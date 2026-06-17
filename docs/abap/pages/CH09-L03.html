@@ -17,12 +17,45 @@
     <header class="lesson-head">
       <div class="lesson-head__eyebrow">CH09 · 모듈화 기초</div>
       <h1>CALL FUNCTION 기본 구조</h1>
-      <p class="lesson-head__direction"></p>
+      <p class="lesson-head__direction">여러 프로그램이 공유하는 재사용 단위 — Function Module.</p>
     </header>
     <article class="prose">
+<h2>프로그램을 넘어 재사용</h2>
+<p><button class="term" type="button" data-term="Subroutine">Subroutine</button>은 한 프로그램 안에 갇힌다. 여러 프로그램이 <strong>공유</strong>하는 재사용
+블록이 <button class="term" type="button" data-term="Function Module">Function Module</button>(함수 모듈)이다. <code>SE37</code>에서 만들고 관리한다.</p>
+<h2>CALL FUNCTION — 호출 구조</h2>
+<pre><code class="language-abap">CALL FUNCTION &#39;Z_ADD_TAX&#39;
+  EXPORTING
+    iv_amount = 1000          &quot; 넘겨줄 값
+  IMPORTING
+    ev_result = lv_out        &quot; 돌려받을 값
+  EXCEPTIONS
+    invalid   = 1
+    OTHERS    = 2.
+
+IF sy-subrc &lt;&gt; 0.
+  &quot; 예외 처리
+ENDIF.
+</code></pre>
+<ul>
+<li><strong>EXPORTING</strong> — 함수에 <strong>넘기는</strong> 값(호출자 입장).</li>
+<li><strong>IMPORTING</strong> — 함수에서 <strong>돌려받는</strong> 값.</li>
+<li><strong>TABLES</strong> — 내부 테이블 전달(레거시 방식).</li>
+<li><strong>EXCEPTIONS</strong> — 오류를 <code>sy-subrc</code>로 받는다.</li>
+</ul>
 <blockquote>
-<p>🚧 골격 — 본문 작성 예정.</p>
+<p>방향이 헷갈린다: <strong>호출자 기준</strong>이다. 내가 함수로 EXPORT(내보냄) → 함수가 받음.</p>
 </blockquote>
+<h2>어디서 찾나</h2>
+<p>표준 함수도 많다. <code>SE37</code>에서 검색하거나, BAPI(CH29)처럼 표준 인터페이스로 제공된다.</p>
+<h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>EXPORTING/IMPORTING 방향 혼동</strong> → 호출자 기준으로 생각.</li>
+<li><strong>EXCEPTIONS 무시</strong> → <code>sy-subrc</code> 확인 누락은 단골 버그.</li>
+</ul>
+<hr>
+<p>함수 모듈은 절차적 재사용의 표준이었다. 그런데 현대 ABAP의 중심은 <strong>클래스</strong>다 —
+가볍게 맛보자 → Local Class(다음 레슨).</p>
 
     </article>
     <nav class="lesson-nav" data-shell="prevnext"></nav>

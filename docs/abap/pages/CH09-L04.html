@@ -17,12 +17,48 @@
     <header class="lesson-head">
       <div class="lesson-head__eyebrow">CH09 · 모듈화 기초</div>
       <h1>Local Class 정의와 Method 호출</h1>
-      <p class="lesson-head__direction"></p>
+      <p class="lesson-head__direction">현대 모듈화의 중심 — 로컬 클래스와 메서드(맛보기).</p>
     </header>
     <article class="prose">
-<blockquote>
-<p>🚧 골격 — 본문 작성 예정.</p>
-</blockquote>
+<h2>현대의 중심 — 클래스</h2>
+<p>새 ABAP은 <button class="term" type="button" data-term="Class">Class</button>(클래스)와 <button class="term" type="button" data-term="Method">Method</button>(메서드)로 모듈화한다. 여기선 <strong>맛보기</strong>만
+한다(본격 OO 설계는 CH19). 프로그램 안에 정의하는 <strong>로컬 클래스</strong>부터.</p>
+<h2>정의 + 구현</h2>
+<pre><code class="language-abap">CLASS lcl_calc DEFINITION.
+  PUBLIC SECTION.
+    METHODS add_tax
+      IMPORTING iv_amount        TYPE p
+      RETURNING VALUE(rv_result) TYPE p.
+ENDCLASS.
+
+CLASS lcl_calc IMPLEMENTATION.
+  METHOD add_tax.
+    rv_result = iv_amount * &#39;1.1&#39;.
+  ENDMETHOD.
+ENDCLASS.
+</code></pre>
+<ul>
+<li><strong>DEFINITION</strong> — 무엇이 있는지(선언). <strong>IMPLEMENTATION</strong> — 실제 코드.</li>
+<li><code>IMPORTING</code>(입력) / <code>RETURNING</code>(반환) 등으로 파라미터를 선언.</li>
+</ul>
+<h2>객체 만들고 메서드 호출</h2>
+<pre><code class="language-abap">START-OF-SELECTION.
+  DATA(lo_calc) = NEW lcl_calc( ).
+  DATA(lv_out)  = lo_calc-&gt;add_tax( 1000 ).
+  WRITE lv_out.
+</code></pre>
+<ul>
+<li><code>NEW</code>로 객체(인스턴스) 생성, <code>-&gt;</code>로 <button class="term" type="button" data-term="Method">Method</button> 호출.</li>
+<li>(<code>DATA(...)</code> 인라인 선언은 현대 구문 — CH17에서 정식으로.)</li>
+</ul>
+<h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>DEFINITION만, IMPLEMENTATION 없음</strong> → 메서드 본문이 없어 오류.</li>
+<li><strong>정적 vs 인스턴스</strong> → 인스턴스 메서드는 객체(<code>-&gt;</code>)로 호출. 정적은 <code>=&gt;</code>(CH19).</li>
+</ul>
+<hr>
+<p>로컬 클래스는 그 프로그램 안에만 산다. 여러 곳에서 쓰는 <strong>전역 클래스</strong>는? →
+다음 레슨.</p>
 
     </article>
     <nav class="lesson-nav" data-shell="prevnext"></nav>

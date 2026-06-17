@@ -17,12 +17,41 @@
     <header class="lesson-head">
       <div class="lesson-head__eyebrow">CH09 · 모듈화 기초</div>
       <h1>USING / CHANGING 파라미터</h1>
-      <p class="lesson-head__direction"></p>
+      <p class="lesson-head__direction">서브루틴에 값을 주고(USING) 결과를 돌려받는다(CHANGING).</p>
     </header>
     <article class="prose">
+<h2>값을 주고받기</h2>
+<p>서브루틴이 바깥 값을 받아 처리하고 결과를 돌려주려면 <strong>파라미터</strong>가 필요하다.
+<code>FORM</code>에서는 <code>USING</code>과 <code>CHANGING</code>으로 한다.</p>
+<h2>USING(입력) / CHANGING(입출력)</h2>
+<pre><code class="language-abap">FORM add_tax
+  USING    iv_amount TYPE p
+  CHANGING cv_result TYPE p.
+  cv_result = iv_amount * &#39;1.1&#39;.
+ENDFORM.
+
+START-OF-SELECTION.
+  DATA lv_out TYPE p LENGTH 8 DECIMALS 2.
+  PERFORM add_tax USING 1000 CHANGING lv_out.
+  WRITE lv_out.
+</code></pre>
+<ul>
+<li><code>USING</code> — 주로 <strong>입력</strong>값(관례). <code>CHANGING</code> — <strong>돌려줄</strong> 값.</li>
+<li>접두어 관례: <code>iv_</code>(input), <code>cv_</code>(changing).</li>
+</ul>
 <blockquote>
-<p>🚧 골격 — 본문 작성 예정.</p>
+<p>엄밀히 <code>USING</code>도 참조로 넘어가 바뀔 수 있다. <strong>값 보호</strong>가 필요하면
+<code>USING value(iv_x)</code>로 값 전달(by value). 관례상 입력은 USING, 출력은 CHANGING로
+<strong>의도를 표현</strong>한다.</p>
 </blockquote>
+<h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>USING/CHANGING 순서·타입 불일치</strong> → 호출과 정의의 파라미터가 맞아야 한다.</li>
+<li><strong>출력을 USING으로</strong> → 의도가 흐려진다. 돌려줄 값은 CHANGING.</li>
+</ul>
+<hr>
+<p>서브루틴은 <strong>같은 프로그램 안</strong>에서만 산다. 여러 프로그램이 <strong>공유</strong>하는 재사용
+블록은? → Function Module(다음 레슨).</p>
 
     </article>
     <nav class="lesson-nav" data-shell="prevnext"></nav>
