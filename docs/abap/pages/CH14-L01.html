@@ -17,12 +17,36 @@
     <header class="lesson-head">
       <div class="lesson-head__eyebrow">CH14 · Report Event·Selection Screen 심화</div>
       <h1>ABAP Report Event 전체 흐름</h1>
-      <p class="lesson-head__direction"></p>
+      <p class="lesson-head__direction">실행형 프로그램의 이벤트 순서 — 언제 무엇이 실행되나.</p>
     </header>
     <article class="prose">
-<blockquote>
-<p>🚧 골격 — 본문 작성 예정.</p>
-</blockquote>
+<h2>코드는 어디에 두나</h2>
+<p>지금까지 <code>START-OF-SELECTION.</code> 아래에 코드를 뒀다. 그런데 &quot;화면 뜨기 전 기본값&quot;,
+&quot;입력 검증&quot;, &quot;조회 후 마무리&quot;는 각각 <strong>다른 시점</strong>에 실행돼야 한다. 실행형
+프로그램은 정해진 <strong><button class="term" type="button" data-term="Report Event">Report Event</button></strong> 순서를 따른다.</p>
+<h2>이벤트 순서(핵심)</h2>
+<pre><code class="language-text">LOAD-OF-PROGRAM
+  → INITIALIZATION              &quot; 화면 뜨기 전 1회 (기본값)
+  → [선택화면 표시]
+  → AT SELECTION-SCREEN OUTPUT  &quot; 화면 그리기 직전 (PBO)
+  → AT SELECTION-SCREEN         &quot; 사용자가 실행/Enter (PAI, 검증)
+  → START-OF-SELECTION          &quot; 본 처리(조회 등)
+  → END-OF-SELECTION            &quot; 처리 후 마무리
+</code></pre>
+<ul>
+<li>각 <strong>이벤트 키워드 아래</strong>에 그 시점 코드를 둔다.</li>
+<li>키워드를 안 쓰면 코드는 암묵적으로 <code>START-OF-SELECTION</code>에 속한다.</li>
+</ul>
+<h2>왜 중요한가</h2>
+<p>기본값은 <button class="term" type="button" data-term="INITIALIZATION">INITIALIZATION</button>, 검증은 <button class="term" type="button" data-term="AT SELECTION-SCREEN">AT SELECTION-SCREEN</button>, 조회는
+<button class="term" type="button" data-term="START-OF-SELECTION">START-OF-SELECTION</button> — <strong>자리를 맞춰야</strong> 의도대로 동작한다.</p>
+<h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>검증을 START-OF-SELECTION에</strong> → 이미 본처리 시작. 검증은 <code>AT SELECTION-SCREEN</code>.</li>
+<li><strong>이벤트 키워드 누락</strong> → 전부 본처리로 묶여 순서가 꼬인다.</li>
+</ul>
+<hr>
+<p>흐름을 봤다. 이제 각 이벤트를 하나씩 — 먼저 화면 전 <strong>기본값</strong> → INITIALIZATION(다음 레슨).</p>
 
     </article>
     <nav class="lesson-nav" data-shell="prevnext"></nav>

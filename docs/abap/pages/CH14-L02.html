@@ -17,12 +17,36 @@
     <header class="lesson-head">
       <div class="lesson-head__eyebrow">CH14 · Report Event·Selection Screen 심화</div>
       <h1>INITIALIZATION 기본값 설정</h1>
-      <p class="lesson-head__direction"></p>
+      <p class="lesson-head__direction">화면 뜨기 전 1회 — PARAMETERS/SELECT-OPTIONS 기본값.</p>
     </header>
     <article class="prose">
-<blockquote>
-<p>🚧 골격 — 본문 작성 예정.</p>
-</blockquote>
+<h2>화면에 기본값을 채워두기</h2>
+<p>선택화면이 뜰 때 자주 쓰는 값(오늘 날짜, 기본 부서)이 미리 채워져 있으면 편하다.
+화면 표시 <strong>전 1회</strong> 실행되는 <button class="term" type="button" data-term="INITIALIZATION">INITIALIZATION</button>에서 설정한다.</p>
+<h2>INITIALIZATION</h2>
+<pre><code class="language-abap">PARAMETERS p_date TYPE d.
+SELECT-OPTIONS s_dept FOR ztperson-dept_id.
+
+INITIALIZATION.
+  p_date = sy-datum.                       &quot; 오늘 날짜 기본값
+
+  s_dept-sign = &#39;I&#39;. s_dept-option = &#39;EQ&#39;.
+  s_dept-low  = &#39;1000&#39;.
+  APPEND s_dept TO s_dept.                  &quot; 기본 범위 1건
+</code></pre>
+<ul>
+<li><code>INITIALIZATION</code>은 화면 표시 <strong>전에 한 번</strong> 실행된다.</li>
+<li>여기서 PARAMETERS/SELECT-OPTIONS에 값을 넣으면 화면에 <strong>기본값으로</strong> 나타난다.</li>
+</ul>
+<h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>START-OF-SELECTION에서 기본값</strong> → 이미 화면을 지난 뒤라 화면엔 안 보인다.
+기본값은 <code>INITIALIZATION</code>.</li>
+<li><strong>여러 번 실행 기대</strong> → 1회만. 매 화면마다는 <code>AT SELECTION-SCREEN OUTPUT</code>.</li>
+</ul>
+<hr>
+<p>기본값은 채웠다. 그런데 화면을 <strong>그릴 때마다</strong> 필드를 숨기거나 잠그려면? →
+AT SELECTION-SCREEN OUTPUT(다음 레슨).</p>
 
     </article>
     <nav class="lesson-nav" data-shell="prevnext"></nav>

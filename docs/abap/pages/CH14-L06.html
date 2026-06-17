@@ -17,12 +17,38 @@
     <header class="lesson-head">
       <div class="lesson-head__eyebrow">CH14 · Report Event·Selection Screen 심화</div>
       <h1>END-OF-SELECTION 출력 마무리</h1>
-      <p class="lesson-head__direction"></p>
+      <p class="lesson-head__direction">본 처리 후 마무리 — 출력·요약을 정리.</p>
     </header>
     <article class="prose">
-<blockquote>
-<p>🚧 골격 — 본문 작성 예정.</p>
-</blockquote>
+<h2>처리 후 마무리</h2>
+<p><code>START-OF-SELECTION</code>의 조회·가공이 끝난 뒤 실행되는 게 <code>END-OF-SELECTION</code>이다.
+<strong>최종 출력·요약</strong>을 여기서 정리하면 흐름이 깔끔해진다.</p>
+<pre><code class="language-abap">START-OF-SELECTION.
+  SELECT * FROM ztperson INTO TABLE lt_person WHERE dept_id IN s_dept.
+
+END-OF-SELECTION.
+  &quot; 조회 결과를 ALV로 표시 (CH10)
+  TRY.
+      cl_salv_table=&gt;factory(
+        IMPORTING r_salv_table = lo_alv
+        CHANGING  t_table      = lt_person ).
+      lo_alv-&gt;display( ).
+    CATCH cx_salv_msg.
+  ENDTRY.
+</code></pre>
+<h2>언제 나누나</h2>
+<ul>
+<li>단순 리포트는 <code>START-OF-SELECTION</code> 한 곳으로 충분.</li>
+<li>&quot;조회&quot;와 &quot;출력&quot;을 <strong>의도적으로 분리</strong>하면 가독성↑ → 출력을 <code>END-OF-SELECTION</code>에.</li>
+</ul>
+<h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>END-OF-SELECTION에서 조회</strong> → 본 조회는 START. END는 마무리.</li>
+<li><strong>과한 분리</strong> → 작은 프로그램까지 억지로 나눌 필요는 없다.</li>
+</ul>
+<hr>
+<p>이벤트 흐름을 다 봤다. 마지막으로 선택화면 단계에서의 <strong>권한·존재 검증</strong> 기초를
+보자 → 다음 레슨.</p>
 
     </article>
     <nav class="lesson-nav" data-shell="prevnext"></nav>
