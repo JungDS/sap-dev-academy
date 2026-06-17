@@ -17,12 +17,37 @@
     <header class="lesson-head">
       <div class="lesson-head__eyebrow">CH12 · Open SQL 2차: JOIN·집계</div>
       <h1>LEFT OUTER JOIN 기본 개념과 NULL 처리</h1>
-      <p class="lesson-head__direction"></p>
+      <p class="lesson-head__direction">왼쪽은 모두 남긴다 — LEFT OUTER JOIN과 빈 값 처리.</p>
     </header>
     <article class="prose">
-<blockquote>
-<p>🚧 골격 — 본문 작성 예정.</p>
-</blockquote>
+<h2>매칭 없어도 남기고 싶다</h2>
+<p>부서가 아직 배정 안 된 사람도 명단에 <strong>남기고</strong> 싶다. <button class="term" type="button" data-term="INNER JOIN">INNER JOIN</button>은 그런 행을
+떨군다. <strong>LEFT OUTER JOIN</strong>은 왼쪽(기준) 테이블 행을 <strong>전부</strong> 남긴다.</p>
+<h2>LEFT OUTER JOIN (classic)</h2>
+<pre><code class="language-abap">SELECT p~persid p~name d~deptname
+  FROM ztperson AS p
+  LEFT OUTER JOIN ztdept AS d
+    ON p~dept_id = d~dept_id
+  INTO CORRESPONDING FIELDS OF TABLE lt_out.
+</code></pre>
+<ul>
+<li>왼쪽(<code>ztperson</code>) 행은 모두 결과에 남는다.</li>
+<li>매칭되는 오른쪽이 없으면 그 컬럼(<code>deptname</code>)은 DB의 <strong>NULL</strong> → ABAP에선
+<strong>초기값</strong>(빈 문자/0)으로 들어온다.</li>
+</ul>
+<h2>NULL 처리 주의</h2>
+<ul>
+<li>DB의 NULL과 ABAP 초기값은 개념이 다르다. LEFT JOIN 결과의 빈 오른쪽 컬럼은
+보통 초기값으로 보이니, &quot;값 없음&quot;을 구분하려면 기준 키로 판단한다.</li>
+</ul>
+<h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>LEFT인데 WHERE로 오른쪽 필터</strong> → 매칭 없는 행이 걸러질 수 있다. 오른쪽 조건은
+<code>ON</code>에 두는 게 안전.</li>
+<li><strong>방향 혼동</strong> → 기준(다 남길 쪽)을 왼쪽(FROM)에 둔다.</li>
+</ul>
+<hr>
+<p>행을 합쳤다. 이제 <strong>묶어서 세고 합산</strong>하고 싶다 → GROUP BY·집계(다음 레슨).</p>
 
     </article>
     <nav class="lesson-nav" data-shell="prevnext"></nav>
