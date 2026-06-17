@@ -17,12 +17,53 @@
     <header class="lesson-head">
       <div class="lesson-head__eyebrow">CH05 · Internal Table</div>
       <h1>Internal Table 기초</h1>
-      <p class="lesson-head__direction"></p>
+      <p class="lesson-head__direction">같은 모양의 행을 여러 개 — 내부 테이블 선언과 행 추가.</p>
     </header>
     <article class="prose">
+<h2>한 건으로는 부족하다</h2>
+<p>CH04의 구조체는 사람 <strong>한 명</strong>을 담는다. 그런데 명단은 보통 여러 명이다. 같은
+모양(구조)의 행을 <strong>여러 개</strong> 쌓아 두고 싶다 — 그게 <button class="term" type="button" data-term="Internal Table">Internal Table</button>(내부 테이블)다.</p>
+<h2>선언 — TYPE TABLE OF</h2>
+<p>행의 모양(구조 타입) 위에 <code>TABLE OF</code>를 붙인다.</p>
+<pre><code class="language-abap">TYPES: BEGIN OF ty_person,
+         name TYPE string,
+         age  TYPE i,
+       END OF ty_person.
+
+DATA: ls_person TYPE ty_person,          &quot; 한 건(Work Area)
+      lt_person TYPE TABLE OF ty_person. &quot; 여러 건(Internal Table)
+</code></pre>
+<ul>
+<li><code>lt_</code> 접두어가 관례(local table). <button class="term" type="button" data-term="Internal Table">Internal Table</button>은 메모리에만 존재한다.</li>
+<li>한 건을 담는 <button class="term" type="button" data-term="Work Area">Work Area</button>(<code>ls_</code>)와 짝지어 쓴다.</li>
+</ul>
+<h2>행 추가 — APPEND</h2>
+<p><button class="term" type="button" data-term="Work Area">Work Area</button>에 값을 채우고 <code>APPEND</code>로 테이블에 쌓는다.</p>
+<pre><code class="language-abap">ls_person-name = &#39;Kim&#39;. ls_person-age = 30.
+APPEND ls_person TO lt_person.
+
+CLEAR ls_person.
+ls_person-name = &#39;Lee&#39;. ls_person-age = 25.
+APPEND ls_person TO lt_person.
+</code></pre>
+<p>이제 <code>lt_person</code>에는 행이 둘이다. <code>lines( lt_person )</code>으로 개수를 센다.</p>
+<h2>비우기 — CLEAR / REFRESH</h2>
+<pre><code class="language-abap">CLEAR   lt_person.   &quot; 모든 행 제거
+REFRESH lt_person.   &quot; 동일하게 행 제거
+</code></pre>
 <blockquote>
-<p>🚧 골격 — 본문 작성 예정.</p>
+<p>구조체(한 건)는 <code>CLEAR</code>로 값만 비웠다. 내부 테이블은 <code>CLEAR</code>/<code>REFRESH</code>로 <strong>행
+전체</strong>를 비운다.</p>
 </blockquote>
+<h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>APPEND 전에 CLEAR 안 함</strong> → 이전 <button class="term" type="button" data-term="Work Area">Work Area</button> 값이 남아 섞일 수 있다. 새 행
+전에 <code>CLEAR ls_person</code> 습관.</li>
+<li><strong>헤더라인 옛 방식</strong> → 오래된 코드의 &quot;header line&quot; 대신, 지금은 <code>INTO ls_</code>
+작업영역 방식을 쓴다(명확·안전).</li>
+</ul>
+<hr>
+<p>행을 쌓았다. 그런데 이 테이블 <strong>타입</strong>도 로컬·전역으로 나뉜다 → 다음 레슨(Table Type).</p>
 
     </article>
     <nav class="lesson-nav" data-shell="prevnext"></nav>

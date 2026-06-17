@@ -17,12 +17,37 @@
     <header class="lesson-head">
       <div class="lesson-head__eyebrow">CH05 · Internal Table</div>
       <h1>Deep Structure 개념</h1>
-      <p class="lesson-head__direction"></p>
+      <p class="lesson-head__direction">구조 안에 내부 테이블/문자열이 든 'Deep' 구조 — 개념 소개.</p>
     </header>
     <article class="prose">
-<blockquote>
-<p>🚧 골격 — 본문 작성 예정.</p>
-</blockquote>
+<h2>행 안에 또 목록이 있다면</h2>
+<p>주문 한 건에 &quot;주문 항목 여러 줄&quot;이 딸린다. 즉 <strong>한 행 안에 또 다른 내부 테이블</strong>
+이 들어가야 한다. 이렇게 구조 안에 테이블이나 문자열 같은 가변 요소가 든 것을
+<strong>Deep Structure</strong>(깊은 구조)라 한다. 여기선 <strong>개념만</strong> 잡는다(구현은 뒤에서).</p>
+<h2>Flat vs Deep</h2>
+<ul>
+<li><strong>Flat 구조</strong> — 모든 컴포넌트가 고정 길이 기본형(지금까지의 구조).</li>
+<li><strong>Deep 구조</strong> — 컴포넌트에 <button class="term" type="button" data-term="Internal Table">Internal Table</button>·STRING·참조 등 가변 요소가 포함.</li>
+</ul>
+<pre><code class="language-abap">TYPES: BEGIN OF ty_order,
+         id    TYPE i,
+         items TYPE ty_person_tab,  &quot; 행 안에 테이블! → Deep
+       END OF ty_order.
+</code></pre>
+<h2>왜 미리 알아두나</h2>
+<ul>
+<li>ALV 표시나 DB 저장에서 Deep 구조는 <strong>Flat과 다르게 취급</strong>된다.</li>
+<li>지금은 &quot;구조 안에 테이블이 들어갈 수 있다&quot;는 가능성만 기억하면 된다. 실제
+활용·제약은 ALV·구조 심화에서 다시 만난다.</li>
+</ul>
+<h2>흔한 오해와 점검</h2>
+<ul>
+<li><strong>Deep을 투명 테이블 컬럼으로</strong> → 안 된다. 투명 테이블 행은 Flat이어야 한다(→ CH06).</li>
+<li><strong>지금 깊이 파지 말 것</strong> → 개념만. 나선형으로 뒤에서 깊어진다.</li>
+</ul>
+<hr>
+<p>이제 여러 건을 메모리에서 자유롭게 다룬다. 그런데 프로그램이 끝나면 이 테이블은
+<strong>사라진다.</strong> 값을 영구히 저장하고 싶다 → <strong>CH06(Transparent Table)</strong>.</p>
 
     </article>
     <nav class="lesson-nav" data-shell="prevnext"></nav>

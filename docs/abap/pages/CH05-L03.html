@@ -17,12 +17,52 @@
     <header class="lesson-head">
       <div class="lesson-head__eyebrow">CH05 · Internal Table</div>
       <h1>LOOP·READ·MODIFY</h1>
-      <p class="lesson-head__direction"></p>
+      <p class="lesson-head__direction">행을 순회·단건 조회·수정·삭제하는 핵심 동작.</p>
     </header>
     <article class="prose">
-<blockquote>
-<p>🚧 골격 — 본문 작성 예정.</p>
-</blockquote>
+<h2>쌓았으면 다뤄야 한다</h2>
+<p>내부 테이블의 행을 <strong>하나씩 순회</strong>하고, <strong>특정 행을 찾고</strong>, <strong>고치고 지운다</strong>.
+가장 자주 쓰는 동작들이다.</p>
+<h2>LOOP — 전체 순회</h2>
+<pre><code class="language-abap">LOOP AT lt_person INTO ls_person.
+  WRITE: / ls_person-name, ls_person-age.
+ENDLOOP.
+</code></pre>
+<ul>
+<li>한 행씩 <button class="term" type="button" data-term="Work Area">Work Area</button> <code>ls_person</code>으로 꺼내 처리한다.</li>
+<li>현재 행 번호는 <code>sy-tabix</code>에 들어온다.</li>
+</ul>
+<h2>READ TABLE — 단건 조회</h2>
+<pre><code class="language-abap">READ TABLE lt_person INTO ls_person WITH KEY name = &#39;Kim&#39;.
+IF sy-subrc = 0.
+  WRITE: / &#39;찾음:&#39;, ls_person-age.
+ENDIF.
+</code></pre>
+<ul>
+<li>찾으면 <code>sy-subrc = 0</code>, 못 찾으면 <code>4</code>. <strong>항상 <code>sy-subrc</code>를 확인</strong>한다.</li>
+</ul>
+<h2>MODIFY / DELETE — 수정·삭제</h2>
+<pre><code class="language-abap">&quot; 순회 중 현재 행 수정
+LOOP AT lt_person INTO ls_person.
+  ls_person-age = ls_person-age + 1.
+  MODIFY lt_person FROM ls_person INDEX sy-tabix.
+ENDLOOP.
+
+&quot; 조건으로 삭제
+DELETE lt_person WHERE age &lt; 20.
+</code></pre>
+<h2>정렬</h2>
+<pre><code class="language-abap">SORT lt_person BY age DESCENDING.
+</code></pre>
+<h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>sy-subrc 미확인</strong> → READ 실패 후 옛 <button class="term" type="button" data-term="Work Area">Work Area</button> 값을 그대로 쓰는 버그. 꼭 확인.</li>
+<li><strong>LOOP 안에서 통째 DELETE</strong> → 인덱스가 꼬인다. 조건 삭제는 <code>DELETE ... WHERE</code>로.</li>
+<li><strong>잦은 단건 READ가 느림</strong> → 키 설계(SORTED/HASHED)를 뒤에서 고려.</li>
+</ul>
+<hr>
+<p>읽고 고치는 법까지 익혔다. 마지막으로 행 안에 <strong>또 테이블이 들어가는</strong> 구조를
+개념만 보고 가자 → Deep Structure(다음 레슨).</p>
 
     </article>
     <nav class="lesson-nav" data-shell="prevnext"></nav>
