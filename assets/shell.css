@@ -1,0 +1,68 @@
+/* SAP Developer Academy — 런타임 셸 스타일
+   상단바(sticky)·좌측 3탭 네비·이전/다음·용어 팝업. base.css 변수 위에서 동작. */
+
+.topbar { position: sticky; top: 0; z-index: 20; }
+
+/* 레이아웃: 좌측 사이드바 + 본문 */
+.layout {
+  max-width: var(--maxw); margin: 0 auto;
+  display: grid; grid-template-columns: 268px 1fr; gap: 28px;
+  align-items: start;
+}
+.layout .shell { max-width: none; margin: 0; padding-right: 8px; }
+
+/* 사이드바 */
+.sidenav {
+  position: sticky; top: 64px; align-self: start;
+  max-height: calc(100vh - 80px); overflow: auto;
+  padding: 16px 0 24px 16px;
+}
+.sidenav__tabs { display: flex; gap: 4px; margin-bottom: 12px; }
+.sidenav__tab {
+  flex: 1; border: 1px solid var(--line); background: var(--surface);
+  color: var(--ink-soft); border-radius: 9px; padding: 7px 4px;
+  font-size: .78rem; font-weight: 700; cursor: pointer;
+}
+.sidenav__tab.is-active { background: var(--brand); color: #fff; border-color: var(--brand); }
+.sidenav__panel { display: none; }
+.sidenav__panel.is-active { display: block; }
+.sidenav__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.sidenav__list a {
+  display: block; padding: 7px 10px; border-radius: 8px;
+  font-size: .86rem; color: var(--ink-soft); line-height: 1.4;
+}
+.sidenav__list a:hover { background: rgba(59, 91, 219, .07); text-decoration: none; }
+.sidenav__list a.is-current { background: rgba(59, 91, 219, .12); color: var(--brand); font-weight: 700; }
+.sidenav__list .toc-h3 { padding-left: 22px; font-size: .82rem; }
+.sidenav__num { color: var(--soon); font-weight: 700; margin-right: 6px; font-size: .78rem; }
+
+/* 이전/다음 */
+.lesson-nav { display: flex; justify-content: space-between; gap: 12px; margin: 36px 0 8px; }
+.lesson-nav a {
+  flex: 1; border: 1px solid var(--line); border-radius: var(--radius);
+  background: var(--surface); padding: 12px 16px; box-shadow: var(--shadow);
+}
+.lesson-nav a:hover { text-decoration: none; border-color: var(--brand); }
+.lesson-nav .dir { font-size: .74rem; color: var(--soon); font-weight: 700; }
+.lesson-nav .ttl { display: block; margin-top: 2px; color: var(--ink); font-weight: 600; font-size: .92rem; }
+.lesson-nav .next { text-align: right; }
+
+/* 용어 팝업 */
+.term-popup {
+  position: absolute; z-index: 50; max-width: 320px;
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: 12px; box-shadow: 0 10px 30px rgba(20, 28, 51, .16);
+  padding: 14px 16px;
+}
+.term-popup__title { font-weight: 800; font-size: .95rem; margin: 0 0 6px; color: var(--ink); }
+.term-popup__desc { margin: 0; font-size: .86rem; color: var(--ink-soft); line-height: 1.55; }
+.term-popup__analogy { margin: 8px 0 0; font-size: .82rem; color: var(--accent); line-height: 1.5; }
+.term-popup__close {
+  position: absolute; top: 8px; right: 10px; border: 0; background: none;
+  cursor: pointer; color: var(--soon); font-size: 1.1rem; line-height: 1;
+}
+
+@media (max-width: 860px) {
+  .layout { grid-template-columns: 1fr; gap: 0; }
+  .sidenav { position: static; max-height: none; padding: 12px 16px; }
+}
