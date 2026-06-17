@@ -1,0 +1,13 @@
+---
+id: CH05
+track: TRACK-01
+order: 5
+title: "Internal Table"
+intro: "한 건이 아니라 여러 건(레코드)을 다뤄야 한다."
+keywords: ["Internal Table","Table Type","LOOP","READ","MODIFY","Deep Structure"]
+difficulty: "초급"
+---
+
+한 건이 아니라 여러 건(레코드)을 다뤄야 한다.
+
+> 🚧 이 챕터는 골격 단계입니다. 레슨 본문은 점진적으로 작성됩니다.
