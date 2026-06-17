@@ -3,28 +3,31 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ABAP 커리큘럼 로드맵 · SAP Developer Academy</title>
-  <meta name="description" content="동기부여형 ABAP 커리큘럼 — 불편 체인으로 연결되는 Chapter 로드맵" />
+  <title>ABAP 커리큘럼 · SAP Developer Academy</title>
+  <meta name="description" content="동기부여형 ABAP 커리큘럼 — 불편 체인으로 연결되는 35개 챕터 로드맵" />
   <link rel="stylesheet" href="../assets/base.css" />
   <style>
     .crumb { padding: 18px 0 0; font-size: .88rem; color: var(--ink-soft); }
-    .road { display: grid; gap: 12px; margin-top: 14px; }
-    .road-item {
-      background: var(--surface); border: 1px solid var(--line);
-      border-radius: var(--radius); box-shadow: var(--shadow);
-      padding: 16px 18px; display: grid;
-      grid-template-columns: 44px 1fr; gap: 14px; align-items: start;
-    }
-    .road-num {
-      width: 44px; height: 44px; border-radius: 11px;
-      background: var(--brand); color: #fff; font-weight: 800;
-      display: grid; place-items: center; font-size: 1.05rem;
-    }
-    .road-item.more .road-num { background: var(--soon); }
-    .road-item h3 { margin: 0 0 3px; font-size: 1.02rem; }
-    .road-item .why { margin: 0; color: var(--ink-soft); font-size: .9rem; }
-    .road-item .why b { color: var(--accent); font-weight: 600; }
-    .note { color: var(--ink-soft); font-size: .9rem; margin-top: 22px; }
+    .track { margin-top: 34px; }
+    .track__head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+    .track__head h2 { margin: 0; font-size: 1.3rem; }
+    .track__intro { color: var(--ink-soft); font-size: .92rem; }
+    .chapters { display: grid; gap: 12px; margin-top: 16px;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+    .ch-card { display: flex; flex-direction: column; gap: 6px; background: var(--surface);
+      border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow);
+      padding: 16px 18px; transition: transform .12s ease, box-shadow .12s ease; }
+    a.ch-card:hover { text-decoration: none; transform: translateY(-2px); box-shadow: 0 10px 30px rgba(20, 28, 51, .1); }
+    .ch-card__top { display: flex; align-items: center; gap: 10px; }
+    .ch-card__num { width: 34px; height: 34px; border-radius: 9px; background: var(--brand); color: #fff;
+      display: grid; place-items: center; font-weight: 800; font-size: .85rem; flex: 0 0 auto; }
+    .ch-card__title { font-weight: 700; font-size: 1rem; color: var(--ink); line-height: 1.3; }
+    .ch-card__why { margin: 0; color: var(--accent); font-size: .86rem; }
+    .ch-card__meta { margin-top: auto; color: var(--soon); font-size: .76rem; font-weight: 700; padding-top: 6px; }
+    .boundary { grid-column: 1 / -1; margin: 6px 0; padding: 8px 12px; border-left: 3px solid var(--brand);
+      background: rgba(59, 91, 219, .06); font-size: .84rem; color: var(--ink); border-radius: 0 8px 8px 0; }
+    .loading, .errbox { color: var(--ink-soft); padding: 20px 0; }
+    .note { color: var(--ink-soft); font-size: .85rem; margin-top: 26px; }
   </style>
 </head>
 <body>
@@ -45,31 +48,55 @@
       <h1>불편을 먼저 겪고, 해결책으로 배우는 ABAP</h1>
       <p>
         각 Chapter는 <strong>"이전 단계에서 느낀 불편"</strong>을 해소하며 다음으로 이어집니다.
-        스칼라·구조체 모두 <em>Local → Global(DDIC)</em> 순서로 두 번 밟고,
+        스칼라·구조체 모두 <em>Local → Global(DDIC)</em>을 두 번 밟고,
         Internal Table → Transparent Table → Open SQL이 하나의 흐름으로 연결됩니다.
       </p>
     </section>
 
-    <div class="section-label">Chapter 로드맵</div>
-    <div class="road">
-      <div class="road-item"><div class="road-num">1</div><div><h3>SAPGUI · 로그온 · T-code · SE38 첫 실행</h3><p class="why">개발 환경에 발을 들인다.</p></div></div>
-      <div class="road-item"><div class="road-num">2</div><div><h3>프로그램 구조 · 주석 · WRITE · 문자열 출력</h3><p class="why"><b>"뭐라도 돌려보고 싶다"</b></p></div></div>
-      <div class="road-item"><div class="road-num">3</div><div><h3>변수 + 표준 타입 (Complete: STRING/I/F/D/T, Incomplete: C/N/P)</h3><p class="why"><b>"값을 담아 다루고 싶다"</b></p></div></div>
-      <div class="road-item"><div class="road-num">4</div><div><h3>Local Type (TYPES) 재사용</h3><p class="why"><b>"매번 같은 선언 반복이 귀찮다"</b></p></div></div>
-      <div class="road-item"><div class="road-num">5</div><div><h3>DDIC Domain & Data Element (얕게) + PARAMETERS로 보상</h3><p class="why"><b>"프로그램마다 또 정의… 전역 공유가 필요"</b></p></div></div>
-      <div class="road-item"><div class="road-num">6</div><div><h3>Local Structure (BEGIN OF ~ END OF)</h3><p class="why"><b>"단일 변수 난립·초기화가 불편, 묶고 싶다"</b></p></div></div>
-      <div class="road-item"><div class="road-num">7</div><div><h3>DDIC Structure</h3><p class="why"><b>"Structure도 매번 재정의가 귀찮다"</b></p></div></div>
-      <div class="road-item"><div class="road-num">8</div><div><h3>Internal Table (+ Table Type: Local / DDIC 전역)</h3><p class="why"><b>"레코드가 여러 개다"</b></p></div></div>
-      <div class="road-item"><div class="road-num">9</div><div><h3>Transparent Table + SE11/SE16N 데이터 입력</h3><p class="why"><b>"끝나면 사라진다 · 영속/공유가 필요"</b></p></div></div>
-      <div class="road-item"><div class="road-num">10</div><div><h3>Open SQL 기본 조회 (SELECT … INTO TABLE)</h3><p class="why"><b>"저장한 걸 다시 읽고 싶다"</b></p></div></div>
-      <div class="road-item more"><div class="road-num">···</div><div><h3>이후</h3><p class="why">DDIC 관계/F4(입력검증 불편), 모듈화, SALV/ALV, SELECT-OPTIONS, JOIN/집계, Classic View, Report Event, Screen/Dynpro, Grid ALV, Modern ABAP, New Open SQL, OO, CDS, RAP — 각자의 불편으로 동기화.</p></div></div>
-    </div>
+    <div id="roadmap"><p class="loading">커리큘럼을 불러오는 중…</p></div>
 
-    <p class="note">※ 본 로드맵은 설계 확정본입니다. 레슨 본문은 백지에서 점진적으로 작성·연결됩니다.</p>
+    <p class="note">
+      ※ 본 로드맵은 <code>docs/abap/curriculum.json</code>에서 자동 생성됩니다.
+      🚧(골격) 챕터는 레슨 본문을 점진적으로 채워 갑니다.
+    </p>
   </main>
 
-  <footer class="footer">
-    © 2026 SAP Developer Academy · ABAP 커리큘럼 로드맵 (초기본)
-  </footer>
+  <footer class="footer">© 2026 SAP Developer Academy · ABAP 커리큘럼</footer>
+
+  <script>
+  (function () {
+    var DATA = "../docs/abap/";
+    var BOUNDARY = { CH18: "◀ 여기부터 Modern Open SQL (@ · @DATA). 이전 CH07~CH16의 SQL은 classic." };
+    function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+
+    fetch(DATA + "curriculum.json").then(function (r) { return r.json(); }).then(function (c) {
+      var root = document.getElementById("roadmap"); root.innerHTML = "";
+      c.tracks.forEach(function (t) {
+        var sec = document.createElement("section"); sec.className = "track";
+        sec.innerHTML = '<div class="track__head"><h2>' + esc(t.title) + '</h2>' +
+          '<span class="track__intro">' + esc(t.intro || "") + '</span></div>';
+        var grid = document.createElement("div"); grid.className = "chapters";
+        (t.chapters || []).forEach(function (ch) {
+          if (BOUNDARY[ch.id]) {
+            var b = document.createElement("div"); b.className = "boundary"; b.textContent = BOUNDARY[ch.id]; grid.appendChild(b);
+          }
+          var href = (ch.lessons && ch.lessons.length) ? DATA + ch.lessons[0].href : null;
+          var card = document.createElement(href ? "a" : "div");
+          card.className = "ch-card"; if (href) card.href = href;
+          card.innerHTML =
+            '<div class="ch-card__top"><span class="ch-card__num">' + esc(String(ch.order)) + '</span>' +
+            '<span class="ch-card__title">' + esc(ch.title) + '</span></div>' +
+            '<p class="ch-card__why">' + esc(ch.intro || "") + '</p>' +
+            '<div class="ch-card__meta">' + esc(ch.difficulty || "") + ' · 레슨 ' + (ch.lessonCount || 0) + '개</div>';
+          grid.appendChild(card);
+        });
+        sec.appendChild(grid); root.appendChild(sec);
+      });
+    }).catch(function () {
+      document.getElementById("roadmap").innerHTML =
+        '<p class="errbox">커리큘럼을 불러오지 못했습니다. file:// 가 아니라 HTTP(로컬 서버/Pages)로 열어 주세요.</p>';
+    });
+  })();
+  </script>
 </body>
 </html>
