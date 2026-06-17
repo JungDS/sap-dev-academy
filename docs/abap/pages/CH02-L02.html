@@ -17,12 +17,74 @@
     <header class="lesson-head">
       <div class="lesson-head__eyebrow">CH02 · 변수와 표준 타입 (+ Local Type)</div>
       <h1>Complete 타입(STRING·I·F·D·T)</h1>
-      <p class="lesson-head__direction"></p>
+      <p class="lesson-head__direction">길이를 따로 안 적어도 되는 완전한 표준 타입부터.</p>
     </header>
     <article class="prose">
+<h2>&quot;길이를 안 적어도 되는&quot; 타입</h2>
+<p>타입 중에는 <strong>그 자체로 완전해서 길이를 추가로 지정할 필요가 없는</strong> 것들이
+있다. 이를 <button class="term" type="button" data-term="Complete 타입">Complete 타입</button>이라 한다. 입문 단계에서 가장 자주 쓴다.</p>
+<h2>대표 Complete 타입</h2>
+<table>
+<thead>
+<tr>
+<th>타입</th>
+<th>뜻</th>
+<th>예</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><button class="term" type="button" data-term="STRING">STRING</button></td>
+<td>가변 길이 문자열</td>
+<td><code>&#39;안녕&#39;</code>, 긴 텍스트</td>
+</tr>
+<tr>
+<td><code>I</code></td>
+<td>정수(integer)</td>
+<td><code>42</code>, <code>-7</code></td>
+</tr>
+<tr>
+<td><code>F</code></td>
+<td>부동소수점(float)</td>
+<td><code>3.14</code></td>
+</tr>
+<tr>
+<td><code>D</code></td>
+<td>날짜(YYYYMMDD, 8자리)</td>
+<td><code>&#39;20260618&#39;</code></td>
+</tr>
+<tr>
+<td><code>T</code></td>
+<td>시간(HHMMSS, 6자리)</td>
+<td><code>&#39;143000&#39;</code></td>
+</tr>
+</tbody></table>
+<pre><code class="language-abap">DATA: lv_text  TYPE string,
+      lv_qty   TYPE i,
+      lv_today TYPE d.
+
+lv_qty   = 10 + 5.
+lv_today = sy-datum.   &quot; 시스템 현재 날짜
+WRITE: / lv_qty, / lv_today.
+</code></pre>
 <blockquote>
-<p>🚧 골격 — 본문 작성 예정.</p>
+<p><code>sy-datum</code>, <code>sy-uzeit</code>은 시스템 필드(System field)로 현재 날짜·시간을 담고
+있다. <code>D</code>·<code>T</code> 변수에 바로 넣어 쓸 수 있다.</p>
 </blockquote>
+<h2>정수 연산의 함정</h2>
+<p><code>I</code>는 정수라 나눗셈 결과가 <strong>반올림</strong>된다.</p>
+<pre><code class="language-abap">DATA lv_r TYPE i.
+lv_r = 7 / 2.     &quot; 3.5 → 4 (반올림)
+WRITE lv_r.
+</code></pre>
+<p>소수를 정확히 다루려면 다음 레슨의 <code>P</code>(packed) 타입이 필요하다.</p>
+<h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>날짜를 순수 숫자로 착각</strong> → <code>D</code>는 내부적으로 8자리 문자다. <code>&#39;20260618&#39;</code>처럼 다룬다.</li>
+<li><strong>정수 나눗셈 반올림</strong> → <code>7 / 2</code>가 4가 된다. 의도와 다르면 <code>P</code> 타입을 쓴다.</li>
+</ul>
+<hr>
+<p>여기까진 길이를 안 적었다. 그런데 &quot;이름은 최대 10글자&quot;, &quot;금액은 소수 2자리&quot;
+처럼 <strong>길이·자릿수를 내가 정해야</strong> 하는 타입이 있다 → 다음 레슨(Incomplete).</p>
 
     </article>
     <nav class="lesson-nav" data-shell="prevnext"></nav>

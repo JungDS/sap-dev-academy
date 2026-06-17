@@ -17,12 +17,63 @@
     <header class="lesson-head">
       <div class="lesson-head__eyebrow">CH02 · 변수와 표준 타입 (+ Local Type)</div>
       <h1>Incomplete 타입(C·N·P)</h1>
-      <p class="lesson-head__direction"></p>
+      <p class="lesson-head__direction">길이(와 소수 자릿수)를 함께 지정해야 하는 타입.</p>
     </header>
     <article class="prose">
+<h2>&quot;길이를 정해야&quot; 완성되는 타입</h2>
+<p>어떤 타입은 <strong>길이를 함께 지정해야</strong> 비로소 완전해진다. 이를
+<button class="term" type="button" data-term="Incomplete 타입">Incomplete 타입</button>이라 한다. 대표는 <code>C</code>·<code>N</code>·<code>P</code>다.</p>
+<h2>C · N · P</h2>
+<table>
+<thead>
+<tr>
+<th>타입</th>
+<th>뜻</th>
+<th>지정할 것</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>C</code></td>
+<td>고정 길이 문자(character)</td>
+<td>길이</td>
+</tr>
+<tr>
+<td><code>N</code></td>
+<td>숫자형 문자(numeric text)</td>
+<td>길이</td>
+</tr>
+<tr>
+<td><code>P</code></td>
+<td>압축 소수(packed)</td>
+<td>길이 + 소수 자릿수</td>
+</tr>
+</tbody></table>
+<pre><code class="language-abap">DATA: lv_code TYPE c LENGTH 4,            &quot; 4글자 코드
+      lv_zip  TYPE n LENGTH 5,            &quot; 우편번호(숫자 문자)
+      lv_amt  TYPE p LENGTH 8 DECIMALS 2. &quot; 금액, 소수 2자리
+
+lv_code = &#39;ABCD&#39;.
+lv_amt  = 7 / 2.    &quot; 3.50 (정확)
+WRITE: / lv_code, / lv_amt.
+</code></pre>
+<ul>
+<li><code>C LENGTH n</code> — 딱 n글자. 모자라면 공백으로 채워진다.</li>
+<li><code>N LENGTH n</code> — 숫자처럼 보이지만 <strong>문자</strong>다(앞의 0이 보존됨, 예: 우편번호).</li>
+<li><code>P LENGTH n DECIMALS d</code> — 금액·수량 등 <strong>정확한 소수</strong> 계산용.</li>
+</ul>
 <blockquote>
-<p>🚧 골격 — 본문 작성 예정.</p>
+<p><strong>왜 N을 쓰나?</strong> 우편번호 <code>01234</code>를 정수 <code>I</code>에 넣으면 앞의 0이 사라져 <code>1234</code>가
+된다. &quot;숫자처럼 보이지만 계산하지 않는 값&quot;은 <code>N</code>(또는 <code>C</code>)으로 둔다.</p>
 </blockquote>
+<h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>길이 누락</strong> → <code>DATA lv_x TYPE c.</code> 는 길이 1로 잘린다. <code>LENGTH</code>를 명시.</li>
+<li><strong>금액에 F 사용</strong> → 부동소수점은 오차가 난다. 돈은 반드시 <code>P … DECIMALS</code>.</li>
+<li><strong>N에 알파벳 대입</strong> → <code>N</code>에는 숫자 문자만. 알파벳은 <code>C</code>.</li>
+</ul>
+<hr>
+<p>이제 표준 타입은 다 봤다. 그런데 <code>p length 8 decimals 2</code>를 <strong>프로그램마다 또
+적자니</strong> 번거롭다 — &quot;한 번 정의해 재사용하고 싶다.&quot; 그게 <button class="term" type="button" data-term="TYPES">TYPES</button>다 → 다음 레슨.</p>
 
     </article>
     <nav class="lesson-nav" data-shell="prevnext"></nav>
