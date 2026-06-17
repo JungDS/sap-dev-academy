@@ -17,12 +17,56 @@
     <header class="lesson-head">
       <div class="lesson-head__eyebrow">CH13 · Classic DDIC View·유지보수 객체</div>
       <h1>Database View와 Open SQL JOIN 비교</h1>
-      <p class="lesson-head__direction"></p>
+      <p class="lesson-head__direction">JOIN을 DDIC에 박아 재사용 — Database View vs 코드 JOIN.</p>
     </header>
     <article class="prose">
-<blockquote>
-<p>🚧 골격 — 본문 작성 예정.</p>
-</blockquote>
+<h2>같은 JOIN을 또 짜기 싫다</h2>
+<p>CH12에서 사람⨝부서 JOIN을 코드로 짰다. 같은 조인을 여러 프로그램이 반복하면
+낭비다. 그 JOIN을 <strong>DDIC에 객체로 박아</strong> 테이블처럼 쓰고 싶다 — <button class="term" type="button" data-term="Database View">Database View</button>다.</p>
+<h2>Database View</h2>
+<p><button class="term" type="button" data-term="Database View">Database View</button>는 여러 테이블을 <strong>Foreign Key 관계로 조인</strong>해 정의한 읽기전용
+DDIC 뷰다. 만든 뒤엔 <strong>테이블처럼</strong> SELECT한다.</p>
+<pre><code class="language-abap">&quot; 뷰 ZV_PERSON_DEPT 가 person⨝dept 를 미리 조인해 둔 것
+SELECT persid name deptname
+  FROM zv_person_dept
+  INTO CORRESPONDING FIELDS OF TABLE lt_out.
+</code></pre>
+<h2>View vs 코드 JOIN</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Database View</th>
+<th>Open SQL JOIN</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>정의 위치</td>
+<td>DDIC(재사용)</td>
+<td>코드(그때그때)</td>
+</tr>
+<tr>
+<td>조인 기준</td>
+<td>보통 Foreign Key</td>
+<td>ON 자유</td>
+</tr>
+<tr>
+<td>성격</td>
+<td>읽기전용</td>
+<td>조회 구문</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>여러 곳이 같은 조인</strong> → View로 재사용.</li>
+<li><strong>한 번뿐/유연한 조인</strong> → 코드 JOIN.</li>
+</ul>
+<h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>View로 쓰기 시도</strong> → Database View는 읽기전용.</li>
+<li><strong>FK 없으면 조인 정의 까다로움</strong> → 보통 Foreign Key 기반.</li>
+</ul>
+<hr>
+<p>여러 테이블 조인 뷰는 봤다. 한 테이블의 <strong>일부 필드만</strong> 노출하는 뷰는? → Projection View(다음 레슨).</p>
 
     </article>
     <nav class="lesson-nav" data-shell="prevnext"></nav>
