@@ -17,12 +17,50 @@
     <header class="lesson-head">
       <div class="lesson-head__eyebrow">CH07 · Open SQL 기본 조회</div>
       <h1>SELECT … INTO TABLE</h1>
-      <p class="lesson-head__direction"></p>
+      <p class="lesson-head__direction">저장된 데이터를 다시 읽는다 — SELECT로 내부 테이블에 담기.</p>
     </header>
     <article class="prose">
+<h2>저장한 걸 다시 읽고 싶다</h2>
+<p>CH06에서 데이터를 <button class="term" type="button" data-term="Transparent Table">Transparent Table</button>에 영구 저장했다. 이제 프로그램에서 그
+값을 <strong>읽어</strong> 와야 쓸모가 있다. DB에서 읽는 언어가 <button class="term" type="button" data-term="Open SQL">Open SQL</button>이다.</p>
 <blockquote>
-<p>🚧 골격 — 본문 작성 예정.</p>
+<p>이 챕터는 <strong>classic 구문</strong>으로 쓴다(필드를 공백으로 나열, host 변수 그대로).
+현대 <code>@</code>/<code>@DATA()</code> 구문은 CH18에서 별도로 배운다 — 지금 섞지 않는다.</p>
 </blockquote>
+<h2>SELECT … INTO TABLE — 여러 행 읽기</h2>
+<p>DB 테이블의 행들을 <button class="term" type="button" data-term="Internal Table">Internal Table</button>에 한 번에 담는다.</p>
+<pre><code class="language-abap">DATA lt_person TYPE TABLE OF ztperson.
+
+SELECT * FROM ztperson
+  INTO TABLE lt_person.
+
+IF sy-subrc = 0.
+  WRITE: / lines( lt_person ), &#39;건 읽음&#39;.
+ENDIF.
+</code></pre>
+<ul>
+<li><code>INTO TABLE</code>은 결과 전체를 내부 테이블에 채운다.</li>
+<li>읽은 행 수는 <code>sy-dbcnt</code>, 성공 여부는 <code>sy-subrc</code>(0 = 1건 이상).</li>
+</ul>
+<h2>필요한 컬럼만 (classic — 공백 구분)</h2>
+<p>전체(<code>*</code>)보다 필요한 컬럼만 읽는 게 빠르다. <strong>classic은 필드를 공백으로</strong> 나열한다.</p>
+<pre><code class="language-abap">DATA lt_person TYPE TABLE OF ztperson.
+
+SELECT persid name age          &quot; 콤마 없이 공백 구분 (classic)
+  FROM ztperson
+  INTO CORRESPONDING FIELDS OF TABLE lt_person.
+</code></pre>
+<ul>
+<li>대상 구조의 <strong>같은 이름 필드</strong>에 담으려면 <code>INTO CORRESPONDING FIELDS OF TABLE</code>.</li>
+</ul>
+<h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>콤마로 필드 나열</strong> → classic에선 오류. 콤마·<code>@</code>는 CH18(modern)부터.</li>
+<li><strong>결과 미확인</strong> → 빈 결과일 수 있다. <code>sy-subrc</code>/<code>lines( )</code>로 확인.</li>
+<li><strong>큰 테이블 전체 SELECT</strong> → 성능 주의. 다음 레슨의 WHERE로 줄인다.</li>
+</ul>
+<hr>
+<p>전부 읽어왔다. 그런데 보통은 <strong>조건에 맞는 행만</strong> 필요하다 → WHERE(다음 레슨).</p>
 
     </article>
     <nav class="lesson-nav" data-shell="prevnext"></nav>
