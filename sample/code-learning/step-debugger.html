@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <!--
-  스텝 디버거 타임라인 (Step Debugger) — standalone
+  스텝 디버거 (Step Debugger) — standalone · 확정 디자인(A안: 라이트 IDE)
   ────────────────────────────────────────────────────────────
-  "다음" 버튼으로 한 줄씩 실행하며 변수 값과 콘솔이 갱신되는 가상 디버거.
-  단계 정의는 .debugger-steps 의 JSON(steps:[{line,vars,console}])으로.
-  코드 줄에 data-line, 변수 칸에 data-key 를 붙여 매핑. 외부 의존성 없음.
-  재사용 시 ".debugger*"/".db-*"/".monitor*" CSS + 하단 JS만 가져가면 됩니다.
+  "다음"을 누를 때마다 한 줄씩 실행하며 변수·콘솔이 갱신되는 가상 디버거.
+   · 강조(앰버 ▶)된 줄 = '실행할 차례'(아직 실행 전) / done(초록 ✓) = 방금 실행한 줄
+   · 콘솔 [현재 행]/[전체 출력] 토글
+   · ABAP 구문 강조(키워드/문자열/주석/숫자) — 실제 에디터 느낌
+  단계 정의는 .stepper-config 의 JSON(code/vars/steps). 외부 의존성 없음.
+  재사용 시: ".dbg*"/".code*"/".var*"/".tok-*" CSS + 하단 엔진(highlightAbap+initStepper)만.
 -->
 <html lang="ko">
 <head>
@@ -15,34 +17,73 @@
 <style>
 :root{--bg:#f6f7fb;--surface:#fff;--ink:#1c2233;--ink-soft:#5b6478;--line:#e6e8ef;--brand:#3b5bdb;--accent:#0ca678;--amber:#d98a0b;--radius:14px;--shadow:0 1px 2px rgba(20,28,51,.04),0 8px 24px rgba(20,28,51,.06);--font:-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic",Roboto,sans-serif;--mono:'D2Coding',Consolas,Monaco,monospace;}
 *{box-sizing:border-box;} html,body{margin:0;}
-body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.65;}
+body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.6;}
 .topbar{position:sticky;top:0;z-index:20;border-bottom:1px solid var(--line);background:var(--surface);}
 .topbar__inner{max-width:1080px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:12px;font-weight:800;}
 .brand__mark{width:28px;height:28px;border-radius:7px;background:var(--brand);color:#fff;display:grid;place-items:center;}
 .wrap{max-width:920px;margin:28px auto 72px;padding:0 24px;}
 .eyebrow{color:var(--brand);font-weight:800;font-size:.82rem;letter-spacing:.05em;text-transform:uppercase;}
-h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 24px;}
+h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 18px;}
+.fixes{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px;}
+.fixes span{font-size:.78rem;font-weight:700;color:#0b7250;background:#eafaf3;border:1px solid #bfead7;border-radius:999px;padding:4px 11px;}
 
-/* ===== 컴포넌트 CSS — 스텝 디버거 ===== */
-.debugger{display:grid;grid-template-columns:1.2fr 1fr;gap:0;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);}
-.debugger__code{background:#f8fafc;padding:14px 0;border-right:1px solid var(--line);max-height:360px;overflow:auto;}
-.db-line{display:block;padding:2px 14px 2px 26px;position:relative;font-family:var(--mono);font-size:13px;line-height:1.6;color:#475569;border-radius:4px;transition:all .2s;}
-.db-line.active{background:#fff7d6;color:#7a5a08;box-shadow:inset 4px 0 0 var(--amber);font-weight:bold;}
-.db-line.active::before{content:"▶";position:absolute;left:8px;color:var(--amber);font-size:.7em;top:50%;transform:translateY(-50%);}
-.debugger__monitor{padding:18px;display:flex;flex-direction:column;min-width:0;}
-.monitor__head{font-weight:700;font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;color:#1e293b;margin-bottom:14px;}
-.monitor__controls{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
-.dbg-btn{padding:8px 16px;border-radius:8px;font-size:.85rem;font-weight:700;cursor:pointer;border:1px solid transparent;font:inherit;}
-.dbg-btn.start{background:var(--brand);color:#fff;} .dbg-btn.start:hover{background:#2f4bc0;}
-.dbg-btn.next{background:#f1f5f9;color:#64748b;border-color:var(--line);}
-.dbg-btn.next:not(:disabled){background:var(--amber);color:#fff;border-color:#b8770a;}
-.dbg-btn:disabled{opacity:.45;cursor:not-allowed;}
-.monitor__vars{background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;}
-.var-row{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid #eef1f6;padding-bottom:8px;font-size:.85rem;}
-.var-row:last-child{border-bottom:none;padding-bottom:0;}
-.var-row .k{color:#475569;font-weight:600;} .var-row .v{font-family:var(--mono);color:var(--brand);font-weight:700;}
-.monitor__console{margin-top:14px;background:#11151f;border-radius:8px;padding:12px;font-family:var(--mono);font-size:.82rem;color:#7af0c4;min-height:64px;white-space:pre-wrap;max-height:120px;overflow:auto;}
-@media (max-width:740px){.debugger{grid-template-columns:1fr;}.debugger__code{border-right:none;border-bottom:1px solid var(--line);}}
+/* 버튼 · 프로그레스 */
+.btn{border:1px solid transparent;border-radius:9px;padding:8px 15px;font-family:inherit;font-size:.84rem;font-weight:700;cursor:pointer;}
+.btn--primary{background:var(--brand);color:#fff;} .btn--primary:hover{background:#2f4bc0;}
+.btn--step{background:#eef1f6;color:#7a8699;border-color:var(--line);}
+.btn--step:not(:disabled){background:var(--amber);color:#fff;border-color:#b8770a;}
+.btn--step:not(:disabled):hover{background:#bd770a;}
+.btn--step:disabled{opacity:.5;cursor:not-allowed;}
+.muted{color:var(--ink-soft);font-size:.82rem;font-weight:700;}
+.progress{height:6px;border-radius:999px;background:#e7ebf3;overflow:hidden;flex:1;min-width:60px;}
+.progress>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--accent));transition:width .35s cubic-bezier(.16,1,.3,1);}
+
+/* 코드 (라인넘버 = CSS counter) + ABAP 토큰 색 */
+.code{counter-reset:ln;list-style:none;margin:0;padding:8px 0;font-family:var(--mono);font-size:13px;line-height:1.75;}
+.code li{counter-increment:ln;display:grid;grid-template-columns:40px 1fr;}
+.code li::before{content:counter(ln);text-align:right;padding-right:12px;color:#aeb6c4;user-select:none;}
+.code li code{padding:0 14px;white-space:pre;color:#24292f;}
+.code li.active{background:#fff7d6;box-shadow:inset 3px 0 0 var(--amber);}
+.code li.active::before{color:#b8770a;background:#fbeec4;font-weight:700;}
+.code li.active code{font-weight:700;}
+.code li.done{background:#eef9f3;box-shadow:inset 3px 0 0 var(--accent);}
+.code li.done::before{color:#0b7250;background:#dcf3e8;}
+/* ABAP 구문 강조 */
+.tok-kw{color:#0a4ea3;font-weight:700;}
+.tok-str{color:#1a7f37;}
+.tok-num{color:#1a7f37;}
+.tok-com{color:#6a737d;font-style:italic;}
+
+/* 변수 */
+.var__name{display:flex;flex-direction:column;}
+.var__label{font-weight:700;color:var(--ink);}
+.var__sub{font-size:.72rem;color:var(--ink-soft);}
+.var__val{font-family:var(--mono);font-weight:800;color:var(--brand);padding:1px 5px;border-radius:5px;}
+@keyframes valflash{0%{background:#fff0b8;}100%{background:transparent;}}
+.var__val.changed{animation:valflash .8s ease;}
+
+/* 콘솔 모드 토글 + 범례 */
+.console-tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.cmode{display:inline-flex;gap:2px;background:#e9edf4;border-radius:7px;padding:2px;}
+.cmode__b{border:0;background:none;border-radius:5px;padding:4px 10px;font:inherit;font-size:.72rem;font-weight:700;color:var(--ink-soft);cursor:pointer;}
+.cmode__b.on{background:#fff;color:var(--brand);box-shadow:0 1px 2px rgba(20,28,51,.12);}
+.leg{font-size:.68rem;font-weight:600;color:var(--ink-soft);}
+.leg .a{color:#b8770a;} .leg .d{color:#0b7250;}
+
+/* 라이트 IDE 레이아웃 (A안) */
+.dbg{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);}
+.dbg__bar{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--line);background:#fbfcfe;}
+.dbg__main{display:grid;grid-template-columns:1.5fr 1fr;}
+.dbg__editor{background:#f6f8fa;border-right:1px solid var(--line);max-height:300px;overflow:auto;}
+.dbg__watch{display:flex;flex-direction:column;min-width:0;}
+.watch__head{padding:10px 14px;font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--ink-soft);border-bottom:1px solid var(--line);}
+.watch__list{overflow:auto;max-height:258px;}
+.dbg .var{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 14px;border-bottom:1px solid #eef1f6;}
+.dbg__console{border-top:1px solid var(--line);}
+.console__head{padding:9px 14px;font-size:.74rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--ink-soft);background:#f4f6fa;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;}
+.console__head .sp{flex:1;}
+.console__body{margin:0;padding:14px;font-family:var(--mono);font-size:.82rem;color:#27425c;background:#f8fafc;min-height:74px;white-space:pre-wrap;}
+@media(max-width:680px){ .dbg__main{grid-template-columns:1fr;} .dbg__editor{border-right:none;border-bottom:1px solid var(--line);} }
 </style>
 </head>
 <body>
@@ -50,80 +91,105 @@ h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 24
   <main class="wrap">
     <p class="eyebrow">Code Learning · 스텝 디버거</p>
     <h1>한 줄씩 실행하며 변수 변화 보기</h1>
-    <p class="lead">SE38의 디버거처럼, "다음"을 누를 때마다 실행 위치가 이동하고 변수·콘솔이 갱신됩니다. 루프가 어떻게 도는지 눈으로 따라가세요.</p>
+    <p class="lead">SE38 디버거처럼 "다음"을 누를 때마다 실행 위치가 이동하고 변수·콘솔이 갱신됩니다. <strong>강조된 줄은 "실행할 차례"(아직 실행 전)</strong>이고, 방금 실행한 줄은 초록(✓)으로 표시됩니다.</p>
+    <div class="fixes"><span>✓ ABAP 구문 강조</span><span>✓ 강조=실행 직전 의미</span><span>✓ 콘솔 현재 행/전체 출력 토글</span></div>
 
-    <div class="debugger" data-debugger>
-      <div class="debugger__code">
-        <span class="db-line" data-line="1">DATA lv_sum TYPE i VALUE 0.</span>
-        <span class="db-line" data-line="2">DATA lt TYPE TABLE OF i.</span>
-        <span class="db-line" data-line="3">APPEND 10 TO lt. APPEND 20 TO lt.</span>
-        <span class="db-line" data-line="4">LOOP AT lt INTO DATA(lv_n).</span>
-        <span class="db-line" data-line="5">  lv_sum = lv_sum + lv_n.</span>
-        <span class="db-line" data-line="6">ENDLOOP.</span>
-        <span class="db-line" data-line="7">WRITE / lv_sum.</span>
+    <div class="dbg" data-stepper>
+      <div class="dbg__bar">
+        <button class="btn btn--primary" data-start>▶ 시작</button>
+        <button class="btn btn--step" data-next disabled>다음 ⏭</button>
+        <div class="progress"><i data-progress></i></div>
+        <span class="muted" data-counter>0 / 7</span>
       </div>
-      <div class="debugger__monitor">
-        <div class="monitor__head">🔬 Variable Monitor</div>
-        <div class="monitor__controls">
-          <button class="dbg-btn start">▶ 시작</button>
-          <button class="dbg-btn next" disabled>다음 ⏭</button>
+      <div class="dbg__main">
+        <div class="dbg__editor" data-code></div>
+        <div class="dbg__watch">
+          <div class="watch__head">🔍 변수 모니터</div>
+          <div class="watch__list" data-vars></div>
         </div>
-        <div class="monitor__vars">
-          <div class="var-row"><span class="k">lv_n (현재 행)</span><span class="v" data-key="n">—</span></div>
-          <div class="var-row"><span class="k">lv_sum (누적)</span><span class="v" data-key="sum">0</span></div>
-          <div class="var-row"><span class="k">sy-tabix (인덱스)</span><span class="v" data-key="tabix">—</span></div>
-        </div>
-        <div class="monitor__console">=== 디버거 대기 중 ===</div>
       </div>
-      <script type="application/json" class="debugger-steps">
-      { "steps": [
-        { "line":1, "vars":{"sum":"0"}, "console":"lv_sum 초기화 = 0" },
-        { "line":3, "vars":{}, "console":"테이블에 10, 20 추가" },
-        { "line":4, "vars":{"n":"10","tabix":"1"}, "console":"LOOP 1회차: lv_n = 10" },
-        { "line":5, "vars":{"sum":"10"}, "console":"lv_sum = 0 + 10 = 10" },
-        { "line":4, "vars":{"n":"20","tabix":"2"}, "console":"LOOP 2회차: lv_n = 20" },
-        { "line":5, "vars":{"sum":"30"}, "console":"lv_sum = 10 + 20 = 30" },
-        { "line":7, "vars":{}, "console":"출력: 30" }
-      ] }
+      <div class="dbg__console">
+        <div class="console__head">
+          <span>콘솔 출력</span>
+          <span class="leg"><span class="a">▶ 실행할 차례</span> · <span class="d">✓ 방금 실행</span></span>
+          <span class="sp"></span>
+          <span class="cmode"><button class="cmode__b on" data-cmode="cur">현재 행</button><button class="cmode__b" data-cmode="all">전체 출력</button></span>
+        </div>
+        <pre class="console__body" data-console>대기 중 — ▶ 시작을 누르세요.</pre>
+      </div>
+      <script type="application/json" class="stepper-config">
+      {"code":["DATA lv_sum TYPE i VALUE 0.","DATA lt TYPE TABLE OF i.","APPEND 10 TO lt. APPEND 20 TO lt.","LOOP AT lt INTO DATA(lv_n).","  lv_sum = lv_sum + lv_n.","ENDLOOP.","WRITE / lv_sum."],
+       "vars":[{"key":"n","label":"lv_n","sub":"현재 행","init":"—"},{"key":"sum","label":"lv_sum","sub":"누적","init":"0"},{"key":"tabix","label":"sy-tabix","sub":"인덱스","init":"—"}],
+       "steps":[{"line":1,"vars":{"sum":"0"},"console":"lv_sum 초기화 = 0"},{"line":3,"vars":{},"console":"테이블에 10, 20 추가"},{"line":4,"vars":{"n":"10","tabix":"1"},"console":"LOOP 1회차: lv_n = 10"},{"line":5,"vars":{"sum":"10"},"console":"lv_sum = 0 + 10 = 10"},{"line":4,"vars":{"n":"20","tabix":"2"},"console":"LOOP 2회차: lv_n = 20"},{"line":5,"vars":{"sum":"30"},"console":"lv_sum = 10 + 20 = 30"},{"line":7,"vars":{},"console":"출력: 30"}]}
       </script>
     </div>
   </main>
 
 <script>
-// ===== 컴포넌트 JS — 스텝 디버거 =====
+// ===== 컴포넌트 JS — ABAP 하이라이터 + 스텝 디버거 엔진 =====
 (function(){
-  document.querySelectorAll("[data-debugger]").forEach(dbg=>{
-    let config; try{ config = JSON.parse(dbg.querySelector(".debugger-steps").textContent); }catch(e){ return; }
-    const steps = config.steps||[];
-    const start = dbg.querySelector(".dbg-btn.start");
-    const next = dbg.querySelector(".dbg-btn.next");
-    const lines = dbg.querySelectorAll(".db-line");
-    const out = dbg.querySelector(".monitor__console");
-    let cur = -1;
-    function render(){
-      lines.forEach(l=>l.classList.remove("active"));
-      const step = steps[cur]; if(!step) return;
-      const active = dbg.querySelector(`.db-line[data-line="${step.line}"]`);
-      if(active) active.classList.add("active");
-      Object.entries(step.vars||{}).forEach(([k,v])=>{
-        const cell = dbg.querySelector(`.var-row .v[data-key="${k}"]`);
-        if(cell) cell.textContent = v;
-      });
-      out.textContent = "=== 추적 중 (" + (cur+1) + "/" + steps.length + ") ===\n" + (step.console||"");
+  const ABAP_KW = new Set("DATA TYPE TYPES VALUE TABLE OF LIKE LINE BEGIN END REF TO LOOP AT INTO ENDLOOP APPEND WRITE IF ELSE ELSEIF ENDIF SELECT FROM WHERE INNER LEFT OUTER JOIN ON READ WITH KEY SORT BY CLEAR REFRESH MOVE CORRESPONDING FIELDS SINGLE STANDARD SORTED HASHED INSERT DELETE MODIFY DESCRIBE LINES DO ENDDO WHILE ENDWHILE CASE WHEN OTHERS ENDCASE CALL METHOD FUNCTION FORM PERFORM PARAMETERS RANGES CHECK EXIT CONTINUE RETURN ADD SUBTRACT MULTIPLY DIVIDE CONCATENATE SPLIT CONDENSE ASCENDING DESCENDING AND OR NOT IS INITIAL BOUND NEW".split(/\s+/));
+  const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  function highlightAbap(line){
+    if(/^\s*\*/.test(line)) return '<span class="tok-com">'+esc(line)+'</span>'; // 전체 줄 주석(*)
+    let out=""; const re=/('[^']*'?)|(".*$)|(\b\d+\b)|([A-Za-z_][A-Za-z0-9_]*)|([^A-Za-z0-9_'"]+)/g; let m;
+    while((m=re.exec(line))!==null){
+      if(m[1]) out+='<span class="tok-str">'+esc(m[1])+'</span>';      // 문자열 '...'
+      else if(m[2]) out+='<span class="tok-com">'+esc(m[2])+'</span>'; // 인라인 주석 "...
+      else if(m[3]) out+='<span class="tok-num">'+esc(m[3])+'</span>'; // 숫자
+      else if(m[4]) out+= ABAP_KW.has(m[4].toUpperCase()) ? '<span class="tok-kw">'+esc(m[4])+'</span>' : esc(m[4]);
+      else out+=esc(m[0]);
     }
-    start.addEventListener("click",()=>{
-      cur=0; start.textContent="↻ 다시 시작"; next.disabled=false;
-      // 변수 초기화
-      dbg.querySelectorAll(".var-row .v").forEach(v=>{ v.textContent = v.dataset.key==="sum" ? "0" : "—"; });
-      render();
-    });
-    next.addEventListener("click",()=>{
-      if(cur < steps.length-1){
-        cur++; render();
-        if(cur===steps.length-1){ next.disabled=true; out.textContent += "\n\n=== 실행 완료 ==="; }
-      }
-    });
-  });
+    return out;
+  }
+
+  function initStepper(root){
+    let cfg; try{ cfg = JSON.parse(root.querySelector(".stepper-config").textContent); }catch(e){ return; }
+    // 코드 렌더(+구문 강조)
+    const codeBox = root.querySelector("[data-code]");
+    if(codeBox){
+      const ol=document.createElement("ol"); ol.className="code";
+      cfg.code.forEach((line,i)=>{ const li=document.createElement("li"); li.dataset.line=i+1;
+        const code=document.createElement("code"); code.innerHTML=highlightAbap(line); li.appendChild(code); ol.appendChild(li); });
+      codeBox.appendChild(ol);
+    }
+    const varsBox=root.querySelector("[data-vars]");
+    if(varsBox) varsBox.innerHTML=cfg.vars.map(v=>`<div class="var"><div class="var__name"><span class="var__label">${v.label}</span><span class="var__sub">${v.sub||""}</span></div><b class="var__val" data-key="${v.key}" data-init="${v.init}">${v.init}</b></div>`).join("");
+
+    const lines=root.querySelectorAll(".code li");
+    const consoleEl=root.querySelector("[data-console]"), startBtn=root.querySelector("[data-start]"), nextBtn=root.querySelector("[data-next]");
+    const progress=root.querySelector("[data-progress]"), counter=root.querySelector("[data-counter]"), cmodeBtns=root.querySelectorAll("[data-cmode]");
+    const steps=cfg.steps;
+    let started=false, cur=0, history=[], mode="cur"; // cur = 실행 완료한 줄 수
+
+    function accVars(k){ const v={}; cfg.vars.forEach(d=>v[d.key]=d.init); for(let i=0;i<k;i++) Object.assign(v, steps[i].vars||{}); return v; }
+    function curMsg(){
+      if(!started) return "대기 중 — ▶ 시작을 누르세요.";
+      const next = cur<steps.length ? steps[cur].line : null;
+      if(cur===0) return "▶ 준비됨 — '다음 ⏭'을 누르면 "+next+"번 줄을 실행합니다.\n(강조된 줄은 '실행할 차례'이며 아직 실행 전입니다.)";
+      const done=steps[cur-1];
+      let msg="✓ 방금 "+done.line+"번 줄 실행 → "+(done.console||"");
+      msg += (next!=null) ? "\n▶ 다음에 실행할 줄: "+next+"번 (아직 실행 전)" : "\n■ 끝까지 실행 완료";
+      return msg;
+    }
+    function paintConsole(){ if(!consoleEl) return; consoleEl.textContent=(mode==="all")?(history.length?history.join("\n"):"(아직 실행한 줄이 없습니다)"):curMsg(); }
+    function render(){
+      lines.forEach(l=>l.classList.remove("active","done"));
+      const nextLine=(started&&cur<steps.length)?steps[cur].line:null, lastLine=(started&&cur>0)?steps[cur-1].line:null;
+      if(lastLine!=null){ const el=root.querySelector('.code li[data-line="'+lastLine+'"]'); if(el) el.classList.add("done"); }
+      if(nextLine!=null){ const el=root.querySelector('.code li[data-line="'+nextLine+'"]'); if(el){ el.classList.add("active"); el.scrollIntoView({block:"nearest"}); } }
+      const v=accVars(cur), changed=(started&&cur>0)?(steps[cur-1].vars||{}):{};
+      cfg.vars.forEach(d=>{ const cell=root.querySelector('.var__val[data-key="'+d.key+'"]'); if(cell){ cell.textContent=v[d.key]; cell.classList.remove("changed"); if(changed[d.key]!==undefined){ void cell.offsetWidth; cell.classList.add("changed"); } } });
+      if(progress) progress.style.width=(cur/steps.length*100)+"%";
+      if(counter) counter.textContent=cur+" / "+steps.length;
+      paintConsole();
+    }
+    startBtn.addEventListener("click",()=>{ started=true; cur=0; history=[]; startBtn.textContent="↻ 다시"; nextBtn.disabled=false; if(progress) progress.style.transition="width .35s"; render(); });
+    nextBtn.addEventListener("click",()=>{ if(!started||cur>=steps.length) return; const s=steps[cur]; history.push((cur+1)+". [line "+s.line+" 실행] "+(s.console||"")); cur++; render(); if(cur>=steps.length) nextBtn.disabled=true; });
+    cmodeBtns.forEach(b=>b.addEventListener("click",()=>{ mode=b.dataset.cmode; cmodeBtns.forEach(x=>x.classList.toggle("on",x===b)); paintConsole(); }));
+    render();
+  }
+  document.querySelectorAll("[data-stepper]").forEach(initStepper);
 })();
 </script>
 </body>

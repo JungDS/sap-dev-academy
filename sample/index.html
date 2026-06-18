@@ -39,6 +39,11 @@
   .card__meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
   .chip{font-size:.7rem;font-weight:700;border-radius:999px;padding:3px 9px;background:rgba(59,91,219,.1);color:var(--brand);}
   .chip.dep{background:#fff4e5;color:#b45309;}
+  .chip.draft{background:#ffe3ec;color:#b02a55;}
+  .cat--draft{margin-top:50px;border-top:2px dashed #f0c2cc;padding-top:26px;}
+  .cat--draft .cat__title{color:#b02a55;}
+  .card--draft{opacity:.8;border-style:dashed;border-color:#e9c2cc;background:#fffafb;}
+  .card--draft:hover{opacity:1;box-shadow:0 10px 30px rgba(176,42,85,.1);}
   .footer{max-width:1080px;margin:0 auto;padding:28px 24px;color:var(--ink-soft);font-size:.85rem;border-top:1px solid var(--line);}
 </style>
 </head>
@@ -76,9 +81,9 @@ const CATEGORIES = [
 const SAMPLES = [
   // { cat, file, icon, title, desc, tags:[], dep:null }
   { cat:"structure", file:"structure/lesson-shell.html", icon:"🧭", title:"학습 셸 (3탭 사이드바)", desc:"상단바 + 좌측 3탭 네비 + 이전/다음 + 용어 팝업까지 레슨 페이지 골격 한 벌.", tags:["페이지 구조","TOC","용어 hover"] },
-  { cat:"structure", file:"structure/lesson-shell-v2-a.html", icon:"📘", title:"레슨 셸 v2-A (소프트 블루)", desc:"풀 레슨 뷰어 시안: 우측 2탭 네비(문서목차/학습경로)+헤더+T코드+목표+본문 호버+정리. 참고본 충실.", tags:["디자인 시안","우측 네비","호버"] },
-  { cat:"structure", file:"structure/lesson-shell-v2-b.html", icon:"📗", title:"레슨 셸 v2-B (모던 플랫)", desc:"같은 구조, 인디고·슬레이트 플랫. 번호 배지+좌측 바 슬라이드 호버, 밑줄형 탭.", tags:["디자인 시안","플랫","인디고"] },
-  { cat:"structure", file:"structure/lesson-shell-v2-c.html", icon:"📙", title:"레슨 셸 v2-C (웜 에디토리얼)", desc:"같은 구조, 크림 배경+큰 타이포+떠오르는 카드(확대·그림자), 알약 탭. 티얼+앰버.", tags:["디자인 시안","에디토리얼","엘리베이션"] },
+  { cat:"structure", file:"structure/lesson-shell-v2-a.html", icon:"📘", title:"레슨 셸 v2-A (소프트 블루)", desc:"풀 레슨 뷰어 시안: 우측 2탭 네비(문서목차/학습경로)+헤더+T코드+목표+본문 호버+정리. 참고본 충실.", tags:["우측 네비","호버"], draft:"시안 — 최종 선택 대기" },
+  { cat:"structure", file:"structure/lesson-shell-v2-b.html", icon:"📗", title:"레슨 셸 v2-B (모던 플랫)", desc:"같은 구조, 인디고·슬레이트 플랫. 번호 배지+좌측 바 슬라이드 호버, 밑줄형 탭.", tags:["플랫","인디고"], draft:"시안 — 최종 선택 대기" },
+  { cat:"structure", file:"structure/lesson-shell-v2-c.html", icon:"📙", title:"레슨 셸 v2-C (웜 에디토리얼)", desc:"같은 구조, 크림 배경+큰 타이포+떠오르는 카드(확대·그림자), 알약 탭. 티얼+앰버.", tags:["에디토리얼","엘리베이션"], draft:"시안 — 최종 선택 대기" },
   { cat:"structure", file:"structure/code-copy-block.html", icon:"📋", title:"코드 복사 블록", desc:"ABAP 에디터 목업 + 줄번호 + 토큰 색상 + 클립보드 복사 버튼.", tags:["코드","복사","구문강조"] },
   { cat:"structure", file:"structure/callout-patterns.html", icon:"💡", title:"콜아웃 패턴", desc:"info / tip / warn 3종 강조 박스.", tags:["콜아웃","강조"] },
   { cat:"structure", file:"structure/beginner-lesson-template.html", icon:"🎓", title:"입문자 학습 페이지 템플릿", desc:"완전 입문자용 표준 골격: 왜→무엇→어떻게→주의→정리 + 용어 한 줄 풀이 + 체험(APPEND/LOOP) + 접이식.", tags:["입문자","템플릿","체험"] },
@@ -91,8 +96,8 @@ const SAMPLES = [
   { cat:"code-learning", file:"code-learning/diff-mapper.html", icon:"🔀", title:"Bad/Good 매퍼", desc:"개선 전/후 대응 줄을 hover로 연결 강조 + 이유 표시.", tags:["비교","hover"] },
   { cat:"code-learning", file:"code-learning/fill-blank-code.html", icon:"⌨️", title:"빈칸 채우기 코드", desc:"코드 일부를 직접 채워 넣고 일괄 채점(능동 회수).", tags:["입력","채점"] },
   { cat:"code-learning", file:"code-learning/bug-hunt.html", icon:"🐛", title:"버그 헌트", desc:"버그가 있는 줄을 클릭해 찾기 + 해설.", tags:["디버깅","클릭"] },
-  { cat:"code-learning", file:"code-learning/step-debugger.html", icon:"🔬", title:"스텝 디버거", desc:"한 줄씩 실행하며 변수·콘솔 변화 추적(JSON 설정).", tags:["디버거","루프"] },
-  { cat:"code-learning", file:"code-learning/step-debugger-v2.html", icon:"🎚️", title:"스텝 디버거 v2 (시안 3종)", desc:"디자인 개선안 비교: 라이트 IDE/탭형/대시보드. 보고 고르는 용도.", tags:["디자인 시안","비교"] },
+  { cat:"code-learning", file:"code-learning/step-debugger.html", icon:"🔬", title:"스텝 디버거 (A안 확정)", desc:"한 줄씩 실행하며 변수·콘솔 추적. ABAP 구문 강조 + 강조=실행 직전 + 콘솔 현재행/전체 토글.", tags:["디버거","구문강조","루프"] },
+  { cat:"code-learning", file:"code-learning/step-debugger-v2.html", icon:"🎚️", title:"스텝 디버거 v2 (시안 3종)", desc:"라이트 IDE/탭형/대시보드 비교용. A안 확정 → step-debugger.html 사용.", tags:["디자인 시안","비교"], draft:"초안 — A안 확정됨" },
   { cat:"interactive", file:"interactive/sap-gui-sandbox.html", icon:"🖥️", title:"가상 SAP GUI 샌드박스", desc:"입력→실행→검증→ALV 출력을 가짜 SAPGUI로 안전 체험(JSON 설정).", tags:["시뮬레이션","검증","ALV"] },
   { cat:"interactive", file:"interactive/decision-tree.html", icon:"🌳", title:"의사결정 트리", desc:"질문에 답하며 노드를 따라 최종 권고에 도달(JSON 트리).", tags:["분기","권고"] },
   { cat:"interactive", file:"interactive/checklist-progress.html", icon:"☑️", title:"진행률 체크리스트", desc:"실습 단계 체크 → 진행률 바 + 완료 배지.", tags:["진행률","실습"] },
@@ -104,7 +109,7 @@ const SAMPLES = [
   { cat:"quizzes", file:"quizzes/short-answer-quiz.html", icon:"✍️", title:"단답형 퀴즈", desc:"선택지 없이 직접 입력해 회수(복수 정답 허용).", tags:["입력","채점"] },
   { cat:"quizzes", file:"quizzes/mini-exam.html", icon:"📝", title:"미니 시험 모드", desc:"객관식 제출 → 점수 + 문항별 정오/해설.", tags:["객관식","채점"] },
   { cat:"visuals", file:"visuals/mermaid-flowchart.html", icon:"🌊", title:"Mermaid 흐름도", desc:"텍스트 문법으로 그리는 분기·복귀 흐름도.", tags:["다이어그램","분기"], dep:"mermaid@10" },
-  { cat:"visuals", file:"visuals/mermaid-flowchart-v2.html", icon:"🎨", title:"Mermaid 흐름도 v2 (시안 3종)", desc:"디자인 개선안: 배지 카드/파스텔 채움/플로팅 카드. 보고 고르는 용도.", tags:["디자인 시안","배지 카드"], dep:"mermaid@10" },
+  { cat:"visuals", file:"visuals/mermaid-flowchart-v2.html", icon:"🎨", title:"Mermaid 흐름도 v2 (시안 3종)", desc:"배지 카드/파스텔/플로팅 비교용. A안 위주(최종 선택 대기).", tags:["디자인 시안","배지 카드"], dep:"mermaid@10", draft:"시안 — A안 위주" },
   { cat:"visuals", file:"visuals/process-flow.html", icon:"➡️", title:"프로세스 플로우", desc:"단계 박스+화살표 순차 흐름(반응형 세로 전환).", tags:["단계","흐름"] },
   { cat:"visuals", file:"visuals/relationship-map.html", icon:"🔗", title:"관계도", desc:"엔티티 간 키/참조 관계를 화살표로 표현.", tags:["관계","키"] },
   { cat:"visuals", file:"visuals/before-after-comparison.html", icon:"↔️", title:"Before/After 비교", desc:"개선 전(빨강)↔후(초록) 나란히 비교.", tags:["비교","개선"] },
@@ -117,29 +122,38 @@ const SAMPLES = [
 ];
 
 const catalog = document.getElementById("catalog");
-CATEGORIES.forEach(c=>{
-  const items = SAMPLES.filter(s=>s.cat===c.id);
-  if(!items.length) return;
+function makeCard(s, isDraft){
+  const a = document.createElement("a");
+  a.className = "card" + (isDraft ? " card--draft" : "");
+  a.href = s.file;
+  const tags = (s.tags||[]).map(t=>`<span class="chip">${t}</span>`).join("");
+  const dep = s.dep ? `<span class="chip dep">CDN: ${s.dep}</span>` : "";
+  const flag = isDraft ? `<span class="chip draft">🚫 ${s.draft}</span>` : "";
+  a.innerHTML = `<span class="card__icon">${s.icon}</span><h3>${s.title}</h3>
+    <p>${s.desc}</p><div class="card__meta">${flag}${tags}${dep}</div>`;
+  return a;
+}
+function makeSection(cls, icon, title, desc, items, isDraft){
   const sec = document.createElement("section");
-  sec.className = "cat";
-  sec.innerHTML = `<div class="cat__head"><span style="font-size:1.3rem">${c.icon}</span>
-    <h2 class="cat__title">${c.title}</h2><span class="cat__desc">${c.desc}</span></div>`;
-  const grid = document.createElement("div");
-  grid.className = "grid";
-  items.forEach(s=>{
-    const a = document.createElement("a");
-    a.className = "card";
-    a.href = s.file;
-    const tags = (s.tags||[]).map(t=>`<span class="chip">${t}</span>`).join("");
-    const dep = s.dep ? `<span class="chip dep">CDN: ${s.dep}</span>` : "";
-    a.innerHTML = `<span class="card__icon">${s.icon}</span><h3>${s.title}</h3>
-      <p>${s.desc}</p><div class="card__meta">${tags}${dep}</div>`;
-    grid.appendChild(a);
-  });
-  sec.appendChild(grid);
-  catalog.appendChild(sec);
+  sec.className = cls;
+  sec.innerHTML = `<div class="cat__head"><span style="font-size:1.3rem">${icon}</span>
+    <h2 class="cat__title">${title}</h2><span class="cat__desc">${desc}</span></div>`;
+  const grid = document.createElement("div"); grid.className = "grid";
+  items.forEach(s=>grid.appendChild(makeCard(s, isDraft)));
+  sec.appendChild(grid); catalog.appendChild(sec);
+}
+// 1) 정상(production) 카테고리 — draft 제외
+CATEGORIES.forEach(c=>{
+  const items = SAMPLES.filter(s=>s.cat===c.id && !s.draft);
+  if(items.length) makeSection("cat", c.icon, c.title, c.desc, items, false);
 });
-document.getElementById("count").textContent = `총 ${SAMPLES.length}개 샘플`;
+// 2) 시안·초안 (사용금지) — 별도 모음
+const drafts = SAMPLES.filter(s=>s.draft);
+if(drafts.length) makeSection("cat cat--draft", "🚫", "시안 · 초안 (사용금지)",
+  "디자인 비교/검토용 — 실제 콘텐츠엔 쓰지 마세요. 최종 선택이 끝나면 확정본만 위 카테고리에 남깁니다.", drafts, true);
+
+const prod = SAMPLES.length - drafts.length;
+document.getElementById("count").textContent = `총 ${prod}개 샘플 · 시안/초안 ${drafts.length}개(사용금지)`;
 </script>
 </body>
 </html>
