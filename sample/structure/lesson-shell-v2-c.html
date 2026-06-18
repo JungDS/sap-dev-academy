@@ -34,7 +34,8 @@ a{color:var(--brand);text-decoration:none;}
 .appbar .btn-soft:hover{background:#0b5d56;transform:translateY(-1px);}
 .icon-btn{width:36px;height:36px;border-radius:999px;border:1px solid var(--line);background:#fff;cursor:pointer;display:grid;place-items:center;color:var(--ink);transition:all .18s;}
 .icon-btn:hover{border-color:var(--brand);color:var(--brand);}
-.summary-pill{position:fixed;top:13px;right:18px;z-index:50;font-size:.74rem;font-weight:700;color:var(--ink-soft);background:#fff;border:1px solid var(--line);border-radius:999px;padding:5px 15px;box-shadow:var(--shadow);}
+.read-progress{position:fixed;top:var(--appbar-h);left:0;right:0;height:3px;z-index:39;background:rgba(15,118,110,.08);}
+.read-progress>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--amber));transition:width .12s ease-out;}
 @media(max-width:720px){.appbar .meta{display:none;}}
 
 /* 레이아웃 */
@@ -42,8 +43,9 @@ a{color:var(--brand);text-decoration:none;}
 body.nav-collapsed .layout{grid-template-columns:minmax(0,1fr);}
 .main{min-width:0;}
 
-.nav-handle{position:fixed;right:0;top:46%;z-index:45;writing-mode:vertical-lr;transform:rotate(180deg);background:var(--brand);color:#fff;border:0;border-radius:12px 0 0 12px;padding:15px 8px;font-size:.78rem;font-weight:700;cursor:pointer;box-shadow:-3px 3px 14px rgba(15,118,110,.32);letter-spacing:.04em;}
-.nav-handle:hover{background:#0b5d56;}
+/* C 핸들: 큰 웜 필(아래쪽 배치) */
+.nav-handle{position:fixed;right:0;top:56%;z-index:45;writing-mode:vertical-lr;transform:rotate(180deg);background:linear-gradient(160deg,var(--brand),#0b5d56);color:#fff;border:0;border-radius:16px 0 0 16px;padding:20px 11px;font-size:.82rem;font-weight:800;cursor:pointer;box-shadow:-4px 4px 18px rgba(15,118,110,.34);letter-spacing:.06em;transition:padding .15s;}
+.nav-handle:hover{padding-right:15px;}
 
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:24px 28px;margin:18px 0;box-shadow:var(--shadow);}
 
@@ -158,7 +160,7 @@ body.nav-open .scrim{opacity:1;pointer-events:auto;}
     <a class="btn-soft" href="#">ABAP 개발 홈</a>
     <button class="icon-btn fs-btn" title="전체화면">⛶</button>
   </header>
-  <a class="summary-pill" href="#summary">summary</a>
+  <div class="read-progress"><i></i></div>
   <button class="nav-handle">Navigation 접기</button>
   <div class="scrim"></div>
 
@@ -289,6 +291,9 @@ body.nav-open .scrim{opacity:1;pointer-events:auto;}
     pop.querySelector('.term-popup__x').addEventListener('click',close);
   }));
   document.addEventListener('click',e=>{ if(pop && !pop.contains(e.target) && !e.target.classList.contains('term')) close(); });
+  const rp=document.querySelector('.read-progress>i');
+  function onScroll(){ const h=document.documentElement.scrollHeight-innerHeight; if(rp) rp.style.width=(h>0?Math.min(100,scrollY/h*100):0)+'%'; }
+  addEventListener('scroll',onScroll,{passive:true}); addEventListener('resize',onScroll); onScroll();
 })();
 </script>
 </body>

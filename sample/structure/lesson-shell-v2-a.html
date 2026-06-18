@@ -38,7 +38,8 @@ a{color:var(--brand);text-decoration:none;}
 .appbar .btn-soft:hover{background:var(--brand);color:#fff;}
 .icon-btn{width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:#fff;cursor:pointer;display:grid;place-items:center;color:var(--ink);transition:all .15s;}
 .icon-btn:hover{border-color:var(--brand);color:var(--brand);}
-.summary-pill{position:fixed;top:12px;right:16px;z-index:50;font-size:.74rem;font-weight:700;color:var(--ink-soft);background:#fff;border:1px solid var(--line);border-radius:999px;padding:4px 14px;box-shadow:var(--shadow);}
+.read-progress{position:fixed;top:var(--appbar-h);left:0;right:0;height:3px;z-index:39;background:rgba(59,91,219,.08);}
+.read-progress>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--accent));transition:width .12s ease-out;box-shadow:0 0 8px rgba(59,91,219,.35);}
 @media(max-width:720px){.appbar .meta{display:none;}}
 
 /* ===== 레이아웃 ===== */
@@ -180,7 +181,7 @@ body.nav-open .scrim{opacity:1;pointer-events:auto;}
     <a class="btn-soft" href="#">ABAP 개발 홈</a>
     <button class="icon-btn fs-btn" title="전체화면">⛶</button>
   </header>
-  <a class="summary-pill" href="#summary">summary</a>
+  <div class="read-progress"><i></i></div>
   <button class="nav-handle">Navigation 접기</button>
   <div class="scrim"></div>
 
@@ -330,6 +331,11 @@ body.nav-open .scrim{opacity:1;pointer-events:auto;}
     pop.querySelector('.term-popup__x').addEventListener('click',close);
   }));
   document.addEventListener('click',e=>{ if(pop && !pop.contains(e.target) && !e.target.classList.contains('term')) close(); });
+
+  /* 읽기 진행률 바 */
+  const rp=document.querySelector('.read-progress>i');
+  function onScroll(){ const h=document.documentElement.scrollHeight-innerHeight; if(rp) rp.style.width=(h>0?Math.min(100,scrollY/h*100):0)+'%'; }
+  addEventListener('scroll',onScroll,{passive:true}); addEventListener('resize',onScroll); onScroll();
 })();
 </script>
 </body>
