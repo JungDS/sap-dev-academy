@@ -2,15 +2,19 @@
 <!--
   레슨 셸 v2-C (종합 개선판) — 웜 에디토리얼 + 좌측 레일 네비 + 우측 학습 여정 (standalone)
   ────────────────────────────────────────────────────────────
-  기준: 기존 v2-C(따뜻한 크림/티얼 톤, 떠 있는 카드)에 아래 7가지를 반영해 재구성.
-   1) 용어 hover = 임시 표시, 클릭 = 고정. 클릭 안 하면 마우스가 벗어날 때 사라짐.
-   2) 전체화면(Fullscreen API): 켜면 본문이 화면 가로폭을 꽉 채움(여백 최소화).
-   3) 헤더(제목 영역) 배경 = 왼쪽 흰색 → 오른쪽 브랜드색 가로 그라데이션.
-   4) T-code는 라벨(칩)로 표시 → 클릭 시 "미니 페이지"급 상세 설명 모달.
-   5) 좌측 네비 = v2-E의 아이콘 레일(hover/클릭 확장). 기존 우측 네비 제거.
-   6) 우측 = v2-F의 "이 레슨의 여정" 스텝퍼(접기 없음). "이해했어요" 제거,
-      대신 스크롤 위치로 현재/지나온 섹션을 인지하도록 표시.
-   7) v2-G의 "용어 모음"을 좌측 레일의 3번째 탭(용어)으로 제공(페이지 용어 자동 수집).
+  기준: 기존 v2-C(따뜻한 크림/티얼 톤, 떠 있는 카드)에 아래를 반영해 재구성.
+   [기존 7]
+   1) 용어 hover=임시, click=고정. 미고정 시 벗어나면 사라짐.
+   2) 전체화면: 켜면 본문이 화면 가로폭을 꽉 채움.
+   3) 헤더 = 왼쪽 흰색 → 오른쪽 옅은 민트 가로 그라데이션(부드럽게).
+   4) T-code 라벨(칩) → 클릭 시 "미니 페이지"급 상세 모달.
+   5) 좌측 네비 = v2-E 아이콘 레일(hover/클릭 확장).
+   6) 우측 = v2-F "이 레슨의 여정" 스텝퍼(접기 없음, 스크롤 위치 표시).
+   7) v2-G "용어 모음" = 좌측 레일 3번째 탭(페이지 용어 자동 수집).
+   [추가 4]
+   8) 코드/실습 = 그 자리에서 체험(R4): "직접 해보기 — Domain 만들기" 인터랙션.
+   9) 읽기 설정: 글자 크기 A−/A+ · 다크 모드 · 가독 폭 토글 — 모두 localStorage 저장.
+   10) 레슨 끝 능동 회수: 미니 퀴즈(즉시 채점·해설)로 "배운 걸 바로 확인".
   외부 의존성 없음. 이름은 고정 풀(정훈영=1번).
 -->
 <html lang="ko">
@@ -20,36 +24,59 @@
 <title>Domain 기본 설계 · 레슨 셸 v2-C</title>
 <style>
 :root{
+  /* 라이트 토큰 */
   --bg:#f7f5f0;--surface:#fff;--ink:#22201c;--ink-soft:#6b6357;--line:#e9e4da;
   --brand:#0f766e;--brand-2:#14b8a6;--amber:#b45309;--soon:#a99f8f;
+  --soft:#fffdf8;--tint:#f3faf8;--tint-2:#e2f4f1;--tint-green:#e9f6f3;--chip:#f1efe8;
+  --warn-bg:#fffaf2;--warn-line:#f0d9bf;--deco:#f1efe8;--track:#ece8df;--dot:#d6cdbd;
+  --line-teal:#cfe9e3;--ink-teal:#234540;--tag-blue:#3b5bdb;--tag-blue-bg:#eef2ff;
+  --appbar-bg:rgba(255,255,255,.82);
+  --grad-head:linear-gradient(105deg,#ffffff 0%,#ffffff 40%,#eef7f4 74%,#dcefe9 100%);
+  --grad-modal:linear-gradient(100deg,#fff 0%,#fff 45%,#d6f0eb 100%);
   --radius:20px;--shadow:0 2px 4px rgba(60,50,30,.04),0 14px 40px rgba(60,50,30,.08);
   --appbar-h:60px;--rail:64px;
   --font:-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic",Roboto,sans-serif;
   --mono:'D2Coding',Consolas,Monaco,monospace;
 }
+/* 다크 토큰 (html.dark) */
+html.dark{
+  --bg:#181a17;--surface:#23241f;--ink:#e9e6dd;--ink-soft:#a7a094;--line:#393b34;
+  --brand:#2dd4bf;--brand-2:#14b8a6;--amber:#e8a35c;--soon:#7c776c;
+  --soft:#26271f;--tint:#1d2a26;--tint-2:#1c322d;--tint-green:#1b2a26;--chip:#2c2d26;
+  --warn-bg:#2a2419;--warn-line:#4a3d28;--deco:#2a2b23;--track:#33342c;--dot:#4f5046;
+  --line-teal:#2c4a43;--ink-teal:#bfe9df;--tag-blue:#9db4ff;--tag-blue-bg:#222a3d;
+  --appbar-bg:rgba(28,29,24,.84);
+  --grad-head:linear-gradient(105deg,#23241f 0%,#23241f 42%,#1f3531 78%,#16403a 100%);
+  --grad-modal:linear-gradient(100deg,#23241f 0%,#23241f 45%,#16403a 100%);
+  --shadow:0 2px 4px rgba(0,0,0,.3),0 14px 40px rgba(0,0,0,.45);
+}
 *{box-sizing:border-box;} html,body{margin:0;}
-body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.8;min-height:100vh;}
+html{transition:background .25s;}
+body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.8;min-height:100vh;transition:background .25s,color .25s;}
 a{color:var(--brand);text-decoration:none;}
 
 /* ===== 앱바 ===== */
-.appbar{position:sticky;top:0;z-index:40;height:var(--appbar-h);display:flex;align-items:center;gap:12px;padding:0 20px;background:rgba(255,255,255,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+.appbar{position:sticky;top:0;z-index:40;height:var(--appbar-h);display:flex;align-items:center;gap:12px;padding:0 18px;background:var(--appbar-bg);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
 .appbar__home{display:flex;align-items:center;gap:8px;font-weight:800;color:var(--brand);font-size:1.02rem;}
 .appbar__sp{flex:1;}
-.appbar .meta{font-size:.78rem;font-weight:600;color:var(--ink-soft);background:#f3f0e9;border-radius:999px;padding:6px 13px;white-space:nowrap;}
+.appbar .meta{font-size:.78rem;font-weight:600;color:var(--ink-soft);background:var(--chip);border-radius:999px;padding:6px 13px;white-space:nowrap;}
 .appbar .btn-soft{font-size:.82rem;font-weight:700;color:#fff;background:var(--brand);border:0;border-radius:999px;padding:8px 16px;transition:all .18s;box-shadow:0 4px 12px rgba(15,118,110,.25);}
-.appbar .btn-soft:hover{background:#0b5d56;transform:translateY(-1px);}
-.icon-btn{width:36px;height:36px;border-radius:999px;border:1px solid var(--line);background:#fff;cursor:pointer;display:grid;place-items:center;color:var(--ink);transition:all .18s;}
+.appbar .btn-soft:hover{filter:brightness(.93);transform:translateY(-1px);}
+.tools{display:flex;align-items:center;gap:6px;}
+.icon-btn{min-width:36px;height:36px;padding:0 8px;border-radius:999px;border:1px solid var(--line);background:var(--surface);cursor:pointer;display:grid;place-items:center;color:var(--ink);font-size:.92rem;font-weight:700;transition:all .18s;}
 .icon-btn:hover{border-color:var(--brand);color:var(--brand);}
-.read-progress{position:fixed;top:var(--appbar-h);left:0;right:0;height:3px;z-index:39;background:rgba(15,118,110,.08);}
+.icon-btn.on{background:var(--brand);color:#fff;border-color:var(--brand);}
+.read-progress{position:fixed;top:var(--appbar-h);left:0;right:0;height:3px;z-index:39;background:rgba(15,118,110,.10);}
 .read-progress>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--amber));transition:width .12s ease-out;}
-@media(max-width:720px){.appbar .meta{display:none;}}
+@media(max-width:860px){.appbar .meta{display:none;}}
+@media(max-width:560px){.appbar__home span.full{display:none;}}
 
-/* ===== 좌측 아이콘 레일 (v2-E) — hover/클릭 확장 ===== */
+/* ===== 좌측 아이콘 레일 (v2-E) ===== */
 .rail{position:fixed;left:0;top:var(--appbar-h);bottom:0;width:var(--rail);z-index:38;background:var(--surface);border-right:1px solid var(--line);
   display:flex;flex-direction:column;align-items:center;padding:14px 0;gap:8px;transition:width .26s cubic-bezier(.4,0,.2,1);overflow:hidden;}
 .rail.open{width:312px;box-shadow:var(--shadow);align-items:stretch;}
 .rail__btn{width:44px;height:44px;border-radius:13px;border:0;background:none;color:var(--ink-soft);cursor:pointer;display:grid;place-items:center;font-size:1.2rem;flex-shrink:0;transition:background .15s,color .15s;margin:0 auto;}
-.rail__btn:hover,.rail__btn.on{background:#e2f4f1;color:var(--brand);}
+.rail__btn:hover,.rail__btn.on{background:var(--tint-2);color:var(--brand);}
 .rail.open .rail__btn{margin:0;}
 .rail__icons{display:flex;flex-direction:column;gap:8px;align-items:center;}
 .rail__expand{display:none;flex-direction:column;min-height:0;flex:1;padding:0 14px;}
@@ -57,122 +84,167 @@ a{color:var(--brand);text-decoration:none;}
 .rail.open .rail__icons{display:none;}
 .rail__hd{display:flex;align-items:center;justify-content:space-between;padding:4px 2px 12px;}
 .rail__hd b{font-weight:800;} .rail__x{border:0;background:none;color:var(--ink-soft);font-size:1.2rem;cursor:pointer;}
-.rail__tabs{display:flex;gap:5px;background:#f1efe8;border-radius:999px;padding:4px;margin-bottom:12px;}
+.rail__tabs{display:flex;gap:5px;background:var(--chip);border-radius:999px;padding:4px;margin-bottom:12px;}
 .rail__tab{flex:1;border:0;background:none;border-radius:999px;padding:8px 4px;font:inherit;font-size:.78rem;font-weight:700;color:var(--ink-soft);cursor:pointer;transition:all .18s;}
-.rail__tab.on{background:#fff;color:var(--brand);box-shadow:0 1px 3px rgba(60,50,30,.12);}
+.rail__tab.on{background:var(--surface);color:var(--brand);box-shadow:0 1px 3px rgba(60,50,30,.12);}
 .rail__panel{display:none;overflow:auto;min-height:0;} .rail__panel.on{display:block;}
 .rail__chap{font-size:.74rem;color:var(--ink-soft);font-weight:800;margin:2px 0 9px;}
 .ll{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px;}
 .ll a{display:block;border:1px solid transparent;border-radius:11px;padding:9px 11px;}
-.ll a:hover{background:#f3faf8;} .ll small{font-size:.66rem;font-weight:800;color:var(--soon);letter-spacing:.04em;}
-.ll .t{display:block;font-size:.85rem;color:#3a342b;font-weight:600;}
-.ll a.on{background:#e2f4f1;border-color:#cfe9e3;} .ll a.on .t,.ll a.on small{color:var(--brand);}
-.rail__prog{font-size:.76rem;font-weight:800;color:#34302a;display:flex;justify-content:space-between;margin:2px 0 6px;}
-.bar{height:7px;border-radius:99px;background:#ece8df;overflow:hidden;margin-bottom:12px;} .bar>i{display:block;height:100%;width:5%;background:linear-gradient(90deg,var(--brand),var(--brand-2));}
+.ll a:hover{background:var(--tint);} .ll small{font-size:.66rem;font-weight:800;color:var(--soon);letter-spacing:.04em;}
+.ll .t{display:block;font-size:.85rem;color:var(--ink);font-weight:600;}
+.ll a.on{background:var(--tint-2);border-color:var(--line-teal);} .ll a.on .t,.ll a.on small{color:var(--brand);}
+.rail__prog{font-size:.76rem;font-weight:800;color:var(--ink);display:flex;justify-content:space-between;margin:2px 0 6px;}
+.bar{height:7px;border-radius:99px;background:var(--track);overflow:hidden;margin-bottom:12px;} .bar>i{display:block;height:100%;width:5%;background:linear-gradient(90deg,var(--brand),var(--brand-2));}
 .cl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;font-size:.83rem;}
-.cl li{display:flex;gap:9px;padding:9px 10px;border-radius:11px;color:#3a342b;cursor:pointer;transition:all .18s;}
-.cl li:hover{background:#f3faf8;} .cl li .dot{width:12px;height:12px;border-radius:50%;border:2px solid #d6cdbd;margin-top:5px;flex-shrink:0;}
-.cl li.on{background:#e2f4f1;color:var(--brand);font-weight:700;} .cl li.on .dot{border-color:var(--brand);background:var(--brand);}
-/* 용어 모음 (v2-G) */
+.cl li{display:flex;gap:9px;padding:9px 10px;border-radius:11px;color:var(--ink);cursor:pointer;transition:all .18s;}
+.cl li:hover{background:var(--tint);} .cl li .dot{width:12px;height:12px;border-radius:50%;border:2px solid var(--dot);margin-top:5px;flex-shrink:0;}
+.cl li.on{background:var(--tint-2);color:var(--brand);font-weight:700;} .cl li.on .dot{border-color:var(--brand);background:var(--brand);}
 .glos{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px;}
-.glos li{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:#fffdf8;}
+.glos li{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--soft);}
 .glos b{font-size:.86rem;color:var(--brand);} .glos span{display:block;font-size:.78rem;color:var(--ink-soft);margin-top:2px;}
 .glos__note{font-size:.74rem;color:var(--ink-soft);margin:0 0 10px;}
 
 .railFab{display:none;position:fixed;left:14px;bottom:18px;z-index:42;width:48px;height:48px;border-radius:50%;border:0;background:var(--brand);color:#fff;font-size:1.3rem;box-shadow:0 8px 20px rgba(15,118,110,.35);cursor:pointer;place-items:center;}
-.scrim{position:fixed;inset:0;background:rgba(40,32,20,.4);z-index:36;opacity:0;pointer-events:none;transition:opacity .25s;}
+.scrim{position:fixed;inset:0;background:rgba(40,32,20,.45);z-index:36;opacity:0;pointer-events:none;transition:opacity .25s;}
 body.rail-open .scrim{opacity:1;pointer-events:auto;}
 
 /* ===== 무대(본문+우측 여정) ===== */
 .stage{margin-left:var(--rail);transition:margin .26s;}
-.layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:30px;max-width:1300px;margin:0 auto;padding:26px 28px 96px;align-items:start;}
-.main{min-width:0;max-width:780px;margin:0 auto;}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:30px;max-width:1320px;margin:0 auto;padding:26px 28px 96px;align-items:start;}
+.main{min-width:0;max-width:780px;margin:0 auto;transition:max-width .2s;}
+html.wide .main{max-width:980px;}
 
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:24px 28px;margin:18px 0;box-shadow:var(--shadow);}
 
-/* 헤더 — 왼쪽 흰색 → 오른쪽 브랜드색 가로 그라데이션 */
-.lhead{position:relative;overflow:hidden;background:linear-gradient(100deg,#ffffff 0%,#ffffff 40%,#7fd3c7 82%,var(--brand) 116%);border:1px solid var(--line);border-radius:24px;padding:30px 32px;box-shadow:var(--shadow);}
+/* 헤더 — 왼쪽 흰색 → 오른쪽 옅은 민트 */
+.lhead{position:relative;overflow:hidden;background:var(--grad-head);border:1px solid var(--line);border-radius:24px;padding:30px 32px;box-shadow:var(--shadow);}
 .crumb{font-size:.86rem;color:var(--ink-soft);font-weight:600;}
-.crumb a{color:var(--brand);} .crumb b{color:var(--ink);} .crumb i{font-style:normal;color:#c9c0b1;margin:0 6px;}
+.crumb a{color:var(--brand);} .crumb b{color:var(--ink);} .crumb i{font-style:normal;color:var(--soon);margin:0 6px;}
 .lhead__eyebrow{margin:14px 0 6px;color:var(--brand);font-weight:800;font-size:.82rem;letter-spacing:.12em;text-transform:uppercase;}
 .lhead h1{font-size:2.5rem;margin:0 0 16px;line-height:1.12;letter-spacing:-.015em;}
 .tags{display:flex;flex-wrap:wrap;gap:8px;}
 .tag{font-size:.78rem;font-weight:700;border-radius:999px;padding:6px 14px;}
 .tag.t-track{background:#fdeee0;color:#b45309;} .tag.t-ch{background:#f1efe8;color:#6b6357;}
-.tag.t-ls{background:#e2f4f1;color:var(--brand);} .tag.t-lv{background:#e7f6ee;color:#137a4a;}
+.tag.t-ls{background:#e2f4f1;color:#0f766e;} .tag.t-lv{background:#e7f6ee;color:#137a4a;}
+html.dark .tag.t-track{background:#3a2a17;color:#e8a35c;}
+html.dark .tag.t-ch{background:#2f2d24;color:var(--ink-soft);}
+html.dark .tag.t-ls{background:#16322d;color:var(--brand);}
+html.dark .tag.t-lv{background:#16322a;color:#5fd6ac;}
 
 .card__h{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.06rem;margin:0 0 14px;}
 .card__h .ic{font-size:1.2rem;}
 
 /* T-code 라벨(칩) → 클릭 시 모달 */
 .tcode{border-left:5px solid var(--amber);}
-.tcode-label{display:inline-flex;align-items:center;gap:11px;border:1px solid #f0d9bf;background:#fffaf2;border-radius:14px;padding:11px 16px;cursor:pointer;font:inherit;transition:all .18s cubic-bezier(.16,1,.3,1);}
+.tcode-label{display:inline-flex;align-items:center;gap:11px;border:1px solid var(--warn-line);background:var(--warn-bg);border-radius:14px;padding:11px 16px;cursor:pointer;font:inherit;transition:all .18s cubic-bezier(.16,1,.3,1);}
 .tcode-label:hover{box-shadow:0 10px 26px rgba(180,83,9,.14);transform:translateY(-2px);border-color:var(--amber);}
 .tcode-label__badge{font-size:.7rem;font-weight:800;color:#137a4a;background:#e7f6ee;border-radius:999px;padding:3px 10px;}
+html.dark .tcode-label__badge,html.dark .tmodal__badge{background:#16322a;color:#5fd6ac;}
 .tcode-label__code{font-family:var(--mono);font-weight:800;font-size:1.2rem;color:var(--ink);}
 .tcode-label__hint{font-size:.82rem;font-weight:700;color:var(--amber);}
 .tcode__cap{margin:10px 0 0;color:var(--ink-soft);font-size:.9rem;}
 
-.goals{background:linear-gradient(180deg,#e9f6f3,#f3faf8);border:1px solid #cfe9e3;border-left:5px solid var(--brand);}
-.goals p{margin:0;color:#234540;}
+.goals{background:var(--tint-green);border:1px solid var(--line-teal);border-left:5px solid var(--brand);}
+.goals p{margin:0;color:var(--ink-teal);}
 
 /* 본문 — 떠 있는 카드 + 데코 번호 */
 .block{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:24px 28px 20px;margin:16px 0;box-shadow:0 2px 6px rgba(60,50,30,.05);overflow:hidden;transition:transform .22s cubic-bezier(.16,1,.3,1),box-shadow .22s;}
-.block::after{content:attr(data-n);position:absolute;right:18px;top:6px;font-size:4.4rem;font-weight:900;color:#f1efe8;line-height:1;pointer-events:none;transition:color .22s;}
+.block::after{content:attr(data-n);position:absolute;right:18px;top:6px;font-size:4.4rem;font-weight:900;color:var(--deco);line-height:1;pointer-events:none;transition:color .22s;}
 .block:hover{transform:translateY(-4px) scale(1.006);box-shadow:0 20px 44px rgba(60,50,30,.12);}
-.block:hover::after{color:#e6f1ee;}
 .block h2{font-size:1.3rem;margin:0 0 8px;position:relative;}
 .block h2 .num{color:var(--brand);font-weight:900;}
-.block p{margin:10px 0;color:#34302a;position:relative;}
-.ex{margin:14px 0 0;border-left:4px solid #cfe9e3;background:#f3faf8;border-radius:0 12px 12px 0;padding:12px 16px;font-size:.95rem;color:#2f4a45;position:relative;}
+.block p{margin:10px 0;color:var(--ink);position:relative;}
+.ex{margin:14px 0 0;border-left:4px solid var(--line-teal);background:var(--tint);border-radius:0 12px 12px 0;padding:12px 16px;font-size:.95rem;color:var(--ink-teal);position:relative;}
 .ex b{color:var(--brand);}
 
-details.fold{border:1px solid var(--line);border-radius:14px;background:#fffdf8;margin:13px 0;overflow:hidden;}
+details.fold{border:1px solid var(--line);border-radius:14px;background:var(--soft);margin:13px 0;overflow:hidden;}
 details.fold>summary{cursor:pointer;font-weight:700;color:var(--brand);padding:13px 17px;list-style:none;display:flex;gap:10px;align-items:center;}
 details.fold>summary::-webkit-details-marker{display:none;}
 details.fold>summary::before{content:"▸";transition:transform .2s;}
 details.fold[open]>summary::before{transform:rotate(90deg);}
-details.fold .fold__in{padding:14px 18px;border-top:1px solid var(--line);color:#4a443b;font-size:.96rem;}
+details.fold .fold__in{padding:14px 18px;border-top:1px solid var(--line);color:var(--ink-soft);font-size:.96rem;}
+details.fold .fold__in code,.block code{font-family:var(--mono);background:var(--chip);border-radius:5px;padding:1px 6px;font-size:.9em;}
 
-/* 용어 트리거 + 팝업(hover 임시 / click 고정) */
+/* 용어 트리거 + 팝업 */
 .term{border-bottom:2px dotted var(--brand);color:var(--brand);font-weight:600;cursor:help;}
-.term-popup{position:absolute;z-index:60;max-width:300px;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 14px 34px rgba(60,50,30,.18);padding:14px 16px 14px;}
-.term-popup b{display:block;margin-bottom:5px;padding-right:14px;} .term-popup span{font-size:.88rem;color:var(--ink-soft);}
+.term-popup{position:absolute;z-index:60;max-width:300px;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 14px 34px rgba(60,50,30,.22);padding:14px 16px;}
+.term-popup b{display:block;margin-bottom:5px;padding-right:14px;color:var(--ink);} .term-popup span{font-size:.88rem;color:var(--ink-soft);}
 .term-popup__pin{display:block;margin-top:9px;font-size:.74rem;font-weight:700;color:var(--soon);}
 .term-popup.pinned .term-popup__pin{color:var(--brand);}
-.term-popup__x{position:absolute;top:8px;right:11px;border:0;background:none;cursor:pointer;color:#a99f8f;font-size:1.1rem;display:none;}
+.term-popup__x{position:absolute;top:8px;right:11px;border:0;background:none;cursor:pointer;color:var(--soon);font-size:1.1rem;display:none;}
 .term-popup.pinned .term-popup__x{display:block;}
 
 .recap__grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(195px,1fr));gap:14px;}
-.recap__c{border:1px solid var(--line);border-radius:16px;padding:17px 18px;background:#fffdf8;transition:transform .2s cubic-bezier(.16,1,.3,1),box-shadow .2s;}
+.recap__c{border:1px solid var(--line);border-radius:16px;padding:17px 18px;background:var(--soft);transition:transform .2s cubic-bezier(.16,1,.3,1),box-shadow .2s;}
 .recap__c:hover{transform:translateY(-5px);box-shadow:0 16px 34px rgba(60,50,30,.12);}
-.recap__c b{display:block;margin-bottom:6px;color:var(--brand);} .recap__c span{font-size:.92rem;color:#4a443b;}
-.next-preview{display:flex;gap:13px;align-items:flex-start;margin-top:18px;padding:16px 18px;border-radius:16px;background:#e9f6f3;border:1px solid #cfe9e3;color:#234540;}
+.recap__c b{display:block;margin-bottom:6px;color:var(--brand);} .recap__c span{font-size:.92rem;color:var(--ink-soft);}
+.next-preview{display:flex;gap:13px;align-items:flex-start;margin-top:18px;padding:16px 18px;border-radius:16px;background:var(--tint-green);border:1px solid var(--line-teal);color:var(--ink-teal);}
 .next-preview .ic{font-size:1.3rem;}
 
 .lesson-nav{display:flex;gap:14px;margin:24px 0 8px;}
-.lesson-nav a{flex:1;border:1px solid var(--line);border-radius:18px;background:#fff;padding:16px 18px;box-shadow:var(--shadow);transition:all .2s cubic-bezier(.16,1,.3,1);}
+.lesson-nav a{flex:1;border:1px solid var(--line);border-radius:18px;background:var(--surface);padding:16px 18px;box-shadow:var(--shadow);transition:all .2s cubic-bezier(.16,1,.3,1);}
 .lesson-nav a:hover{transform:translateY(-3px);box-shadow:0 16px 34px rgba(60,50,30,.12);}
 .lesson-nav .dir{font-size:.72rem;color:var(--soon);font-weight:700;}
-.lesson-nav .ttl{display:block;margin-top:3px;font-weight:700;}
+.lesson-nav .ttl{display:block;margin-top:3px;font-weight:700;color:var(--ink);}
 .lesson-nav .next{text-align:right;}
 .foot{color:var(--ink-soft);font-size:.84rem;padding:24px 4px;border-top:1px solid var(--line);margin-top:20px;}
 
-/* ===== 우측 "이 레슨의 여정" (v2-F, 접기 없음) ===== */
+/* ===== (8) 체험 슬롯 — 직접 해보기 ===== */
+.try{border-left:5px solid var(--brand-2);}
+.try__grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:14px 0;}
+.try__form{display:flex;flex-direction:column;gap:11px;}
+.try__form label{font-size:.84rem;font-weight:700;color:var(--ink-soft);display:flex;flex-direction:column;gap:5px;}
+.try__form input,.try__form select{font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--ink);}
+.try__form .chk{flex-direction:row;align-items:center;gap:8px;}
+.try__form .chk input{width:16px;height:16px;}
+.try__se11{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-family:var(--mono);font-size:.88rem;color:var(--ink);}
+.try__se11 .row{display:flex;justify-content:space-between;gap:10px;padding:3px 0;border-bottom:1px dashed var(--line);}
+.try__se11 .row:last-child{border-bottom:0;}
+.try__se11 .k{color:var(--ink-soft);}
+.try__se11 .state{margin-top:8px;font-weight:800;}
+.try__se11 .state.off{color:var(--soon);} .try__se11 .state.on{color:var(--brand);}
+.try__actions{display:flex;flex-wrap:wrap;gap:9px;margin:4px 0 0;}
+.try__actions button{font:inherit;font-weight:700;border-radius:10px;padding:9px 15px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;transition:all .15s;}
+.try__actions button:not(:disabled):hover{border-color:var(--brand);color:var(--brand);}
+.try__actions button.primary{background:var(--brand);color:#fff;border-color:var(--brand);}
+.try__actions button:disabled{opacity:.45;cursor:not-allowed;}
+.try__actions .ghost{margin-left:auto;color:var(--ink-soft);}
+.try__status{margin-top:12px;border-radius:10px;padding:11px 14px;font-size:.92rem;font-weight:600;background:var(--tint);color:var(--ink);border-left:3px solid var(--brand-2);}
+.try__status.warn{background:var(--warn-bg);border-left-color:var(--amber);}
+.try__status.ok{background:var(--tint-green);border-left-color:var(--brand);color:var(--ink-teal);}
+@media(max-width:560px){.try__grid{grid-template-columns:1fr;}}
+
+/* ===== (10) 능동 회수 — 미니 퀴즈 ===== */
+.recall{border-top:4px solid var(--brand-2);}
+.quiz{display:flex;flex-direction:column;gap:15px;margin:8px 0 0;}
+.q{border:1px solid var(--line);border-radius:14px;padding:16px 18px;background:var(--soft);}
+.q__p{font-weight:700;margin:0 0 11px;color:var(--ink);}
+.q__opts{display:flex;flex-direction:column;gap:8px;}
+.opt{text-align:left;font:inherit;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:10px 13px;cursor:pointer;transition:all .14s;}
+.opt:hover:not(:disabled){border-color:var(--brand);}
+.opt.correct{background:var(--tint-green);border-color:var(--brand);color:var(--ink-teal);font-weight:700;}
+.opt.wrong{background:var(--warn-bg);border-color:var(--amber);}
+.opt:disabled{cursor:default;}
+.q__exp{margin:11px 0 0;font-size:.9rem;color:var(--ink-soft);display:none;border-left:3px solid var(--line-teal);padding-left:11px;}
+.q.answered .q__exp{display:block;}
+.quiz__score{margin-top:16px;font-weight:800;color:var(--brand);font-size:1.02rem;}
+
+/* ===== 우측 "이 레슨의 여정" (v2-F) ===== */
 .journey{position:sticky;top:calc(var(--appbar-h) + 18px);background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:18px 18px 20px;box-shadow:var(--shadow);}
 .journey__hd{font-size:.74rem;font-weight:800;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em;margin:0 0 4px;}
 .journey__sub{font-size:.78rem;color:var(--soon);margin:0 0 16px;}
 .steps{list-style:none;margin:0;padding:0;position:relative;}
 .steps::before{content:"";position:absolute;left:13px;top:8px;bottom:14px;width:2px;background:var(--line);}
 .steps::after{content:"";position:absolute;left:13px;top:8px;width:2px;height:var(--progress,0%);max-height:calc(100% - 22px);background:linear-gradient(var(--brand),var(--brand-2));transition:height .35s ease;}
-.step{position:relative;padding:0 0 18px 38px;cursor:pointer;}
+.step{position:relative;padding:0 0 16px 38px;cursor:pointer;}
 .step:last-child{padding-bottom:0;}
-.step__dot{position:absolute;left:5px;top:1px;width:18px;height:18px;border-radius:50%;background:#fff;border:2px solid #d6cdbd;display:grid;place-items:center;font-size:.6rem;color:#fff;transition:all .2s;z-index:1;}
-.step__t{font-size:.9rem;font-weight:600;color:#56524a;transition:color .2s;}
+.step__dot{position:absolute;left:5px;top:1px;width:18px;height:18px;border-radius:50%;background:var(--surface);border:2px solid var(--dot);display:grid;place-items:center;font-size:.6rem;color:#fff;transition:all .2s;z-index:1;}
+.step__t{font-size:.9rem;font-weight:600;color:var(--ink-soft);transition:color .2s;}
 .step__s{display:block;font-size:.72rem;color:var(--soon);}
 .step.visited .step__dot{background:var(--brand-2);border-color:var(--brand-2);}
 .step.visited .step__dot::after{content:"✓";}
-.step.visited .step__t{color:#3a342b;}
+.step.visited .step__t{color:var(--ink);}
 .step.current .step__dot{border-color:var(--brand);background:var(--brand);box-shadow:0 0 0 4px rgba(15,118,110,.16);}
 .step.current .step__dot::after{content:"";width:6px;height:6px;border-radius:50%;background:#fff;}
 .step.current .step__t{color:var(--brand);font-weight:800;}
@@ -180,10 +252,10 @@ details.fold .fold__in{padding:14px 18px;border-top:1px solid var(--line);color:
 /* ===== T-code 미니 페이지 모달 ===== */
 .tmodal[hidden]{display:none;}
 .tmodal{position:fixed;inset:0;z-index:80;display:grid;place-items:center;padding:24px;}
-.tmodal__backdrop{position:absolute;inset:0;background:rgba(40,32,20,.5);backdrop-filter:blur(2px);}
-.tmodal__card{position:relative;z-index:1;width:min(700px,100%);max-height:88vh;overflow:auto;background:#fff;border:1px solid var(--line);border-radius:22px;box-shadow:0 30px 80px rgba(40,32,20,.32);animation:tpop .22s cubic-bezier(.16,1,.3,1);}
+.tmodal__backdrop{position:absolute;inset:0;background:rgba(40,32,20,.55);backdrop-filter:blur(2px);}
+.tmodal__card{position:relative;z-index:1;width:min(700px,100%);max-height:88vh;overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:22px;box-shadow:0 30px 80px rgba(20,15,5,.4);animation:tpop .22s cubic-bezier(.16,1,.3,1);}
 @keyframes tpop{from{opacity:0;transform:translateY(14px) scale(.98);}to{opacity:1;transform:none;}}
-.tmodal__hd{position:sticky;top:0;z-index:1;background:linear-gradient(100deg,#fff 0%,#fff 45%,#d6f0eb 100%);border-bottom:1px solid var(--line);padding:20px 24px;display:flex;align-items:flex-start;gap:14px;}
+.tmodal__hd{position:sticky;top:0;z-index:1;background:var(--grad-modal);border-bottom:1px solid var(--line);padding:20px 24px;display:flex;align-items:flex-start;gap:14px;}
 .tmodal__badge{font-size:.7rem;font-weight:800;color:#137a4a;background:#e7f6ee;border-radius:999px;padding:3px 10px;align-self:center;}
 .tmodal__code{font-family:var(--mono);font-weight:800;font-size:1.55rem;color:var(--brand);line-height:1.1;}
 .tmodal__sub{display:block;color:var(--ink-soft);font-size:.88rem;font-weight:600;margin-top:2px;}
@@ -192,18 +264,18 @@ details.fold .fold__in{padding:14px 18px;border-top:1px solid var(--line);color:
 .tmodal__body{padding:18px 24px 26px;}
 .tmodal__body h4{font-size:.96rem;margin:18px 0 7px;display:flex;align-items:center;gap:8px;color:var(--ink);}
 .tmodal__body h4:first-child{margin-top:0;}
-.tmodal__body p{margin:6px 0;color:#3a342b;font-size:.95rem;}
-.tmodal__body ul{margin:6px 0;padding-left:20px;color:#3a342b;font-size:.94rem;}
+.tmodal__body p{margin:6px 0;color:var(--ink);font-size:.95rem;}
+.tmodal__body ul{margin:6px 0;padding-left:20px;color:var(--ink);font-size:.94rem;}
 .tmodal__body li{margin:4px 0;}
-.tmodal__body code{font-family:var(--mono);background:#f1efe8;border-radius:5px;padding:1px 6px;font-size:.9em;}
-.cmdfield{display:flex;align-items:center;gap:8px;border:1px solid #cfe9e3;background:#f3faf8;border-radius:10px;padding:9px 12px;margin:8px 0;font-family:var(--mono);font-weight:700;color:var(--brand);}
+.tmodal__body code{font-family:var(--mono);background:var(--chip);border-radius:5px;padding:1px 6px;font-size:.9em;}
+.cmdfield{display:flex;align-items:center;gap:8px;border:1px solid var(--line-teal);background:var(--tint);border-radius:10px;padding:9px 12px;margin:8px 0;font-family:var(--mono);font-weight:700;color:var(--brand);}
 .cmdfield::before{content:"명령";font-family:var(--font);font-size:.66rem;font-weight:800;color:#fff;background:var(--brand);border-radius:5px;padding:3px 6px;}
-.callout{border-left:4px solid var(--amber);background:#fffaf2;border-radius:0 12px 12px 0;padding:11px 15px;margin:10px 0;font-size:.92rem;color:#5a4a32;}
+.callout{border-left:4px solid var(--amber);background:var(--warn-bg);border-radius:0 12px 12px 0;padding:11px 15px;margin:10px 0;font-size:.92rem;color:var(--ink);}
 .callout b{color:var(--amber);}
 .related{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
-.related span{font-family:var(--mono);font-weight:700;font-size:.84rem;background:#eef2ff;color:#3b5bdb;border-radius:8px;padding:5px 10px;}
+.related span{font-family:var(--mono);font-weight:700;font-size:.84rem;background:var(--tag-blue-bg);color:var(--tag-blue);border-radius:8px;padding:5px 10px;}
 
-/* ===== 전체화면: 본문이 화면 가로폭을 꽉 채움 ===== */
+/* ===== 전체화면 ===== */
 body.is-fullscreen .layout{max-width:none;padding-left:clamp(24px,2.4vw,52px);padding-right:clamp(24px,2.4vw,52px);}
 body.is-fullscreen .main{max-width:none;}
 
@@ -218,25 +290,39 @@ body.is-fullscreen .main{max-width:none;}
   .journey{position:static;margin-bottom:10px;}
   .steps::before,.steps::after{display:none;}
   .steps{display:flex;flex-wrap:wrap;gap:8px;}
-  .step{padding:7px 13px 7px 30px;background:#fffdf8;border:1px solid var(--line);border-radius:999px;}
+  .step{padding:7px 13px 7px 30px;background:var(--soft);border:1px solid var(--line);border-radius:999px;}
   .step__s{display:none;}
 }
 @media(min-width:1001px){ .scrim{display:none;} }
 </style>
+<script>
+/* 설정 즉시 적용(플래시 방지): 본문 렌더 전에 localStorage 반영 */
+(function(){try{var L=localStorage,r=document.documentElement;
+  if(L.getItem('ls.dark')==='1') r.classList.add('dark');
+  if(L.getItem('ls.wide')==='1') r.classList.add('wide');
+  var f=parseInt(L.getItem('ls.fontPx'),10); if(f>=13&&f<=20) r.style.fontSize=f+'px';
+}catch(e){}})();
+</script>
 </head>
 <body>
   <header class="appbar">
-    <a class="appbar__home" href="#">🏠 SAP 학습자료 홈</a>
+    <a class="appbar__home" href="#">🏠 <span class="full">SAP 학습자료 홈</span></a>
     <span class="appbar__sp"></span>
     <span class="meta">수정일자 2026-06-18</span>
     <span class="meta">배포자 정훈영</span>
     <a class="btn-soft" href="#">ABAP 개발 홈</a>
-    <button class="icon-btn fs-btn" title="전체화면">⛶</button>
+    <div class="tools">
+      <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
+      <button class="icon-btn" id="fsInc" title="글자 크게">A+</button>
+      <button class="icon-btn" id="darkBtn" title="다크 모드">🌙</button>
+      <button class="icon-btn" id="widthBtn" title="가독 폭 넓게">↔</button>
+      <button class="icon-btn fs-btn" title="전체화면">⛶</button>
+    </div>
   </header>
   <div class="read-progress"><i></i></div>
   <div class="scrim"></div>
 
-  <!-- 좌측 아이콘 레일 (문서목차 / 학습경로 / 용어) -->
+  <!-- 좌측 아이콘 레일 -->
   <nav class="rail" id="rail">
     <div class="rail__icons">
       <button class="rail__btn on" data-rtab="toc" title="문서목차">📑</button>
@@ -333,6 +419,30 @@ body.is-fullscreen .main{max-width:none;}
           <div class="ex"><b>주의:</b> 저장만 하고 활성화를 안 하면 "왜 안 보이지?"가 됩니다. 활성화는 "이제 진짜 쓸게요" 선언이에요.</div>
         </section>
 
+        <section class="block try" id="try" data-n="✋">
+          <h2><span class="num">✋</span> 직접 해보기 — 작은 Domain 만들기</h2>
+          <p>값을 고르고 <strong>저장 → 검사 → 활성화</strong> 순서로 눌러 보세요. 오른쪽 SE11 미리보기에서 상태가 어떻게 바뀌는지 확인합니다. (저장만 해서는 활성 상태가 되지 않아요!)</p>
+          <div class="try__grid">
+            <div class="try__form">
+              <label>Domain 이름<input id="tName" type="text" value="ZHR_STATUS"></label>
+              <label>Data Type
+                <select id="tType"><option value="CHAR">CHAR (문자)</option><option value="NUMC">NUMC (숫자 문자)</option><option value="DATS">DATS (날짜)</option></select>
+              </label>
+              <label>Length (길이)<input id="tLen" type="number" value="1" min="1" max="40"></label>
+              <label class="chk"><input id="tFixed" type="checkbox"> 허용값 고정 (Fixed Value)</label>
+              <label id="tFixedWrap" style="display:none">허용값 (쉼표로 구분)<input id="tFixedVals" type="text" placeholder="예: A,B,C"></label>
+            </div>
+            <div class="try__se11" id="tPreview"><!-- JS 렌더 --></div>
+          </div>
+          <div class="try__actions">
+            <button data-act="save" class="primary">💾 저장</button>
+            <button data-act="check" disabled>🔍 검사</button>
+            <button data-act="activate" disabled>🔥 활성화</button>
+            <button data-act="reset" class="ghost">↺ 초기화</button>
+          </div>
+          <div class="try__status" id="tStatus">아직 저장하지 않았어요. 값을 정하고 💾 저장을 눌러 시작하세요.</div>
+        </section>
+
         <section class="card" id="summary">
           <p class="card__h"><span class="ic">🧾</span>한눈에 정리</p>
           <div class="recap__grid">
@@ -344,6 +454,13 @@ body.is-fullscreen .main{max-width:none;}
           <div class="next-preview"><span class="ic">➡️</span><div><b>다음 Lesson 예고</b><br>오늘 만든 Domain 위에 업무 의미, 화면 라벨, 설명 문장을 붙이는 <strong>Data Element 설계</strong>를 다룹니다.</div></div>
         </section>
 
+        <section class="card recall" id="recall">
+          <p class="card__h"><span class="ic">🎯</span>배운 걸 바로 확인</p>
+          <p>방금 읽은 내용을 짧게 회수해 봐요. 보기를 고르면 즉시 채점되고 해설이 열립니다.</p>
+          <div class="quiz" id="quiz"><!-- JS 렌더 --></div>
+          <div class="quiz__score" id="quizScore"></div>
+        </section>
+
         <nav class="lesson-nav">
           <a href="#"><span class="dir">← 이전 LESSON</span><span class="ttl">SAP Dictionary의 목적과 개발 흐름</span></a>
           <a class="next" href="#"><span class="dir">다음 LESSON →</span><span class="ttl">Data Element 기본 설계</span></a>
@@ -351,7 +468,7 @@ body.is-fullscreen .main{max-width:none;}
         <footer class="foot">SAP Developer Learning Library · Lesson Viewer · 시안 v2-C</footer>
       </main>
 
-      <!-- 우측 "이 레슨의 여정" (접기 없음 · 스크롤 위치 표시) -->
+      <!-- 우측 "이 레슨의 여정" -->
       <aside class="journey">
         <p class="journey__hd">이 레슨의 여정</p>
         <p class="journey__sub">스크롤에 따라 현재 위치가 표시돼요.</p>
@@ -361,7 +478,9 @@ body.is-fullscreen .main{max-width:none;}
           <li class="step" data-go="s1"><span class="step__dot"></span><span class="step__t">1. 값의 재질</span><span class="step__s">Domain의 정체</span></li>
           <li class="step" data-go="s2"><span class="step__dot"></span><span class="step__t">2. 네 가지 속성</span><span class="step__s">Type·Length·…</span></li>
           <li class="step" data-go="s3"><span class="step__dot"></span><span class="step__t">3. SE11 흐름</span><span class="step__s">저장→검사→활성화</span></li>
+          <li class="step" data-go="try"><span class="step__dot"></span><span class="step__t">✋ 직접 해보기</span><span class="step__s">Domain 만들기</span></li>
           <li class="step" data-go="summary"><span class="step__dot"></span><span class="step__t">한눈에 정리</span><span class="step__s">복습·다음</span></li>
+          <li class="step" data-go="recall"><span class="step__dot"></span><span class="step__t">🎯 확인 퀴즈</span><span class="step__s">능동 회수</span></li>
         </ul>
       </aside>
     </div>
@@ -382,9 +501,24 @@ body.is-fullscreen .main{max-width:none;}
 
 <script>
 (function(){
-  const body=document.body, isMobile=()=>matchMedia('(max-width:1000px)').matches;
+  const body=document.body, root=document.documentElement, isMobile=()=>matchMedia('(max-width:1000px)').matches;
+  let L; try{ L=localStorage; }catch(e){ L=null; }
+  const get=k=>{ try{return L&&L.getItem(k);}catch(e){return null;} };
+  const set=(k,v)=>{ try{ L&&L.setItem(k,v); }catch(e){} };
 
-  /* 1) 좌측 레일: 아이콘/탭/hover/드로어 */
+  /* (9) 읽기 설정: 글자 크기 / 다크 / 가독 폭 — localStorage */
+  const darkBtn=document.getElementById('darkBtn'), widthBtn=document.getElementById('widthBtn');
+  function syncDark(){ const on=root.classList.contains('dark'); darkBtn.textContent=on?'☀️':'🌙'; darkBtn.classList.toggle('on',on); darkBtn.title=on?'라이트 모드':'다크 모드'; }
+  function syncWide(){ const on=root.classList.contains('wide'); widthBtn.classList.toggle('on',on); widthBtn.title=on?'가독 폭 기본':'가독 폭 넓게'; }
+  darkBtn.addEventListener('click',()=>{ root.classList.toggle('dark'); set('ls.dark',root.classList.contains('dark')?'1':'0'); syncDark(); });
+  widthBtn.addEventListener('click',()=>{ root.classList.toggle('wide'); set('ls.wide',root.classList.contains('wide')?'1':'0'); syncWide(); });
+  let fontPx=parseInt(get('ls.fontPx'),10); if(!(fontPx>=13&&fontPx<=20)) fontPx=16;
+  function applyFont(){ root.style.fontSize=fontPx+'px'; set('ls.fontPx',String(fontPx)); }
+  document.getElementById('fsInc').addEventListener('click',()=>{ fontPx=Math.min(20,fontPx+1); applyFont(); });
+  document.getElementById('fsDec').addEventListener('click',()=>{ fontPx=Math.max(13,fontPx-1); applyFont(); });
+  syncDark(); syncWide();
+
+  /* 좌측 레일 */
   const rail=document.getElementById('rail');
   function openRail(tab){ rail.classList.add('open'); if(isMobile()) body.classList.add('rail-open'); if(tab) setTab(tab); }
   function closeRail(){ rail.classList.remove('open'); body.classList.remove('rail-open'); }
@@ -401,7 +535,7 @@ body.is-fullscreen .main{max-width:none;}
   rail.addEventListener('mouseleave',()=>{ if(!isMobile()) rail.classList.remove('open'); });
   addEventListener('resize',()=>{ if(!isMobile()) body.classList.remove('rail-open'); });
 
-  /* 1-b) 용어 모음 자동 수집 (v2-G) — 본문 .term 을 모아 레일 용어 탭에 채움 */
+  /* 용어 모음 자동 수집 */
   const railTerms=document.getElementById('railTerms'); const seen=new Set();
   document.querySelectorAll('.main .term').forEach(t=>{
     const k=t.dataset.t||t.textContent.trim(); if(seen.has(k)) return; seen.add(k);
@@ -409,13 +543,13 @@ body.is-fullscreen .main{max-width:none;}
     railTerms.appendChild(li);
   });
 
-  /* 2) 전체화면 — 켜면 본문이 가로폭을 꽉 채움 */
+  /* 전체화면 */
   const fsBtn=document.querySelector('.fs-btn');
   fsBtn.addEventListener('click',()=>{ if(!document.fullscreenElement) (document.documentElement.requestFullscreen||document.documentElement.webkitRequestFullscreen)?.call(document.documentElement); else (document.exitFullscreen||document.webkitExitFullscreen)?.call(document); });
   function onFs(){ const on=!!(document.fullscreenElement||document.webkitFullscreenElement); body.classList.toggle('is-fullscreen',on); fsBtn.title=on?'전체화면 해제':'전체화면'; }
   document.addEventListener('fullscreenchange',onFs); document.addEventListener('webkitfullscreenchange',onFs);
 
-  /* 4) T-code 미니 페이지 모달 */
+  /* T-code 모달 */
   const TCODES={
     SE11:{ badge:'복습', sub:'ABAP Dictionary (DDIC) — 데이터 정의 도구',
       body:`
@@ -467,7 +601,79 @@ body.is-fullscreen .main{max-width:none;}
   tmodal.querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click',closeTcode));
   document.addEventListener('keydown',e=>{ if(e.key==='Escape' && !tmodal.hidden) closeTcode(); });
 
-  /* 5/6) 우측 여정 — 스크롤 위치 표시(현재/지나옴) + 클릭 점프 */
+  /* (8) 체험 슬롯 — Domain 만들기 시뮬레이션 */
+  (function(){
+    const nameEl=document.getElementById('tName'), typeEl=document.getElementById('tType'), lenEl=document.getElementById('tLen');
+    const fixedEl=document.getElementById('tFixed'), fixedWrap=document.getElementById('tFixedWrap'), fixedVals=document.getElementById('tFixedVals');
+    const preview=document.getElementById('tPreview'), status=document.getElementById('tStatus');
+    const btn=a=>document.querySelector(`.try__actions [data-act="${a}"]`);
+    let saved=false, checked=false, active=false;
+    function render(){
+      const fx=fixedEl.checked?(fixedVals.value.trim()||'—'):'(없음)';
+      const stateTxt = active?'🟢 활성 (사용 가능)' : (saved?'● 비활성 (작성 중)':'· 미저장');
+      preview.innerHTML=`
+        <div class="row"><span class="k">Domain</span><span>${(nameEl.value||'—').toUpperCase()}</span></div>
+        <div class="row"><span class="k">Data Type</span><span>${typeEl.value}</span></div>
+        <div class="row"><span class="k">Length</span><span>${lenEl.value||'0'}</span></div>
+        <div class="row"><span class="k">Fixed Value</span><span>${fx}</span></div>
+        <div class="state ${active?'on':'off'}">상태: ${stateTxt}</div>`;
+    }
+    function setStatus(msg,cls){ status.textContent=msg; status.className='try__status'+(cls?' '+cls:''); }
+    function changed(){ // 입력을 바꾸면 활성/검사 상태가 풀린다(실제 DDIC와 동일)
+      if(saved||checked||active){ saved=checked=active=false; btn('check').disabled=true; btn('activate').disabled=true; setStatus('정의를 바꿨어요. 다시 💾 저장부터 시작하세요.'); }
+      render();
+    }
+    [nameEl,typeEl,lenEl,fixedVals].forEach(el=>el.addEventListener('input',changed));
+    fixedEl.addEventListener('change',()=>{ fixedWrap.style.display=fixedEl.checked?'flex':'none'; changed(); });
+    btn('save').addEventListener('click',()=>{ saved=true; checked=false; active=false; btn('check').disabled=false; btn('activate').disabled=false; render(); setStatus('💾 저장됨 — 하지만 아직 "작성 중"이라 다른 객체는 이 Domain을 쓸 수 없어요. 🔍 검사 후 🔥 활성화까지 해야 합니다.'); });
+    btn('check').addEventListener('click',()=>{
+      if(!saved) return;
+      const len=parseInt(lenEl.value,10);
+      if(!(len>=1)){ setStatus('⚠️ 검사 실패: Length는 1 이상이어야 해요.','warn'); return; }
+      if(fixedEl.checked && !fixedVals.value.trim()){ setStatus('⚠️ 검사 실패: Fixed Value를 켰다면 허용값을 적어야 해요(예: A,B,C).','warn'); return; }
+      checked=true; setStatus('🔍 검사 통과 — 문법·길이 OK. 이제 🔥 활성화하면 끝!');
+    });
+    btn('activate').addEventListener('click',()=>{
+      if(!saved){ setStatus('먼저 💾 저장부터 하세요.','warn'); return; }
+      if(!checked){ setStatus('🔍 검사를 먼저 통과하는 걸 권장해요(저장→검사→활성화).','warn'); return; }
+      active=true; render(); setStatus('🎉 활성화 완료! 이제 Data Element가 이 Domain을 가져다 쓸 수 있어요. ("왜 안 보이지?"를 피하는 마지막 단계!)','ok');
+    });
+    btn('reset').addEventListener('click',()=>{ saved=checked=active=false; btn('check').disabled=true; btn('activate').disabled=true; nameEl.value='ZHR_STATUS'; typeEl.value='CHAR'; lenEl.value='1'; fixedEl.checked=false; fixedWrap.style.display='none'; fixedVals.value=''; render(); setStatus('초기화했어요. 값을 정하고 💾 저장을 눌러 다시 해보세요.'); });
+    render();
+  })();
+
+  /* (10) 능동 회수 — 미니 퀴즈 */
+  (function(){
+    const QUIZ=[
+      {p:"Domain이 정하는 것은 무엇인가요?", o:["주문 상태 같은 업무 의미","값의 기술 규격(타입·길이·허용값)","화면에 보일 라벨 텍스트","사용자 권한"], a:1, e:"Domain은 '값의 재질'(타입·길이·허용값)을 정합니다. 업무 의미·라벨은 다음 단계인 Data Element의 몫이에요."},
+      {p:"Domain을 저장만 하고 활성화를 안 하면?", o:["바로 다른 객체가 사용 가능","아직 '작성 중'이라 다른 객체가 쓸 수 없음","자동으로 삭제됨","저장이 거부됨"], a:1, e:"활성화(Activate)까지 끝나야 다른 객체가 이 Domain을 가져다 씁니다. 저장 ≠ 활성화!"},
+      {p:"허용값을 A/B/C로만 받게 제한하는 설정은?", o:["Output Length","Value Table","Fixed Value","Data Type"], a:2, e:"Fixed Value가 허용값을 고정 목록으로 제한합니다. 작고 안정적인 코드 목록에 적합해요."}
+    ];
+    const quizEl=document.getElementById('quiz'), scoreEl=document.getElementById('quizScore');
+    let answered=0, correct=0;
+    QUIZ.forEach((q,qi)=>{
+      const card=document.createElement('div'); card.className='q';
+      card.innerHTML=`<p class="q__p">Q${qi+1}. ${q.p}</p><div class="q__opts"></div><p class="q__exp">💡 ${q.e}</p>`;
+      const opts=card.querySelector('.q__opts');
+      q.o.forEach((opt,oi)=>{
+        const b=document.createElement('button'); b.className='opt'; b.textContent=opt;
+        b.addEventListener('click',()=>{
+          if(card.classList.contains('answered')) return;
+          card.classList.add('answered');
+          const isRight=oi===q.a;
+          b.classList.add(isRight?'correct':'wrong');
+          if(!isRight) opts.children[q.a].classList.add('correct');
+          [...opts.children].forEach(x=>x.disabled=true);
+          answered++; if(isRight) correct++;
+          scoreEl.textContent=`${correct} / ${QUIZ.length} 정답`+(answered===QUIZ.length?(correct===QUIZ.length?' 🎉 완벽해요!':' — 해설을 한 번 더 읽어볼까요?'):'');
+        });
+        opts.appendChild(b);
+      });
+      quizEl.appendChild(card);
+    });
+  })();
+
+  /* 우측 여정 — 스크롤 위치(현재/지나옴) + 클릭 점프 */
   const steps=[...document.querySelectorAll('.step')];
   const secs=steps.map(s=>document.getElementById(s.dataset.go));
   const stepsEl=document.getElementById('steps');
@@ -479,12 +685,12 @@ body.is-fullscreen .main{max-width:none;}
     stepsEl.style.setProperty('--progress',pct+'%');
   }
 
-  /* 읽기 진행률 바 */
+  /* 읽기 진행률 */
   const rp=document.querySelector('.read-progress>i');
   function onScroll(){ const h=document.documentElement.scrollHeight-innerHeight; if(rp) rp.style.width=(h>0?Math.min(100,scrollY/h*100):0)+'%'; spy(); }
   addEventListener('scroll',onScroll,{passive:true}); addEventListener('resize',onScroll); onScroll();
 
-  /* 1) 용어 팝업 — hover=임시, click=고정 */
+  /* 용어 팝업 — hover=임시, click=고정 */
   let pop=null, curTerm=null, pinned=false;
   function place(t){ const r=t.getBoundingClientRect(); pop.style.left=Math.min(r.left+scrollX, scrollX+innerWidth-312)+'px'; pop.style.top=(r.bottom+scrollY+8)+'px'; }
   function build(t){
