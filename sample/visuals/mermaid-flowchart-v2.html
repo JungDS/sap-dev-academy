@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<!--
+  Mermaid 흐름도 v2 — 디자인 시안 3종 (standalone)
+  ────────────────────────────────────────────────────────────
+  v1의 각지고 밋밋한 노드를 개선: 둥근 카드 + 역할 배지 + 제목 + 설명 + 그림자 + 곡선 엣지.
+  · A안: 배지 카드(흰 카드 + 컬러 외곽선 + 알약 배지)
+  · B안: 파스텔 채움(역할색 배경 카드)
+  · C안: 플로팅 카드(헤어라인 + 큰 소프트 그림자 + 텍스트형 배지)
+  같은 그래프(노드/엣지)를 공유하고 classDef + 스코프 CSS만 달리해 3종을 만듭니다.
+  ⚠️ 외부 의존성: Mermaid CDN 1줄. HTML 라벨을 쓰므로 securityLevel:"loose" 필요.
+-->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mermaid 흐름도 v2 (디자인 시안) · Sample</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+:root{--bg:#f6f7fb;--surface:#fff;--ink:#1c2233;--ink-soft:#5b6478;--line:#e6e8ef;--brand:#3b5bdb;--accent:#0ca678;--radius:14px;--shadow:0 1px 2px rgba(20,28,51,.04),0 8px 24px rgba(20,28,51,.06);--font:-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic",Roboto,sans-serif;}
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.65;}
+.topbar{position:sticky;top:0;z-index:20;border-bottom:1px solid var(--line);background:var(--surface);}
+.topbar__inner{max-width:1080px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:12px;font-weight:800;}
+.brand__mark{width:28px;height:28px;border-radius:7px;background:var(--brand);color:#fff;display:grid;place-items:center;}
+.wrap{max-width:900px;margin:28px auto 80px;padding:0 24px;}
+.eyebrow{color:var(--brand);font-weight:800;font-size:.82rem;letter-spacing:.05em;text-transform:uppercase;}
+h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 8px;}
+.fixes{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 0;}
+.fixes span{font-size:.78rem;font-weight:700;color:#0b7250;background:#eafaf3;border:1px solid #bfead7;border-radius:999px;padding:4px 11px;}
+
+.variant{margin:32px 0;}
+.variant__tag{display:flex;align-items:center;gap:10px;margin:0 0 6px;}
+.variant__badge{font-weight:800;color:#fff;background:var(--brand);border-radius:8px;padding:4px 11px;font-size:.86rem;}
+.variant__title{font-weight:800;font-size:1.06rem;}
+.variant__note{color:var(--ink-soft);font-size:.9rem;margin:0 0 12px;}
+.viz-card{padding:18px;border:1px solid var(--line);border-radius:16px;background:#fff;box-shadow:var(--shadow);overflow-x:auto;}
+.vz-b .viz-card{background:#fbfcff;}
+.vz-c .viz-card{background:#f8fafc;}
+.mermaid{display:flex;justify-content:center;min-height:60px;}
+.mermaid svg{max-width:100%;height:auto;}
+
+/* ===== 노드 라벨(HTML) 공통: 배지 + 제목 + 설명 ===== */
+.nw{display:flex;flex-direction:column;align-items:center;gap:5px;padding:7px 12px;font-family:var(--font);line-height:1.3;}
+.nw b{font-size:15px;font-weight:800;color:#1c2233;}
+.nd{font-size:12px;color:#64748b;font-weight:500;}
+.nb{font-size:11px;font-weight:800;border-radius:999px;padding:3px 11px;letter-spacing:.02em;}
+.r-prep{background:#fef3c7;color:#b45309;}
+.r-screen{background:#dbeafe;color:#1d4ed8;}
+.r-check{background:#ffe4e6;color:#be123c;}
+.r-main{background:#d1fae5;color:#0b7250;}
+.r-out{background:#ffedd5;color:#c2410c;}
+
+/* ===== 엣지(전 시안 공통): 부드러운 진회색 + 둥근 화살표 ===== */
+.mermaid svg .edgePaths .path,.mermaid svg .flowchart-link{stroke:#64748b !important;stroke-width:2px !important;}
+.mermaid svg .marker,.mermaid svg marker path{fill:#64748b !important;stroke:#64748b !important;}
+.mermaid svg .edgeLabel{background:transparent !important;}
+.mermaid svg .edgeLabel rect{fill:transparent !important;}
+.mermaid svg .edgeLabel foreignObject div,.mermaid svg .edgeLabel span,.mermaid svg .edgeLabel p{
+  background:#eef2f7 !important;border-radius:6px !important;padding:2px 9px !important;color:#334155 !important;font-weight:700 !important;font-size:12px !important;font-family:var(--font) !important;}
+
+/* ===== A안: 배지 카드 (흰 카드 + 컬러 외곽선 + 알약 배지 + 그림자) ===== */
+.vz-a svg .node rect{rx:14px !important;ry:14px !important;
+  filter:drop-shadow(0 2px 0 rgba(15,23,42,.05)) drop-shadow(0 8px 16px rgba(15,23,42,.07));}
+
+/* ===== B안: 파스텔 채움 (역할색 배경 + 더 둥글게) ===== */
+.vz-b svg .node rect{rx:18px !important;ry:18px !important;
+  filter:drop-shadow(0 6px 16px rgba(15,23,42,.10));}
+
+/* ===== C안: 플로팅 카드 (헤어라인 + 큰 소프트 그림자 + 텍스트형 배지) ===== */
+.vz-c svg .node rect{rx:16px !important;ry:16px !important;stroke:#e8ecf3 !important;stroke-width:1px !important;
+  filter:drop-shadow(0 10px 24px rgba(15,23,42,.13));}
+.vz-c .nb{background:none !important;padding:0 !important;font-size:10px;text-transform:uppercase;letter-spacing:.08em;}
+</style>
+</head>
+<body>
+  <header class="topbar"><div class="topbar__inner"><span class="brand__mark">A</span>SAP Developer Academy</div></header>
+  <main class="wrap">
+    <p class="eyebrow">Visuals · Mermaid 흐름도 v2 (디자인 시안)</p>
+    <h1>이벤트 라이프사이클 흐름도 — 디자인 3종</h1>
+    <p class="lead">v1의 각진 노드를 개선해, 역할 배지·제목·설명을 담은 둥근 카드 + 곡선 엣지로 다시 그렸습니다. 마음에 드는 방향을 골라 주세요.</p>
+    <div class="fixes"><span>✓ 둥근 카드</span><span>✓ 역할 배지</span><span>✓ 제목+설명</span><span>✓ 그림자</span><span>✓ 곡선 엣지</span></div>
+
+    <section class="variant vz-a">
+      <div class="variant__tag"><span class="variant__badge">A안</span><span class="variant__title">배지 카드 (참고본 충실)</span></div>
+      <p class="variant__note">흰 카드 + 역할별 컬러 외곽선 + 알약 배지 + 입체 그림자. 원하셨던 sapui5 디자인에 가장 가깝습니다.</p>
+      <div class="viz-card"><div class="mermaid" id="mm-a"></div></div>
+    </section>
+
+    <section class="variant vz-b">
+      <div class="variant__tag"><span class="variant__badge">B안</span><span class="variant__title">파스텔 채움</span></div>
+      <p class="variant__note">노드를 역할색 파스텔 배경으로 채워 더 따뜻하고 한눈에 구분됩니다. 모서리도 더 둥글게.</p>
+      <div class="viz-card"><div class="mermaid" id="mm-b"></div></div>
+    </section>
+
+    <section class="variant vz-c">
+      <div class="variant__tag"><span class="variant__badge">C안</span><span class="variant__title">플로팅 카드 (미니멀)</span></div>
+      <p class="variant__note">흰 카드 + 헤어라인 테두리 + 큰 소프트 그림자로 떠 있는 느낌. 배지는 알약 대신 컬러 텍스트로 절제. Notion/Linear 톤.</p>
+      <div class="viz-card"><div class="mermaid" id="mm-c"></div></div>
+    </section>
+  </main>
+
+<script>
+// ===== 컴포넌트 JS — 공유 그래프 + 시안별 classDef 주입 후 Mermaid 렌더 =====
+(function(){
+  if(!window.mermaid) return;
+
+  // 노드 라벨은 HTML(배지+제목+설명). 그래프 본문은 3 시안 공통.
+  const GRAPH = [
+    'flowchart TD',
+    '  Start(["<b>Program Starts</b>"]):::term',
+    '  INIT["<div class=\'nw\'><span class=\'nb r-prep\'>준비</span><b>INITIALIZATION</b><span class=\'nd\'>화면 기본값 세팅</span></div>"]:::prep',
+    '  Screen["<div class=\'nw\'><span class=\'nb r-screen\'>화면</span><b>Selection Screen</b><span class=\'nd\'>⏳ 사용자 입력 대기</span></div>"]:::screen',
+    '  ASS["<div class=\'nw\'><span class=\'nb r-check\'>검증</span><b>AT SELECTION-SCREEN</b><span class=\'nd\'>입력값 유효성 검사</span></div>"]:::check',
+    '  SOS["<div class=\'nw\'><span class=\'nb r-main\'>메인</span><b>START-OF-SELECTION</b><span class=\'nd\'>DB 조회·가공</span></div>"]:::main',
+    '  EOS["<div class=\'nw\'><span class=\'nb r-out\'>출력</span><b>END-OF-SELECTION</b><span class=\'nd\'>결과 출력·마감</span></div>"]:::out',
+    '  Ends(["<b>Program Ends</b>"]):::term',
+    '  Start --> INIT --> Screen',
+    '  Screen -->|입력 발생| ASS',
+    '  ASS -.->|에러 시 복귀| Screen',
+    '  ASS -->|통과 + F8| SOS',
+    '  SOS --> EOS --> Ends'
+  ].join('\n');
+
+  // 시안별 노드 채움/외곽선 (구조·그림자는 CSS가 담당)
+  const CLASSDEFS = {
+    a: [
+      'classDef term fill:#eef2ff,stroke:#94a3b8,stroke-width:2px,color:#1c2233;',
+      'classDef prep fill:#ffffff,stroke:#f59e0b,stroke-width:2px;',
+      'classDef screen fill:#ffffff,stroke:#3b5bdb,stroke-width:2.5px;',
+      'classDef check fill:#ffffff,stroke:#e11d48,stroke-width:2px;',
+      'classDef main fill:#ffffff,stroke:#10b981,stroke-width:2px;',
+      'classDef out fill:#ffffff,stroke:#fb923c,stroke-width:2px;'
+    ].join('\n'),
+    b: [
+      'classDef term fill:#eef2ff,stroke:#cbd5e1,color:#1c2233;',
+      'classDef prep fill:#fff8ec,stroke:#f59e0b,stroke-width:1.5px;',
+      'classDef screen fill:#eaf1ff,stroke:#3b5bdb,stroke-width:1.5px;',
+      'classDef check fill:#ffeef2,stroke:#e11d48,stroke-width:1.5px;',
+      'classDef main fill:#e7faf1,stroke:#10b981,stroke-width:1.5px;',
+      'classDef out fill:#fff2e6,stroke:#fb923c,stroke-width:1.5px;'
+    ].join('\n'),
+    c: [
+      'classDef term fill:#ffffff,stroke:#e8ecf3,color:#1c2233;',
+      'classDef prep fill:#ffffff,stroke:#e8ecf3;',
+      'classDef screen fill:#ffffff,stroke:#e8ecf3;',
+      'classDef check fill:#ffffff,stroke:#e8ecf3;',
+      'classDef main fill:#ffffff,stroke:#e8ecf3;',
+      'classDef out fill:#ffffff,stroke:#e8ecf3;'
+    ].join('\n')
+  };
+
+  ['a','b','c'].forEach(k=>{
+    const el = document.getElementById('mm-'+k);
+    if(el) el.textContent = GRAPH + '\n' + CLASSDEFS[k];
+  });
+
+  mermaid.initialize({
+    startOnLoad:false, securityLevel:'loose', theme:'base',
+    themeVariables:{ fontFamily:'inherit' },
+    flowchart:{ curve:'basis', htmlLabels:true, nodeSpacing:48, rankSpacing:46, padding:8 }
+  });
+  mermaid.run({ nodes: document.querySelectorAll('.mermaid') });
+})();
+</script>
+</body>
+</html>
