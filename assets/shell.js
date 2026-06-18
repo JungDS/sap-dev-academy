@@ -264,10 +264,23 @@
     doc.addEventListener("keydown", function (e) { if (e.key === "Escape" && !modal.hidden) close(); });
   }
 
+  /* ===== 임베드 iframe 자동 높이 (컴포넌트가 postMessage 로 높이 전송) ===== */
+  function embedAutoHeight() {
+    window.addEventListener("message", function (e) {
+      var d = e.data;
+      if (!d || d.sda !== "embed-height" || !d.h) return;
+      var frames = qa(".embed__frame");
+      for (var i = 0; i < frames.length; i++) {
+        if (frames[i].contentWindow === e.source) { frames[i].style.height = d.h + "px"; break; }
+      }
+    });
+  }
+
   /* ===== init ===== */
   settings();
   buildJourney();
   scrollInit();
+  embedAutoHeight();
   var needTcode = !!q(".tcode-label");
   Promise.all([
     getJSON("curriculum.json").catch(function () { return null; }),

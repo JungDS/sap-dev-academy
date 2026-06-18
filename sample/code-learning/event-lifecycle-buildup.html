@@ -3,9 +3,12 @@
   ABAP 리포트 이벤트 실행 순서 & 흐름도 — 점진적 빌드업 (standalone, ::embed 용)
   ────────────────────────────────────────────────────────────
   탭 5개: 이벤트 블록이 하나도 없는 1단계 → 전체 생명주기 5단계까지 누적.
-  각 탭 = 좌우 2분할: 왼쪽 Mermaid 흐름도 / 오른쪽 ABAP 코드 에디터 목업(문법 색상).
-  코드를 더할수록 흐름이 어떻게 늘어나는지 좌우 대조로 학습.
-  프로젝트 블루/그린 톤. ⚠️ 외부 의존성: Mermaid CDN 1줄.
+  각 탭 = 좌우 2분할: 좌 Mermaid 흐름도(확정 샘플 visuals/mermaid-flowchart.html 의 배지 카드 양식) /
+  우 ABAP 코드 에디터(structure/code-copy-block.html 양식 + 추가 줄 강조).
+  · 코드/흐름 패널은 grid stretch로 더 높은 쪽(=흐름)에 높이 맞춤, 에디터 서식은 끝까지 이어짐.
+  · 부모(레슨)에 높이를 postMessage → iframe 자동 높이(스크롤/여백 없음).
+  · AT SELECTION-SCREEN 게이트: 에러/ F8 외 입력 → 화면 복귀, "에러 없음 + F8"만 본 처리로.
+  ⚠️ 외부 의존성: Mermaid CDN 1줄.
 -->
 <html lang="ko">
 <head>
@@ -17,7 +20,7 @@
 :root{
   --bg:#f6f7fb;--surface:#fff;--ink:#1c2233;--ink-soft:#5b6478;--line:#e6e8ef;
   --brand:#3b5bdb;--accent:#0ca678;--soon:#94a0b8;
-  --mono:'D2Coding',Consolas,Monaco,monospace;
+  --mono:'D2Coding',Consolas,Monaco,'Courier New',monospace;
   --font:-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic",Roboto,sans-serif;
 }
 *{box-sizing:border-box;} html,body{margin:0;}
@@ -36,36 +39,58 @@ body{font-family:var(--font);color:var(--ink);background:transparent;line-height
 .tab__n{display:grid;place-items:center;width:18px;height:18px;border-radius:6px;background:rgba(255,255,255,.25);font-size:.7rem;}
 .tab:not(.on) .tab__n{background:rgba(59,91,219,.1);color:var(--brand);}
 
-/* 분할 */
+/* 분할 — grid stretch로 양쪽 패널 높이를 더 높은 쪽(흐름)에 맞춤 */
 .panel{display:none;}
 .panel.on{display:block;}
 .split{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:stretch;}
 .pane{border:1px solid var(--line);border-radius:13px;background:var(--surface);overflow:hidden;display:flex;flex-direction:column;min-width:0;}
-.pane__hd{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--line);font-size:.78rem;font-weight:800;color:var(--ink-soft);background:#fafbfe;}
-.pane__hd .dot{width:9px;height:9px;border-radius:50%;}
-.dot--flow{background:var(--accent);} .dot--code{background:var(--brand);}
-.flowpane{min-height:300px;display:grid;place-items:center;padding:10px;overflow:auto;}
-.flowpane svg{max-width:100%;height:auto;}
+.pane__hd{display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid var(--line);font-size:.78rem;font-weight:800;color:var(--ink-soft);background:#fafbfe;}
+.pane__hd .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);}
+.flowpane{flex:1;display:grid;place-items:center;padding:12px;overflow-x:auto;}
 .flowpane .loading{color:var(--soon);font-size:.85rem;}
+.flowpane svg{max-width:100%;height:auto;}
 
-/* 코드 에디터 목업 */
-.codewrap{overflow:auto;max-height:430px;}
-.code{display:grid;grid-template-columns:auto 1fr;font-family:var(--mono);font-size:.82rem;line-height:1.65;}
-.code .gut{ text-align:right;color:#aeb6c7;background:#f7f8fc;padding:10px 10px 10px 12px;user-select:none;border-right:1px solid var(--line);}
-.code .src{padding:10px 14px;white-space:pre;overflow-x:auto;}
-.code .ln{display:block;}
-.code .ln.add{background:rgba(12,166,120,.10);box-shadow:inset 3px 0 0 var(--accent);}
-.gut .gn{display:block;}
-.gut .gn.add{color:var(--accent);font-weight:800;}
-/* ABAP 토큰 */
-.k{color:#0a4ea3;font-weight:700;} .s{color:#1a7f37;} .c{color:#6a737d;font-style:italic;} .n{color:#9a3b00;}
+/* ===== Mermaid 배지 카드 (확정 샘플 양식) ===== */
+.nw{display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 11px;font-family:var(--font);line-height:1.3;}
+.nw b{font-size:13.5px;font-weight:800;color:#1c2233;}
+.nd{font-size:11px;color:#64748b;font-weight:500;}
+.nb{font-size:10px;font-weight:800;border-radius:999px;padding:2px 9px;letter-spacing:.02em;}
+.r-load{background:#ede9fe;color:#6d28d9;} .r-prep{background:#fef3c7;color:#b45309;}
+.r-screen{background:#dbeafe;color:#1d4ed8;} .r-check{background:#ffe4e6;color:#be123c;}
+.r-main{background:#d1fae5;color:#0b7250;} .r-out{background:#ffedd5;color:#c2410c;}
+.tnode{display:inline-block;white-space:nowrap;padding:0 10px;font-weight:800;font-size:14px;color:#1c2233;}
+.flowpane svg .node foreignObject{overflow:visible;}
+.flowpane svg .node rect{rx:13px !important;ry:13px !important;filter:drop-shadow(0 2px 0 rgba(15,23,42,.05)) drop-shadow(0 7px 14px rgba(15,23,42,.07));}
+.flowpane svg .edgePaths .path,.flowpane svg .flowchart-link{stroke:#64748b !important;stroke-width:2px !important;}
+.flowpane svg .marker,.flowpane svg marker path{fill:#64748b !important;stroke:#64748b !important;}
+.flowpane svg .edgeLabel{background:transparent !important;} .flowpane svg .edgeLabel rect{fill:transparent !important;}
+.flowpane svg .edgeLabel foreignObject div,.flowpane svg .edgeLabel span,.flowpane svg .edgeLabel p{
+  background:#eef2f7 !important;border-radius:6px !important;padding:2px 8px !important;color:#334155 !important;font-weight:700 !important;font-size:11px !important;font-family:var(--font) !important;}
 
-.legend{margin-top:10px;font-size:.78rem;color:var(--ink-soft);display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;}
-.legend .sw{display:inline-block;width:11px;height:11px;border-radius:3px;border:1px solid rgba(0,0,0,.1);vertical-align:-1px;margin-right:4px;}
-.note{margin-top:10px;border-left:3px solid var(--accent);background:rgba(12,166,120,.06);border-radius:0 9px 9px 0;padding:9px 13px;font-size:.84rem;color:#234c3e;}
+/* ===== 코드 에디터 (code-copy-block 양식 + 끝까지 이어지는 서식) ===== */
+.ed{flex:1;display:flex;flex-direction:column;min-height:0;background:#f6f8fa;font-family:var(--mono);font-size:13px;}
+.ed__hd{background:#343e6a;padding:8px 12px;display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.ed__dots{display:flex;gap:6px;} .ed__dots i{width:11px;height:11px;border-radius:50%;display:inline-block;}
+.ed__dots .r{background:#ff5f56;} .ed__dots .y{background:#ffbd2e;} .ed__dots .g{background:#27c93f;}
+.ed__title{margin-left:4px;color:#ffa03b;font-weight:bold;font-size:11.5px;letter-spacing:1px;}
+.copy-btn{margin-left:auto;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.35);border-radius:5px;
+  padding:3px 9px;font-size:11px;cursor:pointer;color:#fff;font-weight:bold;font-family:var(--font);transition:all .2s;}
+.copy-btn:hover{background:rgba(255,255,255,.24);} .copy-btn.is-copied{color:#27c93f;border-color:#27c93f;background:rgba(39,201,63,.15);}
+.ed__body{flex:1;display:flex;align-items:stretch;min-height:0;}            /* 두 칼럼이 패널 끝까지 늘어남 */
+.gut{background:#f0f0e1;color:#aeb6c7;padding:10px 9px 10px 12px;text-align:right;border-right:1px solid #d9dac8;
+  user-select:none;line-height:1.65;flex-shrink:0;}
+.gut .gn{display:block;} .gut .gn.add{color:var(--accent);font-weight:800;background:rgba(12,166,120,.12);}
+.src{flex:1;padding:10px 14px;line-height:1.65;color:#333;overflow-x:auto;}
+.src .ln{display:block;white-space:pre;}
+.src .ln.add{background:rgba(12,166,120,.10);box-shadow:inset 3px 0 0 var(--accent);margin:0 -14px;padding:0 14px;}
+.tok-kw{color:#005cc5;font-weight:700;} .tok-str{color:#22863a;} .tok-num{color:#9a3b00;} .tok-com{color:#999;font-style:italic;}
+
+.legend{margin-top:11px;font-size:.78rem;color:var(--ink-soft);display:flex;flex-wrap:wrap;gap:6px 13px;align-items:center;}
+.legend .sw{display:inline-block;width:11px;height:11px;border-radius:3px;border:1px solid rgba(0,0,0,.12);vertical-align:-1px;margin-right:4px;}
+.note{margin-top:11px;border-left:3px solid var(--accent);background:rgba(12,166,120,.06);border-radius:0 9px 9px 0;padding:9px 13px;font-size:.84rem;color:#234c3e;}
 .note b{color:#0b7250;}
 
-@media(max-width:760px){ .split{grid-template-columns:1fr;} .flowpane{min-height:220px;} }
+@media(max-width:760px){ .split{grid-template-columns:1fr;} }
 </style>
 </head>
 <body>
@@ -82,43 +107,63 @@ body{font-family:var(--font);color:var(--ink);background:transparent;line-height
 
 <script>
 (function(){
-  /* ===== ABAP 문법 하이라이터 ===== */
+  /* ===== ABAP 문법 하이라이터 (tok-* / code-copy-block 색) ===== */
   var KW = new Set(("REPORT PARAMETERS DATA TYPE TYPES VALUE CONSTANTS INITIALIZATION LOAD-OF-PROGRAM " +
     "START-OF-SELECTION END-OF-SELECTION AT SELECTION-SCREEN OUTPUT WRITE IF ELSEIF ELSE ENDIF " +
     "LOOP ENDLOOP MODIFY SCREEN MESSAGE CLEAR").split(/\s+/));
   function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
   function hl(line){
-    if(/^\s*\*/.test(line)) return '<span class="c">'+esc(line)+'</span>';
+    if(/^\s*\*/.test(line)) return '<span class="tok-com">'+esc(line)+'</span>';
     var out='', re=/('[^']*'?)|(`[^`]*`?)|(".*$)|(\b\d+\b)|([A-Za-z_][A-Za-z0-9_\-]*)|([^A-Za-z0-9_'`"\-]+)/g, m;
     while((m=re.exec(line))!==null){
-      if(m[1]||m[2]) out+='<span class="s">'+esc(m[1]||m[2])+'</span>';
-      else if(m[3]) out+='<span class="c">'+esc(m[3])+'</span>';
-      else if(m[4]) out+='<span class="n">'+esc(m[4])+'</span>';
-      else if(m[5]) out+= KW.has(m[5].toUpperCase()) ? '<span class="k">'+esc(m[5])+'</span>' : esc(m[5]);
+      if(m[1]||m[2]) out+='<span class="tok-str">'+esc(m[1]||m[2])+'</span>';
+      else if(m[3]) out+='<span class="tok-com">'+esc(m[3])+'</span>';
+      else if(m[4]) out+='<span class="tok-num">'+esc(m[4])+'</span>';
+      else if(m[5]) out+= KW.has(m[5].toUpperCase()) ? '<span class="tok-kw">'+esc(m[5])+'</span>' : esc(m[5]);
       else out+=esc(m[0]);
     }
     return out;
   }
 
-  /* ===== 공통 classDef (역할별 색) ===== */
+  /* ===== 노드 라벨 헬퍼 ===== */
+  function N(role, badge, title, desc){ return '"<div class=\'nw\'><span class=\'nb r-'+role+'\'>'+badge+'</span><b>'+title+'</b><span class=\'nd\'>'+desc+'</span></div>"'; }
+  var START = 'S(["<span class=\'tnode\'>▶ Program Starts</span>"]):::term';
+  var END   = 'E(["<span class=\'tnode\'>■ Program Ends</span>"]):::term';
   var CLASSDEF = [
-    'classDef term fill:#eef1f6,stroke:#94a0b8,color:#1c2233;',
-    'classDef load fill:#f3f0fb,stroke:#6d28d9,color:#1c2233;',
-    'classDef prep fill:#eef4ff,stroke:#3b5bdb,color:#1c2233,stroke-width:2px;',
-    'classDef screen fill:#fff7ea,stroke:#d97706,color:#1c2233;',
-    'classDef check fill:#ffeef1,stroke:#e11d48,color:#1c2233,stroke-width:2px;',
-    'classDef main fill:#e9faf2,stroke:#0ca678,color:#1c2233,stroke-width:2px;',
-    'classDef out fill:#fdeef6,stroke:#be185d,color:#1c2233;'
+    'classDef term fill:#eef2ff,stroke:#94a3b8,stroke-width:2px,color:#1c2233;',
+    'classDef load fill:#ffffff,stroke:#7c3aed,stroke-width:2px;',
+    'classDef prep fill:#ffffff,stroke:#f59e0b,stroke-width:2px;',
+    'classDef screen fill:#ffffff,stroke:#3b5bdb,stroke-width:2.5px;',
+    'classDef check fill:#ffffff,stroke:#e11d48,stroke-width:2px;',
+    'classDef main fill:#ffffff,stroke:#10b981,stroke-width:2px;',
+    'classDef out fill:#ffffff,stroke:#fb923c,stroke-width:2px;'
   ].join('\n');
 
-  /* ===== 5단계 데이터 (graph + code lines{t,add}) ===== */
+  /* 노드 정의(재사용) */
+  var nLOAD = 'LOAD['+N('load','로드','LOAD-OF-PROGRAM','메모리 적재 1회')+']:::load';
+  var nINIT = 'INIT['+N('prep','준비','INITIALIZATION','화면 기본값 세팅')+']:::prep';
+  var nPBO  = 'PBO['+N('screen','화면','AT SELECTION-SCREEN OUTPUT','(PBO) 화면 그리기 직전')+']:::screen';
+  var nSC   = 'SC['+N('screen','화면','Selection Screen','⏳ 사용자 입력 대기')+']:::screen';
+  var nASS  = 'ASS['+N('check','검증','AT SELECTION-SCREEN','(PAI) 입력값 유효성 검사')+']:::check';
+  var nSOS  = 'SOS['+N('main','메인','START-OF-SELECTION','DB 조회·본 처리')+']:::main';
+  var nSOS1 = 'SOS['+N('main','메인','START-OF-SELECTION','(암묵적) WRITE 등 본문')+']:::main';
+  var nEOS  = 'EOS['+N('out','출력','END-OF-SELECTION','결과 출력·마감')+']:::out';
+
+  /* 검증 게이트(엄격): 사용자 입력 → 검증, 에러/ F8 외 입력 → 복귀, 에러없음+F8 → 진행 */
+  function gate(backTo){
+    return [
+      '  SC -->|"사용자 입력 발생"| ASS',
+      '  ASS -.->|"에러 발생 시 (복귀)"| '+backTo,
+      '  ASS -.->|"에러 없음·F8 외 입력"| '+backTo,
+      '  ASS -->|"에러 없음 + F8 실행"| SOS'
+    ].join('\n');
+  }
+
+  /* ===== 5단계 데이터 ===== */
   var L = function(t,add){ return {t:t, add:!!add}; };
   var STAGES = [
     { label:'이벤트 구문 생략 (암묵적 실행)',
-      graph:[
-        'flowchart TD',
-        '  S(["▶ Program Starts"]):::term --> SOS["본문 (암묵적 START-OF-SELECTION)<br/>WRITE 등"]:::main --> E(["■ Program Ends"]):::term'
-      ].join('\n'),
+      graph:['flowchart TD','  '+START,'  '+nSOS1,'  '+END,'  S --> SOS --> E'].join('\n'),
       code:[ L('REPORT zdemo_events.'), L(''),
         L('" 이벤트 키워드가 없으면 모든 문장은',true),
         L('" 자동으로 START-OF-SELECTION 에 묶인다.',true),
@@ -127,25 +172,18 @@ body{font-family:var(--font);color:var(--ink);background:transparent;line-height
       note:'이벤트 블록을 <b>꼭 써야 하는 게 아니다.</b> 한 줄짜리 프로그램은 이렇게 키워드 없이 끝난다.' },
 
     { label:'화면 초기화 추가 (INITIALIZATION)',
-      graph:[
-        'flowchart TD',
-        '  S(["▶ Program Starts"]):::term --> INIT["INITIALIZATION<br/>화면 기본값 세팅"]:::prep',
-        '  INIT --> SC["Selection Screen<br/>입력 대기"]:::screen --> SOS["START-OF-SELECTION<br/>본 처리"]:::main --> E(["■ Program Ends"]):::term'
-      ].join('\n'),
+      graph:['flowchart TD','  '+START,'  '+nINIT,'  '+nSC,'  '+nSOS,'  '+END,
+        '  S --> INIT --> SC -->|"F8 실행"| SOS --> E'].join('\n'),
       code:[ L('REPORT zdemo_events.'), L('PARAMETERS p_date TYPE d.',true), L(''),
         L('INITIALIZATION.            " 화면 뜨기 전 1회',true),
         L('  p_date = sy-datum.       " 기본값',true), L(''),
         L('START-OF-SELECTION.        " 이제 명시적으로',true),
         L('  WRITE: / p_date.') ],
-      note:'화면 기본값이 필요해지면 <b>INITIALIZATION</b> 을 추가한다. 그러면 흐름에 "화면 전 준비" 단계가 생긴다.' },
+      note:'화면 기본값이 필요해지면 <b>INITIALIZATION</b> 을 추가한다. 아직 검증이 없어 F8을 누르면 바로 본 처리로 간다.' },
 
     { label:'자동 로드 & 마감 추가 (메모리/출력)',
-      graph:[
-        'flowchart TD',
-        '  S(["▶ Program Starts"]):::term --> LOAD["LOAD-OF-PROGRAM<br/>메모리 적재 1회"]:::load',
-        '  LOAD --> INIT["INITIALIZATION<br/>화면 기본값"]:::prep --> SC["Selection Screen"]:::screen',
-        '  SC --> SOS["START-OF-SELECTION<br/>본 처리"]:::main --> EOS["END-OF-SELECTION<br/>출력·마감"]:::out --> E(["■ Program Ends"]):::term'
-      ].join('\n'),
+      graph:['flowchart TD','  '+START,'  '+nLOAD,'  '+nINIT,'  '+nSC,'  '+nSOS,'  '+nEOS,'  '+END,
+        '  S --> LOAD --> INIT --> SC -->|"F8 실행"| SOS --> EOS --> E'].join('\n'),
       code:[ L('REPORT zdemo_events.'), L('PARAMETERS p_date TYPE d.'), L(''),
         L('LOAD-OF-PROGRAM.           " 적재 직후 1회',true),
         L('  " (전역 상수 초기화 등)',true), L(''),
@@ -155,16 +193,13 @@ body{font-family:var(--font);color:var(--ink);background:transparent;line-height
         L("  WRITE: / '조회/가공 중...'."), L(''),
         L('END-OF-SELECTION.          " 본 처리 후 마감',true),
         L("  WRITE: / '완료'.",true) ],
-      note:'메모리 준비(<b>LOAD-OF-PROGRAM</b>)와 마감/출력(<b>END-OF-SELECTION</b>)이 흐름의 양 끝에 붙는다.' },
+      note:'메모리 준비(<b>LOAD-OF-PROGRAM</b>)와 마감/출력(<b>END-OF-SELECTION</b>)이 흐름의 양 끝에 붙는다. (아직 검증 없음)' },
 
     { label:'선택 화면 & 입력 검증 추가',
-      graph:[
-        'flowchart TD',
-        '  S(["▶ Program Starts"]):::term --> LOAD["LOAD-OF-PROGRAM"]:::load --> INIT["INITIALIZATION"]:::prep --> SC["Selection Screen"]:::screen',
-        '  SC -->|"입력+실행 (PAI)"| ASS["AT SELECTION-SCREEN<br/>입력 검증"]:::check',
-        '  ASS -.->|"검증 실패 → 복귀"| SC',
-        '  ASS -->|통과| SOS["START-OF-SELECTION<br/>본 처리"]:::main --> EOS["END-OF-SELECTION<br/>출력·마감"]:::out --> E(["■ Program Ends"]):::term'
-      ].join('\n'),
+      graph:['flowchart TD','  '+START,'  '+nLOAD,'  '+nINIT,'  '+nSC,'  '+nASS,'  '+nSOS,'  '+nEOS,'  '+END,
+        '  S --> LOAD --> INIT --> SC',
+        gate('SC'),
+        '  SOS --> EOS --> E'].join('\n'),
       code:[ L('REPORT zdemo_events.'), L('PARAMETERS p_date TYPE d.'), L(''),
         L('LOAD-OF-PROGRAM.'),
         L('INITIALIZATION.'),
@@ -177,17 +212,13 @@ body{font-family:var(--font);color:var(--ink);background:transparent;line-height
         L("  WRITE: / '조회/가공 중...'."), L(''),
         L('END-OF-SELECTION.'),
         L("  WRITE: / '완료'.") ],
-      note:'검증이 필요해지면 <b>AT SELECTION-SCREEN</b> 을 추가한다. <b>점선</b>처럼 실패 시 화면으로 되돌아가고, 통과해야 본 처리로 간다.' },
+      note:'<b>AT SELECTION-SCREEN</b> 추가. 이제 화면에서 <b>F8(실행)</b> 하고 <b>에러가 없을 때만</b> 본 처리로 넘어간다. 에러가 나거나 F8이 아닌 입력(Enter·F4 등)이면 <b>화면으로 되돌아간다.</b>' },
 
     { label:'전체 생명주기 완성 (최종 구조)',
-      graph:[
-        'flowchart TD',
-        '  S(["▶ Program Starts"]):::term --> LOAD["LOAD-OF-PROGRAM"]:::load --> INIT["INITIALIZATION"]:::prep',
-        '  INIT --> PBO["AT SELECTION-SCREEN OUTPUT<br/>(PBO) 화면 그리기 직전"]:::screen --> SC["Selection Screen"]:::screen',
-        '  SC -->|"실행 (PAI)"| ASS["AT SELECTION-SCREEN<br/>입력 검증"]:::check',
-        '  ASS -.->|"실패 → 복귀"| SC',
-        '  ASS -->|통과| SOS["START-OF-SELECTION<br/>본 처리"]:::main --> EOS["END-OF-SELECTION<br/>출력·마감"]:::out --> E(["■ Program Ends"]):::term'
-      ].join('\n'),
+      graph:['flowchart TD','  '+START,'  '+nLOAD,'  '+nINIT,'  '+nPBO,'  '+nSC,'  '+nASS,'  '+nSOS,'  '+nEOS,'  '+END,
+        '  S --> LOAD --> INIT --> PBO --> SC',
+        gate('PBO'),
+        '  SOS --> EOS --> E'].join('\n'),
       code:[ L('REPORT zdemo_events.'), L('PARAMETERS: p_date TYPE d, p_hide TYPE c.',true), L(''),
         L('LOAD-OF-PROGRAM.'),
         L('INITIALIZATION.'),
@@ -206,7 +237,7 @@ body{font-family:var(--font);color:var(--ink);background:transparent;line-height
         L("  WRITE: / '조회/가공 중...'."), L(''),
         L('END-OF-SELECTION.'),
         L("  WRITE: / '완료'.") ],
-      note:'마지막으로 <b>AT SELECTION-SCREEN OUTPUT</b>(PBO)까지 더하면 전체 생명주기가 완성된다. 필요한 이벤트만 골라 쓰면 된다 — 전부 쓸 필요는 없다.' }
+      note:'<b>AT SELECTION-SCREEN OUTPUT</b>(PBO)까지 더하면 전체 생명주기 완성. 화면으로 <b>복귀할 때마다 PBO가 다시 실행</b>돼 화면을 새로 그린다. 필요한 이벤트만 골라 쓰면 된다 — 전부 쓸 필요는 없다.' }
   ];
 
   /* ===== 빌드 ===== */
@@ -217,60 +248,83 @@ body{font-family:var(--font);color:var(--ink);background:transparent;line-height
     tab.innerHTML='<span class="tab__n">'+(i+1)+'</span>'+st.label;
     tabsEl.appendChild(tab);
 
-    var panel=document.createElement('div');
-    panel.className='panel'+(i===0?' on':''); panel.dataset.idx=i;
-    // code rows
     var gut='', src='';
     st.code.forEach(function(ln,k){
       gut+='<span class="gn'+(ln.add?' add':'')+'">'+(k+1)+'</span>';
       src+='<span class="ln'+(ln.add?' add':'')+'">'+(ln.t===''?' ':hl(ln.t))+'</span>';
     });
+    var panel=document.createElement('div');
+    panel.className='panel'+(i===0?' on':''); panel.dataset.idx=i;
     panel.innerHTML=
       '<div class="split">'+
-        '<div class="pane"><div class="pane__hd"><span class="dot dot--flow"></span>실행 흐름도</div>'+
+        '<div class="pane"><div class="pane__hd"><span class="dot"></span>실행 흐름도</div>'+
           '<div class="flowpane" data-graph="'+i+'"><span class="loading">흐름도 그리는 중…</span></div></div>'+
-        '<div class="pane"><div class="pane__hd"><span class="dot dot--code"></span>ABAP 코드 (SE38)</div>'+
-          '<div class="codewrap"><div class="code"><div class="gut">'+gut+'</div><div class="src">'+src+'</div></div></div></div>'+
+        '<div class="pane"><div class="ed">'+
+          '<div class="ed__hd"><span class="ed__dots"><i class="r"></i><i class="y"></i><i class="g"></i></span>'+
+            '<span class="ed__title">ZDEMO_EVENTS · SE38</span><button class="copy-btn" type="button">⧉ 복사</button></div>'+
+          '<div class="ed__body"><div class="gut">'+gut+'</div><div class="src">'+src+'</div></div>'+
+        '</div></div>'+
       '</div>';
     panelsEl.appendChild(panel);
   });
 
-  // 범례 + 노트
   document.getElementById('legend').innerHTML=
-    '<span><span class="sw" style="background:#f3f0fb;border-color:#6d28d9"></span>LOAD</span>'+
-    '<span><span class="sw" style="background:#eef4ff;border-color:#3b5bdb"></span>준비(INIT)</span>'+
-    '<span><span class="sw" style="background:#fff7ea;border-color:#d97706"></span>화면</span>'+
-    '<span><span class="sw" style="background:#ffeef1;border-color:#e11d48"></span>검증</span>'+
-    '<span><span class="sw" style="background:#e9faf2;border-color:#0ca678"></span>본 처리</span>'+
-    '<span><span class="sw" style="background:#fdeef6;border-color:#be185d"></span>출력·마감</span>'+
+    '<span><span class="sw" style="background:#ede9fe;border-color:#7c3aed"></span>로드</span>'+
+    '<span><span class="sw" style="background:#fef3c7;border-color:#f59e0b"></span>준비</span>'+
+    '<span><span class="sw" style="background:#dbeafe;border-color:#3b5bdb"></span>화면</span>'+
+    '<span><span class="sw" style="background:#ffe4e6;border-color:#e11d48"></span>검증</span>'+
+    '<span><span class="sw" style="background:#d1fae5;border-color:#10b981"></span>본 처리</span>'+
+    '<span><span class="sw" style="background:#ffedd5;border-color:#fb923c"></span>출력·마감</span>'+
     '<span style="color:#0ca678">초록 줄 = 이 단계에서 추가된 코드</span>';
   function setNote(i){ document.getElementById('note').innerHTML='💡 '+STAGES[i].note; }
   setNote(0);
 
-  /* ===== Mermaid 지연 렌더(탭 활성 시) ===== */
+  /* 복사 */
+  panelsEl.addEventListener('click',function(e){
+    var btn=e.target.closest('.copy-btn'); if(!btn) return;
+    var text=btn.closest('.ed').querySelector('.src').innerText;
+    var done=function(){ var o=btn.dataset.o||btn.textContent; btn.dataset.o=o; btn.textContent='✓ 복사됨'; btn.classList.add('is-copied');
+      setTimeout(function(){ btn.textContent=o; btn.classList.remove('is-copied'); },1600); };
+    if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done).catch(done); else done();
+  });
+
+  /* ===== 부모에 높이 전송(iframe 자동 높이) ===== */
+  function postHeight(){
+    // 콘텐츠 래퍼(.wrap) 높이로 측정 — iframe 높이에 종속되지 않아 짧은 탭에서도 정확히 줄어듦
+    try{ var el=document.querySelector('.wrap');
+      var h=Math.ceil(el ? el.getBoundingClientRect().height : document.body.scrollHeight) + 6;
+      parent.postMessage({sda:'embed-height', h:h}, '*'); }catch(e){}
+  }
+
+  /* ===== Mermaid 지연 렌더 ===== */
   var rendered={};
-  function renderFlow(i){
-    if(!window.mermaid || rendered[i]) return;
+  function renderFlow(i, cb){
+    if(!window.mermaid || rendered[i]){ if(cb)cb(); return; }
     var pane=panelsEl.querySelector('.flowpane[data-graph="'+i+'"]'); if(!pane) return;
     rendered[i]=true;
     window.mermaid.render('mmd'+i, STAGES[i].graph+'\n'+CLASSDEF).then(function(r){
       pane.innerHTML=r.svg;
       pane.querySelectorAll('.edgeLabel').forEach(function(el){ if(!el.textContent.trim()) el.style.display='none'; });
-    }).catch(function(){ pane.innerHTML='<span class="loading">흐름도를 표시할 수 없습니다.</span>'; rendered[i]=false; });
+      if(cb)cb();
+    }).catch(function(){ pane.innerHTML='<span class="loading">흐름도를 표시할 수 없습니다.</span>'; rendered[i]=false; if(cb)cb(); });
   }
   if(window.mermaid){
     window.mermaid.initialize({ startOnLoad:false, securityLevel:'loose', theme:'base',
-      themeVariables:{fontFamily:'inherit'}, flowchart:{curve:'basis', nodeSpacing:34, rankSpacing:34, padding:8} });
+      themeVariables:{fontFamily:'inherit'}, flowchart:{curve:'basis', htmlLabels:true, nodeSpacing:40, rankSpacing:38, padding:8} });
   }
-  renderFlow(0);
+  renderFlow(0, postHeight);
 
   tabsEl.addEventListener('click',function(e){
     var b=e.target.closest('.tab'); if(!b) return;
     var i=+b.dataset.idx;
     tabsEl.querySelectorAll('.tab').forEach(function(x){ x.classList.toggle('on', x===b); });
     panelsEl.querySelectorAll('.panel').forEach(function(p){ p.classList.toggle('on', +p.dataset.idx===i); });
-    setNote(i); renderFlow(i);
+    setNote(i);
+    renderFlow(i, postHeight);
+    postHeight();
   });
+  window.addEventListener('load', postHeight);
+  window.addEventListener('resize', postHeight);
 })();
 </script>
 </body>
