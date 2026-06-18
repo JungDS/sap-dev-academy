@@ -115,11 +115,11 @@ body.rail-open .scrim{opacity:1;pointer-events:auto;}
 
 /* ===== 무대(본문+우측 여정) ===== */
 .stage{margin-left:var(--rail);transition:margin .26s;}
-.layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:38px;max-width:1480px;margin:0 auto 0 0;padding:26px clamp(24px,3vw,52px) 96px clamp(32px,5vw,88px);align-items:start;}
-.main{min-width:0;max-width:880px;margin:0;transition:max-width .2s;}
-/* 가독 폭 '넓게': 레이아웃 폭 제한 해제 + 거터 축소 + 본문 상한 대폭 확대 */
-html.wide .layout{max-width:none;padding-left:clamp(20px,2vw,40px);padding-right:clamp(20px,2vw,32px);}
-html.wide .main{max-width:1500px;}
+/* flex: 왼쪽 거터 고정 → 본문의 오른쪽 끝만 늘어나고, 여정은 형제로서 자연스럽게 따라 이동 */
+.layout{display:flex;align-items:flex-start;gap:38px;max-width:none;margin:0;padding:26px clamp(24px,3vw,52px) 96px clamp(32px,5vw,88px);}
+.main{flex:0 1 880px;min-width:0;transition:flex-basis .3s cubic-bezier(.4,0,.2,1);}
+/* 가독 폭 '넓게': 왼쪽 좌표는 그대로, flex-basis만 키워 오른쪽으로 확장(여정도 함께 슬라이드) */
+html.wide .main{flex-basis:1500px;}
 
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:24px 28px;margin:18px 0;box-shadow:var(--shadow);}
 
@@ -240,7 +240,7 @@ details.fold .fold__in code,.block code{font-family:var(--mono);background:var(-
 .quiz__score{margin-top:16px;font-weight:800;color:var(--brand);font-size:1.02rem;}
 
 /* ===== 우측 "이 레슨의 여정" (v2-F) ===== */
-.journey{position:sticky;top:calc(var(--appbar-h) + 18px);background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:18px 18px 20px;box-shadow:var(--shadow);}
+.journey{flex:0 0 300px;position:sticky;top:calc(var(--appbar-h) + 18px);background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:18px 18px 20px;box-shadow:var(--shadow);}
 .journey__hd{font-size:.74rem;font-weight:800;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em;margin:0 0 4px;}
 .journey__sub{font-size:.78rem;color:var(--soon);margin:0 0 16px;}
 .steps{list-style:none;margin:0;padding:0;position:relative;}
