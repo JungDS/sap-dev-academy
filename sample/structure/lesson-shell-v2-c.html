@@ -72,6 +72,7 @@ a{color:var(--brand);text-decoration:none;}
 .read-progress{position:fixed;top:var(--appbar-h);left:0;right:0;height:3px;z-index:39;background:rgba(15,118,110,.10);}
 .read-progress>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--amber));transition:width .12s ease-out;}
 @media(max-width:860px){.appbar .meta{display:none;}}
+@media(max-width:680px){.appbar .btn-soft{display:none;}}
 @media(max-width:560px){.appbar__home span.full{display:none;}}
 
 /* ===== 좌측 아이콘 레일 (v2-E) ===== */
@@ -199,6 +200,7 @@ details.fold .fold__in code,.block code{font-family:var(--mono);background:var(-
 
 /* ===== (8) 체험 슬롯 — 직접 해보기 ===== */
 .try{border-left:5px solid var(--brand-2);}
+.try::after{opacity:.4;} /* 손(✋) 등 이모지 데코는 항상 반투명으로 은은하게(color가 안 먹으므로 opacity로) */
 .try__grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:14px 0;}
 .try__form{display:flex;flex-direction:column;gap:11px;}
 .try__form label{font-size:.84rem;font-weight:700;color:var(--ink-soft);display:flex;flex-direction:column;gap:5px;}
@@ -247,7 +249,7 @@ details.fold .fold__in code,.block code{font-family:var(--mono);background:var(-
 .step{position:relative;padding:0 0 16px 38px;cursor:pointer;}
 .step:last-child{padding-bottom:0;}
 .step__dot{position:absolute;left:5px;top:1px;width:18px;height:18px;border-radius:50%;background:var(--surface);border:2px solid var(--dot);display:grid;place-items:center;font-size:.6rem;color:#fff;transition:all .2s;z-index:1;}
-.step__t{font-size:.9rem;font-weight:600;color:var(--ink-soft);transition:color .2s;}
+.step__t{display:block;font-size:.9rem;font-weight:600;line-height:1.3;color:var(--ink-soft);transition:color .2s;}
 .step__s{display:block;font-size:.72rem;color:var(--soon);}
 .step.visited .step__dot{background:var(--brand-2);border-color:var(--brand-2);}
 .step.visited .step__dot::after{content:"✓";}
@@ -308,12 +310,9 @@ body.is-fullscreen .main{max-width:none;}
   .journey.up .journey__body{display:block;}
   .journey.up .journey__chev{transform:rotate(180deg);}
   .journey__hd,.journey__sub{display:none;}
-  .steps{display:block;}
-  .steps::before,.steps::after{display:none;}
-  .step{padding:9px 8px 9px 34px;background:none;border:0;border-radius:10px;}
-  .step:not(:last-child){margin-bottom:2px;}
-  .step:hover{background:var(--tint);}
-  .step__dot{left:7px;}
+  /* 시트 안에서도 PC와 동일한 타임라인(연결선·진행선) + 점/글자 정렬 유지 */
+  .journey__body{padding-top:8px;}
+  .step:hover{background:var(--tint);border-radius:10px;}
 }
 @media(min-width:1001px){ .scrim{display:none;} .journey__bar{display:none;} }
 </style>
@@ -336,6 +335,7 @@ body.is-fullscreen .main{max-width:none;}
     <div class="tools">
       <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
       <button class="icon-btn" id="fsInc" title="글자 크게">A+</button>
+      <button class="icon-btn" id="fsReset" title="글자 크기 초기화">↺</button>
       <button class="icon-btn" id="darkBtn" title="다크 모드">🌙</button>
       <button class="icon-btn" id="widthBtn" title="가독 폭 넓게">↔</button>
       <button class="icon-btn fs-btn" title="전체화면" aria-label="전체화면"></button>
@@ -541,13 +541,14 @@ body.is-fullscreen .main{max-width:none;}
   function syncWide(){ const on=root.classList.contains('wide'); widthBtn.classList.toggle('on',on); widthBtn.title=on?'가독 폭 기본':'가독 폭 넓게'; }
   darkBtn.addEventListener('click',()=>{ root.classList.toggle('dark'); set('ls.dark',root.classList.contains('dark')?'1':'0'); syncDark(); });
   widthBtn.addEventListener('click',()=>{ root.classList.toggle('wide'); set('ls.wide',root.classList.contains('wide')?'1':'0'); syncWide(); });
-  const FMIN=13, FMAX=20;
-  const fsIncBtn=document.getElementById('fsInc'), fsDecBtn=document.getElementById('fsDec');
-  let fontPx=parseInt(get('ls.fontPx'),10); if(!(fontPx>=FMIN&&fontPx<=FMAX)) fontPx=16;
-  function syncFontBtns(){ fsDecBtn.disabled=fontPx<=FMIN; fsIncBtn.disabled=fontPx>=FMAX; } // 최소/최대에서 비활성+반투명
+  const FMIN=13, FMAX=20, FDEF=16;
+  const fsIncBtn=document.getElementById('fsInc'), fsDecBtn=document.getElementById('fsDec'), fsResetBtn=document.getElementById('fsReset');
+  let fontPx=parseInt(get('ls.fontPx'),10); if(!(fontPx>=FMIN&&fontPx<=FMAX)) fontPx=FDEF;
+  function syncFontBtns(){ fsDecBtn.disabled=fontPx<=FMIN; fsIncBtn.disabled=fontPx>=FMAX; fsResetBtn.disabled=fontPx===FDEF; } // 경계/기본값에서 비활성+반투명
   function applyFont(){ root.style.fontSize=fontPx+'px'; set('ls.fontPx',String(fontPx)); syncFontBtns(); }
   fsIncBtn.addEventListener('click',()=>{ fontPx=Math.min(FMAX,fontPx+1); applyFont(); });
   fsDecBtn.addEventListener('click',()=>{ fontPx=Math.max(FMIN,fontPx-1); applyFont(); });
+  fsResetBtn.addEventListener('click',()=>{ fontPx=FDEF; applyFont(); });
   syncDark(); syncWide(); syncFontBtns();
 
   /* 좌측 레일 */
