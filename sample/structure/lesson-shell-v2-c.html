@@ -1,10 +1,16 @@
 <!DOCTYPE html>
 <!--
-  레슨 셸 v2-C — 웜 에디토리얼 / 엘리베이션 (standalone)
+  레슨 셸 v2-C (종합 개선판) — 웜 에디토리얼 + 좌측 레일 네비 + 우측 학습 여정 (standalone)
   ────────────────────────────────────────────────────────────
-  v2-A와 동일한 구조·동작. 디자인 방향만 다름:
-  따뜻한 크림 배경 + 큰 타이포 + 떠 있는 카드(호버 시 살짝 확대·그림자),
-  데코 섹션 번호, 네비 탭 = 알약형, 티얼+앰버 액센트. "프리미엄 문서" 톤.
+  기준: 기존 v2-C(따뜻한 크림/티얼 톤, 떠 있는 카드)에 아래 7가지를 반영해 재구성.
+   1) 용어 hover = 임시 표시, 클릭 = 고정. 클릭 안 하면 마우스가 벗어날 때 사라짐.
+   2) 전체화면(Fullscreen API): 켜면 본문이 화면 가로폭을 꽉 채움(여백 최소화).
+   3) 헤더(제목 영역) 배경 = 왼쪽 흰색 → 오른쪽 브랜드색 가로 그라데이션.
+   4) T-code는 라벨(칩)로 표시 → 클릭 시 "미니 페이지"급 상세 설명 모달.
+   5) 좌측 네비 = v2-E의 아이콘 레일(hover/클릭 확장). 기존 우측 네비 제거.
+   6) 우측 = v2-F의 "이 레슨의 여정" 스텝퍼(접기 없음). "이해했어요" 제거,
+      대신 스크롤 위치로 현재/지나온 섹션을 인지하도록 표시.
+   7) v2-G의 "용어 모음"을 좌측 레일의 3번째 탭(용어)으로 제공(페이지 용어 자동 수집).
   외부 의존성 없음. 이름은 고정 풀(정훈영=1번).
 -->
 <html lang="ko">
@@ -17,7 +23,7 @@
   --bg:#f7f5f0;--surface:#fff;--ink:#22201c;--ink-soft:#6b6357;--line:#e9e4da;
   --brand:#0f766e;--brand-2:#14b8a6;--amber:#b45309;--soon:#a99f8f;
   --radius:20px;--shadow:0 2px 4px rgba(60,50,30,.04),0 14px 40px rgba(60,50,30,.08);
-  --appbar-h:60px;
+  --appbar-h:60px;--rail:64px;
   --font:-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic",Roboto,sans-serif;
   --mono:'D2Coding',Consolas,Monaco,monospace;
 }
@@ -25,8 +31,8 @@
 body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.8;min-height:100vh;}
 a{color:var(--brand);text-decoration:none;}
 
-/* 앱바 */
-.appbar{position:sticky;top:0;z-index:40;height:var(--appbar-h);display:flex;align-items:center;gap:12px;padding:0 20px;background:rgba(255,255,255,.8);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+/* ===== 앱바 ===== */
+.appbar{position:sticky;top:0;z-index:40;height:var(--appbar-h);display:flex;align-items:center;gap:12px;padding:0 20px;background:rgba(255,255,255,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
 .appbar__home{display:flex;align-items:center;gap:8px;font-weight:800;color:var(--brand);font-size:1.02rem;}
 .appbar__sp{flex:1;}
 .appbar .meta{font-size:.78rem;font-weight:600;color:var(--ink-soft);background:#f3f0e9;border-radius:999px;padding:6px 13px;white-space:nowrap;}
@@ -38,20 +44,54 @@ a{color:var(--brand);text-decoration:none;}
 .read-progress>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--amber));transition:width .12s ease-out;}
 @media(max-width:720px){.appbar .meta{display:none;}}
 
-/* 레이아웃 */
-/* nav 영역 상시 예약 → 접어도 본문 레이아웃 불변(독립 요소) */
-.layout{display:grid;grid-template-columns:minmax(0,1fr) 350px;max-width:1320px;margin:0 auto;padding:26px 24px 96px;align-items:start;}
-.main{min-width:0;max-width:860px;margin:0 auto;}
+/* ===== 좌측 아이콘 레일 (v2-E) — hover/클릭 확장 ===== */
+.rail{position:fixed;left:0;top:var(--appbar-h);bottom:0;width:var(--rail);z-index:38;background:var(--surface);border-right:1px solid var(--line);
+  display:flex;flex-direction:column;align-items:center;padding:14px 0;gap:8px;transition:width .26s cubic-bezier(.4,0,.2,1);overflow:hidden;}
+.rail.open{width:312px;box-shadow:var(--shadow);align-items:stretch;}
+.rail__btn{width:44px;height:44px;border-radius:13px;border:0;background:none;color:var(--ink-soft);cursor:pointer;display:grid;place-items:center;font-size:1.2rem;flex-shrink:0;transition:background .15s,color .15s;margin:0 auto;}
+.rail__btn:hover,.rail__btn.on{background:#e2f4f1;color:var(--brand);}
+.rail.open .rail__btn{margin:0;}
+.rail__icons{display:flex;flex-direction:column;gap:8px;align-items:center;}
+.rail__expand{display:none;flex-direction:column;min-height:0;flex:1;padding:0 14px;}
+.rail.open .rail__expand{display:flex;}
+.rail.open .rail__icons{display:none;}
+.rail__hd{display:flex;align-items:center;justify-content:space-between;padding:4px 2px 12px;}
+.rail__hd b{font-weight:800;} .rail__x{border:0;background:none;color:var(--ink-soft);font-size:1.2rem;cursor:pointer;}
+.rail__tabs{display:flex;gap:5px;background:#f1efe8;border-radius:999px;padding:4px;margin-bottom:12px;}
+.rail__tab{flex:1;border:0;background:none;border-radius:999px;padding:8px 4px;font:inherit;font-size:.78rem;font-weight:700;color:var(--ink-soft);cursor:pointer;transition:all .18s;}
+.rail__tab.on{background:#fff;color:var(--brand);box-shadow:0 1px 3px rgba(60,50,30,.12);}
+.rail__panel{display:none;overflow:auto;min-height:0;} .rail__panel.on{display:block;}
+.rail__chap{font-size:.74rem;color:var(--ink-soft);font-weight:800;margin:2px 0 9px;}
+.ll{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px;}
+.ll a{display:block;border:1px solid transparent;border-radius:11px;padding:9px 11px;}
+.ll a:hover{background:#f3faf8;} .ll small{font-size:.66rem;font-weight:800;color:var(--soon);letter-spacing:.04em;}
+.ll .t{display:block;font-size:.85rem;color:#3a342b;font-weight:600;}
+.ll a.on{background:#e2f4f1;border-color:#cfe9e3;} .ll a.on .t,.ll a.on small{color:var(--brand);}
+.rail__prog{font-size:.76rem;font-weight:800;color:#34302a;display:flex;justify-content:space-between;margin:2px 0 6px;}
+.bar{height:7px;border-radius:99px;background:#ece8df;overflow:hidden;margin-bottom:12px;} .bar>i{display:block;height:100%;width:5%;background:linear-gradient(90deg,var(--brand),var(--brand-2));}
+.cl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;font-size:.83rem;}
+.cl li{display:flex;gap:9px;padding:9px 10px;border-radius:11px;color:#3a342b;cursor:pointer;transition:all .18s;}
+.cl li:hover{background:#f3faf8;} .cl li .dot{width:12px;height:12px;border-radius:50%;border:2px solid #d6cdbd;margin-top:5px;flex-shrink:0;}
+.cl li.on{background:#e2f4f1;color:var(--brand);font-weight:700;} .cl li.on .dot{border-color:var(--brand);background:var(--brand);}
+/* 용어 모음 (v2-G) */
+.glos{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px;}
+.glos li{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:#fffdf8;}
+.glos b{font-size:.86rem;color:var(--brand);} .glos span{display:block;font-size:.78rem;color:var(--ink-soft);margin-top:2px;}
+.glos__note{font-size:.74rem;color:var(--ink-soft);margin:0 0 10px;}
 
-/* C 핸들: 큰 웜 필(아래쪽 배치) */
-/* C 핸들: 큰 둥근 그라데이션 아이콘(회전 없음), 아래쪽 배치 */
-.nav-handle{position:fixed;right:0;top:56%;z-index:45;background:linear-gradient(160deg,var(--brand),#0b5d56);color:#fff;border:0;border-radius:16px 0 0 16px;width:40px;height:64px;font-size:1.35rem;font-weight:800;line-height:1;cursor:pointer;display:grid;place-items:center;box-shadow:-4px 4px 18px rgba(15,118,110,.34);transition:width .15s;}
-.nav-handle:hover{width:48px;}
+.railFab{display:none;position:fixed;left:14px;bottom:18px;z-index:42;width:48px;height:48px;border-radius:50%;border:0;background:var(--brand);color:#fff;font-size:1.3rem;box-shadow:0 8px 20px rgba(15,118,110,.35);cursor:pointer;place-items:center;}
+.scrim{position:fixed;inset:0;background:rgba(40,32,20,.4);z-index:36;opacity:0;pointer-events:none;transition:opacity .25s;}
+body.rail-open .scrim{opacity:1;pointer-events:auto;}
+
+/* ===== 무대(본문+우측 여정) ===== */
+.stage{margin-left:var(--rail);transition:margin .26s;}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:30px;max-width:1300px;margin:0 auto;padding:26px 28px 96px;align-items:start;}
+.main{min-width:0;max-width:780px;margin:0 auto;}
 
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:24px 28px;margin:18px 0;box-shadow:var(--shadow);}
 
-/* 헤더 — 크림 카드 + 큰 타이틀 */
-.lhead{background:linear-gradient(160deg,#fffdf8,#f3f7f5);border:1px solid var(--line);border-radius:24px;padding:30px 32px;box-shadow:var(--shadow);}
+/* 헤더 — 왼쪽 흰색 → 오른쪽 브랜드색 가로 그라데이션 */
+.lhead{position:relative;overflow:hidden;background:linear-gradient(100deg,#ffffff 0%,#ffffff 40%,#7fd3c7 82%,var(--brand) 116%);border:1px solid var(--line);border-radius:24px;padding:30px 32px;box-shadow:var(--shadow);}
 .crumb{font-size:.86rem;color:var(--ink-soft);font-weight:600;}
 .crumb a{color:var(--brand);} .crumb b{color:var(--ink);} .crumb i{font-style:normal;color:#c9c0b1;margin:0 6px;}
 .lhead__eyebrow{margin:14px 0 6px;color:var(--brand);font-weight:800;font-size:.82rem;letter-spacing:.12em;text-transform:uppercase;}
@@ -64,12 +104,14 @@ a{color:var(--brand);text-decoration:none;}
 .card__h{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.06rem;margin:0 0 14px;}
 .card__h .ic{font-size:1.2rem;}
 
+/* T-code 라벨(칩) → 클릭 시 모달 */
 .tcode{border-left:5px solid var(--amber);}
-.tcode__box{border:1px solid var(--line);border-radius:14px;padding:16px 18px;background:#fffdf8;transition:all .2s cubic-bezier(.16,1,.3,1);}
-.tcode__box:hover{box-shadow:0 10px 26px rgba(180,83,9,.1);transform:translateY(-2px);}
-.tcode__badge{font-size:.72rem;font-weight:800;color:#137a4a;background:#e7f6ee;border-radius:999px;padding:3px 10px;}
-.tcode__code{font-weight:800;font-size:1.1rem;margin:9px 0 5px;font-family:var(--mono);}
-.tcode__box p{margin:0;color:var(--ink-soft);font-size:.93rem;}
+.tcode-label{display:inline-flex;align-items:center;gap:11px;border:1px solid #f0d9bf;background:#fffaf2;border-radius:14px;padding:11px 16px;cursor:pointer;font:inherit;transition:all .18s cubic-bezier(.16,1,.3,1);}
+.tcode-label:hover{box-shadow:0 10px 26px rgba(180,83,9,.14);transform:translateY(-2px);border-color:var(--amber);}
+.tcode-label__badge{font-size:.7rem;font-weight:800;color:#137a4a;background:#e7f6ee;border-radius:999px;padding:3px 10px;}
+.tcode-label__code{font-family:var(--mono);font-weight:800;font-size:1.2rem;color:var(--ink);}
+.tcode-label__hint{font-size:.82rem;font-weight:700;color:var(--amber);}
+.tcode__cap{margin:10px 0 0;color:var(--ink-soft);font-size:.9rem;}
 
 .goals{background:linear-gradient(180deg,#e9f6f3,#f3faf8);border:1px solid #cfe9e3;border-left:5px solid var(--brand);}
 .goals p{margin:0;color:#234540;}
@@ -92,10 +134,14 @@ details.fold>summary::before{content:"▸";transition:transform .2s;}
 details.fold[open]>summary::before{transform:rotate(90deg);}
 details.fold .fold__in{padding:14px 18px;border-top:1px solid var(--line);color:#4a443b;font-size:.96rem;}
 
+/* 용어 트리거 + 팝업(hover 임시 / click 고정) */
 .term{border-bottom:2px dotted var(--brand);color:var(--brand);font-weight:600;cursor:help;}
-.term-popup{position:absolute;z-index:60;max-width:300px;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 14px 34px rgba(60,50,30,.18);padding:14px 16px;}
-.term-popup b{display:block;margin-bottom:5px;} .term-popup span{font-size:.88rem;color:var(--ink-soft);}
-.term-popup__x{position:absolute;top:8px;right:11px;border:0;background:none;cursor:pointer;color:#a99f8f;font-size:1.1rem;}
+.term-popup{position:absolute;z-index:60;max-width:300px;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 14px 34px rgba(60,50,30,.18);padding:14px 16px 14px;}
+.term-popup b{display:block;margin-bottom:5px;padding-right:14px;} .term-popup span{font-size:.88rem;color:var(--ink-soft);}
+.term-popup__pin{display:block;margin-top:9px;font-size:.74rem;font-weight:700;color:var(--soon);}
+.term-popup.pinned .term-popup__pin{color:var(--brand);}
+.term-popup__x{position:absolute;top:8px;right:11px;border:0;background:none;cursor:pointer;color:#a99f8f;font-size:1.1rem;display:none;}
+.term-popup.pinned .term-popup__x{display:block;}
 
 .recap__grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(195px,1fr));gap:14px;}
 .recap__c{border:1px solid var(--line);border-radius:16px;padding:17px 18px;background:#fffdf8;transition:transform .2s cubic-bezier(.16,1,.3,1),box-shadow .2s;}
@@ -112,43 +158,68 @@ details.fold .fold__in{padding:14px 18px;border-top:1px solid var(--line);color:
 .lesson-nav .next{text-align:right;}
 .foot{color:var(--ink-soft);font-size:.84rem;padding:24px 4px;border-top:1px solid var(--line);margin-top:20px;}
 
-/* 우측 네비 — 알약 탭 */
-.rnav{position:fixed;right:16px;top:calc(var(--appbar-h) + 16px);width:320px;max-height:calc(100vh - var(--appbar-h) - 32px);overflow:auto;z-index:30;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:var(--shadow);transition:transform .28s cubic-bezier(.4,0,.2,1);}
-body.nav-collapsed .rnav{transform:translateX(calc(100% + 56px));}
-.rnav__cur{background:#f3faf8;border:1px solid #cfe9e3;border-radius:14px;padding:12px 14px;margin-bottom:14px;}
-.rnav__cur small{font-size:.72rem;color:var(--ink-soft);font-weight:700;} .rnav__cur b{display:block;font-size:1.02rem;}
-.rnav__tabs{display:flex;gap:6px;margin-bottom:14px;background:#f1efe8;border-radius:999px;padding:4px;}
-.rnav__tab{flex:1;border:0;background:none;color:var(--ink-soft);border-radius:999px;padding:8px;font:inherit;font-size:.82rem;font-weight:700;cursor:pointer;transition:all .18s;}
-.rnav__tab.on{background:#fff;color:var(--brand);box-shadow:0 2px 8px rgba(60,50,30,.1);}
-.rnav__panel{display:none;} .rnav__panel.on{display:block;}
-.rnav__chap{font-size:.74rem;color:var(--ink-soft);font-weight:800;margin:4px 0 9px;}
-.lesson-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;}
-.lesson-list a{display:block;border:1px solid transparent;border-radius:12px;padding:10px 12px;transition:all .18s;}
-.lesson-list a:hover{background:#f3faf8;}
-.lesson-list small{font-size:.68rem;font-weight:800;color:var(--soon);letter-spacing:.04em;}
-.lesson-list .t{display:block;font-size:.88rem;color:#3a342b;font-weight:600;}
-.lesson-list a.on{background:#e2f4f1;border-color:#cfe9e3;}
-.lesson-list a.on small{color:var(--brand);} .lesson-list a.on .t{color:var(--brand);}
-.rnav__move{margin-top:13px;border-top:1px solid var(--line);padding-top:11px;}
-.rnav__move a{display:block;font-size:.85rem;color:var(--ink-soft);padding:6px 4px;}
-.rnav__move a:hover{color:var(--brand);}
-.rnav__prog{font-size:.78rem;font-weight:800;color:#34302a;display:flex;justify-content:space-between;margin:2px 0 7px;}
-.prog{height:8px;border-radius:999px;background:#ece8df;overflow:hidden;margin-bottom:15px;}
-.prog>i{display:block;height:100%;width:5%;background:linear-gradient(90deg,var(--brand),var(--brand-2));}
-.chap-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px;}
-.chap-list li{display:flex;gap:10px;align-items:flex-start;border:1px solid transparent;border-radius:12px;padding:10px 11px;cursor:pointer;transition:all .18s;font-size:.84rem;color:#3a342b;}
-.chap-list li:hover{background:#f3faf8;}
-.chap-list li .dot{width:14px;height:14px;border-radius:50%;border:2px solid #d6cdbd;flex-shrink:0;margin-top:4px;transition:all .18s;}
-.chap-list li.on{background:#e2f4f1;border-color:#cfe9e3;color:var(--brand);font-weight:700;}
-.chap-list li.on .dot{border-color:var(--brand);background:radial-gradient(circle,var(--brand) 40%,#fff 45%);}
-.rnav__note{font-size:.74rem;color:var(--ink-soft);margin:6px 0 11px;}
+/* ===== 우측 "이 레슨의 여정" (v2-F, 접기 없음) ===== */
+.journey{position:sticky;top:calc(var(--appbar-h) + 18px);background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:18px 18px 20px;box-shadow:var(--shadow);}
+.journey__hd{font-size:.74rem;font-weight:800;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em;margin:0 0 4px;}
+.journey__sub{font-size:.78rem;color:var(--soon);margin:0 0 16px;}
+.steps{list-style:none;margin:0;padding:0;position:relative;}
+.steps::before{content:"";position:absolute;left:13px;top:8px;bottom:14px;width:2px;background:var(--line);}
+.steps::after{content:"";position:absolute;left:13px;top:8px;width:2px;height:var(--progress,0%);max-height:calc(100% - 22px);background:linear-gradient(var(--brand),var(--brand-2));transition:height .35s ease;}
+.step{position:relative;padding:0 0 18px 38px;cursor:pointer;}
+.step:last-child{padding-bottom:0;}
+.step__dot{position:absolute;left:5px;top:1px;width:18px;height:18px;border-radius:50%;background:#fff;border:2px solid #d6cdbd;display:grid;place-items:center;font-size:.6rem;color:#fff;transition:all .2s;z-index:1;}
+.step__t{font-size:.9rem;font-weight:600;color:#56524a;transition:color .2s;}
+.step__s{display:block;font-size:.72rem;color:var(--soon);}
+.step.visited .step__dot{background:var(--brand-2);border-color:var(--brand-2);}
+.step.visited .step__dot::after{content:"✓";}
+.step.visited .step__t{color:#3a342b;}
+.step.current .step__dot{border-color:var(--brand);background:var(--brand);box-shadow:0 0 0 4px rgba(15,118,110,.16);}
+.step.current .step__dot::after{content:"";width:6px;height:6px;border-radius:50%;background:#fff;}
+.step.current .step__t{color:var(--brand);font-weight:800;}
 
-.scrim{position:fixed;inset:0;background:rgba(40,32,20,.4);z-index:55;opacity:0;pointer-events:none;transition:opacity .25s;}
-body.nav-open .scrim{opacity:1;pointer-events:auto;}
+/* ===== T-code 미니 페이지 모달 ===== */
+.tmodal[hidden]{display:none;}
+.tmodal{position:fixed;inset:0;z-index:80;display:grid;place-items:center;padding:24px;}
+.tmodal__backdrop{position:absolute;inset:0;background:rgba(40,32,20,.5);backdrop-filter:blur(2px);}
+.tmodal__card{position:relative;z-index:1;width:min(700px,100%);max-height:88vh;overflow:auto;background:#fff;border:1px solid var(--line);border-radius:22px;box-shadow:0 30px 80px rgba(40,32,20,.32);animation:tpop .22s cubic-bezier(.16,1,.3,1);}
+@keyframes tpop{from{opacity:0;transform:translateY(14px) scale(.98);}to{opacity:1;transform:none;}}
+.tmodal__hd{position:sticky;top:0;z-index:1;background:linear-gradient(100deg,#fff 0%,#fff 45%,#d6f0eb 100%);border-bottom:1px solid var(--line);padding:20px 24px;display:flex;align-items:flex-start;gap:14px;}
+.tmodal__badge{font-size:.7rem;font-weight:800;color:#137a4a;background:#e7f6ee;border-radius:999px;padding:3px 10px;align-self:center;}
+.tmodal__code{font-family:var(--mono);font-weight:800;font-size:1.55rem;color:var(--brand);line-height:1.1;}
+.tmodal__sub{display:block;color:var(--ink-soft);font-size:.88rem;font-weight:600;margin-top:2px;}
+.tmodal__x{margin-left:auto;border:0;background:none;font-size:1.7rem;line-height:1;cursor:pointer;color:var(--soon);}
+.tmodal__x:hover{color:var(--ink);}
+.tmodal__body{padding:18px 24px 26px;}
+.tmodal__body h4{font-size:.96rem;margin:18px 0 7px;display:flex;align-items:center;gap:8px;color:var(--ink);}
+.tmodal__body h4:first-child{margin-top:0;}
+.tmodal__body p{margin:6px 0;color:#3a342b;font-size:.95rem;}
+.tmodal__body ul{margin:6px 0;padding-left:20px;color:#3a342b;font-size:.94rem;}
+.tmodal__body li{margin:4px 0;}
+.tmodal__body code{font-family:var(--mono);background:#f1efe8;border-radius:5px;padding:1px 6px;font-size:.9em;}
+.cmdfield{display:flex;align-items:center;gap:8px;border:1px solid #cfe9e3;background:#f3faf8;border-radius:10px;padding:9px 12px;margin:8px 0;font-family:var(--mono);font-weight:700;color:var(--brand);}
+.cmdfield::before{content:"명령";font-family:var(--font);font-size:.66rem;font-weight:800;color:#fff;background:var(--brand);border-radius:5px;padding:3px 6px;}
+.callout{border-left:4px solid var(--amber);background:#fffaf2;border-radius:0 12px 12px 0;padding:11px 15px;margin:10px 0;font-size:.92rem;color:#5a4a32;}
+.callout b{color:var(--amber);}
+.related{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
+.related span{font-family:var(--mono);font-weight:700;font-size:.84rem;background:#eef2ff;color:#3b5bdb;border-radius:8px;padding:5px 10px;}
+
+/* ===== 전체화면: 본문이 화면 가로폭을 꽉 채움 ===== */
+body.is-fullscreen .layout{max-width:none;padding-left:clamp(24px,2.4vw,52px);padding-right:clamp(24px,2.4vw,52px);}
+body.is-fullscreen .main{max-width:none;}
+
+/* ===== 반응형 ===== */
 @media(max-width:1000px){
+  .stage{margin-left:0;}
   .layout{grid-template-columns:minmax(0,1fr);}
-  .rnav{position:fixed;right:0;top:0;bottom:0;width:min(88vw,352px);max-height:none;border-radius:0;z-index:60;transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);}
-  body.nav-open .rnav{transform:none;} body.nav-collapsed .rnav{transform:translateX(100%);}
+  .rail{transform:translateX(-100%);width:300px;align-items:stretch;transition:transform .26s cubic-bezier(.4,0,.2,1);}
+  .rail .rail__icons{display:none;} .rail .rail__expand{display:flex;}
+  body.rail-open .rail{transform:none;}
+  .railFab{display:grid;}
+  .journey{position:static;margin-bottom:10px;}
+  .steps::before,.steps::after{display:none;}
+  .steps{display:flex;flex-wrap:wrap;gap:8px;}
+  .step{padding:7px 13px 7px 30px;background:#fffdf8;border:1px solid var(--line);border-radius:999px;}
+  .step__s{display:none;}
 }
 @media(min-width:1001px){ .scrim{display:none;} }
 </style>
@@ -163,85 +234,25 @@ body.nav-open .scrim{opacity:1;pointer-events:auto;}
     <button class="icon-btn fs-btn" title="전체화면">⛶</button>
   </header>
   <div class="read-progress"><i></i></div>
-  <button class="nav-handle" title="네비 접기" aria-label="네비게이션 토글">›</button>
   <div class="scrim"></div>
 
-  <div class="layout">
-    <main class="main">
-      <section class="lhead">
-        <p class="crumb"><a href="#">Home</a><i>›</i><a href="#">ABAP 커리큘럼</a><i>›</i><a href="#">DDIC 1차: 기본 데이터 구조 생성</a><i>›</i><b>Domain 기본 설계</b></p>
-        <p class="lhead__eyebrow">ABAP 기본 이론 및 구현 흐름</p>
-        <h1>Domain 기본 설계</h1>
-        <div class="tags"><span class="tag t-track">Track 1</span><span class="tag t-ch">Chapter 1</span><span class="tag t-ls">Lesson 2</span><span class="tag t-lv">하 (Low)</span></div>
-      </section>
-
-      <section class="card tcode">
-        <p class="card__h"><span class="ic">🖥️</span>이번 Lesson에서 다루는 트랜잭션 코드</p>
-        <div class="tcode__box">
-          <span class="tcode__badge">복습</span>
-          <p class="tcode__code">SE11</p>
-          <p>SAP GUI 화면에서 <span class="term" data-t="DDIC (SAP Dictionary)" data-d="테이블·데이터 타입·도메인을 한곳에서 정의·관리하는 SAP의 중앙 데이터 사전입니다.">DDIC(SAP Dictionary)</span> 객체를 생성하고 조회할 때 사용하는 전통적인 명령어(트랜잭션 코드)입니다.</p>
-        </div>
-      </section>
-
-      <section class="card goals">
-        <p class="card__h"><span class="ic">🎯</span>학습 목표</p>
-        <p>이번 Lesson에서는 <span class="term" data-t="Domain (도메인)" data-d="값의 기술적 속성(타입·길이·허용값)을 정의하는 DDIC의 가장 아래 부품입니다.">Domain</span>을 "값의 기술 규격"으로 설계합니다. 수업이 끝나면
-          <span class="term" data-t="Data Type" data-d="값의 종류. 문자(CHAR), 숫자(NUMC/INT), 날짜(DATS) 등.">Data Type</span>,
-          <span class="term" data-t="Length" data-d="값을 저장할 칸의 길이(자릿수).">Length</span>,
-          <span class="term" data-t="Output Length" data-d="화면에 보여줄 때 차지하는 표시 길이.">Output Length</span>,
-          <span class="term" data-t="Fixed Value" data-d="허용 가능한 값을 고정 목록으로 제한하는 설정. 예: 상태 A/B/C만 허용.">Fixed Value</span>의 역할을 나눠 설명하고,
-          SE11에서 작은 Domain을 저장·검사·<span class="term" data-t="활성화 (Activation)" data-d="작성한 DDIC 객체를 시스템이 실제로 사용할 수 있게 컴파일·등록하는 단계.">활성화</span>하는 흐름을 직접 시뮬레이션할 수 있어야 합니다.</p>
-      </section>
-
-      <section class="block" id="s1" data-n="01">
-        <h2><span class="num">1.</span> Domain은 업무 의미가 아니라 값의 재질을 정한다</h2>
-        <p>지난 Lesson에서 <span class="term" data-t="DDIC" data-d="SAP의 중앙 데이터 정의 사전.">DDIC</span>는 SAP 시스템이 공유하는 데이터 정의의 기준점이라고 봤습니다. Domain은 그 기준점 안에서 가장 아래쪽에 놓이는 부품입니다.</p>
-        <p>"주문 상태"라는 <strong>업무 의미</strong>보다 먼저 "한 글자 코드인가, 숫자인가, 허용값이 고정되어 있는가"라는 <strong>값의 재질</strong>을 정합니다.</p>
-        <div class="ex"><b>비유:</b> Domain은 "그릇의 규격(재질·크기)", 업무 의미를 붙이는 건 다음 단계(Data Element)에서 "그릇에 이름표 붙이기"입니다.</div>
-      </section>
-
-      <section class="block" id="s2" data-n="02">
-        <h2><span class="num">2.</span> 네 가지 속성을 나눠서 본다</h2>
-        <p>Domain을 만들 때 정하는 핵심 속성은 네 가지예요. 지금은 "이런 게 있구나" 정도면 충분합니다.</p>
-        <details class="fold"><summary>Data Type & Length — 값의 종류와 칸의 크기</summary><div class="fold__in">계산할 값인지(숫자), 코드인지(문자)를 먼저 정하고, 저장 길이(자릿수)를 정합니다. 예: 상태 코드는 <code>CHAR 1</code>.</div></details>
-        <details class="fold"><summary>Output Length — 화면 표시 폭</summary><div class="fold__in">저장 길이와 별개로 화면에 보여줄 폭입니다. 보통은 같지만, 통화·부호 등으로 표시가 더 길어질 수 있어요.</div></details>
-        <details class="fold"><summary>Fixed Value — 허용값 고정</summary><div class="fold__in">값을 정해진 목록으로만 받게 제한합니다. 작고 안정적인 코드 목록(A/B/C)에 적합하며 입력 도움말과 기본 검증에 쓰입니다.</div></details>
-      </section>
-
-      <section class="block" id="s3" data-n="03">
-        <h2><span class="num">3.</span> SE11에서 만드는 흐름 (저장 → 검사 → 활성화)</h2>
-        <p>SE11에서 Domain을 만들면 <strong>저장(Save) → 검사(Check) → 활성화(Activate)</strong> 3단계를 거칩니다. 활성화까지 끝나야 다른 객체가 이 Domain을 가져다 쓸 수 있어요.</p>
-        <div class="ex"><b>주의:</b> 저장만 하고 활성화를 안 하면 "왜 안 보이지?"가 됩니다. 활성화는 "이제 진짜 쓸게요" 선언이에요.</div>
-      </section>
-
-      <section class="card" id="summary">
-        <p class="card__h"><span class="ic">🧾</span>9. 한눈에 정리</p>
-        <div class="recap__grid">
-          <div class="recap__c"><b>Domain</b><span>값의 기술 규격과 작은 허용 범위를 정하는 DDIC 하위 부품입니다.</span></div>
-          <div class="recap__c"><b>Data Type과 Length</b><span>계산할 값인지 보존할 코드인지 먼저 보고 저장 길이를 정합니다.</span></div>
-          <div class="recap__c"><b>Fixed Value</b><span>작고 안정적인 코드 목록에 적합하며 입력 도움과 기본 검증에 쓰입니다.</span></div>
-          <div class="recap__c"><b>Value Table</b><span>자동 검증이 아니라 Foreign Key 후보를 제안하는 성격으로 이해합니다.</span></div>
-        </div>
-        <div class="next-preview"><span class="ic">➡️</span><div><b>다음 Lesson 예고</b><br>오늘 만든 Domain 위에 업무 의미, 화면 라벨, 설명 문장을 붙이는 <strong>Data Element 설계</strong>를 다룹니다.</div></div>
-      </section>
-
-      <nav class="lesson-nav">
-        <a href="#"><span class="dir">← 이전 LESSON</span><span class="ttl">SAP Dictionary의 목적과 개발 흐름</span></a>
-        <a class="next" href="#"><span class="dir">다음 LESSON →</span><span class="ttl">Data Element 기본 설계</span></a>
-      </nav>
-      <footer class="foot">SAP Developer Learning Library · Lesson Viewer · 시안 v2-C</footer>
-    </main>
-
-    <aside class="rnav" id="rnav">
-      <div class="rnav__cur"><small>현재 문서</small><b>Domain 기본 설계</b></div>
-      <div class="rnav__tabs">
-        <button class="rnav__tab on" data-rtab="toc">문서목차</button>
-        <button class="rnav__tab" data-rtab="path">학습경로</button>
+  <!-- 좌측 아이콘 레일 (문서목차 / 학습경로 / 용어) -->
+  <nav class="rail" id="rail">
+    <div class="rail__icons">
+      <button class="rail__btn on" data-rtab="toc" title="문서목차">📑</button>
+      <button class="rail__btn" data-rtab="path" title="학습경로">🗺️</button>
+      <button class="rail__btn" data-rtab="terms" title="용어 모음">📖</button>
+    </div>
+    <div class="rail__expand">
+      <div class="rail__hd"><b>학습 네비</b><button class="rail__x" title="접기">«</button></div>
+      <div class="rail__tabs">
+        <button class="rail__tab on" data-rtab="toc">문서목차</button>
+        <button class="rail__tab" data-rtab="path">학습경로</button>
+        <button class="rail__tab" data-rtab="terms">용어</button>
       </div>
-      <div class="rnav__panel on" data-rpanel="toc">
-        <p class="rnav__chap">현재 Chapter · DDIC 1차: 기본 데이터 구조 생성</p>
-        <ul class="lesson-list">
+      <div class="rail__panel on" data-rpanel="toc">
+        <p class="rail__chap">현재 Chapter · DDIC 1차: 기본 데이터 구조 생성</p>
+        <ul class="ll">
           <li><a href="#"><small>LESSON 1</small><span class="t">SAP Dictionary의 목적과 개발 흐름</span></a></li>
           <li><a class="on" href="#"><small>LESSON 2</small><span class="t">Domain 기본 설계</span></a></li>
           <li><a href="#"><small>LESSON 3</small><span class="t">Data Element 기본 설계</span></a></li>
@@ -249,13 +260,11 @@ body.nav-open .scrim{opacity:1;pointer-events:auto;}
           <li><a href="#"><small>LESSON 5</small><span class="t">Transparent Table 기본 생성</span></a></li>
           <li><a href="#"><small>LESSON 6</small><span class="t">Technical Settings와 데이터 확인 기초</span></a></li>
         </ul>
-        <div class="rnav__move"><a href="#">↑ Chapter 요약으로 돌아가기</a><a href="#">🖥️ 지금까지 배운 T-code</a></div>
       </div>
-      <div class="rnav__panel" data-rpanel="path">
-        <div class="rnav__prog"><span>ABAP 기본 이론 및 구현 흐름</span><span>1 / 21</span></div>
-        <div class="prog"><i></i></div>
-        <p class="rnav__note">현재 Chapter는 강조되며, 다른 항목을 누르면 해당 상세 페이지로 이동합니다.</p>
-        <ul class="chap-list">
+      <div class="rail__panel" data-rpanel="path">
+        <div class="rail__prog"><span>ABAP 기본 이론 및 구현 흐름</span><span>1 / 21</span></div>
+        <div class="bar"><i></i></div>
+        <ul class="cl">
           <li class="on"><span class="dot"></span>Chapter 1 · DDIC 1차: 기본 데이터 구조 생성</li>
           <li><span class="dot"></span>Chapter 2 · ABAP 기본 문법과 WRITE 출력</li>
           <li><span class="dot"></span>Chapter 3 · PARAMETERS 기반 Selection Screen 맛보기</li>
@@ -263,39 +272,235 @@ body.nav-open .scrim{opacity:1;pointer-events:auto;}
           <li><span class="dot"></span>Chapter 5 · ABAP 모듈화 기초</li>
           <li><span class="dot"></span>Chapter 6 · Internal Table 기초</li>
           <li><span class="dot"></span>Chapter 7 · Internal Table 응용과 Deep Structure</li>
-          <li><span class="dot"></span>Chapter 8 · Simple ALV / SALV 1차</li>
-          <li><span class="dot"></span>Chapter 9 · Open SQL 1차: 기본 조회</li>
         </ul>
       </div>
-    </aside>
+      <div class="rail__panel" data-rpanel="terms">
+        <p class="glos__note">이 레슨에 나온 핵심 용어를 한곳에 모았습니다. 본문에서 점선 용어에 마우스를 올리면 바로 뜻이 떠요.</p>
+        <ul class="glos" id="railTerms"><!-- JS가 본문 .term을 모아 자동 생성 --></ul>
+      </div>
+    </div>
+  </nav>
+  <button class="railFab" id="railFab" aria-label="네비 열기">☰</button>
+
+  <div class="stage">
+    <div class="layout">
+      <main class="main">
+        <section class="lhead">
+          <p class="crumb"><a href="#">Home</a><i>›</i><a href="#">ABAP 커리큘럼</a><i>›</i><a href="#">DDIC 1차: 기본 데이터 구조 생성</a><i>›</i><b>Domain 기본 설계</b></p>
+          <p class="lhead__eyebrow">ABAP 기본 이론 및 구현 흐름</p>
+          <h1>Domain 기본 설계</h1>
+          <div class="tags"><span class="tag t-track">Track 1</span><span class="tag t-ch">Chapter 1</span><span class="tag t-ls">Lesson 2</span><span class="tag t-lv">하 (Low)</span></div>
+        </section>
+
+        <section class="card tcode" id="tcode">
+          <p class="card__h"><span class="ic">🖥️</span>이번 Lesson에서 다루는 트랜잭션 코드</p>
+          <button class="tcode-label" data-tcode="SE11">
+            <span class="tcode-label__badge">복습</span>
+            <span class="tcode-label__code">SE11</span>
+            <span class="tcode-label__hint">자세히 보기 ›</span>
+          </button>
+          <p class="tcode__cap">라벨을 누르면 SE11이 무엇이고 어떻게 여는지, 화면 구성과 주의점까지 한 장으로 설명합니다.</p>
+        </section>
+
+        <section class="card goals" id="goals">
+          <p class="card__h"><span class="ic">🎯</span>학습 목표</p>
+          <p>이번 Lesson에서는 <span class="term" data-t="Domain (도메인)" data-d="값의 기술적 속성(타입·길이·허용값)을 정의하는 DDIC의 가장 아래 부품입니다.">Domain</span>을 "값의 기술 규격"으로 설계합니다. 수업이 끝나면
+            <span class="term" data-t="Data Type" data-d="값의 종류. 문자(CHAR), 숫자(NUMC/INT), 날짜(DATS) 등.">Data Type</span>,
+            <span class="term" data-t="Length" data-d="값을 저장할 칸의 길이(자릿수).">Length</span>,
+            <span class="term" data-t="Output Length" data-d="화면에 보여줄 때 차지하는 표시 길이.">Output Length</span>,
+            <span class="term" data-t="Fixed Value" data-d="허용 가능한 값을 고정 목록으로 제한하는 설정. 예: 상태 A/B/C만 허용.">Fixed Value</span>의 역할을 나눠 설명하고,
+            SE11에서 작은 Domain을 저장·검사·<span class="term" data-t="활성화 (Activation)" data-d="작성한 DDIC 객체를 시스템이 실제로 사용할 수 있게 컴파일·등록하는 단계.">활성화</span>하는 흐름을 직접 시뮬레이션할 수 있어야 합니다.</p>
+        </section>
+
+        <section class="block" id="s1" data-n="01">
+          <h2><span class="num">1.</span> Domain은 업무 의미가 아니라 값의 재질을 정한다</h2>
+          <p>지난 Lesson에서 <span class="term" data-t="DDIC (SAP Dictionary)" data-d="테이블·데이터 타입·도메인을 한곳에서 정의·관리하는 SAP의 중앙 데이터 사전입니다.">DDIC</span>는 SAP 시스템이 공유하는 데이터 정의의 기준점이라고 봤습니다. Domain은 그 기준점 안에서 가장 아래쪽에 놓이는 부품입니다.</p>
+          <p>"주문 상태"라는 <strong>업무 의미</strong>보다 먼저 "한 글자 코드인가, 숫자인가, 허용값이 고정되어 있는가"라는 <strong>값의 재질</strong>을 정합니다.</p>
+          <div class="ex"><b>비유:</b> Domain은 "그릇의 규격(재질·크기)", 업무 의미를 붙이는 건 다음 단계(Data Element)에서 "그릇에 이름표 붙이기"입니다.</div>
+        </section>
+
+        <section class="block" id="s2" data-n="02">
+          <h2><span class="num">2.</span> 네 가지 속성을 나눠서 본다</h2>
+          <p>Domain을 만들 때 정하는 핵심 속성은 네 가지예요. 지금은 "이런 게 있구나" 정도면 충분합니다.</p>
+          <details class="fold"><summary>Data Type & Length — 값의 종류와 칸의 크기</summary><div class="fold__in">계산할 값인지(숫자), 코드인지(문자)를 먼저 정하고, 저장 길이(자릿수)를 정합니다. 예: 상태 코드는 <code>CHAR 1</code>.</div></details>
+          <details class="fold"><summary>Output Length — 화면 표시 폭</summary><div class="fold__in">저장 길이와 별개로 화면에 보여줄 폭입니다. 보통은 같지만, 통화·부호 등으로 표시가 더 길어질 수 있어요.</div></details>
+          <details class="fold"><summary>Fixed Value — 허용값 고정</summary><div class="fold__in">값을 정해진 목록으로만 받게 제한합니다. 작고 안정적인 코드 목록(A/B/C)에 적합하며 입력 도움말과 기본 검증에 쓰입니다.</div></details>
+        </section>
+
+        <section class="block" id="s3" data-n="03">
+          <h2><span class="num">3.</span> SE11에서 만드는 흐름 (저장 → 검사 → 활성화)</h2>
+          <p>SE11에서 Domain을 만들면 <strong>저장(Save) → 검사(Check) → 활성화(Activate)</strong> 3단계를 거칩니다. 활성화까지 끝나야 다른 객체가 이 Domain을 가져다 쓸 수 있어요.</p>
+          <div class="ex"><b>주의:</b> 저장만 하고 활성화를 안 하면 "왜 안 보이지?"가 됩니다. 활성화는 "이제 진짜 쓸게요" 선언이에요.</div>
+        </section>
+
+        <section class="card" id="summary">
+          <p class="card__h"><span class="ic">🧾</span>한눈에 정리</p>
+          <div class="recap__grid">
+            <div class="recap__c"><b>Domain</b><span>값의 기술 규격과 작은 허용 범위를 정하는 DDIC 하위 부품입니다.</span></div>
+            <div class="recap__c"><b>Data Type과 Length</b><span>계산할 값인지 보존할 코드인지 먼저 보고 저장 길이를 정합니다.</span></div>
+            <div class="recap__c"><b>Fixed Value</b><span>작고 안정적인 코드 목록에 적합하며 입력 도움과 기본 검증에 쓰입니다.</span></div>
+            <div class="recap__c"><b>Value Table</b><span>자동 검증이 아니라 Foreign Key 후보를 제안하는 성격으로 이해합니다.</span></div>
+          </div>
+          <div class="next-preview"><span class="ic">➡️</span><div><b>다음 Lesson 예고</b><br>오늘 만든 Domain 위에 업무 의미, 화면 라벨, 설명 문장을 붙이는 <strong>Data Element 설계</strong>를 다룹니다.</div></div>
+        </section>
+
+        <nav class="lesson-nav">
+          <a href="#"><span class="dir">← 이전 LESSON</span><span class="ttl">SAP Dictionary의 목적과 개발 흐름</span></a>
+          <a class="next" href="#"><span class="dir">다음 LESSON →</span><span class="ttl">Data Element 기본 설계</span></a>
+        </nav>
+        <footer class="foot">SAP Developer Learning Library · Lesson Viewer · 시안 v2-C</footer>
+      </main>
+
+      <!-- 우측 "이 레슨의 여정" (접기 없음 · 스크롤 위치 표시) -->
+      <aside class="journey">
+        <p class="journey__hd">이 레슨의 여정</p>
+        <p class="journey__sub">스크롤에 따라 현재 위치가 표시돼요.</p>
+        <ul class="steps" id="steps">
+          <li class="step" data-go="tcode"><span class="step__dot"></span><span class="step__t">트랜잭션 코드</span><span class="step__s">SE11 미리보기</span></li>
+          <li class="step" data-go="goals"><span class="step__dot"></span><span class="step__t">학습 목표</span><span class="step__s">무엇을 배우나</span></li>
+          <li class="step" data-go="s1"><span class="step__dot"></span><span class="step__t">1. 값의 재질</span><span class="step__s">Domain의 정체</span></li>
+          <li class="step" data-go="s2"><span class="step__dot"></span><span class="step__t">2. 네 가지 속성</span><span class="step__s">Type·Length·…</span></li>
+          <li class="step" data-go="s3"><span class="step__dot"></span><span class="step__t">3. SE11 흐름</span><span class="step__s">저장→검사→활성화</span></li>
+          <li class="step" data-go="summary"><span class="step__dot"></span><span class="step__t">한눈에 정리</span><span class="step__s">복습·다음</span></li>
+        </ul>
+      </aside>
+    </div>
+  </div>
+
+  <!-- T-code 미니 페이지 모달 -->
+  <div class="tmodal" id="tmodal" hidden>
+    <div class="tmodal__backdrop" data-close></div>
+    <div class="tmodal__card" role="dialog" aria-modal="true" aria-labelledby="tmCode">
+      <header class="tmodal__hd">
+        <span class="tmodal__badge" id="tmBadge">복습</span>
+        <div><span class="tmodal__code" id="tmCode">SE11</span><span class="tmodal__sub" id="tmSub"></span></div>
+        <button class="tmodal__x" data-close aria-label="닫기">×</button>
+      </header>
+      <div class="tmodal__body" id="tmBody"></div>
+    </div>
   </div>
 
 <script>
 (function(){
-  const body=document.body, mq=()=>matchMedia('(max-width:1000px)').matches;
-  document.querySelectorAll('.rnav__tab').forEach(tab=>tab.addEventListener('click',()=>{
-    document.querySelectorAll('.rnav__tab').forEach(t=>t.classList.toggle('on',t===tab));
-    document.querySelectorAll('.rnav__panel').forEach(p=>p.classList.toggle('on',p.dataset.rpanel===tab.dataset.rtab));
-  }));
-  const handle=document.querySelector('.nav-handle'), scrim=document.querySelector('.scrim');
-  function sync(){ const hidden=mq()?!body.classList.contains('nav-open'):body.classList.contains('nav-collapsed'); handle.textContent=hidden?'‹':'›'; handle.title=hidden?(mq()?'메뉴 열기':'네비 펼치기'):(mq()?'메뉴 닫기':'네비 접기'); }
-  handle.addEventListener('click',()=>{ if(mq()) body.classList.toggle('nav-open'); else body.classList.toggle('nav-collapsed'); sync(); });
-  scrim.addEventListener('click',()=>{ body.classList.remove('nav-open'); sync(); });
-  addEventListener('resize',sync); sync();
+  const body=document.body, isMobile=()=>matchMedia('(max-width:1000px)').matches;
+
+  /* 1) 좌측 레일: 아이콘/탭/hover/드로어 */
+  const rail=document.getElementById('rail');
+  function openRail(tab){ rail.classList.add('open'); if(isMobile()) body.classList.add('rail-open'); if(tab) setTab(tab); }
+  function closeRail(){ rail.classList.remove('open'); body.classList.remove('rail-open'); }
+  function setTab(tab){
+    rail.querySelectorAll('[data-rtab]').forEach(b=>b.classList.toggle('on',b.dataset.rtab===tab));
+    rail.querySelectorAll('[data-rpanel]').forEach(p=>p.classList.toggle('on',p.dataset.rpanel===tab));
+  }
+  rail.querySelectorAll('.rail__icons .rail__btn').forEach(b=>b.addEventListener('click',()=>openRail(b.dataset.rtab)));
+  rail.querySelectorAll('.rail__tab').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.rtab)));
+  rail.querySelector('.rail__x').addEventListener('click',closeRail);
+  document.querySelector('.scrim').addEventListener('click',closeRail);
+  document.getElementById('railFab').addEventListener('click',()=>rail.classList.contains('open')?closeRail():openRail());
+  rail.addEventListener('mouseenter',()=>{ if(!isMobile()) rail.classList.add('open'); });
+  rail.addEventListener('mouseleave',()=>{ if(!isMobile()) rail.classList.remove('open'); });
+  addEventListener('resize',()=>{ if(!isMobile()) body.classList.remove('rail-open'); });
+
+  /* 1-b) 용어 모음 자동 수집 (v2-G) — 본문 .term 을 모아 레일 용어 탭에 채움 */
+  const railTerms=document.getElementById('railTerms'); const seen=new Set();
+  document.querySelectorAll('.main .term').forEach(t=>{
+    const k=t.dataset.t||t.textContent.trim(); if(seen.has(k)) return; seen.add(k);
+    const li=document.createElement('li'); li.innerHTML=`<b>${k}</b><span>${t.dataset.d||''}</span>`;
+    railTerms.appendChild(li);
+  });
+
+  /* 2) 전체화면 — 켜면 본문이 가로폭을 꽉 채움 */
   const fsBtn=document.querySelector('.fs-btn');
-  fsBtn.addEventListener('click',()=>{ if(!document.fullscreenElement) document.documentElement.requestFullscreen?.(); else document.exitFullscreen?.(); });
-  let pop=null; const close=()=>{ if(pop){pop.remove();pop=null;} };
-  document.querySelectorAll('.term').forEach(t=>t.addEventListener('mouseenter',()=>{
-    close(); pop=document.createElement('div'); pop.className='term-popup';
-    pop.innerHTML=`<button class="term-popup__x">×</button><b>${t.dataset.t||t.textContent}</b><span>${t.dataset.d||''}</span>`;
-    document.body.appendChild(pop);
-    const r=t.getBoundingClientRect(); pop.style.left=Math.min(r.left+scrollX,scrollX+innerWidth-320)+'px'; pop.style.top=(r.bottom+scrollY+8)+'px';
-    pop.querySelector('.term-popup__x').addEventListener('click',close);
-  }));
-  document.addEventListener('click',e=>{ if(pop && !pop.contains(e.target) && !e.target.classList.contains('term')) close(); });
+  fsBtn.addEventListener('click',()=>{ if(!document.fullscreenElement) (document.documentElement.requestFullscreen||document.documentElement.webkitRequestFullscreen)?.call(document.documentElement); else (document.exitFullscreen||document.webkitExitFullscreen)?.call(document); });
+  function onFs(){ const on=!!(document.fullscreenElement||document.webkitFullscreenElement); body.classList.toggle('is-fullscreen',on); fsBtn.title=on?'전체화면 해제':'전체화면'; }
+  document.addEventListener('fullscreenchange',onFs); document.addEventListener('webkitfullscreenchange',onFs);
+
+  /* 4) T-code 미니 페이지 모달 */
+  const TCODES={
+    SE11:{ badge:'복습', sub:'ABAP Dictionary (DDIC) — 데이터 정의 도구',
+      body:`
+      <h4>📌 한 줄 정의</h4>
+      <p><b>SE11</b>은 SAP의 <span style="font-weight:700">ABAP Dictionary(DDIC)</span> 객체 — Domain·Data Element·Structure·Table 등 — 을 <b>만들고 조회·수정·활성화</b>하는 트랜잭션 코드입니다.</p>
+      <p class="callout"><b>트랜잭션 코드란?</b> SAP 화면을 바로 여는 짧은 명령어예요. 메뉴를 단계별로 누르는 대신 코드 한 줄로 원하는 화면에 점프합니다.</p>
+      <h4>🚪 어떻게 여나요?</h4>
+      <p>화면 왼쪽 위 <b>명령 필드</b>에 트랜잭션 코드를 입력하고 Enter:</p>
+      <div class="cmdfield">/nSE11</div>
+      <ul>
+        <li><code>/n</code> = 현재 작업을 닫고 새 트랜잭션으로 이동(가장 안전한 기본).</li>
+        <li><code>/o</code> = 새 창(세션)으로 열기. 기존 화면을 두고 비교할 때.</li>
+      </ul>
+      <h4>🧭 화면 구성(처음 보면 이렇게 생겼어요)</h4>
+      <ul>
+        <li><b>객체 종류 선택</b>: Database table / View / Data type(=Structure·Data Element·Domain) / Type Group / … 라디오 버튼.</li>
+        <li><b>이름 입력칸</b>: 만들거나 열 객체 이름(예: 도메인 <code>ZHR_STATUS</code>).</li>
+        <li><b>3개의 버튼</b>: 👁️ <b>Display</b>(조회) · ✏️ <b>Change</b>(수정) · ➕ <b>Create</b>(새로 만들기).</li>
+      </ul>
+      <h4>🛠️ 여기서 하는 일</h4>
+      <ul>
+        <li>Domain을 만들어 <b>값의 재질</b>(타입·길이·허용값)을 정한다 — <i>이번 Lesson</i>.</li>
+        <li>그 위에 Data Element로 <b>업무 의미·라벨</b>을 붙인다.</li>
+        <li>Structure/Table로 <b>여러 필드를 묶어</b> 실제 데이터 구조를 만든다.</li>
+      </ul>
+      <h4>⚠️ 입문자가 자주 걸리는 점</h4>
+      <ul>
+        <li><b>저장 ≠ 활성화</b>: 저장(💾)만 하면 "작성 중" 상태. <b>활성화(🔥 Ctrl+F3)</b>까지 해야 다른 객체가 가져다 씁니다.</li>
+        <li>조회만 하려고 들어왔는데 못 고치겠다? → <b>Display 모드</b>라서 그래요. <b>Change</b>로 전환하세요.</li>
+      </ul>
+      <h4>🔗 함께 보는 트랜잭션</h4>
+      <div class="related"><span>SE16N</span><span>SE80</span><span>SE37</span></div>
+      <p style="margin-top:6px;font-size:.9rem;color:var(--ink-soft)">SE16N=테이블 데이터 조회 · SE80=개발 워크벤치(객체 모음) · SE37=Function Module.</p>
+      <h4>✅ 정리</h4>
+      <p>SE11은 "데이터의 설계도를 그리는 방"입니다. 이번 Lesson에서는 그 설계도의 가장 작은 부품인 <b>Domain</b>부터 그립니다.</p>
+      `}
+  };
+  const tmodal=document.getElementById('tmodal');
+  function openTcode(code){
+    const d=TCODES[code]; if(!d) return;
+    document.getElementById('tmCode').textContent=code;
+    document.getElementById('tmBadge').textContent=d.badge||'';
+    document.getElementById('tmSub').textContent=d.sub||'';
+    document.getElementById('tmBody').innerHTML=d.body||'';
+    tmodal.hidden=false; body.style.overflow='hidden';
+  }
+  function closeTcode(){ tmodal.hidden=true; body.style.overflow=''; }
+  document.querySelectorAll('.tcode-label').forEach(b=>b.addEventListener('click',()=>openTcode(b.dataset.tcode)));
+  tmodal.querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click',closeTcode));
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape' && !tmodal.hidden) closeTcode(); });
+
+  /* 5/6) 우측 여정 — 스크롤 위치 표시(현재/지나옴) + 클릭 점프 */
+  const steps=[...document.querySelectorAll('.step')];
+  const secs=steps.map(s=>document.getElementById(s.dataset.go));
+  const stepsEl=document.getElementById('steps');
+  steps.forEach((st,i)=>st.addEventListener('click',()=>secs[i]&&secs[i].scrollIntoView({behavior:'smooth',block:'start'})));
+  function spy(){
+    let idx=0; for(let i=0;i<secs.length;i++){ if(secs[i] && secs[i].getBoundingClientRect().top<=150) idx=i; }
+    steps.forEach((s,i)=>{ s.classList.toggle('current',i===idx); s.classList.toggle('visited',i<idx); });
+    const pct=steps.length>1?(idx/(steps.length-1))*100:0;
+    stepsEl.style.setProperty('--progress',pct+'%');
+  }
+
+  /* 읽기 진행률 바 */
   const rp=document.querySelector('.read-progress>i');
-  function onScroll(){ const h=document.documentElement.scrollHeight-innerHeight; if(rp) rp.style.width=(h>0?Math.min(100,scrollY/h*100):0)+'%'; }
+  function onScroll(){ const h=document.documentElement.scrollHeight-innerHeight; if(rp) rp.style.width=(h>0?Math.min(100,scrollY/h*100):0)+'%'; spy(); }
   addEventListener('scroll',onScroll,{passive:true}); addEventListener('resize',onScroll); onScroll();
+
+  /* 1) 용어 팝업 — hover=임시, click=고정 */
+  let pop=null, curTerm=null, pinned=false;
+  function place(t){ const r=t.getBoundingClientRect(); pop.style.left=Math.min(r.left+scrollX, scrollX+innerWidth-312)+'px'; pop.style.top=(r.bottom+scrollY+8)+'px'; }
+  function build(t){
+    pop=document.createElement('div'); pop.className='term-popup';
+    pop.innerHTML=`<button class="term-popup__x" aria-label="닫기">×</button><b>${t.dataset.t||t.textContent}</b><span>${t.dataset.d||''}</span><span class="term-popup__pin">📌 클릭하면 고정</span>`;
+    document.body.appendChild(pop); place(t);
+    pop.querySelector('.term-popup__x').addEventListener('click',()=>destroy(true));
+  }
+  function destroy(force){ if(pop && (force||!pinned)){ pop.remove(); pop=null; curTerm=null; pinned=false; } }
+  function show(t){ if(curTerm===t) return; destroy(true); curTerm=t; pinned=false; build(t); }
+  document.querySelectorAll('.term').forEach(t=>{
+    t.addEventListener('mouseenter',()=>show(t));
+    t.addEventListener('mouseleave',()=>{ if(!pinned) destroy(); });
+    t.addEventListener('click',e=>{ e.stopPropagation(); if(curTerm!==t) show(t); pinned=true; pop.classList.add('pinned'); pop.querySelector('.term-popup__pin').textContent='📌 고정됨 · 바깥을 누르면 닫힘'; });
+  });
+  document.addEventListener('click',e=>{ if(pinned && pop && !pop.contains(e.target) && !e.target.classList.contains('term')) destroy(true); });
 })();
 </script>
 </body>
