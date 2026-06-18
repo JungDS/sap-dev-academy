@@ -39,13 +39,14 @@ a{color:var(--brand);text-decoration:none;}
 @media(max-width:720px){.appbar .meta{display:none;}}
 
 /* 레이아웃 */
-.layout{display:grid;grid-template-columns:minmax(0,1fr) 328px;gap:26px;max-width:1320px;margin:0 auto;padding:26px 24px 96px;align-items:start;}
-body.nav-collapsed .layout{grid-template-columns:minmax(0,1fr);}
-.main{min-width:0;}
+/* nav 영역 상시 예약 → 접어도 본문 레이아웃 불변(독립 요소) */
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 350px;max-width:1320px;margin:0 auto;padding:26px 24px 96px;align-items:start;}
+.main{min-width:0;max-width:860px;margin:0 auto;}
 
 /* C 핸들: 큰 웜 필(아래쪽 배치) */
-.nav-handle{position:fixed;right:0;top:56%;z-index:45;writing-mode:vertical-lr;transform:rotate(180deg);background:linear-gradient(160deg,var(--brand),#0b5d56);color:#fff;border:0;border-radius:16px 0 0 16px;padding:20px 11px;font-size:.82rem;font-weight:800;cursor:pointer;box-shadow:-4px 4px 18px rgba(15,118,110,.34);letter-spacing:.06em;transition:padding .15s;}
-.nav-handle:hover{padding-right:15px;}
+/* C 핸들: 큰 둥근 그라데이션 아이콘(회전 없음), 아래쪽 배치 */
+.nav-handle{position:fixed;right:0;top:56%;z-index:45;background:linear-gradient(160deg,var(--brand),#0b5d56);color:#fff;border:0;border-radius:16px 0 0 16px;width:40px;height:64px;font-size:1.35rem;font-weight:800;line-height:1;cursor:pointer;display:grid;place-items:center;box-shadow:-4px 4px 18px rgba(15,118,110,.34);transition:width .15s;}
+.nav-handle:hover{width:48px;}
 
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:24px 28px;margin:18px 0;box-shadow:var(--shadow);}
 
@@ -112,7 +113,8 @@ details.fold .fold__in{padding:14px 18px;border-top:1px solid var(--line);color:
 .foot{color:var(--ink-soft);font-size:.84rem;padding:24px 4px;border-top:1px solid var(--line);margin-top:20px;}
 
 /* 우측 네비 — 알약 탭 */
-.rnav{position:sticky;top:calc(var(--appbar-h) + 16px);max-height:calc(100vh - var(--appbar-h) - 32px);overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:var(--shadow);}
+.rnav{position:fixed;right:16px;top:calc(var(--appbar-h) + 16px);width:320px;max-height:calc(100vh - var(--appbar-h) - 32px);overflow:auto;z-index:30;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:var(--shadow);transition:transform .28s cubic-bezier(.4,0,.2,1);}
+body.nav-collapsed .rnav{transform:translateX(calc(100% + 56px));}
 .rnav__cur{background:#f3faf8;border:1px solid #cfe9e3;border-radius:14px;padding:12px 14px;margin-bottom:14px;}
 .rnav__cur small{font-size:.72rem;color:var(--ink-soft);font-weight:700;} .rnav__cur b{display:block;font-size:1.02rem;}
 .rnav__tabs{display:flex;gap:6px;margin-bottom:14px;background:#f1efe8;border-radius:999px;padding:4px;}
@@ -161,7 +163,7 @@ body.nav-open .scrim{opacity:1;pointer-events:auto;}
     <button class="icon-btn fs-btn" title="전체화면">⛶</button>
   </header>
   <div class="read-progress"><i></i></div>
-  <button class="nav-handle">Navigation 접기</button>
+  <button class="nav-handle" title="네비 접기" aria-label="네비게이션 토글">›</button>
   <div class="scrim"></div>
 
   <div class="layout">
@@ -276,7 +278,7 @@ body.nav-open .scrim{opacity:1;pointer-events:auto;}
     document.querySelectorAll('.rnav__panel').forEach(p=>p.classList.toggle('on',p.dataset.rpanel===tab.dataset.rtab));
   }));
   const handle=document.querySelector('.nav-handle'), scrim=document.querySelector('.scrim');
-  function sync(){ handle.textContent=(mq()?(body.classList.contains('nav-open')?'Navigation 닫기':'Navigation 열기'):(body.classList.contains('nav-collapsed')?'Navigation 펼치기':'Navigation 접기')); }
+  function sync(){ const hidden=mq()?!body.classList.contains('nav-open'):body.classList.contains('nav-collapsed'); handle.textContent=hidden?'‹':'›'; handle.title=hidden?(mq()?'메뉴 열기':'네비 펼치기'):(mq()?'메뉴 닫기':'네비 접기'); }
   handle.addEventListener('click',()=>{ if(mq()) body.classList.toggle('nav-open'); else body.classList.toggle('nav-collapsed'); sync(); });
   scrim.addEventListener('click',()=>{ body.classList.remove('nav-open'); sync(); });
   addEventListener('resize',sync); sync();

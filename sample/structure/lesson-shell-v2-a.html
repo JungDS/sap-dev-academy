@@ -42,16 +42,15 @@ a{color:var(--brand);text-decoration:none;}
 .read-progress>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--accent));transition:width .12s ease-out;box-shadow:0 0 8px rgba(59,91,219,.35);}
 @media(max-width:720px){.appbar .meta{display:none;}}
 
-/* ===== 레이아웃 ===== */
-.layout{display:grid;grid-template-columns:minmax(0,1fr) 326px;gap:22px;max-width:1340px;margin:0 auto;padding:22px 22px 90px;align-items:start;}
-body.nav-collapsed .layout{grid-template-columns:minmax(0,1fr);}
-.main{min-width:0;}
+/* ===== 레이아웃 — nav 영역을 상시 예약해 접어도 본문 레이아웃 불변(독립 요소) ===== */
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 350px;max-width:1320px;margin:0 auto;padding:22px 24px 90px;align-items:start;}
+.main{min-width:0;max-width:880px;margin:0 auto;}
 
-/* ===== 네비 접기 핸들 (우측 가장자리) ===== */
-.nav-handle{position:fixed;right:0;top:46%;z-index:45;writing-mode:vertical-lr;transform:rotate(180deg);
-  background:var(--brand);color:#fff;border:0;border-radius:10px 0 0 10px;padding:14px 7px;font-size:.78rem;font-weight:700;cursor:pointer;
-  box-shadow:-2px 2px 10px rgba(59,91,219,.3);letter-spacing:.04em;}
-.nav-handle:hover{background:#2f4bc0;}
+/* ===== 네비 핸들 — 아이콘 쉐브론(회전 없음), 시안별 자유 ===== */
+.nav-handle{position:fixed;right:0;top:44%;z-index:45;background:var(--brand);color:#fff;border:0;border-radius:12px 0 0 12px;
+  width:34px;height:56px;font-size:1.2rem;font-weight:700;line-height:1;cursor:pointer;display:grid;place-items:center;
+  box-shadow:-2px 2px 12px rgba(59,91,219,.32);transition:width .15s,background .15s;}
+.nav-handle:hover{background:#2f4bc0;width:40px;}
 
 /* ===== 카드 공통 ===== */
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px;margin:16px 0;box-shadow:var(--shadow);}
@@ -128,9 +127,10 @@ details.fold .fold__in{padding:13px 16px;border-top:1px solid var(--line);color:
 .lesson-nav .next{text-align:right;}
 .foot{color:var(--ink-soft);font-size:.84rem;padding:22px 4px;border-top:1px solid var(--line);margin-top:18px;}
 
-/* ===== 우측 네비 ===== */
-.rnav{position:sticky;top:calc(var(--appbar-h) + 14px);max-height:calc(100vh - var(--appbar-h) - 28px);overflow:auto;
-  background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:var(--shadow);}
+/* ===== 우측 네비 — fixed 독립 요소. 접으면 본문 안 건드리고 오른쪽으로 슬라이드 아웃 ===== */
+.rnav{position:fixed;right:16px;top:calc(var(--appbar-h) + 14px);width:318px;max-height:calc(100vh - var(--appbar-h) - 28px);overflow:auto;z-index:30;
+  background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:var(--shadow);transition:transform .28s cubic-bezier(.4,0,.2,1);}
+body.nav-collapsed .rnav{transform:translateX(calc(100% + 40px));}
 .rnav__cur{background:#f4f7ff;border:1px solid #e1e8f8;border-radius:12px;padding:11px 13px;margin-bottom:12px;}
 .rnav__cur small{font-size:.72rem;color:var(--ink-soft);font-weight:700;} .rnav__cur b{display:block;font-size:1rem;}
 .rnav__tabs{display:flex;gap:6px;margin-bottom:12px;}
@@ -182,7 +182,7 @@ body.nav-open .scrim{opacity:1;pointer-events:auto;}
     <button class="icon-btn fs-btn" title="전체화면">⛶</button>
   </header>
   <div class="read-progress"><i></i></div>
-  <button class="nav-handle">Navigation 접기</button>
+  <button class="nav-handle" title="네비 접기" aria-label="네비게이션 토글">›</button>
   <div class="scrim"></div>
 
   <div class="layout">
@@ -310,8 +310,7 @@ body.nav-open .scrim{opacity:1;pointer-events:auto;}
 
   /* 네비 핸들: 데스크톱=접기 / 모바일=드로어 */
   const handle=document.querySelector('.nav-handle'), scrim=document.querySelector('.scrim');
-  function syncHandle(){ handle.textContent = (mq()? (body.classList.contains('nav-open')?'Navigation 닫기':'Navigation 열기')
-                                                    : (body.classList.contains('nav-collapsed')?'Navigation 펼치기':'Navigation 접기')); }
+  function syncHandle(){ const hidden=mq()?!body.classList.contains('nav-open'):body.classList.contains('nav-collapsed'); handle.textContent=hidden?'‹':'›'; handle.title=hidden?(mq()?'메뉴 열기':'네비 펼치기'):(mq()?'메뉴 닫기':'네비 접기'); }
   handle.addEventListener('click',()=>{ if(mq()) body.classList.toggle('nav-open'); else body.classList.toggle('nav-collapsed'); syncHandle(); });
   scrim.addEventListener('click',()=>{ body.classList.remove('nav-open'); syncHandle(); });
   addEventListener('resize',syncHandle); syncHandle();
