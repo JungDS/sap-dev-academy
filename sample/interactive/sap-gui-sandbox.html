@@ -53,6 +53,8 @@ h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 24
 .sap-modal p{padding:18px;margin:0;color:#1e293b;font-size:.9rem;}
 .sap-modal .foot{background:#f8fafc;padding:10px 16px;display:flex;justify-content:flex-end;border-top:1px solid var(--line);}
 .sap-modal button{background:#475569;color:#fff;border:none;padding:6px 16px;border-radius:4px;font-size:.85rem;cursor:pointer;}
+.sap-tcode-desc{margin-left:14px;color:#cbd5e1;font-weight:normal;font-size:.78rem;}
+.sap-input[readonly]{background:#e7ebf1;color:#5b6878;cursor:default;font-weight:bold;}
 .sap-field .req{color:#be123c;font-weight:bold;}
 .sap-field .opt{color:#64748b;font-weight:normal;font-size:.78rem;}
 @media (max-width:520px){.sap-field{grid-template-columns:1fr;gap:4px;}}
@@ -63,12 +65,13 @@ h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 24
   <main class="wrap">
     <p class="eyebrow">Interactive · SAP GUI 샌드박스</p>
     <h1>가짜 SAPGUI로 안전하게 실행 체험</h1>
-    <p class="lead">실제 시스템 없이도 "입력 → 실행 → 결과" 흐름을 체험합니다. <strong>사업장(WERKS)은 필수</strong>, <strong>사번(PERNR)은 선택</strong>입니다. 사업장만 입력하면 그 사업장의 <strong>여러 명</strong>이, 사번까지 입력하면 <strong>한 명</strong>만 조회됩니다.</p>
+    <p class="lead">실제 시스템 없이도 표준 트랜잭션 <strong>SE16N</strong>(범용 테이블 조회)으로 PA0001을 조회하는 "입력 → 실행 → 결과" 흐름을 체험합니다. <strong>사업장(WERKS)은 필수</strong>, <strong>사번(PERNR)은 선택</strong>입니다. 사업장만 입력하면 그 사업장의 <strong>여러 명</strong>이, 사번까지 입력하면 <strong>한 명</strong>만 조회됩니다.</p>
 
     <div class="sap-sandbox" data-sandbox>
-      <div class="sap-header"><span class="sap-tcode">Transaction <span class="val">ZHR_EMP</span></span></div>
-      <div class="sap-title">사원 정보 조회 (Selection Screen)</div>
+      <div class="sap-header"><span class="sap-tcode">Transaction <span class="val">SE16N</span></span><span class="sap-tcode-desc">범용 테이블 조회 · Data Browser</span></div>
+      <div class="sap-title">테이블 PA0001 조회 (SE16N · Selection Screen)</div>
       <div class="sap-screen">
+        <div class="sap-field"><label>테이블 (Table)</label><input class="sap-input" id="f-table" value="PA0001" readonly title="이 데모는 PA0001(조직 배정) 테이블에 고정되어 있습니다."></div>
         <div class="sap-field"><label>사업장 (WERKS) <span class="req">*필수</span></label><input class="sap-input" id="f-werks" placeholder="예: 1000" maxlength="4"></div>
         <div class="sap-field"><label>사번 (PERNR) <span class="opt">(선택)</span></label><input class="sap-input" id="f-pernr" placeholder="예: 0001 — 입력 시 1명만" maxlength="4"></div>
         <button class="sap-exec">▶ 실행 (F8)</button>
@@ -80,8 +83,8 @@ h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 24
         "stepDelay": 360,
         "fields": { "werks": "#f-werks", "pernr": "#f-pernr" },
         "steps": [
-          { "label":"LOAD-OF-PROGRAM", "type":"event", "text":"프로그램 로드" },
-          { "label":"START-OF-SELECTION", "type":"event", "text":"메인 로직 시작 — WERKS={werks}, PERNR={pernr}" }
+          { "label":"SE16N", "type":"event", "text":"범용 테이블 조회 시작 — 대상 테이블 PA0001" },
+          { "label":"선택조건", "type":"event", "text":"선택 조건 적용 — WERKS={werks}, PERNR={pernr}" }
         ],
         "validations": [
           { "field":"werks", "test":"required", "label":"검증실패", "text":"사업장(WERKS)은 필수입니다.", "modal":"필수 입력 항목 'WERKS'가 비어 있습니다. 사업장을 입력하세요." },
@@ -90,7 +93,7 @@ h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 24
         ],
         "selectStep": { "label":"SELECT", "type":"event", "text":"DB 조회 중... (FROM pa0001 WHERE werks = '{werks}')" },
         "selectResult": { "label":"SELECT", "type":"info", "text":"조회 완료: {count} 건 (sy-subrc 평가)" },
-        "endStep": { "label":"END-OF-SELECTION", "type":"event", "text":"결과 출력 및 마감" },
+        "endStep": { "label":"출력", "type":"event", "text":"결과를 ALV 그리드로 표시" },
         "match": { "werks":"werks", "pernr":"pernr" },
         "columns": [ {"head":"PERNR","key":"pernr"}, {"head":"NAME1","key":"name1"}, {"head":"WERKS","key":"werks"}, {"head":"STELL","key":"stell"} ],
         "db": [
