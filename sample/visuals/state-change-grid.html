@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<!--
+  상태 변화 그리드 (State Change Grid) — standalone
+  ────────────────────────────────────────────────────────────
+  내부 테이블이 연산(APPEND/SORT/DELETE)을 거치며 어떻게 변하는지
+  단계별 미니 테이블 스냅샷으로 비교. 변경 셀은 하이라이트.
+  순수 CSS, JS 없음. 재사용 시 ".scg*"/".mini-table" CSS만 가져가면 됩니다.
+-->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>상태 변화 그리드 · Sample</title>
+<style>
+:root{--bg:#f6f7fb;--surface:#fff;--ink:#1c2233;--ink-soft:#5b6478;--line:#e6e8ef;--brand:#3b5bdb;--accent:#0ca678;--radius:14px;--shadow:0 1px 2px rgba(20,28,51,.04),0 8px 24px rgba(20,28,51,.06);--font:-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic",Roboto,sans-serif;--mono:'D2Coding',Consolas,Monaco,monospace;}
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.65;}
+.topbar{position:sticky;top:0;z-index:20;border-bottom:1px solid var(--line);background:var(--surface);}
+.topbar__inner{max-width:1080px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:12px;font-weight:800;}
+.brand__mark{width:28px;height:28px;border-radius:7px;background:var(--brand);color:#fff;display:grid;place-items:center;}
+.wrap{max-width:900px;margin:28px auto 72px;padding:0 24px;}
+.eyebrow{color:var(--brand);font-weight:800;font-size:.82rem;letter-spacing:.05em;text-transform:uppercase;}
+h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 24px;}
+
+/* ===== 컴포넌트 CSS — 상태 변화 그리드 ===== */
+.scg{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;}
+.scg__state{border:1px solid #d7e1ee;border-radius:12px;background:#fff;overflow:hidden;box-shadow:var(--shadow);}
+.scg__label{display:block;padding:11px 14px;background:#eef2ff;color:#26336b;font-weight:800;border-bottom:1px solid #e0e6f5;font-size:.92rem;}
+.scg__op{font-family:var(--mono);font-size:.78rem;color:var(--brand);}
+.mini-table{width:100%;border-collapse:collapse;font-size:.86rem;}
+.mini-table th,.mini-table td{padding:7px 10px;border-bottom:1px solid #eef1f7;text-align:left;}
+.mini-table th{background:#fafbfe;color:#38506d;font-weight:700;}
+.mini-table tr:last-child td{border-bottom:none;}
+.cell-new{background:#eafaf3;box-shadow:inset 3px 0 0 #0ca678;}
+.cell-del{background:#ffe3ec;text-decoration:line-through;color:#b02a55;}
+.scg__empty{padding:14px;color:#68788c;text-align:center;background:repeating-linear-gradient(-45deg,#fff,#fff 8px,#f4f7fb 8px,#f4f7fb 16px);}
+</style>
+</head>
+<body>
+  <header class="topbar"><div class="topbar__inner"><span class="brand__mark">A</span>SAP Developer Academy</div></header>
+  <main class="wrap">
+    <p class="eyebrow">Visuals · 상태 변화</p>
+    <h1>내부 테이블이 연산을 거치며 변하는 모습</h1>
+    <p class="lead">같은 테이블이 APPEND → SORT → DELETE를 거치며 어떻게 바뀌는지 스냅샷으로 비교합니다. 추가는 초록, 삭제는 빨강으로 표시됩니다.</p>
+
+    <div class="scg">
+      <div class="scg__state">
+        <span class="scg__label">① 초기 <span class="scg__op">APPEND ×3</span></span>
+        <table class="mini-table"><thead><tr><th>idx</th><th>name</th><th>sal</th></tr></thead><tbody>
+          <tr><td>1</td><td>정훈영</td><td>50</td></tr>
+          <tr><td>2</td><td>김ABAP</td><td>30</td></tr>
+          <tr class="cell-new"><td>3</td><td>이파이오리</td><td>40</td></tr>
+        </tbody></table>
+      </div>
+      <div class="scg__state">
+        <span class="scg__label">② <span class="scg__op">SORT BY sal</span></span>
+        <table class="mini-table"><thead><tr><th>idx</th><th>name</th><th>sal</th></tr></thead><tbody>
+          <tr class="cell-new"><td>1</td><td>김ABAP</td><td>30</td></tr>
+          <tr class="cell-new"><td>2</td><td>이파이오리</td><td>40</td></tr>
+          <tr class="cell-new"><td>3</td><td>정훈영</td><td>50</td></tr>
+        </tbody></table>
+      </div>
+      <div class="scg__state">
+        <span class="scg__label">③ <span class="scg__op">DELETE WHERE sal &lt; 40</span></span>
+        <table class="mini-table"><thead><tr><th>idx</th><th>name</th><th>sal</th></tr></thead><tbody>
+          <tr class="cell-del"><td>—</td><td>김ABAP</td><td>30</td></tr>
+          <tr><td>1</td><td>이파이오리</td><td>40</td></tr>
+          <tr><td>2</td><td>정훈영</td><td>50</td></tr>
+        </tbody></table>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

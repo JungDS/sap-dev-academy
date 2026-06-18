@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<!--
+  Before / After 비교 (Before & After) — standalone
+  ────────────────────────────────────────────────────────────
+  개선 전(빨강 헤더) ↔ 개선 후(초록 헤더) 두 칼럼을 나란히 비교.
+  순수 CSS, JS 없음. 재사용 시 ".ba*" CSS만 가져가면 됩니다.
+-->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Before/After 비교 · Sample</title>
+<style>
+:root{--bg:#f6f7fb;--surface:#fff;--ink:#1c2233;--ink-soft:#5b6478;--line:#e6e8ef;--brand:#3b5bdb;--accent:#0ca678;--radius:14px;--shadow:0 1px 2px rgba(20,28,51,.04),0 8px 24px rgba(20,28,51,.06);--font:-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic",Roboto,sans-serif;--mono:'D2Coding',Consolas,Monaco,monospace;}
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.65;}
+.topbar{position:sticky;top:0;z-index:20;border-bottom:1px solid var(--line);background:var(--surface);}
+.topbar__inner{max-width:1080px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:12px;font-weight:800;}
+.brand__mark{width:28px;height:28px;border-radius:7px;background:var(--brand);color:#fff;display:grid;place-items:center;}
+.wrap{max-width:880px;margin:28px auto 72px;padding:0 24px;}
+.eyebrow{color:var(--brand);font-weight:800;font-size:.82rem;letter-spacing:.05em;text-transform:uppercase;}
+h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 24px;}
+
+/* ===== 컴포넌트 CSS — Before/After ===== */
+.ba{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.ba__col{border:1px solid #d7e1ee;border-radius:12px;background:#fff;overflow:hidden;box-shadow:var(--shadow);}
+.ba__head{padding:11px 16px;font-weight:800;color:#fff;}
+.ba__col.before .ba__head{background:#d6336c;} .ba__col.after .ba__head{background:#0ca678;}
+.ba__body{padding:16px;}
+.ba__body pre{margin:0 0 12px;font-family:var(--mono);font-size:13px;line-height:1.6;white-space:pre-wrap;color:#334155;background:#f6f8fa;border-radius:8px;padding:12px;}
+.ba__list{margin:0;padding-left:1.1rem;color:var(--ink-soft);font-size:.92rem;}
+.ba__list li{margin:4px 0;}
+.ba__metric{display:inline-block;margin-top:6px;font-size:.78rem;font-weight:800;border-radius:999px;padding:3px 10px;}
+.before .ba__metric{background:#ffe3ec;color:#b02a55;} .after .ba__metric{background:#eafaf3;color:#0b7250;}
+@media (max-width:640px){ .ba{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+  <header class="topbar"><div class="topbar__inner"><span class="brand__mark">A</span>SAP Developer Academy</div></header>
+  <main class="wrap">
+    <p class="eyebrow">Visuals · Before / After</p>
+    <h1>루프 내부 SELECT 제거하기</h1>
+    <p class="lead">"무엇이 왜 나빴고, 어떻게 좋아졌는지"를 나란히 보여 주면 개선의 효과가 또렷해집니다.</p>
+
+    <div class="ba">
+      <div class="ba__col before">
+        <div class="ba__head">✗ 개선 전 — N+1 쿼리</div>
+        <div class="ba__body">
+<pre>LOOP AT lt_ord INTO ls.
+  SELECT SINGLE name1
+    FROM pa0001 INTO lv
+    WHERE pernr = ls-pernr.
+ENDLOOP.</pre>
+          <ul class="ba__list">
+            <li>행마다 DB 왕복 → 1,000행이면 1,000번</li>
+            <li>네트워크/파싱 오버헤드 누적</li>
+          </ul>
+          <span class="ba__metric">DB 호출 1,000회</span>
+        </div>
+      </div>
+      <div class="ba__col after">
+        <div class="ba__head">✓ 개선 후 — 일괄 조회</div>
+        <div class="ba__body">
+<pre>SELECT pernr name1
+  FROM pa0001
+  INTO TABLE lt_name
+  FOR ALL ENTRIES IN lt_ord
+  WHERE pernr = lt_ord-pernr.
+" 이후 READ TABLE 로 매칭</pre>
+          <ul class="ba__list">
+            <li>한 번에 가져와 메모리에서 매칭</li>
+            <li>DB 왕복 1회로 축소</li>
+          </ul>
+          <span class="ba__metric">DB 호출 1회</span>
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
