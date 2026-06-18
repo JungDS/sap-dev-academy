@@ -4,6 +4,8 @@ title: T-code와 SE38 첫 실행
 direction: 명령창과 SE38(ABAP Editor)로 첫 프로그램을 만들고 $TMP(Local Object)에 저장한다.
 keywords: [T-code, SE38, ABAP Editor, $TMP, Local Object]
 order: 2
+tcode: SE38
+tcodeBadge: 신규
 ---
 
 ## "메뉴 뒤지기"가 답답하다

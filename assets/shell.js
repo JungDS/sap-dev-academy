@@ -211,16 +211,72 @@
       (next ? '<a class="next" href="' + DATA + next.href + '"><span class="dir">다음 LESSON →</span><span class="ttl">' + esc(next.title) + "</span></a>" : "<span></span>");
   }
 
+  /* ===== 7. T-code 공통 미니페이지 모달 (라벨 클릭 → 모달, 객체 칩 → 2차 요약 팝업) ===== */
+  function initTcode(tc) {
+    var modal = q('[data-shell="tmodal"]'), labels = qa(".tcode-label");
+    if (!modal || !labels.length) return;
+    var tcodes = tc.tcodes || {}, objects = tc.objects || {};
+    function objChips(groups) {
+      return (groups || []).map(function (g) {
+        return '<div class="objgroup"><span class="objgroup__l">' + esc(g.label) + '</span><span class="objgroup__chips">' +
+          (g.items || []).map(function (it) { return '<button class="objchip" data-sum="' + esc(it) + '">' + esc(it) + "</button>"; }).join("") +
+          "</span></div>";
+      }).join("");
+    }
+    function renderBody(d) {
+      var h = "<h4>📌 한 줄 정의</h4><p>" + esc(d.intro) + "</p>";
+      if (d.open) h += '<h4>🚪 어떻게 여나요?</h4><p>명령 필드에 입력하고 Enter:</p><div class="cmdfield">' + esc(d.open) + "</div>";
+      if (d.groups && d.groups.length) h += '<h4>🛠️ 여기서 다루는 객체</h4><p class="dim">항목을 누르면 한 줄 설명이 떠요.</p>' + objChips(d.groups);
+      if (d.pitfalls && d.pitfalls.length) h += "<h4>⚠️ 자주 걸리는 점</h4><ul>" + d.pitfalls.map(function (p) { return "<li>" + p + "</li>"; }).join("") + "</ul>";
+      if (d.related && d.related.length) h += '<h4>🔗 함께 보는 트랜잭션</h4><div class="related">' + d.related.map(function (r) { return '<span title="' + esc(r[1] || "") + '">' + esc(r[0]) + "</span>"; }).join("") + "</div>";
+      return h;
+    }
+    var sumPop = null;
+    function closeSum() { if (sumPop) { sumPop.remove(); sumPop = null; } }
+    function showSum(chip) {
+      closeSum();
+      var key = chip.getAttribute("data-sum");
+      sumPop = doc.createElement("div"); sumPop.className = "sum-popup";
+      sumPop.innerHTML = "<b>" + esc(key) + "</b><span>" + esc(objects[key] || "") + "</span>";
+      doc.body.appendChild(sumPop);
+      var r = chip.getBoundingClientRect();
+      sumPop.style.left = Math.min(r.left, window.innerWidth - sumPop.offsetWidth - 12) + "px";
+      sumPop.style.top = (r.bottom + 8) + "px";
+    }
+    function close() { modal.hidden = true; body.style.overflow = ""; closeSum(); }
+    function open(code, badge) {
+      var d = tcodes[code]; if (!d) return;
+      modal.innerHTML =
+        '<div class="tmodal__backdrop" data-close></div>' +
+        '<div class="tmodal__card" role="dialog" aria-modal="true">' +
+          '<header class="tmodal__hd">' + (badge ? '<span class="tmodal__badge">' + esc(badge) + "</span>" : "") +
+            '<div><span class="tmodal__code">' + esc(code) + '</span><span class="tmodal__sub">' + esc(d.sub || "") + "</span></div>" +
+            '<button class="tmodal__x" data-close aria-label="닫기">×</button>' +
+          "</header>" +
+          '<div class="tmodal__body">' + renderBody(d) + "</div>" +
+        "</div>";
+      modal.hidden = false; body.style.overflow = "hidden";
+      modal.querySelectorAll("[data-close]").forEach(function (el) { el.onclick = close; });
+      modal.querySelectorAll(".objchip").forEach(function (c) { c.onclick = function (e) { e.stopPropagation(); showSum(c); }; });
+      modal.querySelector(".tmodal__body").addEventListener("click", function (e) { if (!e.target.classList.contains("objchip")) closeSum(); });
+    }
+    labels.forEach(function (b) { b.addEventListener("click", function () { open(b.getAttribute("data-tcode"), b.getAttribute("data-badge")); }); });
+    doc.addEventListener("keydown", function (e) { if (e.key === "Escape" && !modal.hidden) close(); });
+  }
+
   /* ===== init ===== */
   settings();
   buildJourney();
   scrollInit();
+  var needTcode = !!q(".tcode-label");
   Promise.all([
     getJSON("curriculum.json").catch(function () { return null; }),
     getJSON("glossary.json").catch(function () { return null; }),
+    needTcode ? getJSON("tcodes.json").catch(function () { return null; }) : Promise.resolve(null),
   ]).then(function (res) {
-    var curr = res[0], gloss = res[1];
+    var curr = res[0], gloss = res[1], tc = res[2];
     if (gloss) initTermPopup(gloss);
+    if (tc) initTcode(tc);
     if (curr) { buildRail(curr, gloss || {}); prevnext(curr); }
   });
 })();

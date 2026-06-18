@@ -176,7 +176,7 @@ function main() {
   }
 
   let pageCount = 0;
-  const curriculumTracks = tracks.map((t) => {
+  const curriculumTracks = tracks.map((t, trackIdx) => {
     const chs = (byTrack.get(t.id) || [])
       .sort((a, b) => (a.meta.order ?? 0) - (b.meta.order ?? 0));
 
@@ -184,7 +184,7 @@ function main() {
       // 레슨 HTML + Tier2 작성
       const lessonsTier2 = ch.lessons.map((l) => {
         const href = `pages/${l.slug}.html`;
-        fs.writeFileSync(path.join(OUT, href), renderLessonPage(ch, l), 'utf8');
+        fs.writeFileSync(path.join(OUT, href), renderLessonPage(ch, l, trackIdx + 1), 'utf8');
         pageCount += 1;
         return {
           id: l.data.id, title: l.data.title, direction: l.data.direction || '',
@@ -230,11 +230,21 @@ function main() {
     fs.writeFileSync(path.join(OUT, 'glossary.json'), JSON.stringify(gloss, null, 2), 'utf8');
   }
 
+  // T-code 사전 pass-through (content/abap/tcodes.json → docs/abap/tcodes.json)
+  const tcodesSrc = path.join(SRC, 'tcodes.json');
+  let tcodeCount = 0;
+  if (fs.existsSync(tcodesSrc)) {
+    const tc = JSON.parse(fs.readFileSync(tcodesSrc, 'utf8'));
+    tcodeCount = Object.keys(tc.tcodes || {}).length;
+    fs.writeFileSync(path.join(OUT, 'tcodes.json'), JSON.stringify(tc, null, 2), 'utf8');
+  }
+
   const totalCh = curriculumTracks.reduce((n, t) => n + t.chapterCount, 0);
   console.log(`✓ curriculum.json — ${curriculumTracks.length} tracks / ${totalCh} chapters`);
   console.log(`✓ lessons/*.json  — ${chapters.length} files`);
   console.log(`✓ pages/*.html    — ${pageCount} lessons`);
   console.log(`✓ glossary.json   — ${glossCount} terms`);
+  console.log(`✓ tcodes.json     — ${tcodeCount} t-codes`);
 }
 
 main();
