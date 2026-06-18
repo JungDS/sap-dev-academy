@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<!--
+  의사결정 트리 (Decision Tree) — standalone
+  ────────────────────────────────────────────────────────────
+  질문에 답하며 노드를 따라가 최종 권고에 도달. 트리는 .tree-config JSON으로 정의.
+  각 노드: { q, options:[{label,next}] }  또는  { answer } (말단).
+  외부 의존성 없음. 재사용 시 ".dtree*" CSS + 하단 JS만 가져가면 됩니다.
+-->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>의사결정 트리 · Sample</title>
+<style>
+:root{--bg:#f6f7fb;--surface:#fff;--ink:#1c2233;--ink-soft:#5b6478;--line:#e6e8ef;--brand:#3b5bdb;--accent:#0ca678;--radius:14px;--shadow:0 1px 2px rgba(20,28,51,.04),0 8px 24px rgba(20,28,51,.06);--font:-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic",Roboto,sans-serif;--mono:'D2Coding',Consolas,Monaco,monospace;}
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.65;}
+.topbar{position:sticky;top:0;z-index:20;border-bottom:1px solid var(--line);background:var(--surface);}
+.topbar__inner{max-width:1080px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:12px;font-weight:800;}
+.brand__mark{width:28px;height:28px;border-radius:7px;background:var(--brand);color:#fff;display:grid;place-items:center;}
+.wrap{max-width:680px;margin:28px auto 72px;padding:0 24px;}
+.eyebrow{color:var(--brand);font-weight:800;font-size:.82rem;letter-spacing:.05em;text-transform:uppercase;}
+h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 24px;}
+
+/* ===== 컴포넌트 CSS — 의사결정 트리 ===== */
+.dtree{background:#fff;border:1px solid var(--line);border-radius:14px;padding:24px;box-shadow:var(--shadow);}
+.dtree__path{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;min-height:24px;}
+.dtree__crumb{font-size:.72rem;font-weight:700;background:#eef2ff;color:var(--brand);border-radius:999px;padding:3px 10px;}
+.dtree__crumb::after{content:"›";margin-left:6px;color:#b6c0d8;}
+.dtree__crumb:last-child::after{content:"";}
+.dtree__q{font-size:1.12rem;font-weight:800;margin:0 0 16px;}
+.dtree__options{display:grid;gap:10px;}
+.dtree__opt{text-align:left;border:1px solid var(--line);background:#f8fafc;border-radius:10px;padding:12px 16px;font:inherit;font-weight:600;color:#334155;cursor:pointer;transition:all .15s;}
+.dtree__opt:hover{border-color:var(--brand);background:#eef2ff;color:var(--brand);transform:translateX(2px);}
+.dtree__answer{border-left:5px solid var(--accent);background:#f0fbf7;border-radius:0 12px 12px 0;padding:18px 20px;}
+.dtree__answer h3{margin:0 0 6px;color:#0b7250;}
+.dtree__answer p{margin:0;color:#33493f;}
+.dtree__answer code{background:#dff5ea;padding:1px 6px;border-radius:5px;font-family:var(--mono);font-size:.9em;}
+.dtree__reset{margin-top:16px;border:1px solid var(--line);background:#fff;color:var(--ink-soft);border-radius:9px;padding:8px 16px;font:inherit;font-weight:700;cursor:pointer;}
+.dtree__reset:hover{border-color:var(--brand);color:var(--brand);}
+</style>
+</head>
+<body>
+  <header class="topbar"><div class="topbar__inner"><span class="brand__mark">A</span>SAP Developer Academy</div></header>
+  <main class="wrap">
+    <p class="eyebrow">Interactive · 의사결정 트리</p>
+    <h1>어떤 내부 테이블 타입을 쓸까?</h1>
+    <p class="lead">질문에 차례로 답하면, 상황에 맞는 ABAP 내부 테이블 종류를 추천합니다. 규칙을 외우기 전에 "선택의 근거"를 체득합니다.</p>
+
+    <div class="dtree" data-dtree>
+      <div class="dtree__path"></div>
+      <div class="dtree__stage"></div>
+      <button class="dtree__reset" hidden>↺ 처음부터</button>
+      <script type="application/json" class="tree-config">
+      {
+        "start": "n1",
+        "nodes": {
+          "n1": { "q":"행을 자주 키(key)로 직접 찾나요?", "options":[
+            {"label":"예 — 특정 키로 조회가 많다","next":"n2"},
+            {"label":"아니오 — 주로 순서대로 전체 순회","next":"a_std"} ] },
+          "n2": { "q":"키가 중복될 수 있나요?", "options":[
+            {"label":"중복 없음 (유일)","next":"a_hashed"},
+            {"label":"중복 가능","next":"a_sorted"} ] },
+          "a_std": { "answer":{ "title":"STANDARD TABLE", "body":"순차 접근·APPEND 위주라면 표준 테이블이 가장 단순하고 빠릅니다. <code>LOOP AT</code>으로 전체를 훑을 때 적합합니다." } },
+          "a_sorted": { "answer":{ "title":"SORTED TABLE", "body":"키로 정렬을 유지하면서 중복도 허용해야 한다면 정렬 테이블입니다. <code>READ ... BINARY SEARCH</code>가 자동 보장됩니다." } },
+          "a_hashed": { "answer":{ "title":"HASHED TABLE", "body":"유일 키로 대량 데이터를 상수 시간에 조회해야 하면 해시 테이블입니다. 키 접근 <code>O(1)</code>, 단 순서는 보장되지 않습니다." } }
+        }
+      }
+      </script>
+    </div>
+  </main>
+
+<script>
+// ===== 컴포넌트 JS — 의사결정 트리 =====
+(function(){
+  document.querySelectorAll("[data-dtree]").forEach(tree=>{
+    let cfg; try{ cfg=JSON.parse(tree.querySelector(".tree-config").textContent); }catch(e){ return; }
+    const stage=tree.querySelector(".dtree__stage");
+    const path=tree.querySelector(".dtree__path");
+    const reset=tree.querySelector(".dtree__reset");
+    const trail=[];
+    function go(id){
+      const node=cfg.nodes[id];
+      if(node.answer){
+        stage.innerHTML=`<div class="dtree__answer"><h3>✅ 추천: ${node.answer.title}</h3><p>${node.answer.body}</p></div>`;
+        reset.hidden=false; return;
+      }
+      stage.innerHTML=`<p class="dtree__q">${node.q}</p>`;
+      const opts=document.createElement("div"); opts.className="dtree__options";
+      node.options.forEach(o=>{
+        const b=document.createElement("button"); b.className="dtree__opt"; b.textContent=o.label;
+        b.addEventListener("click",()=>{ trail.push(o.label); renderPath(); go(o.next); });
+        opts.appendChild(b);
+      });
+      stage.appendChild(opts);
+    }
+    function renderPath(){ path.innerHTML=trail.map(t=>`<span class="dtree__crumb">${t}</span>`).join(""); }
+    reset.addEventListener("click",()=>{ trail.length=0; renderPath(); reset.hidden=true; go(cfg.start); });
+    go(cfg.start);
+  });
+})();
+</script>
+</body>
+</html>
