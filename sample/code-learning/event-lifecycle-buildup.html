@@ -264,7 +264,10 @@ body{font-family:var(--font);color:var(--ink);background:transparent;line-height
     { label:'전체 생명주기 완성 (최종 구조)',
       graph:['flowchart TD','  '+START,'  '+nLOAD,'  '+nINIT,'  '+nPBO,'  '+nSC,'  '+nASS,'  '+nSOS,'  '+nEOS,'  '+END,
         '  S --> LOAD --> INIT --> PBO --> SC',
-        gate('SC'),
+        '  SC -->|"사용자 입력 (Enter·F8 등)"| ASS',
+        '  ASS -.->|"에러 시 (PBO 없이 재표시)"| SC',
+        '  ASS -.->|"에러 없음·F8 외(Enter 등) → PBO 재실행"| PBO',
+        '  ASS -->|"에러 없음 + F8 실행"| SOS',
         '  SOS --> EOS --> E'].join('\n'),
       code:[ L('REPORT zdemo_events.'), L('PARAMETERS: p_date TYPE d, p_hide TYPE c.',true), L(''),
         L('LOAD-OF-PROGRAM.'),
@@ -284,7 +287,7 @@ body{font-family:var(--font);color:var(--ink);background:transparent;line-height
         L("  WRITE: / '조회/가공 중...'."), L(''),
         L('END-OF-SELECTION.'),
         L("  WRITE: / '완료'.") ],
-      note:'<b>AT SELECTION-SCREEN OUTPUT</b>(PBO)까지 더하면 전체 생명주기 완성. PBO는 화면을 <b>처음 그릴 때 한 번</b> 도는 단계라 루프 밖에 있다. 검증 오류가 나면 PBO가 아니라 <b>Selection Screen(입력 대기)으로 복귀</b>한다(오류 재표시는 PBO를 다시 실행하지 않음). <b>AT SELECTION-SCREEN ON</b> <i>필드</i>까지 쓰면, 오류 시 지정한 그 필드만 입력 대기가 되고 나머지는 읽기 전용으로 바뀐다.' }
+      note:'검증(AT SELECTION-SCREEN) 후 세 갈래로 갈린다. ① <b>에러</b> → PBO를 건너뛰고 화면만 재표시(Selection Screen 입력 대기). ② <b>에러 없음 + F8 외(Enter·기타 명령)</b> → 정상 라운드트립이라 <b>AT SELECTION-SCREEN OUTPUT(PBO)이 다시 실행</b>된 뒤 화면. ③ <b>에러 없음 + F8(실행)</b> → START-OF-SELECTION. — 즉 PBO 재실행 여부가 ①②를 가른다. <b>AT SELECTION-SCREEN ON</b> <i>필드</i>를 쓰면 에러 시 그 필드만 입력 대기, 나머지는 읽기 전용.' }
   ];
 
   /* ===== 빌드 ===== */
