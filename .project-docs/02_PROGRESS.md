@@ -23,12 +23,12 @@
 - 카테고리별 **독립형(self-contained) 학습수단·구조 샘플** + 카탈로그(`sample/index.html`). 상세 [06_SAMPLE_LIBRARY](06_SAMPLE_LIBRARY.md).
 - **디자인 결정 현황**:
   - 스텝 디버거: ✅ **A안(라이트 IDE) 확정** → `code-learning/step-debugger.html`(ABAP 구문강조·콘솔 현재행/전체 토글·강조=실행 직전). 비교본 제거됨.
+  - Mermaid 흐름도: ✅ **A안(배지 카드) 확정** → `visuals/mermaid-flowchart.html`(역할 배지 카드·곡선 엣지·빈 라벨 박스 숨김·스타디움 라벨 클립 해제). 비교 시안 제거됨.
   - 레슨 셸: A/B 폐기(사용금지). **C·D·E·F·G 후보 검토 중**(D=C+프로젝트색, E=몰입리더, F=학습여정, G=지식맵) → 1종 선정 대기.
-  - Mermaid 흐름도: `mermaid-flowchart-v2.html` A안 위주 → 선정 대기.
 - **확정 규칙**(이번 세션): 입문자 작성표준([04 R5](04_CONVENTIONS.md)) · 이름 풀([04 R7](04_CONVENTIONS.md)).
 
 ## ▶️ 다음 할 일 (우선순위)
-1. **디자인 시안 선정 반영** — 레슨 셸 A/B/C, 스텝 디버거 A안을 확정본으로 정리.
+1. **레슨 셸 1종 선정** — 후보 C/D/E/F/G 중 1종 확정 후 본 셸/템플릿 반영(스텝 디버거·Mermaid는 ✅확정 완료).
 2. **시각 스모크테스트** — 네비 3탭·이전다음·용어팝업·로드맵 렌더 눈으로 확인.
 3. **CH15~ 본문 채우기** — 스텁(🚧)을 입문자 작성표준 + 체험 수단으로. CH15 Dynpro → CH16 Grid ALV → CH17 Modern → **CH18부터 modern SQL** → CH19 OO → … → TRACK-02(CH23~35). ⚠️ CH18 classic→modern 경계([04 R10](04_CONVENTIONS.md)).
 4. `index.html` 허브에서 ABAP 카드 → 로드맵 연결 점검.
