@@ -33,7 +33,7 @@
 - 샘플의 사람 이름도 **이름 풀** 사용(정훈영 1번)([04 R7](04_CONVENTIONS.md)).
 - 입문자 톤은 `structure/beginner-lesson-template.html`이 기준 구현([04 R5](04_CONVENTIONS.md)).
 
-## 디자인 시안 — 선정 대기
-- 레슨 셸 `lesson-shell-v2-a/b/c`(A 소프트블루/B 모던플랫/C 웜에디토리얼) → 1종 선정 후 본 셸/템플릿에 반영.
-- 스텝 디버거 v2 → 사용자 A안 선호(콘솔 현재행/전체출력 토글 + "강조=실행 직전" 의미 반영됨).
-- Mermaid v2 → A안 메인.
+## 디자인 결정 현황
+- 스텝 디버거: ✅ **A안 확정** → `code-learning/step-debugger.html`(ABAP 구문강조·콘솔 토글·강조=실행 직전). 비교 초안 제거됨.
+- 레슨 셸: A/B 폐기, **C/D/E/F/G 후보 검토 중**(index "디자인 후보" 섹션). 1종 선정 후 본 셸/템플릿에 반영.
+- Mermaid v2 → A안 위주, 선정 대기.

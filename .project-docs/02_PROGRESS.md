@@ -21,10 +21,10 @@
 ## 🧪 샘플 라이브러리 (`sample/`) — 이번 세션 구축
 
 - 카테고리별 **독립형(self-contained) 학습수단·구조 샘플** + 카탈로그(`sample/index.html`). 상세 [06_SAMPLE_LIBRARY](06_SAMPLE_LIBRARY.md).
-- **디자인 시안(사용자 선택 대기)**:
-  - 레슨 셸: `lesson-shell-v2-a/b/c.html` (A=소프트블루 / B=모던플랫 / C=웜에디토리얼) → **1종 선정 대기**.
-  - 스텝 디버거: `step-debugger-v2.html` 내 A/B/C → 사용자 **A안 선호**(확정본 정리 대기).
-  - Mermaid 흐름도: `mermaid-flowchart-v2.html` 내 A/B/C → A안 메인.
+- **디자인 결정 현황**:
+  - 스텝 디버거: ✅ **A안(라이트 IDE) 확정** → `code-learning/step-debugger.html`(ABAP 구문강조·콘솔 현재행/전체 토글·강조=실행 직전). 비교본 제거됨.
+  - 레슨 셸: A/B 폐기(사용금지). **C·D·E·F·G 후보 검토 중**(D=C+프로젝트색, E=몰입리더, F=학습여정, G=지식맵) → 1종 선정 대기.
+  - Mermaid 흐름도: `mermaid-flowchart-v2.html` A안 위주 → 선정 대기.
 - **확정 규칙**(이번 세션): 입문자 작성표준([04 R5](04_CONVENTIONS.md)) · 이름 풀([04 R7](04_CONVENTIONS.md)).
 
 ## ▶️ 다음 할 일 (우선순위)
