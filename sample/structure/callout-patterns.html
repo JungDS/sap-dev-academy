@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<!--
+  콜아웃 패턴 (Callout Patterns) — standalone
+  ────────────────────────────────────────────────────────────
+  info / tip / warn 3종 강조 박스. 아이콘 + 좌측 컬러 보더 + 제목 + 본문.
+  순수 CSS(클래스만으로 동작), JS 없음.
+  재사용 시: ".callout*" CSS 블록만 가져가면 됩니다.
+-->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>콜아웃 패턴 · Sample</title>
+<style>
+:root{
+  --bg:#f6f7fb; --surface:#fff; --ink:#1c2233; --ink-soft:#5b6478; --line:#e6e8ef;
+  --brand:#3b5bdb; --accent:#0ca678;
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic",Roboto,sans-serif;
+}
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.65;}
+.topbar{position:sticky;top:0;z-index:20;border-bottom:1px solid var(--line);background:var(--surface);}
+.topbar__inner{max-width:1080px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:12px;font-weight:800;}
+.brand__mark{width:28px;height:28px;border-radius:7px;background:var(--brand);color:#fff;display:grid;place-items:center;}
+.wrap{max-width:760px;margin:28px auto 72px;padding:0 24px;}
+.eyebrow{color:var(--brand);font-weight:800;font-size:.82rem;letter-spacing:.05em;text-transform:uppercase;}
+h1{font-size:1.7rem;margin:8px 0 6px;}
+.lead{color:var(--ink-soft);margin:0 0 24px;}
+
+/* ===== 컴포넌트 CSS — 콜아웃 ===== */
+.callout{display:flex;gap:14px;padding:16px 18px;margin:16px 0;border-radius:12px;
+  background:#f4f7ff;border:1px solid #e0e8ff;border-left:6px solid var(--brand);}
+.callout.tip{background:#f0fbf7;border-color:#d6f1e7;border-left-color:var(--accent);}
+.callout.warn{background:#fff7f4;border-color:#ffe2d6;border-left-color:#e8590c;}
+.callout__icon{font-size:1.5rem;flex-shrink:0;line-height:1.4;}
+.callout__body{min-width:0;}
+.callout__body h4{margin:0 0 4px;font-size:1.04rem;font-weight:800;}
+.callout__body p{margin:0;font-size:.96rem;color:#3a4256;}
+.callout__body code{background:rgba(20,28,51,.06);padding:1px 6px;border-radius:5px;font-size:.9em;}
+.callout.tip .callout__body h4{color:#0b7250;}
+.callout.warn .callout__body h4{color:#c2410c;}
+</style>
+</head>
+<body>
+  <header class="topbar"><div class="topbar__inner"><span class="brand__mark">A</span>SAP Developer Academy</div></header>
+  <main class="wrap">
+    <p class="eyebrow">Structure · 콜아웃</p>
+    <h1>콜아웃 패턴 3종</h1>
+    <p class="lead">본문 흐름 중 "잠깐 강조하고 싶은 것"을 시각적으로 분리합니다. 정보·팁·주의 3가지 톤으로 의미를 구분합니다.</p>
+
+    <div class="callout">
+      <span class="callout__icon">💡</span>
+      <div class="callout__body">
+        <h4>알아두기 (info)</h4>
+        <p>ABAP 리포트는 <code>START-OF-SELECTION</code> 이벤트가 실제 메인 로직의 시작점입니다. 선언부 아래 코드가 곧장 실행되지 않습니다.</p>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <span class="callout__icon">✅</span>
+      <div class="callout__body">
+        <h4>실무 팁 (tip)</h4>
+        <p>조회 직후 항상 <code>sy-subrc</code>를 확인하세요. 0이 아니면 결과가 없다는 뜻이라, 빈 화면 대신 안내 메시지를 띄울 수 있습니다.</p>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <span class="callout__icon">⚠️</span>
+      <div class="callout__body">
+        <h4>주의 (warn)</h4>
+        <p><code>SELECT *</code> 로 전체 컬럼을 가져오면 불필요한 I/O가 발생합니다. 필요한 컬럼만 명시하는 습관을 들이세요.</p>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

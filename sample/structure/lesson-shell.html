@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<!--
+  학습 셸 (Lesson Shell) — standalone
+  ────────────────────────────────────────────────────────────
+  레슨 페이지의 골격 한 벌: 상단바 + 좌측 3탭 사이드바(목차/용어/T-code) +
+  본문 + 이전/다음 네비 + 용어 hover 팝업.
+  외부 의존성 없음. 이 파일 하나로 동작합니다.
+  재사용 시: 아래 "컴포넌트 CSS/JS" 블록 전체가 셸의 핵심입니다.
+-->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>학습 셸 · Sample</title>
+<style>
+/* ===== 공통 토큰(프로젝트 base.css와 동일) ===== */
+:root{
+  --bg:#f6f7fb; --surface:#fff; --ink:#1c2233; --ink-soft:#5b6478; --line:#e6e8ef;
+  --brand:#3b5bdb; --accent:#0ca678; --soon:#94a0b8; --radius:14px;
+  --shadow:0 1px 2px rgba(20,28,51,.04),0 8px 24px rgba(20,28,51,.06);
+  --maxw:1080px;
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic","Apple SD Gothic Neo",Roboto,sans-serif;
+}
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased;}
+a{color:var(--brand);text-decoration:none;} a:hover{text-decoration:underline;}
+
+/* ===== 컴포넌트 CSS — 학습 셸 ===== */
+.topbar{position:sticky;top:0;z-index:20;border-bottom:1px solid var(--line);background:var(--surface);}
+.topbar__inner{max-width:var(--maxw);margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;color:var(--ink);}
+.brand__mark{width:28px;height:28px;border-radius:7px;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:800;}
+.topbar__utils{display:flex;gap:18px;font-size:.88rem;color:var(--ink-soft);}
+
+.layout{max-width:var(--maxw);margin:0 auto;display:grid;grid-template-columns:268px 1fr;gap:28px;align-items:start;padding:0 24px;}
+
+/* 사이드바 */
+.sidenav{position:sticky;top:62px;align-self:start;max-height:calc(100vh - 80px);overflow:auto;padding:16px 0 24px;}
+.sidenav__tabs{display:flex;gap:4px;margin-bottom:12px;}
+.sidenav__tab{flex:1;border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);border-radius:9px;padding:7px 4px;font-size:.76rem;font-weight:700;cursor:pointer;}
+.sidenav__tab.is-active{background:var(--brand);color:#fff;border-color:var(--brand);}
+.sidenav__panel{display:none;}
+.sidenav__panel.is-active{display:block;}
+.sidenav__list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px;}
+.sidenav__list a{display:block;padding:7px 10px;border-radius:8px;font-size:.86rem;color:var(--ink-soft);line-height:1.4;}
+.sidenav__list a:hover{background:rgba(59,91,219,.07);text-decoration:none;}
+.sidenav__list a.is-current{background:rgba(59,91,219,.12);color:var(--brand);font-weight:700;}
+.sidenav__list .toc-h3{padding-left:22px;font-size:.82rem;}
+.sidenav__num{color:var(--soon);font-weight:700;margin-right:6px;font-size:.78rem;}
+
+/* 본문 */
+.content{padding:24px 8px 80px 0;min-width:0;}
+.content h1{font-size:1.7rem;margin:0 0 6px;line-height:1.25;}
+.content .eyebrow{color:var(--brand);font-weight:800;font-size:.8rem;letter-spacing:.05em;text-transform:uppercase;}
+.content h2{font-size:1.25rem;margin:34px 0 10px;scroll-margin-top:72px;}
+.content p{color:#2c3346;}
+.content section{margin-bottom:8px;}
+
+/* 용어(term) 트리거 + 팝업 */
+.term{border-bottom:2px dotted var(--brand);color:var(--brand);font-weight:600;cursor:help;}
+.term-popup{position:absolute;z-index:50;max-width:300px;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 30px rgba(20,28,51,.16);padding:14px 16px;}
+.term-popup__title{font-weight:800;font-size:.95rem;margin:0 0 6px;}
+.term-popup__desc{margin:0;font-size:.86rem;color:var(--ink-soft);line-height:1.55;}
+.term-popup__analogy{margin:8px 0 0;font-size:.82rem;color:var(--accent);line-height:1.5;}
+.term-popup__close{position:absolute;top:8px;right:10px;border:0;background:none;cursor:pointer;color:var(--soon);font-size:1.1rem;line-height:1;}
+
+/* 이전/다음 */
+.lesson-nav{display:flex;justify-content:space-between;gap:12px;margin:40px 0 8px;}
+.lesson-nav a{flex:1;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);padding:12px 16px;box-shadow:var(--shadow);}
+.lesson-nav a:hover{text-decoration:none;border-color:var(--brand);}
+.lesson-nav .dir{font-size:.74rem;color:var(--soon);font-weight:700;}
+.lesson-nav .ttl{display:block;margin-top:2px;color:var(--ink);font-weight:600;font-size:.92rem;}
+.lesson-nav .next{text-align:right;}
+
+@media (max-width:860px){
+  .layout{grid-template-columns:1fr;gap:0;}
+  .sidenav{position:static;max-height:none;padding:12px 0;}
+}
+</style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar__inner">
+      <a class="brand" href="#"><span class="brand__mark">A</span><span>SAP Developer Academy</span></a>
+      <nav class="topbar__utils"><span>글로서리</span><span>T-code 지도</span></nav>
+    </div>
+  </header>
+
+  <main class="layout">
+    <!-- 좌측 3탭 사이드바 -->
+    <aside class="sidenav">
+      <div class="sidenav__tabs">
+        <button class="sidenav__tab is-active" data-tab="toc">목차</button>
+        <button class="sidenav__tab" data-tab="terms">용어</button>
+        <button class="sidenav__tab" data-tab="tcode">T-code</button>
+      </div>
+
+      <div class="sidenav__panel is-active" data-panel="toc">
+        <ul class="sidenav__list" id="tocList">
+          <!-- JS가 본문 h2를 읽어 자동 생성 -->
+        </ul>
+      </div>
+      <div class="sidenav__panel" data-panel="terms">
+        <ul class="sidenav__list">
+          <li><a href="#">DDIC <span class="sidenav__num">데이터 사전</span></a></li>
+          <li><a href="#">Internal Table <span class="sidenav__num">메모리 표</span></a></li>
+          <li><a href="#">Open SQL <span class="sidenav__num">DB 추상화</span></a></li>
+        </ul>
+      </div>
+      <div class="sidenav__panel" data-panel="tcode">
+        <ul class="sidenav__list">
+          <li><a href="#"><span class="sidenav__num">SE38</span> ABAP 에디터</a></li>
+          <li><a href="#"><span class="sidenav__num">SE11</span> DDIC</a></li>
+          <li><a href="#"><span class="sidenav__num">SE80</span> Object Navigator</a></li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- 본문 -->
+    <article class="content">
+      <p class="eyebrow">Chapter 13 · Lesson 1</p>
+      <h1>리포트 이벤트 생명주기</h1>
+      <p>이 셸은 좌측 <strong>3탭 사이드바</strong>(목차/용어/T-code), 본문 속 <span class="term"
+         data-title="용어 hover 팝업" data-desc="어려운 용어에 마우스를 올리면 정의·비유가 뜨는 인라인 학습 장치입니다."
+         data-analogy="📌 비유: 사전을 찾으러 자리를 뜨지 않고, 그 자리에서 바로 뜻을 본다.">용어 팝업</span>,
+         하단 <strong>이전/다음</strong> 네비를 한 벌로 묶은 레슨 페이지 골격입니다.</p>
+
+      <section>
+        <h2 id="s1">왜 이벤트 순서가 중요한가</h2>
+        <p>ABAP 리포트는 위에서 아래로 실행되지 않습니다.
+          <span class="term" data-title="이벤트 블록"
+          data-desc="START-OF-SELECTION 처럼 특정 시점에 시스템이 호출하는 코드 구획."
+          data-analogy="🍳 비유: 요리사의 하루 — 오픈 준비 → 주문 접수 → 조리 → 마감.">이벤트 블록</span>
+          단위로, 정해진 순서에 따라 시스템이 호출합니다.</p>
+      </section>
+
+      <section>
+        <h2 id="s2">INITIALIZATION 의 역할</h2>
+        <p>화면이 뜨기 전에 기본값을 세팅하는 준비 구간입니다.</p>
+      </section>
+
+      <section>
+        <h2 id="s3">START-OF-SELECTION 흐름</h2>
+        <p>실제 DB 조회와 가공이 일어나는 메인 로직 구간입니다.
+          <span class="term" data-title="sy-subrc"
+          data-desc="직전 문장의 성공/실패를 담는 시스템 필드. 0이면 성공."
+          data-analogy="🚦 비유: 신호등 — 0(초록)이면 통과, 4면 결과 없음.">sy-subrc</span>로 결과를 확인합니다.</p>
+      </section>
+
+      <nav class="lesson-nav">
+        <a href="#"><span class="dir">← 이전</span><span class="ttl">Ch12. 데이터 계층 정리</span></a>
+        <a class="next" href="#"><span class="dir">다음 →</span><span class="ttl">L2. 선택 화면 검증</span></a>
+      </nav>
+    </article>
+  </main>
+
+<script>
+// ===== 컴포넌트 JS — 학습 셸 =====
+(function(){
+  // 1) 사이드바 탭 전환
+  const tabs = document.querySelectorAll(".sidenav__tab");
+  const panels = document.querySelectorAll(".sidenav__panel");
+  tabs.forEach(tab=>tab.addEventListener("click",()=>{
+    tabs.forEach(t=>t.classList.remove("is-active"));
+    panels.forEach(p=>p.classList.remove("is-active"));
+    tab.classList.add("is-active");
+    document.querySelector(`.sidenav__panel[data-panel="${tab.dataset.tab}"]`).classList.add("is-active");
+  }));
+
+  // 2) 본문 h2 → 목차 자동 생성 + 스크롤 추적
+  const tocList = document.getElementById("tocList");
+  const heads = [...document.querySelectorAll(".content h2")];
+  heads.forEach((h,i)=>{
+    const li = document.createElement("li");
+    li.innerHTML = `<a href="#${h.id}"><span class="sidenav__num">${String(i+1).padStart(2,"0")}</span>${h.textContent}</a>`;
+    tocList.appendChild(li);
+  });
+  const links = [...tocList.querySelectorAll("a")];
+  const spy = new IntersectionObserver(es=>{
+    es.forEach(e=>{
+      if(e.isIntersecting){
+        const id = e.target.id;
+        links.forEach(l=>l.classList.toggle("is-current", l.getAttribute("href")==="#"+id));
+      }
+    });
+  },{rootMargin:"-72px 0px -70% 0px"});
+  heads.forEach(h=>spy.observe(h));
+
+  // 3) 용어 hover 팝업
+  let popup=null;
+  function close(){ if(popup){popup.remove();popup=null;} }
+  document.querySelectorAll(".term").forEach(t=>{
+    t.addEventListener("mouseenter",()=>{
+      close();
+      popup=document.createElement("div");
+      popup.className="term-popup";
+      popup.innerHTML=`<button class="term-popup__close" aria-label="닫기">×</button>
+        <p class="term-popup__title">${t.dataset.title||t.textContent}</p>
+        <p class="term-popup__desc">${t.dataset.desc||""}</p>
+        ${t.dataset.analogy?`<p class="term-popup__analogy">${t.dataset.analogy}</p>`:""}`;
+      document.body.appendChild(popup);
+      const r=t.getBoundingClientRect();
+      popup.style.left=Math.min(r.left+window.scrollX, window.scrollX+window.innerWidth-320)+"px";
+      popup.style.top=(r.bottom+window.scrollY+8)+"px";
+      popup.querySelector(".term-popup__close").addEventListener("click",close);
+    });
+  });
+  document.addEventListener("click",e=>{ if(popup && !popup.contains(e.target) && !e.target.classList.contains("term")) close(); });
+})();
+</script>
+</body>
+</html>

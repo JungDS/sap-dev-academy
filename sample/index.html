@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sample Library · SAP Developer Academy</title>
+<style>
+  :root{
+    --bg:#f6f7fb; --surface:#fff; --ink:#1c2233; --ink-soft:#5b6478; --line:#e6e8ef;
+    --brand:#3b5bdb; --accent:#0ca678; --radius:14px;
+    --shadow:0 1px 2px rgba(20,28,51,.04),0 8px 24px rgba(20,28,51,.06);
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic","Apple SD Gothic Neo",Roboto,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;}
+  body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased;}
+  a{color:var(--brand);text-decoration:none;}
+  .topbar{position:sticky;top:0;z-index:20;border-bottom:1px solid var(--line);background:var(--surface);}
+  .topbar__inner{max-width:1080px;margin:0 auto;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;color:var(--ink);}
+  .brand__mark{width:30px;height:30px;border-radius:8px;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:800;}
+  .topbar__back{font-size:.9rem;color:var(--ink-soft);font-weight:600;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px 72px;}
+  .hero{padding:48px 0 8px;}
+  .hero__eyebrow{color:var(--brand);font-weight:800;font-size:.82rem;letter-spacing:.05em;text-transform:uppercase;}
+  .hero h1{font-size:2rem;margin:10px 0 12px;line-height:1.25;}
+  .hero p{color:var(--ink-soft);font-size:1.05rem;max-width:74ch;margin:0;}
+  .count{margin-top:14px;display:inline-block;font-size:.82rem;font-weight:700;color:var(--accent);background:rgba(12,166,120,.12);border-radius:999px;padding:4px 12px;}
+  .cat{margin:40px 0 0;}
+  .cat__head{display:flex;align-items:baseline;gap:10px;margin:0 0 14px;}
+  .cat__title{font-size:1.15rem;margin:0;}
+  .cat__desc{color:var(--ink-soft);font-size:.9rem;}
+  .grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));}
+  .card{display:flex;flex-direction:column;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 18px 16px;box-shadow:var(--shadow);transition:transform .12s ease,box-shadow .12s ease;}
+  .card:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(20,28,51,.1);text-decoration:none;}
+  .card__icon{font-size:1.5rem;}
+  .card h3{margin:2px 0 0;font-size:1.02rem;color:var(--ink);}
+  .card p{margin:0;color:var(--ink-soft);font-size:.88rem;flex:1;}
+  .card__meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+  .chip{font-size:.7rem;font-weight:700;border-radius:999px;padding:3px 9px;background:rgba(59,91,219,.1);color:var(--brand);}
+  .chip.dep{background:#fff4e5;color:#b45309;}
+  .footer{max-width:1080px;margin:0 auto;padding:28px 24px;color:var(--ink-soft);font-size:.85rem;border-top:1px solid var(--line);}
+</style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar__inner">
+      <a class="brand" href="../index.html"><span class="brand__mark">A</span><span>SAP Developer Academy</span></a>
+      <a class="topbar__back" href="../index.html">← 홈으로</a>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div class="hero__eyebrow">Sample Library</div>
+      <h1>학습 수단 · 웹페이지 구조 샘플</h1>
+      <p>구 <code>sapui5</code> 참고본에서 이 프로젝트에 적용하면 좋을 요소를 선별해 <strong>완전 self-contained 단일 파일</strong>로 재구성했습니다.
+         각 카드를 열면 동작을 확인할 수 있고, 그 파일의 <code>&lt;style&gt;</code>·<code>&lt;script&gt;</code> 블록만 옮기면 바로 재사용됩니다.</p>
+      <span class="count" id="count"></span>
+    </section>
+    <div id="catalog"></div>
+  </main>
+
+  <footer class="footer">© 2026 SAP Developer Academy · Sample Library — 각 파일은 외부 의존성 없이 단독 동작합니다.</footer>
+
+<script>
+/* 샘플 매니페스트 — 새 샘플을 추가하려면 이 배열에 항목 하나만 추가하세요. */
+const CATEGORIES = [
+  { id:"structure",     icon:"🧱", title:"구조 · 기술",      desc:"웹페이지 골격과 재사용 기술" },
+  { id:"foundations",   icon:"📘", title:"기초 · 설명형",    desc:"정적 콘텐츠 전달 패턴" },
+  { id:"code-learning", icon:"💻", title:"코드 학습형",      desc:"코드를 직접 다루며 익히는 수단" },
+  { id:"interactive",   icon:"🕹️", title:"상호작용형",       desc:"클릭·입력으로 반응하는 수단" },
+  { id:"quizzes",       icon:"🧩", title:"퀴즈 · 능동 회수", desc:"기억을 끌어내는 채점형 수단" },
+  { id:"visuals",       icon:"📊", title:"시각화",           desc:"구조·흐름·상태를 그림으로" },
+];
+const SAMPLES = [
+  // { cat, file, icon, title, desc, tags:[], dep:null }
+  { cat:"structure", file:"structure/lesson-shell.html", icon:"🧭", title:"학습 셸 (3탭 사이드바)", desc:"상단바 + 좌측 3탭 네비 + 이전/다음 + 용어 팝업까지 레슨 페이지 골격 한 벌.", tags:["페이지 구조","TOC","용어 hover"] },
+  { cat:"structure", file:"structure/code-copy-block.html", icon:"📋", title:"코드 복사 블록", desc:"ABAP 에디터 목업 + 줄번호 + 토큰 색상 + 클립보드 복사 버튼.", tags:["코드","복사","구문강조"] },
+  { cat:"structure", file:"structure/callout-patterns.html", icon:"💡", title:"콜아웃 패턴", desc:"info / tip / warn 3종 강조 박스.", tags:["콜아웃","강조"] },
+];
+
+const catalog = document.getElementById("catalog");
+CATEGORIES.forEach(c=>{
+  const items = SAMPLES.filter(s=>s.cat===c.id);
+  if(!items.length) return;
+  const sec = document.createElement("section");
+  sec.className = "cat";
+  sec.innerHTML = `<div class="cat__head"><span style="font-size:1.3rem">${c.icon}</span>
+    <h2 class="cat__title">${c.title}</h2><span class="cat__desc">${c.desc}</span></div>`;
+  const grid = document.createElement("div");
+  grid.className = "grid";
+  items.forEach(s=>{
+    const a = document.createElement("a");
+    a.className = "card";
+    a.href = s.file;
+    const tags = (s.tags||[]).map(t=>`<span class="chip">${t}</span>`).join("");
+    const dep = s.dep ? `<span class="chip dep">CDN: ${s.dep}</span>` : "";
+    a.innerHTML = `<span class="card__icon">${s.icon}</span><h3>${s.title}</h3>
+      <p>${s.desc}</p><div class="card__meta">${tags}${dep}</div>`;
+    grid.appendChild(a);
+  });
+  sec.appendChild(grid);
+  catalog.appendChild(sec);
+});
+document.getElementById("count").textContent = `총 ${SAMPLES.length}개 샘플`;
+</script>
+</body>
+</html>
