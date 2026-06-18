@@ -259,6 +259,18 @@ function main() {
     fs.writeFileSync(path.join(OUT, 'tcodes.json'), JSON.stringify(tc, null, 2), 'utf8');
   }
 
+  // 글로서리 패리티 점검(경고만, 빌드는 계속) — [[term]] 키가 glossary에 정의돼 있나 (R6)
+  if (fs.existsSync(glossSrc)) {
+    const gloss = JSON.parse(fs.readFileSync(glossSrc, 'utf8'));
+    const missing = new Set();
+    for (const ch of chapters) for (const l of ch.lessons) {
+      const re = /\[\[([^\]|]+?)(?:\|[^\]]+?)?\]\]/g; let m;
+      while ((m = re.exec(l.body)) !== null) { const k = m[1].trim(); if (!gloss[k]) missing.add(k); }
+    }
+    if (missing.size) console.warn(`⚠ glossary 미정의 용어 ${missing.size}건: ${[...missing].slice(0, 20).join(', ')}${missing.size > 20 ? ' …' : ''}`);
+    else console.log('✓ glossary parity — 미정의 용어 0건');
+  }
+
   const totalCh = curriculumTracks.reduce((n, t) => n + t.chapterCount, 0);
   console.log(`✓ curriculum.json — ${curriculumTracks.length} tracks / ${totalCh} chapters`);
   console.log(`✓ lessons/*.json  — ${chapters.length} files`);
