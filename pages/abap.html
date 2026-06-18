@@ -1,4 +1,12 @@
 <!DOCTYPE html>
+<!--
+  ABAP 커리큘럼 로드맵 (hand-authored, not generated)
+  ─────────────────────────────────────────────────────────
+  데이터: docs/abap/curriculum.json (트랙→챕터+슬림 레슨) + 펼칠 때 lessons/CHxx.json 지연 로드.
+  v2-C 레슨 셸과 조화되는 디자인(프로젝트 블루/그린, base.css 토큰 위에서).
+  개선점: 챕터 아코디언 → 각 레슨의 요약(direction)·키워드를 보여주고 "어떤 레슨이든 바로 점프".
+  ⚠️ fetch 사용 → file:// 금지, HTTP로 서빙. 색 테마/규칙: .project-docs/08_LESSON_SHELL_SPEC.md.
+-->
 <html lang="ko">
 <head>
   <meta charset="utf-8" />
@@ -7,27 +15,88 @@
   <meta name="description" content="동기부여형 ABAP 커리큘럼 — 불편 체인으로 연결되는 35개 챕터 로드맵" />
   <link rel="stylesheet" href="../assets/base.css" />
   <style>
-    .crumb { padding: 18px 0 0; font-size: .88rem; color: var(--ink-soft); }
-    .track { margin-top: 34px; }
-    .track__head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
-    .track__head h2 { margin: 0; font-size: 1.3rem; }
-    .track__intro { color: var(--ink-soft); font-size: .92rem; }
-    .chapters { display: grid; gap: 12px; margin-top: 16px;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
-    .ch-card { display: flex; flex-direction: column; gap: 6px; background: var(--surface);
-      border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow);
-      padding: 16px 18px; transition: transform .12s ease, box-shadow .12s ease; }
-    a.ch-card:hover { text-decoration: none; transform: translateY(-2px); box-shadow: 0 10px 30px rgba(20, 28, 51, .1); }
-    .ch-card__top { display: flex; align-items: center; gap: 10px; }
-    .ch-card__num { width: 34px; height: 34px; border-radius: 9px; background: var(--brand); color: #fff;
-      display: grid; place-items: center; font-weight: 800; font-size: .85rem; flex: 0 0 auto; }
-    .ch-card__title { font-weight: 700; font-size: 1rem; color: var(--ink); line-height: 1.3; }
-    .ch-card__why { margin: 0; color: var(--accent); font-size: .86rem; }
-    .ch-card__meta { margin-top: auto; color: var(--soon); font-size: .76rem; font-weight: 700; padding-top: 6px; }
-    .boundary { grid-column: 1 / -1; margin: 6px 0; padding: 8px 12px; border-left: 3px solid var(--brand);
-      background: rgba(59, 91, 219, .06); font-size: .84rem; color: var(--ink); border-radius: 0 8px 8px 0; }
-    .loading, .errbox { color: var(--ink-soft); padding: 20px 0; }
-    .note { color: var(--ink-soft); font-size: .85rem; margin-top: 26px; }
+    :root{ --r-maxw:1040px; }
+    a{ text-decoration:none; }
+
+    .r-wrap{ max-width:var(--r-maxw); margin:0 auto; padding:0 24px 88px; }
+    .crumb{ padding:18px 0 0; font-size:.88rem; color:var(--ink-soft); }
+    .crumb a{ color:var(--brand); }
+
+    /* 헤더 — 좌 흰색 → 우 브랜드 옅은 그라데이션(v2-C 톤, 블루) */
+    .r-hero{ position:relative; overflow:hidden; margin-top:14px; padding:30px 32px;
+      border:1px solid var(--line); border-radius:20px;
+      background:linear-gradient(105deg,#fff 0%,#fff 44%,#eaf0ff 78%,#dce6ff 100%); box-shadow:var(--shadow); }
+    .r-hero__eyebrow{ color:var(--brand); font-weight:800; font-size:.82rem; letter-spacing:.1em; text-transform:uppercase; }
+    .r-hero h1{ font-size:2rem; margin:8px 0 10px; line-height:1.2; }
+    .r-hero p{ margin:0; color:var(--ink-soft); max-width:68ch; }
+    .r-hero p em{ color:var(--accent); font-style:normal; font-weight:700; }
+    .r-hero p strong{ color:var(--ink); }
+
+    /* 툴바: 검색 + 트랙 점프 + 전체 펼치기 */
+    .r-toolbar{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin:22px 0 6px; }
+    .r-search{ flex:1; min-width:220px; display:flex; align-items:center; gap:8px;
+      border:1px solid var(--line); background:var(--surface); border-radius:999px; padding:8px 14px; box-shadow:var(--shadow); }
+    .r-search input{ flex:1; border:0; outline:0; font:inherit; background:none; color:var(--ink); }
+    .r-search .ic{ color:var(--soon); }
+    .r-jump{ display:flex; gap:6px; }
+    .r-chip-btn{ border:1px solid var(--line); background:var(--surface); color:var(--ink-soft);
+      border-radius:999px; padding:8px 13px; font:inherit; font-size:.82rem; font-weight:700; cursor:pointer; transition:all .15s; }
+    .r-chip-btn:hover{ border-color:var(--brand); color:var(--brand); }
+
+    /* 트랙 */
+    .r-track{ margin-top:32px; scroll-margin-top:16px; }
+    .r-track__head{ display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; padding-bottom:4px; border-bottom:2px solid var(--line); }
+    .r-track__badge{ font-size:.72rem; font-weight:800; color:#fff; background:var(--brand); border-radius:999px; padding:3px 11px; }
+    .r-track__head h2{ margin:0; font-size:1.32rem; }
+    .r-track__intro{ color:var(--ink-soft); font-size:.92rem; }
+    .r-chaps{ display:flex; flex-direction:column; gap:10px; margin-top:14px; }
+
+    /* 경계 마커 (classic → modern) */
+    .boundary{ margin:8px 0; padding:9px 14px; border-left:3px solid var(--accent);
+      background:rgba(12,166,120,.07); font-size:.84rem; color:var(--ink); border-radius:0 10px 10px 0; }
+    .boundary b{ color:#0b7250; }
+
+    /* 챕터 아코디언 카드 */
+    .r-chap{ border:1px solid var(--line); border-radius:14px; background:var(--surface); box-shadow:var(--shadow);
+      overflow:hidden; transition:box-shadow .16s ease, transform .16s ease, border-color .16s; }
+    .r-chap:hover{ border-color:#c9d4f5; }
+    .r-chap.is-open{ box-shadow:0 14px 36px rgba(20,28,51,.12); }
+    .r-chap__head{ display:flex; align-items:center; gap:14px; width:100%; border:0; background:none; font:inherit;
+      text-align:left; padding:15px 18px; cursor:pointer; color:var(--ink); }
+    .r-chap__num{ width:36px; height:36px; border-radius:10px; background:rgba(59,91,219,.1); color:var(--brand);
+      display:grid; place-items:center; font-weight:800; font-size:.9rem; flex:0 0 auto; transition:all .16s; }
+    .r-chap.is-open .r-chap__num{ background:var(--brand); color:#fff; }
+    .r-chap__main{ flex:1; min-width:0; }
+    .r-chap__title{ font-weight:700; font-size:1.02rem; line-height:1.3; }
+    .r-chap__why{ margin:2px 0 0; color:var(--accent); font-size:.85rem; }
+    .r-chap__meta{ display:flex; align-items:center; gap:7px; flex:0 0 auto; }
+    .chip{ font-size:.72rem; font-weight:700; border-radius:999px; padding:3px 10px; white-space:nowrap; }
+    .chip--diff{ background:rgba(12,166,120,.12); color:#0b7250; }
+    .chip--count{ background:rgba(20,28,51,.05); color:var(--ink-soft); }
+    .r-chap__chev{ color:var(--soon); font-size:.8rem; transition:transform .22s ease; flex:0 0 auto; }
+    .r-chap.is-open .r-chap__chev{ transform:rotate(180deg); }
+    @media(max-width:640px){ .r-chap__why{ display:none; } .chip--diff{ display:none; } }
+
+    /* 레슨 목록 (펼침) */
+    .r-lessons{ border-top:1px solid var(--line); padding:6px 10px 12px; }
+    .r-lessons__loading{ color:var(--ink-soft); font-size:.86rem; padding:12px; }
+    .r-lesson{ display:flex; gap:13px; align-items:flex-start; padding:11px 12px; border-radius:11px;
+      color:var(--ink); transition:background .14s; }
+    .r-lesson:hover{ background:rgba(59,91,219,.06); }
+    .r-lesson__n{ width:24px; height:24px; border-radius:7px; background:#eef2fc; color:var(--brand);
+      display:grid; place-items:center; font-size:.74rem; font-weight:800; flex:0 0 auto; margin-top:2px; }
+    .r-lesson__body{ flex:1; min-width:0; }
+    .r-lesson__title{ font-weight:600; }
+    .r-lesson__title .arrow{ color:var(--brand); opacity:0; transition:opacity .14s, transform .14s; display:inline-block; }
+    .r-lesson:hover .r-lesson__title .arrow{ opacity:1; transform:translateX(3px); }
+    .r-lesson__dir{ margin:2px 0 0; color:var(--ink-soft); font-size:.88rem; line-height:1.5; }
+    .r-lesson__kw{ display:flex; flex-wrap:wrap; gap:5px; margin-top:7px; }
+    .kw{ font-size:.7rem; font-weight:700; color:var(--ink-soft); background:rgba(20,28,51,.05); border-radius:6px; padding:2px 8px; }
+
+    .r-empty{ color:var(--ink-soft); padding:24px 0; }
+    .loading, .errbox{ color:var(--ink-soft); padding:20px 0; }
+    .note{ color:var(--ink-soft); font-size:.85rem; margin-top:28px; border-top:1px solid var(--line); padding-top:16px; }
+    .note code{ background:rgba(20,28,51,.06); border-radius:5px; padding:1px 6px; }
   </style>
 </head>
 <body>
@@ -37,26 +106,35 @@
         <span class="brand__mark" aria-hidden="true">A</span>
         <span>SAP Developer Academy</span>
       </a>
+      <div class="topbar__utils"><a href="../index.html">홈</a></div>
     </div>
   </header>
 
-  <main class="shell">
+  <main class="r-wrap">
     <div class="crumb"><a href="../index.html">홈</a> › ABAP 커리큘럼</div>
 
-    <section class="hero">
-      <div class="hero__eyebrow">ABAP 커리큘럼</div>
+    <section class="r-hero">
+      <div class="r-hero__eyebrow">ABAP 커리큘럼</div>
       <h1>불편을 먼저 겪고, 해결책으로 배우는 ABAP</h1>
-      <p>
-        각 Chapter는 <strong>"이전 단계에서 느낀 불편"</strong>을 해소하며 다음으로 이어집니다.
+      <p>각 Chapter는 <strong>"이전 단계에서 느낀 불편"</strong>을 해소하며 다음으로 이어집니다.
         스칼라·구조체 모두 <em>Local → Global(DDIC)</em>을 두 번 밟고,
-        Internal Table → Transparent Table → Open SQL이 하나의 흐름으로 연결됩니다.
-      </p>
+        Internal Table → Transparent Table → Open SQL이 하나의 흐름으로 연결됩니다.</p>
     </section>
+
+    <div class="r-toolbar">
+      <label class="r-search">
+        <span class="ic" aria-hidden="true">🔍</span>
+        <input id="search" type="search" placeholder="챕터·키워드 검색 (예: ALV, Internal Table, SE11)" autocomplete="off" />
+      </label>
+      <div class="r-jump" id="trackJump"></div>
+      <button class="r-chip-btn" id="expandAll" type="button">전체 펼치기</button>
+    </div>
 
     <div id="roadmap"><p class="loading">커리큘럼을 불러오는 중…</p></div>
 
     <p class="note">
       ※ 본 로드맵은 <code>docs/abap/curriculum.json</code>에서 자동 생성됩니다.
+      챕터를 펼치면 각 레슨의 요약을 보고 <strong>원하는 레슨으로 바로</strong> 이동할 수 있어요.
       🚧(골격) 챕터는 레슨 본문을 점진적으로 채워 갑니다.
     </p>
   </main>
@@ -66,35 +144,140 @@
   <script>
   (function () {
     var DATA = "../docs/abap/";
-    var BOUNDARY = { CH18: "◀ 여기부터 Modern Open SQL (@ · @DATA). 이전 CH07~CH16의 SQL은 classic." };
-    function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+    var BOUNDARY = { CH18: '◀ 여기부터 <b>Modern Open SQL</b> (@ · @DATA). 이전 CH07~CH16의 SQL은 classic.' };
+    var lessonCache = {};      // chId → lessons[] (lessons/CHxx.json 지연 로드 캐시)
+    var allChapters = [];      // 검색 필터용
 
+    function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+    function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
+
+    /* ---- 레슨 목록 렌더(펼칠 때) ---- */
+    function renderLessons(box, chId, slimLessons) {
+      function paint(lessons) {
+        box.innerHTML = "";
+        lessons.forEach(function (l) {
+          var a = el("a", "r-lesson");
+          a.href = DATA + l.href;
+          a.innerHTML =
+            '<span class="r-lesson__n">' + esc(String(l.order)) + '</span>' +
+            '<span class="r-lesson__body">' +
+              '<span class="r-lesson__title">' + esc(l.title) + ' <span class="arrow">→</span></span>' +
+              (l.direction ? '<p class="r-lesson__dir">' + esc(l.direction) + '</p>' : '') +
+              (l.keywords && l.keywords.length
+                ? '<span class="r-lesson__kw">' + l.keywords.map(function (k) { return '<span class="kw">' + esc(k) + '</span>'; }).join('') + '</span>'
+                : '') +
+            '</span>';
+          box.appendChild(a);
+        });
+      }
+      // 캐시 있으면 즉시, 없으면 lessons/CHxx.json 지연 로드(요약·키워드 포함)
+      if (lessonCache[chId]) { paint(lessonCache[chId]); return; }
+      box.innerHTML = '<p class="r-lessons__loading">레슨 정보를 불러오는 중…</p>';
+      fetch(DATA + "lessons/" + chId + ".json").then(function (r) { return r.json(); }).then(function (d) {
+        lessonCache[chId] = d.lessons || []; paint(lessonCache[chId]);
+      }).catch(function () {
+        // 폴백: 슬림 레슨(제목/링크)만이라도 표시
+        lessonCache[chId] = slimLessons || []; paint(lessonCache[chId]);
+      });
+    }
+
+    /* ---- 챕터 아코디언 ---- */
+    function chapterCard(ch) {
+      var card = el("div", "r-chap");
+      card.setAttribute("data-search", (ch.title + " " + (ch.intro || "") + " " + (ch.keywords || []).join(" ") + " " + (ch.difficulty || "")).toLowerCase());
+      var head = el("button", "r-chap__head");
+      head.type = "button";
+      head.innerHTML =
+        '<span class="r-chap__num">' + esc(String(ch.order)) + '</span>' +
+        '<span class="r-chap__main">' +
+          '<span class="r-chap__title">' + esc(ch.title) + '</span>' +
+          (ch.intro ? '<p class="r-chap__why">' + esc(ch.intro) + '</p>' : '') +
+        '</span>' +
+        '<span class="r-chap__meta">' +
+          (ch.difficulty ? '<span class="chip chip--diff">' + esc(ch.difficulty) + '</span>' : '') +
+          '<span class="chip chip--count">레슨 ' + (ch.lessonCount || (ch.lessons || []).length) + '</span>' +
+        '</span>' +
+        '<span class="r-chap__chev" aria-hidden="true">▾</span>';
+      var lessons = el("div", "r-lessons");
+      lessons.hidden = true;
+      head.addEventListener("click", function () {
+        var open = card.classList.toggle("is-open");
+        head.setAttribute("aria-expanded", open ? "true" : "false");
+        lessons.hidden = !open;
+        if (open && !lessons.getAttribute("data-loaded")) {
+          renderLessons(lessons, ch.id, ch.lessons);
+          lessons.setAttribute("data-loaded", "1");
+        }
+      });
+      head.setAttribute("aria-expanded", "false");
+      card.appendChild(head); card.appendChild(lessons);
+      return card;
+    }
+
+    /* ---- 검색 필터 ---- */
+    function applyFilter(q) {
+      q = (q || "").trim().toLowerCase();
+      var root = document.getElementById("roadmap");
+      var anyTrackVisible = false;
+      root.querySelectorAll(".r-track").forEach(function (tr) {
+        var shown = 0;
+        tr.querySelectorAll(".r-chap").forEach(function (c) {
+          var hit = !q || c.getAttribute("data-search").indexOf(q) >= 0;
+          c.style.display = hit ? "" : "none";
+          if (hit) shown++;
+        });
+        // 경계 마커는 검색 중 숨김
+        tr.querySelectorAll(".boundary").forEach(function (b) { b.style.display = q ? "none" : ""; });
+        tr.style.display = shown ? "" : "none";
+        if (shown) anyTrackVisible = true;
+      });
+      var empty = document.getElementById("r-empty");
+      if (empty) empty.style.display = anyTrackVisible ? "none" : "";
+    }
+
+    /* ---- 렌더 ---- */
     fetch(DATA + "curriculum.json").then(function (r) { return r.json(); }).then(function (c) {
       var root = document.getElementById("roadmap"); root.innerHTML = "";
-      c.tracks.forEach(function (t) {
-        var sec = document.createElement("section"); sec.className = "track";
-        sec.innerHTML = '<div class="track__head"><h2>' + esc(t.title) + '</h2>' +
-          '<span class="track__intro">' + esc(t.intro || "") + '</span></div>';
-        var grid = document.createElement("div"); grid.className = "chapters";
+      var jump = document.getElementById("trackJump");
+      c.tracks.forEach(function (t, ti) {
+        var sec = el("section", "r-track"); sec.id = "track-" + (ti + 1);
+        sec.appendChild(el("div", "r-track__head",
+          '<span class="r-track__badge">Track ' + (ti + 1) + '</span>' +
+          '<h2>' + esc(t.title) + '</h2>' +
+          '<span class="r-track__intro">' + esc(t.intro || "") + '</span>'));
+        var chaps = el("div", "r-chaps");
         (t.chapters || []).forEach(function (ch) {
-          if (BOUNDARY[ch.id]) {
-            var b = document.createElement("div"); b.className = "boundary"; b.textContent = BOUNDARY[ch.id]; grid.appendChild(b);
-          }
-          var href = (ch.lessons && ch.lessons.length) ? DATA + ch.lessons[0].href : null;
-          var card = document.createElement(href ? "a" : "div");
-          card.className = "ch-card"; if (href) card.href = href;
-          card.innerHTML =
-            '<div class="ch-card__top"><span class="ch-card__num">' + esc(String(ch.order)) + '</span>' +
-            '<span class="ch-card__title">' + esc(ch.title) + '</span></div>' +
-            '<p class="ch-card__why">' + esc(ch.intro || "") + '</p>' +
-            '<div class="ch-card__meta">' + esc(ch.difficulty || "") + ' · 레슨 ' + (ch.lessonCount || 0) + '개</div>';
-          grid.appendChild(card);
+          if (BOUNDARY[ch.id]) chaps.appendChild(el("div", "boundary", BOUNDARY[ch.id]));
+          allChapters.push(ch);
+          chaps.appendChild(chapterCard(ch));
         });
-        sec.appendChild(grid); root.appendChild(sec);
+        sec.appendChild(chaps); root.appendChild(sec);
+        // 트랙 점프 칩
+        var b = el("button", "r-chip-btn", "Track " + (ti + 1));
+        b.type = "button";
+        b.addEventListener("click", function () { sec.scrollIntoView({ behavior: "smooth", block: "start" }); });
+        jump.appendChild(b);
       });
+      var emptyEl = el("p", "r-empty", "검색 결과가 없습니다.");
+      emptyEl.id = "r-empty"; emptyEl.style.display = "none";
+      root.appendChild(emptyEl);
     }).catch(function () {
       document.getElementById("roadmap").innerHTML =
         '<p class="errbox">커리큘럼을 불러오지 못했습니다. file:// 가 아니라 HTTP(로컬 서버/Pages)로 열어 주세요.</p>';
+    });
+
+    /* ---- 컨트롤 ---- */
+    document.getElementById("search").addEventListener("input", function (e) { applyFilter(e.target.value); });
+    var expandBtn = document.getElementById("expandAll");
+    expandBtn.addEventListener("click", function () {
+      var cards = [].slice.call(document.querySelectorAll(".r-chap"))
+        .filter(function (c) { return c.style.display !== "none"; });
+      var willOpen = cards.some(function (c) { return !c.classList.contains("is-open"); });
+      cards.forEach(function (c) {
+        var isOpen = c.classList.contains("is-open");
+        if (willOpen !== isOpen) c.querySelector(".r-chap__head").click();
+      });
+      expandBtn.textContent = willOpen ? "전체 접기" : "전체 펼치기";
     });
   })();
   </script>
