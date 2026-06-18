@@ -45,7 +45,27 @@ const glossaryExt = {
     return `<button class="term" type="button" data-term="${esc(t.term)}">${esc(t.label)}</button>`;
   },
 };
-marked.use({ extensions: [glossaryExt], gfm: true });
+/* ---------- marked: 체험 임베드 ::embed <sample경로> | <제목>:: ----------
+   sample/ 의 standalone HTML을 "체험 위젯"으로 프레이밍한 iframe으로 펼친다.
+   레슨 페이지는 모두 docs/abap/pages/ 깊이 → sample 경로 접두 고정(../../../sample/). */
+const embedExt = {
+  name: 'embed',
+  level: 'block',
+  start(src) { const i = src.indexOf('::embed'); return i < 0 ? undefined : i; },
+  tokenizer(src) {
+    const m = /^::embed\s+([^\s|]+)\s*(?:\|\s*([^\n]+?))?\s*::/.exec(src);
+    if (m) return { type: 'embed', raw: m[0], path: m[1].trim(), title: (m[2] || '').trim() };
+  },
+  renderer(t) {
+    const src = '../../../sample/' + t.path;
+    const title = t.title || '직접 해보기';
+    return `<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span>` +
+      `<span class="embed__title">${esc(title)}</span>` +
+      `<a class="embed__open" href="${src}" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption>` +
+      `<iframe class="embed__frame" src="${src}" loading="lazy" title="${esc(title)}"></iframe></figure>\n`;
+  },
+};
+marked.use({ extensions: [glossaryExt, embedExt], gfm: true });
 
 /* ---------- 소스 로딩 ---------- */
 function loadTracks() {

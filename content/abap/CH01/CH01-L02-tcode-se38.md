@@ -64,6 +64,8 @@ ABAP은 작성한 코드를 **"활성화(Activate)"** 해야 실제로 동작한
 
 이 네 박자가 ABAP 개발의 기본 루프다. 앞으로 수백 번 반복하게 된다.
 
+::embed code-learning/step-debugger.html | 코드가 한 줄씩 실행되는 과정을 직접 따라가 보기::
+
 ## 흔한 실수와 점검
 
 - **"Name range" 오류** → 이름이 Z/Y로 시작하지 않는다.
