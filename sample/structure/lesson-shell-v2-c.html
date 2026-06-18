@@ -283,6 +283,15 @@ details.fold .fold__in code,.block code{font-family:var(--mono);background:var(-
 .callout b{color:var(--amber);}
 .related{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
 .related span{font-family:var(--mono);font-weight:700;font-size:.84rem;background:var(--tag-blue-bg);color:var(--tag-blue);border-radius:8px;padding:5px 10px;}
+.tmodal__body p.dim{color:var(--ink-soft);font-size:.84rem;margin:2px 0 9px;}
+.objgroup{display:flex;gap:10px;align-items:baseline;margin:7px 0;flex-wrap:wrap;}
+.objgroup__l{font-size:.8rem;font-weight:800;color:var(--ink-soft);min-width:74px;}
+.objgroup__chips{display:flex;flex-wrap:wrap;gap:6px;flex:1;}
+.objchip{font:inherit;font-size:.84rem;font-weight:700;border:1px solid var(--line-teal);background:var(--tint);color:var(--brand);border-radius:999px;padding:5px 12px;cursor:pointer;transition:all .14s;}
+.objchip:hover{background:var(--brand);color:#fff;border-color:var(--brand);}
+.sum-popup{position:fixed;z-index:90;max-width:280px;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 16px 40px rgba(20,15,5,.32);padding:12px 14px;animation:tpop .16s ease;}
+.sum-popup b{display:block;margin-bottom:4px;color:var(--brand);font-family:var(--mono);font-size:.92rem;}
+.sum-popup span{font-size:.86rem;color:var(--ink-soft);line-height:1.5;}
 
 /* ===== 전체화면 ===== */
 body.is-fullscreen .layout{max-width:none;padding-left:clamp(24px,2.4vw,52px);padding-right:clamp(24px,2.4vw,52px);}
@@ -402,7 +411,7 @@ body.is-fullscreen .main{max-width:none;}
 
         <section class="card tcode" id="tcode">
           <p class="card__h"><span class="ic">🖥️</span>이번 Lesson에서 다루는 트랜잭션 코드</p>
-          <button class="tcode-label" data-tcode="SE11">
+          <button class="tcode-label" data-tcode="SE11" data-badge="복습">
             <span class="tcode-label__badge">복습</span>
             <span class="tcode-label__code">SE11</span>
             <span class="tcode-label__hint">자세히 보기 ›</span>
@@ -593,57 +602,84 @@ body.is-fullscreen .main{max-width:none;}
   }
   document.addEventListener('fullscreenchange',onFs); document.addEventListener('webkitfullscreenchange',onFs);
 
-  /* T-code 모달 */
+  /* ===== T-code 미니페이지(공통) + DDIC 객체 요약(2차 팝업) =====
+     · TCODES: 레슨과 무관한 "프로그램 소개"(공통 활용). lesson별 문구 금지.
+     · DDIC_SUMMARY: 각 객체 한 줄 요약. mini-page의 칩을 클릭하면 뜸.
+     → 사전이 [미니페이지용] + [요약 설명용] 2계층을 함께 보유. */
   const TCODES={
-    SE11:{ badge:'복습', sub:'ABAP Dictionary (DDIC) — 데이터 정의 도구',
-      body:`
-      <h4>📌 한 줄 정의</h4>
-      <p><b>SE11</b>은 SAP의 <span style="font-weight:700">ABAP Dictionary(DDIC)</span> 객체 — Domain·Data Element·Structure·Table 등 — 을 <b>만들고 조회·수정·활성화</b>하는 트랜잭션 코드입니다.</p>
-      <p class="callout"><b>트랜잭션 코드란?</b> SAP 화면을 바로 여는 짧은 명령어예요. 메뉴를 단계별로 누르는 대신 코드 한 줄로 원하는 화면에 점프합니다.</p>
-      <h4>🚪 어떻게 여나요?</h4>
-      <p>화면 왼쪽 위 <b>명령 필드</b>에 트랜잭션 코드를 입력하고 Enter:</p>
-      <div class="cmdfield">/nSE11</div>
-      <ul>
-        <li><code>/n</code> = 현재 작업을 닫고 새 트랜잭션으로 이동(가장 안전한 기본).</li>
-        <li><code>/o</code> = 새 창(세션)으로 열기. 기존 화면을 두고 비교할 때.</li>
-      </ul>
-      <h4>🧭 화면 구성(처음 보면 이렇게 생겼어요)</h4>
-      <ul>
-        <li><b>객체 종류 선택</b>: Database table / View / Data type(=Structure·Data Element·Domain) / Type Group / … 라디오 버튼.</li>
-        <li><b>이름 입력칸</b>: 만들거나 열 객체 이름(예: 도메인 <code>ZHR_STATUS</code>).</li>
-        <li><b>3개의 버튼</b>: 👁️ <b>Display</b>(조회) · ✏️ <b>Change</b>(수정) · ➕ <b>Create</b>(새로 만들기).</li>
-      </ul>
-      <h4>🛠️ 여기서 하는 일</h4>
-      <ul>
-        <li>Domain을 만들어 <b>값의 재질</b>(타입·길이·허용값)을 정한다 — <i>이번 Lesson</i>.</li>
-        <li>그 위에 Data Element로 <b>업무 의미·라벨</b>을 붙인다.</li>
-        <li>Structure/Table로 <b>여러 필드를 묶어</b> 실제 데이터 구조를 만든다.</li>
-      </ul>
-      <h4>⚠️ 입문자가 자주 걸리는 점</h4>
-      <ul>
-        <li><b>저장 ≠ 활성화</b>: 저장(💾)만 하면 "작성 중" 상태. <b>활성화(🔥 Ctrl+F3)</b>까지 해야 다른 객체가 가져다 씁니다.</li>
-        <li>조회만 하려고 들어왔는데 못 고치겠다? → <b>Display 모드</b>라서 그래요. <b>Change</b>로 전환하세요.</li>
-      </ul>
-      <h4>🔗 함께 보는 트랜잭션</h4>
-      <div class="related"><span>SE16N</span><span>SE80</span><span>SE37</span></div>
-      <p style="margin-top:6px;font-size:.9rem;color:var(--ink-soft)">SE16N=테이블 데이터 조회 · SE80=개발 워크벤치(객체 모음) · SE37=Function Module.</p>
-      <h4>✅ 정리</h4>
-      <p>SE11은 "데이터의 설계도를 그리는 방"입니다. 이번 Lesson에서는 그 설계도의 가장 작은 부품인 <b>Domain</b>부터 그립니다.</p>
-      `}
+    SE11:{ sub:'ABAP Dictionary (DDIC) — 데이터 정의 도구',
+      intro:'SAP의 <b>ABAP Dictionary(DDIC)</b>를 다루는 트랜잭션 코드입니다. 아래 데이터 정의 객체들을 <b>생성·조회·수정·삭제(CRUD)</b>하고 활성화하는 "데이터 설계도를 그리는 방"이에요.',
+      open:'/nSE11',
+      groups:[
+        {label:'Domain', items:['Domain']},
+        {label:'Data Type', items:['Data Element','Structure','Table Type']},
+        {label:'Table·View', items:['Transparent Table','DB View','Maintenance View']},
+        {label:'기타 객체', items:['Type Group','Search Help','Lock Object']}
+      ],
+      screen:'객체 종류와 이름을 고른 뒤 👁️ <b>Display</b>(조회) · ✏️ <b>Change</b>(수정) · ➕ <b>Create</b>(생성) 중 하나로 들어갑니다.',
+      pitfalls:[
+        '<b>저장 ≠ 활성화</b>: 저장(💾)만 하면 "작성 중" 상태. <b>활성화(🔥 Ctrl+F3)</b>까지 해야 다른 객체가 가져다 씁니다.',
+        '조회만 되고 수정이 안 되면 <b>Display 모드</b>예요 → <b>Change</b>로 전환하세요.'
+      ],
+      related:[['SE16N','테이블 데이터 조회'],['SE80','개발 워크벤치(객체 모음)'],['SE37','Function Module']]
+    }
   };
+  const DDIC_SUMMARY={
+    'Domain':'값의 기술 규격(데이터 타입·길이·허용값)을 정하는 DDIC 최하위 부품.',
+    'Data Element':'Domain 위에 업무 의미·필드 라벨·도움말을 붙이는 의미 계층. 테이블 필드가 직접 참조합니다.',
+    'Structure':'여러 필드를 묶은 구조 정의. DB에 저장되진 않고 프로그램 메모리에서 사용합니다.',
+    'Table Type':'내부 테이블의 "줄 타입"을 정의 — 어떤 구조의 행을 담는 표인지 규정합니다.',
+    'Transparent Table':'DB에 실제로 1:1 저장되는 투명 테이블. 데이터가 진짜 들어가는 곳입니다.',
+    'DB View':'여러 테이블을 조인해 읽기 전용으로 보여주는 데이터베이스 뷰.',
+    'Maintenance View':'SM30 등에서 값을 직접 입력·수정할 수 있게 만든 유지보수용 뷰.',
+    'Type Group':'전역 상수·타입을 모아두는 옛 방식 묶음(TYPE-POOLS). 요즘은 클래스 상수로 대체됩니다.',
+    'Search Help':'입력 필드에서 F4를 누르면 값을 찾도록 돕는 입력 도움말 객체.',
+    'Lock Object':'여러 사용자의 동시 변경을 막는 잠금(ENQUEUE/DEQUEUE) 객체.'
+  };
+  function renderTcodeBody(d){
+    let h=`<h4>📌 한 줄 정의</h4><p>${d.intro}</p>`;
+    h+=`<p class="callout"><b>트랜잭션 코드란?</b> SAP 화면을 바로 여는 짧은 명령어예요. 메뉴를 단계별로 누르는 대신 코드 한 줄로 점프합니다.</p>`;
+    if(d.open) h+=`<h4>🚪 어떻게 여나요?</h4><p>명령 필드에 입력하고 Enter (<code>/n</code>=새 트랜잭션 / <code>/o</code>=새 창):</p><div class="cmdfield">${d.open}</div>`;
+    if(d.groups){
+      h+=`<h4>🛠️ 여기서 다루는 객체 — 생성·조회·수정·삭제</h4><p class="dim">항목을 누르면 간단한 소개가 떠요(클릭).</p>`;
+      d.groups.forEach(g=>{
+        h+=`<div class="objgroup"><span class="objgroup__l">${g.label}</span><span class="objgroup__chips">`+
+           g.items.map(it=>`<button type="button" class="objchip" data-sum="${it}">${it}</button>`).join('')+`</span></div>`;
+      });
+    }
+    if(d.screen) h+=`<h4>🧭 들어가는 방법</h4><p>${d.screen}</p>`;
+    if(d.pitfalls) h+=`<h4>⚠️ 자주 걸리는 점</h4><ul>`+d.pitfalls.map(p=>`<li>${p}</li>`).join('')+`</ul>`;
+    if(d.related) h+=`<h4>🔗 함께 보는 트랜잭션</h4><div class="related">`+d.related.map(r=>`<span title="${r[1]}">${r[0]}</span>`).join('')+`</div>`;
+    return h;
+  }
   const tmodal=document.getElementById('tmodal');
-  function openTcode(code){
+  function openTcode(code, badge){
     const d=TCODES[code]; if(!d) return;
     document.getElementById('tmCode').textContent=code;
-    document.getElementById('tmBadge').textContent=d.badge||'';
+    document.getElementById('tmBadge').textContent=badge||''; // 배지(복습/신규 등)는 레슨이 정함 → 라벨에서 전달
     document.getElementById('tmSub').textContent=d.sub||'';
-    document.getElementById('tmBody').innerHTML=d.body||'';
+    document.getElementById('tmBody').innerHTML=renderTcodeBody(d);
+    document.querySelectorAll('#tmBody .objchip').forEach(c=>c.addEventListener('click',e=>{ e.stopPropagation(); showSum(c); }));
     tmodal.hidden=false; body.style.overflow='hidden';
   }
-  function closeTcode(){ tmodal.hidden=true; body.style.overflow=''; }
-  document.querySelectorAll('.tcode-label').forEach(b=>b.addEventListener('click',()=>openTcode(b.dataset.tcode)));
+  function closeTcode(){ tmodal.hidden=true; body.style.overflow=''; closeSum(); }
+  /* 2차 요약 팝업(객체 한 줄 설명) */
+  let sumPop=null;
+  function closeSum(){ if(sumPop){ sumPop.remove(); sumPop=null; } }
+  function showSum(chip){
+    closeSum();
+    const key=chip.dataset.sum;
+    sumPop=document.createElement('div'); sumPop.className='sum-popup';
+    sumPop.innerHTML=`<b>${key}</b><span>${DDIC_SUMMARY[key]||'설명 준비 중'}</span>`;
+    document.body.appendChild(sumPop);
+    const r=chip.getBoundingClientRect();
+    sumPop.style.left=Math.max(8,Math.min(r.left, innerWidth-sumPop.offsetWidth-12))+'px';
+    sumPop.style.top=(r.bottom+8)+'px';
+  }
+  document.querySelectorAll('.tcode-label').forEach(b=>b.addEventListener('click',()=>openTcode(b.dataset.tcode,b.dataset.badge)));
   tmodal.querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click',closeTcode));
-  document.addEventListener('keydown',e=>{ if(e.key==='Escape' && !tmodal.hidden) closeTcode(); });
+  tmodal.addEventListener('click',e=>{ if(!e.target.closest('.objchip')) closeSum(); });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ if(sumPop) closeSum(); else if(!tmodal.hidden) closeTcode(); } });
 
   /* (8) 체험 슬롯 — Domain 만들기 시뮬레이션 */
   (function(){
