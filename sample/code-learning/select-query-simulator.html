@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<!--
+  SELECT 조회 시뮬레이터 (classic Open SQL) — standalone, ::embed 용
+  ────────────────────────────────────────────────────────────
+  컬럼 선택(projection) + WHERE(selection)로 classic SELECT를 구성 →
+  DB 테이블 ZTPERSON 에서 내부 테이블 LT_PERSON 으로 조회 → 결과 + sy-subrc/sy-dbcnt.
+  · 생성되는 ABAP 코드를 실시간으로 보여 줌(classic: 필드 공백 구분, @ 없음, 콤마 없음).
+  · 실행 시 매칭된 원본 행 강조 + 결과 내부 테이블(선택 컬럼만) 렌더.
+  · 예제 칩 4종. iframe 자동 높이. 외부 의존성 없음.
+-->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SELECT 조회 시뮬레이터 · Sample</title>
+<style>
+:root{
+  --bg:#f6f7fb;--surface:#fff;--ink:#1c2233;--ink-soft:#5b6478;--line:#e6e8ef;
+  --brand:#3b5bdb;--accent:#0ca678;--soon:#94a0b8;--warn:#be123c;
+  --mono:'D2Coding',Consolas,Monaco,'Courier New',monospace;
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic",Roboto,sans-serif;
+}
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:transparent;line-height:1.5;}
+.wrap{padding:14px;}
+.hd{font-weight:800;font-size:1rem;margin:0 0 4px;}
+.hd small{font-weight:600;color:var(--brand);}
+.lead{margin:0 0 12px;color:var(--ink-soft);font-size:.86rem;}
+.lead code{font-family:var(--mono);background:#eef2ff;color:var(--brand);padding:1px 5px;border-radius:5px;font-size:.92em;}
+
+.presets{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin-bottom:12px;}
+.presets__lbl{font-size:.8rem;font-weight:700;color:var(--ink-soft);margin-right:2px;}
+.chip{border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);border-radius:999px;
+  padding:6px 13px;font:inherit;font-size:.8rem;font-weight:700;cursor:pointer;transition:all .15s;}
+.chip:hover{border-color:var(--brand);color:var(--brand);}
+.chip.on{background:var(--brand);color:#fff;border-color:var(--brand);box-shadow:0 4px 12px rgba(59,91,219,.25);}
+
+/* 쿼리 빌더 */
+.builder{border:1px solid var(--line);border-radius:13px;background:var(--surface);overflow:hidden;margin-bottom:12px;}
+.brow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:11px 14px;border-bottom:1px solid var(--line);}
+.brow:last-child{border-bottom:0;}
+.brow__lbl{font-family:var(--mono);font-weight:800;color:var(--brand);font-size:.82rem;min-width:62px;}
+.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;}
+.seg button{border:0;background:#fff;color:var(--ink-soft);font:inherit;font-size:.8rem;font-weight:700;padding:6px 12px;cursor:pointer;}
+.seg button.on{background:var(--brand);color:#fff;}
+.cols{display:flex;gap:6px;flex-wrap:wrap;}
+.cols.dim{opacity:.4;pointer-events:none;}
+.colchk{display:flex;align-items:center;gap:5px;border:1px solid var(--line);border-radius:7px;padding:5px 10px;font-family:var(--mono);font-size:.8rem;cursor:pointer;background:#fff;user-select:none;}
+.colchk input{accent-color:var(--brand);}
+.colchk.on{border-color:var(--brand);background:#f3f6ff;color:var(--brand);font-weight:700;}
+.cond{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.cond.dim{opacity:.4;pointer-events:none;}
+select,input[type=text]{font:inherit;font-size:.82rem;padding:5px 8px;border:1px solid var(--line);border-radius:7px;background:#fff;color:var(--ink);font-family:var(--mono);}
+select:focus,input:focus{outline:0;border-color:var(--brand);box-shadow:0 0 0 3px rgba(59,91,219,.12);}
+input.val{width:96px;}
+.toggle{display:flex;align-items:center;gap:6px;font-size:.82rem;font-weight:700;color:var(--ink-soft);cursor:pointer;user-select:none;}
+.toggle input{accent-color:var(--brand);}
+
+/* 생성 코드 */
+.codebox{background:#f6f8fa;border:1px solid var(--line);border-radius:11px;overflow:hidden;margin-bottom:12px;}
+.codebox__hd{background:#343e6a;color:#fff;font-size:.74rem;font-weight:800;padding:7px 12px;display:flex;align-items:center;gap:7px;}
+.codebox__hd .tag{margin-left:auto;background:rgba(12,166,120,.9);border-radius:5px;padding:1px 8px;font-size:.68rem;}
+.code{margin:0;padding:11px 14px;font-family:var(--mono);font-size:12.5px;line-height:1.7;color:#24324a;white-space:pre;overflow-x:auto;}
+.tok-kw{color:#005cc5;font-weight:700;} .tok-str{color:#22863a;} .tok-num{color:#9a3b00;} .tok-com{color:#999;font-style:italic;}
+
+.runrow{display:flex;align-items:center;gap:11px;margin-bottom:12px;flex-wrap:wrap;}
+.run-btn{background:var(--accent);border:0;border-radius:8px;padding:8px 16px;font:inherit;font-size:.86rem;font-weight:800;color:#fff;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px;}
+.run-btn:hover{filter:brightness(1.08);} .run-btn:active{transform:translateY(1px);}
+.run-btn kbd{background:rgba(255,255,255,.22);border-radius:4px;padding:0 5px;font-size:10px;font-family:var(--mono);}
+.subrc{font-family:var(--mono);font-size:.82rem;font-weight:700;}
+.subrc .ok{color:var(--accent);} .subrc .no{color:var(--warn);}
+
+/* 결과 — 원본/결과 표 */
+.tables{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start;}
+.tcard{border:1px solid var(--line);border-radius:11px;overflow:hidden;background:#fff;min-width:0;}
+.tcard__hd{padding:8px 12px;font-size:.76rem;font-weight:800;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:7px;}
+.tcard.src .tcard__hd{background:#eef2ff;color:#26336b;}
+.tcard.res .tcard__hd{background:#eafaf3;color:#0b7250;}
+.tcard__hd .cnt{margin-left:auto;font-family:var(--mono);font-weight:700;}
+.dt{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px;}
+.dt th,.dt td{padding:5px 9px;text-align:left;border-bottom:1px solid #eef1f7;white-space:nowrap;}
+.dt th{background:#fafbfe;color:var(--ink-soft);font-size:11px;font-weight:800;}
+.dt td.num{text-align:right;}
+.dt tbody tr.matched{background:#eafaf3;box-shadow:inset 3px 0 0 var(--accent);}
+.dt tbody tr.dimmed{opacity:.34;}
+.dt .empty{color:var(--soon);font-style:italic;padding:14px;text-align:center;font-family:var(--font);}
+
+.note{margin-top:11px;border-left:3px solid var(--brand);background:rgba(59,91,219,.06);border-radius:0 9px 9px 0;padding:9px 13px;font-size:.83rem;color:#2a3550;}
+.note code{font-family:var(--mono);background:#fff;border:1px solid var(--line);padding:0 5px;border-radius:4px;}
+
+@media(max-width:540px){ .tables{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">SELECT 조회 시뮬레이터 <small>(classic Open SQL)</small></p>
+  <p class="lead">읽을 <b>컬럼</b>과 <b>WHERE 조건</b>을 고르면 아래에 <b>classic SELECT 코드</b>가 만들어집니다. <b>▶ 실행(F8)</b>을 누르면 DB 테이블 <code>ZTPERSON</code>에서 조건에 맞는 행이 내부 테이블 <code>LT_PERSON</code>으로 담깁니다.</p>
+
+  <div class="presets" id="presets">
+    <span class="presets__lbl">예제:</span>
+    <button class="chip" type="button" data-ex="0">전체 조회 (SELECT *)</button>
+    <button class="chip" type="button" data-ex="1">컬럼만 (name age)</button>
+    <button class="chip" type="button" data-ex="2">조건 (age &gt;= 33)</button>
+    <button class="chip" type="button" data-ex="3">문자 조건 (city = 'Seoul')</button>
+  </div>
+
+  <div class="builder">
+    <div class="brow">
+      <span class="brow__lbl">SELECT</span>
+      <div class="seg" id="segSel">
+        <button type="button" data-sel="all" class="on">전체 *</button>
+        <button type="button" data-sel="cols">컬럼 선택</button>
+      </div>
+      <div class="cols dim" id="cols"></div>
+    </div>
+    <div class="brow">
+      <span class="brow__lbl">WHERE</span>
+      <label class="toggle"><input type="checkbox" id="whereOn"> 조건 사용</label>
+      <div class="cond dim" id="cond1"></div>
+      <label class="toggle" id="and2wrap" style="display:none"><input type="checkbox" id="cond2On"> +</label>
+      <select id="conn" style="display:none"><option>AND</option><option>OR</option></select>
+      <div class="cond dim" id="cond2" style="display:none"></div>
+    </div>
+  </div>
+
+  <div class="codebox">
+    <div class="codebox__hd">생성된 ABAP <span class="tag">classic</span></div>
+    <pre class="code" id="code"></pre>
+  </div>
+
+  <div class="runrow">
+    <button class="run-btn" id="run" type="button">▶ 실행 <kbd>F8</kbd></button>
+    <span class="subrc" id="subrc"></span>
+  </div>
+
+  <div class="tables">
+    <div class="tcard src">
+      <div class="tcard__hd">DB 테이블 · ZTPERSON <span class="cnt" id="srcCnt"></span></div>
+      <div style="overflow-x:auto"><table class="dt" id="srcTbl"></table></div>
+    </div>
+    <div class="tcard res">
+      <div class="tcard__hd">내부 테이블 · LT_PERSON <span class="cnt" id="resCnt"></span></div>
+      <div style="overflow-x:auto"><table class="dt" id="resTbl"></table></div>
+    </div>
+  </div>
+
+  <div class="note">💡 <b>classic 규칙</b> — 필드는 <b>공백</b>으로 나열(콤마 ✕), 값은 <code>@</code> 없이 그대로. 컬럼을 고르면 <code>INTO CORRESPONDING FIELDS OF TABLE</code>, 전체(<code>*</code>)면 <code>INTO TABLE</code>. <code>@</code>·콤마는 CH18(modern)부터.</div>
+</div>
+
+<script>
+(function(){
+  var COLS=['persid','name','age','city'];
+  var NUMERIC={persid:true, age:true};
+  var DATA=[
+    {persid:1001,name:'정훈영',age:33,city:'Seoul'},
+    {persid:1002,name:'손흥민',age:31,city:'London'},
+    {persid:1003,name:'아이유',age:30,city:'Seoul'},
+    {persid:1004,name:'유재석',age:51,city:'Seoul'},
+    {persid:1005,name:'김연아',age:33,city:'Busan'},
+    {persid:1006,name:'차은우',age:26,city:'Seoul'},
+    {persid:1007,name:'마동석',age:54,city:'Incheon'}
+  ];
+  var OPS=['=','<>','>=','<=','>','<','LIKE'];
+  var $=function(id){return document.getElementById(id);};
+
+  /* 상태 */
+  var st={ selAll:true, cols:{persid:false,name:false,age:false,city:false}, whereOn:false,
+           c1:{f:'age',op:'>=',v:''}, c2On:false, conn:'AND', c2:{f:'city',op:'=',v:''} };
+
+  /* ── 컬럼 체크박스 ── */
+  COLS.forEach(function(c){
+    var lab=document.createElement('label'); lab.className='colchk'; lab.dataset.col=c;
+    lab.innerHTML='<input type="checkbox">'+c;
+    lab.querySelector('input').addEventListener('change',function(e){
+      st.cols[c]=e.target.checked; lab.classList.toggle('on',e.target.checked); refresh();
+    });
+    $('cols').appendChild(lab);
+  });
+
+  /* ── 조건 행 빌더 ── */
+  function buildCond(host, cobj){
+    var fsel=document.createElement('select');
+    COLS.forEach(function(c){ var o=document.createElement('option'); o.value=c; o.textContent=c; fsel.appendChild(o); });
+    fsel.value=cobj.f;
+    var osel=document.createElement('select');
+    OPS.forEach(function(o){ var op=document.createElement('option'); op.value=o; op.textContent=o; osel.appendChild(op); });
+    osel.value=cobj.op;
+    var val=document.createElement('input'); val.type='text'; val.className='val'; val.placeholder='값'; val.value=cobj.v;
+    fsel.addEventListener('change',function(){ cobj.f=fsel.value; refresh(); });
+    osel.addEventListener('change',function(){ cobj.op=osel.value; refresh(); });
+    val.addEventListener('input',function(){ cobj.v=val.value; refresh(); });
+    host.appendChild(fsel); host.appendChild(osel); host.appendChild(val);
+  }
+  buildCond($('cond1'), st.c1);
+  buildCond($('cond2'), st.c2);
+
+  /* ── SELECT 세그먼트 ── */
+  $('segSel').addEventListener('click',function(e){
+    var b=e.target.closest('button'); if(!b) return;
+    st.selAll = b.dataset.sel==='all';
+    $('segSel').querySelectorAll('button').forEach(function(x){ x.classList.toggle('on', x===b); });
+    $('cols').classList.toggle('dim', st.selAll);
+    refresh();
+  });
+  /* ── WHERE 토글 ── */
+  $('whereOn').addEventListener('change',function(e){
+    st.whereOn=e.target.checked;
+    $('cond1').classList.toggle('dim', !st.whereOn);
+    $('and2wrap').style.display = st.whereOn?'flex':'none';
+    refresh();
+  });
+  $('cond2On').addEventListener('change',function(e){
+    st.c2On=e.target.checked;
+    $('conn').style.display = st.c2On?'inline-block':'none';
+    $('cond2').style.display = st.c2On?'flex':'none';
+    $('cond2').classList.toggle('dim', !st.c2On);
+    refresh();
+  });
+  $('conn').addEventListener('change',function(e){ st.conn=e.target.value; refresh(); });
+
+  /* ── 코드 하이라이트 ── */
+  var KW=new Set(('DATA TYPE TABLE OF SELECT FROM INTO CORRESPONDING FIELDS WHERE AND OR LIKE').split(' '));
+  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function hl(line){
+    if(/^\s*"/.test(line)||/^\s*\*/.test(line)) return '<span class="tok-com">'+esc(line)+'</span>';
+    var out='', re=/('[^']*'?)|("[^\n]*$)|(\b\d+\b)|([A-Za-z_][A-Za-z0-9_]*)|([^A-Za-z0-9_']+)/g, m;
+    while((m=re.exec(line))!==null){
+      if(m[1]) out+='<span class="tok-str">'+esc(m[1])+'</span>';
+      else if(m[2]) out+='<span class="tok-com">'+esc(m[2])+'</span>';
+      else if(m[3]) out+='<span class="tok-num">'+esc(m[3])+'</span>';
+      else if(m[4]) out+= KW.has(m[4].toUpperCase()) ? '<span class="tok-kw">'+esc(m[4])+'</span>' : esc(m[4]);
+      else out+=esc(m[0]);
+    }
+    return out;
+  }
+
+  function selectedCols(){
+    if(st.selAll) return COLS.slice();
+    var c=COLS.filter(function(x){ return st.cols[x]; });
+    return c.length?c:COLS.slice();   // 아무것도 안 고르면 전체로 간주
+  }
+  function fieldList(){
+    if(st.selAll) return '*';
+    var c=COLS.filter(function(x){ return st.cols[x]; });
+    return c.length? c.join(' ') : '*';   // classic: 공백 구분
+  }
+  function condSql(c){
+    var v=c.v.trim(); if(v==='') v='?';
+    var lit = NUMERIC[c.f] && c.op!=='LIKE' ? v : "'"+v+"'";
+    return c.f+' '+c.op+' '+lit;
+  }
+
+  /* ── 코드 생성 ── */
+  function genCode(){
+    var into = st.selAll ? 'INTO TABLE lt_person' : 'INTO CORRESPONDING FIELDS OF TABLE lt_person';
+    var lines=[ 'DATA lt_person TYPE TABLE OF ztperson.', '',
+                'SELECT '+fieldList(),
+                '  FROM ztperson',
+                '  '+into ];
+    if(st.whereOn){
+      var w='  WHERE '+condSql(st.c1);
+      if(st.c2On) w+=' '+st.conn+' '+condSql(st.c2);
+      lines.push(w);
+    }
+    lines[lines.length-1]+='.';
+    return lines.join('\n');
+  }
+
+  /* ── 조건 평가 ── */
+  function evalCond(row,c){
+    var v=c.v.trim(); if(v==='') return true;   // 미입력 조건은 무시
+    var cell=row[c.f];
+    if(c.op==='LIKE'){
+      var rx=new RegExp('^'+v.replace(/[.+^${}()|[\]\\]/g,'\\$&').replace(/%/g,'.*').replace(/_/g,'.')+'$','i');
+      return rx.test(String(cell));
+    }
+    var a=cell, b=v;
+    if(NUMERIC[c.f]){ a=Number(cell); b=Number(v); if(isNaN(b)) return false; }
+    else { a=String(cell); b=String(v); }
+    switch(c.op){
+      case '=':  return a===b;
+      case '<>': return a!==b;
+      case '>=': return a>=b;
+      case '<=': return a<=b;
+      case '>':  return a>b;
+      case '<':  return a<b;
+    }
+    return true;
+  }
+  function matches(row){
+    if(!st.whereOn) return true;
+    var r1=evalCond(row,st.c1);
+    if(!st.c2On) return r1;
+    var r2=evalCond(row,st.c2);
+    return st.conn==='AND' ? (r1&&r2) : (r1||r2);
+  }
+
+  /* ── 렌더: 코드 + 원본 표(빌드 시 전체, 실행 시 강조) ── */
+  function renderCode(){ $('code').innerHTML = genCode().split('\n').map(hl).join('\n'); }
+  function thRow(cols){ return '<thead><tr>'+cols.map(function(c){return '<th>'+c.toUpperCase()+'</th>';}).join('')+'</tr></thead>'; }
+  function tdRow(row,cols){ return '<tr>'+cols.map(function(c){ return '<td class="'+(NUMERIC[c]?'num':'')+'">'+row[c]+'</td>'; }).join('')+'</tr>'; }
+
+  function renderSource(highlight){
+    var html=thRow(COLS)+'<tbody>'+DATA.map(function(r){
+      var m=highlight?matches(r):null;
+      var cls=highlight?(m?'matched':'dimmed'):'';
+      return '<tr class="'+cls+'">'+COLS.map(function(c){return '<td class="'+(NUMERIC[c]?'num':'')+'">'+r[c]+'</td>';}).join('')+'</tr>';
+    }).join('')+'</tbody>';
+    $('srcTbl').innerHTML=html; $('srcCnt').textContent=DATA.length+'행';
+  }
+
+  function refresh(){   // 빌더 변경 시: 코드 갱신 + 결과 초기화
+    renderCode(); renderSource(false);
+    $('resTbl').innerHTML='<tbody><tr><td class="empty">▶ 실행을 누르면 결과가 채워집니다.</td></tr></tbody>';
+    $('resCnt').textContent=''; $('subrc').innerHTML='';
+  }
+
+  function run(){
+    var cols=selectedCols();
+    var matched=DATA.filter(matches);
+    renderSource(true);
+    if(matched.length===0){
+      $('resTbl').innerHTML='<tbody><tr><td class="empty">조회 결과 없음 (0행)</td></tr></tbody>';
+      $('resCnt').textContent='0행';
+      $('subrc').innerHTML='<span class="no">sy-subrc = 4</span> · sy-dbcnt = 0 · lines( lt_person ) = 0';
+    } else {
+      $('resTbl').innerHTML=thRow(cols)+'<tbody>'+matched.map(function(r){return tdRow(r,cols);}).join('')+'</tbody>';
+      $('resCnt').textContent=matched.length+'행';
+      $('subrc').innerHTML='<span class="ok">sy-subrc = 0</span> · sy-dbcnt = '+matched.length+' · lines( lt_person ) = '+matched.length;
+    }
+    postHeight();
+  }
+
+  /* ── 예제 ── */
+  var EX=[
+    function(){ set(true,{},false); },                                            // 전체
+    function(){ set(false,{name:true,age:true},false); },                         // 컬럼만
+    function(){ set(true,{},true,{f:'age',op:'>=',v:'33'},false); },              // age>=33
+    function(){ set(true,{},true,{f:'city',op:'=',v:'Seoul'},false); }            // city='Seoul'
+  ];
+  function set(selAll,cols,whereOn,c1,c2On){
+    st.selAll=selAll;
+    COLS.forEach(function(c){ st.cols[c]=!!cols[c]; });
+    st.whereOn=whereOn; if(c1){ st.c1.f=c1.f; st.c1.op=c1.op; st.c1.v=c1.v; } st.c2On=!!c2On;
+    // reflect to UI
+    $('segSel').querySelectorAll('button').forEach(function(b){ b.classList.toggle('on', (b.dataset.sel==='all')===selAll); });
+    $('cols').classList.toggle('dim', selAll);
+    $('cols').querySelectorAll('.colchk').forEach(function(l){ var c=l.dataset.col; l.querySelector('input').checked=st.cols[c]; l.classList.toggle('on',st.cols[c]); });
+    $('whereOn').checked=whereOn; $('cond1').classList.toggle('dim',!whereOn);
+    $('and2wrap').style.display=whereOn?'flex':'none';
+    $('cond2On').checked=false; $('conn').style.display='none'; $('cond2').style.display='none'; $('cond2').classList.add('dim');
+    // rebuild cond1 inputs to reflect values
+    $('cond1').innerHTML=''; buildCond($('cond1'), st.c1);
+  }
+  $('presets').addEventListener('click',function(e){
+    var c=e.target.closest('.chip'); if(!c) return;
+    var i=+c.dataset.ex; EX[i]();
+    $('presets').querySelectorAll('.chip').forEach(function(x){ x.classList.toggle('on', x===c); });
+    refresh(); run();
+  });
+
+  $('run').addEventListener('click',function(){
+    $('presets').querySelectorAll('.chip').forEach(function(x){ x.classList.remove('on'); });
+    run();
+  });
+  document.addEventListener('keydown',function(e){ if(e.key==='F8'){ e.preventDefault(); run(); } });
+
+  /* iframe 자동 높이 */
+  function postHeight(){
+    try{ var el=document.querySelector('.wrap');
+      var h=Math.ceil(el?el.getBoundingClientRect().height:document.body.scrollHeight)+6;
+      parent.postMessage({sda:'embed-height', h:h}, '*'); }catch(e){}
+  }
+  window.addEventListener('load', postHeight);
+  window.addEventListener('resize', postHeight);
+
+  /* 초기: 예제 0 */
+  EX[0](); $('presets').querySelector('.chip[data-ex="0"]').classList.add('on'); refresh(); run();
+})();
+</script>
+</body>
+</html>
