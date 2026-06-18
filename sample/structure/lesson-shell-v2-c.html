@@ -116,7 +116,9 @@ body.rail-open .scrim{opacity:1;pointer-events:auto;}
 .stage{margin-left:var(--rail);transition:margin .26s;}
 .layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:38px;max-width:1480px;margin:0 auto 0 0;padding:26px clamp(24px,3vw,52px) 96px clamp(32px,5vw,88px);align-items:start;}
 .main{min-width:0;max-width:880px;margin:0;transition:max-width .2s;}
-html.wide .main{max-width:1160px;}
+/* 가독 폭 '넓게': 레이아웃 폭 제한 해제 + 거터 축소 + 본문 상한 대폭 확대 */
+html.wide .layout{max-width:none;padding-left:clamp(20px,2vw,40px);padding-right:clamp(20px,2vw,32px);}
+html.wide .main{max-width:1500px;}
 
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:24px 28px;margin:18px 0;box-shadow:var(--shadow);}
 
@@ -153,7 +155,9 @@ html.dark .tcode-label__badge,html.dark .tmodal__badge{background:#16322a;color:
 
 /* 본문 — 떠 있는 카드 + 데코 번호 */
 .block{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:24px 28px 20px;margin:16px 0;box-shadow:0 2px 6px rgba(60,50,30,.05);overflow:hidden;transition:transform .22s cubic-bezier(.16,1,.3,1),box-shadow .22s;}
-.block::after{content:attr(data-n);position:absolute;right:18px;top:6px;font-size:4.4rem;font-weight:900;color:var(--deco);line-height:1;pointer-events:none;transition:color .22s;}
+/* 데코 번호/아이콘: 장식(덜 중요) → 콘텐츠 뒤(아래 z-order)로 보내 글자를 덮지 않게 */
+.block::after{content:attr(data-n);position:absolute;right:18px;top:6px;font-size:4.4rem;font-weight:900;color:var(--deco);line-height:1;pointer-events:none;z-index:0;transition:color .22s;}
+.block>*{position:relative;z-index:1;}
 .block:hover{transform:translateY(-4px) scale(1.006);box-shadow:0 20px 44px rgba(60,50,30,.12);}
 .block h2{font-size:1.3rem;margin:0 0 8px;position:relative;}
 .block h2 .num{color:var(--brand);font-weight:900;}
