@@ -43,36 +43,44 @@
 <p>내부 테이블의 행을 <strong>하나씩 순회</strong>하고, <strong>특정 행을 찾고</strong>, <strong>고치고 지운다</strong>.
 가장 자주 쓰는 동작들이다.</p>
 </section><section class="lblock"><h2>LOOP — 전체 순회</h2>
-<pre><code class="language-abap">LOOP AT lt_person INTO ls_person.
-  WRITE: / ls_person-name, ls_person-age.
-ENDLOOP.
-</code></pre>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3</pre><pre class="abap-editor__code"><code><span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_person <span class="tok-kw">INTO</span> ls_person.
+  <span class="tok-kw">WRITE</span>: / ls_person-name, ls_person-age.
+<span class="tok-kw">ENDLOOP</span>.</code></pre></div></div>
 <ul>
 <li>한 행씩 <button class="term" type="button" data-term="Work Area">Work Area</button> <code>ls_person</code>으로 꺼내 처리한다.</li>
 <li>현재 행 번호는 <code>sy-tabix</code>에 들어온다.</li>
 </ul>
 </section><section class="lblock"><h2>READ TABLE — 단건 조회</h2>
-<pre><code class="language-abap">READ TABLE lt_person INTO ls_person WITH KEY name = &#39;Kim&#39;.
-IF sy-subrc = 0.
-  WRITE: / &#39;찾음:&#39;, ls_person-age.
-ENDIF.
-</code></pre>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4</pre><pre class="abap-editor__code"><code><span class="tok-kw">READ</span> <span class="tok-kw">TABLE</span> lt_person <span class="tok-kw">INTO</span> ls_person <span class="tok-kw">WITH</span> <span class="tok-kw">KEY</span> name = <span class="tok-str">'Kim'</span>.
+<span class="tok-kw">IF</span> sy-subrc = <span class="tok-num">0</span>.
+  <span class="tok-kw">WRITE</span>: / <span class="tok-str">'찾음:'</span>, ls_person-age.
+<span class="tok-kw">ENDIF</span>.</code></pre></div></div>
 <ul>
 <li>찾으면 <code>sy-subrc = 0</code>, 못 찾으면 <code>4</code>. <strong>항상 <code>sy-subrc</code>를 확인</strong>한다.</li>
 </ul>
 </section><section class="lblock"><h2>MODIFY / DELETE — 수정·삭제</h2>
-<pre><code class="language-abap">&quot; 순회 중 현재 행 수정
-LOOP AT lt_person INTO ls_person.
-  ls_person-age = ls_person-age + 1.
-  MODIFY lt_person FROM ls_person INDEX sy-tabix.
-ENDLOOP.
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8</pre><pre class="abap-editor__code"><code><span class="tok-com">" 순회 중 현재 행 수정</span>
+<span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_person <span class="tok-kw">INTO</span> ls_person.
+  ls_person-age = ls_person-age + <span class="tok-num">1</span>.
+  <span class="tok-kw">MODIFY</span> lt_person <span class="tok-kw">FROM</span> ls_person INDEX sy-tabix.
+<span class="tok-kw">ENDLOOP</span>.
 
-&quot; 조건으로 삭제
-DELETE lt_person WHERE age &lt; 20.
-</code></pre>
+<span class="tok-com">" 조건으로 삭제</span>
+<span class="tok-kw">DELETE</span> lt_person <span class="tok-kw">WHERE</span> age &lt; <span class="tok-num">20</span>.</code></pre></div></div>
 </section><section class="lblock"><h2>정렬</h2>
-<pre><code class="language-abap">SORT lt_person BY age DESCENDING.
-</code></pre>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1</pre><pre class="abap-editor__code"><code><span class="tok-kw">SORT</span> lt_person BY age <span class="tok-kw">DESCENDING</span>.</code></pre></div></div>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
 <li><strong>sy-subrc 미확인</strong> → READ 실패 후 옛 <button class="term" type="button" data-term="Work Area">Work Area</button> 값을 그대로 쓰는 버그. 꼭 확인.</li>

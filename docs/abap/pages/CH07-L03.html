@@ -43,30 +43,42 @@
 <p>특정 사람 한 명, 특정 주문 하나처럼 <strong>키로 단건</strong>만 필요할 때가 많다. 이럴 땐
 <button class="term" type="button" data-term="SELECT SINGLE">SELECT SINGLE</button>이 맞다.</p>
 </section><section class="lblock"><h2>SELECT SINGLE — 한 행을 Work Area로</h2>
-<pre><code class="language-abap">DATA: lv_id     TYPE ztperson-persid VALUE &#39;0001&#39;,
-      ls_person TYPE ztperson.
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>: lv_id     <span class="tok-kw">TYPE</span> ztperson-persid <span class="tok-kw">VALUE</span> <span class="tok-str">'0001'</span>,
+      ls_person <span class="tok-kw">TYPE</span> ztperson.
 
-SELECT SINGLE * FROM ztperson
-  INTO ls_person
-  WHERE persid = lv_id.
+<span class="tok-kw">SELECT</span> <span class="tok-kw">SINGLE</span> * <span class="tok-kw">FROM</span> ztperson
+  <span class="tok-kw">INTO</span> ls_person
+  <span class="tok-kw">WHERE</span> persid = lv_id.
 
-IF sy-subrc = 0.
-  WRITE: / ls_person-name, ls_person-age.
-ELSE.
-  WRITE: / &#39;없음&#39;.
-ENDIF.
-</code></pre>
+<span class="tok-kw">IF</span> sy-subrc = <span class="tok-num">0</span>.
+  <span class="tok-kw">WRITE</span>: / ls_person-name, ls_person-age.
+<span class="tok-kw">ELSE</span>.
+  <span class="tok-kw">WRITE</span>: / <span class="tok-str">'없음'</span>.
+<span class="tok-kw">ENDIF</span>.</code></pre></div></div>
 <ul>
 <li>결과는 <button class="term" type="button" data-term="Work Area">Work Area</button> 한 건(<code>INTO ls_</code>, <code>INTO TABLE</code> 아님).</li>
 <li><strong>키 전체</strong>로 조회하면 정확히 한 행이 보장된다.</li>
 <li><code>sy-subrc = 0</code>이면 찾음, <code>4</code>면 없음 — <strong>반드시 확인</strong>.</li>
 </ul>
 </section><section class="lblock"><h2>필요한 컬럼만 (classic)</h2>
-<pre><code class="language-abap">SELECT SINGLE name age          &quot; 공백 구분(classic)
-  FROM ztperson
-  INTO CORRESPONDING FIELDS OF ls_person
-  WHERE persid = lv_id.
-</code></pre>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> <span class="tok-kw">SINGLE</span> name age          <span class="tok-com">" 공백 구분(classic)</span>
+  <span class="tok-kw">FROM</span> ztperson
+  <span class="tok-kw">INTO</span> <span class="tok-kw">CORRESPONDING</span> <span class="tok-kw">FIELDS</span> <span class="tok-kw">OF</span> ls_person
+  <span class="tok-kw">WHERE</span> persid = lv_id.</code></pre></div></div>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
 <li><strong>부분 키로 SINGLE</strong> → 여러 행 중 임의의 한 행이 온다. 단건은 <strong>전체 키</strong>로.</li>

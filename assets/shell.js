@@ -264,6 +264,23 @@
     doc.addEventListener("keydown", function (e) { if (e.key === "Escape" && !modal.hidden) close(); });
   }
 
+  /* ===== 코드 복사 버튼 (.abap-editor / code-copy-block 양식) ===== */
+  function codeCopy() {
+    doc.addEventListener("click", function (e) {
+      var btn = e.target.closest(".copy-btn"); if (!btn) return;
+      var ed = btn.closest(".abap-editor"); if (!ed) return;
+      var codeEl = ed.querySelector(".abap-editor__code"); if (!codeEl) return;
+      var done = function () {
+        var o = btn.getAttribute("data-o") || btn.textContent;
+        btn.setAttribute("data-o", o); btn.textContent = "✓ 복사됨"; btn.classList.add("is-copied");
+        setTimeout(function () { btn.textContent = o; btn.classList.remove("is-copied"); }, 1600);
+      };
+      var text = codeEl.innerText;
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done).catch(done);
+      else done();
+    });
+  }
+
   /* ===== 임베드 iframe 자동 높이 (컴포넌트가 postMessage 로 높이 전송) ===== */
   function embedAutoHeight() {
     window.addEventListener("message", function (e) {
@@ -280,6 +297,7 @@
   settings();
   buildJourney();
   scrollInit();
+  codeCopy();
   embedAutoHeight();
   var needTcode = !!q(".tcode-label");
   Promise.all([

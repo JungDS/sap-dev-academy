@@ -43,24 +43,35 @@
 <p>본 처리에 들어가기 전, &quot;이 사용자가 볼 권한이 있나&quot;, &quot;입력한 키가 실제 존재하나&quot;
 를 <strong>선택화면 단계</strong>에서 확인하면 안전하다.</p>
 </section><section class="lblock"><h2>존재 여부 (AT SELECTION-SCREEN, classic)</h2>
-<pre><code class="language-abap">DATA lv_dummy TYPE ztdept-dept_id.
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> lv_dummy <span class="tok-kw">TYPE</span> ztdept-dept_id.
 
-AT SELECTION-SCREEN.
-  SELECT SINGLE dept_id FROM ztdept
-    INTO lv_dummy
-    WHERE dept_id = p_dept.        &quot; classic (@ 없이)
-  IF sy-subrc &lt;&gt; 0.
-    MESSAGE &#39;존재하지 않는 부서&#39; TYPE &#39;E&#39;.
-  ENDIF.
-</code></pre>
+<span class="tok-kw">AT</span> <span class="tok-kw">SELECTION-SCREEN</span>.
+  <span class="tok-kw">SELECT</span> <span class="tok-kw">SINGLE</span> dept_id <span class="tok-kw">FROM</span> ztdept
+    <span class="tok-kw">INTO</span> lv_dummy
+    <span class="tok-kw">WHERE</span> dept_id = p_dept.        <span class="tok-com">" classic (@ 없이)</span>
+  <span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.
+    <span class="tok-kw">MESSAGE</span> <span class="tok-str">'존재하지 않는 부서'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'E'</span>.
+  <span class="tok-kw">ENDIF</span>.</code></pre></div></div>
 </section><section class="lblock"><h2>권한 검사 (AUTHORITY-CHECK)</h2>
-<pre><code class="language-abap">AUTHORITY-CHECK OBJECT &#39;Z_DEPT&#39;
-  ID &#39;DEPT&#39;  FIELD p_dept
-  ID &#39;ACTVT&#39; FIELD &#39;03&#39;.          &quot; 03 = 조회
-IF sy-subrc &lt;&gt; 0.
-  MESSAGE &#39;권한이 없습니다&#39; TYPE &#39;E&#39;.
-ENDIF.
-</code></pre>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6</pre><pre class="abap-editor__code"><code>AUTHORITY-CHECK <span class="tok-kw">OBJECT</span> <span class="tok-str">'Z_DEPT'</span>
+  <span class="tok-kw">ID</span> <span class="tok-str">'DEPT'</span>  FIELD p_dept
+  <span class="tok-kw">ID</span> <span class="tok-str">'ACTVT'</span> FIELD <span class="tok-str">'03'</span>.          <span class="tok-com">" 03 = 조회</span>
+<span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.
+  <span class="tok-kw">MESSAGE</span> <span class="tok-str">'권한이 없습니다'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'E'</span>.
+<span class="tok-kw">ENDIF</span>.</code></pre></div></div>
 <ul>
 <li><code>AUTHORITY-CHECK</code>는 권한 객체로 사용자 권한을 확인하고 <code>sy-subrc</code>로 결과를 준다.</li>
 <li>깊은 권한 설계는 실무 트랙(TRACK-02)에서. 지금은 &quot;입력 단계에서 막는다&quot;는 패턴만.</li>

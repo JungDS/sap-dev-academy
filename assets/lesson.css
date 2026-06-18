@@ -33,12 +33,44 @@
 .prose th,.prose td{border:1px solid var(--line);padding:7px 11px;text-align:left;}
 .prose th{background:var(--tint);font-weight:700;}
 
-/* 코드 */
-.prose pre{background:#0f172a;color:#e2e8f0;border-radius:12px;padding:14px 16px;overflow-x:auto;
-  font-family:'D2Coding',Consolas,Monaco,monospace;font-size:.86rem;line-height:1.55;margin:12px 0;}
-html.dark .prose pre{background:#0b0f1a;border:1px solid var(--line);}
+/* 코드 — 합의된 code-copy-block 양식(네이비 헤더 + 줄번호 + 토큰색 + 복사 버튼).
+   빌드(build-curriculum.mjs)가 ```code 를 .abap-editor 마크업으로 emit한다. 다크 블록 금지(P10). */
+.prose .abap-editor{background:#f6f8fa;border:1px solid #d0d0d0;border-radius:12px;overflow:hidden;margin:14px 0;
+  font-family:'D2Coding',Consolas,Monaco,monospace;font-size:.86rem;box-shadow:0 4px 12px rgba(0,0,0,.08);}
+.prose .abap-editor__header{background:#343e6a;padding:8px 14px;display:flex;align-items:center;gap:8px;}
+.prose .abap-editor__dots{display:flex;gap:6px;}
+.prose .abap-editor__dot{width:12px;height:12px;border-radius:50%;display:inline-block;}
+.prose .abap-editor__dot.r{background:#ff5f56;}.prose .abap-editor__dot.y{background:#ffbd2e;}.prose .abap-editor__dot.g{background:#27c93f;}
+.prose .abap-editor__title{margin-left:6px;color:#ffa03b;font-weight:700;font-size:12px;letter-spacing:1px;}
+.prose .copy-btn{margin-left:auto;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.35);border-radius:5px;
+  padding:4px 10px;font-size:12px;cursor:pointer;color:#fff;font-weight:700;font-family:var(--font);transition:all .2s;}
+.prose .copy-btn:hover{background:rgba(255,255,255,.24);}
+.prose .copy-btn.is-copied{color:#27c93f;border-color:#27c93f;background:rgba(39,201,63,.15);}
+.prose .abap-editor__body{display:flex;align-items:stretch;background:#f6f8fa;}
+.prose .abap-editor__gutter{margin:0;background:#f0f0e1;color:#aeb6c7;padding:10px 9px;text-align:right;border-right:1px solid #d9dac8;
+  user-select:none;min-width:38px;line-height:1.6;white-space:pre;}
+.prose .abap-editor__code{margin:0;padding:10px 14px;overflow-x:auto;line-height:1.6;color:#333;flex:1;white-space:pre;background:#f6f8fa;}
+.prose .abap-editor__code code{font-family:inherit;background:none;padding:0;border:0;font-size:inherit;color:inherit;white-space:pre;}
+.prose .tok-kw{color:#005cc5;font-weight:700;}.prose .tok-str{color:#22863a;}.prose .tok-num{color:#9a3b00;}.prose .tok-com{color:#999;font-style:italic;}
+html.dark .prose .abap-editor{border-color:var(--line);}
+
+/* 인라인 코드 칩 */
 .prose :not(pre)>code{background:var(--chip);border-radius:6px;padding:1px 6px;font-size:.9em;
   font-family:'D2Coding',Consolas,Monaco,monospace;}
+
+/* 펼치기(details) — 클릭 가능함을 분명히(커서·삼각형·hover) */
+.prose details{margin:14px 0;border:1px solid var(--line);border-radius:12px;background:var(--tint);overflow:hidden;}
+.prose details>summary{cursor:pointer;padding:11px 16px;font-weight:700;color:var(--brand);
+  list-style:none;display:flex;align-items:center;gap:9px;user-select:none;transition:background .15s;}
+.prose details>summary::-webkit-details-marker{display:none;}
+.prose details>summary::before{content:'▸';color:var(--brand);font-size:.9em;transition:transform .15s;flex-shrink:0;}
+.prose details[open]>summary::before{transform:rotate(90deg);}
+.prose details>summary:hover{background:rgba(59,91,219,.10);}
+.prose details>summary::after{content:'펼치기';margin-left:auto;font-size:.72rem;font-weight:700;color:var(--ink-soft);
+  background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:2px 9px;}
+.prose details[open]>summary::after{content:'접기';}
+.prose details>*:not(summary){margin-left:16px;margin-right:16px;}
+.prose details>*:last-child{margin-bottom:12px;}
 
 /* 체험 임베드 위젯(::embed) — sample/ 를 iframe으로, 블루 헤더로 프레이밍 */
 .embed{margin:20px 0;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);background:var(--surface);}

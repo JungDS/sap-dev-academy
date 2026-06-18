@@ -67,7 +67,75 @@ const embedExt = {
       `<iframe class="embed__frame" src="${src}" loading="lazy" title="${esc(title)}"${hStyle}></iframe></figure>\n`;
   },
 };
-marked.use({ extensions: [glossaryExt, embedExt], gfm: true });
+/* ---------- 코드 블록 = code-copy-block 양식 강제 (R3 / P10) ----------
+   합의된 코드 표시 = sample/structure/code-copy-block.html (네이비 헤더 + 줄번호 + 토큰색 + 복사 버튼).
+   marked 기본 <pre><code>(다크 블록) 대신 이 양식을 빌드가 항상 emit한다 → 손으로 "블랙 코드"가 나올 수 없다. */
+const ABAP_KW = new Set((
+  "REPORT PROGRAM TYPE TYPES DATA CONSTANTS STATICS FIELD-SYMBOLS FIELD-SYMBOL VALUE TABLE OF REF TO LIKE " +
+  "BEGIN END WRITE ULINE SKIP FORMAT NEW-LINE NEW-PAGE " +
+  "IF ELSEIF ELSE ENDIF CASE WHEN ENDCASE CHECK CONTINUE EXIT " +
+  "DO ENDDO WHILE ENDWHILE LOOP ENDLOOP AT ENDAT " +
+  "MOVE CLEAR REFRESH FREE APPEND INSERT MODIFY DELETE READ COLLECT SORT " +
+  "SELECT FROM INTO CORRESPONDING FIELDS WHERE AND OR NOT IN BETWEEN " +
+  "ORDER GROUP UP ROWS SINGLE DISTINCT INNER JOIN ON AS CLIENT " +
+  "PARAMETERS SELECT-OPTIONS SELECTION-SCREEN " +
+  "INITIALIZATION START-OF-SELECTION END-OF-SELECTION LOAD-OF-PROGRAM OUTPUT " +
+  "MESSAGE RAISE CALL FUNCTION METHOD PERFORM FORM ENDFORM ENDFUNCTION " +
+  "TRY CATCH CLEANUP ENDTRY CREATE OBJECT NEW " +
+  "IMPORTING EXPORTING CHANGING RETURNING EXCEPTIONS RECEIVING " +
+  "CLASS ENDCLASS METHODS CLASS-METHODS ENDMETHOD DEFINITION IMPLEMENTATION " +
+  "PUBLIC PRIVATE PROTECTED SECTION INHERITING REDEFINITION ABSTRACT FINAL " +
+  "COMMIT ROLLBACK WORK ASSIGN UNASSIGN IS INITIAL BOUND ASSIGNED " +
+  "WITH KEY USING DEFAULT ASCENDING DESCENDING LINES DESCRIBE CONCATENATE SPLIT CONDENSE " +
+  "SET GET PARAMETER ID"
+).split(/\s+/));
+
+function escHtml(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function hlAbapLine(line) {
+  if (/^\s*\*/.test(line)) return '<span class="tok-com">' + escHtml(line) + '</span>';
+  let out = '', m;
+  const re = /('[^']*'?)|(`[^`]*`?)|(".*$)|(\b\d+\b)|([A-Za-z_][A-Za-z0-9_\-]*)|([^A-Za-z0-9_'`"\-]+)/g;
+  while ((m = re.exec(line)) !== null) {
+    if (m[1] || m[2]) out += '<span class="tok-str">' + escHtml(m[1] || m[2]) + '</span>';
+    else if (m[3]) out += '<span class="tok-com">' + escHtml(m[3]) + '</span>';
+    else if (m[4]) out += '<span class="tok-num">' + escHtml(m[4]) + '</span>';
+    else if (m[5]) out += ABAP_KW.has(m[5].toUpperCase()) ? '<span class="tok-kw">' + escHtml(m[5]) + '</span>' : escHtml(m[5]);
+    else out += escHtml(m[0]);
+  }
+  return out;
+}
+function renderCodeBlock(code, lang) {
+  const language = (lang || '').trim();
+  const isAbap = language === '' || /^abap$/i.test(language);
+  const raw = String(code).replace(/\n+$/, '');
+  const lines = raw.length ? raw.split('\n') : [''];
+  const gutter = lines.map((_, i) => i + 1).join('\n');
+  const bodyHl = lines.map((l) => (isAbap ? hlAbapLine(l) : escHtml(l))).join('\n');
+  const title = language ? language.toUpperCase() : 'ABAP';
+  return '<div class="abap-editor">' +
+    '<div class="abap-editor__header">' +
+      '<span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span>' +
+      '<span class="abap-editor__title">' + esc(title) + '</span>' +
+      '<button class="copy-btn" type="button">⧉ 복사</button>' +
+    '</div>' +
+    '<div class="abap-editor__body">' +
+      '<pre class="abap-editor__gutter" aria-hidden="true">' + gutter + '</pre>' +
+      '<pre class="abap-editor__code"><code>' + bodyHl + '</code></pre>' +
+    '</div></div>\n';
+}
+
+marked.use({
+  extensions: [glossaryExt, embedExt],
+  gfm: true,
+  renderer: {
+    code(codeArg, infoArg) {
+      let code, lang;
+      if (codeArg && typeof codeArg === 'object') { code = codeArg.text; lang = codeArg.lang; }
+      else { code = codeArg; lang = infoArg; }
+      return renderCodeBlock(code, lang);
+    },
+  },
+});
 
 /* ---------- 소스 로딩 ---------- */
 function loadTracks() {
@@ -192,6 +260,8 @@ function main() {
   const tracks = loadTracks();
   const chapters = loadChapters();
 
+  // 페이지 파일명은 레슨 ID로 통일(CHxx-Lyy.html). 슬러그 잔재 제거 위해 먼저 비운다.
+  fs.rmSync(OUT_PAGES, { recursive: true, force: true });
   fs.mkdirSync(OUT_PAGES, { recursive: true });
   fs.mkdirSync(OUT_LESSONS, { recursive: true });
 
@@ -211,7 +281,7 @@ function main() {
     const chapterEntries = chs.map((ch) => {
       // 레슨 HTML + Tier2 작성
       const lessonsTier2 = ch.lessons.map((l) => {
-        const href = `pages/${l.slug}.html`;
+        const href = `pages/${l.data.id}.html`;   // 파일명 = 레슨 ID로 통일(슬러그 무관)
         fs.writeFileSync(path.join(OUT, href), renderLessonPage(ch, l, trackIdx + 1), 'utf8');
         pageCount += 1;
         return {

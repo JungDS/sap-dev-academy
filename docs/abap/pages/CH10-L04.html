@@ -42,28 +42,47 @@
 <section class="lblock"><h2>처음부터 끝까지 한 번에</h2>
 <p>지금까지 배운 걸 모아 <strong>DB 조회 → 표 출력</strong>까지 하나의 프로그램으로 완성한다.
 classic SELECT(CH07) + <button class="term" type="button" data-term="SALV">SALV</button>(CH10)의 결합이다.</p>
-<pre><code class="language-abap">REPORT zsalv_person.
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21</pre><pre class="abap-editor__code"><code><span class="tok-kw">REPORT</span> zsalv_person.
 
-DATA: lt_person TYPE TABLE OF ztperson,
-      lo_alv    TYPE REF TO cl_salv_table.
+<span class="tok-kw">DATA</span>: lt_person <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ztperson,
+      lo_alv    <span class="tok-kw">TYPE</span> <span class="tok-kw">REF</span> <span class="tok-kw">TO</span> cl_salv_table.
 
-START-OF-SELECTION.
-  &quot; 1) 데이터 조회 (classic Open SQL)
-  SELECT * FROM ztperson INTO TABLE lt_person.
+<span class="tok-kw">START-OF-SELECTION</span>.
+  <span class="tok-com">" 1) 데이터 조회 (classic Open SQL)</span>
+  <span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> ztperson <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> lt_person.
 
-  &quot; 2) SALV 객체 생성
-  TRY.
+  <span class="tok-com">" 2) SALV 객체 생성</span>
+  <span class="tok-kw">TRY</span>.
       cl_salv_table=&gt;factory(
-        IMPORTING r_salv_table = lo_alv
-        CHANGING  t_table      = lt_person ).
+        <span class="tok-kw">IMPORTING</span> r_salv_table = lo_alv
+        <span class="tok-kw">CHANGING</span>  t_table      = lt_person ).
 
-      &quot; 3) 표준 기능 + 표시
-      lo_alv-&gt;get_functions( )-&gt;set_all( abap_true ).
+      <span class="tok-com">" 3) 표준 기능 + 표시</span>
+      lo_alv-&gt;get_functions( )&gt;set_all( abap_true ).
       lo_alv-&gt;display( ).
-    CATCH cx_salv_msg.
-      MESSAGE &#39;ALV 생성 실패&#39; TYPE &#39;I&#39;.
-  ENDTRY.
-</code></pre>
+    <span class="tok-kw">CATCH</span> cx_salv_msg.
+      <span class="tok-kw">MESSAGE</span> <span class="tok-str">'ALV 생성 실패'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'I'</span>.
+  <span class="tok-kw">ENDTRY</span>.</code></pre></div></div>
 <p>실행(F8)하면 정렬·필터·엑셀 내보내기가 되는 <strong>표 리포트</strong>가 뜬다. 첫 &quot;쓸 만한&quot;
 리포트의 완성이다.</p>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>

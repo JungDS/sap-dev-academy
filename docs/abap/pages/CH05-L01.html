@@ -44,32 +44,41 @@
 모양(구조)의 행을 <strong>여러 개</strong> 쌓아 두고 싶다 — 그게 <button class="term" type="button" data-term="Internal Table">Internal Table</button>(내부 테이블)다.</p>
 </section><section class="lblock"><h2>선언 — TYPE TABLE OF</h2>
 <p>행의 모양(구조 타입) 위에 <code>TABLE OF</code>를 붙인다.</p>
-<pre><code class="language-abap">TYPES: BEGIN OF ty_person,
-         name TYPE string,
-         age  TYPE i,
-       END OF ty_person.
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7</pre><pre class="abap-editor__code"><code><span class="tok-kw">TYPES</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ty_person,
+         name <span class="tok-kw">TYPE</span> string,
+         age  <span class="tok-kw">TYPE</span> i,
+       <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ty_person.
 
-DATA: ls_person TYPE ty_person,          &quot; 한 건(Work Area)
-      lt_person TYPE TABLE OF ty_person. &quot; 여러 건(Internal Table)
-</code></pre>
+<span class="tok-kw">DATA</span>: ls_person <span class="tok-kw">TYPE</span> ty_person,          <span class="tok-com">" 한 건(Work Area)</span>
+      lt_person <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ty_person. <span class="tok-com">" 여러 건(Internal Table)</span></code></pre></div></div>
 <ul>
 <li><code>lt_</code> 접두어가 관례(local table). <button class="term" type="button" data-term="Internal Table">Internal Table</button>은 메모리에만 존재한다.</li>
 <li>한 건을 담는 <button class="term" type="button" data-term="Work Area">Work Area</button>(<code>ls_</code>)와 짝지어 쓴다.</li>
 </ul>
 </section><section class="lblock"><h2>행 추가 — APPEND</h2>
 <p><button class="term" type="button" data-term="Work Area">Work Area</button>에 값을 채우고 <code>APPEND</code>로 테이블에 쌓는다.</p>
-<pre><code class="language-abap">ls_person-name = &#39;Kim&#39;. ls_person-age = 30.
-APPEND ls_person TO lt_person.
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6</pre><pre class="abap-editor__code"><code>ls_person-name = <span class="tok-str">'Kim'</span>. ls_person-age = <span class="tok-num">30</span>.
+<span class="tok-kw">APPEND</span> ls_person <span class="tok-kw">TO</span> lt_person.
 
-CLEAR ls_person.
-ls_person-name = &#39;Lee&#39;. ls_person-age = 25.
-APPEND ls_person TO lt_person.
-</code></pre>
+<span class="tok-kw">CLEAR</span> ls_person.
+ls_person-name = <span class="tok-str">'Lee'</span>. ls_person-age = <span class="tok-num">25</span>.
+<span class="tok-kw">APPEND</span> ls_person <span class="tok-kw">TO</span> lt_person.</code></pre></div></div>
 <p>이제 <code>lt_person</code>에는 행이 둘이다. <code>lines( lt_person )</code>으로 개수를 센다.</p>
 </section><section class="lblock"><h2>비우기 — CLEAR / REFRESH</h2>
-<pre><code class="language-abap">CLEAR   lt_person.   &quot; 모든 행 제거
-REFRESH lt_person.   &quot; 동일하게 행 제거
-</code></pre>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2</pre><pre class="abap-editor__code"><code><span class="tok-kw">CLEAR</span>   lt_person.   <span class="tok-com">" 모든 행 제거</span>
+<span class="tok-kw">REFRESH</span> lt_person.   <span class="tok-com">" 동일하게 행 제거</span></code></pre></div></div>
 <blockquote>
 <p>구조체(한 건)는 <code>CLEAR</code>로 값만 비웠다. 내부 테이블은 <code>CLEAR</code>/<code>REFRESH</code>로 <strong>행
 전체</strong>를 비운다.</p>

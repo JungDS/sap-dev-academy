@@ -43,15 +43,21 @@
 <p>화면이나 앞 단계에서 만든 <strong>내부 테이블의 값들</strong>을 조건으로 DB를 조회하고 싶다.
 <button class="term" type="button" data-term="FOR ALL ENTRIES">FOR ALL ENTRIES</button>(FAE)가 그 도구다 — 단, <strong>함정이 많아 규칙을 지켜야</strong> 한다.</p>
 </section><section class="lblock"><h2>기본형 (classic)</h2>
-<pre><code class="language-abap">&quot; 전제: lt_dept (조회 기준이 될 내부 테이블)에 dept_id들이 있음
-IF lt_dept IS NOT INITIAL.          &quot; ← 필수!
-  SELECT persid name dept_id
-    FROM ztperson
-    INTO CORRESPONDING FIELDS OF TABLE lt_person
-    FOR ALL ENTRIES IN lt_dept
-    WHERE dept_id = lt_dept-dept_id.
-ENDIF.
-</code></pre>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8</pre><pre class="abap-editor__code"><code><span class="tok-com">" 전제: lt_dept (조회 기준이 될 내부 테이블)에 dept_id들이 있음</span>
+<span class="tok-kw">IF</span> lt_dept <span class="tok-kw">IS</span> <span class="tok-kw">NOT</span> <span class="tok-kw">INITIAL</span>.          <span class="tok-com">" ← 필수!</span>
+  <span class="tok-kw">SELECT</span> persid name dept_id
+    <span class="tok-kw">FROM</span> ztperson
+    <span class="tok-kw">INTO</span> <span class="tok-kw">CORRESPONDING</span> <span class="tok-kw">FIELDS</span> <span class="tok-kw">OF</span> <span class="tok-kw">TABLE</span> lt_person
+    FOR ALL ENTRIES <span class="tok-kw">IN</span> lt_dept
+    <span class="tok-kw">WHERE</span> dept_id = lt_dept-dept_id.
+<span class="tok-kw">ENDIF</span>.</code></pre></div></div>
 </section><section class="lblock"><h2>반드시 지킬 규칙</h2>
 <ul>
 <li><strong>빈 테이블 금지</strong> → <code>lt_dept</code>가 비어 있으면 FAE는 <strong>WHERE를 무시하고 전체

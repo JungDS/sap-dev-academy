@@ -56,15 +56,21 @@
 </blockquote>
 </section><section class="lblock"><h2>SELECT … INTO TABLE — 여러 행 읽기</h2>
 <p>DB 테이블의 행들을 <button class="term" type="button" data-term="Internal Table">Internal Table</button>(메모리에 잠깐 두는 표)에 한 번에 담는다.</p>
-<pre><code class="language-abap">DATA lt_person TYPE TABLE OF ztperson.
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> lt_person <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ztperson.
 
-SELECT * FROM ztperson
-  INTO TABLE lt_person.
+<span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> ztperson
+  <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> lt_person.
 
-IF sy-subrc = 0.
-  WRITE: / lines( lt_person ), &#39;건 읽음&#39;.
-ENDIF.
-</code></pre>
+<span class="tok-kw">IF</span> sy-subrc = <span class="tok-num">0</span>.
+  <span class="tok-kw">WRITE</span>: / <span class="tok-kw">lines</span>( lt_person ), <span class="tok-str">'건 읽음'</span>.
+<span class="tok-kw">ENDIF</span>.</code></pre></div></div>
 <ul>
 <li><code>INTO TABLE</code>은 결과 <strong>전체</strong>를 내부 테이블에 채운다.</li>
 <li>성공 여부는 <button class="term" type="button" data-term="sy-subrc">sy-subrc</button>(0 = 1건 이상), 읽은 행 수는 <code>sy-dbcnt</code>.</li>
@@ -80,10 +86,11 @@ ENDIF.
 </blockquote>
 </section><section class="lblock"><h2>필요한 컬럼만 (classic — 공백 구분)</h2>
 <p>전체(<code>*</code>)보다 필요한 컬럼만 읽는 게 빠르다. <strong>classic은 필드를 공백으로</strong> 나열한다(콤마 ✕).</p>
-<pre><code class="language-abap">SELECT persid name age          &quot; 콤마 없이 공백 구분 (classic)
-  FROM ztperson
-  INTO CORRESPONDING FIELDS OF TABLE lt_person.
-</code></pre>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> persid name age          <span class="tok-com">" 콤마 없이 공백 구분 (classic)</span>
+  <span class="tok-kw">FROM</span> ztperson
+  <span class="tok-kw">INTO</span> <span class="tok-kw">CORRESPONDING</span> <span class="tok-kw">FIELDS</span> <span class="tok-kw">OF</span> <span class="tok-kw">TABLE</span> lt_person.</code></pre></div></div>
 <ul>
 <li>컬럼 일부만 읽을 땐, 같은 이름 필드에 맞춰 담는 <strong><code>INTO CORRESPONDING FIELDS OF TABLE</code></strong> 을 쓴다.</li>
 <li>시뮬레이터에서 &quot;컬럼 선택&quot;을 켜면 <code>INTO TABLE</code> → <code>INTO CORRESPONDING FIELDS OF TABLE</code>로 <strong>자동으로 바뀌는</strong> 걸 확인해 보라.</li>
