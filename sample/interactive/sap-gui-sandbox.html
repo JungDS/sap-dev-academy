@@ -53,6 +53,8 @@ h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 24
 .sap-modal p{padding:18px;margin:0;color:#1e293b;font-size:.9rem;}
 .sap-modal .foot{background:#f8fafc;padding:10px 16px;display:flex;justify-content:flex-end;border-top:1px solid var(--line);}
 .sap-modal button{background:#475569;color:#fff;border:none;padding:6px 16px;border-radius:4px;font-size:.85rem;cursor:pointer;}
+.sap-field .req{color:#be123c;font-weight:bold;}
+.sap-field .opt{color:#64748b;font-weight:normal;font-size:.78rem;}
 @media (max-width:520px){.sap-field{grid-template-columns:1fr;gap:4px;}}
 </style>
 </head>
@@ -61,41 +63,44 @@ h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 24
   <main class="wrap">
     <p class="eyebrow">Interactive · SAP GUI 샌드박스</p>
     <h1>가짜 SAPGUI로 안전하게 실행 체험</h1>
-    <p class="lead">실제 시스템 없이도 "입력 → 실행 → 결과" 흐름을 체험합니다. 사번을 비우거나 4자리가 아니면 검증 에러가, 올바르면 ALV 결과가 나옵니다.</p>
+    <p class="lead">실제 시스템 없이도 "입력 → 실행 → 결과" 흐름을 체험합니다. <strong>사업장(WERKS)은 필수</strong>, <strong>사번(PERNR)은 선택</strong>입니다. 사업장만 입력하면 그 사업장의 <strong>여러 명</strong>이, 사번까지 입력하면 <strong>한 명</strong>만 조회됩니다.</p>
 
     <div class="sap-sandbox" data-sandbox>
       <div class="sap-header"><span class="sap-tcode">Transaction <span class="val">ZHR_EMP</span></span></div>
       <div class="sap-title">사원 정보 조회 (Selection Screen)</div>
       <div class="sap-screen">
-        <div class="sap-field"><label>사번 (PERNR)</label><input class="sap-input" id="f-pernr" placeholder="예: 0001" maxlength="4"></div>
-        <div class="sap-field"><label>사업장 (WERKS)</label><input class="sap-input" id="f-werks" placeholder="예: 1000 (선택)"></div>
+        <div class="sap-field"><label>사업장 (WERKS) <span class="req">*필수</span></label><input class="sap-input" id="f-werks" placeholder="예: 1000" maxlength="4"></div>
+        <div class="sap-field"><label>사번 (PERNR) <span class="opt">(선택)</span></label><input class="sap-input" id="f-pernr" placeholder="예: 0001 — 입력 시 1명만" maxlength="4"></div>
         <button class="sap-exec">▶ 실행 (F8)</button>
       </div>
       <div class="sap-log"><span class="ph">실행(F8)을 누르면 처리 로그가 여기에 흐릅니다.</span></div>
 
       <script type="application/json" class="sandbox-config">
       {
-        "stepDelay": 380,
-        "fields": { "pernr": "#f-pernr", "werks": "#f-werks" },
+        "stepDelay": 360,
+        "fields": { "werks": "#f-werks", "pernr": "#f-pernr" },
         "steps": [
           { "label":"LOAD-OF-PROGRAM", "type":"event", "text":"프로그램 로드" },
-          { "label":"START-OF-SELECTION", "type":"event", "text":"메인 로직 시작 — 입력값 PERNR={pernr}, WERKS={werks}" }
+          { "label":"START-OF-SELECTION", "type":"event", "text":"메인 로직 시작 — WERKS={werks}, PERNR={pernr}" }
         ],
         "validations": [
-          { "field":"pernr", "test":"required", "label":"검증실패", "text":"사번을 입력하세요.", "modal":"필수 입력 항목 'PERNR'이 비어 있습니다." },
-          { "field":"pernr", "test":"num4", "label":"검증실패", "text":"사번은 숫자 4자리여야 합니다: {pernr}", "modal":"PERNR '{pernr}' 은(는) 숫자 4자리 형식이 아닙니다." }
+          { "field":"werks", "test":"required", "label":"검증실패", "text":"사업장(WERKS)은 필수입니다.", "modal":"필수 입력 항목 'WERKS'가 비어 있습니다. 사업장을 입력하세요." },
+          { "field":"werks", "test":"num4", "label":"검증실패", "text":"사업장은 숫자 4자리여야 합니다: {werks}", "modal":"WERKS '{werks}' 은(는) 숫자 4자리 형식이 아닙니다." },
+          { "field":"pernr", "test":"num4", "when":"filled", "label":"검증실패", "text":"사번을 입력했다면 숫자 4자리여야 합니다: {pernr}", "modal":"PERNR '{pernr}' 은(는) 숫자 4자리 형식이 아닙니다. (사번은 선택이지만 입력 시 형식을 지켜야 합니다.)" }
         ],
-        "selectStep": { "label":"SELECT", "type":"event", "text":"DB 조회 중... (FROM pa0001 WHERE pernr={pernr})" },
+        "selectStep": { "label":"SELECT", "type":"event", "text":"DB 조회 중... (FROM pa0001 WHERE werks = '{werks}')" },
         "selectResult": { "label":"SELECT", "type":"info", "text":"조회 완료: {count} 건 (sy-subrc 평가)" },
         "endStep": { "label":"END-OF-SELECTION", "type":"event", "text":"결과 출력 및 마감" },
-        "match": { "pernr":"pernr", "werks":"werks" },
-        "columns": [ {"head":"PERNR","key":"pernr"}, {"head":"NAME1","key":"name1"}, {"head":"WERKS","key":"werks"} ],
+        "match": { "werks":"werks", "pernr":"pernr" },
+        "columns": [ {"head":"PERNR","key":"pernr"}, {"head":"NAME1","key":"name1"}, {"head":"WERKS","key":"werks"}, {"head":"STELL","key":"stell"} ],
         "db": [
-          { "pernr":"0001", "name1":"정훈영", "werks":"1000" },
-          { "pernr":"0002", "name1":"김ABAP", "werks":"1000" },
-          { "pernr":"0003", "name1":"이파이오리", "werks":"2000" }
+          { "pernr":"0001", "name1":"정훈영", "werks":"1000", "stell":"백엔드(ABAP)" },
+          { "pernr":"0002", "name1":"김에이밥", "werks":"1000", "stell":"백엔드(ABAP)" },
+          { "pernr":"0005", "name1":"최오데이타", "werks":"1000", "stell":"DBA" },
+          { "pernr":"0003", "name1":"이파이오리", "werks":"2000", "stell":"프론트(UI5)" },
+          { "pernr":"0004", "name1":"박게이트웨이", "werks":"2000", "stell":"통합(Gateway)" }
         ],
-        "emptyText": "조회 결과가 없습니다. (SY-SUBRC = 4)"
+        "emptyText": "조회 결과가 없습니다. (SY-SUBRC = 4) — 해당 사업장에 사원이 없습니다."
       }
       </script>
     </div>
@@ -134,6 +139,7 @@ h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 24
       step(()=>{
         for(const v of (cfg.validations||[])){
           const val=vars[v.field]||""; let fail=false;
+          if(v.when==="filled" && val==="") continue; // 선택 항목: 입력했을 때만 검증
           if(v.test==="required") fail=(val==="");
           else if(v.test==="num4") fail=(isNaN(val)||val.length!==4);
           else if(v.test==="numeric") fail=(val===""||isNaN(val));
