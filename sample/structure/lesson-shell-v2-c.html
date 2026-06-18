@@ -66,6 +66,9 @@ a{color:var(--brand);text-decoration:none;}
 .icon-btn{min-width:36px;height:36px;padding:0 8px;border-radius:999px;border:1px solid var(--line);background:var(--surface);cursor:pointer;display:grid;place-items:center;color:var(--ink);font-size:.92rem;font-weight:700;transition:all .18s;}
 .icon-btn:hover{border-color:var(--brand);color:var(--brand);}
 .icon-btn.on{background:var(--brand);color:#fff;border-color:var(--brand);}
+.icon-btn svg{width:15px;height:15px;display:block;}
+.icon-btn:disabled{opacity:.38;cursor:not-allowed;}
+.icon-btn:disabled:hover{border-color:var(--line);color:var(--ink);background:var(--surface);}
 .read-progress{position:fixed;top:var(--appbar-h);left:0;right:0;height:3px;z-index:39;background:rgba(15,118,110,.10);}
 .read-progress>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--amber));transition:width .12s ease-out;}
 @media(max-width:860px){.appbar .meta{display:none;}}
@@ -111,9 +114,9 @@ body.rail-open .scrim{opacity:1;pointer-events:auto;}
 
 /* ===== 무대(본문+우측 여정) ===== */
 .stage{margin-left:var(--rail);transition:margin .26s;}
-.layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:30px;max-width:1320px;margin:0 auto;padding:26px 28px 96px;align-items:start;}
-.main{min-width:0;max-width:780px;margin:0 auto;transition:max-width .2s;}
-html.wide .main{max-width:980px;}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:38px;max-width:1480px;margin:0 auto 0 0;padding:26px clamp(24px,3vw,52px) 96px clamp(32px,5vw,88px);align-items:start;}
+.main{min-width:0;max-width:880px;margin:0;transition:max-width .2s;}
+html.wide .main{max-width:1160px;}
 
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:24px 28px;margin:18px 0;box-shadow:var(--shadow);}
 
@@ -282,18 +285,33 @@ body.is-fullscreen .main{max-width:none;}
 /* ===== 반응형 ===== */
 @media(max-width:1000px){
   .stage{margin-left:0;}
-  .layout{grid-template-columns:minmax(0,1fr);}
+  .layout{grid-template-columns:minmax(0,1fr);margin:0 auto;padding:22px clamp(16px,4vw,28px) 96px;}
   .rail{transform:translateX(-100%);width:300px;align-items:stretch;transition:transform .26s cubic-bezier(.4,0,.2,1);}
   .rail .rail__icons{display:none;} .rail .rail__expand{display:flex;}
   body.rail-open .rail{transform:none;}
-  .railFab{display:grid;}
-  .journey{position:static;margin-bottom:10px;}
+  .railFab{display:grid;bottom:76px;transition:opacity .2s,transform .2s;}
+  body.jup .railFab{opacity:0;pointer-events:none;transform:scale(.8);}
+  /* "이 레슨의 여정" = 하단 고정 시트(어느 스크롤에서나 접근) */
+  .journey{position:fixed;left:0;right:0;bottom:0;top:auto;margin:0;padding:0;border-radius:18px 18px 0 0;border-left:0;border-right:0;border-bottom:0;box-shadow:0 -8px 30px rgba(40,32,20,.22);z-index:41;max-height:74vh;display:flex;flex-direction:column;transition:transform .26s cubic-bezier(.4,0,.2,1);}
+  body.rail-open .journey{transform:translateY(110%);}
+  .journey__bar{display:flex;align-items:center;gap:12px;width:100%;border:0;background:var(--surface);border-radius:18px 18px 0 0;padding:13px 18px;font:inherit;text-align:left;cursor:pointer;color:var(--ink);}
+  .journey__now{display:flex;flex-direction:column;align-items:flex-start;min-width:0;flex:1;}
+  .journey__now small{font-size:.64rem;font-weight:800;color:var(--soon);text-transform:uppercase;letter-spacing:.05em;}
+  .journey__now b{font-size:.95rem;color:var(--brand);max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .journey__count{font-size:.82rem;font-weight:800;color:var(--ink-soft);white-space:nowrap;}
+  .journey__chev{color:var(--ink-soft);font-size:.9rem;transition:transform .22s;}
+  .journey__body{display:none;overflow:auto;padding:2px 18px 22px;}
+  .journey.up .journey__body{display:block;}
+  .journey.up .journey__chev{transform:rotate(180deg);}
+  .journey__hd,.journey__sub{display:none;}
+  .steps{display:block;}
   .steps::before,.steps::after{display:none;}
-  .steps{display:flex;flex-wrap:wrap;gap:8px;}
-  .step{padding:7px 13px 7px 30px;background:var(--soft);border:1px solid var(--line);border-radius:999px;}
-  .step__s{display:none;}
+  .step{padding:9px 8px 9px 34px;background:none;border:0;border-radius:10px;}
+  .step:not(:last-child){margin-bottom:2px;}
+  .step:hover{background:var(--tint);}
+  .step__dot{left:7px;}
 }
-@media(min-width:1001px){ .scrim{display:none;} }
+@media(min-width:1001px){ .scrim{display:none;} .journey__bar{display:none;} }
 </style>
 <script>
 /* 설정 즉시 적용(플래시 방지): 본문 렌더 전에 localStorage 반영 */
@@ -316,7 +334,7 @@ body.is-fullscreen .main{max-width:none;}
       <button class="icon-btn" id="fsInc" title="글자 크게">A+</button>
       <button class="icon-btn" id="darkBtn" title="다크 모드">🌙</button>
       <button class="icon-btn" id="widthBtn" title="가독 폭 넓게">↔</button>
-      <button class="icon-btn fs-btn" title="전체화면">⛶</button>
+      <button class="icon-btn fs-btn" title="전체화면" aria-label="전체화면"></button>
     </div>
   </header>
   <div class="read-progress"><i></i></div>
@@ -468,8 +486,14 @@ body.is-fullscreen .main{max-width:none;}
         <footer class="foot">SAP Developer Learning Library · Lesson Viewer · 시안 v2-C</footer>
       </main>
 
-      <!-- 우측 "이 레슨의 여정" -->
-      <aside class="journey">
+      <!-- 우측 "이 레슨의 여정" (모바일: 하단 고정 시트) -->
+      <aside class="journey" id="journey">
+        <button class="journey__bar" id="journeyBar" aria-expanded="false" aria-controls="steps">
+          <span class="journey__now"><small>이 레슨의 여정</small><b id="jNow">트랜잭션 코드</b></span>
+          <span class="journey__count"><span id="jIdx">1</span> / <span id="jTot">8</span></span>
+          <span class="journey__chev">▴</span>
+        </button>
+        <div class="journey__body">
         <p class="journey__hd">이 레슨의 여정</p>
         <p class="journey__sub">스크롤에 따라 현재 위치가 표시돼요.</p>
         <ul class="steps" id="steps">
@@ -482,6 +506,7 @@ body.is-fullscreen .main{max-width:none;}
           <li class="step" data-go="summary"><span class="step__dot"></span><span class="step__t">한눈에 정리</span><span class="step__s">복습·다음</span></li>
           <li class="step" data-go="recall"><span class="step__dot"></span><span class="step__t">🎯 확인 퀴즈</span><span class="step__s">능동 회수</span></li>
         </ul>
+        </div>
       </aside>
     </div>
   </div>
@@ -512,11 +537,14 @@ body.is-fullscreen .main{max-width:none;}
   function syncWide(){ const on=root.classList.contains('wide'); widthBtn.classList.toggle('on',on); widthBtn.title=on?'가독 폭 기본':'가독 폭 넓게'; }
   darkBtn.addEventListener('click',()=>{ root.classList.toggle('dark'); set('ls.dark',root.classList.contains('dark')?'1':'0'); syncDark(); });
   widthBtn.addEventListener('click',()=>{ root.classList.toggle('wide'); set('ls.wide',root.classList.contains('wide')?'1':'0'); syncWide(); });
-  let fontPx=parseInt(get('ls.fontPx'),10); if(!(fontPx>=13&&fontPx<=20)) fontPx=16;
-  function applyFont(){ root.style.fontSize=fontPx+'px'; set('ls.fontPx',String(fontPx)); }
-  document.getElementById('fsInc').addEventListener('click',()=>{ fontPx=Math.min(20,fontPx+1); applyFont(); });
-  document.getElementById('fsDec').addEventListener('click',()=>{ fontPx=Math.max(13,fontPx-1); applyFont(); });
-  syncDark(); syncWide();
+  const FMIN=13, FMAX=20;
+  const fsIncBtn=document.getElementById('fsInc'), fsDecBtn=document.getElementById('fsDec');
+  let fontPx=parseInt(get('ls.fontPx'),10); if(!(fontPx>=FMIN&&fontPx<=FMAX)) fontPx=16;
+  function syncFontBtns(){ fsDecBtn.disabled=fontPx<=FMIN; fsIncBtn.disabled=fontPx>=FMAX; } // 최소/최대에서 비활성+반투명
+  function applyFont(){ root.style.fontSize=fontPx+'px'; set('ls.fontPx',String(fontPx)); syncFontBtns(); }
+  fsIncBtn.addEventListener('click',()=>{ fontPx=Math.min(FMAX,fontPx+1); applyFont(); });
+  fsDecBtn.addEventListener('click',()=>{ fontPx=Math.max(FMIN,fontPx-1); applyFont(); });
+  syncDark(); syncWide(); syncFontBtns();
 
   /* 좌측 레일 */
   const rail=document.getElementById('rail');
@@ -545,8 +573,11 @@ body.is-fullscreen .main{max-width:none;}
 
   /* 전체화면 */
   const fsBtn=document.querySelector('.fs-btn');
+  const FS_OPEN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>';
+  const FS_CLOSE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v3a2 2 0 0 1-2 2H3M21 8h-3a2 2 0 0 1-2-2V3M3 16h3a2 2 0 0 1 2 2v3M16 21v-3a2 2 0 0 1 2-2h3"/></svg>';
+  fsBtn.innerHTML=FS_OPEN;
   fsBtn.addEventListener('click',()=>{ if(!document.fullscreenElement) (document.documentElement.requestFullscreen||document.documentElement.webkitRequestFullscreen)?.call(document.documentElement); else (document.exitFullscreen||document.webkitExitFullscreen)?.call(document); });
-  function onFs(){ const on=!!(document.fullscreenElement||document.webkitFullscreenElement); body.classList.toggle('is-fullscreen',on); fsBtn.title=on?'전체화면 해제':'전체화면'; }
+  function onFs(){ const on=!!(document.fullscreenElement||document.webkitFullscreenElement); body.classList.toggle('is-fullscreen',on); fsBtn.innerHTML=on?FS_CLOSE:FS_OPEN; fsBtn.title=on?'전체화면 해제':'전체화면'; }
   document.addEventListener('fullscreenchange',onFs); document.addEventListener('webkitfullscreenchange',onFs);
 
   /* T-code 모달 */
@@ -677,12 +708,18 @@ body.is-fullscreen .main{max-width:none;}
   const steps=[...document.querySelectorAll('.step')];
   const secs=steps.map(s=>document.getElementById(s.dataset.go));
   const stepsEl=document.getElementById('steps');
-  steps.forEach((st,i)=>st.addEventListener('click',()=>secs[i]&&secs[i].scrollIntoView({behavior:'smooth',block:'start'})));
+  const journey=document.getElementById('journey'), journeyBar=document.getElementById('journeyBar');
+  const jNow=document.getElementById('jNow'), jIdx=document.getElementById('jIdx'), jTot=document.getElementById('jTot');
+  jTot.textContent=steps.length;
+  function closeSheet(){ journey.classList.remove('up'); body.classList.remove('jup'); journeyBar.setAttribute('aria-expanded','false'); }
+  journeyBar.addEventListener('click',()=>{ const up=journey.classList.toggle('up'); body.classList.toggle('jup',up); journeyBar.setAttribute('aria-expanded',up?'true':'false'); });
+  steps.forEach((st,i)=>st.addEventListener('click',()=>{ if(secs[i]) secs[i].scrollIntoView({behavior:'smooth',block:'start'}); if(isMobile()) closeSheet(); }));
   function spy(){
     let idx=0; for(let i=0;i<secs.length;i++){ if(secs[i] && secs[i].getBoundingClientRect().top<=150) idx=i; }
     steps.forEach((s,i)=>{ s.classList.toggle('current',i===idx); s.classList.toggle('visited',i<idx); });
     const pct=steps.length>1?(idx/(steps.length-1))*100:0;
     stepsEl.style.setProperty('--progress',pct+'%');
+    const cur=steps[idx]; if(cur){ jNow.textContent=cur.querySelector('.step__t').textContent; jIdx.textContent=idx+1; } // 모바일 바의 '현재' 라벨
   }
 
   /* 읽기 진행률 */
