@@ -49,6 +49,9 @@ h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 8p
 .r-check{background:#ffe4e6;color:#be123c;}
 .r-main{background:#d1fae5;color:#0b7250;}
 .r-out{background:#ffedd5;color:#c2410c;}
+/* 시작/끝(스타디움) 라벨: 좌우 패딩 + 줄바꿈 금지 + 라벨박스 클리핑 해제로 마지막 글자(s) 잘림 방지 */
+.tnode{display:inline-block;white-space:nowrap;padding:0 10px;font-weight:800;font-size:15px;color:#1c2233;}
+.mermaid svg .node foreignObject{overflow:visible;}
 
 /* ===== 엣지(전 시안 공통): 부드러운 진회색 + 둥근 화살표 ===== */
 .mermaid svg .edgePaths .path,.mermaid svg .flowchart-link{stroke:#64748b !important;stroke-width:2px !important;}
@@ -107,13 +110,13 @@ h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 8p
   // 노드 라벨은 HTML(배지+제목+설명). 그래프 본문은 3 시안 공통.
   const GRAPH = [
     'flowchart TD',
-    '  Start(["<b>Program Starts</b>"]):::term',
+    '  Start(["<span class=\'tnode\'>Program Starts</span>"]):::term',
     '  INIT["<div class=\'nw\'><span class=\'nb r-prep\'>준비</span><b>INITIALIZATION</b><span class=\'nd\'>화면 기본값 세팅</span></div>"]:::prep',
     '  Screen["<div class=\'nw\'><span class=\'nb r-screen\'>화면</span><b>Selection Screen</b><span class=\'nd\'>⏳ 사용자 입력 대기</span></div>"]:::screen',
     '  ASS["<div class=\'nw\'><span class=\'nb r-check\'>검증</span><b>AT SELECTION-SCREEN</b><span class=\'nd\'>입력값 유효성 검사</span></div>"]:::check',
     '  SOS["<div class=\'nw\'><span class=\'nb r-main\'>메인</span><b>START-OF-SELECTION</b><span class=\'nd\'>DB 조회·가공</span></div>"]:::main',
     '  EOS["<div class=\'nw\'><span class=\'nb r-out\'>출력</span><b>END-OF-SELECTION</b><span class=\'nd\'>결과 출력·마감</span></div>"]:::out',
-    '  Ends(["<b>Program Ends</b>"]):::term',
+    '  Ends(["<span class=\'tnode\'>Program Ends</span>"]):::term',
     '  Start --> INIT --> Screen',
     '  Screen -->|입력 발생| ASS',
     '  ASS -.->|에러 시 복귀| Screen',
@@ -157,9 +160,15 @@ h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 8p
   mermaid.initialize({
     startOnLoad:false, securityLevel:'loose', theme:'base',
     themeVariables:{ fontFamily:'inherit' },
-    flowchart:{ curve:'basis', htmlLabels:true, nodeSpacing:48, rankSpacing:46, padding:8 }
+    flowchart:{ curve:'basis', htmlLabels:true, nodeSpacing:48, rankSpacing:46, padding:10 }
   });
-  mermaid.run({ nodes: document.querySelectorAll('.mermaid') });
+  mermaid.run({ nodes: document.querySelectorAll('.mermaid') }).then(()=>{
+    // 라벨 없는 엣지(시작→INIT 등)의 빈 라벨 상자 숨김
+    // — 엣지 라벨 배경 알약 때문에 빈 회색 박스로 보이던 문제 제거
+    document.querySelectorAll('.mermaid .edgeLabel').forEach(el=>{
+      if(!el.textContent.trim()) el.style.display = 'none';
+    });
+  });
 })();
 </script>
 </body>
