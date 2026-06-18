@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<!--
+  스텝 디버거 타임라인 (Step Debugger) — standalone
+  ────────────────────────────────────────────────────────────
+  "다음" 버튼으로 한 줄씩 실행하며 변수 값과 콘솔이 갱신되는 가상 디버거.
+  단계 정의는 .debugger-steps 의 JSON(steps:[{line,vars,console}])으로.
+  코드 줄에 data-line, 변수 칸에 data-key 를 붙여 매핑. 외부 의존성 없음.
+  재사용 시 ".debugger*"/".db-*"/".monitor*" CSS + 하단 JS만 가져가면 됩니다.
+-->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>스텝 디버거 · Sample</title>
+<style>
+:root{--bg:#f6f7fb;--surface:#fff;--ink:#1c2233;--ink-soft:#5b6478;--line:#e6e8ef;--brand:#3b5bdb;--accent:#0ca678;--amber:#d98a0b;--radius:14px;--shadow:0 1px 2px rgba(20,28,51,.04),0 8px 24px rgba(20,28,51,.06);--font:-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic",Roboto,sans-serif;--mono:'D2Coding',Consolas,Monaco,monospace;}
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.65;}
+.topbar{position:sticky;top:0;z-index:20;border-bottom:1px solid var(--line);background:var(--surface);}
+.topbar__inner{max-width:1080px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:12px;font-weight:800;}
+.brand__mark{width:28px;height:28px;border-radius:7px;background:var(--brand);color:#fff;display:grid;place-items:center;}
+.wrap{max-width:920px;margin:28px auto 72px;padding:0 24px;}
+.eyebrow{color:var(--brand);font-weight:800;font-size:.82rem;letter-spacing:.05em;text-transform:uppercase;}
+h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 24px;}
+
+/* ===== 컴포넌트 CSS — 스텝 디버거 ===== */
+.debugger{display:grid;grid-template-columns:1.2fr 1fr;gap:0;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);}
+.debugger__code{background:#f8fafc;padding:14px 0;border-right:1px solid var(--line);max-height:360px;overflow:auto;}
+.db-line{display:block;padding:2px 14px 2px 26px;position:relative;font-family:var(--mono);font-size:13px;line-height:1.6;color:#475569;border-radius:4px;transition:all .2s;}
+.db-line.active{background:#fff7d6;color:#7a5a08;box-shadow:inset 4px 0 0 var(--amber);font-weight:bold;}
+.db-line.active::before{content:"▶";position:absolute;left:8px;color:var(--amber);font-size:.7em;top:50%;transform:translateY(-50%);}
+.debugger__monitor{padding:18px;display:flex;flex-direction:column;min-width:0;}
+.monitor__head{font-weight:700;font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;color:#1e293b;margin-bottom:14px;}
+.monitor__controls{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+.dbg-btn{padding:8px 16px;border-radius:8px;font-size:.85rem;font-weight:700;cursor:pointer;border:1px solid transparent;font:inherit;}
+.dbg-btn.start{background:var(--brand);color:#fff;} .dbg-btn.start:hover{background:#2f4bc0;}
+.dbg-btn.next{background:#f1f5f9;color:#64748b;border-color:var(--line);}
+.dbg-btn.next:not(:disabled){background:var(--amber);color:#fff;border-color:#b8770a;}
+.dbg-btn:disabled{opacity:.45;cursor:not-allowed;}
+.monitor__vars{background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;}
+.var-row{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid #eef1f6;padding-bottom:8px;font-size:.85rem;}
+.var-row:last-child{border-bottom:none;padding-bottom:0;}
+.var-row .k{color:#475569;font-weight:600;} .var-row .v{font-family:var(--mono);color:var(--brand);font-weight:700;}
+.monitor__console{margin-top:14px;background:#11151f;border-radius:8px;padding:12px;font-family:var(--mono);font-size:.82rem;color:#7af0c4;min-height:64px;white-space:pre-wrap;max-height:120px;overflow:auto;}
+@media (max-width:740px){.debugger{grid-template-columns:1fr;}.debugger__code{border-right:none;border-bottom:1px solid var(--line);}}
+</style>
+</head>
+<body>
+  <header class="topbar"><div class="topbar__inner"><span class="brand__mark">A</span>SAP Developer Academy</div></header>
+  <main class="wrap">
+    <p class="eyebrow">Code Learning · 스텝 디버거</p>
+    <h1>한 줄씩 실행하며 변수 변화 보기</h1>
+    <p class="lead">SE38의 디버거처럼, "다음"을 누를 때마다 실행 위치가 이동하고 변수·콘솔이 갱신됩니다. 루프가 어떻게 도는지 눈으로 따라가세요.</p>
+
+    <div class="debugger" data-debugger>
+      <div class="debugger__code">
+        <span class="db-line" data-line="1">DATA lv_sum TYPE i VALUE 0.</span>
+        <span class="db-line" data-line="2">DATA lt TYPE TABLE OF i.</span>
+        <span class="db-line" data-line="3">APPEND 10 TO lt. APPEND 20 TO lt.</span>
+        <span class="db-line" data-line="4">LOOP AT lt INTO DATA(lv_n).</span>
+        <span class="db-line" data-line="5">  lv_sum = lv_sum + lv_n.</span>
+        <span class="db-line" data-line="6">ENDLOOP.</span>
+        <span class="db-line" data-line="7">WRITE / lv_sum.</span>
+      </div>
+      <div class="debugger__monitor">
+        <div class="monitor__head">🔬 Variable Monitor</div>
+        <div class="monitor__controls">
+          <button class="dbg-btn start">▶ 시작</button>
+          <button class="dbg-btn next" disabled>다음 ⏭</button>
+        </div>
+        <div class="monitor__vars">
+          <div class="var-row"><span class="k">lv_n (현재 행)</span><span class="v" data-key="n">—</span></div>
+          <div class="var-row"><span class="k">lv_sum (누적)</span><span class="v" data-key="sum">0</span></div>
+          <div class="var-row"><span class="k">sy-tabix (인덱스)</span><span class="v" data-key="tabix">—</span></div>
+        </div>
+        <div class="monitor__console">=== 디버거 대기 중 ===</div>
+      </div>
+      <script type="application/json" class="debugger-steps">
+      { "steps": [
+        { "line":1, "vars":{"sum":"0"}, "console":"lv_sum 초기화 = 0" },
+        { "line":3, "vars":{}, "console":"테이블에 10, 20 추가" },
+        { "line":4, "vars":{"n":"10","tabix":"1"}, "console":"LOOP 1회차: lv_n = 10" },
+        { "line":5, "vars":{"sum":"10"}, "console":"lv_sum = 0 + 10 = 10" },
+        { "line":4, "vars":{"n":"20","tabix":"2"}, "console":"LOOP 2회차: lv_n = 20" },
+        { "line":5, "vars":{"sum":"30"}, "console":"lv_sum = 10 + 20 = 30" },
+        { "line":7, "vars":{}, "console":"출력: 30" }
+      ] }
+      </script>
+    </div>
+  </main>
+
+<script>
+// ===== 컴포넌트 JS — 스텝 디버거 =====
+(function(){
+  document.querySelectorAll("[data-debugger]").forEach(dbg=>{
+    let config; try{ config = JSON.parse(dbg.querySelector(".debugger-steps").textContent); }catch(e){ return; }
+    const steps = config.steps||[];
+    const start = dbg.querySelector(".dbg-btn.start");
+    const next = dbg.querySelector(".dbg-btn.next");
+    const lines = dbg.querySelectorAll(".db-line");
+    const out = dbg.querySelector(".monitor__console");
+    let cur = -1;
+    function render(){
+      lines.forEach(l=>l.classList.remove("active"));
+      const step = steps[cur]; if(!step) return;
+      const active = dbg.querySelector(`.db-line[data-line="${step.line}"]`);
+      if(active) active.classList.add("active");
+      Object.entries(step.vars||{}).forEach(([k,v])=>{
+        const cell = dbg.querySelector(`.var-row .v[data-key="${k}"]`);
+        if(cell) cell.textContent = v;
+      });
+      out.textContent = "=== 추적 중 (" + (cur+1) + "/" + steps.length + ") ===\n" + (step.console||"");
+    }
+    start.addEventListener("click",()=>{
+      cur=0; start.textContent="↻ 다시 시작"; next.disabled=false;
+      // 변수 초기화
+      dbg.querySelectorAll(".var-row .v").forEach(v=>{ v.textContent = v.dataset.key==="sum" ? "0" : "—"; });
+      render();
+    });
+    next.addEventListener("click",()=>{
+      if(cur < steps.length-1){
+        cur++; render();
+        if(cur===steps.length-1){ next.disabled=true; out.textContent += "\n\n=== 실행 완료 ==="; }
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>

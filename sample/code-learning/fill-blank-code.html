@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<!--
+  빈칸 채우기 코드 (Fill-in-the-Blank Code) — standalone
+  ────────────────────────────────────────────────────────────
+  코드 일부를 빈칸(input)으로 비워 두고 직접 채우게 함 → 채점.
+  input[data-answer]에 정답을 두고, 버튼으로 일괄 채점(대소문자 무시).
+  외부 의존성 없음. 재사용 시 ".fillblank*" CSS + 하단 JS만 가져가면 됩니다.
+-->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>빈칸 채우기 코드 · Sample</title>
+<style>
+:root{--bg:#f6f7fb;--surface:#fff;--ink:#1c2233;--ink-soft:#5b6478;--line:#e6e8ef;--brand:#3b5bdb;--accent:#0ca678;--radius:14px;--shadow:0 1px 2px rgba(20,28,51,.04),0 8px 24px rgba(20,28,51,.06);--font:-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic",Roboto,sans-serif;--mono:'D2Coding',Consolas,Monaco,monospace;}
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.65;}
+.topbar{position:sticky;top:0;z-index:20;border-bottom:1px solid var(--line);background:var(--surface);}
+.topbar__inner{max-width:1080px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:12px;font-weight:800;}
+.brand__mark{width:28px;height:28px;border-radius:7px;background:var(--brand);color:#fff;display:grid;place-items:center;}
+.wrap{max-width:760px;margin:28px auto 72px;padding:0 24px;}
+.eyebrow{color:var(--brand);font-weight:800;font-size:.82rem;letter-spacing:.05em;text-transform:uppercase;}
+h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 24px;}
+.btn{border:1px solid var(--brand);background:var(--brand);color:#fff;border-radius:9px;padding:10px 18px;font-weight:700;cursor:pointer;font:inherit;}
+.btn:hover{background:#2f4bc0;} .btn.ghost{background:#fff;color:var(--brand);} .btn.ghost:hover{background:#eef2ff;}
+
+/* ===== 컴포넌트 CSS — 빈칸 채우기 ===== */
+.fillblank{background:#f6f8fa;border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:var(--shadow);}
+.fillblank pre{margin:0 0 16px;font-family:var(--mono);font-size:14px;line-height:2;color:#334155;white-space:pre-wrap;}
+.blank{display:inline-block;width:11ch;border:0;border-bottom:2px solid var(--brand);background:#eef2ff;font-family:var(--mono);font-size:14px;text-align:center;padding:2px 4px;border-radius:5px 5px 0 0;color:#1f2a44;}
+.blank:focus{outline:none;background:#e0e8ff;}
+.blank.ok{border-color:var(--accent);background:#e8faf2;color:#0b7250;}
+.blank.bad{border-color:#d6336c;background:#ffe3ec;color:#b02a55;}
+.fillblank__actions{display:flex;gap:10px;}
+.fill-output{margin-top:14px;padding:12px 14px;border-radius:10px;background:#f1f5f9;border:1px solid var(--line);min-height:22px;font-weight:600;color:#334155;}
+.fill-output.ok{background:#e8faf2;border-color:#bfead7;color:#0b7250;}
+.fill-output.bad{background:#ffe3ec;border-color:#f6c2d4;color:#b02a55;}
+</style>
+</head>
+<body>
+  <header class="topbar"><div class="topbar__inner"><span class="brand__mark">A</span>SAP Developer Academy</div></header>
+  <main class="wrap">
+    <p class="eyebrow">Code Learning · 빈칸 채우기</p>
+    <h1>구문을 직접 완성하며 익히기</h1>
+    <p class="lead">읽기만 하면 안다고 착각합니다. 핵심 키워드를 직접 채워 넣어 능동적으로 회수해 보세요.</p>
+
+    <div class="fillblank" data-fillblank data-explain="Internal Table를 순회하는 기본 패턴입니다." data-hint="LOOP / INTO / sy-tabix 를 떠올려 보세요.">
+<pre>SELECT pernr name1 FROM pa0001
+  INTO TABLE lt_emp.
+
+<input class="blank" data-answer="LOOP AT" placeholder="____" aria-label="빈칸1"> lt_emp INTO DATA(ls).
+  WRITE: / ls-pernr, ls-name1.
+END<input class="blank" data-answer="LOOP" placeholder="____" aria-label="빈칸2">.
+
+IF sy-<input class="blank" data-answer="subrc" placeholder="____" aria-label="빈칸3"> = 0.
+  WRITE / 'OK'.
+ENDIF.</pre>
+      <div class="fillblank__actions">
+        <button class="btn" data-check>채점하기</button>
+        <button class="btn ghost" data-reveal>정답 보기</button>
+      </div>
+      <div class="fill-output">빈칸을 채우고 "채점하기"를 눌러 보세요.</div>
+    </div>
+  </main>
+
+<script>
+// ===== 컴포넌트 JS — 빈칸 채우기 =====
+(function(){
+  document.querySelectorAll("[data-fillblank]").forEach(group=>{
+    const inputs = group.querySelectorAll("input[data-answer]");
+    const out = group.querySelector(".fill-output");
+    const norm = s => s.trim().toLowerCase().replace(/\s+/g," ");
+    group.querySelector("[data-check]").addEventListener("click",()=>{
+      let all=true, done=0;
+      inputs.forEach(inp=>{
+        const ok = norm(inp.value)===norm(inp.dataset.answer);
+        inp.classList.toggle("ok",ok); inp.classList.toggle("bad",!ok);
+        if(ok) done++; else all=false;
+      });
+      out.className = "fill-output " + (all?"ok":"bad");
+      out.textContent = all
+        ? "✅ 정답입니다! " + (group.dataset.explain||"")
+        : `❌ ${done}/${inputs.length} 정답. ${group.dataset.hint||""}`;
+    });
+    const reveal = group.querySelector("[data-reveal]");
+    if(reveal) reveal.addEventListener("click",()=>{
+      inputs.forEach(inp=>{ inp.value=inp.dataset.answer; inp.classList.remove("bad"); inp.classList.add("ok"); });
+      out.className="fill-output"; out.textContent="정답을 채워 넣었습니다. 한 번 더 직접 입력해 보세요.";
+    });
+  });
+})();
+</script>
+</body>
+</html>
