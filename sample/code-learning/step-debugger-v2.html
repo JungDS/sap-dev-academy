@@ -58,9 +58,20 @@ h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 18
 .code li{counter-increment:ln;display:grid;grid-template-columns:40px 1fr;}
 .code li::before{content:counter(ln);text-align:right;padding-right:12px;color:#aeb6c4;user-select:none;}
 .code li code{padding:0 14px;white-space:pre;color:#334155;}
-.code li.active{background:#fff7d6;}
+/* 강조(active) = '실행할 차례'(아직 실행 전, 앰버) / done = '방금 실행'(초록) */
+.code li.active{background:#fff7d6;box-shadow:inset 3px 0 0 var(--amber);}
 .code li.active::before{color:#b8770a;background:#fbeec4;font-weight:700;}
 .code li.active code{color:#7a5a08;font-weight:700;}
+.code li.done{background:#eef9f3;box-shadow:inset 3px 0 0 var(--accent);}
+.code li.done::before{color:#0b7250;background:#dcf3e8;}
+.code li.done code{color:#2f6b54;}
+/* 콘솔 모드 토글 + 범례 */
+.console-tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;}
+.cmode{display:inline-flex;gap:2px;background:#e9edf4;border-radius:7px;padding:2px;}
+.cmode__b{border:0;background:none;border-radius:5px;padding:4px 10px;font:inherit;font-size:.72rem;font-weight:700;color:var(--ink-soft);cursor:pointer;}
+.cmode__b.on{background:#fff;color:var(--brand);box-shadow:0 1px 2px rgba(20,28,51,.12);}
+.leg{font-size:.68rem;font-weight:600;color:var(--ink-soft);}
+.leg .a{color:#b8770a;} .leg .d{color:#0b7250;}
 
 /* 변수 행 (CSS로 변형) */
 .var__name{display:flex;flex-direction:column;}
@@ -82,7 +93,8 @@ h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 18
 .dbg-a .watch__list{overflow:auto;max-height:258px;}
 .dbg-a .var{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 14px;border-bottom:1px solid #eef1f6;}
 .dbg-a__console{border-top:1px solid var(--line);}
-.dbg-a .console__head{padding:9px 14px;font-size:.74rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--ink-soft);background:#f4f6fa;border-bottom:1px solid var(--line);}
+.dbg-a .console__head{padding:9px 14px;font-size:.74rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--ink-soft);background:#f4f6fa;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;}
+.dbg-a .console__head .sp{flex:1;}
 .dbg-a .console__body{margin:0;padding:14px;font-family:var(--mono);font-size:.82rem;color:#27425c;background:#f8fafc;min-height:74px;white-space:pre-wrap;}
 @media(max-width:680px){ .dbg-a__main{grid-template-columns:1fr;} .dbg-a__editor{border-right:none;border-bottom:1px solid var(--line);} }
 
@@ -123,11 +135,13 @@ h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 18
   <main class="wrap">
     <p class="eyebrow">Code Learning · 스텝 디버거 v2 (디자인 시안)</p>
     <h1>스텝 디버거 — 디자인 시안 3종</h1>
-    <p class="lead">아래 A·B·C 시안을 직접 실행해 보고(▶ 시작 → 다음), 마음에 드는 방향을 골라 주세요. 셋 다 같은 엔진으로 동작합니다.</p>
+    <p class="lead">아래 A·B·C 시안을 직접 실행해 보고(▶ 시작 → 다음), 마음에 드는 방향을 골라 주세요. 셋 다 같은 엔진으로 동작합니다. <strong>강조된 줄은 "실행할 차례"(아직 실행 전)</strong>이고, 방금 실행한 줄은 초록(✓)으로 표시됩니다.</p>
     <div class="fixes">
       <span>✓ 코드 하단 흰 여백 제거</span>
       <span>✓ 검정 콘솔 박스 개선</span>
       <span>✓ 변수 많아도 콘솔 안 밀림</span>
+      <span>✓ 콘솔 현재 행/전체 출력 토글</span>
+      <span>✓ 강조=실행 직전 의미 명확화</span>
     </div>
 
     <!-- ===== A안 ===== -->
@@ -149,7 +163,12 @@ h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 18
           </div>
         </div>
         <div class="dbg-a__console">
-          <div class="console__head">콘솔 출력</div>
+          <div class="console__head">
+            <span>콘솔 출력</span>
+            <span class="leg"><span class="a">▶ 실행할 차례</span> · <span class="d">✓ 방금 실행</span></span>
+            <span class="sp"></span>
+            <span class="cmode"><button class="cmode__b on" data-cmode="cur">현재 행</button><button class="cmode__b" data-cmode="all">전체 출력</button></span>
+          </div>
           <pre class="console__body" data-console>대기 중 — ▶ 시작을 누르세요.</pre>
         </div>
       </div>
@@ -177,7 +196,10 @@ h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 18
             <span class="muted" data-counter>0 / 7</span>
           </div>
           <div class="mpanel is-active" data-mpanel="vars"><div data-vars></div></div>
-          <div class="mpanel" data-mpanel="console"><pre class="term" data-console>대기 중…</pre></div>
+          <div class="mpanel" data-mpanel="console">
+            <div class="console-tools"><span class="leg"><span class="a">▶ 실행할 차례</span> · <span class="d">✓ 방금 실행</span></span><span class="cmode"><button class="cmode__b on" data-cmode="cur">현재 행</button><button class="cmode__b" data-cmode="all">전체 출력</button></span></div>
+            <pre class="term" data-console>대기 중…</pre>
+          </div>
         </div>
       </div>
       <script type="application/json" data-config>
@@ -201,7 +223,10 @@ h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 18
         </div>
         <div class="dbg-c__vars" data-vars></div>
         <div class="dbg-c__editor" data-code></div>
-        <div class="dbg-c__console"><pre data-console>대기 중 — ▶ 시작을 누르세요.</pre></div>
+        <div class="dbg-c__console">
+          <div class="console-tools"><span class="leg"><span class="a">▶ 실행할 차례</span> · <span class="d">✓ 방금 실행</span></span><span class="cmode"><button class="cmode__b on" data-cmode="cur">현재 행</button><button class="cmode__b" data-cmode="all">전체 출력</button></span></div>
+          <pre data-console>대기 중 — ▶ 시작을 누르세요.</pre>
+        </div>
       </div>
       <script type="application/json" data-config>
       {"code":["DATA lv_sum TYPE i VALUE 0.","DATA lt TYPE TABLE OF i.","APPEND 10 TO lt. APPEND 20 TO lt.","LOOP AT lt INTO DATA(lv_n).","  lv_sum = lv_sum + lv_n.","ENDLOOP.","WRITE / lv_sum."],
@@ -246,36 +271,58 @@ h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 18
     const nextBtn  = root.querySelector("[data-next]");
     const progress = root.querySelector("[data-progress]");
     const counter  = root.querySelector("[data-counter]");
+    const cmodeBtns = root.querySelectorAll("[data-cmode]");
     const steps = cfg.steps;
-    let cur = -1;
 
-    function resetVars(){ root.querySelectorAll(".var__val").forEach(el=>{ el.textContent = el.dataset.init; el.classList.remove("changed"); }); }
-    function setCounter(){ if(counter) counter.textContent = (cur+1) + " / " + steps.length; }
+    // 디버거 의미: cur = '실행 완료한 줄 수'. 강조(active)는 steps[cur].line = 다음에 실행할 줄(아직 실행 전),
+    // done은 steps[cur-1].line = 방금 실행한 줄. 변수는 cur개 줄 실행 후의 누적 상태.
+    let started=false, cur=0, history=[], mode="cur";
+
+    function accVars(k){ const v={}; cfg.vars.forEach(d=>v[d.key]=d.init); for(let i=0;i<k;i++) Object.assign(v, steps[i].vars||{}); return v; }
+    function curMsg(){
+      if(!started) return "대기 중 — ▶ 시작을 누르세요.";
+      const next = cur<steps.length ? steps[cur].line : null;
+      if(cur===0) return "▶ 준비됨 — '다음 ⏭'을 누르면 "+next+"번 줄을 실행합니다.\n(강조된 줄은 '실행할 차례'이며 아직 실행 전입니다.)";
+      const done = steps[cur-1];
+      let m = "✓ 방금 "+done.line+"번 줄 실행 → "+(done.console||"");
+      m += (next!=null) ? "\n▶ 다음에 실행할 줄: "+next+"번 (아직 실행 전)" : "\n■ 끝까지 실행 완료";
+      return m;
+    }
+    function paintConsole(){
+      if(!consoleEl) return;
+      consoleEl.textContent = (mode==="all")
+        ? (history.length ? history.join("\n") : "(아직 실행한 줄이 없습니다)")
+        : curMsg();
+    }
     function render(){
-      lines.forEach(l=>l.classList.remove("active"));
-      const step = steps[cur]; if(!step) return;
-      const active = root.querySelector('.code li[data-line="'+step.line+'"]');
-      if(active){ active.classList.add("active"); active.scrollIntoView({block:"nearest"}); }
-      Object.entries(step.vars||{}).forEach(([k,v])=>{
-        const cell = root.querySelector('.var__val[data-key="'+k+'"]');
-        if(cell){ cell.textContent = v; cell.classList.remove("changed"); void cell.offsetWidth; cell.classList.add("changed"); }
-      });
-      if(consoleEl) consoleEl.textContent = "▶ step " + (cur+1) + "/" + steps.length + "  (line " + step.line + ")\n" + (step.console||"");
-      if(progress) progress.style.width = ((cur+1)/steps.length*100) + "%";
-      dots.forEach((d,i)=>{ d.classList.toggle("done", i<cur); d.classList.toggle("current", i===cur); });
-      setCounter();
+      lines.forEach(l=>l.classList.remove("active","done"));
+      const nextLine = (started && cur<steps.length) ? steps[cur].line : null;
+      const lastLine = (started && cur>0) ? steps[cur-1].line : null;
+      if(lastLine!=null){ const el=root.querySelector('.code li[data-line="'+lastLine+'"]'); if(el) el.classList.add("done"); }
+      if(nextLine!=null){ const el=root.querySelector('.code li[data-line="'+nextLine+'"]'); if(el){ el.classList.add("active"); el.scrollIntoView({block:"nearest"}); } }
+      const v=accVars(cur), changed=(started&&cur>0)?(steps[cur-1].vars||{}):{};
+      cfg.vars.forEach(d=>{ const cell=root.querySelector('.var__val[data-key="'+d.key+'"]');
+        if(cell){ cell.textContent=v[d.key]; cell.classList.remove("changed"); if(changed[d.key]!==undefined){ void cell.offsetWidth; cell.classList.add("changed"); } } });
+      if(progress) progress.style.width=(cur/steps.length*100)+"%";
+      if(counter) counter.textContent=cur+" / "+steps.length;
+      dots.forEach((d,i)=>{ d.classList.toggle("done", i<cur); d.classList.toggle("current", started && i===cur); });
+      paintConsole();
     }
     startBtn.addEventListener("click",()=>{
-      cur = 0; startBtn.textContent = "↻ 다시"; nextBtn.disabled = false;
-      resetVars(); if(progress) progress.style.transition="width .35s"; render();
+      started=true; cur=0; history=[]; startBtn.textContent="↻ 다시"; nextBtn.disabled=false;
+      if(progress) progress.style.transition="width .35s"; render();
     });
     nextBtn.addEventListener("click",()=>{
-      if(cur < steps.length-1){
-        cur++; render();
-        if(cur === steps.length-1){ nextBtn.disabled = true; if(consoleEl) consoleEl.textContent += "\n\n✓ 실행 완료"; }
-      }
+      if(!started || cur>=steps.length) return;
+      const s=steps[cur];
+      history.push((cur+1)+". [line "+s.line+" 실행] "+(s.console||""));
+      cur++; render();
+      if(cur>=steps.length) nextBtn.disabled=true;
     });
-    setCounter();
+    cmodeBtns.forEach(b=>b.addEventListener("click",()=>{
+      mode=b.dataset.cmode; cmodeBtns.forEach(x=>x.classList.toggle("on", x===b)); paintConsole();
+    }));
+    render();
   }
 
   // 탭형 모니터(B안) 탭 전환
