@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<!--
+  플래시카드 (Flashcards) — standalone
+  ────────────────────────────────────────────────────────────
+  카드를 클릭하면 앞/뒤가 3D 회전으로 뒤집힘(용어↔정의). 능동 회수 훈련.
+  순수 CSS 3D + 최소 JS(토글). 외부 의존성 없음.
+  재사용 시 ".flashcard*" CSS + 하단 JS만 가져가면 됩니다.
+-->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>플래시카드 · Sample</title>
+<style>
+:root{--bg:#f6f7fb;--surface:#fff;--ink:#1c2233;--ink-soft:#5b6478;--line:#e6e8ef;--brand:#3b5bdb;--accent:#0ca678;--radius:14px;--shadow:0 1px 2px rgba(20,28,51,.04),0 8px 24px rgba(20,28,51,.06);--font:-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic",Roboto,sans-serif;}
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.65;}
+.topbar{position:sticky;top:0;z-index:20;border-bottom:1px solid var(--line);background:var(--surface);}
+.topbar__inner{max-width:1080px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:12px;font-weight:800;}
+.brand__mark{width:28px;height:28px;border-radius:7px;background:var(--brand);color:#fff;display:grid;place-items:center;}
+.wrap{max-width:760px;margin:28px auto 72px;padding:0 24px;}
+.eyebrow{color:var(--brand);font-weight:800;font-size:.82rem;letter-spacing:.05em;text-transform:uppercase;}
+h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 24px;}
+
+/* ===== 컴포넌트 CSS — 플래시카드 ===== */
+.flashcard-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;}
+.flashcard{height:130px;perspective:900px;cursor:pointer;background:none;border:none;padding:0;font:inherit;}
+.flashcard__inner{position:relative;width:100%;height:100%;transition:transform .5s cubic-bezier(.16,1,.3,1);transform-style:preserve-3d;}
+.flashcard.flipped .flashcard__inner{transform:rotateY(180deg);}
+.flashcard__face{position:absolute;inset:0;backface-visibility:hidden;border-radius:12px;display:grid;place-items:center;text-align:center;padding:14px;box-shadow:var(--shadow);}
+.flashcard__front{background:#fff;border:1px solid var(--line);font-weight:800;color:var(--ink);}
+.flashcard__front .hint{position:absolute;bottom:8px;font-size:.7rem;font-weight:600;color:#b6c0d8;}
+.flashcard__back{background:#f0fbf7;border:1px solid #bfead7;color:#23493d;transform:rotateY(180deg);font-size:.9rem;font-weight:500;line-height:1.5;}
+</style>
+</head>
+<body>
+  <header class="topbar"><div class="topbar__inner"><span class="brand__mark">A</span>SAP Developer Academy</div></header>
+  <main class="wrap">
+    <p class="eyebrow">Quizzes · 플래시카드</p>
+    <h1>용어를 보고 정의를 떠올리기</h1>
+    <p class="lead">카드를 클릭하면 뒤집힙니다. 먼저 정의를 머릿속으로 말한 뒤 뒤집어 확인하세요(능동 회수).</p>
+
+    <div class="flashcard-grid">
+      <button class="flashcard"><span class="flashcard__inner">
+        <span class="flashcard__face flashcard__front">DDIC<span class="hint">클릭해서 뒤집기</span></span>
+        <span class="flashcard__face flashcard__back">SAP의 중앙 데이터 정의 사전. 테이블·도메인·데이터 요소를 한 곳에서 관리.</span>
+      </span></button>
+      <button class="flashcard"><span class="flashcard__inner">
+        <span class="flashcard__face flashcard__front">sy-subrc<span class="hint">클릭해서 뒤집기</span></span>
+        <span class="flashcard__face flashcard__back">직전 문장의 성공/실패 코드. 0이면 성공, 4면 결과 없음.</span>
+      </span></button>
+      <button class="flashcard"><span class="flashcard__inner">
+        <span class="flashcard__face flashcard__front">Internal Table<span class="hint">클릭해서 뒤집기</span></span>
+        <span class="flashcard__face flashcard__back">같은 구조의 여러 행을 메모리에 담는 그릇. LOOP AT으로 순회.</span>
+      </span></button>
+      <button class="flashcard"><span class="flashcard__inner">
+        <span class="flashcard__face flashcard__front">Open SQL<span class="hint">클릭해서 뒤집기</span></span>
+        <span class="flashcard__face flashcard__back">DB 종류와 무관하게 동작하는 ABAP의 DB 추상화 구문 집합.</span>
+      </span></button>
+    </div>
+  </main>
+
+<script>
+// ===== 컴포넌트 JS — 플래시카드 =====
+document.querySelectorAll(".flashcard").forEach(c=>c.addEventListener("click",()=>c.classList.toggle("flipped")));
+</script>
+</body>
+</html>

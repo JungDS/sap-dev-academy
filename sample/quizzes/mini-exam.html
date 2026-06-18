@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<!--
+  미니 시험 모드 (Mini Exam) — standalone
+  ────────────────────────────────────────────────────────────
+  객관식 여러 문항을 풀고 "제출"하면 점수 + 문항별 정오 + 해설 표시.
+  문항: .exam-q[data-correct], 보기: radio[value]. 외부 의존성 없음.
+  재사용 시 ".exam*" CSS + 하단 JS만 가져가면 됩니다.
+-->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>미니 시험 · Sample</title>
+<style>
+:root{--bg:#f6f7fb;--surface:#fff;--ink:#1c2233;--ink-soft:#5b6478;--line:#e6e8ef;--brand:#3b5bdb;--accent:#0ca678;--red:#d6336c;--radius:14px;--shadow:0 1px 2px rgba(20,28,51,.04),0 8px 24px rgba(20,28,51,.06);--font:-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic",Roboto,sans-serif;}
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.65;}
+.topbar{position:sticky;top:0;z-index:20;border-bottom:1px solid var(--line);background:var(--surface);}
+.topbar__inner{max-width:1080px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:12px;font-weight:800;}
+.brand__mark{width:28px;height:28px;border-radius:7px;background:var(--brand);color:#fff;display:grid;place-items:center;}
+.wrap{max-width:720px;margin:28px auto 72px;padding:0 24px;}
+.eyebrow{color:var(--brand);font-weight:800;font-size:.82rem;letter-spacing:.05em;text-transform:uppercase;}
+h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 24px;}
+.btn{border:1px solid var(--brand);background:var(--brand);color:#fff;border-radius:9px;padding:11px 22px;font-weight:700;cursor:pointer;font:inherit;}
+.btn:hover{background:#2f4bc0;}
+
+/* ===== 컴포넌트 CSS — 미니 시험 ===== */
+.exam{display:grid;gap:16px;}
+.exam-q{border:1px solid var(--line);border-radius:12px;padding:16px 18px;background:#fff;box-shadow:var(--shadow);}
+.exam-q__q{margin:0 0 12px;font-weight:700;}
+.exam-q__q .n{color:var(--brand);margin-right:6px;}
+.exam-q label{display:flex;gap:10px;align-items:center;padding:8px 10px;border-radius:8px;cursor:pointer;transition:background .12s;}
+.exam-q label:hover{background:#f4f7ff;}
+.exam-q input{accent-color:var(--brand);width:16px;height:16px;}
+.exam-q.correct{border-color:#bfead7;background:#f6fdfa;}
+.exam-q.wrong{border-color:#f6c2d4;background:#fff7fa;}
+.exam-q__exp{margin:10px 0 0;font-size:.88rem;padding:9px 12px;border-radius:8px;display:none;}
+.exam-q.correct .exam-q__exp{display:block;background:#eafaf3;color:#0b7250;}
+.exam-q.wrong .exam-q__exp{display:block;background:#ffe3ec;color:#b02a55;}
+.exam__bar{display:flex;align-items:center;gap:14px;margin-top:18px;}
+.exam__score{font-weight:800;font-size:1.05rem;color:var(--ink-soft);}
+.exam__score.pass{color:#0b7250;} .exam__score.fail{color:var(--red);}
+</style>
+</head>
+<body>
+  <header class="topbar"><div class="topbar__inner"><span class="brand__mark">A</span>SAP Developer Academy</div></header>
+  <main class="wrap">
+    <p class="eyebrow">Quizzes · 미니 시험</p>
+    <h1>이벤트 & 데이터 미니 시험</h1>
+    <p class="lead">세 문항을 풀고 제출하면 점수와 함께 문항별 정오·해설이 펼쳐집니다.</p>
+
+    <div class="exam" data-exam>
+      <div class="exam-q" data-q="q1" data-correct="b" data-exp="START-OF-SELECTION이 실제 메인 로직(DB 조회)의 시작점입니다.">
+        <p class="exam-q__q"><span class="n">Q1.</span> 리포트의 메인 처리 로직이 시작되는 이벤트는?</p>
+        <label><input type="radio" name="q1" value="a"> INITIALIZATION</label>
+        <label><input type="radio" name="q1" value="b"> START-OF-SELECTION</label>
+        <label><input type="radio" name="q1" value="c"> AT SELECTION-SCREEN</label>
+        <p class="exam-q__exp"></p>
+      </div>
+      <div class="exam-q" data-q="q2" data-correct="c" data-exp="sy-subrc = 0 은 직전 문장이 성공했음을 의미합니다.">
+        <p class="exam-q__q"><span class="n">Q2.</span> SELECT 직후 sy-subrc 가 0이면?</p>
+        <label><input type="radio" name="q2" value="a"> 문법 오류가 있다</label>
+        <label><input type="radio" name="q2" value="b"> 결과가 없다</label>
+        <label><input type="radio" name="q2" value="c"> 한 건 이상 조회됐다</label>
+        <p class="exam-q__exp"></p>
+      </div>
+      <div class="exam-q" data-q="q3" data-correct="a" data-exp="유일 키로 대량 데이터를 O(1)로 조회할 땐 HASHED TABLE이 적합합니다.">
+        <p class="exam-q__q"><span class="n">Q3.</span> 유일 키 기반 초고속 단건 조회에 가장 적합한 테이블은?</p>
+        <label><input type="radio" name="q3" value="a"> HASHED TABLE</label>
+        <label><input type="radio" name="q3" value="b"> STANDARD TABLE</label>
+        <label><input type="radio" name="q3" value="c"> 셋 다 동일</label>
+        <p class="exam-q__exp"></p>
+      </div>
+      <div class="exam__bar">
+        <button class="btn" data-submit>제출하고 채점</button>
+        <span class="exam__score"></span>
+      </div>
+    </div>
+  </main>
+
+<script>
+// ===== 컴포넌트 JS — 미니 시험 =====
+(function(){
+  document.querySelectorAll("[data-exam]").forEach(exam=>{
+    const qs=exam.querySelectorAll(".exam-q");
+    const score=exam.querySelector(".exam__score");
+    exam.querySelector("[data-submit]").addEventListener("click",()=>{
+      let correct=0;
+      qs.forEach(q=>{
+        const picked=exam.querySelector(`input[name="${q.dataset.q}"]:checked`);
+        const ok=picked && picked.value===q.dataset.correct;
+        q.classList.toggle("correct",!!ok); q.classList.toggle("wrong",!ok);
+        q.querySelector(".exam-q__exp").textContent=(ok?"✅ 정답 — ":"❌ 오답 — ")+q.dataset.exp;
+        if(ok) correct++;
+      });
+      const full=correct===qs.length;
+      score.className="exam__score "+(full?"pass":"fail");
+      score.textContent=`${correct} / ${qs.length}점 — `+(full?"만점! 🎉":"틀린 문항 해설을 다시 읽어보세요.");
+    });
+  });
+})();
+</script>
+</body>
+</html>

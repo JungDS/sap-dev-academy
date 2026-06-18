@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<!--
+  드래그 앤 드롭 퀴즈 (Drag & Drop Ordering) — standalone
+  ────────────────────────────────────────────────────────────
+  카드를 알맞은 순서 칸으로 끌어다 놓으면 즉시 채점(초록/빨강), 전부 맞으면 컨페티.
+  배치한 카드를 클릭하면 회수. 칸: data-expected, 카드: data-answer.
+  외부 의존성 없음(컨페티도 내장). 재사용 시 ".ddq*"/".confetti-canvas" CSS + 하단 JS만.
+-->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>드래그 앤 드롭 퀴즈 · Sample</title>
+<style>
+:root{--bg:#f6f7fb;--surface:#fff;--ink:#1c2233;--ink-soft:#5b6478;--line:#e6e8ef;--brand:#3b5bdb;--accent:#0ca678;--red:#d6336c;--radius:14px;--shadow:0 1px 2px rgba(20,28,51,.04),0 8px 24px rgba(20,28,51,.06);--font:-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic",Roboto,sans-serif;--mono:'D2Coding',Consolas,Monaco,monospace;}
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.65;}
+.topbar{position:sticky;top:0;z-index:20;border-bottom:1px solid var(--line);background:var(--surface);}
+.topbar__inner{max-width:1080px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:12px;font-weight:800;}
+.brand__mark{width:28px;height:28px;border-radius:7px;background:var(--brand);color:#fff;display:grid;place-items:center;}
+.wrap{max-width:760px;margin:28px auto 72px;padding:0 24px;}
+.eyebrow{color:var(--brand);font-weight:800;font-size:.82rem;letter-spacing:.05em;text-transform:uppercase;}
+h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 24px;}
+
+/* ===== 컴포넌트 CSS — 드래그&드롭 퀴즈 ===== */
+.ddq{background:#fff;border:1px solid var(--line);border-radius:16px;padding:24px;box-shadow:var(--shadow);}
+.ddq__q{font-size:1.04rem;font-weight:700;margin:0 0 18px;}
+.ddq__zones{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:22px;}
+.ddq-zone{background:#f8fafc;border:2px dashed #cfd6e6;border-radius:12px;padding:14px;min-height:92px;display:flex;flex-direction:column;align-items:center;gap:8px;transition:all .2s;}
+.ddq-zone.over{border-color:var(--brand);background:#eef2ff;transform:scale(1.02);}
+.ddq-zone.correct{border-color:var(--accent);background:#eafaf3;border-style:solid;}
+.ddq-zone.incorrect{border-color:var(--red);background:#ffe3ec;border-style:solid;}
+.ddq-zone__label{font-size:.72rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.5px;text-align:center;}
+.ddq__pool-label{font-size:.78rem;font-weight:700;color:var(--ink-soft);margin:0 0 8px;}
+.ddq__pool{display:flex;flex-wrap:wrap;gap:12px;background:#f1f4fb;padding:16px;border-radius:12px;min-height:58px;align-items:center;}
+.ddq-card{background:#fff;border:1px solid #cfd6e6;border-radius:8px;padding:8px 16px;font-family:var(--mono);font-size:.9rem;font-weight:700;color:#334155;cursor:grab;box-shadow:0 3px 6px rgba(0,0,0,.05);transition:all .18s;user-select:none;}
+.ddq-card:hover{transform:translateY(-2px);border-color:var(--brand);color:var(--brand);}
+.ddq-card:active{cursor:grabbing;}
+.ddq-card.dragging{opacity:.4;transform:scale(.95);}
+.ddq__feedback{margin-top:18px;padding:12px 16px;border-radius:10px;font-size:.95rem;display:none;}
+.ddq__feedback.success{display:block;background:#eafaf3;border:1px solid #bfead7;color:#0b7250;}
+.ddq__feedback.error{display:block;background:#ffe3ec;border:1px solid #f6c2d4;color:#b02a55;}
+.confetti-canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9999;}
+</style>
+</head>
+<body>
+  <header class="topbar"><div class="topbar__inner"><span class="brand__mark">A</span>SAP Developer Academy</div></header>
+  <main class="wrap">
+    <p class="eyebrow">Quizzes · 드래그 앤 드롭</p>
+    <h1>리포트 이벤트 생명주기 순서 맞추기</h1>
+    <p class="lead">카드를 알맞은 단계 칸으로 끌어다 놓으세요. 맞으면 칸이 초록으로 바뀌고, 모두 맞히면 축하 효과가 나타납니다. 배치한 카드를 클릭하면 회수됩니다.</p>
+
+    <div class="ddq" data-ddq
+         data-success="🎉 <strong>정답입니다!</strong> LOAD-OF-PROGRAM → INITIALIZATION → START-OF-SELECTION → END-OF-SELECTION 순서를 완벽히 맞췄습니다."
+         data-error="❌ <strong>아직이에요.</strong> 요리사의 하루(오픈 준비 → 주문 초기화 → 조리 → 마감)를 떠올려 보세요.">
+      <p class="ddq__q">Q. 프로그램 호출부터 출력까지, 리포트 생명주기 순서를 채우세요.</p>
+      <div class="ddq__zones">
+        <div class="ddq-zone" data-expected="LOAD-OF-PROGRAM"><span class="ddq-zone__label">1 · 메모리 로드</span></div>
+        <div class="ddq-zone" data-expected="INITIALIZATION"><span class="ddq-zone__label">2 · 화면 초기화</span></div>
+        <div class="ddq-zone" data-expected="START-OF-SELECTION"><span class="ddq-zone__label">3 · 메인 쿼리</span></div>
+        <div class="ddq-zone" data-expected="END-OF-SELECTION"><span class="ddq-zone__label">4 · 출력 마감</span></div>
+      </div>
+      <p class="ddq__pool-label">드래그할 이벤트 카드</p>
+      <div class="ddq__pool">
+        <div class="ddq-card" draggable="true" data-answer="START-OF-SELECTION">START-OF-SELECTION</div>
+        <div class="ddq-card" draggable="true" data-answer="INITIALIZATION">INITIALIZATION</div>
+        <div class="ddq-card" draggable="true" data-answer="LOAD-OF-PROGRAM">LOAD-OF-PROGRAM</div>
+        <div class="ddq-card" draggable="true" data-answer="END-OF-SELECTION">END-OF-SELECTION</div>
+      </div>
+      <div class="ddq__feedback"></div>
+    </div>
+  </main>
+
+<script>
+// ===== 컴포넌트 JS — 드래그&드롭 퀴즈 + 컨페티 =====
+(function(){
+  function confetti(){
+    const c=document.createElement("canvas"); c.className="confetti-canvas"; document.body.appendChild(c);
+    const ctx=c.getContext("2d"); const cols=["#3b5bdb","#0ca678","#f59e0b","#d6336c","#6d28d9"]; const P=[];
+    const resize=()=>{c.width=innerWidth;c.height=innerHeight;}; resize(); addEventListener("resize",resize);
+    for(let i=0;i<140;i++) P.push({x:Math.random()*c.width,y:Math.random()*-c.height,s:Math.random()*7+4,col:cols[i%cols.length],sp:Math.random()*4+3,a:Math.random()*360,sn:Math.random()*4-2});
+    const t0=Date.now();
+    (function draw(){
+      ctx.clearRect(0,0,c.width,c.height);
+      if(Date.now()-t0>2400){ c.remove(); removeEventListener("resize",resize); return; }
+      P.forEach(p=>{ p.y+=p.sp; p.x+=Math.sin(p.a*Math.PI/180)*1.4; p.a+=p.sn; ctx.fillStyle=p.col; ctx.beginPath(); ctx.arc(p.x,p.y,p.s,0,7); ctx.fill(); });
+      requestAnimationFrame(draw);
+    })();
+  }
+  document.querySelectorAll("[data-ddq]").forEach(quiz=>{
+    const cards=quiz.querySelectorAll(".ddq-card");
+    const zones=quiz.querySelectorAll(".ddq-zone");
+    const pool=quiz.querySelector(".ddq__pool");
+    const fb=quiz.querySelector(".ddq__feedback");
+    let dragged=null;
+    cards.forEach(card=>{
+      card.addEventListener("dragstart",()=>{ dragged=card; card.classList.add("dragging"); });
+      card.addEventListener("dragend",()=>card.classList.remove("dragging"));
+    });
+    zones.forEach(zone=>{
+      zone.addEventListener("dragover",e=>{ e.preventDefault(); zone.classList.add("over"); });
+      zone.addEventListener("dragleave",()=>zone.classList.remove("over"));
+      zone.addEventListener("drop",()=>{
+        zone.classList.remove("over"); if(!dragged) return;
+        const existing=zone.querySelector(".ddq-card"); if(existing) pool.appendChild(existing);
+        zone.appendChild(dragged); check();
+      });
+    });
+    quiz.addEventListener("click",e=>{
+      if(e.target.classList.contains("ddq-card") && e.target.parentElement.classList.contains("ddq-zone")){
+        pool.appendChild(e.target); e.target.parentElement.classList.remove("correct","incorrect"); check();
+      }
+    });
+    function check(){
+      let filled=0,correct=0;
+      zones.forEach(zone=>{
+        const card=zone.querySelector(".ddq-card");
+        if(card){ filled++;
+          if(card.dataset.answer===zone.dataset.expected){ zone.classList.add("correct"); zone.classList.remove("incorrect"); correct++; }
+          else{ zone.classList.add("incorrect"); zone.classList.remove("correct"); }
+        } else zone.classList.remove("correct","incorrect");
+      });
+      if(filled===zones.length){
+        if(correct===zones.length){ fb.className="ddq__feedback success"; fb.innerHTML=quiz.dataset.success; confetti(); }
+        else{ fb.className="ddq__feedback error"; fb.innerHTML=quiz.dataset.error; }
+      } else fb.style.display="none";
+    }
+  });
+})();
+</script>
+</body>
+</html>

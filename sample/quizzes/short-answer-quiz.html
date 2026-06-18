@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<!--
+  단답형 퀴즈 (Short Answer) — standalone
+  ────────────────────────────────────────────────────────────
+  짧은 답을 직접 입력해 회수. input[data-answer]에 정답(여러 개는 | 로 구분),
+  버튼으로 일괄 채점(대소문자/공백 무시). 외부 의존성 없음.
+  재사용 시 ".saq*" CSS + 하단 JS만 가져가면 됩니다.
+-->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>단답형 퀴즈 · Sample</title>
+<style>
+:root{--bg:#f6f7fb;--surface:#fff;--ink:#1c2233;--ink-soft:#5b6478;--line:#e6e8ef;--brand:#3b5bdb;--accent:#0ca678;--red:#d6336c;--radius:14px;--shadow:0 1px 2px rgba(20,28,51,.04),0 8px 24px rgba(20,28,51,.06);--font:-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic",Roboto,sans-serif;--mono:'D2Coding',Consolas,Monaco,monospace;}
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.65;}
+.topbar{position:sticky;top:0;z-index:20;border-bottom:1px solid var(--line);background:var(--surface);}
+.topbar__inner{max-width:1080px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:12px;font-weight:800;}
+.brand__mark{width:28px;height:28px;border-radius:7px;background:var(--brand);color:#fff;display:grid;place-items:center;}
+.wrap{max-width:680px;margin:28px auto 72px;padding:0 24px;}
+.eyebrow{color:var(--brand);font-weight:800;font-size:.82rem;letter-spacing:.05em;text-transform:uppercase;}
+h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 24px;}
+.btn{border:1px solid var(--brand);background:var(--brand);color:#fff;border-radius:9px;padding:10px 18px;font-weight:700;cursor:pointer;font:inherit;}
+.btn:hover{background:#2f4bc0;}
+
+/* ===== 컴포넌트 CSS — 단답형 ===== */
+.saq{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:var(--shadow);}
+.saq__q{display:grid;gap:8px;margin-bottom:18px;}
+.saq__q .q{font-weight:700;}
+.saq__q .q .n{color:var(--brand);margin-right:6px;}
+.saq__input{border:1px solid var(--line);border-radius:9px;padding:10px 12px;font:inherit;font-family:var(--mono);background:#f8fafc;outline:none;}
+.saq__input:focus{border-color:var(--brand);background:#fff;}
+.saq__input.ok{border-color:var(--accent);background:#eafaf3;}
+.saq__input.bad{border-color:var(--red);background:#ffe3ec;}
+.saq__output{margin-top:16px;padding:12px 14px;border-radius:10px;background:#f1f5f9;border:1px solid var(--line);min-height:22px;font-weight:600;color:#334155;}
+.saq__output.ok{background:#eafaf3;border-color:#bfead7;color:#0b7250;}
+.saq__output.bad{background:#ffe3ec;border-color:#f6c2d4;color:#b02a55;}
+</style>
+</head>
+<body>
+  <header class="topbar"><div class="topbar__inner"><span class="brand__mark">A</span>SAP Developer Academy</div></header>
+  <main class="wrap">
+    <p class="eyebrow">Quizzes · 단답형</p>
+    <h1>핵심 키워드를 직접 적어보기</h1>
+    <p class="lead">선택지가 없으니 머릿속에서 꺼내야 합니다. 답을 입력하고 한 번에 채점하세요.</p>
+
+    <div class="saq" data-saq data-explain="세 키워드 모두 리포트 이벤트 흐름의 핵심입니다." data-hint="이벤트 이름과 시스템 필드를 떠올려 보세요.">
+      <div class="saq__q">
+        <span class="q"><span class="n">Q1.</span> DB 조회를 수행하는 메인 이벤트 블록의 이름은?</span>
+        <input class="saq__input" data-answer="START-OF-SELECTION" placeholder="이벤트 블록 이름">
+      </div>
+      <div class="saq__q">
+        <span class="q"><span class="n">Q2.</span> 직전 문장의 성공 여부를 담는 시스템 필드는?</span>
+        <input class="saq__input" data-answer="sy-subrc|subrc" placeholder="시스템 필드">
+      </div>
+      <div class="saq__q">
+        <span class="q"><span class="n">Q3.</span> 내부 테이블 전체를 한 행씩 순회하는 구문은? (두 단어)</span>
+        <input class="saq__input" data-answer="LOOP AT" placeholder="구문">
+      </div>
+      <button class="btn" data-check>채점하기</button>
+      <div class="saq__output">답을 입력하고 "채점하기"를 누르세요.</div>
+    </div>
+  </main>
+
+<script>
+// ===== 컴포넌트 JS — 단답형 =====
+(function(){
+  const norm=s=>s.trim().toLowerCase().replace(/\s+/g," ");
+  document.querySelectorAll("[data-saq]").forEach(quiz=>{
+    const inputs=quiz.querySelectorAll(".saq__input");
+    const out=quiz.querySelector(".saq__output");
+    quiz.querySelector("[data-check]").addEventListener("click",()=>{
+      let done=0;
+      inputs.forEach(inp=>{
+        const answers=inp.dataset.answer.split("|").map(norm);
+        const ok=answers.includes(norm(inp.value));
+        inp.classList.toggle("ok",ok); inp.classList.toggle("bad",!ok);
+        if(ok) done++;
+      });
+      const all=done===inputs.length;
+      out.className="saq__output "+(all?"ok":"bad");
+      out.textContent= all ? "✅ 전부 정답! "+(quiz.dataset.explain||"") : `❌ ${done}/${inputs.length} 정답. ${quiz.dataset.hint||""}`;
+    });
+  });
+})();
+</script>
+</body>
+</html>
