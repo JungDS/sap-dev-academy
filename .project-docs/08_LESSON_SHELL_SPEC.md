@@ -1,11 +1,12 @@
 # 08. LESSON SHELL SPEC — 레슨 셸 표준(v2-C 확정) · 이식 규칙
 
-> 📅 **최종수정: 2026-06-18 KST**
+> 📅 **최종수정: 2026-06-18 19:51 KST**
 > 🎯 **목적:** 레슨 셸 디자인을 **v2-C로 확정**했고, 이를 실제 런타임(`assets/shell.*`)·빌드(`tools/build-curriculum.mjs`)·입문자 템플릿에 이식할 때 **지켜야 할 규칙·주의·체크리스트**를 한곳에.
 > 📖 **읽을 때:** 레슨 셸/뷰어/빌드 마크업을 건드리기 직전. 입문자 템플릿 작성 시.
 > ⚡ **TL;DR:**
 > - 확정본 = **`sample/structure/lesson-shell-v2-c.html`** (레퍼런스 구현). 이걸 데이터 주도 셸로 이식.
-> - **색 테마는 미결정(D안=프로젝트 블루/그린 권장)** — [§1](#1-색-테마-결정-필요) 확인 후 진행.
+> - **Phase 1 이식 완료**: `shell.css`/`shell.js`/`lesson.css`/빌드 템플릿 → 192페이지 재생성. 남은 건 P1(tcodes.json)·P2(front-matter tcode)·P5(입문자 템플릿).
+> - **색 테마 = 프로젝트 블루/그린 확정(D안).** base.css 토큰 + html.dark 오버라이드.
 > - T-code 미니페이지·용어는 **레슨 독립 공통**(레슨 전용 문구 금지). 사전은 2계층. [[tcode-minipage-shared]]
 > - 생성물(`docs/abap/**`)은 **빌드로만**(R1). 셸은 fetch라 **HTTP 서빙**(P1).
 
@@ -65,13 +66,13 @@
 - **R8**: `shell.js`·`*.css` 수정 전 전체 읽기(이 작업 이미 수행).
 
 ## 7. 이식 체크리스트 (단계)
-- [ ] **(P0) §1 색 테마 확정** — 블루/그린 vs 웜.
-- [ ] (P1) `tcodes.json` 스키마 + 초기 T코드(SE38·SE11·SE16N·SE80…) 작성, 빌드 pass-through.
-- [ ] (P2) front-matter 확장(`tcode`/`goals`) + 빌드 emit(헤더·여정·레일·설정 컨테이너).
-- [ ] (P3) `shell.css`/`base.css`/`lesson.css`에 v2-C 컴포넌트 이식(확정 테마로).
-- [ ] (P4) `shell.js` 재작성: 레일·여정 스크롤스파이·용어 hover/click·T코드 모달(2계층)·설정·전체화면·읽기진행.
+- [x] **(P0) §1 색 테마 확정** — 프로젝트 블루/그린(D안).
+- [ ] (P1) `tcodes.json` 스키마 + 초기 T코드(SE38·SE11·SE16N·SE80…) 작성, 빌드 pass-through. **(다음)**
+- [ ] (P2) front-matter 확장(`tcode`/`tcodeBadge`/`goals`) — 빌드 emit은 준비됨(tcode 라벨 조건부). 콘텐츠에 값 추가 + shell.js에 T코드 모달(2계층) 결선. **(다음)**
+- [x] (P3) `shell.css`/`lesson.css`에 v2-C 컴포넌트 이식(블루/그린 + html.dark). base.css는 미변경(토큰 재사용).
+- [x] (P4) `shell.js` 재작성: 레일(레슨/챕터/용어)·여정 스크롤스파이(모바일 시트)·용어 hover/click·설정(글자/다크/폭/전체화면)·읽기진행·이전다음. (T코드 모달만 P2로)
 - [ ] (P5) `beginner-lesson-template.html` 정렬.
-- [ ] (P6) `npm run build:abap` 통과 + HTTP 서빙 + 콘솔0 + 인터랙션/모바일/다크 검증([07](07_BROWSER_TESTING.md)).
+- [x] (P6) `npm run build:abap` 통과(192페이지) + CH01-L01 데스크톱/모바일/다크 검증 + 콘솔0.
 - [ ] (P7) 시안 정리: v2-C ✅확정, A/B 사용금지, **D/E/F/G 대체됨**(보존/삭제는 확인 후).
 
 > 레퍼런스 구현(픽셀·동작 기준): [`sample/structure/lesson-shell-v2-c.html`](../sample/structure/lesson-shell-v2-c.html). 이식은 이 파일의 CSS/JS 블록을 데이터 주도로 옮기는 작업이다.

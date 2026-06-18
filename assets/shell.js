@@ -1,140 +1,226 @@
-/* SAP Developer Academy — 런타임 셸
-   생성된 레슨 페이지에 공통 헤더 · 좌측 3탭 네비(이 문서/레슨/챕터) ·
-   이전/다음 · 핵심용어 팝업을 주입한다.
-   데이터: curriculum.json, glossary.json (window.__SDA__.dataBase 기준 fetch).
-   ※ fetch를 쓰므로 file:// 가 아니라 HTTP로 서빙해야 동작한다. */
+/* SAP Developer Academy — 런타임 셸 (v2-C 구조)
+   생성된 레슨 페이지에 앱바 설정 · 좌측 아이콘 레일(레슨/챕터/용어) · 우측 "이 레슨의 여정"
+   (섹션 스크롤스파이, 모바일 하단 시트) · 용어 hover/click 팝업 · 읽기 진행률 · 이전/다음을 주입.
+   데이터: curriculum.json, glossary.json (window.__SDA__.dataBase 기준 fetch). fetch라 HTTP 서빙 필수.
+   레퍼런스: sample/structure/lesson-shell-v2-c.html · 규칙: .project-docs/08_LESSON_SHELL_SPEC.md
+   ※ T-code 미니페이지 모달은 Phase 2(tcodes.json + front-matter tcode)에서 추가. */
 (function () {
   "use strict";
   var cfg = window.__SDA__ || { dataBase: "../", siteRoot: "../../../", domain: "abap" };
-  var DATA = cfg.dataBase, ROOT = cfg.siteRoot;
-  var body = document.body;
+  var DATA = cfg.dataBase;
+  var doc = document, body = doc.body, root = doc.documentElement;
   var chapterId = body.getAttribute("data-chapter-id");
   var lessonId = body.getAttribute("data-lesson-id");
 
   function getJSON(p) { return fetch(DATA + p).then(function (r) { if (!r.ok) throw new Error(p); return r.json(); }); }
-  function h(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
+  function byId(id) { return doc.getElementById(id); }
+  function q(s) { return doc.querySelector(s); }
+  function qa(s) { return Array.prototype.slice.call(doc.querySelectorAll(s)); }
   function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
   function slug(s) { return String(s).trim().toLowerCase().replace(/[^\w가-힣]+/g, "-").replace(/^-+|-+$/g, "") || "sec"; }
+  function isMobile() { return window.matchMedia("(max-width:1000px)").matches; }
+  var LS = (function () { try { return window.localStorage; } catch (e) { return null; } })();
+  function lsGet(k) { try { return LS && LS.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { LS && LS.setItem(k, v); } catch (e) {} }
 
-  /* ---- 상단바 ---- */
-  function topbar() {
-    var host = document.querySelector('[data-shell="topbar"]'); if (!host) return;
-    host.innerHTML =
-      '<div class="topbar__inner">' +
-        '<a class="brand" href="' + ROOT + 'index.html"><span class="brand__mark">A</span><span>SAP Developer Academy</span></a>' +
-        '<div class="topbar__utils"><a href="' + ROOT + 'pages/abap.html">ABAP 커리큘럼</a></div>' +
-      '</div>';
+  var spyFn = null; // 여정 scroll-spy (있으면 스크롤 핸들러가 호출)
+
+  /* ===== 1. 읽기 설정: 글자 크기 / 다크 / 가독 폭 / 전체화면 ===== */
+  function settings() {
+    var darkBtn = byId("darkBtn"), widthBtn = byId("widthBtn"), fsBtn = q(".fs-btn");
+    var fsInc = byId("fsInc"), fsDec = byId("fsDec"), fsReset = byId("fsReset");
+    if (!darkBtn) return;
+    var FMIN = 13, FMAX = 20, FDEF = 16;
+    var fontPx = parseInt(lsGet("sda.fontPx"), 10); if (!(fontPx >= FMIN && fontPx <= FMAX)) fontPx = FDEF;
+    function syncFont() { fsDec.disabled = fontPx <= FMIN; fsInc.disabled = fontPx >= FMAX; fsReset.disabled = fontPx === FDEF; }
+    function applyFont() { root.style.fontSize = fontPx + "px"; lsSet("sda.fontPx", String(fontPx)); syncFont(); }
+    fsInc.onclick = function () { fontPx = Math.min(FMAX, fontPx + 1); applyFont(); };
+    fsDec.onclick = function () { fontPx = Math.max(FMIN, fontPx - 1); applyFont(); };
+    fsReset.onclick = function () { fontPx = FDEF; applyFont(); };
+    function syncDark() { var on = root.classList.contains("dark"); darkBtn.textContent = on ? "☀️" : "🌙"; darkBtn.classList.toggle("on", on); darkBtn.title = on ? "라이트 모드" : "다크 모드"; }
+    function syncWide() { var on = root.classList.contains("wide"); widthBtn.classList.toggle("on", on); widthBtn.title = on ? "가독 폭 기본" : "가독 폭 넓게"; }
+    darkBtn.onclick = function () { root.classList.toggle("dark"); lsSet("sda.dark", root.classList.contains("dark") ? "1" : "0"); syncDark(); };
+    widthBtn.onclick = function () { root.classList.toggle("wide"); lsSet("sda.wide", root.classList.contains("wide") ? "1" : "0"); syncWide(); };
+    var FS_OPEN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>';
+    var FS_CLOSE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v3a2 2 0 0 1-2 2H3M21 8h-3a2 2 0 0 1-2-2V3M3 16h3a2 2 0 0 1 2 2v3M16 21v-3a2 2 0 0 1 2-2h3"/></svg>';
+    if (fsBtn) {
+      fsBtn.innerHTML = FS_OPEN;
+      fsBtn.onclick = function () {
+        if (!doc.fullscreenElement && !doc.webkitFullscreenElement) { (root.requestFullscreen || root.webkitRequestFullscreen || function () {}).call(root); }
+        else { (doc.exitFullscreen || doc.webkitExitFullscreen || function () {}).call(doc); }
+      };
+      var prevWide = null;
+      var onFs = function () {
+        var on = !!(doc.fullscreenElement || doc.webkitFullscreenElement);
+        body.classList.toggle("is-fullscreen", on);
+        fsBtn.innerHTML = on ? FS_CLOSE : FS_OPEN; fsBtn.title = on ? "전체화면 해제" : "전체화면";
+        if (on) { if (prevWide === null) prevWide = root.classList.contains("wide"); root.classList.add("wide"); widthBtn.disabled = true; }
+        else { if (prevWide !== null) { root.classList.toggle("wide", prevWide); prevWide = null; } widthBtn.disabled = false; }
+        syncWide();
+      };
+      doc.addEventListener("fullscreenchange", onFs); doc.addEventListener("webkitfullscreenchange", onFs);
+    }
+    syncDark(); syncWide(); syncFont();
   }
 
-  /* ---- 좌측 3탭 네비 ---- */
-  function tabBtn(label, key, active) {
-    var b = h("button", "sidenav__tab" + (active ? " is-active" : ""), label);
-    b.type = "button"; b.setAttribute("data-tab", key); return b;
-  }
-  function tocPanel() {
-    var ul = h("ul", "sidenav__list");
-    var hs = document.querySelectorAll(".prose h2, .prose h3");
-    var used = {};
+  /* ===== 2. 우측 "이 레슨의 여정" (본문 h2 → 스텝퍼, 스크롤스파이, 모바일 하단 시트) ===== */
+  function buildJourney() {
+    var host = q('[data-shell="journey"]'); if (!host) return;
+    var hs = qa(".prose h2");
+    if (!hs.length) { host.hidden = true; return; }
+    var used = {}, stepsHtml = "";
     hs.forEach(function (el) {
       var id = el.id;
       if (!id) { id = slug(el.textContent); if (used[id]) { id += "-" + (++used[id]); } else { used[id] = 1; } el.id = id; }
-      var li = h("li"); var a = h("a", el.tagName === "H3" ? "toc-h3" : "", esc(el.textContent));
-      a.href = "#" + id; li.appendChild(a); ul.appendChild(li);
+      stepsHtml += '<li class="step" data-go="' + id + '"><span class="step__dot"></span><span class="step__t">' + esc(el.textContent) + "</span></li>";
     });
-    if (!hs.length) ul.appendChild(h("li", "", '<span style="color:var(--soon);font-size:.84rem">섹션 없음</span>'));
-    return ul;
+    host.innerHTML =
+      '<button class="journey__bar" id="journeyBar" aria-expanded="false">' +
+        '<span class="journey__now"><small>이 레슨의 여정</small><b id="jNow"></b></span>' +
+        '<span class="journey__count"><span id="jIdx">1</span> / <span id="jTot">' + hs.length + "</span></span>" +
+        '<span class="journey__chev" aria-hidden="true">▾</span>' +
+      "</button>" +
+      '<div class="journey__body"><p class="journey__hd">이 레슨의 여정</p>' +
+      '<p class="journey__sub">스크롤에 따라 현재 위치가 표시돼요.</p>' +
+      '<ul class="steps" id="steps">' + stepsHtml + "</ul></div>";
+    var steps = qa(".step"), secs = steps.map(function (s) { return byId(s.getAttribute("data-go")); });
+    var stepsEl = byId("steps"), bar = byId("journeyBar"), jNow = byId("jNow"), jIdx = byId("jIdx");
+    function closeSheet() { host.classList.remove("up"); body.classList.remove("jup"); bar.setAttribute("aria-expanded", "false"); }
+    bar.onclick = function () { var up = host.classList.toggle("up"); body.classList.toggle("jup", up); bar.setAttribute("aria-expanded", up ? "true" : "false"); };
+    steps.forEach(function (st, i) { st.onclick = function () { if (secs[i]) secs[i].scrollIntoView({ behavior: "smooth", block: "start" }); if (isMobile()) closeSheet(); }; });
+    spyFn = function () {
+      var idx = 0;
+      for (var i = 0; i < secs.length; i++) { if (secs[i] && secs[i].getBoundingClientRect().top <= 150) idx = i; }
+      steps.forEach(function (s, i) { s.classList.toggle("current", i === idx); s.classList.toggle("visited", i < idx); });
+      stepsEl.style.setProperty("--progress", (steps.length > 1 ? (idx / (steps.length - 1)) * 100 : 0) + "%");
+      var cur = steps[idx]; if (cur) { jNow.textContent = cur.querySelector(".step__t").textContent; jIdx.textContent = idx + 1; }
+    };
   }
-  function lessonsPanel(lessons) {
-    var ul = h("ul", "sidenav__list");
-    lessons.forEach(function (l) {
-      var li = h("li");
-      var a = h("a", l.id === lessonId ? "is-current" : "",
-        '<span class="sidenav__num">' + esc(String(l.order)) + '</span>' + esc(l.title));
-      a.href = DATA + l.href; li.appendChild(a); ul.appendChild(li);
-    });
-    return ul;
+
+  /* ===== 3. 읽기 진행률 + 스크롤 핸들러 ===== */
+  function scrollInit() {
+    var rp = q(".read-progress>i");
+    function onScroll() {
+      var hgt = doc.documentElement.scrollHeight - window.innerHeight;
+      if (rp) rp.style.width = (hgt > 0 ? Math.min(100, window.scrollY / hgt * 100) : 0) + "%";
+      if (spyFn) spyFn();
+    }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    onScroll();
   }
-  function chaptersPanel(curr) {
-    var ul = h("ul", "sidenav__list");
+
+  /* ===== 4. 좌측 아이콘 레일 (레슨 / 챕터 / 용어) ===== */
+  function buildRail(curr, gloss) {
+    var host = q('[data-shell="rail"]'); if (!host) return;
+    var chLessons = [], allChaps = [], chTitle = "";
     curr.tracks.forEach(function (t) {
       (t.chapters || []).forEach(function (c) {
         if (!c.lessons || !c.lessons.length) return;
-        var li = h("li");
-        var a = h("a", c.id === chapterId ? "is-current" : "",
-          '<span class="sidenav__num">' + esc(c.id) + '</span>' + esc(c.title));
-        a.href = DATA + c.lessons[0].href; li.appendChild(a); ul.appendChild(li);
+        allChaps.push(c);
+        if (c.id === chapterId) { chLessons = c.lessons; chTitle = c.title; }
       });
     });
-    return ul;
-  }
-  function sidenav(curr, chLessons) {
-    var host = document.querySelector('[data-shell="sidenav"]'); if (!host) return;
-    var tabs = h("div", "sidenav__tabs");
-    tabs.appendChild(tabBtn("이 문서", "toc", true));
-    tabs.appendChild(tabBtn("레슨", "lesson", false));
-    tabs.appendChild(tabBtn("챕터", "chapter", false));
-    host.appendChild(tabs);
-    var panels = {
-      toc: h("div", "sidenav__panel is-active"),
-      lesson: h("div", "sidenav__panel"),
-      chapter: h("div", "sidenav__panel")
-    };
-    panels.toc.appendChild(tocPanel());
-    panels.lesson.appendChild(lessonsPanel(chLessons));
-    panels.chapter.appendChild(chaptersPanel(curr));
-    host.appendChild(panels.toc); host.appendChild(panels.lesson); host.appendChild(panels.chapter);
-    tabs.addEventListener("click", function (e) {
-      var b = e.target.closest(".sidenav__tab"); if (!b) return;
-      tabs.querySelectorAll(".sidenav__tab").forEach(function (x) { x.classList.toggle("is-active", x === b); });
-      var key = b.getAttribute("data-tab");
-      Object.keys(panels).forEach(function (k) { panels[k].classList.toggle("is-active", k === key); });
-    });
+    var lessonHtml = chLessons.map(function (l) {
+      return '<li><a class="' + (l.id === lessonId ? "on" : "") + '" href="' + DATA + l.href + '"><small>LESSON ' + esc(String(l.order)) + '</small><span class="t">' + esc(l.title) + "</span></a></li>";
+    }).join("");
+    var chapHtml = allChaps.map(function (c) {
+      return '<li><a class="' + (c.id === chapterId ? "on" : "") + '" href="' + DATA + c.lessons[0].href + '"><small>' + esc(c.id) + '</small><span class="t">' + esc(c.title) + "</span></a></li>";
+    }).join("");
+    var seen = {}, termsArr = [];
+    qa(".prose .term").forEach(function (t) { var k = t.getAttribute("data-term"); if (!k || seen[k]) return; seen[k] = 1; termsArr.push(k); });
+    var termsHtml = termsArr.map(function (k) { var g = (gloss && gloss[k]) || {}; return "<li><b>" + esc(g.title || k) + "</b><span>" + esc(g.desc || "") + "</span></li>"; }).join("");
+    host.innerHTML =
+      '<div class="rail__icons">' +
+        '<button class="rail__btn on" data-rtab="lesson" title="레슨">📑</button>' +
+        '<button class="rail__btn" data-rtab="chapter" title="챕터">🗺️</button>' +
+        '<button class="rail__btn" data-rtab="terms" title="용어">📖</button>' +
+      "</div>" +
+      '<div class="rail__expand">' +
+        '<div class="rail__hd"><b>학습 네비</b><button class="rail__x" title="접기">«</button></div>' +
+        '<div class="rail__tabs"><button class="rail__tab on" data-rtab="lesson">레슨</button><button class="rail__tab" data-rtab="chapter">챕터</button><button class="rail__tab" data-rtab="terms">용어</button></div>' +
+        '<div class="rail__panel on" data-rpanel="lesson"><p class="rail__chap">현재 Chapter · ' + esc(chTitle) + '</p><ul class="ll">' + lessonHtml + "</ul></div>" +
+        '<div class="rail__panel" data-rpanel="chapter"><ul class="ll">' + chapHtml + "</ul></div>" +
+        '<div class="rail__panel" data-rpanel="terms">' +
+          (termsHtml
+            ? '<p class="glos__note">이 레슨의 핵심 용어입니다. 본문 점선 용어에 마우스를 올리면 바로 뜻이 떠요.</p><ul class="glos">' + termsHtml + "</ul>"
+            : '<p class="rail__empty">이 레슨엔 표시된 핵심 용어가 없어요.</p>') +
+        "</div>" +
+      "</div>";
+    function setTab(tab) {
+      host.querySelectorAll("[data-rtab]").forEach(function (b) { b.classList.toggle("on", b.getAttribute("data-rtab") === tab); });
+      host.querySelectorAll("[data-rpanel]").forEach(function (p) { p.classList.toggle("on", p.getAttribute("data-rpanel") === tab); });
+    }
+    function openRail(tab) { host.classList.add("open"); if (isMobile()) body.classList.add("rail-open"); if (tab) setTab(tab); }
+    function closeRail() { host.classList.remove("open"); body.classList.remove("rail-open"); }
+    host.querySelectorAll(".rail__icons .rail__btn").forEach(function (b) { b.onclick = function () { openRail(b.getAttribute("data-rtab")); }; });
+    host.querySelectorAll(".rail__tab").forEach(function (b) { b.onclick = function () { setTab(b.getAttribute("data-rtab")); }; });
+    var x = host.querySelector(".rail__x"); if (x) x.onclick = closeRail;
+    var scrim = q(".scrim"); if (scrim) scrim.onclick = closeRail;
+    var fab = byId("railFab"); if (fab) fab.onclick = function () { host.classList.contains("open") ? closeRail() : openRail(); };
+    host.addEventListener("mouseenter", function () { if (!isMobile()) host.classList.add("open"); });
+    host.addEventListener("mouseleave", function () { if (!isMobile()) host.classList.remove("open"); });
+    window.addEventListener("resize", function () { if (!isMobile()) body.classList.remove("rail-open"); });
   }
 
-  /* ---- 이전/다음 (전 커리큘럼 순서) ---- */
+  /* ===== 5. 용어 팝업 (hover=임시, click=고정) ===== */
+  function initTermPopup(gloss) {
+    var pop = q('[data-shell="popup"]'); if (!pop) return;
+    var curTerm = null, pinned = false;
+    function place(t) { var r = t.getBoundingClientRect(); pop.style.left = Math.min(r.left + window.scrollX, window.scrollX + window.innerWidth - 312) + "px"; pop.style.top = (r.bottom + window.scrollY + 8) + "px"; }
+    function build(t) {
+      var g = gloss[t.getAttribute("data-term")] || { title: t.getAttribute("data-term"), desc: "" };
+      pop.className = "term-popup";
+      pop.innerHTML =
+        '<button class="term-popup__x" aria-label="닫기">×</button>' +
+        '<b class="term-popup__title">' + esc(g.title || t.getAttribute("data-term")) + "</b>" +
+        '<span class="term-popup__desc">' + esc(g.desc || "") + "</span>" +
+        (g.analogy ? '<p class="term-popup__analogy">' + esc(g.analogy) + "</p>" : "") +
+        '<span class="term-popup__pin">📌 클릭하면 고정</span>';
+      pop.hidden = false; place(t);
+      pop.querySelector(".term-popup__x").onclick = function () { destroy(true); };
+    }
+    function destroy(force) { if (!pop.hidden && (force || !pinned)) { pop.hidden = true; curTerm = null; pinned = false; pop.classList.remove("pinned"); } }
+    function show(t) { if (curTerm === t && !pop.hidden) return; destroy(true); curTerm = t; pinned = false; build(t); }
+    qa(".prose .term").forEach(function (t) {
+      t.addEventListener("mouseenter", function () { show(t); });
+      t.addEventListener("mouseleave", function () { if (!pinned) destroy(); });
+      t.addEventListener("click", function (e) {
+        e.preventDefault(); e.stopPropagation();
+        if (curTerm !== t || pop.hidden) show(t);
+        pinned = true; pop.classList.add("pinned");
+        var pin = pop.querySelector(".term-popup__pin"); if (pin) pin.textContent = "📌 고정됨 · 바깥을 누르면 닫힘";
+      });
+    });
+    doc.addEventListener("click", function (e) {
+      if (pinned && !pop.hidden && !pop.contains(e.target) && !(e.target.classList && e.target.classList.contains("term"))) destroy(true);
+    });
+    doc.addEventListener("keydown", function (e) { if (e.key === "Escape") destroy(true); });
+  }
+
+  /* ===== 6. 이전/다음 (전 커리큘럼 순서) ===== */
   function prevnext(curr) {
-    var host = document.querySelector('[data-shell="prevnext"]'); if (!host) return;
+    var host = q('[data-shell="prevnext"]'); if (!host) return;
     var flat = [];
     curr.tracks.forEach(function (t) { (t.chapters || []).forEach(function (c) { (c.lessons || []).forEach(function (l) { flat.push(l); }); }); });
     var i = flat.findIndex(function (l) { return l.id === lessonId; });
     var prev = i > 0 ? flat[i - 1] : null;
     var next = (i >= 0 && i < flat.length - 1) ? flat[i + 1] : null;
     host.innerHTML =
-      (prev ? '<a class="prev" href="' + DATA + prev.href + '"><span class="dir">← 이전</span><span class="ttl">' + esc(prev.title) + '</span></a>' : '<span></span>') +
-      (next ? '<a class="next" href="' + DATA + next.href + '"><span class="dir">다음 →</span><span class="ttl">' + esc(next.title) + '</span></a>' : '<span></span>');
+      (prev ? '<a class="prev" href="' + DATA + prev.href + '"><span class="dir">← 이전 LESSON</span><span class="ttl">' + esc(prev.title) + "</span></a>" : "<span></span>") +
+      (next ? '<a class="next" href="' + DATA + next.href + '"><span class="dir">다음 LESSON →</span><span class="ttl">' + esc(next.title) + "</span></a>" : "<span></span>");
   }
 
-  /* ---- 핵심용어 팝업 ---- */
-  function glossary(gloss) {
-    var pop = document.querySelector('[data-shell="popup"]'); if (!pop || !gloss) return;
-    function hide() { pop.hidden = true; }
-    document.addEventListener("click", function (e) {
-      var t = e.target.closest ? e.target.closest(".term") : null;
-      if (!t) { if (!(e.target.closest && e.target.closest(".term-popup"))) hide(); return; }
-      e.preventDefault();
-      var g = gloss[t.getAttribute("data-term")];
-      if (!g) return;
-      pop.innerHTML =
-        '<button class="term-popup__close" type="button" aria-label="닫기">×</button>' +
-        '<p class="term-popup__title">' + esc(g.title || t.getAttribute("data-term")) + '</p>' +
-        '<p class="term-popup__desc">' + esc(g.desc || "") + '</p>' +
-        (g.analogy ? '<p class="term-popup__analogy">' + esc(g.analogy) + '</p>' : '');
-      pop.hidden = false;
-      var r = t.getBoundingClientRect();
-      pop.style.top = (window.scrollY + r.bottom + 8) + "px";
-      pop.style.left = (window.scrollX + Math.min(r.left, document.documentElement.clientWidth - 340)) + "px";
-    });
-    document.addEventListener("keydown", function (e) { if (e.key === "Escape") hide(); });
-    pop.addEventListener("click", function (e) { if (e.target.closest(".term-popup__close")) hide(); });
-  }
-
-  /* ---- init ---- */
-  topbar();
-  getJSON("curriculum.json").then(function (curr) {
-    var chLessons = [];
-    curr.tracks.forEach(function (t) { (t.chapters || []).forEach(function (c) { if (c.id === chapterId) chLessons = c.lessons || []; }); });
-    sidenav(curr, chLessons);
-    prevnext(curr);
-  }).catch(function () { /* 데이터 없음/HTTP 아님 — 본문은 그대로 표시 */ });
-  getJSON("glossary.json").then(glossary).catch(function () {});
+  /* ===== init ===== */
+  settings();
+  buildJourney();
+  scrollInit();
+  Promise.all([
+    getJSON("curriculum.json").catch(function () { return null; }),
+    getJSON("glossary.json").catch(function () { return null; }),
+  ]).then(function (res) {
+    var curr = res[0], gloss = res[1];
+    if (gloss) initTermPopup(gloss);
+    if (curr) { buildRail(curr, gloss || {}); prevnext(curr); }
+  });
 })();

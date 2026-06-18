@@ -74,14 +74,33 @@ function loadChapters() {
   });
 }
 
-/* ---------- 레슨 HTML 템플릿 ---------- */
-function renderLessonPage(ch, lesson) {
+/* ---------- 레슨 HTML 템플릿 (v2-C 셸 골격) ----------
+   레이아웃/네비/설정은 shell.js가 data-shell 훅에 주입한다.
+   T-code 라벨은 front-matter `tcode`가 있을 때만 emit(Phase 2). */
+function renderLessonPage(ch, lesson, trackNo) {
   const assets = relPosix(OUT_PAGES, path.join(ROOT, 'assets'));
   const dataBase = relPosix(OUT_PAGES, OUT) + '/';
   const siteRoot = relPosix(OUT_PAGES, ROOT) + '/';
   const bodyHtml = marked.parse(lesson.body);
   const chId = ch.meta.id;
   const sda = JSON.stringify({ domain: DOMAIN, dataBase, siteRoot });
+  const tcode = lesson.data.tcode || '';
+  const tcodeBadge = lesson.data.tcodeBadge || '';
+  const tags =
+    `<span class="tag tag--track">Track ${esc(String(trackNo || 1))}</span>` +
+    `<span class="tag tag--ch">Chapter ${esc(String(ch.meta.order ?? ''))}</span>` +
+    `<span class="tag tag--ls">Lesson ${esc(String(lesson.data.order ?? ''))}</span>` +
+    (ch.meta.difficulty ? `<span class="tag tag--lv">${esc(ch.meta.difficulty)}</span>` : '');
+  const tcodeBlock = tcode
+    ? `      <section class="lcard tcode">
+        <p class="lcard__h"><span class="ic">🖥️</span>이번 Lesson에서 다루는 트랜잭션 코드</p>
+        <button class="tcode-label" data-tcode="${esc(tcode)}"${tcodeBadge ? ` data-badge="${esc(tcodeBadge)}"` : ''}>
+          ${tcodeBadge ? `<span class="tcode-label__badge">${esc(tcodeBadge)}</span>` : ''}
+          <span class="tcode-label__code">${esc(tcode)}</span>
+          <span class="tcode-label__hint">자세히 보기 ›</span>
+        </button>
+      </section>\n`
+    : '';
   return `<!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -91,26 +110,48 @@ function renderLessonPage(ch, lesson) {
 <link rel="stylesheet" href="${assets}/base.css">
 <link rel="stylesheet" href="${assets}/lesson.css">
 <link rel="stylesheet" href="${assets}/shell.css">
+<script>/* 읽기 설정 선적용(플래시 방지) */(function(){try{var L=localStorage,r=document.documentElement;if(L.getItem('sda.dark')==='1')r.classList.add('dark');if(L.getItem('sda.wide')==='1')r.classList.add('wide');var f=parseInt(L.getItem('sda.fontPx'),10);if(f>=13&&f<=20)r.style.fontSize=f+'px';}catch(e){}})();</script>
 </head>
 <body data-domain="${DOMAIN}" data-chapter-id="${esc(chId)}" data-lesson-id="${esc(lesson.data.id)}">
-<div class="topbar" data-shell="topbar"></div>
-<div class="layout">
-  <aside class="sidenav" data-shell="sidenav"></aside>
-  <main class="shell lesson">
-    <nav class="crumb"><a href="${siteRoot}index.html">홈</a> › <a href="${siteRoot}pages/abap.html">ABAP</a> › ${esc(chId)}</nav>
-    <header class="lesson-head">
-      <div class="lesson-head__eyebrow">${esc(chId)} · ${esc(ch.meta.title)}</div>
-      <h1>${esc(lesson.data.title)}</h1>
-      <p class="lesson-head__direction">${esc(lesson.data.direction || '')}</p>
-    </header>
-    <article class="prose">
+<header class="appbar">
+  <a class="appbar__home" href="${siteRoot}index.html">🏠 <span class="full">SAP Developer Academy</span></a>
+  <span class="appbar__sp"></span>
+  <span class="meta">${esc(chId)} · ${esc(ch.meta.title)}</span>
+  <a class="btn-soft" href="${siteRoot}pages/abap.html">ABAP 커리큘럼</a>
+  <div class="tools">
+    <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
+    <button class="icon-btn" id="fsInc" title="글자 크게">A+</button>
+    <button class="icon-btn" id="fsReset" title="글자 크기 초기화">↺</button>
+    <button class="icon-btn" id="darkBtn" title="다크 모드">🌙</button>
+    <button class="icon-btn" id="widthBtn" title="가독 폭 넓게">↔</button>
+    <button class="icon-btn fs-btn" title="전체화면" aria-label="전체화면"></button>
+  </div>
+</header>
+<div class="read-progress"><i></i></div>
+<div class="scrim"></div>
+<nav class="rail" data-shell="rail"></nav>
+<button class="railFab" id="railFab" aria-label="네비 열기">☰</button>
+<div class="stage">
+  <div class="layout">
+    <main class="main">
+      <nav class="crumb"><a href="${siteRoot}index.html">홈</a> › <a href="${siteRoot}pages/abap.html">ABAP 커리큘럼</a> › ${esc(chId)}</nav>
+      <section class="lhead">
+        <p class="lhead__eyebrow">${esc(ch.meta.title)}</p>
+        <h1>${esc(lesson.data.title)}</h1>
+        ${lesson.data.direction ? `<p class="lhead__direction">${esc(lesson.data.direction)}</p>` : ''}
+        <div class="tags">${tags}</div>
+      </section>
+${tcodeBlock}      <article class="prose">
 ${bodyHtml}
-    </article>
-    <nav class="lesson-nav" data-shell="prevnext"></nav>
-  </main>
+      </article>
+      <nav class="lesson-nav" data-shell="prevnext"></nav>
+      <footer class="foot">SAP Developer Academy · ${esc(chId)} ${esc(lesson.data.id)}</footer>
+    </main>
+    <aside class="journey" data-shell="journey"></aside>
+  </div>
 </div>
-<footer class="footer">© 2026 SAP Developer Academy · ${esc(chId)} ${esc(lesson.data.id)}</footer>
 <div class="term-popup" data-shell="popup" hidden></div>
+<div class="tmodal" data-shell="tmodal" hidden></div>
 <script>window.__SDA__=${sda};</script>
 <script src="${assets}/shell.js" defer></script>
 </body>
