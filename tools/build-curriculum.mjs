@@ -53,16 +53,18 @@ const embedExt = {
   level: 'block',
   start(src) { const i = src.indexOf('::embed'); return i < 0 ? undefined : i; },
   tokenizer(src) {
-    const m = /^::embed\s+([^\s|]+)\s*(?:\|\s*([^\n]+?))?\s*::/.exec(src);
-    if (m) return { type: 'embed', raw: m[0], path: m[1].trim(), title: (m[2] || '').trim() };
+    // ::embed <경로> | <제목> | <높이px>::  (제목·높이 선택)
+    const m = /^::embed\s+([^\s|]+)\s*(?:\|\s*([^\n|]+?))?\s*(?:\|\s*(\d+))?\s*::/.exec(src);
+    if (m) return { type: 'embed', raw: m[0], path: m[1].trim(), title: (m[2] || '').trim(), height: m[3] ? parseInt(m[3], 10) : 0 };
   },
   renderer(t) {
     const src = '../../../sample/' + t.path;
     const title = t.title || '직접 해보기';
+    const hStyle = t.height ? ` style="height:${t.height}px"` : '';
     return `<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span>` +
       `<span class="embed__title">${esc(title)}</span>` +
       `<a class="embed__open" href="${src}" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption>` +
-      `<iframe class="embed__frame" src="${src}" loading="lazy" title="${esc(title)}"></iframe></figure>\n`;
+      `<iframe class="embed__frame" src="${src}" loading="lazy" title="${esc(title)}"${hStyle}></iframe></figure>\n`;
   },
 };
 marked.use({ extensions: [glossaryExt, embedExt], gfm: true });

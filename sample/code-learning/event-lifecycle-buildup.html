@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<!--
+  ABAP 리포트 이벤트 실행 순서 & 흐름도 — 점진적 빌드업 (standalone, ::embed 용)
+  ────────────────────────────────────────────────────────────
+  탭 5개: 이벤트 블록이 하나도 없는 1단계 → 전체 생명주기 5단계까지 누적.
+  각 탭 = 좌우 2분할: 왼쪽 Mermaid 흐름도 / 오른쪽 ABAP 코드 에디터 목업(문법 색상).
+  코드를 더할수록 흐름이 어떻게 늘어나는지 좌우 대조로 학습.
+  프로젝트 블루/그린 톤. ⚠️ 외부 의존성: Mermaid CDN 1줄.
+-->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ABAP 이벤트 점진적 빌드업 · Sample</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+:root{
+  --bg:#f6f7fb;--surface:#fff;--ink:#1c2233;--ink-soft:#5b6478;--line:#e6e8ef;
+  --brand:#3b5bdb;--accent:#0ca678;--soon:#94a0b8;
+  --mono:'D2Coding',Consolas,Monaco,monospace;
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic",Roboto,sans-serif;
+}
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:transparent;line-height:1.5;}
+.wrap{padding:14px;}
+.hd{font-weight:800;font-size:1rem;margin:0 0 4px;}
+.hd small{font-weight:600;color:var(--brand);}
+.lead{margin:0 0 12px;color:var(--ink-soft);font-size:.86rem;}
+
+/* 탭 */
+.tabs{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px;}
+.tab{border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);border-radius:10px;
+  padding:8px 12px;font:inherit;font-size:.82rem;font-weight:700;cursor:pointer;transition:all .15s;display:flex;gap:7px;align-items:center;}
+.tab:hover{border-color:var(--brand);color:var(--brand);}
+.tab.on{background:var(--brand);color:#fff;border-color:var(--brand);box-shadow:0 4px 12px rgba(59,91,219,.28);}
+.tab__n{display:grid;place-items:center;width:18px;height:18px;border-radius:6px;background:rgba(255,255,255,.25);font-size:.7rem;}
+.tab:not(.on) .tab__n{background:rgba(59,91,219,.1);color:var(--brand);}
+
+/* 분할 */
+.panel{display:none;}
+.panel.on{display:block;}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:stretch;}
+.pane{border:1px solid var(--line);border-radius:13px;background:var(--surface);overflow:hidden;display:flex;flex-direction:column;min-width:0;}
+.pane__hd{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--line);font-size:.78rem;font-weight:800;color:var(--ink-soft);background:#fafbfe;}
+.pane__hd .dot{width:9px;height:9px;border-radius:50%;}
+.dot--flow{background:var(--accent);} .dot--code{background:var(--brand);}
+.flowpane{min-height:300px;display:grid;place-items:center;padding:10px;overflow:auto;}
+.flowpane svg{max-width:100%;height:auto;}
+.flowpane .loading{color:var(--soon);font-size:.85rem;}
+
+/* 코드 에디터 목업 */
+.codewrap{overflow:auto;max-height:430px;}
+.code{display:grid;grid-template-columns:auto 1fr;font-family:var(--mono);font-size:.82rem;line-height:1.65;}
+.code .gut{ text-align:right;color:#aeb6c7;background:#f7f8fc;padding:10px 10px 10px 12px;user-select:none;border-right:1px solid var(--line);}
+.code .src{padding:10px 14px;white-space:pre;overflow-x:auto;}
+.code .ln{display:block;}
+.code .ln.add{background:rgba(12,166,120,.10);box-shadow:inset 3px 0 0 var(--accent);}
+.gut .gn{display:block;}
+.gut .gn.add{color:var(--accent);font-weight:800;}
+/* ABAP 토큰 */
+.k{color:#0a4ea3;font-weight:700;} .s{color:#1a7f37;} .c{color:#6a737d;font-style:italic;} .n{color:#9a3b00;}
+
+.legend{margin-top:10px;font-size:.78rem;color:var(--ink-soft);display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;}
+.legend .sw{display:inline-block;width:11px;height:11px;border-radius:3px;border:1px solid rgba(0,0,0,.1);vertical-align:-1px;margin-right:4px;}
+.note{margin-top:10px;border-left:3px solid var(--accent);background:rgba(12,166,120,.06);border-radius:0 9px 9px 0;padding:9px 13px;font-size:.84rem;color:#234c3e;}
+.note b{color:#0b7250;}
+
+@media(max-width:760px){ .split{grid-template-columns:1fr;} .flowpane{min-height:220px;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">ABAP 리포트 이벤트 실행 순서 및 흐름도 <small>(점진적 빌드업)</small></p>
+  <p class="lead">탭을 누를수록 <b>이벤트 블록이 하나씩 추가</b>되고, 왼쪽 흐름도가 함께 확장됩니다. 1단계는 이벤트 키워드가 <b>하나도 없는</b> 경우예요.</p>
+
+  <div class="tabs" id="tabs"></div>
+  <div id="panels"></div>
+
+  <div class="legend" id="legend"></div>
+  <div class="note" id="note"></div>
+</div>
+
+<script>
+(function(){
+  /* ===== ABAP 문법 하이라이터 ===== */
+  var KW = new Set(("REPORT PARAMETERS DATA TYPE TYPES VALUE CONSTANTS INITIALIZATION LOAD-OF-PROGRAM " +
+    "START-OF-SELECTION END-OF-SELECTION AT SELECTION-SCREEN OUTPUT WRITE IF ELSEIF ELSE ENDIF " +
+    "LOOP ENDLOOP MODIFY SCREEN MESSAGE CLEAR").split(/\s+/));
+  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function hl(line){
+    if(/^\s*\*/.test(line)) return '<span class="c">'+esc(line)+'</span>';
+    var out='', re=/('[^']*'?)|(`[^`]*`?)|(".*$)|(\b\d+\b)|([A-Za-z_][A-Za-z0-9_\-]*)|([^A-Za-z0-9_'`"\-]+)/g, m;
+    while((m=re.exec(line))!==null){
+      if(m[1]||m[2]) out+='<span class="s">'+esc(m[1]||m[2])+'</span>';
+      else if(m[3]) out+='<span class="c">'+esc(m[3])+'</span>';
+      else if(m[4]) out+='<span class="n">'+esc(m[4])+'</span>';
+      else if(m[5]) out+= KW.has(m[5].toUpperCase()) ? '<span class="k">'+esc(m[5])+'</span>' : esc(m[5]);
+      else out+=esc(m[0]);
+    }
+    return out;
+  }
+
+  /* ===== 공통 classDef (역할별 색) ===== */
+  var CLASSDEF = [
+    'classDef term fill:#eef1f6,stroke:#94a0b8,color:#1c2233;',
+    'classDef load fill:#f3f0fb,stroke:#6d28d9,color:#1c2233;',
+    'classDef prep fill:#eef4ff,stroke:#3b5bdb,color:#1c2233,stroke-width:2px;',
+    'classDef screen fill:#fff7ea,stroke:#d97706,color:#1c2233;',
+    'classDef check fill:#ffeef1,stroke:#e11d48,color:#1c2233,stroke-width:2px;',
+    'classDef main fill:#e9faf2,stroke:#0ca678,color:#1c2233,stroke-width:2px;',
+    'classDef out fill:#fdeef6,stroke:#be185d,color:#1c2233;'
+  ].join('\n');
+
+  /* ===== 5단계 데이터 (graph + code lines{t,add}) ===== */
+  var L = function(t,add){ return {t:t, add:!!add}; };
+  var STAGES = [
+    { label:'이벤트 구문 생략 (암묵적 실행)',
+      graph:[
+        'flowchart TD',
+        '  S(["▶ Program Starts"]):::term --> SOS["본문 (암묵적 START-OF-SELECTION)<br/>WRITE 등"]:::main --> E(["■ Program Ends"]):::term'
+      ].join('\n'),
+      code:[ L('REPORT zdemo_events.'), L(''),
+        L('" 이벤트 키워드가 없으면 모든 문장은',true),
+        L('" 자동으로 START-OF-SELECTION 에 묶인다.',true),
+        L('DATA(lv_msg) = `Hello ABAP`.',true),
+        L('WRITE: / lv_msg.',true) ],
+      note:'이벤트 블록을 <b>꼭 써야 하는 게 아니다.</b> 한 줄짜리 프로그램은 이렇게 키워드 없이 끝난다.' },
+
+    { label:'화면 초기화 추가 (INITIALIZATION)',
+      graph:[
+        'flowchart TD',
+        '  S(["▶ Program Starts"]):::term --> INIT["INITIALIZATION<br/>화면 기본값 세팅"]:::prep',
+        '  INIT --> SC["Selection Screen<br/>입력 대기"]:::screen --> SOS["START-OF-SELECTION<br/>본 처리"]:::main --> E(["■ Program Ends"]):::term'
+      ].join('\n'),
+      code:[ L('REPORT zdemo_events.'), L('PARAMETERS p_date TYPE d.',true), L(''),
+        L('INITIALIZATION.            " 화면 뜨기 전 1회',true),
+        L('  p_date = sy-datum.       " 기본값',true), L(''),
+        L('START-OF-SELECTION.        " 이제 명시적으로',true),
+        L('  WRITE: / p_date.') ],
+      note:'화면 기본값이 필요해지면 <b>INITIALIZATION</b> 을 추가한다. 그러면 흐름에 "화면 전 준비" 단계가 생긴다.' },
+
+    { label:'자동 로드 & 마감 추가 (메모리/출력)',
+      graph:[
+        'flowchart TD',
+        '  S(["▶ Program Starts"]):::term --> LOAD["LOAD-OF-PROGRAM<br/>메모리 적재 1회"]:::load',
+        '  LOAD --> INIT["INITIALIZATION<br/>화면 기본값"]:::prep --> SC["Selection Screen"]:::screen',
+        '  SC --> SOS["START-OF-SELECTION<br/>본 처리"]:::main --> EOS["END-OF-SELECTION<br/>출력·마감"]:::out --> E(["■ Program Ends"]):::term'
+      ].join('\n'),
+      code:[ L('REPORT zdemo_events.'), L('PARAMETERS p_date TYPE d.'), L(''),
+        L('LOAD-OF-PROGRAM.           " 적재 직후 1회',true),
+        L('  " (전역 상수 초기화 등)',true), L(''),
+        L('INITIALIZATION.'),
+        L('  p_date = sy-datum.'), L(''),
+        L('START-OF-SELECTION.'),
+        L("  WRITE: / '조회/가공 중...'."), L(''),
+        L('END-OF-SELECTION.          " 본 처리 후 마감',true),
+        L("  WRITE: / '완료'.",true) ],
+      note:'메모리 준비(<b>LOAD-OF-PROGRAM</b>)와 마감/출력(<b>END-OF-SELECTION</b>)이 흐름의 양 끝에 붙는다.' },
+
+    { label:'선택 화면 & 입력 검증 추가',
+      graph:[
+        'flowchart TD',
+        '  S(["▶ Program Starts"]):::term --> LOAD["LOAD-OF-PROGRAM"]:::load --> INIT["INITIALIZATION"]:::prep --> SC["Selection Screen"]:::screen',
+        '  SC -->|"입력+실행 (PAI)"| ASS["AT SELECTION-SCREEN<br/>입력 검증"]:::check',
+        '  ASS -.->|"검증 실패 → 복귀"| SC',
+        '  ASS -->|통과| SOS["START-OF-SELECTION<br/>본 처리"]:::main --> EOS["END-OF-SELECTION<br/>출력·마감"]:::out --> E(["■ Program Ends"]):::term'
+      ].join('\n'),
+      code:[ L('REPORT zdemo_events.'), L('PARAMETERS p_date TYPE d.'), L(''),
+        L('LOAD-OF-PROGRAM.'),
+        L('INITIALIZATION.'),
+        L('  p_date = sy-datum.'), L(''),
+        L('AT SELECTION-SCREEN.       " 입력 검증 (PAI)',true),
+        L('  IF p_date > sy-datum.',true),
+        L("    MESSAGE '미래 날짜는 안 됩니다' TYPE 'E'.",true),
+        L('  ENDIF.',true), L(''),
+        L('START-OF-SELECTION.'),
+        L("  WRITE: / '조회/가공 중...'."), L(''),
+        L('END-OF-SELECTION.'),
+        L("  WRITE: / '완료'.") ],
+      note:'검증이 필요해지면 <b>AT SELECTION-SCREEN</b> 을 추가한다. <b>점선</b>처럼 실패 시 화면으로 되돌아가고, 통과해야 본 처리로 간다.' },
+
+    { label:'전체 생명주기 완성 (최종 구조)',
+      graph:[
+        'flowchart TD',
+        '  S(["▶ Program Starts"]):::term --> LOAD["LOAD-OF-PROGRAM"]:::load --> INIT["INITIALIZATION"]:::prep',
+        '  INIT --> PBO["AT SELECTION-SCREEN OUTPUT<br/>(PBO) 화면 그리기 직전"]:::screen --> SC["Selection Screen"]:::screen',
+        '  SC -->|"실행 (PAI)"| ASS["AT SELECTION-SCREEN<br/>입력 검증"]:::check',
+        '  ASS -.->|"실패 → 복귀"| SC',
+        '  ASS -->|통과| SOS["START-OF-SELECTION<br/>본 처리"]:::main --> EOS["END-OF-SELECTION<br/>출력·마감"]:::out --> E(["■ Program Ends"]):::term'
+      ].join('\n'),
+      code:[ L('REPORT zdemo_events.'), L('PARAMETERS: p_date TYPE d, p_hide TYPE c.',true), L(''),
+        L('LOAD-OF-PROGRAM.'),
+        L('INITIALIZATION.'),
+        L('  p_date = sy-datum.'), L(''),
+        L('AT SELECTION-SCREEN OUTPUT. " 화면 그리기 직전(PBO)',true),
+        L('  LOOP AT SCREEN.',true),
+        L("    IF screen-name = 'P_HIDE'.",true),
+        L("      screen-active = '0'. MODIFY SCREEN.",true),
+        L('    ENDIF.',true),
+        L('  ENDLOOP.',true), L(''),
+        L('AT SELECTION-SCREEN.'),
+        L('  IF p_date > sy-datum.'),
+        L("    MESSAGE '미래 날짜는 안 됩니다' TYPE 'E'."),
+        L('  ENDIF.'), L(''),
+        L('START-OF-SELECTION.'),
+        L("  WRITE: / '조회/가공 중...'."), L(''),
+        L('END-OF-SELECTION.'),
+        L("  WRITE: / '완료'.") ],
+      note:'마지막으로 <b>AT SELECTION-SCREEN OUTPUT</b>(PBO)까지 더하면 전체 생명주기가 완성된다. 필요한 이벤트만 골라 쓰면 된다 — 전부 쓸 필요는 없다.' }
+  ];
+
+  /* ===== 빌드 ===== */
+  var tabsEl=document.getElementById('tabs'), panelsEl=document.getElementById('panels');
+  STAGES.forEach(function(st,i){
+    var tab=document.createElement('button');
+    tab.className='tab'+(i===0?' on':''); tab.dataset.idx=i;
+    tab.innerHTML='<span class="tab__n">'+(i+1)+'</span>'+st.label;
+    tabsEl.appendChild(tab);
+
+    var panel=document.createElement('div');
+    panel.className='panel'+(i===0?' on':''); panel.dataset.idx=i;
+    // code rows
+    var gut='', src='';
+    st.code.forEach(function(ln,k){
+      gut+='<span class="gn'+(ln.add?' add':'')+'">'+(k+1)+'</span>';
+      src+='<span class="ln'+(ln.add?' add':'')+'">'+(ln.t===''?' ':hl(ln.t))+'</span>';
+    });
+    panel.innerHTML=
+      '<div class="split">'+
+        '<div class="pane"><div class="pane__hd"><span class="dot dot--flow"></span>실행 흐름도</div>'+
+          '<div class="flowpane" data-graph="'+i+'"><span class="loading">흐름도 그리는 중…</span></div></div>'+
+        '<div class="pane"><div class="pane__hd"><span class="dot dot--code"></span>ABAP 코드 (SE38)</div>'+
+          '<div class="codewrap"><div class="code"><div class="gut">'+gut+'</div><div class="src">'+src+'</div></div></div></div>'+
+      '</div>';
+    panelsEl.appendChild(panel);
+  });
+
+  // 범례 + 노트
+  document.getElementById('legend').innerHTML=
+    '<span><span class="sw" style="background:#f3f0fb;border-color:#6d28d9"></span>LOAD</span>'+
+    '<span><span class="sw" style="background:#eef4ff;border-color:#3b5bdb"></span>준비(INIT)</span>'+
+    '<span><span class="sw" style="background:#fff7ea;border-color:#d97706"></span>화면</span>'+
+    '<span><span class="sw" style="background:#ffeef1;border-color:#e11d48"></span>검증</span>'+
+    '<span><span class="sw" style="background:#e9faf2;border-color:#0ca678"></span>본 처리</span>'+
+    '<span><span class="sw" style="background:#fdeef6;border-color:#be185d"></span>출력·마감</span>'+
+    '<span style="color:#0ca678">초록 줄 = 이 단계에서 추가된 코드</span>';
+  function setNote(i){ document.getElementById('note').innerHTML='💡 '+STAGES[i].note; }
+  setNote(0);
+
+  /* ===== Mermaid 지연 렌더(탭 활성 시) ===== */
+  var rendered={};
+  function renderFlow(i){
+    if(!window.mermaid || rendered[i]) return;
+    var pane=panelsEl.querySelector('.flowpane[data-graph="'+i+'"]'); if(!pane) return;
+    rendered[i]=true;
+    window.mermaid.render('mmd'+i, STAGES[i].graph+'\n'+CLASSDEF).then(function(r){
+      pane.innerHTML=r.svg;
+      pane.querySelectorAll('.edgeLabel').forEach(function(el){ if(!el.textContent.trim()) el.style.display='none'; });
+    }).catch(function(){ pane.innerHTML='<span class="loading">흐름도를 표시할 수 없습니다.</span>'; rendered[i]=false; });
+  }
+  if(window.mermaid){
+    window.mermaid.initialize({ startOnLoad:false, securityLevel:'loose', theme:'base',
+      themeVariables:{fontFamily:'inherit'}, flowchart:{curve:'basis', nodeSpacing:34, rankSpacing:34, padding:8} });
+  }
+  renderFlow(0);
+
+  tabsEl.addEventListener('click',function(e){
+    var b=e.target.closest('.tab'); if(!b) return;
+    var i=+b.dataset.idx;
+    tabsEl.querySelectorAll('.tab').forEach(function(x){ x.classList.toggle('on', x===b); });
+    panelsEl.querySelectorAll('.panel').forEach(function(p){ p.classList.toggle('on', +p.dataset.idx===i); });
+    setNote(i); renderFlow(i);
+  });
+})();
+</script>
+</body>
+</html>
