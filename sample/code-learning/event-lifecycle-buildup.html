@@ -61,6 +61,11 @@ body{font-family:var(--font);color:var(--ink);background:transparent;line-height
 .tnode{display:inline-block;white-space:nowrap;padding:0 10px;font-weight:800;font-size:14px;color:#1c2233;}
 .flowpane svg .node foreignObject{overflow:visible;}
 .flowpane svg .node rect{rx:13px !important;ry:13px !important;filter:drop-shadow(0 2px 0 rgba(15,23,42,.05)) drop-shadow(0 7px 14px rgba(15,23,42,.07));}
+/* 노드↔코드 연결 hover */
+.flowpane svg g.node{transition:filter .12s;}
+.flowpane svg g.node.lk rect{stroke-width:4px !important;}
+.flowpane svg g.node.lk{filter:drop-shadow(0 0 8px rgba(59,91,219,.6)) !important;}
+.src .ln,.gut .gn{transition:background .1s;}
 .flowpane svg .edgePaths .path,.flowpane svg .flowchart-link{stroke:#64748b !important;stroke-width:2px !important;}
 .flowpane svg .marker,.flowpane svg marker path{fill:#64748b !important;stroke:#64748b !important;}
 .flowpane svg .edgeLabel{background:transparent !important;} .flowpane svg .edgeLabel rect{fill:transparent !important;}
@@ -96,7 +101,7 @@ body{font-family:var(--font);color:var(--ink);background:transparent;line-height
 <body>
 <div class="wrap">
   <p class="hd">ABAP 리포트 이벤트 실행 순서 및 흐름도 <small>(점진적 빌드업)</small></p>
-  <p class="lead">탭을 누를수록 <b>이벤트 블록이 하나씩 추가</b>되고, 왼쪽 흐름도가 함께 확장됩니다. 1단계는 이벤트 키워드가 <b>하나도 없는</b> 경우예요.</p>
+  <p class="lead">탭을 누를수록 <b>이벤트 블록이 하나씩 추가</b>되고, 왼쪽 흐름도가 함께 확장됩니다. 1단계는 이벤트 키워드가 <b>하나도 없는</b> 경우예요. <b style="color:#0ca678">🖱️ 노드나 코드에 마우스를 올리면</b> 서로 대응되는 부분이 함께 강조됩니다.</p>
 
   <div class="tabs" id="tabs"></div>
   <div id="panels"></div>
@@ -123,6 +128,48 @@ body{font-family:var(--font);color:var(--ink);background:transparent;line-height
       else out+=esc(m[0]);
     }
     return out;
+  }
+
+  /* ===== 노드 ↔ 코드 연결(hover) ===== */
+  var NODE2EV={LOAD:'load',INIT:'init',PBO:'pbo',SC:'screen',ASS:'ass',SOS:'sos',EOS:'eos'};
+  var EVCOLOR={load:'#ede9fe',init:'#fef3c7',pbo:'#dbeafe',screen:'#dbeafe',ass:'#ffe4e6',sos:'#d1fae5',eos:'#ffedd5'};
+  function tagEv(lines, implicit){            // 각 코드 줄에 이벤트 키(ev) 부여
+    var cur=null;
+    lines.forEach(function(ln){
+      var s=ln.t.trim(), ev;
+      if(/^REPORT\b/i.test(s)) ev='decl';
+      else if(/^PARAMETERS\b/i.test(s)) ev='screen';
+      else if(/^LOAD-OF-PROGRAM\b/i.test(s)){ cur='load'; ev='load'; }
+      else if(/^INITIALIZATION\b/i.test(s)){ cur='init'; ev='init'; }
+      else if(/^AT SELECTION-SCREEN OUTPUT\b/i.test(s)){ cur='pbo'; ev='pbo'; }
+      else if(/^AT SELECTION-SCREEN\b/i.test(s)){ cur='ass'; ev='ass'; }
+      else if(/^START-OF-SELECTION\b/i.test(s)){ cur='sos'; ev='sos'; }
+      else if(/^END-OF-SELECTION\b/i.test(s)){ cur='eos'; ev='eos'; }
+      else if(s==='') ev=null;
+      else ev = cur || implicit || null;     // 연속 줄은 현재 블록(또는 암묵적 SOS) 상속
+      ln.ev = ev || '';
+    });
+    return lines;
+  }
+  function parseNodeId(g){ var m=(g.id||'').match(/-([A-Za-z]+)-\d+$/); return m?m[1]:''; }
+  function linkHL(panel, evNodes, ev, on){
+    if(!ev) return;
+    panel.querySelectorAll('[data-ev="'+ev+'"]').forEach(function(el){ el.style.background = on?EVCOLOR[ev]:''; });
+    var node=evNodes[ev]; if(node) node.classList.toggle('lk', on);
+  }
+  function wirePanel(idx){                    // 렌더 후 노드/코드에 hover 연결
+    var panel=panelsEl.querySelectorAll('.panel')[idx]; if(!panel || panel._wired) return; panel._wired=true;
+    var fp=panel.querySelector('.flowpane'), evNodes={};
+    fp.querySelectorAll('g.node').forEach(function(g){
+      var ev=NODE2EV[parseNodeId(g)]; if(!ev) return; evNodes[ev]=g; g.style.cursor='pointer';
+      g.addEventListener('mouseenter',function(){ linkHL(panel,evNodes,ev,true); });
+      g.addEventListener('mouseleave',function(){ linkHL(panel,evNodes,ev,false); });
+    });
+    panel.querySelectorAll('.gn[data-ev],.ln[data-ev]').forEach(function(el){
+      var ev=el.getAttribute('data-ev'); if(!ev) return; el.style.cursor='pointer';
+      el.addEventListener('mouseenter',function(){ linkHL(panel,evNodes,ev,true); });
+      el.addEventListener('mouseleave',function(){ linkHL(panel,evNodes,ev,false); });
+    });
   }
 
   /* ===== 노드 라벨 헬퍼 ===== */
@@ -162,7 +209,7 @@ body{font-family:var(--font);color:var(--ink);background:transparent;line-height
   /* ===== 5단계 데이터 ===== */
   var L = function(t,add){ return {t:t, add:!!add}; };
   var STAGES = [
-    { label:'이벤트 구문 생략 (암묵적 실행)',
+    { label:'이벤트 구문 생략 (암묵적 실행)', implicit:'sos',
       graph:['flowchart TD','  '+START,'  '+nSOS1,'  '+END,'  S --> SOS --> E'].join('\n'),
       code:[ L('REPORT zdemo_events.'), L(''),
         L('" 이벤트 키워드가 없으면 모든 문장은',true),
@@ -248,10 +295,11 @@ body{font-family:var(--font);color:var(--ink);background:transparent;line-height
     tab.innerHTML='<span class="tab__n">'+(i+1)+'</span>'+st.label;
     tabsEl.appendChild(tab);
 
+    tagEv(st.code, st.implicit);
     var gut='', src='';
     st.code.forEach(function(ln,k){
-      gut+='<span class="gn'+(ln.add?' add':'')+'">'+(k+1)+'</span>';
-      src+='<span class="ln'+(ln.add?' add':'')+'">'+(ln.t===''?' ':hl(ln.t))+'</span>';
+      gut+='<span class="gn'+(ln.add?' add':'')+'" data-ev="'+ln.ev+'">'+(k+1)+'</span>';
+      src+='<span class="ln'+(ln.add?' add':'')+'" data-ev="'+ln.ev+'">'+(ln.t===''?' ':hl(ln.t))+'</span>';
     });
     var panel=document.createElement('div');
     panel.className='panel'+(i===0?' on':''); panel.dataset.idx=i;
@@ -312,7 +360,7 @@ body{font-family:var(--font);color:var(--ink);background:transparent;line-height
     window.mermaid.initialize({ startOnLoad:false, securityLevel:'loose', theme:'base',
       themeVariables:{fontFamily:'inherit'}, flowchart:{curve:'basis', htmlLabels:true, nodeSpacing:40, rankSpacing:38, padding:8} });
   }
-  renderFlow(0, postHeight);
+  renderFlow(0, function(){ wirePanel(0); postHeight(); });
 
   tabsEl.addEventListener('click',function(e){
     var b=e.target.closest('.tab'); if(!b) return;
@@ -320,7 +368,7 @@ body{font-family:var(--font);color:var(--ink);background:transparent;line-height
     tabsEl.querySelectorAll('.tab').forEach(function(x){ x.classList.toggle('on', x===b); });
     panelsEl.querySelectorAll('.panel').forEach(function(p){ p.classList.toggle('on', +p.dataset.idx===i); });
     setNote(i);
-    renderFlow(i, postHeight);
+    renderFlow(i, function(){ wirePanel(i); postHeight(); });
     postHeight();
   });
   window.addEventListener('load', postHeight);
