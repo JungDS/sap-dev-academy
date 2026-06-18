@@ -1,6 +1,6 @@
 # 08. LESSON SHELL SPEC — 레슨 셸 표준(v2-C 확정) · 이식 규칙
 
-> 📅 **최종수정: 2026-06-19 03:36 KST**
+> 📅 **최종수정: 2026-06-19 04:02 KST**
 > 🎯 **목적:** 레슨 셸 디자인을 **v2-C로 확정**했고, 이를 실제 런타임(`assets/shell.*`)·빌드(`tools/build-curriculum.mjs`)·입문자 템플릿에 이식할 때 **지켜야 할 규칙·주의·체크리스트**를 한곳에.
 > 📖 **읽을 때:** 레슨 셸/뷰어/빌드 마크업을 건드리기 직전. 입문자 템플릿 작성 시.
 > ⚡ **TL;DR:**
@@ -135,9 +135,9 @@
 | 2 ✅ | ⓑ 코드 작성·실행 | **CH01-L04** WRITE로 문자열 출력 | `code-learning/write-output-simulator.html`(편집→F8 실행→리스트 렌더, 신규 제작) | 가장 흔한 레슨 유형(모든 구문 레슨의 원형)·진입 가치 최고 |
 | 3 ✅ | ⓓ DDIC 객체 생성 | **CH03-L01** Domain(얕게) | `interactive/domain-builder.html`(SE11 폼: 저장→검사→활성화, 신규 제작) + SE11 신규 라벨 | DDIC 생성 유형 대표(CH03·04·06·08·13·21 재사용)·T코드 라벨 시연 |
 | 4 ✅ | ⓕ SQL·데이터 조회 | **CH07-L01** SELECT … INTO TABLE | `code-learning/select-query-simulator.html`(projection+WHERE→classic 코드 생성→결과+sy-subrc, 신규 제작) + SE16N 신규 라벨 | SQL 조회 유형 대표(CH07·11·12·18)·SE16N 인접 |
-| 5 | ⓖ ALV·출력 | **CH10-L02** FACTORY로 Internal Table 출력 | `visuals/sample-data-table.html`(정렬·행 강조) | 출력/ALV 유형 대표(CH10·16·20) |
+| 5 ✅ | ⓖ ALV·출력 | **CH10-L02** FACTORY로 Internal Table 출력 | `interactive/salv-grid-simulator.html`(factory→display 2단계·라벨 자동·정렬·합계, 신규 제작) + SE38 복습 | 출력/ALV 유형 대표(CH10·16·20) |
 
-> **진행:** ✅ #1 CH14-L01(흐름)·✅ #2 CH01-L04(코드)·✅ #3 CH03-L01(DDIC)·✅ #4 CH07-L01(SQL) 생성·검증 완료. 남은 1 = #5 ALV. #2~#4 학습수단은 당초 후보보다 토픽에 직접적인 **시뮬레이터를 신규 제작**(§9.1 "샘플에 없으면 신규 제작" 규칙): #2 WRITE 출력, #3 Domain 생성(저장→검사→활성화), #4 SELECT 조회(projection+WHERE→classic 코드→sy-subrc).
+> **진행: 골든 5종 ✅ 전부 완료·검증.** #1 CH14-L01(흐름)·#2 CH01-L04(코드)·#3 CH03-L01(DDIC)·#4 CH07-L01(SQL)·#5 CH10-L02(ALV). #2~#5 학습수단은 당초 후보보다 토픽에 직접적인 **시뮬레이터를 신규 제작**(§9.1 "샘플에 없으면 신규 제작" 규칙): #2 WRITE 출력, #3 Domain 생성(저장→검사→활성화), #4 SELECT 조회(projection+WHERE→classic 코드→sy-subrc), #5 SALV factory→display(2단계·라벨 자동·정렬/합계). 각 골든은 섹션마다 ≥1 시각/상호작용(§9.4 통과), glossary 패리티 0, 콘솔 0으로 확인. **다음 = 이 5 아키타입 기준 나머지 레슨 양산.**
 
 - **미채택 아키타입 처리**: ⓒGUI조작은 CH01-L02(Phase 2 PoC, tcode+embed)가 데모로 커버. ⓗ모듈화/OO·ⓐ개념은 distinct 5 우선 규칙상 차순(다음 양산 시 추가 템플릿 후보).
 - **#3 도메인 체험**은 standalone 샘플이 없어(현재 v2-C 셸 샘플 내장) `sample/`로 추출 필요 — Stage 6에서 처리.

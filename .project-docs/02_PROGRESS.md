@@ -1,6 +1,6 @@
 # 02. PROGRESS — 진행 현황 · 다음 할 일
 
-> 📅 **최종수정: 2026-06-19 03:36 KST**
+> 📅 **최종수정: 2026-06-19 04:02 KST**
 > 🎯 **목적:** 목표가 어디까지 왔고, 다음에 무엇을 할지. 작업 시작·종료 시 갱신.
 > 📖 **읽을 때:** 작업 시작 전(현황 파악) · 종료 후(갱신).
 > ⚡ **TL;DR:** ABAP 커리큘럼 골격+CH01~14 본문 완료(CH15+ 스텁). 이번에 `sample/` 독립형 라이브러리 구축 + 입문자 작성표준·이름 풀 확정.
@@ -28,7 +28,8 @@
 - **확정 규칙**(이번 세션): 입문자 작성표준([04 R5](04_CONVENTIONS.md)) · 이름 풀([04 R7](04_CONVENTIONS.md)).
 
 ## ▶️ 다음 할 일 (우선순위)
-1. **골든 템플릿 양산(1개 남음)** — 셸 이식 완료(✅v2-C·T코드·`::embed`). 골든 선정 5종([08 §10](08_LESSON_SHELL_SPEC.md)). ✅ **#1 CH14-L01(흐름)** · ✅ **#2 CH01-L04(코드)** WRITE 시뮬레이터 · ✅ **#3 CH03-L01(DDIC)** Domain 시뮬레이터(저장→검사→활성화) · ✅ **#4 CH07-L01(SQL)** SELECT 조회 시뮬레이터(`code-learning/select-query-simulator.html`, projection+WHERE→classic 코드 생성→결과+sy-subrc) — 모두 신규 제작·검증 완료. 남은 1: CH10-L02(ALV). 오써링 체크리스트=[08 §11](08_LESSON_SHELL_SPEC.md).
+1. **골든 템플릿 5종 ✅ 전부 완료** — 셸 이식(✅v2-C·T코드·`::embed`) + 골든 5종([08 §10](08_LESSON_SHELL_SPEC.md)) 모두 신규 시뮬레이터 제작·검증 완료: ✅ **#1 CH14-L01(흐름)** 이벤트 점진적 빌드업 · ✅ **#2 CH01-L04(코드)** WRITE 출력 · ✅ **#3 CH03-L01(DDIC)** Domain 생성(저장→검사→활성화) · ✅ **#4 CH07-L01(SQL)** SELECT 조회(projection+WHERE→classic→sy-subrc) · ✅ **#5 CH10-L02(ALV)** SALV factory→display(라벨 자동·정렬·합계). 오써링 체크리스트=[08 §11](08_LESSON_SHELL_SPEC.md).
+   - **▶ 다음**: 이 5 아키타입을 기준으로 나머지 레슨 양산(아래 2번).
 2. **나머지 레슨 양산** — 골든 5종을 기준으로 CH01~14 업그레이드 + CH15~ 본문. ⚠️ CH18 classic→modern 경계([04 R10](04_CONVENTIONS.md)).
 3. **시각 스모크테스트** — 셸 인터랙션·로드맵·임베드 렌더 눈으로 확인.
 4. `index.html` 허브에서 ABAP 카드 → 로드맵 연결 점검.
