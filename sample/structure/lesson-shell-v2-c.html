@@ -487,7 +487,7 @@ body.is-fullscreen .main{max-width:none;}
           <a href="#"><span class="dir">← 이전 LESSON</span><span class="ttl">SAP Dictionary의 목적과 개발 흐름</span></a>
           <a class="next" href="#"><span class="dir">다음 LESSON →</span><span class="ttl">Data Element 기본 설계</span></a>
         </nav>
-        <footer class="foot">SAP Developer Learning Library · Lesson Viewer · 시안 v2-C</footer>
+        <footer class="foot">SAP Developer Academy · Lesson Viewer · 시안 v2-C</footer>
       </main>
 
       <!-- 우측 "이 레슨의 여정" (모바일: 하단 고정 시트) -->
@@ -582,7 +582,15 @@ body.is-fullscreen .main{max-width:none;}
   const FS_CLOSE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v3a2 2 0 0 1-2 2H3M21 8h-3a2 2 0 0 1-2-2V3M3 16h3a2 2 0 0 1 2 2v3M16 21v-3a2 2 0 0 1 2-2h3"/></svg>';
   fsBtn.innerHTML=FS_OPEN;
   fsBtn.addEventListener('click',()=>{ if(!document.fullscreenElement) (document.documentElement.requestFullscreen||document.documentElement.webkitRequestFullscreen)?.call(document.documentElement); else (document.exitFullscreen||document.webkitExitFullscreen)?.call(document); });
-  function onFs(){ const on=!!(document.fullscreenElement||document.webkitFullscreenElement); body.classList.toggle('is-fullscreen',on); fsBtn.innerHTML=on?FS_CLOSE:FS_OPEN; fsBtn.title=on?'전체화면 해제':'전체화면'; }
+  let prevWide=null;
+  function onFs(){
+    const on=!!(document.fullscreenElement||document.webkitFullscreenElement);
+    body.classList.toggle('is-fullscreen',on);
+    fsBtn.innerHTML=on?FS_CLOSE:FS_OPEN; fsBtn.title=on?'전체화면 해제':'전체화면';
+    if(on){ if(prevWide===null) prevWide=root.classList.contains('wide'); root.classList.add('wide'); widthBtn.disabled=true; } // 전체화면=폭 넓게 강제
+    else { if(prevWide!==null){ root.classList.toggle('wide',prevWide); prevWide=null; } widthBtn.disabled=false; } // 해제 시 사용자 설정 복원
+    syncWide();
+  }
   document.addEventListener('fullscreenchange',onFs); document.addEventListener('webkitfullscreenchange',onFs);
 
   /* T-code 모달 */
