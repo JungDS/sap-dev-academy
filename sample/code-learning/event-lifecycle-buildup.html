@@ -7,7 +7,7 @@
   우 ABAP 코드 에디터(structure/code-copy-block.html 양식 + 추가 줄 강조).
   · 코드/흐름 패널은 grid stretch로 더 높은 쪽(=흐름)에 높이 맞춤, 에디터 서식은 끝까지 이어짐.
   · 부모(레슨)에 높이를 postMessage → iframe 자동 높이(스크롤/여백 없음).
-  · AT SELECTION-SCREEN 게이트: 에러/ F8 외 입력 → 화면 복귀, "에러 없음 + F8"만 본 처리로.
+  · AT SELECTION-SCREEN 게이트: 에러/ F8 외 입력 → 화면 복귀, "에러 없음 + F8"만 메인 로직로.
   ⚠️ 외부 의존성: Mermaid CDN 1줄.
 -->
 <html lang="ko">
@@ -192,7 +192,7 @@ body{font-family:var(--font);color:var(--ink);background:transparent;line-height
   var nPBO  = 'PBO['+N('screen','화면','AT SELECTION-SCREEN OUTPUT','(PBO) 화면 그리기 직전')+']:::screen';
   var nSC   = 'SC['+N('screen','화면','Selection Screen','⏳ 사용자 입력 대기')+']:::screen';
   var nASS  = 'ASS['+N('check','검증','AT SELECTION-SCREEN','(PAI) 입력값 유효성 검사')+']:::check';
-  var nSOS  = 'SOS['+N('main','메인','START-OF-SELECTION','DB 조회·본 처리')+']:::main';
+  var nSOS  = 'SOS['+N('main','메인','START-OF-SELECTION','DB 조회·메인 로직')+']:::main';
   var nSOS1 = 'SOS['+N('main','메인','START-OF-SELECTION','(암묵적) WRITE 등 본문')+']:::main';
   var nEOS  = 'EOS['+N('out','출력','END-OF-SELECTION','결과 출력·마감')+']:::out';
 
@@ -226,7 +226,7 @@ body{font-family:var(--font);color:var(--ink);background:transparent;line-height
         L('  p_date = sy-datum.       " 기본값',true), L(''),
         L('START-OF-SELECTION.        " 이제 명시적으로',true),
         L('  WRITE: / p_date.') ],
-      note:'화면 기본값이 필요해지면 <b>INITIALIZATION</b> 을 추가한다. 아직 검증이 없어 F8을 누르면 바로 본 처리로 간다.' },
+      note:'화면 기본값이 필요해지면 <b>INITIALIZATION</b> 을 추가한다. 아직 검증이 없어 F8을 누르면 바로 메인 로직로 간다.' },
 
     { label:'자동 로드 & 마감 추가 (메모리/출력)',
       graph:['flowchart TD','  '+START,'  '+nLOAD,'  '+nINIT,'  '+nSC,'  '+nSOS,'  '+nEOS,'  '+END,
@@ -238,7 +238,7 @@ body{font-family:var(--font);color:var(--ink);background:transparent;line-height
         L('  p_date = sy-datum.'), L(''),
         L('START-OF-SELECTION.'),
         L("  WRITE: / '조회/가공 중...'."), L(''),
-        L('END-OF-SELECTION.          " 본 처리 후 마감',true),
+        L('END-OF-SELECTION.          " 메인 로직 후 마감',true),
         L("  WRITE: / '완료'.",true) ],
       note:'메모리 준비(<b>LOAD-OF-PROGRAM</b>)와 마감/출력(<b>END-OF-SELECTION</b>)이 흐름의 양 끝에 붙는다. (아직 검증 없음)' },
 
@@ -259,7 +259,7 @@ body{font-family:var(--font);color:var(--ink);background:transparent;line-height
         L("  WRITE: / '조회/가공 중...'."), L(''),
         L('END-OF-SELECTION.'),
         L("  WRITE: / '완료'.") ],
-      note:'<b>AT SELECTION-SCREEN</b> 추가. 이제 화면에서 <b>F8(실행)</b> 하고 <b>에러가 없을 때만</b> 본 처리로 넘어간다. 에러가 나거나 F8이 아닌 입력(Enter·F4 등)이면 <b>화면으로 되돌아간다.</b>' },
+      note:'<b>AT SELECTION-SCREEN</b> 추가. 이제 화면에서 <b>F8(실행)</b> 하고 <b>에러가 없을 때만</b> 메인 로직로 넘어간다. 에러가 나거나 F8이 아닌 입력(Enter·F4 등)이면 <b>화면으로 되돌아간다.</b>' },
 
     { label:'전체 생명주기 완성 (최종 구조)',
       graph:['flowchart TD','  '+START,'  '+nLOAD,'  '+nINIT,'  '+nPBO,'  '+nSC,'  '+nASS,'  '+nSOS,'  '+nEOS,'  '+END,
@@ -324,7 +324,7 @@ body{font-family:var(--font);color:var(--ink);background:transparent;line-height
     '<span><span class="sw" style="background:#fef3c7;border-color:#f59e0b"></span>준비</span>'+
     '<span><span class="sw" style="background:#dbeafe;border-color:#3b5bdb"></span>화면</span>'+
     '<span><span class="sw" style="background:#ffe4e6;border-color:#e11d48"></span>검증</span>'+
-    '<span><span class="sw" style="background:#d1fae5;border-color:#10b981"></span>본 처리</span>'+
+    '<span><span class="sw" style="background:#d1fae5;border-color:#10b981"></span>메인 로직</span>'+
     '<span><span class="sw" style="background:#ffedd5;border-color:#fb923c"></span>출력·마감</span>'+
     '<span style="color:#0ca678">초록 줄 = 이 단계에서 추가된 코드</span>';
   function setNote(i){ document.getElementById('note').innerHTML='💡 '+STAGES[i].note; }

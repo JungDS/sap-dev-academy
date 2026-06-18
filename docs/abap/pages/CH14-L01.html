@@ -47,7 +47,7 @@
         </button>
       </section>
       <article class="prose">
-<h2>위에서 아래로? 아니다</h2>
+<section class="lblock"><h2>위에서 아래로? 아니다</h2>
 <p>지금까지 <code>START-OF-SELECTION.</code> 아래에 코드를 몰아 뒀다. 그런데 <strong>&quot;화면 뜨기 전 기본값&quot;</strong>,
 <strong>&quot;입력 검증&quot;</strong>, <strong>&quot;조회 후 마무리&quot;</strong> 는 서로 <strong>다른 시점</strong>에 실행돼야 한다. 실행형 프로그램은
 한 줄씩 위에서 아래로 도는 게 아니라, 시스템이 정해진 <strong><button class="term" type="button" data-term="Report Event">Report Event</button></strong> 순서대로
@@ -56,7 +56,7 @@
 <p>🍳 <strong>비유 — 식당의 하루</strong>: 오픈 준비(재료 세팅) → 주문 접수(검증) → 조리(본 처리) → 마감.
 손님이 와도 &quot;조리&quot;부터 하지 않는다. ABAP도 똑같이 <em>시점</em>이 정해져 있다.</p>
 </blockquote>
-<h2>한눈에 보는 이벤트 흐름</h2>
+</section><section class="lblock"><h2>한눈에 보는 이벤트 흐름</h2>
 <p>이벤트 블록을 <strong>꼭 다 써야 하는 건 아니다.</strong> 아래에서 <strong>탭을 1단계 → 5단계로</strong> 누르면,
 이벤트 키워드가 하나도 없는 코드부터 전체 생명주기까지 <strong>코드와 흐름이 함께 점점 확장</strong>된다.
 왼쪽 흐름도와 오른쪽 코드를 좌우로 대조하며 &quot;코드를 더하면 실행 흐름이 어떻게 늘어나는가&quot;를 보자.</p>
@@ -93,7 +93,7 @@
 <tr>
 <td><button class="term" type="button" data-term="START-OF-SELECTION">START-OF-SELECTION</button></td>
 <td>검증 통과 후</td>
-<td><strong>본 처리</strong>(DB 조회·가공)</td>
+<td><strong>메인 로직 실행</strong>(DB 조회·가공)</td>
 </tr>
 <tr>
 <td><button class="term" type="button" data-term="END-OF-SELECTION">END-OF-SELECTION</button></td>
@@ -112,25 +112,25 @@
 <li><strong>AT SELECTION-SCREEN</strong> — PAI(Process After Input). 사용자가 값을 넣고 실행을 누른 직후라 <em>검증</em>의 자리.</li>
 <li><strong>START-OF-SELECTION / END-OF-SELECTION</strong> — 본 처리와 마무리. 보통 조회는 START, 출력은 END.</details></li>
 </ul>
-<h2>왜 자리가 중요한가</h2>
+</section><section class="lblock"><h2>왜 자리가 중요한가</h2>
 <p>기본값은 <button class="term" type="button" data-term="INITIALIZATION">INITIALIZATION</button>, 검증은 <button class="term" type="button" data-term="AT SELECTION-SCREEN">AT SELECTION-SCREEN</button>, 조회는 <button class="term" type="button" data-term="START-OF-SELECTION">START-OF-SELECTION</button> —
 <strong>자리를 맞춰야</strong> 의도대로 동작한다. 자리를 틀리면 &quot;검증했는데 이미 조회가 끝나 있다&quot; 같은
 일이 벌어진다.</p>
-<h2>흔한 실수와 점검</h2>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <blockquote>
-<p>⚠️ <strong>검증을 START-OF-SELECTION에 두면?</strong> 이미 본처리가 시작된 뒤다. 검증은 반드시 <button class="term" type="button" data-term="AT SELECTION-SCREEN">AT SELECTION-SCREEN</button>.</p>
+<p>⚠️ <strong>검증을 START-OF-SELECTION에 두면?</strong> 이미 메인 로직이 시작된 뒤다. 검증은 반드시 <button class="term" type="button" data-term="AT SELECTION-SCREEN">AT SELECTION-SCREEN</button>.</p>
 </blockquote>
 <blockquote>
 <p>⚠️ <strong>이벤트 키워드 누락?</strong> 코드가 전부 본처리로 묶여 순서가 꼬인다.</p>
 </blockquote>
-<h2>정리</h2>
+</section><section class="lblock"><h2>정리</h2>
 <ul>
 <li>실행형 프로그램은 <strong>정해진 <button class="term" type="button" data-term="Report Event">Report Event</button> 순서</strong>로 각 구획을 호출한다(위→아래 X).</li>
-<li><strong>기본값·검증·본처리·출력</strong>은 각자의 이벤트에 둔다.</li>
+<li><strong>기본값·검증·메인 로직·출력</strong>은 각자의 이벤트에 둔다.</li>
 <li>그림의 <strong>점선(검증 실패 복귀)</strong> 이 핵심 — 검증을 통과해야 본처리로 간다.</li>
 </ul>
 <p>→ 이제 각 이벤트를 하나씩. 먼저 화면 전 <strong>기본값</strong> → INITIALIZATION (다음 레슨).</p>
-
+</section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
       <footer class="foot">SAP Developer Academy · CH14 CH14-L01</footer>

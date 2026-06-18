@@ -96,6 +96,12 @@ function loadChapters() {
   });
 }
 
+/* 본문 h2 섹션을 흰 카드(.lblock)로 감싼다 — v2-C의 섹션 카드 디자인 */
+function wrapSections(html) {
+  const parts = html.split(/(?=<h2[\s>])/);
+  return parts.map((p) => (/^<h2[\s>]/.test(p) ? `<section class="lblock">${p}</section>` : p)).join('');
+}
+
 /* ---------- 레슨 HTML 템플릿 (v2-C 셸 골격) ----------
    레이아웃/네비/설정은 shell.js가 data-shell 훅에 주입한다.
    T-code 라벨은 front-matter `tcode`가 있을 때만 emit(Phase 2). */
@@ -103,7 +109,7 @@ function renderLessonPage(ch, lesson, trackNo) {
   const assets = relPosix(OUT_PAGES, path.join(ROOT, 'assets'));
   const dataBase = relPosix(OUT_PAGES, OUT) + '/';
   const siteRoot = relPosix(OUT_PAGES, ROOT) + '/';
-  const bodyHtml = marked.parse(lesson.body);
+  const bodyHtml = wrapSections(marked.parse(lesson.body));
   const chId = ch.meta.id;
   const sda = JSON.stringify({ domain: DOMAIN, dataBase, siteRoot });
   const tcode = lesson.data.tcode || '';
