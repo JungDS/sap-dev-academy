@@ -18,6 +18,7 @@
 5. **[05_PITFALLS.md](05_PITFALLS.md)** — 자주 깨지는 지점(P1~). 막히면 즉시.
 6. **[06_SAMPLE_LIBRARY.md](06_SAMPLE_LIBRARY.md)** — 학습수단·페이지 구조 샘플 카탈로그. 레슨/컴포넌트 만들 때.
 7. **[07_BROWSER_TESTING.md](07_BROWSER_TESTING.md)** — 미리보기로 화면을 검증해야 할 때(스크린샷 한계·DOM 측정 우회).
+8. **[08_LESSON_SHELL_SPEC.md](08_LESSON_SHELL_SPEC.md)** — 레슨 셸 표준(v2-C 확정)·실제 셸/빌드 이식 규칙. 셸·빌드 마크업 건드리기 직전.
 
 ## 🗺️ 문서 지도
 
@@ -30,6 +31,7 @@
 | [05_PITFALLS.md](05_PITFALLS.md) | 자주 깨지는 함정(P1~) | 막혔을 때 |
 | [06_SAMPLE_LIBRARY.md](06_SAMPLE_LIBRARY.md) | `sample/` 카탈로그 + 컴포넌트 재사용법 | 레슨/컴포넌트 설계 시 |
 | [07_BROWSER_TESTING.md](07_BROWSER_TESTING.md) | preview 검증 워크플로 · 스크린샷 타임아웃 우회 | 브라우저 검증 시 |
+| [08_LESSON_SHELL_SPEC.md](08_LESSON_SHELL_SPEC.md) | 레슨 셸 표준(v2-C)·이식 규칙·front-matter 확장 | 셸/빌드 이식 시 |
 
 ## 📐 이 폴더의 설계 원칙 (왜 이렇게 생겼나)
 - **번호 규칙**: 모든 문서는 `NN_TITLE.md` 2자리 prefix. **번호 순 = 읽기 우선순위**(00→07).
