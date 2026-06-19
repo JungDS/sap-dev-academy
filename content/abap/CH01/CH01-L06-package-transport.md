@@ -1,9 +1,9 @@
 ---
-id: CH01-L05
+id: CH01-L06
 title: 개발 패키지와 이송요청 입문
 direction: $TMP의 한계를 넘어, 개발 객체를 패키지에 보관하고 이송요청으로 관리하는 첫걸음.
 keywords: [개발 패키지, $TMP, 이송요청, Transport Organizer, SE09]
-order: 5
+order: 6
 ---
 
 ## $TMP에 둔 게 불편해질 때

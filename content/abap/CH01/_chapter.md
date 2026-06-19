@@ -9,8 +9,9 @@ objectives:
   - T-code와 SE38(ABAP Editor)로 첫 프로그램을 생성·실행한다.
   - 프로그램 기본 구조와 주석을 이해한다.
   - WRITE로 문자열을 화면에 출력한다.
+  - WRITE의 폭·정렬·색·구분선으로 출력을 보기 좋게 다듬는다.
   - 프로그램을 $TMP(Local)에 저장한 뒤, 개발 패키지와 이송요청의 필요를 이해한다.
-keywords: [SAPGUI, 로그온, T-code, SE38, REPORT, WRITE, 주석, $TMP, 개발 패키지, 이송요청]
+keywords: [SAPGUI, 로그온, T-code, SE38, REPORT, WRITE, 출력서식, 주석, $TMP, 개발 패키지, 이송요청]
 difficulty: 입문
 ---
 
