@@ -1,6 +1,6 @@
 # 02. PROGRESS — 진행 현황 · 다음 할 일
 
-> 📅 **최종수정: 2026-06-19 04:02 KST**
+> 📅 **최종수정: 2026-06-19 09:13 KST**
 > 🎯 **목적:** 목표가 어디까지 왔고, 다음에 무엇을 할지. 작업 시작·종료 시 갱신.
 > 📖 **읽을 때:** 작업 시작 전(현황 파악) · 종료 후(갱신).
 > ⚡ **TL;DR:** ABAP 커리큘럼 골격+CH01~14 본문 완료(CH15+ 스텁). 이번에 `sample/` 독립형 라이브러리 구축 + 입문자 작성표준·이름 풀 확정.
@@ -11,11 +11,13 @@
 |------|------|
 | 콘텐츠 파이프라인(`tools/build-curriculum.mjs`) | ✅ 동작 |
 | 런타임 셸(`assets/shell.js`/`shell.css`/`lesson.css`) | ✅ **v2-C 이식 Phase 1** — 앱바·설정(글자/다크/폭/전체화면)·좌측 레일(레슨/챕터/용어)·우측 여정(스크롤스파이·모바일 시트)·용어 hover/click·읽기진행·이전다음. 블루/그린+다크. **+T코드 공통 미니페이지(tcodes.json 2계층)·`::embed` 체험 임베드(R4)·글로서리 패리티 게이트.** 시안 D/E/F/G 사용금지(대체됨). [08](08_LESSON_SHELL_SPEC.md) |
-| 전체 spine(35챕터/193레슨 스캐폴딩) | ✅ |
+| 코드 블록 표시 | ✅ **code-copy-block 양식 강제**(빌드가 ```abap → `.abap-editor`: 네이비 헤더+줄번호+ABAP 토큰색+복사). 다크 금지([05 P10](05_PITFALLS.md)/[04 R3](04_CONVENTIONS.md)). `<details>` 클릭 단서·생성물 파일명 `CHxx-Lyy.html` 통일([04 R8](04_CONVENTIONS.md)). |
+| 전체 spine(35챕터/**194**레슨 스캐폴딩) | ✅ (CH01에 WRITE 심화 L05 신설 → 6레슨) |
 | CH01~CH14 본문(classic 기초 전체) | ✅ 완료 (단 CH14-L08 = `AT SELECTION-SCREEN ON` 심화 **예약 스텁**, 본문 추후) |
 | CH15~CH35 본문 | 🚧 스텁 골격 |
+| 통합 커리큘럼 MD(`CURRICULUM.md`) | ✅ `npm run build:curriculum-md`로 전 챕터·레슨 구조+다룰내용 개요를 단일 MD 생성(NotebookLM 소스용). 생성물 — front-matter에서 고치고 재생성. |
 | 로드맵 `pages/abap.html` | ✅ 개편 — 챕터 아코디언 + 레슨 요약(direction)·키워드·**직접 점프** + 검색/트랙점프/전체펼치기. v2-C 조화(블루/그린). 레슨 상세는 `lessons/CHxx.json` 지연 로드 |
-| glossary(64용어, CH01~14 커버) | ✅ |
+| glossary(65용어, CH01~14 커버) | ✅ |
 | 브라우저 시각 스모크테스트 | ⚠️ 일부 미실시(미리보기 깊은 URL 제약 → [07](07_BROWSER_TESTING.md)) |
 
 ## 🧪 샘플 라이브러리 (`sample/`) — 이번 세션 구축
