@@ -71,7 +71,9 @@ input[type=text],input[type=number],select{font:inherit;font-size:.86rem;padding
 input:focus,select:focus{outline:0;border-color:var(--brand);box-shadow:0 0 0 3px rgba(59,91,219,.12);}
 input.bad{border-color:var(--warn);background:#fff5f6;}
 input[type=text]#dname{font-family:var(--mono);text-transform:uppercase;}
-.row-dec.hide{display:none;}
+.row-dec.hide,.field.hide{display:none;}
+.chkline{display:flex;align-items:center;gap:7px;font-size:.83rem;font-weight:600;color:var(--ink);cursor:pointer;user-select:none;}
+.chkline input{accent-color:var(--brand);}
 
 /* 값 범위(고정값) 표 */
 .fv{width:100%;border-collapse:collapse;font-size:.84rem;margin-bottom:10px;}
@@ -105,6 +107,7 @@ input[type=text]#dname{font-family:var(--mono);text-transform:uppercase;}
     <span class="presets__lbl">예제:</span>
     <button class="chip" type="button" data-ex="0">금액 도메인 (DEC 8,2)</button>
     <button class="chip" type="button" data-ex="1">상태 도메인 (CHAR 1 + 고정값)</button>
+    <button class="chip" type="button" data-ex="2">항공사 코드 (CHAR 3 + Value Table)</button>
   </div>
 
   <div class="se">
@@ -137,21 +140,38 @@ input[type=text]#dname{font-family:var(--mono);text-transform:uppercase;}
           <option value="INT4">INT4 — 정수</option>
           <option value="DATS">DATS — 날짜(YYYYMMDD)</option>
         </select>
+        <div class="hint" id="typeAbap"></div>
       </div>
       <div class="field">
-        <label for="dlen">길이 (No. Characters)</label>
+        <label for="dlen">길이 (Length)</label>
         <input type="number" id="dlen" min="1" value="10" />
         <div class="hint" id="lenHint"></div>
+      </div>
+      <div class="field" id="rowOut">
+        <label for="dout">출력 길이 (Output Length)</label>
+        <input type="number" id="dout" min="1" value="10" />
+        <div class="hint">화면에 표시될 칸 너비. 보통 길이와 같지만, 부호·천단위 구분기호 때문에 더 길 수 있습니다.</div>
       </div>
       <div class="field row-dec" id="rowDec">
         <label for="ddec">소수 자릿수 (Decimals)</label>
         <input type="number" id="ddec" min="0" value="0" />
         <div class="hint">소수점 이하 자릿수. 길이보다 작아야 합니다(DEC 전용).</div>
       </div>
+      <div class="field" id="rowLower">
+        <label>대소문자</label>
+        <label class="chkline"><input type="checkbox" id="dlower"> 소문자 허용 (Lower Case)</label>
+        <div class="hint">체크 안 하면 입력값이 <b>자동으로 대문자</b>로 바뀝니다(CHAR 기본 동작).</div>
+      </div>
     </div>
 
     <div class="tabpane" data-pane="val">
-      <p class="fv__note">정해진 값만 받게 하려면 <b>고정값(Fixed Values)</b>을 넣습니다. (예: <code>O</code>=Open, <code>C</code>=Closed) — 이 목록은 나중에 화면 F4·입력 검증으로 되돌아옵니다.</p>
+      <div class="field" style="margin-bottom:6px">
+        <label for="dvtab">값 테이블 (Value Table)</label>
+        <input type="text" id="dvtab" placeholder="예: SCARR" autocomplete="off" spellcheck="false" style="text-transform:uppercase;font-family:var(--mono)" />
+        <div class="hint">허용 값을 <b>다른 테이블의 저장된 데이터</b>로 검사·F4 제공. 값이 자주 바뀌는 목록(예: 항공사 SCARR)에 씁니다. 외래 키(CH08)의 바탕이 됩니다.</div>
+      </div>
+      <hr style="border:0;border-top:1px solid var(--line);margin:6px 0 13px" />
+      <p class="fv__note"><b>또는</b>, 거의 안 바뀌는 <b>소수의 값</b>만 받게 하려면 <b>고정값(Fixed Values)</b>을 넣습니다. (예: <code>O</code>=Open, <code>C</code>=Closed) — 화면 F4·입력 검증으로 되돌아옵니다. <b>값 테이블과 고정값은 보통 둘 중 하나만</b> 씁니다.</p>
       <table class="fv">
         <thead><tr><th style="width:34%">고정값</th><th>설명</th><th style="width:48px"></th></tr></thead>
         <tbody id="fvBody"></tbody>
@@ -171,20 +191,23 @@ input[type=text]#dname{font-family:var(--mono);text-transform:uppercase;}
 <script>
 (function(){
   var TYPES = {
-    CHAR:{maxLen:1333, dec:false, numeric:false, fixedLen:false},
-    NUMC:{maxLen:255,  dec:false, numeric:true,  fixedLen:false},
-    DEC: {maxLen:31,   dec:true,  numeric:true,  fixedLen:false},
-    INT4:{maxLen:10,   dec:false, numeric:true,  fixedLen:true},
-    DATS:{maxLen:8,    dec:false, numeric:false, fixedLen:true}
+    CHAR:{maxLen:1333, dec:false, numeric:false, fixedLen:false, lower:true,  abap:'c', desc:'문자(텍스트)'},
+    NUMC:{maxLen:255,  dec:false, numeric:true,  fixedLen:false, lower:false, abap:'n', desc:'숫자만 담는 문자(자릿수 고정·앞 0 유지)'},
+    DEC: {maxLen:31,   dec:true,  numeric:true,  fixedLen:false, lower:false, abap:'p', desc:'십진수(소수 가능·금액 등)'},
+    INT4:{maxLen:10,   dec:false, numeric:true,  fixedLen:true,  lower:false, abap:'i', desc:'정수(4바이트)'},
+    DATS:{maxLen:8,    dec:false, numeric:false, fixedLen:true,  lower:false, abap:'d', desc:'날짜 YYYYMMDD(8자리)'}
   };
   var EXAMPLES = [
-    { name:'ZDO_AMOUNT', type:'DEC', len:8, dec:2, fv:[] },
-    { name:'ZDO_STATUS', type:'CHAR', len:1, dec:0, fv:[['O','Open (열림)'],['C','Closed (닫힘)']] }
+    { name:'ZDO_AMOUNT', type:'DEC',  len:8, dec:2, out:11, lower:false, vtab:'', fv:[] },
+    { name:'ZDO_STATUS', type:'CHAR', len:1, dec:0, out:1,  lower:false, vtab:'', fv:[['O','Open (열림)'],['C','Closed (닫힘)']] },
+    { name:'ZDO_CARRID', type:'CHAR', len:3, dec:0, out:3,  lower:false, vtab:'SCARR', fv:[] }
   ];
 
   var $=function(id){return document.getElementById(id);};
-  var dname=$('dname'), dtype=$('dtype'), dlen=$('dlen'), ddec=$('ddec'),
-      rowDec=$('rowDec'), lenHint=$('lenHint'), fvBody=$('fvBody'),
+  var dname=$('dname'), dtype=$('dtype'), dlen=$('dlen'), dout=$('dout'), ddec=$('ddec'),
+      dlower=$('dlower'), dvtab=$('dvtab'),
+      rowDec=$('rowDec'), rowOut=$('rowOut'), rowLower=$('rowLower'), typeAbap=$('typeAbap'),
+      lenHint=$('lenHint'), fvBody=$('fvBody'),
       badge=$('badge'), badgeTxt=$('badgeTxt'), msg=$('msg'), msgBody=$('msgBody'),
       presetsEl=$('presets');
   var state='new';
@@ -197,6 +220,15 @@ input[type=text]#dname{font-family:var(--mono);text-transform:uppercase;}
     if(t.fixedLen){ dlen.disabled=true; if(dtype.value==='INT4') dlen.value=10; if(dtype.value==='DATS') dlen.value=8; }
     else { dlen.disabled=false; }
     lenHint.textContent='최대 길이: '+t.maxLen+(t.fixedLen?' (고정)':'')+(t.numeric?' · 숫자 타입':'');
+    // ABAP 변수 선언 대응 타입 (도메인 CHAR ↔ 변수 c 의 구분을 분명히)
+    typeAbap.innerHTML='ABAP 변수로 선언하면 → <b>TYPE '+t.abap+'</b> ('+t.desc+')'+
+      (dtype.value==='CHAR'?' · <b>주의:</b> DDIC 타입은 <b>CHAR</b>, 변수 선언 키워드는 <b>c</b>':'');
+    // 대소문자(Lower Case)는 문자 타입에만
+    rowLower.classList.toggle('hide', !t.lower);
+    if(!t.lower) dlower.checked=false;
+    // 출력 길이는 길이 이상으로 유지
+    var len=parseInt(dlen.value,10)||0;
+    if((parseInt(dout.value,10)||0)<len) dout.value=len;
   }
 
   /* ---- 고정값 행 ---- */
@@ -240,6 +272,11 @@ input[type=text]#dname{font-family:var(--mono);text-transform:uppercase;}
       c.push({ok:decOk, msg: decOk?('소수 '+dec+'자리 — 길이('+len+')보다 작음 OK'):'소수 자릿수는 0 이상, 길이보다 작아야 합니다(최대 14).'});
       ddec.classList.toggle('bad', !decOk);
     }
+    // 출력 길이
+    var out=parseInt(dout.value,10)||0;
+    var outOk = out>=len && out<=99;
+    c.push({ok:outOk, msg: outOk?('출력 길이 '+out+' — 길이('+len+') 이상 OK'):('출력 길이는 길이('+len+') 이상이어야 합니다(최대 99).')});
+    dout.classList.toggle('bad', !outOk);
     var fv=getFv();
     if(fv.length){
       var bad=fv.filter(function(r){
@@ -249,6 +286,16 @@ input[type=text]#dname{font-family:var(--mono);text-transform:uppercase;}
       });
       var fvOk=bad.length===0;
       c.push({ok:fvOk, msg: fvOk?('고정값 '+fv.length+'개 — 타입·길이 일관성 OK'):('고정값이 타입/길이에 안 맞습니다: '+bad.map(function(r){return '"'+r[0]+'"';}).join(', '))});
+    }
+    // 값 테이블
+    var vtab=dvtab.value.trim().toUpperCase();
+    if(vtab){
+      var vtabOk=/^[A-Z][A-Z0-9_\/]{1,29}$/.test(vtab);
+      c.push({ok:vtabOk, msg: vtabOk?('값 테이블 '+vtab+' — 참조 OK'):'값 테이블 이름 형식이 올바르지 않습니다(테이블명).'});
+      dvtab.classList.toggle('bad', !vtabOk);
+    } else { dvtab.classList.remove('bad'); }
+    if(vtab && fv.length){
+      c.push({ok:false, msg:'값 테이블과 고정값을 동시에 두지 마세요 — 보통 둘 중 하나만 씁니다.'});
     }
     return c;
   }
@@ -291,17 +338,23 @@ input[type=text]#dname{font-family:var(--mono);text-transform:uppercase;}
   /* ---- 예제 로드 ---- */
   function loadEx(i){
     var e=EXAMPLES[i];
-    dname.value=e.name; dtype.value=e.type; syncType(); dlen.value=e.len; ddec.value=e.dec;
+    dname.value=e.name; dtype.value=e.type;
+    dlen.value=e.len; ddec.value=e.dec; dout.value=e.out; dlower.checked=!!e.lower; dvtab.value=e.vtab||'';
+    syncType();
     fvBody.innerHTML=''; e.fv.forEach(function(r){ addFv(r[0],r[1]); });
-    dname.classList.remove('bad'); dlen.classList.remove('bad'); ddec.classList.remove('bad');
+    [dname,dlen,ddec,dout,dvtab].forEach(function(el){ el.classList.remove('bad'); });
     presetsEl.querySelectorAll('.chip').forEach(function(c){ c.classList.toggle('on', +c.dataset.ex===i); });
+    // 첫 탭으로
+    document.querySelector('.setab[data-tab="def"]').click();
     setState('new');
     showMsg('info','ℹ️ 예제 불러옴','<b>'+e.name+'</b> 값을 채웠습니다. <b>💾 저장 → ✓ 검사 → 🔥 활성화</b> 순으로 눌러 보세요.');
   }
 
   /* ---- 이벤트 바인딩 ---- */
   dtype.addEventListener('change', function(){ syncType(); touched(); });
-  [dname,dlen,ddec].forEach(function(el){ el.addEventListener('input', touched); });
+  [dname,dlen,ddec,dout,dvtab].forEach(function(el){ el.addEventListener('input', touched); });
+  dlower.addEventListener('change', touched);
+  dlen.addEventListener('input', function(){ var len=parseInt(dlen.value,10)||0; if((parseInt(dout.value,10)||0)<len) dout.value=len; });
   $('bSave').addEventListener('click', doSave);
   $('bCheck').addEventListener('click', doCheck);
   $('bAct').addEventListener('click', doActivate);
