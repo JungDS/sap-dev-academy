@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DDIC Structure · Structure (Local · DDIC) · SAP Developer Academy</title>
+<link rel="stylesheet" href="../../../assets/base.css">
+<link rel="stylesheet" href="../../../assets/lesson.css">
+<link rel="stylesheet" href="../../../assets/shell.css">
+<script>/* 읽기 설정 선적용(플래시 방지) */(function(){try{var L=localStorage,r=document.documentElement;if(L.getItem('sda.dark')==='1')r.classList.add('dark');if(L.getItem('sda.wide')==='1')r.classList.add('wide');var f=parseInt(L.getItem('sda.fontPx'),10);if(f>=13&&f<=20)r.style.fontSize=f+'px';}catch(e){}})();</script>
+</head>
+<body data-domain="abap" data-chapter-id="CH04" data-lesson-id="CH04-L02">
+<header class="appbar">
+  <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
+  <span class="appbar__sp"></span>
+  <span class="meta">CH04 · Structure (Local · DDIC)</span>
+  <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
+  <div class="tools">
+    <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
+    <button class="icon-btn" id="fsInc" title="글자 크게">A+</button>
+    <button class="icon-btn" id="fsReset" title="글자 크기 초기화">↺</button>
+    <button class="icon-btn" id="darkBtn" title="다크 모드">🌙</button>
+    <button class="icon-btn" id="widthBtn" title="가독 폭 넓게">↔</button>
+    <button class="icon-btn fs-btn" title="전체화면" aria-label="전체화면"></button>
+  </div>
+</header>
+<div class="read-progress"><i></i></div>
+<div class="scrim"></div>
+<nav class="rail" data-shell="rail"></nav>
+<button class="railFab" id="railFab" aria-label="네비 열기">☰</button>
+<div class="stage">
+  <div class="layout">
+    <main class="main">
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH04</nav>
+      <section class="lhead">
+        <p class="lhead__eyebrow">Structure (Local · DDIC)</p>
+        <h1>DDIC Structure</h1>
+        <p class="lhead__direction">구조체 모양도 전역으로 — SE11에서 DDIC Structure로 공유한다.</p>
+        <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 4</span><span class="tag tag--ls">Lesson 2</span><span class="tag tag--lv">초급</span></div>
+      </section>
+      <article class="prose">
+<section class="lblock"><h2>구조도 전역으로</h2>
+<p>CH03에서 타입을 전역(Domain·Data Element)으로 올렸듯, <strong>구조체 모양</strong>도 전역으로
+올릴 수 있다. 여러 프로그램·화면·테이블이 같은 구조를 공유하게 하는 게
+<button class="term" type="button" data-term="DDIC">DDIC</button> Structure다.</p>
+</section><section class="lblock"><h2>SE11에서 Structure 만들기</h2>
+<p><code>SE11</code> → Data Type → <strong>Structure</strong> → <code>ZST_PERSON</code> → Create.</p>
+<ul>
+<li>컴포넌트(필드)를 추가하고, 각 필드 타입은 보통 <button class="term" type="button" data-term="Data Element">Data Element</button>로 준다
+(라벨·도움말까지 상속).</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Typing</th>
+<th>예</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>NAME</td>
+<td>Data Element</td>
+<td><code>ZDE_NAME</code></td>
+</tr>
+<tr>
+<td>AGE</td>
+<td>Data Element</td>
+<td><code>ZDE_AGE</code></td>
+</tr>
+<tr>
+<td>AMOUNT</td>
+<td>Data Element</td>
+<td><code>ZDE_AMOUNT</code></td>
+</tr>
+</tbody></table>
+<p>활성화하면 전역 구조 타입이 된다.</p>
+</section><section class="lblock"><h2>프로그램에서 쓰기</h2>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> ls_person <span class="tok-kw">TYPE</span> zst_person.
+
+ls_person-name = <span class="tok-str">'Kim'</span>.
+<span class="tok-kw">WRITE</span> ls_person-name.</code></pre></div></div>
+<p>로컬 구조(<code>BEGIN OF</code>)와 <strong>쓰는 법은 똑같다</strong> — 차이는 &quot;정의가 어디 사느냐&quot;뿐.
+전역이라 여러 곳에서 같은 모양을 공유하고, 한 곳만 고치면 전부 반영된다.</p>
+</section><section class="lblock"><h2>언제 로컬, 언제 DDIC?</h2>
+<ul>
+<li>그 프로그램에서만 쓰는 임시 묶음 → <strong>로컬</strong>(<code>BEGIN OF</code>).</li>
+<li>여러 프로그램·테이블이 공유 → <strong>DDIC Structure</strong>.</li>
+<li>(참고) 다음 챕터의 투명 테이블도 사실 이 구조 위에 행이 쌓이는 형태다.</li>
+</ul>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>필드를 표준 타입으로 직접</strong> → 가능하지만 라벨·도움말을 잃는다. 가능하면 Data
+Element 참조.</li>
+<li><strong>이름 규칙/활성화</strong> → <code>Z</code>/<code>Y</code> 시작, 활성화(Ctrl+F3) 안 하면 사용 불가.</li>
+</ul>
+<hr>
+<p>이제 한 건을 로컬·전역 양쪽으로 묶을 수 있다. 마지막으로 묶은 구조체를 <strong>다루는
+요령</strong>(복사·초기화)을 보고 가자 → 다음 레슨.</p>
+</section>
+      </article>
+      <nav class="lesson-nav" data-shell="prevnext"></nav>
+      <footer class="foot">SAP Developer Academy · CH04 CH04-L02</footer>
+    </main>
+    <aside class="journey" data-shell="journey"></aside>
+  </div>
+</div>
+<div class="term-popup" data-shell="popup" hidden></div>
+<div class="tmodal" data-shell="tmodal" hidden></div>
+<script>window.__SDA__={"domain":"abap","dataBase":"../","siteRoot":"../../../"};</script>
+<script src="../../../assets/shell.js" defer></script>
+</body>
+</html>

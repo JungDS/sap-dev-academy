@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<!--
+  인터랙티브 데이터 차트 (Interactive Bar Chart) — standalone
+  ────────────────────────────────────────────────────────────
+  입력값을 바꾸면 막대 높이가 실시간으로 변하는 바 차트(순수 CSS 막대 + JS).
+  "값이 결과에 어떻게 반영되는가"를 손으로 만지며 체감. 외부 의존성 없음.
+  재사용 시 ".chart*" CSS + 하단 JS만 가져가면 됩니다.
+-->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>인터랙티브 데이터 차트 · Sample</title>
+<style>
+:root{--bg:#f6f7fb;--surface:#fff;--ink:#1c2233;--ink-soft:#5b6478;--line:#e6e8ef;--brand:#3b5bdb;--accent:#0ca678;--radius:14px;--shadow:0 1px 2px rgba(20,28,51,.04),0 8px 24px rgba(20,28,51,.06);--font:-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic",Roboto,sans-serif;--mono:'D2Coding',Consolas,Monaco,monospace;}
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.65;}
+.topbar{position:sticky;top:0;z-index:20;border-bottom:1px solid var(--line);background:var(--surface);}
+.topbar__inner{max-width:1080px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:12px;font-weight:800;}
+.brand__mark{width:28px;height:28px;border-radius:7px;background:var(--brand);color:#fff;display:grid;place-items:center;}
+.wrap{max-width:760px;margin:28px auto 72px;padding:0 24px;}
+.eyebrow{color:var(--brand);font-weight:800;font-size:.82rem;letter-spacing:.05em;text-transform:uppercase;}
+h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 24px;}
+
+/* ===== 컴포넌트 CSS — 인터랙티브 차트 ===== */
+.chart-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:24px;box-shadow:var(--shadow);}
+.chart{display:flex;align-items:flex-end;gap:18px;height:220px;border-left:2px solid var(--line);border-bottom:2px solid var(--line);padding:8px 14px 0;}
+.chart__col{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;flex:1;height:100%;gap:8px;}
+.chart__bar{width:100%;max-width:64px;background:var(--brand);border-radius:8px 8px 0 0;transition:height .5s cubic-bezier(.16,1,.3,1);display:flex;align-items:flex-start;justify-content:center;color:#fff;font-weight:800;font-size:.85rem;padding-top:6px;min-height:2px;}
+.chart__col:nth-child(2) .chart__bar{background:var(--accent);}
+.chart__col:nth-child(3) .chart__bar{background:#6d28d9;}
+.chart__label{font-size:.8rem;color:var(--ink-soft);font-weight:700;text-align:center;}
+.chart__inputs{display:flex;gap:16px;margin-top:20px;flex-wrap:wrap;}
+.chart__field{display:flex;flex-direction:column;gap:4px;flex:1;min-width:120px;}
+.chart__field label{font-size:.78rem;font-weight:700;color:var(--ink-soft);}
+.chart__field input{border:1px solid var(--line);border-radius:8px;padding:8px 10px;font:inherit;font-family:var(--mono);background:#f8fafc;}
+.chart__field input:focus{border-color:var(--brand);background:#fff;outline:none;box-shadow:0 0 0 3px rgba(59,91,219,.16);}
+</style>
+</head>
+<body>
+  <header class="topbar"><div class="topbar__inner"><span class="brand__mark">A</span>SAP Developer Academy</div></header>
+  <main class="wrap">
+    <p class="eyebrow">Visuals · 인터랙티브 차트</p>
+    <h1>값을 바꾸며 결과를 체감하기</h1>
+    <p class="lead">아래 숫자를 바꾸면 막대가 실시간으로 움직입니다. 사업장별 인원수처럼 "입력 → 시각 결과"의 관계를 손으로 만져 봅니다.</p>
+
+    <div class="chart-card" data-chart>
+      <div class="chart">
+        <div class="chart__col"><div class="chart__bar" data-bar></div><span class="chart__label">1000<br>본사</span></div>
+        <div class="chart__col"><div class="chart__bar" data-bar></div><span class="chart__label">2000<br>공장</span></div>
+        <div class="chart__col"><div class="chart__bar" data-bar></div><span class="chart__label">3000<br>지사</span></div>
+      </div>
+      <div class="chart__inputs">
+        <div class="chart__field"><label>본사 인원</label><input type="number" data-input value="42" min="0" max="100"></div>
+        <div class="chart__field"><label>공장 인원</label><input type="number" data-input value="68" min="0" max="100"></div>
+        <div class="chart__field"><label>지사 인원</label><input type="number" data-input value="25" min="0" max="100"></div>
+      </div>
+    </div>
+  </main>
+
+<script>
+// ===== 컴포넌트 JS — 인터랙티브 차트 =====
+(function(){
+  document.querySelectorAll("[data-chart]").forEach(chart=>{
+    const inputs=chart.querySelectorAll("[data-input]");
+    const bars=chart.querySelectorAll("[data-bar]");
+    function draw(){
+      const vals=[...inputs].map(i=>Math.max(0,+i.value||0));
+      const max=Math.max(1,...vals);
+      vals.forEach((v,i)=>{ bars[i].style.height=(v/max*100)+"%"; bars[i].textContent=v; });
+    }
+    inputs.forEach(i=>i.addEventListener("input",draw));
+    draw();
+  });
+})();
+</script>
+</body>
+</html>

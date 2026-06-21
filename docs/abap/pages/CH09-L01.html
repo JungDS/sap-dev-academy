@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FORM / PERFORM 기본 호출 · 모듈화 기초 · SAP Developer Academy</title>
+<link rel="stylesheet" href="../../../assets/base.css">
+<link rel="stylesheet" href="../../../assets/lesson.css">
+<link rel="stylesheet" href="../../../assets/shell.css">
+<script>/* 읽기 설정 선적용(플래시 방지) */(function(){try{var L=localStorage,r=document.documentElement;if(L.getItem('sda.dark')==='1')r.classList.add('dark');if(L.getItem('sda.wide')==='1')r.classList.add('wide');var f=parseInt(L.getItem('sda.fontPx'),10);if(f>=13&&f<=20)r.style.fontSize=f+'px';}catch(e){}})();</script>
+</head>
+<body data-domain="abap" data-chapter-id="CH09" data-lesson-id="CH09-L01">
+<header class="appbar">
+  <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
+  <span class="appbar__sp"></span>
+  <span class="meta">CH09 · 모듈화 기초</span>
+  <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
+  <div class="tools">
+    <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
+    <button class="icon-btn" id="fsInc" title="글자 크게">A+</button>
+    <button class="icon-btn" id="fsReset" title="글자 크기 초기화">↺</button>
+    <button class="icon-btn" id="darkBtn" title="다크 모드">🌙</button>
+    <button class="icon-btn" id="widthBtn" title="가독 폭 넓게">↔</button>
+    <button class="icon-btn fs-btn" title="전체화면" aria-label="전체화면"></button>
+  </div>
+</header>
+<div class="read-progress"><i></i></div>
+<div class="scrim"></div>
+<nav class="rail" data-shell="rail"></nav>
+<button class="railFab" id="railFab" aria-label="네비 열기">☰</button>
+<div class="stage">
+  <div class="layout">
+    <main class="main">
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH09</nav>
+      <section class="lhead">
+        <p class="lhead__eyebrow">모듈화 기초</p>
+        <h1>FORM / PERFORM 기본 호출</h1>
+        <p class="lhead__direction">반복 코드를 묶는 첫 도구 — 서브루틴(FORM/PERFORM).</p>
+        <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 9</span><span class="tag tag--ls">Lesson 1</span><span class="tag tag--lv">초급</span></div>
+      </section>
+      <article class="prose">
+<section class="lblock"><h2>같은 코드가 반복된다</h2>
+<p>출력·계산 로직을 여기저기서 똑같이 쓰고 있다. 한 곳에 묶어 <strong>이름으로 부르고
+싶다</strong> — 가장 오래된 모듈화 도구가 <button class="term" type="button" data-term="Subroutine">Subroutine</button>(서브루틴), 즉 <code>FORM</code>/<code>PERFORM</code>이다.</p>
+<blockquote>
+<p><strong>먼저 알아둘 것:</strong> <code>FORM</code>/<code>PERFORM</code>은 **레거시(구식)**다. 새 코드는 메서드
+(클래스)를 권장한다(L04~). 하지만 기존 코드에 워낙 많아 <strong>읽을 줄은 알아야</strong> 한다.</p>
+</blockquote>
+</section><section class="lblock"><h2>정의 — FORM ~ ENDFORM</h2>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3</pre><pre class="abap-editor__code"><code><span class="tok-kw">FORM</span> print_hello.
+  <span class="tok-kw">WRITE</span>: / <span class="tok-str">'Hello from subroutine'</span>.
+<span class="tok-kw">ENDFORM</span>.</code></pre></div></div>
+</section><section class="lblock"><h2>호출 — PERFORM</h2>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2</pre><pre class="abap-editor__code"><code><span class="tok-kw">START-OF-SELECTION</span>.
+  <span class="tok-kw">PERFORM</span> print_hello.</code></pre></div></div>
+<ul>
+<li><code>PERFORM</code>으로 <button class="term" type="button" data-term="Subroutine">Subroutine</button> 이름을 부르면 그 블록이 실행된다.</li>
+<li>보통 프로그램 하단에 <code>FORM</code>들을 모아 둔다.</li>
+</ul>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>정의 없이 호출</strong> → <code>PERFORM</code>만 있고 <code>FORM</code>이 없으면 오류.</li>
+<li><strong>새 코드에 FORM 남발</strong> → 레거시다. 신규는 메서드(L04) 권장.</li>
+</ul>
+<hr>
+<p>이름으로 부르는 건 됐다. 그런데 값을 <strong>주고받으려면</strong>? 파라미터가 필요하다 →
+USING / CHANGING(다음 레슨).</p>
+</section>
+      </article>
+      <nav class="lesson-nav" data-shell="prevnext"></nav>
+      <footer class="foot">SAP Developer Academy · CH09 CH09-L01</footer>
+    </main>
+    <aside class="journey" data-shell="journey"></aside>
+  </div>
+</div>
+<div class="term-popup" data-shell="popup" hidden></div>
+<div class="tmodal" data-shell="tmodal" hidden></div>
+<script>window.__SDA__={"domain":"abap","dataBase":"../","siteRoot":"../../../"};</script>
+<script src="../../../assets/shell.js" defer></script>
+</body>
+</html>

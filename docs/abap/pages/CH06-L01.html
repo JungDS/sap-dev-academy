@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Transparent Table 생성(SE11) · Transparent Table (SE11 · SE16N) · SAP Developer Academy</title>
+<link rel="stylesheet" href="../../../assets/base.css">
+<link rel="stylesheet" href="../../../assets/lesson.css">
+<link rel="stylesheet" href="../../../assets/shell.css">
+<script>/* 읽기 설정 선적용(플래시 방지) */(function(){try{var L=localStorage,r=document.documentElement;if(L.getItem('sda.dark')==='1')r.classList.add('dark');if(L.getItem('sda.wide')==='1')r.classList.add('wide');var f=parseInt(L.getItem('sda.fontPx'),10);if(f>=13&&f<=20)r.style.fontSize=f+'px';}catch(e){}})();</script>
+</head>
+<body data-domain="abap" data-chapter-id="CH06" data-lesson-id="CH06-L01">
+<header class="appbar">
+  <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
+  <span class="appbar__sp"></span>
+  <span class="meta">CH06 · Transparent Table (SE11 · SE16N)</span>
+  <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
+  <div class="tools">
+    <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
+    <button class="icon-btn" id="fsInc" title="글자 크게">A+</button>
+    <button class="icon-btn" id="fsReset" title="글자 크기 초기화">↺</button>
+    <button class="icon-btn" id="darkBtn" title="다크 모드">🌙</button>
+    <button class="icon-btn" id="widthBtn" title="가독 폭 넓게">↔</button>
+    <button class="icon-btn fs-btn" title="전체화면" aria-label="전체화면"></button>
+  </div>
+</header>
+<div class="read-progress"><i></i></div>
+<div class="scrim"></div>
+<nav class="rail" data-shell="rail"></nav>
+<button class="railFab" id="railFab" aria-label="네비 열기">☰</button>
+<div class="stage">
+  <div class="layout">
+    <main class="main">
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH06</nav>
+      <section class="lhead">
+        <p class="lhead__eyebrow">Transparent Table (SE11 · SE16N)</p>
+        <h1>Transparent Table 생성(SE11)</h1>
+        <p class="lhead__direction">값을 영구히 — DB에 1:1로 대응하는 투명 테이블을 만든다.</p>
+        <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 6</span><span class="tag tag--ls">Lesson 1</span><span class="tag tag--lv">초급</span></div>
+      </section>
+      <article class="prose">
+<section class="lblock"><h2>끝나면 사라진다</h2>
+<p>CH05의 <button class="term" type="button" data-term="Internal Table">Internal Table</button>은 강력하지만 <strong>메모리</strong>에만 산다. 프로그램이 끝나면
+사라지고, 다른 사용자와 공유도 안 된다. 값을 <strong>디스크에 영구 저장</strong>하고 싶다 —
+그게 <button class="term" type="button" data-term="Transparent Table">Transparent Table</button>(투명 테이블)다.</p>
+</section><section class="lblock"><h2>투명 테이블이란</h2>
+<p><button class="term" type="button" data-term="Transparent Table">Transparent Table</button>은 DDIC에 정의하는 테이블로, <strong>DB의 실제 물리 테이블과
+1:1로 대응</strong>한다. &quot;투명(transparent)&quot;은 DDIC 정의와 DB 테이블이 같은 모양으로
+들여다보인다는 뜻.</p>
+</section><section class="lblock"><h2>SE11에서 만들기</h2>
+<p><code>SE11</code> → Database Table → <code>ZTPERSON</code> → Create. 핵심 입력:</p>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Delivery Class</td>
+<td>보통 <code>A</code>(application data)</td>
+</tr>
+<tr>
+<td>필드</td>
+<td>각 컬럼. 타입은 <button class="term" type="button" data-term="Data Element">Data Element</button>로</td>
+</tr>
+<tr>
+<td>Key</td>
+<td>행을 유일하게 식별하는 키 필드 체크</td>
+</tr>
+<tr>
+<td><button class="term" type="button" data-term="MANDT">MANDT</button></td>
+<td>보통 첫 키 필드 = 클라이언트</td>
+</tr>
+</tbody></table>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">TEXT</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4</pre><pre class="abap-editor__code"><code>MANDT  (Key)  → 클라이언트
+PERSID (Key)  → ZDE_PERSID
+NAME          → ZDE_NAME
+AGE           → ZDE_AGE</code></pre></div></div>
+<p><strong>Technical Settings</strong>(데이터 클래스·크기)까지 채우고 활성화하면, 그 순간 실제
+DB 테이블이 생성된다.</p>
+</section><section class="lblock"><h2>MANDT — 클라이언트 분리</h2>
+<p>대부분 업무 테이블의 첫 키는 <button class="term" type="button" data-term="MANDT">MANDT</button>(클라이언트)다. CH01에서 본 &quot;방(Client)&quot;
+별로 데이터가 분리되는 장치다. 보통 직접 다루지 않아도 시스템이 챙긴다.</p>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>키 미지정</strong> → 최소 하나의 키 필드가 필요. 보통 MANDT + 업무 키.</li>
+<li><strong>활성화 안 함</strong> → 활성화해야 DB 테이블이 실제로 생긴다.</li>
+<li><strong>필드를 표준 타입 직접</strong> → 가능하나 <button class="term" type="button" data-term="Data Element">Data Element</button>로 줘야 라벨·도움말이 산다.</li>
+</ul>
+<hr>
+<p>그릇(테이블)은 만들었다. 이제 <strong>값을 넣어</strong> 보자 → 데이터 입력(SE16N).</p>
+</section>
+      </article>
+      <nav class="lesson-nav" data-shell="prevnext"></nav>
+      <footer class="foot">SAP Developer Academy · CH06 CH06-L01</footer>
+    </main>
+    <aside class="journey" data-shell="journey"></aside>
+  </div>
+</div>
+<div class="term-popup" data-shell="popup" hidden></div>
+<div class="tmodal" data-shell="tmodal" hidden></div>
+<script>window.__SDA__={"domain":"abap","dataBase":"../","siteRoot":"../../../"};</script>
+<script src="../../../assets/shell.js" defer></script>
+</body>
+</html>

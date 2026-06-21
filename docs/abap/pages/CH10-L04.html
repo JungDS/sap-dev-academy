@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Internal Table → SALV 미니 리포트 · SALV 1차 (간단 ALV) · SAP Developer Academy</title>
+<link rel="stylesheet" href="../../../assets/base.css">
+<link rel="stylesheet" href="../../../assets/lesson.css">
+<link rel="stylesheet" href="../../../assets/shell.css">
+<script>/* 읽기 설정 선적용(플래시 방지) */(function(){try{var L=localStorage,r=document.documentElement;if(L.getItem('sda.dark')==='1')r.classList.add('dark');if(L.getItem('sda.wide')==='1')r.classList.add('wide');var f=parseInt(L.getItem('sda.fontPx'),10);if(f>=13&&f<=20)r.style.fontSize=f+'px';}catch(e){}})();</script>
+</head>
+<body data-domain="abap" data-chapter-id="CH10" data-lesson-id="CH10-L04">
+<header class="appbar">
+  <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
+  <span class="appbar__sp"></span>
+  <span class="meta">CH10 · SALV 1차 (간단 ALV)</span>
+  <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
+  <div class="tools">
+    <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
+    <button class="icon-btn" id="fsInc" title="글자 크게">A+</button>
+    <button class="icon-btn" id="fsReset" title="글자 크기 초기화">↺</button>
+    <button class="icon-btn" id="darkBtn" title="다크 모드">🌙</button>
+    <button class="icon-btn" id="widthBtn" title="가독 폭 넓게">↔</button>
+    <button class="icon-btn fs-btn" title="전체화면" aria-label="전체화면"></button>
+  </div>
+</header>
+<div class="read-progress"><i></i></div>
+<div class="scrim"></div>
+<nav class="rail" data-shell="rail"></nav>
+<button class="railFab" id="railFab" aria-label="네비 열기">☰</button>
+<div class="stage">
+  <div class="layout">
+    <main class="main">
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH10</nav>
+      <section class="lhead">
+        <p class="lhead__eyebrow">SALV 1차 (간단 ALV)</p>
+        <h1>Internal Table → SALV 미니 리포트</h1>
+        <p class="lhead__direction">SELECT → SALV까지 한 프로그램으로 — 첫 표 리포트 완성.</p>
+        <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 10</span><span class="tag tag--ls">Lesson 4</span><span class="tag tag--lv">초급</span></div>
+      </section>
+      <article class="prose">
+<section class="lblock"><h2>처음부터 끝까지 한 번에</h2>
+<p>지금까지 배운 걸 모아 <strong>DB 조회 → 표 출력</strong>까지 하나의 프로그램으로 완성한다.
+classic SELECT(CH07) + <button class="term" type="button" data-term="SALV">SALV</button>(CH10)의 결합이다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21</pre><pre class="abap-editor__code"><code><span class="tok-kw">REPORT</span> zsalv_person.
+
+<span class="tok-kw">DATA</span>: lt_person <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ztperson,
+      lo_alv    <span class="tok-kw">TYPE</span> <span class="tok-kw">REF</span> <span class="tok-kw">TO</span> cl_salv_table.
+
+<span class="tok-kw">START-OF-SELECTION</span>.
+  <span class="tok-com">" 1) 데이터 조회 (classic Open SQL)</span>
+  <span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> ztperson <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> lt_person.
+
+  <span class="tok-com">" 2) SALV 객체 생성</span>
+  <span class="tok-kw">TRY</span>.
+      cl_salv_table=&gt;factory(
+        <span class="tok-kw">IMPORTING</span> r_salv_table = lo_alv
+        <span class="tok-kw">CHANGING</span>  t_table      = lt_person ).
+
+      <span class="tok-com">" 3) 표준 기능 + 표시</span>
+      lo_alv-&gt;get_functions( )&gt;set_all( abap_true ).
+      lo_alv-&gt;display( ).
+    <span class="tok-kw">CATCH</span> cx_salv_msg.
+      <span class="tok-kw">MESSAGE</span> <span class="tok-str">'ALV 생성 실패'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'I'</span>.
+  <span class="tok-kw">ENDTRY</span>.</code></pre></div></div>
+<p>실행(F8)하면 정렬·필터·엑셀 내보내기가 되는 <strong>표 리포트</strong>가 뜬다. 첫 &quot;쓸 만한&quot;
+리포트의 완성이다.</p>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>조회 결과 미확인</strong> → 빈 테이블이면 빈 표. <code>lines( )</code>로 확인 후 메시지도 가능.</li>
+<li><strong>classic/modern 혼동</strong> → 이 시점 SELECT는 <strong>classic</strong>(CH18 전). <code>@</code> 안 쓴다.</li>
+</ul>
+<hr>
+<p>미니 리포트는 됐다. 그런데 정렬 고정·색·셀 제어 같은 <strong>심화</strong>는 어디까지가 지금
+범위일까? → 다음 레슨.</p>
+</section>
+      </article>
+      <nav class="lesson-nav" data-shell="prevnext"></nav>
+      <footer class="foot">SAP Developer Academy · CH10 CH10-L04</footer>
+    </main>
+    <aside class="journey" data-shell="journey"></aside>
+  </div>
+</div>
+<div class="term-popup" data-shell="popup" hidden></div>
+<div class="tmodal" data-shell="tmodal" hidden></div>
+<script>window.__SDA__={"domain":"abap","dataBase":"../","siteRoot":"../../../"};</script>
+<script src="../../../assets/shell.js" defer></script>
+</body>
+</html>

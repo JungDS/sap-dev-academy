@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Value Table과 Foreign Key의 차이 · DDIC 관계와 입력도움말(F4) · SAP Developer Academy</title>
+<link rel="stylesheet" href="../../../assets/base.css">
+<link rel="stylesheet" href="../../../assets/lesson.css">
+<link rel="stylesheet" href="../../../assets/shell.css">
+<script>/* 읽기 설정 선적용(플래시 방지) */(function(){try{var L=localStorage,r=document.documentElement;if(L.getItem('sda.dark')==='1')r.classList.add('dark');if(L.getItem('sda.wide')==='1')r.classList.add('wide');var f=parseInt(L.getItem('sda.fontPx'),10);if(f>=13&&f<=20)r.style.fontSize=f+'px';}catch(e){}})();</script>
+</head>
+<body data-domain="abap" data-chapter-id="CH08" data-lesson-id="CH08-L02">
+<header class="appbar">
+  <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
+  <span class="appbar__sp"></span>
+  <span class="meta">CH08 · DDIC 관계와 입력도움말(F4)</span>
+  <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
+  <div class="tools">
+    <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
+    <button class="icon-btn" id="fsInc" title="글자 크게">A+</button>
+    <button class="icon-btn" id="fsReset" title="글자 크기 초기화">↺</button>
+    <button class="icon-btn" id="darkBtn" title="다크 모드">🌙</button>
+    <button class="icon-btn" id="widthBtn" title="가독 폭 넓게">↔</button>
+    <button class="icon-btn fs-btn" title="전체화면" aria-label="전체화면"></button>
+  </div>
+</header>
+<div class="read-progress"><i></i></div>
+<div class="scrim"></div>
+<nav class="rail" data-shell="rail"></nav>
+<button class="railFab" id="railFab" aria-label="네비 열기">☰</button>
+<div class="stage">
+  <div class="layout">
+    <main class="main">
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH08</nav>
+      <section class="lhead">
+        <p class="lhead__eyebrow">DDIC 관계와 입력도움말(F4)</p>
+        <h1>Value Table과 Foreign Key의 차이</h1>
+        <p class="lhead__direction">Domain의 Value Table은 '제안', Foreign Key는 '실제 관계'.</p>
+        <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 8</span><span class="tag tag--ls">Lesson 2</span><span class="tag tag--lv">초급</span></div>
+      </section>
+      <article class="prose">
+<section class="lblock"><h2>비슷해 보이는 둘</h2>
+<p><button class="term" type="button" data-term="Domain">Domain</button>을 만들 때 <strong>Value Table</strong>을 지정할 수 있고, 테이블 필드엔
+<button class="term" type="button" data-term="Foreign Key">Foreign Key</button>를 건다. 둘 다 &quot;어떤 테이블의 값으로 제한&quot;하는 것 같은데 뭐가
+다른가? 헷갈리기 쉬운 지점이라 분명히 짚는다.</p>
+</section><section class="lblock"><h2>Value Table = Domain의 &#39;제안&#39;</h2>
+<ul>
+<li><button class="term" type="button" data-term="Value Table">Value Table</button>은 <strong>Domain 수준</strong>에서 &quot;이 도메인 값은 보통 이 테이블에서 온다&quot;고
+<strong>제안</strong>하는 것이다.</li>
+<li>그 자체로는 검증을 <strong>강제하지 않는다.</strong> 어디까지나 기본 제안.</li>
+</ul>
+</section><section class="lblock"><h2>Foreign Key = 테이블 필드의 &#39;실제 관계&#39;</h2>
+<ul>
+<li><button class="term" type="button" data-term="Foreign Key">Foreign Key</button>는 <strong>테이블 필드 수준</strong>에서 거는 <strong>실제 관계</strong>다.</li>
+<li>이게 있어야 입력검증·F4가 <strong>실제로 동작</strong>한다.</li>
+<li>Foreign Key를 만들 때, Domain에 Value Table이 있으면 시스템이 그걸
+<strong>Check Table로 자동 제안</strong>한다 → 둘은 협력 관계.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Value Table</th>
+<th>Foreign Key</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>정의 위치</td>
+<td>Domain</td>
+<td>테이블 필드</td>
+</tr>
+<tr>
+<td>역할</td>
+<td>제안(기본값)</td>
+<td>실제 관계·검증</td>
+</tr>
+<tr>
+<td>검증 강제</td>
+<td>✗</td>
+<td>✓</td>
+</tr>
+</tbody></table>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>Value Table만 믿기</strong> → 그것만으론 검증 안 된다. 필드에 Foreign Key를 걸어야.</li>
+<li><strong>Check Table ≠ Value Table</strong> → 보통 같게 쓰지만, Foreign Key에서 다른 Check
+Table을 지정할 수도 있다.</li>
+</ul>
+<hr>
+<p>값의 <strong>존재</strong>는 관계로 제한했다. 그런데 사용자가 <strong>목록에서 고르게</strong> 하는 더
+똑똑한 도움말이 있다 → <button class="term" type="button" data-term="Search Help">Search Help</button>(다음 레슨).</p>
+</section>
+      </article>
+      <nav class="lesson-nav" data-shell="prevnext"></nav>
+      <footer class="foot">SAP Developer Academy · CH08 CH08-L02</footer>
+    </main>
+    <aside class="journey" data-shell="journey"></aside>
+  </div>
+</div>
+<div class="term-popup" data-shell="popup" hidden></div>
+<div class="tmodal" data-shell="tmodal" hidden></div>
+<script>window.__SDA__={"domain":"abap","dataBase":"../","siteRoot":"../../../"};</script>
+<script src="../../../assets/shell.js" defer></script>
+</body>
+</html>

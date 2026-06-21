@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<!--
+  접이식 설명 (Foldable Explanation) — standalone
+  ────────────────────────────────────────────────────────────
+  <details>/<summary> 기반 점진 공개. 처음엔 핵심만, 펼치면 깊이.
+  순수 HTML/CSS (네이티브 토글). JS 없음.
+  재사용 시: "details.foldable" CSS 블록만 가져가면 됩니다.
+-->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>접이식 설명 · Sample</title>
+<style>
+:root{--bg:#f6f7fb;--surface:#fff;--ink:#1c2233;--ink-soft:#5b6478;--line:#e6e8ef;--brand:#3b5bdb;--accent:#0ca678;--radius:14px;--font:-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic",Roboto,sans-serif;--mono:'D2Coding',Consolas,Monaco,monospace;}
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.65;}
+.topbar{position:sticky;top:0;z-index:20;border-bottom:1px solid var(--line);background:var(--surface);}
+.topbar__inner{max-width:1080px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:12px;font-weight:800;}
+.brand__mark{width:28px;height:28px;border-radius:7px;background:var(--brand);color:#fff;display:grid;place-items:center;}
+.wrap{max-width:760px;margin:28px auto 72px;padding:0 24px;}
+.eyebrow{color:var(--brand);font-weight:800;font-size:.82rem;letter-spacing:.05em;text-transform:uppercase;}
+h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 24px;}
+
+/* ===== 컴포넌트 CSS — 접이식 ===== */
+details.foldable{border:1px solid var(--line);border-radius:12px;padding:0;margin:12px 0;background:#fff;overflow:hidden;}
+details.foldable>summary{cursor:pointer;font-weight:700;color:var(--brand);padding:14px 18px;list-style:none;display:flex;align-items:center;gap:10px;user-select:none;}
+details.foldable>summary::-webkit-details-marker{display:none;}
+details.foldable>summary::before{content:"▸";transition:transform .2s;color:var(--brand);}
+details.foldable[open]>summary::before{transform:rotate(90deg);}
+details.foldable>summary:hover{background:#f7f9ff;}
+details.foldable[open]>summary{border-bottom:1px solid var(--line);background:#f7f9ff;}
+.foldable__inner{padding:14px 18px 18px;color:#3a4256;}
+.foldable__inner p{margin:0 0 8px;}
+.foldable__inner code{background:#f1f3f9;padding:2px 6px;border-radius:5px;font-family:var(--mono);font-size:.9em;}
+.foldable__tag{margin-left:auto;font-size:.72rem;font-weight:800;border-radius:999px;padding:3px 10px;background:#eef2ff;color:#2f4bc0;}
+.foldable__tag.adv{background:#fff3e6;color:#b45309;}
+</style>
+</head>
+<body>
+  <header class="topbar"><div class="topbar__inner"><span class="brand__mark">A</span>SAP Developer Academy</div></header>
+  <main class="wrap">
+    <p class="eyebrow">Foundations · 접이식 설명</p>
+    <h1>점진 공개로 인지 부하 낮추기</h1>
+    <p class="lead">처음엔 핵심 한 줄만 보여 주고, 더 알고 싶을 때만 펼치게 합니다. 한 화면에 모든 깊이를 쏟지 않습니다.</p>
+
+    <details class="foldable" open>
+      <summary>DDIC 가 뭔가요?<span class="foldable__tag">기본</span></summary>
+      <div class="foldable__inner">
+        <p>DDIC(Data Dictionary)는 SAP의 <strong>중앙 데이터 정의 사전</strong>입니다. 테이블·데이터 타입·도메인을 한 곳에서 정의해 전체 시스템이 공유합니다.</p>
+      </div>
+    </details>
+
+    <details class="foldable">
+      <summary>왜 ABAP 변수 타입을 DDIC와 연결하나요?<span class="foldable__tag adv">심화</span></summary>
+      <div class="foldable__inner">
+        <p><code>DATA lv_pernr TYPE pa0001-pernr.</code> 처럼 선언하면, 테이블 컬럼의 길이·타입이 바뀌어도 코드가 자동으로 따라갑니다.</p>
+        <p>즉 <strong>단일 진실 공급원(Single Source of Truth)</strong>이 DDIC가 되어 유지보수 비용이 줄어듭니다.</p>
+      </div>
+    </details>
+
+    <details class="foldable">
+      <summary>도메인(Domain)과 데이터 요소(Data Element)의 차이는?<span class="foldable__tag adv">심화</span></summary>
+      <div class="foldable__inner">
+        <p><strong>도메인</strong> = 기술적 속성(타입·길이·값 범위). <strong>데이터 요소</strong> = 도메인 + 의미(필드 라벨·문서).</p>
+        <p>비유하면 도메인은 "그릇의 규격", 데이터 요소는 "그 그릇에 붙인 이름표"입니다.</p>
+      </div>
+    </details>
+  </main>
+</body>
+</html>

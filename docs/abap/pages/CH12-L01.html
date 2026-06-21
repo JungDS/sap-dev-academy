@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>INNER JOIN 기본 개념과 구현 · Open SQL 2차: JOIN·집계 · SAP Developer Academy</title>
+<link rel="stylesheet" href="../../../assets/base.css">
+<link rel="stylesheet" href="../../../assets/lesson.css">
+<link rel="stylesheet" href="../../../assets/shell.css">
+<script>/* 읽기 설정 선적용(플래시 방지) */(function(){try{var L=localStorage,r=document.documentElement;if(L.getItem('sda.dark')==='1')r.classList.add('dark');if(L.getItem('sda.wide')==='1')r.classList.add('wide');var f=parseInt(L.getItem('sda.fontPx'),10);if(f>=13&&f<=20)r.style.fontSize=f+'px';}catch(e){}})();</script>
+</head>
+<body data-domain="abap" data-chapter-id="CH12" data-lesson-id="CH12-L01">
+<header class="appbar">
+  <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
+  <span class="appbar__sp"></span>
+  <span class="meta">CH12 · Open SQL 2차: JOIN·집계</span>
+  <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
+  <div class="tools">
+    <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
+    <button class="icon-btn" id="fsInc" title="글자 크게">A+</button>
+    <button class="icon-btn" id="fsReset" title="글자 크기 초기화">↺</button>
+    <button class="icon-btn" id="darkBtn" title="다크 모드">🌙</button>
+    <button class="icon-btn" id="widthBtn" title="가독 폭 넓게">↔</button>
+    <button class="icon-btn fs-btn" title="전체화면" aria-label="전체화면"></button>
+  </div>
+</header>
+<div class="read-progress"><i></i></div>
+<div class="scrim"></div>
+<nav class="rail" data-shell="rail"></nav>
+<button class="railFab" id="railFab" aria-label="네비 열기">☰</button>
+<div class="stage">
+  <div class="layout">
+    <main class="main">
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH12</nav>
+      <section class="lhead">
+        <p class="lhead__eyebrow">Open SQL 2차: JOIN·집계</p>
+        <h1>INNER JOIN 기본 개념과 구현</h1>
+        <p class="lhead__direction">여러 테이블을 키로 합친다 — classic INNER JOIN.</p>
+        <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 12</span><span class="tag tag--ls">Lesson 1</span><span class="tag tag--lv">중급</span></div>
+      </section>
+      <article class="prose">
+<section class="lblock"><h2>한 테이블론 부족하다</h2>
+<p>사람 테이블엔 <code>dept_id</code>만 있고, 부서명은 부서 테이블에 있다. 매번 따로 읽어
+맞추긴 번거롭다. DB에서 <strong>키로 합쳐</strong> 한 번에 읽고 싶다 — <button class="term" type="button" data-term="JOIN">JOIN</button>이다.</p>
+<blockquote>
+<p>이 챕터는 전부 <strong>classic</strong>이다. 필드는 공백 구분, <code>~</code>로 별칭·필드를 잇고,
+<code>@</code>는 쓰지 않는다(modern은 CH18).</p>
+</blockquote>
+</section><section class="lblock"><h2>INNER JOIN — 양쪽 다 있는 행만</h2>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> p~persid p~name d~deptname
+  <span class="tok-kw">FROM</span> ztperson <span class="tok-kw">AS</span> p
+  <span class="tok-kw">INNER</span> <span class="tok-kw">JOIN</span> ztdept <span class="tok-kw">AS</span> d
+    <span class="tok-kw">ON</span> p~dept_id = d~dept_id
+  <span class="tok-kw">INTO</span> <span class="tok-kw">CORRESPONDING</span> <span class="tok-kw">FIELDS</span> <span class="tok-kw">OF</span> <span class="tok-kw">TABLE</span> lt_out
+  <span class="tok-kw">WHERE</span> p~age &gt;= <span class="tok-num">20</span>.</code></pre></div></div>
+<ul>
+<li><code>AS p</code>, <code>AS d</code> — 테이블 <strong>별칭</strong>.</li>
+<li><code>p~persid</code> — <code>별칭~필드</code>(classic의 필드 구분자 <code>~</code>).</li>
+<li><code>ON ... = ...</code> — 합치는 키 조건.</li>
+<li><button class="term" type="button" data-term="INNER JOIN">INNER JOIN</button>은 <strong>양쪽에 다 매칭되는 행만</strong> 결과에 남긴다.</li>
+</ul>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>콤마/@ 사용</strong> → classic 위반. 공백 구분, <code>@</code> 없이.</li>
+<li><strong>별칭 없이 동일 필드명</strong> → 모호. 별칭(<code>p~</code>,<code>d~</code>)으로 명확히.</li>
+<li><strong>ON 조건 누락</strong> → 카테시안 곱(행 폭증). 반드시 키로 ON.</li>
+</ul>
+<hr>
+<p>INNER는 양쪽 다 있어야 남는다. 한쪽만 있어도 살리려면? → LEFT OUTER JOIN(다음 레슨).</p>
+</section>
+      </article>
+      <nav class="lesson-nav" data-shell="prevnext"></nav>
+      <footer class="foot">SAP Developer Academy · CH12 CH12-L01</footer>
+    </main>
+    <aside class="journey" data-shell="journey"></aside>
+  </div>
+</div>
+<div class="term-popup" data-shell="popup" hidden></div>
+<div class="tmodal" data-shell="tmodal" hidden></div>
+<script>window.__SDA__={"domain":"abap","dataBase":"../","siteRoot":"../../../"};</script>
+<script src="../../../assets/shell.js" defer></script>
+</body>
+</html>

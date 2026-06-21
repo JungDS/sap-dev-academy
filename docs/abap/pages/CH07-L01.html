@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SELECT … INTO TABLE · Open SQL 기본 조회 · SAP Developer Academy</title>
+<link rel="stylesheet" href="../../../assets/base.css">
+<link rel="stylesheet" href="../../../assets/lesson.css">
+<link rel="stylesheet" href="../../../assets/shell.css">
+<script>/* 읽기 설정 선적용(플래시 방지) */(function(){try{var L=localStorage,r=document.documentElement;if(L.getItem('sda.dark')==='1')r.classList.add('dark');if(L.getItem('sda.wide')==='1')r.classList.add('wide');var f=parseInt(L.getItem('sda.fontPx'),10);if(f>=13&&f<=20)r.style.fontSize=f+'px';}catch(e){}})();</script>
+</head>
+<body data-domain="abap" data-chapter-id="CH07" data-lesson-id="CH07-L01">
+<header class="appbar">
+  <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
+  <span class="appbar__sp"></span>
+  <span class="meta">CH07 · Open SQL 기본 조회</span>
+  <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
+  <div class="tools">
+    <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
+    <button class="icon-btn" id="fsInc" title="글자 크게">A+</button>
+    <button class="icon-btn" id="fsReset" title="글자 크기 초기화">↺</button>
+    <button class="icon-btn" id="darkBtn" title="다크 모드">🌙</button>
+    <button class="icon-btn" id="widthBtn" title="가독 폭 넓게">↔</button>
+    <button class="icon-btn fs-btn" title="전체화면" aria-label="전체화면"></button>
+  </div>
+</header>
+<div class="read-progress"><i></i></div>
+<div class="scrim"></div>
+<nav class="rail" data-shell="rail"></nav>
+<button class="railFab" id="railFab" aria-label="네비 열기">☰</button>
+<div class="stage">
+  <div class="layout">
+    <main class="main">
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH07</nav>
+      <section class="lhead">
+        <p class="lhead__eyebrow">Open SQL 기본 조회</p>
+        <h1>SELECT … INTO TABLE</h1>
+        <p class="lhead__direction">저장된 데이터를 다시 읽는다 — classic SELECT로 내부 테이블에 담고, 컬럼·조건을 직접 조합해 본다.</p>
+        <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 7</span><span class="tag tag--ls">Lesson 1</span><span class="tag tag--lv">초급</span></div>
+      </section>
+      <section class="lcard tcode">
+        <p class="lcard__h"><span class="ic">🖥️</span>이번 Lesson에서 다루는 트랜잭션 코드</p>
+        <button class="tcode-label" data-tcode="SE16N" data-badge="신규">
+          <span class="tcode-label__badge">신규</span>
+          <span class="tcode-label__code">SE16N</span>
+          <span class="tcode-label__hint">자세히 보기 ›</span>
+        </button>
+      </section>
+      <article class="prose">
+<section class="lblock"><h2>저장한 걸 다시 읽고 싶다</h2>
+<p>CH06에서 데이터를 <button class="term" type="button" data-term="Transparent Table">Transparent Table</button>(디스크에 영구 저장되는 DB 테이블)에 넣었다.
+이제 프로그램에서 그 값을 <strong>읽어</strong> 와야 쓸모가 있다. DB에서 읽는 언어가 <button class="term" type="button" data-term="Open SQL">Open SQL</button>이다.</p>
+<blockquote>
+<p>📌 이 챕터는 <strong>classic 구문</strong>으로 쓴다 — 필드를 <strong>공백</strong>으로 나열하고, 비교 값에 <code>@</code>를 붙이지 않는다.
+현대 <code>@</code>/<code>@DATA()</code> 구문은 <strong>CH18</strong>에서 별도로 배운다. 지금 섞으면 경계가 무너진다.</p>
+</blockquote>
+</section><section class="lblock"><h2>SELECT … INTO TABLE — 여러 행 읽기</h2>
+<p>DB 테이블의 행들을 <button class="term" type="button" data-term="Internal Table">Internal Table</button>(메모리에 잠깐 두는 표)에 한 번에 담는다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> lt_person <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ztperson.
+
+<span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> ztperson
+  <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> lt_person.
+
+<span class="tok-kw">IF</span> sy-subrc = <span class="tok-num">0</span>.
+  <span class="tok-kw">WRITE</span>: / <span class="tok-kw">lines</span>( lt_person ), <span class="tok-str">'건 읽음'</span>.
+<span class="tok-kw">ENDIF</span>.</code></pre></div></div>
+<ul>
+<li><code>INTO TABLE</code>은 결과 <strong>전체</strong>를 내부 테이블에 채운다.</li>
+<li>성공 여부는 <button class="term" type="button" data-term="sy-subrc">sy-subrc</button>(0 = 1건 이상), 읽은 행 수는 <code>sy-dbcnt</code>.</li>
+</ul>
+</section><section class="lblock"><h2>직접 조회해 보자</h2>
+<p>조회는 <strong>두 가지를 고르는 일</strong>이다 — 어떤 <strong>컬럼</strong>을 읽을지(projection), 어떤 <strong>행</strong>만 읽을지(WHERE, selection).
+아래 시뮬레이터에서 컬럼과 조건을 바꾸면 <strong>classic SELECT 코드가 실시간으로</strong> 만들어지고,
+<strong>▶ 실행(F8)</strong> 을 누르면 <code>ZTPERSON</code>에서 조건에 맞는 행이 <code>LT_PERSON</code>으로 담긴다.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">SELECT 조회 시뮬레이터 — 컬럼·조건을 바꿔 실행</span><a class="embed__open" href="../../../sample/code-learning/select-query-simulator.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../sample/code-learning/select-query-simulator.html" loading="lazy" title="SELECT 조회 시뮬레이터 — 컬럼·조건을 바꿔 실행" style="height:620px"></iframe></figure>
+<blockquote>
+<p>🖱️ 예제 칩 <strong>&quot;컬럼만 (name age)&quot;</strong> 을 누르면 코드가 <code>SELECT name age …</code>로 바뀌고 결과 표의 <strong>열이 줄어든다</strong>.
+<strong>&quot;조건 (age &gt;= 33)&quot;</strong> 은 원본 테이블에서 <strong>맞는 행만 초록색</strong>으로 강조되는 걸 볼 수 있다.</p>
+</blockquote>
+</section><section class="lblock"><h2>필요한 컬럼만 (classic — 공백 구분)</h2>
+<p>전체(<code>*</code>)보다 필요한 컬럼만 읽는 게 빠르다. <strong>classic은 필드를 공백으로</strong> 나열한다(콤마 ✕).</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> persid name age          <span class="tok-com">" 콤마 없이 공백 구분 (classic)</span>
+  <span class="tok-kw">FROM</span> ztperson
+  <span class="tok-kw">INTO</span> <span class="tok-kw">CORRESPONDING</span> <span class="tok-kw">FIELDS</span> <span class="tok-kw">OF</span> <span class="tok-kw">TABLE</span> lt_person.</code></pre></div></div>
+<ul>
+<li>컬럼 일부만 읽을 땐, 같은 이름 필드에 맞춰 담는 <strong><code>INTO CORRESPONDING FIELDS OF TABLE</code></strong> 을 쓴다.</li>
+<li>시뮬레이터에서 &quot;컬럼 선택&quot;을 켜면 <code>INTO TABLE</code> → <code>INTO CORRESPONDING FIELDS OF TABLE</code>로 <strong>자동으로 바뀌는</strong> 걸 확인해 보라.</li>
+</ul>
+</section><section class="lblock"><h2>결과는 반드시 확인한다</h2>
+<p>조회가 <strong>항상 성공하는 건 아니다.</strong> 조건에 맞는 행이 하나도 없으면 <button class="term" type="button" data-term="sy-subrc">sy-subrc</button>가 <code>4</code>가 된다.</p>
+<table>
+<thead>
+<tr>
+<th>결과</th>
+<th>sy-subrc</th>
+<th>sy-dbcnt</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1건 이상 읽음</td>
+<td><code>0</code></td>
+<td>읽은 행 수</td>
+</tr>
+<tr>
+<td>한 건도 없음</td>
+<td><code>4</code></td>
+<td><code>0</code></td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>🔎 시뮬레이터에서 <code>WHERE age &gt; 100</code> 처럼 아무도 안 맞는 조건을 주면 <strong><code>sy-subrc = 4</code></strong> 가 뜬다.
+결과를 안 보고 다음 로직으로 가면, 빈 테이블을 가지고 일하다 사고가 난다.</p>
+</blockquote>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<blockquote>
+<p>⚠️ <strong>콤마로 필드 나열</strong> — <code>SELECT persid, name</code>은 classic에서 오류. 콤마·<code>@</code>는 CH18(modern)부터.</p>
+</blockquote>
+<blockquote>
+<p>⚠️ <strong>결과 미확인</strong> — 빈 결과일 수 있다. 항상 <button class="term" type="button" data-term="sy-subrc">sy-subrc</button>·<code>lines( )</code>로 확인.</p>
+</blockquote>
+<blockquote>
+<p>⚠️ <strong>큰 테이블 전체 SELECT</strong> — <code>SELECT *</code>로 다 읽으면 성능 위험. 다음 레슨의 <strong>WHERE</strong>로 줄인다.</p>
+</blockquote>
+</section><section class="lblock"><h2>정리</h2>
+<ul>
+<li>저장된 데이터를 읽는 언어가 <button class="term" type="button" data-term="Open SQL">Open SQL</button> — 이 챕터는 <strong>classic</strong>(공백 구분·<code>@</code> 없음).</li>
+<li><code>SELECT … INTO TABLE</code>로 여러 행을 <button class="term" type="button" data-term="Internal Table">Internal Table</button>에 담는다.</li>
+<li>컬럼 일부만 읽으면 <code>INTO CORRESPONDING FIELDS OF TABLE</code>.</li>
+<li>조회 결과는 <strong>반드시 <button class="term" type="button" data-term="sy-subrc">sy-subrc</button></strong> 로 확인한다(없으면 <code>4</code>).</li>
+</ul>
+<hr>
+<p>전부 읽어왔다. 그런데 보통은 <strong>조건에 맞는 행만</strong> 필요하다 → WHERE(다음 레슨).</p>
+</section>
+      </article>
+      <nav class="lesson-nav" data-shell="prevnext"></nav>
+      <footer class="foot">SAP Developer Academy · CH07 CH07-L01</footer>
+    </main>
+    <aside class="journey" data-shell="journey"></aside>
+  </div>
+</div>
+<div class="term-popup" data-shell="popup" hidden></div>
+<div class="tmodal" data-shell="tmodal" hidden></div>
+<script>window.__SDA__={"domain":"abap","dataBase":"../","siteRoot":"../../../"};</script>
+<script src="../../../assets/shell.js" defer></script>
+</body>
+</html>

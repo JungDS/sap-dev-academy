@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<!--
+  레슨 셸 v2-B — 모던 플랫 / 인디고·슬레이트 (standalone)
+  ────────────────────────────────────────────────────────────
+  v2-A와 동일한 구조·동작(상단 앱바, 우측 2탭 네비, 헤더→T코드→목표→본문→정리→이전/다음).
+  디자인 방향만 다름: 평평하고 또렷한 카드, 작은 모서리, 인디고 액센트,
+  본문 호버 = 좌측 바 슬라이드 + 번호 배지 채움, 네비 탭 = 밑줄형.
+  외부 의존성 없음. 이름은 고정 풀(정훈영=1번).
+-->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Domain 기본 설계 · 레슨 셸 v2-B</title>
+<style>
+:root{
+  --bg:#f6f7fb;--surface:#fff;--ink:#161a26;--ink-soft:#5b6478;--line:#e5e7ef;
+  --brand:#4f46e5;--brand-2:#6366f1;--accent:#0d9488;--soon:#9aa3b5;
+  --radius:12px;--shadow:0 1px 2px rgba(20,28,51,.05),0 6px 18px rgba(20,28,51,.06);
+  --appbar-h:56px;
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic",Roboto,sans-serif;
+  --mono:'D2Coding',Consolas,Monaco,monospace;
+}
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.75;min-height:100vh;}
+a{color:var(--brand);text-decoration:none;}
+
+/* 앱바 */
+.appbar{position:sticky;top:0;z-index:40;height:var(--appbar-h);display:flex;align-items:center;gap:12px;padding:0 18px;background:var(--surface);border-bottom:1px solid var(--line);}
+.appbar__home{display:flex;align-items:center;gap:8px;font-weight:800;color:var(--brand);}
+.appbar__sp{flex:1;}
+.appbar .meta{font-size:.78rem;font-weight:600;color:var(--ink-soft);background:#f2f3f8;border-radius:7px;padding:5px 11px;white-space:nowrap;}
+.appbar .btn-soft{font-size:.82rem;font-weight:700;color:#fff;background:var(--brand);border:0;border-radius:8px;padding:7px 14px;transition:all .15s;}
+.appbar .btn-soft:hover{background:#4338ca;}
+.icon-btn{width:34px;height:34px;border-radius:8px;border:1px solid var(--line);background:#fff;cursor:pointer;display:grid;place-items:center;color:var(--ink);transition:all .15s;}
+.icon-btn:hover{border-color:var(--brand);color:var(--brand);}
+.read-progress{position:fixed;top:var(--appbar-h);left:0;right:0;height:3px;z-index:39;background:rgba(79,70,229,.08);}
+.read-progress>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--accent));transition:width .12s ease-out;}
+@media(max-width:720px){.appbar .meta{display:none;}}
+
+/* 레이아웃 */
+/* nav 영역 상시 예약 → 접어도 본문 레이아웃 불변(독립 요소) */
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 350px;max-width:1320px;margin:0 auto;padding:22px 24px 90px;align-items:start;}
+.main{min-width:0;max-width:880px;margin:0 auto;}
+
+/* B 핸들: 컴팩트 아이콘(쉐브론) 버튼 */
+.nav-handle{position:fixed;right:0;top:32%;z-index:45;background:var(--brand);color:#fff;border:0;border-radius:8px 0 0 8px;width:30px;height:48px;font-size:1.15rem;font-weight:700;cursor:pointer;box-shadow:-2px 2px 10px rgba(79,70,229,.3);display:grid;place-items:center;line-height:1;}
+.nav-handle:hover{background:#4338ca;width:34px;}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px;margin:14px 0;box-shadow:var(--shadow);}
+
+/* 헤더 — 플랫 화이트 + 하단 인디고 라인 */
+.lhead{background:var(--surface);border:1px solid var(--line);border-bottom:3px solid var(--brand);border-radius:var(--radius);padding:24px 26px;box-shadow:var(--shadow);}
+.crumb{font-size:.86rem;color:var(--ink-soft);font-weight:600;}
+.crumb a{color:var(--brand);} .crumb b{color:var(--ink);} .crumb i{font-style:normal;color:#b6c0d8;margin:0 6px;}
+.lhead__eyebrow{margin:12px 0 4px;color:var(--brand);font-weight:800;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;}
+.lhead h1{font-size:2rem;margin:0 0 14px;line-height:1.18;letter-spacing:-.01em;}
+.tags{display:flex;flex-wrap:wrap;gap:7px;}
+.tag{font-size:.76rem;font-weight:700;border-radius:7px;padding:5px 11px;border:1px solid var(--line);}
+.tag.t-track{background:#f1eefe;color:#6d28d9;border-color:#e3dbfb;} .tag.t-ch{background:#f2f3f8;color:#475569;}
+.tag.t-ls{background:#eef0fe;color:var(--brand);border-color:#dcdefa;} .tag.t-lv{background:#e9faf6;color:#0b7a6e;border-color:#cdeee7;}
+
+.card__h{display:flex;align-items:center;gap:9px;font-weight:800;font-size:1rem;margin:0 0 12px;}
+.card__h .ic{font-size:1.12rem;}
+
+.tcode{border-left:4px solid var(--brand);}
+.tcode__box{border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:#fafaff;transition:all .18s;}
+.tcode__box:hover{border-color:var(--brand);}
+.tcode__badge{font-size:.72rem;font-weight:800;color:#0b7a6e;background:#e9faf6;border-radius:5px;padding:3px 8px;}
+.tcode__code{font-weight:800;font-size:1.05rem;margin:8px 0 4px;font-family:var(--mono);}
+.tcode__box p{margin:0;color:var(--ink-soft);font-size:.92rem;}
+
+.goals{background:#f3f4fe;border:1px solid #e1e3fb;border-left:4px solid var(--brand);}
+.goals p{margin:0;color:#2b2f4a;}
+
+/* 본문 — 번호 배지 + 좌측 바 슬라이드 */
+.block{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px 18px;margin:12px 0;overflow:hidden;transition:border-color .2s,box-shadow .2s;}
+.block::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--brand);transform:translateX(-4px);transition:transform .22s cubic-bezier(.16,1,.3,1);}
+.block:hover{border-color:#c8caf6;box-shadow:0 10px 26px rgba(20,28,51,.08);}
+.block:hover::before{transform:translateX(0);}
+.block h2{font-size:1.14rem;margin:0 0 6px;display:flex;align-items:center;gap:10px;}
+.block h2 .num{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:#eef0fe;color:var(--brand);font-size:.9rem;font-weight:800;transition:all .2s;}
+.block:hover h2 .num{background:var(--brand);color:#fff;transform:scale(1.05);}
+.block p{margin:9px 0;color:#2c3346;}
+.ex{margin:12px 0 0;border-left:3px solid #c8caf6;background:#f5f6ff;border-radius:0 8px 8px 0;padding:11px 14px;font-size:.94rem;color:#374063;}
+.ex b{color:var(--brand);}
+
+details.fold{border:1px solid var(--line);border-radius:9px;background:#fafaff;margin:12px 0;overflow:hidden;}
+details.fold>summary{cursor:pointer;font-weight:700;color:var(--brand);padding:11px 15px;list-style:none;display:flex;gap:9px;align-items:center;}
+details.fold>summary::-webkit-details-marker{display:none;}
+details.fold>summary::before{content:"+";font-size:1.1rem;line-height:1;transition:transform .2s;}
+details.fold[open]>summary::before{transform:rotate(45deg);}
+details.fold .fold__in{padding:13px 16px;border-top:1px solid var(--line);color:#3a4256;font-size:.95rem;}
+
+.term{border-bottom:2px dotted var(--brand);color:var(--brand);font-weight:600;cursor:help;}
+.term-popup{position:absolute;z-index:60;max-width:300px;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 12px 30px rgba(20,28,51,.18);padding:13px 15px;}
+.term-popup b{display:block;margin-bottom:5px;} .term-popup span{font-size:.88rem;color:var(--ink-soft);}
+.term-popup__x{position:absolute;top:7px;right:10px;border:0;background:none;cursor:pointer;color:#94a0b8;font-size:1.1rem;}
+
+.recap__grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;}
+.recap__c{border:1px solid var(--line);border-radius:10px;padding:15px 16px;background:#fff;transition:all .18s;}
+.recap__c:hover{border-color:var(--brand);background:#fafaff;transform:translateY(-2px);}
+.recap__c b{display:block;margin-bottom:5px;color:var(--brand);} .recap__c span{font-size:.92rem;color:#475569;}
+.next-preview{display:flex;gap:12px;align-items:flex-start;margin-top:16px;padding:14px 16px;border-radius:10px;background:#f3f4fe;border:1px solid #e1e3fb;color:#2b2f4a;}
+.next-preview .ic{font-size:1.2rem;}
+
+.lesson-nav{display:flex;gap:12px;margin:22px 0 8px;}
+.lesson-nav a{flex:1;border:1px solid var(--line);border-radius:var(--radius);background:#fff;padding:14px 16px;box-shadow:var(--shadow);transition:all .18s;}
+.lesson-nav a:hover{border-color:var(--brand);background:#fafaff;}
+.lesson-nav .dir{font-size:.72rem;color:var(--soon);font-weight:700;}
+.lesson-nav .ttl{display:block;margin-top:3px;font-weight:700;}
+.lesson-nav .next{text-align:right;}
+.foot{color:var(--ink-soft);font-size:.84rem;padding:22px 4px;border-top:1px solid var(--line);margin-top:18px;}
+
+/* 우측 네비 — 밑줄형 탭 */
+.rnav{position:fixed;right:16px;top:calc(var(--appbar-h) + 14px);width:318px;max-height:calc(100vh - var(--appbar-h) - 28px);overflow:auto;z-index:30;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);transition:transform .28s cubic-bezier(.4,0,.2,1);}
+body.nav-collapsed .rnav{transform:translateX(calc(100% + 40px));}
+.rnav__cur{background:#f3f4fe;border:1px solid #e1e3fb;border-radius:9px;padding:11px 13px;margin-bottom:12px;}
+.rnav__cur small{font-size:.72rem;color:var(--ink-soft);font-weight:700;} .rnav__cur b{display:block;font-size:1rem;}
+.rnav__tabs{display:flex;gap:0;margin-bottom:12px;border-bottom:2px solid var(--line);}
+.rnav__tab{flex:1;border:0;background:none;color:var(--ink-soft);padding:9px 4px;font:inherit;font-size:.84rem;font-weight:700;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s;}
+.rnav__tab.on{color:var(--brand);border-bottom-color:var(--brand);}
+.rnav__panel{display:none;} .rnav__panel.on{display:block;}
+.rnav__chap{font-size:.74rem;color:var(--ink-soft);font-weight:800;margin:4px 0 8px;}
+.lesson-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px;}
+.lesson-list a{display:block;border-left:3px solid transparent;border-radius:0 8px 8px 0;padding:9px 11px;transition:all .15s;}
+.lesson-list a:hover{background:#f5f6ff;}
+.lesson-list small{font-size:.68rem;font-weight:800;color:var(--soon);letter-spacing:.04em;}
+.lesson-list .t{display:block;font-size:.88rem;color:#33405c;font-weight:600;}
+.lesson-list a.on{background:#eef0fe;border-left-color:var(--brand);}
+.lesson-list a.on small{color:var(--brand);} .lesson-list a.on .t{color:var(--brand);}
+.rnav__move{margin-top:12px;border-top:1px solid var(--line);padding-top:10px;}
+.rnav__move a{display:block;font-size:.85rem;color:var(--ink-soft);padding:6px 4px;}
+.rnav__move a:hover{color:var(--brand);}
+.rnav__prog{font-size:.78rem;font-weight:800;color:#33405c;display:flex;justify-content:space-between;margin:2px 0 7px;}
+.prog{height:7px;border-radius:999px;background:#e7e8f2;overflow:hidden;margin-bottom:14px;}
+.prog>i{display:block;height:100%;width:5%;background:linear-gradient(90deg,var(--brand),var(--accent));}
+.chap-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;}
+.chap-list li{display:flex;gap:9px;align-items:flex-start;border-left:3px solid transparent;border-radius:0 8px 8px 0;padding:9px 10px;cursor:pointer;transition:all .15s;font-size:.84rem;color:#33405c;}
+.chap-list li:hover{background:#f5f6ff;}
+.chap-list li .dot{width:13px;height:13px;border-radius:4px;border:2px solid #cbd0e2;flex-shrink:0;margin-top:4px;transition:all .15s;}
+.chap-list li.on{background:#eef0fe;border-left-color:var(--brand);color:var(--brand);font-weight:700;}
+.chap-list li.on .dot{border-color:var(--brand);background:var(--brand);}
+.rnav__note{font-size:.74rem;color:var(--ink-soft);margin:6px 0 10px;}
+
+.scrim{position:fixed;inset:0;background:rgba(15,20,35,.4);z-index:55;opacity:0;pointer-events:none;transition:opacity .25s;}
+body.nav-open .scrim{opacity:1;pointer-events:auto;}
+@media(max-width:1000px){
+  .layout{grid-template-columns:minmax(0,1fr);}
+  .rnav{position:fixed;right:0;top:0;bottom:0;width:min(88vw,350px);max-height:none;border-radius:0;z-index:60;transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);}
+  body.nav-open .rnav{transform:none;} body.nav-collapsed .rnav{transform:translateX(100%);}
+}
+@media(min-width:1001px){ .scrim{display:none;} }
+</style>
+</head>
+<body>
+  <header class="appbar">
+    <a class="appbar__home" href="#">🏠 SAP 학습자료 홈</a>
+    <span class="appbar__sp"></span>
+    <span class="meta">수정일자 2026-06-18</span>
+    <span class="meta">배포자 정훈영</span>
+    <a class="btn-soft" href="#">ABAP 개발 홈</a>
+    <button class="icon-btn fs-btn" title="전체화면">⛶</button>
+  </header>
+  <div class="read-progress"><i></i></div>
+  <button class="nav-handle" title="네비 접기">›</button>
+  <div class="scrim"></div>
+
+  <div class="layout">
+    <main class="main">
+      <section class="lhead">
+        <p class="crumb"><a href="#">Home</a><i>›</i><a href="#">ABAP 커리큘럼</a><i>›</i><a href="#">DDIC 1차: 기본 데이터 구조 생성</a><i>›</i><b>Domain 기본 설계</b></p>
+        <p class="lhead__eyebrow">ABAP 기본 이론 및 구현 흐름</p>
+        <h1>Domain 기본 설계</h1>
+        <div class="tags"><span class="tag t-track">Track 1</span><span class="tag t-ch">Chapter 1</span><span class="tag t-ls">Lesson 2</span><span class="tag t-lv">하 (Low)</span></div>
+      </section>
+
+      <section class="card tcode">
+        <p class="card__h"><span class="ic">🖥️</span>이번 Lesson에서 다루는 트랜잭션 코드</p>
+        <div class="tcode__box">
+          <span class="tcode__badge">복습</span>
+          <p class="tcode__code">SE11</p>
+          <p>SAP GUI 화면에서 <span class="term" data-t="DDIC (SAP Dictionary)" data-d="테이블·데이터 타입·도메인을 한곳에서 정의·관리하는 SAP의 중앙 데이터 사전입니다.">DDIC(SAP Dictionary)</span> 객체를 생성하고 조회할 때 사용하는 전통적인 명령어(트랜잭션 코드)입니다.</p>
+        </div>
+      </section>
+
+      <section class="card goals">
+        <p class="card__h"><span class="ic">🎯</span>학습 목표</p>
+        <p>이번 Lesson에서는 <span class="term" data-t="Domain (도메인)" data-d="값의 기술적 속성(타입·길이·허용값)을 정의하는 DDIC의 가장 아래 부품입니다.">Domain</span>을 "값의 기술 규격"으로 설계합니다. 수업이 끝나면
+          <span class="term" data-t="Data Type" data-d="값의 종류. 문자(CHAR), 숫자(NUMC/INT), 날짜(DATS) 등.">Data Type</span>,
+          <span class="term" data-t="Length" data-d="값을 저장할 칸의 길이(자릿수).">Length</span>,
+          <span class="term" data-t="Output Length" data-d="화면에 보여줄 때 차지하는 표시 길이.">Output Length</span>,
+          <span class="term" data-t="Fixed Value" data-d="허용 가능한 값을 고정 목록으로 제한하는 설정. 예: 상태 A/B/C만 허용.">Fixed Value</span>의 역할을 나눠 설명하고,
+          SE11에서 작은 Domain을 저장·검사·<span class="term" data-t="활성화 (Activation)" data-d="작성한 DDIC 객체를 시스템이 실제로 사용할 수 있게 컴파일·등록하는 단계.">활성화</span>하는 흐름을 직접 시뮬레이션할 수 있어야 합니다.</p>
+      </section>
+
+      <section class="block" id="s1">
+        <h2><span class="num">1</span> Domain은 업무 의미가 아니라 값의 재질을 정한다</h2>
+        <p>지난 Lesson에서 <span class="term" data-t="DDIC" data-d="SAP의 중앙 데이터 정의 사전.">DDIC</span>는 SAP 시스템이 공유하는 데이터 정의의 기준점이라고 봤습니다. Domain은 그 기준점 안에서 가장 아래쪽에 놓이는 부품입니다.</p>
+        <p>"주문 상태"라는 <strong>업무 의미</strong>보다 먼저 "한 글자 코드인가, 숫자인가, 허용값이 고정되어 있는가"라는 <strong>값의 재질</strong>을 정합니다.</p>
+        <div class="ex"><b>비유:</b> Domain은 "그릇의 규격(재질·크기)", 업무 의미를 붙이는 건 다음 단계(Data Element)에서 "그릇에 이름표 붙이기"입니다.</div>
+      </section>
+
+      <section class="block" id="s2">
+        <h2><span class="num">2</span> 네 가지 속성을 나눠서 본다</h2>
+        <p>Domain을 만들 때 정하는 핵심 속성은 네 가지예요. 지금은 "이런 게 있구나" 정도면 충분합니다.</p>
+        <details class="fold"><summary>Data Type & Length — 값의 종류와 칸의 크기</summary><div class="fold__in">계산할 값인지(숫자), 코드인지(문자)를 먼저 정하고, 저장 길이(자릿수)를 정합니다. 예: 상태 코드는 <code>CHAR 1</code>.</div></details>
+        <details class="fold"><summary>Output Length — 화면 표시 폭</summary><div class="fold__in">저장 길이와 별개로 화면에 보여줄 폭입니다. 보통은 같지만, 통화·부호 등으로 표시가 더 길어질 수 있어요.</div></details>
+        <details class="fold"><summary>Fixed Value — 허용값 고정</summary><div class="fold__in">값을 정해진 목록으로만 받게 제한합니다. 작고 안정적인 코드 목록(A/B/C)에 적합하며 입력 도움말과 기본 검증에 쓰입니다.</div></details>
+      </section>
+
+      <section class="block" id="s3">
+        <h2><span class="num">3</span> SE11에서 만드는 흐름 (저장 → 검사 → 활성화)</h2>
+        <p>SE11에서 Domain을 만들면 <strong>저장(Save) → 검사(Check) → 활성화(Activate)</strong> 3단계를 거칩니다. 활성화까지 끝나야 다른 객체가 이 Domain을 가져다 쓸 수 있어요.</p>
+        <div class="ex"><b>주의:</b> 저장만 하고 활성화를 안 하면 "왜 안 보이지?"가 됩니다. 활성화는 "이제 진짜 쓸게요" 선언이에요.</div>
+      </section>
+
+      <section class="card" id="summary">
+        <p class="card__h"><span class="ic">🧾</span>9. 한눈에 정리</p>
+        <div class="recap__grid">
+          <div class="recap__c"><b>Domain</b><span>값의 기술 규격과 작은 허용 범위를 정하는 DDIC 하위 부품입니다.</span></div>
+          <div class="recap__c"><b>Data Type과 Length</b><span>계산할 값인지 보존할 코드인지 먼저 보고 저장 길이를 정합니다.</span></div>
+          <div class="recap__c"><b>Fixed Value</b><span>작고 안정적인 코드 목록에 적합하며 입력 도움과 기본 검증에 쓰입니다.</span></div>
+          <div class="recap__c"><b>Value Table</b><span>자동 검증이 아니라 Foreign Key 후보를 제안하는 성격으로 이해합니다.</span></div>
+        </div>
+        <div class="next-preview"><span class="ic">➡️</span><div><b>다음 Lesson 예고</b><br>오늘 만든 Domain 위에 업무 의미, 화면 라벨, 설명 문장을 붙이는 <strong>Data Element 설계</strong>를 다룹니다.</div></div>
+      </section>
+
+      <nav class="lesson-nav">
+        <a href="#"><span class="dir">← 이전 LESSON</span><span class="ttl">SAP Dictionary의 목적과 개발 흐름</span></a>
+        <a class="next" href="#"><span class="dir">다음 LESSON →</span><span class="ttl">Data Element 기본 설계</span></a>
+      </nav>
+      <footer class="foot">SAP Developer Academy · Lesson Viewer · 시안 v2-B</footer>
+    </main>
+
+    <aside class="rnav" id="rnav">
+      <div class="rnav__cur"><small>현재 문서</small><b>Domain 기본 설계</b></div>
+      <div class="rnav__tabs">
+        <button class="rnav__tab on" data-rtab="toc">문서목차</button>
+        <button class="rnav__tab" data-rtab="path">학습경로</button>
+      </div>
+      <div class="rnav__panel on" data-rpanel="toc">
+        <p class="rnav__chap">현재 Chapter · DDIC 1차: 기본 데이터 구조 생성</p>
+        <ul class="lesson-list">
+          <li><a href="#"><small>LESSON 1</small><span class="t">SAP Dictionary의 목적과 개발 흐름</span></a></li>
+          <li><a class="on" href="#"><small>LESSON 2</small><span class="t">Domain 기본 설계</span></a></li>
+          <li><a href="#"><small>LESSON 3</small><span class="t">Data Element 기본 설계</span></a></li>
+          <li><a href="#"><small>LESSON 4</small><span class="t">Structure 기본 생성</span></a></li>
+          <li><a href="#"><small>LESSON 5</small><span class="t">Transparent Table 기본 생성</span></a></li>
+          <li><a href="#"><small>LESSON 6</small><span class="t">Technical Settings와 데이터 확인 기초</span></a></li>
+        </ul>
+        <div class="rnav__move"><a href="#">↑ Chapter 요약으로 돌아가기</a><a href="#">🖥️ 지금까지 배운 T-code</a></div>
+      </div>
+      <div class="rnav__panel" data-rpanel="path">
+        <div class="rnav__prog"><span>ABAP 기본 이론 및 구현 흐름</span><span>1 / 21</span></div>
+        <div class="prog"><i></i></div>
+        <p class="rnav__note">현재 Chapter는 강조되며, 다른 항목을 누르면 해당 상세 페이지로 이동합니다.</p>
+        <ul class="chap-list">
+          <li class="on"><span class="dot"></span>Chapter 1 · DDIC 1차: 기본 데이터 구조 생성</li>
+          <li><span class="dot"></span>Chapter 2 · ABAP 기본 문법과 WRITE 출력</li>
+          <li><span class="dot"></span>Chapter 3 · PARAMETERS 기반 Selection Screen 맛보기</li>
+          <li><span class="dot"></span>Chapter 4 · DDIC 2차: 관계와 입력 도움말</li>
+          <li><span class="dot"></span>Chapter 5 · ABAP 모듈화 기초</li>
+          <li><span class="dot"></span>Chapter 6 · Internal Table 기초</li>
+          <li><span class="dot"></span>Chapter 7 · Internal Table 응용과 Deep Structure</li>
+          <li><span class="dot"></span>Chapter 8 · Simple ALV / SALV 1차</li>
+          <li><span class="dot"></span>Chapter 9 · Open SQL 1차: 기본 조회</li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+
+<script>
+(function(){
+  const body=document.body, mq=()=>matchMedia('(max-width:1000px)').matches;
+  document.querySelectorAll('.rnav__tab').forEach(tab=>tab.addEventListener('click',()=>{
+    document.querySelectorAll('.rnav__tab').forEach(t=>t.classList.toggle('on',t===tab));
+    document.querySelectorAll('.rnav__panel').forEach(p=>p.classList.toggle('on',p.dataset.rpanel===tab.dataset.rtab));
+  }));
+  const handle=document.querySelector('.nav-handle'), scrim=document.querySelector('.scrim');
+  function sync(){ const hidden=mq()?!body.classList.contains('nav-open'):body.classList.contains('nav-collapsed'); handle.textContent=hidden?'‹':'›'; handle.title=hidden?(mq()?'메뉴 열기':'네비 펼치기'):(mq()?'메뉴 닫기':'네비 접기'); }
+  handle.addEventListener('click',()=>{ if(mq()) body.classList.toggle('nav-open'); else body.classList.toggle('nav-collapsed'); sync(); });
+  scrim.addEventListener('click',()=>{ body.classList.remove('nav-open'); sync(); });
+  addEventListener('resize',sync); sync();
+  const fsBtn=document.querySelector('.fs-btn');
+  fsBtn.addEventListener('click',()=>{ if(!document.fullscreenElement) document.documentElement.requestFullscreen?.(); else document.exitFullscreen?.(); });
+  let pop=null; const close=()=>{ if(pop){pop.remove();pop=null;} };
+  document.querySelectorAll('.term').forEach(t=>t.addEventListener('mouseenter',()=>{
+    close(); pop=document.createElement('div'); pop.className='term-popup';
+    pop.innerHTML=`<button class="term-popup__x">×</button><b>${t.dataset.t||t.textContent}</b><span>${t.dataset.d||''}</span>`;
+    document.body.appendChild(pop);
+    const r=t.getBoundingClientRect(); pop.style.left=Math.min(r.left+scrollX,scrollX+innerWidth-320)+'px'; pop.style.top=(r.bottom+scrollY+8)+'px';
+    pop.querySelector('.term-popup__x').addEventListener('click',close);
+  }));
+  document.addEventListener('click',e=>{ if(pop && !pop.contains(e.target) && !e.target.classList.contains('term')) close(); });
+  const rp=document.querySelector('.read-progress>i');
+  function onScroll(){ const h=document.documentElement.scrollHeight-innerHeight; if(rp) rp.style.width=(h>0?Math.min(100,scrollY/h*100):0)+'%'; }
+  addEventListener('scroll',onScroll,{passive:true}); addEventListener('resize',onScroll); onScroll();
+})();
+</script>
+</body>
+</html>

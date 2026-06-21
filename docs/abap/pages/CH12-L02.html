@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LEFT OUTER JOIN 기본 개념과 NULL 처리 · Open SQL 2차: JOIN·집계 · SAP Developer Academy</title>
+<link rel="stylesheet" href="../../../assets/base.css">
+<link rel="stylesheet" href="../../../assets/lesson.css">
+<link rel="stylesheet" href="../../../assets/shell.css">
+<script>/* 읽기 설정 선적용(플래시 방지) */(function(){try{var L=localStorage,r=document.documentElement;if(L.getItem('sda.dark')==='1')r.classList.add('dark');if(L.getItem('sda.wide')==='1')r.classList.add('wide');var f=parseInt(L.getItem('sda.fontPx'),10);if(f>=13&&f<=20)r.style.fontSize=f+'px';}catch(e){}})();</script>
+</head>
+<body data-domain="abap" data-chapter-id="CH12" data-lesson-id="CH12-L02">
+<header class="appbar">
+  <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
+  <span class="appbar__sp"></span>
+  <span class="meta">CH12 · Open SQL 2차: JOIN·집계</span>
+  <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
+  <div class="tools">
+    <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
+    <button class="icon-btn" id="fsInc" title="글자 크게">A+</button>
+    <button class="icon-btn" id="fsReset" title="글자 크기 초기화">↺</button>
+    <button class="icon-btn" id="darkBtn" title="다크 모드">🌙</button>
+    <button class="icon-btn" id="widthBtn" title="가독 폭 넓게">↔</button>
+    <button class="icon-btn fs-btn" title="전체화면" aria-label="전체화면"></button>
+  </div>
+</header>
+<div class="read-progress"><i></i></div>
+<div class="scrim"></div>
+<nav class="rail" data-shell="rail"></nav>
+<button class="railFab" id="railFab" aria-label="네비 열기">☰</button>
+<div class="stage">
+  <div class="layout">
+    <main class="main">
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH12</nav>
+      <section class="lhead">
+        <p class="lhead__eyebrow">Open SQL 2차: JOIN·집계</p>
+        <h1>LEFT OUTER JOIN 기본 개념과 NULL 처리</h1>
+        <p class="lhead__direction">왼쪽은 모두 남긴다 — LEFT OUTER JOIN과 빈 값 처리.</p>
+        <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 12</span><span class="tag tag--ls">Lesson 2</span><span class="tag tag--lv">중급</span></div>
+      </section>
+      <article class="prose">
+<section class="lblock"><h2>매칭 없어도 남기고 싶다</h2>
+<p>부서가 아직 배정 안 된 사람도 명단에 <strong>남기고</strong> 싶다. <button class="term" type="button" data-term="INNER JOIN">INNER JOIN</button>은 그런 행을
+떨군다. <strong>LEFT OUTER JOIN</strong>은 왼쪽(기준) 테이블 행을 <strong>전부</strong> 남긴다.</p>
+</section><section class="lblock"><h2>LEFT OUTER JOIN (classic)</h2>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> p~persid p~name d~deptname
+  <span class="tok-kw">FROM</span> ztperson <span class="tok-kw">AS</span> p
+  LEFT OUTER <span class="tok-kw">JOIN</span> ztdept <span class="tok-kw">AS</span> d
+    <span class="tok-kw">ON</span> p~dept_id = d~dept_id
+  <span class="tok-kw">INTO</span> <span class="tok-kw">CORRESPONDING</span> <span class="tok-kw">FIELDS</span> <span class="tok-kw">OF</span> <span class="tok-kw">TABLE</span> lt_out.</code></pre></div></div>
+<ul>
+<li>왼쪽(<code>ztperson</code>) 행은 모두 결과에 남는다.</li>
+<li>매칭되는 오른쪽이 없으면 그 컬럼(<code>deptname</code>)은 DB의 <strong>NULL</strong> → ABAP에선
+<strong>초기값</strong>(빈 문자/0)으로 들어온다.</li>
+</ul>
+</section><section class="lblock"><h2>NULL 처리 주의</h2>
+<ul>
+<li>DB의 NULL과 ABAP 초기값은 개념이 다르다. LEFT JOIN 결과의 빈 오른쪽 컬럼은
+보통 초기값으로 보이니, &quot;값 없음&quot;을 구분하려면 기준 키로 판단한다.</li>
+</ul>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>LEFT인데 WHERE로 오른쪽 필터</strong> → 매칭 없는 행이 걸러질 수 있다. 오른쪽 조건은
+<code>ON</code>에 두는 게 안전.</li>
+<li><strong>방향 혼동</strong> → 기준(다 남길 쪽)을 왼쪽(FROM)에 둔다.</li>
+</ul>
+<hr>
+<p>행을 합쳤다. 이제 <strong>묶어서 세고 합산</strong>하고 싶다 → GROUP BY·집계(다음 레슨).</p>
+</section>
+      </article>
+      <nav class="lesson-nav" data-shell="prevnext"></nav>
+      <footer class="foot">SAP Developer Academy · CH12 CH12-L02</footer>
+    </main>
+    <aside class="journey" data-shell="journey"></aside>
+  </div>
+</div>
+<div class="term-popup" data-shell="popup" hidden></div>
+<div class="tmodal" data-shell="tmodal" hidden></div>
+<script>window.__SDA__={"domain":"abap","dataBase":"../","siteRoot":"../../../"};</script>
+<script src="../../../assets/shell.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<!--
+  Domain 생성 시뮬레이터 — SE11 라이프사이클 (standalone, ::embed 용)
+  ────────────────────────────────────────────────────────────
+  SE11 풍 폼: 도메인 이름·데이터 타입·길이·소수 + 값 범위(고정값) 탭.
+  툴바: 💾 저장 → ✓ 검사 → 🔥 활성화. 상태 배지 신규→비활성→활성.
+  · DDIC 생성의 핵심 교훈("활성화해야 런타임에 산다")을 상태 전이로 체험.
+  · 이름 규칙(Z/Y)·타입별 길이 한계·소수 위치·고정값 검증을 친절히 안내.
+  · 활성 후 필드를 고치면 다시 비활성(수정됨) → 재활성화 필요.
+  · 예제 칩 2종(금액 DEC 8,2 / 상태 CHAR 1 + 고정값).
+  · 부모(레슨)에 높이 postMessage → iframe 자동 높이. 외부 의존성 없음.
+-->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Domain 생성 시뮬레이터 · Sample</title>
+<style>
+:root{
+  --bg:#f6f7fb;--surface:#fff;--ink:#1c2233;--ink-soft:#5b6478;--line:#e6e8ef;
+  --brand:#3b5bdb;--accent:#0ca678;--soon:#94a0b8;--warn:#be123c;--amber:#b45309;
+  --mono:'D2Coding',Consolas,Monaco,'Courier New',monospace;
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic",Roboto,sans-serif;
+}
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:transparent;line-height:1.5;}
+.wrap{padding:14px;}
+.hd{font-weight:800;font-size:1rem;margin:0 0 4px;}
+.hd small{font-weight:600;color:var(--brand);}
+.lead{margin:0 0 12px;color:var(--ink-soft);font-size:.86rem;}
+.lead code{font-family:var(--mono);background:#eef2ff;color:var(--brand);padding:1px 5px;border-radius:5px;font-size:.92em;}
+
+.presets{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin-bottom:12px;}
+.goalbar{margin:0 0 12px;padding:11px 14px;border-radius:11px;background:#eef2ff;border:1px solid #d7e1f5;color:#26336b;font-size:.9rem;line-height:1.6;}
+.goalbar b{color:var(--brand);}
+.presets__lbl{font-size:.8rem;font-weight:700;color:var(--ink-soft);margin-right:2px;}
+.chip{border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);border-radius:999px;
+  padding:6px 13px;font:inherit;font-size:.8rem;font-weight:700;cursor:pointer;transition:all .15s;}
+.chip:hover{border-color:var(--brand);color:var(--brand);}
+.chip.on{background:var(--brand);color:#fff;border-color:var(--brand);box-shadow:0 4px 12px rgba(59,91,219,.25);}
+
+/* SE11 창 */
+.se{border:1px solid var(--line);border-radius:13px;background:var(--surface);overflow:hidden;}
+.se__bar{display:flex;align-items:center;gap:9px;background:#2c3666;border-bottom:2px solid var(--brand);color:#fff;padding:9px 13px;font-size:.82rem;font-weight:800;}
+.se__bar .ico{opacity:.85;}
+.badge{margin-left:auto;font-size:.72rem;font-weight:800;border-radius:999px;padding:3px 11px;display:flex;align-items:center;gap:5px;}
+.badge .d{width:8px;height:8px;border-radius:50%;display:inline-block;}
+.badge.s-new{background:#e9edf5;color:#5b6478;} .badge.s-new .d{background:#94a0b8;}
+.badge.s-inactive{background:#fff3e0;color:#b45309;} .badge.s-inactive .d{background:#f59e0b;}
+.badge.s-active{background:#d1fae5;color:#0b7250;} .badge.s-active .d{background:#10b981;}
+
+/* 툴바 */
+.tools{display:flex;gap:8px;padding:10px 13px;border-bottom:1px solid var(--line);background:#fafbfe;flex-wrap:wrap;}
+.tbtn{border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 13px;font:inherit;font-size:.82rem;font-weight:800;
+  cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px;color:var(--ink);}
+.tbtn:hover{border-color:var(--brand);color:var(--brand);}
+.tbtn.act{background:var(--accent);color:#fff;border-color:var(--accent);}
+.tbtn.act:hover{filter:brightness(1.07);color:#fff;}
+.tbtn kbd{background:rgba(0,0,0,.07);border-radius:4px;padding:0 5px;font-size:10px;font-family:var(--mono);}
+.tbtn.act kbd{background:rgba(255,255,255,.25);}
+
+/* 탭 */
+.setabs{display:flex;gap:2px;padding:9px 13px 0;background:#fafbfe;}
+.setab{border:1px solid var(--line);border-bottom:0;background:#eef1f7;color:var(--ink-soft);border-radius:8px 8px 0 0;
+  padding:7px 14px;font:inherit;font-size:.8rem;font-weight:700;cursor:pointer;}
+.setab.on{background:#fff;color:var(--brand);border-color:var(--brand);position:relative;top:1px;}
+
+.tabpane{display:none;padding:15px 16px;} .tabpane.on{display:block;}
+.field{display:grid;grid-template-columns:130px 1fr;gap:9px 12px;align-items:center;margin-bottom:11px;}
+.field label{font-size:.83rem;font-weight:700;color:var(--ink-soft);}
+.field .hint{grid-column:2;font-size:.74rem;color:var(--soon);margin-top:-5px;}
+input[type=text],input[type=number],select{font:inherit;font-size:.86rem;padding:7px 10px;border:1px solid var(--line);border-radius:7px;background:#fff;color:var(--ink);width:100%;max-width:280px;}
+input:focus,select:focus{outline:0;border-color:var(--brand);box-shadow:0 0 0 3px rgba(59,91,219,.12);}
+input.bad{border-color:var(--warn);background:#fff5f6;}
+input[type=text]#dname{font-family:var(--mono);text-transform:uppercase;}
+.row-dec.hide,.field.hide{display:none;}
+.chkline{display:flex;align-items:center;gap:7px;font-size:.83rem;font-weight:600;color:var(--ink);cursor:pointer;user-select:none;}
+.chkline input{accent-color:var(--brand);}
+
+/* 값 범위(고정값) 표 */
+.fv{width:100%;border-collapse:collapse;font-size:.84rem;margin-bottom:10px;}
+.fv th,.fv td{border:1px solid var(--line);padding:6px 9px;text-align:left;}
+.fv th{background:#f4f6fb;font-size:.76rem;color:var(--ink-soft);}
+.fv input{max-width:none;font-family:var(--mono);}
+.fv .del{border:0;background:#fff0f1;color:var(--warn);border-radius:6px;padding:3px 9px;font-weight:800;cursor:pointer;}
+.fv__add{border:1px dashed var(--brand);background:#f3f6ff;color:var(--brand);border-radius:8px;padding:6px 12px;font:inherit;font-size:.8rem;font-weight:800;cursor:pointer;}
+.fv__note{font-size:.78rem;color:var(--ink-soft);margin:0 0 10px;}
+
+/* 상태바(메시지) */
+.msgbar{padding:11px 14px;border-top:1px solid var(--line);background:#fbfcfe;min-height:46px;font-size:.84rem;}
+.msgbar .head{font-weight:800;margin-bottom:5px;}
+.msgbar.ok .head{color:var(--accent);} .msgbar.bad .head{color:var(--warn);} .msgbar.info .head{color:var(--brand);}
+.checks{margin:0;padding-left:2px;list-style:none;}
+.checks li{display:flex;gap:7px;align-items:flex-start;padding:2px 0;font-size:.82rem;color:#3a4458;}
+.checks li .m{flex-shrink:0;font-weight:800;}
+.checks li.pass .m{color:var(--accent);} .checks li.fail .m{color:var(--warn);}
+.usehint{margin-top:8px;font-family:var(--mono);font-size:.8rem;background:#eef9f4;border:1px solid #b6e6d3;border-radius:8px;padding:7px 11px;color:#0b7250;}
+
+.note{margin-top:11px;border-left:3px solid var(--brand);background:rgba(59,91,219,.06);border-radius:0 9px 9px 0;padding:9px 13px;font-size:.83rem;color:#2a3550;}
+.note code{font-family:var(--mono);background:#fff;border:1px solid var(--line);padding:0 5px;border-radius:4px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">Domain 생성 시뮬레이터 <small>(SE11 — 저장 → 검사 → 활성화)</small></p>
+  <p class="lead">SE11에서 Domain을 만드는 흐름을 그대로 체험합니다. 값을 채우고 <b>💾 저장 → ✓ 검사 → 🔥 활성화</b> 순서로 눌러 보세요. <b>활성화해야</b> 비로소 런타임에서 쓸 수 있는 객체가 됩니다.</p>
+
+  <div class="presets" id="presets">
+    <span class="presets__lbl">예제:</span>
+    <button class="chip" type="button" data-ex="0">금액 도메인 (DEC 8,2)</button>
+    <button class="chip" type="button" data-ex="1">상태 도메인 (CHAR 1 + 고정값)</button>
+    <button class="chip" type="button" data-ex="2">항공사 코드 (CHAR 3 + Value Table)</button>
+    <button class="chip" type="button" data-ex="3">이메일 (CHAR + 소문자 허용)</button>
+    <button class="chip" type="button" data-ex="4">재고 증감 (INT4 · 음수 가능)</button>
+    <button class="chip" type="button" data-ex="5">대기번호·연도 (NUMC · 단순 카운트)</button>
+  </div>
+  <div class="goalbar" id="goalbar"><b>🎯 목표 ·</b> 위 예제 버튼을 누르면 만들 Domain의 목표가 여기에 계속 표시됩니다.</div>
+
+  <div class="se">
+    <div class="se__bar"><span class="ico">📚</span>Dictionary: Domain 유지보수
+      <span class="badge s-new" id="badge"><span class="d"></span><span id="badgeTxt">신규 (미저장)</span></span></div>
+
+    <div class="tools">
+      <button class="tbtn" id="bSave" type="button">💾 저장 <kbd>Ctrl+S</kbd></button>
+      <button class="tbtn" id="bCheck" type="button">✓ 검사</button>
+      <button class="tbtn act" id="bAct" type="button">🔥 활성화 <kbd>Ctrl+F3</kbd></button>
+    </div>
+
+    <div class="setabs">
+      <button class="setab on" data-tab="def" type="button">속성 (Definition)</button>
+      <button class="setab" data-tab="val" type="button">값 범위 (Value Range)</button>
+    </div>
+
+    <div class="tabpane on" data-pane="def">
+      <div class="field">
+        <label for="dname">도메인 이름</label>
+        <input type="text" id="dname" autocomplete="off" spellcheck="false" />
+        <div class="hint">전역 객체는 <b>Z</b> 또는 <b>Y</b>로 시작합니다.</div>
+      </div>
+      <div class="field">
+        <label for="dtype">데이터 타입</label>
+        <select id="dtype">
+          <option value="" selected>— 선택 —</option>
+          <option value="CHAR">CHAR — 문자</option>
+          <option value="NUMC">NUMC — 숫자 문자(자릿수 고정)</option>
+          <option value="DEC">DEC — 십진수(소수 가능)</option>
+          <option value="INT4">INT4 — 정수</option>
+          <option value="DATS">DATS — 날짜(YYYYMMDD)</option>
+        </select>
+        <div class="hint" id="typeAbap"></div>
+      </div>
+      <div class="field">
+        <label for="dlen">길이 (Length)</label>
+        <input type="number" id="dlen" min="1" value="10" />
+        <div class="hint" id="lenHint"></div>
+      </div>
+      <div class="field" id="rowOut">
+        <label for="dout">출력 길이 (Output Length)</label>
+        <input type="number" id="dout" min="1" value="10" />
+        <div class="hint">화면에 표시될 칸 너비. 보통 길이와 같지만, 부호·천단위 구분기호 때문에 더 길 수 있습니다.</div>
+      </div>
+      <div class="field row-dec" id="rowDec">
+        <label for="ddec">소수 자릿수 (Decimals)</label>
+        <input type="number" id="ddec" min="0" value="0" />
+        <div class="hint">소수점 이하 자릿수. 길이보다 작아야 합니다(DEC 전용).</div>
+      </div>
+      <div class="field" id="rowLower">
+        <label>대소문자</label>
+        <label class="chkline"><input type="checkbox" id="dlower"> 소문자 허용 (Lower Case)</label>
+        <div class="hint">체크 안 하면 입력값이 <b>자동으로 대문자</b>로 바뀝니다(CHAR 기본 동작).</div>
+      </div>
+      <div class="field hide" id="rowNeg">
+        <label>부호</label>
+        <label class="chkline"><input type="checkbox" id="dneg"> 음수 허용 (Sign / Negative)</label>
+        <div class="hint">체크하면 음수(−)를 저장할 수 있어요(예: 재고 증감 −5). <b>숫자 타입(INT4·DEC)에서만</b> 가능 — <b>NUMC는 음수를 담지 못합니다.</b></div>
+      </div>
+    </div>
+
+    <div class="tabpane" data-pane="val">
+      <div class="field" style="margin-bottom:6px">
+        <label for="dvtab">값 테이블 (Value Table)</label>
+        <input type="text" id="dvtab" placeholder="예: SCARR" autocomplete="off" spellcheck="false" style="text-transform:uppercase;font-family:var(--mono)" />
+        <div class="hint">허용 값을 <b>다른 테이블의 저장된 데이터</b>로 검사·F4 제공. 값이 자주 바뀌는 목록(예: 항공사 SCARR)에 씁니다. 외래 키(CH08)의 바탕이 됩니다.</div>
+      </div>
+      <hr style="border:0;border-top:1px solid var(--line);margin:6px 0 13px" />
+      <p class="fv__note"><b>또는</b>, 거의 안 바뀌는 <b>소수의 값</b>만 받게 하려면 <b>고정값(Fixed Values)</b>을 넣습니다. (예: <code>O</code>=Open, <code>C</code>=Closed) — 화면 F4·입력 검증으로 되돌아옵니다. <b>값 테이블과 고정값은 보통 둘 중 하나만</b> 씁니다.</p>
+      <table class="fv">
+        <thead><tr><th style="width:34%">고정값</th><th>설명</th><th style="width:48px"></th></tr></thead>
+        <tbody id="fvBody"></tbody>
+      </table>
+      <button class="fv__add" id="fvAdd" type="button">＋ 고정값 추가</button>
+    </div>
+
+    <div class="msgbar info" id="msg">
+      <div class="head">ℹ️ 준비됨</div>
+      <div id="msgBody">값을 채운 뒤 <b>💾 저장</b> → <b>✓ 검사</b> → <b>🔥 활성화</b> 순으로 눌러 보세요.</div>
+    </div>
+  </div>
+
+  <div class="note">💡 <b>DDIC 객체의 철칙</b> — 저장만 하면 <b>비활성(inactive)</b> 상태라 런타임에서 쓸 수 없습니다. <b>활성화</b>해야 런타임 객체가 생성됩니다. 활성 후 필드를 고치면 다시 비활성이 되어 <b>재활성화</b>가 필요합니다.</div>
+</div>
+
+<script>
+(function(){
+  var TYPES = {
+    CHAR:{maxLen:1333, dec:false, numeric:false, fixedLen:false, lower:true,  sign:false, abap:'c', desc:'문자(텍스트)'},
+    NUMC:{maxLen:255,  dec:false, numeric:true,  fixedLen:false, lower:false, sign:false, abap:'n', desc:'숫자만 담는 문자(자릿수 고정·앞 0 유지)'},
+    DEC: {maxLen:31,   dec:true,  numeric:true,  fixedLen:false, lower:false, sign:true,  abap:'p', desc:'십진수(소수 가능·금액 등)'},
+    INT4:{maxLen:10,   dec:false, numeric:true,  fixedLen:true,  lower:false, sign:true,  abap:'i', desc:'정수(4바이트)'},
+    DATS:{maxLen:8,    dec:false, numeric:false, fixedLen:true,  lower:false, sign:false, abap:'d', desc:'날짜 YYYYMMDD(8자리)'}
+  };
+  var EXAMPLES = [
+    { goal:'금액을 담을 Domain을 직접 만들어 보세요. 권장: 이름 <b>ZDO_AMOUNT</b>, 타입 <b>DEC</b>, 길이 <b>8</b>, 소수 <b>2</b>자리. 값을 입력한 뒤 💾 저장 → ✓ 검사 → 🔥 활성화 순으로 눌러 확인하세요.' },
+    { goal:'주문 상태 코드 Domain을 만들어 보세요. 권장: 이름 <b>ZDO_STATUS</b>, 타입 <b>CHAR</b>, 길이 <b>1</b>. “값 범위” 탭에서 고정값 <b>O</b>(Open)·<b>C</b>(Closed)를 직접 추가해 보세요.' },
+    { goal:'항공사 코드 Domain을 만들어 보세요. 권장: 이름 <b>ZDO_CARRID</b>, 타입 <b>CHAR</b>, 길이 <b>3</b>. “값 범위” 탭의 <b>값 테이블(Value Table)</b>에 <b>SCARR</b>를 입력해 외래키 후보로 연결해 보세요.' },
+    { goal:'이메일처럼 <b>대소문자를 그대로 보존</b>해야 하는 값의 Domain을 만들어 보세요. 권장: 이름 <b>ZDO_EMAIL</b>, 타입 <b>CHAR</b>, 길이 <b>80</b>, “속성” 탭에서 <b>소문자 허용(Lower Case)</b>을 체크. (체크 안 하면 입력이 자동 대문자로 바뀝니다.)' },
+    { goal:'재고 증감처럼 <b>음수가 될 수 있는 정수</b>(입고 +, 출고 −)를 담을 Domain을 만들어 보세요. 권장: 이름 <b>ZDO_STOCKCHG</b>, 타입 <b>INT4</b>(정수), “속성” 탭에서 <b>음수 허용(Sign)</b>을 체크. 참고: <b>NUMC</b>는 음수를 담지 못합니다.' },
+    { goal:'연도·대기번호처럼 <b>숫자로 적지만 계산하지 않는</b> “단순 카운트” 값의 Domain을 만들어 보세요. 권장: 이름 <b>ZDO_SEQNO</b>, 타입 <b>NUMC</b>, 길이 <b>4</b>(예: 대기번호 0001~9999, 연도 2026). 참고: NUMC는 <b>앞 0을 보존</b>하는 “숫자 문자”라 계산용이 아니고 <b>음수도 담지 못합니다</b>.' }
+  ];
+
+  var $=function(id){return document.getElementById(id);};
+  var dname=$('dname'), dtype=$('dtype'), dlen=$('dlen'), dout=$('dout'), ddec=$('ddec'),
+      dlower=$('dlower'), dneg=$('dneg'), dvtab=$('dvtab'),
+      rowDec=$('rowDec'), rowOut=$('rowOut'), rowLower=$('rowLower'), rowNeg=$('rowNeg'), typeAbap=$('typeAbap'),
+      lenHint=$('lenHint'), fvBody=$('fvBody'),
+      badge=$('badge'), badgeTxt=$('badgeTxt'), msg=$('msg'), msgBody=$('msgBody'),
+      presetsEl=$('presets'), goalbar=$('goalbar');
+  var state='new';
+
+  /* ---- 타입에 따른 폼 표시 ---- */
+  function syncType(){
+    var t=TYPES[dtype.value];
+    if(!t){   // 타입 미선택 — 부가 행 모두 숨기고 안내
+      rowDec.classList.add('hide'); rowLower.classList.add('hide'); rowNeg.classList.add('hide');
+      dlen.disabled=false; lenHint.textContent='';
+      typeAbap.innerHTML='먼저 <b>데이터 타입</b>을 선택하세요.';
+      return;
+    }
+    rowDec.classList.toggle('hide', !t.dec);
+    if(!t.dec) ddec.value=0;
+    if(t.fixedLen){ dlen.disabled=true; if(dtype.value==='INT4') dlen.value=10; if(dtype.value==='DATS') dlen.value=8; }
+    else { dlen.disabled=false; }
+    lenHint.textContent='최대 길이: '+t.maxLen+(t.fixedLen?' (고정)':'')+(t.numeric?' · 숫자 타입':'');
+    // ABAP 변수 선언 대응 타입 (도메인 CHAR ↔ 변수 c 의 구분을 분명히)
+    typeAbap.innerHTML='ABAP 변수로 선언하면 → <b>TYPE '+t.abap+'</b> ('+t.desc+')'+
+      (dtype.value==='CHAR'?' · <b>주의:</b> DDIC 타입은 <b>CHAR</b>, 변수 선언 키워드는 <b>c</b>':'');
+    // 대소문자(Lower Case)는 문자 타입에만 · 음수 허용(Sign)은 부호 가능한 숫자 타입(INT4·DEC)에만
+    rowLower.classList.toggle('hide', !t.lower);
+    if(!t.lower) dlower.checked=false;
+    rowNeg.classList.toggle('hide', !t.sign);
+    if(!t.sign) dneg.checked=false;
+    // 출력 길이: 비워두면 그대로(저장/검사/활성화 때 자동 계산). 값이 있을 때만 길이 이상 유지.
+    var len=parseInt(dlen.value,10)||0;
+    if(dout.value.trim()!=='' && (parseInt(dout.value,10)||0)<len) dout.value=len;
+  }
+
+  /* ---- 출력 길이 자동 계산 (SE11: Length로부터 Output Length 자동 채움) ---- */
+  function computeOutLen(){
+    var t=TYPES[dtype.value]; if(!t) return 0;
+    var len=parseInt(dlen.value,10)||0; if(!len) return 0;
+    var dec=parseInt(ddec.value,10)||0;
+    if(!t.numeric) return len;            // CHAR / DATS: 길이와 동일
+    if(dtype.value==='NUMC') return len;  // 숫자 문자: 부호·구분기호 없음
+    // INT4 / DEC: 부호 + (DEC) 천단위 구분기호 + 소수점 고려
+    var intDigits = (dtype.value==='DEC') ? Math.max(len-dec,1) : len;
+    var seps = (dtype.value==='DEC') ? Math.floor((intDigits-1)/3) : 0;
+    var out = len + seps;
+    if(dec>0) out += 1;                    // 소수점
+    if(dneg.checked) out += 1;             // 부호 자리
+    return out;
+  }
+  function autofillOut(){   // 출력 길이가 비어 있으면 자동 계산해 채움
+    if(dout.value.trim()==='' && dtype.value && (parseInt(dlen.value,10)||0)>0){
+      var v=computeOutLen(); if(v>0) dout.value=v;
+    }
+  }
+
+  /* ---- 고정값 행 ---- */
+  function addFv(v,d){
+    var tr=document.createElement('tr');
+    tr.innerHTML='<td><input type="text" class="f-val" value="'+(v||'')+'" spellcheck="false"></td>'+
+                 '<td><input type="text" class="f-desc" value="'+(d||'')+'" spellcheck="false"></td>'+
+                 '<td><button class="del" type="button" title="삭제">✕</button></td>';
+    tr.querySelector('.del').addEventListener('click',function(){ tr.remove(); touched(); });
+    tr.querySelectorAll('input').forEach(function(i){ i.addEventListener('input', touched); });
+    fvBody.appendChild(tr);
+  }
+  function getFv(){
+    return [].map.call(fvBody.querySelectorAll('tr'),function(tr){
+      return [tr.querySelector('.f-val').value.trim(), tr.querySelector('.f-desc').value.trim()];
+    }).filter(function(r){ return r[0]!==''; });
+  }
+
+  /* ---- 상태 배지 ---- */
+  function setState(s){
+    state=s;
+    badge.className='badge s-'+s;
+    badgeTxt.textContent = s==='new'?'신규 (미저장)' : s==='inactive'?'비활성 (활성화 필요)' : '활성 (런타임 사용 가능)';
+  }
+  function touched(){   // 필드 수정 시: 활성 → 비활성(수정됨)
+    if(state==='active'){ setState('inactive'); showMsg('info','✏️ 수정됨', '정의가 바뀌었습니다 — 다시 <b>🔥 활성화</b>해야 변경이 런타임에 반영됩니다.'); }
+  }
+
+  /* ---- 검증 ---- */
+  function validate(){
+    var t=TYPES[dtype.value], name=dname.value.trim().toUpperCase(), len=parseInt(dlen.value,10), dec=parseInt(ddec.value,10)||0;
+    var c=[];
+    var nameOk=/^[YZ][A-Z0-9_]{1,29}$/.test(name);
+    c.push({ok:nameOk, msg: nameOk?('이름 '+name+' — 명명 규칙 OK'):'이름은 Z 또는 Y로 시작하고 영문·숫자·_만 (2~30자).'});
+    dname.classList.toggle('bad', !nameOk);
+    var lenOk = len>=1 && len<=t.maxLen;
+    c.push({ok:lenOk, msg: lenOk?('길이 '+len+' — '+dtype.value+' 허용 범위 내'):('길이는 1~'+t.maxLen+' 사이여야 합니다('+dtype.value+').')});
+    dlen.classList.toggle('bad', !lenOk);
+    if(t.dec){
+      var decOk = dec>=0 && dec<len && dec<=14;
+      c.push({ok:decOk, msg: decOk?('소수 '+dec+'자리 — 길이('+len+')보다 작음 OK'):'소수 자릿수는 0 이상, 길이보다 작아야 합니다(최대 14).'});
+      ddec.classList.toggle('bad', !decOk);
+    }
+    // 출력 길이
+    var out=parseInt(dout.value,10)||0;
+    var outOk = out>=len && out<=99;
+    c.push({ok:outOk, msg: outOk?('출력 길이 '+out+' — 길이('+len+') 이상 OK'):('출력 길이는 길이('+len+') 이상이어야 합니다(최대 99).')});
+    dout.classList.toggle('bad', !outOk);
+    var fv=getFv();
+    if(fv.length){
+      var bad=fv.filter(function(r){
+        if(r[0].length>len) return true;
+        if(t.numeric && !/^-?\d+$/.test(r[0])) return true;
+        return false;
+      });
+      var fvOk=bad.length===0;
+      c.push({ok:fvOk, msg: fvOk?('고정값 '+fv.length+'개 — 타입·길이 일관성 OK'):('고정값이 타입/길이에 안 맞습니다: '+bad.map(function(r){return '"'+r[0]+'"';}).join(', '))});
+    }
+    // 값 테이블
+    var vtab=dvtab.value.trim().toUpperCase();
+    if(vtab){
+      var vtabOk=/^[A-Z][A-Z0-9_\/]{1,29}$/.test(vtab);
+      c.push({ok:vtabOk, msg: vtabOk?('값 테이블 '+vtab+' — 참조 OK'):'값 테이블 이름 형식이 올바르지 않습니다(테이블명).'});
+      dvtab.classList.toggle('bad', !vtabOk);
+    } else { dvtab.classList.remove('bad'); }
+    if(vtab && fv.length){
+      c.push({ok:false, msg:'값 테이블과 고정값을 동시에 두지 마세요 — 보통 둘 중 하나만 씁니다.'});
+    }
+    return c;
+  }
+  function structOk(){   // 저장 가능한 최소 조건(이름)
+    return /^[YZ][A-Z0-9_]{1,29}$/.test(dname.value.trim().toUpperCase());
+  }
+
+  function showMsg(cls, head, bodyHtml){
+    msg.className='msgbar '+cls; msg.querySelector('.head').textContent=head; msgBody.innerHTML=bodyHtml; postHeight();
+  }
+  function showChecks(cls, head, checks, extra){
+    msg.className='msgbar '+cls; msg.querySelector('.head').textContent=head;
+    var html='<ul class="checks">'+checks.map(function(x){
+      return '<li class="'+(x.ok?'pass':'fail')+'"><span class="m">'+(x.ok?'✓':'✕')+'</span><span>'+x.msg+'</span></li>';
+    }).join('')+'</ul>'+(extra||'');
+    msgBody.innerHTML=html; postHeight();
+  }
+
+  /* ---- 액션: 저장 / 검사 / 활성화 ---- */
+  function doSave(){
+    if(!structOk()){ dname.classList.add('bad'); return showMsg('bad','⛔ 저장 실패','도메인 <b>이름</b>을 먼저 올바르게 입력하세요 (Z/Y로 시작).'); }
+    if(!dtype.value){ return showMsg('bad','⛔ 저장 실패','<b>데이터 타입</b>을 선택하세요.'); }
+    autofillOut();
+    setState('inactive');
+    showMsg('ok','💾 저장되었습니다','상태: <b>비활성</b>. 아직 런타임에선 못 씁니다 — <b>✓ 검사</b> 후 <b>🔥 활성화</b>하세요. (출력 길이를 비워뒀다면 길이로부터 자동 계산해 채웠어요.)');
+  }
+  function doCheck(){
+    if(!dtype.value){ return showMsg('bad','⛔ 검사 불가','먼저 <b>데이터 타입</b>을 선택하세요.'); }
+    autofillOut();
+    var c=validate(), allOk=c.every(function(x){return x.ok;});
+    showChecks(allOk?'ok':'bad', allOk?'✓ 검사 통과 — 일관성 OK':'✗ 검사 — 아래 항목을 해결하세요', c,
+      allOk?'<div style="margin-top:6px;color:#0b7250;font-weight:700">이제 🔥 활성화할 수 있습니다.</div>':'');
+  }
+  function doActivate(){
+    if(state==='new'){ return showMsg('bad','⛔ 활성화 전','먼저 <b>💾 저장</b>한 뒤 활성화하세요.'); }
+    autofillOut();
+    var c=validate(), allOk=c.every(function(x){return x.ok;});
+    if(!allOk){ return showChecks('bad','⛔ 활성화 실패 — 검사 오류', c); }
+    setState('active');
+    var name=dname.value.trim().toUpperCase();
+    showChecks('ok','🔥 활성화 완료', c,
+      '<div class="usehint">✓ '+name+' 활성 — 런타임 객체 생성됨.<br>이제 <b>Data Element</b>가 이 Domain을 참조할 수 있습니다 (다음 레슨).</div>');
+  }
+
+  /* ---- 예제 로드 ---- */
+  function loadEx(i){
+    var e=EXAMPLES[i];
+    // 값을 미리 채우지 않는다 — 폼 초기화 후 '목표'만 안내해 사용자가 직접 입력하도록 유도
+    dname.value=''; dtype.value=''; dlen.value=''; ddec.value=''; dout.value=''; dlower.checked=false; dneg.checked=false; dvtab.value='';
+    syncType();
+    fvBody.innerHTML='';
+    [dname,dlen,ddec,dout,dvtab].forEach(function(el){ el.classList.remove('bad'); });
+    presetsEl.querySelectorAll('.chip').forEach(function(c){ c.classList.toggle('on', +c.dataset.ex===i); });
+    // 첫 탭으로
+    document.querySelector('.setab[data-tab="def"]').click();
+    setState('new');
+    if(goalbar) goalbar.innerHTML='<b>🎯 목표 ·</b> '+e.goal;
+    showMsg('info','준비됨','값을 입력한 뒤 💾 저장 → ✓ 검사 → 🔥 활성화 순으로 눌러 보세요. (목표는 위 배너에 계속 표시됩니다.)');
+  }
+
+  /* ---- 이벤트 바인딩 ---- */
+  dtype.addEventListener('change', function(){ syncType(); touched(); });
+  [dname,dlen,ddec,dout,dvtab].forEach(function(el){ el.addEventListener('input', touched); });
+  dlower.addEventListener('change', touched);
+  dneg.addEventListener('change', touched);
+  dlen.addEventListener('input', function(){ var len=parseInt(dlen.value,10)||0; if(dout.value.trim()!=='' && (parseInt(dout.value,10)||0)<len) dout.value=len; });
+  $('bSave').addEventListener('click', doSave);
+  $('bCheck').addEventListener('click', doCheck);
+  $('bAct').addEventListener('click', doActivate);
+  $('fvAdd').addEventListener('click', function(){ addFv('',''); touched(); postHeight(); });
+  presetsEl.addEventListener('click', function(e){ var c=e.target.closest('.chip'); if(c) loadEx(+c.dataset.ex); });
+  document.querySelector('.setabs').addEventListener('click', function(e){
+    var b=e.target.closest('.setab'); if(!b) return;
+    document.querySelectorAll('.setab').forEach(function(x){ x.classList.toggle('on', x===b); });
+    document.querySelectorAll('.tabpane').forEach(function(p){ p.classList.toggle('on', p.dataset.pane===b.dataset.tab); });
+    postHeight();
+  });
+  document.addEventListener('keydown', function(e){
+    if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='s'){ e.preventDefault(); doSave(); }
+    if((e.ctrlKey||e.metaKey) && e.key==='F3'){ e.preventDefault(); doActivate(); }
+  });
+
+  /* ---- iframe 자동 높이 ---- */
+  function postHeight(){
+    try{ var el=document.querySelector('.wrap');
+      var h=Math.ceil(el?el.getBoundingClientRect().height:document.body.scrollHeight)+6;
+      parent.postMessage({sda:'embed-height', h:h}, '*'); }catch(e){}
+  }
+  window.addEventListener('load', postHeight);
+  window.addEventListener('resize', postHeight);
+
+  syncType();
+  loadEx(0);   // 금액 도메인 기본 로드
+})();
+</script>
+</body>
+</html>

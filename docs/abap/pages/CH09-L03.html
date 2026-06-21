@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CALL FUNCTION 기본 구조 · 모듈화 기초 · SAP Developer Academy</title>
+<link rel="stylesheet" href="../../../assets/base.css">
+<link rel="stylesheet" href="../../../assets/lesson.css">
+<link rel="stylesheet" href="../../../assets/shell.css">
+<script>/* 읽기 설정 선적용(플래시 방지) */(function(){try{var L=localStorage,r=document.documentElement;if(L.getItem('sda.dark')==='1')r.classList.add('dark');if(L.getItem('sda.wide')==='1')r.classList.add('wide');var f=parseInt(L.getItem('sda.fontPx'),10);if(f>=13&&f<=20)r.style.fontSize=f+'px';}catch(e){}})();</script>
+</head>
+<body data-domain="abap" data-chapter-id="CH09" data-lesson-id="CH09-L03">
+<header class="appbar">
+  <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
+  <span class="appbar__sp"></span>
+  <span class="meta">CH09 · 모듈화 기초</span>
+  <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
+  <div class="tools">
+    <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
+    <button class="icon-btn" id="fsInc" title="글자 크게">A+</button>
+    <button class="icon-btn" id="fsReset" title="글자 크기 초기화">↺</button>
+    <button class="icon-btn" id="darkBtn" title="다크 모드">🌙</button>
+    <button class="icon-btn" id="widthBtn" title="가독 폭 넓게">↔</button>
+    <button class="icon-btn fs-btn" title="전체화면" aria-label="전체화면"></button>
+  </div>
+</header>
+<div class="read-progress"><i></i></div>
+<div class="scrim"></div>
+<nav class="rail" data-shell="rail"></nav>
+<button class="railFab" id="railFab" aria-label="네비 열기">☰</button>
+<div class="stage">
+  <div class="layout">
+    <main class="main">
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH09</nav>
+      <section class="lhead">
+        <p class="lhead__eyebrow">모듈화 기초</p>
+        <h1>CALL FUNCTION 기본 구조</h1>
+        <p class="lhead__direction">여러 프로그램이 공유하는 재사용 단위 — Function Module.</p>
+        <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 9</span><span class="tag tag--ls">Lesson 3</span><span class="tag tag--lv">초급</span></div>
+      </section>
+      <article class="prose">
+<section class="lblock"><h2>프로그램을 넘어 재사용</h2>
+<p><button class="term" type="button" data-term="Subroutine">Subroutine</button>은 한 프로그램 안에 갇힌다. 여러 프로그램이 <strong>공유</strong>하는 재사용
+블록이 <button class="term" type="button" data-term="Function Module">Function Module</button>(함수 모듈)이다. <code>SE37</code>에서 만들고 관리한다.</p>
+</section><section class="lblock"><h2>CALL FUNCTION — 호출 구조</h2>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12</pre><pre class="abap-editor__code"><code><span class="tok-kw">CALL</span> <span class="tok-kw">FUNCTION</span> <span class="tok-str">'Z_ADD_TAX'</span>
+  <span class="tok-kw">EXPORTING</span>
+    iv_amount = <span class="tok-num">1000</span>          <span class="tok-com">" 넘겨줄 값</span>
+  <span class="tok-kw">IMPORTING</span>
+    ev_result = lv_out        <span class="tok-com">" 돌려받을 값</span>
+  <span class="tok-kw">EXCEPTIONS</span>
+    invalid   = <span class="tok-num">1</span>
+    OTHERS    = <span class="tok-num">2</span>.
+
+<span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.
+  <span class="tok-com">" 예외 처리</span>
+<span class="tok-kw">ENDIF</span>.</code></pre></div></div>
+<ul>
+<li><strong>EXPORTING</strong> — 함수에 <strong>넘기는</strong> 값(호출자 입장).</li>
+<li><strong>IMPORTING</strong> — 함수에서 <strong>돌려받는</strong> 값.</li>
+<li><strong>TABLES</strong> — 내부 테이블 전달(레거시 방식).</li>
+<li><strong>EXCEPTIONS</strong> — 오류를 <code>sy-subrc</code>로 받는다.</li>
+</ul>
+<blockquote>
+<p>방향이 헷갈린다: <strong>호출자 기준</strong>이다. 내가 함수로 EXPORT(내보냄) → 함수가 받음.</p>
+</blockquote>
+</section><section class="lblock"><h2>어디서 찾나</h2>
+<p>표준 함수도 많다. <code>SE37</code>에서 검색하거나, BAPI(CH29)처럼 표준 인터페이스로 제공된다.</p>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>EXPORTING/IMPORTING 방향 혼동</strong> → 호출자 기준으로 생각.</li>
+<li><strong>EXCEPTIONS 무시</strong> → <code>sy-subrc</code> 확인 누락은 단골 버그.</li>
+</ul>
+<hr>
+<p>함수 모듈은 절차적 재사용의 표준이었다. 그런데 현대 ABAP의 중심은 <strong>클래스</strong>다 —
+가볍게 맛보자 → Local Class(다음 레슨).</p>
+</section>
+      </article>
+      <nav class="lesson-nav" data-shell="prevnext"></nav>
+      <footer class="foot">SAP Developer Academy · CH09 CH09-L03</footer>
+    </main>
+    <aside class="journey" data-shell="journey"></aside>
+  </div>
+</div>
+<div class="term-popup" data-shell="popup" hidden></div>
+<div class="tmodal" data-shell="tmodal" hidden></div>
+<script>window.__SDA__={"domain":"abap","dataBase":"../","siteRoot":"../../../"};</script>
+<script src="../../../assets/shell.js" defer></script>
+</body>
+</html>

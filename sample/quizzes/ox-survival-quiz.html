@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<!--
+  O/X 타임어택 서바이벌 (O/X Survival) — standalone
+  ────────────────────────────────────────────────────────────
+  문제마다 제한 시간(타임바)이 줄어드는 가운데 O/X 판정. 정답 +점수, 오답/시간초과 생명 감소.
+  문제는 .ox-data JSON([{q,a:"O"|"X",why}]). 외부 의존성 없음.
+  재사용 시 ".ox*" CSS + 하단 JS만 가져가면 됩니다.
+-->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>O/X 서바이벌 · Sample</title>
+<style>
+:root{--bg:#f6f7fb;--surface:#fff;--ink:#1c2233;--ink-soft:#5b6478;--line:#e6e8ef;--brand:#3b5bdb;--accent:#0ca678;--red:#d6336c;--amber:#f59e0b;--radius:14px;--shadow:0 1px 2px rgba(20,28,51,.04),0 8px 24px rgba(20,28,51,.06);--font:-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic",Roboto,sans-serif;}
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.65;}
+.topbar{position:sticky;top:0;z-index:20;border-bottom:1px solid var(--line);background:var(--surface);}
+.topbar__inner{max-width:1080px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:12px;font-weight:800;}
+.brand__mark{width:28px;height:28px;border-radius:7px;background:var(--brand);color:#fff;display:grid;place-items:center;}
+.wrap{max-width:600px;margin:28px auto 72px;padding:0 24px;}
+.eyebrow{color:var(--brand);font-weight:800;font-size:.82rem;letter-spacing:.05em;text-transform:uppercase;}
+h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 24px;}
+
+/* ===== 컴포넌트 CSS — O/X 서바이벌 ===== */
+.ox{background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px 22px;box-shadow:var(--shadow);text-align:center;}
+.ox__hud{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-weight:800;}
+.ox__lives{color:var(--red);letter-spacing:2px;} .ox__score{color:var(--brand);}
+.ox__timebar{height:8px;border-radius:999px;background:#eef1f6;overflow:hidden;margin-bottom:20px;}
+.ox__timebar-fill{height:100%;width:100%;background:linear-gradient(90deg,var(--accent),var(--amber));transition:width .1s linear;}
+.ox__q{font-size:1.15rem;font-weight:700;min-height:64px;display:flex;align-items:center;justify-content:center;margin-bottom:18px;}
+.ox__btns{display:flex;justify-content:center;gap:22px;}
+.ox__btns button{font-size:1.8rem;width:76px;height:76px;border-radius:50%;border:none;color:#fff;font-weight:bold;cursor:pointer;transition:transform .1s,box-shadow .2s;box-shadow:0 6px 14px rgba(0,0,0,.12);}
+.ox__btns button:hover{transform:translateY(-2px);} .ox__btns button:active{transform:scale(.92);}
+.ox__btns .o{background:var(--accent);} .ox__btns .x{background:var(--red);}
+.ox__flash{margin:16px 0 0;min-height:22px;font-weight:700;}
+.ox__flash.good{color:#0b7250;} .ox__flash.bad{color:var(--red);}
+.ox__start{margin-top:8px;border:1px solid var(--brand);background:var(--brand);color:#fff;border-radius:9px;padding:10px 22px;font-weight:700;cursor:pointer;font:inherit;}
+</style>
+</head>
+<body>
+  <header class="topbar"><div class="topbar__inner"><span class="brand__mark">A</span>SAP Developer Academy</div></header>
+  <main class="wrap">
+    <p class="eyebrow">Quizzes · O/X 서바이벌</p>
+    <h1>제한 시간 안에 O/X 판정</h1>
+    <p class="lead">문제마다 시간바가 줄어듭니다. 맞으면 점수, 틀리거나 시간초과면 생명이 줄어요. 생명 3개로 끝까지 살아남으세요!</p>
+
+    <div class="ox" data-ox data-time="6000">
+      <div class="ox__hud"><span class="ox__lives">❤❤❤</span><span class="ox__score">Score 0</span></div>
+      <div class="ox__timebar"><div class="ox__timebar-fill"></div></div>
+      <div class="ox__q">시작 버튼을 누르면 첫 문제가 나옵니다.</div>
+      <div class="ox__btns"><button class="o" disabled>O</button><button class="x" disabled>X</button></div>
+      <p class="ox__flash"></p>
+      <button class="ox__start">▶ 시작</button>
+      <script type="application/json" class="ox-data">
+      [
+        { "q":"START-OF-SELECTION은 리포트의 메인 로직 이벤트다.", "a":"O", "why":"맞습니다. 실제 DB 조회/가공이 일어나는 핵심 이벤트입니다." },
+        { "q":"sy-subrc 가 4면 직전 조회가 성공한 것이다.", "a":"X", "why":"4는 '결과 없음'을 뜻합니다. 성공은 0입니다." },
+        { "q":"HASHED TABLE은 행의 순서를 항상 보장한다.", "a":"X", "why":"해시 테이블은 순서를 보장하지 않습니다. 순서가 필요하면 SORTED/STANDARD를 쓰세요." },
+        { "q":"SELECT * 는 필요한 컬럼만 명시하는 것보다 성능에 유리하다.", "a":"X", "why":"불필요한 컬럼까지 읽어 I/O가 늘어납니다. 필요한 컬럼만 명시하세요." },
+        { "q":"LOOP AT ... INTO 는 내부 테이블을 한 행씩 순회한다.", "a":"O", "why":"맞습니다. 작업 영역(work area)에 한 행씩 담아 처리합니다." }
+      ]
+      </script>
+    </div>
+  </main>
+
+<script>
+// ===== 컴포넌트 JS — O/X 서바이벌 =====
+(function(){
+  document.querySelectorAll("[data-ox]").forEach(ox=>{
+    let qs=[]; try{ qs=JSON.parse(ox.querySelector(".ox-data").textContent); }catch(e){ return; }
+    const limit=+ox.dataset.time||6000;
+    const qEl=ox.querySelector(".ox__q"), scoreEl=ox.querySelector(".ox__score"), livesEl=ox.querySelector(".ox__lives");
+    const flash=ox.querySelector(".ox__flash"), bar=ox.querySelector(".ox__timebar-fill");
+    const oBtn=ox.querySelector(".o"), xBtn=ox.querySelector(".x"), startBtn=ox.querySelector(".ox__start");
+    let i=0,score=0,lives=3,timer=null,deadline=0,raf=null;
+    function setHud(){ scoreEl.textContent="Score "+score; livesEl.textContent="❤".repeat(lives)+"♡".repeat(3-lives); }
+    function stopTimer(){ clearTimeout(timer); cancelAnimationFrame(raf); }
+    function tick(){ const left=Math.max(0,deadline-Date.now()); bar.style.width=(left/limit*100)+"%"; if(left>0) raf=requestAnimationFrame(tick); }
+    function next(){
+      if(i>=qs.length || lives<=0){ end(); return; }
+      flash.textContent=""; flash.className="ox__flash";
+      qEl.textContent=qs[i].q; oBtn.disabled=xBtn.disabled=false;
+      deadline=Date.now()+limit; bar.style.width="100%"; tick();
+      timer=setTimeout(()=>answer(null),limit);
+    }
+    function answer(ans){
+      stopTimer(); oBtn.disabled=xBtn.disabled=true;
+      const cur=qs[i];
+      if(ans===cur.a){ score+=10; flash.className="ox__flash good"; flash.textContent="✓ 정답! +10 — "+cur.why; }
+      else{ lives--; flash.className="ox__flash bad"; flash.textContent=(ans===null?"시간 초과! ":"✗ 오답! ")+cur.why; }
+      setHud(); i++;
+      setTimeout(next,1300);
+    }
+    function start(){ i=0;score=0;lives=3;setHud();startBtn.style.display="none";next(); }
+    function end(){
+      stopTimer(); oBtn.disabled=xBtn.disabled=true; bar.style.width="0%";
+      const cleared=i>=qs.length && lives>0;
+      qEl.textContent=(cleared?"🏆 클리어! ":"💀 게임 오버 ")+"최종 점수 "+score;
+      flash.textContent=""; startBtn.style.display=""; startBtn.textContent="↻ 다시 도전";
+    }
+    oBtn.addEventListener("click",()=>answer("O"));
+    xBtn.addEventListener("click",()=>answer("X"));
+    startBtn.addEventListener("click",start);
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deep Structure 개념 · Internal Table · SAP Developer Academy</title>
+<link rel="stylesheet" href="../../../assets/base.css">
+<link rel="stylesheet" href="../../../assets/lesson.css">
+<link rel="stylesheet" href="../../../assets/shell.css">
+<script>/* 읽기 설정 선적용(플래시 방지) */(function(){try{var L=localStorage,r=document.documentElement;if(L.getItem('sda.dark')==='1')r.classList.add('dark');if(L.getItem('sda.wide')==='1')r.classList.add('wide');var f=parseInt(L.getItem('sda.fontPx'),10);if(f>=13&&f<=20)r.style.fontSize=f+'px';}catch(e){}})();</script>
+</head>
+<body data-domain="abap" data-chapter-id="CH05" data-lesson-id="CH05-L04">
+<header class="appbar">
+  <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
+  <span class="appbar__sp"></span>
+  <span class="meta">CH05 · Internal Table</span>
+  <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
+  <div class="tools">
+    <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
+    <button class="icon-btn" id="fsInc" title="글자 크게">A+</button>
+    <button class="icon-btn" id="fsReset" title="글자 크기 초기화">↺</button>
+    <button class="icon-btn" id="darkBtn" title="다크 모드">🌙</button>
+    <button class="icon-btn" id="widthBtn" title="가독 폭 넓게">↔</button>
+    <button class="icon-btn fs-btn" title="전체화면" aria-label="전체화면"></button>
+  </div>
+</header>
+<div class="read-progress"><i></i></div>
+<div class="scrim"></div>
+<nav class="rail" data-shell="rail"></nav>
+<button class="railFab" id="railFab" aria-label="네비 열기">☰</button>
+<div class="stage">
+  <div class="layout">
+    <main class="main">
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH05</nav>
+      <section class="lhead">
+        <p class="lhead__eyebrow">Internal Table</p>
+        <h1>Deep Structure 개념</h1>
+        <p class="lhead__direction">구조 안에 내부 테이블/문자열이 든 'Deep' 구조 — 개념 소개.</p>
+        <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 5</span><span class="tag tag--ls">Lesson 4</span><span class="tag tag--lv">초급</span></div>
+      </section>
+      <article class="prose">
+<section class="lblock"><h2>행 안에 또 목록이 있다면</h2>
+<p>주문 한 건에 &quot;주문 항목 여러 줄&quot;이 딸린다. 즉 <strong>한 행 안에 또 다른 내부 테이블</strong>
+이 들어가야 한다. 이렇게 구조 안에 테이블이나 문자열 같은 가변 요소가 든 것을
+<strong>Deep Structure</strong>(깊은 구조)라 한다. 여기선 <strong>개념만</strong> 잡는다(구현은 뒤에서).</p>
+</section><section class="lblock"><h2>Flat vs Deep</h2>
+<ul>
+<li><strong>Flat 구조</strong> — 모든 컴포넌트가 고정 길이 기본형(지금까지의 구조).</li>
+<li><strong>Deep 구조</strong> — 컴포넌트에 <button class="term" type="button" data-term="Internal Table">Internal Table</button>·STRING·참조 등 가변 요소가 포함.</li>
+</ul>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4</pre><pre class="abap-editor__code"><code><span class="tok-kw">TYPES</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ty_order,
+         <span class="tok-kw">id</span>    <span class="tok-kw">TYPE</span> i,
+         items <span class="tok-kw">TYPE</span> ty_person_tab,  <span class="tok-com">" 행 안에 테이블! → Deep</span>
+       <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ty_order.</code></pre></div></div>
+</section><section class="lblock"><h2>왜 미리 알아두나</h2>
+<ul>
+<li>ALV 표시나 DB 저장에서 Deep 구조는 <strong>Flat과 다르게 취급</strong>된다.</li>
+<li>지금은 &quot;구조 안에 테이블이 들어갈 수 있다&quot;는 가능성만 기억하면 된다. 실제
+활용·제약은 ALV·구조 심화에서 다시 만난다.</li>
+</ul>
+</section><section class="lblock"><h2>흔한 오해와 점검</h2>
+<ul>
+<li><strong>Deep을 투명 테이블 컬럼으로</strong> → 안 된다. 투명 테이블 행은 Flat이어야 한다(→ CH06).</li>
+<li><strong>지금 깊이 파지 말 것</strong> → 개념만. 나선형으로 뒤에서 깊어진다.</li>
+</ul>
+<hr>
+<p>이제 여러 건을 메모리에서 자유롭게 다룬다. 그런데 프로그램이 끝나면 이 테이블은
+<strong>사라진다.</strong> 값을 영구히 저장하고 싶다 → <strong>CH06(Transparent Table)</strong>.</p>
+</section>
+      </article>
+      <nav class="lesson-nav" data-shell="prevnext"></nav>
+      <footer class="foot">SAP Developer Academy · CH05 CH05-L04</footer>
+    </main>
+    <aside class="journey" data-shell="journey"></aside>
+  </div>
+</div>
+<div class="term-popup" data-shell="popup" hidden></div>
+<div class="tmodal" data-shell="tmodal" hidden></div>
+<script>window.__SDA__={"domain":"abap","dataBase":"../","siteRoot":"../../../"};</script>
+<script src="../../../assets/shell.js" defer></script>
+</body>
+</html>

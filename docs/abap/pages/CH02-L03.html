@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Incomplete 타입(C·N·P) · 변수와 표준 타입 (+ Local Type) · SAP Developer Academy</title>
+<link rel="stylesheet" href="../../../assets/base.css">
+<link rel="stylesheet" href="../../../assets/lesson.css">
+<link rel="stylesheet" href="../../../assets/shell.css">
+<script>/* 읽기 설정 선적용(플래시 방지) */(function(){try{var L=localStorage,r=document.documentElement;if(L.getItem('sda.dark')==='1')r.classList.add('dark');if(L.getItem('sda.wide')==='1')r.classList.add('wide');var f=parseInt(L.getItem('sda.fontPx'),10);if(f>=13&&f<=20)r.style.fontSize=f+'px';}catch(e){}})();</script>
+</head>
+<body data-domain="abap" data-chapter-id="CH02" data-lesson-id="CH02-L03">
+<header class="appbar">
+  <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
+  <span class="appbar__sp"></span>
+  <span class="meta">CH02 · 변수와 표준 타입 (+ Local Type)</span>
+  <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
+  <div class="tools">
+    <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
+    <button class="icon-btn" id="fsInc" title="글자 크게">A+</button>
+    <button class="icon-btn" id="fsReset" title="글자 크기 초기화">↺</button>
+    <button class="icon-btn" id="darkBtn" title="다크 모드">🌙</button>
+    <button class="icon-btn" id="widthBtn" title="가독 폭 넓게">↔</button>
+    <button class="icon-btn fs-btn" title="전체화면" aria-label="전체화면"></button>
+  </div>
+</header>
+<div class="read-progress"><i></i></div>
+<div class="scrim"></div>
+<nav class="rail" data-shell="rail"></nav>
+<button class="railFab" id="railFab" aria-label="네비 열기">☰</button>
+<div class="stage">
+  <div class="layout">
+    <main class="main">
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH02</nav>
+      <section class="lhead">
+        <p class="lhead__eyebrow">변수와 표준 타입 (+ Local Type)</p>
+        <h1>Incomplete 타입(C·N·P)</h1>
+        <p class="lhead__direction">길이(와 소수 자릿수)를 함께 지정해야 하는 타입.</p>
+        <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 2</span><span class="tag tag--ls">Lesson 3</span><span class="tag tag--lv">입문</span></div>
+      </section>
+      <article class="prose">
+<section class="lblock"><h2>&quot;길이를 정해야&quot; 완성되는 타입</h2>
+<p>어떤 타입은 <strong>길이를 함께 지정해야</strong> 비로소 완전해진다. 이를
+<button class="term" type="button" data-term="Incomplete 타입">Incomplete 타입</button>이라 한다. 대표는 <code>C</code>·<code>N</code>·<code>P</code>다.</p>
+</section><section class="lblock"><h2>C · N · P</h2>
+<table>
+<thead>
+<tr>
+<th>타입</th>
+<th>뜻</th>
+<th>지정할 것</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>C</code></td>
+<td>고정 길이 문자(character)</td>
+<td>길이</td>
+</tr>
+<tr>
+<td><code>N</code></td>
+<td>숫자형 문자(numeric text)</td>
+<td>길이</td>
+</tr>
+<tr>
+<td><code>P</code></td>
+<td>압축 소수(packed)</td>
+<td>길이 + 소수 자릿수</td>
+</tr>
+</tbody></table>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>: lv_code <span class="tok-kw">TYPE</span> c LENGTH <span class="tok-num">4</span>,            <span class="tok-com">" 4글자 코드</span>
+      lv_zip  <span class="tok-kw">TYPE</span> n LENGTH <span class="tok-num">5</span>,            <span class="tok-com">" 우편번호(숫자 문자)</span>
+      lv_amt  <span class="tok-kw">TYPE</span> p LENGTH <span class="tok-num">8</span> DECIMALS <span class="tok-num">2</span>. <span class="tok-com">" 금액, 소수 2자리</span>
+
+lv_code = <span class="tok-str">'ABCD'</span>.
+lv_amt  = <span class="tok-num">7</span> / <span class="tok-num">2</span>.    <span class="tok-com">" 3.50 (정확)</span>
+<span class="tok-kw">WRITE</span>: / lv_code, / lv_amt.</code></pre></div></div>
+<ul>
+<li><code>C LENGTH n</code> — 딱 n글자. 모자라면 공백으로 채워진다.</li>
+<li><code>N LENGTH n</code> — 숫자처럼 보이지만 <strong>문자</strong>다(앞의 0이 보존됨, 예: 우편번호).</li>
+<li><code>P LENGTH n DECIMALS d</code> — 금액·수량 등 <strong>정확한 소수</strong> 계산용.</li>
+</ul>
+<blockquote>
+<p><strong>왜 N을 쓰나?</strong> 우편번호 <code>01234</code>를 정수 <code>I</code>에 넣으면 앞의 0이 사라져 <code>1234</code>가
+된다. &quot;숫자처럼 보이지만 계산하지 않는 값&quot;은 <code>N</code>(또는 <code>C</code>)으로 둔다.</p>
+</blockquote>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>길이 누락</strong> → <code>DATA lv_x TYPE c.</code> 는 길이 1로 잘린다. <code>LENGTH</code>를 명시.</li>
+<li><strong>금액에 F 사용</strong> → 부동소수점은 오차가 난다. 돈은 반드시 <code>P … DECIMALS</code>.</li>
+<li><strong>N에 알파벳 대입</strong> → <code>N</code>에는 숫자 문자만. 알파벳은 <code>C</code>.</li>
+</ul>
+<hr>
+<p>이제 표준 타입은 다 봤다. 그런데 <code>p length 8 decimals 2</code>를 <strong>프로그램마다 또
+적자니</strong> 번거롭다 — &quot;한 번 정의해 재사용하고 싶다.&quot; 그게 <button class="term" type="button" data-term="TYPES">TYPES</button>다 → 다음 레슨.</p>
+</section>
+      </article>
+      <nav class="lesson-nav" data-shell="prevnext"></nav>
+      <footer class="foot">SAP Developer Academy · CH02 CH02-L03</footer>
+    </main>
+    <aside class="journey" data-shell="journey"></aside>
+  </div>
+</div>
+<div class="term-popup" data-shell="popup" hidden></div>
+<div class="tmodal" data-shell="tmodal" hidden></div>
+<script>window.__SDA__={"domain":"abap","dataBase":"../","siteRoot":"../../../"};</script>
+<script src="../../../assets/shell.js" defer></script>
+</body>
+</html>

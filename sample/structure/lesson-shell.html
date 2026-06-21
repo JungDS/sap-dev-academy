@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<!--
+  학습 셸 (Lesson Shell) — standalone
+  ────────────────────────────────────────────────────────────
+  레슨 페이지의 골격 한 벌:
+   • PC(≥980px): 좌측 끝에 고정(fixed)된 사이드바 + 남는 공간 전체를 쓰는 본문
+   • 모바일(<980px): 좌상단 햄버거 → 좌측 슬라이드 드로어(오프캔버스) + 스크림
+   • 전체화면 버튼(Fullscreen API): 켜면 본문 좌우 여백을 줄여 화면을 꽉 채움
+   • 좌측 3탭(목차/용어/T-code) · 본문 h2 자동 목차 + 스크롤 추적 · 용어 hover 팝업 · 이전/다음
+  외부 의존성 없음. 이 파일 하나로 동작합니다.
+  재사용 시: 아래 "컴포넌트 CSS/JS" 블록 전체가 셸의 핵심입니다.
+-->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>학습 셸 · Sample</title>
+<style>
+/* ===== 공통 토큰(프로젝트 base.css와 동일) ===== */
+:root{
+  --bg:#f6f7fb; --surface:#fff; --ink:#1c2233; --ink-soft:#5b6478; --line:#e6e8ef;
+  --brand:#3b5bdb; --accent:#0ca678; --soon:#94a0b8; --radius:14px;
+  --shadow:0 1px 2px rgba(20,28,51,.04),0 8px 24px rgba(20,28,51,.06);
+  --topbar-h:56px; --nav-w:266px; --content-max:1040px;
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic","Apple SD Gothic Neo",Roboto,sans-serif;
+}
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased;}
+a{color:var(--brand);text-decoration:none;} a:hover{text-decoration:underline;}
+
+/* ===== 컴포넌트 CSS — 학습 셸 ===== */
+
+/* ---- 상단바 (full-width app bar) ---- */
+.topbar{position:sticky;top:0;z-index:30;border-bottom:1px solid var(--line);background:var(--surface);}
+.topbar__inner{height:var(--topbar-h);display:flex;align-items:center;gap:12px;padding:0 16px;}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;color:var(--ink);min-width:0;}
+.brand span:last-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.brand__mark{width:28px;height:28px;border-radius:7px;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:800;flex-shrink:0;}
+.topbar__spacer{flex:1;}
+.topbar__utils{display:flex;gap:16px;font-size:.86rem;color:var(--ink-soft);}
+
+/* 아이콘/액션 버튼 */
+.icon-btn{display:inline-grid;place-items:center;width:38px;height:38px;border-radius:9px;border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;font-size:1.15rem;flex-shrink:0;}
+.icon-btn:hover{border-color:var(--brand);color:var(--brand);}
+.fs-btn{display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 13px;border-radius:9px;border:1px solid var(--line);background:#fff;color:var(--ink-soft);font-weight:700;font-size:.84rem;cursor:pointer;flex-shrink:0;}
+.fs-btn:hover{border-color:var(--brand);color:var(--brand);}
+
+/* ---- 스크림(모바일 드로어 뒤 배경) ---- */
+.scrim{position:fixed;inset:0;background:rgba(15,20,35,.42);z-index:55;opacity:0;pointer-events:none;transition:opacity .28s ease;}
+body.nav-open .scrim{opacity:1;pointer-events:auto;}
+
+/* ---- 사이드바: 기본값 = 모바일 오프캔버스 드로어 ---- */
+.sidenav{
+  position:fixed;top:0;left:0;bottom:0;width:min(84vw,300px);z-index:60;
+  background:var(--surface);border-right:1px solid var(--line);overflow-y:auto;
+  padding:0 14px 28px;transform:translateX(-100%);
+  transition:transform .28s cubic-bezier(.4,0,.2,1);box-shadow:0 0 50px rgba(0,0,0,.18);
+}
+body.nav-open .sidenav{transform:translateX(0);}
+.sidenav__head{position:sticky;top:0;background:var(--surface);display:flex;align-items:center;justify-content:space-between;
+  padding:13px 2px;border-bottom:1px solid var(--line);margin-bottom:12px;z-index:1;}
+.sidenav__head-title{font-weight:800;font-size:.95rem;}
+.sidenav__close{border:0;background:none;font-size:1.6rem;line-height:1;color:var(--ink-soft);cursor:pointer;padding:0 4px;}
+.sidenav__tabs{display:flex;gap:4px;margin-bottom:12px;}
+.sidenav__tab{flex:1;border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);border-radius:9px;padding:7px 4px;font-size:.76rem;font-weight:700;cursor:pointer;}
+.sidenav__tab.is-active{background:var(--brand);color:#fff;border-color:var(--brand);}
+.sidenav__panel{display:none;}
+.sidenav__panel.is-active{display:block;}
+.sidenav__list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px;}
+.sidenav__list a{display:block;padding:8px 10px;border-radius:8px;font-size:.86rem;color:var(--ink-soft);line-height:1.4;}
+.sidenav__list a:hover{background:rgba(59,91,219,.07);text-decoration:none;}
+.sidenav__list a.is-current{background:rgba(59,91,219,.12);color:var(--brand);font-weight:700;}
+.sidenav__num{color:var(--soon);font-weight:700;margin-right:6px;font-size:.78rem;}
+
+/* ---- 본문 ---- */
+.content__inner{max-width:var(--content-max);margin:0 auto;padding:26px clamp(16px,4vw,40px) 90px;min-width:0;}
+.content .eyebrow{color:var(--brand);font-weight:800;font-size:.8rem;letter-spacing:.05em;text-transform:uppercase;}
+.content h1{font-size:1.8rem;margin:6px 0 8px;line-height:1.25;}
+.content h2{font-size:1.28rem;margin:36px 0 10px;scroll-margin-top:72px;}
+.content p{color:#2c3346;max-width:78ch;}
+.content section{margin-bottom:8px;}
+
+/* 용어(term) 트리거 + 팝업 */
+.term{border-bottom:2px dotted var(--brand);color:var(--brand);font-weight:600;cursor:help;}
+.term-popup{position:absolute;z-index:70;max-width:300px;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 30px rgba(20,28,51,.16);padding:14px 16px;}
+.term-popup__title{font-weight:800;font-size:.95rem;margin:0 0 6px;}
+.term-popup__desc{margin:0;font-size:.86rem;color:var(--ink-soft);line-height:1.55;}
+.term-popup__analogy{margin:8px 0 0;font-size:.82rem;color:var(--accent);line-height:1.5;}
+.term-popup__close{position:absolute;top:8px;right:10px;border:0;background:none;cursor:pointer;color:var(--soon);font-size:1.1rem;line-height:1;}
+
+/* 이전/다음 */
+.lesson-nav{display:flex;justify-content:space-between;gap:12px;margin:44px 0 8px;}
+.lesson-nav a{flex:1;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);padding:12px 16px;box-shadow:var(--shadow);}
+.lesson-nav a:hover{text-decoration:none;border-color:var(--brand);}
+.lesson-nav .dir{font-size:.74rem;color:var(--soon);font-weight:700;}
+.lesson-nav .ttl{display:block;margin-top:2px;color:var(--ink);font-weight:600;font-size:.92rem;}
+.lesson-nav .next{text-align:right;}
+
+/* ---- 데스크톱(≥980px): 사이드바를 좌측 끝에 고정, 본문은 남는 공간 전체 ---- */
+@media (min-width:980px){
+  .hamburger{display:none;}
+  .scrim{display:none;}
+  .sidenav{position:fixed;top:var(--topbar-h);left:0;bottom:0;width:var(--nav-w);
+    transform:none;box-shadow:none;z-index:20;padding-top:16px;}
+  .sidenav__head{display:none;}
+  .content{margin-left:var(--nav-w);}
+}
+
+/* ---- 전체화면: 본문 좌우 여백을 줄여 화면을 꽉 채움 ---- */
+body.is-fullscreen{--content-max:none;}
+body.is-fullscreen .content__inner{padding-left:clamp(24px,2.5vw,56px);padding-right:clamp(24px,2.5vw,56px);}
+
+/* 작은 화면: 보조 유틸/버튼 라벨 숨김 */
+@media (max-width:720px){
+  .topbar__utils{display:none;}
+  .fs-btn__label{display:none;}
+  .fs-btn{padding:0;width:38px;justify-content:center;}
+}
+</style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar__inner">
+      <button class="icon-btn hamburger" aria-label="메뉴 열기" aria-expanded="false" aria-controls="sidenav">☰</button>
+      <a class="brand" href="#"><span class="brand__mark">A</span><span>SAP Developer Academy</span></a>
+      <span class="topbar__spacer"></span>
+      <nav class="topbar__utils"><span>글로서리</span><span>T-code 지도</span></nav>
+      <button class="fs-btn" type="button"><span aria-hidden="true">⛶</span><span class="fs-btn__label">전체화면</span></button>
+    </div>
+  </header>
+
+  <div class="scrim" aria-hidden="true"></div>
+
+  <main>
+    <!-- 좌측 3탭 사이드바 (PC: 좌측 고정 / 모바일: 드로어) -->
+    <aside class="sidenav" id="sidenav" aria-label="학습 네비게이션">
+      <div class="sidenav__head">
+        <span class="sidenav__head-title">학습 메뉴</span>
+        <button class="sidenav__close" aria-label="메뉴 닫기">×</button>
+      </div>
+      <div class="sidenav__tabs">
+        <button class="sidenav__tab is-active" data-tab="toc">목차</button>
+        <button class="sidenav__tab" data-tab="terms">용어</button>
+        <button class="sidenav__tab" data-tab="tcode">T-code</button>
+      </div>
+
+      <div class="sidenav__panel is-active" data-panel="toc">
+        <ul class="sidenav__list" id="tocList"><!-- JS가 본문 h2를 읽어 자동 생성 --></ul>
+      </div>
+      <div class="sidenav__panel" data-panel="terms">
+        <ul class="sidenav__list">
+          <li><a href="#">DDIC <span class="sidenav__num">데이터 사전</span></a></li>
+          <li><a href="#">Internal Table <span class="sidenav__num">메모리 표</span></a></li>
+          <li><a href="#">Open SQL <span class="sidenav__num">DB 추상화</span></a></li>
+        </ul>
+      </div>
+      <div class="sidenav__panel" data-panel="tcode">
+        <ul class="sidenav__list">
+          <li><a href="#"><span class="sidenav__num">SE38</span> ABAP 에디터</a></li>
+          <li><a href="#"><span class="sidenav__num">SE11</span> DDIC</a></li>
+          <li><a href="#"><span class="sidenav__num">SE80</span> Object Navigator</a></li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- 본문 -->
+    <article class="content">
+      <div class="content__inner">
+        <p class="eyebrow">Chapter 13 · Lesson 1</p>
+        <h1>리포트 이벤트 생명주기</h1>
+        <p>이 셸은 PC에서 <strong>좌측 끝 고정 사이드바</strong>로 본문 공간을 넓게 쓰고, 모바일에서는 좌상단 <strong>햄버거 → 슬라이드 드로어</strong>로 메뉴를 엽니다.
+          본문 속 <span class="term"
+          data-title="용어 hover 팝업" data-desc="어려운 용어에 마우스를 올리면 정의·비유가 뜨는 인라인 학습 장치입니다."
+          data-analogy="📌 비유: 사전을 찾으러 자리를 뜨지 않고, 그 자리에서 바로 뜻을 본다.">용어 팝업</span>과
+          우상단 <strong>전체화면</strong> 버튼(좌우 여백을 줄여 화면을 꽉 채움)도 함께 제공합니다.</p>
+
+        <section>
+          <h2 id="s1">왜 이벤트 순서가 중요한가</h2>
+          <p>ABAP 리포트는 위에서 아래로 실행되지 않습니다.
+            <span class="term" data-title="이벤트 블록"
+            data-desc="START-OF-SELECTION 처럼 특정 시점에 시스템이 호출하는 코드 구획."
+            data-analogy="🍳 비유: 요리사의 하루 — 오픈 준비 → 주문 접수 → 조리 → 마감.">이벤트 블록</span>
+            단위로, 정해진 순서에 따라 시스템이 호출합니다.</p>
+        </section>
+
+        <section>
+          <h2 id="s2">INITIALIZATION 의 역할</h2>
+          <p>화면이 뜨기 전에 기본값을 세팅하는 준비 구간입니다. 선택 화면의 기본 파라미터, 기본 날짜 범위 등을 여기서 채웁니다.</p>
+        </section>
+
+        <section>
+          <h2 id="s3">START-OF-SELECTION 흐름</h2>
+          <p>실제 DB 조회와 가공이 일어나는 메인 로직 구간입니다.
+            <span class="term" data-title="sy-subrc"
+            data-desc="직전 문장의 성공/실패를 담는 시스템 필드. 0이면 성공."
+            data-analogy="🚦 비유: 신호등 — 0(초록)이면 통과, 4면 결과 없음.">sy-subrc</span>로 결과를 확인합니다.</p>
+        </section>
+
+        <section>
+          <h2 id="s4">END-OF-SELECTION 과 출력</h2>
+          <p>조회·가공이 끝난 뒤 결과를 화면에 출력하고 마감하는 구간입니다. ALV(cl_salv_table)로 표를 그리는 호출이 보통 여기 위치합니다.</p>
+        </section>
+
+        <nav class="lesson-nav">
+          <a href="#"><span class="dir">← 이전</span><span class="ttl">Ch12. 데이터 계층 정리</span></a>
+          <a class="next" href="#"><span class="dir">다음 →</span><span class="ttl">L2. 선택 화면 검증</span></a>
+        </nav>
+      </div>
+    </article>
+  </main>
+
+<script>
+// ===== 컴포넌트 JS — 학습 셸 =====
+(function(){
+  const body = document.body;
+
+  /* 1) 모바일 드로어 (햄버거 + 스크림 + 닫기) */
+  const ham = document.querySelector(".hamburger");
+  const scrim = document.querySelector(".scrim");
+  const closeBtn = document.querySelector(".sidenav__close");
+  const isMobile = () => window.matchMedia("(max-width:979px)").matches;
+  function openNav(){ body.classList.add("nav-open"); ham.setAttribute("aria-expanded","true"); }
+  function closeNav(){ body.classList.remove("nav-open"); ham.setAttribute("aria-expanded","false"); }
+  ham.addEventListener("click", ()=> body.classList.contains("nav-open") ? closeNav() : openNav());
+  scrim.addEventListener("click", closeNav);
+  if(closeBtn) closeBtn.addEventListener("click", closeNav);
+  document.addEventListener("keydown", e=>{ if(e.key==="Escape") closeNav(); });
+  // 데스크톱으로 넓어지면 드로어 상태 정리
+  window.addEventListener("resize", ()=>{ if(!isMobile()) closeNav(); });
+
+  /* 2) 전체화면 토글 (Fullscreen API) */
+  const fsBtn = document.querySelector(".fs-btn");
+  const fsLabel = fsBtn.querySelector(".fs-btn__label");
+  fsBtn.addEventListener("click", ()=>{
+    if(!document.fullscreenElement){ (document.documentElement.requestFullscreen||document.documentElement.webkitRequestFullscreen)?.call(document.documentElement); }
+    else{ (document.exitFullscreen||document.webkitExitFullscreen)?.call(document); }
+  });
+  function onFsChange(){
+    const on = !!(document.fullscreenElement || document.webkitFullscreenElement);
+    body.classList.toggle("is-fullscreen", on);
+    if(fsLabel) fsLabel.textContent = on ? "해제" : "전체화면";
+    fsBtn.title = on ? "전체화면 해제" : "전체화면";
+  }
+  document.addEventListener("fullscreenchange", onFsChange);
+  document.addEventListener("webkitfullscreenchange", onFsChange);
+
+  /* 3) 사이드바 탭 전환 */
+  const tabs = document.querySelectorAll(".sidenav__tab");
+  const panels = document.querySelectorAll(".sidenav__panel");
+  tabs.forEach(tab=>tab.addEventListener("click",()=>{
+    tabs.forEach(t=>t.classList.remove("is-active"));
+    panels.forEach(p=>p.classList.remove("is-active"));
+    tab.classList.add("is-active");
+    document.querySelector(`.sidenav__panel[data-panel="${tab.dataset.tab}"]`).classList.add("is-active");
+  }));
+
+  /* 4) 본문 h2 → 목차 자동 생성 + 스크롤 추적 */
+  const tocList = document.getElementById("tocList");
+  const heads = [...document.querySelectorAll(".content h2")];
+  heads.forEach((h,i)=>{
+    const li = document.createElement("li");
+    li.innerHTML = `<a href="#${h.id}"><span class="sidenav__num">${String(i+1).padStart(2,"0")}</span>${h.textContent}</a>`;
+    tocList.appendChild(li);
+  });
+  const links = [...tocList.querySelectorAll("a")];
+  // 모바일에서 목차 클릭 시 드로어 닫기
+  tocList.addEventListener("click", e=>{ if(e.target.closest("a") && isMobile()) closeNav(); });
+  const spy = new IntersectionObserver(es=>{
+    es.forEach(e=>{
+      if(e.isIntersecting){
+        const id = e.target.id;
+        links.forEach(l=>l.classList.toggle("is-current", l.getAttribute("href")==="#"+id));
+      }
+    });
+  },{rootMargin:"-72px 0px -70% 0px"});
+  heads.forEach(h=>spy.observe(h));
+
+  /* 5) 용어 hover 팝업 */
+  let popup=null;
+  function closePopup(){ if(popup){popup.remove();popup=null;} }
+  document.querySelectorAll(".term").forEach(t=>{
+    t.addEventListener("mouseenter",()=>{
+      closePopup();
+      popup=document.createElement("div");
+      popup.className="term-popup";
+      popup.innerHTML=`<button class="term-popup__close" aria-label="닫기">×</button>
+        <p class="term-popup__title">${t.dataset.title||t.textContent}</p>
+        <p class="term-popup__desc">${t.dataset.desc||""}</p>
+        ${t.dataset.analogy?`<p class="term-popup__analogy">${t.dataset.analogy}</p>`:""}`;
+      document.body.appendChild(popup);
+      const r=t.getBoundingClientRect();
+      popup.style.left=Math.min(r.left+window.scrollX, window.scrollX+window.innerWidth-320)+"px";
+      popup.style.top=(r.bottom+window.scrollY+8)+"px";
+      popup.querySelector(".term-popup__close").addEventListener("click",closePopup);
+    });
+  });
+  document.addEventListener("click",e=>{ if(popup && !popup.contains(e.target) && !e.target.classList.contains("term")) closePopup(); });
+})();
+</script>
+</body>
+</html>

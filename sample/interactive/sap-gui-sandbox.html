@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<!--
+  가상 SAP GUI 샌드박스 (Virtual SAP GUI Sandbox) — standalone
+  ────────────────────────────────────────────────────────────
+  SAPGUI 선택 화면을 흉내 낸 입력폼 → 실행 시 로그가 한 줄씩 흐르고,
+  검증 실패 시 에러 모달, 통과 시 가짜 DB를 필터링해 ALV 표로 출력.
+  동작은 .sandbox-config JSON 하나로 정의(fields/steps/validations/db/columns/match).
+  외부 의존성 없음. 재사용 시 ".sap-*" CSS + 하단 JS만 가져가면 됩니다.
+-->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>가상 SAP GUI 샌드박스 · Sample</title>
+<style>
+:root{--bg:#f6f7fb;--surface:#fff;--ink:#1c2233;--ink-soft:#5b6478;--line:#e6e8ef;--brand:#3b5bdb;--accent:#0ca678;--fiori:#0a6ed1;--radius:14px;--shadow:0 1px 2px rgba(20,28,51,.04),0 8px 24px rgba(20,28,51,.06);--font:-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic",Roboto,sans-serif;--mono:'D2Coding',Consolas,Monaco,monospace;}
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.65;}
+.topbar{position:sticky;top:0;z-index:20;border-bottom:1px solid var(--line);background:var(--surface);}
+.topbar__inner{max-width:1080px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:12px;font-weight:800;}
+.brand__mark{width:28px;height:28px;border-radius:7px;background:var(--brand);color:#fff;display:grid;place-items:center;}
+.wrap{max-width:760px;margin:28px auto 72px;padding:0 24px;}
+.eyebrow{color:var(--brand);font-weight:800;font-size:.82rem;letter-spacing:.05em;text-transform:uppercase;}
+h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 24px;}
+
+/* ===== 컴포넌트 CSS — SAP GUI 샌드박스 ===== */
+.sap-sandbox{background:#cbd5e1;border:2px solid #64748b;border-radius:10px;overflow:hidden;box-shadow:var(--shadow);font-family:Arial,sans-serif;}
+.sap-header{background:linear-gradient(180deg,#0a6ed1,#0857a6);padding:6px 12px;display:flex;align-items:center;gap:8px;color:#fff;border-bottom:2px solid #064a8a;}
+.sap-tcode{display:flex;align-items:center;gap:8px;font-size:.8rem;font-weight:bold;}
+.sap-tcode .val{background:#fff;color:#000;padding:2px 8px;border-radius:4px;font-family:var(--mono);}
+.sap-title{background:#f8fafc;border-bottom:1px solid var(--line);padding:8px 16px;color:#334155;font-weight:bold;font-size:.95rem;}
+.sap-screen{background:#f8fafc;padding:22px;display:flex;flex-direction:column;gap:14px;}
+.sap-field{display:grid;grid-template-columns:180px minmax(100px,260px);align-items:center;gap:12px;}
+.sap-field label{font-size:.85rem;color:#475569;font-weight:bold;}
+.sap-input{border:1px solid #cbd5e1;padding:6px 10px;border-radius:4px;font-size:.85rem;background:#fff;color:#1e293b;outline:none;transition:border-color .2s;}
+.sap-input:focus{border-color:var(--fiori);box-shadow:0 0 0 2px rgba(10,110,209,.18);}
+.sap-exec{align-self:flex-start;background:var(--fiori);color:#fff;font-size:.85rem;font-weight:bold;border:1px solid #085cab;padding:8px 22px;border-radius:4px;cursor:pointer;display:flex;align-items:center;gap:8px;margin-top:6px;}
+.sap-exec:hover{background:#0857a6;}
+.sap-log{background:#fff;color:#334155;padding:16px;border-top:2px solid #94a3b8;font-family:var(--mono);font-size:.82rem;min-height:120px;max-height:320px;overflow:auto;}
+.sap-log-line{margin:5px 0;opacity:0;transform:translateY(5px);animation:fadeLog .35s ease forwards;}
+@keyframes fadeLog{to{opacity:1;transform:translateY(0);}}
+.sap-log-line.event{color:#0369a1;font-weight:bold;} .sap-log-line.info{color:#475569;}
+.sap-log-line.error{color:#be123c;font-weight:bold;} .sap-log-line.success{color:#0b7250;font-weight:bold;}
+.sap-log .ph{color:#94a3b8;font-style:italic;}
+.sap-alv{width:100%;border-collapse:collapse;margin-top:10px;font-family:Arial,sans-serif;font-size:.8rem;background:#fff;}
+.sap-alv th{background:#eef2ff;border:1px solid #cbd5e1;padding:6px 10px;color:#26336b;font-weight:bold;text-align:left;}
+.sap-alv td{border:1px solid #cbd5e1;padding:6px 10px;}
+.sap-alv tr:nth-child(even){background:#f8fafc;}
+.sap-modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.3);display:none;align-items:center;justify-content:center;z-index:999;}
+.sap-modal-bg.show{display:flex;}
+.sap-modal{background:#fff;border:2px solid #be123c;border-radius:8px;width:90%;max-width:400px;overflow:hidden;box-shadow:0 20px 40px rgba(0,0,0,.25);}
+.sap-modal h3{background:#be123c;color:#fff;margin:0;padding:10px 16px;font-size:.95rem;}
+.sap-modal h3 svg{width:15px;height:15px;vertical-align:-2px;margin-right:5px;}
+.sap-modal p{padding:18px;margin:0;color:#1e293b;font-size:.9rem;}
+.sap-modal .foot{background:#f8fafc;padding:10px 16px;display:flex;justify-content:flex-end;border-top:1px solid var(--line);}
+.sap-modal button{background:#475569;color:#fff;border:none;padding:6px 16px;border-radius:4px;font-size:.85rem;cursor:pointer;}
+.sap-tcode-desc{margin-left:14px;color:#cbd5e1;font-weight:normal;font-size:.78rem;}
+.sap-input[readonly]{background:#e7ebf1;color:#5b6878;cursor:default;font-weight:bold;}
+.sap-field .req{color:#be123c;font-weight:bold;}
+.sap-field .opt{color:#64748b;font-weight:normal;font-size:.78rem;}
+@media (max-width:520px){.sap-field{grid-template-columns:1fr;gap:4px;}}
+</style>
+</head>
+<body>
+  <header class="topbar"><div class="topbar__inner"><span class="brand__mark">A</span>SAP Developer Academy</div></header>
+  <main class="wrap">
+    <p class="eyebrow">Interactive · SAP GUI 샌드박스</p>
+    <h1>가짜 SAPGUI로 안전하게 실행 체험</h1>
+    <p class="lead">실제 시스템 없이도 표준 트랜잭션 <strong>SE16N</strong>(범용 테이블 조회)으로 PA0001을 조회하는 "입력 → 실행 → 결과" 흐름을 체험합니다. <strong>사업장(WERKS)은 필수</strong>, <strong>사번(PERNR)은 선택</strong>입니다. 사업장만 입력하면 그 사업장의 <strong>여러 명</strong>이, 사번까지 입력하면 <strong>한 명</strong>만 조회됩니다.</p>
+
+    <div class="sap-sandbox" data-sandbox>
+      <div class="sap-header"><span class="sap-tcode">Transaction <span class="val">SE16N</span></span><span class="sap-tcode-desc">범용 테이블 조회 · Data Browser</span></div>
+      <div class="sap-title">테이블 PA0001 조회 (SE16N · Selection Screen)</div>
+      <div class="sap-screen">
+        <div class="sap-field"><label>테이블 (Table)</label><input class="sap-input" id="f-table" value="PA0001" readonly title="이 데모는 PA0001(조직 배정) 테이블에 고정되어 있습니다."></div>
+        <div class="sap-field"><label>사업장 (WERKS) <span class="req">*필수</span></label><input class="sap-input" id="f-werks" placeholder="예: 1000" maxlength="4"></div>
+        <div class="sap-field"><label>사번 (PERNR) <span class="opt">(선택)</span></label><input class="sap-input" id="f-pernr" placeholder="예: 0001 — 입력 시 1명만" maxlength="4"></div>
+        <button class="sap-exec">▶ 실행 (F8)</button>
+      </div>
+      <div class="sap-log"><span class="ph">실행(F8)을 누르면 처리 로그가 여기에 흐릅니다.</span></div>
+
+      <script type="application/json" class="sandbox-config">
+      {
+        "stepDelay": 360,
+        "fields": { "werks": "#f-werks", "pernr": "#f-pernr" },
+        "steps": [
+          { "label":"SE16N", "type":"event", "text":"범용 테이블 조회 시작 — 대상 테이블 PA0001" },
+          { "label":"선택조건", "type":"event", "text":"선택 조건 적용 — WERKS={werks}, PERNR={pernr}" }
+        ],
+        "validations": [
+          { "field":"werks", "test":"required", "label":"검증실패", "text":"사업장(WERKS)은 필수입니다.", "modal":"필수 입력 항목 'WERKS'가 비어 있습니다. 사업장을 입력하세요." },
+          { "field":"werks", "test":"num4", "label":"검증실패", "text":"사업장은 숫자 4자리여야 합니다: {werks}", "modal":"WERKS '{werks}' 은(는) 숫자 4자리 형식이 아닙니다." },
+          { "field":"pernr", "test":"num4", "when":"filled", "label":"검증실패", "text":"사번을 입력했다면 숫자 4자리여야 합니다: {pernr}", "modal":"PERNR '{pernr}' 은(는) 숫자 4자리 형식이 아닙니다. (사번은 선택이지만 입력 시 형식을 지켜야 합니다.)" }
+        ],
+        "selectStep": { "label":"SELECT", "type":"event", "text":"DB 조회 중... (FROM pa0001 WHERE werks = '{werks}')" },
+        "selectResult": { "label":"SELECT", "type":"info", "text":"조회 완료: {count} 건 (sy-subrc 평가)" },
+        "endStep": { "label":"출력", "type":"event", "text":"결과를 ALV 그리드로 표시" },
+        "match": { "werks":"werks", "pernr":"pernr" },
+        "columns": [ {"head":"PERNR","key":"pernr"}, {"head":"NAME1","key":"name1"}, {"head":"WERKS","key":"werks"}, {"head":"STELL","key":"stell"} ],
+        "db": [
+          { "pernr":"0001", "name1":"정훈영", "werks":"1000", "stell":"백엔드(ABAP)" },
+          { "pernr":"0002", "name1":"손흥민", "werks":"1000", "stell":"백엔드(ABAP)" },
+          { "pernr":"0005", "name1":"아이유", "werks":"1000", "stell":"DBA" },
+          { "pernr":"0003", "name1":"유재석", "werks":"2000", "stell":"프론트(UI5)" },
+          { "pernr":"0004", "name1":"김연아", "werks":"2000", "stell":"통합(Gateway)" }
+        ],
+        "emptyText": "조회 결과가 없습니다. (SY-SUBRC = 4) — 해당 사업장에 사원이 없습니다."
+      }
+      </script>
+    </div>
+  </main>
+
+  <div class="sap-modal-bg"><div class="sap-modal"><h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.2 L21.4 20 H2.6 Z"/><line x1="12" y1="9.5" x2="12" y2="14"/><line x1="12" y1="16.8" x2="12" y2="16.9"/></svg>SAP GUI Error</h3><p></p><div class="foot"><button>확인</button></div></div></div>
+
+<script>
+// ===== 컴포넌트 JS — SAP GUI 샌드박스 =====
+(function(){
+  const modalBg = document.querySelector(".sap-modal-bg");
+  modalBg.querySelector("button").addEventListener("click",()=>modalBg.classList.remove("show"));
+  function showModal(msg){ modalBg.querySelector("p").textContent = msg; modalBg.classList.add("show"); }
+  const interp = (t,v)=>String(t).replace(/\{(\w+)\}/g,(_,k)=>(v[k]===undefined||v[k]==="")?"(미입력)":v[k]);
+
+  document.querySelectorAll("[data-sandbox]").forEach(sb=>{
+    let cfg; try{ cfg=JSON.parse(sb.querySelector(".sandbox-config").textContent); }catch(e){ return; }
+    const btn = sb.querySelector(".sap-exec");
+    const log = sb.querySelector(".sap-log");
+    function add(label,type,text){
+      const line=document.createElement("div");
+      line.className="sap-log-line "+(type||"info");
+      line.textContent="["+label+"] "+text;
+      log.appendChild(line); log.scrollTop=log.scrollHeight;
+    }
+    btn.addEventListener("click",()=>{
+      log.innerHTML="";
+      const vars={};
+      Object.entries(cfg.fields||{}).forEach(([k,sel])=>{ const el=sb.querySelector(sel); vars[k]=el?el.value.trim():""; });
+      // 절대 시각 기준 스케줄러 — 중첩 step()도 올바른 누적 오프셋에 실행됨
+      const t0=Date.now(); let delay=0, stopped=false;
+      const step=fn=>{ delay+=cfg.stepDelay||380; const at=delay; setTimeout(()=>{ if(!stopped) fn(); }, Math.max(0, t0+at-Date.now())); };
+
+      (cfg.steps||[]).forEach(s=>step(()=>add(s.label,s.type||"event",interp(s.text,vars))));
+      // 검증
+      step(()=>{
+        for(const v of (cfg.validations||[])){
+          const val=vars[v.field]||""; let fail=false;
+          if(v.when==="filled" && val==="") continue; // 선택 항목: 입력했을 때만 검증
+          if(v.test==="required") fail=(val==="");
+          else if(v.test==="num4") fail=(isNaN(val)||val.length!==4);
+          else if(v.test==="numeric") fail=(val===""||isNaN(val));
+          if(fail){ add(v.label||"Error","error",interp(v.text,vars)); showModal(interp(v.modal||v.text,vars)); stopped=true; return; }
+        }
+      });
+      // 조회
+      step(()=>{
+        if(stopped) return;
+        if(cfg.selectStep) add(cfg.selectStep.label,cfg.selectStep.type||"event",interp(cfg.selectStep.text,vars));
+        const rows=(cfg.db||[]).filter(row=>{
+          let ok=true;
+          Object.entries(cfg.match||{}).forEach(([col,fk])=>{
+            const want=vars[fk]; if(want===undefined||want==="") return;
+            if(String(row[col])!==String(want)) ok=false;
+          });
+          return ok;
+        });
+        vars.count=rows.length;
+        if(cfg.selectResult) add(cfg.selectResult.label||"SELECT","info",interp(cfg.selectResult.text,vars));
+        step(()=>{
+          if(cfg.endStep) add(cfg.endStep.label,cfg.endStep.type||"event",interp(cfg.endStep.text,vars));
+          if(rows.length){
+            const th=(cfg.columns||[]).map(c=>"<th>"+c.head+"</th>").join("");
+            const body=rows.map(r=>"<tr>"+(cfg.columns||[]).map(c=>"<td>"+r[c.key]+"</td>").join("")+"</tr>").join("");
+            log.insertAdjacentHTML("beforeend",'<div class="sap-log-line info"><table class="sap-alv"><thead><tr>'+th+"</tr></thead><tbody>"+body+"</tbody></table></div>");
+          }else{
+            log.insertAdjacentHTML("beforeend",'<div class="sap-log-line error">'+(cfg.emptyText||"결과 없음")+"</div>");
+          }
+          log.scrollTop=log.scrollHeight;
+        });
+      });
+    });
+  });
+})();
+</script>
+</body>
+</html>

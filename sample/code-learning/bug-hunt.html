@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<!--
+  버그 헌트 미션 (Bug Hunt) — standalone
+  ────────────────────────────────────────────────────────────
+  코드에서 버그가 있는 줄을 클릭해 찾는 미션. 정답 줄에 data-bug="설명".
+  맞히면 초록 강조+해설, 틀리면 빨강 흔들림. 외부 의존성 없음.
+  재사용 시 ".bughunt*" CSS + 하단 JS만 가져가면 됩니다.
+-->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>버그 헌트 · Sample</title>
+<style>
+:root{--bg:#f6f7fb;--surface:#fff;--ink:#1c2233;--ink-soft:#5b6478;--line:#e6e8ef;--brand:#3b5bdb;--accent:#0ca678;--radius:14px;--shadow:0 1px 2px rgba(20,28,51,.04),0 8px 24px rgba(20,28,51,.06);--font:-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic",Roboto,sans-serif;--mono:'D2Coding',Consolas,Monaco,monospace;}
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.65;}
+.topbar{position:sticky;top:0;z-index:20;border-bottom:1px solid var(--line);background:var(--surface);}
+.topbar__inner{max-width:1080px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:12px;font-weight:800;}
+.brand__mark{width:28px;height:28px;border-radius:7px;background:var(--brand);color:#fff;display:grid;place-items:center;}
+.wrap{max-width:780px;margin:28px auto 72px;padding:0 24px;}
+.eyebrow{color:var(--brand);font-weight:800;font-size:.82rem;letter-spacing:.05em;text-transform:uppercase;}
+h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 24px;}
+
+/* ===== 컴포넌트 CSS — 버그 헌트 (밝은 테마: code-copy-block 패밀리와 통일) ===== */
+.bughunt{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);}
+.bughunt__bar{background:#2c3666;border-bottom:2px solid var(--brand);color:#ffa03b;font-weight:bold;font-size:12px;letter-spacing:1px;padding:10px 16px;display:flex;align-items:center;gap:8px;}
+.bughunt__bar svg{width:15px;height:15px;display:block;flex-shrink:0;}
+.bughunt__bar .bh-lang{color:#ffa03b;font-weight:bold;letter-spacing:1px;margin:0 2px;}
+.bughunt__bar .mission{margin-left:auto;color:#aab4cf;font-weight:600;}
+.bughunt__code{margin:0;padding:14px 0;font-family:var(--mono);font-size:13.5px;line-height:1.7;background:#f6f8fa;counter-reset:bln;}
+.bug-line{display:block;counter-increment:bln;padding:3px 18px;color:#334155;cursor:pointer;border-left:3px solid transparent;transition:background .15s;}
+.bug-line::before{content:counter(bln);display:inline-block;width:1.6em;margin-right:14px;color:#aab3cf;text-align:right;user-select:none;}
+.bug-line:hover{background:rgba(59,91,219,.07);}
+.bug-line.miss{background:#ffe3ec;border-left-color:#d6336c;color:#b02a55;animation:shake .3s;}
+.bug-line.hit{background:#eafaf3;border-left-color:#0ca678;color:#0b7250;font-weight:600;}
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-4px);}75%{transform:translateX(4px);}}
+.bughunt__result{padding:0 18px;}
+.bughunt__result:has(.bug-feedback.show){padding:16px 18px;}
+.bug-feedback{margin:0;padding:12px 14px;border-radius:10px;font-size:.93rem;display:none;}
+.bug-feedback.show{display:block;}
+.bug-feedback.good{background:#eafaf3;color:#0b7250;border:1px solid #bfead7;}
+.bug-feedback.bad{background:#ffe3ec;color:#b02a55;border:1px solid #f6c2d4;}
+.bug-feedback code{background:rgba(20,28,51,.08);padding:1px 6px;border-radius:5px;}
+</style>
+</head>
+<body>
+  <header class="topbar"><div class="topbar__inner"><span class="brand__mark">A</span>SAP Developer Academy</div></header>
+  <main class="wrap">
+    <p class="eyebrow">Code Learning · 버그 헌트</p>
+    <h1>버그가 숨은 줄을 찾아라</h1>
+    <p class="lead">아래 코드에는 런타임 오류를 일으키는 줄이 하나 있습니다. 의심되는 줄을 클릭해 보세요.</p>
+
+    <div class="bughunt" data-bughunt>
+      <div class="bughunt__bar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="6" width="8" height="13" rx="4"/><path d="M12 3.2v2.8"/><path d="M8.7 4.2 10.2 6"/><path d="M15.3 4.2 13.8 6"/><path d="M8 11H4"/><path d="M20 11h-4"/><path d="M8 16H4"/><path d="M20 16h-4"/></svg><span class="bh-lang">ABAP</span>BUG HUNT <span class="mission">버그 줄을 클릭</span></div>
+<pre class="bughunt__code"><span class="bug-line">DATA lt_emp TYPE TABLE OF pa0001.</span><span class="bug-line">DATA ls_emp TYPE pa0001.</span><span class="bug-line">SELECT pernr name1 FROM pa0001 INTO TABLE lt_emp.</span><span class="bug-line" data-bug="READ TABLE는 키가 없으면 첫 행을 임의로 읽거나 런타임 에러가 납니다. <code>WITH KEY pernr = '...'</code> 처럼 조회 키를 반드시 지정해야 합니다.">READ TABLE lt_emp INTO ls_emp.</span><span class="bug-line">IF sy-subrc = 0.</span><span class="bug-line">  WRITE / ls_emp-name1.</span><span class="bug-line">ENDIF.</span></pre>
+      <div class="bughunt__result">
+        <p class="bug-feedback"></p>
+      </div>
+    </div>
+  </main>
+
+<script>
+// ===== 컴포넌트 JS — 버그 헌트 =====
+(function(){
+  document.querySelectorAll("[data-bughunt]").forEach(hunt=>{
+    const lines = hunt.querySelectorAll(".bug-line");
+    const fb = hunt.querySelector(".bug-feedback");
+    let solved = false;
+    lines.forEach(line=>{
+      line.addEventListener("click",()=>{
+        if(solved) return;
+        if(line.dataset.bug){
+          line.classList.add("hit"); solved=true;
+          fb.className="bug-feedback show good";
+          fb.innerHTML = "✓ <strong>정답!</strong> " + line.dataset.bug;
+        }else{
+          line.classList.add("miss");
+          setTimeout(()=>line.classList.remove("miss"),350);
+          fb.className="bug-feedback show bad";
+          fb.innerHTML = "✗ 이 줄은 정상입니다. 조회/읽기 구문을 다시 살펴보세요.";
+        }
+      });
+    });
+  });
+})();
+</script>
+</body>
+</html>

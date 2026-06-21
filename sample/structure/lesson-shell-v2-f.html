@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<!--
+  레슨 셸 v2-F — 가이디드 학습 여정 (Guided Journey) · standalone
+  ────────────────────────────────────────────────────────────
+  완전 새 디자인. 핵심 혁신:
+   · 좌측 "여정 스텝퍼" — 레슨 섹션을 단계로 표시. 스크롤 위치에 따라 현재 단계 강조(scroll-spy),
+     각 섹션의 "이해했어요 ✓"를 누르면 단계가 완료(초록)로 채워짐.
+   · 하단 스티키 진행 바 — 이해 N/총 · 진행률 · "다음 단계 ↓" · 모두 완료 시 축하.
+   · 챕터/레슨 이동은 상단 "전체 학습경로" 버튼 → 슬라이드 패널.
+   입문자가 "어디까지 했고 다음에 뭘 할지"를 항상 알게 하는 게이미피케이션.
+  외부 의존성 없음(컨페티 내장). 이름은 고정 풀(정훈영=1번).
+-->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Domain 기본 설계 · 레슨 셸 v2-F (학습 여정)</title>
+<style>
+:root{
+  --bg:#f6f7fb;--surface:#fff;--ink:#1a2030;--ink-soft:#5b6478;--line:#e6e8ef;
+  --brand:#3b5bdb;--accent:#0ca678;--soon:#9aa3b5;
+  --shadow:0 1px 2px rgba(20,28,51,.04),0 10px 28px rgba(20,28,51,.07);
+  --appbar-h:56px;--font:-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic",Roboto,sans-serif;--mono:'D2Coding',Consolas,monospace;
+}
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.8;}
+a{color:var(--brand);text-decoration:none;}
+
+.appbar{position:sticky;top:0;z-index:30;height:var(--appbar-h);display:flex;align-items:center;gap:12px;padding:0 18px;background:var(--surface);border-bottom:1px solid var(--line);}
+.appbar__home{display:flex;align-items:center;gap:8px;font-weight:800;color:var(--brand);}
+.brand__mark{width:28px;height:28px;border-radius:8px;background:var(--brand);color:#fff;display:grid;place-items:center;}
+.appbar .sp{flex:1;}
+.appbar .meta{font-size:.76rem;color:var(--ink-soft);font-weight:600;}
+.pathbtn{font-size:.82rem;font-weight:700;border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 14px;cursor:pointer;color:var(--brand);}
+.pathbtn:hover{background:#eef2ff;}
+@media(max-width:720px){.appbar .meta{display:none;}}
+
+.layout{display:grid;grid-template-columns:248px minmax(0,1fr);gap:30px;max-width:1140px;margin:0 auto;padding:26px 24px 120px;align-items:start;}
+.main{min-width:0;max-width:760px;}
+
+/* 좌측 여정 스텝퍼 */
+.journey{position:sticky;top:calc(var(--appbar-h) + 18px);}
+.journey__hd{font-size:.74rem;font-weight:800;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em;margin:0 0 14px;}
+.steps{list-style:none;margin:0;padding:0;position:relative;}
+.steps::before{content:"";position:absolute;left:13px;top:8px;bottom:18px;width:2px;background:var(--line);}
+.step{position:relative;padding:0 0 18px 38px;cursor:pointer;}
+.step__dot{position:absolute;left:5px;top:1px;width:18px;height:18px;border-radius:50%;background:#fff;border:2px solid #cbd5e6;display:grid;place-items:center;font-size:.62rem;color:#fff;transition:all .2s;z-index:1;}
+.step__t{font-size:.9rem;font-weight:600;color:#56607a;transition:color .2s;}
+.step__s{display:block;font-size:.72rem;color:var(--soon);}
+.step.current .step__dot{border-color:var(--brand);box-shadow:0 0 0 4px rgba(59,91,219,.15);}
+.step.current .step__t{color:var(--brand);font-weight:800;}
+.step.done .step__dot{background:var(--accent);border-color:var(--accent);}
+.step.done .step__dot::after{content:"✓";}
+.step.done .step__t{color:#0b7250;}
+
+/* 헤더 */
+.crumb{font-size:.84rem;color:var(--ink-soft);font-weight:600;margin-bottom:12px;}
+.crumb a{color:var(--brand);} .crumb i{font-style:normal;color:#c2c9d8;margin:0 6px;}
+.eyebrow{color:var(--brand);font-weight:800;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;}
+h1{font-size:2.3rem;line-height:1.14;margin:8px 0 12px;}
+.tags{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:20px;}
+.tag{font-size:.76rem;font-weight:700;border-radius:999px;padding:5px 13px;background:#eef1f6;color:#475569;} .tag.lv{background:#e8faf2;color:#0b7250;}
+
+.tcode,.goals{border-radius:15px;padding:17px 19px;margin:18px 0;}
+.tcode{background:#fbfcff;border:1px solid var(--line);border-left:4px solid var(--brand);}
+.goals{background:#f1fbf7;border:1px solid #d2eee2;border-left:4px solid var(--accent);}
+.h-ic{font-weight:800;display:flex;align-items:center;gap:8px;margin:0 0 8px;}
+.tcode .code{font-family:var(--mono);font-weight:800;} .tcode .badge{font-size:.7rem;font-weight:800;color:#0b7250;background:#e8faf2;border-radius:999px;padding:2px 9px;margin-right:8px;}
+.tcode p,.goals p{margin:6px 0 0;color:#33405c;}
+
+/* 섹션 카드 + 이해 체크 */
+.sec{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px 24px;margin:18px 0;box-shadow:0 1px 2px rgba(20,28,51,.04);scroll-margin-top:78px;transition:border-color .2s,box-shadow .2s;}
+.sec.read{border-color:#bfead7;box-shadow:0 0 0 1px #d2eee2;}
+.sec h2{font-size:1.4rem;margin:0 0 8px;} .sec h2 .n{color:var(--brand);}
+.sec p{color:#2a3142;}
+.understand{display:flex;align-items:center;gap:10px;margin-top:16px;padding-top:14px;border-top:1px dashed var(--line);}
+.understand button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 16px;font:inherit;font-size:.84rem;font-weight:700;color:var(--ink-soft);cursor:pointer;transition:all .15s;}
+.understand button:hover{border-color:var(--accent);color:#0b7250;}
+.sec.read .understand button{background:var(--accent);color:#fff;border-color:var(--accent);}
+.understand .hint{font-size:.78rem;color:var(--soon);}
+.ex{margin:14px 0 0;border-left:3px solid #c7d6f4;background:#f6f9ff;border-radius:0 10px 10px 0;padding:11px 15px;color:#33405c;} .ex b{color:var(--brand);}
+details.fold{border:1px solid var(--line);border-radius:12px;background:#fbfcff;margin:12px 0;overflow:hidden;}
+details.fold>summary{cursor:pointer;font-weight:700;color:var(--brand);padding:12px 15px;list-style:none;display:flex;gap:9px;align-items:center;}
+details.fold>summary::-webkit-details-marker{display:none;} details.fold>summary::before{content:"▸";transition:transform .2s;} details.fold[open]>summary::before{transform:rotate(90deg);}
+details.fold .in{padding:12px 15px;border-top:1px solid var(--line);color:#3a4256;font-size:.95rem;}
+
+.term{border-bottom:2px dotted var(--brand);color:var(--brand);font-weight:600;cursor:help;}
+.tp{position:absolute;z-index:60;max-width:300px;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 14px 34px rgba(20,28,51,.18);padding:14px 16px;}
+.tp b{display:block;margin-bottom:5px;} .tp span{font-size:.88rem;color:var(--ink-soft);} .tp__x{position:absolute;top:8px;right:11px;border:0;background:none;cursor:pointer;color:#9aa3b5;font-size:1.1rem;}
+.recap{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:8px 0;}
+.recap__c{border:1px solid var(--line);border-radius:13px;padding:14px 16px;background:#fbfcff;} .recap__c b{display:block;margin-bottom:4px;color:var(--brand);} .recap__c span{font-size:.9rem;color:#4a5468;}
+
+/* 하단 스티키 진행 바 */
+.journeybar{position:fixed;left:0;right:0;bottom:0;z-index:35;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border-top:1px solid var(--line);box-shadow:0 -6px 20px rgba(20,28,51,.06);}
+.journeybar__in{max-width:1140px;margin:0 auto;padding:11px 24px;display:flex;align-items:center;gap:16px;}
+.jb__stat{font-size:.84rem;font-weight:800;white-space:nowrap;} .jb__stat b{color:var(--brand);}
+.jb__bar{flex:1;height:9px;border-radius:99px;background:#e7ebf3;overflow:hidden;min-width:80px;} .jb__bar>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--accent));transition:width .4s cubic-bezier(.16,1,.3,1);}
+.jb__next{border:0;background:var(--brand);color:#fff;border-radius:999px;padding:9px 18px;font:inherit;font-weight:700;font-size:.85rem;cursor:pointer;white-space:nowrap;} .jb__next:hover{background:#2f4bc0;}
+.jb__next.done{background:var(--accent);}
+
+/* 학습경로 슬라이드 패널 + 스크림 */
+.scrim{position:fixed;inset:0;background:rgba(15,20,35,.4);z-index:45;opacity:0;pointer-events:none;transition:opacity .25s;}
+body.path-open .scrim{opacity:1;pointer-events:auto;}
+.pathpanel{position:fixed;right:0;top:0;bottom:0;width:min(90vw,360px);z-index:50;background:#fff;border-left:1px solid var(--line);box-shadow:-10px 0 40px rgba(20,28,51,.16);transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);overflow:auto;padding:20px;}
+body.path-open .pathpanel{transform:none;}
+.pathpanel__hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;} .pathpanel__hd b{font-weight:800;} .pathpanel__x{border:0;background:none;font-size:1.4rem;color:var(--ink-soft);cursor:pointer;}
+.pp__prog{font-size:.78rem;font-weight:800;color:#34406a;margin:2px 0 6px;}
+.bar{height:7px;border-radius:99px;background:#e7ecf6;overflow:hidden;margin-bottom:14px;} .bar>i{display:block;height:100%;width:5%;background:linear-gradient(90deg,var(--brand),var(--accent));}
+.cl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;font-size:.85rem;}
+.cl li{display:flex;gap:9px;padding:9px 10px;border-radius:10px;color:#33405c;cursor:pointer;} .cl li:hover{background:#eef2ff;}
+.cl li .dot{width:12px;height:12px;border-radius:50%;border:2px solid #cbd5e6;margin-top:4px;flex-shrink:0;} .cl li.on{background:#e6efff;color:var(--brand);font-weight:700;} .cl li.on .dot{border-color:var(--brand);background:var(--brand);}
+.confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:60;}
+@media(max-width:880px){ .layout{grid-template-columns:1fr;} .journey{position:static;margin-bottom:10px;} .steps::before{display:none;} .steps{display:flex;flex-wrap:wrap;gap:8px;} .step{padding:6px 12px 6px 30px;background:#fff;border:1px solid var(--line);border-radius:999px;} .step__s{display:none;} }
+</style>
+</head>
+<body>
+  <header class="appbar">
+    <a class="appbar__home" href="#"><span class="brand__mark">A</span>SAP 학습자료 홈</a>
+    <span class="sp"></span>
+    <span class="meta">배포자 정훈영 · 2026-06-18</span>
+    <button class="pathbtn" id="pathBtn">🗺️ 전체 학습경로</button>
+  </header>
+  <div class="scrim"></div>
+
+  <div class="layout">
+    <!-- 좌측 여정 스텝퍼 -->
+    <aside class="journey">
+      <p class="journey__hd">이 레슨의 여정</p>
+      <ul class="steps" id="steps">
+        <li class="step" data-go="goals"><span class="step__dot"></span><span class="step__t">학습 목표</span><span class="step__s">무엇을 배우나</span></li>
+        <li class="step" data-go="s1"><span class="step__dot"></span><span class="step__t">1. 값의 재질</span><span class="step__s">Domain의 정체</span></li>
+        <li class="step" data-go="s2"><span class="step__dot"></span><span class="step__t">2. 네 가지 속성</span><span class="step__s">Type·Length·…</span></li>
+        <li class="step" data-go="s3"><span class="step__dot"></span><span class="step__t">3. SE11 흐름</span><span class="step__s">저장→검사→활성화</span></li>
+        <li class="step" data-go="summary"><span class="step__dot"></span><span class="step__t">한눈에 정리</span><span class="step__s">복습·다음</span></li>
+      </ul>
+    </aside>
+
+    <main class="main">
+      <p class="crumb"><a href="#">Home</a><i>›</i><a href="#">ABAP 커리큘럼</a><i>›</i><a href="#">DDIC 1차</a><i>›</i>Domain 기본 설계</p>
+      <p class="eyebrow">ABAP 기본 이론 및 구현 흐름</p>
+      <h1>Domain 기본 설계</h1>
+      <div class="tags"><span class="tag">Track 1</span><span class="tag">Chapter 1</span><span class="tag">Lesson 2</span><span class="tag lv">하 (Low)</span></div>
+
+      <section class="tcode" id="tcode">
+        <p class="h-ic">🖥️ 이번 Lesson 트랜잭션 코드</p>
+        <p><span class="badge">복습</span><span class="code">SE11</span></p>
+        <p>SAP GUI에서 <span class="term" data-t="DDIC (SAP Dictionary)" data-d="테이블·타입·도메인을 한곳에서 정의·관리하는 SAP 중앙 데이터 사전.">DDIC</span> 객체를 생성·조회하는 전통적 트랜잭션 코드.</p>
+      </section>
+      <section class="sec" id="goals"><h2><span class="n">🎯</span> 학습 목표</h2>
+        <p><span class="term" data-t="Domain (도메인)" data-d="값의 기술 속성(타입·길이·허용값)을 정의하는 DDIC 최하위 부품.">Domain</span>을 "값의 기술 규격"으로 설계합니다. <span class="term" data-t="Data Type" data-d="값의 종류(CHAR·NUMC·DATS 등).">Data Type</span>·<span class="term" data-t="Length" data-d="저장 칸의 길이.">Length</span>·<span class="term" data-t="Fixed Value" data-d="허용값을 고정 목록으로 제한.">Fixed Value</span>의 역할을 나눠 설명하고, SE11에서 저장·검사·활성화 흐름을 직접 시뮬레이션할 수 있어야 합니다.</p>
+        <div class="understand"><button data-understand>이해했어요 ✓</button><span class="hint">읽고 이해했다면 눌러 단계를 채우세요.</span></div>
+      </section>
+      <section class="sec" id="s1"><h2><span class="n">1.</span> Domain은 값의 재질을 정한다</h2>
+        <p>Domain은 DDIC에서 가장 아래 부품입니다. "주문 상태"라는 <strong>업무 의미</strong>보다 먼저 "한 글자 코드인가, 숫자인가, 허용값이 고정인가"라는 <strong>값의 재질</strong>을 정합니다.</p>
+        <div class="ex"><b>비유:</b> Domain = 그릇의 규격, 의미를 붙이는 건 다음 단계(Data Element)에서 "이름표".</div>
+        <div class="understand"><button data-understand>이해했어요 ✓</button><span class="hint"></span></div>
+      </section>
+      <section class="sec" id="s2"><h2><span class="n">2.</span> 네 가지 속성을 나눠서 본다</h2>
+        <p>지금은 "이런 게 있구나" 정도면 충분합니다. 필요할 때 펼쳐 보세요.</p>
+        <details class="fold"><summary>Data Type & Length</summary><div class="in">계산할 값(숫자)/코드(문자)를 정하고 저장 길이를 정함. 예: 상태 코드 <code>CHAR 1</code>.</div></details>
+        <details class="fold"><summary>Fixed Value</summary><div class="in">값을 정해진 목록으로만 받게 제한. 작은 코드 목록(A/B/C)에 적합, 입력 도움·검증에 쓰임.</div></details>
+        <div class="understand"><button data-understand>이해했어요 ✓</button><span class="hint"></span></div>
+      </section>
+      <section class="sec" id="s3"><h2><span class="n">3.</span> SE11에서 만드는 흐름</h2>
+        <p>SE11에서 Domain을 만들면 <strong>저장 → 검사 → 활성화</strong> 3단계. 활성화까지 끝나야 다른 객체가 이 Domain을 씁니다.</p>
+        <div class="ex"><b>주의:</b> 저장만 하고 활성화를 안 하면 "왜 안 보이지?". 활성화 = "이제 진짜 쓸게요" 선언.</div>
+        <div class="understand"><button data-understand>이해했어요 ✓</button><span class="hint"></span></div>
+      </section>
+      <section class="sec" id="summary"><h2><span class="n">✓</span> 한눈에 정리</h2>
+        <div class="recap">
+          <div class="recap__c"><b>Domain</b><span>값의 기술 규격·허용 범위를 정하는 DDIC 하위 부품.</span></div>
+          <div class="recap__c"><b>Type·Length</b><span>값 종류와 저장 길이를 먼저 정함.</span></div>
+          <div class="recap__c"><b>Fixed Value</b><span>작은 코드 목록 제한 + 기본 검증.</span></div>
+          <div class="recap__c"><b>Value Table</b><span>Foreign Key 후보 제안 성격.</span></div>
+        </div>
+        <div class="ex"><b>➡️ 다음 Lesson:</b> 이 Domain 위에 의미·라벨·설명을 붙이는 <strong>Data Element 설계</strong>.</div>
+        <div class="understand"><button data-understand>이해했어요 ✓</button><span class="hint">마지막 단계!</span></div>
+      </section>
+    </main>
+  </div>
+
+  <!-- 하단 여정 진행 바 -->
+  <div class="journeybar"><div class="journeybar__in">
+    <span class="jb__stat"><b id="jbDone">0</b> / <span id="jbTotal">5</span> 이해</span>
+    <div class="jb__bar"><i id="jbFill"></i></div>
+    <button class="jb__next" id="jbNext">다음 단계 ↓</button>
+  </div></div>
+
+  <!-- 학습경로 패널 -->
+  <aside class="pathpanel" id="pathpanel">
+    <div class="pathpanel__hd"><b>전체 학습경로</b><button class="pathpanel__x" id="pathX">×</button></div>
+    <p class="pp__prog">ABAP 기본 이론 및 구현 흐름 · 1 / 21</p>
+    <div class="bar"><i></i></div>
+    <ul class="cl">
+      <li class="on"><span class="dot"></span>Chapter 1 · DDIC 1차: 기본 데이터 구조</li>
+      <li><span class="dot"></span>Chapter 2 · ABAP 기본 문법과 WRITE</li>
+      <li><span class="dot"></span>Chapter 3 · PARAMETERS Selection Screen</li>
+      <li><span class="dot"></span>Chapter 4 · DDIC 2차: 관계·입력 도움말</li>
+      <li><span class="dot"></span>Chapter 5 · ABAP 모듈화 기초</li>
+      <li><span class="dot"></span>Chapter 6 · Internal Table 기초</li>
+      <li><span class="dot"></span>Chapter 7 · Internal Table 응용</li>
+    </ul>
+  </aside>
+
+<script>
+(function(){
+  const body=document.body;
+  const steps=[...document.querySelectorAll('.step')];
+  const secs=steps.map(s=>document.getElementById(s.dataset.go));
+  const total=steps.length;
+  document.getElementById('jbTotal').textContent=total;
+
+  // 스텝 클릭 → 해당 섹션으로
+  steps.forEach((st,i)=>st.addEventListener('click',()=>secs[i]&&secs[i].scrollIntoView({behavior:'smooth',block:'start'})));
+
+  // scroll-spy: 현재 섹션 강조
+  function spy(){
+    let idx=0; for(let i=0;i<secs.length;i++){ const r=secs[i].getBoundingClientRect(); if(r.top<=140) idx=i; }
+    steps.forEach((s,i)=>s.classList.toggle('current',i===idx));
+  }
+  addEventListener('scroll',spy,{passive:true}); spy();
+
+  // 이해 체크
+  function refresh(){
+    let done=0;
+    secs.forEach((sec,i)=>{ const ok=sec.classList.contains('read'); steps[i].classList.toggle('done',ok); if(ok) done++; });
+    document.getElementById('jbDone').textContent=done;
+    document.getElementById('jbFill').style.width=(done/total*100)+'%';
+    const nb=document.getElementById('jbNext');
+    if(done===total){ nb.textContent='🎉 레슨 완료!'; nb.classList.add('done'); }
+    else { nb.textContent='다음 단계 ↓'; nb.classList.remove('done'); }
+    return done;
+  }
+  document.querySelectorAll('[data-understand]').forEach(btn=>btn.addEventListener('click',()=>{
+    const sec=btn.closest('.sec'); sec.classList.toggle('read');
+    const wasAll = refresh()===total;
+    if(sec.classList.contains('read') && wasAll) confetti();
+  }));
+  // "다음 단계" → 다음 미완료 섹션으로(없으면 완료 축하)
+  document.getElementById('jbNext').addEventListener('click',()=>{
+    const next=secs.find(s=>!s.classList.contains('read'));
+    if(next) next.scrollIntoView({behavior:'smooth',block:'start'}); else confetti();
+  });
+
+  // 학습경로 패널
+  const open=()=>body.classList.add('path-open'), close=()=>body.classList.remove('path-open');
+  document.getElementById('pathBtn').addEventListener('click',open);
+  document.getElementById('pathX').addEventListener('click',close);
+  document.querySelector('.scrim').addEventListener('click',close);
+
+  // 용어 팝업
+  let tp=null; const tclose=()=>{ if(tp){tp.remove();tp=null;} };
+  document.querySelectorAll('.term').forEach(t=>t.addEventListener('mouseenter',()=>{
+    tclose(); tp=document.createElement('div'); tp.className='tp';
+    tp.innerHTML=`<button class="tp__x">×</button><b>${t.dataset.t||t.textContent}</b><span>${t.dataset.d||''}</span>`;
+    document.body.appendChild(tp); const r=t.getBoundingClientRect();
+    tp.style.left=Math.min(r.left+scrollX,scrollX+innerWidth-320)+'px'; tp.style.top=(r.bottom+scrollY+8)+'px';
+    tp.querySelector('.tp__x').addEventListener('click',tclose);
+  }));
+  document.addEventListener('click',e=>{ if(tp&&!tp.contains(e.target)&&!e.target.classList.contains('term')) tclose(); });
+
+  function confetti(){
+    const c=document.createElement('canvas'); c.className='confetti-canvas'; document.body.appendChild(c);
+    const x=c.getContext('2d'); const cols=['#3b5bdb','#0ca678','#f59e0b','#d6336c','#6d28d9']; const P=[];
+    const rz=()=>{c.width=innerWidth;c.height=innerHeight;}; rz(); addEventListener('resize',rz);
+    for(let i=0;i<150;i++)P.push({x:Math.random()*c.width,y:Math.random()*-c.height,s:Math.random()*7+4,col:cols[i%cols.length],sp:Math.random()*4+3,a:Math.random()*360,sn:Math.random()*4-2});
+    const t0=Date.now();(function d(){x.clearRect(0,0,c.width,c.height);if(Date.now()-t0>2400){c.remove();removeEventListener('resize',rz);return;}P.forEach(p=>{p.y+=p.sp;p.x+=Math.sin(p.a*Math.PI/180)*1.4;p.a+=p.sn;x.fillStyle=p.col;x.beginPath();x.arc(p.x,p.y,p.s,0,7);x.fill();});requestAnimationFrame(d);})();
+  }
+  refresh();
+})();
+</script>
+</body>
+</html>

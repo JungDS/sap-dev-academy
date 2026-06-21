@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<!--
+  단축키 시뮬레이터 (Shortcut Simulator) — standalone
+  ────────────────────────────────────────────────────────────
+  목표 단축키를 실제로 눌러 맞히는 근육 기억 훈련기. 입력창에 포커스 후 키 조합 입력.
+  목표 조합은 data-target-combo 로 정의(예: "CTRL + S"). 외부 의존성 없음.
+  재사용 시 ".shortcut*"/".keycap" CSS + 하단 JS만 가져가면 됩니다.
+-->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>단축키 시뮬레이터 · Sample</title>
+<style>
+:root{--bg:#f6f7fb;--surface:#fff;--ink:#1c2233;--ink-soft:#5b6478;--line:#e6e8ef;--brand:#3b5bdb;--accent:#0ca678;--red:#d6336c;--radius:14px;--shadow:0 1px 2px rgba(20,28,51,.04),0 8px 24px rgba(20,28,51,.06);--font:-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic",Roboto,sans-serif;--mono:'D2Coding',Consolas,Monaco,monospace;}
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.65;}
+.topbar{position:sticky;top:0;z-index:20;border-bottom:1px solid var(--line);background:var(--surface);}
+.topbar__inner{max-width:1080px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:12px;font-weight:800;}
+.brand__mark{width:28px;height:28px;border-radius:7px;background:var(--brand);color:#fff;display:grid;place-items:center;}
+.wrap{max-width:640px;margin:28px auto 72px;padding:0 24px;}
+.eyebrow{color:var(--brand);font-weight:800;font-size:.82rem;letter-spacing:.05em;text-transform:uppercase;}
+h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 24px;}
+
+/* ===== 컴포넌트 CSS — 단축키 시뮬레이터 ===== */
+.shortcut{text-align:center;padding:30px 22px;background:#fff;border:2px dashed var(--line);border-radius:16px;box-shadow:var(--shadow);}
+.shortcut__target{margin:0 0 6px;color:var(--ink-soft);font-size:.9rem;}
+.keys{display:flex;gap:8px;justify-content:center;margin:0 0 22px;flex-wrap:wrap;}
+.keycap{display:inline-block;min-width:34px;padding:8px 12px;background:#f1f4fb;border:1px solid #cfd6e6;border-bottom-width:3px;border-radius:8px;font-family:var(--mono);font-weight:700;color:#26336b;font-size:.95rem;}
+.shortcut__input{font-size:1.4rem;text-align:center;padding:14px;width:min(300px,100%);text-transform:uppercase;border:2px solid var(--line);border-radius:10px;font-family:var(--mono);background:#f8fafc;color:#1e293b;outline:none;}
+.shortcut__input:focus{border-color:var(--brand);background:#fff;}
+.shortcut__hint{margin:10px 0 0;color:var(--ink-soft);font-size:.82rem;}
+.shortcut__msg{margin:16px 0 0;font-weight:800;min-height:24px;}
+.shortcut__msg.success{color:#0b7250;} .shortcut__msg.error{color:var(--red);}
+</style>
+</head>
+<body>
+  <header class="topbar"><div class="topbar__inner"><span class="brand__mark">A</span>SAP Developer Academy</div></header>
+  <main class="wrap">
+    <p class="eyebrow">Interactive · 단축키 시뮬레이터</p>
+    <h1>SE38 단축키를 손에 익히기</h1>
+    <p class="lead">설명을 읽는 대신 직접 눌러 봅니다. 아래 목표 조합을 입력창에 포커스한 채로 실제로 눌러 보세요. (저장 = Ctrl+S)</p>
+
+    <div class="shortcut" data-target-combo="CTRL + S">
+      <p class="shortcut__target">목표: <strong>소스 저장</strong> 단축키</p>
+      <div class="keys"><span class="keycap">Ctrl</span><span class="keycap">S</span></div>
+      <input class="shortcut__input" placeholder="여기를 클릭 후 키 입력" readonly>
+      <p class="shortcut__hint">입력창을 클릭한 뒤 실제 키 조합을 누르세요.</p>
+      <p class="shortcut__msg"></p>
+    </div>
+  </main>
+
+<script>
+// ===== 컴포넌트 JS — 단축키 시뮬레이터 =====
+(function(){
+  document.querySelectorAll("[data-target-combo]").forEach(sh=>{
+    const input=sh.querySelector(".shortcut__input");
+    const msg=sh.querySelector(".shortcut__msg");
+    const target=sh.dataset.targetCombo.toUpperCase();
+    input.addEventListener("keydown",e=>{
+      e.preventDefault();
+      const keys=[];
+      if(e.ctrlKey) keys.push("CTRL");
+      if(e.shiftKey) keys.push("SHIFT");
+      if(e.altKey) keys.push("ALT");
+      const k=e.key.toUpperCase();
+      if(!["CONTROL","SHIFT","ALT","META"].includes(k)) keys.push(k);
+      const combo=keys.join(" + ");
+      input.value=combo;
+      if(combo===target){ msg.className="shortcut__msg success"; msg.textContent="✓ 성공! 올바른 단축키입니다."; }
+      else{ msg.className="shortcut__msg error"; msg.textContent="✗ "+combo+" — 목표는 "+target+" 입니다. 다시!"; }
+    });
+  });
+})();
+</script>
+</body>
+</html>

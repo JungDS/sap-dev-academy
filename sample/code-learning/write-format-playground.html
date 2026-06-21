@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<!--
+  WRITE 포맷 플레이그라운드 — standalone, ::embed 용 (CH01-L05 WRITE 심화)
+  ────────────────────────────────────────────────────────────
+  값 + 포맷 옵션(폭·정렬·색·강조·구분선)을 토글 → 생성되는 WRITE 코드 + SAP 리스트 출력.
+  · 폭(width)/정렬(LEFT·CENTERED·RIGHT-JUSTIFIED) / COLOR n / INTENSIFIED / INVERSE / 선행 ULINE·SKIP.
+  · 임의 파싱이 아닌 토글 기반 → 견고. iframe 자동 높이. 외부 의존성 없음.
+-->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WRITE 포맷 플레이그라운드 · Sample</title>
+<style>
+:root{
+  --bg:#f6f7fb;--surface:#fff;--ink:#1c2233;--ink-soft:#5b6478;--line:#e6e8ef;
+  --brand:#3b5bdb;--accent:#0ca678;--soon:#94a0b8;
+  --mono:'D2Coding',Consolas,Monaco,'Courier New',monospace;
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic",Roboto,sans-serif;
+}
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:transparent;line-height:1.5;}
+.wrap{padding:14px;}
+.hd{font-weight:800;font-size:1rem;margin:0 0 4px;}
+.hd small{font-weight:600;color:var(--brand);}
+.lead{margin:0 0 12px;color:var(--ink-soft);font-size:.86rem;}
+.lead code{font-family:var(--mono);background:#eef2ff;color:var(--brand);padding:1px 5px;border-radius:5px;font-size:.92em;}
+
+.presets{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin-bottom:12px;}
+.presets__lbl{font-size:.8rem;font-weight:700;color:var(--ink-soft);margin-right:2px;}
+.chip{border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);border-radius:999px;
+  padding:6px 13px;font:inherit;font-size:.8rem;font-weight:700;cursor:pointer;transition:all .15s;}
+.chip:hover{border-color:var(--brand);color:var(--brand);}
+.chip.on{background:var(--brand);color:#fff;border-color:var(--brand);box-shadow:0 4px 12px rgba(59,91,219,.25);}
+
+.split{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start;}
+.panel{border:1px solid var(--line);border-radius:13px;background:var(--surface);overflow:hidden;min-width:0;}
+.panel__hd{padding:8px 12px;font-size:.78rem;font-weight:800;border-bottom:1px solid var(--line);background:#fafbfe;color:var(--ink-soft);display:flex;align-items:center;gap:7px;}
+.panel__hd svg{width:15px;height:15px;flex-shrink:0;}
+
+/* 컨트롤 */
+.ctrls{padding:12px 14px;display:flex;flex-direction:column;gap:11px;}
+.ctrl{display:grid;grid-template-columns:84px 1fr;gap:8px 10px;align-items:center;}
+.ctrl>label{font-size:.82rem;font-weight:700;color:var(--ink-soft);}
+.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;flex-wrap:wrap;}
+.seg button{border:0;border-right:1px solid var(--line);background:#fff;color:var(--ink-soft);font:inherit;font-size:.76rem;font-weight:700;padding:6px 9px;cursor:pointer;}
+.seg button:last-child{border-right:0;}
+.seg button.on{background:var(--brand);color:#fff;}
+input[type=range]{width:100%;accent-color:var(--brand);}
+.wlbl{font-family:var(--mono);font-size:.8rem;color:var(--ink);font-weight:700;}
+select{font:inherit;font-size:.82rem;padding:5px 8px;border:1px solid var(--line);border-radius:7px;background:#fff;font-family:var(--mono);}
+.toggles{display:flex;flex-wrap:wrap;gap:6px;}
+.tg{display:flex;align-items:center;gap:5px;border:1px solid var(--line);border-radius:7px;padding:5px 10px;font-size:.78rem;font-weight:700;cursor:pointer;background:#fff;user-select:none;color:var(--ink-soft);}
+.tg input{accent-color:var(--brand);}
+.tg.on{border-color:var(--brand);background:#f3f6ff;color:var(--brand);}
+
+/* 코드 */
+.codebox{margin:0;}
+.codebox__hd{background:#2c3666;border-bottom:2px solid var(--brand);color:#fff;font-size:.74rem;font-weight:800;padding:7px 12px;display:flex;align-items:center;gap:8px;}
+.cb-dots{display:flex;gap:5px;} .cb-dots i{width:10px;height:10px;border-radius:50%;display:block;}
+.cb-dots i:nth-child(1){background:#ff5f56;} .cb-dots i:nth-child(2){background:#ffbd2e;} .cb-dots i:nth-child(3){background:#27c93f;}
+.cb-lang{color:#ffa03b;font-weight:bold;letter-spacing:1px;} .cb-name{color:#e7ebff;font-weight:600;letter-spacing:.5px;}
+.codebox__body{display:flex;align-items:stretch;background:#f6f8fa;}
+.code-gut{margin:0;padding:11px 9px;background:#eef1f8;color:#aab3cf;text-align:right;border-right:1px solid #e3e7f2;user-select:none;font-family:var(--mono);font-size:12.5px;line-height:1.7;min-width:32px;white-space:pre;}
+.code{flex:1;margin:0;padding:11px 14px;font-family:var(--mono);font-size:12.5px;line-height:1.7;color:#24324a;white-space:pre;overflow-x:auto;background:#f6f8fa;}
+.tok-kw{color:#005cc5;font-weight:700;}.tok-str{color:#22863a;}.tok-num{color:#22863a;}
+
+/* SAP 리스트 출력 */
+.screen{padding:12px;background:#fff;min-height:120px;}
+.listline{font-family:var(--mono);font-size:13px;white-space:pre;line-height:1.7;}
+.uline{color:#9aa3b2;}
+.field{display:inline-block;}
+.swatch{display:inline-block;padding:0 2px;border-radius:2px;}
+.ruler{font-family:var(--mono);font-size:11px;color:#c2cad8;white-space:pre;line-height:1.4;border-bottom:1px dashed #e6e8ef;margin-bottom:6px;padding-bottom:3px;}
+
+.note{margin-top:11px;border-left:3px solid var(--brand);background:rgba(59,91,219,.06);border-radius:0 9px 9px 0;padding:9px 13px;font-size:.83rem;color:#2a3550;}
+.note code{font-family:var(--mono);background:#fff;border:1px solid var(--line);padding:0 5px;border-radius:4px;}
+@media(max-width:540px){ .split{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">WRITE 포맷 플레이그라운드 <small>(폭·정렬·색·강조)</small></p>
+  <p class="lead">값과 <b>포맷 옵션</b>을 바꾸면, 왼쪽에 <b>WRITE 코드</b>가 만들어지고 오른쪽 SAP 리스트에 결과가 그려집니다. 같은 값이라도 <code>RIGHT-JUSTIFIED</code>·<code>COLOR</code>·<code>ULINE</code>으로 얼마나 달라지는지 보세요.</p>
+
+  <div class="presets" id="presets">
+    <span class="presets__lbl">예제:</span>
+    <button class="chip on" type="button" data-ex="0">오른쪽 정렬 숫자</button>
+    <button class="chip" type="button" data-ex="1">강조 색 텍스트</button>
+    <button class="chip" type="button" data-ex="2">구분선 + 가운데</button>
+  </div>
+
+  <div class="split">
+    <div class="panel">
+      <div class="panel__hd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.1 14.5a1.5 1.5 0 0 0 .3 1.6l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.5 1.5 0 0 0-2.5 1V21a2 2 0 1 1-4 0v-.2a1.5 1.5 0 0 0-2.5-1l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.5 1.5 0 0 0-1-2.5H3a2 2 0 1 1 0-4h.2a1.5 1.5 0 0 0 1-2.5l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.5 1.5 0 0 0 2.5-1V3a2 2 0 1 1 4 0v.2a1.5 1.5 0 0 0 2.5 1l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.5 1.5 0 0 0-.3 1.6z"/></svg>포맷 옵션</div>
+      <div class="ctrls">
+        <div class="ctrl"><label for="val">값</label>
+          <select id="val">
+            <option value="'정훈영'">'정훈영' (텍스트)</option>
+            <option value="1250000">1250000 (숫자)</option>
+            <option value="'합 계'">'합 계' (텍스트)</option>
+          </select>
+        </div>
+        <div class="ctrl"><label>정렬</label>
+          <div class="seg" id="just">
+            <button type="button" data-j="" class="on">기본</button>
+            <button type="button" data-j="LEFT-JUSTIFIED">LEFT</button>
+            <button type="button" data-j="CENTERED">CENTERED</button>
+            <button type="button" data-j="RIGHT-JUSTIFIED">RIGHT</button>
+          </div>
+        </div>
+        <div class="ctrl"><label for="width">폭(len)</label>
+          <div><input type="range" id="width" min="6" max="30" value="16"><span class="wlbl" id="wlbl">16</span></div>
+        </div>
+        <div class="ctrl"><label for="color">COLOR</label>
+          <select id="color">
+            <option value="0">없음</option>
+            <option value="3">3 · TOTAL(노랑)</option>
+            <option value="5">5 · POSITIVE(초록)</option>
+            <option value="6">6 · NEGATIVE(빨강)</option>
+            <option value="1">1 · HEADING(청회색)</option>
+            <option value="4">4 · KEY(파랑)</option>
+          </select>
+        </div>
+        <div class="ctrl"><label>강조</label>
+          <div class="toggles">
+            <label class="tg" data-tgl="intens"><input type="checkbox">INTENSIFIED</label>
+            <label class="tg" data-tgl="inverse"><input type="checkbox">INVERSE</label>
+          </div>
+        </div>
+        <div class="ctrl"><label>선행</label>
+          <div class="toggles">
+            <label class="tg" data-tgl="uline"><input type="checkbox">ULINE(밑줄선)</label>
+            <label class="tg" data-tgl="skip"><input type="checkbox">SKIP(빈 줄)</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="codebox">
+        <div class="codebox__hd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span><span class="cb-name">ZHELLO</span></div>
+        <div class="codebox__body"><pre class="code-gut" id="codeGut">1</pre><pre class="code" id="code"></pre></div>
+      </div>
+      <div class="panel__hd" style="border-top:1px solid var(--line)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><line x1="8" y1="20" x2="16" y2="20"/><line x1="12" y1="16" x2="12" y2="20"/></svg>리스트 출력</div>
+      <div class="screen" id="screen"></div>
+    </div>
+  </div>
+
+  <div class="note"><b>폭(len)</b> 안에서 값을 어디로 붙일지가 <b>정렬</b>(LEFT·CENTERED·RIGHT-JUSTIFIED)입니다. 숫자는 보통 <code>RIGHT-JUSTIFIED</code>로 자릿수를 맞추고, 합계·경고는 <code>COLOR</code>로 눈에 띄게 합니다. <code>ULINE</code>은 밑줄선, <code>SKIP</code>은 빈 줄을 넣습니다.</div>
+</div>
+
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id);};
+  var st={ val:"'정훈영'", just:'', width:16, color:0, intens:false, inverse:false, uline:false, skip:false };
+
+  /* COLOR n → 배경/글자 (SAP 리스트 색 근사) */
+  var COLORS={
+    0:{bg:'transparent',fg:'#1c2233',name:''},
+    1:{bg:'#dfe7f0',fg:'#2a3a52',name:'HEADING'},
+    3:{bg:'#fff3bf',fg:'#7a5a00',name:'TOTAL'},
+    4:{bg:'#d0ebff',fg:'#1457a8',name:'KEY'},
+    5:{bg:'#d3f9d8',fg:'#1b7a36',name:'POSITIVE'},
+    6:{bg:'#ffe3e3',fg:'#c92a2a',name:'NEGATIVE'}
+  };
+
+  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function rawVal(){ var m=st.val.match(/^'(.*)'$/); return m?m[1]:String(st.val); }
+
+  /* 폭 안에서 정렬 + 색/강조 적용한 출력 필드 */
+  function fieldHtml(){
+    var text=rawVal(), w=st.width;
+    if(text.length>w) text=text.slice(0,w);
+    var pad=w-text.length, left=0, right=0;
+    if(st.just==='RIGHT-JUSTIFIED'){ left=pad; }
+    else if(st.just==='CENTERED'){ left=Math.floor(pad/2); right=pad-left; }
+    else { right=pad; }            // 기본/LEFT = 왼쪽 정렬
+    var inner=' '.repeat(left)+text+' '.repeat(right);
+    var c=COLORS[st.color]||COLORS[0];
+    var style='';
+    if(st.color){ style+='background:'+c.bg+';color:'+c.fg+';'; }
+    if(st.inverse && st.color){ style='background:'+c.fg+';color:'+c.bg+';'; }
+    if(st.intens){ style+='font-weight:800;'; }
+    return '<span class="swatch" style="'+style+'">'+esc(inner).replace(/ /g,'&nbsp;')+'</span>';
+  }
+
+  function ruler(){
+    var w=st.width, s=''; for(var i=1;i<=w;i++){ s+=(i%5===0)?String((i/5)%10):'·'; }
+    return '폭 '+w+': '+s;
+  }
+
+  function render(){
+    // 코드
+    var lines=['REPORT zhello.',''];
+    if(st.skip) lines.push('SKIP.');
+    if(st.uline) lines.push('ULINE.');
+    var w='WRITE: /';
+    var opts='';
+    if(st.color){ opts+=' COLOR '+st.color; }
+    if(st.intens){ opts+=' INTENSIFIED'; }
+    if(st.inverse){ opts+=' INVERSE'; }
+    // 폭 지정: WRITE: /(len) value  +  정렬
+    w='WRITE: /('+st.width+') '+st.val + (st.just? ' '+st.just : '') + opts + '.';
+    lines.push(w);
+    $('code').innerHTML=lines.map(function(l){
+      return l.replace(/&/g,'&amp;').replace(/</g,'&lt;')
+        .replace(/\b(REPORT|WRITE|SKIP|ULINE|COLOR|INTENSIFIED|INVERSE|LEFT-JUSTIFIED|CENTERED|RIGHT-JUSTIFIED)\b/g,'<span class="tok-kw">$1</span>')
+        .replace(/('[^']*')/g,'<span class="tok-str">$1</span>')
+        .replace(/(?<![\w>])(\d+)(?![\w<])/g,'<span class="tok-num">$1</span>');
+    }).join('\n');
+    $('codeGut').textContent=lines.map(function(_,i){return i+1;}).join('\n');
+
+    // 출력
+    var out='<div class="ruler">'+ruler()+'</div>';
+    if(st.skip) out+='<div class="listline">&nbsp;</div>';
+    if(st.uline) out+='<div class="listline uline">'+'─'.repeat(st.width)+'</div>';
+    out+='<div class="listline">'+fieldHtml()+'</div>';
+    $('screen').innerHTML=out;
+    postHeight();
+  }
+
+  /* 바인딩 */
+  $('val').addEventListener('change',function(e){ st.val=e.target.value; render(); });
+  $('just').addEventListener('click',function(e){ var b=e.target.closest('button'); if(!b) return;
+    st.just=b.dataset.j; $('just').querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b);}); render(); });
+  $('width').addEventListener('input',function(e){ st.width=+e.target.value; $('wlbl').textContent=e.target.value; render(); });
+  $('color').addEventListener('change',function(e){ st.color=+e.target.value; render(); });
+  document.querySelectorAll('.tg').forEach(function(tg){
+    tg.querySelector('input').addEventListener('change',function(e){
+      st[tg.dataset.tgl]=e.target.checked; tg.classList.toggle('on',e.target.checked); render();
+    });
+  });
+
+  /* 예제 */
+  var EX=[
+    { val:'1250000', just:'RIGHT-JUSTIFIED', width:16, color:0, intens:false, inverse:false, uline:false, skip:false },
+    { val:"'정훈영'", just:'', width:16, color:4, intens:true, inverse:false, uline:false, skip:false },
+    { val:"'합 계'", just:'CENTERED', width:20, color:3, intens:false, inverse:false, uline:true, skip:true }
+  ];
+  function applyState(s){
+    st=Object.assign({},s);
+    $('val').value=st.val; $('width').value=st.width; $('wlbl').textContent=st.width; $('color').value=st.color;
+    $('just').querySelectorAll('button').forEach(function(b){ b.classList.toggle('on', b.dataset.j===st.just); });
+    document.querySelectorAll('.tg').forEach(function(tg){ var on=st[tg.dataset.tgl]; tg.querySelector('input').checked=on; tg.classList.toggle('on',on); });
+    render();
+  }
+  $('presets').addEventListener('click',function(e){ var c=e.target.closest('.chip'); if(!c) return;
+    $('presets').querySelectorAll('.chip').forEach(function(x){x.classList.toggle('on',x===c);});
+    applyState(EX[+c.dataset.ex]);
+  });
+
+  function postHeight(){
+    try{ var el=document.querySelector('.wrap');
+      var h=Math.ceil(el?el.getBoundingClientRect().height:document.body.scrollHeight)+6;
+      parent.postMessage({sda:'embed-height', h:h}, '*'); }catch(e){}
+  }
+  window.addEventListener('load', postHeight);
+  window.addEventListener('resize', postHeight);
+
+  applyState(EX[0]);
+})();
+</script>
+</body>
+</html>

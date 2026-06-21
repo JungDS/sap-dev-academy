@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<!--
+  진행률 체크리스트 (Checklist with Progress) — standalone
+  ────────────────────────────────────────────────────────────
+  실습 단계를 체크하며 진행률 바가 차오름. 모두 체크 시 완료 배지.
+  외부 의존성 없음. 재사용 시 ".checklist*" CSS + 하단 JS만 가져가면 됩니다.
+-->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>진행률 체크리스트 · Sample</title>
+<style>
+:root{--bg:#f6f7fb;--surface:#fff;--ink:#1c2233;--ink-soft:#5b6478;--line:#e6e8ef;--brand:#3b5bdb;--accent:#0ca678;--radius:14px;--shadow:0 1px 2px rgba(20,28,51,.04),0 8px 24px rgba(20,28,51,.06);--font:-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic",Roboto,sans-serif;}
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.65;}
+.topbar{position:sticky;top:0;z-index:20;border-bottom:1px solid var(--line);background:var(--surface);}
+.topbar__inner{max-width:1080px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:12px;font-weight:800;}
+.brand__mark{width:28px;height:28px;border-radius:7px;background:var(--brand);color:#fff;display:grid;place-items:center;}
+.wrap{max-width:680px;margin:28px auto 72px;padding:0 24px;}
+.eyebrow{color:var(--brand);font-weight:800;font-size:.82rem;letter-spacing:.05em;text-transform:uppercase;}
+h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 24px;}
+
+/* ===== 컴포넌트 CSS — 진행률 체크리스트 ===== */
+.checklist-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:var(--shadow);}
+.cl-bar{height:10px;border-radius:999px;background:#eef1f6;overflow:hidden;margin:0 0 6px;}
+.cl-bar__fill{height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--accent));border-radius:999px;transition:width .4s cubic-bezier(.16,1,.3,1);}
+.cl-status{font-size:.85rem;font-weight:800;color:var(--brand);margin:0 0 16px;}
+.cl-status.done{color:#0b7250;}
+.checklist{display:grid;gap:10px;}
+.checklist label{display:flex;gap:12px;align-items:flex-start;padding:13px 15px;border:1px solid var(--line);border-radius:10px;background:#fff;cursor:pointer;transition:all .15s;}
+.checklist label:hover{border-color:var(--brand);background:#f8faff;}
+.checklist input{margin-top:3px;width:17px;height:17px;accent-color:var(--accent);flex-shrink:0;}
+.checklist label.checked{background:#f0fbf7;border-color:#bfead7;}
+.checklist label.checked .txt{color:#0b7250;text-decoration:line-through;text-decoration-color:#9ad9bf;}
+.checklist .txt{font-weight:600;color:#334155;}
+.checklist .sub{display:block;font-weight:400;color:var(--ink-soft);font-size:.86rem;margin-top:2px;}
+</style>
+</head>
+<body>
+  <header class="topbar"><div class="topbar__inner"><span class="brand__mark">A</span>SAP Developer Academy</div></header>
+  <main class="wrap">
+    <p class="eyebrow">Interactive · 진행률 체크리스트</p>
+    <h1>첫 리포트 작성 실습 체크리스트</h1>
+    <p class="lead">단계를 하나씩 체크하면 진행률이 차오릅니다. 모두 끝내면 완료 배지가 나타납니다.</p>
+
+    <div class="checklist-card">
+      <div class="cl-bar"><div class="cl-bar__fill"></div></div>
+      <p class="cl-status">진행: 0 / 5</p>
+      <div class="checklist">
+        <label><input type="checkbox"><span class="txt">SE38에서 프로그램 ZDEMO 생성<span class="sub">실행 가능한 리포트 타입으로</span></span></label>
+        <label><input type="checkbox"><span class="txt">PARAMETERS 로 입력 필드 선언<span class="sub">선택 화면이 자동 생성됨</span></span></label>
+        <label><input type="checkbox"><span class="txt">START-OF-SELECTION 에서 SELECT 작성<span class="sub">결과를 내부 테이블에 담기</span></span></label>
+        <label><input type="checkbox"><span class="txt">sy-subrc 로 결과 유무 분기<span class="sub">0이 아니면 안내 메시지</span></span></label>
+        <label><input type="checkbox"><span class="txt">CL_SALV_TABLE 로 결과 출력<span class="sub">F8 실행으로 ALV 확인</span></span></label>
+      </div>
+    </div>
+  </main>
+
+<script>
+// ===== 컴포넌트 JS — 진행률 체크리스트 =====
+(function(){
+  document.querySelectorAll(".checklist-card").forEach(card=>{
+    const boxes=card.querySelectorAll('input[type="checkbox"]');
+    const fill=card.querySelector(".cl-bar__fill");
+    const status=card.querySelector(".cl-status");
+    function update(){
+      const done=[...boxes].filter(b=>b.checked).length;
+      const pct=Math.round(done/boxes.length*100);
+      fill.style.width=pct+"%";
+      const all=done===boxes.length;
+      status.className="cl-status"+(all?" done":"");
+      status.textContent= all ? `✓ 완료! ${boxes.length}/${boxes.length} 모든 단계 통과` : `진행: ${done} / ${boxes.length}`;
+    }
+    boxes.forEach(b=>b.addEventListener("change",()=>{ b.closest("label").classList.toggle("checked",b.checked); update(); }));
+    update();
+  });
+})();
+</script>
+</body>
+</html>

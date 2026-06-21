@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>USING / CHANGING 파라미터 · 모듈화 기초 · SAP Developer Academy</title>
+<link rel="stylesheet" href="../../../assets/base.css">
+<link rel="stylesheet" href="../../../assets/lesson.css">
+<link rel="stylesheet" href="../../../assets/shell.css">
+<script>/* 읽기 설정 선적용(플래시 방지) */(function(){try{var L=localStorage,r=document.documentElement;if(L.getItem('sda.dark')==='1')r.classList.add('dark');if(L.getItem('sda.wide')==='1')r.classList.add('wide');var f=parseInt(L.getItem('sda.fontPx'),10);if(f>=13&&f<=20)r.style.fontSize=f+'px';}catch(e){}})();</script>
+</head>
+<body data-domain="abap" data-chapter-id="CH09" data-lesson-id="CH09-L02">
+<header class="appbar">
+  <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
+  <span class="appbar__sp"></span>
+  <span class="meta">CH09 · 모듈화 기초</span>
+  <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
+  <div class="tools">
+    <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
+    <button class="icon-btn" id="fsInc" title="글자 크게">A+</button>
+    <button class="icon-btn" id="fsReset" title="글자 크기 초기화">↺</button>
+    <button class="icon-btn" id="darkBtn" title="다크 모드">🌙</button>
+    <button class="icon-btn" id="widthBtn" title="가독 폭 넓게">↔</button>
+    <button class="icon-btn fs-btn" title="전체화면" aria-label="전체화면"></button>
+  </div>
+</header>
+<div class="read-progress"><i></i></div>
+<div class="scrim"></div>
+<nav class="rail" data-shell="rail"></nav>
+<button class="railFab" id="railFab" aria-label="네비 열기">☰</button>
+<div class="stage">
+  <div class="layout">
+    <main class="main">
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH09</nav>
+      <section class="lhead">
+        <p class="lhead__eyebrow">모듈화 기초</p>
+        <h1>USING / CHANGING 파라미터</h1>
+        <p class="lhead__direction">서브루틴에 값을 주고(USING) 결과를 돌려받는다(CHANGING).</p>
+        <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 9</span><span class="tag tag--ls">Lesson 2</span><span class="tag tag--lv">초급</span></div>
+      </section>
+      <article class="prose">
+<section class="lblock"><h2>값을 주고받기</h2>
+<p>서브루틴이 바깥 값을 받아 처리하고 결과를 돌려주려면 <strong>파라미터</strong>가 필요하다.
+<code>FORM</code>에서는 <code>USING</code>과 <code>CHANGING</code>으로 한다.</p>
+</section><section class="lblock"><h2>USING(입력) / CHANGING(입출력)</h2>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10</pre><pre class="abap-editor__code"><code><span class="tok-kw">FORM</span> add_tax
+  <span class="tok-kw">USING</span>    iv_amount <span class="tok-kw">TYPE</span> p
+  <span class="tok-kw">CHANGING</span> cv_result <span class="tok-kw">TYPE</span> p.
+  cv_result = iv_amount * <span class="tok-str">'1.1'</span>.
+<span class="tok-kw">ENDFORM</span>.
+
+<span class="tok-kw">START-OF-SELECTION</span>.
+  <span class="tok-kw">DATA</span> lv_out <span class="tok-kw">TYPE</span> p LENGTH <span class="tok-num">8</span> DECIMALS <span class="tok-num">2</span>.
+  <span class="tok-kw">PERFORM</span> add_tax <span class="tok-kw">USING</span> <span class="tok-num">1000</span> <span class="tok-kw">CHANGING</span> lv_out.
+  <span class="tok-kw">WRITE</span> lv_out.</code></pre></div></div>
+<ul>
+<li><code>USING</code> — 주로 <strong>입력</strong>값(관례). <code>CHANGING</code> — <strong>돌려줄</strong> 값.</li>
+<li>접두어 관례: <code>iv_</code>(input), <code>cv_</code>(changing).</li>
+</ul>
+<blockquote>
+<p>엄밀히 <code>USING</code>도 참조로 넘어가 바뀔 수 있다. <strong>값 보호</strong>가 필요하면
+<code>USING value(iv_x)</code>로 값 전달(by value). 관례상 입력은 USING, 출력은 CHANGING로
+<strong>의도를 표현</strong>한다.</p>
+</blockquote>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>USING/CHANGING 순서·타입 불일치</strong> → 호출과 정의의 파라미터가 맞아야 한다.</li>
+<li><strong>출력을 USING으로</strong> → 의도가 흐려진다. 돌려줄 값은 CHANGING.</li>
+</ul>
+<hr>
+<p>서브루틴은 <strong>같은 프로그램 안</strong>에서만 산다. 여러 프로그램이 <strong>공유</strong>하는 재사용
+블록은? → Function Module(다음 레슨).</p>
+</section>
+      </article>
+      <nav class="lesson-nav" data-shell="prevnext"></nav>
+      <footer class="foot">SAP Developer Academy · CH09 CH09-L02</footer>
+    </main>
+    <aside class="journey" data-shell="journey"></aside>
+  </div>
+</div>
+<div class="term-popup" data-shell="popup" hidden></div>
+<div class="tmodal" data-shell="tmodal" hidden></div>
+<script>window.__SDA__={"domain":"abap","dataBase":"../","siteRoot":"../../../"};</script>
+<script src="../../../assets/shell.js" defer></script>
+</body>
+</html>

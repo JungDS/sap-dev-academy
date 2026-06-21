@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WRITE 심화 — 정렬·폭·색·구분선 · 개발 환경과 첫 프로그램 · SAP Developer Academy</title>
+<link rel="stylesheet" href="../../../assets/base.css">
+<link rel="stylesheet" href="../../../assets/lesson.css">
+<link rel="stylesheet" href="../../../assets/shell.css">
+<script>/* 읽기 설정 선적용(플래시 방지) */(function(){try{var L=localStorage,r=document.documentElement;if(L.getItem('sda.dark')==='1')r.classList.add('dark');if(L.getItem('sda.wide')==='1')r.classList.add('wide');var f=parseInt(L.getItem('sda.fontPx'),10);if(f>=13&&f<=20)r.style.fontSize=f+'px';}catch(e){}})();</script>
+</head>
+<body data-domain="abap" data-chapter-id="CH01" data-lesson-id="CH01-L05">
+<header class="appbar">
+  <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
+  <span class="appbar__sp"></span>
+  <span class="meta">CH01 · 개발 환경과 첫 프로그램</span>
+  <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
+  <div class="tools">
+    <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
+    <button class="icon-btn" id="fsInc" title="글자 크게">A+</button>
+    <button class="icon-btn" id="fsReset" title="글자 크기 초기화">↺</button>
+    <button class="icon-btn" id="darkBtn" title="다크 모드">🌙</button>
+    <button class="icon-btn" id="widthBtn" title="가독 폭 넓게">↔</button>
+    <button class="icon-btn fs-btn" title="전체화면" aria-label="전체화면"></button>
+  </div>
+</header>
+<div class="read-progress"><i></i></div>
+<div class="scrim"></div>
+<nav class="rail" data-shell="rail"></nav>
+<button class="railFab" id="railFab" aria-label="네비 열기">☰</button>
+<div class="stage">
+  <div class="layout">
+    <main class="main">
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH01</nav>
+      <section class="lhead">
+        <p class="lhead__eyebrow">개발 환경과 첫 프로그램</p>
+        <h1>WRITE 심화 — 정렬·폭·색·구분선</h1>
+        <p class="lhead__direction">출력을 보기 좋게 — 폭과 정렬로 칸을 맞추고, 색·구분선으로 강조한다.</p>
+        <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 1</span><span class="tag tag--ls">Lesson 5</span><span class="tag tag--lv">입문</span></div>
+      </section>
+      <section class="lcard tcode">
+        <p class="lcard__h"><span class="ic">🖥️</span>이번 Lesson에서 다루는 트랜잭션 코드</p>
+        <button class="tcode-label" data-tcode="SE38" data-badge="복습">
+          <span class="tcode-label__badge">복습</span>
+          <span class="tcode-label__code">SE38</span>
+          <span class="tcode-label__hint">자세히 보기 ›</span>
+        </button>
+      </section>
+      <article class="prose">
+<section class="lblock"><h2>출력은 됐는데, 투박하다</h2>
+<p>앞 레슨에서 <button class="term" type="button" data-term="WRITE">WRITE</button>로 화면에 글자를 찍었다. 그런데 숫자를 여러 줄 출력해 보면 <strong>자릿수가 안 맞아</strong>
+들쭉날쭉하고, 중요한 합계도 평범한 글자로 묻힌다. ABAP의 <button class="term" type="button" data-term="WRITE">WRITE</button>는 사실 <strong>출력 서식 옵션</strong>을
+풍부하게 갖고 있다. 이 레슨에서 그걸 꺼내 쓴다.</p>
+<blockquote>
+<p>🧾 리스트 출력은 결국 <strong>표처럼 줄을 맞춰</strong> 보여줄 때가 많다. 그래서 &quot;폭과 정렬&quot;이 첫 번째 도구다.</p>
+</blockquote>
+</section><section class="lblock"><h2>폭과 정렬 — 칸을 맞춘다</h2>
+<p>값을 <strong>정해진 폭(len)</strong> 안에 출력하고, 그 안에서 어디로 붙일지를 <strong>정렬</strong>로 정한다.
+폭은 <code>WRITE /(len)</code>처럼 괄호로, 정렬은 키워드로 지정한다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3</pre><pre class="abap-editor__code"><code><span class="tok-kw">WRITE</span>: /(<span class="tok-num">16</span>) <span class="tok-str">'정훈영'</span>.                  <span class="tok-com">" 폭 16, 기본(왼쪽)</span>
+<span class="tok-kw">WRITE</span>: /(<span class="tok-num">16</span>) <span class="tok-num">1250000</span> RIGHT-JUSTIFIED.   <span class="tok-com">" 폭 16, 오른쪽 정렬</span>
+<span class="tok-kw">WRITE</span>: /(<span class="tok-num">16</span>) <span class="tok-str">'합 계'</span> CENTERED.          <span class="tok-com">" 폭 16, 가운데</span></code></pre></div></div>
+<table>
+<thead>
+<tr>
+<th>정렬 키워드</th>
+<th>뜻</th>
+<th>잘 쓰는 곳</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>(기본) / <code>LEFT-JUSTIFIED</code></td>
+<td>왼쪽 붙임</td>
+<td>텍스트</td>
+</tr>
+<tr>
+<td><code>RIGHT-JUSTIFIED</code></td>
+<td>오른쪽 붙임</td>
+<td><strong>숫자</strong>(자릿수 정렬)</td>
+</tr>
+<tr>
+<td><code>CENTERED</code></td>
+<td>가운데</td>
+<td>제목·라벨</td>
+</tr>
+</tbody></table>
+</section><section class="lblock"><h2>직접 다뤄 보자</h2>
+<p>말보다 손이 빠르다. 아래에서 <strong>값과 옵션을 바꾸면</strong> 왼쪽에 <button class="term" type="button" data-term="WRITE">WRITE</button> 코드가 만들어지고
+오른쪽 리스트에 결과가 그려진다. 같은 값이라도 <code>RIGHT-JUSTIFIED</code>·<code>COLOR</code>·<code>ULINE</code>으로
+얼마나 달라지는지 직접 보자.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">WRITE 포맷 플레이그라운드 — 폭·정렬·색·구분선</span><a class="embed__open" href="../../../sample/code-learning/write-format-playground.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../sample/code-learning/write-format-playground.html" loading="lazy" title="WRITE 포맷 플레이그라운드 — 폭·정렬·색·구분선" style="height:560px"></iframe></figure>
+<blockquote>
+<p>🖱️ 예제 칩 <strong>&quot;오른쪽 정렬 숫자&quot;</strong> 와 <strong>&quot;강조 색 텍스트&quot;</strong> 를 번갈아 누르면, 숫자 정렬과 색 강조가
+코드·출력에 어떻게 반영되는지 한눈에 비교된다.</p>
+</blockquote>
+</section><section class="lblock"><h2>색과 강조 — 눈에 띄게</h2>
+<p>합계나 경고처럼 <strong>튀어야 하는 값</strong>은 색과 강조로 표시한다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3</pre><pre class="abap-editor__code"><code><span class="tok-kw">WRITE</span>: /(<span class="tok-num">16</span>) <span class="tok-num">1250000</span> COLOR <span class="tok-num">5</span>.              <span class="tok-com">" 5 = 긍정(초록)</span>
+<span class="tok-kw">WRITE</span>: /(<span class="tok-num">16</span>) <span class="tok-str">'경고!'</span>  COLOR <span class="tok-num">6</span> INTENSIFIED. <span class="tok-com">" 6 = 부정(빨강) + 진하게</span>
+<span class="tok-kw">WRITE</span>: /(<span class="tok-num">16</span>) <span class="tok-str">'반전'</span>   COLOR <span class="tok-num">4</span> INVERSE.      <span class="tok-com">" 배경·글자 반전</span></code></pre></div></div>
+<ul>
+<li><code>COLOR n</code> — 0~7번의 표준 리스트 색(예: 3 합계, 5 긍정, 6 부정).</li>
+<li><code>INTENSIFIED</code> — 더 진하게, <code>INVERSE</code> — 배경과 글자색을 뒤집는다.</li>
+</ul>
+<blockquote>
+<p>💡 색 번호는 <strong>의미</strong>로 외우면 쉽다 — <code>COLOR 5</code>(초록)는 &quot;좋음&quot;, <code>COLOR 6</code>(빨강)은 &quot;문제&quot;. 위 플레이그라운드에서 COLOR를 바꿔 보라.</p>
+</blockquote>
+</section><section class="lblock"><h2>줄과 구분선 — 여백을 준다</h2>
+<p>빽빽한 출력은 읽기 어렵다. <strong>빈 줄</strong>과 <strong>구분선</strong>으로 숨 쉴 공간을 준다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4</pre><pre class="abap-editor__code"><code><span class="tok-kw">SKIP</span>.            <span class="tok-com">" 빈 줄 하나</span>
+<span class="tok-kw">SKIP</span> <span class="tok-num">2</span>.          <span class="tok-com">" 빈 줄 둘</span>
+<span class="tok-kw">ULINE</span>.           <span class="tok-com">" 가로 구분선(밑줄)</span>
+<span class="tok-kw">WRITE</span>: / <span class="tok-str">'소계'</span>.</code></pre></div></div>
+<ul>
+<li><code>SKIP</code> / <code>SKIP n</code> — 빈 줄을 1개/n개 넣는다.</li>
+<li><code>ULINE</code> — 가로 구분선을 긋는다(표의 칸 구분에 자주 쓴다).</li>
+</ul>
+</section><section class="lblock"><h2>숫자·날짜 다듬기</h2>
+<p>숫자와 날짜는 전용 옵션으로 더 깔끔하게 만든다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3</pre><pre class="abap-editor__code"><code><span class="tok-kw">WRITE</span>: / lv_num   NO-ZERO.        <span class="tok-com">" 앞의 의미 없는 0 숨김</span>
+<span class="tok-kw">WRITE</span>: / lv_amt   DECIMALS <span class="tok-num">2</span>.     <span class="tok-com">" 소수 2자리로</span>
+<span class="tok-kw">WRITE</span>: / sy-datum DD/MM/YYYY.     <span class="tok-com">" 날짜 형식 지정</span></code></pre></div></div>
+<blockquote>
+<p>🔎 <code>sy-datum</code>은 시스템이 주는 <strong>오늘 날짜</strong>다(앞으로 자주 쓴다). 그냥 출력하면 <code>20260619</code>처럼 붙어 나오니
+<code>DD/MM/YYYY</code> 같은 형식을 주면 사람이 읽기 좋다.</p>
+</blockquote>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<blockquote>
+<p>⚠️ <strong>폭보다 긴 값</strong> — 폭(len)보다 값이 길면 잘리거나 <code>*</code>로 표시된다. 폭을 넉넉히 준다.</p>
+</blockquote>
+<blockquote>
+<p>⚠️ <strong>숫자를 왼쪽 정렬</strong> — 숫자는 보통 <code>RIGHT-JUSTIFIED</code>로 자릿수를 맞춰야 읽기 좋다.</p>
+</blockquote>
+<blockquote>
+<p>⚠️ <strong>색·강조 남발</strong> — 다 강조하면 아무것도 강조가 안 된다. 정말 중요한 값에만.</p>
+</blockquote>
+</section><section class="lblock"><h2>정리</h2>
+<ul>
+<li><button class="term" type="button" data-term="WRITE">WRITE</button>는 값을 <strong>폭(len)</strong> 안에 넣고 <strong>정렬</strong>(LEFT·CENTERED·RIGHT-JUSTIFIED)로 칸을 맞춘다.</li>
+<li><strong>COLOR·INTENSIFIED·INVERSE</strong> 로 중요한 값을 강조한다.</li>
+<li><strong>SKIP</strong>(빈 줄)·<strong>ULINE</strong>(구분선)으로 읽기 좋게 띄운다.</li>
+<li>숫자·날짜는 <code>NO-ZERO</code>·<code>DECIMALS</code>·<code>DD/MM/YYYY</code> 같은 전용 옵션으로 다듬는다.</li>
+</ul>
+<hr>
+<p>출력을 마음대로 다듬었다. 그런데 이 프로그램, 지금 <strong>어디에 저장</strong>돼 있더라? 학습용 <code>$TMP</code>를
+넘어 <strong>제대로 보관·이송</strong>하는 법 → 개발 패키지·이송요청(다음 레슨).</p>
+</section>
+      </article>
+      <nav class="lesson-nav" data-shell="prevnext"></nav>
+      <footer class="foot">SAP Developer Academy · CH01 CH01-L05</footer>
+    </main>
+    <aside class="journey" data-shell="journey"></aside>
+  </div>
+</div>
+<div class="term-popup" data-shell="popup" hidden></div>
+<div class="tmodal" data-shell="tmodal" hidden></div>
+<script>window.__SDA__={"domain":"abap","dataBase":"../","siteRoot":"../../../"};</script>
+<script src="../../../assets/shell.js" defer></script>
+</body>
+</html>
