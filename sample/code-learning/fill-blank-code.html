@@ -25,10 +25,14 @@ h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 24
 .btn:hover{background:#2f4bc0;} .btn.ghost{background:#fff;color:var(--brand);} .btn.ghost:hover{background:#eef2ff;}
 
 /* ===== 컴포넌트 CSS — 빈칸 채우기 ===== */
-.fillblank{background:#f6f8fa;border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:var(--shadow);}
+.fillblank{background:#f6f8fa;border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:var(--shadow);overflow:hidden;}
+.fb-hd{margin:-20px -20px 16px;background:#2c3666;border-bottom:2px solid var(--brand);padding:9px 14px;display:flex;align-items:center;gap:8px;}
+.fb-hd .cb-dots{display:flex;gap:5px;} .fb-hd .cb-dots i{width:10px;height:10px;border-radius:50%;display:block;}
+.fb-hd .cb-dots i:nth-child(1){background:#ff5f56;} .fb-hd .cb-dots i:nth-child(2){background:#ffbd2e;} .fb-hd .cb-dots i:nth-child(3){background:#27c93f;}
+.fb-hd .cb-lang{color:#ffa03b;font-weight:bold;letter-spacing:1px;font-size:12px;}
 .fillblank pre{margin:0 0 16px;font-family:var(--mono);font-size:14px;line-height:2;color:#334155;white-space:pre-wrap;}
 .blank{display:inline-block;width:11ch;border:0;border-bottom:2px solid var(--brand);background:#eef2ff;font-family:var(--mono);font-size:14px;text-align:center;padding:2px 4px;border-radius:5px 5px 0 0;color:#1f2a44;}
-.blank:focus{outline:none;background:#e0e8ff;}
+.blank:focus{outline:none;background:#e0e8ff;box-shadow:0 0 0 3px rgba(59,91,219,.22);}
 .blank.ok{border-color:var(--accent);background:#e8faf2;color:#0b7250;}
 .blank.bad{border-color:#d6336c;background:#ffe3ec;color:#b02a55;}
 .fillblank__actions{display:flex;gap:10px;}
@@ -45,6 +49,7 @@ h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 24
     <p class="lead">읽기만 하면 안다고 착각합니다. 핵심 키워드를 직접 채워 넣어 능동적으로 회수해 보세요.</p>
 
     <div class="fillblank" data-fillblank data-explain="Internal Table를 순회하는 기본 패턴입니다." data-hint="LOOP / INTO / sy-tabix 를 떠올려 보세요.">
+<div class="fb-hd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span></div>
 <pre>SELECT pernr name1 FROM pa0001
   INTO TABLE lt_emp.
 
@@ -58,6 +63,7 @@ ENDIF.</pre>
       <div class="fillblank__actions">
         <button class="btn" data-check>채점하기</button>
         <button class="btn ghost" data-reveal>정답 보기</button>
+        <button class="btn ghost" data-reset>다시하기</button>
       </div>
       <div class="fill-output">빈칸을 채우고 "채점하기"를 눌러 보세요.</div>
     </div>
@@ -79,13 +85,19 @@ ENDIF.</pre>
       });
       out.className = "fill-output " + (all?"ok":"bad");
       out.textContent = all
-        ? "✅ 정답입니다! " + (group.dataset.explain||"")
-        : `❌ ${done}/${inputs.length} 정답. ${group.dataset.hint||""}`;
+        ? "✓ 정답입니다! " + (group.dataset.explain||"")
+        : `✗ ${done}/${inputs.length} 정답. ${group.dataset.hint||""}`;
     });
     const reveal = group.querySelector("[data-reveal]");
     if(reveal) reveal.addEventListener("click",()=>{
       inputs.forEach(inp=>{ inp.value=inp.dataset.answer; inp.classList.remove("bad"); inp.classList.add("ok"); });
       out.className="fill-output"; out.textContent="정답을 채워 넣었습니다. 한 번 더 직접 입력해 보세요.";
+    });
+    const resetBtn = group.querySelector("[data-reset]");
+    if(resetBtn) resetBtn.addEventListener("click",()=>{
+      inputs.forEach(inp=>{ inp.value=""; inp.classList.remove("ok","bad"); });
+      out.className="fill-output"; out.textContent='빈칸을 채우고 "채점하기"를 눌러 보세요.';
+      if(inputs[0]) inputs[0].focus();
     });
   });
 })();

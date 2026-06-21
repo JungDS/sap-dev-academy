@@ -2,9 +2,13 @@
 <!--
   코드 복사 블록 (ABAP Editor Mockup) — standalone
   ────────────────────────────────────────────────────────────
-  네이비 헤더 + 신호등 버튼 + 줄번호 + 구문 토큰 색상 + 클립보드 복사 버튼.
-  외부 의존성 없음. 토큰 색은 클래스(.tok-kw/.tok-str/.tok-num/.tok-com)로 직접 칠합니다.
-  재사용 시: ".abap-editor*" / ".copy-btn" CSS와 복사 JS만 가져가면 됩니다.
+  네이비 헤더 + 신호등 + 언어 배지 + (선택)프로그램명 + 줄번호 + 구문 토큰색 + 복사 버튼.
+  외부 의존성 없음.
+
+  ▶ 두 가지 프리셋(헤더만 다름, 본문/클래스는 동일):
+    · 케이스 A — 프로그램명 표시:  .abap-editor__title 포함 (SE38에서 그 이름으로 만드는 레슨 등)
+    · 케이스 B — 프로그램명 생략:  .abap-editor__title 제거 (문법/개념 한 토막)
+  ▶ 재사용 시: ".abap-editor*" / ".copy-btn" CSS와 복사 JS만 가져가면 됩니다.
 -->
 <html lang="ko">
 <head>
@@ -29,25 +33,42 @@ a{color:var(--brand);text-decoration:none;}
 .eyebrow{color:var(--brand);font-weight:800;font-size:.82rem;letter-spacing:.05em;text-transform:uppercase;}
 h1{font-size:1.7rem;margin:8px 0 6px;}
 .lead{color:var(--ink-soft);margin:0 0 24px;}
+.case{margin:30px 0 6px;display:flex;align-items:center;gap:10px;}
+.case__no{width:24px;height:24px;border-radius:7px;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:800;font-size:.85rem;}
+.case__ttl{font-weight:800;font-size:1.05rem;}
+.case__when{color:var(--ink-soft);font-size:.9rem;margin:2px 0 0 34px;}
 
-/* ===== 컴포넌트 CSS — 코드 복사 블록 ===== */
-.abap-editor{background:#f6f8fa;border:1px solid #d0d0d0;border-radius:10px;overflow:hidden;margin:18px 0;
-  font-family:var(--mono);font-size:14px;box-shadow:0 4px 12px rgba(0,0,0,.08);}
-.abap-editor__header{background:#343e6a;padding:8px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #232a4a;}
+/* ===== 컴포넌트 CSS — 코드 복사 블록 (양쪽 케이스 공용) ===== */
+.abap-editor{background:#fff;border:1px solid #dfe3ee;border-radius:12px;overflow:hidden;margin:14px 0 4px;
+  font-family:var(--mono);font-size:14px;box-shadow:0 1px 2px rgba(20,28,51,.04),0 10px 26px rgba(20,28,51,.10);}
+.abap-editor__header{background:#2c3666;border-bottom:2px solid var(--brand);padding:9px 14px;display:flex;align-items:center;gap:10px;}
 .abap-editor__dots{display:flex;gap:6px;}
-.abap-editor__dot{width:12px;height:12px;border-radius:50%;}
+.abap-editor__dot{width:11px;height:11px;border-radius:50%;opacity:.9;}
 .abap-editor__dot.r{background:#ff5f56;} .abap-editor__dot.y{background:#ffbd2e;} .abap-editor__dot.g{background:#27c93f;}
-.abap-editor__title{margin-left:6px;color:#ffa03b;font-weight:bold;font-size:12px;letter-spacing:1px;}
-.copy-btn{margin-left:auto;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.35);border-radius:5px;
-  padding:4px 10px;font-size:12px;cursor:pointer;color:#fff;font-weight:bold;font-family:var(--font);transition:all .2s;}
-.copy-btn:hover{background:rgba(255,255,255,.24);}
-.copy-btn.is-copied{color:#27c93f;border-color:#27c93f;background:rgba(39,201,63,.15);}
-.abap-editor__body{display:flex;align-items:stretch;}
-.abap-editor__gutter{margin:0;background:#f0f0e1;color:#999;padding:10px 8px;text-align:right;border-right:1px solid #d0d0d0;
-  user-select:none;min-width:40px;line-height:1.6;}
-.abap-editor__code{margin:0;padding:10px 14px;overflow-x:auto;line-height:1.6;color:#333;flex:1;white-space:pre;}
-.tok-kw{color:#005cc5;font-weight:700;}
-.tok-str{color:#22863a;} .tok-num{color:#22863a;} .tok-com{color:#999;font-style:italic;}
+.abap-editor__lang{font-family:var(--font);font-size:12px;font-weight:bold;letter-spacing:1px;color:#ffa03b;}
+.abap-editor__title{font-family:var(--font);color:#e7ebff;font-weight:600;font-size:12.5px;letter-spacing:.5px;}
+.copy-btn{margin-left:auto;display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.32);
+  border-radius:7px;padding:4px 11px;font-size:12px;cursor:pointer;color:#fff;font-weight:600;font-family:var(--font);transition:background .15s;}
+.copy-btn:hover{background:rgba(255,255,255,.22);}
+.copy-btn.is-copied{color:#5ee08a;border-color:#5ee08a;background:rgba(94,224,138,.16);}
+.abap-editor__body{display:flex;align-items:stretch;background:#fbfcfe;}
+.abap-editor__gutter{margin:0;background:#eef1f8;color:#aab3cf;padding:11px 10px;text-align:right;border-right:1px solid #e3e7f2;
+  user-select:none;min-width:42px;line-height:1.65;}
+.abap-editor__code{margin:0;padding:11px 16px;overflow-x:auto;line-height:1.65;color:#2f3650;flex:1;white-space:pre;}
+.tok-kw{color:#005cc5;font-weight:700;} .tok-str{color:#22863a;} .tok-num{color:#22863a;} .tok-com{color:#9aa0ad;font-style:italic;}
+
+/* ===== (옵션) 키워드 설명 아코디언 — 구 code-tour 흡수 ===== */
+.tour-kw{display:inline;background:rgba(59,91,219,.08);border-bottom:2px dashed var(--brand);padding:0 5px;border-radius:4px;cursor:pointer;font-weight:700;color:var(--brand);transition:background .2s,color .2s;}
+.tour-kw:hover{background:rgba(59,91,219,.16);}
+.tour-kw.is-open{background:var(--brand);color:#fff;}
+.tour-kw .badge{font-size:.78em;margin-left:4px;opacity:.85;}
+.tour-panels{padding:0 16px;display:grid;gap:0;background:#fbfcfe;}
+.tour-panels:has(.tour-acc.is-open){padding-bottom:16px;}
+.tour-acc{max-height:0;opacity:0;overflow:hidden;transition:max-height .35s cubic-bezier(.16,1,.3,1),opacity .25s,margin .25s;border-left:4px solid transparent;border-radius:6px;background:#f0f5ff;}
+.tour-acc.is-open{max-height:320px;opacity:1;margin:8px 0;border-left-color:var(--brand);}
+.tour-acc__inner{padding:14px 18px;font-size:.95rem;color:#334155;}
+.tour-acc__inner strong{color:#1e293b;}
+.tour-acc__inner code{background:#e7edfb;padding:1px 6px;border-radius:5px;font-family:var(--mono);font-size:.9em;}
 </style>
 </head>
 <body>
@@ -55,11 +76,15 @@ h1{font-size:1.7rem;margin:8px 0 6px;}
   <main class="wrap">
     <p class="eyebrow">Structure · 코드 복사 블록</p>
     <h1>ABAP 에디터 목업 + 복사 버튼</h1>
-    <p class="lead">SE38 에디터 분위기의 코드 박스. 우상단 버튼으로 클립보드에 복사되고, 줄번호와 토큰 색상으로 가독성을 높입니다.</p>
+    <p class="lead">같은 컴포넌트의 두 프리셋. <b>헤더의 프로그램명 유무</b>만 다르고 본문·복사·토큰색은 동일합니다.</p>
 
+    <!-- ===== 케이스 A — 프로그램명 표시 ===== -->
+    <div class="case"><span class="case__no">A</span><span class="case__ttl">프로그램명 표시</span></div>
+    <p class="case__when">코드에 <code>REPORT</code>/<code>INCLUDE</code> 이름이 등장하고, 학습자가 SE38에서 <b>그 이름 그대로 프로그램을 만들어야</b> 할 때.</p>
     <div class="abap-editor">
       <div class="abap-editor__header">
         <span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span>
+        <span class="abap-editor__lang">ABAP</span>
         <span class="abap-editor__title">ZDEMO_REPORT</span>
         <button class="copy-btn" type="button">⧉ 복사</button>
       </div>
@@ -69,19 +94,86 @@ h1{font-size:1.7rem;margin:8px 0 6px;}
 3
 4
 5
-6</pre>
-<pre class="abap-editor__code"><code><span class="tok-com">* 사번으로 사원명 조회</span>
+6
+7
+8
+9
+10</pre><pre class="abap-editor__code"><code><span class="tok-kw">REPORT</span> zdemo_report.
+
+<span class="tok-com">* 사번으로 사원명 조회</span>
 <span class="tok-kw">DATA</span> lv_name <span class="tok-kw">TYPE</span> string.
+
 <span class="tok-kw">SELECT SINGLE</span> name1 <span class="tok-kw">FROM</span> pa0001
   <span class="tok-kw">INTO</span> lv_name
   <span class="tok-kw">WHERE</span> pernr = <span class="tok-str">'00001234'</span>.
+
 <span class="tok-kw">WRITE</span>: / lv_name.</code></pre>
       </div>
     </div>
+
+    <!-- ===== 케이스 B — 프로그램명 생략 ===== -->
+    <div class="case"><span class="case__no">B</span><span class="case__ttl">프로그램명 생략</span></div>
+    <p class="case__when">문법·개념 한 토막만 보여줄 때. 프로그램 정체성이 학습 포인트와 무관하면 이름을 빼서 <b>깔끔하게</b>.</p>
+    <div class="abap-editor">
+      <div class="abap-editor__header">
+        <span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span>
+        <span class="abap-editor__lang">ABAP</span>
+        <button class="copy-btn" type="button">⧉ 복사</button>
+      </div>
+      <div class="abap-editor__body">
+        <pre class="abap-editor__gutter">1
+2
+3
+4
+5</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> lv_text <span class="tok-kw">TYPE</span> string.
+
+lv_text = <span class="tok-str">'Hello, ABAP!'</span>.
+
+<span class="tok-kw">WRITE</span>: / lv_text.</code></pre>
+      </div>
+    </div>
+
+    <!-- ===== 케이스 C — 키워드 설명 아코디언 (옵션, 구 code-tour 흡수) ===== -->
+    <div class="case"><span class="case__no">C</span><span class="case__ttl">키워드 설명 아코디언 (옵션)</span></div>
+    <p class="case__when">코드 속 <b>점선 키워드</b>를 클릭하면 그 아래로 설명이 펼쳐집니다. 케이스 A·B 어느 코드블록에나 얹을 수 있는 옵션 기능(구 <code>code-tour</code> 흡수).</p>
+    <div class="abap-editor">
+      <div class="abap-editor__header">
+        <span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span>
+        <span class="abap-editor__lang">ABAP</span>
+        <span class="abap-editor__title">ZDEMO_SELECT</span>
+        <button class="copy-btn" type="button">⧉ 복사</button>
+      </div>
+      <div class="abap-editor__body">
+        <pre class="abap-editor__gutter">1
+2
+3
+4
+5
+6
+7
+8
+9</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> <span class="tour-kw" data-target="a1">lt_emp<span class="badge">▾</span></span> <span class="tok-kw">TYPE STANDARD TABLE OF</span> pa0001.
+
+<span class="tok-kw">SELECT</span> pernr name1 <span class="tok-kw">FROM</span> pa0001
+  <span class="tour-kw" data-target="a2">INTO CORRESPONDING FIELDS OF TABLE<span class="badge">▾</span></span> lt_emp
+  <span class="tour-kw" data-target="a3"><span class="tok-kw">WHERE</span><span class="badge">▾</span></span> werks = <span class="tok-str">'1000'</span>.
+
+<span class="tok-kw">IF</span> <span class="tour-kw" data-target="a4">sy-subrc<span class="badge">▾</span></span> = 0.
+  <span class="tok-kw">WRITE</span> / lines( lt_emp ).
+<span class="tok-kw">ENDIF</span>.</code></pre>
+      </div>
+      <div class="tour-panels">
+        <div class="tour-acc" id="a1"><div class="tour-acc__inner"><strong>lt_emp — Internal Table</strong><br>같은 구조의 여러 행을 메모리에 담는 그릇. <code>STANDARD TABLE OF pa0001</code>은 "PA0001 한 줄과 같은 모양의 행"을 여러 개 담겠다는 선언입니다.</div></div>
+        <div class="tour-acc" id="a2"><div class="tour-acc__inner"><strong>INTO CORRESPONDING FIELDS OF TABLE</strong><br>SELECT 결과를 이름이 같은 컬럼끼리 자동 매핑해 테이블에 채웁니다. 컬럼 순서가 달라도 이름으로 맞춰 줍니다.</div></div>
+        <div class="tour-acc" id="a3"><div class="tour-acc__inner"><strong>WHERE — 필터 조건</strong><br>DB에서 가져올 행을 좁힙니다. 여기선 <code>werks = '1000'</code>(사업장 1000)인 행만. 가능한 한 DB 단에서 걸러야 성능에 좋습니다.</div></div>
+        <div class="tour-acc" id="a4"><div class="tour-acc__inner"><strong>sy-subrc — 결과 코드</strong><br>직전 문장의 성공/실패를 담는 시스템 필드. <code>0</code>이면 한 건 이상 조회됨, <code>4</code>면 결과 없음.</div></div>
+      </div>
+    </div>
+
   </main>
 
 <script>
-// ===== 컴포넌트 JS — 복사 버튼 =====
+// ===== 컴포넌트 JS — 복사 버튼 (양쪽 케이스 공용) =====
 document.querySelectorAll(".copy-btn").forEach(btn=>{
   btn.addEventListener("click",()=>{
     const code = btn.closest(".abap-editor").querySelector(".abap-editor__code");
@@ -97,6 +189,20 @@ document.querySelectorAll(".copy-btn").forEach(btn=>{
     else done();
   });
 });
+
+// ===== 컴포넌트 JS — (옵션) 키워드 설명 아코디언 (구 code-tour 흡수) =====
+(function(){
+  const kws = document.querySelectorAll(".tour-kw");
+  kws.forEach(kw=>{
+    kw.addEventListener("click",()=>{
+      const acc = document.getElementById(kw.dataset.target);
+      const willOpen = !acc.classList.contains("is-open");
+      document.querySelectorAll(".tour-acc").forEach(a=>a.classList.remove("is-open"));
+      kws.forEach(k=>k.classList.remove("is-open"));
+      if(willOpen){ acc.classList.add("is-open"); kw.classList.add("is-open"); acc.scrollIntoView({behavior:"smooth",block:"nearest"}); }
+    });
+  });
+})();
 </script>
 </body>
 </html>

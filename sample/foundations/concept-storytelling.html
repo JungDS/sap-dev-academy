@@ -4,7 +4,8 @@
   ────────────────────────────────────────────────────────────
   "불편을 먼저 겪고 → 그 해결책으로 개념을 배운다"는 동기부여형 서사를
   beat(장면) 단위로 쌓는 패턴. 순수 CSS, JS 없음.
-  재사용 시: ".storyline" / ".beat*" CSS 블록만 가져가면 됩니다.
+  재사용 시: ".storyline" / ".beat*" / ".beat__fig"·".fig-tbl" CSS + 인라인 SVG·표만 가져가면 됩니다.
+  장면(beat) 안에는 텍스트뿐 아니라 도형(SVG)·표·스크린샷 이미지(<img>)도 넣을 수 있습니다.
 -->
 <html lang="ko">
 <head>
@@ -12,7 +13,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>개념 스토리텔링 · Sample</title>
 <style>
-:root{--bg:#f6f7fb;--surface:#fff;--ink:#1c2233;--ink-soft:#5b6478;--line:#e6e8ef;--brand:#3b5bdb;--accent:#0ca678;--violet:#6d28d9;--radius:14px;--shadow:0 1px 2px rgba(20,28,51,.04),0 8px 24px rgba(20,28,51,.06);--font:-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic",Roboto,sans-serif;}
+:root{--bg:#f6f7fb;--surface:#fff;--ink:#1c2233;--ink-soft:#5b6478;--line:#e6e8ef;--brand:#3b5bdb;--accent:#0ca678;--warn:#e8590c;--violet:#6d28d9;--radius:14px;--shadow:0 1px 2px rgba(20,28,51,.04),0 8px 24px rgba(20,28,51,.06);--font:-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic",Roboto,sans-serif;}
 *{box-sizing:border-box;} html,body{margin:0;}
 body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.65;}
 a{color:var(--brand);text-decoration:none;}
@@ -26,16 +27,29 @@ h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 24
 /* ===== 컴포넌트 CSS — 스토리라인 ===== */
 .storyline{display:grid;gap:14px;position:relative;}
 .beat{border:1px solid var(--line);border-radius:12px;padding:16px 18px;background:#fff;display:flex;gap:14px;align-items:flex-start;box-shadow:var(--shadow);}
-.beat__icon{font-size:1.5rem;flex-shrink:0;line-height:1.4;}
+.beat__icon{flex-shrink:0;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;}
+.beat__icon svg{width:19px;height:19px;display:block;}
 .beat__body{min-width:0;}
 .beat__role{font-size:.72rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;margin:0 0 3px;}
-.beat__body p{margin:0;color:#3a4256;}
-.beat.pain{border-left:5px solid #e8590c;}
+.beat__body p{margin:0 0 9px;color:#3a4256;}
+.beat__body p:last-child{margin-bottom:0;}
+.beat__fig{margin:13px 0 2px;padding:0;}
+.beat__fig svg{display:block;max-width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:#fffaf6;}
+.beat.turn .beat__fig svg,.beat.win .beat__fig svg{background:#f7faff;}
+.beat__fig figcaption{font-size:.82rem;color:var(--ink-soft);margin-top:7px;}
+.fig-tbl{border-collapse:collapse;font-size:.85rem;background:#fff;}
+.fig-tbl th,.fig-tbl td{border:1px solid var(--line);padding:5px 12px;text-align:left;}
+.fig-tbl th{background:rgba(59,91,219,.10);color:#26336b;font-weight:700;}
+.fig-tbl caption{caption-side:bottom;font-size:.8rem;color:var(--ink-soft);padding-top:7px;text-align:left;}
+.beat.pain{border-left:5px solid var(--warn);}
 .beat.pain .beat__role{color:#c2410c;}
+.beat.pain .beat__icon{background:rgba(232,89,12,.12);color:var(--warn);}
 .beat.turn{border-left:5px solid var(--brand);}
 .beat.turn .beat__role{color:var(--brand);}
+.beat.turn .beat__icon{background:rgba(59,91,219,.12);color:var(--brand);}
 .beat.win{border-left:5px solid var(--accent);}
 .beat.win .beat__role{color:#0b7250;}
+.beat.win .beat__icon{background:rgba(12,166,120,.13);color:#0b7250;}
 .beat code{background:rgba(20,28,51,.06);padding:1px 6px;border-radius:5px;font-size:.9em;}
 </style>
 </head>
@@ -48,24 +62,64 @@ h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 24
 
     <div class="storyline">
       <div class="beat pain">
-        <span class="beat__icon">😣</span>
+        <span class="beat__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 L21.4 20 H2.6 Z"/><line x1="12" y1="9.5" x2="12" y2="14"/><line x1="12" y1="16.8" x2="12" y2="16.9"/></svg>
+        </span>
         <div class="beat__body">
           <p class="beat__role">불편 — 문제 상황</p>
-          <p>사원 100명의 급여를 화면에 뿌려야 합니다. 변수 하나로는 한 명분밖에 못 담습니다. <code>lv_sal1, lv_sal2 …</code> 100개를 선언할까요?</p>
+          <p>입사 첫 주, <strong>정훈영</strong>은 팀장에게 첫 과제를 받았어요.</p>
+          <p><em>"우리 부서 사원 100명의 이번 달 급여를 한 화면에 쭉 보여줘."</em></p>
+          <p>정훈영은 배운 대로 값을 담는 상자(변수)를 하나 만들었습니다. 그런데 상자 하나에는 딱 <strong>한 사람</strong>의 급여만 들어가요.</p>
+          <p>100명이면 상자(<code>lv_sal1</code>, <code>lv_sal2</code> …)를 100개나 손으로 만들어야 한다는 뜻이죠. 코드는 끝없이 길어지고, 한 명만 빠뜨려도 어디가 틀렸는지 찾기 어렵습니다. 😵</p>
+          <figure class="beat__fig">
+            <svg viewBox="0 0 480 56" role="img" aria-label="변수를 100개 만들어야 하는 불편 — 상자 비유">
+              <g font-family="'D2Coding',Consolas,monospace" font-size="11" fill="#9a4a1a">
+                <rect x="4" y="11" width="74" height="30" rx="6" fill="#fff" stroke="#e8a87c"/><text x="41" y="30" text-anchor="middle">lv_sal1</text>
+                <rect x="86" y="11" width="74" height="30" rx="6" fill="#fff" stroke="#e8a87c"/><text x="123" y="30" text-anchor="middle">lv_sal2</text>
+                <rect x="168" y="11" width="74" height="30" rx="6" fill="#fff" stroke="#e8a87c"/><text x="205" y="30" text-anchor="middle">lv_sal3</text>
+                <rect x="250" y="11" width="74" height="30" rx="6" fill="#fff" stroke="#e8a87c"/><text x="287" y="30" text-anchor="middle">lv_sal4</text>
+                <rect x="332" y="11" width="74" height="30" rx="6" fill="#fff" stroke="#e8a87c"/><text x="369" y="30" text-anchor="middle">lv_sal5</text>
+              </g>
+              <text x="416" y="31" font-family="sans-serif" font-size="15" fill="#c2410c" font-weight="700">… ×100</text>
+            </svg>
+            <figcaption>상자(변수) 하나당 사원 한 명 — 이렇게 <strong>도형·이미지</strong>로도 장면을 보여줄 수 있어요.</figcaption>
+          </figure>
         </div>
       </div>
       <div class="beat turn">
-        <span class="beat__icon">💡</span>
+        <span class="beat__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 21.2h4"/><path d="M12 3.2a6 6 0 0 0-3.8 10.6c.7.6 1.1 1.4 1.3 2.2h5a4.6 4.6 0 0 1 1.3-2.2A6 6 0 0 0 12 3.2z"/></svg>
+        </span>
         <div class="beat__body">
           <p class="beat__role">전환 — 해결의 실마리</p>
-          <p>"같은 구조의 여러 행을 메모리에 줄줄이 담을 그릇"이 있으면 됩니다. 그게 바로 <code>Internal Table</code>입니다.</p>
+          <p>막막해하던 정훈영에게 선배 <strong>유재석</strong>이 한마디 건넵니다.</p>
+          <p><em>"상자 100개 말고, 여러 줄을 차곡차곡 담는 '표' 한 장을 쓰면 어때?"</em></p>
+          <p>엑셀 시트를 떠올려 보세요. 맨 위에 <strong>사번·이름·급여</strong> 같은 칸(열)이 있고, 사원 한 명이 한 줄(행)로 들어갑니다.</p>
+          <p>ABAP에서는 이렇게 프로그램이 도는 동안 메모리에 잠깐 두는 표를 <code>Internal Table</code>(메모리에 잠깐 두는 표)이라고 불러요. 상자 100개가 아니라 <strong>표 한 장</strong>이면 충분합니다.</p>
+          <figure class="beat__fig">
+            <table class="fig-tbl">
+              <caption>표 한 장(Internal Table) — 행을 늘리면 100명도 거뜬. 게다가 급여가 '누구의' 급여인지도 한눈에. (실제 스크린샷·이미지로 바꿔 넣어도 됩니다.)</caption>
+              <thead><tr><th>사번 (empid)</th><th>이름 (name)</th><th>급여 (salary)</th></tr></thead>
+              <tbody>
+                <tr><td>1001</td><td>정훈영</td><td>5,000</td></tr>
+                <tr><td>1002</td><td>손흥민</td><td>3,200</td></tr>
+                <tr><td>1003</td><td>유재석</td><td>4,100</td></tr>
+                <tr><td>…</td><td>…</td><td>…</td></tr>
+              </tbody>
+            </table>
+          </figure>
         </div>
       </div>
       <div class="beat win">
-        <span class="beat__icon">🎉</span>
+        <span class="beat__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.2"/><polyline points="8.2 12.4 11 15.2 16 9.2"/></svg>
+        </span>
         <div class="beat__body">
           <p class="beat__role">해결 — 개념 획득</p>
-          <p>한 줄로 표를 선언하고 <code>LOOP AT</code>으로 100행을 순회합니다. 변수 100개의 불편이 사라졌습니다. <em>이제 왜 배우는지 알고 외웁니다.</em></p>
+          <p>정훈영은 표(<code>Internal Table</code>)를 <strong>딱 한 줄로 선언</strong>하고, 사원 데이터를 한 줄씩 표에 담았어요.</p>
+          <p>그리고 <code>LOOP AT</code>(표를 위에서부터 한 줄씩 차례로 꺼내 읽는 명령)으로 100명을 쭉 훑어 화면에 출력했습니다.</p>
+          <p>상자 100개의 악몽은 사라지고, 코드는 단 몇 줄로 깔끔해졌죠.</p>
+          <p>무엇보다 정훈영은 이제 <strong>"왜"</strong> Internal Table이 필요한지 몸으로 이해했어요 — 그래서 절대 잊어버리지 않습니다. 🎉</p>
         </div>
       </div>
     </div>

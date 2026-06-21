@@ -1,332 +1,852 @@
 <!DOCTYPE html>
 <!--
-  입문자 학습 페이지 템플릿 (Beginner Lesson Template) — standalone
+  입문 레슨 템플릿 (Beginner Lesson Template) — 레슨 셸 v2-C 위에 Internal Table 입문 콘텐츠 (standalone)
   ────────────────────────────────────────────────────────────
-  완전 입문자용 학습 페이지의 표준 골격을 보여주는 참고 구현.
-   · 용어는 처음 나올 때 한 줄로 풀어줌(인라인 + hover 팝업)
-   · 흐름: 왜 필요한가 → 무엇인가 → 어떻게 쓰나 → 실수/주의 → 정리
-   · 시각화 + 체험형(APPEND/LOOP 표 만들기) 포함
-   · 긴 설명은 접기/펼치기(details)로 — 페이지는 짧게, 정보는 풍성하게
-  외부 의존성 없음. 이름은 고정 풀(정훈영=1번) 사용.
-
-  ※ 작성 톤(입문자 흐름·용어 풀이)의 참고로는 유효하나, **확정 레슨 셸은 v2-C**이고
-     실제 페이지는 빌드(content/abap/**.md → docs)가 생성한다. 레슨을 새로 쓸 땐
-     이 파일이 아니라 **골든 템플릿 + 오써링 체크리스트(.project-docs/08_LESSON_SHELL_SPEC)**를
-     기준으로 한다. (체험은 ::embed, 용어는 [[term]], T코드는 front-matter tcode)
+  기준: 기존 v2-C(따뜻한 크림/티얼 톤, 떠 있는 카드)에 아래를 반영해 재구성.
+   [기존 7]
+   1) 용어 hover=임시, click=고정. 미고정 시 벗어나면 사라짐.
+   2) 전체화면: 켜면 본문이 화면 가로폭을 꽉 채움.
+   3) 헤더 = 왼쪽 흰색 → 오른쪽 옅은 민트 가로 그라데이션(부드럽게).
+   4) T-code 라벨(칩) → 클릭 시 "미니 페이지"급 상세 모달.
+   5) 좌측 네비 = v2-E 아이콘 레일(hover/클릭 확장).
+   6) 우측 = v2-F "이 레슨의 여정" 스텝퍼(접기 없음, 스크롤 위치 표시).
+   7) v2-G "용어 모음" = 좌측 레일 3번째 탭(페이지 용어 자동 수집).
+   [추가 4]
+   8) 코드/실습 = 그 자리에서 체험(R4): Internal Table "직접 해보기 — APPEND/LOOP/CLEAR" 빌더.
+   9) 읽기 설정: 글자 크기 A−/A+ · 다크 모드 · 가독 폭 토글 — 모두 localStorage 저장.
+   10) 레슨 끝 능동 회수: 미니 퀴즈(즉시 채점·해설)로 "배운 걸 바로 확인".
+  외부 의존성 없음. 이름은 고정 풀(정훈영=1번).
 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>내부 테이블이 뭐예요? · 입문 레슨 템플릿</title>
+<title>Internal Table이 뭐예요? · 입문 레슨 템플릿 (v2-C 셸)</title>
 <style>
 :root{
+  /* 라이트 토큰 */
   --bg:#f6f7fb;--surface:#fff;--ink:#1c2233;--ink-soft:#5b6478;--line:#e6e8ef;
-  --brand:#3b5bdb;--accent:#0ca678;--amber:#b45309;--red:#d6336c;--violet:#6d28d9;
-  --radius:14px;--shadow:0 1px 2px rgba(20,28,51,.04),0 8px 24px rgba(20,28,51,.06);
+  --brand:#3b5bdb;--brand-2:#0ca678;--amber:#b45309;--soon:#94a0b8;
+  --soft:#f8faff;--tint:#f1f5ff;--tint-2:#e6efff;--tint-green:#eafaf3;--chip:#eef1f6;
+  --warn-bg:#fff8ec;--warn-line:#f0dcb8;--deco:#eef2fc;--track:#e7ecf6;--dot:#cbd5e6;
+  --line-teal:#d7e1f7;--ink-teal:#27406e;--tag-blue:#3b5bdb;--tag-blue-bg:#e6efff;
+  --appbar-bg:rgba(255,255,255,.82);
+  --grad-head:linear-gradient(105deg,#ffffff 0%,#ffffff 40%,#eef3ff 76%,#dde7ff 100%);
+  --grad-modal:linear-gradient(100deg,#fff 0%,#fff 45%,#dbe7ff 100%);
+  --radius:20px;--shadow:0 2px 4px rgba(20,28,51,.04),0 14px 40px rgba(20,28,51,.08);
+  --appbar-h:60px;--rail:64px;
   --font:-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic",Roboto,sans-serif;
   --mono:'D2Coding',Consolas,Monaco,monospace;
 }
+/* 다크 토큰 (html.dark) */
+html.dark{
+  --bg:#15171c;--surface:#1f2229;--ink:#e8eaf0;--ink-soft:#a2a9ba;--line:#333845;
+  --brand:#7aa2ff;--brand-2:#34d399;--amber:#e8a35c;--soon:#6b7488;
+  --soft:#21242c;--tint:#1c222e;--tint-2:#1f2a3e;--tint-green:#192a24;--chip:#2a2e38;
+  --warn-bg:#2a2417;--warn-line:#4a3d24;--deco:#262a33;--track:#2f3441;--dot:#4a5163;
+  --line-teal:#2c3852;--ink-teal:#b9ccf0;--tag-blue:#9db4ff;--tag-blue-bg:#222a3d;
+  --appbar-bg:rgba(26,28,34,.84);
+  --grad-head:linear-gradient(105deg,#1f2229 0%,#1f2229 42%,#202a3e 78%,#1b2740 100%);
+  --grad-modal:linear-gradient(100deg,#1f2229 0%,#1f2229 45%,#1b2740 100%);
+  --shadow:0 2px 4px rgba(0,0,0,.3),0 14px 40px rgba(0,0,0,.45);
+}
 *{box-sizing:border-box;} html,body{margin:0;}
-body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.75;}
-a{color:var(--brand);}
-.topbar{position:sticky;top:0;z-index:20;border-bottom:1px solid var(--line);background:var(--surface);}
-.topbar__inner{max-width:1080px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:12px;font-weight:800;}
-.brand__mark{width:28px;height:28px;border-radius:7px;background:var(--brand);color:#fff;display:grid;place-items:center;}
-.wrap{max-width:760px;margin:26px auto 90px;padding:0 24px;}
+html{transition:background .25s;}
+body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.8;min-height:100vh;transition:background .25s,color .25s;}
+a{color:var(--brand);text-decoration:none;}
 
-/* 히어로 */
-.hero__eyebrow{color:var(--brand);font-weight:800;font-size:.8rem;letter-spacing:.05em;text-transform:uppercase;}
-h1{font-size:1.85rem;margin:8px 0 10px;line-height:1.25;}
-.hero__lead{color:#39435a;font-size:1.05rem;margin:0 0 12px;}
-.hero__meta{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 6px;}
-.chip{font-size:.76rem;font-weight:700;border-radius:999px;padding:4px 11px;background:#eef2ff;color:var(--brand);}
-.chip.time{background:#eafaf3;color:#0b7250;}
-.hero__guide{margin:14px 0 0;font-size:.9rem;color:var(--ink-soft);background:#fbfcff;border:1px dashed #cdd6ef;border-radius:10px;padding:10px 14px;}
+/* ===== 앱바 ===== */
+.appbar{position:sticky;top:0;z-index:40;height:var(--appbar-h);display:flex;align-items:center;gap:12px;padding:0 18px;background:var(--appbar-bg);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+.appbar__home{display:flex;align-items:center;gap:8px;font-weight:800;color:var(--brand);font-size:1.02rem;}
+.appbar__sp{flex:1;}
+.appbar .meta{font-size:.78rem;font-weight:600;color:var(--ink-soft);background:var(--chip);border-radius:999px;padding:6px 13px;white-space:nowrap;}
+.appbar .btn-soft{font-size:.82rem;font-weight:700;color:#fff;background:var(--brand);border:0;border-radius:999px;padding:8px 16px;transition:all .18s;box-shadow:0 4px 12px rgba(59,91,219,.25);}
+.appbar .btn-soft:hover{filter:brightness(.93);transform:translateY(-1px);}
+.tools{display:flex;align-items:center;gap:6px;}
+.icon-btn{min-width:36px;height:36px;padding:0 8px;border-radius:999px;border:1px solid var(--line);background:var(--surface);cursor:pointer;display:grid;place-items:center;color:var(--ink);font-size:.92rem;font-weight:700;transition:all .18s;}
+.icon-btn:hover{border-color:var(--brand);color:var(--brand);}
+.icon-btn.on{background:var(--brand);color:#fff;border-color:var(--brand);}
+.icon-btn svg{width:15px;height:15px;display:block;}
+.icon-btn:disabled{opacity:.38;cursor:not-allowed;}
+.icon-btn:disabled:hover{border-color:var(--line);color:var(--ink);background:var(--surface);}
+.read-progress{position:fixed;top:var(--appbar-h);left:0;right:0;height:3px;z-index:39;background:rgba(59,91,219,.10);}
+.read-progress>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--amber));transition:width .12s ease-out;}
+@media(max-width:860px){.appbar .meta{display:none;}}
+@media(max-width:680px){.appbar .btn-soft{display:none;}}
+@media(max-width:560px){.appbar__home span.full{display:none;}}
 
-/* 단계(phase) 내비 */
-.phases{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 6px;position:sticky;top:57px;background:var(--bg);padding:8px 0;z-index:10;}
-.phases a{font-size:.82rem;font-weight:700;text-decoration:none;border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 13px;color:var(--ink-soft);}
-.phases a:hover{border-color:var(--brand);color:var(--brand);}
+/* ===== 좌측 아이콘 레일 (v2-E) ===== */
+.rail{position:fixed;left:0;top:var(--appbar-h);bottom:0;width:var(--rail);z-index:38;background:var(--surface);border-right:1px solid var(--line);
+  display:flex;flex-direction:column;align-items:center;padding:14px 0;gap:8px;transition:width .26s cubic-bezier(.4,0,.2,1);overflow:hidden;}
+.rail.open{width:312px;box-shadow:var(--shadow);align-items:stretch;}
+.rail__btn{width:44px;height:44px;border-radius:13px;border:0;background:none;color:var(--ink-soft);cursor:pointer;display:grid;place-items:center;font-size:1.2rem;flex-shrink:0;transition:background .15s,color .15s;margin:0 auto;}
+.rail__btn:hover,.rail__btn.on{background:var(--tint-2);color:var(--brand);}
+.rail.open .rail__btn{margin:0;}
+.rail__icons{display:flex;flex-direction:column;gap:8px;align-items:center;}
+.rail__expand{display:none;flex-direction:column;min-height:0;flex:1;padding:0 14px;}
+.rail.open .rail__expand{display:flex;}
+.rail.open .rail__icons{display:none;}
+.rail__hd{display:flex;align-items:center;justify-content:space-between;padding:4px 2px 12px;}
+.rail__hd b{font-weight:800;} .rail__x{border:0;background:none;color:var(--ink-soft);font-size:1.2rem;cursor:pointer;}
+.rail__tabs{display:flex;gap:5px;background:var(--chip);border-radius:999px;padding:4px;margin-bottom:12px;}
+.rail__tab{flex:1;border:0;background:none;border-radius:999px;padding:8px 4px;font:inherit;font-size:.78rem;font-weight:700;color:var(--ink-soft);cursor:pointer;transition:all .18s;}
+.rail__tab.on{background:var(--surface);color:var(--brand);box-shadow:0 1px 3px rgba(20,28,51,.12);}
+.rail__panel{display:none;overflow:auto;min-height:0;} .rail__panel.on{display:block;}
+.rail__chap{font-size:.74rem;color:var(--ink-soft);font-weight:800;margin:2px 0 9px;}
+.ll{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px;}
+.ll a{display:block;border:1px solid transparent;border-radius:11px;padding:9px 11px;}
+.ll a:hover{background:var(--tint);} .ll small{font-size:.66rem;font-weight:800;color:var(--soon);letter-spacing:.04em;}
+.ll .t{display:block;font-size:.85rem;color:var(--ink);font-weight:600;}
+.ll a.on{background:var(--tint-2);border-color:var(--line-teal);} .ll a.on .t,.ll a.on small{color:var(--brand);}
+.rail__prog{font-size:.76rem;font-weight:800;color:var(--ink);display:flex;justify-content:space-between;margin:2px 0 6px;}
+.bar{height:7px;border-radius:99px;background:var(--track);overflow:hidden;margin-bottom:12px;} .bar>i{display:block;height:100%;width:5%;background:linear-gradient(90deg,var(--brand),var(--brand-2));}
+.cl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;font-size:.83rem;}
+.cl li{display:flex;gap:9px;padding:9px 10px;border-radius:11px;color:var(--ink);cursor:pointer;transition:all .18s;}
+.cl li:hover{background:var(--tint);} .cl li .dot{width:12px;height:12px;border-radius:50%;border:2px solid var(--dot);margin-top:5px;flex-shrink:0;}
+.cl li.on{background:var(--tint-2);color:var(--brand);font-weight:700;} .cl li.on .dot{border-color:var(--brand);background:var(--brand);}
+.glos{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px;}
+.glos li{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--soft);}
+.glos b{font-size:.86rem;color:var(--brand);} .glos span{display:block;font-size:.78rem;color:var(--ink-soft);margin-top:2px;}
+.glos__note{font-size:.74rem;color:var(--ink-soft);margin:0 0 10px;}
 
-/* 섹션 */
-.sec{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px 22px 20px;margin:16px 0;box-shadow:var(--shadow);scroll-margin-top:108px;}
-.sec__head{display:flex;align-items:center;gap:10px;margin:0 0 6px;}
-.sec__badge{font-size:.72rem;font-weight:800;color:#fff;border-radius:7px;padding:4px 9px;white-space:nowrap;}
-.b-why{background:var(--amber);} .b-what{background:var(--brand);} .b-how{background:var(--accent);} .b-warn{background:var(--red);} .b-sum{background:var(--violet);}
-.sec h2{font-size:1.22rem;margin:0;}
-.sec p{margin:10px 0;color:#2c3346;}
-.sec strong{color:#16203a;}
+.railFab{display:none;position:fixed;left:14px;bottom:18px;z-index:42;width:48px;height:48px;border-radius:50%;border:0;background:var(--brand);color:#fff;font-size:1.3rem;box-shadow:0 8px 20px rgba(59,91,219,.35);cursor:pointer;place-items:center;}
+.scrim{position:fixed;inset:0;background:rgba(15,20,35,.45);z-index:36;opacity:0;pointer-events:none;transition:opacity .25s;}
+body.rail-open .scrim{opacity:1;pointer-events:auto;}
 
-/* 용어: 인라인 풀이 + hover 팝업 */
+/* ===== 무대(본문+우측 여정) ===== */
+.stage{margin-left:var(--rail);transition:margin .26s;}
+/* flex: 왼쪽 거터 고정 → 본문의 오른쪽 끝만 늘어나고, 여정은 형제로서 자연스럽게 따라 이동 */
+.layout{display:flex;align-items:flex-start;gap:38px;max-width:none;margin:0;padding:26px clamp(24px,3vw,52px) 96px clamp(32px,5vw,88px);}
+.main{flex:0 1 880px;min-width:0;transition:flex-basis .3s cubic-bezier(.4,0,.2,1);}
+/* 가독 폭 '넓게': 왼쪽 좌표는 그대로, flex-basis만 키워 오른쪽으로 확장(여정도 함께 슬라이드) */
+html.wide .main{flex-basis:1500px;}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:24px 28px;margin:18px 0;box-shadow:var(--shadow);}
+
+/* 헤더 — 왼쪽 흰색 → 오른쪽 옅은 민트 */
+.lhead{position:relative;overflow:hidden;background:var(--grad-head);border:1px solid var(--line);border-radius:24px;padding:30px 32px;box-shadow:var(--shadow);}
+.crumb{font-size:.86rem;color:var(--ink-soft);font-weight:600;}
+.crumb a{color:var(--brand);} .crumb b{color:var(--ink);} .crumb i{font-style:normal;color:var(--soon);margin:0 6px;}
+.lhead__eyebrow{margin:14px 0 6px;color:var(--brand);font-weight:800;font-size:.82rem;letter-spacing:.12em;text-transform:uppercase;}
+.lhead h1{font-size:2.5rem;margin:0 0 16px;line-height:1.12;letter-spacing:-.015em;}
+.tags{display:flex;flex-wrap:wrap;gap:8px;}
+.tag{font-size:.78rem;font-weight:700;border-radius:999px;padding:6px 14px;}
+.tag.t-track{background:#e6efff;color:#2f4bc0;} .tag.t-ch{background:#eef1f6;color:#5b6478;}
+.tag.t-ls{background:#e6efff;color:#3b5bdb;} .tag.t-lv{background:#eafaf3;color:#0b7250;}
+html.dark .tag.t-track{background:#22304d;color:#9db4ff;}
+html.dark .tag.t-ch{background:#2a2e38;color:var(--ink-soft);}
+html.dark .tag.t-ls{background:#22304d;color:var(--brand);}
+html.dark .tag.t-lv{background:#16332a;color:#5fd6ac;}
+
+.card__h{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.06rem;margin:0 0 14px;}
+.card__h .ic{font-size:1.2rem;}
+
+/* T-code 라벨(칩) → 클릭 시 모달 */
+.tcode{border-left:5px solid var(--amber);}
+.tcode-label{display:inline-flex;align-items:center;gap:11px;border:1px solid var(--warn-line);background:var(--warn-bg);border-radius:14px;padding:11px 16px;cursor:pointer;font:inherit;transition:all .18s cubic-bezier(.16,1,.3,1);}
+.tcode-label:hover{box-shadow:0 10px 26px rgba(180,83,9,.14);transform:translateY(-2px);border-color:var(--amber);}
+.tcode-label__badge{font-size:.7rem;font-weight:800;color:#137a4a;background:#e7f6ee;border-radius:999px;padding:3px 10px;}
+html.dark .tcode-label__badge,html.dark .tmodal__badge{background:#16322a;color:#5fd6ac;}
+.tcode-label__code{font-family:var(--mono);font-weight:800;font-size:1.2rem;color:var(--ink);}
+.tcode-label__hint{font-size:.82rem;font-weight:700;color:var(--amber);}
+.tcode__cap{margin:10px 0 0;color:var(--ink-soft);font-size:.9rem;}
+
+.goals{background:var(--tint-green);border:1px solid var(--line-teal);border-left:5px solid var(--brand);}
+.goals p{margin:0;color:var(--ink-teal);}
+
+/* 본문 — 떠 있는 카드 + 데코 번호 */
+.block{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:24px 28px 20px;margin:16px 0;box-shadow:0 2px 6px rgba(20,28,51,.05);overflow:hidden;transition:transform .22s cubic-bezier(.16,1,.3,1),box-shadow .22s;}
+/* 데코 번호/아이콘: 장식(덜 중요) → 콘텐츠 뒤(아래 z-order)로 보내 글자를 덮지 않게 */
+.block::after{content:attr(data-n);position:absolute;right:18px;top:6px;font-size:4.4rem;font-weight:900;color:var(--deco);line-height:1;pointer-events:none;z-index:0;transition:color .22s;}
+.block>*{position:relative;z-index:1;}
+.block:hover{transform:translateY(-4px) scale(1.006);box-shadow:0 20px 44px rgba(20,28,51,.12);}
+.block h2{font-size:1.3rem;margin:0 0 8px;position:relative;}
+.block h2 .num{color:var(--brand);font-weight:900;}
+.block p{margin:10px 0;color:var(--ink);position:relative;}
+.ex{margin:14px 0 0;border-left:4px solid var(--line-teal);background:var(--tint);border-radius:0 12px 12px 0;padding:12px 16px;font-size:.95rem;color:var(--ink-teal);position:relative;}
+.ex b{color:var(--brand);}
+
+details.fold{border:1px solid var(--line);border-radius:14px;background:var(--soft);margin:13px 0;overflow:hidden;}
+details.fold>summary{cursor:pointer;font-weight:700;color:var(--brand);padding:13px 17px;list-style:none;display:flex;gap:10px;align-items:center;}
+details.fold>summary::-webkit-details-marker{display:none;}
+details.fold>summary::before{content:"▸";transition:transform .2s;}
+details.fold[open]>summary::before{transform:rotate(90deg);}
+details.fold .fold__in{padding:14px 18px;border-top:1px solid var(--line);color:var(--ink-soft);font-size:.96rem;}
+details.fold .fold__in code,.block code{font-family:var(--mono);background:var(--chip);border-radius:5px;padding:1px 6px;font-size:.9em;}
+
+/* 용어 트리거 + 팝업 */
 .term{border-bottom:2px dotted var(--brand);color:var(--brand);font-weight:600;cursor:help;}
-.gloss{color:var(--ink-soft);font-weight:500;font-size:.94em;}
-.term-popup{position:absolute;z-index:60;max-width:300px;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 30px rgba(20,28,51,.18);padding:13px 15px;}
-.term-popup b{display:block;margin-bottom:5px;color:var(--ink);}
-.term-popup span{font-size:.88rem;color:var(--ink-soft);line-height:1.55;}
-.term-popup__x{position:absolute;top:7px;right:10px;border:0;background:none;cursor:pointer;color:#94a0b8;font-size:1.1rem;}
+.term-popup{position:absolute;z-index:60;max-width:300px;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 14px 34px rgba(20,28,51,.22);padding:14px 16px;}
+.term-popup b{display:block;margin-bottom:5px;padding-right:14px;color:var(--ink);} .term-popup span{font-size:.88rem;color:var(--ink-soft);}
+.term-popup__pin{display:block;margin-top:9px;font-size:.74rem;font-weight:700;color:var(--soon);}
+.term-popup.pinned .term-popup__pin{color:var(--brand);}
+.term-popup__x{position:absolute;top:8px;right:11px;border:0;background:none;cursor:pointer;color:var(--soon);font-size:1.1rem;display:none;}
+.term-popup.pinned .term-popup__x{display:block;}
 
-/* 콜아웃 */
-.callout{display:flex;gap:12px;padding:13px 15px;margin:14px 0;border-radius:11px;background:#f4f7ff;border:1px solid #e0e8ff;border-left:5px solid var(--brand);}
-.callout.tip{background:#f0fbf7;border-color:#d6f1e7;border-left-color:var(--accent);}
-.callout.warn{background:#fff7f4;border-color:#ffe2d6;border-left-color:#e8590c;}
-.callout__i{font-size:1.3rem;flex-shrink:0;line-height:1.4;}
-.callout__b{min-width:0;} .callout__b b{display:block;margin-bottom:2px;}
-.callout__b p{margin:0;font-size:.95rem;}
+.recap__grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(195px,1fr));gap:14px;}
+.recap__c{border:1px solid var(--line);border-radius:16px;padding:17px 18px;background:var(--soft);transition:transform .2s cubic-bezier(.16,1,.3,1),box-shadow .2s;}
+.recap__c:hover{transform:translateY(-5px);box-shadow:0 16px 34px rgba(20,28,51,.12);}
+.recap__c b{display:block;margin-bottom:6px;color:var(--brand);} .recap__c span{font-size:.92rem;color:var(--ink-soft);}
+.next-preview{display:flex;gap:13px;align-items:flex-start;margin-top:18px;padding:16px 18px;border-radius:16px;background:var(--tint-green);border:1px solid var(--line-teal);color:var(--ink-teal);}
+.next-preview .ic{font-size:1.3rem;}
 
-/* 접이식 심화 */
-details.more{border:1px solid var(--line);border-radius:11px;background:#fbfcff;margin:12px 0;overflow:hidden;}
-details.more>summary{cursor:pointer;font-weight:700;color:var(--brand);padding:11px 15px;list-style:none;display:flex;align-items:center;gap:9px;}
-details.more>summary::-webkit-details-marker{display:none;}
-details.more>summary::before{content:"▸";transition:transform .2s;}
-details.more[open]>summary::before{transform:rotate(90deg);}
-details.more[open]>summary{border-bottom:1px solid var(--line);background:#f4f7ff;}
-.more__in{padding:13px 16px;color:#3a4256;font-size:.96rem;}
-.more__in p{margin:0 0 9px;} .more__in p:last-child{margin:0;}
+.lesson-nav{display:flex;gap:14px;margin:24px 0 8px;}
+.lesson-nav a{flex:1;border:1px solid var(--line);border-radius:18px;background:var(--surface);padding:16px 18px;box-shadow:var(--shadow);transition:all .2s cubic-bezier(.16,1,.3,1);}
+.lesson-nav a:hover{transform:translateY(-3px);box-shadow:0 16px 34px rgba(20,28,51,.12);}
+.lesson-nav .dir{font-size:.72rem;color:var(--soon);font-weight:700;}
+.lesson-nav .ttl{display:block;margin-top:3px;font-weight:700;color:var(--ink);}
+.lesson-nav .next{text-align:right;}
+.foot{color:var(--ink-soft);font-size:.84rem;padding:24px 4px;border-top:1px solid var(--line);margin-top:20px;}
 
-/* 코드 */
-.code{background:#f6f8fa;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:12px 0;}
-.code__bar{background:#343e6a;color:#ffa03b;font-size:11px;font-weight:bold;letter-spacing:1px;padding:7px 14px;}
-.code pre{margin:0;padding:12px 14px;font-family:var(--mono);font-size:13px;line-height:1.7;color:#334155;overflow-x:auto;white-space:pre;}
-.tok{color:#005cc5;font-weight:700;} .com{color:#9aa3b2;font-style:italic;} .str{color:#22863a;}
+/* ===== (8) 체험 슬롯 — 직접 해보기 ===== */
+.try{border-left:5px solid var(--brand-2);}
+.try::after{opacity:.4;} /* 손(✋) 등 이모지 데코는 항상 반투명으로 은은하게(color가 안 먹으므로 opacity로) */
+.try__grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:14px 0;}
+.try__form{display:flex;flex-direction:column;gap:11px;}
+.try__form label{font-size:.84rem;font-weight:700;color:var(--ink-soft);display:flex;flex-direction:column;gap:5px;}
+.try__form input,.try__form select{font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--ink);}
+.try__form .chk{flex-direction:row;align-items:center;gap:8px;}
+.try__form .chk input{width:16px;height:16px;}
+.try__se11{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-family:var(--mono);font-size:.88rem;color:var(--ink);}
+.try__se11 .row{display:flex;justify-content:space-between;gap:10px;padding:3px 0;border-bottom:1px dashed var(--line);}
+.try__se11 .row:last-child{border-bottom:0;}
+.try__se11 .k{color:var(--ink-soft);}
+.try__se11 .state{margin-top:8px;font-weight:800;}
+.try__se11 .state.off{color:var(--soon);} .try__se11 .state.on{color:var(--brand);}
+.try__actions{display:flex;flex-wrap:wrap;gap:9px;margin:4px 0 0;}
+.try__actions button{font:inherit;font-weight:700;border-radius:10px;padding:9px 15px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;transition:all .15s;}
+.try__actions button:not(:disabled):hover{border-color:var(--brand);color:var(--brand);}
+.try__actions button.primary{background:var(--brand);color:#fff;border-color:var(--brand);}
+.try__actions button:disabled{opacity:.45;cursor:not-allowed;}
+.try__actions .ghost{margin-left:auto;color:var(--ink-soft);}
+.try__status{margin-top:12px;border-radius:10px;padding:11px 14px;font-size:.92rem;font-weight:600;background:var(--tint);color:var(--ink);border-left:3px solid var(--brand-2);}
+.try__status.warn{background:var(--warn-bg);border-left-color:var(--amber);}
+.try__status.ok{background:var(--tint-green);border-left-color:var(--brand);color:var(--ink-teal);}
+@media(max-width:560px){.try__grid{grid-template-columns:1fr;}}
 
-/* 시각화: 변수 vs 표 */
+/* ===== (10) 능동 회수 — 미니 퀴즈 ===== */
+.recall{border-top:4px solid var(--brand-2);}
+.quiz{display:flex;flex-direction:column;gap:15px;margin:8px 0 0;}
+.q{border:1px solid var(--line);border-radius:14px;padding:16px 18px;background:var(--soft);}
+.q__p{font-weight:700;margin:0 0 11px;color:var(--ink);}
+.q__opts{display:flex;flex-direction:column;gap:8px;}
+.opt{text-align:left;font:inherit;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:10px 13px;cursor:pointer;transition:all .14s;}
+.opt:hover:not(:disabled){border-color:var(--brand);}
+.opt.correct{background:var(--tint-green);border-color:var(--brand);color:var(--ink-teal);font-weight:700;}
+.opt.wrong{background:var(--warn-bg);border-color:var(--amber);}
+.opt:disabled{cursor:default;}
+.q__exp{margin:11px 0 0;font-size:.9rem;color:var(--ink-soft);display:none;border-left:3px solid var(--line-teal);padding-left:11px;}
+.q.answered .q__exp{display:block;}
+.quiz__score{margin-top:16px;font-weight:800;color:var(--brand);font-size:1.02rem;}
+
+/* ===== 우측 "이 레슨의 여정" (v2-F) ===== */
+.journey{flex:0 0 300px;position:sticky;top:calc(var(--appbar-h) + 18px);background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:18px 18px 20px;box-shadow:var(--shadow);}
+.journey__hd{font-size:.74rem;font-weight:800;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em;margin:0 0 4px;}
+.journey__sub{font-size:.78rem;color:var(--soon);margin:0 0 16px;}
+.steps{list-style:none;margin:0;padding:0;position:relative;}
+.steps::before{content:"";position:absolute;left:13px;top:8px;bottom:14px;width:2px;background:var(--line);z-index:1;}
+.steps::after{content:"";position:absolute;left:13px;top:8px;width:2px;height:var(--progress,0%);max-height:calc(100% - 22px);background:linear-gradient(var(--brand),var(--brand-2));transition:height .35s ease;z-index:1;}
+.step{position:relative;padding:0 0 16px 38px;cursor:pointer;}
+.step:last-child{padding-bottom:0;}
+.step__dot{position:absolute;left:5px;top:1px;width:18px;height:18px;border-radius:50%;background:var(--surface);border:2px solid var(--dot);display:grid;place-items:center;font-size:.6rem;color:#fff;transition:all .2s;z-index:2;}
+.step__t{display:block;font-size:.9rem;font-weight:600;line-height:1.3;color:var(--ink-soft);transition:color .2s;}
+.step__s{display:block;font-size:.72rem;color:var(--soon);}
+.step.visited .step__dot{background:var(--brand-2);border-color:var(--brand-2);}
+.step.visited .step__dot::after{content:"✓";}
+.step.visited .step__t{color:var(--ink);}
+.step.current .step__dot{border-color:var(--brand);background:var(--brand);box-shadow:0 0 0 4px rgba(59,91,219,.16);}
+.step.current .step__dot::after{content:"";width:6px;height:6px;border-radius:50%;background:#fff;}
+.step.current .step__t{color:var(--brand);font-weight:800;}
+
+/* ===== T-code 미니 페이지 모달 ===== */
+.tmodal[hidden]{display:none;}
+.tmodal{position:fixed;inset:0;z-index:80;display:grid;place-items:center;padding:24px;}
+.tmodal__backdrop{position:absolute;inset:0;background:rgba(15,20,35,.55);backdrop-filter:blur(2px);}
+.tmodal__card{position:relative;z-index:1;width:min(700px,100%);max-height:88vh;overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:22px;box-shadow:0 30px 80px rgba(20,15,5,.4);animation:tpop .22s cubic-bezier(.16,1,.3,1);}
+@keyframes tpop{from{opacity:0;transform:translateY(14px) scale(.98);}to{opacity:1;transform:none;}}
+.tmodal__hd{position:sticky;top:0;z-index:1;background:var(--grad-modal);border-bottom:1px solid var(--line);padding:20px 24px;display:flex;align-items:flex-start;gap:14px;}
+.tmodal__badge{font-size:.7rem;font-weight:800;color:#137a4a;background:#e7f6ee;border-radius:999px;padding:3px 10px;align-self:center;}
+.tmodal__code{font-family:var(--mono);font-weight:800;font-size:1.55rem;color:var(--brand);line-height:1.1;}
+.tmodal__sub{display:block;color:var(--ink-soft);font-size:.88rem;font-weight:600;margin-top:2px;}
+.tmodal__x{margin-left:auto;border:0;background:none;font-size:1.7rem;line-height:1;cursor:pointer;color:var(--soon);}
+.tmodal__x:hover{color:var(--ink);}
+.tmodal__body{padding:18px 24px 26px;}
+.tmodal__body h4{font-size:.96rem;margin:18px 0 7px;display:flex;align-items:center;gap:8px;color:var(--ink);}
+.tmodal__body h4:first-child{margin-top:0;}
+.tmodal__body p{margin:6px 0;color:var(--ink);font-size:.95rem;}
+.tmodal__body ul{margin:6px 0;padding-left:20px;color:var(--ink);font-size:.94rem;}
+.tmodal__body li{margin:4px 0;}
+.tmodal__body code{font-family:var(--mono);background:var(--chip);border-radius:5px;padding:1px 6px;font-size:.9em;}
+.cmdfield{display:flex;align-items:center;gap:8px;border:1px solid var(--line-teal);background:var(--tint);border-radius:10px;padding:9px 12px;margin:8px 0;font-family:var(--mono);font-weight:700;color:var(--brand);}
+.cmdfield::before{content:"명령";font-family:var(--font);font-size:.66rem;font-weight:800;color:#fff;background:var(--brand);border-radius:5px;padding:3px 6px;}
+.callout{border-left:4px solid var(--amber);background:var(--warn-bg);border-radius:0 12px 12px 0;padding:11px 15px;margin:10px 0;font-size:.92rem;color:var(--ink);}
+.callout b{color:var(--amber);}
+.related{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
+.related span{font-family:var(--mono);font-weight:700;font-size:.84rem;background:var(--tag-blue-bg);color:var(--tag-blue);border-radius:8px;padding:5px 10px;}
+.tmodal__body p.dim{color:var(--ink-soft);font-size:.84rem;margin:2px 0 9px;}
+.objgroup{display:flex;gap:10px;align-items:baseline;margin:7px 0;flex-wrap:wrap;}
+.objgroup__l{font-size:.8rem;font-weight:800;color:var(--ink-soft);min-width:74px;}
+.objgroup__chips{display:flex;flex-wrap:wrap;gap:6px;flex:1;}
+.objchip{font:inherit;font-size:.84rem;font-weight:700;border:1px solid var(--line-teal);background:var(--tint);color:var(--brand);border-radius:999px;padding:5px 12px;cursor:pointer;transition:all .14s;}
+.objchip:hover{background:var(--brand);color:#fff;border-color:var(--brand);}
+.sum-popup{position:fixed;z-index:90;max-width:280px;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 16px 40px rgba(20,15,5,.32);padding:12px 14px;animation:tpop .16s ease;}
+.sum-popup b{display:block;margin-bottom:4px;color:var(--brand);font-family:var(--mono);font-size:.92rem;}
+.sum-popup span{font-size:.86rem;color:var(--ink-soft);line-height:1.5;}
+
+/* ===== 전체화면 ===== */
+body.is-fullscreen .layout{max-width:none;padding-left:clamp(24px,2.4vw,52px);padding-right:clamp(24px,2.4vw,52px);}
+body.is-fullscreen .main{max-width:none;}
+
+/* ===== 반응형 ===== */
+@media(max-width:1000px){
+  .stage{margin-left:0;}
+  .layout{grid-template-columns:minmax(0,1fr);margin:0 auto;padding:22px clamp(16px,4vw,28px) 96px;}
+  .rail{transform:translateX(-100%);width:300px;align-items:stretch;transition:transform .26s cubic-bezier(.4,0,.2,1);}
+  .rail .rail__icons{display:none;} .rail .rail__expand{display:flex;}
+  body.rail-open .rail{transform:none;}
+  .railFab{display:grid;bottom:76px;transition:opacity .2s,transform .2s;}
+  body.jup .railFab{opacity:0;pointer-events:none;transform:scale(.8);}
+  /* "이 레슨의 여정" = 하단 고정 시트(어느 스크롤에서나 접근) */
+  .journey{position:fixed;left:0;right:0;bottom:0;top:auto;margin:0;padding:0;border-radius:18px 18px 0 0;border-left:0;border-right:0;border-bottom:0;box-shadow:0 -8px 30px rgba(15,20,35,.22);z-index:41;max-height:74vh;display:flex;flex-direction:column;transition:transform .26s cubic-bezier(.4,0,.2,1);}
+  body.rail-open .journey{transform:translateY(110%);}
+  .journey__bar{display:flex;align-items:center;gap:12px;width:100%;border:0;background:var(--surface);border-radius:18px 18px 0 0;padding:13px 18px;font:inherit;text-align:left;cursor:pointer;color:var(--ink);}
+  .journey__now{display:flex;flex-direction:column;align-items:flex-start;min-width:0;flex:1;}
+  .journey__now small{font-size:.64rem;font-weight:800;color:var(--soon);text-transform:uppercase;letter-spacing:.05em;}
+  .journey__now b{font-size:.95rem;color:var(--brand);max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .journey__count{font-size:.82rem;font-weight:800;color:var(--ink-soft);white-space:nowrap;}
+  .journey__chev{color:var(--ink-soft);font-size:.9rem;transition:transform .22s;}
+  .journey__body{display:none;overflow:auto;padding:2px 18px 22px;}
+  .journey.up .journey__body{display:block;}
+  .journey.up .journey__chev{transform:rotate(180deg);}
+  .journey__hd,.journey__sub{display:none;}
+  /* 시트 안에서도 PC와 동일한 타임라인(연결선·진행선) + 점/글자 정렬 유지 */
+  .journey__body{padding-top:8px;}
+  .step:hover{background:var(--tint);border-radius:10px;}
+}
+@media(min-width:1001px){ .scrim{display:none;} .journey__bar{display:none;} }
+
+/* ===== 입문 콘텐츠 컴포넌트 (변수vs표 · 코드박스 · APPEND/LOOP 빌더) ===== */
 .viz-compare{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0;}
-.viz-box{border:1px solid var(--line);border-radius:12px;padding:14px;background:#fff;}
+.viz-box{border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--surface);}
 .viz-box h4{margin:0 0 10px;font-size:.92rem;}
-.viz-box.bad h4{color:var(--red);} .viz-box.good h4{color:#0b7250;}
-.var-chip{display:block;border:1px solid #e6e8ef;border-radius:8px;padding:6px 10px;margin:5px 0;font-family:var(--mono);font-size:.82rem;color:#475569;background:#fafbfe;}
+.viz-box.bad h4{color:#d6336c;} .viz-box.good h4{color:#0b7250;}
+.var-chip{display:block;border:1px solid var(--line);border-radius:8px;padding:6px 10px;margin:5px 0;font-family:'D2Coding',Consolas,Monaco,monospace;font-size:.8rem;color:var(--ink-soft);background:rgba(120,130,160,.07);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .mini-tbl{width:100%;border-collapse:collapse;font-size:.84rem;}
-.mini-tbl th,.mini-tbl td{border:1px solid #e6e8ef;padding:5px 8px;text-align:left;}
-.mini-tbl th{background:#eef2ff;color:#26336b;}
+.mini-tbl th,.mini-tbl td{border:1px solid var(--line);padding:5px 8px;text-align:left;}
+.mini-tbl th{background:rgba(12,166,120,.12);color:#0b7250;}
 @media(max-width:560px){.viz-compare{grid-template-columns:1fr;}}
-
-/* 체험: 표 만들기 */
-.builder{border:1px solid var(--line);border-radius:12px;background:#fff;padding:16px;margin:14px 0;}
+/* 코드박스 — code-copy-block(.abap-editor) 패밀리와 동일 양식(네이비 헤더·신호등·ABAP 주황·거터 1:1·D2Coding) */
+.abap-editor{background:#fff;border:1px solid #dfe3ee;border-radius:12px;overflow:hidden;margin:14px 0;font-family:'D2Coding',Consolas,Monaco,monospace;font-size:13.5px;box-shadow:0 1px 2px rgba(20,28,51,.05),0 8px 22px rgba(20,28,51,.08);}
+.abap-editor__header{background:#2c3666;border-bottom:2px solid var(--brand);padding:9px 14px;display:flex;align-items:center;gap:10px;}
+.abap-editor__dots{display:flex;gap:6px;}
+.abap-editor__dot{width:11px;height:11px;border-radius:50%;opacity:.92;}
+.abap-editor__dot.r{background:#ff5f56;} .abap-editor__dot.y{background:#ffbd2e;} .abap-editor__dot.g{background:#27c93f;}
+.abap-editor__lang{font-family:var(--font);font-size:12px;font-weight:800;letter-spacing:1px;color:#ffa03b;}
+.abap-editor__title{font-family:var(--font);color:#e7ebff;font-weight:600;font-size:12.5px;letter-spacing:.4px;}
+.abap-editor__body{display:flex;align-items:stretch;background:#fbfcfe;}
+.abap-editor__gutter{margin:0;background:#eef1f8;color:#aab3cf;padding:11px 10px;text-align:right;border-right:1px solid #e3e7f2;user-select:none;min-width:40px;line-height:1.65;}
+.abap-editor__code{margin:0;padding:11px 14px;overflow-x:auto;line-height:1.65;color:#2f3650;flex:1;white-space:pre;}
+.abap-editor__code .tok-kw{color:#005cc5;font-weight:700;}
+.abap-editor__code .tok-str{color:#22863a;}
+.abap-editor__code .tok-com{color:#9aa0ad;font-style:italic;}
+/* APPEND/LOOP/CLEAR 빌더 */
+.builder{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:16px;margin:14px 0;}
 .builder__btns{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
-.btn{border:1px solid var(--brand);background:var(--brand);color:#fff;border-radius:9px;padding:9px 14px;font:inherit;font-weight:700;font-size:.86rem;cursor:pointer;}
-.btn:hover{background:#2f4bc0;} .btn:disabled{opacity:.45;cursor:not-allowed;}
-.btn.ghost{background:#fff;color:var(--brand);} .btn.ghost:hover{background:#eef2ff;}
-.btn.gray{background:#fff;color:var(--ink-soft);border-color:var(--line);}
+.bbtn{border:1px solid var(--brand);background:var(--brand);color:#fff;border-radius:9px;padding:9px 14px;font:inherit;font-weight:700;font-size:.86rem;cursor:pointer;}
+.bbtn:hover{filter:brightness(.96);}
+.bbtn:disabled{opacity:.45;cursor:not-allowed;}
+.bbtn.ghost{background:var(--surface);color:var(--brand);}
+.bbtn.gray{background:var(--surface);color:var(--ink-soft);border-color:var(--line);}
 .bld-tbl{width:100%;border-collapse:collapse;font-size:.88rem;margin-bottom:10px;}
-.bld-tbl th,.bld-tbl td{border:1px solid #e6e8ef;padding:7px 10px;text-align:left;}
-.bld-tbl th{background:#eef2ff;color:#26336b;font-weight:700;}
-.bld-tbl td.idx{font-family:var(--mono);color:#94a0b8;width:46px;}
-.bld-tbl tr.on td{background:#fff7d6;box-shadow:inset 3px 0 0 var(--amber);}
-.bld-empty{color:#94a0b8;font-style:italic;padding:8px 2px;}
-.bld-log{background:#11151f;border-radius:9px;padding:11px 13px;font-family:var(--mono);font-size:.8rem;color:#8ff0c8;min-height:42px;white-space:pre-wrap;}
-
-/* 정리 */
-.recap{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:12px 0;}
-.recap__c{border:1px solid var(--line);border-left:5px solid var(--accent);border-radius:0 11px 11px 0;padding:13px 15px;background:#fff;}
-.recap__c b{display:block;margin-bottom:3px;}
-.recap__c span{font-size:.92rem;color:#475569;}
-.next{margin-top:14px;padding:13px 16px;border-radius:11px;background:#f4f0ff;border:1px solid #e4dbff;color:#4c3a86;font-weight:600;}
+.bld-tbl th,.bld-tbl td{border:1px solid var(--line);padding:7px 10px;text-align:left;}
+.bld-tbl th{background:rgba(59,91,219,.08);color:var(--brand);font-weight:700;}
+.bld-tbl td.idx{font-family:'D2Coding',Consolas,Monaco,monospace;color:var(--soon);width:46px;}
+.bld-tbl tr.on td{background:rgba(217,138,11,.16);box-shadow:inset 3px 0 0 var(--amber);}
+.bld-empty{color:var(--soon);font-style:italic;padding:8px 2px;}
+.bld-log{background:rgba(12,166,120,.07);border:1px solid var(--line);border-radius:9px;padding:11px 13px;font-family:'D2Coding',Consolas,Monaco,monospace;font-size:.8rem;color:var(--ink-soft);min-height:42px;white-space:pre-wrap;line-height:1.55;}
 </style>
+<script>
+/* 설정 즉시 적용(플래시 방지): 본문 렌더 전에 localStorage 반영 */
+(function(){try{var L=localStorage,r=document.documentElement;
+  if(L.getItem('ls.dark')==='1') r.classList.add('dark');
+  if(L.getItem('ls.wide')==='1') r.classList.add('wide');
+  var f=parseInt(L.getItem('ls.fontPx'),10); if(f>=13&&f<=20) r.style.fontSize=f+'px';
+}catch(e){}})();
+</script>
 </head>
 <body>
-  <header class="topbar"><div class="topbar__inner"><span class="brand__mark">A</span>SAP Developer Academy</div></header>
-  <main class="wrap">
-    <section class="hero">
-      <p class="hero__eyebrow">입문 · ABAP 첫걸음</p>
-      <h1>내부 테이블(Internal Table)이 뭐예요?</h1>
-      <p class="hero__lead">SAP/ABAP을 오늘 처음 보셔도 괜찮아요. 어려운 말은 그때그때 풀어드릴게요. 이 페이지를 끝까지 보면, "여러 줄의 데이터를 다루는 가장 기본 도구"를 손으로 직접 만들어 보게 됩니다.</p>
-      <div class="hero__meta"><span class="chip time">⏱ 약 5분</span><span class="chip">사전지식 없어도 OK</span><span class="chip">체험 포함</span></div>
-      <p class="hero__guide">📖 <strong>읽는 법:</strong> <span class="term" data-t="점선 밑줄 용어" data-d="처음 나오는 어려운 용어예요. 옆 괄호에 한 줄 뜻을 적어뒀고, 마우스를 올리면 다시 볼 수 있어요.">점선 밑줄</span>이 그어진 단어는 마우스를 올리면 뜻이 다시 나와요. "▸ 더 자세히"는 눌러서 펼쳐 보세요.</p>
-    </section>
+  <header class="appbar">
+    <a class="appbar__home" href="#">🏠 <span class="full">SAP 학습자료 홈</span></a>
+    <span class="appbar__sp"></span>
+    <span class="meta">수정일자 2026-06-18</span>
+    <span class="meta">배포자 정훈영</span>
+    <a class="btn-soft" href="#">ABAP 개발 홈</a>
+    <div class="tools">
+      <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
+      <button class="icon-btn" id="fsInc" title="글자 크게">A+</button>
+      <button class="icon-btn" id="fsReset" title="글자 크기 초기화">↺</button>
+      <button class="icon-btn" id="darkBtn" title="다크 모드">🌙</button>
+      <button class="icon-btn" id="widthBtn" title="가독 폭 넓게">↔</button>
+      <button class="icon-btn fs-btn" title="전체화면" aria-label="전체화면"></button>
+    </div>
+  </header>
+  <div class="read-progress"><i></i></div>
+  <div class="scrim"></div>
 
-    <nav class="phases">
-      <a href="#why">① 왜 필요해요?</a>
-      <a href="#what">② 무엇인가요?</a>
-      <a href="#how">③ 어떻게 써요?</a>
-      <a href="#warn">④ 실수 주의</a>
-      <a href="#sum">⑤ 정리</a>
-    </nav>
+  <!-- 좌측 아이콘 레일 -->
+  <nav class="rail" id="rail">
+    <div class="rail__icons">
+      <button class="rail__btn on" data-rtab="toc" title="문서목차">📑</button>
+      <button class="rail__btn" data-rtab="path" title="학습경로">🗺️</button>
+      <button class="rail__btn" data-rtab="terms" title="용어 모음">📖</button>
+    </div>
+    <div class="rail__expand">
+      <div class="rail__hd"><b>학습 네비</b><button class="rail__x" title="접기">«</button></div>
+      <div class="rail__tabs">
+        <button class="rail__tab on" data-rtab="toc">문서목차</button>
+        <button class="rail__tab" data-rtab="path">학습경로</button>
+        <button class="rail__tab" data-rtab="terms">용어</button>
+      </div>
+      <div class="rail__panel on" data-rpanel="toc">
+        <p class="rail__chap">현재 Chapter · Internal Table 기초</p>
+        <ul class="ll">
+          <li><a class="on" href="#"><small>LESSON 1</small><span class="t">Internal Table이 뭐예요?</span></a></li>
+          <li><a href="#"><small>LESSON 2</small><span class="t">선언과 행 추가 (APPEND)</span></a></li>
+          <li><a href="#"><small>LESSON 3</small><span class="t">한 줄씩 읽기 (LOOP AT)</span></a></li>
+          <li><a href="#"><small>LESSON 4</small><span class="t">DB에서 담기 (SELECT … INTO TABLE)</span></a></li>
+          <li><a href="#"><small>LESSON 5</small><span class="t">한 건 찾기 (READ TABLE)</span></a></li>
+          <li><a href="#"><small>LESSON 6</small><span class="t">정렬·건수 (SORT · lines)</span></a></li>
+        </ul>
+      </div>
+      <div class="rail__panel" data-rpanel="path">
+        <div class="rail__prog"><span>ABAP 기본 이론 및 구현 흐름</span><span>6 / 21</span></div>
+        <div class="bar"><i></i></div>
+        <ul class="cl">
+          <li><span class="dot"></span>Chapter 1 · DDIC 1차: 기본 데이터 구조 생성</li>
+          <li><span class="dot"></span>Chapter 2 · ABAP 기본 문법과 WRITE 출력</li>
+          <li><span class="dot"></span>Chapter 3 · PARAMETERS 기반 Selection Screen 맛보기</li>
+          <li><span class="dot"></span>Chapter 4 · DDIC 2차: 관계와 입력 도움말</li>
+          <li><span class="dot"></span>Chapter 5 · ABAP 모듈화 기초</li>
+          <li class="on"><span class="dot"></span>Chapter 6 · Internal Table 기초</li>
+          <li><span class="dot"></span>Chapter 7 · Internal Table 응용과 Deep Structure</li>
+        </ul>
+      </div>
+      <div class="rail__panel" data-rpanel="terms">
+        <p class="glos__note">이 레슨에 나온 핵심 용어를 한곳에 모았습니다. 본문에서 점선 용어에 마우스를 올리면 바로 뜻이 떠요.</p>
+        <ul class="glos" id="railTerms"><!-- JS가 본문 .term을 모아 자동 생성 --></ul>
+      </div>
+    </div>
+  </nav>
+  <button class="railFab" id="railFab" aria-label="네비 열기">☰</button>
 
-    <!-- ① 왜 -->
-    <section class="sec" id="why">
-      <div class="sec__head"><span class="sec__badge b-why">① 왜</span><h2>먼저, 왜 이게 필요할까요?</h2></div>
-      <p>회사에 사원이 5명 있어요: <strong>정훈영, 손흥민, 유재석, 김연아, 아이유</strong>. 이 다섯 명의 급여를 화면에 한 번에 보여주고 싶어요.</p>
-      <p>그런데 <span class="term" data-t="변수(variable)" data-d="값 하나만 담아두는 이름표 붙은 상자예요. 예: lv_salary = 5000.">변수</span><span class="gloss">(값 하나만 담는 상자)</span> 하나에는 <strong>한 명분의 급여밖에</strong> 못 담아요. 그럼 다섯 명이면 상자 5개, 100명이면 상자 100개를 일일이 만들어야 할까요? 😵</p>
+  <div class="stage">
+    <div class="layout">
+      <main class="main">
+        <section class="lhead">
+          <p class="crumb"><a href="#">Home</a><i>›</i><a href="#">ABAP 커리큘럼</a><i>›</i><a href="#">Internal Table 기초</a><i>›</i><b>Internal Table이 뭐예요?</b></p>
+          <p class="lhead__eyebrow">입문 · ABAP 첫걸음</p>
+          <h1>Internal Table이 뭐예요?</h1>
+          <div class="tags"><span class="tag t-track">Track 1</span><span class="tag t-ch">Chapter 6</span><span class="tag t-ls">Lesson 1</span><span class="tag t-lv">입문</span></div>
+        </section>
 
-      <div class="viz-compare">
-        <div class="viz-box bad">
-          <h4>✗ 변수만 쓰면</h4>
-          <span class="var-chip">lv_sal1 = 5000</span>
-          <span class="var-chip">lv_sal2 = 3200</span>
-          <span class="var-chip">lv_sal3 = 4100</span>
-          <span class="var-chip">… 100명이면 100개 😱</span>
+        <section class="card goals" id="goals">
+          <p class="card__h"><span class="ic">🎯</span>학습 목표</p>
+          <p>SAP/ABAP을 오늘 처음 보셔도 괜찮아요. 어려운 말은 그때그때 풀어드릴게요. 이 페이지를 끝까지 보면 "여러 줄의 데이터를 다루는 가장 기본 도구"인 <span class="term" data-t="Internal Table" data-d="프로그램이 실행되는 동안 메모리에 잠깐 두는 '표'. 같은 모양의 행을 여러 개 담습니다.">Internal Table</span>을 <strong>직접 만들어</strong> 보게 됩니다. <span class="term" data-t="변수 (Variable)" data-d="값 하나만 담는 이름표 붙은 상자. 예: lv_sal = 5000.">변수</span> 하나로는 왜 부족한지부터, 표를 선언하고 <span class="term" data-t="APPEND" data-d="Internal Table 맨 끝에 한 행을 붙이는 ABAP 명령.">APPEND</span>로 줄을 넣고 <span class="term" data-t="LOOP AT" data-d="표를 위에서부터 한 줄씩 차례로 꺼내 읽는 ABAP 반복 명령.">LOOP AT</span>으로 한 줄씩 읽는 3단계까지요. 🙂</p>
+        </section>
+
+        <section class="block" id="s1" data-n="01">
+          <h2><span class="num">1.</span> 먼저, 왜 이게 필요할까요?</h2>
+          <p>회사에 사원이 5명 있어요: <strong>정훈영, 손흥민, 유재석, 김연아, 아이유</strong>. 이 다섯 명의 급여를 화면에 한 번에 보여주고 싶어요. 그런데 <span class="term" data-t="변수 (Variable)" data-d="값 하나만 담는 이름표 붙은 상자.">변수</span> 하나에는 <strong>한 명분</strong>의 급여밖에 못 담아요. 다섯 명이면 상자 5개, 100명이면 100개를 일일이 만들어야 할까요? 😵</p>
+          <div class="viz-compare">
+            <div class="viz-box bad">
+              <h4>✗ 변수만 쓰면</h4>
+              <span class="var-chip">DATA lv_sal1 TYPE i. "정훈영</span>
+              <span class="var-chip">DATA lv_sal2 TYPE i. "손흥민</span>
+              <span class="var-chip">DATA lv_sal3 TYPE i. "유재석</span>
+              <span class="var-chip">… 100명이면 100줄 😱</span>
+            </div>
+            <div class="viz-box good">
+              <h4>✓ 표(Internal Table)를 쓰면</h4>
+              <table class="mini-tbl"><thead><tr><th>이름</th><th>급여</th></tr></thead><tbody><tr><td>정훈영</td><td>5000</td></tr><tr><td>손흥민</td><td>3200</td></tr><tr><td>… (한 표에 줄줄이)</td><td>…</td></tr></tbody></table>
+            </div>
+          </div>
+          <div class="ex"><b>그래서:</b> 이 불편을 해결하는 도구가 바로 <strong>Internal Table</strong>이에요. "왜 배우는지"를 먼저 느꼈으니, 이제 정체를 알아볼까요? 👀</div>
+        </section>
+
+        <section class="block" id="s2" data-n="02">
+          <h2><span class="num">2.</span> Internal Table은 무엇인가요?</h2>
+          <p><strong>Internal Table</strong>(프로그램이 도는 동안 메모리에 잠깐 두는 "표")은, 같은 모양의 <span class="term" data-t="행 (Row)" data-d="표의 가로 한 줄. 사원 한 명의 정보(이름·급여)가 한 행이 됩니다.">행</span>을 여러 개 담아두는 그릇이에요. 엑셀 표나 출석부를 떠올리면 쉬워요.</p>
+          <p><strong>열(칼럼)</strong>은 "이름·급여" 같은 항목이고, <strong>행</strong>은 사원 한 명 한 명이에요. 다만 엑셀 파일처럼 저장되는 게 아니라, 프로그램이 도는 동안에만 <span class="term" data-t="메모리 (Memory)" data-d="컴퓨터가 작업하는 동안 데이터를 잠깐 올려두는 공간. 프로그램이 끝나면 사라져요.">메모리</span>에 잠깐 있다 사라집니다.</p>
+          <div class="ex"><b>한 문장 비유:</b> Internal Table = "사원 명단을 적는 빈 표 한 장". 줄을 추가하면 명단이 늘고, 한 줄씩 읽으면 한 명씩 호명하는 셈이에요. 📋</div>
+          <details class="fold"><summary>더 자세히 — "같은 모양"이라는 게 무슨 뜻이죠?</summary><div class="fold__in">표의 모든 행이 <strong>똑같은 칸 구성</strong>을 가진다는 뜻이에요. 1번 행이 (이름, 급여)면 2번 행도 (이름, 급여)예요. 이 "칸 구성"을 ABAP에서는 <span class="term" data-t="Structure" data-d="여러 항목을 한 묶음으로 정의한 데이터 모양. 예: 이름+급여를 묶은 '사원' 모양.">Structure</span>라고 부릅니다.</div></details>
+        </section>
+
+        <section class="block" id="s3" data-n="03">
+          <h2><span class="num">3.</span> 그럼 어떻게 쓰나요? (3단계 + 직접 해보기)</h2>
+          <p>딱 세 동작만 기억하면 돼요: <strong>① 표 선언 → ② 줄 추가(APPEND) → ③ 한 줄씩 읽기(LOOP).</strong> 아래 코드를 먼저 눈으로 보고, 바로 밑에서 직접 눌러볼게요.</p>
+          <div class="abap-editor">
+            <div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__lang">ABAP</span><span class="abap-editor__title">ZDEMO_ITAB</span></div>
+            <div class="abap-editor__body"><pre class="abap-editor__gutter">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11</pre><pre class="abap-editor__code"><code><span class="tok-com">* ① 표 선언: 사원 명단을 담을 빈 표</span>
+<span class="tok-kw">DATA</span> lt_emp <span class="tok-kw">TYPE TABLE OF</span> ty_emp.
+
+<span class="tok-com">* ② APPEND: 표 맨 끝에 한 줄 추가</span>
+<span class="tok-kw">APPEND VALUE</span> #( name = <span class="tok-str">'정훈영'</span>
+                sal  = 5000 ) <span class="tok-kw">TO</span> lt_emp.
+
+<span class="tok-com">* ③ LOOP: 한 줄씩 꺼내 읽기</span>
+<span class="tok-kw">LOOP AT</span> lt_emp <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(ls_emp).
+  <span class="tok-kw">WRITE</span>: / ls_emp-name, ls_emp-sal.
+<span class="tok-kw">ENDLOOP</span>.</code></pre></div>
+          </div>
+          <p>글로만 보면 잘 와닿지 않죠. 아래 버튼으로 <strong>표를 직접 만들어</strong> 보세요. 줄이 어떻게 쌓이고(APPEND), LOOP가 어떻게 한 줄씩 훑는지 눈으로 확인할 수 있어요. 👇</p>
+          <div class="builder" data-builder>
+            <div class="builder__btns">
+              <button class="bbtn" data-append>➕ 줄 추가 (APPEND)</button>
+              <button class="bbtn ghost" data-loop>🔁 한 줄씩 읽기 (LOOP)</button>
+              <button class="bbtn gray" data-clear>🧹 비우기 (CLEAR)</button>
+            </div>
+            <table class="bld-tbl"><thead><tr><th>#</th><th>이름 (name)</th><th>급여 (sal)</th></tr></thead><tbody data-rows><tr><td colspan="3" class="bld-empty">아직 빈 표예요. "➕ 줄 추가"를 눌러 사원을 한 명씩 넣어 보세요.</td></tr></tbody></table>
+            <div class="bld-log" data-log>여기에 실행 로그(APPEND·LOOP 결과)가 표시돼요.</div>
+          </div>
+        </section>
+
+        <section class="block" id="s4" data-n="04">
+          <h2><span class="num">4.</span> 입문자가 자주 하는 실수</h2>
+          <p>미리 알아두면 피할 수 있는 함정들이에요. 궁금한 것만 펼쳐 보세요.</p>
+          <details class="fold"><summary>실수 1 — 빈 표인데 바로 읽으려 한다</summary><div class="fold__in">표가 비어 있으면 LOOP는 <strong>한 번도 돌지 않아요</strong>(에러가 아니라 그냥 아무 일도 안 함). "결과가 안 나와요!" 할 때 십중팔구 표가 비어 있는 경우예요. (위 빌더에서 빈 채로 🔁를 눌러 직접 확인해 보세요!)</div></details>
+          <details class="fold"><summary>실수 2 — LOOP 도는 중에 그 표를 건드린다</summary><div class="fold__in">한 줄씩 읽는 도중에 같은 표에서 줄을 지우거나 추가하면 순서가 꼬여 예상치 못한 결과가 나와요. <strong>읽는 중에는 그 표를 바꾸지 않기.</strong></div></details>
+          <details class="fold"><summary>실수 3 — "메모리에만 있다"는 걸 잊는다</summary><div class="fold__in">Internal Table은 프로그램이 끝나면 사라져요. 영구 보관이 필요하면 <span class="term" data-t="Database (DB)" data-d="데이터를 영구 보관하는 창고. 프로그램이 꺼져도 남아 있어요.">Database</span>에 저장해야 합니다.</div></details>
+          <div class="ex"><b>가장 중요한 한 가지:</b> 읽기 전에 항상 "이 표에 줄이 들어있나?"를 떠올리세요. 빈 표는 입문 단계 오류 1순위예요. ⚠️</div>
+        </section>
+
+        <section class="card" id="summary">
+          <p class="card__h"><span class="ic">🧾</span>한눈에 정리</p>
+          <div class="recap__grid">
+            <div class="recap__c"><b>왜? 🤔</b><span>변수 하나는 값 1개뿐. 여러 줄을 다루려면 "표"가 필요해서.</span></div>
+            <div class="recap__c"><b>무엇? 📋</b><span>같은 모양의 행을 메모리에 줄줄이 담는 임시 표 — Internal Table.</span></div>
+            <div class="recap__c"><b>어떻게? 🛠️</b><span>① 선언 → ② APPEND(줄 추가) → ③ LOOP AT(한 줄씩 읽기).</span></div>
+            <div class="recap__c"><b>주의! ⚠️</b><span>빈 표면 LOOP는 0번 돈다. 읽기 전에 "줄 있나?" 확인.</span></div>
+          </div>
+          <div class="next-preview"><span class="ic">➡️</span><div><b>다음 Lesson 예고</b><br>표에 줄을 직접 넣는 건 해봤으니, 이제 <strong>Database에서 여러 줄을 한 번에 가져와 표에 담기</strong>(SELECT … INTO TABLE)를 배워요.</div></div>
+        </section>
+
+        <section class="card recall" id="recall">
+          <p class="card__h"><span class="ic">🎯</span>배운 걸 바로 확인</p>
+          <p>방금 읽은 내용을 짧게 회수해 봐요. 보기를 고르면 즉시 채점되고 해설이 열립니다.</p>
+          <div class="quiz" id="quiz"><!-- JS 렌더 --></div>
+          <div class="quiz__score" id="quizScore"></div>
+        </section>
+
+        <nav class="lesson-nav">
+          <a href="#"><span class="dir">← 이전 LESSON</span><span class="ttl">Chapter 5 · ABAP 모듈화 기초</span></a>
+          <a class="next" href="#"><span class="dir">다음 LESSON →</span><span class="ttl">Internal Table에 DB 데이터 담기 (SELECT … INTO TABLE)</span></a>
+        </nav>
+        <footer class="foot">SAP Developer Academy · Lesson Viewer · 입문 레슨 템플릿 (v2-C 셸)</footer>
+      </main>
+
+      <!-- 우측 "이 레슨의 여정" (모바일: 하단 고정 시트) -->
+      <aside class="journey" id="journey">
+        <button class="journey__bar" id="journeyBar" aria-expanded="false" aria-controls="steps">
+          <span class="journey__now"><small>이 레슨의 여정</small><b id="jNow">학습 목표</b></span>
+          <span class="journey__count"><span id="jIdx">1</span> / <span id="jTot">7</span></span>
+          <span class="journey__chev">▴</span>
+        </button>
+        <div class="journey__body">
+        <p class="journey__hd">이 레슨의 여정</p>
+        <p class="journey__sub">스크롤에 따라 현재 위치가 표시돼요.</p>
+        <ul class="steps" id="steps">
+          <li class="step" data-go="goals"><span class="step__dot"></span><span class="step__t">학습 목표</span><span class="step__s">무엇을 배우나</span></li>
+          <li class="step" data-go="s1"><span class="step__dot"></span><span class="step__t">1. 왜 필요해요?</span><span class="step__s">변수 vs 표</span></li>
+          <li class="step" data-go="s2"><span class="step__dot"></span><span class="step__t">2. 무엇인가요?</span><span class="step__s">Internal Table 정체</span></li>
+          <li class="step" data-go="s3"><span class="step__dot"></span><span class="step__t">3. 어떻게 + ✋체험</span><span class="step__s">선언·APPEND·LOOP</span></li>
+          <li class="step" data-go="s4"><span class="step__dot"></span><span class="step__t">4. 실수 주의</span><span class="step__s">빈 표 등</span></li>
+          <li class="step" data-go="summary"><span class="step__dot"></span><span class="step__t">한눈에 정리</span><span class="step__s">복습·다음</span></li>
+          <li class="step" data-go="recall"><span class="step__dot"></span><span class="step__t">🎯 확인 퀴즈</span><span class="step__s">능동 회수</span></li>
+        </ul>
         </div>
-        <div class="viz-box good">
-          <h4>✓ 표(내부 테이블)를 쓰면</h4>
-          <table class="mini-tbl"><thead><tr><th>이름</th><th>급여</th></tr></thead>
-          <tbody><tr><td>정훈영</td><td>5000</td></tr><tr><td>손흥민</td><td>3200</td></tr><tr><td>…</td><td>…</td></tr></tbody></table>
-          <p style="margin:8px 0 0;font-size:.85rem;color:#0b7250;">한 개의 "표"에 줄줄이 담으면 끝!</p>
-        </div>
-      </div>
-      <p>이 불편을 해결하는 도구가 바로 <strong>내부 테이블</strong>이에요. "왜 배우는지" 먼저 느꼈으니, 이제 정체를 알아볼까요?</p>
-    </section>
+      </aside>
+    </div>
+  </div>
 
-    <!-- ② 무엇 -->
-    <section class="sec" id="what">
-      <div class="sec__head"><span class="sec__badge b-what">② 무엇</span><h2>내부 테이블은 무엇인가요?</h2></div>
-      <p><strong>내부 테이블(Internal Table)</strong><span class="gloss">(프로그램이 실행되는 동안 메모리에 잠깐 두는 "표")</span>은, 같은 모양의 <span class="term" data-t="행(row)" data-d="표의 가로 한 줄이에요. 사원 한 명의 정보(이름·급여)가 한 행이 됩니다.">행</span><span class="gloss">(가로 한 줄)</span>을 여러 개 담아두는 그릇이에요.</p>
-      <p>엑셀 표나 출석부를 떠올리면 쉬워요. <strong>열(칼럼)</strong>은 "이름, 급여"처럼 항목이고, <strong>행</strong>은 사원 한 명 한 명이에요. 다만 엑셀 파일처럼 저장되는 게 아니라, 프로그램이 도는 동안에만 <span class="term" data-t="메모리(memory)" data-d="컴퓨터가 작업하는 동안 데이터를 잠깐 올려두는 공간. 전원을 끄거나 프로그램이 끝나면 사라져요.">메모리</span>에 잠깐 존재했다 사라진다는 점이 달라요.</p>
-
-      <div class="callout tip">
-        <span class="callout__i">🧺</span>
-        <div class="callout__b"><b>한 문장 비유</b><p>내부 테이블 = "사원 명단을 적는 빈 표 한 장". 줄을 추가하면 명단이 늘고, 한 줄씩 읽으면 한 명씩 호명하는 셈이에요.</p></div>
-      </div>
-
-      <details class="more">
-        <summary>더 자세히 — "같은 모양"이라는 게 무슨 뜻이죠?</summary>
-        <div class="more__in">
-          <p>표의 모든 행이 <strong>똑같은 칸 구성</strong>을 가진다는 뜻이에요. 1번 행이 (이름, 급여)면 2번 행도 (이름, 급여)예요. 이 "칸 구성"을 ABAP에서는 <span class="term" data-t="구조(structure)" data-d="여러 항목을 한 묶음으로 정의한 데이터 모양. 예: 이름+급여를 묶은 '사원' 모양.">구조</span>라고 부릅니다.</p>
-          <p>그래서 내부 테이블을 만들 땐 "어떤 모양의 행을 담을 표인지"를 먼저 정해줘요. (아래 ③에서 직접 해봅니다.)</p>
-        </div>
-      </details>
-    </section>
-
-    <!-- ③ 어떻게 -->
-    <section class="sec" id="how">
-      <div class="sec__head"><span class="sec__badge b-how">③ 어떻게</span><h2>그럼 어떻게 쓰나요? (3단계)</h2></div>
-      <p>딱 세 동작만 기억하면 돼요: <strong>① 표를 선언하고 → ② 줄을 추가하고(APPEND) → ③ 한 줄씩 읽는다(LOOP).</strong> 아래 코드를 보고, 바로 밑에서 직접 눌러볼게요.</p>
-
-      <div class="code">
-        <div class="code__bar">ZDEMO_TABLE.abap</div>
-<pre><span class="com">* ① 사원 명단을 담을 빈 표를 선언</span>
-<span class="tok">DATA</span> lt_emp <span class="tok">TYPE TABLE OF</span> ty_emp.   <span class="com">" ty_emp = (이름, 급여) 모양</span>
-
-<span class="com">* ② 표에 한 줄씩 추가(APPEND = 맨 끝에 붙이기)</span>
-<span class="tok">APPEND VALUE</span> #( name = <span class="str">'정훈영'</span> sal = 5000 ) <span class="tok">TO</span> lt_emp.
-
-<span class="com">* ③ 표를 한 줄씩 읽기(LOOP = 반복해서 한 행씩)</span>
-<span class="tok">LOOP AT</span> lt_emp <span class="tok">INTO</span> <span class="tok">DATA</span>(ls_emp).
-  <span class="tok">WRITE</span>: / ls_emp-name, ls_emp-sal.
-<span class="tok">ENDLOOP</span>.</pre>
-      </div>
-      <p>글로만 보면 와닿지 않죠. 아래 버튼으로 <strong>표를 직접 만들어</strong> 보세요. 줄이 어떻게 쌓이고, LOOP가 어떻게 한 줄씩 훑는지 눈으로 확인할 수 있어요.</p>
-
-      <div class="builder" data-builder>
-        <div class="builder__btns">
-          <button class="btn" data-append>+ 줄 추가 (APPEND)</button>
-          <button class="btn ghost" data-loop>한 줄씩 읽기 (LOOP)</button>
-          <button class="btn gray" data-clear>비우기 (CLEAR)</button>
-        </div>
-        <table class="bld-tbl">
-          <thead><tr><th class="idx">#</th><th>이름 (name)</th><th>급여 (sal)</th></tr></thead>
-          <tbody data-rows><tr><td colspan="3" class="bld-empty">아직 빈 표예요. "+ 줄 추가"를 눌러 사원을 한 명씩 넣어 보세요.</td></tr></tbody>
-        </table>
-        <div class="bld-log" data-log>여기에 실행 로그가 나와요.</div>
-      </div>
-
-      <details class="more">
-        <summary>더 자세히 — APPEND 말고 다른 추가 방법도 있나요?</summary>
-        <div class="more__in">
-          <p><strong>APPEND</strong>는 "맨 끝에 붙이기"예요. 가장 많이 씁니다. 이 외에 <span class="term" data-t="INSERT" data-d="원하는 위치(예: 3번째)에 끼워 넣기. 정렬을 유지해야 할 때 써요.">INSERT</span>(원하는 자리에 끼워넣기), 정렬된 표에서의 자동 정렬 추가 등이 있어요. 입문 단계에선 <strong>APPEND 하나만</strong> 확실히 익히면 충분합니다.</p>
-        </div>
-      </details>
-    </section>
-
-    <!-- ④ 주의 -->
-    <section class="sec" id="warn">
-      <div class="sec__head"><span class="sec__badge b-warn">④ 주의</span><h2>입문자가 자주 하는 실수</h2></div>
-      <p>미리 알아두면 피할 수 있는 함정들이에요. 지금 다 외울 필요는 없고, "이런 게 있구나" 정도면 충분해요. 궁금한 것만 펼쳐 보세요.</p>
-
-      <details class="more">
-        <summary>실수 1 — 빈 표인데 첫 줄을 읽으려 한다</summary>
-        <div class="more__in"><p>표가 비어 있으면 LOOP는 한 번도 돌지 않아요(에러가 아니라 그냥 아무 일도 안 함). "결과가 안 나와요!" 할 때 십중팔구 <strong>표가 비어 있는</strong> 경우예요. 추가(APPEND)를 먼저 했는지 확인하세요.</p></div>
-      </details>
-      <details class="more">
-        <summary>실수 2 — LOOP 도는 중에 그 표를 건드린다</summary>
-        <div class="more__in"><p>한 줄씩 읽는 도중에 같은 표에서 줄을 지우거나 추가하면 순서가 꼬여 예상치 못한 결과가 나와요. <strong>읽는 중에는 그 표를 바꾸지 않기</strong> — 이것만 기억하세요.</p></div>
-      </details>
-      <details class="more">
-        <summary>실수 3 — "메모리에만 있다"는 걸 잊는다</summary>
-        <div class="more__in"><p>내부 테이블은 프로그램이 끝나면 사라져요. 영구 저장이 필요하면 <span class="term" data-t="데이터베이스(DB)" data-d="데이터를 영구적으로 보관하는 창고. 프로그램이 꺼져도 남아 있어요.">데이터베이스</span>에 저장해야 합니다. 내부 테이블은 어디까지나 "작업용 임시 표"예요.</p></div>
-      </details>
-
-      <div class="callout warn">
-        <span class="callout__i">⚠️</span>
-        <div class="callout__b"><b>가장 중요한 한 가지</b><p>읽기 전에 항상 "이 표에 줄이 들어있나?"를 떠올리세요. 빈 표는 입문 단계 오류의 1순위예요.</p></div>
-      </div>
-    </section>
-
-    <!-- ⑤ 정리 -->
-    <section class="sec" id="sum">
-      <div class="sec__head"><span class="sec__badge b-sum">⑤ 정리</span><h2>오늘 챙긴 것</h2></div>
-      <div class="recap">
-        <div class="recap__c"><b>왜?</b><span>변수 하나는 값 1개뿐. 여러 줄은 "표"가 필요해서.</span></div>
-        <div class="recap__c"><b>무엇?</b><span>같은 모양의 행을 메모리에 줄줄이 담는 임시 표.</span></div>
-        <div class="recap__c"><b>어떻게?</b><span>선언 → APPEND(추가) → LOOP(한 줄씩 읽기).</span></div>
-      </div>
-      <div class="callout tip">
-        <span class="callout__i">✅</span>
-        <div class="callout__b"><b>스스로 점검</b><p>"빈 표에서 LOOP를 돌리면 어떻게 될까요?" — 머릿속으로 답해보고, 위 ④-실수1을 펼쳐 확인해 보세요.</p></div>
-      </div>
-      <p class="next">➡️ <strong>다음 레슨:</strong> 표에 줄을 넣는 건 했으니, 이제 <em>데이터베이스에서 여러 줄을 한 번에 가져와 표에 담기</em>(SELECT … INTO TABLE)를 배워요.</p>
-    </section>
-  </main>
+  <!-- T-code 미니 페이지 모달 -->
+  <div class="tmodal" id="tmodal" hidden>
+    <div class="tmodal__backdrop" data-close></div>
+    <div class="tmodal__card" role="dialog" aria-modal="true" aria-labelledby="tmCode">
+      <header class="tmodal__hd">
+        <span class="tmodal__badge" id="tmBadge">복습</span>
+        <div><span class="tmodal__code" id="tmCode">SE11</span><span class="tmodal__sub" id="tmSub"></span></div>
+        <button class="tmodal__x" data-close aria-label="닫기">×</button>
+      </header>
+      <div class="tmodal__body" id="tmBody"></div>
+    </div>
+  </div>
 
 <script>
-// ===== 컴포넌트 JS — 용어 팝업 + 체험형 표 빌더 =====
 (function(){
-  /* 1) 용어 hover 팝업 */
-  let pop=null;
-  const close=()=>{ if(pop){pop.remove();pop=null;} };
-  document.querySelectorAll(".term").forEach(t=>{
-    t.addEventListener("mouseenter",()=>{
-      close();
-      pop=document.createElement("div");
-      pop.className="term-popup";
-      pop.innerHTML=`<button class="term-popup__x" aria-label="닫기">×</button><b>${t.dataset.t||t.textContent}</b><span>${t.dataset.d||""}</span>`;
-      document.body.appendChild(pop);
-      const r=t.getBoundingClientRect();
-      pop.style.left=Math.min(r.left+scrollX, scrollX+innerWidth-320)+"px";
-      pop.style.top=(r.bottom+scrollY+8)+"px";
-      pop.querySelector(".term-popup__x").addEventListener("click",close);
-    });
-  });
-  document.addEventListener("click",e=>{ if(pop && !pop.contains(e.target) && !e.target.classList.contains("term")) close(); });
+  const body=document.body, root=document.documentElement, isMobile=()=>matchMedia('(max-width:1000px)').matches;
+  let L; try{ L=localStorage; }catch(e){ L=null; }
+  const get=k=>{ try{return L&&L.getItem(k);}catch(e){return null;} };
+  const set=(k,v)=>{ try{ L&&L.setItem(k,v); }catch(e){} };
 
-  /* 2) 체험형 표 빌더 (APPEND / LOOP / CLEAR) */
-  const POOL=[{n:"정훈영",s:5000},{n:"손흥민",s:3200},{n:"유재석",s:4100},{n:"김연아",s:2800},{n:"아이유",s:3600}];
-  document.querySelectorAll("[data-builder]").forEach(b=>{
-    const rows=b.querySelector("[data-rows]"), log=b.querySelector("[data-log]");
-    const aBtn=b.querySelector("[data-append]"), lBtn=b.querySelector("[data-loop]"), cBtn=b.querySelector("[data-clear]");
-    let data=[], looping=false;
-    function render(){
-      if(!data.length){ rows.innerHTML='<tr><td colspan="3" class="bld-empty">아직 빈 표예요. "+ 줄 추가"를 눌러 사원을 한 명씩 넣어 보세요.</td></tr>'; return; }
-      rows.innerHTML=data.map((d,i)=>`<tr data-r="${i}"><td class="idx">${i+1}</td><td>${d.n}</td><td>${d.s}</td></tr>`).join("");
-    }
-    function setLog(t){ log.textContent=t; }
-    aBtn.addEventListener("click",()=>{
-      if(looping) return;
-      if(data.length>=POOL.length){ setLog("풀의 사원을 모두 넣었어요. '비우기(CLEAR)'로 초기화할 수 있어요."); return; }
-      const next=POOL[data.length]; data.push(next); render();
-      setLog(`APPEND → ${data.length}번째 줄에 ( name='${next.n}', sal=${next.s} ) 추가\n현재 줄 수(lines): ${data.length}`);
-      aBtn.disabled = data.length>=POOL.length;
-    });
-    lBtn.addEventListener("click",()=>{
-      if(looping) return;
-      if(!data.length){ setLog("⚠️ 표가 비어 있어요! LOOP는 한 번도 돌지 않습니다. 먼저 '+ 줄 추가'를 해보세요. (← 실수1 체험)"); return; }
-      looping=true; aBtn.disabled=lBtn.disabled=cBtn.disabled=true;
-      let i=0; setLog("LOOP AT lt_emp INTO ls_emp …");
-      const step=()=>{
-        rows.querySelectorAll("tr").forEach(tr=>tr.classList.remove("on"));
-        if(i>=data.length){ looping=false; aBtn.disabled=data.length>=POOL.length; lBtn.disabled=cBtn.disabled=false; setLog(log.textContent+`\n\n✓ LOOP 종료 — 총 ${data.length}명 읽음`); return; }
-        const tr=rows.querySelector(`tr[data-r="${i}"]`); if(tr) tr.classList.add("on");
-        setLog(`LOOP ${i+1}회: sy-tabix=${i+1} → ls_emp = ( '${data[i].n}', ${data[i].s} )`);
-        i++; setTimeout(step,760);
-      };
-      setTimeout(step,400);
-    });
-    cBtn.addEventListener("click",()=>{
-      if(looping) return;
-      data=[]; render(); aBtn.disabled=false; setLog("CLEAR → 표를 비웠어요. 줄 수(lines): 0");
-    });
-    render();
+  /* (9) 읽기 설정: 글자 크기 / 다크 / 가독 폭 — localStorage */
+  const darkBtn=document.getElementById('darkBtn'), widthBtn=document.getElementById('widthBtn');
+  function syncDark(){ const on=root.classList.contains('dark'); darkBtn.textContent=on?'☀️':'🌙'; darkBtn.classList.toggle('on',on); darkBtn.title=on?'라이트 모드':'다크 모드'; }
+  function syncWide(){ const on=root.classList.contains('wide'); widthBtn.classList.toggle('on',on); widthBtn.title=on?'가독 폭 기본':'가독 폭 넓게'; }
+  darkBtn.addEventListener('click',()=>{ root.classList.toggle('dark'); set('ls.dark',root.classList.contains('dark')?'1':'0'); syncDark(); });
+  widthBtn.addEventListener('click',()=>{ root.classList.toggle('wide'); set('ls.wide',root.classList.contains('wide')?'1':'0'); syncWide(); });
+  const FMIN=13, FMAX=20, FDEF=16;
+  const fsIncBtn=document.getElementById('fsInc'), fsDecBtn=document.getElementById('fsDec'), fsResetBtn=document.getElementById('fsReset');
+  let fontPx=parseInt(get('ls.fontPx'),10); if(!(fontPx>=FMIN&&fontPx<=FMAX)) fontPx=FDEF;
+  function syncFontBtns(){ fsDecBtn.disabled=fontPx<=FMIN; fsIncBtn.disabled=fontPx>=FMAX; fsResetBtn.disabled=fontPx===FDEF; } // 경계/기본값에서 비활성+반투명
+  function applyFont(){ root.style.fontSize=fontPx+'px'; set('ls.fontPx',String(fontPx)); syncFontBtns(); }
+  fsIncBtn.addEventListener('click',()=>{ fontPx=Math.min(FMAX,fontPx+1); applyFont(); });
+  fsDecBtn.addEventListener('click',()=>{ fontPx=Math.max(FMIN,fontPx-1); applyFont(); });
+  fsResetBtn.addEventListener('click',()=>{ fontPx=FDEF; applyFont(); });
+  syncDark(); syncWide(); syncFontBtns();
+
+  /* 좌측 레일 */
+  const rail=document.getElementById('rail');
+  function openRail(tab){ rail.classList.add('open'); if(isMobile()) body.classList.add('rail-open'); if(tab) setTab(tab); }
+  function closeRail(){ rail.classList.remove('open'); body.classList.remove('rail-open'); }
+  function setTab(tab){
+    rail.querySelectorAll('[data-rtab]').forEach(b=>b.classList.toggle('on',b.dataset.rtab===tab));
+    rail.querySelectorAll('[data-rpanel]').forEach(p=>p.classList.toggle('on',p.dataset.rpanel===tab));
+  }
+  rail.querySelectorAll('.rail__icons .rail__btn').forEach(b=>b.addEventListener('click',()=>openRail(b.dataset.rtab)));
+  rail.querySelectorAll('.rail__tab').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.rtab)));
+  rail.querySelector('.rail__x').addEventListener('click',closeRail);
+  document.querySelector('.scrim').addEventListener('click',closeRail);
+  document.getElementById('railFab').addEventListener('click',()=>rail.classList.contains('open')?closeRail():openRail());
+  rail.addEventListener('mouseenter',()=>{ if(!isMobile()) rail.classList.add('open'); });
+  rail.addEventListener('mouseleave',()=>{ if(!isMobile()) rail.classList.remove('open'); });
+  addEventListener('resize',()=>{ if(!isMobile()) body.classList.remove('rail-open'); });
+
+  /* 용어 모음 자동 수집 */
+  const railTerms=document.getElementById('railTerms'); const seen=new Set();
+  document.querySelectorAll('.main .term').forEach(t=>{
+    const k=t.dataset.t||t.textContent.trim(); if(seen.has(k)) return; seen.add(k);
+    const li=document.createElement('li'); li.innerHTML=`<b>${k}</b><span>${t.dataset.d||''}</span>`;
+    railTerms.appendChild(li);
   });
+
+  /* 전체화면 */
+  const fsBtn=document.querySelector('.fs-btn');
+  const FS_OPEN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>';
+  const FS_CLOSE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v3a2 2 0 0 1-2 2H3M21 8h-3a2 2 0 0 1-2-2V3M3 16h3a2 2 0 0 1 2 2v3M16 21v-3a2 2 0 0 1 2-2h3"/></svg>';
+  fsBtn.innerHTML=FS_OPEN;
+  fsBtn.addEventListener('click',()=>{ if(!document.fullscreenElement) (document.documentElement.requestFullscreen||document.documentElement.webkitRequestFullscreen)?.call(document.documentElement); else (document.exitFullscreen||document.webkitExitFullscreen)?.call(document); });
+  let prevWide=null;
+  function onFs(){
+    const on=!!(document.fullscreenElement||document.webkitFullscreenElement);
+    body.classList.toggle('is-fullscreen',on);
+    fsBtn.innerHTML=on?FS_CLOSE:FS_OPEN; fsBtn.title=on?'전체화면 해제':'전체화면';
+    if(on){ if(prevWide===null) prevWide=root.classList.contains('wide'); root.classList.add('wide'); widthBtn.disabled=true; } // 전체화면=폭 넓게 강제
+    else { if(prevWide!==null){ root.classList.toggle('wide',prevWide); prevWide=null; } widthBtn.disabled=false; } // 해제 시 사용자 설정 복원
+    syncWide();
+  }
+  document.addEventListener('fullscreenchange',onFs); document.addEventListener('webkitfullscreenchange',onFs);
+
+  /* ===== T-code 미니페이지(공통) + DDIC 객체 요약(2차 팝업) =====
+     · TCODES: 레슨과 무관한 "프로그램 소개"(공통 활용). lesson별 문구 금지.
+     · DDIC_SUMMARY: 각 객체 한 줄 요약. mini-page의 칩을 클릭하면 뜸.
+     → 사전이 [미니페이지용] + [요약 설명용] 2계층을 함께 보유. */
+  const TCODES={
+    SE11:{ sub:'ABAP Dictionary (DDIC) — 데이터 정의 도구',
+      intro:'SAP의 <b>ABAP Dictionary(DDIC)</b>를 다루는 트랜잭션 코드입니다. 아래 데이터 정의 객체들을 <b>생성·조회·수정·삭제(CRUD)</b>하고 활성화하는 "데이터 설계도를 그리는 방"이에요.',
+      open:'/nSE11',
+      groups:[
+        {label:'Domain', items:['Domain']},
+        {label:'Data Type', items:['Data Element','Structure','Table Type']},
+        {label:'Table·View', items:['Transparent Table','DB View','Maintenance View']},
+        {label:'기타 객체', items:['Type Group','Search Help','Lock Object']}
+      ],
+      screen:'객체 종류와 이름을 고른 뒤 👁️ <b>Display</b>(조회) · ✏️ <b>Change</b>(수정) · ➕ <b>Create</b>(생성) 중 하나로 들어갑니다.',
+      pitfalls:[
+        '<b>저장 ≠ 활성화</b>: 저장(💾)만 하면 "작성 중" 상태. <b>활성화(🔥 Ctrl+F3)</b>까지 해야 다른 객체가 가져다 씁니다.',
+        '조회만 되고 수정이 안 되면 <b>Display 모드</b>예요 → <b>Change</b>로 전환하세요.'
+      ],
+      related:[['SE16N','테이블 데이터 조회'],['SE80','개발 워크벤치(객체 모음)'],['SE37','Function Module']]
+    }
+  };
+  const DDIC_SUMMARY={
+    'Domain':'값의 기술 규격(데이터 타입·길이·허용값)을 정하는 DDIC 최하위 부품.',
+    'Data Element':'Domain 위에 업무 의미·필드 라벨·도움말을 붙이는 의미 계층. 테이블 필드가 직접 참조합니다.',
+    'Structure':'여러 필드를 묶은 구조 정의. DB에 저장되진 않고 프로그램 메모리에서 사용합니다.',
+    'Table Type':'내부 테이블의 "줄 타입"을 정의 — 어떤 구조의 행을 담는 표인지 규정합니다.',
+    'Transparent Table':'DB에 실제로 1:1 저장되는 투명 테이블. 데이터가 진짜 들어가는 곳입니다.',
+    'DB View':'여러 테이블을 조인해 읽기 전용으로 보여주는 데이터베이스 뷰.',
+    'Maintenance View':'SM30 등에서 값을 직접 입력·수정할 수 있게 만든 유지보수용 뷰.',
+    'Type Group':'전역 상수·타입을 모아두는 옛 방식 묶음(TYPE-POOLS). 요즘은 클래스 상수로 대체됩니다.',
+    'Search Help':'입력 필드에서 F4를 누르면 값을 찾도록 돕는 입력 도움말 객체.',
+    'Lock Object':'여러 사용자의 동시 변경을 막는 잠금(ENQUEUE/DEQUEUE) 객체.'
+  };
+  function renderTcodeBody(d){
+    let h=`<h4>📌 한 줄 정의</h4><p>${d.intro}</p>`;
+    // "트랜잭션 코드란?" 입문 설명은 공통 미니페이지에서 제거(매번 반복은 낭비). 첫 레슨 본문에서 한 번만 다룸.
+    if(d.open) h+=`<h4>🚪 어떻게 여나요?</h4><p>명령 필드에 입력하고 Enter (<code>/n</code>=새 트랜잭션 / <code>/o</code>=새 창):</p><div class="cmdfield">${d.open}</div>`;
+    if(d.groups){
+      h+=`<h4>🛠️ 여기서 다루는 객체 — 생성·조회·수정·삭제</h4><p class="dim">항목을 누르면 간단한 소개가 떠요(클릭).</p>`;
+      d.groups.forEach(g=>{
+        h+=`<div class="objgroup"><span class="objgroup__l">${g.label}</span><span class="objgroup__chips">`+
+           g.items.map(it=>`<button type="button" class="objchip" data-sum="${it}">${it}</button>`).join('')+`</span></div>`;
+      });
+    }
+    if(d.screen) h+=`<h4>🧭 들어가는 방법</h4><p>${d.screen}</p>`;
+    if(d.pitfalls) h+=`<h4>⚠️ 자주 걸리는 점</h4><ul>`+d.pitfalls.map(p=>`<li>${p}</li>`).join('')+`</ul>`;
+    if(d.related) h+=`<h4>🔗 함께 보는 트랜잭션</h4><div class="related">`+d.related.map(r=>`<span title="${r[1]}">${r[0]}</span>`).join('')+`</div>`;
+    return h;
+  }
+  const tmodal=document.getElementById('tmodal');
+  function openTcode(code, badge){
+    const d=TCODES[code]; if(!d) return;
+    document.getElementById('tmCode').textContent=code;
+    document.getElementById('tmBadge').textContent=badge||''; // 배지(복습/신규 등)는 레슨이 정함 → 라벨에서 전달
+    document.getElementById('tmSub').textContent=d.sub||'';
+    document.getElementById('tmBody').innerHTML=renderTcodeBody(d);
+    document.querySelectorAll('#tmBody .objchip').forEach(c=>c.addEventListener('click',e=>{ e.stopPropagation(); showSum(c); }));
+    tmodal.hidden=false; body.style.overflow='hidden';
+  }
+  function closeTcode(){ tmodal.hidden=true; body.style.overflow=''; closeSum(); }
+  /* 2차 요약 팝업(객체 한 줄 설명) */
+  let sumPop=null;
+  function closeSum(){ if(sumPop){ sumPop.remove(); sumPop=null; } }
+  function showSum(chip){
+    closeSum();
+    const key=chip.dataset.sum;
+    sumPop=document.createElement('div'); sumPop.className='sum-popup';
+    sumPop.innerHTML=`<b>${key}</b><span>${DDIC_SUMMARY[key]||'설명 준비 중'}</span>`;
+    document.body.appendChild(sumPop);
+    const r=chip.getBoundingClientRect();
+    sumPop.style.left=Math.max(8,Math.min(r.left, innerWidth-sumPop.offsetWidth-12))+'px';
+    sumPop.style.top=(r.bottom+8)+'px';
+  }
+  document.querySelectorAll('.tcode-label').forEach(b=>b.addEventListener('click',()=>openTcode(b.dataset.tcode,b.dataset.badge)));
+  tmodal.querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click',closeTcode));
+  tmodal.addEventListener('click',e=>{ if(!e.target.closest('.objchip')) closeSum(); });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ if(sumPop) closeSum(); else if(!tmodal.hidden) closeTcode(); } });
+
+  /* (8) 체험 슬롯 — Internal Table 만들기 (APPEND / LOOP / CLEAR) */
+  (function(){
+    const POOL=[{n:'정훈영',s:5000},{n:'손흥민',s:3200},{n:'유재석',s:4100},{n:'김연아',s:2800},{n:'아이유',s:3600}];
+    document.querySelectorAll('[data-builder]').forEach(b=>{
+      const rows=b.querySelector('[data-rows]'), log=b.querySelector('[data-log]');
+      const aBtn=b.querySelector('[data-append]'), lBtn=b.querySelector('[data-loop]'), cBtn=b.querySelector('[data-clear]');
+      let data=[], looping=false;
+      function render(){
+        if(!data.length){ rows.innerHTML='<tr><td colspan="3" class="bld-empty">아직 빈 표예요. "➕ 줄 추가"를 눌러 사원을 한 명씩 넣어 보세요.</td></tr>'; return; }
+        rows.innerHTML=data.map((d,i)=>`<tr data-r="${i}"><td class="idx">${i+1}</td><td>${d.n}</td><td>${d.s}</td></tr>`).join('');
+      }
+      function setLog(t){ log.textContent=t; }
+      aBtn.addEventListener('click',()=>{
+        if(looping) return;
+        if(data.length>=POOL.length){ setLog('풀의 사원을 모두 넣었어요. "🧹 비우기(CLEAR)"로 초기화할 수 있어요.'); return; }
+        const next=POOL[data.length]; data.push(next); render();
+        setLog(`APPEND VALUE #( name='${next.n}' sal=${next.s} ) TO lt_emp.\n→ ${data.length}번째 줄 추가됨 · 현재 줄 수 lines( lt_emp ) = ${data.length}`);
+        aBtn.disabled = data.length>=POOL.length;
+      });
+      lBtn.addEventListener('click',()=>{
+        if(looping) return;
+        if(!data.length){ setLog('⚠️ 표가 비어 있어요! LOOP는 한 번도 돌지 않습니다(에러 아님). 먼저 "➕ 줄 추가"를 해보세요. (← 실수 1 체험)'); return; }
+        looping=true; aBtn.disabled=lBtn.disabled=cBtn.disabled=true;
+        let i=0; setLog('LOOP AT lt_emp INTO ls_emp …');
+        const step=()=>{
+          rows.querySelectorAll('tr').forEach(tr=>tr.classList.remove('on'));
+          if(i>=data.length){ looping=false; aBtn.disabled=data.length>=POOL.length; lBtn.disabled=cBtn.disabled=false; setLog(log.textContent+`\n\n✓ ENDLOOP — 총 ${data.length}명 읽음 🎉`); return; }
+          const tr=rows.querySelector(`tr[data-r="${i}"]`); if(tr) tr.classList.add('on');
+          setLog(`LOOP ${i+1}회차 (sy-tabix=${i+1}) → ls_emp = ( '${data[i].n}', ${data[i].s} )`);
+          i++; setTimeout(step,780);
+        };
+        setTimeout(step,420);
+      });
+      cBtn.addEventListener('click',()=>{
+        if(looping) return;
+        data=[]; render(); aBtn.disabled=false; setLog('CLEAR lt_emp.\n→ 표를 비웠어요. 현재 줄 수 lines( lt_emp ) = 0');
+      });
+      render();
+    });
+  })();
+
+  /* (10) 능동 회수 — 미니 퀴즈 */
+  (function(){
+    const QUIZ=[
+      {p:"여러 명의 급여처럼 '여러 줄'을 다뤄야 할 때 알맞은 도구는?", o:["변수(Variable) 하나","Internal Table","상수(Constant)","주석(Comment)"], a:1, e:"변수 하나는 값 1개만 담습니다. 같은 모양의 여러 행은 Internal Table에 줄줄이 담아요."},
+      {p:"표 맨 끝에 한 줄을 추가하는 ABAP 명령은?", o:["LOOP AT","READ TABLE","APPEND","CLEAR"], a:2, e:"APPEND가 맨 끝에 한 행을 붙입니다. LOOP는 한 줄씩 읽기, READ TABLE은 한 건 찾기, CLEAR는 비우기예요."},
+      {p:"빈 Internal Table에서 LOOP를 돌리면 어떻게 되나요?", o:["런타임 에러가 난다","한 번도 돌지 않는다(아무 일도 안 함)","첫 줄이 자동 생성된다","무한 반복한다"], a:1, e:"빈 표면 LOOP는 0번 돕니다(에러 아님). '결과가 안 나와요!'의 1순위 원인이에요."}
+    ];
+    const quizEl=document.getElementById('quiz'), scoreEl=document.getElementById('quizScore');
+    let answered=0, correct=0;
+    QUIZ.forEach((q,qi)=>{
+      const card=document.createElement('div'); card.className='q';
+      card.innerHTML=`<p class="q__p">Q${qi+1}. ${q.p}</p><div class="q__opts"></div><p class="q__exp">💡 ${q.e}</p>`;
+      const opts=card.querySelector('.q__opts');
+      q.o.forEach((opt,oi)=>{
+        const b=document.createElement('button'); b.className='opt'; b.textContent=opt;
+        b.addEventListener('click',()=>{
+          if(card.classList.contains('answered')) return;
+          card.classList.add('answered');
+          const isRight=oi===q.a;
+          b.classList.add(isRight?'correct':'wrong');
+          if(!isRight) opts.children[q.a].classList.add('correct');
+          [...opts.children].forEach(x=>x.disabled=true);
+          answered++; if(isRight) correct++;
+          scoreEl.textContent=`${correct} / ${QUIZ.length} 정답`+(answered===QUIZ.length?(correct===QUIZ.length?' 🎉 완벽해요!':' — 해설을 한 번 더 읽어볼까요?'):'');
+        });
+        opts.appendChild(b);
+      });
+      quizEl.appendChild(card);
+    });
+  })();
+
+  /* 우측 여정 — 스크롤 위치(현재/지나옴) + 클릭 점프 */
+  const steps=[...document.querySelectorAll('.step')];
+  const secs=steps.map(s=>document.getElementById(s.dataset.go));
+  const stepsEl=document.getElementById('steps');
+  const journey=document.getElementById('journey'), journeyBar=document.getElementById('journeyBar');
+  const jNow=document.getElementById('jNow'), jIdx=document.getElementById('jIdx'), jTot=document.getElementById('jTot');
+  jTot.textContent=steps.length;
+  function closeSheet(){ journey.classList.remove('up'); body.classList.remove('jup'); journeyBar.setAttribute('aria-expanded','false'); }
+  journeyBar.addEventListener('click',()=>{ const up=journey.classList.toggle('up'); body.classList.toggle('jup',up); journeyBar.setAttribute('aria-expanded',up?'true':'false'); });
+  steps.forEach((st,i)=>st.addEventListener('click',()=>{ if(secs[i]) secs[i].scrollIntoView({behavior:'smooth',block:'start'}); if(isMobile()) closeSheet(); }));
+  function spy(){
+    let idx=0; for(let i=0;i<secs.length;i++){ if(secs[i] && secs[i].getBoundingClientRect().top<=150) idx=i; }
+    steps.forEach((s,i)=>{ s.classList.toggle('current',i===idx); s.classList.toggle('visited',i<idx); });
+    const pct=steps.length>1?(idx/(steps.length-1))*100:0;
+    stepsEl.style.setProperty('--progress',pct+'%');
+    const cur=steps[idx]; if(cur){ jNow.textContent=cur.querySelector('.step__t').textContent; jIdx.textContent=idx+1; } // 모바일 바의 '현재' 라벨
+  }
+
+  /* 읽기 진행률 */
+  const rp=document.querySelector('.read-progress>i');
+  function onScroll(){ const h=document.documentElement.scrollHeight-innerHeight; if(rp) rp.style.width=(h>0?Math.min(100,scrollY/h*100):0)+'%'; spy(); }
+  addEventListener('scroll',onScroll,{passive:true}); addEventListener('resize',onScroll); onScroll();
+
+  /* 용어 팝업 — hover=임시, click=고정 */
+  let pop=null, curTerm=null, pinned=false;
+  function place(t){ const r=t.getBoundingClientRect(); pop.style.left=Math.min(r.left+scrollX, scrollX+innerWidth-312)+'px'; pop.style.top=(r.bottom+scrollY+8)+'px'; }
+  function build(t){
+    pop=document.createElement('div'); pop.className='term-popup';
+    pop.innerHTML=`<button class="term-popup__x" aria-label="닫기">×</button><b>${t.dataset.t||t.textContent}</b><span>${t.dataset.d||''}</span><span class="term-popup__pin">📌 클릭하면 고정</span>`;
+    document.body.appendChild(pop); place(t);
+    pop.querySelector('.term-popup__x').addEventListener('click',()=>destroy(true));
+  }
+  function destroy(force){ if(pop && (force||!pinned)){ pop.remove(); pop=null; curTerm=null; pinned=false; } }
+  function show(t){ if(curTerm===t) return; destroy(true); curTerm=t; pinned=false; build(t); }
+  document.querySelectorAll('.term').forEach(t=>{
+    t.addEventListener('mouseenter',()=>show(t));
+    t.addEventListener('mouseleave',()=>{ if(!pinned) destroy(); });
+    t.addEventListener('click',e=>{ e.stopPropagation(); if(curTerm!==t) show(t); pinned=true; pop.classList.add('pinned'); pop.querySelector('.term-popup__pin').textContent='📌 고정됨 · 바깥을 누르면 닫힘'; });
+  });
+  document.addEventListener('click',e=>{ if(pinned && pop && !pop.contains(e.target) && !e.target.classList.contains('term')) destroy(true); });
 })();
 </script>
 </body>

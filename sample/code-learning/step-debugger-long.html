@@ -1,4 +1,6 @@
 <!DOCTYPE html>
+<!-- 규칙(코드 예제 공통): 소스는 수직 스크롤만 허용하고 수평 스크롤은 지양한다 → 한 줄을 짧게 유지(긴 문장은 여러 줄로 분할). 이 롱 샘플도 한 줄에 몰아쓰지 않고 문장별로 분할(33줄)해 가로 스크롤이 생기지 않게 함. -->
+
 <!--
   스텝 디버거 (Step Debugger) — standalone · 확정 디자인(A안 → .abap-editor 네이비로 통일)
   ────────────────────────────────────────────────────────────
@@ -13,7 +15,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>스텝 디버거 · Sample</title>
+<title>스텝 디버거 (롱 소스 20줄+) · Sample</title>
 <style>
 :root{--bg:#f6f7fb;--surface:#fff;--ink:#1c2233;--ink-soft:#5b6478;--line:#e6e8ef;--brand:#3b5bdb;--accent:#0ca678;--amber:#d98a0b;--radius:14px;--shadow:0 1px 2px rgba(20,28,51,.04),0 8px 24px rgba(20,28,51,.06);--font:-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic",Roboto,sans-serif;--mono:'D2Coding',Consolas,Monaco,monospace;}
 *{box-sizing:border-box;} html,body{margin:0;}
@@ -95,8 +97,8 @@ h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 18
 <body>
   <header class="topbar"><div class="topbar__inner"><span class="brand__mark">A</span>SAP Developer Academy</div></header>
   <main class="wrap">
-    <p class="eyebrow">Code Learning · 스텝 디버거</p>
-    <h1>한 줄씩 실행하며 변수 변화 보기</h1>
+    <p class="eyebrow">Code Learning · 스텝 디버거 (롱 소스)</p>
+    <h1>한 줄씩 실행하며 변수 변화 보기 — 긴 소스 버전</h1>
     <p class="lead">SE38 디버거처럼 "다음"을 누를 때마다 실행 위치가 이동하고 변수·콘솔이 갱신됩니다. <strong>강조된 줄은 "실행할 차례"(아직 실행 전)</strong>이고, 방금 실행한 줄은 초록(✓)으로 표시됩니다.</p>
     <div class="fixes"><span>✓ ABAP 구문 강조</span><span>✓ 강조=실행 직전 의미</span><span>✓ 콘솔 현재 행/전체 출력 토글</span></div>
 
@@ -105,7 +107,7 @@ h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 18
         <button class="btn btn--primary" data-start>▶ 시작</button>
         <button class="btn btn--step" data-next disabled>다음 ⏭</button>
         <div class="progress"><i data-progress></i></div>
-        <span class="muted" data-counter>0 / 7</span>
+        <span class="muted" data-counter>0 / 12</span>
       </div>
       <div class="dbg__main">
         <div class="dbg__editorwrap"><div class="dbg__edhd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span></div><div class="dbg__editor" data-code></div></div>
@@ -124,9 +126,9 @@ h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 18
         <pre class="console__body" data-console>대기 중 — ▶ 시작을 누르세요.</pre>
       </div>
       <script type="application/json" class="stepper-config">
-      {"code":["DATA lv_sum TYPE i VALUE 0.","DATA lt TYPE TABLE OF i.","","APPEND 10 TO lt. APPEND 20 TO lt.","","LOOP AT lt INTO DATA(lv_n).","  lv_sum = lv_sum + lv_n.","ENDLOOP.","","WRITE / lv_sum."],
-       "vars":[{"key":"n","label":"lv_n","sub":"현재 행","init":"—"},{"key":"sum","label":"lv_sum","sub":"누적","init":"0"},{"key":"tabix","label":"sy-tabix","sub":"인덱스","init":"—"}],
-       "steps":[{"line":1,"vars":{"sum":"0"},"console":"lv_sum 초기화 = 0"},{"line":4,"vars":{},"console":"테이블에 10, 20 추가"},{"line":6,"vars":{"n":"10","tabix":"1"},"console":"LOOP 1회차: lv_n = 10"},{"line":7,"vars":{"sum":"10"},"console":"lv_sum = 0 + 10 = 10"},{"line":6,"vars":{"n":"20","tabix":"2"},"console":"LOOP 2회차: lv_n = 20"},{"line":7,"vars":{"sum":"30"},"console":"lv_sum = 10 + 20 = 30"},{"line":10,"vars":{},"console":"출력: 30"}]}
+      {"code":["REPORT zdemo_long.","","TYPES: BEGIN OF ty_emp,","         name TYPE string,","         dept TYPE string,","         sal  TYPE i,","       END OF ty_emp.","DATA: lt_emp TYPE TABLE OF ty_emp,","      ls_emp TYPE ty_emp,","      lv_total TYPE i.","","ls_emp-name = '정훈영'.","ls_emp-dept = 'DEV'.","ls_emp-sal  = 5000.","APPEND ls_emp TO lt_emp.","","ls_emp-name = '손흥민'.","ls_emp-dept = 'SALES'.","ls_emp-sal  = 3200.","APPEND ls_emp TO lt_emp.","","ls_emp-name = '아이유'.","ls_emp-dept = 'DEV'.","ls_emp-sal  = 4100.","APPEND ls_emp TO lt_emp.","","LOOP AT lt_emp INTO ls_emp.","  IF ls_emp-dept = 'DEV'.","    lv_total = lv_total + ls_emp-sal.","  ENDIF.","ENDLOOP.","","WRITE: / 'DEV 합계:', lv_total."],
+       "vars":[{"key":"emp","label":"ls_emp","sub":"현재 행(name/dept/sal)","init":"—"},{"key":"total","label":"lv_total","sub":"DEV 합계","init":"0"}],
+       "steps":[{"line":15,"vars":{"emp":"정훈영/DEV/5000"},"console":"1행 추가: 정훈영(DEV, 5000)"},{"line":20,"vars":{"emp":"손흥민/SALES/3200"},"console":"2행 추가: 손흥민(SALES, 3200)"},{"line":25,"vars":{"emp":"아이유/DEV/4100"},"console":"3행 추가: 아이유(DEV, 4100)"},{"line":27,"vars":{"emp":"정훈영/DEV/5000"},"console":"LOOP 1회차: ls_emp = 정훈영(DEV)"},{"line":28,"vars":{},"console":"IF dept = 'DEV'? → 참"},{"line":29,"vars":{"total":"5000"},"console":"lv_total = 0 + 5000 = 5000"},{"line":27,"vars":{"emp":"손흥민/SALES/3200"},"console":"LOOP 2회차: ls_emp = 손흥민(SALES)"},{"line":28,"vars":{},"console":"IF dept = 'DEV'? → 거짓 (건너뜀)"},{"line":27,"vars":{"emp":"아이유/DEV/4100"},"console":"LOOP 3회차: ls_emp = 아이유(DEV)"},{"line":28,"vars":{},"console":"IF dept = 'DEV'? → 참"},{"line":29,"vars":{"total":"9100"},"console":"lv_total = 5000 + 4100 = 9100"},{"line":33,"vars":{},"console":"출력: DEV 합계 = 9100"}]}
       </script>
     </div>
   </main>

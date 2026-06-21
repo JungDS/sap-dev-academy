@@ -2,9 +2,9 @@
 <!--
   콜아웃 패턴 (Callout Patterns) — standalone
   ────────────────────────────────────────────────────────────
-  info / tip / warn 3종 강조 박스. 아이콘 + 좌측 컬러 보더 + 제목 + 본문.
+  info / tip / warn 3종 강조 박스. 아이콘 배지 + 좌측 컬러 보더 + 제목 + 본문.
   순수 CSS(클래스만으로 동작), JS 없음.
-  재사용 시: ".callout*" CSS 블록만 가져가면 됩니다.
+  재사용 시: ".callout*" CSS 블록 + 인라인 SVG만 가져가면 됩니다.
 -->
 <html lang="ko">
 <head>
@@ -14,7 +14,7 @@
 <style>
 :root{
   --bg:#f6f7fb; --surface:#fff; --ink:#1c2233; --ink-soft:#5b6478; --line:#e6e8ef;
-  --brand:#3b5bdb; --accent:#0ca678;
+  --brand:#3b5bdb; --accent:#0ca678; --warn:#e8590c;
   --font:-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic",Roboto,sans-serif;
 }
 *{box-sizing:border-box;} html,body{margin:0;}
@@ -29,10 +29,14 @@ h1{font-size:1.7rem;margin:8px 0 6px;}
 
 /* ===== 컴포넌트 CSS — 콜아웃 ===== */
 .callout{display:flex;gap:14px;padding:16px 18px;margin:16px 0;border-radius:12px;
-  background:#f4f7ff;border:1px solid #e0e8ff;border-left:6px solid var(--brand);}
+  background:#f4f7ff;border:1px solid #e0e8ff;border-left:5px solid var(--brand);}
 .callout.tip{background:#f0fbf7;border-color:#d6f1e7;border-left-color:var(--accent);}
-.callout.warn{background:#fff7f4;border-color:#ffe2d6;border-left-color:#e8590c;}
-.callout__icon{font-size:1.5rem;flex-shrink:0;line-height:1.4;}
+.callout.warn{background:#fff7f4;border-color:#ffe2d6;border-left-color:var(--warn);}
+.callout__icon{flex-shrink:0;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;
+  background:rgba(59,91,219,.12);color:var(--brand);}
+.callout.tip .callout__icon{background:rgba(12,166,120,.13);color:var(--accent);}
+.callout.warn .callout__icon{background:rgba(232,89,12,.12);color:var(--warn);}
+.callout__icon svg{width:18px;height:18px;display:block;}
 .callout__body{min-width:0;}
 .callout__body h4{margin:0 0 4px;font-size:1.04rem;font-weight:800;}
 .callout__body p{margin:0;font-size:.96rem;color:#3a4256;}
@@ -49,7 +53,9 @@ h1{font-size:1.7rem;margin:8px 0 6px;}
     <p class="lead">본문 흐름 중 "잠깐 강조하고 싶은 것"을 시각적으로 분리합니다. 정보·팁·주의 3가지 톤으로 의미를 구분합니다.</p>
 
     <div class="callout">
-      <span class="callout__icon">💡</span>
+      <span class="callout__icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.2"/><line x1="12" y1="11" x2="12" y2="16.2"/><line x1="12" y1="7.6" x2="12" y2="7.7"/></svg>
+      </span>
       <div class="callout__body">
         <h4>알아두기 (info)</h4>
         <p>ABAP 리포트는 <code>START-OF-SELECTION</code> 이벤트가 실제 메인 로직의 시작점입니다. 선언부 아래 코드가 곧장 실행되지 않습니다.</p>
@@ -57,7 +63,9 @@ h1{font-size:1.7rem;margin:8px 0 6px;}
     </div>
 
     <div class="callout tip">
-      <span class="callout__icon">✅</span>
+      <span class="callout__icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.2"/><polyline points="8.2 12.4 11 15.2 16 9.2"/></svg>
+      </span>
       <div class="callout__body">
         <h4>실무 팁 (tip)</h4>
         <p>조회 직후 항상 <code>sy-subrc</code>를 확인하세요. 0이 아니면 결과가 없다는 뜻이라, 빈 화면 대신 안내 메시지를 띄울 수 있습니다.</p>
@@ -65,7 +73,9 @@ h1{font-size:1.7rem;margin:8px 0 6px;}
     </div>
 
     <div class="callout warn">
-      <span class="callout__icon">⚠️</span>
+      <span class="callout__icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 L21.4 20 H2.6 Z"/><line x1="12" y1="9.5" x2="12" y2="14"/><line x1="12" y1="16.8" x2="12" y2="16.9"/></svg>
+      </span>
       <div class="callout__body">
         <h4>주의 (warn)</h4>
         <p><code>SELECT *</code> 로 전체 컬럼을 가져오면 불필요한 I/O가 발생합니다. 필요한 컬럼만 명시하는 습관을 들이세요.</p>

@@ -22,12 +22,15 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1
 .eyebrow{color:var(--brand);font-weight:800;font-size:.82rem;letter-spacing:.05em;text-transform:uppercase;}
 h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 24px;}
 
-/* ===== 컴포넌트 CSS — 버그 헌트 (밝은 테마: code-tour와 통일) ===== */
+/* ===== 컴포넌트 CSS — 버그 헌트 (밝은 테마: code-copy-block 패밀리와 통일) ===== */
 .bughunt{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);}
-.bughunt__bar{background:#343e6a;color:#ffa03b;font-weight:bold;font-size:12px;letter-spacing:1px;padding:10px 16px;display:flex;align-items:center;gap:8px;}
+.bughunt__bar{background:#2c3666;border-bottom:2px solid var(--brand);color:#ffa03b;font-weight:bold;font-size:12px;letter-spacing:1px;padding:10px 16px;display:flex;align-items:center;gap:8px;}
+.bughunt__bar svg{width:15px;height:15px;display:block;flex-shrink:0;}
+.bughunt__bar .bh-lang{color:#ffa03b;font-weight:bold;letter-spacing:1px;margin:0 2px;}
 .bughunt__bar .mission{margin-left:auto;color:#aab4cf;font-weight:600;}
-.bughunt__code{margin:0;padding:14px 0;font-family:var(--mono);font-size:13.5px;line-height:1.7;background:#f6f8fa;}
-.bug-line{display:block;padding:3px 18px;color:#334155;cursor:pointer;border-left:3px solid transparent;transition:background .15s;}
+.bughunt__code{margin:0;padding:14px 0;font-family:var(--mono);font-size:13.5px;line-height:1.7;background:#f6f8fa;counter-reset:bln;}
+.bug-line{display:block;counter-increment:bln;padding:3px 18px;color:#334155;cursor:pointer;border-left:3px solid transparent;transition:background .15s;}
+.bug-line::before{content:counter(bln);display:inline-block;width:1.6em;margin-right:14px;color:#aab3cf;text-align:right;user-select:none;}
 .bug-line:hover{background:rgba(59,91,219,.07);}
 .bug-line.miss{background:#ffe3ec;border-left-color:#d6336c;color:#b02a55;animation:shake .3s;}
 .bug-line.hit{background:#eafaf3;border-left-color:#0ca678;color:#0b7250;font-weight:600;}
@@ -49,7 +52,7 @@ h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 24
     <p class="lead">아래 코드에는 런타임 오류를 일으키는 줄이 하나 있습니다. 의심되는 줄을 클릭해 보세요.</p>
 
     <div class="bughunt" data-bughunt>
-      <div class="bughunt__bar">🐛 BUG HUNT <span class="mission">버그 줄을 클릭</span></div>
+      <div class="bughunt__bar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="6" width="8" height="13" rx="4"/><path d="M12 3.2v2.8"/><path d="M8.7 4.2 10.2 6"/><path d="M15.3 4.2 13.8 6"/><path d="M8 11H4"/><path d="M20 11h-4"/><path d="M8 16H4"/><path d="M20 16h-4"/></svg><span class="bh-lang">ABAP</span>BUG HUNT <span class="mission">버그 줄을 클릭</span></div>
 <pre class="bughunt__code"><span class="bug-line">DATA lt_emp TYPE TABLE OF pa0001.</span><span class="bug-line">DATA ls_emp TYPE pa0001.</span><span class="bug-line">SELECT pernr name1 FROM pa0001 INTO TABLE lt_emp.</span><span class="bug-line" data-bug="READ TABLE는 키가 없으면 첫 행을 임의로 읽거나 런타임 에러가 납니다. <code>WITH KEY pernr = '...'</code> 처럼 조회 키를 반드시 지정해야 합니다.">READ TABLE lt_emp INTO ls_emp.</span><span class="bug-line">IF sy-subrc = 0.</span><span class="bug-line">  WRITE / ls_emp-name1.</span><span class="bug-line">ENDIF.</span></pre>
       <div class="bughunt__result">
         <p class="bug-feedback"></p>
@@ -70,12 +73,12 @@ h1{font-size:1.7rem;margin:8px 0 6px;} .lead{color:var(--ink-soft);margin:0 0 24
         if(line.dataset.bug){
           line.classList.add("hit"); solved=true;
           fb.className="bug-feedback show good";
-          fb.innerHTML = "✅ <strong>정답!</strong> " + line.dataset.bug;
+          fb.innerHTML = "✓ <strong>정답!</strong> " + line.dataset.bug;
         }else{
           line.classList.add("miss");
           setTimeout(()=>line.classList.remove("miss"),350);
           fb.className="bug-feedback show bad";
-          fb.innerHTML = "❌ 이 줄은 정상입니다. 조회/읽기 구문을 다시 살펴보세요.";
+          fb.innerHTML = "✗ 이 줄은 정상입니다. 조회/읽기 구문을 다시 살펴보세요.";
         }
       });
     });

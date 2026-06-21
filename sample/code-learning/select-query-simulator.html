@@ -58,10 +58,15 @@ input.val{width:96px;}
 
 /* 생성 코드 */
 .codebox{background:#f6f8fa;border:1px solid var(--line);border-radius:11px;overflow:hidden;margin-bottom:12px;}
-.codebox__hd{background:#343e6a;color:#fff;font-size:.74rem;font-weight:800;padding:7px 12px;display:flex;align-items:center;gap:7px;}
+.codebox__hd{background:#2c3666;border-bottom:2px solid var(--brand);color:#fff;font-size:.74rem;font-weight:800;padding:7px 12px;display:flex;align-items:center;gap:8px;}
+.cb-dots{display:flex;gap:5px;} .cb-dots i{width:10px;height:10px;border-radius:50%;display:block;}
+.cb-dots i:nth-child(1){background:#ff5f56;} .cb-dots i:nth-child(2){background:#ffbd2e;} .cb-dots i:nth-child(3){background:#27c93f;}
+.cb-lang{color:#ffa03b;font-weight:bold;letter-spacing:1px;}
 .codebox__hd .tag{margin-left:auto;background:rgba(12,166,120,.9);border-radius:5px;padding:1px 8px;font-size:.68rem;}
-.code{margin:0;padding:11px 14px;font-family:var(--mono);font-size:12.5px;line-height:1.7;color:#24324a;white-space:pre;overflow-x:auto;}
-.tok-kw{color:#005cc5;font-weight:700;} .tok-str{color:#22863a;} .tok-num{color:#9a3b00;} .tok-com{color:#999;font-style:italic;}
+.codebox__body{display:flex;align-items:stretch;}
+.code-gut{margin:0;padding:11px 9px;background:#eef1f8;color:#aab3cf;text-align:right;border-right:1px solid #e3e7f2;user-select:none;font-family:var(--mono);font-size:12.5px;line-height:1.7;min-width:32px;white-space:pre;}
+.code{flex:1;margin:0;padding:11px 14px;font-family:var(--mono);font-size:12.5px;line-height:1.7;color:#24324a;white-space:pre;overflow-x:auto;}
+.tok-kw{color:#005cc5;font-weight:700;} .tok-str{color:#22863a;} .tok-num{color:#22863a;} .tok-com{color:#9aa0ad;font-style:italic;}
 
 .runrow{display:flex;align-items:center;gap:11px;margin-bottom:12px;flex-wrap:wrap;}
 .run-btn{background:var(--accent);border:0;border-radius:8px;padding:8px 16px;font:inherit;font-size:.86rem;font-weight:800;color:#fff;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px;}
@@ -101,7 +106,7 @@ input.val{width:96px;}
     <button class="chip" type="button" data-ex="0">전체 조회 (SELECT *)</button>
     <button class="chip" type="button" data-ex="1">컬럼만 (name age)</button>
     <button class="chip" type="button" data-ex="2">조건 (age &gt;= 33)</button>
-    <button class="chip" type="button" data-ex="3">문자 조건 (city = 'Seoul')</button>
+    <button class="chip" type="button" data-ex="3">문자 조건 (city = '서울')</button>
   </div>
 
   <div class="builder">
@@ -124,8 +129,8 @@ input.val{width:96px;}
   </div>
 
   <div class="codebox">
-    <div class="codebox__hd">생성된 ABAP <span class="tag">classic</span></div>
-    <pre class="code" id="code"></pre>
+    <div class="codebox__hd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span><span class="tag">classic</span></div>
+    <div class="codebox__body"><pre class="code-gut" id="codeGut">1</pre><pre class="code" id="code"></pre></div>
   </div>
 
   <div class="runrow">
@@ -144,7 +149,7 @@ input.val{width:96px;}
     </div>
   </div>
 
-  <div class="note">💡 <b>classic 규칙</b> — 필드는 <b>공백</b>으로 나열(콤마 ✕), 값은 <code>@</code> 없이 그대로. 컬럼을 고르면 <code>INTO CORRESPONDING FIELDS OF TABLE</code>, 전체(<code>*</code>)면 <code>INTO TABLE</code>. <code>@</code>·콤마는 CH18(modern)부터.</div>
+  <div class="note"><b>classic 규칙</b> — 필드는 <b>공백</b>으로 나열(콤마 ✕), 값은 <code>@</code> 없이 그대로. 컬럼을 고르면 <code>INTO CORRESPONDING FIELDS OF TABLE</code>, 전체(<code>*</code>)면 <code>INTO TABLE</code>. <code>@</code>·콤마는 CH18(modern)부터.</div>
 </div>
 
 <script>
@@ -152,13 +157,16 @@ input.val{width:96px;}
   var COLS=['persid','name','age','city'];
   var NUMERIC={persid:true, age:true};
   var DATA=[
-    {persid:1001,name:'정훈영',age:33,city:'Seoul'},
-    {persid:1002,name:'손흥민',age:31,city:'London'},
-    {persid:1003,name:'아이유',age:30,city:'Seoul'},
-    {persid:1004,name:'유재석',age:51,city:'Seoul'},
-    {persid:1005,name:'김연아',age:33,city:'Busan'},
-    {persid:1006,name:'차은우',age:26,city:'Seoul'},
-    {persid:1007,name:'마동석',age:54,city:'Incheon'}
+    {persid:1001,name:'정훈영',age:33,city:'서울'},
+    {persid:1002,name:'손흥민',age:31,city:'런던'},
+    {persid:1003,name:'아이유',age:30,city:'서울'},
+    {persid:1004,name:'유재석',age:51,city:'서울'},
+    {persid:1005,name:'김연아',age:33,city:'부산'},
+    {persid:1006,name:'차은우',age:26,city:'서울'},
+    {persid:1007,name:'마동석',age:54,city:'인천'},
+    {persid:1008,name:'박지성',age:43,city:'수원'},
+    {persid:1009,name:'류현진',age:37,city:'부산'},
+    {persid:1010,name:'수지',age:30,city:'서울'}
   ];
   var OPS=['=','<>','>=','<=','>','<','LIKE'];
   var $=function(id){return document.getElementById(id);};
@@ -296,7 +304,7 @@ input.val{width:96px;}
   }
 
   /* ── 렌더: 코드 + 원본 표(빌드 시 전체, 실행 시 강조) ── */
-  function renderCode(){ $('code').innerHTML = genCode().split('\n').map(hl).join('\n'); }
+  function renderCode(){ var src=genCode().split('\n'); $('code').innerHTML = src.map(hl).join('\n'); $('codeGut').textContent = src.map(function(_,i){return i+1;}).join('\n'); }
   function thRow(cols){ return '<thead><tr>'+cols.map(function(c){return '<th>'+c.toUpperCase()+'</th>';}).join('')+'</tr></thead>'; }
   function tdRow(row,cols){ return '<tr>'+cols.map(function(c){ return '<td class="'+(NUMERIC[c]?'num':'')+'">'+row[c]+'</td>'; }).join('')+'</tr>'; }
 
@@ -336,7 +344,7 @@ input.val{width:96px;}
     function(){ set(true,{},false); },                                            // 전체
     function(){ set(false,{name:true,age:true},false); },                         // 컬럼만
     function(){ set(true,{},true,{f:'age',op:'>=',v:'33'},false); },              // age>=33
-    function(){ set(true,{},true,{f:'city',op:'=',v:'Seoul'},false); }            // city='Seoul'
+    function(){ set(true,{},true,{f:'city',op:'=',v:'서울'},false); }            // city='서울'
   ];
   function set(selAll,cols,whereOn,c1,c2On){
     st.selAll=selAll;

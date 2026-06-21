@@ -1,0 +1,14 @@
+#!/bin/sh
+# R13: 손작성 .md(content/, .project-docs/)의 '최종수정' 타임스탬프를 커밋 시 자동 갱신.
+# (사용자 확인용 표기. '최종수정:' 줄이 있는 파일만 대상 — 없는 파일은 건너뜀.)
+ts="$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
+files="$(git diff --cached --name-only --diff-filter=ACM | grep -E '^(content|\.project-docs)/.*\.md$' || true)"
+[ -z "$files" ] && exit 0
+for f in $files; do
+  [ -f "$f" ] || continue
+  if grep -qE '최종수정: ?[0-9]{4}-[0-9]{2}-[0-9]{2}' "$f"; then
+    sed -i -E "s/(최종수정: ?)[0-9]{4}-[0-9]{2}-[0-9]{2}([ T][0-9]{2}:[0-9]{2})?( KST)?/\1${ts}/" "$f"
+    git add "$f"
+  fi
+done
+exit 0

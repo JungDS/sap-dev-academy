@@ -37,11 +37,20 @@ body{font-family:var(--font);color:var(--ink);background:transparent;line-height
 
 /* 코드 */
 .codebox{background:#f6f8fa;border:1px solid var(--line);border-radius:11px;overflow:hidden;margin-bottom:12px;}
-.codebox__hd{background:#343e6a;color:#fff;font-size:.74rem;font-weight:800;padding:7px 12px;display:flex;align-items:center;gap:7px;}
-.code{margin:0;padding:11px 14px;font-family:var(--mono);font-size:12.5px;line-height:1.7;color:#24324a;white-space:pre;overflow-x:auto;}
+.codebox__hd{background:#2c3666;border-bottom:2px solid var(--brand);color:#fff;font-size:.74rem;font-weight:800;padding:7px 12px;display:flex;align-items:center;gap:8px;}
+.cb-dots{display:flex;gap:5px;} .cb-dots i{width:10px;height:10px;border-radius:50%;display:block;}
+.cb-dots i:nth-child(1){background:#ff5f56;} .cb-dots i:nth-child(2){background:#ffbd2e;} .cb-dots i:nth-child(3){background:#27c93f;}
+.cb-lang{color:#ffa03b;font-weight:bold;letter-spacing:1px;} .cb-name{color:#e7ebff;font-weight:600;letter-spacing:.5px;}
+.lt-toggle{margin:0 0 12px;border:1px solid var(--line);background:#fff;border-radius:8px;padding:7px 13px;font:inherit;font-size:.82rem;font-weight:700;color:var(--brand);cursor:pointer;}
+.lt-toggle:hover{background:#eef2ff;}
+.lt-data{margin:0 0 12px;border:1px solid var(--line);border-radius:10px;overflow:auto;}
+.lt-data .lt-empty{margin:0;padding:12px;color:var(--soon);font-style:italic;text-align:center;}
+.codebox__body{display:flex;align-items:stretch;}
+.code-gut{margin:0;padding:11px 9px;background:#eef1f8;color:#aab3cf;text-align:right;border-right:1px solid #e3e7f2;user-select:none;font-family:var(--mono);font-size:12.5px;line-height:1.7;min-width:32px;white-space:pre;}
+.code{flex:1;margin:0;padding:11px 14px;font-family:var(--mono);font-size:12.5px;line-height:1.7;color:#24324a;white-space:pre;overflow-x:auto;}
 .code .ln{display:block;border-radius:5px;margin:0 -6px;padding:0 6px;transition:background .15s;}
 .code .ln.lit{background:rgba(12,166,120,.14);box-shadow:inset 3px 0 0 var(--accent);}
-.tok-kw{color:#005cc5;font-weight:700;} .tok-str{color:#22863a;} .tok-cls{color:#6f42c1;font-weight:700;} .tok-com{color:#999;font-style:italic;}
+.tok-kw{color:#005cc5;font-weight:700;} .tok-str{color:#22863a;} .tok-cls{color:#6f42c1;font-weight:700;} .tok-com{color:#9aa0ad;font-style:italic;}
 
 /* 단계 버튼 */
 .steps{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-bottom:11px;}
@@ -96,9 +105,12 @@ body{font-family:var(--font);color:var(--ink);background:transparent;line-height
   </div>
 
   <div class="codebox">
-    <div class="codebox__hd">ABAP · CL_SALV_TABLE</div>
-    <pre class="code" id="code"></pre>
+    <div class="codebox__hd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span><span class="cb-name">CL_SALV_TABLE</span></div>
+    <div class="codebox__body"><pre class="code-gut" id="codeGut">1</pre><pre class="code" id="code"></pre></div>
   </div>
+
+  <button class="lt-toggle" id="ltToggle" type="button">▾ lt_person 데이터 보기</button>
+  <div class="lt-data" id="ltData" hidden></div>
 
   <div class="steps">
     <button class="sbtn ready" id="bFactory" type="button"><span class="n">1</span>factory( )</button>
@@ -121,7 +133,7 @@ body{font-family:var(--font);color:var(--ink);background:transparent;line-height
     <div class="readout" id="readout">행을 클릭하면 현재 행(<b>sy-tabix</b>)이 표시됩니다.</div>
   </div>
 
-  <div class="note">💡 <b>두 단계의 차이</b> — <code>factory( )</code>는 ALV <b>객체만</b> 메모리에 만든다(화면엔 안 뜸). <code>display( )</code>를 호출해야 비로소 그리드가 화면에 나타난다. 컬럼 제목은 <b>Data Element 라벨</b>에서 자동(CH03의 라벨이 여기서 보상받는다). 정렬·합계·엑셀 같은 표준 기능은 <b>공짜로</b> 따라온다.</div>
+  <div class="note"><b>두 단계의 차이</b> — <code>factory( )</code>는 ALV <b>객체만</b> 메모리에 만든다(화면엔 안 뜸). <code>display( )</code>를 호출해야 비로소 그리드가 화면에 나타난다. 컬럼 제목은 <b>Data Element 라벨</b>에서 자동(CH03의 라벨이 여기서 보상받는다). 정렬·합계·엑셀 같은 표준 기능은 <b>공짜로</b> 따라온다.</div>
 </div>
 
 <script>
@@ -181,6 +193,7 @@ body{font-family:var(--font);color:var(--ink);background:transparent;line-height
       var c='ln'+(lit&&l.g===lit?' lit':'');
       return '<span class="'+c+'" data-g="'+l.g+'">'+(l.t===''?' ':hl(l.t))+'</span>';
     }).join('');
+    $('codeGut').textContent=CODE.map(function(_,i){return i+1;}).join('\n');
   }
 
   /* ── 그리드 렌더 ── */
@@ -229,7 +242,9 @@ body{font-family:var(--font);color:var(--ink);background:transparent;line-height
     step=0; sumOn=false; sortCol=-1; sortAsc=true; renderCode(null);
     $('bFactory').className='sbtn ready'; $('bDisplay').className='sbtn'; $('bDisplay').disabled=true;
     $('alv').classList.add('hidden');
-    setStat('info','먼저 <b>① factory( )</b> 를 눌러 ALV 객체를 만드세요.'); postHeight();
+    setStat('info','먼저 <b>① factory( )</b> 를 눌러 ALV 객체를 만드세요.');
+    if(ltData && !ltData.hasAttribute('hidden')) renderLt();   // 예제 전환 시 열려있는 데이터 보기 갱신
+    postHeight();
   }
   $('bFactory').addEventListener('click',doFactory);
   $('bDisplay').addEventListener('click',doDisplay);
@@ -263,6 +278,20 @@ body{font-family:var(--font);color:var(--ink);background:transparent;line-height
     rows = (+c.dataset.ex===1) ? [] : FULL.slice();
     $('presets').querySelectorAll('.chip').forEach(function(x){x.classList.toggle('on',x===c);});
     reset();
+  });
+
+  /* ── lt_person 데이터 보기 토글 ── */
+  var ltToggle=$('ltToggle'), ltData=$('ltData');
+  function renderLt(){
+    if(!rows.length){ ltData.innerHTML='<p class="lt-empty">lt_person이 비어 있습니다 (0행).</p>'; return; }
+    var th='<tr>'+COLS.map(function(c){return '<th>'+c.label+'</th>';}).join('')+'</tr>';
+    var bd=rows.map(function(r){return '<tr>'+COLS.map(function(c){return '<td class="'+(c.num?'num':'')+'">'+r[c.key]+'</td>';}).join('')+'</tr>';}).join('');
+    ltData.innerHTML='<table class="dt">'+th+bd+'</table>';
+  }
+  ltToggle.addEventListener('click',function(){
+    if(ltData.hasAttribute('hidden')){ renderLt(); ltData.removeAttribute('hidden'); ltToggle.textContent='▴ lt_person 데이터 숨기기'; }
+    else { ltData.setAttribute('hidden',''); ltToggle.textContent='▾ lt_person 데이터 보기'; }
+    postHeight();
   });
 
   /* ── iframe 자동 높이 ── */
