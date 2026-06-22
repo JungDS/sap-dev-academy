@@ -2,12 +2,12 @@
 id: CH28
 track: TRACK-02
 order: 28
-title: "Enhancement / BAdI / User Exit"
-intro: "표준 기능을 건드리지 않고 확장하고 싶다."
-keywords: ["BAdI","Enhancement","User Exit"]
+title: "Editable Grid ALV와 입력 검증"
+intro: "ALV에서 직접 입력·수정하고 검증하고 싶다."
+keywords: ["Editable ALV","Data Changed","입력검증"]
 difficulty: "고급"
 ---
 
-표준 기능을 건드리지 않고 확장하고 싶다.
+ALV에서 직접 입력·수정하고 검증하고 싶다.
 
 > 🚧 이 챕터는 골격 단계입니다. 레슨 본문은 점진적으로 작성됩니다.

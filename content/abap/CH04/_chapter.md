@@ -2,11 +2,12 @@
 id: CH04
 track: TRACK-01
 order: 4
-title: "Structure (Local · DDIC)"
-intro: "낱개 변수가 난립한다 — 관련된 값을 하나로 묶고 싶다."
-keywords: ["Structure","BEGIN OF","DDIC Structure","MOVE-CORRESPONDING"]
-difficulty: "초급"
+title: "연산자와 흐름 제어"
+intro: "값을 받았지만 계산·분기·반복을 못 한다 — 연산자와 흐름 제어로 프로그램에 '판단'과 '되풀이'를 넣는다."
+keywords: ["연산자", "IF", "CASE", "DO", "WHILE", "디버깅", "구구단"]
+difficulty: "입문"
 ---
 
-낱개 변수가 난립한다 — 관련된 값을 하나로 묶고 싶다.
+값을 받았지만 계산·분기·반복을 못 한다 — 연산자와 흐름 제어로 프로그램에 '판단'과 '되풀이'를 넣는다.
 
+> 🚧 이 챕터 본문은 Phase 2에서 작성됩니다(front-matter·학습 경계 먼저 확정).

@@ -2,11 +2,11 @@
 id: CH14
 track: TRACK-01
 order: 14
-title: "Report Event·Selection Screen 심화"
-intro: "실행 흐름의 적절한 시점에 코드를 끼우고, 선택화면을 다듬고 싶다."
-keywords: ["INITIALIZATION","AT SELECTION-SCREEN","START-OF-SELECTION"]
+title: "Classic DDIC View·유지보수 객체"
+intro: "테이블을 더 보기 좋게 보여주고, 마스터데이터를 유지보수하고 싶다."
+keywords: ["Database View","Maintenance View","Table Maintenance"]
 difficulty: "중급"
 ---
 
-실행 흐름의 적절한 시점에 코드를 끼우고, 선택화면을 다듬고 싶다.
+테이블을 더 보기 좋게 보여주고, 마스터데이터를 유지보수하고 싶다.
 

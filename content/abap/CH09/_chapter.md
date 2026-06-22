@@ -2,11 +2,11 @@
 id: CH09
 track: TRACK-01
 order: 9
-title: "모듈화 기초"
-intro: "같은 코드가 여기저기 반복된다 — 묶어서 재사용하고 싶다."
-keywords: ["FORM","PERFORM","Function Module","모듈화"]
+title: "DDIC 관계와 입력도움말(F4)"
+intro: "아무 값이나 입력된다 — 올바른 값만 받도록 관계·검색도움말이 필요하다."
+keywords: ["Foreign Key","Check Table","Search Help","F4"]
 difficulty: "초급"
 ---
 
-같은 코드가 여기저기 반복된다 — 묶어서 재사용하고 싶다.
+아무 값이나 입력된다 — 올바른 값만 받도록 관계·검색도움말이 필요하다.
 
