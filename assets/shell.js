@@ -1,7 +1,7 @@
 /* SAP Developer Academy — 런타임 셸 (v2-C 구조)
    생성된 레슨 페이지에 앱바 설정 · 좌측 아이콘 레일(레슨/챕터/용어) · 우측 "이 레슨의 여정"
    (섹션 스크롤스파이, 모바일 하단 시트) · 용어 hover/click 팝업 · 읽기 진행률 · 이전/다음을 주입.
-   데이터: curriculum.json, glossary.json (window.__SDA__.dataBase 기준 fetch). fetch라 HTTP 서빙 필수.
+   데이터: curriculum.json은 __SDA__.dataBase(docs/abap), glossary·tcodes는 __SDA__.siteRoot+reference/ 기준 fetch. fetch라 HTTP 서빙 필수.
    레퍼런스: sample/structure/lesson-shell-v2-c.html · 규칙: .project-docs/08_LESSON_SHELL_SPEC.md
    ※ T-code 미니페이지 모달은 Phase 2(tcodes.json + front-matter tcode)에서 추가. */
 (function () {
@@ -13,6 +13,8 @@
   var lessonId = body.getAttribute("data-lesson-id");
 
   function getJSON(p) { return fetch(DATA + p).then(function (r) { if (!r.ok) throw new Error(p); return r.json(); }); }
+  var REF = (cfg.siteRoot || "../../../") + "reference/";  // 참조 데이터(glossary·tcodes)는 reference/에서 직접 fetch
+  function getRef(p) { return fetch(REF + p).then(function (r) { if (!r.ok) throw new Error(p); return r.json(); }); }
   function byId(id) { return doc.getElementById(id); }
   function q(s) { return doc.querySelector(s); }
   function qa(s) { return Array.prototype.slice.call(doc.querySelectorAll(s)); }
@@ -302,8 +304,8 @@
   var needTcode = !!q(".tcode-label");
   Promise.all([
     getJSON("curriculum.json").catch(function () { return null; }),
-    getJSON("glossary.json").catch(function () { return null; }),
-    needTcode ? getJSON("tcodes.json").catch(function () { return null; }) : Promise.resolve(null),
+    getRef("glossary.json").catch(function () { return null; }),
+    needTcode ? getRef("tcodes.json").catch(function () { return null; }) : Promise.resolve(null),
   ]).then(function (res) {
     var curr = res[0], gloss = res[1], tc = res[2];
     if (gloss) initTermPopup(gloss);
