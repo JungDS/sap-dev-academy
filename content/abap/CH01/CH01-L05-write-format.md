@@ -7,6 +7,10 @@ order: 5
 tcode: SE38
 tcodeBadge: 복습
 goals: "WRITE의 폭·정렬·색·강조·구분선 옵션으로 리스트 출력을 보기 좋게 다듬는다(classic 리스트 서식)."
+introduces: ["FORMAT", "COLOR", "ULINE", "SKIP", "NO-ZERO", "DECIMALS", "EDIT MASK", "CURRENCY", "WRITE TO"]
+prereq: ["CH01-L04"]
+advanceUse: ["DATA(변수 선언)", "sy-datum"]
+prevRel: deepening
 ---
 
 ## 출력은 됐는데, 투박하다
@@ -84,8 +88,10 @@ WRITE: / lv_amt   DECIMALS 2.     " 소수 2자리로
 WRITE: / sy-datum DD/MM/YYYY.     " 날짜 형식 지정
 ```
 
-> 🔎 `sy-datum`은 시스템이 주는 **오늘 날짜**다(앞으로 자주 쓴다). 그냥 출력하면 `20260619`처럼 붙어 나오니
-> `DD/MM/YYYY` 같은 형식을 주면 사람이 읽기 좋다.
+> 🔎 **[선행 사용]** 위 `lv_num`·`lv_amt`(변수)와 `sy-datum`(오늘 날짜)은 서식 효과를
+> 보여주려고 미리 끌어다 쓴 것이다 — 변수는 **CH02**, `sy-datum`은 **CH04**에서 정식으로
+> 배운다(지금은 분석·암기 불필요). 핵심은 날짜를 그냥 출력하면 `20260619`처럼 붙어 나오니
+> `DD/MM/YYYY` 형식을 주면 읽기 좋다는 **서식 효과**다.
 
 ## 흔한 실수와 점검
 
