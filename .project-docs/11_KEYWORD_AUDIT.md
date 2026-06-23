@@ -1,6 +1,6 @@
 # 11. KEYWORD AUDIT — 공식 ABAP Keyword Doc 대비 콘텐츠 감사 원장
 
-> 📅 최종수정: 2026-06-23 09:50 KST
+> 📅 최종수정: 2026-06-23 09:51 KST
 > 🎯 **목적:** `content/abap/**` 레슨을 **SAP 공식 ABAP Keyword Documentation 오프라인 전체본**(`C:\ABAP_DOCU_HTML`, AS ABAP Release 758)과 대조해 키워드·문법·이론의 **누락/상이/오류**를 보강. 챕터 순서대로.
 > 📖 **읽을 때:** 감사 패스 **재개 시**(이어서 진행) — 이 원장이 어디까지 했는지의 단일 출처.
 
@@ -27,8 +27,9 @@
 | CH05 | ✅ 완료 | 변경 없음 — 공식과 일치 |
 | CH06 | ✅ 완료 | L03 READ INDEX·L04 LOOP FROM/TO 보강 |
 | CH07 | ✅ 완료 | 변경 없음 — 공식과 일치 |
-| CH08 | 🔄 진행 중 | |
-| CH09~CH36 | ⬜ 대기 | |
+| CH08 | ✅ 완료 | 변경 없음 — classic 경계 정확 |
+| CH09 | 🔄 진행 중 | |
+| CH10~CH36 | ⬜ 대기 | |
 
 ## 챕터별 findings
 
@@ -69,3 +70,8 @@
 ### CH07 — Transparent Table (SE11)  → **변경 없음(공식과 일치)**
 - **L01**(생성·Key·MANDT·Delivery Class A·Data Element vs Built-In)·**L02**(Create Entries·Table Contents)·**L03**(Structure/Internal/Transparent 비교): 정확 ✓.
 - pooled/cluster(폐기)·버퍼링 등은 입문 스코프상 생략(타당). 투명 테이블=DB 물리 테이블 1:1 정의 공식과 일치.
+
+### CH08 — Open SQL 기본 조회 (classic)  → **변경 없음(공식과 일치)**
+- **L01**(데모 SCARR/SPFLI/SFLIGHT·client 자동 종속)~**L07**(sy-subrc 분기·MESSAGE 맛보기): 정확 ✓ — classic 공백구분(콤마 ✕) 경계 철저.
+- SELECT SINGLE/INTO TABLE/ENDSELECT/UP TO·INTO 형태(wa·(v1,v2)·CORRESPONDING·APPENDING)·WHERE(BETWEEN/LIKE/IN/IS NULL)·키vs인덱스 정확.
+- `ORDER BY`·`DISTINCT`·`GROUP BY`·`INNER JOIN`은 **CH13으로 의도 배치**(grep 확인) → CH08 생략은 설계대로(갭 아님). modern escape(`@`)는 CH19.
