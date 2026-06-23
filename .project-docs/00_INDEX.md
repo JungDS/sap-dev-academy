@@ -1,6 +1,6 @@
 # 00. INDEX — 문서 지도
 
-> 📅 최종수정: 2026-06-22 21:25 KST
+> 📅 최종수정: 2026-06-23 09:38 KST
 > `.project-docs`는 AI 부팅용 컨텍스트. 원칙: **한 사실은 한 문서에만(SSOT)** · 번호=우선순위 · 완료된 이력은 git+02.
 
 ## 자동 로드 (CLAUDE.md가 `@` 임포트 — 이미 컨텍스트에 있음)
@@ -18,3 +18,4 @@
 | [08_LESSON_SHELL_SPEC](08_LESSON_SHELL_SPEC.md) | 레슨 셸 표준(v2-C) · 이식 규칙 | 셸/빌드 이식 시 |
 | [09_CURRICULUM_LEDGER](09_CURRICULUM_LEDGER.md) | **리빌드 단일 스펙** — 레슨별 introduces/prereq/prevRel · 리넘버맵 · 경계 · 관통예제 | 리빌드 전·중 |
 | [10_REBUILD_EXECUTION](10_REBUILD_EXECUTION.md) | **전 트랙 CONTENT MD 생성 실행 프롬프트**(핸드오프) | 리빌드 실행 시 |
+| [11_KEYWORD_AUDIT](11_KEYWORD_AUDIT.md) | **공식 ABAP keyword doc 대비 감사 원장** — 기준·챕터별 findings·진행현황 | 감사 패스 재개 시 |
