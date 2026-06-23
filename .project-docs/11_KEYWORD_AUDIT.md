@@ -1,6 +1,6 @@
 # 11. KEYWORD AUDIT — 공식 ABAP Keyword Doc 대비 콘텐츠 감사 원장
 
-> 📅 최종수정: 2026-06-23 09:38 KST
+> 📅 최종수정: 2026-06-23 09:41 KST
 > 🎯 **목적:** `content/abap/**` 레슨을 **SAP 공식 ABAP Keyword Documentation 오프라인 전체본**(`C:\ABAP_DOCU_HTML`, AS ABAP Release 758)과 대조해 키워드·문법·이론의 **누락/상이/오류**를 보강. 챕터 순서대로.
 > 📖 **읽을 때:** 감사 패스 **재개 시**(이어서 진행) — 이 원장이 어디까지 했는지의 단일 출처.
 
@@ -20,8 +20,9 @@
 ## 진행 현황
 | 챕터 | 상태 | 핵심 |
 |---|---|---|
-| CH01 | ✅ 1차 완료(리뷰 대기) | L05 `introduces`↔본문 불일치 교정 |
-| CH02~CH36 | ⬜ 대기 | |
+| CH01 | ✅ 완료 | L05 `introduces`↔본문 불일치 교정 |
+| CH02 | ✅ 완료 | L01 `DATA … VALUE` 초기값 보강 |
+| CH03~CH36 | ⬜ 대기 | |
 
 ## 챕터별 findings
 
@@ -32,6 +33,12 @@
 - **L05**(WRITE 서식): **`introduces`↔본문 불일치 교정** —
   - ➕ 추가: `FORMAT`(색을 여러 줄에 set-once → `FORMAT RESET`), `CURRENCY`(통화별 소수 자리) — 선언됐으나 본문 누락이던 것.
   - ➖ 트림: `EDIT MASK`(정확 구문 `USING EDIT MASK` — CH01엔 niche, 도입 보류), `WRITE TO`(홈 = CH04-L02, R15 중복 제거) → `introduces`에서 제외.
+
+### CH02 — 변수·표준 타입·상수·Text Symbol
+- **L01**(DATA·TYPE·LIKE): 정확 ✓ — **보강 1건**: `DATA … VALUE`(선언 초기값)가 CH02-L03·CH04-L01에서 *쓰이는데 도입이 없어* → L01에 정식 추가(공식 `DATA var TYPE … [VALUE val]`, 미지정 시 타입 기본값).
+- **L02**(Complete STRING·I·F·D·T)·**L03**(Incomplete C·N·P·offset): 정확 ✓ — `X`(hex)·`int8`·`decfloat`는 게이팅상 의도적 생략(타당). 정수 반올림·`P` 금액 경고 정확.
+- **L04**(TYPES)·**L05**(CONSTANTS·abap_true/false)·**L06**(Text Symbol `TEXT-001` vs `'…'(001)`): 정확 ✓.
+- ⚠️ 메타 갭(감사 범위 밖, 별도 처리 권장): L01~L04 front-matter에 `introduces`/`prereq` 없음. CH02-L01은 코드블록 다수인데 `::embed` 없음(R2).
 
 ## 선반영 노트 (다른 챕터에서 미리 발견)
 - **CH04**: `DIV`/`MOD`는 산술 **연산자**(공식 `abenarith_operators.htm` 우선순위 2)인데 CH04-L02가 "내장함수"로 분류. → CH04 감사 때 **L01로 이전 + L02에서 제외**(개념당 L3 한 곳, R15). *(구 background 칩 task_fca1391b를 이 노트로 대체.)*
