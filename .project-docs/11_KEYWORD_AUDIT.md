@@ -1,6 +1,6 @@
 # 11. KEYWORD AUDIT — 공식 ABAP Keyword Doc 대비 콘텐츠 감사 원장
 
-> 📅 최종수정: 2026-06-23 09:45 KST
+> 📅 최종수정: 2026-06-23 09:47 KST
 > 🎯 **목적:** `content/abap/**` 레슨을 **SAP 공식 ABAP Keyword Documentation 오프라인 전체본**(`C:\ABAP_DOCU_HTML`, AS ABAP Release 758)과 대조해 키워드·문법·이론의 **누락/상이/오류**를 보강. 챕터 순서대로.
 > 📖 **읽을 때:** 감사 패스 **재개 시**(이어서 진행) — 이 원장이 어디까지 했는지의 단일 출처.
 
@@ -23,8 +23,10 @@
 | CH01 | ✅ 완료 | L05 `introduces`↔본문 불일치 교정 |
 | CH02 | ✅ 완료 | L01 `DATA … VALUE` 초기값 보강 |
 | CH03 | ✅ 완료 | 변경 없음 — 공식과 일치 |
-| CH04 | 🔄 진행 중 | DIV/MOD 재배치(L02→L01) 외 |
-| CH05~CH36 | ⬜ 대기 | |
+| CH04 | ✅ 완료 | DIV/MOD 연산자 재배치(L02→L01) |
+| CH05 | ✅ 완료 | 변경 없음 — 공식과 일치 |
+| CH06 | 🔄 진행 중 | |
+| CH07~CH36 | ⬜ 대기 | |
 
 ## 챕터별 findings
 
@@ -47,6 +49,12 @@
 - **L02**(Data Element): 정확 ✓ — "Domain 없이도 가능(직접 타입)"이 공식과 일치(글로서리보다 본문이 더 정밀).
 - **L03**(PARAMETERS): 정확 ✓ — OBLIGATORY·DEFAULT·LOWER CASE. `AS CHECKBOX`·`RADIOBUTTON` 등은 **CH13(Selection Screens) 소유** → 게이팅상 여기 추가 안 함(의도된 단순 스코프).
 
-## 선반영 노트 (다른 챕터에서 미리 발견)
-- **CH04**: `DIV`/`MOD`는 산술 **연산자**(공식 `abenarith_operators.htm` 우선순위 2)인데 CH04-L02가 "내장함수"로 분류. → CH04 감사 때 **L01로 이전 + L02에서 제외**(개념당 L3 한 곳, R15). *(구 background 칩 task_fca1391b를 이 노트로 대체.)*
-- **CH04-L01**: 베이스라인 커밋(`882f63c`)에서 연산 우선순위·괄호·0나눗셈 주의 이미 보강됨 — CH04 감사 때 중복 점검 불필요.
+### CH04 — 연산자와 흐름 제어
+- **L01**(산술): 베이스라인서 우선순위·괄호·0나눗셈 보강 + **이번에 `DIV`/`MOD` 연산자 도입**(L02서 이전).
+- **L02**(문자열): DIV/MOD를 "내장함수"에서 제외(연산자라 L01 소유) — CONCATENATE/&&/SPLIT/FIND/REPLACE/CONDENSE 등 정확 ✓.
+- **L03**(IF): 정확 ✓ — 비교연산자 기호/영문, AND/OR/NOT·괄호, IS INITIAL, boolean 부재(C1·abap_true/false·XSDBOOL/BOOLC) 모두 공식과 일치.
+- **L04**(CASE)·**L05**(DO/WHILE·EXIT/CONTINUE/CHECK·SY 변수)·**L06**(디버거 BREAK-POINT·/h·F5~F8·WATCH POINT): 정확 ✓.
+
+### CH05 — Structure (Local · DDIC)  → **변경 없음(공식과 일치)**
+- **L01**(Local `BEGIN OF/END OF`·Work Area·`-` 접근)·**L02**(DDIC Structure)·**L03**(`=` 통째 대입·CLEAR·MOVE-CORRESPONDING)·**L04**(캡스톤): 정확 ✓.
+- modern `CORRESPONDING #( )`는 New Syntax(CH18+)라 의도적 미노출 — 게이팅 준수. 중첩 구조·INCLUDE는 입문 스코프상 생략(타당).
