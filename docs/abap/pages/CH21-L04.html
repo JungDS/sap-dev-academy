@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Annotation과 의미 부여 · CDS View Entity 기초 · SAP Developer Academy</title>
+<title>Deep Structure 기반 Cell Color · SALV/Grid ALV 표시 제어 심화 · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH21 · CDS View Entity 기초</span>
+  <span class="meta">CH21 · SALV/Grid ALV 표시 제어 심화</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,16 +33,55 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH21</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">CDS View Entity 기초</p>
-        <h1>Annotation과 의미 부여</h1>
-        
+        <p class="lhead__eyebrow">SALV/Grid ALV 표시 제어 심화</p>
+        <h1>Deep Structure 기반 Cell Color</h1>
+        <p class="lhead__direction">셀 단위 색 — 행 구조에 색 테이블을 품는다.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 21</span><span class="tag tag--ls">Lesson 4</span><span class="tag tag--lv">고급</span></div>
       </section>
       <article class="prose">
-<blockquote>
-<p>🚧 골격 — 본문 작성 예정.</p>
-</blockquote>
+<section class="lblock"><h2>행이 아니라 셀 하나만</h2>
+<p>CH17에서 행 전체 색을 봤다. 이제 <strong>특정 셀 하나</strong>(예: 매진 회차의 잔여석 칸만 빨강)에
+색을 준다. 방법은 행 구조에 <strong>색 정보 테이블</strong>(<code>LVC_T_SCOL</code>)을 컬럼으로 품는 것 —
+CH06의 <button class="term" type="button" data-term="Deep Structure">Deep Structure</button>가 여기 쓰인다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6</pre><pre class="abap-editor__code"><code><span class="tok-kw">TYPES</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ty_perf,
+         concert_id <span class="tok-kw">TYPE</span> zconcert-concert_id,
+         seatsocc   <span class="tok-kw">TYPE</span> i,
+         capacity   <span class="tok-kw">TYPE</span> i,
+         cellcolors <span class="tok-kw">TYPE</span> lvc_t_scol,        <span class="tok-com">" 셀 색 정보(테이블 in 행)</span>
+       <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ty_perf.</code></pre></div></div>
+<p>각 행을 채울 때, 색을 줄 셀을 지정한다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8</pre><pre class="abap-editor__code"><code><span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_perf ASSIGNING <span class="tok-kw">FIELD-SYMBOL</span>(&lt;perf&gt;).
+  <span class="tok-kw">IF</span> &lt;perf&gt;seatsocc &gt;= &lt;perf&gt;capacity.
+    &lt;perf&gt;cellcolors = <span class="tok-kw">VALUE</span> #( ( fname = <span class="tok-str">'SEATSOCC'</span>
+                                   color-col = col_negative ) ).  <span class="tok-com">" 빨강 계열</span>
+  <span class="tok-kw">ENDIF</span>.
+<span class="tok-kw">ENDLOOP</span>.
 
+ls_layout-ctab_fname = <span class="tok-str">'CELLCOLORS'</span>.     <span class="tok-com">" 셀색 컬럼 이름을 Layout에 알림</span></code></pre></div></div>
+<ul>
+<li><code>LVC_T_SCOL</code> 한 줄 = (어느 컬럼 <code>fname</code> + 색 <code>color</code>).</li>
+<li><code>ctab_fname</code> — 셀 색 테이블 컬럼 이름을 Layout에 지정.</li>
+</ul>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>ctab_fname 미지정</strong> → 색 컬럼을 둬도 Layout에 안 알리면 무시된다.</li>
+<li><strong>fname 오타</strong> → 색 줄 컬럼명이 fieldcat과 정확히 같아야.</li>
+</ul>
+<hr>
+<p>셀에 색을 줬다. 이제 셀 <strong>모양·동작</strong>(편집·버튼)을 정하는 Cell Style → 다음 레슨.</p>
+</section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
       <footer class="foot">SAP Developer Academy · CH21 CH21-L04</footer>

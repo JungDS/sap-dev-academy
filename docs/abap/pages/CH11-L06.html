@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Selection Table 직접 조작 기초 · SELECT-OPTIONS와 Range Table · SAP Developer Academy</title>
+<title>실습 — 예매 목록 SALV · SALV 1차 (간단 ALV) · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH11 · SELECT-OPTIONS와 Range Table</span>
+  <span class="meta">CH11 · SALV 1차 (간단 ALV)</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,16 +33,14 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH11</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">SELECT-OPTIONS와 Range Table</p>
-        <h1>Selection Table 직접 조작 기초</h1>
-        <p class="lhead__direction">Range Table을 코드로 채우기 — 화면 없이 조건 구성.</p>
-        <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 11</span><span class="tag tag--ls">Lesson 6</span><span class="tag tag--lv">중급</span></div>
+        <p class="lhead__eyebrow">SALV 1차 (간단 ALV)</p>
+        <h1>실습 — 예매 목록 SALV</h1>
+        <p class="lhead__direction">콘서트앱 3단계 — 예매 목록을 SALV 표로.</p>
+        <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 11</span><span class="tag tag--ls">Lesson 6</span><span class="tag tag--lv">초급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>화면 없이 조건 만들기</h2>
-<p>배치/내부 호출처럼 화면이 없을 때, <button class="term" type="button" data-term="Range Table">Range Table</button>을 <strong>코드로 직접</strong> 채워 조회
-조건으로 쓴다. 구조(SIGN/OPTION/LOW/HIGH)를 알면 어렵지 않다.</p>
-</section><section class="lblock"><h2>코드로 행 추가 (classic)</h2>
+<section class="lblock"><h2>🎫 3단계 — 예매 목록을 표로</h2>
+<p>CH09 데이터를 SELECT해 SALV(CH11)로 깔끔히 띄운다. <code>WRITE</code> 리스트와 비교해 보자.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -54,30 +52,34 @@
 9
 10
 11
-12</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>: lr_age <span class="tok-kw">TYPE</span> RANGE <span class="tok-kw">OF</span> ztperson-age,
-      ls_age <span class="tok-kw">LIKE</span> LINE <span class="tok-kw">OF</span> lr_age,
-      lt_p   <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ztperson.
+12
+13</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>: lt_book <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> zbooking,
+      lo_alv  <span class="tok-kw">TYPE</span> <span class="tok-kw">REF</span> <span class="tok-kw">TO</span> cl_salv_table.
 
-ls_age-sign   = <span class="tok-str">'I'</span>.
-ls_age-option = <span class="tok-str">'BT'</span>.
-ls_age-low    = <span class="tok-num">20</span>.
-ls_age-high   = <span class="tok-num">40</span>.
-<span class="tok-kw">APPEND</span> ls_age <span class="tok-kw">TO</span> lr_age.
+<span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> zbooking <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> lt_book.
 
-<span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> ztperson <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> lt_p
-  <span class="tok-kw">WHERE</span> age <span class="tok-kw">IN</span> lr_age.       <span class="tok-com">" classic (@ 없이)</span></code></pre></div></div>
-<ul>
-<li><code>TYPE RANGE OF &lt;필드&gt;</code>로 Range Table 타입을 간단히 만든다.</li>
-<li>한 행 = 한 조건. 여러 조건은 여러 번 <code>APPEND</code>.</li>
-</ul>
+<span class="tok-kw">TRY</span>.
+    cl_salv_table=&gt;factory(
+      <span class="tok-kw">IMPORTING</span> r_salv_table = lo_alv
+      <span class="tok-kw">CHANGING</span>  t_table      = lt_book ).
+    lo_alv-&gt;get_functions( )&gt;set_all( abap_true ).
+    lo_alv-&gt;display( ).
+  <span class="tok-kw">CATCH</span> cx_salv_msg.
+<span class="tok-kw">ENDTRY</span>.</code></pre></div></div>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">데이터를 SALV로 띄워 정렬·합계를 눌러 보기</span><a class="embed__open" href="../../../sample/interactive/salv-grid-simulator.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../sample/interactive/salv-grid-simulator.html" loading="lazy" title="데이터를 SALV로 띄워 정렬·합계를 눌러 보기"></iframe></figure>
+</section><section class="lblock"><h2>직접 해 볼 과제</h2>
+<ol>
+<li>예매 목록을 SALV로 띄운다.</li>
+<li>컬럼 제목이 <strong>Data Element 라벨</strong>(CH03)로 자동으로 뜨는지 확인.</li>
+<li>(도전) <code>lo_alv-&gt;get_columns( )</code>로 STATUS 컬럼 제목을 &quot;상태&quot;로 바꿔 본다.</li>
+</ol>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>SIGN/OPTION 빈 값</strong> → 채우지 않으면 조건이 안 먹는다. I/E·EQ/BT 등 필수.</li>
-<li><strong>modern 혼입</strong> → classic 구간이라 SELECT에 <code>@</code>/<code>@DATA</code> 자제(→ CH18).</li>
+<li><strong>TRY/CATCH 없이 factory</strong> → cx_salv_msg 덤프 위험(CH11-L02).</li>
+<li><strong>빈 결과</strong> → SELECT 결과가 없으면 빈 표. sy-subrc 확인(CH08).</li>
 </ul>
 <hr>
-<p>이제 범위·다중·제외 조건을 화면·코드로 다룬다. 다음은 여러 테이블을 합치고
-집계하는 <strong>JOIN·집계</strong>(여전히 classic) → <strong>CH12</strong>.</p>
+<p>목록을 표로 봤다. 그런데 &quot;특정 공연만·특정 상태만&quot; 보고 싶다 → <strong>CH12(SELECT-OPTIONS)</strong>.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Custom Control과 Container 개념 · Screen Programming / Dynpro 기초 · SAP Developer Academy</title>
+<title>Selection Screen 권한/존재 여부 검증 기초 · Report Event·Selection Screen 심화 · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH15 · Screen Programming / Dynpro 기초</span>
+  <span class="meta">CH15 · Report Event·Selection Screen 심화</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,16 +33,58 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH15</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">Screen Programming / Dynpro 기초</p>
-        <h1>Custom Control과 Container 개념</h1>
-        
+        <p class="lhead__eyebrow">Report Event·Selection Screen 심화</p>
+        <h1>Selection Screen 권한/존재 여부 검증 기초</h1>
+        <p class="lhead__direction">입력 단계에서 권한과 존재를 확인하는 기초.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 15</span><span class="tag tag--ls">Lesson 7</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
-<blockquote>
-<p>🚧 골격 — 본문 작성 예정.</p>
-</blockquote>
+<section class="lblock"><h2>권한과 존재를 일찍 확인</h2>
+<p>본 처리에 들어가기 전, &quot;이 사용자가 볼 권한이 있나&quot;, &quot;입력한 키가 실제 존재하나&quot;
+를 <strong>선택화면 단계</strong>에서 확인하면 안전하다.</p>
+</section><section class="lblock"><h2>존재 여부 (AT SELECTION-SCREEN, classic)</h2>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> lv_dummy <span class="tok-kw">TYPE</span> ztdept-dept_id.
 
+<span class="tok-kw">AT</span> <span class="tok-kw">SELECTION-SCREEN</span>.
+  <span class="tok-kw">SELECT</span> <span class="tok-kw">SINGLE</span> dept_id <span class="tok-kw">FROM</span> ztdept
+    <span class="tok-kw">INTO</span> lv_dummy
+    <span class="tok-kw">WHERE</span> dept_id = p_dept.        <span class="tok-com">" classic (@ 없이)</span>
+  <span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.
+    <span class="tok-kw">MESSAGE</span> <span class="tok-str">'존재하지 않는 부서'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'E'</span>.
+  <span class="tok-kw">ENDIF</span>.</code></pre></div></div>
+</section><section class="lblock"><h2>권한 검사 (AUTHORITY-CHECK)</h2>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6</pre><pre class="abap-editor__code"><code>AUTHORITY-CHECK <span class="tok-kw">OBJECT</span> <span class="tok-str">'Z_DEPT'</span>
+  <span class="tok-kw">ID</span> <span class="tok-str">'DEPT'</span>  FIELD p_dept
+  <span class="tok-kw">ID</span> <span class="tok-str">'ACTVT'</span> FIELD <span class="tok-str">'03'</span>.          <span class="tok-com">" 03 = 조회</span>
+<span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.
+  <span class="tok-kw">MESSAGE</span> <span class="tok-str">'권한이 없습니다'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'E'</span>.
+<span class="tok-kw">ENDIF</span>.</code></pre></div></div>
+<ul>
+<li><code>AUTHORITY-CHECK</code>는 권한 객체로 사용자 권한을 확인하고 <code>sy-subrc</code>로 결과를 준다.</li>
+<li>깊은 권한 설계는 실무 트랙(TRACK-02)에서. 지금은 &quot;입력 단계에서 막는다&quot;는 패턴만.</li>
+</ul>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>권한 검사 생략</strong> → 민감 데이터는 반드시 <code>AUTHORITY-CHECK</code>.</li>
+<li><strong>modern 혼입</strong> → classic 구간이라 <code>@DATA</code>/<code>@</code> 자제(→ CH19).</li>
+</ul>
+<hr>
+<p>이제 실행 흐름의 각 시점에 코드를 정확히 배치한다. 다음은 표준 화면을 넘어 <strong>내가
+설계하는 입력 화면</strong> → <strong>CH16(Screen Programming / Dynpro)</strong>.</p>
+</section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
       <footer class="foot">SAP Developer Academy · CH15 CH15-L07</footer>

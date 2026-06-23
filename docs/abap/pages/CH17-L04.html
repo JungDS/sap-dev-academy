@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Table Expression · Modern ABAP Syntax · SAP Developer Academy</title>
+<title>Field Catalog 기초 · Grid ALV 기초 · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH17 · Modern ABAP Syntax</span>
+  <span class="meta">CH17 · Grid ALV 기초</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,16 +33,53 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH17</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">Modern ABAP Syntax</p>
-        <h1>Table Expression</h1>
-        
+        <p class="lhead__eyebrow">Grid ALV 기초</p>
+        <h1>Field Catalog 기초</h1>
+        <p class="lhead__direction">컬럼을 정의한다 — Field Catalog로 제목·순서·속성 제어.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 17</span><span class="tag tag--ls">Lesson 4</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
-<blockquote>
-<p>🚧 골격 — 본문 작성 예정.</p>
-</blockquote>
+<section class="lblock"><h2>컬럼을 내 맘대로</h2>
+<p><button class="term" type="button" data-term="Field Catalog">Field Catalog</button>(필드 카탈로그)는 &quot;어떤 컬럼을, 어떤 제목·너비·순서·정렬로&quot; 보여줄지
+정의하는 표다(타입 <code>LVC_T_FCAT</code>). 그리드의 핵심 설정이다.</p>
+</section><section class="lblock"><h2>자동으로 만들기 — merge</h2>
+<p>행 구조가 DDIC에 있으면, 함수로 Field Catalog를 <strong>자동 생성</strong>할 수 있다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> lt_fcat <span class="tok-kw">TYPE</span> lvc_t_fcat.
 
+<span class="tok-kw">CALL</span> <span class="tok-kw">FUNCTION</span> <span class="tok-str">'LVC_FIELDCATALOG_MERGE'</span>
+  <span class="tok-kw">EXPORTING</span> i_structure_name = <span class="tok-str">'ZBOOKING'</span>
+  <span class="tok-kw">CHANGING</span>  ct_fieldcat      = lt_fcat.</code></pre></div></div>
+</section><section class="lblock"><h2>손으로 다듬기</h2>
+<p>자동 생성 후, 특정 컬럼의 제목·너비·숨김 등을 코드로 조정한다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> ls_fcat <span class="tok-kw">TYPE</span> lvc_s_fcat.
+
+<span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_fcat <span class="tok-kw">INTO</span> ls_fcat.
+  <span class="tok-kw">IF</span> ls_fcat-fieldname = <span class="tok-str">'SEATS'</span>.
+    ls_fcat-coltext = <span class="tok-str">'좌석수'</span>.       <span class="tok-com">" 컬럼 제목</span>
+    ls_fcat-outputlen = <span class="tok-num">8</span>.            <span class="tok-com">" 너비</span>
+    <span class="tok-kw">MODIFY</span> lt_fcat <span class="tok-kw">FROM</span> ls_fcat.
+  <span class="tok-kw">ENDIF</span>.
+<span class="tok-kw">ENDLOOP</span>.</code></pre></div></div>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>fieldcat 비움</strong> → 컬럼 정의가 없어 표가 안 그려진다. merge 또는 수동 작성.</li>
+<li><strong>fieldname 대문자</strong> → 보통 DDIC 필드명은 대문자(<code>&#39;SEATS&#39;</code>).</li>
+</ul>
+<hr>
+<p>컬럼을 정의했다. 이제 표 전체의 <strong>모양</strong>(줄무늬·선택 모드 등)을 정하는 Layout → 다음 레슨.</p>
+</section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
       <footer class="foot">SAP Developer Academy · CH17 CH17-L04</footer>

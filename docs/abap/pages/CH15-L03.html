@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Input Field / Text Field / Push Button · Screen Programming / Dynpro 기초 · SAP Developer Academy</title>
+<title>AT SELECTION-SCREEN OUTPUT 동적 화면 제어 · Report Event·Selection Screen 심화 · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH15 · Screen Programming / Dynpro 기초</span>
+  <span class="meta">CH15 · Report Event·Selection Screen 심화</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,16 +33,43 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH15</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">Screen Programming / Dynpro 기초</p>
-        <h1>Input Field / Text Field / Push Button</h1>
-        
+        <p class="lhead__eyebrow">Report Event·Selection Screen 심화</p>
+        <h1>AT SELECTION-SCREEN OUTPUT 동적 화면 제어</h1>
+        <p class="lhead__direction">화면 그리기 직전(PBO) — 필드를 동적으로 숨김/잠금.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 15</span><span class="tag tag--ls">Lesson 3</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
-<blockquote>
-<p>🚧 골격 — 본문 작성 예정.</p>
-</blockquote>
-
+<section class="lblock"><h2>화면을 상황에 맞게</h2>
+<p>&quot;옵션 A를 고르면 B 입력칸을 숨긴다&quot;처럼 화면을 <strong>동적으로</strong> 바꾸고 싶다. 화면이
+그려지기 <strong>직전(PBO)</strong> 마다 실행되는 <code>AT SELECTION-SCREEN OUTPUT</code>에서 한다.</p>
+</section><section class="lblock"><h2>LOOP AT SCREEN</h2>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7</pre><pre class="abap-editor__code"><code><span class="tok-kw">AT</span> <span class="tok-kw">SELECTION-SCREEN</span> <span class="tok-kw">OUTPUT</span>.
+  <span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> SCREEN.
+    <span class="tok-kw">IF</span> screen-name = <span class="tok-str">'P_SECRET'</span>.
+      screen-active = <span class="tok-str">'0'</span>.        <span class="tok-com">" 숨김 (0 = 비활성)</span>
+      <span class="tok-kw">MODIFY</span> SCREEN.
+    <span class="tok-kw">ENDIF</span>.
+  <span class="tok-kw">ENDLOOP</span>.</code></pre></div></div>
+<ul>
+<li><code>LOOP AT SCREEN</code>으로 화면 요소를 돌며 <code>screen-active</code>/<code>screen-input</code> 등을 바꾸고
+<code>MODIFY SCREEN</code>으로 적용한다.</li>
+<li>이 이벤트는 화면을 그릴 때마다(매 PBO) 실행된다.</li>
+</ul>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>MODIFY SCREEN 누락</strong> → 바꿔도 반영 안 됨. 꼭 <code>MODIFY SCREEN</code>.</li>
+<li><strong>여기서 무거운 로직</strong> → 매번 실행되니 가볍게. 조회는 START-OF-SELECTION.</li>
+</ul>
+<hr>
+<p>화면 모양은 제어했다. 이제 사용자가 실행을 누른 순간 <strong>입력을 검증</strong>하자 →
+AT SELECTION-SCREEN(다음 레슨).</p>
+</section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
       <footer class="foot">SAP Developer Academy · CH15 CH15-L03</footer>

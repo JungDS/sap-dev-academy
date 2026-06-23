@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>조회 실패와 MESSAGE (기초) · Open SQL 기본 조회 · SAP Developer Academy</title>
+<link rel="stylesheet" href="../../../assets/base.css">
+<link rel="stylesheet" href="../../../assets/lesson.css">
+<link rel="stylesheet" href="../../../assets/shell.css">
+<script>/* 읽기 설정 선적용(플래시 방지) */(function(){try{var L=localStorage,r=document.documentElement;if(L.getItem('sda.dark')==='1')r.classList.add('dark');if(L.getItem('sda.wide')==='1')r.classList.add('wide');var f=parseInt(L.getItem('sda.fontPx'),10);if(f>=13&&f<=20)r.style.fontSize=f+'px';}catch(e){}})();</script>
+</head>
+<body data-domain="abap" data-chapter-id="CH08" data-lesson-id="CH08-L07">
+<header class="appbar">
+  <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
+  <span class="appbar__sp"></span>
+  <span class="meta">CH08 · Open SQL 기본 조회</span>
+  <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
+  <div class="tools">
+    <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
+    <button class="icon-btn" id="fsInc" title="글자 크게">A+</button>
+    <button class="icon-btn" id="fsReset" title="글자 크기 초기화">↺</button>
+    <button class="icon-btn" id="darkBtn" title="다크 모드">🌙</button>
+    <button class="icon-btn" id="widthBtn" title="가독 폭 넓게">↔</button>
+    <button class="icon-btn fs-btn" title="전체화면" aria-label="전체화면"></button>
+  </div>
+</header>
+<div class="read-progress"><i></i></div>
+<div class="scrim"></div>
+<nav class="rail" data-shell="rail"></nav>
+<button class="railFab" id="railFab" aria-label="네비 열기">☰</button>
+<div class="stage">
+  <div class="layout">
+    <main class="main">
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH08</nav>
+      <section class="lhead">
+        <p class="lhead__eyebrow">Open SQL 기본 조회</p>
+        <h1>조회 실패와 MESSAGE (기초)</h1>
+        <p class="lhead__direction">결과가 없을 때 — sy-subrc 분기와 MESSAGE 맛보기.</p>
+        <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 8</span><span class="tag tag--ls">Lesson 7</span><span class="tag tag--lv">초급</span></div>
+      </section>
+      <article class="prose">
+<section class="lblock"><h2>결과가 없을 수도 있다</h2>
+<p>조회는 늘 성공하지 않는다. 우리 <code>ZGUGUDAN</code>에는 2·3단만 넣었으니, <strong>5단</strong>을 조회하면
+한 건도 안 나온다. 이때 빈 화면만 두면 사용자는 영문을 모른다 — <strong>알려 줘야</strong> 한다.</p>
+</section><section class="lblock"><h2>sy-subrc로 분기</h2>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> zgugudan <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> lt_gugu <span class="tok-kw">WHERE</span> dan = <span class="tok-num">5</span>.
+
+<span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.
+  <span class="tok-kw">WRITE</span>: / <span class="tok-str">'5단 데이터가 없습니다.'</span>.
+<span class="tok-kw">ELSE</span>.
+  <span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_gugu <span class="tok-kw">INTO</span> ls_line.
+    <span class="tok-kw">WRITE</span>: / ls_line-dan, <span class="tok-str">'x'</span>, ls_line-mul, <span class="tok-str">'='</span>, ls_line-result.
+  <span class="tok-kw">ENDLOOP</span>.
+<span class="tok-kw">ENDIF</span>.</code></pre></div></div>
+</section><section class="lblock"><h2>MESSAGE — 사용자에게 알리기 (맛보기)</h2>
+<p><code>WRITE</code>로 화면에 찍는 것보다, <strong>MESSAGE</strong>로 알림을 띄우는 게 더 적절할 때가 많다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3</pre><pre class="abap-editor__code"><code><span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.
+  <span class="tok-kw">MESSAGE</span> <span class="tok-str">'해당 단의 데이터가 없습니다.'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'S'</span>.   <span class="tok-com">" S = 상태바 알림</span>
+<span class="tok-kw">ENDIF</span>.</code></pre></div></div>
+<ul>
+<li><code>TYPE &#39;S&#39;</code>(Status, 상태바)·<code>TYPE &#39;I&#39;</code>(Information, 팝업)가 가벼운 알림이다.</li>
+<li>여기선 <strong>맛보기</strong>만 — 메시지 타입 전체(I/S/W/E/A/X)와 메시지 클래스는 <strong>CH15</strong>에서
+정식으로 배운다.</li>
+</ul>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>결과 미확인 진행</strong> → 빈 테이블로 다음 로직을 돌리면 사고. 항상 <code>sy-subrc</code> 분기.</li>
+<li><strong>모든 걸 E로</strong> → 단순 &quot;없음&quot;은 S/I가 적절. E(오류)는 흐름을 막는다(CH15).</li>
+</ul>
+<hr>
+<p>여기까지가 <strong>읽기 기초</strong>의 완성이다 — 값(CH02)→전역(CH03)→묶음(CH05)→여러 건(CH06)
+→영속(CH07)→다시 읽기(CH08). 그런데 <code>carrid</code>만 입력해도 항공사명이 F4로 뜨면 좋겠다.
+입력을 똑똑하게 만드는 <strong>DDIC 관계와 F4</strong> → <strong>CH09</strong>.</p>
+</section>
+      </article>
+      <nav class="lesson-nav" data-shell="prevnext"></nav>
+      <footer class="foot">SAP Developer Academy · CH08 CH08-L07</footer>
+    </main>
+    <aside class="journey" data-shell="journey"></aside>
+  </div>
+</div>
+<div class="term-popup" data-shell="popup" hidden></div>
+<div class="tmodal" data-shell="tmodal" hidden></div>
+<script>window.__SDA__={"domain":"abap","dataBase":"../","siteRoot":"../../../"};</script>
+<script src="../../../assets/shell.js" defer></script>
+</body>
+</html>

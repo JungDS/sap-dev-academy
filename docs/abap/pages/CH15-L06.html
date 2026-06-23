@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PF-STATUS와 TITLEBAR · Screen Programming / Dynpro 기초 · SAP Developer Academy</title>
+<title>END-OF-SELECTION 출력 마무리 · Report Event·Selection Screen 심화 · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH15 · Screen Programming / Dynpro 기초</span>
+  <span class="meta">CH15 · Report Event·Selection Screen 심화</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,16 +33,52 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH15</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">Screen Programming / Dynpro 기초</p>
-        <h1>PF-STATUS와 TITLEBAR</h1>
-        
+        <p class="lhead__eyebrow">Report Event·Selection Screen 심화</p>
+        <h1>END-OF-SELECTION 출력 마무리</h1>
+        <p class="lhead__direction">본 처리 후 마무리 — 출력·요약을 정리.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 15</span><span class="tag tag--ls">Lesson 6</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
-<blockquote>
-<p>🚧 골격 — 본문 작성 예정.</p>
-</blockquote>
+<section class="lblock"><h2>처리 후 마무리</h2>
+<p><code>START-OF-SELECTION</code>의 조회·가공이 끝난 뒤 실행되는 게 <code>END-OF-SELECTION</code>이다.
+<strong>최종 출력·요약</strong>을 여기서 정리하면 흐름이 깔끔해진다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12</pre><pre class="abap-editor__code"><code><span class="tok-kw">START-OF-SELECTION</span>.
+  <span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> ztperson <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> lt_person <span class="tok-kw">WHERE</span> dept_id <span class="tok-kw">IN</span> s_dept.
 
+<span class="tok-kw">END-OF-SELECTION</span>.
+  <span class="tok-com">" 조회 결과를 ALV로 표시 (CH11)</span>
+  <span class="tok-kw">TRY</span>.
+      cl_salv_table=&gt;factory(
+        <span class="tok-kw">IMPORTING</span> r_salv_table = lo_alv
+        <span class="tok-kw">CHANGING</span>  t_table      = lt_person ).
+      lo_alv-&gt;display( ).
+    <span class="tok-kw">CATCH</span> cx_salv_msg.
+  <span class="tok-kw">ENDTRY</span>.</code></pre></div></div>
+</section><section class="lblock"><h2>언제 나누나</h2>
+<ul>
+<li>단순 리포트는 <code>START-OF-SELECTION</code> 한 곳으로 충분.</li>
+<li>&quot;조회&quot;와 &quot;출력&quot;을 <strong>의도적으로 분리</strong>하면 가독성↑ → 출력을 <code>END-OF-SELECTION</code>에.</li>
+</ul>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>END-OF-SELECTION에서 조회</strong> → 본 조회는 START. END는 마무리.</li>
+<li><strong>과한 분리</strong> → 작은 프로그램까지 억지로 나눌 필요는 없다.</li>
+</ul>
+<hr>
+<p>이벤트 흐름을 다 봤다. 마지막으로 선택화면 단계에서의 <strong>권한·존재 검증</strong> 기초를
+보자 → 다음 레슨.</p>
+</section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
       <footer class="foot">SAP Developer Academy · CH15 CH15-L06</footer>

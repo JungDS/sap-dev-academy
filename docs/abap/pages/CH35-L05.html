@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Action / Validation / Determination 구현 · RAP + Fiori 실무 Capstone · SAP Developer Academy</title>
+<title>Application Log와 오류 추적 · 운영 품질과 배포 관리 (이송 심화) · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH35 · RAP + Fiori 실무 Capstone</span>
+  <span class="meta">CH35 · 운영 품질과 배포 관리 (이송 심화)</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,16 +33,47 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH35</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">RAP + Fiori 실무 Capstone</p>
-        <h1>Action / Validation / Determination 구현</h1>
-        
+        <p class="lhead__eyebrow">운영 품질과 배포 관리 (이송 심화)</p>
+        <h1>Application Log와 오류 추적</h1>
+        <p class="lhead__direction">운영 중 무슨 일이 있었나 — 표준 로그로 추적한다.</p>
         <div class="tags"><span class="tag tag--track">Track 2</span><span class="tag tag--ch">Chapter 35</span><span class="tag tag--ls">Lesson 5</span><span class="tag tag--lv">고급</span></div>
       </section>
       <article class="prose">
+<section class="lblock"><h2>운영의 블랙박스 — Application Log</h2>
+<p>운영에서 무슨 일이 있었는지(성공·경고·오류) 남기는 표준이 <button class="term" type="button" data-term="Application Log">Application Log</button>(BAL)다.
+<code>WRITE</code>·임시 로그 대신, <strong>검색·보관·권한</strong>이 되는 표준 로그를 쓴다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2</pre><pre class="abap-editor__code"><code><span class="tok-com">" 개념: 로그 생성 → 메시지 추가 → 저장</span>
+<span class="tok-com">" BAL_LOG_CREATE → BAL_LOG_MSG_ADD → BAL_DB_SAVE</span></code></pre></div></div>
+<ul>
+<li><code>SLG1</code> — Application Log 조회(객체·기간·사용자별).</li>
+<li>메시지(타입 I/S/W/E, CH15)를 컨텍스트(키·단계)와 함께 남긴다.</li>
+<li>배치(CH35-L04)·인터페이스(CH30)·DML(CH24)의 결과를 여기 기록 → <strong>재처리·감사</strong>.</li>
+</ul>
+</section><section class="lblock"><h2>운영 마인드셋</h2>
+<ul>
+<li><strong>무엇이·왜·언제</strong> 실패했는지 남겨야 고친다.</li>
+<li>성공도 적당히 남겨(추적성), 너무 많으면 노이즈 — 균형.</li>
+</ul>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>로그 없음</strong> → 운영 사고의 원인을 못 찾는다. 핵심 단계엔 BAL.</li>
+<li><strong>민감정보 로깅</strong> → 개인정보·비밀번호는 남기지 않는다.</li>
+</ul>
+</section><section class="lblock"><h2>🧩 도전 과제 (서브퀘스트)</h2>
 <blockquote>
-<p>🚧 골격 — 본문 작성 예정.</p>
+<p>선택 과제 — 예매 앱을 운영 품질로 끌어올린다.</p>
 </blockquote>
-
+<ol>
+<li>예매 프로그램에 <strong>ATC</strong>를 돌려 findings를 0(또는 정당한 예외)으로 만든다.</li>
+<li>핵심 로직(<code>remaining</code>·검증)에 <strong>ABAP Unit</strong> 테스트를 붙여 회귀를 막는다.</li>
+<li>(심화) 야간 예매 정산을 <strong>Background Job</strong>(SM36)으로 스케줄하고 <strong>Application Log</strong>(BAL)로 결과를 남긴다.</li>
+</ol>
+<p>힌트: L01(ATC)·L02(ABAP Unit)·L03(Transport)·L04(Background Job)·L05(BAL).</p>
+<hr>
+<p>품질·테스트·이송·배치·로그까지 — 운영의 한 바퀴를 돌았다. 이제 배운 모든 걸 모아
+실전 앱을 완성하는 <strong>Capstone</strong> → <strong>CH36</strong>.</p>
+</section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
       <footer class="foot">SAP Developer Academy · CH35 CH35-L05</footer>

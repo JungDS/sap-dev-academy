@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LOOP·READ·MODIFY · Internal Table · SAP Developer Academy</title>
+<title>구조체 다루기 · Structure (Local · DDIC) · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH05 · Internal Table</span>
+  <span class="meta">CH05 · Structure (Local · DDIC)</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,63 +33,45 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH05</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">Internal Table</p>
-        <h1>LOOP·READ·MODIFY</h1>
-        <p class="lhead__direction">행을 순회·단건 조회·수정·삭제하는 핵심 동작.</p>
+        <p class="lhead__eyebrow">Structure (Local · DDIC)</p>
+        <h1>구조체 다루기</h1>
+        <p class="lhead__direction">구조체 복사·초기화·동일 이름 필드 옮기기(MOVE-CORRESPONDING).</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 5</span><span class="tag tag--ls">Lesson 3</span><span class="tag tag--lv">초급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>쌓았으면 다뤄야 한다</h2>
-<p>내부 테이블의 행을 <strong>하나씩 순회</strong>하고, <strong>특정 행을 찾고</strong>, <strong>고치고 지운다</strong>.
-가장 자주 쓰는 동작들이다.</p>
-</section><section class="lblock"><h2>LOOP — 전체 순회</h2>
-<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
-2
-3</pre><pre class="abap-editor__code"><code><span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_person <span class="tok-kw">INTO</span> ls_person.
-  <span class="tok-kw">WRITE</span>: / ls_person-name, ls_person-age.
-<span class="tok-kw">ENDLOOP</span>.</code></pre></div></div>
-<ul>
-<li>한 행씩 <button class="term" type="button" data-term="Work Area">Work Area</button> <code>ls_person</code>으로 꺼내 처리한다.</li>
-<li>현재 행 번호는 <code>sy-tabix</code>에 들어온다.</li>
-</ul>
-</section><section class="lblock"><h2>READ TABLE — 단건 조회</h2>
-<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
-2
-3
-4</pre><pre class="abap-editor__code"><code><span class="tok-kw">READ</span> <span class="tok-kw">TABLE</span> lt_person <span class="tok-kw">INTO</span> ls_person <span class="tok-kw">WITH</span> <span class="tok-kw">KEY</span> name = <span class="tok-str">'Kim'</span>.
-<span class="tok-kw">IF</span> sy-subrc = <span class="tok-num">0</span>.
-  <span class="tok-kw">WRITE</span>: / <span class="tok-str">'찾음:'</span>, ls_person-age.
-<span class="tok-kw">ENDIF</span>.</code></pre></div></div>
-<ul>
-<li>찾으면 <code>sy-subrc = 0</code>, 못 찾으면 <code>4</code>. <strong>항상 <code>sy-subrc</code>를 확인</strong>한다.</li>
-</ul>
-</section><section class="lblock"><h2>MODIFY / DELETE — 수정·삭제</h2>
+<section class="lblock"><h2>묶었으면 다뤄야 한다</h2>
+<p>구조체를 통째로 복사하거나, 비우거나, <strong>이름이 같은 필드만 골라 옮기는</strong> 일이
+자주 생긴다. 기본기 몇 가지를 익힌다.</p>
+</section><section class="lblock"><h2>통째로 대입 / 초기화</h2>
+<p>같은 타입이면 구조체끼리 <strong>통째로</strong> 대입된다. <code>CLEAR</code>로 전체를 비운다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
 4
 5
-6
-7
-8</pre><pre class="abap-editor__code"><code><span class="tok-com">" 순회 중 현재 행 수정</span>
-<span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_person <span class="tok-kw">INTO</span> ls_person.
-  ls_person-age = ls_person-age + <span class="tok-num">1</span>.
-  <span class="tok-kw">MODIFY</span> lt_person <span class="tok-kw">FROM</span> ls_person INDEX sy-tabix.
-<span class="tok-kw">ENDLOOP</span>.
+6</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>: ls_a <span class="tok-kw">TYPE</span> zst_person,
+      ls_b <span class="tok-kw">TYPE</span> zst_person.
 
-<span class="tok-com">" 조건으로 삭제</span>
-<span class="tok-kw">DELETE</span> lt_person <span class="tok-kw">WHERE</span> age &lt; <span class="tok-num">20</span>.</code></pre></div></div>
-</section><section class="lblock"><h2>정렬</h2>
-<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1</pre><pre class="abap-editor__code"><code><span class="tok-kw">SORT</span> lt_person BY age <span class="tok-kw">DESCENDING</span>.</code></pre></div></div>
+ls_a-name = <span class="tok-str">'정훈영'</span>.
+ls_b = ls_a.        <span class="tok-com">" 모든 컴포넌트 복사</span>
+<span class="tok-kw">CLEAR</span> ls_a.         <span class="tok-com">" ls_a를 초기값으로</span></code></pre></div></div>
+</section><section class="lblock"><h2>MOVE-CORRESPONDING — 이름이 같은 필드만</h2>
+<p>타입이 다른 두 구조 사이에서 <strong>이름이 같은 컴포넌트만</strong> 골라 옮긴다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1</pre><pre class="abap-editor__code"><code>MOVE-CORRESPONDING ls_source <span class="tok-kw">TO</span> ls_target.</code></pre></div></div>
+<ul>
+<li>두 구조의 공통 이름 필드만 복사되고, 나머지는 건드리지 않는다.</li>
+<li>화면·테이블·DB 구조가 조금씩 다를 때 아주 유용하다.</li>
+</ul>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>sy-subrc 미확인</strong> → READ 실패 후 옛 <button class="term" type="button" data-term="Work Area">Work Area</button> 값을 그대로 쓰는 버그. 꼭 확인.</li>
-<li><strong>LOOP 안에서 통째 DELETE</strong> → 인덱스가 꼬인다. 조건 삭제는 <code>DELETE ... WHERE</code>로.</li>
-<li><strong>잦은 단건 READ가 느림</strong> → 키 설계(SORTED/HASHED)를 뒤에서 고려.</li>
+<li><strong>타입 다른데 통째 대입</strong> → 컴포넌트 구성이 다르면 오류/엉뚱한 결과. 다르면
+<button class="term" type="button" data-term="MOVE-CORRESPONDING">MOVE-CORRESPONDING</button>.</li>
+<li><strong>CLEAR vs REFRESH</strong> → 구조체는 <code>CLEAR</code>. (여러 행을 담는 내부 테이블 비우기는
+다음 챕터에서.)</li>
 </ul>
 <hr>
-<p>읽고 고치는 법까지 익혔다. 마지막으로 행 안에 <strong>또 테이블이 들어가는</strong> 구조를
-개념만 보고 가자 → Deep Structure(다음 레슨).</p>
+<p>한 건(구조체)은 자유자재로 다룬다. 이제 배운 걸 모아 <strong>구구단 한 줄을 Structure로</strong>
+완성하고 디버거로 들여다보자 → <strong>CH05-L04(구구단 한 줄 = Structure)</strong>.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

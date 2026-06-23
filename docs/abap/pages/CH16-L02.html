@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CL_GUI_ALV_GRID 생성 · Grid ALV 기초 · SAP Developer Academy</title>
+<title>Screen Number와 Screen Painter · Screen Programming / Dynpro 기초 · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH16 · Grid ALV 기초</span>
+  <span class="meta">CH16 · Screen Programming / Dynpro 기초</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,16 +33,40 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH16</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">Grid ALV 기초</p>
-        <h1>CL_GUI_ALV_GRID 생성</h1>
-        
+        <p class="lhead__eyebrow">Screen Programming / Dynpro 기초</p>
+        <h1>Screen Number와 Screen Painter</h1>
+        <p class="lhead__direction">화면에 번호를 붙이고, Screen Painter로 레이아웃을 그린다.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 16</span><span class="tag tag--ls">Lesson 2</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
-<blockquote>
-<p>🚧 골격 — 본문 작성 예정.</p>
-</blockquote>
-
+<section class="lblock"><h2>화면에 번호를 붙인다</h2>
+<p>Dynpro는 각 화면을 <strong>네 자리 번호</strong>(예: <code>0100</code>)로 구분한다. 한 Module Pool 안에
+여러 화면(0100·0200…)을 두고 번호로 오간다.</p>
+</section><section class="lblock"><h2>Screen Painter로 그리기</h2>
+<p><code>SE80</code>(또는 <code>SE51</code>) Screen Painter에서 입력칸·버튼 같은 요소를 <strong>끌어다 놓는다.</strong>
+각 요소에는 <strong>이름</strong>을 주는데, 그 이름의 전역 변수와 자동으로 연결된다(예: 입력칸
+<code>P_SEATS</code> ↔ 프로그램의 <code>DATA p_seats</code>).</p>
+</section><section class="lblock"><h2>Flow Logic — PBO / PAI 선언</h2>
+<p>화면마다 <strong>Flow Logic</strong>에 두 블록이 있고, 각 블록에서 처리 모듈(<code>MODULE</code>)을 부른다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4</pre><pre class="abap-editor__code"><code>PROCESS BEFORE <span class="tok-kw">OUTPUT</span>.
+  MODULE status_0100.
+PROCESS AFTER INPUT.
+  MODULE user_command_0100.</code></pre></div></div>
+<ul>
+<li>Flow Logic은 ABAP과 조금 다른 <strong>화면 전용 문법</strong>이다(여기서 <code>MODULE</code>만 부른다).</li>
+<li>실제 처리 코드는 프로그램 쪽 <code>MODULE ... ENDMODULE</code>에 쓴다.</li>
+</ul>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>요소 이름 ≠ 변수 이름</strong> → 이름이 달라 값이 연결 안 됨. 같은 이름으로 맞춘다.</li>
+<li><strong>Flow Logic에 일반 ABAP</strong> → Flow Logic엔 <code>MODULE</code> 등 화면 문법만. 로직은 모듈 안에.</li>
+</ul>
+<hr>
+<p>화면과 흐름의 골격을 만들었다. 이제 화면에 올릴 <strong>요소들</strong>을 보자 → 다음 레슨.</p>
+</section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
       <footer class="foot">SAP Developer Academy · CH16 CH16-L02</footer>

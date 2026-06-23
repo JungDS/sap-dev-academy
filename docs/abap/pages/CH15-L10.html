@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>실습 — 예매현황 리포트 (이벤트·검증) · Report Event·Selection Screen 심화 · SAP Developer Academy</title>
+<link rel="stylesheet" href="../../../assets/base.css">
+<link rel="stylesheet" href="../../../assets/lesson.css">
+<link rel="stylesheet" href="../../../assets/shell.css">
+<script>/* 읽기 설정 선적용(플래시 방지) */(function(){try{var L=localStorage,r=document.documentElement;if(L.getItem('sda.dark')==='1')r.classList.add('dark');if(L.getItem('sda.wide')==='1')r.classList.add('wide');var f=parseInt(L.getItem('sda.fontPx'),10);if(f>=13&&f<=20)r.style.fontSize=f+'px';}catch(e){}})();</script>
+</head>
+<body data-domain="abap" data-chapter-id="CH15" data-lesson-id="CH15-L10">
+<header class="appbar">
+  <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
+  <span class="appbar__sp"></span>
+  <span class="meta">CH15 · Report Event·Selection Screen 심화</span>
+  <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
+  <div class="tools">
+    <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
+    <button class="icon-btn" id="fsInc" title="글자 크게">A+</button>
+    <button class="icon-btn" id="fsReset" title="글자 크기 초기화">↺</button>
+    <button class="icon-btn" id="darkBtn" title="다크 모드">🌙</button>
+    <button class="icon-btn" id="widthBtn" title="가독 폭 넓게">↔</button>
+    <button class="icon-btn fs-btn" title="전체화면" aria-label="전체화면"></button>
+  </div>
+</header>
+<div class="read-progress"><i></i></div>
+<div class="scrim"></div>
+<nav class="rail" data-shell="rail"></nav>
+<button class="railFab" id="railFab" aria-label="네비 열기">☰</button>
+<div class="stage">
+  <div class="layout">
+    <main class="main">
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH15</nav>
+      <section class="lhead">
+        <p class="lhead__eyebrow">Report Event·Selection Screen 심화</p>
+        <h1>실습 — 예매현황 리포트 (이벤트·검증)</h1>
+        <p class="lhead__direction">콘서트앱 7단계 — 기본값·검증·조회·출력을 이벤트로 엮는다.</p>
+        <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 15</span><span class="tag tag--ls">Lesson 10</span><span class="tag tag--lv">중급</span></div>
+      </section>
+      <article class="prose">
+<section class="lblock"><h2>🎫 7단계 — 이벤트로 엮은 리포트</h2>
+<p>CH13의 집계 리포트에, CH15의 <strong>Report Event</strong>를 입혀 실무형 리포트로 만든다 —
+기본값·입력검증·조회·출력을 이벤트마다 제자리에.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27</pre><pre class="abap-editor__code"><code>TABLES zconcert.
+<span class="tok-kw">PARAMETERS</span> p_conc <span class="tok-kw">TYPE</span> zconcert-concert_id.
+
+<span class="tok-kw">DATA</span>: lt_book <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> zbooking,
+      lv_chk  <span class="tok-kw">TYPE</span> zconcert-concert_id,
+      lo_alv  <span class="tok-kw">TYPE</span> <span class="tok-kw">REF</span> <span class="tok-kw">TO</span> cl_salv_table.
+
+<span class="tok-kw">INITIALIZATION</span>.
+  <span class="tok-kw">SELECT</span> <span class="tok-kw">SINGLE</span> concert_id <span class="tok-kw">FROM</span> zconcert <span class="tok-kw">INTO</span> p_conc.   <span class="tok-com">" 첫 공연을 기본값으로</span>
+
+<span class="tok-kw">AT</span> <span class="tok-kw">SELECTION-SCREEN</span>.
+  <span class="tok-kw">SELECT</span> <span class="tok-kw">SINGLE</span> concert_id <span class="tok-kw">FROM</span> zconcert <span class="tok-kw">INTO</span> lv_chk    <span class="tok-com">" 존재 확인(classic)</span>
+    <span class="tok-kw">WHERE</span> concert_id = p_conc.
+  <span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.
+    <span class="tok-kw">MESSAGE</span> <span class="tok-str">'없는 공연 번호입니다'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'E'</span>.       <span class="tok-com">" 화면으로 복귀(CH15-L04)</span>
+  <span class="tok-kw">ENDIF</span>.
+
+<span class="tok-kw">START-OF-SELECTION</span>.
+  <span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> zbooking <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> lt_book <span class="tok-kw">WHERE</span> concert_id = p_conc.
+
+<span class="tok-kw">END-OF-SELECTION</span>.
+  <span class="tok-kw">TRY</span>.
+      cl_salv_table=&gt;factory(
+        <span class="tok-kw">IMPORTING</span> r_salv_table = lo_alv <span class="tok-kw">CHANGING</span> t_table = lt_book ).
+      lo_alv-&gt;display( ).
+    <span class="tok-kw">CATCH</span> cx_salv_msg.
+  <span class="tok-kw">ENDTRY</span>.</code></pre></div></div>
+</section><section class="lblock"><h2>직접 해 볼 과제</h2>
+<ol>
+<li>기본 공연이 화면에 채워지는지(INITIALIZATION) 확인.</li>
+<li>없는 공연 번호를 넣어 <code>MESSAGE E</code>로 막히는지 확인.</li>
+<li>(도전) 회차(<code>p_perf</code>)도 입력받아 회차별로 거른다.</li>
+</ol>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>검증을 START-OF-SELECTION에</strong> → 너무 늦다. 입력검증은 <code>AT SELECTION-SCREEN</code>(CH15-L04).</li>
+<li><strong>이벤트 순서</strong> → INITIALIZATION → AT SELECTION-SCREEN → START → END 순.</li>
+</ul>
+<hr>
+<p>이벤트·검증을 갖춘 리포트를 만들었다. 이제 <strong>내가 설계한 예매 입력 화면</strong>으로 →
+<strong>CH16(Dynpro)</strong>.</p>
+</section>
+      </article>
+      <nav class="lesson-nav" data-shell="prevnext"></nav>
+      <footer class="foot">SAP Developer Academy · CH15 CH15-L10</footer>
+    </main>
+    <aside class="journey" data-shell="journey"></aside>
+  </div>
+</div>
+<div class="term-popup" data-shell="popup" hidden></div>
+<div class="tmodal" data-shell="tmodal" hidden></div>
+<script>window.__SDA__={"domain":"abap","dataBase":"../","siteRoot":"../../../"};</script>
+<script src="../../../assets/shell.js" defer></script>
+</body>
+</html>

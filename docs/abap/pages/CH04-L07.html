@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>종합 실습: 구구단 · 연산자와 흐름 제어 · SAP Developer Academy</title>
+<link rel="stylesheet" href="../../../assets/base.css">
+<link rel="stylesheet" href="../../../assets/lesson.css">
+<link rel="stylesheet" href="../../../assets/shell.css">
+<script>/* 읽기 설정 선적용(플래시 방지) */(function(){try{var L=localStorage,r=document.documentElement;if(L.getItem('sda.dark')==='1')r.classList.add('dark');if(L.getItem('sda.wide')==='1')r.classList.add('wide');var f=parseInt(L.getItem('sda.fontPx'),10);if(f>=13&&f<=20)r.style.fontSize=f+'px';}catch(e){}})();</script>
+</head>
+<body data-domain="abap" data-chapter-id="CH04" data-lesson-id="CH04-L07">
+<header class="appbar">
+  <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
+  <span class="appbar__sp"></span>
+  <span class="meta">CH04 · 연산자와 흐름 제어</span>
+  <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
+  <div class="tools">
+    <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
+    <button class="icon-btn" id="fsInc" title="글자 크게">A+</button>
+    <button class="icon-btn" id="fsReset" title="글자 크기 초기화">↺</button>
+    <button class="icon-btn" id="darkBtn" title="다크 모드">🌙</button>
+    <button class="icon-btn" id="widthBtn" title="가독 폭 넓게">↔</button>
+    <button class="icon-btn fs-btn" title="전체화면" aria-label="전체화면"></button>
+  </div>
+</header>
+<div class="read-progress"><i></i></div>
+<div class="scrim"></div>
+<nav class="rail" data-shell="rail"></nav>
+<button class="railFab" id="railFab" aria-label="네비 열기">☰</button>
+<div class="stage">
+  <div class="layout">
+    <main class="main">
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH04</nav>
+      <section class="lhead">
+        <p class="lhead__eyebrow">연산자와 흐름 제어</p>
+        <h1>종합 실습: 구구단</h1>
+        <p class="lhead__direction">배운 연산·분기·반복을 모아 구구단을 만든다.</p>
+        <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 4</span><span class="tag tag--ls">Lesson 7</span><span class="tag tag--lv">입문</span></div>
+      </section>
+      <article class="prose">
+<section class="lblock"><h2>다 모아서, 구구단</h2>
+<p>산술·판단·반복·디버깅을
+한 번에 쓸 차례다. 목표는 <strong>구구단</strong>. 이 구구단은 앞으로 여러 챕터를 따라다니며
+&quot;같은 결과물을 한 단계씩 키우는&quot; <button class="term" type="button" data-term="관통예제">관통예제</button>의 출발점이 된다.</p>
+</section><section class="lblock"><h2>1단계 — 한 단 출력</h2>
+<p>곱하는 수(1~9)만큼 반복하면 한 단이 나온다. <button class="term" type="button" data-term="PARAMETERS">PARAMETERS</button>로 몇 단인지 입력받는다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10</pre><pre class="abap-editor__code"><code><span class="tok-kw">PARAMETERS</span> p_dan <span class="tok-kw">TYPE</span> i.
+
+<span class="tok-kw">DATA</span> gv_mul <span class="tok-kw">TYPE</span> i.
+<span class="tok-kw">DATA</span> gv_res <span class="tok-kw">TYPE</span> i.
+
+<span class="tok-kw">DO</span> <span class="tok-num">9</span> TIMES.
+  gv_mul = sy-index.            <span class="tok-com">" 1, 2, 3 … 9</span>
+  gv_res = p_dan * gv_mul.
+  <span class="tok-kw">WRITE</span>: / p_dan, <span class="tok-str">'x'</span>, gv_mul, <span class="tok-str">'='</span>, gv_res.
+<span class="tok-kw">ENDDO</span>.</code></pre></div></div>
+</section><section class="lblock"><h2>2단계 — 전체(2~9단) 출력: 반복 속의 반복</h2>
+<p>단도 1~9로 바꾸면 <strong>반복 안에 반복</strong>(중첩 <button class="term" type="button" data-term="DO">DO</button>)이 된다. 바깥은 단, 안쪽은
+곱하는 수다. 바깥의 회차는 안쪽 루프가 <button class="term" type="button" data-term="sy-index">sy-index</button>를 덮어쓰기 전에 <strong>변수에
+담아 둔다</strong>.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> gv_dan <span class="tok-kw">TYPE</span> i.
+<span class="tok-kw">DATA</span> gv_mul <span class="tok-kw">TYPE</span> i.
+<span class="tok-kw">DATA</span> gv_res <span class="tok-kw">TYPE</span> i.
+
+<span class="tok-kw">DO</span> <span class="tok-num">8</span> TIMES.
+  gv_dan = sy-index + <span class="tok-num">1</span>.        <span class="tok-com">" 2 ~ 9단 (1단은 생략)</span>
+  <span class="tok-kw">DO</span> <span class="tok-num">9</span> TIMES.
+    gv_mul = sy-index.          <span class="tok-com">" 1 ~ 9</span>
+    gv_res = gv_dan * gv_mul.
+    <span class="tok-kw">WRITE</span>: / gv_dan, <span class="tok-str">'x'</span>, gv_mul, <span class="tok-str">'='</span>, gv_res.
+  <span class="tok-kw">ENDDO</span>.
+  <span class="tok-kw">SKIP</span>.                          <span class="tok-com">" 단 사이 빈 줄</span>
+<span class="tok-kw">ENDDO</span>.</code></pre></div></div>
+</section><section class="lblock"><h2>3단계 — 범위만 (예: 3~5단)</h2>
+<p>시작·끝 단을 입력받아 그 범위만 출력한다. <button class="term" type="button" data-term="IF">IF</button>로 &quot;현재 단이 범위 안인가&quot;를
+가린다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16</pre><pre class="abap-editor__code"><code><span class="tok-kw">PARAMETERS</span> p_from <span class="tok-kw">TYPE</span> i.
+<span class="tok-kw">PARAMETERS</span> p_to   <span class="tok-kw">TYPE</span> i.
+
+<span class="tok-kw">DATA</span> gv_dan <span class="tok-kw">TYPE</span> i.
+<span class="tok-kw">DATA</span> gv_mul <span class="tok-kw">TYPE</span> i.
+
+<span class="tok-kw">DO</span> <span class="tok-num">9</span> TIMES.
+  gv_dan = sy-index.
+  <span class="tok-kw">IF</span> gv_dan &lt; p_from <span class="tok-kw">OR</span> gv_dan &gt; p_to.
+    <span class="tok-kw">CONTINUE</span>.                    <span class="tok-com">" 범위 밖 단은 건너뜀</span>
+  <span class="tok-kw">ENDIF</span>.
+  <span class="tok-kw">DO</span> <span class="tok-num">9</span> TIMES.
+    gv_mul = sy-index.
+    <span class="tok-kw">WRITE</span>: / gv_dan, <span class="tok-str">'x'</span>, gv_mul, <span class="tok-str">'='</span>, gv_dan * gv_mul.
+  <span class="tok-kw">ENDDO</span>.
+<span class="tok-kw">ENDDO</span>.</code></pre></div></div>
+</section><section class="lblock"><h2>디버거로 들여다보기</h2>
+<p>2단계 코드에 <code>BREAK-POINT</code>를 걸고(CH04-L06) <code>F5</code>로 진행하며 <code>gv_dan</code>·<code>gv_mul</code>·
+<code>gv_res</code>가 어떻게 변하는지 본다. 바깥 루프가 한 번 돌 때 안쪽 루프가 9번 도는
+구조가 눈에 들어온다.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">빈칸을 채워 구구단 프로그램 완성하기</span><a class="embed__open" href="../../../sample/code-learning/fill-blank-code.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../sample/code-learning/fill-blank-code.html" loading="lazy" title="빈칸을 채워 구구단 프로그램 완성하기"></iframe></figure>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>중첩 루프에서 단을 잃어버림</strong> → 바깥 <code>sy-index</code>를 변수(<code>gv_dan</code>)에 담은 뒤
+안쪽 루프로 들어간다. 안 그러면 안쪽 <code>sy-index</code>에 덮어써진다.</li>
+<li><strong>줄바꿈</strong> → 각 줄은 <code>WRITE: /</code>로 시작(<code>/</code>가 새 줄).</li>
+<li><strong>범위 입력 역전</strong> → <code>p_from</code>이 <code>p_to</code>보다 크면 아무것도 안 나온다. 입력 점검.</li>
+</ul>
+</section><section class="lblock"><h2>정리 — 그리고 다음 불편</h2>
+<p>연산·분기·반복으로 구구단을 완성했다. 그런데 한 줄을 표현하려고 <code>gv_dan</code>·
+<code>gv_mul</code>·<code>gv_res</code> <strong>변수 세 개</strong>를 따로 들고 다녔다. 이 셋은 사실 &quot;구구단 한 줄&quot;이라는
+<strong>한 묶음</strong>인데 코드에는 그렇게 안 보인다. 관련된 값을 <strong>하나로 묶고 싶다</strong> →
+<strong>CH05(Structure)</strong>.</p>
+</section>
+      </article>
+      <nav class="lesson-nav" data-shell="prevnext"></nav>
+      <footer class="foot">SAP Developer Academy · CH04 CH04-L07</footer>
+    </main>
+    <aside class="journey" data-shell="journey"></aside>
+  </div>
+</div>
+<div class="term-popup" data-shell="popup" hidden></div>
+<div class="tmodal" data-shell="tmodal" hidden></div>
+<script>window.__SDA__={"domain":"abap","dataBase":"../","siteRoot":"../../../"};</script>
+<script src="../../../assets/shell.js" defer></script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>출력용 Internal Table 준비 · Grid ALV 기초 · SAP Developer Academy</title>
+<title>화면 요소 — 입력·버튼·체크박스·라디오·드롭다운 · Screen Programming / Dynpro 기초 · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH16 · Grid ALV 기초</span>
+  <span class="meta">CH16 · Screen Programming / Dynpro 기초</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,16 +33,73 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH16</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">Grid ALV 기초</p>
-        <h1>출력용 Internal Table 준비</h1>
-        
+        <p class="lhead__eyebrow">Screen Programming / Dynpro 기초</p>
+        <h1>화면 요소 — 입력·버튼·체크박스·라디오·드롭다운</h1>
+        <p class="lhead__direction">화면에 올리는 기본 요소들과 변수 연결.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 16</span><span class="tag tag--ls">Lesson 3</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
-<blockquote>
-<p>🚧 골격 — 본문 작성 예정.</p>
-</blockquote>
-
+<section class="lblock"><h2>화면을 채우는 요소들</h2>
+<p>예매 화면을 떠올려 보자 — 공연ID 입력칸, 좌석 수 입력칸, &quot;예매&quot; 버튼. 화면에 올리는
+요소는 종류가 정해져 있고, 각자 <strong>같은 이름의 전역 변수</strong>와 연결된다.</p>
+<table>
+<thead>
+<tr>
+<th>요소</th>
+<th>뜻</th>
+<th>연결 변수</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Input/Output Field</td>
+<td>값 입력·표시 칸</td>
+<td>그 타입의 변수</td>
+</tr>
+<tr>
+<td>Text Field</td>
+<td>고정 라벨(설명)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Push Button</td>
+<td>누르면 명령 발생</td>
+<td>FctCode → OK_CODE</td>
+</tr>
+<tr>
+<td>Checkbox</td>
+<td>켜고 끄기</td>
+<td><code>CHAR1</code>(<code>&#39;X&#39;</code>/공백)</td>
+</tr>
+<tr>
+<td>Radiobutton</td>
+<td>그룹 중 하나</td>
+<td>그룹 변수</td>
+</tr>
+<tr>
+<td>Dropdown</td>
+<td>목록에서 선택</td>
+<td>값 목록과 연결</td>
+</tr>
+</tbody></table>
+</section><section class="lblock"><h2>예: 예매 입력 화면</h2>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>: p_concert <span class="tok-kw">TYPE</span> zconcert-concert_id,   <span class="tok-com">" 공연ID 입력칸</span>
+      p_seats   <span class="tok-kw">TYPE</span> i,                       <span class="tok-com">" 좌석 수</span>
+      ok_code   <span class="tok-kw">TYPE</span> sy-ucomm.                <span class="tok-com">" 버튼 명령</span></code></pre></div></div>
+<ul>
+<li>입력칸 <code>P_CONCERT</code>에 <button class="term" type="button" data-term="Data Element">Data Element</button>를 쓰면 CH09의 F4·검증이 화면에서도 작동한다.</li>
+<li>&quot;예매&quot; 버튼의 FctCode(예: <code>SAVE</code>)가 눌리면 <code>OK_CODE</code>로 전달된다(다음 레슨 PAI).</li>
+</ul>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">입력칸·버튼이 있는 화면을 조작해 보기</span><a class="embed__open" href="../../../sample/interactive/sap-gui-sandbox.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../sample/interactive/sap-gui-sandbox.html" loading="lazy" title="입력칸·버튼이 있는 화면을 조작해 보기"></iframe></figure>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>버튼인데 OK_CODE 안 옴</strong> → 버튼에 FctCode를 안 줬다. FctCode를 지정한다.</li>
+<li><strong>체크박스 값</strong> → 체크=<code>&#39;X&#39;</code>, 해제=공백. <code>CHAR1</code>로 받는다.</li>
+</ul>
+<hr>
+<p>요소를 올렸다. 이제 화면이 뜨기 직전 <strong>PBO</strong>에서 무엇을 하는지 보자 → 다음 레슨.</p>
+</section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
       <footer class="foot">SAP Developer Academy · CH16 CH16-L03</footer>

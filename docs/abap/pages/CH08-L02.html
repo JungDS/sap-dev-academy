@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Value Table과 Foreign Key의 차이 · DDIC 관계와 입력도움말(F4) · SAP Developer Academy</title>
+<title>SELECT 4요소 · `*` vs 필드 · Open SQL 기본 조회 · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH08 · DDIC 관계와 입력도움말(F4)</span>
+  <span class="meta">CH08 · Open SQL 기본 조회</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,62 +33,94 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH08</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">DDIC 관계와 입력도움말(F4)</p>
-        <h1>Value Table과 Foreign Key의 차이</h1>
-        <p class="lhead__direction">Domain의 Value Table은 '제안', Foreign Key는 '실제 관계'.</p>
+        <p class="lhead__eyebrow">Open SQL 기본 조회</p>
+        <h1>SELECT 4요소 · `*` vs 필드</h1>
+        <p class="lhead__direction">SELECT의 네 가지 — 어느 테이블·어느 필드·어느 행·어디에 담을지.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 8</span><span class="tag tag--ls">Lesson 2</span><span class="tag tag--lv">초급</span></div>
       </section>
+      <section class="lcard tcode">
+        <p class="lcard__h"><span class="ic">🖥️</span>이번 Lesson에서 다루는 트랜잭션 코드</p>
+        <button class="tcode-label" data-tcode="SE38">
+          
+          <span class="tcode-label__code">SE38</span>
+          <span class="tcode-label__hint">자세히 보기 ›</span>
+        </button>
+      </section>
       <article class="prose">
-<section class="lblock"><h2>비슷해 보이는 둘</h2>
-<p><button class="term" type="button" data-term="Domain">Domain</button>을 만들 때 <strong>Value Table</strong>을 지정할 수 있고, 테이블 필드엔
-<button class="term" type="button" data-term="Foreign Key">Foreign Key</button>를 건다. 둘 다 &quot;어떤 테이블의 값으로 제한&quot;하는 것 같은데 뭐가
-다른가? 헷갈리기 쉬운 지점이라 분명히 짚는다.</p>
-</section><section class="lblock"><h2>Value Table = Domain의 &#39;제안&#39;</h2>
+<section class="lblock"><h2>SELECT의 네 가지 핵심</h2>
+<blockquote>
+<p>📌 이 챕터는 <strong>classic 구문</strong> — 필드를 <strong>공백</strong>으로 나열한다(콤마 ✕). 현대식 Open SQL
+구문은 <strong>CH19</strong>에서 따로 배운다. 섞으면 경계가 무너진다.</p>
+</blockquote>
+<p>SELECT 한 문장은 네 가지를 정하는 일이다.</p>
+<ol>
+<li><strong>FROM</strong> — 어느 테이블에서</li>
+<li><strong>필드</strong> — 어느 컬럼을 (<code>*</code> = 전부, 또는 필드 나열)</li>
+<li><strong>WHERE</strong> — 어느 행만 (다음 레슨들)</li>
+<li><strong>INTO</strong> — 어디에 담을지 (Work Area / Internal Table)</li>
+</ol>
+</section><section class="lblock"><h2>손입력한 구구단을 되찾기</h2>
+<p>CH07에서 손으로 넣은 18행을, 이제 SELECT로 <strong>한 번에 되찾는다.</strong></p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> lt_gugu <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> zgugudan.
+
+<span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> zgugudan
+  <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> lt_gugu.
+
+<span class="tok-kw">IF</span> sy-subrc = <span class="tok-num">0</span>.
+  <span class="tok-kw">WRITE</span>: / <span class="tok-kw">lines</span>( lt_gugu ), <span class="tok-str">'건 읽음'</span>.   <span class="tok-com">" 18</span>
+<span class="tok-kw">ENDIF</span>.</code></pre></div></div>
 <ul>
-<li><button class="term" type="button" data-term="Value Table">Value Table</button>은 <strong>Domain 수준</strong>에서 &quot;이 도메인 값은 보통 이 테이블에서 온다&quot;고
-<strong>제안</strong>하는 것이다.</li>
-<li>그 자체로는 검증을 <strong>강제하지 않는다.</strong> 어디까지나 기본 제안.</li>
+<li><code>INTO TABLE</code>은 결과 <strong>전체</strong>를 내부 테이블에 채운다(<button class="term" type="button" data-term="Array Fetch">Array Fetch</button>).</li>
+<li>성공 여부는 <button class="term" type="button" data-term="sy-subrc">sy-subrc</button>(0 = 1건 이상), 읽은 행 수는 <code>sy-dbcnt</code>.</li>
 </ul>
-</section><section class="lblock"><h2>Foreign Key = 테이블 필드의 &#39;실제 관계&#39;</h2>
+</section><section class="lblock"><h2><code>*</code> vs 필드 (projection)</h2>
+<p>전부(<code>*</code>)보다 <strong>필요한 컬럼만</strong> 읽는 게 빠르다. classic은 필드를 <strong>공백</strong>으로 나열한다(콤마 ✕).</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> dan mul result          <span class="tok-com">" 콤마 없이 공백 구분 (classic)</span>
+  <span class="tok-kw">FROM</span> zgugudan
+  <span class="tok-kw">INTO</span> <span class="tok-kw">CORRESPONDING</span> <span class="tok-kw">FIELDS</span> <span class="tok-kw">OF</span> <span class="tok-kw">TABLE</span> lt_gugu.</code></pre></div></div>
 <ul>
-<li><button class="term" type="button" data-term="Foreign Key">Foreign Key</button>는 <strong>테이블 필드 수준</strong>에서 거는 <strong>실제 관계</strong>다.</li>
-<li>이게 있어야 입력검증·F4가 <strong>실제로 동작</strong>한다.</li>
-<li>Foreign Key를 만들 때, Domain에 Value Table이 있으면 시스템이 그걸
-<strong>Check Table로 자동 제안</strong>한다 → 둘은 협력 관계.</li>
+<li>컬럼 일부만 읽을 땐, 같은 이름 필드에 맞춰 담는 <code>INTO CORRESPONDING FIELDS OF TABLE</code>.</li>
+<li>여러 테이블을 다룰 땐 <code>테이블~필드</code>(예: <code>sflight~carrid</code>)로 어느 테이블 컬럼인지 밝힌다.</li>
 </ul>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">SELECT 조회 시뮬레이터 — 컬럼·조건을 바꿔 실행</span><a class="embed__open" href="../../../sample/code-learning/select-query-simulator.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../sample/code-learning/select-query-simulator.html" loading="lazy" title="SELECT 조회 시뮬레이터 — 컬럼·조건을 바꿔 실행" style="height:620px"></iframe></figure>
+</section><section class="lblock"><h2>결과는 반드시 확인</h2>
 <table>
 <thead>
 <tr>
-<th></th>
-<th>Value Table</th>
-<th>Foreign Key</th>
+<th>결과</th>
+<th>sy-subrc</th>
+<th>sy-dbcnt</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>정의 위치</td>
-<td>Domain</td>
-<td>테이블 필드</td>
+<td>1건 이상</td>
+<td><code>0</code></td>
+<td>읽은 행 수</td>
 </tr>
 <tr>
-<td>역할</td>
-<td>제안(기본값)</td>
-<td>실제 관계·검증</td>
-</tr>
-<tr>
-<td>검증 강제</td>
-<td>✗</td>
-<td>✓</td>
+<td>한 건도 없음</td>
+<td><code>4</code></td>
+<td><code>0</code></td>
 </tr>
 </tbody></table>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>Value Table만 믿기</strong> → 그것만으론 검증 안 된다. 필드에 Foreign Key를 걸어야.</li>
-<li><strong>Check Table ≠ Value Table</strong> → 보통 같게 쓰지만, Foreign Key에서 다른 Check
-Table을 지정할 수도 있다.</li>
+<li><strong>콤마로 필드 나열</strong> → <code>SELECT dan, mul</code>은 classic에서 오류. 콤마 구분은 CH19(modern)부터.</li>
+<li><strong>결과 미확인</strong> → 빈 결과일 수 있다. 항상 <button class="term" type="button" data-term="sy-subrc">sy-subrc</button>·<code>lines( )</code> 확인.</li>
+<li><strong><code>SELECT *</code> 남용</strong> → 큰 테이블 전체는 성능 위험. WHERE로 줄인다.</li>
 </ul>
 <hr>
-<p>값의 <strong>존재</strong>는 관계로 제한했다. 그런데 사용자가 <strong>목록에서 고르게</strong> 하는 더
-똑똑한 도움말이 있다 → <button class="term" type="button" data-term="Search Help">Search Help</button>(다음 레슨).</p>
+<p>읽을 테이블·필드를 정했다. 그런데 SELECT에는 <strong>여러 형태</strong>가 있다 — 한 건만, 여러 건,
+줄여 읽기 → 다음 레슨.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>구구단 전체 = Internal Table (캡스톤) · Internal Table · SAP Developer Academy</title>
+<link rel="stylesheet" href="../../../assets/base.css">
+<link rel="stylesheet" href="../../../assets/lesson.css">
+<link rel="stylesheet" href="../../../assets/shell.css">
+<script>/* 읽기 설정 선적용(플래시 방지) */(function(){try{var L=localStorage,r=document.documentElement;if(L.getItem('sda.dark')==='1')r.classList.add('dark');if(L.getItem('sda.wide')==='1')r.classList.add('wide');var f=parseInt(L.getItem('sda.fontPx'),10);if(f>=13&&f<=20)r.style.fontSize=f+'px';}catch(e){}})();</script>
+</head>
+<body data-domain="abap" data-chapter-id="CH06" data-lesson-id="CH06-L06">
+<header class="appbar">
+  <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
+  <span class="appbar__sp"></span>
+  <span class="meta">CH06 · Internal Table</span>
+  <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
+  <div class="tools">
+    <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
+    <button class="icon-btn" id="fsInc" title="글자 크게">A+</button>
+    <button class="icon-btn" id="fsReset" title="글자 크기 초기화">↺</button>
+    <button class="icon-btn" id="darkBtn" title="다크 모드">🌙</button>
+    <button class="icon-btn" id="widthBtn" title="가독 폭 넓게">↔</button>
+    <button class="icon-btn fs-btn" title="전체화면" aria-label="전체화면"></button>
+  </div>
+</header>
+<div class="read-progress"><i></i></div>
+<div class="scrim"></div>
+<nav class="rail" data-shell="rail"></nav>
+<button class="railFab" id="railFab" aria-label="네비 열기">☰</button>
+<div class="stage">
+  <div class="layout">
+    <main class="main">
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH06</nav>
+      <section class="lhead">
+        <p class="lhead__eyebrow">Internal Table</p>
+        <h1>구구단 전체 = Internal Table (캡스톤)</h1>
+        <p class="lhead__direction">구구단 81줄을 내부 테이블에 쌓아 정렬·출력한다.</p>
+        <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 6</span><span class="tag tag--ls">Lesson 6</span><span class="tag tag--lv">초급</span></div>
+      </section>
+      <article class="prose">
+<section class="lblock"><h2>구구단 전체를 메모리에 담는다</h2>
+<p>CH05에서 구구단 한 줄을 구조체로 묶었지만 <strong>한 번에 한 줄</strong>뿐이었다. 이제 같은
+모양의 행을 <strong>내부 테이블</strong>에 쌓으면 81줄을 통째로 들고 있을 수 있다.</p>
+</section><section class="lblock"><h2>쌓기 — 중첩 DO + APPEND</h2>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17</pre><pre class="abap-editor__code"><code><span class="tok-kw">TYPES</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ty_line,
+         dan    <span class="tok-kw">TYPE</span> i,
+         mul    <span class="tok-kw">TYPE</span> i,
+         result <span class="tok-kw">TYPE</span> i,
+       <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ty_line.
+
+<span class="tok-kw">DATA</span>: ls_line <span class="tok-kw">TYPE</span> ty_line,
+      lt_gugu <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ty_line.
+
+<span class="tok-kw">DO</span> <span class="tok-num">8</span> TIMES.
+  ls_line-dan = sy-index + <span class="tok-num">1</span>.            <span class="tok-com">" 2~9단</span>
+  <span class="tok-kw">DO</span> <span class="tok-num">9</span> TIMES.
+    ls_line-mul    = sy-index.
+    ls_line-result = ls_line-dan * ls_line-mul.
+    <span class="tok-kw">APPEND</span> ls_line <span class="tok-kw">TO</span> lt_gugu.           <span class="tok-com">" 한 줄씩 쌓는다</span>
+  <span class="tok-kw">ENDDO</span>.
+<span class="tok-kw">ENDDO</span>.</code></pre></div></div>
+<p>이제 <code>lt_gugu</code>에는 구구단 81행이 <strong>전부</strong> 들어 있다 — 출력 후에도 사라지지 않고
+정렬·검색에 쓸 수 있다.</p>
+</section><section class="lblock"><h2>정렬해서 출력 — SORT + LOOP</h2>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5</pre><pre class="abap-editor__code"><code><span class="tok-kw">SORT</span> lt_gugu BY result <span class="tok-kw">DESCENDING</span>.       <span class="tok-com">" 결과 큰 순서로</span>
+
+<span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_gugu <span class="tok-kw">INTO</span> ls_line.
+  <span class="tok-kw">WRITE</span>: / ls_line-dan, <span class="tok-str">'x'</span>, ls_line-mul, <span class="tok-str">'='</span>, ls_line-result.
+<span class="tok-kw">ENDLOOP</span>.</code></pre></div></div>
+<p>한 줄씩 출력만 하던 CH05와 달리, <strong>모아 두었기에</strong> &quot;결과가 큰 순서&quot;처럼 마음대로
+재배열할 수 있다.</p>
+</section><section class="lblock"><h2>디버거로 행들 보기</h2>
+<p><code>APPEND</code> 다음 줄에 <code>BREAK-POINT</code>를 걸고 <code>lt_gugu</code>를 펼치면, 행이 하나씩 쌓여
+2개, 4개 … 81개가 되는 모습이 보인다(CH04-L06 디버거).</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">행이 APPEND될 때마다 내부 테이블이 늘어나는 모습 보기</span><a class="embed__open" href="../../../sample/visuals/state-change-grid.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../sample/visuals/state-change-grid.html" loading="lazy" title="행이 APPEND될 때마다 내부 테이블이 늘어나는 모습 보기"></iframe></figure>
+</section><section class="lblock"><h2>정리 — 그리고 다음 불편</h2>
+<p>구구단 전체를 메모리에서 자유롭게 다뤘다. 그런데 프로그램이 끝나면 <code>lt_gugu</code>는
+<strong>흔적도 없이 사라진다.</strong> 다시 실행하면 또 처음부터 만들어야 한다. 값을 <strong>영구히
+저장</strong>해 두고 싶다 → <strong>CH07(Transparent Table)</strong>.</p>
+</section>
+      </article>
+      <nav class="lesson-nav" data-shell="prevnext"></nav>
+      <footer class="foot">SAP Developer Academy · CH06 CH06-L06</footer>
+    </main>
+    <aside class="journey" data-shell="journey"></aside>
+  </div>
+</div>
+<div class="term-popup" data-shell="popup" hidden></div>
+<div class="tmodal" data-shell="tmodal" hidden></div>
+<script>window.__SDA__={"domain":"abap","dataBase":"../","siteRoot":"../../../"};</script>
+<script src="../../../assets/shell.js" defer></script>
+</body>
+</html>

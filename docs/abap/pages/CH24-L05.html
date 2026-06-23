@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lock Object와 COMMIT/ROLLBACK 연결 · Lock Object와 동시성 제어 · SAP Developer Academy</title>
+<title>대량 변경 시 Package 처리 · 실무 데이터 변경과 트랜잭션 제어 · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH24 · Lock Object와 동시성 제어</span>
+  <span class="meta">CH24 · 실무 데이터 변경과 트랜잭션 제어</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,16 +33,60 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH24</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">Lock Object와 동시성 제어</p>
-        <h1>Lock Object와 COMMIT/ROLLBACK 연결</h1>
-        
+        <p class="lhead__eyebrow">실무 데이터 변경과 트랜잭션 제어</p>
+        <h1>대량 변경 시 Package 처리</h1>
+        <p class="lhead__direction">수십만 건을 나눠서 — 패키지 단위 COMMIT.</p>
         <div class="tags"><span class="tag tag--track">Track 2</span><span class="tag tag--ch">Chapter 24</span><span class="tag tag--ls">Lesson 5</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
-<blockquote>
-<p>🚧 골격 — 본문 작성 예정.</p>
-</blockquote>
+<section class="lblock"><h2>한 번에 다 하면 터진다</h2>
+<p>수십만 건을 한 트랜잭션으로 바꾸면 메모리·로그·잠금이 폭발한다. <strong>일정 건수(패키지)</strong>
+마다 처리하고 COMMIT한다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> lv_cnt <span class="tok-kw">TYPE</span> i.
 
+<span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_big <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(ls).
+  <span class="tok-kw">MODIFY</span> ztarget <span class="tok-kw">FROM</span> @ls.
+  lv_cnt += <span class="tok-num">1</span>.
+  <span class="tok-kw">IF</span> lv_cnt &gt;= <span class="tok-num">5000</span>.          <span class="tok-com">" 5천 건마다</span>
+    <span class="tok-kw">COMMIT</span> <span class="tok-kw">WORK</span>.
+    <span class="tok-kw">CLEAR</span> lv_cnt.
+  <span class="tok-kw">ENDIF</span>.
+<span class="tok-kw">ENDLOOP</span>.
+<span class="tok-kw">COMMIT</span> <span class="tok-kw">WORK</span>.                  <span class="tok-com">" 남은 것 확정</span></code></pre></div></div>
+<ul>
+<li>패키지 크기는 <strong>메모리·성능을 보며</strong> 조정(예: 1천~1만).</li>
+<li>패키지마다 COMMIT해 잠금·로그·롤백 세그먼트를 비운다.</li>
+<li>중간 실패 시 <strong>어디까지 처리됐는지</strong>(재시작점) 관리가 중요(L04의 로깅과 함께).</li>
+</ul>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>전체 단일 COMMIT</strong> → 대량에서 자원 폭발. 패키지로 쪼갠다.</li>
+<li><strong>재시작점 없음</strong> → 중간 실패 후 처음부터 다시. 진행 위치를 기록.</li>
+</ul>
+</section><section class="lblock"><h2>🧩 도전 과제 (서브퀘스트)</h2>
+<blockquote>
+<p>선택 과제 — 콘서트 예매 앱(CH09~)에 이 챕터를 적용한다.</p>
+</blockquote>
+<ol>
+<li>CH16-L08에서 만든 예매 입력 화면의 SAVE에 실제 <code>INSERT zbooking</code>을 붙이고 <code>COMMIT WORK</code>로 확정한다.</li>
+<li>저장 시 감사필드(<code>created_by</code>=sy-uname·<code>created_on</code>=sy-datum)를 자동 stamp한다.</li>
+<li>(심화) 엑셀에서 받은 예매 100건을 <strong>패키지 단위 COMMIT</strong>(L05)으로 일괄 등록한다.</li>
+</ol>
+<p>힌트: L01(INSERT·감사필드)·L02(COMMIT)·L05(패키지). 표준 테이블은 직접 DML 금지(BAPI).</p>
+<hr>
+<p>직접 데이터 변경·트랜잭션·대량처리를 다뤘다. 그런데 <strong>여러 사용자가 동시에</strong> 같은
+데이터를 바꾸면? 충돌을 막는 잠금 → <strong>CH25(Lock Object)</strong>.</p>
+</section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
       <footer class="foot">SAP Developer Academy · CH24 CH24-L05</footer>

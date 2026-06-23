@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>행 색상 기초 · Grid ALV 기초 · SAP Developer Academy</title>
+<link rel="stylesheet" href="../../../assets/base.css">
+<link rel="stylesheet" href="../../../assets/lesson.css">
+<link rel="stylesheet" href="../../../assets/shell.css">
+<script>/* 읽기 설정 선적용(플래시 방지) */(function(){try{var L=localStorage,r=document.documentElement;if(L.getItem('sda.dark')==='1')r.classList.add('dark');if(L.getItem('sda.wide')==='1')r.classList.add('wide');var f=parseInt(L.getItem('sda.fontPx'),10);if(f>=13&&f<=20)r.style.fontSize=f+'px';}catch(e){}})();</script>
+</head>
+<body data-domain="abap" data-chapter-id="CH17" data-lesson-id="CH17-L09">
+<header class="appbar">
+  <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
+  <span class="appbar__sp"></span>
+  <span class="meta">CH17 · Grid ALV 기초</span>
+  <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
+  <div class="tools">
+    <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
+    <button class="icon-btn" id="fsInc" title="글자 크게">A+</button>
+    <button class="icon-btn" id="fsReset" title="글자 크기 초기화">↺</button>
+    <button class="icon-btn" id="darkBtn" title="다크 모드">🌙</button>
+    <button class="icon-btn" id="widthBtn" title="가독 폭 넓게">↔</button>
+    <button class="icon-btn fs-btn" title="전체화면" aria-label="전체화면"></button>
+  </div>
+</header>
+<div class="read-progress"><i></i></div>
+<div class="scrim"></div>
+<nav class="rail" data-shell="rail"></nav>
+<button class="railFab" id="railFab" aria-label="네비 열기">☰</button>
+<div class="stage">
+  <div class="layout">
+    <main class="main">
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH17</nav>
+      <section class="lhead">
+        <p class="lhead__eyebrow">Grid ALV 기초</p>
+        <h1>행 색상 기초</h1>
+        <p class="lhead__direction">특정 행을 색으로 강조한다 — 행 단위 색상.</p>
+        <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 17</span><span class="tag tag--ls">Lesson 9</span><span class="tag tag--lv">중급</span></div>
+      </section>
+      <article class="prose">
+<section class="lblock"><h2>매진 회차를 빨갛게</h2>
+<p>&quot;매진된 회차는 빨강&quot;처럼 <strong>행 전체를 색</strong>으로 강조하면 한눈에 들어온다. 행 색은
+각 행에 <strong>색 코드 컬럼</strong>을 두고, Layout에 그 컬럼 이름을 알려 주는 방식이다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11</pre><pre class="abap-editor__code"><code><span class="tok-com">" 1) 출력 구조에 색 컬럼 추가(CHAR4) — 예: ROWCOLOR</span>
+<span class="tok-com">" 2) 데이터 채울 때 색 코드 설정</span>
+<span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_perf <span class="tok-kw">INTO</span> ls_perf.
+  <span class="tok-kw">IF</span> ls_perf-seatsocc &gt;= ls_perf-capacity.
+    ls_perf-rowcolor = <span class="tok-str">'C610'</span>.        <span class="tok-com">" 빨강 계열 코드</span>
+    <span class="tok-kw">MODIFY</span> lt_perf <span class="tok-kw">FROM</span> ls_perf.
+  <span class="tok-kw">ENDIF</span>.
+<span class="tok-kw">ENDLOOP</span>.
+
+<span class="tok-com">" 3) Layout에 색 컬럼 이름 지정</span>
+ls_layout-info_fname = <span class="tok-str">'ROWCOLOR'</span>.</code></pre></div></div>
+<ul>
+<li>색 코드는 <code>C</code> + 색번호 + 강조 + 반전 형식(예: <code>C610</code>).</li>
+<li><code>info_fname</code> — 행 색을 담은 컬럼 이름을 Layout에 알려 준다.</li>
+</ul>
+<blockquote>
+<p>🔶 <strong>셀 하나만</strong> 색을 다르게 하는 <strong>셀 색상</strong>과 이벤트(더블클릭 등)는 표시 제어
+심화인 <strong>CH21</strong>에서 다룬다. 여기선 <strong>행 색상</strong>까지.</p>
+</blockquote>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>info_fname 미지정</strong> → 색 컬럼을 둬도 Layout에 안 알리면 색이 안 먹는다.</li>
+<li><strong>색 코드 형식</strong> → <code>C</code>로 시작하는 4자리 코드. 임의 RGB 아님.</li>
+</ul>
+<hr>
+<p>화면에 박는 Grid ALV의 조각을 모두 배웠다(컨테이너→그리드→fieldcat→layout→display→
+refresh→색). 이제 그 조각들을 <strong>하나의 실행 프로그램으로</strong> 모아 보자 →
+<strong>CH17-L10(종합 실습)</strong>.</p>
+</section>
+      </article>
+      <nav class="lesson-nav" data-shell="prevnext"></nav>
+      <footer class="foot">SAP Developer Academy · CH17 CH17-L09</footer>
+    </main>
+    <aside class="journey" data-shell="journey"></aside>
+  </div>
+</div>
+<div class="term-popup" data-shell="popup" hidden></div>
+<div class="tmodal" data-shell="tmodal" hidden></div>
+<script>window.__SDA__={"domain":"abap","dataBase":"../","siteRoot":"../../../"};</script>
+<script src="../../../assets/shell.js" defer></script>
+</body>
+</html>

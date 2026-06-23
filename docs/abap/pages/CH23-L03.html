@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DB LUW와 SAP LUW 차이 · 실무 데이터 변경과 트랜잭션 제어 · SAP Developer Academy</title>
+<title>Projection View ZC_* 설계 · RAP / ABAP Cloud 입문 · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH23 · 실무 데이터 변경과 트랜잭션 제어</span>
+  <span class="meta">CH23 · RAP / ABAP Cloud 입문</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,16 +33,48 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH23</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">실무 데이터 변경과 트랜잭션 제어</p>
-        <h1>DB LUW와 SAP LUW 차이</h1>
-        
-        <div class="tags"><span class="tag tag--track">Track 2</span><span class="tag tag--ch">Chapter 23</span><span class="tag tag--ls">Lesson 3</span><span class="tag tag--lv">중급</span></div>
+        <p class="lhead__eyebrow">RAP / ABAP Cloud 입문</p>
+        <h1>Projection View ZC_* 설계</h1>
+        <p class="lhead__direction">서비스·화면에 노출할 소비용 뷰.</p>
+        <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 23</span><span class="tag tag--ls">Lesson 3</span><span class="tag tag--lv">고급</span></div>
       </section>
       <article class="prose">
-<blockquote>
-<p>🚧 골격 — 본문 작성 예정.</p>
-</blockquote>
-
+<section class="lblock"><h2>소비용 뷰</h2>
+<p>기반(<code>ZI_Booking</code>)을 그대로 노출하지 않고, 화면/서비스에 맞춘 <strong>Projection</strong>(<code>ZC_</code>)을
+둔다(CH22의 ZI_/ZC_ 분리 그대로).</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11</pre><pre class="abap-editor__code"><code>define root view entity ZC_Booking
+  provider contract transactional_query
+  <span class="tok-kw">as</span> projection <span class="tok-kw">on</span> ZI_Booking
+{
+  <span class="tok-kw">key</span> booking_id,
+      concert_id,
+      perf_no,
+      customer,
+      seats,
+      status
+}</code></pre></div></div>
+<ul>
+<li><code>provider contract transactional_query</code> — 트랜잭션 소비 계약(RAP 표준).</li>
+<li>UI 주석(@UI)·필드 추림을 여기서(또는 Metadata Extension).</li>
+</ul>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>contract 누락</strong> → 트랜잭션 소비엔 <code>transactional_query</code> 계약.</li>
+<li><strong>기반 직접 노출</strong> → 소비는 ZC_로, 기반 ZI_는 안정적으로.</li>
+</ul>
+<hr>
+<p>노출 모델까지 만들었다. 이제 <strong>동작</strong>을 정의하는 Behavior Definition → 다음 레슨.</p>
+</section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
       <footer class="foot">SAP Developer Academy · CH23 CH23-L03</footer>

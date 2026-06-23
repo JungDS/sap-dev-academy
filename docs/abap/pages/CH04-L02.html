@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DDIC Structure · Structure (Local · DDIC) · SAP Developer Academy</title>
+<title>문자열 다루기 · 연산자와 흐름 제어 · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH04 · Structure (Local · DDIC)</span>
+  <span class="meta">CH04 · 연산자와 흐름 제어</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,72 +33,85 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH04</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">Structure (Local · DDIC)</p>
-        <h1>DDIC Structure</h1>
-        <p class="lhead__direction">구조체 모양도 전역으로 — SE11에서 DDIC Structure로 공유한다.</p>
-        <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 4</span><span class="tag tag--ls">Lesson 2</span><span class="tag tag--lv">초급</span></div>
+        <p class="lhead__eyebrow">연산자와 흐름 제어</p>
+        <h1>문자열 다루기</h1>
+        <p class="lhead__direction">문자열을 잇고, 자르고, 찾고, 바꾸고, 다듬는다.</p>
+        <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 4</span><span class="tag tag--ls">Lesson 2</span><span class="tag tag--lv">입문</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>구조도 전역으로</h2>
-<p>CH03에서 타입을 전역(Domain·Data Element)으로 올렸듯, <strong>구조체 모양</strong>도 전역으로
-올릴 수 있다. 여러 프로그램·화면·테이블이 같은 구조를 공유하게 하는 게
-<button class="term" type="button" data-term="DDIC">DDIC</button> Structure다.</p>
-</section><section class="lblock"><h2>SE11에서 Structure 만들기</h2>
-<p><code>SE11</code> → Data Type → <strong>Structure</strong> → <code>ZST_PERSON</code> → Create.</p>
-<ul>
-<li>컴포넌트(필드)를 추가하고, 각 필드 타입은 보통 <button class="term" type="button" data-term="Data Element">Data Element</button>로 준다
-(라벨·도움말까지 상속).</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th>Component</th>
-<th>Typing</th>
-<th>예</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>NAME</td>
-<td>Data Element</td>
-<td><code>ZDE_NAME</code></td>
-</tr>
-<tr>
-<td>AGE</td>
-<td>Data Element</td>
-<td><code>ZDE_AGE</code></td>
-</tr>
-<tr>
-<td>AMOUNT</td>
-<td>Data Element</td>
-<td><code>ZDE_AMOUNT</code></td>
-</tr>
-</tbody></table>
-<p>활성화하면 전역 구조 타입이 된다.</p>
-</section><section class="lblock"><h2>프로그램에서 쓰기</h2>
+<section class="lblock"><h2>숫자 다음은 글자</h2>
+<p>숫자를 계산했으니, 이번엔 <strong>문자열</strong>이다. 이름과 성을 한 줄로 잇고, &quot;성:이름&quot;을
+쪼개고, 특정 글자를 찾아 바꾸는 일은 업무 프로그램에서 끝없이 나온다.</p>
+</section><section class="lblock"><h2>잇기 — <code>CONCATENATE</code> 와 <code>&amp;&amp;</code></h2>
+<p>여러 문자열을 하나로 잇는다. <button class="term" type="button" data-term="CONCATENATE">CONCATENATE</button>는 <strong>사이 구분자</strong>를 <code>SEPARATED BY</code>로
+지정할 수 있다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
-4</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> ls_person <span class="tok-kw">TYPE</span> zst_person.
+4</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> gv_full <span class="tok-kw">TYPE</span> string.
 
-ls_person-name = <span class="tok-str">'Kim'</span>.
-<span class="tok-kw">WRITE</span> ls_person-name.</code></pre></div></div>
-<p>로컬 구조(<code>BEGIN OF</code>)와 <strong>쓰는 법은 똑같다</strong> — 차이는 &quot;정의가 어디 사느냐&quot;뿐.
-전역이라 여러 곳에서 같은 모양을 공유하고, 한 곳만 고치면 전부 반영된다.</p>
-</section><section class="lblock"><h2>언제 로컬, 언제 DDIC?</h2>
-<ul>
-<li>그 프로그램에서만 쓰는 임시 묶음 → <strong>로컬</strong>(<code>BEGIN OF</code>).</li>
-<li>여러 프로그램·테이블이 공유 → <strong>DDIC Structure</strong>.</li>
-<li>(참고) 다음 챕터의 투명 테이블도 사실 이 구조 위에 행이 쌓이는 형태다.</li>
-</ul>
+<span class="tok-kw">CONCATENATE</span> <span class="tok-str">'정훈영'</span> <span class="tok-str">'님'</span> <span class="tok-kw">INTO</span> gv_full.                  <span class="tok-com">" 정훈영님</span>
+<span class="tok-kw">CONCATENATE</span> <span class="tok-str">'2026'</span> <span class="tok-str">'06'</span> <span class="tok-str">'23'</span> <span class="tok-kw">INTO</span> gv_full SEPARATED BY <span class="tok-str">'-'</span>. <span class="tok-com">" 2026-06-23</span></code></pre></div></div>
+<p>짧게 이을 땐 <strong><code>&amp;&amp;</code> 연산자</strong>가 더 간단하다(아주 자주 쓰여 미리 익혀 둔다).</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1</pre><pre class="abap-editor__code"><code>gv_full = <span class="tok-str">'정훈영'</span> &amp;&amp; <span class="tok-str">'님'</span>.       <span class="tok-com">" 정훈영님</span></code></pre></div></div>
+<blockquote>
+<p>💡 <code>CONCATENATE</code>는 구분자(<code>SEPARATED BY</code>)까지 챙길 수 있어 여러 조각을 정교하게
+이을 때 좋고, <code>&amp;&amp;</code>는 두어 개를 짧게 이을 때 간편하다. 상황에 맞게 고른다.</p>
+</blockquote>
+</section><section class="lblock"><h2>쪼개기 · 길이 — <code>SPLIT</code> · <code>STRLEN</code></h2>
+<p><code>SPLIT</code>은 구분자를 기준으로 문자열을 나눈다. <code>strlen( )</code>은 글자 수를 센다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> gv_id   <span class="tok-kw">TYPE</span> string <span class="tok-kw">VALUE</span> <span class="tok-str">'KR:정훈영'</span>.
+<span class="tok-kw">DATA</span> gv_cty  <span class="tok-kw">TYPE</span> string.
+<span class="tok-kw">DATA</span> gv_name <span class="tok-kw">TYPE</span> string.
+<span class="tok-kw">DATA</span> gv_len  <span class="tok-kw">TYPE</span> i.
+
+<span class="tok-kw">SPLIT</span> gv_id <span class="tok-kw">AT</span> <span class="tok-str">':'</span> <span class="tok-kw">INTO</span> gv_cty gv_name.   <span class="tok-com">" gv_cty='KR', gv_name='정훈영'</span>
+gv_len = strlen( gv_name ).               <span class="tok-com">" 3</span></code></pre></div></div>
+<p><code>strlen( )</code>처럼 <strong>괄호 안에 값을 넣어 결과를 돌려주는 것</strong>을 <button class="term" type="button" data-term="내장함수">내장함수</button>라 한다.
+숫자용 내장함수도 있다: <code>abs( -5 )</code>(절댓값 5), <code>sqrt( 9 )</code>(3), <code>ipow( base = 2 exp = 8 )</code>(256),
+<code>gv MOD 3</code>(나머지), <code>gv DIV 3</code>(몫).</p>
+</section><section class="lblock"><h2>찾고 바꾸기 — <code>FIND</code> · <code>REPLACE</code></h2>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> gv_text <span class="tok-kw">TYPE</span> string <span class="tok-kw">VALUE</span> <span class="tok-str">'SAP ABAP'</span>.
+
+FIND <span class="tok-str">'ABAP'</span> <span class="tok-kw">IN</span> gv_text.        <span class="tok-com">" 찾으면 sy-subrc = 0</span>
+REPLACE <span class="tok-str">'ABAP'</span> <span class="tok-kw">IN</span> gv_text <span class="tok-kw">WITH</span> <span class="tok-str">'HANA'</span>.   <span class="tok-com">" gv_text = 'SAP HANA'</span></code></pre></div></div>
+<blockquote>
+<p>옛 코드의 <code>SEARCH</code>문은 더 쓰지 않는다(obsolete). **찾기는 <code>FIND</code>**가 표준이다.</p>
+</blockquote>
+</section><section class="lblock"><h2>다듬기 — <code>CONDENSE</code> · 부분 접근(offset)</h2>
+<p><button class="term" type="button" data-term="CONDENSE">CONDENSE</button>는 <strong>앞뒤 공백을 없애고</strong> 중간 연속 공백을 한 칸으로 줄인다. 문자열의
+일부만 떼어 보려면 CH02에서 배운 <strong>offset 접근</strong> <code>gv+시작(길이)</code>을 쓴다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> gv_raw  <span class="tok-kw">TYPE</span> string <span class="tok-kw">VALUE</span> <span class="tok-str">'   정훈영   '</span>.
+<span class="tok-kw">DATA</span> gv_date <span class="tok-kw">TYPE</span> c LENGTH <span class="tok-num">8</span> <span class="tok-kw">VALUE</span> <span class="tok-str">'20260623'</span>.
+
+<span class="tok-kw">CONDENSE</span> gv_raw.                 <span class="tok-com">" '정훈영'</span>
+<span class="tok-kw">WRITE</span> gv_date+<span class="tok-num">4</span>(<span class="tok-num">2</span>).              <span class="tok-com">" 5번째부터 2글자 → '06' (월)</span></code></pre></div></div>
+<p>이 밖에 <code>SHIFT</code>(밀기)·<code>TRANSLATE</code>(대소문자/치환)·<code>OVERLAY</code>(겹쳐쓰기)·
+<code>WRITE 값 TO 변수</code>(서식을 입혀 변수로 받기)도 같은 갈래의 도구다.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">빈칸을 채워 문자열 함수 완성하기 — CONCATENATE · SPLIT · FIND</span><a class="embed__open" href="../../../sample/code-learning/fill-blank-code.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../sample/code-learning/fill-blank-code.html" loading="lazy" title="빈칸을 채워 문자열 함수 완성하기 — CONCATENATE · SPLIT · FIND"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>필드를 표준 타입으로 직접</strong> → 가능하지만 라벨·도움말을 잃는다. 가능하면 Data
-Element 참조.</li>
-<li><strong>이름 규칙/활성화</strong> → <code>Z</code>/<code>Y</code> 시작, 활성화(Ctrl+F3) 안 하면 사용 불가.</li>
+<li><strong><code>SPLIT</code> 대상 변수 개수</strong> → 쪼갠 조각 수만큼 받을 변수를 적는다.</li>
+<li><strong><code>&amp;&amp;</code> 양옆 공백</strong> → <code>a &amp;&amp; b</code>처럼 띄운다.</li>
+<li><strong><code>CONDENSE</code>로 안 지워질 때</strong> → 중간 모든 공백 제거는 <code>CONDENSE gv NO-GAPS</code>.</li>
 </ul>
-<hr>
-<p>이제 한 건을 로컬·전역 양쪽으로 묶을 수 있다. 마지막으로 묶은 구조체를 <strong>다루는
-요령</strong>(복사·초기화)을 보고 가자 → 다음 레슨.</p>
+</section><section class="lblock"><h2>정리</h2>
+<p>문자열을 잇고·쪼개고·찾고·다듬었다. 계산도 글자 처리도 되는데 — 프로그램은 아직
+<strong>언제나 똑같이</strong> 행동한다. &quot;값이 양수면 이렇게, 아니면 저렇게&quot; 갈라지게 하고 싶다
+→ <strong>CH04-L03(IF와 조건식)</strong>.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

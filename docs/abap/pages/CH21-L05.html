@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Metadata Extension 기초 · CDS View Entity 기초 · SAP Developer Academy</title>
+<title>Deep Structure 기반 Cell Style · SALV/Grid ALV 표시 제어 심화 · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH21 · CDS View Entity 기초</span>
+  <span class="meta">CH21 · SALV/Grid ALV 표시 제어 심화</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,16 +33,55 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH21</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">CDS View Entity 기초</p>
-        <h1>Metadata Extension 기초</h1>
-        
+        <p class="lhead__eyebrow">SALV/Grid ALV 표시 제어 심화</p>
+        <h1>Deep Structure 기반 Cell Style</h1>
+        <p class="lhead__direction">셀 단위 모양·동작 — 편집 가능·비활성·버튼.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 21</span><span class="tag tag--ls">Lesson 5</span><span class="tag tag--lv">고급</span></div>
       </section>
       <article class="prose">
-<blockquote>
-<p>🚧 골격 — 본문 작성 예정.</p>
-</blockquote>
+<section class="lblock"><h2>셀마다 다른 모양·동작</h2>
+<p>색뿐 아니라 셀마다 <strong>편집 가능 여부·버튼·체크박스</strong> 같은 모양을 다르게 줄 수 있다.
+역시 행 구조에 <strong>스타일 테이블</strong>(<code>LVC_T_STYL</code>)을 품는 방식이다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14</pre><pre class="abap-editor__code"><code><span class="tok-kw">TYPES</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ty_perf,
+         <span class="tok-com">"... 기존 필드 ...</span>
+         cellstyles <span class="tok-kw">TYPE</span> lvc_t_styl,
+       <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ty_perf.
 
+<span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_perf ASSIGNING <span class="tok-kw">FIELD-SYMBOL</span>(&lt;p&gt;).
+  <span class="tok-com">" 매진 회차는 좌석수 셀을 읽기 전용으로</span>
+  <span class="tok-kw">IF</span> &lt;p&gt;seatsocc &gt;= &lt;p&gt;capacity.
+    &lt;p&gt;cellstyles = <span class="tok-kw">VALUE</span> #( ( fieldname = <span class="tok-str">'SEATSOCC'</span>
+                                style = cl_gui_alv_grid=&gt;mc_style_disabled ) ).
+  <span class="tok-kw">ENDIF</span>.
+<span class="tok-kw">ENDLOOP</span>.
+
+ls_layout-stylefname = <span class="tok-str">'CELLSTYLES'</span>.</code></pre></div></div>
+<ul>
+<li><code>mc_style_disabled</code>(비활성)·<code>mc_style_enabled</code>(편집)·<code>mc_style_button</code> 등.</li>
+<li><code>stylefname</code> — 스타일 테이블 컬럼 이름을 Layout에 지정.</li>
+<li><strong>본격 편집(입력 받기·검증)</strong> 은 CH28(Editable Grid)에서.</li>
+</ul>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>색과 스타일 혼동</strong> → 색=<code>ctab_fname</code>, 모양·동작=<code>stylefname</code>.</li>
+<li><strong>편집만 켜고 처리 없음</strong> → 편집 표시는 됐어도 값 반영·검증은 별도(CH28).</li>
+</ul>
+<hr>
+<p>셀 색·모양까지 줬다. 그런데 색을 줄 단위가 셋(행·컬럼·셀)이다 — 언제 무엇을? → 다음 레슨.</p>
+</section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
       <footer class="foot">SAP Developer Academy · CH21 CH21-L05</footer>

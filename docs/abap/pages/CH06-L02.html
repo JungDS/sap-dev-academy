@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>데이터 입력(SE16N) · Transparent Table (SE11 · SE16N) · SAP Developer Academy</title>
+<title>내부 테이블의 3속성 · 테이블 종류 · Internal Table · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH06 · Transparent Table (SE11 · SE16N)</span>
+  <span class="meta">CH06 · Internal Table</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,36 +33,78 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH06</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">Transparent Table (SE11 · SE16N)</p>
-        <h1>데이터 입력(SE16N)</h1>
-        <p class="lhead__direction">만든 테이블에 데이터를 넣고 확인한다(SE16N).</p>
+        <p class="lhead__eyebrow">Internal Table</p>
+        <h1>내부 테이블의 3속성 · 테이블 종류</h1>
+        <p class="lhead__direction">내부 테이블을 정의하는 세 가지 — 행 모양·키·종류.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 6</span><span class="tag tag--ls">Lesson 2</span><span class="tag tag--lv">초급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>빈 테이블 채우기</h2>
-<p><button class="term" type="button" data-term="Transparent Table">Transparent Table</button>을 만들었으니 값을 넣어야 조회도 의미가 있다. 학습 단계에선
-<strong>SE16N</strong>으로 손쉽게 입력·확인한다.</p>
-</section><section class="lblock"><h2>SE16N로 조회·입력</h2>
-<p><code>SE16N</code> → 테이블명 <code>ZTPERSON</code> → 실행(F8)하면 현재 행이 보인다.</p>
+<section class="lblock"><h2>내부 테이블을 정하는 세 가지</h2>
+<p><code>TYPE TABLE OF ty_person</code> 한 줄에는 사실 <strong>세 가지 속성</strong>이 들어 있다. 이 셋을
+알면 테이블을 의도대로 설계할 수 있다.</p>
+<ol>
+<li><strong>Line Type(행 모양)</strong> — 한 행의 구조.</li>
+<li><strong>Primary Key(기본 키)</strong> — 행을 구분하는 기준.</li>
+<li><strong>Table Kind(종류)</strong> — 내부적으로 어떻게 저장·탐색하나.</li>
+</ol>
+</section><section class="lblock"><h2>① Line Type — 행은 꼭 구조가 아니어도 된다</h2>
+<p>행 모양은 보통 구조체지만, <strong>숫자 하나·문자 하나</strong> 같은 단일(elementary) 타입일 수도 있다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> lt_num    <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> i.           <span class="tok-com">" 행이 정수 하나</span>
+<span class="tok-kw">DATA</span> lt_person <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ty_person.   <span class="tok-com">" 행이 구조체</span></code></pre></div></div>
+</section><section class="lblock"><h2>② Primary Key — 행을 구분하는 기준</h2>
+<p>키는 &quot;어떤 필드로 행을 식별하나&quot;이다. <code>TYPE TABLE OF</code>만 쓰면 기본은 <strong>standard key</strong>
+(여러 필드 기준의 느슨한 키)가 잡힌다. 필요하면 키를 명시할 수도 있다(<code>WITH KEY ...</code>).</p>
+</section><section class="lblock"><h2>③ Table Kind — 세 종류</h2>
+<table>
+<thead>
+<tr>
+<th>종류</th>
+<th>저장 / 탐색</th>
+<th>인덱스 접근</th>
+<th>언제</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>STANDARD</td>
+<td>입력 순서 유지, 순차 탐색</td>
+<td>O</td>
+<td>기본·순서 중요</td>
+</tr>
+<tr>
+<td>SORTED</td>
+<td>키로 자동 정렬, 이진 탐색</td>
+<td>O</td>
+<td>정렬 유지·빠른 범위</td>
+</tr>
+<tr>
+<td>HASHED</td>
+<td>해시로 단건 초고속</td>
+<td>X</td>
+<td>유일 키 대량 단건</td>
+</tr>
+</tbody></table>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2</pre><pre class="abap-editor__code"><code><span class="tok-kw">TYPES</span> ty_person_tab <span class="tok-kw">TYPE</span> STANDARD <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ty_person.
+<span class="tok-kw">DATA</span>  lt_person     <span class="tok-kw">TYPE</span> ty_person_tab.</code></pre></div></div>
 <ul>
-<li><strong>조회</strong> — 조건을 주고 실행하면 해당 행만 나온다.</li>
-<li><strong>입력</strong> — 신규 행 입력은 권한·설정에 따라 다르다. 교육 시스템의 안내(또는
-<code>SE11 → Contents</code>, 전용 입력 프로그램)를 따른다.</li>
+<li>STANDARD·SORTED는 <strong>Index Table</strong>(번호 <code>sy-tabix</code>로 접근 가능), HASHED는 인덱스가 없다.</li>
+<li>처음엔 <strong>STANDARD</strong>로 충분하다. SORTED/HASHED는 성능이 절실할 때 다시 본다.</li>
 </ul>
-<blockquote>
-<p>실무에서는 보통 <strong>입력용 화면/프로그램</strong>(또는 유지보수 뷰, CH13)으로 데이터를
-넣는다. 지금은 &quot;테이블에 행이 들어간다&quot;를 확인하는 게 목적.</p>
-</blockquote>
-</section><section class="lblock"><h2>키 중복은 안 된다</h2>
-<p>키가 같은 행을 두 번 넣을 수 없다. <code>MANDT + PERSID</code>가 키라면 같은 PERSID는 하나뿐.</p>
+</section><section class="lblock"><h2>로컬 vs 전역(DDIC) Table Type</h2>
+<p>구조체처럼 테이블 타입도 로컬(<code>TYPES</code>)·전역(SE11 Table Type)으로 둘 수 있다.</p>
+<p><code>SE11</code> → Data Type → <strong>Table Type</strong> → <code>ZTT_PERSON</code> → 행 타입에 구조 <code>ZST_PERSON</code> →
+활성화. 그러면 여러 프로그램이 같은 테이블 타입을 공유한다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> lt_person <span class="tok-kw">TYPE</span> ztt_person.   <span class="tok-com">" 전역 Table Type</span></code></pre></div></div>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>입력 권한 없음</strong> → 교육 시스템 안내를 따른다. SE16N 직접 편집은 제한될 수 있다.</li>
-<li><strong>클라이언트 혼동</strong> → 다른 Client에서 넣은 데이터는 안 보인다(<button class="term" type="button" data-term="MANDT">MANDT</button> 분리).</li>
+<li><strong>처음부터 SORTED/HASHED 남발</strong> → 기본은 STANDARD. 측정 후 바꾼다.</li>
+<li><strong>HASHED에 인덱스 접근</strong> → HASHED는 <code>sy-tabix</code>/INDEX 접근 불가(키로만 찾는다).</li>
+<li><strong>행 타입 먼저</strong> → 테이블 타입의 &quot;행&quot;은 구조(또는 단일형). 행 모양을 먼저 정한다.</li>
 </ul>
 <hr>
-<p>이제 데이터가 디스크에 <strong>영구히</strong> 남았다. 그런데 프로그램에서 이 저장된 값을 다시
-<strong>읽어오려면</strong>? → <strong>CH07(Open SQL 기본 조회)</strong>.</p>
+<p>테이블을 어떻게 정의하는지 알았다. 이제 <strong>한 행을 콕 집어</strong> 넣고·찾고·고치는 법이다
+→ 단일행 접근(다음 레슨).</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

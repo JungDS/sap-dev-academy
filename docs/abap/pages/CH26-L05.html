@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ALV Event Handler Class 설계 · ALV 고급 Event 응용 · SAP Developer Academy</title>
+<title>Testable Class 설계와 ABAP Unit · OO ABAP 고급 설계와 패턴 · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH26 · ALV 고급 Event 응용</span>
+  <span class="meta">CH26 · OO ABAP 고급 설계와 패턴</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,16 +33,68 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH26</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">ALV 고급 Event 응용</p>
-        <h1>ALV Event Handler Class 설계</h1>
-        
+        <p class="lhead__eyebrow">OO ABAP 고급 설계와 패턴</p>
+        <h1>Testable Class 설계와 ABAP Unit</h1>
+        <p class="lhead__direction">검증 가능한 설계 — 의존성 분리와 단위 테스트.</p>
         <div class="tags"><span class="tag tag--track">Track 2</span><span class="tag tag--ch">Chapter 26</span><span class="tag tag--ls">Lesson 5</span><span class="tag tag--lv">고급</span></div>
       </section>
       <article class="prose">
-<blockquote>
-<p>🚧 골격 — 본문 작성 예정.</p>
-</blockquote>
+<section class="lblock"><h2>검증 가능하게 설계</h2>
+<p>DB·화면에 딱 붙은 코드는 자동 테스트가 어렵다. <strong>인터페이스로 의존성을 분리</strong>하면
+가짜 구현(Mock)으로 갈아끼워 <strong>단위 테스트</strong>할 수 있다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4</pre><pre class="abap-editor__code"><code><span class="tok-com">" 의존성을 인터페이스로 주입받기</span>
+<span class="tok-kw">METHOD</span> constructor.
+  mo_repo = io_repo.        <span class="tok-com">" zif_booking_repo (실제 or Mock)</span>
+<span class="tok-kw">ENDMETHOD</span>.</code></pre></div></div>
+</section><section class="lblock"><h2>ABAP Unit — 테스트 클래스</h2>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11</pre><pre class="abap-editor__code"><code><span class="tok-kw">CLASS</span> ltcl_test <span class="tok-kw">DEFINITION</span> FOR TESTING DURATION SHORT RISK LEVEL HARMLESS.
+  <span class="tok-kw">PRIVATE</span> <span class="tok-kw">SECTION</span>.
+    <span class="tok-kw">METHODS</span> remaining_calc FOR TESTING.
+<span class="tok-kw">ENDCLASS</span>.
 
+<span class="tok-kw">CLASS</span> ltcl_test <span class="tok-kw">IMPLEMENTATION</span>.
+  <span class="tok-kw">METHOD</span> remaining_calc.
+    <span class="tok-kw">DATA</span>(lo) = <span class="tok-kw">NEW</span> zcl_booking_manager( io_repo = <span class="tok-kw">NEW</span> ltd_repo_mock( ) ).
+    cl_abap_unit_assert=&gt;assert_equals( act = lo-&gt;remaining( ) exp = <span class="tok-num">50</span> ).
+  <span class="tok-kw">ENDMETHOD</span>.
+<span class="tok-kw">ENDCLASS</span>.</code></pre></div></div>
+<ul>
+<li><code>FOR TESTING</code> 클래스에 테스트 메서드를 둔다.</li>
+<li><code>cl_abap_unit_assert</code>로 기대값 검증.</li>
+<li>Mock(가짜 의존성)으로 DB 없이 로직만 빠르게 검증.</li>
+</ul>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>DB 직접 의존</strong> → 테스트가 느리고 불안정. 인터페이스로 분리·Mock.</li>
+<li><strong>테스트 없음</strong> → 리팩터링이 두려워진다. 핵심 로직엔 단위 테스트를.</li>
+</ul>
+</section><section class="lblock"><h2>🧩 도전 과제 (서브퀘스트)</h2>
+<blockquote>
+<p>선택 과제 — 예매 로직을 OO 패턴으로 다듬는다.</p>
+</blockquote>
+<ol>
+<li><code>ZCL_BOOKING_MANAGER</code>(CH20-L10)를 <strong>Factory</strong>로 생성하게 바꾼다(일반/VIP 예매).</li>
+<li>요금 계산을 <strong>Strategy</strong>(인터페이스)로 분리해 정책을 갈아끼운다.</li>
+<li>(심화) <code>remaining()</code> 로직에 <strong>ABAP Unit</strong> 테스트를 작성하고 DB는 Mock으로 분리한다.</li>
+</ol>
+<p>힌트: L01(Factory)·L03(Strategy)·L05(ABAP Unit/의존성 주입).</p>
+<hr>
+<p>테스트 가능한 OO 설계까지 익혔다. 이제 이 OO 힘으로 <strong>ALV의 본격 이벤트</strong>를 다루자 →
+<strong>CH27</strong>.</p>
+</section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
       <footer class="foot">SAP Developer Academy · CH26 CH26-L05</footer>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Testable Class 설계 · OO ABAP 고급 설계와 패턴 · SAP Developer Academy</title>
+<title>Lock Object와 COMMIT/ROLLBACK 연결 · Lock Object와 동시성 제어 · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH25 · OO ABAP 고급 설계와 패턴</span>
+  <span class="meta">CH25 · Lock Object와 동시성 제어</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,16 +33,78 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH25</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">OO ABAP 고급 설계와 패턴</p>
-        <h1>Testable Class 설계</h1>
-        
-        <div class="tags"><span class="tag tag--track">Track 2</span><span class="tag tag--ch">Chapter 25</span><span class="tag tag--ls">Lesson 5</span><span class="tag tag--lv">고급</span></div>
+        <p class="lhead__eyebrow">Lock Object와 동시성 제어</p>
+        <h1>Lock Object와 COMMIT/ROLLBACK 연결</h1>
+        <p class="lhead__direction">잠금–읽기–변경–커밋–해제의 한 흐름.</p>
+        <div class="tags"><span class="tag tag--track">Track 2</span><span class="tag tag--ch">Chapter 25</span><span class="tag tag--ls">Lesson 5</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
-<blockquote>
-<p>🚧 골격 — 본문 작성 예정.</p>
-</blockquote>
+<section class="lblock"><h2>안전한 변경의 정석</h2>
+<p>CH24(DML·COMMIT)와 CH25(잠금)를 묶으면 안전한 변경 흐름이 완성된다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23</pre><pre class="abap-editor__code"><code><span class="tok-com">" 1) 잠금</span>
+<span class="tok-kw">CALL</span> <span class="tok-kw">FUNCTION</span> <span class="tok-str">'ENQUEUE_EZ_BOOKING'</span>
+  <span class="tok-kw">EXPORTING</span> booking_id = lv_id
+  <span class="tok-kw">EXCEPTIONS</span> foreign_lock = <span class="tok-num">1</span> OTHERS = <span class="tok-num">2</span>.
+<span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.
+  <span class="tok-kw">MESSAGE</span> <span class="tok-str">'편집 중입니다'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'E'</span>.
+<span class="tok-kw">ENDIF</span>.
 
+<span class="tok-com">" 2) 읽기 → 3) 변경</span>
+<span class="tok-kw">SELECT</span> <span class="tok-kw">SINGLE</span> * <span class="tok-kw">FROM</span> zbooking <span class="tok-kw">WHERE</span> booking_id = @lv_id <span class="tok-kw">INTO</span> @<span class="tok-kw">DATA</span>(ls).
+ls-seats = lv_new_seats.
+ls-changed_by = sy-uname. ls-changed_at = sy-uzeit.
+UPDATE zbooking <span class="tok-kw">FROM</span> @ls.
+
+<span class="tok-com">" 4) 확정 / 취소</span>
+<span class="tok-kw">IF</span> sy-subrc = <span class="tok-num">0</span>.
+  <span class="tok-kw">COMMIT</span> <span class="tok-kw">WORK</span>.
+<span class="tok-kw">ELSE</span>.
+  <span class="tok-kw">ROLLBACK</span> <span class="tok-kw">WORK</span>.
+<span class="tok-kw">ENDIF</span>.
+
+<span class="tok-com">" 5) 해제(보통 COMMIT/ROLLBACK이 자동 해제하나 명시도 안전)</span>
+<span class="tok-kw">CALL</span> <span class="tok-kw">FUNCTION</span> <span class="tok-str">'DEQUEUE_EZ_BOOKING'</span> <span class="tok-kw">EXPORTING</span> booking_id = lv_id.</code></pre></div></div>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>순서 어긋남</strong> → 잠금은 변경 <strong>전</strong>, 해제는 커밋 <strong>후</strong>.</li>
+<li><strong>롤백 시 잠금</strong> → ROLLBACK도 잠금을 해제한다(보통). 흐름을 일관되게.</li>
+</ul>
+</section><section class="lblock"><h2>🧩 도전 과제 (서브퀘스트)</h2>
+<blockquote>
+<p>선택 과제 — 예매 변경에 동시성 제어를 입힌다.</p>
+</blockquote>
+<ol>
+<li>예매 수정 전 <code>ENQUEUE_EZ_BOOKING</code>으로 잠그고, 끝나면 <code>DEQUEUE</code>(또는 COMMIT 시 자동 해제).</li>
+<li>다른 세션이 같은 예매를 잠그면(<code>foreign_lock</code>) &quot;편집 중&quot; 메시지로 정중히 거절.</li>
+<li>(심화) 낙관적 잠금 — 읽을 때의 <code>changed_at</code>을 저장 직전 DB와 비교해 충돌을 감지.</li>
+</ol>
+<p>힌트: L02(ENQUEUE/DEQUEUE)·L03(foreign_lock)·L04(낙관/비관)·L05(통합 패턴).</p>
+<hr>
+<p>동시성까지 안전하게 다뤘다. 이제 코드 구조를 더 정교하게 — OO 고급 설계·패턴 →
+<strong>CH26</strong>.</p>
+</section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
       <footer class="foot">SAP Developer Academy · CH25 CH25-L05</footer>
