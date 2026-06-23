@@ -1,6 +1,6 @@
 # 07. BROWSER TESTING — 미리보기 검증 워크플로
 
-> 📅 **최종수정: 2026-06-18 KST**
+> 📅 **최종수정: 2026-06-23 02:12 KST**
 > 🎯 **목적:** 화면/인터랙션을 신뢰성 있게 검증하는 방법(이 환경의 한계 포함).
 > 📖 **읽을 때:** 브라우저로 동작을 확인해야 할 때.
 > ⚡ **TL;DR:**
@@ -10,7 +10,7 @@
 
 ## 서버 띄우기
 - `preview_start` name=`static` (포트 8137). `.claude/launch.json`에 `python -m http.server 8137`로 정의됨.
-- URL 예: `http://localhost:8137/sample/index.html`, `.../docs/abap/pages/CH01-L01-logon.html`.
+- URL 예: `http://localhost:8137/sample/index.html`, `.../docs/abap/pages/CH01-L01.html`.
 
 ## 검증 순서 (권장)
 1. `preview_eval`로 페이지 이동: `location.href='http://localhost:8137/...'` → 다음 eval은 **새로** 보낸다(네비 후 이전 컨텍스트는 끊김, [05 P3](05_PITFALLS.md)).
