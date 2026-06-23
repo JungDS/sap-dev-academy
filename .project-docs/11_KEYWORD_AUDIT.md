@@ -1,6 +1,6 @@
 # 11. KEYWORD AUDIT — 공식 ABAP Keyword Doc 대비 콘텐츠 감사 원장
 
-> 📅 최종수정: 2026-06-23 09:47 KST
+> 📅 최종수정: 2026-06-23 09:49 KST
 > 🎯 **목적:** `content/abap/**` 레슨을 **SAP 공식 ABAP Keyword Documentation 오프라인 전체본**(`C:\ABAP_DOCU_HTML`, AS ABAP Release 758)과 대조해 키워드·문법·이론의 **누락/상이/오류**를 보강. 챕터 순서대로.
 > 📖 **읽을 때:** 감사 패스 **재개 시**(이어서 진행) — 이 원장이 어디까지 했는지의 단일 출처.
 
@@ -25,8 +25,9 @@
 | CH03 | ✅ 완료 | 변경 없음 — 공식과 일치 |
 | CH04 | ✅ 완료 | DIV/MOD 연산자 재배치(L02→L01) |
 | CH05 | ✅ 완료 | 변경 없음 — 공식과 일치 |
-| CH06 | 🔄 진행 중 | |
-| CH07~CH36 | ⬜ 대기 | |
+| CH06 | ✅ 완료 | L03 READ INDEX·L04 LOOP FROM/TO 보강 |
+| CH07 | 🔄 진행 중 | |
+| CH08~CH36 | ⬜ 대기 | |
 
 ## 챕터별 findings
 
@@ -58,3 +59,8 @@
 ### CH05 — Structure (Local · DDIC)  → **변경 없음(공식과 일치)**
 - **L01**(Local `BEGIN OF/END OF`·Work Area·`-` 접근)·**L02**(DDIC Structure)·**L03**(`=` 통째 대입·CLEAR·MOVE-CORRESPONDING)·**L04**(캡스톤): 정확 ✓.
 - modern `CORRESPONDING #( )`는 New Syntax(CH18+)라 의도적 미노출 — 게이팅 준수. 중첩 구조·INCLUDE는 입문 스코프상 생략(타당).
+
+### CH06 — Internal Table
+- **L01**(TYPE TABLE OF·APPEND·CLEAR/REFRESH/FREE·헤더라인 경고)·**L02**(Line Type·Key·STANDARD/SORTED/HASHED·Index Table)·**L05**(Deep)·**L06**(캡스톤): 정확 ✓ — 매우 충실.
+- **L03**(단일행): **보강** `READ TABLE … INDEX n`(번호로 행 읽기) 추가 — 기본 classic 접근인데 누락이던 것. (APPEND/INSERT·WITH KEY/TABLE KEY·BINARY SEARCH·MODIFY·TRANSPORTING·DELETE는 정확.)
+- **L04**(집단행): **보강** `LOOP … FROM n TO m`(번호 범위) 추가 — introduces가 `LOOP(FROM/TO·WHERE)` 선언·본문도 "조건·범위"라 했으나 범위 코드 누락이던 갭. (ASSIGNING `<fs>`·COLLECT·컨트롤레벨·DELETE ADJACENT DUPLICATES·DESCRIBE 정확.)
