@@ -1,8 +1,9 @@
-# 04. CONVENTIONS — 규칙 단일 홈 (R1~R14) · 이름 풀 · 입문자 작성법
+# 04. CONVENTIONS — 규칙 단일 홈 (R1~R15) · 이름 풀 · 입문자 작성법
 
-> 📅 최종수정: 2026-06-21 00:37 KST
+> 📅 최종수정: 2026-06-22 07:19 KST
 > 🎯 **이 문서가 규칙(R)의 단일 출처.** 01·05·06 등은 여기 ID를 참조한다(재진술 금지).
-> 📖 파일을 쓰기/고치기 직전. 중요도 순(필수→높음→중), 안정 ID `R1`~`R14`.
+> 🧭 **공통 원칙: 규칙은 형식을 강제하지 않는다 — 정직한 적합성이 우선.** 불편·시각요소·예고를 "칸을 채우려고" 인위적으로 만들지 말 것(맞는 곳에 맞는 것만).
+> 📖 파일을 쓰기/고치기 직전. 중요도 순(필수→높음→중), 안정 ID `R1`~`R15`.
 
 ## 🚨 규칙 (R = Rule, 위반 금지)
 
@@ -13,7 +14,7 @@
 
 **R3 · 입문자 작성법 ★** — 학습 대상 = 개발·전공 경험 없는 20대 전후 입문자(학습자용 콘텐츠 한정 — `.project-docs`·빌드 스크립트엔 비적용).
 - 친근한 톤 · **이모지/SVG 둘 다 상황껏**(한 방식 강제 금지). [[audience-and-emoji-tone]]
-- 용어 **첫 등장 1회** 인라인 한 줄 풀이(반복은 glossary 팝업). 예: "Internal Table(메모리에 잠깐 두는 표)".
+- 용어 **첫 등장 1회** 인라인 한 줄 풀이(반복은 glossary 팝업). 예: "Internal Table(메모리에 잠깐 두는 표)". **단 "한 줄"은 *스쳐가는 부수 용어*의 노출 형식** — 그 용어가 *이번 레슨의 주제 개념*이면 한 줄로 끝내지 말고 R15 **L3**로 본문 전체가 풀이(필요성→정의→구조…).
 - **ABAP 고유 용어는 영어 원문**(직역 금지): Internal Table·Data Element… 풀이는 괄호로. [[abap-terms-english]]
 - 흐름: 왜 필요한가 → 무엇인가 → 어떻게 쓰나 → 실수/주의 → 정리. 압축 설명 금지.
 - 시각화·체험 동반(길면 `details` 접기). 참고 구현: `sample/structure/beginner-lesson-template.html`. [[beginner-learning-page-style]]
@@ -26,13 +27,21 @@
 - 코드는 ```` ```abap … ``` ````. **빌드가 [code-copy-block 양식](../sample/structure/code-copy-block.html)(네이비 헤더+줄번호+ABAP 토큰색+복사)으로 자동 변환** → 다크/블랙 블록 금지([05 P10](05_PITFALLS.md)). 본문엔 fenced 코드만(직접 HTML 금지).
 - 핵심용어 `[[WRITE]]` / `[[Internal Table|내부 테이블]]` → `term` 버튼(hover=임시·click=고정). 마킹 키는 glossary에 있어야(R12).
 - 체험 임베드: `::embed <sample경로> | <제목>::` → `sample/` standalone을 iframe 위젯으로.
-- 콜아웃은 `>` 블록인용. 챕터/레슨 끝에 다음 불편을 `→ CHxx`로(불편 체인).
+- 콜아웃은 `>` 블록인용. **레슨 끝 연결은 관계대로**(R15): 진짜 pain→solution이면 다음 불편을 `→ CHxx`(불편 체인), 형제/대안(DO↔WHILE)·심화면 억지 불편 대신 "도구 선택"/"다음 단계"로 정직히 연결.
 - **코드 글꼴 = D2Coding 우선**(`--mono:'D2Coding',Consolas,…`; 빌드·샘플·SVG 코드 텍스트 공통).
 - **코드 표시: 수직 스크롤만 허용, 수평 지양** — 한 줄 짧게(긴 문장 분할). 행번호(거터)와 코드 줄 수는 항상 1:1.
 
-**R6 · classic-first SQL 경계 = CH18** — CH18 이전(특히 CH07~16 Open SQL)은 **순수 classic**: New Syntax(인라인 `DATA()`·`VALUE`/`NEW` 등)와 New Open SQL(`@`·콤마) **금지**. **CH18에서 modern을 도입한 뒤부터는 자유 사용.** + 스칼라·구조체는 **Local(프로그램 내 `DATA`/`TYPES`) → Global(DDIC: Domain·Data Element·Structure·Table) 나선**으로 — 한 번에 몰지 않고 같은 개념을 넓은 범위로 재방문(DDIC는 CH03/04/06에 분산). [[abap-curriculum-design]]
+**R6 · classic-first SQL 경계 = CH18** — CH18 이전(특히 CH07~16 Open SQL)은 **순수 classic**: New Syntax(인라인 `DATA()`·`VALUE`/`NEW` 등)와 New Open SQL(`@`·콤마) **금지**. **이는 R15에서 New Syntax/New Open SQL을 `CH18까지 L0(예고조차 금지) → CH18에서 L3`로 선언한 특례**(일반 게이팅보다 강함). **CH18에서 modern을 도입한 뒤부터는 자유 사용.** + 스칼라·구조체는 **Local(프로그램 내 `DATA`/`TYPES`) → Global(DDIC: Domain·Data Element·Structure·Table) 나선**으로 — 한 번에 몰지 않고 같은 개념을 넓은 범위로 재방문(DDIC는 CH03/04/06에 분산). [[abap-curriculum-design]]
 
 **R7 · git** — main 직접 작업 금지(별도 브랜치). `.gitignore`에 안 걸린 변경은 **전부** `git add -A` → commit → push. 커밋 메시지 끝에 `Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>`.
+
+**R15 · 개념 노출 게이팅 + 선수지식 잠금 ★** (R6와 짝) — 레슨은 **그 시점까지 배운 것만으로** 이해·실습 가능해야 한다. 후속 개념의 정의·구조·문법·코드를 미리 당겨 설명하지 않는다(AI가 "완성도"를 이유로 앞당기는 게 대표 실수 → [05 P11](05_PITFALLS.md)). 같은 개념도 노출을 4단계로 관리:
+- **L0 노출금지** — 용어·예고·코드 전부 금지(현재 레슨과 무관하거나 미리 보면 혼란 큰 개념).
+- **L1 예고** — *존재/이름 + 배울 시점*만. 1~2문장·새 용어 1개·코드 없음·"지금 외울 필요 없음" 명시. **우리 불편 체인(`→ CHxx`, R5)이 곧 L1** — 도입/마무리에만, 중간 반복 금지. 실습·평가 제외.
+- **L2 선행사용** — 명세가 *명시 허용*한 코드만 `[선행 사용]`으로 표시해 먼저 사용("분석/암기 불필요" + 정식 레슨 안내, 실습·평가 제외). AI 임의 결정 금지.
+- **L3 정식 도입** — 필요성→정의→구조→동작→문법→예제→실습. **개념당 한 곳(최초 도입 레슨)에서만.**
+- **불편-해결책과의 관계**: 도입부 불편(일상어, 미래 용어 미사용) → 필요성 → 그 해결책으로 **L3 정식 도입** → 끝에서 다음 불편을 **L1 예고**. 이 규칙은 불편-해결책을 *대체가 아니라 강제하는 가드레일.* **단, 불편 체인은 다음 레슨이 진짜 *이번 한계의 해소*(pain→solution)일 때만** — 형제/대안(DO↔WHILE 등)·심화면 억지 불편 금지, "도구 선택"/"다음 단계"로 정직히(레슨 관계는 R10 `prevRel`로 선언).
+- **R6 나선과의 화해**: 나선 재방문은 "같은 개념 중복 정의"가 아니라 **범위가 다른 별개 개념**으로 본다(예: Local 구조체 ≠ DDIC 구조체 → 각자 L3 도입 지점). 경계는 R10 front-matter(`introduces`/`prereq`/`foreshadow`/`advanceUse`)로 선언. [[abap-curriculum-design]]
 
 ### 중
 **R8 · 공통 자산 인덱스 주석** — `shell.js`·`base.css` 등 공통/큰 자산은:
@@ -48,10 +57,11 @@
 **R10 · front-matter + 제목** — 제목=기술형(서사 문구 금지), 동기는 `intro`(챕터)/`direction`(레슨).
 - `_chapter.md`: `id`(=폴더명)·`track`·`order`·`title`·`intro`·`keywords`·`difficulty`.
 - 레슨 `.md`: `id`·`title`·`direction`·`keywords`·`order` · (선택) `tcode`·`tcodeBadge`·`goals`.
+- 레슨 `.md` **학습 경계(R15)**: `introduces`(이번에 L3 정식 도입할 개념)·`prereq`(전제 개념) = **리빌딩 시 필수**(게이팅 검증 근거) · `foreshadow`(L1 예고 허용)·`advanceUse`(L2 선행 사용 허용)·`prevRel`(이전 레슨과의 관계: `pain-solution`/`parallel`/`deepening`) = 선택. 빌드는 무시(메타 전용) — 리빌딩 때 경계·관계 선언 + 후속 정적 점검 근거.
 
 **R11 · 네이밍** — 챕터 폴더 = 챕터 ID(`CH01/`). 레슨 소스 = `<레슨ID>[-슬러그].md`. **생성물 HTML = `docs/abap/pages/<레슨ID>.html`**(슬러그 무관, 빌드 강제). 샘플 = `<카테고리>/<기능-케밥>.html`.
 
-**R12 · glossary 패리티** — 본문에서 마킹한 모든 용어 키는 `content/abap/glossary.json`에 존재(미정의 0). 빌드 후 정적 점검.
+**R12 · glossary 패리티** — 본문에서 마킹한 모든 용어 키는 `reference/glossary.json`에 존재(미정의 0). 빌드 후 정적 점검.
 
 **R13 · 타임스탬프** — 손작성 `.md`(content·.project-docs) 최상단 `최종수정: YYYY-MM-DD HH:MM KST`. **사용자 확인용이라 무조건 유지** — `.githooks/pre-commit`이 스테이징된 `.md`에 자동 스탬프하므로 수동 갱신 불필요.
 

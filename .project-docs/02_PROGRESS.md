@@ -1,6 +1,6 @@
 # 02. PROGRESS — 진행 현황 · 다음 할 일
 
-> 📅 **최종수정: 2026-06-21 00:37 KST**
+> 📅 **최종수정: 2026-06-22 07:19 KST**
 > 🎯 **목적:** 목표가 어디까지 왔고, 다음에 무엇을 할지. 작업 시작·종료 시 갱신.
 > 📖 **읽을 때:** 작업 시작 전(현황 파악) · 종료 후(갱신).
 > ⚡ **TL;DR:** ABAP 커리큘럼 골격+CH01~14 본문 완료(CH15+ 스텁). 이번에 `sample/` 독립형 라이브러리 구축 + 입문자 작성표준·이름 풀 확정.
@@ -15,7 +15,7 @@
 | 전체 spine(35챕터/**194**레슨 스캐폴딩) | ✅ (CH01에 WRITE 심화 L05 신설 → 6레슨) |
 | CH01~CH14 본문(classic 기초 전체) | ✅ 완료 (단 CH14-L08 = `AT SELECTION-SCREEN ON` 심화 **예약 스텁**, 본문 추후) |
 | CH15~CH35 본문 | 🚧 스텁 골격 |
-| 통합 커리큘럼 MD(`CURRICULUM.md`) | ✅ `npm run build:curriculum-md`로 전 챕터·레슨 구조+다룰내용 개요를 단일 MD 생성(NotebookLM 소스용). 생성물 — front-matter에서 고치고 재생성. |
+| 커리큘럼 개요 MD(`docs/abap/curriculum.md` + 트랙/챕터별) | ✅ `npm run build:curriculum-md`로 전 챕터·레슨 구조+다룰내용 개요를 통합·트랙별·챕터별 MD로 생성(NotebookLM·AI 부분분석용). 생성물 — front-matter에서 고치고 재생성. |
 | 로드맵 `pages/abap.html` | ✅ 개편 — 챕터 아코디언 + 레슨 요약(direction)·키워드·**직접 점프** + 검색/트랙점프/전체펼치기. v2-C 조화(블루/그린). 레슨 상세는 `lessons/CHxx.json` 지연 로드 |
 | glossary(65용어, CH01~14 커버) | ✅ |
 | 브라우저 시각 스모크테스트 | ⚠️ 일부 미실시(미리보기 깊은 URL 제약 → [07](07_BROWSER_TESTING.md)) |
@@ -37,7 +37,7 @@
 ## ▶️ 다음 할 일 (우선순위)
 1. **골든 템플릿 5종 ✅ 전부 완료** — 셸 이식(✅v2-C·T코드·`::embed`) + 골든 5종([08 §10](08_LESSON_SHELL_SPEC.md)) 모두 신규 시뮬레이터 제작·검증 완료: ✅ **#1 CH14-L01(흐름)** 이벤트 점진적 빌드업 · ✅ **#2 CH01-L04(코드)** WRITE 출력 · ✅ **#3 CH03-L01(DDIC)** Domain 생성(저장→검사→활성화) · ✅ **#4 CH07-L01(SQL)** SELECT 조회(projection+WHERE→classic→sy-subrc) · ✅ **#5 CH10-L02(ALV)** SALV factory→display(라벨 자동·정렬·합계). 오써링 체크리스트=[08 §11](08_LESSON_SHELL_SPEC.md).
    - **▶ 다음**: 이 5 아키타입을 기준으로 나머지 레슨 양산(아래 2번).
-2. **나머지 레슨 양산** — 골든 5종을 기준으로 CH01~14 업그레이드 + CH15~ 본문. ⚠️ CH18 classic→modern 경계([04 R6](04_CONVENTIONS.md)).
+2. **나머지 레슨 양산** — **(선행) 전면 리빌드면 MD 작성 *전에* "커리큘럼 맵 + 개념 원장" 확정**: 챕터/레슨 목록(가감·분할 가능하나 ID 안정성 우선 = 리넘버보다 추가/분할) · 개념별 `introduces` 레슨 · `prereq` · CH18 경계 · 레슨 관계(`prevRel`). 그 위에서 골든 5종 기준 CH01~14 업그레이드 + CH15~ 본문. ⚠️ CH18 classic→modern 경계([04 R6](04_CONVENTIONS.md)) · **리빌딩 시 R15 게이팅(L0~L3)·선수지식 잠금이 핵심 지표** — 레슨마다 `introduces`/`prereq` 필수 선언 + DoD 학습순서 항목 통과([04 R15](04_CONVENTIONS.md)/[05 P11](05_PITFALLS.md)).
 3. **시각 스모크테스트** — 셸 인터랙션·로드맵·임베드 렌더 눈으로 확인.
 4. `index.html` 허브에서 ABAP 카드 → 로드맵 연결 점검.
 

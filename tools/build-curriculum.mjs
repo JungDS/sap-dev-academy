@@ -319,27 +319,13 @@ function main() {
   };
   fs.writeFileSync(path.join(OUT, 'curriculum.json'), JSON.stringify(curriculum, null, 2), 'utf8');
 
-  // 글로서리 pass-through (source content/abap/glossary.json → docs/abap/glossary.json)
-  const glossSrc = path.join(SRC, 'glossary.json');
+  // 참조 데이터(glossary·tcodes)는 reference/에 손작성 → 런타임이 직접 fetch. 빌드 pass-through 없음.
+  // glossary 패리티만 점검(경고): 본문 [[term]] 키가 reference/glossary.json에 정의돼 있나 (R12).
+  const glossSrc = path.join(ROOT, 'reference', 'glossary.json');
   let glossCount = 0;
   if (fs.existsSync(glossSrc)) {
     const gloss = JSON.parse(fs.readFileSync(glossSrc, 'utf8'));
     glossCount = Object.keys(gloss).length;
-    fs.writeFileSync(path.join(OUT, 'glossary.json'), JSON.stringify(gloss, null, 2), 'utf8');
-  }
-
-  // T-code 사전 pass-through (content/abap/tcodes.json → docs/abap/tcodes.json)
-  const tcodesSrc = path.join(SRC, 'tcodes.json');
-  let tcodeCount = 0;
-  if (fs.existsSync(tcodesSrc)) {
-    const tc = JSON.parse(fs.readFileSync(tcodesSrc, 'utf8'));
-    tcodeCount = Object.keys(tc.tcodes || {}).length;
-    fs.writeFileSync(path.join(OUT, 'tcodes.json'), JSON.stringify(tc, null, 2), 'utf8');
-  }
-
-  // 글로서리 패리티 점검(경고만, 빌드는 계속) — [[term]] 키가 glossary에 정의돼 있나 (R6)
-  if (fs.existsSync(glossSrc)) {
-    const gloss = JSON.parse(fs.readFileSync(glossSrc, 'utf8'));
     const missing = new Set();
     for (const ch of chapters) for (const l of ch.lessons) {
       const re = /\[\[([^\]|]+?)(?:\|[^\]]+?)?\]\]/g; let m;
@@ -353,8 +339,7 @@ function main() {
   console.log(`✓ curriculum.json — ${curriculumTracks.length} tracks / ${totalCh} chapters`);
   console.log(`✓ lessons/*.json  — ${chapters.length} files`);
   console.log(`✓ pages/*.html    — ${pageCount} lessons`);
-  console.log(`✓ glossary.json   — ${glossCount} terms`);
-  console.log(`✓ tcodes.json     — ${tcodeCount} t-codes`);
+  console.log(`✓ reference/glossary.json — ${glossCount} terms (참조 — 빌드 안 함)`);
 }
 
 main();
