@@ -1,6 +1,6 @@
 # 11. KEYWORD AUDIT — 공식 ABAP Keyword Doc 대비 콘텐츠 감사 원장
 
-> 📅 최종수정: 2026-06-24 02:08 KST
+> 📅 최종수정: 2026-06-24 02:15 KST
 > 🎯 **목적:** `content/abap/**` 레슨을 **SAP 공식 ABAP Keyword Documentation 오프라인 전체본**(`C:\ABAP_DOCU_HTML`, AS ABAP Release 758)과 대조해 키워드·문법·이론의 **누락/상이/오류**를 보강. 챕터 순서대로.
 > 📖 **읽을 때:** 감사 패스 **재개 시**(이어서 진행) — 이 원장이 어디까지 했는지의 단일 출처.
 
@@ -55,7 +55,9 @@
 | CH33 | ✅ 완료 | L02 AMDP `OPTIONS READ-ONLY` 보강·L03 ADBC 등 정확 |
 | CH34 | ✅ 완료 | 변경 없음 — 양식 도구(doc 밖)·L04 XSTRING/xstrlen/동적 CALL FUNCTION 정확 |
 | CH35 | ✅ 완료 | L04 `SUBMIT VIA JOB`에 필수 `AND RETURN` 보강(나머지 운영툴은 doc 밖) |
-| CH36 | ⬜ 대기 | (다음 재개 지점 = CH36 — 마지막) |
+| CH36 | ✅ 완료 | L05 미학습 `VALUE #( FOR )`→CH23 `LOOP` 관용구 교체(커리큘럼 유일 FOR-comprehension 제거) |
+
+> ✅ **CH01~CH36 전 챕터 감사 완료 (2026-06-24).** 요약은 아래 "감사 완료 총평" 참조.
 
 ## 챕터별 findings
 
@@ -213,3 +215,19 @@
 ### CH35 — 운영 품질과 배포 관리 (이송 심화, Track-2)
 - **L01**(ATC/Code Inspector `SCI`)·**L02**(ABAP Unit `cl_abap_unit_assert=>assert_equals`·Mock·CI/gCTS)·**L03**(Transport DEV→QAS→PRD·`SE09`/`SE10`/`STMS`·순서/의존)·**L05**(Application Log BAL·`SLG1`·`BAL_LOG_CREATE`/`MSG_ADD`/`DB_SAVE`): 품질·배포·로그 **도구/표준 FM** → keyword doc 영역 밖(CH31류). `assert_equals` 시그니처(act/exp)·메시지 타입(I/S/W/E) 정확.
 - **L04**(Background Job): **보강** — `SUBMIT … VIA JOB job NUMBER n` 공식 구문 일치. 단 공식 필수 규칙 **"VIA JOB은 AND RETURN과 함께만 사용 가능"** 을 주석 스켈레톤이 빠뜨려(산문엔 있음) → 주석에 `AND RETURN` 추가 + 필수 페어링 1줄 명시. `SM36/SM37` 툴은 doc 밖. 미학습 constructor 식 없음.
+
+### CH36 — RAP + Fiori 실무 Capstone (Track-2, 7레슨)
+- **L01**(시나리오 통합 지도)·**L02**(`ZI_Booking` Interface View·`association [1..1]`·`$projection`·`@Semantics.user.createdBy`)·**L03**(`ZC_Booking` Projection·`provider contract transactional_query`·`@UI.lineItem/identification/facet`·`@Metadata.allowExtensions`)·**L04**(BDEF `managed … unique`·`persistent/draft table`·`lock master`·`determination/validation/action`·BIMP 핸들러 `FOR DETERMINE ON MODIFY`/`FOR VALIDATE ON SAVE`/`FOR MODIFY … FOR ACTION`)·**L06**(`define service … expose`·Service Binding OData V4·Fiori Elements)·**L07**(`draft table`·DCL+BDEF `authorization master ( global, instance )`·Clean Core): CDS DDL·RAP BDL 모두 공식 문법과 일치 ✓. `READ/MODIFY ENTITIES … IN LOCAL MODE`·`%tky`·`WITH CORRESPONDING #( keys )`도 공식(derived types) 확인.
+- **L05**(비즈니스 로직 구현): **게이팅 교체** — `MODIFY ENTITIES … WITH VALUE #( FOR b IN bks ( … ) )` 2곳이 **커리큘럼 유일** FOR-comprehension(미학습, CH18 구조적 갭). CH23-L07이 확립한 RAP 관용구(`READ ENTITIES → LOOP AT … INTO`)에 맞춰 `LOOP`+단일 `VALUE #()`+`TYPE TABLE FOR UPDATE`로 교체(이미 배운 문법만). CH26/CH28 게이팅 교정과 동일 원칙. → 이로써 **커리큘럼 전체에서 미학습 constructor 식 0**.
+
+---
+
+## 🏁 감사 완료 총평 (CH01~CH36, 2026-06-24)
+**전 36챕터·231레슨**을 SAP 공식 ABAP Keyword Documentation(오프라인 758)과 대조 완료.
+
+- **보강한 챕터(12)**: CH01(WRITE 서식 introduces 정합)·CH02(`DATA VALUE`)·CH04(DIV/MOD 재배치)·CH06(READ INDEX·LOOP FROM/TO)·CH10(CALL FUNCTION `CHANGING`)·CH12(RANGES)·CH13(SELECT DISTINCT)·CH22(@Semantics 자기참조 교정)·CH30(RFC MESSAGE·BDC OPTIONS FROM·OPEN DATASET 보안/MESSAGE/TRANSFER)·CH33(AMDP `OPTIONS READ-ONLY`)·CH35(`SUBMIT VIA JOB … AND RETURN`).
+- **게이팅 교정(3)**: CH26-L01(`COND`→`CASE`)·CH28-L04(`COND`→`IF`)·CH36-L05(`VALUE #( FOR )`→`LOOP`). → **미학습 constructor 식 0 달성**.
+- **무변경/정확(21)**: CH03·05·07·08·09·11·14·15·16·17·19·20·21·23·24·25·27·29·31·32·34. (Track-2 후반 CH31/34는 IDoc/Gateway·양식 등 **툴링이라 keyword doc 영역 밖** — 코드 정확성만 확인.)
+- **구조적 갭 플래그(1, 사용자 결정 대기)**: **CH18** — modern constructor(`CONV`/`COND`/`SWITCH`/`REDUCE`/`FOR`-comprehension) 정식 도입 레슨 부재. 다운스트림 미학습 사용분(CH26/28/36)은 교체 완료했으나, 근본 갭은 `check/CH18.md` 참조(별도 결정).
+- **총평**: classic-first(R6) 경계·R15 게이팅은 전반적으로 **잘 지켜짐**. 사실오류는 드물고(@Semantics 자기참조 1건), 대부분 "같은 주제의 빠진 classic 하위옵션"(MESSAGE·OPTIONS FROM·READ-ONLY·AND RETURN 등) 보강. Track-2 실무 챕터는 keyword doc 밖 툴링이 많아 N/A 비중이 큼.
+- **다음**: `.project-docs/12_EXPANSION_PLAN.md`(51항목 콘텐츠 확장)로 전환 — 별도 지시 대기.
