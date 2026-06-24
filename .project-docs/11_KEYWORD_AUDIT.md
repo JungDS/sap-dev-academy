@@ -1,6 +1,6 @@
 # 11. KEYWORD AUDIT — 공식 ABAP Keyword Doc 대비 콘텐츠 감사 원장
 
-> 📅 최종수정: 2026-06-24 00:21 KST
+> 📅 최종수정: 2026-06-24 00:25 KST
 > 🎯 **목적:** `content/abap/**` 레슨을 **SAP 공식 ABAP Keyword Documentation 오프라인 전체본**(`C:\ABAP_DOCU_HTML`, AS ABAP Release 758)과 대조해 키워드·문법·이론의 **누락/상이/오류**를 보강. 챕터 순서대로.
 > 📖 **읽을 때:** 감사 패스 **재개 시**(이어서 진행) — 이 원장이 어디까지 했는지의 단일 출처.
 
@@ -30,7 +30,8 @@
 | CH08 | ✅ 완료 | 변경 없음 — classic 경계 정확 |
 | CH09 | ✅ 완료 | 변경 없음 — 공식과 일치 |
 | CH10 | ✅ 완료 | L03 CALL FUNCTION `CHANGING` 보강 |
-| CH11~CH36 | ⬜ 대기 | (다음 재개 지점 = CH11) |
+| CH11 | ✅ 완료 | 변경 없음 — 공식과 일치 |
+| CH12~CH36 | ⬜ 대기 | (다음 재개 지점 = CH12) |
 
 ## 챕터별 findings
 
@@ -84,3 +85,7 @@
 ### CH10 — 모듈화 기초
 - **L01**(FORM/PERFORM·**obsolete 명시**)·**L02**(USING/CHANGING·by Value/Ref/Value-Result·RETURN·STATICS)·**L04**(Local Class·CLASS-METHODS·`=>`)·**L05**(Global Class 정적호출·[선행사용])·**L06**(선택기준)·**L07**(실습): 정확 ✓ — subroutine=obsolete 공식과 일치, OO 본격은 CH20 유보(게이팅).
 - **L03**(CALL FUNCTION): **보강** `CHANGING`(입출력) 파라미터 종류 추가 — EXPORTING/IMPORTING/TABLES/EXCEPTIONS만 있어 빠졌던 표준 파라미터(introduces도 갱신).
+
+### CH11 — SALV 1차 (간단 ALV)  → **변경 없음(공식과 일치)**
+- **L01~L06**(`cl_salv_table=>factory`·`get_functions()->set_all`·`display`·`cx_salv_msg` TRY/CATCH·Data Element 라벨 자동·미니 리포트·실습): 정확 ✓ — SALV API 공식과 일치.
+- 의도적 최소 스코프(읽기전용+표준기능). 심화(컬럼/색/이벤트/편집)는 CH17/21/27/28로 **명시 분리**(L05) → 추가 보강은 R15 위반이라 안 함. `REF TO`/`TRY`는 `[선행 사용]`로 CH20 게이팅 준수.
