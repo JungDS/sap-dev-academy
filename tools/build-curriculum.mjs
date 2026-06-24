@@ -45,9 +45,10 @@ const glossaryExt = {
     return `<button class="term" type="button" data-term="${esc(t.term)}">${esc(t.label)}</button>`;
   },
 };
-/* ---------- marked: 체험 임베드 ::embed <sample경로> | <제목>:: ----------
-   sample/ 의 standalone HTML을 "체험 위젯"으로 프레이밍한 iframe으로 펼친다.
-   레슨 페이지는 모두 docs/abap/pages/ 깊이 → sample 경로 접두 고정(../../../sample/). */
+/* ---------- marked: 체험 임베드 ::embed CHnn-Lnn-Snn | <제목>:: ----------
+   embeds/abap/CHnn-Lnn-Snn.html (공통 엔진 _engine + 레슨 전용 위젯)을 iframe으로 펼친다.
+   레슨 페이지는 모두 docs/abap/pages/ 깊이 → 경로 접두 고정(../../../embeds/abap/).
+   (구 sample/ 직접참조 분기는 전 챕터 이관 완료 후 제거됨 — 비형식 경로는 빌드 경고.) */
 const embedExt = {
   name: 'embed',
   level: 'block',
@@ -58,10 +59,10 @@ const embedExt = {
     if (m) return { type: 'embed', raw: m[0], path: m[1].trim(), title: (m[2] || '').trim(), height: m[3] ? parseInt(m[3], 10) : 0 };
   },
   renderer(t) {
-    // 신규: `::embed CHnn-Lnn-Snn` → embeds/abap/CHnn-Lnn-Snn.html
-    // 레거시(전환기): 슬래시·.html 포함 경로 → sample/ (전 챕터 이관 완료 후 제거)
-    const isNew = /^CH\d+-L\d+-S\d+$/.test(t.path);
-    const src = isNew ? ('../../../embeds/abap/' + t.path + '.html') : ('../../../sample/' + t.path);
+    // `::embed CHnn-Lnn-Snn` → embeds/abap/CHnn-Lnn-Snn.html (유일 경로)
+    if (!/^CH\d+-L\d+-S\d+$/.test(t.path))
+      console.warn(`  ⚠️ embed 경로가 CHnn-Lnn-Snn 형식이 아님(레거시 sample 참조?): ${t.path}`);
+    const src = '../../../embeds/abap/' + t.path + '.html';
     const title = t.title || '직접 해보기';
     const hStyle = t.height ? ` style="height:${t.height}px"` : '';
     return `<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span>` +

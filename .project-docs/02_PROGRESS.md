@@ -1,6 +1,6 @@
 # 02. PROGRESS — 진행 현황 · 다음 할 일
 
-> 📅 **최종수정: 2026-06-22 07:19 KST**
+> 📅 **최종수정: 2026-06-24 11:46 KST**
 > 🎯 **목적:** 목표가 어디까지 왔고, 다음에 무엇을 할지. 작업 시작·종료 시 갱신.
 > 📖 **읽을 때:** 작업 시작 전(현황 파악) · 종료 후(갱신).
 > ⚡ **TL;DR:** ABAP 커리큘럼 골격+CH01~14 본문 완료(CH15+ 스텁). 이번에 `sample/` 독립형 라이브러리 구축 + 입문자 작성표준·이름 풀 확정.
@@ -19,6 +19,15 @@
 | 로드맵 `pages/abap.html` | ✅ 개편 — 챕터 아코디언 + 레슨 요약(direction)·키워드·**직접 점프** + 검색/트랙점프/전체펼치기. v2-C 조화(블루/그린). 레슨 상세는 `lessons/CHxx.json` 지연 로드 |
 | glossary(65용어, CH01~14 커버) | ✅ |
 | 브라우저 시각 스모크테스트 | ⚠️ 일부 미실시(미리보기 깊은 URL 제약 → [07](07_BROWSER_TESTING.md)) |
+
+## 🧩 학습수단 embed 아키텍처 이관 — ✅ 완료 (2026-06-24)
+
+- **배경**: 챕터별 학습수단(`::embed`) 전수 점검(`check/20260624_챕터별_점검결과/`) → 일부가 `sample/` generic을 레슨과 무관하게 그대로 사용(치명 오배치). 수정 + 신규 제작.
+- **새 구조**: `embeds/_engine/<엔진>.{js,css}`(공통 엔진) + `embeds/abap/CHnn-Lnn-Snn.html`(레슨 전용 위젯) + `embeds/_engine/_base.css`(토큰) + `embeds/_vendor/`(mermaid 백업) + `embeds/abap/_index.md`(현황). `sample/`은 참고 카탈로그로만 유지.
+- **빌드**: `::embed CHnn-Lnn-Snn` → `embeds/abap/…html`(유일 경로). 레거시 `sample/` 직접참조 분기 **제거 완료**(비형식 경로는 빌드 경고).
+- **결과**: 미이관 embed **0건**(CH01~CH22 전수) · 신규/이관 위젯 **36개** · 정착 엔진 **21종**(step-debugger·fill-blank·before-after·domain-builder·mermaid·write-output·write-format·se38·se93·case-branch-sim·state-change-grid·select-query-simulator·input-help-priority·salv-grid-simulator·select-options-filter-sim·join-aggregate-visualizer·event-lifecycle-buildup·process-flow-pbo-pai·dynpro-screen-elements·gui-alv-grid-simulator·diff-mapper·class-diagram·relationship-map + 공통 `_autoheight`).
+- **품질**: 전 위젯 게이팅 준수(classic↔modern 경계 R6·R15) · D2Coding 웹폰트(`assets/fonts/`) · 브라우저 전수 인터랙션 검증(콘솔 0) · 관통예제(콘서트앱 zconcert/zbooking·status N/C·이름풀) 데이터 일관.
+- **상세 현황**: [embeds/abap/_index.md](../embeds/abap/_index.md).
 
 ## 🧪 샘플 라이브러리 (`sample/`) — 이번 세션 구축
 
