@@ -1,6 +1,6 @@
 # 11. KEYWORD AUDIT — 공식 ABAP Keyword Doc 대비 콘텐츠 감사 원장
 
-> 📅 최종수정: 2026-06-24 01:22 KST
+> 📅 최종수정: 2026-06-24 01:38 KST
 > 🎯 **목적:** `content/abap/**` 레슨을 **SAP 공식 ABAP Keyword Documentation 오프라인 전체본**(`C:\ABAP_DOCU_HTML`, AS ABAP Release 758)과 대조해 키워드·문법·이론의 **누락/상이/오류**를 보강. 챕터 순서대로.
 > 📖 **읽을 때:** 감사 패스 **재개 시**(이어서 진행) — 이 원장이 어디까지 했는지의 단일 출처.
 
@@ -48,7 +48,8 @@
 | CH26 | ✅ 완료 | L01 미학습 `COND`→`CASE` 게이팅 교정(CH18 갭 연계) |
 | CH27 | ✅ 완료 | 변경 없음 — 공식 ALV 이벤트 API와 일치 |
 | CH28 | ✅ 완료 | L04 미학습 `COND`→`IF` 게이팅 교정(CH18 갭 연계) |
-| CH29~CH36 | ⬜ 대기 | (다음 재개 지점 = CH29) |
+| CH29 | ✅ 완료 | 변경 없음 — 공식과 일치 |
+| CH30~CH36 | ⬜ 대기 | (다음 재개 지점 = CH30) |
 
 ## 챕터별 findings
 
@@ -173,3 +174,6 @@
 ### CH28 — Editable Grid ALV와 입력 검증 (Track-2)
 - **L04**(Cell Style): **게이팅 교정** — `COND i()`(CH18 미도입)는 P11 위반 → 이미 배운 `IF`로 교체(CH26-L01과 동일 패턴).
 - **L01~L03·L05·L06**: fieldcat `edit`·`register_edit_event(mc_evt_modified/enter)`·`FOR EVENT data_changed/data_changed_finished`·`mt_good_cells`·`add_protocol_entry`/`display_protocol`·`stylefname`/`mc_style_*`·`check_changed_data`·저장 전 최종 검증·`MODIFY … COMMIT` 전부 공식과 일치 ✓.
+
+### CH29 — Enhancement / BAdI / User Exit (Track-2)  → **변경 없음(공식과 일치)**
+- **L01~L05**: User Exit(FORM)·Customer Exit(`FUNCTION EXIT_…`·SMOD/CMOD)·Enhancement Point/Section(`ENHANCEMENT…ENDENHANCEMENT`·Implicit)·BAdI(`GET BADI`/`CALL BADI`·SE18/SE19·필터)·확장 우선순위(BAdI>Explicit>Implicit>Modification)·Clean Core(Released API·Key User/Developer Extensibility) 전부 공식 개념과 일치 ✓. 미학습 constructor 식 없음.
