@@ -58,7 +58,10 @@ const embedExt = {
     if (m) return { type: 'embed', raw: m[0], path: m[1].trim(), title: (m[2] || '').trim(), height: m[3] ? parseInt(m[3], 10) : 0 };
   },
   renderer(t) {
-    const src = '../../../sample/' + t.path;
+    // 신규: `::embed CHnn-Lnn-Snn` → embeds/abap/CHnn-Lnn-Snn.html
+    // 레거시(전환기): 슬래시·.html 포함 경로 → sample/ (전 챕터 이관 완료 후 제거)
+    const isNew = /^CH\d+-L\d+-S\d+$/.test(t.path);
+    const src = isNew ? ('../../../embeds/abap/' + t.path + '.html') : ('../../../sample/' + t.path);
     const title = t.title || '직접 해보기';
     const hStyle = t.height ? ` style="height:${t.height}px"` : '';
     return `<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span>` +
