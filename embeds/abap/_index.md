@@ -13,14 +13,16 @@
 | CH01-L05-S01 | CH01-L05 | write-format | WRITE 서식 플레이그라운드(폭·정렬·COLOR·ULINE·SKIP) | ✅ |
 | CH01-L02-S01 | CH01-L02 | se38-first-program | 가상 SE38 개발루프(생성→저장→$TMP·비활성→활성화→실행)+흔한실수 | ✅ |
 | CH01-L07-S01 | CH01-L07 | se93-tcode-create | SE93 T-code 생성→명령창 실행(Hello, ABAP!)+흔한실수 | ✅ |
-| _(CH02부터 — 다음)_ | | | | 🔧 |
+| CH02-L05-S01 | CH02-L05 | before-after | 매직넘버 vs 상수(고칠곳 2곳/1곳) | ✅ |
+| CH02-L06-S01 | CH02-L06 | fill-blank | Text Symbol 빈칸(TEXT·001) | ✅ |
+| _(CH03부터 — 다음)_ | | | | 🔧 |
 
 ## B. 엔진별 집계 (카테고리 현황 — 같은 종류 몇 개·어디서)
 | 엔진 (embeds/_engine/) | 그룹 | 공통/standalone | 사용 인스턴스 | 비고 |
 |---|---|---|---|---|
 | step-debugger | 2 | 공통 | _(미작성)_ | config 주입 |
-| fill-blank | 1 | 공통 | _(미작성)_ | 데이터=마크업 |
-| before-after | 1 | 공통 | _(미작성)_ | CSS-only |
+| fill-blank | 3 | 공통(_engine)+_autoheight ✅ | CH02-L06-S01 (외 CH04-L02·L07 예정) | 데이터=마크업 |
+| before-after | 2 | 공통(CSS-only)+_autoheight ✅ | CH02-L05-S01 (외 CH07-L03 예정) | 콘텐츠 정리(크롬 제거) |
 | diff-mapper | 1 | 공통 | _(미작성)_ | 데이터=마크업 |
 | select-query | 2 | 공통 | _(미작성)_ | config 주입 |
 | salv-grid | 2 | 공통 | _(미작성)_ | config 주입 |

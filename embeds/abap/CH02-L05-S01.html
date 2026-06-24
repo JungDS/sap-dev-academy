@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<!-- CH02-L05-S01 — 엔진: before-after (embeds/_engine/before-after.css, CSS-only) + _autoheight.js
+     ⚠️ 콘텐츠=레슨 전용(매직넘버 vs 상수, #C02-1). 엔진 수정은 _engine/에서. -->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>매직 넘버 vs 상수 · CH02-L05-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/before-after.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">매직 넘버 vs 상수 <small>(같은 코드, 두 버전)</small></p>
+  <p class="lead">코드에 박힌 정체불명의 숫자(매직 넘버)를 <code>CONSTANTS</code>로 이름 붙이면 어떻게 달라지는지 나란히 비교해 보세요.</p>
+
+  <div class="ba">
+    <div class="ba__col before">
+      <div class="ba__head">✗ 매직 넘버</div>
+      <div class="ba__body">
+<pre>DATA lv_amt TYPE i VALUE 1500.
+
+IF lv_amt > <b>1000</b>.            " 이 1000이 한도? 수량?
+  WRITE: / '한도 초과 (최대 <b>1000</b>)'.
+ENDIF.</pre>
+        <ul class="ba__list">
+          <li>정체불명의 <b>1000</b>이 여러 곳에 흩어짐</li>
+          <li>한도가 2000으로 바뀌면 <b>빠짐없이 찾아</b> 고쳐야(하나라도 놓치면 버그)</li>
+        </ul>
+        <span class="ba__metric">한도 변경 시 고칠 곳: 2곳</span>
+      </div>
+    </div>
+    <div class="ba__col after">
+      <div class="ba__head">✓ CONSTANTS</div>
+      <div class="ba__body">
+<pre><b>CONSTANTS gc_max_amount TYPE i VALUE 1000.</b>
+
+IF lv_amt > <b>gc_max_amount</b>.   " 이름으로 읽힘
+  WRITE: / '한도 초과'.
+ENDIF.</pre>
+        <ul class="ba__list">
+          <li>값에 <b>이름</b>을 붙여 뜻이 분명</li>
+          <li>한도 변경 = <b>선언 한 줄(VALUE)</b>만 — 쓰는 곳은 그대로</li>
+        </ul>
+        <span class="ba__metric">한도 변경 시 고칠 곳: 1곳</span>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>
