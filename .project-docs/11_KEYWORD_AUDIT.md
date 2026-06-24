@@ -1,6 +1,6 @@
 # 11. KEYWORD AUDIT — 공식 ABAP Keyword Doc 대비 콘텐츠 감사 원장
 
-> 📅 최종수정: 2026-06-24 00:51 KST
+> 📅 최종수정: 2026-06-24 00:55 KST
 > 🎯 **목적:** `content/abap/**` 레슨을 **SAP 공식 ABAP Keyword Documentation 오프라인 전체본**(`C:\ABAP_DOCU_HTML`, AS ABAP Release 758)과 대조해 키워드·문법·이론의 **누락/상이/오류**를 보강. 챕터 순서대로.
 > 📖 **읽을 때:** 감사 패스 **재개 시**(이어서 진행) — 이 원장이 어디까지 했는지의 단일 출처.
 
@@ -39,7 +39,8 @@
 | CH17 | ✅ 완료 | 변경 없음 — 공식과 일치(classic) |
 | CH18 | ✅ 완료 | 문법 정확 · ⚠️구조적 갭(CONV/COND/SWITCH/REDUCE 부재) check/ 플래그 |
 | CH19 | ✅ 완료 | 변경 없음 — 공식과 일치(modern SQL) |
-| CH20~CH36 | ⬜ 대기 | (다음 재개 지점 = CH20) |
+| CH20 | ✅ 완료 | 변경 없음 — 공식과 일치(매우 충실) |
+| CH21~CH36 | ⬜ 대기 | (다음 재개 지점 = CH21) |
 
 ## 챕터별 findings
 
@@ -129,3 +130,7 @@
 ### CH19 — New Open SQL / Modern ABAP SQL  → **변경 없음(공식과 일치)**
 - **L01~L08**: 콤마 필드·`@` host var/`@( )` host expr·strict·`@DATA()` 인라인 대상·SQL식(CASE/CAST/COALESCE)·SQL 문자/날짜 함수(CONCAT/SUBSTRING/UPPER/`DATS_ADD_DAYS`)·`SELECT FROM @itab` 전부 공식과 일치 ✓. "ABAP SQL" 현행 명칭 사용 정확.
 - `CAST( x AS CHAR )`는 공식 `CHAR [ ( len ) ]`(길이 선택)이라 유효(오류 아님). 고급 SQL(UNION/서브쿼리/윈도우)은 입문 스코프 외(합리적).
+
+### CH20 — OO ABAP 기본 설계  → **변경 없음(공식과 일치, 매우 충실)**
+- **L01~L10**: Global Class(DEFINITION/IMPLEMENTATION·NEW/CREATE OBJECT)·Attribute/Method/Visibility(DATA vs CLASS-DATA)·CONSTRUCTOR/CLASS_CONSTRUCTOR·Static/Instance(`=>`/`->`·me->)·INTERFACE/INTERFACES(`~`)·예외(TRY/CATCH/CLEANUP·RAISE EXCEPTION·CX_STATIC/DYNAMIC/NO_CHECK·CX_ROOT·get_text·RESUME)·Inheritance(INHERITING FROM·REDEFINITION·super->·ABSTRACT/FINAL)·다형성(CAST/`?=`·CX_SY_MOVE_CAST_ERROR·CASE TYPE OF)·OO 이벤트(EVENTS/RAISE EVENT/SET HANDLER) 전부 공식과 일치 ✓.
+- 앞 챕터 `[선행 사용]`(REF TO/CREATE OBJECT/TRY)이 여기서 정식 도입 — 게이팅 정합. ALIASES·FRIENDS·CREATE PRIVATE 등 고급은 "기본 설계" 스코프 외(합리적).
