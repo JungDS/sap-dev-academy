@@ -1,6 +1,6 @@
 # Track 2 (CH24~36) 콘텐츠·체험·시각 보강 — 진행 원장
 
-> 📅 최종수정: 2026-06-24 18:17 KST · 자동 작업(/loop goal) 진행 기록. **압축돼도 이 파일로 재개.**
+> 📅 최종수정: 2026-06-24 18:22 KST · 자동 작업(/loop goal) 진행 기록. **압축돼도 이 파일로 재개.**
 > 🎯 Track 2(실무, CH24~36) 전 레슨을 초반부 골드 스탠다드(본문 1,500자±·섹션 5±·체험 1+·시각 동반) 수준으로 보강.
 
 ## 규칙·합의 (이 작업 한정 + 영구)
@@ -16,7 +16,7 @@
 | CH | 제목 | 레슨 | 상태 |
 |---|---|---|---|
 | 24 | 실무 데이터 변경과 트랜잭션 제어 | 5 | ✅ 완료 (위젯5·엔진5) |
-| 25 | Lock Object와 동시성 제어 | 5 | ⬜ 대기 |
+| 25 | Lock Object와 동시성 제어 | 5 | 🔄 진행 |
 | 26 | OO ABAP 고급 설계와 패턴 | 5 | ⬜ 대기 |
 | 27 | ALV 고급 Event 응용 | 5 | ⬜ 대기 |
 | 28 | Editable Grid ALV와 입력 검증 | 6 | ⬜ 대기 |
@@ -61,3 +61,21 @@
 
 ### CH24-L05 · 대량 변경 Package 처리
 - 계획: **체험=패키지 커밋 시각화**(N건 진행바, 패키지크기 조절 → COMMIT 횟수·메모리 비움 시점 표시). **시각=단일 COMMIT vs 패키지 before-after**. 본문: 메모리 폭발 why, 재시작점, 크기 튜닝. 도전과제 유지·정비.
+
+## CH25 — Lock Object와 동시성 제어 (계획)
+다양성: 매트릭스·2세션 시뮬·퀴즈·타임라인·플로우차트로 골고루.
+
+### CH25-L01 · Lock Object 설계 + 잠금 모드
+- 계획: **체험=잠금 모드 호환 매트릭스**(보유 모드 E/S/X × 요청 모드 → 허용/거절 인터랙티브). 본문: 동시변경 문제, Lock Object 구성(Primary Table·Lock Argument), 모드, 활성화→ENQUEUE/DEQUEUE 생성. 엔진 `lock-mode-matrix`.
+
+### CH25-L02 · ENQUEUE / DEQUEUE (센터피스)
+- 계획: **체험=2세션 잠금 데모**(User A/B 패널 + 공유 잠금목록(SM12풍). A ENQUEUE 1001→성공, B ENQUEUE 1001→foreign_lock 거절, A DEQUEUE/COMMIT→B 가능). 본문: ENQUEUE 호출·foreign_lock·DEQUEUE·표준 5단계. 엔진 `enqueue-2session`.
+
+### CH25-L03 · 해제·예외
+- 계획: **체험=퀴즈("잠금은 언제 풀리나?")** — DEQUEUE/COMMIT/ROLLBACK/세션종료=풀림, SELECT/다른행=유지 OX 판별(변화 = 퀴즈 도입). 본문: 자동 해제, DEQUEUE_ALL, foreign_lock 정중거절, SM12, 장시간 잠금 주의. 엔진 `release-quiz`(범용 OX/판별 퀴즈).
+
+### CH25-L04 · 충돌 시나리오 (Lost Update)
+- 계획: **체험=Lost Update 타임라인 시뮬**(A·B 읽기/쓰기 순서 → A 갱신 소실. 전략 토글: Pessimistic=잠금으로 B 차단 / Optimistic=changed_at 비교로 거절). 본문: Lost Update, 낙관/비관, 타임스탬프 비교. 엔진 `lost-update-sim`.
+
+### CH25-L05 · 통합 패턴
+- 계획: **시각=안전 변경 5단계 플로우차트**(ENQUEUE→읽기→변경→COMMIT→DEQUEUE) = mermaid 엔진 재사용. 본문: 통합 패턴, 순서 주의. 도전과제 유지.
