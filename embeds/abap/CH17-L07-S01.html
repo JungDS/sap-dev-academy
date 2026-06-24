@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<!-- CH17-L07-S01 — 엔진: gui-alv-grid-simulator · 자체 postHeight. 콘텐츠=레슨 전용(set_table_for_first_display, #C17-1).
+     게이팅: CL_GUI_ALV_GRID·classic. SALV(CH11)와 다른 '세밀제어' 경로. -->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>set_table_for_first_display · CH17-L07-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/gui-alv-grid-simulator.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">CL_GUI_ALV_GRID — 처음 띄우기 <small>(set_table_for_first_display)</small></p>
+  <p class="lead"><b>다음 단계</b>를 누르면 컨테이너 → 그리드 → Field Catalog 를 거쳐, 마지막 <code>set_table_for_first_display</code>에서 표가 화면에 그려집니다. 데이터·fieldcat은 <code>CHANGING</code>으로 넘깁니다.</p>
+
+  <div class="alvg-ctrl">
+    <button class="alvg-btn" id="alvgNext" type="button">▶ 다음 단계</button>
+    <button class="alvg-reset" id="alvgReset" type="button">↺ 처음부터</button>
+  </div>
+  <div class="alvg-steps" id="alvgSteps"></div>
+
+  <div class="alvg-code">
+    <div class="alvg-code__hd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span><span class="tag">classic</span></div>
+    <div class="alvg-code__body"><pre class="alvg-gut" id="alvgGut"></pre><pre class="alvg-src" id="alvgSrc"></pre></div>
+  </div>
+
+  <div class="alvg-cont hidden" id="alvgCont">
+    <div class="alvg-cont__tt">📊 CL_GUI_ALV_GRID · 컨테이너 CONT100</div>
+    <div class="alvg-cont__bar"><button type="button" data-bar="sort">🔃 정렬</button><button type="button" data-bar="sum">Σ 합계</button></div>
+    <div style="overflow-x:auto"><table class="dt" data-grid></table></div>
+  </div>
+
+  <div class="note"><b>SALV와 다르다</b> — <code>cl_salv_table=>factory</code>(CH11)는 한 줄로 끝나 간단하지만, <code>CL_GUI_ALV_GRID</code>는 컨테이너·그리드·<b>Field Catalog</b>를 직접 만든다(세밀 제어). 컬럼·색·이벤트까지 손볼 수 있는 대신 코드가 길다.</div>
+</div>
+
+<script>
+window.ALVG_CFG = {
+  itab:'lt_booking', sumKey:'seats',
+  cols:[
+    {key:'booking_id',label:'BOOKING_ID',num:true},
+    {key:'concert_id',label:'CONCERT_ID',num:false},
+    {key:'customer',label:'CUSTOMER',num:false},
+    {key:'seats',label:'SEATS',num:true},
+    {key:'status',label:'STATUS',num:false}
+  ],
+  data:[
+    {booking_id:5001,concert_id:'C001',customer:'정훈영',seats:2,status:'N'},
+    {booking_id:5002,concert_id:'C001',customer:'손흥민',seats:4,status:'N'},
+    {booking_id:5003,concert_id:'C001',customer:'아이유',seats:3,status:'N'},
+    {booking_id:5005,concert_id:'C002',customer:'김연아',seats:2,status:'N'},
+    {booking_id:5006,concert_id:'C001',customer:'차은우',seats:5,status:'N'}
+  ],
+  steps:[
+    {n:1, nm:'Custom Container', sub:"CONT100", code:[
+      "CREATE OBJECT go_cont",
+      "  EXPORTING container_name = 'CONT100'." ]},
+    {n:2, nm:'ALV Grid 객체', sub:'i_parent=go_cont', code:[
+      "CREATE OBJECT go_grid",
+      "  EXPORTING i_parent = go_cont." ]},
+    {n:3, nm:'Field Catalog', sub:'lt_fcat (CH17-L04)', code:[
+      "\" Field Catalog lt_fcat 구성 (CH17-L04)",
+      "CALL FUNCTION 'LVC_FIELDCATALOG_MERGE'",
+      "  EXPORTING i_structure_name = 'ZBOOKING'",
+      "  CHANGING  ct_fieldcat      = lt_fcat." ]},
+    {n:4, nm:'set_table_for_first_display', sub:'데이터+fcat+layout', showGrid:true, code:[
+      "go_grid->set_table_for_first_display(",
+      "  EXPORTING is_layout       = ls_layout",
+      "            is_variant      = ls_variant",
+      "            i_save          = 'A'",
+      "  CHANGING  it_outtab       = lt_booking",
+      "            it_fieldcatalog = lt_fcat )." ]}
+  ]
+};
+</script>
+<script src="../_engine/gui-alv-grid-simulator.js" defer></script>
+</body>
+</html>
