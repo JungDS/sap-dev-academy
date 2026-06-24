@@ -1,6 +1,6 @@
 # 12. EXPANSION PLAN — 51항목 체크리스트 기반 콘텐츠 확장 배치 계획
 
-> 📅 최종수정: 2026-06-24 03:20 KST
+> 📅 최종수정: 2026-06-24 03:28 KST
 > 🎯 **목적:** 사용자 제공 51항목 체크리스트(+ Input Help 우선순위 이미지)에서 **미수록/부분수록 38건**을 `content/abap/**`에 배치·보강. 진행 추적의 단일 출처.
 > 📖 **읽을 때:** 확장 작업 재개 시. (키워드 감사 원장 = [11](11_KEYWORD_AUDIT.md), 별개 작업.)
 
@@ -29,7 +29,7 @@
 | B — Transparent Table 실무 | CH07·09·(04 덤프) | ✅ 완료 (7건) |
 | C — JOIN 보강 | CH13·14 | ✅ 완료 (4건) |
 | D — View·유지보수 | CH14 | ✅ 완료 (3건) |
-| E — Search Help·Input Help(★우선순위 이미지) | CH09·15·16 | ⬜ 대기 |
+| E — Search Help·Input Help(★우선순위 이미지) | CH09·15·16 | ✅ 완료 (3건·신규 레슨 CH09-L06+SVG) |
 | F — Selection Screen 심화(최대) | CH15(신규 L11+) | ⬜ 대기 |
 
 ## 항목별 배치 (38건)
@@ -77,9 +77,9 @@
 ### E. Search Help · Input Help (CH09/15/16)
 | # | 배치 | 액션 |
 |---|---|---|
-|35|CH09-L05|보강: 부착지점(DE/Table/필드/Structure 컴포넌트/프로그램·화면)|
-|36 ★|**신규 CH09-Lx** "Input Help 호출 우선순위"|첨부 이미지의 우선순위 흐름(PROCESS ON VALUE-REQUEST→Search Help→Check/Text/Fixed→Calendar) + 시각화|
-|38|CH16-L03 또는 CH15|보강: Listbox(VRM) 등 Input Help 대체수단|
+|35|✅ CH09-L05|"부착 지점" 표(DE/필드/Structure 컴포넌트/MATCHCODE)|
+|36 ★|✅ **신규 레슨 CH09-L06 "Input Help 호출 우선순위"**(리넘버 L06→L07·L07→L08, 교차참조 3건 교정)|우선순위 사다리(①POV=L1예고 CH15/16 → ②Search Help → ③Check/Text/Fixed → ④타입 기본) + **SVG 시각화** `sample/visuals/input-help-priority.html` ::embed|
+|38|✅ CH16-L03|Dropdown(Listbox)=VRM `VRM_SET_VALUES`, Search Help 대체수단 섹션|
 
 ### F. Selection Screen 심화 (CH15 — 최대, 신규 레슨)
 | # | 배치 | 액션 |
