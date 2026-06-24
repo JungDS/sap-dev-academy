@@ -88,8 +88,8 @@ ls-changed_by = sy-uname. ls-changed_at = sy-uzeit.
 <span class="tok-kw">CALL</span> <span class="tok-kw">FUNCTION</span> <span class="tok-str">'DEQUEUE_EZ_BOOKING'</span> <span class="tok-kw">EXPORTING</span> booking_id = lv_id.</code></pre></div></div>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>순서 어긋남</strong> → 잠금은 변경 <strong>전</strong>, 해제는 커밋 <strong>후</strong>.</li>
-<li><strong>롤백 시 잠금</strong> → ROLLBACK도 잠금을 해제한다(보통). 흐름을 일관되게.</li>
+<li><strong>순서 어긋남</strong> → 잠금은 변경 <strong>전</strong>, 해제는 <button class="term" type="button" data-term="COMMIT WORK">커밋</button> <strong>후</strong>.</li>
+<li><strong><button class="term" type="button" data-term="ROLLBACK WORK">롤백</button> 시 잠금</strong> → ROLLBACK도 잠금을 해제한다(보통). 흐름을 일관되게.</li>
 </ul>
 </section><section class="lblock"><h2>🧩 도전 과제 (서브퀘스트)</h2>
 <blockquote>
@@ -97,7 +97,7 @@ ls-changed_by = sy-uname. ls-changed_at = sy-uzeit.
 </blockquote>
 <ol>
 <li>예매 수정 전 <code>ENQUEUE_EZ_BOOKING</code>으로 잠그고, 끝나면 <code>DEQUEUE</code>(또는 COMMIT 시 자동 해제).</li>
-<li>다른 세션이 같은 예매를 잠그면(<code>foreign_lock</code>) &quot;편집 중&quot; 메시지로 정중히 거절.</li>
+<li>다른 <button class="term" type="button" data-term="세션">세션</button>이 같은 예매를 잠그면(<code>foreign_lock</code>) &quot;편집 중&quot; 메시지로 정중히 거절.</li>
 <li>(심화) 낙관적 잠금 — 읽을 때의 <code>changed_at</code>을 저장 직전 DB와 비교해 충돌을 감지.</li>
 </ol>
 <p>힌트: L02(ENQUEUE/DEQUEUE)·L03(foreign_lock)·L04(낙관/비관)·L05(통합 패턴).</p>

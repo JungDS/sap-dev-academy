@@ -32,6 +32,19 @@ const esc = (s) => String(s ?? '')
 const toPosix = (p) => p.split(path.sep).join('/');
 const relPosix = (fromDir, toPath) => toPosix(path.relative(fromDir, toPath)) || '.';
 
+/* ---------- 용어 전역 자동 링크(게이팅) ----------
+   reference/autolink.json: { "표면형": { "minCh": n, "key"?: "글로서리키" } }.
+   레슨 챕터 ≥ minCh일 때만 그 용어를 자동 링크(R15 게이팅) → 도입 이후 모든 레슨에
+   '섹션별 첫 등장 1회' 버튼. 소스 [[ ]] 마킹 없이 빌드가 매번 자동 적용.
+   큐레이션 목록이라 길이 가드(≥3자)를 우회한다(짧은 한글 개념도 링크). */
+let GLOBAL_AUTOLINK = [];
+try {
+  const al = JSON.parse(fs.readFileSync(path.join(ROOT, 'reference', 'autolink.json'), 'utf8'));
+  GLOBAL_AUTOLINK = Object.entries(al)
+    .filter(([form]) => !form.startsWith('_') && al[form] && typeof al[form] === 'object')
+    .map(([form, cfg]) => ({ form, key: cfg.key || form, minCh: cfg.minCh || 0 }));
+} catch (e) { /* 파일 없으면 전역 자동 링크 비활성(레슨 [[ ]] 마킹만 동작) */ }
+
 /* ---------- marked: 핵심용어 [[term]] / [[term|label]] 인라인 확장 ---------- */
 const glossaryExt = {
   name: 'glossary',
@@ -220,16 +233,24 @@ function linkTermsInText(text, forms, formToKey, seen) {
   }
   return out;
 }
-function autolinkGlossary(html, rawBody) {
+function autolinkGlossary(html, rawBody, chapterNum) {
   const re = /\[\[([^\]|]+?)(?:\|([^\]]+?))?\]\]/g;
   const formToKey = new Map(); let m;
   while ((m = re.exec(rawBody))) {
     const key = m[1].trim(), label = (m[2] || m[1]).trim();
     formToKey.set(key, key); formToKey.set(label, key);   // 키·라벨 둘 다 표면형으로
   }
-  // 과잉 링크 방지: 너무 짧은 표면형(타입글자 I·P·D·T, '변수', IF·DO 등)은 자동 링크 제외(첫 [[마킹]]만 유지).
-  const forms = [...formToKey.keys()].filter((k) => k.replace(/\s/g, '').length >= 3).sort((a, b) => b.length - a.length);
+  // 과잉 링크 방지: 레슨이 직접 마킹한 표면형 중 너무 짧은 것(타입글자 I·P·D·T, '변수' 등)은 자동 링크 제외(첫 [[마킹]]만).
+  const forms = [...formToKey.keys()].filter((k) => k.replace(/\s/g, '').length >= 3);
+  // 전역 자동 링크(게이팅) 병합 — 큐레이션 목록이라 길이 가드 우회. 챕터 ≥ minCh일 때만.
+  for (const g of GLOBAL_AUTOLINK) {
+    if ((chapterNum || 0) >= g.minCh && !formToKey.has(g.form)) {
+      formToKey.set(g.form, g.key);
+      forms.push(g.form);
+    }
+  }
   if (!forms.length) { return html; }
+  forms.sort((a, b) => b.length - a.length);   // greedy: 긴 표면형 우선
   const tagRe = /<\/?([a-zA-Z0-9]+)(?:\s[^>]*)?\/?>/g;
   const seen = new Set();                     // 현재 h2 섹션에서 이미 링크한 글로서리 키
   let out = '', last = 0, skip = 0, mt;
@@ -275,8 +296,9 @@ function renderLessonPage(ch, lesson, trackNo) {
   const assets = relPosix(OUT_PAGES, path.join(ROOT, 'assets'));
   const dataBase = relPosix(OUT_PAGES, OUT) + '/';
   const siteRoot = relPosix(OUT_PAGES, ROOT) + '/';
-  const bodyHtml = wrapSections(dedupTermButtonsPerSection(autolinkGlossary(marked.parse(lesson.body), lesson.body)));
   const chId = ch.meta.id;
+  const chNum = parseInt(String(chId).replace(/\D/g, ''), 10) || 0;
+  const bodyHtml = wrapSections(dedupTermButtonsPerSection(autolinkGlossary(marked.parse(lesson.body), lesson.body, chNum)));
   const sda = JSON.stringify({ domain: DOMAIN, dataBase, siteRoot });
   const tcode = lesson.data.tcode || '';
   const tcodeBadge = lesson.data.tcodeBadge || '';
