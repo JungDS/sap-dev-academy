@@ -1,6 +1,6 @@
 # 11. KEYWORD AUDIT — 공식 ABAP Keyword Doc 대비 콘텐츠 감사 원장
 
-> 📅 최종수정: 2026-06-24 01:59 KST
+> 📅 최종수정: 2026-06-24 02:04 KST
 > 🎯 **목적:** `content/abap/**` 레슨을 **SAP 공식 ABAP Keyword Documentation 오프라인 전체본**(`C:\ABAP_DOCU_HTML`, AS ABAP Release 758)과 대조해 키워드·문법·이론의 **누락/상이/오류**를 보강. 챕터 순서대로.
 > 📖 **읽을 때:** 감사 패스 **재개 시**(이어서 진행) — 이 원장이 어디까지 했는지의 단일 출처.
 
@@ -53,7 +53,8 @@
 | CH31 | ✅ 완료 | 변경 없음 — IDoc/ALE/Gateway 툴링(doc 밖)·L05 modern SQL 절순서/OFFSET 정확 |
 | CH32 | ✅ 완료 | 변경 없음 — 성능툴(doc 밖)·L04 FAE/L05 Pushdown modern SQL 정확 |
 | CH33 | ✅ 완료 | L02 AMDP `OPTIONS READ-ONLY` 보강·L03 ADBC 등 정확 |
-| CH34~CH36 | ⬜ 대기 | (다음 재개 지점 = CH34) |
+| CH34 | ✅ 완료 | 변경 없음 — 양식 도구(doc 밖)·L04 XSTRING/xstrlen/동적 CALL FUNCTION 정확 |
+| CH35~CH36 | ⬜ 대기 | (다음 재개 지점 = CH35) |
 
 ## 챕터별 findings
 
@@ -203,3 +204,7 @@
 - **L02**(AMDP `BY DATABASE PROCEDURE FOR HDB LANGUAGE SQLSCRIPT USING`·`if_amdp_marker_hdb`): **보강** — 공식 메서드 구문 `METHOD … BY DATABASE PROCEDURE FOR db LANGUAGE lang [OPTIONS db_options] [USING entities]` 및 선언부 `AMDP OPTIONS [READ-ONLY]`에 따라, 순수 SELECT인 `get_stats` 선언에 **`AMDP OPTIONS READ-ONLY`** 추가(읽기 전용→병렬·읽기복제본 가속, 쓰기 혼입 시 문법검사 차단). 메서드 선언·SQLScript 본문·`:param`·USING은 공식과 일치 ✓.
 - **L03**(ADBC `cl_sql_statement`·`execute_query`·`set_param_table( REF #( ) )`·`next_package`·`cx_sql_exception`): 정확 ✓ — "옛 `EXEC SQL`의 현대판" 설명 맞음. client 자동종속 없음·구문검사 없음·SQL injection 주의 모두 공식 Caution과 일치. `NEW`/`REF #( )`/`|…|`/인라인 `DATA()`는 CH18+ 도입분(CH33>CH18 게이팅 OK).
 - **L04**(푸시다운 수단 선택)·**L05**(DB 종속성·디버깅·검증약함·클라우드 제약 리스크): 정확 ✓ — 변경 없음. 미학습 constructor 식 없음.
+
+### CH34 — Forms / Output / PDF (Track-2)  → **변경 없음(공식과 일치)**
+- **L01**(Smart Forms `SMARTFORMS`·Form/Page/Window/Form Interface·생성FM `/1BCDWB/SF…`·`SSF_FUNCTION_MODULE_NAME`)·**L02**(Adobe Forms `SFP`·Interface/Context/Layout·`FP_JOB_OPEN`/`FP_JOB_CLOSE`·ADS)·**L03**(Output Control NAST↔BRF+ Output Management)·**L05**(SP01 스풀·이송·변경 운영): **양식 디자인 도구·표준 FM·프레임워크** → ABAP keyword doc 영역 밖(CH31류 N/A). 개념 서술 일관.
+- **L04**(PDF 바이트 처리): **정확 ✓** — `XSTRING`(PDF 바이너리)·`xstrlen( )`(공식 built-in, 공식 예제와 일치)·`cl_bcs_convert=>xstring_to_solix`·`gui_download(… filetype='BIN' bin_filesize=xstrlen(…))` 모두 정상. "PDF=바이너리→BIN 모드" 경고 정확. 동적 `CALL FUNCTION lv_fm`(변수 FM명, 공식 확인)·인라인 `DATA()`(CH18+, CH34>CH18 게이팅 OK). 미학습 constructor 식 없음.
