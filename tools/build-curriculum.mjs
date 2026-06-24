@@ -191,25 +191,30 @@ function loadChapters() {
 
 /* 본문 h2 섹션을 흰 카드(.lblock)로 감싼다 — v2-C의 섹션 카드 디자인 */
 /* ---------- 용어 자동 링크 ----------
-   레슨에서 [[…]]로 한 번이라도 표시한 용어는 그 레슨 안 '모든' 재등장에도 용어 버튼을 단다.
-   (입문자는 한 번 본 용어를 못 외울 수 있으므로 항상 설명 제공) — 코드/기존 버튼/링크/제목 안은 제외.
-   대상 = 그 레슨이 명시적으로 마킹한 용어(작성자 opt-in). data-term=글로서리 키. */
+   레슨에서 [[…]]로 한 번이라도 표시한 용어는 '섹션(h2)마다 첫 등장 1회'에 용어 버튼을 단다.
+   (입문자가 못 외워도 매 섹션 한 번은 설명을 제공하되, 같은 섹션 안 반복은 도배하지 않음.)
+   - 명시 [[ ]] 버튼도 그 섹션의 '첫 등장'으로 카운트 → 직후 같은 용어는 자동 링크 안 함.
+   - 새 h2를 만나면 카운터 초기화 → 다음 섹션의 첫 등장은 다시 링크.
+   - 코드/기존 버튼/링크/제목 안은 제외. 짧은 표면형(타입글자 I·P·D·T 등)은 자동 링크 제외(첫 [[마킹]]만).
+   대상 = 그 레슨이 명시적으로 마킹한 용어(작성자 opt-in). data-term=글로서리 키 · seen=섹션 내 이미 링크한 키. */
 const AUTOLINK_SKIP = new Set(['pre','code','button','a','h1','h2','h3','h4','h5','h6','script','style']);
-function linkTermsInText(text, forms, formToKey) {
+function linkTermsInText(text, forms, formToKey, seen) {
   let out = '', i = 0;
   while (i < text.length) {
     let matched = null;
     for (const f of forms) {                 // forms = 길이 내림차순(greedy)
-      if (text.startsWith(f, i)) {
-        if (/^[\x00-\x7F]+$/.test(f)) {       // ASCII 용어는 단어 경계 확인(부분일치 방지)
-          const prev = text[i - 1], next = text[i + f.length];
-          if ((prev && /[A-Za-z0-9_]/.test(prev)) || (next && /[A-Za-z0-9_]/.test(next))) { continue; }
-        }
-        matched = f; break;
+      if (!text.startsWith(f, i)) { continue; }
+      if (seen.has(formToKey.get(f))) { continue; }   // 이 섹션에서 이미 링크한 키 → 평문 유지
+      if (/^[\x00-\x7F]+$/.test(f)) {         // ASCII 용어는 단어 경계 확인(부분일치 방지)
+        const prev = text[i - 1], next = text[i + f.length];
+        if ((prev && /[A-Za-z0-9_]/.test(prev)) || (next && /[A-Za-z0-9_]/.test(next))) { continue; }
       }
+      matched = f; break;
     }
     if (matched) {
-      out += `<button class="term" type="button" data-term="${esc(formToKey.get(matched))}">${esc(matched)}</button>`;
+      const key = formToKey.get(matched);
+      out += `<button class="term" type="button" data-term="${esc(key)}">${esc(matched)}</button>`;
+      seen.add(key);                          // 이 섹션에선 더 안 검 → 다음 h2에서 초기화
       i += matched.length;
     } else { out += text[i]; i += 1; }
   }
@@ -226,18 +231,36 @@ function autolinkGlossary(html, rawBody) {
   const forms = [...formToKey.keys()].filter((k) => k.replace(/\s/g, '').length >= 3).sort((a, b) => b.length - a.length);
   if (!forms.length) { return html; }
   const tagRe = /<\/?([a-zA-Z0-9]+)(?:\s[^>]*)?\/?>/g;
+  const seen = new Set();                     // 현재 h2 섹션에서 이미 링크한 글로서리 키
   let out = '', last = 0, skip = 0, mt;
   while ((mt = tagRe.exec(html))) {
     const seg = html.slice(last, mt.index);
-    out += skip > 0 ? seg : linkTermsInText(seg, forms, formToKey);
+    out += skip > 0 ? seg : linkTermsInText(seg, forms, formToKey, seen);
     out += mt[0];
     const name = mt[1].toLowerCase(), isClose = mt[0][1] === '/';
     const selfClose = /\/>$/.test(mt[0]) || ['br','hr','img','input','meta','link'].includes(name);
+    if (name === 'h2' && !isClose) { seen.clear(); }                 // 새 섹션 → 첫 등장 카운터 초기화
+    if (name === 'button' && !isClose) {                             // 명시 [[ ]] 버튼도 '첫 등장'으로 카운트
+      const dm = /data-term="([^"]*)"/.exec(mt[0]); if (dm) { seen.add(dm[1]); }
+    }
     if (AUTOLINK_SKIP.has(name) && !selfClose) { skip = isClose ? Math.max(0, skip - 1) : skip + 1; }
     last = tagRe.lastIndex;
   }
-  out += skip > 0 ? html.slice(last) : linkTermsInText(html.slice(last), forms, formToKey);
+  out += skip > 0 ? html.slice(last) : linkTermsInText(html.slice(last), forms, formToKey, seen);
   return out;
+}
+
+/* 섹션(h2)당 용어 버튼 1회 보장 — 자동 링크는 autolink가 이미 억제하지만,
+   작성자가 한 섹션에 [[용어]]를 두 번 명시 마킹한 경우(또는 평문+명시 순서)까지 평문으로 풀어 보장.
+   첫 등장만 버튼 유지, 같은 키 2번째부터는 라벨 텍스트로 unwrap. h2를 만나면 초기화. */
+function dedupTermButtonsPerSection(html) {
+  const seen = new Set();
+  return html.replace(/<h2[\s>]|<button class="term" type="button" data-term="([^"]*)">([^<]*)<\/button>/g,
+    (full, key, inner) => {
+      if (key === undefined) { seen.clear(); return full; }   // <h2 경계 → 카운터 초기화
+      if (seen.has(key)) { return inner; }                    // 같은 섹션 2번째+ → 평문
+      seen.add(key); return full;                             // 섹션 첫 등장 → 버튼 유지
+    });
 }
 
 function wrapSections(html) {
@@ -252,7 +275,7 @@ function renderLessonPage(ch, lesson, trackNo) {
   const assets = relPosix(OUT_PAGES, path.join(ROOT, 'assets'));
   const dataBase = relPosix(OUT_PAGES, OUT) + '/';
   const siteRoot = relPosix(OUT_PAGES, ROOT) + '/';
-  const bodyHtml = wrapSections(autolinkGlossary(marked.parse(lesson.body), lesson.body));
+  const bodyHtml = wrapSections(dedupTermButtonsPerSection(autolinkGlossary(marked.parse(lesson.body), lesson.body)));
   const chId = ch.meta.id;
   const sda = JSON.stringify({ domain: DOMAIN, dataBase, siteRoot });
   const tcode = lesson.data.tcode || '';
