@@ -55,7 +55,8 @@
 11
 12
 13
-14</pre><pre class="abap-editor__code"><code><span class="tok-kw">CLASS</span> zcl_booking_factory <span class="tok-kw">DEFINITION</span> <span class="tok-kw">PUBLIC</span>.
+14
+15</pre><pre class="abap-editor__code"><code><span class="tok-kw">CLASS</span> zcl_booking_factory <span class="tok-kw">DEFINITION</span> <span class="tok-kw">PUBLIC</span>.
   <span class="tok-kw">PUBLIC</span> <span class="tok-kw">SECTION</span>.
     <span class="tok-kw">CLASS-METHODS</span> <span class="tok-kw">create</span>
       <span class="tok-kw">IMPORTING</span> iv_type       <span class="tok-kw">TYPE</span> c
@@ -64,9 +65,10 @@
 
 <span class="tok-kw">CLASS</span> zcl_booking_factory <span class="tok-kw">IMPLEMENTATION</span>.
   <span class="tok-kw">METHOD</span> <span class="tok-kw">create</span>.
-    ro_obj = COND #(
-      <span class="tok-kw">WHEN</span> iv_type = <span class="tok-str">'V'</span> THEN <span class="tok-kw">NEW</span> zcl_vip_booking( )
-      <span class="tok-kw">ELSE</span>                    <span class="tok-kw">NEW</span> zcl_booking_manager( ) ).
+    <span class="tok-kw">CASE</span> iv_type.
+      <span class="tok-kw">WHEN</span> <span class="tok-str">'V'</span>.    ro_obj = <span class="tok-kw">NEW</span> zcl_vip_booking( ).      <span class="tok-com">" VIP 예매</span>
+      <span class="tok-kw">WHEN</span> OTHERS. ro_obj = <span class="tok-kw">NEW</span> zcl_booking_manager( ).  <span class="tok-com">" 일반 예매</span>
+    <span class="tok-kw">ENDCASE</span>.
   <span class="tok-kw">ENDMETHOD</span>.
 <span class="tok-kw">ENDCLASS</span>.</code></pre></div></div>
 <ul>
