@@ -1,6 +1,6 @@
 # Track 2 (CH24~36) 콘텐츠·체험·시각 보강 — 진행 원장
 
-> 📅 최종수정: 2026-06-24 18:06 KST · 자동 작업(/loop goal) 진행 기록. **압축돼도 이 파일로 재개.**
+> 📅 최종수정: 2026-06-24 18:09 KST · 자동 작업(/loop goal) 진행 기록. **압축돼도 이 파일로 재개.**
 > 🎯 Track 2(실무, CH24~36) 전 레슨을 초반부 골드 스탠다드(본문 1,500자±·섹션 5±·체험 1+·시각 동반) 수준으로 보강.
 
 ## 규칙·합의 (이 작업 한정 + 영구)
@@ -49,7 +49,8 @@
 - 계획: **체험=DML 플레이그라운드**(ZBOOKING 미니 테이블에 INSERT/UPDATE/MODIFY/DELETE를 키·값 넣어 실행 → 행 변화+결과메시지. INSERT 중복키=오류, MODIFY=upsert, WHERE 없는 DELETE=전체삭제 경고). **시각=감사필드 자동 stamp 도식**(sy-uname/datum/uzeit). 본문: 읽기→쓰기 불편, 4종 차이 깊이, FROM TABLE, 감사필드 why, 표준테이블 금지 why. 퀴즈(선택): "이 상황엔 어떤 DML?" OX/단답.
 - 신규 엔진: `dml-playground`(테이블 변이 시뮬, L02·L04·L05에도 변형 재사용 가능).
 
-### CH24-L02 · COMMIT / ROLLBACK (원자성)
+### CH24-L02 · COMMIT / ROLLBACK (원자성) ✅
+- 구현완료: 본문 6섹션 확장 + 신규 엔진 `txn-atomicity` + `CH24-L02-S01`(미확정↔확정 2패널). 검증: 실패+COMMIT=반쪽저장(헤더만), 실패+ROLLBACK=DB깨끗, 성공+COMMIT=둘다·콘솔0.
 - 계획: **체험=원자성 시뮬**(header INSERT + items INSERT, "항목 실패?" 토글 → COMMIT or ROLLBACK. 실패→ROLLBACK→둘 다 사라짐(반쪽저장 방지), 성공→COMMIT→둘 다 영속). **시각=전부 아니면 전무 도식**. 본문: 반쪽저장 위험, COMMIT/ROLLBACK, AND WAIT.
 
 ### CH24-L03 · DB LUW vs SAP LUW + Update Task
