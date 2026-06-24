@@ -7,12 +7,18 @@
     DATS:{maxLen:8,    dec:false, numeric:false, fixedLen:true,  lower:false, sign:false, abap:'d', desc:'날짜 YYYYMMDD(8자리)'}
   };
   var EXAMPLES = [
-    { goal:'금액을 담을 Domain을 직접 만들어 보세요. 권장: 이름 <b>ZDO_AMOUNT</b>, 타입 <b>DEC</b>, 길이 <b>8</b>, 소수 <b>2</b>자리. 값을 입력한 뒤 💾 저장 → ✓ 검사 → 🔥 활성화 순으로 눌러 확인하세요.' },
-    { goal:'주문 상태 코드 Domain을 만들어 보세요. 권장: 이름 <b>ZDO_STATUS</b>, 타입 <b>CHAR</b>, 길이 <b>1</b>. “값 범위” 탭에서 고정값 <b>O</b>(Open)·<b>C</b>(Closed)를 직접 추가해 보세요.' },
-    { goal:'항공사 코드 Domain을 만들어 보세요. 권장: 이름 <b>ZDO_CARRID</b>, 타입 <b>CHAR</b>, 길이 <b>3</b>. “값 범위” 탭의 <b>값 테이블(Value Table)</b>에 <b>SCARR</b>를 입력해 외래키 후보로 연결해 보세요.' },
-    { goal:'이메일처럼 <b>대소문자를 그대로 보존</b>해야 하는 값의 Domain을 만들어 보세요. 권장: 이름 <b>ZDO_EMAIL</b>, 타입 <b>CHAR</b>, 길이 <b>80</b>, “속성” 탭에서 <b>소문자 허용(Lower Case)</b>을 체크. (체크 안 하면 입력이 자동 대문자로 바뀝니다.)' },
-    { goal:'재고 증감처럼 <b>음수가 될 수 있는 정수</b>(입고 +, 출고 −)를 담을 Domain을 만들어 보세요. 권장: 이름 <b>ZDO_STOCKCHG</b>, 타입 <b>INT4</b>(정수), “속성” 탭에서 <b>음수 허용(Sign)</b>을 체크. 참고: <b>NUMC</b>는 음수를 담지 못합니다.' },
-    { goal:'연도·대기번호처럼 <b>숫자로 적지만 계산하지 않는</b> “단순 카운트” 값의 Domain을 만들어 보세요. 권장: 이름 <b>ZDO_SEQNO</b>, 타입 <b>NUMC</b>, 길이 <b>4</b>(예: 대기번호 0001~9999, 연도 2026). 참고: NUMC는 <b>앞 0을 보존</b>하는 “숫자 문자”라 계산용이 아니고 <b>음수도 담지 못합니다</b>.' }
+    { goal:'금액을 담을 Domain을 직접 만들어 보세요. <b>목표</b>: 이름 <b>ZDO_AMOUNT</b>, 타입 <b>DEC</b>, 길이 <b>8</b>, 소수 <b>2</b>자리. 값을 입력한 뒤 💾 저장 → ✓ 검사 → 🔥 활성화 순으로 눌러 확인하세요.',
+      target:{ name:'ZDO_AMOUNT', type:'DEC', len:8, dec:2 } },
+    { goal:'주문 상태 코드 Domain을 만들어 보세요. <b>목표</b>: 이름 <b>ZDO_STATUS</b>, 타입 <b>CHAR</b>, 길이 <b>1</b>. “값 범위” 탭에서 고정값 <b>O</b>(Open)·<b>C</b>(Closed)를 추가하세요.',
+      target:{ name:'ZDO_STATUS', type:'CHAR', len:1, fixed:['O','C'] } },
+    { goal:'항공사 코드 Domain을 만들어 보세요. <b>목표</b>: 이름 <b>ZDO_CARRID</b>, 타입 <b>CHAR</b>, 길이 <b>3</b>. “값 범위” 탭의 <b>값 테이블(Value Table)</b>에 <b>SCARR</b>를 입력해 외래키 후보로 연결하세요.',
+      target:{ name:'ZDO_CARRID', type:'CHAR', len:3, vtab:'SCARR' } },
+    { goal:'이메일처럼 <b>대소문자를 그대로 보존</b>해야 하는 값의 Domain을 만들어 보세요. <b>목표</b>: 이름 <b>ZDO_EMAIL</b>, 타입 <b>CHAR</b>, 길이 <b>80</b>, “속성” 탭에서 <b>소문자 허용(Lower Case)</b>을 체크. (체크 안 하면 입력이 자동 대문자로 바뀝니다.)',
+      target:{ name:'ZDO_EMAIL', type:'CHAR', len:80, lower:true } },
+    { goal:'재고 증감처럼 <b>음수가 될 수 있는 정수</b>(입고 +, 출고 −)를 담을 Domain을 만들어 보세요. <b>목표</b>: 이름 <b>ZDO_STOCKCHG</b>, 타입 <b>INT4</b>(정수), “속성” 탭에서 <b>음수 허용(Sign)</b>을 체크. 참고: <b>NUMC</b>는 음수를 담지 못합니다.',
+      target:{ name:'ZDO_STOCKCHG', type:'INT4', neg:true } },
+    { goal:'연도·대기번호처럼 <b>숫자로 적지만 계산하지 않는</b> “단순 카운트” 값의 Domain을 만들어 보세요. <b>목표</b>: 이름 <b>ZDO_SEQNO</b>, 타입 <b>NUMC</b>, 길이 <b>4</b>(예: 대기번호 0001~9999, 연도 2026). 참고: NUMC는 <b>앞 0을 보존</b>하는 “숫자 문자”라 계산용이 아니고 <b>음수도 담지 못합니다</b>.',
+      target:{ name:'ZDO_SEQNO', type:'NUMC', len:4 } }
   ];
 
   var $=function(id){return document.getElementById(id);};
@@ -22,7 +28,7 @@
       lenHint=$('lenHint'), fvBody=$('fvBody'),
       badge=$('badge'), badgeTxt=$('badgeTxt'), msg=$('msg'), msgBody=$('msgBody'),
       presetsEl=$('presets'), goalbar=$('goalbar');
-  var state='new';
+  var state='new', curEx=0;
 
   /* ---- 타입에 따른 폼 표시 ---- */
   function syncType(){
@@ -144,6 +150,26 @@
     return /^[YZ][A-Z0-9_]{1,29}$/.test(dname.value.trim().toUpperCase());
   }
 
+  /* ---- 예제 '목표' 일치 검사 (선택된 예제대로 정확히 입력해야 통과) ---- */
+  function targetChecks(){
+    var e=EXAMPLES[curEx]; if(!e||!e.target) return [];
+    var tg=e.target, out=[], name=dname.value.trim().toUpperCase();
+    function chk(ok, okMsg, failMsg){ out.push({ok:ok, msg: ok?okMsg:failMsg}); }
+    chk(name===tg.name, '목표 이름 '+tg.name+' — 일치', '이름을 목표대로 입력하세요 → <b>'+tg.name+'</b>');
+    chk(dtype.value===tg.type, '목표 타입 '+tg.type+' — 일치', '타입을 <b>'+tg.type+'</b>(으)로 선택하세요.');
+    if(tg.len!=null) chk((parseInt(dlen.value,10)||0)===tg.len, '목표 길이 '+tg.len+' — 일치', '길이를 <b>'+tg.len+'</b>(으)로 맞추세요.');
+    if(tg.dec!=null) chk((parseInt(ddec.value,10)||0)===tg.dec, '목표 소수 '+tg.dec+'자리 — 일치', '소수 자릿수를 <b>'+tg.dec+'</b>(으)로 맞추세요.');
+    if(tg.lower!=null) chk(dlower.checked===tg.lower, tg.lower?'소문자 허용 — 체크됨(목표)':'소문자 허용 — 해제됨(목표)', tg.lower?'“속성” 탭에서 <b>소문자 허용(Lower Case)</b>을 체크하세요.':'“소문자 허용”을 해제하세요.');
+    if(tg.neg!=null) chk(dneg.checked===tg.neg, tg.neg?'음수 허용 — 체크됨(목표)':'음수 허용 — 해제됨(목표)', tg.neg?'“속성” 탭에서 <b>음수 허용(Sign)</b>을 체크하세요.':'“음수 허용”을 해제하세요.');
+    if(tg.vtab!=null) chk(dvtab.value.trim().toUpperCase()===tg.vtab, '목표 값 테이블 '+tg.vtab+' — 일치', '“값 범위” 탭에서 값 테이블을 <b>'+tg.vtab+'</b>(으)로 입력하세요.');
+    if(tg.fixed!=null){
+      var vals=getFv().map(function(r){return r[0].toUpperCase();}).sort();
+      var want=tg.fixed.map(function(s){return s.toUpperCase();}).sort();
+      chk(vals.length===want.length && vals.join(',')===want.join(','), '목표 고정값 '+tg.fixed.join('·')+' — 일치', '“값 범위” 탭에서 고정값 <b>'+tg.fixed.join('·')+'</b>만 추가하세요.');
+    }
+    return out;
+  }
+
   function showMsg(cls, head, bodyHtml){
     msg.className='msgbar '+cls; msg.querySelector('.head').textContent=head; msgBody.innerHTML=bodyHtml; postHeight();
   }
@@ -166,15 +192,15 @@
   function doCheck(){
     if(!dtype.value){ return showMsg('bad','⛔ 검사 불가','먼저 <b>데이터 타입</b>을 선택하세요.'); }
     autofillOut();
-    var c=validate(), allOk=c.every(function(x){return x.ok;});
-    showChecks(allOk?'ok':'bad', allOk?'✓ 검사 통과 — 일관성 OK':'✗ 검사 — 아래 항목을 해결하세요', c,
+    var c=targetChecks().concat(validate()), allOk=c.every(function(x){return x.ok;});
+    showChecks(allOk?'ok':'bad', allOk?'✓ 검사 통과 — 예제 목표와 일치':'✗ 검사 — 아래 항목을 예제 목표대로 고치세요', c,
       allOk?'<div style="margin-top:6px;color:#0b7250;font-weight:700">이제 🔥 활성화할 수 있습니다.</div>':'');
   }
   function doActivate(){
     if(state==='new'){ return showMsg('bad','⛔ 활성화 전','먼저 <b>💾 저장</b>한 뒤 활성화하세요.'); }
     autofillOut();
-    var c=validate(), allOk=c.every(function(x){return x.ok;});
-    if(!allOk){ return showChecks('bad','⛔ 활성화 실패 — 검사 오류', c); }
+    var c=targetChecks().concat(validate()), allOk=c.every(function(x){return x.ok;});
+    if(!allOk){ return showChecks('bad','⛔ 활성화 실패 — 예제 목표와 다릅니다', c); }
     setState('active');
     var name=dname.value.trim().toUpperCase();
     showChecks('ok','🔥 활성화 완료', c,
@@ -183,6 +209,7 @@
 
   /* ---- 예제 로드 ---- */
   function loadEx(i){
+    curEx=i;
     var e=EXAMPLES[i];
     // 값을 미리 채우지 않는다 — 폼 초기화 후 '목표'만 안내해 사용자가 직접 입력하도록 유도
     dname.value=''; dtype.value=''; dlen.value=''; ddec.value=''; dout.value=''; dlower.checked=false; dneg.checked=false; dvtab.value='';
