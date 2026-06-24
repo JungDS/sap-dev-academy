@@ -190,6 +190,56 @@ function loadChapters() {
 }
 
 /* 본문 h2 섹션을 흰 카드(.lblock)로 감싼다 — v2-C의 섹션 카드 디자인 */
+/* ---------- 용어 자동 링크 ----------
+   레슨에서 [[…]]로 한 번이라도 표시한 용어는 그 레슨 안 '모든' 재등장에도 용어 버튼을 단다.
+   (입문자는 한 번 본 용어를 못 외울 수 있으므로 항상 설명 제공) — 코드/기존 버튼/링크/제목 안은 제외.
+   대상 = 그 레슨이 명시적으로 마킹한 용어(작성자 opt-in). data-term=글로서리 키. */
+const AUTOLINK_SKIP = new Set(['pre','code','button','a','h1','h2','h3','h4','h5','h6','script','style']);
+function linkTermsInText(text, forms, formToKey) {
+  let out = '', i = 0;
+  while (i < text.length) {
+    let matched = null;
+    for (const f of forms) {                 // forms = 길이 내림차순(greedy)
+      if (text.startsWith(f, i)) {
+        if (/^[\x00-\x7F]+$/.test(f)) {       // ASCII 용어는 단어 경계 확인(부분일치 방지)
+          const prev = text[i - 1], next = text[i + f.length];
+          if ((prev && /[A-Za-z0-9_]/.test(prev)) || (next && /[A-Za-z0-9_]/.test(next))) { continue; }
+        }
+        matched = f; break;
+      }
+    }
+    if (matched) {
+      out += `<button class="term" type="button" data-term="${esc(formToKey.get(matched))}">${esc(matched)}</button>`;
+      i += matched.length;
+    } else { out += text[i]; i += 1; }
+  }
+  return out;
+}
+function autolinkGlossary(html, rawBody) {
+  const re = /\[\[([^\]|]+?)(?:\|([^\]]+?))?\]\]/g;
+  const formToKey = new Map(); let m;
+  while ((m = re.exec(rawBody))) {
+    const key = m[1].trim(), label = (m[2] || m[1]).trim();
+    formToKey.set(key, key); formToKey.set(label, key);   // 키·라벨 둘 다 표면형으로
+  }
+  // 과잉 링크 방지: 너무 짧은 표면형(타입글자 I·P·D·T, '변수', IF·DO 등)은 자동 링크 제외(첫 [[마킹]]만 유지).
+  const forms = [...formToKey.keys()].filter((k) => k.replace(/\s/g, '').length >= 3).sort((a, b) => b.length - a.length);
+  if (!forms.length) { return html; }
+  const tagRe = /<\/?([a-zA-Z0-9]+)(?:\s[^>]*)?\/?>/g;
+  let out = '', last = 0, skip = 0, mt;
+  while ((mt = tagRe.exec(html))) {
+    const seg = html.slice(last, mt.index);
+    out += skip > 0 ? seg : linkTermsInText(seg, forms, formToKey);
+    out += mt[0];
+    const name = mt[1].toLowerCase(), isClose = mt[0][1] === '/';
+    const selfClose = /\/>$/.test(mt[0]) || ['br','hr','img','input','meta','link'].includes(name);
+    if (AUTOLINK_SKIP.has(name) && !selfClose) { skip = isClose ? Math.max(0, skip - 1) : skip + 1; }
+    last = tagRe.lastIndex;
+  }
+  out += skip > 0 ? html.slice(last) : linkTermsInText(html.slice(last), forms, formToKey);
+  return out;
+}
+
 function wrapSections(html) {
   const parts = html.split(/(?=<h2[\s>])/);
   return parts.map((p) => (/^<h2[\s>]/.test(p) ? `<section class="lblock">${p}</section>` : p)).join('');
@@ -202,7 +252,7 @@ function renderLessonPage(ch, lesson, trackNo) {
   const assets = relPosix(OUT_PAGES, path.join(ROOT, 'assets'));
   const dataBase = relPosix(OUT_PAGES, OUT) + '/';
   const siteRoot = relPosix(OUT_PAGES, ROOT) + '/';
-  const bodyHtml = wrapSections(marked.parse(lesson.body));
+  const bodyHtml = wrapSections(autolinkGlossary(marked.parse(lesson.body), lesson.body));
   const chId = ch.meta.id;
   const sda = JSON.stringify({ domain: DOMAIN, dataBase, siteRoot });
   const tcode = lesson.data.tcode || '';
