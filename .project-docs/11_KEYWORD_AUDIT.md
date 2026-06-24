@@ -1,6 +1,6 @@
 # 11. KEYWORD AUDIT — 공식 ABAP Keyword Doc 대비 콘텐츠 감사 원장
 
-> 📅 최종수정: 2026-06-24 00:25 KST
+> 📅 최종수정: 2026-06-24 00:26 KST
 > 🎯 **목적:** `content/abap/**` 레슨을 **SAP 공식 ABAP Keyword Documentation 오프라인 전체본**(`C:\ABAP_DOCU_HTML`, AS ABAP Release 758)과 대조해 키워드·문법·이론의 **누락/상이/오류**를 보강. 챕터 순서대로.
 > 📖 **읽을 때:** 감사 패스 **재개 시**(이어서 진행) — 이 원장이 어디까지 했는지의 단일 출처.
 
@@ -31,7 +31,8 @@
 | CH09 | ✅ 완료 | 변경 없음 — 공식과 일치 |
 | CH10 | ✅ 완료 | L03 CALL FUNCTION `CHANGING` 보강 |
 | CH11 | ✅ 완료 | 변경 없음 — 공식과 일치 |
-| CH12~CH36 | ⬜ 대기 | (다음 재개 지점 = CH12) |
+| CH12 | ✅ 완료 | L06 RANGES(레거시) 대비 보강 |
+| CH13~CH36 | ⬜ 대기 | (다음 재개 지점 = CH13) |
 
 ## 챕터별 findings
 
@@ -89,3 +90,7 @@
 ### CH11 — SALV 1차 (간단 ALV)  → **변경 없음(공식과 일치)**
 - **L01~L06**(`cl_salv_table=>factory`·`get_functions()->set_all`·`display`·`cx_salv_msg` TRY/CATCH·Data Element 라벨 자동·미니 리포트·실습): 정확 ✓ — SALV API 공식과 일치.
 - 의도적 최소 스코프(읽기전용+표준기능). 심화(컬럼/색/이벤트/편집)는 CH17/21/27/28로 **명시 분리**(L05) → 추가 보강은 R15 위반이라 안 함. `REF TO`/`TRY`는 `[선행 사용]`로 CH20 게이팅 준수.
+
+### CH12 — SELECT-OPTIONS와 Range Table
+- **L01**(4컬럼 SIGN/OPTION/LOW/HIGH)·**L02**(`SELECT-OPTIONS … FOR`·TABLES)·**L03**(`WHERE … IN` classic)·**L04**(Include/Exclude I/E)·**L05**(OPTION EQ/BT/CP… · **CP 와일드카드 `*`/`+`**가 LIKE `%`/`_`와 구분 — 정확)·**L07**(실습): 정확 ✓.
+- **L06**(코드 직접 조작): **보강** 레거시 `RANGES r FOR field.`(헤더라인식) 한 줄 대비 추가 — introduces가 RANGES 선언했으나 본문 부재이던 갭(현재식은 `TYPE RANGE OF`).
