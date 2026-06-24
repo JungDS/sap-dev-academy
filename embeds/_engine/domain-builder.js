@@ -167,6 +167,12 @@
       var want=tg.fixed.map(function(s){return s.toUpperCase();}).sort();
       chk(vals.length===want.length && vals.join(',')===want.join(','), '목표 고정값 '+tg.fixed.join('·')+' — 일치', '“값 범위” 탭에서 고정값 <b>'+tg.fixed.join('·')+'</b>만 추가하세요.');
     }
+    // 엄격: 목표에 '없는' 옵션은 비어 있어야 함(제시되지 않은 건 손대지 않기)
+    var tt=TYPES[dtype.value];
+    if(tg.lower==null && tt && tt.lower) chk(!dlower.checked, '소문자 허용 — 미사용(목표 외)', '이 예제는 <b>소문자 허용</b>을 쓰지 않습니다 — 체크를 해제하세요.');
+    if(tg.neg==null   && tt && tt.sign)  chk(!dneg.checked,   '음수 허용 — 미사용(목표 외)', '이 예제는 <b>음수 허용</b>을 쓰지 않습니다 — 체크를 해제하세요.');
+    if(tg.vtab==null)  chk(dvtab.value.trim()==='', '값 테이블 — 미사용(목표 외)', '이 예제는 <b>값 테이블</b>을 쓰지 않습니다 — 비우세요.');
+    if(tg.fixed==null) chk(getFv().length===0,      '고정값 — 미사용(목표 외)', '이 예제는 <b>고정값</b>을 쓰지 않습니다 — 모두 지우세요.');
     return out;
   }
 
