@@ -1,6 +1,6 @@
 # 11. KEYWORD AUDIT — 공식 ABAP Keyword Doc 대비 콘텐츠 감사 원장
 
-> 📅 최종수정: 2026-06-24 00:47 KST
+> 📅 최종수정: 2026-06-24 00:51 KST
 > 🎯 **목적:** `content/abap/**` 레슨을 **SAP 공식 ABAP Keyword Documentation 오프라인 전체본**(`C:\ABAP_DOCU_HTML`, AS ABAP Release 758)과 대조해 키워드·문법·이론의 **누락/상이/오류**를 보강. 챕터 순서대로.
 > 📖 **읽을 때:** 감사 패스 **재개 시**(이어서 진행) — 이 원장이 어디까지 했는지의 단일 출처.
 
@@ -38,7 +38,8 @@
 | CH16 | ✅ 완료 | 변경 없음 — 공식과 일치 |
 | CH17 | ✅ 완료 | 변경 없음 — 공식과 일치(classic) |
 | CH18 | ✅ 완료 | 문법 정확 · ⚠️구조적 갭(CONV/COND/SWITCH/REDUCE 부재) check/ 플래그 |
-| CH19~CH36 | ⬜ 대기 | (다음 재개 지점 = CH19) |
+| CH19 | ✅ 완료 | 변경 없음 — 공식과 일치(modern SQL) |
+| CH20~CH36 | ⬜ 대기 | (다음 재개 지점 = CH20) |
 
 ## 챕터별 findings
 
@@ -124,3 +125,7 @@
 ### CH18 — Modern ABAP Syntax  → **문법 정확 · 구조적 갭 플래그(본문 무변경)**
 - **L01~L07**: `DATA()`/`FINAL()` 인라인·`VALUE #()`/BASE·`CORRESPONDING #()`/MAPPING/EXCEPT·Table Expression `lt[ ]`(`CX_SY_ITAB_LINE_NOT_FOUND`·`line_exists()`/`line_index()`)·String Template `|{ }|`·서식·함수형 문자열함수·`+= -= *= /=` 전부 공식과 일치 ✓. SELECT 인라인(@)은 CH19 유보(정확).
 - ⚠️ **구조적 갭(사용자 판단 — check/CH18.md)**: 핵심 constructor 식 `CONV`/`SWITCH`/`REDUCE`/`FILTER`가 **커리큘럼 전무**(grep 0), `COND`는 CH26/28에서 정식 도입 없이 사용, constructor `FOR`(컴프리헨션)는 CH36-L05에만. CH18 keywords엔 `FOR` 있으나 본문 부재. → 새 레슨 추가는 설계 결정이라 임의 보강 안 함(R15: 한 번에 새 용어 다수 금지).
+
+### CH19 — New Open SQL / Modern ABAP SQL  → **변경 없음(공식과 일치)**
+- **L01~L08**: 콤마 필드·`@` host var/`@( )` host expr·strict·`@DATA()` 인라인 대상·SQL식(CASE/CAST/COALESCE)·SQL 문자/날짜 함수(CONCAT/SUBSTRING/UPPER/`DATS_ADD_DAYS`)·`SELECT FROM @itab` 전부 공식과 일치 ✓. "ABAP SQL" 현행 명칭 사용 정확.
+- `CAST( x AS CHAR )`는 공식 `CHAR [ ( len ) ]`(길이 선택)이라 유효(오류 아님). 고급 SQL(UNION/서브쿼리/윈도우)은 입문 스코프 외(합리적).
