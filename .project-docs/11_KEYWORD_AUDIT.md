@@ -1,6 +1,6 @@
 # 11. KEYWORD AUDIT — 공식 ABAP Keyword Doc 대비 콘텐츠 감사 원장
 
-> 📅 최종수정: 2026-06-24 01:51 KST
+> 📅 최종수정: 2026-06-24 01:55 KST
 > 🎯 **목적:** `content/abap/**` 레슨을 **SAP 공식 ABAP Keyword Documentation 오프라인 전체본**(`C:\ABAP_DOCU_HTML`, AS ABAP Release 758)과 대조해 키워드·문법·이론의 **누락/상이/오류**를 보강. 챕터 순서대로.
 > 📖 **읽을 때:** 감사 패스 **재개 시**(이어서 진행) — 이 원장이 어디까지 했는지의 단일 출처.
 
@@ -51,7 +51,8 @@
 | CH29 | ✅ 완료 | 변경 없음 — 공식과 일치 |
 | CH30 | ✅ 완료 | L02 RFC `MESSAGE`·L03 BDC `OPTIONS FROM`·L05 OPEN DATASET 보안/MESSAGE/TRANSFER 보강 |
 | CH31 | ✅ 완료 | 변경 없음 — IDoc/ALE/Gateway 툴링(doc 밖)·L05 modern SQL 절순서/OFFSET 정확 |
-| CH32~CH36 | ⬜ 대기 | (다음 재개 지점 = CH32) |
+| CH32 | ✅ 완료 | 변경 없음 — 성능툴(doc 밖)·L04 FAE/L05 Pushdown modern SQL 정확 |
+| CH33~CH36 | ⬜ 대기 | (다음 재개 지점 = CH33) |
 
 ## 챕터별 findings
 
@@ -190,3 +191,8 @@
 ### CH31 — IDoc / ALE / Gateway (Track-2)  → **변경 없음(공식과 일치)**
 - **L01~L03**(IDoc 3층 EDIDC/EDIDD/EDIDS·Basic Type/Segment·WE02/WE05/WE60·상태코드 53/51/03/12/02/26·BD87 재처리)·**L02**(ALE Distribution Model BD64·Partner Profile WE20·Port WE21·Logical System BD54)·**L04**(Gateway SEGW·EntityType/EntitySet/Association·DPC_EXT/MPC_EXT·/IWFND/MAINT_SERVICE): IDoc/ALE/Gateway **툴링·프레임워크 설정** → ABAP keyword doc 영역 밖(CH01류 N/A). 개념 서술은 일관.
 - **L05**(`GET_ENTITYSET` 구현·modern Open SQL): **정확 ✓** — 절 순서 `SELECT-list→FROM→ORDER BY→INTO→UP TO ROWS→OFFSET`가 공식 규칙(INTO=마지막 query 절, UP TO/OFFSET은 INTO 뒤, OFFSET은 ORDER BY 필수)과 정확히 일치. `@` escape·host expr·`INTO CORRESPONDING FIELDS OF TABLE` 모두 정상. CH31>CH19라 modern SQL 게이팅 OK. 메서드 체이닝(CH20)·인라인 `DATA()`(CH18+)도 도입 완료분. 미학습 constructor 식 없음.
+
+### CH32 — 성능 분석과 튜닝 (Track-2)  → **변경 없음(공식과 일치)**
+- **L01~L03**(ST05 SQL Trace·Identical Selects / SAT(구 SE30) Runtime Analysis·Hit List / SQLM·SWLT·Secondary Index 판단·S/4HANA 인덱스 제한): 성능 **분석 도구/T-code** → keyword doc 영역 밖(CH01류 N/A). 개념 서술 일관.
+- **L04**(SELECT-in-LOOP 제거): **정확 ✓** — ❌안티패턴(`LOOP … SELECT SINGLE`)↔✅`FOR ALL ENTRIES`+`SORT`+`READ … BINARY SEARCH` 수정. 공식 대조: FAE 배치(`FROM → FOR ALL ENTRIES IN @itab → WHERE`) 정확, **빈 드라이버 테이블→전체 조회** 치명 함정도 본문이 정확히 경고("비었으면 건너뛴다"). FAE 중복 자동제거는 홈(CH13-L06) 참조 — 중복 안 함(R15). 미학습식 없음.
+- **L05**(대량처리·Code Pushdown): **정확 ✓** — `SELECT carrid, SUM( seatsocc ) AS occ … GROUP BY carrid INTO TABLE @DATA()` modern 집계 SQL 정상. 패키지/병렬(aRFC)/Pushdown(CDS·AMDP=CH33 예고 L1) 게이팅 OK. CH32>CH19라 modern SQL 정당.
