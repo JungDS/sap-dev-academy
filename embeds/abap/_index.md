@@ -19,13 +19,15 @@
 | CH04-L01-S01 | CH04-L01 | step-debugger | 산술 트레이스(7+3·2**10·DIV·MOD) | ✅ |
 | CH04-L05-S01 | CH04-L05 | step-debugger | DO·sy-index 트레이스(1→5) | ✅ |
 | CH04-L06-S01 | CH04-L06 | step-debugger | 구구단 중첩DO 디버거 홈(F5·gv_mul/res) | ✅ |
-| _(CH04 L02·L07·L03·L04 — 진행 중)_ | | | | 🔧 |
+| CH04-L02-S01 | CH04-L02 | fill-blank | 문자열 함수 빈칸(INTO·AT·strlen·FIND) | ✅ |
+| CH04-L07-S01 | CH04-L07 | fill-blank | 구구단 빈칸(TIMES·sy-index·*·ENDDO) | ✅ |
+| _(CH04 L03·L04 — 진행 중)_ | | | | 🔧 |
 
 ## B. 엔진별 집계 (카테고리 현황 — 같은 종류 몇 개·어디서)
 | 엔진 (embeds/_engine/) | 그룹 | 공통/standalone | 사용 인스턴스 | 비고 |
 |---|---|---|---|---|
 | step-debugger | 6 | 공통(_engine)·config 주도 🔧 | CH04-L01·L05·L06 (외 CH05-L01·L05·CH10-L07 예정) | `.stepper-config` 트레이스(이미 주도형·리팩터 불요) |
-| fill-blank | 3 | 공통(_engine)+_autoheight ✅ | CH02-L06-S01 (외 CH04-L02·L07 예정) | 데이터=마크업 |
+| fill-blank | 3 | 공통(_engine)+_autoheight ✅ | CH02-L06·CH04-L02·L07 (전부 완료) | 데이터=마크업 |
 | before-after | 2 | 공통(CSS-only)+_autoheight ✅ | CH02-L05-S01 (외 CH07-L03 예정) | 콘텐츠 정리(크롬 제거) |
 | diff-mapper | 1 | 공통 | _(미작성)_ | 데이터=마크업 |
 | select-query | 2 | 공통 | _(미작성)_ | config 주입 |
