@@ -1,6 +1,6 @@
 # 11. KEYWORD AUDIT — 공식 ABAP Keyword Doc 대비 콘텐츠 감사 원장
 
-> 📅 최종수정: 2026-06-24 00:26 KST
+> 📅 최종수정: 2026-06-24 00:30 KST
 > 🎯 **목적:** `content/abap/**` 레슨을 **SAP 공식 ABAP Keyword Documentation 오프라인 전체본**(`C:\ABAP_DOCU_HTML`, AS ABAP Release 758)과 대조해 키워드·문법·이론의 **누락/상이/오류**를 보강. 챕터 순서대로.
 > 📖 **읽을 때:** 감사 패스 **재개 시**(이어서 진행) — 이 원장이 어디까지 했는지의 단일 출처.
 
@@ -32,7 +32,8 @@
 | CH10 | ✅ 완료 | L03 CALL FUNCTION `CHANGING` 보강 |
 | CH11 | ✅ 완료 | 변경 없음 — 공식과 일치 |
 | CH12 | ✅ 완료 | L06 RANGES(레거시) 대비 보강 |
-| CH13~CH36 | ⬜ 대기 | (다음 재개 지점 = CH13) |
+| CH13 | ✅ 완료 | L03 SELECT DISTINCT 보강 |
+| CH14~CH36 | ⬜ 대기 | (다음 재개 지점 = CH14) |
 
 ## 챕터별 findings
 
@@ -94,3 +95,7 @@
 ### CH12 — SELECT-OPTIONS와 Range Table
 - **L01**(4컬럼 SIGN/OPTION/LOW/HIGH)·**L02**(`SELECT-OPTIONS … FOR`·TABLES)·**L03**(`WHERE … IN` classic)·**L04**(Include/Exclude I/E)·**L05**(OPTION EQ/BT/CP… · **CP 와일드카드 `*`/`+`**가 LIKE `%`/`_`와 구분 — 정확)·**L07**(실습): 정확 ✓.
 - **L06**(코드 직접 조작): **보강** 레거시 `RANGES r FOR field.`(헤더라인식) 한 줄 대비 추가 — introduces가 RANGES 선언했으나 본문 부재이던 갭(현재식은 `TYPE RANGE OF`).
+
+### CH13 — Open SQL 2차: JOIN·집계 (classic)
+- **L01**(INNER JOIN·`~`·AS·ON·카테시안 경고)·**L02**(LEFT OUTER JOIN·NULL→초기값)·**L04**(HAVING·절 순서)·**L05**(ORDER BY·PRIMARY KEY·vs SORT)·**L06**(FAE·IS NOT INITIAL 필수·중복 자동제거)·**L07**(JOIN/FAE/ABAP 선택·LOOP+SELECT 안티패턴)·**L08**(실습): 정확 ✓ — classic 경계 철저.
+- **L03**(GROUP BY·집계): **보강** `SELECT DISTINCT`(중복 행 제거) 추가 — introduces가 DISTINCT 선언했으나 본문 부재이던 갭. (COUNT/SUM/MIN/MAX/AVG·비집계컬럼 규칙은 정확.)
