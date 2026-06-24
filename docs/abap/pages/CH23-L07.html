@@ -70,11 +70,11 @@
 3
 4
 5
-6</pre><pre class="abap-editor__code"><code>define behavior for ZI_Booking alias Booking
+6</pre><pre class="abap-editor__code"><code>define behavior <span class="tok-kw">for</span> ZI_Booking alias Booking
 {
-  validation validateSeats <span class="tok-kw">on</span> save { field seats; }
+  validation validateSeats <span class="tok-kw">on</span> <span class="tok-kw">save</span> { <span class="tok-kw">field</span> seats; }
   determination setStatus <span class="tok-kw">on</span> <span class="tok-kw">modify</span> { <span class="tok-kw">create</span>; }
-  action cancel result [<span class="tok-num">1</span>] $self;            // 취소 액션
+  <span class="tok-kw">action</span> cancel result [<span class="tok-num">1</span>] $self;            // 취소 액션
 }</code></pre></div></div>
 </section><section class="lblock"><h2>정원 초과 Validation (콘서트 thread)</h2>
 <p>예매 좌석 수가 회차 정원을 넘으면 거부한다 — <code>ZCX_FULLY_BOOKED</code>(CH20)의 RAP 버전이다.</p>
@@ -86,8 +86,8 @@
 6
 7
 8</pre><pre class="abap-editor__code"><code><span class="tok-kw">METHOD</span> validateSeats.
-  <span class="tok-kw">READ</span> ENTITIES <span class="tok-kw">OF</span> zi_booking <span class="tok-kw">IN</span> LOCAL MODE
-    ENTITY Booking <span class="tok-kw">FIELDS</span> ( concert_id seats ) <span class="tok-kw">WITH</span> <span class="tok-kw">CORRESPONDING</span> #( keys )
+  <span class="tok-kw">READ</span> <span class="tok-kw">ENTITIES</span> <span class="tok-kw">OF</span> zi_booking <span class="tok-kw">IN</span> <span class="tok-kw">LOCAL</span> <span class="tok-kw">MODE</span>
+    <span class="tok-kw">ENTITY</span> Booking <span class="tok-kw">FIELDS</span> ( concert_id seats ) <span class="tok-kw">WITH</span> <span class="tok-kw">CORRESPONDING</span> #( keys )
     RESULT <span class="tok-kw">DATA</span>(bookings).
   <span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> bookings <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(b).
     <span class="tok-com">" 회차 정원 조회 후 초과면 APPEND TO failed/reported</span>

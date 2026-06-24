@@ -58,19 +58,19 @@
 15
 16</pre><pre class="abap-editor__code"><code>managed <span class="tok-kw">implementation</span> <span class="tok-kw">in</span> <span class="tok-kw">class</span> zbp_i_booking unique;
 
-define behavior for ZI_Booking alias Booking
+define behavior <span class="tok-kw">for</span> ZI_Booking alias Booking
 persistent <span class="tok-kw">table</span> zbooking
 draft <span class="tok-kw">table</span> zbooking_d              // 초안 보관(L07)
 lock master
 {
-  <span class="tok-kw">create</span>; update; <span class="tok-kw">delete</span>;
-  field ( readonly ) booking_id, created_by;
+  <span class="tok-kw">create</span>; <span class="tok-kw">update</span>; <span class="tok-kw">delete</span>;
+  <span class="tok-kw">field</span> ( readonly ) booking_id, created_by;
 
   determination setDefaults <span class="tok-kw">on</span> <span class="tok-kw">modify</span> { <span class="tok-kw">create</span>; }
-  validation validateCapacity <span class="tok-kw">on</span> save { field seats, concert_id, perf_no; }
-  action ( features : instance ) cancelBooking result [<span class="tok-num">1</span>] $self;
+  validation validateCapacity <span class="tok-kw">on</span> <span class="tok-kw">save</span> { <span class="tok-kw">field</span> seats, concert_id, perf_no; }
+  <span class="tok-kw">action</span> ( features : instance ) cancelBooking result [<span class="tok-num">1</span>] $self;
 
-  mapping for zbooking { booking_id = booking_id; }
+  <span class="tok-kw">mapping</span> <span class="tok-kw">for</span> zbooking { booking_id = booking_id; }
 }</code></pre></div></div>
 </section><section class="lblock"><h2>구현 — Behavior Pool</h2>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
@@ -80,9 +80,9 @@ lock master
 5
 6</pre><pre class="abap-editor__code"><code><span class="tok-kw">CLASS</span> lhc_booking <span class="tok-kw">DEFINITION</span> <span class="tok-kw">INHERITING</span> <span class="tok-kw">FROM</span> cl_abap_behavior_handler.
   <span class="tok-kw">PRIVATE</span> <span class="tok-kw">SECTION</span>.
-    <span class="tok-kw">METHODS</span> setDefaults     FOR DETERMINE <span class="tok-kw">ON</span> <span class="tok-kw">MODIFY</span> <span class="tok-kw">IMPORTING</span> keys FOR Booking~setDefaults.
-    <span class="tok-kw">METHODS</span> validateCapacity FOR VALIDATE <span class="tok-kw">ON</span> SAVE   <span class="tok-kw">IMPORTING</span> keys FOR Booking~validateCapacity.
-    <span class="tok-kw">METHODS</span> cancelBooking   FOR <span class="tok-kw">MODIFY</span>            <span class="tok-kw">IMPORTING</span> keys FOR ACTION Booking~cancelBooking RESULT result.
+    <span class="tok-kw">METHODS</span> setDefaults     <span class="tok-kw">FOR</span> <span class="tok-kw">DETERMINE</span> <span class="tok-kw">ON</span> <span class="tok-kw">MODIFY</span> <span class="tok-kw">IMPORTING</span> keys <span class="tok-kw">FOR</span> Booking~setDefaults.
+    <span class="tok-kw">METHODS</span> validateCapacity <span class="tok-kw">FOR</span> <span class="tok-kw">VALIDATE</span> <span class="tok-kw">ON</span> <span class="tok-kw">SAVE</span>   <span class="tok-kw">IMPORTING</span> keys <span class="tok-kw">FOR</span> Booking~validateCapacity.
+    <span class="tok-kw">METHODS</span> cancelBooking   <span class="tok-kw">FOR</span> <span class="tok-kw">MODIFY</span>            <span class="tok-kw">IMPORTING</span> keys <span class="tok-kw">FOR</span> <span class="tok-kw">ACTION</span> Booking~cancelBooking RESULT result.
 <span class="tok-kw">ENDCLASS</span>.</code></pre></div></div>
 <ul>
 <li><code>draft table</code> — 미저장 변경을 초안으로(L07).</li>

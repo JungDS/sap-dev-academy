@@ -62,21 +62,21 @@
 18
 19</pre><pre class="abap-editor__code"><code><span class="tok-kw">CLASS</span> zcl_booking_amdp <span class="tok-kw">DEFINITION</span> <span class="tok-kw">PUBLIC</span>.
   <span class="tok-kw">PUBLIC</span> <span class="tok-kw">SECTION</span>.
-    INTERFACES if_amdp_marker_hdb.        <span class="tok-com">" AMDP 표시</span>
+    <span class="tok-kw">INTERFACES</span> if_amdp_marker_hdb.        <span class="tok-com">" AMDP 표시</span>
     <span class="tok-kw">METHODS</span> get_stats
       <span class="tok-kw">IMPORTING</span> <span class="tok-kw">VALUE</span>(iv_concert) <span class="tok-kw">TYPE</span> zconcert-concert_id
       <span class="tok-kw">EXPORTING</span> <span class="tok-kw">VALUE</span>(et_stats)   <span class="tok-kw">TYPE</span> ztt_stats
-      AMDP OPTIONS READ-ONLY.             <span class="tok-com">" 읽기 전용 선언</span>
+      AMDP <span class="tok-kw">OPTIONS</span> <span class="tok-kw">READ-ONLY</span>.             <span class="tok-com">" 읽기 전용 선언</span>
 <span class="tok-kw">ENDCLASS</span>.
 
 <span class="tok-kw">CLASS</span> zcl_booking_amdp <span class="tok-kw">IMPLEMENTATION</span>.
-  <span class="tok-kw">METHOD</span> get_stats BY DATABASE PROCEDURE FOR HDB
-                   LANGUAGE SQLSCRIPT
+  <span class="tok-kw">METHOD</span> get_stats <span class="tok-kw">BY</span> <span class="tok-kw">DATABASE</span> <span class="tok-kw">PROCEDURE</span> <span class="tok-kw">FOR</span> <span class="tok-kw">HDB</span>
+                   <span class="tok-kw">LANGUAGE</span> <span class="tok-kw">SQLSCRIPT</span>
                    <span class="tok-kw">USING</span> zbooking.
-    et_stats = <span class="tok-kw">SELECT</span> concert_id, SUM( seats ) <span class="tok-kw">AS</span> total
+    et_stats = <span class="tok-kw">SELECT</span> concert_id, <span class="tok-kw">SUM</span>( seats ) <span class="tok-kw">AS</span> total
                <span class="tok-kw">FROM</span> zbooking
                <span class="tok-kw">WHERE</span> concert_id = :iv_concert
-               <span class="tok-kw">GROUP</span> BY concert_id;
+               <span class="tok-kw">GROUP</span> <span class="tok-kw">BY</span> concert_id;
   <span class="tok-kw">ENDMETHOD</span>.
 <span class="tok-kw">ENDCLASS</span>.</code></pre></div></div>
 <ul>

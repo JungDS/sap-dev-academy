@@ -74,12 +74,12 @@
 <span class="tok-kw">DATA</span>: lt_stat <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ty_stat,
       lo_alv  <span class="tok-kw">TYPE</span> <span class="tok-kw">REF</span> <span class="tok-kw">TO</span> cl_salv_table.
 
-<span class="tok-kw">SELECT</span> c~concert_id c~artist c~capacity SUM( b~seats ) <span class="tok-kw">AS</span> booked
+<span class="tok-kw">SELECT</span> c~concert_id c~artist c~capacity <span class="tok-kw">SUM</span>( b~seats ) <span class="tok-kw">AS</span> booked
   <span class="tok-kw">FROM</span> zconcert <span class="tok-kw">AS</span> c
-  LEFT OUTER <span class="tok-kw">JOIN</span> zbooking <span class="tok-kw">AS</span> b
+  <span class="tok-kw">LEFT</span> <span class="tok-kw">OUTER</span> <span class="tok-kw">JOIN</span> zbooking <span class="tok-kw">AS</span> b
     <span class="tok-kw">ON</span> c~concert_id = b~concert_id <span class="tok-kw">AND</span> b~status &lt;&gt; <span class="tok-str">'C'</span>
   <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> lt_stat
-  <span class="tok-kw">GROUP</span> BY c~concert_id c~artist c~capacity.
+  <span class="tok-kw">GROUP</span> <span class="tok-kw">BY</span> c~concert_id c~artist c~capacity.
 
 <span class="tok-kw">TRY</span>.
     cl_salv_table=&gt;factory(

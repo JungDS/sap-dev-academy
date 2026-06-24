@@ -81,7 +81,7 @@
                                   iv_perf    <span class="tok-kw">TYPE</span> zbooking-perf_no.
     <span class="tok-kw">METHODS</span> remaining <span class="tok-kw">RETURNING</span> <span class="tok-kw">VALUE</span>(rv) <span class="tok-kw">TYPE</span> i.
     <span class="tok-kw">METHODS</span> book <span class="tok-kw">IMPORTING</span> iv_seats <span class="tok-kw">TYPE</span> i
-                 RAISING   zcx_fully_booked.
+                 <span class="tok-kw">RAISING</span>   zcx_fully_booked.
   <span class="tok-kw">PRIVATE</span> <span class="tok-kw">SECTION</span>.
     <span class="tok-kw">DATA</span>: mv_concert <span class="tok-kw">TYPE</span> zconcert-concert_id,
           mv_perf    <span class="tok-kw">TYPE</span> zbooking-perf_no,
@@ -96,7 +96,7 @@
   <span class="tok-kw">ENDMETHOD</span>.
 
   <span class="tok-kw">METHOD</span> remaining.
-    <span class="tok-kw">SELECT</span> COALESCE( SUM( seats ), <span class="tok-num">0</span> ) <span class="tok-kw">FROM</span> zbooking
+    <span class="tok-kw">SELECT</span> <span class="tok-kw">COALESCE</span>( <span class="tok-kw">SUM</span>( seats ), <span class="tok-num">0</span> ) <span class="tok-kw">FROM</span> zbooking
       <span class="tok-kw">WHERE</span> concert_id = @mv_concert <span class="tok-kw">AND</span> perf_no = @mv_perf
         <span class="tok-kw">AND</span> status &lt;&gt; <span class="tok-str">'C'</span> <span class="tok-kw">INTO</span> @<span class="tok-kw">DATA</span>(lv_sum).
     rv = mv_cap  lv_sum.
@@ -104,7 +104,7 @@
 
   <span class="tok-kw">METHOD</span> book.
     <span class="tok-kw">IF</span> iv_seats &gt; me-&gt;remaining( ).
-      <span class="tok-kw">RAISE</span> EXCEPTION <span class="tok-kw">TYPE</span> zcx_fully_booked.
+      <span class="tok-kw">RAISE</span> <span class="tok-kw">EXCEPTION</span> <span class="tok-kw">TYPE</span> zcx_fully_booked.
     <span class="tok-kw">ENDIF</span>.
     <span class="tok-com">" 실제 INSERT는 CH24(DML)</span>
   <span class="tok-kw">ENDMETHOD</span>.

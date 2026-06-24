@@ -56,18 +56,18 @@
 13
 14</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> lv_msg <span class="tok-kw">TYPE</span> string.
 
-OPEN DATASET lv_path FOR INPUT <span class="tok-kw">IN</span> TEXT MODE ENCODING UTF-8
+<span class="tok-kw">OPEN</span> <span class="tok-kw">DATASET</span> lv_path <span class="tok-kw">FOR</span> <span class="tok-kw">INPUT</span> <span class="tok-kw">IN</span> <span class="tok-kw">TEXT</span> <span class="tok-kw">MODE</span> <span class="tok-kw">ENCODING</span> UTF-8
   <span class="tok-kw">MESSAGE</span> lv_msg.                  <span class="tok-com">" 실패 시 OS 오류 원인이 lv_msg에</span>
 <span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.
   <span class="tok-kw">MESSAGE</span> lv_msg <span class="tok-kw">TYPE</span> <span class="tok-str">'E'</span>.         <span class="tok-com">" 못 열면 즉시 중단</span>
 <span class="tok-kw">ENDIF</span>.
 
 <span class="tok-kw">DO</span>.
-  <span class="tok-kw">READ</span> DATASET lv_path <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(lv_rec).
+  <span class="tok-kw">READ</span> <span class="tok-kw">DATASET</span> lv_path <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(lv_rec).
   <span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>. <span class="tok-kw">EXIT</span>. <span class="tok-kw">ENDIF</span>.   <span class="tok-com">" 더 읽을 줄 없음 → 종료</span>
   <span class="tok-com">" 파싱·검증·등록</span>
 <span class="tok-kw">ENDDO</span>.
-CLOSE DATASET lv_path.</code></pre></div></div>
+<span class="tok-kw">CLOSE</span> <span class="tok-kw">DATASET</span> lv_path.</code></pre></div></div>
 <ul>
 <li><code>FOR INPUT</code>(읽기)·<code>FOR OUTPUT</code>(새로 쓰기)·<code>FOR APPENDING</code>(이어쓰기). 쓸 때는 <code>TRANSFER &lt;데이터&gt; TO lv_path</code>로 한 줄씩 내보낸다.</li>
 <li><strong>항상 <code>MESSAGE</code>로 연다</strong> — 못 열면 OS 원인(권한·경로)을 받아 로그에 남기고 <code>sy-subrc</code>를 확인.</li>

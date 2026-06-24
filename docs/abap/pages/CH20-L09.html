@@ -55,12 +55,12 @@
 9
 10</pre><pre class="abap-editor__code"><code><span class="tok-kw">CLASS</span> zcl_booking_manager <span class="tok-kw">DEFINITION</span> <span class="tok-kw">PUBLIC</span>.
   <span class="tok-kw">PUBLIC</span> <span class="tok-kw">SECTION</span>.
-    EVENTS sold_out.                 <span class="tok-com">" 이벤트 선언</span>
+    <span class="tok-kw">EVENTS</span> sold_out.                 <span class="tok-com">" 이벤트 선언</span>
 <span class="tok-kw">ENDCLASS</span>.
 
 <span class="tok-kw">METHOD</span> book.
   <span class="tok-kw">IF</span> me-&gt;remaining( ) = <span class="tok-num">0</span>.
-    <span class="tok-kw">RAISE</span> EVENT sold_out.            <span class="tok-com">" 사건 발생</span>
+    <span class="tok-kw">RAISE</span> <span class="tok-kw">EVENT</span> sold_out.            <span class="tok-com">" 사건 발생</span>
   <span class="tok-kw">ENDIF</span>.
 <span class="tok-kw">ENDMETHOD</span>.</code></pre></div></div>
 </section><section class="lblock"><h2>반응 등록 — Handler / SET HANDLER</h2>
@@ -72,11 +72,11 @@
 6
 7</pre><pre class="abap-editor__code"><code><span class="tok-kw">CLASS</span> zcl_monitor <span class="tok-kw">DEFINITION</span>.
   <span class="tok-kw">PUBLIC</span> <span class="tok-kw">SECTION</span>.
-    <span class="tok-kw">METHODS</span> on_sold_out FOR EVENT sold_out <span class="tok-kw">OF</span> zcl_booking_manager.
+    <span class="tok-kw">METHODS</span> on_sold_out <span class="tok-kw">FOR</span> <span class="tok-kw">EVENT</span> sold_out <span class="tok-kw">OF</span> zcl_booking_manager.
 <span class="tok-kw">ENDCLASS</span>.
 
 <span class="tok-com">" 연결: 이 매니저의 sold_out이 나면 monitor가 반응</span>
-<span class="tok-kw">SET</span> HANDLER lo_monitor-&gt;on_sold_out FOR lo_mgr.</code></pre></div></div>
+<span class="tok-kw">SET</span> <span class="tok-kw">HANDLER</span> lo_monitor-&gt;on_sold_out <span class="tok-kw">FOR</span> lo_mgr.</code></pre></div></div>
 <ul>
 <li><code>EVENTS</code> 선언 → <code>RAISE EVENT</code>로 발생 → 핸들러(<code>FOR EVENT</code>)가 처리 → <code>SET HANDLER</code>로 연결.</li>
 </ul>
