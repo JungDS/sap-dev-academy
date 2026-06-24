@@ -1,6 +1,6 @@
 # 12. EXPANSION PLAN — 51항목 체크리스트 기반 콘텐츠 확장 배치 계획
 
-> 📅 최종수정: 2026-06-24 03:11 KST
+> 📅 최종수정: 2026-06-24 03:16 KST
 > 🎯 **목적:** 사용자 제공 51항목 체크리스트(+ Input Help 우선순위 이미지)에서 **미수록/부분수록 38건**을 `content/abap/**`에 배치·보강. 진행 추적의 단일 출처.
 > 📖 **읽을 때:** 확장 작업 재개 시. (키워드 감사 원장 = [11](11_KEYWORD_AUDIT.md), 별개 작업.)
 
@@ -27,7 +27,7 @@
 | 누락문법 `VALUE #( FOR )` | CH18-L02 | ✅ 완료 (감사 후속·사용자 결정) |
 | A — DDIC 타입·구조 | CH03·05·06 | ✅ 완료 (10건) |
 | B — Transparent Table 실무 | CH07·09·(04 덤프) | ✅ 완료 (7건) |
-| C — JOIN 보강 | CH13·14 | ⬜ 대기 |
+| C — JOIN 보강 | CH13·14 | ✅ 완료 (4건) |
 | D — View·유지보수 | CH14 | ⬜ 대기 |
 | E — Search Help·Input Help(★우선순위 이미지) | CH09·15·16 | ⬜ 대기 |
 | F — Selection Screen 심화(최대) | CH15(신규 L11+) | ⬜ 대기 |
@@ -62,10 +62,10 @@
 ### C. JOIN 보강 (CH13/CH14)
 | # | 배치 | 액션 |
 |---|---|---|
-|26|CH13-L01|보강: 직관적 JOIN 설명(시각/비유)|
-|27|CH13-L01|보강: "조인 조건엔 한 테이블의 전체 키가 등장" 표현·예시|
-|28|CH14-L01/L04|보강: DB View=Inner only, Maintenance View=Left Outer only|
-|29|CH13-L02|보강: 한 SELECT에 Inner+Left Outer 혼용|
+|26|✅ CH13-L01|"직관적으로 — 두 표를 공통 번호로 나란히" 그림(text 표)|
+|27|✅ CH13-L01|"조인 조건엔 전체 키가 등장"(concert_id+perf_no AND 예시·뻥튀기 경고)|
+|28|✅ CH14-L01·L04|DB View=INNER only 📌 / Maintenance View=LEFT OUTER 📌|
+|29|✅ CH13-L02|"한 SELECT에 INNER와 LEFT OUTER 섞기"(예매 thread 예시)|
 
 ### D. View·유지보수 (CH14)
 | # | 배치 | 액션 |

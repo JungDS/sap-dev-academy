@@ -42,6 +42,16 @@
 <section class="lblock"><h2>한 테이블론 부족하다</h2>
 <p>사람 테이블엔 <code>dept_id</code>만 있고, 부서명은 부서 테이블에 있다. 매번 따로 읽어
 맞추긴 번거롭다. DB에서 <strong>키로 합쳐</strong> 한 번에 읽고 싶다 — <button class="term" type="button" data-term="JOIN">JOIN</button>이다.</p>
+</section><section class="lblock"><h2>직관적으로 — 두 표를 공통 번호로 나란히</h2>
+<p>JOIN은 <strong>두 명단을 공통 칸(키)으로 짝지어 한 줄로 붙이는 것</strong>이다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">TEXT</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4</pre><pre class="abap-editor__code"><code>  사람                부서                 →   JOIN 결과
+  persid dept_id      dept_id deptname         persid deptname
+   1      10           10      영업             1      영업
+   2      20           20      개발             2      개발</code></pre></div></div>
+<p><code>dept_id</code>가 같은 행끼리 옆으로 이어 붙인다 — 그래서 사람 줄 옆에 부서명이 따라온다.</p>
 <blockquote>
 <p>이 챕터는 전부 <strong>classic</strong>이다. 필드는 공백 구분, <code>~</code>로 별칭·필드를 잇고,
 <code>@</code>는 쓰지 않는다(modern은 CH19).</p>
@@ -63,6 +73,14 @@
 <li><code>p~persid</code> — <code>별칭~필드</code>(classic의 필드 구분자 <code>~</code>).</li>
 <li><code>ON ... = ...</code> — 합치는 키 조건.</li>
 <li><button class="term" type="button" data-term="INNER JOIN">INNER JOIN</button>은 <strong>양쪽에 다 매칭되는 행만</strong> 결과에 남긴다.</li>
+</ul>
+</section><section class="lblock"><h2>조인 조건엔 &#39;전체 키&#39;가 등장해야</h2>
+<p><code>ON</code>에는 보통 <strong>한쪽 테이블의 키 전체</strong>가 들어가야 한다. 부서 키가 <code>dept_id</code> 하나면 <code>ON p~dept_id = d~dept_id</code> 하나로 충분하지만, 회차(CH09)처럼 키가 <code>concert_id</code>+<code>perf_no</code> <strong>둘</strong>이면 둘 다 <code>ON</code>에 적는다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2</pre><pre class="abap-editor__code"><code>  <span class="tok-kw">ON</span>  b~concert_id = pf~concert_id
+  <span class="tok-kw">AND</span> b~perf_no    = pf~perf_no      <span class="tok-com">" 키가 둘이면 AND로 둘 다</span></code></pre></div></div>
+<ul>
+<li>키 일부만 <code>ON</code>에 두면 짝이 여러 개로 늘어 <strong>행이 뻥튀기</strong>된다(의도치 않은 중복).</li>
 </ul>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>

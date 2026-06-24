@@ -62,6 +62,27 @@
 <li>DB의 NULL과 ABAP 초기값은 개념이 다르다. LEFT JOIN 결과의 빈 오른쪽 컬럼은
 보통 초기값으로 보이니, &quot;값 없음&quot;을 구분하려면 기준 키로 판단한다.</li>
 </ul>
+</section><section class="lblock"><h2>한 SELECT에 INNER와 LEFT OUTER 섞기</h2>
+<p>조인은 한 문장에 <strong>여러 개</strong> 이어 붙일 수 있고, 종류를 <strong>섞어</strong> 쓸 수도 있다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> b~booking_id c~artist pf~perf_date
+  <span class="tok-kw">FROM</span> zbooking <span class="tok-kw">AS</span> b
+  <span class="tok-kw">INNER</span> <span class="tok-kw">JOIN</span> zconcert <span class="tok-kw">AS</span> c              <span class="tok-com">" 공연은 반드시 있어야 → INNER</span>
+    <span class="tok-kw">ON</span> c~concert_id = b~concert_id
+  LEFT OUTER <span class="tok-kw">JOIN</span> zperf <span class="tok-kw">AS</span> pf           <span class="tok-com">" 회차는 없을 수도 → LEFT OUTER</span>
+    <span class="tok-kw">ON</span>  pf~concert_id = b~concert_id
+    <span class="tok-kw">AND</span> pf~perf_no    = b~perf_no
+  <span class="tok-kw">INTO</span> <span class="tok-kw">CORRESPONDING</span> <span class="tok-kw">FIELDS</span> <span class="tok-kw">OF</span> <span class="tok-kw">TABLE</span> lt_out.</code></pre></div></div>
+<ul>
+<li>&quot;반드시 있어야 하는&quot; 쪽은 INNER, &quot;없어도 남길&quot; 쪽은 LEFT OUTER로 고른다.</li>
+<li>위에서 아래로 차례로 합쳐진다 — 순서와 종류를 의도대로 선택한다.</li>
+</ul>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
 <li><strong>LEFT인데 WHERE로 오른쪽 필터</strong> → 매칭 없는 행이 걸러질 수 있다. 오른쪽 조건은
