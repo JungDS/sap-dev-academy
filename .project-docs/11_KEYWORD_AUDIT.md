@@ -1,6 +1,6 @@
 # 11. KEYWORD AUDIT — 공식 ABAP Keyword Doc 대비 콘텐츠 감사 원장
 
-> 📅 최종수정: 2026-06-24 00:43 KST
+> 📅 최종수정: 2026-06-24 00:47 KST
 > 🎯 **목적:** `content/abap/**` 레슨을 **SAP 공식 ABAP Keyword Documentation 오프라인 전체본**(`C:\ABAP_DOCU_HTML`, AS ABAP Release 758)과 대조해 키워드·문법·이론의 **누락/상이/오류**를 보강. 챕터 순서대로.
 > 📖 **읽을 때:** 감사 패스 **재개 시**(이어서 진행) — 이 원장이 어디까지 했는지의 단일 출처.
 
@@ -37,7 +37,8 @@
 | CH15 | ✅ 완료 | 변경 없음 — 공식과 일치(매우 충실) |
 | CH16 | ✅ 완료 | 변경 없음 — 공식과 일치 |
 | CH17 | ✅ 완료 | 변경 없음 — 공식과 일치(classic) |
-| CH18~CH36 | ⬜ 대기 | (다음 재개 지점 = CH18 · modern 도입 시작) |
+| CH18 | ✅ 완료 | 문법 정확 · ⚠️구조적 갭(CONV/COND/SWITCH/REDUCE 부재) check/ 플래그 |
+| CH19~CH36 | ⬜ 대기 | (다음 재개 지점 = CH19) |
 
 ## 챕터별 findings
 
@@ -119,3 +120,7 @@
 ### CH17 — Grid ALV 기초 (classic)  → **변경 없음(공식과 일치)**
 - **L01~L10**: `CL_GUI_CUSTOM_CONTAINER`·`CL_GUI_ALV_GRID`(CREATE OBJECT·i_parent), Field Catalog(`LVC_T_FCAT`·`LVC_FIELDCATALOG_MERGE`·coltext/outputlen), Layout(`LVC_S_LAYO`·zebra/sel_mode/cwidth_opt), Variant(`DISVARIANT`·sy-repid·i_save), `set_table_for_first_display`·`refresh_table_display`+Stable(`LVC_S_STBL`), 행색상(`info_fname`·`Cxyz`) 전부 공식 API와 일치 ✓.
 - classic `CREATE OBJECT` 유지(NEW=CH18+). 셀색/이벤트/편집은 CH21/27/28 분리, `do_sum`은 CH21 맛보기. `REF TO`는 `[선행 사용]` CH20 게이팅.
+
+### CH18 — Modern ABAP Syntax  → **문법 정확 · 구조적 갭 플래그(본문 무변경)**
+- **L01~L07**: `DATA()`/`FINAL()` 인라인·`VALUE #()`/BASE·`CORRESPONDING #()`/MAPPING/EXCEPT·Table Expression `lt[ ]`(`CX_SY_ITAB_LINE_NOT_FOUND`·`line_exists()`/`line_index()`)·String Template `|{ }|`·서식·함수형 문자열함수·`+= -= *= /=` 전부 공식과 일치 ✓. SELECT 인라인(@)은 CH19 유보(정확).
+- ⚠️ **구조적 갭(사용자 판단 — check/CH18.md)**: 핵심 constructor 식 `CONV`/`SWITCH`/`REDUCE`/`FILTER`가 **커리큘럼 전무**(grep 0), `COND`는 CH26/28에서 정식 도입 없이 사용, constructor `FOR`(컴프리헨션)는 CH36-L05에만. CH18 keywords엔 `FOR` 있으나 본문 부재. → 새 레슨 추가는 설계 결정이라 임의 보강 안 함(R15: 한 번에 새 용어 다수 금지).
