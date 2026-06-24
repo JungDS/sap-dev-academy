@@ -1,6 +1,6 @@
 # 11. KEYWORD AUDIT — 공식 ABAP Keyword Doc 대비 콘텐츠 감사 원장
 
-> 📅 최종수정: 2026-06-24 01:16 KST
+> 📅 최종수정: 2026-06-24 01:18 KST
 > 🎯 **목적:** `content/abap/**` 레슨을 **SAP 공식 ABAP Keyword Documentation 오프라인 전체본**(`C:\ABAP_DOCU_HTML`, AS ABAP Release 758)과 대조해 키워드·문법·이론의 **누락/상이/오류**를 보강. 챕터 순서대로.
 > 📖 **읽을 때:** 감사 패스 **재개 시**(이어서 진행) — 이 원장이 어디까지 했는지의 단일 출처.
 
@@ -46,7 +46,8 @@
 | CH24 | ✅ 완료 | 변경 없음 — 공식과 일치 |
 | CH25 | ✅ 완료 | 변경 없음 — 공식과 일치 |
 | CH26 | ✅ 완료 | L01 미학습 `COND`→`CASE` 게이팅 교정(CH18 갭 연계) |
-| CH27~CH36 | ⬜ 대기 | (다음 재개 지점 = CH27) |
+| CH27 | ✅ 완료 | 변경 없음 — 공식 ALV 이벤트 API와 일치 |
+| CH28~CH36 | ⬜ 대기 | (다음 재개 지점 = CH28 · L04 COND 점검) |
 
 ## 챕터별 findings
 
@@ -164,3 +165,6 @@
 ### CH26 — OO ABAP 고급 설계와 패턴 (Track-2)
 - **L01**(Factory): **게이팅 교정** — `COND #()`(constructor 식)는 CH18 미도입(구조적 갭)이라 P11 위반 → 이미 배운 `CASE`로 교체. (CH18에 COND 정식 도입 결정 시 되돌릴 수 있음.)
 - **L02**(Singleton·`CREATE PRIVATE`)·**L03**(Strategy·OCP)·**L04**(MVC)·**L05**(ABAP Unit `FOR TESTING DURATION/RISK LEVEL`·`cl_abap_unit_assert`·DI·Mock): 정확 ✓.
+
+### CH27 — ALV 고급 Event 응용 (Track-2)  → **변경 없음(공식과 일치)**
+- **L01~L05**: `FOR EVENT double_click/hotspot_click/toolbar/user_command OF cl_gui_alv_grid`(OO 이벤트=CH20-L09 학습분, constructor FOR 아님)·`SET HANDLER`·`e_row-index`/`e_column-fieldname`·fieldcat `hotspot`·`e_object->mt_toolbar`(`VALUE #()`)·`get_selected_rows`·`refresh_table_display`·핸들러 클래스 통합 전부 공식 ALV API와 일치 ✓. 미학습 constructor 식 없음.
