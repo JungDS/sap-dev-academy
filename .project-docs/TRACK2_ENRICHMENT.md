@@ -1,6 +1,6 @@
 # Track 2 (CH24~36) 콘텐츠·체험·시각 보강 — 진행 원장
 
-> 📅 최종수정: 2026-06-24 19:12 KST · 자동 작업(/loop goal) 진행 기록. **압축돼도 이 파일로 재개.**
+> 📅 최종수정: 2026-06-24 19:19 KST · 자동 작업(/loop goal) 진행 기록. **압축돼도 이 파일로 재개.**
 > 🎯 Track 2(실무, CH24~36) 전 레슨을 초반부 골드 스탠다드(본문 1,500자±·섹션 5±·체험 1+·시각 동반) 수준으로 보강.
 
 ## 규칙·합의 (이 작업 한정 + 영구)
@@ -22,7 +22,7 @@
 | 28 | Editable Grid ALV와 입력 검증 | 6 | ✅ 완료 (위젯6·엔진1: editable-grid 6모드) |
 | 29 | Enhancement / BAdI / User Exit | 5 | ✅ 완료 (위젯5·엔진3 신규: inject-slots·badi-socket·decision-tree + judge-quiz 재사용) |
 | 30 | 인터페이스 실무: BAPI/RFC/BDC/File | 5 | ✅ 완료 (위젯5·엔진4 신규: bapi-return·rfc-call·bdc-recorder·excel-upload + mermaid) |
-| 31 | IDoc / ALE / Gateway | 5 | ⬜ 대기 |
+| 31 | IDoc / ALE / Gateway | 5 | ✅ 완료 (위젯5·엔진4 신규: idoc-structure·idoc-status·odata-tree·odata-query + mermaid. L02·L04 text코드블록→mermaid/tree로 교체) |
 | 32 | 성능 분석과 튜닝 | 5 | ⬜ 대기 |
 | 33 | AMDP / ADBC / Pushdown | 5 | ⬜ 대기 |
 | 34 | Forms / Output / PDF | 5 | ⬜ 대기 |
