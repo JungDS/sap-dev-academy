@@ -1,7 +1,8 @@
 # Track 2 (CH24~36) 콘텐츠·체험·시각 보강 — 진행 원장
 
-> 📅 최종수정: 2026-06-24 19:45 KST · 자동 작업(/loop goal) 진행 기록. **압축돼도 이 파일로 재개.**
+> 📅 최종수정: 2026-06-24 19:52 KST · 자동 작업(/loop goal) 진행 기록. **압축돼도 이 파일로 재개.**
 > 🎯 Track 2(실무, CH24~36) 전 레슨을 초반부 골드 스탠다드(본문 1,500자±·섹션 5±·체험 1+·시각 동반) 수준으로 보강.
+> ✅ **2026-06-25 전체 완료** — CH24~36 13챕터·68레슨 전부 체험/시각 위젯 + 본문 보강. 신규 엔진 ~38종(+재사용). code-copy-block 헤더 오브젝트 유형화(CDS View/Behavior Definition/Implementation/Service/Metadata). 흐름 code-block 오용(CH31·CH35-L03) 시각 위젯으로 교체. 전 위젯 브라우저 검증·콘솔0·parity0.
 
 ## 규칙·합의 (이 작업 한정 + 영구)
 - **게이팅**: 후속 개념 선노출 금지(R15)는 **Track 1 기준만**. Track 2는 챕터 순서 영향 적음(독립 내용 많음). 단 **동일 챕터 내**에서 뒤 레슨 개념을 앞 레슨에 설명 없이 먼저 쓰면 안 됨. 불가피하면 **예외**: 한 줄 설명 + "자세히는 같은 챕터 Lx에서" 명시.
@@ -27,7 +28,7 @@
 | 33 | AMDP / ADBC / Pushdown | 5 | ✅ 완료 (위젯5·엔진3 신규: pushdown-flow·code-anatomy·compare-matrix + mermaid·judge-quiz 재사용) |
 | 34 | Forms / Output / PDF | 5 | ✅ 완료 (위젯5·전부 엔진 재사용: odata-tree·compare-matrix·mermaid·code-anatomy·judge-quiz) |
 | 35 | 운영 품질과 배포 관리 | 5 | ✅ 완료 (위젯5·엔진2 신규 atc-findings·bal-log + mermaid×2·abap-unit-runner 재사용. ★CH35-L03 진행흐름 code-block→mermaid 교체 완료) |
-| 36 | RAP + Fiori 실무 Capstone | 7 | ⬜ 대기 |
+| 36 | RAP + Fiori 실무 Capstone | 7 | ✅ 완료 (위젯7·전부 재사용: mermaid×2·code-anatomy×3·compare-matrix·judge-quiz. ★fence 재태깅 CDS/BDEF/BIMP/Service 헤더 적용) |
 
 ---
 
