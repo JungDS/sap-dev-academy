@@ -1,6 +1,6 @@
 # 11. KEYWORD AUDIT — 공식 ABAP Keyword Doc 대비 콘텐츠 감사 원장
 
-> 📅 최종수정: 2026-06-24 00:55 KST
+> 📅 최종수정: 2026-06-24 00:58 KST
 > 🎯 **목적:** `content/abap/**` 레슨을 **SAP 공식 ABAP Keyword Documentation 오프라인 전체본**(`C:\ABAP_DOCU_HTML`, AS ABAP Release 758)과 대조해 키워드·문법·이론의 **누락/상이/오류**를 보강. 챕터 순서대로.
 > 📖 **읽을 때:** 감사 패스 **재개 시**(이어서 진행) — 이 원장이 어디까지 했는지의 단일 출처.
 
@@ -40,7 +40,8 @@
 | CH18 | ✅ 완료 | 문법 정확 · ⚠️구조적 갭(CONV/COND/SWITCH/REDUCE 부재) check/ 플래그 |
 | CH19 | ✅ 완료 | 변경 없음 — 공식과 일치(modern SQL) |
 | CH20 | ✅ 완료 | 변경 없음 — 공식과 일치(매우 충실) |
-| CH21~CH36 | ⬜ 대기 | (다음 재개 지점 = CH21) |
+| CH21 | ✅ 완료 | 변경 없음 — 공식 ALV API와 일치 |
+| CH22~CH36 | ⬜ 대기 | (다음 재개 지점 = CH22) |
 
 ## 챕터별 findings
 
@@ -134,3 +135,7 @@
 ### CH20 — OO ABAP 기본 설계  → **변경 없음(공식과 일치, 매우 충실)**
 - **L01~L10**: Global Class(DEFINITION/IMPLEMENTATION·NEW/CREATE OBJECT)·Attribute/Method/Visibility(DATA vs CLASS-DATA)·CONSTRUCTOR/CLASS_CONSTRUCTOR·Static/Instance(`=>`/`->`·me->)·INTERFACE/INTERFACES(`~`)·예외(TRY/CATCH/CLEANUP·RAISE EXCEPTION·CX_STATIC/DYNAMIC/NO_CHECK·CX_ROOT·get_text·RESUME)·Inheritance(INHERITING FROM·REDEFINITION·super->·ABSTRACT/FINAL)·다형성(CAST/`?=`·CX_SY_MOVE_CAST_ERROR·CASE TYPE OF)·OO 이벤트(EVENTS/RAISE EVENT/SET HANDLER) 전부 공식과 일치 ✓.
 - 앞 챕터 `[선행 사용]`(REF TO/CREATE OBJECT/TRY)이 여기서 정식 도입 — 게이팅 정합. ALIASES·FRIENDS·CREATE PRIVATE 등 고급은 "기본 설계" 스코프 외(합리적).
+
+### CH21 — SALV/Grid ALV 표시 제어 심화  → **변경 없음(공식과 일치)**
+- **L01~L08**: SALV(`get_functions/get_sorts(add_sort)/get_filters`·`get_display_settings/get_columns/get_layout`)·Field Catalog 속성(`no_out/do_sum/just/key/edit`)·Cell Color(`LVC_T_SCOL`·`ctab_fname`·`col_negative/col_total`)·Cell Style(`LVC_T_STYL`·`stylefname`·`mc_style_disabled/enabled/button`)·색 단위(`info_fname`/`emphasize`/`ctab_fname`)·Stable/Soft Refresh 전부 공식 ALV API와 일치 ✓.
+- 이벤트→CH27·편집→CH28로 분리(정확). modern(VALUE/FIELD-SYMBOL 인라인) 적절.
