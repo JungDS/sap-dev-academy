@@ -50,11 +50,17 @@ CH21-L05의 <strong>Cell Style</strong>(<code>LVC_T_STYL</code>)로 동적 제�
 6
 7
 8
-9</pre><pre class="abap-editor__code"><code><span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_perf ASSIGNING <span class="tok-kw">FIELD-SYMBOL</span>(&lt;p&gt;).
-  <span class="tok-kw">DATA</span>(lv_style) = COND i(
-    <span class="tok-kw">WHEN</span> &lt;p&gt;seatsocc &gt;= &lt;p&gt;capacity
-    THEN cl_gui_alv_grid=&gt;mc_style_disabled      <span class="tok-com">" 매진 → 읽기전용</span>
-    <span class="tok-kw">ELSE</span> cl_gui_alv_grid=&gt;mc_style_enabled ).    <span class="tok-com">" 그 외 → 편집</span>
+9
+10
+11
+12</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> lv_style <span class="tok-kw">TYPE</span> i.
+
+<span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_perf ASSIGNING <span class="tok-kw">FIELD-SYMBOL</span>(&lt;p&gt;).
+  <span class="tok-kw">IF</span> &lt;p&gt;seatsocc &gt;= &lt;p&gt;capacity.
+    lv_style = cl_gui_alv_grid=&gt;mc_style_disabled.   <span class="tok-com">" 매진 → 읽기전용</span>
+  <span class="tok-kw">ELSE</span>.
+    lv_style = cl_gui_alv_grid=&gt;mc_style_enabled.    <span class="tok-com">" 그 외 → 편집</span>
+  <span class="tok-kw">ENDIF</span>.
   &lt;p&gt;cellstyles = <span class="tok-kw">VALUE</span> #( ( fieldname = <span class="tok-str">'SEATS'</span> style = lv_style ) ).
 <span class="tok-kw">ENDLOOP</span>.
 
