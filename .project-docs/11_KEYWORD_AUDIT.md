@@ -1,6 +1,6 @@
 # 11. KEYWORD AUDIT — 공식 ABAP Keyword Doc 대비 콘텐츠 감사 원장
 
-> 📅 최종수정: 2026-06-24 00:40 KST
+> 📅 최종수정: 2026-06-24 00:43 KST
 > 🎯 **목적:** `content/abap/**` 레슨을 **SAP 공식 ABAP Keyword Documentation 오프라인 전체본**(`C:\ABAP_DOCU_HTML`, AS ABAP Release 758)과 대조해 키워드·문법·이론의 **누락/상이/오류**를 보강. 챕터 순서대로.
 > 📖 **읽을 때:** 감사 패스 **재개 시**(이어서 진행) — 이 원장이 어디까지 했는지의 단일 출처.
 
@@ -36,7 +36,8 @@
 | CH14 | ✅ 완료 | 변경 없음 — 공식과 일치 |
 | CH15 | ✅ 완료 | 변경 없음 — 공식과 일치(매우 충실) |
 | CH16 | ✅ 완료 | 변경 없음 — 공식과 일치 |
-| CH17~CH36 | ⬜ 대기 | (다음 재개 지점 = CH17) |
+| CH17 | ✅ 완료 | 변경 없음 — 공식과 일치(classic) |
+| CH18~CH36 | ⬜ 대기 | (다음 재개 지점 = CH18 · modern 도입 시작) |
 
 ## 챕터별 findings
 
@@ -114,3 +115,7 @@
 ### CH16 — Screen Programming / Dynpro 기초  → **변경 없음(공식과 일치)**
 - **L01~L08**: Module Pool(T-code 필수)·PBO/PAI·Flow Logic(`PROCESS BEFORE OUTPUT`/`AFTER INPUT`·MODULE)·화면요소·OK_CODE/SY-UCOMM·`CLEAR ok_code`·LEAVE TO SCREEN 0/LEAVE PROGRAM/LEAVE SCREEN·SET PF-STATUS/TITLEBAR/EXCLUDING·LOOP AT SCREEN(screen-input/invisible·MODIFY SCREEN)·Custom Container(`cl_gui_custom_container`·CREATE OBJECT)·Tabstrip/Subscreen 전부 공식과 일치 ✓.
 - Table Control·CALL SCREEN(다중화면 네비)은 의도적 스코프 제외(화면 표는 ALV로 대체 명시 — CH17). `REF TO`/`CREATE OBJECT`는 `[선행 사용]`로 CH20 게이팅 준수.
+
+### CH17 — Grid ALV 기초 (classic)  → **변경 없음(공식과 일치)**
+- **L01~L10**: `CL_GUI_CUSTOM_CONTAINER`·`CL_GUI_ALV_GRID`(CREATE OBJECT·i_parent), Field Catalog(`LVC_T_FCAT`·`LVC_FIELDCATALOG_MERGE`·coltext/outputlen), Layout(`LVC_S_LAYO`·zebra/sel_mode/cwidth_opt), Variant(`DISVARIANT`·sy-repid·i_save), `set_table_for_first_display`·`refresh_table_display`+Stable(`LVC_S_STBL`), 행색상(`info_fname`·`Cxyz`) 전부 공식 API와 일치 ✓.
+- classic `CREATE OBJECT` 유지(NEW=CH18+). 셀색/이벤트/편집은 CH21/27/28 분리, `do_sum`은 CH21 맛보기. `REF TO`는 `[선행 사용]` CH20 게이팅.
