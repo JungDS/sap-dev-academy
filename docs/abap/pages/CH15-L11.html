@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>여러 선택화면 — 화면번호·CALL·Variant · Report Event·Selection Screen 심화 · SAP Developer Academy</title>
+<link rel="stylesheet" href="../../../assets/base.css">
+<link rel="stylesheet" href="../../../assets/lesson.css">
+<link rel="stylesheet" href="../../../assets/shell.css">
+<script>/* 읽기 설정 선적용(플래시 방지) */(function(){try{var L=localStorage,r=document.documentElement;if(L.getItem('sda.dark')==='1')r.classList.add('dark');if(L.getItem('sda.wide')==='1')r.classList.add('wide');var f=parseInt(L.getItem('sda.fontPx'),10);if(f>=13&&f<=20)r.style.fontSize=f+'px';}catch(e){}})();</script>
+</head>
+<body data-domain="abap" data-chapter-id="CH15" data-lesson-id="CH15-L11">
+<header class="appbar">
+  <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
+  <span class="appbar__sp"></span>
+  <span class="meta">CH15 · Report Event·Selection Screen 심화</span>
+  <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
+  <div class="tools">
+    <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
+    <button class="icon-btn" id="fsInc" title="글자 크게">A+</button>
+    <button class="icon-btn" id="fsReset" title="글자 크기 초기화">↺</button>
+    <button class="icon-btn" id="darkBtn" title="다크 모드">🌙</button>
+    <button class="icon-btn" id="widthBtn" title="가독 폭 넓게">↔</button>
+    <button class="icon-btn fs-btn" title="전체화면" aria-label="전체화면"></button>
+  </div>
+</header>
+<div class="read-progress"><i></i></div>
+<div class="scrim"></div>
+<nav class="rail" data-shell="rail"></nav>
+<button class="railFab" id="railFab" aria-label="네비 열기">☰</button>
+<div class="stage">
+  <div class="layout">
+    <main class="main">
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH15</nav>
+      <section class="lhead">
+        <p class="lhead__eyebrow">Report Event·Selection Screen 심화</p>
+        <h1>여러 선택화면 — 화면번호·CALL·Variant</h1>
+        <p class="lhead__direction">선택화면을 여러 개 두고 골라 부른다 — 화면번호·팝업 호출·입력값 저장.</p>
+        <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 15</span><span class="tag tag--ls">Lesson 11</span><span class="tag tag--lv">중급</span></div>
+      </section>
+      <article class="prose">
+<section class="lblock"><h2>화면 하나로는 부족할 때</h2>
+<p>지금까지 <code>PARAMETERS</code>·<code>SELECT-OPTIONS</code>는 <strong>하나의 기본 선택화면</strong>에 쌓였다. 그 기본
+화면의 번호가 <strong>1000</strong>이다. 그런데 &quot;조건 입력 화면&quot;과 &quot;옵션 설정 팝업&quot;을 <strong>따로</strong> 두고
+상황에 따라 부르고 싶을 때가 있다.</p>
+</section><section class="lblock"><h2>선택화면에 번호 붙이기</h2>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECTION-SCREEN</span> <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> SCREEN <span class="tok-num">1100</span> <span class="tok-kw">AS</span> WINDOW TITLE TEXT-010.
+  <span class="tok-kw">PARAMETERS</span> p_opt <span class="tok-kw">TYPE</span> c LENGTH <span class="tok-num">1</span>.
+<span class="tok-kw">SELECTION-SCREEN</span> <span class="tok-kw">END</span> <span class="tok-kw">OF</span> SCREEN <span class="tok-num">1100</span>.</code></pre></div></div>
+<ul>
+<li>기본 화면(1000) 외에 <strong>번호를 가진</strong> 선택화면을 따로 선언한다.</li>
+<li><code>AS WINDOW</code> — 팝업(작은 창)으로 띄울 화면.</li>
+</ul>
+</section><section class="lblock"><h2>불러오기 — CALL SELECTION-SCREEN</h2>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6</pre><pre class="abap-editor__code"><code><span class="tok-kw">CALL</span> <span class="tok-kw">SELECTION-SCREEN</span> <span class="tok-num">1100</span> STARTING <span class="tok-kw">AT</span> <span class="tok-num">10</span> <span class="tok-num">5</span>.   <span class="tok-com">" (열,행) 위치에 팝업</span>
+<span class="tok-kw">IF</span> sy-subrc = <span class="tok-num">0</span>.
+  <span class="tok-com">" 사용자가 실행(체크)함 — p_opt 사용</span>
+<span class="tok-kw">ELSE</span>.
+  <span class="tok-com">" 취소함</span>
+<span class="tok-kw">ENDIF</span>.</code></pre></div></div>
+<ul>
+<li><code>CALL SELECTION-SCREEN &lt;번호&gt;</code> — 그 화면을 띄운다.</li>
+<li><code>STARTING AT x y</code> — 팝업으로 그 위치에 띄운다(없으면 전체 화면).</li>
+<li><code>sy-subrc</code>로 사용자가 <strong>실행했는지/취소했는지</strong> 판단.</li>
+</ul>
+<blockquote>
+<p>버튼(CH15-L09의 <code>PUSHBUTTON</code>/<code>FUNCTION KEY</code>)이 눌렸을 때 <code>AT SELECTION-SCREEN</code>에서
+<code>CALL SELECTION-SCREEN 1100</code>을 호출하면, 메인 화면 위에 <strong>옵션 팝업</strong>이 뜬다.</p>
+</blockquote>
+</section><section class="lblock"><h2>Selection Screen Variant — 입력값 저장</h2>
+<p>매번 같은 조건을 손으로 넣기는 번거롭다. 사용자가 채운 선택화면 값을 <strong>Variant</strong>(변형)로
+<strong>저장</strong>해 두고 다음에 불러 쓴다.</p>
+<ul>
+<li>선택화면에서 <strong>저장</strong>(Save as Variant)하면 그 조건 묶음이 이름으로 보관된다.</li>
+<li>다음 실행 때 Variant를 고르면 값이 <strong>자동으로</strong> 채워진다.</li>
+<li><strong>배치 잡</strong>(CH35)에서 특히 중요 — 잡은 화면 입력이 없으니, 미리 만든 Variant로 조건을 준다.</li>
+</ul>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>CALL 했는데 값이 안 보임</strong> → 호출한 화면의 항목은 그 화면 안에서 선언해야.</li>
+<li><strong>sy-subrc 무시</strong> → 사용자가 취소했는데 실행한 것으로 처리. <code>sy-subrc</code>로 분기.</li>
+<li><strong>Variant 없이 배치</strong> → 야간 잡이 조건을 못 받는다. 잡엔 Variant를 지정.</li>
+</ul>
+<hr>
+<p>선택화면을 여러 개 두고 골라 부르는 것까지 익혔다. 이제 배운 이벤트·검증·구성을
+<strong>콘서트앱</strong>에 적용해 예매현황 리포트를 만들자 → <strong>CH15-L12(실습)</strong>.</p>
+</section>
+      </article>
+      <nav class="lesson-nav" data-shell="prevnext"></nav>
+      <footer class="foot">SAP Developer Academy · CH15 CH15-L11</footer>
+    </main>
+    <aside class="journey" data-shell="journey"></aside>
+  </div>
+</div>
+<div class="term-popup" data-shell="popup" hidden></div>
+<div class="tmodal" data-shell="tmodal" hidden></div>
+<script>window.__SDA__={"domain":"abap","dataBase":"../","siteRoot":"../../../"};</script>
+<script src="../../../assets/shell.js" defer></script>
+</body>
+</html>

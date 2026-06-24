@@ -1,6 +1,6 @@
 # 12. EXPANSION PLAN — 51항목 체크리스트 기반 콘텐츠 확장 배치 계획
 
-> 📅 최종수정: 2026-06-24 03:28 KST
+> 📅 최종수정: 2026-06-24 03:34 KST
 > 🎯 **목적:** 사용자 제공 51항목 체크리스트(+ Input Help 우선순위 이미지)에서 **미수록/부분수록 38건**을 `content/abap/**`에 배치·보강. 진행 추적의 단일 출처.
 > 📖 **읽을 때:** 확장 작업 재개 시. (키워드 감사 원장 = [11](11_KEYWORD_AUDIT.md), 별개 작업.)
 
@@ -30,7 +30,7 @@
 | C — JOIN 보강 | CH13·14 | ✅ 완료 (4건) |
 | D — View·유지보수 | CH14 | ✅ 완료 (3건) |
 | E — Search Help·Input Help(★우선순위 이미지) | CH09·15·16 | ✅ 완료 (3건·신규 레슨 CH09-L06+SVG) |
-| F — Selection Screen 심화(최대) | CH15(신규 L11+) | ⬜ 대기 |
+| F — Selection Screen 심화(최대) | CH15(신규 L10·L11) | ✅ 완료 (9건·신규 레슨 2 + L08/L09 보강) |
 
 ## 항목별 배치 (38건)
 
@@ -84,17 +84,38 @@
 ### F. Selection Screen 심화 (CH15 — 최대, 신규 레슨)
 | # | 배치 | 액션 |
 |---|---|---|
-|39·48|신규|다중 선택화면 + AT SELECTION-SCREEN에서 호출(팝업 포함)|
-|40|신규|기본 1000번 화면·다른 번호 선언|
-|41|신규|Selection Screen Variant(선택조건 저장)|
-|42|신규|`CALL SELECTION-SCREEN nnnn`|
-|43|신규/CH15-L09 보강|PARAMETERS 전옵션(TYPE/LIKE·DECIMALS·MEMORY ID·OBLIGATORY·DEFAULT·LOWER CASE·VALUE CHECK·AS CHECKBOX·RADIOBUTTON GROUP·MODIF ID)|
-|44|신규/CH15-L09 보강|SELECT-OPTIONS 전옵션(SIGN·OPTION값·DEFAULT~TO~·MEMORY ID·LOWER CASE·OBLIGATORY·NO-EXTENSION·NO INTERVALS·MODIF ID)|
-|47|CH15-L09 보강|SELECTION-SCREEN COMMENT/POSITION·POS_LOW·POS_HIGH|
-|49|CH15-L09 보강|선택화면 Tabstrip/Subscreen|
-|51 ★|CH15-L08 보강|ON VALUE-REQUEST 비중↑·F4IF_INT_TABLE_VALUE_REQUEST 실무패턴(SELECT→화면반영→연관필드 추가조회)|
-→ **제안: CH15에 신규 L11~L13 신설**(L11 PARAMETERS/SELECT-OPTIONS 전옵션, L12 화면번호·Variant·CALL·다중화면, L13 레이아웃 COMMENT/POSITION·Tabstrip/Subscreen) + L08 보강. 번호는 append(리넘버 없음).
+|39·48|✅ **신규 CH15-L11**|`CALL SELECTION-SCREEN`(STARTING AT 팝업) + `AT SELECTION-SCREEN` 버튼서 호출|
+|40|✅ **신규 CH15-L11**|기본 화면 1000·`BEGIN OF SCREEN nnnn AS WINDOW`|
+|41|✅ **신규 CH15-L11**|Selection Screen Variant(저장·배치 잡 연계 CH35)|
+|42|✅ **신규 CH15-L11**|`CALL SELECTION-SCREEN nnnn`·sy-subrc 분기|
+|43|✅ **신규 CH15-L10**|PARAMETERS 옵션 표(TYPE/LIKE·DECIMALS·OBLIGATORY·DEFAULT·LOWER CASE·CHECKBOX/RADIO·MEMORY ID·VALUE CHECK·MODIF ID)|
+|44|✅ **신규 CH15-L10**|SELECT-OPTIONS 옵션 표(DEFAULT~TO~·OBLIGATORY·LOWER CASE·NO-EXTENSION·NO INTERVALS·MEMORY ID·MODIF ID)|
+|47|✅ CH15-L09|`BEGIN OF LINE`·`POSITION`·`POS_LOW`/`POS_HIGH` 위치 지정|
+|49|✅ CH15-L09|TABBED BLOCK 각 탭=Subscreen 설명|
+|51 ★|✅ CH15-L08|ON VALUE-REQUEST 실무패턴 — `F4IF_INT_TABLE_VALUE_REQUEST`(목록 조회→화면필드 반영→연관 추가조회). **classic SELECT로 게이팅 교정**|
+→ **실제 구현**: 신규 **L10**(PARAMETERS/SELECT-OPTIONS 옵션 총정리·MODIF ID) + **L11**(화면번호·CALL·Variant·다중화면). 레이아웃(#47/#49)은 L09가 이미 광범위해 **L09 보강**으로 통합. 실습 **L10→L12 리넘버**(서사 보존). L13 불필요.
 
 ## 이미 충족 / 무수정
 - **#16** Pooled/Cluster Table — 본문에 없음(제거 불필요). ✅
 - **수록 항목**(6·9·12·17·18·19·30·34·37·45·46·50 등)은 유지.
+
+---
+
+## 🏁 확장 완료 총평 (2026-06-24)
+**51항목 체크리스트의 미수록/부분수록 38건 = 전부 반영(클러스터 A~F).** 빌드 parity 0, 전체 **234 레슨**(231→234, 신규 3 + 리넘버 2회).
+
+- **신규 레슨(3)**: **CH09-L06** Input Help 호출 우선순위(+SVG `input-help-priority.html`) · **CH15-L10** PARAMETERS/SELECT-OPTIONS 옵션 총정리 · **CH15-L11** 여러 선택화면·CALL·Variant.
+- **리넘버(2)**: CH09(검증 L06→L07·실습 L07→L08, 교차참조 3건 교정) · CH15(실습 L10→L12).
+- **glossary 신규(3)**: Text Table · Short Dump · View Cluster.
+- **보강 클러스터**: A(DDIC 타입·구조 10) · B(Transparent Table 실무 7) · C(JOIN 4) · D(View·유지보수 3) · E(Input Help 3) · F(Selection Screen 9). + 감사 후속 `VALUE #( FOR )`(CH18-L02).
+
+### ⏳ 사용자 결정 대기 — "신규 레슨 승격" 정책
+사용자 선택 = "전면 확장 — 새 레슨 추가". 그러나 **챕터가 실습/캡스톤으로 끝나** 신규 레슨 append 시 서사가 역전되거나 중간삽입 리넘버가 교차참조를 깨는 경우, 아래 항목은 **기존 레슨에 통합**했다(각 check에 사유). 독립 레슨 승격을 원하면 리넘버로 전환 가능:
+- **#4·5 .INCLUDE/.APPEND** → CH05-L02 통합 (L04 캡스톤).
+- **#21 Text Table** → CH09-L02 통합 (CH09 실습 종료·4참조).
+- **#33 View Cluster** → CH14-L05 통합 (CH14 실습 종료).
+- (대조: **#36**은 ★·첨부이미지라 리넘버 감수하고 **독립 레슨**으로, **F**는 L10 앞 삽입으로 신규 레슨화.)
+
+### 메타갭(공통)
+- 보강분 다수가 표·콜아웃 위주로 새 `::embed` 미부착(R4 칸채우기 금지·기존 레슨 톤). 신규 레슨 중 #36만 시각화 부착. 향후 인터랙션 위젯 후보는 각 check 참조.
+- `#36` SVG는 **브라우저 눈검수 1회 권장**(check/EXPANSION-E).
