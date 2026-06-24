@@ -23,6 +23,7 @@
 | CH05-L05-S01 | CH05-L05 | step-debugger | 구구단=구조체 캡스톤(ls_line-dan/mul/result·sy-index 반복 갱신) | ✅ |
 | CH06-L06-S01 | CH06-L06 | state-change-grid | 구구단 lt_gugu 성장 스냅샷(APPEND 1→9→81행 + SORT result DESC) | ✅ |
 | CH07-L03-S01 | CH07-L03 | before-after | 메모리(휘발) vs 디스크(영속) 두 운명 — 중립 톤(tone-warm/cool) | ✅ |
+| CH08-L02-S01 | CH08-L02 | select-query-simulator | classic SELECT 빌더(projection·WHERE·sy-subrc)·ZTPERSON 연습 샌드박스 | ✅ |
 | CH04-L02-S01 | CH04-L02 | fill-blank | 문자열 함수 빈칸(INTO·AT·strlen·FIND) | ✅ |
 | CH04-L07-S01 | CH04-L07 | fill-blank | 구구단 빈칸(TIMES·sy-index·*·ENDDO) | ✅ |
 | CH04-L03-S01 | CH04-L03 | mermaid | IF/ELSEIF/ELSE 분기 흐름도(p_amt: 큰금액/소액/0·음수) | ✅ |
@@ -35,7 +36,7 @@
 | fill-blank | 3 | 공통(_engine)+_autoheight ✅ | CH02-L06·CH04-L02·L07 (전부 완료) | 데이터=마크업 |
 | before-after | 2 | 공통(CSS-only)+_autoheight ✅ | CH02-L05-S01·CH07-L03-S01 (완료) | 콘텐츠 정리 · 중립 톤 변형(tone-warm/cool) 추가 |
 | diff-mapper | 1 | 공통 | _(미작성)_ | 데이터=마크업 |
-| select-query | 2 | 공통 | _(미작성)_ | config 주입 |
+| select-query-simulator | 2 | 공통(_engine)·자체 postHeight ✅ | CH08-L02-S01 (외 CH12-L07 예정) | config 주입(SQL_CFG: 테이블·컬럼·데이터·프리셋) · #N1 주석 CH19 정정 |
 | salv-grid | 2 | 공통 | _(미작성)_ | config 주입 |
 | relationship-map | 1 | 공통 | _(미작성)_ | CSS-only |
 | state-change-grid | 1 | 공통(CSS-only)+_autoheight ✅ | CH06-L06-S01 | 스냅샷=마크업(lt_gugu 성장·정렬) · 빈 .js 제거 |
