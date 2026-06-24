@@ -1,6 +1,6 @@
 # Track 2 (CH24~36) 콘텐츠·체험·시각 보강 — 진행 원장
 
-> 📅 최종수정: 2026-06-24 18:49 KST · 자동 작업(/loop goal) 진행 기록. **압축돼도 이 파일로 재개.**
+> 📅 최종수정: 2026-06-24 18:56 KST · 자동 작업(/loop goal) 진행 기록. **압축돼도 이 파일로 재개.**
 > 🎯 Track 2(실무, CH24~36) 전 레슨을 초반부 골드 스탠다드(본문 1,500자±·섹션 5±·체험 1+·시각 동반) 수준으로 보강.
 
 ## 규칙·합의 (이 작업 한정 + 영구)
@@ -19,7 +19,7 @@
 | 25 | Lock Object와 동시성 제어 | 5 | ✅ 완료 (위젯5·엔진4+mermaid+judge-quiz) |
 | 26 | OO ABAP 고급 설계와 패턴 | 5 | ✅ 완료 (위젯5·엔진5) |
 | 27 | ALV 고급 Event 응용 | 5 | ✅ 완료 (위젯5·엔진2: alv-events 4모드+alv-handler-wiring) |
-| 28 | Editable Grid ALV와 입력 검증 | 6 | ⬜ 대기 |
+| 28 | Editable Grid ALV와 입력 검증 | 6 | ✅ 완료 (위젯6·엔진1: editable-grid 6모드) |
 | 29 | Enhancement / BAdI / User Exit | 5 | ⬜ 대기 |
 | 30 | 인터페이스 실무: BAPI/RFC/BDC/File | 5 | ⬜ 대기 |
 | 31 | IDoc / ALE / Gateway | 5 | ⬜ 대기 |
@@ -101,3 +101,12 @@
 - L03 toolbar: 커스텀 버튼(ZCANCEL) 추가 표시(toolbar 이벤트).
 - L04 user_command: 행 선택 + 버튼 클릭 → on_user_command(e_ucomm) + 선택행 취소·refresh.
 - L05 핸들러 클래스: 이벤트→핸들러 메서드 SET HANDLER 배선 다이어그램(`alv-handler-wiring`), 도전과제 유지.
+
+## CH28 — Editable Grid ALV와 입력 검증 (계획)
+재사용 엔진 `editable-grid`(mode) — seats 편집 가능 그리드. 6모드:
+- L01 editcols: 편집모드 ON/OFF → seats가 input↔text. fieldcat edit + register_edit_event.
+- L02 datachanged: seats 변경 즉시 DATA_CHANGED 검증(1~10) → 오류 셀 빨강 + add_protocol_entry 로그.
+- L03 finished: 편집 후 DATA_CHANGED_FINISHED → 총 좌석 합계 재계산(per-change L02와 대비).
+- L04 cellstyle: 매진 토글 → 해당 행 seats 셀 disabled(LVC_T_STYL mc_style_disabled/enabled).
+- L05 validate: 잘못된 입력 셀 빨강 + 오류 목록/카운트(display_protocol).
+- L06 save: 💾저장 → check_changed_data→전체 검증→오류면 거부/통과면 MODIFY+COMMIT 로그. 도전과제 유지.
