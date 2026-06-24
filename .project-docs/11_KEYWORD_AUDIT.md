@@ -1,6 +1,6 @@
 # 11. KEYWORD AUDIT — 공식 ABAP Keyword Doc 대비 콘텐츠 감사 원장
 
-> 📅 최종수정: 2026-06-24 02:04 KST
+> 📅 최종수정: 2026-06-24 02:08 KST
 > 🎯 **목적:** `content/abap/**` 레슨을 **SAP 공식 ABAP Keyword Documentation 오프라인 전체본**(`C:\ABAP_DOCU_HTML`, AS ABAP Release 758)과 대조해 키워드·문법·이론의 **누락/상이/오류**를 보강. 챕터 순서대로.
 > 📖 **읽을 때:** 감사 패스 **재개 시**(이어서 진행) — 이 원장이 어디까지 했는지의 단일 출처.
 
@@ -54,7 +54,8 @@
 | CH32 | ✅ 완료 | 변경 없음 — 성능툴(doc 밖)·L04 FAE/L05 Pushdown modern SQL 정확 |
 | CH33 | ✅ 완료 | L02 AMDP `OPTIONS READ-ONLY` 보강·L03 ADBC 등 정확 |
 | CH34 | ✅ 완료 | 변경 없음 — 양식 도구(doc 밖)·L04 XSTRING/xstrlen/동적 CALL FUNCTION 정확 |
-| CH35~CH36 | ⬜ 대기 | (다음 재개 지점 = CH35) |
+| CH35 | ✅ 완료 | L04 `SUBMIT VIA JOB`에 필수 `AND RETURN` 보강(나머지 운영툴은 doc 밖) |
+| CH36 | ⬜ 대기 | (다음 재개 지점 = CH36 — 마지막) |
 
 ## 챕터별 findings
 
@@ -208,3 +209,7 @@
 ### CH34 — Forms / Output / PDF (Track-2)  → **변경 없음(공식과 일치)**
 - **L01**(Smart Forms `SMARTFORMS`·Form/Page/Window/Form Interface·생성FM `/1BCDWB/SF…`·`SSF_FUNCTION_MODULE_NAME`)·**L02**(Adobe Forms `SFP`·Interface/Context/Layout·`FP_JOB_OPEN`/`FP_JOB_CLOSE`·ADS)·**L03**(Output Control NAST↔BRF+ Output Management)·**L05**(SP01 스풀·이송·변경 운영): **양식 디자인 도구·표준 FM·프레임워크** → ABAP keyword doc 영역 밖(CH31류 N/A). 개념 서술 일관.
 - **L04**(PDF 바이트 처리): **정확 ✓** — `XSTRING`(PDF 바이너리)·`xstrlen( )`(공식 built-in, 공식 예제와 일치)·`cl_bcs_convert=>xstring_to_solix`·`gui_download(… filetype='BIN' bin_filesize=xstrlen(…))` 모두 정상. "PDF=바이너리→BIN 모드" 경고 정확. 동적 `CALL FUNCTION lv_fm`(변수 FM명, 공식 확인)·인라인 `DATA()`(CH18+, CH34>CH18 게이팅 OK). 미학습 constructor 식 없음.
+
+### CH35 — 운영 품질과 배포 관리 (이송 심화, Track-2)
+- **L01**(ATC/Code Inspector `SCI`)·**L02**(ABAP Unit `cl_abap_unit_assert=>assert_equals`·Mock·CI/gCTS)·**L03**(Transport DEV→QAS→PRD·`SE09`/`SE10`/`STMS`·순서/의존)·**L05**(Application Log BAL·`SLG1`·`BAL_LOG_CREATE`/`MSG_ADD`/`DB_SAVE`): 품질·배포·로그 **도구/표준 FM** → keyword doc 영역 밖(CH31류). `assert_equals` 시그니처(act/exp)·메시지 타입(I/S/W/E) 정확.
+- **L04**(Background Job): **보강** — `SUBMIT … VIA JOB job NUMBER n` 공식 구문 일치. 단 공식 필수 규칙 **"VIA JOB은 AND RETURN과 함께만 사용 가능"** 을 주석 스켈레톤이 빠뜨려(산문엔 있음) → 주석에 `AND RETURN` 추가 + 필수 페어링 1줄 명시. `SM36/SM37` 툴은 doc 밖. 미학습 constructor 식 없음.
