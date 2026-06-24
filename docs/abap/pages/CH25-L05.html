@@ -40,7 +40,10 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>안전한 변경의 정석</h2>
-<p>CH24(DML·COMMIT)와 CH25(잠금)를 묶으면 안전한 변경 흐름이 완성된다.</p>
+<p>CH24(DML·COMMIT)와 CH25(잠금)를 묶으면 <strong>동시성까지 안전한 변경 흐름</strong>이 완성된다. 먼저
+전체 흐름을 한눈에 보자 — 어디서 갈라지고, 잠금이 언제 풀리는지.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">안전 변경 패턴 흐름도</span><a class="embed__open" href="../../../embeds/abap/CH25-L05-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH25-L05-S01.html" loading="lazy" title="안전 변경 패턴 흐름도" style="height:460px"></iframe></figure>
+<p>그대로 코드로 옮기면 이렇다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -89,7 +92,14 @@ ls-changed_by = sy-uname. ls-changed_at = sy-uzeit.
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
 <li><strong>순서 어긋남</strong> → 잠금은 변경 <strong>전</strong>, 해제는 <button class="term" type="button" data-term="COMMIT WORK">커밋</button> <strong>후</strong>.</li>
-<li><strong><button class="term" type="button" data-term="ROLLBACK WORK">롤백</button> 시 잠금</strong> → ROLLBACK도 잠금을 해제한다(보통). 흐름을 일관되게.</li>
+<li><strong><button class="term" type="button" data-term="ROLLBACK WORK">롤백</button> 시 잠금</strong> → <code>ROLLBACK</code>도 잠금을 해제한다(보통). 흐름을 일관되게.</li>
+<li><strong>거절 후 진행</strong> → <code>foreign_lock</code>인데 무시하고 변경하면 동시성 보호가 무의미.</li>
+</ul>
+</section><section class="lblock"><h2>정리</h2>
+<ul>
+<li>안전 변경 = <strong>ENQUEUE → READ → UPDATE → COMMIT →(DEQUEUE)</strong> 한 흐름.</li>
+<li>잠금은 변경 전, 해제는 <button class="term" type="button" data-term="COMMIT WORK">커밋</button> 후. <code>COMMIT</code>/<code>ROLLBACK</code>이 자동 해제.</li>
+<li>이 패턴 하나로 CH24(원자성)+CH25(동시성)가 합쳐진다.</li>
 </ul>
 </section><section class="lblock"><h2>🧩 도전 과제 (서브퀘스트)</h2>
 <blockquote>
