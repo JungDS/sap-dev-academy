@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Background Job 운영 · 운영 품질과 배포 관리 (이송 심화) · SAP Developer Academy</title>
+<title>PDF 생성과 다운로드 · Forms / Output / PDF · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH34 · 운영 품질과 배포 관리 (이송 심화)</span>
+  <span class="meta">CH34 · Forms / Output / PDF</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,16 +33,44 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH34</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">운영 품질과 배포 관리 (이송 심화)</p>
-        <h1>Background Job 운영</h1>
-        
-        <div class="tags"><span class="tag tag--track">Track 2</span><span class="tag tag--ch">Chapter 34</span><span class="tag tag--ls">Lesson 4</span><span class="tag tag--lv">고급</span></div>
+        <p class="lhead__eyebrow">Forms / Output / PDF</p>
+        <h1>PDF 생성과 다운로드</h1>
+        <p class="lhead__direction">양식을 PDF 바이트로 받아 저장·전송한다.</p>
+        <div class="tags"><span class="tag tag--track">Track 2</span><span class="tag tag--ch">Chapter 34</span><span class="tag tag--ls">Lesson 4</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
-<blockquote>
-<p>🚧 골격 — 본문 작성 예정.</p>
-</blockquote>
+<section class="lblock"><h2>화면 출력을 넘어 — 파일로</h2>
+<p>Adobe Forms는 PDF를 <strong>바이트(XSTRING)</strong> 로 돌려준다(L02의 <code>formoutput</code>). 이걸 저장·이메일
+첨부·DMS 보관에 쓴다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>(lv_pdf) = ls_formout-pdf.        <span class="tok-com">" XSTRING(PDF 바이트)</span>
 
+<span class="tok-com">" XSTRING → 바이너리 테이블 후 PC 저장</span>
+<span class="tok-kw">DATA</span> lt_bin <span class="tok-kw">TYPE</span> solix_tab.
+lt_bin = cl_bcs_convert=&gt;xstring_to_solix( lv_pdf ).
+cl_gui_frontend_services=&gt;gui_download(
+  <span class="tok-kw">EXPORTING</span> filename = <span class="tok-str">'ticket.pdf'</span> filetype = <span class="tok-str">'BIN'</span>
+            bin_filesize = xstrlen( lv_pdf )
+  <span class="tok-kw">CHANGING</span>  data_tab = lt_bin ).</code></pre></div></div>
+<ul>
+<li>PDF는 텍스트가 아니라 <strong>바이너리</strong> — <code>BIN</code> 모드로 저장.</li>
+<li>이메일 첨부는 BCS(<code>CL_BCS</code>)로, 보관은 ArchiveLink/DMS로.</li>
+</ul>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>TEXT 모드 저장</strong> → PDF가 깨진다. 반드시 <code>BIN</code>.</li>
+<li><strong>인코딩 변환 실수</strong> → XSTRING↔바이너리 변환 헬퍼를 쓴다.</li>
+</ul>
+<hr>
+<p>PDF를 만들어 내보냈다. 마지막으로 양식 오류·변경 대응 → 다음 레슨.</p>
+</section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
       <footer class="foot">SAP Developer Academy · CH34 CH34-L04</footer>

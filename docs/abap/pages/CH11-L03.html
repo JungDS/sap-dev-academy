@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WHERE … IN (classic range) · SELECT-OPTIONS와 Range Table · SAP Developer Academy</title>
+<title>기본 Function 표시와 Display 실행 · SALV 1차 (간단 ALV) · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH11 · SELECT-OPTIONS와 Range Table</span>
+  <span class="meta">CH11 · SALV 1차 (간단 ALV)</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,47 +33,34 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH11</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">SELECT-OPTIONS와 Range Table</p>
-        <h1>WHERE … IN (classic range)</h1>
-        <p class="lhead__direction">Range Table을 조회 조건으로 — classic WHERE … IN.</p>
-        <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 11</span><span class="tag tag--ls">Lesson 3</span><span class="tag tag--lv">중급</span></div>
+        <p class="lhead__eyebrow">SALV 1차 (간단 ALV)</p>
+        <h1>기본 Function 표시와 Display 실행</h1>
+        <p class="lhead__direction">표준 툴바를 켜고 display로 화면에 띄운다.</p>
+        <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 11</span><span class="tag tag--ls">Lesson 3</span><span class="tag tag--lv">초급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>범위를 조회에 꽂기</h2>
-<p><button class="term" type="button" data-term="SELECT-OPTIONS">SELECT-OPTIONS</button>가 채운 <button class="term" type="button" data-term="Range Table">Range Table</button>을 <code>WHERE ... IN</code>으로 SELECT에 바로
-꽂는다. 한 줄로 범위·다중 조건이 적용된다.</p>
-<blockquote>
-<p>이 챕터는 <strong>classic</strong>이다. <code>WHERE age IN s_age</code>처럼 <strong><code>@</code> 없이</strong> 쓴다.
-modern(<code>WHERE age IN @s_age</code>)은 CH18부터.</p>
-</blockquote>
-</section><section class="lblock"><h2>WHERE … IN (classic)</h2>
-<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
-2
-3
-4
-5</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> lt_person <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ztperson.
-
-<span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> ztperson
-  <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> lt_person
-  <span class="tok-kw">WHERE</span> age <span class="tok-kw">IN</span> s_age.        <span class="tok-com">" classic: @ 없이 Range Table 직접</span></code></pre></div></div>
+<section class="lblock"><h2>기능 켜고 띄우기</h2>
+<p>factory로 만든 <button class="term" type="button" data-term="SALV">SALV</button> 객체에 <strong>표준 툴바</strong>(정렬·필터·합계·엑셀 등)를 켜고,
+<code>display( )</code>로 화면에 그린다.</p>
+</section><section class="lblock"><h2>표준 Function 켜기</h2>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1</pre><pre class="abap-editor__code"><code>lo_alv-&gt;get_functions( )&gt;set_all( abap_true ).</code></pre></div></div>
 <ul>
-<li><code>IN s_age</code> 하나로 사용자가 입력한 모든 범위·목록 조건이 적용된다.</li>
-<li>비어 있으면(아무 입력 없음) <strong>조건 없음</strong>으로 동작 → 전체 조회. 의도와 다르면
-검증을 추가한다.</li>
+<li><code>get_functions( )</code>가 기능 객체를 주고, <code>set_all( abap_true )</code>로 표준 버튼을 모두 켠다.</li>
+<li>이 한 줄로 정렬·필터·합계·레이아웃·엑셀 내보내기가 툴바에 생긴다.</li>
 </ul>
-</section><section class="lblock"><h2>여러 SELECT-OPTIONS 결합</h2>
-<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
-2
-3</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> ztperson <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> lt_person
-  <span class="tok-kw">WHERE</span> age  <span class="tok-kw">IN</span> s_age
-    <span class="tok-kw">AND</span> name <span class="tok-kw">IN</span> s_name.</code></pre></div></div>
+</section><section class="lblock"><h2>화면에 표시 — display</h2>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1</pre><pre class="abap-editor__code"><code>lo_alv-&gt;display( ).</code></pre></div></div>
+<ul>
+<li><code>display( )</code>가 실제로 ALV 화면을 그린다. <strong>이게 없으면 아무것도 안 보인다.</strong></li>
+</ul>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong><code>@s_age</code> 사용</strong> → 이 챕터는 classic이라 <code>@</code> 없이. modern은 CH18.</li>
-<li><strong>빈 SELECT-OPTIONS = 전체</strong> → 무조건 조회가 의도가 아니면 입력 필수 처리.</li>
+<li><strong>display 누락</strong> → 객체만 만들고 안 띄움. 가장 흔한 &quot;왜 안 보이지&quot;.</li>
+<li><strong>set_all 안 함</strong> → 표는 떠도 툴바 기능이 비어 보인다.</li>
 </ul>
 <hr>
-<p>조건은 됐다. 그런데 화면의 <strong>다중 선택 팝업</strong>(여러 값·제외)은 어떻게 다루나 → 다음 레슨.</p>
+<p>조각이 다 모였다(factory → functions → display). 한 프로그램으로 <strong>이어 붙여</strong>
+미니 리포트를 완성하자 → 다음 레슨.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

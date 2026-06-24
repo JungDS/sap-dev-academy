@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gateway SEGW 프로젝트 구조 · IDoc / ALE / Gateway · SAP Developer Academy</title>
+<title>Excel Upload 처리 · 인터페이스 실무: BAPI/RFC/BDC/File · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH30 · IDoc / ALE / Gateway</span>
+  <span class="meta">CH30 · 인터페이스 실무: BAPI/RFC/BDC/File</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,16 +33,55 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH30</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">IDoc / ALE / Gateway</p>
-        <h1>Gateway SEGW 프로젝트 구조</h1>
-        
+        <p class="lhead__eyebrow">인터페이스 실무: BAPI/RFC/BDC/File</p>
+        <h1>Excel Upload 처리</h1>
+        <p class="lhead__direction">엑셀 파일을 읽어 내부 테이블로.</p>
         <div class="tags"><span class="tag tag--track">Track 2</span><span class="tag tag--ch">Chapter 30</span><span class="tag tag--ls">Lesson 4</span><span class="tag tag--lv">고급</span></div>
       </section>
       <article class="prose">
-<blockquote>
-<p>🚧 골격 — 본문 작성 예정.</p>
-</blockquote>
+<section class="lblock"><h2>엑셀로 받은 데이터 등록</h2>
+<p>업무에서 자주 — 사용자가 엑셀로 준 데이터를 읽어 등록한다. 보통 엑셀을 <strong>CSV/탭 텍스트</strong>로
+저장해 읽거나, 표준 변환 함수를 쓴다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> lt_raw <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> string.
 
+cl_gui_frontend_services=&gt;gui_upload(
+  <span class="tok-kw">EXPORTING</span> filename = lv_path filetype = <span class="tok-str">'ASC'</span>
+  <span class="tok-kw">CHANGING</span>  data_tab = lt_raw
+  <span class="tok-kw">EXCEPTIONS</span> OTHERS = <span class="tok-num">1</span> ).
+
+<span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_raw <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(lv_line).
+  <span class="tok-kw">SPLIT</span> lv_line <span class="tok-kw">AT</span> cl_abap_char_utilities=&gt;horizontal_tab
+    <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(lv_a) <span class="tok-kw">DATA</span>(lv_b).      <span class="tok-com">" 탭 구분 파싱</span>
+  <span class="tok-com">" 검증 후 내부 테이블에 APPEND</span>
+<span class="tok-kw">ENDLOOP</span>.</code></pre></div></div>
+<ul>
+<li><code>cl_gui_frontend_services=&gt;gui_upload</code> — PC 파일 읽기.</li>
+<li>한 줄씩 <code>SPLIT</code>으로 컬럼 분리(CH04 문자열).</li>
+<li>읽은 뒤 <strong>반드시 검증</strong>(타입·필수·중복) 후 등록(BAPI/DML).</li>
+</ul>
+<blockquote>
+<p>💡 <code>.xls</code>를 직접 셀 단위로 읽는 옛 표준 함수 <code>ALSM_EXCEL_TO_INTERNAL_TABLE</code>도 있다
+(행·열·값으로 반환). 다만 신형 포맷·대량엔 CSV/탭 텍스트나 <code>XCO</code>/<code>abap2xlsx</code>가 더 안정적이다.</p>
+</blockquote>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>헤더 행 포함</strong> → 첫 줄(제목)은 건너뛴다.</li>
+<li><strong>무검증 등록</strong> → 외부 데이터는 신뢰 금지. 철저히 검증.</li>
+</ul>
+<hr>
+<p>파일을 읽었다. 이 인터페이스들의 공통 — 오류·재처리 구조 → 다음 레슨.</p>
+</section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
       <footer class="foot">SAP Developer Academy · CH30 CH30-L04</footer>

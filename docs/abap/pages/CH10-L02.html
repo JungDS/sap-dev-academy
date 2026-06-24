@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FACTORY 메서드로 Internal Table 출력 · SALV 1차 (간단 ALV) · SAP Developer Academy</title>
+<title>USING / CHANGING 파라미터 · 모듈화 기초 · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH10 · SALV 1차 (간단 ALV)</span>
+  <span class="meta">CH10 · 모듈화 기초</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,24 +33,16 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH10</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">SALV 1차 (간단 ALV)</p>
-        <h1>FACTORY 메서드로 Internal Table 출력</h1>
-        <p class="lhead__direction">factory 한 번으로 내부 테이블을 SALV 객체로 만들고, display로 띄우는 두 단계를 직접 체험한다.</p>
+        <p class="lhead__eyebrow">모듈화 기초</p>
+        <h1>USING / CHANGING 파라미터</h1>
+        <p class="lhead__direction">서브루틴에 값을 주고(USING) 결과를 돌려받는다(CHANGING).</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 10</span><span class="tag tag--ls">Lesson 2</span><span class="tag tag--lv">초급</span></div>
       </section>
-      <section class="lcard tcode">
-        <p class="lcard__h"><span class="ic">🖥️</span>이번 Lesson에서 다루는 트랜잭션 코드</p>
-        <button class="tcode-label" data-tcode="SE38" data-badge="복습">
-          <span class="tcode-label__badge">복습</span>
-          <span class="tcode-label__code">SE38</span>
-          <span class="tcode-label__hint">자세히 보기 ›</span>
-        </button>
-      </section>
       <article class="prose">
-<section class="lblock"><h2>SALV 객체 만들기 — factory</h2>
-<p>앞 레슨에서 <button class="term" type="button" data-term="SALV">SALV</button>가 &quot;표로 보여 주는 가장 단순한 길&quot;임을 봤다. 이제 실제로 띄워 보자.
-<button class="term" type="button" data-term="SALV">SALV</button>는 정적 메서드 <code>factory( )</code>로 <button class="term" type="button" data-term="Internal Table">Internal Table</button>(메모리에 잠깐 두는 표)을 받아 <button class="term" type="button" data-term="ALV">ALV</button> 객체를 만든다.
-(CH09의 정적 메서드 <code>=&gt;</code> 호출이다.)</p>
+<section class="lblock"><h2>값을 주고받기</h2>
+<p>서브루틴이 바깥 값을 받아 처리하고 결과를 돌려주려면 <strong>파라미터</strong>가 필요하다.
+<code>FORM</code>에서는 <code>USING</code>과 <code>CHANGING</code>으로 한다.</p>
+</section><section class="lblock"><h2>USING(입력) / CHANGING(입출력)</h2>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -59,59 +51,74 @@
 6
 7
 8
-9</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> lo_alv <span class="tok-kw">TYPE</span> <span class="tok-kw">REF</span> <span class="tok-kw">TO</span> cl_salv_table.
+9
+10</pre><pre class="abap-editor__code"><code><span class="tok-kw">FORM</span> add_tax
+  <span class="tok-kw">USING</span>    iv_amount <span class="tok-kw">TYPE</span> p
+  <span class="tok-kw">CHANGING</span> cv_result <span class="tok-kw">TYPE</span> p.
+  cv_result = iv_amount * <span class="tok-str">'1.1'</span>.
+<span class="tok-kw">ENDFORM</span>.
 
-<span class="tok-kw">TRY</span>.
-    cl_salv_table=&gt;factory(
-      <span class="tok-kw">IMPORTING</span> r_salv_table = lo_alv      <span class="tok-com">" 만들어진 ALV 객체</span>
-      <span class="tok-kw">CHANGING</span>  t_table      = lt_person ). <span class="tok-com">" 표시할 내부 테이블</span>
-  <span class="tok-kw">CATCH</span> cx_salv_msg.
-    <span class="tok-com">" 생성 실패 처리</span>
-<span class="tok-kw">ENDTRY</span>.</code></pre></div></div>
+<span class="tok-kw">START-OF-SELECTION</span>.
+  <span class="tok-kw">DATA</span> lv_out <span class="tok-kw">TYPE</span> p LENGTH <span class="tok-num">8</span> DECIMALS <span class="tok-num">2</span>.
+  <span class="tok-kw">PERFORM</span> add_tax <span class="tok-kw">USING</span> <span class="tok-num">1000</span> <span class="tok-kw">CHANGING</span> lv_out.
+  <span class="tok-kw">WRITE</span> lv_out.</code></pre></div></div>
 <ul>
-<li><code>IMPORTING r_salv_table</code> — 결과 ALV 객체를 받는다.</li>
-<li><code>CHANGING t_table</code> — 표시할 <button class="term" type="button" data-term="Internal Table">Internal Table</button>(참조로 연결).</li>
-<li><code>factory</code>는 예외 <code>cx_salv_msg</code>를 던질 수 있어 <code>TRY ... CATCH</code>로 감싼다.</li>
+<li><code>USING</code> — 주로 <strong>입력</strong>값(관례). <code>CHANGING</code> — <strong>돌려줄</strong> 값.</li>
+<li>접두어 관례: <code>iv_</code>(input), <code>cv_</code>(changing).</li>
 </ul>
-</section><section class="lblock"><h2>factory와 display는 다른 일 — 직접</h2>
-<p>여기서 입문자가 가장 많이 헷갈리는 게 있다 — <strong><code>factory( )</code>를 부르면 표가 바로 뜰까?</strong>
-아니다. <code>factory</code>는 ALV <strong>객체만</strong> 만들고, 화면에 그리는 건 <code>display( )</code>가 따로 한다.
-아래에서 <strong>① factory → ② display</strong> 를 순서대로 눌러, 두 단계의 차이를 눈으로 확인하라.</p>
-<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">SALV factory → display 시뮬레이터</span><a class="embed__open" href="../../../sample/interactive/salv-grid-simulator.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../sample/interactive/salv-grid-simulator.html" loading="lazy" title="SALV factory → display 시뮬레이터" style="height:520px"></iframe></figure>
 <blockquote>
-<p>🖱️ <strong>① factory( )</strong> 를 누르면 &quot;객체 생성됨&quot;이라는 안내만 뜨고 <strong>표는 아직 안 보인다.</strong>
-<strong>② display( )</strong> 까지 눌러야 비로소 그리드가 화면에 나타난다. 이 차이가 이 레슨의 핵심이다.</p>
+<p>엄밀히 <code>USING</code>도 참조로 넘어가 바뀔 수 있다. <strong>값 보호</strong>가 필요하면
+<code>USING value(iv_x)</code>로 값 전달(by value). 관례상 입력은 USING, 출력은 CHANGING로
+<strong>의도를 표현</strong>한다.</p>
 </blockquote>
-</section><section class="lblock"><h2>컬럼 제목은 자동</h2>
-<p>방금 그리드의 컬럼 제목이 <code>PERSID</code>가 아니라 <strong>&quot;사번&quot;</strong>, <code>NAME</code>이 아니라 <strong>&quot;이름&quot;</strong> 으로
-떴다. 테이블 행이 <button class="term" type="button" data-term="Data Element">Data Element</button>로 타입팅돼 있으면 <strong>컬럼 제목(라벨)이 자동</strong>으로 붙기 때문이다.</p>
-<blockquote>
-<p>🎁 CH03에서 <button class="term" type="button" data-term="Data Element">Data Element</button>에 라벨을 채워 둔 수고가 <strong>여기서 보상</strong>받는다. 라벨을 비워 뒀다면
-컬럼 제목이 기술명이나 빈칸으로 떠 볼품없어진다.</p>
-</blockquote>
-</section><section class="lblock"><h2>표준 기능은 공짜</h2>
-<p><code>factory</code> + <code>display</code> 몇 줄이면, 그리드 위 툴바의 <strong>정렬·필터·합계·엑셀 내보내기</strong> 같은
-표준 기능이 <strong>코드 추가 없이</strong> 따라온다. (시뮬레이터에서 헤더 클릭 정렬·<code>Σ 합계</code>를 눌러 보라.)
-이게 <code>WRITE</code> 리스트를 손으로 꾸미는 것과 결정적으로 다른 점이다.</p>
-</section><section class="lblock"><h2>흔한 실수와 점검</h2>
-<blockquote>
-<p>⚠️ <strong>TRY/CATCH 없이 factory</strong> — <code>cx_salv_msg</code> 예외를 안 잡으면 런타임 덤프 위험. 항상 감싼다.</p>
-</blockquote>
-<blockquote>
-<p>⚠️ <strong>factory만 부르고 끝</strong> — 객체만 만들고 <code>display( )</code>를 안 불러 &quot;왜 표가 안 뜨지?&quot; 하는 단골 실수.</p>
-</blockquote>
-<blockquote>
-<p>⚠️ <strong>빈 테이블</strong> — 오류는 아니지만 빈 그리드가 뜬다(시뮬레이터의 &quot;빈 테이블&quot; 예제). 데이터 유무는 미리 확인.</p>
-</blockquote>
-</section><section class="lblock"><h2>정리</h2>
+</section><section class="lblock"><h2>세 가지 전달 방식</h2>
+<table>
+<thead>
+<tr>
+<th>방식</th>
+<th>문법</th>
+<th>뜻</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Call by Reference</td>
+<td><code>USING iv_x</code> · <code>CHANGING cv_x</code></td>
+<td>원본을 가리킴(빠름, 바뀔 수 있음)</td>
+</tr>
+<tr>
+<td>Call by Value</td>
+<td><code>USING value(iv_x)</code></td>
+<td>값 복사 — 원본 보호(입력 전용)</td>
+</tr>
+<tr>
+<td>Call by Value and Result</td>
+<td><code>CHANGING value(cv_x)</code></td>
+<td>복사해 처리 후 <strong>정상 종료 시</strong> 되돌려씀</td>
+</tr>
+</tbody></table>
 <ul>
-<li><button class="term" type="button" data-term="SALV">SALV</button>는 <code>cl_salv_table=&gt;factory( )</code>로 <button class="term" type="button" data-term="Internal Table">Internal Table</button>을 받아 <button class="term" type="button" data-term="ALV">ALV</button> 객체를 만든다.</li>
-<li><strong>factory(객체 생성)와 display(화면 표시)는 별개</strong> — 둘 다 호출해야 표가 뜬다.</li>
-<li>컬럼 제목은 <button class="term" type="button" data-term="Data Element">Data Element</button> 라벨에서 <strong>자동</strong>, 정렬·합계 등 표준 기능은 <strong>공짜</strong>.</li>
-<li><code>factory</code>는 <code>TRY ... CATCH cx_salv_msg</code>로 감싼다.</li>
+<li><strong>입력만</strong> → <code>USING value(...)</code>로 원본을 보호한다.</li>
+<li><strong>돌려줄 값</strong> → 보통 <code>CHANGING</code>(reference).</li>
+<li><strong>타입 명시</strong> → <code>USING iv_x TYPE p</code>처럼 타입을 적으면 안전하다(권장).</li>
+</ul>
+</section><section class="lblock"><h2>빠져나오기 · 값 유지 — RETURN · STATICS</h2>
+<ul>
+<li><code>RETURN</code> — 서브루틴(또는 메서드)을 <strong>즉시 빠져나간다</strong>(남은 코드 건너뜀).</li>
+<li><code>STATICS</code> — 서브루틴 안에서 선언하되 <strong>호출이 끝나도 값이 유지</strong>되어 다음 호출에
+누적된다(일반 지역변수 <code>DATA</code>는 호출마다 사라진다).</li>
+</ul>
+<blockquote>
+<p>메서드/함수에는 파라미터를 <strong>선택적으로</strong>(<code>OPTIONAL</code>)·<strong>기본값</strong>(<code>DEFAULT</code>)으로 줄
+수도 있다 — 호출 시 일부를 생략하게. (메서드 본격 설계는 CH20.)</p>
+</blockquote>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>USING/CHANGING 순서·타입 불일치</strong> → 호출과 정의의 파라미터가 맞아야 한다.</li>
+<li><strong>출력을 USING으로</strong> → 의도가 흐려진다. 돌려줄 값은 CHANGING.</li>
 </ul>
 <hr>
-<p>객체는 만들었고 표도 떴다. 그런데 <code>display( )</code>와 툴바·제목 설정을 더 다듬고 싶다 → 다음 레슨.</p>
+<p>서브루틴은 <strong>같은 프로그램 안</strong>에서만 산다. 여러 프로그램이 <strong>공유</strong>하는 재사용
+블록은? → Function Module(다음 레슨).</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

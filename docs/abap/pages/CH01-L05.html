@@ -107,6 +107,11 @@
 <li><code>INTENSIFIED</code> — 더 진하게, <code>INVERSE</code> — 배경과 글자색을 뒤집는다.</li>
 </ul>
 <blockquote>
+<p>💡 색을 <strong>여러 줄에 한꺼번에</strong> 주려면 <code>FORMAT</code> 문을 쓴다. <code>FORMAT COLOR 6.</code> 다음부터의
+모든 <code>WRITE</code>가 그 색으로 나오고, <code>FORMAT RESET.</code>으로 평소 색으로 되돌린다 — 줄마다
+<code>COLOR</code>를 붙이지 않아도 된다.</p>
+</blockquote>
+<blockquote>
 <p>💡 색 번호는 <strong>의미</strong>로 외우면 쉽다 — <code>COLOR 5</code>(초록)는 &quot;좋음&quot;, <code>COLOR 6</code>(빨강)은 &quot;문제&quot;. 위 플레이그라운드에서 COLOR를 바꿔 보라.</p>
 </blockquote>
 </section><section class="lblock"><h2>줄과 구분선 — 여백을 준다</h2>
@@ -126,12 +131,21 @@
 <p>숫자와 날짜는 전용 옵션으로 더 깔끔하게 만든다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
-3</pre><pre class="abap-editor__code"><code><span class="tok-kw">WRITE</span>: / lv_num   NO-ZERO.        <span class="tok-com">" 앞의 의미 없는 0 숨김</span>
-<span class="tok-kw">WRITE</span>: / lv_amt   DECIMALS <span class="tok-num">2</span>.     <span class="tok-com">" 소수 2자리로</span>
-<span class="tok-kw">WRITE</span>: / sy-datum DD/MM/YYYY.     <span class="tok-com">" 날짜 형식 지정</span></code></pre></div></div>
+3
+4</pre><pre class="abap-editor__code"><code><span class="tok-kw">WRITE</span>: / lv_num   NO-ZERO.         <span class="tok-com">" 앞의 의미 없는 0 숨김</span>
+<span class="tok-kw">WRITE</span>: / lv_amt   DECIMALS <span class="tok-num">2</span>.      <span class="tok-com">" 소수 2자리로</span>
+<span class="tok-kw">WRITE</span>: / lv_amt   CURRENCY <span class="tok-str">'USD'</span>.  <span class="tok-com">" 통화 규칙에 맞춰 소수 자리</span>
+<span class="tok-kw">WRITE</span>: / sy-datum DD/MM/YYYY.      <span class="tok-com">" 날짜 형식 지정</span></code></pre></div></div>
+<ul>
+<li><code>NO-ZERO</code> — 값이 0이면 공백으로(의미 없는 0 숨김). <code>DECIMALS n</code> — 소수 자리 수.</li>
+<li><code>CURRENCY cur</code> — 통화 <code>cur</code>의 규칙대로 소수 자리를 잡는다(예: USD 2자리, JPY 0자리).</li>
+<li><code>DD/MM/YYYY</code>·<code>MM/DD/YYYY</code> 등 — 날짜 출력 형식.</li>
+</ul>
 <blockquote>
-<p>🔎 <code>sy-datum</code>은 시스템이 주는 <strong>오늘 날짜</strong>다(앞으로 자주 쓴다). 그냥 출력하면 <code>20260619</code>처럼 붙어 나오니
-<code>DD/MM/YYYY</code> 같은 형식을 주면 사람이 읽기 좋다.</p>
+<p>🔎 <strong>[선행 사용]</strong> 위 <code>lv_num</code>·<code>lv_amt</code>(변수)와 <code>sy-datum</code>(오늘 날짜)은 서식 효과를
+보여주려고 미리 끌어다 쓴 것이다 — 변수는 <strong>CH02</strong>, <code>sy-datum</code>은 <strong>CH04</strong>에서 정식으로
+배운다(지금은 분석·암기 불필요). 핵심은 날짜를 그냥 출력하면 <code>20260619</code>처럼 붙어 나오니
+<code>DD/MM/YYYY</code> 형식을 주면 읽기 좋다는 <strong>서식 효과</strong>다.</p>
 </blockquote>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <blockquote>
@@ -146,9 +160,9 @@
 </section><section class="lblock"><h2>정리</h2>
 <ul>
 <li><button class="term" type="button" data-term="WRITE">WRITE</button>는 값을 <strong>폭(len)</strong> 안에 넣고 <strong>정렬</strong>(LEFT·CENTERED·RIGHT-JUSTIFIED)로 칸을 맞춘다.</li>
-<li><strong>COLOR·INTENSIFIED·INVERSE</strong> 로 중요한 값을 강조한다.</li>
+<li><strong>COLOR·INTENSIFIED·INVERSE</strong>(줄마다) 또는 <strong>FORMAT</strong>(여러 줄 한꺼번에)로 강조한다.</li>
 <li><strong>SKIP</strong>(빈 줄)·<strong>ULINE</strong>(구분선)으로 읽기 좋게 띄운다.</li>
-<li>숫자·날짜는 <code>NO-ZERO</code>·<code>DECIMALS</code>·<code>DD/MM/YYYY</code> 같은 전용 옵션으로 다듬는다.</li>
+<li>숫자·날짜는 <code>NO-ZERO</code>·<code>DECIMALS</code>·<code>CURRENCY</code>·<code>DD/MM/YYYY</code> 같은 전용 옵션으로 다듬는다.</li>
 </ul>
 <hr>
 <p>출력을 마음대로 다듬었다. 그런데 이 프로그램, 지금 <strong>어디에 저장</strong>돼 있더라? 학습용 <code>$TMP</code>를

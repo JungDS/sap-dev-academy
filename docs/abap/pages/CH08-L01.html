@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Foreign Key와 Check Table · DDIC 관계와 입력도움말(F4) · SAP Developer Academy</title>
+<title>SAP 데모 테이블과 Client 종속 · Open SQL 기본 조회 · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH08 · DDIC 관계와 입력도움말(F4)</span>
+  <span class="meta">CH08 · Open SQL 기본 조회</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,41 +33,62 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH08</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">DDIC 관계와 입력도움말(F4)</p>
-        <h1>Foreign Key와 Check Table</h1>
-        <p class="lhead__direction">아무 값이나 막는다 — Foreign Key로 입력을 다른 테이블 값으로 제한.</p>
+        <p class="lhead__eyebrow">Open SQL 기본 조회</p>
+        <h1>SAP 데모 테이블과 Client 종속</h1>
+        <p class="lhead__direction">풍부한 연습 데이터 — SCARR·SPFLI·SFLIGHT와 Open SQL의 client 자동 종속.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 8</span><span class="tag tag--ls">Lesson 1</span><span class="tag tag--lv">초급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>아무 값이나 들어온다</h2>
-<p>CH06의 테이블에 <code>country = &#39;XX&#39;</code>처럼 <strong>존재하지 않는 값</strong>도 그냥 저장된다. 입력을
-<strong>올바른 값으로 제한</strong>하고 싶다. DDIC가 선언적으로 해주는 첫 장치가
-<button class="term" type="button" data-term="Foreign Key">Foreign Key</button>(외래 키)와 <button class="term" type="button" data-term="Check Table">Check Table</button>이다.</p>
-</section><section class="lblock"><h2>Foreign Key = 다른 테이블을 참조</h2>
-<p>어떤 필드의 값이 <strong>다른 테이블에 실제로 존재하는 값</strong>이어야 한다고 DDIC에
-선언한다. 그 &quot;다른 테이블&quot;이 <button class="term" type="button" data-term="Check Table">Check Table</button>이다.</p>
-<p>예: <code>ZTPERSON-COUNTRY</code>가 국가 마스터(<code>ZTCOUNTRY</code>)에 있는 코드만 받도록.</p>
-</section><section class="lblock"><h2>SE11에서 설정</h2>
-<p><code>SE11</code> → 테이블 → 필드 선택 → <strong>Foreign Keys</strong> 버튼.</p>
-<ul>
-<li>Check Table 지정(참조할 테이블).</li>
-<li>키 필드 대응(이 필드 ↔ Check Table의 키)을 매핑.</li>
-<li>활성화.</li>
-</ul>
-<p>그러면 <strong>두 가지</strong>가 공짜로 생긴다:</p>
-<ul>
-<li><strong>입력검증</strong> — Check Table에 없는 값은 입력 화면/유지보수에서 거부.</li>
-<li><strong><button class="term" type="button" data-term="F4">F4</button> 도움말</strong> — 그 필드에서 F4 시 Check Table의 값 목록.</li>
-</ul>
+<section class="lblock"><h2>저장한 걸 다시 읽고 싶다</h2>
+<p>CH07에서 구구단 18행을 <code>ZGUGUDAN</code>에 손으로 넣어 영구 저장했다. 이제 프로그램에서
+그 값을 <strong>읽어</strong> 와야 쓸모가 있다. DB에서 읽는 언어가 <button class="term" type="button" data-term="Open SQL">Open SQL</button>이다.</p>
+<p>연습은 우리 <code>ZGUGUDAN</code>뿐 아니라, SAP이 기본 제공하는 <strong>풍부한 표준 데이터</strong>로도 한다.</p>
+</section><section class="lblock"><h2>SAP 항공 데모 테이블</h2>
+<p>SAP에는 학습·예제용 <strong>항공 예약 데모 데이터</strong>가 들어 있다. 관계까지 잘 갖춰져 있어
+SELECT·조인 연습에 안성맞춤이다.</p>
+<table>
+<thead>
+<tr>
+<th>테이블</th>
+<th>내용</th>
+<th>예</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>SCARR</code></td>
+<td>항공사</td>
+<td>대한항공(KE)</td>
+</tr>
+<tr>
+<td><code>SPFLI</code></td>
+<td>항공편 스케줄(노선)</td>
+<td>KE 인천→나리타</td>
+</tr>
+<tr>
+<td><code>SFLIGHT</code></td>
+<td>항공편(날짜별 좌석·예약)</td>
+<td>KE 0701, 2026-06-23</td>
+</tr>
+</tbody></table>
+<p>이 셋은 &quot;항공사 → 노선 → 운항편&quot;으로 이어지는 master-detail 구조다. 앞으로 SELECT·
+WHERE·JOIN을 이 데이터로 연습한다.</p>
+</section><section class="lblock"><h2>Open SQL은 Client를 자동으로 챙긴다</h2>
+<p>CH07에서 본 <button class="term" type="button" data-term="MANDT">MANDT</button>(클라이언트)를 기억하는가? 업무 테이블의 첫 키는 보통 MANDT다.
+<strong>Open SQL은 SELECT할 때 현재 로그인 client의 행만 자동으로</strong> 가져온다 — WHERE에
+<code>MANDT</code>를 적지 않아도 된다(적지 않는다).</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> sflight <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> lt_flight.   <span class="tok-com">" 현재 client 행만 자동 조회</span></code></pre></div></div>
+<blockquote>
+<p>💡 그래서 Open SQL 코드에는 보통 MANDT가 안 보인다. 시스템이 뒤에서 &quot;지금 이 방
+(client)의 데이터만&quot;으로 한정해 준다.</p>
+</blockquote>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>검증이 안 먹어요</strong> → Foreign Key는 화면/유지보수 레벨 검증이다. <code>INSERT</code> 같은
-직접 DB 쓰기는 자동 검증되지 않는다(프로그램이 책임 — CH08-L06).</li>
-<li><strong>키 대응 누락</strong> → 매핑이 정확해야 검증이 동작.</li>
+<li><strong>WHERE에 MANDT 직접</strong> → Open SQL에선 불필요(오히려 피한다). 시스템이 챙긴다.</li>
+<li><strong>데모 데이터 없음</strong> → 교육 시스템에 데모 데이터가 없으면 강사 안내(생성 프로그램)를 따른다.</li>
 </ul>
 <hr>
-<p>Foreign Key는 &quot;이 테이블을 보라&quot;고 가리킨다. 그런데 <button class="term" type="button" data-term="Domain">Domain</button>에도 비슷한 &quot;Value
-Table&quot;이 있다. 둘이 뭐가 다를까? → 다음 레슨.</p>
+<p>읽을 대상(우리 <code>ZGUGUDAN</code>·표준 <code>SFLIGHT</code>)을 알았다. 이제 SELECT의 <strong>네 가지 핵심
+요소</strong>부터 차근차근 → 다음 레슨.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

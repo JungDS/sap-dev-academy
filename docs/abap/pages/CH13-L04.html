@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Maintenance View와 Foreign Key 관계 · Classic DDIC View·유지보수 객체 · SAP Developer Academy</title>
+<title>HAVING과 집계 조건 · Open SQL 2차: JOIN·집계 · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH13 · Classic DDIC View·유지보수 객체</span>
+  <span class="meta">CH13 · Open SQL 2차: JOIN·집계</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,33 +33,53 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH13</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">Classic DDIC View·유지보수 객체</p>
-        <h1>Maintenance View와 Foreign Key 관계</h1>
-        <p class="lhead__direction">관련 테이블을 함께 유지보수 — Maintenance View.</p>
+        <p class="lhead__eyebrow">Open SQL 2차: JOIN·집계</p>
+        <h1>HAVING과 집계 조건</h1>
+        <p class="lhead__direction">집계 결과로 거른다 — WHERE와 다른 HAVING.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 13</span><span class="tag tag--ls">Lesson 4</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>마스터데이터를 손쉽게 입력</h2>
-<p>CH06에서 데이터 입력이 번거로웠다(SE16N 제약). 표준 화면으로 <strong>입력·수정·삭제</strong>
-하고 싶다. 그 토대가 <button class="term" type="button" data-term="Maintenance View">Maintenance View</button>(유지보수 뷰)다.</p>
-</section><section class="lblock"><h2>Maintenance View</h2>
-<ul>
-<li><button class="term" type="button" data-term="Foreign Key">Foreign Key</button>로 연결된 테이블(들)을 <strong>함께 유지보수</strong>할 수 있게 정의한 뷰.</li>
-<li>단일 테이블도 가능(가장 흔함).</li>
-<li>이 뷰(또는 테이블)에 <strong>유지보수 화면</strong>을 붙이는 게 다음 레슨의 Generator다.</li>
-</ul>
-</section><section class="lblock"><h2>Foreign Key 기반</h2>
-<ul>
-<li>여러 테이블 유지보수 뷰는 <button class="term" type="button" data-term="Foreign Key">Foreign Key</button> 관계를 따라 구성된다(CH08의 관계가
-여기서 또 쓰인다 — 나선).</li>
-</ul>
+<section class="lblock"><h2>집계한 다음에 거르기</h2>
+<p><code>WHERE</code>는 <strong>그룹 짓기 전</strong> 행을 거른다. &quot;인원 5명 이상인 부서만&quot;처럼 <strong>집계
+결과로</strong> 거르려면 <code>HAVING</code>이 필요하다.</p>
+</section><section class="lblock"><h2>WHERE vs HAVING</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>시점</th>
+<th>대상</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>WHERE</code></td>
+<td>GROUP BY <strong>전</strong></td>
+<td>개별 행</td>
+</tr>
+<tr>
+<td><code>HAVING</code></td>
+<td>GROUP BY <strong>후</strong></td>
+<td>집계 결과</td>
+</tr>
+</tbody></table>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> dept_id COUNT( * ) <span class="tok-kw">AS</span> cnt
+  <span class="tok-kw">FROM</span> ztperson
+  <span class="tok-kw">INTO</span> <span class="tok-kw">CORRESPONDING</span> <span class="tok-kw">FIELDS</span> <span class="tok-kw">OF</span> <span class="tok-kw">TABLE</span> lt_sum
+  <span class="tok-kw">WHERE</span> age &gt;= <span class="tok-num">20</span>          <span class="tok-com">" 먼저 개별 행 필터</span>
+  <span class="tok-kw">GROUP</span> BY dept_id
+  HAVING COUNT( * ) &gt;= <span class="tok-num">5</span>.  <span class="tok-com">" 그 다음 그룹 필터</span></code></pre></div></div>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>아무 테이블이나 다 조인</strong> → 유지보수 뷰는 관계(FK)가 명확해야.</li>
-<li><strong>읽기 뷰와 혼동</strong> → Database View는 읽기, Maintenance View는 유지보수 토대.</li>
+<li><strong>집계 조건을 WHERE에</strong> → <code>WHERE COUNT(*)…</code>는 오류. 집계 조건은 <code>HAVING</code>.</li>
+<li><strong>순서</strong> → <code>WHERE → GROUP BY → HAVING → ORDER BY</code>를 지킨다.</li>
 </ul>
 <hr>
-<p>뷰는 만들었다. 이제 여기에 <strong>실제 입력 화면</strong>을 붙이자 → Table Maintenance Generator(다음 레슨).</p>
+<p>요약·필터까지 됐다. 결과 <strong>정렬</strong>도 DB에서 해보자 → ORDER BY(다음 레슨).</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

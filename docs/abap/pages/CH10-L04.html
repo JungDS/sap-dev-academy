@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Internal Table → SALV 미니 리포트 · SALV 1차 (간단 ALV) · SAP Developer Academy</title>
+<title>Local Class로 모듈화 (Static-first) · 모듈화 기초 · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH10 · SALV 1차 (간단 ALV)</span>
+  <span class="meta">CH10 · 모듈화 기초</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,15 +33,23 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH10</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">SALV 1차 (간단 ALV)</p>
-        <h1>Internal Table → SALV 미니 리포트</h1>
-        <p class="lhead__direction">SELECT → SALV까지 한 프로그램으로 — 첫 표 리포트 완성.</p>
+        <p class="lhead__eyebrow">모듈화 기초</p>
+        <h1>Local Class로 모듈화 (Static-first)</h1>
+        <p class="lhead__direction">클래스라는 또 다른 묶음 — 객체 없이 부르는 정적 메서드부터.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 10</span><span class="tag tag--ls">Lesson 4</span><span class="tag tag--lv">초급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>처음부터 끝까지 한 번에</h2>
-<p>지금까지 배운 걸 모아 <strong>DB 조회 → 표 출력</strong>까지 하나의 프로그램으로 완성한다.
-classic SELECT(CH07) + <button class="term" type="button" data-term="SALV">SALV</button>(CH10)의 결합이다.</p>
+<section class="lblock"><h2>Subroutine 말고, 클래스라는 묶음</h2>
+<p>지금까지 코드를 <button class="term" type="button" data-term="Subroutine">Subroutine</button>·<button class="term" type="button" data-term="Function Module">Function Module</button>로 묶었다. 또 하나의 묶음 도구가
+<button class="term" type="button" data-term="Class">Class</button>(클래스)와 <button class="term" type="button" data-term="Method">Method</button>(메서드)다. 본격 OO(객체지향) 설계는 한참 뒤(CH20)에
+배우니, 여기선 <strong>맛보기</strong>만 — 그것도 객체를 안 만들어도 되는 <strong>정적(static) 메서드</strong>부터.</p>
+<blockquote>
+<p>💡 이 시기의 코드는 <strong>보통 Subroutine/Function Module</strong>로 묶고, 클래스는 특수한 경우에
+쓴다. 클래스가 본격적으로 주인공이 되는 건 CH20이다.</p>
+</blockquote>
+</section><section class="lblock"><h2>클래스의 두 부분 — DEFINITION / IMPLEMENTATION</h2>
+<p><button class="term" type="button" data-term="Class">Class</button>는 &quot;무엇이 있는지&quot;(DEFINITION)와 &quot;실제 코드&quot;(IMPLEMENTATION) 둘로 나뉜다.
+공개할 것은 <code>PUBLIC SECTION</code>, 감출 것은 <code>PRIVATE SECTION</code>에 둔다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -53,46 +61,44 @@ classic SELECT(CH07) + <button class="term" type="button" data-term="SALV">SALV<
 9
 10
 11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21</pre><pre class="abap-editor__code"><code><span class="tok-kw">REPORT</span> zsalv_person.
+12</pre><pre class="abap-editor__code"><code><span class="tok-kw">CLASS</span> lcl_calc <span class="tok-kw">DEFINITION</span>.
+  <span class="tok-kw">PUBLIC</span> <span class="tok-kw">SECTION</span>.
+    <span class="tok-kw">CLASS-METHODS</span> add_tax
+      <span class="tok-kw">IMPORTING</span> iv_amount        <span class="tok-kw">TYPE</span> p
+      <span class="tok-kw">RETURNING</span> <span class="tok-kw">VALUE</span>(rv_result) <span class="tok-kw">TYPE</span> p.
+<span class="tok-kw">ENDCLASS</span>.
 
-<span class="tok-kw">DATA</span>: lt_person <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ztperson,
-      lo_alv    <span class="tok-kw">TYPE</span> <span class="tok-kw">REF</span> <span class="tok-kw">TO</span> cl_salv_table.
+<span class="tok-kw">CLASS</span> lcl_calc <span class="tok-kw">IMPLEMENTATION</span>.
+  <span class="tok-kw">METHOD</span> add_tax.
+    rv_result = iv_amount * <span class="tok-str">'1.1'</span>.
+  <span class="tok-kw">ENDMETHOD</span>.
+<span class="tok-kw">ENDCLASS</span>.</code></pre></div></div>
+<ul>
+<li><code>CLASS-METHODS</code> — <strong>정적 메서드</strong>(객체 없이 클래스로 직접 부르는 메서드).</li>
+<li><code>IMPORTING</code>(입력)·<code>RETURNING</code>(반환 한 개)으로 파라미터를 선언한다.</li>
+</ul>
+</section><section class="lblock"><h2>정적 메서드 호출 — <code>=&gt;</code></h2>
+<p>정적 메서드는 <strong>객체를 만들 필요 없이</strong> &quot;클래스이름<code>=&gt;</code>메서드&quot;로 부른다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> lv_out <span class="tok-kw">TYPE</span> p LENGTH <span class="tok-num">8</span> DECIMALS <span class="tok-num">2</span>.
 
-<span class="tok-kw">START-OF-SELECTION</span>.
-  <span class="tok-com">" 1) 데이터 조회 (classic Open SQL)</span>
-  <span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> ztperson <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> lt_person.
-
-  <span class="tok-com">" 2) SALV 객체 생성</span>
-  <span class="tok-kw">TRY</span>.
-      cl_salv_table=&gt;factory(
-        <span class="tok-kw">IMPORTING</span> r_salv_table = lo_alv
-        <span class="tok-kw">CHANGING</span>  t_table      = lt_person ).
-
-      <span class="tok-com">" 3) 표준 기능 + 표시</span>
-      lo_alv-&gt;get_functions( )&gt;set_all( abap_true ).
-      lo_alv-&gt;display( ).
-    <span class="tok-kw">CATCH</span> cx_salv_msg.
-      <span class="tok-kw">MESSAGE</span> <span class="tok-str">'ALV 생성 실패'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'I'</span>.
-  <span class="tok-kw">ENDTRY</span>.</code></pre></div></div>
-<p>실행(F8)하면 정렬·필터·엑셀 내보내기가 되는 <strong>표 리포트</strong>가 뜬다. 첫 &quot;쓸 만한&quot;
-리포트의 완성이다.</p>
+lv_out = lcl_calc=&gt;add_tax( <span class="tok-num">1000</span> ).   <span class="tok-com">" 객체 생성 불필요</span>
+<span class="tok-kw">WRITE</span> lv_out.</code></pre></div></div>
+</section><section class="lblock"><h2>설계도와 객체 (개념만)</h2>
+<p><button class="term" type="button" data-term="Class">Class</button>는 &quot;설계도&quot;, 그 설계도로 찍어낸 실체가 **객체(Object)**다(쿠키틀과 쿠키).
+객체를 만들어 &quot;객체<code>-&gt;</code>메서드&quot;로 부르는 <strong>인스턴스 메서드</strong>도 있지만, 객체 생성과
+참조 변수는 본격 OO인 <strong>CH20</strong>에서 다룬다. 지금은 <strong>정적 메서드(<code>=&gt;</code>)면 충분</strong>하다.</p>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>조회 결과 미확인</strong> → 빈 테이블이면 빈 표. <code>lines( )</code>로 확인 후 메시지도 가능.</li>
-<li><strong>classic/modern 혼동</strong> → 이 시점 SELECT는 <strong>classic</strong>(CH18 전). <code>@</code> 안 쓴다.</li>
+<li><strong>DEFINITION만, IMPLEMENTATION 없음</strong> → 메서드 본문이 없어 오류.</li>
+<li><strong>정적인데 객체 만들기</strong> → <code>CLASS-METHODS</code>는 객체 없이 <code>=&gt;</code>로 부른다.</li>
+<li><strong><code>=&gt;</code> vs <code>-&gt;</code></strong> → 정적은 <code>=&gt;</code>(클래스로 직접), 인스턴스는 <code>-&gt;</code>(객체로, CH20).</li>
 </ul>
 <hr>
-<p>미니 리포트는 됐다. 그런데 정렬 고정·색·셀 제어 같은 <strong>심화</strong>는 어디까지가 지금
-범위일까? → 다음 레슨.</p>
+<p>로컬 클래스는 그 프로그램 안에만 산다. 여러 프로그램이 쓰는 <strong>전역 클래스</strong>를
+불러 쓰려면? → 다음 레슨.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

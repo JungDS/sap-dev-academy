@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Text Symbol — 화면 글자의 다국어 · 변수·표준 타입·상수·Text Symbol · SAP Developer Academy</title>
+<link rel="stylesheet" href="../../../assets/base.css">
+<link rel="stylesheet" href="../../../assets/lesson.css">
+<link rel="stylesheet" href="../../../assets/shell.css">
+<script>/* 읽기 설정 선적용(플래시 방지) */(function(){try{var L=localStorage,r=document.documentElement;if(L.getItem('sda.dark')==='1')r.classList.add('dark');if(L.getItem('sda.wide')==='1')r.classList.add('wide');var f=parseInt(L.getItem('sda.fontPx'),10);if(f>=13&&f<=20)r.style.fontSize=f+'px';}catch(e){}})();</script>
+</head>
+<body data-domain="abap" data-chapter-id="CH02" data-lesson-id="CH02-L06">
+<header class="appbar">
+  <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
+  <span class="appbar__sp"></span>
+  <span class="meta">CH02 · 변수·표준 타입·상수·Text Symbol</span>
+  <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
+  <div class="tools">
+    <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
+    <button class="icon-btn" id="fsInc" title="글자 크게">A+</button>
+    <button class="icon-btn" id="fsReset" title="글자 크기 초기화">↺</button>
+    <button class="icon-btn" id="darkBtn" title="다크 모드">🌙</button>
+    <button class="icon-btn" id="widthBtn" title="가독 폭 넓게">↔</button>
+    <button class="icon-btn fs-btn" title="전체화면" aria-label="전체화면"></button>
+  </div>
+</header>
+<div class="read-progress"><i></i></div>
+<div class="scrim"></div>
+<nav class="rail" data-shell="rail"></nav>
+<button class="railFab" id="railFab" aria-label="네비 열기">☰</button>
+<div class="stage">
+  <div class="layout">
+    <main class="main">
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH02</nav>
+      <section class="lhead">
+        <p class="lhead__eyebrow">변수·표준 타입·상수·Text Symbol</p>
+        <h1>Text Symbol — 화면 글자의 다국어</h1>
+        <p class="lhead__direction">코드에 박은 텍스트를 번호로 빼서, 언어마다 다르게 보이게 한다.</p>
+        <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 2</span><span class="tag tag--ls">Lesson 6</span><span class="tag tag--lv">입문</span></div>
+      </section>
+      <article class="prose">
+<section class="lblock"><h2>화면 글자를 코드에 박으면 생기는 문제</h2>
+<p><code>WRITE &#39;금액&#39;.</code> 처럼 화면에 보일 텍스트를 코드에 직접 적으면, <strong>영어 사용자가
+로그인해도 여전히 &#39;금액&#39;</strong> 이라고 나온다. SAP는 전 세계가 같은 프로그램을 각자
+언어로 쓰는 시스템이라, 화면 텍스트는 <strong>언어마다 바뀔 수 있어야</strong> 한다. 그 장치가
+<button class="term" type="button" data-term="Text Symbol">Text Symbol</button>(텍스트 심볼)이다.</p>
+</section><section class="lblock"><h2>텍스트를 번호로 빼기 — TEXT-nnn</h2>
+<p>화면 텍스트를 코드에 직접 두지 않고, <strong>세 자리 번호</strong>로 관리한다. 코드에서는
+<code>TEXT-001</code>처럼 부르고, 실제 글자(&quot;금액&quot;)는 별도의 텍스트 목록(SE38의 Text Elements)에
+언어별로 등록한다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1</pre><pre class="abap-editor__code"><code><span class="tok-kw">WRITE</span>: / TEXT-001, lv_amt.     <span class="tok-com">" TEXT-001 = '금액'(한국어) / 'Amount'(영어)</span></code></pre></div></div>
+<p>로그인 언어가 한국어면 &#39;금액&#39;, 영어면 &#39;Amount&#39;가 자동으로 나온다 — 코드는 그대로다.</p>
+</section><section class="lblock"><h2><code>TEXT-001</code> 과 <code>&#39;금액&#39;(001)</code> 의 차이 (중요)</h2>
+<p>두 가지로 적을 수 있는데 동작이 다르다.</p>
+<table>
+<thead>
+<tr>
+<th>적는 법</th>
+<th>번역이 없을 때</th>
+<th>효과</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>TEXT-001</code></td>
+<td><strong>공백</strong>이 나온다</td>
+<td>번역 누락이 화면에서 바로 들통남</td>
+</tr>
+<tr>
+<td><code>&#39;금액&#39;(001)</code></td>
+<td><strong>&#39;금액&#39;</strong>(괄호 앞 기본값)이 나온다</td>
+<td>번역이 없어도 일단 보이지만, 누락이 숨겨짐</td>
+</tr>
+</tbody></table>
+<p><code>&#39;금액&#39;(001)</code>은 기본값(&#39;금액&#39;)과 번호(001)를 함께 적는 방식이다. 번역을 빠뜨려도
+한국어가 보여 편하지만, <strong>누락을 놓치기 쉽다.</strong> 번역 관리를 엄격히 하려면 <code>TEXT-001</code>
+쪽이 안전하다.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">텍스트를 번호로 빼서 다국어로 만들기 — 빈칸 채우기</span><a class="embed__open" href="../../../sample/code-learning/fill-blank-code.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../sample/code-learning/fill-blank-code.html" loading="lazy" title="텍스트를 번호로 빼서 다국어로 만들기 — 빈칸 채우기"></iframe></figure>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>번호만 적고 등록 안 함</strong> → <code>TEXT-001</code>만 쓰고 Text Elements에 안 넣으면 공백.</li>
+<li><strong>메시지와 혼동</strong> → 사용자에게 띄우는 알림(MESSAGE)은 또 다른 장치다(뒤 챕터).
+Text Symbol은 <strong>화면에 박히는 라벨·제목</strong> 용도다.</li>
+<li><strong>세 자리 번호</strong> → <code>TEXT-1</code>이 아니라 <code>TEXT-001</code>.</li>
+</ul>
+</section><section class="lblock"><h2>정리 — 그리고 다음 챕터</h2>
+<p>변수·타입·상수·화면 텍스트까지, 한 프로그램을 깔끔히 갖추는 법을 익혔다. 그런데
+이 타입들(금액·코드…)을 <strong>프로그램마다 또 정의</strong>하는 건 여전하다. 한 번 정의해
+<strong>여러 프로그램이 공유</strong>하고 싶다 → <strong>CH03(DDIC: Domain·Data Element)</strong>.</p>
+</section>
+      </article>
+      <nav class="lesson-nav" data-shell="prevnext"></nav>
+      <footer class="foot">SAP Developer Academy · CH02 CH02-L06</footer>
+    </main>
+    <aside class="journey" data-shell="journey"></aside>
+  </div>
+</div>
+<div class="term-popup" data-shell="popup" hidden></div>
+<div class="tmodal" data-shell="tmodal" hidden></div>
+<script>window.__SDA__={"domain":"abap","dataBase":"../","siteRoot":"../../../"};</script>
+<script src="../../../assets/shell.js" defer></script>
+</body>
+</html>

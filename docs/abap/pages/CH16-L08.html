@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Refresh와 Stable Refresh 기초 · Grid ALV 기초 · SAP Developer Academy</title>
+<title>실습 — 예매 입력 화면 (Dynpro) · Screen Programming / Dynpro 기초 · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH16 · Grid ALV 기초</span>
+  <span class="meta">CH16 · Screen Programming / Dynpro 기초</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,16 +33,68 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH16</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">Grid ALV 기초</p>
-        <h1>Refresh와 Stable Refresh 기초</h1>
-        
+        <p class="lhead__eyebrow">Screen Programming / Dynpro 기초</p>
+        <h1>실습 — 예매 입력 화면 (Dynpro)</h1>
+        <p class="lhead__direction">콘서트앱 8단계 — 공연·좌석을 입력받아 검증하는 화면.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 16</span><span class="tag tag--ls">Lesson 8</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
-<blockquote>
-<p>🚧 골격 — 본문 작성 예정.</p>
-</blockquote>
+<section class="lblock"><h2>🎫 8단계 — 예매 입력 화면</h2>
+<p>CH16에서 배운 Module Pool로 <strong>예매 입력 화면</strong>(0100)을 만든다. 공연ID(F4)·회차·좌석수·
+예매자를 입력받고, PAI에서 <strong>예매 가능 여부</strong>(CH10-L07의 <code>can_book</code>)를 검증한다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18</pre><pre class="abap-editor__code"><code><span class="tok-com">" 화면 0100 필드: P_CONC(F4)·P_PERF·P_SEATS·P_CUST·OK_CODE</span>
+MODULE user_command_0100 INPUT.
+  <span class="tok-kw">DATA</span>: lv_code <span class="tok-kw">TYPE</span> sy-ucomm,
+        lv_ok   <span class="tok-kw">TYPE</span> abap_bool.
+  lv_code = ok_code.  <span class="tok-kw">CLEAR</span> ok_code.
 
+  <span class="tok-kw">CASE</span> lv_code.
+    <span class="tok-kw">WHEN</span> <span class="tok-str">'SAVE'</span>.
+      <span class="tok-kw">PERFORM</span> can_book <span class="tok-kw">USING</span> p_conc p_perf p_seats <span class="tok-kw">CHANGING</span> lv_ok.
+      <span class="tok-kw">IF</span> lv_ok = abap_true.
+        <span class="tok-kw">MESSAGE</span> <span class="tok-str">'예매 가능 — 저장 단계는 CH24(DML)에서'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'S'</span>.
+      <span class="tok-kw">ELSE</span>.
+        <span class="tok-kw">MESSAGE</span> <span class="tok-str">'좌석이 부족합니다'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'E'</span>.
+      <span class="tok-kw">ENDIF</span>.
+    <span class="tok-kw">WHEN</span> <span class="tok-str">'BACK'</span> <span class="tok-kw">OR</span> <span class="tok-str">'EXIT'</span> <span class="tok-kw">OR</span> <span class="tok-str">'CANCEL'</span>.
+      LEAVE <span class="tok-kw">TO</span> SCREEN <span class="tok-num">0</span>.
+  <span class="tok-kw">ENDCASE</span>.
+ENDMODULE.</code></pre></div></div>
+<blockquote>
+<p>실제 DB 저장(INSERT)·잠금은 <strong>CH24·CH25</strong>에서 붙인다. 여기선 <strong>화면·검증</strong>까지가 목표다.</p>
+</blockquote>
+</section><section class="lblock"><h2>직접 해 볼 과제</h2>
+<ol>
+<li>화면 0100을 그리고(공연ID에 F4, CH09) T-code로 실행(CH16-L01).</li>
+<li>좌석을 과다 입력해 <code>MESSAGE E</code>로 막히는지 확인.</li>
+<li>BACK으로 화면이 닫히는지(<code>LEAVE TO SCREEN 0</code>) 확인.</li>
+</ol>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>OK_CODE 미초기화</strong> → 읽은 뒤 <code>CLEAR</code>(CH16-L05).</li>
+<li><strong>저장까지 기대</strong> → DML은 CH24. 지금은 화면+검증.</li>
+</ul>
+<hr>
+<p>내가 설계한 입력 화면을 만들었다. 화면 안에 <strong>표(좌석/예매 목록)</strong> 를 박으려면 →
+<strong>CH17(Grid ALV)</strong>.</p>
+</section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
       <footer class="foot">SAP Developer Academy · CH16 CH16-L08</footer>

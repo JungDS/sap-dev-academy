@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SELECT SINGLE · Open SQL 기본 조회 · SAP Developer Academy</title>
+<title>Transparent ↔ Structure ↔ Table Type 비교 · Transparent Table (SE11) · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH07 · Open SQL 기본 조회</span>
+  <span class="meta">CH07 · Transparent Table (SE11)</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,62 +33,64 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH07</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">Open SQL 기본 조회</p>
-        <h1>SELECT SINGLE</h1>
-        <p class="lhead__direction">키로 딱 한 건 — SELECT SINGLE로 단건 조회.</p>
+        <p class="lhead__eyebrow">Transparent Table (SE11)</p>
+        <h1>Transparent ↔ Structure ↔ Table Type 비교</h1>
+        <p class="lhead__direction">같은 DDIC 모양이 쓰임에 따라 작업영역·내부테이블·영속테이블이 된다.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 7</span><span class="tag tag--ls">Lesson 3</span><span class="tag tag--lv">초급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>딱 한 건이면 충분할 때</h2>
-<p>특정 사람 한 명, 특정 주문 하나처럼 <strong>키로 단건</strong>만 필요할 때가 많다. 이럴 땐
-<button class="term" type="button" data-term="SELECT SINGLE">SELECT SINGLE</button>이 맞다.</p>
-</section><section class="lblock"><h2>SELECT SINGLE — 한 행을 Work Area로</h2>
+<section class="lblock"><h2>같은 모양, 다른 쓰임</h2>
+<p>지금까지 &quot;구구단 한 줄&quot;(dan·mul·result)이라는 같은 모양을 세 가지로 썼다. 헷갈리기
+쉬우니 한 번에 정리한다.</p>
+<table>
+<thead>
+<tr>
+<th>무엇</th>
+<th>어떻게</th>
+<th>사는 곳</th>
+<th>용도</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Structure</strong>(Work Area)</td>
+<td><code>TYPE ty_line</code></td>
+<td>메모리(한 건)</td>
+<td>한 줄을 담아 다룸</td>
+</tr>
+<tr>
+<td><strong>Internal Table</strong></td>
+<td><code>TYPE TABLE OF ty_line</code></td>
+<td>메모리(여러 건)</td>
+<td>여러 줄을 모아 처리</td>
+</tr>
+<tr>
+<td><strong>Transparent Table</strong></td>
+<td>SE11 DB 테이블</td>
+<td><strong>디스크(영속)</strong></td>
+<td>영구 저장·공유</td>
+</tr>
+</tbody></table>
+<p>핵심: <strong>앞의 둘은 메모리라 프로그램이 끝나면 사라지고, Transparent Table만 남는다.</strong></p>
+</section><section class="lblock"><h2>DDIC 구조를 TYPE로 / TABLE OF로</h2>
+<p>전역 DDIC Structure(예: <code>ZST_LINE</code>) 하나를 만들어 두면, 프로그램에서 작업영역으로도
+내부 테이블로도 쓸 수 있다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>: lv_id     <span class="tok-kw">TYPE</span> ztperson-persid <span class="tok-kw">VALUE</span> <span class="tok-str">'0001'</span>,
-      ls_person <span class="tok-kw">TYPE</span> ztperson.
-
-<span class="tok-kw">SELECT</span> <span class="tok-kw">SINGLE</span> * <span class="tok-kw">FROM</span> ztperson
-  <span class="tok-kw">INTO</span> ls_person
-  <span class="tok-kw">WHERE</span> persid = lv_id.
-
-<span class="tok-kw">IF</span> sy-subrc = <span class="tok-num">0</span>.
-  <span class="tok-kw">WRITE</span>: / ls_person-name, ls_person-age.
-<span class="tok-kw">ELSE</span>.
-  <span class="tok-kw">WRITE</span>: / <span class="tok-str">'없음'</span>.
-<span class="tok-kw">ENDIF</span>.</code></pre></div></div>
-<ul>
-<li>결과는 <button class="term" type="button" data-term="Work Area">Work Area</button> 한 건(<code>INTO ls_</code>, <code>INTO TABLE</code> 아님).</li>
-<li><strong>키 전체</strong>로 조회하면 정확히 한 행이 보장된다.</li>
-<li><code>sy-subrc = 0</code>이면 찾음, <code>4</code>면 없음 — <strong>반드시 확인</strong>.</li>
-</ul>
-</section><section class="lblock"><h2>필요한 컬럼만 (classic)</h2>
-<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
-2
-3
-4</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> <span class="tok-kw">SINGLE</span> name age          <span class="tok-com">" 공백 구분(classic)</span>
-  <span class="tok-kw">FROM</span> ztperson
-  <span class="tok-kw">INTO</span> <span class="tok-kw">CORRESPONDING</span> <span class="tok-kw">FIELDS</span> <span class="tok-kw">OF</span> ls_person
-  <span class="tok-kw">WHERE</span> persid = lv_id.</code></pre></div></div>
+2</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> ls_line <span class="tok-kw">TYPE</span> zst_line.            <span class="tok-com">" 작업영역(한 건)</span>
+<span class="tok-kw">DATA</span> lt_line <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> zst_line.   <span class="tok-com">" 내부 테이블(여러 건)</span></code></pre></div></div>
+<p>DB에 영구 저장이 필요하면 같은 모양을 <strong>Transparent Table</strong>로 만든다. 즉 <strong>모양은
+공유, 쓰임(메모리냐 디스크냐)만 다르다.</strong></p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">메모리(끝나면 사라짐) vs 디스크(영속) — 같은 모양의 두 운명 비교</span><a class="embed__open" href="../../../sample/visuals/before-after-comparison.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../sample/visuals/before-after-comparison.html" loading="lazy" title="메모리(끝나면 사라짐) vs 디스크(영속) — 같은 모양의 두 운명 비교"></iframe></figure>
+</section><section class="lblock"><h2>Transparent Table 본래 목적 = 영속</h2>
+<p>Structure·Internal Table은 &quot;지금 이 실행 동안&quot; 쓰는 작업 도구다. Transparent Table은
+&quot;실행이 끝나도 남아야 하는 <strong>업무 데이터</strong>&quot;를 위한 것이다 — 이게 본래 목적이다.</p>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>부분 키로 SINGLE</strong> → 여러 행 중 임의의 한 행이 온다. 단건은 <strong>전체 키</strong>로.</li>
-<li><strong>sy-subrc 미확인</strong> → 없음(4)일 때 옛 <button class="term" type="button" data-term="Work Area">Work Area</button> 값을 쓰는 버그.</li>
-<li><strong>INTO TABLE과 혼동</strong> → SINGLE은 한 건이라 <code>INTO ls_</code>(구조체).</li>
+<li><strong>메모리 테이블에 영속 기대</strong> → 내부 테이블은 끝나면 사라진다. 영구 저장은 DB 테이블.</li>
+<li><strong>셋을 같은 것으로</strong> → 모양만 같을 뿐 사는 곳·수명이 다르다.</li>
 </ul>
 <hr>
-<p>이제 영속 데이터를 조건·단건으로 읽어온다. 여기까지가 <strong>기초 흐름</strong>의 완성이다 —
-값(CH02) → 전역(CH03) → 묶음(CH04) → 여러 건(CH05) → 영속(CH06) → 다시 읽기(CH07).
-다음은 입력을 똑똑하게 만드는 <strong>DDIC 관계와 F4</strong> → <strong>CH08</strong>.</p>
+<p>값을 영구히 저장했고, 셋의 차이도 정리했다. 그런데 손으로 넣은 18행을 <strong>프로그램에서
+다시 읽어</strong> 쓰려면? → <strong>CH08(Open SQL 기본 조회)</strong>.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

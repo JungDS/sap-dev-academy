@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Layout 기본 설정 · Grid ALV 기초 · SAP Developer Academy</title>
+<title>PAI 처리 흐름 — OK_CODE와 화면 떠나기 · Screen Programming / Dynpro 기초 · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH16 · Grid ALV 기초</span>
+  <span class="meta">CH16 · Screen Programming / Dynpro 기초</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,16 +33,82 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH16</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">Grid ALV 기초</p>
-        <h1>Layout 기본 설정</h1>
-        
+        <p class="lhead__eyebrow">Screen Programming / Dynpro 기초</p>
+        <h1>PAI 처리 흐름 — OK_CODE와 화면 떠나기</h1>
+        <p class="lhead__direction">버튼을 누른 뒤 — OK_CODE 분기와 BACK/EXIT/CANCEL·LEAVE.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 16</span><span class="tag tag--ls">Lesson 5</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
-<blockquote>
-<p>🚧 골격 — 본문 작성 예정.</p>
-</blockquote>
+<section class="lblock"><h2>버튼을 누른 뒤 — PAI</h2>
+<p><button class="term" type="button" data-term="PAI">PAI</button>(Process After Input)는 사용자가 <strong>버튼·Enter</strong>를 누른 뒤 실행된다. 어떤
+버튼이 눌렸는지는 명령 필드 <strong><code>OK_CODE</code></strong>(또는 <code>SY-UCOMM</code>)로 안다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12</pre><pre class="abap-editor__code"><code>MODULE user_command_0100 INPUT.
+  <span class="tok-kw">DATA</span> lv_code <span class="tok-kw">TYPE</span> sy-ucomm.
+  lv_code = ok_code.
+  <span class="tok-kw">CLEAR</span> ok_code.                       <span class="tok-com">" 다음을 위해 비움(관례)</span>
 
+  <span class="tok-kw">CASE</span> lv_code.
+    <span class="tok-kw">WHEN</span> <span class="tok-str">'SAVE'</span>.
+      <span class="tok-kw">PERFORM</span> save_booking.            <span class="tok-com">" 예매 저장(모듈화는 CH10)</span>
+    <span class="tok-kw">WHEN</span> <span class="tok-str">'BACK'</span> <span class="tok-kw">OR</span> <span class="tok-str">'EXIT'</span> <span class="tok-kw">OR</span> <span class="tok-str">'CANCEL'</span>.
+      LEAVE <span class="tok-kw">TO</span> SCREEN <span class="tok-num">0</span>.               <span class="tok-com">" 화면 종료</span>
+  <span class="tok-kw">ENDCASE</span>.
+ENDMODULE.</code></pre></div></div>
+<blockquote>
+<p>💡 <code>OK_CODE</code>를 읽은 뒤 <strong><code>CLEAR</code></strong> 하는 건 관례다(이전 명령이 남아 오작동하는 걸 막는다).</p>
+</blockquote>
+</section><section class="lblock"><h2>화면을 떠나는 세 가지</h2>
+<table>
+<thead>
+<tr>
+<th>문</th>
+<th>동작</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>LEAVE TO SCREEN 0</code></td>
+<td><strong>현재 화면 종료</strong> → 이전/호출자로 돌아간다</td>
+</tr>
+<tr>
+<td><code>LEAVE PROGRAM</code></td>
+<td><strong>프로그램 전체 종료</strong>(EXIT 맥락)</td>
+</tr>
+<tr>
+<td><code>LEAVE SCREEN</code></td>
+<td>현재 화면 처리 끝내고 <strong>다음 화면(SET SCREEN)</strong> 으로</td>
+</tr>
+</tbody></table>
+</section><section class="lblock"><h2>BACK · EXIT · CANCEL — 관례</h2>
+<p>화면 위 표준 버튼 셋은 역할이 정해져 있다.</p>
+<ul>
+<li><strong>BACK</strong>(초록 화살표) — 한 단계 뒤로.</li>
+<li><strong>EXIT</strong> — 트랜잭션 종료(보통 <code>LEAVE PROGRAM</code>).</li>
+<li><strong>CANCEL</strong> — 입력 취소하고 뒤로.</li>
+</ul>
+<p>보통 세 버튼을 <code>CASE</code>에서 비슷하게 처리하되, 저장 안 한 변경이 있으면 확인을 띄운다.</p>
+<blockquote>
+<p>🔶 화면에 <strong>목록</strong>을 보여줄 땐 Table Control 대신 <strong>ALV(CH17)</strong> 를 쓴다(이 과정은
+Table Control을 다루지 않는다).</p>
+</blockquote>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>OK_CODE 안 비움</strong> → 이전 명령이 남아 엉뚱하게 분기. 읽은 뒤 <code>CLEAR</code>.</li>
+<li><strong>LEAVE 혼동</strong> → 화면 종료=<code>LEAVE TO SCREEN 0</code>, 프로그램 종료=<code>LEAVE PROGRAM</code>.</li>
+</ul>
+<hr>
+<p>입력 처리까지 했다. 이제 화면 위 <strong>메뉴·툴바·제목</strong>을 다는 법 → 다음 레슨.</p>
+</section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
       <footer class="foot">SAP Developer Academy · CH16 CH16-L05</footer>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OData V2 EntitySet 조회 구현 · IDoc / ALE / Gateway · SAP Developer Academy</title>
+<title>File Interface와 재처리 · 인터페이스 실무: BAPI/RFC/BDC/File · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH30 · IDoc / ALE / Gateway</span>
+  <span class="meta">CH30 · 인터페이스 실무: BAPI/RFC/BDC/File</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,16 +33,76 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH30</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">IDoc / ALE / Gateway</p>
-        <h1>OData V2 EntitySet 조회 구현</h1>
-        
+        <p class="lhead__eyebrow">인터페이스 실무: BAPI/RFC/BDC/File</p>
+        <h1>File Interface와 재처리</h1>
+        <p class="lhead__direction">파일 기반 인터페이스의 공통 — 검증·로그·재처리.</p>
         <div class="tags"><span class="tag tag--track">Track 2</span><span class="tag tag--ch">Chapter 30</span><span class="tag tag--ls">Lesson 5</span><span class="tag tag--lv">고급</span></div>
       </section>
       <article class="prose">
-<blockquote>
-<p>🚧 골격 — 본문 작성 예정.</p>
-</blockquote>
+<section class="lblock"><h2>서버 파일과 자동화</h2>
+<p>PC 파일(L04)과 달리, 배치 인터페이스는 <strong>서버 파일</strong>을 읽고 쓴다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> lv_msg <span class="tok-kw">TYPE</span> string.
 
+OPEN DATASET lv_path FOR INPUT <span class="tok-kw">IN</span> TEXT MODE ENCODING UTF-8
+  <span class="tok-kw">MESSAGE</span> lv_msg.                  <span class="tok-com">" 실패 시 OS 오류 원인이 lv_msg에</span>
+<span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.
+  <span class="tok-kw">MESSAGE</span> lv_msg <span class="tok-kw">TYPE</span> <span class="tok-str">'E'</span>.         <span class="tok-com">" 못 열면 즉시 중단</span>
+<span class="tok-kw">ENDIF</span>.
+
+<span class="tok-kw">DO</span>.
+  <span class="tok-kw">READ</span> DATASET lv_path <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(lv_rec).
+  <span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>. <span class="tok-kw">EXIT</span>. <span class="tok-kw">ENDIF</span>.   <span class="tok-com">" 더 읽을 줄 없음 → 종료</span>
+  <span class="tok-com">" 파싱·검증·등록</span>
+<span class="tok-kw">ENDDO</span>.
+CLOSE DATASET lv_path.</code></pre></div></div>
+<ul>
+<li><code>FOR INPUT</code>(읽기)·<code>FOR OUTPUT</code>(새로 쓰기)·<code>FOR APPENDING</code>(이어쓰기). 쓸 때는 <code>TRANSFER &lt;데이터&gt; TO lv_path</code>로 한 줄씩 내보낸다.</li>
+<li><strong>항상 <code>MESSAGE</code>로 연다</strong> — 못 열면 OS 원인(권한·경로)을 받아 로그에 남기고 <code>sy-subrc</code>를 확인.</li>
+</ul>
+<blockquote>
+<p>⚠️ <strong>보안 — 경로 검증 필수.</strong> 외부에서 받은 파일명을 그대로 <code>OPEN DATASET</code>에 넣으면 <strong>Directory Traversal</strong>(상위 경로 <code>../</code>로 시스템 파일에 접근)에 노출된다. 외부 입력 경로는 화이트리스트·정규화로 반드시 검증한다(SAP 공식 보안 경고).</p>
+</blockquote>
+</section><section class="lblock"><h2>인터페이스 공통 — 검증·로그·재처리</h2>
+<p>BAPI·RFC·BDC·File 모두 같은 골격이 필요하다(CH24-L04와 같은 정신).</p>
+<ol>
+<li><strong>읽기/수신</strong> → 2. <strong>검증</strong> → 3. <strong>등록</strong>(BAPI/DML) → 4. <strong>결과 로그</strong> → 5. <strong>실패분 재처리</strong>.</li>
+</ol>
+<ul>
+<li>성공/실패를 <strong>인터페이스 로그 테이블</strong>에 남긴다.</li>
+<li>실패 건은 보관 후 원인 해결 시 <strong>재처리 잡</strong>으로.</li>
+<li>멱등성(중복 수신 방지: 메시지ID·키 체크)을 고려.</li>
+</ul>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>CLOSE DATASET 누락</strong> → 파일 핸들 누수.</li>
+<li><strong>재처리 없음</strong> → 일시 오류로 누락된 데이터가 영영 안 들어온다.</li>
+</ul>
+</section><section class="lblock"><h2>🧩 도전 과제 (서브퀘스트)</h2>
+<blockquote>
+<p>선택 과제 — 예매 데이터를 외부와 주고받는다.</p>
+</blockquote>
+<ol>
+<li>예매 조회를 <strong>RFC</strong> 함수(Remote-Enabled)로 노출해 외부에서 호출 가능하게 한다.</li>
+<li>엑셀 예매 파일을 업로드해 <strong>검증 후</strong> 등록(BAPI/DML)하고 실패 건을 로그에 남긴다.</li>
+<li>(심화) 표준 트랜잭션 등록은 <strong>BDC Session</strong>(<code>SHDB</code>로 녹화)으로 대량 처리한다.</li>
+</ol>
+<p>힌트: L01(BAPI)·L02(RFC)·L03(BDC/SHDB)·L04(엑셀)·L05(서버파일/재처리).</p>
+<hr>
+<p>외부 인터페이스를 두루 다뤘다. 이제 표준 메시지 기반 연계 — IDoc/ALE → <strong>CH31</strong>.</p>
+</section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
       <footer class="foot">SAP Developer Academy · CH30 CH30-L05</footer>

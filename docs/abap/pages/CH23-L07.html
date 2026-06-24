@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Validation / Determination / Action 개요 · RAP / ABAP Cloud 입문 · SAP Developer Academy</title>
+<link rel="stylesheet" href="../../../assets/base.css">
+<link rel="stylesheet" href="../../../assets/lesson.css">
+<link rel="stylesheet" href="../../../assets/shell.css">
+<script>/* 읽기 설정 선적용(플래시 방지) */(function(){try{var L=localStorage,r=document.documentElement;if(L.getItem('sda.dark')==='1')r.classList.add('dark');if(L.getItem('sda.wide')==='1')r.classList.add('wide');var f=parseInt(L.getItem('sda.fontPx'),10);if(f>=13&&f<=20)r.style.fontSize=f+'px';}catch(e){}})();</script>
+</head>
+<body data-domain="abap" data-chapter-id="CH23" data-lesson-id="CH23-L07">
+<header class="appbar">
+  <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
+  <span class="appbar__sp"></span>
+  <span class="meta">CH23 · RAP / ABAP Cloud 입문</span>
+  <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
+  <div class="tools">
+    <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
+    <button class="icon-btn" id="fsInc" title="글자 크게">A+</button>
+    <button class="icon-btn" id="fsReset" title="글자 크기 초기화">↺</button>
+    <button class="icon-btn" id="darkBtn" title="다크 모드">🌙</button>
+    <button class="icon-btn" id="widthBtn" title="가독 폭 넓게">↔</button>
+    <button class="icon-btn fs-btn" title="전체화면" aria-label="전체화면"></button>
+  </div>
+</header>
+<div class="read-progress"><i></i></div>
+<div class="scrim"></div>
+<nav class="rail" data-shell="rail"></nav>
+<button class="railFab" id="railFab" aria-label="네비 열기">☰</button>
+<div class="stage">
+  <div class="layout">
+    <main class="main">
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH23</nav>
+      <section class="lhead">
+        <p class="lhead__eyebrow">RAP / ABAP Cloud 입문</p>
+        <h1>Validation / Determination / Action 개요</h1>
+        <p class="lhead__direction">검증·자동결정·액션 — RAP의 비즈니스 로직.</p>
+        <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 23</span><span class="tag tag--ls">Lesson 7</span><span class="tag tag--lv">고급</span></div>
+      </section>
+      <article class="prose">
+<section class="lblock"><h2>RAP의 비즈니스 로직 셋</h2>
+<table>
+<thead>
+<tr>
+<th>종류</th>
+<th>언제</th>
+<th>예</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Validation</strong></td>
+<td>저장 전 <strong>검증</strong></td>
+<td>정원 초과면 거부</td>
+</tr>
+<tr>
+<td><strong>Determination</strong></td>
+<td>값 <strong>자동 결정</strong></td>
+<td>예매 상태 기본값·감사필드</td>
+</tr>
+<tr>
+<td><strong>Action</strong></td>
+<td>사용자가 <strong>명시 실행</strong></td>
+<td>예약 / 취소</td>
+</tr>
+</tbody></table>
+</section><section class="lblock"><h2>BDEF에 선언</h2>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6</pre><pre class="abap-editor__code"><code>define behavior for ZI_Booking alias Booking
+{
+  validation validateSeats <span class="tok-kw">on</span> save { field seats; }
+  determination setStatus <span class="tok-kw">on</span> <span class="tok-kw">modify</span> { <span class="tok-kw">create</span>; }
+  action cancel result [<span class="tok-num">1</span>] $self;            // 취소 액션
+}</code></pre></div></div>
+</section><section class="lblock"><h2>정원 초과 Validation (콘서트 thread)</h2>
+<p>예매 좌석 수가 회차 정원을 넘으면 거부한다 — <code>ZCX_FULLY_BOOKED</code>(CH20)의 RAP 버전이다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8</pre><pre class="abap-editor__code"><code><span class="tok-kw">METHOD</span> validateSeats.
+  <span class="tok-kw">READ</span> ENTITIES <span class="tok-kw">OF</span> zi_booking <span class="tok-kw">IN</span> LOCAL MODE
+    ENTITY Booking <span class="tok-kw">FIELDS</span> ( concert_id seats ) <span class="tok-kw">WITH</span> <span class="tok-kw">CORRESPONDING</span> #( keys )
+    RESULT <span class="tok-kw">DATA</span>(bookings).
+  <span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> bookings <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(b).
+    <span class="tok-com">" 회차 정원 조회 후 초과면 APPEND TO failed/reported</span>
+  <span class="tok-kw">ENDLOOP</span>.
+<span class="tok-kw">ENDMETHOD</span>.</code></pre></div></div>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>검증을 액션에</strong> → 저장 검증은 <code>validation</code>, 사용자 실행은 <code>action</code>.</li>
+<li><strong>failed/reported 누락</strong> → 검증 실패는 <code>failed</code>·<code>reported</code>로 알려야 RAP이 막는다.</li>
+</ul>
+<hr>
+<p>비즈니스 로직까지 RAP으로. 마지막으로 이 모든 게 사는 <strong>ABAP Cloud</strong> 원칙 → 다음 레슨.</p>
+</section>
+      </article>
+      <nav class="lesson-nav" data-shell="prevnext"></nav>
+      <footer class="foot">SAP Developer Academy · CH23 CH23-L07</footer>
+    </main>
+    <aside class="journey" data-shell="journey"></aside>
+  </div>
+</div>
+<div class="term-popup" data-shell="popup" hidden></div>
+<div class="tmodal" data-shell="tmodal" hidden></div>
+<script>window.__SDA__={"domain":"abap","dataBase":"../","siteRoot":"../../../"};</script>
+<script src="../../../assets/shell.js" defer></script>
+</body>
+</html>

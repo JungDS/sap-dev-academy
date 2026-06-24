@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Module Pool 프로그램 구조 · Screen Programming / Dynpro 기초 · SAP Developer Academy</title>
+<title>ABAP Report Event 전체 흐름 · Report Event·Selection Screen 심화 · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH15 · Screen Programming / Dynpro 기초</span>
+  <span class="meta">CH15 · Report Event·Selection Screen 심화</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,16 +33,104 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH15</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">Screen Programming / Dynpro 기초</p>
-        <h1>Module Pool 프로그램 구조</h1>
-        
+        <p class="lhead__eyebrow">Report Event·Selection Screen 심화</p>
+        <h1>ABAP Report Event 전체 흐름</h1>
+        <p class="lhead__direction">실행형 프로그램의 이벤트 순서 — 언제 무엇이 실행되나.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 15</span><span class="tag tag--ls">Lesson 1</span><span class="tag tag--lv">중급</span></div>
       </section>
+      <section class="lcard tcode">
+        <p class="lcard__h"><span class="ic">🖥️</span>이번 Lesson에서 다루는 트랜잭션 코드</p>
+        <button class="tcode-label" data-tcode="SE38" data-badge="복습">
+          <span class="tcode-label__badge">복습</span>
+          <span class="tcode-label__code">SE38</span>
+          <span class="tcode-label__hint">자세히 보기 ›</span>
+        </button>
+      </section>
       <article class="prose">
+<section class="lblock"><h2>위에서 아래로? 아니다</h2>
+<p>지금까지 <code>START-OF-SELECTION.</code> 아래에 코드를 몰아 뒀다. 그런데 <strong>&quot;화면 뜨기 전 기본값&quot;</strong>,
+<strong>&quot;입력 검증&quot;</strong>, <strong>&quot;조회 후 마무리&quot;</strong> 는 서로 <strong>다른 시점</strong>에 실행돼야 한다. 실행형 프로그램은
+한 줄씩 위에서 아래로 도는 게 아니라, 시스템이 정해진 <strong><button class="term" type="button" data-term="Report Event">Report Event</button></strong> 순서대로
+<strong>각 구획을 호출</strong>한다.</p>
 <blockquote>
-<p>🚧 골격 — 본문 작성 예정.</p>
+<p>🍳 <strong>비유 — 식당의 하루</strong>: 오픈 준비(재료 세팅) → 주문 접수(검증) → 조리(본 처리) → 마감.
+손님이 와도 &quot;조리&quot;부터 하지 않는다. ABAP도 똑같이 <em>시점</em>이 정해져 있다.</p>
 </blockquote>
-
+</section><section class="lblock"><h2>한눈에 보는 이벤트 흐름</h2>
+<p>이벤트 블록을 <strong>꼭 다 써야 하는 건 아니다.</strong> 아래에서 <strong>탭을 1단계 → 5단계로</strong> 누르면,
+이벤트 키워드가 하나도 없는 코드부터 전체 생명주기까지 <strong>코드와 흐름이 함께 점점 확장</strong>된다.
+왼쪽 흐름도와 오른쪽 코드를 좌우로 대조하며 &quot;코드를 더하면 실행 흐름이 어떻게 늘어나는가&quot;를 보자.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">점진적 빌드업 — 코드를 더할수록 흐름이 늘어난다 (1→5단계)</span><a class="embed__open" href="../../../sample/code-learning/event-lifecycle-buildup.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../sample/code-learning/event-lifecycle-buildup.html" loading="lazy" title="점진적 빌드업 — 코드를 더할수록 흐름이 늘어난다 (1→5단계)" style="height:660px"></iframe></figure>
+<p>아래 표는 <strong>5단계(최종 구조)</strong> 의 전체 이벤트를 한 번에 정리한 것이다.</p>
+<table>
+<thead>
+<tr>
+<th>시점(이벤트)</th>
+<th>언제 도나</th>
+<th>주로 하는 일</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><button class="term" type="button" data-term="LOAD-OF-PROGRAM">LOAD-OF-PROGRAM</button></td>
+<td>프로그램 적재 직후 1회</td>
+<td>거의 안 씀(초기 상수 등)</td>
+</tr>
+<tr>
+<td><button class="term" type="button" data-term="INITIALIZATION">INITIALIZATION</button></td>
+<td>선택화면 <strong>뜨기 전</strong> 1회</td>
+<td>파라미터 <strong>기본값</strong> 세팅</td>
+</tr>
+<tr>
+<td><button class="term" type="button" data-term="AT SELECTION-SCREEN OUTPUT">AT SELECTION-SCREEN OUTPUT</button></td>
+<td>화면 <strong>그리기 직전</strong>(PBO)</td>
+<td>화면 동적 제어(숨김/회색)</td>
+</tr>
+<tr>
+<td><button class="term" type="button" data-term="AT SELECTION-SCREEN">AT SELECTION-SCREEN</button></td>
+<td>사용자가 실행/Enter(PAI)</td>
+<td><strong>입력 검증</strong></td>
+</tr>
+<tr>
+<td><button class="term" type="button" data-term="START-OF-SELECTION">START-OF-SELECTION</button></td>
+<td>검증 통과 후</td>
+<td><strong>메인 로직 실행</strong>(DB 조회·가공)</td>
+</tr>
+<tr>
+<td><button class="term" type="button" data-term="END-OF-SELECTION">END-OF-SELECTION</button></td>
+<td>본 처리 끝</td>
+<td>결과 <strong>출력·마무리</strong>(ALV 등)</td>
+</tr>
+</tbody></table>
+<ul>
+<li>각 <strong>이벤트 키워드 아래</strong>에 그 시점 코드를 둔다.</li>
+<li>키워드를 안 쓰면 코드는 암묵적으로 <button class="term" type="button" data-term="START-OF-SELECTION">START-OF-SELECTION</button>에 묶인다.</li>
+</ul>
+<details>
+<summary>각 이벤트, 한 줄 더 자세히</summary><ul>
+<li><strong>INITIALIZATION</strong> — 화면이 보이기 전이라, 사용자가 바꾸기 <em>전</em>의 기본값을 넣기 좋다.</li>
+<li><strong>AT SELECTION-SCREEN OUTPUT</strong> — PBO(Process Before Output). 화면을 그리기 직전이라 필드를 숨기거나 비활성화한다.</li>
+<li><strong>AT SELECTION-SCREEN</strong> — PAI(Process After Input). 사용자가 값을 넣고 실행을 누른 직후라 <em>검증</em>의 자리.</li>
+<li><strong>START-OF-SELECTION / END-OF-SELECTION</strong> — 본 처리와 마무리. 보통 조회는 START, 출력은 END.</details></li>
+</ul>
+</section><section class="lblock"><h2>왜 자리가 중요한가</h2>
+<p>기본값은 <button class="term" type="button" data-term="INITIALIZATION">INITIALIZATION</button>, 검증은 <button class="term" type="button" data-term="AT SELECTION-SCREEN">AT SELECTION-SCREEN</button>, 조회는 <button class="term" type="button" data-term="START-OF-SELECTION">START-OF-SELECTION</button> —
+<strong>자리를 맞춰야</strong> 의도대로 동작한다. 자리를 틀리면 &quot;검증했는데 이미 조회가 끝나 있다&quot; 같은
+일이 벌어진다.</p>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<blockquote>
+<p>⚠️ <strong>검증을 START-OF-SELECTION에 두면?</strong> 이미 메인 로직이 시작된 뒤다. 검증은 반드시 <button class="term" type="button" data-term="AT SELECTION-SCREEN">AT SELECTION-SCREEN</button>.</p>
+</blockquote>
+<blockquote>
+<p>⚠️ <strong>이벤트 키워드 누락?</strong> 코드가 전부 본처리로 묶여 순서가 꼬인다.</p>
+</blockquote>
+</section><section class="lblock"><h2>정리</h2>
+<ul>
+<li>실행형 프로그램은 <strong>정해진 <button class="term" type="button" data-term="Report Event">Report Event</button> 순서</strong>로 각 구획을 호출한다(위→아래 X).</li>
+<li><strong>기본값·검증·메인 로직·출력</strong>은 각자의 이벤트에 둔다.</li>
+<li>그림의 <strong>점선(검증 실패 복귀)</strong> 이 핵심 — 검증을 통과해야 본처리로 간다.</li>
+</ul>
+<p>→ 이제 각 이벤트를 하나씩. 먼저 화면 전 <strong>기본값</strong> → INITIALIZATION (다음 레슨).</p>
+</section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
       <footer class="foot">SAP Developer Academy · CH15 CH15-L01</footer>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Deep Structure 기반 Cell Style · SALV/Grid ALV 표시 제어 심화 · SAP Developer Academy</title>
+<title>Interface 기본 설계 · OO ABAP 기본 설계 · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH20 · SALV/Grid ALV 표시 제어 심화</span>
+  <span class="meta">CH20 · OO ABAP 기본 설계</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,16 +33,54 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH20</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">SALV/Grid ALV 표시 제어 심화</p>
-        <h1>Deep Structure 기반 Cell Style</h1>
-        
+        <p class="lhead__eyebrow">OO ABAP 기본 설계</p>
+        <h1>Interface 기본 설계</h1>
+        <p class="lhead__direction">여러 클래스가 같은 규약을 따르게 한다 — Interface.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 20</span><span class="tag tag--ls">Lesson 5</span><span class="tag tag--lv">고급</span></div>
       </section>
       <article class="prose">
-<blockquote>
-<p>🚧 골격 — 본문 작성 예정.</p>
-</blockquote>
+<section class="lblock"><h2>같은 규약, 다른 구현</h2>
+<p>&quot;출력할 수 있다&quot;, &quot;검증할 수 있다&quot; 같은 <strong>규약(약속)</strong> 만 정하고, 실제 방법은 각
+클래스가 알아서 — 그게 <button class="term" type="button" data-term="Interface">Interface</button>(인터페이스)다. 서로 다른 클래스를 <strong>같은 방식으로
+다룰</strong> 수 있게 해 준다(다형성의 기반).</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3</pre><pre class="abap-editor__code"><code>INTERFACE zif_printable.
+  <span class="tok-kw">METHODS</span> print.
+ENDINTERFACE.</code></pre></div></div>
+</section><section class="lblock"><h2>클래스에서 구현 — INTERFACES</h2>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10</pre><pre class="abap-editor__code"><code><span class="tok-kw">CLASS</span> zcl_booking <span class="tok-kw">DEFINITION</span> <span class="tok-kw">PUBLIC</span>.
+  <span class="tok-kw">PUBLIC</span> <span class="tok-kw">SECTION</span>.
+    INTERFACES zif_printable.       <span class="tok-com">" 이 규약을 따른다</span>
+<span class="tok-kw">ENDCLASS</span>.
 
+<span class="tok-kw">CLASS</span> zcl_booking <span class="tok-kw">IMPLEMENTATION</span>.
+  <span class="tok-kw">METHOD</span> zif_printable~print.       <span class="tok-com">" 인터페이스~메서드</span>
+    <span class="tok-kw">WRITE</span>: / <span class="tok-str">'예매 내역 출력'</span>.
+  <span class="tok-kw">ENDMETHOD</span>.
+<span class="tok-kw">ENDCLASS</span>.</code></pre></div></div>
+<ul>
+<li><code>INTERFACES zif_printable</code> — 규약을 받아들인다.</li>
+<li>구현은 <code>인터페이스~메서드</code> 이름으로.</li>
+<li>호출: <code>lo_obj-&gt;zif_printable~print( )</code> 또는 인터페이스 참조로.</li>
+</ul>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>메서드 구현 누락</strong> → 인터페이스의 모든 메서드를 구현해야 활성화된다.</li>
+<li><strong><code>~</code> 빼먹음</strong> → 구현·호출 시 <code>인터페이스~메서드</code> 형식.</li>
+</ul>
+<hr>
+<p>규약으로 묶었다. 그런데 처리 중 <strong>오류</strong>가 나면? 예외를 다루자 → 다음 레슨.</p>
+</section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
       <footer class="foot">SAP Developer Academy · CH20 CH20-L05</footer>

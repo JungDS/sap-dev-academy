@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Help View와 Search Help 연결 · Classic DDIC View·유지보수 객체 · SAP Developer Academy</title>
+<title>GROUP BY와 Aggregate · Open SQL 2차: JOIN·집계 · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH13 · Classic DDIC View·유지보수 객체</span>
+  <span class="meta">CH13 · Open SQL 2차: JOIN·집계</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,32 +33,47 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH13</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">Classic DDIC View·유지보수 객체</p>
-        <h1>Help View와 Search Help 연결</h1>
-        <p class="lhead__direction">여러 테이블에서 F4 값을 뽑는 소스 — Help View.</p>
+        <p class="lhead__eyebrow">Open SQL 2차: JOIN·집계</p>
+        <h1>GROUP BY와 Aggregate</h1>
+        <p class="lhead__direction">묶어서 세고 합산한다 — GROUP BY와 집계 함수.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 13</span><span class="tag tag--ls">Lesson 3</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>F4 소스가 여러 테이블이면</h2>
-<p>CH08의 <button class="term" type="button" data-term="Search Help">Search Help</button>는 보통 한 테이블/뷰에서 값을 뽑는다. F4 목록을 <strong>여러
-테이블을 조인</strong>해 만들고 싶다면, 그 조인 소스로 <strong>Help View</strong>를 쓴다.</p>
-</section><section class="lblock"><h2>Help View = Search Help의 조인 소스</h2>
-<ul>
-<li>Foreign Key 관계로 테이블들을 조인한 <strong>F4 전용 읽기 뷰</strong>.</li>
-<li>검색 도움말(<button class="term" type="button" data-term="Search Help">Search Help</button>)의 <strong>Selection Method</strong>로 지정한다.</li>
-</ul>
-<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">TEXT</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+<section class="lblock"><h2>묶어서 요약하기</h2>
+<p>&quot;부서별 인원수&quot;, &quot;부서별 급여합계&quot;처럼 <strong>그룹마다 요약</strong>하고 싶다. <code>GROUP BY</code>와
+<button class="term" type="button" data-term="Aggregate">Aggregate</button>(집계 함수)다.</p>
+</section><section class="lblock"><h2>GROUP BY + 집계 (classic)</h2>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
-3</pre><pre class="abap-editor__code"><code>ZHV_PERSON (Help View: person ⨝ dept)
-   ↑ Selection Method
-ZSH_PERSON (Search Help) → 필드/Data Element에 부착 → 화면 F4</code></pre></div></div>
+3
+4</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> dept_id COUNT( * ) <span class="tok-kw">AS</span> cnt SUM( salary ) <span class="tok-kw">AS</span> total
+  <span class="tok-kw">FROM</span> ztperson
+  <span class="tok-kw">INTO</span> <span class="tok-kw">CORRESPONDING</span> <span class="tok-kw">FIELDS</span> <span class="tok-kw">OF</span> <span class="tok-kw">TABLE</span> lt_sum
+  <span class="tok-kw">GROUP</span> BY dept_id.</code></pre></div></div>
+<ul>
+<li>집계 함수: <code>COUNT( * )</code>, <code>SUM( )</code>, <code>MAX( )</code>, <code>MIN( )</code>, <code>AVG( )</code>.</li>
+<li><strong>그룹 키가 아닌 컬럼</strong>은 집계 함수로 감싸야 한다(GROUP BY에 없는 평컬럼 금지).</li>
+<li>결과 구조에 <code>cnt</code>, <code>total</code> 같은 별칭 필드를 둔다.</li>
+</ul>
+</section><section class="lblock"><h2>결과 받기</h2>
+<p><code>INTO CORRESPONDING FIELDS OF TABLE</code>로 별칭과 같은 이름 필드에 담는다(합계가 커질
+수 있으니 타입을 충분히 크게).</p>
+</section><section class="lblock"><h2>중복 없이 — <code>SELECT DISTINCT</code></h2>
+<p>집계까지 필요 없고 <strong>중복 행만 제거</strong>하고 싶을 땐 <code>DISTINCT</code>를 쓴다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> <span class="tok-kw">DISTINCT</span> dept_id
+  <span class="tok-kw">FROM</span> ztperson
+  <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> lt_dept.        <span class="tok-com">" 등장한 부서 ID를 중복 없이</span></code></pre></div></div>
+<p><code>GROUP BY</code>가 &quot;묶어서 <strong>요약(집계)</strong>&quot;이라면, <code>DISTINCT</code>는 &quot;<strong>중복 행만</strong> 제거&quot;다.</p>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>Help View를 일반 조회에</strong> → 주 용도는 F4 소스. 일반 조회는 <button class="term" type="button" data-term="Database View">Database View</button>.</li>
-<li><strong>조인 키 부정확</strong> → F4 목록이 엉뚱해진다. FK·조인 조건 확인.</li>
+<li><strong>그룹키 아닌 평컬럼 SELECT</strong> → 오류. 집계로 감싸거나 GROUP BY에 추가.</li>
+<li><strong>합계 오버플로</strong> → SUM 결과 타입(P 길이)을 충분히.</li>
+<li><strong>콤마/@</strong> → classic이라 공백 구분, <code>@</code> 없이.</li>
 </ul>
 <hr>
-<p>조회·도움말 뷰를 봤다. 이제 <strong>데이터를 입력·수정</strong>하는 뷰다 → Maintenance View(다음 레슨).</p>
+<p>그룹 요약은 됐다. &quot;인원 5명 이상인 부서만&quot;처럼 <strong>집계 결과로 필터</strong>하려면? → HAVING(다음 레슨).</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

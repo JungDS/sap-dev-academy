@@ -2,11 +2,10 @@
 id: CH10
 track: TRACK-01
 order: 10
-title: "SALV 1차 (간단 ALV)"
-intro: "WRITE 리스트는 투박하다 — 표 형태로 깔끔하게 보고 싶다."
-keywords: ["SALV","CL_SALV_TABLE","ALV"]
+title: "모듈화 기초"
+intro: "같은 코드가 여기저기 반복된다 — 묶어서 재사용하고 싶다."
+keywords: ["FORM","PERFORM","Function Module","모듈화"]
 difficulty: "초급"
 ---
 
-WRITE 리스트는 투박하다 — 표 형태로 깔끔하게 보고 싶다.
-
+같은 코드가 여기저기 반복된다 — 묶어서 재사용하고 싶다.

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SET_TABLE_FOR_FIRST_DISPLAY · Grid ALV 기초 · SAP Developer Academy</title>
+<title>Custom Control과 Container · Tabstrip · Subscreen · Screen Programming / Dynpro 기초 · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH16 · Grid ALV 기초</span>
+  <span class="meta">CH16 · Screen Programming / Dynpro 기초</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,16 +33,64 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH16</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">Grid ALV 기초</p>
-        <h1>SET_TABLE_FOR_FIRST_DISPLAY</h1>
-        
+        <p class="lhead__eyebrow">Screen Programming / Dynpro 기초</p>
+        <h1>Custom Control과 Container · Tabstrip · Subscreen</h1>
+        <p class="lhead__direction">화면 안에 ALV·트리를 박을 자리 — Container와 화면 분할 요소.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 16</span><span class="tag tag--ls">Lesson 7</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
+<section class="lblock"><h2>화면에 ALV를 박으려면</h2>
+<p>다음 챕터(CH17)에서 화면에 <strong>ALV 그리드</strong>(좌석표·예매 목록)를 박는다. 그러려면 화면에
+<strong>Custom Control 영역</strong>을 두고, 거기에 <button class="term" type="button" data-term="Custom Container">Custom Container</button> 객체를 연결해야 한다.</p>
 <blockquote>
-<p>🚧 골격 — 본문 작성 예정.</p>
+<p>🔎 <strong>[선행 사용]</strong> 아래의 <code>TYPE REF TO</code>·<code>CREATE OBJECT</code>는 본격적으로 <strong>CH20(OO)</strong> 에서
+배운다. 지금은 &quot;컨테이너 객체를 만들어 화면 영역에 연결한다&quot; 정도로만 받아들이면 된다.</p>
 </blockquote>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> go_cont <span class="tok-kw">TYPE</span> <span class="tok-kw">REF</span> <span class="tok-kw">TO</span> cl_gui_custom_container.
 
+<span class="tok-kw">CREATE</span> <span class="tok-kw">OBJECT</span> go_cont
+  <span class="tok-kw">EXPORTING</span> container_name = <span class="tok-str">'CONT100'</span>.   <span class="tok-com">" 화면의 Custom Control 이름</span></code></pre></div></div>
+<p>이 <code>go_cont</code>에 CH17에서 ALV 그리드를 얹는다.</p>
+</section><section class="lblock"><h2>화면을 나누는 요소들</h2>
+<table>
+<thead>
+<tr>
+<th>요소</th>
+<th>뜻</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Tabstrip</strong></td>
+<td>한 화면을 여러 <strong>탭</strong>으로 나눔</td>
+</tr>
+<tr>
+<td><strong>Subscreen Area</strong></td>
+<td>화면 안에 <strong>다른 화면을 끼워</strong> 넣는 영역</td>
+</tr>
+<tr>
+<td><strong>Status Icon</strong></td>
+<td>상태를 <strong>아이콘</strong>으로 표시(예: 매진 🔴)</td>
+</tr>
+</tbody></table>
+<ul>
+<li>Tabstrip은 &quot;공연 정보 / 예매 내역&quot;처럼 한 화면에 여러 탭을 둘 때.</li>
+<li>Subscreen은 공통 머리말 화면을 여러 화면에서 재사용할 때.</li>
+</ul>
+<blockquote>
+<p>🔶 <strong>Table Control은 다루지 않는다</strong> — 화면 안의 표는 거의 항상 ALV로 대체한다(CH17).</p>
+</blockquote>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>Container 이름 불일치</strong> → 화면의 Custom Control 이름과 <code>container_name</code>이 같아야 한다.</li>
+<li><strong>컨테이너만 만들고 비움</strong> → 컨테이너는 자리일 뿐. 내용(ALV 등)은 CH17에서 얹는다.</li>
+</ul>
+<hr>
+<p>화면에 컨트롤을 박을 자리를 마련했다. 배운 걸 <strong>콘서트앱</strong>에 적용해 예매 입력
+화면을 만들어 보자 → <strong>CH16-L08(실습)</strong>.</p>
+</section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
       <footer class="foot">SAP Developer Academy · CH16 CH16-L07</footer>

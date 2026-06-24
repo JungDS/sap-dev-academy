@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Database View와 Open SQL JOIN 비교 · Classic DDIC View·유지보수 객체 · SAP Developer Academy</title>
+<title>INNER JOIN 기본 개념과 구현 · Open SQL 2차: JOIN·집계 · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH13 · Classic DDIC View·유지보수 객체</span>
+  <span class="meta">CH13 · Open SQL 2차: JOIN·집계</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,61 +33,63 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH13</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">Classic DDIC View·유지보수 객체</p>
-        <h1>Database View와 Open SQL JOIN 비교</h1>
-        <p class="lhead__direction">JOIN을 DDIC에 박아 재사용 — Database View vs 코드 JOIN.</p>
+        <p class="lhead__eyebrow">Open SQL 2차: JOIN·집계</p>
+        <h1>INNER JOIN 기본 개념과 구현</h1>
+        <p class="lhead__direction">여러 테이블을 키로 합친다 — classic INNER JOIN.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 13</span><span class="tag tag--ls">Lesson 1</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>같은 JOIN을 또 짜기 싫다</h2>
-<p>CH12에서 사람⨝부서 JOIN을 코드로 짰다. 같은 조인을 여러 프로그램이 반복하면
-낭비다. 그 JOIN을 <strong>DDIC에 객체로 박아</strong> 테이블처럼 쓰고 싶다 — <button class="term" type="button" data-term="Database View">Database View</button>다.</p>
-</section><section class="lblock"><h2>Database View</h2>
-<p><button class="term" type="button" data-term="Database View">Database View</button>는 여러 테이블을 <strong>Foreign Key 관계로 조인</strong>해 정의한 읽기전용
-DDIC 뷰다. 만든 뒤엔 <strong>테이블처럼</strong> SELECT한다.</p>
+<section class="lblock"><h2>한 테이블론 부족하다</h2>
+<p>사람 테이블엔 <code>dept_id</code>만 있고, 부서명은 부서 테이블에 있다. 매번 따로 읽어
+맞추긴 번거롭다. DB에서 <strong>키로 합쳐</strong> 한 번에 읽고 싶다 — <button class="term" type="button" data-term="JOIN">JOIN</button>이다.</p>
+</section><section class="lblock"><h2>직관적으로 — 두 표를 공통 번호로 나란히</h2>
+<p>JOIN은 <strong>두 명단을 공통 칸(키)으로 짝지어 한 줄로 붙이는 것</strong>이다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">TEXT</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4</pre><pre class="abap-editor__code"><code>  사람                부서                 →   JOIN 결과
+  persid dept_id      dept_id deptname         persid deptname
+   1      10           10      영업             1      영업
+   2      20           20      개발             2      개발</code></pre></div></div>
+<p><code>dept_id</code>가 같은 행끼리 옆으로 이어 붙인다 — 그래서 사람 줄 옆에 부서명이 따라온다.</p>
+<blockquote>
+<p>이 챕터는 전부 <strong>classic</strong>이다. 필드는 공백 구분, <code>~</code>로 별칭·필드를 잇고,
+<code>@</code>는 쓰지 않는다(modern은 CH19).</p>
+</blockquote>
+</section><section class="lblock"><h2>INNER JOIN — 양쪽 다 있는 행만</h2>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
-4</pre><pre class="abap-editor__code"><code><span class="tok-com">" 뷰 ZV_PERSON_DEPT 가 person⨝dept 를 미리 조인해 둔 것</span>
-<span class="tok-kw">SELECT</span> persid name deptname
-  <span class="tok-kw">FROM</span> zv_person_dept
-  <span class="tok-kw">INTO</span> <span class="tok-kw">CORRESPONDING</span> <span class="tok-kw">FIELDS</span> <span class="tok-kw">OF</span> <span class="tok-kw">TABLE</span> lt_out.</code></pre></div></div>
-</section><section class="lblock"><h2>View vs 코드 JOIN</h2>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>Database View</th>
-<th>Open SQL JOIN</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>정의 위치</td>
-<td>DDIC(재사용)</td>
-<td>코드(그때그때)</td>
-</tr>
-<tr>
-<td>조인 기준</td>
-<td>보통 Foreign Key</td>
-<td>ON 자유</td>
-</tr>
-<tr>
-<td>성격</td>
-<td>읽기전용</td>
-<td>조회 구문</td>
-</tr>
-</tbody></table>
+4
+5
+6</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> p~persid p~name d~deptname
+  <span class="tok-kw">FROM</span> ztperson <span class="tok-kw">AS</span> p
+  <span class="tok-kw">INNER</span> <span class="tok-kw">JOIN</span> ztdept <span class="tok-kw">AS</span> d
+    <span class="tok-kw">ON</span> p~dept_id = d~dept_id
+  <span class="tok-kw">INTO</span> <span class="tok-kw">CORRESPONDING</span> <span class="tok-kw">FIELDS</span> <span class="tok-kw">OF</span> <span class="tok-kw">TABLE</span> lt_out
+  <span class="tok-kw">WHERE</span> p~age &gt;= <span class="tok-num">20</span>.</code></pre></div></div>
 <ul>
-<li><strong>여러 곳이 같은 조인</strong> → View로 재사용.</li>
-<li><strong>한 번뿐/유연한 조인</strong> → 코드 JOIN.</li>
+<li><code>AS p</code>, <code>AS d</code> — 테이블 <strong>별칭</strong>.</li>
+<li><code>p~persid</code> — <code>별칭~필드</code>(classic의 필드 구분자 <code>~</code>).</li>
+<li><code>ON ... = ...</code> — 합치는 키 조건.</li>
+<li><button class="term" type="button" data-term="INNER JOIN">INNER JOIN</button>은 <strong>양쪽에 다 매칭되는 행만</strong> 결과에 남긴다.</li>
+</ul>
+</section><section class="lblock"><h2>조인 조건엔 &#39;전체 키&#39;가 등장해야</h2>
+<p><code>ON</code>에는 보통 <strong>한쪽 테이블의 키 전체</strong>가 들어가야 한다. 부서 키가 <code>dept_id</code> 하나면 <code>ON p~dept_id = d~dept_id</code> 하나로 충분하지만, 회차(CH09)처럼 키가 <code>concert_id</code>+<code>perf_no</code> <strong>둘</strong>이면 둘 다 <code>ON</code>에 적는다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2</pre><pre class="abap-editor__code"><code>  <span class="tok-kw">ON</span>  b~concert_id = pf~concert_id
+  <span class="tok-kw">AND</span> b~perf_no    = pf~perf_no      <span class="tok-com">" 키가 둘이면 AND로 둘 다</span></code></pre></div></div>
+<ul>
+<li>키 일부만 <code>ON</code>에 두면 짝이 여러 개로 늘어 <strong>행이 뻥튀기</strong>된다(의도치 않은 중복).</li>
 </ul>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>View로 쓰기 시도</strong> → Database View는 읽기전용.</li>
-<li><strong>FK 없으면 조인 정의 까다로움</strong> → 보통 Foreign Key 기반.</li>
+<li><strong>콤마/@ 사용</strong> → classic 위반. 공백 구분, <code>@</code> 없이.</li>
+<li><strong>별칭 없이 동일 필드명</strong> → 모호. 별칭(<code>p~</code>,<code>d~</code>)으로 명확히.</li>
+<li><strong>ON 조건 누락</strong> → 카테시안 곱(행 폭증). 반드시 키로 ON.</li>
 </ul>
 <hr>
-<p>여러 테이블 조인 뷰는 봤다. 한 테이블의 <strong>일부 필드만</strong> 노출하는 뷰는? → Projection View(다음 레슨).</p>
+<p>INNER는 양쪽 다 있어야 남는다. 한쪽만 있어도 살리려면? → LEFT OUTER JOIN(다음 레슨).</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

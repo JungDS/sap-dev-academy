@@ -2,11 +2,10 @@
 id: CH12
 track: TRACK-01
 order: 12
-title: "Open SQL 2차: JOIN·집계"
-intro: "여러 테이블을 한 번에, 집계까지 해서 보고 싶다. (classic 유지)"
-keywords: ["JOIN","INNER JOIN","집계","GROUP BY","classic"]
+title: "SELECT-OPTIONS와 Range Table"
+intro: "단일 값(PARAMETERS)만으론 부족 — 범위·다중 조건으로 조회하고 싶다."
+keywords: ["SELECT-OPTIONS","Range Table","SIGN","OPTION"]
 difficulty: "중급"
 ---
 
-여러 테이블을 한 번에, 집계까지 해서 보고 싶다. (classic 유지)
-
+단일 값(PARAMETERS)만으론 부족 — 범위·다중 조건으로 조회하고 싶다.

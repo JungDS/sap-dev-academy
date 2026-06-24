@@ -2,11 +2,10 @@
 id: CH13
 track: TRACK-01
 order: 13
-title: "Classic DDIC View·유지보수 객체"
-intro: "테이블을 더 보기 좋게 보여주고, 마스터데이터를 유지보수하고 싶다."
-keywords: ["Database View","Maintenance View","Table Maintenance"]
+title: "Open SQL 2차: JOIN·집계"
+intro: "여러 테이블을 한 번에, 집계까지 해서 보고 싶다. (classic 유지)"
+keywords: ["JOIN","INNER JOIN","집계","GROUP BY","classic"]
 difficulty: "중급"
 ---
 
-테이블을 더 보기 좋게 보여주고, 마스터데이터를 유지보수하고 싶다.
-
+여러 테이블을 한 번에, 집계까지 해서 보고 싶다. (classic 유지)

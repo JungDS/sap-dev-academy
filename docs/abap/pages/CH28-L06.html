@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>변경 데이터 DB 반영 전 검증 · Editable Grid ALV와 입력 검증 · SAP Developer Academy</title>
+<link rel="stylesheet" href="../../../assets/base.css">
+<link rel="stylesheet" href="../../../assets/lesson.css">
+<link rel="stylesheet" href="../../../assets/shell.css">
+<script>/* 읽기 설정 선적용(플래시 방지) */(function(){try{var L=localStorage,r=document.documentElement;if(L.getItem('sda.dark')==='1')r.classList.add('dark');if(L.getItem('sda.wide')==='1')r.classList.add('wide');var f=parseInt(L.getItem('sda.fontPx'),10);if(f>=13&&f<=20)r.style.fontSize=f+'px';}catch(e){}})();</script>
+</head>
+<body data-domain="abap" data-chapter-id="CH28" data-lesson-id="CH28-L06">
+<header class="appbar">
+  <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
+  <span class="appbar__sp"></span>
+  <span class="meta">CH28 · Editable Grid ALV와 입력 검증</span>
+  <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
+  <div class="tools">
+    <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
+    <button class="icon-btn" id="fsInc" title="글자 크게">A+</button>
+    <button class="icon-btn" id="fsReset" title="글자 크기 초기화">↺</button>
+    <button class="icon-btn" id="darkBtn" title="다크 모드">🌙</button>
+    <button class="icon-btn" id="widthBtn" title="가독 폭 넓게">↔</button>
+    <button class="icon-btn fs-btn" title="전체화면" aria-label="전체화면"></button>
+  </div>
+</header>
+<div class="read-progress"><i></i></div>
+<div class="scrim"></div>
+<nav class="rail" data-shell="rail"></nav>
+<button class="railFab" id="railFab" aria-label="네비 열기">☰</button>
+<div class="stage">
+  <div class="layout">
+    <main class="main">
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH28</nav>
+      <section class="lhead">
+        <p class="lhead__eyebrow">Editable Grid ALV와 입력 검증</p>
+        <h1>변경 데이터 DB 반영 전 검증</h1>
+        <p class="lhead__direction">저장 직전 최종 점검 후 DML로 반영한다.</p>
+        <div class="tags"><span class="tag tag--track">Track 2</span><span class="tag tag--ch">Chapter 28</span><span class="tag tag--ls">Lesson 6</span><span class="tag tag--lv">고급</span></div>
+      </section>
+      <article class="prose">
+<section class="lblock"><h2>화면 검증과 저장 검증은 다르다</h2>
+<p>셀 단위 검증(L05)을 통과해도, <strong>저장 직전</strong> 전체 규칙(중복·정원 합계·권한)을 다시
+본다. 화면 검증은 입력 편의, 저장 검증은 데이터 무결성의 <strong>마지막 방어선</strong>이다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13</pre><pre class="abap-editor__code"><code><span class="tok-com">" 1) 변경분 확보(편집 내용을 내부 테이블에 반영)</span>
+go_grid-&gt;check_changed_data( ).
+
+<span class="tok-com">" 2) 전체 규칙 최종 검증</span>
+<span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_perf <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(ls).
+  <span class="tok-kw">IF</span> ls-seats_sum &gt; ls-capacity.
+    <span class="tok-kw">MESSAGE</span> <span class="tok-str">'정원을 초과했습니다'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'E'</span>.
+  <span class="tok-kw">ENDIF</span>.
+<span class="tok-kw">ENDLOOP</span>.
+
+<span class="tok-com">" 3) 통과하면 DML + 잠금 + 커밋(CH24/25)</span>
+<span class="tok-kw">MODIFY</span> zperf <span class="tok-kw">FROM</span> <span class="tok-kw">TABLE</span> @lt_perf.
+<span class="tok-kw">COMMIT</span> <span class="tok-kw">WORK</span>.</code></pre></div></div>
+<ul>
+<li><code>check_changed_data( )</code> — 편집 중인 값을 내부 테이블로 강제 반영.</li>
+<li>최종 검증 통과 후에만 DML.</li>
+</ul>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>check_changed_data 누락</strong> → 마지막 셀 편집이 반영 안 된 채 저장될 수 있다.</li>
+<li><strong>화면 검증만 믿기</strong> → 저장 전 전체 규칙을 다시 확인(무결성).</li>
+</ul>
+</section><section class="lblock"><h2>🧩 도전 과제 (서브퀘스트)</h2>
+<blockquote>
+<p>선택 과제 — 예매 좌석수를 표에서 직접 편집한다.</p>
+</blockquote>
+<ol>
+<li>예매 목록 Grid의 <code>SEATS</code> 컬럼을 편집 가능(<code>edit</code>)으로 만들고 입력 이벤트를 등록한다.</li>
+<li><code>DATA_CHANGED</code>에서 좌석수가 잔여석을 넘으면 그 셀에 오류를 등록(<code>add_protocol_entry</code>)한다.</li>
+<li>(심화) 저장 직전 <code>check_changed_data</code> 후 정원 규칙을 최종 검증하고 <code>MODIFY</code>+<code>COMMIT</code>(CH24).</li>
+</ol>
+<p>힌트: L01(edit)·L02(DATA_CHANGED)·L05(검증/오류표시)·L06(저장 전 검증).</p>
+<hr>
+<p>입력·검증·저장까지 완성했다. 이제 SAP 표준을 <strong>건드리지 않고 확장</strong>하는 법 →
+<strong>CH29(Enhancement·BAdI)</strong>.</p>
+</section>
+      </article>
+      <nav class="lesson-nav" data-shell="prevnext"></nav>
+      <footer class="foot">SAP Developer Academy · CH28 CH28-L06</footer>
+    </main>
+    <aside class="journey" data-shell="journey"></aside>
+  </div>
+</div>
+<div class="term-popup" data-shell="popup" hidden></div>
+<div class="tmodal" data-shell="tmodal" hidden></div>
+<script>window.__SDA__={"domain":"abap","dataBase":"../","siteRoot":"../../../"};</script>
+<script src="../../../assets/shell.js" defer></script>
+</body>
+</html>

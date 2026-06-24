@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lock Object 설계 기준 · Lock Object와 동시성 제어 · SAP Developer Academy</title>
+<title>INSERT / UPDATE / MODIFY / DELETE 실무 기준 · 실무 데이터 변경과 트랜잭션 제어 · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH24 · Lock Object와 동시성 제어</span>
+  <span class="meta">CH24 · 실무 데이터 변경과 트랜잭션 제어</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,16 +33,74 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH24</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">Lock Object와 동시성 제어</p>
-        <h1>Lock Object 설계 기준</h1>
-        
+        <p class="lhead__eyebrow">실무 데이터 변경과 트랜잭션 제어</p>
+        <h1>INSERT / UPDATE / MODIFY / DELETE 실무 기준</h1>
+        <p class="lhead__direction">직접 DB를 바꾼다 — 네 가지 DML과 감사필드.</p>
         <div class="tags"><span class="tag tag--track">Track 2</span><span class="tag tag--ch">Chapter 24</span><span class="tag tag--ls">Lesson 1</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
-<blockquote>
-<p>🚧 골격 — 본문 작성 예정.</p>
-</blockquote>
-
+<section class="lblock"><h2>CH08은 읽기였다 — 이제 쓰기</h2>
+<p>CH08의 Open SQL은 <strong>읽기 전용</strong>이었다. 실무는 데이터를 <strong>바꿔야</strong> 한다. DB를 직접
+변경하는 네 문장이 <button class="term" type="button" data-term="DML">DML</button>(Data Manipulation Language)이다.</p>
+<table>
+<thead>
+<tr>
+<th>문</th>
+<th>동작</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>INSERT</code></td>
+<td>새 행 추가(이미 있으면 오류)</td>
+</tr>
+<tr>
+<td><code>UPDATE</code></td>
+<td>기존 행 수정</td>
+</tr>
+<tr>
+<td><code>MODIFY</code></td>
+<td>있으면 수정, 없으면 추가(upsert)</td>
+</tr>
+<tr>
+<td><code>DELETE</code></td>
+<td>행 삭제</td>
+</tr>
+</tbody></table>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4</pre><pre class="abap-editor__code"><code><span class="tok-kw">INSERT</span> zbooking <span class="tok-kw">FROM</span> @ls_booking.
+UPDATE zbooking <span class="tok-kw">SET</span> status = <span class="tok-str">'X'</span> <span class="tok-kw">WHERE</span> booking_id = @lv_id.
+<span class="tok-kw">MODIFY</span> zbooking <span class="tok-kw">FROM</span> @ls_booking.
+<span class="tok-kw">DELETE</span> <span class="tok-kw">FROM</span> zbooking <span class="tok-kw">WHERE</span> booking_id = @lv_id.</code></pre></div></div>
+</section><section class="lblock"><h2>통째로 — FROM TABLE</h2>
+<p>CH07에서 손입력이 번거롭고, CH08에서 &quot;메모리 itab을 통째로 넣고 싶다&quot;고 했다. 이제
+<strong>내부 테이블을 한 번에</strong> 넣는다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2</pre><pre class="abap-editor__code"><code><span class="tok-kw">INSERT</span> zgugudan <span class="tok-kw">FROM</span> <span class="tok-kw">TABLE</span> @lt_gugu.        <span class="tok-com">" 81행을 한 번에</span>
+<span class="tok-kw">MODIFY</span> zbooking <span class="tok-kw">FROM</span> <span class="tok-kw">TABLE</span> @lt_booking.</code></pre></div></div>
+</section><section class="lblock"><h2>감사필드 자동 stamp</h2>
+<p>&quot;누가·언제&quot; 바꿨는지 기록할 컬럼(생성자·일시)을 둔다. CH04의 SY 변수로 채운다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4</pre><pre class="abap-editor__code"><code>ls_booking-created_by = sy-uname.
+ls_booking-created_on = sy-datum.
+ls_booking-created_at = sy-uzeit.
+<span class="tok-kw">INSERT</span> zbooking <span class="tok-kw">FROM</span> @ls_booking.</code></pre></div></div>
+</section><section class="lblock"><h2>⚠️ 표준 테이블은 직접 쓰지 않는다</h2>
+<p><code>SCARR</code>·<code>SFLIGHT</code> 같은 <strong>SAP 표준 테이블</strong>은 <code>INSERT</code>/<code>UPDATE</code>로 직접 바꾸면 안 된다
+(검증·후속 로직 우회 → 데이터 깨짐). 반드시 <strong>BAPI/표준 API</strong>를 경유한다. 직접 DML은
+<strong>내 테이블</strong>(<code>ZBOOKING</code> 등)에만.</p>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>INSERT 중복키</strong> → 이미 있으면 덤프. upsert가 필요하면 <code>MODIFY</code>.</li>
+<li><strong>WHERE 없는 UPDATE/DELETE</strong> → 전체가 바뀐다. 조건을 반드시.</li>
+<li><strong>표준 테이블 직접 DML</strong> → 금지. BAPI 경유.</li>
+</ul>
+<hr>
+<p>데이터를 바꿨다. 그런데 이 변경은 <strong>언제 확정</strong>되나? COMMIT/ROLLBACK → 다음 레슨.</p>
+</section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
       <footer class="foot">SAP Developer Academy · CH24 CH24-L01</footer>

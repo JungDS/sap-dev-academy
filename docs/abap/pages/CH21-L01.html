@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CDS View Entity 기본 구조 · CDS View Entity 기초 · SAP Developer Academy</title>
+<title>SALV Sort / Filter / Function 제어 · SALV/Grid ALV 표시 제어 심화 · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH21 · CDS View Entity 기초</span>
+  <span class="meta">CH21 · SALV/Grid ALV 표시 제어 심화</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,16 +33,39 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH21</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">CDS View Entity 기초</p>
-        <h1>CDS View Entity 기본 구조</h1>
-        
+        <p class="lhead__eyebrow">SALV/Grid ALV 표시 제어 심화</p>
+        <h1>SALV Sort / Filter / Function 제어</h1>
+        <p class="lhead__direction">SALV 객체로 정렬·필터·툴바 기능을 코드로 제어한다.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 21</span><span class="tag tag--ls">Lesson 1</span><span class="tag tag--lv">고급</span></div>
       </section>
       <article class="prose">
-<blockquote>
-<p>🚧 골격 — 본문 작성 예정.</p>
-</blockquote>
+<section class="lblock"><h2>SALV를 코드로 더 다루기</h2>
+<p>CH11에서 SALV를 띄우기만 했다. 이제 OO(CH20)를 배웠으니, SALV 객체의 메서드로
+<strong>정렬·필터·툴바 기능</strong>을 코드로 제어한다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>(lo_salv) = cl_salv_table=&gt;factory(
+  <span class="tok-kw">IMPORTING</span> r_salv_table = <span class="tok-kw">DATA</span>(lo) <span class="tok-kw">CHANGING</span> t_table = lt_perf ).
 
+lo-&gt;get_functions( )&gt;set_all( abap_true ).          <span class="tok-com">" 표준 기능 켜기</span>
+lo-&gt;get_sorts( )&gt;add_sort( <span class="tok-str">'PERF_DATE'</span> ).            <span class="tok-com">" 날짜로 정렬</span>
+lo-&gt;display( ).</code></pre></div></div>
+<ul>
+<li><code>get_functions( )</code> — 툴바 표준 기능(정렬·합계·엑셀 등).</li>
+<li><code>get_sorts( )-&gt;add_sort( )</code> — 기본 정렬 지정.</li>
+<li>필터·집계도 <code>get_filters( )</code>·<code>get_aggregations( )</code>로.</li>
+</ul>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>display 전에 설정</strong> → 정렬·기능은 <code>display( )</code> <strong>전에</strong> 지정한다.</li>
+<li><strong>존재하지 않는 필드</strong> → <code>add_sort</code>의 필드명은 정확한 컬럼명.</li>
+</ul>
+<hr>
+<p>기능을 제어했다. 이제 표시 레이아웃·Variant를 더 깊이 다루자 → 다음 레슨.</p>
+</section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
       <footer class="foot">SAP Developer Academy · CH21 CH21-L01</footer>

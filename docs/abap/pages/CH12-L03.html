@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GROUP BY와 Aggregate · Open SQL 2차: JOIN·집계 · SAP Developer Academy</title>
+<title>WHERE … IN (classic range) · SELECT-OPTIONS와 Range Table · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH12 · Open SQL 2차: JOIN·집계</span>
+  <span class="meta">CH12 · SELECT-OPTIONS와 Range Table</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,39 +33,47 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH12</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">Open SQL 2차: JOIN·집계</p>
-        <h1>GROUP BY와 Aggregate</h1>
-        <p class="lhead__direction">묶어서 세고 합산한다 — GROUP BY와 집계 함수.</p>
+        <p class="lhead__eyebrow">SELECT-OPTIONS와 Range Table</p>
+        <h1>WHERE … IN (classic range)</h1>
+        <p class="lhead__direction">Range Table을 조회 조건으로 — classic WHERE … IN.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 12</span><span class="tag tag--ls">Lesson 3</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>묶어서 요약하기</h2>
-<p>&quot;부서별 인원수&quot;, &quot;부서별 급여합계&quot;처럼 <strong>그룹마다 요약</strong>하고 싶다. <code>GROUP BY</code>와
-<button class="term" type="button" data-term="Aggregate">Aggregate</button>(집계 함수)다.</p>
-</section><section class="lblock"><h2>GROUP BY + 집계 (classic)</h2>
+<section class="lblock"><h2>범위를 조회에 꽂기</h2>
+<p><button class="term" type="button" data-term="SELECT-OPTIONS">SELECT-OPTIONS</button>가 채운 <button class="term" type="button" data-term="Range Table">Range Table</button>을 <code>WHERE ... IN</code>으로 SELECT에 바로
+꽂는다. 한 줄로 범위·다중 조건이 적용된다.</p>
+<blockquote>
+<p>이 챕터는 <strong>classic</strong>이다. <code>WHERE age IN s_age</code>처럼 <strong><code>@</code> 없이</strong> 쓴다.
+현대식 Open SQL 구문은 CH19부터.</p>
+</blockquote>
+</section><section class="lblock"><h2>WHERE … IN (classic)</h2>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
-4</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> dept_id COUNT( * ) <span class="tok-kw">AS</span> cnt SUM( salary ) <span class="tok-kw">AS</span> total
-  <span class="tok-kw">FROM</span> ztperson
-  <span class="tok-kw">INTO</span> <span class="tok-kw">CORRESPONDING</span> <span class="tok-kw">FIELDS</span> <span class="tok-kw">OF</span> <span class="tok-kw">TABLE</span> lt_sum
-  <span class="tok-kw">GROUP</span> BY dept_id.</code></pre></div></div>
+4
+5</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> lt_person <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ztperson.
+
+<span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> ztperson
+  <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> lt_person
+  <span class="tok-kw">WHERE</span> age <span class="tok-kw">IN</span> s_age.        <span class="tok-com">" classic: @ 없이 Range Table 직접</span></code></pre></div></div>
 <ul>
-<li>집계 함수: <code>COUNT( * )</code>, <code>SUM( )</code>, <code>MAX( )</code>, <code>MIN( )</code>, <code>AVG( )</code>.</li>
-<li><strong>그룹 키가 아닌 컬럼</strong>은 집계 함수로 감싸야 한다(GROUP BY에 없는 평컬럼 금지).</li>
-<li>결과 구조에 <code>cnt</code>, <code>total</code> 같은 별칭 필드를 둔다.</li>
+<li><code>IN s_age</code> 하나로 사용자가 입력한 모든 범위·목록 조건이 적용된다.</li>
+<li>비어 있으면(아무 입력 없음) <strong>조건 없음</strong>으로 동작 → 전체 조회. 의도와 다르면
+검증을 추가한다.</li>
 </ul>
-</section><section class="lblock"><h2>결과 받기</h2>
-<p><code>INTO CORRESPONDING FIELDS OF TABLE</code>로 별칭과 같은 이름 필드에 담는다(합계가 커질
-수 있으니 타입을 충분히 크게).</p>
+</section><section class="lblock"><h2>여러 SELECT-OPTIONS 결합</h2>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> ztperson <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> lt_person
+  <span class="tok-kw">WHERE</span> age  <span class="tok-kw">IN</span> s_age
+    <span class="tok-kw">AND</span> name <span class="tok-kw">IN</span> s_name.</code></pre></div></div>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>그룹키 아닌 평컬럼 SELECT</strong> → 오류. 집계로 감싸거나 GROUP BY에 추가.</li>
-<li><strong>합계 오버플로</strong> → SUM 결과 타입(P 길이)을 충분히.</li>
-<li><strong>콤마/@</strong> → classic이라 공백 구분, <code>@</code> 없이.</li>
+<li><strong>modern escape 습관</strong> → 이 챕터는 classic이라 host 변수 그대로(현대식은 CH19).</li>
+<li><strong>빈 SELECT-OPTIONS = 전체</strong> → 무조건 조회가 의도가 아니면 입력 필수 처리.</li>
 </ul>
 <hr>
-<p>그룹 요약은 됐다. &quot;인원 5명 이상인 부서만&quot;처럼 <strong>집계 결과로 필터</strong>하려면? → HAVING(다음 레슨).</p>
+<p>조건은 됐다. 그런데 화면의 <strong>다중 선택 팝업</strong>(여러 값·제외)은 어떻게 다루나 → 다음 레슨.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

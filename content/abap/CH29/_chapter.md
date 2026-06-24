@@ -2,12 +2,10 @@
 id: CH29
 track: TRACK-02
 order: 29
-title: "인터페이스 실무: BAPI/RFC/BDC/File"
-intro: "외부 시스템과 데이터를 주고받아야 한다."
-keywords: ["BAPI","RFC","BDC","File","Excel"]
+title: "Enhancement / BAdI / User Exit"
+intro: "표준 기능을 건드리지 않고 확장하고 싶다."
+keywords: ["BAdI","Enhancement","User Exit"]
 difficulty: "고급"
 ---
 
-외부 시스템과 데이터를 주고받아야 한다.
-
-> 🚧 이 챕터는 골격 단계입니다. 레슨 본문은 점진적으로 작성됩니다.
+표준 기능을 건드리지 않고 확장하고 싶다.

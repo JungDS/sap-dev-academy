@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IDoc 오류 추적과 재처리 · IDoc / ALE / Gateway · SAP Developer Academy</title>
+<title>BDC / Batch Input 실무 기준 · 인터페이스 실무: BAPI/RFC/BDC/File · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH30 · IDoc / ALE / Gateway</span>
+  <span class="meta">CH30 · 인터페이스 실무: BAPI/RFC/BDC/File</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,16 +33,73 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH30</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">IDoc / ALE / Gateway</p>
-        <h1>IDoc 오류 추적과 재처리</h1>
-        
+        <p class="lhead__eyebrow">인터페이스 실무: BAPI/RFC/BDC/File</p>
+        <h1>BDC / Batch Input 실무 기준</h1>
+        <p class="lhead__direction">화면을 자동 입력해 대량 등록한다.</p>
         <div class="tags"><span class="tag tag--track">Track 2</span><span class="tag tag--ch">Chapter 30</span><span class="tag tag--ls">Lesson 3</span><span class="tag tag--lv">고급</span></div>
       </section>
       <article class="prose">
-<blockquote>
-<p>🚧 골격 — 본문 작성 예정.</p>
-</blockquote>
+<section class="lblock"><h2>BAPI가 없을 때 — 화면을 자동으로</h2>
+<p>표준 BAPI가 없는 트랜잭션은, <strong>사용자가 화면에 입력하는 과정을 흉내</strong> 내 자동 등록한다.
+그게 <button class="term" type="button" data-term="BDC">BDC</button>(Batch Data Communication)다. 화면·필드·값을 <code>BDCDATA</code>에 채워 트랜잭션을 돌린다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> lt_bdc <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> bdcdata.
 
+<span class="tok-com">" 화면·필드·값을 차곡차곡(헬퍼 FORM으로)</span>
+<span class="tok-kw">PERFORM</span> fill <span class="tok-kw">USING</span> <span class="tok-str">'X'</span> <span class="tok-str">'SAPMXXXX'</span> <span class="tok-str">'0100'</span>.   <span class="tok-com">" 화면</span>
+<span class="tok-kw">PERFORM</span> fill <span class="tok-kw">USING</span> <span class="tok-str">' '</span> <span class="tok-str">'FIELD-X'</span>  <span class="tok-str">'값'</span>.      <span class="tok-com">" 필드</span>
+
+<span class="tok-kw">CALL</span> TRANSACTION <span class="tok-str">'XX01'</span> <span class="tok-kw">USING</span> lt_bdc
+  MODE <span class="tok-str">'N'</span> UPDATE <span class="tok-str">'S'</span>                         <span class="tok-com">" N=무화면, S=동기</span>
+  MESSAGES <span class="tok-kw">INTO</span> lt_msg.</code></pre></div></div>
+<ul>
+<li><code>MODE</code>: <code>A</code>(전체화면)·<code>E</code>(오류만)·<code>N</code>(무화면, 배치).</li>
+<li>결과 메시지를 받아 성공/실패를 판정(L05의 재처리와 결합).</li>
+<li>(실무) <code>MODE</code>/<code>UPDATE</code>를 일일이 적는 대신 <code>OPTIONS FROM &lt;옵션구조체&gt;</code>(<code>ctu_params</code> 타입) 하나로 화면모드·갱신 등을 한 번에 지정하기도 한다.</li>
+<li><strong>BAPI가 있으면 BAPI 우선</strong> — BDC는 화면 변경에 취약하다.</li>
+</ul>
+</section><section class="lblock"><h2>두 가지 방식 — Call Transaction vs Session</h2>
+<table>
+<thead>
+<tr>
+<th>방식</th>
+<th>특징</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Call Transaction</strong></td>
+<td>즉시 실행·결과 바로 확인(위 예시). 단순·동기.</td>
+</tr>
+<tr>
+<td><strong>Session(배치 입력)</strong></td>
+<td>큐에 쌓아 두고 <code>SM35</code>에서 실행·재처리. 대량·야간에 안정적.</td>
+</tr>
+</tbody></table>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4</pre><pre class="abap-editor__code"><code><span class="tok-kw">CALL</span> <span class="tok-kw">FUNCTION</span> <span class="tok-str">'BDC_OPEN_GROUP'</span>  <span class="tok-kw">EXPORTING</span> <span class="tok-kw">client</span> = sy-mandt <span class="tok-kw">group</span> = <span class="tok-str">'ZBOOK'</span>.
+<span class="tok-kw">CALL</span> <span class="tok-kw">FUNCTION</span> <span class="tok-str">'BDC_INSERT'</span>      <span class="tok-kw">EXPORTING</span> tcode = <span class="tok-str">'XX01'</span> TABLES dynprotab = lt_bdc.
+<span class="tok-kw">CALL</span> <span class="tok-kw">FUNCTION</span> <span class="tok-str">'BDC_CLOSE_GROUP'</span>.
+<span class="tok-com">" → SM35에서 세션을 실행하고 오류 건을 재처리한다</span></code></pre></div></div>
+</section><section class="lblock"><h2>BDCDATA는 SHDB로 녹화</h2>
+<p>화면·필드 이름을 손으로 채우긴 번거롭다. <strong>SHDB</strong>(Transaction Recorder)로 트랜잭션을
+한 번 <strong>녹화</strong>하면 <code>BDCDATA</code>를 채우는 뼈대 코드를 자동 생성해 준다.</p>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>화면 흐름 변경</strong> → 표준 화면이 바뀌면 BDC가 깨진다. BAPI 가능하면 그쪽.</li>
+<li><strong>MODE &#39;A&#39;로 대량</strong> → 배치는 <code>N</code>. <code>A</code>는 디버깅용.</li>
+</ul>
+<hr>
+<p>화면 자동 입력을 봤다. 이제 외부 파일(엑셀)을 읽어 들이자 → 다음 레슨.</p>
+</section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
       <footer class="foot">SAP Developer Academy · CH30 CH30-L03</footer>

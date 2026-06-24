@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Elementary Search Help · DDIC 관계와 입력도움말(F4) · SAP Developer Academy</title>
+<title>SELECT 형태 — SINGLE · INTO TABLE · UP TO n ROWS · Open SQL 기본 조회 · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH08 · DDIC 관계와 입력도움말(F4)</span>
+  <span class="meta">CH08 · Open SQL 기본 조회</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,43 +33,61 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH08</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">DDIC 관계와 입력도움말(F4)</p>
-        <h1>Elementary Search Help</h1>
-        <p class="lhead__direction">F4 목록을 설계한다 — 단일 소스 Elementary Search Help.</p>
+        <p class="lhead__eyebrow">Open SQL 기본 조회</p>
+        <h1>SELECT 형태 — SINGLE · INTO TABLE · UP TO n ROWS</h1>
+        <p class="lhead__direction">한 건만, 여러 건, 줄여 읽기 — 결과 형태에 맞는 SELECT.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 8</span><span class="tag tag--ls">Lesson 3</span><span class="tag tag--lv">초급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>F4를 제대로 설계하기</h2>
-<p>Foreign Key의 F4는 &quot;Check Table 그대로&quot;다. 그런데 검색 화면(어떤 컬럼을 보여줄지,
-무엇으로 검색할지)을 <strong>직접 설계</strong>하고 싶다. 그게 <button class="term" type="button" data-term="Search Help">Search Help</button>(검색 도움말)다.
-가장 기본은 <strong>Elementary</strong>(단일 소스) 검색 도움말.</p>
-</section><section class="lblock"><h2>Elementary Search Help 구성</h2>
-<p><code>SE11</code> → Search Help → <code>ZSH_PERSON</code> → Create (Elementary).</p>
-<p>핵심 요소:</p>
+<section class="lblock"><h2>결과가 한 건? 여러 건?</h2>
+<p>읽는 결과의 모양에 따라 SELECT 형태가 다르다.</p>
+</section><section class="lblock"><h2>SELECT SINGLE — 키로 딱 한 건</h2>
+<p>특정 한 행이 필요하면 <button class="term" type="button" data-term="SELECT SINGLE">SELECT SINGLE</button>. 결과는 <button class="term" type="button" data-term="Work Area">Work Area</button> 하나(<code>INTO ls_</code>).</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> ls_flight <span class="tok-kw">TYPE</span> sflight.
+
+<span class="tok-kw">SELECT</span> <span class="tok-kw">SINGLE</span> * <span class="tok-kw">FROM</span> sflight
+  <span class="tok-kw">INTO</span> ls_flight
+  <span class="tok-kw">WHERE</span> carrid = <span class="tok-str">'KE'</span> <span class="tok-kw">AND</span> connid = <span class="tok-str">'0701'</span> <span class="tok-kw">AND</span> fldate = <span class="tok-str">'20260623'</span>.
+
+<span class="tok-kw">IF</span> sy-subrc = <span class="tok-num">0</span>.
+  <span class="tok-kw">WRITE</span>: / ls_flight-seatsocc, <span class="tok-str">'/'</span>, ls_flight-seatsmax.
+<span class="tok-kw">ENDIF</span>.</code></pre></div></div>
 <ul>
-<li><strong>Selection Method</strong> — 값을 가져올 테이블/뷰.</li>
-<li><strong>Parameters</strong> — F4 팝업에 보일 필드들. 각 파라미터의 역할:<ul>
-<li><strong>IMP</strong>(Import) — 검색 조건으로 입력받는 값.</li>
-<li><strong>EXP</strong>(Export) — 선택 시 화면 필드로 돌려줄 값.</li>
-<li><strong>LPos / SPos</strong> — 목록(List)·검색(Selection) 화면에서의 위치.</li>
+<li><strong>키 전체</strong>로 조회하면 정확히 한 행이 보장된다.</li>
 </ul>
-</li>
-</ul>
-</section><section class="lblock"><h2>어디에 붙이나</h2>
-<p>검색 도움말은 **<button class="term" type="button" data-term="Data Element">Data Element</button>**나 <strong>테이블 필드</strong>에 붙인다(Attach). 그러면 그
-타입을 쓰는 모든 화면·PARAMETERS에서 F4가 이 도움말로 동작한다.</p>
+</section><section class="lblock"><h2>INTO TABLE — 여러 건 한 번에</h2>
+<p>여러 행은 <code>INTO TABLE</code>로 내부 테이블에 통째로 담는다(= Array Fetch, 빠르다).</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> sflight <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> lt_flight <span class="tok-kw">WHERE</span> carrid = <span class="tok-str">'KE'</span>.</code></pre></div></div>
+</section><section class="lblock"><h2>SELECT … ENDSELECT — 한 행씩 (지양)</h2>
+<p><code>INTO ls_</code>로 받으면 한 행씩 반복 처리하는 <code>SELECT…ENDSELECT</code> 루프가 된다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> sflight <span class="tok-kw">INTO</span> ls_flight <span class="tok-kw">WHERE</span> carrid = <span class="tok-str">'KE'</span>.
+  <span class="tok-kw">WRITE</span>: / ls_flight-fldate.
+ENDSELECT.</code></pre></div></div>
 <blockquote>
-<p>CH03에서 &quot;<button class="term" type="button" data-term="Data Element">Data Element</button>에 라벨·도움말이 붙는다&quot;고 했다. 그 &#39;도움말&#39;의 정체가
-바로 이 Search Help다 — 나선형으로 다시 만났다.</p>
+<p>⚠️ <code>SELECT…ENDSELECT</code>는 DB를 여러 번 왕복해 <strong>느리다.</strong> 가능하면 <code>INTO TABLE</code>로
+한 번에 가져와 <code>LOOP</code>로 처리한다. <strong>중첩 SELECT는 절대 금지</strong>(성능 최악).</p>
 </blockquote>
+</section><section class="lblock"><h2>UP TO n ROWS — 줄여 읽기</h2>
+<p>처음 몇 건만 필요하면 행 수를 제한한다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> sflight <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> lt_flight <span class="tok-kw">UP</span> <span class="tok-kw">TO</span> <span class="tok-num">10</span> <span class="tok-kw">ROWS</span>.</code></pre></div></div>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>EXP 미지정</strong> → 골랐는데 화면에 값이 안 돌아온다. 돌려줄 파라미터를 EXP로.</li>
-<li><strong>Selection Method 범위</strong> → 큰 테이블이면 적절한 뷰·검색조건으로 제한.</li>
+<li><strong>부분 키로 SINGLE</strong> → 임의의 한 행이 온다. 단건은 <strong>전체 키</strong>로.</li>
+<li><strong>ENDSELECT 남용</strong> → 대량은 <code>INTO TABLE</code>. 중첩 SELECT 금지.</li>
+<li><strong>sy-subrc 미확인</strong> → SINGLE도 없음(4)일 수 있다.</li>
 </ul>
 <hr>
-<p>소스가 하나면 Elementary로 충분하다. 그런데 &quot;사번으로도, 이름으로도, 부서로도&quot;
-여러 방식으로 찾고 싶다면? → Collective Search Help(다음 레슨).</p>
+<p>형태는 골랐다. 그런데 결과를 <strong>어디에 어떻게</strong> 담을지(INTO 대상)도 여러 가지다 → 다음 레슨.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

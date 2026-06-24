@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CALL FUNCTION 기본 구조 · 모듈화 기초 · SAP Developer Academy</title>
+<title>Text Table — 코드 옆 이름표 · DDIC 관계와 입력도움말(F4) · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH09 · 모듈화 기초</span>
+  <span class="meta">CH09 · DDIC 관계와 입력도움말(F4)</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,58 +33,57 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH09</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">모듈화 기초</p>
-        <h1>CALL FUNCTION 기본 구조</h1>
-        <p class="lhead__direction">여러 프로그램이 공유하는 재사용 단위 — Function Module.</p>
+        <p class="lhead__eyebrow">DDIC 관계와 입력도움말(F4)</p>
+        <h1>Text Table — 코드 옆 이름표</h1>
+        <p class="lhead__direction">코드만 든 마스터에 사람이 읽을 이름을 — 언어별 Text Table.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 9</span><span class="tag tag--ls">Lesson 3</span><span class="tag tag--lv">초급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>프로그램을 넘어 재사용</h2>
-<p><button class="term" type="button" data-term="Subroutine">Subroutine</button>은 한 프로그램 안에 갇힌다. 여러 프로그램이 <strong>공유</strong>하는 재사용
-블록이 <button class="term" type="button" data-term="Function Module">Function Module</button>(함수 모듈)이다. <code>SE37</code>에서 만들고 관리한다.</p>
-</section><section class="lblock"><h2>CALL FUNCTION — 호출 구조</h2>
-<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12</pre><pre class="abap-editor__code"><code><span class="tok-kw">CALL</span> <span class="tok-kw">FUNCTION</span> <span class="tok-str">'Z_ADD_TAX'</span>
-  <span class="tok-kw">EXPORTING</span>
-    iv_amount = <span class="tok-num">1000</span>          <span class="tok-com">" 넘겨줄 값</span>
-  <span class="tok-kw">IMPORTING</span>
-    ev_result = lv_out        <span class="tok-com">" 돌려받을 값</span>
-  <span class="tok-kw">EXCEPTIONS</span>
-    invalid   = <span class="tok-num">1</span>
-    OTHERS    = <span class="tok-num">2</span>.
-
-<span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.
-  <span class="tok-com">" 예외 처리</span>
-<span class="tok-kw">ENDIF</span>.</code></pre></div></div>
+<section class="lblock"><h2>코드만으론 못 읽는다</h2>
+<p>마스터 테이블은 보통 <strong>코드</strong>(예: 공연번호 <code>C001</code>)만 키로 든다. 그런데 화면·목록엔
+사람이 읽을 <strong>이름</strong>(공연명)이 필요하다. 게다가 이름은 <strong>언어마다</strong> 다르다(한국어
+&quot;콘서트&quot;, 영어 &quot;Concert&quot;). 이 이름을 <strong>별도 테이블</strong>에 두는 게 <button class="term" type="button" data-term="Text Table">Text Table</button>(텍스트 테이블)다.</p>
+</section><section class="lblock"><h2>Text Table의 모양</h2>
+<p>핵심은 키 구성이다 — <strong>마스터 키 + 언어(<code>SPRAS</code>)</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>테이블</th>
+<th>키</th>
+<th>담는 것</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>ZCONCERT</code>(마스터)</td>
+<td><code>CONCERT_ID</code></td>
+<td>정원·장소 등</td>
+</tr>
+<tr>
+<td><code>ZCONCERT_T</code>(Text)</td>
+<td><code>CONCERT_ID</code> + <code>SPRAS</code></td>
+<td>공연명(언어별)</td>
+</tr>
+</tbody></table>
 <ul>
-<li><strong>EXPORTING</strong> — 함수에 <strong>넘기는</strong> 값(호출자 입장).</li>
-<li><strong>IMPORTING</strong> — 함수에서 <strong>돌려받는</strong> 값.</li>
-<li><strong>TABLES</strong> — 내부 테이블 전달(레거시 방식).</li>
-<li><strong>EXCEPTIONS</strong> — 오류를 <code>sy-subrc</code>로 받는다.</li>
+<li>같은 <code>C001</code>이라도 언어(<code>SPRAS</code>)가 다르면 <strong>다른 줄</strong> → 언어별 이름을 따로 보관.</li>
+<li>마스터와는 <button class="term" type="button" data-term="Foreign Key">Foreign Key</button>(CH09-L01)로 잇고, SE11에서 그 관계를 <strong>Text Table로 지정</strong>한다.</li>
+</ul>
+</section><section class="lblock"><h2>무엇이 좋아지나</h2>
+<ul>
+<li>화면·<button class="term" type="button" data-term="F4">F4</button>·Search Help가 코드 옆에 <strong>이름을 자동으로</strong> 보여 준다(코드만 보면 무슨 공연인지 모르니까).</li>
+<li>사용자의 <strong>로그인 언어</strong>에 맞는 이름이 자동으로 뜬다.</li>
 </ul>
 <blockquote>
-<p>방향이 헷갈린다: <strong>호출자 기준</strong>이다. 내가 함수로 EXPORT(내보냄) → 함수가 받음.</p>
+<p>💡 표준 예: 많은 마스터가 코드(마스터 테이블)와 <strong>언어별 텍스트</strong>(텍스트 테이블)를 나눠 둔다. &quot;코드는 마스터, 이름은 Text Table&quot;로 기억하자.</p>
 </blockquote>
-</section><section class="lblock"><h2>어디서 찾나</h2>
-<p>표준 함수도 많다. <code>SE37</code>에서 검색하거나, BAPI(CH29)처럼 표준 인터페이스로 제공된다.</p>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>EXPORTING/IMPORTING 방향 혼동</strong> → 호출자 기준으로 생각.</li>
-<li><strong>EXCEPTIONS 무시</strong> → <code>sy-subrc</code> 확인 누락은 단골 버그.</li>
+<li><strong>언어 키(SPRAS) 누락</strong> → 텍스트 테이블의 키엔 반드시 언어가 들어간다. 빠지면 다국어가 안 된다.</li>
+<li><strong>마스터에 이름 직접</strong> → 다국어가 필요하면 텍스트는 Text Table로 분리한다.</li>
 </ul>
 <hr>
-<p>함수 모듈은 절차적 재사용의 표준이었다. 그런데 현대 ABAP의 중심은 <strong>클래스</strong>다 —
-가볍게 맛보자 → Local Class(다음 레슨).</p>
+<p>코드 옆 이름표까지 붙였다. 이제 사용자가 <strong>목록에서 골라</strong> 입력하게 하는 <button class="term" type="button" data-term="Search Help">Search Help</button>로 →
+다음 레슨.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

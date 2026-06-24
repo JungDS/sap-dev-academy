@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DDIC 검증과 프로그램 검증의 역할 분리 · DDIC 관계와 입력도움말(F4) · SAP Developer Academy</title>
+<title>키 필드 vs 일반 필드 · Index 기초 · Open SQL 기본 조회 · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH08 · DDIC 관계와 입력도움말(F4)</span>
+  <span class="meta">CH08 · Open SQL 기본 조회</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,66 +33,44 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH08</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">DDIC 관계와 입력도움말(F4)</p>
-        <h1>DDIC 검증과 프로그램 검증의 역할 분리</h1>
-        <p class="lhead__direction">선언적 DDIC 검증과 코드 검증의 경계 — 무엇을 어디서.</p>
+        <p class="lhead__eyebrow">Open SQL 기본 조회</p>
+        <h1>키 필드 vs 일반 필드 · Index 기초</h1>
+        <p class="lhead__direction">무엇으로 찾느냐가 속도를 가른다 — 키와 인덱스.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 8</span><span class="tag tag--ls">Lesson 6</span><span class="tag tag--lv">초급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>검증은 누가 하나</h2>
-<p>DDIC의 <button class="term" type="button" data-term="Foreign Key">Foreign Key</button>·<button class="term" type="button" data-term="고정값">고정값</button>·<button class="term" type="button" data-term="Search Help">Search Help</button>는 <strong>선언적 검증</strong>을 해준다.
-그런데 &quot;퇴직자는 못 고른다&quot;, &quot;금액 &gt; 한도면 거부&quot; 같은 <strong>업무 규칙</strong>은? 어디까지
-DDIC가 하고 어디부터 코드가 해야 하는지 가른다.</p>
-</section><section class="lblock"><h2>두 계층</h2>
-<table>
-<thead>
-<tr>
-<th>검증</th>
-<th>담당</th>
-<th>예</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>존재/형식</strong></td>
-<td>DDIC(선언적)</td>
-<td>국가코드가 실제 존재? 고정값 범위?</td>
-</tr>
-<tr>
-<td><strong>업무 규칙</strong></td>
-<td>프로그램(코드)</td>
-<td>한도 초과? 상태 전이 허용? 권한?</td>
-</tr>
-</tbody></table>
-</section><section class="lblock"><h2>DDIC 검증의 한계</h2>
-<ul>
-<li>DDIC 검증(Foreign Key 등)은 <strong>화면/유지보수</strong> 레벨에서 동작한다.</li>
-<li>프로그램이 <code>INSERT</code>/<code>MODIFY</code>로 <strong>직접 DB에 쓰면</strong> 그 검증은 <strong>자동 적용되지
-않는다.</strong> 직접 쓰기 전엔 프로그램이 책임지고 확인해야 한다.</li>
-</ul>
+<section class="lblock"><h2>같은 SELECT인데 왜 느릴까</h2>
+<p>테이블이 커지면 &quot;무슨 컬럼으로 찾느냐&quot;가 속도를 크게 가른다.</p>
+</section><section class="lblock"><h2>키 필드 검색이 빠르다</h2>
+<p>DB는 <strong>Primary Key</strong>로 정렬·색인돼 있어 키로 찾으면 빠르다. 키 일부 또는 키가 아닌
+일반 필드로 찾으면 많은 행을 훑어야 해 느려질 수 있다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
 4
 5
-6</pre><pre class="abap-editor__code"><code><span class="tok-com">" 직접 쓰기 전, 존재 여부를 코드로 확인(예)</span>
-<span class="tok-kw">SELECT</span> <span class="tok-kw">SINGLE</span> country <span class="tok-kw">FROM</span> ztcountry
-  <span class="tok-kw">INTO</span> lv_dummy <span class="tok-kw">WHERE</span> country = ls_person-country.
-<span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.
-  <span class="tok-com">" 잘못된 국가코드 — 업무 처리(메시지/중단)</span>
-<span class="tok-kw">ENDIF</span>.</code></pre></div></div>
-</section><section class="lblock"><h2>원칙</h2>
-<ul>
-<li><strong>할 수 있으면 DDIC로</strong>(선언적·재사용·일관). 존재·형식·코드 목록은 DDIC.</li>
-<li><strong>DDIC로 표현 못 하는 업무 규칙만</strong> 코드로. 중복 검증은 피한다.</li>
-</ul>
+6</pre><pre class="abap-editor__code"><code><span class="tok-com">" 빠름: 키(carrid·connid·fldate)로 조회</span>
+<span class="tok-kw">SELECT</span> <span class="tok-kw">SINGLE</span> * <span class="tok-kw">FROM</span> sflight <span class="tok-kw">INTO</span> ls_flight
+  <span class="tok-kw">WHERE</span> carrid = <span class="tok-str">'KE'</span> <span class="tok-kw">AND</span> connid = <span class="tok-str">'0701'</span> <span class="tok-kw">AND</span> fldate = <span class="tok-str">'20260623'</span>.
+
+<span class="tok-com">" 느릴 수 있음: 키가 아닌 일반 필드로 조회</span>
+<span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> sflight <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> lt_flight <span class="tok-kw">WHERE</span> planetype = <span class="tok-str">'747-400'</span>.</code></pre></div></div>
+</section><section class="lblock"><h2>Secondary Index — 보조 색인</h2>
+<p>키가 아닌 필드로 자주 조회한다면, 그 필드에 <strong>Secondary Index</strong>(보조 인덱스, SE11에서
+정의)를 만들어 빠르게 할 수 있다. 다만 인덱스는 저장공간·쓰기비용이 들고,
+<strong>S/4HANA(컬럼 저장 DB)에서는 권장되지 않는 경우가 많다</strong>(엔진이 이미 빠르다).</p>
+<blockquote>
+<p>여기선 &quot;키로 찾으면 빠르다, 일반 필드는 인덱스를 고려한다&quot;는 감만 잡는다. 성능
+튜닝의 본격적인 이야기는 뒤(성능 챕터)에서 다룬다.</p>
+</blockquote>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>코드로 다 검증</strong> → DDIC가 해줄 걸 중복 구현. 유지보수 부담.</li>
-<li><strong>DDIC만 믿고 직접 쓰기</strong> → 직접 DB 쓰기는 DDIC 검증을 우회한다. 코드로 보완.</li>
+<li><strong>일반 필드 대량 조회</strong> → 느릴 수 있다. 가능하면 키 위주, 필요시 인덱스.</li>
+<li><strong>인덱스 남발</strong> → 조회는 빨라도 입력·수정이 느려진다. 꼭 필요한 곳만.</li>
 </ul>
 <hr>
-<p>이제 입력이 똑똑해졌다(존재·형식은 DDIC, 업무 규칙은 코드). 다음은 반복되는
-코드를 묶는 <strong>모듈화</strong> → <strong>CH09</strong>.</p>
+<p>읽기를 빠르게 하는 법까지 봤다. 그런데 조회 결과가 <strong>하나도 없을 때</strong>, 사용자에게
+어떻게 알릴까 → 조회 실패와 MESSAGE(다음 레슨).</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

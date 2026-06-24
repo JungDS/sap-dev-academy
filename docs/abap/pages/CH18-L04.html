@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SQL Expression: CASE / CAST / COALESCE · New Open SQL / Modern ABAP SQL · SAP Developer Academy</title>
+<title>Table Expression · Modern ABAP Syntax · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH18 · New Open SQL / Modern ABAP SQL</span>
+  <span class="meta">CH18 · Modern ABAP Syntax</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,16 +33,52 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH18</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">New Open SQL / Modern ABAP SQL</p>
-        <h1>SQL Expression: CASE / CAST / COALESCE</h1>
-        
+        <p class="lhead__eyebrow">Modern ABAP Syntax</p>
+        <h1>Table Expression</h1>
+        <p class="lhead__direction">테이블 한 행을 대괄호로 콕 집는다 — tab[ ].</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 18</span><span class="tag tag--ls">Lesson 4</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
-<blockquote>
-<p>🚧 골격 — 본문 작성 예정.</p>
-</blockquote>
+<section class="lblock"><h2>READ TABLE의 식 버전</h2>
+<p>CH06의 <code>READ TABLE</code>을 모던에서는 <strong>대괄호</strong>로 더 짧게 쓴다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8</pre><pre class="abap-editor__code"><code><span class="tok-com">" classic</span>
+<span class="tok-kw">READ</span> <span class="tok-kw">TABLE</span> lt_booking <span class="tok-kw">INTO</span> ls_book <span class="tok-kw">WITH</span> <span class="tok-kw">KEY</span> booking_id = <span class="tok-str">'0001'</span>.
 
+<span class="tok-com">" modern — 키로 콕 집기</span>
+<span class="tok-kw">DATA</span>(ls_book) = lt_booking[ booking_id = <span class="tok-str">'0001'</span> ].
+
+<span class="tok-com">" 인덱스로</span>
+<span class="tok-kw">DATA</span>(ls_first) = lt_booking[ <span class="tok-num">1</span> ].</code></pre></div></div>
+</section><section class="lblock"><h2>없으면 예외가 난다</h2>
+<p>찾는 행이 <strong>없으면</strong> <code>CX_SY_ITAB_LINE_NOT_FOUND</code> 예외가 난다(classic의 <code>sy-subrc=4</code>와
+다르다). 그래서 존재를 먼저 확인하거나 예외를 잡는다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5</pre><pre class="abap-editor__code"><code><span class="tok-kw">IF</span> line_exists( lt_booking[ booking_id = <span class="tok-str">'0001'</span> ] ).
+  <span class="tok-kw">DATA</span>(ls) = lt_booking[ booking_id = <span class="tok-str">'0001'</span> ].
+<span class="tok-kw">ENDIF</span>.
+
+<span class="tok-kw">DATA</span>(lv_idx) = line_index( lt_booking[ booking_id = <span class="tok-str">'0001'</span> ] ).  <span class="tok-com">" 위치(없으면 0)</span></code></pre></div></div>
+<blockquote>
+<p>예외 처리(<code>TRY/CATCH</code>)는 CH20에서 정식으로 — 지금은 <code>line_exists( )</code>로 안전하게.</p>
+</blockquote>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>없는 행 직접 접근</strong> → 예외 덤프. <code>line_exists( )</code>로 먼저 확인.</li>
+<li><strong>classic과 혼동</strong> → 표현식은 <code>sy-subrc</code>를 안 세운다(예외로 알린다).</li>
+</ul>
+<hr>
+<p>행을 식으로 집었다. 이제 문자열을 우아하게 만드는 <strong>String Template</strong> → 다음 레슨.</p>
+</section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
       <footer class="foot">SAP Developer Academy · CH18 CH18-L04</footer>

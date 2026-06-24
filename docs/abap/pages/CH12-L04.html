@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HAVING과 집계 조건 · Open SQL 2차: JOIN·집계 · SAP Developer Academy</title>
+<title>Multiple Selection과 Include/Exclude · SELECT-OPTIONS와 Range Table · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH12 · Open SQL 2차: JOIN·집계</span>
+  <span class="meta">CH12 · SELECT-OPTIONS와 Range Table</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,53 +33,37 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH12</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">Open SQL 2차: JOIN·집계</p>
-        <h1>HAVING과 집계 조건</h1>
-        <p class="lhead__direction">집계 결과로 거른다 — WHERE와 다른 HAVING.</p>
+        <p class="lhead__eyebrow">SELECT-OPTIONS와 Range Table</p>
+        <h1>Multiple Selection과 Include/Exclude</h1>
+        <p class="lhead__direction">다중 선택 팝업 — 여러 값·범위와 포함/제외(녹색/빨강).</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 12</span><span class="tag tag--ls">Lesson 4</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>집계한 다음에 거르기</h2>
-<p><code>WHERE</code>는 <strong>그룹 짓기 전</strong> 행을 거른다. &quot;인원 5명 이상인 부서만&quot;처럼 <strong>집계
-결과로</strong> 거르려면 <code>HAVING</code>이 필요하다.</p>
-</section><section class="lblock"><h2>WHERE vs HAVING</h2>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>시점</th>
-<th>대상</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>WHERE</code></td>
-<td>GROUP BY <strong>전</strong></td>
-<td>개별 행</td>
-</tr>
-<tr>
-<td><code>HAVING</code></td>
-<td>GROUP BY <strong>후</strong></td>
-<td>집계 결과</td>
-</tr>
-</tbody></table>
-<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
-2
-3
-4
-5
-6</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> dept_id COUNT( * ) <span class="tok-kw">AS</span> cnt
-  <span class="tok-kw">FROM</span> ztperson
-  <span class="tok-kw">INTO</span> <span class="tok-kw">CORRESPONDING</span> <span class="tok-kw">FIELDS</span> <span class="tok-kw">OF</span> <span class="tok-kw">TABLE</span> lt_sum
-  <span class="tok-kw">WHERE</span> age &gt;= <span class="tok-num">20</span>          <span class="tok-com">" 먼저 개별 행 필터</span>
-  <span class="tok-kw">GROUP</span> BY dept_id
-  HAVING COUNT( * ) &gt;= <span class="tok-num">5</span>.  <span class="tok-com">" 그 다음 그룹 필터</span></code></pre></div></div>
+<section class="lblock"><h2>여러 값, 그리고 제외</h2>
+<p><button class="term" type="button" data-term="SELECT-OPTIONS">SELECT-OPTIONS</button> 우측 <strong>화살표 버튼</strong>을 누르면 다중 선택 팝업이 뜬다. 여기서
+&quot;여러 값&quot;, &quot;여러 범위&quot;, 그리고 <strong>제외(Exclude)</strong> 까지 지정한다.</p>
+</section><section class="lblock"><h2>팝업의 탭</h2>
+<ul>
+<li><strong>Single values (포함)</strong> — 개별 값 여러 개.</li>
+<li><strong>Ranges (포함)</strong> — 여러 범위.</li>
+<li><strong>Exclude single values / ranges</strong> — 제외할 값/범위.</li>
+</ul>
+<p>포함은 <button class="term" type="button" data-term="Range Table">Range Table</button>의 <code>SIGN = &#39;I&#39;</code>, 제외는 <code>SIGN = &#39;E&#39;</code>로 들어간다(녹색/빨강
+아이콘으로 구분).</p>
+</section><section class="lblock"><h2>동작 규칙(직관)</h2>
+<ul>
+<li>포함(I) 조건들 중 하나라도 맞고(OR),</li>
+<li>제외(E) 조건에 걸리지 않으면 통과.</li>
+</ul>
+<p>예: &quot;20~40 포함, 단 30 제외&quot; → <code>I BT 20 40</code> + <code>E EQ 30</code>.</p>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>집계 조건을 WHERE에</strong> → <code>WHERE COUNT(*)…</code>는 오류. 집계 조건은 <code>HAVING</code>.</li>
-<li><strong>순서</strong> → <code>WHERE → GROUP BY → HAVING → ORDER BY</code>를 지킨다.</li>
+<li><strong>제외만 지정</strong> → 포함이 없으면 결과가 비거나 의도와 다를 수 있다. 포함과 함께.</li>
+<li><strong>녹색/빨강 의미</strong> → 녹색=포함(I), 빨강=제외(E).</li>
 </ul>
 <hr>
-<p>요약·필터까지 됐다. 결과 <strong>정렬</strong>도 DB에서 해보자 → ORDER BY(다음 레슨).</p>
+<p>포함·제외까지 다뤘다. 각 조건의 <strong>비교 방식(OPTION)</strong> 을 정확히 알면 코드로도
+조작할 수 있다 → EQ/BT/CP(다음 레슨).</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Adobe Forms 기본 구조 · Forms / Output / PDF · SAP Developer Academy</title>
+<title>AMDP 기본 구조 · AMDP / ADBC / Pushdown · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH33 · Forms / Output / PDF</span>
+  <span class="meta">CH33 · AMDP / ADBC / Pushdown</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,16 +33,66 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH33</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">Forms / Output / PDF</p>
-        <h1>Adobe Forms 기본 구조</h1>
-        
-        <div class="tags"><span class="tag tag--track">Track 2</span><span class="tag tag--ch">Chapter 33</span><span class="tag tag--ls">Lesson 2</span><span class="tag tag--lv">중급</span></div>
+        <p class="lhead__eyebrow">AMDP / ADBC / Pushdown</p>
+        <h1>AMDP 기본 구조</h1>
+        <p class="lhead__direction">ABAP 메서드 안에 SQLScript를 담는다 — AMDP.</p>
+        <div class="tags"><span class="tag tag--track">Track 2</span><span class="tag tag--ch">Chapter 33</span><span class="tag tag--ls">Lesson 2</span><span class="tag tag--lv">고급</span></div>
       </section>
       <article class="prose">
-<blockquote>
-<p>🚧 골격 — 본문 작성 예정.</p>
-</blockquote>
+<section class="lblock"><h2>DB 프로시저를 ABAP 메서드로</h2>
+<p><button class="term" type="button" data-term="AMDP">AMDP</button>(ABAP Managed Database Procedure)는 ABAP 클래스 메서드 안에 <strong>SQLScript</strong>(HANA
+프로시저 언어)를 써서, DB에서 직접 실행되게 한다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19</pre><pre class="abap-editor__code"><code><span class="tok-kw">CLASS</span> zcl_booking_amdp <span class="tok-kw">DEFINITION</span> <span class="tok-kw">PUBLIC</span>.
+  <span class="tok-kw">PUBLIC</span> <span class="tok-kw">SECTION</span>.
+    INTERFACES if_amdp_marker_hdb.        <span class="tok-com">" AMDP 표시</span>
+    <span class="tok-kw">METHODS</span> get_stats
+      <span class="tok-kw">IMPORTING</span> <span class="tok-kw">VALUE</span>(iv_concert) <span class="tok-kw">TYPE</span> zconcert-concert_id
+      <span class="tok-kw">EXPORTING</span> <span class="tok-kw">VALUE</span>(et_stats)   <span class="tok-kw">TYPE</span> ztt_stats
+      AMDP OPTIONS READ-ONLY.             <span class="tok-com">" 읽기 전용 선언</span>
+<span class="tok-kw">ENDCLASS</span>.
 
+<span class="tok-kw">CLASS</span> zcl_booking_amdp <span class="tok-kw">IMPLEMENTATION</span>.
+  <span class="tok-kw">METHOD</span> get_stats BY DATABASE PROCEDURE FOR HDB
+                   LANGUAGE SQLSCRIPT
+                   <span class="tok-kw">USING</span> zbooking.
+    et_stats = <span class="tok-kw">SELECT</span> concert_id, SUM( seats ) <span class="tok-kw">AS</span> total
+               <span class="tok-kw">FROM</span> zbooking
+               <span class="tok-kw">WHERE</span> concert_id = :iv_concert
+               <span class="tok-kw">GROUP</span> BY concert_id;
+  <span class="tok-kw">ENDMETHOD</span>.
+<span class="tok-kw">ENDCLASS</span>.</code></pre></div></div>
+<ul>
+<li><code>INTERFACES if_amdp_marker_hdb</code> — AMDP 클래스 표시.</li>
+<li><code>BY DATABASE PROCEDURE FOR HDB LANGUAGE SQLSCRIPT</code> — 본문이 SQLScript.</li>
+<li><code>USING</code> — 접근할 테이블/뷰를 선언. <code>:파라미터</code>로 입력 참조.</li>
+<li><code>AMDP OPTIONS READ-ONLY</code> — 메서드가 <strong>읽기만</strong> 하면 선언에 붙인다. DB가 병렬·읽기복제본으로 더 빠르게 처리하고, 실수로 쓰기를 넣으면 문법 검사가 막아준다(이 예시는 SELECT뿐이라 READ-ONLY).</li>
+</ul>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>USING 누락</strong> → 쓰는 테이블을 USING에 선언해야 한다.</li>
+<li><strong>ABAP 문법 혼입</strong> → 본문은 SQLScript다(ABAP 문 못 씀).</li>
+</ul>
+<hr>
+<p>SQLScript를 품었다. 더 낮은 수준의 Native SQL — ADBC → 다음 레슨.</p>
+</section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
       <footer class="foot">SAP Developer Academy · CH33 CH33-L02</footer>
