@@ -1,6 +1,6 @@
 # 11. KEYWORD AUDIT — 공식 ABAP Keyword Doc 대비 콘텐츠 감사 원장
 
-> 📅 최종수정: 2026-06-24 01:01 KST
+> 📅 최종수정: 2026-06-24 01:05 KST
 > 🎯 **목적:** `content/abap/**` 레슨을 **SAP 공식 ABAP Keyword Documentation 오프라인 전체본**(`C:\ABAP_DOCU_HTML`, AS ABAP Release 758)과 대조해 키워드·문법·이론의 **누락/상이/오류**를 보강. 챕터 순서대로.
 > 📖 **읽을 때:** 감사 패스 **재개 시**(이어서 진행) — 이 원장이 어디까지 했는지의 단일 출처.
 
@@ -42,7 +42,8 @@
 | CH20 | ✅ 완료 | 변경 없음 — 공식과 일치(매우 충실) |
 | CH21 | ✅ 완료 | 변경 없음 — 공식 ALV API와 일치 |
 | CH22 | ✅ 완료 | L04 잘못된 @Semantics 자기참조 예시 교정 |
-| CH23~CH36 | ⬜ 대기 | (다음 재개 지점 = CH23) |
+| CH23 | ✅ 완료 | 변경 없음 — 공식 RAP BDL/EML과 일치 |
+| CH24~CH36 | ⬜ 대기 | (다음 재개 지점 = CH24 · Track-2) |
 
 ## 챕터별 findings
 
@@ -144,3 +145,7 @@
 ### CH22 — CDS View Entity 기초
 - **L01~L07**: `define view entity … as select from`·`as projection on`(ZI_/ZC_)·`association [0..*] … on $projection.…`·Annotation(`@EndUserText/@UI.lineItem/@AccessControl`)·Metadata Extension(`annotate entity … with`·`@Metadata.layer`)·DCL(`define role … grant select … aspect pfcg_auth`) 전부 공식 CDS DDL/DCL과 일치 ✓.
 - **L04**: **교정** `@Semantics.quantity.unitOfMeasure: 'CAPACITY'`를 정수 `capacity`에 자기참조로 단 예시 제거(단위 필드 참조 필수 → 그대로면 활성화 실패) + "수량/금액 의미는 단위·통화 짝 필드 필요" 설명 보강.
+
+### CH23 — RAP / ABAP Cloud 입문  → **변경 없음(공식 RAP BDL/EML과 일치)**
+- **L01~L09**: RAP 계층·managed/unmanaged·`define root view entity`·`provider contract transactional_query`·BDEF(`managed implementation in class … unique`·`persistent table … lock master`·create/update/delete·`field ( readonly )`·mapping)·Behavior Pool(`cl_abap_behavior_handler`·`FOR VALIDATE ON SAVE IMPORTING keys FOR …`)·Service Def/Binding(`define service … expose`)·Validation/Determination/Action(`validation … on save`·`determination … on modify`·`action … result [1] $self`)·EML(`READ ENTITIES … IN LOCAL MODE … WITH CORRESPONDING #( keys ) RESULT`·failed/reported)·ABAP Cloud/Released API/Clean Core 전부 공식과 일치 ✓.
+- Track-1(CH01~23) 완료. CH24+ = Track-2 실무 디테일.
