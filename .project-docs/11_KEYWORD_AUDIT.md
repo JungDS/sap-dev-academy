@@ -1,6 +1,6 @@
 # 11. KEYWORD AUDIT — 공식 ABAP Keyword Doc 대비 콘텐츠 감사 원장
 
-> 📅 최종수정: 2026-06-24 00:37 KST
+> 📅 최종수정: 2026-06-24 00:40 KST
 > 🎯 **목적:** `content/abap/**` 레슨을 **SAP 공식 ABAP Keyword Documentation 오프라인 전체본**(`C:\ABAP_DOCU_HTML`, AS ABAP Release 758)과 대조해 키워드·문법·이론의 **누락/상이/오류**를 보강. 챕터 순서대로.
 > 📖 **읽을 때:** 감사 패스 **재개 시**(이어서 진행) — 이 원장이 어디까지 했는지의 단일 출처.
 
@@ -35,7 +35,8 @@
 | CH13 | ✅ 완료 | L03 SELECT DISTINCT 보강 |
 | CH14 | ✅ 완료 | 변경 없음 — 공식과 일치 |
 | CH15 | ✅ 완료 | 변경 없음 — 공식과 일치(매우 충실) |
-| CH16~CH36 | ⬜ 대기 | (다음 재개 지점 = CH16) |
+| CH16 | ✅ 완료 | 변경 없음 — 공식과 일치 |
+| CH17~CH36 | ⬜ 대기 | (다음 재개 지점 = CH17) |
 
 ## 챕터별 findings
 
@@ -109,3 +110,7 @@
 ### CH15 — Report Event·Selection Screen 심화  → **변경 없음(공식과 일치, 매우 충실)**
 - **L01~L10**(전 10레슨): Report Event 흐름(LOAD-OF-PROGRAM·INITIALIZATION·AT SELECTION-SCREEN OUTPUT(PBO)·AT SELECTION-SCREEN(PAI)·START/END-OF-SELECTION), LOOP AT SCREEN·MODIFY SCREEN, AT SELECTION-SCREEN ON(전체vs필드·오류시 동작 차이), **MESSAGE 6타입(I/S/W/E/A/X)·메시지클래스 SE91·`&1~&4`**, AUTHORITY-CHECK, ON BLOCK/RADIOBUTTON GROUP/HELP·VALUE-REQUEST, SELECTION-SCREEN UI(BLOCK·COMMENT·ULINE·SKIP·AS CHECKBOX·RADIOBUTTON GROUP·PUSHBUTTON·TABBED BLOCK·FUNCTION KEY·SSCRFIELDS) — 전부 공식과 일치 ✓.
 - ⚠️ 글롭 주의: `CHxx-L0*`는 L10 누락(이 챕터 10레슨) → 이후 `CHxx-L*` 사용.
+
+### CH16 — Screen Programming / Dynpro 기초  → **변경 없음(공식과 일치)**
+- **L01~L08**: Module Pool(T-code 필수)·PBO/PAI·Flow Logic(`PROCESS BEFORE OUTPUT`/`AFTER INPUT`·MODULE)·화면요소·OK_CODE/SY-UCOMM·`CLEAR ok_code`·LEAVE TO SCREEN 0/LEAVE PROGRAM/LEAVE SCREEN·SET PF-STATUS/TITLEBAR/EXCLUDING·LOOP AT SCREEN(screen-input/invisible·MODIFY SCREEN)·Custom Container(`cl_gui_custom_container`·CREATE OBJECT)·Tabstrip/Subscreen 전부 공식과 일치 ✓.
+- Table Control·CALL SCREEN(다중화면 네비)은 의도적 스코프 제외(화면 표는 ALV로 대체 명시 — CH17). `REF TO`/`CREATE OBJECT`는 `[선행 사용]`로 CH20 게이팅 준수.
