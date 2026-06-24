@@ -1,6 +1,6 @@
 # 12. EXPANSION PLAN — 51항목 체크리스트 기반 콘텐츠 확장 배치 계획
 
-> 📅 최종수정: 2026-06-24 03:16 KST
+> 📅 최종수정: 2026-06-24 03:20 KST
 > 🎯 **목적:** 사용자 제공 51항목 체크리스트(+ Input Help 우선순위 이미지)에서 **미수록/부분수록 38건**을 `content/abap/**`에 배치·보강. 진행 추적의 단일 출처.
 > 📖 **읽을 때:** 확장 작업 재개 시. (키워드 감사 원장 = [11](11_KEYWORD_AUDIT.md), 별개 작업.)
 
@@ -28,7 +28,7 @@
 | A — DDIC 타입·구조 | CH03·05·06 | ✅ 완료 (10건) |
 | B — Transparent Table 실무 | CH07·09·(04 덤프) | ✅ 완료 (7건) |
 | C — JOIN 보강 | CH13·14 | ✅ 완료 (4건) |
-| D — View·유지보수 | CH14 | ⬜ 대기 |
+| D — View·유지보수 | CH14 | ✅ 완료 (3건) |
 | E — Search Help·Input Help(★우선순위 이미지) | CH09·15·16 | ⬜ 대기 |
 | F — Selection Screen 심화(최대) | CH15(신규 L11+) | ⬜ 대기 |
 
@@ -70,9 +70,9 @@
 ### D. View·유지보수 (CH14)
 | # | 배치 | 액션 |
 |---|---|---|
-|31|CH14-L05|보강: One Step/Two Step 상세|
-|32|CH14-L05|보강: Maintenance Dialog 장단점|
-|33|**신규 CH14-Lx** 또는 L05 보강|View Cluster 소개·장단점·사용시점|
+|31|✅ CH14-L05|One Step(1단계)/Two Step(2단계) 상세|
+|32|✅ CH14-L05|Maintenance Dialog 장단점 표|
+|33|✅ CH14-L05 보강(신규 대신)|View Cluster(SE54) 소개·장단점·사용시점 + glossary 등록. *재량: CH14가 L08 실습 캡스톤(→CH15)이라 신규 레슨 append는 서사 역전 → 계획서 허용대로 L05(TMG/SM30) 통합.*|
 
 ### E. Search Help · Input Help (CH09/15/16)
 | # | 배치 | 액션 |
