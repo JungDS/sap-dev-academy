@@ -1,52 +1,57 @@
 <!DOCTYPE html>
-<!-- CH02-L05-S01 — 엔진: before-after (embeds/_engine/before-after.css, CSS-only) + _autoheight.js
-     ⚠️ 콘텐츠=레슨 전용(매직넘버 vs 상수, #C02-1). 엔진 수정은 _engine/에서. -->
+<!-- CH02-L05-S01 — 엔진: constant-circle-sim + _autoheight. 콘텐츠=레슨 전용(상수 pi 원 계산 + 변수↔상수 보호, #C02-L05 재설계).
+     게이팅: CH02(선언·대입·산술 *). IF 없음. 매직넘버 한도 예제 폐기. -->
 <html lang="ko">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>매직 넘버 vs 상수 · CH02-L05-S01</title>
+<title>상수 pi 원 계산 · CH02-L05-S01</title>
 <link rel="stylesheet" href="../_engine/_base.css" />
-<link rel="stylesheet" href="../_engine/before-after.css" />
+<link rel="stylesheet" href="../_engine/constant-circle-sim.css" />
 </head>
 <body>
-<div class="wrap">
-  <p class="hd">매직 넘버 vs 상수 <small>(같은 코드, 두 버전)</small></p>
-  <p class="lead">코드에 박힌 정체불명의 숫자(매직 넘버)를 <code>CONSTANTS</code>로 이름 붙이면 어떻게 달라지는지 나란히 비교해 보세요.</p>
+<div class="wrap" data-circlesim>
+  <p class="hd">상수 <code>gc_pi</code>로 원 계산 — 변수로 두면? <small>(CONSTANTS)</small></p>
+  <p class="lead">반지름과 pi 정밀도를 바꾸면 <b>지름·둘레·넓이</b>가 바로 계산됩니다. 한 상수 <code>gc_pi</code>가 둘레·넓이 <b>두 식에 재사용</b>되는 데 주목하세요.</p>
 
-  <div class="ba">
-    <div class="ba__col before">
-      <div class="ba__head">✗ 매직 넘버</div>
-      <div class="ba__body">
-<pre>DATA lv_amt TYPE i VALUE 1500.
-
-IF lv_amt > <b>1000</b>.            " 이 1000이 한도? 수량?
-  WRITE: / '한도 초과 (최대 <b>1000</b>)'.
-ENDIF.</pre>
-        <ul class="ba__list">
-          <li>정체불명의 <b>1000</b>이 여러 곳에 흩어짐</li>
-          <li>한도가 2000으로 바뀌면 <b>빠짐없이 찾아</b> 고쳐야(하나라도 놓치면 버그)</li>
-        </ul>
-        <span class="ba__metric">한도 변경 시 고칠 곳: 2곳</span>
-      </div>
-    </div>
-    <div class="ba__col after">
-      <div class="ba__head">✓ CONSTANTS</div>
-      <div class="ba__body">
-<pre><b>CONSTANTS gc_max_amount TYPE i VALUE 1000.</b>
-
-IF lv_amt > <b>gc_max_amount</b>.   " 이름으로 읽힘
-  WRITE: / '한도 초과'.
-ENDIF.</pre>
-        <ul class="ba__list">
-          <li>값에 <b>이름</b>을 붙여 뜻이 분명</li>
-          <li>한도 변경 = <b>선언 한 줄(VALUE)</b>만 — 쓰는 곳은 그대로</li>
-        </ul>
-        <span class="ba__metric">한도 변경 시 고칠 곳: 1곳</span>
-      </div>
-    </div>
+  <div class="cc-sec">① 원 계산기</div>
+  <div class="cc-controls">
+    <label class="cc-field">반지름 r <input type="number" data-radius value="5" min="0" step="1"></label>
+    <span class="cc-field">pi 정밀도</span>
+    <span class="cc-seg" data-pi-seg>
+      <button type="button" data-pi="3.14">3.14</button>
+      <button type="button" data-pi="3.1415926" class="on">3.1415926</button>
+    </span>
   </div>
+
+  <div class="cc-results">
+    <div class="cc-card"><div class="cc-card__lbl">지름 (2r)</div><div class="cc-card__val" data-d>—</div><div class="cc-card__f">r × 2</div></div>
+    <div class="cc-card"><div class="cc-card__lbl">둘레 (2πr)</div><div class="cc-card__val" data-c>—</div><div class="cc-card__f">gc_pi × r × 2</div></div>
+    <div class="cc-card"><div class="cc-card__lbl">넓이 (πr²)</div><div class="cc-card__val" data-a>—</div><div class="cc-card__f">gc_pi × r × r</div></div>
+  </div>
+
+  <div class="cc-code">
+    <div class="cc-code__hd"><span class="cb-dots"><i></i><i></i><i></i></span>ABAP</div>
+    <pre data-code></pre>
+  </div>
+
+  <div class="cc-sec">② 변수로 두면? — 실수로 덮어쓰기</div>
+  <div class="cc-guard">
+    <div class="cc-guard__row">
+      <span class="cc-field">pi를</span>
+      <span class="cc-seg" data-mode-seg>
+        <button type="button" data-mode="const" class="on">상수 gc_pi</button>
+        <button type="button" data-mode="var">변수 lv_pi</button>
+      </span>
+      <button class="cc-guard__btn" type="button" data-act>🧑‍💻 누군가 pi = 3 으로 덮어쓴다</button>
+      <button class="cc-reset" type="button" data-greset>↺ 되돌리기</button>
+    </div>
+    <div class="cc-out idle" data-out></div>
+  </div>
+
+  <div class="note">변수로도 같은 계산을 할 수 있다. 하지만 <b>변수는 실수로 덮어써져도 ABAP이 막지 않아</b> 이후 계산이 조용히 틀어진다. <code>gc_pi</code>처럼 <b>절대 바뀌면 안 되는 값</b>은 상수로 못 박으면 재대입이 <b>문법 오류</b>라 그런 사고가 원천 차단된다.</div>
 </div>
+<script src="../_engine/constant-circle-sim.js" defer></script>
 <script src="../_engine/_autoheight.js" defer></script>
 </body>
 </html>

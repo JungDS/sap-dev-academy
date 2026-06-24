@@ -13,7 +13,7 @@
 | CH01-L05-S01 | CH01-L05 | write-format | WRITE 서식 플레이그라운드(폭·정렬·COLOR·ULINE·SKIP) | ✅ |
 | CH01-L02-S01 | CH01-L02 | se38-first-program | 가상 SE38 개발루프(생성→저장→$TMP·비활성→활성화→실행)+흔한실수 | ✅ |
 | CH01-L07-S01 | CH01-L07 | se93-tcode-create | SE93 T-code 생성→명령창 실행(Hello, ABAP!)+흔한실수 | ✅ |
-| CH02-L05-S01 | CH02-L05 | before-after | 매직넘버 vs 상수(고칠곳 2곳/1곳) | ✅ |
+| CH02-L05-S01 | CH02-L05 | constant-circle-sim | 상수 pi 원 계산기(지름·둘레·넓이) + 변수↔상수 보호 데모(재설계·매직넘버/IF 폐기) | ✅ |
 | CH02-L06-S01 | CH02-L06 | fill-blank | Text Symbol 빈칸(TEXT·001) | ✅ |
 | CH03-L01-S01 | CH03-L01 | domain-builder | SE11 Domain 생성(저장→검사→활성화·예제칩 6) | ✅ |
 | CH04-L01-S01 | CH04-L01 | step-debugger | 산술 트레이스(7+3·2**10·DIV·MOD) | ✅ |
