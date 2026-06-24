@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<!-- CH25-L04-S01 — 엔진: lost-update-sim (embeds/_engine/lost-update-sim.{js,css}) · 공통토큰: _engine/_base.css
+     Lost Update와 낙관/비관 잠금 — 전략 토글로 A·B 타임라인 결과 비교. -->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Lost Update 시뮬 · CH25-L04-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/lost-update-sim.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">잃어버린 갱신 — 전략에 따라 결과가 다르다</p>
+  <p class="lead">A와 B가 같은 예매의 좌석 수를 동시에 만집니다. <b>전략</b>을 바꿔, A의 변경이 사라지는지(Lost Update) 막아지는지 비교해 보세요.</p>
+
+  <div class="pick">
+    <button class="st on" data-s="none" type="button">전략 없음<small>그냥 저장</small></button>
+    <button class="st" data-s="pessimistic" type="button">Pessimistic<small>미리 잠금</small></button>
+    <button class="st" data-s="optimistic" type="button">Optimistic<small>저장 직전 비교</small></button>
+  </div>
+
+  <div class="tl" id="tl"></div>
+  <div class="out" id="out"></div>
+
+  <div class="note">💡 <b>Pessimistic</b>(비관) = 충돌 잦음·편집 긺 → 미리 <code>ENQUEUE</code>. <b>Optimistic</b>(낙관) = 충돌 드묾·읽기 위주 → 안 잠그고 저장 직전 <code>changed_at</code> 비교. 무조건 잠그면 동시성이 떨어지니 빈도를 보고 고른다.</div>
+</div>
+<script src="../_engine/lost-update-sim.js" defer></script>
+</body>
+</html>
