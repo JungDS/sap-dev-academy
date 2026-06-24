@@ -1,6 +1,6 @@
 # 11. KEYWORD AUDIT — 공식 ABAP Keyword Doc 대비 콘텐츠 감사 원장
 
-> 📅 최종수정: 2026-06-24 01:38 KST
+> 📅 최종수정: 2026-06-24 01:47 KST
 > 🎯 **목적:** `content/abap/**` 레슨을 **SAP 공식 ABAP Keyword Documentation 오프라인 전체본**(`C:\ABAP_DOCU_HTML`, AS ABAP Release 758)과 대조해 키워드·문법·이론의 **누락/상이/오류**를 보강. 챕터 순서대로.
 > 📖 **읽을 때:** 감사 패스 **재개 시**(이어서 진행) — 이 원장이 어디까지 했는지의 단일 출처.
 
@@ -49,7 +49,8 @@
 | CH27 | ✅ 완료 | 변경 없음 — 공식 ALV 이벤트 API와 일치 |
 | CH28 | ✅ 완료 | L04 미학습 `COND`→`IF` 게이팅 교정(CH18 갭 연계) |
 | CH29 | ✅ 완료 | 변경 없음 — 공식과 일치 |
-| CH30~CH36 | ⬜ 대기 | (다음 재개 지점 = CH30) |
+| CH30 | ✅ 완료 | L02 RFC `MESSAGE`·L03 BDC `OPTIONS FROM`·L05 OPEN DATASET 보안/MESSAGE/TRANSFER 보강 |
+| CH31~CH36 | ⬜ 대기 | (다음 재개 지점 = CH31) |
 
 ## 챕터별 findings
 
@@ -177,3 +178,10 @@
 
 ### CH29 — Enhancement / BAdI / User Exit (Track-2)  → **변경 없음(공식과 일치)**
 - **L01~L05**: User Exit(FORM)·Customer Exit(`FUNCTION EXIT_…`·SMOD/CMOD)·Enhancement Point/Section(`ENHANCEMENT…ENDENHANCEMENT`·Implicit)·BAdI(`GET BADI`/`CALL BADI`·SE18/SE19·필터)·확장 우선순위(BAdI>Explicit>Implicit>Modification)·Clean Core(Released API·Key User/Developer Extensibility) 전부 공식 개념과 일치 ✓. 미학습 constructor 식 없음.
+
+### CH30 — 인터페이스 실무: BAPI/RFC/BDC/File (Track-2)
+- **L01**(BAPI·BAPIRET2·`BAPI_TRANSACTION_COMMIT`): 정확 ✓ — "BAPI는 스스로 COMMIT 안 함→명시 COMMIT", Return type E/A 확인 모두 공식 패턴과 일치. (BAPI/BAPIRET2는 표준 객체라 keyword doc 직접 항목 아님 — 개념 검증.) `line_exists`·테이블식·인라인 `DATA()`는 CH18+ 도입분이라 게이팅 OK.
+- **L02**(RFC `CALL FUNCTION … DESTINATION`): **보강** — 공식 RFC 특수예외 구문 `communication_failure = n [MESSAGE m]`·`system_failure = n [MESSAGE m]`에 맞춰 `MESSAGE lv_msg` 추가(실패 원인 텍스트 수신). `DESTINATION`·SM59·Remote-Enabled 제약은 공식과 일치 ✓.
+- **L03**(BDC `CALL TRANSACTION … USING`): **보강** — 공식 구문 `{[MODE][UPDATE]} | [OPTIONS FROM opt]`의 대안 `OPTIONS FROM <ctu_params>`를 실무 노트로 1줄 추가. MODE A/E/N·`MESSAGES INTO`·Session(`BDC_OPEN/INSERT/CLOSE_GROUP`·SM35)·SHDB·BDCDATA 구조 모두 정확 ✓.
+- **L04**(GUI 업로드·`SPLIT`·`ALSM_EXCEL_TO_INTERNAL_TABLE`): 정확 ✓ — 변경 없음.
+- **L05**(`OPEN/READ/CLOSE DATASET`): **보강 3건** — ① 공식 Security Hint **Directory Traversal**(외부 주입 경로 검증) 경고 추가 ② 공식 권고 `OPEN DATASET … MESSAGE m` + OPEN의 `sy-subrc` 확인 ③ `FOR INPUT/OUTPUT/APPENDING` + 쓰기 `TRANSFER` 1줄(intro "읽고 쓴다"와 본문 일치). 전부 classic·게이팅 안전.

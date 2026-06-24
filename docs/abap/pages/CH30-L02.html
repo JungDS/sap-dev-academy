@@ -48,16 +48,21 @@
 4
 5
 6
-7</pre><pre class="abap-editor__code"><code><span class="tok-com">" 호출 측: 대상 시스템(RFC Destination)을 지정해 원격 호출</span>
+7
+8
+9</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> lv_msg <span class="tok-kw">TYPE</span> string.
+
+<span class="tok-com">" 호출 측: 대상 시스템(RFC Destination)을 지정해 원격 호출</span>
 <span class="tok-kw">CALL</span> <span class="tok-kw">FUNCTION</span> <span class="tok-str">'Z_GET_BOOKINGS'</span>
   DESTINATION <span class="tok-str">'TARGET_SYS'</span>           <span class="tok-com">" SM59에 등록된 연결</span>
   <span class="tok-kw">EXPORTING</span>  iv_concert = lv_id
   <span class="tok-kw">IMPORTING</span>  et_booking = lt_booking
-  <span class="tok-kw">EXCEPTIONS</span> communication_failure = <span class="tok-num">1</span>
-             system_failure        = <span class="tok-num">2</span>.</code></pre></div></div>
+  <span class="tok-kw">EXCEPTIONS</span> communication_failure = <span class="tok-num">1</span> <span class="tok-kw">MESSAGE</span> lv_msg
+             system_failure        = <span class="tok-num">2</span> <span class="tok-kw">MESSAGE</span> lv_msg.</code></pre></div></div>
 <ul>
 <li><strong>Remote-Enabled</strong> 함수는 파라미터에 제약(테이블·구조는 가능, 일부 타입 제한).</li>
 <li><code>SM59</code> — RFC Destination(대상 시스템 연결) 등록.</li>
+<li>RFC 전용 예외 <code>communication_failure</code>·<code>system_failure</code> 뒤에 <code>MESSAGE lv_msg</code>를 붙이면 <strong>실패 원인 텍스트</strong>를 받아 로그·화면에 쓸 수 있다(원격 오류는 메시지가 핵심 단서).</li>
 <li>외부(Java·.NET 등)도 RFC로 ABAP 함수를 부른다.</li>
 </ul>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
