@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<!-- CH24-L05-S01 — 엔진: package-commit (embeds/_engine/package-commit.{js,css}) · 공통토큰: _engine/_base.css
+     대량 변경 패키지 단위 COMMIT 시각화 — 패키지 크기별 COMMIT 횟수·미커밋 버퍼 sawtooth. -->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>패키지 커밋 시각화 · CH24-L05-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/package-commit.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">패키지 커밋 — <b>20,000건</b>을 어떻게 나눌까?</p>
+  <p class="lead">패키지 크기를 바꿔 보세요. <b>COMMIT 횟수</b>와 <b>최대 미커밋 버퍼</b>(메모리·잠금 부담)가 어떻게 달라지는지 톱니 그래프로 보입니다.</p>
+
+  <div class="pick">
+    <span class="lbl">패키지 크기:</span>
+    <button class="psz" data-p="1000" type="button">1,000</button>
+    <button class="psz on" data-p="5000" type="button">5,000</button>
+    <button class="psz" data-p="10000" type="button">10,000</button>
+    <button class="psz single" data-p="20000" type="button">단일(전체)</button>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="v" id="cTotal">20,000</div><div class="k">총 처리 건수</div></div>
+    <div class="stat"><div class="v" id="cCommit">4</div><div class="k">COMMIT 횟수</div></div>
+    <div class="stat"><div class="v" id="cBuf">5,000</div><div class="k">최대 미커밋 버퍼</div></div>
+  </div>
+
+  <div class="chart">
+    <div class="ttl">미커밋 버퍼(누적) — 진행에 따른 변화 ↓ (낮을수록 안전)</div>
+    <svg id="svg" viewBox="0 0 600 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"></svg>
+  </div>
+
+  <div class="msg ok" id="msg"></div>
+  <div class="note">💡 패키지마다 <code>COMMIT WORK</code>로 미커밋 버퍼를 비워 잠금·로그·롤백 세그먼트를 정리합니다. 작을수록 안전하나 COMMIT 오버헤드↑ → 보통 <b>1천~1만</b>에서 절충. 중간 실패 대비 <b>재시작점</b>(L04) 관리 필수.</div>
+</div>
+<script src="../_engine/package-commit.js" defer></script>
+</body>
+</html>
