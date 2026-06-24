@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<!-- CH04-L01-S01 — 엔진: step-debugger (embeds/_engine/step-debugger.{js,css}) + _autoheight.js
+     ⚠️ config=레슨 전용(산술 트레이스, #C04-1). 게이팅: 내부테이블·inline DATA() 없음. -->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>산술 스텝 디버거 · CH04-L01-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/step-debugger.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">산술 — 한 줄씩 실행하며 변수 보기 <small>(스텝 디버거)</small></p>
+  <p class="lead"><b>다음 ⏭</b>을 누를 때마다 한 줄씩 실행돼 변수 값이 바뀝니다. 강조된 줄 = <b>실행할 차례</b>(아직 전), 초록 = 방금 실행.</p>
+
+  <div class="dbg" data-stepper>
+    <div class="dbg__bar">
+      <button class="btn btn--primary" data-start>▶ 시작</button>
+      <button class="btn btn--step" data-next disabled>다음 ⏭</button>
+      <div class="progress"><i data-progress></i></div>
+      <span class="muted" data-counter>0 / 4</span>
+    </div>
+    <div class="dbg__main">
+      <div class="dbg__editorwrap"><div class="dbg__edhd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span></div><div class="dbg__editor" data-code></div></div>
+      <div class="dbg__watch">
+        <div class="watch__head">변수 모니터</div>
+        <div class="watch__list" data-vars></div>
+      </div>
+    </div>
+    <div class="dbg__console">
+      <div class="console__head">
+        <span>콘솔</span>
+        <span class="leg"><span class="a">▶ 실행할 차례</span> · <span class="d">✓ 방금 실행</span></span>
+        <span class="sp"></span>
+        <span class="cmode"><button class="cmode__b on" data-cmode="cur">현재 행</button><button class="cmode__b" data-cmode="all">전체 출력</button></span>
+      </div>
+      <pre class="console__body" data-console>대기 중 — ▶ 시작을 누르세요.</pre>
+    </div>
+    <script type="application/json" class="stepper-config">
+    {
+      "code":[
+        "DATA gv_result TYPE i.",
+        "",
+        "gv_result = 7 + 3.",
+        "gv_result = 2 ** 10.",
+        "",
+        "DATA gv_q TYPE i.",
+        "gv_q = 17 DIV 5.",
+        "DATA gv_r TYPE i.",
+        "gv_r = 17 MOD 5."
+      ],
+      "vars":[
+        {"label":"gv_result","sub":"TYPE i","key":"gv_result","init":"0"},
+        {"label":"gv_q","sub":"몫(DIV)","key":"gv_q","init":"0"},
+        {"label":"gv_r","sub":"나머지(MOD)","key":"gv_r","init":"0"}
+      ],
+      "steps":[
+        {"line":3,"vars":{"gv_result":"10"},"console":"7 + 3 = 10"},
+        {"line":4,"vars":{"gv_result":"1024"},"console":"2 ** 10 = 1024 (제곱)"},
+        {"line":7,"vars":{"gv_q":"3"},"console":"17 DIV 5 → 몫 3"},
+        {"line":9,"vars":{"gv_r":"2"},"console":"17 MOD 5 → 나머지 2"}
+      ]
+    }
+    </script>
+  </div>
+</div>
+<script src="../_engine/step-debugger.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

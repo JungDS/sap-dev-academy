@@ -16,12 +16,13 @@
 | CH02-L05-S01 | CH02-L05 | before-after | 매직넘버 vs 상수(고칠곳 2곳/1곳) | ✅ |
 | CH02-L06-S01 | CH02-L06 | fill-blank | Text Symbol 빈칸(TEXT·001) | ✅ |
 | CH03-L01-S01 | CH03-L01 | domain-builder | SE11 Domain 생성(저장→검사→활성화·예제칩 6) | ✅ |
-| _(CH04부터 — 다음)_ | | | | 🔧 |
+| CH04-L01-S01 | CH04-L01 | step-debugger | 산술 트레이스(7+3·2**10·DIV·MOD) | ✅ |
+| _(CH04 L05·L06·L02·L07·L03·L04 — 진행 중)_ | | | | 🔧 |
 
 ## B. 엔진별 집계 (카테고리 현황 — 같은 종류 몇 개·어디서)
 | 엔진 (embeds/_engine/) | 그룹 | 공통/standalone | 사용 인스턴스 | 비고 |
 |---|---|---|---|---|
-| step-debugger | 2 | 공통 | _(미작성)_ | config 주입 |
+| step-debugger | 6 | 공통(_engine)·config 주도 🔧 | CH04-L01-S01 (외 L05·L06·CH05-L01·L05·CH10-L07 예정) | `.stepper-config` 트레이스(이미 주도형·리팩터 불요) |
 | fill-blank | 3 | 공통(_engine)+_autoheight ✅ | CH02-L06-S01 (외 CH04-L02·L07 예정) | 데이터=마크업 |
 | before-after | 2 | 공통(CSS-only)+_autoheight ✅ | CH02-L05-S01 (외 CH07-L03 예정) | 콘텐츠 정리(크롬 제거) |
 | diff-mapper | 1 | 공통 | _(미작성)_ | 데이터=마크업 |
