@@ -142,14 +142,31 @@ function hlAbapLine(line) {
   }
   return out;
 }
+/* fence 언어 토큰 → 헤더 라벨 + 하이라이트 여부.
+   code-copy-block 헤더를 '작성하는 오브젝트 유형'에 맞게 구분(무조건 ABAP 금지).
+   ```abap/빈칸=ABAP · ```cds=CDS View · ```bdef=Behavior Definition · ```bimpl=Behavior Implementation
+   · ```service=Service Definition · ```metadata=Metadata Extension · ```dcl=Access Control(DCL).
+   ABAP 계열(DDL 포함)은 ABAP 토큰 하이라이트 공유(hl:true). 그 외(text 등)는 라벨 대문자화·하이라이트 없음. */
+const CODE_LANGS = {
+  abap:     { label: 'ABAP',                    hl: true },
+  cds:      { label: 'CDS View',                hl: true },
+  ddl:      { label: 'CDS View',                hl: true },
+  bdef:     { label: 'Behavior Definition',     hl: true },
+  bimpl:    { label: 'Behavior Implementation', hl: true },
+  service:  { label: 'Service Definition',      hl: true },
+  metadata: { label: 'Metadata Extension',      hl: true },
+  dcl:      { label: 'Access Control (DCL)',    hl: true },
+  sql:      { label: 'SQL',                     hl: true },
+};
 function renderCodeBlock(code, lang) {
-  const language = (lang || '').trim();
-  const isAbap = language === '' || /^abap$/i.test(language);
+  const language = (lang || '').trim().toLowerCase();
+  const cfg = CODE_LANGS[language];
+  const isAbap = language === '' ? true : (cfg ? cfg.hl : false);
   const raw = String(code).replace(/\n+$/, '');
   const lines = raw.length ? raw.split('\n') : [''];
   const gutter = lines.map((_, i) => i + 1).join('\n');
   const bodyHl = lines.map((l) => (isAbap ? hlAbapLine(l) : escHtml(l))).join('\n');
-  const title = language ? language.toUpperCase() : 'ABAP';
+  const title = cfg ? cfg.label : (language ? language.toUpperCase() : 'ABAP');
   return '<div class="abap-editor">' +
     '<div class="abap-editor__header">' +
       '<span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span>' +
