@@ -1,6 +1,6 @@
 # 11. KEYWORD AUDIT — 공식 ABAP Keyword Doc 대비 콘텐츠 감사 원장
 
-> 📅 최종수정: 2026-06-24 01:47 KST
+> 📅 최종수정: 2026-06-24 01:51 KST
 > 🎯 **목적:** `content/abap/**` 레슨을 **SAP 공식 ABAP Keyword Documentation 오프라인 전체본**(`C:\ABAP_DOCU_HTML`, AS ABAP Release 758)과 대조해 키워드·문법·이론의 **누락/상이/오류**를 보강. 챕터 순서대로.
 > 📖 **읽을 때:** 감사 패스 **재개 시**(이어서 진행) — 이 원장이 어디까지 했는지의 단일 출처.
 
@@ -50,7 +50,8 @@
 | CH28 | ✅ 완료 | L04 미학습 `COND`→`IF` 게이팅 교정(CH18 갭 연계) |
 | CH29 | ✅ 완료 | 변경 없음 — 공식과 일치 |
 | CH30 | ✅ 완료 | L02 RFC `MESSAGE`·L03 BDC `OPTIONS FROM`·L05 OPEN DATASET 보안/MESSAGE/TRANSFER 보강 |
-| CH31~CH36 | ⬜ 대기 | (다음 재개 지점 = CH31) |
+| CH31 | ✅ 완료 | 변경 없음 — IDoc/ALE/Gateway 툴링(doc 밖)·L05 modern SQL 절순서/OFFSET 정확 |
+| CH32~CH36 | ⬜ 대기 | (다음 재개 지점 = CH32) |
 
 ## 챕터별 findings
 
@@ -185,3 +186,7 @@
 - **L03**(BDC `CALL TRANSACTION … USING`): **보강** — 공식 구문 `{[MODE][UPDATE]} | [OPTIONS FROM opt]`의 대안 `OPTIONS FROM <ctu_params>`를 실무 노트로 1줄 추가. MODE A/E/N·`MESSAGES INTO`·Session(`BDC_OPEN/INSERT/CLOSE_GROUP`·SM35)·SHDB·BDCDATA 구조 모두 정확 ✓.
 - **L04**(GUI 업로드·`SPLIT`·`ALSM_EXCEL_TO_INTERNAL_TABLE`): 정확 ✓ — 변경 없음.
 - **L05**(`OPEN/READ/CLOSE DATASET`): **보강 3건** — ① 공식 Security Hint **Directory Traversal**(외부 주입 경로 검증) 경고 추가 ② 공식 권고 `OPEN DATASET … MESSAGE m` + OPEN의 `sy-subrc` 확인 ③ `FOR INPUT/OUTPUT/APPENDING` + 쓰기 `TRANSFER` 1줄(intro "읽고 쓴다"와 본문 일치). 전부 classic·게이팅 안전.
+
+### CH31 — IDoc / ALE / Gateway (Track-2)  → **변경 없음(공식과 일치)**
+- **L01~L03**(IDoc 3층 EDIDC/EDIDD/EDIDS·Basic Type/Segment·WE02/WE05/WE60·상태코드 53/51/03/12/02/26·BD87 재처리)·**L02**(ALE Distribution Model BD64·Partner Profile WE20·Port WE21·Logical System BD54)·**L04**(Gateway SEGW·EntityType/EntitySet/Association·DPC_EXT/MPC_EXT·/IWFND/MAINT_SERVICE): IDoc/ALE/Gateway **툴링·프레임워크 설정** → ABAP keyword doc 영역 밖(CH01류 N/A). 개념 서술은 일관.
+- **L05**(`GET_ENTITYSET` 구현·modern Open SQL): **정확 ✓** — 절 순서 `SELECT-list→FROM→ORDER BY→INTO→UP TO ROWS→OFFSET`가 공식 규칙(INTO=마지막 query 절, UP TO/OFFSET은 INTO 뒤, OFFSET은 ORDER BY 필수)과 정확히 일치. `@` escape·host expr·`INTO CORRESPONDING FIELDS OF TABLE` 모두 정상. CH31>CH19라 modern SQL 게이팅 OK. 메서드 체이닝(CH20)·인라인 `DATA()`(CH18+)도 도입 완료분. 미학습 constructor 식 없음.
