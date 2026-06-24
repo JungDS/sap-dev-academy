@@ -50,23 +50,15 @@
 7
 8
 9
-10
-11
-12
-13
-14</pre><pre class="abap-editor__code"><code><span class="tok-kw">METHOD</span> setDefaults.
+10</pre><pre class="abap-editor__code"><code><span class="tok-kw">METHOD</span> setDefaults.
   <span class="tok-kw">READ</span> ENTITIES <span class="tok-kw">OF</span> zi_booking <span class="tok-kw">IN</span> LOCAL MODE
     ENTITY Booking ALL <span class="tok-kw">FIELDS</span> <span class="tok-kw">WITH</span> <span class="tok-kw">CORRESPONDING</span> #( keys ) RESULT <span class="tok-kw">DATA</span>(bks).
-
-  <span class="tok-kw">DATA</span> upd <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> FOR UPDATE zi_booking.   <span class="tok-com">" 수정할 인스턴스 모음</span>
-  <span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> bks <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(b).
-    <span class="tok-kw">APPEND</span> <span class="tok-kw">VALUE</span> #( %tky       = b-%tky
-                    status     = <span class="tok-str">'N'</span>
-                    created_by = sy-uname ) <span class="tok-kw">TO</span> upd.
-  <span class="tok-kw">ENDLOOP</span>.
-
   <span class="tok-kw">MODIFY</span> ENTITIES <span class="tok-kw">OF</span> zi_booking <span class="tok-kw">IN</span> LOCAL MODE
-    ENTITY Booking UPDATE <span class="tok-kw">FIELDS</span> ( status created_by ) <span class="tok-kw">WITH</span> upd.
+    ENTITY Booking UPDATE <span class="tok-kw">FIELDS</span> ( status created_by )
+    <span class="tok-kw">WITH</span> <span class="tok-kw">VALUE</span> #( FOR b <span class="tok-kw">IN</span> bks (             <span class="tok-com">" CH18-L02의 FOR 반복 생성</span>
+      %tky        = b-%tky
+      status      = <span class="tok-str">'N'</span>
+      created_by  = sy-uname ) ).
 <span class="tok-kw">ENDMETHOD</span>.</code></pre></div></div>
 </section><section class="lblock"><h2>정원 검증 — Validation</h2>
 <p>좌석 합계가 회차 정원을 넘으면 거부한다(<code>ZCX_FULLY_BOOKED</code>의 RAP 표현).</p>
@@ -83,18 +75,10 @@
 3
 4
 5
-6
-7
-8
-9
-10</pre><pre class="abap-editor__code"><code><span class="tok-kw">METHOD</span> cancelBooking.
-  <span class="tok-kw">DATA</span> upd <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> FOR UPDATE zi_booking.
-  <span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> keys <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(k).
-    <span class="tok-kw">APPEND</span> <span class="tok-kw">VALUE</span> #( %tky = k-%tky status = <span class="tok-str">'C'</span> ) <span class="tok-kw">TO</span> upd.
-  <span class="tok-kw">ENDLOOP</span>.
-
+6</pre><pre class="abap-editor__code"><code><span class="tok-kw">METHOD</span> cancelBooking.
   <span class="tok-kw">MODIFY</span> ENTITIES <span class="tok-kw">OF</span> zi_booking <span class="tok-kw">IN</span> LOCAL MODE
-    ENTITY Booking UPDATE <span class="tok-kw">FIELDS</span> ( status ) <span class="tok-kw">WITH</span> upd.
+    ENTITY Booking UPDATE <span class="tok-kw">FIELDS</span> ( status )
+    <span class="tok-kw">WITH</span> <span class="tok-kw">VALUE</span> #( FOR k <span class="tok-kw">IN</span> keys ( %tky = k-%tky status = <span class="tok-str">'C'</span> ) ).
   <span class="tok-com">" result에 변경된 인스턴스 반환</span>
 <span class="tok-kw">ENDMETHOD</span>.</code></pre></div></div>
 <ul>

@@ -1,6 +1,6 @@
 # 11. KEYWORD AUDIT — 공식 ABAP Keyword Doc 대비 콘텐츠 감사 원장
 
-> 📅 최종수정: 2026-06-24 02:15 KST
+> 📅 최종수정: 2026-06-24 02:56 KST
 > 🎯 **목적:** `content/abap/**` 레슨을 **SAP 공식 ABAP Keyword Documentation 오프라인 전체본**(`C:\ABAP_DOCU_HTML`, AS ABAP Release 758)과 대조해 키워드·문법·이론의 **누락/상이/오류**를 보강. 챕터 순서대로.
 > 📖 **읽을 때:** 감사 패스 **재개 시**(이어서 진행) — 이 원장이 어디까지 했는지의 단일 출처.
 
@@ -37,7 +37,7 @@
 | CH15 | ✅ 완료 | 변경 없음 — 공식과 일치(매우 충실) |
 | CH16 | ✅ 완료 | 변경 없음 — 공식과 일치 |
 | CH17 | ✅ 완료 | 변경 없음 — 공식과 일치(classic) |
-| CH18 | ✅ 완료 | 문법 정확 · ⚠️구조적 갭(CONV/COND/SWITCH/REDUCE 부재) check/ 플래그 |
+| CH18 | ✅ 완료 | L02에 `VALUE #( FOR )` 정식 도입(누락 보강) · CONV/COND/SWITCH/REDUCE는 미사용이라 보류 |
 | CH19 | ✅ 완료 | 변경 없음 — 공식과 일치(modern SQL) |
 | CH20 | ✅ 완료 | 변경 없음 — 공식과 일치(매우 충실) |
 | CH21 | ✅ 완료 | 변경 없음 — 공식 ALV API와 일치 |
@@ -55,7 +55,7 @@
 | CH33 | ✅ 완료 | L02 AMDP `OPTIONS READ-ONLY` 보강·L03 ADBC 등 정확 |
 | CH34 | ✅ 완료 | 변경 없음 — 양식 도구(doc 밖)·L04 XSTRING/xstrlen/동적 CALL FUNCTION 정확 |
 | CH35 | ✅ 완료 | L04 `SUBMIT VIA JOB`에 필수 `AND RETURN` 보강(나머지 운영툴은 doc 밖) |
-| CH36 | ✅ 완료 | L05 미학습 `VALUE #( FOR )`→CH23 `LOOP` 관용구 교체(커리큘럼 유일 FOR-comprehension 제거) |
+| CH36 | ✅ 완료 | L05 실무 정석 `VALUE #( FOR )` 유지 — 누락 문법을 CH18-L02에 도입해 해소(사용자 결정) |
 
 > ✅ **CH01~CH36 전 챕터 감사 완료 (2026-06-24).** 요약은 아래 "감사 완료 총평" 참조.
 
@@ -140,9 +140,10 @@
 - **L01~L10**: `CL_GUI_CUSTOM_CONTAINER`·`CL_GUI_ALV_GRID`(CREATE OBJECT·i_parent), Field Catalog(`LVC_T_FCAT`·`LVC_FIELDCATALOG_MERGE`·coltext/outputlen), Layout(`LVC_S_LAYO`·zebra/sel_mode/cwidth_opt), Variant(`DISVARIANT`·sy-repid·i_save), `set_table_for_first_display`·`refresh_table_display`+Stable(`LVC_S_STBL`), 행색상(`info_fname`·`Cxyz`) 전부 공식 API와 일치 ✓.
 - classic `CREATE OBJECT` 유지(NEW=CH18+). 셀색/이벤트/편집은 CH21/27/28 분리, `do_sum`은 CH21 맛보기. `REF TO`는 `[선행 사용]` CH20 게이팅.
 
-### CH18 — Modern ABAP Syntax  → **문법 정확 · 구조적 갭 플래그(본문 무변경)**
+### CH18 — Modern ABAP Syntax  → **문법 정확 · `VALUE #( FOR )` 누락 보강(2026-06-24 사용자 결정)**
 - **L01~L07**: `DATA()`/`FINAL()` 인라인·`VALUE #()`/BASE·`CORRESPONDING #()`/MAPPING/EXCEPT·Table Expression `lt[ ]`(`CX_SY_ITAB_LINE_NOT_FOUND`·`line_exists()`/`line_index()`)·String Template `|{ }|`·서식·함수형 문자열함수·`+= -= *= /=` 전부 공식과 일치 ✓. SELECT 인라인(@)은 CH19 유보(정확).
-- ⚠️ **구조적 갭(사용자 판단 — check/CH18.md)**: 핵심 constructor 식 `CONV`/`SWITCH`/`REDUCE`/`FILTER`가 **커리큘럼 전무**(grep 0), `COND`는 CH26/28에서 정식 도입 없이 사용, constructor `FOR`(컴프리헨션)는 CH36-L05에만. CH18 keywords엔 `FOR` 있으나 본문 부재. → 새 레슨 추가는 설계 결정이라 임의 보강 안 함(R15: 한 번에 새 용어 다수 금지).
+- **L02 보강**: `VALUE #( FOR … )`(table comprehension)를 정식 도입 — ① 숫자범위 `FOR i = 1 WHILE i <= 9 ( … )`(구구단 전체 생성으로 기존 예제와 연결) ② 테이블순회 `FOR line IN lt_gugu ( … )`(변환). FOR 변수 수명 주의 포함. chapter keywords에 이미 `FOR`가 선언돼 있었으나 본문 부재이던 갭을 메움. CH36-L05의 RAP `VALUE #( FOR )`가 이제 학습분 위에서 동작.
+- 남은 `CONV`/`SWITCH`/`REDUCE`/`FILTER`/`COND`(constructor)는 현재 **사용처 없음**(grep 0; CH26/28은 CASE/IF) → 도입 보류(필요 시 확장 단계). `check/CH18.md` 참조.
 
 ### CH19 — New Open SQL / Modern ABAP SQL  → **변경 없음(공식과 일치)**
 - **L01~L08**: 콤마 필드·`@` host var/`@( )` host expr·strict·`@DATA()` 인라인 대상·SQL식(CASE/CAST/COALESCE)·SQL 문자/날짜 함수(CONCAT/SUBSTRING/UPPER/`DATS_ADD_DAYS`)·`SELECT FROM @itab` 전부 공식과 일치 ✓. "ABAP SQL" 현행 명칭 사용 정확.
@@ -226,8 +227,9 @@
 **전 36챕터·231레슨**을 SAP 공식 ABAP Keyword Documentation(오프라인 758)과 대조 완료.
 
 - **보강한 챕터(12)**: CH01(WRITE 서식 introduces 정합)·CH02(`DATA VALUE`)·CH04(DIV/MOD 재배치)·CH06(READ INDEX·LOOP FROM/TO)·CH10(CALL FUNCTION `CHANGING`)·CH12(RANGES)·CH13(SELECT DISTINCT)·CH22(@Semantics 자기참조 교정)·CH30(RFC MESSAGE·BDC OPTIONS FROM·OPEN DATASET 보안/MESSAGE/TRANSFER)·CH33(AMDP `OPTIONS READ-ONLY`)·CH35(`SUBMIT VIA JOB … AND RETURN`).
-- **게이팅 교정(3)**: CH26-L01(`COND`→`CASE`)·CH28-L04(`COND`→`IF`)·CH36-L05(`VALUE #( FOR )`→`LOOP`). → **미학습 constructor 식 0 달성**.
+- **게이팅 교정(2)**: CH26-L01(`COND`→`CASE`)·CH28-L04(`COND`→`IF`). (CASE/IF가 입문에 더 명료 — 유지.)
+- **누락 문법 보강(1, 사용자 결정 2026-06-24)**: `VALUE #( FOR )`(table comprehension)는 New Syntax에서 진작 다뤘어야 할 누락 → **CH18-L02에 정식 도입**(숫자범위 `FOR i = 1 WHILE`·테이블순회 `FOR x IN itab`). 이에 따라 CH36-L05는 임시 LOOP 교체를 되돌려 **실무 정석 `VALUE #( FOR )`** 로 복원. → 커리큘럼 전체 미학습 constructor 식 0(FOR는 이제 정식 학습분).
 - **무변경/정확(21)**: CH03·05·07·08·09·11·14·15·16·17·19·20·21·23·24·25·27·29·31·32·34. (Track-2 후반 CH31/34는 IDoc/Gateway·양식 등 **툴링이라 keyword doc 영역 밖** — 코드 정확성만 확인.)
-- **구조적 갭 플래그(1, 사용자 결정 대기)**: **CH18** — modern constructor(`CONV`/`COND`/`SWITCH`/`REDUCE`/`FOR`-comprehension) 정식 도입 레슨 부재. 다운스트림 미학습 사용분(CH26/28/36)은 교체 완료했으나, 근본 갭은 `check/CH18.md` 참조(별도 결정).
+- **구조적 갭(부분 해소)**: **CH18** — `FOR`-comprehension은 위와 같이 **해소(L02 도입)**. 남은 `CONV`/`COND`/`SWITCH`/`REDUCE`는 현재 커리큘럼 어디에서도 *사용처가 없어*(CH26/28은 CASE/IF로 충분) 정식 도입을 **보류** — 필요 시 확장 단계에서 판단(`check/CH18.md`).
 - **총평**: classic-first(R6) 경계·R15 게이팅은 전반적으로 **잘 지켜짐**. 사실오류는 드물고(@Semantics 자기참조 1건), 대부분 "같은 주제의 빠진 classic 하위옵션"(MESSAGE·OPTIONS FROM·READ-ONLY·AND RETURN 등) 보강. Track-2 실무 챕터는 keyword doc 밖 툴링이 많아 N/A 비중이 큼.
 - **다음**: `.project-docs/12_EXPANSION_PLAN.md`(51항목 콘텐츠 확장)로 전환 — 별도 지시 대기.
