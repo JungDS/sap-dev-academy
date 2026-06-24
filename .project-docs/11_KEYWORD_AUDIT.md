@@ -1,6 +1,6 @@
 # 11. KEYWORD AUDIT — 공식 ABAP Keyword Doc 대비 콘텐츠 감사 원장
 
-> 📅 최종수정: 2026-06-24 00:33 KST
+> 📅 최종수정: 2026-06-24 00:37 KST
 > 🎯 **목적:** `content/abap/**` 레슨을 **SAP 공식 ABAP Keyword Documentation 오프라인 전체본**(`C:\ABAP_DOCU_HTML`, AS ABAP Release 758)과 대조해 키워드·문법·이론의 **누락/상이/오류**를 보강. 챕터 순서대로.
 > 📖 **읽을 때:** 감사 패스 **재개 시**(이어서 진행) — 이 원장이 어디까지 했는지의 단일 출처.
 
@@ -34,7 +34,8 @@
 | CH12 | ✅ 완료 | L06 RANGES(레거시) 대비 보강 |
 | CH13 | ✅ 완료 | L03 SELECT DISTINCT 보강 |
 | CH14 | ✅ 완료 | 변경 없음 — 공식과 일치 |
-| CH15~CH36 | ⬜ 대기 | (다음 재개 지점 = CH15) |
+| CH15 | ✅ 완료 | 변경 없음 — 공식과 일치(매우 충실) |
+| CH16~CH36 | ⬜ 대기 | (다음 재개 지점 = CH16) |
 
 ## 챕터별 findings
 
@@ -55,7 +56,7 @@
 ### CH03 — DDIC Domain·Data Element + PARAMETERS  → **변경 없음(공식과 일치)**
 - **L01**(Domain): 정확 ✓ — DDIC 타입 매핑(CHAR→c·NUMC→n·DEC→p·INT4→i·DATS→d), 출력길이·대소문자·고정값/값테이블, "Domain은 변수 타입 직접 불가·활성화 철칙" 모두 공식과 일치.
 - **L02**(Data Element): 정확 ✓ — "Domain 없이도 가능(직접 타입)"이 공식과 일치(글로서리보다 본문이 더 정밀).
-- **L03**(PARAMETERS): 정확 ✓ — OBLIGATORY·DEFAULT·LOWER CASE. `AS CHECKBOX`·`RADIOBUTTON` 등은 **CH13(Selection Screens) 소유** → 게이팅상 여기 추가 안 함(의도된 단순 스코프).
+- **L03**(PARAMETERS): 정확 ✓ — OBLIGATORY·DEFAULT·LOWER CASE. `AS CHECKBOX`·`RADIOBUTTON` 등은 **CH15-L09(Selection Screen UI) 소유** → 게이팅상 여기 추가 안 함(의도된 단순 스코프). *(소유 챕터 오기 교정: CH13→CH15-L09.)*
 
 ### CH04 — 연산자와 흐름 제어
 - **L01**(산술): 베이스라인서 우선순위·괄호·0나눗셈 보강 + **이번에 `DIV`/`MOD` 연산자 도입**(L02서 이전).
@@ -104,3 +105,7 @@
 ### CH14 — Classic DDIC View·유지보수 객체  → **변경 없음(공식과 일치)**
 - **L01**(Database View)·**L02**(Projection View·한계)·**L03**(Help View)·**L04**(Maintenance View)·**L05**(TMG/SM30)·**L06**(SE16N·운영편집 주의)·**L07**(Classic↔CDS 전환 미리보기)·**L08**(실습): 정확 ✓.
 - DDIC 툴 영역이라 keyword doc 직접 비교 항목 적음. classic 뷰 폐기 흐름은 L07이 "신규=CDS·유지보수 뷰는 유효"로 균형있게 처리 — 과도한 obsolete 플래그 불필요. CDS 본격은 CH22 게이팅.
+
+### CH15 — Report Event·Selection Screen 심화  → **변경 없음(공식과 일치, 매우 충실)**
+- **L01~L10**(전 10레슨): Report Event 흐름(LOAD-OF-PROGRAM·INITIALIZATION·AT SELECTION-SCREEN OUTPUT(PBO)·AT SELECTION-SCREEN(PAI)·START/END-OF-SELECTION), LOOP AT SCREEN·MODIFY SCREEN, AT SELECTION-SCREEN ON(전체vs필드·오류시 동작 차이), **MESSAGE 6타입(I/S/W/E/A/X)·메시지클래스 SE91·`&1~&4`**, AUTHORITY-CHECK, ON BLOCK/RADIOBUTTON GROUP/HELP·VALUE-REQUEST, SELECTION-SCREEN UI(BLOCK·COMMENT·ULINE·SKIP·AS CHECKBOX·RADIOBUTTON GROUP·PUSHBUTTON·TABBED BLOCK·FUNCTION KEY·SSCRFIELDS) — 전부 공식과 일치 ✓.
+- ⚠️ 글롭 주의: `CHxx-L0*`는 L10 누락(이 챕터 10레슨) → 이후 `CHxx-L*` 사용.
