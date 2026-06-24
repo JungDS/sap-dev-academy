@@ -128,27 +128,32 @@
 <li><code>ULINE</code> — 가로 구분선을 긋는다(표의 칸 구분에 자주 쓴다).</li>
 </ul>
 </section><section class="lblock"><h2>숫자·날짜 다듬기</h2>
-<p>숫자와 날짜는 전용 옵션으로 더 깔끔하게 만든다. 아래는 <strong>그대로 복사해 실행</strong>해 볼 수 있게
-변수 선언과 값까지 함께 적었다.</p>
+<p>숫자와 날짜는 전용 옵션으로 더 깔끔하게 만든다. 아래는 <strong>그대로 복사해 실행</strong>해 보며
+<em>같은 값이 옵션에 따라 어떻게 달라지는지</em> 비교해 보라(변수 선언·값까지 함께 적었다).</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
 4
 5
 6
-7</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> lv_qty <span class="tok-kw">TYPE</span> i <span class="tok-kw">VALUE</span> <span class="tok-num">0</span>.                              <span class="tok-com">" 수량(0)</span>
-<span class="tok-kw">DATA</span> lv_amt <span class="tok-kw">TYPE</span> p <span class="tok-kw">LENGTH</span> <span class="tok-num">8</span> <span class="tok-kw">DECIMALS</span> <span class="tok-num">2</span> <span class="tok-kw">VALUE</span> <span class="tok-str">'1250.50'</span>.  <span class="tok-com">" 금액</span>
+7</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> lv_qty <span class="tok-kw">TYPE</span> n <span class="tok-kw">LENGTH</span> <span class="tok-num">4</span> <span class="tok-kw">VALUE</span> <span class="tok-str">'0001'</span>.               <span class="tok-com">" 수량(앞 0 포함)</span>
+<span class="tok-kw">DATA</span> lv_amt <span class="tok-kw">TYPE</span> p <span class="tok-kw">LENGTH</span> <span class="tok-num">8</span> <span class="tok-kw">DECIMALS</span> <span class="tok-num">2</span> <span class="tok-kw">VALUE</span> <span class="tok-str">'100.00'</span>.  <span class="tok-com">" 금액(소수 2자리)</span>
 
-<span class="tok-kw">WRITE</span>: / lv_qty   <span class="tok-kw">NO-ZERO</span>.         <span class="tok-com">" 0 → 공백 (의미 없는 0 숨김)</span>
-<span class="tok-kw">WRITE</span>: / lv_amt   <span class="tok-kw">DECIMALS</span> <span class="tok-num">2</span>.      <span class="tok-com">" 1250.50 (소수 2자리)</span>
-<span class="tok-kw">WRITE</span>: / lv_amt   <span class="tok-kw">CURRENCY</span> <span class="tok-str">'USD'</span>.  <span class="tok-com">" 통화 규칙대로 소수 자리</span>
-<span class="tok-kw">WRITE</span>: / sy-datum <span class="tok-kw">DD</span>/<span class="tok-kw">MM</span>/<span class="tok-kw">YYYY</span>.      <span class="tok-com">" 오늘 날짜를 구분자·4자리 연도로</span></code></pre></div></div>
+<span class="tok-kw">WRITE</span>: / lv_qty   <span class="tok-kw">NO-ZERO</span>.         <span class="tok-com">" 0001 → '   1' (앞의 의미 없는 0 숨김)</span>
+<span class="tok-kw">WRITE</span>: / lv_amt   <span class="tok-kw">DECIMALS</span> <span class="tok-num">4</span>.      <span class="tok-com">" 100.00 → 100.0000 (옵션이 소수 자리를 바꿈)</span>
+<span class="tok-kw">WRITE</span>: / lv_amt   <span class="tok-kw">CURRENCY</span> <span class="tok-str">'KRW'</span>.  <span class="tok-com">" 100.00 → 10,000  (KRW는 소수 0자리!)</span>
+<span class="tok-kw">WRITE</span>: / sy-datum <span class="tok-kw">DD</span>/<span class="tok-kw">MM</span>/<span class="tok-kw">YY</span>.        <span class="tok-com">" 오늘 날짜를 구분자·2자리 연도로</span></code></pre></div></div>
 <ul>
-<li><code>NO-ZERO</code> — 값이 <strong>0이면 공백</strong>으로(의미 없는 0 숨김). <code>DECIMALS n</code> — 소수 자리 수.</li>
-<li><code>CURRENCY cur</code> — 통화 <code>cur</code>의 규칙대로 소수 자리를 잡는다(예: USD 2자리, JPY 0자리).</li>
-<li><code>DD/MM/YYYY</code> — 날짜를 <strong>구분자와 4자리 연도</strong>로 읽기 좋게 출력한다. (실제 일·월 순서와
-구분자는 시스템의 국가 설정을 따른다 — 자세한 건 한참 뒤 이야기다.)</li>
+<li><code>NO-ZERO</code> — <strong>앞의 의미 없는 0</strong>을 공백으로(<code>0001</code> → <code>1</code>). 값이 통째로 0이어도 빈칸이 된다.</li>
+<li><code>DECIMALS n</code> — 출력할 소수 자리 수. <strong>필드에 정해진 자리수를 덮어쓴다</strong>(<code>100.00</code>을 <code>DECIMALS 4</code> → <code>100.0000</code>).</li>
+<li><code>CURRENCY cur</code> — <strong>통화별 소수 자리 규칙</strong>대로 표시한다(USD·EUR = 2자리, <strong>KRW·JPY = 0자리</strong>). 같은 저장값도 통화에 따라 다르게 보인다.</li>
+<li><code>DD/MM/YY</code> — 날짜를 구분자와 <strong>2자리 연도</strong>로(<code>DD/MM/YYYY</code>면 4자리). 실제 일·월 순서·구분자는 시스템의 국가 설정을 따른다.</li>
 </ul>
+<blockquote>
+<p>💡 <strong>통화가 자릿수를 바꾼다</strong> — 똑같이 저장된 <code>100.00</code>이 <code>CURRENCY &#39;KRW&#39;</code>에선 <strong><code>10,000</code></strong> 으로 나온다.
+금액은 내부적으로 소수 2자리(<code>100.00</code> = 숫자 <code>10000</code>)로 들고 있는데, KRW는 소수 자리가 <strong>0</strong>이라 그 <code>10000</code>을
+소수점 없이 그대로 보여 주기 때문이다. <strong>통화 코드가 표시 자릿수를 정한다</strong>는 걸 꼭 기억하자.</p>
+</blockquote>
 <blockquote>
 <p>🔎 <strong>[선행 사용]</strong> 앞 두 줄 <code>DATA … VALUE …</code>(변수 선언과 값)와 <code>sy-datum</code>(오늘 날짜)은
 <strong>CH02(변수)·CH04(날짜)</strong> 에서 정식으로 배운다. 지금은 <em>분석·암기 없이</em> 통째로 복사해
