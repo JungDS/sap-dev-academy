@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>실습 — 콘서트 모델 만들기 (DDIC) · DDIC 관계와 입력도움말(F4) · SAP Developer Academy</title>
+<title>DDIC 검증과 프로그램 검증의 역할 분리 · DDIC 관계와 입력도움말(F4) · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -34,66 +34,65 @@
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH09</nav>
       <section class="lhead">
         <p class="lhead__eyebrow">DDIC 관계와 입력도움말(F4)</p>
-        <h1>실습 — 콘서트 모델 만들기 (DDIC)</h1>
-        <p class="lhead__direction">우리 앱의 토대 — ZCONCERT·ZPERF·ZBOOKING과 FK·F4를 직접 만든다.</p>
+        <h1>DDIC 검증과 프로그램 검증의 역할 분리</h1>
+        <p class="lhead__direction">선언적 DDIC 검증과 코드 검증의 경계 — 무엇을 어디서.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 9</span><span class="tag tag--ls">Lesson 8</span><span class="tag tag--lv">초급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>🎫 콘서트 예매 앱 — 첫 삽</h2>
-<p>CH09-L01에서 본 콘서트 모델을 <strong>이번 챕터부터 직접 만들어</strong> CH23(RAP)까지 한 단계씩
-키운다. 첫 단계는 데이터 토대 — 세 테이블과 관계·도움말이다.</p>
-</section><section class="lblock"><h2>1) 세 테이블 (SE11, CH07)</h2>
+<section class="lblock"><h2>검증은 누가 하나</h2>
+<p>DDIC의 <button class="term" type="button" data-term="Foreign Key">Foreign Key</button>·<button class="term" type="button" data-term="고정값">고정값</button>·<button class="term" type="button" data-term="Search Help">Search Help</button>는 <strong>선언적 검증</strong>을 해준다.
+그런데 &quot;퇴직자는 못 고른다&quot;, &quot;금액 &gt; 한도면 거부&quot; 같은 <strong>업무 규칙</strong>은? 어디까지
+DDIC가 하고 어디부터 코드가 해야 하는지 가른다.</p>
+</section><section class="lblock"><h2>두 계층</h2>
 <table>
 <thead>
 <tr>
-<th>테이블</th>
-<th>키</th>
-<th>주요 필드</th>
+<th>검증</th>
+<th>담당</th>
+<th>예</th>
 </tr>
 </thead>
 <tbody><tr>
-<td><code>ZCONCERT</code></td>
-<td>MANDT·CONCERT_ID</td>
-<td>ARTIST·VENUE·CAPACITY</td>
+<td><strong>존재/형식</strong></td>
+<td>DDIC(선언적)</td>
+<td>국가코드가 실제 존재? 고정값 범위?</td>
 </tr>
 <tr>
-<td><code>ZPERF</code></td>
-<td>MANDT·CONCERT_ID·PERF_NO</td>
-<td>PERF_DATE</td>
-</tr>
-<tr>
-<td><code>ZBOOKING</code></td>
-<td>MANDT·BOOKING_ID</td>
-<td>CONCERT_ID·PERF_NO·CUSTOMER·SEATS·STATUS</td>
+<td><strong>업무 규칙</strong></td>
+<td>프로그램(코드)</td>
+<td>한도 초과? 상태 전이 허용? 권한?</td>
 </tr>
 </tbody></table>
+</section><section class="lblock"><h2>DDIC 검증의 한계</h2>
 <ul>
-<li>필드 타입은 <strong>Data Element</strong>로(라벨·F4 상속, CH03). 정원 CAPACITY·좌석수 SEATS는 정수.</li>
-<li>활성화하면 실제 DB 테이블이 생긴다(CH07-L01).</li>
+<li>DDIC 검증(Foreign Key 등)은 <strong>화면/유지보수</strong> 레벨에서 동작한다.</li>
+<li>프로그램이 <code>INSERT</code>/<code>MODIFY</code>로 <strong>직접 DB에 쓰면</strong> 그 검증은 <strong>자동 적용되지
+않는다.</strong> 직접 쓰기 전엔 프로그램이 책임지고 확인해야 한다.</li>
 </ul>
-</section><section class="lblock"><h2>2) Foreign Key (CH09-L01)</h2>
-<p><code>ZBOOKING-CONCERT_ID</code> 필드 → Foreign Keys → Check Table <code>ZCONCERT</code>. 이제 없는 공연
-번호는 입력이 거부되고, 그 칸에서 F4로 공연 목록이 뜬다.</p>
-</section><section class="lblock"><h2>3) 공연 Search Help (CH09-L03)</h2>
-<p><code>ZSH_CONCERT</code>(Elementary) — Selection Method <code>ZCONCERT</code>, 공연ID·아티스트·장소를 목록에
-보여 주고 CONCERT_ID를 돌려준다. <code>ZBOOKING-CONCERT_ID</code>에 붙인다.</p>
-</section><section class="lblock"><h2>직접 해 볼 과제</h2>
-<ol>
-<li>세 테이블을 만들고 <strong>Create Entries</strong>(CH07)로 공연 2개·회차 3개·예매 3건을 넣는다(예매자=정훈영).</li>
-<li><code>ZBOOKING</code>에 <strong>없는 공연번호</strong>를 넣어 보고 거부되는지 확인.</li>
-<li>그 칸에서 <strong>F4</strong>를 눌러 공연 목록이 뜨는지 확인.</li>
-</ol>
-<blockquote>
-<p>여기서 만든 테이블·데이터를 다음 챕터부터 계속 쓴다 — 잘 만들어 두자.</p>
-</blockquote>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6</pre><pre class="abap-editor__code"><code><span class="tok-com">" 직접 쓰기 전, 존재 여부를 코드로 확인(예)</span>
+<span class="tok-kw">SELECT</span> <span class="tok-kw">SINGLE</span> country <span class="tok-kw">FROM</span> ztcountry
+  <span class="tok-kw">INTO</span> lv_dummy <span class="tok-kw">WHERE</span> country = ls_person-country.
+<span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.
+  <span class="tok-com">" 잘못된 국가코드 — 업무 처리(메시지/중단)</span>
+<span class="tok-kw">ENDIF</span>.</code></pre></div></div>
+</section><section class="lblock"><h2>원칙</h2>
+<ul>
+<li><strong>할 수 있으면 DDIC로</strong>(선언적·재사용·일관). 존재·형식·코드 목록은 DDIC.</li>
+<li><strong>DDIC로 표현 못 하는 업무 규칙만</strong> 코드로. 중복 검증은 피한다.</li>
+</ul>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>활성화 누락</strong> → 테이블·Search Help 모두 활성화해야 동작.</li>
-<li><strong>타입을 Built-In으로</strong> → Data Element로 줘야 라벨·F4가 산다(CH07-L01).</li>
+<li><strong>코드로 다 검증</strong> → DDIC가 해줄 걸 중복 구현. 유지보수 부담.</li>
+<li><strong>DDIC만 믿고 직접 쓰기</strong> → 직접 DB 쓰기는 DDIC 검증을 우회한다. 코드로 보완.</li>
 </ul>
 <hr>
-<p>토대(테이블·관계·도움말)를 놓았다. 이제 &quot;잔여석 계산&quot;·&quot;예매 판정&quot; 로직을 <strong>모듈로</strong>
-묶자 → <strong>CH10</strong>.</p>
+<p>이제 입력이 똑똑해졌다(존재·형식은 DDIC, 업무 규칙은 코드). 다음은 우리 콘서트
+모델을 <strong>직접 만들어 보는</strong> 실습이다 → <strong>CH09-L09(실습)</strong>.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

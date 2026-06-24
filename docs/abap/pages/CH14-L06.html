@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SE16N 데이터 브라우저 · Classic DDIC View·유지보수 객체 · SAP Developer Academy</title>
+<title>View Cluster — 관련 뷰를 묶어 유지보수 · Classic DDIC View·유지보수 객체 · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -34,38 +34,54 @@
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH14</nav>
       <section class="lhead">
         <p class="lhead__eyebrow">Classic DDIC View·유지보수 객체</p>
-        <h1>SE16N 데이터 브라우저</h1>
-        <p class="lhead__direction">테이블 내용을 빠르게 조회하는 만능 브라우저 — SE16N.</p>
+        <h1>View Cluster — 관련 뷰를 묶어 유지보수</h1>
+        <p class="lhead__direction">마스터+종속 테이블을 한 흐름으로 — SE54 View Cluster.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 14</span><span class="tag tag--ls">Lesson 6</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>빠르게 들여다보는 만능 도구</h2>
-<p>지금까지 데이터를 SE11 Create Entries(한 건씩, CH07)·TMG/SM30(표준 유지보수 화면,
-L05)으로 다뤘다. 그런데 &quot;아무 테이블이나 빠르게 내용만 보고 싶다&quot;면? 그게
-<strong>SE16N</strong>(Data Browser)이다.</p>
-</section><section class="lblock"><h2>SE16N로 조회</h2>
-<p><code>SE16N</code> → 테이블명 입력 → 조건(선택) → 실행(F8). 어떤 테이블이든 <strong>별도 화면 없이</strong>
-행을 바로 조회한다.</p>
+<section class="lblock"><h2>테이블 하나로는 부족할 때</h2>
+<p>CH14-L05의 SM30은 <strong>한 테이블/뷰</strong>를 유지보수한다. 그런데 &quot;공연 → 회차 → 좌석등급&quot;처럼
+<strong>연관된 여러 테이블</strong>을 늘 함께 손봐야 하면, 화면을 오가며 따로 관리하기 번거롭다.
+여러 유지보수 뷰/테이블을 <strong>하나로 묶어</strong> 계층적으로 다루는 게 <button class="term" type="button" data-term="View Cluster">View Cluster</button>(뷰 클러스터)다.</p>
+</section><section class="lblock"><h2>View Cluster (SE54)</h2>
+<p><code>SE54</code>로 정의하며, 관련 뷰·테이블을 <strong>헤더 → 상세 → 상세의 상세</strong> 계층으로 엮는다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">TEXT</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3</pre><pre class="abap-editor__code"><code>공연(헤더)            ← 상위에서 한 건 선택
+ └ 회차(상세)         ← 그 공연의 회차들
+    └ 좌석등급(상세)  ← 그 회차의 좌석등급들</code></pre></div></div>
 <ul>
-<li>컬럼별 조건·정렬·레이아웃 저장 등 편의 기능이 풍부하다.</li>
-<li><code>ZCONCERT</code>·<code>ZBOOKING</code>·<code>SFLIGHT</code> 등 무엇이든 테이블명만 알면 본다.</li>
+<li>상위에서 한 건을 고르면 그에 딸린 하위 항목으로 <strong>자연스럽게 내려가며</strong> 유지보수한다.</li>
+<li>각 단계는 결국 <button class="term" type="button" data-term="Foreign Key">Foreign Key</button> 관계(CH09)로 이어진 테이블들이다.</li>
 </ul>
-</section><section class="lblock"><h2>왜 &#39;마지막에&#39; 배우나</h2>
-<p>SE16N은 너무 편해서, <strong>먼저 보여 주면</strong> 앞에서 배운 Maintenance View·TMG를 만들
-이유가 사라져 보인다. 하지만 SE16N은 <strong>개발자용 빠른 점검 도구</strong>이고, 실제 사용자가
-쓰는 <strong>정식 입력 화면</strong>은 Maintenance View·전용 프로그램이다. 역할이 다르다.</p>
+</section><section class="lblock"><h2>언제 쓰나 — 장단점</h2>
+<table>
+<thead>
+<tr>
+<th>장점</th>
+<th>단점</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>관련 테이블 묶음을 한 흐름에서 일관되게</td>
+<td>설정이 복잡하다</td>
+</tr>
+<tr>
+<td>헤더-상세 계층을 그대로 표현</td>
+<td><strong>단일 테이블엔 과하다</strong>(그냥 SM30)</td>
+</tr>
+</tbody></table>
 <blockquote>
-<p>⚠️ <strong>운영 데이터 직접 편집 주의</strong> — SE16N으로 운영 테이블을 함부로 고치면 위험하다
-(검증·이력 우회). 보통 조회 위주로 쓰고, 편집은 권한·상황을 가린다.</p>
+<p>마스터 + 여러 종속 테이블을 <strong>늘 함께</strong> 손봐야 할 때만 View Cluster. 한 테이블이면 TMG+SM30(L05)로 충분하다.</p>
 </blockquote>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>SE16N을 정식 입력 화면으로</strong> → 개발/점검용이다. 사용자 입력은 Maintenance/전용 화면.</li>
-<li><strong>권한</strong> → 편집은 권한에 따라 제한된다(교육 시스템 안내).</li>
+<li><strong>단일 테이블에 View Cluster</strong> → 과한 설정. 단일은 SM30.</li>
+<li><strong>FK 관계 불명확</strong> → 계층은 Foreign Key를 따라 구성된다. 관계부터 명확히(CH09).</li>
 </ul>
 <hr>
-<p>DDIC 뷰와 유지보수·조회 도구를 마쳤다. 그런데 이 클래식 뷰들은 현대의 <strong>CDS
-View</strong>로 진화한다 — 그 비교를 준비하자 → 다음 레슨.</p>
+<p>관련 뷰를 묶어 유지보수하는 법까지 봤다. 이제 개발자가 <strong>아무 테이블이나 빠르게
+조회</strong>하는 도구로 → 다음 레슨.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

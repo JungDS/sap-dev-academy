@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Collective Search Help 기초 · DDIC 관계와 입력도움말(F4) · SAP Developer Academy</title>
+<title>Elementary Search Help · DDIC 관계와 입력도움말(F4) · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -34,42 +34,42 @@
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH09</nav>
       <section class="lhead">
         <p class="lhead__eyebrow">DDIC 관계와 입력도움말(F4)</p>
-        <h1>Collective Search Help 기초</h1>
-        <p class="lhead__direction">여러 Elementary를 묶어 탭으로 — Collective Search Help.</p>
+        <h1>Elementary Search Help</h1>
+        <p class="lhead__direction">F4 목록을 설계한다 — 단일 소스 Elementary Search Help.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 9</span><span class="tag tag--ls">Lesson 4</span><span class="tag tag--lv">초급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>여러 방식으로 찾고 싶다</h2>
-<p>사람을 &quot;사번으로&quot;, &quot;이름으로&quot;, &quot;부서로&quot; 각각 찾고 싶다. 검색 방식마다 Elementary
-검색 도움말을 만들고, 이들을 <strong>하나로 묶는</strong> 게 <button class="term" type="button" data-term="Collective Search Help">Collective Search Help</button>다.</p>
-</section><section class="lblock"><h2>구성</h2>
-<p><code>SE11</code> → Search Help → <code>ZSH_PERSON_COLL</code> → Create (Collective).</p>
+<section class="lblock"><h2>F4를 제대로 설계하기</h2>
+<p>Foreign Key의 F4는 &quot;Check Table 그대로&quot;다. 그런데 검색 화면(어떤 컬럼을 보여줄지,
+무엇으로 검색할지)을 <strong>직접 설계</strong>하고 싶다. 그게 <button class="term" type="button" data-term="Search Help">Search Help</button>(검색 도움말)다.
+가장 기본은 <strong>Elementary</strong>(단일 소스) 검색 도움말.</p>
+</section><section class="lblock"><h2>Elementary Search Help 구성</h2>
+<p><code>SE11</code> → Search Help → <code>ZSH_PERSON</code> → Create (Elementary).</p>
+<p>핵심 요소:</p>
 <ul>
-<li>여러 **Elementary <button class="term" type="button" data-term="Search Help">Search Help</button>**를 포함시킨다.</li>
-<li>F4 팝업에 각 Elementary가 <strong>탭</strong>으로 나타나, 사용자가 검색 방식을 고른다.</li>
-<li>포함된 Elementary들의 파라미터를 Collective의 파라미터와 <strong>대응</strong>시킨다.</li>
+<li><strong>Selection Method</strong> — 값을 가져올 테이블/뷰.</li>
+<li><strong>Parameters</strong> — F4 팝업에 보일 필드들. 각 파라미터의 역할:<ul>
+<li><strong>IMP</strong>(Import) — 검색 조건으로 입력받는 값.</li>
+<li><strong>EXP</strong>(Export) — 선택 시 화면 필드로 돌려줄 값.</li>
+<li><strong>LPos / SPos</strong> — 목록(List)·검색(Selection) 화면에서의 위치.</li>
 </ul>
-<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">TEXT</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
-2
-3
-4</pre><pre class="abap-editor__code"><code>ZSH_PERSON_COLL (Collective)
- ├─ ZSH_BY_ID    (사번으로)
- ├─ ZSH_BY_NAME  (이름으로)
- └─ ZSH_BY_DEPT  (부서로)</code></pre></div></div>
-</section><section class="lblock"><h2>언제 무엇을</h2>
-<ul>
-<li>검색 소스/방식이 <strong>하나</strong> → Elementary.</li>
-<li><strong>여러</strong> 방식을 한 F4에서 → Collective(탭으로 묶음).</li>
+</li>
 </ul>
+</section><section class="lblock"><h2>어디에 붙이나</h2>
+<p>검색 도움말은 **<button class="term" type="button" data-term="Data Element">Data Element</button>**나 <strong>테이블 필드</strong>에 붙인다(Attach). 그러면 그
+타입을 쓰는 모든 화면·PARAMETERS에서 F4가 이 도움말로 동작한다.</p>
+<blockquote>
+<p>CH03에서 &quot;<button class="term" type="button" data-term="Data Element">Data Element</button>에 라벨·도움말이 붙는다&quot;고 했다. 그 &#39;도움말&#39;의 정체가
+바로 이 Search Help다 — 나선형으로 다시 만났다.</p>
+</blockquote>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>파라미터 대응 누락</strong> → 탭은 떠도 값이 안 돌아온다. Collective↔Elementary
-파라미터 매핑 확인.</li>
-<li><strong>과설계</strong> → 방식이 하나뿐이면 Collective는 과하다. Elementary로.</li>
+<li><strong>EXP 미지정</strong> → 골랐는데 화면에 값이 안 돌아온다. 돌려줄 파라미터를 EXP로.</li>
+<li><strong>Selection Method 범위</strong> → 큰 테이블이면 적절한 뷰·검색조건으로 제한.</li>
 </ul>
 <hr>
-<p>도움말을 설계했다. 이제 이게 <strong>PARAMETERS 화면에서 어떻게 연결</strong>되는지 정리하자
-→ 다음 레슨.</p>
+<p>소스가 하나면 Elementary로 충분하다. 그런데 &quot;사번으로도, 이름으로도, 부서로도&quot;
+여러 방식으로 찾고 싶다면? → Collective Search Help(다음 레슨).</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

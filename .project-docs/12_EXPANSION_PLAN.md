@@ -1,6 +1,6 @@
 # 12. EXPANSION PLAN — 51항목 체크리스트 기반 콘텐츠 확장 배치 계획
 
-> 📅 최종수정: 2026-06-24 03:34 KST
+> 📅 최종수정: 2026-06-24 04:10 KST
 > 🎯 **목적:** 사용자 제공 51항목 체크리스트(+ Input Help 우선순위 이미지)에서 **미수록/부분수록 38건**을 `content/abap/**`에 배치·보강. 진행 추적의 단일 출처.
 > 📖 **읽을 때:** 확장 작업 재개 시. (키워드 감사 원장 = [11](11_KEYWORD_AUDIT.md), 별개 작업.)
 
@@ -40,7 +40,7 @@
 |1|CH05-L02 또는 CH03 요약|보강: "DDIC에서 변수 타입으로 쓰는 것=DE/Structure/Transp/View/Table Type, Domain ✗" 표|
 |2|CH03-L02|보강: Data Element의 SET/GET Parameter(파라미터 ID) 섹션|
 |3|CH05-L02|보강: 컴포넌트 타입을 View/Transp/Table Type로도 줄 수 있음(주석)|
-|4·5|✅ **CH05-L02에 "구조 재사용" 섹션으로 통합**(신규 L05 대신)|.INCLUDE(펼쳐 담기)·.APPEND(표준에 안전하게 더하기, CH29 연계). *설계 변경: L04가 캡스톤(→CH06)이라 그 뒤 신규 레슨은 서사 역전 → DDIC Structure 레슨에 묶음.*|
+|4·5|✅ **신규 레슨 CH05-L03 "구조 재사용 — 중첩·.INCLUDE·.APPEND"**(승격 완료)|중첩·INCLUDE(펼쳐 담기)·APPEND(표준에 안전하게 더하기, CH29). *2026-06-24 승격: 다루기 L03→L04·캡스톤 L04→L05. L02는 슬림화.*|
 |7|CH05-L02|보강: 중첩 DDIC 구조 → 중첩 변수|
 |8|CH06-L02|보강: Line Type을 DE/View/Transp로도|
 |10|CH10 또는 CH02-L05|보강(절제): Type Group=obsolete 1단락|
@@ -54,7 +54,7 @@
 |14|✅ CH07-L01 보강(신규 L04 대신)|Technical Settings: Data Class·Size Category 섹션|
 |15|✅ CH07-L01|Fragmentation=DBA 영역 1줄(절제)|
 |20|✅ CH09-L01|Check Table Cardinality(1:n) 참고 문단(절제)|
-|21|✅ **CH09-L02에 "Text Table" 섹션으로 통합**(신규 레슨 대신)|코드↔언어별 이름표·SPRAS·Foreign Key 표시. *재량: CH09가 실습(L07)로 끝나 신규 삽입 시 리넘버가 4개 교차참조(L01·L06·CH14-L08·CH15-L04)를 깸 → Check Table 관계 레슨에 묶음. 승격 원하면 check 참조.*|
+|21|✅ **신규 레슨 CH09-L03 "Text Table — 코드 옆 이름표"**(승격 완료)|코드↔언어별 이름표·SPRAS·Foreign Key. *2026-06-24 승격: L03~L08을 L04~L09로 시프트, 교차참조 3건(CH09-L01·CH14-L09·CH15-L04) 교정. L02 슬림화.*|
 |22|✅ CH07-L01|활성 후 타입/길이 변경 위험 ⚠️(흔한 실수)|
 |23|✅ CH07-L01|Where-Used List 🔎 툴 소개|
 |24|✅ CH04-L06|Short Dump란?+ST22로 지난 덤프 확인(glossary 등록)|
@@ -72,7 +72,7 @@
 |---|---|---|
 |31|✅ CH14-L05|One Step(1단계)/Two Step(2단계) 상세|
 |32|✅ CH14-L05|Maintenance Dialog 장단점 표|
-|33|✅ CH14-L05 보강(신규 대신)|View Cluster(SE54) 소개·장단점·사용시점 + glossary 등록. *재량: CH14가 L08 실습 캡스톤(→CH15)이라 신규 레슨 append는 서사 역전 → 계획서 허용대로 L05(TMG/SM30) 통합.*|
+|33|✅ **신규 레슨 CH14-L06 "View Cluster"**(승격 완료)|SE54·계층 유지보수·장단점 + glossary. *2026-06-24 승격: SE16N L06→L07·Classic/CDS L07→L08·실습 L08→L09. L05 슬림화.*|
 
 ### E. Search Help · Input Help (CH09/15/16)
 | # | 배치 | 액션 |
@@ -102,19 +102,18 @@
 ---
 
 ## 🏁 확장 완료 총평 (2026-06-24)
-**51항목 체크리스트의 미수록/부분수록 38건 = 전부 반영(클러스터 A~F).** 빌드 parity 0, 전체 **234 레슨**(231→234, 신규 3 + 리넘버 2회).
+**51항목 체크리스트의 미수록/부분수록 38건 = 전부 반영(클러스터 A~F).** 빌드 parity 0, 전체 **237 레슨**(231→237, 신규 6 + 리넘버 5회).
 
-- **신규 레슨(3)**: **CH09-L06** Input Help 호출 우선순위(+SVG `input-help-priority.html`) · **CH15-L10** PARAMETERS/SELECT-OPTIONS 옵션 총정리 · **CH15-L11** 여러 선택화면·CALL·Variant.
-- **리넘버(2)**: CH09(검증 L06→L07·실습 L07→L08, 교차참조 3건 교정) · CH15(실습 L10→L12).
+- **신규 레슨(6)**: **CH09-L06** Input Help 호출 우선순위(+SVG) · **CH15-L10** PARAMETERS/SELECT-OPTIONS 옵션 총정리 · **CH15-L11** 여러 선택화면·CALL·Variant · **CH05-L03** 구조 재사용(.INCLUDE/.APPEND) · **CH09-L03** Text Table · **CH14-L06** View Cluster.
 - **glossary 신규(3)**: Text Table · Short Dump · View Cluster.
-- **보강 클러스터**: A(DDIC 타입·구조 10) · B(Transparent Table 실무 7) · C(JOIN 4) · D(View·유지보수 3) · E(Input Help 3) · F(Selection Screen 9). + 감사 후속 `VALUE #( FOR )`(CH18-L02).
+- **보강 클러스터**: A(10) · B(7) · C(4) · D(3) · E(3) · F(9). + 감사 후속 `VALUE #( FOR )`(CH18-L02).
 
-### ⏳ 사용자 결정 대기 — "신규 레슨 승격" 정책
-사용자 선택 = "전면 확장 — 새 레슨 추가". 그러나 **챕터가 실습/캡스톤으로 끝나** 신규 레슨 append 시 서사가 역전되거나 중간삽입 리넘버가 교차참조를 깨는 경우, 아래 항목은 **기존 레슨에 통합**했다(각 check에 사유). 독립 레슨 승격을 원하면 리넘버로 전환 가능:
-- **#4·5 .INCLUDE/.APPEND** → CH05-L02 통합 (L04 캡스톤).
-- **#21 Text Table** → CH09-L02 통합 (CH09 실습 종료·4참조).
-- **#33 View Cluster** → CH14-L05 통합 (CH14 실습 종료).
-- (대조: **#36**은 ★·첨부이미지라 리넘버 감수하고 **독립 레슨**으로, **F**는 L10 앞 삽입으로 신규 레슨화.)
+### ✅ "신규 레슨 승격" 정책 적용 완료 (2026-06-24)
+사용자 결정에 따라, 처음 기존 레슨에 통합했던 3건을 **독립 레슨으로 승격**:
+- **#4·5 .INCLUDE/.APPEND** → **CH05-L03** 신규(다루기 L03→L04·캡스톤 L04→L05).
+- **#21 Text Table** → **CH09-L03** 신규(L03~L08 → L04~L09 시프트, 외부참조 3건 교정).
+- **#33 View Cluster** → **CH14-L06** 신규(L06~L08 → L07~L09 시프트).
+- 모두 원 출처 레슨(CH05-L02·CH09-L02·CH14-L05)은 해당 섹션 제거로 **슬림화**(과적 완화 겸).
 
 ### 메타갭(공통)
 - 보강분 다수가 표·콜아웃 위주로 새 `::embed` 미부착(R4 칸채우기 금지·기존 레슨 톤). 신규 레슨 중 #36만 시각화 부착. 향후 인터랙션 위젯 후보는 각 check 참조.

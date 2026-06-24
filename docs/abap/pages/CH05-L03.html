@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>구조체 다루기 · Structure (Local · DDIC) · SAP Developer Academy</title>
+<title>구조 재사용 — 중첩 · .INCLUDE · .APPEND · Structure (Local · DDIC) · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -34,44 +34,74 @@
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH05</nav>
       <section class="lhead">
         <p class="lhead__eyebrow">Structure (Local · DDIC)</p>
-        <h1>구조체 다루기</h1>
-        <p class="lhead__direction">구조체 복사·초기화·동일 이름 필드 옮기기(MOVE-CORRESPONDING).</p>
+        <h1>구조 재사용 — 중첩 · .INCLUDE · .APPEND</h1>
+        <p class="lhead__direction">구조를 구조로 — 끼워 넣고 펼쳐 담아 재사용한다.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 5</span><span class="tag tag--ls">Lesson 3</span><span class="tag tag--lv">초급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>묶었으면 다뤄야 한다</h2>
-<p>구조체를 통째로 복사하거나, 비우거나, <strong>이름이 같은 필드만 골라 옮기는</strong> 일이
-자주 생긴다. 기본기 몇 가지를 익힌다.</p>
-</section><section class="lblock"><h2>통째로 대입 / 초기화</h2>
-<p>같은 타입이면 구조체끼리 <strong>통째로</strong> 대입된다. <code>CLEAR</code>로 전체를 비운다.</p>
+<section class="lblock"><h2>구조를 또 짜기 싫다</h2>
+<p>주소(시·도·우편번호)나 감사필드(생성자·생성일)처럼 <strong>같은 필드 묶음</strong>을 여러 구조에
+매번 다시 적기는 번거롭다. DDIC는 <strong>이미 만든 구조를 다른 구조에 끼워 넣어</strong> 재사용한다.
+방법이 세 가지인데, &quot;어떻게 들어가느냐&quot;가 다르다.</p>
+</section><section class="lblock"><h2>① 중첩 — 구조를 컴포넌트로</h2>
+<p>컴포넌트의 타입에 <strong>다른 구조</strong>를 주면, 구조 안에 구조가 들어간다(중첩 구조).</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
 4
 5
-6</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>: ls_a <span class="tok-kw">TYPE</span> zst_person,
-      ls_b <span class="tok-kw">TYPE</span> zst_person.
+6</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ls_order,
+        head <span class="tok-kw">TYPE</span> zst_order_head,   <span class="tok-com">" 구조를 통째로 한 컴포넌트로</span>
+        qty  <span class="tok-kw">TYPE</span> i,
+      <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ls_order.
 
-ls_a-name = <span class="tok-str">'정훈영'</span>.
-ls_b = ls_a.        <span class="tok-com">" 모든 컴포넌트 복사</span>
-<span class="tok-kw">CLEAR</span> ls_a.         <span class="tok-com">" ls_a를 초기값으로</span></code></pre></div></div>
-</section><section class="lblock"><h2>MOVE-CORRESPONDING — 이름이 같은 필드만</h2>
-<p>타입이 다른 두 구조 사이에서 <strong>이름이 같은 컴포넌트만</strong> 골라 옮긴다.</p>
-<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1</pre><pre class="abap-editor__code"><code>MOVE-CORRESPONDING ls_source <span class="tok-kw">TO</span> ls_target.</code></pre></div></div>
+ls_order-head-customer = <span class="tok-str">'정훈영'</span>.   <span class="tok-com">" 한 단계 더 -로 파고든다</span></code></pre></div></div>
 <ul>
-<li>두 구조의 공통 이름 필드만 복사되고, 나머지는 건드리지 않는다.</li>
-<li>화면·테이블·DB 구조가 조금씩 다를 때 아주 유용하다.</li>
+<li>접근이 <code>ls_order-head-customer</code>처럼 <strong>단계가 생긴다</strong>(<code>-</code>를 두 번).</li>
+<li>&quot;고객 정보는 head 안에&quot;처럼 <strong>묶음이 그대로 보존</strong>된다.</li>
 </ul>
+</section><section class="lblock"><h2>② <code>.INCLUDE</code> — 펼쳐서 담기</h2>
+<p>DDIC Structure 편집 화면에서 다른 구조를 <code>.INCLUDE</code>로 포함하면, 그 구조의 필드들이
+<strong>평평하게(직접 필드처럼)</strong> 들어온다.</p>
+<ul>
+<li>중첩은 <code>ls-head-customer</code>로 들어가지만, <code>.INCLUDE</code>는 펼쳐져 **<code>ls-customer</code>**로 바로 접근한다.</li>
+<li>&quot;묶음 티 안 나게, 내 필드인 것처럼&quot; 쓰고 싶을 때.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>중첩(컴포넌트)</th>
+<th><code>.INCLUDE</code></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>접근</td>
+<td><code>ls-head-customer</code></td>
+<td><code>ls-customer</code>(펼쳐짐)</td>
+</tr>
+<tr>
+<td>느낌</td>
+<td>묶음 유지</td>
+<td>내 필드처럼</td>
+</tr>
+</tbody></table>
+</section><section class="lblock"><h2>③ <code>.APPEND</code> — 표준에 안전하게 더하기</h2>
+<p><strong><code>.APPEND</code></strong>(Append Structure)는 SAP <strong>표준</strong> 구조·테이블을 <strong>직접 고치지 않고</strong>, 내 필드를
+<strong>별도 구조로 덧붙인다.</strong> 표준 원본을 안 건드려 시스템 업그레이드에 안전하다(확장 주제 —
+자세히는 CH29).</p>
+<blockquote>
+<p>끼워 넣기(<code>.INCLUDE</code>)=남의 필드를 내 것처럼 <strong>펼쳐 담기</strong>, 덧붙이기(<code>.APPEND</code>)=표준에
+<strong>안전하게 더하기</strong>. 묶음을 유지하려면 중첩.</p>
+</blockquote>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>타입 다른데 통째 대입</strong> → 컴포넌트 구성이 다르면 오류/엉뚱한 결과. 다르면
-<button class="term" type="button" data-term="MOVE-CORRESPONDING">MOVE-CORRESPONDING</button>.</li>
-<li><strong>CLEAR vs REFRESH</strong> → 구조체는 <code>CLEAR</code>. (여러 행을 담는 내부 테이블 비우기는
-다음 챕터에서.)</li>
+<li><strong>중첩인데 <code>-</code> 한 번</strong> → 중첩은 <code>ls-head-customer</code>(단계마다 <code>-</code>). 단계를 빠뜨리지 않는다.</li>
+<li><strong>표준 구조 직접 수정</strong> → 업그레이드 때 덮어쓰여 사라진다. 표준 확장은 <code>.APPEND</code>로.</li>
 </ul>
 <hr>
-<p>한 건(구조체)은 자유자재로 다룬다. 이제 배운 걸 모아 <strong>구구단 한 줄을 Structure로</strong>
-완성하고 디버거로 들여다보자 → <strong>CH05-L04(구구단 한 줄 = Structure)</strong>.</p>
+<p>구조를 재사용하는 법까지 익혔다. 이제 묶은 구조체를 <strong>다루는 요령</strong>(복사·초기화)을
+보자 → 다음 레슨.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
