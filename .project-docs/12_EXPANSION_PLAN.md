@@ -1,6 +1,6 @@
 # 12. EXPANSION PLAN — 51항목 체크리스트 기반 콘텐츠 확장 배치 계획
 
-> 📅 최종수정: 2026-06-24 01:36 KST
+> 📅 최종수정: 2026-06-24 03:02 KST
 > 🎯 **목적:** 사용자 제공 51항목 체크리스트(+ Input Help 우선순위 이미지)에서 **미수록/부분수록 38건**을 `content/abap/**`에 배치·보강. 진행 추적의 단일 출처.
 > 📖 **읽을 때:** 확장 작업 재개 시. (키워드 감사 원장 = [11](11_KEYWORD_AUDIT.md), 별개 작업.)
 
@@ -24,7 +24,8 @@
 | 클러스터 | 대상 챕터 | 상태 |
 |---|---|---|
 | 즉시수정 #51 FM 오타 | CH15-L08 | ✅ 완료 |
-| A — DDIC 타입·구조 | CH03·05·06 | ⬜ 대기 |
+| 누락문법 `VALUE #( FOR )` | CH18-L02 | ✅ 완료 (감사 후속·사용자 결정) |
+| A — DDIC 타입·구조 | CH03·05·06 | ✅ 완료 (10건) |
 | B — Transparent Table 실무 | CH07·09·(04 덤프) | ⬜ 대기 |
 | C — JOIN 보강 | CH13·14 | ⬜ 대기 |
 | D — View·유지보수 | CH14 | ⬜ 대기 |
@@ -39,7 +40,7 @@
 |1|CH05-L02 또는 CH03 요약|보강: "DDIC에서 변수 타입으로 쓰는 것=DE/Structure/Transp/View/Table Type, Domain ✗" 표|
 |2|CH03-L02|보강: Data Element의 SET/GET Parameter(파라미터 ID) 섹션|
 |3|CH05-L02|보강: 컴포넌트 타입을 View/Transp/Table Type로도 줄 수 있음(주석)|
-|4·5|**신규 CH05-L05** "구조 재사용 — .INCLUDE / .APPEND"|.INCLUDE(구조 통째 포함)·.APPEND 차이|
+|4·5|✅ **CH05-L02에 "구조 재사용" 섹션으로 통합**(신규 L05 대신)|.INCLUDE(펼쳐 담기)·.APPEND(표준에 안전하게 더하기, CH29 연계). *설계 변경: L04가 캡스톤(→CH06)이라 그 뒤 신규 레슨은 서사 역전 → DDIC Structure 레슨에 묶음.*|
 |7|CH05-L02|보강: 중첩 DDIC 구조 → 중첩 변수|
 |8|CH06-L02|보강: Line Type을 DE/View/Transp로도|
 |10|CH10 또는 CH02-L05|보강(절제): Type Group=obsolete 1단락|
