@@ -90,11 +90,24 @@ RESULT        → 결과</code></pre></div></div>
 </section><section class="lblock"><h2>MANDT — 클라이언트 분리</h2>
 <p>대부분 업무 테이블의 첫 키는 <button class="term" type="button" data-term="MANDT">MANDT</button>(클라이언트)다. CH01에서 본 &quot;방(Client)&quot;별로
 데이터가 분리되는 장치다. 보통 직접 다루지 않아도 시스템이 챙긴다.</p>
+</section><section class="lblock"><h2>Technical Settings — 저장 방식 지정</h2>
+<p>활성화 전, <strong>Technical Settings</strong>(기술 설정)에서 DB에 <strong>어떻게 저장할지</strong>를 정한다(앞 표의 그 항목).</p>
+<ul>
+<li><strong>Data Class</strong>(데이터 클래스) — 테이블의 성격(예: 마스터 데이터·트랜잭션 데이터). DB가 비슷한 성격끼리 같은 저장 영역에 모은다.</li>
+<li><strong>Size Category</strong>(크기 범주) — 예상 행 수 규모(0~4 등). DB가 처음 잡을 공간을 가늠하는 <strong>힌트</strong>다(나중에 늘어나도 됨).</li>
+</ul>
+<blockquote>
+<p>💡 입문 단계에선 <strong>기본값으로 두고 활성화</strong>해도 된다. &quot;성격(Data Class)과 규모(Size Category)를 미리 알려 주는 것&quot; 정도면 충분. 참고로 데이터가 많이 쌓이고 지워지길 반복하면 테이블에 빈틈이 생기는 <strong>Fragmentation</strong>(단편화)이 생길 수 있는데, 이건 DBA(운영 DB 관리자) 영역이다 — 지금은 이름만.</p>
+</blockquote>
+<blockquote>
+<p>🔎 <strong>Where-Used List</strong> — SE11에서 어떤 Data Element·Domain·테이블을 <strong>어디서 쓰는지</strong> 한 번에 찾아 준다. 객체를 고치기 전 &quot;이걸 바꾸면 어디가 영향받지?&quot;를 이걸로 먼저 확인한다.</p>
+</blockquote>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
 <li><strong>키 미지정</strong> → 최소 하나의 키 필드 필요. 보통 MANDT + 업무 키.</li>
 <li><strong>활성화 안 함</strong> → 활성화해야 DB 테이블이 실제로 생긴다.</li>
 <li><strong>필드를 Built-In으로만</strong> → 라벨·도움말을 잃는다. 가능하면 Data Element.</li>
+<li><strong>활성 후 타입·길이 변경</strong> ⚠️ → 이미 데이터가 든 테이블의 필드 타입·길이를 바꾸면 데이터 변환·손실·긴 잠금 위험이 있다. 운영 테이블 구조 변경은 신중히·이송 절차로(CH35).</li>
 </ul>
 <hr>
 <p>그릇(<code>ZGUGUDAN</code>)은 만들었다. 이제 <strong>값을 직접 넣어</strong> 보자 → Create Entries로

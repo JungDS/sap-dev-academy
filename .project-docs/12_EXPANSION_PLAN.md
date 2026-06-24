@@ -1,6 +1,6 @@
 # 12. EXPANSION PLAN — 51항목 체크리스트 기반 콘텐츠 확장 배치 계획
 
-> 📅 최종수정: 2026-06-24 03:02 KST
+> 📅 최종수정: 2026-06-24 03:11 KST
 > 🎯 **목적:** 사용자 제공 51항목 체크리스트(+ Input Help 우선순위 이미지)에서 **미수록/부분수록 38건**을 `content/abap/**`에 배치·보강. 진행 추적의 단일 출처.
 > 📖 **읽을 때:** 확장 작업 재개 시. (키워드 감사 원장 = [11](11_KEYWORD_AUDIT.md), 별개 작업.)
 
@@ -26,7 +26,7 @@
 | 즉시수정 #51 FM 오타 | CH15-L08 | ✅ 완료 |
 | 누락문법 `VALUE #( FOR )` | CH18-L02 | ✅ 완료 (감사 후속·사용자 결정) |
 | A — DDIC 타입·구조 | CH03·05·06 | ✅ 완료 (10건) |
-| B — Transparent Table 실무 | CH07·09·(04 덤프) | ⬜ 대기 |
+| B — Transparent Table 실무 | CH07·09·(04 덤프) | ✅ 완료 (7건) |
 | C — JOIN 보강 | CH13·14 | ⬜ 대기 |
 | D — View·유지보수 | CH14 | ⬜ 대기 |
 | E — Search Help·Input Help(★우선순위 이미지) | CH09·15·16 | ⬜ 대기 |
@@ -51,13 +51,13 @@
 ### B. Transparent Table 실무 (CH07/CH09/CH04)
 | # | 배치 | 액션 |
 |---|---|---|
-|14|**신규 CH07-L04** 또는 CH07-L01 보강|Technical Settings: Size Category·Data Class 설명|
-|15|위와 같은 곳|보강(절제): Table Fragmentation 짧게|
-|20|CH09-L01|보강(절제): Check Table Cardinality 짧게|
-|21|**신규 CH09-Lx** "Text Table"|텍스트 테이블 역할·생성|
-|22|CH07-L01|보강: 활성 후 타입/길이 변경 위험 ⚠️|
-|23|CH07 또는 CH14|보강: Where-Used List(어디서 쓰이나) 툴 소개|
-|24|CH04-L06 보강|덤프란?+ST22로 지난 덤프 확인|
+|14|✅ CH07-L01 보강(신규 L04 대신)|Technical Settings: Data Class·Size Category 섹션|
+|15|✅ CH07-L01|Fragmentation=DBA 영역 1줄(절제)|
+|20|✅ CH09-L01|Check Table Cardinality(1:n) 참고 문단(절제)|
+|21|✅ **CH09-L02에 "Text Table" 섹션으로 통합**(신규 레슨 대신)|코드↔언어별 이름표·SPRAS·Foreign Key 표시. *재량: CH09가 실습(L07)로 끝나 신규 삽입 시 리넘버가 4개 교차참조(L01·L06·CH14-L08·CH15-L04)를 깸 → Check Table 관계 레슨에 묶음. 승격 원하면 check 참조.*|
+|22|✅ CH07-L01|활성 후 타입/길이 변경 위험 ⚠️(흔한 실수)|
+|23|✅ CH07-L01|Where-Used List 🔎 툴 소개|
+|24|✅ CH04-L06|Short Dump란?+ST22로 지난 덤프 확인(glossary 등록)|
 
 ### C. JOIN 보강 (CH13/CH14)
 | # | 배치 | 액션 |
