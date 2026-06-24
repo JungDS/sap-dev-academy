@@ -1,6 +1,6 @@
 # Track 2 (CH24~36) 콘텐츠·체험·시각 보강 — 진행 원장
 
-> 📅 최종수정: 2026-06-24 18:41 KST · 자동 작업(/loop goal) 진행 기록. **압축돼도 이 파일로 재개.**
+> 📅 최종수정: 2026-06-24 18:47 KST · 자동 작업(/loop goal) 진행 기록. **압축돼도 이 파일로 재개.**
 > 🎯 Track 2(실무, CH24~36) 전 레슨을 초반부 골드 스탠다드(본문 1,500자±·섹션 5±·체험 1+·시각 동반) 수준으로 보강.
 
 ## 규칙·합의 (이 작업 한정 + 영구)
@@ -18,7 +18,7 @@
 | 24 | 실무 데이터 변경과 트랜잭션 제어 | 5 | ✅ 완료 (위젯5·엔진5) |
 | 25 | Lock Object와 동시성 제어 | 5 | ✅ 완료 (위젯5·엔진4+mermaid+judge-quiz) |
 | 26 | OO ABAP 고급 설계와 패턴 | 5 | ✅ 완료 (위젯5·엔진5) |
-| 27 | ALV 고급 Event 응용 | 5 | ⬜ 대기 |
+| 27 | ALV 고급 Event 응용 | 5 | 🔄 진행 |
 | 28 | Editable Grid ALV와 입력 검증 | 6 | ⬜ 대기 |
 | 29 | Enhancement / BAdI / User Exit | 5 | ⬜ 대기 |
 | 30 | 인터페이스 실무: BAPI/RFC/BDC/File | 5 | ⬜ 대기 |
@@ -93,3 +93,11 @@
 - 체험/시각: Model/View/Controller 관계도 + "이 계층 바꾸면 영향 범위" 하이라이트(View 교체 시 Model 불변 등).
 ### CH26-L05 · ABAP Unit — 엔진 `abap-unit-runner`
 - 체험: 테스트 메서드 목록 → Run → ✓/✗ + assert(act/exp). "버그 주입" 토글로 red 케이스. Mock=DB 없이. 도전과제 유지.
+
+## CH27 — ALV 고급 Event 응용 (계획)
+재사용 엔진 `alv-events`(mode 설정) 1개로 L01~L04, L05는 핸들러 배선 다이어그램.
+- L01 double_click: 행 더블클릭 → on_double_click(e_row/e_column) 이벤트 로그.
+- L02 hotspot: concert_id 링크 셀 → 단일 클릭 → on_hotspot(e_row_id→concert).
+- L03 toolbar: 커스텀 버튼(ZCANCEL) 추가 표시(toolbar 이벤트).
+- L04 user_command: 행 선택 + 버튼 클릭 → on_user_command(e_ucomm) + 선택행 취소·refresh.
+- L05 핸들러 클래스: 이벤트→핸들러 메서드 SET HANDLER 배선 다이어그램(`alv-handler-wiring`), 도전과제 유지.
