@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<!-- CH09-L02-S01 — 엔진: value-vs-fk (embeds/_engine/value-vs-fk.{js,css}) · 자체 postHeight.
+     체험: Value Table/Foreign Key 토글 조합 → C999 통과처럼/거부, 4-state 매트릭스 + ALPHA 변환.
+     게이팅: DDIC 설계 관점만(코드 검증 심화는 CH15+). -->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>제안 vs 검증 스위치보드 · CH09-L02-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/value-vs-fk.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">제안 vs 검증 스위치보드 <small>(Value Table · Foreign Key)</small></p>
+  <p class="lead">두 스위치를 켜고 끄며 없는 값 <code>C999</code>가 어떻게 처리되는지 보세요. <b>Value Table은 "후보 제안"일 뿐 검증을 강제하지 않고</b>, 실제로 막아 주는 것은 <b>Foreign Key</b>입니다.</p>
+
+  <div class="switches">
+    <div class="sw" id="swVT">
+      <div class="sw__top"><div class="sw__knob"></div><div class="sw__name">Value Table <code>ZCONCERT</code></div></div>
+      <div class="sw__desc">Domain 수준 — "이 도메인 값은 보통 여기서 온다"는 제안</div>
+    </div>
+    <div class="sw" id="swFK">
+      <div class="sw__top"><div class="sw__knob"></div><div class="sw__name">Foreign Key <code>ZBOOKING-CONCERT_ID</code></div></div>
+      <div class="sw__desc">테이블 필드 수준 — "이 값은 반드시 저 Check Table에 있어야 한다"</div>
+    </div>
+  </div>
+
+  <div class="result">
+    <div class="result__hd">선언 상태 → C999 입력 결과</div>
+    <div class="result__body">
+      <div class="decl" id="decl"></div>
+      <div class="verdict" id="verdict"></div>
+    </div>
+  </div>
+
+  <table class="matrix">
+    <thead><tr><th>Value Table</th><th>Foreign Key</th><th>C999 결과</th><th>해설</th></tr></thead>
+    <tbody>
+      <tr data-k="00"><td class="lab">없음</td><td class="lab">없음</td><td class="pass">통과처럼 보임</td><td>아무 관계도 선언 안 함</td></tr>
+      <tr data-k="10"><td class="lab">있음</td><td class="lab">없음</td><td class="pass">통과처럼 보임</td><td>후보 제안만, 실제 검증 없음</td></tr>
+      <tr data-k="01"><td class="lab">없음</td><td class="lab">있음</td><td class="rej">거부</td><td>실제 관계가 있어 검증</td></tr>
+      <tr data-k="11"><td class="lab">있음</td><td class="lab">있음</td><td class="rej">거부</td><td>제안 + 실제 관계 함께</td></tr>
+    </tbody>
+  </table>
+
+  <div class="alpha">
+    <div class="alpha__t">보너스 · Conversion Routine(ALPHA) — 화면 표시값 ≠ 내부 저장값</div>
+    <div class="alpha__row">
+      <span style="font-size:.78rem;color:var(--ink-soft)">입력</span>
+      <input id="alphaIn" type="text" value="42" inputmode="numeric" />
+      <span class="conv"><span class="tag">내부 저장</span> <b id="alphaInternal">—</b></span>
+      <span class="arr">·</span>
+      <span class="conv"><span class="tag">화면 표시</span> <b id="alphaDisplay">—</b></span>
+    </div>
+    <div style="font-size:.74rem;color:var(--ink-soft);margin-top:7px">ID 비교·조회 때 형식이 안 맞으면 "분명히 있는데 없음"처럼 보일 수 있습니다.</div>
+  </div>
+
+  <div class="note"><b>기억법</b> — Value Table = "이 도메인은 보통 여기서 온다"(제안), Foreign Key = "이 필드는 반드시 저 테이블을 참조한다"(검증). 검증이 걸렸는지는 <b>테이블 필드의 Foreign Key 화면</b>까지 확인해야 합니다.</div>
+</div>
+
+<script src="../_engine/value-vs-fk.js" defer></script>
+</body>
+</html>

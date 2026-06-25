@@ -1,0 +1,51 @@
+/* ===== value-vs-fk — Value Table(제안) vs Foreign Key(검증) 스위치보드 (CH09-L02) =====
+   두 토글 조합에 따라 C999가 통과처럼 보이는지/거부되는지 비교 + ALPHA 변환 미니카드. 데이터=window.VFK_CFG. */
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:transparent;line-height:1.5;}
+.wrap{padding:14px;}
+.hd{font-weight:800;font-size:1rem;margin:0 0 4px;}
+.hd small{font-weight:600;color:var(--brand);}
+.lead{margin:0 0 12px;color:var(--ink-soft);font-size:.86rem;}
+.lead code{font-family:var(--mono);background:#eef2ff;color:var(--brand);padding:1px 5px;border-radius:5px;font-size:.92em;}
+
+.switches{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:13px;}
+.sw{flex:1;min-width:200px;border:1px solid var(--line);border-radius:11px;padding:11px 13px;background:var(--surface);cursor:pointer;transition:all .15s;}
+.sw:hover{border-color:var(--brand);}
+.sw.on{border-color:var(--accent);background:#eafaf3;}
+.sw__top{display:flex;align-items:center;gap:9px;}
+.sw__knob{width:38px;height:21px;border-radius:999px;background:#cfd6e6;position:relative;transition:background .15s;flex:none;}
+.sw__knob::after{content:"";position:absolute;top:2px;left:2px;width:17px;height:17px;border-radius:50%;background:#fff;transition:transform .15s;box-shadow:0 1px 2px rgba(0,0,0,.2);}
+.sw.on .sw__knob{background:var(--accent);} .sw.on .sw__knob::after{transform:translateX(17px);}
+.sw__name{font-weight:800;font-size:.84rem;} .sw__name code{font-family:var(--mono);font-size:.82em;color:var(--brand);}
+.sw__desc{font-size:.74rem;color:var(--ink-soft);margin-top:5px;}
+
+.result{border:1px solid var(--line);border-radius:12px;background:var(--surface);overflow:hidden;margin-bottom:13px;}
+.result__hd{padding:8px 12px;font-size:.74rem;font-weight:800;background:#f3f4f7;color:var(--ink-soft);}
+.result__body{padding:12px;display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:520px){ .result__body{grid-template-columns:1fr;} }
+.decl{font-family:var(--mono);font-size:12px;color:var(--ink);}
+.decl .li{padding:3px 0;display:flex;gap:7px;align-items:center;}
+.decl .li .dot{width:8px;height:8px;border-radius:50%;background:var(--soon);flex:none;}
+.decl .li.on .dot{background:var(--accent);} .decl .li.off{color:var(--soon);}
+.verdict{display:flex;flex-direction:column;justify-content:center;text-align:center;border-radius:10px;padding:12px;}
+.verdict.ok{background:#eafaf3;color:#0b7250;} .verdict.no{background:rgba(214,51,108,.07);color:var(--bad);}
+.verdict .big{font-size:1rem;font-weight:800;}
+.verdict .sm{font-size:.76rem;margin-top:5px;opacity:.9;}
+
+.matrix{border-collapse:collapse;width:100%;font-size:12px;margin-bottom:13px;}
+.matrix th,.matrix td{border:1px solid var(--line);padding:6px 9px;text-align:center;}
+.matrix th{background:#fafbfe;color:var(--ink-soft);font-weight:800;font-size:11px;}
+.matrix td.lab{font-family:var(--mono);font-weight:700;}
+.matrix tr.cur{outline:2px solid var(--brand);}
+.matrix .pass{color:var(--amber);font-weight:700;} .matrix .rej{color:var(--bad);font-weight:800;}
+
+.alpha{border:1px dashed var(--line);border-radius:11px;padding:11px 13px;background:#fafbfe;}
+.alpha__t{font-size:.78rem;font-weight:800;color:var(--ink);margin-bottom:8px;}
+.alpha__row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.alpha input{font-family:var(--mono);font-size:.86rem;padding:6px 9px;border:1px solid var(--line);border-radius:7px;width:90px;}
+.alpha .conv{font-family:var(--mono);font-size:.84rem;}
+.alpha .conv b{color:var(--brand);} .alpha .arr{color:var(--soon);font-weight:800;}
+.alpha .tag{font-size:.62rem;font-weight:800;background:var(--soon);color:#fff;border-radius:5px;padding:1px 6px;}
+
+.note{margin-top:13px;border-left:3px solid var(--brand);background:rgba(59,91,219,.06);border-radius:0 9px 9px 0;padding:9px 13px;font-size:.83rem;color:#2a3550;}
+.note code{font-family:var(--mono);background:#fff;border:1px solid var(--line);padding:0 5px;border-radius:4px;}
