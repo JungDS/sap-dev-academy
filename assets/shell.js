@@ -1,6 +1,7 @@
 /* SAP Developer Academy — 런타임 셸 (v2-C 구조)
    생성된 레슨 페이지에 앱바 설정 · 좌측 아이콘 레일(레슨/챕터/용어) · 우측 "이 레슨의 여정"
    (섹션 스크롤스파이, 모바일 하단 시트) · 용어 hover/click 팝업 · 읽기 진행률 · 이전/다음을 주입.
+   §0 진입 시 항상 최상단(scrollRestoration='manual' + pageshow) — 이전/다음 왕복 시 중간 시작 방지.
    데이터: curriculum.json은 __SDA__.dataBase(docs/abap), glossary·tcodes는 __SDA__.siteRoot+reference/ 기준 fetch. fetch라 HTTP 서빙 필수.
    레퍼런스: sample/structure/lesson-shell-v2-c.html · 규칙: .project-docs/08_LESSON_SHELL_SPEC.md
    ※ T-code 미니페이지 모달은 Phase 2(tcodes.json + front-matter tcode)에서 추가. */
@@ -24,6 +25,13 @@
   var LS = (function () { try { return window.localStorage; } catch (e) { return null; } })();
   function lsGet(k) { try { return LS && LS.getItem(k); } catch (e) { return null; } }
   function lsSet(k, v) { try { LS && LS.setItem(k, v); } catch (e) {} }
+
+  /* ===== 0. 진입 시 항상 최상단 =====
+     브라우저 기본 history.scrollRestoration='auto'는 이미 방문한 레슨을 다시 열 때(이전/다음 왕복 등)
+     직전 스크롤 위치를 복원해 페이지 중간에서 시작하게 만든다. 복원을 끄고, 모든 표시 시점
+     (초기 로드 + bfcache 뒤로/앞으로 = pageshow)에서 맨 위로 보낸다. 단 의도된 #앵커 이동은 존중. */
+  try { if ("scrollRestoration" in history) history.scrollRestoration = "manual"; } catch (e) {}
+  window.addEventListener("pageshow", function () { if (!location.hash) window.scrollTo(0, 0); });
 
   var spyFn = null; // 여정 scroll-spy (있으면 스크롤 핸들러가 호출)
 
