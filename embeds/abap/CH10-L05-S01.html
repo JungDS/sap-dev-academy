@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<!-- CH10-L05-S01 — 엔진: global-class-blackbox (embeds/_engine/global-class-blackbox.{js,css}) · 자체 postHeight.
+     체험: 이미 만들어진 ZCL_BOOKING_CALC=>GET_REMAINING을 내부 안 열고 계약(IMPORTING/RETURNING)만 보고 호출.
+     게이팅: 정적 메서드 블랙박스 호출만(Global Class 설계는 CH20). 로직 내장. -->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>전역 클래스 블랙박스 호출기 · CH10-L05-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/global-class-blackbox.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">전역 클래스 블랙박스 호출기 <small>(이미 있는 도구 부르기)</small></p>
+  <p class="lead">전역 클래스 <code>ZCL_BOOKING_CALC</code>는 이미 만들어져 있습니다. <b>내부 구현을 몰라도</b> 공개 계약(무엇을 넣고 무엇을 받는지)만 알면 정적 메서드를 호출할 수 있습니다 — 블랙박스처럼.</p>
+
+  <div class="toolbar">
+    <button class="btn" id="btnContract" type="button">SE24 계약 보기</button>
+    <button class="btn go" id="btnNormal" type="button">정상 호출</button>
+    <button class="btn" id="btnMissing" type="button">필수 parameter 누락</button>
+    <button class="btn" id="btnStatic" type="button">static 여부 확인</button>
+  </div>
+
+  <div class="contract" id="contract">
+    <div class="contract__hd">SE24 · ZCL_BOOKING_CALC → GET_REMAINING (공개 계약)</div>
+    <div class="contract__b">
+      <div class="crow meta"><span class="role">종류</span><span>CLASS-METHODS (static) → =&gt; 로 호출</span></div>
+      <div class="crow imp"><span class="role">IMPORTING</span><span>iv_concert TYPE … / iv_perf TYPE …</span></div>
+      <div class="crow ret"><span class="role">RETURNING</span><span>rv_left TYPE i</span></div>
+    </div>
+  </div>
+
+  <div class="flow">
+    <div class="panel caller">
+      <div class="panel__hd">호출자</div>
+      <div class="panel__b">
+        <div class="kv"><span>iv_concert</span><b>'C001'</b></div>
+        <div class="kv"><span>iv_perf</span><b>'001'</b></div>
+      </div>
+    </div>
+    <div class="arr">→</div>
+    <div class="panel box">
+      <div class="panel__hd">ZCL_BOOKING_CALC</div>
+      <div class="panel__b"><div class="closed"><div class="lock">🔒</div><div class="nm">GET_REMAINING</div><div class="sub">내부 구현 비공개<br>(계약만 보고 호출)</div></div></div>
+    </div>
+    <div class="arr">→</div>
+    <div class="panel result">
+      <div class="panel__hd">결과 lv_left</div>
+      <div class="panel__b"><div class="resval idle" id="resVal">(미호출)</div></div>
+    </div>
+  </div>
+
+  <div class="msg" id="msg">버튼을 눌러 호출해 보세요.</div>
+
+  <div class="note"><b>핵심</b> — Global Class는 여러 프로그램이 함께 쓰는 전역 도구입니다. CH10에서는 <b>정적 메서드를 블랙박스처럼 호출</b>하는 법만 익힙니다. CH11 SALV에서도 표준 클래스를 같은 방식으로 부릅니다. 직접 설계는 <a href="CH20-L01.html">CH20</a>.</div>
+</div>
+
+<script src="../_engine/global-class-blackbox.js" defer></script>
+</body>
+</html>
