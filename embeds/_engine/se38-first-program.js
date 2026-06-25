@@ -13,7 +13,8 @@
     $('barTitle').textContent = titles[n];
     $('badge').hidden = (n!==3);
     [1,2,3].forEach(function(i){ $('si'+i).className = 's'+(i<n?' done':(i===n?' on':'')); });
-    if(n===1){ try{$('cmd').focus();}catch(e){} } else if(n===2){ try{$('prog').focus();}catch(e){} }
+    // preventScroll: iframe 내부 포커스가 부모 페이지를 위젯까지 스크롤시키는 것 방지(로드 시 점프 차단)
+    if(n===1){ try{$('cmd').focus({preventScroll:true});}catch(e){} } else if(n===2){ try{$('prog').focus({preventScroll:true});}catch(e){} }
     post();
   }
   function setBadge(s){

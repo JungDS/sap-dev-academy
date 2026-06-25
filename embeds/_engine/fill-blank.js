@@ -25,7 +25,7 @@
     if(resetBtn) resetBtn.addEventListener("click",()=>{
       inputs.forEach(inp=>{ inp.value=""; inp.classList.remove("ok","bad"); });
       out.className="fill-output"; out.textContent='빈칸을 채우고 "채점하기"를 눌러 보세요.';
-      if(inputs[0]) inputs[0].focus();
+      if(inputs[0]) inputs[0].focus({preventScroll:true});
     });
   });
 })();
