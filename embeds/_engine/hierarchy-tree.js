@@ -12,16 +12,20 @@
   function all(){ return [ROOT].concat(KIDS); }
   function find(id){ return all().filter(function(n){return n.id===id;})[0]; }
 
-  function nodeHtml(n){
-    var bcls = n.badge==='Collective' ? 'coll' : 'elem';
-    return '<div class="node'+(n.id===sel?' sel':'')+'" data-id="'+esc(n.id)+'">'
-      +'<span class="nm">'+esc(n.name)+'</span>'
-      +(n.note?'<span class="note">'+esc(n.note)+'</span>':'')
-      +'<span class="badge '+bcls+'">'+esc(n.badge||'')+'</span></div>';
+  function nodeHtml(n, isRoot){
+    var role = n.badge==='Collective' ? 'coll' : 'elem';
+    var icon = isRoot ? '📁' : '🔎';
+    var sub = n.note ? esc(n.note) : (isRoot ? (KIDS.length+'개 검색 방식 포함') : '');
+    return '<div class="ht-node '+role+(n.id===sel?' sel':'')+'" data-id="'+esc(n.id)+'">'
+      +'<span class="ht-ico">'+icon+'</span>'
+      +'<span class="ht-txt"><span class="ht-nm">'+esc(n.name)+'</span>'
+      +(sub?'<span class="ht-sub">'+sub+'</span>':'')
+      +'</span>'
+      +'<span class="ht-badge '+role+'">'+esc(n.badge||'')+'</span></div>';
   }
   function renderTree(){
-    $('tree').innerHTML = nodeHtml(ROOT)
-      + '<div class="kids">' + KIDS.map(function(k){ return '<div class="kid">'+nodeHtml(k)+'</div>'; }).join('') + '</div>';
+    $('tree').innerHTML = nodeHtml(ROOT, true)
+      + '<div class="ht-kids">' + KIDS.map(function(k){ return '<div class="ht-kid">'+nodeHtml(k, false)+'</div>'; }).join('') + '</div>';
   }
   function renderDetail(){
     var n=find(sel)||ROOT;
@@ -39,7 +43,7 @@
   }
   function render(){ renderTree(); renderDetail(); postHeight(); }
 
-  $('tree').addEventListener('click',function(e){ var n=e.target.closest('.node'); if(n){ sel=n.dataset.id; render(); } });
+  $('tree').addEventListener('click',function(e){ var n=e.target.closest('.ht-node'); if(n){ sel=n.dataset.id; render(); } });
 
   function postHeight(){ try{ var el=document.querySelector('.wrap');
     var h=Math.ceil(el?el.getBoundingClientRect().bottom:document.body.scrollHeight)+8;
