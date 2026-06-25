@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<!-- CH09-L07-S03 — 자체 포함 정적 SVG 다이어그램(재사용 엔진 없는 고유물 · embeds/_engine/_autoheight.js로 높이).
+     §02 "우선순위 사다리" text 블록을 시각화: F4 누름→①~④ 위에서부터 검사, 있으면 채택·없으면 ▼.
+     테마 대응: 중립색=var() 토큰(_base.css html.dark 자동), 강조색=고정 중간톤 hex(흰 글자 대비 양호, 다크 생성기 미처리=자체 포함). -->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>F4 우선순위 사다리 다이어그램 · CH09-L07-S03</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<style>
+  *{box-sizing:border-box;} html,body{margin:0;}
+  body{font-family:var(--font);color:var(--ink);background:transparent;line-height:1.5;}
+  .wrap{padding:14px;}
+  .hd{font-weight:800;font-size:1rem;margin:0 0 4px;}
+  .hd small{font-weight:600;color:var(--brand);}
+  .lead{margin:0 0 12px;color:var(--ink-soft);font-size:.86rem;}
+  .lead code{font-family:var(--mono);background:#eef2ff;color:var(--brand);padding:1px 5px;border-radius:5px;font-size:.92em;}
+  .diagram{border:1px solid var(--line);border-radius:13px;background:var(--surface);padding:6px 8px;}
+  .diagram svg{display:block;width:100%;max-width:560px;height:auto;margin:0 auto;}
+  /* SVG 텍스트/요소 — 중립은 토큰(다크 자동), 강조는 고정 hex */
+  .t-name{font:800 15px var(--font);fill:var(--ink);}
+  .t-desc{font:600 11.5px var(--font);fill:var(--ink-soft);}
+  .t-num{font:800 15px var(--font);fill:#fff;}
+  .t-entry{font:800 12.5px var(--font);fill:#fff;}
+  .t-no{font:700 11px var(--font);fill:var(--ink-soft);}
+  .t-yes{font:800 11px var(--font);fill:#0a8f68;}
+  .card{fill:var(--surface);stroke:var(--line);stroke-width:1.4;}
+  .rail{stroke:var(--line);stroke-width:2;fill:none;}
+  .note{margin-top:12px;border-left:3px solid var(--brand);background:rgba(59,91,219,.06);border-radius:0 9px 9px 0;padding:9px 13px;font-size:.83rem;color:#2a3550;}
+  .note code{font-family:var(--mono);background:#fff;border:1px solid var(--line);padding:0 5px;border-radius:4px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">F4 우선순위 사다리 <small>(위가 있으면 아래는 안 본다)</small></p>
+  <p class="lead">한 입력칸에 도움말이 여러 개 걸려 있어도, <code>F4</code> 한 번에 <b>위에서부터 검사해 가장 먼저 걸린 하나만</b> 뜹니다.</p>
+
+  <div class="diagram">
+    <svg viewBox="0 0 580 452" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="F4 입력 도움말 우선순위 사다리 다이어그램">
+      <defs>
+        <marker id="ar-no" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--soon)"/>
+        </marker>
+        <marker id="ar-yes" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#0ca678"/>
+        </marker>
+      </defs>
+
+      <!-- F4 진입 -->
+      <rect x="178" y="8" width="224" height="30" rx="15" fill="#2c3666"/>
+      <text x="290" y="28" text-anchor="middle" class="t-entry">⌨  F4 한 번 누름</text>
+      <line x1="74" y1="38" x2="74" y2="60" class="rail" marker-end="url(#ar-no)"/>
+
+      <!-- 티어 4개: y = 62 / 160 / 258 / 356, 카드 x=40 w=384 h=66 -->
+      <!-- ① 코드 직접 F4 -->
+      <rect x="40" y="62" width="384" height="66" rx="13" class="card"/>
+      <circle cx="74" cy="95" r="17" fill="#7048e8"/>
+      <text x="74" y="100" text-anchor="middle" class="t-num">1</text>
+      <text x="104" y="91" class="t-name">코드로 직접 만든 F4</text>
+      <text x="104" y="110" class="t-desc">화면 이벤트에서 직접 (CH15·16에서 배움)</text>
+      <line x1="430" y1="95" x2="486" y2="95" class="rail" stroke="#0ca678" marker-end="url(#ar-yes)"/>
+      <text x="455" y="86" text-anchor="middle" class="t-yes">있으면</text>
+      <text x="492" y="99" class="t-yes" style="fill:#0a8f68">✓ 채택</text>
+      <!-- 없으면 ▼ -->
+      <line x1="74" y1="128" x2="74" y2="160" class="rail" marker-end="url(#ar-no)"/>
+      <text x="92" y="148" class="t-no">없으면</text>
+
+      <!-- ② Search Help -->
+      <rect x="40" y="160" width="384" height="66" rx="13" class="card"/>
+      <circle cx="74" cy="193" r="17" fill="#3b5bdb"/>
+      <text x="74" y="198" text-anchor="middle" class="t-num">2</text>
+      <text x="104" y="189" class="t-name">Search Help</text>
+      <text x="104" y="208" class="t-desc">설계된 검색 화면 — 선언적 도움말 중 가장 유연</text>
+      <line x1="430" y1="193" x2="486" y2="193" class="rail" stroke="#0ca678" marker-end="url(#ar-yes)"/>
+      <text x="492" y="197" class="t-yes" style="fill:#0a8f68">✓ 채택</text>
+      <line x1="74" y1="226" x2="74" y2="258" class="rail" marker-end="url(#ar-no)"/>
+      <text x="92" y="246" class="t-no">없으면</text>
+
+      <!-- ③ Check / Text / 고정값 -->
+      <rect x="40" y="258" width="384" height="66" rx="13" class="card"/>
+      <circle cx="74" cy="291" r="17" fill="#0ca678"/>
+      <text x="74" y="296" text-anchor="middle" class="t-num">3</text>
+      <text x="104" y="287" class="t-name">Check · Text · 고정값</text>
+      <text x="104" y="306" class="t-desc">DDIC 관계·값에서 자동으로 나오는 목록</text>
+      <line x1="430" y1="291" x2="486" y2="291" class="rail" stroke="#0ca678" marker-end="url(#ar-yes)"/>
+      <text x="492" y="295" class="t-yes" style="fill:#0a8f68">✓ 채택</text>
+      <line x1="74" y1="324" x2="74" y2="356" class="rail" marker-end="url(#ar-no)"/>
+      <text x="92" y="344" class="t-no">없으면</text>
+
+      <!-- ④ 타입 기본 -->
+      <rect x="40" y="356" width="384" height="66" rx="13" class="card"/>
+      <circle cx="74" cy="389" r="17" fill="#748094"/>
+      <text x="74" y="394" text-anchor="middle" class="t-num">4</text>
+      <text x="104" y="385" class="t-name">타입 기본 도움</text>
+      <text x="104" y="404" class="t-desc">날짜 = 달력 · 숫자 = 계산기 (아무것도 안 걸어도)</text>
+      <line x1="430" y1="389" x2="486" y2="389" class="rail" stroke="#0ca678" marker-end="url(#ar-yes)"/>
+      <text x="492" y="393" class="t-yes" style="fill:#0a8f68">✓ 채택</text>
+    </svg>
+  </div>
+
+  <div class="note"><b>읽는 법</b> — ①부터 차례로 "있나?"를 확인해 <b>처음 걸린 하나에서 멈춥니다</b>(✓ 채택). F4가 예상과 다르면 이 순서를 위에서부터 짚으면 원인이 보입니다. ①(코드 직접 F4)은 존재만 알면 되고 <a href="CH15-L01.html">CH15</a>·<a href="CH16-L01.html">CH16</a>에서 배웁니다.</div>
+</div>
+
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>
