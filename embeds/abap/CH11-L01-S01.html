@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<!-- CH11-L01-S01 — 엔진: write-vs-salv (embeds/_engine/write-vs-salv.{js,css}) · 자체 postHeight.
+     체험: 같은 예매 6행을 WRITE 텍스트/SALV 표로 비교, 정렬·합계가 WRITE 불가/SALV 표준. 이름풀 사용. 데이터=window.WVS_CFG. -->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WRITE 리스트 vs SALV 표 · CH11-L01-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/write-vs-salv.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">WRITE 리스트 vs SALV 표 <small>(같은 데이터, 다른 화면)</small></p>
+  <p class="lead">같은 예매 6행을 두 방식으로 봅니다. <code>WRITE</code>는 값은 보이지만 사용자가 <b>정렬·필터·합계</b>를 할 수 없습니다. <b>SALV</b>는 같은 Internal Table을 <b>조작 가능한 표</b>로 만들어 줍니다.</p>
+
+  <div class="toolbar">
+    <div class="seg" id="modeSeg"><button class="on" data-m="write">WRITE로 보기</button><button data-m="salv">SALV로 보기</button></div>
+    <button class="act" id="btnSort" type="button">좌석수 정렬</button>
+    <button class="act" id="btnSum" type="button">합계 보기</button>
+  </div>
+
+  <div class="view" id="view">
+    <div class="view__hd" id="viewHd"></div>
+    <div class="salvbar" id="salvbar"><span class="tbtn">정렬</span><span class="tbtn">필터</span><span class="tbtn">Σ 합계</span><span class="tbtn">엑셀</span><span class="tbtn">인쇄</span></div>
+    <div id="body"></div>
+  </div>
+
+  <div class="cmp">
+    <div class="cmpcard write"><div class="cmpcard__t">WRITE 리스트</div>
+      <div class="feat n"><span class="ic">✕</span>정렬 — 직접 코딩</div>
+      <div class="feat n"><span class="ic">✕</span>필터 — 직접 코딩</div>
+      <div class="feat n"><span class="ic">✕</span>합계 — 직접 계산·출력</div>
+      <div class="feat n"><span class="ic">✕</span>엑셀 내보내기 — 별도 구현</div>
+    </div>
+    <div class="cmpcard salv"><div class="cmpcard__t">SALV 표</div>
+      <div class="feat y"><span class="ic">✓</span>정렬 — 표준 기능</div>
+      <div class="feat y"><span class="ic">✓</span>필터 — 표준 기능</div>
+      <div class="feat y"><span class="ic">✓</span>합계 — 숫자 컬럼 표준</div>
+      <div class="feat y"><span class="ic">✓</span>엑셀 — 표준 툴바<span style="color:var(--soon);font-weight:600">&nbsp;(읽기 전용)</span></div>
+    </div>
+  </div>
+
+  <div class="fb" id="fb">위 버튼으로 정렬·합계를 눌러 두 화면의 차이를 확인하세요.</div>
+
+  <div class="note"><b>경계</b> — SALV는 <b>데이터 조회 도구가 아닙니다</b>. 조회는 <code>SELECT</code>(CH08), 담는 곳은 Internal Table(CH06), 보여 주는 건 SALV. CH11 SALV 1차는 <b>읽기 전용</b> — 셀 편집은 <a href="CH28-L01.html">CH28</a>에서 배웁니다.</div>
+</div>
+
+<script>
+window.WVS_CFG = {
+  sumKey:'seats',
+  cols:[
+    {key:'booking_id', label:'예매번호', num:true},
+    {key:'concert_id', label:'공연', num:false},
+    {key:'customer',   label:'고객명', num:false},
+    {key:'seats',      label:'좌석수', num:true},
+    {key:'status',     label:'상태', num:false}
+  ],
+  rows:[
+    {booking_id:5001, concert_id:'C001', customer:'정훈영', seats:2, status:'N'},
+    {booking_id:5002, concert_id:'C001', customer:'손흥민', seats:4, status:'N'},
+    {booking_id:5003, concert_id:'C001', customer:'아이유', seats:3, status:'N'},
+    {booking_id:5004, concert_id:'C002', customer:'유재석', seats:1, status:'C'},
+    {booking_id:5005, concert_id:'C002', customer:'김연아', seats:2, status:'N'},
+    {booking_id:5006, concert_id:'C001', customer:'차은우', seats:5, status:'N'}
+  ]
+};
+</script>
+<script src="../_engine/write-vs-salv.js" defer></script>
+</body>
+</html>

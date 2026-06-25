@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<!-- CH11-L04-S01 — 엔진: salv-pipeline-stepper (embeds/_engine/salv-pipeline-stepper.{js,css}) · 자체 postHeight.
+     체험: SELECT→DESCRIBE→factory→set_all→display 파이프라인을 3칸(DB/Internal Table/SALV)으로, 단계 건너뛰면 피드백.
+     게이팅: classic SELECT·START-OF-SELECTION/REF TO/TRY는 선행 사용. 데이터 내장. -->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SELECT→Internal Table→SALV 파이프라인 · CH11-L04-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/salv-pipeline-stepper.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">SELECT → Internal Table → SALV 파이프라인 <small>(미니 리포트)</small></p>
+  <p class="lead">첫 "쓸 만한 표 리포트"는 다섯 단계 흐름입니다. 순서대로 눌러 데이터가 <b>DB → 메모리 표 → 화면</b>으로 흘러가는 걸 보세요. 단계를 건너뛰면 무엇이 빠졌는지 알려 줍니다.</p>
+
+  <div class="toolbar" id="toolbar">
+    <button class="btn" data-a="sel" type="button">SELECT 실행</button>
+    <button class="btn" data-a="desc" type="button">행 수 확인</button>
+    <button class="btn" data-a="fac" type="button">factory 실행</button>
+    <button class="btn" data-a="set" type="button">set_all 실행</button>
+    <button class="btn" data-a="disp" type="button">display 실행</button>
+    <button class="btn empty" data-a="empty" type="button">빈 결과 시나리오</button>
+    <button class="btn reset" data-a="reset" type="button">리셋</button>
+  </div>
+
+  <div class="pipe">
+    <div class="col db"><div class="col__hd">DB Table · ZTPERSON</div><div class="col__b" id="dbBody"></div></div>
+    <div class="parr">→</div>
+    <div class="col it"><div class="col__hd">Internal Table · LT_PERSON</div><div class="col__b" id="itBody"></div></div>
+    <div class="parr">→</div>
+    <div class="col salv"><div class="col__hd">SALV 화면</div><div class="col__b" id="salvBody"></div></div>
+  </div>
+
+  <div class="fb" id="fb"></div>
+
+  <div class="note"><b>핵심</b> — 표가 비면 SALV 탓부터 하지 말고 <code>SELECT</code> 결과·행 수(<code>DESCRIBE TABLE</code>)를 먼저 확인하세요. <code>factory</code>=객체 생성, <code>set_all</code>=기능, <code>display</code>=화면 표시. CH11은 classic Open SQL을 유지합니다.</div>
+</div>
+
+<script src="../_engine/salv-pipeline-stepper.js" defer></script>
+</body>
+</html>
