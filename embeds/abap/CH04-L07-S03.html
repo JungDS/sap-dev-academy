@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!-- CH04-L07-S03 — 엔진: fill-blank + _autoheight. 콘텐츠=레슨 §3단계(범위 출력, #C04-7).
-     정답을 바로 주지 않고 핵심(두 경계 OR·범위 밖 CONTINUE)을 빈칸으로 직접 채우게 함.
-     게이팅: PARAMETERS·DATA·DO·IF·OR·CONTINUE·sy-index·*만(SELECT·내부테이블 없음). -->
+     효율형: 1~9 전부 돌며 IF로 거르지 않고, p_from부터 (p_to-p_from+1)번만 반복 + 매 회차 단 1 증가.
+     게이팅: classic만 — 횟수는 변수(gv_cnt)에 담아 DO에 넣음(DO에 산술식 직접=modern, CH18↑). -->
 <html lang="ko">
 <head>
 <meta charset="utf-8" />
@@ -12,25 +12,25 @@
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">3단계 — 범위만 출력 <small>(예: 3~5단)</small></p>
-  <p class="lead">시작·끝 단을 입력받아 <b>그 범위만</b> 출력합니다. 범위 밖 단은 <b>건너뛰는 것</b>이 핵심 — 정답을 보기 전에 빈칸을 직접 채워 보세요.</p>
+  <p class="hd">3단계 — 범위만큼만 반복 <small>(예: 3~5단)</small></p>
+  <p class="lead">1~9를 다 돌며 거르지 말고, <b><code>p_from</code>부터 필요한 횟수만큼만</b> 돌고 회차 끝에 단을 1 올립니다. 정답을 보기 전에 빈칸을 직접 채워 보세요.</p>
 
   <div class="fillblank" data-fillblank
-       data-explain="두 경계는 OR로 묶어 '범위 밖'을 판정하고, 범위 밖이면 CONTINUE로 이번 단을 건너뛰어 다음 단으로 갑니다."
-       data-hint="두 경계 OR로 묶기 · 범위 밖이면 CONTINUE(이번 회차 건너뜀)">
+       data-explain="p_from부터 시작해 (p_to - p_from + 1)번만 반복하고, 매 회차 끝에 gv_dan을 1 올립니다. 1~9를 다 돌며 IF로 거를 필요가 없어 더 효율적이에요."
+       data-hint="시작 = p_from · 반복 횟수 = gv_cnt · 다음 단 = gv_dan + 1">
     <div class="fb-hd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span></div>
 <pre>PARAMETERS: p_from TYPE i, p_to TYPE i.
-DATA: gv_dan TYPE i, gv_mul TYPE i.
+DATA: gv_dan TYPE i, gv_mul TYPE i, gv_cnt TYPE i.
 
-DO 9 TIMES.
-  gv_dan = sy-index.
-  IF gv_dan &lt; p_from <input class="blank" data-answer="OR" placeholder="__" aria-label="빈칸1"> gv_dan &gt; p_to.
-    <input class="blank" data-answer="CONTINUE" placeholder="________" aria-label="빈칸2">.            <span class="cmt">" 범위 밖 단은 건너뜀</span>
-  ENDIF.
+gv_cnt = p_to - p_from + 1.   <span class="cmt">" 출력할 단 개수</span>
+gv_dan = <input class="blank" data-answer="p_from" placeholder="______" aria-label="빈칸1">.            <span class="cmt">" 시작 단부터</span>
+
+DO <input class="blank" data-answer="gv_cnt" placeholder="______" aria-label="빈칸2"> TIMES.
   DO 9 TIMES.
-    gv_mul = <input class="blank" data-answer="sy-index" placeholder="________" aria-label="빈칸3">.
+    gv_mul = sy-index.
     WRITE: / gv_dan, 'x', gv_mul, '=', gv_dan * gv_mul.
   ENDDO.
+  gv_dan = gv_dan + <input class="blank" data-answer="1" placeholder="_" aria-label="빈칸3">.        <span class="cmt">" 다음 단으로</span>
 ENDDO.</pre>
     <div class="fillblank__actions">
       <button class="btn" data-check type="button">채점하기</button>
@@ -38,7 +38,7 @@ ENDDO.</pre>
       <button class="btn ghost" data-reveal type="button">정답 보기</button>
       <button class="btn ghost" data-reset type="button">다시하기</button>
     </div>
-    <div class="fill-output">"범위 밖이면 어떻게 건너뛸까?"를 떠올리며 빈칸을 채워 보세요.</div>
+    <div class="fill-output">"몇 번 돌고, 단을 어떻게 올릴까?"를 떠올리며 빈칸을 채워 보세요.</div>
   </div>
 </div>
 <script src="../_engine/fill-blank.js" defer></script>
