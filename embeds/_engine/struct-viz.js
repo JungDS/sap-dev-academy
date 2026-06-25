@@ -5,7 +5,7 @@
   var cfg = window.SV_CFG; if(!cfg) return;
   var root = document.querySelector('[data-structviz]'); if(!root) return;
   function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-  var acc = cfg.access || '-';
+  // 컴포넌트는 이름만 표기 — 하이픈(-)은 접근 연산자(구분자)지 이름의 일부가 아니다(트리 가지선이 루트→컴포넌트를 나타냄).
 
   var h = '<div class="sv">';
   h += '<div class="sv__root"><span class="sv__rootname">'+esc(cfg.root)+'</span>'
@@ -13,7 +13,7 @@
   h += '<div class="sv__tree">';
   (cfg.comps || []).forEach(function(c){
     h += '<div class="sv__comp">'
-       + '<span class="sv__name">'+esc(acc + c.name)+'</span>'
+       + '<span class="sv__name">'+esc(c.name)+'</span>'
        + '<span class="sv__type">TYPE '+esc(c.type)+'</span>'
        + '<span class="sv__lead"></span>'
        + ((c.value != null && c.value !== '')
