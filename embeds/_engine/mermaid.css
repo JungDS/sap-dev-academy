@@ -39,3 +39,25 @@ body{font-family:var(--font);color:var(--ink);background:transparent;line-height
 /* ===== 노드 카드: 둥근 모서리 + 입체 그림자 ===== */
 .mermaid svg .node rect{rx:14px !important;ry:14px !important;
   filter:drop-shadow(0 2px 0 rgba(15,23,42,.05)) drop-shadow(0 8px 16px rgba(15,23,42,.07));}
+
+/* ===== 다크모드 — SVG는 mermaid 테마(라이트 고정)라 CSS !important로 덮는다(토글 즉시 반응·재렌더 불필요).
+   크롬·HTML 라벨·엣지·엣지라벨도 다크화. shell이 iframe html에 .dark 주입 → 즉시 적용.
+   ⚠️ 이 파일이 html.dark를 보유하므로 gen-embed-dark.mjs는 mermaid.css를 스킵(수동 단일 홈). ===== */
+html.dark .hd{color:#cdd9f2;}
+html.dark .hd small{color:#8893b5;}
+html.dark .lead{color:var(--ink-soft);}
+html.dark .viz-card{background:#1b1f2b;border-color:#333845;}
+html.dark .viz-card__title{color:#cdd9f2;}
+html.dark .viz-note{color:#a2a9ba;}
+html.dark .viz-note code{background:#232a3d;color:#cdd5ec;}
+/* 노드 채움/텍스트(SVG)는 mermaid.js가 주입 <style>을 다크로 변환(classDef가 ID+!important라 외부 CSS로 못 덮음).
+   노드 라벨(HTML) 텍스트 — 밝게 (배지 .r-* 는 컬러 칩이라 유지) */
+html.dark .nw b{color:#e8eaf0;}
+html.dark .nd{color:#9aa6c2;}
+html.dark .tnode{color:#e8eaf0;}
+/* 엣지 — 어두운 배경에서 보이도록 밝게 */
+html.dark .mermaid svg .edgePaths .path,html.dark .mermaid svg .flowchart-link{stroke:#8893b5 !important;}
+html.dark .mermaid svg .marker,html.dark .mermaid svg marker path{fill:#8893b5 !important;stroke:#8893b5 !important;}
+/* 엣지 라벨 칩 — 다크 배경+밝은 글자(라이트 박스 방지) */
+html.dark .mermaid svg .edgeLabel foreignObject div,html.dark .mermaid svg .edgeLabel span,html.dark .mermaid svg .edgeLabel p{
+  background:#262b3a !important;color:#cdd5ec !important;}
