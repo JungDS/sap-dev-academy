@@ -42,7 +42,7 @@
 <section class="lblock"><h2>결과가 한 건? 여러 건?</h2>
 <p>읽는 결과의 모양에 따라 SELECT 형태가 다르다.</p>
 </section><section class="lblock"><h2>SELECT SINGLE — 키로 딱 한 건</h2>
-<p>특정 한 행이 필요하면 <button class="term" type="button" data-term="SELECT SINGLE">SELECT SINGLE</button>. 결과는 <button class="term" type="button" data-term="Work Area">Work Area</button> 하나(<code>INTO ls_</code>).</p>
+<p>특정 한 행이 필요하면 <button class="term" type="button" data-term="SELECT SINGLE">SELECT SINGLE</button>. 결과는 <button class="term" type="button" data-term="Work Area">Work Area</button> 하나(<code>INTO gs_</code>).</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -51,27 +51,27 @@
 6
 7
 8
-9</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> ls_flight <span class="tok-kw">TYPE</span> sflight.
+9</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> gs_flight <span class="tok-kw">TYPE</span> sflight.
 
 <span class="tok-kw">SELECT</span> <span class="tok-kw">SINGLE</span> * <span class="tok-kw">FROM</span> sflight
-  <span class="tok-kw">INTO</span> ls_flight
+  <span class="tok-kw">INTO</span> gs_flight
   <span class="tok-kw">WHERE</span> carrid = <span class="tok-str">'KE'</span> <span class="tok-kw">AND</span> connid = <span class="tok-str">'0701'</span> <span class="tok-kw">AND</span> fldate = <span class="tok-str">'20260623'</span>.
 
 <span class="tok-kw">IF</span> sy-subrc = <span class="tok-num">0</span>.
-  <span class="tok-kw">WRITE</span>: / ls_flight-seatsocc, <span class="tok-str">'/'</span>, ls_flight-seatsmax.
+  <span class="tok-kw">WRITE</span>: / gs_flight-seatsocc, <span class="tok-str">'/'</span>, gs_flight-seatsmax.
 <span class="tok-kw">ENDIF</span>.</code></pre></div></div>
 <ul>
 <li><strong>키 전체</strong>로 조회하면 정확히 한 행이 보장된다.</li>
 </ul>
 </section><section class="lblock"><h2>INTO TABLE — 여러 건 한 번에</h2>
 <p>여러 행은 <code>INTO TABLE</code>로 내부 테이블에 통째로 담는다(= Array Fetch, 빠르다).</p>
-<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> sflight <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> lt_flight <span class="tok-kw">WHERE</span> carrid = <span class="tok-str">'KE'</span>.</code></pre></div></div>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> sflight <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> gt_flight <span class="tok-kw">WHERE</span> carrid = <span class="tok-str">'KE'</span>.</code></pre></div></div>
 </section><section class="lblock"><h2>SELECT … ENDSELECT — 한 행씩 (지양)</h2>
-<p><code>INTO ls_</code>로 받으면 한 행씩 반복 처리하는 <code>SELECT…ENDSELECT</code> 루프가 된다.</p>
+<p><code>INTO gs_</code>로 받으면 한 행씩 반복 처리하는 <code>SELECT…ENDSELECT</code> 루프가 된다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
-3</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> sflight <span class="tok-kw">INTO</span> ls_flight <span class="tok-kw">WHERE</span> carrid = <span class="tok-str">'KE'</span>.
-  <span class="tok-kw">WRITE</span>: / ls_flight-fldate.
+3</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> sflight <span class="tok-kw">INTO</span> gs_flight <span class="tok-kw">WHERE</span> carrid = <span class="tok-str">'KE'</span>.
+  <span class="tok-kw">WRITE</span>: / gs_flight-fldate.
 <span class="tok-kw">ENDSELECT</span>.</code></pre></div></div>
 <blockquote>
 <p>⚠️ <code>SELECT…ENDSELECT</code>는 DB를 여러 번 왕복해 <strong>느리다.</strong> 가능하면 <code>INTO TABLE</code>로
@@ -79,7 +79,7 @@
 </blockquote>
 </section><section class="lblock"><h2>UP TO n ROWS — 줄여 읽기</h2>
 <p>처음 몇 건만 필요하면 행 수를 제한한다.</p>
-<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> sflight <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> lt_flight <span class="tok-kw">UP</span> <span class="tok-kw">TO</span> <span class="tok-num">10</span> <span class="tok-kw">ROWS</span>.</code></pre></div></div>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> sflight <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> gt_flight <span class="tok-kw">UP</span> <span class="tok-kw">TO</span> <span class="tok-num">10</span> <span class="tok-kw">ROWS</span>.</code></pre></div></div>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
 <li><strong>부분 키로 SINGLE</strong> → 임의의 한 행이 온다. 단건은 <strong>전체 키</strong>로.</li>
