@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<!-- CH09-L08-S01 — 엔진: validation-router (embeds/_engine/validation-router.{js,css}) · 자체 postHeight.
+     체험: 상황 카드를 DDIC/프로그램으로 분류 → 정답·해설. 게이팅: 데이터 변경/트랜잭션은 CH24+, 읽기 확인만. 데이터=window.VR_CFG. -->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>검증 책임 라우터 · CH09-L08-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/validation-router.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">검증 책임 라우터 <small>(DDIC vs 프로그램)</small></p>
+  <p class="lead">각 검증을 누가 맡아야 할까요? <b>존재·형식</b>은 DDIC가 잘하고, <b>상황에 따라 달라지는 업무 규칙</b>은 프로그램이 맡습니다. 카드마다 골라 보고 정답·해설을 확인하세요.</p>
+
+  <div class="scorebar">
+    <span class="score" id="score">정답 0 / 5</span>
+    <span class="legend"><span><span class="dotd"></span>DDIC = 존재·형식</span><span><span class="dotp"></span>프로그램 = 업무 규칙</span></span>
+    <button class="reset" id="reset" type="button">다시</button>
+  </div>
+
+  <div class="cards" id="cards"></div>
+
+  <div class="note"><b>원칙</b> — DDIC는 값의 <b>존재·형식</b>(Foreign Key·fixed values)에 강하고, <b>잔여석·상태 전이·권한</b>처럼 상황에 따라 달라지는 판단은 프로그램이 책임집니다. 둘 중 하나만 믿으면 재사용을 버리거나(코드 전용) 업무 흐름을 못 막습니다(DDIC 전용).</div>
+</div>
+
+<script>
+window.VR_CFG = {
+  cards:[
+    {q:'공연 ID가 마스터에 존재하는가?', ans:'DDIC', why:'Foreign Key + Check Table이 존재 검증을 담당합니다.'},
+    {q:"상태 코드가 'O' 또는 'C' 중 하나인가?", ans:'DDIC', why:'Domain fixed values로 허용값을 제한할 수 있습니다.'},
+    {q:'신청 좌석이 잔여석보다 많지 않은가?', ans:'PROG', why:'재고는 상황에 따라 달라지는 업무 규칙 — 프로그램이 읽어 판단합니다.'},
+    {q:'이 예매자가 취소 권한이 있는가?', ans:'PROG', why:'권한 판단은 DDIC 관계로 표현하기 어렵습니다 — 프로그램 책임.'},
+    {q:'이미 종료된 공연인가?', ans:'PROG', why:'시점에 따른 상태 판단 — 프로그램이 날짜·상태를 확인합니다.'}
+  ]
+};
+</script>
+<script src="../_engine/validation-router.js" defer></script>
+</body>
+</html>
