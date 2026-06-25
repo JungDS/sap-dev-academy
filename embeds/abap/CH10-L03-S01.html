@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<!-- CH10-L03-S01 — 엔진: call-function-box (embeds/_engine/call-function-box.{js,css}) · 자체 postHeight.
+     체험: 호출자 기준 EXPORTING/IMPORTING/CHANGING/EXCEPTIONS 방향, 정상/음수 sy-subrc, EXCEPTIONS 제거 실험.
+     게이팅: classic CALL FUNCTION + classic EXCEPTIONS(RFC/BAPI 심화는 CH30+). 로직 내장. -->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CALL FUNCTION 상자 · CH10-L03-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/call-function-box.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">CALL FUNCTION 상자 <small>(호출자 기준 계약)</small></p>
+  <p class="lead">Function Module은 검은 상자가 아니라 <b>계약 상자</b>입니다. <code>EXPORTING</code>·<code>IMPORTING</code>은 반드시 <b>호출자 기준</b>으로 읽습니다 — 내가 내보내고(EXPORTING), 내가 받아옵니다(IMPORTING). 시나리오를 실행해 <code>sy-subrc</code>를 확인하세요.</p>
+
+  <div class="toolbar">
+    <button class="btn" id="btnNormal" type="button">정상 금액 (1000)</button>
+    <button class="btn" id="btnNeg" type="button">음수 금액 (-1)</button>
+    <label class="btn" style="display:flex;gap:6px;align-items:center;cursor:pointer"><input type="checkbox" id="excChk"> EXCEPTIONS 제거</label>
+    <div class="persp" id="persp"><button class="on" data-p="caller">호출자 기준</button><button data-p="fm">함수 내부 기준</button></div>
+  </div>
+
+  <div class="flow">
+    <div class="caller">
+      <div class="caller__hd">호출자 (zch10_l03)</div>
+      <div class="caller__b">
+        <div class="var" id="vAmount"></div>
+        <div class="var" id="vResult"></div>
+        <div class="var" id="vLog"></div>
+        <div class="subrc" id="subrc"></div>
+      </div>
+    </div>
+    <div class="fm">
+      <div class="fm__hd">CALL FUNCTION 'Z_CH10_ADD_TAX'</div>
+      <div class="fm__b"><div id="iface"></div><div class="perspwarn" id="perspWarn"></div></div>
+    </div>
+  </div>
+
+  <div class="msg" id="msg"></div>
+
+  <div class="note"><b>주의 2가지</b> — ① <code>EXPORTING/IMPORTING</code>은 호출자 기준으로 읽기(위 토글로 틀린 읽기 확인). ② <code>CALL FUNCTION</code> 뒤 <code>sy-subrc</code> 분기 잊지 않기. <code>TABLES</code>·일부 obsolete typing은 기존 FM에서 보일 뿐 신규 권장 아님.</div>
+</div>
+
+<script src="../_engine/call-function-box.js" defer></script>
+</body>
+</html>

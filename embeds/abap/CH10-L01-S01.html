@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<!-- CH10-L01-S01 — 엔진: perform-call-map (embeds/_engine/perform-call-map.{js,css}) · 자체 postHeight.
+     체험: PERFORM→FORM 점프와 복귀, 전역 누적 vs 지역 매번-새로 생김. "정의 누락" 오류 체험.
+     게이팅: classic FORM/PERFORM(레거시 이해용). 코드/스텝 내장. -->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PERFORM 호출 지도 · CH10-L01-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/perform-call-map.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">PERFORM 호출 지도 <small>(FORM 점프 · 스코프)</small></p>
+  <p class="lead"><code>PERFORM</code>을 만나면 실행이 <code>FORM</code> 블록으로 <b>들어갔다가</b> 끝나면 <b>호출 다음 줄로 돌아옵니다</b>. 전역 <code>gv_</code>는 계속 누적되지만, 지역 <code>lv_</code>는 호출할 때마다 새로 생겼다 사라집니다 — 한 단계씩 따라가 보세요.</p>
+
+  <div class="toolbar">
+    <button class="btn go" id="btnStart" type="button">▶ 시작</button>
+    <button class="btn" id="btnNext" type="button">다음 단계 →</button>
+    <button class="btn" id="btnReset" type="button">처음으로</button>
+    <label class="missing"><input type="checkbox" id="missChk"> FORM 정의 누락 실험</label>
+  </div>
+
+  <div class="stage">
+    <div class="codecol">
+      <div class="block"><div class="block__hd">메인 (실행 시작)</div><div id="mainBlk"></div></div>
+      <div class="block form" id="formBlk"><div class="block__hd">FORM count_call … ENDFORM</div><div id="formLines"></div></div>
+      <div class="block form" id="formMissing" style="display:none"><div class="block__hd">FORM 정의</div><div style="padding:11px;color:var(--bad);font-size:.82rem">(정의 없음 — PERFORM이 부를 블록이 없습니다)</div></div>
+    </div>
+    <div class="side">
+      <div class="scard"><div class="scard__t">호출 스택</div><div class="stack" id="stack"></div></div>
+      <div class="scard"><div class="scard__t">전역 변수 (gv_)</div><div id="gv"></div></div>
+      <div class="scard"><div class="scard__t">지역 변수 (lv_, FORM 안)</div><div id="lv"></div></div>
+      <div class="note-step" id="noteStep"></div>
+    </div>
+  </div>
+
+  <div class="note"><b>레거시 꼬리표</b> — <code>FORM/PERFORM</code>은 공식 문서상 obsolete modularization입니다. 기존 코드를 <b>읽고 유지보수</b>하기 위해 배우고, 새 코드는 method 중심으로 갑니다(→ <a href="CH10-L04.html">L04</a>·<a href="CH20-L01.html">CH20</a>).</div>
+</div>
+
+<script src="../_engine/perform-call-map.js" defer></script>
+</body>
+</html>

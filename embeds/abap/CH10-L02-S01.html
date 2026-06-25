@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<!-- CH10-L02-S01 — 엔진: param-passing-board (embeds/_engine/param-passing-board.{js,css}) · 자체 postHeight.
+     체험: USING/CHANGING·VALUE 전달 방식별 원본 보호/변경 비교 + RETURN(조기 종료)·STATICS(값 유지) 데모.
+     게이팅: classic FORM 파라미터(VALUE(...)는 pass-by-value 문법, constructor expression 아님). -->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>파라미터 이동 보드 · CH10-L02-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/param-passing-board.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">파라미터 이동 보드 <small>(USING · CHANGING · VALUE)</small></p>
+  <p class="lead">모듈의 <b>입구와 출구</b>가 파라미터입니다. 전달 방식을 바꿔 가며, FORM이 값을 바꿨을 때 <b>호출자 원본이 보호되는지/바뀌는지</b> 비교해 보세요(원본 <code>lv_amount = 1000</code>, FORM 안에서 × 1.1).</p>
+
+  <div class="modes" id="modes">
+    <button class="mbtn" data-m="uref" type="button">USING (ref)</button>
+    <button class="mbtn" data-m="uval" type="button">USING VALUE</button>
+    <button class="mbtn" data-m="cref" type="button">CHANGING (ref)</button>
+    <button class="mbtn" data-m="cval" type="button">CHANGING VALUE</button>
+  </div>
+
+  <div class="board">
+    <div class="col caller"><div class="col__hd">호출자</div><div class="col__b"><div class="vbox" id="vCaller"></div></div></div>
+    <div class="barrow">→<small>전달</small></div>
+    <div class="col iface"><div class="col__hd">FORM 인터페이스</div><div class="col__b" id="iface"></div></div>
+    <div class="barrow">→<small>복귀</small></div>
+    <div class="col inner"><div class="col__hd">결과</div><div class="col__b"><div class="vbox" id="vInner" style="margin-bottom:8px"></div><div class="vbox" id="vAfter"></div></div></div>
+  </div>
+
+  <div class="expl" id="expl"></div>
+
+  <div class="demos">
+    <div class="demo">
+      <div class="demo__t"><code>RETURN</code> — 조기 종료</div>
+      <div class="dbtns">
+        <button class="dbtn" id="retDiv" type="button">0으로 나누기</button>
+        <button class="dbtn" id="retOk" type="button">2로 나누기</button>
+      </div>
+      <div class="dout" id="retOut">divide_safe 를 호출해 보세요.</div>
+    </div>
+    <div class="demo">
+      <div class="demo__t"><code>STATICS</code> — 호출 사이 값 유지</div>
+      <div class="dbtns">
+        <button class="dbtn" id="stCall" type="button">FORM 호출</button>
+        <button class="dbtn" id="stReset" type="button">초기화</button>
+      </div>
+      <div class="dout" id="stOut">STATICS sv_count = 0 (초기)</div>
+    </div>
+  </div>
+
+  <div class="note"><b>요령</b> — 입력만 받는 값은 <code>USING VALUE(...)</code>로 원본을 보호하고, 결과를 돌려줄 값은 <code>CHANGING</code>으로 의도를 드러냅니다. 출력을 <code>USING</code>으로 돌려주는 코드는 읽는 사람을 속입니다. 타입은 항상 <code>TYPE</code>으로 명시하세요.</div>
+</div>
+
+<script src="../_engine/param-passing-board.js" defer></script>
+</body>
+</html>
