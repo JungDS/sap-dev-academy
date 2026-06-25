@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<!-- CH09-L05-S01 — 엔진: collective-search-help (embeds/_engine/collective-search-help.{js,css}) · 자체 postHeight.
+     체험: ID/아티스트/장소 3탭 — 어느 탭에서 골라도 CONCERT_ID 반환. 매핑 끊기 시 실패. 데이터=window.CSH_CFG. -->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Collective Search Help 탭 시뮬레이터 · CH09-L05-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/collective-search-help.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">Collective Search Help 탭 시뮬레이터 <small>(F4 여러 검색 방식 묶기)</small></p>
+  <p class="lead">사용자는 공연 ID를 알 수도, 아티스트만 기억할 수도, 장소만 알 수도 있습니다. 여러 Elementary Search Help를 <b>탭으로 묶어</b>, 어느 탭에서 골라도 <b>같은 입력칸으로 <code>CONCERT_ID</code></b>가 돌아옵니다.</p>
+
+  <div class="toprow">
+    <span style="font-size:.8rem;font-weight:700;color:var(--ink-soft)">ZSH_CONCERT_ALL (Collective)</span>
+    <button class="brk" id="brk" type="button">parameter 매핑 끊기</button>
+  </div>
+
+  <div class="f4">
+    <div class="f4__hd">🔍 공연 검색 (Collective Search Help)</div>
+    <div class="tabs" id="tabs"></div>
+    <div class="tabbody" id="tabbody"></div>
+  </div>
+
+  <div class="retrow">
+    <span class="lbl">입력칸 반환값 →</span>
+    <div class="inbox" id="inbox">—</div>
+    <span class="retmsg" id="retmsg">행을 고르면 CONCERT_ID가 반환됩니다.</span>
+  </div>
+
+  <div class="note"><b>핵심</b> — Collective는 "검색 도움말 여러 개를 모은 폴더"입니다. 단, 폴더 안 Elementary들이 <b>같은 반환 parameter</b>로 연결돼야 어느 탭에서 골라도 같은 값이 돌아옵니다. 검색 방식이 하나뿐이면 Collective는 과설계입니다.</div>
+</div>
+
+<script>
+window.CSH_CFG = {
+  returnCol:'CONCERT_ID',
+  tabs:[
+    {key:'id',     label:'공연 ID로 검색',   searchCol:'CONCERT_ID', listCols:['CONCERT_ID','NAME']},
+    {key:'artist', label:'아티스트로 검색',  searchCol:'ARTIST',     listCols:['CONCERT_ID','ARTIST','NAME']},
+    {key:'venue',  label:'장소로 검색',      searchCol:'VENUE',      listCols:['CONCERT_ID','VENUE','NAME']}
+  ],
+  rows:[
+    {CONCERT_ID:'C001', ARTIST:'아이유', VENUE:'KSPO DOME', NAME:'아이유 콘서트'},
+    {CONCERT_ID:'C002', ARTIST:'김연아', VENUE:'잠실', NAME:'김연아 아이스쇼'},
+    {CONCERT_ID:'C003', ARTIST:'성춘향', VENUE:'예술의전당', NAME:'춘향 국악 공연'}
+  ]
+};
+</script>
+<script src="../_engine/collective-search-help.js" defer></script>
+</body>
+</html>

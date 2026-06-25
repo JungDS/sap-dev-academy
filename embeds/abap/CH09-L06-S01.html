@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<!-- CH09-L06-S01 — 엔진: f4-attach-scope (embeds/_engine/f4-attach-scope.{js,css}) · 자체 postHeight.
+     체험: Search Help 부착 지점(Data Element/테이블 필드/Structure/MATCHCODE)별 영향 범위를 초록으로 비교.
+     게이팅: classic PARAMETERS·MATCHCODE OBJECT만. 데이터=window.FAS_CFG. -->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>F4 부착 범위 보드 · CH09-L06-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/f4-attach-scope.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">F4 부착 범위 보드 <small>(Search Help 어디에 붙이나)</small></p>
+  <p class="lead">같은 Search Help라도 <b>어디에 붙이느냐</b>에 따라 영향 범위가 달라집니다. 부착 지점을 골라, 어떤 입력칸이 그 F4를 받는지(<span style="color:var(--accent);font-weight:700">초록</span>) 비교해 보세요.</p>
+
+  <div class="aps" id="aps">
+    <button class="ap" data-k="de" type="button">Data Element 부착</button>
+    <button class="ap" data-k="field" type="button">테이블 필드 부착</button>
+    <button class="ap" data-k="struct" type="button">Structure 컴포넌트</button>
+    <button class="ap" data-k="matchcode" type="button">MATCHCODE OBJECT</button>
+  </div>
+
+  <div class="codebox">
+    <div class="codebox__hd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP / DDIC</span></div>
+    <pre class="code" id="code"></pre>
+  </div>
+
+  <div class="scopebar" id="scopebar"></div>
+  <div class="fields" id="fields"></div>
+
+  <div class="note"><b>요령</b> — 넓게(Data Element) 붙이면 여러 칸이 함께 바뀌고, 좁게(MATCHCODE OBJECT) 붙이면 그 칸만 바뀝니다. F4가 안 뜨면 먼저 <b>타입</b>을 확인하세요(Built-in 타입은 DDIC 의미 정보가 안 따라옴). 여러 도움말이 겹칠 때 무엇이 뜨는지는 <a href="CH09-L07.html">L07 우선순위</a>에서 정리합니다.</div>
+</div>
+
+<script>
+window.FAS_CFG = {
+  fields:[
+    {id:'p_con',   name:'p_con',              basis:'PARAMETERS · DE zcon_de_concert_id'},
+    {id:'p_ref',   name:'p_ref_con',          basis:'PARAMETERS · 같은 DE zcon_de_concert_id'},
+    {id:'zbk',     name:'(화면) ZBOOKING-CONCERT_ID', basis:'테이블 필드'},
+    {id:'zsperf',  name:'(화면) ZSPERF-CONCERT_ID',   basis:'Structure 컴포넌트'}
+  ],
+  points:[
+    {key:'de', scope:'그 Data Element를 쓰는 모든 필드 (가장 넓음)', fields:['p_con','p_ref','zbk','zsperf'],
+     code:'<span class="tok-com">" Data Element zcon_de_concert_id 에 Search Help 부착</span>\n<span class="tok-com">" → 이 DE를 쓰는 모든 입력칸이 같은 F4를 받는다</span>'},
+    {key:'field', scope:'해당 테이블 필드를 쓰는 화면 중심', fields:['zbk'],
+     code:'<span class="tok-com">" 테이블 필드 ZBOOKING-CONCERT_ID 에만 Search Help 부착</span>\n<span class="tok-com">" → 같은 DE라도 이 필드 기반 화면만 영향</span>'},
+    {key:'struct', scope:'그 구조를 쓰는 화면 필드', fields:['zsperf'],
+     code:'<span class="tok-com">" Structure 컴포넌트에 Search Help 부착</span>\n<span class="tok-com">" → 그 구조를 쓰는 화면 필드에만 적용</span>'},
+    {key:'matchcode', scope:'그 프로그램 입력칸 하나', fields:['p_con'],
+     code:'<span class="tok-kw">PARAMETERS</span> p_con <span class="tok-kw">TYPE</span> zcon_de_concert_id\n  <span class="tok-kw">MATCHCODE OBJECT</span> zsh_concert_all.\n<span class="tok-com">" → 이 입력칸 하나만 명시적으로 고정</span>'}
+  ]
+};
+</script>
+<script src="../_engine/f4-attach-scope.js" defer></script>
+</body>
+</html>
