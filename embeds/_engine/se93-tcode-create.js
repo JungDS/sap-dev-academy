@@ -21,16 +21,21 @@
     st.created=true; st.tcode=tc; st.prog=pg; setBadge('active');
     // 저장·활성화 후 입력칸도 잠금(생성 후 변경 불가 — 버튼과 동일)
     $('createBtn').disabled=true; $('tcode').disabled=true; $('typeSel').disabled=true; $('prog').disabled=true;
-    // 생성 결과 트리: $TMP(로컬 오브젝트) → Transaction → 생성한 트랜잭션
+    // 생성 결과 트리: $TMP(로컬) → Programs(기존 프로그램) + Transaction(방금 만든, 프로그램을 가리킴)
     $('treeBody').innerHTML =
-        '<details open><summary>📦 $TMP <span class="otag">로컬 오브젝트</span></summary>'
-      + '<div class="otree__lvl"><details open><summary>📁 Transaction</summary>'
-      + '<div class="otree__lvl"><div class="oleaf">🔹 <span class="b">'+tc+'</span> <span class="otag ok">생성됨</span></div></div>'
-      + '</details></div></details>';
+        '<details open><summary>📦 $TMP <span class="otag">로컬 오브젝트</span></summary><div class="otree__lvl">'
+      +   '<details open><summary>📁 Programs</summary>'
+      +     '<div class="otree__lvl"><div class="oleaf">📄 <span class="b">'+pg+'</span> <span class="otag">REPORT · 기존</span></div></div>'
+      +   '</details>'
+      +   '<details open><summary>📁 Transaction</summary>'
+      +     '<div class="otree__lvl"><div class="oleaf">🔹 <span class="b">'+tc+'</span> <span class="otag ok">생성됨 · → 프로그램 '+pg+'</span></div></div>'
+      +   '</details>'
+      + '</div></details>';
     $('treeBox').hidden=false;
     $('cmdRow').hidden=false; $('goBtn').classList.add('ready');
     $('cmd').value='';
-    setMsg('ok','✓ 트랜잭션 <b>'+tc+'</b> 생성·활성화 완료 (프로그램 <code>'+pg+'</code> 연결). 이제 아래 <b>명령창</b>에 <code>'+tc+'</code>를 입력해 실행해 보세요!');
+    var dup = (tc===pg) ? ' 트랜잭션 이름과 프로그램 이름이 똑같이 <b>'+tc+'</b>죠? ABAP은 <b>오브젝트 종류가 다르면</b>(프로그램 vs 트랜잭션) 같은 이름을 허용해요 — 일부러 같게 만들어 짝을 기억하기 쉽게 했습니다.' : '';
+    setMsg('ok','✓ 트랜잭션 <b>'+tc+'</b> 생성·활성화 완료 (프로그램 <code>'+pg+'</code> 연결).'+dup+' 이제 아래 <b>명령창</b>에 <code>'+tc+'</code>를 입력해 실행해 보세요!');
   });
 
   $('goBtn').addEventListener('click',function(){
