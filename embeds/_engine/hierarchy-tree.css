@@ -1,0 +1,45 @@
+/* ===== hierarchy-tree — 계층 트리 위젯 (Collective→Elementary 등) =====
+   root + children 구조를 연결선이 있는 트리로 보여 주고, 노드 클릭 시 역할을 설명. 데이터=window.HT_CFG. */
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:transparent;line-height:1.5;}
+.wrap{padding:14px;}
+.hd{font-weight:800;font-size:1rem;margin:0 0 4px;}
+.hd small{font-weight:600;color:var(--brand);}
+.lead{margin:0 0 12px;color:var(--ink-soft);font-size:.86rem;}
+.lead code{font-family:var(--mono);background:#eef2ff;color:var(--brand);padding:1px 5px;border-radius:5px;font-size:.92em;}
+
+.stage{display:grid;grid-template-columns:1.3fr 1fr;gap:14px;align-items:start;}
+@media(max-width:560px){ .stage{grid-template-columns:1fr;} }
+
+.tree{padding:2px 0;}
+.node{display:flex;align-items:center;gap:9px;border:1px solid var(--line);border-radius:10px;padding:9px 12px;background:var(--surface);cursor:pointer;transition:all .15s;}
+.node:hover{border-color:var(--brand);}
+.node.sel{border-color:var(--brand);background:#f3f6ff;box-shadow:0 4px 12px rgba(59,91,219,.16);}
+.node .nm{font-family:var(--mono);font-size:.9rem;font-weight:800;color:var(--ink);}
+.node.sel .nm{color:var(--brand);}
+.node .note{font-size:.78rem;color:var(--ink-soft);margin-left:2px;}
+.badge{margin-left:auto;font-size:.62rem;font-weight:800;border-radius:6px;padding:2px 8px;white-space:nowrap;}
+.badge.coll{background:var(--brand);color:#fff;} .badge.elem{background:var(--accent);color:#fff;}
+
+/* 자식 + 연결선 */
+.kids{position:relative;margin-top:0;}
+.kid{position:relative;padding-left:32px;margin-top:11px;}
+.kid::before{content:'';position:absolute;left:13px;width:2px;background:var(--line);top:-11px;bottom:-11px;}
+.kid:last-child::before{bottom:auto;height:calc(50% + 11px);}
+.kid::after{content:'';position:absolute;left:13px;top:50%;width:17px;height:2px;background:var(--line);transform:translateY(-1px);}
+
+/* 상세 패널 */
+.detail{border:1px solid var(--line);border-radius:12px;background:var(--surface);overflow:hidden;}
+.detail__hd{font-size:.72rem;font-weight:800;padding:8px 12px;background:#eef2ff;color:#26336b;}
+.detail__b{padding:12px;}
+.detail__b .dt-name{font-family:var(--mono);font-size:.92rem;font-weight:800;color:var(--brand);margin-bottom:6px;}
+.detail__b .dt-role{font-size:.78rem;font-weight:700;color:var(--ink-soft);margin-bottom:8px;}
+.detail__b .dt-text{font-size:.84rem;color:var(--ink);line-height:1.55;}
+/* F4 미리보기(탭) */
+.f4tabs{display:flex;gap:4px;margin-top:11px;flex-wrap:wrap;}
+.f4tab{font-size:.72rem;font-weight:700;border:1px solid var(--line);background:#fafbfe;color:var(--ink-soft);border-radius:7px 7px 0 0;padding:5px 11px;}
+.f4tab.on{background:#fff;border-bottom-color:#fff;color:var(--brand);box-shadow:inset 0 -2px 0 var(--brand);}
+.f4hint{font-size:.74rem;color:var(--soon);margin-top:6px;}
+
+.note{margin-top:12px;border-left:3px solid var(--brand);background:rgba(59,91,219,.06);border-radius:0 9px 9px 0;padding:9px 13px;font-size:.83rem;color:#2a3550;}
+.note code{font-family:var(--mono);background:#fff;border:1px solid var(--line);padding:0 5px;border-radius:4px;}
