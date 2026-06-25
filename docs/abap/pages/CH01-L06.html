@@ -41,17 +41,21 @@
       <article class="prose">
 <section class="lblock"><h2>$TMP에 둔 게 불편해질 때</h2>
 <p>CH01-L02에서 첫 프로그램을 <button class="term" type="button" data-term="$TMP">$TMP</button>(Local Object)에 저장했다. 학습엔 충분하다.
-하지만 곧 한계에 부딪힌다 — <strong>이 객체를 품질·운영 시스템으로 옮길 수도, 팀과
-공유할 수도 없다.</strong> $TMP는 &quot;내 PC 바탕화면&quot;이라서다. 이 레슨은 그 벽을
-넘는 <strong>첫걸음</strong>이다(깊은 운영은 뒤에서).</p>
+오해하기 쉬운데, <strong>같은 개발 서버에 있는 다른 사람도 <code>$TMP</code>의 객체를 조회하거나
+실행할 수 있다</strong> — <code>$TMP</code>는 &quot;비공개&quot;가 아니다. 진짜 한계는 따로 있다: <strong><code>$TMP</code>의
+객체는 다른 서버(품질·운영)로 절대 옮길 수 없다(이송 불가).</strong> <code>$TMP</code>는 <em>이 개발
+서버에만 묶인 임시 보관함</em>이라서다. 실서비스로 내보내려면 객체를 <strong><button class="term" type="button" data-term="개발 패키지">개발 패키지</button></strong>에
+담아야 한다 — 이 레슨은 그 벽을 넘는 <strong>첫걸음</strong>이다(깊은 운영은 뒤에서).</p>
 </section><section class="lblock"><h2>개발 패키지란</h2>
-<p><button class="term" type="button" data-term="개발 패키지">개발 패키지</button>는 개발 객체들을 담는 <strong>그릇</strong>이다. 단순 폴더와 다른 점은,
-패키지가 <strong>이송 계층(transport layer)</strong> 과 연결돼 있어서 그 안의 객체를
-다른 시스템으로 <strong>이송할 수 있다</strong>는 것.</p>
+<p><button class="term" type="button" data-term="개발 패키지">개발 패키지</button>는 <strong>Repository Object</strong>(프로그램·DDIC·클래스 등 개발 산출물)를 담는
+<strong>그릇</strong>이다. 단순 폴더와 다른 점은, 패키지가 <strong>이송 계층(transport layer)</strong> 과 연결돼
+있어 그 안의 객체를 <strong>다른 서버로 옮길(이송할) 수 있다</strong>는 것.</p>
 <ul>
 <li>이름은 <code>Z</code>/<code>Y</code>로 시작 (네임스페이스 규칙, 프로그램 이름과 동일).</li>
-<li>생성 위치: <strong>SE80</strong>(Object Navigator) 또는 <strong>SE21</strong>(Package Builder).</li>
+<li>생성·조회: <strong>SE80</strong>(Object Navigator) 또는 <strong>SE21</strong>(Package Builder).</li>
 </ul>
+<p>패키지에 담긴 객체는 <strong>개발 → 품질 → 운영</strong> 서버로 <strong>한 방향으로</strong> 흐른다.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">개발→품질→운영 이송 흐름</span><a class="embed__open" href="../../../embeds/abap/CH01-L06-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH01-L06-S01.html" loading="lazy" title="개발→품질→운영 이송 흐름"></iframe></figure>
 </section><section class="lblock"><h2>이송요청이 뜨는 이유</h2>
 <p>객체를 <button class="term" type="button" data-term="$TMP">$TMP</button>가 <strong>아닌</strong> <button class="term" type="button" data-term="개발 패키지">개발 패키지</button>에 저장하면, 시스템이 이번엔
 <strong><button class="term" type="button" data-term="이송요청">이송요청</button>(Transport Request)</strong> 을 요구한다. 왜?</p>
@@ -59,8 +63,11 @@
 <li>패키지에 속한 객체의 <strong>모든 변경을 추적</strong>하고,</li>
 <li>그 변경을 <strong>하나의 단위로 묶어 다음 시스템으로 이송</strong>하기 위해서다.</li>
 </ul>
-<p>이송요청은 &quot;변경분을 담은 택배 송장&quot;이다. 무엇을, 어디로 보낼지 적힌
-운송 단위. 객체를 저장할 때 기존 요청을 고르거나 새로 만든다.</p>
+<p>이송요청은 &quot;변경분을 담은 택배 송장&quot;이다. 하나의 <strong>Request</strong> 아래, 같이 작업하는
+사람마다 <strong>Task</strong>가 하나씩 생기고, 각자 손댄 객체(Programs 등)가 그 Task에 기록된다.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">이송요청 구조 — Request·Task·Programs</span><a class="embed__open" href="../../../embeds/abap/CH01-L06-S02.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH01-L06-S02.html" loading="lazy" title="이송요청 구조 — Request·Task·Programs"></iframe></figure>
+<p>이 Request를 <strong>릴리스(Release)</strong> 하면, 묶인 객체들이 <strong><code>STMS</code></strong>(Transport Management
+System)를 통해 <strong>다음 서버(품질·운영)로 전송</strong>된다. 실제 릴리스·임포트 운영은 → <strong>CH35</strong>.</p>
 </section><section class="lblock"><h2>Transport Organizer 맛보기 (SE09 / SE10)</h2>
 <p><button class="term" type="button" data-term="Transport Organizer">Transport Organizer</button>에서 내 <button class="term" type="button" data-term="이송요청">이송요청</button>을 조회한다.</p>
 <ul>
@@ -76,6 +83,37 @@
 <li>객체의 패키지 속성을 바꾸면(예: SE80에서 객체 우클릭 → 이동) 패키지를
 재지정하고, 그 시점에 <button class="term" type="button" data-term="이송요청">이송요청</button>에 기록된다.</li>
 </ul>
+</section><section class="lblock"><h2>이 레슨의 T-code 정리</h2>
+<p>이 레슨에서 만난 화면(T-code)을 한눈에. 명령창에 코드를 입력해 들어간다.</p>
+<table>
+<thead>
+<tr>
+<th>T-code</th>
+<th>이름</th>
+<th>역할</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>SE80</code></td>
+<td>Object Navigator</td>
+<td>객체·패키지를 한 화면에서 탐색·생성</td>
+</tr>
+<tr>
+<td><code>SE21</code></td>
+<td>Package Builder</td>
+<td><button class="term" type="button" data-term="개발 패키지">개발 패키지</button> 생성·관리</td>
+</tr>
+<tr>
+<td><code>SE09</code> / <code>SE10</code></td>
+<td><button class="term" type="button" data-term="Transport Organizer">Transport Organizer</button></td>
+<td>내 <button class="term" type="button" data-term="이송요청">이송요청</button>(Request·Task) 조회</td>
+</tr>
+<tr>
+<td><code>STMS</code></td>
+<td>Transport Management System</td>
+<td>릴리스된 요청을 다음 서버로 전송(임포트)</td>
+</tr>
+</tbody></table>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
 <li><strong><button class="term" type="button" data-term="이송요청">이송요청</button> 창에서 막힘</strong> → 학습 단계라면 <button class="term" type="button" data-term="$TMP">$TMP</button>(Local Object)로 두면 요청이
