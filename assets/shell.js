@@ -232,7 +232,12 @@
       if (d.open) h += '<h4>🚪 어떻게 여나요?</h4><p>명령 필드에 입력하고 Enter:</p><div class="cmdfield">' + esc(d.open) + "</div>";
       if (d.groups && d.groups.length) h += '<h4>🛠️ 여기서 다루는 객체</h4><p class="dim">항목을 누르면 한 줄 설명이 떠요.</p>' + objChips(d.groups);
       if (d.pitfalls && d.pitfalls.length) h += "<h4>⚠️ 자주 걸리는 점</h4><ul>" + d.pitfalls.map(function (p) { return "<li>" + p + "</li>"; }).join("") + "</ul>";
-      if (d.related && d.related.length) h += '<h4>🔗 함께 보는 트랜잭션</h4><div class="related">' + d.related.map(function (r) { return '<span title="' + esc(r[1] || "") + '">' + esc(r[0]) + "</span>"; }).join("") + "</div>";
+      if (d.related && d.related.length) h += '<h4>🔗 함께 보는 트랜잭션</h4><div class="related">' + d.related.map(function (r) {
+        var code = r[0], label = r[1] || "";
+        return tcodes[code]   // 정의된 T-code면 클릭해서 그 미니페이지로 이동
+          ? '<button class="relchip" type="button" data-tcode="' + esc(code) + '" title="' + esc(label) + '">' + esc(code) + "</button>"
+          : '<span title="' + esc(label) + '">' + esc(code) + "</span>";
+      }).join("") + "</div>";
       return h;
     }
     var sumPop = null;
@@ -262,6 +267,7 @@
       modal.hidden = false; body.style.overflow = "hidden";
       modal.querySelectorAll("[data-close]").forEach(function (el) { el.onclick = close; });
       modal.querySelectorAll(".objchip").forEach(function (c) { c.onclick = function (e) { e.stopPropagation(); showSum(c); }; });
+      modal.querySelectorAll(".relchip").forEach(function (c) { c.onclick = function (e) { e.stopPropagation(); closeSum(); open(c.getAttribute("data-tcode")); }; });
       modal.querySelector(".tmodal__body").addEventListener("click", function (e) { if (!e.target.classList.contains("objchip")) closeSum(); });
     }
     labels.forEach(function (b) { b.addEventListener("click", function () { open(b.getAttribute("data-tcode"), b.getAttribute("data-badge")); }); });
