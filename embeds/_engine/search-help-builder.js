@@ -27,9 +27,9 @@
     $('params').innerHTML = cols.map(function(c){
       var r=roles[c];
       return '<div class="prow"><span class="pn">'+esc(c)+'</span><div class="roles" data-col="'+c+'">'
-        +'<button class="rchip search'+(r.search?' on':'')+'" data-r="search">검색조건</button>'
-        +'<button class="rchip list'+(r.list?' on':'')+'" data-r="list">목록표시</button>'
-        +'<button class="rchip exp'+(r.exp?' on':'')+'" data-r="exp">반환(EXP)</button>'
+        +'<button class="rchip r-search'+(r.search?' on':'')+'" data-r="search">검색조건</button>'
+        +'<button class="rchip r-list'+(r.list?' on':'')+'" data-r="list">목록표시</button>'
+        +'<button class="rchip r-exp'+(r.exp?' on':'')+'" data-r="exp">반환(EXP)</button>'
         +'</div></div>';
     }).join('');
   }
