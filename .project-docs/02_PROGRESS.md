@@ -1,6 +1,6 @@
 # 02. PROGRESS — 진행 현황 · 다음 할 일
 
-> 📅 **최종수정: 2026-06-24 11:46 KST**
+> 📅 **최종수정: 2026-06-25 10:18 KST**
 > 🎯 **목적:** 목표가 어디까지 왔고, 다음에 무엇을 할지. 작업 시작·종료 시 갱신.
 > 📖 **읽을 때:** 작업 시작 전(현황 파악) · 종료 후(갱신).
 > ⚡ **TL;DR:** ABAP 커리큘럼 골격+CH01~14 본문 완료(CH15+ 스텁). 이번에 `sample/` 독립형 라이브러리 구축 + 입문자 작성표준·이름 풀 확정.
@@ -28,6 +28,17 @@
 - **결과**: 미이관 embed **0건**(CH01~CH22 전수) · 신규/이관 위젯 **36개** · 정착 엔진 **21종**(step-debugger·fill-blank·before-after·domain-builder·mermaid·write-output·write-format·se38·se93·case-branch-sim·state-change-grid·select-query-simulator·input-help-priority·salv-grid-simulator·select-options-filter-sim·join-aggregate-visualizer·event-lifecycle-buildup·process-flow-pbo-pai·dynpro-screen-elements·gui-alv-grid-simulator·diff-mapper·class-diagram·relationship-map + 공통 `_autoheight`).
 - **품질**: 전 위젯 게이팅 준수(classic↔modern 경계 R6·R15) · D2Coding 웹폰트(`assets/fonts/`) · 브라우저 전수 인터랙션 검증(콘솔 0) · 관통예제(콘서트앱 zconcert/zbooking·status N/C·이름풀) 데이터 일관.
 - **상세 현황**: [embeds/abap/_index.md](../embeds/abap/_index.md).
+
+## 🧩 CH08~CH11 체험수단 추가 보강 — ✅ 완료 (2026-06-25, `feature/lesson-design-polish`)
+
+- **배경**: `reference/codex_0625_v2/CHnn_REWRITE.md`(v2 기준 원고)의 "체험 설계"를 근거로, 체험수단이 **없던 레슨**에 신규 학습수단을 제작·연결. 사용자가 기존/신규를 직접 보고 선정하도록 **기존 학습수단은 그대로 보존**(대체 아님, 추가).
+- **신규 26개 위젯·신규 엔진 22종**:
+  - CH08(6): client-scope-filter·select-form-lab·into-target-board·where-filter-lab·key-condition-lens·empty-result-message.
+  - CH09(9): relation-gate·value-vs-fk·text-table-viewer·search-help-builder·collective-search-help·f4-attach-scope·f4-priority-lab(L07-S02)·validation-router·concert-model-checklist.
+  - CH10(7): perform-call-map·param-passing-board·call-function-box·local-class-stepper·global-class-blackbox·module-choice-cards·can-book-toggle(L07-S02).
+  - CH11(4): write-vs-salv·salv-function-switch·salv-pipeline-stepper·(L05=module-choice-cards 재사용).
+- **보존된 기존 embed**: CH08-L02-S01·CH09-L07-S01·CH10-L07-S01·CH11-L02/L06-S01(미수정).
+- **품질**: classic-first 게이팅 준수(미래 문법 0)·이름풀(정훈영)·빌드 parity 0·콘솔 0·브라우저 DOM 검증(뷰포트 폭 정상화 후 측정, [05 P3](05_PITFALLS.md))·`_index.md` 등재·`_dark.css` 재생성.
 
 ## 🧪 샘플 라이브러리 (`sample/`) — 이번 세션 구축
 
