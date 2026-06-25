@@ -1,29 +1,36 @@
 <!DOCTYPE html>
-<!-- CH05-L01-S04 — 엔진: struct-viz + _autoheight. 콘텐츠=레슨 §타입으로 빼두기(ty_person, #C05-1).
-     게이팅: Local Structure·TYPES만. 타입·길이(p LENGTH 8 DECIMALS 2) 표기. 설정=window.SV_CFG. -->
+<!-- CH05-L01-S04 — 엔진: struct-viz + _autoheight. 콘텐츠=레슨 §타입으로 빼두기(ty_person 재사용, #C05-1).
+     타입(모양) 1개 → 변수 인스턴스 여러 개(값만 각자). 타입·길이(p LENGTH 8 DECIMALS 2) 표기. 설정=window.SV_CFG. -->
 <html lang="ko">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>ty_person 구조 트리 · CH05-L01-S04</title>
+<title>ty_person 타입 재사용 트리 · CH05-L01-S04</title>
 <link rel="stylesheet" href="../_engine/_base.css" />
 <link rel="stylesheet" href="../_engine/struct-viz.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">타입으로 정의한 구조 — <code>ls_person</code> <small>(TYPE ty_person)</small></p>
-  <p class="lead"><code>TYPES</code>로 구조 <b>모양</b>을 정의하고 <code>ls_person</code>이 그 타입을 씁니다. 타입·길이까지 한눈에 보세요.</p>
+  <p class="hd">타입 재사용 — <code>ty_person</code> 하나로 변수 여러 개 <small>(TYPES)</small></p>
+  <p class="lead">구조 <b>모양</b>을 <code>TYPES</code>로 한 번만 정의하고, 변수는 <code>TYPE ty_person</code>으로 여러 개 만듭니다 — 모양은 공유, 값만 각자.</p>
   <div data-structviz></div>
 </div>
 <script>
 window.SV_CFG = {
-  root: 'ls_person', kind: 'TYPE ty_person', access: '-',
+  root: 'ty_person', kind: 'TYPE · 모양 정의',
   comps: [
-    { name: 'name',   type: 'string',                 value: "'정훈영'" },
-    { name: 'age',    type: 'i',                       value: '30' },
-    { name: 'amount', type: 'p LENGTH 8 DECIMALS 2',   value: "'1500.50'" }
+    { name: 'name',   type: 'string' },
+    { name: 'age',    type: 'i' },
+    { name: 'amount', type: 'p LENGTH 8 DECIMALS 2' }
   ],
-  note: '<code>amount</code>는 <b>TYPE p LENGTH 8 DECIMALS 2</b> — 자리수 8, 소수 둘째 자리까지의 금액(Packed). 모양을 <code>ty_person</code>으로 빼두면 같은 구조를 여러 변수가 공유합니다.'
+  reuse: {
+    label: '같은 타입으로 변수 여러 개 — 모양은 한 번만 정의',
+    instances: [
+      { root: 'ls_p1', vals: { name: "'정훈영'", age: '30', amount: "'1500.50'" } },
+      { root: 'ls_p2', vals: { name: "'손흥민'", age: '32' } }
+    ]
+  },
+  note: '모양(<code>ty_person</code>)은 한 번만 정의하고, <code>ls_p1</code>·<code>ls_p2</code>는 <code>TYPE ty_person</code>으로 같은 구조를 <b>재사용</b>합니다 — 컴포넌트·타입·길이는 같고 값만 다릅니다.'
 };
 </script>
 <script src="../_engine/struct-viz.js" defer></script>
