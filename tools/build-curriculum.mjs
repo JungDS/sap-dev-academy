@@ -317,21 +317,25 @@ function renderLessonPage(ch, lesson, trackNo) {
   const chNum = parseInt(String(chId).replace(/\D/g, ''), 10) || 0;
   const bodyHtml = wrapSections(dedupTermButtonsPerSection(autolinkGlossary(marked.parse(lesson.body), lesson.body, chNum)));
   const sda = JSON.stringify({ domain: DOMAIN, dataBase, siteRoot });
-  const tcode = lesson.data.tcode || '';
+  // tcode: 단일 문자열·콤마목록·배열 모두 허용 → 여러 개면 공통 카드에 라벨 여러 개
+  const tcodeList = Array.isArray(lesson.data.tcode)
+    ? lesson.data.tcode.map((t) => String(t).trim()).filter(Boolean)
+    : (lesson.data.tcode ? String(lesson.data.tcode).split(',').map((t) => t.trim()).filter(Boolean) : []);
   const tcodeBadge = lesson.data.tcodeBadge || '';
   const tags =
     `<span class="tag tag--track">Track ${esc(String(trackNo || 1))}</span>` +
     `<span class="tag tag--ch">Chapter ${esc(String(ch.meta.order ?? ''))}</span>` +
     `<span class="tag tag--ls">Lesson ${esc(String(lesson.data.order ?? ''))}</span>` +
     (ch.meta.difficulty ? `<span class="tag tag--lv">${esc(ch.meta.difficulty)}</span>` : '');
-  const tcodeBlock = tcode
+  const tcodeBlock = tcodeList.length
     ? `      <section class="lcard tcode">
         <p class="lcard__h"><span class="ic">🖥️</span>이번 Lesson에서 다루는 트랜잭션 코드</p>
-        <button class="tcode-label" data-tcode="${esc(tcode)}"${tcodeBadge ? ` data-badge="${esc(tcodeBadge)}"` : ''}>
-          ${tcodeBadge ? `<span class="tcode-label__badge">${esc(tcodeBadge)}</span>` : ''}
-          <span class="tcode-label__code">${esc(tcode)}</span>
-          <span class="tcode-label__hint">자세히 보기 ›</span>
-        </button>
+        <div class="tcode-labels">
+${tcodeList.map((tc, i) => {
+      const badge = (i === 0 && tcodeBadge) ? tcodeBadge : '';
+      return `          <button class="tcode-label" data-tcode="${esc(tc)}"${badge ? ` data-badge="${esc(badge)}"` : ''}>${badge ? `<span class="tcode-label__badge">${esc(badge)}</span>` : ''}<span class="tcode-label__code">${esc(tc)}</span><span class="tcode-label__hint">자세히 보기 ›</span></button>`;
+    }).join('\n')}
+        </div>
       </section>\n`
     : '';
   return `<!DOCTYPE html>
