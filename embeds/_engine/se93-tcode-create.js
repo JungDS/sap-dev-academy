@@ -19,7 +19,16 @@
     if(ty!=='report') return setMsg('bad','유형은 <b>“Program and selection screen (report transaction)”</b>를 고르세요 — 실행형 리포트(REPORT)에 맞는 유형이에요.');
     if(!/^[ZY][A-Z0-9_]*$/.test(pg)) return setMsg('bad','연결할 <b>프로그램 이름</b>을 넣으세요(앞서 만든 <code>ZHELLO</code>, Z/Y 시작).');
     st.created=true; st.tcode=tc; st.prog=pg; setBadge('active');
-    $('cmdRow').hidden=false; $('createBtn').disabled=true; $('goBtn').classList.add('ready');
+    // 저장·활성화 후 입력칸도 잠금(생성 후 변경 불가 — 버튼과 동일)
+    $('createBtn').disabled=true; $('tcode').disabled=true; $('typeSel').disabled=true; $('prog').disabled=true;
+    // 생성 결과 트리: $TMP(로컬 오브젝트) → Transaction → 생성한 트랜잭션
+    $('treeBody').innerHTML =
+        '<details open><summary>📦 $TMP <span class="otag">로컬 오브젝트</span></summary>'
+      + '<div class="otree__lvl"><details open><summary>📁 Transaction</summary>'
+      + '<div class="otree__lvl"><div class="oleaf">🔹 <span class="b">'+tc+'</span> <span class="otag ok">생성됨</span></div></div>'
+      + '</details></div></details>';
+    $('treeBox').hidden=false;
+    $('cmdRow').hidden=false; $('goBtn').classList.add('ready');
     $('cmd').value='';
     setMsg('ok','✓ 트랜잭션 <b>'+tc+'</b> 생성·활성화 완료 (프로그램 <code>'+pg+'</code> 연결). 이제 아래 <b>명령창</b>에 <code>'+tc+'</code>를 입력해 실행해 보세요!');
   });
@@ -42,5 +51,6 @@
 
   function post(){ try{ var el=document.querySelector('.wrap'); if(document.documentElement.clientWidth<60) return; var h=Math.ceil(el?el.getBoundingClientRect().height:document.body.scrollHeight)+6; parent.postMessage({sda:'embed-height',h:h},'*'); }catch(e){} }
   window.addEventListener('load',post); window.addEventListener('resize',post);
+  document.addEventListener('toggle',post,true);   // 트리 펼침/접힘 시 높이 재측정
   post();
 })();
