@@ -41,9 +41,9 @@
       <article class="prose">
 <section class="lblock"><h2>표를 클릭하면 반응하게</h2>
 <p>CH21까지 ALV는 <strong>보여주기만</strong> 했다. 이제 사용자가 행을 더블클릭하면 <strong>상세 화면</strong>으로
-가는 식의 상호작용을 넣는다. CH20-L09의 OO 이벤트(<code>SET HANDLER</code>)가 여기 쓰인다.</p>
+가는 식의 상호작용을 넣는다. CH20-L09의 OO <button class="term" type="button" data-term="이벤트">이벤트</button>(<code>SET HANDLER</code>)가 여기 쓰인다.</p>
 </section><section class="lblock"><h2>핸들러 메서드 — FOR EVENT</h2>
-<p><code>CL_GUI_ALV_GRID</code>의 <code>double_click</code> 이벤트를 처리할 메서드를 만든다.</p>
+<p><code>CL_GUI_ALV_GRID</code>의 <code>double_click</code> <button class="term" type="button" data-term="이벤트">이벤트</button>를 처리할 <button class="term" type="button" data-term="Method">메서드</button>를 만든다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -61,13 +61,13 @@
 15</pre><pre class="abap-editor__code"><code><span class="tok-kw">CLASS</span> lcl_handler <span class="tok-kw">DEFINITION</span>.
   <span class="tok-kw">PUBLIC</span> <span class="tok-kw">SECTION</span>.
     <span class="tok-kw">METHODS</span> on_double_click
-      FOR EVENT double_click <span class="tok-kw">OF</span> cl_gui_alv_grid
+      <span class="tok-kw">FOR</span> <span class="tok-kw">EVENT</span> double_click <span class="tok-kw">OF</span> cl_gui_alv_grid
       <span class="tok-kw">IMPORTING</span> e_row e_column.
 <span class="tok-kw">ENDCLASS</span>.
 
 <span class="tok-kw">CLASS</span> lcl_handler <span class="tok-kw">IMPLEMENTATION</span>.
   <span class="tok-kw">METHOD</span> on_double_click.
-    <span class="tok-kw">READ</span> <span class="tok-kw">TABLE</span> lt_booking <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(ls) INDEX e_row-index.
+    <span class="tok-kw">READ</span> <span class="tok-kw">TABLE</span> lt_booking <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(ls) <span class="tok-kw">INDEX</span> e_row-index.
     <span class="tok-kw">IF</span> sy-subrc = <span class="tok-num">0</span>.
       <span class="tok-com">" 예매 상세 화면 호출</span>
     <span class="tok-kw">ENDIF</span>.
@@ -76,14 +76,18 @@
 </section><section class="lblock"><h2>연결 — SET HANDLER</h2>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>(lo_h) = <span class="tok-kw">NEW</span> lcl_handler( ).
-<span class="tok-kw">SET</span> HANDLER lo_h-&gt;on_double_click FOR go_grid.</code></pre></div></div>
+<span class="tok-kw">SET</span> <span class="tok-kw">HANDLER</span> lo_h-&gt;on_double_click <span class="tok-kw">FOR</span> go_grid.</code></pre></div></div>
 <ul>
 <li><code>e_row-index</code> — 클릭한 행 번호. <code>e_column-fieldname</code> — 클릭한 컬럼.</li>
 </ul>
+</section><section class="lblock"><h2>직접 더블클릭해 보기</h2>
+<p>아래 ALV 표의 행을 더블클릭하면 핸들러가 받는 <code>e_row-index</code>·<code>e_column</code>이 <button class="term" type="button" data-term="이벤트">이벤트</button> 로그에
+찍힌다.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">Double Click 이벤트 — 행 더블클릭</span><a class="embed__open" href="../../../embeds/abap/CH27-L01-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH27-L01-S01.html" loading="lazy" title="Double Click 이벤트 — 행 더블클릭" style="height:460px"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
 <li><strong>SET HANDLER 누락</strong> → 더블클릭해도 반응 없음(CH20-L09).</li>
-<li><strong>인덱스 vs 키</strong> → <code>e_row-index</code>로 내부 테이블 행을 READ.</li>
+<li><strong><button class="term" type="button" data-term="인덱스">인덱스</button> vs 키</strong> → <code>e_row-index</code>로 내부 테이블 행을 READ.</li>
 </ul>
 <hr>
 <p>더블클릭에 반응했다. 이제 셀을 <strong>링크처럼</strong> 만드는 Hotspot → 다음 레슨.</p>

@@ -41,7 +41,7 @@
       <article class="prose">
 <section class="lblock"><h2>DB에 직접 말 걸기</h2>
 <p><button class="term" type="button" data-term="ADBC">ADBC</button>(ABAP Database Connectivity)는 <strong>DB 고유 Native SQL</strong>을 ABAP에서 직접 실행하는
-객체지향 API다(옛 <code>EXEC SQL</code>의 현대판).</p>
+<button class="term" type="button" data-term="객체">객체</button>지향 API다(옛 <code>EXEC SQL</code>의 현대판).</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -53,7 +53,7 @@
 9</pre><pre class="abap-editor__code"><code><span class="tok-kw">TRY</span>.
     <span class="tok-kw">DATA</span>(lo_sql) = <span class="tok-kw">NEW</span> cl_sql_statement( ).
     <span class="tok-kw">DATA</span>(lo_res) = lo_sql-&gt;execute_query(
-      |<span class="tok-kw">SELECT</span> carrid, COUNT(*) <span class="tok-kw">FROM</span> sflight <span class="tok-kw">GROUP</span> BY carrid| ).
+      |<span class="tok-kw">SELECT</span> carrid, <span class="tok-kw">COUNT</span>(*) <span class="tok-kw">FROM</span> sflight <span class="tok-kw">GROUP</span> <span class="tok-kw">BY</span> carrid| ).
     lo_res-&gt;set_param_table( <span class="tok-kw">REF</span> #( lt_result ) ).
     lo_res-&gt;next_package( ).
   <span class="tok-kw">CATCH</span> cx_sql_exception <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(lx).
@@ -63,10 +63,11 @@
 <li>Open SQL이 못 하는 <strong>DB 고유 기능</strong>이 꼭 필요할 때만.</li>
 <li><strong>client 자동 종속·구문 검사 없음</strong> → 직접 책임(MANDT·SQL injection 주의).</li>
 </ul>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">ADBC Native SQL 호출 경로</span><a class="embed__open" href="../../../embeds/abap/CH33-L03-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH33-L03-S01.html" loading="lazy" title="ADBC Native SQL 호출 경로" style="height:420px"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
 <li><strong>client 누락</strong> → Native SQL은 MANDT를 자동으로 안 챙긴다. 직접 조건에.</li>
-<li><strong>문자열 SQL 주입</strong> → 파라미터 바인딩으로(직접 연결 금지).</li>
+<li><strong>문자열 SQL 주입</strong> → <button class="term" type="button" data-term="파라미터">파라미터</button> 바인딩으로(직접 연결 금지).</li>
 </ul>
 <hr>
 <p>가장 낮은 수준까지 봤다. 그럼 언제 무엇을? AMDP vs CDS/Open SQL 비교 → 다음 레슨.</p>

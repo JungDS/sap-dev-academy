@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<!-- CH25-L02-S01 — 엔진: enqueue-2session (embeds/_engine/enqueue-2session.{js,css}) · 공통토큰: _engine/_base.css
+     두 세션 ENQUEUE/DEQUEUE 동시성 체험 — foreign_lock 거절, DEQUEUE/COMMIT 해제, SM12풍 잠금목록. -->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>2세션 잠금 데모 · CH25-L02-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/enqueue-2session.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">두 사용자가 같은 예매를 잠그면? — <code>ENQUEUE</code> / <code>DEQUEUE</code></p>
+  <p class="lead">A가 먼저 <code>booking_id=1001</code>을 잠근 뒤 B가 같은 예매를 잠가 보세요. <b>foreign_lock</b>으로 거절됩니다. A가 <b>DEQUEUE</b>하거나 <b>COMMIT</b>하면 그제야 B가 가능.</p>
+
+  <div class="users">
+    <div class="user a">
+      <div class="user__h"><span class="dot"></span>User A (정훈영)<span class="own" id="ownA">🔒 잠금 보유</span></div>
+      <div class="user__b">
+        <div class="acts"><button class="b enq" id="enqA" type="button">ENQUEUE 1001</button><button class="b" id="deqA" type="button">DEQUEUE</button><button class="b" id="comA" type="button">COMMIT WORK</button></div>
+        <div class="ulog" id="logA"></div>
+      </div>
+    </div>
+    <div class="user b">
+      <div class="user__h"><span class="dot"></span>User B (손흥민)<span class="own" id="ownB">🔒 잠금 보유</span></div>
+      <div class="user__b">
+        <div class="acts"><button class="b enq" id="enqB" type="button">ENQUEUE 1001</button><button class="b" id="deqB" type="button">DEQUEUE</button><button class="b" id="comB" type="button">COMMIT WORK</button></div>
+        <div class="ulog" id="logB"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sm12">
+    <div class="sm12__h">🔒 잠금 목록 (SM12) <small id="sm12n">0건</small></div>
+    <div class="sm12__b" id="sm12b"></div>
+  </div>
+  <button class="reset" id="reset" type="button">↺ 초기화</button>
+
+  <div class="note">💡 표준 패턴: ① <code>ENQUEUE</code>(잠금) → ② 읽기 → ③ 변경(DML) → ④ <code>COMMIT</code>(확정+자동해제) → (필요시 ⑤ <code>DEQUEUE</code>). 잠긴 행은 <b>SM12</b>에서 누가 잠갔는지 확인합니다.</div>
+</div>
+<script src="../_engine/enqueue-2session.js" defer></script>
+</body>
+</html>

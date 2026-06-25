@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<!-- CH04-L05-S01 — 엔진: step-debugger + _autoheight. config=레슨 전용(DO/sy-index, #C04-5).
+     게이팅: DO·sy-index만(내부테이블·inline DATA() 없음). -->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DO·sy-index 스텝 디버거 · CH04-L05-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/step-debugger.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">반복마다 sy-index가 1,2,3…으로 <small>(스텝 디버거)</small></p>
+  <p class="lead"><b>다음 ⏭</b>을 누르면 <code>DO</code> 안을 한 회씩 돌며 <code>sy-index</code>가 1→2→…→5로 바뀝니다.</p>
+
+  <div class="dbg" data-stepper>
+    <div class="dbg__bar">
+      <button class="btn btn--primary" data-start>▶ 시작</button>
+      <button class="btn btn--step" data-next disabled>다음 ⏭</button>
+      <div class="progress"><i data-progress></i></div>
+      <span class="muted" data-counter>0 / 7</span>
+    </div>
+    <div class="dbg__main">
+      <div class="dbg__editorwrap"><div class="dbg__edhd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span></div><div class="dbg__editor" data-code></div></div>
+      <div class="dbg__watch">
+        <div class="watch__head">변수 모니터</div>
+        <div class="watch__list" data-vars></div>
+      </div>
+    </div>
+    <div class="dbg__console">
+      <div class="console__head">
+        <span>콘솔</span>
+        <span class="leg"><span class="a">▶ 실행할 차례</span> · <span class="d">✓ 방금 실행</span></span>
+        <span class="sp"></span>
+        <span class="cmode"><button class="cmode__b on" data-cmode="cur">현재 행</button><button class="cmode__b" data-cmode="all">전체 출력</button></span>
+      </div>
+      <pre class="console__body" data-console>대기 중 — ▶ 시작을 누르세요.</pre>
+    </div>
+    <script type="application/json" class="stepper-config">
+    {
+      "code":[
+        "DO 5 TIMES.",
+        "  WRITE: / sy-index.",
+        "ENDDO."
+      ],
+      "vars":[
+        {"label":"sy-index","sub":"현재 회차(시스템 변수)","key":"sy-index","init":"-"}
+      ],
+      "steps":[
+        {"line":1,"vars":{},"console":"DO 5 TIMES — 5번 반복 시작"},
+        {"line":2,"vars":{"sy-index":"1"},"console":"1회차 · sy-index=1 → 출력 1"},
+        {"line":2,"vars":{"sy-index":"2"},"console":"2회차 · sy-index=2 → 출력 2"},
+        {"line":2,"vars":{"sy-index":"3"},"console":"3회차 · sy-index=3 → 출력 3"},
+        {"line":2,"vars":{"sy-index":"4"},"console":"4회차 · sy-index=4 → 출력 4"},
+        {"line":2,"vars":{"sy-index":"5"},"console":"5회차 · sy-index=5 → 출력 5"},
+        {"line":3,"vars":{},"console":"ENDDO — 5회 완료"}
+      ]
+    }
+    </script>
+  </div>
+</div>
+<script src="../_engine/step-debugger.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<!-- CH02-L05-S01 — 엔진: before-after (embeds/_engine/before-after.css, CSS-only) + _autoheight.
+     콘텐츠=레슨 전용(매직넘버 pi vs 상수 gc_pi). bad=줄마다 다른 pi(실수 강조), good=상수 하나.
+     게이팅: CH02(선언·대입·산술 *). ABAP 소수 리터럴은 따옴표('3.14') — CH02-L02 규칙. -->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>매직 넘버 pi vs 상수 · CH02-L05-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/before-after.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">pi를 직접 적으면 vs 상수 하나로 <small>(같은 계산, 두 버전)</small></p>
+  <p class="lead">반지름 <b>3</b>과 <b>5</b>인 원의 둘레·넓이를 구하는 같은 코드입니다. pi를 줄마다 직접 적은 쪽(왼쪽)과 상수 <code>gc_pi</code> 하나로 묶은 쪽(오른쪽)을 비교해 보세요.</p>
+
+  <div class="ba">
+    <div class="ba__col before">
+      <div class="ba__head">✗ pi를 줄마다 직접</div>
+      <div class="ba__body">
+<pre><span class="cmt">" 반지름 3</span>
+lv_c = 2 * <b>'3.1415926'</b> * 3.
+lv_a = <b>'3.1415927'</b> * 3 * 3.   <span class="cmt">" …27 오타!</span>
+
+<span class="cmt">" 반지름 5</span>
+lv_c = 2 * <b>'3.14'</b> * 5.
+lv_a = <b>'3.14159'</b> * 5 * 5.</pre>
+        <ul class="ba__list">
+          <li>줄마다 pi가 다르다 — <b>'3.1415926'</b>·<b>'3.1415927'</b>·<b>'3.14'</b>·<b>'3.14159'</b></li>
+          <li>끝자리 오타(<b>…27</b>)·정밀도 불일치로 결과가 <b>미묘하게 틀어진다</b></li>
+        </ul>
+        <span class="ba__metric">직접 적은 pi: 4곳 (다 다름)</span>
+      </div>
+    </div>
+    <div class="ba__col after">
+      <div class="ba__head">✓ 상수 gc_pi 하나</div>
+      <div class="ba__body">
+<pre><b>CONSTANTS gc_pi TYPE p LENGTH 8 DECIMALS 7 VALUE '3.1415926'.</b>
+
+<span class="cmt">" 반지름 3</span>
+lv_c = 2 * <b>gc_pi</b> * 3.
+lv_a = <b>gc_pi</b> * 3 * 3.
+
+<span class="cmt">" 반지름 5</span>
+lv_c = 2 * <b>gc_pi</b> * 5.
+lv_a = <b>gc_pi</b> * 5 * 5.</pre>
+        <ul class="ba__list">
+          <li><b>gc_pi</b> 하나만 읽어 모든 계산이 <b>같은 값</b></li>
+          <li>사람이 잘못 적을 일이 <b>없다</b> — 정밀도를 바꿔도 선언 한 줄만</li>
+        </ul>
+        <span class="ba__metric">직접 적은 pi: 0곳</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="note">변수로도 같은 계산을 할 수 있다. 하지만 변수는 실수로 덮어써져도 ABAP이 막지 않아 이후 계산이 조용히 틀어진다. <code>gc_pi</code>처럼 절대 바뀌면 안 되는 값은 상수로 못 박으면 재대입이 문법 오류라 그런 사고가 원천 차단된다.</div>
+</div>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

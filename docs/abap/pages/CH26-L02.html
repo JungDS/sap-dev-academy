@@ -40,8 +40,8 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>단 하나여야 하는 객체</h2>
-<p>설정·캐시·연결처럼 <strong>프로그램에 하나만</strong> 있어야 하는 객체가 있다. 매번 NEW하면
-상태가 분산된다. <strong>Singleton</strong>은 인스턴스를 하나로 보장한다.</p>
+<p>설정·<button class="term" type="button" data-term="캐시">캐시</button>·연결처럼 <strong>프로그램에 하나만</strong> 있어야 하는 <button class="term" type="button" data-term="객체">객체</button>가 있다. 매번 NEW하면
+상태가 분산된다. <strong>Singleton</strong>은 <button class="term" type="button" data-term="인스턴스">인스턴스</button>를 하나로 보장한다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -60,7 +60,7 @@
   <span class="tok-kw">PUBLIC</span> <span class="tok-kw">SECTION</span>.
     <span class="tok-kw">CLASS-METHODS</span> get_instance <span class="tok-kw">RETURNING</span> <span class="tok-kw">VALUE</span>(ro) <span class="tok-kw">TYPE</span> <span class="tok-kw">REF</span> <span class="tok-kw">TO</span> zcl_config.
   <span class="tok-kw">PRIVATE</span> <span class="tok-kw">SECTION</span>.
-    CLASS-DATA go_instance <span class="tok-kw">TYPE</span> <span class="tok-kw">REF</span> <span class="tok-kw">TO</span> zcl_config.
+    <span class="tok-kw">CLASS-DATA</span> go_instance <span class="tok-kw">TYPE</span> <span class="tok-kw">REF</span> <span class="tok-kw">TO</span> zcl_config.
 <span class="tok-kw">ENDCLASS</span>.
 
 <span class="tok-kw">CLASS</span> zcl_config <span class="tok-kw">IMPLEMENTATION</span>.
@@ -75,10 +75,19 @@
 <li><code>CREATE PRIVATE</code> — 외부에서 <code>NEW</code> 금지(생성 통제).</li>
 <li><code>get_instance( )</code> — 항상 같은 인스턴스를 돌려준다.</li>
 </ul>
+</section><section class="lblock"><h2>같은 하나임을 직접 확인</h2>
+<p><code>get_instance()</code>를 여러 번 부르면 <strong>같은 주소</strong>(<button class="term" type="button" data-term="인스턴스">인스턴스</button> 1개)가, <code>NEW</code>를 여러 번 하면
+<strong>매번 다른 주소</strong>가 나오는 걸 비교해 보라.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">Singleton 시뮬 — 같은 인스턴스 vs 매번 새로</span><a class="embed__open" href="../../../embeds/abap/CH26-L02-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH26-L02-S01.html" loading="lazy" title="Singleton 시뮬 — 같은 인스턴스 vs 매번 새로" style="height:400px"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>CREATE PRIVATE 누락</strong> → 외부에서 NEW 가능해 &#39;하나&#39; 보장이 깨진다.</li>
-<li><strong>남용</strong> → 전역 상태는 테스트·동시성을 어렵게 한다. 정말 하나여야 할 때만.</li>
+<li><strong><code>CREATE PRIVATE</code> 누락</strong> → 외부에서 <code>NEW</code>가 가능해 &#39;하나&#39; 보장이 깨진다.</li>
+<li><strong>남용</strong> → 전역 상태는 <strong>테스트·동시성</strong>을 어렵게 한다. 정말 하나여야 할 때만(다음다음 레슨의 테스트와 충돌).</li>
+</ul>
+</section><section class="lblock"><h2>정리</h2>
+<ul>
+<li>Singleton = <button class="term" type="button" data-term="인스턴스">인스턴스</button>를 <strong>단 하나</strong>로 보장(<code>get_instance()</code> + <code>CREATE PRIVATE</code>).</li>
+<li>설정·캐시·연결처럼 상태가 한 곳에 모여야 할 때 유용 — 단, 남용 금지.</li>
 </ul>
 <hr>
 <p>하나로 통제했다. 이제 동작을 <strong>갈아끼우는</strong> Strategy → 다음 레슨.</p>

@@ -63,18 +63,21 @@
 9
 10</pre><pre class="abap-editor__code"><code><span class="tok-com">" ✅ 미리 한 번에 읽어 두고 메모리에서 찾기</span>
 <span class="tok-kw">SELECT</span> concert_id, artist <span class="tok-kw">FROM</span> zconcert
-  FOR ALL ENTRIES <span class="tok-kw">IN</span> @lt_booking
+  <span class="tok-kw">FOR</span> <span class="tok-kw">ALL</span> <span class="tok-kw">ENTRIES</span> <span class="tok-kw">IN</span> @lt_booking
   <span class="tok-kw">WHERE</span> concert_id = @lt_booking-concert_id
   <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> @<span class="tok-kw">DATA</span>(lt_concert).
-<span class="tok-kw">SORT</span> lt_concert BY concert_id.
+<span class="tok-kw">SORT</span> lt_concert <span class="tok-kw">BY</span> concert_id.
 
 <span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_booking <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(b2).
-  <span class="tok-kw">READ</span> <span class="tok-kw">TABLE</span> lt_concert <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(c) <span class="tok-kw">WITH</span> <span class="tok-kw">KEY</span> concert_id = b2-concert_id BINARY SEARCH.
+  <span class="tok-kw">READ</span> <span class="tok-kw">TABLE</span> lt_concert <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(c) <span class="tok-kw">WITH</span> <span class="tok-kw">KEY</span> concert_id = b2-concert_id <span class="tok-kw">BINARY</span> <span class="tok-kw">SEARCH</span>.
 <span class="tok-kw">ENDLOOP</span>.</code></pre></div></div>
 <ul>
 <li><strong>FOR ALL ENTRIES</strong>(CH13) 또는 <strong>JOIN</strong>으로 한 번에.</li>
 <li>또는 사전 조회 후 <strong>내부 테이블에서 READ</strong>(BINARY SEARCH, CH06).</li>
 </ul>
+</section><section class="lblock"><h2>N을 늘려 보면 — 왕복 폭발</h2>
+<p>예매 건수 N을 키우며 DB 왕복이 어떻게 폭발하는지(1+N) vs 사전 조회(2)를 비교해 보라.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">SELECT in LOOP — 1+N vs FAE/JOIN</span><a class="embed__open" href="../../../embeds/abap/CH32-L04-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH32-L04-S01.html" loading="lazy" title="SELECT in LOOP — 1+N vs FAE/JOIN" style="height:440px"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
 <li><strong>FAE 빈 테이블</strong> → 드라이버가 비면 전체 조회된다. 비었으면 건너뛴다.</li>

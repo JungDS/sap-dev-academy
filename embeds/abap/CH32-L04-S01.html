@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<!-- CH32-L04-S01 — 엔진: select-in-loop · _engine/_base.css. LOOP 안 SELECT(1+N) vs FAE/JOIN(2) 왕복 대비. -->
+<html lang="ko">
+<head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SELECT in LOOP · CH32-L04-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/select-in-loop.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">SELECT in LOOP — 1 + N의 재앙</p>
+  <p class="lead">예매 건수 <b>N</b>을 늘려 보세요. LOOP 안에서 매 행 SELECT하면 DB 왕복이 <b>1+N회</b>로 폭발하지만, 미리 한 번에 읽으면(FAE/JOIN) <b>2회</b>로 끝납니다.</p>
+  <div class="slider"><label>예매 건수 N</label><input id="n" type="range" min="0" max="6" value="4" /><span class="v" id="nv"></span></div>
+  <div class="cols">
+    <div class="card bad"><div class="t">❌ LOOP 안 SELECT</div><code>LOOP… SELECT SINGLE … ENDLOOP</code>
+      <div class="metric"><div class="lbl">DB 왕복</div><div class="big" id="bCalls"></div><div class="lbl" id="bTime"></div><div class="barwrap"><div class="bar" id="bBar"></div></div></div></div>
+    <div class="card good"><div class="t">✅ 사전 조회(FAE/JOIN)</div><code>SELECT … FOR ALL ENTRIES → READ</code>
+      <div class="metric"><div class="lbl">DB 왕복</div><div class="big" id="aCalls"></div><div class="lbl" id="aTime"></div><div class="barwrap"><div class="bar" id="aBar"></div></div></div></div>
+  </div>
+  <div class="verdict" id="verdict"></div>
+  <div class="note">💡 <b>FOR ALL ENTRIES</b>(CH13)나 <b>JOIN</b>으로 한 번에 읽고, 메모리에서 <code>READ TABLE … BINARY SEARCH</code>(CH06)로 찾습니다. FAE는 드라이버 테이블이 비면 전체 조회되니 <b>비었으면 건너뜁니다</b>. 중첩 SELECT는 금지.</div>
+</div>
+<script src="../_engine/select-in-loop.js" defer></script>
+</body>
+</html>

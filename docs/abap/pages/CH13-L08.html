@@ -40,7 +40,7 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>🎫 5단계 — 공연별 현황 한눈에</h2>
-<p>지금까지 예매를 행 단위로 봤다. 이제 <strong>공연별로 묶어</strong> 예매 좌석합계를 집계한다
+<p>지금까지 예매를 행 단위로 봤다. 이제 <strong>공연별로 묶어</strong> 예매 좌석합계를 <button class="term" type="button" data-term="Aggregate">집계</button>한다
 (CH13 JOIN·GROUP BY). 정원과 비교하면 잔여 현황이 된다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
@@ -74,12 +74,12 @@
 <span class="tok-kw">DATA</span>: lt_stat <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ty_stat,
       lo_alv  <span class="tok-kw">TYPE</span> <span class="tok-kw">REF</span> <span class="tok-kw">TO</span> cl_salv_table.
 
-<span class="tok-kw">SELECT</span> c~concert_id c~artist c~capacity SUM( b~seats ) <span class="tok-kw">AS</span> booked
+<span class="tok-kw">SELECT</span> c~concert_id c~artist c~capacity <span class="tok-kw">SUM</span>( b~seats ) <span class="tok-kw">AS</span> booked
   <span class="tok-kw">FROM</span> zconcert <span class="tok-kw">AS</span> c
-  LEFT OUTER <span class="tok-kw">JOIN</span> zbooking <span class="tok-kw">AS</span> b
+  <span class="tok-kw">LEFT</span> <span class="tok-kw">OUTER</span> <span class="tok-kw">JOIN</span> zbooking <span class="tok-kw">AS</span> b
     <span class="tok-kw">ON</span> c~concert_id = b~concert_id <span class="tok-kw">AND</span> b~status &lt;&gt; <span class="tok-str">'C'</span>
   <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> lt_stat
-  <span class="tok-kw">GROUP</span> BY c~concert_id c~artist c~capacity.
+  <span class="tok-kw">GROUP</span> <span class="tok-kw">BY</span> c~concert_id c~artist c~capacity.
 
 <span class="tok-kw">TRY</span>.
     cl_salv_table=&gt;factory(
@@ -87,7 +87,7 @@
     lo_alv-&gt;display( ).
   <span class="tok-kw">CATCH</span> cx_salv_msg.
 <span class="tok-kw">ENDTRY</span>.</code></pre></div></div>
-<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">JOIN·GROUP BY 결과를 확인해 보기</span><a class="embed__open" href="../../../sample/code-learning/select-query-simulator.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../sample/code-learning/select-query-simulator.html" loading="lazy" title="JOIN·GROUP BY 결과를 확인해 보기"></iframe></figure>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">JOIN·GROUP BY 결과를 확인해 보기</span><a class="embed__open" href="../../../embeds/abap/CH13-L08-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH13-L08-S01.html" loading="lazy" title="JOIN·GROUP BY 결과를 확인해 보기"></iframe></figure>
 </section><section class="lblock"><h2>직접 해 볼 과제</h2>
 <ol>
 <li>공연별 <strong>예매 좌석합계</strong>가 맞게 나오는지 확인.</li>
@@ -97,8 +97,8 @@
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
 <li><strong>LEFT JOIN 이유</strong> → 예매 없는 공연도 0으로 보이게(INNER면 빠진다).</li>
-<li><strong>classic 집계</strong> → <code>SUM( )</code>·<code>GROUP BY</code>는 classic OK. modern <code>@</code>·콤마는 CH19.</li>
-<li><strong>합계 매핑</strong> → SELECT 필드 순서와 <code>ty_stat</code> 컴포넌트 순서를 맞춘다.</li>
+<li><strong>classic <button class="term" type="button" data-term="Aggregate">집계</button></strong> → <code>SUM( )</code>·<code>GROUP BY</code>는 classic OK. modern <code>@</code>·콤마는 CH19.</li>
+<li><strong>합계 매핑</strong> → SELECT 필드 순서와 <code>ty_stat</code> <button class="term" type="button" data-term="컴포넌트">컴포넌트</button> 순서를 맞춘다.</li>
 </ul>
 <hr>
 <p>공연별 현황까지 만들었다. 이제 공연 마스터를 <strong>표준 화면으로 등록·유지보수</strong>하자 →

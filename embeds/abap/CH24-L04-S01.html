@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<!-- CH24-L04-S01 — 엔진: reprocess-sim (embeds/_engine/reprocess-sim.{js,css}) · 공통토큰: _engine/_base.css
+     오류 로그·재처리 체험 — 배치 처리 → 실패 건 오류테이블 → 원인 해결 → 재처리. -->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>재처리 시뮬레이터 · CH24-L04-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/reprocess-sim.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">재처리 시뮬레이터 — 실패는 남기고, 실패분만 다시</p>
+  <p class="lead">예매 5건을 일괄 처리합니다. 2건은 중복키라 실패 — <code>sy-subrc</code>를 보고 <b>오류 테이블</b>에 모았다가, 원인 해결 후 <b>실패분만</b> 재처리합니다.</p>
+
+  <div class="bar">
+    <button class="btn" id="process" type="button">① 처리 (INSERT 루프)</button>
+    <button class="btn" id="fix" type="button">② 원인 해결</button>
+    <button class="btn" id="retry" type="button">③ 재처리 (MODIFY)</button>
+    <button class="reset" id="reset" type="button">↺ 초기화</button>
+  </div>
+
+  <div class="cols">
+    <div class="col in"><div class="col__h">📥 입력 배치 <span class="n" id="nIn">5</span></div><div class="col__b" id="inbox"></div></div>
+    <div class="col ok"><div class="col__h">💾 DB (성공) <span class="n" id="nDb">0</span></div><div class="col__b" id="db"></div></div>
+    <div class="col err"><div class="col__h">❌ 오류 테이블 <span class="n" id="nErr">0</span></div><div class="col__b" id="err"></div></div>
+  </div>
+
+  <div class="msg info" id="msg"></div>
+  <div class="note">💡 핵심 셋: ① 매 변경 뒤 <code>sy-subrc</code> 점검 · ② 실패는 <b>무시하지 말고 기록</b>(키·사유) · ③ 멱등성(<code>MODIFY</code>)으로 안전하게 재처리. 표준 <b>Application Log</b>(BAL·SLG1)는 CH35-L05에서.</div>
+</div>
+<script src="../_engine/reprocess-sim.js" defer></script>
+</body>
+</html>

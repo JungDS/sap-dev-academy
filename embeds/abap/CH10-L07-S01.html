@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<!-- CH10-L07-S01 — 엔진: step-debugger (embeds/_engine/step-debugger.{js,css}) + _autoheight.js
+     config=레슨 전용(잔여석 모듈화 FORM get_remaining, #C10-1). 게이팅: classic(SELECT INTO TABLE·LOOP INTO·SELECT SINGLE INTO) · inline DATA() 없음. -->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>잔여석 합산 디버거 · CH10-L07-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/step-debugger.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">잔여석 합산 — 예매를 더해 정원에서 빼기 <small>(스텝 디버거)</small></p>
+  <p class="lead"><b>다음 ⏭</b>을 누를 때마다 한 줄씩 실행됩니다. <code>LOOP</code>가 예매 좌석을 <code>lv_sum</code>에 누적하고, 마지막에 <b>정원 − 합계 = 잔여석</b>(<code>cv_left</code>)이 나오는 과정을 보세요.</p>
+
+  <div class="dbg" data-stepper>
+    <div class="dbg__bar">
+      <button class="btn btn--primary" data-start>▶ 시작</button>
+      <button class="btn btn--step" data-next disabled>다음 ⏭</button>
+      <div class="progress"><i data-progress></i></div>
+      <span class="muted" data-counter>0 / 6</span>
+    </div>
+    <div class="dbg__main">
+      <div class="dbg__editorwrap"><div class="dbg__edhd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span></div><div class="dbg__editor" data-code></div></div>
+      <div class="dbg__watch">
+        <div class="watch__head">변수 모니터 — 잔여석 합산</div>
+        <div class="watch__list" data-vars></div>
+      </div>
+    </div>
+    <div class="dbg__console">
+      <div class="console__head">
+        <span>콘솔</span>
+        <span class="leg"><span class="a">▶ 실행할 차례</span> · <span class="d">✓ 방금 실행</span></span>
+        <span class="sp"></span>
+        <span class="cmode"><button class="cmode__b on" data-cmode="cur">현재 행</button><button class="cmode__b" data-cmode="all">전체 출력</button></span>
+      </div>
+      <pre class="console__body" data-console>대기 중 — ▶ 시작을 누르세요.</pre>
+    </div>
+    <script type="application/json" class="stepper-config">
+    {
+      "code":[
+        "FORM get_remaining",
+        "  USING    iv_concert TYPE zbooking-concert_id",
+        "           iv_perf    TYPE zbooking-perf_no",
+        "  CHANGING cv_left    TYPE i.",
+        "",
+        "  DATA: lt_book TYPE TABLE OF zbooking,",
+        "        ls_book TYPE zbooking,",
+        "        lv_sum  TYPE i,",
+        "        lv_cap  TYPE zconcert-capacity.",
+        "",
+        "  SELECT * FROM zbooking INTO TABLE lt_book",
+        "    WHERE concert_id = iv_concert AND perf_no = iv_perf",
+        "      AND status <> 'C'.",
+        "",
+        "  LOOP AT lt_book INTO ls_book.",
+        "    lv_sum = lv_sum + ls_book-seats.",
+        "  ENDLOOP.",
+        "",
+        "  SELECT SINGLE capacity FROM zconcert INTO lv_cap",
+        "    WHERE concert_id = iv_concert.",
+        "",
+        "  cv_left = lv_cap - lv_sum.",
+        "ENDFORM."
+      ],
+      "vars":[
+        {"label":"ls_book-seats","sub":"현재 예매 좌석","key":"ls_book-seats","init":"-"},
+        {"label":"lv_sum","sub":"예매 합계","key":"lv_sum","init":"0"},
+        {"label":"lv_cap","sub":"정원 capacity","key":"lv_cap","init":"0"},
+        {"label":"cv_left","sub":"잔여석(결과)","key":"cv_left","init":"0"}
+      ],
+      "steps":[
+        {"line":11,"vars":{},"console":"zbooking에서 조건 맞는 예매 3건 조회 (status <> 'C' 취소 제외)"},
+        {"line":16,"vars":{"ls_book-seats":"2","lv_sum":"2"},"console":"1번째 예매 +2석 → lv_sum = 0 + 2 = 2"},
+        {"line":16,"vars":{"ls_book-seats":"3","lv_sum":"5"},"console":"2번째 예매 +3석 → lv_sum = 2 + 3 = 5"},
+        {"line":16,"vars":{"ls_book-seats":"1","lv_sum":"6"},"console":"3번째 예매 +1석 → lv_sum = 5 + 1 = 6"},
+        {"line":19,"vars":{"lv_cap":"10"},"console":"SELECT SINGLE → 정원 capacity = 10"},
+        {"line":22,"vars":{"cv_left":"4"},"console":"잔여석 cv_left = 정원 10 − 예매 6 = 4"}
+      ]
+    }
+    </script>
+  </div>
+</div>
+<script src="../_engine/step-debugger.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

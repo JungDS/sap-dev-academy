@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<!-- CH11-L02-S01 — 엔진: salv-grid-simulator (embeds/_engine/salv-grid-simulator.{js,css}) · 자체 postHeight.
+     ✅ copy(내용 정확) — config=window.SALV_CFG(generic person/salary). 게이팅: OO ALV(SALV)·classic. REF TO·TRY/CATCH는 advanceUse(L2 선행). -->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SALV factory→display 시뮬레이터 · CH11-L02-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/salv-grid-simulator.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">SALV factory → display 시뮬레이터 <small>(CL_SALV_TABLE)</small></p>
+  <p class="lead">내부 테이블 <code>LT_PERSON</code>을 ALV 표로 띄웁니다. <b>① factory( )</b> 로 ALV 객체를 만들고, <b>② display( )</b> 로 화면에 표시합니다. 두 단계가 <b>어떻게 다른지</b> 직접 눌러 확인해 보세요.</p>
+
+  <div class="presets" id="presets">
+    <span class="presets__lbl">예제:</span>
+    <button class="chip on" type="button" data-ex="0">정상 데이터 (6행)</button>
+    <button class="chip" type="button" data-ex="1">빈 테이블 (0행)</button>
+  </div>
+
+  <div class="codebox">
+    <div class="codebox__hd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span><span class="cb-name">CL_SALV_TABLE</span></div>
+    <div class="codebox__body"><pre class="code-gut" id="codeGut">1</pre><pre class="code" id="code"></pre></div>
+  </div>
+
+  <button class="lt-toggle" id="ltToggle" type="button">▾ lt_person 데이터 보기</button>
+  <div class="lt-data" id="ltData" hidden></div>
+
+  <div class="steps">
+    <button class="sbtn ready" id="bFactory" type="button"><span class="n">1</span>factory( )</button>
+    <button class="sbtn" id="bDisplay" type="button" disabled><span class="n">2</span>display( )</button>
+    <button class="reset" id="bReset" type="button">↺ 초기화</button>
+  </div>
+  <div class="stat info" id="stat">먼저 <b>① factory( )</b> 를 눌러 ALV 객체를 만드세요.</div>
+
+  <div class="alv hidden" id="alv">
+    <div class="alv__tt">📊 ALV · LT_PERSON</div>
+    <div class="alv__bar">
+      <button type="button" data-bar="sort" title="첫 컬럼 정렬">🔃 정렬</button>
+      <button type="button" data-bar="filter" title="표준 기능 (시뮬 생략)">🔍 필터</button>
+      <button type="button" data-bar="sum" title="합계 토글">Σ 합계</button>
+      <span class="sep"></span>
+      <button type="button" data-bar="xls" title="표준 기능 (시뮬 생략)">⬇ 엑셀</button>
+      <button type="button" data-bar="print" title="표준 기능 (시뮬 생략)">🖨 인쇄</button>
+    </div>
+    <div style="overflow-x:auto"><table class="dt" id="grid"></table></div>
+    <div class="readout" id="readout">행을 클릭하면 현재 행(<b>sy-tabix</b>)이 표시됩니다.</div>
+  </div>
+
+  <div class="note"><b>두 단계의 차이</b> — <code>factory( )</code>는 ALV <b>객체만</b> 메모리에 만든다(화면엔 안 뜸). <code>display( )</code>를 호출해야 비로소 그리드가 화면에 나타난다. 컬럼 제목은 <b>Data Element 라벨</b>에서 자동(CH03의 라벨이 여기서 보상받는다). 정렬·합계·엑셀 같은 표준 기능은 <b>공짜로</b> 따라온다.</div>
+</div>
+
+<script>
+window.SALV_CFG = {
+  itab:'lt_person', sumKey:'salary',
+  cols:[
+    {key:'persid', label:'사번', num:true},
+    {key:'name',   label:'이름', num:false},
+    {key:'age',    label:'나이', num:true},
+    {key:'city',   label:'도시', num:false},
+    {key:'salary', label:'급여', num:true}
+  ],
+  data:[
+    {persid:1001,name:'정훈영',age:33,city:'Seoul',salary:5200},
+    {persid:1002,name:'손흥민',age:31,city:'London',salary:4800},
+    {persid:1003,name:'아이유',age:30,city:'Seoul',salary:4100},
+    {persid:1004,name:'유재석',age:51,city:'Seoul',salary:6000},
+    {persid:1005,name:'김연아',age:33,city:'Busan',salary:3900},
+    {persid:1006,name:'차은우',age:26,city:'Incheon',salary:3500}
+  ],
+  code:[
+    {t:'DATA lo_alv TYPE REF TO cl_salv_table.', g:'factory'},
+    {t:'', g:''},
+    {t:'TRY.', g:'factory'},
+    {t:'    cl_salv_table=>factory(', g:'factory'},
+    {t:'      IMPORTING r_salv_table = lo_alv      " 만들어진 ALV 객체', g:'factory'},
+    {t:'      CHANGING  t_table      = lt_person ). " 표시할 내부 테이블', g:'factory'},
+    {t:'  CATCH cx_salv_msg.', g:'factory'},
+    {t:'    " 생성 실패 처리', g:'factory'},
+    {t:'ENDTRY.', g:'factory'},
+    {t:'', g:''},
+    {t:'lo_alv->display( ).            " 화면에 그리드 표시', g:'display'}
+  ]
+};
+</script>
+<script src="../_engine/salv-grid-simulator.js" defer></script>
+</body>
+</html>

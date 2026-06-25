@@ -1,0 +1,42 @@
+/* txn-atomicity — COMMIT/ROLLBACK 원자성 체험 (CH24-L02).
+   미확정(메모리) ↔ 확정(DB) 2패널. 항목 INSERT 실패 토글로 '반쪽 저장' 위험 체험.
+   _base.css=토큰만 → 리셋·프리미티브 자체 보유. */
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:transparent;line-height:1.5;}
+.wrap{padding:14px;}
+.hd{font-weight:800;font-size:1rem;margin:0 0 4px;}
+.lead{margin:0 0 12px;color:var(--ink-soft);font-size:.86rem;}
+.lead code{font-family:var(--mono);background:#eef2ff;color:var(--brand);padding:1px 5px;border-radius:5px;}
+
+.bar{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-bottom:12px;}
+.toggle{display:flex;align-items:center;gap:6px;font-size:.8rem;font-weight:700;color:var(--amber);background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:6px 11px;cursor:pointer;}
+.btn{border:1px solid var(--line);background:#fff;border-radius:8px;padding:8px 15px;font:inherit;font-weight:800;font-size:.84rem;cursor:pointer;color:var(--ink);transition:all .15s;}
+.btn:hover:not(:disabled){border-color:var(--brand);color:var(--brand);}
+.btn:disabled{opacity:.4;cursor:not-allowed;}
+.btn.go{border-color:var(--brand);background:var(--brand);color:#fff;}
+.btn.commit.on{border-color:var(--accent);background:var(--accent);color:#fff;box-shadow:0 4px 12px rgba(12,166,120,.25);}
+.btn.rollback.on{border-color:var(--warn);background:var(--warn);color:#fff;box-shadow:0 4px 12px rgba(190,18,57,.22);}
+.reset{margin-left:auto;border:0;background:transparent;color:var(--ink-soft);font:inherit;font-size:.78rem;font-weight:700;text-decoration:underline;cursor:pointer;}
+
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:520px){.cols{grid-template-columns:1fr;}}
+.col{border:1px solid var(--line);border-radius:12px;background:var(--surface);overflow:hidden;min-height:150px;}
+.col__h{padding:8px 12px;font-weight:800;font-size:.82rem;border-bottom:1px solid var(--line);}
+.col.mem .col__h{background:#fff7ed;color:#b45309;}
+.col.db .col__h{background:#ecfdf5;color:#0b7250;}
+.col__b{padding:10px 12px;display:flex;flex-direction:column;gap:7px;}
+.rec{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:.8rem;border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:#fafbfe;}
+.rec .tag{font-size:.68rem;font-weight:800;border-radius:5px;padding:1px 7px;}
+.rec.head .tag{background:#dbeafe;color:#1e40af;}
+.rec.item .tag{background:#ede9fe;color:#6d28d9;}
+.rec .st{margin-left:auto;font-weight:800;}
+.rec.ok .st{color:var(--good);} .rec.fail{border-color:var(--bad);background:#fff0f5;} .rec.fail .st{color:var(--bad);}
+.ph{color:var(--soon);font-style:italic;font-size:.8rem;}
+
+.msg{margin-top:12px;padding:11px 14px;font-size:.85rem;line-height:1.55;border-radius:10px;background:#fbfcfe;border:1px solid var(--line);min-height:44px;}
+.msg.ok{color:#0b7250;background:#ecfdf5;border-color:#a7f3d0;}
+.msg.bad{color:var(--warn);background:#fff0f5;border-color:#fbcfe0;}
+.msg.info{color:#26336b;}
+.msg b{font-weight:800;}
+.note{margin-top:11px;border-left:3px solid var(--brand);background:rgba(59,91,219,.06);border-radius:0 9px 9px 0;padding:9px 13px;font-size:.82rem;color:#2a3550;}
+.note code{font-family:var(--mono);background:#fff;border:1px solid var(--line);padding:0 5px;border-radius:4px;}

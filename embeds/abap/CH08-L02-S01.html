@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<!-- CH08-L02-S01 — 엔진: select-query-simulator (embeds/_engine/select-query-simulator.{js,css}) · 자체 postHeight.
+     ✅ copy(내용 정확) — config=window.SQL_CFG(연습용 ZTPERSON). 게이팅: classic Open SQL(필드 공백·@없음·콤마없음). #N1 주석 CH19로 정정. -->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SELECT 조회 시뮬레이터 · CH08-L02-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/select-query-simulator.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">SELECT 조회 시뮬레이터 <small>(classic Open SQL)</small></p>
+  <p class="lead">읽을 <b>컬럼</b>과 <b>WHERE 조건</b>을 고르면 아래에 <b>classic SELECT 코드</b>가 만들어집니다. <b>▶ 실행(F8)</b>을 누르면 연습용 DB 테이블 <code>ZTPERSON</code>에서 조건에 맞는 행이 내부 테이블 <code>LT_PERSON</code>으로 담깁니다. (레슨 본문의 <code>zgugudan</code> 대신, 조건이 다채로운 인물 표로 연습합니다.)</p>
+
+  <div class="presets" id="presets">
+    <span class="presets__lbl">예제:</span>
+  </div>
+
+  <div class="builder">
+    <div class="brow">
+      <span class="brow__lbl">SELECT</span>
+      <div class="seg" id="segSel">
+        <button type="button" data-sel="all" class="on">전체 *</button>
+        <button type="button" data-sel="cols">컬럼 선택</button>
+      </div>
+      <div class="cols dim" id="cols"></div>
+    </div>
+    <div class="brow">
+      <span class="brow__lbl">WHERE</span>
+      <label class="toggle"><input type="checkbox" id="whereOn"> 조건 사용</label>
+      <div class="cond dim" id="cond1"></div>
+      <label class="toggle" id="and2wrap" style="display:none"><input type="checkbox" id="cond2On"> +</label>
+      <select id="conn" style="display:none"><option>AND</option><option>OR</option></select>
+      <div class="cond dim" id="cond2" style="display:none"></div>
+    </div>
+  </div>
+
+  <div class="codebox">
+    <div class="codebox__hd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span><span class="tag">classic</span></div>
+    <div class="codebox__body"><pre class="code-gut" id="codeGut">1</pre><pre class="code" id="code"></pre></div>
+  </div>
+
+  <div class="runrow">
+    <button class="run-btn" id="run" type="button">▶ 실행 <kbd>F8</kbd></button>
+    <span class="subrc" id="subrc"></span>
+  </div>
+
+  <div class="tables">
+    <div class="tcard src">
+      <div class="tcard__hd">DB 테이블 · ZTPERSON <span class="cnt" id="srcCnt"></span></div>
+      <div style="overflow-x:auto"><table class="dt" id="srcTbl"></table></div>
+    </div>
+    <div class="tcard res">
+      <div class="tcard__hd">내부 테이블 · LT_PERSON <span class="cnt" id="resCnt"></span></div>
+      <div style="overflow-x:auto"><table class="dt" id="resTbl"></table></div>
+    </div>
+  </div>
+
+  <div class="note"><b>classic 규칙</b> — 필드는 <b>공백</b>으로 나열(콤마 ✕), 값은 <code>@</code> 없이 그대로. 컬럼을 고르면 <code>INTO CORRESPONDING FIELDS OF TABLE</code>, 전체(<code>*</code>)면 <code>INTO TABLE</code>. <code>@</code>·콤마는 CH19(modern)부터.</div>
+</div>
+
+<script>
+window.SQL_CFG = {
+  dbTable:'ztperson', itab:'lt_person',
+  cols:['persid','name','age','city'],
+  numeric:{persid:true, age:true},
+  data:[
+    {persid:1001,name:'정훈영',age:33,city:'서울'},
+    {persid:1002,name:'손흥민',age:31,city:'런던'},
+    {persid:1003,name:'아이유',age:30,city:'서울'},
+    {persid:1004,name:'유재석',age:51,city:'서울'},
+    {persid:1005,name:'김연아',age:33,city:'부산'},
+    {persid:1006,name:'차은우',age:26,city:'서울'},
+    {persid:1007,name:'마동석',age:54,city:'인천'},
+    {persid:1008,name:'박지성',age:43,city:'수원'},
+    {persid:1009,name:'류현진',age:37,city:'부산'},
+    {persid:1010,name:'수지',age:30,city:'서울'}
+  ],
+  presets:[
+    {label:'전체 조회 (SELECT *)', selAll:true, cols:{}, whereOn:false},
+    {label:'컬럼만 (name age)', selAll:false, cols:{name:true,age:true}, whereOn:false},
+    {label:'조건 (age >= 33)', selAll:true, cols:{}, whereOn:true, c1:{f:'age',op:'>=',v:'33'}},
+    {label:"문자 조건 (city = '서울')", selAll:true, cols:{}, whereOn:true, c1:{f:'city',op:'=',v:'서울'}}
+  ]
+};
+</script>
+<script src="../_engine/select-query-simulator.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<!-- CH13-L08-S01 — 엔진: join-aggregate-visualizer · 자체 postHeight. 콘텐츠=레슨 전용(공연별 예매현황, #C13-1).
+     config=window.JOIN_CFG. 게이팅: classic JOIN+GROUP BY+SUM(@/콤마 없음) · REF TO·TRY/CATCH는 advanceUse. -->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>JOIN·집계 리포트 시각화 · CH13-L08-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/join-aggregate-visualizer.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">공연별 예매현황 — JOIN + GROUP BY <small>(zconcert ⨝ zbooking)</small></p>
+  <p class="lead">두 표를 <code>concert_id</code>로 잇고(<code>JOIN</code>), 공연별로 묶어(<code>GROUP BY</code>) 좌석을 더합니다(<code>SUM</code>). <b>LEFT OUTER</b>면 예매 없는 공연도 0으로 남습니다. 취소(<code>status = 'C'</code>)는 <code>ON</code> 조건으로 합계에서 빠집니다.</p>
+
+  <div class="jav-sec">① 원본 두 테이블</div>
+  <div class="jav-src">
+    <div class="jav-card l"><div class="jav-card__hd">zconcert (공연 c)</div><div style="overflow-x:auto"><table class="dt" id="srcL"></table></div></div>
+    <div class="jav-card r"><div class="jav-card__hd">zbooking (예매 b)</div><div style="overflow-x:auto"><table class="dt" id="srcR"></table></div></div>
+  </div>
+
+  <div class="jav-sec">② JOIN 방식 — 바꿔 비교</div>
+  <div class="jav-toggle" id="javToggle">
+    <button type="button" data-j="LEFT" class="on">LEFT OUTER JOIN</button>
+    <button type="button" data-j="INNER">INNER JOIN</button>
+  </div>
+  <p class="jav-hint" id="javHint">🟡 <b>LEFT OUTER JOIN</b> — 예매가 하나도 없는 공연도 결과에 <b>남습니다</b>(booked 0). 빈 행 = 강조.</p>
+
+  <div class="jav-code">
+    <div class="jav-code__hd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span><span class="tag">classic</span></div>
+    <pre id="javCode"></pre>
+  </div>
+
+  <div class="jav-sec">③ GROUP BY 집계 결과 — lt_stat (ty_stat)</div>
+  <div class="jav-res" id="javRes"></div>
+
+  <div class="note"><b>왜 LEFT인가</b> — <code>INNER</code>면 예매 없는 공연(C003)이 통째로 빠진다. "예매 0"도 보여 줘야 하므로 <code>LEFT OUTER JOIN</code>. 취소 건은 <code>ON … AND b~status &lt;&gt; 'C'</code>로 합계에서 제외. <code>SUM( )</code>·<code>GROUP BY</code>는 classic OK — <code>@</code>·콤마는 CH19.</div>
+</div>
+
+<script>
+window.JOIN_CFG = {
+  left:{ name:'zconcert', alias:'c',
+    cols:[{key:'concert_id',label:'공연ID'},{key:'artist',label:'아티스트'},{key:'capacity',label:'정원',num:true}],
+    data:[
+      {concert_id:'C001',artist:'안유진',capacity:100},
+      {concert_id:'C002',artist:'신유빈',capacity:50},
+      {concert_id:'C003',artist:'전지현',capacity:80}
+    ]},
+  right:{ name:'zbooking', alias:'b',
+    cols:[{key:'booking_id',label:'예매',num:true},{key:'concert_id',label:'공연ID'},{key:'customer',label:'고객'},{key:'seats',label:'좌석',num:true},{key:'status',label:'상태'}],
+    data:[
+      {booking_id:5001,concert_id:'C001',customer:'정훈영',seats:2,status:'N'},
+      {booking_id:5002,concert_id:'C001',customer:'손흥민',seats:4,status:'N'},
+      {booking_id:5003,concert_id:'C001',customer:'아이유',seats:3,status:'N'},
+      {booking_id:5004,concert_id:'C002',customer:'유재석',seats:1,status:'C'},
+      {booking_id:5005,concert_id:'C002',customer:'김연아',seats:2,status:'N'},
+      {booking_id:5006,concert_id:'C001',customer:'차은우',seats:5,status:'N'}
+    ]},
+  onLeft:'concert_id', onRight:'concert_id',
+  filter:{field:'status', op:'<>', val:'C', label:"b~status <> 'C'"},
+  groupBy:['concert_id','artist','capacity'],
+  sumField:'seats', sumAs:'booked'
+};
+</script>
+<script src="../_engine/join-aggregate-visualizer.js" defer></script>
+</body>
+</html>

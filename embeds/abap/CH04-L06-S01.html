@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<!-- CH04-L06-S01 — 엔진: step-debugger + _autoheight. config=레슨 전용(구구단 중첩DO, #C04-6).
+     디버깅 입문의 정당한 홈. 게이팅: DATA·VALUE·DO·sy-index·* (내부테이블·inline DATA() 없음). -->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>구구단 디버거 · CH04-L06-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/step-debugger.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">디버거로 구구단 따라가기 <small>(F5처럼 한 줄씩)</small></p>
+  <p class="lead"><b>다음 ⏭</b> = F5(한 줄 실행). 반복마다 <code>sy-index</code>·<code>gv_mul</code>·<code>gv_res</code>가 어떻게 바뀌는지 변수 모니터로 관찰하세요(2단 예시).</p>
+
+  <div class="dbg" data-stepper>
+    <div class="dbg__bar">
+      <button class="btn btn--primary" data-start>▶ 시작</button>
+      <button class="btn btn--step" data-next disabled>다음 ⏭ (F5)</button>
+      <div class="progress"><i data-progress></i></div>
+      <span class="muted" data-counter>0 / 11</span>
+    </div>
+    <div class="dbg__main">
+      <div class="dbg__editorwrap"><div class="dbg__edhd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span></div><div class="dbg__editor" data-code></div></div>
+      <div class="dbg__watch">
+        <div class="watch__head">변수 모니터</div>
+        <div class="watch__list" data-vars></div>
+      </div>
+    </div>
+    <div class="dbg__console">
+      <div class="console__head">
+        <span>콘솔</span>
+        <span class="leg"><span class="a">▶ 실행할 차례</span> · <span class="d">✓ 방금 실행</span></span>
+        <span class="sp"></span>
+        <span class="cmode"><button class="cmode__b on" data-cmode="cur">현재 행</button><button class="cmode__b" data-cmode="all">전체 출력</button></span>
+      </div>
+      <pre class="console__body" data-console>대기 중 — ▶ 시작을 누르세요.</pre>
+    </div>
+    <script type="application/json" class="stepper-config">
+    {
+      "code":[
+        "DATA gv_dan TYPE i VALUE 2.",
+        "DATA gv_mul TYPE i.",
+        "DATA gv_res TYPE i.",
+        "",
+        "DO 9 TIMES.",
+        "  gv_mul = sy-index.",
+        "  gv_res = gv_dan * gv_mul.",
+        "  WRITE: / gv_dan, 'x', gv_mul, '=', gv_res.",
+        "ENDDO."
+      ],
+      "vars":[
+        {"label":"gv_dan","sub":"단","key":"gv_dan","init":"0"},
+        {"label":"gv_mul","sub":"곱하는 수","key":"gv_mul","init":"0"},
+        {"label":"gv_res","sub":"결과","key":"gv_res","init":"0"},
+        {"label":"sy-index","sub":"회차","key":"sy","init":"-"}
+      ],
+      "steps":[
+        {"line":1,"vars":{"gv_dan":"2"},"console":"gv_dan = 2 (2단)"},
+        {"line":5,"vars":{},"console":"DO 9 TIMES 시작"},
+        {"line":6,"vars":{"gv_mul":"1","sy":"1"},"console":"1회차 · sy-index=1 → gv_mul=1"},
+        {"line":7,"vars":{"gv_res":"2"},"console":"gv_res = 2 * 1 = 2"},
+        {"line":8,"vars":{},"console":"출력: 2 x 1 = 2"},
+        {"line":6,"vars":{"gv_mul":"2","sy":"2"},"console":"2회차 · sy-index=2 → gv_mul=2"},
+        {"line":7,"vars":{"gv_res":"4"},"console":"gv_res = 2 * 2 = 4"},
+        {"line":8,"vars":{},"console":"출력: 2 x 2 = 4"},
+        {"line":6,"vars":{"gv_mul":"3","sy":"3"},"console":"3회차 · sy-index=3 → gv_mul=3"},
+        {"line":7,"vars":{"gv_res":"6"},"console":"gv_res = 2 * 3 = 6"},
+        {"line":8,"vars":{},"console":"출력: 2 x 3 = 6 … (이후 9까지 같은 패턴)"}
+      ]
+    }
+    </script>
+  </div>
+</div>
+<script src="../_engine/step-debugger.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<!-- CH22-L03-S01 — 엔진: relationship-map (CSS-only) + _autoheight. 콘텐츠=레슨 전용(CDS Association, #C22).
+     게이팅: CDS·modern 허용. 관통예제(공연→회차→예매) association 관계도. -->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CDS Association 관계도 · CH22-L03-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/relationship-map.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">공연 – 회차 – 예매 <small>(CDS Association)</small></p>
+  <p class="lead">JOIN을 매번 쓰는 대신, 뷰 사이 <b>관계(Association)</b>를 선언해 두고 <code>_이름</code> 경로로 따라갑니다. <code>association [카디널리티] to 대상 as _이름 on 조건</code> — 선언 후 <code>{ }</code>에 노출하면 소비 측에서 따라갈 수 있습니다.</p>
+
+  <div class="relmap-card">
+    <p class="relmap-card__title">ZI_Concert 를 축으로 한 association 경로</p>
+    <div class="relmap">
+      <div class="relmap__row">
+        <div class="relmap__node key"><strong>ZI_Concert</strong><code>공연</code></div>
+        <div class="relmap__rel">_Perf [0..*]<br>on concert_id</div>
+        <div class="relmap__node"><strong>ZI_Perf</strong><code>회차</code></div>
+      </div>
+      <div class="relmap__row">
+        <div class="relmap__node key"><strong>ZI_Perf</strong><code>회차</code></div>
+        <div class="relmap__rel">_Booking [0..*]<br>on perf_no</div>
+        <div class="relmap__node"><strong>ZI_Booking</strong><code>예매</code></div>
+      </div>
+      <div class="relmap__row">
+        <div class="relmap__node key"><strong>ZI_Booking</strong><code>예매</code></div>
+        <div class="relmap__rel">_Concert [1..1]<br>역방향 경로</div>
+        <div class="relmap__node"><strong>ZI_Concert</strong><code>공연</code></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note"><b>관계를 경로로</b> — <code>ZI_Concert</code>에서 <code>_Perf</code>로 회차를, 다시 <code>_Booking</code>으로 예매를 따라갑니다(예: <code>_Perf._Booking</code>). 선언만 하고 <code>{ }</code>에 <b>노출하지 않으면</b> 소비 측에서 못 따라갑니다. <code>on</code> 조건은 <code>$projection.필드 = _대상.필드</code>로 키를 정확히 잇습니다.</div>
+</div>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

@@ -32,6 +32,19 @@ const esc = (s) => String(s ?? '')
 const toPosix = (p) => p.split(path.sep).join('/');
 const relPosix = (fromDir, toPath) => toPosix(path.relative(fromDir, toPath)) || '.';
 
+/* ---------- 용어 전역 자동 링크(게이팅) ----------
+   reference/autolink.json: { "표면형": { "minCh": n, "key"?: "글로서리키" } }.
+   레슨 챕터 ≥ minCh일 때만 그 용어를 자동 링크(R15 게이팅) → 도입 이후 모든 레슨에
+   '섹션별 첫 등장 1회' 버튼. 소스 [[ ]] 마킹 없이 빌드가 매번 자동 적용.
+   큐레이션 목록이라 길이 가드(≥3자)를 우회한다(짧은 한글 개념도 링크). */
+let GLOBAL_AUTOLINK = [];
+try {
+  const al = JSON.parse(fs.readFileSync(path.join(ROOT, 'reference', 'autolink.json'), 'utf8'));
+  GLOBAL_AUTOLINK = Object.entries(al)
+    .filter(([form]) => !form.startsWith('_') && al[form] && typeof al[form] === 'object')
+    .map(([form, cfg]) => ({ form, key: cfg.key || form, minCh: cfg.minCh || 0 }));
+} catch (e) { /* 파일 없으면 전역 자동 링크 비활성(레슨 [[ ]] 마킹만 동작) */ }
+
 /* ---------- marked: 핵심용어 [[term]] / [[term|label]] 인라인 확장 ---------- */
 const glossaryExt = {
   name: 'glossary',
@@ -45,9 +58,10 @@ const glossaryExt = {
     return `<button class="term" type="button" data-term="${esc(t.term)}">${esc(t.label)}</button>`;
   },
 };
-/* ---------- marked: 체험 임베드 ::embed <sample경로> | <제목>:: ----------
-   sample/ 의 standalone HTML을 "체험 위젯"으로 프레이밍한 iframe으로 펼친다.
-   레슨 페이지는 모두 docs/abap/pages/ 깊이 → sample 경로 접두 고정(../../../sample/). */
+/* ---------- marked: 체험 임베드 ::embed CHnn-Lnn-Snn | <제목>:: ----------
+   embeds/abap/CHnn-Lnn-Snn.html (공통 엔진 _engine + 레슨 전용 위젯)을 iframe으로 펼친다.
+   레슨 페이지는 모두 docs/abap/pages/ 깊이 → 경로 접두 고정(../../../embeds/abap/).
+   (구 sample/ 직접참조 분기는 전 챕터 이관 완료 후 제거됨 — 비형식 경로는 빌드 경고.) */
 const embedExt = {
   name: 'embed',
   level: 'block',
@@ -58,7 +72,10 @@ const embedExt = {
     if (m) return { type: 'embed', raw: m[0], path: m[1].trim(), title: (m[2] || '').trim(), height: m[3] ? parseInt(m[3], 10) : 0 };
   },
   renderer(t) {
-    const src = '../../../sample/' + t.path;
+    // `::embed CHnn-Lnn-Snn` → embeds/abap/CHnn-Lnn-Snn.html (유일 경로)
+    if (!/^CH\d+-L\d+-S\d+$/.test(t.path))
+      console.warn(`  ⚠️ embed 경로가 CHnn-Lnn-Snn 형식이 아님(레거시 sample 참조?): ${t.path}`);
+    const src = '../../../embeds/abap/' + t.path + '.html';
     const title = t.title || '직접 해보기';
     const hStyle = t.height ? ` style="height:${t.height}px"` : '';
     return `<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span>` +
@@ -87,7 +104,28 @@ const ABAP_KW = new Set((
   "PUBLIC PRIVATE PROTECTED SECTION INHERITING REDEFINITION ABSTRACT FINAL " +
   "COMMIT ROLLBACK WORK ASSIGN UNASSIGN IS INITIAL BOUND ASSIGNED " +
   "WITH KEY USING DEFAULT ASCENDING DESCENDING LINES DESCRIBE CONCATENATE SPLIT CONDENSE " +
-  "SET GET PARAMETER ID"
+  "SET GET PARAMETER ID " +
+  // 타입 추가 · 출력 서식(WRITE/FORMAT) · 날짜 마스크 · 문자열 템플릿 포맷
+  "LENGTH DECIMALS NO-ZERO CURRENCY COLOR INTENSIFIED INVERSE RIGHT-JUSTIFIED LEFT-JUSTIFIED CENTERED " +
+  "DD MM YY YYYY DDMMYY MMDDYY YYMMDD " +
+  // 산술(classic) · 연산자
+  "ADD SUBTRACT MULTIPLY DIVIDE DIV MOD " +
+  // 문자열 처리 · 내장/SQL 함수
+  "FIND REPLACE SEPARATED CONCAT SUBSTRING UPPER LOWER COALESCE CAST " +
+  // 내부 테이블 · 제어 · 분기 보조
+  "FOR BY TIMES OTHERS SUM COUNT INDEX STANDARD TRANSPORTING BINARY SEARCH ENTRIES ALL NO LINE THEN BASE MAPPING EXCEPT " +
+  "ASSIGNING MOVE-CORRESPONDING ADJACENT DUPLICATES COMPARING APPENDING " +
+  // Open SQL 추가
+  "LEFT OUTER NULL RANGE HAVING UPDATE ENDSELECT OFFSET " +
+  // 선택화면 · 모듈풀 · 화면(Dynpro) 흐름
+  "TABLES MODULE ENDMODULE INPUT SCREEN RADIOBUTTON CHECKBOX OBLIGATORY MATCHCODE BLOCK FRAME COMMENT TITLE TITLEBAR PF-STATUS LEAVE PROCESS BEFORE AFTER INTERVALS NO-EXTENSION MODIF WINDOW STARTING HELP-REQUEST VALUE-REQUEST " +
+  // OO · 인터페이스 · 이벤트 · 예외 · 디버그
+  "INTERFACE ENDINTERFACE INTERFACES EXCEPTION RAISING EVENT EVENTS HANDLER REFERENCE CLASS-DATA BREAK-POINT " +
+  // 권한 · 파일 · 메모리 · 잡 · 원격 호출
+  "AUTHORITY-CHECK FIELD DATASET OPEN CLOSE TEXT ENCODING MEMORY TASK DESTINATION TRANSACTION MESSAGES " +
+  // CDS · RAP · AMDP · ABAP Unit · Enhancement
+  "ENTITIES ENTITY LOCAL MODE ACTION DETERMINE VALIDATE SAVE DATABASE PROCEDURE HDB LANGUAGE SQLSCRIPT OPTIONS READ-ONLY CHAR " +
+  "ENHANCEMENT ENDENHANCEMENT BADI TESTING DURATION SHORT RISK LEVEL HARMLESS"
 ).split(/\s+/));
 
 function escHtml(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
@@ -104,14 +142,31 @@ function hlAbapLine(line) {
   }
   return out;
 }
+/* fence 언어 토큰 → 헤더 라벨 + 하이라이트 여부.
+   code-copy-block 헤더를 '작성하는 오브젝트 유형'에 맞게 구분(무조건 ABAP 금지).
+   ```abap/빈칸=ABAP · ```cds=CDS View · ```bdef=Behavior Definition · ```bimpl=Behavior Implementation
+   · ```service=Service Definition · ```metadata=Metadata Extension · ```dcl=Access Control(DCL).
+   ABAP 계열(DDL 포함)은 ABAP 토큰 하이라이트 공유(hl:true). 그 외(text 등)는 라벨 대문자화·하이라이트 없음. */
+const CODE_LANGS = {
+  abap:     { label: 'ABAP',                    hl: true },
+  cds:      { label: 'CDS View',                hl: true },
+  ddl:      { label: 'CDS View',                hl: true },
+  bdef:     { label: 'Behavior Definition',     hl: true },
+  bimpl:    { label: 'Behavior Implementation', hl: true },
+  service:  { label: 'Service Definition',      hl: true },
+  metadata: { label: 'Metadata Extension',      hl: true },
+  dcl:      { label: 'Access Control (DCL)',    hl: true },
+  sql:      { label: 'SQL',                     hl: true },
+};
 function renderCodeBlock(code, lang) {
-  const language = (lang || '').trim();
-  const isAbap = language === '' || /^abap$/i.test(language);
+  const language = (lang || '').trim().toLowerCase();
+  const cfg = CODE_LANGS[language];
+  const isAbap = language === '' ? true : (cfg ? cfg.hl : false);
   const raw = String(code).replace(/\n+$/, '');
   const lines = raw.length ? raw.split('\n') : [''];
   const gutter = lines.map((_, i) => i + 1).join('\n');
   const bodyHl = lines.map((l) => (isAbap ? hlAbapLine(l) : escHtml(l))).join('\n');
-  const title = language ? language.toUpperCase() : 'ABAP';
+  const title = cfg ? cfg.label : (language ? language.toUpperCase() : 'ABAP');
   return '<div class="abap-editor">' +
     '<div class="abap-editor__header">' +
       '<span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span>' +
@@ -165,6 +220,87 @@ function loadChapters() {
 }
 
 /* 본문 h2 섹션을 흰 카드(.lblock)로 감싼다 — v2-C의 섹션 카드 디자인 */
+/* ---------- 용어 자동 링크 ----------
+   레슨에서 [[…]]로 한 번이라도 표시한 용어는 '섹션(h2)마다 첫 등장 1회'에 용어 버튼을 단다.
+   (입문자가 못 외워도 매 섹션 한 번은 설명을 제공하되, 같은 섹션 안 반복은 도배하지 않음.)
+   - 명시 [[ ]] 버튼도 그 섹션의 '첫 등장'으로 카운트 → 직후 같은 용어는 자동 링크 안 함.
+   - 새 h2를 만나면 카운터 초기화 → 다음 섹션의 첫 등장은 다시 링크.
+   - 코드/기존 버튼/링크/제목 안은 제외. 짧은 표면형(타입글자 I·P·D·T 등)은 자동 링크 제외(첫 [[마킹]]만).
+   대상 = 그 레슨이 명시적으로 마킹한 용어(작성자 opt-in). data-term=글로서리 키 · seen=섹션 내 이미 링크한 키. */
+const AUTOLINK_SKIP = new Set(['pre','code','button','a','h1','h2','h3','h4','h5','h6','script','style']);
+function linkTermsInText(text, forms, formToKey, seen) {
+  let out = '', i = 0;
+  while (i < text.length) {
+    let matched = null;
+    for (const f of forms) {                 // forms = 길이 내림차순(greedy)
+      if (!text.startsWith(f, i)) { continue; }
+      if (seen.has(formToKey.get(f))) { continue; }   // 이 섹션에서 이미 링크한 키 → 평문 유지
+      if (/^[\x00-\x7F]+$/.test(f)) {         // ASCII 용어는 단어 경계 확인(부분일치 방지)
+        const prev = text[i - 1], next = text[i + f.length];
+        if ((prev && /[A-Za-z0-9_]/.test(prev)) || (next && /[A-Za-z0-9_]/.test(next))) { continue; }
+      }
+      matched = f; break;
+    }
+    if (matched) {
+      const key = formToKey.get(matched);
+      out += `<button class="term" type="button" data-term="${esc(key)}">${esc(matched)}</button>`;
+      seen.add(key);                          // 이 섹션에선 더 안 검 → 다음 h2에서 초기화
+      i += matched.length;
+    } else { out += text[i]; i += 1; }
+  }
+  return out;
+}
+function autolinkGlossary(html, rawBody, chapterNum) {
+  const re = /\[\[([^\]|]+?)(?:\|([^\]]+?))?\]\]/g;
+  const formToKey = new Map(); let m;
+  while ((m = re.exec(rawBody))) {
+    const key = m[1].trim(), label = (m[2] || m[1]).trim();
+    formToKey.set(key, key); formToKey.set(label, key);   // 키·라벨 둘 다 표면형으로
+  }
+  // 과잉 링크 방지: 레슨이 직접 마킹한 표면형 중 너무 짧은 것(타입글자 I·P·D·T, '변수' 등)은 자동 링크 제외(첫 [[마킹]]만).
+  const forms = [...formToKey.keys()].filter((k) => k.replace(/\s/g, '').length >= 3);
+  // 전역 자동 링크(게이팅) 병합 — 큐레이션 목록이라 길이 가드 우회. 챕터 ≥ minCh일 때만.
+  for (const g of GLOBAL_AUTOLINK) {
+    if ((chapterNum || 0) >= g.minCh && !formToKey.has(g.form)) {
+      formToKey.set(g.form, g.key);
+      forms.push(g.form);
+    }
+  }
+  if (!forms.length) { return html; }
+  forms.sort((a, b) => b.length - a.length);   // greedy: 긴 표면형 우선
+  const tagRe = /<\/?([a-zA-Z0-9]+)(?:\s[^>]*)?\/?>/g;
+  const seen = new Set();                     // 현재 h2 섹션에서 이미 링크한 글로서리 키
+  let out = '', last = 0, skip = 0, mt;
+  while ((mt = tagRe.exec(html))) {
+    const seg = html.slice(last, mt.index);
+    out += skip > 0 ? seg : linkTermsInText(seg, forms, formToKey, seen);
+    out += mt[0];
+    const name = mt[1].toLowerCase(), isClose = mt[0][1] === '/';
+    const selfClose = /\/>$/.test(mt[0]) || ['br','hr','img','input','meta','link'].includes(name);
+    if (name === 'h2' && !isClose) { seen.clear(); }                 // 새 섹션 → 첫 등장 카운터 초기화
+    if (name === 'button' && !isClose) {                             // 명시 [[ ]] 버튼도 '첫 등장'으로 카운트
+      const dm = /data-term="([^"]*)"/.exec(mt[0]); if (dm) { seen.add(dm[1]); }
+    }
+    if (AUTOLINK_SKIP.has(name) && !selfClose) { skip = isClose ? Math.max(0, skip - 1) : skip + 1; }
+    last = tagRe.lastIndex;
+  }
+  out += skip > 0 ? html.slice(last) : linkTermsInText(html.slice(last), forms, formToKey, seen);
+  return out;
+}
+
+/* 섹션(h2)당 용어 버튼 1회 보장 — 자동 링크는 autolink가 이미 억제하지만,
+   작성자가 한 섹션에 [[용어]]를 두 번 명시 마킹한 경우(또는 평문+명시 순서)까지 평문으로 풀어 보장.
+   첫 등장만 버튼 유지, 같은 키 2번째부터는 라벨 텍스트로 unwrap. h2를 만나면 초기화. */
+function dedupTermButtonsPerSection(html) {
+  const seen = new Set();
+  return html.replace(/<h2[\s>]|<button class="term" type="button" data-term="([^"]*)">([^<]*)<\/button>/g,
+    (full, key, inner) => {
+      if (key === undefined) { seen.clear(); return full; }   // <h2 경계 → 카운터 초기화
+      if (seen.has(key)) { return inner; }                    // 같은 섹션 2번째+ → 평문
+      seen.add(key); return full;                             // 섹션 첫 등장 → 버튼 유지
+    });
+}
+
 function wrapSections(html) {
   const parts = html.split(/(?=<h2[\s>])/);
   return parts.map((p) => (/^<h2[\s>]/.test(p) ? `<section class="lblock">${p}</section>` : p)).join('');
@@ -177,8 +313,9 @@ function renderLessonPage(ch, lesson, trackNo) {
   const assets = relPosix(OUT_PAGES, path.join(ROOT, 'assets'));
   const dataBase = relPosix(OUT_PAGES, OUT) + '/';
   const siteRoot = relPosix(OUT_PAGES, ROOT) + '/';
-  const bodyHtml = wrapSections(marked.parse(lesson.body));
   const chId = ch.meta.id;
+  const chNum = parseInt(String(chId).replace(/\D/g, ''), 10) || 0;
+  const bodyHtml = wrapSections(dedupTermButtonsPerSection(autolinkGlossary(marked.parse(lesson.body), lesson.body, chNum)));
   const sda = JSON.stringify({ domain: DOMAIN, dataBase, siteRoot });
   const tcode = lesson.data.tcode || '';
   const tcodeBadge = lesson.data.tcodeBadge || '';

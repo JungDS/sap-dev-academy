@@ -1,0 +1,39 @@
+/* enqueue-2session — 두 세션의 ENQUEUE/DEQUEUE 동시성 체험 (CH25-L02).
+   User A·B가 같은 예매를 잠그려 시도 → foreign_lock 거절, DEQUEUE/COMMIT로 해제. SM12풍 잠금목록. _base.css=토큰만. */
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:transparent;line-height:1.5;}
+.wrap{padding:14px;}
+.hd{font-weight:800;font-size:1rem;margin:0 0 4px;}
+.lead{margin:0 0 12px;color:var(--ink-soft);font-size:.86rem;}
+.lead code{font-family:var(--mono);background:#eef2ff;color:var(--brand);padding:1px 5px;border-radius:5px;}
+
+.users{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+@media(max-width:520px){.users{grid-template-columns:1fr;}}
+.user{border:1px solid var(--line);border-radius:12px;background:var(--surface);overflow:hidden;}
+.user__h{padding:8px 12px;font-weight:800;font-size:.86rem;display:flex;align-items:center;gap:7px;border-bottom:1px solid var(--line);}
+.user.a .user__h{background:#eef2ff;color:#3b5bdb;}
+.user.b .user__h{background:#f3eefe;color:#7c3aed;}
+.user__h .dot{width:9px;height:9px;border-radius:50%;}
+.user.a .dot{background:#3b5bdb;} .user.b .dot{background:#7c3aed;}
+.user__h .own{margin-left:auto;font-size:.68rem;font-weight:800;border-radius:999px;padding:2px 9px;background:#d1fae5;color:#0b7250;}
+.user__b{padding:10px 12px;}
+.acts{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px;}
+.b{border:1px solid var(--line);background:#fff;border-radius:7px;padding:6px 11px;font:inherit;font-weight:800;font-size:.78rem;cursor:pointer;color:var(--ink);}
+.b:hover{border-color:var(--brand);color:var(--brand);}
+.b.enq{border-color:var(--brand);background:var(--brand);color:#fff;}
+.b.enq:hover{filter:brightness(1.07);color:#fff;}
+.ulog{font-size:.78rem;min-height:38px;line-height:1.5;color:var(--ink-soft);}
+.ulog .ok{color:#0b7250;font-weight:700;} .ulog .no{color:var(--warn);font-weight:700;}
+
+.sm12{border:1px solid var(--line);border-radius:12px;background:var(--surface);overflow:hidden;}
+.sm12__h{background:#2c3666;color:#fff;padding:7px 12px;font-weight:800;font-size:.8rem;font-family:var(--mono);display:flex;align-items:center;gap:7px;}
+.sm12__h small{margin-left:auto;font-weight:600;opacity:.8;font-family:var(--font);}
+.sm12__b{padding:10px 12px;}
+.lockrow{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:.82rem;border:1px solid var(--line);border-radius:8px;padding:7px 11px;background:#fafbfe;}
+.lockrow .m{font-weight:800;border-radius:5px;padding:1px 8px;background:#fee2e2;color:#b91c1c;}
+.lockrow .ownr{margin-left:auto;font-weight:800;}
+.lockrow.a{border-color:#bcccff;} .lockrow.b{border-color:#ddd0fb;}
+.empty{color:var(--soon);font-style:italic;font-size:.82rem;font-family:var(--font);}
+.reset{margin-top:10px;border:0;background:transparent;color:var(--ink-soft);font:inherit;font-size:.78rem;font-weight:700;text-decoration:underline;cursor:pointer;}
+.note{margin-top:11px;border-left:3px solid var(--brand);background:rgba(59,91,219,.06);border-radius:0 9px 9px 0;padding:9px 13px;font-size:.82rem;color:#2a3550;}
+.note code{font-family:var(--mono);background:#fff;border:1px solid var(--line);padding:0 5px;border-radius:4px;}

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<!-- CH03-L01-S01 — 엔진: domain-builder (embeds/_engine/domain-builder.{js,css}) · 공통토큰: _engine/_base.css
+     ⚠️ 생성: tools/_extract-embed.mjs (sample/interactive/domain-builder.html에서 추출). 엔진 수정은 _engine/에서. -->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Domain 생성 시뮬레이터 · CH03-L01-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/domain-builder.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">Domain 생성 시뮬레이터 <small>(SE11 — 저장 → 검사 → 활성화)</small></p>
+  <p class="lead">SE11에서 Domain을 만드는 흐름을 그대로 체험합니다. 값을 채우고 <b>💾 저장 → ✓ 검사 → 🔥 활성화</b> 순서로 눌러 보세요. <b>활성화해야</b> 비로소 런타임에서 쓸 수 있는 객체가 됩니다.</p>
+
+  <div class="presets" id="presets">
+    <span class="presets__lbl">예제:</span>
+    <button class="chip" type="button" data-ex="0">금액 도메인 (DEC 8,2)</button>
+    <button class="chip" type="button" data-ex="1">상태 도메인 (CHAR 1 + 고정값)</button>
+    <button class="chip" type="button" data-ex="2">항공사 코드 (CHAR 3 + Value Table)</button>
+    <button class="chip" type="button" data-ex="3">이메일 (CHAR + 소문자 허용)</button>
+    <button class="chip" type="button" data-ex="4">재고 증감 (INT4 · 음수 가능)</button>
+    <button class="chip" type="button" data-ex="5">대기번호·연도 (NUMC · 단순 카운트)</button>
+  </div>
+  <div class="goalbar" id="goalbar"><b>🎯 목표 ·</b> 위 예제 버튼을 누르면 만들 Domain의 목표가 여기에 계속 표시됩니다.</div>
+
+  <div class="se">
+    <div class="se__bar"><span class="ico">📚</span>Dictionary: Domain 유지보수
+      <span class="badge s-new" id="badge"><span class="d"></span><span id="badgeTxt">신규 (미저장)</span></span></div>
+
+    <div class="tools">
+      <button class="tbtn" id="bSave" type="button">💾 저장 <kbd>Ctrl+S</kbd></button>
+      <button class="tbtn" id="bCheck" type="button">✓ 검사</button>
+      <button class="tbtn act" id="bAct" type="button">🔥 활성화 <kbd>Ctrl+F3</kbd></button>
+    </div>
+
+    <div class="setabs">
+      <button class="setab on" data-tab="def" type="button">속성 (Definition)</button>
+      <button class="setab" data-tab="val" type="button">값 범위 (Value Range)</button>
+    </div>
+
+    <div class="tabpane on" data-pane="def">
+      <div class="field">
+        <label for="dname">도메인 이름</label>
+        <input type="text" id="dname" autocomplete="off" spellcheck="false" />
+        <div class="hint">전역 객체는 <b>Z</b> 또는 <b>Y</b>로 시작합니다.</div>
+      </div>
+      <div class="field">
+        <label for="dtype">데이터 타입</label>
+        <select id="dtype">
+          <option value="" selected>— 선택 —</option>
+          <option value="CHAR">CHAR — 문자</option>
+          <option value="NUMC">NUMC — 숫자 문자(자릿수 고정)</option>
+          <option value="DEC">DEC — 십진수(소수 가능)</option>
+          <option value="INT4">INT4 — 정수</option>
+          <option value="DATS">DATS — 날짜(YYYYMMDD)</option>
+        </select>
+        <div class="hint" id="typeAbap"></div>
+      </div>
+      <div class="field">
+        <label for="dlen">길이 (Length)</label>
+        <input type="number" id="dlen" min="1" value="10" />
+        <div class="hint" id="lenHint"></div>
+      </div>
+      <div class="field" id="rowOut">
+        <label for="dout">출력 길이 (Output Length)</label>
+        <input type="number" id="dout" min="1" value="10" />
+        <div class="hint">화면에 표시될 칸 너비. 보통 길이와 같지만, 부호·천단위 구분기호 때문에 더 길 수 있습니다.</div>
+      </div>
+      <div class="field row-dec" id="rowDec">
+        <label for="ddec">소수 자릿수 (Decimals)</label>
+        <input type="number" id="ddec" min="0" value="0" />
+        <div class="hint">소수점 이하 자릿수. 길이보다 작아야 합니다(DEC 전용).</div>
+      </div>
+      <div class="field" id="rowLower">
+        <label>대소문자</label>
+        <label class="chkline"><input type="checkbox" id="dlower"> 소문자 허용 (Lower Case)</label>
+        <div class="hint">체크 안 하면 입력값이 <b>자동으로 대문자</b>로 바뀝니다(CHAR 기본 동작).</div>
+      </div>
+      <div class="field hide" id="rowNeg">
+        <label>부호</label>
+        <label class="chkline"><input type="checkbox" id="dneg"> 음수 허용 (Sign / Negative)</label>
+        <div class="hint">체크하면 음수(−)를 저장할 수 있어요(예: 재고 증감 −5). <b>숫자 타입(INT4·DEC)에서만</b> 가능 — <b>NUMC는 음수를 담지 못합니다.</b></div>
+      </div>
+    </div>
+
+    <div class="tabpane" data-pane="val">
+      <div class="field" style="margin-bottom:6px">
+        <label for="dvtab">값 테이블 (Value Table)</label>
+        <input type="text" id="dvtab" placeholder="예: SCARR" autocomplete="off" spellcheck="false" style="text-transform:uppercase;font-family:var(--mono)" />
+        <div class="hint">허용 값을 <b>다른 테이블의 저장된 데이터</b>로 검사·F4 제공. 값이 자주 바뀌는 목록(예: 항공사 SCARR)에 씁니다. 외래 키(CH08)의 바탕이 됩니다.</div>
+      </div>
+      <hr style="border:0;border-top:1px solid var(--line);margin:6px 0 13px" />
+      <p class="fv__note"><b>또는</b>, 거의 안 바뀌는 <b>소수의 값</b>만 받게 하려면 <b>고정값(Fixed Values)</b>을 넣습니다. (예: <code>O</code>=Open, <code>C</code>=Closed) — 화면 F4·입력 검증으로 되돌아옵니다. <b>값 테이블과 고정값은 보통 둘 중 하나만</b> 씁니다.</p>
+      <table class="fv">
+        <thead><tr><th style="width:34%">고정값</th><th>설명</th><th style="width:48px"></th></tr></thead>
+        <tbody id="fvBody"></tbody>
+      </table>
+      <button class="fv__add" id="fvAdd" type="button">＋ 고정값 추가</button>
+    </div>
+
+    <div class="msgbar info" id="msg">
+      <div class="head">ℹ️ 준비됨</div>
+      <div id="msgBody">값을 채운 뒤 <b>💾 저장</b> → <b>✓ 검사</b> → <b>🔥 활성화</b> 순으로 눌러 보세요.</div>
+    </div>
+  </div>
+
+  <div class="note">💡 <b>DDIC 객체의 철칙</b> — 저장만 하면 <b>비활성(inactive)</b> 상태라 런타임에서 쓸 수 없습니다. <b>활성화</b>해야 런타임 객체가 생성됩니다. 활성 후 필드를 고치면 다시 비활성이 되어 <b>재활성화</b>가 필요합니다.</div>
+</div>
+<script src="../_engine/domain-builder.js" defer></script>
+</body>
+</html>

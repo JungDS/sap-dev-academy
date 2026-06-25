@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>집단행 순회 · 컨트롤레벨 · Internal Table · SAP Developer Academy</title>
+<title>다중 행 제어 · Internal Table · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -34,7 +34,7 @@
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH06</nav>
       <section class="lhead">
         <p class="lhead__eyebrow">Internal Table</p>
-        <h1>집단행 순회 · 컨트롤레벨</h1>
+        <h1>다중 행 제어</h1>
         <p class="lhead__direction">여러 행을 한꺼번에 — 순회·집계·중복 제거·그룹 처리.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 6</span><span class="tag tag--ls">Lesson 4</span><span class="tag tag--lv">초급</span></div>
       </section>
@@ -73,7 +73,7 @@
 4
 5</pre><pre class="abap-editor__code"><code><span class="tok-kw">FIELD-SYMBOLS</span> &lt;fs_person&gt; <span class="tok-kw">TYPE</span> ty_person.
 
-<span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_person ASSIGNING &lt;fs_person&gt;.
+<span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_person <span class="tok-kw">ASSIGNING</span> &lt;fs_person&gt;.
   &lt;fs_person&gt;age = &lt;fs_person&gt;age + <span class="tok-num">1</span>.   <span class="tok-com">" 테이블 행이 바로 바뀐다(MODIFY 불필요)</span>
 <span class="tok-kw">ENDLOOP</span>.</code></pre></div></div>
 <blockquote>
@@ -94,14 +94,14 @@
 8
 9
 10
-11</pre><pre class="abap-editor__code"><code><span class="tok-kw">SORT</span> lt_sales BY region.
+11</pre><pre class="abap-editor__code"><code><span class="tok-kw">SORT</span> lt_sales <span class="tok-kw">BY</span> region.
 <span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_sales <span class="tok-kw">INTO</span> ls_sales.
   <span class="tok-kw">AT</span> <span class="tok-kw">NEW</span> region.        <span class="tok-com">" region이 바뀌는 첫 행</span>
     <span class="tok-kw">WRITE</span>: / <span class="tok-str">'지역:'</span>, ls_sales-region.
   <span class="tok-kw">ENDAT</span>.
   <span class="tok-kw">WRITE</span>: / ls_sales-amount.
   <span class="tok-kw">AT</span> <span class="tok-kw">END</span> <span class="tok-kw">OF</span> region.     <span class="tok-com">" region의 마지막 행</span>
-    SUM.                <span class="tok-com">" 그 그룹 합계가 ls_sales에 들어온다</span>
+    <span class="tok-kw">SUM</span>.                <span class="tok-com">" 그 그룹 합계가 ls_sales에 들어온다</span>
     <span class="tok-kw">WRITE</span>: / <span class="tok-str">'소계:'</span>, ls_sales-amount.
   <span class="tok-kw">ENDAT</span>.
 <span class="tok-kw">ENDLOOP</span>.</code></pre></div></div>
@@ -116,8 +116,8 @@
 4
 5
 6
-7</pre><pre class="abap-editor__code"><code><span class="tok-kw">SORT</span> lt_person BY name.
-<span class="tok-kw">DELETE</span> ADJACENT DUPLICATES <span class="tok-kw">FROM</span> lt_person COMPARING name.  <span class="tok-com">" 인접 중복 제거</span>
+7</pre><pre class="abap-editor__code"><code><span class="tok-kw">SORT</span> lt_person <span class="tok-kw">BY</span> name.
+<span class="tok-kw">DELETE</span> <span class="tok-kw">ADJACENT</span> <span class="tok-kw">DUPLICATES</span> <span class="tok-kw">FROM</span> lt_person <span class="tok-kw">COMPARING</span> name.  <span class="tok-com">" 인접 중복 제거</span>
 
 <span class="tok-kw">DATA</span> lv_cnt <span class="tok-kw">TYPE</span> i.
 <span class="tok-kw">DESCRIBE</span> <span class="tok-kw">TABLE</span> lt_person <span class="tok-kw">LINES</span> lv_cnt.   <span class="tok-com">" 행 수(= lines( ))</span>

@@ -40,7 +40,7 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>BAPI가 없을 때 — 화면을 자동으로</h2>
-<p>표준 BAPI가 없는 트랜잭션은, <strong>사용자가 화면에 입력하는 과정을 흉내</strong> 내 자동 등록한다.
+<p>표준 BAPI가 없는 <button class="term" type="button" data-term="트랜잭션">트랜잭션</button>은, <strong>사용자가 화면에 입력하는 과정을 흉내</strong> 내 자동 등록한다.
 그게 <button class="term" type="button" data-term="BDC">BDC</button>(Batch Data Communication)다. 화면·필드·값을 <code>BDCDATA</code>에 채워 트랜잭션을 돌린다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
@@ -56,9 +56,9 @@
 <span class="tok-kw">PERFORM</span> fill <span class="tok-kw">USING</span> <span class="tok-str">'X'</span> <span class="tok-str">'SAPMXXXX'</span> <span class="tok-str">'0100'</span>.   <span class="tok-com">" 화면</span>
 <span class="tok-kw">PERFORM</span> fill <span class="tok-kw">USING</span> <span class="tok-str">' '</span> <span class="tok-str">'FIELD-X'</span>  <span class="tok-str">'값'</span>.      <span class="tok-com">" 필드</span>
 
-<span class="tok-kw">CALL</span> TRANSACTION <span class="tok-str">'XX01'</span> <span class="tok-kw">USING</span> lt_bdc
-  MODE <span class="tok-str">'N'</span> UPDATE <span class="tok-str">'S'</span>                         <span class="tok-com">" N=무화면, S=동기</span>
-  MESSAGES <span class="tok-kw">INTO</span> lt_msg.</code></pre></div></div>
+<span class="tok-kw">CALL</span> <span class="tok-kw">TRANSACTION</span> <span class="tok-str">'XX01'</span> <span class="tok-kw">USING</span> lt_bdc
+  <span class="tok-kw">MODE</span> <span class="tok-str">'N'</span> <span class="tok-kw">UPDATE</span> <span class="tok-str">'S'</span>                         <span class="tok-com">" N=무화면, S=동기</span>
+  <span class="tok-kw">MESSAGES</span> <span class="tok-kw">INTO</span> lt_msg.</code></pre></div></div>
 <ul>
 <li><code>MODE</code>: <code>A</code>(전체화면)·<code>E</code>(오류만)·<code>N</code>(무화면, 배치).</li>
 <li>결과 메시지를 받아 성공/실패를 판정(L05의 재처리와 결합).</li>
@@ -86,15 +86,19 @@
 2
 3
 4</pre><pre class="abap-editor__code"><code><span class="tok-kw">CALL</span> <span class="tok-kw">FUNCTION</span> <span class="tok-str">'BDC_OPEN_GROUP'</span>  <span class="tok-kw">EXPORTING</span> <span class="tok-kw">client</span> = sy-mandt <span class="tok-kw">group</span> = <span class="tok-str">'ZBOOK'</span>.
-<span class="tok-kw">CALL</span> <span class="tok-kw">FUNCTION</span> <span class="tok-str">'BDC_INSERT'</span>      <span class="tok-kw">EXPORTING</span> tcode = <span class="tok-str">'XX01'</span> TABLES dynprotab = lt_bdc.
+<span class="tok-kw">CALL</span> <span class="tok-kw">FUNCTION</span> <span class="tok-str">'BDC_INSERT'</span>      <span class="tok-kw">EXPORTING</span> tcode = <span class="tok-str">'XX01'</span> <span class="tok-kw">TABLES</span> dynprotab = lt_bdc.
 <span class="tok-kw">CALL</span> <span class="tok-kw">FUNCTION</span> <span class="tok-str">'BDC_CLOSE_GROUP'</span>.
 <span class="tok-com">" → SM35에서 세션을 실행하고 오류 건을 재처리한다</span></code></pre></div></div>
 </section><section class="lblock"><h2>BDCDATA는 SHDB로 녹화</h2>
-<p>화면·필드 이름을 손으로 채우긴 번거롭다. <strong>SHDB</strong>(Transaction Recorder)로 트랜잭션을
+<p>화면·필드 이름을 손으로 채우긴 번거롭다. <strong>SHDB</strong>(Transaction Recorder)로 <button class="term" type="button" data-term="트랜잭션">트랜잭션</button>을
 한 번 <strong>녹화</strong>하면 <code>BDCDATA</code>를 채우는 뼈대 코드를 자동 생성해 준다.</p>
+</section><section class="lblock"><h2>직접 녹화해 보기</h2>
+<p>&quot;다음 동작&quot;을 눌러 화면 입력이 <code>BDCDATA</code>에 한 줄씩 쌓이는 걸 보고, 다 채운 뒤
+<code>CALL TRANSACTION</code>으로 실행해 보라.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title"><button class="term" type="button" data-term="BDC">BDC</button> 녹화 — BDCDATA 채우기</span><a class="embed__open" href="../../../embeds/abap/CH30-L03-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH30-L03-S01.html" loading="lazy" title="BDC 녹화 — BDCDATA 채우기" style="height:480px"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>화면 흐름 변경</strong> → 표준 화면이 바뀌면 BDC가 깨진다. BAPI 가능하면 그쪽.</li>
+<li><strong>화면 흐름 변경</strong> → 표준 화면이 바뀌면 <button class="term" type="button" data-term="BDC">BDC</button>가 깨진다. BAPI 가능하면 그쪽.</li>
 <li><strong>MODE &#39;A&#39;로 대량</strong> → 배치는 <code>N</code>. <code>A</code>는 디버깅용.</li>
 </ul>
 <hr>

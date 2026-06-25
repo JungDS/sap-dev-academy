@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<!-- CH35-L03-S01 — 엔진: mermaid + _autoheight. Transport 경로 DEV→QAS→PRD. (기존 text 코드블록 흐름도 교체) -->
+<html lang="ko">
+<head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Transport 경로 · CH35-L03-S01</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>if(!window.mermaid){var s=document.createElement("script");s.src="../_vendor/mermaid.min.js";document.head.appendChild(s);}</script>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/mermaid.css" />
+</head>
+<body>
+  <div class="wrap">
+    <p class="hd">Transport 경로 — 개발에서 운영까지</p>
+    <p class="lead">이송요청(CH01-L06)이 어떤 시스템을 거쳐 운영에 도달하는지. 운영(PRD)은 직접 개발 금지 — 반드시 이송으로.</p>
+    <div class="viz-card">
+      <p class="viz-card__title">DEV → QAS → PRD</p>
+      <div class="mermaid" id="mm">
+flowchart LR
+  DEV["DEV · 개발<br/>SE09/SE10에서 release"]:::dev
+  QAS["QAS · 품질/테스트<br/>ATC · ABAP Unit · 기능"]:::qas
+  PRD["PRD · 운영<br/>직접 개발 금지"]:::prd
+  DEV -->|"release (이송요청)"| QAS
+  QAS -->|"import (STMS)"| PRD
+classDef dev fill:#eef2ff,stroke:#3b5bdb,stroke-width:2px,color:#1e3a8a;
+classDef qas fill:#fff7ed,stroke:#fb923c,stroke-width:2px,color:#c2410c;
+classDef prd fill:#ecfdf5,stroke:#10b981,stroke-width:2.4px,color:#0b7250;
+      </div>
+      <p class="viz-note">의존하는 객체는 <b>순서대로</b> 이송해야 합니다(역전 시 운영 깨짐). 이송 전 QAS에서 <b>ATC·ABAP Unit·기능 테스트</b>를 통과시키고, 한 요청에 관련 객체를 모두 담아 일관 이송합니다.</p>
+    </div>
+  </div>
+<script src="../_engine/mermaid.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<!-- CH01-L05-S01 — 엔진: write-format (embeds/_engine/write-format.{js,css}) · 공통토큰: _engine/_base.css
+     ⚠️ 생성: tools/_extract-embed.mjs (sample/code-learning/write-format-playground.html에서 추출). 엔진 수정은 _engine/에서. -->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WRITE 포맷 플레이그라운드 · CH01-L05-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/write-format.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">WRITE 포맷 플레이그라운드 <small>(폭·정렬·색·강조)</small></p>
+  <p class="lead">값과 <b>포맷 옵션</b>을 바꾸면, 왼쪽에 <b>WRITE 코드</b>가 만들어지고 오른쪽 SAP 리스트에 결과가 그려집니다. 같은 값이라도 <code>RIGHT-JUSTIFIED</code>·<code>COLOR</code>·<code>ULINE</code>으로 얼마나 달라지는지 보세요.</p>
+
+  <div class="presets" id="presets">
+    <span class="presets__lbl">예제:</span>
+    <button class="chip on" type="button" data-ex="0">오른쪽 정렬 숫자</button>
+    <button class="chip" type="button" data-ex="1">강조 색 텍스트</button>
+    <button class="chip" type="button" data-ex="2">구분선 + 가운데</button>
+  </div>
+
+  <div class="split">
+    <div class="panel">
+      <div class="panel__hd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.1 14.5a1.5 1.5 0 0 0 .3 1.6l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.5 1.5 0 0 0-2.5 1V21a2 2 0 1 1-4 0v-.2a1.5 1.5 0 0 0-2.5-1l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.5 1.5 0 0 0-1-2.5H3a2 2 0 1 1 0-4h.2a1.5 1.5 0 0 0 1-2.5l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.5 1.5 0 0 0 2.5-1V3a2 2 0 1 1 4 0v.2a1.5 1.5 0 0 0 2.5 1l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.5 1.5 0 0 0-.3 1.6z"/></svg>포맷 옵션</div>
+      <div class="ctrls">
+        <div class="ctrl"><label for="val">값</label>
+          <select id="val">
+            <option value="'정훈영'">'정훈영' (텍스트)</option>
+            <option value="1250000">1250000 (숫자)</option>
+            <option value="'합 계'">'합 계' (텍스트)</option>
+          </select>
+        </div>
+        <div class="ctrl"><label>정렬</label>
+          <div class="seg" id="just">
+            <button type="button" data-j="" class="on">기본</button>
+            <button type="button" data-j="LEFT-JUSTIFIED">LEFT</button>
+            <button type="button" data-j="CENTERED">CENTERED</button>
+            <button type="button" data-j="RIGHT-JUSTIFIED">RIGHT</button>
+          </div>
+        </div>
+        <div class="ctrl"><label for="width">폭(len)</label>
+          <div><input type="range" id="width" min="6" max="30" value="16"><span class="wlbl" id="wlbl">16</span></div>
+        </div>
+        <div class="ctrl"><label for="color">COLOR</label>
+          <select id="color">
+            <option value="0">없음</option>
+            <option value="3">3 · TOTAL(노랑)</option>
+            <option value="5">5 · POSITIVE(초록)</option>
+            <option value="6">6 · NEGATIVE(빨강)</option>
+            <option value="1">1 · HEADING(청회색)</option>
+            <option value="4">4 · KEY(파랑)</option>
+          </select>
+        </div>
+        <div class="ctrl"><label>강조</label>
+          <div class="toggles">
+            <label class="tg" data-tgl="intens"><input type="checkbox">INTENSIFIED</label>
+            <label class="tg" data-tgl="inverse"><input type="checkbox">INVERSE</label>
+          </div>
+        </div>
+        <div class="ctrl"><label>선행</label>
+          <div class="toggles">
+            <label class="tg" data-tgl="uline"><input type="checkbox">ULINE(밑줄선)</label>
+            <label class="tg" data-tgl="skip"><input type="checkbox">SKIP(빈 줄)</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="codebox">
+        <div class="codebox__hd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span><span class="cb-name">ZHELLO</span></div>
+        <div class="codebox__body"><pre class="code-gut" id="codeGut">1</pre><pre class="code" id="code"></pre></div>
+      </div>
+      <div class="panel__hd" style="border-top:1px solid var(--line)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><line x1="8" y1="20" x2="16" y2="20"/><line x1="12" y1="16" x2="12" y2="20"/></svg>리스트 출력</div>
+      <div class="screen" id="screen"></div>
+    </div>
+  </div>
+
+  <div class="note"><b>폭(len)</b> 안에서 값을 어디로 붙일지가 <b>정렬</b>(LEFT·CENTERED·RIGHT-JUSTIFIED)입니다. 숫자는 보통 <code>RIGHT-JUSTIFIED</code>로 자릿수를 맞추고, 합계·경고는 <code>COLOR</code>로 눈에 띄게 합니다. <code>ULINE</code>은 밑줄선, <code>SKIP</code>은 빈 줄을 넣습니다.</div>
+</div>
+<script>window.__SDA_CFG__=Object.assign(window.__SDA_CFG__||{},{presets:[
+    { val:'1250000', just:'RIGHT-JUSTIFIED', width:16, color:0, intens:false, inverse:false, uline:false, skip:false },
+    { val:"'정훈영'", just:'', width:16, color:4, intens:true, inverse:false, uline:false, skip:false },
+    { val:"'합 계'", just:'CENTERED', width:20, color:3, intens:false, inverse:false, uline:true, skip:true }
+  ]});</script>
+<script src="../_engine/write-format.js" defer></script>
+</body>
+</html>

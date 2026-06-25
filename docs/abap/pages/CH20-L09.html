@@ -40,7 +40,7 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>객체가 &quot;사건&quot;을 알린다</h2>
-<p>&quot;예약이 매진됐다&quot; 같은 사건이 일어났을 때, 객체가 <strong>이벤트</strong>를 발생시키고 관심 있는
+<p>&quot;예약이 매진됐다&quot; 같은 사건이 일어났을 때, <button class="term" type="button" data-term="객체">객체</button>가 <strong><button class="term" type="button" data-term="이벤트">이벤트</button></strong>를 발생시키고 관심 있는
 다른 객체가 <strong>반응</strong>하게 한다. ALV의 더블클릭·버튼 같은 상호작용이 모두 이 구조다
 (CH21·CH27에서 활용).</p>
 </section><section class="lblock"><h2>이벤트 선언 · 발생 — EVENTS / RAISE EVENT</h2>
@@ -55,12 +55,12 @@
 9
 10</pre><pre class="abap-editor__code"><code><span class="tok-kw">CLASS</span> zcl_booking_manager <span class="tok-kw">DEFINITION</span> <span class="tok-kw">PUBLIC</span>.
   <span class="tok-kw">PUBLIC</span> <span class="tok-kw">SECTION</span>.
-    EVENTS sold_out.                 <span class="tok-com">" 이벤트 선언</span>
+    <span class="tok-kw">EVENTS</span> sold_out.                 <span class="tok-com">" 이벤트 선언</span>
 <span class="tok-kw">ENDCLASS</span>.
 
 <span class="tok-kw">METHOD</span> book.
   <span class="tok-kw">IF</span> me-&gt;remaining( ) = <span class="tok-num">0</span>.
-    <span class="tok-kw">RAISE</span> EVENT sold_out.            <span class="tok-com">" 사건 발생</span>
+    <span class="tok-kw">RAISE</span> <span class="tok-kw">EVENT</span> sold_out.            <span class="tok-com">" 사건 발생</span>
   <span class="tok-kw">ENDIF</span>.
 <span class="tok-kw">ENDMETHOD</span>.</code></pre></div></div>
 </section><section class="lblock"><h2>반응 등록 — Handler / SET HANDLER</h2>
@@ -72,22 +72,22 @@
 6
 7</pre><pre class="abap-editor__code"><code><span class="tok-kw">CLASS</span> zcl_monitor <span class="tok-kw">DEFINITION</span>.
   <span class="tok-kw">PUBLIC</span> <span class="tok-kw">SECTION</span>.
-    <span class="tok-kw">METHODS</span> on_sold_out FOR EVENT sold_out <span class="tok-kw">OF</span> zcl_booking_manager.
+    <span class="tok-kw">METHODS</span> on_sold_out <span class="tok-kw">FOR</span> <span class="tok-kw">EVENT</span> sold_out <span class="tok-kw">OF</span> zcl_booking_manager.
 <span class="tok-kw">ENDCLASS</span>.
 
 <span class="tok-com">" 연결: 이 매니저의 sold_out이 나면 monitor가 반응</span>
-<span class="tok-kw">SET</span> HANDLER lo_monitor-&gt;on_sold_out FOR lo_mgr.</code></pre></div></div>
+<span class="tok-kw">SET</span> <span class="tok-kw">HANDLER</span> lo_monitor-&gt;on_sold_out <span class="tok-kw">FOR</span> lo_mgr.</code></pre></div></div>
 <ul>
 <li><code>EVENTS</code> 선언 → <code>RAISE EVENT</code>로 발생 → 핸들러(<code>FOR EVENT</code>)가 처리 → <code>SET HANDLER</code>로 연결.</li>
 </ul>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>SET HANDLER 누락</strong> → 이벤트가 나도 아무도 안 듣는다. 핸들러를 연결해야.</li>
+<li><strong>SET HANDLER 누락</strong> → <button class="term" type="button" data-term="이벤트">이벤트</button>가 나도 아무도 안 듣는다. 핸들러를 연결해야.</li>
 <li><strong>핸들러 시그니처</strong> → <code>FOR EVENT ... OF 클래스</code>가 정확해야 연결된다.</li>
 </ul>
 <hr>
-<p>객체로 설계·확장·반응까지 다뤘다. 배운 OO를 <strong>콘서트앱</strong>에 적용해 예약 로직을
-클래스로 만들자 → <strong>CH20-L10(실습)</strong>.</p>
+<p><button class="term" type="button" data-term="객체">객체</button>로 설계·확장·반응까지 다뤘다. 배운 OO를 <strong>콘서트앱</strong>에 적용해 예약 로직을
+<button class="term" type="button" data-term="Class">클래스</button>로 만들자 → <strong>CH20-L10(실습)</strong>.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

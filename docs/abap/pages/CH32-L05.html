@@ -42,22 +42,23 @@
 <section class="lblock"><h2>규모가 커지면 설계가 다르다</h2>
 <p>수백만 건은 &quot;잘 짠 SELECT&quot; 이상의 <strong>설계</strong>가 필요하다.</p>
 <ul>
-<li><strong>패키지 처리</strong>(CH24-L05) — 일정 건수마다 처리·COMMIT로 메모리·잠금 관리.</li>
+<li><strong>패키지 처리</strong>(CH24-L05) — 일정 건수마다 처리·COMMIT로 <button class="term" type="button" data-term="메모리">메모리</button>·잠금 관리.</li>
 <li><strong>병렬 처리</strong> — 작업을 나눠 동시에(<code>aRFC</code>·병렬 프레임워크). 단 복잡·자원 고려.</li>
 <li><strong>Code Pushdown</strong> — 가공을 ABAP이 아니라 <strong>DB(HANA)에서</strong> 하도록 — CDS·AMDP(CH33)·
-modern SQL 식(CH19). &quot;데이터를 ABAP으로 끌어와 LOOP&quot; 대신 <strong>DB에서 집계해 결과만</strong>.</li>
+modern SQL 식(CH19). &quot;데이터를 ABAP으로 끌어와 LOOP&quot; 대신 <strong>DB에서 <button class="term" type="button" data-term="Aggregate">집계</button>해 결과만</strong>.</li>
 </ul>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">대량 처리 전략 선택 트리</span><a class="embed__open" href="../../../embeds/abap/CH32-L05-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH32-L05-S01.html" loading="lazy" title="대량 처리 전략 선택 트리" style="height:380px"></iframe></figure>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
 4</pre><pre class="abap-editor__code"><code><span class="tok-com">" 끌어와서 ABAP 집계(느림) 대신</span>
-<span class="tok-kw">SELECT</span> carrid, SUM( seatsocc ) <span class="tok-kw">AS</span> occ      <span class="tok-com">" DB에서 집계(빠름)</span>
-  <span class="tok-kw">FROM</span> sflight <span class="tok-kw">GROUP</span> BY carrid
+<span class="tok-kw">SELECT</span> carrid, <span class="tok-kw">SUM</span>( seatsocc ) <span class="tok-kw">AS</span> occ      <span class="tok-com">" DB에서 집계(빠름)</span>
+  <span class="tok-kw">FROM</span> sflight <span class="tok-kw">GROUP</span> <span class="tok-kw">BY</span> carrid
   <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> @<span class="tok-kw">DATA</span>(lt).</code></pre></div></div>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>전부 메모리로</strong> → 수백만 건을 한 번에 itab에 담으면 메모리 폭발. 패키지·스트리밍.</li>
-<li><strong>ABAP에서 집계</strong> → DB가 잘하는 일(집계·정렬)은 DB로 내린다.</li>
+<li><strong>전부 <button class="term" type="button" data-term="메모리">메모리</button>로</strong> → 수백만 건을 한 번에 itab에 담으면 메모리 폭발. 패키지·스트리밍.</li>
+<li><strong>ABAP에서 <button class="term" type="button" data-term="Aggregate">집계</button></strong> → DB가 잘하는 일(집계·정렬)은 DB로 내린다.</li>
 </ul>
 </section><section class="lblock"><h2>🧩 도전 과제 (서브퀘스트)</h2>
 <blockquote>
@@ -66,7 +67,7 @@ modern SQL 식(CH19). &quot;데이터를 ABAP으로 끌어와 LOOP&quot; 대신 
 <ol>
 <li>예매현황 리포트를 <strong>ST05</strong>로 트레이스해 가장 느린 SELECT를 찾는다.</li>
 <li>LOOP 안 SELECT가 있으면 <strong>FOR ALL ENTRIES/JOIN</strong>(CH13)으로 제거한다.</li>
-<li>(심화) 대량 집계를 <strong>Code Pushdown</strong>(GROUP BY를 DB에서)으로 바꿔 ABAP LOOP 합산을 없앤다.</li>
+<li>(심화) 대량 <button class="term" type="button" data-term="Aggregate">집계</button>를 <strong>Code Pushdown</strong>(GROUP BY를 DB에서)으로 바꿔 ABAP LOOP 합산을 없앤다.</li>
 </ol>
 <p>힌트: L01(ST05)·L02(SAT)·L04(SELECT-in-LOOP)·L05(Pushdown).</p>
 <hr>

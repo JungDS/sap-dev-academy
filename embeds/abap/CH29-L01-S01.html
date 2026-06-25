@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<!-- CH29-L01-S01 — 엔진: inject-slots(exit) · _engine/_base.css. User/Customer Exit 자리에 내 코드 끼우기. -->
+<html lang="ko">
+<head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>User/Customer Exit · CH29-L01-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/inject-slots.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">표준이 마련한 빈 자리 — User / Customer Exit</p>
+  <p class="lead">SAP 표준은 직접 고치지 않습니다. 표준이 부르는 <b>빈 FORM/함수(Exit)</b>에 내 코드만 넣으면, <b>표준 소스는 그대로</b>인 채 동작이 확장됩니다. 토글로 켜고 꺼 보세요.</p>
+  <div class="bar"><button class="toggle" id="toggle" type="button"><span class="sw"></span><span id="swtxt">확장 적용: OFF</span></button><span class="badge">표준 소스 변경 0줄</span></div>
+  <div class="prog" id="prog"></div>
+  <div class="note">💡 <code>SMOD</code>(Exit 조회)·<code>CMOD</code>(프로젝트로 활성화). 오래된 방식이라 신규 개발은 <b>BAdI</b>(L03)·Enhancement(L02)를 선호합니다.</div>
+  <script type="application/json" id="is-cfg">
+  {
+    "progName": "SAPMV45A (표준 판매 처리)",
+    "slotLabel": "User Exit 자리 — 표준이 부르는 빈 FORM",
+    "lines": [
+      { "t": "std", "x": "FORM userexit_save_document_prepare." },
+      { "t": "slot" },
+      { "t": "std", "x": "ENDFORM." }
+    ],
+    "my": [
+      "  \" 내 확장: VIP 고객이면 메모 자동 기록",
+      "  IF is_vip( kunnr ).",
+      "    vbak-bezei = 'VIP 우선 처리'.",
+      "  ENDIF."
+    ],
+    "emptyMsg": "(비어 있음 — 표준 기본 저장 동작만)"
+  }
+  </script>
+</div>
+<script src="../_engine/inject-slots.js" defer></script>
+</body>
+</html>

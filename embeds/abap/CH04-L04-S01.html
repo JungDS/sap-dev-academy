@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<!-- CH04-L04-S01 — 엔진: case-branch-sim + _autoheight. 콘텐츠=레슨 전용(CASE…WHEN 등급, #C04-4).
+     게이팅: CASE/WHEN/OTHERS/OR만(IF 사다리 비교용 · 내부테이블·SELECT 없음). 설정=window.CASE_CFG. -->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CASE 분기 시뮬 · CH04-L04-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/case-branch-sim.css" />
+</head>
+<body>
+  <div class="wrap">
+    <p class="hd">CASE … WHEN — 한 값을 여러 갈래로 <small>(p_grade 등급 판정)</small></p>
+    <p class="lead">값을 고르면 <b>처음 일치하는</b> <code>WHEN</code> 줄로만 들어갑니다. 어디에도 안 맞으면 <code>WHEN OTHERS</code>. 위 토글로 <code>'A' OR 'B'</code> 묶기도 비교해 보세요.</p>
+    <div data-casesim></div>
+  </div>
+
+<script>
+window.CASE_CFG = {
+  caseVar: 'p_grade',
+  choices: [ {val:'A'}, {val:'B'}, {val:'C'}, {val:'Z', disp:"'Z' · 그 외"} ],
+  variants: [
+    { label: '기본 (A·B·C·그 외)',
+      whens: [
+        { keys:['A'],        code:["WHEN 'A'.","  WRITE: / '우수'."],     out:'우수' },
+        { keys:['B'],        code:["WHEN 'B'.","  WRITE: / '양호'."],     out:'양호' },
+        { keys:['C'],        code:["WHEN 'C'.","  WRITE: / '보통'."],     out:'보통' },
+        { keys:['*OTHERS*'], code:["WHEN OTHERS.","  WRITE: / '등급 없음'."], out:'등급 없음' }
+      ] },
+    { label: "묶기 ('A' OR 'B')",
+      whens: [
+        { keys:['A','B'],    code:["WHEN 'A' OR 'B'.","  WRITE: / '합격'."], out:'합격' },
+        { keys:['*OTHERS*'], code:["WHEN OTHERS.","  WRITE: / '불합격'."],   out:'불합격' }
+      ] }
+  ]
+};
+</script>
+<script src="../_engine/case-branch-sim.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

@@ -41,7 +41,7 @@
       <article class="prose">
 <section class="lblock"><h2>기본값 — Determination</h2>
 <p>생성 시 상태·감사필드를 자동 채운다(CH24 감사 stamp의 RAP 버전).</p>
-<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">Behavior Implementation</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
 4
@@ -51,18 +51,18 @@
 8
 9
 10</pre><pre class="abap-editor__code"><code><span class="tok-kw">METHOD</span> setDefaults.
-  <span class="tok-kw">READ</span> ENTITIES <span class="tok-kw">OF</span> zi_booking <span class="tok-kw">IN</span> LOCAL MODE
-    ENTITY Booking ALL <span class="tok-kw">FIELDS</span> <span class="tok-kw">WITH</span> <span class="tok-kw">CORRESPONDING</span> #( keys ) RESULT <span class="tok-kw">DATA</span>(bks).
-  <span class="tok-kw">MODIFY</span> ENTITIES <span class="tok-kw">OF</span> zi_booking <span class="tok-kw">IN</span> LOCAL MODE
-    ENTITY Booking UPDATE <span class="tok-kw">FIELDS</span> ( status created_by )
-    <span class="tok-kw">WITH</span> <span class="tok-kw">VALUE</span> #( FOR b <span class="tok-kw">IN</span> bks (             <span class="tok-com">" CH18-L02의 FOR 반복 생성</span>
+  <span class="tok-kw">READ</span> <span class="tok-kw">ENTITIES</span> <span class="tok-kw">OF</span> zi_booking <span class="tok-kw">IN</span> <span class="tok-kw">LOCAL</span> <span class="tok-kw">MODE</span>
+    <span class="tok-kw">ENTITY</span> Booking <span class="tok-kw">ALL</span> <span class="tok-kw">FIELDS</span> <span class="tok-kw">WITH</span> <span class="tok-kw">CORRESPONDING</span> #( keys ) RESULT <span class="tok-kw">DATA</span>(bks).
+  <span class="tok-kw">MODIFY</span> <span class="tok-kw">ENTITIES</span> <span class="tok-kw">OF</span> zi_booking <span class="tok-kw">IN</span> <span class="tok-kw">LOCAL</span> <span class="tok-kw">MODE</span>
+    <span class="tok-kw">ENTITY</span> Booking <span class="tok-kw">UPDATE</span> <span class="tok-kw">FIELDS</span> ( status created_by )
+    <span class="tok-kw">WITH</span> <span class="tok-kw">VALUE</span> #( <span class="tok-kw">FOR</span> b <span class="tok-kw">IN</span> bks (             <span class="tok-com">" CH18-L02의 FOR 반복 생성</span>
       %tky        = b-%tky
       status      = <span class="tok-str">'N'</span>
       created_by  = sy-uname ) ).
 <span class="tok-kw">ENDMETHOD</span>.</code></pre></div></div>
 </section><section class="lblock"><h2>정원 검증 — Validation</h2>
 <p>좌석 합계가 회차 정원을 넘으면 거부한다(<code>ZCX_FULLY_BOOKED</code>의 RAP 표현).</p>
-<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">Behavior Implementation</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
 4</pre><pre class="abap-editor__code"><code><span class="tok-kw">METHOD</span> validateCapacity.
@@ -70,21 +70,22 @@
   <span class="tok-com">" 초과 시: APPEND ... TO failed-booking / reported-booking (메시지)</span>
 <span class="tok-kw">ENDMETHOD</span>.</code></pre></div></div>
 </section><section class="lblock"><h2>취소 — Action</h2>
-<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">Behavior Implementation</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
 4
 5
 6</pre><pre class="abap-editor__code"><code><span class="tok-kw">METHOD</span> cancelBooking.
-  <span class="tok-kw">MODIFY</span> ENTITIES <span class="tok-kw">OF</span> zi_booking <span class="tok-kw">IN</span> LOCAL MODE
-    ENTITY Booking UPDATE <span class="tok-kw">FIELDS</span> ( status )
-    <span class="tok-kw">WITH</span> <span class="tok-kw">VALUE</span> #( FOR k <span class="tok-kw">IN</span> keys ( %tky = k-%tky status = <span class="tok-str">'C'</span> ) ).
+  <span class="tok-kw">MODIFY</span> <span class="tok-kw">ENTITIES</span> <span class="tok-kw">OF</span> zi_booking <span class="tok-kw">IN</span> <span class="tok-kw">LOCAL</span> <span class="tok-kw">MODE</span>
+    <span class="tok-kw">ENTITY</span> Booking <span class="tok-kw">UPDATE</span> <span class="tok-kw">FIELDS</span> ( status )
+    <span class="tok-kw">WITH</span> <span class="tok-kw">VALUE</span> #( <span class="tok-kw">FOR</span> k <span class="tok-kw">IN</span> keys ( %tky = k-%tky status = <span class="tok-str">'C'</span> ) ).
   <span class="tok-com">" result에 변경된 인스턴스 반환</span>
 <span class="tok-kw">ENDMETHOD</span>.</code></pre></div></div>
 <ul>
 <li>검증 실패는 <strong>failed/reported</strong>로 알려 RAP이 저장을 막는다(CH23-L07).</li>
 <li>액션은 사용자가 버튼으로 실행(취소).</li>
 </ul>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">Determination·Validation·Action 비교</span><a class="embed__open" href="../../../embeds/abap/CH36-L05-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH36-L05-S01.html" loading="lazy" title="Determination·Validation·Action 비교" style="height:400px"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
 <li><strong>IN LOCAL MODE 누락</strong> → 핸들러 내부 읽기/수정은 보통 <code>IN LOCAL MODE</code>.</li>

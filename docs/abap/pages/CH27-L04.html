@@ -40,7 +40,7 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>버튼이 눌렸을 때</h2>
-<p>추가한 버튼(<code>ZCANCEL</code>)이 눌리면 <code>user_command</code> 이벤트가 온다. 명령 코드로 분기해
+<p>추가한 버튼(<code>ZCANCEL</code>)이 눌리면 <code>user_command</code> <button class="term" type="button" data-term="이벤트">이벤트</button>가 온다. 명령 코드로 분기해
 처리한다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
@@ -58,7 +58,7 @@
 14
 15
 16</pre><pre class="abap-editor__code"><code><span class="tok-kw">METHODS</span> on_user_command
-  FOR EVENT user_command <span class="tok-kw">OF</span> cl_gui_alv_grid
+  <span class="tok-kw">FOR</span> <span class="tok-kw">EVENT</span> user_command <span class="tok-kw">OF</span> cl_gui_alv_grid
   <span class="tok-kw">IMPORTING</span> e_ucomm.
 
 <span class="tok-kw">METHOD</span> on_user_command.
@@ -67,7 +67,7 @@
       <span class="tok-com">" 선택한 행들을 가져와 취소 처리</span>
       go_grid-&gt;get_selected_rows( <span class="tok-kw">IMPORTING</span> et_index_rows = <span class="tok-kw">DATA</span>(lt_rows) ).
       <span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_rows <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(ls_row).
-        <span class="tok-kw">READ</span> <span class="tok-kw">TABLE</span> lt_booking <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(ls) INDEX ls_row-index.
+        <span class="tok-kw">READ</span> <span class="tok-kw">TABLE</span> lt_booking <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(ls) <span class="tok-kw">INDEX</span> ls_row-index.
         <span class="tok-com">" ls-booking_id 취소(DML+잠금: CH24/25)</span>
       <span class="tok-kw">ENDLOOP</span>.
       go_grid-&gt;refresh_table_display( ).
@@ -78,6 +78,10 @@
 <li>처리 후 <code>refresh_table_display( )</code>(CH17/21)로 갱신.</li>
 <li>실제 변경은 CH24(DML)·CH25(잠금) 패턴으로.</li>
 </ul>
+</section><section class="lblock"><h2>선택 → 취소 → 갱신 체험</h2>
+<p>행을 체크해 고르고 <strong>예매 취소</strong> 버튼을 누르면 <code>user_command</code>가 <code>ZCANCEL</code>로 분기해 선택
+행을 취소하고 화면을 갱신한다. 아무것도 안 고르고 누르면 어떻게 되는지도 확인해 보라.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">USER_COMMAND — 선택 행 취소·갱신</span><a class="embed__open" href="../../../embeds/abap/CH27-L04-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH27-L04-S01.html" loading="lazy" title="USER_COMMAND — 선택 행 취소·갱신" style="height:480px"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
 <li><strong>선택 없음 처리</strong> → 아무 행도 안 골랐을 때 안내.</li>

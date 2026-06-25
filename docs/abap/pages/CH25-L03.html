@@ -40,12 +40,17 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>잠금은 언제 풀리나</h2>
+<p>잠금을 거는 것만큼 <strong>푸는 타이밍</strong>이 중요하다. 안 풀면 다른 사용자가 영영 막히고, 너무
+일찍 풀면 보호가 안 된다. 잠금이 풀리는 경우는 셋이다.</p>
 <ul>
-<li><strong>DEQUEUE</strong> 명시 호출 시.</li>
-<li><strong>COMMIT WORK / ROLLBACK WORK</strong> 시 — 보통 트랜잭션 종료와 함께 자동 해제된다.</li>
-<li>세션 종료 시.</li>
+<li><strong><code>DEQUEUE</code></strong> 명시 호출 시 — 내가 직접 푼다.</li>
+<li><strong><code>COMMIT WORK</code> / <code>ROLLBACK WORK</code></strong> 시 — 보통 <button class="term" type="button" data-term="트랜잭션">트랜잭션</button> 종료와 함께 <strong>자동 해제</strong>된다(실무에서 가장 흔함).</li>
+<li><strong><button class="term" type="button" data-term="세션">세션</button> 종료</strong> 시 — 그 세션이 쥔 잠금이 모두 풀린다.</li>
 </ul>
 <p><code>DEQUEUE_ALL</code>로 현재 프로그램이 건 <strong>모든 잠금</strong>을 한 번에 풀 수도 있다.</p>
+<p>반대로 단순 <code>SELECT</code>(읽기)나 <strong>다른 키</strong>의 작업은 내 잠금에 영향이 없다. 아래 퀴즈로
+&quot;풀림 / 유지&quot;를 판별해 보라.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">잠금 해제 판별 퀴즈</span><a class="embed__open" href="../../../embeds/abap/CH25-L03-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH25-L03-S01.html" loading="lazy" title="잠금 해제 판별 퀴즈" style="height:560px"></iframe></figure>
 </section><section class="lblock"><h2>foreign_lock 예외 — 정중히 거절</h2>
 <p>이미 남이 잠갔으면 <code>foreign_lock</code>이 난다. 무시하지 말고 사용자에게 안내한다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
@@ -56,7 +61,7 @@
 6
 7</pre><pre class="abap-editor__code"><code><span class="tok-kw">CALL</span> <span class="tok-kw">FUNCTION</span> <span class="tok-str">'ENQUEUE_EZ_BOOKING'</span>
   <span class="tok-kw">EXPORTING</span>  booking_id = lv_id
-  <span class="tok-kw">EXCEPTIONS</span> foreign_lock = <span class="tok-num">1</span> OTHERS = <span class="tok-num">2</span>.
+  <span class="tok-kw">EXCEPTIONS</span> foreign_lock = <span class="tok-num">1</span> <span class="tok-kw">OTHERS</span> = <span class="tok-num">2</span>.
 
 <span class="tok-kw">IF</span> sy-subrc = <span class="tok-num">1</span>.
   <span class="tok-kw">MESSAGE</span> <span class="tok-str">'다른 사용자가 편집 중입니다'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'E'</span>.
@@ -67,11 +72,18 @@
 </blockquote>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>장시간 잠금</strong> → 사용자가 화면을 켜 둔 채 점심. 가능하면 <strong>짧게</strong> 잠그고 푼다.</li>
-<li><strong>예외 안 잡음</strong> → foreign_lock을 무시하면 사용자 경험이 나쁘다. 안내한다.</li>
+<li><strong>장시간 잠금</strong> → 사용자가 편집 화면을 켜 둔 채 자리를 비우면 남이 막힌다. 가능하면 <strong>짧게</strong> 잠그고 푼다.</li>
+<li><strong><button class="term" type="button" data-term="예외">예외</button> 안 잡음</strong> → <code>foreign_lock</code>을 무시하면 사용자 경험이 나쁘다. 반드시 안내한다.</li>
+<li><strong>누가 잠갔나 가정</strong> → 잠금 소유자는 시스템 변수에 항상 채워진다고 믿지 말고 <code>SM12</code>/조회 함수로 확인.</li>
+</ul>
+</section><section class="lblock"><h2>정리</h2>
+<ul>
+<li>잠금은 <strong><code>DEQUEUE</code>·<code>COMMIT</code>/<code>ROLLBACK</code>·세션 종료</strong>로 풀린다(자동 해제가 흔함). <code>SELECT</code>·다른 키는 영향 없음.</li>
+<li><code>DEQUEUE_ALL</code>로 내 모든 잠금을 한 번에.</li>
+<li><code>foreign_lock</code>은 <strong>정중히 거절</strong>하고, 잠금은 <strong>짧게</strong> 유지한다. 소유자는 <code>SM12</code>로 확인.</li>
 </ul>
 <hr>
-<p>해제·예외를 다뤘다. 실제 충돌이 어떻게 일어나는지 시나리오로 보자 → 다음 레슨.</p>
+<p>해제·<button class="term" type="button" data-term="예외">예외</button>를 다뤘다. 그런데 <strong>잠그지 않으면</strong> 실제로 어떤 충돌이 나는지 — 시나리오로 보자 → 다음 레슨.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

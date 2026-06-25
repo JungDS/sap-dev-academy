@@ -40,19 +40,19 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>보여주기에서 입력받기로</h2>
-<p>지금까지 ALV는 표시·이벤트였다. 이제 <strong>표 안에서 직접 값을 입력·수정</strong>받는다(좌석 수
+<p>지금까지 ALV는 표시·<button class="term" type="button" data-term="이벤트">이벤트</button>였다. 이제 <strong>표 안에서 직접 값을 입력·수정</strong>받는다(좌석 수
 조정 등). 먼저 어떤 컬럼을 편집 가능하게 할지 정한다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
 4
-5</pre><pre class="abap-editor__code"><code><span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_fcat REFERENCE <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(lr).
+5</pre><pre class="abap-editor__code"><code><span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_fcat <span class="tok-kw">REFERENCE</span> <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(lr).
   <span class="tok-kw">IF</span> lr-&gt;fieldname = <span class="tok-str">'SEATS'</span>.
     lr-&gt;edit = abap_true.        <span class="tok-com">" 이 컬럼 편집 가능</span>
   <span class="tok-kw">ENDIF</span>.
 <span class="tok-kw">ENDLOOP</span>.</code></pre></div></div>
 </section><section class="lblock"><h2>입력 이벤트 등록</h2>
-<p>편집한 값을 받으려면 그리드에 <strong>편집 이벤트를 등록</strong>해야 한다.</p>
+<p>편집한 값을 받으려면 그리드에 <strong>편집 <button class="term" type="button" data-term="이벤트">이벤트</button>를 등록</strong>해야 한다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2</pre><pre class="abap-editor__code"><code>go_grid-&gt;register_edit_event(
   i_event_id = cl_gui_alv_grid=&gt;mc_evt_modified ).   <span class="tok-com">" Enter/포커스 이동 시 발생</span></code></pre></div></div>
@@ -60,9 +60,12 @@
 <li><code>mc_evt_modified</code> — 셀을 고치면 이벤트 발생.</li>
 <li><code>mc_evt_enter</code> — Enter 시 발생.</li>
 </ul>
+</section><section class="lblock"><h2>편집 모드 켜 보기</h2>
+<p>편집 모드를 토글하면 <code>SEATS</code>만 입력칸으로 바뀌고 키·표시 컬럼은 그대로인 걸 확인해 보라.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">Editable 컬럼 — 편집 모드 토글</span><a class="embed__open" href="../../../embeds/abap/CH28-L01-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH28-L01-S01.html" loading="lazy" title="Editable 컬럼 — 편집 모드 토글" style="height:360px"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>edit만 켜고 이벤트 미등록</strong> → 값은 보이지만 프로그램이 변경을 못 받는다.</li>
+<li><strong>edit만 켜고 <button class="term" type="button" data-term="이벤트">이벤트</button> 미등록</strong> → 값은 보이지만 프로그램이 변경을 못 받는다.</li>
 <li><strong>전체 편집</strong> → 키·계산 컬럼은 보통 읽기전용. 필요한 컬럼만 <code>edit</code>.</li>
 </ul>
 <hr>

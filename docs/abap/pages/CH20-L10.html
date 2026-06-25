@@ -40,8 +40,8 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>🎫 9단계 — 예약 로직을 클래스로</h2>
-<p>CH10-L07의 잔여석·예매판정을, 이제 <strong>클래스</strong>(CH20)로 캡슐화한다. 정원 초과는
-<strong>예외</strong>(<code>ZCX_FULLY_BOOKED</code>)로 알린다.</p>
+<p>CH10-L07의 잔여석·예매판정을, 이제 <strong><button class="term" type="button" data-term="Class">클래스</button></strong>(CH20)로 캡슐화한다. 정원 초과는
+<strong><button class="term" type="button" data-term="예외">예외</button></strong>(<code>ZCX_FULLY_BOOKED</code>)로 알린다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -81,7 +81,7 @@
                                   iv_perf    <span class="tok-kw">TYPE</span> zbooking-perf_no.
     <span class="tok-kw">METHODS</span> remaining <span class="tok-kw">RETURNING</span> <span class="tok-kw">VALUE</span>(rv) <span class="tok-kw">TYPE</span> i.
     <span class="tok-kw">METHODS</span> book <span class="tok-kw">IMPORTING</span> iv_seats <span class="tok-kw">TYPE</span> i
-                 RAISING   zcx_fully_booked.
+                 <span class="tok-kw">RAISING</span>   zcx_fully_booked.
   <span class="tok-kw">PRIVATE</span> <span class="tok-kw">SECTION</span>.
     <span class="tok-kw">DATA</span>: mv_concert <span class="tok-kw">TYPE</span> zconcert-concert_id,
           mv_perf    <span class="tok-kw">TYPE</span> zbooking-perf_no,
@@ -96,7 +96,7 @@
   <span class="tok-kw">ENDMETHOD</span>.
 
   <span class="tok-kw">METHOD</span> remaining.
-    <span class="tok-kw">SELECT</span> COALESCE( SUM( seats ), <span class="tok-num">0</span> ) <span class="tok-kw">FROM</span> zbooking
+    <span class="tok-kw">SELECT</span> <span class="tok-kw">COALESCE</span>( <span class="tok-kw">SUM</span>( seats ), <span class="tok-num">0</span> ) <span class="tok-kw">FROM</span> zbooking
       <span class="tok-kw">WHERE</span> concert_id = @mv_concert <span class="tok-kw">AND</span> perf_no = @mv_perf
         <span class="tok-kw">AND</span> status &lt;&gt; <span class="tok-str">'C'</span> <span class="tok-kw">INTO</span> @<span class="tok-kw">DATA</span>(lv_sum).
     rv = mv_cap  lv_sum.
@@ -104,7 +104,7 @@
 
   <span class="tok-kw">METHOD</span> book.
     <span class="tok-kw">IF</span> iv_seats &gt; me-&gt;remaining( ).
-      <span class="tok-kw">RAISE</span> EXCEPTION <span class="tok-kw">TYPE</span> zcx_fully_booked.
+      <span class="tok-kw">RAISE</span> <span class="tok-kw">EXCEPTION</span> <span class="tok-kw">TYPE</span> zcx_fully_booked.
     <span class="tok-kw">ENDIF</span>.
     <span class="tok-com">" 실제 INSERT는 CH24(DML)</span>
   <span class="tok-kw">ENDMETHOD</span>.
@@ -121,20 +121,20 @@
   <span class="tok-kw">CATCH</span> zcx_fully_booked.
     <span class="tok-kw">MESSAGE</span> <span class="tok-str">'매진입니다'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'I'</span>.
 <span class="tok-kw">ENDTRY</span>.</code></pre></div></div>
-<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">클래스의 속성·메서드 구조</span><a class="embed__open" href="../../../sample/visuals/relationship-map.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../sample/visuals/relationship-map.html" loading="lazy" title="클래스의 속성·메서드 구조"></iframe></figure>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">클래스의 속성·<button class="term" type="button" data-term="Method">메서드</button> 구조</span><a class="embed__open" href="../../../embeds/abap/CH20-L10-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH20-L10-S01.html" loading="lazy" title="클래스의 속성·메서드 구조"></iframe></figure>
 </section><section class="lblock"><h2>직접 해 볼 과제</h2>
 <ol>
-<li><code>ZCX_FULLY_BOOKED</code> 예외 클래스(<code>CX_STATIC_CHECK</code> 상속)를 만든다.</li>
+<li><code>ZCX_FULLY_BOOKED</code> <button class="term" type="button" data-term="예외">예외</button> <button class="term" type="button" data-term="Class">클래스</button>(<code>CX_STATIC_CHECK</code> <button class="term" type="button" data-term="상속">상속</button>)를 만든다.</li>
 <li>정원보다 많은 좌석으로 <code>book</code>을 불러 예외가 잡히는지 확인.</li>
-<li>(도전) <code>cancel( iv_booking )</code> 메서드를 더해 상태를 &#39;C&#39;로 바꾼다.</li>
+<li>(도전) <code>cancel( iv_booking )</code> <button class="term" type="button" data-term="Method">메서드</button>를 더해 상태를 &#39;C&#39;로 바꾼다.</li>
 </ol>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>예외 미선언</strong> → <code>book</code>에 <code>RAISING zcx_fully_booked</code>를 선언해야 호출부가 잡는다.</li>
-<li><strong>상태 캡슐화</strong> → 정원·회차는 PRIVATE, 외부는 메서드로만(CH20-L02).</li>
+<li><strong><button class="term" type="button" data-term="예외">예외</button> 미선언</strong> → <code>book</code>에 <code>RAISING zcx_fully_booked</code>를 선언해야 호출부가 잡는다.</li>
+<li><strong>상태 캡슐화</strong> → 정원·회차는 PRIVATE, 외부는 <button class="term" type="button" data-term="Method">메서드</button>로만(CH20-L02).</li>
 </ul>
 <hr>
-<p>로직을 객체로 설계했다. 이제 ALV에 <strong>매진을 색으로</strong> 보여 주자 → <strong>CH21</strong>.</p>
+<p>로직을 <button class="term" type="button" data-term="객체">객체</button>로 설계했다. 이제 ALV에 <strong>매진을 색으로</strong> 보여 주자 → <strong>CH21</strong>.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

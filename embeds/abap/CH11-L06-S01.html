@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<!-- CH11-L06-S01 — 엔진: salv-grid-simulator · 자체 postHeight. 콘텐츠=레슨 전용(예매 목록 lt_book, #C11-1).
+     config=window.SALV_CFG(zbooking). 게이팅: OO ALV(SALV)·classic SELECT INTO TABLE. REF TO·TRY/CATCH는 advanceUse. -->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>예매 목록 SALV · CH11-L06-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/salv-grid-simulator.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">예매 목록을 SALV 표로 <small>(CL_SALV_TABLE)</small></p>
+  <p class="lead">예매 내부 테이블 <code>LT_BOOK</code>(zbooking)을 ALV 표로 띄웁니다. <b>① factory( )</b> → <b>② display( )</b> 순서로 눌러 보세요. 컬럼 제목은 <b>Data Element 라벨</b>로 자동, 정렬·<code>Σ</code>(좌석수 합계)도 공짜입니다.</p>
+
+  <div class="presets" id="presets">
+    <span class="presets__lbl">예제:</span>
+    <button class="chip on" type="button" data-ex="0">정상 데이터 (6행)</button>
+    <button class="chip" type="button" data-ex="1">빈 테이블 (0행)</button>
+  </div>
+
+  <div class="codebox">
+    <div class="codebox__hd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span><span class="cb-name">CL_SALV_TABLE</span></div>
+    <div class="codebox__body"><pre class="code-gut" id="codeGut">1</pre><pre class="code" id="code"></pre></div>
+  </div>
+
+  <button class="lt-toggle" id="ltToggle" type="button">▾ lt_book 데이터 보기</button>
+  <div class="lt-data" id="ltData" hidden></div>
+
+  <div class="steps">
+    <button class="sbtn ready" id="bFactory" type="button"><span class="n">1</span>factory( )</button>
+    <button class="sbtn" id="bDisplay" type="button" disabled><span class="n">2</span>display( )</button>
+    <button class="reset" id="bReset" type="button">↺ 초기화</button>
+  </div>
+  <div class="stat info" id="stat">먼저 <b>① factory( )</b> 를 눌러 ALV 객체를 만드세요.</div>
+
+  <div class="alv hidden" id="alv">
+    <div class="alv__tt">📊 ALV · LT_BOOK</div>
+    <div class="alv__bar">
+      <button type="button" data-bar="sort" title="첫 컬럼 정렬">🔃 정렬</button>
+      <button type="button" data-bar="filter" title="표준 기능 (시뮬 생략)">🔍 필터</button>
+      <button type="button" data-bar="sum" title="합계 토글">Σ 합계</button>
+      <span class="sep"></span>
+      <button type="button" data-bar="xls" title="표준 기능 (시뮬 생략)">⬇ 엑셀</button>
+      <button type="button" data-bar="print" title="표준 기능 (시뮬 생략)">🖨 인쇄</button>
+    </div>
+    <div style="overflow-x:auto"><table class="dt" id="grid"></table></div>
+    <div class="readout" id="readout">행을 클릭하면 현재 행(<b>sy-tabix</b>)이 표시됩니다.</div>
+  </div>
+
+  <div class="note"><b>표준 기능은 공짜</b> — <code>get_functions( )->set_all( abap_true )</code> 한 줄이면 정렬·필터·합계·엑셀 툴바가 다 켜진다. 컬럼 제목(예: <code>SEATS</code>→"좌석수")은 <b>Data Element 라벨</b>에서 자동. <code>STATUS</code> 제목을 바꾸려면 <code>get_columns( )</code>로 직접 지정한다(도전 과제).</div>
+</div>
+
+<script>
+window.SALV_CFG = {
+  itab:'lt_book', sumKey:'seats',
+  cols:[
+    {key:'booking_id', label:'예매번호', num:true},
+    {key:'concert_id', label:'공연',     num:false},
+    {key:'perf_no',    label:'회차',     num:true},
+    {key:'customer',   label:'고객',     num:false},
+    {key:'seats',      label:'좌석수',   num:true},
+    {key:'status',     label:'상태',     num:false}
+  ],
+  data:[
+    {booking_id:5001,concert_id:'C001',perf_no:1,customer:'정훈영',seats:2,status:'N'},
+    {booking_id:5002,concert_id:'C001',perf_no:1,customer:'손흥민',seats:4,status:'N'},
+    {booking_id:5003,concert_id:'C001',perf_no:2,customer:'아이유',seats:3,status:'N'},
+    {booking_id:5004,concert_id:'C002',perf_no:1,customer:'유재석',seats:1,status:'C'},
+    {booking_id:5005,concert_id:'C002',perf_no:1,customer:'김연아',seats:2,status:'N'},
+    {booking_id:5006,concert_id:'C001',perf_no:2,customer:'차은우',seats:5,status:'N'}
+  ],
+  code:[
+    {t:'DATA: lt_book TYPE TABLE OF zbooking,', g:'factory'},
+    {t:'      lo_alv  TYPE REF TO cl_salv_table.', g:'factory'},
+    {t:'', g:''},
+    {t:'SELECT * FROM zbooking INTO TABLE lt_book.', g:'factory'},
+    {t:'', g:''},
+    {t:'TRY.', g:'factory'},
+    {t:'    cl_salv_table=>factory(', g:'factory'},
+    {t:'      IMPORTING r_salv_table = lo_alv', g:'factory'},
+    {t:'      CHANGING  t_table      = lt_book ).', g:'factory'},
+    {t:'    lo_alv->get_functions( )->set_all( abap_true ).', g:'display'},
+    {t:'    lo_alv->display( ).', g:'display'},
+    {t:'  CATCH cx_salv_msg.', g:'factory'},
+    {t:'ENDTRY.', g:'factory'}
+  ]
+};
+</script>
+<script src="../_engine/salv-grid-simulator.js" defer></script>
+</body>
+</html>

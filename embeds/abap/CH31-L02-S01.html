@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<!-- CH31-L02-S01 — 엔진: mermaid + _autoheight. ALE 분배 흐름(발신→PP→Port→수신, BD64). -->
+<html lang="ko">
+<head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ALE 분배 모델 · CH31-L02-S01</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>if(!window.mermaid){var s=document.createElement("script");s.src="../_vendor/mermaid.min.js";document.head.appendChild(s);}</script>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/mermaid.css" />
+</head>
+<body>
+  <div class="wrap">
+    <p class="hd">ALE — 누가 누구에게 무엇을 보내나</p>
+    <p class="lead">Distribution Model(BD64)이 흐름을 정의하고, Partner Profile(WE20)·Port(WE21)가 양쪽 처리를 설정합니다.</p>
+    <div class="viz-card">
+      <p class="viz-card__title">발신 → 수신, IDoc 한 건의 경로</p>
+      <div class="mermaid" id="mm">
+flowchart LR
+  A["발신 시스템<br/>(BD54 논리시스템)"]:::sys
+  OP["Outbound<br/>Partner Profile (WE20)"]:::soft
+  PT["Port (WE21)<br/>tRFC / 파일"]:::soft
+  IP["Inbound<br/>Partner Profile (WE20)"]:::soft
+  B["수신 시스템"]:::sys
+  DM{{"Distribution Model (BD64)<br/>발신↔수신·메시지 타입"}}:::model
+  A --> OP --> PT --> IP --> B
+  DM -.->|"규칙 정의·배포"| OP
+  DM -.-> IP
+classDef sys fill:#eef2ff,stroke:#3b5bdb,stroke-width:2px,color:#1e3a8a;
+classDef soft fill:#ffffff,stroke:#94a3b8,stroke-width:1.6px,color:#334155;
+classDef model fill:#fff7ed,stroke:#fb923c,stroke-width:2px,color:#c2410c;
+      </div>
+      <p class="viz-note"><b>Partner Profile</b>이 없으면 IDoc이 생성/수신돼도 처리되지 않습니다. <code>BD64</code>에서 모델을 <b>배포</b>해야 양쪽이 일치합니다.</p>
+    </div>
+  </div>
+<script src="../_engine/mermaid.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

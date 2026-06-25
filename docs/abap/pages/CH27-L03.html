@@ -40,7 +40,7 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>표준 버튼만으론 부족</h2>
-<p>&quot;선택한 예매 취소&quot; 같은 <strong>내 기능 버튼</strong>을 ALV 툴바에 추가한다. <code>toolbar</code> 이벤트에서
+<p>&quot;선택한 예매 취소&quot; 같은 <strong>내 기능 버튼</strong>을 ALV 툴바에 추가한다. <code>toolbar</code> <button class="term" type="button" data-term="이벤트">이벤트</button>에서
 버튼을 끼워 넣는다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
@@ -52,13 +52,13 @@
 8
 9
 10</pre><pre class="abap-editor__code"><code><span class="tok-kw">METHODS</span> on_toolbar
-  FOR EVENT toolbar <span class="tok-kw">OF</span> cl_gui_alv_grid
+  <span class="tok-kw">FOR</span> <span class="tok-kw">EVENT</span> toolbar <span class="tok-kw">OF</span> cl_gui_alv_grid
   <span class="tok-kw">IMPORTING</span> e_object.
 
 <span class="tok-kw">METHOD</span> on_toolbar.
   <span class="tok-kw">APPEND</span> <span class="tok-kw">VALUE</span> #( <span class="tok-kw">function</span>  = <span class="tok-str">'ZCANCEL'</span>
                   icon      = icon_delete
-                  text      = <span class="tok-str">'예매 취소'</span>
+                  <span class="tok-kw">text</span>      = <span class="tok-str">'예매 취소'</span>
                   butn_type = <span class="tok-num">0</span> ) <span class="tok-kw">TO</span> e_object-&gt;mt_toolbar.
 <span class="tok-kw">ENDMETHOD</span>.</code></pre></div></div>
 <ul>
@@ -66,6 +66,10 @@
 <li><code>function = &#39;ZCANCEL&#39;</code> — 눌렀을 때 올 명령(다음 레슨 user_command).</li>
 <li>버튼 추가 후 <code>go_grid-&gt;set_toolbar_interactive( )</code>로 갱신하기도 한다.</li>
 </ul>
+</section><section class="lblock"><h2>추가된 버튼 확인</h2>
+<p>표준 버튼 옆에 끼워 넣은 커스텀 버튼(<code>ZCANCEL</code>)을 눌러, 어떤 <code>function</code> 코드로 등록됐는지
+확인해 보라(실제 처리는 다음 레슨의 <code>user_command</code>).</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">Toolbar <button class="term" type="button" data-term="이벤트">이벤트</button> — 커스텀 버튼 추가</span><a class="embed__open" href="../../../embeds/abap/CH27-L03-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH27-L03-S01.html" loading="lazy" title="Toolbar 이벤트 — 커스텀 버튼 추가" style="height:440px"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
 <li><strong>function 코드 누락</strong> → 눌러도 무슨 버튼인지 모른다. 고유 코드를.</li>

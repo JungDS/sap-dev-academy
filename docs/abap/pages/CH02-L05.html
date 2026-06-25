@@ -40,14 +40,14 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>코드에 박힌 정체불명의 값들</h2>
-<p>코드 곳곳에 <code>1000</code>, <code>&#39;X&#39;</code>, <code>0.1</code> 같은 값이 흩어져 있으면 두 가지가 괴롭다.
-<strong>첫째</strong>, 이 <code>1000</code>이 한도인지 수량인지 뜻을 알 수 없다(이런 값을 <em>매직 넘버</em>라
-부른다). <strong>둘째</strong>, 한도가 2000으로 바뀌면 여기저기 박힌 <code>1000</code>을 <strong>빠짐없이</strong>
-찾아 고쳐야 한다 — 하나라도 놓치면 버그다.</p>
-<p>값에 <strong>이름</strong>을 붙이면 둘 다 해결된다. 그게 <button class="term" type="button" data-term="CONSTANTS">CONSTANTS</button>(상수)다.</p>
+<p>코드 곳곳에 <code>3.1415926</code>, <code>&#39;X&#39;</code>, <code>10</code> 같은 값을 <strong>직접</strong> 적으면 괴롭다. <strong>①</strong> 이 값이
+뭔지 한눈에 안 보이고(이런 값을 <em>매직 넘버</em>라 부른다), <strong>②</strong> 바꿀 때 흩어진 걸
+빠짐없이 찾아 고쳐야 하고, <strong>③</strong> 여러 번 적다 <strong>오타</strong>가 난다(<code>3.1415926</code>을 어디선
+<code>3.1415927</code>로). 값에 <strong>이름</strong>을 붙여 한 곳에서 못 박으면 다 해결된다 — 그게
+<button class="term" type="button" data-term="CONSTANTS">CONSTANTS</button>(상수)다.</p>
 </section><section class="lblock"><h2>CONSTANTS로 선언하기</h2>
-<p><button class="term" type="button" data-term="DATA">DATA</button>와 거의 같지만 <code>VALUE</code>로 <strong>값을 못 박는다</strong>. 한번 정한 값은 실행 중에
-바꿀 수 없다.</p>
+<p><button class="term" type="button" data-term="DATA">DATA</button>와 거의 같지만 <code>VALUE</code>로 값을 <strong>못 박는다</strong>. 변수는 값을 받을 수 있지만,
+상수는 한번 정하면 <strong>다시 대입할 수 없다</strong>.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -55,19 +55,26 @@
 5
 6
 7
-8</pre><pre class="abap-editor__code"><code><span class="tok-kw">CONSTANTS</span> gc_max_amount <span class="tok-kw">TYPE</span> i <span class="tok-kw">VALUE</span> <span class="tok-num">1000</span>.
-<span class="tok-kw">CONSTANTS</span> gc_flag_on    <span class="tok-kw">TYPE</span> c LENGTH <span class="tok-num">1</span> <span class="tok-kw">VALUE</span> <span class="tok-str">'X'</span>.
+8</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>      gv_my_var <span class="tok-kw">TYPE</span> i.
+<span class="tok-kw">CONSTANTS</span> gc_10     <span class="tok-kw">TYPE</span> i <span class="tok-kw">VALUE</span> <span class="tok-num">10</span>.   <span class="tok-com">" 동작만 보려는 이름(실제론 gc_pi처럼 뜻을 담는다)</span>
 
-<span class="tok-kw">DATA</span> lv_amt <span class="tok-kw">TYPE</span> i <span class="tok-kw">VALUE</span> <span class="tok-num">1500</span>.
+gv_my_var = <span class="tok-num">10</span>.                 <span class="tok-com">" 오른쪽 값(10)을 왼쪽 변수에 넣는다</span>
+gv_my_var = gc_10.              <span class="tok-com">" 상수에서 값을 읽어 변수에 넣는다 → 10</span>
+gv_my_var = gc_10 + gc_10.      <span class="tok-com">" 상수로 계산한 결과를 변수에 넣는다 → 20</span>
 
-<span class="tok-kw">IF</span> lv_amt &gt; gc_max_amount.       <span class="tok-com">" 1000 대신 '이름'으로 읽힌다</span>
-  <span class="tok-kw">WRITE</span>: / <span class="tok-str">'한도 초과'</span>.
-<span class="tok-kw">ENDIF</span>.</code></pre></div></div>
+<span class="tok-com">" gc_10 = 20.                   " ✗ 문법 오류 — 상수는 다시 대입할 수 없다</span></code></pre></div></div>
 <ul>
-<li><code>gc_</code> 접두어가 관례(global constant).</li>
-<li>한도가 바뀌면 <strong>선언 한 줄(<code>VALUE 1000</code>)만</strong> 고치면 끝 — 쓰는 곳은 그대로다.</li>
-<li>상수에 값을 다시 대입(<code>gc_max_amount = 2000.</code>)하려 하면 <strong>문법 오류</strong>가 난다.</li>
+<li>대입은 <strong>오른쪽 → 왼쪽</strong>. 상수는 오른쪽에서 <strong>읽기만</strong> 된다.</li>
+<li><code>gc_</code> 접두어가 관례(global constant), 변수는 <code>gv_</code>.</li>
+<li>상수를 왼쪽에 두고 재대입(<code>gc_10 = 20.</code>)하면 <strong>문법 오류</strong> — 실행 전 <button class="term" type="button" data-term="컴파일">컴파일</button> 단계에서 막힌다.</li>
 </ul>
+</section><section class="lblock"><h2>변수로도 되는데, 왜 상수일까</h2>
+<p>위 계산은 변수로도 할 수 있다. 하지만 변수는 코드 어딘가에서 <strong>실수로 덮어써질 수</strong>
+있다. 원주율(π)처럼 <strong>절대 바뀌면 안 되는 값</strong>을 변수에 뒀다가 누군가 실수로 바꾸면,
+그 뒤의 모든 계산이 <strong>조용히</strong> 틀어진다. 상수로 못 박으면 그런 사고가 <strong>원천 차단</strong>된다
+(재대입 자체가 문법 오류). 아래에서 pi를 줄마다 직접 적은 코드(왼쪽)와 상수 하나로
+묶은 코드(오른쪽)를 나란히 비교해 보자.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">pi를 줄마다 직접 vs 상수 하나 — 같은 계산, 두 버전</span><a class="embed__open" href="../../../embeds/abap/CH02-L05-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH02-L05-S01.html" loading="lazy" title="pi를 줄마다 직접 vs 상수 하나 — 같은 계산, 두 버전"></iframe></figure>
 </section><section class="lblock"><h2>SAP가 미리 만들어 둔 상수도 있다</h2>
 <p>매번 <code>&#39;X&#39;</code>/공백을 직접 쓰는 대신, SAP가 제공하는 표준 상수 <code>abap_true</code>(=&#39;X&#39;)·
 <code>abap_false</code>(=공백)를 쓰면 뜻이 더 분명해진다(참/거짓 플래그용). 이 약속은
@@ -75,7 +82,6 @@
 <blockquote>
 <p>💡 <strong>옛 코드에서</strong> — 클래스가 흔해지기 전에는 전역 상수·타입을 <strong>Type Group</strong>(<code>TYPE-POOLS</code>로 불러 씀)에 모아 뒀다. 지금은 **클래스의 <code>CONSTANTS</code>**가 그 자리를 대신한다(Type Group은 구식). 옛 코드에서 <code>TYPE-POOLS abap.</code> 같은 줄을 보면 &quot;전역 상수 묶음이구나&quot; 정도로 읽으면 된다.</p>
 </blockquote>
-<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">매직 넘버 vs 상수 — 같은 코드를 비교해 보기</span><a class="embed__open" href="../../../sample/visuals/before-after-comparison.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../sample/visuals/before-after-comparison.html" loading="lazy" title="매직 넘버 vs 상수 — 같은 코드를 비교해 보기"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
 <li><strong>VALUE 누락</strong> → <code>CONSTANTS gc_x TYPE i.</code>는 값이 없어 의미가 없다. <code>VALUE</code>를 붙인다.</li>

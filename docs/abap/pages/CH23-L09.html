@@ -51,13 +51,13 @@
 7
 8
 9</pre><pre class="abap-editor__code"><code><span class="tok-com">" BDEF</span>
-define behavior for ZI_Booking alias Booking
+define behavior <span class="tok-kw">for</span> ZI_Booking alias Booking
 persistent <span class="tok-kw">table</span> zbooking
 lock master
 {
-  <span class="tok-kw">create</span>; update; <span class="tok-kw">delete</span>;
-  validation validateCapacity <span class="tok-kw">on</span> save { field seats, concert_id, perf_no; }
-  action cancel result [<span class="tok-num">1</span>] $self;
+  <span class="tok-kw">create</span>; <span class="tok-kw">update</span>; <span class="tok-kw">delete</span>;
+  validation validateCapacity <span class="tok-kw">on</span> <span class="tok-kw">save</span> { <span class="tok-kw">field</span> seats, concert_id, perf_no; }
+  <span class="tok-kw">action</span> cancel result [<span class="tok-num">1</span>] $self;
 }</code></pre></div></div>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
@@ -69,8 +69,8 @@ lock master
 8
 9</pre><pre class="abap-editor__code"><code><span class="tok-com">" Behavior Pool — 정원 검증</span>
 <span class="tok-kw">METHOD</span> validateCapacity.
-  <span class="tok-kw">READ</span> ENTITIES <span class="tok-kw">OF</span> zi_booking <span class="tok-kw">IN</span> LOCAL MODE
-    ENTITY Booking <span class="tok-kw">FIELDS</span> ( concert_id perf_no seats )
+  <span class="tok-kw">READ</span> <span class="tok-kw">ENTITIES</span> <span class="tok-kw">OF</span> zi_booking <span class="tok-kw">IN</span> <span class="tok-kw">LOCAL</span> <span class="tok-kw">MODE</span>
+    <span class="tok-kw">ENTITY</span> Booking <span class="tok-kw">FIELDS</span> ( concert_id perf_no seats )
     <span class="tok-kw">WITH</span> <span class="tok-kw">CORRESPONDING</span> #( keys ) RESULT <span class="tok-kw">DATA</span>(bks).
   <span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> bks <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(b).
     <span class="tok-com">" 회차 정원·기존 합계 조회 → 초과면 APPEND TO failed/reported</span>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<!-- CH32-L03-S01 — 엔진: sql-trace(재사용) · _engine/_base.css. SQLM 운영 누적 SQL 분석. -->
+<html lang="ko">
+<head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SQLM · CH32-L03-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/sql-trace.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">SQLM — 운영 전체에서 무거운 SQL 우선순위</p>
+  <p class="lead">ST05가 한 실행을 본다면, SQLM은 <b>운영 전체</b>를 누적합니다. <b>총 실행시간</b> 순으로 정렬해 "어디부터 고칠지" 우선순위를 잡으세요.</p>
+  <p class="hint">💡 헤더를 클릭해 총시간·총횟수로 정렬</p>
+  <div class="panel"><div class="panel__h" id="phead">SQLM — SQL Monitor</div>
+    <table><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
+  <div class="callout" id="callout"></div>
+  <div class="note">💡 총 실행시간·횟수·레코드가 큰 SQL부터 개선합니다. 자주·느리게 도는 비키 조건은 <b>Secondary Index</b> 후보지만(CH08-L06), 인덱스는 쓰기 비용·공간이 들고 <b>S/4HANA에선 권장 제한</b>(엔진이 빠름) — 측정 근거 없이 남발 금지. <code>SWLT</code>로 코드 점검과 결합.</div>
+  <script type="application/json" id="trace-cfg">
+  {
+    "header": "SQLM — 지난 7일 누적",
+    "worstKey": "total",
+    "cols": [
+      { "k": "stmt", "label": "SQL (프로그램)" },
+      { "k": "execs", "label": "총 실행", "num": true },
+      { "k": "total", "label": "총 시간(ms)", "num": true },
+      { "k": "avg", "label": "평균(ms)", "num": true }
+    ],
+    "rows": [
+      { "stmt": "SELECT sflight (ZBOOK_RPT)", "execs": 53000, "total": 420000, "avg": 8 },
+      { "stmt": "SELECT zbooking (ZBOOK_SAVE)", "execs": 8000, "total": 96000, "avg": 12 },
+      { "stmt": "SELECT zconcert (ZBOOK_F4)", "execs": 210000, "total": 84000, "avg": 0.4 }
+    ],
+    "callout": "⚠ 1위: 총 <b>420초</b>(평균은 짧지만 5.3만 회) — 자주 도는 쿼리라 작은 개선도 큰 효과. 평균이 긴 2위와 함께 우선 대상."
+  }
+  </script>
+</div>
+<script src="../_engine/sql-trace.js" defer></script>
+</body>
+</html>
