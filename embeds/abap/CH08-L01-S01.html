@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<!-- CH08-L01-S01 — 엔진: client-scope-filter (embeds/_engine/client-scope-filter.{js,css}) · 자체 postHeight.
+     체험: 현재 로그인 client를 바꿔 같은 SELECT(WHERE carrid='KE')를 실행 → MANDT를 안 써도 현재 client 행만 결과로.
+     게이팅: classic Open SQL(필드/값 그대로 · @없음 · 콤마없음). 데이터=window.CSF_CFG. -->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Client 자동 필터 체험 · CH08-L01-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/client-scope-filter.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">Client 자동 필터 체험 <small>(Open SQL)</small></p>
+  <p class="lead">하나의 DB가 <code>client</code> 100·200·300으로 칸막이돼 있습니다. <b>현재 로그인 client</b>를 바꿔 가며 같은 <code>SELECT … WHERE carrid = 'KE'</code>를 실행해 보세요. <code>MANDT</code>를 조건에 적지 않아도, 시스템이 <b>현재 client 행만</b> 자동으로 골라 줍니다.</p>
+
+  <div class="ctrl">
+    <span class="ctrl__lbl">현재 로그인 Client</span>
+    <div class="seg" id="clientSeg">
+      <button type="button" data-c="100" class="on">100</button>
+      <button type="button" data-c="200">200</button>
+      <button type="button" data-c="300">300</button>
+    </div>
+    <button class="run-btn" id="run" type="button">▶ SELECT 실행 <kbd>F8</kbd></button>
+  </div>
+
+  <div class="codebox">
+    <div class="codebox__hd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span><span class="tag">classic</span></div>
+    <pre class="code" id="code"></pre>
+  </div>
+
+  <div class="stage">
+    <div class="sys">
+      <div class="sys__hd">SAP 시스템 · 하나의 DB를 client로 칸막이</div>
+      <div class="clients" id="clients"></div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="res">
+      <div class="res__hd">내부 테이블 · GT_FLIGHT <span class="cnt" id="resCnt"></span></div>
+      <table class="dt" id="resTbl"></table>
+    </div>
+  </div>
+
+  <div class="statusgrid">
+    <div class="scard you"><div class="k">내가 쓴 WHERE</div><div class="v" id="stYou">—</div></div>
+    <div class="scard sys"><div class="k">시스템이 자동 적용</div><div class="v" id="stSys">—</div></div>
+    <div class="scard out"><div class="k">결과</div><div class="v" id="stOut">—</div></div>
+  </div>
+
+  <div class="note"><b>핵심</b> — 같은 코드인데 현재 client에 따라 결과가 달라집니다. WHERE에 <code>MANDT</code>를 직접 적지 않는 이유가 여기 있습니다(시스템이 챙김). cross-client 같은 특별 조회는 입문 범위가 아닙니다.</div>
+</div>
+
+<script>
+window.CSF_CFG = {
+  table:'sflight', itab:'gt_flight', carrid:'KE', current:'100',
+  cols:['carrid','connid','fldate'],
+  clients:[
+    {id:'100', rows:[
+      {carrid:'KE', connid:'0701', fldate:'2026-06-23'},
+      {carrid:'KE', connid:'0702', fldate:'2026-06-24'},
+      {carrid:'LH', connid:'0400', fldate:'2026-06-23'}
+    ]},
+    {id:'200', rows:[
+      {carrid:'KE', connid:'0801', fldate:'2026-07-01'},
+      {carrid:'LH', connid:'0401', fldate:'2026-07-02'},
+      {carrid:'AA', connid:'0017', fldate:'2026-07-01'}
+    ]},
+    {id:'300', rows:[
+      {carrid:'KE', connid:'0901', fldate:'2026-08-15'}
+    ]}
+  ]
+};
+</script>
+<script src="../_engine/client-scope-filter.js" defer></script>
+</body>
+</html>
