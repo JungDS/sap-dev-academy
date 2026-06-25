@@ -15,6 +15,7 @@
   }
   window.addEventListener('load', post);
   window.addEventListener('resize', post);
+  document.addEventListener('toggle', post, true);   // <details> 아코디언 펼침/접힘 시 높이 재측정(capture=toggle은 버블 안 함)
   if(document.fonts&&document.fonts.ready) document.fonts.ready.then(post);   // 웹폰트 swap 후 reflow 재측정
   try{ new MutationObserver(post).observe(document.body, {childList:true, subtree:true, characterData:true}); }catch(e){}
   if(document.readyState!=='loading') post(); else document.addEventListener('DOMContentLoaded', post);
