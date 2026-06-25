@@ -1,6 +1,7 @@
 /* SAP Developer Academy — 런타임 셸 (v2-C 구조)
    생성된 레슨 페이지에 앱바 설정 · 좌측 아이콘 레일(레슨/챕터/용어) · 우측 "이 레슨의 여정"
    (섹션 스크롤스파이, 모바일 하단 시트) · 용어 hover/click 팝업 · 읽기 진행률 · 이전/다음을 주입.
+   embedTheme: 체험 iframe(same-origin)에 .dark 주입 — 다크모드 동기화(로드/토글 시).
    데이터: curriculum.json은 __SDA__.dataBase(docs/abap), glossary·tcodes는 __SDA__.siteRoot+reference/ 기준 fetch. fetch라 HTTP 서빙 필수.
    레퍼런스: sample/structure/lesson-shell-v2-c.html · 규칙: .project-docs/08_LESSON_SHELL_SPEC.md
    ※ T-code 미니페이지 모달은 Phase 2(tcodes.json + front-matter tcode)에서 추가. */
@@ -26,6 +27,7 @@
   function lsSet(k, v) { try { LS && LS.setItem(k, v); } catch (e) {} }
 
   var spyFn = null; // 여정 scroll-spy (있으면 스크롤 핸들러가 호출)
+  var syncEmbeds = function () {}; // 임베드 iframe 다크 동기화 (embedTheme가 실제 구현 주입)
 
   /* ===== 1. 읽기 설정: 글자 크기 / 다크 / 가독 폭 / 전체화면 ===== */
   function settings() {
@@ -41,7 +43,7 @@
     fsReset.onclick = function () { fontPx = FDEF; applyFont(); };
     function syncDark() { var on = root.classList.contains("dark"); darkBtn.textContent = on ? "☀️" : "🌙"; darkBtn.classList.toggle("on", on); darkBtn.title = on ? "라이트 모드" : "다크 모드"; }
     function syncWide() { var on = root.classList.contains("wide"); widthBtn.classList.toggle("on", on); widthBtn.title = on ? "가독 폭 기본" : "가독 폭 넓게"; }
-    darkBtn.onclick = function () { root.classList.toggle("dark"); lsSet("sda.dark", root.classList.contains("dark") ? "1" : "0"); syncDark(); };
+    darkBtn.onclick = function () { root.classList.toggle("dark"); lsSet("sda.dark", root.classList.contains("dark") ? "1" : "0"); syncDark(); syncEmbeds(); };
     widthBtn.onclick = function () { root.classList.toggle("wide"); lsSet("sda.wide", root.classList.contains("wide") ? "1" : "0"); syncWide(); };
     var FS_OPEN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>';
     var FS_CLOSE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v3a2 2 0 0 1-2 2H3M21 8h-3a2 2 0 0 1-2-2V3M3 16h3a2 2 0 0 1 2 2v3M16 21v-3a2 2 0 0 1 2-2h3"/></svg>';
@@ -283,6 +285,22 @@
     });
   }
 
+  /* ===== 임베드 iframe 다크모드 동기화 =====
+     체험 위젯은 별도 문서(iframe)라 부모의 html.dark를 상속하지 않는다. same-origin이므로
+     부모가 iframe <html>에 .dark를 직접 주입한다(_base.css의 html.dark + 엔진별 다크 블록이 받음).
+     로드 완료 시 + 다크 토글 시(syncEmbeds) 재적용. */
+  function embedTheme() {
+    function apply(fr) {
+      try {
+        var d = fr.contentDocument;
+        if (d && d.documentElement) d.documentElement.classList.toggle("dark", root.classList.contains("dark"));
+      } catch (e) {}
+    }
+    var frames = qa(".embed__frame");
+    frames.forEach(function (fr) { apply(fr); fr.addEventListener("load", function () { apply(fr); }); });
+    syncEmbeds = function () { frames.forEach(apply); };
+  }
+
   /* ===== 임베드 iframe 자동 높이 (컴포넌트가 postMessage 로 높이 전송) ===== */
   function embedAutoHeight() {
     window.addEventListener("message", function (e) {
@@ -300,6 +318,7 @@
   buildJourney();
   scrollInit();
   codeCopy();
+  embedTheme();
   embedAutoHeight();
   var needTcode = !!q(".tcode-label");
   Promise.all([
