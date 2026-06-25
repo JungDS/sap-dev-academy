@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<!-- CH04-L04-S02 — 엔진: mermaid (.dc 2칼럼) + _autoheight. 콘텐츠=레슨 §2 기본 CASE(4분기, #C04-4).
+     좌=값이 어느 WHEN과 매칭되는지(팬아웃), 우=그 ABAP 코드(레슨과 동일·WRITE: 콜론형).
+     게이팅: CASE/WHEN/OTHERS만(내부테이블·SELECT 없음). 그래프 정의는 .mermaid textContent에. -->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CASE 기본 분기 + 코드 · CH04-L04-S02</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>if(!window.mermaid){var s=document.createElement("script");s.src="../_vendor/mermaid.min.js";document.head.appendChild(s);}</script>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/mermaid.css" />
+</head>
+<body>
+  <div class="wrap">
+    <p class="hd">CASE — 한 값을 여러 경우로 <small>(p_grade 등급)</small></p>
+    <p class="lead">왼쪽은 <b>흐름</b>, 오른쪽은 그 흐름을 옮긴 <b>ABAP 코드</b>입니다. <code>p_grade</code>를 각 <code>WHEN</code>과 <b>= 비교</b>해, 처음 맞는 가지만 실행합니다.</p>
+
+    <div class="dc">
+      <!-- 왼쪽: 값 → 매칭되는 WHEN -->
+      <div class="viz-card">
+        <p class="viz-card__title"><code>p_grade</code>가 맞는 <code>WHEN</code>으로</p>
+        <div class="mermaid" id="mm">
+flowchart TD
+  S(["p_grade"]):::term
+  A["우수"]:::main
+  B["양호"]:::soft
+  C["보통"]:::amber
+  O["등급 없음"]:::out
+  S -->|"= 'A'"| A
+  S -->|"= 'B'"| B
+  S -->|"= 'C'"| C
+  S -->|"그 외"| O
+classDef term fill:#eef2ff,stroke:#94a3b8,stroke-width:2px,color:#1c2233;
+classDef main fill:#ffffff,stroke:#10b981,stroke-width:2.4px,color:#0b7250;
+classDef soft fill:#ffffff,stroke:#3b5bdb,stroke-width:2px,color:#1d4ed8;
+classDef amber fill:#ffffff,stroke:#d97706,stroke-width:2px,color:#b45309;
+classDef out fill:#ffffff,stroke:#94a3b8,stroke-width:2px,color:#64748b;
+        </div>
+        <p class="viz-note">화살표 라벨 = 그 가지로 가는 값. <code>= 비교</code>만 한다 — "크냐/작냐" 같은 범위는 <code>IF</code>의 몫.</p>
+      </div>
+
+      <!-- 오른쪽: 같은 분기를 ABAP 코드로 -->
+      <div class="dc__code">
+        <div class="codecard">
+          <div class="codecard__hd"><span class="d r"></span><span class="d y"></span><span class="d g"></span><span class="lang">ABAP</span><span class="ttl">CASE … WHEN … ENDCASE</span></div>
+          <div class="codecard__body">
+<pre class="codecard__gut">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13</pre>
+<pre class="codecard__code"><span class="tok-kw">PARAMETERS</span> p_grade <span class="tok-kw">TYPE</span> c <span class="tok-kw">LENGTH</span> 1.
+
+<span class="tok-kw">CASE</span> p_grade.
+  <span class="tok-kw">WHEN</span> <span class="tok-str">'A'</span>.
+    <span class="tok-kw">WRITE</span>: / <span class="tok-str">'우수'</span>.
+  <span class="tok-kw">WHEN</span> <span class="tok-str">'B'</span>.
+    <span class="tok-kw">WRITE</span>: / <span class="tok-str">'양호'</span>.
+  <span class="tok-kw">WHEN</span> <span class="tok-str">'C'</span>.
+    <span class="tok-kw">WRITE</span>: / <span class="tok-str">'보통'</span>.
+  <span class="tok-kw">WHEN OTHERS</span>.
+    <span class="tok-kw">WRITE</span>: / <span class="tok-str">'등급 없음'</span>.
+<span class="tok-kw">ENDCASE</span>.</pre>
+          </div>
+        </div>
+        <ul class="dc__map">
+          <li>마름모 대신 <b>한 값</b>을 여러 <code>WHEN</code>과 <code>=</code> 비교</li>
+          <li>처음 맞는 가지만 실행하고 <code>ENDCASE</code>로</li>
+          <li>아무 데도 안 맞으면 <code>WHEN OTHERS</code></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+<script src="../_engine/mermaid.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>
