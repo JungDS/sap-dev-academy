@@ -72,6 +72,8 @@
   .ig-mt small{font-weight:600;color:var(--ink-soft);}
   .ig-mini p{margin:0;font-size:.78rem;color:var(--ink-soft);line-height:1.65;}
   .ig-mini b{color:var(--ink);}
+  .ig-mul{margin:3px 0 0;padding-left:16px;font-size:.78rem;color:var(--ink-soft);line-height:1.8;}
+  .ig-mul b{color:var(--ink);}
   .ig-step-arr{align-self:center;color:#7048e8;font-size:1.15rem;font-weight:800;}
   .ig-segwrap{flex:1 1 100%;margin-top:8px;}
   .ig-seg2{display:block;width:100%;max-width:360px;height:auto;margin:0 auto;}
@@ -150,8 +152,8 @@ DATA: gv_dan TYPE i, gv_mul TYPE i, gv_cnt TYPE i, gv_res TYPE i.</pre>
               <div class="ig-card c-blue">
                 <p class="ig-ct"><span class="ig-tag t-blue">IF 왼쪽 조건</span> <code>p_from &lt; 2</code></p>
                 <ul class="ig-ul">
-                  <li>시작이 <b>2보다 작으면</b> 이 조건이 <b>참</b> → (OR이라) IF가 실행돼 <b>오류·중단</b>.</li>
-                  <li>시작이 <b>2 이상이면</b> 이 조건은 <b>거짓</b> → 오류를 내지 않고 <b>다음 검사</b>로 넘어갑니다.</li>
+                  <li><code>p_from</code> 이 <b>2보다 작으면 참</b> → WRITE문 실행 후 <b>프로그램 종료</b> (OR이라 오른쪽 조건 결과와 관계없이 참)</li>
+                  <li><code>p_from</code> 이 <b>2 이상이면 거짓</b> → <b>IF 오른쪽 조건</b> 검사</li>
                 </ul>
                 <svg class="ig-ray" viewBox="0 0 330 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                   <text class="ray-n" x="165" y="14" text-anchor="middle">2</text>
@@ -168,8 +170,8 @@ DATA: gv_dan TYPE i, gv_mul TYPE i, gv_cnt TYPE i, gv_res TYPE i.</pre>
               <div class="ig-card c-green">
                 <p class="ig-ct"><span class="ig-tag t-green">IF 오른쪽 조건</span> <code>p_to &gt; 9</code></p>
                 <ul class="ig-ul">
-                  <li>종료가 <b>9보다 크면</b> 이 조건이 <b>참</b> → IF가 실행돼 <b>오류·중단</b>.</li>
-                  <li>종료가 <b>9 이하면</b> 이 조건은 <b>거짓</b> → 오류를 내지 않고 <b>다음 검사</b>로 넘어갑니다.</li>
+                  <li><code>p_to</code> 가 <b>9보다 크면 참</b> → WRITE문 실행 후 <b>프로그램 종료</b></li>
+                  <li><code>p_to</code> 가 <b>9 이하면 거짓</b> → IF 두 조건 모두 거짓이므로 <b>ELSEIF로 이동</b></li>
                 </ul>
                 <svg class="ig-ray" viewBox="0 0 330 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                   <text class="ray-n" x="165" y="14" text-anchor="middle">9</text>
@@ -189,13 +191,16 @@ DATA: gv_dan TYPE i, gv_mul TYPE i, gv_cnt TYPE i, gv_res TYPE i.</pre>
             <p class="ig-ct"><span class="ig-tag t-purple">ELSEIF 조건</span> <code>p_from &gt; p_to</code></p>
             <div class="ig-steps">
               <div class="ig-mini">
-                <p class="ig-mt">여기로 오는 때 <small>(IF가 거짓일 때만)</small></p>
-                <p>ELSEIF는 <b>앞 IF가 거짓</b>이라야 실행됩니다. 그래서 여기 왔다면 이미<br><b>p_from ≥ 2</b> 그리고 <b>p_to ≤ 9</b></p>
+                <p class="ig-mt">ELSEIF는 <b>이전 IF가 거짓</b>일 때만 진행</p>
+                <ul class="ig-mul">
+                  <li><code>p_from &lt; 2</code> 가 거짓 → <b>p_from ≥ 2</b> (2 이상)</li>
+                  <li><code>p_to &gt; 9</code> 가 거짓 → <b>p_to ≤ 9</b> (9 이하)</li>
+                </ul>
               </div>
               <span class="ig-step-arr">➜</span>
               <div class="ig-mini">
                 <p class="ig-mt">ELSEIF <code>p_from &gt; p_to</code></p>
-                <p><b>참</b>(시작 &gt; 종료)이면 → 오류·중단<br><b>거짓</b>(시작 ≤ 종료)이면 → 통과(실행)</p>
+                <p><b>참</b>(시작 &gt; 종료)이면 → WRITE문 실행 후 <b>프로그램 종료</b><br><b>거짓</b>(시작 ≤ 종료)이면 → <b>ENDIF 다음 문장</b> 실행</p>
               </div>
               <div class="ig-segwrap">
                 <svg class="ig-seg2" viewBox="0 0 340 108" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
