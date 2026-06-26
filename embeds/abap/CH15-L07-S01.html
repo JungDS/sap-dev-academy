@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<!-- CH15-L07-S01 — 엔진: dual-gate-auth-check · _autoheight. 콘텐츠=레슨 전용(존재 검증→권한 검증 이중 관문, CH15 L07).
+     config=window.DGA_CFG. 게이팅: classic SELECT SINGLE·AUTHORITY-CHECK·sy-subrc·MESSAGE 메시지클래스(CH15-L04) 개념만 · modern 없음. -->
+<html lang="ko" data-eng="dual-gate-auth-check">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>존재·권한 이중문 · CH15-L07-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/dual-gate-auth-check.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">존재·권한 이중문 <small>(SELECT SINGLE → AUTHORITY-CHECK)</small></p>
+  <p class="lead">공연 코드를 골라 두 관문에 통과시켜 보세요. <b>① 존재 검증</b>을 지나야 <b>② 권한 검증</b>이 열리고, 둘 다 통과해야 <code>START-OF-SELECTION</code>에 진입합니다. "없는 코드"와 "권한 없음"은 <b>다른 색·다른 문구</b>로 막힙니다.</p>
+
+  <p class="dga-h">입력 공연 코드</p>
+  <div class="dga-cases"></div>
+
+  <p class="dga-h">두 관문 흐름</p>
+  <div class="dga-pipe"></div>
+
+  <p class="dga-h">검증 상세</p>
+  <div class="dga-detail" id="dgaDetail"></div>
+
+  <div id="dgaMsg"></div>
+
+  <div class="note"><b>두 문제를 섞지 말 것.</b> <span class="t-exist">없는 코드(존재 문제)</span>와 <span class="t-auth">권한 없음(보안 문제)</span>은 원인도, 사용자에게 줄 안내도 다릅니다. 둘 다 "데이터 없음"으로 뭉뚱그리면 잘못된 안내·보안 사고로 이어집니다. <code>AUTHORITY-CHECK</code> 뒤엔 항상 <code>sy-subrc</code>를 확인하세요.</div>
+</div>
+
+<script>
+window.DGA_CFG = {
+  authObject: 'Z_CONCERT', authField: 'CONCERT', actvt: '03',
+  cases: [
+    { code: 'C001', name: '정훈영 콘서트', exists: true,  auth: true },
+    { code: 'C002', name: '아이유 콘서트', exists: true,  auth: false, authSubrc: 12 },
+    { code: 'C999', name: '(미등록 코드)', exists: false, auth: null }
+  ]
+};
+</script>
+<script src="../_engine/dual-gate-auth-check.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

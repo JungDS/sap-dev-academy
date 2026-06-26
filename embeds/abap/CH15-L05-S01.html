@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<!-- CH15-L05-S01 — 엔진: select-start-gate · _autoheight. 콘텐츠=레슨 전용(검증 통과→START-OF-SELECTION SELECT, CH15 L05).
+     config=window.SSG_CFG. 게이팅: classic START-OF-SELECTION·SELECT WHERE..IN·sy-subrc·MESSAGE S 개념만 · modern 없음. -->
+<html lang="ko" data-eng="select-start-gate">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>조회 시작 게이트 · CH15-L05-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/select-start-gate.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">조회 시작 게이트 <small>(검증 통과 → SELECT)</small></p>
+  <p class="lead"><code>AT SELECTION-SCREEN</code> 검증을 통과해야 <code>START-OF-SELECTION</code>이 열리고 <code>SELECT</code>가 실행됩니다. 검증 상태와 조건을 바꿔, 결과·<code>sy-subrc</code>가 어떻게 달라지는지 보세요.</p>
+
+  <div class="ssg-ctrl">
+    <div class="ssg-grp"><span class="clbl">검증(AT SELECTION-SCREEN)</span><div class="ssg-seg ssg-valid"></div></div>
+    <div class="ssg-grp"><span class="clbl">조회 조건</span><div class="ssg-seg ssg-cond"></div></div>
+  </div>
+
+  <p class="ssg-h">이벤트 흐름</p>
+  <div class="ssg-timeline"></div>
+
+  <button class="ssg-runbtn" type="button" data-run>▶ SELECT 실행 (START-OF-SELECTION)</button>
+
+  <p class="ssg-h">결과 gt_booking</p>
+  <div id="ssgResult"></div>
+
+  <div class="ssg-status" id="ssgStatus"></div>
+
+  <div class="note"><b>검증 후 본 처리.</b> START-OF-SELECTION은 selection screen 처리(입력·검증)가 끝난 뒤 열립니다. 검증이 막으면 SELECT는 실행되지 않습니다. 정상 조건인데 0건이면 <code>sy-subrc=4</code> → <code>MESSAGE 'S'</code>로 안내합니다(없는 코드 입력 차단과는 다른 문제).</div>
+</div>
+
+<script>
+window.SSG_CFG = {
+  cols: [
+    { key: 'booking_id', label: 'booking_id' },
+    { key: 'customer_name', label: 'customer' },
+    { key: 'status', label: 'status' },
+    { key: 'amount', label: 'amount' }
+  ],
+  rows: [
+    { booking_id: 'B001', concert_id: 'C001', customer_name: '김민수', status: 'R', amount: 120000 },
+    { booking_id: 'B002', concert_id: 'C001', customer_name: '이서연', status: 'C', amount: 120000 },
+    { booking_id: 'B003', concert_id: 'C002', customer_name: '박지훈', status: 'R', amount: 70000 },
+    { booking_id: 'B004', concert_id: 'C001', customer_name: '최유나', status: 'R', amount: 90000 },
+    { booking_id: 'B005', concert_id: 'C002', customer_name: '정해인', status: 'C', amount: 70000 }
+  ],
+  conds: [
+    { label: 'C001 · 예약(R)', conc: 'C001', stat: 'R' },
+    { label: 'C001 · 취소(C)', conc: 'C001', stat: 'C' },
+    { label: 'C999 · 빈 결과', conc: 'C999', stat: '*' }
+  ]
+};
+</script>
+<script src="../_engine/select-start-gate.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>
