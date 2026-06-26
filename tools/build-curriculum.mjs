@@ -132,7 +132,7 @@ function escHtml(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt
 function hlAbapLine(line) {
   if (/^\s*\*/.test(line)) return '<span class="tok-com">' + escHtml(line) + '</span>';
   let out = '', m;
-  const re = /('[^']*'?)|(`[^`]*`?)|(".*$)|(\b\d+\b)|([A-Za-z_][A-Za-z0-9_\-]*)|([^A-Za-z0-9_'`"\-]+)/g;
+  const re = /('[^']*'?)|(`[^`]*`?)|(".*$)|(\b\d+\b)|([A-Za-z_][A-Za-z0-9_\-]*)|([^A-Za-z0-9_'`"]+)/g;
   while ((m = re.exec(line)) !== null) {
     if (m[1] || m[2]) out += '<span class="tok-str">' + escHtml(m[1] || m[2]) + '</span>';
     else if (m[3]) out += '<span class="tok-com">' + escHtml(m[3]) + '</span>';
