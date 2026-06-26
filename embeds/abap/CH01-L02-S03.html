@@ -1,70 +1,64 @@
 <!DOCTYPE html>
 <!-- CH01-L02-S03 — 엔진: sap-easy-access-mock (embeds/_engine/sap-easy-access-mock.{js,css}) · 자체 postHeight.
-     SAP Easy Access 첫 화면을 HTML로 재현(테마 자동) + 명령창 위치 콜아웃. 이미지 1·2 참고 재현. 데이터=window.EAM_CFG. -->
+     좌: Easy Access↔트랜잭션(SE38/SE11/SE80) 인터랙티브 mock. 접두어 없는 코드는 Easy Access 전용,
+         다른 화면에선 /n 필수(강조). /nex=로그아웃(명령창 사라짐)+다시하기.
+     우: 자주 쓰는 접두어 reference. -->
 <html lang="ko">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>SAP Easy Access 화면과 명령창 · CH01-L02-S03</title>
+<title>명령창 직행 플레이그라운드 · CH01-L02-S03</title>
 <link rel="stylesheet" href="../_engine/_base.css" />
 <link rel="stylesheet" href="../_engine/sap-easy-access-mock.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">SAP 첫 화면과 명령창 <small>(SAP Easy Access)</small></p>
-  <p class="lead">로그인하면 처음 만나는 화면입니다. 왼쪽 위 <b>명령창</b>에 T-code를 입력하고 Enter를 치면 메뉴를 거치지 않고 직행합니다 — 웹 브라우저 <b>주소창</b>과 같습니다.</p>
+  <p class="hd">명령창 직행 플레이그라운드 <small>(직접 입력해 보기)</small></p>
+  <p class="lead">왼쪽 <b>명령창</b>에 코드를 입력하고 <b>Enter</b>를 눌러 보세요. <code>SE38</code>로 이동한 뒤, 거기서 다시 <code>SE11</code>(접두어 없이)을 쳐 보면 — <b>Easy Access가 아니면 막힌다</b>는 걸 직접 겪게 됩니다. 오른쪽 접두어 표를 참고하세요.</p>
 
-  <div class="eam-win">
-    <div class="eam-menubar">
-      <span class="eam-logo"><span>SAP</span></span>
-      <div class="eam-menu">
-        <span>메뉴<u>(M)</u></span><span>편집<u>(E)</u></span><span>즐겨찾기<u>(F)</u></span>
-        <span>기타<u>(A)</u></span><span>시스템<u>(Y)</u></span><span>도움말<u>(H)</u></span>
+  <div class="eam-stage">
+    <!-- 좌: 인터랙티브 mock -->
+    <div class="eam-win">
+      <div class="eam-menubar">
+        <span class="eam-logo"><span>SAP</span></span>
+        <div class="eam-menu"><span>메뉴(M)</span><span>편집(E)</span><span>즐겨찾기(F)</span><span>시스템(Y)</span></div>
+        <span class="eam-where" id="menubarWhere">현재: SAP Easy Access</span>
       </div>
-    </div>
-    <div class="eam-cmdrow">
-      <span class="eam-ok">✓</span>
-      <input class="eam-input" id="cmd" type="text" value="SE38" spellcheck="false" autocomplete="off" aria-label="명령창 (T-code 입력)" />
-      <span class="eam-dd">▾</span>
-      <button class="eam-enter" id="enter" type="button">Enter ↵</button>
-      <div class="eam-callout">여기가 <b>명령창</b> — 코드 입력 후<br><b>Enter ↵</b> 해보세요</div>
-    </div>
-    <div class="eam-toolbar">
-      <span class="eam-tb">✓</span><span class="eam-tb">⏎</span><span class="eam-tb">★</span>
-      <span class="eam-tb">⮝</span><span class="eam-tb">⮟</span><span class="eam-tb">🔍</span><span class="eam-tb">🖶</span>
-    </div>
-    <div class="eam-body" id="easyBody">
-      <div class="eam-tree">
-        <div class="trow fav"><span class="ar">▶</span> 즐겨찾기</div>
-        <div class="trow root"><span class="ar">▼</span> SAP 메뉴</div>
-        <div class="trow fold"><span class="ar">▶</span> <span class="fico">📁</span> 사무관리</div>
-        <div class="trow fold"><span class="ar">▶</span> <span class="fico">📁</span> 인사관리</div>
-        <div class="trow fold"><span class="ar">▶</span> <span class="fico">📁</span> 재무회계</div>
-        <div class="trow fold"><span class="ar">▶</span> <span class="fico">📁</span> 관리회계</div>
-        <div class="trow fold"><span class="ar">▶</span> <span class="fico">📁</span> 물류관리</div>
-        <div class="trow fold"><span class="ar">▶</span> <span class="fico">📁</span> 판매관리</div>
-        <div class="trow fold"><span class="ar">▶</span> <span class="fico">📁</span> 생산관리</div>
-        <div class="trow fold"><span class="ar">▶</span> <span class="fico">📁</span> 도구</div>
+      <div class="eam-cmdrow" id="cmdrow">
+        <span class="eam-ok">✓</span>
+        <input class="eam-input" id="cmd" type="text" value="SE38" spellcheck="false" autocomplete="off" aria-label="명령창 (T-code 입력)" />
+        <button class="eam-enter" id="enter" type="button">Enter ↵</button>
       </div>
-      <div class="eam-main">
-        <h3>SAP Easy Access</h3>
-        <div class="sub">사용자 메뉴</div>
-        <div class="eam-illus">
-          <div class="mon"><b>SAP</b></div>
-          <div class="path"></div>
-          <div class="pin">📍</div>
-        </div>
-      </div>
+      <div class="eam-status" id="status"></div>
+      <div class="eam-body" id="body"></div>
     </div>
-    <div id="tcodeBody" style="display:none"></div>
+
+    <!-- 우: 접두어 reference -->
+    <div class="eam-ref">
+      <div class="eam-ref__hd">자주 쓰는 접두어</div>
+      <div class="eam-ref__item">
+        <code>SE38</code><span class="eam-tag warn">Easy Access 전용</span>
+        <div class="d">접두어 없는 코드는 <b>로그인 직후 Easy Access에서만</b> 이동. 다른 화면에선 막힘.</div>
+      </div>
+      <div class="eam-ref__item">
+        <code>/nSE38</code><span class="eam-tag any">어디서든</span>
+        <div class="d">현재 작업을 닫고 이동(<code>/n</code>=new). 가장 안전. (<code>/n SE38</code>처럼 공백도 OK)</div>
+      </div>
+      <div class="eam-ref__item">
+        <code>/oSE38</code>
+        <div class="d">새 창(세션)에서 열기(<code>/o</code>=open). 현재 화면은 그대로.</div>
+      </div>
+      <div class="eam-ref__item">
+        <code>/nex</code>
+        <div class="d">확인 없이 즉시 <b>로그아웃</b>. (<code>/n ex</code>도 같음)</div>
+      </div>
+      <div class="eam-ref__tip">💡 <b>핵심</b> — 접두어 없이 통하는 건 <b>Easy Access뿐</b>. 다른 화면에선 <code>/n</code>을 꼭 붙이세요.</div>
+    </div>
   </div>
 
-  <div class="note"><b>명령창 = 주소창</b> — 메뉴 트리를 한참 펼치는 대신, 명령창에 <code>SE38</code> 같은 코드를 직접 쳐서 원하는 화면으로 바로 갑니다. 단, <b>접두어 없는 코드는 이 Easy Access 화면에서만</b> 통합니다(아래 접두어 카드 참고).</div>
+  <div class="note"><b>해 보기</b> — ① <code>SE38</code> Enter(이동) → ② 그 화면에서 <code>SE11</code> Enter(막힘!) → ③ <code>/nSE11</code> Enter(이동) → ④ <code>/nex</code> Enter(로그아웃) → ⑤ 다시하기.</div>
 </div>
 
-<script>
-window.EAM_CFG = { samples:['SE38'] };
-</script>
 <script src="../_engine/sap-easy-access-mock.js" defer></script>
 </body>
 </html>
