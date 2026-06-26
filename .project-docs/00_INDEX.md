@@ -1,6 +1,6 @@
 # 00. INDEX — 문서 지도
 
-> 📅 최종수정: 2026-06-24 09:31 KST
+> 📅 최종수정: 2026-06-26 19:02 KST
 > `.project-docs`는 AI 부팅용 컨텍스트. 원칙: **한 사실은 한 문서에만(SSOT)** · 번호=우선순위 · 완료된 이력은 git+02.
 
 ## 자동 로드 (CLAUDE.md가 `@` 임포트 — 이미 컨텍스트에 있음)
@@ -21,3 +21,4 @@
 | [11_KEYWORD_AUDIT](11_KEYWORD_AUDIT.md) | **공식 ABAP keyword doc 대비 감사 원장** — 기준·챕터별 findings·진행현황 | 감사 패스 재개 시 |
 | [12_EXPANSION_PLAN](12_EXPANSION_PLAN.md) | **51항목 체크리스트 기반 콘텐츠 확장 배치 계획** — 항목별 배치·진행추적 | 확장 작업 시 |
 | [13_EMBED_BUILD_PLAN](13_EMBED_BUILD_PLAN.md) | **학습수단 수정·제작 계획** — embeds/ 구조·엔진 공통화·챕터 루프(입력=check 감사) | 학습수단 제작 시 |
+| [14_REFERENCE_CORPUS](14_REFERENCE_CORPUS.md) | **외부 참고 코퍼스 인벤토리** — `ABAP_DOCU_DOWNLOAD` 자료별 관련성·활용 규칙(cheat-sheets/abap-docs MD/Clean ABAP/skills) | 레슨 집필·사실검증 시 |
