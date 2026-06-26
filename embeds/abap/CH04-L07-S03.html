@@ -23,6 +23,25 @@
   .fl-sm{fill:var(--ink-soft);font-size:10px;font-weight:800;font-family:var(--font);}
   .fl-arrow{stroke:var(--ink-soft);stroke-width:1.6;fill:none;}
   .fl-ah{fill:var(--ink-soft);}
+  .fl-t2{fill:var(--ink);font-weight:700;font-size:10px;font-family:var(--font);}
+  /* '마법'(경계 상속) 설명 + 정수축(수평선) */
+  .mg-h{margin:13px 0 4px;font-size:.9rem;font-weight:800;color:var(--ink);}
+  .mg-note{margin:5px 0;font-size:.82rem;color:var(--ink-soft);line-height:1.65;}
+  .mg-note b{color:var(--ink);}
+  .mg-list{margin:6px 0;padding-left:18px;font-size:.82rem;color:var(--ink-soft);line-height:1.95;}
+  .mg-list b{color:var(--ink);}
+  .mg-tag{display:inline-block;margin-left:3px;font-size:.68rem;font-weight:700;color:var(--brand);background:color-mix(in srgb,var(--brand) 13%,var(--surface));border-radius:6px;padding:1px 7px;}
+  .nl-svg{display:block;width:100%;max-width:400px;height:auto;margin:8px auto 2px;}
+  .nl-axis{stroke:var(--line);stroke-width:1.4;}
+  .nl-seg{stroke:var(--accent);stroke-width:5;stroke-linecap:round;opacity:.5;}
+  .nl-solid{stroke:var(--accent);stroke-width:3.4;}
+  .nl-dash{stroke:var(--brand);stroke-width:2.6;stroke-dasharray:3.5 3;}
+  .nl-n{fill:var(--ink-soft);font-size:9.5px;font-weight:700;font-family:var(--font);}
+  .nl-nb{fill:var(--brand);font-size:10.5px;font-weight:800;font-family:var(--font);}
+  .nl-var{fill:var(--ink);font-size:12px;font-weight:800;font-family:var(--font);}
+  .nl-direct{fill:var(--accent);font-size:10px;font-weight:800;font-family:var(--font);}
+  .nl-inherit{fill:var(--brand);font-size:10px;font-weight:800;font-family:var(--font);}
+  .nl-leg{fill:var(--ink-soft);font-size:9.5px;font-weight:700;font-family:var(--font);}
 </style>
 </head>
 <body>
@@ -40,14 +59,14 @@ DATA: gv_dan TYPE i, gv_mul TYPE i, gv_cnt TYPE i, gv_res TYPE i.</pre>
     <details class="tip">
       <summary>💡 시작·종료 범위를 점검하는 로직은 여기(루프 전)에 추가하는 게 좋습니다 — 펼쳐 보기</summary>
       <div class="tip__body">
-        <p class="tip__note">루프 <b>전에 두 번만</b> 확인하면 됩니다 — ① <b>범위</b>(2~9 안인가) → ② <b>순서</b>(시작 ≤ 종료인가). 둘 다 통과해야 실행하고, 어긋나면 안내하고 멈춥니다.</p>
+        <p class="tip__note">루프 <b>전에 두 번만</b> 확인하면 됩니다 — ① <b>양 끝</b>(시작 ≥ 2 · 종료 ≤ 9) → ② <b>순서</b>(시작 ≤ 종료). 둘 다 통과해야 실행하고, 어긋나면 안내 후 멈춥니다. 신기하게도 <b>이 둘이면 시작·종료가 모두 2~9 안</b>에 들어옵니다(까닭은 맨 아래 🪄).</p>
         <svg class="fl-svg" viewBox="0 0 440 292" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="입력 점검 흐름: 범위 관문과 순서 관문을 통과해야 실행, 아니면 안내 후 중단">
           <defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="fl-ah"/></marker></defs>
           <rect class="fl-box" x="28" y="8" width="194" height="34" rx="9"/>
           <text class="fl-t" x="125" y="30" text-anchor="middle">시작·종료 입력</text>
           <path class="fl-arrow" d="M125,42 L125,67" marker-end="url(#ah)"/>
           <polygon class="fl-dia" points="125,70 187,98 125,126 63,98"/>
-          <text class="fl-t" x="125" y="102" text-anchor="middle">2~9 범위 밖?</text>
+          <text class="fl-t2" x="125" y="93" text-anchor="middle"><tspan x="125">시작 &lt; 2 또는</tspan><tspan x="125" dy="13">종료 &gt; 9?</tspan></text>
           <text class="fl-sm" x="195" y="91">예</text>
           <path class="fl-arrow" d="M187,98 L247,98" marker-end="url(#ah)"/>
           <rect class="fl-rej" x="250" y="80" width="178" height="36" rx="9"/>
@@ -73,6 +92,56 @@ DATA: gv_dan TYPE i, gv_mul TYPE i, gv_cnt TYPE i, gv_res TYPE i.</pre>
   <span class="k">WRITE</span>: / <span class="s">'시작 ≤ 종료로 입력하세요.'</span>.
   <span class="k">EXIT</span>.
 <span class="k">ENDIF</span>.</pre>
+        <p class="mg-h">🪄 그런데 왜 이 두 줄로 <b>2~9 전체</b>가 검사될까?</p>
+        <p class="mg-note">①은 사실 <b>시작의 왼쪽(≥2)</b>과 <b>종료의 오른쪽(≤9)</b> — <b>두 경계</b>만 직접 봅니다. 나머지 두 경계는 ②<code>시작 ≤ 종료</code>가 옮겨 줘요. ①을 지나왔으니 이미 <b>시작 ≥ 2</b>·<b>종료 ≤ 9</b>인데:</p>
+        <ul class="mg-list">
+          <li><code>종료 ≤ 9</code> 이고 <code>시작 ≤ 종료</code> &rArr; <b>시작도 ≤ 9</b> <span class="mg-tag">종료의 오른쪽 경계를 상속</span></li>
+          <li><code>시작 ≥ 2</code> 이고 <code>종료 ≥ 시작</code> &rArr; <b>종료도 ≥ 2</b> <span class="mg-tag">시작의 왼쪽 경계를 상속</span></li>
+        </ul>
+        <p class="mg-note">그래서 시작·종료 <b>둘 다 결국 2~9 안</b>에 갇힙니다. 정수축으로 보면 — <b>초록 실선</b>=직접 검사한 경계, <b>파랑 점선</b>=②가 옮겨 준(상속) 경계:</p>
+        <svg class="nl-svg" viewBox="0 0 400 224" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="정수축에서 시작과 종료가 각각 한쪽은 직접 검사, 다른 한쪽은 상속받아 둘 다 2부터 9 사이에 들어옴">
+          <!-- 시작(p_from): 왼쪽 직접(≥2 실선) · 오른쪽 상속(≤9 점선) -->
+          <text class="nl-direct" x="83" y="48" text-anchor="middle">≥2 직접</text>
+          <text class="nl-inherit" x="314" y="48" text-anchor="middle">≤9 상속</text>
+          <text class="nl-var" x="10" y="68">시작</text>
+          <line class="nl-axis" x1="44" y1="64" x2="353" y2="64"/>
+          <line class="nl-seg" x1="83" y1="64" x2="314" y2="64"/>
+          <line class="nl-solid" x1="83" y1="55" x2="83" y2="73"/>
+          <line class="nl-dash" x1="314" y1="55" x2="314" y2="73"/>
+          <text class="nl-n" x="50" y="80" text-anchor="middle">1</text>
+          <text class="nl-nb" x="83" y="80" text-anchor="middle">2</text>
+          <text class="nl-n" x="116" y="80" text-anchor="middle">3</text>
+          <text class="nl-n" x="149" y="80" text-anchor="middle">4</text>
+          <text class="nl-n" x="182" y="80" text-anchor="middle">5</text>
+          <text class="nl-n" x="215" y="80" text-anchor="middle">6</text>
+          <text class="nl-n" x="248" y="80" text-anchor="middle">7</text>
+          <text class="nl-n" x="281" y="80" text-anchor="middle">8</text>
+          <text class="nl-nb" x="314" y="80" text-anchor="middle">9</text>
+          <text class="nl-n" x="347" y="80" text-anchor="middle">10</text>
+          <!-- 종료(p_to): 왼쪽 상속(≥2 점선) · 오른쪽 직접(≤9 실선) -->
+          <text class="nl-inherit" x="83" y="132" text-anchor="middle">≥2 상속</text>
+          <text class="nl-direct" x="314" y="132" text-anchor="middle">≤9 직접</text>
+          <text class="nl-var" x="10" y="152">종료</text>
+          <line class="nl-axis" x1="44" y1="148" x2="353" y2="148"/>
+          <line class="nl-seg" x1="83" y1="148" x2="314" y2="148"/>
+          <line class="nl-dash" x1="83" y1="139" x2="83" y2="157"/>
+          <line class="nl-solid" x1="314" y1="139" x2="314" y2="157"/>
+          <text class="nl-n" x="50" y="164" text-anchor="middle">1</text>
+          <text class="nl-nb" x="83" y="164" text-anchor="middle">2</text>
+          <text class="nl-n" x="116" y="164" text-anchor="middle">3</text>
+          <text class="nl-n" x="149" y="164" text-anchor="middle">4</text>
+          <text class="nl-n" x="182" y="164" text-anchor="middle">5</text>
+          <text class="nl-n" x="215" y="164" text-anchor="middle">6</text>
+          <text class="nl-n" x="248" y="164" text-anchor="middle">7</text>
+          <text class="nl-n" x="281" y="164" text-anchor="middle">8</text>
+          <text class="nl-nb" x="314" y="164" text-anchor="middle">9</text>
+          <text class="nl-n" x="347" y="164" text-anchor="middle">10</text>
+          <!-- 범례 -->
+          <line class="nl-solid" x1="44" y1="201" x2="62" y2="201"/>
+          <text class="nl-leg" x="66" y="205">직접 검사한 경계</text>
+          <line class="nl-dash" x1="190" y1="201" x2="208" y2="201"/>
+          <text class="nl-leg" x="212" y="205">상속(시작 ≤ 종료가 옮김)</text>
+        </svg>
       </div>
     </details>
 
