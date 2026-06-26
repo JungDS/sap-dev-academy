@@ -129,7 +129,7 @@
       return '<li><a class="' + (l.id === lessonId ? "on" : "") + '" href="' + DATA + l.href + '"><small>LESSON ' + esc(String(l.order)) + '</small><span class="t">' + esc(l.title) + "</span></a></li>";
     }).join("");
     var chapHtml = allChaps.map(function (c) {
-      return '<li><a class="' + (c.id === chapterId ? "on" : "") + '" href="' + DATA + c.lessons[0].href + '"><small>' + esc(c.id) + '</small><span class="t">' + esc(c.title) + "</span></a></li>";
+      return '<li><a class="' + (c.id === chapterId ? "on" : "") + '" href="' + DATA + c.lessons[0].href + '"><small>Chapter ' + (parseInt(String(c.id).replace(/\D/g, ""), 10) || esc(c.id)) + '</small><span class="t">' + esc(c.title) + "</span></a></li>";
     }).join("");
     var seen = {}, termsArr = [];
     qa(".prose .term").forEach(function (t) { var k = t.getAttribute("data-term"); if (!k || seen[k]) return; seen[k] = 1; termsArr.push(k); });
@@ -141,7 +141,7 @@
         '<button class="rail__btn" data-rtab="terms" title="용어">📖</button>' +
       "</div>" +
       '<div class="rail__expand">' +
-        '<div class="rail__hd"><b>학습 네비</b><button class="rail__x" title="접기">«</button></div>' +
+        '<div class="rail__hd"><b>학습 내비게이션</b><button class="rail__x" title="접기">«</button></div>' +
         '<div class="rail__tabs"><button class="rail__tab on" data-rtab="lesson">레슨</button><button class="rail__tab" data-rtab="chapter">챕터</button><button class="rail__tab" data-rtab="terms">용어</button></div>' +
         '<div class="rail__panel on" data-rpanel="lesson"><p class="rail__chap">현재 Chapter · ' + esc(chTitle) + '</p><ul class="ll">' + lessonHtml + "</ul></div>" +
         '<div class="rail__panel" data-rpanel="chapter"><ul class="ll">' + chapHtml + "</ul></div>" +
