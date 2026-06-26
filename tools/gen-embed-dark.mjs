@@ -134,6 +134,10 @@ const files = fs.readdirSync(ENG)
 
 let out = `/* _dark.css — AUTO-GENERATED: node tools/gen-embed-dark.mjs · 직접 수정 금지(재생성됨).
    체험 위젯 iframe 다크모드: 엔진별 하드코딩 라이트색을 html.dark에서 어둡게/밝게 덮음.
+   ⚠️ 각 규칙은 'html.dark[data-eng="<엔진>"] …'로 그 엔진 위젯에만 매칭(엔진 전용 스코프).
+      이 파일은 모든 위젯에 _base.css @import로 로드되지만, 위젯 <html>의 data-eng가 유일해
+      다른 위젯의 같은 클래스명을 덮지 않는다(단일 제네릭 클래스 누수 방지). data-eng는
+      _extract-embed.mjs가 부여(기존 임베드는 tools/_scope-embed-data-eng.mjs로 일괄 주입).
    코어 토큰(var)은 _base.css의 html.dark가 처리. 미세조정은 해당 엔진 css에 html.dark 규칙으로(소스 순서상 우선).
    수동 html.dark 블록이 있는 엔진은 존중하여 제외. */\n`;
 
@@ -141,11 +145,12 @@ let genCount = 0, skipManual = [];
 for (const f of files) {
   const css = fs.readFileSync(path.join(ENG, f), 'utf8');
   if (/html\.dark/.test(css)) { skipManual.push(f); continue; }   // 수동 블록 존중
+  const eng = f.replace(/\.css$/, '');                            // 엔진 전용 스코프 키(data-eng)
   const blocks = [];
   for (const { sel, body } of topRules(css)) {
     const changed = procBody(body);
     if (!changed.length) continue;
-    const darkSel = sel.split(',').map((s) => 'html.dark ' + s.trim()).join(', ');
+    const darkSel = sel.split(',').map((s) => `html.dark[data-eng="${eng}"] ` + s.trim()).join(', ');
     blocks.push(`${darkSel}{${changed.join(';')};}`);
   }
   if (blocks.length) { out += `\n/* ${f} */\n${blocks.join('\n')}\n`; genCount++; }
