@@ -9,6 +9,21 @@
 <title>구구단 3단계 빈칸 · CH04-L07-S03</title>
 <link rel="stylesheet" href="../_engine/_base.css" />
 <link rel="stylesheet" href="../_engine/fill-blank.css" />
+<style>
+  /* 입력 점검 흐름 다이어그램(이 임베드 전용) · 중립=var() 토큰(테마 자동), 강조도 토큰(--bad/--accent/--brand) */
+  .tip__sub{margin:11px 0 6px;font-size:.82rem;color:var(--ink-soft);font-weight:700;}
+  .fl-svg{display:block;width:100%;max-width:440px;height:auto;margin:10px auto 2px;}
+  .fl-box{fill:var(--surface);stroke:var(--line);stroke-width:1.4;}
+  .fl-dia{fill:var(--surface);stroke:var(--brand);stroke-width:1.6;}
+  .fl-rej{fill:var(--surface);stroke:var(--bad);stroke-width:1.5;}
+  .fl-pass{fill:var(--surface);stroke:var(--accent);stroke-width:2;}
+  .fl-t{fill:var(--ink);font-weight:700;font-size:12px;font-family:var(--font);}
+  .fl-rt{fill:var(--bad);font-weight:800;font-size:11px;font-family:var(--font);}
+  .fl-pt{fill:var(--ink);font-weight:800;font-size:12.5px;font-family:var(--font);}
+  .fl-sm{fill:var(--ink-soft);font-size:10px;font-weight:800;font-family:var(--font);}
+  .fl-arrow{stroke:var(--ink-soft);stroke-width:1.6;fill:none;}
+  .fl-ah{fill:var(--ink-soft);}
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -25,6 +40,32 @@ DATA: gv_dan TYPE i, gv_mul TYPE i, gv_cnt TYPE i, gv_res TYPE i.</pre>
     <details class="tip">
       <summary>💡 시작·종료 범위를 점검하는 로직은 여기(루프 전)에 추가하는 게 좋습니다 — 펼쳐 보기</summary>
       <div class="tip__body">
+        <p class="tip__note">루프 <b>전에 두 번만</b> 확인하면 됩니다 — ① <b>범위</b>(2~9 안인가) → ② <b>순서</b>(시작 ≤ 종료인가). 둘 다 통과해야 실행하고, 어긋나면 안내하고 멈춥니다.</p>
+        <svg class="fl-svg" viewBox="0 0 440 292" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="입력 점검 흐름: 범위 관문과 순서 관문을 통과해야 실행, 아니면 안내 후 중단">
+          <defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="fl-ah"/></marker></defs>
+          <rect class="fl-box" x="28" y="8" width="194" height="34" rx="9"/>
+          <text class="fl-t" x="125" y="30" text-anchor="middle">시작·종료 입력</text>
+          <path class="fl-arrow" d="M125,42 L125,67" marker-end="url(#ah)"/>
+          <polygon class="fl-dia" points="125,70 187,98 125,126 63,98"/>
+          <text class="fl-t" x="125" y="102" text-anchor="middle">2~9 범위 밖?</text>
+          <text class="fl-sm" x="195" y="91">예</text>
+          <path class="fl-arrow" d="M187,98 L247,98" marker-end="url(#ah)"/>
+          <rect class="fl-rej" x="250" y="80" width="178" height="36" rx="9"/>
+          <text class="fl-rt" x="339" y="103" text-anchor="middle">⛔ '단은 2~9' → 중단</text>
+          <text class="fl-sm" x="133" y="143">아니오</text>
+          <path class="fl-arrow" d="M125,126 L125,152" marker-end="url(#ah)"/>
+          <polygon class="fl-dia" points="125,154 187,182 125,210 63,182"/>
+          <text class="fl-t" x="125" y="186" text-anchor="middle">시작 &gt; 종료?</text>
+          <text class="fl-sm" x="195" y="175">예</text>
+          <path class="fl-arrow" d="M187,182 L247,182" marker-end="url(#ah)"/>
+          <rect class="fl-rej" x="250" y="164" width="178" height="36" rx="9"/>
+          <text class="fl-rt" x="339" y="187" text-anchor="middle">⛔ '시작 ≤ 종료' → 중단</text>
+          <text class="fl-sm" x="133" y="227">아니오</text>
+          <path class="fl-arrow" d="M125,210 L125,238" marker-end="url(#ah)"/>
+          <rect class="fl-pass" x="28" y="240" width="194" height="40" rx="10"/>
+          <text class="fl-pt" x="125" y="265" text-anchor="middle">✅ 통과 → 범위 출력</text>
+        </svg>
+        <p class="tip__sub">두 관문을 <code>IF</code> / <code>ELSEIF</code>로 적으면:</p>
 <pre class="tip__code"><span class="k">IF</span> p_from &lt; 2 <span class="k">OR</span> p_to &gt; 9.
   <span class="k">WRITE</span>: / <span class="s">'단은 2~9 사이로 입력하세요.'</span>.
   <span class="k">EXIT</span>.
@@ -32,7 +73,6 @@ DATA: gv_dan TYPE i, gv_mul TYPE i, gv_cnt TYPE i, gv_res TYPE i.</pre>
   <span class="k">WRITE</span>: / <span class="s">'시작 ≤ 종료로 입력하세요.'</span>.
   <span class="k">EXIT</span>.
 <span class="k">ENDIF</span>.</pre>
-        <p class="tip__note"><b>두 가지로 나눠</b> 메시지를 분명히 합니다 — ① 값이 <b>2~9 범위 밖</b>, ② <b>시작 &gt; 종료</b>. 신기하게도 <code>p_from &gt; 9</code>·<code>p_to &lt; 2</code>는 따로 적지 않아도 됩니다: 첫 IF를 지나오면 <code>p_from ≥ 2</code>·<code>p_to ≤ 9</code>이라, 시작이 9를 넘거나 종료가 2 미만이면 <b>자동으로 시작 &gt; 종료</b>가 되어 ②에서 걸리거든요. 그래서 <code>시작 40·종료 0</code>도 <code>40 &gt; 0</code>에서 잡힙니다. <b>EXIT</b>는 실행 중인 범위를 중단합니다 — 반복문 안이면 그 반복을, 본문이면 현재 처리 블록을 멈춥니다. 그래서 루프 <b>전</b> 점검에서 값이 잘못되면 바로 멈출 수 있어요.</p>
       </div>
     </details>
 
