@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<!-- CH04-L03-S02 — §04 AND/OR/NOT/괄호 논리 다이어그램(커스텀 SVG·자체 _autoheight). 중립=var() 토큰, 강조 고정 중간톤.
+     게이팅: 비교·AND/OR/NOT·괄호만. -->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AND · OR · NOT · 괄호 · CH04-L03-S02</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<style>
+  *{box-sizing:border-box;} html,body{margin:0;}
+  body{font-family:var(--font);color:var(--ink);background:transparent;line-height:1.6;}
+  .wrap{max-width:760px;margin:0 auto;padding:14px 16px 18px;}
+  .hd{margin:0 0 4px;font-weight:800;font-size:1.04rem;color:var(--ink);}
+  .hd small{font-weight:600;color:var(--ink-soft);font-size:.8rem;}
+  .lead{margin:0 0 14px;color:var(--ink-soft);font-size:.92rem;}
+  .lead code{font-family:var(--mono);background:color-mix(in srgb,var(--brand) 12%,var(--surface));padding:1px 5px;border-radius:5px;}
+  .dgm{display:block;width:100%;max-width:440px;height:auto;margin:0 auto;}
+  .note{margin:12px 0 0;font-size:.84rem;color:var(--ink-soft);background:color-mix(in srgb,var(--brand) 7%,var(--surface));border:1px solid var(--line);border-radius:10px;padding:9px 12px;line-height:1.7;}
+  .note b{color:var(--ink);} .note code{font-family:var(--mono);}
+  .grp-or{fill:color-mix(in srgb,#4263eb 8%,var(--surface));stroke:#4263eb;stroke-width:1.7;}
+  .grp-not{fill:color-mix(in srgb,#f08c00 9%,var(--surface));stroke:#f08c00;stroke-width:1.7;}
+  .grp-res{fill:color-mix(in srgb,var(--accent) 11%,var(--surface));stroke:var(--accent);stroke-width:2;}
+  .chip{fill:var(--surface);stroke:var(--line);stroke-width:1.4;}
+  .lbl-or{fill:#4263eb;font-size:11px;font-weight:800;font-family:var(--font);}
+  .lbl-not{fill:#d9480f;font-size:11px;font-weight:800;font-family:var(--font);}
+  .t{fill:var(--ink);font-size:12.5px;font-weight:700;font-family:var(--font);}
+  .tc{fill:var(--ink);font-size:12.5px;font-weight:800;font-family:var(--mono);}
+  .op{fill:var(--ink-soft);font-size:13px;font-weight:800;font-family:var(--font);}
+  .ttl{fill:var(--ink);font-size:13px;font-weight:800;font-family:var(--font);}
+  .pill{fill:#4263eb;}
+  .pillt{fill:#fff;font-size:12px;font-weight:800;font-family:var(--font);}
+  .sm{fill:var(--ink-soft);font-size:11px;font-weight:700;font-family:var(--font);}
+  .arr{stroke:var(--ink-soft);stroke-width:1.7;fill:none;}
+  .ah{fill:var(--ink-soft);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">AND · OR · NOT · 괄호 — 여러 조건을 묶는다 <small>(VIP 혜택 판정)</small></p>
+  <p class="lead"><code>( p_amt &gt; 5000 OR p_vip = 'X' ) AND NOT p_blocked = 'X'</code> — 괄호부터, 그다음 NOT, 마지막 AND 순으로 본다.</p>
+
+  <svg class="dgm" viewBox="0 0 440 300" xmlns="http://www.w3.org/2000/svg" role="img"
+       aria-label="괄호 안 OR(둘 중 하나) 그리고 NOT(차단 아님)이 모두 참이면 VIP 혜택">
+    <defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker></defs>
+
+    <text class="ttl" x="220" y="18" text-anchor="middle">'VIP 혜택' = 아래 둘이 모두 참이어야</text>
+
+    <!-- 괄호 OR 그룹 -->
+    <rect class="grp-or" x="24" y="32" width="392" height="82" rx="12"/>
+    <text class="lbl-or" x="40" y="52">괄호 ( ) 먼저 — OR : 둘 중 하나라도 참이면 참</text>
+    <rect class="chip" x="44" y="62" width="150" height="36" rx="8"/>
+    <text class="tc" x="119" y="85" text-anchor="middle">p_amt &gt; 5000</text>
+    <text class="op" x="212" y="85" text-anchor="middle">OR</text>
+    <rect class="chip" x="232" y="62" width="142" height="36" rx="8"/>
+    <text class="tc" x="303" y="85" text-anchor="middle">p_vip = 'X'</text>
+
+    <!-- AND 배지 -->
+    <rect class="pill" x="128" y="120" width="184" height="26" rx="13"/>
+    <text class="pillt" x="220" y="137" text-anchor="middle">AND · 둘 다 참이어야</text>
+
+    <!-- NOT 그룹 -->
+    <rect class="grp-not" x="24" y="152" width="392" height="62" rx="12"/>
+    <text class="lbl-not" x="40" y="172">NOT — 뒤집기 : 차단이 '아니어야' 참</text>
+    <rect class="chip" x="44" y="180" width="160" height="28" rx="8"/>
+    <text class="tc" x="124" y="199" text-anchor="middle">p_blocked = 'X'</text>
+    <text class="sm" x="218" y="199">→ 거짓이어야 (차단 아님)</text>
+
+    <path class="arr" d="M220,214 L220,234" marker-end="url(#ah)"/>
+
+    <!-- 결과 -->
+    <rect class="grp-res" x="106" y="236" width="228" height="36" rx="10"/>
+    <text class="t" x="220" y="259" text-anchor="middle">✅ 둘 다 참 → 'VIP 혜택' 출력</text>
+
+    <text class="sm" x="220" y="292" text-anchor="middle">AND 둘 다 참 · OR 하나라도 참 · NOT 뒤집기</text>
+  </svg>
+
+  <p class="note"><b>섞이면 괄호로</b> 의도를 분명히 — 괄호 안 <code>OR</code>(하나라도)를 먼저 묶고, <code>NOT</code>으로 차단을 뒤집은 뒤, <code>AND</code>로 둘을 모두 요구합니다. 괄호 안쪽도 <code>( p_amt &gt; 5000 )</code>처럼 <b>앞뒤 공백</b>을 둡니다.</p>
+</div>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

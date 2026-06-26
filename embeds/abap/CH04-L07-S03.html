@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<!-- CH04-L07-S03 — 엔진: fill-blank + _autoheight. 콘텐츠=레슨 §3단계(범위 출력, #C04-7).
+     효율형: p_from부터 (p_to-p_from+1)번만 반복 + 매 회차 단 1 증가. 루프 전 입력 점검은 아코디언으로 권장 제시.
+     게이팅: classic만(DO에 산술식=modern은 CH18↑ → 횟수를 gv_cnt 변수에). EXIT는 CH04-L05 도입. -->
+<html lang="ko" data-eng="fill-blank">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>구구단 3단계 빈칸 · CH04-L07-S03</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/fill-blank.css" />
+<style>
+  /* 입력 점검 흐름 다이어그램(이 임베드 전용) · 중립=var() 토큰(테마 자동), 강조도 토큰(--bad/--accent/--brand) */
+  .tip__sub{margin:11px 0 6px;font-size:.82rem;color:var(--ink-soft);font-weight:700;}
+  .fl-svg{display:block;width:100%;max-width:440px;height:auto;margin:10px auto 2px;}
+  .fl-box{fill:var(--surface);stroke:var(--line);stroke-width:1.4;}
+  .fl-dia{fill:var(--surface);stroke:var(--brand);stroke-width:1.6;}
+  .fl-rej{fill:var(--surface);stroke:var(--bad);stroke-width:1.5;}
+  .fl-pass{fill:var(--surface);stroke:var(--accent);stroke-width:2;}
+  .fl-t{fill:var(--ink);font-weight:700;font-size:12px;font-family:var(--font);}
+  .fl-rt{fill:var(--bad);font-weight:800;font-size:11px;font-family:var(--font);}
+  .fl-pt{fill:var(--ink);font-weight:800;font-size:12.5px;font-family:var(--font);}
+  .fl-pt2{fill:var(--ink);font-weight:700;font-size:11px;font-family:var(--font);}
+  .fl-sm{fill:var(--ink-soft);font-size:10px;font-weight:800;font-family:var(--font);}
+  .fl-arrow{stroke:var(--ink-soft);stroke-width:1.6;fill:none;}
+  .fl-ah{fill:var(--ink-soft);}
+  .fl-t2{fill:var(--ink);font-weight:700;font-size:10px;font-family:var(--font);}
+  /* 인포그래픽(이미지형): IF(OR로 묶인 좌·우 두 조건) + ELSEIF 의 코드 구조로 설명.
+     카드 배경=color-mix(accent,surface)→테마 적응. 배지=고정 중간톤+흰글씨(다크 안전), 컬러 텍스트=var 토큰. */
+  .ig{margin-top:24px;}
+  .ig-h{display:flex;align-items:center;gap:7px;margin:0 0 3px;font-size:1rem;font-weight:800;color:var(--ink);}
+  .ig-hico{flex:none;width:19px;height:19px;color:var(--brand);}
+  .ig-sub{margin:0 0 12px;font-size:.82rem;color:var(--ink-soft);font-weight:600;line-height:1.55;}
+  .ig-sub b{color:var(--ink);}
+  .ig-group{border:1.6px dashed color-mix(in srgb,#3b5bdb 48%,var(--line));border-radius:14px;padding:11px 12px 13px;}
+  .ig-glabel{margin:0 2px 10px;}
+  .ig-ifline{display:inline-block;font-family:var(--mono);font-size:.82rem;font-weight:700;color:var(--ink);background:color-mix(in srgb,#3b5bdb 10%,var(--surface));border:1px solid color-mix(in srgb,#3b5bdb 25%,var(--surface));border-radius:7px;padding:4px 10px;margin-bottom:7px;}
+  .ig-gtext{margin:0;font-size:.8rem;color:var(--ink-soft);font-weight:600;line-height:1.6;}
+  .ig-gtext b{color:var(--ink);}
+  .ig-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .ig-row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;}
+  @media (max-width:560px){.ig-row,.ig-row2{grid-template-columns:1fr;}}
+  .ig-card{border:1.5px solid var(--line);border-radius:14px;padding:13px 15px;background:var(--surface);}
+  .c-blue{border-color:#3b5bdb;background:color-mix(in srgb,#3b5bdb 7%,var(--surface));}
+  .c-green{border-color:#0ca678;background:color-mix(in srgb,#0ca678 7%,var(--surface));}
+  .c-purple{border-color:#7048e8;background:color-mix(in srgb,#7048e8 7%,var(--surface));}
+  .c-amber{border-color:#f08c00;background:color-mix(in srgb,#f08c00 11%,var(--surface));}
+  .ig-ct{margin:0 0 8px;font-size:.9rem;font-weight:800;color:var(--ink);line-height:1.55;}
+  .ig-ct code{font-size:.95em;}
+  .ig-tag{display:inline-flex;align-items:center;border-radius:7px;padding:2px 9px;font-size:.7rem;font-weight:800;color:#fff;vertical-align:middle;margin-right:6px;white-space:nowrap;}
+  .t-blue{background:#3b5bdb;} .t-green{background:#0ca678;} .t-purple{background:#7048e8;}
+  .ig-ul{margin:0;padding-left:17px;font-size:.8rem;color:var(--ink-soft);line-height:1.7;}
+  .ig-ul b{color:var(--ink);}
+  .ig-info{display:flex;align-items:center;gap:7px;margin-top:10px;border-radius:9px;padding:6px 10px;font-size:.76rem;font-weight:600;color:var(--ink-soft);}
+  .i-blue{background:color-mix(in srgb,#3b5bdb 11%,var(--surface));}
+  .i-green{background:color-mix(in srgb,#0ca678 11%,var(--surface));}
+  .ig-ico{flex:none;display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;color:#fff;font-size:.62rem;font-weight:800;font-style:normal;}
+  .ico-b{background:#3b5bdb;} .ico-g{background:#0ca678;}
+  .ig-ray{display:block;width:100%;max-width:320px;height:auto;margin:9px auto 4px;}
+  .ray-err{stroke:#e8413a;stroke-width:4;stroke-linecap:round;}
+  .ray-pb{stroke:#3b5bdb;stroke-width:4;stroke-linecap:round;}
+  .ray-pg{stroke:#0ca678;stroke-width:4;stroke-linecap:round;}
+  .fill-err{fill:#e8413a;} .fill-pb{fill:#3b5bdb;} .fill-pg{fill:#0ca678;}
+  .ray-pt{fill:var(--surface);stroke:var(--ink);stroke-width:2;}
+  .ray-n{fill:var(--ink);font-size:14px;font-weight:800;font-family:var(--font);}
+  .ig-chips{display:flex;justify-content:space-between;gap:6px;}
+  .ig-chip{border-radius:8px;padding:3px 11px;font-size:.74rem;font-weight:800;color:#fff;}
+  .chip-err{background:#e8413a;} .chip-pb{background:#3b5bdb;} .chip-pg{background:#0ca678;}
+  .ig-steps{display:flex;align-items:stretch;gap:8px;flex-wrap:wrap;}
+  .ig-mini{flex:1 1 150px;border-radius:11px;padding:9px 12px;background:color-mix(in srgb,#7048e8 8%,var(--surface));border:1px solid color-mix(in srgb,#7048e8 26%,var(--surface));}
+  .ig-mt{margin:0 0 4px;font-size:.8rem;font-weight:800;color:var(--ink);}
+  .ig-mt small{font-weight:600;color:var(--ink-soft);}
+  .ig-mini p{margin:0;font-size:.78rem;color:var(--ink-soft);line-height:1.65;}
+  .ig-mini b{color:var(--ink);}
+  .ig-mul{margin:3px 0 0;padding-left:16px;font-size:.78rem;color:var(--ink-soft);line-height:1.8;}
+  .ig-mul b{color:var(--ink);}
+  .ig-step-arr{align-self:center;color:#7048e8;font-size:1.15rem;font-weight:800;}
+  .ig-segwrap{flex:1 1 100%;margin-top:8px;}
+  .ig-seg2{display:block;width:100%;max-width:360px;height:auto;margin:0 auto;}
+  .seg-line{stroke:var(--ink);stroke-width:2.4;}
+  .seg-end{fill:var(--surface);stroke:var(--ink);stroke-width:2;}
+  .seg-pf{fill:var(--brand);} .seg-pt{fill:var(--accent);}
+  .seg-stem-pf{stroke:var(--brand);stroke-width:1.8;} .seg-stem-pt{stroke:var(--accent);stroke-width:1.8;}
+  .chain-n{fill:var(--ink);font-family:var(--mono);font-size:15px;font-weight:800;}
+  .chain-op{fill:var(--ink-soft);font-family:var(--mono);font-size:15px;font-weight:700;}
+  .chain-pf{fill:var(--brand);font-family:var(--mono);font-size:15px;font-weight:800;}
+  .chain-pt{fill:var(--accent);font-family:var(--mono);font-size:15px;font-weight:800;}
+  .goalbar{display:flex;align-items:center;gap:10px;margin-top:11px;border:1.5px solid #f08c00;background:color-mix(in srgb,#f08c00 11%,var(--surface));border-radius:12px;padding:11px 15px;}
+  .goal-ico{flex:none;font-size:1.5rem;}
+  .ig-goal{margin:0;font-size:.84rem;font-weight:700;color:var(--ink);line-height:1.55;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">3단계 — 범위만큼만 반복 <small>(예: 3~5단)</small></p>
+  <p class="lead">1~9를 다 돌며 거르지 말고, <b><code>p_from</code>부터 필요한 횟수만큼만</b> 돌고 회차 끝에 단을 1 올립니다. 정답을 보기 전에 빈칸을 직접 채워 보세요. (아래 💡는 루프 전 입력 점검 권장 로직)</p>
+
+  <div class="fillblank" data-fillblank
+       data-explain="p_from부터 (p_to - p_from + 1)번만 반복하고, 매 회차 끝에 gv_dan을 1 올립니다. 입력 점검은 루프 전에 한 번만 하면 됩니다."
+       data-hint="시작 = p_from · 반복 횟수 = gv_cnt · 다음 단 = gv_dan + 1">
+    <div class="fb-hd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span></div>
+<pre>PARAMETERS: p_from TYPE i, p_to TYPE i.
+DATA: gv_dan TYPE i, gv_mul TYPE i, gv_cnt TYPE i, gv_res TYPE i.</pre>
+
+    <details class="tip">
+      <summary>💡 시작·종료 범위를 점검하는 로직은 여기(루프 전)에 추가하는 게 좋습니다 — 펼쳐 보기</summary>
+      <div class="tip__body">
+        <p class="tip__note">루프 <b>전에 두 번만</b> 확인하면 됩니다 — ① <b>양 끝</b>(시작 ≥ 2 · 종료 ≤ 9) → ② <b>순서</b>(시작 ≤ 종료). 둘 다 통과해야 실행하고, 어긋나면 안내 후 멈춥니다. 신기하게도 <b>이 둘이면 시작·종료가 모두 2~9 안</b>에 들어옵니다(까닭은 <b>맨 아래에서 그림으로</b>).</p>
+        <svg class="fl-svg" viewBox="0 0 440 292" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="입력 점검 흐름: 범위 관문과 순서 관문을 통과해야 실행, 아니면 안내 후 중단">
+          <defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="fl-ah"/></marker></defs>
+          <rect class="fl-box" x="28" y="8" width="194" height="34" rx="9"/>
+          <text class="fl-t" x="125" y="30" text-anchor="middle">시작·종료 입력</text>
+          <path class="fl-arrow" d="M125,42 L125,67" marker-end="url(#ah)"/>
+          <polygon class="fl-dia" points="125,70 187,98 125,126 63,98"/>
+          <text class="fl-t2" x="125" y="93" text-anchor="middle"><tspan x="125">시작 &lt; 2 또는</tspan><tspan x="125" dy="13">종료 &gt; 9?</tspan></text>
+          <text class="fl-sm" x="195" y="91">예</text>
+          <path class="fl-arrow" d="M187,98 L247,98" marker-end="url(#ah)"/>
+          <rect class="fl-rej" x="250" y="80" width="178" height="36" rx="9"/>
+          <text class="fl-rt" x="339" y="103" text-anchor="middle">⛔ '단은 2~9' → 중단</text>
+          <text class="fl-sm" x="133" y="143">아니오</text>
+          <path class="fl-arrow" d="M125,126 L125,152" marker-end="url(#ah)"/>
+          <polygon class="fl-dia" points="125,154 187,182 125,210 63,182"/>
+          <text class="fl-t" x="125" y="186" text-anchor="middle">시작 &gt; 종료?</text>
+          <text class="fl-sm" x="195" y="175">예</text>
+          <path class="fl-arrow" d="M187,182 L247,182" marker-end="url(#ah)"/>
+          <rect class="fl-rej" x="250" y="164" width="178" height="36" rx="9"/>
+          <text class="fl-rt" x="339" y="187" text-anchor="middle">⛔ '시작 ≤ 종료' → 중단</text>
+          <text class="fl-sm" x="133" y="227">아니오</text>
+          <path class="fl-arrow" d="M125,210 L125,238" marker-end="url(#ah)"/>
+          <rect class="fl-pass" x="20" y="238" width="210" height="48" rx="11"/>
+          <text class="fl-pt" x="125" y="257" text-anchor="middle">✅ 통과</text>
+          <text class="fl-pt2" x="125" y="275" text-anchor="middle">해당 범위의 구구단 출력</text>
+        </svg>
+        <p class="tip__sub">두 관문을 <code>IF</code> / <code>ELSEIF</code>로 적으면:</p>
+<pre class="tip__code"><span class="k">IF</span> p_from &lt; 2 <span class="k">OR</span> p_to &gt; 9.
+  <span class="k">WRITE</span>: / <span class="s">'단은 2~9 사이로 입력하세요.'</span>.
+  <span class="k">EXIT</span>.
+<span class="k">ELSEIF</span> p_from &gt; p_to.
+  <span class="k">WRITE</span>: / <span class="s">'시작 ≤ 종료로 입력하세요.'</span>.
+  <span class="k">EXIT</span>.
+<span class="k">ENDIF</span>.</pre>
+        <div class="ig">
+          <p class="ig-h"><svg class="ig-hico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6.5" fill="none" stroke="currentColor" stroke-width="2.2"/><line x1="15" y1="15" x2="20.5" y2="20.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg> 구구단 점검 로직, 왜 이렇게 검사할까?</p>
+          <p class="ig-sub">조건문이 어떻게 <b>시작·종료를 모두 2~9</b>로 가두는지, IF와 ELSEIF를 한 조각씩 뜯어 봅니다.</p>
+
+          <div class="ig-group">
+            <div class="ig-glabel">
+              <code class="ig-ifline">IF&nbsp; p_from &lt; 2&nbsp; OR&nbsp; p_to &gt; 9</code>
+              <p class="ig-gtext">한 IF가 <code>OR</code>로 두 가지를 함께 봅니다. <b>둘 중 하나라도 참이면</b> 오류 메시지를 내고 멈추죠. 그래서 아래 두 조건은 <b>같은 IF의 왼쪽·오른쪽</b>입니다.</p>
+            </div>
+            <div class="ig-row">
+              <div class="ig-card c-blue">
+                <p class="ig-ct"><span class="ig-tag t-blue">IF 왼쪽 조건</span> <code>p_from &lt; 2</code></p>
+                <ul class="ig-ul">
+                  <li><code>p_from</code> 이 <b>2보다 작으면 참</b> → WRITE문 실행 후 <b>프로그램 종료</b> (OR이라 오른쪽 조건 결과와 관계없이 참)</li>
+                  <li><code>p_from</code> 이 <b>2 이상이면 거짓</b> → <b>IF 오른쪽 조건</b> 검사</li>
+                </ul>
+                <svg class="ig-ray" viewBox="0 0 330 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <text class="ray-n" x="165" y="14" text-anchor="middle">2</text>
+                  <polygon class="fill-err" points="14,26 28,18 28,34"/>
+                  <line class="ray-err" x1="27" y1="26" x2="165" y2="26"/>
+                  <line class="ray-pg" x1="165" y1="26" x2="303" y2="26"/>
+                  <polygon class="fill-pg" points="316,26 302,18 302,34"/>
+                  <circle class="ray-pt" cx="165" cy="26" r="6.5"/>
+                </svg>
+                <div class="ig-chips"><span class="ig-chip chip-err">참 → 오류 (&lt; 2)</span><span class="ig-chip chip-pg">거짓 → 다음 (≥ 2)</span></div>
+                <p class="ig-info i-blue"><i class="ig-ico ico-b">i</i> 시작의 상한(9 이내)은 여기서 아직 안 봅니다</p>
+              </div>
+
+              <div class="ig-card c-green">
+                <p class="ig-ct"><span class="ig-tag t-green">IF 오른쪽 조건</span> <code>p_to &gt; 9</code></p>
+                <ul class="ig-ul">
+                  <li><code>p_to</code> 가 <b>9보다 크면 참</b> → WRITE문 실행 후 <b>프로그램 종료</b></li>
+                  <li><code>p_to</code> 가 <b>9 이하면 거짓</b> → IF 두 조건 모두 거짓이므로 <b>ELSEIF로 이동</b></li>
+                </ul>
+                <svg class="ig-ray" viewBox="0 0 330 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <text class="ray-n" x="165" y="14" text-anchor="middle">9</text>
+                  <polygon class="fill-pg" points="14,26 28,18 28,34"/>
+                  <line class="ray-pg" x1="27" y1="26" x2="165" y2="26"/>
+                  <line class="ray-err" x1="165" y1="26" x2="303" y2="26"/>
+                  <polygon class="fill-err" points="316,26 302,18 302,34"/>
+                  <circle class="ray-pt" cx="165" cy="26" r="6.5"/>
+                </svg>
+                <div class="ig-chips"><span class="ig-chip chip-pg">거짓 → 다음 (≤ 9)</span><span class="ig-chip chip-err">참 → 오류 (&gt; 9)</span></div>
+                <p class="ig-info i-green"><i class="ig-ico ico-g">i</i> 종료의 하한(2 이상)은 여기서 아직 안 봅니다</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="ig-card c-purple" style="margin-top:12px;">
+            <p class="ig-ct"><span class="ig-tag t-purple">ELSEIF 조건</span> <code>p_from &gt; p_to</code></p>
+            <div class="ig-steps">
+              <div class="ig-mini">
+                <p class="ig-mt">ELSEIF는 <b>이전 IF가 거짓</b>일 때만 진행</p>
+                <ul class="ig-mul">
+                  <li><code>p_from &lt; 2</code> 가 거짓 → <b>p_from ≥ 2</b> (2 이상)</li>
+                  <li><code>p_to &gt; 9</code> 가 거짓 → <b>p_to ≤ 9</b> (9 이하)</li>
+                </ul>
+              </div>
+              <span class="ig-step-arr">➜</span>
+              <div class="ig-mini">
+                <p class="ig-mt">ELSEIF <code>p_from &gt; p_to</code></p>
+                <p><b>참</b>(시작 &gt; 종료)이면 → WRITE문 실행 후 <b>프로그램 종료</b><br><b>거짓</b>(시작 ≤ 종료)이면 → <b>ENDIF 다음 문장</b> 실행</p>
+              </div>
+              <div class="ig-segwrap">
+                <svg class="ig-seg2" viewBox="0 0 340 108" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <line class="seg-line" x1="40" y1="30" x2="300" y2="30"/>
+                  <circle class="seg-end" cx="40" cy="30" r="6"/>
+                  <circle class="seg-end" cx="300" cy="30" r="6"/>
+                  <circle class="seg-pf" cx="120" cy="30" r="5.5"/>
+                  <circle class="seg-pt" cx="210" cy="30" r="5.5"/>
+                  <line class="seg-stem-pf" x1="120" y1="37" x2="120" y2="74"/>
+                  <line class="seg-stem-pt" x1="210" y1="37" x2="210" y2="74"/>
+                  <text class="chain-n"  x="40"  y="94" text-anchor="middle">2</text>
+                  <text class="chain-op" x="80"  y="94" text-anchor="middle">≤</text>
+                  <text class="chain-pf" x="120" y="94" text-anchor="middle">p_from</text>
+                  <text class="chain-op" x="165" y="94" text-anchor="middle">≤</text>
+                  <text class="chain-pt" x="210" y="94" text-anchor="middle">p_to</text>
+                  <text class="chain-op" x="255" y="94" text-anchor="middle">≤</text>
+                  <text class="chain-n"  x="300" y="94" text-anchor="middle">9</text>
+                </svg>
+              </div>
+            </div>
+            <div class="ig-row2">
+              <div class="ig-card c-blue">
+                <p class="ig-ct"><span class="ig-tag t-blue">A</span> 왜 <code>p_from</code> 도 9 이하일까?</p>
+                <ul class="ig-ul">
+                  <li>IF 오른쪽이 거짓 → <b>p_to ≤ 9</b>, ELSEIF가 거짓(통과) → <b>p_from ≤ p_to</b>.</li>
+                  <li>이으면 <b>p_from ≤ p_to ≤ 9</b> → 그래서 p_from도 9 이하!</li>
+                </ul>
+              </div>
+              <div class="ig-card c-green">
+                <p class="ig-ct"><span class="ig-tag t-green">B</span> 왜 <code>p_to</code> 도 2 이상일까?</p>
+                <ul class="ig-ul">
+                  <li>IF 왼쪽이 거짓 → <b>p_from ≥ 2</b>, ELSEIF가 거짓(통과) → <b>p_from ≤ p_to</b>.</li>
+                  <li>이으면 <b>2 ≤ p_from ≤ p_to</b> → 그래서 p_to도 2 이상!</li>
+                </ul>
+              </div>
+            </div>
+            <div class="goalbar">
+              <span class="goal-ico">🎯</span>
+              <p class="ig-goal">두 조건을 모두 통과한 순간 <b>p_from</b>·<b>p_to</b>는 자동으로 <b>둘 다 2~9 범위 안</b>에 있게 됩니다.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </details>
+
+<pre>gv_cnt = p_to - p_from + 1.   <span class="cmt">" 출력할 단 개수</span>
+gv_dan = <input class="blank" data-answer="p_from" placeholder="______" aria-label="빈칸1">.            <span class="cmt">" 시작 단부터</span>
+
+DO <input class="blank" data-answer="gv_cnt" placeholder="______" aria-label="빈칸2"> TIMES.
+  DO 9 TIMES.
+    gv_mul = sy-index.
+    gv_res = gv_dan * gv_mul.
+    WRITE: / gv_dan, 'x', gv_mul, '=', gv_res.
+  ENDDO.
+  gv_dan = gv_dan + <input class="blank" data-answer="1" placeholder="_" aria-label="빈칸3">.        <span class="cmt">" 다음 단으로</span>
+ENDDO.</pre>
+    <div class="fillblank__actions">
+      <button class="btn" data-check type="button">채점하기</button>
+      <button class="btn ghost" data-peek type="button">👁 잠깐 보기</button>
+      <button class="btn ghost" data-reveal type="button">정답 보기</button>
+      <button class="btn ghost" data-reset type="button">다시하기</button>
+    </div>
+    <div class="fill-output">"몇 번 돌고, 단을 어떻게 올릴까?"를 떠올리며 빈칸을 채워 보세요.</div>
+  </div>
+</div>
+<script src="../_engine/fill-blank.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

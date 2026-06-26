@@ -1,0 +1,62 @@
+/* ===== command-field-sim — SAP 명령창 T-code 이동 시뮬 (CH01-L02) =====
+   "현재 화면"(Easy Access vs 다른 트랜잭션)에서 명령(SE38·/nSE38·/oSE38·/nex)을 입력하면
+   이동/오류/새창/로그오프 결과가 달라짐을 보여 준다. 강조: 접두어 없는 코드는 Easy Access에서만.
+   클래스는 cfs- 접두로 격리(공유 _dark.css 교차충돌 방지). 데이터=window.CFS_CFG(선택). */
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:transparent;line-height:1.5;}
+.wrap{padding:14px;}
+.hd{font-weight:800;font-size:1rem;margin:0 0 4px;}
+.hd small{font-weight:600;color:var(--brand);}
+.lead{margin:0 0 12px;color:var(--ink-soft);font-size:.86rem;}
+.lead code{font-family:var(--mono);background:#eef2ff;color:var(--brand);padding:1px 5px;border-radius:5px;font-size:.92em;}
+
+.cfs-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:10px;}
+.cfs-row .lbl{font-size:.78rem;font-weight:700;color:var(--ink-soft);}
+.cfs-seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;}
+/* 베이스 배경은 var(--surface) — 다크 생성기가 경쟁 html.dark 규칙을 안 만들어 .on(고정 hex)이 다크에서도 적용됨. */
+.cfs-seg button{border:0;background:var(--surface);color:var(--ink-soft);font:inherit;font-size:.8rem;font-weight:700;padding:7px 13px;cursor:pointer;}
+.cfs-seg button.on{background:#3b5bdb;color:#fff;}
+.cfs-cmds{display:flex;flex-wrap:wrap;gap:6px;}
+.cfs-cmd{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:7px;padding:6px 11px;font:inherit;font-size:.8rem;font-weight:700;cursor:pointer;font-family:var(--mono);}
+.cfs-cmd:hover{border-color:var(--brand);color:var(--brand);}
+.cfs-cmd.on{background:#3b5bdb;color:#fff;border-color:#3b5bdb;}
+
+/* 모형 SAP 창 */
+.cfs-win{border:1px solid var(--line);border-radius:11px;overflow:hidden;background:var(--surface);position:relative;box-shadow:var(--shadow);}
+.cfs-bar{display:flex;align-items:center;gap:9px;background:#0a6ed1;padding:7px 10px;}
+.cfs-field{display:flex;align-items:center;gap:6px;background:#fff;border-radius:5px;padding:3px 8px;min-width:160px;}
+.cfs-field .cmdtxt{font-family:var(--mono);font-size:12.5px;color:#1c2233;font-weight:700;}
+.cfs-field .cur{display:inline-block;width:1px;height:14px;background:#1c2233;animation:cfsblink 1s steps(1) infinite;}
+@keyframes cfsblink{50%{opacity:0;}}
+.cfs-enter{background:rgba(255,255,255,.22);color:#fff;border:0;border-radius:5px;font:inherit;font-size:.74rem;font-weight:800;padding:4px 10px;cursor:pointer;}
+.cfs-enter:hover{background:rgba(255,255,255,.34);}
+.cfs-title{margin-left:auto;color:#fff;font-size:.78rem;font-weight:700;white-space:nowrap;}
+
+.cfs-body{padding:14px;min-height:148px;position:relative;}
+.cfs-scr{font-size:.84rem;}
+.cfs-scr h4{margin:0 0 9px;font-size:.92rem;display:flex;align-items:center;gap:7px;}
+.cfs-scr .tcode{font-family:var(--mono);font-size:.72rem;font-weight:800;background:#eef2ff;color:#26336b;border-radius:5px;padding:2px 7px;}
+.cfs-tree{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft);line-height:1.7;}
+.cfs-tree .hi{color:var(--brand);font-weight:700;}
+.cfs-form{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12.5px;color:var(--ink-soft);}
+.cfs-form input{font-family:var(--mono);font-size:12px;border:1px solid var(--line);border-radius:5px;padding:4px 8px;width:130px;background:#fff;color:var(--ink);}
+.cfs-ed{font-family:var(--mono);font-size:12px;color:var(--ink-soft);background:#f6f8fa;border:1px solid var(--line);border-radius:8px;padding:9px 11px;line-height:1.6;}
+
+/* 오버레이: 오류 / 새 세션 / 로그오프 */
+.cfs-err{margin-top:11px;display:flex;align-items:flex-start;gap:9px;background:rgba(214,51,108,.08);border:1px solid var(--bad);border-radius:9px;padding:9px 12px;}
+.cfs-err .ic{font-size:1rem;}
+.cfs-err .tx{font-size:.82rem;color:var(--bad);font-weight:600;}
+.cfs-err .tx b{font-weight:800;}
+.cfs-new{position:absolute;right:14px;bottom:14px;width:62%;border:1px solid var(--accent);border-radius:9px;overflow:hidden;box-shadow:0 10px 24px rgba(20,28,51,.18);background:var(--surface);}
+.cfs-new .nbar{background:#0ca678;color:#fff;font-size:.72rem;font-weight:800;padding:5px 9px;display:flex;align-items:center;gap:6px;}
+.cfs-new .nbody{padding:9px 11px;font-family:var(--mono);font-size:11.5px;color:var(--ink-soft);}
+.cfs-logoff{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:120px;color:var(--ink-soft);}
+.cfs-logoff .big{font-size:1rem;font-weight:800;color:var(--ink);}
+
+.cfs-result{margin-top:11px;font-size:.84rem;padding:9px 12px;border-radius:9px;display:flex;align-items:flex-start;gap:8px;}
+.cfs-result.ok{background:#eafaf3;color:#0b7250;} .cfs-result.no{background:rgba(214,51,108,.07);color:var(--bad);} .cfs-result.idle{background:#f3f4f7;color:var(--ink-soft);}
+.cfs-result .ic{font-size:.95rem;}
+.cfs-result code{font-family:var(--mono);background:rgba(255,255,255,.6);border:1px solid var(--line);padding:0 5px;border-radius:4px;}
+
+.note{margin-top:12px;border-left:3px solid var(--amber);background:rgba(180,83,9,.07);border-radius:0 9px 9px 0;padding:9px 13px;font-size:.83rem;color:#5b4420;}
+.note code{font-family:var(--mono);background:#fff;border:1px solid var(--line);padding:0 5px;border-radius:4px;}

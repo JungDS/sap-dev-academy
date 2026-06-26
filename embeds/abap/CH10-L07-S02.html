@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<!-- CH10-L07-S02 — 엔진: can-book-toggle (embeds/_engine/can-book-toggle.{js,css}) · 자체 postHeight.
+     체험: 잔여석=정원−비취소합계, can_book=요청≤잔여. 요청 3/5 토글 + 취소 포함 시 잘못된 계산.
+     (S01 step-debugger 잔여석 합산과 병행 — 기존 학습수단 유지.) 이름풀 정훈영 사용. 데이터=window.CBT_CFG. -->
+<html lang="ko" data-eng="can-book-toggle">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>예매 가능 판정 토글 · CH10-L07-S02</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/can-book-toggle.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">예매 가능 판정 토글 <small>(can_book)</small></p>
+  <p class="lead"><code>can_book</code>은 <code>get_remaining</code>이 돌려준 잔여석과 요청 좌석을 비교합니다. 요청 좌석을 바꿔 가능/불가를 확인하고, <b>취소 건을 합산하면</b> 왜 잘못되는지도 직접 보세요.</p>
+
+  <div class="layout">
+    <div class="bookings" id="bk"></div>
+    <div class="calc" id="calc"></div>
+  </div>
+
+  <div class="reqrow">
+    <span class="lbl">요청 좌석 iv_want</span>
+    <div class="seg" id="reqSeg"><button class="on" data-w="3">3석</button><button data-w="5">5석</button></div>
+    <label class="inclbl"><input type="checkbox" id="incChk"> 취소 건 포함(실수 재현)</label>
+  </div>
+
+  <div class="verdict" id="verdict"></div>
+  <div class="warnbox" id="warn"></div>
+
+  <div class="note"><b>핵심</b> — 업무 규칙(<code>status &lt;&gt; 'C'</code>, 요청 ≤ 잔여)은 이름 붙은 모듈(<code>get_remaining</code>·<code>can_book</code>)로 분리하고, 입력은 <code>USING</code>·결과는 <code>CHANGING</code>으로 드러냅니다. SQL 집계(<a href="CH13-L01.html">CH13</a>)는 아직 안 쓰고 <code>LOOP</code> 합산으로 눈으로 확인합니다.</div>
+</div>
+
+<script>
+window.CBT_CFG = {
+  capacity:10,
+  bookings:[
+    {name:'정훈영', seats:2, status:'O'},
+    {name:'손흥민', seats:3, status:'O'},
+    {name:'아이유', seats:1, status:'O'},
+    {name:'김연아', seats:4, status:'C'}
+  ]
+};
+</script>
+<script src="../_engine/can-book-toggle.js" defer></script>
+</body>
+</html>

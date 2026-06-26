@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<!-- CH08-L03-S01 — 엔진: select-form-lab (embeds/_engine/select-form-lab.{js,css}) · 자체 postHeight.
+     체험: 같은 KE 항공편 데이터를 SINGLE/INTO TABLE/ENDSELECT/UP TO 3 으로 조회 → 대상 모양·행 수·반복 비교.
+     게이팅: classic Open SQL(필드 공백·@없음·콤마없음). 데이터=window.SFL_CFG. -->
+<html lang="ko" data-eng="select-form-lab">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SELECT 형태 비교 실험실 · CH08-L03-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/select-form-lab.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">SELECT 형태 비교 실험실 <small>(classic Open SQL)</small></p>
+  <p class="lead">같은 <code>KE</code> 항공편 데이터(8행)를 네 가지 형태로 조회해 보세요. <b>결과가 한 행인지, 여러 행인지, 제한된 여러 행인지</b>에 따라 담기는 모양과 반복 횟수가 달라집니다.</p>
+
+  <div class="forms" id="forms">
+    <button type="button" class="fbtn" data-f="single">SELECT SINGLE</button>
+    <button type="button" class="fbtn" data-f="table">INTO TABLE</button>
+    <button type="button" class="fbtn" data-f="endselect">SELECT … ENDSELECT</button>
+    <button type="button" class="fbtn" data-f="uptoN">UP TO 3 ROWS</button>
+  </div>
+
+  <div class="situ" id="situ">
+    <span class="situ__lbl">상황으로 골라보기:</span>
+    <button type="button" class="schip" data-f="single">키 전체를 안다 · 한 건</button>
+    <button type="button" class="schip" data-f="table">항공사만 알고 목록 필요</button>
+    <button type="button" class="schip" data-f="endselect">옛 코드 한 행씩</button>
+    <button type="button" class="schip" data-f="uptoN">상위 3건만 빠르게</button>
+  </div>
+
+  <div class="codebox">
+    <div class="codebox__hd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span><span class="tag">classic</span></div>
+    <div class="codebox__body"><pre class="code-gut" id="codeGut">1</pre><pre class="code" id="code"></pre></div>
+  </div>
+
+  <div class="metrics">
+    <div class="mcard"><div class="k">결과 대상</div><div class="v" id="mTarget">—</div></div>
+    <div class="mcard"><div class="k">ABAP으로 넘어온 행</div><div class="v" id="mRows">—</div></div>
+    <div class="mcard"><div class="k">DB 왕복 · 반복</div><div class="v" id="mLoop">—</div></div>
+    <div class="mcard subrc"><div class="k">상태</div><div class="v" id="mSubrc">—</div></div>
+  </div>
+
+  <div class="target">
+    <div class="target__hd"><span id="targetHd">결과 대상</span><span class="cnt" id="targetCnt"></span></div>
+    <div class="target__body" id="targetBody"></div>
+  </div>
+
+  <div class="explain" id="explain"></div>
+</div>
+
+<script>
+window.SFL_CFG = {
+  carrid:'KE', single:{connid:'0701', fldate:'2026-06-23'}, cap:3,
+  cols:['connid','fldate','seatsocc','seatsmax'],
+  numeric:{seatsocc:true, seatsmax:true},
+  data:[
+    {carrid:'KE', connid:'0701', fldate:'2026-06-23', seatsocc:320, seatsmax:380},
+    {carrid:'KE', connid:'0701', fldate:'2026-06-24', seatsocc:290, seatsmax:380},
+    {carrid:'KE', connid:'0702', fldate:'2026-06-23', seatsocc:150, seatsmax:200},
+    {carrid:'KE', connid:'0702', fldate:'2026-06-25', seatsocc:180, seatsmax:200},
+    {carrid:'KE', connid:'0703', fldate:'2026-06-23', seatsocc:95,  seatsmax:120},
+    {carrid:'KE', connid:'0711', fldate:'2026-06-26', seatsocc:410, seatsmax:420},
+    {carrid:'KE', connid:'0711', fldate:'2026-06-27', seatsocc:388, seatsmax:420},
+    {carrid:'KE', connid:'0712', fldate:'2026-06-28', seatsocc:200, seatsmax:260}
+  ]
+};
+</script>
+<script src="../_engine/select-form-lab.js" defer></script>
+</body>
+</html>

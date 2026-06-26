@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH04 · 연산자와 흐름 제어</span>
+  <span class="meta">Chapter 4 · 연산자와 흐름 제어</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -31,7 +31,7 @@
 <div class="stage">
   <div class="layout">
     <main class="main">
-      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH04</nav>
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 4 › Lesson 1</nav>
       <section class="lhead">
         <p class="lhead__eyebrow">연산자와 흐름 제어</p>
         <h1>산술 연산과 대입 · 날짜 산술</h1>
@@ -39,13 +39,37 @@
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 4</span><span class="tag tag--ls">Lesson 1</span><span class="tag tag--lv">입문</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>값을 받았지만, 계산을 못 한다</h2>
+<section class="lblock"><h2>대입과 초기화 — <code>=</code> 와 <code>CLEAR</code></h2>
+<p>계산을 시작하기 전에 가장 기본부터 — <strong>값을 변수에 넣는 일</strong>이다. <code>=</code>는 수학의
+&#39;같다&#39;가 아니라, <strong>오른쪽을 왼쪽 변수에 넣어라</strong>라는 뜻의 <em>대입</em>이다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> gv_a <span class="tok-kw">TYPE</span> i.
+<span class="tok-kw">DATA</span> gv_b <span class="tok-kw">TYPE</span> i.
+
+gv_a = <span class="tok-num">10</span>.          <span class="tok-com">" 오른쪽 값(10)을 왼쪽 변수에 넣는다</span>
+gv_b = gv_a.        <span class="tok-com">" gv_a의 값을 gv_b에 복사 → gv_b = 10</span>
+gv_a = <span class="tok-num">25</span>.          <span class="tok-com">" 다시 넣으면 이전 값(10)은 덮여 사라진다 → gv_a = 25</span></code></pre></div></div>
+<p>변수를 <strong>처음 상태로 비우려면</strong> <button class="term" type="button" data-term="CLEAR">CLEAR</button>를 쓴다(숫자는 0, 문자는 공백으로 돌아간다).</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> gv_amount <span class="tok-kw">TYPE</span> i <span class="tok-kw">VALUE</span> <span class="tok-num">500</span>.
+
+<span class="tok-kw">CLEAR</span> gv_amount.     <span class="tok-com">" gv_amount = 0</span></code></pre></div></div>
+<blockquote>
+<p>옛 코드에는 <code>MOVE a TO b</code>(= <code>b = a</code>)도 보이는데, 지금은 <strong><code>=</code>가 표준</strong>이다.
+<code>MOVE</code>는 굳이 새로 쓰지 않는다(legacy).</p>
+</blockquote>
+</section><section class="lblock"><h2>값을 받았지만, 계산을 못 한다</h2>
 <p><button class="term" type="button" data-term="PARAMETERS">PARAMETERS</button>로 숫자를 입력받는 데까지 왔다(CH03). 그런데 막상 그 값으로
 <strong>무언가를 계산</strong>하려니 방법이 없다. 입력받은 두 수를 더하고 싶고, 금액에 부가세를
 곱하고 싶다. 변수에 값을 <strong>담는 것</strong>과, 그 값으로 <strong>계산하는 것</strong>은 다른 일이다.</p>
 <p>이번 레슨에서 ABAP의 <strong>산술 연산자</strong>부터 익힌다.</p>
 </section><section class="lblock"><h2>사칙연산 — <code>+ - * /</code> 와 제곱 <code>**</code></h2>
-<p>연산 결과를 <code>=</code>로 변수에 담는다. <code>=</code>는 &quot;오른쪽을 계산해서 왼쪽에 넣어라&quot;라는 뜻이다.</p>
+<p>연산 결과도 <code>=</code>로 변수에 담는다(왼쪽 변수 = 오른쪽 계산 결과).</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -56,16 +80,16 @@
 8</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> gv_result <span class="tok-kw">TYPE</span> i.
 
 gv_result = <span class="tok-num">7</span> + <span class="tok-num">3</span>.      <span class="tok-com">" 10</span>
-gv_result = <span class="tok-num">7</span>  <span class="tok-num">3</span>.      <span class="tok-com">" 4</span>
+gv_result = <span class="tok-num">7</span> - <span class="tok-num">3</span>.      <span class="tok-com">" 4</span>
 gv_result = <span class="tok-num">7</span> * <span class="tok-num">3</span>.      <span class="tok-com">" 21</span>
 gv_result = <span class="tok-num">2</span> ** <span class="tok-num">10</span>.    <span class="tok-com">" 1024 (2의 10제곱)</span>
 
 <span class="tok-kw">WRITE</span>: / gv_result.</code></pre></div></div>
-<blockquote>
+<blockquote class="cw">
 <p>⚠️ <strong>연산자 앞뒤에는 공백이 필수</strong>다. <code>7+3</code>(X) → <code>7 + 3</code>(O). ABAP은 토큰을
 공백으로 끊어 읽기 때문에 붙여 쓰면 오류가 난다.</p>
 </blockquote>
-<h3>계산 순서 — 우선순위와 괄호</h3>
+</section><section class="lblock"><h2>계산 순서 — 우선순위와 괄호</h2>
 <p>여러 연산이 한 줄에 섞이면 <strong>정해진 순서</strong>로 계산된다. 제곱 <code>**</code>이 가장 먼저,
 그다음 <code>*</code>·<code>/</code>, 마지막으로 <code>+</code>·<code>-</code> 순이다. 같은 등급끼리는 <strong>왼쪽부터</strong> 차례로 한다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
@@ -77,7 +101,7 @@ gv_n = <span class="tok-num">2</span> + <span class="tok-num">3</span> * <span c
 gv_n = ( <span class="tok-num">2</span> + <span class="tok-num">3</span> ) * <span class="tok-num">4</span>.    <span class="tok-com">" 20  — 괄호가 먼저: 5 * 4</span></code></pre></div></div>
 <p>순서를 바꾸고 싶으면 괄호 <code>( )</code>로 묶는다 — 묶은 부분이 <strong>먼저</strong> 계산된다. 이때도
 괄호 안팎에 <strong>공백</strong>을 둔다: <code>(2+3)</code>(X) → <code>( 2 + 3 )</code>(O).</p>
-<h3>나눗셈은 소수까지 — 타입에 주의</h3>
+</section><section class="lblock"><h2>나눗셈은 소수까지 — 타입에 주의</h2>
 <p>정수(<button class="term" type="button" data-term="I">I</button>) 변수에 나눗셈 결과를 담으면 <strong>반올림</strong>되어 소수가 사라진다. 소수가
 필요하면 <button class="term" type="button" data-term="P">P</button>(Packed) 타입을 쓴다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
@@ -89,12 +113,28 @@ gv_n = ( <span class="tok-num">2</span> + <span class="tok-num">3</span> ) * <sp
 
 gv_i   = <span class="tok-num">10</span> / <span class="tok-num">4</span>.    <span class="tok-com">" 3  (2.5가 반올림됨!)</span>
 gv_dec = <span class="tok-num">10</span> / <span class="tok-num">4</span>.    <span class="tok-com">" 2.50</span></code></pre></div></div>
-<blockquote>
+<blockquote class="cw">
 <p>⚠️ <strong>0으로 나누지 말 것</strong> — 나누는 수가 <code>0</code>이면 나눗셈 자체가 정의되지 않아
 프로그램이 <strong>런타임 오류</strong>(실행 도중 멈추는 오류)로 중단된다. 나누는 값이 <code>0</code>이
 될 수 있는지 늘 확인한다.</p>
 </blockquote>
-<h3>정수 몫과 나머지 — <code>DIV</code> · <code>MOD</code></h3>
+<p>그래서 보통은 <strong>나누기 전에 <code>0</code>인지 검사</strong>한다. 검사는 <code>IF</code>문으로 하는데, <code>IF</code>는
+아직 안 배웠으니 지금은 <strong>&quot;0이 아닐 때만 나눈다&quot;는 흐름만</strong> 읽고 넘어가자(정식 학습은
+<a href="CH04-L03.html">Chapter 4 · IF와 조건식</a>).</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> gv_x <span class="tok-kw">TYPE</span> i.
+<span class="tok-kw">DATA</span> gv_y <span class="tok-kw">TYPE</span> i <span class="tok-kw">VALUE</span> <span class="tok-num">0</span>.
+
+<span class="tok-com">" [선행 사용] IF는 CH04-L03에서 배운다 — 지금은 분석·암기 말고 흐름만</span>
+<span class="tok-kw">IF</span> gv_y &lt;&gt; <span class="tok-num">0</span>.            <span class="tok-com">" gv_y가 0이 아니면 ( &lt;&gt; 는 '같지 않다' )</span>
+  gv_x = <span class="tok-num">100</span> / gv_y.     <span class="tok-com">" 그때만 나눈다 → 런타임 오류 없음</span>
+<span class="tok-kw">ENDIF</span>.                   <span class="tok-com">" gv_y가 0이면 나누기를 통째로 건너뛴다</span></code></pre></div></div>
+</section><section class="lblock"><h2>정수 몫과 나머지 — <code>DIV</code> · <code>MOD</code></h2>
 <p><code>/</code>는 소수까지 계산하지만, 때로는 <strong>나눈 몫(정수)</strong> 과 <strong>나머지</strong> 만 따로 알고 싶다.
 그때 <code>DIV</code>(몫)와 <code>MOD</code>(나머지)를 쓴다. 둘 다 <code>+ - * /</code>와 같은 갈래의 산술 연산자다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
@@ -109,6 +149,10 @@ gv_r = <span class="tok-num">17</span> <span class="tok-kw">MOD</span> <span cla
 <blockquote>
 <p>💡 <code>MOD</code>는 <strong>짝수·홀수 판별</strong>에 자주 쓴다 — <code>n MOD 2</code>가 <code>0</code>이면 짝수, <code>1</code>이면 홀수다.</p>
 </blockquote>
+</section><section class="lblock"><h2>직접 따라가 보기 — 산술 한 줄씩 실행</h2>
+<p>지금까지의 **사칙연산·제곱·<code>DIV</code>·<code>MOD</code>**가 한 줄씩 실행되며 변수 값이 어떻게
+바뀌는지 따라가 본다.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">코드가 한 줄씩 실행되며 변수 값이 바뀌는 과정을 따라가기</span><a class="embed__open" href="../../../embeds/abap/CH04-L01-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH04-L01-S01.html" loading="lazy" title="코드가 한 줄씩 실행되며 변수 값이 바뀌는 과정을 따라가기"></iframe></figure>
 </section><section class="lblock"><h2>문장형 연산 — <code>ADD</code> · <code>SUBTRACT</code> · <code>MULTIPLY</code> · <code>DIVIDE</code></h2>
 <p><code>=</code> 말고, <strong>문장처럼 읽히는</strong> classic 연산문도 있다. 현업 코드에 자주 보이니
 눈에 익혀 둔다.</p>
@@ -126,21 +170,21 @@ gv_r = <span class="tok-num">17</span> <span class="tok-kw">MOD</span> <span cla
 <blockquote>
 <p>💡 <code>ADD 10 TO gv_n</code> 은 <code>gv_n = gv_n + 10</code> 과 똑같다. 둘 중 편한 쪽을 쓰면 된다.</p>
 </blockquote>
-</section><section class="lblock"><h2>대입과 초기화 — <code>=</code> 와 <code>CLEAR</code></h2>
-<p><code>=</code>로 값을 옮긴다. 변수를 <strong>처음 상태로 비우려면</strong> <button class="term" type="button" data-term="CLEAR">CLEAR</button>를 쓴다(숫자는 0,
-문자는 공백으로 돌아간다).</p>
+</section><section class="lblock"><h2>날짜도 계산된다 — <code>D</code> 타입의 특수 산술</h2>
+<p><button class="term" type="button" data-term="D">D</button>(날짜) 타입은 겉보기엔 <code>YYYYMMDD</code> 형식의 <strong>8자리 문자</strong>다(앞 레슨에서 봤다).
+그런데 <strong>예외적으로 더하기·빼기가 된다</strong> — 단, 보통의 산술과 <strong>다른 특수한 계산</strong>(달력
+규칙)이 들어간다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
-3</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> gv_amount <span class="tok-kw">TYPE</span> i <span class="tok-kw">VALUE</span> <span class="tok-num">500</span>.
+3
+4
+5</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> gv_date <span class="tok-kw">TYPE</span> d.
 
-<span class="tok-kw">CLEAR</span> gv_amount.     <span class="tok-com">" gv_amount = 0</span></code></pre></div></div>
-<blockquote>
-<p>옛 코드에는 <code>MOVE a TO b</code>(= <code>b = a</code>)도 보이는데, 지금은 <strong><code>=</code>가 표준</strong>이다.
-<code>MOVE</code>는 굳이 새로 쓰지 않는다(legacy).</p>
-</blockquote>
-</section><section class="lblock"><h2>날짜도 숫자다 — <code>D</code> 타입 산술</h2>
-<p><button class="term" type="button" data-term="D">D</button>(날짜) 타입은 내부적으로 <code>YYYYMMDD</code> 8자리 숫자다. 그래서 <strong>날짜에 숫자를
-더하면 그만큼 뒤의 날짜</strong>가 되고, <strong>두 날짜를 빼면 그 사이의 일수</strong>가 된다.</p>
+gv_date = <span class="tok-str">'20260131'</span>.       <span class="tok-com">" 1월 31일</span>
+gv_date = gv_date + <span class="tok-num">1</span>.      <span class="tok-com">" 보통 산술이면 '20260132'를 기대하지만,</span>
+                            <span class="tok-com">" 날짜는 특수 처리라 '20260201'(2월 1일)이 된다.</span></code></pre></div></div>
+<p><code>&#39;20260132&#39;</code> 같은 <strong>없는 날짜</strong>로 가지 않고, 달이 바뀌며 <strong>다음 날</strong>로 정확히 넘어간다.
+덕분에 날짜로 자연스럽게 계산할 수 있다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -151,10 +195,13 @@ gv_r = <span class="tok-num">17</span> <span class="tok-kw">MOD</span> <span cla
 <span class="tok-kw">DATA</span> gv_days  <span class="tok-kw">TYPE</span> i.
 
 gv_due  = gv_start + <span class="tok-num">30</span>.        <span class="tok-com">" 30일 뒤 → 20260131</span>
-gv_days = gv_due  gv_start.    <span class="tok-com">" 두 날짜 차이 → 30</span></code></pre></div></div>
-<p><code>&#39;20260101&#39;</code>처럼 <strong>따옴표 안 8자리</strong>로 날짜 <button class="term" type="button" data-term="리터럴">리터럴</button>을 적는다. 시간(<button class="term" type="button" data-term="T">T</button>)도 같은
-방식(<code>HHMMSS</code> 6자리)으로 더하고 뺄 수 있다.</p>
-<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">코드가 한 줄씩 실행되며 변수 값이 바뀌는 과정을 따라가기</span><a class="embed__open" href="../../../embeds/abap/CH04-L01-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH04-L01-S01.html" loading="lazy" title="코드가 한 줄씩 실행되며 변수 값이 바뀌는 과정을 따라가기"></iframe></figure>
+gv_days = gv_due - gv_start.    <span class="tok-com">" 두 날짜 차이(일수) → 30</span></code></pre></div></div>
+<ul>
+<li><strong>날짜 + 숫자</strong> → 그만큼 <strong>뒤의 날짜</strong></li>
+<li><strong>날짜 - 날짜</strong> → 그 사이의 <strong>일수</strong>(정수)</li>
+</ul>
+<p><code>&#39;20260101&#39;</code>처럼 <strong>따옴표 안 8자리</strong>로 날짜 <button class="term" type="button" data-term="리터럴">리터럴</button>을 적는다. 시간(<button class="term" type="button" data-term="T">T</button>)도 똑같이
+<strong>특수 산술</strong>이 적용된다 — <code>HHMMSS</code> 6자리에 초를 더하면 분·시가 알아서 넘어간다.</p>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
 <li><strong>연산자 공백 누락</strong> → <code>a+b</code>가 아니라 <code>a + b</code>. 괄호도 <code>( a + b )</code>처럼 띄운다.</li>
@@ -169,7 +216,7 @@ gv_days = gv_due  gv_start.    <span class="tok-com">" 두 날짜 차이 → 30<
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
-      <footer class="foot">SAP Developer Academy · CH04 CH04-L01</footer>
+      <footer class="foot">SAP Developer Academy · 배포자 SAP전문강사 정훈영</footer>
     </main>
     <aside class="journey" data-shell="journey"></aside>
   </div>

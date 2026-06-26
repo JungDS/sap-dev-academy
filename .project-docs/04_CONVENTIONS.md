@@ -1,6 +1,6 @@
 # 04. CONVENTIONS — 규칙 단일 홈 (R1~R15) · 이름 풀 · 입문자 작성법
 
-> 📅 최종수정: 2026-06-22 21:29 KST
+> 📅 최종수정: 2026-06-25 08:46 KST
 > 🎯 **이 문서가 규칙(R)의 단일 출처.** 01·05·06 등은 여기 ID를 참조한다(재진술 금지).
 > 🧭 **공통 원칙: 규칙은 형식을 강제하지 않는다 — 정직한 적합성이 우선.** 불편·시각요소·예고를 "칸을 채우려고" 인위적으로 만들지 말 것(맞는 곳에 맞는 것만).
 > 📖 파일을 쓰기/고치기 직전. 중요도 순(필수→높음→중), 안정 ID `R1`~`R15`.
@@ -30,6 +30,7 @@
 - 콜아웃은 `>` 블록인용. **레슨 끝 연결은 관계대로**(R15): 진짜 pain→solution이면 다음 불편을 `→ CHxx`(불편 체인), 형제/대안(DO↔WHILE)·심화면 억지 불편 대신 "도구 선택"/"다음 단계"로 정직히 연결.
 - **코드 글꼴 = D2Coding 우선**(`--mono:'D2Coding',Consolas,…`; 빌드·샘플·SVG 코드 텍스트 공통).
 - **코드 표시: 수직 스크롤만 허용, 수평 지양** — 한 줄 짧게(긴 문장 분할). 행번호(거터)와 코드 줄 수는 항상 1:1.
+- **다른 챕터/레슨 참조 = 링크(내부ID 비노출)** — `CHxx`를 본문에 그대로 노출 말고 `[Chapter NN · 제목](CHnn-Lmm.html)` 링크로(사람이 읽고 클릭 이동). **링크 대상 = 그 내용이 실제 있는 레슨**(특정 주제면 해당 `Lmm`, 챕터 전반이면 대표/첫 레슨) — **무조건 L01 금지**. 불편 체인 `→ CHxx`도 동일.
 
 **R6 · classic-first 경계 (CH04 삽입 리넘버 반영)** — 순수 classic 구간 = **CH01~17**. **New Syntax**(인라인 `DATA()`·`VALUE`·`NEW`·`+=`·`|…|`)는 CH17까지 **L0(예고조차 금지)** → **CH18에서 L3** 정식 도입. **New Open SQL**(`@`·콤마)은 CH18까지 L0 → **CH19에서 L3**(CH08~17 Open SQL은 전부 classic). 이는 R15 게이팅의 특례(일반보다 강함) — modern 도입(CH18/19) 후부터 자유 사용. 🔶 **예외 — `&&`(문자열 잇기)는 CH04에서 조기 도입**(매우 간단·고빈도); 그 대가로 classic `ADD`/`SUBTRACT`/`MULTIPLY`/`DIVIDE`도 CH04에서 함께 소개(`+=`/`-=`는 CH18로 미룸). + 스칼라·구조체는 **Local(프로그램 내 `DATA`/`TYPES`) → Global(DDIC) 나선**으로 재방문 — **DDIC 코어 = CH03(Domain·Data Element)·CH05(Structure)·CH07(Transparent Table)에 분산**. [[abap-curriculum-design]]
 
@@ -60,6 +61,7 @@
 - 레슨 `.md` **학습 경계(R15)**: `introduces`(이번에 L3 정식 도입할 개념)·`prereq`(전제 개념) = **리빌딩 시 필수**(게이팅 검증 근거) · `foreshadow`(L1 예고 허용)·`advanceUse`(L2 선행 사용 허용)·`prevRel`(이전 레슨과의 관계: `pain-solution`/`parallel`/`deepening`) = 선택. 빌드는 무시(메타 전용) — 리빌딩 때 경계·관계 선언 + 후속 정적 점검 근거.
 
 **R11 · 네이밍** — 챕터 폴더 = 챕터 ID(`CH01/`). 레슨 소스 = `<레슨ID>[-슬러그].md`. **생성물 HTML = `docs/abap/pages/<레슨ID>.html`**(슬러그 무관, 빌드 강제). 샘플 = `<카테고리>/<기능-케밥>.html`.
+- **ABAP 변수 접두어(스코프) ★** — Subroutine/Method(로컬 스코프) 도입 **전(=CH01~09)** 에는 모든 선언이 사실상 **전역**이다 → **`gv_`(스칼라)·`gs_`(Structure)·`gt_`(Internal Table)** 로 시작. 로컬 스코프(METHOD/FORM 안, **CH10 모듈화 기초↑**)에서 선언한 것만 `lv_`/`ls_`/`lt_`. 즉 g=global·l=local. **`it_`는 Header Line을 가진 Internal Table에만** (헤더라인 없는 일반 내부테이블은 `gt_`/`lt_`). [[abap-var-prefix-scope]]
 
 **R12 · glossary 패리티** — 본문에서 마킹한 모든 용어 키는 `reference/glossary.json`에 존재(미정의 0). 빌드 후 정적 점검.
 

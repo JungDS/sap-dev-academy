@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!-- CH04-L05-S01 — 엔진: step-debugger + _autoheight. config=레슨 전용(DO/sy-index, #C04-5).
      게이팅: DO·sy-index만(내부테이블·inline DATA() 없음). -->
-<html lang="ko">
+<html lang="ko" data-eng="step-debugger">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -11,15 +11,15 @@
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">반복마다 sy-index가 1,2,3…으로 <small>(스텝 디버거)</small></p>
-  <p class="lead"><b>다음 ⏭</b>을 누르면 <code>DO</code> 안을 한 회씩 돌며 <code>sy-index</code>가 1→2→…→5로 바뀝니다.</p>
+  <p class="hd">반복마다 값이 어떻게 쌓이나 <small>(스텝 디버거)</small></p>
+  <p class="lead"><b>다음 ⏭</b>을 누르면 <code>DO</code> 안 <b>두 줄</b>이 회차마다 다시 실행됩니다. 회차 <code>sy-index</code>는 1→5로, 합계 <code>gv_sum</code>은 1→3→6→10→15로 쌓이는 걸 보세요.</p>
 
   <div class="dbg" data-stepper>
     <div class="dbg__bar">
       <button class="btn btn--primary" data-start>▶ 시작</button>
       <button class="btn btn--step" data-next disabled>다음 ⏭</button>
       <div class="progress"><i data-progress></i></div>
-      <span class="muted" data-counter>0 / 7</span>
+      <span class="muted" data-counter>0 / 13</span>
     </div>
     <div class="dbg__main">
       <div class="dbg__editorwrap"><div class="dbg__edhd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span></div><div class="dbg__editor" data-code></div></div>
@@ -40,21 +40,30 @@
     <script type="application/json" class="stepper-config">
     {
       "code":[
+        "DATA gv_sum TYPE i VALUE 0.",
         "DO 5 TIMES.",
-        "  WRITE: / sy-index.",
+        "  gv_sum = gv_sum + sy-index.",
+        "  WRITE: / sy-index, '회차 → 합계', gv_sum.",
         "ENDDO."
       ],
       "vars":[
-        {"label":"sy-index","sub":"현재 회차(시스템 변수)","key":"sy-index","init":"-"}
+        {"label":"sy-index","sub":"현재 회차(시스템 변수)","key":"sy-index","init":"-"},
+        {"label":"gv_sum","sub":"누적 합","key":"gv_sum","init":"0"}
       ],
       "steps":[
-        {"line":1,"vars":{},"console":"DO 5 TIMES — 5번 반복 시작"},
-        {"line":2,"vars":{"sy-index":"1"},"console":"1회차 · sy-index=1 → 출력 1"},
-        {"line":2,"vars":{"sy-index":"2"},"console":"2회차 · sy-index=2 → 출력 2"},
-        {"line":2,"vars":{"sy-index":"3"},"console":"3회차 · sy-index=3 → 출력 3"},
-        {"line":2,"vars":{"sy-index":"4"},"console":"4회차 · sy-index=4 → 출력 4"},
-        {"line":2,"vars":{"sy-index":"5"},"console":"5회차 · sy-index=5 → 출력 5"},
-        {"line":3,"vars":{},"console":"ENDDO — 5회 완료"}
+        {"line":1,"vars":{"gv_sum":"0"},"console":"gv_sum = 0 으로 시작"},
+        {"line":2,"vars":{},"console":"DO 5 TIMES — 5번 반복 시작"},
+        {"line":3,"vars":{"sy-index":"1","gv_sum":"1"},"console":"1회차 · gv_sum = 0 + 1 = 1"},
+        {"line":4,"vars":{},"console":"출력: 1 회차 → 합계 1"},
+        {"line":3,"vars":{"sy-index":"2","gv_sum":"3"},"console":"2회차 · gv_sum = 1 + 2 = 3"},
+        {"line":4,"vars":{},"console":"출력: 2 회차 → 합계 3"},
+        {"line":3,"vars":{"sy-index":"3","gv_sum":"6"},"console":"3회차 · gv_sum = 3 + 3 = 6"},
+        {"line":4,"vars":{},"console":"출력: 3 회차 → 합계 6"},
+        {"line":3,"vars":{"sy-index":"4","gv_sum":"10"},"console":"4회차 · gv_sum = 6 + 4 = 10"},
+        {"line":4,"vars":{},"console":"출력: 4 회차 → 합계 10"},
+        {"line":3,"vars":{"sy-index":"5","gv_sum":"15"},"console":"5회차 · gv_sum = 10 + 5 = 15"},
+        {"line":4,"vars":{},"console":"출력: 5 회차 → 합계 15"},
+        {"line":5,"vars":{},"console":"ENDDO — 5회 완료, 합계 15"}
       ]
     }
     </script>

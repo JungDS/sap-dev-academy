@@ -1,5 +1,6 @@
 /* fill-blank — 빈칸 채우기(채점·정답보기·다시하기). 엔진 JS=fill-blank.js + 높이=_autoheight.js.
    _base.css=토큰만 → 위젯 프리미티브 자체 보유. 레슨별 빈칸 코드는 위젯 HTML에. */
+body{font-family:var(--font);color:var(--ink);background:transparent;line-height:1.5;}
 .wrap{padding:14px;}
 .hd{font-weight:800;font-size:1rem;margin:0 0 4px;} .hd small{font-weight:600;color:var(--brand);}
 .lead{margin:0 0 12px;color:var(--ink-soft);font-size:.86rem;}
@@ -18,7 +19,22 @@
 .blank:focus{outline:none;background:#e0e8ff;box-shadow:0 0 0 3px rgba(59,91,219,.22);}
 .blank.ok{border-color:var(--accent);background:#e8faf2;color:#0b7250;}
 .blank.bad{border-color:#d6336c;background:#ffe3ec;color:#b02a55;}
+.blank.peek{border-color:var(--amber);background:color-mix(in srgb, var(--amber) 20%, var(--surface));color:var(--ink);font-weight:700;}
 .fillblank__actions{display:flex;gap:10px;flex-wrap:wrap;}
 .fill-output{margin-top:14px;padding:12px 14px;border-radius:10px;background:#f1f5f9;border:1px solid var(--line);min-height:22px;font-weight:600;color:#334155;font-size:.88rem;}
 .fill-output.ok{background:#e8faf2;border-color:#bfead7;color:#0b7250;}
 .fill-output.bad{background:#ffe3ec;border-color:#f6c2d4;color:#b02a55;}
+
+/* 실무 팁 아코디언 — 접힌 권장 로직(예: 루프 전 입력 점검)을 누르면 펼친다. 토큰·color-mix로 다크 자동 적응. */
+.tip{margin:2px 0 16px;border:1px dashed color-mix(in srgb, var(--amber) 55%, var(--line));border-radius:10px;
+  background:color-mix(in srgb, var(--amber) 8%, var(--surface));overflow:hidden;}
+.tip>summary{cursor:pointer;list-style:none;padding:11px 14px;font-weight:700;font-size:.85rem;color:var(--ink);display:flex;align-items:center;gap:8px;}
+.tip>summary::-webkit-details-marker{display:none;}
+.tip>summary::before{content:"▸";color:var(--amber);font-weight:800;transition:transform .15s;}
+.tip[open]>summary::before{transform:rotate(90deg);}
+.tip__body{padding:0 14px 14px;}
+.tip__code{margin:0 0 10px;font-family:var(--mono);font-size:13px;line-height:1.85;white-space:pre-wrap;color:var(--ink);
+  background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:11px 13px;}
+.tip__code .k{color:var(--brand);font-weight:700;} .tip__code .s{color:var(--accent);} .tip__code .cmt{color:var(--ink-soft);font-style:italic;}
+.tip__note{margin:0;font-size:.83rem;line-height:1.7;color:var(--ink-soft);}
+.tip__note b{color:var(--ink);} .tip__note code{font-family:var(--mono);background:color-mix(in srgb, var(--brand) 12%, var(--surface));padding:1px 5px;border-radius:4px;}

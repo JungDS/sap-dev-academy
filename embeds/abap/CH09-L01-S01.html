@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<!-- CH09-L01-S01 — 엔진: relation-gate (embeds/_engine/relation-gate.{js,css}) · 자체 postHeight.
+     체험: ZBOOKING-CONCERT_ID에 C001/C999/F4 → Check Table ZCONCERT 통과/거부·연결선 끊김. 데이터=window.RG_CFG.
+     게이팅: DDIC 관계 선언 관점만(데이터 저장/트랜잭션은 CH24+). -->
+<html lang="ko" data-eng="relation-gate">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>관계 게이트 실험실 · CH09-L01-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/relation-gate.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">관계 게이트 실험실 <small>(Foreign Key · Check Table)</small></p>
+  <p class="lead">예매 테이블의 <code>ZBOOKING-CONCERT_ID</code>에 값을 넣어 보세요. Foreign Key가 가리키는 Check Table <code>ZCONCERT</code>에 <b>실제로 있는 값만</b> 통과합니다. 없는 값은 거부돼 고아 데이터를 막습니다.</p>
+
+  <div class="btns">
+    <button class="ibtn good" id="btnGood" type="button">C001 입력</button>
+    <button class="ibtn bad" id="btnBad" type="button">C999 입력</button>
+    <button class="ibtn f4" id="btnF4" type="button">🔍 F4로 고르기</button>
+  </div>
+
+  <div class="stage">
+    <div class="panel check">
+      <div class="panel__hd" id="chkHd">Check Table · ZCONCERT</div>
+      <div class="panel__body" id="chkBody"></div>
+    </div>
+    <div class="conn" id="conn"><div class="line"></div><div class="lbl">참조</div></div>
+    <div class="panel input">
+      <div class="panel__hd">입력칸 (Foreign Key Field)</div>
+      <div class="panel__body"><div class="fieldlbl" id="fkLbl">ZBOOKING-CONCERT_ID</div><div class="inbox empty" id="inbox">(값 없음)</div></div>
+    </div>
+    <div class="conn"><div class="line" style="background:var(--soon)"></div><div class="lbl">검증</div></div>
+    <div class="panel result">
+      <div class="panel__hd">검증 결과</div>
+      <div class="panel__body"><div class="verdict idle" id="verdict">입력 대기</div><div class="vexp" id="vexp"></div></div>
+    </div>
+  </div>
+
+  <div class="f4pop" id="f4pop" style="display:none"></div>
+
+  <div class="note"><b>핵심</b> — Foreign Key는 두 테이블을 물리적으로 합치는 게 아니라, "이 필드 값은 저 Check Table에 있어야 한다"는 <b>의미 관계를 DDIC에 선언</b>하는 것입니다. 이 검증은 입력·F4에서 작동하고, 프로그램 처리 책임까지 없애지는 않습니다(→ <a href="CH09-L08.html">L08</a>).</div>
+</div>
+
+<script>
+window.RG_CFG = {
+  checkTable:'ZCONCERT', fkTable:'ZBOOKING', fkField:'CONCERT_ID', keyField:'CONCERT_ID',
+  rows:[
+    {id:'C001', artist:'아이유 콘서트', venue:'KSPO DOME'},
+    {id:'C002', artist:'김연아 아이스쇼', venue:'잠실'}
+  ]
+};
+</script>
+<script src="../_engine/relation-gate.js" defer></script>
+</body>
+</html>

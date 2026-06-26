@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<!-- CH08-L06-S01 — 엔진: key-condition-lens (embeds/_engine/key-condition-lens.{js,css}) · 자체 postHeight.
+     체험: 키 부분을 채워 후보가 좁혀지는 장면 / 일반 필드는 전 행 훑기 / 보조 인덱스 개념. 속도 ms는 단정 안 함.
+     게이팅: 성능 심화는 후속 성능 챕터로 경계. 데이터=window.KCL_CFG. -->
+<html lang="ko" data-eng="key-condition-lens">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>키 조건 렌즈 · CH08-L06-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/key-condition-lens.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">키 조건 렌즈 <small>(찾는 길의 차이)</small></p>
+  <p class="lead">같은 테이블이라도 <b>무엇으로 찾느냐</b>가 "찾는 길"을 바꿉니다. 키 부분을 하나씩 채워 후보가 좁혀지는 장면과, 일반 필드로 찾을 때 여러 행을 훑는 장면을 비교해 보세요.</p>
+
+  <div class="modes" id="modes">
+    <button type="button" class="mbtn on" data-m="key">키 조회</button>
+    <button type="button" class="mbtn" data-m="general">일반 필드 조회</button>
+    <button type="button" class="mbtn" data-m="index">보조 인덱스 개념</button>
+  </div>
+
+  <div class="keysel" id="keysel">
+    <span class="keysel__lbl">조건으로 줄 키:</span>
+    <label class="kchk on" data-k="carrid"><input type="checkbox" checked> carrid = 'KE' <span class="keytag">KEY1</span></label>
+    <label class="kchk" data-k="connid"><input type="checkbox"> connid = '0701' <span class="keytag">KEY2</span></label>
+    <label class="kchk" data-k="fldate"><input type="checkbox"> fldate = '2026-06-23' <span class="keytag">KEY3</span></label>
+  </div>
+
+  <div class="stage">
+    <div class="panel" id="left"></div>
+    <div id="right"></div>
+  </div>
+
+  <div class="note"><b>주의</b> — 키를 일부만 줬다고 항상 한 행이 되는 건 아닙니다(<code>carrid='KE'</code>는 항공편 여러 개). 실제 속도(ms)는 시스템·데이터에 따라 다르므로 여기선 단정하지 않습니다. 본격 성능 튜닝은 <a href="CH32-L01.html">성능 챕터</a>에서 다룹니다.</div>
+</div>
+
+<script>
+window.KCL_CFG = {
+  key:{carrid:'KE', connid:'0701', fldate:'2026-06-23'},
+  general:{field:'planetype', val:'747-400'},
+  data:[
+    {carrid:'KE', connid:'0701', fldate:'2026-06-23', planetype:'747-400'},
+    {carrid:'KE', connid:'0701', fldate:'2026-06-24', planetype:'747-400'},
+    {carrid:'KE', connid:'0702', fldate:'2026-06-23', planetype:'A380'},
+    {carrid:'KE', connid:'0901', fldate:'2026-06-23', planetype:'777-200'},
+    {carrid:'LH', connid:'0400', fldate:'2026-06-23', planetype:'747-400'},
+    {carrid:'LH', connid:'0401', fldate:'2026-06-23', planetype:'A380'},
+    {carrid:'AA', connid:'0017', fldate:'2026-06-23', planetype:'777-200'}
+  ]
+};
+</script>
+<script src="../_engine/key-condition-lens.js" defer></script>
+</body>
+</html>

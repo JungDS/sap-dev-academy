@@ -1,0 +1,51 @@
+/* ===== search-help-builder — Elementary Search Help 조립 (CH09-L04) =====
+   Selection Method + parameter 역할(검색조건/목록표시/반환EXP)을 조립해 F4 팝업을 미리본다. 데이터=window.SHB_CFG. */
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:transparent;line-height:1.5;}
+.wrap{padding:14px;}
+.hd{font-weight:800;font-size:1rem;margin:0 0 4px;}
+.hd small{font-weight:600;color:var(--brand);}
+.lead{margin:0 0 12px;color:var(--ink-soft);font-size:.86rem;}
+.lead code{font-family:var(--mono);background:#eef2ff;color:var(--brand);padding:1px 5px;border-radius:5px;font-size:.92em;}
+
+.step{border:1px solid var(--line);border-radius:11px;background:var(--surface);padding:11px 13px;margin-bottom:11px;}
+.step__t{font-size:.74rem;font-weight:800;color:var(--brand);margin-bottom:9px;display:flex;align-items:center;gap:7px;}
+.step__t .n{background:var(--brand);color:#fff;border-radius:50%;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;}
+
+.smbtns{display:flex;flex-wrap:wrap;gap:7px;}
+.smbtn{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:8px;padding:6px 12px;font:inherit;font-size:.8rem;font-weight:700;cursor:pointer;font-family:var(--mono);}
+.smbtn.on{background:var(--brand);color:#fff;border-color:var(--brand);}
+.smbtn.bad.on{background:var(--bad);border-color:var(--bad);}
+
+.params{display:flex;flex-direction:column;gap:7px;}
+.prow{display:grid;grid-template-columns:120px 1fr;gap:9px;align-items:center;}
+.prow .pn{font-family:var(--mono);font-size:.82rem;font-weight:700;color:var(--ink);}
+.roles{display:flex;gap:6px;flex-wrap:wrap;}
+.rchip{border:1px solid var(--line);background:#fff;color:var(--ink-soft);border-radius:7px;padding:4px 10px;font:inherit;font-size:.74rem;font-weight:700;cursor:pointer;}
+/* ON 칩 배경 = 고정 중간톤 hex(밝기<0.6) → 다크 생성기가 어둡게 유지 → 흰 글자 대비 확보(라이트는 토큰값과 동일).
+   var(--brand/--amber)는 다크에서 밝은 파스텔이 되어 흰 글자가 안 보이므로 쓰지 않는다. */
+.rchip.on{color:#fff;}
+/* 역할 클래스는 비제네릭 접두(r-)로 — 공유 _dark.css의 다른 엔진 .list/.search 규칙과 교차 충돌 방지. */
+.rchip.r-search.on{background:#b45309;border-color:#b45309;}
+.rchip.r-list.on{background:#3b5bdb;border-color:#3b5bdb;}
+.rchip.r-exp.on{background:#0ca678;border-color:#0ca678;}
+
+/* F4 미리보기 */
+.f4{border:1px solid var(--brand);border-radius:11px;overflow:hidden;}
+.f4__hd{background:#0a6ed1;color:#fff;font-size:.74rem;font-weight:700;padding:7px 12px;}
+.f4__search{padding:9px 12px;background:#f6f8fc;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:9px;align-items:center;}
+.f4__search .sf{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:12px;}
+.f4__search .sf input{width:90px;font-family:var(--mono);font-size:12px;padding:4px 7px;border:1px solid var(--line);border-radius:6px;}
+.f4__search .none{color:var(--soon);font-size:.78rem;font-style:italic;}
+.dt{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px;}
+.dt th,.dt td{padding:6px 10px;text-align:left;border-bottom:1px solid #eef1f7;}
+.dt th{background:#fafbfe;color:var(--ink-soft);font-size:11px;font-weight:800;}
+.dt tbody tr{cursor:pointer;} .dt tbody tr:hover{background:#eef2ff;}
+.dt .id{color:var(--brand);font-weight:800;}
+
+.retbox{margin-top:10px;padding:9px 12px;border-radius:9px;font-size:.84rem;font-family:var(--font);}
+.retbox.ok{background:#eafaf3;color:#0b7250;} .retbox.no{background:rgba(214,51,108,.07);color:var(--bad);} .retbox.idle{background:#f3f4f7;color:var(--ink-soft);}
+.retbox code{font-family:var(--mono);background:#fff;border:1px solid var(--line);padding:0 5px;border-radius:4px;}
+
+.note{margin-top:12px;border-left:3px solid var(--brand);background:rgba(59,91,219,.06);border-radius:0 9px 9px 0;padding:9px 13px;font-size:.83rem;color:#2a3550;}
+.note code{font-family:var(--mono);background:#fff;border:1px solid var(--line);padding:0 5px;border-radius:4px;}

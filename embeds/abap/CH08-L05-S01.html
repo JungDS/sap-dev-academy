@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<!-- CH08-L05-S01 — 엔진: where-filter-lab (embeds/_engine/where-filter-lab.{js,css}) · 자체 postHeight.
+     체험: 조건 칩(=,>,BETWEEN,LIKE,IN,IS NULL)을 AND/OR로 조합 → 행별 통과/제외와 사유, classic SQL 생성.
+     게이팅: classic Open SQL(필드 그대로·@없음·콤마없음). SELECT-OPTIONS Range는 CH12. 데이터=window.WFL_CFG. -->
+<html lang="ko" data-eng="where-filter-lab">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WHERE 필터 실험실 · CH08-L05-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/where-filter-lab.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">WHERE 필터 실험실 <small>(classic Open SQL)</small></p>
+  <p class="lead">조건 칩을 켜고 끄며 <code>AND</code>/<code>OR</code>로 조합해 보세요. 노선 표 <code>SPFLI</code>의 각 행이 <b>통과</b>인지 <b>제외</b>인지, 제외라면 <b>어떤 조건에서 탈락</b>했는지 즉시 보여 줍니다.</p>
+
+  <div class="chips" id="chips"></div>
+
+  <div class="connrow">
+    <span class="connrow__lbl">조건 연결:</span>
+    <div class="tgl" id="connTgl"><button class="on" data-c="AND">AND (모두 만족)</button><button data-c="OR">OR (하나라도)</button></div>
+    <button class="clr" id="clr" type="button">조건 초기화</button>
+  </div>
+
+  <div class="codebox">
+    <div class="codebox__hd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span><span class="cnt" id="cnt"></span></div>
+    <pre class="code" id="code"></pre>
+  </div>
+
+  <div id="grid"></div>
+
+  <div class="note"><b>와일드카드</b> — <code>LIKE '07%'</code>의 <code>%</code>는 임의 길이, <code>_</code>는 한 글자. <b>IS NULL</b>은 DB에 값 자체가 없는 특별 상태(ABAP 초기값과 다름). 여러 후보는 <code>IN ( … )</code>. <b>SELECT-OPTIONS의 Range</b>를 이용한 동적 조건은 <a href="CH12-L07.html">Chapter 12</a>에서 배웁니다.</div>
+</div>
+
+<script>
+window.WFL_CFG = {
+  table:'spfli', itab:'gt_spfli',
+  cols:['carrid','connid','cityfrom','cityto','fltime','distance'],
+  numeric:{fltime:true, distance:true},
+  data:[
+    {carrid:'KE', connid:'0701', cityfrom:'SEOUL', cityto:'TOKYO',   fltime:130, distance:1160},
+    {carrid:'KE', connid:'0702', cityfrom:'SEOUL', cityto:'OSAKA',   fltime:95,  distance:870},
+    {carrid:'KE', connid:'0712', cityfrom:'SEOUL', cityto:'BEIJING', fltime:null, distance:950},
+    {carrid:'KE', connid:'0901', cityfrom:'SEOUL', cityto:'NEWYORK', fltime:870, distance:11000},
+    {carrid:'LH', connid:'0400', cityfrom:'FRANKFURT', cityto:'NEWYORK', fltime:455, distance:6200},
+    {carrid:'LH', connid:'0401', cityfrom:'FRANKFURT', cityto:'TOKYO',   fltime:660, distance:9300},
+    {carrid:'AA', connid:'0017', cityfrom:'NEWYORK', cityto:'SANFRAN', fltime:365, distance:4100}
+  ],
+  conds:[
+    {id:'c1', label:"carrid = 'KE'",            sql:"carrid = 'KE'",            field:'carrid',   type:'eq',   val:'KE'},
+    {id:'c2', label:"cityfrom = 'SEOUL'",       sql:"cityfrom = 'SEOUL'",       field:'cityfrom', type:'eq',   val:'SEOUL'},
+    {id:'c3', label:"distance > 1000",          sql:"distance > 1000",          field:'distance', type:'gt',   val:1000},
+    {id:'c4', label:"connid LIKE '07%'",        sql:"connid LIKE '07%'",        field:'connid',   type:'like', val:'07%'},
+    {id:'c5', label:"cityfrom IN ('SEOUL','TOKYO')", sql:"cityfrom IN ( 'SEOUL', 'TOKYO' )", field:'cityfrom', type:'in', val:['SEOUL','TOKYO']},
+    {id:'c6', label:"fltime BETWEEN 60 AND 120",sql:"fltime BETWEEN 60 AND 120",field:'fltime',   type:'between', lo:60, hi:120},
+    {id:'c7', label:"fltime IS NULL",           sql:"fltime IS NULL",           field:'fltime',   type:'isnull'}
+  ]
+};
+</script>
+<script src="../_engine/where-filter-lab.js" defer></script>
+</body>
+</html>

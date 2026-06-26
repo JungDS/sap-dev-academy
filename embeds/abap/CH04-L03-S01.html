@@ -1,47 +1,72 @@
 <!DOCTYPE html>
-<!-- CH04-L03-S01 — 엔진: mermaid (embeds/_engine/mermaid.{js,css}) + _autoheight. 콘텐츠=레슨 전용(IF/ELSEIF/ELSE, #C04-3).
-     게이팅: IF 분기 흐름만(이벤트 블록·내부테이블 없음). 그래프 정의는 아래 .mermaid 요소 textContent에. -->
+<!-- CH04-L03-S01 — §03 IF/ELSEIF/ELSE 흐름도(커스텀 SVG·자체 _autoheight). 중립=var() 토큰(테마 자동), 강조는 고정 중간톤.
+     게이팅: IF 분기 흐름만(이벤트 블록·내부테이블 없음). -->
 <html lang="ko">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>IF 분기 흐름도 · CH04-L03-S01</title>
-<!-- Mermaid: CDN 우선 + 손상 대비 로컬 백업(embeds/_vendor) -->
-<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-<script>if(!window.mermaid){var s=document.createElement("script");s.src="../_vendor/mermaid.min.js";document.head.appendChild(s);}</script>
+<title>IF / ELSEIF / ELSE 흐름도 · CH04-L03-S01</title>
 <link rel="stylesheet" href="../_engine/_base.css" />
-<link rel="stylesheet" href="../_engine/mermaid.css" />
+<style>
+  *{box-sizing:border-box;} html,body{margin:0;}
+  body{font-family:var(--font);color:var(--ink);background:transparent;line-height:1.6;}
+  .wrap{max-width:760px;margin:0 auto;padding:14px 16px 18px;}
+  .hd{margin:0 0 4px;font-weight:800;font-size:1.04rem;color:var(--ink);}
+  .hd small{font-weight:600;color:var(--ink-soft);font-size:.8rem;}
+  .lead{margin:0 0 14px;color:var(--ink-soft);font-size:.92rem;}
+  .lead code{font-family:var(--mono);background:color-mix(in srgb,var(--brand) 12%,var(--surface));padding:1px 5px;border-radius:5px;}
+  .dgm{display:block;width:100%;max-width:460px;height:auto;margin:0 auto;}
+  .note{margin:12px 0 0;font-size:.84rem;color:var(--ink-soft);background:color-mix(in srgb,var(--brand) 7%,var(--surface));border:1px solid var(--line);border-radius:10px;padding:9px 12px;line-height:1.65;}
+  .note b{color:var(--ink);} .note code{font-family:var(--mono);}
+  .nbox{fill:var(--surface);stroke:var(--line);stroke-width:1.5;}
+  .ndia{fill:var(--surface);stroke:var(--brand);stroke-width:1.7;}
+  .ngreen{fill:var(--surface);stroke:var(--accent);stroke-width:2;}
+  .nblue{fill:var(--surface);stroke:#4263eb;stroke-width:2;}
+  .namber{fill:var(--surface);stroke:#f08c00;stroke-width:2;}
+  .t{fill:var(--ink);font-size:13px;font-weight:700;font-family:var(--font);}
+  .tc{fill:var(--ink);font-size:12.5px;font-weight:800;font-family:var(--mono);}
+  .sm{fill:var(--ink-soft);font-size:11px;font-weight:800;font-family:var(--font);}
+  .arr{stroke:var(--ink-soft);stroke-width:1.7;fill:none;}
+  .ah{fill:var(--ink-soft);}
+</style>
 </head>
 <body>
-  <div class="wrap">
-    <p class="hd">IF / ELSEIF / ELSE — 흐름이 갈라진다 <small>(p_amt 금액 분류)</small></p>
-    <p class="lead">위에서부터 조건을 하나씩 검사해 <b>처음 참이 되는</b> 가지로만 들어갑니다. 마름모 = 조건(참/거짓), 사각형 = 실행할 <code>WRITE</code>.</p>
+<div class="wrap">
+  <p class="hd">IF / ELSEIF / ELSE — 흐름이 갈라진다 <small>(p_amt 금액 분류)</small></p>
+  <p class="lead">한 값 <code>p_amt</code>를 위에서부터 검사해 <b>처음 참이 되는 가지 하나만</b> 실행합니다.</p>
 
-    <div class="viz-card">
-      <p class="viz-card__title">한 값 <code>p_amt</code>가 세 갈래로 나뉜다</p>
-      <div class="mermaid" id="mm">
-flowchart TD
-  S(["p_amt 입력"]):::term
-  C1{"p_amt &gt; 1000 ?"}:::check
-  B1["큰 금액"]:::main
-  C2{"p_amt &gt; 0 ?"}:::check
-  B2["소액"]:::soft
-  B3["0 또는 음수"]:::out
-  S --> C1
-  C1 -->|"예"| B1
-  C1 -->|"아니오"| C2
-  C2 -->|"예"| B2
-  C2 -->|"아니오"| B3
-classDef term fill:#eef2ff,stroke:#94a3b8,stroke-width:2px,color:#1c2233;
-classDef check fill:#fff7ed,stroke:#e11d48,stroke-width:2px,color:#1c2233;
-classDef main fill:#ffffff,stroke:#10b981,stroke-width:2.4px,color:#0b7250;
-classDef soft fill:#ffffff,stroke:#3b5bdb,stroke-width:2px,color:#1d4ed8;
-classDef out fill:#ffffff,stroke:#fb923c,stroke-width:2px,color:#c2410c;
-      </div>
-      <p class="viz-note"><code>p_amt &gt; 1000</code>이 참이면 거기서 끝 — 아래 <code>ELSEIF/ELSE</code>는 보지 않습니다. 어느 가지로 가든 모든 길은 결국 <code>ENDIF</code>에서 하나로 합쳐집니다.</p>
-    </div>
-  </div>
-<script src="../_engine/mermaid.js" defer></script>
+  <svg class="dgm" viewBox="0 0 460 272" xmlns="http://www.w3.org/2000/svg" role="img"
+       aria-label="p_amt 입력 → p_amt>1000 이면 큰 금액, 아니면 p_amt>0 이면 소액, 아니면 0 또는 음수">
+    <defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker></defs>
+
+    <rect class="nbox" x="70" y="8" width="150" height="34" rx="9"/>
+    <text class="t" x="145" y="30" text-anchor="middle">p_amt 입력</text>
+    <path class="arr" d="M145,42 L145,63" marker-end="url(#ah)"/>
+
+    <polygon class="ndia" points="145,66 231,92 145,118 59,92"/>
+    <text class="tc" x="145" y="96" text-anchor="middle">p_amt &gt; 1000?</text>
+    <text class="sm" x="240" y="85">예</text>
+    <path class="arr" d="M231,92 L300,92" marker-end="url(#ah)"/>
+    <rect class="ngreen" x="302" y="75" width="126" height="34" rx="9"/>
+    <text class="t" x="365" y="96" text-anchor="middle">'큰 금액' 출력</text>
+    <text class="sm" x="153" y="136">아니오</text>
+    <path class="arr" d="M145,118 L145,147" marker-end="url(#ah)"/>
+
+    <polygon class="ndia" points="145,150 231,176 145,202 59,176"/>
+    <text class="tc" x="145" y="180" text-anchor="middle">p_amt &gt; 0?</text>
+    <text class="sm" x="240" y="169">예</text>
+    <path class="arr" d="M231,176 L300,176" marker-end="url(#ah)"/>
+    <rect class="nblue" x="302" y="159" width="126" height="34" rx="9"/>
+    <text class="t" x="365" y="180" text-anchor="middle">'소액' 출력</text>
+    <text class="sm" x="153" y="220">아니오</text>
+    <path class="arr" d="M145,202 L145,231" marker-end="url(#ah)"/>
+
+    <rect class="namber" x="70" y="232" width="150" height="34" rx="9"/>
+    <text class="t" x="145" y="254" text-anchor="middle">'0 또는 음수' 출력</text>
+  </svg>
+
+  <p class="note"><b>마름모</b>=조건(<code>IF</code>·<code>ELSEIF</code> 줄), <b>사각형</b>=실행할 <code>WRITE</code> 줄. <code>p_amt &gt; 1000</code>이 참이면 거기서 끝 — 아래 <code>ELSEIF/ELSE</code>는 보지 않습니다. 어느 가지로 가든 실행 후 <b><code>ENDIF</code>에서 하나로</b> 합쳐집니다.</p>
+</div>
 <script src="../_engine/_autoheight.js" defer></script>
 </body>
 </html>

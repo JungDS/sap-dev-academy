@@ -6,6 +6,9 @@
    ⚠️ iframe 안에서 로드되므로 부모 셸 base.css를 상속하지 않음 → 토큰을 여기 둔다.
    ⚠️ 리셋(*·body)·컴포넌트(.wrap·.hd…)는 각 엔진 css가 자체 보유 → 여기엔 토큰만(중복 0).
    ============================================================= */
+/* 다크모드 — 엔진별 하드코딩 라이트색 오버라이드(생성물). @import는 모든 룰보다 앞서야 함.
+   생성: node tools/gen-embed-dark.mjs · 코어 토큰 다크화는 아래 html.dark가 처리. */
+@import url("./_dark.css");
 /* 코드 글꼴 — D2Coding 웹폰트(OFL). 위젯은 iframe이라 자체 @font-face 필요. 단일 파일 재사용(assets/fonts). */
 @font-face{
   font-family:'D2Coding';
@@ -16,8 +19,20 @@
   --bg:#f6f7fb; --surface:#fff; --ink:#1c2233; --ink-soft:#5b6478; --line:#e6e8ef;
   --brand:#3b5bdb; --accent:#0ca678; --soon:#94a0b8; --warn:#be123c; --amber:#b45309;
   --good:#0ca678; --bad:#d6336c;
+  /* 채운 헤더/배지 배경(흰 글자 위) — 라이트=선명, 다크=톤다운(눈부심 방지·var() 자동전환) */
+  --fill-bad:#d6336c; --fill-good:#0ca678; --fill-amber:#b45309; --fill-brand:#3b5bdb;
   --mono:'D2Coding',Consolas,Monaco,'Courier New',monospace;
   --font:-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic",Roboto,sans-serif;
   --radius:14px;
   --shadow:0 1px 2px rgba(20,28,51,.04),0 8px 24px rgba(20,28,51,.06);
+}
+/* 다크모드 — 부모 셸이 iframe <html>에 .dark 주입(shell.js embedTheme, same-origin).
+   여기선 코어 토큰만 어둡게 → var() 기반 색은 자동 적응. 엔진별 하드코딩 라이트색은
+   각 엔진 css의 html.dark 블록이 따로 덮는다(중복 0, 토큰만 단일 홈). */
+html.dark{
+  --bg:#15171c; --surface:#1f2229; --ink:#e8eaf0; --ink-soft:#a2a9ba; --line:#333845;
+  --brand:#7aa2ff; --accent:#34d399; --soon:#6b7488; --warn:#fb7185; --amber:#fbbf24;
+  --good:#34d399; --bad:#f472b6;
+  --fill-bad:#7a2540; --fill-good:#135a3f; --fill-amber:#5e3c14; --fill-brand:#2d3f73;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.42);
 }

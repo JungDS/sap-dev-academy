@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<!-- CH09-L07-S03 — 자체 포함 정적 SVG 다이어그램(재사용 엔진 없는 고유물 · embeds/_engine/_autoheight.js로 높이).
+     §02 "우선순위 사다리" text 블록을 시각화: F4 누름→①~④ 위에서부터 검사, 있으면 채택·없으면 ▼.
+     규칙(R5): 본문/시각자료에 raw CHxx 노출 금지 → 챕터 참조는 레슨 본문 링크로만(여기엔 ID 미출력).
+     테마 대응: 중립색=var() 토큰(_base.css html.dark 자동), 강조색=고정 중간톤 hex(흰 글자 대비 양호). -->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>F4 우선순위 사다리 다이어그램 · CH09-L07-S03</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<style>
+  *{box-sizing:border-box;} html,body{margin:0;}
+  body{font-family:var(--font);color:var(--ink);background:transparent;line-height:1.5;}
+  .wrap{padding:14px;}
+  .hd{font-weight:800;font-size:1rem;margin:0 0 4px;}
+  .hd small{font-weight:600;color:var(--brand);}
+  .lead{margin:0 0 12px;color:var(--ink-soft);font-size:.86rem;}
+  .lead code{font-family:var(--mono);background:#eef2ff;color:var(--brand);padding:1px 5px;border-radius:5px;font-size:.92em;}
+  .diagram{border:1px solid var(--line);border-radius:13px;background:var(--surface);padding:8px;}
+  .diagram svg{display:block;width:100%;max-width:560px;height:auto;margin:0 auto;}
+  .t-name{font:800 15px var(--font);fill:var(--ink);}
+  .t-desc{font:600 11.5px var(--font);fill:var(--ink-soft);}
+  .t-num{font:800 15px var(--font);fill:#fff;}
+  .t-entry{font:800 12.5px var(--font);fill:#fff;}
+  .t-no{font:700 11px var(--font);fill:var(--ink-soft);}
+  .t-yes{font:800 11.5px var(--font);fill:#0a8f68;}
+  .t-yeslbl{font:700 10.5px var(--font);fill:var(--ink-soft);}
+  .card{fill:var(--surface);stroke:var(--line);stroke-width:1.4;}
+  .rail{stroke:var(--line);stroke-width:2;fill:none;}
+  .note{margin-top:12px;border-left:3px solid var(--brand);background:rgba(59,91,219,.06);border-radius:0 9px 9px 0;padding:9px 13px;font-size:.83rem;color:#2a3550;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">F4 우선순위 사다리 <small>(위가 있으면 아래는 안 본다)</small></p>
+  <p class="lead">한 입력칸에 도움말이 여러 개 걸려 있어도, <code>F4</code> 한 번에 <b>위에서부터 검사해 가장 먼저 걸린 하나만</b> 뜹니다.</p>
+
+  <div class="diagram">
+    <svg viewBox="0 0 580 434" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="F4 입력 도움말 우선순위 사다리 다이어그램">
+      <defs>
+        <marker id="ar-no" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--soon)"/>
+        </marker>
+        <marker id="ar-yes" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#0ca678"/>
+        </marker>
+      </defs>
+
+      <!-- F4 진입(좌측 스파인 정렬) -->
+      <rect x="40" y="10" width="210" height="28" rx="14" fill="#2c3666"/>
+      <text x="145" y="29" text-anchor="middle" class="t-entry">⌨  F4 한 번 누름</text>
+      <line x1="72" y1="38" x2="72" y2="54" class="rail" marker-end="url(#ar-no)"/>
+
+      <!-- ① 코드 직접 F4 (cy=91) -->
+      <rect x="40" y="56" width="400" height="70" rx="13" class="card"/>
+      <circle cx="72" cy="91" r="16" fill="#7048e8"/>
+      <text x="72" y="96" text-anchor="middle" class="t-num">1</text>
+      <text x="100" y="84" class="t-name">코드로 직접 만든 F4</text>
+      <text x="100" y="104" class="t-desc">화면 이벤트에서 코드로 직접 목록을 띄움</text>
+      <text x="470" y="83" text-anchor="middle" class="t-yeslbl">있으면</text>
+      <line x1="448" y1="91" x2="496" y2="91" class="rail" stroke="#0ca678" marker-end="url(#ar-yes)"/>
+      <text x="502" y="95" class="t-yes">✓ 채택</text>
+      <line x1="72" y1="126" x2="72" y2="152" class="rail" marker-end="url(#ar-no)"/>
+      <text x="88" y="143" class="t-no">없으면</text>
+
+      <!-- ② Search Help (cy=189) -->
+      <rect x="40" y="154" width="400" height="70" rx="13" class="card"/>
+      <circle cx="72" cy="189" r="16" fill="#3b5bdb"/>
+      <text x="72" y="194" text-anchor="middle" class="t-num">2</text>
+      <text x="100" y="182" class="t-name">Search Help</text>
+      <text x="100" y="202" class="t-desc">직접 설계한 맞춤 검색창 (조건·결과 컬럼 지정)</text>
+      <line x1="448" y1="189" x2="496" y2="189" class="rail" stroke="#0ca678" marker-end="url(#ar-yes)"/>
+      <text x="502" y="193" class="t-yes">✓ 채택</text>
+      <line x1="72" y1="224" x2="72" y2="250" class="rail" marker-end="url(#ar-no)"/>
+      <text x="88" y="241" class="t-no">없으면</text>
+
+      <!-- ③ Check / Text / 고정값 (cy=287) -->
+      <rect x="40" y="252" width="400" height="70" rx="13" class="card"/>
+      <circle cx="72" cy="287" r="16" fill="#0ca678"/>
+      <text x="72" y="292" text-anchor="middle" class="t-num">3</text>
+      <text x="100" y="280" class="t-name">Check · Text · 고정값</text>
+      <text x="100" y="300" class="t-desc">관계 마스터·코드 이름·고정값에서 자동 목록</text>
+      <line x1="448" y1="287" x2="496" y2="287" class="rail" stroke="#0ca678" marker-end="url(#ar-yes)"/>
+      <text x="502" y="291" class="t-yes">✓ 채택</text>
+      <line x1="72" y1="322" x2="72" y2="348" class="rail" marker-end="url(#ar-no)"/>
+      <text x="88" y="339" class="t-no">없으면</text>
+
+      <!-- ④ 타입 기본 (cy=385) -->
+      <rect x="40" y="350" width="400" height="70" rx="13" class="card"/>
+      <circle cx="72" cy="385" r="16" fill="#748094"/>
+      <text x="72" y="390" text-anchor="middle" class="t-num">4</text>
+      <text x="100" y="378" class="t-name">타입 기본 도움</text>
+      <text x="100" y="398" class="t-desc">아무것도 안 걸어도 — 날짜→달력, 숫자→계산기</text>
+      <line x1="448" y1="385" x2="496" y2="385" class="rail" stroke="#0ca678" marker-end="url(#ar-yes)"/>
+      <text x="502" y="389" class="t-yes">✓ 채택</text>
+    </svg>
+  </div>
+
+  <div class="note"><b>읽는 법</b> — ①부터 차례로 "있나?"를 확인해 <b>처음 걸린 하나에서 멈춥니다</b>(✓ 채택). F4가 예상과 다르면 이 순서를 위에서부터 짚으면 원인이 보입니다. ①(코드로 직접 만든 F4)은 지금은 "맨 위에 이런 게 있다"만 알면 됩니다.</div>
+</div>
+
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>
