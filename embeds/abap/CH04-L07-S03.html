@@ -20,19 +20,23 @@
   .fl-t{fill:var(--ink);font-weight:700;font-size:12px;font-family:var(--font);}
   .fl-rt{fill:var(--bad);font-weight:800;font-size:11px;font-family:var(--font);}
   .fl-pt{fill:var(--ink);font-weight:800;font-size:12.5px;font-family:var(--font);}
+  .fl-pt2{fill:var(--ink);font-weight:700;font-size:11px;font-family:var(--font);}
   .fl-sm{fill:var(--ink-soft);font-size:10px;font-weight:800;font-family:var(--font);}
   .fl-arrow{stroke:var(--ink-soft);stroke-width:1.6;fill:none;}
   .fl-ah{fill:var(--ink-soft);}
   .fl-t2{fill:var(--ink);font-weight:700;font-size:10px;font-family:var(--font);}
   /* 인포그래픽(이미지형): IF(OR로 묶인 좌·우 두 조건) + ELSEIF 의 코드 구조로 설명.
      카드 배경=color-mix(accent,surface)→테마 적응. 배지=고정 중간톤+흰글씨(다크 안전), 컬러 텍스트=var 토큰. */
-  .ig{margin-top:14px;}
-  .ig-h{margin:0 0 2px;font-size:1rem;font-weight:800;color:var(--ink);}
+  .ig{margin-top:24px;}
+  .ig-h{display:flex;align-items:center;gap:7px;margin:0 0 3px;font-size:1rem;font-weight:800;color:var(--ink);}
+  .ig-hico{flex:none;width:19px;height:19px;color:var(--brand);}
   .ig-sub{margin:0 0 12px;font-size:.82rem;color:var(--ink-soft);font-weight:600;line-height:1.55;}
   .ig-sub b{color:var(--ink);}
-  .ig-group{border:1.6px dashed color-mix(in srgb,#3b5bdb 48%,var(--line));border-radius:14px;padding:10px 11px 12px;}
-  .ig-glabel{margin:0 2px 9px;font-size:.8rem;color:var(--ink-soft);font-weight:600;line-height:1.55;}
-  .ig-glabel b{color:var(--ink);}
+  .ig-group{border:1.6px dashed color-mix(in srgb,#3b5bdb 48%,var(--line));border-radius:14px;padding:11px 12px 13px;}
+  .ig-glabel{margin:0 2px 10px;}
+  .ig-ifline{display:inline-block;font-family:var(--mono);font-size:.82rem;font-weight:700;color:var(--ink);background:color-mix(in srgb,#3b5bdb 10%,var(--surface));border:1px solid color-mix(in srgb,#3b5bdb 25%,var(--surface));border-radius:7px;padding:4px 10px;margin-bottom:7px;}
+  .ig-gtext{margin:0;font-size:.8rem;color:var(--ink-soft);font-weight:600;line-height:1.6;}
+  .ig-gtext b{color:var(--ink);}
   .ig-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
   .ig-row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;}
   @media (max-width:560px){.ig-row,.ig-row2{grid-template-columns:1fr;}}
@@ -99,7 +103,7 @@ DATA: gv_dan TYPE i, gv_mul TYPE i, gv_cnt TYPE i, gv_res TYPE i.</pre>
     <details class="tip">
       <summary>💡 시작·종료 범위를 점검하는 로직은 여기(루프 전)에 추가하는 게 좋습니다 — 펼쳐 보기</summary>
       <div class="tip__body">
-        <p class="tip__note">루프 <b>전에 두 번만</b> 확인하면 됩니다 — ① <b>양 끝</b>(시작 ≥ 2 · 종료 ≤ 9) → ② <b>순서</b>(시작 ≤ 종료). 둘 다 통과해야 실행하고, 어긋나면 안내 후 멈춥니다. 신기하게도 <b>이 둘이면 시작·종료가 모두 2~9 안</b>에 들어옵니다(까닭은 맨 아래 🪄).</p>
+        <p class="tip__note">루프 <b>전에 두 번만</b> 확인하면 됩니다 — ① <b>양 끝</b>(시작 ≥ 2 · 종료 ≤ 9) → ② <b>순서</b>(시작 ≤ 종료). 둘 다 통과해야 실행하고, 어긋나면 안내 후 멈춥니다. 신기하게도 <b>이 둘이면 시작·종료가 모두 2~9 안</b>에 들어옵니다(까닭은 <b>맨 아래에서 그림으로</b>).</p>
         <svg class="fl-svg" viewBox="0 0 440 292" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="입력 점검 흐름: 범위 관문과 순서 관문을 통과해야 실행, 아니면 안내 후 중단">
           <defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="fl-ah"/></marker></defs>
           <rect class="fl-box" x="28" y="8" width="194" height="34" rx="9"/>
@@ -121,8 +125,9 @@ DATA: gv_dan TYPE i, gv_mul TYPE i, gv_cnt TYPE i, gv_res TYPE i.</pre>
           <text class="fl-rt" x="339" y="187" text-anchor="middle">⛔ '시작 ≤ 종료' → 중단</text>
           <text class="fl-sm" x="133" y="227">아니오</text>
           <path class="fl-arrow" d="M125,210 L125,238" marker-end="url(#ah)"/>
-          <rect class="fl-pass" x="28" y="240" width="194" height="40" rx="10"/>
-          <text class="fl-pt" x="125" y="265" text-anchor="middle">✅ 통과 → 범위 출력</text>
+          <rect class="fl-pass" x="20" y="238" width="210" height="48" rx="11"/>
+          <text class="fl-pt" x="125" y="257" text-anchor="middle">✅ 통과</text>
+          <text class="fl-pt2" x="125" y="275" text-anchor="middle">해당 범위의 구구단 출력</text>
         </svg>
         <p class="tip__sub">두 관문을 <code>IF</code> / <code>ELSEIF</code>로 적으면:</p>
 <pre class="tip__code"><span class="k">IF</span> p_from &lt; 2 <span class="k">OR</span> p_to &gt; 9.
@@ -133,35 +138,38 @@ DATA: gv_dan TYPE i, gv_mul TYPE i, gv_cnt TYPE i, gv_res TYPE i.</pre>
   <span class="k">EXIT</span>.
 <span class="k">ENDIF</span>.</pre>
         <div class="ig">
-          <p class="ig-h">🪄 구구단 점검 로직, 왜 이렇게 검사할까?</p>
-          <p class="ig-sub">검사는 1·2·3이 아닙니다 — <b>IF 한 줄</b>(<code>OR</code>로 묶인 좌·우 두 조건)과 <b>ELSEIF 한 줄</b>, 이렇게 둘입니다.</p>
+          <p class="ig-h"><svg class="ig-hico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6.5" fill="none" stroke="currentColor" stroke-width="2.2"/><line x1="15" y1="15" x2="20.5" y2="20.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg> 구구단 점검 로직, 왜 이렇게 검사할까?</p>
+          <p class="ig-sub">조건문이 어떻게 <b>시작·종료를 모두 2~9</b>로 가두는지, IF와 ELSEIF를 한 조각씩 뜯어 봅니다.</p>
 
           <div class="ig-group">
-            <p class="ig-glabel"><b>IF <code>p_from &lt; 2</code> OR <code>p_to &gt; 9</code></b> — 한 IF가 <code>OR</code>로 두 조건을 묶어 <b>하나라도 참이면 오류</b>로 멈춥니다. 그래서 아래 둘은 1·2가 아니라 <b>같은 IF의 좌·우 짝</b>입니다.</p>
+            <div class="ig-glabel">
+              <code class="ig-ifline">IF&nbsp; p_from &lt; 2&nbsp; OR&nbsp; p_to &gt; 9</code>
+              <p class="ig-gtext">한 IF가 <code>OR</code>로 두 가지를 함께 봅니다. <b>둘 중 하나라도 참이면</b> 오류 메시지를 내고 멈추죠. 그래서 아래 두 조건은 <b>같은 IF의 왼쪽·오른쪽</b>입니다.</p>
+            </div>
             <div class="ig-row">
               <div class="ig-card c-blue">
-                <p class="ig-ct"><span class="ig-tag t-blue">IF 좌측 조건</span> <code>p_from &lt; 2</code> 는 무엇을 뜻할까?</p>
+                <p class="ig-ct"><span class="ig-tag t-blue">IF 왼쪽 조건</span> <code>p_from &lt; 2</code></p>
                 <ul class="ig-ul">
-                  <li>시작 단이 <b>2보다 작으면</b> 오류 — 즉 <b>시작의 하한(≥2)</b>만 검사합니다.</li>
-                  <li>2 이상이면 이 조건만으로는 통과입니다.</li>
+                  <li>시작이 <b>2보다 작으면</b> 이 조건이 <b>참</b> → (OR이라) IF가 실행돼 <b>오류·중단</b>.</li>
+                  <li>시작이 <b>2 이상이면</b> 이 조건은 <b>거짓</b> → 오류를 내지 않고 <b>다음 검사</b>로 넘어갑니다.</li>
                 </ul>
                 <svg class="ig-ray" viewBox="0 0 330 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                   <text class="ray-n" x="165" y="14" text-anchor="middle">2</text>
                   <polygon class="fill-err" points="14,26 28,18 28,34"/>
                   <line class="ray-err" x1="27" y1="26" x2="165" y2="26"/>
-                  <line class="ray-pb" x1="165" y1="26" x2="303" y2="26"/>
-                  <polygon class="fill-pb" points="316,26 302,18 302,34"/>
+                  <line class="ray-pg" x1="165" y1="26" x2="303" y2="26"/>
+                  <polygon class="fill-pg" points="316,26 302,18 302,34"/>
                   <circle class="ray-pt" cx="165" cy="26" r="6.5"/>
                 </svg>
-                <div class="ig-chips"><span class="ig-chip chip-err">오류 (&lt; 2)</span><span class="ig-chip chip-pb">통과 (2 이상)</span></div>
-                <p class="ig-info i-blue"><i class="ig-ico ico-b">i</i> 시작의 상한(9 이내)은 아직 확정 아님</p>
+                <div class="ig-chips"><span class="ig-chip chip-err">참 → 오류 (&lt; 2)</span><span class="ig-chip chip-pg">거짓 → 다음 (≥ 2)</span></div>
+                <p class="ig-info i-blue"><i class="ig-ico ico-b">i</i> 시작의 상한(9 이내)은 여기서 아직 안 봅니다</p>
               </div>
 
               <div class="ig-card c-green">
-                <p class="ig-ct"><span class="ig-tag t-green">IF 우측 조건</span> <code>p_to &gt; 9</code> 는 무엇을 뜻할까?</p>
+                <p class="ig-ct"><span class="ig-tag t-green">IF 오른쪽 조건</span> <code>p_to &gt; 9</code></p>
                 <ul class="ig-ul">
-                  <li>종료 단이 <b>9보다 크면</b> 오류 — 즉 <b>종료의 상한(≤9)</b>만 검사합니다.</li>
-                  <li>9 이하면 이 조건만으로는 통과입니다.</li>
+                  <li>종료가 <b>9보다 크면</b> 이 조건이 <b>참</b> → IF가 실행돼 <b>오류·중단</b>.</li>
+                  <li>종료가 <b>9 이하면</b> 이 조건은 <b>거짓</b> → 오류를 내지 않고 <b>다음 검사</b>로 넘어갑니다.</li>
                 </ul>
                 <svg class="ig-ray" viewBox="0 0 330 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                   <text class="ray-n" x="165" y="14" text-anchor="middle">9</text>
@@ -171,23 +179,23 @@ DATA: gv_dan TYPE i, gv_mul TYPE i, gv_cnt TYPE i, gv_res TYPE i.</pre>
                   <polygon class="fill-err" points="316,26 302,18 302,34"/>
                   <circle class="ray-pt" cx="165" cy="26" r="6.5"/>
                 </svg>
-                <div class="ig-chips"><span class="ig-chip chip-pg">통과 (9 이하)</span><span class="ig-chip chip-err">오류 (&gt; 9)</span></div>
-                <p class="ig-info i-green"><i class="ig-ico ico-g">i</i> 종료의 하한(2 이상)은 아직 확정 아님</p>
+                <div class="ig-chips"><span class="ig-chip chip-pg">거짓 → 다음 (≤ 9)</span><span class="ig-chip chip-err">참 → 오류 (&gt; 9)</span></div>
+                <p class="ig-info i-green"><i class="ig-ico ico-g">i</i> 종료의 하한(2 이상)은 여기서 아직 안 봅니다</p>
               </div>
             </div>
           </div>
 
           <div class="ig-card c-purple" style="margin-top:12px;">
-            <p class="ig-ct"><span class="ig-tag t-purple">ELSEIF 조건</span> <code>p_from &gt; p_to</code> 는 단순 순서 검사일까?</p>
+            <p class="ig-ct"><span class="ig-tag t-purple">ELSEIF 조건</span> <code>p_from &gt; p_to</code></p>
             <div class="ig-steps">
               <div class="ig-mini">
-                <p class="ig-mt">선행 조건 <small>(IF를 이미 통과함)</small></p>
-                <p><b>p_from ≥ 2</b><br><b>p_to ≤ 9</b></p>
+                <p class="ig-mt">여기로 오는 때 <small>(IF가 거짓일 때만)</small></p>
+                <p>ELSEIF는 <b>앞 IF가 거짓</b>이라야 실행됩니다. 그래서 여기 왔다면 이미<br><b>p_from ≥ 2</b> 그리고 <b>p_to ≤ 9</b></p>
               </div>
               <span class="ig-step-arr">➜</span>
               <div class="ig-mini">
-                <p class="ig-mt">이제 ELSEIF 를 본다</p>
-                <p>p_from &gt; p_to 가 <b>아니어야</b> 통과<br>즉, 통과했다면 <b>p_from ≤ p_to</b></p>
+                <p class="ig-mt">ELSEIF <code>p_from &gt; p_to</code></p>
+                <p><b>참</b>(시작 &gt; 종료)이면 → 오류·중단<br><b>거짓</b>(시작 ≤ 종료)이면 → 통과(실행)</p>
               </div>
               <div class="ig-segwrap">
                 <svg class="ig-seg2" viewBox="0 0 340 108" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -210,17 +218,17 @@ DATA: gv_dan TYPE i, gv_mul TYPE i, gv_cnt TYPE i, gv_res TYPE i.</pre>
             </div>
             <div class="ig-row2">
               <div class="ig-card c-blue">
-                <p class="ig-ct"><span class="ig-tag t-blue">A</span> 왜 <code>p_from</code> 도 9 이하?</p>
+                <p class="ig-ct"><span class="ig-tag t-blue">A</span> 왜 <code>p_from</code> 도 9 이하일까?</p>
                 <ul class="ig-ul">
-                  <li>IF 우측에서 <b>p_to ≤ 9</b>, ELSEIF 통과로 <b>p_from ≤ p_to</b>.</li>
-                  <li>이으면 <b>p_from ≤ p_to ≤ 9</b> → p_from도 9 이하.</li>
+                  <li>IF 오른쪽이 거짓 → <b>p_to ≤ 9</b>, ELSEIF가 거짓(통과) → <b>p_from ≤ p_to</b>.</li>
+                  <li>이으면 <b>p_from ≤ p_to ≤ 9</b> → 그래서 p_from도 9 이하!</li>
                 </ul>
               </div>
               <div class="ig-card c-green">
-                <p class="ig-ct"><span class="ig-tag t-green">B</span> 왜 <code>p_to</code> 도 2 이상?</p>
+                <p class="ig-ct"><span class="ig-tag t-green">B</span> 왜 <code>p_to</code> 도 2 이상일까?</p>
                 <ul class="ig-ul">
-                  <li>IF 좌측에서 <b>p_from ≥ 2</b>, ELSEIF 통과로 <b>p_from ≤ p_to</b>.</li>
-                  <li>이으면 <b>2 ≤ p_from ≤ p_to</b> → p_to도 2 이상.</li>
+                  <li>IF 왼쪽이 거짓 → <b>p_from ≥ 2</b>, ELSEIF가 거짓(통과) → <b>p_from ≤ p_to</b>.</li>
+                  <li>이으면 <b>2 ≤ p_from ≤ p_to</b> → 그래서 p_to도 2 이상!</li>
                 </ul>
               </div>
             </div>
