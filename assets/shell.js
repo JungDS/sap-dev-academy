@@ -126,7 +126,7 @@
       });
     });
     var lessonHtml = chLessons.map(function (l) {
-      return '<li><a class="' + (l.id === lessonId ? "on" : "") + '" href="' + DATA + l.href + '"><small>LESSON ' + esc(String(l.order)) + '</small><span class="t">' + esc(l.title) + "</span></a></li>";
+      return '<li><a class="' + (l.id === lessonId ? "on" : "") + '" href="' + DATA + l.href + '"><small>Lesson ' + esc(String(l.order)) + '</small><span class="t">' + esc(l.title) + "</span></a></li>";
     }).join("");
     var chapHtml = allChaps.map(function (c) {
       return '<li><a class="' + (c.id === chapterId ? "on" : "") + '" href="' + DATA + c.lessons[0].href + '"><small>Chapter ' + (parseInt(String(c.id).replace(/\D/g, ""), 10) || esc(c.id)) + '</small><span class="t">' + esc(c.title) + "</span></a></li>";
