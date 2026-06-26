@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<!-- CH01-L02-S02 — 엔진: command-field-sim (embeds/_engine/command-field-sim.{js,css}) · 자체 postHeight.
+     체험: 현재 화면(Easy Access vs SE11)을 토글하며 SE38·/nSE38·/oSE38·/nex 입력 → 이동/오류/새창/로그오프.
+     강조: 접두어 없는 SE38은 Easy Access에서만 통함(다른 트랜잭션 안에선 /nSE38). 데이터=window.CFS_CFG. -->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>명령창 T-code 이동 시뮬레이터 · CH01-L02-S02</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/command-field-sim.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">명령창 T-code 이동 시뮬레이터 <small>(SE38 · /n · /o · /nex)</small></p>
+  <p class="lead"><b>현재 화면</b>을 바꿔 가며 명령을 입력해 보세요. 접두어 없는 <code>SE38</code>은 <b>로그인 직후 Easy Access에서만</b> 통합니다. <code>SE11</code> 같은 다른 트랜잭션 안에서는 <code>/nSE38</code>로 이동해야 합니다.</p>
+
+  <div class="cfs-row">
+    <span class="lbl">현재 화면</span>
+    <div class="cfs-seg" id="ctxSeg">
+      <button class="on" data-c="easy">Easy Access (로그인 직후)</button>
+      <button data-c="other">SE11 (다른 트랜잭션 안)</button>
+    </div>
+  </div>
+  <div class="cfs-row">
+    <span class="lbl">명령 입력</span>
+    <div class="cfs-cmds" id="cmds"></div>
+  </div>
+
+  <div class="cfs-win">
+    <div class="cfs-bar">
+      <div class="cfs-field"><span class="cmdtxt" id="cmdtxt"></span></div>
+      <button class="cfs-enter" id="enterBtn" type="button">⏎ Enter</button>
+      <span class="cfs-title" id="winTitle">SAP Easy Access</span>
+    </div>
+    <div class="cfs-body" id="winBody"></div>
+  </div>
+
+  <div class="cfs-result idle" id="result"></div>
+
+  <div class="note"><b>흔한 함정</b> — SE11에서 작업하다 명령창에 <code>SE38</code>만 치면 이동이 안 됩니다(현재 화면의 함수 코드로 해석돼 오류). <b>다른 화면에서 이동할 땐 항상 <code>/n</code></b>: <code>/nSE38</code>(현재 닫고 이동) · <code>/oSE38</code>(새 창) — 이게 안전한 기본기입니다.</div>
+</div>
+
+<script>
+window.CFS_CFG = {
+  target:'SE38', targetName:'ABAP Editor',
+  other:'SE11', otherName:'ABAP Dictionary'
+};
+</script>
+<script src="../_engine/command-field-sim.js" defer></script>
+</body>
+</html>
