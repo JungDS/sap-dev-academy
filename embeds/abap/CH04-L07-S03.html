@@ -25,11 +25,13 @@ DATA: gv_dan TYPE i, gv_mul TYPE i, gv_cnt TYPE i, gv_res TYPE i.</pre>
     <details class="tip">
       <summary>💡 시작·종료 범위를 점검하는 로직은 여기(루프 전)에 추가하는 게 좋습니다 — 펼쳐 보기</summary>
       <div class="tip__body">
-<pre class="tip__code"><span class="k">IF</span> p_from &lt; 2 <span class="k">OR</span> p_to &gt; 9.
-  <span class="k">WRITE</span>: / <span class="s">'단은 2~9 사이로 입력하세요.'</span>.
+<pre class="tip__code"><span class="k">IF</span> p_from &lt; 2 <span class="k">OR</span> p_from &gt; 9
+   <span class="k">OR</span> p_to &lt; 2 <span class="k">OR</span> p_to &gt; 9
+   <span class="k">OR</span> p_from &gt; p_to.
+  <span class="k">WRITE</span>: / <span class="s">'단은 2~9 사이, 시작 ≤ 종료로 입력하세요.'</span>.
   <span class="k">EXIT</span>.
 <span class="k">ENDIF</span>.</pre>
-        <p class="tip__note"><b>EXIT</b>는 지금 실행 중인 <b>범위</b>를 중단합니다 — <b>반복문(DO/WHILE) 안</b>이면 그 반복을 빠져나가고(CH04-L05), <b>반복문 밖(프로그램 본문)</b>이면 프로그램(현재 처리 블록)을 멈춥니다. 그래서 루프 <b>전</b> 입력 점검에서 값이 잘못되면 <code>EXIT</code>로 바로 중단할 수 있어요(루프 안에서 매번 거를 필요가 없습니다).</p>
+        <p class="tip__note"><b>양쪽 끝을 다 확인</b>해야 합니다 — <code>p_from</code>·<code>p_to</code>가 각각 2~9 안인지, 그리고 <b>시작 ≤ 종료</b>인지까지. 한쪽 부등호만 보면 <code>시작 40·종료 0</code> 같은 입력이 (두 조건 다 거짓이라) 그대로 통과해, <code>DO -39 TIMES</code>로 아무것도 안 도는 채 조용히 끝나 버립니다. <b>EXIT</b>는 지금 실행 중인 <b>범위</b>를 중단합니다 — <b>반복문(DO/WHILE) 안</b>이면 그 반복을, <b>반복문 밖(프로그램 본문)</b>이면 현재 처리 블록을 멈춥니다. 그래서 루프 <b>전</b> 점검에서 값이 잘못되면 <code>EXIT</code>로 바로 중단할 수 있어요.</p>
       </div>
     </details>
 
