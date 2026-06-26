@@ -27,7 +27,7 @@
   function showResult(rid) {
     var r = cfg.results[rid];
     renderPath();
-    $('card').className = 'result';
+    $('card').className = 'dt-result';
     $('card').innerHTML = '<span class="rank' + (r.last ? ' last' : '') + '">' + r.rank + '</span>' +
       '<div class="rt' + (r.last ? ' last' : '') + '">' + r.title + '</div><div class="rd">' + r.desc + '</div>' +
       '<div class="btns"><button class="btn restart" id="restart" type="button">↺ 처음부터</button></div>';

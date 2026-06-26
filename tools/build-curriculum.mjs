@@ -322,6 +322,7 @@ function renderLessonPage(ch, lesson, trackNo) {
   const siteRoot = relPosix(OUT_PAGES, ROOT) + '/';
   const chId = ch.meta.id;
   const chNum = parseInt(String(chId).replace(/\D/g, ''), 10) || 0;
+  const lessonNum = lesson.data.order || parseInt((String(lesson.data.id).match(/-L0*(\d+)/) || [])[1] || '0', 10);
   const bodyHtml = wrapSections(dedupTermButtonsPerSection(autolinkGlossary(markWarnCallouts(marked.parse(lesson.body)), lesson.body, chNum)));
   const sda = JSON.stringify({ domain: DOMAIN, dataBase, siteRoot });
   // tcode: 단일 문자열·콤마목록·배열 모두 허용 → 여러 개면 공통 카드에 라벨 여러 개
@@ -360,7 +361,7 @@ ${tcodeList.map((tc, i) => {
 <header class="appbar">
   <a class="appbar__home" href="${siteRoot}index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">${esc(chId)} · ${esc(ch.meta.title)}</span>
+  <span class="meta">Chapter ${chNum} · ${esc(ch.meta.title)}</span>
   <a class="btn-soft" href="${siteRoot}pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -378,7 +379,7 @@ ${tcodeList.map((tc, i) => {
 <div class="stage">
   <div class="layout">
     <main class="main">
-      <nav class="crumb"><a href="${siteRoot}index.html">홈</a> › <a href="${siteRoot}pages/abap.html">ABAP 커리큘럼</a> › ${esc(chId)}</nav>
+      <nav class="crumb"><a href="${siteRoot}index.html">홈</a> › <a href="${siteRoot}pages/abap.html">ABAP 커리큘럼</a> › Chapter ${chNum} › Lesson ${lessonNum}</nav>
       <section class="lhead">
         <p class="lhead__eyebrow">${esc(ch.meta.title)}</p>
         <h1>${esc(lesson.data.title)}</h1>
@@ -389,7 +390,7 @@ ${tcodeBlock}      <article class="prose">
 ${bodyHtml}
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
-      <footer class="foot">SAP Developer Academy · ${esc(chId)} ${esc(lesson.data.id)}</footer>
+      <footer class="foot">SAP Developer Academy · 배포자 SAP전문강사 정훈영</footer>
     </main>
     <aside class="journey" data-shell="journey"></aside>
   </div>

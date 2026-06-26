@@ -23,7 +23,7 @@
   function renderSalv(){
     if(!displayed){ $('salvBody').innerHTML='<div class="hidden-msg">아직 화면 표시 안 됨 — display( )를 호출해야 표가 열립니다.</div>'; $('bar').style.display='none'; return; }
     $('bar').style.display='flex';
-    $('bar').className='bar'+(funcsOn?'':' minimal');
+    $('bar').className='sfs-bar'+(funcsOn?'':' minimal');
     $('bar').innerHTML = funcsOn
       ? '<span class="tbtn">정렬</span><span class="tbtn ext">필터</span><span class="tbtn ext sum" id="sumBtn">Σ 합계</span><span class="tbtn ext">엑셀</span><span class="tbtn ext">인쇄</span>'
       : '<span class="muted">표준 기능이 제한적입니다 (set_all 미호출)</span>';
