@@ -79,6 +79,15 @@
 | CH13-L06-S01 | CH13-L06 | fae-safety-sim | FOR ALL ENTRIES 기준목록×안전장치 토글→실행: 제한조회/빈목록보호/⚠️전체조회 위험·중복제거 | ✅ |
 | CH13-L07-S01 | CH13-L07 | module-choice-cards | (재사용) 조회 전략 의사결정 카드 5문항→JOIN/FAE/ABAP/GROUP BY/LEFT OUTER 분류·이유 | ✅ |
 | CH13-L08-S01 | CH13-L08 | join-aggregate-visualizer | LEFT OUTER JOIN+GROUP BY SUM(공연별 booked·LEFT/INNER 토글·취소 제외) | ✅ |
+| CH14-L01-S01 | CH14-L01 | db-view-vs-join | 코드 JOIN vs Database View 비교(정상/마스터누락→inner-join 탈락/필드축소→구조계약) | ✅ |
+| CH14-L02-S01 | CH14-L02 | field-curtain | Projection View 필드 선택(체크박스)→결과 컬럼 변화·기술필드 일괄숨김·key 경고·ABAP 구조 | ✅ |
+| CH14-L03-S01 | CH14-L03 | f4-help-flow | Help View F4 흐름(F4→팝업→key 복귀)·설명누락 outer 보존·Export OFF 복귀안함 | ✅ |
+| CH14-L04-S01 | CH14-L04 | fk-maintenance-gate | Foreign Key 토글→유지보수 input check(FK ON: 없는코드 거부 / OFF: orphan 통과) | ✅ |
+| CH14-L05-S01 | CH14-L05 | sm30-gate-checklist | SM30 열리기까지 조건 게이트(활성화·유지보수허용·TMG·권한)→모두 충족 시 grid·파이프라인 | ✅ |
+| CH14-L06-S01 | CH14-L06 | view-cluster-tree | View Cluster 계층 유지보수(공연장→좌석등급)·상위 선택이 하위 자동조건·하위 추가 | ✅ |
+| CH14-L07-S01 | CH14-L07 | se16n-tracker | SM30 저장→SE16N 확인(원본 vs View·H03 inner-join 차이·H30 오타 0건 단정금지) | ✅ |
+| CH14-L08-S01 | CH14-L08 | timeline-boundary | Classic↔CDS 경계 타임라인(지금=DDIC View/나중=CDS·RAP)·필터·나중 카드 챕터 안내 | ✅ |
+| CH14-L09-S01 | CH14-L09 | concert-register-console | (캡스톤) F4→SM30 저장→원본 ZCONCERT/View ZV_CONCERT 비교·기준 삭제 inner-join 누락 | ✅ |
 | CH15-L01-S01 | CH15-L01 | event-lifecycle-buildup | 이벤트 5단계 빌드업(mermaid 흐름도+코드·hover 연결·stage1 classic) | ✅ |
 | CH16-L01-S01 | CH16-L01 | process-flow-pbo-pai | Module Pool 두 박자 순환(PBO→화면→입력→PAI→loop·다음박자 진행) | ✅ |
 | CH16-L03-S01 | CH16-L03 | dynpro-screen-elements | 예매 화면 요소↔변수(Input·Check·Radio·Dropdown VRM·Button→OK_CODE) | ✅ |
@@ -115,6 +124,15 @@
 | where-having-pipeline (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH13-L04-S01 | WHP_CFG 주도 · 4단계 스텝퍼(원본→WHERE→GROUP BY→HAVING)·행 vs 그룹 필터·코드 하이라이트 · 다크 자동 |
 | sort-priority-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH13-L05-S01 | SPL_CFG 주도 · ORDER BY 다중 기준 안정정렬·동률 2차기준·정렬없음 경고·헤더 화살표/우선순위 · 다크(chip base=surface) |
 | fae-safety-sim (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH13-L06-S01 | FAE_CFG 주도 · 기준목록×안전장치 조합 실행·빈목록 함정 시뮬·코드 미리보기(IF guard 토글)·중복제거 · 다크(버튼 base=surface) |
+| db-view-vs-join (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH14-L01-S01 | DVJ_CFG 주도 · 코드JOIN/DB View 2카드·상태토글(정상/마스터누락 inner drop/필드축소) · 다크(seg base=surface) |
+| field-curtain (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH14-L02-S01 | FC_CFG 주도 · Projection View 필드 체크박스→결과 컬럼·기술필드 일괄숨김·key 경고·ABAP 구조 미리보기 · 다크 |
+| f4-help-flow (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH14-L03-S01 | F4_CFG 주도 · F4→Help View 팝업→key 복귀·설명누락(outer 보존)·Export OFF 토글 · 다크(toggle base=surface) |
+| fk-maintenance-gate (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH14-L04-S01 | FKM_CFG 주도 · FK 토글→유지보수 input check·orphan 시연·SM30 grid mock · 다크(toggle base=surface) |
+| sm30-gate-checklist (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH14-L05-S01 | SGC_CFG 주도 · 게이트(테이블/유지보수/TMG/권한) 체크→SM30 실행·파이프라인·결과 grid · 다크 |
+| view-cluster-tree (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH14-L06-S01 | VCT_CFG 주도 · 상위(공연장) 선택→하위(좌석등급) 자동 좁힘·하위 추가(부모 맥락)·트리 카운트 · 다크 |
+| se16n-tracker (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH14-L07-S01 | SE16_CFG 주도 · SM30 저장→SE16N(table/조건 토글)·원본 vs View inner-join 차이·0건 단정금지 · 다크 |
+| timeline-boundary (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH14-L08-S01 | TB_CFG 주도 · 지금/나중 경계 타임라인 카드·필터·나중 클릭→챕터 안내(R15 경계 시각화) · 다크 |
+| concert-register-console (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH14-L09-S01 | CRC_CFG 주도 · CH14 캡스톤 F4+SM30 저장+원본/View 비교+기준삭제 inner-join · 다크(btn base=surface) |
 | salv-grid-simulator | 2 | 공통(_engine)·자체 postHeight ✅ | CH11-L02-S01·CH11-L06-S01 (완료) | config 주입(SALV_CFG: itab·cols·data·sumKey·code) · ALV제목/토글 엔진설정 |
 | relationship-map | 1 | 공통 | _(미작성)_ | CSS-only |
 | state-change-grid | 1 | 공통(CSS-only)+_autoheight ✅ | CH06-L06-S01 | 스냅샷=마크업(lt_gugu 성장·정렬) · 빈 .js 제거 |
