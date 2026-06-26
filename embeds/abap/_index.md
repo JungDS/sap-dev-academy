@@ -64,6 +64,12 @@
 | CH11-L04-S01 | CH11-L04 | salv-pipeline-stepper | SELECT→DESCRIBE→factory→set_all→display 3칸 파이프라인·건너뛰기 피드백 | ✅ |
 | CH11-L05-S01 | CH11-L05 | module-choice-cards | (재사용) SALV 1차 범위 분류(지금 CH11 / CH17·21·27·28) | ✅ |
 | CH11-L06-S01 | CH11-L06 | salv-grid-simulator | 예매목록 SALV(lt_book·set_all·Σ좌석수=17·STATUS N/C) | ✅ |
+| CH12-L01-S01 | CH12-L01 | range-row-builder | 조건 카드(사람 말)→Range Table 4칸 행(SIGN/OPTION/LOW/HIGH)·I/E·EQ/BT/CP·행별 사람말 해석·OR/제외 규칙 | ✅ |
+| CH12-L02-S01 | CH12-L02 | selopt-screen-mapper | 선택화면 From/To+다중선택→s_conc Range Table→LOOP AT 출력(From=EQ·From~To=BT·제외 E·8자) | ✅ |
+| CH12-L03-S01 | CH12-L03 | select-options-filter-sim | (재사용) classic WHERE..IN 평가 + #soSys(sy-subrc/sy-dbcnt)·시나리오(전체=6·C999=0건subrc4·AND) | ✅ |
+| CH12-L04-S01 | CH12-L04 | include-exclude-judge | 포함(I)/제외(E) 조건 쌓기→공연별 통과/탈락 판정·이유(포함 OR·제외 빼기·녹색/빨강=SIGN) | ✅ |
+| CH12-L05-S01 | CH12-L05 | option-compare-lab | 단일 조건 SIGN·OPTION(EQ/BT/CP)·LOW/HIGH 토글→후보 통과 비교·CP wildcard(*,+)·E 반전 | ✅ |
+| CH12-L06-S01 | CH12-L06 | range-append-stepper | 코드 한 줄씩(CLEAR→sign→option→low→APPEND→SELECT)·ls_stat↔lr_stat·APPEND 전 빈 table·결과 5행 | ✅ |
 | CH12-L07-S01 | CH12-L07 | select-options-filter-sim | SELECT-OPTIONS Range Table(s_conc·s_stat·I/E·EQ/BT/CP→zbooking 필터) | ✅ |
 | CH13-L08-S01 | CH13-L08 | join-aggregate-visualizer | LEFT OUTER JOIN+GROUP BY SUM(공연별 booked·LEFT/INNER 토글·취소 제외) | ✅ |
 | CH15-L01-S01 | CH15-L01 | event-lifecycle-buildup | 이벤트 5단계 빌드업(mermaid 흐름도+코드·hover 연결·stage1 classic) | ✅ |
@@ -90,7 +96,12 @@
 | before-after | 2 | 공통(CSS-only)+_autoheight ✅ | CH02-L05-S01·CH07-L03-S01 (완료) | 콘텐츠 정리 · 중립 톤(tone-warm/cool)·.note·.cmt 추가 · constant-circle-sim(폐기) 대체 |
 | diff-mapper | 2 | 공통(_engine)+_autoheight ✅ | CH18-L06·L07 (완료) | 데이터=마크업(data-link/title/desc) · classic/modern 중립 톤 추가 |
 | select-query-simulator | 1 | 공통(_engine)·자체 postHeight ✅ | CH08-L02-S01 | config 주입(SQL_CFG) · #N1 주석 CH19 정정 · (CH12-L07은 SELECT-OPTIONS 전용 신규엔진로 분리) |
-| select-options-filter-sim (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH12-L07-S01 | SO_CFG 주도 · Range Table(SIGN I/E·OPTION EQ/NE/GT/LT/GE/LE/BT/CP) 평가 |
+| select-options-filter-sim | 2 | 공통(_engine)·자체 postHeight ✅ | CH12-L03-S01·CH12-L07-S01 | SO_CFG 주도 · Range Table(SIGN I/E·OPTION EQ/NE/GT/LT/GE/LE/BT/CP) 평가 · **opt-in `#soSys`**(있으면 sy-subrc/sy-dbcnt 표시, L03만) |
+| range-row-builder (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH12-L01-S01 | RRB_CFG.cards 주도 · 조건 카드→SIGN/OPTION/LOW/HIGH 행 빌더·행/종합 사람말 해석 · 다크 자동(토큰+gen-embed-dark) |
+| selopt-screen-mapper (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH12-L02-S01 | SSM_CFG 주도 · 선택화면 From/To+다중선택→Range Table→LOOP 출력 · 다크 자동(토큰+gen-embed-dark) |
+| include-exclude-judge (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH12-L04-S01 | IEJ_CFG 주도 · 포함/제외 조건→후보별 통과/탈락 판정+이유(matchOpt EQ/BT/CP…) · 다크 자동 |
+| option-compare-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH12-L05-S01 | OCL_CFG 주도 · 단일 조건 SIGN/OPTION/LOW/HIGH 편집→후보 매칭·CP wildcard·HIGH BT시만 표시 · 다크 자동 |
+| range-append-stepper (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH12-L06-S01 | RAS_CFG 주도 · 코드 한 줄씩 실행→ls_stat/lr_stat/SELECT 결과·ABAP 하이라이트·result는 lr로 data 필터 · 다크 자동 |
 | salv-grid-simulator | 2 | 공통(_engine)·자체 postHeight ✅ | CH11-L02-S01·CH11-L06-S01 (완료) | config 주입(SALV_CFG: itab·cols·data·sumKey·code) · ALV제목/토글 엔진설정 |
 | relationship-map | 1 | 공통 | _(미작성)_ | CSS-only |
 | state-change-grid | 1 | 공통(CSS-only)+_autoheight ✅ | CH06-L06-S01 | 스냅샷=마크업(lt_gugu 성장·정렬) · 빈 .js 제거 |

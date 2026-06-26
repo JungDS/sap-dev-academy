@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<!-- CH12-L05-S01 — 엔진: option-compare-lab · _autoheight. 콘텐츠=레슨 전용(OPTION EQ/BT/CP·SIGN 실험, CH12 L05).
+     config=window.OCL_CFG. 게이팅: Range OPTION/SIGN 개념·CP wildcard(*,+)만 · ABAP 코드/Open SQL/SQL LIKE 없음. -->
+<html lang="ko" data-eng="option-compare-lab">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>OPTION 비교 실험실 · CH12-L05-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/option-compare-lab.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">OPTION 비교 실험실 <small>(EQ · BT · CP · SIGN 토글)</small></p>
+  <p class="lead">조건 하나의 <code>SIGN</code>·<code>OPTION</code>·값을 바꿔 가며 같은 후보가 어떻게 다르게 걸리는지 봅니다. <code>EQ</code>=정확히 같음, <code>BT</code>=사이, <code>CP</code>=패턴(<code>*</code>·<code>+</code>).</p>
+
+  <p class="ocl-h">조건 편집기</p>
+  <div class="ocl-editor">
+    <div class="ocl-line">
+      <span class="lab">SIGN</span>
+      <span class="ocl-sign">
+        <button type="button" data-sign="I" aria-pressed="true">I 포함</button>
+        <button type="button" data-sign="E" aria-pressed="false">E 제외</button>
+      </span>
+      <span class="lab">OPTION</span>
+      <select id="oclOpt">
+        <option value="EQ">EQ</option><option value="NE">NE</option>
+        <option value="BT">BT</option><option value="NB">NB</option>
+        <option value="GT">GT</option><option value="GE">GE</option>
+        <option value="LT">LT</option><option value="LE">LE</option>
+        <option value="CP">CP</option><option value="NP">NP</option>
+      </select>
+      <span class="lab">LOW</span>
+      <input id="oclLow" type="text" value="C001" />
+      <span class="ocl-high"><span class="ocl-tilde">~</span><span class="lab">HIGH</span><input id="oclHigh" type="text" /></span>
+    </div>
+    <div class="ocl-chips"></div>
+  </div>
+
+  <div class="ocl-read" id="oclRead"></div>
+
+  <p class="ocl-h">공연 후보 판정</p>
+  <table class="ocl-tbl">
+    <thead><tr><th>공연ID</th><th>패턴에 맞나?</th><th>최종(SIGN 반영)</th></tr></thead>
+    <tbody id="oclBody"></tbody>
+  </table>
+
+  <div class="note"><b>CP는 패턴 비교.</b> <code>*</code>=여러 글자, <code>+</code>=한 글자. <code>C*</code>는 C로 시작, <code>C+01</code>은 C·한 글자·01(길이 4 고정). SQL <code>LIKE</code>의 <code>%</code>·<code>_</code>와 기호가 다릅니다. <code>SIGN=E</code>면 같은 패턴이라도 통과/탈락이 뒤집힙니다.</div>
+</div>
+
+<script>
+window.OCL_CFG = {
+  candidates: ['C001', 'C002', 'A001', 'C010'],
+  init: { sign: 'I', opt: 'EQ', low: 'C001', high: '' },
+  presets: [
+    { label: 'I EQ C001', cond: { sign: 'I', opt: 'EQ', low: 'C001', high: '' } },
+    { label: 'I BT C001~C003', cond: { sign: 'I', opt: 'BT', low: 'C001', high: 'C003' } },
+    { label: 'I CP C*', cond: { sign: 'I', opt: 'CP', low: 'C*', high: '' } },
+    { label: 'I CP C+01', cond: { sign: 'I', opt: 'CP', low: 'C+01', high: '' } },
+    { label: 'E CP C*', cond: { sign: 'E', opt: 'CP', low: 'C*', high: '' } }
+  ]
+};
+</script>
+<script src="../_engine/option-compare-lab.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>
