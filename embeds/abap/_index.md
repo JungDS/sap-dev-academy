@@ -9,6 +9,8 @@
 ## A. 인스턴스 목록 (레슨 순)
 | 파일 (embeds/abap/) | 레슨 | 엔진 | 학습수단 설명 | 상태 |
 |---|---|---|---|---|
+| CH01-L01-S01 | CH01-L01 | image-figure | 실제 SAP 로그온 화면 스크린샷(assets/img/abap/CH01-L01-logon.png) | 🖼️ |
+| CH01-L01-S02 | CH01-L01 | image-figure | 실제 SAP Easy Access 첫 화면 스크린샷(assets/img/abap/CH01-L01-easy-access.png) | 🖼️ |
 | CH01-L04-S01 | CH01-L04 | write-output | WRITE 출력 시뮬(편집→F8→리스트, /·콜론체인·리터럴) | ✅ |
 | CH01-L05-S01 | CH01-L05 | write-format | WRITE 서식 플레이그라운드(폭·정렬·COLOR·ULINE·SKIP) | ✅ |
 | CH01-L02-S01 | CH01-L02 | se38-first-program | 가상 SE38 개발루프 — **3-step 진행형**(①명령창 SE38→②생성 ZHELLO→③저장·활성화·실행, 단계별 노출) | ✅ |
