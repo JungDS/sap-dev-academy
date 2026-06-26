@@ -65,6 +65,14 @@
 <li><strong>중복 자동 제거</strong> → FAE 결과는 <strong>중복 행이 제거</strong>된다. 중복이 의미 있으면 주의.</li>
 <li><strong>WHERE에 기준 테이블 필드</strong> → <code>lt_dept-dept_id</code>처럼 기준 테이블 필드를 조건에.</li>
 </ul>
+</section><section class="lblock"><h2>빈 목록일 때 무슨 일이? — 직접 실험</h2>
+<p><code>lt_dept</code>를 비운 채 안전장치를 끄고 실행하면, FAE는 <code>WHERE</code>를 통째로 무시하고
+<strong>전체 테이블을 조회</strong>한다. 운영 DB에서는 화면이 멈추거나 배치 시간이 폭증하는
+사고로 이어진다. 안전장치(<code>IS NOT INITIAL</code>)가 왜 선택이 아니라 필수인지 직접 보자.</p>
+<blockquote class="cw">
+<p>⚠️ 아래는 <strong>시뮬레이션</strong>이다. 실제 운영 DB에서 빈 목록 + 안전장치 OFF를 실험하면 안 된다.</p>
+</blockquote>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">FAE 안전장치 시뮬레이터 (빈 목록 = 전체 조회 위험)</span><a class="embed__open" href="../../../embeds/abap/CH13-L06-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH13-L06-S01.html" loading="lazy" title="FAE 안전장치 시뮬레이터 (빈 목록 = 전체 조회 위험)"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
 <li><strong>IS NOT INITIAL 누락</strong> → 빈 테이블 → 전체 조회 폭탄. 1순위 점검.</li>

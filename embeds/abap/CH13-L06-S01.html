@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<!-- CH13-L06-S01 — 엔진: fae-safety-sim · _autoheight. 콘텐츠=레슨 전용(FOR ALL ENTRIES 빈목록 함정, CH13 L06).
+     config=window.FAE_CFG. 게이팅: classic FOR ALL ENTRIES·IS NOT INITIAL·WHERE 개념만 · modern/comma/host marker 없음. 시뮬레이션(실DB 아님). -->
+<html lang="ko" data-eng="fae-safety-sim">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FAE 안전장치 시뮬레이터 · CH13-L06-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/fae-safety-sim.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">FAE 안전장치 시뮬레이터 <small>(빈 목록 = 전체 조회 위험)</small></p>
+  <p class="lead">기준 내부 테이블 <code>lt_dept</code>와 안전장치 <code>IS NOT INITIAL</code>을 조합해 <b>▶ 실행</b>하면, FAE가 어떻게 동작하는지 봅니다. <b>빈 목록 + 안전장치 OFF</b>가 왜 사고인지 직접 확인하세요. (시뮬레이션 — 실제 DB 아님)</p>
+
+  <div class="fae-ctrl">
+    <div class="fae-grp"><span class="fae-h">기준 목록 lt_dept</span><div class="fae-btns fae-dept"></div></div>
+    <div class="fae-grp"><span class="fae-h">안전장치</span><div class="fae-btns"><button class="fae-btn fae-safety" type="button" data-safety aria-pressed="true">IS NOT INITIAL: ON 🛡️</button></div></div>
+  </div>
+
+  <div class="fae-list" id="faeList"></div>
+
+  <div class="fae-code">
+    <div class="fae-code__hd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span><span style="margin-left:auto">classic</span></div>
+    <pre id="faeCode"></pre>
+  </div>
+
+  <div class="fae-run"><button class="fae-runbtn" type="button" data-run>▶ 실행</button></div>
+  <div class="fae-status" id="faeStatus"></div>
+
+  <p class="fae-h">결과 lt_person (DB: ztperson 7명, 부서 10·20·30·40)</p>
+  <table class="fae-tbl">
+    <thead><tr><th>persid</th><th>name</th><th>dept_id</th></tr></thead>
+    <tbody id="faeBody"></tbody>
+  </table>
+
+  <div class="note"><b>IS NOT INITIAL은 필수.</b> FAE는 기준 테이블이 비면 <code>WHERE</code>를 무시하고 전체를 읽습니다(대형 사고). 또 결과는 <b>중복 제거</b>되니 입력 목록 수와 결과 행수를 1:1로 보지 마세요. 집계가 필요하면 GROUP BY+FAE 대신 JOIN/별도 SELECT를 검토합니다.</div>
+</div>
+
+<script>
+window.FAE_CFG = {
+  cols: [{ key: 'persid', label: 'persid' }, { key: 'name', label: 'name' }, { key: 'dept_id', label: 'dept_id' }],
+  deptSets: [
+    { label: '10, 20 채우기', ids: [10, 20] },
+    { label: '비우기 ( )', ids: [] },
+    { label: '중복 10,10,20', ids: [10, 10, 20] }
+  ],
+  people: [
+    { persid: 1, name: '정훈영', dept_id: 10 },
+    { persid: 2, name: '손흥민', dept_id: 10 },
+    { persid: 3, name: '아이유', dept_id: 20 },
+    { persid: 4, name: '유재석', dept_id: 30 },
+    { persid: 5, name: '김연아', dept_id: 30 },
+    { persid: 6, name: '박지성', dept_id: 40 },
+    { persid: 7, name: '수지', dept_id: 40 }
+  ]
+};
+</script>
+<script src="../_engine/fae-safety-sim.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>
