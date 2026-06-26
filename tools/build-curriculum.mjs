@@ -306,6 +306,13 @@ function wrapSections(html) {
   return parts.map((p) => (/^<h2[\s>]/.test(p) ? `<section class="lblock">${p}</section>` : p)).join('');
 }
 
+/* ⚠️(또는 🚫/❌)를 포함한 blockquote → 경고 콜아웃 클래스(.cw) 부여. lesson.css가 앰버(주의)색 처리.
+   섹션색(--sec, 초록 등)을 쓰는 기본 인용과 달리, 함정/주의 콜아웃이 경고로 보이게 한다(additive). */
+function markWarnCallouts(html) {
+  return html.replace(/<blockquote>([\s\S]*?)<\/blockquote>/g,
+    (m, inner) => (/⚠️|🚫|❌/.test(inner) ? `<blockquote class="cw">${inner}</blockquote>` : m));
+}
+
 /* ---------- 레슨 HTML 템플릿 (v2-C 셸 골격) ----------
    레이아웃/네비/설정은 shell.js가 data-shell 훅에 주입한다.
    T-code 라벨은 front-matter `tcode`가 있을 때만 emit(Phase 2). */
@@ -315,7 +322,7 @@ function renderLessonPage(ch, lesson, trackNo) {
   const siteRoot = relPosix(OUT_PAGES, ROOT) + '/';
   const chId = ch.meta.id;
   const chNum = parseInt(String(chId).replace(/\D/g, ''), 10) || 0;
-  const bodyHtml = wrapSections(dedupTermButtonsPerSection(autolinkGlossary(marked.parse(lesson.body), lesson.body, chNum)));
+  const bodyHtml = wrapSections(dedupTermButtonsPerSection(autolinkGlossary(markWarnCallouts(marked.parse(lesson.body)), lesson.body, chNum)));
   const sda = JSON.stringify({ domain: DOMAIN, dataBase, siteRoot });
   // tcode: 단일 문자열·콤마목록·배열 모두 허용 → 여러 개면 공통 카드에 라벨 여러 개
   const tcodeList = Array.isArray(lesson.data.tcode)
