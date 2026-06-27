@@ -40,8 +40,11 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>변경이 끝난 뒤에 할 일</h2>
-<p><code>data_changed</code>는 검증용(바뀌기 직전), <code>data_changed_finished</code>는 <strong>변경이 내부 테이블에
-반영된 뒤</strong> 온다. 합계·잔여석 같은 <strong>연동 값 재계산</strong>에 적합하다.</p>
+<p><a href="CH28-L02.html">DATA_CHANGED Event</a>는 값이 바뀐 <strong>직후</strong>(아직 내부 테이블 반영 전) 그 셀을
+검증했다. 그런데 <strong>모든 후처리</strong>를 그 순간에 하면 안 된다. 좌석 수를 여러 번 고치는 중에 매
+입력마다 총합·잔여석·상태를 다 다시 계산하면 화면이 흔들리고 <button class="term" type="button" data-term="이벤트">이벤트</button>가 꼬인다.</p>
+<p><code>data_changed_finished</code>는 변경이 <strong>내부 테이블에 반영된 뒤</strong> 발생한다. 합계·잔여석 같은
+<strong>연동(파생) 값 재계산</strong>에 적합하다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -52,32 +55,59 @@
 8
 9
 10
-11</pre><pre class="abap-editor__code"><code><span class="tok-kw">METHODS</span> on_changed_finished
+11
+12
+13
+14
+15
+16
+17
+18</pre><pre class="abap-editor__code"><code><span class="tok-kw">METHODS</span> on_changed_finished
   <span class="tok-kw">FOR</span> <span class="tok-kw">EVENT</span> data_changed_finished <span class="tok-kw">OF</span> cl_gui_alv_grid
   <span class="tok-kw">IMPORTING</span> e_modified.
 
 <span class="tok-kw">METHOD</span> on_changed_finished.
-  <span class="tok-kw">IF</span> e_modified = abap_true.
-    <span class="tok-com">" 좌석 합계 등 파생값 재계산 후</span>
-    go_grid-&gt;refresh_table_display(
-      <span class="tok-kw">EXPORTING</span> is_stable = <span class="tok-kw">VALUE</span> #( row = abap_true col = abap_true ) ).
+  <span class="tok-kw">IF</span> e_modified &lt;&gt; abap_true.
+    RETURN.                          <span class="tok-com">" 바뀐 게 없으면 후처리 생략</span>
   <span class="tok-kw">ENDIF</span>.
+
+  <span class="tok-kw">CLEAR</span> gv_total_seats.
+  <span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_booking <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(ls_booking).
+    gv_total_seats = gv_total_seats + ls_booking-seats.
+  <span class="tok-kw">ENDLOOP</span>.
+
+  <span class="tok-kw">DATA</span>(ls_stbl) = <span class="tok-kw">VALUE</span> lvc_s_stbl(
+    row = abap_true col = abap_true ).
+  go_grid-&gt;refresh_table_display( is_stable = ls_stbl ).
 <span class="tok-kw">ENDMETHOD</span>.</code></pre></div></div>
 <ul>
-<li><code>e_modified</code> — 실제로 바뀐 게 있나.</li>
-<li>여기서 파생 컬럼을 다시 계산하고 stable refresh(CH21).</li>
+<li><code>e_modified</code> — 실제로 바뀐 게 있을 때만(<code>abap_true</code>) 재계산한다.</li>
+<li>끝에 <a href="CH21-L07.html">stable refresh</a>로 편집하던 행·컬럼 위치를 유지하며 다시 그린다.</li>
 </ul>
 </section><section class="lblock"><h2>합계 재계산 체험</h2>
-<p><code>SEATS</code>를 고치고 확정(Enter/칸 이동)하면 <code>data_changed_finished</code>가 <strong>총 좌석 합계</strong>를 다시
-계산하는 걸 확인해 보라.</p>
+<p><code>SEATS</code>를 고치고 <strong>확정</strong>(Enter나 다른 칸으로 이동)하면 <code>data_changed_finished</code>가 <strong>총 좌석
+합계</strong>를 다시 계산하는 걸 확인해 보라.</p>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">DATA_CHANGED_FINISHED — 합계 재계산</span><a class="embed__open" href="../../../embeds/abap/CH28-L03-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH28-L03-S01.html" loading="lazy" title="DATA_CHANGED_FINISHED — 합계 재계산" style="height:460px"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>두 <button class="term" type="button" data-term="이벤트">이벤트</button> 혼동</strong> → 검증=<code>data_changed</code>, 후처리=<code>data_changed_finished</code>.</li>
-<li><strong>무한 갱신</strong> → 재계산이 또 변경을 유발하지 않게 주의.</li>
+<li><strong>두 <button class="term" type="button" data-term="이벤트">이벤트</button>를 같은 용도로</strong> → 검증은 <code>data_changed</code>(바뀐 셀), 후처리는
+<code>data_changed_finished</code>(변경 완료 후). 검증을 finished에서 늦게 하면 값이 이미 들어간 뒤
+오류를 보게 된다.</li>
+<li><strong>후처리가 또 변경을 유발</strong> → 재계산이 사용자 입력값을 덮어쓰거나 또 다른 변경 이벤트를
+부르면 무한 갱신이 된다. 파생값 갱신은 최소한으로.</li>
+<li><strong><code>e_modified</code> 미확인</strong> → 안 바뀌었는데 매번 재계산·refresh하면 성능·UX가 나빠진다(실무
+ALV는 행이 많고 후처리가 여러 서비스를 부를 수 있다).</li>
+</ul>
+</section><section class="lblock"><h2>정리</h2>
+<ul>
+<li><code>data_changed_finished</code> = 변경이 <strong>내부 테이블에 반영된 뒤</strong> 후처리.</li>
+<li><code>e_modified</code>로 실제 변경을 확인하고, 합계·잔여석 같은 파생값을 계산한 뒤 <strong>stable refresh</strong>.</li>
+<li>셀별 즉시 검증(<code>data_changed</code>)과 라운드 후 후처리(<code>data_changed_finished</code>)는 <strong>역할이
+다르다</strong>.</li>
 </ul>
 <hr>
-<p>후처리까지 했다. 이제 셀 단위 입력 가능 여부를 동적으로 → Cell Style(다음 레슨).</p>
+<p>후처리까지 했다. 이제 같은 컬럼이라도 <strong>행마다</strong> 입력 가능 여부를 다르게 하는 Cell Style →
+<a href="CH28-L04.html">Cell Style 기반 입력 제어</a>(다음 레슨).</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
