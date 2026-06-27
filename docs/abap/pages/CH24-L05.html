@@ -75,13 +75,22 @@
 <li>패키지 크기는 <strong><button class="term" type="button" data-term="메모리">메모리</button>·성능을 보며</strong> 조정한다(보통 <strong>1천~1만</strong>). 작을수록 자원은 안전하나
 COMMIT 횟수가 늘어 <strong>오버헤드</strong>가 커진다 — 절충점을 찾는다.</li>
 <li>패키지마다 COMMIT해 <strong>잠금·로그·<button class="term" type="button" data-term="ROLLBACK WORK">롤백</button> 세그먼트</strong>를 비운다.</li>
-<li>중간 실패 시 <strong>어디까지 처리됐는지</strong>(재시작점)를 관리한다 — L04의 오류 테이블/로깅과 함께.</li>
+<li>중간 실패 시 <strong>어디까지 처리됐는지</strong>(재시작점)를 관리한다 — <a href="CH24-L04.html">오류 로그와 재처리 구조</a>의 오류
+테이블/로깅과 함께.</li>
 </ul>
+<blockquote>
+<p><strong>원자성 ↔ 재시작은 트레이드오프다.</strong> 패키지 COMMIT은 <em>부분 성공과 재처리</em>를 허용하는 업무에 어울린다.
+반대로 **&quot;전체가 모두 성공해야만 저장&quot;**인 업무에는 패키지 COMMIT을 쓰면 안 된다 — 앞 패키지가 이미 확정되어
+뒤에서 실패해도 전체를 한 번에 <code>ROLLBACK</code>할 수 없기 때문이다. 그런 경우는 전체 한 LUW로 묶거나 사전 검증을 강화한다.</p>
+</blockquote>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
 <li><strong>전체 단일 COMMIT</strong> → 대량에서 자원 폭발. 반드시 패키지로 쪼갠다.</li>
-<li><strong>루프 뒤 마지막 COMMIT 누락</strong> → 패키지 배수가 아닌 <strong>나머지 건</strong>이 확정 안 됨. 루프 후 한 번 더.</li>
-<li><strong>재시작점 없음</strong> → 중간 실패 후 처음부터 다시. 진행 위치를 기록(L04).</li>
+<li><strong>루프 뒤 마지막 COMMIT 누락</strong> → 패키지 배수가 아닌 <strong>나머지 건</strong>이 확정 안 됨. 루프 후 한 번 더 — 단,
+실제 변경이 있었을 때만 commit하도록 <code>lv_pending</code> 플래그를 두면 더 명확하다.</li>
+<li><strong>재시작점 없음</strong> → 중간 실패 후 처음부터 다시. 진행 위치를 기록(<a href="CH24-L04.html">오류 로그와 재처리 구조</a>).</li>
+<li><strong>전체 성공 필요 업무에 패키지 COMMIT</strong> → 앞 패키지가 이미 확정돼 전체 <code>ROLLBACK</code>이 불가. 부분 성공을 허용하는
+업무에만 쓴다.</li>
 </ul>
 </section><section class="lblock"><h2>정리</h2>
 <ul>
@@ -91,17 +100,19 @@ COMMIT 횟수가 늘어 <strong>오버헤드</strong>가 커진다 — 절충점
 </ul>
 </section><section class="lblock"><h2>🧩 도전 과제 (서브퀘스트)</h2>
 <blockquote>
-<p>선택 과제 — 콘서트 예매 앱(CH09~)에 이 챕터를 적용한다.</p>
+<p>선택 과제 — 이 과정에서 키운 콘서트 예매 앱에 이 챕터를 적용한다.</p>
 </blockquote>
 <ol>
-<li>CH16-L08에서 만든 예매 입력 화면의 SAVE에 실제 <code>INSERT zbooking</code>을 붙이고 <code>COMMIT WORK</code>로 확정한다.</li>
+<li><a href="CH16-L08.html">실습 — 예매 입력 화면 (Dynpro)</a>에서 만든 예매 입력 화면의 SAVE에 실제 <code>INSERT zbooking</code>을
+붙이고 <code>COMMIT WORK</code>로 확정한다.</li>
 <li>저장 시 감사필드(<code>created_by</code>=sy-uname·<code>created_on</code>=sy-datum)를 자동 stamp한다.</li>
-<li>(심화) 엑셀에서 받은 예매 100건을 <strong>패키지 단위 COMMIT</strong>(L05)으로 일괄 등록한다.</li>
+<li>(심화) 엑셀에서 받은 예매 100건을 <strong>패키지 단위 COMMIT</strong>(이 레슨)으로 일괄 등록한다.</li>
 </ol>
-<p>힌트: L01(INSERT·감사필드)·L02(COMMIT)·L05(패키지). 표준 테이블은 직접 DML 금지(BAPI).</p>
+<p>힌트: <a href="CH24-L01.html">INSERT / UPDATE / MODIFY / DELETE 실무 기준</a>(INSERT·감사필드)·<a href="CH24-L02.html">COMMIT WORK / ROLLBACK
+WORK</a>(COMMIT)·이 레슨(패키지). 표준 테이블은 직접 DML 금지(BAPI).</p>
 <hr>
 <p>직접 데이터 변경·<button class="term" type="button" data-term="트랜잭션">트랜잭션</button>·대량처리를 다뤘다. 그런데 <strong>여러 사용자가 동시에</strong> 같은
-데이터를 바꾸면? 충돌을 막는 잠금 → <strong>CH25(Lock Object)</strong>.</p>
+데이터를 바꾸면? 충돌을 막는 잠금 → <a href="CH25-L01.html">Lock Object 설계 기준</a>.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

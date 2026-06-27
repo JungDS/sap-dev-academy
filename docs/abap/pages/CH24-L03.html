@@ -65,15 +65,24 @@ Module</strong>(업데이트 함수)이다.</p>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">SAP LUW 타임라인 — IN UPDATE TASK 타이밍</span><a class="embed__open" href="../../../embeds/abap/CH24-L03-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH24-L03-S01.html" loading="lazy" title="SAP LUW 타임라인 — IN UPDATE TASK 타이밍" style="height:560px"></iframe></figure>
 <ul>
 <li><code>IN UPDATE TASK</code> — 지금이 아니라 <strong>COMMIT 시점에</strong> 실행하도록 등록(지연 실행).</li>
-<li><code>PERFORM &lt;form&gt; ON COMMIT</code> — 비슷하게 &quot;<button class="term" type="button" data-term="COMMIT WORK">커밋</button> 때 이 루틴을 실행&quot;하도록 등록한다.</li>
+<li><code>PERFORM &lt;form&gt; ON COMMIT</code> — 비슷하게 &quot;<button class="term" type="button" data-term="COMMIT WORK">커밋</button> 때 이 루틴을 실행&quot;하도록 등록한다. 단, subroutine은
+parameter interface가 없는 <strong>유산(legacy) 패턴</strong>이라 신규 설계엔 권장하지 않는다 — <em>보이면 읽을 수 있는</em>
+수준으로만 알아 두고, 새 코드는 method wrapper로 감싼다.</li>
 <li>기본 <code>COMMIT WORK</code>는 update를 <strong>비동기</strong>로 맡기고 진행한다. 저장 완료를 기다려야 하면
 앞 레슨의 <code>COMMIT WORK AND WAIT</code>.</li>
 </ul>
+<blockquote>
+<p><strong><code>IN UPDATE TASK</code> 직후 <code>sy-subrc</code>는 <em>정의되지 않는다</em>.</strong> 이 문장은 <em>실행</em>이 아니라 <em>등록</em>이라, 성공 여부를
+<code>sy-subrc</code>로 판정하지 않는다. 저장 결과는 <code>COMMIT WORK</code> 결과와 update log(SM13)로 확인한다.</p>
+</blockquote>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>즉시 실행 기대</strong> → <code>IN UPDATE TASK</code>는 COMMIT 때 실행. 그 전엔 DB에 없다.</li>
-<li><strong>COMMIT 없이 끝</strong> → 등록만 하고 COMMIT을 안 하면 update task는 영영 실행되지 않는다.</li>
-<li><strong>표준은 BAPI</strong> → 표준 데이터 변경은 BAPI가 이 LUW 처리를 알아서 관리(직접 update task 짤 일 적음).</li>
+<li><strong>즉시 실행 기대</strong> → <code>IN UPDATE TASK</code>는 COMMIT 때 실행. 그 전엔 DB에 없다(그리고 호출 직후 <code>sy-subrc</code>는 무의미).</li>
+<li><strong>COMMIT 없이 끝</strong> → 등록만 하고 COMMIT을 안 하면 update task는 영영 실행되지 않는다. 프로그램·<button class="term" type="button" data-term="세션">세션</button>이
+끝나면 등록이 사라질 수 있으니 저장 책임을 분명히 한다.</li>
+<li><strong>update 함수 안에서 COMMIT/ROLLBACK</strong> → 금지. update 처리 중에는 <button class="term" type="button" data-term="트랜잭션">트랜잭션</button> 경계를 다시 흔들지 않는다.</li>
+<li><strong>표준은 BAPI</strong> → 표준 데이터 변경은 BAPI가 이 LUW 처리를 알아서 관리(직접 update task 짤 일 적음).
+ABAP Cloud에서는 임의 update task보다 released API·RAP behavior를 먼저 검토한다.</li>
 </ul>
 </section><section class="lblock"><h2>정리</h2>
 <ul>
