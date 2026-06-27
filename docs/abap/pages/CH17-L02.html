@@ -35,57 +35,76 @@
       <section class="lhead">
         <p class="lhead__eyebrow">Grid ALV 기초</p>
         <h1>CL_GUI_ALV_GRID 생성</h1>
-        <p class="lhead__direction">컨테이너 위에 ALV 그리드 객체를 만든다.</p>
+        <p class="lhead__direction">컨테이너 위에 ALV 그리드 컨트롤 객체를 얹는다.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 17</span><span class="tag tag--ls">Lesson 2</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
 <section class="lblock"><h2>컨테이너 위에 그리드를 얹는다</h2>
-<p><button class="term" type="button" data-term="CL_GUI_ALV_GRID">CL_GUI_ALV_GRID</button>는 화면 안에 박는 강력한 표 컨트롤이다. 만들 때 <strong>어느 컨테이너에
-들어갈지</strong>를 알려 준다.</p>
+<p>컨테이너는 <strong>자리만</strong> 준비한다. 실제로 표를 그리고, 정렬 버튼을 주고, 컬럼 너비를
+조절하고, 나중에 색·<button class="term" type="button" data-term="이벤트">이벤트</button>까지 다룰 주인공은 <button class="term" type="button" data-term="CL_GUI_ALV_GRID">CL_GUI_ALV_GRID</button>다. 만들 때 <code>i_parent</code>에
+<strong>어느 컨테이너에 들어갈지</strong>(앞 레슨의 <code>go_cont</code>)를 넘긴다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
 4</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> go_grid <span class="tok-kw">TYPE</span> <span class="tok-kw">REF</span> <span class="tok-kw">TO</span> cl_gui_alv_grid.
 
 <span class="tok-kw">CREATE</span> <span class="tok-kw">OBJECT</span> go_grid
-  <span class="tok-kw">EXPORTING</span> i_parent = go_cont.    <span class="tok-com">" 앞 레슨의 컨테이너</span></code></pre></div></div>
+  <span class="tok-kw">EXPORTING</span> i_parent = go_cont.    <span class="tok-com">" 이 그리드는 go_cont 안에 들어간다</span></code></pre></div></div>
 <ul>
-<li><code>i_parent</code> — 그리드를 담을 부모 컨테이너(<code>go_cont</code>).</li>
-<li>아직 데이터는 안 보인다 — 무엇을(내부 테이블) 어떻게(Field Catalog) 보여줄지 더
-준비해야 한다(다음 레슨들).</li>
+<li><code>go_grid</code>는 표 컨트롤 객체, <code>go_cont</code>는 그 표가 들어갈 <strong>부모 영역</strong>이다.</li>
+<li><code>go_cont</code>가 아직 없거나 <code>initial</code>이면 <code>go_grid</code>를 화면에 정상적으로 붙일 수 없다.</li>
 </ul>
 </section><section class="lblock"><h2>SALV와 무엇이 다른가</h2>
 <table>
 <thead>
 <tr>
-<th></th>
-<th>SALV(CH11)</th>
-<th>Grid ALV(CH17)</th>
+<th>관점</th>
+<th>SALV</th>
+<th>Grid ALV</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>코드량</td>
-<td>적음(factory)</td>
-<td>많음(컨테이너·fieldcat 등)</td>
+<td>목적</td>
+<td>빠른 목록 표시</td>
+<td>화면 안 표 <strong>컨트롤</strong> 구성</td>
 </tr>
 <tr>
-<td>화면 박기</td>
-<td>전체 화면</td>
-<td><strong>내 화면 영역에</strong></td>
+<td>시작 코드</td>
+<td>짧음(<a href="CH11-L02.html">factory</a>)</td>
+<td>컨테이너·그리드·field catalog·layout 필요</td>
 </tr>
 <tr>
-<td>제어·편집</td>
-<td>제한적·읽기전용</td>
-<td><strong>세밀·편집 가능</strong>(CH28)</td>
+<td>화면 배치</td>
+<td>단독 목록 화면</td>
+<td><strong>Dynpro 안 특정 영역</strong>에 배치</td>
+</tr>
+<tr>
+<td>후속 확장</td>
+<td>제한적</td>
+<td>색·<a href="CH27-L01.html">이벤트</a>·<a href="CH28-L01.html">편집</a>·툴바까지</td>
 </tr>
 </tbody></table>
+</section><section class="lblock"><h2>그리드를 만들었는데 왜 표가 안 보이지?</h2>
+<p><code>CREATE OBJECT go_grid</code>까지 했는데도 화면에 표가 <strong>안 보일 수 있다.</strong> 이건 실패가
+아니라 <strong>정상</strong>이다 — 무엇을(데이터), 어떻게(Field Catalog) 보여줄지, 그리고 표시
+명령(<code>set_table_for_first_display</code>)이 <strong>아직 없기</strong> 때문이다.</p>
+<p>아래에서 컨테이너 → 그리드를 차례로 만들고, 오른쪽 <strong>준비 상태 체크리스트</strong>에서 무엇이
+아직 비어 있는지 확인하자. <code>i_parent</code>를 비워 두면 왜 연결이 깨지는지도 보라.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">그리드 준비 상태 체크리스트</span><a class="embed__open" href="../../../embeds/abap/CH17-L02-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH17-L02-S01.html" loading="lazy" title="그리드 준비 상태 체크리스트" style="height:560px"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>부모 컨테이너 없음</strong> → <code>i_parent</code>에 유효한 컨테이너를 넘겨야 한다.</li>
-<li><strong>그리드만 만들고 끝</strong> → 데이터·Field Catalog·display까지 해야 표가 보인다.</li>
+<li><strong><code>i_parent</code>에 엉뚱한 reference</strong> → <code>go_cont</code>가 아니면 화면 영역 연결이 깨진다.</li>
+<li><strong>그리드만 만들고 끝</strong> → Grid는 컨트롤 객체일 뿐. 실제 표 출력은
+<a href="CH17-L07.html">SET_TABLE_FOR_FIRST_DISPLAY</a>에서 일어난다.</li>
+</ul>
+</section><section class="lblock"><h2>정리</h2>
+<ul>
+<li>이 레슨은 &quot;표가 들어갈 자리(컨테이너)&quot; 위에 <strong>&quot;표를 그릴 컨트롤(그리드)&quot;</strong> 을 얹는 단계다.</li>
+<li>그리드를 만들었다고 표가 바로 보이는 게 아니다 — 데이터·Field Catalog·display가 더 필요하다.</li>
 </ul>
 <hr>
-<p>그리드 객체는 만들었다. 이제 <strong>보여줄 데이터</strong>(내부 테이블)를 준비하자 → 다음 레슨.</p>
+<p>표를 그릴 컨트롤을 얹었다. 이제 그 표에 넣을 <strong>데이터</strong>(내부 테이블)를 준비하자
+→ <a href="CH17-L03.html">출력용 Internal Table 준비</a>.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

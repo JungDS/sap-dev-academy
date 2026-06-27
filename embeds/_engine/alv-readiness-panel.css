@@ -1,0 +1,55 @@
+/* ===== alv-readiness-panel 엔진 CSS — 컨테이너→그리드 생성 후 "표가 안 보이는 이유"를 준비 상태 체크리스트로 (config 주도) =====
+   골격 계약(HTML 제공): .arp-parent(세그) · [data-next] · [data-reset] · .arp-steps · #arpCheck · #arpMsg.
+   config=window.ARP_CFG = { steps:[{evt,detail}], checks:[{key,label,readyAt,pending}] }.
+   토큰 active 배경 버튼 base=var(--surface). 높이: _autoheight.js. */
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:transparent;line-height:1.5;}
+.wrap{max-width:740px;margin:0 auto;padding:14px 16px 18px;}
+.hd{margin:0 0 4px;font-weight:800;font-size:1.04rem;color:#1d3a63;}
+.hd small{font-weight:600;color:#64748b;font-size:.8rem;}
+.lead{margin:0 0 12px;color:var(--ink-soft);font-size:.9rem;}
+.lead code{font-family:var(--mono);background:#eef2fb;color:var(--brand);padding:1px 5px;border-radius:5px;}
+.arp-h{font-size:.72rem;font-weight:800;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em;margin:0 0 6px;}
+
+.arp-ctrl{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px;}
+.arp-parent{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;}
+.arp-parent button{border:0;border-right:1px solid var(--line);background:var(--surface);color:var(--ink-soft);font:inherit;font-size:.75rem;font-weight:700;padding:6px 10px;cursor:pointer;font-family:var(--mono);}
+.arp-parent button:last-child{border-right:0;}
+.arp-parent button[aria-pressed="true"]{background:var(--brand);color:#fff;}
+.arp-parent button[aria-pressed="true"][data-bad="1"]{background:var(--bad);}
+.arp-btn{border:0;border-radius:8px;padding:7px 14px;font:inherit;font-size:.82rem;font-weight:800;color:#fff;cursor:pointer;background:var(--accent);}
+.arp-btn:hover{filter:brightness(1.07);} .arp-btn:disabled{opacity:.4;cursor:default;}
+.arp-btn.ghost{background:var(--surface);color:var(--ink-soft);border:1px solid var(--line);}
+
+.arp-cols{display:grid;grid-template-columns:1fr 1.1fr;gap:12px;margin-bottom:11px;}
+@media (max-width:560px){ .arp-cols{grid-template-columns:1fr;} }
+
+.arp-steps{display:flex;flex-direction:column;gap:0;}
+.arp-step{display:flex;gap:9px;align-items:flex-start;position:relative;padding-bottom:9px;}
+.arp-step:not(:last-child)::before{content:"";position:absolute;left:9px;top:19px;bottom:0;width:2px;background:var(--line);}
+.arp-sdot{flex:0 0 auto;width:19px;height:19px;border-radius:50%;border:2px solid var(--line);background:var(--surface);font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;color:var(--ink-soft);z-index:1;}
+.arp-step.done .arp-sdot{border-color:var(--good);background:var(--good);color:#fff;}
+.arp-step.cur .arp-sdot{border-color:var(--accent);background:var(--accent);color:#fff;}
+.arp-step.fail .arp-sdot{border-color:var(--bad);background:var(--bad);color:#fff;}
+.arp-step.pending{opacity:.5;}
+.arp-sbody .se{font-family:var(--mono);font-size:.77rem;font-weight:800;color:var(--ink);}
+.arp-sbody .sd{font-size:.73rem;color:var(--ink-soft);}
+
+#arpCheck{border:1px solid var(--line);border-radius:9px;overflow:hidden;}
+.arp-cr{display:flex;align-items:center;gap:8px;padding:6px 11px;border-bottom:1px solid #eef1f7;font-size:.79rem;}
+.arp-cr:last-child{border-bottom:0;}
+.arp-ci{flex:0 0 auto;width:17px;height:17px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;border:1.5px solid var(--line);color:#94a3b8;background:var(--surface);}
+.arp-cr.ready .arp-ci{border-color:var(--good);background:var(--good);color:#fff;}
+.arp-cr.fail .arp-ci{border-color:var(--bad);background:var(--bad);color:#fff;}
+.arp-cr .ck{font-family:var(--mono);font-weight:700;color:var(--ink);}
+.arp-cr .cs{margin-left:auto;font-size:.72rem;font-family:var(--mono);color:var(--ink-soft);}
+.arp-cr.ready .cs{color:#0f7a52;font-weight:700;} .arp-cr.fail .cs{color:var(--bad);font-weight:700;}
+.arp-cr.pending .cs{color:var(--amber);font-weight:700;}
+
+#arpMsg{font-size:.84rem;border-radius:9px;padding:10px 13px;border:1px solid var(--line);background:#eef2fb;color:#2a3550;}
+#arpMsg.ok{background:#eafaf3;border-color:var(--good);color:#0f5a3f;}
+#arpMsg.bad{background:#fff1f3;border-color:var(--bad);color:#8a1538;font-weight:700;}
+#arpMsg code{font-family:var(--mono);background:#fff;border:1px solid var(--line);padding:0 5px;border-radius:4px;}
+
+.note{margin-top:12px;border-left:3px solid var(--brand);background:rgba(59,91,219,.06);border-radius:0 9px 9px 0;padding:9px 13px;font-size:.83rem;color:#2a3550;}
+.note code{font-family:var(--mono);background:#fff;border:1px solid var(--line);padding:0 5px;border-radius:4px;}

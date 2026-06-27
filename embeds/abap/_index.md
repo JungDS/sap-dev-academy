@@ -108,6 +108,14 @@
 | CH16-L07-S01 | CH16-L07 | screen-extension-designer | 화면 확장요소 4탭(Custom Control 이름매칭·Subscreen OK field 없음→main·Tabstrip activetab/subscreen·Status Icon) | ✅ |
 | CH16-L08-S01 | CH16-L08 | dynpro-form-simulator | CH16 캡스톤·화면0100 PBO준비→좌석입력→SAVE(can_book 검증 S/E·화면유지)·BACK=LEAVE TO SCREEN0·EXIT=LEAVE PROGRAM·Enter 재실행방지 | ✅ |
 | CH16-L03-S01 | CH16-L03 | dynpro-screen-elements | 예매 화면 요소↔변수(Input·Check·Radio·Dropdown VRM·Button→OK_CODE) | ✅ |
+| CH17-L01-S01 | CH17-L01 | container-bind-stepper | CL_GUI_CUSTOM_CONTAINER 바인딩 3단계(Screen Painter 확인→PBO→CREATE OBJECT)·이름 매칭→go_cont initial→bound/오타 fail | ✅ |
+| CH17-L02-S01 | CH17-L02 | alv-readiness-panel | CL_GUI_ALV_GRID 생성 2단계+준비 체크리스트(go_cont/go_grid ready·데이터/fcat/display 비어있음→표 안보이는게 정상)·i_parent 비움 fail | ✅ |
+| CH17-L03-S01 | CH17-L03 | alv-data-query | SELECT INTO TABLE 3시나리오(C001=4건·C999=0건subrc4 빈표정상·조건없이=전체 경고)·sy-subrc/sy-dbcnt/행수·lt_booking 미리보기 | ✅ |
+| CH17-L04-S01 | CH17-L04 | fieldcat-editor | lt_fcat coltext/outputlen 편집→lt_booking 헤더 라이브 변경·fieldname 대소문자 매칭(소문자→적용 안 됨) | ✅ |
+| CH17-L05-S01 | CH17-L05 | alv-layout-toggles | LVC_S_LAYO 토글(zebra/cwidth_opt/grid_title/sel_mode)→미리보기 라이브·cwidth_opt off→긴 고객명 clip | ✅ |
+| CH17-L06-S01 | CH17-L06 | alv-variant-store | Display Variant 사용자A/B 컬럼순서 저장·열기→미리보기 복원(표시방식≠데이터)·report 비움→경고+버튼 disabled | ✅ |
+| CH17-L08-S01 | CH17-L08 | alv-refresh-sync | 내부 vs 화면 2테이블·상태변경(내부만 stale)→일반 Refresh(맨위로 튐)/Stable Refresh(위치 유지)·데이터변경/화면갱신/위치보존 3체크 | ✅ |
+| CH17-L09-S01 | CH17-L09 | alv-row-color-lab | 매진 판정(점유/정원)→색코드 쓰기(C610)→info_fname 연결→표시→매진 행 색칠·틀린 필드명(ROW_COLOR)→색 안보임·3체크 | ✅ |
 | CH17-L07-S01 | CH17-L07 | gui-alv-grid-simulator | CL_GUI_ALV_GRID 4단계(container→grid→fcat→set_table)·정렬·Σ | ✅ |
 | CH17-L10-S01 | CH17-L10 | gui-alv-grid-simulator | 예매목록 Grid ALV 종합 5단계(SELECT→…→set_table·MERGE·layout) | ✅ |
 | CH18-L06-S01 | CH18-L06 | diff-mapper | classic↔modern(VALUE·+=) hover 대응+설명 · 중립 톤 classic/modern | ✅ |
@@ -175,6 +183,14 @@
 | case-branch-sim | 2 | 공통(_engine)+_autoheight ✅ | CH04-L04-S01 | CASE…WHEN 시뮬·config 주도·OR묶기 토글(bespoke 신규) |
 | join-aggregate-visualizer | 1 | 공통(_engine)·자체 postHeight ✅ | CH13-L08-S01 | JOIN_CFG 주도 · LEFT/INNER 토글·GROUP BY SUM·ON 필터(취소 제외) |
 | gui-alv-grid-simulator (신규) | 2 | 공통(_engine·ALVG_CFG)·자체 postHeight ✅ | CH17-L07·L10 (완료) | 단계 빌드업+그리드 · config로 steps/data/cols 주입 |
+| container-bind-stepper (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH17-L01-S01 | CBS_CFG 주도 · 컨테이너 바인딩 3단계·이름 토글(CONT100/오타)→화면 도식 강조·go_cont initial→bound/fail·상태패널 · 다크 |
+| alv-readiness-panel (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH17-L02-S01 | ARP_CFG 주도 · 컨테이너→그리드 2단계+준비 체크리스트(ready/pending/fail)·i_parent 토글·"표 안 보이는 게 정상" 메시지 · 다크 |
+| alv-data-query (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH17-L03-S01 | ADQ_CFG 주도 · SELECT 시나리오 3종→sy-subrc/sy-dbcnt/행수 박스·lt_booking 미리보기·빈테이블 정상 S·전체조회 경고 · 다크 |
+| fieldcat-editor (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH17-L04-S01 | FCE_CFG 주도 · lt_fcat coltext/outputlen 편집 input→미리보기 헤더 라이브·fieldname 대소문자 토글(소문자→불일치 적용X warn) · 다크 |
+| alv-layout-toggles (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH17-L05-S01 | ALT_CFG 주도 · zebra/cwidth_opt/grid_title 칩+sel_mode 세그→미리보기(제목바·줄무늬·clip·선택컬럼) 라이브 · 다크 |
+| alv-variant-store (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH17-L06-S01 | AVS_CFG 주도 · report 토글·사용자별 Variant 카드(컬럼순서 chip)→열기 시 미리보기 순서 복원(moved th)·report 비움 경고/disabled · 다크 |
+| alv-refresh-sync (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH17-L08-S01 | ARS_CFG 주도 · 내부/화면 2테이블·change(내부만 stale)·scroll·plain refresh(맨위)/stable refresh(위치유지)·3체크(데이터변경/화면갱신/위치보존) · 다크 |
+| alv-row-color-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH17-L09-S01 | ARC_CFG 주도 · seatsocc 편집→상태 badge·색코드 쓰기/info_fname 토글(good/bad)/표시→매진 행 색칠·3체크(색코드/필드명/표시) · 다크 |
 | process-flow-pbo-pai (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH16-L01-S01 | PBO/PAI 두 박자 순환(클릭 진행) |
 | dynpro-screen-elements (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH16-L03-S01 | 화면 요소↔변수 + FctCode→OK_CODE 시연 |
 | screen-painter-wiring (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH16-L02-S01 | SPW_CFG 주도 · 4패널(Layout/Element List/Flow Logic/ABAP Source) 연결 지도·시나리오로 깨기→활성화 오류(MODULE 누락·이름불일치·OK field) · 다크 |

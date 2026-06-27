@@ -35,38 +35,71 @@
       <section class="lhead">
         <p class="lhead__eyebrow">Grid ALV 기초</p>
         <h1>SET_TABLE_FOR_FIRST_DISPLAY</h1>
-        <p class="lhead__direction">데이터·fieldcat·layout을 묶어 그리드를 처음 띄운다.</p>
+        <p class="lhead__direction">데이터·fieldcat·layout·variant를 묶어 그리드를 처음 띄운다.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 17</span><span class="tag tag--ls">Lesson 7</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
 <section class="lblock"><h2>드디어 화면에</h2>
-<p>지금까지 만든 <strong>데이터·Field Catalog·Layout·Variant</strong>를 그리드의
-<code>set_table_for_first_display</code> 메서드에 넘기면 표가 화면에 그려진다.</p>
+<p>앞 레슨들에서 조각을 만들었다 — 자리(컨테이너)·그리드 객체·데이터·컬럼 설명서·표 모양·Variant.
+하지만 조각이 준비됐다고 표가 <strong>자동으로</strong> 나타나진 않는다. 그리드에게 &quot;이 데이터와 이
+컬럼 설명서와 이 layout으로 <strong>처음</strong> 표를 그려라&quot;라고 말하는 호출이 필요하다 —
+<code>set_table_for_first_display</code>다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
 4
 5
-6</pre><pre class="abap-editor__code"><code>go_grid-&gt;set_table_for_first_display(
+6
+7
+8
+9
+10
+11
+12
+13
+14</pre><pre class="abap-editor__code"><code>go_grid-&gt;set_table_for_first_display(
   <span class="tok-kw">EXPORTING</span> is_layout       = ls_layout
             is_variant      = ls_variant
             i_save          = <span class="tok-str">'A'</span>
   <span class="tok-kw">CHANGING</span>  it_outtab       = lt_booking      <span class="tok-com">" 표시할 데이터</span>
-            it_fieldcatalog = lt_fcat ).      <span class="tok-com">" 컬럼 정의</span></code></pre></div></div>
+            it_fieldcatalog = lt_fcat         <span class="tok-com">" 컬럼 정의</span>
+  <span class="tok-kw">EXCEPTIONS</span> invalid_parameter_combination = <span class="tok-num">1</span>
+             program_error                 = <span class="tok-num">2</span>
+             too_many_lines                = <span class="tok-num">3</span>
+             <span class="tok-kw">OTHERS</span>                        = <span class="tok-num">4</span> ).
+
+<span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.
+  <span class="tok-kw">MESSAGE</span> <span class="tok-str">'ALV Grid를 처음 표시하지 못했습니다.'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'E'</span>.
+<span class="tok-kw">ENDIF</span>.</code></pre></div></div>
+<blockquote>
+<p>💡 <strong><code>EXPORTING</code> vs <code>CHANGING</code>을 역할로 나눠 보자.</strong></p>
 <ul>
-<li><code>it_outtab</code> — 보여줄 <button class="term" type="button" data-term="Internal Table">Internal Table</button>.</li>
-<li><code>it_fieldcatalog</code> — 컬럼 정의(CH17-L04).</li>
-<li><code>is_layout</code>·<code>is_variant</code> — 모양·레이아웃 저장(L05·L06).</li>
-<li>이건 <strong>처음 한 번</strong>의 호출이다. 데이터가 바뀐 뒤 다시 그릴 땐 refresh(다음 레슨).</li>
+<li><code>EXPORTING</code>(<code>is_layout</code>·<code>is_variant</code>·<code>i_save</code>) = <strong>어떻게 보일지</strong>(설정).</li>
+<li><code>CHANGING</code>(<code>it_outtab</code>·<code>it_fieldcatalog</code>) = <strong>무엇을 어떤 컬럼으로</strong> 그릴지(데이터·정의).</li>
 </ul>
+</blockquote>
+<ul>
+<li><code>it_outtab</code> — 보여줄 <button class="term" type="button" data-term="Internal Table">Internal Table</button>. <code>it_fieldcatalog</code> — 컬럼 정의(<a href="CH17-L04.html">Field Catalog 기초</a>).</li>
+<li><code>is_layout</code>·<code>is_variant</code> — 모양·저장(<a href="CH17-L05.html">Layout 기본 설정</a>·<a href="CH17-L06.html">Variant 기본 설정</a>).</li>
+</ul>
+<p>아래에서 컨테이너 → 그리드 → field catalog → <code>set_table_for_first_display</code> 4단계를 차례로
+밟아, 마지막에 표가 화면에 그려지는 걸 확인하자.</p>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">데이터를 그리드로 띄워 정렬·합계를 눌러 보기</span><a class="embed__open" href="../../../embeds/abap/CH17-L07-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH17-L07-S01.html" loading="lazy" title="데이터를 그리드로 띄워 정렬·합계를 눌러 보기"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>CHANGING/EXPORTING 구분</strong> → 데이터·fieldcat은 <code>CHANGING</code>으로 넘긴다.</li>
-<li><strong>빈 fieldcat</strong> → 컬럼 정의가 없으면 표가 비어 보인다.</li>
+<li><strong><code>EXPORTING</code>/<code>CHANGING</code> 섞기</strong> → 데이터·fieldcat은 <strong><code>CHANGING</code></strong>, 설정은 <code>EXPORTING</code>이다.</li>
+<li><strong>준비 없이 호출</strong> → <code>it_outtab</code>·<code>it_fieldcatalog</code>를 채우고 호출한다. 빈 fieldcat이면 표가 비어 보인다.</li>
+<li><strong>PBO마다 반복 호출</strong> → 이건 <strong>처음 한 번</strong>의 호출이다. 이미 표시된 뒤 데이터만 바뀌면
+다음 레슨의 refresh를 쓴다.</li>
+</ul>
+</section><section class="lblock"><h2>정리</h2>
+<ul>
+<li>이 호출이 <strong>이 챕터의 첫 완성 순간</strong> — 데이터가 화면의 Grid ALV로 바뀐다.</li>
+<li><code>EXPORTING</code>=어떻게 보일지, <code>CHANGING</code>=무엇을 그릴지로 나눠 기억하고, <code>sy-subrc</code>로 성공을 확인한다.</li>
 </ul>
 <hr>
-<p>표를 처음 띄웠다. 그런데 데이터가 바뀌면 어떻게 <strong>다시 그릴까</strong>? → Refresh(다음 레슨).</p>
+<p>표를 처음 띄웠다. 그런데 데이터가 바뀌면 어떻게 <strong>다시 그릴까</strong>?
+→ <a href="CH17-L08.html">Refresh와 Stable Refresh 기초</a>.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
