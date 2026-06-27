@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<!-- CH21-L04-S01 — 엔진: cell-color-microscope · _autoheight. 콘텐츠=레슨 전용(Deep Structure 기반 Cell Color, CH21 L04).
+     config=window.CCM_CFG. 게이팅: CH21=셀 색(LVC_T_SCOL deep·ctab_fname). 셀 style은 다음 레슨·편집 본격은 CH28. -->
+<html lang="ko" data-eng="cell-color-microscope">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Cell Color 현미경 · CH21-L04-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/cell-color-microscope.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">Cell Color 현미경 <small>(2단계: 색 계산 → 연결)</small></p>
+  <p class="lead">행 전체가 아니라 <b>매진 회차의 <code>SEATSOCC</code> 셀 하나</b>만 빨강으로 칠합니다. 핵심은 <b>2단계</b>예요 — <code>cellcolors</code>(<code>LVC_T_SCOL</code>)를 채운다고 끝이 아니라, <code>ls_layout-ctab_fname</code>으로 <b>연결</b>해야 ALV가 색을 읽습니다. 버튼을 순서대로 눌러 보세요.</p>
+
+  <div class="ccm-act"></div>
+
+  <p class="ccm-h">화면 (매진 행은 왼쪽 빨간 막대)</p>
+  <div id="ccmTable"></div>
+  <div id="ccmScol"></div>
+  <div id="ccmStatus"></div>
+
+  <div class="note"><b>flat ↔ deep 분리.</b> DB는 <b>flat table</b>로 조회하고(deep는 SQL work area 제한), ALV 표시용 internal table에 <code>cellcolors TYPE lvc_t_scol</code> 같은 deep component를 더해 색을 채웁니다. <code>CELLCOLORS</code>는 화면 컬럼으로 보이면 안 되니 field catalog에서 숨깁니다. 셀 색은 <b>위험·경고·확정</b> 같은 제한된 의미에만.</div>
+</div>
+
+<script>
+window.CCM_CFG = {
+  colorCol: 'SEATSOCC', badName: 'SEATS_OCC',
+  rows: [
+    { concert: 'C001', perf: '01', seatsocc: 100, capacity: 100 },
+    { concert: 'C001', perf: '02', seatsocc: 95,  capacity: 100 },
+    { concert: 'C002', perf: '01', seatsocc: 50,  capacity: 50 },
+    { concert: 'C002', perf: '02', seatsocc: 30,  capacity: 80 },
+    { concert: 'C003', perf: '01', seatsocc: 20,  capacity: 60 }
+  ]
+};
+</script>
+<script src="../_engine/cell-color-microscope.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>
