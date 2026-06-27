@@ -35,12 +35,14 @@
       <section class="lhead">
         <p class="lhead__eyebrow">Modern ABAP Syntax</p>
         <h1>Table Expression</h1>
-        <p class="lhead__direction">테이블 한 행을 대괄호로 콕 집는다 — tab[ ].</p>
+        <p class="lhead__direction">한 행을 값처럼 읽는다 — tab[ ]·line_exists·line_index (짧지만 안전하게).</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 18</span><span class="tag tag--ls">Lesson 4</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
 <section class="lblock"><h2>READ TABLE의 식 버전</h2>
-<p>CH06의 <code>READ TABLE</code>을 모던에서는 <strong>대괄호</strong>로 더 짧게 쓴다.</p>
+<p><a href="CH06-L01.html">Internal Table 기초</a>에서 한 행을 찾는 기본 도구는 <code>READ TABLE</code>이었다.
+성공 여부를 <code>sy-subrc</code>로 확인하고, 성공했을 때만 값을 썼다. modern에서는 한 행을
+<strong>배열처럼 대괄호로</strong> 꺼낸다 — Table expression.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -56,28 +58,52 @@
 
 <span class="tok-com">" 인덱스로</span>
 <span class="tok-kw">DATA</span>(ls_first) = lt_booking[ <span class="tok-num">1</span> ].</code></pre></div></div>
-</section><section class="lblock"><h2>없으면 예외가 난다</h2>
-<p>찾는 행이 <strong>없으면</strong> <code>CX_SY_ITAB_LINE_NOT_FOUND</code> 예외가 난다(classic의 <code>sy-subrc=4</code>와
-다르다). 그래서 존재를 먼저 확인하거나 예외를 잡는다.</p>
+</section><section class="lblock"><h2>없으면 예외가 난다 — line_exists로 보호</h2>
+<p>짧지만 <strong>중요한 차이</strong>가 있다. <code>READ TABLE</code>은 실패하면 <code>sy-subrc</code>만 세팅하고 지나간다.
+Table expression은 일반 <strong>값 표현식</strong>이라, 없는 행을 직접 읽으면 <code>CX_SY_ITAB_LINE_NOT_FOUND</code>
+<strong>예외</strong>가 난다. 이 차이를 모르면 modern 문법이 오히려 더 위험하다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
 4
-5</pre><pre class="abap-editor__code"><code><span class="tok-kw">IF</span> line_exists( lt_booking[ booking_id = <span class="tok-str">'0001'</span> ] ).
-  <span class="tok-kw">DATA</span>(ls) = lt_booking[ booking_id = <span class="tok-str">'0001'</span> ].
+5
+6</pre><pre class="abap-editor__code"><code><span class="tok-kw">IF</span> line_exists( lt_booking[ booking_id = lv_id ] ).
+  <span class="tok-kw">DATA</span>(ls) = lt_booking[ booking_id = lv_id ].
+  <span class="tok-kw">WRITE</span>: / ls-customer.
 <span class="tok-kw">ENDIF</span>.
 
-<span class="tok-kw">DATA</span>(lv_idx) = line_index( lt_booking[ booking_id = <span class="tok-str">'0001'</span> ] ).  <span class="tok-com">" 위치(없으면 0)</span></code></pre></div></div>
+<span class="tok-kw">DATA</span>(lv_idx) = line_index( lt_booking[ booking_id = lv_id ] ).  <span class="tok-com">" 위치(못 찾으면 0)</span></code></pre></div></div>
+<ul>
+<li><code>line_exists( )</code> — 그 행이 있는지 먼저 확인(성공 여부는 <strong><code>sy-subrc</code>가 아니라</strong> 이걸로).</li>
+<li><code>line_index( )</code> — 찾은 <strong>위치</strong>. 못 찾으면 <code>0</code>(hashed key 등 순서를 말할 수 없으면 <code>-1</code>).</li>
+</ul>
 <blockquote>
-<p>예외 처리(<code>TRY/CATCH</code>)는 CH20에서 정식으로 — 지금은 <code>line_exists( )</code>로 안전하게.</p>
+<p>예외 처리(<code>TRY/CATCH</code>)는 <a href="CH20-L06.html">Exception Class — TRY / CATCH / CX 계층</a>에서
+정식으로 — 이 챕터에서는 <code>line_exists( )</code>로 안전하게 피한다.</p>
 </blockquote>
+</section><section class="lblock"><h2>직접 비교해 보기 — READ TABLE vs Table Expression</h2>
+<p>같은 데이터로 <strong>존재하는 키(B001)</strong>, <strong>다른 키(B002)</strong>, **없는 키(B999)**를 검색하며
+<code>READ TABLE</code>(sy-subrc), 직접 <code>tab[ ]</code>(예외!), <code>line_exists</code> 보호, <code>line_index</code>를 비교하자.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">READ TABLE vs Table Expression 비교기</span><a class="embed__open" href="../../../embeds/abap/CH18-L04-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH18-L04-S01.html" loading="lazy" title="READ TABLE vs Table Expression 비교기" style="height:620px"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>없는 행 직접 접근</strong> → 예외 덤프. <code>line_exists( )</code>로 먼저 확인.</li>
-<li><strong>classic과 혼동</strong> → 표현식은 <code>sy-subrc</code>를 안 세운다(예외로 알린다).</li>
+<li><strong><code>tab[ ]</code> 뒤에 <code>IF sy-subrc = 0</code></strong> → table expression은 <code>sy-subrc</code>를 세우지 않는다.
+성공 여부는 <code>line_exists</code>, 위치는 <code>line_index</code>로 본다.</li>
+<li><strong>없는 행 직접 접근</strong> → 예외 발생. <code>line_exists( )</code>로 먼저 확인하고 읽는다.</li>
+<li><strong>여러 행에 남발</strong> → table expression은 <strong>한 행 조회</strong> 도구다. 여러 행 순회·전체 처리는
+여전히 <code>LOOP AT</code>이 자연스럽다.</li>
+<li><strong><button class="term" type="button" data-term="인덱스">인덱스</button> 접근 <code>tab[ 1 ]</code></strong> → 정렬·테이블 종류에 민감하다. &quot;첫 행&quot;이 업무적으로 의미 있을
+때만. 예매번호로 찾을 수 있으면 key 조건이 더 명확하다.</li>
+</ul>
+</section><section class="lblock"><h2>정리</h2>
+<ul>
+<li>Table expression은 Internal Table 한 행을 <strong>값처럼</strong> 읽는 modern syntax — 존재가 확실할 땐 매우 간결하다.</li>
+<li>없는 행을 직접 읽으면 <code>READ TABLE</code>과 달리 <strong>예외</strong>가 난다. <code>line_exists</code>·<code>line_index</code>로
+&quot;짧지만 안전한 조회&quot;를 한다.</li>
 </ul>
 <hr>
-<p>행을 식으로 집었다. 이제 문자열을 우아하게 만드는 <strong>String Template</strong> → 다음 레슨.</p>
+<p>행을 식으로 집었다. 이제 문자열을 우아하게 만드는 <strong>String Template</strong>
+→ <a href="CH18-L05.html">String Template과 내장 함수</a>.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

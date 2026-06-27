@@ -35,41 +35,79 @@
       <section class="lhead">
         <p class="lhead__eyebrow">Modern ABAP Syntax</p>
         <h1>CORRESPONDING과 구조 매핑</h1>
-        <p class="lhead__direction">이름이 같은 필드끼리 한 식으로 옮긴다 — CORRESPONDING</p>
+        <p class="lhead__direction">이름이 같은 필드를 새 타입으로 옮긴다 — CORRESPONDING·MAPPING·EXCEPT.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 18</span><span class="tag tag--ls">Lesson 3</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>MOVE-CORRESPONDING의 식 버전</h2>
-<p>CH05에서 이름이 같은 필드만 옮기는 <code>MOVE-CORRESPONDING</code>을 배웠다. 모던에서는
-<strong>식</strong>으로 쓴다 — <code>CORRESPONDING #( )</code>.</p>
+<section class="lblock"><h2>같은 데이터를 다른 모양으로</h2>
+<p>업무 프로그램은 같은 데이터를 다른 모양으로 옮기는 일이 많다 — DB 행을 화면 표시용
+구조로, 입력 구조를 저장 구조로. classic은 같은 이름 필드를 자동으로 옮기는
+<code>MOVE-CORRESPONDING</code>을 썼다(<a href="CH05-L01.html">Local Structure (BEGIN OF ~ END OF)</a>).</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2</pre><pre class="abap-editor__code"><code><span class="tok-com">" classic</span>
+<span class="tok-kw">MOVE-CORRESPONDING</span> ls_source <span class="tok-kw">TO</span> ls_target.</code></pre></div></div>
+<p>modern에서는 <strong>값을 만드는 식</strong> 흐름 안에서 같은 일을 한다 — <code>CORRESPONDING</code> constructor.</p>
+</section><section class="lblock"><h2>같은 이름은 자동, 다른 이름은 MAPPING, 제외는 EXCEPT</h2>
+<p>표시용 구조에 이름이 다른 필드(<code>display_status</code>)와 원본에 없는 필드(<code>audit_user</code>)가 있다고 하자.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
 4
-5</pre><pre class="abap-editor__code"><code><span class="tok-com">" classic</span>
-<span class="tok-kw">MOVE-CORRESPONDING</span> ls_source <span class="tok-kw">TO</span> ls_target.
+5
+6
+7
+8
+9
+10
+11
+12</pre><pre class="abap-editor__code"><code><span class="tok-kw">TYPES</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ty_booking_ui,
+         booking_id     <span class="tok-kw">TYPE</span> zbooking-booking_id,
+         customer       <span class="tok-kw">TYPE</span> zbooking-customer,
+         seats          <span class="tok-kw">TYPE</span> zbooking-seats,
+         display_status <span class="tok-kw">TYPE</span> zbooking-status,   <span class="tok-com">" 이름 다름</span>
+         audit_user     <span class="tok-kw">TYPE</span> syuname,           <span class="tok-com">" 원본에 없음</span>
+       <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ty_booking_ui.
 
-<span class="tok-com">" modern</span>
-<span class="tok-kw">DATA</span>(ls_target) = <span class="tok-kw">CORRESPONDING</span> ty_target( ls_source ).</code></pre></div></div>
-<p>내부 테이블도 통째로 매핑된다.</p>
-<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>(lt_target) = <span class="tok-kw">CORRESPONDING</span> ty_target_tab( lt_source ).</code></pre></div></div>
-</section><section class="lblock"><h2>이름이 다를 때 — MAPPING · EXCEPT</h2>
-<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
-2
-3</pre><pre class="abap-editor__code"><code>ls_target = <span class="tok-kw">CORRESPONDING</span> #( ls_source
-  <span class="tok-kw">MAPPING</span> tgt_field = src_field    <span class="tok-com">" 이름이 다른 필드 연결</span>
-          <span class="tok-kw">EXCEPT</span>  skip_field ).    <span class="tok-com">" 제외할 필드</span></code></pre></div></div>
+<span class="tok-kw">DATA</span>(ls_ui) = <span class="tok-kw">CORRESPONDING</span> ty_booking_ui(
+  ls_booking
+  <span class="tok-kw">MAPPING</span> display_status = status      <span class="tok-com">" 대상 = 원본</span>
+  <span class="tok-kw">EXCEPT</span>  audit_user ).</code></pre></div></div>
 <ul>
-<li><code>MAPPING a = b</code> — 이름이 다른 필드를 직접 연결.</li>
-<li><code>EXCEPT f</code> — 복사에서 제외.</li>
+<li><code>booking_id</code>·<code>customer</code>·<code>seats</code> — <strong>같은 이름</strong>이라 자동으로 옮긴다.</li>
+<li><code>MAPPING display_status = status</code> — 이름이 다른 필드 연결. 문법은 <strong><code>대상필드 = 원본필드</code></strong> 다.</li>
+<li><code>EXCEPT audit_user</code> — <strong>대상 필드</strong> <code>audit_user</code>를 결과에서 채우지 않는다(초기값으로 둠).</li>
 </ul>
+<p>내부 테이블도 같은 규칙이 각 행에 적용된다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>(lt_ui) = <span class="tok-kw">CORRESPONDING</span> ty_booking_ui_tab(
+  lt_booking <span class="tok-kw">MAPPING</span> display_status = status <span class="tok-kw">EXCEPT</span> audit_user ).</code></pre></div></div>
+<blockquote>
+<p>💡 <code>CORRESPONDING</code>은 <strong>모든 것을 복사하는 도구가 아니다.</strong> <strong>대상 타입 기준</strong>으로 옮길 수
+있는 필드만 결과에 들어간다 — 원본에만 있는 필드(<code>created_by</code> 등)는 <strong>조용히 버려진다.</strong></p>
+</blockquote>
+</section><section class="lblock"><h2>직접 매핑해 보기 — Field Mapping Board</h2>
+<p>원본·대상 구조의 필드가 어떻게 연결되는지 보자. 같은 이름은 자동, <code>status</code>→<code>display_status</code>는
+<code>MAPPING</code>으로, <code>audit_user</code>는 <code>EXCEPT</code>로. 생성되는 <code>CORRESPONDING</code> 코드와 결과 구조체가 어떻게 바뀌는지 확인한다.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">Field Mapping Board (CORRESPONDING)</span><a class="embed__open" href="../../../embeds/abap/CH18-L03-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH18-L03-S01.html" loading="lazy" title="Field Mapping Board (CORRESPONDING)" style="height:620px"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>이름 다른데 MAPPING 없음</strong> → 안 옮겨진다. <code>MAPPING</code>으로 연결.</li>
-<li><strong>깊은 구조</strong> → 중첩 매핑은 <code>DEEP</code> 옵션 등 추가 고려.</li>
+<li><strong><code>MAPPING</code> 방향 혼동</strong> → 문법은 <code>대상 = 원본</code>이다. <code>display_status = status</code>는 대상 <code>display_status</code>에 원본 <code>status</code>를 넣는다.</li>
+<li><strong><code>EXCEPT</code>를 원본 기준으로 생각</strong> → <code>EXCEPT</code>는 <strong>대상 필드</strong> 기준이다.</li>
+<li><strong>이름 같다고 의미도 같다고 가정</strong> → 한 구조의 <code>status</code>(예매 상태)와 다른 구조의 <code>status</code>(처리 상태)는 의미가 다를 수 있다. 이름은 같고 의미가 다르면 자동 복사는 위험하다.</li>
+</ul>
+<blockquote>
+<p>💡 <code>CORRESPONDING</code>은 변환 로직을 <strong>숨기기 쉽다.</strong> 단순 이름 매칭엔 좋지만, 값 변환·조건부
+매핑이 많아지면 <code>LOOP</code>와 명시 대입이 더 읽기 쉽다. 이 챕터에선 &quot;같은 이름 또는 간단한 이름 변경&quot; 범위에서만 쓴다.</p>
+</blockquote>
+</section><section class="lblock"><h2>정리</h2>
+<ul>
+<li><code>CORRESPONDING</code>은 <strong>같은 이름 필드</strong>를 기준으로 구조체·테이블을 새 타입으로 옮기는 constructor다.</li>
+<li><code>MAPPING</code>은 이름이 다른 필드를 연결(<code>대상 = 원본</code>), <code>EXCEPT</code>는 <strong>대상 필드</strong>를 결과에서 제외한다.</li>
+<li>강력하지만, <strong>이름은 같고 의미가 다른</strong> 구조에는 주의해야 한다.</li>
 </ul>
 <hr>
-<p>구조 매핑까지 식으로 했다. 이제 테이블의 한 행을 <strong>대괄호로 콕 집는</strong> Table Expression → 다음 레슨.</p>
+<p>구조 매핑까지 식으로 했다. 이제 테이블의 한 행을 <strong>대괄호로 콕 집는</strong> Table Expression
+→ <a href="CH18-L04.html">Table Expression</a>.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
