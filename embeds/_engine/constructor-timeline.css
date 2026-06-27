@@ -1,0 +1,45 @@
+/* ===== constructor-timeline 엔진 CSS — 객체 생성/정적 호출 시 constructor(객체별)와 class_constructor(클래스 1회)의 실행 순서·횟수를 타임라인과 카운터로 보여 준다 (config 주도) =====
+   골격 계약(HTML 제공): .ctl-act(버튼들) · #ctlCounters · #ctlTimeline · #ctlObjects.
+   config=window.CTL_CFG = { presets:[{concert,perf,cap}] }.
+   토큰 active 배경 버튼 base=var(--surface). 다크: gen-embed-dark. 높이: _autoheight.js. */
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:transparent;line-height:1.5;}
+.wrap{max-width:760px;margin:0 auto;padding:14px 16px 18px;}
+.hd{margin:0 0 4px;font-weight:800;font-size:1.04rem;color:#1d3a63;}
+.hd small{font-weight:600;color:#64748b;font-size:.8rem;}
+.lead{margin:0 0 12px;color:var(--ink-soft);font-size:.9rem;}
+.lead code{font-family:var(--mono);background:#eef2fb;color:var(--brand);padding:1px 5px;border-radius:5px;}
+.ctl-h{font-size:.72rem;font-weight:800;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em;margin:0 0 6px;}
+
+.ctl-act{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+.ctl-act button{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:7px 13px;font:inherit;font-size:.78rem;font-weight:700;cursor:pointer;}
+.ctl-act button:hover{border-color:var(--brand);color:var(--brand);}
+.ctl-act button.prim{background:var(--brand);color:#fff;border-color:var(--brand);}
+.ctl-act button.ghost{margin-left:auto;}
+
+#ctlCounters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
+.ctl-cnt{flex:1 1 150px;border:1px solid var(--line);border-radius:9px;padding:9px 12px;background:var(--surface);}
+.ctl-cnt .k{font-size:.66rem;font-weight:800;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;}
+.ctl-cnt .v{font-family:var(--mono);font-size:1.3rem;font-weight:800;color:var(--ink);}
+.ctl-cnt.inst .v{color:var(--brand);} .ctl-cnt.stat .v{color:#0f766e;}
+.ctl-cnt .sub{font-size:.68rem;color:var(--ink-soft);}
+
+.ctl-tl{list-style:none;margin:0 0 12px;padding:0;border:1px solid var(--line);border-radius:9px;overflow:hidden;}
+.ctl-tl li{display:flex;gap:9px;align-items:flex-start;padding:7px 12px;border-bottom:1px solid var(--line);font-size:.82rem;}
+.ctl-tl li:last-child{border-bottom:0;}
+.ctl-tl li .ic{flex:0 0 22px;text-align:center;font-weight:800;}
+.ctl-tl li code{font-family:var(--mono);font-size:.82em;background:rgba(59,91,219,.08);color:var(--brand);padding:0 4px;border-radius:4px;}
+.ctl-tl li.inst{background:rgba(59,91,219,.05);}
+.ctl-tl li.stat{background:rgba(15,118,110,.06);}
+.ctl-tl li.skip{opacity:.6;font-style:italic;}
+.ctl-tl li.state{background:rgba(245,158,11,.07);}
+
+#ctlObjects{display:flex;gap:10px;flex-wrap:wrap;}
+#ctlObjects:empty::after{content:'아직 만든 객체가 없습니다. 위 버튼을 눌러 보세요.';color:var(--ink-soft);font-size:.84rem;}
+.ctl-obj{flex:1 1 150px;border:1px solid var(--brand);border-radius:9px;padding:9px 12px;background:rgba(59,91,219,.06);}
+.ctl-obj .nm{font-family:var(--mono);font-weight:800;font-size:.84rem;color:var(--brand);margin-bottom:5px;}
+.ctl-obj .row{font-family:var(--mono);font-size:.76rem;color:var(--ink-soft);}
+.ctl-obj .row b{color:var(--ink);}
+
+.note{margin-top:12px;border-left:3px solid var(--brand);background:rgba(59,91,219,.06);border-radius:0 9px 9px 0;padding:9px 13px;font-size:.83rem;color:#2a3550;}
+.note code{font-family:var(--mono);background:#fff;border:1px solid var(--line);padding:0 5px;border-radius:4px;}

@@ -134,6 +134,13 @@
 | CH19-L07-S01 | CH19-L07 | module-choice-cards | (재사용) SQL Decision Cards 6문항→@host/@DATA/CASE/COALESCE/SELECT FROM @itab/ABAP·명시타입 분류·이유 | ✅ |
 | CH19-L08-S01 | CH19-L08 | concert-agg-join-lab | 콘서트 집계: 취소 제외 조건 ON↔WHERE 토글(C003 보존/소멸)·COALESCE null↔0·LEFT OUTER JOIN+GROUP BY·결과/검증 테이블 | ✅ |
 | CH20-L01-S01 | CH20-L01 | class-diagram | 클래스(설계도)→NEW→객체(인스턴스) 흐름 | ✅ |
+| CH20-L02-S01 | CH20-L02 | visibility-gate-sim | 멤버(데이터/메서드)×visibility(PUBLIC/PROTECTED/PRIVATE)×호출자(외부/자기/자식)→접근 허용·차단(컴파일 단계)+캡슐화 조언+접근 매트릭스 | ✅ |
+| CH20-L03-S01 | CH20-L03 | constructor-timeline | 객체 생성/정적 호출→constructor(객체별 count)·class_constructor(클래스 1회) 실행 순서 타임라인+카운터+객체 카드(상태) | ✅ |
+| CH20-L04-S01 | CH20-L04 | selector-trainer | 왼쪽(클래스명/참조변수)×선택자(=>/->)×멤버(정적/인스턴스)→호출 정오 판정(class=>static OK·class=>instance 오류·ref->instance OK·ref->static 동작하나 권장X) | ✅ |
+| CH20-L05-S01 | CH20-L05 | interface-contract-board | 인터페이스 1(zif_printable)+구현 클래스 3·계약 보드·인터페이스 참조에 클래스 담기→같은 print() 다른 출력(다형성)·구현 누락→활성화 실패 | ✅ |
+| CH20-L06-S01 | CH20-L06 | exception-flow-console | 좌석(정상/정원초과)×CATCH 순서(구체/cx_root 먼저)→TRY/RAISE/CATCH 실행 흐름 단계+cx_root 먼저 시 구체 handler 도달불가 경고 | ✅ |
+| CH20-L08-S01 | CH20-L08 | dynamic-type-inspector | 실제 객체(일반/VIP)×연산(CAST/CASE TYPE OF)→정적/동적 타입·CAST 성공/실패(CX_SY_MOVE_CAST_ERROR)·CASE TYPE OF 안전 분기 | ✅ |
+| CH20-L09-S01 | CH20-L09 | event-wiring-panel | 발생 객체 lo_mgr + handler 2(monitor/logger) SET HANDLER 등록 토글·RAISE EVENT→등록된 handler만 동기 호출 로그·미등록 무반응·다중 handler 순서 미보장 | ✅ |
 | CH20-L07-S01 | CH20-L07 | class-diagram | 상속 계층(부모 ZCL_BOOKING_MANAGER←자식 ZCL_VIP_BOOKING·REDEFINITION/super·ABSTRACT/FINAL) | ✅ |
 | CH20-L10-S01 | CH20-L10 | class-diagram | UML 클래스 구조(PUBLIC 메서드·PRIVATE 속성·캡슐화·RAISING) | ✅ |
 | CH22-L03-S01 | CH22-L03 | relationship-map | CDS Association 관계도(공연 ZI_Concert→회차 ZI_Perf→예매 ZI_Booking) | ✅ |
@@ -161,6 +168,13 @@
 | sql-function-workbench (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH19-L05-S01 | SFW_CFG 주도 · fn 세그 7종(CONCAT/SUBSTRING/UPPER/LOWER/LENGTH/DATS_ADD_DAYS/DATS_DAYS_BETWEEN)→코드+결과·SUBSTRING pos(1-기반)/len 입력→범위밖 bad+SQL↔ABAP off 비교행·DATS_ADD_DAYS days·base=var(--surface) · 다크 |
 | itab-sql-console (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH19-L06-S01 | ICS_CFG 주도 · 원본 테이블 + op 세그(WHERE/ORDER BY/GROUP BY)×impl 세그(SELECT@itab/LOOP·SORT·COLLECT)→코드(fn·esc·as 강조)+결과 테이블(res teal·agg)·위치 배지·op별 note·base=var(--surface) · 다크 |
 | concert-agg-join-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH19-L08-S01 | CAJL_CFG 주도 · zconcert/zbooking 원본+cond 세그(취소제외 ON/WHERE)×coal 세그(COALESCE 0/SUM)→aggregate()로 결과 테이블 계산(C003 ON=kept/WHERE=소멸·null↔0·FULL/OPEN)+코드 hot 강조+note good/warn·이름 풀(R9)·base=var(--surface) · 다크 |
+| visibility-gate-sim (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH20-L02-S01 | VGS_CFG.members 주도 · mem(데이터/메서드)×vis(PUBLIC/PROTECTED/PRIVATE)×caller(외부/자기/자식)→ALLOW 표로 접근 verdict(ok/bad=syntax)+kind별 캡슐화 advice(warn/ok)+접근 매트릭스(cur 강조)·base=var(--surface) · 다크 |
+| constructor-timeline (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH20-L03-S01 | CTL_CFG.presets 주도 · 액션 버튼(객체1/객체2/정적호출/리셋)→ctorCount(객체별++)·classCtorCount(최초 1회)·classInit 게이트→실행순서 타임라인(stat/inst/skip/state)+카운터+객체 카드(mv_concert/perf/cap)·base=var(--surface) · 다크 |
+| selector-trainer (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH20-L04-S01 | ST_CFG 주도 · left(class/ref)×sel(=>/->)×mem(static/instance) 세그→호출 조립 코드+verdict(ok/bad/warn). 규칙: => 클래스만·-> 참조만, class=>instance 오류, ref->static warn(공식 ABENCLASS_COMPONENT_SELECTOR 허용·Clean ABAP 권장X)·base=var(--surface)·3색 verdict base 중립rgba+.ok 명시(교훈3) · 다크 |
+| interface-contract-board (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH20-L05-S01 | ICB_CFG.classes 주도 · 계약 보드(intf 카드+클래스 카드 sel/miss)+cls 세그×impl 세그(구현됨/누락)→인터페이스 참조 코드+out(ok 다형성 다른 출력/bad 활성화 실패)·intf 보라(#7c3aed)·base=var(--surface) · 다크 |
+| exception-flow-console (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH20-L06-S01 | EFC_CFG 주도 · seats 세그(정상2/초과100, remaining 40)×order 세그(구체/cx_root 먼저)→코드(cx_root 먼저 시 구체 handler dead)+실행 흐름 li(ran/raise/caught/skip)+verdict(ok 정상/bad 실패처리/warn 순서문제)·3색 verdict base 중립rgba+.ok 명시(교훈3)·base=var(--surface) · 다크 |
+| dynamic-type-inspector (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH20-L08-S01 | DTI_CFG 주도 · obj 세그(일반/VIP)×op 세그(CAST/CASE TYPE OF)→정적/동적 타입 패널+코드(hit 강조)+verdict(CAST: VIP ok/일반 bad=CX_SY_MOVE_CAST_ERROR; CASE TYPE OF 항상 ok 안전분기)·base 중립rgba+.ok/.bad 명시(교훈3)·base=var(--surface) · 다크 |
+| event-wiring-panel (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH20-L09-S01 | EWP_CFG.handlers 주도 · 발행 박스(lo_mgr EVENTS)+handler 박스(등록 토글 on/off)·매진발생/리셋 버튼→RAISE EVENT 시 reg된 handler만 로그 호출(raise/call/none/warn)·다중 handler 순서 미보장 경고·prim 버튼 base=var(--surface) · 다크 |
 | select-query-simulator | 1 | 공통(_engine)·자체 postHeight ✅ | CH08-L02-S01 | config 주입(SQL_CFG) · #N1 주석 CH19 정정 · (CH12-L07은 SELECT-OPTIONS 전용 신규엔진로 분리) |
 | select-options-filter-sim | 2 | 공통(_engine)·자체 postHeight ✅ | CH12-L03-S01·CH12-L07-S01 | SO_CFG 주도 · Range Table(SIGN I/E·OPTION EQ/NE/GT/LT/GE/LE/BT/CP) 평가 · **opt-in `#soSys`**(있으면 sy-subrc/sy-dbcnt 표시, L03만) |
 | range-row-builder (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH12-L01-S01 | RRB_CFG.cards 주도 · 조건 카드→SIGN/OPTION/LOW/HIGH 행 빌더·행/종합 사람말 해석 · 다크 자동(토큰+gen-embed-dark) |
