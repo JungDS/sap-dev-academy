@@ -40,10 +40,11 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>동시에 같은 예매를 고치면</h2>
-<p>CH24에서 데이터를 안전하게 <strong>바꾸는</strong> 법을 배웠다. 그런데 실무 시스템은 <strong>여러 사람이
-동시에</strong> 쓴다. 두 직원이 같은 예매(<code>ZBOOKING</code>)를 <strong>동시에</strong> 열어 수정하면 어떻게 될까?
-한쪽이 저장한 변경이 다른 쪽 저장에 <strong>덮여 사라지거나</strong>, 데이터가 어긋난다.</p>
-<p><code>COMMIT</code>/<code>ROLLBACK</code>은 <em>내 <button class="term" type="button" data-term="트랜잭션">트랜잭션</button> 안</em>만 챙길 뿐, <strong>남이 동시에 건드리는 것</strong>은 못 막는다.
+<p><a href="CH24-L01.html">INSERT / UPDATE / MODIFY / DELETE 실무 기준</a>에서 데이터를 안전하게 <strong>바꾸는</strong> 법을 배웠다.
+그런데 실무 시스템은 <strong>여러 사람이 동시에</strong> 쓴다. A·B 두 직원이 같은 예매 <code>1001</code>(2석)을 동시에 열고, A가
+3석으로 고쳐 저장한 뒤 B가 <em>오래된 화면</em>에서 1석으로 저장하면 — 결과는 1석이다. <strong>A의 3석이 오류 없이
+사라진다.</strong> 이 현상을 <strong>Lost Update</strong>(잃어버린 갱신: 먼저 저장한 변경이 나중 저장에 덮여 사라짐)라고 한다.</p>
+<p><code>COMMIT</code>/<code>ROLLBACK</code>은 <em>내 <button class="term" type="button" data-term="트랜잭션">트랜잭션</button> 안</em>만 챙길 뿐, <strong>두 사람이 같은 예매를 동시에 편집했다는 사실</strong>은 못 막는다.
 그래서 &quot;이 행은 지금 내가 작업 중&quot;이라고 알리는 <strong>잠금</strong> 장치가 필요하다 — <button class="term" type="button" data-term="Lock Object">Lock Object</button>다.</p>
 </section><section class="lblock"><h2>Lock Object — SE11에서 만든다</h2>
 <p><code>SE11</code> → <button class="term" type="button" data-term="Lock Object">Lock Object</button> → <code>EZ_BOOKING</code>(관례: <code>E</code> + 테이블명)을 만든다. 구성은 단 두 가지다.</p>
@@ -87,9 +88,13 @@
 </blockquote>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>Lock Argument 과다</strong> → 너무 넓게(테이블 전체 등) 잠그면 동시성이 급락. 보통 <strong>키 단위</strong>로 좁게.</li>
-<li><strong>잠금 없이 변경</strong> → 동시 충돌 위험. 변경 <strong>전에</strong> 잠근다(L02의 표준 패턴).</li>
-<li><strong>모드 오해</strong> → 단순 조회 보호엔 <code>S</code>, 변경엔 <code>E</code>. X는 특수 상황.</li>
+<li><strong>Lock Argument 과다</strong> → key를 안 넘기면 한 건이 아니라 더 넓은 범위가 잠긴다. 한 사람이 한 예매를
+고치는데 다른 모든 예매 변경이 막히면 시스템은 안전해지는 게 아니라 <strong>멈춘다</strong>. 보통 <strong>키 단위</strong>로 좁게.</li>
+<li><strong>SAP Lock이 SQL을 자동으로 막는다고 착각</strong> → SAP Lock은 중앙 lock table의 **논리적 약속(자발적 규약)**이다.
+잠긴 행이라도 프로그램이 lock check를 <em>안 하면</em> ABAP SQL로 그냥 접근·변경된다. 즉 &quot;DB가 모든 UPDATE를
+거절하는 마법&quot;이 아니다 — 변경 프로그램이 <strong>먼저 <code>ENQUEUE_*</code>를 호출</strong>하고 실패하면 변경을 멈춰야 의미가 있다.</li>
+<li><strong>잠금 없이 변경</strong> → 동시 충돌 위험. 변경 <strong>전에</strong> 잠근다(<a href="CH25-L02.html">ENQUEUE / DEQUEUE Function Module</a>의 표준 패턴).</li>
+<li><strong>모드 오해</strong> → 단순 조회 보호엔 <code>S</code>, 변경엔 <code>E</code>. <code>X</code>(강한 배타)·<code>O</code>(optimistic)는 특수 상황.</li>
 </ul>
 </section><section class="lblock"><h2>정리</h2>
 <ul>
