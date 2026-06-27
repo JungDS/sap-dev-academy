@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<!-- CH22-L04-S01 — 엔진: annotation-effect-preview · _autoheight. 콘텐츠=레슨 전용(CDS Annotation 효과 미리보기, #C22 L04).
+     config=window.AEP_CFG. 게이팅: CDS 정식(@EndUserText/@UI.lineItem/@Semantics). 자기참조 오류=v2 교정 핵심.
+     관통예제=콘서트. @UI.lineItem은 position 중심(Fiori Elements 상세는 후속). -->
+<html lang="ko" data-eng="annotation-effect-preview">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CDS Annotation 효과 미리보기 · CH22-L04-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/annotation-effect-preview.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">Annotation 효과 미리보기 <small>(metadata는 도구가 읽는다)</small></p>
+  <p class="lead">Annotation은 예쁜 주석이 아니라 <b>활성화된 metadata</b>입니다 — UI·분석 도구가 읽어요. 라벨을 켜고/끄고, 금액 의미의 짝을 맞춰 보고, 목록 순서를 바꿔 효과를 직접 확인하세요.</p>
+
+  <div class="aep-panel">
+    <p class="aep-cap">① <code>@EndUserText.label</code> — 헤더에 업무 라벨</p>
+    <button class="aep-toggle" id="aepLabelBtn"></button>
+    <div id="aepLabelPrev"></div>
+    <p class="aep-cap" id="aepLabelNote" style="margin:8px 0 0;font-weight:600;color:var(--ink-soft);"></p>
+  </div>
+
+  <div class="aep-panel">
+    <p class="aep-cap">② <code>@Semantics.amount.currencyCode</code> — 금액은 어떤 통화 필드를 가리킬까?</p>
+    <div class="aep-seg" id="aepSemSeg">
+      <button data-t="currency_code">→ currency_code</button>
+      <button data-t="ticket_price">→ ticket_price (자기참조)</button>
+      <button data-t="none">지정 안 함</button>
+    </div>
+    <div id="aepSemCode"></div>
+    <div class="aep-verdict" id="aepSemVerdict"></div>
+  </div>
+
+  <div class="aep-panel">
+    <p class="aep-cap">③ <code>@UI.lineItem</code> position — 목록 컬럼 순서</p>
+    <div class="aep-list" id="aepOrderList"></div>
+    <div id="aepOrderPrev"></div>
+  </div>
+
+  <div class="note"><b>annotation은 바로 아래 필드에 붙습니다.</b> <code>@UI.lineItem</code>을 <code>artist</code> 위에 쓰면 <code>artist</code>에 적용돼요 — 사이에 빈 줄이나 다른 필드가 끼면 의도와 다른 필드에 붙을 수 있습니다. 그리고 annotation은 <b>SAP가 정의한 것</b>만 도구가 읽습니다(이름만 그럴듯한 임의 annotation은 무시).</div>
+</div>
+
+<script>
+window.AEP_CFG = {
+  priceField: 'ticket_price',
+  currencyField: 'currency_code',
+  order: ['concert_id', 'artist', 'venue', 'capacity'],
+  labels: {
+    concert_id: '공연 ID',
+    artist: '아티스트',
+    venue: '공연장',
+    capacity: '정원',
+    ticket_price: '티켓가격',
+    currency_code: '통화'
+  }
+};
+</script>
+<script src="../_engine/annotation-effect-preview.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

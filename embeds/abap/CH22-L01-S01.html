@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<!-- CH22-L01-S01 — 엔진: cds-activation-observer · _autoheight. 콘텐츠=레슨 전용(CDS View Entity 활성화 관찰기, #C22 L01).
+     config=window.CAO_CFG. 게이팅: CH22 정식 도입(define view entity·as select from·{ }). New Open SQL(@DATA)은 CH19 이후 허용.
+     관통예제=콘서트(zconcert). 이름 풀(R9: 정훈영·아이유·손흥민). -->
+<html lang="ko" data-eng="cds-activation-observer">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CDS View Entity 활성화 관찰기 · CH22-L01-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/cds-activation-observer.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">CDS View Entity 활성화 관찰기 <small>(테이블 → 모델 → 소비)</small></p>
+  <p class="lead">단계를 따라가며 <code>zconcert</code> 테이블 위에 <code>ZI_Concert</code>라는 <b>읽기 모델</b>을 만들어 봅니다. <b>필드 오타 주입</b>을 켜면 활성화가 어떻게 실패하는지, 끄면 <code>SELECT FROM ZI_Concert</code>로 소비까지 어떻게 이어지는지 관찰하세요.</p>
+
+  <div class="cao-rail" id="caoRail"></div>
+
+  <div class="cao-tools">
+    <button class="cao-toggle" id="caoTypo">필드 오타 주입(capacty)</button>
+    <div class="cao-nav">
+      <button id="caoPrev">‹ 이전</button>
+      <button id="caoNext">다음 ›</button>
+    </div>
+  </div>
+
+  <div class="cao-panel">
+    <p class="cao-cap" id="caoCap"></p>
+    <div id="caoPanel"></div>
+  </div>
+
+  <div class="cao-msg" id="caoMsg"></div>
+
+  <div class="note"><b>관점 전환이 핵심.</b> CDS View Entity는 프로그램을 하나 더 만드는 게 아니라, <b>읽기 모델을 재사용 가능한 이름</b>으로 만드는 일입니다. 활성화해도 바뀌는 건 테이블 데이터가 아니라 <code>ZI_Concert</code>라는 모델 정의예요.</div>
+</div>
+
+<script>
+window.CAO_CFG = {
+  entity: 'ZI_Concert',
+  source: 'zconcert',
+  typoField: 'capacty',
+  fields: [
+    { name: 'concert_id', key: true },
+    { name: 'artist' },
+    { name: 'venue' },
+    { name: 'capacity' }
+  ],
+  rows: [
+    { concert_id: 'C001', artist: '아이유',  venue: '올림픽홀', capacity: 3000 },
+    { concert_id: 'C002', artist: '손흥민',  venue: '고척돔',   capacity: 16000 },
+    { concert_id: 'C003', artist: '정훈영',  venue: 'KSPO돔',  capacity: 15000 }
+  ]
+};
+</script>
+<script src="../_engine/cds-activation-observer.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

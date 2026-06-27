@@ -1,0 +1,60 @@
+/* ===== cds-builder-stepper — 콘서트 CDS 빌더 (CH22-L07 capstone) =====
+   6단계 순서 의존 빌드: ①ZI_Perf ②ZI_Concert(+_Perf assoc) ③ZC_Concert(projection) ④Metadata Extension ⑤Data Preview ⑥소비 코드.
+   순서 어기면 'target 없음' 오류(활성화 순서 무결성). 산출물 4개 상태 다이어그램. 데이터=config. 교훈3: msg base 중립 rgba·ok/bad 명시. */
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:transparent;line-height:1.5;}
+.wrap{padding:14px;}
+.hd{font-weight:800;font-size:1rem;margin:0 0 4px;}
+.hd small{font-weight:600;color:var(--brand);}
+.lead{margin:0 0 12px;color:var(--ink-soft);font-size:.86rem;}
+.lead code{font-family:var(--mono);background:#eef2ff;color:var(--brand);padding:1px 5px;border-radius:5px;font-size:.92em;}
+
+.cbs-steps{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+.cbs-step{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:9px;
+  padding:7px 10px;font:inherit;font-size:.74rem;font-weight:700;cursor:pointer;text-align:left;}
+.cbs-step:hover{border-color:var(--brand);}
+.cbs-step .n{font-family:var(--mono);color:var(--soon);margin-right:4px;}
+.cbs-step.done{background:#eafaf3;border-color:var(--accent);color:#0b7250;}
+.cbs-step.done .n{color:#0b7250;}
+.cbs-reset{margin-left:auto;border:1px dashed var(--line);background:var(--surface);color:var(--ink-soft);
+  border-radius:8px;padding:6px 11px;font:inherit;font-size:.72rem;font-weight:700;cursor:pointer;}
+
+.cbs-arts{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px;}
+@media(max-width:560px){ .cbs-arts{grid-template-columns:1fr 1fr;} }
+.cbs-art{border:1px solid var(--line);border-radius:10px;background:var(--surface);padding:8px 9px;text-align:center;opacity:.5;}
+.cbs-art.active{opacity:1;border-color:var(--accent);background:#eafaf3;}
+.cbs-art__nm{font-family:var(--mono);font-size:.74rem;font-weight:800;color:var(--ink);}
+.cbs-art.active .cbs-art__nm{color:#0b7250;}
+.cbs-art__role{font-size:.64rem;color:var(--ink-soft);margin-top:2px;}
+.cbs-art__st{font-size:.6rem;font-weight:800;margin-top:4px;color:var(--soon);}
+.cbs-art.active .cbs-art__st{color:var(--accent);}
+.cbs-art__st::before{content:'○ pending';}
+.cbs-art.active .cbs-art__st::before{content:'● active';}
+
+.cbs-out{border:1px solid var(--line);border-radius:11px;background:var(--surface);padding:10px;margin-bottom:10px;min-height:48px;}
+.cbs-out__cap{font-size:.7rem;font-weight:800;color:var(--ink-soft);margin:0 0 7px;text-transform:uppercase;letter-spacing:.03em;}
+.cbs-prev{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+@media(max-width:520px){ .cbs-prev{grid-template-columns:1fr;} }
+.cbs-prev__t{font-size:.66rem;font-weight:800;margin:0 0 4px;}
+.cbs-prev .zi{color:#26336b;} .cbs-prev .zc{color:#0b7250;}
+.dt{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:11px;}
+.dt th,.dt td{padding:3px 6px;text-align:left;border-bottom:1px solid #eef1f7;white-space:nowrap;}
+.dt th{background:#fafbfe;color:var(--ink-soft);font-size:10px;font-weight:800;}
+.cbs-eq{display:inline-block;font-size:.66rem;font-weight:800;border-radius:5px;padding:2px 8px;margin-top:7px;background:#eafaf3;color:#0b7250;}
+.cbs-code{font-family:var(--mono);font-size:11.5px;line-height:1.65;white-space:pre;overflow-x:auto;margin:0;color:var(--ink);}
+.cbs-code .k{color:var(--brand);font-weight:700;}
+.cbs-code .ent{color:var(--accent);font-weight:700;}
+.cbs-code .host{color:var(--amber);font-weight:700;}
+.cbs-empty{color:var(--soon);font-style:italic;font-size:.78rem;text-align:center;padding:6px;}
+
+.cbs-msg{font-size:.84rem;padding:9px 12px;border-radius:9px;background:rgba(59,91,219,.08);color:var(--ink);}
+.cbs-msg.ok{background:#eafaf3;color:#0b7250;}
+.cbs-msg.bad{background:rgba(214,51,108,.12);color:var(--bad);}
+.cbs-msg b{color:inherit;}
+
+.cbs-chall{margin-top:12px;}
+.cbs-chall__t{font-size:.72rem;font-weight:800;color:var(--amber);margin:0 0 5px;}
+.cbs-chall ul{margin:0;padding-left:18px;font-size:.8rem;color:var(--ink-soft);}
+.cbs-chall li{margin:2px 0;}
+.note{margin-top:12px;border-left:3px solid var(--brand);background:rgba(59,91,219,.06);border-radius:0 9px 9px 0;padding:9px 13px;font-size:.83rem;color:#2a3550;}
+.note code{font-family:var(--mono);background:#fff;border:1px solid var(--line);padding:0 5px;border-radius:4px;}

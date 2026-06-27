@@ -1,0 +1,58 @@
+/* ===== association-path-simulator — CDS Association 경로 시뮬레이터 (CH22-L03) =====
+   공연 선택→_Perf 경로로 회차 따라가기. 노출 토글(끄면 소비자 경로 못 봄)·concert_id select list 제거(ON source 사라짐)
+   ·cardinality [0..*]/[1..1](여러 회차면 [1..1] 불일치 경고)·JOIN으로 보기(CH13 비교). 데이터=config.
+   교훈3: 메시지 base는 중립 rgba, ok/warn/bad 명시 클래스. */
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:transparent;line-height:1.5;}
+.wrap{padding:14px;}
+.hd{font-weight:800;font-size:1rem;margin:0 0 4px;}
+.hd small{font-weight:600;color:var(--brand);}
+.lead{margin:0 0 12px;color:var(--ink-soft);font-size:.86rem;}
+.lead code{font-family:var(--mono);background:#eef2ff;color:var(--brand);padding:1px 5px;border-radius:5px;font-size:.92em;}
+
+.aps-grp{display:flex;flex-wrap:wrap;gap:5px;align-items:center;margin-bottom:8px;}
+.aps-glbl{font-size:.7rem;font-weight:800;color:var(--ink-soft);margin-right:3px;min-width:62px;}
+.aps-seg{border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);border-radius:8px;
+  padding:6px 11px;font:inherit;font-size:.76rem;font-weight:700;cursor:pointer;font-family:var(--mono);}
+.aps-seg:hover{border-color:var(--brand);color:var(--brand);}
+.aps-seg.on{background:var(--brand);border-color:var(--brand);color:#fff;}
+.aps-toggle{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;
+  padding:6px 10px;font:inherit;font-size:.74rem;font-weight:700;cursor:pointer;}
+.aps-toggle:hover{border-color:var(--brand);}
+.aps-toggle.act{background:#eef2ff;border-color:#26336b;color:#26336b;}
+.aps-toggle.warnstate{background:rgba(180,83,9,.1);border-color:var(--amber);color:#7a4a12;border-style:dashed;}
+
+.aps-flow{display:grid;grid-template-columns:1fr auto 1fr;gap:6px;align-items:stretch;margin:12px 0;}
+@media(max-width:600px){ .aps-flow{grid-template-columns:1fr;} .aps-arrow{display:none;} }
+.aps-card{border:1px solid var(--line);border-radius:11px;background:var(--surface);overflow:hidden;display:flex;flex-direction:column;}
+.aps-card__hd{font-size:.72rem;font-weight:800;padding:6px 10px;}
+.aps-card.src .aps-card__hd{background:#eef2ff;color:#26336b;}
+.aps-card.tgt .aps-card__hd{background:#eafaf3;color:#0b7250;}
+.aps-card__b{padding:9px 10px;flex:1;}
+.aps-arrow{align-self:center;font-family:var(--mono);font-size:.78rem;color:var(--brand);font-weight:800;text-align:center;white-space:nowrap;}
+.aps-arrow small{display:block;color:var(--soon);font-size:.62rem;font-weight:700;}
+
+.dt{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:11.5px;}
+.dt th,.dt td{padding:4px 7px;text-align:left;border-bottom:1px solid #eef1f7;white-space:nowrap;}
+.dt th{background:#fafbfe;color:var(--ink-soft);font-size:10.5px;font-weight:800;}
+.dt td.hl{background:#fff7d6;color:#7a4a12;font-weight:800;}
+.aps-blocked{color:var(--bad);font-size:.82rem;font-weight:600;padding:12px 4px;text-align:center;line-height:1.5;}
+.aps-blocked.warn{color:var(--amber);}
+
+.aps-code{font-family:var(--mono);font-size:11.5px;line-height:1.65;white-space:pre;overflow-x:auto;
+  margin:0 0 10px;padding:9px 11px;border:1px solid var(--line);border-radius:9px;background:#fafbff;color:var(--ink);}
+.aps-code .k{color:var(--brand);font-weight:700;}
+.aps-code .ent{color:var(--accent);font-weight:700;}
+.aps-code .src{color:var(--amber);font-weight:700;}
+.aps-code .as{color:#0b7250;font-weight:700;}
+.aps-code .kw{color:var(--brand);font-weight:700;}
+.aps-code .gone{color:var(--bad);text-decoration:line-through;}
+.aps-code .card{background:#fff7d6;color:#7a4a12;border-radius:3px;padding:0 3px;font-weight:700;}
+
+.aps-msg{font-size:.84rem;padding:9px 12px;border-radius:9px;background:rgba(59,91,219,.08);color:var(--ink);}
+.aps-msg.ok{background:#eef2ff;color:#26336b;}
+.aps-msg.warn{background:rgba(180,83,9,.1);color:#7a4a12;}
+.aps-msg.bad{background:rgba(214,51,108,.12);color:var(--bad);}
+.aps-msg b{color:inherit;}
+.note{margin-top:12px;border-left:3px solid var(--brand);background:rgba(59,91,219,.06);border-radius:0 9px 9px 0;padding:9px 13px;font-size:.83rem;color:#2a3550;}
+.note code{font-family:var(--mono);background:#fff;border:1px solid var(--line);padding:0 5px;border-radius:4px;}

@@ -1,0 +1,75 @@
+/* ===== cds-activation-observer — CDS View Entity 활성화 관찰기 (CH22-L01) =====
+   원본 테이블 → DDL 작성 → 활성화 → Data Preview → ABAP SQL 소비 5단계를 따라가며
+   "테이블 데이터가 아니라 모델 정의를 만든다"는 관점 전환을 보여준다. 필드 오타 토글로 활성화 실패 관찰. 데이터=config. */
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:transparent;line-height:1.5;}
+.wrap{padding:14px;}
+.hd{font-weight:800;font-size:1rem;margin:0 0 4px;}
+.hd small{font-weight:600;color:var(--brand);}
+.lead{margin:0 0 12px;color:var(--ink-soft);font-size:.86rem;}
+.lead code{font-family:var(--mono);background:#eef2ff;color:var(--brand);padding:1px 5px;border-radius:5px;font-size:.92em;}
+
+/* 단계 레일 */
+.cao-rail{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;}
+.cao-step{flex:1;min-width:96px;border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);
+  border-radius:9px;padding:7px 8px;font-size:.72rem;font-weight:700;cursor:pointer;text-align:center;line-height:1.25;}
+.cao-step:hover{border-color:var(--brand);color:var(--brand);}
+.cao-step.on{background:var(--brand);border-color:var(--brand);color:#fff;}
+.cao-step.done{border-color:var(--accent);}
+
+/* 오타 토글 */
+.cao-tools{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.cao-toggle{border:1px dashed var(--line);background:var(--surface);color:var(--amber);border-radius:8px;
+  padding:6px 10px;font:inherit;font-size:.74rem;font-weight:700;cursor:pointer;font-family:var(--mono);}
+.cao-toggle.on{background:rgba(180,83,9,.1);border-color:var(--amber);border-style:solid;}
+.cao-nav{margin-left:auto;display:flex;gap:6px;}
+.cao-nav button{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;
+  padding:6px 12px;font:inherit;font-size:.78rem;font-weight:700;cursor:pointer;}
+.cao-nav button:hover:not(:disabled){border-color:var(--brand);color:var(--brand);}
+.cao-nav button:disabled{opacity:.4;cursor:not-allowed;}
+
+/* 본문 패널 */
+.cao-panel{border:1px solid var(--line);border-radius:11px;background:var(--surface);padding:11px 12px;min-height:120px;}
+.cao-cap{font-size:.72rem;font-weight:800;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em;margin:0 0 8px;}
+
+.dt{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:11.5px;}
+.dt th,.dt td{padding:4px 7px;text-align:left;border-bottom:1px solid #eef1f7;white-space:nowrap;}
+.dt th{background:#fafbfe;color:var(--ink-soft);font-size:10.5px;font-weight:800;}
+.dt th.key,.dt td.key{color:var(--brand);font-weight:800;}
+
+/* DDL 코드 */
+.cao-ddl{font-family:var(--mono);font-size:12px;line-height:1.7;white-space:pre;overflow-x:auto;margin:0;color:var(--ink);}
+.cao-ddl .anno{color:var(--soon);}
+.cao-ddl .k{color:var(--brand);font-weight:700;}
+.cao-ddl .ent{color:var(--accent);font-weight:700;}
+.cao-ddl .src{color:var(--amber);font-weight:700;}
+.cao-ddl .kw{color:var(--brand);font-weight:700;}
+.cao-ddl .bad{color:#fff;background:var(--bad);border-radius:3px;padding:0 3px;font-weight:700;}
+.cao-region{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px;}
+.cao-tag{font-size:.66rem;font-weight:700;border-radius:5px;padding:2px 7px;}
+.cao-tag.k{background:#eef2ff;color:#26336b;}
+.cao-tag.src{background:#fff7ed;color:#9a3412;}
+.cao-tag.fld{background:#eafaf3;color:#0b7250;}
+
+/* 활성화 상태 */
+.status{display:inline-block;font-size:.8rem;font-weight:800;border-radius:8px;padding:6px 13px;}
+.status.inactive{background:#f1f3f8;color:var(--ink-soft);}
+.status.active{background:#eafaf3;color:#0b7250;}
+.status.fail{background:rgba(214,51,108,.12);color:var(--bad);}
+.cao-arrow{font-size:1rem;color:var(--soon);font-weight:800;margin:0 8px;}
+
+.cao-badge{display:inline-block;font-size:.7rem;font-weight:800;border-radius:6px;padding:3px 9px;margin-top:8px;}
+.cao-badge.eq{background:#eafaf3;color:#0b7250;}
+
+.cao-blocked{color:var(--bad);font-size:.84rem;font-weight:600;padding:14px 6px;text-align:center;}
+.cao-sql{font-family:var(--mono);font-size:12px;line-height:1.7;white-space:pre;margin:0;color:var(--ink);}
+.cao-sql .k{color:var(--brand);font-weight:700;}
+.cao-sql .ent{color:var(--accent);font-weight:700;}
+.cao-sql .host{color:var(--amber);font-weight:700;}
+
+/* 메시지 */
+.cao-msg{margin-top:12px;font-size:.84rem;padding:9px 12px;border-radius:9px;background:#eef2ff;color:#26336b;}
+.cao-msg.warn{background:rgba(180,83,9,.1);color:#7a4a12;}
+.cao-msg b{color:inherit;}
+.note{margin-top:12px;border-left:3px solid var(--brand);background:rgba(59,91,219,.06);border-radius:0 9px 9px 0;padding:9px 13px;font-size:.83rem;color:#2a3550;}
+.note code{font-family:var(--mono);background:#fff;border:1px solid var(--line);padding:0 5px;border-radius:4px;}
