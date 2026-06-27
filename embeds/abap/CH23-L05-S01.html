@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<!-- CH23-L05-S01 — 엔진: behavior-pool-tracer · _autoheight. 콘텐츠=레슨 전용(RAP Behavior Pool 호출 추적기, #C23 L05).
+     게이팅: behavior pool L3(cl_abap_behavior_handler·FOR VALIDATE ON SAVE·keys 집합·failed/reported). validation/action 상세는 L06+·EML 이후·DML CH24.
+     관통예제=예매(zbp_i_booking). keys=internal table(여러 instance 한 번에). -->
+<html lang="ko" data-eng="behavior-pool-tracer">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RAP Behavior Pool 호출 추적기 · CH23-L05-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/behavior-pool-tracer.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">Behavior Pool 호출 추적기 <small>(handler는 집합 지향)</small></p>
+  <p class="lead">검증 handler가 호출되는 흐름을 따라가 봅니다. 핵심은 <code>keys</code>가 <b>단건이 아니라 여러 예매</b>라는 점이에요 — RAP runtime은 여러 instance를 한 번에 넘깁니다. 순서대로 눌러 보고, <b>loop 안 EML</b> anti-pattern도 확인하세요.</p>
+
+  <div class="bpt-steps" id="bptSteps"></div>
+  <div style="display:flex;margin-bottom:10px;"><button class="bpt-eml" id="bptEml"></button></div>
+
+  <div id="bptBody"></div>
+  <div class="bpt-msg" id="bptMsg"></div>
+
+  <div class="note"><b>behavior pool ≠ 일반 utility class.</b> RAP runtime이 호출하는 구현 위치예요 — 외부에서 마음대로 부르는 helper와 다릅니다. validation은 <b>실패를 알리는</b> 역할이라 그 안에서 데이터를 수정(<code>MODIFY ENTITIES</code>)하면 안 돼요. 값 자동 변경은 determination·action에서 합니다.</div>
+</div>
+
+<script src="../_engine/behavior-pool-tracer.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

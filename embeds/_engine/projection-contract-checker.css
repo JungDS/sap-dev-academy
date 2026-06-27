@@ -1,0 +1,51 @@
+/* ===== projection-contract-checker — RAP Transactional Projection 계약 검사기 (CH23-L03) =====
+   ZI_Booking(기반 root) → ZC_Booking(소비 projection). provider contract transactional_query 토글·root 맞춤·노출 필드 선택.
+   contract 빠지면 점검 약함(warn)·projection이 root 아니면 위치 불일치(bad)·필드 숨김=계약 제외(삭제 아님). 데이터 내장.
+   교훈3: verdict base 중립 rgba·ok/warn/bad 명시. */
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:transparent;line-height:1.5;}
+.wrap{padding:14px;}
+.hd{font-weight:800;font-size:1rem;margin:0 0 4px;}
+.hd small{font-weight:600;color:var(--brand);}
+.lead{margin:0 0 12px;color:var(--ink-soft);font-size:.86rem;}
+.lead code{font-family:var(--mono);background:#eef2ff;color:var(--brand);padding:1px 5px;border-radius:5px;font-size:.92em;}
+
+.pcc-ctrl{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+.pcc-tog{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;
+  padding:6px 10px;font:inherit;font-size:.73rem;font-weight:700;cursor:pointer;font-family:var(--mono);}
+.pcc-tog:hover{border-color:var(--brand);}
+.pcc-tog.on{background:#eef2ff;border-color:#26336b;color:#26336b;}
+.pcc-tog.off{background:var(--surface);color:var(--soon);border-style:dashed;}
+
+.pcc-fields{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;}
+.pcc-fld{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:7px;
+  padding:4px 9px;font:inherit;font-size:.72rem;font-weight:700;cursor:pointer;font-family:var(--mono);}
+.pcc-fld:hover{border-color:var(--brand);}
+.pcc-fld.shown{background:#eafaf3;border-color:var(--accent);color:#0b7250;}
+.pcc-fld.hidden{background:var(--surface);color:var(--soon);border-style:dashed;}
+.pcc-fld.keyf{outline:1.5px solid var(--brand);cursor:not-allowed;}
+
+.pcc-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+@media(max-width:560px){ .pcc-row{grid-template-columns:1fr;} }
+.pcc-card{border:1px solid var(--line);border-radius:11px;background:var(--surface);overflow:hidden;}
+.pcc-card__hd{font-size:.72rem;font-weight:800;padding:6px 10px;}
+.pcc-card.zi .pcc-card__hd{background:#eef2ff;color:#26336b;}
+.pcc-card.zc .pcc-card__hd{background:#eafaf3;color:#0b7250;}
+.pcc-card__b{padding:9px 10px;}
+.pcc-code{font-family:var(--mono);font-size:11px;line-height:1.6;white-space:pre;overflow-x:auto;margin:0;color:var(--ink);}
+.pcc-code .k{color:var(--brand);font-weight:700;}
+.pcc-code .ent{color:var(--accent);font-weight:700;}
+.pcc-code .anno{color:var(--accent);}
+.pcc-code .contract{color:var(--amber);font-weight:700;}
+.pcc-code .miss{color:var(--soon);font-style:italic;}
+.pcc-code .kw{color:var(--brand);font-weight:700;}
+.pcc-chip{display:inline-block;font-family:var(--mono);font-size:.7rem;font-weight:700;border-radius:6px;padding:2px 7px;margin:2px;background:#e8f8f1;color:#0b7250;}
+
+.pcc-verdict{font-size:.84rem;padding:9px 12px;border-radius:9px;background:rgba(59,91,219,.08);color:var(--ink);}
+.pcc-verdict.ok{background:#eafaf3;color:#0b7250;}
+.pcc-verdict.warn{background:rgba(180,83,9,.1);color:#7a4a12;}
+.pcc-verdict.bad{background:rgba(214,51,108,.12);color:var(--bad);}
+.pcc-verdict b{color:inherit;}
+
+.note{margin-top:12px;border-left:3px solid var(--brand);background:rgba(59,91,219,.06);border-radius:0 9px 9px 0;padding:9px 13px;font-size:.83rem;color:#2a3550;}
+.note code{font-family:var(--mono);background:#fff;border:1px solid var(--line);padding:0 5px;border-radius:4px;}

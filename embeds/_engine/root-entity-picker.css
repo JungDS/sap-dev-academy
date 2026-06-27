@@ -1,0 +1,48 @@
+/* ===== root-entity-picker — RAP Root Entity 판정기 (CH23-L02) =====
+   업무 후보(공연/회차/예매) 중 트랜잭션 단위를 고르고, 사용자 행동이 거기 모이는지·key가 안정적인지 판정.
+   예매+booking_id → root 적합(ok). 다른 후보 → action 대상 불안정(warn). 불안정 key → bad. 데이터 내장.
+   교훈3: verdict base 중립 rgba·ok/warn/bad 명시. 설계 판단 훈련(문법보다 "왜 예매가 root인가"). */
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:transparent;line-height:1.5;}
+.wrap{padding:14px;}
+.hd{font-weight:800;font-size:1rem;margin:0 0 4px;}
+.hd small{font-weight:600;color:var(--brand);}
+.lead{margin:0 0 12px;color:var(--ink-soft);font-size:.86rem;}
+.lead code{font-family:var(--mono);background:#eef2ff;color:var(--brand);padding:1px 5px;border-radius:5px;font-size:.92em;}
+
+.rep-cap{font-size:.74rem;font-weight:800;color:var(--ink-soft);margin:10px 0 6px;}
+.rep-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;}
+.rep-card{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:9px;cursor:pointer;text-align:center;}
+.rep-card:hover{border-color:var(--brand);}
+.rep-card.on{border-color:var(--brand);background:#eef2ff;}
+.rep-card__nm{font-weight:800;font-size:.84rem;color:var(--ink);}
+.rep-card.on .rep-card__nm{color:#26336b;}
+.rep-card__tb{font-family:var(--mono);font-size:.66rem;color:var(--ink-soft);margin-top:2px;}
+
+.rep-acts{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px;}
+.rep-act{font-size:.72rem;font-weight:700;border-radius:6px;padding:4px 9px;border:1px solid var(--line);}
+.rep-act.belong{background:#eafaf3;color:#0b7250;border-color:#9fdcc6;}
+.rep-act.stray{background:rgba(180,83,9,.1);color:#7a4a12;border-color:var(--amber);border-style:dashed;}
+
+.rep-keys{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px;}
+.rep-key{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:7px;
+  padding:5px 10px;font:inherit;font-size:.74rem;font-weight:700;cursor:pointer;font-family:var(--mono);}
+.rep-key:hover{border-color:var(--brand);}
+.rep-key.sel-ok{background:#eafaf3;border-color:var(--accent);color:#0b7250;}
+.rep-key.sel-bad{background:rgba(214,51,108,.12);border-color:var(--bad);color:var(--bad);}
+.rep-keynote{font-size:.74rem;color:var(--ink-soft);margin-top:5px;min-height:1em;}
+
+.rep-code{font-family:var(--mono);font-size:11.5px;line-height:1.65;white-space:pre;overflow-x:auto;
+  margin:10px 0 0;padding:9px 11px;border:1px solid var(--line);border-radius:9px;background:#fafbff;color:var(--ink);}
+.rep-code .k{color:var(--brand);font-weight:700;}
+.rep-code .ent{color:var(--accent);font-weight:700;}
+.rep-code .kw{color:var(--brand);font-weight:700;}
+
+.rep-verdict{font-size:.84rem;padding:9px 12px;border-radius:9px;margin-top:10px;background:rgba(59,91,219,.08);color:var(--ink);}
+.rep-verdict.ok{background:#eafaf3;color:#0b7250;}
+.rep-verdict.warn{background:rgba(180,83,9,.1);color:#7a4a12;}
+.rep-verdict.bad{background:rgba(214,51,108,.12);color:var(--bad);}
+.rep-verdict b{color:inherit;}
+
+.note{margin-top:12px;border-left:3px solid var(--brand);background:rgba(59,91,219,.06);border-radius:0 9px 9px 0;padding:9px 13px;font-size:.83rem;color:#2a3550;}
+.note code{font-family:var(--mono);background:#fff;border:1px solid var(--line);padding:0 5px;border-radius:4px;}
