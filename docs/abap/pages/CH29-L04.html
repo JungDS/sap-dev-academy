@@ -40,6 +40,8 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>확장점이 있나 없나</h2>
+<p>확장 수단을 <em>많이 아는 것</em>보다 중요한 건 <strong>순서대로 판단하는 능력</strong>이다. &quot;넣을 수 있나&quot;가
+아니라 <strong>&quot;여기 넣는 게 맞나&quot;</strong> 를 먼저 묻는다 — 확장은 자유도가 높을수록 책임도 커진다.</p>
 <table>
 <thead>
 <tr>
@@ -49,33 +51,86 @@
 </thead>
 <tbody><tr>
 <td><strong>Explicit</strong></td>
-<td>개발자가 <strong>미리 심어 둔</strong> 확장점(BAdI·Enhancement Point/Section)</td>
+<td>표준이 <strong>의도적으로 표시</strong>한 확장점(<a href="CH29-L03.html">BAdI</a>·<a href="CH29-L02.html">Enhancement Point/Section</a>)</td>
 </tr>
 <tr>
 <td><strong>Implicit</strong></td>
-<td>모든 <button class="term" type="button" data-term="Method">메서드</button>·함수·FORM의 <strong>시작/끝</strong>에 자동으로 존재</td>
+<td>표시가 없어도 프레임워크가 <strong>자동 제공</strong>하는 자리</td>
 </tr>
 </tbody></table>
-</section><section class="lblock"><h2>선택 기준</h2>
-<ol>
-<li><strong>BAdI가 있으면 BAdI</strong>(가장 권장·OO·필터).</li>
-<li>없고 적당한 <strong>Explicit Point</strong>가 있으면 그걸.</li>
-<li>그것도 없으면 <strong>Implicit</strong>(<button class="term" type="button" data-term="Method">메서드</button> 시작/끝)에 최소한으로.</li>
-<li><strong>그 무엇도 아니면 표준 직접 수정 — 최후의 수단</strong>(Modification, 등록·이유 필요).</li>
-</ol>
+<p><strong>Implicit</strong>은 <button class="term" type="button" data-term="Method">메서드</button>·함수·FORM의 <strong>시작/끝</strong>, include 마지막, 로컬 <button class="term" type="button" data-term="Class">클래스</button> visibility 끝 등
+정해진 위치에 늘 있다(에디터에서 <em>implicit enhancement 표시</em>를 켜야 보인다). 강력하지만
+<em>위치가 표준 내부</em>라 패치에 깨지기 쉽다.</p>
+</section><section class="lblock"><h2>선택 우선순위</h2>
+<p>위쪽일수록 <strong>계약이 강하고 안전</strong>하다. 위에서부터 가능한지 따져 내려간다.</p>
+<table>
+<thead>
+<tr>
+<th>순위</th>
+<th>선택</th>
+<th>선택 이유</th>
+<th>멈춰야 하는 신호</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td><strong>BAdI</strong></td>
+<td><button class="term" type="button" data-term="Interface">인터페이스</button> 계약·필터·활성화 관리가 좋다</td>
+<td>필요한 데이터·시점이 method 계약에 없다</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Explicit Point</strong></td>
+<td>SAP가 추가 위치를 명시</td>
+<td>point 위치가 요구 시점과 다르다</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Explicit Section</strong></td>
+<td>표준 블록 대체를 명시 허용</td>
+<td>표준 책임을 <em>완전히</em> 대신할 준비가 없다</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>Implicit</strong></td>
+<td>시작·끝 등 제한 위치에서 최소 보강</td>
+<td>내부 변수 의존·중간 흐름 변경·과한 로직</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>Modification</strong></td>
+<td>다른 선택지가 없을 때 <em><button class="term" type="button" data-term="예외">예외</button> 심사</em></td>
+<td>단순 편의·빠른 해결·테스트 부족</td>
+</tr>
+</tbody></table>
 <blockquote>
-<p>즉 확장 강도: BAdI &gt; Explicit &gt; Implicit &gt; Modification. 위쪽일수록 안전·권장.</p>
+<p>확장 강도: <strong>BAdI &gt; Explicit &gt; Implicit &gt; Modification</strong>. Modification(표준 직접 수정)은
+등록·이유가 필요한 <strong>최후의 수단</strong>이다.</p>
 </blockquote>
 </section><section class="lblock"><h2>직접 골라 보기</h2>
 <p>상황을 입력하면 어떤 확장 수단이 권장되는지 트리를 따라가 보라.</p>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">확장 수단 선택 트리</span><a class="embed__open" href="../../../embeds/abap/CH29-L04-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH29-L04-S01.html" loading="lazy" title="확장 수단 선택 트리" style="height:380px"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>Implicit 남용</strong> → 코드 중간이 아니라 시작/끝만 가능. 흐름 중간 개입엔 부적합.</li>
-<li><strong>Modification 먼저</strong> → 거의 마지막 선택. 가능한 다른 수단을 먼저.</li>
+<li><strong>Implicit을 &quot;어디든 넣는 자유권&quot;으로</strong> → 위치가 정해져 있고, include·컴파일 단위에 따라
+안 보이기도 한다. <em>보인다고 안정적 계약은 아니다.</em></li>
+<li><strong>Section을 modification보다 항상 안전하다 단정</strong> → Section은 표준 <em>책임을 대신 맡는다</em>.
+표준 로직의 <button class="term" type="button" data-term="예외">예외</button>·메시지·데이터 변경을 놓치면 <strong>회귀</strong>가 난다.</li>
+<li><strong>BAdI parameter가 부족하다고 implicit로 우회</strong> → 먼저 <em>BAdI 계약 안에서</em> 설계한다. 계약 밖
+내부 변수에 손대면 당장 편해도 업그레이드에 깨진다.</li>
+<li><strong>선택 근거를 안 남김</strong> → &quot;왜 BAdI가 아니라 implicit인가&quot;, &quot;왜 modification 심사를
+올렸나&quot;를 한 문단 남기면 운영 중 분석 시간이 크게 준다.</li>
+</ul>
+</section><section class="lblock"><h2>정리</h2>
+<ul>
+<li>핵심은 문법이 아니라 <strong>우선순위 판단</strong> — BAdI → Explicit Point → Section(신중) →
+Implicit(제한적) → Modification(최후).</li>
+<li>&quot;넣을 수 있다&quot;에서 멈추지 말고 <em>&quot;표준이 의도한 계약인가·업그레이드 후에도 견디나·남이
+이유를 이해하나&quot;</em> 까지 본다.</li>
 </ul>
 <hr>
-<p>수단을 골랐다. 마지막으로 클라우드 시대의 확장 원칙 → 다음 레슨.</p>
+<p>수단을 골랐다. 마지막으로 <strong>클라우드 시대</strong>의 확장 원칙(Clean Core) →
+<a href="CH29-L05.html">Clean Core 관점의 확장 기준</a>(다음 레슨).</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
