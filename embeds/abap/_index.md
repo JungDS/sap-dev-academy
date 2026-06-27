@@ -125,6 +125,14 @@
 | CH18-L05-S01 | CH18-L05 | string-template-composer | CONCATENATE↔String Template 비교·DATE/NUMBER=USER 서식·substring(off/len) 범위 초과 오류 | ✅ |
 | CH18-L06-S01 | CH18-L06 | diff-mapper | classic↔modern(VALUE·+=) hover 대응+설명 · 중립 톤 classic/modern | ✅ |
 | CH18-L07-S01 | CH18-L07 | diff-mapper | 콘서트앱 모던리팩터(인라인DATA·+=·VALUE·Table Expr) | ✅ |
+| CH19-L01-S01 | CH19-L01 | sql-modernize-stepper | classic→modern SQL 단계 변환(콤마·@·INTO 뒤로)·항공사 코드별 결과(행수·sy-subrc·sy-dbcnt) 동일 | ✅ |
+| CH19-L02-S01 | CH19-L02 | host-escape-inspector | WHERE 오른쪽 operand(ABAP변수/식/DB컬럼/리터럴)×@ on·off→정오 판정(escape 필요/불필요/누락)·host식 lossless·SQL식↔host식 구분 | ✅ |
+| CH19-L03-S01 | CH19-L03 | inline-target-viewer | SELECT 목록(*/필드/계산/계산+AS)×target(@DATA/DATA/@기존)→행 구조 chips·standard+empty key·계산 컬럼 AS 별칭 필요·@DATA↔DATA 구분 | ✅ |
+| CH19-L04-S01 | CH19-L04 | sql-expression-lab | CASE/CAST/COALESCE×DB식↔ABAP LOOP 토글→결과 테이블(계산 컬럼·null 강조)·계산 위치만 다름·CASE 타입호환·CAST 길이·COALESCE null≠initial | ✅ |
+| CH19-L05-S01 | CH19-L05 | sql-function-workbench | SQL 문자열·날짜 함수 7종 선택·SUBSTRING pos(1-기반)/len 인터랙티브+ABAP off(0-기반) 비교·DATS_ADD_DAYS days·DATS_DAYS_BETWEEN·null 전파 | ✅ |
+| CH19-L06-S01 | CH19-L06 | itab-sql-console | 내부 테이블을 @itab source로·WHERE/ORDER BY/GROUP BY×SELECT↔LOOP/SORT/COLLECT 비교·원본/결과 테이블·@ 필요·DB 대용 아님 | ✅ |
+| CH19-L07-S01 | CH19-L07 | module-choice-cards | (재사용) SQL Decision Cards 6문항→@host/@DATA/CASE/COALESCE/SELECT FROM @itab/ABAP·명시타입 분류·이유 | ✅ |
+| CH19-L08-S01 | CH19-L08 | concert-agg-join-lab | 콘서트 집계: 취소 제외 조건 ON↔WHERE 토글(C003 보존/소멸)·COALESCE null↔0·LEFT OUTER JOIN+GROUP BY·결과/검증 테이블 | ✅ |
 | CH20-L01-S01 | CH20-L01 | class-diagram | 클래스(설계도)→NEW→객체(인스턴스) 흐름 | ✅ |
 | CH20-L07-S01 | CH20-L07 | class-diagram | 상속 계층(부모 ZCL_BOOKING_MANAGER←자식 ZCL_VIP_BOOKING·REDEFINITION/super·ABSTRACT/FINAL) | ✅ |
 | CH20-L10-S01 | CH20-L10 | class-diagram | UML 클래스 구조(PUBLIC 메서드·PRIVATE 속성·캡슐화·RAISING) | ✅ |
@@ -146,6 +154,13 @@
 | field-mapping-board (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH18-L03-S01 | FMB_CFG 주도 · 원본/대상 필드 매핑표(자동/MAPPING/EXCEPT/초기값 배지)·MAPPING/EXCEPT 토글→CORRESPONDING 코드·원본only 버려짐 · 다크 |
 | read-vs-tabexpr (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH18-L04-S01 | RVT_CFG 주도 · id 세그·데이터테이블(hit)·4 method 카드(READ TABLE/tab[ ]/line_exists/line_index)·없으면 예외(bad) · 다크 |
 | string-template-composer (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH18-L05-S01 | STC_CFG 주도 · mode(concat/template)·fmt(raw/user) 세그→코드/결과·substring 입력(범위초과 bad)·코드 base=var(--surface)로 틴트 다크 유지 · 다크 |
+| sql-modernize-stepper (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH19-L01-S01 | SMS_CFG 주도 · stage 세그(classic/콤마/@/INTO 뒤로)→코드 변환(hl·esc 강조)·carr 세그(LH/AA/ZZ)→결과 카드(subrc 0/4·dbcnt)·표기 무관 결과 동일·base=var(--surface) · 다크 |
+| host-escape-inspector (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH19-L02-S01 | HEI_CFG.operands 주도 · op 세그(ABAP변수/식/DB컬럼/리터럴)×esc 세그(@ on/off)→WHERE 조건 렌더(col/esc/bad 강조)·정오 판정(correctOn=ABAP값만)·식=@( )·lossless·base=var(--surface) · 다크 |
+| inline-target-viewer (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH19-L03-S01 | ITV_CFG 주도 · list 세그(*/2필드/계산/계산+AS)→행 구조 chips(이름없음=noname red)·tgt 세그(@DATA/DATA/@기존)→verdict(badEscape/existing/ok)·계산 alias missing 경고·standard+empty key·base=var(--surface) · 다크 |
+| sql-expression-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH19-L04-S01 | SEL_CFG.modes 주도 · mode 세그(CASE/CAST/COALESCE)×impl 세그(DB식/ABAP LOOP)→코드(fn·AS 강조)+결과 테이블(out 컬럼 teal·null 빨강·repl amber)·위치 배지(db/abap)·mode별 note·base=var(--surface) · 다크 |
+| sql-function-workbench (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH19-L05-S01 | SFW_CFG 주도 · fn 세그 7종(CONCAT/SUBSTRING/UPPER/LOWER/LENGTH/DATS_ADD_DAYS/DATS_DAYS_BETWEEN)→코드+결과·SUBSTRING pos(1-기반)/len 입력→범위밖 bad+SQL↔ABAP off 비교행·DATS_ADD_DAYS days·base=var(--surface) · 다크 |
+| itab-sql-console (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH19-L06-S01 | ICS_CFG 주도 · 원본 테이블 + op 세그(WHERE/ORDER BY/GROUP BY)×impl 세그(SELECT@itab/LOOP·SORT·COLLECT)→코드(fn·esc·as 강조)+결과 테이블(res teal·agg)·위치 배지·op별 note·base=var(--surface) · 다크 |
+| concert-agg-join-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH19-L08-S01 | CAJL_CFG 주도 · zconcert/zbooking 원본+cond 세그(취소제외 ON/WHERE)×coal 세그(COALESCE 0/SUM)→aggregate()로 결과 테이블 계산(C003 ON=kept/WHERE=소멸·null↔0·FULL/OPEN)+코드 hot 강조+note good/warn·이름 풀(R9)·base=var(--surface) · 다크 |
 | select-query-simulator | 1 | 공통(_engine)·자체 postHeight ✅ | CH08-L02-S01 | config 주입(SQL_CFG) · #N1 주석 CH19 정정 · (CH12-L07은 SELECT-OPTIONS 전용 신규엔진로 분리) |
 | select-options-filter-sim | 2 | 공통(_engine)·자체 postHeight ✅ | CH12-L03-S01·CH12-L07-S01 | SO_CFG 주도 · Range Table(SIGN I/E·OPTION EQ/NE/GT/LT/GE/LE/BT/CP) 평가 · **opt-in `#soSys`**(있으면 sy-subrc/sy-dbcnt 표시, L03만) |
 | range-row-builder (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH12-L01-S01 | RRB_CFG.cards 주도 · 조건 카드→SIGN/OPTION/LOW/HIGH 행 빌더·행/종합 사람말 해석 · 다크 자동(토큰+gen-embed-dark) |

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<!-- CH19-L08-S01 — 엔진: concert-agg-join-lab · _autoheight. 콘텐츠=레슨 전용(콘서트앱 모던 SQL 집계, CH19 L08).
+     config=window.CAJL_CFG. 게이팅: CH19=New Open SQL 정식(@·@DATA·COALESCE·LEFT OUTER JOIN·GROUP BY). 저장 DML·lock·OO·CDS는 범위 밖. 이름=풀(R9). -->
+<html lang="ko" data-eng="concert-agg-join-lab">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Concert Modern SQL Lab · CH19-L08-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/concert-agg-join-lab.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">Concert Modern SQL Lab <small>(ON vs WHERE · COALESCE)</small></p>
+  <p class="lead">공연별 예약 좌석을 집계합니다. <b>취소(<code>status='C'</code>) 제외 조건을 <code>ON</code>에 둘지 <code>WHERE</code>에 둘지</b> 바꿔 보세요 — 예매가 없는 공연(<code>C003</code>)이 남는지 사라지는지 결과가 달라집니다. <code>COALESCE</code>도 토글해 보세요.</p>
+
+  <div class="cajl-src">
+    <div id="cajlConcert"></div>
+    <div id="cajlBook"></div>
+  </div>
+
+  <div class="cajl-ctrl">
+    <div class="cajl-grp"><span class="clbl">취소 제외 조건 위치</span><div class="cajl-seg cajl-cond"></div></div>
+    <div class="cajl-grp"><span class="clbl">합계 null 처리</span><div class="cajl-seg cajl-coal"></div></div>
+  </div>
+
+  <p class="cajl-h">SELECT 코드</p>
+  <div id="cajlCode"></div>
+  <p class="cajl-h">집계 결과 (s_conc = C001·C002·C003)</p>
+  <div id="cajlResult"></div>
+  <div id="cajlNote"></div>
+
+  <div class="note"><b>문법이 modern이어도 업무 결과가 틀리면 끝.</b> 취소 예매가 합계에서 빠졌는지, 예매 없는 공연이 보존되는지, <code>sy-dbcnt</code>와 행 수가 맞는지 — <b>실제 데이터로 검증</b>하세요. <code>SUM( b~seats ) AS booked</code> 별칭은 같은 SELECT의 <code>CASE</code> 안에서 다시 못 쓰니 식을 반복합니다.</div>
+</div>
+
+<script>
+window.CAJL_CFG = {
+  concerts: [
+    { id: 'C001', artist: '정훈영 Band', cap: 100 },
+    { id: 'C002', artist: 'ABAP Trio',  cap: 50 },
+    { id: 'C003', artist: 'UI5 Night',  cap: 80 }
+  ],
+  bookings: [
+    { id: 'B001', concert: 'C001', customer: '손흥민', seats: 2,  status: 'N' },
+    { id: 'B002', concert: 'C001', customer: '아이유', seats: 3,  status: 'N' },
+    { id: 'B003', concert: 'C001', customer: '차은우', seats: 1,  status: 'C' },
+    { id: 'B004', concert: 'C002', customer: '정훈영', seats: 50, status: 'N' }
+  ]
+};
+</script>
+<script src="../_engine/concert-agg-join-lab.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

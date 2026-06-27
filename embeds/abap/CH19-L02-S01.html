@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<!-- CH19-L02-S01 — 엔진: host-escape-inspector · _autoheight. 콘텐츠=레슨 전용(@ host variable/expression 경계, CH19 L02).
+     config=window.HEI_CFG. 게이팅: CH19=New Open SQL 정식(@·@( )). host expression은 산술·단순 내장값까지(메서드/객체식은 CH20+). -->
+<html lang="ko" data-eng="host-escape-inspector">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Host Boundary Inspector · CH19-L02-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/host-escape-inspector.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">Host Boundary Inspector <small>(@ 가 필요한 곳 · 아닌 곳)</small></p>
+  <p class="lead"><code>WHERE</code> 오른쪽에 넣을 값을 고르고 <code>@</code>를 켜고 꺼 보세요. <b>ABAP 값</b>(변수·식)엔 <code>@</code>가 필요하고, <b>DB 컬럼·SQL 리터럴</b>엔 붙이지 않습니다. 잘못 켜고 끄면 어떤 오류인지 알려 줍니다.</p>
+
+  <div class="hei-ctrl">
+    <div class="hei-grp"><span class="clbl">오른쪽 operand</span><div class="hei-seg hei-op"></div></div>
+    <div class="hei-grp"><span class="clbl">@ escape</span><div class="hei-seg hei-esc"></div></div>
+  </div>
+
+  <p class="hei-h">WHERE 조건</p>
+  <div id="heiCode"></div>
+  <div id="heiVerdict"></div>
+
+  <div id="heiNote"><b>"식"이 둘 있다 — 헷갈리지 말기.</b> <code>@( lv_base + 100 )</code>는 <b>host expression</b>(ABAP에서 계산 → SQL에 넘김)입니다. <code>CASE</code>·<code>COALESCE</code>·<code>SUBSTRING</code> 같은 <b>SQL expression</b>(다음 레슨들)은 <b>DB에서</b> 계산됩니다. 둘 다 "식"이지만 <b>실행되는 곳</b>이 다릅니다.</div>
+</div>
+
+<script>
+window.HEI_CFG = {
+  operands: [
+    { v: 'var',  kind: 'var',  left: 'carrid',   op: '=', bare: 'lv_carr',      label: 'ABAP 변수' },
+    { v: 'expr', kind: 'expr', left: 'seatsmax', op: '>', bare: 'lv_base + 100', label: 'ABAP 식' },
+    { v: 'col',  kind: 'col',  left: 'seatsmax', op: '>', bare: 'seatsocc',      label: 'DB 컬럼' },
+    { v: 'lit',  kind: 'lit',  left: 'carrid',   op: '=', bare: "'LH'",          label: 'SQL 리터럴' }
+  ]
+};
+</script>
+<script src="../_engine/host-escape-inspector.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>
