@@ -35,13 +35,17 @@
       <section class="lhead">
         <p class="lhead__eyebrow">Screen Programming / Dynpro 기초</p>
         <h1>PF-STATUS와 TITLEBAR</h1>
-        <p class="lhead__direction">화면 위 메뉴·툴바·기능키와 제목을 단다.</p>
+        <p class="lhead__direction">화면 위 메뉴·툴바·기능키와 제목을 달고, function code를 PAI와 맞춘다.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 16</span><span class="tag tag--ls">Lesson 6</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>화면 위 메뉴·툴바</h2>
-<p>화면 상단의 <strong>메뉴바·툴바·기능키</strong>를 묶은 것이 <button class="term" type="button" data-term="GUI Status">GUI Status</button>(PF-STATUS)다.
-<code>SE41</code>(또는 Screen Painter)에서 만들고, 어떤 버튼을 둘지·각 버튼의 FctCode를 정한다.</p>
+<section class="lblock"><h2>화면 위 메뉴·툴바 — GUI Status</h2>
+<p>화면에는 입력칸만 있는 게 아니다. 위쪽에는 <strong>메뉴바·표준 툴바·application toolbar·
+function key</strong>가 있고, 사용자는 그 버튼으로 저장하거나 뒤로 가거나 도움말을 연다.
+이 상단 버튼들의 function code를 묶은 객체가 <button class="term" type="button" data-term="GUI Status">GUI Status</button>(PF-STATUS)다.
+<code>SE41</code>(Menu Painter)에서 만들고, 어떤 버튼을 둘지·각 버튼의 FctCode를 정한다.</p>
+</section><section class="lblock"><h2>PBO에서 켜기 — SET PF-STATUS · SET TITLEBAR</h2>
+<p><button class="term" type="button" data-term="GUI Status">GUI Status</button>와 제목은 <a href="CH16-L04.html">PBO 처리 흐름</a>의 <code>MODULE ... OUTPUT</code>에서 켠다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -50,20 +54,65 @@
   <span class="tok-kw">SET</span> <span class="tok-kw">TITLEBAR</span>  <span class="tok-str">'TB100'</span>.     <span class="tok-com">" 제목 표시줄</span>
 <span class="tok-kw">ENDMODULE</span>.</code></pre></div></div>
 <ul>
-<li><code>SET PF-STATUS</code>로 PBO에서 상태를 켜면, 그 버튼들이 눌릴 때 FctCode가 <code>OK_CODE</code>로 온다.</li>
-<li><code>SET TITLEBAR</code>로 제목을 지정한다(텍스트는 변수로 채울 수도 있음 <code>WITH</code>).</li>
+<li><code>SET PF-STATUS</code>로 상태를 켜면, 그 버튼이 눌릴 때 FctCode가 <code>OK_CODE</code>로 온다
+(<a href="CH16-L05.html">PAI 처리 흐름 — OK_CODE와 화면 떠나기</a>).</li>
+<li>설정 후 <code>sy-pfkey</code>에 현재 status 이름이, <code>sy-title</code>에 제목이 들어온다.</li>
 </ul>
-</section><section class="lblock"><h2>버튼을 동적으로 숨기기</h2>
-<p>특정 상황에서 일부 버튼만 감추려면 <code>SET PF-STATUS &#39;ST100&#39; EXCLUDING lt_fcode.</code>처럼
-<strong>제외 목록</strong>을 넘긴다.</p>
+</section><section class="lblock"><h2>버튼을 동적으로 숨기기 — EXCLUDING</h2>
+<p>특정 상황에서 일부 버튼만 비활성화하려면 <code>EXCLUDING</code>에 <strong>제외할 function code 목록</strong>을 넘긴다.
+(공식문서: <code>EXCLUDING</code>된 기능은 화면에서 선택할 수 없게 된다.)</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> gt_excl  <span class="tok-kw">TYPE</span> <span class="tok-kw">STANDARD</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> sy-ucomm.
+<span class="tok-kw">DATA</span> gv_fcode <span class="tok-kw">TYPE</span> sy-ucomm.
+
+<span class="tok-kw">MODULE</span> status_0100 <span class="tok-kw">OUTPUT</span>.
+  <span class="tok-kw">CLEAR</span> gt_excl.
+  <span class="tok-kw">IF</span> p_locked = <span class="tok-str">'X'</span>.
+    gv_fcode = <span class="tok-str">'SAVE'</span>.
+    <span class="tok-kw">APPEND</span> gv_fcode <span class="tok-kw">TO</span> gt_excl.          <span class="tok-com">" 잠금 상태면 SAVE 비활성</span>
+  <span class="tok-kw">ENDIF</span>.
+
+  <span class="tok-kw">SET</span> <span class="tok-kw">PF-STATUS</span> <span class="tok-str">'ST100'</span> EXCLUDING gt_excl.
+  <span class="tok-kw">SET</span> <span class="tok-kw">TITLEBAR</span>  <span class="tok-str">'TB100'</span> <span class="tok-kw">WITH</span> p_conc.     <span class="tok-com">" 아래 참고</span>
+<span class="tok-kw">ENDMODULE</span>.</code></pre></div></div>
+</section><section class="lblock"><h2>제목에 값 넣기 — TITLEBAR ... WITH</h2>
+<p>제목 텍스트에 <code>&amp;1</code>~`&amp;9<code>자리표시자를 두고</code>WITH<code>로 값을 채운다. 제목 </code>TB100<code>이 **</code>공연 &amp;1 예매<code>** 라면, </code>SET TITLEBAR &#39;TB100&#39; WITH p_conc<code>는 </code>공연 C001 예매`가 된다.</p>
+<blockquote>
+<p>제목은 장식이 아니다 — 사용자가 <strong>지금 어느 공연·어느 업무 화면</strong>에 있는지 알려 주는 안전 장치다.</p>
+</blockquote>
+</section><section class="lblock"><h2>직접 매핑해 보기 — Toolbar와 Function Code 매핑판</h2>
+<p>툴바 버튼을 눌러 그 <strong>function code가 <code>OK_CODE</code>로 전달</strong>되고 PAI <code>CASE</code>에서 처리되는지 보자.
+잠금으로 <code>SAVE</code>를 <code>EXCLUDING</code>하면 어떻게 빠지는지, 그리고 <strong>CASE에 없는 버튼(<code>HELP</code>)</strong> 을
+누르면 어떤 경고가 뜨는지 확인하자.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">Toolbar와 Function Code 매핑판</span><a class="embed__open" href="../../../embeds/abap/CH16-L06-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH16-L06-S01.html" loading="lazy" title="Toolbar와 Function Code 매핑판" style="height:600px"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>PF-STATUS 미설정</strong> → 표준 버튼만 떠 내 기능키가 없다. PBO에서 <code>SET PF-STATUS</code>.</li>
-<li><strong>FctCode 불일치</strong> → Status의 버튼 코드와 <code>CASE ok_code</code>의 값이 같아야 한다.</li>
+<li><strong>PF-STATUS 미설정</strong> → 표준 버튼만 떠 내 기능키가 없다. PBO에서 늦지 않게 <code>SET PF-STATUS</code>.</li>
+<li><strong>FctCode 불일치</strong> → Menu Painter의 버튼 코드와 <code>CASE save_ok</code> 값이 <strong>같아야</strong> 한다.
+다르면 버튼은 눌렸지만 처리할 branch가 없다.</li>
+<li><strong><code>EXCLUDING</code> 오타</strong> → 없는 function code를 넣으면 조용히 무시된다. 코드를 점검한다.</li>
+<li><strong>제목 placeholder 누락</strong> → <code>&amp;1</code>이 있는데 <code>WITH</code>를 안 주면 자리표시자가 그대로 보인다.</li>
+</ul>
+</section><section class="lblock"><h2>정리</h2>
+<ul>
+<li><strong>PF-STATUS</strong>는 화면 위 버튼과 function code의 설계도, <strong>TITLEBAR</strong>는 현재 화면의 업무 맥락이다.</li>
+<li>둘 다 <strong>PBO에서</strong> 설정하고(<code>EXCLUDING</code>으로 동적 비활성화, <code>WITH</code>로 제목 값 채움),
+PAI의 <code>OK_CODE</code> 처리와 <strong>같은 function code 체계</strong>로 맞춘다.</li>
 </ul>
 <hr>
 <p>화면·입력·메뉴까지 갖췄다. 이제 화면 안에 ALV·트리 같은 <strong>컨트롤</strong>을 박는 자리,
-Custom Control을 보자 → 다음 레슨.</p>
+Custom Control을 보자 → <a href="CH16-L07.html">Custom Control과 Container · Tabstrip · Subscreen</a>.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
