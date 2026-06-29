@@ -1,0 +1,48 @@
+/* ===== bdef-contract-editor — RAP BDEF 계약 편집기 (CH23-L04) =====
+   operation(create/update/delete) 체크→소비자 행동 버튼 활성/비활성. persistent table 일치·lock master·key readonly 검사.
+   BDEF는 동작 *선언*이지 ABAP 코드가 아님(코드는 behavior pool). create/update/delete는 DML SQL 아님. 데이터 내장.
+   교훈3: verdict base 중립 rgba·ok/warn/bad 명시. */
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:transparent;line-height:1.5;}
+.wrap{padding:14px;}
+.hd{font-weight:800;font-size:1rem;margin:0 0 4px;}
+.hd small{font-weight:600;color:var(--brand);}
+.lead{margin:0 0 12px;color:var(--ink-soft);font-size:.86rem;}
+.lead code{font-family:var(--mono);background:#eef2ff;color:var(--brand);padding:1px 5px;border-radius:5px;font-size:.92em;}
+
+.bce-sec{font-size:.72rem;font-weight:800;color:var(--ink-soft);margin:10px 0 5px;}
+.bce-ops{display:flex;flex-wrap:wrap;gap:5px;}
+.bce-op{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:7px;
+  padding:5px 11px;font:inherit;font-size:.74rem;font-weight:700;cursor:pointer;font-family:var(--mono);}
+.bce-op:hover{border-color:var(--brand);}
+.bce-op.on{background:#eef2ff;border-color:#26336b;color:#26336b;}
+.bce-op.off{background:var(--surface);color:var(--soon);border-style:dashed;}
+
+.bce-acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:5px;}
+.bce-act{font-size:.74rem;font-weight:700;border-radius:7px;padding:5px 11px;border:1px solid var(--line);}
+.bce-act.able{background:#eafaf3;color:#0b7250;border-color:#9fdcc6;}
+.bce-act.unable{background:var(--surface);color:var(--soon);border-style:dashed;text-decoration:line-through;}
+
+.bce-tog{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;
+  padding:6px 10px;font:inherit;font-size:.73rem;font-weight:700;cursor:pointer;font-family:var(--mono);margin-right:6px;}
+.bce-tog:hover{border-color:var(--brand);}
+.bce-tog.ok{background:#eef2ff;border-color:#26336b;color:#26336b;}
+.bce-tog.warnstate{background:rgba(180,83,9,.1);border-color:var(--amber);color:#7a4a12;border-style:dashed;}
+.bce-tog.badstate{background:rgba(214,51,108,.1);border-color:var(--bad);color:var(--bad);border-style:dashed;}
+
+.bce-code{font-family:var(--mono);font-size:11px;line-height:1.6;white-space:pre;overflow-x:auto;
+  margin:10px 0 0;padding:9px 11px;border:1px solid var(--line);border-radius:9px;background:#fafbff;color:var(--ink);}
+.bce-code .k{color:var(--brand);font-weight:700;}
+.bce-code .ent{color:var(--accent);font-weight:700;}
+.bce-code .cls{color:var(--amber);font-weight:700;}
+.bce-code .miss{color:var(--soon);font-style:italic;}
+.bce-code .badtok{color:#fff;background:var(--bad);border-radius:3px;padding:0 3px;font-weight:700;}
+
+.bce-verdict{font-size:.84rem;padding:9px 12px;border-radius:9px;margin-top:10px;background:rgba(59,91,219,.08);color:var(--ink);}
+.bce-verdict.ok{background:#eafaf3;color:#0b7250;}
+.bce-verdict.warn{background:rgba(180,83,9,.1);color:#7a4a12;}
+.bce-verdict.bad{background:rgba(214,51,108,.12);color:var(--bad);}
+.bce-verdict b{color:inherit;}
+
+.note{margin-top:12px;border-left:3px solid var(--brand);background:rgba(59,91,219,.06);border-radius:0 9px 9px 0;padding:9px 13px;font-size:.83rem;color:#2a3550;}
+.note code{font-family:var(--mono);background:#fff;border:1px solid var(--line);padding:0 5px;border-radius:4px;}

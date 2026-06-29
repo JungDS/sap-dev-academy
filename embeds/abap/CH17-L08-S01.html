@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<!-- CH17-L08-S01 — 엔진: alv-refresh-sync · _autoheight. 콘텐츠=레슨 전용(refresh_table_display·stable 위치보존, CH17 L08).
+     config=window.ARS_CFG. 게이팅: classic refresh_table_display·is_stable(LVC_S_STBL)·데이터변경≠화면갱신 개념만 · modern 없음. -->
+<html lang="ko" data-eng="alv-refresh-sync">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>데이터 변경 vs 화면 갱신 · CH17-L08-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/alv-refresh-sync.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">데이터 변경 vs 화면 갱신 <small>(refresh_table_display)</small></p>
+  <p class="lead"><b>예약 상태 변경</b>은 내부 테이블만 바꿉니다(화면은 옛 값). <b>스크롤 ↓</b>로 보는 위치를 옮긴 뒤 <b>일반 Refresh</b>(맨 위로 튐)와 <b>Stable Refresh</b>(위치 유지)의 차이를 보세요.</p>
+
+  <div class="ars-btns">
+    <button type="button" data-act="change">① 예약 상태 변경 (내부만)</button>
+    <button type="button" class="scroll" data-act="scroll">② 스크롤 ↓</button>
+    <button type="button" class="alt" data-act="refresh">③ 일반 Refresh</button>
+    <button type="button" data-act="stable">④ Stable Refresh</button>
+  </div>
+
+  <div class="ars-cols">
+    <div id="arsInternal"></div>
+    <div id="arsScreen"></div>
+  </div>
+
+  <p class="ars-h">상태 확인</p>
+  <div id="arsChecks"></div>
+
+  <div class="note"><b>데이터 변경 ≠ 화면 갱신.</b> 내부 테이블을 바꿔도 화면은 이미 그려진 상태입니다. <code>refresh_table_display( )</code>로 다시 그리고, 보던 위치를 지키려면 <code>is_stable</code>(row·col)을 줍니다. display는 처음, refresh는 이후 갱신.</div>
+</div>
+
+<script>
+window.ARS_CFG = {
+  flipRow: 1, flipCol: 'status', midRow: 3,
+  cols: [
+    { key: 'booking_id', label: '예매번호' },
+    { key: 'customer', label: '예매자' },
+    { key: 'status', label: '상태' }
+  ],
+  rows: [
+    { booking_id: '5001', customer: '정훈영', status: 'N' },
+    { booking_id: '5002', customer: '손흥민', status: 'N' },
+    { booking_id: '5003', customer: '아이유', status: 'N' },
+    { booking_id: '5004', customer: '차은우', status: 'N' },
+    { booking_id: '5005', customer: '김연아', status: 'N' }
+  ]
+};
+</script>
+<script src="../_engine/alv-refresh-sync.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

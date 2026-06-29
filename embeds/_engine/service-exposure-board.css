@@ -1,0 +1,53 @@
+/* ===== service-exposure-board — RAP Service 노출 점검판 (CH23-L06) =====
+   Service Definition(expose ZC_Booking) + Service Binding(protocol·activate) 2단계 역할 분리.
+   expose 없으면 metadata 비고·binding inactive면 URL 없음 — 두 오류를 구분해서 보여줌. UI vs Web API. 데이터 내장.
+   교훈3: verdict base 중립 rgba·ok/warn 명시. */
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:transparent;line-height:1.5;}
+.wrap{padding:14px;}
+.hd{font-weight:800;font-size:1rem;margin:0 0 4px;}
+.hd small{font-weight:600;color:var(--brand);}
+.lead{margin:0 0 12px;color:var(--ink-soft);font-size:.86rem;}
+.lead code{font-family:var(--mono);background:#eef2ff;color:var(--brand);padding:1px 5px;border-radius:5px;font-size:.92em;}
+
+.seb-grp{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:8px;}
+.seb-glbl{font-size:.7rem;font-weight:800;color:var(--ink-soft);min-width:96px;}
+.seb-tog{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;
+  padding:6px 11px;font:inherit;font-size:.74rem;font-weight:700;cursor:pointer;font-family:var(--mono);}
+.seb-tog:hover{border-color:var(--brand);}
+.seb-tog.on{background:#eef2ff;border-color:#26336b;color:#26336b;}
+.seb-tog.off{background:var(--surface);color:var(--soon);border-style:dashed;}
+.seb-seg{border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);border-radius:8px;
+  padding:6px 10px;font:inherit;font-size:.72rem;font-weight:700;cursor:pointer;}
+.seb-seg:hover{border-color:var(--brand);color:var(--brand);}
+.seb-seg.on{background:var(--brand);border-color:var(--brand);color:#fff;}
+
+.seb-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+@media(max-width:560px){ .seb-row{grid-template-columns:1fr;} }
+.seb-card{border:1px solid var(--line);border-radius:11px;background:var(--surface);overflow:hidden;}
+.seb-card__hd{font-size:.72rem;font-weight:800;padding:6px 10px;display:flex;justify-content:space-between;align-items:center;}
+.seb-card.def .seb-card__hd{background:#eef2ff;color:#26336b;}
+.seb-card.bind .seb-card__hd{background:#eafaf3;color:#0b7250;}
+.seb-card__b{padding:9px 10px;}
+.seb-status{font-size:.6rem;font-weight:800;border-radius:5px;padding:1px 6px;}
+.seb-status.act{background:#eafaf3;color:#0b7250;}
+.seb-status.inact{background:rgba(180,83,9,.14);color:#7a4a12;}
+.seb-code{font-family:var(--mono);font-size:11px;line-height:1.6;white-space:pre;overflow-x:auto;margin:0;color:var(--ink);}
+.seb-code .k{color:var(--brand);font-weight:700;}
+.seb-code .ent{color:var(--accent);font-weight:700;}
+.seb-code .miss{color:var(--soon);font-style:italic;}
+.seb-kv{font-size:.74rem;color:var(--ink-soft);line-height:1.7;}
+.seb-kv b{color:var(--ink);font-family:var(--mono);font-weight:700;}
+
+.seb-meta{border:1px solid var(--line);border-radius:10px;background:var(--surface);padding:9px 10px;margin-bottom:10px;}
+.seb-meta__cap{font-size:.68rem;font-weight:800;color:var(--ink-soft);margin:0 0 5px;}
+.seb-chip{display:inline-block;font-family:var(--mono);font-size:.72rem;font-weight:700;border-radius:6px;padding:2px 8px;background:#e8f8f1;color:#0b7250;}
+.seb-empty{color:var(--soon);font-style:italic;font-size:.78rem;}
+
+.seb-verdict{font-size:.84rem;padding:9px 12px;border-radius:9px;background:rgba(59,91,219,.08);color:var(--ink);}
+.seb-verdict.ok{background:#eafaf3;color:#0b7250;}
+.seb-verdict.warn{background:rgba(180,83,9,.1);color:#7a4a12;}
+.seb-verdict b{color:inherit;}
+
+.note{margin-top:12px;border-left:3px solid var(--brand);background:rgba(59,91,219,.06);border-radius:0 9px 9px 0;padding:9px 13px;font-size:.83rem;color:#2a3550;}
+.note code{font-family:var(--mono);background:#fff;border:1px solid var(--line);padding:0 5px;border-radius:4px;}

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<!-- CH23-L03-S01 — 엔진: projection-contract-checker · _autoheight. 콘텐츠=레슨 전용(RAP Transactional Projection 계약 검사기, #C23 L03).
+     게이팅: define root view entity ... provider contract transactional_query as projection on. CH22 projection 위 RAP 계약.
+     관통예제=예매(ZI_Booking/ZC_Booking). UI annotation/Metadata Extension은 CH22 L04/L05. -->
+<html lang="ko" data-eng="projection-contract-checker">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Transactional Projection 계약 검사기 · CH23-L03-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/projection-contract-checker.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">Transactional Projection 계약 검사기 <small>(ZI_Booking → ZC_Booking)</small></p>
+  <p class="lead">기반 root <code>ZI_Booking</code>을 소비용 <code>ZC_Booking</code>으로 투영합니다. <code>provider contract transactional_query</code>를 넣고 빼 보고, projection이 <b>root 위치</b>를 맞추는지, 어떤 필드를 외부에 노출할지 정해 보세요. 숨김은 삭제가 아니라 <b>소비 계약에서 제외</b>입니다.</p>
+
+  <div class="pcc-ctrl">
+    <button class="pcc-tog" id="pccContract"></button>
+    <button class="pcc-tog" id="pccRoot"></button>
+    <button class="pcc-tog" id="pccAllow"></button>
+  </div>
+
+  <p style="font-size:.72rem;font-weight:800;color:var(--ink-soft);margin:0 0 6px;">노출 필드 (감사 필드는 기본 숨김)</p>
+  <div class="pcc-fields" id="pccFields"></div>
+
+  <div class="pcc-row">
+    <div class="pcc-card zi"><div class="pcc-card__hd">ZI_Booking (기반 root · 내부)</div><div class="pcc-card__b" id="pccZi"></div></div>
+    <div class="pcc-card zc"><div class="pcc-card__hd">ZC_Booking (소비 projection)</div><div class="pcc-card__b" id="pccZc"></div></div>
+  </div>
+
+  <p style="font-size:.72rem;font-weight:800;color:var(--ink-soft);margin:0 0 4px;">OData 소비자가 보는 payload</p>
+  <div id="pccPayload" style="margin-bottom:10px;"></div>
+
+  <div class="pcc-verdict" id="pccVerdict"></div>
+
+  <div class="note"><b>provider contract는 장식이 아니라 계약입니다.</b> <code>transactional_query</code>는 이 projection이 RAP transactional query 시나리오에 쓰인다는 걸 드러내요. 그리고 기반 <code>ZI_Booking</code>을 서비스에 <b>직접 노출하지 말고</b> 소비 계층 <code>ZC_*</code>를 두면 변경에 강합니다.</div>
+</div>
+
+<script src="../_engine/projection-contract-checker.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

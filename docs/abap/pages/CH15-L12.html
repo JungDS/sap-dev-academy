@@ -35,13 +35,23 @@
       <section class="lhead">
         <p class="lhead__eyebrow">Report Event·Selection Screen 심화</p>
         <h1>실습 — 예매현황 리포트 (이벤트·검증)</h1>
-        <p class="lhead__direction">콘서트앱 7단계 — 기본값·검증·조회·출력을 이벤트로 엮는다.</p>
+        <p class="lhead__direction">이벤트·검증 종합 — 기본값·화면제어·입력/존재/권한 검증·조회·표시를 이벤트마다 제자리에.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 15</span><span class="tag tag--ls">Lesson 12</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>🎫 7단계 — 이벤트로 엮은 리포트</h2>
-<p>CH13의 <button class="term" type="button" data-term="Aggregate">집계</button> 리포트에, CH15의 <strong>Report Event</strong>를 입혀 실무형 리포트로 만든다 —
-기본값·입력검증·조회·출력을 <button class="term" type="button" data-term="이벤트">이벤트</button>마다 제자리에.</p>
+<section class="lblock"><h2>🎫 종합 — 이벤트로 엮은 예매 조회 리포트</h2>
+<p>이 챕터의 마지막은 <button class="term" type="button" data-term="이벤트">이벤트</button>를 따로 외우는 게 아니라 <strong>한 리포트 흐름으로 묶는</strong> 실습이다.
+사용자는 공연 코드를 보고(기본값) → 잘못된 입력을 고치고(검증) → 권한을 통과한 뒤
+→ 예매 목록을 조회한다. 이걸 한 번에 만들면 <code>INITIALIZATION</code>·<code>AT SELECTION-SCREEN OUTPUT</code>·<code>AT SELECTION-SCREEN</code>·<code>START-OF-SELECTION</code>이 <strong>각각 왜 필요한지</strong> 연결된다.</p>
+<h3>요구사항</h3>
+<ul>
+<li>최초 실행 시 기본 공연 코드 <code>C001</code>을 제안한다.</li>
+<li>고급 조건 필드(<code>p_note</code>)는 모드가 <code>A</code>일 때만 활성화한다.</li>
+<li>공연 코드가 <strong>비어 있거나 존재하지 않으면</strong> 실행을 막는다.</li>
+<li>현재 사용자에게 <strong>조회 권한이 없으면</strong> 실행을 막는다.</li>
+<li>검증을 통과하면 <code>zbooking</code>을 조회한다. 결과가 없으면 상태 메시지를, 있으면 SALV로 표시한다.</li>
+</ul>
+</section><section class="lblock"><h2>통합 코드</h2>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -68,47 +78,183 @@
 24
 25
 26
-27</pre><pre class="abap-editor__code"><code><span class="tok-kw">TABLES</span> zconcert.
-<span class="tok-kw">PARAMETERS</span> p_conc <span class="tok-kw">TYPE</span> zconcert-concert_id.
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63</pre><pre class="abap-editor__code"><code><span class="tok-kw">REPORT</span> zch15_concert_booking.
 
-<span class="tok-kw">DATA</span>: lt_book <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> zbooking,
-      lv_chk  <span class="tok-kw">TYPE</span> zconcert-concert_id,
-      lo_alv  <span class="tok-kw">TYPE</span> <span class="tok-kw">REF</span> <span class="tok-kw">TO</span> cl_salv_table.
+<span class="tok-kw">PARAMETERS</span>: p_conc <span class="tok-kw">TYPE</span> zconcert-concert_id,
+            p_mode <span class="tok-kw">TYPE</span> c <span class="tok-kw">LENGTH</span> <span class="tok-num">1</span>,
+            p_note <span class="tok-kw">TYPE</span> c <span class="tok-kw">LENGTH</span> <span class="tok-num">20</span>.
 
-<span class="tok-kw">INITIALIZATION</span>.
-  <span class="tok-kw">SELECT</span> <span class="tok-kw">SINGLE</span> concert_id <span class="tok-kw">FROM</span> zconcert <span class="tok-kw">INTO</span> p_conc.   <span class="tok-com">" 첫 공연을 기본값으로</span>
+<span class="tok-kw">DATA</span>: gv_chk     <span class="tok-kw">TYPE</span> zconcert-concert_id,
+      gv_status  <span class="tok-kw">TYPE</span> zbooking-status,
+      gt_booking <span class="tok-kw">TYPE</span> <span class="tok-kw">STANDARD</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> zbooking,
+      lo_alv     <span class="tok-kw">TYPE</span> <span class="tok-kw">REF</span> <span class="tok-kw">TO</span> cl_salv_table,
+      gs_screen  <span class="tok-kw">TYPE</span> <span class="tok-kw">screen</span>.
 
-<span class="tok-kw">AT</span> <span class="tok-kw">SELECTION-SCREEN</span>.
-  <span class="tok-kw">SELECT</span> <span class="tok-kw">SINGLE</span> concert_id <span class="tok-kw">FROM</span> zconcert <span class="tok-kw">INTO</span> lv_chk    <span class="tok-com">" 존재 확인(classic)</span>
-    <span class="tok-kw">WHERE</span> concert_id = p_conc.
-  <span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.
-    <span class="tok-kw">MESSAGE</span> <span class="tok-str">'없는 공연 번호입니다'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'E'</span>.       <span class="tok-com">" 화면으로 복귀(CH15-L04)</span>
+<span class="tok-kw">SELECT-OPTIONS</span> s_stat <span class="tok-kw">FOR</span> gv_status.
+
+<span class="tok-kw">INITIALIZATION</span>.                              <span class="tok-com">" ① 첫 기본값</span>
+  p_conc = <span class="tok-str">'C001'</span>.
+  s_stat-sign = <span class="tok-str">'I'</span>. s_stat-option = <span class="tok-str">'EQ'</span>. s_stat-low = <span class="tok-str">'R'</span>.
+  <span class="tok-kw">APPEND</span> s_stat.
+
+<span class="tok-kw">AT</span> <span class="tok-kw">SELECTION-SCREEN</span> <span class="tok-kw">OUTPUT</span>.                   <span class="tok-com">" ② 화면 직전 제어</span>
+  <span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> <span class="tok-kw">SCREEN</span> <span class="tok-kw">INTO</span> gs_screen.
+    <span class="tok-kw">IF</span> gs_screen-name = <span class="tok-str">'P_NOTE'</span> <span class="tok-kw">AND</span> p_mode &lt;&gt; <span class="tok-str">'A'</span>.
+      gs_screen-active = <span class="tok-str">'0'</span>.                 <span class="tok-com">" 고급 모드 아닐 때 숨김</span>
+      <span class="tok-kw">MODIFY</span> <span class="tok-kw">SCREEN</span> <span class="tok-kw">FROM</span> gs_screen.
+    <span class="tok-kw">ENDIF</span>.
+  <span class="tok-kw">ENDLOOP</span>.
+
+<span class="tok-kw">AT</span> <span class="tok-kw">SELECTION-SCREEN</span> <span class="tok-kw">ON</span> p_conc.                <span class="tok-com">" ③ 입력·존재·권한 검증</span>
+  <span class="tok-kw">IF</span> p_conc <span class="tok-kw">IS</span> <span class="tok-kw">INITIAL</span>.
+    <span class="tok-kw">MESSAGE</span> <span class="tok-str">'공연 코드를 입력하세요'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'E'</span>.
   <span class="tok-kw">ENDIF</span>.
 
-<span class="tok-kw">START-OF-SELECTION</span>.
-  <span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> zbooking <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> lt_book <span class="tok-kw">WHERE</span> concert_id = p_conc.
+  <span class="tok-kw">SELECT</span> <span class="tok-kw">SINGLE</span> concert_id <span class="tok-kw">FROM</span> zconcert <span class="tok-kw">INTO</span> gv_chk
+    <span class="tok-kw">WHERE</span> concert_id = p_conc.
+  <span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.
+    <span class="tok-kw">MESSAGE</span> <span class="tok-str">'없는 공연 코드입니다'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'E'</span>.
+  <span class="tok-kw">ENDIF</span>.
 
-<span class="tok-kw">END-OF-SELECTION</span>.
+  <span class="tok-kw">AUTHORITY-CHECK</span> <span class="tok-kw">OBJECT</span> <span class="tok-str">'Z_CONCERT'</span>
+    <span class="tok-kw">ID</span> <span class="tok-str">'CONCERT'</span> <span class="tok-kw">FIELD</span> p_conc
+    <span class="tok-kw">ID</span> <span class="tok-str">'ACTVT'</span>   <span class="tok-kw">FIELD</span> <span class="tok-str">'03'</span>.
+  <span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.
+    <span class="tok-kw">MESSAGE</span> <span class="tok-str">'이 공연을 볼 권한이 없습니다'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'E'</span>.
+  <span class="tok-kw">ENDIF</span>.
+
+<span class="tok-kw">START-OF-SELECTION</span>.                           <span class="tok-com">" ④ 검증 후 본 처리(조회+표시)</span>
+  <span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> zbooking <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> gt_booking
+    <span class="tok-kw">WHERE</span> concert_id = p_conc
+      <span class="tok-kw">AND</span> status <span class="tok-kw">IN</span> s_stat.
+
+  <span class="tok-kw">IF</span> gt_booking <span class="tok-kw">IS</span> <span class="tok-kw">INITIAL</span>.
+    <span class="tok-kw">MESSAGE</span> <span class="tok-str">'조회된 예매가 없습니다'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'S'</span>.
+    RETURN.
+  <span class="tok-kw">ENDIF</span>.
+
   <span class="tok-kw">TRY</span>.
       cl_salv_table=&gt;factory(
-        <span class="tok-kw">IMPORTING</span> r_salv_table = lo_alv <span class="tok-kw">CHANGING</span> t_table = lt_book ).
+        <span class="tok-kw">IMPORTING</span> r_salv_table = lo_alv
+        <span class="tok-kw">CHANGING</span>  t_table      = gt_booking ).
       lo_alv-&gt;display( ).
     <span class="tok-kw">CATCH</span> cx_salv_msg.
+      <span class="tok-kw">MESSAGE</span> <span class="tok-str">'ALV 표시 중 오류가 발생했습니다'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'E'</span>.
   <span class="tok-kw">ENDTRY</span>.</code></pre></div></div>
-</section><section class="lblock"><h2>직접 해 볼 과제</h2>
-<ol>
-<li>기본 공연이 화면에 채워지는지(INITIALIZATION) 확인.</li>
-<li>없는 공연 번호를 넣어 <code>MESSAGE E</code>로 막히는지 확인.</li>
-<li>(도전) 회차(<code>p_perf</code>)도 입력받아 회차별로 거른다.</li>
-</ol>
-</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<blockquote>
+<p>💡 <strong>책임이 <button class="term" type="button" data-term="이벤트">이벤트</button>별로 나뉜다.</strong> 기본값=<code>INITIALIZATION</code>, 화면 제어=<code>OUTPUT</code>,
+입력/존재/권한 검증=<code>AT SELECTION-SCREEN ON p_conc</code>, 조회·표시=<code>START-OF-SELECTION</code>.
+SALV 표시는 <a href="CH15-L06.html">END-OF-SELECTION의 위치와 경계</a>에서 본 대로 <strong>legacy/LDB용
+이벤트가 아니라</strong> <code>START-OF-SELECTION</code> 안에 둔다(신규 단순 리포트엔 <code>END-OF-SELECTION</code> 불필요).</p>
+</blockquote>
+</section><section class="lblock"><h2>직접 실행해 보기 — 예매 리포트 실행 시뮬레이터</h2>
+<p>시나리오를 골라 ▶ 실행하면, <button class="term" type="button" data-term="이벤트">이벤트</button>가 차례로 흐르며 <strong>어디서 통과하고 어디서 막히는지</strong>,
+어떤 메시지가 나가고 결과 테이블이 어떻게 채워지는지 보인다. 상태 필터(<code>s_stat</code>)를
+<code>R</code>↔<code>C</code>로 바꿔 결과가 달라지는 것도 확인하자.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">예매 리포트 실행 시뮬레이터</span><a class="embed__open" href="../../../embeds/abap/CH15-L12-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH15-L12-S01.html" loading="lazy" title="예매 리포트 실행 시뮬레이터" style="height:700px"></iframe></figure>
+</section><section class="lblock"><h2>검증 시나리오</h2>
+<table>
+<thead>
+<tr>
+<th>시나리오</th>
+<th>입력</th>
+<th>기대 결과</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>기본 실행</td>
+<td><code>p_conc=C001</code>, <code>s_stat=R</code></td>
+<td>예매 목록 조회</td>
+</tr>
+<tr>
+<td>코드 누락</td>
+<td><code>p_conc</code> 공백</td>
+<td><code>E</code> 메시지 · 화면 복귀</td>
+</tr>
+<tr>
+<td>없는 공연</td>
+<td><code>p_conc=C999</code></td>
+<td><code>E</code> 메시지 · 화면 복귀</td>
+</tr>
+<tr>
+<td>권한 없음</td>
+<td><code>p_conc=C002</code>(권한 없음)</td>
+<td><code>E</code> 메시지 · 화면 복귀</td>
+</tr>
+<tr>
+<td>결과 없음</td>
+<td>존재·권한 OK, 0건</td>
+<td><code>S</code> 메시지 · 종료</td>
+</tr>
+<tr>
+<td>고급 모드</td>
+<td><code>p_mode=A</code></td>
+<td><code>p_note</code> 입력 가능</td>
+</tr>
+</tbody></table>
+</section><section class="lblock"><h2>흔한 실수와 주의</h2>
 <ul>
-<li><strong>검증을 START-OF-SELECTION에</strong> → 너무 늦다. 입력검증은 <code>AT SELECTION-SCREEN</code>(CH15-L04).</li>
-<li><strong><button class="term" type="button" data-term="이벤트">이벤트</button> 순서</strong> → INITIALIZATION → AT SELECTION-SCREEN → START → END 순.</li>
+<li><strong>검증을 <code>START-OF-SELECTION</code>으로 미룸</strong> → 입력·존재·권한 검증은 조회 <strong>전</strong>
+<code>AT SELECTION-SCREEN</code>에서 한다. 권한 검증을 조회 뒤로 미루지 않는다.</li>
+<li><strong>필드를 숨기면 값도 사라진다고 착각</strong> → <code>p_note</code>를 숨겨도 내부 변수 값은 그대로다.
+숨김과 값 삭제는 다른 문제다.</li>
+<li><strong><code>END-OF-SELECTION</code>을 통합 실습에 넣기</strong> → 신규 단순 리포트는 <code>START-OF-SELECTION</code>
+하나로 충분하다.</li>
+<li><strong>메시지 문구만 같게</strong> → &quot;없는 코드&quot;와 &quot;권한 없음&quot;은 원인이 다른 문제다. 다른 문구로 막는다.</li>
 </ul>
+</section><section class="lblock"><h2>정리</h2>
+<p>이 실습의 완성 기준은 &quot;코드가 돈다&quot;가 아니라 <strong>책임이 <button class="term" type="button" data-term="이벤트">이벤트</button>별로 분리</strong>되어 있느냐다.
+사용자가 값을 보기 전·입력한 뒤·실행하기 전·조회를 시작한 뒤의 일이 제자리에 있으면,
+리포트는 읽기 쉬워지고 오류는 빨리 잡히며 피드백은 정확해진다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">TEXT</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5</pre><pre class="abap-editor__code"><code>INITIALIZATION        = 첫 기본값
+AT SELECTION-SCREEN OUTPUT = 화면 직전 제어
+AT SELECTION-SCREEN   = 입력·존재·권한 검증
+START-OF-SELECTION    = 검증 후 본 처리(조회·표시)
+END-OF-SELECTION      = legacy/LDB 기존 코드 독해 포인트</code></pre></div></div>
 <hr>
-<p>이벤트·검증을 갖춘 리포트를 만들었다. 이제 <strong>내가 설계한 예매 입력 화면</strong>으로 →
-<strong>CH16(Dynpro)</strong>.</p>
+<p>이벤트·검증을 갖춘 리포트를 완성했다. 지금까지는 <strong>표준 선택화면</strong>이 만들어 준 입력
+화면을 썼다. 이제 <strong>내가 처음부터 설계하는 입력 화면</strong>으로 넘어가자
+→ <a href="CH16-L01.html">Chapter 16 · Module Pool 프로그램 구조</a>.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

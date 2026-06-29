@@ -35,35 +35,66 @@
       <section class="lhead">
         <p class="lhead__eyebrow">Grid ALV 기초</p>
         <h1>Refresh와 Stable Refresh 기초</h1>
-        <p class="lhead__direction">데이터가 바뀐 뒤 표를 다시 그린다 — 스크롤·선택을 유지하며.</p>
+        <p class="lhead__direction">데이터 변경과 화면 갱신은 별개 — refresh로 다시 그리고, stable로 위치를 지킨다.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 17</span><span class="tag tag--ls">Lesson 8</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>데이터가 바뀌면 다시 그린다</h2>
-<p>예매가 추가/취소돼 내부 테이블이 바뀌면, 그리드를 <strong>다시 그려야</strong> 화면에 반영된다.
-<code>refresh_table_display</code>를 부른다.</p>
+<section class="lblock"><h2>데이터 변경 ≠ 화면 갱신</h2>
+<p>한 번 띄운 ALV 표는 자동으로 계속 최신이 되지 않는다. 초보자는 internal table이 바뀌면
+화면도 바로 바뀐다고 생각하기 쉽지만, <strong>화면 컨트롤은 이미 그려진 상태</strong>다. 예매 취소·상태
+변경·재조회 같은 화면에서는 <strong>데이터 변경</strong>과 <strong>화면 갱신</strong>이 별개의 단계임을 알아야 한다.</p>
+<p>이미 떠 있는 Grid를 다시 그리려면 <code>refresh_table_display</code>를 부른다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1</pre><pre class="abap-editor__code"><code>go_grid-&gt;refresh_table_display( ).</code></pre></div></div>
-</section><section class="lblock"><h2>Stable Refresh — 위치를 지키며</h2>
-<p>그냥 refresh하면 스크롤 위치·행 선택이 초기화돼 사용자가 보던 자리를 잃는다.
-<strong>Stable</strong> 옵션을 주면 스크롤·선택을 <strong>유지</strong>한 채 다시 그린다.</p>
+</section><section class="lblock"><h2>Stable Refresh — 보던 위치를 지키며</h2>
+<p>단순 refresh는 사용자가 보던 <strong>위치를 잃게</strong> 할 수 있다. 200번째 행 근처를 보고 있었는데
+refresh 후 맨 위로 튀면 매우 불편하다. <strong>Stable Refresh</strong>는 행·컬럼 위치를 가능한 유지하며 다시 그린다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
 4
 5
-6</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> ls_stable <span class="tok-kw">TYPE</span> lvc_s_stbl.
-ls_stable-row = abap_true.
-ls_stable-col = abap_true.
+6
+7
+8
+9
+10
+11
+12
+13</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> ls_stable <span class="tok-kw">TYPE</span> lvc_s_stbl.
+
+ls_stable-row = abap_true.    <span class="tok-com">" 행 위치 유지</span>
+ls_stable-col = abap_true.    <span class="tok-com">" 컬럼 위치 유지</span>
 
 go_grid-&gt;refresh_table_display(
-  <span class="tok-kw">EXPORTING</span> is_stable = ls_stable ).</code></pre></div></div>
+  <span class="tok-kw">EXPORTING</span> is_stable = ls_stable
+  <span class="tok-kw">EXCEPTIONS</span> finished = <span class="tok-num">1</span>
+             <span class="tok-kw">OTHERS</span>   = <span class="tok-num">2</span> ).
+
+<span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.
+  <span class="tok-kw">MESSAGE</span> <span class="tok-str">'ALV Grid 새로고침 중 문제가 발생했습니다.'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'S'</span>.
+<span class="tok-kw">ENDIF</span>.</code></pre></div></div>
+</section><section class="lblock"><h2>직접 갱신해 보기 — 데이터 vs 화면</h2>
+<p>왼쪽은 내부 테이블, 오른쪽은 화면 Grid다. <strong>예약 상태 변경</strong>을 누르면 <strong>왼쪽만</strong> 바뀐다
+(화면은 아직 옛 값). <strong>일반 Refresh</strong>는 화면을 맞추지만 스크롤이 맨 위로 튀고,
+<strong>Stable Refresh</strong>는 화면을 맞추면서 보던 위치를 지킨다.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">데이터 변경 vs 화면 갱신 (refresh)</span><a class="embed__open" href="../../../embeds/abap/CH17-L08-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH17-L08-S01.html" loading="lazy" title="데이터 변경 vs 화면 갱신 (refresh)" style="height:620px"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>refresh 안 함</strong> → 내부 테이블만 바꾸고 화면은 그대로. refresh 호출 필요.</li>
-<li><strong>stable 미사용</strong> → 새로고침마다 맨 위로 튄다. 편집·갱신이 잦으면 <code>is_stable</code>.</li>
+<li><strong>refresh 안 함</strong> → 내부 테이블만 바꾸고 화면은 그대로다. 디버거엔 바뀌었는데 사용자는
+안 바뀐 것처럼 느낀다. <code>refresh_table_display</code>를 호출한다.</li>
+<li><strong>매번 display 재호출</strong> → Grid를 만든 뒤에는 display 재호출이 아니라 <strong>refresh</strong>가 맞다.
+처음 구성(display)과 이후 갱신(refresh)을 분리해야 화면이 안정적이다.</li>
+<li><strong>stable 미사용</strong> → 갱신마다 맨 위로 튄다. 편집·갱신이 잦으면 <code>is_stable</code>을 준다.
+(단 정렬이 크게 바뀌거나 행이 삭제되면 위치 유지가 어려울 수 있다 — 그래도 일반 refresh보다 친절하다.)</li>
+</ul>
+</section><section class="lblock"><h2>정리</h2>
+<ul>
+<li><strong>데이터 변경과 화면 갱신은 별개</strong> — 내부 테이블을 바꿨으면 <code>refresh_table_display</code>로 다시 그린다.</li>
+<li><strong>display는 처음, refresh는 이후 갱신.</strong> 위치를 지키려면 <code>is_stable</code>(row·col)을 준다.</li>
 </ul>
 <hr>
-<p>표를 갱신하는 법까지 익혔다. 마지막으로 <strong>행에 색</strong>을 입혀 강조해 보자 → 다음 레슨.</p>
+<p>표를 갱신하는 법까지 익혔다. 마지막으로 특정 <strong>행에 색</strong>을 입혀 강조해 보자
+→ <a href="CH17-L09.html">행 색상 기초</a>.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

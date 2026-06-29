@@ -35,13 +35,20 @@
       <section class="lhead">
         <p class="lhead__eyebrow">Modern ABAP Syntax</p>
         <h1>Legacy 코드의 Modern ABAP 리팩터링</h1>
-        <p class="lhead__direction">classic 코드를 모던으로 — 짧고 안전하게, += 까지.</p>
+        <p class="lhead__direction">classic 코드를 모던으로 — &quot;짧게&quot;가 아니라 &quot;또렷하게&quot;, 결과는 그대로. += 까지.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 18</span><span class="tag tag--ls">Lesson 6</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>배운 모던을 모아 — 리팩터링</h2>
-<p>지금까지 배운 인라인·VALUE·CORRESPONDING·Table Expression·String Template을 모아,
-앞 챕터의 classic 코드를 <strong>짧고 읽기 좋게</strong> 바꿔 본다.</p>
+<section class="lblock"><h2>왜 바꾸나 — &quot;짧게&quot;가 아니라 &quot;또렷하게&quot; 🧭</h2>
+<p>여기까지 인라인 <code>DATA( )</code>·<code>VALUE</code>·<code>CORRESPONDING</code>·Table Expression·String Template을 하나씩 배웠다.
+이제 이 조각들을 모아, <strong>앞에서 쓰던 classic 코드를 다시 써 본다.</strong> 이걸 리팩터링이라 한다.</p>
+<blockquote>
+<p>🎯 <strong>리팩터링</strong>(Refactoring, 동작은 그대로 두고 코드 모양만 다듬기)의 목표는 <strong>줄 수를 줄이는 게 아니다.</strong>
+① 의도가 더 잘 보이고 ② 실수할 구석이 줄고 ③ <strong>실행 결과는 똑같이</strong> 나오는 것 — 이 셋이다.</p>
+</blockquote>
+<p>그래서 이 레슨은 새 문법을 더 배우는 자리가 아니라, <strong>이미 배운 걸로 &quot;어떤 줄을 바꾸고 어떤 줄은 그냥 둘지&quot; 판단하는</strong> 중간 점검이다.</p>
+</section><section class="lblock"><h2>같은 코드, 두 가지 표기 ✍️</h2>
+<p>먼저 흔한 classic 코드다. 구구단 한 줄을 만들어 테이블에 담고, 합계를 누적한다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -49,33 +56,108 @@
 5
 6
 7
-8</pre><pre class="abap-editor__code"><code><span class="tok-com">" --- classic ---</span>
-<span class="tok-kw">DATA</span> ls <span class="tok-kw">TYPE</span> ty_line.
-<span class="tok-kw">DATA</span> lt <span class="tok-kw">TYPE</span> ty_line_tab.
-ls-dan = <span class="tok-num">2</span>. ls-mul = <span class="tok-num">1</span>. ls-result = <span class="tok-num">2</span>.
-<span class="tok-kw">APPEND</span> ls <span class="tok-kw">TO</span> lt.
+8
+9
+10
+11</pre><pre class="abap-editor__code"><code><span class="tok-com">" --- classic (개선 전) ---</span>
+<span class="tok-kw">DATA</span> ls_line  <span class="tok-kw">TYPE</span> ty_line.
+<span class="tok-kw">DATA</span> lt_gugu  <span class="tok-kw">TYPE</span> ty_line_tab.
+<span class="tok-kw">DATA</span> lv_total <span class="tok-kw">TYPE</span> i.
 
-<span class="tok-com">" --- modern ---</span>
-<span class="tok-kw">DATA</span>(lt) = <span class="tok-kw">VALUE</span> ty_line_tab( ( dan = <span class="tok-num">2</span> mul = <span class="tok-num">1</span> result = <span class="tok-num">2</span> ) ).</code></pre></div></div>
-</section><section class="lblock"><h2>복합 대입 — += -= *= /=</h2>
-<p><code>lv = lv + 10</code>을 더 짧게 쓴다(CH04에서 예고 없이 미뤄 둔 그 문법).</p>
+ls_line-dan    = <span class="tok-num">2</span>.
+ls_line-mul    = <span class="tok-num">1</span>.
+ls_line-result = <span class="tok-num">2</span>.
+<span class="tok-kw">APPEND</span> ls_line <span class="tok-kw">TO</span> lt_gugu.
+
+lv_total = lv_total + ls_line-result.</code></pre></div></div>
+<p>동작은 한다. 그런데 <strong>한 줄을 만들려고 네 줄</strong>을 썼고, 누적도 <code>lv_total</code>을 양쪽에 두 번 적었다.
+이 챕터에서 배운 문법으로 다듬으면 이렇게 짧아진다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
-2</pre><pre class="abap-editor__code"><code>lv_total += ls-result.    <span class="tok-com">" lv_total = lv_total + ls-result</span>
-lv_n     -= <span class="tok-num">1</span>.</code></pre></div></div>
+2
+3
+4
+5
+6</pre><pre class="abap-editor__code"><code><span class="tok-com">" --- modern (권장) ---</span>
+<span class="tok-kw">DATA</span>(lt_gugu) = <span class="tok-kw">VALUE</span> ty_line_tab(
+  ( dan = <span class="tok-num">2</span> mul = <span class="tok-num">1</span> result = <span class="tok-num">2</span> ) ).
+
+<span class="tok-kw">DATA</span>(lv_total) = <span class="tok-num">0</span>.
+lv_total += lt_gugu[ <span class="tok-num">1</span> ]-result.</code></pre></div></div>
+<p>여기서 내가 내린 <strong>판단은 세 가지</strong>다.</p>
+<ol>
+<li><strong>구조체 채우고 바로 <code>APPEND</code></strong> → <code>VALUE</code>로 묶는다. 결과 테이블의 &quot;모양&quot;이 코드에 그대로 보인다.</li>
+<li><strong>누적 대입</strong> <code>lv_total = lv_total + x</code> → <code>+=</code>로 줄인다(바로 아래에서 정식 도입).</li>
+<li><strong>Table Expression <code>lt_gugu[ 1 ]</code></strong> → 바로 앞에서 한 행을 만들었으니 1번 행이 <strong>있는 게 확실</strong>할 때만 안심하고 쓴다. 행이 있을지 불확실하면 <code>line_exists( )</code>로 먼저 막는다(<a href="CH18-L04.html">Table Expression 안전하게 읽기</a>에서 배운 방어선).</li>
+</ol>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">같은 로직의 classic ↔ modern 코드를 짝지어 비교</span><a class="embed__open" href="../../../embeds/abap/CH18-L06-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH18-L06-S01.html" loading="lazy" title="같은 로직의 classic ↔ modern 코드를 짝지어 비교"></iframe></figure>
-</section><section class="lblock"><h2>언제까지 모던, 언제 classic</h2>
+</section><section class="lblock"><h2><code>+=</code> <code>-=</code> <code>*=</code> <code>/=</code> — 누적을 짧게 ➕</h2>
+<p><a href="CH04-L01.html">산술 연산과 대입</a>에서 배운 <code>lv_total = lv_total + x</code>를, <strong>같은 변수를 한 번만 쓰고</strong> 끝내는 짧은 표기가 있다. 이것을 <strong>복합 대입</strong>(compound assignment, 계산하면서 동시에 대입)이라고 한다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4</pre><pre class="abap-editor__code"><code>lv_total += ls_line-result.   <span class="tok-com">" lv_total = lv_total + ls_line-result 와 같다</span>
+lv_count -= <span class="tok-num">1</span>.                <span class="tok-com">" lv_count = lv_count - 1</span>
+lv_price *= <span class="tok-num">2</span>.                <span class="tok-com">" lv_price = lv_price * 2</span>
+lv_share /= <span class="tok-num">3</span>.                <span class="tok-com">" lv_share = lv_share / 3</span></code></pre></div></div>
+<blockquote class="cw">
+<p>⚠️ <code>+=</code>의 <strong>왼쪽 변수는 이미 존재해야</strong> 한다. <code>+=</code>는 &quot;기존 값에 더하기&quot;라서, 선언과 동시에는 못 쓴다.
+<code>DATA(lv_total) += 10.</code> ← 이건 안 된다. 먼저 <code>DATA(lv_total) = 0.</code>으로 만든 <strong>뒤에</strong> <code>lv_total += 10.</code>.</p>
+</blockquote>
+</section><section class="lblock"><h2>결과가 같은지 꼭 확인 ✅</h2>
+<p>리팩터링은 &quot;컴파일되네&quot;에서 끝나면 안 된다. <strong>바꾸기 전과 후의 실행 결과가 같아야</strong> 진짜 성공이다.
+순서는 이렇게 잡는다.</p>
+<ol>
+<li>classic 코드의 결과를 <strong>먼저 적어 둔다</strong>(합계·테이블 행 수·첫 행 값).</li>
+<li>modern으로 바꾼다.</li>
+<li><strong>같은 입력</strong>으로 다시 실행한다.</li>
+<li>출력·행 수·합계가 <strong>모두 같은지</strong> 비교한다.</li>
+<li>아직 안 배운 영역(모던 SQL·OO·예외 처리)을 <strong>실수로 끌어오지 않았는지</strong> 확인한다.</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>확인 항목</th>
+<th align="right">classic 기대</th>
+<th align="right">modern 기대</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>lt_gugu</code> 행 수</td>
+<td align="right">1</td>
+<td align="right">1</td>
+</tr>
+<tr>
+<td>첫 행 <code>dan</code> / <code>mul</code> / <code>result</code></td>
+<td align="right">2 / 1 / 2</td>
+<td align="right">2 / 1 / 2</td>
+</tr>
+<tr>
+<td><code>lv_total</code></td>
+<td align="right">2</td>
+<td align="right">2</td>
+</tr>
+</tbody></table>
+<p>세 값이 모두 같으면 — <strong>표현만 바뀌고 결과는 그대로.</strong> 그게 좋은 리팩터링이다.</p>
+</section><section class="lblock"><h2>흔한 실수와 점검 🚧</h2>
 <ul>
-<li>새 코드는 <strong>모던 우선</strong>(짧고 안전).</li>
-<li>기존 classic 코드를 읽고 유지보수할 줄도 알아야 한다(둘 다 현장에 있다).</li>
+<li><strong><code>BASE</code>를 빠뜨림</strong> → <code>VALUE</code>로 다시 쓰면서 <em>기존 테이블에 행을 더하려던</em> 거라면 <code>VALUE ...( BASE lt_old ( … ) )</code>처럼 <code>BASE</code>가 필요하다. 빼면 기존 행이 통째로 사라진다(<a href="CH18-L02.html">VALUE Constructor Expression</a>에서 다룬 함정).</li>
+<li><strong><code>+=</code> 왼쪽을 새로 선언</strong> → 위에서 본 함정. 누적 변수는 <em>먼저</em> 있어야 한다.</li>
+<li><strong>한 줄에 너무 많이</strong> → 짧다고 다 좋은 게 아니다. 아래는 9줄짜리 테이블을 통째로 만들어 <strong>단 한 값</strong>만 꺼낸다.</li>
 </ul>
-</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4</pre><pre class="abap-editor__code"><code><span class="tok-com">" 😵 과한 표현 — 9행을 다 만들고 그중 하나만 쓴다</span>
+<span class="tok-kw">DATA</span>(lt_all) = <span class="tok-kw">VALUE</span> ty_line_tab(
+  <span class="tok-kw">FOR</span> i = <span class="tok-num">1</span> <span class="tok-kw">WHILE</span> i &lt;= <span class="tok-num">9</span> ( dan = <span class="tok-num">2</span> mul = i result = <span class="tok-num">2</span> * i ) ).
+<span class="tok-kw">DATA</span>(lv_third) = lt_all[ <span class="tok-num">3</span> ]-result.</code></pre></div></div>
+<p>  필요한 게 값 하나면 테이블을 통째로 만들 이유가 없다. 처음부터 그 값만 — <code>DATA(lv_third) = 2 * 3.</code> <code>VALUE</code>·<code>FOR</code>·Table Expression은 <strong>쓸 수 있다고 다 쓰는 게 아니라</strong>, 의도에 맞는 만큼만 쓴다. 헷갈리면 <strong>끊어 쓴다.</strong></p>
 <ul>
-<li><strong>과한 한 줄</strong> → 너무 많은 식을 한 줄에 몰면 오히려 안 읽힌다. 적당히 끊는다.</li>
-<li><strong>SELECT 모던 혼동</strong> → SELECT 안의 modern 구문(콤마·escape)은 <strong>다음 챕터(CH19)</strong> 다.</li>
+<li><strong>SQL은 그대로 둔다</strong> → <code>SELECT</code> 문장을 모던 SQL로 바꾸는 건 이 레슨 범위 밖이다. SQL의 <code>@</code>·콤마는 <a href="CH19-L01.html">Classic Open SQL과 Modern ABAP SQL 비교</a>에서 따로 연다. 여기선 <strong>SQL 바깥의 ABAP 코드만</strong> 다듬는다.</li>
 </ul>
 <hr>
-<p>ABAP 코드를 모던으로 쓰게 됐다. 배운 걸 <strong>콘서트앱</strong>에 적용해 리팩터해 보자 →
-<strong>CH18-L07(실습)</strong>.</p>
+<p>classic 코드를 안전하게 모던으로 다듬는 감을 잡았다. 이제 이 판단을 <strong>콘서트 예매 앱</strong>에 적용해 보자 →
+<a href="CH18-L07.html">실습 — 콘서트앱 모던 리팩터</a>.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

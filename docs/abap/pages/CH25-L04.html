@@ -77,6 +77,13 @@
 <span class="tok-kw">IF</span> lv_now &lt;&gt; lv_read_at.            <span class="tok-com">" 읽은 뒤 누가 바꿈</span>
   <span class="tok-kw">MESSAGE</span> <span class="tok-str">'데이터가 변경되었습니다. 다시 조회하세요'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'E'</span>.
 <span class="tok-kw">ENDIF</span>.</code></pre></div></div>
+<blockquote>
+<p><strong>핵심은 &quot;저장 직전 비교&quot;다.</strong> <code>changed_at</code> 컬럼이 <em>있다는 사실만</em>으로는 충돌을 막지 못한다 — 저장 직전에
+읽은 값과 현재 값을 비교해 다르면 거절해야 비로소 낙관적 잠금이다. 그리고 <code>changed_at = sy-uzeit</code>는 학습용
+예시일 뿐 — 날짜가 빠지고 같은 초에 두 변경이 들어오면 구분이 약하다. 운영에선 <strong>timestamp·version
+counter·ETag</strong> 같은 더 안정적인 변경표식을 쓴다. ABAP Cloud/RAP에서는 ETag와
+<a href="CH23-L04.html">Behavior Definition 기초</a>의 <code>lock master</code>가 이 문제를 체계적으로 다룬다(이 챕터는 classic 중심).</p>
+</blockquote>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
 <li><strong>무조건 비관적 잠금</strong> → 동시성↓. 충돌 빈도를 보고 전략 선택.</li>

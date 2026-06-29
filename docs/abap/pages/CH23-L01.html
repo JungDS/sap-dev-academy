@@ -40,23 +40,65 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>읽기를 넘어 — 쓰기·검증·서비스까지</h2>
-<p>CH22의 CDS는 데이터를 <strong>읽기/모델링</strong>했다. 그런데 실무 앱은 <strong>생성·수정·삭제·검증</strong>과
-<strong>Fiori 화면 연결</strong>까지 필요하다. 이 전부를 현대적으로 묶는 표준이 <button class="term" type="button" data-term="RAP">RAP</button>
-(RESTful Application Programming Model)다.</p>
-</section><section class="lblock"><h2>RAP의 계층</h2>
+<p><a href="CH22-L01.html">CDS View Entity 기본 구조</a>에서 만든 CDS는 데이터를 <strong>읽기/모델링</strong>하는 데 강하다.
+<code>ZI_Concert</code>·<code>ZC_Concert</code>를 만들면 프로그램이 테이블을 직접 읽지 않고 재사용 가능한 모델을 소비할 수 있다.
+하지만 예매 앱의 핵심은 읽기에서 끝나지 않는다.</p>
+<p>사용자는 예매를 <strong>생성</strong>하고, 좌석 수를 <strong>수정</strong>하고, 취소 버튼을 누르고(<strong>삭제</strong>), 저장 전에 정원 초과를
+<strong>검증</strong>해야 한다. 그리고 그 기능은 <strong>Fiori 화면이나 OData API</strong>로 노출되어야 한다. 이걸 프로그램마다 직접
+짜면 구조가 금방 무너진다 — 화면·리포트·서비스마다 저장 로직·권한·메시지가 제각각이 된다.</p>
+<p>이 전부를 하나의 <strong>비즈니스 <button class="term" type="button" data-term="객체">객체</button></strong>로 묶는 현대 SAP 표준이 <button class="term" type="button" data-term="RAP">RAP</button>(RESTful Application Programming Model)다.</p>
+</section><section class="lblock"><h2>RAP는 &quot;파일 하나&quot;가 아니다 — 계층의 연결</h2>
+<p>입문자가 가장 먼저 버려야 할 기대는 &quot;<button class="term" type="button" data-term="RAP">RAP</button> 파일 하나&quot;를 찾는 것이다. RAP Business Object는 여러 구성요소의
+<strong>관계</strong>로 이루어진다. 아래에서 위로 계층을 본다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">TEXT</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
 4
 5
 6
-7</pre><pre class="abap-editor__code"><code>Fiori Elements (UI)
-   │  OData
-Service Binding / Service Definition   ← 노출
-Behavior Definition / Implementation   ← 동작(CUD·검증·액션)
-CDS Projection View (ZC_)              ← 소비 모델
-CDS Interface View  (ZI_, root)        ← 기반 모델
-DB 테이블 (ZBOOKING …)</code></pre></div></div>
+7
+8
+9</pre><pre class="abap-editor__code"><code>Fiori Elements / OData Client
+        │
+Service Binding          ← protocol(OData) 연결
+Service Definition       ← 노출할 entity 선언
+ZC_Booking (Projection)  ← 외부 소비 모델
+BDEF (Behavior Definition) ← 허용 operation 선언
+Behavior Pool            ← 동작 코드 구현
+ZI_Booking (Root View)   ← 업무 객체의 뿌리
+DB Table (ZBOOKING)      ← 지속 데이터</code></pre></div></div>
+<table>
+<thead>
+<tr>
+<th>계층</th>
+<th>역할</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Root Interface View</td>
+<td>RAP BO의 중심 entity(뿌리). 보통 <code>define root view entity</code>로 만든다.</td>
+</tr>
+<tr>
+<td>Projection View</td>
+<td>외부에 보여 줄 소비 모델(<code>ZC_*</code>).</td>
+</tr>
+<tr>
+<td>BDEF (Behavior Definition)</td>
+<td>어떤 operation을 허용할지 선언(create·update·delete·validation·determination·action).</td>
+</tr>
+<tr>
+<td>Behavior Pool</td>
+<td>BDEF에 선언한 custom 동작의 실제 ABAP 코드를 담는다.</td>
+</tr>
+<tr>
+<td>Service Definition</td>
+<td>어떤 CDS entity를 서비스로 노출할지 선언.</td>
+</tr>
+<tr>
+<td>Service Binding</td>
+<td>OData 같은 protocol과 연결해 실제 호출 가능한 서비스로 만든다.</td>
+</tr>
+</tbody></table>
 </section><section class="lblock"><h2>managed vs unmanaged</h2>
 <table>
 <thead>
@@ -67,21 +109,65 @@ DB 테이블 (ZBOOKING …)</code></pre></div></div>
 </thead>
 <tbody><tr>
 <td><strong>managed</strong></td>
-<td><button class="term" type="button" data-term="RAP">RAP</button> 런타임이 <strong>자동</strong>으로 DB 저장 처리</td>
+<td><button class="term" type="button" data-term="RAP">RAP</button> 런타임/provider가 표준 저장 처리의 상당 부분을 <strong>자동</strong>으로 맡는다.</td>
 </tr>
 <tr>
 <td><strong>unmanaged</strong></td>
-<td>기존 로직을 <strong>직접</strong> 연결(레거시 통합)</td>
+<td>기존 로직·특수 저장 절차를 개발자가 더 <strong>직접</strong> 구현한다(레거시 통합).</td>
 </tr>
 </tbody></table>
-<p>신규 개발은 보통 <strong>managed</strong>로 시작한다(코드가 적다).</p>
-</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<p>신규 학습·신규 개발은 보통 <strong>managed</strong>에서 시작한다(이해하기 좋고 코드가 적다). 단, managed라고 &quot;코드 0&quot;은
+아니다 — validation·action·메시지·권한 같은 custom 로직은 behavior pool에 들어간다.</p>
+</section><section class="lblock"><h2>직접 조립해 보기</h2>
+<p>아래 보드에서 6계층을 하나씩 켜 보자. 빠진 계층마다 <strong>어떤 사용자 행동이 불가능해지는지</strong>가 핵심이다.
+&quot;이 파일이 무엇을 하나&quot;보다 &quot;이 파일이 없으면 무엇을 못 하나&quot;로 보면 <button class="term" type="button" data-term="RAP">RAP</button> 구조가 또렷해진다.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">RAP 계층 조립 보드</span><a class="embed__open" href="../../../embeds/abap/CH23-L01-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH23-L01-S01.html" loading="lazy" title="RAP 계층 조립 보드"></iframe></figure>
+</section><section class="lblock"><h2>어떻게 확인하는가</h2>
+<p>파일 이름을 외우기보다 **&quot;계층이 빠짐없이 이어지는가&quot;**를 본다.</p>
+<table>
+<thead>
+<tr>
+<th>확인 질문</th>
+<th>정상 신호</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>root entity가 있는가?</td>
+<td><code>define root view entity ZI_Booking ...</code>가 있다.</td>
+</tr>
+<tr>
+<td>소비 projection이 있는가?</td>
+<td><code>ZC_Booking</code>이 <code>ZI_Booking</code>을 projection한다.</td>
+</tr>
+<tr>
+<td>behavior가 선언되어 있는가?</td>
+<td>BDEF에 <code>define behavior for ZI_Booking</code>이 있다.</td>
+</tr>
+<tr>
+<td>동작 코드 위치가 있는가?</td>
+<td>behavior pool의 local handler class가 있다.</td>
+</tr>
+<tr>
+<td>서비스로 노출되는가?</td>
+<td>service definition이 <code>expose ZC_Booking as Booking;</code>을 포함한다.</td>
+</tr>
+<tr>
+<td>protocol binding이 있는가?</td>
+<td>Service Binding이 활성화되어 URL/preview를 제공한다.</td>
+</tr>
+</tbody></table>
+</section><section class="lblock"><h2>흔한 실수와 점검 🚧</h2>
 <ul>
-<li><strong><button class="term" type="button" data-term="RAP">RAP</button>=CDS로 오해</strong> → CDS는 데이터 모델, RAP은 그 위 트랜잭션·서비스까지.</li>
-<li><strong>계층 건너뛰기</strong> → 보통 ZI_(root)→ZC_→BDEF→Service 순으로 쌓는다.</li>
+<li><strong><button class="term" type="button" data-term="RAP">RAP</button>를 CDS의 다른 이름으로 생각</strong> → CDS는 RAP의 <em>data model</em>을 구성하지만, RAP는 behavior와 service까지
+포함한다.</li>
+<li><strong><code>create/update/delete</code>를 직접 DB DML과 혼동</strong> → 이건 BDEF에서 BO operation을 <em>허용하는 선언</em>이다. 테이블을
+직접 바꾸는 SQL과 LUW는 <a href="CH24-L01.html">INSERT / UPDATE / MODIFY / DELETE 실무 기준</a>에서 다룬다.</li>
+<li><strong>managed = 코드 0으로 오해</strong> → 표준 저장은 줄지만 custom 로직은 behavior pool에 들어간다.</li>
+<li><strong>서비스부터 만들기</strong> → 아래 계층(root·BDEF)이 부실하면 서비스가 있어도 트랜잭션 앱으로 동작하지 않는다.</li>
 </ul>
 <hr>
-<p>큰 그림을 봤다. 먼저 RAP의 토대인 root Interface View부터 → 다음 레슨.</p>
+<p>큰 그림을 봤다. 이제 RAP의 토대인 <strong>root Interface View</strong>부터 아래에서 위로 하나씩 쌓자 →
+<a href="CH23-L02.html">Interface View ZI_* 설계 (Root)</a>.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<!-- CH15-L06-S01 — 엔진: legacy-event-reader · _autoheight. 콘텐츠=레슨 전용(기존 리포트 3종으로 END-OF-SELECTION 경계 독해, CH15 L06).
+     config=window.LER_CFG. 게이팅: classic START/END-OF-SELECTION·LDB 개념·SALV 표시 재사용만 · modern 없음. -->
+<html lang="ko" data-eng="legacy-event-reader">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>기존 리포트 독해 모드 · CH15-L06-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/legacy-event-reader.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">기존 리포트 독해 모드 <small>(END-OF-SELECTION의 위치·경계)</small></p>
+  <p class="lead">리포트 3종을 골라, <code>END-OF-SELECTION</code>이 <b>언제 발생</b>하고 <b>출력을 어디에 두는지</b>, 공식 문서 경고가 언제 붙는지 비교하세요. 아래 체크박스로 "신규 리포트에 필수"라고 보면 어떤 경고가 뜨는지도 확인하세요.</p>
+
+  <p class="ler-h">리포트 종류</p>
+  <div class="ler-scen"></div>
+
+  <div id="lerBadge"></div>
+
+  <p class="ler-h">이벤트 흐름</p>
+  <div class="ler-timeline"></div>
+
+  <p class="ler-h">조회·표시 위치</p>
+  <div class="ler-map" id="lerMap"></div>
+
+  <div id="lerVerdict"></div>
+
+  <div class="ler-judge">
+    <label><input type="checkbox" /><span>이 리포트(LDB 없는 신규 리포트)에서도 <code>END-OF-SELECTION</code>을 <b>필수 표준</b>으로 넣어야 한다고 본다.</span></label>
+  </div>
+
+  <div id="lerStatus"></div>
+
+  <div class="note"><b>경계 한 줄.</b> <code>END-OF-SELECTION</code>은 원래 Logical Database 이벤트(공식문서상 obsolete)다. LDB가 없는 일반 리포트엔 필수가 아니다 — 기존 코드를 <b>읽을 때</b> 만나는 legacy 패턴으로 이해하면 충분합니다.</div>
+</div>
+
+<script>
+window.LER_CFG = {
+  scenarios: [
+    {
+      key: 'ldb', label: 'LDB 연결 리포트', ldb: true,
+      timeline: [
+        { t: 'AT SELECTION-SCREEN', d: '선택화면 입력·검증' },
+        { t: 'START-OF-SELECTION', d: '본 처리 시작' },
+        { t: '(Logical Database 읽기)', d: 'LDB가 데이터를 전부 선택', ldb: true },
+        { t: 'END-OF-SELECTION', d: '읽은 데이터를 요약·표시', fire: true }
+      ],
+      selectAt: 'logical database', displayAt: 'END-OF-SELECTION',
+      badge: '⚠ Obsolete Syntax · Logical Databases (LDB, Obsolete)',
+      desc: 'LDB가 데이터를 다 읽으면 END-OF-SELECTION이 발생한다. 기존 시스템에 많은 패턴 — 읽을 줄 알면 된다.'
+    },
+    {
+      key: 'start', label: '일반 SELECT (START 한 곳)', ldb: false,
+      timeline: [
+        { t: 'AT SELECTION-SCREEN', d: '선택화면 입력·검증' },
+        { t: 'START-OF-SELECTION', d: 'SELECT 조회 + ALV 표시', fire: true }
+      ],
+      selectAt: 'START-OF-SELECTION', displayAt: 'START-OF-SELECTION',
+      badge: '',
+      desc: 'LDB가 없으니 END-OF-SELECTION은 구현할 이유가 없다(공식문서). 조회·표시를 START 한 곳에 두면 된다.'
+    },
+    {
+      key: 'split', label: 'END로 표시 분리 (교육용)', ldb: false,
+      timeline: [
+        { t: 'AT SELECTION-SCREEN', d: '선택화면 입력·검증' },
+        { t: 'START-OF-SELECTION', d: 'SELECT 조회' },
+        { t: 'END-OF-SELECTION', d: 'ALV 표시', fire: true }
+      ],
+      selectAt: 'START-OF-SELECTION', displayAt: 'END-OF-SELECTION',
+      badge: '',
+      desc: '비-LDB라도 조회/표시 단계를 의도적으로 나눈 예제. END는 START 직후 자동 발생 — 필수가 아니라 가독성 선택일 뿐.'
+    }
+  ]
+};
+</script>
+<script src="../_engine/legacy-event-reader.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

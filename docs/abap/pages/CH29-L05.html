@@ -40,40 +40,80 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>표준은 깨끗하게, 확장은 분리</h2>
-<p>CH23-L08의 <strong>Clean Core</strong> 원칙이 확장에도 그대로 적용된다. 표준을 직접 고치지 않고,
-<strong>공개 확장점(BAdI)·Released API</strong>로만 확장해야 업그레이드에 강하다.</p>
-</section><section class="lblock"><h2>기준</h2>
-<ul>
-<li><strong>확장점(BAdI) 우선</strong> — SAP이 보장한 자리만.</li>
-<li><strong>Released API만</strong> — 비공개 <button class="term" type="button" data-term="객체">객체</button>·테이블 직접 접근 금지(클라우드에서 깨짐).</li>
-<li><strong>Key User / Developer Extensibility</strong> — S/4HANA Cloud의 공식 확장 계층을 쓴다.</li>
-<li>확장 코드는 <strong>별도 패키지</strong>로 분리해 추적·이송을 명확히.</li>
-</ul>
+<p>확장은 요구를 빨리 푸는 도구지만, 잘못 쌓이면 표준을 점점 무겁게 만든다. 처음엔 작은 exit
+하나였는데, 몇 년 뒤엔 <em>업그레이드마다 깨지는 표준 변경·어디서 실행되는지 모르는 implicit·
+내부 테이블 직접 접근 Z 로직</em>이 쌓인다. 기능은 많아도 <strong>바꾸기 어려운</strong> 시스템이 된다.</p>
+<p><strong>Clean Core</strong>(<a href="CH23-L08.html">ABAP Cloud와 Released API 원칙</a>에서 본 그 원칙)는 표준 핵심을
+깨끗이 유지하고, 확장은 <strong>표준이 허용한 안정적 지점·공개 계약</strong>으로 분리하자는 사고방식이다.
+유행어 암기가 아니라, 앞에서 배운 확장 수단을 운영에 넣을 때 <em>&quot;미래 업그레이드·Cloud-ready를
+해치지 않는가&quot;</em> 를 판단하는 기준이다.</p>
 <blockquote>
-<p>온프레미스의 유연함(Implicit·Modification)과 클라우드의 규율(BAdI·Released) 사이에서,
-<strong>가능한 한 Clean Core 쪽</strong>을 택하는 게 미래지향적이다.</p>
+<p>💡 핵심 질문은 <strong>&quot;기술적으로 가능한가&quot;가 아니라 &quot;공개된 계약인가.&quot;</strong> 오늘 on-premise라 내부
+테이블을 직접 읽을 수 있어도, 그게 <em>미래에도 안정적인 계약</em>이란 뜻은 아니다.</p>
 </blockquote>
+</section><section class="lblock"><h2>좋은 확장의 4가지 특성</h2>
+<ol>
+<li><strong>표준 소스를 직접 수정하지 않는다.</strong></li>
+<li>SAP가 제공한 <strong>명시적 확장 계약</strong>(BAdI·Enhancement Point)을 우선한다.</li>
+<li><strong>Released API·안정적 interface</strong>로만 표준과 통신한다(비공개 <button class="term" type="button" data-term="객체">객체</button>·테이블 직접 접근 X).</li>
+<li>고객 코드는 <strong>별도 package·명확한 이름·transport·테스트 근거</strong>를 가진다.</li>
+</ol>
+<p>ABAP Cloud 관점에선 세 단어를 구분한다.</p>
+<table>
+<thead>
+<tr>
+<th>용어</th>
+<th>뜻</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Released API</strong></td>
+<td>ABAP Cloud에서 접근이 <em>허용(release)된</em> 객체</td>
+</tr>
+<tr>
+<td><strong>Developer Extensibility</strong></td>
+<td>ADT에서 released API로 <strong>upgrade-stable 커스텀 코드</strong></td>
+</tr>
+<tr>
+<td><strong>Key User Extensibility</strong></td>
+<td>지정된 확장점에서 <em>key user 도구</em>로 하는 제한적 확장</td>
+</tr>
+</tbody></table>
 </section><section class="lblock"><h2>친화 여부 가려내기</h2>
 <p>각 확장 방식이 Clean Core에 맞는지 퀴즈로 가려 보라.</p>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">Clean Core 친화 판별 퀴즈</span><a class="embed__open" href="../../../embeds/abap/CH29-L05-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH29-L05-S01.html" loading="lazy" title="Clean Core 친화 판별 퀴즈" style="height:520px"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>비공개 API 확장</strong> → 업그레이드·클라우드 전환에서 깨진다.</li>
-<li><strong>확장 추적 불가</strong> → 별도 패키지·문서로 무엇을 왜 확장했는지 남긴다.</li>
+<li><strong>&quot;Clean Core는 Cloud 얘기&quot;로 치부</strong> → on-premise도 업그레이드·패치·운영 분석·개발자 교체가
+있다. 깨끗한 코어는 classic에서도 비용을 줄인다.</li>
+<li><strong>Released API = SAP 표준 <button class="term" type="button" data-term="객체">객체</button>로 착각</strong> → SAP가 만든 객체라고 다 <em>release된 API</em>는 아니다.
+release contract·제한 언어 버전 visibility 기준이 따로 있다.</li>
+<li><strong>implicit을 Clean Core <button class="term" type="button" data-term="예외">예외</button> 구멍으로</strong> → modification이 아니어도 내부 변수·순서에 깊게
+붙으면 업그레이드에 약하다. <em>&quot;표준 안 고쳤다&quot;만으로 부족 — &quot;안정적 계약을 썼다&quot;까지.</em></li>
+<li><strong>확장을 문서화 안 함</strong> → 어느 BAdI에 어떤 filter로, 어떤 업무 규칙을, 비활성화하면 뭐가
+사라지는지 없으면 장애 분석이 지옥. 문서가 곧 <strong>운영 안전장치</strong>.</li>
+</ul>
+</section><section class="lblock"><h2>정리</h2>
+<ul>
+<li>이 챕터의 결론 = &quot;확장을 <em>할 수 있다</em>&quot;가 아니라 &quot;표준을 <strong>깨끗하게 유지하며</strong> 확장한다.&quot;</li>
+<li>우선순위 = <strong>BAdI·Released API 같은 공개 계약</strong> &gt; Customer Exit·implicit(레거시·제한적) &gt;
+Modification(최후).</li>
+<li>확장 요구를 받으면 코드부터 쓰지 말고 <strong>확장 지점과 책임 범위</strong>를 먼저 판단한다.</li>
 </ul>
 </section><section class="lblock"><h2>🧩 도전 과제 (서브퀘스트)</h2>
 <blockquote>
 <p>선택 과제 — 표준을 건드리지 않고 확장한다.</p>
 </blockquote>
 <ol>
-<li>적절한 <strong>BAdI</strong>를 찾아(<code>SE18</code>) 예매 관련 검증 로직을 구현(<code>SE19</code>)하는 시나리오를 설계한다.</li>
-<li>BAdI가 없는 지점은 <strong>Enhancement Point</strong>(Implicit)로 최소 개입하는 방안을 제시한다.</li>
+<li>적절한 <a href="CH29-L03.html">BAdI</a>를 찾아(<code>SE18</code>) 예매 검증 로직을 구현(<code>SE19</code>)하는 시나리오를
+설계한다.</li>
+<li>BAdI가 없는 지점은 <a href="CH29-L02.html">Enhancement Point</a>로 최소 개입하는 방안을
+제시한다(<a href="CH29-L04.html">어느 수단을 쓸지 판단</a>).</li>
 <li>(심화) 같은 확장을 <strong>Clean Core</strong>(Released API·별도 패키지) 관점에서 재검토한다.</li>
 </ol>
-<p>힌트: L02(Enhancement Point)·L03(BAdI)·L04(Implicit/Explicit)·L05(Clean Core).</p>
 <hr>
-<p>표준을 안전하게 확장하는 법을 익혔다. 이제 외부 시스템과 데이터를 주고받는 <button class="term" type="button" data-term="Interface">인터페이스</button> →
-<strong>CH30</strong>.</p>
+<p>표준을 안전하게 확장하는 법까지 익혔다. 이제 외부 시스템과 데이터를 주고받는 <button class="term" type="button" data-term="Interface">인터페이스</button> →
+<a href="CH30-L01.html">Chapter 30 · 인터페이스 실무: BAPI/RFC/BDC/File</a>(다음 챕터).</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

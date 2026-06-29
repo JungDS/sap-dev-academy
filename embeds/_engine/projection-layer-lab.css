@@ -1,0 +1,56 @@
+/* ===== projection-layer-lab — Interface(ZI_) vs Projection(ZC_) 계층 분리 실험실 (CH22-L02) =====
+   기반 ZI_의 필드를 projection ZC_가 골라 노출. ZC_에서 숨겨도 ZI_ 불변(비파괴),
+   ZI_에서 제거하면 ZC_도 노출 불가(연쇄). DDL·SELECT 미리보기 라이브. 데이터=config. */
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:transparent;line-height:1.5;}
+.wrap{padding:14px;}
+.hd{font-weight:800;font-size:1rem;margin:0 0 4px;}
+.hd small{font-weight:600;color:var(--brand);}
+.lead{margin:0 0 12px;color:var(--ink-soft);font-size:.86rem;}
+.lead code{font-family:var(--mono);background:#eef2ff;color:var(--brand);padding:1px 5px;border-radius:5px;font-size:.92em;}
+
+/* 필드 제어 테이블 */
+.pll-tbl{width:100%;border-collapse:collapse;font-size:.8rem;margin-bottom:12px;}
+.pll-tbl th,.pll-tbl td{padding:6px 9px;border-bottom:1px solid var(--line);text-align:left;}
+.pll-tbl th{font-size:.7rem;font-weight:800;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;}
+.pll-tbl th.zi{color:#26336b;} .pll-tbl th.zc{color:#0b7250;}
+.pll-fname{font-family:var(--mono);font-weight:700;}
+.pll-key{font-size:.6rem;font-weight:800;color:var(--brand);border:1px solid var(--brand);border-radius:4px;padding:0 4px;margin-left:5px;}
+.pll-toggle{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:7px;
+  padding:4px 10px;font:inherit;font-size:.72rem;font-weight:700;cursor:pointer;font-family:var(--mono);}
+.pll-toggle:hover:not(:disabled){border-color:var(--brand);}
+.pll-toggle:disabled{opacity:.45;cursor:not-allowed;}
+.pll-toggle.on{background:#eef2ff;border-color:#26336b;color:#26336b;}      /* ZI 포함 */
+.pll-toggle.off{background:rgba(180,83,9,.1);border-color:var(--amber);color:#7a4a12;border-style:dashed;}
+.pll-toggle.proj-on{background:#eafaf3;border-color:var(--accent);color:#0b7250;}  /* ZC 노출 */
+.pll-toggle.proj-off{background:var(--surface);color:var(--soon);border-style:dashed;}
+.pll-lock{font-size:.7rem;color:var(--soon);}
+
+/* 결과 미리보기 카드 2개 */
+.pll-cards{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+@media(max-width:560px){ .pll-cards{grid-template-columns:1fr;} }
+.pll-card{border:1px solid var(--line);border-radius:11px;background:var(--surface);overflow:hidden;}
+.pll-card__hd{font-size:.72rem;font-weight:800;padding:6px 10px;}
+.pll-card.zi .pll-card__hd{background:#eef2ff;color:#26336b;}
+.pll-card.zc .pll-card__hd{background:#eafaf3;color:#0b7250;}
+.pll-card__b{padding:9px 10px;display:flex;flex-wrap:wrap;gap:5px;min-height:34px;}
+.pll-chip{font-family:var(--mono);font-size:.72rem;font-weight:700;border-radius:6px;padding:3px 8px;}
+.pll-card.zi .pll-chip{background:#f1f4ff;color:#26336b;}
+.pll-card.zc .pll-chip{background:#e8f8f1;color:#0b7250;}
+.pll-chip.key{outline:1.5px solid var(--brand);}
+.pll-empty{color:var(--soon);font-style:italic;font-size:.76rem;}
+
+/* 코드 미리보기 */
+.pll-code{font-family:var(--mono);font-size:11.5px;line-height:1.65;white-space:pre;overflow-x:auto;
+  margin:0 0 10px;padding:9px 11px;border:1px solid var(--line);border-radius:9px;background:#fafbff;color:var(--ink);}
+.pll-code .k{color:var(--brand);font-weight:700;}
+.pll-code .ent{color:var(--accent);font-weight:700;}
+.pll-code .base{color:#26336b;font-weight:700;}
+.pll-code .host{color:var(--amber);font-weight:700;}
+.pll-code .kw{color:var(--brand);font-weight:700;}
+
+.pll-msg{font-size:.84rem;padding:9px 12px;border-radius:9px;background:#eef2ff;color:#26336b;}
+.pll-msg.warn{background:rgba(180,83,9,.1);color:#7a4a12;}
+.pll-msg b{color:inherit;}
+.note{margin-top:12px;border-left:3px solid var(--brand);background:rgba(59,91,219,.06);border-radius:0 9px 9px 0;padding:9px 13px;font-size:.83rem;color:#2a3550;}
+.note code{font-family:var(--mono);background:#fff;border:1px solid var(--line);padding:0 5px;border-radius:4px;}

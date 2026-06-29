@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<!-- CH12-L06-S01 — 엔진: range-append-stepper · _autoheight. 콘텐츠=레슨 전용(TYPE RANGE OF·CLEAR·APPEND→SELECT, CH12 L06).
+     config=window.RAS_CFG. 게이팅: classic DATA/TYPE RANGE OF/CLEAR/APPEND/SELECT WHERE..IN · @/콤마/inline DATA/VALUE 없음. -->
+<html lang="ko" data-eng="range-append-stepper">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>코드로 Range 행 추가 스텝퍼 · CH12-L06-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/range-append-stepper.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">코드로 Range 행 추가 스텝퍼 <small>(ls_stat → APPEND → lr_stat → SELECT)</small></p>
+  <p class="lead">한 줄씩 실행하며 <code>ls_stat</code>(work area)이 채워지고, <code>APPEND</code> 순간 <code>lr_stat</code>(Range Table)에 행이 생기는 걸 보세요. <b>APPEND 전엔 lr_stat이 비어 있습니다.</b></p>
+
+  <div class="ras-ctrl">
+    <button class="ras-btn" type="button" data-next>▶ 다음 단계</button>
+    <button class="ras-reset" type="button" data-reset>↺ 리셋</button>
+    <span class="ras-prog" data-progress></span>
+  </div>
+  <p class="ras-fb" id="rasFb"></p>
+
+  <div class="ras-code">
+    <div class="ras-code__hd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span><span class="tag">classic</span></div>
+    <div data-code></div>
+  </div>
+
+  <div class="ras-state">
+    <div class="ras-col">
+      <p class="ras-h">ls_stat <small>(work area · 한 행)</small></p>
+      <div class="ras-wa" id="rasLs"></div>
+    </div>
+    <div class="ras-col">
+      <p class="ras-h">lr_stat <small>(Range Table)</small></p>
+      <table class="ras-tbl"><thead><tr><th>SIGN</th><th>OPTION</th><th>LOW</th><th>HIGH</th></tr></thead><tbody id="rasLr"></tbody></table>
+    </div>
+  </div>
+
+  <div class="ras-result hide" id="rasResult">
+    <p class="ras-h">SELECT 결과 <small class="ras-cap"></small></p>
+    <div style="overflow-x:auto"><table class="dt"></table></div>
+  </div>
+
+  <div class="note"><b>work area ≠ Range Table.</b> <code>ls_stat</code>에 값을 채워도 그건 한 행 준비일 뿐, <code>APPEND</code>해야 <code>lr_stat</code>에 행이 생깁니다. <code>CLEAR</code>를 빼먹으면 앞 행의 <code>HIGH</code> 같은 값이 남아 의도와 달라질 수 있습니다.</div>
+</div>
+
+<script>
+window.RAS_CFG = {
+  field: 'status',
+  resultCols: [
+    { key: 'booking_id', label: '예매번호', num: true },
+    { key: 'concert_id', label: '공연' },
+    { key: 'customer', label: '고객' },
+    { key: 'status', label: '상태' }
+  ],
+  data: [
+    { booking_id: 5001, concert_id: 'C001', customer: '정훈영', status: 'N' },
+    { booking_id: 5002, concert_id: 'C001', customer: '손흥민', status: 'N' },
+    { booking_id: 5003, concert_id: 'C001', customer: '아이유', status: 'N' },
+    { booking_id: 5004, concert_id: 'C002', customer: '유재석', status: 'C' },
+    { booking_id: 5005, concert_id: 'C002', customer: '김연아', status: 'N' },
+    { booking_id: 5006, concert_id: 'C001', customer: '차은우', status: 'N' }
+  ],
+  code: [
+    'DATA: lr_stat TYPE RANGE OF zbooking-status,',
+    '      ls_stat LIKE LINE OF lr_stat,',
+    '      lt_book TYPE TABLE OF zbooking.',
+    '',
+    'CLEAR ls_stat.',
+    "ls_stat-sign   = 'I'.",
+    "ls_stat-option = 'EQ'.",
+    "ls_stat-low    = 'N'.",
+    'APPEND ls_stat TO lr_stat.',
+    '',
+    'SELECT * FROM zbooking INTO TABLE lt_book',
+    '  WHERE status IN lr_stat.'
+  ],
+  steps: [
+    { hl: 2, ls: {}, lr: [], result: false, fb: '선언 — lr_stat은 빈 Range Table, ls_stat은 빈 work area입니다.' },
+    { hl: 4, ls: { sign: '', option: '', low: '', high: '' }, lr: [], result: false, fb: 'CLEAR ls_stat — 새 조건 행을 만들기 전에 이전 값을 지웁니다.' },
+    { hl: 5, ls: { sign: 'I' }, lr: [], result: false, fb: "ls_stat-sign = 'I' — 포함(Include) 조건으로 설정." },
+    { hl: 6, ls: { sign: 'I', option: 'EQ' }, lr: [], result: false, fb: "ls_stat-option = 'EQ' — 정확히 같은 값 비교." },
+    { hl: 7, ls: { sign: 'I', option: 'EQ', low: 'N' }, lr: [], result: false, fb: "ls_stat-low = 'N' — 상태 N을 조건값으로. (아직 lr_stat은 비어 있음!)" },
+    { hl: 8, ls: { sign: 'I', option: 'EQ', low: 'N' }, lr: [{ sign: 'I', option: 'EQ', low: 'N', high: '' }], result: false, fb: 'APPEND — 완성한 행이 lr_stat에 추가됐습니다. 이제 WHERE IN에서 평가할 조건이 생겼습니다.' },
+    { hl: 11, ls: { sign: 'I', option: 'EQ', low: 'N' }, lr: [{ sign: 'I', option: 'EQ', low: 'N', high: '' }], result: true, fb: 'SELECT WHERE status IN lr_stat — 화면 없이 만든 Range Table로도 상태 N 예매만 걸러집니다.' }
+  ]
+};
+</script>
+<script src="../_engine/range-append-stepper.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

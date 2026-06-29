@@ -1,0 +1,43 @@
+/* ===== sql-expression-lab 엔진 CSS — CASE/CAST/COALESCE를 SELECT 안에서 계산하고, 같은 결과를 ABAP LOOP로도 만들어 "계산 위치"를 비교한다 (config 주도) =====
+   골격 계약(HTML 제공): .sel-mode(세그) · .sel-impl(세그) · #selCode · #selTable · #selNote.
+   config=window.SEL_CFG = { modes:[{v,label,col,sqlExpr,abapLoop,baseCols,rows,note,nullCol}] }.
+   토큰 active 배경 버튼 base=var(--surface). 다크: gen-embed-dark. 높이: _autoheight.js. */
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:transparent;line-height:1.5;}
+.wrap{max-width:760px;margin:0 auto;padding:14px 16px 18px;}
+.hd{margin:0 0 4px;font-weight:800;font-size:1.04rem;color:#1d3a63;}
+.hd small{font-weight:600;color:#64748b;font-size:.8rem;}
+.lead{margin:0 0 12px;color:var(--ink-soft);font-size:.9rem;}
+.lead code{font-family:var(--mono);background:#eef2fb;color:var(--brand);padding:1px 5px;border-radius:5px;}
+.sel-h{font-size:.72rem;font-weight:800;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em;margin:0 0 6px;}
+
+.sel-ctrl{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:12px;}
+.sel-grp{display:flex;flex-direction:column;gap:5px;}
+.sel-grp .clbl{font-size:.68rem;font-weight:800;color:var(--ink-soft);text-transform:uppercase;}
+.sel-seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;flex-wrap:wrap;}
+.sel-seg button{border:0;border-right:1px solid var(--line);background:var(--surface);color:var(--ink-soft);font:inherit;font-size:.73rem;font-weight:700;padding:6px 11px;cursor:pointer;font-family:var(--mono);}
+.sel-seg button:last-child{border-right:0;}
+.sel-seg button[aria-pressed="true"]{background:var(--brand);color:#fff;}
+
+.sel-loc{display:inline-block;font-size:.7rem;font-weight:800;padding:2px 9px;border-radius:999px;margin-bottom:8px;}
+.sel-loc.db{background:rgba(15,118,110,.14);color:#0f766e;}
+.sel-loc.abap{background:rgba(59,91,219,.14);color:var(--brand);}
+
+#selCode{font-family:var(--mono);font-size:.76rem;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 13px;white-space:pre-wrap;color:var(--ink-soft);margin-bottom:10px;}
+#selCode .as{background:rgba(245,158,11,.22);border-radius:3px;padding:0 2px;font-weight:800;color:#7c4a02;}
+#selCode .fn{color:#0f766e;font-weight:700;}
+
+.sel-tbl{width:100%;border-collapse:collapse;font-size:.78rem;margin-bottom:10px;}
+.sel-tbl th,.sel-tbl td{border:1px solid var(--line);padding:5px 9px;text-align:left;font-family:var(--mono);}
+.sel-tbl th{background:rgba(59,91,219,.07);color:var(--ink);font-weight:800;font-size:.72rem;}
+.sel-tbl td.out{background:rgba(15,118,110,.10);color:#0f766e;font-weight:800;}
+.sel-tbl th.out{background:rgba(15,118,110,.16);color:#0f766e;}
+.sel-tbl td.nul{color:#8a1538;font-style:italic;}
+.sel-tbl td.out.repl{background:rgba(245,158,11,.16);color:#7c4a02;}
+
+#selNote{border-left:3px solid var(--warn,#f59e0b);background:rgba(245,158,11,.08);border-radius:0 9px 9px 0;padding:9px 13px;font-size:.82rem;color:#7c4a02;}
+#selNote code{font-family:var(--mono);background:#fff;border:1px solid var(--line);padding:0 5px;border-radius:4px;}
+#selNote b{font-weight:800;}
+
+.note{margin-top:12px;border-left:3px solid var(--brand);background:rgba(59,91,219,.06);border-radius:0 9px 9px 0;padding:9px 13px;font-size:.83rem;color:#2a3550;}
+.note code{font-family:var(--mono);background:#fff;border:1px solid var(--line);padding:0 5px;border-radius:4px;}

@@ -54,8 +54,34 @@
 
 <span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_booking <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(ls).
   <span class="tok-kw">INSERT</span> zbooking <span class="tok-kw">FROM</span> @ls.
-  <span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.
+  <span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.                <span class="tok-com">" 단건 중복키면 sy-subrc=4</span>
     <span class="tok-kw">APPEND</span> ls <span class="tok-kw">TO</span> lt_error.        <span class="tok-com">" 실패 건만 따로 모은다</span>
+  <span class="tok-kw">ENDIF</span>.
+<span class="tok-kw">ENDLOOP</span>.</code></pre></div></div>
+<p>실패 행만 모으는 것으로는 부족하다. 나중에 추적하려면 <strong>키 + 사유</strong>까지 남겨야 한다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13</pre><pre class="abap-editor__code"><code><span class="tok-kw">TYPES</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ty_error,
+         booking_id <span class="tok-kw">TYPE</span> zbooking-booking_id,
+         reason     <span class="tok-kw">TYPE</span> string,
+       <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ty_error.
+<span class="tok-kw">DATA</span> lt_error <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ty_error.
+
+<span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_booking <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(ls).
+  <span class="tok-kw">INSERT</span> zbooking <span class="tok-kw">FROM</span> @ls.
+  <span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.
+    <span class="tok-kw">APPEND</span> <span class="tok-kw">VALUE</span> #( booking_id = ls-booking_id
+                    reason     = |<span class="tok-kw">INSERT</span> 실패: sy-subrc={ sy-subrc }| ) <span class="tok-kw">TO</span> lt_error.
   <span class="tok-kw">ENDIF</span>.
 <span class="tok-kw">ENDLOOP</span>.</code></pre></div></div>
 </section><section class="lblock"><h2>처리 → 실패 수집 → 재처리, 직접 해 보기</h2>
@@ -69,11 +95,11 @@
 <li><strong>멱등성</strong>(같은 걸 두 번 처리해도 결과가 안전)을 고려한다 — <code>INSERT</code> 대신
 <code>MODIFY</code>(upsert)나 사전 중복 체크. 재처리가 또 중복키로 깨지면 안 되니까.</li>
 <li>표준 <strong>Application Log</strong>(BAL, T-code <code>SLG1</code>)에 성공·경고·오류 메시지를 남기는 방식이
-현업에서 흔하다(정식 학습은 <strong>CH35-L05</strong>).</li>
+현업에서 흔하다(정식 학습은 <a href="CH35-L05.html">Application Log와 오류 추적</a>).</li>
 </ul>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>실패 무시</strong> → 일부 실패를 모른 채 COMMIT. 항상 <code>sy-subrc</code> 점검(L02의 COMMIT 판단과 직결).</li>
+<li><strong>실패 무시</strong> → 일부 실패를 모른 채 COMMIT. 항상 <code>sy-subrc</code> 점검(<a href="CH24-L02.html">COMMIT WORK / ROLLBACK WORK</a>의 COMMIT 판단과 직결).</li>
 <li><strong>로그 없음</strong> → 무엇이 실패했는지 못 찾는다. 최소한 <strong>키 + 사유</strong>는 기록.</li>
 <li><strong>재처리가 또 깨짐</strong> → 멱등성 미고려. <code>MODIFY</code>/중복 체크로 두 번 처리해도 안전하게.</li>
 </ul>

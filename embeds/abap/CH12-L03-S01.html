@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<!-- CH12-L03-S01 — 엔진: select-options-filter-sim(재사용 · #soSys 옵션으로 sy-subrc/sy-dbcnt 표시) · 자체 postHeight.
+     콘텐츠=레슨 전용(classic WHERE..IN 평가 + 시스템 필드, CH12 L03). config=window.SO_CFG(zbooking).
+     게이팅: classic `field IN s_xxx`(AND 결합) · @/콤마/modern Open SQL 없음. -->
+<html lang="ko" data-eng="select-options-filter-sim">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WHERE … IN 필터 엔진 · CH12-L03-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/select-options-filter-sim.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">WHERE … IN 필터 엔진 <small>(s_conc · s_stat → sy-subrc · sy-dbcnt)</small></p>
+  <p class="lead">Range Table을 <code>WHERE field IN s_xxx</code>로 조회에 꽂으면 <code>zbooking</code> 목록이 줄어듭니다. 두 조건 사이는 <code>AND</code>입니다. <b>빈 범위는 true</b>라 비우면 전체가 나옵니다. 실행 후 <code>sy-subrc</code>·<code>sy-dbcnt</code>를 확인하세요.</p>
+
+  <div class="so-presets">
+    <span class="lbl">시나리오:</span>
+    <button class="chip" type="button" data-ex="0">전체 (빈 범위)</button>
+    <button class="chip" type="button" data-ex="1">공연 C001만</button>
+    <button class="chip" type="button" data-ex="2">예약 N만</button>
+    <button class="chip" type="button" data-ex="3">C001 + N (AND)</button>
+    <button class="chip" type="button" data-ex="4">없는 공연 C999 (0건)</button>
+  </div>
+
+  <div class="so-block">
+    <div class="so-block__hd">s_conc <small>FOR zbooking-concert_id</small></div>
+    <div class="so-rows" id="rows-s_conc"></div>
+    <button class="so-add" type="button" data-add="s_conc">+ 범위 행 추가</button>
+  </div>
+  <div class="so-block">
+    <div class="so-block__hd">s_stat <small>FOR zbooking-status (N 예약 · C 취소)</small></div>
+    <div class="so-rows" id="rows-s_stat"></div>
+    <button class="so-add" type="button" data-add="s_stat">+ 범위 행 추가</button>
+  </div>
+
+  <div class="so-code">
+    <div class="so-code__hd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span><span class="tag">classic</span></div>
+    <pre id="soCode"></pre>
+  </div>
+
+  <div class="so-run">
+    <button class="run-btn" id="soRun" type="button">▶ 실행</button>
+    <span class="so-cnt" id="soCnt"></span>
+    <span class="so-sys" id="soSys"></span>
+  </div>
+  <div style="overflow-x:auto"><table class="dt" id="soGrid"></table></div>
+
+  <div class="note"><b>빈 range = true.</b> 비운 조건은 제한하지 않아 전체가 통과합니다(실수로 비우면 전체 조회 위험 — 입력 필수 검증은 CH15). 두 줄 사이 <code>AND</code>라 <b>둘 다</b> 만족해야 합니다. 결과가 없으면 <code>sy-subrc = 4</code>, 있으면 <code>0</code> · <code>sy-dbcnt</code> = 담긴 행 수. <code>@</code>·콤마 없는 classic 표기 — modern은 CH19.</div>
+</div>
+
+<script>
+window.SO_CFG = {
+  table:'zbooking',
+  cols:[
+    {key:'booking_id',label:'예매번호',num:true},
+    {key:'concert_id',label:'공연',num:false},
+    {key:'perf_no',label:'회차',num:true},
+    {key:'customer',label:'고객',num:false},
+    {key:'seats',label:'좌석수',num:true},
+    {key:'status',label:'상태',num:false}
+  ],
+  data:[
+    {booking_id:5001,concert_id:'C001',perf_no:1,customer:'정훈영',seats:2,status:'N'},
+    {booking_id:5002,concert_id:'C001',perf_no:1,customer:'손흥민',seats:4,status:'N'},
+    {booking_id:5003,concert_id:'C001',perf_no:2,customer:'아이유',seats:3,status:'N'},
+    {booking_id:5004,concert_id:'C002',perf_no:1,customer:'유재석',seats:1,status:'C'},
+    {booking_id:5005,concert_id:'C002',perf_no:1,customer:'김연아',seats:2,status:'N'},
+    {booking_id:5006,concert_id:'C001',perf_no:2,customer:'차은우',seats:5,status:'N'}
+  ],
+  selopts:[
+    {name:'s_conc', field:'concert_id', label:'FOR zbooking-concert_id', num:false},
+    {name:'s_stat', field:'status',     label:'FOR zbooking-status',     num:false}
+  ],
+  presets:[
+    {label:'전체 (빈 범위)', ranges:{}},
+    {label:'공연 C001만', ranges:{s_conc:[{sign:'I',opt:'EQ',low:'C001'}]}},
+    {label:'예약 N만', ranges:{s_stat:[{sign:'I',opt:'EQ',low:'N'}]}},
+    {label:'C001 + N (AND)', ranges:{s_conc:[{sign:'I',opt:'EQ',low:'C001'}], s_stat:[{sign:'I',opt:'EQ',low:'N'}]}},
+    {label:'없는 공연 C999 (0건)', ranges:{s_conc:[{sign:'I',opt:'EQ',low:'C999'}]}}
+  ]
+};
+</script>
+<script src="../_engine/select-options-filter-sim.js" defer></script>
+</body>
+</html>

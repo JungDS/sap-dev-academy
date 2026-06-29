@@ -1,0 +1,44 @@
+/* ===== event-wiring-panel 엔진 CSS — 발생 객체의 이벤트에 handler를 SET HANDLER로 연결하고, RAISE EVENT 시 등록된 handler만 호출되는 발행/구독 구조를 보여 준다 (config 주도) =====
+   골격 계약(HTML 제공): #ewpWiring(발생/handler 박스) · .ewp-act(버튼) · #ewpLog · #ewpNote.
+   config=window.EWP_CFG = { publisher, event, concert, perf, handlers:[{v,name,action}] }.
+   토큰 active 배경 버튼 base=var(--surface). 다크: gen-embed-dark. 높이: _autoheight.js. */
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:transparent;line-height:1.5;}
+.wrap{max-width:760px;margin:0 auto;padding:14px 16px 18px;}
+.hd{margin:0 0 4px;font-weight:800;font-size:1.04rem;color:#1d3a63;}
+.hd small{font-weight:600;color:#64748b;font-size:.8rem;}
+.lead{margin:0 0 12px;color:var(--ink-soft);font-size:.9rem;}
+.lead code{font-family:var(--mono);background:#eef2fb;color:var(--brand);padding:1px 5px;border-radius:5px;}
+.ewp-h{font-size:.72rem;font-weight:800;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em;margin:0 0 6px;}
+
+#ewpWiring{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
+.ewp-pub{flex:0 0 auto;border:2px solid var(--brand);border-radius:10px;padding:9px 13px;background:rgba(59,91,219,.07);}
+.ewp-pub .nm{font-family:var(--mono);font-weight:800;font-size:.82rem;color:var(--brand);}
+.ewp-pub .ev{font-family:var(--mono);font-size:.72rem;color:var(--ink-soft);}
+.ewp-conn{flex:0 0 auto;color:var(--ink-soft);font-size:1.1rem;font-weight:800;}
+.ewp-handlers{display:flex;gap:9px;flex-wrap:wrap;}
+.ewp-hbox{border:1px dashed var(--line);border-radius:10px;padding:8px 11px;background:var(--surface);text-align:center;min-width:135px;}
+.ewp-hbox.on{border-style:solid;border-color:var(--good);background:rgba(15,118,110,.06);}
+.ewp-hbox .nm{font-family:var(--mono);font-weight:800;font-size:.78rem;color:var(--ink);}
+.ewp-hbox .st{font-size:.68rem;font-weight:700;color:var(--ink-soft);margin:2px 0 6px;}
+.ewp-hbox.on .st{color:#0f766e;}
+.ewp-hbox button{border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);border-radius:7px;padding:4px 9px;font:inherit;font-size:.7rem;font-weight:700;cursor:pointer;}
+.ewp-hbox.on button{background:var(--good);color:#fff;border-color:var(--good);}
+
+.ewp-act{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+.ewp-act button{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:7px 13px;font:inherit;font-size:.78rem;font-weight:700;cursor:pointer;}
+.ewp-act button.prim{background:var(--brand);color:#fff;border-color:var(--brand);}
+.ewp-act button.ghost{margin-left:auto;}
+
+#ewpLog{list-style:none;margin:0 0 6px;padding:0;border:1px solid var(--line);border-radius:9px;overflow:hidden;min-height:44px;}
+#ewpLog:empty::after{content:'\00a0 버튼을 눌러 이벤트를 발생시켜 보세요.';display:block;padding:10px 12px;color:var(--ink-soft);font-size:.82rem;}
+#ewpLog li{padding:6px 12px;border-bottom:1px solid var(--line);font-size:.82rem;font-family:var(--mono);}
+#ewpLog li:last-child{border-bottom:0;}
+#ewpLog li.raise{background:rgba(59,91,219,.06);color:var(--brand);font-weight:700;}
+#ewpLog li.call{background:rgba(15,118,110,.06);color:#0f5a3f;}
+#ewpLog li.none{background:rgba(245,158,11,.08);color:#7c4a02;font-style:italic;}
+#ewpLog li.warn{background:rgba(245,158,11,.1);color:#7c4a02;}
+
+#ewpNote{border-left:3px solid var(--brand);background:rgba(59,91,219,.06);border-radius:0 9px 9px 0;padding:9px 13px;font-size:.83rem;color:#2a3550;}
+#ewpNote code{font-family:var(--mono);background:#fff;border:1px solid var(--line);padding:0 5px;border-radius:4px;}
+#ewpNote b{font-weight:800;}

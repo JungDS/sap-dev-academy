@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<!-- CH12-L02-S01 — 엔진: selopt-screen-mapper · _autoheight. 콘텐츠=레슨 전용(SELECT-OPTIONS 화면→Range Table→LOOP, CH12 L02).
+     config=window.SSM_CFG(s_conc FOR zbooking-concert_id). 게이팅: classic SELECT-OPTIONS·LOOP AT·WRITE만 · @/콤마/modern·실제 SELECT 없음. -->
+<html lang="ko" data-eng="selopt-screen-mapper">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SELECT-OPTIONS 화면 변환기 · CH12-L02-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/selopt-screen-mapper.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">SELECT-OPTIONS 화면 변환기 <small>(입력 → Range Table → LOOP)</small></p>
+  <p class="lead">화면의 <code>From</code>/<code>To</code> 칸과 <b>다중 선택</b>이 어떻게 <code>s_conc</code> Range Table 행으로 바뀌는지 봅니다. <b>From만</b> 넣으면 <code>EQ</code>, <b>To까지</b> 넣으면 <code>BT</code>입니다.</p>
+
+  <p class="ssm-h">선택화면 (모형)</p>
+  <div class="ssm-screen">
+    <div class="ssm-row">
+      <span class="ssm-name">s_conc</span>
+      <input class="ssm-from" type="text" placeholder="From" value="C001" />
+      <span class="ssm-tilde">~</span>
+      <input class="ssm-to" type="text" placeholder="To" />
+      <button class="ssm-multi" type="button" data-multi>다중 선택 ▾</button>
+      <span class="ssm-field">FOR zbooking-concert_id</span>
+    </div>
+    <div class="ssm-pop">
+      <div class="ssm-pop__hd">다중 선택 팝업 — 여러 값·범위·제외를 행으로 추가</div>
+      <div class="ssm-chips"></div>
+    </div>
+  </div>
+
+  <div class="ssm-arrow">↓ Range Table <code>s_conc</code> 로 변환</div>
+  <table class="ssm-tbl">
+    <thead><tr><th>SIGN</th><th>OPTION</th><th>LOW</th><th>HIGH</th><th>출처</th><th></th></tr></thead>
+    <tbody id="ssmBody"></tbody>
+  </table>
+
+  <div class="ssm-code">
+    <div class="ssm-code__hd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span> LOOP AT s_conc INTO ls. WRITE: / sign option low high.<span class="tag">classic</span></div>
+    <pre class="ssm-out" id="ssmOut"></pre>
+  </div>
+
+  <div class="note"><b>화면 = 프로그램.</b> 입력칸 하나가 <code>SIGN/OPTION/LOW/HIGH</code> 행이 됩니다. <b>From만</b> = <code>EQ</code>(LOW만), <b>From~To</b> = <code>BT</code>(LOW·HIGH). 비우면 행이 없어 <code>LOOP</code>이 0회 — 조건을 걸지 않은 것과 같습니다.</div>
+</div>
+
+<script>
+window.SSM_CFG = {
+  name: 's_conc',
+  field: 'zbooking-concert_id',
+  multi: [
+    { label: '+ 값 C002 (I/EQ)',       row: { sign: 'I', opt: 'EQ', low: 'C002', high: '' } },
+    { label: '+ 범위 C003~C005 (I/BT)', row: { sign: 'I', opt: 'BT', low: 'C003', high: 'C005' } },
+    { label: '+ C004 제외 (E/EQ)',      row: { sign: 'E', opt: 'EQ', low: 'C004', high: '' } }
+  ]
+};
+</script>
+<script src="../_engine/selopt-screen-mapper.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

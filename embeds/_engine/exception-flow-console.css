@@ -1,0 +1,44 @@
+/* ===== exception-flow-console 엔진 CSS — 좌석 수(정상/정원초과)와 CATCH 순서에 따라 TRY/CATCH 실행 흐름이 어떻게 달라지는지 보여 준다 (config 주도) =====
+   골격 계약(HTML 제공): .efc-seats(세그) · .efc-order(세그) · #efcCode · #efcFlow · #efcVerdict.
+   config=window.EFC_CFG = { remaining, normalSeats, overSeats }.
+   토큰 active 배경 버튼 base=var(--surface). 다크: gen-embed-dark. 높이: _autoheight.js. */
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:transparent;line-height:1.5;}
+.wrap{max-width:760px;margin:0 auto;padding:14px 16px 18px;}
+.hd{margin:0 0 4px;font-weight:800;font-size:1.04rem;color:#1d3a63;}
+.hd small{font-weight:600;color:#64748b;font-size:.8rem;}
+.lead{margin:0 0 12px;color:var(--ink-soft);font-size:.9rem;}
+.lead code{font-family:var(--mono);background:#eef2fb;color:var(--brand);padding:1px 5px;border-radius:5px;}
+.efc-h{font-size:.72rem;font-weight:800;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em;margin:0 0 6px;}
+
+.efc-ctrl{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:12px;}
+.efc-grp{display:flex;flex-direction:column;gap:5px;}
+.efc-grp .clbl{font-size:.68rem;font-weight:800;color:var(--ink-soft);text-transform:uppercase;}
+.efc-seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;flex-wrap:wrap;}
+.efc-seg button{border:0;border-right:1px solid var(--line);background:var(--surface);color:var(--ink-soft);font:inherit;font-size:.73rem;font-weight:700;padding:6px 11px;cursor:pointer;font-family:var(--mono);}
+.efc-seg button:last-child{border-right:0;}
+.efc-seg button[aria-pressed="true"]{background:var(--brand);color:#fff;}
+
+#efcCode{font-family:var(--mono);font-size:.76rem;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 13px;white-space:pre-wrap;color:var(--ink-soft);margin-bottom:12px;}
+#efcCode .fn{color:#0f766e;font-weight:700;}
+#efcCode .cx{color:#7c3aed;font-weight:700;}
+#efcCode .dead{opacity:.45;text-decoration:line-through;}
+
+.efc-flow{list-style:none;margin:0 0 12px;padding:0;}
+.efc-flow li{display:flex;gap:9px;align-items:flex-start;padding:7px 11px;border:1px solid var(--line);border-radius:8px;margin-bottom:6px;font-size:.82rem;background:var(--surface);}
+.efc-flow li .ic{flex:0 0 20px;text-align:center;font-weight:800;}
+.efc-flow li code{font-family:var(--mono);font-size:.86em;background:rgba(59,91,219,.08);color:var(--brand);padding:0 4px;border-radius:4px;}
+.efc-flow li.ran{border-color:var(--brand);background:rgba(59,91,219,.06);}
+.efc-flow li.raise{border-color:var(--bad);background:rgba(225,29,72,.06);color:#8a1538;}
+.efc-flow li.caught{border-color:var(--good);background:rgba(15,118,110,.07);color:#0f5a3f;}
+.efc-flow li.skip{opacity:.5;font-style:italic;}
+
+#efcVerdict{font-size:.86rem;border-radius:8px;padding:10px 13px;border-left:3px solid var(--brand);background:rgba(59,91,219,.06);color:#2a3550;}
+#efcVerdict.ok{border-left-color:var(--good);background:#eafaf3;color:#0f5a3f;font-weight:600;}
+#efcVerdict.bad{border-left-color:var(--bad);background:#fff1f3;color:#8a1538;font-weight:600;}
+#efcVerdict.warn{border-left-color:var(--warn,#f59e0b);background:rgba(245,158,11,.10);color:#7c4a02;}
+#efcVerdict code{font-family:var(--mono);background:#fff;border:1px solid var(--line);padding:0 5px;border-radius:4px;}
+#efcVerdict b{font-weight:800;}
+
+.note{margin-top:12px;border-left:3px solid var(--brand);background:rgba(59,91,219,.06);border-radius:0 9px 9px 0;padding:9px 13px;font-size:.83rem;color:#2a3550;}
+.note code{font-family:var(--mono);background:#fff;border:1px solid var(--line);padding:0 5px;border-radius:4px;}

@@ -35,44 +35,59 @@
       <section class="lhead">
         <p class="lhead__eyebrow">New Open SQL / Modern ABAP SQL</p>
         <h1>SQL String / Date Function</h1>
-        <p class="lhead__direction">SELECT 안에서 문자열·날짜를 다루는 SQL 함수.</p>
+        <p class="lhead__direction">SELECT 안에서 문자열·날짜를 다루는 SQL 함수 — 단, ABAP 함수와 헷갈리지 않기.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 19</span><span class="tag tag--ls">Lesson 5</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>DB에서 문자열·날짜도 가공</h2>
-<p>modern SQL은 문자열·날짜용 함수도 제공한다. 자주 쓰는 것만 익혀 둔다.</p>
-</section><section class="lblock"><h2>문자열 함수</h2>
+<section class="lblock"><h2>DB에서 문자열·날짜도 가공 🧰</h2>
+<p>modern SQL은 문자열·날짜용 함수도 제공한다. 결과 목록에 보여 줄 간단한 route code·대문자 도시명·기준일 같은 값은, ABAP으로 다 가져와 <code>LOOP</code> 돌기보다 <strong>DB에서 만들어 가져오는</strong> 편이 자연스러울 때가 있다.</p>
+</section><section class="lblock"><h2>문자열 함수 🔤</h2>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
 4
 5
-6</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> carrid,
-       <span class="tok-kw">CONCAT</span>( carrid, connid )        <span class="tok-kw">AS</span> route,     <span class="tok-com">" 잇기</span>
-       <span class="tok-kw">SUBSTRING</span>( connid, <span class="tok-num">1</span>, <span class="tok-num">2</span> )       <span class="tok-kw">AS</span> prefix,    <span class="tok-com">" 잘라내기</span>
-       <span class="tok-kw">UPPER</span>( cityfrom )               <span class="tok-kw">AS</span> city_up    <span class="tok-com">" 대문자</span>
+6
+7</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> carrid, connid,
+       <span class="tok-kw">CONCAT</span>( carrid, connid )  <span class="tok-kw">AS</span> route,    <span class="tok-com">" 잇기</span>
+       <span class="tok-kw">SUBSTRING</span>( connid, <span class="tok-num">1</span>, <span class="tok-num">2</span> ) <span class="tok-kw">AS</span> prefix,   <span class="tok-com">" 1번째부터 2글자</span>
+       <span class="tok-kw">UPPER</span>( cityfrom )         <span class="tok-kw">AS</span> city_up   <span class="tok-com">" 대문자</span>
   <span class="tok-kw">FROM</span> spfli
-  <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> @<span class="tok-kw">DATA</span>(lt).</code></pre></div></div>
-</section><section class="lblock"><h2>날짜 함수</h2>
+  <span class="tok-kw">WHERE</span> carrid = @lv_carr
+  <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> @<span class="tok-kw">DATA</span>(lt_route).</code></pre></div></div>
+<p><code>connid = &#39;0400&#39;</code>이면 <code>SUBSTRING( connid, 1, 2 )</code>는 <code>&#39;04&#39;</code>다.</p>
+<blockquote class="cw">
+<p>⚠️ <strong>SQL <code>SUBSTRING</code>의 시작 위치는 1부터다.</strong> <a href="CH18-L05.html">지난 챕터</a>의 ABAP <code>substring( off = 0 … )</code>는 <strong>0부터</strong>였다. 이름이 비슷해도 <strong>실행 위치(DB↔ABAP)와 인자 의미가 다르다</strong> — 같은 글자를 집으려면 <strong>SQL <code>pos</code> = ABAP <code>off</code> + 1</strong>.</p>
+</blockquote>
+<p><code>CONCAT</code>·<code>SUBSTRING</code> 외에 <code>UPPER</code>/<code>LOWER</code>(대/소문자)·<code>LENGTH</code>(길이) 등이 있다.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">SQL Function Workbench (SUBSTRING 1-기반·DATS 날짜 함수)</span><a class="embed__open" href="../../../embeds/abap/CH19-L05-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH19-L05-S01.html" loading="lazy" title="SQL Function Workbench (SUBSTRING 1-기반·DATS 날짜 함수)"></iframe></figure>
+</section><section class="lblock"><h2>날짜 함수 📅</h2>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
-4</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> carrid, connid, fldate,
-       DATS_ADD_DAYS( fldate, <span class="tok-num">7</span>, <span class="tok-str">'INITIAL'</span> ) <span class="tok-kw">AS</span> due  <span class="tok-com">" 7일 뒤</span>
+4
+5
+6</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> carrid, connid, fldate,
+       DATS_ADD_DAYS( fldate, <span class="tok-num">7</span> )              <span class="tok-kw">AS</span> due,        <span class="tok-com">" 7일 뒤</span>
+       DATS_DAYS_BETWEEN( @sy-datum, fldate )  <span class="tok-kw">AS</span> days_gap    <span class="tok-com">" 두 날짜 차이</span>
   <span class="tok-kw">FROM</span> sflight
-  <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> @<span class="tok-kw">DATA</span>(lt_flight).</code></pre></div></div>
+  <span class="tok-kw">WHERE</span> carrid = @lv_carr
+  <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> @<span class="tok-kw">DATA</span>(lt_due).</code></pre></div></div>
 <ul>
-<li><code>CONCAT</code>·<code>SUBSTRING</code>·<code>UPPER</code>/<code>LOWER</code>·<code>LENGTH</code> 등 문자열 함수.</li>
-<li><code>DATS_ADD_DAYS</code>·<code>DATS_DAYS_BETWEEN</code> 등 날짜 함수.</li>
-<li>함수마다 DB·릴리스에 따라 지원이 다를 수 있어, <strong>필요할 때 찾아 쓰는</strong> 식으로.</li>
+<li><code>DATS_ADD_DAYS( fldate, 7 )</code> — ABAP SQL에선 <strong>인자 두 개</strong>(<code>date</code>, <code>days</code>)로 쓴다. <code>fldate</code>가 <code>20260626</code>이면 <code>20260703</code>.</li>
+<li><code>DATS_DAYS_BETWEEN( @sy-datum, fldate )</code> — 두 날짜의 차이를 정수(일)로. <code>@sy-datum</code>은 ABAP 시스템 날짜를 host variable로 넘긴 것.</li>
 </ul>
-</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+</section><section class="lblock"><h2>흔한 실수와 점검 🚧</h2>
 <ul>
-<li><strong>모든 가공을 SQL로</strong> → 복잡하면 ABAP/CDS가 낫다. SQL 함수는 단순 가공.</li>
-<li><strong>별칭 권장</strong> → 함수 결과 컬럼엔 <code>AS</code>로 이름을.</li>
+<li><strong><code>SUBSTRING</code> 위치 혼동</strong> → SQL은 <strong>1부터</strong>. <code>0</code>을 넣지 않는다(ABAP <code>off</code>와 다름).</li>
+<li><strong>함수 결과에 별칭 누락</strong> → <code>AS route</code>·<code>AS due</code>로 이름을 줘야 결과 구조가 읽기 쉽다.</li>
+<li><strong>null 전파</strong> → 문자열 함수는 인자가 null이면 <strong>결과 전체가 null</strong>이 될 수 있다. outer join과 함께면 <code>COALESCE</code>와 같이 생각한다.</li>
+<li><strong>날짜 유효성</strong> → <code>DATS</code> 값은 <code>YYYYMMDD</code> 유효 날짜여야 한다. 잘못된 날짜는 함수마다 초기화·오류가 날 수 있다.</li>
+<li><strong>표시 문구를 전부 SQL로</strong> → 사용자 언어·번역·Text Symbol·메시지는 ABAP/UI 계층에서. SQL 함수는 <strong>결과 컬럼의 간단한 가공</strong>에 집중.</li>
 </ul>
 <hr>
-<p>DB에서 문자·날짜까지 가공했다. 이제 <strong>내부 테이블을 SELECT 소스로</strong> 쓰는 법 → 다음 레슨.</p>
+<p>DB에서 문자·날짜까지 가공했다. 이제 <strong>이미 <button class="term" type="button" data-term="메모리">메모리</button>에 있는 내부 테이블</strong>을 SELECT 소스로 쓰는 법을 보자 →
+<a href="CH19-L06.html">SELECT FROM @itab 기초</a>.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

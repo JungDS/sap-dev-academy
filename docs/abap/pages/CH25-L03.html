@@ -47,7 +47,14 @@
 <li><strong><code>COMMIT WORK</code> / <code>ROLLBACK WORK</code></strong> 시 — 보통 <button class="term" type="button" data-term="트랜잭션">트랜잭션</button> 종료와 함께 <strong>자동 해제</strong>된다(실무에서 가장 흔함).</li>
 <li><strong><button class="term" type="button" data-term="세션">세션</button> 종료</strong> 시 — 그 세션이 쥔 잠금이 모두 풀린다.</li>
 </ul>
-<p><code>DEQUEUE_ALL</code>로 현재 프로그램이 건 <strong>모든 잠금</strong>을 한 번에 풀 수도 있다.</p>
+<p><code>DEQUEUE_ALL</code>로 현재 프로그램이 건 <strong>모든 잠금</strong>을 한 번에 풀 수도 있다(단, cleanup 성격 — 보통은 key별
+<code>DEQUEUE_*</code>로 정확히 푸는 습관이 먼저).</p>
+<blockquote class="cw">
+<p>⚠️ <strong>&quot;COMMIT했으니 무조건 풀렸겠지&quot;는 위험한 단순화다.</strong> 정확한 잠금 수명은 <a href="CH25-L02.html">ENQUEUE / DEQUEUE Function
+Module</a>에서 본 <code>_scope</code>로 판단한다 — 특히 <code>_scope = &#39;2&#39;</code>(update 연계) 잠금은 <code>COMMIT WORK</code>
+뒤에도 <strong>update 처리가 끝날 때까지 남을 수 있다.</strong> 입문 실습에선 &quot;COMMIT/ROLLBACK = 풀림&quot;으로 보되, 세부는
+<code>_scope</code>를 확인하는 습관을 들인다.</p>
+</blockquote>
 <p>반대로 단순 <code>SELECT</code>(읽기)나 <strong>다른 키</strong>의 작업은 내 잠금에 영향이 없다. 아래 퀴즈로
 &quot;풀림 / 유지&quot;를 판별해 보라.</p>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">잠금 해제 판별 퀴즈</span><a class="embed__open" href="../../../embeds/abap/CH25-L03-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH25-L03-S01.html" loading="lazy" title="잠금 해제 판별 퀴즈" style="height:560px"></iframe></figure>

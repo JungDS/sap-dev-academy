@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<!-- CH15-L04-S01 — 엔진: validation-gate-console · _autoheight. 콘텐츠=레슨 전용(AT SELECTION-SCREEN 검증·MESSAGE, CH15 L04).
+     config=window.VGC_CFG. 게이팅: classic AT SELECTION-SCREEN·MESSAGE type E·message class·&1&2·sy-msg* 개념만 · modern 없음. -->
+<html lang="ko" data-eng="validation-gate-console">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>검증 게이트와 메시지 콘솔 · CH15-L04-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/validation-gate-console.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">검증 게이트와 메시지 콘솔 <small>(AT SELECTION-SCREEN → MESSAGE)</small></p>
+  <p class="lead">시나리오를 고르고 <b>검증 실행</b>을 누르면, <code>AT SELECTION-SCREEN</code>이 어떤 <code>MESSAGE</code>로 막는지(<code>&amp;1·&amp;2</code> 치환), <code>sy-msg*</code>가 어떻게 채워지는지, <code>E</code>가 <code>START-OF-SELECTION</code>을 어떻게 잠그는지 봅니다.</p>
+
+  <div class="vgc-scen"></div>
+
+  <p class="vgc-h">선택화면 입력</p>
+  <div class="vgc-screen">
+    <div class="vgc-field"><span class="lbl">p_from</span><span class="v" id="vgcFrom"></span></div>
+    <div class="vgc-field"><span class="lbl">p_to</span><span class="v" id="vgcTo"></span></div>
+    <div class="vgc-field"><span class="lbl">p_conc</span><span class="v" id="vgcConc"></span></div>
+  </div>
+
+  <button class="vgc-runbtn" type="button" data-run>▶ 검증 실행 (AT SELECTION-SCREEN)</button>
+
+  <p class="vgc-h">MESSAGE</p>
+  <div class="vgc-msg" id="vgcMsg"></div>
+  <table class="vgc-sys" id="vgcSys" style="display:none"></table>
+
+  <div class="vgc-start"></div>
+
+  <div class="note"><b>조회 전에 막는다.</b> 입력 검증은 <code>AT SELECTION-SCREEN</code>에서 하고, <code>MESSAGE e###(class) WITH ...</code>로 사용자가 고칠 이유를 알립니다. <code>E</code>는 화면으로 되돌려 START를 잠그고, <code>S/I</code>는 흐름을 막지 않습니다. message class를 쓰면 다국어·일관 관리에 유리합니다.</div>
+</div>
+
+<script>
+window.VGC_CFG = {
+  scenarios: [
+    { label: '정상', from: '2026-07-01', to: '2026-07-03', conc: 'C001', msg: null },
+    { label: '날짜 누락', from: '', to: '2026-07-03', conc: 'C001', msg: { no: '001', text: '조회 시작일과 종료일을 모두 입력하세요.' } },
+    { label: 'from > to', from: '2026-07-05', to: '2026-07-01', conc: 'C001', msg: { no: '002', text: '시작일 &1 이 종료일 &2 보다 늦습니다.', v1: '2026-07-05', v2: '2026-07-01' } },
+    { label: '없는 공연 C999', from: '2026-07-01', to: '2026-07-03', conc: 'C999', msg: { no: '004', text: '공연 &1 을(를) 찾을 수 없습니다.', v1: 'C999' } }
+  ]
+};
+</script>
+<script src="../_engine/validation-gate-console.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

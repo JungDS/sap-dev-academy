@@ -35,31 +35,87 @@
       <section class="lhead">
         <p class="lhead__eyebrow">New Open SQL / Modern ABAP SQL</p>
         <h1>ABAP SQL 정리 — 다음 단계로</h1>
-        <p class="lhead__direction">모던 ABAP SQL을 정리하고, 코드 구조의 OO로 넘어간다.</p>
+        <p class="lhead__direction">모던 ABAP SQL을 &quot;언제 무엇을 쓸지&quot;로 정리하고, 코드 구조의 OO로 넘어간다.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 19</span><span class="tag tag--ls">Lesson 7</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>여기까지의 ABAP SQL</h2>
+<section class="lblock"><h2>여기까지의 ABAP SQL 🗺️</h2>
 <ul>
 <li><strong>콤마·<code>@</code>·strict</strong> — classic과 다른 modern SQL의 기본.</li>
-<li><strong><code>@DATA( )</code></strong> — 결과 테이블 인라인 선언.</li>
-<li><strong>SQL 식</strong>(CASE·CAST·COALESCE)·<strong>문자/날짜 함수</strong> — DB에서 값 가공.</li>
+<li><strong><code>@DATA( )</code></strong> — 결과 테이블을 SELECT 자리에서 인라인 선언.</li>
+<li><strong>SQL 식</strong>(<code>CASE</code>·<code>CAST</code>·<code>COALESCE</code>)·<strong>문자/날짜 함수</strong> — DB에서 값 가공.</li>
 <li><strong><code>SELECT FROM @itab</code></strong> — <button class="term" type="button" data-term="메모리">메모리</button> 테이블도 SQL로.</li>
 </ul>
-<p>이제 데이터 접근(읽기·가공)은 현대적이다. 곧 배울 <strong>CDS View</strong>(CH22)는 이 ABAP SQL을
-<strong>재사용 가능한 뷰</strong>로 끌어올린 것이다 — 여기서 익힌 SQL 감각이 그대로 쓰인다.</p>
-</section><section class="lblock"><h2>다음은 — 코드 구조를 객체로</h2>
-<p>문법(CH18)·SQL(CH19)을 현대화했다. 그런데 CH17에서 ALV를 만들 때 객체·메서드를
-&quot;블랙박스&quot;로 빌려 썼을 뿐, <strong>직접 클래스를 설계</strong>하진 않았다. 이제 코드 구조 자체를
-객체로 설계하는 <strong>OO ABAP</strong> → <strong>CH20</strong>.</p>
-</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+</section><section class="lblock"><h2>언제 무엇을 쓸까 — 선택 기준 🧭</h2>
+<p>이 챕터의 핵심은 문법 암기가 아니라 <strong>선택 기준</strong>이다. &quot;modern이니까 무조건 SQL로&quot;가 아니라, <strong>DB가 잘하는 집합 연산·결과 컬럼 계산은 SQL에</strong>, <strong>절차적 판단·사용자 상호작용은 ABAP에</strong> 둔다.</p>
+<table>
+<thead>
+<tr>
+<th>상황</th>
+<th>선택</th>
+<th>이유</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>DB 컬럼과 ABAP 변수 경계가 헷갈린다</td>
+<td><code>@</code> host variable</td>
+<td>ABAP 값임을 SQL 안에서 명확히</td>
+</tr>
+<tr>
+<td>SELECT list가 길다</td>
+<td>콤마 필드 목록</td>
+<td>필드 경계 분명 · strict mode</td>
+</tr>
+<tr>
+<td>짧은 조회 결과를 바로 쓴다</td>
+<td><code>INTO TABLE @DATA( )</code></td>
+<td>target을 SELECT 가까이</td>
+</tr>
+<tr>
+<td>단순 상태 컬럼이 필요하다</td>
+<td>SQL <code>CASE</code></td>
+<td>DB에서 결과 컬럼 계산</td>
+</tr>
+<tr>
+<td>null을 표시값으로 바꾼다</td>
+<td><code>COALESCE</code></td>
+<td>DB null 대체</td>
+</tr>
+<tr>
+<td>날짜·문자열 일부 가공</td>
+<td>SQL function</td>
+<td>결과 컬럼으로 계산</td>
+</tr>
+<tr>
+<td><button class="term" type="button" data-term="메모리">메모리</button> 데이터를 SQL식으로 재가공</td>
+<td><code>SELECT FROM @itab</code></td>
+<td>internal table을 source로</td>
+</tr>
+<tr>
+<td>결과를 key로 자주 조회한다</td>
+<td>명시 타입 + key</td>
+<td><code>@DATA( )</code>는 empty key</td>
+</tr>
+<tr>
+<td>복잡한 업무 규칙을 표현한다</td>
+<td>ABAP 코드</td>
+<td>SQL에 과적하지 않기</td>
+</tr>
+</tbody></table>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">SQL Decision Cards (상황에 맞는 도구 고르기)</span><a class="embed__open" href="../../../embeds/abap/CH19-L07-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH19-L07-S01.html" loading="lazy" title="SQL Decision Cards (상황에 맞는 도구 고르기)"></iframe></figure>
+</section><section class="lblock"><h2>흔한 실수와 점검 🚧</h2>
 <ul>
-<li><strong>classic/modern 혼용</strong> → 한 SELECT 안에서 섞지 않는다(콤마면 <code>@</code>까지 일관되게).</li>
-<li><strong>SQL에 업무 로직 과적</strong> → 복잡한 규칙은 ABAP/CDS·클래스로 분리.</li>
+<li><strong>classic/modern 혼용</strong> → 한 SELECT 안에서 섞지 않는다(콤마를 쓰면 <code>@</code>까지 일관되게).</li>
+<li><strong>SQL에 업무 로직 과적</strong> → <code>CASE</code>가 된다고 모든 조건을 SELECT list에 넣지 않는다. 복잡한 규칙은 ABAP/이후 구조화로.</li>
+<li><strong><code>@DATA( )</code>가 항상 최선은 아님</strong> → key로 자주 조회하거나 타입을 여러 모듈이 공유하면 명시 타입이 낫다.</li>
+<li><strong><code>@itab</code>은 &quot;DB SELECT 없이 SQL 쓰는 멋진 방법&quot;이 아님</strong> → <button class="term" type="button" data-term="메모리">메모리</button>에 있는 적당한 데이터에 SQL을 적용하는 선택지일 뿐.</li>
 </ul>
+</section><section class="lblock"><h2>다음은 — 코드 구조를 객체로 🧱</h2>
+<p>데이터 접근(읽기·가공)은 이제 현대적이다. 곧 배울 <a href="CH22-L01.html">CDS View</a>는 이 ABAP SQL을 <strong>재사용 가능한 뷰</strong>로 끌어올린 것 — 여기서 익힌 SQL 감각이 그대로 쓰인다.</p>
+<p>그리고 문법(지난 챕터)·SQL(이 챕터)을 현대화했지만, <a href="CH17-L01.html">ALV를 만들 때</a>는 객체·메서드를 &quot;블랙박스&quot;로 빌려 썼을 뿐 <strong>직접 클래스를 설계</strong>하진 않았다. 이제 코드 구조 자체를 객체로 설계하는 <a href="CH20-L01.html">OO ABAP</a>로 간다.</p>
 <hr>
 <p>데이터는 현대적으로 다룬다. 배운 모던 SQL을 <strong>콘서트앱</strong>에 적용해 보자 →
-<strong>CH19-L08(실습)</strong>.</p>
+<a href="CH19-L08.html">실습 — 콘서트앱 모던 SQL</a>.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

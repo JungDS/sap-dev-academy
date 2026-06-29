@@ -68,7 +68,7 @@
         if (mode === 'toolbar') { log('toolbar', '버튼 추가됨 → function=ZCANCEL (눌리면 user_command로 — 다음 레슨)'); return; }
         var picked = Object.keys(sel).filter(function (k) { return sel[k]; }).map(Number);
         if (!picked.length) { log('on_user_command', 'e_ucomm=ZCANCEL  ⚠ 선택된 행 없음 — 안내 후 종료'); return; }
-        log('on_user_command', 'e_ucomm=ZCANCEL  선택 행=' + picked.map(function (i) { return ROWS[i].id; }).join(',') + '  → 취소 처리(DML+잠금: CH24/25)');
+        log('on_user_command', 'e_ucomm=ZCANCEL  선택 행=' + picked.map(function (i) { return ROWS[i].id; }).join(',') + '  → 취소 처리(실제는 DML·잠금 필요)');
         picked.forEach(function (i) { ROWS[i].st = 'X'; sel[i] = false; });
         render(); log('refresh_table_display', '취소 반영 후 갱신');
       });

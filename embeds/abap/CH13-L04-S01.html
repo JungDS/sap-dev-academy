@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<!-- CH13-L04-S01 — 엔진: where-having-pipeline · _autoheight. 콘텐츠=레슨 전용(WHERE↔HAVING 2단 필터, CH13 L04).
+     config=window.WHP_CFG. 게이팅: classic WHERE/GROUP BY/HAVING/COUNT 개념만 · ORDER BY/modern/comma 없음. -->
+<html lang="ko" data-eng="where-having-pipeline">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WHERE·HAVING 2단 필터 파이프라인 · CH13-L04-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/where-having-pipeline.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">WHERE·HAVING 2단 필터 파이프라인 <small>(행 필터 vs 그룹 필터)</small></p>
+  <p class="lead">한 단계씩 진행하며 <code>WHERE</code>는 <b>개별 행</b>을, <code>HAVING</code>은 <b>그룹 전체</b>를 어떻게 떨어뜨리는지 보세요. 집계 조건(<code>COUNT</code>)은 그룹이 생긴 <b>뒤</b>에야 의미가 있어 <code>HAVING</code>에 둡니다.</p>
+
+  <div class="whp-stages"></div>
+
+  <div class="whp-ctrl">
+    <button class="whp-btn" type="button" data-next>▶ 다음 단계</button>
+    <button class="whp-reset" type="button" data-reset>↺ 리셋</button>
+    <span class="whp-prog" data-progress></span>
+  </div>
+  <p class="whp-fb" id="whpFb"></p>
+
+  <div class="whp-code">
+    <div class="whp-code__hd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span><span style="margin-left:auto">classic</span></div>
+    <div data-code></div>
+  </div>
+
+  <div id="whpData"></div>
+
+  <div class="note"><b>순서가 핵심.</b> <code>WHERE → GROUP BY → HAVING</code>. WHERE는 묶기 전 행을, HAVING은 묶은 뒤 그룹을 거릅니다. <code>WHERE COUNT(*) &gt;= 2</code>처럼 집계 조건을 WHERE에 두면 오류 — 아직 COUNT가 없기 때문입니다.</div>
+</div>
+
+<script>
+window.WHP_CFG = {
+  whereField: 'age', whereVal: 20,
+  groupKey: 'dept_id', havingVal: 2,
+  hlMap: { where: 2, group: 3, having: 4 },
+  code: [
+    'SELECT dept_id COUNT( * ) AS cnt',
+    '  FROM ztperson',
+    '  WHERE age >= 20',
+    '  GROUP BY dept_id',
+    '  HAVING COUNT( * ) >= 2.'
+  ],
+  people: [
+    { dept_id: 10, age: 25, salary: 300 },
+    { dept_id: 10, age: 31, salary: 400 },
+    { dept_id: 10, age: 17, salary: 200 },
+    { dept_id: 20, age: 42, salary: 500 },
+    { dept_id: 30, age: 22, salary: 350 },
+    { dept_id: 30, age: 29, salary: 450 }
+  ]
+};
+</script>
+<script src="../_engine/where-having-pipeline.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

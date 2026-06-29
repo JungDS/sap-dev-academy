@@ -35,62 +35,101 @@
       <section class="lhead">
         <p class="lhead__eyebrow">Classic DDIC View·유지보수 객체</p>
         <h1>Database View와 Open SQL JOIN 비교</h1>
-        <p class="lhead__direction">JOIN을 DDIC에 박아 재사용 — Database View vs 코드 JOIN.</p>
+        <p class="lhead__direction">반복되는 JOIN을 DDIC에 등록해 재사용 — Database View vs 코드 JOIN.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 14</span><span class="tag tag--ls">Lesson 1</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
 <section class="lblock"><h2>같은 JOIN을 또 짜기 싫다</h2>
-<p>CH13에서 사람⨝부서 JOIN을 코드로 짰다. 같은 <button class="term" type="button" data-term="JOIN">조인</button>을 여러 프로그램이 반복하면
-낭비다. 그 JOIN을 <strong>DDIC에 객체로 박아</strong> 테이블처럼 쓰고 싶다 — <button class="term" type="button" data-term="Database View">Database View</button>다.</p>
-</section><section class="lblock"><h2>Database View</h2>
-<p><button class="term" type="button" data-term="Database View">Database View</button>는 여러 테이블을 <strong>Foreign Key 관계로 <button class="term" type="button" data-term="JOIN">조인</button></strong>해 정의한 읽기전용
-DDIC 뷰다. 만든 뒤엔 <strong>테이블처럼</strong> SELECT한다.</p>
+<p><a href="CH13-L01.html">Chapter 13 · JOIN</a>에서 여러 테이블을 코드의 JOIN으로 붙였다. 즉시
+이해하기는 좋지만, <strong>같은 결합을 여러 프로그램이 반복</strong>하면 문제가 생긴다. 공연 조회·
+예매 확인·정산 리포트가 모두 <code>zconcert</code>와 <code>zperf</code>를 같은 조건으로 붙인다면, 필드명이
+바뀌거나 <button class="term" type="button" data-term="JOIN">조인</button> 조건을 보강할 때 <strong>프로그램마다</strong> 고쳐야 한다.</p>
+<p><button class="term" type="button" data-term="Database View">Database View</button>는 이 반복 조회 구조를 <strong>DDIC에 이름 붙여 등록</strong>하는 방법이다.</p>
+</section><section class="lblock"><h2>Database View — JOIN을 DDIC에 등록</h2>
+<p><button class="term" type="button" data-term="Database View">Database View</button>는 하나 이상의 basis table에서 필요한 컬럼을 골라 만드는 DDIC 객체다.
+여러 테이블이면 <strong>inner join</strong>으로 결합한다. 활성화하면 DB 쪽에도 SQL View가 만들어져
+ABAP SQL의 <code>FROM</code> 자리에서 <strong>테이블처럼</strong> 읽을 수 있다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
-4</pre><pre class="abap-editor__code"><code><span class="tok-com">" 뷰 ZV_PERSON_DEPT 가 person⨝dept 를 미리 조인해 둔 것</span>
-<span class="tok-kw">SELECT</span> persid name deptname
-  <span class="tok-kw">FROM</span> zv_person_dept
-  <span class="tok-kw">INTO</span> <span class="tok-kw">CORRESPONDING</span> <span class="tok-kw">FIELDS</span> <span class="tok-kw">OF</span> <span class="tok-kw">TABLE</span> lt_out.</code></pre></div></div>
-</section><section class="lblock"><h2>View vs 코드 JOIN</h2>
+4
+5
+6
+7
+8
+9
+10</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>: gt_concert <span class="tok-kw">TYPE</span> <span class="tok-kw">STANDARD</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> zv_concert,
+      gs_concert <span class="tok-kw">TYPE</span> zv_concert.
+
+<span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> zv_concert
+  <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> gt_concert.
+
+<span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> gt_concert <span class="tok-kw">INTO</span> gs_concert.
+  <span class="tok-kw">WRITE</span>: / gs_concert-concert_id, gs_concert-perf_name,
+           gs_concert-date,       gs_concert-hall_id.
+<span class="tok-kw">ENDLOOP</span>.</code></pre></div></div>
+<p>프로그램은 JOIN 조건을 <strong>모르는 채로도</strong> 결합된 결과를 읽는다 — <button class="term" type="button" data-term="JOIN">조인</button> 정의가 View 안에
+들어 있기 때문이다.</p>
+<blockquote>
+<p>📌 중요한 제한 둘. ① Database View는 <strong>데이터를 새로 저장하지 않는다</strong>(결과는 basis
+table에서 읽힌다). ② 여러 테이블 View는 <strong>inner join</strong>이라, 공연 코드는 있는데 공연
+마스터가 없으면 그 행은 <strong>결과에서 사라진다</strong>.</p>
+</blockquote>
+</section><section class="lblock"><h2>View vs 코드 JOIN — 책임 위치가 다르다</h2>
 <table>
 <thead>
 <tr>
-<th></th>
+<th>비교</th>
 <th><button class="term" type="button" data-term="Database View">Database View</button></th>
-<th>Open SQL JOIN</th>
+<th>코드 JOIN</th>
 </tr>
 </thead>
 <tbody><tr>
 <td>정의 위치</td>
-<td>DDIC(재사용)</td>
-<td>코드(그때그때)</td>
+<td>SE11의 DDIC 객체</td>
+<td>ABAP 프로그램 소스</td>
 </tr>
 <tr>
-<td><button class="term" type="button" data-term="JOIN">조인</button> 기준</td>
-<td>보통 Foreign Key</td>
-<td>ON 자유</td>
+<td>재사용</td>
+<td>여러 프로그램이 같은 View</td>
+<td>프로그램마다 작성</td>
 </tr>
 <tr>
-<td>성격</td>
-<td>읽기전용</td>
-<td>조회 구문</td>
+<td>결합</td>
+<td>DDIC에 고정된 inner join</td>
+<td>inner·left outer 등 선택</td>
+</tr>
+<tr>
+<td>변경 영향</td>
+<td>View 쓰는 프로그램 전체</td>
+<td>해당 프로그램 중심</td>
+</tr>
+<tr>
+<td>적합</td>
+<td>안정적인 공통 조회 관점</td>
+<td>조건·결합이 매번 다른 조회</td>
 </tr>
 </tbody></table>
-<ul>
-<li><strong>여러 곳이 같은 조인</strong> → View로 재사용.</li>
-<li><strong>한 번뿐/유연한 조인</strong> → 코드 JOIN.</li>
-</ul>
-<blockquote>
-<p>📌 클래식 <strong>Database View의 조인은 INNER</strong>다(양쪽에 다 있는 행만 나온다). 한쪽만 있어도 남기는 LEFT OUTER가 필요하면 <strong>Maintenance View</strong>(L04, FK 기반 outer)나 코드 JOIN(CH13-L02)을 쓴다.</p>
-</blockquote>
+<p>아래에서 같은 결과가 &quot;코드 JOIN&quot;과 &quot;Database View&quot; 두 정의에서 나오는 걸 확인하고,
+마스터가 빠졌을 때 inner join이 행을 어떻게 떨어뜨리는지 직접 보자.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">코드 JOIN vs Database View 비교 보드</span><a class="embed__open" href="../../../embeds/abap/CH14-L01-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH14-L01-S01.html" loading="lazy" title="코드 JOIN vs Database View 비교 보드"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>View로 쓰기 시도</strong> → <button class="term" type="button" data-term="Database View">Database View</button>는 읽기전용.</li>
-<li><strong>FK 없으면 <button class="term" type="button" data-term="JOIN">조인</button> 정의 까다로움</strong> → 보통 Foreign Key 기반.</li>
+<li><strong>테이블 복사본으로 오해</strong> → View엔 데이터가 없다. basis table이 바뀌면 결과도 바뀐다.</li>
+<li><strong>모든 JOIN을 View로</strong> → 조건이 매번 다르거나, 누락 행도 보존해야 하거나, 계산
+컬럼이 필요하면 View가 답이 아니다. 한쪽만 있어도 남기려면 코드의 <strong>LEFT OUTER
+JOIN</strong>(<a href="CH13-L02.html">Chapter 13 · LEFT OUTER JOIN</a>)이나 별도 검증 리포트를 쓴다.</li>
+<li><strong>View Field 과다 노출</strong> → View Field는 외부 프로그램의 <strong>구조 계약</strong>이다. 실제 읽는
+필드만 노출한다(나중에 제거하면 쓰던 프로그램이 깨진다).</li>
+</ul>
+</section><section class="lblock"><h2>정리</h2>
+<ul>
+<li><button class="term" type="button" data-term="Database View">Database View</button>는 반복 JOIN을 DDIC의 공통 조회 관점으로 옮기는 도구다.</li>
+<li>여러 테이블이면 <strong>inner join</strong> 성격 — 짝 없는 행은 빠진다.</li>
+<li>저장소가 아니며, 누락 보존·복잡 계산의 만능 도구도 아니다.</li>
 </ul>
 <hr>
-<p>여러 테이블 조인 뷰는 봤다. 한 테이블의 <strong>일부 필드만</strong> 노출하는 뷰는? → Projection View(다음 레슨).</p>
+<p>여러 테이블을 합치는 View는 봤다. 그럼 <strong>한 테이블에서 필요한 필드만</strong> 좁게 보여 주는 View는? → 다음 레슨(Projection View).</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

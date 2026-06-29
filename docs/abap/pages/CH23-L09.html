@@ -35,13 +35,55 @@
       <section class="lhead">
         <p class="lhead__eyebrow">RAP / ABAP Cloud 입문</p>
         <h1>실습 — 예매 RAP 동작 구현</h1>
-        <p class="lhead__direction">콘서트앱 12단계 — 예약/취소 action과 정원 validation.</p>
+        <p class="lhead__direction">콘서트 예매 RAP — 정원 validation·취소 action·상태 determination.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 23</span><span class="tag tag--ls">Lesson 9</span><span class="tag tag--lv">고급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>🎫 12단계 — RAP로 트랜잭션</h2>
-<p>CH22의 CDS 위에, 예매 RAP 앱의 핵심 동작을 직접 선언·구현한다 — 정원 초과 검증과
-취소 action.</p>
+<section class="lblock"><h2>🎫 조각을 하나의 예매 흐름으로</h2>
+<p>이제 이 챕터의 조각을 하나의 콘서트 예매 흐름으로 묶는다. 목표는 &quot;RAP 앱 전체를 완벽히 운영 배포한다&quot;가
+아니라, RAP 구조를 실제 예매 시나리오에 연결해 보는 것이다. 실습의 핵심은 둘이다 — <strong>정원 초과 예매는
+validation으로 막고, 취소는 action으로 명시 실행한다</strong>. 여기에 생성 시 기본 상태를 determination으로 채우면
+세 로직의 차이를 한 번에 확인할 수 있다.</p>
+<table>
+<thead>
+<tr>
+<th>단계</th>
+<th>산출물</th>
+<th>역할</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td><code>ZI_Booking</code></td>
+<td>예매 root interface view</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>ZC_Booking</code></td>
+<td>transactional projection view</td>
+</tr>
+<tr>
+<td>3</td>
+<td>BDEF</td>
+<td>create/update/delete · validation · determination · action 선언</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Behavior Pool</td>
+<td>validation/determination/action 구현 위치</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Service Definition</td>
+<td><code>ZC_Booking</code> expose</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Service Binding</td>
+<td>OData로 활성화하고 Preview 확인</td>
+</tr>
+</tbody></table>
+</section><section class="lblock"><h2>BDEF — 세 로직을 선언</h2>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -50,15 +92,32 @@
 6
 7
 8
-9</pre><pre class="abap-editor__code"><code><span class="tok-com">" BDEF</span>
+9
+10
+11
+12
+13
+14
+15
+16
+17</pre><pre class="abap-editor__code"><code>managed <span class="tok-kw">implementation</span> <span class="tok-kw">in</span> <span class="tok-kw">class</span> zbp_i_booking unique;
+
 define behavior <span class="tok-kw">for</span> ZI_Booking alias Booking
 persistent <span class="tok-kw">table</span> zbooking
 lock master
 {
-  <span class="tok-kw">create</span>; <span class="tok-kw">update</span>; <span class="tok-kw">delete</span>;
-  validation validateCapacity <span class="tok-kw">on</span> <span class="tok-kw">save</span> { <span class="tok-kw">field</span> seats, concert_id, perf_no; }
+  <span class="tok-kw">create</span>;
+  <span class="tok-kw">update</span>;
+  <span class="tok-kw">delete</span>;
+
+  validation validate_capacity <span class="tok-kw">on</span> <span class="tok-kw">save</span> { <span class="tok-kw">field</span> seats, concert_id, perf_no; }
+  determination set_status_new <span class="tok-kw">on</span> <span class="tok-kw">modify</span> { <span class="tok-kw">create</span>; }
   <span class="tok-kw">action</span> cancel result [<span class="tok-num">1</span>] $self;
+
+  <span class="tok-kw">field</span> ( readonly:<span class="tok-kw">update</span> ) booking_id;
+  <span class="tok-kw">mapping</span> <span class="tok-kw">for</span> zbooking { booking_id = booking_id; }
 }</code></pre></div></div>
+<p>정원 validation의 behavior pool 흐름은 이렇게 설계한다(골격).</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -67,29 +126,87 @@ lock master
 6
 7
 8
-9</pre><pre class="abap-editor__code"><code><span class="tok-com">" Behavior Pool — 정원 검증</span>
-<span class="tok-kw">METHOD</span> validateCapacity.
-  <span class="tok-kw">READ</span> <span class="tok-kw">ENTITIES</span> <span class="tok-kw">OF</span> zi_booking <span class="tok-kw">IN</span> <span class="tok-kw">LOCAL</span> <span class="tok-kw">MODE</span>
-    <span class="tok-kw">ENTITY</span> Booking <span class="tok-kw">FIELDS</span> ( concert_id perf_no seats )
-    <span class="tok-kw">WITH</span> <span class="tok-kw">CORRESPONDING</span> #( keys ) RESULT <span class="tok-kw">DATA</span>(bks).
-  <span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> bks <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(b).
-    <span class="tok-com">" 회차 정원·기존 합계 조회 → 초과면 APPEND TO failed/reported</span>
+9
+10
+11
+12</pre><pre class="abap-editor__code"><code><span class="tok-kw">METHOD</span> validate_capacity.
+  <span class="tok-kw">READ</span> <span class="tok-kw">ENTITIES</span> <span class="tok-kw">OF</span> ZI_Booking <span class="tok-kw">IN</span> <span class="tok-kw">LOCAL</span> <span class="tok-kw">MODE</span>
+    <span class="tok-kw">ENTITY</span> Booking <span class="tok-kw">FIELDS</span> ( booking_id concert_id perf_no seats )
+    <span class="tok-kw">WITH</span> <span class="tok-kw">CORRESPONDING</span> #( keys )
+    RESULT <span class="tok-kw">DATA</span>(lt_bookings).
+
+  <span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_bookings <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(ls_booking).
+    <span class="tok-com">" 1. concert_id·perf_no로 회차 정원을 찾는다.</span>
+    <span class="tok-com">" 2. 이미 예약된 좌석 수 + 이번 요청 좌석 수를 비교한다.</span>
+    <span class="tok-com">" 3. 초과하면 failed-booking·reported-booking에 기록한다.</span>
   <span class="tok-kw">ENDLOOP</span>.
 <span class="tok-kw">ENDMETHOD</span>.</code></pre></div></div>
-</section><section class="lblock"><h2>직접 해 볼 과제</h2>
-<ol>
-<li><code>validateCapacity</code>에서 정원 초과 예매를 <code>failed</code>/<code>reported</code>로 막는다.</li>
-<li><code>cancel</code> action으로 상태를 &#39;C&#39;로 바꾼다.</li>
-<li>(도전) <code>setStatus</code> determination으로 생성 시 기본 상태를 &#39;N&#39;으로.</li>
-</ol>
-</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<p>취소 action은 상태를 바꾸는 명시 동작이다(전체 구현은 줄이고, action이 validation과 <em>다른 종류</em>임을 확인한다).</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5</pre><pre class="abap-editor__code"><code><span class="tok-kw">METHOD</span> cancel.
+  <span class="tok-com">" 1. keys로 취소 대상 예매를 읽는다.</span>
+  <span class="tok-com">" 2. 이미 취소된 건인지 확인한다.</span>
+  <span class="tok-com">" 3. 취소 가능하면 status를 'C'로 바꾸는 modify request를 수행한다.</span>
+<span class="tok-kw">ENDMETHOD</span>.</code></pre></div></div>
+</section><section class="lblock"><h2>직접 실행해 보기</h2>
+<p>아래 시뮬레이터에서 예매를 생성하면 determination이 상태를 채우고 validation이 정원을 검사한다. 정원을
+넘으면 <code>failed/reported</code>로 거부되고, 취소는 action으로 실행된다 — <strong>어느 RAP 단계에서 무엇이 바뀌는지</strong> 보자.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">예매 RAP 런타임 시뮬레이터</span><a class="embed__open" href="../../../embeds/abap/CH23-L09-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH23-L09-S01.html" loading="lazy" title="예매 RAP 런타임 시뮬레이터"></iframe></figure>
+</section><section class="lblock"><h2>확인 체크리스트</h2>
+<table>
+<thead>
+<tr>
+<th>케이스</th>
+<th>입력</th>
+<th>기대 결과</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>정상 생성</td>
+<td>좌석 2, 잔여 10</td>
+<td>저장 성공, 상태 <code>N</code></td>
+</tr>
+<tr>
+<td>정원 초과</td>
+<td>좌석 12, 잔여 10</td>
+<td>validation 실패, <code>failed/reported</code> 메시지</td>
+</tr>
+<tr>
+<td>취소</td>
+<td>상태 <code>N</code> 예매에 cancel</td>
+<td>상태 <code>C</code></td>
+</tr>
+<tr>
+<td>중복 취소</td>
+<td>이미 <code>C</code>인 예매에 cancel</td>
+<td>실패 메시지 또는 no-op 정책</td>
+</tr>
+<tr>
+<td>service preview</td>
+<td>binding 활성화 후 preview</td>
+<td>Booking 목록·<code>cancel</code> action 노출</td>
+</tr>
+</tbody></table>
+</section><section class="lblock"><h2>흔한 실수와 점검 🚧</h2>
 <ul>
-<li><strong>IN LOCAL MODE 누락</strong> → 핸들러 내부 읽기/수정은 보통 <code>IN LOCAL MODE</code>(CH23-L07).</li>
-<li><strong>failed/reported 누락</strong> → 검증 실패를 안 알리면 저장이 안 막힌다.</li>
+<li><strong>validation 실패를 화면 메시지로만</strong> → 실패 instance를 <code>failed</code>에, 사용자 메시지를 <code>reported</code>에 기록해야
+runtime·UI가 제대로 반응한다.</li>
+<li><strong>정원 계산을 현재 입력 좌석만 보기</strong> → 이미 예약된 좌석·취소 제외·같은 회차 합계·현재 transaction 변경분을
+함께 봐야 한다(실습에선 이 기준을 설계 질문으로 적어 둔다).</li>
+<li><strong>action과 determination 섞기</strong> → 취소는 사용자가 명시 실행하므로 action, 생성 시 기본 상태는 자동 결정이므로
+determination이 자연스럽다(<a href="CH23-L07.html">Validation / Determination / Action 개요</a>).</li>
+<li><strong><code>IN LOCAL MODE</code> 남용</strong> → behavior implementation에서 해당 RAP BO 자체를 읽는 특수 EML 형태다(<a href="CH23-L05.html">Behavior
+Implementation 기초</a>). 일반 소비 프로그램에 습관적으로 붙이는 문법이 아니다.</li>
+<li><strong>직접 DML로 우회</strong> → behavior pool 안에서 테이블을 직접 바꾸면 RAP buffer·save sequence를 우회할 수 있다.
+직접 DB 변경은 <a href="CH24-L01.html">INSERT / UPDATE / MODIFY / DELETE 실무 기준</a>에서 따로 다룬다.</li>
 </ul>
 <hr>
-<p>CH09부터 키운 콘서트 예매 앱이 RAP 트랜잭션 앱으로 완성됐다. 이제 Track-2 실무
-디테일 — 직접 DB 변경(DML) → <strong>CH24</strong>.</p>
+<p>이 과정에서 키운 콘서트 예매 앱이 RAP 트랜잭션 앱으로 완성됐다. Track-1은 &quot;읽기 프로그램&quot;에서 &quot;현대 SAP
+트랜잭션 앱의 기본 구조&quot;까지 한 바퀴를 돌았다. 이제 Track-2 실무 디테일 — 직접 DB 변경(DML) →
+<a href="CH24-L01.html">INSERT / UPDATE / MODIFY / DELETE 실무 기준</a>.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<!-- CH17-L06-S01 — 엔진: alv-variant-store · _autoheight. 콘텐츠=레슨 전용(Display Variant 사용자별 컬럼순서 저장/복원, CH17 L06).
+     config=window.AVS_CFG. 게이팅: classic DISVARIANT·report=sy-repid·is_variant/i_save·표시방식 저장 개념만 · modern 없음. -->
+<html lang="ko" data-eng="alv-variant-store">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>사용자별 보기 저장 · CH17-L06-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/alv-variant-store.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">사용자별 보기 저장 <small>(Display Variant)</small></p>
+  <p class="lead">사용자 A·B가 저장한 Variant를 <b>열기</b>하면 미리보기의 <b>컬럼 순서</b>가 그 사용자의 방식으로 복원됩니다. 저장되는 건 <b>데이터가 아니라 표시 방식</b>입니다. <code>report</code>를 비우면 어떤 경고가 뜨는지도 보세요.</p>
+
+  <div class="avs-ctrl">
+    <span class="avs-h" style="margin:0">DISVARIANT</span>
+    <span class="avs-report"></span>
+    <button class="avs-reset" type="button" data-reset>↺ 원래 순서</button>
+  </div>
+
+  <p class="avs-h">미리보기</p>
+  <div id="avsPreview"></div>
+
+  <p class="avs-h">저장된 Variant</p>
+  <div class="avs-variants"></div>
+
+  <div id="avsMsg"></div>
+
+  <div class="note"><b>Variant ≠ 데이터 저장.</b> 컬럼 순서·필터·정렬 같은 <b>표시 방식</b>이 저장됩니다. <code>DISVARIANT-report = sy-repid</code>로 프로그램을 식별하고, <code>is_variant</code>·<code>i_save</code>를 display에 넘깁니다.</div>
+</div>
+
+<script>
+window.AVS_CFG = {
+  cols: [
+    { key: 'booking_id', label: '예매번호' },
+    { key: 'customer', label: '예매자' },
+    { key: 'seats', label: '좌석수' },
+    { key: 'status', label: '상태' }
+  ],
+  rows: [
+    { booking_id: '5001', customer: '정훈영', seats: '2', status: 'N' },
+    { booking_id: '5002', customer: '손흥민', seats: '4', status: 'N' },
+    { booking_id: '5003', customer: '아이유', seats: '3', status: 'N' }
+  ],
+  variants: [
+    { name: '사용자 A', order: ['customer', 'seats', 'booking_id', 'status'] },
+    { name: '사용자 B', order: ['status', 'booking_id', 'customer', 'seats'] }
+  ]
+};
+</script>
+<script src="../_engine/alv-variant-store.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

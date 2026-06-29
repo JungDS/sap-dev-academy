@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<!-- CH18-L04-S01 — 엔진: read-vs-tabexpr · _autoheight. 콘텐츠=레슨 전용(Table Expression vs READ TABLE, CH18 L04).
+     config=window.RVT_CFG. 게이팅: modern table expression tab[ ]·line_exists·line_index(CH18 도입)·예외는 개념만(TRY/CATCH는 CH20). -->
+<html lang="ko" data-eng="read-vs-tabexpr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>READ TABLE vs Table Expression 비교기 · CH18-L04-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/read-vs-tabexpr.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">READ TABLE vs Table Expression <small>(예외 · line_exists · line_index)</small></p>
+  <p class="lead">검색 키를 골라 네 가지 접근을 비교하세요. <b>B001/B002</b>는 존재, <b>B999</b>는 없습니다. <code>READ TABLE</code>은 <code>sy-subrc</code>만 세팅하지만, <code>lt[ ]</code>는 없는 행을 직접 읽으면 <b>예외</b>가 납니다.</p>
+
+  <p class="rvt-h">검색 키 booking_id</p>
+  <div class="rvt-ctrl"><div class="rvt-ids"></div></div>
+
+  <div id="rvtData"></div>
+
+  <p class="rvt-h">네 가지 접근 결과</p>
+  <div id="rvtMethods"></div>
+
+  <div class="note"><b>짧지만 안전하게.</b> Table expression <code>lt[ ]</code>은 한 행을 값처럼 읽지만, 성공 여부는 <code>sy-subrc</code>가 아니라 <code>line_exists( )</code>로 확인합니다. 없는 행을 직접 읽으면 <code>CX_SY_ITAB_LINE_NOT_FOUND</code> 예외 — <code>line_exists</code>로 먼저 확인하세요.</div>
+</div>
+
+<script>
+window.RVT_CFG = {
+  keyField: 'booking_id', ids: ['B001', 'B002', 'B999'],
+  cols: [
+    { key: 'booking_id', label: 'booking_id' },
+    { key: 'customer', label: 'customer' },
+    { key: 'seats', label: 'seats' }
+  ],
+  rows: [
+    { booking_id: 'B001', customer: '정훈영', seats: '2' },
+    { booking_id: 'B002', customer: '김하나', seats: '1' },
+    { booking_id: 'B003', customer: '이도윤', seats: '4' }
+  ]
+};
+</script>
+<script src="../_engine/read-vs-tabexpr.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

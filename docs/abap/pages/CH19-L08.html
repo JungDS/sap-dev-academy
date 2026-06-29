@@ -35,12 +35,16 @@
       <section class="lhead">
         <p class="lhead__eyebrow">New Open SQL / Modern ABAP SQL</p>
         <h1>실습 — 콘서트앱 모던 SQL</h1>
-        <p class="lhead__direction">콘서트앱 — 조회를 @·콤마·@DATA로 현대화.</p>
+        <p class="lhead__direction">콘서트앱 — 조회를 @·콤마·@DATA로 현대화하되, 업무 결과를 검증한다.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 19</span><span class="tag tag--ls">Lesson 8</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>🎫 SELECT를 모던으로</h2>
-<p>CH12·CH13의 조회를 CH19 모던 SQL(<code>@</code>·콤마·<code>@DATA</code>)로 다듬는다.</p>
+<section class="lblock"><h2>🎫 SELECT를 모던으로 — 단, 결과는 검증</h2>
+<p><a href="CH12-L07.html">공연·상태로 예매 필터</a>·<a href="CH13-L08.html">공연별 예매현황 리포트</a>에서 만든 콘서트 조회를, 이 챕터의 모던 SQL(<code>@</code>·콤마·<code>@DATA</code>)로 다듬는다. 목표는 앱을 새로 만드는 게 아니라 <strong>이미 동작하는 조회를 모던 SQL 경계 안에서 안전하게</strong> 바꾸고, <strong>업무 결과가 그대로인지 검증</strong>하는 것이다.</p>
+<blockquote>
+<p>🚧 <strong>이 실습이 하지 않는 것</strong>: 예매 저장(DML)·lock·OO manager 클래스·CDS/RAP·예외 클래스. 모두 다음 챕터들의 주제다.</p>
+</blockquote>
+</section><section class="lblock"><h2>① 기본 조회 — @ · @DATA</h2>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -48,15 +52,20 @@
 5
 6
 7
-8</pre><pre class="abap-editor__code"><code><span class="tok-com">" classic (CH12-L07)</span>
-<span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> zbooking <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> lt_book
+8
+9
+10</pre><pre class="abap-editor__code"><code><span class="tok-com">" classic</span>
+<span class="tok-kw">DATA</span> lt_book <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> zbooking.
+<span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> zbooking
+  <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> lt_book
   <span class="tok-kw">WHERE</span> concert_id <span class="tok-kw">IN</span> s_conc.
 
-<span class="tok-com">" modern (CH19)</span>
+<span class="tok-com">" modern</span>
 <span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> zbooking
   <span class="tok-kw">WHERE</span> concert_id <span class="tok-kw">IN</span> @s_conc
   <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> @<span class="tok-kw">DATA</span>(lt_book).</code></pre></div></div>
-<p>공연별 <button class="term" type="button" data-term="Aggregate">집계</button>도 모던으로(인라인 결과 테이블).</p>
+<p><code>s_conc</code>는 selection screen에서 만들어진 range table이다. SQL 안에선 ABAP 값이므로 **<code>@s_conc</code>**로 표시한다.</p>
+</section><section class="lblock"><h2>② 공연별 집계 — LEFT OUTER JOIN · COALESCE · CASE</h2>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -64,27 +73,111 @@
 5
 6
 7
-8</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> c~concert_id, c~artist, c~capacity,
-       <span class="tok-kw">SUM</span>( b~seats ) <span class="tok-kw">AS</span> booked
+8
+9
+10
+11</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> c~concert_id, c~artist, c~capacity,
+       <span class="tok-kw">COALESCE</span>( <span class="tok-kw">SUM</span>( b~seats ), <span class="tok-num">0</span> ) <span class="tok-kw">AS</span> booked,
+       <span class="tok-kw">CASE</span> <span class="tok-kw">WHEN</span> <span class="tok-kw">COALESCE</span>( <span class="tok-kw">SUM</span>( b~seats ), <span class="tok-num">0</span> ) &gt;= c~capacity <span class="tok-kw">THEN</span> <span class="tok-str">'FULL'</span>
+            <span class="tok-kw">ELSE</span> <span class="tok-str">'OPEN'</span> <span class="tok-kw">END</span> <span class="tok-kw">AS</span> seat_status
   <span class="tok-kw">FROM</span> zconcert <span class="tok-kw">AS</span> c
   <span class="tok-kw">LEFT</span> <span class="tok-kw">OUTER</span> <span class="tok-kw">JOIN</span> zbooking <span class="tok-kw">AS</span> b
-    <span class="tok-kw">ON</span>  c~concert_id = b~concert_id
+    <span class="tok-kw">ON</span>  b~concert_id = c~concert_id
     <span class="tok-kw">AND</span> b~status &lt;&gt; <span class="tok-str">'C'</span>
+  <span class="tok-kw">WHERE</span> c~concert_id <span class="tok-kw">IN</span> @s_conc
   <span class="tok-kw">GROUP</span> <span class="tok-kw">BY</span> c~concert_id, c~artist, c~capacity
   <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> @<span class="tok-kw">DATA</span>(lt_stat).</code></pre></div></div>
+<p>여기 모던 SQL이 여럿 모였다 — 콤마 목록, <code>@s_conc</code>, <code>@DATA</code>, <strong><code>COALESCE</code></strong>(예매 없는 공연의 합계 null → 0), <strong><code>CASE</code></strong>(매진 상태 컬럼).</p>
+<blockquote>
+<p>🧩 <strong>별칭을 같은 SELECT 안에서 다시 못 쓴다.</strong> <code>SUM( b~seats ) AS booked</code>로 만든 <code>booked</code>를 같은 SELECT list의 <code>CASE</code>에서 바로 쓸 수 없다(SELECT list alias는 같은 list의 SQL expression operand로 불가). 그래서 <code>CASE</code> 안에서 <code>COALESCE( SUM( b~seats ), 0 )</code>를 <strong>반복</strong>한다. 길어 보여도 규칙을 지킨 코드다.</p>
+</blockquote>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">Concert Modern SQL Lab (ON vs WHERE · COALESCE)</span><a class="embed__open" href="../../../embeds/abap/CH19-L08-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH19-L08-S01.html" loading="lazy" title="Concert Modern SQL Lab (ON vs WHERE · COALESCE)"></iframe></figure>
+</section><section class="lblock"><h2>③ 가장 조심할 곳 — 취소 조건은 ON에 ⚠️</h2>
+<p>취소 예매(<code>status = &#39;C&#39;</code>) 제외 조건을 <strong>어디에 두느냐</strong>가 결과를 바꾼다.</p>
+<ul>
+<li><strong><code>ON</code>에 두면</strong>(<code>… ON b~concert_id = c~concert_id AND b~status &lt;&gt; &#39;C&#39;</code>): 예매가 없는 공연(C003)도 목록에 <strong>남는다</strong>(booked = 0).</li>
+<li><strong><code>WHERE</code>에 두면</strong>(<code>… WHERE b~status &lt;&gt; &#39;C&#39;</code>): outer join 뒤 WHERE가 <strong>오른쪽 null 행을 지워</strong>, 예매 없는 공연 C003가 <strong>사라진다.</strong></li>
+</ul>
+<p>예매 없는 공연도 보여 주는 게 목적이므로, <strong>오른쪽 테이블 조건은 <code>ON</code>에</strong> 둔다. 위 체험에서 직접 바꿔 보자.</p>
+</section><section class="lblock"><h2>결과 검증 ✅</h2>
+<p>샘플 데이터(<code>s_conc = C001·C002·C003</code>):</p>
+<table>
+<thead>
+<tr>
+<th>concert_id</th>
+<th>artist</th>
+<th align="right">cap</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>C001</td>
+<td>정훈영 Band</td>
+<td align="right">100</td>
+</tr>
+<tr>
+<td>C002</td>
+<td>ABAP Trio</td>
+<td align="right">50</td>
+</tr>
+<tr>
+<td>C003</td>
+<td>UI5 Night</td>
+<td align="right">80</td>
+</tr>
+</tbody></table>
+<p><code>zbooking</code>: 손흥민 C001 2(N), 아이유 C001 3(N), 차은우 C001 1(<strong>C</strong>=취소), 정훈영 C002 50(N).</p>
+<table>
+<thead>
+<tr>
+<th>concert_id</th>
+<th align="right">booked</th>
+<th>seat_status</th>
+<th>이유</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>C001</td>
+<td align="right">5</td>
+<td>OPEN</td>
+<td>취소 1건 제외, 2 + 3 만 합산</td>
+</tr>
+<tr>
+<td>C002</td>
+<td align="right">50</td>
+<td>FULL</td>
+<td>예약 좌석이 capacity와 같음</td>
+</tr>
+<tr>
+<td>C003</td>
+<td align="right">0</td>
+<td>OPEN</td>
+<td>예매 없음 → <code>SUM</code> null → <code>COALESCE</code>로 0</td>
+</tr>
+</tbody></table>
+<p>실행 후 확인할 것: ① <code>lt_book</code> 행 수 = <code>sy-dbcnt</code> ② <code>booked</code> 값 ③ <code>seat_status</code>가 capacity 기준과 맞는지 ④ <strong>C003가 사라지지 않는지</strong> ⑤ 취소 <code>C</code>가 합계에서 빠졌는지.</p>
+</section><section class="lblock"><h2>결과 메시지 — string template</h2>
+<p>SQL이 아니라 ABAP 출력이다. <a href="CH18-L05.html">지난 챕터</a>의 string template로 확인한다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3</pre><pre class="abap-editor__code"><code><span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_stat <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(ls_stat).
+  <span class="tok-kw">WRITE</span> / |{ ls_stat-concert_id } { ls_stat-artist } 예약 { ls_stat-booked }/{ ls_stat-capacity } - { ls_stat-seat_status }|.
+<span class="tok-kw">ENDLOOP</span>.</code></pre></div></div>
 </section><section class="lblock"><h2>직접 해 볼 과제</h2>
 <ol>
-<li>CH12-L07 조회를 <code>@</code>·<code>@DATA</code>로 바꾼다.</li>
-<li>CH13-L08 <button class="term" type="button" data-term="Aggregate">집계</button>를 콤마·<code>@DATA</code>로 바꾼다(필드 사이 콤마 주의).</li>
-<li>(도전) <code>CASE WHEN ... THEN &#39;FULL&#39; ELSE &#39;OPEN&#39; END AS status</code>로 매진 상태 컬럼을 계산(CH19-L04).</li>
+<li><a href="CH12-L07.html">공연·상태로 예매 필터</a> 조회를 <code>@</code>·<code>@DATA</code>로 바꾼다.</li>
+<li><a href="CH13-L08.html">공연별 예매현황 리포트</a> <button class="term" type="button" data-term="Aggregate">집계</button>를 콤마·<code>@DATA</code>로 바꾼다(필드 사이 콤마 주의).</li>
+<li>(도전) <a href="CH19-L04.html">SQL Expression</a>의 <code>CASE</code>로 매진 상태 컬럼을, <code>COALESCE</code>로 null을 0으로 처리한다.</li>
 </ol>
-</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+</section><section class="lblock"><h2>흔한 실수와 점검 🚧</h2>
 <ul>
-<li><strong>@ 누락</strong> → 모던 SELECT의 ABAP 변수엔 <code>@</code>. 컬럼엔 안 붙인다.</li>
+<li><strong><code>@</code> 누락</strong> → 모던 SELECT의 ABAP 변수·<code>s_conc</code>엔 <code>@</code>. 컬럼엔 안 붙인다.</li>
 <li><strong>콤마/공백 혼용</strong> → 모던은 필드 콤마. classic 공백과 섞지 않는다.</li>
+<li><strong>취소 조건을 WHERE에</strong> → 예매 없는 공연이 사라진다. 보존하려면 <code>ON</code>에.</li>
+<li><strong><code>COALESCE</code> 오해</strong> → DB null 대체다. 이미 <code>0</code>인 값을 바꾸는 게 아니다.</li>
 </ul>
 <hr>
-<p>데이터 접근을 끝까지 현대화했다. 이제 콘서트 로직을 <strong>객체</strong>로 설계하자 → <strong>CH20(OO)</strong>.</p>
+<p>데이터 접근을 끝까지 현대화했다. 이제 콘서트 로직을 <strong>객체</strong>로 설계하자 →
+<a href="CH20-L01.html">Global Class 생성과 객체</a>.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

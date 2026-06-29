@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<!-- CH22-L02-S01 — 엔진: projection-layer-lab · _autoheight. 콘텐츠=레슨 전용(Interface ZI_ vs Projection ZC_, #C22 L02).
+     config=window.PLL_CFG. 게이팅: CDS 정식(as projection on). 핵심=ZC_ 숨김은 비파괴·ZI_ 제거는 연쇄.
+     관통예제=콘서트. 이름 풀(R9) 무관(필드만). -->
+<html lang="ko" data-eng="projection-layer-lab">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Interface vs Projection 계층 분리 실험실 · CH22-L02-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/projection-layer-lab.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">Interface(ZI_) vs Projection(ZC_) <small>(계층 분리 실험실)</small></p>
+  <p class="lead">기반 <code>ZI_Concert</code>의 필드를 소비용 <code>ZC_ConcertList</code>가 골라 노출합니다. <b>ZC_에서 숨김</b>은 기반을 건드리지 않지만(비파괴), <b>ZI_에서 제거</b>하면 projection도 더는 노출할 수 없습니다(연쇄). 두 동작의 차이를 직접 만들어 보세요.</p>
+
+  <table class="pll-tbl">
+    <thead><tr><th>필드</th><th class="zi">ZI_Concert · 기반</th><th class="zc">ZC_ConcertList · 소비</th></tr></thead>
+    <tbody id="pllRows"></tbody>
+  </table>
+
+  <div class="pll-cards">
+    <div class="pll-card zi"><div class="pll-card__hd">ZI_Concert (기반 — 안정)</div><div class="pll-card__b" id="pllZi"></div></div>
+    <div class="pll-card zc"><div class="pll-card__hd">ZC_ConcertList (소비 — 출구)</div><div class="pll-card__b" id="pllZc"></div></div>
+  </div>
+
+  <div id="pllDdl"></div>
+  <div id="pllSql"></div>
+
+  <div class="pll-msg" id="pllMsg"></div>
+
+  <div class="note"><b>역할을 섞지 않기.</b> <code>ZI_</code>는 재사용 기반(테이블과 가까운 안정 모델), <code>ZC_</code>는 화면·서비스용 출구입니다. UI 주석은 가능하면 <code>ZC_</code>나 Metadata Extension에 둡니다. <code>ZI_</code>·<code>ZC_</code>는 ABAP 문법이 아니라 <b>명명 관습</b>이에요.</div>
+</div>
+
+<script>
+window.PLL_CFG = {
+  base: 'ZI_Concert',
+  proj: 'ZC_ConcertList',
+  fields: [
+    { name: 'concert_id', key: true },
+    { name: 'artist' },
+    { name: 'venue' },
+    { name: 'capacity' }
+  ]
+};
+</script>
+<script src="../_engine/projection-layer-lab.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>
