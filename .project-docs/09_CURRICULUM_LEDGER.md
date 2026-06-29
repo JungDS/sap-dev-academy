@@ -1,6 +1,6 @@
 # 09. CURRICULUM LEDGER — 커리큘럼 개념 원장 (개요 SSOT)
 
-> 📅 최종수정: 2026-06-29 05:07 KST
+> 📅 최종수정: 2026-06-29 18:11 KST
 > 🎯 **2트랙 36챕터의 챕터 맵 + 교차 설계 합의(경계·관통예제·도구 아크)의 단일 출처.**
 > 🧭 **per-lesson `introduces`/`prereq`/`prevRel`/`foreshadow`/`advanceUse` = 각 레슨 `.md` front-matter가 라이브 SSOT**([04 R10](04_CONVENTIONS.md)) — 이 문서는 레슨별 데이터를 중복하지 않고 *그 위의 개요·경계·관통설계*만 담는다(§F). 게이팅([04 R15](04_CONVENTIONS.md)) 점검 = front-matter ↔ 본문 ↔ R15.
 > ✅ 현행: 본문은 **CH01～36 전 레슨 작성 완료**(CH04 흐름제어 삽입·전 챕터 리넘버 반영 끝). 전면 리빌드는 *선택* — 실행 절차는 [10_REBUILD_EXECUTION](10_REBUILD_EXECUTION.md).
@@ -60,7 +60,7 @@
 | 35 | 운영 품질과 배포 관리 (이송 심화) | 5 | ATC·BAL 로그·SUBMIT VIA JOB·이송 |
 | 36 | RAP + Fiori 실무 Capstone | 7 | RAP+Fiori 통합 캡스톤 |
 
-> Track-1 = 입문 게이팅(R15)이 핵심. Track-2 = 챕터 내 순서만 게이팅(서로 독립 내용 많음 — 상세 정책은 아카이브 `TRACK2_ENRICHMENT.md` §규칙).
+> Track-1 = 입문 게이팅(R15)이 핵심. Track-2 = 챕터 내 순서만 게이팅(서로 독립 내용 많음 — 상세 정책은 아카이브 [`TRACK2_ENRICHMENT.md`](../.archive/2026-06-29-docs-cleanup/TRACK2_ENRICHMENT.md) §규칙).
 
 ## B. classic↔modern 경계 (R6 요약 — 규칙 단일 홈 = [04 R6](04_CONVENTIONS.md))
 - 순수 classic 구간 = **CH01～17**.
