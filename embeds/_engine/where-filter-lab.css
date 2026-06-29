@@ -1,0 +1,48 @@
+/* ===== where-filter-lab — WHERE 연산자/와일드카드 필터 실험실 (CH08-L05) =====
+   조건 칩(=, >, BETWEEN, LIKE, IN, IS NULL)을 AND/OR로 조합 → 행별 통과/제외와 사유.
+   데이터·조건은 window.WFL_CFG로 주입. */
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:transparent;line-height:1.5;}
+.wrap{padding:14px;}
+.hd{font-weight:800;font-size:1rem;margin:0 0 4px;}
+.hd small{font-weight:600;color:var(--brand);}
+.lead{margin:0 0 12px;color:var(--ink-soft);font-size:.86rem;}
+.lead code{font-family:var(--mono);background:#eef2ff;color:var(--brand);padding:1px 5px;border-radius:5px;font-size:.92em;}
+
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:9px;}
+.chip{border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);border-radius:999px;
+  padding:6px 12px;font:inherit;font-size:.78rem;font-weight:700;cursor:pointer;font-family:var(--mono);transition:all .15s;}
+.chip:hover{border-color:var(--brand);color:var(--brand);}
+.chip.on{background:var(--brand);color:#fff;border-color:var(--brand);box-shadow:0 4px 10px rgba(59,91,219,.22);}
+
+.connrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
+.connrow__lbl{font-size:.78rem;font-weight:700;color:var(--ink-soft);}
+.tgl{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;}
+.tgl button{border:0;background:var(--surface);color:var(--ink-soft);font:inherit;font-size:.78rem;font-weight:800;padding:6px 14px;cursor:pointer;font-family:var(--mono);}
+.tgl button.on{background:var(--brand);color:#fff;}
+.clr{margin-left:auto;border:1px solid var(--line);background:#fff;color:var(--ink-soft);border-radius:8px;padding:6px 12px;font:inherit;font-size:.76rem;font-weight:700;cursor:pointer;}
+.clr:hover{border-color:var(--bad);color:var(--bad);}
+
+.codebox{background:#f6f8fa;border:1px solid var(--line);border-radius:11px;overflow:hidden;margin-bottom:12px;}
+.codebox__hd{background:#2c3666;border-bottom:2px solid var(--brand);color:#fff;font-size:.74rem;font-weight:800;padding:7px 12px;display:flex;align-items:center;gap:8px;}
+.cb-dots{display:flex;gap:5px;} .cb-dots i{width:10px;height:10px;border-radius:50%;display:block;}
+.cb-dots i:nth-child(1){background:#ff5f56;} .cb-dots i:nth-child(2){background:#ffbd2e;} .cb-dots i:nth-child(3){background:#27c93f;}
+.cb-lang{color:#ffa03b;font-weight:bold;letter-spacing:1px;}
+.codebox__hd .cnt{margin-left:auto;font-family:var(--mono);font-size:.74rem;}
+.codebox__hd .cnt b{color:#27c93f;}
+.code{margin:0;padding:11px 14px;font-family:var(--mono);font-size:12.5px;line-height:1.7;color:#24324a;white-space:pre;overflow-x:auto;}
+.tok-kw{color:#005cc5;font-weight:700;} .tok-str{color:#22863a;} .tok-num{color:#22863a;} .tok-com{color:#9aa0ad;font-style:italic;}
+
+.dt{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px;border:1px solid var(--line);border-radius:11px;overflow:hidden;}
+.dt th,.dt td{padding:6px 9px;text-align:left;border-bottom:1px solid #eef1f7;white-space:nowrap;}
+.dt th{background:#fafbfe;color:var(--ink-soft);font-size:11px;font-weight:800;}
+.dt td.num{text-align:right;} .dt td.nul{color:var(--soon);font-style:italic;}
+.dt tr.pass{background:#eafaf3;}
+.dt tr.fail{opacity:.5;}
+.bdg{display:inline-block;font-size:.62rem;font-weight:800;border-radius:5px;padding:2px 7px;font-family:var(--font);}
+.bdg.pass{background:var(--accent);color:#fff;} .bdg.fail{background:var(--soon);color:#fff;}
+.reason{font-family:var(--font);font-size:11px;color:var(--bad);white-space:normal;max-width:240px;}
+.reason.ok{color:var(--accent);}
+
+.note{margin-top:12px;border-left:3px solid var(--brand);background:rgba(59,91,219,.06);border-radius:0 9px 9px 0;padding:9px 13px;font-size:.83rem;color:#2a3550;}
+.note code{font-family:var(--mono);background:#fff;border:1px solid var(--line);padding:0 5px;border-radius:4px;}

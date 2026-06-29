@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<!-- CH12-L01-S01 — 엔진: range-row-builder · _autoheight. 콘텐츠=레슨 전용(조건 카드→Range Table 4칸 행, CH12 L01).
+     config=window.RRB_CFG. 게이팅: Range Table 구조 개념만(SIGN/OPTION/LOW/HIGH) · ABAP 코드/Open SQL 없음(classic 이전). -->
+<html lang="ko" data-eng="range-row-builder">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>조건 카드 → Range Table 행 · CH12-L01-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/range-row-builder.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">조건 카드 → Range Table 행 <small>(SIGN · OPTION · LOW · HIGH)</small></p>
+  <p class="lead">왼쪽 <b>조건 카드</b>를 누르면 오른쪽 <b>Range Table</b>에 네 칸짜리 행이 쌓입니다. <code>SIGN</code>은 포함(I)·제외(E), <code>OPTION</code>은 비교 방식(EQ·BT·CP)입니다. 행을 쌓고 아래 <b>해석</b>이 어떻게 바뀌는지 보세요.</p>
+
+  <div class="rrb-cols">
+    <div class="rrb-left">
+      <p class="rrb-h">조건 카드 (사람 말)</p>
+      <div class="rrb-cards"></div>
+      <p class="rrb-fb" id="rrbFb"></p>
+    </div>
+    <div class="rrb-right">
+      <p class="rrb-h">Range Table</p>
+      <table class="rrb-tbl">
+        <thead><tr><th>SIGN</th><th>OPTION</th><th>LOW</th><th>HIGH</th><th>사람 말</th><th></th></tr></thead>
+        <tbody id="rrbBody"></tbody>
+      </table>
+      <div class="rrb-bar"><button class="rrb-clear" type="button" data-clear>↺ 비우기</button></div>
+    </div>
+  </div>
+
+  <div class="rrb-say" id="rrbSay"></div>
+
+  <div class="note"><b>한 행 = 한 조건.</b> <code>EQ</code>는 <code>LOW</code>만, <code>BT</code>는 <code>LOW</code>·<code>HIGH</code>를 함께 씁니다. 포함(I)이 여러 개면 "하나라도 맞으면 후보", 제외(E)는 "맞으면 탈락"입니다.</div>
+</div>
+
+<script>
+window.RRB_CFG = {
+  cards: [
+    { label: '공연 C001만',            ic: '🎯', row: { sign: 'I', opt: 'EQ', low: 'C001', high: '' },     fb: '단일 값은 EQ이고 HIGH는 비워 둡니다.' },
+    { label: '공연 C001~C003',         ic: '↔️', row: { sign: 'I', opt: 'BT', low: 'C001', high: 'C003' }, fb: '범위는 BT이고 LOW·HIGH가 모두 필요합니다.' },
+    { label: '취소 C 제외',             ic: '🚫', row: { sign: 'E', opt: 'EQ', low: 'C', high: '' },        fb: '제외 조건은 SIGN이 E입니다.' },
+    { label: "고객명 '정'으로 시작",     ic: '🔤', row: { sign: 'I', opt: 'CP', low: '정*', high: '' },      fb: '패턴 비교는 CP이고 wildcard(*)를 씁니다.' }
+  ]
+};
+</script>
+<script src="../_engine/range-row-builder.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

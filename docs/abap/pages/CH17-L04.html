@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH17 · Grid ALV 기초</span>
+  <span class="meta">Chapter 17 · Grid ALV 기초</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -31,30 +31,55 @@
 <div class="stage">
   <div class="layout">
     <main class="main">
-      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH17</nav>
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 17 › Lesson 4</nav>
       <section class="lhead">
         <p class="lhead__eyebrow">Grid ALV 기초</p>
         <h1>Field Catalog 기초</h1>
-        <p class="lhead__direction">컬럼을 정의한다 — Field Catalog로 제목·순서·속성 제어.</p>
+        <p class="lhead__direction">데이터 필드를 사용자가 보는 컬럼으로 — 제목·너비·순서 제어.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 17</span><span class="tag tag--ls">Lesson 4</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>컬럼을 내 맘대로</h2>
-<p><button class="term" type="button" data-term="Field Catalog">Field Catalog</button>(필드 카탈로그)는 &quot;어떤 컬럼을, 어떤 제목·너비·순서·정렬로&quot; 보여줄지
-정의하는 표다(타입 <code>LVC_T_FCAT</code>). 그리드의 핵심 설정이다.</p>
-</section><section class="lblock"><h2>자동으로 만들기 — merge</h2>
-<p>행 구조가 DDIC에 있으면, 함수로 <button class="term" type="button" data-term="Field Catalog">Field Catalog</button>를 <strong>자동 생성</strong>할 수 있다.</p>
+<section class="lblock"><h2>컬럼을 내 맘대로 — 표의 &quot;컬럼 설명서&quot;</h2>
+<p>데이터만 있으면 ALV가 표를 그릴 수는 있다. 하지만 실무 화면은 기술 필드명 <code>SEATS</code>를
+그대로 두기보다 <strong>&quot;좌석수&quot;</strong> 라는 제목이 좋고, 어떤 컬럼은 좁게·어떤 컬럼은 넓게·어떤
+컬럼은 숨기거나 강조해야 한다. 이 역할이 <button class="term" type="button" data-term="Field Catalog">Field Catalog</button> — <strong>표의 컬럼 설명서</strong>다.</p>
+<ul>
+<li>타입 <code>LVC_T_FCAT</code>은 컬럼 설정들의 <strong>내부 테이블</strong>, 각 행 <code>LVC_S_FCAT</code>은 <strong>한 컬럼의 설정</strong>이다.</li>
+<li>주요 칸: <code>fieldname</code>(어떤 데이터 필드와 연결), <code>coltext</code>(컬럼 제목), <code>outputlen</code>(출력 너비).</li>
+</ul>
+</section><section class="lblock"><h2>자동으로 만들기 — LVC_FIELDCATALOG_MERGE</h2>
+<p>행 구조가 DDIC에 있으면 함수로 기본 <button class="term" type="button" data-term="Field Catalog">Field Catalog</button>를 <strong>자동 생성</strong>한다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
 4
-5</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> lt_fcat <span class="tok-kw">TYPE</span> lvc_t_fcat.
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> lt_fcat <span class="tok-kw">TYPE</span> lvc_t_fcat.
 
 <span class="tok-kw">CALL</span> <span class="tok-kw">FUNCTION</span> <span class="tok-str">'LVC_FIELDCATALOG_MERGE'</span>
-  <span class="tok-kw">EXPORTING</span> i_structure_name = <span class="tok-str">'ZBOOKING'</span>
-  <span class="tok-kw">CHANGING</span>  ct_fieldcat      = lt_fcat.</code></pre></div></div>
+  <span class="tok-kw">EXPORTING</span>
+    i_structure_name = <span class="tok-str">'ZBOOKING'</span>      <span class="tok-com">" ← DDIC 구조명(변수명 아님)</span>
+  <span class="tok-kw">CHANGING</span>
+    ct_fieldcat      = lt_fcat
+  <span class="tok-kw">EXCEPTIONS</span>
+    inconsistent_interface = <span class="tok-num">1</span>
+    program_error          = <span class="tok-num">2</span>
+    <span class="tok-kw">OTHERS</span>                 = <span class="tok-num">3</span>.
+
+<span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.
+  <span class="tok-kw">MESSAGE</span> <span class="tok-str">'Field Catalog를 생성하지 못했습니다.'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'E'</span>.
+<span class="tok-kw">ENDIF</span>.</code></pre></div></div>
 </section><section class="lblock"><h2>손으로 다듬기</h2>
-<p>자동 생성 후, 특정 컬럼의 제목·너비·숨김 등을 코드로 조정한다.</p>
+<p>자동 생성 후, 필요한 컬럼만 코드로 다듬는다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -67,22 +92,36 @@
 
 <span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_fcat <span class="tok-kw">INTO</span> ls_fcat.
   <span class="tok-kw">IF</span> ls_fcat-fieldname = <span class="tok-str">'SEATS'</span>.
-    ls_fcat-coltext = <span class="tok-str">'좌석수'</span>.       <span class="tok-com">" 컬럼 제목</span>
-    ls_fcat-outputlen = <span class="tok-num">8</span>.            <span class="tok-com">" 너비</span>
-    <span class="tok-kw">MODIFY</span> lt_fcat <span class="tok-kw">FROM</span> ls_fcat.
+    ls_fcat-coltext   = <span class="tok-str">'좌석수'</span>.            <span class="tok-com">" 컬럼 제목</span>
+    ls_fcat-outputlen = <span class="tok-num">8</span>.                  <span class="tok-com">" 출력 너비</span>
+    <span class="tok-kw">MODIFY</span> lt_fcat <span class="tok-kw">FROM</span> ls_fcat <span class="tok-kw">INDEX</span> sy-tabix.   <span class="tok-com">" 현재 행에 반영</span>
   <span class="tok-kw">ENDIF</span>.
 <span class="tok-kw">ENDLOOP</span>.</code></pre></div></div>
+</section><section class="lblock"><h2>직접 편집해 보기 — 컬럼 설명서 편집기</h2>
+<p>왼쪽 <code>lt_booking</code> 미리보기를 보면서, 오른쪽 <code>lt_fcat</code>에서 컬럼 <strong>제목(<code>coltext</code>)·너비</strong>를
+바꿔 보자. 헤더가 즉시 바뀐다. 단, <code>fieldname</code>을 <strong>소문자</strong>로 잡으면 DDIC 필드명과 맞지
+않아 수정이 적용되지 않는 것도 확인하자.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">컬럼 설명서 편집기 (<button class="term" type="button" data-term="Field Catalog">Field Catalog</button>)</span><a class="embed__open" href="../../../embeds/abap/CH17-L04-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH17-L04-S01.html" loading="lazy" title="컬럼 설명서 편집기 (Field Catalog)" style="height:600px"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>fieldcat 비움</strong> → 컬럼 정의가 없어 표가 안 그려진다. merge 또는 수동 작성.</li>
-<li><strong>fieldname 대문자</strong> → 보통 DDIC 필드명은 대문자(<code>&#39;SEATS&#39;</code>).</li>
+<li><strong><code>fieldname</code> 오타·소문자</strong> → 출력 데이터 필드명(<code>&#39;SEATS&#39;</code>)과 정확히 같아야 적용된다.
+대소문자도 맞춰야 한다.</li>
+<li><strong><code>i_structure_name</code>에 변수명</strong> → DDIC <strong>구조명</strong>(<code>&#39;ZBOOKING&#39;</code>)을 넣어야 한다. 내부
+테이블 변수명을 넣으면 의도대로 안 된다.</li>
+<li><strong>fcat 비움</strong> → &quot;데이터가 있는데 표가 이상하다&quot;면, 먼저 <code>lt_fcat</code>이 채워졌는지 확인한다.</li>
+</ul>
+</section><section class="lblock"><h2>정리</h2>
+<ul>
+<li>이 레슨은 <strong>&quot;데이터 필드&quot;를 &quot;사용자가 보는 컬럼&quot;으로 번역</strong>하는 단계다.</li>
+<li><code>LVC_FIELDCATALOG_MERGE</code>로 기본 카탈로그를 만들고, <code>coltext</code>·<code>outputlen</code> 등을 손으로 다듬는다.</li>
 </ul>
 <hr>
-<p>컬럼을 정의했다. 이제 표 전체의 <strong>모양</strong>(줄무늬·선택 모드 등)을 정하는 Layout → 다음 레슨.</p>
+<p>컬럼을 정의했다. 이제 컬럼 하나하나가 아니라 <strong>표 전체의 보기 방식</strong>(줄무늬·선택 모드 등)을
+정하는 Layout으로 넘어가자 → <a href="CH17-L05.html">Layout 기본 설정</a>.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
-      <footer class="foot">SAP Developer Academy · CH17 CH17-L04</footer>
+      <footer class="foot">SAP Developer Academy · 배포자 SAP전문강사 정훈영</footer>
     </main>
     <aside class="journey" data-shell="journey"></aside>
   </div>

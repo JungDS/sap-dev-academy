@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<!-- CH17-L02-S01 — 엔진: alv-readiness-panel · _autoheight. 콘텐츠=레슨 전용(CL_GUI_ALV_GRID 생성·준비 체크리스트, CH17 L02).
+     config=window.ARP_CFG. 게이팅: classic CREATE OBJECT(선행)·i_parent·go_grid·준비요소(데이터/fcat/display) 개념만 · set_table은 L07. -->
+<html lang="ko" data-eng="alv-readiness-panel">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>그리드 준비 상태 체크리스트 · CH17-L02-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/alv-readiness-panel.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">그리드 준비 상태 체크리스트 <small>(CL_GUI_ALV_GRID)</small></p>
+  <p class="lead">컨테이너 → 그리드를 차례로 만들어도 표는 <b>아직 안 보입니다.</b> 오른쪽 체크리스트에서 무엇이 비어 있어 그런지 확인하세요. <code>i_parent</code>를 비우면 그리드 생성이 왜 실패하는지도 보세요.</p>
+
+  <div class="arp-ctrl">
+    <span class="arp-h" style="margin:0">i_parent</span>
+    <span class="arp-parent"></span>
+    <button class="arp-btn" type="button" data-next></button>
+    <button class="arp-btn ghost" type="button" data-reset>↺ 처음부터</button>
+  </div>
+
+  <div class="arp-cols">
+    <div>
+      <p class="arp-h">생성 단계</p>
+      <div class="arp-steps"></div>
+    </div>
+    <div>
+      <p class="arp-h">준비 상태</p>
+      <div id="arpCheck"></div>
+    </div>
+  </div>
+
+  <div id="arpMsg"></div>
+
+  <div class="note"><b>그리드 ≠ 표.</b> <code>CL_GUI_ALV_GRID</code>는 표를 <b>그릴 컨트롤</b>일 뿐입니다. 실제 표 출력은 데이터·Field Catalog·<code>set_table_for_first_display</code>가 갖춰져야 일어납니다 — 그리드만 만들고 표가 안 보이는 건 정상입니다.</div>
+</div>
+
+<script>
+window.ARP_CFG = {
+  gridAt: 1,
+  steps: [
+    { evt: '① 컨테이너 생성', detail: 'CREATE OBJECT go_cont (container_name=CONT100)' },
+    { evt: '② 그리드 생성',   detail: 'CREATE OBJECT go_grid EXPORTING i_parent = go_cont' }
+  ],
+  checks: [
+    { key: 'go_cont',    label: 'go_cont (컨테이너)',     readyAt: 0 },
+    { key: 'go_grid',    label: 'go_grid (그리드)',        readyAt: 1 },
+    { key: 'lt_booking', label: 'lt_booking (데이터)',     readyAt: 99, pending: true },
+    { key: 'lt_fcat',    label: 'lt_fcat (Field Catalog)', readyAt: 99, pending: true },
+    { key: 'display',    label: 'set_table (display 호출)', readyAt: 99, pending: true }
+  ]
+};
+</script>
+<script src="../_engine/alv-readiness-panel.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

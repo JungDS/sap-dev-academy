@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<!-- CH15-L12-S01 — 엔진: report-run-simulator · _autoheight. 콘텐츠=레슨 전용(CH15 캡스톤 예매 리포트 실행 시뮬레이터, CH15 L12).
+     config=window.RRS_CFG. 게이팅: classic INITIALIZATION·AT SELECTION-SCREEN(OUTPUT/ON)·AUTHORITY-CHECK·START-OF-SELECTION·status IN s_stat·SALV 개념만 · modern 없음. -->
+<html lang="ko" data-eng="report-run-simulator">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>예매 리포트 실행 시뮬레이터 · CH15-L12-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/report-run-simulator.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">예매 리포트 실행 시뮬레이터 <small>(CH15 종합)</small></p>
+  <p class="lead">시나리오와 상태 필터를 고르고 <b>▶ 실행</b>하면, 4개 report event(<code>INITIALIZATION</code> → <code>OUTPUT</code> → <code>검증</code> → <code>START-OF-SELECTION</code>)가 차례로 흐릅니다. 어디서 통과하고 어디서 막히는지, 메시지·결과가 어떻게 달라지는지 보세요.</p>
+
+  <p class="rrs-h">시나리오</p>
+  <div class="rrs-scen"></div>
+
+  <div class="rrs-ctrl">
+    <div class="rrs-grp"><span class="clbl">상태 필터 s_stat</span><div class="rrs-stat"></div></div>
+  </div>
+
+  <p class="rrs-h">선택화면 입력값</p>
+  <div id="rrsScreen"></div>
+
+  <button class="rrs-runbtn" type="button" data-run>▶ 실행 (report event 흐름)</button>
+
+  <p class="rrs-h">이벤트 흐름</p>
+  <div class="rrs-timeline"></div>
+
+  <p class="rrs-h">결과</p>
+  <div id="rrsResult"></div>
+
+  <div class="note"><b>책임은 이벤트별로.</b> 기본값=<code>INITIALIZATION</code>, 화면 제어=<code>OUTPUT</code>, 입력·존재·권한 검증=<code>AT SELECTION-SCREEN ON p_conc</code>, 조회·표시=<code>START-OF-SELECTION</code>. 검증을 통과해야 본 처리가 실행되고, 0건이면 막지 않고 <code>S</code> 메시지로 안내합니다.</div>
+</div>
+
+<script>
+window.RRS_CFG = {
+  concerts: {
+    C001: { exists: true, auth: true },
+    C002: { exists: true, auth: false },
+    C003: { exists: true, auth: true }
+  },
+  bookings: [
+    { concert: 'C001', id: 'B001', cust: '김민수', status: 'R', amount: 120000 },
+    { concert: 'C001', id: 'B002', cust: '이서연', status: 'C', amount: 120000 },
+    { concert: 'C001', id: 'B004', cust: '최유나', status: 'R', amount: 90000 },
+    { concert: 'C002', id: 'B003', cust: '박지훈', status: 'R', amount: 70000 },
+    { concert: 'C002', id: 'B005', cust: '정해인', status: 'C', amount: 70000 }
+  ],
+  scenarios: [
+    { key: 'basic',    label: '기본 실행 (C001)', conc: 'C001', mode: 'normal' },
+    { key: 'empty',    label: '코드 누락',        conc: '',     mode: 'normal' },
+    { key: 'notexist', label: '없는 공연 (C999)', conc: 'C999', mode: 'normal' },
+    { key: 'noauth',   label: '권한 없음 (C002)', conc: 'C002', mode: 'normal' },
+    { key: 'noresult', label: '결과 없음 (C003)', conc: 'C003', mode: 'normal' },
+    { key: 'adv',      label: '고급 모드 (A)',    conc: 'C001', mode: 'adv' }
+  ]
+};
+</script>
+<script src="../_engine/report-run-simulator.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

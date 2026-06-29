@@ -13,8 +13,17 @@
     $('barTitle').textContent = titles[n];
     $('badge').hidden = (n!==3);
     [1,2,3].forEach(function(i){ $('si'+i).className = 's'+(i<n?' done':(i===n?' on':'')); });
-    if(n===1){ try{$('cmd').focus();}catch(e){} } else if(n===2){ try{$('prog').focus();}catch(e){} }
+    // ③ 진입 시 로컬 오브젝트 트리($TMP → Programs → 생성한 프로그램)를 소스 위에 표시
+    if(n===3 && st.prog){ var t=$('tree'); if(t) t.innerHTML = treeHTML(st.prog); }
+    // preventScroll: iframe 내부 포커스가 부모 페이지를 위젯까지 스크롤시키는 것 방지(로드 시 점프 차단)
+    if(n===1){ try{$('cmd').focus({preventScroll:true});}catch(e){} } else if(n===2){ try{$('prog').focus({preventScroll:true});}catch(e){} }
     post();
+  }
+  function treeHTML(prog){   // $TMP → Programs → 생성한 프로그램 (CH01-L07 SE93 위젯과 동일 트리 양식)
+    return '<details open><summary>📦 $TMP <span class="otag">로컬 오브젝트</span></summary>'
+         + '<div class="otree__lvl"><details open><summary>📁 Programs</summary>'
+         + '<div class="otree__lvl"><div class="oleaf">📄 <span class="b">'+prog+'</span> <span class="otag ok">생성됨 · REPORT</span></div></div>'
+         + '</details></div></details>';
   }
   function setBadge(s){
     var b=$('badge'), t=$('badgeTxt');
@@ -89,6 +98,7 @@
 
   function post(){ try{ if(document.documentElement.clientWidth<60) return; var el=document.querySelector('.wrap'); var h=Math.ceil(el?el.getBoundingClientRect().height:document.body.scrollHeight)+6; parent.postMessage({sda:'embed-height',h:h},'*'); }catch(e){} }
   window.addEventListener('load',post); window.addEventListener('resize',post);
+  document.addEventListener('toggle',post,true);   // 트리 펼침/접힘 시 높이 재측정
 
   showStep(1); post();
 })();

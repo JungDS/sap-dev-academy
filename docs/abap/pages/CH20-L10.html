@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH20 · OO ABAP 기본 설계</span>
+  <span class="meta">Chapter 20 · OO ABAP 기본 설계</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -31,17 +31,57 @@
 <div class="stage">
   <div class="layout">
     <main class="main">
-      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH20</nav>
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 20 › Lesson 10</nav>
       <section class="lhead">
         <p class="lhead__eyebrow">OO ABAP 기본 설계</p>
         <h1>실습 — ZCL_BOOKING_MANAGER 클래스</h1>
-        <p class="lhead__direction">콘서트앱 9단계 — 예약 로직을 객체로 설계한다.</p>
+        <p class="lhead__direction">콘서트앱 — 예약 로직을 객체로 종합 설계(상태·검증·예외·이벤트).</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 20</span><span class="tag tag--ls">Lesson 10</span><span class="tag tag--lv">고급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>🎫 9단계 — 예약 로직을 클래스로</h2>
-<p>CH10-L07의 잔여석·예매판정을, 이제 <strong><button class="term" type="button" data-term="Class">클래스</button></strong>(CH20)로 캡슐화한다. 정원 초과는
-<strong><button class="term" type="button" data-term="예외">예외</button></strong>(<code>ZCX_FULLY_BOOKED</code>)로 알린다.</p>
+<section class="lblock"><h2>🎫 배운 OO를 한 클래스에 모으기</h2>
+<p><a href="CH10-L07.html">잔여석 계산·예매 판정 모듈화</a>에서 절차적으로 만들었던 잔여석·예매 판정을, 이제 하나의 업무 <button class="term" type="button" data-term="객체">객체</button> <code>ZCL_BOOKING_MANAGER</code>로 <strong>캡슐화</strong>한다. 상태는 숨기고(PRIVATE), 외부는 <button class="term" type="button" data-term="Method">메서드</button>로만 다루며, <strong>실패는 <button class="term" type="button" data-term="예외">예외</button></strong>로, <strong>사건은 <button class="term" type="button" data-term="이벤트">이벤트</button></strong>로 표현한다. (목표는 멋진 OO를 많이 쓰는 게 아니라, 이 챕터에서 배운 것을 <em>제자리에</em> 놓는 것.)</p>
+<blockquote>
+<p>🚧 실제 예약 행을 <code>INSERT</code>하거나 취소를 <code>UPDATE</code>하는 건 <strong>이후 DML 챕터</strong>의 영역이다. 여기선 <strong>읽기·검증·예외/이벤트 설계</strong>까지가 경계다.</p>
+</blockquote>
+</section><section class="lblock"><h2>클래스 — 외부 계약과 내부 상태 🧱</h2>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18</pre><pre class="abap-editor__code"><code><span class="tok-kw">CLASS</span> zcl_booking_manager <span class="tok-kw">DEFINITION</span> <span class="tok-kw">PUBLIC</span> <span class="tok-kw">CREATE</span> <span class="tok-kw">PUBLIC</span>.
+  <span class="tok-kw">PUBLIC</span> <span class="tok-kw">SECTION</span>.
+    <span class="tok-kw">EVENTS</span> sold_out
+      <span class="tok-kw">EXPORTING</span> <span class="tok-kw">VALUE</span>(iv_concert) <span class="tok-kw">TYPE</span> zconcert-concert_id
+                <span class="tok-kw">VALUE</span>(iv_perf)    <span class="tok-kw">TYPE</span> zbooking-perf_no.
+
+    <span class="tok-kw">METHODS</span> constructor <span class="tok-kw">IMPORTING</span> iv_concert <span class="tok-kw">TYPE</span> zconcert-concert_id
+                                  iv_perf    <span class="tok-kw">TYPE</span> zbooking-perf_no.
+    <span class="tok-kw">METHODS</span> remaining  <span class="tok-kw">RETURNING</span> <span class="tok-kw">VALUE</span>(rv_remaining) <span class="tok-kw">TYPE</span> i.
+    <span class="tok-kw">METHODS</span> can_book   <span class="tok-kw">IMPORTING</span> iv_seats <span class="tok-kw">TYPE</span> i
+                       <span class="tok-kw">RETURNING</span> <span class="tok-kw">VALUE</span>(rv_ok) <span class="tok-kw">TYPE</span> abap_bool.
+    <span class="tok-kw">METHODS</span> book       <span class="tok-kw">IMPORTING</span> iv_seats <span class="tok-kw">TYPE</span> i
+                       <span class="tok-kw">RAISING</span>   zcx_fully_booked.
+  <span class="tok-kw">PRIVATE</span> <span class="tok-kw">SECTION</span>.
+    <span class="tok-kw">DATA</span> mv_concert <span class="tok-kw">TYPE</span> zconcert-concert_id.
+    <span class="tok-kw">DATA</span> mv_perf    <span class="tok-kw">TYPE</span> zbooking-perf_no.
+    <span class="tok-kw">DATA</span> mv_cap     <span class="tok-kw">TYPE</span> i.
+<span class="tok-kw">ENDCLASS</span>.</code></pre></div></div>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title"><button class="term" type="button" data-term="Class">클래스</button>의 속성·<button class="term" type="button" data-term="Method">메서드</button>·<button class="term" type="button" data-term="이벤트">이벤트</button> 구조</span><a class="embed__open" href="../../../embeds/abap/CH20-L10-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH20-L10-S01.html" loading="lazy" title="클래스의 속성·메서드·이벤트 구조"></iframe></figure>
+</section><section class="lblock"><h2>구현 — 초기화·조회·검증·예외/이벤트 ⚙️</h2>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -73,24 +113,10 @@
 29
 30
 31
-32
-33
-34</pre><pre class="abap-editor__code"><code><span class="tok-kw">CLASS</span> zcl_booking_manager <span class="tok-kw">DEFINITION</span> <span class="tok-kw">PUBLIC</span>.
-  <span class="tok-kw">PUBLIC</span> <span class="tok-kw">SECTION</span>.
-    <span class="tok-kw">METHODS</span> constructor <span class="tok-kw">IMPORTING</span> iv_concert <span class="tok-kw">TYPE</span> zconcert-concert_id
-                                  iv_perf    <span class="tok-kw">TYPE</span> zbooking-perf_no.
-    <span class="tok-kw">METHODS</span> remaining <span class="tok-kw">RETURNING</span> <span class="tok-kw">VALUE</span>(rv) <span class="tok-kw">TYPE</span> i.
-    <span class="tok-kw">METHODS</span> book <span class="tok-kw">IMPORTING</span> iv_seats <span class="tok-kw">TYPE</span> i
-                 <span class="tok-kw">RAISING</span>   zcx_fully_booked.
-  <span class="tok-kw">PRIVATE</span> <span class="tok-kw">SECTION</span>.
-    <span class="tok-kw">DATA</span>: mv_concert <span class="tok-kw">TYPE</span> zconcert-concert_id,
-          mv_perf    <span class="tok-kw">TYPE</span> zbooking-perf_no,
-          mv_cap     <span class="tok-kw">TYPE</span> i.
-<span class="tok-kw">ENDCLASS</span>.
-
-<span class="tok-kw">CLASS</span> zcl_booking_manager <span class="tok-kw">IMPLEMENTATION</span>.
+32</pre><pre class="abap-editor__code"><code><span class="tok-kw">CLASS</span> zcl_booking_manager <span class="tok-kw">IMPLEMENTATION</span>.
   <span class="tok-kw">METHOD</span> constructor.
-    mv_concert = iv_concert.  mv_perf = iv_perf.
+    mv_concert = iv_concert.
+    mv_perf    = iv_perf.
     <span class="tok-kw">SELECT</span> <span class="tok-kw">SINGLE</span> capacity <span class="tok-kw">FROM</span> zconcert
       <span class="tok-kw">WHERE</span> concert_id = @iv_concert <span class="tok-kw">INTO</span> @mv_cap.
   <span class="tok-kw">ENDMETHOD</span>.
@@ -98,47 +124,63 @@
   <span class="tok-kw">METHOD</span> remaining.
     <span class="tok-kw">SELECT</span> <span class="tok-kw">COALESCE</span>( <span class="tok-kw">SUM</span>( seats ), <span class="tok-num">0</span> ) <span class="tok-kw">FROM</span> zbooking
       <span class="tok-kw">WHERE</span> concert_id = @mv_concert <span class="tok-kw">AND</span> perf_no = @mv_perf
-        <span class="tok-kw">AND</span> status &lt;&gt; <span class="tok-str">'C'</span> <span class="tok-kw">INTO</span> @<span class="tok-kw">DATA</span>(lv_sum).
-    rv = mv_cap  lv_sum.
+        <span class="tok-kw">AND</span> status &lt;&gt; <span class="tok-str">'C'</span>                       <span class="tok-com">" 취소 제외</span>
+      <span class="tok-kw">INTO</span> @<span class="tok-kw">DATA</span>(lv_booked).
+    rv_remaining = mv_cap - lv_booked.
+  <span class="tok-kw">ENDMETHOD</span>.
+
+  <span class="tok-kw">METHOD</span> can_book.
+    rv_ok = xsdbool( iv_seats &gt; <span class="tok-num">0</span> <span class="tok-kw">AND</span> iv_seats &lt;= me-&gt;remaining( ) ).
   <span class="tok-kw">ENDMETHOD</span>.
 
   <span class="tok-kw">METHOD</span> book.
-    <span class="tok-kw">IF</span> iv_seats &gt; me-&gt;remaining( ).
-      <span class="tok-kw">RAISE</span> <span class="tok-kw">EXCEPTION</span> <span class="tok-kw">TYPE</span> zcx_fully_booked.
+    <span class="tok-kw">DATA</span>(lv_remaining) = me-&gt;remaining( ).
+    <span class="tok-kw">IF</span> iv_seats &lt;= <span class="tok-num">0</span> <span class="tok-kw">OR</span> iv_seats &gt; lv_remaining.
+      <span class="tok-kw">RAISE</span> <span class="tok-kw">EXCEPTION</span> <span class="tok-kw">TYPE</span> zcx_fully_booked.     <span class="tok-com">" 실패 = 예외</span>
     <span class="tok-kw">ENDIF</span>.
-    <span class="tok-com">" 실제 INSERT는 CH24(DML)</span>
+    <span class="tok-kw">IF</span> iv_seats = lv_remaining.
+      <span class="tok-kw">RAISE</span> <span class="tok-kw">EVENT</span> sold_out                       <span class="tok-com">" 사건 = 이벤트</span>
+        <span class="tok-kw">EXPORTING</span> iv_concert = mv_concert iv_perf = mv_perf.
+    <span class="tok-kw">ENDIF</span>.
+    <span class="tok-com">" 실제 INSERT는 이후 DML 챕터에서.</span>
   <span class="tok-kw">ENDMETHOD</span>.
 <span class="tok-kw">ENDCLASS</span>.</code></pre></div></div>
-<p>호출부:</p>
+<p>호출부는 <strong>public <button class="term" type="button" data-term="Method">메서드</button>만</strong> 쓴다(정원·회차를 직접 못 바꾼다).</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
 4
 5
-6</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>(lo_mgr) = <span class="tok-kw">NEW</span> zcl_booking_manager( iv_concert = <span class="tok-str">'C001'</span> iv_perf = <span class="tok-str">'01'</span> ).
+6
+7</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>(lo_mgr) = <span class="tok-kw">NEW</span> zcl_booking_manager( iv_concert = <span class="tok-str">'C001'</span> iv_perf = <span class="tok-str">'01'</span> ).
 <span class="tok-kw">TRY</span>.
     lo_mgr-&gt;book( iv_seats = <span class="tok-num">2</span> ).
-  <span class="tok-kw">CATCH</span> zcx_fully_booked.
-    <span class="tok-kw">MESSAGE</span> <span class="tok-str">'매진입니다'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'I'</span>.
+    <span class="tok-kw">MESSAGE</span> <span class="tok-str">'예약 가능'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'S'</span>.
+  <span class="tok-kw">CATCH</span> zcx_fully_booked <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(lx_booked).
+    <span class="tok-kw">MESSAGE</span> lx_booked-&gt;get_text( ) <span class="tok-kw">TYPE</span> <span class="tok-str">'I'</span>.
 <span class="tok-kw">ENDTRY</span>.</code></pre></div></div>
-<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">클래스의 속성·<button class="term" type="button" data-term="Method">메서드</button> 구조</span><a class="embed__open" href="../../../embeds/abap/CH20-L10-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH20-L10-S01.html" loading="lazy" title="클래스의 속성·메서드 구조"></iframe></figure>
 </section><section class="lblock"><h2>직접 해 볼 과제</h2>
 <ol>
-<li><code>ZCX_FULLY_BOOKED</code> <button class="term" type="button" data-term="예외">예외</button> <button class="term" type="button" data-term="Class">클래스</button>(<code>CX_STATIC_CHECK</code> <button class="term" type="button" data-term="상속">상속</button>)를 만든다.</li>
-<li>정원보다 많은 좌석으로 <code>book</code>을 불러 예외가 잡히는지 확인.</li>
-<li>(도전) <code>cancel( iv_booking )</code> <button class="term" type="button" data-term="Method">메서드</button>를 더해 상태를 &#39;C&#39;로 바꾼다.</li>
+<li><code>ZCX_FULLY_BOOKED</code> <button class="term" type="button" data-term="예외">예외</button> <button class="term" type="button" data-term="Class">클래스</button>(<code>CX_STATIC_CHECK</code> <button class="term" type="button" data-term="상속">상속</button>)를 SE24에서 만든다.</li>
+<li><button class="term" type="button" data-term="객체">객체</button>를 만들고 <code>remaining( )</code>이 취소 제외 좌석 합계를 정원에서 빼는지 확인한다.</li>
+<li>잔여석보다 큰 좌석 수로 <code>book</code>을 불러 <code>ZCX_FULLY_BOOKED</code>가 <code>CATCH</code>로 잡히는지 확인한다.</li>
+<li>(도전) <code>lo_monitor</code>의 <code>on_sold_out</code>을 <code>SET HANDLER</code>로 등록하고, 잔여석과 <em>같은</em> 좌석을 예약해 <code>sold_out</code> <button class="term" type="button" data-term="이벤트">이벤트</button>가 호출되는지 본다.</li>
 </ol>
-</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+</section><section class="lblock"><h2>흔한 실수와 점검 🚧</h2>
 <ul>
-<li><strong><button class="term" type="button" data-term="예외">예외</button> 미선언</strong> → <code>book</code>에 <code>RAISING zcx_fully_booked</code>를 선언해야 호출부가 잡는다.</li>
-<li><strong>상태 캡슐화</strong> → 정원·회차는 PRIVATE, 외부는 <button class="term" type="button" data-term="Method">메서드</button>로만(CH20-L02).</li>
+<li><strong><code>book</code>이 DB INSERT까지 한다고 오해</strong> → 이 챕터는 OO <em>설계</em> 장. 저장(DML)은 이후 챕터. 여기선 검증·<button class="term" type="button" data-term="예외">예외</button>·<button class="term" type="button" data-term="이벤트">이벤트</button>까지.</li>
+<li><strong><code>remaining( )</code>에서 취소 미제외</strong> → <code>status = &#39;C&#39;</code>까지 합산하면 잔여석이 실제보다 적게 나온다.</li>
+<li><strong><code>can_book</code>과 <code>book</code> 기준 불일치</strong> → 둘이 다른 잔여석 판단을 가지면 호출자가 혼란. <code>book</code>이 내부에서 <code>remaining( )</code>을 다시 확인한다.</li>
+<li><strong>너무 넓은 예외 이름</strong> → <code>ZCX_ERROR</code>는 이유 구분이 안 된다. <code>ZCX_FULLY_BOOKED</code>처럼 <em>업무 상황</em>을 말하는 이름.</li>
+<li><strong>상태 캡슐화</strong> → 정원·회차는 PRIVATE, 외부는 <button class="term" type="button" data-term="Method">메서드</button>로만(<a href="CH20-L02.html">Attribute / Method / Visibility</a>). (없는 공연 ID는 <a href="CH15-L07.html">선택화면 검증</a>에서 걸러진다는 전제.)</li>
 </ul>
 <hr>
-<p>로직을 <button class="term" type="button" data-term="객체">객체</button>로 설계했다. 이제 ALV에 <strong>매진을 색으로</strong> 보여 주자 → <strong>CH21</strong>.</p>
+<p>예약 로직을 <button class="term" type="button" data-term="객체">객체</button>로 설계·검증·예외·이벤트까지 다뤘다. 이제 이 객체와 이벤트를 <strong>화면·ALV</strong>로 이어 가자 →
+<a href="CH21-L01.html">SALV Sort / Filter / Function 제어</a>.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
-      <footer class="foot">SAP Developer Academy · CH20 CH20-L10</footer>
+      <footer class="foot">SAP Developer Academy · 배포자 SAP전문강사 정훈영</footer>
     </main>
     <aside class="journey" data-shell="journey"></aside>
   </div>

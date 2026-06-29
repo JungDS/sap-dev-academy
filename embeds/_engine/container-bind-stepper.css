@@ -1,0 +1,53 @@
+/* ===== container-bind-stepper 엔진 CSS — CL_GUI_CUSTOM_CONTAINER가 화면 Custom Control(CONT100)을 붙잡는 과정을 단계별로 (config 주도) =====
+   골격 계약(HTML 제공): .cbs-name(세그) · [data-next] · [data-reset] · #cbsScreen · .cbs-steps · #cbsStatus.
+   config=window.CBS_CFG = { area, goodName, badName, steps:[{evt,detail}], createAt }.
+   토큰 active 배경 버튼 base=var(--surface). 높이: _autoheight.js. */
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:transparent;line-height:1.5;}
+.wrap{max-width:740px;margin:0 auto;padding:14px 16px 18px;}
+.hd{margin:0 0 4px;font-weight:800;font-size:1.04rem;color:#1d3a63;}
+.hd small{font-weight:600;color:#64748b;font-size:.8rem;}
+.lead{margin:0 0 12px;color:var(--ink-soft);font-size:.9rem;}
+.lead code{font-family:var(--mono);background:#eef2fb;color:var(--brand);padding:1px 5px;border-radius:5px;}
+.cbs-h{font-size:.72rem;font-weight:800;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em;margin:0 0 6px;}
+
+.cbs-ctrl{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px;}
+.cbs-name{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;}
+.cbs-name button{border:0;border-right:1px solid var(--line);background:var(--surface);color:var(--ink-soft);font:inherit;font-size:.76rem;font-weight:700;padding:6px 11px;cursor:pointer;font-family:var(--mono);}
+.cbs-name button:last-child{border-right:0;}
+.cbs-name button[aria-pressed="true"]{background:var(--brand);color:#fff;}
+.cbs-name button[aria-pressed="true"][data-bad="1"]{background:var(--bad);}
+.cbs-btn{border:0;border-radius:8px;padding:7px 14px;font:inherit;font-size:.82rem;font-weight:800;color:#fff;cursor:pointer;background:var(--accent);}
+.cbs-btn:hover{filter:brightness(1.07);} .cbs-btn:disabled{opacity:.4;cursor:default;}
+.cbs-btn.ghost{background:var(--surface);color:var(--ink-soft);border:1px solid var(--line);}
+
+.cbs-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+@media (max-width:560px){ .cbs-cols{grid-template-columns:1fr;} }
+
+/* 화면 도식 */
+#cbsScreen{border:1.5px solid #b9c4dc;border-radius:9px;padding:12px;background:var(--surface);position:relative;min-height:120px;}
+#cbsScreen .stt{position:absolute;top:-9px;left:11px;background:var(--surface);padding:0 6px;font-size:.72rem;font-weight:800;color:#1d3a63;}
+.cbs-rect{margin-top:8px;border:2px dashed var(--line);border-radius:8px;height:78px;display:flex;align-items:center;justify-content:center;text-align:center;font-family:var(--mono);font-size:.78rem;color:var(--ink-soft);transition:none;}
+.cbs-rect.hl{border-color:var(--brand);background:rgba(59,91,219,.07);color:var(--brand);font-weight:800;}
+.cbs-rect.bound{border-style:solid;border-color:var(--good);background:rgba(12,166,120,.1);color:#0f7a52;font-weight:800;}
+.cbs-rect.fail{border-color:var(--bad);background:rgba(214,51,108,.07);color:var(--bad);font-weight:800;}
+
+.cbs-steps{display:flex;flex-direction:column;gap:0;}
+.cbs-step{display:flex;gap:9px;align-items:flex-start;position:relative;padding-bottom:9px;}
+.cbs-step:not(:last-child)::before{content:"";position:absolute;left:9px;top:19px;bottom:0;width:2px;background:var(--line);}
+.cbs-sdot{flex:0 0 auto;width:19px;height:19px;border-radius:50%;border:2px solid var(--line);background:var(--surface);font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;color:var(--ink-soft);z-index:1;}
+.cbs-step.done .cbs-sdot{border-color:var(--good);background:var(--good);color:#fff;}
+.cbs-step.cur .cbs-sdot{border-color:var(--accent);background:var(--accent);color:#fff;}
+.cbs-step.pending{opacity:.5;}
+.cbs-sbody .se{font-family:var(--mono);font-size:.77rem;font-weight:800;color:var(--ink);}
+.cbs-sbody .sd{font-size:.73rem;color:var(--ink-soft);}
+
+#cbsStatus{border:1px solid var(--line);border-radius:9px;overflow:hidden;}
+.cbs-srow{display:flex;border-bottom:1px solid #eef1f7;font-size:.78rem;}
+.cbs-srow:last-child{border-bottom:0;}
+.cbs-sk{flex:0 0 110px;background:#f3f6fc;color:var(--ink-soft);font-weight:700;padding:5px 9px;font-family:var(--mono);font-size:.7rem;}
+.cbs-sv{padding:5px 9px;font-family:var(--mono);color:var(--ink);}
+.cbs-sv.bound{color:#0f7a52;font-weight:800;} .cbs-sv.fail{color:var(--bad);font-weight:800;} .cbs-sv.muted{color:#94a3b8;}
+
+.note{margin-top:4px;border-left:3px solid var(--brand);background:rgba(59,91,219,.06);border-radius:0 9px 9px 0;padding:9px 13px;font-size:.83rem;color:#2a3550;}
+.note code{font-family:var(--mono);background:#fff;border:1px solid var(--line);padding:0 5px;border-radius:4px;}

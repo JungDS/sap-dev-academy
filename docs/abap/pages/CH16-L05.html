@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH16 · Screen Programming / Dynpro 기초</span>
+  <span class="meta">Chapter 16 · Screen Programming / Dynpro 기초</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -31,17 +31,21 @@
 <div class="stage">
   <div class="layout">
     <main class="main">
-      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH16</nav>
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 16 › Lesson 5</nav>
       <section class="lhead">
         <p class="lhead__eyebrow">Screen Programming / Dynpro 기초</p>
         <h1>PAI 처리 흐름 — OK_CODE와 화면 떠나기</h1>
-        <p class="lhead__direction">버튼을 누른 뒤 — OK_CODE 분기와 BACK/EXIT/CANCEL·LEAVE.</p>
+        <p class="lhead__direction">버튼을 누른 뒤 — OK_CODE를 안전하게 읽고, 화면/프로그램 종료를 구분한다.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 16</span><span class="tag tag--ls">Lesson 5</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
 <section class="lblock"><h2>버튼을 누른 뒤 — PAI</h2>
-<p><button class="term" type="button" data-term="PAI">PAI</button>(Process After Input)는 사용자가 <strong>버튼·Enter</strong>를 누른 뒤 실행된다. 어떤
-버튼이 눌렸는지는 명령 필드 <strong><code>OK_CODE</code></strong>(또는 <code>SY-UCOMM</code>)로 안다.</p>
+<p><button class="term" type="button" data-term="PAI">PAI</button>(Process After Input)는 사용자가 <strong>버튼·Enter</strong>를 누른 뒤 실행된다. 어떤 버튼이
+눌렸는지는 명령 필드 <strong><code>OK_CODE</code></strong>(화면의 OK field와 같은 이름의 ABAP 변수)로 안다.
+<code>예매</code>·<code>뒤로</code>·<code>종료</code>·<code>취소</code>는 모두 다른 의미이므로, 이 판단을 제대로 해야 한다.</p>
+</section><section class="lblock"><h2>안전한 분기 — save_ok 패턴</h2>
+<p>공식 권장 패턴은 <button class="term" type="button" data-term="PAI">PAI</button> 처음에 <code>OK_CODE</code>를 <strong>보조 변수 <code>save_ok</code>로 복사한 뒤 바로
+<code>CLEAR</code></strong> 하고, <code>save_ok</code>로 분기하는 것이다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -53,65 +57,100 @@
 9
 10
 11
-12</pre><pre class="abap-editor__code"><code><span class="tok-kw">MODULE</span> user_command_0100 <span class="tok-kw">INPUT</span>.
-  <span class="tok-kw">DATA</span> lv_code <span class="tok-kw">TYPE</span> sy-ucomm.
-  lv_code = ok_code.
-  <span class="tok-kw">CLEAR</span> ok_code.                       <span class="tok-com">" 다음을 위해 비움(관례)</span>
+12
+13
+14
+15
+16
+17
+18</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>: ok_code <span class="tok-kw">TYPE</span> sy-ucomm,
+      save_ok <span class="tok-kw">TYPE</span> sy-ucomm.
 
-  <span class="tok-kw">CASE</span> lv_code.
+<span class="tok-kw">MODULE</span> user_command_0100 <span class="tok-kw">INPUT</span>.
+  save_ok = ok_code.            <span class="tok-com">" 보조 변수로 복사</span>
+  <span class="tok-kw">CLEAR</span> ok_code.               <span class="tok-com">" OK field 즉시 비움</span>
+
+  <span class="tok-kw">CASE</span> save_ok.
     <span class="tok-kw">WHEN</span> <span class="tok-str">'SAVE'</span>.
-      <span class="tok-kw">PERFORM</span> save_booking.            <span class="tok-com">" 예매 저장(모듈화는 CH10)</span>
-    <span class="tok-kw">WHEN</span> <span class="tok-str">'BACK'</span> <span class="tok-kw">OR</span> <span class="tok-str">'EXIT'</span> <span class="tok-kw">OR</span> <span class="tok-str">'CANCEL'</span>.
-      <span class="tok-kw">LEAVE</span> <span class="tok-kw">TO</span> <span class="tok-kw">SCREEN</span> <span class="tok-num">0</span>.               <span class="tok-com">" 화면 종료</span>
+      <span class="tok-kw">PERFORM</span> check_booking.   <span class="tok-com">" 예매 검증·저장</span>
+    <span class="tok-kw">WHEN</span> <span class="tok-str">'BACK'</span>.
+      <span class="tok-kw">LEAVE</span> <span class="tok-kw">TO</span> <span class="tok-kw">SCREEN</span> <span class="tok-num">0</span>.       <span class="tok-com">" 화면 종료</span>
+    <span class="tok-kw">WHEN</span> <span class="tok-str">'EXIT'</span>.
+      <span class="tok-kw">LEAVE</span> <span class="tok-kw">PROGRAM</span>.           <span class="tok-com">" 프로그램 종료</span>
+    <span class="tok-kw">WHEN</span> <span class="tok-str">'CANCEL'</span>.
+      <span class="tok-kw">LEAVE</span> <span class="tok-kw">TO</span> <span class="tok-kw">SCREEN</span> <span class="tok-num">0</span>.
   <span class="tok-kw">ENDCASE</span>.
 <span class="tok-kw">ENDMODULE</span>.</code></pre></div></div>
 <blockquote>
-<p>💡 <code>OK_CODE</code>를 읽은 뒤 <strong><code>CLEAR</code></strong> 하는 건 관례다(이전 명령이 남아 오작동하는 걸 막는다).</p>
+<p>💡 <strong>왜 바로 <code>CLEAR</code>?</strong> OK field를 비우지 않으면, 그 다음 Enter를 눌렀을 때 이전
+<code>&#39;SAVE&#39;</code>가 <strong>그대로 남아 다시 실행</strong>될 수 있다. 읽자마자 비우는 게 핵심이다.
+(<code>PERFORM</code>은 <a href="CH10-L01.html">FORM / PERFORM 기본 호출</a>에서 본 모듈 호출이다.)</p>
 </blockquote>
-</section><section class="lblock"><h2>화면을 떠나는 세 가지</h2>
+</section><section class="lblock"><h2>화면을 떠나는 문장들</h2>
 <table>
 <thead>
 <tr>
-<th>문</th>
-<th>동작</th>
+<th>문장</th>
+<th>의미</th>
 </tr>
 </thead>
 <tbody><tr>
 <td><code>LEAVE TO SCREEN 0</code></td>
-<td><strong>현재 화면 종료</strong> → 이전/호출자로 돌아간다</td>
+<td>next dynpro를 <strong>0</strong>으로 → 현재 화면 시퀀스 종료(호출자로 복귀)</td>
 </tr>
 <tr>
 <td><code>LEAVE PROGRAM</code></td>
-<td><strong>프로그램 전체 종료</strong>(EXIT 맥락)</td>
+<td>프로그램(트랜잭션) <strong>전체</strong> 종료 — 강한 종료</td>
+</tr>
+<tr>
+<td><code>SET SCREEN &lt;번호&gt;</code></td>
+<td><strong>다음 화면 번호만 지정</strong> — 즉시 안 나가고, 처리 끝에 그 화면 호출</td>
 </tr>
 <tr>
 <td><code>LEAVE SCREEN</code></td>
-<td>현재 화면 처리 끝내고 <strong>다음 화면(SET SCREEN)</strong> 으로</td>
+<td>현재 화면 처리를 <strong>즉시</strong> 끝내고 다음 화면 호출</td>
 </tr>
 </tbody></table>
+<ul>
+<li>⚠️ <code>SET SCREEN</code>은 &quot;다음에 갈 화면&quot;을 정할 뿐 <strong>즉시 떠나지 않는다.</strong> 지금 바로
+떠나려면 <code>LEAVE SCREEN</code>(또는 <code>LEAVE TO SCREEN</code>)과 함께 쓴다.</li>
+</ul>
 </section><section class="lblock"><h2>BACK · EXIT · CANCEL — 관례</h2>
 <p>화면 위 표준 버튼 셋은 역할이 정해져 있다.</p>
 <ul>
-<li><strong>BACK</strong>(초록 화살표) — 한 단계 뒤로.</li>
-<li><strong>EXIT</strong> — 트랜잭션 종료(보통 <code>LEAVE PROGRAM</code>).</li>
-<li><strong>CANCEL</strong> — 입력 취소하고 뒤로.</li>
+<li><strong>BACK</strong>(초록 화살표) — 한 단계 뒤로(<code>LEAVE TO SCREEN 0</code>).</li>
+<li><strong>EXIT</strong> — 트랜잭션 종료(<code>LEAVE PROGRAM</code>). <strong>한 화면 뒤로 가는 버튼에 함부로 쓰면</strong>
+사용자가 트랜잭션 전체를 잃는다.</li>
+<li><strong>CANCEL</strong> — 입력 취소하고 뒤로(<code>LEAVE TO SCREEN 0</code>).</li>
 </ul>
-<p>보통 세 버튼을 <code>CASE</code>에서 비슷하게 처리하되, 저장 안 한 변경이 있으면 확인을 띄운다.</p>
 <blockquote>
-<p>🔶 화면에 <strong>목록</strong>을 보여줄 땐 Table Control 대신 <strong>ALV(CH17)</strong> 를 쓴다(이 과정은
-Table Control을 다루지 않는다).</p>
+<p>🔶 화면에 <strong>목록</strong>을 보여줄 땐 Table Control 대신 <a href="CH17-L01.html">Grid ALV 기초</a>를
+쓴다(이 과정은 Table Control을 다루지 않는다).</p>
 </blockquote>
+</section><section class="lblock"><h2>직접 분기시켜 보기 — OK_CODE 안전 분기 실험실</h2>
+<p>버튼을 눌러 <code>ok_code</code> → <code>save_ok</code> 복사 → <code>CLEAR</code> → <code>CASE</code> 분기를 따라가 보자. 특히
+<strong><code>CLEAR</code>를 생략한 채 SAVE 뒤 Enter</strong>를 누르면 이전 <code>SAVE</code>가 어떻게 재실행되는지 확인하자.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">OK_CODE 안전 분기 실험실</span><a class="embed__open" href="../../../embeds/abap/CH16-L05-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH16-L05-S01.html" loading="lazy" title="OK_CODE 안전 분기 실험실" style="height:620px"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>OK_CODE 안 비움</strong> → 이전 명령이 남아 엉뚱하게 분기. 읽은 뒤 <code>CLEAR</code>.</li>
-<li><strong>LEAVE 혼동</strong> → 화면 종료=<code>LEAVE TO SCREEN 0</code>, 프로그램 종료=<code>LEAVE PROGRAM</code>.</li>
+<li><strong><code>OK_CODE</code>를 안 비움</strong> → 이전 명령이 남아 Enter에 재실행된다. 읽은 뒤 바로 <code>CLEAR</code>.</li>
+<li><strong>읽기 전에 <code>CLEAR</code></strong> → 값을 잃는다. <strong>먼저 <code>save_ok</code>로 복사</strong>한 뒤 비운다.</li>
+<li><strong>EXIT에 <code>LEAVE TO SCREEN 0</code></strong> → EXIT는 트랜잭션 종료(<code>LEAVE PROGRAM</code>)다. 화면 종료와 구분.</li>
+<li><strong><code>SET SCREEN</code>만 쓰고 안 떠남</strong> → 즉시 이동하려면 <code>LEAVE SCREEN</code>을 함께.</li>
+</ul>
+</section><section class="lblock"><h2>정리</h2>
+<ul>
+<li><strong><button class="term" type="button" data-term="PAI">PAI</button></strong>는 사용자의 행동을 해석하는 단계다. <code>OK_CODE</code>를 <strong><code>save_ok</code>로 옮기고 바로
+<code>CLEAR</code></strong> 한 뒤 <code>CASE</code>로 분기하는 게 기본 패턴이다.</li>
+<li><strong>화면 종료(<code>LEAVE TO SCREEN 0</code>)와 프로그램 종료(<code>LEAVE PROGRAM</code>)를 구분</strong>해야 안전한 흐름이 된다.</li>
 </ul>
 <hr>
-<p>입력 처리까지 했다. 이제 화면 위 <strong>메뉴·툴바·제목</strong>을 다는 법 → 다음 레슨.</p>
+<p>입력 처리까지 했다. 이제 화면 위 <strong>메뉴·툴바·제목</strong>을 다는 법을 보자
+→ <a href="CH16-L06.html">PF-STATUS와 TITLEBAR</a>.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
-      <footer class="foot">SAP Developer Academy · CH16 CH16-L05</footer>
+      <footer class="foot">SAP Developer Academy · 배포자 SAP전문강사 정훈영</footer>
     </main>
     <aside class="journey" data-shell="journey"></aside>
   </div>

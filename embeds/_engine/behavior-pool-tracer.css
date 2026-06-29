@@ -1,0 +1,45 @@
+/* ===== behavior-pool-tracer — RAP Behavior Pool 호출 추적기 (CH23-L05) =====
+   저장 요청→READ ENTITIES(집합 read)→정원 검사→failed/reported 기록 순서 추적. keys=internal table(여러 instance 한 번에).
+   loop 안 EML 토글=anti-pattern 경고. handler는 단건 함수가 아니라 집합 지향 runtime callback. 데이터 내장.
+   교훈3: msg base 중립 rgba·ok/warn 명시. */
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:transparent;line-height:1.5;}
+.wrap{padding:14px;}
+.hd{font-weight:800;font-size:1rem;margin:0 0 4px;}
+.hd small{font-weight:600;color:var(--brand);}
+.lead{margin:0 0 12px;color:var(--ink-soft);font-size:.86rem;}
+.lead code{font-family:var(--mono);background:#eef2ff;color:var(--brand);padding:1px 5px;border-radius:5px;font-size:.92em;}
+
+.bpt-steps{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;}
+.bpt-step{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;
+  padding:7px 10px;font:inherit;font-size:.73rem;font-weight:700;cursor:pointer;}
+.bpt-step:hover{border-color:var(--brand);}
+.bpt-step .n{font-family:var(--mono);color:var(--soon);margin-right:3px;}
+.bpt-step.done{background:#eef2ff;border-color:#26336b;color:#26336b;}
+.bpt-step.done .n{color:#26336b;}
+.bpt-eml{margin-left:auto;border:1px dashed var(--line);background:var(--surface);color:var(--amber);
+  border-radius:8px;padding:6px 10px;font:inherit;font-size:.72rem;font-weight:700;cursor:pointer;font-family:var(--mono);}
+.bpt-eml.on{background:rgba(180,83,9,.1);border-color:var(--amber);border-style:solid;}
+
+.bpt-panel{border:1px solid var(--line);border-radius:11px;background:var(--surface);padding:10px 11px;margin-bottom:8px;}
+.bpt-cap{font-size:.7rem;font-weight:800;color:var(--ink-soft);margin:0 0 6px;text-transform:uppercase;letter-spacing:.03em;}
+.bpt-cap code{font-family:var(--mono);color:var(--brand);text-transform:none;}
+.dt{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:11.5px;}
+.dt th,.dt td{padding:4px 7px;text-align:left;border-bottom:1px solid #eef1f7;white-space:nowrap;}
+.dt th{background:#fafbfe;color:var(--ink-soft);font-size:10.5px;font-weight:800;}
+.dt tr.fail td{background:rgba(214,51,108,.09);}
+.bpt-badge{display:inline-block;font-size:.62rem;font-weight:800;border-radius:5px;padding:1px 6px;}
+.bpt-badge.ok{background:#eafaf3;color:#0b7250;}
+.bpt-badge.fail{background:rgba(214,51,108,.14);color:var(--bad);}
+.bpt-empty{color:var(--soon);font-style:italic;font-size:.78rem;text-align:center;padding:6px;}
+.bpt-rsp{font-family:var(--mono);font-size:11px;line-height:1.6;white-space:pre;margin:0;color:var(--ink);}
+.bpt-rsp .k{color:var(--brand);font-weight:700;}
+.bpt-rsp .bad{color:var(--bad);font-weight:700;}
+
+.bpt-msg{font-size:.83rem;padding:9px 12px;border-radius:9px;background:rgba(59,91,219,.08);color:var(--ink);}
+.bpt-msg.ok{background:#eef2ff;color:#26336b;}
+.bpt-msg.warn{background:rgba(180,83,9,.1);color:#7a4a12;}
+.bpt-msg b{color:inherit;}
+
+.note{margin-top:12px;border-left:3px solid var(--brand);background:rgba(59,91,219,.06);border-radius:0 9px 9px 0;padding:9px 13px;font-size:.83rem;color:#2a3550;}
+.note code{font-family:var(--mono);background:#fff;border:1px solid var(--line);padding:0 5px;border-radius:4px;}

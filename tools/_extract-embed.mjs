@@ -45,7 +45,7 @@ const mermaidTag = hasMermaid
 const html = `<!DOCTYPE html>
 <!-- ${embedId} — 엔진: ${engineName} (embeds/_engine/${engineName}.{js,css}) · 공통토큰: _engine/_base.css
      ⚠️ 생성: tools/_extract-embed.mjs (${sampleRel}에서 추출). 엔진 수정은 _engine/에서. -->
-<html lang="ko">
+<html lang="ko" data-eng="${engineName}">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />

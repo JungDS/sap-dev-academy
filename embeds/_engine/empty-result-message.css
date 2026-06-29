@@ -1,0 +1,57 @@
+/* ===== empty-result-message — 조회 실패(sy-subrc)와 MESSAGE 피드백 (CH08-L07) =====
+   dan을 골라 조회 → 결과/빈 결과를 sy-subrc·sy-dbcnt로 판정하고, 피드백 방식(WRITE/MESSAGE S/I)을 비교.
+   데이터=window.ERM_CFG. */
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:transparent;line-height:1.5;}
+.wrap{padding:14px;}
+.hd{font-weight:800;font-size:1rem;margin:0 0 4px;}
+.hd small{font-weight:600;color:var(--brand);}
+.lead{margin:0 0 12px;color:var(--ink-soft);font-size:.86rem;}
+.lead code{font-family:var(--mono);background:#eef2ff;color:var(--brand);padding:1px 5px;border-radius:5px;font-size:.92em;}
+
+.ctrls{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-bottom:12px;}
+.grp{display:flex;align-items:center;gap:8px;}
+.grp__lbl{font-size:.78rem;font-weight:700;color:var(--ink-soft);}
+.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;}
+.seg button{border:0;background:var(--surface);color:var(--ink-soft);font:inherit;font-size:.8rem;font-weight:700;padding:6px 13px;cursor:pointer;font-family:var(--mono);}
+.seg button.on{background:var(--brand);color:#fff;}
+.run-btn{background:var(--accent);border:0;border-radius:8px;padding:8px 16px;font:inherit;font-size:.84rem;font-weight:800;color:#fff;cursor:pointer;transition:filter .15s;display:flex;align-items:center;gap:6px;}
+.run-btn:hover{filter:brightness(1.08);} .run-btn:active{transform:translateY(1px);}
+.run-btn kbd{background:rgba(255,255,255,.22);border-radius:4px;padding:0 5px;font-size:10px;font-family:var(--mono);}
+
+.codebox{background:#f6f8fa;border:1px solid var(--line);border-radius:11px;overflow:hidden;margin-bottom:12px;}
+.codebox__hd{background:#2c3666;border-bottom:2px solid var(--brand);color:#fff;font-size:.74rem;font-weight:800;padding:7px 12px;display:flex;align-items:center;gap:8px;}
+.cb-dots{display:flex;gap:5px;} .cb-dots i{width:10px;height:10px;border-radius:50%;display:block;}
+.cb-dots i:nth-child(1){background:#ff5f56;} .cb-dots i:nth-child(2){background:#ffbd2e;} .cb-dots i:nth-child(3){background:#27c93f;}
+.cb-lang{color:#ffa03b;font-weight:bold;letter-spacing:1px;}
+.code{margin:0;padding:11px 14px;font-family:var(--mono);font-size:12.5px;line-height:1.7;color:#24324a;white-space:pre;overflow-x:auto;}
+.tok-kw{color:#005cc5;font-weight:700;} .tok-str{color:#22863a;} .tok-num{color:#22863a;} .tok-com{color:#9aa0ad;font-style:italic;}
+
+.subrcbar{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:12px;}
+.scard{flex:1;min-width:120px;border:1px solid var(--line);border-radius:10px;padding:9px 11px;background:var(--surface);}
+.scard .k{font-size:.68rem;font-weight:800;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px;}
+.scard .v{font-family:var(--mono);font-size:.92rem;font-weight:800;}
+.scard .v.ok{color:var(--accent);} .scard .v.no{color:var(--warn);}
+
+/* SAP GUI 화면 모형 */
+.gui{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface);position:relative;}
+.gui__title{background:#0a6ed1;color:#fff;font-size:.74rem;font-weight:700;padding:6px 12px;}
+.gui__list{padding:11px 14px;font-family:var(--mono);font-size:12.5px;min-height:90px;color:var(--ink);}
+.gui__list .ln{padding:1px 0;}
+.gui__list .empty{color:var(--soon);font-style:italic;}
+.gui__status{border-top:1px solid var(--line);background:#f3f4f7;font-size:.78rem;padding:7px 12px;display:flex;align-items:center;gap:8px;min-height:34px;color:var(--ink-soft);}
+.gui__status .ico{width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;background:var(--soon);}
+.gui__status.show .ico{background:var(--accent);}
+.gui__status.show{color:var(--ink);font-weight:600;}
+
+/* 정보 팝업 모형 */
+.popup{position:absolute;inset:0;background:rgba(20,28,51,.32);display:flex;align-items:center;justify-content:center;}
+.popup__box{background:var(--surface);border-radius:12px;box-shadow:var(--shadow);width:min(300px,86%);overflow:hidden;}
+.popup__hd{background:#0a6ed1;color:#fff;font-size:.78rem;font-weight:700;padding:8px 13px;display:flex;align-items:center;gap:7px;}
+.popup__body{padding:15px 14px;font-size:.86rem;color:var(--ink);}
+.popup__ft{padding:0 14px 13px;text-align:right;}
+.popup__ft button{background:var(--brand);color:#fff;border:0;border-radius:7px;padding:6px 18px;font:inherit;font-size:.8rem;font-weight:700;cursor:pointer;}
+
+.note{margin-top:12px;border-left:3px solid var(--brand);background:rgba(59,91,219,.06);border-radius:0 9px 9px 0;padding:9px 13px;font-size:.83rem;color:#2a3550;}
+.note code{font-family:var(--mono);background:#fff;border:1px solid var(--line);padding:0 5px;border-radius:4px;}
+.note a{color:var(--brand);font-weight:700;}

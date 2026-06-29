@@ -93,6 +93,9 @@
     }).join('')+'</tbody>';
     $('soGrid').innerHTML=thead+body;
     $('soCnt').textContent = passed.length+' / '+DATA.length+' 행 통과 (lt_book = '+passed.length+'행)';
+    var sysEl=$('soSys');                                  // (옵션) 레슨 HTML이 #soSys를 두면 시스템 필드 표시
+    if(sysEl){ var subrc = passed.length>0 ? 0 : 4;        // SELECT INTO TABLE: 1행↑ → 0, 0행 → 4
+      sysEl.innerHTML='<code>sy-subrc</code> = <b>'+subrc+'</b> &nbsp;·&nbsp; <code>sy-dbcnt</code> = <b>'+passed.length+'</b>'; }
     postHeight();
   }
   function refresh(){ renderBuilders(); renderCode(); renderResult(); }

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<!-- CH14-L01-S01 — 엔진: db-view-vs-join · _autoheight. 콘텐츠=레슨 전용(코드 JOIN vs Database View, CH14 L01).
+     config=window.DVJ_CFG. 게이팅: classic Database View(inner join)·SE11 개념만 · CDS/modern/comma 없음. -->
+<html lang="ko" data-eng="db-view-vs-join">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>코드 JOIN vs Database View 비교 보드 · CH14-L01-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/db-view-vs-join.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">코드 JOIN vs Database View <small>(같은 결과 · 다른 정의 위치)</small></p>
+  <p class="lead">같은 결합을 <b>코드 JOIN</b>으로 쓰든 <b>Database View</b>로 등록하든 결과는 같습니다. 상태를 바꿔 inner join이 마스터 없는 행을 어떻게 떨어뜨리는지, View Field 축소가 결과에 어떻게 영향을 주는지 보세요.</p>
+
+  <div class="dvj-seg"></div>
+
+  <div class="dvj-cols">
+    <div class="dvj-card code">
+      <div class="dvj-card__hd">① 코드 JOIN (CH13 스타일)</div>
+      <div class="dvj-card__bd"><pre><span class="kw">SELECT</span> c~concert_id p~perf_name
+       c~date c~hall_id
+  <span class="kw">FROM</span> zconcert <span class="kw">AS</span> c
+  <span class="kw">INNER JOIN</span> zperf <span class="kw">AS</span> p
+    <span class="kw">ON</span> c~perf_id = p~perf_id
+  <span class="kw">INTO TABLE</span> lt_out.</pre></div>
+    </div>
+    <div class="dvj-card view">
+      <div class="dvj-card__hd">② Database View ZV_CONCERT (SE11)</div>
+      <div class="dvj-card__bd">
+        <div class="dvj-row">Basis: <b>zconcert</b>, <b>zperf</b></div>
+        <div class="dvj-row">Join: zconcert~perf_id = zperf~perf_id</div>
+        <div class="dvj-h" style="margin:8px 0 4px">View Fields</div>
+        <div class="dvj-fields" id="dvjFields"></div>
+      </div>
+    </div>
+  </div>
+
+  <p class="dvj-same">↓ 두 정의 모두 같은 결과를 읽는다</p>
+  <table class="dvj-tbl">
+    <thead><tr id="dvjHead"></tr></thead>
+    <tbody id="dvjBody"></tbody>
+  </table>
+
+  <div class="dvj-status" id="dvjStatus"></div>
+
+  <div class="note"><b>View = 저장소가 아니다.</b> 데이터는 basis table에 있고 View는 그 관점일 뿐입니다. 여러 테이블 View는 <b>inner join</b>이라 짝 없는 행은 빠집니다. View Field는 외부 프로그램의 구조 계약이니 필요한 필드만 노출하세요.</div>
+</div>
+
+<script>
+window.DVJ_CFG = {
+  baseFields: [
+    { key: 'concert_id', label: 'concert_id' },
+    { key: 'perf_name', label: 'perf_name' },
+    { key: 'date', label: 'date' },
+    { key: 'hall_id', label: 'hall_id' }
+  ],
+  narrowDrop: 'perf_name',
+  perf: { P001: '클래식 갈라', P002: '재즈 나이트' },
+  concert: [
+    { concert_id: 'C001', perf_id: 'P001', date: '2026-07-01', hall_id: 'H01' },
+    { concert_id: 'C002', perf_id: 'P002', date: '2026-07-03', hall_id: 'H02' }
+  ],
+  extraRow: { concert_id: 'C003', perf_id: 'P999', date: '2026-07-05', hall_id: 'H01' }
+};
+</script>
+<script src="../_engine/db-view-vs-join.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<!-- CH22-L06-S01 — 엔진: dcl-auth-comparator · _autoheight. 콘텐츠=레슨 전용(CDS DCL 권한 필터 결과 비교기, #C22 L06).
+     config=window.DAC_CFG. 게이팅: CDS 정식(DCL define role·grant select·aspect pfcg_auth·@AccessControl). RAP instance auth은 CH23+.
+     관통예제=콘서트. DCL role≠PFCG 사용자 배정. 이름 풀(R9: 아이유·손흥민·정훈영·김연아·유재석). -->
+<html lang="ko" data-eng="dcl-auth-comparator">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DCL 권한 필터 결과 비교기 · CH22-L06-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/dcl-auth-comparator.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">DCL 권한 필터 결과 비교기 <small>(같은 코드, 다른 결과)</small></p>
+  <p class="lead">사용자를 바꾸고 <code>@AccessControl</code>을 <code>#CHECK</code>↔<code>#NOT_REQUIRED</code>로 토글해 보세요. <b>같은 <code>SELECT FROM ZI_Concert</code></b>인데 권한(PFCG VENUE)에 따라 보이는 행이 달라집니다. <code>#NOT_REQUIRED</code>면 권한 밖 venue까지 노출되는 걸 직접 확인하세요.</p>
+
+  <div class="dac-grp"><span class="dac-glbl">사용자</span><span id="dacUsers"></span><span class="dac-pfcg" id="dacPfcg"></span></div>
+  <div class="dac-grp"><span class="dac-glbl">접근 제어</span><button class="dac-mode" id="dacMode"></button></div>
+
+  <pre class="dac-code" id="dacDcl"></pre>
+  <pre class="dac-code" id="dacSql"></pre>
+
+  <div class="dac-result"><div class="dac-result__hd" id="dacResultHd"></div><div id="dacResult"></div></div>
+
+  <div class="dac-verdict" id="dacVerdict"></div>
+
+  <div class="note"><b>DCL role ≠ 사용자에게 role 부여.</b> <code>define role</code>은 CDS 접근 규칙이고, <code>aspect pfcg_auth</code>는 기존 PFCG 권한 객체의 값을 조건으로 <b>참조</b>할 뿐입니다. 사용자에게 권한을 주는 작업(SU01/PFCG)은 별도 보안 설정이에요. 그리고 권한은 UI에서만 막으면 안 됩니다 — 모델을 직접 읽는 다른 소비처가 우회할 수 있으니까요.</div>
+</div>
+
+<script>
+window.DAC_CFG = {
+  entity: 'ZI_Concert',
+  users: [
+    { id: 'SEOUL_USER', auth: ['SEOUL'] },
+    { id: 'BUSAN_USER', auth: ['BUSAN'] },
+    { id: 'NO_AUTH_USER', auth: [] }
+  ],
+  concerts: [
+    { id: 'C001', artist: '아이유',  venue: 'SEOUL' },
+    { id: 'C002', artist: '손흥민',  venue: 'BUSAN' },
+    { id: 'C003', artist: '정훈영',  venue: 'SEOUL' },
+    { id: 'C004', artist: '김연아',  venue: 'BUSAN' },
+    { id: 'C005', artist: '유재석',  venue: 'JEJU' }
+  ]
+};
+</script>
+<script src="../_engine/dcl-auth-comparator.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

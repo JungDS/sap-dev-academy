@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH29 · Enhancement / BAdI / User Exit</span>
+  <span class="meta">Chapter 29 · Enhancement / BAdI / User Exit</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -31,7 +31,7 @@
 <div class="stage">
   <div class="layout">
     <main class="main">
-      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH29</nav>
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 29 › Lesson 3</nav>
       <section class="lhead">
         <p class="lhead__eyebrow">Enhancement / BAdI / User Exit</p>
         <h1>BAdI 정의와 구현</h1>
@@ -40,24 +40,42 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>가장 권장되는 확장 — BAdI</h2>
-<p><button class="term" type="button" data-term="BAdI">BAdI</button>(Business Add-In)는 <strong><button class="term" type="button" data-term="Interface">인터페이스</button> 기반</strong>의 <button class="term" type="button" data-term="객체">객체</button>지향 확장점이다. 표준이 정의한
-인터페이스를 내가 <strong>구현</strong>하면, 표준이 그 <button class="term" type="button" data-term="Method">메서드</button>를 불러 준다(CH20 인터페이스·다형성).</p>
+<p><a href="CH29-L01.html">Customer Exit</a>·Enhancement Point는 <em>&quot;표준 어디에 코드를 꽂나&quot;</em> 가 초점이었다.
+그런데 같은 시점이라도 <strong>국가·회사코드·사업부별로 구현이 다를</strong> 수 있고, 여러 구현을 켜고
+끄거나 조건에 맞는 것만 골라야 한다. <strong><button class="term" type="button" data-term="BAdI">BAdI</button></strong>(Business Add-In)는 이걸 <strong><button class="term" type="button" data-term="객체">객체</button>지향</strong>으로 푼다.</p>
+<p>표준은 <em>&quot;어떤 구현을 부를지&quot;</em> 를 직접 모른다. 대신 <strong><button class="term" type="button" data-term="Interface">인터페이스</button>(계약)</strong> 의 <button class="term" type="button" data-term="Method">메서드</button>를 부르고,
+고객이 그 인터페이스를 <strong>구현</strong>한다. <a href="CH20-L05.html">Interface 기본 설계</a>에서 배운 인터페이스가
+여기서 <em>표준–고객 사이의 계약</em>으로 산다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
-4</pre><pre class="abap-editor__code"><code><span class="tok-com">" 표준이 BAdI를 호출(개념)</span>
-<span class="tok-kw">GET</span> <span class="tok-kw">BADI</span> lo_badi.
+4
+5
+6</pre><pre class="abap-editor__code"><code><span class="tok-com">" 표준 쪽: 구현을 직접 모르고 인터페이스만 호출</span>
+<span class="tok-kw">GET</span> <span class="tok-kw">BADI</span> lo_badi
+  FILTERS country = lv_country.
+
 <span class="tok-kw">CALL</span> <span class="tok-kw">BADI</span> lo_badi-&gt;check_booking
   <span class="tok-kw">EXPORTING</span> is_booking = ls_booking.</code></pre></div></div>
+<p>고객은 그 인터페이스 메서드를 <strong>구현</strong>한다(<code>SE19</code>로 생성).</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7</pre><pre class="abap-editor__code"><code><span class="tok-com">" 고객 구현 클래스: 인터페이스 메서드 구현</span>
+<span class="tok-kw">METHOD</span> if_ex_booking_check~check_booking.
+  <span class="tok-kw">IF</span> is_booking-total_amount &gt; <span class="tok-num">100000</span>
+     <span class="tok-kw">AND</span> is_booking-customer_group = <span class="tok-str">'VIP'</span>.
+    <span class="tok-com">" 고객 규칙: 검증·메시지</span>
+  <span class="tok-kw">ENDIF</span>.
+<span class="tok-kw">ENDMETHOD</span>.</code></pre></div></div>
 <ul>
-<li><code>SE18</code>(BAdI 정의 조회)·<code>SE19</code>(구현 생성).</li>
-<li>표준이 마련한 인터페이스(예: <code>IF_EX_...</code>)의 메서드를 내가 채운다.</li>
-<li><strong>필터 BAdI</strong>는 조건(국가·회사코드 등)별로 다른 구현을 고를 수 있다.</li>
-</ul>
-</section><section class="lblock"><h2>왜 BAdI인가</h2>
-<ul>
-<li><button class="term" type="button" data-term="Interface">인터페이스</button> 기반이라 <strong>여러 구현</strong>·<strong>다형성</strong>·<strong>필터</strong>가 자연스럽다.</li>
-<li>User Exit보다 현대적이고 관리가 쉽다(신규 권장).</li>
+<li><code>SE18</code>(정의 조회)·<code>SE19</code>(구현 생성). 인터페이스 이름은 보통 <code>IF_EX_...</code> 꼴.</li>
+<li><strong>필터 BAdI</strong> — <code>FILTERS</code>로 국가·회사코드 등 조건별 구현을 자동 선택.</li>
+<li><strong>multiple-use</strong>는 여러 구현이 차례로, <strong>single-use</strong>는 하나만(참조가 비었는데 호출하면
+<button class="term" type="button" data-term="예외">예외</button> 가능).</li>
 </ul>
 </section><section class="lblock"><h2>구현을 꽂아 보기</h2>
 <p>구현(플러그)을 켜고 끈 뒤 표준을 실행해, 표준이 내 <button class="term" type="button" data-term="BAdI">BAdI</button> <button class="term" type="button" data-term="Method">메서드</button>를 부르는지(없으면 기본 동작)
@@ -65,15 +83,31 @@
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">BAdI 플러그인 — 구현 on/off</span><a class="embed__open" href="../../../embeds/abap/CH29-L03-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH29-L03-S01.html" loading="lazy" title="BAdI 플러그인 — 구현 on/off" style="height:440px"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>구현 미활성화</strong> → SE19 구현을 활성화해야 표준이 호출.</li>
-<li><strong>필터 미설정</strong> → 필터 <button class="term" type="button" data-term="BAdI">BAdI</button>는 조건을 줘야 해당 구현이 선택된다.</li>
+<li><strong>정의(<code>SE18</code>)와 구현(<code>SE19</code>) 혼동</strong> → 정의만 보고 &quot;작동한다&quot; 할 수 없고, 구현만 만들어도
+filter·activation이 안 맞으면 호출 안 된다.</li>
+<li><strong>filter를 가볍게</strong> → filter는 부가 조건이 아니라 <strong>구현 선택 조건</strong>이다. 표준이
+<code>country=&#39;KR&#39;</code>로 부르는데 구현 filter를 <code>US</code>로 두면 <em>로직이 완벽해도</em> 호출 안 된다.</li>
+<li><strong>multiple-use 순서·중복 무시</strong> → 여러 구현이 같은 메시지를 더하면 결과가 중복된다. 구현은
+<strong>멱등</strong>하게, 같은 메시지 반복 방지 guard를 둔다.</li>
+<li><strong><button class="term" type="button" data-term="BAdI">BAdI</button>에 화면·외부연동 직접</strong> → BAdI는 표준 <button class="term" type="button" data-term="트랜잭션">트랜잭션</button> 중간에 실행된다. 느린 I/O·<button class="term" type="button" data-term="COMMIT WORK">커밋</button>
+제어·화면 호출은 표준 전체를 불안정하게 한다. <em>짧게 호출·판단·반환</em>만, 복잡한 건 별도
+서비스 <button class="term" type="button" data-term="Class">클래스</button>로 분리한다.</li>
+</ul>
+</section><section class="lblock"><h2>정리</h2>
+<ul>
+<li><button class="term" type="button" data-term="BAdI">BAdI</button> = 표준과 고객 구현 사이를 <strong><button class="term" type="button" data-term="Interface">인터페이스</button> 계약</strong>으로 분리하는 OO 확장.</li>
+<li>표준은 <code>GET BADI</code>로 구현을 준비하고 <code>CALL BADI</code>로 <button class="term" type="button" data-term="Method">메서드</button> 호출, 고객은 <code>SE19</code> 구현 <button class="term" type="button" data-term="Class">클래스</button>로
+응답한다.</li>
+<li>Customer Exit보다 선호되는 이유 = <strong>구조가 명확</strong>(signature·filter·use 방식·activation으로
+관리).</li>
 </ul>
 <hr>
-<p><button class="term" type="button" data-term="객체">객체</button>지향 확장을 봤다. 그런데 확장점이 없는 곳은? Implicit/Explicit 판단 → 다음 레슨.</p>
+<p><button class="term" type="button" data-term="객체">객체</button>지향 확장을 봤다. 그런데 확장점이 <em>없는</em> 곳은? Implicit/Explicit 어느 걸 쓸지 판단 →
+<a href="CH29-L04.html">Implicit / Explicit Enhancement 판단</a>(다음 레슨).</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
-      <footer class="foot">SAP Developer Academy · CH29 CH29-L03</footer>
+      <footer class="foot">SAP Developer Academy · 배포자 SAP전문강사 정훈영</footer>
     </main>
     <aside class="journey" data-shell="journey"></aside>
   </div>

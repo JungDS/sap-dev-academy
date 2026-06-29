@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<!-- CH08-L07-S01 — 엔진: empty-result-message (embeds/_engine/empty-result-message.{js,css}) · 자체 postHeight.
+     체험: dan(2·3=있음 / 5=없음)을 골라 조회 → sy-subrc·sy-dbcnt 분기, 피드백(WRITE / MESSAGE S / I) 비교.
+     게이팅: MESSAGE는 S/I 맛보기만 — 메시지 클래스·타입 전체는 CH15. 데이터=window.ERM_CFG. -->
+<html lang="ko" data-eng="empty-result-message">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>빈 결과와 MESSAGE 피드백 · CH08-L07-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/empty-result-message.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">빈 결과와 MESSAGE 피드백 <small>(sy-subrc 분기)</small></p>
+  <p class="lead">우리 <code>ZGUGUDAN</code>에는 <b>2·3단만</b> 저장돼 있습니다. <b>5단</b>을 조회하면 한 건도 안 나옵니다. 이때 조용히 지나가지 않고 사용자에게 어떻게 알릴지, 세 가지 피드백 방식을 비교해 보세요.</p>
+
+  <div class="ctrls">
+    <div class="grp"><span class="grp__lbl">조회할 dan</span>
+      <div class="seg" id="danSeg">
+        <button type="button" data-d="2" class="on">dan = 2</button>
+        <button type="button" data-d="3">dan = 3</button>
+        <button type="button" data-d="5">dan = 5</button>
+      </div>
+    </div>
+    <div class="grp"><span class="grp__lbl">실패 시 피드백</span>
+      <div class="seg" id="fbSeg">
+        <button type="button" data-f="write" class="on">WRITE만</button>
+        <button type="button" data-f="msgS">MESSAGE S</button>
+        <button type="button" data-f="msgI">MESSAGE I</button>
+      </div>
+    </div>
+    <button class="run-btn" id="run" type="button">▶ 실행 <kbd>F8</kbd></button>
+  </div>
+
+  <div class="codebox">
+    <div class="codebox__hd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span></div>
+    <pre class="code" id="code"></pre>
+  </div>
+
+  <div class="subrcbar">
+    <div class="scard"><div class="k">sy-subrc</div><div id="subrc"><span class="v">—</span></div></div>
+    <div class="scard"><div class="k">sy-dbcnt</div><div class="v" id="dbcnt">—</div></div>
+    <div class="scard"><div class="k">lines( gt_gugu )</div><div class="v" id="lines">—</div></div>
+  </div>
+
+  <div class="gui">
+    <div class="gui__title">ZCH08_L07 — 구구단 조회</div>
+    <div class="gui__list" id="guiList"></div>
+    <div class="gui__status" id="guiStatus"><span class="ico">·</span>준비</div>
+    <div class="popup" id="popup" style="display:none">
+      <div class="popup__box">
+        <div class="popup__hd">ℹ️ 정보</div>
+        <div class="popup__body" id="popMsg"></div>
+        <div class="popup__ft"><button id="popClose" type="button">확인</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note"><b>핵심</b> — 같은 "없음"이라도 피드백 방식에 따라 사용자 경험이 다릅니다. <code>TYPE 'S'</code>는 상태바 알림, <code>TYPE 'I'</code>는 확인이 필요한 팝업. 메시지 타입 전체(I/S/W/E/A/X)와 메시지 클래스는 <a href="CH15-L01.html">Chapter 15</a>에서 정식으로 배웁니다.</div>
+</div>
+
+<script>
+window.ERM_CFG = {
+  table:'zgugudan', itab:'gt_gugu', present:[2,3],
+  rows:{
+    2:[{mul:1,result:2},{mul:2,result:4},{mul:3,result:6},{mul:4,result:8},{mul:5,result:10},{mul:6,result:12},{mul:7,result:14},{mul:8,result:16},{mul:9,result:18}],
+    3:[{mul:1,result:3},{mul:2,result:6},{mul:3,result:9},{mul:4,result:12},{mul:5,result:15},{mul:6,result:18},{mul:7,result:21},{mul:8,result:24},{mul:9,result:27}]
+  }
+};
+</script>
+<script src="../_engine/empty-result-message.js" defer></script>
+</body>
+</html>

@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH17 · Grid ALV 기초</span>
+  <span class="meta">Chapter 17 · Grid ALV 기초</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -31,37 +31,66 @@
 <div class="stage">
   <div class="layout">
     <main class="main">
-      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH17</nav>
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 17 › Lesson 6</nav>
       <section class="lhead">
         <p class="lhead__eyebrow">Grid ALV 기초</p>
         <h1>Variant 기본 설정</h1>
-        <p class="lhead__direction">사용자가 컬럼 배치를 저장·재사용하는 Display Variant.</p>
+        <p class="lhead__direction">사용자가 표시 방식(컬럼 순서·필터)을 저장·재사용하는 Display Variant.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 17</span><span class="tag tag--ls">Lesson 6</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
 <section class="lblock"><h2>사용자마다 다른 표 모양</h2>
-<p>같은 표라도 사람마다 보고 싶은 컬럼·순서가 다르다. ALV는 사용자가 컬럼을 바꿔
-<strong>Variant(레이아웃)</strong> 로 저장하고 다시 불러 쓰게 해 준다.</p>
+<p>현업 사용자는 같은 표를 같은 방식으로 보지 않는다. 회계 담당자는 금액 컬럼을 앞에,
+운영 담당자는 상태·변경일을 먼저 보고 싶을 수 있다. 매번 컬럼을 드래그하고 필터를 다시
+잡게 하면 화면은 불편한 도구가 된다. ALV의 <button class="term" type="button" data-term="Display Variant">Display Variant</button>는 사용자가 <strong>자기 보기
+방식을 저장하고 다시 불러오게</strong> 해 준다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> ls_variant <span class="tok-kw">TYPE</span> disvariant.
 
-ls_variant-report = sy-repid.    <span class="tok-com">" 이 프로그램 기준으로 Variant 구분</span></code></pre></div></div>
+ls_variant-report = sy-repid.    <span class="tok-com">" 현재 프로그램 이름 → 프로그램별 Variant 구분</span></code></pre></div></div>
 <ul>
-<li><code>report = sy-repid</code> — 어느 프로그램의 Variant인지 식별.</li>
-<li>display 호출 시 <code>is_variant</code>로 넘기면, 사용자가 툴바에서 레이아웃을 저장/선택할 수 있다.</li>
+<li><code>sy-repid</code>는 <strong>현재 실행 중인 프로그램 이름</strong>이다. Variant를 프로그램별로 구분하려면 필요하다.</li>
+<li>display 호출에서 <code>is_variant</code>와 <code>i_save</code>를 함께 넘긴다(<code>i_save = &#39;A&#39;</code> = 저장 허용 — 교육용).</li>
 </ul>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6</pre><pre class="abap-editor__code"><code>go_grid-&gt;set_table_for_first_display(
+  <span class="tok-kw">EXPORTING</span> is_variant = ls_variant
+            i_save     = <span class="tok-str">'A'</span>
+            is_layout  = ls_layout
+  <span class="tok-kw">CHANGING</span>  it_outtab       = lt_booking
+            it_fieldcatalog = lt_fcat ).</code></pre></div></div>
+<blockquote>
+<p>💡 <strong>Variant는 데이터 저장이 아니다.</strong> 예매 데이터가 저장되는 게 아니라, <strong>컬럼 순서·
+필터·정렬 같은 표시 방식</strong>이 저장된다.</p>
+</blockquote>
+</section><section class="lblock"><h2>직접 저장·복원해 보기 — 사용자별 보기</h2>
+<p>사용자 A는 <code>예매자·좌석수</code>를 앞에, 사용자 B는 <code>상태·예매번호</code>를 앞에 두고 저장한다.
+저장한 Variant를 다시 열면 그 컬럼 순서가 복원된다. <code>report</code>를 비우면 왜 기준이 약해지는지도 보자.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">사용자별 보기 저장 (<button class="term" type="button" data-term="Display Variant">Display Variant</button>)</span><a class="embed__open" href="../../../embeds/abap/CH17-L06-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH17-L06-S01.html" loading="lazy" title="사용자별 보기 저장 (Display Variant)" style="height:580px"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>report 미설정</strong> → Variant 저장/불러오기가 꼬인다. <code>sy-repid</code>를 넣는다.</li>
-<li><strong>save 옵션</strong> → 저장 범위(사용자/전역)는 display의 <code>i_save</code>로 정한다.</li>
+<li><strong><code>report</code> 미설정</strong> → 어느 프로그램의 Variant인지 기준이 약해져 저장/조회가 꼬인다.
+<code>sy-repid</code>를 넣는다.</li>
+<li><strong>저장 범위를 함부로</strong> → 운영에서 <strong>전역 Variant</strong>를 아무나 바꾸게 하면 모든 사용자의
+화면이 바뀐 것처럼 느낀다. <code>i_save</code> 범위(사용자/전역)는 프로젝트 규칙에 맞춘다.</li>
+</ul>
+</section><section class="lblock"><h2>정리</h2>
+<ul>
+<li>이 레슨은 <strong>사용자가 표를 자기 방식으로 다시 볼 수 있게</strong> 하는 장치(<button class="term" type="button" data-term="Display Variant">Display Variant</button>)를 연결한다.</li>
+<li><code>DISVARIANT-report = sy-repid</code>로 프로그램을 식별하고, <code>is_variant</code>·<code>i_save</code>를 display에 넘긴다.</li>
 </ul>
 <hr>
-<p>저장 가능한 표까지 만들었다. 이제 <strong>준비한 모든 것을 한 번에 띄우는</strong> display 호출 → 다음 레슨.</p>
+<p>저장 가능한 표까지 만들었다. 이제 <strong>데이터·field catalog·layout·variant를 한 번에 넘겨</strong>
+실제 표를 띄우자 → <a href="CH17-L07.html">SET_TABLE_FOR_FIRST_DISPLAY</a>.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
-      <footer class="foot">SAP Developer Academy · CH17 CH17-L06</footer>
+      <footer class="foot">SAP Developer Academy · 배포자 SAP전문강사 정훈영</footer>
     </main>
     <aside class="journey" data-shell="journey"></aside>
   </div>

@@ -1,0 +1,46 @@
+/* ===== perform-call-map — PERFORM/FORM 호출 점프와 스코프 (CH10-L01) =====
+   PERFORM에서 FORM으로 들어갔다 돌아오는 흐름 + 전역/지역 변수 수명. 데이터=window.PCM_CFG(스크립트). */
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:transparent;line-height:1.5;}
+.wrap{padding:14px;}
+.hd{font-weight:800;font-size:1rem;margin:0 0 4px;}
+.hd small{font-weight:600;color:var(--brand);}
+.lead{margin:0 0 12px;color:var(--ink-soft);font-size:.86rem;}
+.lead code{font-family:var(--mono);background:#eef2ff;color:var(--brand);padding:1px 5px;border-radius:5px;font-size:.92em;}
+
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px;}
+.btn{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:7px 14px;font:inherit;font-size:.82rem;font-weight:700;cursor:pointer;}
+.btn:hover{border-color:var(--brand);color:var(--brand);}
+.btn.go{background:var(--brand);color:#fff;border-color:var(--brand);}
+.btn.go:hover{filter:brightness(1.08);color:#fff;}
+.btn:disabled{opacity:.4;cursor:default;}
+.missing{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:.78rem;font-weight:700;color:var(--bad);cursor:pointer;user-select:none;}
+.missing input{accent-color:var(--bad);}
+
+.stage{display:grid;grid-template-columns:1.4fr 1fr;gap:12px;align-items:start;}
+@media(max-width:600px){ .stage{grid-template-columns:1fr;} }
+
+.codecol{display:flex;flex-direction:column;gap:9px;}
+.block{border:1px solid var(--line);border-radius:11px;overflow:hidden;background:var(--surface);}
+.block__hd{font-family:var(--mono);font-size:.72rem;font-weight:800;padding:6px 11px;background:#eef2ff;color:#26336b;}
+.block.form .block__hd{background:#fff7ed;color:#9a3412;}
+.cline{display:grid;grid-template-columns:26px 1fr;font-family:var(--mono);font-size:12px;padding:2px 0;}
+.cline .ln{color:#aab3cf;text-align:right;padding-right:8px;user-select:none;}
+.cline .tx{white-space:pre;color:#24324a;padding-right:10px;}
+.cline.cur{background:#fff3bf;box-shadow:inset 3px 0 0 var(--amber);}
+.cline.cur .tx{font-weight:700;}
+.tok-kw{color:#005cc5;font-weight:700;} .tok-str{color:#22863a;} .tok-com{color:#9aa0ad;font-style:italic;}
+
+.side{display:flex;flex-direction:column;gap:10px;}
+.scard{border:1px solid var(--line);border-radius:10px;background:var(--surface);padding:9px 11px;}
+.scard__t{font-size:.7rem;font-weight:800;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px;}
+.var{display:flex;justify-content:space-between;font-family:var(--mono);font-size:12.5px;padding:2px 0;}
+.var b{color:var(--brand);} .var.local b{color:var(--amber);}
+.gone{color:var(--soon);font-style:italic;font-size:.78rem;}
+.stack{font-family:var(--mono);font-size:12px;}
+.stkitem{padding:3px 8px;border-radius:6px;background:#eef2ff;color:#26336b;margin-bottom:4px;}
+.note-step{font-size:.82rem;padding:8px 11px;border-radius:8px;background:var(--surface);color:var(--ink-soft);min-height:20px;}
+.note-step.jump{background:#eef2ff;color:#26336b;} .note-step.ret{background:#eafaf3;color:#0b7250;} .note-step.err{background:rgba(214,51,108,.08);color:var(--bad);font-weight:700;}
+
+.note{margin-top:12px;border-left:3px solid var(--brand);background:rgba(59,91,219,.06);border-radius:0 9px 9px 0;padding:9px 13px;font-size:.83rem;color:#2a3550;}
+.note code{font-family:var(--mono);background:#fff;border:1px solid var(--line);padding:0 5px;border-radius:4px;}

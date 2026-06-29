@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<!-- CH04-L04-S03 — 엔진: mermaid (.dc 2칼럼) + _autoheight. 콘텐츠=레슨 §2 OR 묶기 CASE(#C04-4).
+     좌=한 가지로 묶이는 값들, 우=그 ABAP 코드(레슨과 동일). 게이팅: CASE/WHEN/OTHERS/OR만. -->
+<html lang="ko" data-eng="mermaid">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CASE OR 묶기 + 코드 · CH04-L04-S03</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>if(!window.mermaid){var s=document.createElement("script");s.src="../_vendor/mermaid.min.js";document.head.appendChild(s);}</script>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/mermaid.css" />
+</head>
+<body>
+  <div class="wrap">
+    <p class="hd">CASE — 같은 처리를 <code>OR</code>로 묶기 <small>(합격/불합격)</small></p>
+    <p class="lead">여러 값이 <b>같은 결과</b>면 <code>WHEN</code> 한 줄에 <code>OR</code>로 나열합니다. 왼쪽 흐름과 오른쪽 코드를 비교해 보세요.</p>
+
+    <div class="dc">
+      <!-- 왼쪽: 묶인 값 → 한 가지 -->
+      <div class="viz-card">
+        <p class="viz-card__title"><code>'A'</code>·<code>'B'</code>가 한 가지로</p>
+        <div class="mermaid" id="mm">
+flowchart TD
+  S(["p_grade"]):::term
+  P["합격"]:::main
+  F["불합격"]:::out
+  S -->|"'A' 또는 'B'"| P
+  S -->|"그 외"| F
+classDef term fill:#eef2ff,stroke:#94a3b8,stroke-width:2px,color:#1c2233;
+classDef main fill:#ffffff,stroke:#10b981,stroke-width:2.4px,color:#0b7250;
+classDef out fill:#ffffff,stroke:#94a3b8,stroke-width:2px,color:#64748b;
+        </div>
+        <p class="viz-note"><code>'A' OR 'B'</code> — 둘 중 <b>하나만 맞아도</b> 같은 가지(합격)로 들어갑니다.</p>
+      </div>
+
+      <!-- 오른쪽: 같은 분기를 ABAP 코드로 -->
+      <div class="dc__code">
+        <div class="codecard">
+          <div class="codecard__hd"><span class="d r"></span><span class="d y"></span><span class="d g"></span><span class="lang">ABAP</span><span class="ttl">WHEN … OR …</span></div>
+          <div class="codecard__body">
+<pre class="codecard__gut">1
+2
+3
+4
+5
+6</pre>
+<pre class="codecard__code"><span class="tok-kw">CASE</span> p_grade.
+  <span class="tok-kw">WHEN</span> <span class="tok-str">'A'</span> <span class="tok-kw">OR</span> <span class="tok-str">'B'</span>.
+    <span class="tok-kw">WRITE</span>: / <span class="tok-str">'합격'</span>.
+  <span class="tok-kw">WHEN OTHERS</span>.
+    <span class="tok-kw">WRITE</span>: / <span class="tok-str">'불합격'</span>.
+<span class="tok-kw">ENDCASE</span>.</pre>
+          </div>
+        </div>
+        <ul class="dc__map">
+          <li><code>WHEN 'A' OR 'B'</code> = 둘 중 하나면 그 가지</li>
+          <li>나머지 값은 모두 <code>WHEN OTHERS</code>로</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+<script src="../_engine/mermaid.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

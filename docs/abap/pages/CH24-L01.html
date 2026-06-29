@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH24 · 실무 데이터 변경과 트랜잭션 제어</span>
+  <span class="meta">Chapter 24 · 실무 데이터 변경과 트랜잭션 제어</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -31,7 +31,7 @@
 <div class="stage">
   <div class="layout">
     <main class="main">
-      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH24</nav>
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 24 › Lesson 1</nav>
       <section class="lhead">
         <p class="lhead__eyebrow">실무 데이터 변경과 트랜잭션 제어</p>
         <h1>INSERT / UPDATE / MODIFY / DELETE 실무 기준</h1>
@@ -39,8 +39,8 @@
         <div class="tags"><span class="tag tag--track">Track 2</span><span class="tag tag--ch">Chapter 24</span><span class="tag tag--ls">Lesson 1</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>CH08은 읽기였다 — 이제 쓰기</h2>
-<p>CH08에서 배운 <code>SELECT</code>는 <strong>읽기 전용</strong>이었다. 데이터를 화면에 보여 줄 수는 있었지만,
+<section class="lblock"><h2>읽기에서 쓰기로</h2>
+<p><a href="CH08-L02.html">SELECT 4요소 · <code>*</code> vs 필드</a>에서 배운 <code>SELECT</code>는 <strong>읽기 전용</strong>이었다. 데이터를 화면에 보여 줄 수는 있었지만,
 &quot;예매가 들어왔다&quot;, &quot;취소됐다&quot; 같은 <strong>변화를 DB에 남기지는</strong> 못했다. 실무 프로그램의
 절반은 결국 <strong>데이터를 바꾸는</strong> 일이다.</p>
 <p>DB의 행을 직접 바꾸는 네 개의 문장을 묶어 <button class="term" type="button" data-term="DML">DML</button>(Data Manipulation Language)이라고
@@ -57,7 +57,7 @@
 <tbody><tr>
 <td><code>INSERT</code></td>
 <td>새 행 추가</td>
-<td><strong>오류(덤프)</strong></td>
+<td><strong>삽입 안 됨</strong>(<code>sy-subrc=4</code>)</td>
 <td>추가</td>
 </tr>
 <tr>
@@ -94,16 +94,21 @@
 일어나는지, <code>UPDATE</code>/<code>DELETE</code>에서 <code>WHERE</code>를 빼면 몇 행이 바뀌는지 <strong>눈으로 확인</strong>해 보라.</p>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title"><button class="term" type="button" data-term="DML">DML</button> 플레이그라운드 — ZBOOKING 직접 바꾸기</span><a class="embed__open" href="../../../embeds/abap/CH24-L01-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH24-L01-S01.html" loading="lazy" title="DML 플레이그라운드 — ZBOOKING 직접 바꾸기" style="height:560px"></iframe></figure>
 </section><section class="lblock"><h2>한 건이 아니라 통째로 — FROM TABLE</h2>
-<p>한 행씩 넣는 대신, <strong><button class="term" type="button" data-term="메모리">메모리</button>의 내부 테이블을 한 번에</strong> DB로 보낼 수 있다. CH07에서 손으로
-한 줄씩 입력하던 번거로움, CH08에서 &quot;조회 결과 itab을 통째로 저장하고 싶다&quot;던 아쉬움이
-여기서 풀린다. 행마다 왕복하지 않아 <strong>훨씬 빠르다</strong>.</p>
+<p>한 행씩 넣는 대신, <strong><button class="term" type="button" data-term="메모리">메모리</button>의 내부 테이블을 한 번에</strong> DB로 보낼 수 있다. <a href="CH07-L01.html">Transparent Table 생성
+(SE11)</a>에서 만든 표에 한 줄씩 손으로 넣던 번거로움, <a href="CH08-L03.html">SELECT 형태 — SINGLE · INTO TABLE · UP
+TO n ROWS</a>에서 &quot;조회 결과 itab을 통째로 저장하고 싶다&quot;던 아쉬움이 여기서 풀린다. 행마다
+왕복하지 않아 <strong>훨씬 빠르다</strong>.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2</pre><pre class="abap-editor__code"><code><span class="tok-kw">INSERT</span> zgugudan <span class="tok-kw">FROM</span> <span class="tok-kw">TABLE</span> @lt_gugu.        <span class="tok-com">" 81행을 한 번에</span>
 <span class="tok-kw">MODIFY</span> zbooking <span class="tok-kw">FROM</span> <span class="tok-kw">TABLE</span> @lt_booking.     <span class="tok-com">" 여러 건 upsert</span></code></pre></div></div>
+<blockquote>
+<p>단, <code>INSERT ... FROM TABLE</code>에서 <strong>중복 키가 섞이면</strong> 단건과 달리 런타임 오류가 난다(필요하면
+<code>ACCEPTING DUPLICATE KEYS</code>로 건너뛴다). 대량 처리의 실패 회수는 뒤 레슨에서 다시 잡는다.</p>
+</blockquote>
 </section><section class="lblock"><h2>누가·언제 바꿨나 — 감사필드 자동 stamp</h2>
 <p>업무 테이블에는 보통 &quot;이 행을 <strong>누가·언제</strong> 만들었나&quot;를 남기는 컬럼(<code>created_by</code>·
-<code>created_on</code>)을 둔다. 나중에 문제를 추적하거나 책임을 가릴 때 필수다. 값은 CH04에서 만난
-<button class="term" type="button" data-term="SY 시스템 변수">SY 변수</button>로 채운다 — 시스템이 로그온 사용자·날짜·시각을 알아서 들고 있다.</p>
+<code>created_on</code>)을 둔다. 나중에 문제를 추적하거나 책임을 가릴 때 필수다. 값은 <button class="term" type="button" data-term="SY 시스템 변수">SY 변수</button>로
+채운다 — 시스템이 로그온 사용자·날짜·시각을 알아서 들고 있다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -119,14 +124,17 @@ ls_booking-created_at = sy-uzeit.   <span class="tok-com">" 현재 시각</span>
 <p><code>SCARR</code>·<code>SFLIGHT</code> 같은 <strong>SAP 표준 테이블</strong>은 <code>INSERT</code>/<code>UPDATE</code>로 <strong>직접 바꾸면 안 된다</strong>.
 표준 데이터는 보이지 않는 검증·후속 처리(다른 테이블 동기화, 번호 채번 등)가 딸려 있는데,
 직접 <button class="term" type="button" data-term="DML">DML</button>은 그걸 <strong>모두 건너뛰어</strong> 데이터를 조용히 망가뜨린다. 표준 데이터는 반드시
-<strong>BAPI/표준 API</strong>를 경유한다(자세히는 CH30). 직접 DML은 <strong>내가 만든 테이블</strong>(<code>ZBOOKING</code>
-등)에만 쓴다.</p>
+<strong>BAPI/표준 API</strong>를 경유한다(자세히는 <a href="CH30-L01.html">BAPI 호출과 Return 처리</a>). 직접 DML은 <strong>내가 만든
+테이블</strong>(<code>ZBOOKING</code> 등)에만 쓴다.</p>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>INSERT 중복키</strong> → 이미 있는 키면 런타임 덤프. &quot;있으면 갱신&quot;이 목적이면 <code>MODIFY</code>.</li>
+<li><strong>INSERT 중복키</strong> → 단건 <code>INSERT FROM wa</code>는 같은 키가 있으면 <strong>삽입 안 됨·<code>sy-subrc=4</code></strong>(덤프 아님 — 중복은
+성공이 아니므로 실패로 분기). 대량 <code>INSERT FROM TABLE</code>은 런타임 오류. &quot;있으면 갱신&quot;이 목적이면 <code>MODIFY</code>.</li>
 <li><strong><code>WHERE</code> 없는 <code>UPDATE</code>/<code>DELETE</code></strong> → <strong>전체 행</strong>이 바뀌거나 사라진다. 사고의 단골 — 조건을 반드시.</li>
-<li><strong>표준 테이블 직접 <button class="term" type="button" data-term="DML">DML</button></strong> → 금지. BAPI 경유(CH30).</li>
-<li><strong><code>sy-subrc</code> 미확인</strong> → 변경이 정말 됐는지 항상 확인(다음 레슨의 COMMIT 판단과 직결).</li>
+<li><strong>표준 테이블 직접 <button class="term" type="button" data-term="DML">DML</button></strong> → 금지. <a href="CH30-L01.html">BAPI 호출과 Return 처리</a> 경유.</li>
+<li><strong><code>sy-subrc</code>/<code>sy-dbcnt</code> 미확인</strong> → 실행 전 &quot;몇 행이 바뀌어야 정상인지&quot; 예측하고, 실행 후 <code>sy-subrc</code>(성공 여부)·
+<code>sy-dbcnt</code>(영향 행 수)로 확인한다. <code>sy-dbcnt</code>가 예상과 다르면 <code>WHERE</code>가 너무 넓거나 대상이 없는 것 —
+그대로 다음 레슨의 COMMIT 판단으로 넘기면 안 된다.</li>
 </ul>
 </section><section class="lblock"><h2>정리</h2>
 <ul>
@@ -141,7 +149,7 @@ ls_booking-created_at = sy-uzeit.   <span class="tok-com">" 현재 시각</span>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
-      <footer class="foot">SAP Developer Academy · CH24 CH24-L01</footer>
+      <footer class="foot">SAP Developer Academy · 배포자 SAP전문강사 정훈영</footer>
     </main>
     <aside class="journey" data-shell="journey"></aside>
   </div>

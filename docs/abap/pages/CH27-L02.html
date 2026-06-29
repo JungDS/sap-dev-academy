@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH27 · ALV 고급 Event 응용</span>
+  <span class="meta">Chapter 27 · ALV 고급 Event 응용</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -31,7 +31,7 @@
 <div class="stage">
   <div class="layout">
     <main class="main">
-      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH27</nav>
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 27 › Lesson 2</nav>
       <section class="lhead">
         <p class="lhead__eyebrow">ALV 고급 Event 응용</p>
         <h1>Hotspot Click Event</h1>
@@ -40,19 +40,26 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>한 번 클릭하는 링크</h2>
-<p>공연ID 컬럼을 <strong>링크처럼</strong> 만들어, 한 번 클릭하면 공연 상세로 보내고 싶다. 그게
+<p><a href="CH27-L01.html">Double Click Event</a>는 <strong>행 전체</strong>를 상세로 보냈다. 그런데 모든 셀을
+더블클릭 대상으로 만들면 사용자는 어디를 눌러야 할지 헷갈린다. 예매 목록에서
+<em>공연ID·고객번호</em>처럼 &quot;눌러서 이동할 값&quot;만 <strong>링크처럼</strong> 보여 주는 게 낫다. 그게
 <strong>Hotspot</strong>이다.</p>
-</section><section class="lblock"><h2>컬럼을 hotspot으로 — fieldcat</h2>
+<p>핵심은 <strong>핸들러만 만들면 끝이 아니라는 점</strong>이다. 먼저 <a href="CH17-L04.html">Field Catalog</a>에서
+그 컬럼의 <code>hotspot</code> 속성을 켜야 화면에서 링크처럼 보이고, 사용자의 <strong>한 번 클릭</strong>이
+<code>hotspot_click</code> <button class="term" type="button" data-term="이벤트">이벤트</button>로 이어진다.</p>
+</section><section class="lblock"><h2>컬럼을 hotspot으로 — Field Catalog</h2>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
 4
-5</pre><pre class="abap-editor__code"><code><span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_fcat <span class="tok-kw">REFERENCE</span> <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(lr).
-  <span class="tok-kw">IF</span> lr-&gt;fieldname = <span class="tok-str">'CONCERT_ID'</span>.
-    lr-&gt;hotspot = abap_true.        <span class="tok-com">" 링크 표시</span>
+5</pre><pre class="abap-editor__code"><code><span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_fcat <span class="tok-kw">REFERENCE</span> <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(lr_fcat).
+  <span class="tok-kw">IF</span> lr_fcat-&gt;fieldname = <span class="tok-str">'CONCERT_ID'</span>.
+    lr_fcat-&gt;hotspot = abap_true.        <span class="tok-com">" 이 컬럼을 링크처럼</span>
   <span class="tok-kw">ENDIF</span>.
 <span class="tok-kw">ENDLOOP</span>.</code></pre></div></div>
 </section><section class="lblock"><h2>핸들러 — hotspot_click</h2>
+<p><code>hotspot_click</code>은 클릭된 <strong>행과 컬럼</strong>을 넘긴다. <code>e_column_id-fieldname</code>으로 <em>의도한
+컬럼일 때만</em> 반응한다(핸들러는 앞 레슨처럼 생성자로 주입받은 예매 테이블 <code>mt_booking</code>을 든다).</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -60,29 +67,63 @@
 5
 6
 7
-8</pre><pre class="abap-editor__code"><code><span class="tok-kw">METHODS</span> on_hotspot
+8
+9
+10
+11
+12
+13
+14</pre><pre class="abap-editor__code"><code><span class="tok-kw">METHODS</span> on_hotspot_click
   <span class="tok-kw">FOR</span> <span class="tok-kw">EVENT</span> hotspot_click <span class="tok-kw">OF</span> cl_gui_alv_grid
   <span class="tok-kw">IMPORTING</span> e_row_id e_column_id.
 
-<span class="tok-kw">METHOD</span> on_hotspot.
-  <span class="tok-kw">READ</span> <span class="tok-kw">TABLE</span> lt_booking <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(ls) <span class="tok-kw">INDEX</span> e_row_id-index.
-  <span class="tok-com">" ls-concert_id 로 공연 상세 이동</span>
+<span class="tok-kw">METHOD</span> on_hotspot_click.
+  <span class="tok-kw">IF</span> e_column_id-fieldname &lt;&gt; <span class="tok-str">'CONCERT_ID'</span>.
+    RETURN.                              <span class="tok-com">" 다른 컬럼이면 무시</span>
+  <span class="tok-kw">ENDIF</span>.
+  <span class="tok-kw">READ</span> <span class="tok-kw">TABLE</span> mt_booking <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(ls_booking) <span class="tok-kw">INDEX</span> e_row_id-index.
+  <span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.
+    RETURN.
+  <span class="tok-kw">ENDIF</span>.
+  <span class="tok-kw">MESSAGE</span> |공연 { ls_booking-concert_id } 상세로 이동| <span class="tok-kw">TYPE</span> <span class="tok-str">'I'</span>.
 <span class="tok-kw">ENDMETHOD</span>.</code></pre></div></div>
+<ul>
+<li><code>e_column_id-fieldname</code> — 클릭한 컬럼명. <code>e_row_id-index</code> — 클릭한 화면 행.</li>
+<li>연결은 앞 레슨처럼 <code>SET HANDLER ... FOR go_grid</code>로 등록한다.</li>
+</ul>
 </section><section class="lblock"><h2>직접 클릭해 보기</h2>
 <p><code>concert_id</code>가 밑줄 링크로 보인다. <strong>한 번</strong> 클릭하면 <code>hotspot_click</code>이 행·컬럼과 함께
 실행되는 걸 확인해 보라(더블클릭 아님).</p>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">Hotspot <button class="term" type="button" data-term="이벤트">이벤트</button> — 링크 셀 클릭</span><a class="embed__open" href="../../../embeds/abap/CH27-L02-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH27-L02-S01.html" loading="lazy" title="Hotspot 이벤트 — 링크 셀 클릭" style="height:460px"></iframe></figure>
+<blockquote>
+<p>🔁 <strong>더블클릭 ↔ Hotspot</strong> — <code>double_click</code>은 <strong>행</strong> 전체를 대상으로 상세 조회에, Hotspot은
+<em>특정 컬럼 값</em>이 링크임을 명확히 보일 때 어울린다. 같은 값에 둘 다 강하게 걸면 &quot;한 번/두
+번&quot;이 헷갈리니 하나만.</p>
+</blockquote>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>hotspot 미지정</strong> → 링크가 안 생긴다. fieldcat에서 <code>hotspot</code>.</li>
-<li><strong>double_click과 혼동</strong> → hotspot은 <strong>한 번</strong> 클릭. 둘 다 두면 헷갈린다.</li>
+<li><strong><code>hotspot</code> 안 켜고 핸들러만</strong> → 사용자는 셀이 클릭 가능한지 모르고, <button class="term" type="button" data-term="이벤트">이벤트</button>도 안 난다.
+<em>Field Catalog에서 <code>hotspot</code> 먼저</em> 켠다.</li>
+<li><strong>컬럼 구분 없이 반응</strong> → 핸들러가 모든 클릭에 반응하면 엉뚱한 컬럼에도 동작한다.
+<code>e_column_id-fieldname</code>으로 의도한 컬럼만 처리한다.</li>
+<li><strong><code>e_row_id-index</code>를 업무 키로</strong> → 앞 레슨과 같은 이유로 화면 행 위치일 뿐. 키
+(<code>concert_id</code>)로 상세를 잇는다. 또 Hotspot은 <strong>탐색</strong>용 — 셀 값을 바꾸는 입력은
+<a href="CH28-L01.html">Editable Grid ALV와 입력 검증</a>에서 다룬다.</li>
+</ul>
+</section><section class="lblock"><h2>정리</h2>
+<ul>
+<li>Hotspot = 특정 셀을 <strong>링크처럼</strong> 보이게 하고 <strong>한 번 클릭</strong>으로 <code>hotspot_click</code>을 일으킨다.</li>
+<li><strong>Field Catalog에서 <code>hotspot=abap_true</code>를 먼저</strong> 켜야 링크가 되고 <button class="term" type="button" data-term="이벤트">이벤트</button>가 난다.</li>
+<li>핸들러는 <code>e_row_id</code>·<code>e_column_id</code>로 <em>클릭 위치</em>를 확인 — 더블클릭은 행 중심, Hotspot은
+컬럼 값 중심 탐색.</li>
 </ul>
 <hr>
-<p>링크를 만들었다. 이제 표 위 <strong>툴바에 내 버튼</strong>을 추가하자 → 다음 레슨.</p>
+<p>링크를 만들었다. 이제 표 위 <strong>툴바에 내 버튼</strong>을 추가하자 →
+<a href="CH27-L03.html">Toolbar Event</a>(다음 레슨).</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
-      <footer class="foot">SAP Developer Academy · CH27 CH27-L02</footer>
+      <footer class="foot">SAP Developer Academy · 배포자 SAP전문강사 정훈영</footer>
     </main>
     <aside class="journey" data-shell="journey"></aside>
   </div>

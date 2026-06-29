@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH27 · ALV 고급 Event 응용</span>
+  <span class="meta">Chapter 27 · ALV 고급 Event 응용</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -31,7 +31,7 @@
 <div class="stage">
   <div class="layout">
     <main class="main">
-      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH27</nav>
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 27 › Lesson 3</nav>
       <section class="lhead">
         <p class="lhead__eyebrow">ALV 고급 Event 응용</p>
         <h1>Toolbar Event</h1>
@@ -40,8 +40,14 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>표준 버튼만으론 부족</h2>
-<p>&quot;선택한 예매 취소&quot; 같은 <strong>내 기능 버튼</strong>을 ALV 툴바에 추가한다. <code>toolbar</code> <button class="term" type="button" data-term="이벤트">이벤트</button>에서
-버튼을 끼워 넣는다.</p>
+<p>ALV를 업무 화면으로 쓰다 보면 표 위에 &quot;예매 취소&quot;·&quot;메일 발송&quot;·&quot;엑셀 다운로드&quot; 같은
+<strong>화면 고유 기능</strong>을 놓고 싶어진다. 표 밖에 버튼을 둘 수도 있지만, 표에서 행을 고른 뒤
+바로 실행할 기능이면 <strong>ALV 툴바 안</strong>에 버튼을 두는 게 흐름이 자연스럽다.</p>
+<p><code>toolbar</code> <button class="term" type="button" data-term="이벤트">이벤트</button>가 그 지점이다. ALV가 툴바를 구성할 때 끼어들어 버튼을 추가한다. 단 —
+**<code>toolbar</code>는 버튼을 <em>만드는</em> 이벤트일 뿐, <em>눌렀을 때 처리</em>하는 건 다음 레슨의
+<a href="CH27-L04.html">USER_COMMAND 처리</a>** 다.</p>
+</section><section class="lblock"><h2>툴바에 버튼 추가 — toolbar</h2>
+<p>핸들러는 <code>e_object</code>를 받는다. 그 안의 <code>mt_toolbar</code>에 버튼 한 줄을 추가하면 툴바에 나타난다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -51,36 +57,60 @@
 7
 8
 9
-10</pre><pre class="abap-editor__code"><code><span class="tok-kw">METHODS</span> on_toolbar
+10
+11
+12
+13</pre><pre class="abap-editor__code"><code><span class="tok-kw">METHODS</span> on_toolbar
   <span class="tok-kw">FOR</span> <span class="tok-kw">EVENT</span> toolbar <span class="tok-kw">OF</span> cl_gui_alv_grid
   <span class="tok-kw">IMPORTING</span> e_object.
 
 <span class="tok-kw">METHOD</span> on_toolbar.
-  <span class="tok-kw">APPEND</span> <span class="tok-kw">VALUE</span> #( <span class="tok-kw">function</span>  = <span class="tok-str">'ZCANCEL'</span>
-                  icon      = icon_delete
-                  <span class="tok-kw">text</span>      = <span class="tok-str">'예매 취소'</span>
-                  butn_type = <span class="tok-num">0</span> ) <span class="tok-kw">TO</span> e_object-&gt;mt_toolbar.
+  <span class="tok-kw">APPEND</span> <span class="tok-kw">VALUE</span> #(
+    <span class="tok-kw">function</span>  = <span class="tok-str">'ZCANCEL'</span>
+    icon      = icon_delete
+    <span class="tok-kw">text</span>      = <span class="tok-str">'예매 취소'</span>
+    quickinfo = <span class="tok-str">'선택한 예매를 취소합니다'</span>
+    butn_type = <span class="tok-num">0</span>
+  ) <span class="tok-kw">TO</span> e_object-&gt;mt_toolbar.
 <span class="tok-kw">ENDMETHOD</span>.</code></pre></div></div>
 <ul>
-<li><code>e_object-&gt;mt_toolbar</code>에 버튼을 추가.</li>
-<li><code>function = &#39;ZCANCEL&#39;</code> — 눌렀을 때 올 명령(다음 레슨 user_command).</li>
-<li>버튼 추가 후 <code>go_grid-&gt;set_toolbar_interactive( )</code>로 갱신하기도 한다.</li>
+<li><strong><code>function</code>(<code>ZCANCEL</code>)이 핵심</strong> — 버튼을 누르면 이 코드가 다음 <button class="term" type="button" data-term="이벤트">이벤트</button>(<code>user_command</code>)의
+<code>e_ucomm</code>으로 넘어온다.</li>
+<li><code>text</code>·<code>quickinfo</code> = 사용자에게 보이는 이름·설명, <code>function</code> = 코드가 분기할 <strong>내부 명령
+키</strong>(둘은 다르다).</li>
+<li>동적으로 툴바가 바뀌면 <code>go_grid-&gt;set_toolbar_interactive( )</code>로 다시 그리기도 한다.</li>
 </ul>
+<p>이 코드는 버튼을 <strong>추가만</strong> 한다. <code>ZCANCEL</code>은 아직 취소 로직이 아니다.</p>
 </section><section class="lblock"><h2>추가된 버튼 확인</h2>
 <p>표준 버튼 옆에 끼워 넣은 커스텀 버튼(<code>ZCANCEL</code>)을 눌러, 어떤 <code>function</code> 코드로 등록됐는지
-확인해 보라(실제 처리는 다음 레슨의 <code>user_command</code>).</p>
+확인해 보라. 로그는 &quot;버튼 추가&quot;까지만 — 실제 취소·갱신이 아직 안 일어나는 게 <strong>정상</strong>이다
+(다음 레슨).</p>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">Toolbar <button class="term" type="button" data-term="이벤트">이벤트</button> — 커스텀 버튼 추가</span><a class="embed__open" href="../../../embeds/abap/CH27-L03-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH27-L03-S01.html" loading="lazy" title="Toolbar 이벤트 — 커스텀 버튼 추가" style="height:440px"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>function 코드 누락</strong> → 눌러도 무슨 버튼인지 모른다. 고유 코드를.</li>
-<li><strong>갱신 안 됨</strong> → 동적으로 바꾸면 toolbar를 다시 그리도록.</li>
+<li><strong><code>toolbar</code>에서 바로 업무 처리(DB 취소 등)</strong> → ⚠️ 툴바는 <strong>여러 번 다시 그려진다</strong>. 그릴
+때마다 취소가 반복되면 치명적이다. <code>toolbar</code>에선 <strong>버튼 정의만</strong>, 실제 처리는
+<code>user_command</code>에서.</li>
+<li><strong><code>function</code> 코드 누락·모호</strong> → 눌러도 분기할 키가 없다. SAP 표준 코드와 안 겹치게
+<code>ZCANCEL</code>처럼 <strong>커스텀임을 드러내는</strong> 고유 코드를 쓴다.</li>
+<li><strong>버튼이 안 보임</strong> → 보통 세 곳: <code>SET HANDLER</code> 누락 · <code>mt_toolbar</code>에 <code>APPEND</code> 안 함 ·
+동적 갱신 누락. 순서대로 점검한다.</li>
+</ul>
+</section><section class="lblock"><h2>정리</h2>
+<ul>
+<li><code>toolbar</code> <button class="term" type="button" data-term="이벤트">이벤트</button> = ALV 툴바를 구성할 때 <strong>커스텀 버튼을 추가</strong>하는 지점.</li>
+<li><code>e_object-&gt;mt_toolbar</code>에 버튼 정의를 <code>APPEND</code>하고, 그 <code>function</code>을 다음 단계의 명령 코드로
+쓴다.</li>
+<li><strong>버튼 만들기(<code>toolbar</code>)와 처리(<code>user_command</code>)는 분리</strong> — 업무 처리는 절대 <code>toolbar</code>에서
+하지 않는다.</li>
 </ul>
 <hr>
-<p>버튼을 달았다. 이제 그 버튼이 눌렸을 때를 처리하자 → USER_COMMAND(다음 레슨).</p>
+<p>버튼을 달았다. 이제 그 버튼이 눌렸을 때를 처리하자 →
+<a href="CH27-L04.html">USER_COMMAND 처리</a>(다음 레슨).</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
-      <footer class="foot">SAP Developer Academy · CH27 CH27-L03</footer>
+      <footer class="foot">SAP Developer Academy · 배포자 SAP전문강사 정훈영</footer>
     </main>
     <aside class="journey" data-shell="journey"></aside>
   </div>

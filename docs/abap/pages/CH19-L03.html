@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH19 · New Open SQL / Modern ABAP SQL</span>
+  <span class="meta">Chapter 19 · New Open SQL / Modern ABAP SQL</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -31,7 +31,7 @@
 <div class="stage">
   <div class="layout">
     <main class="main">
-      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH19</nav>
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 19 › Lesson 3</nav>
       <section class="lhead">
         <p class="lhead__eyebrow">New Open SQL / Modern ABAP SQL</p>
         <h1>INTO TABLE @DATA(...) Inline Target</h1>
@@ -39,8 +39,8 @@
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 19</span><span class="tag tag--ls">Lesson 3</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>결과 그릇을 미리 선언 안 해도 된다</h2>
-<p>CH18의 인라인 선언을 SELECT에서도 쓴다. 단 SQL이라 <strong><code>@DATA(...)</code></strong> 형태다(앞 <code>@</code>).</p>
+<section class="lblock"><h2>결과 그릇을 미리 선언 안 해도 된다 🥣</h2>
+<p><a href="CH18-L01.html">지난 챕터</a>에서 배운 인라인 선언(<code>DATA( )</code>)을 SELECT 결과에도 쓴다. 단 SQL 문장 안이라 앞에 <code>@</code>가 붙어 <strong><code>@DATA( )</code></strong> 형태다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -48,35 +48,84 @@
 5
 6
 7
-8</pre><pre class="abap-editor__code"><code><span class="tok-com">" classic: 먼저 DATA 선언 후 SELECT</span>
+8
+9
+10</pre><pre class="abap-editor__code"><code><span class="tok-com">" classic: 먼저 DATA로 선언한 뒤 SELECT</span>
 <span class="tok-kw">DATA</span> lt_flight <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> sflight.
-<span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> sflight <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> lt_flight <span class="tok-kw">WHERE</span> carrid = <span class="tok-str">'KE'</span>.
+<span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> sflight
+  <span class="tok-kw">WHERE</span> carrid = <span class="tok-str">'KE'</span>
+  <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> lt_flight.
 
 <span class="tok-com">" modern: 결과 타입을 SELECT가 알아서 만들어 준다</span>
 <span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> sflight
   <span class="tok-kw">WHERE</span> carrid = <span class="tok-str">'KE'</span>
   <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> @<span class="tok-kw">DATA</span>(lt_flight).</code></pre></div></div>
-<p>단건은 <code>INTO @DATA( )</code>.</p>
+<p><code>@DATA(lt_flight)</code>는 <strong>SELECT 결과 구조에 맞는 내부 테이블을 그 자리에서 자동 선언</strong>한다.</p>
+</section><section class="lblock"><h2>무엇이 만들어지나 — 모양은 SELECT 목록이 정한다 🧱</h2>
+<p><code>SELECT *</code>면 원본 테이블 행 구조에 가깝고, <strong>컬럼을 고르면 그 컬럼만 가진</strong> 행 구조가 만들어진다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
-3</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> <span class="tok-kw">SINGLE</span> * <span class="tok-kw">FROM</span> scarr
-  <span class="tok-kw">WHERE</span> carrid = <span class="tok-str">'KE'</span>
-  <span class="tok-kw">INTO</span> @<span class="tok-kw">DATA</span>(ls_carr).</code></pre></div></div>
+3
+4
+5</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> carrid, connid, seatsmax
+  <span class="tok-kw">FROM</span> sflight
+  <span class="tok-kw">WHERE</span> carrid = @lv_carr
+  <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> @<span class="tok-kw">DATA</span>(lt_flight).
+<span class="tok-com">" → lt_flight 한 행 = carrid · connid · seatsmax</span></code></pre></div></div>
+<blockquote>
+<p>📦 이렇게 만들어지는 표는 <strong>Standard Table · Empty Key</strong>다. 키로 자주 찾아 읽어야 하는 결과라면, 인라인 대신 <strong>타입을 직접 선언</strong>하고 알맞은 key를 주는 편이 낫다.</p>
+</blockquote>
+<p>단건은 표가 아니라 <strong>구조체</strong>로 받는다 — <code>INTO @DATA( )</code>.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> <span class="tok-kw">SINGLE</span> carrid, carrname
+  <span class="tok-kw">FROM</span> scarr
+  <span class="tok-kw">WHERE</span> carrid = @lv_carr
+  <span class="tok-kw">INTO</span> @<span class="tok-kw">DATA</span>(ls_carr).
+<span class="tok-com">" → ls_carr = carrid · carrname (구조체)</span></code></pre></div></div>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">SELECT Target Type Viewer (@DATA가 만드는 표 구조)</span><a class="embed__open" href="../../../embeds/abap/CH19-L03-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH19-L03-S01.html" loading="lazy" title="SELECT Target Type Viewer (@DATA가 만드는 표 구조)"></iframe></figure>
+</section><section class="lblock"><h2>계산 컬럼엔 이름(<code>AS</code>)을 붙인다 🏷️</h2>
+<p>값을 계산해 컬럼으로 뽑을 땐 <strong>결과 컬럼에 이름이 없으면</strong> 인라인 표의 구조가 흐릿해진다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12</pre><pre class="abap-editor__code"><code><span class="tok-com">" 🚫 계산 컬럼에 이름이 없다 — 행 구조가 모호</span>
+<span class="tok-kw">SELECT</span> carrid,
+       seatsmax - seatsocc
+  <span class="tok-kw">FROM</span> sflight
+  <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> @<span class="tok-kw">DATA</span>(lt_bad).
+
+<span class="tok-com">" ✅ AS 로 이름을 준다</span>
+<span class="tok-kw">SELECT</span> carrid,
+       seatsmax - seatsocc <span class="tok-kw">AS</span> seats_free
+  <span class="tok-kw">FROM</span> sflight
+  <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> @<span class="tok-kw">DATA</span>(lt_ok).
+<span class="tok-com">" → lt_ok 한 행 = carrid · seats_free</span></code></pre></div></div>
+<p>JOIN에서 같은 이름 컬럼이 겹칠 때도 마찬가지다 — <strong>컬럼 이름은 유일</strong>해야 하니 <code>AS</code>로 풀어 준다.</p>
+</section><section class="lblock"><h2>흔한 실수와 점검 🚧</h2>
 <ul>
-<li><code>@DATA(lt)</code> — 결과 구조에 맞는 테이블을 <strong>자동 선언</strong>.</li>
-<li>컬럼을 고르면(<code>SELECT carrid, connid</code>) 그 컬럼만 가진 구조로 만들어진다.</li>
-</ul>
-</section><section class="lblock"><h2>흔한 실수와 점검</h2>
-<ul>
-<li><strong>@ 없이 DATA()</strong> → SQL 안에선 <code>@DATA()</code>. 밖에선 <code>DATA()</code>(CH18).</li>
-<li><strong>이미 선언된 이름</strong> → <code>@DATA()</code>는 새 이름이어야. 기존 변수면 <code>@lt_기존</code>.</li>
+<li><strong><code>@</code> 없이 <code>DATA( )</code></strong> → SQL 문장 안의 target은 <code>@DATA( )</code>. <code>DATA( )</code>는 SQL 밖 ABAP 문장용(<a href="CH18-L01.html">Inline Declaration</a>).</li>
+<li><strong>이미 선언된 이름에 <code>@DATA( )</code></strong> → <code>@DATA( )</code>는 <strong>새 이름</strong>일 때만. 기존 변수에 받으려면 <code>@lt_기존</code>.</li>
+<li><strong>계산·JOIN 컬럼에 별칭 없음</strong> → 인라인 target은 결과 컬럼 이름이 필요하다. <code>AS</code>로 이름을 붙인다.</li>
+<li><strong><code>@FINAL( )</code></strong> → 결과를 이후 바꾸지 않을 때만 제한적으로. 입문 실습은 보통 <code>@DATA( )</code>로 시작한다.</li>
 </ul>
 <hr>
-<p>결과까지 인라인으로. 이제 SELECT 안에서 <strong>값을 가공</strong>하는 SQL 식을 보자 → 다음 레슨.</p>
+<p>결과까지 인라인으로 받았다. 이제 SELECT 안에서 <strong>DB가 직접 값을 계산</strong>하게 하는 SQL 식을 보자 →
+<a href="CH19-L04.html">SQL Expression — CASE / CAST / COALESCE</a>.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
-      <footer class="foot">SAP Developer Academy · CH19 CH19-L03</footer>
+      <footer class="foot">SAP Developer Academy · 배포자 SAP전문강사 정훈영</footer>
     </main>
     <aside class="journey" data-shell="journey"></aside>
   </div>

@@ -1,6 +1,6 @@
 # 01. AI SYNC — 단일 목표 · 완료 정의 · 체크리스트
 
-> 📅 최종수정: 2026-06-22 07:19 KST
+> 📅 최종수정: 2026-06-26 19:02 KST
 > 📖 모든 작업 시작 전 (최우선).
 > ⚡ 목표=동기부여형 SAP 학습 사이트(MD→빌드→정적 HTML). 콘텐츠는 **완전 입문자용**(용어 한 줄 풀이 · 왜→무엇→어떻게→주의→정리, 압축 금지). **코드 나오면 그 페이지에서 체험 필수.** 규칙은 **[04 R1~R15](04_CONVENTIONS.md) 단일 홈 — 위반 금지.**
 
@@ -25,5 +25,5 @@
 - **함정 P1~P11 = [05_PITFALLS](05_PITFALLS.md).** 막히면 즉시.
 
 ## 🤖 작업 전 / 종료 체크리스트
-**시작:** ① 대상을 레슨/컴포넌트 1개로 좁힘 → ② [02_PROGRESS](02_PROGRESS.md) 현재 상태·우선순위 확인 → ③ 규칙([04](04_CONVENTIONS.md))·함정([05](05_PITFALLS.md)) 훑기 → ④ 코드 있으면 체험 수단을 [06](06_SAMPLE_LIBRARY.md)에서 선택.
+**시작:** ① 대상을 레슨/컴포넌트 1개로 좁힘 → ② [02_PROGRESS](02_PROGRESS.md) 현재 상태·우선순위 확인 → ③ 규칙([04](04_CONVENTIONS.md))·함정([05](05_PITFALLS.md)) 훑기 → ④ 코드 있으면 체험 수단을 [06](06_SAMPLE_LIBRARY.md)에서 선택 → ⑤ 구조·예제·사실검증은 [14_REFERENCE_CORPUS](14_REFERENCE_CORPUS.md) 참고 루틴(cheat-sheet 버전 매칭 + abap-docs grep, SAP 원문 verbatim 허용·예제 그대로·어려운 본문은 R3 각색).
 **종료:** ① `npm run build:abap` 통과 + 정적 점검(href 실존·glossary 패리티) → ② [02_PROGRESS](02_PROGRESS.md) 갱신 → ③ 브랜치에서 `git add -A` → commit(`Co-Authored-By` 포함) → push (main 금지). *(타임스탬프는 pre-commit 훅이 자동, [04 R13](04_CONVENTIONS.md).)*

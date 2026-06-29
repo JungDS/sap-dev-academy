@@ -1,0 +1,38 @@
+/* ===== salv-pipeline-stepper — SELECT→Internal Table→SALV 미니 리포트 (CH11-L04) =====
+   DB·Internal Table·SALV 3칸을 SELECT/DESCRIBE/factory/set_all/display 순서로 채운다. 단계 건너뛰면 피드백. 데이터 내장. */
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:transparent;line-height:1.5;}
+.wrap{padding:14px;}
+.hd{font-weight:800;font-size:1rem;margin:0 0 4px;}
+.hd small{font-weight:600;color:var(--brand);}
+.lead{margin:0 0 12px;color:var(--ink-soft);font-size:.86rem;}
+.lead code{font-family:var(--mono);background:#eef2ff;color:var(--brand);padding:1px 5px;border-radius:5px;font-size:.92em;}
+
+.toolbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:12px;}
+.btn{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:8px;padding:7px 11px;font:inherit;font-size:.76rem;font-weight:700;cursor:pointer;font-family:var(--mono);}
+.btn:hover{border-color:var(--brand);color:var(--brand);}
+.btn.done{background:#eafaf3;border-color:var(--accent);color:#0b7250;}
+.btn.empty{margin-left:auto;border-style:dashed;color:var(--amber);font-family:var(--font);}
+.btn.reset{border-style:dashed;color:var(--ink-soft);font-family:var(--font);}
+
+.pipe{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:6px;align-items:stretch;margin-bottom:12px;}
+@media(max-width:680px){ .pipe{grid-template-columns:1fr;} .parr{display:none;} }
+.col{border:1px solid var(--line);border-radius:11px;background:var(--surface);overflow:hidden;display:flex;flex-direction:column;}
+.col__hd{font-size:.7rem;font-weight:800;padding:6px 9px;}
+.col.db .col__hd{background:#eef2ff;color:#26336b;} .col.it .col__hd{background:#fff7ed;color:#9a3412;} .col.salv .col__hd{background:#eafaf3;color:#0b7250;}
+.col__b{padding:8px;flex:1;}
+.parr{align-self:center;font-size:1.1rem;color:var(--soon);font-weight:800;}
+.dt{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:11px;}
+.dt th,.dt td{padding:3px 6px;text-align:left;border-bottom:1px solid #eef1f7;white-space:nowrap;}
+.dt th{background:#fafbfe;color:var(--ink-soft);font-size:10px;font-weight:800;}
+.empty-it{color:var(--soon);font-style:italic;font-size:.78rem;padding:10px;text-align:center;}
+.badge{display:inline-block;font-size:.66rem;font-weight:800;border-radius:5px;padding:2px 8px;margin:3px 0;}
+.badge.cnt{background:#fff7ed;color:#9a3412;} .badge.lo{background:#eef2ff;color:#26336b;} .badge.fn{background:#eafaf3;color:#0b7250;}
+.bar{display:flex;gap:4px;flex-wrap:wrap;margin:5px 0;}
+.tbtn{font-size:.6rem;font-weight:700;border:1px solid var(--line);background:#fff;color:var(--ink-soft);border-radius:4px;padding:1px 6px;}
+.salv-wait{color:var(--soon);font-style:italic;font-size:.78rem;padding:10px;text-align:center;}
+
+.fb{font-size:.82rem;padding:9px 12px;border-radius:9px;background:rgba(59,91,219,.08);color:#26336b;}
+.fb.warn{background:rgba(180,83,9,.08);color:#7a4a12;}
+.note{margin-top:12px;border-left:3px solid var(--brand);background:rgba(59,91,219,.06);border-radius:0 9px 9px 0;padding:9px 13px;font-size:.83rem;color:#2a3550;}
+.note code{font-family:var(--mono);background:#fff;border:1px solid var(--line);padding:0 5px;border-radius:4px;}

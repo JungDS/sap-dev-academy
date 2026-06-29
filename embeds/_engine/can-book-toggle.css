@@ -1,0 +1,46 @@
+/* ===== can-book-toggle — 예매 가능 판정(can_book) 토글 (CH10-L07, S02) =====
+   잔여석 = 정원 − 비취소 예매 합계, can_book = 요청 ≤ 잔여. 취소 포함 시 잘못된 계산. 데이터=window.CBT_CFG. */
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:transparent;line-height:1.5;}
+.wrap{padding:14px;}
+.hd{font-weight:800;font-size:1rem;margin:0 0 4px;}
+.hd small{font-weight:600;color:var(--brand);}
+.lead{margin:0 0 12px;color:var(--ink-soft);font-size:.86rem;}
+.lead code{font-family:var(--mono);background:#eef2ff;color:var(--brand);padding:1px 5px;border-radius:5px;font-size:.92em;}
+
+.layout{display:grid;grid-template-columns:1.1fr 1fr;gap:12px;align-items:start;}
+@media(max-width:600px){ .layout{grid-template-columns:1fr;} }
+
+.bookings{border:1px solid var(--line);border-radius:11px;background:var(--surface);overflow:hidden;}
+.bookings__hd{font-size:.74rem;font-weight:800;padding:7px 11px;background:#eef2ff;color:#26336b;display:flex;}
+.bookings__hd .cap{margin-left:auto;font-family:var(--mono);}
+.brow{display:grid;grid-template-columns:1fr auto auto;gap:9px;align-items:center;font-family:var(--mono);font-size:12px;padding:6px 11px;border-bottom:1px solid #eef1f7;}
+.brow .seat{font-weight:700;}
+.brow .st{font-size:.62rem;font-weight:800;border-radius:5px;padding:1px 7px;}
+.brow .st.o{background:#eafaf3;color:#0b7250;} .brow .st.c{background:rgba(214,51,108,.1);color:var(--bad);}
+.brow.counted{}
+.brow.cancelled{opacity:.6;}
+.brow.cancelled.included{opacity:1;background:rgba(214,51,108,.06);}
+
+.calc{display:flex;flex-direction:column;gap:9px;}
+.calcline{display:flex;justify-content:space-between;font-family:var(--mono);font-size:13px;padding:5px 11px;border:1px solid var(--line);border-radius:8px;background:var(--surface);}
+.calcline b{color:var(--brand);}
+.calcline.big{font-size:1rem;font-weight:800;border-color:var(--accent);background:#eafaf3;}
+.calcline.big b{color:#0b7250;}
+
+.reqrow{display:flex;align-items:center;gap:9px;margin:12px 0;flex-wrap:wrap;}
+.reqrow .lbl{font-size:.8rem;font-weight:700;color:var(--ink-soft);}
+.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;}
+.seg button{border:0;background:var(--surface);color:var(--ink-soft);font:inherit;font-size:.82rem;font-weight:800;padding:6px 14px;cursor:pointer;font-family:var(--mono);}
+.seg button.on{background:var(--brand);color:#fff;}
+.inclbl{display:flex;align-items:center;gap:6px;font-size:.78rem;font-weight:700;color:var(--amber);cursor:pointer;user-select:none;margin-left:auto;}
+.inclbl input{accent-color:var(--amber);}
+
+.verdict{text-align:center;font-weight:800;font-size:1.05rem;padding:12px;border-radius:11px;}
+.verdict.ok{background:#eafaf3;color:#0b7250;} .verdict.no{background:rgba(214,51,108,.07);color:var(--bad);}
+.verdict .sub{font-size:.78rem;font-weight:600;margin-top:5px;opacity:.9;}
+.warnbox{margin-top:11px;font-size:.8rem;color:#7a4a12;background:rgba(180,83,9,.08);border:1px solid var(--amber);border-radius:9px;padding:9px 12px;display:none;}
+.warnbox.show{display:block;}
+
+.note{margin-top:12px;border-left:3px solid var(--brand);background:rgba(59,91,219,.06);border-radius:0 9px 9px 0;padding:9px 13px;font-size:.83rem;color:#2a3550;}
+.note code{font-family:var(--mono);background:#fff;border:1px solid var(--line);padding:0 5px;border-radius:4px;}

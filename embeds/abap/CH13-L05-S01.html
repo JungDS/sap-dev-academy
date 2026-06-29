@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<!-- CH13-L05-S01 — 엔진: sort-priority-lab · _autoheight. 콘텐츠=레슨 전용(ORDER BY 정렬 우선순위, CH13 L05).
+     config=window.SPL_CFG. 게이팅: classic ORDER BY·ASCENDING/DESCENDING·다중 기준 개념만 · modern/comma/host marker 없음. -->
+<html lang="ko" data-eng="sort-priority-lab">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>정렬 우선순위 조작기 · CH13-L05-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/sort-priority-lab.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">정렬 우선순위 조작기 <small>(ORDER BY)</small></p>
+  <p class="lead">정렬 기준을 바꾸면 결과 순서가 달라집니다. <b>앞에 적은 기준이 우선</b>이고, 첫 기준이 <b>같으면(동률)</b> 두 번째 기준이 순서를 정합니다. <code>ORDER BY</code> 없이는 순서가 보장되지 않습니다.</p>
+
+  <div class="spl-chips"><span class="lbl">ORDER BY:</span></div>
+  <p class="spl-fb" id="splFb"></p>
+
+  <table class="spl-tbl">
+    <thead><tr id="splHead"></tr></thead>
+    <tbody id="splBody"></tbody>
+  </table>
+  <p class="spl-tie-note">주황색 = 첫 기준 값이 같은 <b>동률</b> 구간 (여기서 2차 기준이 끼어듭니다)</p>
+
+  <div class="note"><b>순서는 의미다.</b> "상위 매출"·"최근순"처럼 순서가 업무 의미를 가지면 <code>ORDER BY</code>로 고정합니다. 단 대량 데이터에 인덱스 없는 정렬은 DB 부하가 크니 필요한 만큼만 — 소량은 ABAP <code>SORT</code>가 단순할 수 있습니다.</div>
+</div>
+
+<script>
+window.SPL_CFG = {
+  cols: [
+    { key: 'name', label: 'name' },
+    { key: 'age', label: 'age', num: true },
+    { key: 'dept_id', label: 'dept_id', num: true }
+  ],
+  presets: [
+    { label: '정렬 없음', keys: [] },
+    { label: 'age ▼', keys: [{ field: 'age', dir: 'DESC' }] },
+    { label: 'age ▼ · name ▲', keys: [{ field: 'age', dir: 'DESC' }, { field: 'name', dir: 'ASC' }] },
+    { label: 'name ▲', keys: [{ field: 'name', dir: 'ASC' }] }
+  ],
+  people: [
+    { name: '정훈영', age: 30, dept_id: 10 },
+    { name: '손흥민', age: 28, dept_id: 20 },
+    { name: '아이유', age: 30, dept_id: 10 },
+    { name: '유재석', age: 35, dept_id: 30 }
+  ]
+};
+</script>
+<script src="../_engine/sort-priority-lab.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

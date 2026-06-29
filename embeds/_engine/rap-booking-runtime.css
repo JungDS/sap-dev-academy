@@ -1,0 +1,60 @@
+/* ===== rap-booking-runtime — 예매 RAP 런타임 시뮬레이터 (CH23-L09 capstone) =====
+   create→determination(status='N')→validation(정원 검사)→save/reject, cancel=action(status='C'). V/D/A를 한 흐름에서 확인.
+   정원 초과는 failed/reported로 거부, 취소는 명시 action. 데이터 내장. 교훈3: msg base 중립·ok/warn/bad 명시. */
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:transparent;line-height:1.5;}
+.wrap{padding:14px;}
+.hd{font-weight:800;font-size:1rem;margin:0 0 4px;}
+.hd small{font-weight:600;color:var(--brand);}
+.lead{margin:0 0 12px;color:var(--ink-soft);font-size:.86rem;}
+.lead code{font-family:var(--mono);background:#eef2ff;color:var(--brand);padding:1px 5px;border-radius:5px;font-size:.92em;}
+
+.rbr-perf{display:flex;flex-wrap:wrap;gap:10px;align-items:center;border:1px solid var(--line);border-radius:9px;padding:8px 11px;margin-bottom:10px;background:var(--surface);font-size:.78rem;}
+.rbr-perf b{font-family:var(--mono);}
+.rbr-rem{font-weight:800;color:var(--good);}
+.rbr-rem.low{color:var(--bad);}
+
+.rbr-acts{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+.rbr-btn{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;
+  padding:7px 11px;font:inherit;font-size:.76rem;font-weight:700;cursor:pointer;}
+.rbr-btn:hover{border-color:var(--brand);color:var(--brand);}
+.rbr-btn.ok{border-color:var(--accent);}
+.rbr-btn.bad{border-color:var(--bad);color:var(--bad);}
+.rbr-reset{margin-left:auto;border:1px dashed var(--line);background:var(--surface);color:var(--ink-soft);
+  border-radius:8px;padding:7px 10px;font:inherit;font-size:.72rem;font-weight:700;cursor:pointer;}
+
+.dt{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:11.5px;margin-bottom:10px;}
+.dt th,.dt td{padding:5px 8px;text-align:left;border-bottom:1px solid #eef1f7;white-space:nowrap;}
+.dt th{background:#fafbfe;color:var(--ink-soft);font-size:10.5px;font-weight:800;}
+.dt tr.cancelled td{color:var(--soon);text-decoration:line-through;}
+.rbr-st{font-size:.62rem;font-weight:800;border-radius:5px;padding:1px 6px;}
+.rbr-st.n{background:#eafaf3;color:#0b7250;} .rbr-st.c{background:#f1f3f8;color:var(--ink-soft);}
+.rbr-cancel{border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);border-radius:6px;padding:2px 8px;font:inherit;font-size:.66rem;font-weight:700;cursor:pointer;}
+.rbr-cancel:hover:not(:disabled){border-color:var(--bad);color:var(--bad);}
+.rbr-cancel:disabled{opacity:.4;cursor:not-allowed;}
+.rbr-empty{color:var(--soon);font-style:italic;font-size:.78rem;text-align:center;padding:8px;}
+
+/* 타임라인 */
+.rbr-tl{border:1px solid var(--line);border-radius:10px;padding:9px 10px;margin-bottom:10px;background:var(--surface);}
+.rbr-tl__c{font-size:.66rem;font-weight:800;color:var(--ink-soft);margin:0 0 6px;}
+.rbr-flow{display:flex;flex-wrap:wrap;align-items:stretch;gap:5px;}
+.rbr-node{border:1px solid var(--line);border-radius:8px;padding:6px 8px;font-size:.68rem;font-weight:700;text-align:center;min-width:78px;background:var(--surface);color:var(--ink-soft);}
+.rbr-node small{display:block;font-size:.58rem;font-weight:700;margin-top:1px;}
+.rbr-node.on{background:#eef2ff;color:#26336b;border-color:#9db2f0;}
+.rbr-node.pass{background:#eafaf3;color:#0b7250;border-color:#9fdcc6;}
+.rbr-node.fail{background:rgba(214,51,108,.12);color:var(--bad);border-color:var(--bad);}
+.rbr-arrow{align-self:center;color:var(--soon);font-weight:800;}
+
+.rbr-resp{border:1px solid var(--bad);border-radius:9px;padding:8px 10px;margin-bottom:10px;background:rgba(214,51,108,.06);}
+.rbr-resp__c{font-size:.66rem;font-weight:800;color:var(--bad);margin:0 0 4px;}
+.rbr-resp pre{font-family:var(--mono);font-size:11px;line-height:1.6;white-space:pre;margin:0;color:var(--ink);}
+.rbr-resp .k{color:var(--bad);font-weight:700;}
+
+.rbr-msg{font-size:.84rem;padding:9px 12px;border-radius:9px;background:rgba(59,91,219,.08);color:var(--ink);}
+.rbr-msg.ok{background:#eafaf3;color:#0b7250;}
+.rbr-msg.warn{background:rgba(180,83,9,.1);color:#7a4a12;}
+.rbr-msg.bad{background:rgba(214,51,108,.12);color:var(--bad);}
+.rbr-msg b{color:inherit;}
+
+.note{margin-top:12px;border-left:3px solid var(--brand);background:rgba(59,91,219,.06);border-radius:0 9px 9px 0;padding:9px 13px;font-size:.83rem;color:#2a3550;}
+.note code{font-family:var(--mono);background:#fff;border:1px solid var(--line);padding:0 5px;border-radius:4px;}

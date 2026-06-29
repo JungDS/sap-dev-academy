@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<!-- CH01-L02-S04 — 엔진: tcode-prefix-cards (embeds/_engine/tcode-prefix-cards.{js,css}) · 자체 postHeight.
+     자주 쓰는 접두어 4종 카드(숫자 요약→클릭 펼침) + 함정 한 컷(SE11에서 SE38 vs /nSE38). 데이터=window.TPC_CFG. -->
+<html lang="ko" data-eng="tcode-prefix-cards">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>자주 쓰는 접두어 카드 · CH01-L02-S04</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/tcode-prefix-cards.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">자주 쓰는 접두어 <small>(카드를 눌러 펼치기)</small></p>
+  <p class="lead">번호 카드를 누르면 <b>의미</b>와 <b>핵심 포인트</b>가 펼쳐집니다. 다 외울 필요 없이, 필요할 때 펼쳐 보세요.</p>
+
+  <div class="tpc-cards" id="cards"></div>
+
+  <div class="tpc-trap" id="trap" style="display:none"></div>
+
+  <div class="note"><b>한 줄 요약</b> — 접두어 없이 통하는 건 <b>Easy Access뿐</b>. 다른 화면에서 이동할 땐 <code>/n</code>(현재 닫고)·<code>/o</code>(새 창). 접두어는 코드 앞에 <b>공백 없이</b> 붙입니다(예: <code>/nSE38</code>).</div>
+</div>
+
+<script>
+window.TPC_CFG = {
+  cards:[
+    { code:'SE38', summary:'접두어 없이 그냥 입력', open:true,
+      meaning:'접두어 없이 트랜잭션 코드만 입력',
+      point:'<b>로그인 직후 Easy Access 화면에서만</b> SE38로 이동합니다. 이미 다른 트랜잭션(예: <code style="font-family:var(--mono)">SE11</code>) 안이면 <span class="warn">작동하지 않습니다</span>.' },
+    { code:'/nSE38', summary:'현재 닫고 이동',
+      meaning:'현재 작업을 닫고 SE38로 이동',
+      point:'<b>현재 화면이 무엇이든</b> 동작합니다(<code style="font-family:var(--mono)">/n</code> = new task). 다른 화면에서 이동할 때의 <b>가장 안전한 기본기</b>.' },
+    { code:'/oSE38', summary:'새 창에서 열기',
+      meaning:'새 창(세션)에서 SE38 열기',
+      point:'현재 화면은 <b>그대로 두고</b> 별도의 새 세션에서 엽니다(<code style="font-family:var(--mono)">/o</code> = open).' },
+    { code:'/nex', summary:'즉시 로그오프',
+      meaning:'확인 없이 즉시 로그오프',
+      point:'저장 확인 창 없이 세션을 <span class="warn">즉시 종료</span>합니다. 저장 안 한 데이터에 주의.' }
+  ],
+  trap:{
+    context:'SE11 화면에서 작업 중일 때',
+    bad:{ cmd:'SE38', res:'이동 안 됨 (화면 함수 코드로 처리·오류)' },
+    good:{ cmd:'/nSE38', res:'SE38로 이동 성공' }
+  }
+};
+</script>
+<script src="../_engine/tcode-prefix-cards.js" defer></script>
+</body>
+</html>

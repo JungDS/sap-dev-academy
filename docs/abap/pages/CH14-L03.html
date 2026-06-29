@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH14 · Classic DDIC View·유지보수 객체</span>
+  <span class="meta">Chapter 14 · Classic DDIC View·유지보수 객체</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -31,38 +31,85 @@
 <div class="stage">
   <div class="layout">
     <main class="main">
-      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH14</nav>
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 14 › Lesson 3</nav>
       <section class="lhead">
         <p class="lhead__eyebrow">Classic DDIC View·유지보수 객체</p>
         <h1>Help View와 Search Help 연결</h1>
-        <p class="lhead__direction">여러 테이블에서 F4 값을 뽑는 소스 — Help View.</p>
+        <p class="lhead__direction">F4 도움말을 풍부하게 — 여러 테이블을 묶는 Help View.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 14</span><span class="tag tag--ls">Lesson 3</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>F4 소스가 여러 테이블이면</h2>
-<p>CH09의 <button class="term" type="button" data-term="Search Help">Search Help</button>는 보통 한 테이블/뷰에서 값을 뽑는다. F4 목록을 <strong>여러
-테이블을 <button class="term" type="button" data-term="JOIN">조인</button></strong>해 만들고 싶다면, 그 조인 소스로 <strong>Help View</strong>를 쓴다.</p>
-</section><section class="lblock"><h2>Help View = Search Help의 조인 소스</h2>
+<section class="lblock"><h2>사용자는 코드를 외우지 않는다</h2>
+<p>공연 등록 화면에서 &quot;<code>P001</code>을 입력하라&quot;고 하면 개발자는 당연하지만, 업무 담당자는
+&quot;클래식 갈라가 어느 코드인지&quot;를 찾아야 한다. <strong>F4 입력도움말</strong>이 이 간격을 줄인다.
+사용자는 코드나 설명 일부로 검색하고, 고른 값이 입력 필드로 돌아온다.</p>
+<p><a href="CH09-L01.html">Chapter 9 · 입력도움말(F4)</a>에서 <button class="term" type="button" data-term="Search Help">Search Help</button>의 기본을 배웠다. 단일
+테이블로 충분하면 selection method가 테이블이면 된다. 하지만 <strong>코드 + 설명 + 보조
+정보</strong>를 함께 보여 주려면 <button class="term" type="button" data-term="Help View">Help View</button>가 후보가 된다.</p>
+</section><section class="lblock"><h2>Help View = Search Help의 소스</h2>
+<p><button class="term" type="button" data-term="Help View">Help View</button>는 <button class="term" type="button" data-term="Search Help">Search Help</button>에서 쓰는 DDIC table view다. 공식문서 기준 두 가지가 핵심이다.</p>
 <ul>
-<li>Foreign Key 관계로 테이블들을 <button class="term" type="button" data-term="JOIN">조인</button>한 <strong>F4 전용 읽기 뷰</strong>.</li>
-<li>검색 도움말(<button class="term" type="button" data-term="Search Help">Search Help</button>)의 <strong>Selection Method</strong>로 지정한다.</li>
+<li><strong>F4 전용</strong> — ABAP SQL로 직접 읽는 대상이 <strong>아니다</strong>(프로그램 조회는 Database/Projection View).</li>
+<li><strong>primary table 보존(outer join 성격)</strong> — foreign key로 보조 테이블을 묶되, 주
+테이블 행은 남고 보조 설명이 없으면 그 칸만 비어 보일 수 있다.</li>
 </ul>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">TEXT</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
-3</pre><pre class="abap-editor__code"><code>ZHV_PERSON (Help View: person ⨝ dept)
-   ↑ Selection Method
-ZSH_PERSON (Search Help) → 필드/Data Element에 부착 → 화면 F4</code></pre></div></div>
+3
+4
+5</pre><pre class="abap-editor__code"><code>Search Help ZSH_PERF
+  Selection Method : ZHV_PERF          (Help View)
+  Import Parameter : PERF_ID           (사용자 검색어 → 검색에 반영)
+  Export Parameter : PERF_ID           (선택한 행의 key → 화면 필드로 복귀)
+  Display Fields   : PERF_ID, PERF_NAME, GENRE, DESCRIPTION</code></pre></div></div>
+<p>Database View와 목적이 다르다.</p>
+<table>
+<thead>
+<tr>
+<th>질문</th>
+<th>Database View</th>
+<th>Help View</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ABAP SQL에서 읽나</td>
+<td>예</td>
+<td><strong>아니오</strong></td>
+</tr>
+<tr>
+<td>주 사용처</td>
+<td>프로그램 조회</td>
+<td><strong>F4 Search Help</strong></td>
+</tr>
+<tr>
+<td>여러 테이블 결합</td>
+<td>inner join</td>
+<td><strong>primary table 보존(outer)</strong></td>
+</tr>
+</tbody></table>
+<p>아래에서 <code>perf_id</code> 필드에 F4를 눌러, 사용자가 설명을 보고 고르면 <strong>key가 화면에 돌아오는</strong>
+흐름을 확인하자. 설명 테이블이 누락되거나 Export가 꺼지면 어떻게 되는지도 보자.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">F4 여행 경로 — Help View → Search Help → 화면</span><a class="embed__open" href="../../../embeds/abap/CH14-L03-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH14-L03-S01.html" loading="lazy" title="F4 여행 경로 — Help View → Search Help → 화면"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>Help View를 일반 조회에</strong> → 주 용도는 F4 소스. 일반 조회는 <button class="term" type="button" data-term="Database View">Database View</button>.</li>
-<li><strong><button class="term" type="button" data-term="JOIN">조인</button> 키 부정확</strong> → F4 목록이 엉뚱해진다. FK·조인 조건 확인.</li>
+<li><strong><button class="term" type="button" data-term="Help View">Help View</button>를 프로그램 조회용으로</strong> → ABAP SQL data source가 아니다. 조회는
+Database/Projection View나 코드 JOIN.</li>
+<li><strong>parameter를 대충 둔다</strong> → 표시 필드가 많아도 <strong>Export</strong>가 안 맞으면 선택값이 화면에
+안 돌아오고, <strong>Import</strong>가 틀리면 입력 검색어가 반영되지 않는다.</li>
+<li><strong>F4를 너무 복잡하게</strong> → 처음엔 코드·대표명·상태면 충분하다. exit·동적 제어는 심화.</li>
+</ul>
+</section><section class="lblock"><h2>정리</h2>
+<ul>
+<li><button class="term" type="button" data-term="Help View">Help View</button>는 F4 <button class="term" type="button" data-term="Search Help">Search Help</button>를 풍부하게 만드는 View다(프로그램 조회용 아님).</li>
+<li>primary table을 기준으로 보조 정보를 붙여 사용자의 선택을 돕는다.</li>
+<li>F4는 단순 팝업이 아니라 <strong>DDIC와 화면 필드가 연결된 데이터 흐름</strong>이다.</li>
 </ul>
 <hr>
-<p>조회·도움말 뷰를 봤다. 이제 <strong>데이터를 입력·수정</strong>하는 뷰다 → Maintenance View(다음 레슨).</p>
+<p>조회용·F4용 View까지 봤다. 이제 데이터를 <strong>입력·수정</strong>하는 유지보수 관점의 View다 → 다음 레슨(Maintenance View).</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
-      <footer class="foot">SAP Developer Academy · CH14 CH14-L03</footer>
+      <footer class="foot">SAP Developer Academy · 배포자 SAP전문강사 정훈영</footer>
     </main>
     <aside class="journey" data-shell="journey"></aside>
   </div>

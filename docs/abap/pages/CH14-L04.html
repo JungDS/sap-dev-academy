@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH14 · Classic DDIC View·유지보수 객체</span>
+  <span class="meta">Chapter 14 · Classic DDIC View·유지보수 객체</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -31,42 +31,94 @@
 <div class="stage">
   <div class="layout">
     <main class="main">
-      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH14</nav>
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 14 › Lesson 4</nav>
       <section class="lhead">
         <p class="lhead__eyebrow">Classic DDIC View·유지보수 객체</p>
         <h1>Maintenance View와 Foreign Key 관계</h1>
-        <p class="lhead__direction">관련 테이블을 함께 유지보수 — Maintenance View.</p>
+        <p class="lhead__direction">관련 테이블을 표준 화면에서 함께 유지보수 — Maintenance View와 Foreign Key.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 14</span><span class="tag tag--ls">Lesson 4</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>마스터데이터를 손쉽게 입력</h2>
-<p>CH07에서 Create Entries로 한 건씩 입력하기가 번거로웠다. 표준 화면으로 <strong>입력·수정·삭제</strong>
-하고 싶다. 그 토대가 <button class="term" type="button" data-term="Maintenance View">Maintenance View</button>(유지보수 뷰)다.</p>
-</section><section class="lblock"><h2>Maintenance View</h2>
-<ul>
-<li><button class="term" type="button" data-term="Foreign Key">Foreign Key</button>로 연결된 테이블(들)을 <strong>함께 유지보수</strong>할 수 있게 정의한 뷰.</li>
-<li>단일 테이블도 가능(가장 흔함).</li>
-<li>이 뷰(또는 테이블)에 <strong>유지보수 화면</strong>을 붙이는 게 다음 레슨의 Generator다.</li>
-</ul>
-</section><section class="lblock"><h2>Foreign Key 기반</h2>
-<ul>
-<li>여러 테이블 유지보수 뷰는 <button class="term" type="button" data-term="Foreign Key">Foreign Key</button> 관계를 따라 구성된다(CH09의 관계가
-여기서 또 쓰인다 — 나선).</li>
-</ul>
-<blockquote>
-<p>📌 <strong><button class="term" type="button" data-term="Maintenance View">Maintenance View</button>의 <button class="term" type="button" data-term="JOIN">조인</button>은 LEFT OUTER</strong>다(정확히는 Foreign Key 기반 outer join). 그래서 기준 테이블 행은 관련 테이블에 짝이 없어도 유지보수 목록에 <strong>남는다</strong>. (읽기전용 Database View=INNER와 대비 — L01.)</p>
+<section class="lblock"><h2>마스터 데이터를 담당자가 직접</h2>
+<p><a href="CH07-L01.html">Chapter 7 · 투명 테이블</a>에서 SE11의 Create Entries로 한 건씩 넣어 봤다.
+학습 초반엔 편하지만, 실무에서는 개발자가 매번 운영 값을 대신 넣을 수 없다. 공연장
+코드·좌석 등급·가격 구간처럼 <strong>업무 담당자가 관리할 기준 데이터</strong>는 표준 화면으로
+유지보수할 수 있어야 한다. 게다가 서로 연결된 테이블이면 어느 순서로 열고 어떤 key가
+이어지는지 기억해야 해서 실수도 잦다.</p>
+<p><button class="term" type="button" data-term="Maintenance View">Maintenance View</button>는 관련 테이블을 <strong>하나의 유지보수 관점</strong>으로 묶는 도구다.</p>
+</section><section class="lblock"><h2>Maintenance View — 조회가 아니라 유지보수</h2>
+<p><button class="term" type="button" data-term="Maintenance View">Maintenance View</button>는 <strong>extended table maintenance</strong>(확장 테이블 유지보수)를 위한 DDIC
+view다. 공식문서 기준으로 <strong>ABAP SQL로 읽는 대상이 아니며</strong>, SE54에서 maintenance
+dialog를 만들고 SM30·SM31 같은 표준 유지보수 흐름에서 쓴다.</p>
+<p>핵심은 <button class="term" type="button" data-term="Database View">Database View</button>와 <strong>목적부터</strong> 다르다는 점이다.</p>
+<table>
+<thead>
+<tr>
+<th>구분</th>
+<th>Database View</th>
+<th>Maintenance View</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>핵심 목적</td>
+<td>프로그램 <strong>조회</strong>용 공통 관점</td>
+<td>표준 <strong>유지보수</strong>용 관점</td>
+</tr>
+<tr>
+<td>ABAP SQL 읽기</td>
+<td>가능</td>
+<td><strong>대상 아님</strong></td>
+</tr>
+<tr>
+<td>연결 근거</td>
+<td>join condition</td>
+<td><strong><button class="term" type="button" data-term="Foreign Key">Foreign Key</button> dependency</strong></td>
+</tr>
+<tr>
+<td>사용 화면</td>
+<td>SELECT·Data Browser</td>
+<td>SE54·SM30·SM31</td>
+</tr>
+<tr>
+<td>설계 질문</td>
+<td>어떤 필드를 읽을까</td>
+<td>어떤 데이터를 같이 관리할까</td>
+</tr>
+</tbody></table>
+<blockquote class="cw">
+<p>⚠️ Maintenance View를 &quot;left outer join 조회 대안&quot;으로 외우지 말자(흔한 오해). 그건
+조회 관점이고, Maintenance View는 <strong>유지보수 관점</strong>이다. (outer join 성격은
+<a href="CH14-L03.html">Chapter 14 · Help View</a>에 해당.)</p>
 </blockquote>
+</section><section class="lblock"><h2>Foreign Key가 설계 기준</h2>
+<p>여러 테이블을 아무 조건으로나 붙이는 게 아니라 <strong><button class="term" type="button" data-term="Foreign Key">Foreign Key</button> 관계</strong>로 연결한다.
+(<a href="CH09-L01.html">Chapter 9 · DDIC 관계</a>의 관계가 여기서 또 쓰인다 — 나선.) Foreign Key는
+<strong>input check·input help·view 생성</strong>에서 평가된다. 단, ABAP SQL의 <code>SELECT</code>는 Foreign
+Key를 <strong>자동으로 평가하지 않는다</strong>(DDIC 화면·표준 도구에서 강한 의미).</p>
+<p>아래에서 <code>zconcert-hall_id → zhall-hall_id</code> Foreign Key를 켜고 끄며, 유지보수 화면에서
+존재하지 않는 공연장 코드를 입력했을 때 input check가 어떻게 막는지 보자.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">Foreign Key로 문 열기 — 유지보수 input check</span><a class="embed__open" href="../../../embeds/abap/CH14-L04-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH14-L04-S01.html" loading="lazy" title="Foreign Key로 문 열기 — 유지보수 input check"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>아무 테이블이나 다 <button class="term" type="button" data-term="JOIN">조인</button></strong> → 유지보수 뷰는 관계(FK)가 명확해야.</li>
-<li><strong>읽기 뷰와 혼동</strong> → Database View는 읽기, <button class="term" type="button" data-term="Maintenance View">Maintenance View</button>는 유지보수 토대.</li>
+<li><strong>유지보수 = 조회로 혼동</strong> → <button class="term" type="button" data-term="Database View">Database View</button>는 읽기, <button class="term" type="button" data-term="Maintenance View">Maintenance View</button>는 유지보수 토대.
+이름이 같아도 목적이 다르면 완전히 다른 도구다.</li>
+<li><strong><button class="term" type="button" data-term="Foreign Key">Foreign Key</button>를 문서용 선으로</strong> → input check·input help·view 생성에서 실제로 평가된다.
+(단 <code>SELECT</code> 조건이 자동으로 안전해지는 건 아니다.)</li>
+<li><strong>권한 없이 판단</strong> → View·dialog가 있어도 authorization이 부족하면 못 연다. 표준
+유지보수는 <strong>설정 + 권한</strong>이 함께 필요하다.</li>
+</ul>
+</section><section class="lblock"><h2>정리</h2>
+<ul>
+<li><button class="term" type="button" data-term="Maintenance View">Maintenance View</button>는 조회 편의가 아니라 <strong>유지보수 흐름</strong>을 위해 존재한다.</li>
+<li><button class="term" type="button" data-term="Foreign Key">Foreign Key</button>로 연결된 테이블을 표준 Table View Maintenance에서 함께 다룬다.</li>
+<li>ABAP SQL 일반 data source로 읽는 View가 <strong>아니다</strong>.</li>
 </ul>
 <hr>
-<p>뷰는 만들었다. 이제 여기에 <strong>실제 입력 화면</strong>을 붙이자 → Table Maintenance Generator(다음 레슨).</p>
+<p>유지보수 관점은 정의했다. 이제 여기에 <strong>실제 입력 화면</strong>을 붙이자 → 다음 레슨(Table Maintenance Generator·SM30).</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
-      <footer class="foot">SAP Developer Academy · CH14 CH14-L04</footer>
+      <footer class="foot">SAP Developer Academy · 배포자 SAP전문강사 정훈영</footer>
     </main>
     <aside class="journey" data-shell="journey"></aside>
   </div>

@@ -1,0 +1,51 @@
+/* ===== dcl-auth-comparator — CDS DCL 권한 필터 결과 비교기 (CH22-L06) =====
+   같은 SELECT FROM ZI_Concert를 사용자(서울/부산/권한없음)별로 실행. @AccessControl #CHECK→DCL 행 필터 적용,
+   #NOT_REQUIRED→필터 없음(권한 밖 venue 노출=보안 실패). 행 단위 권한은 결과집합 내용이 핵심. 데이터=config.
+   교훈3: verdict base 중립 rgba·ok/bad 명시 클래스. */
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:transparent;line-height:1.5;}
+.wrap{padding:14px;}
+.hd{font-weight:800;font-size:1rem;margin:0 0 4px;}
+.hd small{font-weight:600;color:var(--brand);}
+.lead{margin:0 0 12px;color:var(--ink-soft);font-size:.86rem;}
+.lead code{font-family:var(--mono);background:#eef2ff;color:var(--brand);padding:1px 5px;border-radius:5px;font-size:.92em;}
+
+.dac-grp{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:8px;}
+.dac-glbl{font-size:.7rem;font-weight:800;color:var(--ink-soft);min-width:66px;}
+.dac-seg{border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);border-radius:8px;
+  padding:6px 10px;font:inherit;font-size:.74rem;font-weight:700;cursor:pointer;}
+.dac-seg:hover{border-color:var(--brand);color:var(--brand);}
+.dac-seg.on{background:var(--brand);border-color:var(--brand);color:#fff;}
+.dac-pfcg{font-family:var(--mono);font-size:.7rem;font-weight:800;border-radius:6px;padding:3px 9px;background:#eef2ff;color:var(--ink);}
+.dac-pfcg.none{background:#f1f3f8;color:var(--ink-soft);}
+.dac-mode{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;
+  padding:6px 11px;font:inherit;font-size:.74rem;font-weight:700;cursor:pointer;font-family:var(--mono);}
+.dac-mode.check{background:#eafaf3;border-color:var(--accent);color:#0b7250;}
+.dac-mode.notreq{background:rgba(214,51,108,.1);border-color:var(--bad);color:var(--bad);border-style:dashed;}
+
+.dac-code{font-family:var(--mono);font-size:11px;line-height:1.6;white-space:pre;overflow-x:auto;
+  margin:10px 0 0;padding:9px 11px;border:1px solid var(--line);border-radius:9px;background:#fafbff;color:var(--ink);}
+.dac-code .k{color:var(--brand);font-weight:700;}
+.dac-code .ent{color:var(--accent);font-weight:700;}
+.dac-code .anno{color:var(--accent);font-weight:700;}
+.dac-code .role{color:var(--amber);font-weight:700;}
+.dac-code .host{color:var(--amber);font-weight:700;}
+.dac-code.mode-check{border-color:var(--accent);}
+.dac-code.mode-notreq{border-color:var(--bad);}
+
+.dac-result{margin-top:10px;border:1px solid var(--line);border-radius:11px;overflow:hidden;}
+.dac-result__hd{font-size:.72rem;font-weight:800;padding:6px 10px;background:#eef2ff;color:#26336b;}
+.dt{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:11.5px;}
+.dt th,.dt td{padding:4px 8px;text-align:left;border-bottom:1px solid #eef1f7;white-space:nowrap;}
+.dt th{background:#fafbfe;color:var(--ink-soft);font-size:10.5px;font-weight:800;}
+.dt tr.unauth td{background:rgba(214,51,108,.1);color:var(--bad);}
+.dt .tag{font-size:.58rem;font-weight:800;border-radius:4px;padding:1px 5px;background:var(--bad);color:#fff;}
+.dac-none{color:var(--soon);font-style:italic;font-size:.8rem;padding:12px;text-align:center;}
+
+.dac-verdict{font-size:.84rem;padding:9px 12px;border-radius:9px;margin-top:10px;background:rgba(59,91,219,.08);color:var(--ink);}
+.dac-verdict.ok{background:#eafaf3;color:#0b7250;}
+.dac-verdict.bad{background:rgba(214,51,108,.12);color:var(--bad);}
+.dac-verdict b{color:inherit;}
+
+.note{margin-top:12px;border-left:3px solid var(--brand);background:rgba(59,91,219,.06);border-radius:0 9px 9px 0;padding:9px 13px;font-size:.83rem;color:#2a3550;}
+.note code{font-family:var(--mono);background:#fff;border:1px solid var(--line);padding:0 5px;border-radius:4px;}

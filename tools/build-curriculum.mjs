@@ -132,7 +132,7 @@ function escHtml(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt
 function hlAbapLine(line) {
   if (/^\s*\*/.test(line)) return '<span class="tok-com">' + escHtml(line) + '</span>';
   let out = '', m;
-  const re = /('[^']*'?)|(`[^`]*`?)|(".*$)|(\b\d+\b)|([A-Za-z_][A-Za-z0-9_\-]*)|([^A-Za-z0-9_'`"\-]+)/g;
+  const re = /('[^']*'?)|(`[^`]*`?)|(".*$)|(\b\d+\b)|([A-Za-z_][A-Za-z0-9_\-]*)|([^A-Za-z0-9_'`"]+)/g;
   while ((m = re.exec(line)) !== null) {
     if (m[1] || m[2]) out += '<span class="tok-str">' + escHtml(m[1] || m[2]) + '</span>';
     else if (m[3]) out += '<span class="tok-com">' + escHtml(m[3]) + '</span>';
@@ -306,6 +306,13 @@ function wrapSections(html) {
   return parts.map((p) => (/^<h2[\s>]/.test(p) ? `<section class="lblock">${p}</section>` : p)).join('');
 }
 
+/* ⚠️(또는 🚫/❌)를 포함한 blockquote → 경고 콜아웃 클래스(.cw) 부여. lesson.css가 앰버(주의)색 처리.
+   섹션색(--sec, 초록 등)을 쓰는 기본 인용과 달리, 함정/주의 콜아웃이 경고로 보이게 한다(additive). */
+function markWarnCallouts(html) {
+  return html.replace(/<blockquote>([\s\S]*?)<\/blockquote>/g,
+    (m, inner) => (/⚠️|🚫|❌/.test(inner) ? `<blockquote class="cw">${inner}</blockquote>` : m));
+}
+
 /* ---------- 레슨 HTML 템플릿 (v2-C 셸 골격) ----------
    레이아웃/네비/설정은 shell.js가 data-shell 훅에 주입한다.
    T-code 라벨은 front-matter `tcode`가 있을 때만 emit(Phase 2). */
@@ -315,23 +322,28 @@ function renderLessonPage(ch, lesson, trackNo) {
   const siteRoot = relPosix(OUT_PAGES, ROOT) + '/';
   const chId = ch.meta.id;
   const chNum = parseInt(String(chId).replace(/\D/g, ''), 10) || 0;
-  const bodyHtml = wrapSections(dedupTermButtonsPerSection(autolinkGlossary(marked.parse(lesson.body), lesson.body, chNum)));
+  const lessonNum = lesson.data.order || parseInt((String(lesson.data.id).match(/-L0*(\d+)/) || [])[1] || '0', 10);
+  const bodyHtml = wrapSections(dedupTermButtonsPerSection(autolinkGlossary(markWarnCallouts(marked.parse(lesson.body)), lesson.body, chNum)));
   const sda = JSON.stringify({ domain: DOMAIN, dataBase, siteRoot });
-  const tcode = lesson.data.tcode || '';
+  // tcode: 단일 문자열·콤마목록·배열 모두 허용 → 여러 개면 공통 카드에 라벨 여러 개
+  const tcodeList = Array.isArray(lesson.data.tcode)
+    ? lesson.data.tcode.map((t) => String(t).trim()).filter(Boolean)
+    : (lesson.data.tcode ? String(lesson.data.tcode).split(',').map((t) => t.trim()).filter(Boolean) : []);
   const tcodeBadge = lesson.data.tcodeBadge || '';
   const tags =
     `<span class="tag tag--track">Track ${esc(String(trackNo || 1))}</span>` +
     `<span class="tag tag--ch">Chapter ${esc(String(ch.meta.order ?? ''))}</span>` +
     `<span class="tag tag--ls">Lesson ${esc(String(lesson.data.order ?? ''))}</span>` +
     (ch.meta.difficulty ? `<span class="tag tag--lv">${esc(ch.meta.difficulty)}</span>` : '');
-  const tcodeBlock = tcode
+  const tcodeBlock = tcodeList.length
     ? `      <section class="lcard tcode">
         <p class="lcard__h"><span class="ic">🖥️</span>이번 Lesson에서 다루는 트랜잭션 코드</p>
-        <button class="tcode-label" data-tcode="${esc(tcode)}"${tcodeBadge ? ` data-badge="${esc(tcodeBadge)}"` : ''}>
-          ${tcodeBadge ? `<span class="tcode-label__badge">${esc(tcodeBadge)}</span>` : ''}
-          <span class="tcode-label__code">${esc(tcode)}</span>
-          <span class="tcode-label__hint">자세히 보기 ›</span>
-        </button>
+        <div class="tcode-labels">
+${tcodeList.map((tc, i) => {
+      const badge = (i === 0 && tcodeBadge) ? tcodeBadge : '';
+      return `          <button class="tcode-label" data-tcode="${esc(tc)}"${badge ? ` data-badge="${esc(badge)}"` : ''}>${badge ? `<span class="tcode-label__badge">${esc(badge)}</span>` : ''}<span class="tcode-label__code">${esc(tc)}</span><span class="tcode-label__hint">자세히 보기 ›</span></button>`;
+    }).join('\n')}
+        </div>
       </section>\n`
     : '';
   return `<!DOCTYPE html>
@@ -349,7 +361,7 @@ function renderLessonPage(ch, lesson, trackNo) {
 <header class="appbar">
   <a class="appbar__home" href="${siteRoot}index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">${esc(chId)} · ${esc(ch.meta.title)}</span>
+  <span class="meta">Chapter ${chNum} · ${esc(ch.meta.title)}</span>
   <a class="btn-soft" href="${siteRoot}pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -367,7 +379,7 @@ function renderLessonPage(ch, lesson, trackNo) {
 <div class="stage">
   <div class="layout">
     <main class="main">
-      <nav class="crumb"><a href="${siteRoot}index.html">홈</a> › <a href="${siteRoot}pages/abap.html">ABAP 커리큘럼</a> › ${esc(chId)}</nav>
+      <nav class="crumb"><a href="${siteRoot}index.html">홈</a> › <a href="${siteRoot}pages/abap.html">ABAP 커리큘럼</a> › Chapter ${chNum} › Lesson ${lessonNum}</nav>
       <section class="lhead">
         <p class="lhead__eyebrow">${esc(ch.meta.title)}</p>
         <h1>${esc(lesson.data.title)}</h1>
@@ -378,7 +390,7 @@ ${tcodeBlock}      <article class="prose">
 ${bodyHtml}
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
-      <footer class="foot">SAP Developer Academy · ${esc(chId)} ${esc(lesson.data.id)}</footer>
+      <footer class="foot">SAP Developer Academy · 배포자 SAP전문강사 정훈영</footer>
     </main>
     <aside class="journey" data-shell="journey"></aside>
   </div>

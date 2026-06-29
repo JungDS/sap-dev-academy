@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH15 · Report Event·Selection Screen 심화</span>
+  <span class="meta">Chapter 15 · Report Event·Selection Screen 심화</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -31,17 +31,19 @@
 <div class="stage">
   <div class="layout">
     <main class="main">
-      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH15</nav>
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 15 › Lesson 2</nav>
       <section class="lhead">
         <p class="lhead__eyebrow">Report Event·Selection Screen 심화</p>
         <h1>INITIALIZATION 기본값 설정</h1>
-        <p class="lhead__direction">화면 뜨기 전 1회 — PARAMETERS/SELECT-OPTIONS 기본값.</p>
+        <p class="lhead__direction">화면 뜨기 전 1회 — 좋은 출발점 제안(매번 강제 아님).</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 15</span><span class="tag tag--ls">Lesson 2</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>화면에 기본값을 채워두기</h2>
-<p>선택화면이 뜰 때 자주 쓰는 값(오늘 날짜, 기본 부서)이 미리 채워져 있으면 편하다.
-화면 표시 <strong>전 1회</strong> 실행되는 <button class="term" type="button" data-term="INITIALIZATION">INITIALIZATION</button>에서 설정한다.</p>
+<section class="lblock"><h2>빈 화면에서 시작하고 싶진 않다</h2>
+<p>운영 리포트라면 오늘 날짜, 자주 보는 부서, 기본 상태 같은 값이 미리 채워져 있으면
+편하다. 단, 기본값은 &quot;언제든 덮어써도 되는 값&quot;이 아니다. 사용자가 화면에서 값을
+바꿨는데 화면이 다시 그려질 때마다 프로그램이 그걸 되돌리면, 사용자는 입력을 잃는다.</p>
+<p><button class="term" type="button" data-term="INITIALIZATION">INITIALIZATION</button>은 이 문제의 첫 자리다 — 선택화면이 <strong>처음 나타나기 전 1회</strong> 기본값을 준비한다.</p>
 </section><section class="lblock"><h2>INITIALIZATION</h2>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
@@ -51,32 +53,51 @@
 6
 7
 8
-9</pre><pre class="abap-editor__code"><code><span class="tok-kw">PARAMETERS</span> p_date <span class="tok-kw">TYPE</span> d.
-<span class="tok-kw">SELECT-OPTIONS</span> s_dept <span class="tok-kw">FOR</span> ztperson-dept_id.
+9
+10
+11
+12</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> gv_dept <span class="tok-kw">TYPE</span> c <span class="tok-kw">LENGTH</span> <span class="tok-num">4</span>.
+
+<span class="tok-kw">PARAMETERS</span> p_date <span class="tok-kw">TYPE</span> d.
+<span class="tok-kw">SELECT-OPTIONS</span> s_dept <span class="tok-kw">FOR</span> gv_dept.
 
 <span class="tok-kw">INITIALIZATION</span>.
-  p_date = sy-datum.                       <span class="tok-com">" 오늘 날짜 기본값</span>
+  p_date = sy-datum.              <span class="tok-com">" 오늘 날짜 기본값</span>
 
-  s_dept-sign = <span class="tok-str">'I'</span>. s_dept-option = <span class="tok-str">'EQ'</span>.
-  s_dept-low  = <span class="tok-str">'1000'</span>.
-  <span class="tok-kw">APPEND</span> s_dept <span class="tok-kw">TO</span> s_dept.                  <span class="tok-com">" 기본 범위 1건</span></code></pre></div></div>
+  s_dept-sign   = <span class="tok-str">'I'</span>.
+  s_dept-option = <span class="tok-str">'EQ'</span>.
+  s_dept-low    = <span class="tok-str">'1000'</span>.
+  <span class="tok-kw">APPEND</span> s_dept.                  <span class="tok-com">" header line → selection table에 조건 1건</span></code></pre></div></div>
 <ul>
-<li><code>INITIALIZATION</code>은 화면 표시 <strong>전에 한 번</strong> 실행된다.</li>
-<li>여기서 PARAMETERS/SELECT-OPTIONS에 값을 넣으면 화면에 <strong>기본값으로</strong> 나타난다.</li>
+<li><code>p_date</code>는 단일 입력값, <code>s_dept</code>는 selection table이다.</li>
+<li><code>[[SELECT-OPTIONS]]</code>는 <strong>header line</strong>을 가진 selection table을 만들어, <code>sign</code>·<code>option</code>·
+<code>low</code>를 채운 뒤 <code>APPEND s_dept.</code>로 조건 행을 추가한다.</li>
+<li><a href="CH12-L01.html">Chapter 12 · Range Table</a>에서 배운 네 칸(<code>SIGN/OPTION/LOW/HIGH</code>) 구조가 그대로 이어진다.</li>
 </ul>
+</section><section class="lblock"><h2>첫 제안일 뿐, 매번 강제가 아니다</h2>
+<p><code>INITIALIZATION</code>은 <strong>1회</strong>라 사용자가 화면에서 바꾼 값을 유지한다. 반면 매 화면마다 도는
+<button class="term" type="button" data-term="AT SELECTION-SCREEN OUTPUT">AT SELECTION-SCREEN OUTPUT</button>에서 값을 대입하면, 사용자가 입력한 값을 <strong>덮어써</strong> 입력이
+사라진다. 아래에서 두 방식의 차이를 직접 보자.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">기본값 주입기 — <button class="term" type="button" data-term="INITIALIZATION">INITIALIZATION</button> vs 매번 덮어쓰기</span><a class="embed__open" href="../../../embeds/abap/CH15-L02-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH15-L02-S01.html" loading="lazy" title="기본값 주입기 — INITIALIZATION vs 매번 덮어쓰기"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>START-OF-SELECTION에서 기본값</strong> → 이미 화면을 지난 뒤라 화면엔 안 보인다.
-기본값은 <code>INITIALIZATION</code>.</li>
-<li><strong>여러 번 실행 기대</strong> → 1회만. 매 화면마다는 <code>AT SELECTION-SCREEN OUTPUT</code>.</li>
+<li><strong>START-OF-SELECTION에서 기본값</strong> → 이미 화면을 지난 뒤라 화면엔 안 보인다. 기본값은 <code>INITIALIZATION</code>.</li>
+<li><strong><code>APPEND</code> 누락</strong> → header line만 채우고 <code>APPEND</code> 안 하면 조건 행이 안 들어간다.</li>
+<li><strong><code>LOW</code>에 표시용 텍스트</strong> → <code>LOW</code>·<code>HIGH</code>에는 필드 타입에 맞는 <strong>내부 값</strong>이 들어가야 한다.</li>
+<li><strong>&quot;매번 초기화&quot;로 오해</strong> → <code>INITIALIZATION</code>은 <strong>첫 실행 기본값</strong>이지 사용자 입력을 계속 이기는 규칙이 아니다.</li>
+</ul>
+</section><section class="lblock"><h2>정리</h2>
+<ul>
+<li><button class="term" type="button" data-term="INITIALIZATION">INITIALIZATION</button>은 사용자에게 <strong>좋은 출발점</strong>을 제안하는 event다(화면 뜨기 전 1회).</li>
+<li>오늘 날짜·기본 조직·기본 상태를 미리 넣기 좋다.</li>
+<li>사용자 입력을 계속 덮어쓰는 자리가 아니다 — 반복 화면 제어는 <code>AT SELECTION-SCREEN OUTPUT</code>.</li>
 </ul>
 <hr>
-<p>기본값은 채웠다. 그런데 화면을 <strong>그릴 때마다</strong> 필드를 숨기거나 잠그려면? →
-AT SELECTION-SCREEN OUTPUT(다음 레슨).</p>
+<p>기본값은 채웠다. 그런데 화면을 <strong>그릴 때마다</strong> 필드를 숨기거나 잠그려면? → 다음 레슨(<button class="term" type="button" data-term="AT SELECTION-SCREEN OUTPUT">AT SELECTION-SCREEN OUTPUT</button>).</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
-      <footer class="foot">SAP Developer Academy · CH15 CH15-L02</footer>
+      <footer class="foot">SAP Developer Academy · 배포자 SAP전문강사 정훈영</footer>
     </main>
     <aside class="journey" data-shell="journey"></aside>
   </div>

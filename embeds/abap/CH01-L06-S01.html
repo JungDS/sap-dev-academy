@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<!-- CH01-L06-S01 — bespoke SVG(이송 landscape: 개발→품질→운영) + _autoheight · _engine/_base.css.
+     SVG는 토큰(var)로 칠해 다크 자동 적응. #C01-6. -->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>이송 흐름 (DEV→QAS→PRD) · CH01-L06-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<style>
+  *{box-sizing:border-box;} html,body{margin:0;}
+  body{font-family:var(--font);color:var(--ink);background:transparent;line-height:1.55;}
+  .wrap{padding:14px;}
+  .hd{font-weight:800;font-size:1rem;margin:0 0 4px;}
+  .lead{margin:0 0 12px;color:var(--ink-soft);font-size:.86rem;}
+  .lead code{font-family:var(--mono);background:color-mix(in srgb,var(--brand) 11%,var(--surface));color:var(--brand);padding:1px 5px;border-radius:5px;}
+  .land{border:1px solid var(--line);border-radius:14px;background:var(--surface);box-shadow:var(--shadow);padding:14px 10px;}
+  .land svg{display:block;width:100%;height:auto;}
+  .srv{fill:color-mix(in srgb,var(--brand) 6%,var(--surface));stroke:var(--brand);stroke-width:2;}
+  .srvln{stroke:color-mix(in srgb,var(--brand) 32%,var(--line));stroke-width:3;stroke-linecap:round;}
+  .dot{fill:var(--accent);} .dot.qas{fill:var(--amber);} .dot.prd{fill:var(--warn);}
+  .srv-label{fill:var(--ink);font:800 15px var(--font);}
+  .srv-sub{fill:var(--ink-soft);font:500 11.5px var(--font);}
+  .flow{stroke:var(--accent);stroke-width:2.5;fill:none;}
+  .ah{fill:var(--accent);}
+  .flow-label{fill:var(--ink-soft);font:800 11.5px var(--font);}
+  .note{margin-top:12px;border-left:3px solid var(--brand);background:color-mix(in srgb,var(--brand) 7%,var(--surface));border-radius:0 9px 9px 0;padding:9px 13px;font-size:.83rem;color:var(--ink-soft);line-height:1.6;}
+  .note b{color:var(--ink);} .note code{font-family:var(--mono);background:color-mix(in srgb,var(--brand) 11%,var(--surface));padding:1px 5px;border-radius:4px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">이송(Transport) — 한 번 만들면 서버를 따라 흐른다</p>
+  <p class="lead">개발 서버에서 만든 변경은 <b>같은 순서</b>로 품질 → 운영 서버로 옮겨집니다. 서버마다 코드를 다시 만들지 않아요.</p>
+  <div class="land">
+    <svg viewBox="0 0 660 178" role="img" aria-label="개발 DEV → 품질 QAS → 운영 PRD 이송 흐름">
+      <defs>
+        <marker id="ah" markerWidth="9" markerHeight="9" refX="6.5" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" class="ah"/></marker>
+      </defs>
+      <!-- DEV -->
+      <g transform="translate(40,38)">
+        <rect class="srv" width="120" height="80" rx="12"/>
+        <line class="srvln" x1="18" y1="26" x2="102" y2="26"/><line class="srvln" x1="18" y1="46" x2="102" y2="46"/><line class="srvln" x1="18" y1="66" x2="102" y2="66"/>
+        <circle class="dot" cx="100" cy="14" r="4"/>
+        <text class="srv-label" x="60" y="106" text-anchor="middle">개발 · DEV</text>
+        <text class="srv-sub" x="60" y="124" text-anchor="middle">여기서 작성·변경</text>
+      </g>
+      <!-- QAS -->
+      <g transform="translate(270,38)">
+        <rect class="srv" width="120" height="80" rx="12"/>
+        <line class="srvln" x1="18" y1="26" x2="102" y2="26"/><line class="srvln" x1="18" y1="46" x2="102" y2="46"/><line class="srvln" x1="18" y1="66" x2="102" y2="66"/>
+        <circle class="dot qas" cx="100" cy="14" r="4"/>
+        <text class="srv-label" x="60" y="106" text-anchor="middle">품질 · QAS</text>
+        <text class="srv-sub" x="60" y="124" text-anchor="middle">테스트·검증</text>
+      </g>
+      <!-- PRD -->
+      <g transform="translate(500,38)">
+        <rect class="srv" width="120" height="80" rx="12"/>
+        <line class="srvln" x1="18" y1="26" x2="102" y2="26"/><line class="srvln" x1="18" y1="46" x2="102" y2="46"/><line class="srvln" x1="18" y1="66" x2="102" y2="66"/>
+        <circle class="dot prd" cx="100" cy="14" r="4"/>
+        <text class="srv-label" x="60" y="106" text-anchor="middle">운영 · PRD</text>
+        <text class="srv-sub" x="60" y="124" text-anchor="middle">실제 사용자</text>
+      </g>
+      <!-- arrows -->
+      <path class="flow" d="M163,78 L266,78" marker-end="url(#ah)"/>
+      <text class="flow-label" x="214" y="66" text-anchor="middle">릴리즈 → 임포트</text>
+      <path class="flow" d="M393,78 L496,78" marker-end="url(#ah)"/>
+      <text class="flow-label" x="444" y="66" text-anchor="middle">임포트</text>
+    </svg>
+  </div>
+  <div class="note">💡 개발 패키지에 담긴 <b>Repository Object</b>(프로그램·DDIC 등)는 이송요청에 묶여 이 경로로만 흐릅니다 — <b>거꾸로(운영→개발)는 가지 않아요.</b> 옮기는 도구가 <code>STMS</code>(다음 섹션).</div>
+</div>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

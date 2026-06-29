@@ -11,16 +11,38 @@ body{font-family:var(--font);color:var(--ink);background:transparent;line-height
 
 /* variant 토글 (기본 ↔ 묶기) */
 .cs-seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;align-self:flex-start;}
-.cs-seg button{border:0;background:#fff;padding:7px 15px;font:inherit;font-size:.84rem;font-weight:700;color:#64748b;cursor:pointer;transition:.12s;}
+.cs-seg button{border:0;background:var(--surface);padding:7px 15px;font:inherit;font-size:.84rem;font-weight:700;color:#64748b;cursor:pointer;transition:.12s;}
 .cs-seg button.on{background:var(--brand);color:#fff;}
 .cs-seg button+button{border-left:1px solid var(--line);}
 
 /* 값 선택 칩 */
 .cs-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 .cs-lbl{font-family:var(--mono);font-weight:700;color:#334155;}
-.cs-chip{border:1.5px solid var(--line);background:#fff;border-radius:9px;padding:7px 14px;font-family:var(--mono);font-size:.92rem;font-weight:700;color:#1c2233;cursor:pointer;transition:.12s;}
+.cs-chip{border:1.5px solid var(--line);background:var(--surface);border-radius:9px;padding:7px 14px;font-family:var(--mono);font-size:.92rem;font-weight:700;color:#1c2233;cursor:pointer;transition:.12s;}
 .cs-chip:hover{border-color:var(--brand);}
 .cs-chip.sel{background:var(--brand);border-color:var(--brand);color:#fff;}
+
+/* ===== 좌(분기 시각화) · 우(코드) 2칼럼 ===== */
+.cs-split{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start;}
+@media(max-width:520px){ .cs-split{grid-template-columns:1fr;} }
+
+/* 좌: 분기 스위치보드 — 고른 값이 어느 WHEN으로 가는지 점등(우측 코드와 동시에) */
+.cs-viz{border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--surface);box-shadow:var(--shadow);}
+.cs-viz__in{display:block;text-align:center;font-family:var(--mono);font-weight:800;font-size:.92rem;color:var(--ink);
+  background:color-mix(in srgb, var(--brand) 12%, var(--surface));border:1px solid color-mix(in srgb, var(--brand) 30%, transparent);
+  border-radius:8px;padding:7px 10px;}
+.cs-viz__in b{color:var(--brand);}
+.cs-viz__arrow{text-align:center;color:var(--ink-soft);font-size:.9rem;line-height:1;margin:6px 0;}
+.cs-viz__branches{display:flex;flex-direction:column;gap:7px;}
+.cs-br{display:grid;grid-template-columns:1fr auto;align-items:center;gap:9px;border:1.5px solid var(--line);border-radius:9px;
+  padding:8px 11px;background:var(--surface);transition:border-color .15s,background .15s;}
+.cs-br__cond{font-family:var(--mono);font-weight:800;font-size:.85rem;color:var(--ink-soft);}
+.cs-br__cond::before{content:"WHEN ";color:var(--brand);opacity:.65;}
+.cs-br__out{font-weight:700;font-size:.88rem;color:var(--ink-soft);}
+.cs-br__out::before{content:"→ ";color:var(--ink-soft);font-weight:400;}
+.cs-br.on{border-color:var(--good);background:color-mix(in srgb, var(--good) 12%, var(--surface));box-shadow:inset 3px 0 0 var(--good);}
+.cs-br.on .cs-br__cond{color:var(--ink);}
+.cs-br.on .cs-br__out{color:var(--good);font-weight:800;}
 
 /* 코드 패널 (네이비 헤더 + 밝은 본문 = code-copy-block 관례) */
 .cs-code{border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);}
@@ -29,7 +51,7 @@ body{font-family:var(--font);color:var(--ink);background:transparent;line-height
 .cs-dots i{width:10px;height:10px;border-radius:50%;background:#475569;}
 .cs-dots i:nth-child(1){background:#ef4444;} .cs-dots i:nth-child(2){background:#f59e0b;} .cs-dots i:nth-child(3){background:#22c55e;}
 .cs-lang{color:#cbd5e1;font-size:.74rem;font-weight:700;letter-spacing:.05em;}
-.cs-body{background:#fbfcfe;padding:12px 14px;font-family:var(--mono);font-size:13px;line-height:1.75;}
+.cs-body{background:#fbfcfe;padding:12px 14px;font-family:var(--mono);font-size:13px;line-height:1.75;overflow-x:auto;}
 .cs-line{white-space:pre;padding:1px 0;}
 .cs-mk{color:var(--good);font-weight:800;display:inline-block;width:1.3em;}
 .cs-mk-sp{display:inline-block;width:1.3em;}

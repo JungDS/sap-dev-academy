@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH17 · Grid ALV 기초</span>
+  <span class="meta">Chapter 17 · Grid ALV 기초</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -31,17 +31,19 @@
 <div class="stage">
   <div class="layout">
     <main class="main">
-      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH17</nav>
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 17 › Lesson 5</nav>
       <section class="lhead">
         <p class="lhead__eyebrow">Grid ALV 기초</p>
         <h1>Layout 기본 설정</h1>
-        <p class="lhead__direction">표 전체 모양 — 줄무늬·선택 모드·제목(LVC_S_LAYO).</p>
+        <p class="lhead__direction">표 전체의 보기 설정 — 줄무늬·선택 모드·제목·너비 최적화(LVC_S_LAYO).</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 17</span><span class="tag tag--ls">Lesson 5</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>표 전체의 모양</h2>
-<p><button class="term" type="button" data-term="Layout">Layout</button>(타입 <code>LVC_S_LAYO</code>)은 그리드 <strong>전체</strong>의 모양을 정한다 — 줄무늬, 행 선택
-방식, 제목 등.</p>
+<section class="lblock"><h2>표 전체의 보기 설정</h2>
+<p>Field Catalog가 <strong>컬럼별</strong> 설명서라면, <button class="term" type="button" data-term="Layout">Layout</button>(타입 <code>LVC_S_LAYO</code>)은 <strong>표 전체</strong>의
+보기 설정이다. 같은 데이터라도 줄무늬가 있으면 읽기 쉽고, 컬럼 너비가 자동으로 맞으면
+가로 스크롤이 줄고, 제목이 있으면 지금 보는 목록이 무엇인지 바로 안다. 업무 화면에서
+표는 <strong>반복해서 읽고 비교하는 도구</strong> — 읽기 편한 표가 사용자 실수를 줄인다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -49,26 +51,63 @@
 5
 6</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> ls_layout <span class="tok-kw">TYPE</span> lvc_s_layo.
 
-ls_layout-zebra      = abap_true.    <span class="tok-com">" 줄무늬(가독성)</span>
+ls_layout-zebra      = abap_true.    <span class="tok-com">" 줄무늬</span>
 ls_layout-sel_mode   = <span class="tok-str">'A'</span>.          <span class="tok-com">" 행 선택 모드</span>
 ls_layout-grid_title = <span class="tok-str">'예매 목록'</span>.   <span class="tok-com">" 표 제목</span>
 ls_layout-cwidth_opt = abap_true.    <span class="tok-com">" 컬럼 너비 자동 최적화</span></code></pre></div></div>
-<ul>
-<li><code>zebra</code> — 행마다 음영을 번갈아(읽기 편함).</li>
-<li><code>sel_mode</code> — 단일/다중 행 선택 방식.</li>
-<li><code>cwidth_opt</code> — 내용에 맞춰 컬럼 너비 자동 조정.</li>
-</ul>
+<table>
+<thead>
+<tr>
+<th>필드</th>
+<th>의미</th>
+<th>초보자 설명</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>zebra</code></td>
+<td>행 배경을 번갈아</td>
+<td>긴 목록에서 줄을 놓치지 않게</td>
+</tr>
+<tr>
+<td><code>sel_mode</code></td>
+<td>행 선택 방식</td>
+<td>한 행만/여러 행 선택 기준</td>
+</tr>
+<tr>
+<td><code>grid_title</code></td>
+<td>표 제목</td>
+<td>이 표가 무엇을 보여 주는지</td>
+</tr>
+<tr>
+<td><code>cwidth_opt</code></td>
+<td>컬럼 너비 자동 조정</td>
+<td>데이터 길이에 맞춰 너비</td>
+</tr>
+</tbody></table>
+</section><section class="lblock"><h2>직접 켜고 꺼 보기 — Layout 토글 패널</h2>
+<p>각 옵션을 켜고 끄며 미리보기 표가 어떻게 달라지는지 보자. 특히 <code>cwidth_opt</code>를 끄면
+<strong>긴 고객명이 잘리고</strong>, 켜면 컬럼이 넓어진다. 여기서 바뀌는 건 <strong>데이터가 아니라
+표 전체의 보기 설정</strong>이라는 점에 주목하자.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title"><button class="term" type="button" data-term="Layout">Layout</button> 토글 패널 (LVC_S_LAYO)</span><a class="embed__open" href="../../../embeds/abap/CH17-L05-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH17-L05-S01.html" loading="lazy" title="Layout 토글 패널 (LVC_S_LAYO)" style="height:580px"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>레이아웃 안 넘김</strong> → display 호출 시 <code>is_layout</code>으로 함께 넘겨야 적용된다.</li>
-<li><strong>너무 많은 옵션</strong> → 처음엔 <code>zebra</code>·<code>cwidth_opt</code> 정도면 충분하다.</li>
+<li><strong>만들고 안 넘김</strong> → <code>ls_layout</code>을 채워도 <a href="CH17-L07.html">SET_TABLE_FOR_FIRST_DISPLAY</a>의
+<code>is_layout</code>에 <strong>넘겨야</strong> 적용된다. <em>만들었는지</em>와 <em>전달했는지</em>를 따로 확인한다.</li>
+<li><strong>옵션 과다</strong> → 처음엔 <code>zebra</code>·<code>cwidth_opt</code>·<code>grid_title</code>·<code>sel_mode</code> 정도로 충분하다.
+셀 스타일·세부 표시 제어는 후속 챕터로.</li>
+</ul>
+</section><section class="lblock"><h2>정리</h2>
+<ul>
+<li>이 레슨은 <strong>표 전체를 읽기 좋게 만드는 설정</strong>을 다룬다.</li>
+<li><code>LVC_S_LAYO</code>를 채워 <code>is_layout</code>으로 넘긴다 — 채우기와 전달은 별개의 단계다.</li>
 </ul>
 <hr>
-<p>표 모양을 정했다. 사용자가 자기 입맛대로 컬럼을 바꿔 저장하는 <strong>Variant</strong>를 보자 → 다음 레슨.</p>
+<p>표 모양을 정했다. 이제 사용자가 컬럼 배치·필터 상태를 저장하고 다시 불러오는
+<strong>Variant</strong>를 연결하자 → <a href="CH17-L06.html">Variant 기본 설정</a>.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
-      <footer class="foot">SAP Developer Academy · CH17 CH17-L05</footer>
+      <footer class="foot">SAP Developer Academy · 배포자 SAP전문강사 정훈영</footer>
     </main>
     <aside class="journey" data-shell="journey"></aside>
   </div>

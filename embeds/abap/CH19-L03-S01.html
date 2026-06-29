@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<!-- CH19-L03-S01 — 엔진: inline-target-viewer · _autoheight. 콘텐츠=레슨 전용(INTO TABLE @DATA inline target, CH19 L03).
+     config=window.ITV_CFG. 게이팅: CH19=New Open SQL 정식(@DATA·@( )·AS alias). 동적 SELECT list·NEW 동적 target은 범위 밖. -->
+<html lang="ko" data-eng="inline-target-viewer">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SELECT Target Type Viewer · CH19-L03-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/inline-target-viewer.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">SELECT Target Type Viewer <small>(@DATA가 만드는 표)</small></p>
+  <p class="lead"><code>SELECT</code> 목록과 결과 <b>target</b> 선언을 바꿔 보세요. 고른 컬럼에 따라 <code>@DATA( )</code>가 만드는 <b>행 구조</b>가 달라지고, 계산 컬럼엔 <code>AS</code> 별칭이 필요합니다. 표는 항상 <b>standard table · empty key</b>입니다.</p>
+
+  <div class="itv-ctrl">
+    <div class="itv-grp"><span class="clbl">SELECT 목록</span><div class="itv-seg itv-list"></div></div>
+    <div class="itv-grp"><span class="clbl">target 선언</span><div class="itv-seg itv-tgt"></div></div>
+  </div>
+
+  <p class="itv-h">SELECT 코드</p>
+  <div id="itvCode"></div>
+  <p class="itv-h">만들어지는 결과 표</p>
+  <div class="itv-shape" id="itvShape"></div>
+  <div id="itvVerdict"></div>
+
+  <div class="note"><b>단건은 <code>INTO @DATA( )</code>.</b> 한 행만 받을 땐 <code>SELECT SINGLE … INTO @DATA(ls_carr)</code>로 <b>구조체</b>가 만들어집니다. 표가 아니라 행 하나라는 점만 다릅니다.</div>
+</div>
+
+<script>
+window.ITV_CFG = {
+  table: 'sflight',
+  lists: [
+    { v: 'star',   label: '*',              sql: '*',                                         cols: ['carrid', 'connid', 'fldate', 'price', 'seatsmax', 'seatsocc'], alias: 'na' },
+    { v: 'two',    label: 'carrid, connid', sql: 'carrid, connid',                            cols: ['carrid', 'connid'], alias: 'na' },
+    { v: 'calc',   label: '계산(별칭 X)',    sql: 'carrid,\n       seatsmax - seatsocc',         cols: ['carrid', '??? (이름 없음)'], alias: 'missing' },
+    { v: 'calcAs', label: '계산 + AS',       sql: 'carrid,\n       seatsmax - seatsocc AS seats_free', cols: ['carrid', 'seats_free'], alias: 'ok' }
+  ],
+  targets: [
+    { v: 'data2', label: '@DATA( ) 새로',  form: '@DATA(lt_flight)', verdict: 'ok' },
+    { v: 'data1', label: 'DATA( ) 틀림',   form: 'DATA(lt_flight)',  verdict: 'badEscape' },
+    { v: 'exist', label: '@lt_기존 재사용', form: '@lt_flight',       verdict: 'existing' }
+  ]
+};
+</script>
+<script src="../_engine/inline-target-viewer.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

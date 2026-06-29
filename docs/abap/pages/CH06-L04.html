@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH06 · Internal Table</span>
+  <span class="meta">Chapter 6 · Internal Table</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -31,7 +31,7 @@
 <div class="stage">
   <div class="layout">
     <main class="main">
-      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH06</nav>
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 6 › Lesson 4</nav>
       <section class="lhead">
         <p class="lhead__eyebrow">Internal Table</p>
         <h1>다중 행 제어</h1>
@@ -45,27 +45,27 @@
 </section><section class="lblock"><h2>LOOP — 순회와 sy-tabix</h2>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
-3</pre><pre class="abap-editor__code"><code><span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_person <span class="tok-kw">INTO</span> ls_person.
-  <span class="tok-kw">WRITE</span>: / sy-tabix, ls_person-name.   <span class="tok-com">" sy-tabix = 현재 행 번호</span>
+3</pre><pre class="abap-editor__code"><code><span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> gt_person <span class="tok-kw">INTO</span> gs_person.
+  <span class="tok-kw">WRITE</span>: / sy-tabix, gs_person-name.   <span class="tok-com">" sy-tabix = 현재 행 번호</span>
 <span class="tok-kw">ENDLOOP</span>.</code></pre></div></div>
 <p>조건·범위로 일부만 돌 수도 있다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
-3</pre><pre class="abap-editor__code"><code><span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_person <span class="tok-kw">INTO</span> ls_person <span class="tok-kw">WHERE</span> age &gt;= <span class="tok-num">20</span>.
-  <span class="tok-kw">WRITE</span>: / ls_person-name.
+3</pre><pre class="abap-editor__code"><code><span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> gt_person <span class="tok-kw">INTO</span> gs_person <span class="tok-kw">WHERE</span> age &gt;= <span class="tok-num">20</span>.
+  <span class="tok-kw">WRITE</span>: / gs_person-name.
 <span class="tok-kw">ENDLOOP</span>.</code></pre></div></div>
 <p>행 <strong>번호 범위</strong>로 자르려면 <code>FROM n TO m</code>을 쓴다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
-3</pre><pre class="abap-editor__code"><code><span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_person <span class="tok-kw">FROM</span> <span class="tok-num">2</span> <span class="tok-kw">TO</span> <span class="tok-num">5</span> <span class="tok-kw">INTO</span> ls_person.   <span class="tok-com">" 2~5번째 행만</span>
-  <span class="tok-kw">WRITE</span>: / ls_person-name.
+3</pre><pre class="abap-editor__code"><code><span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> gt_person <span class="tok-kw">FROM</span> <span class="tok-num">2</span> <span class="tok-kw">TO</span> <span class="tok-num">5</span> <span class="tok-kw">INTO</span> gs_person.   <span class="tok-com">" 2~5번째 행만</span>
+  <span class="tok-kw">WRITE</span>: / gs_person-name.
 <span class="tok-kw">ENDLOOP</span>.</code></pre></div></div>
-<blockquote>
+<blockquote class="cw">
 <p>⚠️ <code>WHERE</code>를 쓰면 <strong>걸러진 행만</strong> 돌므로, 첫 반복의 <code>sy-tabix</code>가 1이 아닐 수 있다
 (실제 테이블 위치 번호다). &quot;몇 번째로 돌았나&quot;와 &quot;테이블 몇 번 행이냐&quot;는 다르다.</p>
 </blockquote>
 </section><section class="lblock"><h2>복사 없이 직접 고치기 — LOOP ... ASSIGNING <code>&lt;fs&gt;</code></h2>
-<p><code>INTO ls_</code>는 행을 <strong>복사</strong>해 온다. 복사 없이 행을 <strong>직접 가리켜</strong> 그 자리에서
+<p><code>INTO gs_</code>는 행을 <strong>복사</strong>해 온다. 복사 없이 행을 <strong>직접 가리켜</strong> 그 자리에서
 고치려면 <strong>Field Symbol</strong>(필드 심볼, 행을 가리키는 이름표)을 쓴다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
@@ -73,8 +73,8 @@
 4
 5</pre><pre class="abap-editor__code"><code><span class="tok-kw">FIELD-SYMBOLS</span> &lt;fs_person&gt; <span class="tok-kw">TYPE</span> ty_person.
 
-<span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_person <span class="tok-kw">ASSIGNING</span> &lt;fs_person&gt;.
-  &lt;fs_person&gt;age = &lt;fs_person&gt;age + <span class="tok-num">1</span>.   <span class="tok-com">" 테이블 행이 바로 바뀐다(MODIFY 불필요)</span>
+<span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> gt_person <span class="tok-kw">ASSIGNING</span> &lt;fs_person&gt;.
+  &lt;fs_person&gt;-age = &lt;fs_person&gt;-age + <span class="tok-num">1</span>.   <span class="tok-com">" 테이블 행이 바로 바뀐다(MODIFY 불필요)</span>
 <span class="tok-kw">ENDLOOP</span>.</code></pre></div></div>
 <blockquote>
 <p><code>&lt;...&gt;</code>로 감싼 이름이 Field Symbol이다. 가리키는 행을 직접 수정하니 <code>MODIFY</code>가
@@ -82,7 +82,7 @@
 </blockquote>
 </section><section class="lblock"><h2>집계 — COLLECT · 컨트롤레벨</h2>
 <p><code>COLLECT</code>는 <strong>키가 같은 행의 숫자 필드를 자동 합산</strong>한다.</p>
-<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1</pre><pre class="abap-editor__code"><code><span class="tok-kw">COLLECT</span> ls_sales <span class="tok-kw">INTO</span> lt_sales.   <span class="tok-com">" 같은 키면 금액이 누적된다</span></code></pre></div></div>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1</pre><pre class="abap-editor__code"><code><span class="tok-kw">COLLECT</span> gs_sales <span class="tok-kw">INTO</span> gt_sales.   <span class="tok-com">" 같은 키면 금액이 누적된다</span></code></pre></div></div>
 <p>정렬된 테이블을 <strong>그룹 경계</strong>로 처리하려면 컨트롤레벨을 쓴다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
@@ -94,15 +94,15 @@
 8
 9
 10
-11</pre><pre class="abap-editor__code"><code><span class="tok-kw">SORT</span> lt_sales <span class="tok-kw">BY</span> region.
-<span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_sales <span class="tok-kw">INTO</span> ls_sales.
+11</pre><pre class="abap-editor__code"><code><span class="tok-kw">SORT</span> gt_sales <span class="tok-kw">BY</span> region.
+<span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> gt_sales <span class="tok-kw">INTO</span> gs_sales.
   <span class="tok-kw">AT</span> <span class="tok-kw">NEW</span> region.        <span class="tok-com">" region이 바뀌는 첫 행</span>
-    <span class="tok-kw">WRITE</span>: / <span class="tok-str">'지역:'</span>, ls_sales-region.
+    <span class="tok-kw">WRITE</span>: / <span class="tok-str">'지역:'</span>, gs_sales-region.
   <span class="tok-kw">ENDAT</span>.
-  <span class="tok-kw">WRITE</span>: / ls_sales-amount.
+  <span class="tok-kw">WRITE</span>: / gs_sales-amount.
   <span class="tok-kw">AT</span> <span class="tok-kw">END</span> <span class="tok-kw">OF</span> region.     <span class="tok-com">" region의 마지막 행</span>
-    <span class="tok-kw">SUM</span>.                <span class="tok-com">" 그 그룹 합계가 ls_sales에 들어온다</span>
-    <span class="tok-kw">WRITE</span>: / <span class="tok-str">'소계:'</span>, ls_sales-amount.
+    <span class="tok-kw">SUM</span>.                <span class="tok-com">" 그 그룹 합계가 gs_sales에 들어온다</span>
+    <span class="tok-kw">WRITE</span>: / <span class="tok-str">'소계:'</span>, gs_sales-amount.
   <span class="tok-kw">ENDAT</span>.
 <span class="tok-kw">ENDLOOP</span>.</code></pre></div></div>
 <ul>
@@ -116,13 +116,13 @@
 4
 5
 6
-7</pre><pre class="abap-editor__code"><code><span class="tok-kw">SORT</span> lt_person <span class="tok-kw">BY</span> name.
-<span class="tok-kw">DELETE</span> <span class="tok-kw">ADJACENT</span> <span class="tok-kw">DUPLICATES</span> <span class="tok-kw">FROM</span> lt_person <span class="tok-kw">COMPARING</span> name.  <span class="tok-com">" 인접 중복 제거</span>
+7</pre><pre class="abap-editor__code"><code><span class="tok-kw">SORT</span> gt_person <span class="tok-kw">BY</span> name.
+<span class="tok-kw">DELETE</span> <span class="tok-kw">ADJACENT</span> <span class="tok-kw">DUPLICATES</span> <span class="tok-kw">FROM</span> gt_person <span class="tok-kw">COMPARING</span> name.  <span class="tok-com">" 인접 중복 제거</span>
 
-<span class="tok-kw">DATA</span> lv_cnt <span class="tok-kw">TYPE</span> i.
-<span class="tok-kw">DESCRIBE</span> <span class="tok-kw">TABLE</span> lt_person <span class="tok-kw">LINES</span> lv_cnt.   <span class="tok-com">" 행 수(= lines( ))</span>
+<span class="tok-kw">DATA</span> gv_cnt <span class="tok-kw">TYPE</span> i.
+<span class="tok-kw">DESCRIBE</span> <span class="tok-kw">TABLE</span> gt_person <span class="tok-kw">LINES</span> gv_cnt.   <span class="tok-com">" 행 수(= lines( ))</span>
 
-<span class="tok-kw">APPEND</span> <span class="tok-kw">LINES</span> <span class="tok-kw">OF</span> lt_a <span class="tok-kw">TO</span> lt_b.            <span class="tok-com">" 테이블을 통째로 이어 붙이기</span></code></pre></div></div>
+<span class="tok-kw">APPEND</span> <span class="tok-kw">LINES</span> <span class="tok-kw">OF</span> gt_a <span class="tok-kw">TO</span> gt_b.            <span class="tok-com">" 테이블을 통째로 이어 붙이기</span></code></pre></div></div>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
 <li><strong>DELETE ADJACENT DUPLICATES 전에 SORT 안 함</strong> → &quot;인접&quot;만 보므로 정렬이 선행.</li>
@@ -135,7 +135,7 @@
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
-      <footer class="foot">SAP Developer Academy · CH06 CH06-L04</footer>
+      <footer class="foot">SAP Developer Academy · 배포자 SAP전문강사 정훈영</footer>
     </main>
     <aside class="journey" data-shell="journey"></aside>
   </div>

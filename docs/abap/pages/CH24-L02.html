@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH24 · 실무 데이터 변경과 트랜잭션 제어</span>
+  <span class="meta">Chapter 24 · 실무 데이터 변경과 트랜잭션 제어</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -31,7 +31,7 @@
 <div class="stage">
   <div class="layout">
     <main class="main">
-      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH24</nav>
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 24 › Lesson 2</nav>
       <section class="lhead">
         <p class="lhead__eyebrow">실무 데이터 변경과 트랜잭션 제어</p>
         <h1>COMMIT WORK / ROLLBACK WORK</h1>
@@ -50,14 +50,29 @@
 5
 6
 7
-8</pre><pre class="abap-editor__code"><code><span class="tok-kw">INSERT</span> zbooking      <span class="tok-kw">FROM</span> @ls_booking.      <span class="tok-com">" 헤더(예매 1건)</span>
-<span class="tok-kw">INSERT</span> zbooking_item <span class="tok-kw">FROM</span> <span class="tok-kw">TABLE</span> @lt_items.  <span class="tok-com">" 항목(좌석 2석)</span>
+8
+9
+10
+11
+12
+13</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> lv_failed <span class="tok-kw">TYPE</span> abap_bool.
 
-<span class="tok-kw">IF</span> sy-subrc = <span class="tok-num">0</span>.
-  <span class="tok-kw">COMMIT</span> <span class="tok-kw">WORK</span>.        <span class="tok-com">" 둘 다 확정</span>
+<span class="tok-kw">INSERT</span> zbooking <span class="tok-kw">FROM</span> @ls_booking.            <span class="tok-com">" 헤더(예매 1건)</span>
+<span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>. lv_failed = abap_true. <span class="tok-kw">ENDIF</span>.
+
+<span class="tok-kw">INSERT</span> zbooking_item <span class="tok-kw">FROM</span> <span class="tok-kw">TABLE</span> @lt_items.   <span class="tok-com">" 항목(좌석 2석)</span>
+<span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>. lv_failed = abap_true. <span class="tok-kw">ENDIF</span>.
+
+<span class="tok-kw">IF</span> lv_failed = abap_false.
+  <span class="tok-kw">COMMIT</span> <span class="tok-kw">WORK</span>.        <span class="tok-com">" 둘 다 성공했을 때만 확정</span>
 <span class="tok-kw">ELSE</span>.
-  <span class="tok-kw">ROLLBACK</span> <span class="tok-kw">WORK</span>.      <span class="tok-com">" 둘 다 취소 — 반쪽 저장 방지</span>
+  <span class="tok-kw">ROLLBACK</span> <span class="tok-kw">WORK</span>.      <span class="tok-com">" 하나라도 실패하면 둘 다 취소 — 반쪽 저장 방지</span>
 <span class="tok-kw">ENDIF</span>.</code></pre></div></div>
+<blockquote>
+<p><strong>마지막 한 줄만 보면 안 된다.</strong> 두 <code>INSERT</code> 뒤에 <code>IF sy-subrc = 0</code>을 한 번만 쓰면 <em>두 번째</em> 문장만
+보게 되어 첫 <code>INSERT</code> 실패를 놓친다. <code>COMMIT WORK</code>는 &quot;마지막 문장이 성공&quot;이 아니라 **&quot;업무 단위 전체가
+성공&quot;**일 때만 호출한다 — 그래서 문장마다 결과를 누적한다.</p>
+</blockquote>
 </section><section class="lblock"><h2>왜 중요한가 — 전부 아니면 전무 (원자성)</h2>
 <p>예매 한 건은 보통 <strong>헤더(누가·언제)+항목(어느 좌석)</strong> 여러 행으로 나뉜다. 만약 &quot;헤더는
 저장됐는데 항목 저장은 실패&quot;한다면? <strong>예매는 있는데 좌석이 없는</strong> 깨진 데이터가 남는다.
@@ -77,8 +92,10 @@
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
 <li><strong>COMMIT 누락</strong> → 변경이 확정 안 돼 사라진다. 작업 끝에 확정 책임을 분명히.</li>
-<li><strong>실패 무시 후 COMMIT</strong> → 반쪽 저장. 반드시 <code>sy-subrc</code>를 보고 실패면 <code>ROLLBACK</code>.</li>
+<li><strong>실패 무시 후 COMMIT</strong> → 반쪽 저장. <code>sy-subrc=4</code>인 <code>UPDATE</code>는 dump가 아니라 <em>조용히 지나가니</em>, 반드시
+결과를 보고 실패면 <code>ROLLBACK</code>. &quot;조용히 지나감&quot;은 성공이 아니다.</li>
 <li><strong>남발하는 COMMIT</strong> → 논리 단위를 쪼개지 말 것.</li>
+<li><strong>DB cursor 중간에 COMMIT/ROLLBACK</strong> → <code>ROLLBACK WORK</code>는 열린 database cursor를 닫을 수 있다. <code>SELECT … ENDSELECT</code> 같은 긴 cursor 흐름 중간에 <button class="term" type="button" data-term="트랜잭션">트랜잭션</button> 제어를 넣는 습관은 피한다.</li>
 </ul>
 </section><section class="lblock"><h2>정리</h2>
 <ul>
@@ -92,7 +109,7 @@
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
-      <footer class="foot">SAP Developer Academy · CH24 CH24-L02</footer>
+      <footer class="foot">SAP Developer Academy · 배포자 SAP전문강사 정훈영</footer>
     </main>
     <aside class="journey" data-shell="journey"></aside>
   </div>

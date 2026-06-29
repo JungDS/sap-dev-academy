@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<!-- CH13-L02-S01 — 엔진: outer-join-switch · _autoheight. 콘텐츠=레슨 전용(INNER↔LEFT OUTER·WHERE 함정, CH13 L02).
+     config=window.OJS_CFG. 게이팅: classic LEFT OUTER JOIN·ON·WHERE 개념만 · modern/comma/host marker·IS NULL 코드 없음. -->
+<html lang="ko" data-eng="outer-join-switch">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LEFT 보존 스위치 · CH13-L02-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/outer-join-switch.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">LEFT 보존 스위치 <small>(INNER ↔ LEFT · WHERE 함정)</small></p>
+  <p class="lead">공연(zconcert) 기준으로 예매(zbooking)를 붙입니다. <b>INNER</b>는 예매 있는 공연만, <b>LEFT OUTER</b>는 예매 없는 <code>C003</code>도 남깁니다. 오른쪽 필드를 <code>WHERE</code>에 걸면 어떻게 되는지도 보세요.</p>
+
+  <div class="ojs-ctrl">
+    <span class="ojs-seg">
+      <button type="button" data-mode="INNER">INNER JOIN</button>
+      <button type="button" data-mode="LEFT" aria-pressed="true">LEFT OUTER JOIN</button>
+    </span>
+    <button type="button" class="ojs-where" data-where aria-pressed="false"><span class="box"></span> WHERE b~status = 'N'</button>
+  </div>
+
+  <div class="ojs-sql">
+    <div class="ojs-sql__hd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span><span style="margin-left:auto">classic</span></div>
+    <pre id="ojsSql"></pre>
+  </div>
+
+  <table class="ojs-tbl">
+    <thead><tr><th>concert_id</th><th>artist</th><th>booking_id</th><th>seats</th><th>판정</th></tr></thead>
+    <tbody id="ojsBody"></tbody>
+  </table>
+
+  <div class="ojs-check" id="ojsCheck"></div>
+
+  <div class="note"><b>JOIN 종류는 업무로 고른다.</b> "0건도 보여야 하는 기준 목록"을 왼쪽(FROM)에 두고 LEFT OUTER. 단 <b>오른쪽 필드를 WHERE에 걸면</b> 매칭 없는 행의 초기값이 걸러져, LEFT라도 기준 행이 빠질 수 있습니다 — 오른쪽 조건은 <code>ON</code>에 두는 게 안전합니다.</div>
+</div>
+
+<script>
+window.OJS_CFG = {
+  whereField: 'status', whereVal: 'N',
+  concerts: [
+    { concert_id: 'C001', artist: '안유진' },
+    { concert_id: 'C002', artist: '신유빈' },
+    { concert_id: 'C003', artist: '전지현' }
+  ],
+  bookings: [
+    { booking_id: 5001, concert_id: 'C001', seats: 2, status: 'N' },
+    { booking_id: 5002, concert_id: 'C002', seats: 1, status: 'C' },
+    { booking_id: 5003, concert_id: 'C001', seats: 4, status: 'N' }
+  ]
+};
+</script>
+<script src="../_engine/outer-join-switch.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

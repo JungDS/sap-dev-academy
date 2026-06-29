@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH19 · New Open SQL / Modern ABAP SQL</span>
+  <span class="meta">Chapter 19 · New Open SQL / Modern ABAP SQL</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -31,21 +31,20 @@
 <div class="stage">
   <div class="layout">
     <main class="main">
-      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH19</nav>
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 19 › Lesson 1</nav>
       <section class="lhead">
         <p class="lhead__eyebrow">New Open SQL / Modern ABAP SQL</p>
         <h1>Classic Open SQL과 Modern ABAP SQL 비교</h1>
-        <p class="lhead__direction">같은 조회를 classic과 modern으로 — 무엇이 달라졌나.</p>
+        <p class="lhead__direction">같은 조회를 classic과 modern으로 — 무엇이, 왜 달라졌나.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 19</span><span class="tag tag--ls">Lesson 1</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>SELECT만 아직 옛날식이었다</h2>
-<p>CH18에서 ABAP 코드를 모던으로 바꿨지만, <strong>SELECT(Open SQL)</strong> 만은 일부러 classic으로
-뒀다(공백 구분·<code>@</code> 없음). 이제 그 경계를 넘는다 — <strong>Modern ABAP SQL</strong>이다.</p>
+<section class="lblock"><h2>SELECT만 아직 옛날식이었다 🕰️</h2>
+<p><a href="CH18-L01.html">지난 챕터</a>에서 ABAP 코드는 모던으로 바꿨지만, <strong><code>SELECT</code>(Open SQL)</strong> 만은 일부러 classic으로 뒀다(공백 구분·<code>@</code> 없음). 이유가 있다 — SQL의 모던화는 단순한 축약이 아니라, <strong>ABAP 프로그램과 데이터베이스 사이의 경계를 다시 긋는</strong> 일이기 때문이다. 이제 그 경계를 연다. 이것이 <strong>Modern ABAP SQL</strong>이다.</p>
 <blockquote>
-<p>📌 <strong>★ 여기부터 modern SQL</strong>(<code>@</code>·콤마·SQL 식)을 쓴다. CH18까지의 SELECT는 classic이었다.</p>
+<p>📌 <strong>★ 여기부터 modern SQL</strong>(<code>@</code>·콤마·SQL 식)을 쓴다. 이전 챕터까지의 <code>SELECT</code>는 전부 classic이었다.</p>
 </blockquote>
-</section><section class="lblock"><h2>한눈에 비교</h2>
+</section><section class="lblock"><h2>한눈에 비교 👀</h2>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -56,37 +55,79 @@
 8
 9
 10
-11</pre><pre class="abap-editor__code"><code><span class="tok-com">" --- classic (CH08~13) ---</span>
+11</pre><pre class="abap-editor__code"><code><span class="tok-com">" classic — 지금까지 쓰던 형태</span>
 <span class="tok-kw">SELECT</span> carrid connid seatsmax
   <span class="tok-kw">FROM</span> sflight
   <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> lt_flight
   <span class="tok-kw">WHERE</span> carrid = lv_carr.
 
-<span class="tok-com">" --- modern (CH19~) ---</span>
+<span class="tok-com">" modern — 이 챕터부터</span>
 <span class="tok-kw">SELECT</span> carrid, connid, seatsmax       <span class="tok-com">" 콤마로 필드 구분</span>
   <span class="tok-kw">FROM</span> sflight
-  <span class="tok-kw">WHERE</span> carrid = @lv_carr             <span class="tok-com">" @ 로 ABAP 변수 escape</span>
-  <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> @lt_flight.              <span class="tok-com">" 대상도 @</span></code></pre></div></div>
-<p>핵심 변화 셋:</p>
+  <span class="tok-kw">WHERE</span> carrid = @lv_carr             <span class="tok-com">" @ 로 ABAP 변수 표시</span>
+  <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> @lt_flight.              <span class="tok-com">" 대상도 @ · INTO는 맨 뒤</span></code></pre></div></div>
+<p>달라진 점은 <strong>셋</strong>이다.</p>
 <ul>
-<li><strong>콤마</strong>로 필드를 구분(공백 ✕).</li>
-<li>ABAP 변수·대상 앞에 <strong><code>@</code></strong>(host variable escape).</li>
-<li>더 엄격한 문법 검사(<strong>strict 모드</strong>) — 실수를 컴파일 단계에서 잡아 준다.</li>
+<li><strong>콤마</strong>로 필드를 구분한다(공백 ✕).</li>
+<li>ABAP 변수·대상 앞에 <strong><code>@</code></strong>(host variable, &quot;이건 ABAP 값&quot;이라는 표시)를 붙인다.</li>
+<li><strong><code>INTO</code>를 문장 맨 뒤</strong>에 둔다 → <code>SELECT list → FROM → WHERE → INTO</code> 순으로 읽힌다.</li>
 </ul>
-</section><section class="lblock"><h2>왜 바뀌었나</h2>
-<p><code>@</code>로 &quot;이건 DB 컬럼이 아니라 ABAP 변수&quot;임을 분명히 해, DB 코드와 ABAP 코드의 경계를
-또렷이 한다. 가독성과 안전성이 올라간다.</p>
-</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+</section><section class="lblock"><h2>어느 이름이 DB 것이고, 어느 게 ABAP 것인가 🧭</h2>
+<p>modern SQL의 핵심은 멋이 아니라 <strong>경계 표시</strong>다. DB 테이블의 컬럼은 그냥 쓰고, ABAP 프로그램의 값은 <code>@</code>로 표시(escape)한다.</p>
+<table>
+<thead>
+<tr>
+<th>이름</th>
+<th>정체</th>
+<th>예</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>carrid</code></td>
+<td>DB 테이블 <code>sflight</code>의 <strong>컬럼</strong></td>
+<td><code>SELECT carrid</code></td>
+</tr>
+<tr>
+<td><code>@lv_carr</code></td>
+<td>ABAP 프로그램의 <strong>변수 값</strong></td>
+<td><code>WHERE carrid = @lv_carr</code></td>
+</tr>
+<tr>
+<td><code>@lt_flight</code></td>
+<td>ABAP 프로그램의 <strong>결과 내부 테이블</strong></td>
+<td><code>INTO TABLE @lt_flight</code></td>
+</tr>
+<tr>
+<td><code>carrid, connid</code></td>
+<td><strong>콤마</strong>로 구분한 SELECT list</td>
+<td><code>SELECT carrid, connid</code></td>
+</tr>
+</tbody></table>
+<p>공식 문서 기준으로 <strong>공백으로 필드를 나열하는 옛 방식은 obsolete</strong>(낡은 것) 쪽으로 밀려 있고, 콤마 리스트와 <code>@</code>는 <strong>strict 모드</strong>(더 엄격한 문법 검사)를 켠다. strict 모드는 애매한 SQL을 <strong>컴파일 단계에서</strong> 더 빨리 잡아 준다.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">Classic → Modern SQL Converter (콤마·@·INTO 단계 변환)</span><a class="embed__open" href="../../../embeds/abap/CH19-L01-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH19-L01-S01.html" loading="lazy" title="Classic → Modern SQL Converter (콤마·@·INTO 단계 변환)"></iframe></figure>
+</section><section class="lblock"><h2>결과는 그대로 — 확인 습관도 그대로 ✅</h2>
+<p>표기가 모던으로 바뀌어도 <strong>읽어 오는 데이터는 똑같다.</strong> 실행 뒤 보는 곳도 classic 때와 같다.</p>
+<ol>
+<li>결과 내부 테이블에 <strong>몇 행</strong>이 들어왔나.</li>
+<li><code>sy-subrc</code>가 <code>0</code>인가 <code>4</code>인가(찾았나 / 못 찾았나).</li>
+<li><code>sy-dbcnt</code>가 실제 전달된 행 수와 같은가.</li>
+</ol>
+<p>예를 들어 <code>lv_carr = &#39;LH&#39;</code>이고 데이터가 있으면 <code>sy-subrc = 0</code>, <code>sy-dbcnt &gt; 0</code>. 없는 코드(<code>&#39;ZZ&#39;</code>)라면 테이블은 비고 <code>sy-subrc = 4</code>, <code>sy-dbcnt = 0</code>이다. 이 관찰 지점은 <strong>이 챕터 내내 그대로</strong> 유지된다.</p>
+</section><section class="lblock"><h2>흔한 실수와 점검 🚧</h2>
 <ul>
-<li><strong>@ 빠뜨림</strong> → modern SQL에서 ABAP 변수엔 <code>@</code>가 필수. 없으면 오류.</li>
-<li><strong>공백 구분 잔재</strong> → modern은 필드를 콤마로. 섞으면 오류.</li>
+<li><strong>콤마와 공백을 섞음</strong> → <code>SELECT carrid connid, seatsmax</code>처럼 섞으면 오류. 모던으로 갈 거면 <strong>일관되게 콤마</strong>.</li>
+<li><strong>DB 컬럼에 <code>@</code>를 붙임</strong> → <code>@</code>는 <em>ABAP 값/대상</em>에만. <code>carrid</code>는 DB 컬럼이라 그냥 쓴다.</li>
+<li><strong><code>@</code> 빠뜨림</strong> → modern SQL에서 ABAP 변수엔 <code>@</code>가 필수. 없으면 오류.</li>
+<li><strong><code>INTO</code>를 중간에 둠</strong> → 마지막 clause로 두는 습관을 처음부터. strict 모드에선 강제되는 경우가 있다.</li>
+<li><strong>무심한 <code>SELECT *</code></strong> → 필요한 컬럼만 읽는 원칙은 모던에서도 그대로다.</li>
 </ul>
 <hr>
-<p>큰 그림을 봤다. 이제 <code>@</code>의 정체 — host variable과 host expression을 보자 → 다음 레슨.</p>
+<p>큰 그림을 봤다. 이제 그 <code>@</code>의 정체 — <strong>host variable</strong>과 한 걸음 더 나아간 <strong>host expression</strong>을 보자 →
+<a href="CH19-L02.html">@ Host Variable과 Host Expression</a>.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
-      <footer class="foot">SAP Developer Academy · CH19 CH19-L01</footer>
+      <footer class="foot">SAP Developer Academy · 배포자 SAP전문강사 정훈영</footer>
     </main>
     <aside class="journey" data-shell="journey"></aside>
   </div>

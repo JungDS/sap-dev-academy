@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH26 · OO ABAP 고급 설계와 패턴</span>
+  <span class="meta">Chapter 26 · OO ABAP 고급 설계와 패턴</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -31,7 +31,7 @@
 <div class="stage">
   <div class="layout">
     <main class="main">
-      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH26</nav>
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 26 › Lesson 4</nav>
       <section class="lhead">
         <p class="lhead__eyebrow">OO ABAP 고급 설계와 패턴</p>
         <h1>MVC 기반 Report 구조화</h1>
@@ -40,63 +40,147 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>한 프로그램에 다 섞으면</h2>
-<p>조회·계산·화면·<button class="term" type="button" data-term="이벤트">이벤트</button>가 한 리포트에 뒤섞이면 유지보수가 지옥이다. <strong>MVC</strong>로 역할을
-나눈다.</p>
+<p>전통적인 ABAP Report는 빠르다. <code>PARAMETERS</code> → <code>SELECT</code> → 계산 → 표시(<code>WRITE</code>나 ALV)를
+한 파일에 순서대로 적으면 끝이다. <strong>작은 보고서엔 이게 가장 실용적</strong>이다. 문제는 보고서가
+커질 때다.</p>
+<p>예매 현황 리포트에 기능이 하나씩 붙는다고 해 보자.</p>
+<ul>
+<li>공연별 조회 조건, 잔여석 계산</li>
+<li>취소/확정 상태별 색상</li>
+<li>더블클릭 상세, 엑셀 다운로드, 권한별 버튼</li>
+</ul>
+<p>조회 SQL·계산·화면·<button class="term" type="button" data-term="이벤트">이벤트</button>·메시지가 <strong>한 report에 뒤엉키면</strong> 고칠 때 영향 범위를 알 수 없다.
+<em>화면만 바꾸려는데 계산이 깨지고, 계산만 바꾸려는데 이벤트가 깨진다.</em> <strong>MVC</strong>(Model·View·
+Controller — 데이터/로직·표시·흐름을 나누는 구조)는 이 섞임을 푸는 방법이다.</p>
+</section><section class="lblock"><h2>세 역할로 나누기</h2>
 <table>
 <thead>
 <tr>
 <th>계층</th>
-<th>역할</th>
-<th>예</th>
+<th>책임</th>
+<th>ABAP 예</th>
 </tr>
 </thead>
 <tbody><tr>
 <td><strong>Model</strong></td>
-<td>데이터·업무 로직</td>
-<td><code>ZCL_BOOKING_MODEL</code>(조회·계산)</td>
+<td>데이터 조회·업무 계산</td>
+<td><code>get_bookings( )</code>·<code>remaining( )</code></td>
 </tr>
 <tr>
 <td><strong>View</strong></td>
-<td>표시</td>
-<td>ALV/Dynpro 출력</td>
+<td>화면 표시</td>
+<td>ALV display·list 출력·화면 필드 갱신</td>
 </tr>
 <tr>
 <td><strong>Controller</strong></td>
 <td>흐름 조율</td>
-<td>이벤트 받아 Model 호출 → View 갱신</td>
+<td>조건 수집 → Model 호출 → View 갱신</td>
 </tr>
 </tbody></table>
+<p>각 역할을 class로 잡으면 이렇게 된다(뼈대만).</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
-4</pre><pre class="abap-editor__code"><code><span class="tok-com">" Controller가 조율</span>
-<span class="tok-kw">DATA</span>(lo_model) = <span class="tok-kw">NEW</span> zcl_booking_model( iv_concert = p_concert ).
-<span class="tok-kw">DATA</span>(lt) = lo_model-&gt;get_bookings( ).
-mo_view-&gt;display( lt ).</code></pre></div></div>
-<ul>
-<li>화면을 바꿔도 Model은 그대로, 로직을 바꿔도 View는 그대로.</li>
-<li>테스트도 Model만 떼어 검증 가능(다음 레슨).</li>
-</ul>
-</section><section class="lblock"><h2>한 계층을 바꾸면 어디까지 영향이 갈까</h2>
-<p>시나리오를 골라, 한 계층을 바꿀 때 <strong>나머지가 그대로</strong>인지 직접 확인해 보라 — 이게 역할을
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15</pre><pre class="abap-editor__code"><code><span class="tok-kw">CLASS</span> zcl_booking_model <span class="tok-kw">DEFINITION</span>.
+  <span class="tok-kw">PUBLIC</span> <span class="tok-kw">SECTION</span>.
+    <span class="tok-kw">METHODS</span> constructor
+      <span class="tok-kw">IMPORTING</span> iv_concert <span class="tok-kw">TYPE</span> zconcert_id.
+    <span class="tok-kw">METHODS</span> get_bookings
+      <span class="tok-kw">RETURNING</span> <span class="tok-kw">VALUE</span>(rt_bookings) <span class="tok-kw">TYPE</span> ztt_booking.
+  <span class="tok-kw">PRIVATE</span> <span class="tok-kw">SECTION</span>.
+    <span class="tok-kw">DATA</span> mv_concert <span class="tok-kw">TYPE</span> zconcert_id.
+<span class="tok-kw">ENDCLASS</span>.
+
+<span class="tok-kw">CLASS</span> zcl_booking_view <span class="tok-kw">DEFINITION</span>.
+  <span class="tok-kw">PUBLIC</span> <span class="tok-kw">SECTION</span>.
+    <span class="tok-kw">METHODS</span> display
+      <span class="tok-kw">IMPORTING</span> it_bookings <span class="tok-kw">TYPE</span> ztt_booking.
+<span class="tok-kw">ENDCLASS</span>.</code></pre></div></div>
+<p>흐름은 <strong>Controller</strong>가 조율한다 — Model로 데이터를 얻어 View에 넘길 뿐이다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7</pre><pre class="abap-editor__code"><code><span class="tok-kw">METHOD</span> run.
+  <span class="tok-kw">DATA</span>(lo_model) = <span class="tok-kw">NEW</span> zcl_booking_model( iv_concert = p_concert ).
+  <span class="tok-kw">DATA</span>(lt_bookings) = lo_model-&gt;get_bookings( ).
+
+  <span class="tok-kw">DATA</span>(lo_view) = <span class="tok-kw">NEW</span> zcl_booking_view( ).
+  lo_view-&gt;display( it_bookings = lt_bookings ).
+<span class="tok-kw">ENDMETHOD</span>.</code></pre></div></div>
+<p>중요한 건 class <strong>이름</strong>이 아니다. <em>&quot;조회·계산은 Model, 표시는 View, 실행 순서는
+Controller&quot;</em> 라는 <strong>책임 분리</strong>다.</p>
+</section><section class="lblock"><h2>한 계층을 바꾸면 어디까지?</h2>
+<p>MVC가 잘 됐는지는 <strong>변경 시나리오</strong>로 확인한다. 한 가지를 바꿀 때 <em>바뀌어야 하는 곳</em>은
+분명하고, <em>나머지는 그대로</em>여야 한다.</p>
+<table>
+<thead>
+<tr>
+<th>변경 요구</th>
+<th>바뀌어야 하는 곳</th>
+<th>여기까지 바뀌면 = 분리 깨짐 신호</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ALV → list 출력</td>
+<td>View</td>
+<td>Model SQL</td>
+</tr>
+<tr>
+<td>잔여석 계산식 변경</td>
+<td>Model</td>
+<td>View 표시 코드</td>
+</tr>
+<tr>
+<td>버튼 클릭 시 재조회</td>
+<td>Controller</td>
+<td>Model 계산식</td>
+</tr>
+</tbody></table>
+<p>아래에서 한 계층을 바꿔 보고, <strong>나머지가 그대로</strong>인지 직접 확인해 보라 — 이게 역할을
 나누는 진짜 이유다.</p>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">MVC 영향 범위 시각화</span><a class="embed__open" href="../../../embeds/abap/CH26-L04-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH26-L04-S01.html" loading="lazy" title="MVC 영향 범위 시각화" style="height:540px"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>Model에 화면 코드</strong> → 표시 관심사는 View로. Model은 <strong>순수 로직</strong>(화면을 몰라야).</li>
-<li><strong>과분리</strong> → 작은 리포트까지 3계층은 과할 수 있다. <strong>규모에 맞게</strong>.</li>
+<li><strong>Model에 화면 코드</strong> → Model이 ALV field catalog·색상·메시지를 알기 시작하면 View와 다시
+붙는다. Model은 <strong>순수한 데이터·업무 규칙</strong>만 돌려준다.</li>
+<li><strong>View에서 DB 조회</strong> → View가 표시 중에 <code>SELECT</code>를 또 하면 <em>&quot;화면만 바꿨는데 조회 결과가
+달라지는&quot;</em> 이상한 구조가 된다. 조회는 Model 몫.</li>
+<li><strong>Controller가 다 앎</strong> → Controller가 계산 세부까지 들고 있으면 Model이 텅 빈다. Controller는
+실행 <strong>순서만</strong> 조율한다.</li>
+<li><strong>과분리</strong> → 30줄짜리 일회성 리포트에 class 3개는 구조화가 아니라 의식(ritual)이 된다.
+기준은 <em>&quot;변경이 예상되는가 · 테스트가 필요한가 · 화면/로직이 섞여 고통이 생겼는가.&quot;</em></li>
 </ul>
+<blockquote>
+<p>🔍 <strong>코드 리뷰 체크</strong> — ① Model 안에 <code>WRITE</code>·ALV display가 있나 ② View가 직접 <code>SELECT</code>
+하나 ③ Controller가 계산 세부를 너무 아나 ④ <strong>Model만 떼어 테스트</strong>할 수 있나.</p>
+</blockquote>
 </section><section class="lblock"><h2>정리</h2>
 <ul>
 <li><strong>Model</strong>(로직)·<strong>View</strong>(표시)·<strong>Controller</strong>(흐름)로 관심사를 나눈다.</li>
-<li>한 계층 변경이 나머지에 안 번진다 → 유지보수·테스트가 쉬워진다.</li>
+<li>변경 요구별로 <strong>수정 범위가 예측 가능</strong>해지는 게 핵심 — 한 계층 변경이 나머지로 안 번진다.</li>
+<li>Model에 화면, View에 DB 조회가 들어가면 분리가 깨진다. 작은 리포트엔 과분리 주의.</li>
 </ul>
 <hr>
-<p>구조를 나눴다. 그 덕에 <strong>테스트 가능한</strong> 설계가 가능해진다 → 다음 레슨.</p>
+<p>구조를 나눈 덕에 <strong>Model만 떼어 테스트</strong>할 수 있다 →
+<a href="CH26-L05.html">Testable Class 설계와 ABAP Unit</a>(다음 레슨).</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
-      <footer class="foot">SAP Developer Academy · CH26 CH26-L04</footer>
+      <footer class="foot">SAP Developer Academy · 배포자 SAP전문강사 정훈영</footer>
     </main>
     <aside class="journey" data-shell="journey"></aside>
   </div>

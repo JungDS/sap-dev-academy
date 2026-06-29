@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<!-- CH17-L03-S01 — 엔진: alv-data-query · _autoheight. 콘텐츠=레슨 전용(ALV 출력용 lt_booking SELECT, CH17 L03).
+     config=window.ADQ_CFG. 게이팅: classic SELECT INTO TABLE WHERE·sy-subrc/sy-dbcnt·빈테이블 개념만 · modern Open SQL(@/콤마)은 CH19. -->
+<html lang="ko" data-eng="alv-data-query">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>공연별 데이터 준비 · CH17-L03-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/alv-data-query.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">공연별 데이터 준비 <small>(SELECT INTO TABLE)</small></p>
+  <p class="lead">시나리오를 골라 <code>lt_booking</code>을 채워 보세요. <b>C001</b>은 결과가 있고, <b>C999</b>는 0건(<code>sy-subrc=4</code>), <b>조건 없이</b> 조회하면 전체가 들어옵니다. <code>sy-subrc</code>·<code>sy-dbcnt</code>·행 수가 어떻게 달라지는지 보세요.</p>
+
+  <p class="adq-h">조회 시나리오</p>
+  <div class="adq-scen"></div>
+
+  <p class="adq-h">조회 직후 시스템 필드</p>
+  <div id="adqResult"></div>
+
+  <div id="adqGrid"></div>
+
+  <div id="adqMsg"></div>
+
+  <div class="note"><b>빈 표 ≠ 오류.</b> 존재하지 않는 공연을 조회하면 빈 <code>lt_booking</code>이 <b>정상 결과</b>입니다. <code>sy-subrc</code>·<code>sy-dbcnt</code>·메시지를 함께 봐야 빈 그리드가 기술 오류인지 "결과 없음"인지 구분됩니다.</div>
+</div>
+
+<script>
+window.ADQ_CFG = {
+  cols: [
+    { key: 'booking_id', label: 'BOOKING_ID' },
+    { key: 'customer', label: 'CUSTOMER' },
+    { key: 'seats', label: 'SEATS' },
+    { key: 'status', label: 'STATUS' }
+  ],
+  rows: [
+    { concert_id: 'C001', booking_id: 5001, customer: '정훈영', seats: 2, status: 'N' },
+    { concert_id: 'C001', booking_id: 5002, customer: '손흥민', seats: 4, status: 'N' },
+    { concert_id: 'C001', booking_id: 5003, customer: '아이유', seats: 3, status: 'N' },
+    { concert_id: 'C001', booking_id: 5004, customer: '차은우', seats: 5, status: 'N' },
+    { concert_id: 'C002', booking_id: 5005, customer: '김연아', seats: 2, status: 'N' },
+    { concert_id: 'C002', booking_id: 5006, customer: '안유진', seats: 1, status: 'N' }
+  ],
+  scenarios: [
+    { key: 'C001', label: 'C001 조회', conc: 'C001' },
+    { key: 'C999', label: 'C999 조회', conc: 'C999' },
+    { key: 'all',  label: '조건 없이 조회', conc: '*' }
+  ]
+};
+</script>
+<script src="../_engine/alv-data-query.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

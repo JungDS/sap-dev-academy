@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH12 · SELECT-OPTIONS와 Range Table</span>
+  <span class="meta">Chapter 12 · SELECT-OPTIONS와 Range Table</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -31,53 +31,130 @@
 <div class="stage">
   <div class="layout">
     <main class="main">
-      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH12</nav>
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 12 › Lesson 3</nav>
       <section class="lhead">
         <p class="lhead__eyebrow">SELECT-OPTIONS와 Range Table</p>
         <h1>WHERE … IN (classic range)</h1>
-        <p class="lhead__direction">Range Table을 조회 조건으로 — classic WHERE … IN.</p>
+        <p class="lhead__direction">Range Table을 조회 조건으로 — classic WHERE … IN과 sy-subrc·sy-dbcnt.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 12</span><span class="tag tag--ls">Lesson 3</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>범위를 조회에 꽂기</h2>
-<p><button class="term" type="button" data-term="SELECT-OPTIONS">SELECT-OPTIONS</button>가 채운 <button class="term" type="button" data-term="Range Table">Range Table</button>을 <code>WHERE ... IN</code>으로 SELECT에 바로
-꽂는다. 한 줄로 범위·다중 조건이 적용된다.</p>
+<section class="lblock"><h2>담기만 해선 줄지 않는다</h2>
+<p>L02에서 사용자의 조건이 <code>s_conc</code>·<code>s_stat</code> 같은 <button class="term" type="button" data-term="Range Table">Range Table</button>에 담겼다. 하지만
+<strong>담기만 해서는</strong> 예매 목록이 줄어들지 않는다. 그 조건을 DB 조회 문장에 <strong>꽂아야</strong>
+실제로 걸러진다.</p>
+<p>핵심은 한 줄, <code>WHERE field IN range_table</code>이다. 이 한 줄이 사용자가 넣은 단일 값,
+여러 값, 범위, 제외 조건을 SELECT의 필터로 바꿔 준다.</p>
 <blockquote>
-<p>이 챕터는 <strong>classic</strong>이다. <code>WHERE age IN s_age</code>처럼 <strong><code>@</code> 없이</strong> 쓴다.
-현대식 Open SQL 구문은 CH19부터.</p>
+<p>이 챕터는 <strong>classic</strong>이다. <code>WHERE concert_id IN s_conc</code>처럼 <strong><code>@</code> 없이</strong> 쓴다.
+호스트 변수 표시(<code>@</code>)와 콤마 필드 목록 같은 현대식 Open SQL은
+<a href="CH19-L01.html">Chapter 19 · Modern Open SQL</a>에서 배운다.</p>
 </blockquote>
 </section><section class="lblock"><h2>WHERE … IN (classic)</h2>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
 4
-5</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> lt_person <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ztperson.
+5</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> lt_book <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> zbooking.
 
-<span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> ztperson
-  <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> lt_person
-  <span class="tok-kw">WHERE</span> age <span class="tok-kw">IN</span> s_age.        <span class="tok-com">" classic: @ 없이 Range Table 직접</span></code></pre></div></div>
+<span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> zbooking <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> lt_book
+  <span class="tok-kw">WHERE</span> concert_id <span class="tok-kw">IN</span> s_conc
+    <span class="tok-kw">AND</span> status     <span class="tok-kw">IN</span> s_stat.</code></pre></div></div>
+<p>사람 말로 읽으면 이렇다.</p>
+<table>
+<thead>
+<tr>
+<th>코드</th>
+<th>사람 말</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>concert_id IN s_conc</code></td>
+<td>공연ID가 사용자가 고른 공연 조건에 들면</td>
+</tr>
+<tr>
+<td><code>status IN s_stat</code></td>
+<td>상태가 사용자가 고른 상태 조건에 들면</td>
+</tr>
+<tr>
+<td><code>AND</code></td>
+<td><strong>두 조건을 모두</strong> 만족하는 행만</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>📌 <strong>빈 range는 true.</strong> <code>s_conc</code>가 비어 있으면 <code>concert_id IN s_conc</code>는 조건을 걸지
+않은 것처럼 동작한다(공식 문서: <em>initial ranges table → 조건이 DB에 전달되지 않아 결과는 항상 참</em>).
+그래서 둘 다 비우면 <strong>전체 예매</strong>가 조회된다. 편리하지만, 실수로 비우면 테이블 전체를
+읽어 버릴 수 있다는 뜻이기도 하다.</p>
+</blockquote>
+</section><section class="lblock"><h2>결과 확인 — sy-subrc · sy-dbcnt</h2>
+<p>예매 6건을 기준으로 시나리오별 결과를 예측해 보자.</p>
+<table>
+<thead>
+<tr>
+<th>s_conc</th>
+<th>s_stat</th>
+<th>예상 결과</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>비어 있음</td>
+<td>비어 있음</td>
+<td>6건 전체</td>
+</tr>
+<tr>
+<td><code>I EQ C001</code></td>
+<td>비어 있음</td>
+<td>C001 공연 4건</td>
+</tr>
+<tr>
+<td>비어 있음</td>
+<td><code>I EQ N</code></td>
+<td>예약 N 5건</td>
+</tr>
+<tr>
+<td><code>I EQ C001</code></td>
+<td><code>I EQ N</code></td>
+<td>C001이면서 N인 4건</td>
+</tr>
+<tr>
+<td><code>I EQ C999</code></td>
+<td>비어 있음</td>
+<td>0건 (없는 공연)</td>
+</tr>
+</tbody></table>
+<p>실행 뒤에는 시스템 필드로 확인한다.</p>
 <ul>
-<li><code>IN s_age</code> 하나로 사용자가 입력한 모든 범위·목록 조건이 적용된다.</li>
-<li>비어 있으면(아무 입력 없음) <strong>조건 없음</strong>으로 동작 → 전체 조회. 의도와 다르면
-검증을 추가한다.</li>
+<li>행이 하나라도 담기면 <code>sy-subrc = 0</code>, <code>sy-dbcnt</code> = 담긴 행 수.</li>
+<li>결과가 비면 <code>sy-subrc = 4</code>, <code>sy-dbcnt = 0</code>.</li>
+<li>단, **빈 range로 전체가 나온 것도 <code>sy-subrc = 0</code>**이다. &quot;성공&quot;과 &quot;의도한 필터&quot;는
+따로 확인해야 한다.</li>
 </ul>
-</section><section class="lblock"><h2>여러 SELECT-OPTIONS 결합</h2>
-<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
-2
-3</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> ztperson <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> lt_person
-  <span class="tok-kw">WHERE</span> age  <span class="tok-kw">IN</span> s_age
-    <span class="tok-kw">AND</span> name <span class="tok-kw">IN</span> s_name.</code></pre></div></div>
+<p>아래에서 시나리오를 눌러 가며 통과 행 수와 <code>sy-subrc</code>·<code>sy-dbcnt</code>가 어떻게 바뀌는지 보자.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">WHERE … IN 필터 엔진 (sy-subrc · sy-dbcnt)</span><a class="embed__open" href="../../../embeds/abap/CH12-L03-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH12-L03-S01.html" loading="lazy" title="WHERE … IN 필터 엔진 (sy-subrc · sy-dbcnt)"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>modern escape 습관</strong> → 이 챕터는 classic이라 host 변수 그대로(현대식은 CH19).</li>
-<li><strong>빈 <button class="term" type="button" data-term="SELECT-OPTIONS">SELECT-OPTIONS</button> = 전체</strong> → 무조건 조회가 의도가 아니면 입력 필수 처리.</li>
+<li><strong>빈 range의 의미를 거꾸로 기억한다</strong> → 빈 <code>s_conc</code>는 &quot;아무것도 선택 안 했으니
+0건&quot;이 아니라 &quot;<strong>공연 조건은 제한 안 함</strong>&quot;이다.</li>
+<li><strong>전체 조회를 정상 필터로 착각한다</strong> → 조건이 비어 전체가 나온 걸 결과로 믿으면
+위험하다(성능·권한). 입력 필수 검증은
+<a href="CH15-L01.html">Chapter 15 · 이벤트와 선택화면</a>에서 다룬다.</li>
+<li><strong>classic과 modern을 섞는다</strong> → 이 예제는 classic range 조건이다. <code>@</code> 호스트 표시·콤마
+필드 목록은 쓰지 않는다(modern Open SQL은 다음 구간에서).</li>
+</ul>
+</section><section class="lblock"><h2>정리</h2>
+<ul>
+<li><code>WHERE field IN range_table</code>은 <button class="term" type="button" data-term="Range Table">Range Table</button>을 SELECT 조건으로 평가한다.</li>
+<li><button class="term" type="button" data-term="SELECT-OPTIONS">SELECT-OPTIONS</button>가 만든 selection table도 같은 구조라 그대로 <code>IN</code>에 쓴다.</li>
+<li><strong>빈 range는 true</strong> → 전체 조회가 될 수 있다.</li>
+<li>결과는 <code>sy-subrc</code>·<code>sy-dbcnt</code>·담긴 행 수로 확인한다.</li>
 </ul>
 <hr>
-<p>조건은 됐다. 그런데 화면의 <strong>다중 선택 팝업</strong>(여러 값·제외)은 어떻게 다루나 → 다음 레슨.</p>
+<p>조건은 SELECT에 꽂았다. 그런데 화면의 <strong>다중 선택 팝업</strong>에서 포함(I)과 제외(E)가 섞이면 결과가 어떻게 정해질까 → 다음 레슨.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
-      <footer class="foot">SAP Developer Academy · CH12 CH12-L03</footer>
+      <footer class="foot">SAP Developer Academy · 배포자 SAP전문강사 정훈영</footer>
     </main>
     <aside class="journey" data-shell="journey"></aside>
   </div>

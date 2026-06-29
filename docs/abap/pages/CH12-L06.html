@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH12 · SELECT-OPTIONS와 Range Table</span>
+  <span class="meta">Chapter 12 · SELECT-OPTIONS와 Range Table</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -31,18 +31,21 @@
 <div class="stage">
   <div class="layout">
     <main class="main">
-      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH12</nav>
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 12 › Lesson 6</nav>
       <section class="lhead">
         <p class="lhead__eyebrow">SELECT-OPTIONS와 Range Table</p>
         <h1>Selection Table 직접 조작 기초</h1>
-        <p class="lhead__direction">Range Table을 코드로 채우기 — 화면 없이 조건 구성.</p>
+        <p class="lhead__direction">화면 없이 코드로 Range Table 채우기 — TYPE RANGE OF·CLEAR·APPEND.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 12</span><span class="tag tag--ls">Lesson 6</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
 <section class="lblock"><h2>화면 없이 조건 만들기</h2>
-<p>배치/내부 호출처럼 화면이 없을 때, <button class="term" type="button" data-term="Range Table">Range Table</button>을 <strong>코드로 직접</strong> 채워 조회
-조건으로 쓴다. 구조(SIGN/OPTION/LOW/HIGH)를 알면 어렵지 않다.</p>
-</section><section class="lblock"><h2>코드로 행 추가 (classic)</h2>
+<p>지금까지는 사용자가 선택화면에 입력하면 <button class="term" type="button" data-term="Range Table">Range Table</button>이 만들어졌다. 하지만 모든
+조건이 화면에서 오지는 않는다. <strong>배치 프로그램, 내부 호출, 기본 조건 보정, 권한에
+따른 자동 제한</strong>처럼 화면 없이 조건을 만들어야 할 때가 있다.</p>
+<p>이때 필요한 게 Range Table <strong>직접 조작</strong>이다. 구조(<code>SIGN/OPTION/LOW/HIGH</code>)는 이미
+L01에서 배웠다. 코드로도 결국 그 네 칸을 채운 행을 만들어 <code>APPEND</code>하면 된다.</p>
+</section><section class="lblock"><h2>TYPE RANGE OF로 코드에서 만들기</h2>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -54,39 +57,80 @@
 9
 10
 11
-12</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>: lr_age <span class="tok-kw">TYPE</span> <span class="tok-kw">RANGE</span> <span class="tok-kw">OF</span> ztperson-age,
-      ls_age <span class="tok-kw">LIKE</span> <span class="tok-kw">LINE</span> <span class="tok-kw">OF</span> lr_age,
-      lt_p   <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ztperson.
+12</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>: lr_stat <span class="tok-kw">TYPE</span> <span class="tok-kw">RANGE</span> <span class="tok-kw">OF</span> zbooking-status,
+      ls_stat <span class="tok-kw">LIKE</span> <span class="tok-kw">LINE</span> <span class="tok-kw">OF</span> lr_stat,
+      lt_book <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> zbooking.
 
-ls_age-sign   = <span class="tok-str">'I'</span>.
-ls_age-option = <span class="tok-str">'BT'</span>.
-ls_age-low    = <span class="tok-num">20</span>.
-ls_age-high   = <span class="tok-num">40</span>.
-<span class="tok-kw">APPEND</span> ls_age <span class="tok-kw">TO</span> lr_age.
+<span class="tok-kw">CLEAR</span> ls_stat.
+ls_stat-sign   = <span class="tok-str">'I'</span>.
+ls_stat-option = <span class="tok-str">'EQ'</span>.
+ls_stat-low    = <span class="tok-str">'N'</span>.
+<span class="tok-kw">APPEND</span> ls_stat <span class="tok-kw">TO</span> lr_stat.
 
-<span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> ztperson <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> lt_p
-  <span class="tok-kw">WHERE</span> age <span class="tok-kw">IN</span> lr_age.       <span class="tok-com">" classic (@ 없이)</span></code></pre></div></div>
-<ul>
-<li><code>TYPE RANGE OF &lt;필드&gt;</code>로 <button class="term" type="button" data-term="Range Table">Range Table</button> 타입을 간단히 만든다.</li>
-<li>한 행 = 한 조건. 여러 조건은 여러 번 <code>APPEND</code>.</li>
-</ul>
+<span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> zbooking <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> lt_book
+  <span class="tok-kw">WHERE</span> status <span class="tok-kw">IN</span> lr_stat.</code></pre></div></div>
+<p>줄별 의미는 이렇다.</p>
+<table>
+<thead>
+<tr>
+<th>코드</th>
+<th>의미</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>lr_stat TYPE RANGE OF zbooking-status</code></td>
+<td>상태 필드와 같은 타입의 <button class="term" type="button" data-term="Range Table">Range Table</button>을 만든다.</td>
+</tr>
+<tr>
+<td><code>ls_stat LIKE LINE OF lr_stat</code></td>
+<td>Range Table <strong>한 행</strong>을 담을 work area를 만든다.</td>
+</tr>
+<tr>
+<td><code>CLEAR ls_stat.</code></td>
+<td>이전 행 값이 남지 않게 비운다.</td>
+</tr>
+<tr>
+<td><code>ls_stat-sign/option/low</code></td>
+<td>포함(I)·정확히 같음(EQ)·상태 N으로 한 행을 채운다.</td>
+</tr>
+<tr>
+<td><code>APPEND ls_stat TO lr_stat.</code></td>
+<td>완성한 조건 행을 Range Table에 <strong>추가</strong>한다.</td>
+</tr>
+</tbody></table>
 <blockquote>
-<p>💡 옛 코드엔 <code>RANGES r_age FOR ztperson-age.</code> 형태도 보인다 — 화면 없이 Range Table을
-선언하는 <strong>레거시</strong>(헤더라인식) 방식이다. 지금은 위처럼 **<code>TYPE RANGE OF</code>**를 쓴다
-(헤더라인 없이 명확). <code>SELECT-OPTIONS</code>는 같은 Range Table을 <em>화면 입력칸과 함께</em> 만든다.</p>
+<p>💡 옛 코드에는 <code>RANGES r_stat FOR zbooking-status.</code> 형태도 보인다 — 화면 없이 Range
+Table을 선언하는 <strong>레거시</strong>(헤더라인식) 방식이다. 공식 문서상 <em>obsolete</em>라, 읽을 수는
+있어야 하지만 새 코드는 위처럼 **<code>TYPE RANGE OF</code>**를 쓴다. 참고로 <button class="term" type="button" data-term="SELECT-OPTIONS">SELECT-OPTIONS</button>는
+같은 Range Table을 <em>화면 입력칸과 함께</em> 만들고, <code>TYPE RANGE OF</code>는 <strong>코드 안의 table만</strong>
+만든다.</p>
 </blockquote>
+</section><section class="lblock"><h2>한 줄씩 따라가기</h2>
+<p>핵심은 <strong><code>APPEND</code> 전에는 <code>lr_stat</code>이 비어 있다</strong>는 점이다. <code>ls_stat</code>에 값을 채워도
+그건 work area일 뿐, <code>APPEND</code>해야 비로소 <button class="term" type="button" data-term="Range Table">Range Table</button>에 행이 생긴다. 한 줄씩 실행하며
+<code>ls_stat</code>와 <code>lr_stat</code>이 어떻게 바뀌는지 보자.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">코드로 Range 행 추가 스텝퍼 (ls_stat → APPEND → lr_stat → SELECT)</span><a class="embed__open" href="../../../embeds/abap/CH12-L06-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH12-L06-S01.html" loading="lazy" title="코드로 Range 행 추가 스텝퍼 (ls_stat → APPEND → lr_stat → SELECT)"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>SIGN/OPTION 빈 값</strong> → 채우지 않으면 조건이 안 먹는다. I/E·EQ/BT 등 필수.</li>
-<li><strong>modern 혼입</strong> → classic 구간이라 SELECT에 현대식 escape 자제(→ CH19).</li>
+<li><strong><code>SIGN</code>/<code>OPTION</code>을 비운 채 <code>APPEND</code></strong> → 행은 네 칸이지만 최소 <code>SIGN</code>·<code>OPTION</code>·<code>LOW</code>는
+조건에 맞게 채워야 한다.</li>
+<li><strong><code>CLEAR</code> 생략</strong> → work area를 재사용할 때 안 비우면 앞 행 값이 남는다. 특히 앞 행이
+<code>BT</code>라 <code>HIGH</code>를 썼고 다음이 <code>EQ</code>라면, <code>HIGH</code>가 남아 해석을 헷갈리게 만든다.</li>
+<li><strong><code>RANGES</code>를 새 기준처럼 쓴다</strong> → 레거시 인지용일 뿐, 새 코드는 <code>TYPE RANGE OF</code>.</li>
+</ul>
+</section><section class="lblock"><h2>정리</h2>
+<ul>
+<li>화면 없이도 <code>TYPE RANGE OF</code>로 <button class="term" type="button" data-term="Range Table">Range Table</button>을 만들 수 있다.</li>
+<li>한 조건 행은 work area에 <code>SIGN</code>·<code>OPTION</code>·<code>LOW</code>(·<code>HIGH</code>)를 채운 뒤 <code>APPEND</code>한다.</li>
+<li><code>SELECT-OPTIONS</code>는 화면+selection table, <code>TYPE RANGE OF</code>는 코드 안 range table만.</li>
+<li><code>RANGES</code>는 레거시 인지용이다.</li>
 </ul>
 <hr>
-<p>이제 범위·다중·제외 조건을 화면·코드로 다룬다. 다음은 여러 테이블을 합치고
-집계하는 <strong>JOIN·집계</strong>(여전히 classic) → <strong>CH12-L07(실습)</strong>.</p>
+<p>화면·코드 양쪽으로 Range Table을 다뤘다. 이제 배운 걸 모아 <strong>공연·상태 조건으로 예매 목록을 필터링</strong>하는 실습으로 마무리하자 → 다음 레슨.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
-      <footer class="foot">SAP Developer Academy · CH12 CH12-L06</footer>
+      <footer class="foot">SAP Developer Academy · 배포자 SAP전문강사 정훈영</footer>
     </main>
     <aside class="journey" data-shell="journey"></aside>
   </div>

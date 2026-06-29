@@ -22,6 +22,10 @@
     for(var j=0;j<variant.whens.length;j++){ if(variant.whens[j].keys.indexOf('*OTHERS*') >= 0) return j; }
     return -1;
   }
+  function condLabel(w){   // 좌측 스위치보드용 조건 표기 ('A' / 'A' OR 'B' / OTHERS)
+    if(w.keys.indexOf('*OTHERS*') >= 0) return 'OTHERS';
+    return w.keys.map(function(k){ return "'"+k+"'"; }).join(' OR ');
+  }
   function render(){
     var variant = cfg.variants[vIdx];
     var mi = (sel === null) ? -1 : matchIdx(variant, sel);
@@ -40,7 +44,20 @@
     });
     html += '</div>';
 
-    // 코드 패널
+    // ===== 좌(분기 스위치보드) · 우(코드) 2칼럼 =====
+    html += '<div class="cs-split">';
+
+    // 좌: 고른 값이 어느 WHEN으로 가는지 점등
+    html += '<div class="cs-viz">';
+    html += '<span class="cs-viz__in">'+esc(cfg.caseVar)+' = <b>'+(sel===null?'?':"'"+esc(sel)+"'")+'</b></span>';
+    html += '<div class="cs-viz__arrow">▼</div>';
+    html += '<div class="cs-viz__branches">';
+    variant.whens.forEach(function(w,i){
+      html += '<div class="cs-br'+(i===mi?' on':'')+'"><span class="cs-br__cond">'+esc(condLabel(w))+'</span><span class="cs-br__out">'+esc(w.out)+'</span></div>';
+    });
+    html += '</div></div>';
+
+    // 우: CASE 코드(매칭 WHEN 줄 하이라이트)
     html += '<div class="cs-code"><div class="cs-hd"><span class="cs-dots"><i></i><i></i><i></i></span><span class="cs-lang">ABAP</span></div><div class="cs-body">';
     html += '<div class="cs-line"><span class="cs-mk-sp"></span><span class="cs-kw">CASE</span> '+esc(cfg.caseVar)+'.</div>';
     variant.whens.forEach(function(w,i){
@@ -55,7 +72,9 @@
     html += '<div class="cs-line"><span class="cs-mk-sp"></span><span class="cs-kw">ENDCASE</span>.</div>';
     html += '</div></div>';
 
-    // 실행 결과
+    html += '</div>';   // /cs-split
+
+    // 실행 결과 (하단 전체폭)
     html += '<div class="cs-out"><span class="cs-out__cap">실행 결과</span>';
     if(sel === null) html += '<span class="cs-out__hint">위에서 값을 골라 보세요.</span>';
     else html += '<span class="cs-out__val">'+esc(variant.whens[mi].out)+'</span>';

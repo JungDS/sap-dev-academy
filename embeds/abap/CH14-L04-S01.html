@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<!-- CH14-L04-S01 — 엔진: fk-maintenance-gate · _autoheight. 콘텐츠=레슨 전용(Foreign Key input check 유지보수, CH14 L04).
+     config=window.FKM_CFG. 게이팅: classic Foreign Key·input check·Maintenance View 개념만 · ABAP SQL FK 자동평가 아님 명시 · CDS/modern 없음. -->
+<html lang="ko" data-eng="fk-maintenance-gate">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Foreign Key로 문 열기 · CH14-L04-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/fk-maintenance-gate.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">Foreign Key로 문 열기 <small>(유지보수 input check)</small></p>
+  <p class="lead">공연 유지보수 화면에서 <code>hall_id</code>를 입력합니다. <b>Foreign Key</b>(zconcert-hall_id → zhall-hall_id)가 있으면 존재하지 않는 코드를 <b>input check</b>가 막습니다. 끄면 무엇이든 통과해 orphan이 생깁니다.</p>
+
+  <p class="fkm-h">Foreign Key 관계</p>
+  <div class="fkm-rel">
+    <div class="fkm-card"><div class="t">zconcert</div><div class="f">hall_id (FK)</div></div>
+    <div class="fkm-line"></div>
+    <div class="fkm-card"><div class="t">zhall</div><div class="f">hall_id (Check Table)</div></div>
+  </div>
+  <div class="fkm-toggle-wrap"><button class="fkm-tg" type="button" data-fk aria-pressed="true">Foreign Key: ON 🔗</button></div>
+
+  <div class="fkm-ref">zhall 공연장: <b>H01</b> 블루홀 · <b>H02</b> 그린홀 (H99는 없음)</div>
+  <div class="fkm-halls"></div>
+
+  <p class="fkm-h">유지보수 결과 (SM30 grid)</p>
+  <table class="fkm-tbl">
+    <thead><tr><th>concert_id</th><th>hall_id</th><th>hall_name</th></tr></thead>
+    <tbody id="fkmBody"></tbody>
+  </table>
+
+  <div class="fkm-status" id="fkmStatus"></div>
+
+  <div class="note"><b>Foreign Key는 문서용 선이 아니다.</b> input check·input help·view 생성에서 실제로 평가됩니다. 단 ABAP SQL <code>SELECT</code>는 FK를 자동 평가하지 않습니다. Maintenance View는 이 관계로 관련 테이블을 표준 유지보수(SE54·SM30)에서 함께 다루는 도구입니다.</div>
+</div>
+
+<script>
+window.FKM_CFG = {
+  halls: { H01: '블루홀', H02: '그린홀' },
+  options: ['H01', 'H02', 'H99']
+};
+</script>
+<script src="../_engine/fk-maintenance-gate.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+/* ===== metadata-extension-lab — 본문(DDL)과 메타데이터(DDLX) 분리 실험실 (CH22-L05) =====
+   UI 주석을 본문(DDL Source)에 둘지 별도 DDLX(Metadata Extension)로 뺄지 토글. @Metadata.allowExtensions off→활성화 실패.
+   DDLX 구분자 세미콜론(;)↔쉼표(,) 검사. annotation만 분리(필드/source 변경 아님). 데이터=config.
+   교훈3: status base 중립 rgba·ok/bad 명시 클래스. */
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:transparent;line-height:1.5;}
+.wrap{padding:14px;}
+.hd{font-weight:800;font-size:1rem;margin:0 0 4px;}
+.hd small{font-weight:600;color:var(--brand);}
+.lead{margin:0 0 12px;color:var(--ink-soft);font-size:.86rem;}
+.lead code{font-family:var(--mono);background:#eef2ff;color:var(--brand);padding:1px 5px;border-radius:5px;font-size:.92em;}
+
+.mxl-ctrl{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:12px;}
+.mxl-glbl{font-size:.7rem;font-weight:800;color:var(--ink-soft);margin-right:2px;}
+.mxl-toggle{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;
+  padding:6px 11px;font:inherit;font-size:.74rem;font-weight:700;cursor:pointer;}
+.mxl-toggle:hover{border-color:var(--brand);}
+.mxl-toggle.on{background:#eef2ff;border-color:#26336b;color:#26336b;}
+.mxl-toggle.warnstate{background:rgba(180,83,9,.1);border-color:var(--amber);color:#7a4a12;border-style:dashed;}
+
+.mxl-files{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+@media(max-width:620px){ .mxl-files{grid-template-columns:1fr;} }
+.mxl-file{border:1px solid var(--line);border-radius:11px;background:var(--surface);overflow:hidden;display:flex;flex-direction:column;}
+.mxl-file__hd{font-size:.7rem;font-weight:800;padding:6px 10px;display:flex;justify-content:space-between;align-items:center;}
+.mxl-file.ddl .mxl-file__hd{background:#eef2ff;color:#26336b;}
+.mxl-file.ddlx .mxl-file__hd{background:#eafaf3;color:#0b7250;}
+.mxl-file__tag{font-size:.58rem;font-weight:800;border-radius:4px;padding:1px 5px;background:rgba(255,255,255,.55);}
+.mxl-code{font-family:var(--mono);font-size:11px;line-height:1.6;white-space:pre;overflow-x:auto;padding:9px 10px;margin:0;color:var(--ink);flex:1;}
+.mxl-code .k{color:var(--brand);font-weight:700;}
+.mxl-code .ent{color:var(--accent);font-weight:700;}
+.mxl-code .base{color:#26336b;font-weight:700;}
+.mxl-code .anno{color:var(--accent);}
+.mxl-code .allow{color:#0b7250;font-weight:700;}
+.mxl-code .miss{color:var(--soon);font-style:italic;}
+.mxl-code .sep-bad{color:#fff;background:var(--bad);border-radius:3px;padding:0 2px;font-weight:700;}
+.mxl-code .layer{color:var(--amber);font-weight:700;}
+.mxl-empty{color:var(--soon);font-style:italic;font-size:.78rem;padding:12px 10px;text-align:center;}
+
+.mxl-status{font-size:.84rem;padding:9px 12px;border-radius:9px;background:rgba(59,91,219,.08);color:var(--ink);}
+.mxl-status.ok{background:#eafaf3;color:#0b7250;}
+.mxl-status.bad{background:rgba(214,51,108,.12);color:var(--bad);}
+.mxl-status b{color:inherit;}
+.mxl-badge{display:inline-block;font-size:.66rem;font-weight:800;border-radius:5px;padding:2px 7px;margin-right:6px;}
+.mxl-badge.act{background:#eafaf3;color:#0b7250;}
+.mxl-badge.fail{background:rgba(214,51,108,.14);color:var(--bad);}
+
+.note{margin-top:12px;border-left:3px solid var(--brand);background:rgba(59,91,219,.06);border-radius:0 9px 9px 0;padding:9px 13px;font-size:.83rem;color:#2a3550;}
+.note code{font-family:var(--mono);background:#fff;border:1px solid var(--line);padding:0 5px;border-radius:4px;}

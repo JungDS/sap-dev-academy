@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">CH16 · Screen Programming / Dynpro 기초</span>
+  <span class="meta">Chapter 16 · Screen Programming / Dynpro 기초</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -31,23 +31,59 @@
 <div class="stage">
   <div class="layout">
     <main class="main">
-      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › CH16</nav>
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 16 › Lesson 2</nav>
       <section class="lhead">
         <p class="lhead__eyebrow">Screen Programming / Dynpro 기초</p>
         <h1>Screen Number와 Screen Painter</h1>
-        <p class="lhead__direction">화면에 번호를 붙이고, Screen Painter로 레이아웃을 그린다.</p>
+        <p class="lhead__direction">화면에 번호를 붙이고, Screen Painter의 네 조각으로 화면을 그린다.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 16</span><span class="tag tag--ls">Lesson 2</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
 <section class="lblock"><h2>화면에 번호를 붙인다</h2>
-<p>Dynpro는 각 화면을 <strong>네 자리 번호</strong>(예: <code>0100</code>)로 구분한다. 한 Module Pool 안에
-여러 화면(0100·0200…)을 두고 번호로 오간다.</p>
-</section><section class="lblock"><h2>Screen Painter로 그리기</h2>
-<p><code>SE80</code>(또는 <code>SE51</code>) Screen Painter에서 입력칸·버튼 같은 요소를 <strong>끌어다 놓는다.</strong>
-각 요소에는 <strong>이름</strong>을 주는데, 그 이름의 전역 변수와 자동으로 연결된다(예: 입력칸
-<code>P_SEATS</code> ↔ 프로그램의 <code>DATA p_seats</code>).</p>
-</section><section class="lblock"><h2>Flow Logic — PBO / PAI 선언</h2>
-<p>화면마다 <strong>Flow Logic</strong>에 두 블록이 있고, 각 블록에서 처리 모듈(<code>MODULE</code>)을 부른다.</p>
+<p>Module Pool에는 화면이 하나만 있는 게 아니다. 예매 입력 화면 <code>0100</code>, 상세 확인
+화면 <code>0200</code>, 팝업 <code>0300</code>처럼 여러 <button class="term" type="button" data-term="Dynpro">Dynpro</button>가 있을 수 있고, 화면마다 layout과
+흐름 로직이 <strong>따로</strong> 있다. 그래서 Dynpro는 <strong>네 자리 번호</strong>로 구분한다 —
+번호를 모르면 &quot;지금 내가 어느 화면의 PBO/PAI를 고치는가&quot;를 잃어버린다.</p>
+</section><section class="lblock"><h2>Screen Painter의 네 조각</h2>
+<p><code>SE80</code>(또는 <code>SE51</code>) <button class="term" type="button" data-term="Screen Painter">Screen Painter</button>는 &quot;ABAP 코드만 쓰면 화면이 생긴다&quot;가 아니라,
+<strong>네 조각이 함께 맞아야</strong> 움직이는 구조다.</p>
+<table>
+<thead>
+<tr>
+<th>조각</th>
+<th>무엇을 담나</th>
+<th>확인 위치</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Layout</strong></td>
+<td>입력칸·텍스트·버튼의 위치·크기</td>
+<td>Screen Painter Layout</td>
+</tr>
+<tr>
+<td><strong>Element List</strong></td>
+<td>화면 요소 이름·타입·길이·OK field</td>
+<td>Element List</td>
+</tr>
+<tr>
+<td><strong><button class="term" type="button" data-term="Flow Logic">Flow Logic</button></strong></td>
+<td>PBO/PAI 블록 + 호출할 <code>MODULE</code></td>
+<td>Flow Logic</td>
+</tr>
+<tr>
+<td><strong>Attributes</strong></td>
+<td>next screen·modal 여부·화면 타입</td>
+<td>Screen Attributes</td>
+</tr>
+</tbody></table>
+<ul>
+<li>화면 요소에 준 <strong>이름</strong>은 같은 이름의 전역 변수와 자동 연결된다(예: 입력칸
+<code>P_SEATS</code> ↔ 프로그램의 <code>DATA p_seats</code>). 이름이 다르면 값이 운반되지 않는다.</li>
+<li>사용자 버튼의 function code를 받는 <strong>OK field</strong>는 Element List에서 지정한다(자세히는
+<a href="CH16-L05.html">PAI 처리 흐름 — OK_CODE와 화면 떠나기</a>).</li>
+</ul>
+</section><section class="lblock"><h2>Flow Logic — 화면이 부르는 MODULE</h2>
+<p>화면마다 <button class="term" type="button" data-term="Flow Logic">Flow Logic</button>에 PBO/PAI 두 블록이 있고, 각 블록에서 처리 모듈(<code>MODULE</code>)을 부른다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -55,21 +91,54 @@
   <span class="tok-kw">MODULE</span> status_0100.
 <span class="tok-kw">PROCESS</span> <span class="tok-kw">AFTER</span> <span class="tok-kw">INPUT</span>.
   <span class="tok-kw">MODULE</span> user_command_0100.</code></pre></div></div>
-<ul>
-<li>Flow Logic은 ABAP과 조금 다른 <strong>화면 전용 문법</strong>이다(여기서 <code>MODULE</code>만 부른다).</li>
-<li>실제 처리 코드는 프로그램 쪽 <code>MODULE ... ENDMODULE</code>에 쓴다.</li>
-</ul>
+<p>Flow Logic은 ABAP과 조금 다른 <strong>화면 전용 문법</strong>이다 — 여기서는 <code>MODULE</code>을 <strong>부르기만</strong> 한다.</p>
+</section><section class="lblock"><h2>ABAP 쪽 MODULE 정의 — OUTPUT(PBO) / INPUT(PAI)</h2>
+<p>실제 처리 코드는 프로그램 쪽 <code>MODULE ... ENDMODULE</code>에 쓴다. <code>OUTPUT</code>/<code>INPUT</code> 추가어가
+이 모듈이 <strong>PBO에서</strong> 불릴지 <strong>PAI에서</strong> 불릴지를 정한다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7</pre><pre class="abap-editor__code"><code><span class="tok-kw">MODULE</span> status_0100 <span class="tok-kw">OUTPUT</span>.          <span class="tok-com">" OUTPUT = PBO에서 호출</span>
+  <span class="tok-com">" 초기값·화면 상태 준비</span>
+<span class="tok-kw">ENDMODULE</span>.
+
+<span class="tok-kw">MODULE</span> user_command_0100 <span class="tok-kw">INPUT</span>.     <span class="tok-com">" INPUT = PAI에서 호출</span>
+  <span class="tok-com">" 입력·버튼 처리</span>
+<span class="tok-kw">ENDMODULE</span>.</code></pre></div></div>
+<blockquote>
+<p>🔑 <strong>핵심 구분.</strong> <button class="term" type="button" data-term="Flow Logic">Flow Logic</button>의 <code>MODULE status_0100.</code>(호출)과 ABAP의
+<code>MODULE status_0100 OUTPUT.</code>(정의)은 <strong>다른 위치</strong>에 있고, <strong>이름이 같아야</strong> 연결된다.
+이름이 어긋나면 화면 활성화가 실패한다.</p>
+</blockquote>
+</section><section class="lblock"><h2>직접 연결해 보기 — Screen Painter 연결 지도</h2>
+<p>Layout · Element List · <button class="term" type="button" data-term="Flow Logic">Flow Logic</button> · ABAP Source 네 패널이 어떻게 연결되는지 보고,
+연결을 하나씩 깨뜨려 어떤 활성화 오류가 나는지 확인하자.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title"><button class="term" type="button" data-term="Screen Painter">Screen Painter</button> 연결 지도</span><a class="embed__open" href="../../../embeds/abap/CH16-L02-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH16-L02-S01.html" loading="lazy" title="Screen Painter 연결 지도" style="height:600px"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>요소 이름 ≠ 변수 이름</strong> → 이름이 달라 값이 연결 안 됨. 같은 이름으로 맞춘다.</li>
-<li><strong>Flow Logic에 일반 ABAP</strong> → Flow Logic엔 <code>MODULE</code> 등 화면 문법만. 로직은 모듈 안에.</li>
+<li><strong><button class="term" type="button" data-term="Flow Logic">Flow Logic</button> 호출 ≠ ABAP 정의</strong> → <code>MODULE status_0100.</code>은 있는데
+<code>MODULE status_0100 OUTPUT.</code> 정의가 없으면 활성화 오류(&quot;호출 대상 없음&quot;).</li>
+<li><strong>요소 이름 ≠ 변수 이름</strong> → 자동 data transport가 안 된다. 같은 이름으로 맞춘다.</li>
+<li><strong>Flow Logic에 일반 ABAP 로직</strong> → Flow Logic엔 <code>MODULE</code> 호출 같은 화면 문법만. 로직은 모듈 안에.</li>
+<li><strong>OK field 미지정</strong> → 사용자 버튼의 function code를 안정적으로 못 읽는다.</li>
+<li><strong>next screen <code>0</code>을 빈 값으로 오해</strong> → <code>0</code>은 화면 sequence <strong>종료</strong>를 뜻한다.</li>
+</ul>
+</section><section class="lblock"><h2>정리</h2>
+<ul>
+<li><strong>Screen Number</strong>는 &quot;어느 화면인가&quot;를 가리키는 주소, <strong><button class="term" type="button" data-term="Screen Painter">Screen Painter</button></strong>는 그 화면의
+layout·flow logic을 만드는 도구다.</li>
+<li><button class="term" type="button" data-term="Dynpro">Dynpro</button>는 <strong>Layout · Element List · <button class="term" type="button" data-term="Flow Logic">Flow Logic</button> · ABAP module</strong> 네 조각이 모두 맞아야 움직인다.</li>
 </ul>
 <hr>
-<p>화면과 흐름의 골격을 만들었다. 이제 화면에 올릴 <strong>요소들</strong>을 보자 → 다음 레슨.</p>
+<p>화면과 흐름의 골격을 만들었다. 이제 화면에 올릴 <strong>요소들</strong>(입력칸·버튼·체크박스·라디오·
+드롭다운)을 보자 → <a href="CH16-L03.html">화면 요소 — 입력·버튼·체크박스·라디오·드롭다운</a>.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
-      <footer class="foot">SAP Developer Academy · CH16 CH16-L02</footer>
+      <footer class="foot">SAP Developer Academy · 배포자 SAP전문강사 정훈영</footer>
     </main>
     <aside class="journey" data-shell="journey"></aside>
   </div>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<!-- CH19-L04-S01 — 엔진: sql-expression-lab · _autoheight. 콘텐츠=레슨 전용(SQL Expression CASE/CAST/COALESCE, CH19 L04).
+     config=window.SEL_CFG. 게이팅: CH19=New Open SQL 정식(SQL식·AS alias·outer join). 복잡 업무로직/CDS는 이후. -->
+<html lang="ko" data-eng="sql-expression-lab">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SQL Expression Lab · CH19-L04-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/sql-expression-lab.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">SQL Expression Lab <small>(CASE · CAST · COALESCE)</small></p>
+  <p class="lead">DB가 <code>SELECT</code> 안에서 계산해 만든 <b>결과 컬럼</b>을 보세요. 같은 결과를 <b>ABAP LOOP</b>로 만든 코드와 비교하면, <b>계산 위치만 다르고 결과는 같다</b>는 걸 알 수 있습니다. 계산 컬럼엔 <code>AS</code> 별칭을 붙입니다.</p>
+
+  <div class="sel-ctrl">
+    <div class="sel-grp"><span class="clbl">SQL 식</span><div class="sel-seg sel-mode"></div></div>
+    <div class="sel-grp"><span class="clbl">계산 위치 비교</span><div class="sel-seg sel-impl"></div></div>
+  </div>
+
+  <span id="selLoc" class="sel-loc db"></span>
+  <div id="selCode"></div>
+  <p class="sel-h">결과 (계산 컬럼 강조)</p>
+  <div id="selTable"></div>
+  <div id="selNote"></div>
+
+  <div class="note"><b>모든 걸 SQL로 밀어 넣지는 않기.</b> 단순 상태 컬럼·타입 변환·null 대체는 SQL 식이 좋지만, 복잡한 업무 규칙·메시지·권한 분기는 ABAP(또는 이후 장의 구조화된 코드)이 더 맞습니다.</div>
+</div>
+
+<script>
+window.SEL_CFG = {
+  modes: [
+    {
+      v: 'case', label: 'CASE 상태', col: 'seat_status',
+      base: ['carrid', 'connid', 'seatsocc', 'seatsmax'],
+      rows: [
+        { carrid: 'LH', connid: '0400', seatsocc: 380, seatsmax: 380, out: 'FULL' },
+        { carrid: 'LH', connid: '0401', seatsocc: 120, seatsmax: 220, out: 'OPEN' },
+        { carrid: 'LH', connid: '0402', seatsocc: 90,  seatsmax: 90,  out: 'FULL' }
+      ],
+      sqlExpr:
+        "SELECT carrid, connid, seatsocc, seatsmax,\n" +
+        "       CASE WHEN seatsocc >= seatsmax THEN 'FULL'\n" +
+        "            ELSE 'OPEN' END AS seat_status\n" +
+        "  FROM sflight\n" +
+        "  WHERE carrid = @lv_carr\n" +
+        "  INTO TABLE @DATA(lt_status).",
+      abapLoop:
+        "SELECT carrid, connid, seatsocc, seatsmax\n" +
+        "  FROM sflight WHERE carrid = @lv_carr\n" +
+        "  INTO TABLE @DATA(lt_flight).\n\n" +
+        "LOOP AT lt_flight INTO DATA(ls).\n" +
+        "  IF ls-seatsocc >= ls-seatsmax.\n" +
+        "    lv_status = 'FULL'.\n" +
+        "  ELSE.\n" +
+        "    lv_status = 'OPEN'.\n" +
+        "  ENDIF.\n" +
+        "  \" ... lv_status 를 결과 행에 담는다\n" +
+        "ENDLOOP.",
+      note: "<b>CASE 결과 타입은 호환돼야</b> — <code>THEN 'FULL'</code>·<code>ELSE 'OPEN'</code>은 둘 다 문자. <code>ELSE 0</code>처럼 숫자를 섞으면 타입 오류가 납니다."
+    },
+    {
+      v: 'cast', label: 'CAST 문자', col: 'seatsmax_text',
+      base: ['carrid', 'connid', 'seatsmax'],
+      rows: [
+        { carrid: 'LH', connid: '0400', seatsmax: 380, out: "'380'" },
+        { carrid: 'LH', connid: '0401', seatsmax: 220, out: "'220'" },
+        { carrid: 'LH', connid: '0402', seatsmax: 90,  out: "'90'" }
+      ],
+      sqlExpr:
+        "SELECT carrid, connid,\n" +
+        "       CAST( seatsmax AS CHAR( 5 ) ) AS seatsmax_text\n" +
+        "  FROM sflight\n" +
+        "  WHERE carrid = @lv_carr\n" +
+        "  INTO TABLE @DATA(lt_text).",
+      abapLoop:
+        "SELECT carrid, connid, seatsmax\n" +
+        "  FROM sflight WHERE carrid = @lv_carr\n" +
+        "  INTO TABLE @DATA(lt_flight).\n\n" +
+        "LOOP AT lt_flight INTO DATA(ls).\n" +
+        "  lv_text = |{ ls-seatsmax }|.   \" 숫자 → 문자\n" +
+        "ENDLOOP.",
+      note: "<b>CAST 길이를 의식</b> — <code>CHAR( 5 )</code>가 너무 짧으면 큰 숫자가 잘릴 수 있습니다. 값이 표현 가능한 길이를 줍니다."
+    },
+    {
+      v: 'coal', label: 'COALESCE null', col: 'city_to_text',
+      base: ['carrid', 'carrname', 'cityto'],
+      rows: [
+        { carrid: 'LH', carrname: 'Lufthansa', cityto: 'FRANKFURT', out: 'FRANKFURT' },
+        { carrid: 'AA', carrname: 'American',  cityto: null,        out: 'NO ROUTE', repl: true },
+        { carrid: 'ZZ', carrname: 'Zeta Air',  cityto: null,        out: 'NO ROUTE', repl: true }
+      ],
+      sqlExpr:
+        "SELECT c~carrid, c~carrname,\n" +
+        "       COALESCE( p~cityto, 'NO ROUTE' ) AS city_to_text\n" +
+        "  FROM scarr AS c\n" +
+        "  LEFT OUTER JOIN spfli AS p ON p~carrid = c~carrid\n" +
+        "  INTO TABLE @DATA(lt_route).",
+      abapLoop:
+        "\" outer join 결과를 ABAP으로 가져온 뒤:\n" +
+        "LOOP AT lt_route INTO DATA(ls).\n" +
+        "  IF ls-cityto IS INITIAL.   \" ⚠️ null과 initial은 다른 개념\n" +
+        "    ls-city_to_text = 'NO ROUTE'.\n" +
+        "  ELSE.\n" +
+        "    ls-city_to_text = ls-cityto.\n" +
+        "  ENDIF.\n" +
+        "ENDLOOP.",
+      note: "<b>COALESCE는 DB의 null 대체</b> — ABAP의 빈 값(initial)과 <b>다른 개념</b>입니다. left outer join에서 매칭되는 행이 없으면 오른쪽 컬럼이 null이 됩니다."
+    }
+  ]
+};
+</script>
+<script src="../_engine/sql-expression-lab.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

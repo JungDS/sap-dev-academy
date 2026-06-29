@@ -1,0 +1,44 @@
+/* ===== call-function-box — CALL FUNCTION 계약 상자 (CH10-L03) =====
+   호출자 기준 EXPORTING/IMPORTING/CHANGING/EXCEPTIONS 방향과 sy-subrc 분기. 코드/로직 내장. */
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:transparent;line-height:1.5;}
+.wrap{padding:14px;}
+.hd{font-weight:800;font-size:1rem;margin:0 0 4px;}
+.hd small{font-weight:600;color:var(--brand);}
+.lead{margin:0 0 12px;color:var(--ink-soft);font-size:.86rem;}
+.lead code{font-family:var(--mono);background:#eef2ff;color:var(--brand);padding:1px 5px;border-radius:5px;font-size:.92em;}
+
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px;}
+.btn{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:7px 13px;font:inherit;font-size:.8rem;font-weight:700;cursor:pointer;}
+.btn:hover{border-color:var(--brand);color:var(--brand);}
+.btn.on{background:var(--brand);color:#fff;border-color:var(--brand);}
+.persp{margin-left:auto;display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;}
+.persp button{border:0;background:var(--surface);color:var(--ink-soft);font:inherit;font-size:.74rem;font-weight:700;padding:6px 11px;cursor:pointer;}
+.persp button.on{background:var(--amber);color:#fff;}
+
+.flow{display:grid;grid-template-columns:1fr 1.2fr;gap:12px;align-items:stretch;margin-bottom:12px;}
+@media(max-width:600px){ .flow{grid-template-columns:1fr;} }
+.caller,.fm{border:1px solid var(--line);border-radius:12px;background:var(--surface);overflow:hidden;}
+.caller__hd,.fm__hd{font-size:.74rem;font-weight:800;padding:7px 11px;}
+.caller__hd{background:#eef2ff;color:#26336b;} .fm__hd{background:#2c3666;color:#fff;}
+.caller__b,.fm__b{padding:11px;}
+.var{display:flex;justify-content:space-between;font-family:var(--mono);font-size:12.5px;padding:3px 0;}
+.var b{color:var(--brand);}
+.subrc{margin-top:8px;font-family:var(--mono);font-size:.86rem;font-weight:800;}
+.subrc .ok{color:var(--accent);} .subrc .no{color:var(--warn);}
+
+.param{display:grid;grid-template-columns:96px 1fr;gap:8px;align-items:center;padding:5px 0;border-bottom:1px dashed var(--line);}
+.param:last-child{border-bottom:0;}
+.param .dir{font-family:var(--mono);font-size:.74rem;font-weight:800;display:flex;align-items:center;gap:6px;}
+.param .arr{font-size:1rem;}
+.param.exp .dir{color:var(--brand);} .param.imp .dir{color:var(--accent);} .param.chg .dir{color:var(--amber);} .param.exc .dir{color:var(--bad);}
+.param .desc{font-size:.76rem;color:var(--ink-soft);}
+.perspwarn{margin-top:8px;font-size:.76rem;color:var(--bad);background:rgba(214,51,108,.07);border-radius:7px;padding:7px 10px;display:none;}
+.perspwarn.show{display:block;}
+
+.msg{font-size:.83rem;padding:9px 12px;border-radius:9px;background:var(--surface);color:var(--ink-soft);}
+.msg.ok{background:#eafaf3;color:#0b7250;} .msg.no{background:rgba(214,51,108,.07);color:var(--bad);}
+.msg code{font-family:var(--mono);background:#fff;border:1px solid var(--line);padding:0 5px;border-radius:4px;}
+
+.note{margin-top:12px;border-left:3px solid var(--brand);background:rgba(59,91,219,.06);border-radius:0 9px 9px 0;padding:9px 13px;font-size:.83rem;color:#2a3550;}
+.note code{font-family:var(--mono);background:#fff;border:1px solid var(--line);padding:0 5px;border-radius:4px;}

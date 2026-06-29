@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<!-- CH14-L02-S01 — 엔진: field-curtain · _autoheight. 콘텐츠=레슨 전용(Projection View 필드 선택, CH14 L02).
+     config=window.FC_CFG. 게이팅: classic Projection View(단일 테이블·열 축소) 개념만 · 조인/행필터/CDS 없음. -->
+<html lang="ko" data-eng="field-curtain">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>필드 커튼 — Projection View · CH14-L02-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/field-curtain.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">필드 커튼 <small>(Projection View — 한 테이블, 열 줄이기)</small></p>
+  <p class="lead">단일 테이블 <code>zconcert</code>에서 <b>노출할 필드만</b> 골라 보세요. 행은 그대로, <b>열</b>만 줄어듭니다. key 필드를 빼면 어떤 경고가 뜨는지도 확인하세요.</p>
+
+  <div class="fc-cols">
+    <div class="fc-left">
+      <p class="fc-h">View Fields (켜고 끄기)</p>
+      <div id="fcFields"></div>
+      <div class="fc-btns">
+        <button class="fc-btn" type="button" data-tech>기술 필드 숨기기</button>
+        <button class="fc-btn" type="button" data-all>전체 선택</button>
+      </div>
+    </div>
+    <div class="fc-right">
+      <p class="fc-h">사용자가 보는 결과 (ZPV_CONCERT_BASIC)</p>
+      <table class="fc-tbl"><thead><tr id="fcHead"></tr></thead><tbody id="fcBody"></tbody></table>
+      <div class="fc-struct" id="fcStruct">
+        <div class="fc-struct__hd">ABAP 구조 (선택된 필드)</div>
+        <pre></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="fc-fb" id="fcFb"></div>
+
+  <div class="note"><b>열만 줄인다.</b> Projection View는 단일 테이블에서 필드를 솎아낼 뿐, 행을 거르거나(필터) 권한을 대신하지 않습니다. 데이터가 안 보인다고 지워진 건 아닙니다 — basis table엔 그대로 있습니다.</div>
+</div>
+
+<script>
+window.FC_CFG = {
+  table: 'zconcert', structName: 'ty_concert_basic',
+  fields: [
+    { key: 'concert_id', isKey: true },
+    { key: 'perf_id' },
+    { key: 'date' },
+    { key: 'hall_id' },
+    { key: 'base_price' },
+    { key: 'internal_status', tech: true },
+    { key: 'created_by', tech: true },
+    { key: 'changed_at', tech: true }
+  ],
+  rows: [
+    { concert_id: 'C001', perf_id: 'P001', date: '2026-07-01', hall_id: 'H01', base_price: 120000, internal_status: 'A', created_by: 'JHY', changed_at: '0701' },
+    { concert_id: 'C002', perf_id: 'P002', date: '2026-07-03', hall_id: 'H02', base_price: 70000, internal_status: 'A', created_by: 'JHY', changed_at: '0702' }
+  ]
+};
+</script>
+<script src="../_engine/field-curtain.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

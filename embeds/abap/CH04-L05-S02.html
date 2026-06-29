@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<!-- CH04-L05-S02 — 엔진: mermaid (.dc 2칼럼) + _autoheight. 콘텐츠=레슨 §2 DO 루프(#C04-5).
+     좌=반복 사이클(본문→회차 체크→되돌이/탈출), 우=그 ABAP 코드(레슨과 동일). 게이팅: DO·sy-index만. -->
+<html lang="ko" data-eng="mermaid">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DO 반복 흐름 + 코드 · CH04-L05-S02</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>if(!window.mermaid){var s=document.createElement("script");s.src="../_vendor/mermaid.min.js";document.head.appendChild(s);}</script>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/mermaid.css" />
+</head>
+<body>
+  <div class="wrap">
+    <p class="hd">DO — 정해진 횟수만큼 <small>(5번 반복)</small></p>
+    <p class="lead">왼쪽은 <b>반복 흐름</b>, 오른쪽은 그 <b>ABAP 코드</b>입니다. 본문을 실행하고 회차를 세어, 다 안 돌았으면 <b>다시 위로</b> 돌아갑니다.</p>
+
+    <div class="dc">
+      <div class="viz-card">
+        <p class="viz-card__title">본문 → 회차 확인 → 되돌이</p>
+        <div class="mermaid" id="mm">
+flowchart TD
+  S(["DO 5 TIMES"]):::term
+  B["본문 실행<br/>(이번 회차 = sy-index)"]:::main
+  Q{"5회 다 돌았나?"}:::check
+  E(["ENDDO ▸ 다음 코드"]):::out
+  S --> B
+  B --> Q
+  Q -->|"아니오 · 다음 회차"| B
+  Q -->|"예"| E
+classDef term fill:#eef2ff,stroke:#94a3b8,stroke-width:2px,color:#1c2233;
+classDef check fill:#fff7ed,stroke:#e11d48,stroke-width:2px,color:#1c2233;
+classDef main fill:#ffffff,stroke:#10b981,stroke-width:2.4px,color:#0b7250;
+classDef out fill:#ffffff,stroke:#fb923c,stroke-width:2px,color:#c2410c;
+        </div>
+        <p class="viz-note">되돌이 화살표(아니오)가 <b>반복</b>입니다. 지금 몇 회차인지는 <code>sy-index</code>에 자동으로 들어갑니다.</p>
+      </div>
+
+      <div class="dc__code">
+        <div class="codecard">
+          <div class="codecard__hd"><span class="d r"></span><span class="d y"></span><span class="d g"></span><span class="lang">ABAP</span><span class="ttl">DO … ENDDO</span></div>
+          <div class="codecard__body">
+<pre class="codecard__gut">1
+2
+3
+4</pre>
+<pre class="codecard__code"><span class="tok-kw">DO</span> 5 <span class="tok-kw">TIMES</span>.
+  <span class="tok-kw">WRITE</span>: / <span class="tok-str">'sy-index ='</span>, sy-index.
+<span class="tok-kw">ENDDO</span>.
+<span class="tok-com">" 출력: 1, 2, 3, 4, 5</span></pre>
+          </div>
+        </div>
+        <ul class="dc__map">
+          <li><code>DO n TIMES</code> = 안쪽을 정확히 <b>n번</b> 반복</li>
+          <li><code>sy-index</code> = 지금 <b>몇 회차</b>(1,2,3…)인지 자동</li>
+          <li>n번 다 돌면 <code>ENDDO</code> 다음으로</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+<script src="../_engine/mermaid.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!-- CH25-L03-S01 — 엔진: judge-quiz (embeds/_engine/judge-quiz.{js,css}) · 공통토큰: _engine/_base.css
      "잠금은 언제 풀리나?" 풀림/유지 판별 퀴즈. -->
-<html lang="ko">
+<html lang="ko" data-eng="judge-quiz">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -23,8 +23,8 @@
     "labels": ["🔓 풀림", "🔒 유지"],
     "items": [
       { "q": "<code>DEQUEUE_EZ_BOOKING</code>을 호출했다.", "a": 0, "why": "명시적 <b>DEQUEUE</b> 호출 → 그 잠금이 풀린다." },
-      { "q": "<code>COMMIT WORK</code>를 실행했다.", "a": 0, "why": "트랜잭션이 끝나며 잠금이 <b>자동 해제</b>된다(가장 흔한 해제 경로)." },
-      { "q": "<code>ROLLBACK WORK</code>를 실행했다.", "a": 0, "why": "ROLLBACK도 트랜잭션을 끝내므로 잠금이 <b>자동 해제</b>된다." },
+      { "q": "<code>COMMIT WORK</code>를 실행했다.", "a": 0, "why": "보통 트랜잭션 종료와 함께 <b>자동 해제</b>된다(가장 흔한 경로). 단, 정확한 수명은 <code>_scope</code>로 판단 — <code>_scope=2</code> update 연계 잠금은 update 완료까지 남을 수 있다." },
+      { "q": "<code>ROLLBACK WORK</code>를 실행했다.", "a": 0, "why": "ROLLBACK도 트랜잭션을 끝내며 <code>_scope=2</code> 잠금을 제거하는 흐름이다. 모든 잠금이 무조건 풀린다고 단정하지 말고 <code>_scope</code>를 본다." },
       { "q": "사용자가 SAP 세션(모드)을 종료했다.", "a": 0, "why": "<b>세션 종료</b> 시 그 세션이 보유한 잠금은 모두 풀린다." },
       { "q": "그 예매 행을 <code>SELECT</code>로 조회만 했다.", "a": 1, "why": "단순 읽기는 잠금과 무관 → 잠금은 <b>그대로 유지</b>." },
       { "q": "다른 예매(<code>2002</code>)를 변경했다.", "a": 1, "why": "다른 키의 작업 → <code>1001</code> 잠금은 <b>유지</b>(키 단위 잠금)." },

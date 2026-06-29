@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<!-- CH12-L04-S01 — 엔진: include-exclude-judge · _autoheight. 콘텐츠=레슨 전용(포함/제외 판정, CH12 L04).
+     config=window.IEJ_CFG. 게이팅: Range Table I/E·EQ/BT 개념만 · ABAP 코드/Open SQL 없음. -->
+<html lang="ko" data-eng="include-exclude-judge">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Include/Exclude 판정기 · CH12-L04-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/include-exclude-judge.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">Include/Exclude 판정기 <small>(포함 OR · 제외 빼기)</small></p>
+  <p class="lead">다중 선택으로 <b>포함(I)</b>·<b>제외(E)</b> 조건을 쌓고, 각 공연이 왜 통과/탈락하는지 봅니다. <b>포함</b>은 후보를 넓히고(OR), <b>제외</b>는 후보에서 뺍니다.</p>
+
+  <p class="iej-h">다중 선택 (조건 쌓기)</p>
+  <div class="iej-presets">
+    <div class="iej-chips"></div>
+    <button class="iej-clear" type="button" data-clear>↺ 비우기</button>
+  </div>
+
+  <p class="iej-h">현재 조건 (s_conc Range Table)</p>
+  <div class="iej-rows" id="iejRows"></div>
+
+  <p class="iej-h">공연별 판정</p>
+  <table class="iej-tbl">
+    <thead><tr><th>공연ID</th><th>포함 후보?</th><th>제외 걸림?</th><th>최종</th><th>이유</th></tr></thead>
+    <tbody id="iejBody"></tbody>
+  </table>
+
+  <div class="note"><b>제외가 더 세다.</b> 포함(I) 범위에 들어왔어도 제외(E) 조건에 걸리면 최종 결과에서 빠집니다. 포함 여러 줄은 <b>OR</b>처럼 후보를 넓히고, 제외는 그 후보를 빼냅니다.</div>
+</div>
+
+<script>
+window.IEJ_CFG = {
+  field: 'concert_id',
+  candidates: ['C001', 'C002', 'C003', 'C004'],
+  presets: [
+    { label: 'C001~C003 포함 (I/BT)', rows: [{ sign: 'I', opt: 'BT', low: 'C001', high: 'C003' }] },
+    { label: 'C002 제외 (E/EQ)',       rows: [{ sign: 'E', opt: 'EQ', low: 'C002', high: '' }] },
+    { label: 'C004 추가 포함 (I/EQ)',   rows: [{ sign: 'I', opt: 'EQ', low: 'C004', high: '' }] }
+  ]
+};
+</script>
+<script src="../_engine/include-exclude-judge.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>
