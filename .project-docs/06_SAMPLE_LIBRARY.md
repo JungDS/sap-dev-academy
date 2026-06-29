@@ -1,9 +1,10 @@
 # 06. SAMPLE LIBRARY — 학습수단·페이지구조 샘플 카탈로그
 
-> 📅 **최종수정: 2026-06-21 00:37 KST**
-> 🎯 **목적:** `sample/`의 독립형 샘플을 레슨 제작 시 골라 쓰기 위한 지도.
-> 📖 **읽을 때:** 레슨에 시각화/체험/구조를 붙일 때(특히 코드→체험 필수일 때 [04 R2](04_CONVENTIONS.md)).
+> 📅 **최종수정: 2026-06-29 15:20 KST**
+> 🎯 **목적:** `sample/` 독립형 샘플 = **패턴·아이디어 참고 카탈로그**. 실제 레슨 체험은 `embeds/`(`::embed`)로 제작하며, 여기서 패턴을 골라 **embeds/ 위젯으로 적응**한다.
+> 📖 **읽을 때:** 레슨 체험(`embeds/`) 설계 시 참고할 패턴을 고를 때(코드→체험 필수 [04 R2](04_CONVENTIONS.md)).
 > ⚡ **TL;DR:**
+> - ⚠️ **체험 정본 = `embeds/`** — 레슨 `::embed CHnn-Lnn-Snn` → `embeds/abap/`(엔진 `embeds/_engine/`). `sample/`은 그 위젯을 만들 때 **참고할 패턴 카탈로그**(직접 ::embed 아님, [03](03_ARCHITECTURE.md)).
 > - 각 샘플은 **완전 self-contained 단일 HTML**(CSS·JS 내장, 외부의존 0; mermaid만 CDN).
 > - 카탈로그는 `sample/index.html`. 재사용은 그 파일의 `<style>`/`<script>` 블록만 옮기면 끝.
 > - 원본 아이디어는 구 repo `sapui5/sample/learning-methods-v3`. [[sapui5-readonly]]
@@ -12,7 +13,7 @@
 
 | 폴더 | 성격 | 대표 |
 |------|------|------|
-| `structure/` | 페이지 골격·기술 | 레슨 셸(v1 + v2 후보 C/D/E/F/G 검토 중), 코드 복사 블록, 콜아웃, **입문자 레슨 템플릿** |
+| `structure/` | 페이지 골격·기술 | 레슨 셸(**v2-C 확정** [08](08_LESSON_SHELL_SPEC.md)), 코드 복사 블록, 콜아웃, **입문자 레슨 템플릿** |
 | `foundations/` | 정적 설명형 | 개념 스토리텔링, 치트시트, 접이식, 요약 회수, 공식 링크 |
 | `code-learning/` | 코드 학습형 | Bad/Good 매퍼, 빈칸 채우기, 버그 헌트, 스텝 디버거 (코드 투어 아코디언 → code-copy-block 케이스 C로 흡수) |
 | `interactive/` | 상호작용형 | **가상 SAP GUI 샌드박스**, 의사결정 트리, 체크리스트, 단축키 시뮬레이터 |
@@ -20,7 +21,8 @@
 | `visuals/` | 시각화 | Mermaid 흐름도, 프로세스 플로우, 관계도, Before/After, 상태 변화, 데이터 테이블, 차트, SVG 아키텍처, 핫스팟 |
 
 ## "코드 → 체험" 추천 매핑 ([04 R2](04_CONVENTIONS.md))
-| 본문에 나오는 것 | 붙일 체험 샘플 |
+> 아래는 **embeds/ 위젯으로 적응할 참고 패턴** — 직접 ::embed 대상이 아니라, 실제 체험은 `embeds/abap/`에 제작한다.
+| 본문에 나오는 것 | 참고 패턴(sample) |
 |---|---|
 | SAP GUI 화면/T-code 실행 | `interactive/sap-gui-sandbox.html` (입력→검증→ALV, 표준 T-code SE16N 예시) |
 | 변수/루프 추적 | `code-learning/step-debugger.html` |
