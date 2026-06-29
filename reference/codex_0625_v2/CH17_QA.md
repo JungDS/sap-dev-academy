@@ -1,6 +1,6 @@
 # CH17_QA - codex_0625_v2 재작업 검수
 
-> 대상 파일: `reference/codex_0625_v2/CH17_REWRITE.md`  
+> 대상 파일: `reference/codex_0625_v2/CH17_REWRITE.md`
 > 판정: CH17 v2 기준 원고는 재작업 준비 산출물로 통과 대상. 실제 `content/abap/CH17` 반영과 embed 수정은 아직 수행하지 않았다.
 
 ## 1. 재작업 판정 반영

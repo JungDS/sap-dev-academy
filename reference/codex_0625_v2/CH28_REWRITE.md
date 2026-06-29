@@ -1,7 +1,7 @@
 # CH28_REWRITE - Editable Grid ALV와 입력 검증
 
-> 기준: `reference/codex_0625/00_QUALITY_REVIEW.md`, `reference/codex_0625/CH28_Editable-Grid-ALV와-입력-검증.md`, `content/abap/CH28/*`, `embeds/abap/CH28-L0*-S01.html`  
-> 작성 범위: CH28 한 챕터. 기존 v1의 반복 템플릿을 제거하고, 레슨 본문을 완성 강의자료 수준으로 재집필한다.  
+> 기준: `reference/codex_0625/00_QUALITY_REVIEW.md`, `reference/codex_0625/CH28_Editable-Grid-ALV와-입력-검증.md`, `content/abap/CH28/*`, `embeds/abap/CH28-L0*-S01.html`
+> 작성 범위: CH28 한 챕터. 기존 v1의 반복 템플릿을 제거하고, 레슨 본문을 완성 강의자료 수준으로 재집필한다.
 > Classic-first 경계: 이 챕터는 SAP GUI 기반 `CL_GUI_ALV_GRID`의 editable grid 수업이다. ABAP Cloud/RAP/Fiori의 입력 검증 방식으로 대체하지 않는다.
 
 ## CH28의 위치

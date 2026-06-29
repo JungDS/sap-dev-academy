@@ -158,4 +158,3 @@ rg -n "## CH16-L[0-9][0-9]" reference\codex_0625_v2\CH16_REWRITE.md
 CH16 v2는 `00_QUALITY_REVIEW.md`의 재작업 판정에 맞춰 v1의 템플릿 반복을 제거했고, 8개 레슨을 Dynpro 입문자가 실제 화면 흐름을 이해할 수 있는 강의 원고로 재작성했다. 공식문서 근거는 수동 확인으로 제한했고, R15 게이팅과 classic-first 경계를 지켰다.
 
 판정: 통과.
-

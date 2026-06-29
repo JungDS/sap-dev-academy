@@ -1,7 +1,7 @@
 # CH20_QA · OO ABAP 기본 설계 재작성 검수
 
-> 대상 산출물: `reference/codex_0625_v2/CH20_REWRITE.md`  
-> 기준 문서: `reference/codex_0625/00_QUALITY_REVIEW.md`  
+> 대상 산출물: `reference/codex_0625_v2/CH20_REWRITE.md`
+> 기준 문서: `reference/codex_0625/00_QUALITY_REVIEW.md`
 > 작업 단위: CH20 1개 챕터
 
 ## 1. 재작업 판정 반영

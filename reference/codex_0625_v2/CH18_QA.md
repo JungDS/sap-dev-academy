@@ -1,7 +1,7 @@
 # CH18_QA · Modern ABAP Syntax 재작성 검수
 
-> 대상 산출물: `reference/codex_0625_v2/CH18_REWRITE.md`  
-> 기준 문서: `reference/codex_0625/00_QUALITY_REVIEW.md`  
+> 대상 산출물: `reference/codex_0625_v2/CH18_REWRITE.md`
+> 기준 문서: `reference/codex_0625/00_QUALITY_REVIEW.md`
 > 작업 단위: CH18 1개 챕터
 
 ## 1. 재작업 판정 반영
@@ -126,5 +126,5 @@ CH18 v2는 `00_QUALITY_REVIEW.md`의 재작업 필요 판정을 반영해 작성
 - CH18에서 허용되는 modern syntax와 CH19/CH20 이후 경계를 분리했다.
 - 체험형 학습 장치를 버튼/상태/데이터/피드백 수준으로 구체화했다.
 
-판정: **통과**.  
+판정: **통과**.
 단, 실제 `content/abap/CH18`에 반영할 때는 기존 embed의 table expression 안전 경고를 UI에도 함께 보강하는 것이 좋다.

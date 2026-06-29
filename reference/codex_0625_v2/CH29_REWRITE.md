@@ -1,7 +1,7 @@
 # CH29_REWRITE - Enhancement / BAdI / User Exit
 
-> 기준 자료: `content/abap/CH29`, `reference/codex_0625/CH29_Enhancement-BAdI-User-Exit.md`, `reference/codex_0625/00_QUALITY_REVIEW.md`  
-> 재집필 목표: 표준 SAP 코드를 직접 고치지 않고 고객 요구를 넣는 방법을, 입문자가 "어디를 건드려야 하고 어디를 건드리면 안 되는지" 판단할 수 있을 만큼 완성 강의자료로 설명한다.  
+> 기준 자료: `content/abap/CH29`, `reference/codex_0625/CH29_Enhancement-BAdI-User-Exit.md`, `reference/codex_0625/00_QUALITY_REVIEW.md`
+> 재집필 목표: 표준 SAP 코드를 직접 고치지 않고 고객 요구를 넣는 방법을, 입문자가 "어디를 건드려야 하고 어디를 건드리면 안 되는지" 판단할 수 있을 만큼 완성 강의자료로 설명한다.
 > Classic-first 경계: 이 장은 Classic ABAP 환경의 User Exit, Customer Exit, Enhancement Framework, BAdI를 먼저 다룬다. ABAP Cloud, RAP, Released API는 CH29-L05의 Clean Core 판단 기준으로만 사용하고, RAP 구현이나 Cloud 확장 구현 절차로 넘어가지 않는다.
 
 ## CH29 전체 강의 지도

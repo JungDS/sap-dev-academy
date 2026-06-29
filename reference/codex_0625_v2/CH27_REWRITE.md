@@ -1,7 +1,7 @@
 # CH27_REWRITE - ALV 고급 Event 응용
 
-> 기준: `reference/codex_0625/00_QUALITY_REVIEW.md`, `reference/codex_0625/CH27_ALV-고급-Event-응용.md`, `content/abap/CH27/*`, `embeds/abap/CH27-L0*-S01.html`  
-> 작성 범위: CH27 한 챕터. 기존 v1의 반복 템플릿을 제거하고, 레슨 본문을 완성 강의자료 수준으로 재집필한다.  
+> 기준: `reference/codex_0625/00_QUALITY_REVIEW.md`, `reference/codex_0625/CH27_ALV-고급-Event-응용.md`, `content/abap/CH27/*`, `embeds/abap/CH27-L0*-S01.html`
+> 작성 범위: CH27 한 챕터. 기존 v1의 반복 템플릿을 제거하고, 레슨 본문을 완성 강의자료 수준으로 재집필한다.
 > Classic-first 경계: 이 챕터는 SAP GUI 기반 `CL_GUI_ALV_GRID` 이벤트 처리 수업이다. ABAP Cloud/RAP 방식으로 대체 설명하지 않는다.
 
 ## CH27의 위치
