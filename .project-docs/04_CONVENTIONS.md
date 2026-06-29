@@ -1,6 +1,6 @@
 # 04. CONVENTIONS — 규칙 단일 홈 (R1～R16) · 이름 풀 · 입문자 작성법
 
-> 📅 최종수정: 2026-06-29 15:20 KST
+> 📅 최종수정: 2026-06-29 15:36 KST
 > 🎯 **이 문서가 규칙(R)의 단일 출처.** 01·05·06 등은 여기 ID를 참조한다(재진술 금지).
 > 🧭 **공통 원칙: 규칙은 형식을 강제하지 않는다 — 정직한 적합성이 우선.** 불편·시각요소·예고를 "칸을 채우려고" 인위적으로 만들지 말 것(맞는 곳에 맞는 것만).
 > 📖 파일을 쓰기/고치기 직전. 중요도 순(필수→높음→중), 안정 ID `R1`～`R16` — R15·R16은 중요도상 높음/중에 배치(번호 비순차는 안정 ID 유지).
@@ -32,7 +32,12 @@
 - **코드 표시: 수직 스크롤만 허용, 수평 지양** — 한 줄 짧게(긴 문장 분할). 행번호(거터)와 코드 줄 수는 항상 1:1.
 - **다른 챕터/레슨 참조 = 링크(내부ID 비노출)** — `CHxx`를 본문에 그대로 노출 말고 `[Chapter NN · 제목](CHnn-Lmm.html)` 링크로(사람이 읽고 클릭 이동). **링크 대상 = 그 내용이 실제 있는 레슨**(특정 주제면 해당 `Lmm`, 챕터 전반이면 대표/첫 레슨) — **무조건 L01 금지**. 불편 체인 `→ CHxx`도 동일.
 
-**R6 · classic-first 경계 (CH04 삽입 리넘버 반영)** — 순수 classic 구간 = **CH01～17**. **New Syntax**(인라인 `DATA()`·`VALUE`·`NEW`·`+=`·`|…|`)는 CH17까지 **L0(예고조차 금지)** → **CH18에서 L3** 정식 도입. **New Open SQL**(`@`·콤마)은 CH18까지 L0 → **CH19에서 L3**(CH08～17 Open SQL은 전부 classic). 이는 R15 게이팅의 특례(일반보다 강함) — modern 도입(CH18/19) 후부터 자유 사용. 🔶 **예외 — `&&`(문자열 잇기)는 CH04에서 조기 도입**(매우 간단·고빈도); 그 대가로 classic `ADD`/`SUBTRACT`/`MULTIPLY`/`DIVIDE`도 CH04에서 함께 소개(`+=`/`-=`는 CH18로 미룸). + 스칼라·구조체는 **Local(프로그램 내 `DATA`/`TYPES`) → Global(DDIC) 나선**으로 재방문 — **DDIC 코어 = CH03(Domain·Data Element)·CH05(Structure)·CH07(Transparent Table)에 분산**. [[abap-curriculum-design]]
+**R6 · classic-first 경계 (CH04 삽입 리넘버 반영)** — modern 문법·SQL은 정해진 챕터부터만 — **R15 게이팅의 특례(일반보다 강함)**, 도입(CH18/19) 후 자유 사용. [[abap-curriculum-design]]
+- 순수 classic 구간 = **CH01～17**.
+- **New Syntax**(인라인 `DATA()`·`VALUE`·`NEW`·`+=`·`|…|`): CH17까지 **L0(예고조차 금지)** → **CH18에서 L3** 정식 도입.
+- **New Open SQL**(`@`·콤마): CH18까지 L0 → **CH19에서 L3** (CH08～17 Open SQL은 전부 classic).
+- 🔶 예외 — **`&&`(문자열 잇기)는 CH04 조기 도입**(매우 간단·고빈도). 대가로 classic `ADD`/`SUBTRACT`/`MULTIPLY`/`DIVIDE`도 CH04에서 함께(`+=`/`-=`는 CH18로 미룸).
+- 스칼라·구조체는 **Local(프로그램 내 `DATA`/`TYPES`) → Global(DDIC) 나선**으로 재방문 — **DDIC 코어 = CH03(Domain·Data Element)·CH05(Structure)·CH07(Transparent Table)에 분산**.
 
 **R7 · git** — main 직접 작업 금지(별도 브랜치). `.gitignore`에 안 걸린 변경은 **전부** `git add -A` → commit → push. 커밋 메시지 끝에 `Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>`.
 

@@ -1,6 +1,6 @@
 # 00. INDEX — 문서 지도
 
-> 📅 최종수정: 2026-06-29 14:17 KST
+> 📅 최종수정: 2026-06-29 15:36 KST
 > `.project-docs`는 AI 부팅용 컨텍스트. 원칙: **한 사실은 한 문서에만(SSOT)** · 번호≈우선순위(낮을수록 핵심; 11～13 공백 = 아카이브) · **완료된 이력 = git + `.archive`**(라이브 인덱스 포함, [04 R16](04_CONVENTIONS.md)).
 
 ## 자동 로드 (CLAUDE.md가 `@` 임포트 — 이미 컨텍스트에 있음)
@@ -14,7 +14,7 @@
 |---|---|---|
 | [02_PROGRESS](02_PROGRESS.md) | 현재 상태 · 다음 할 일 (**prune-only 스냅샷**, [04 R16](04_CONVENTIONS.md)) | 작업 시작·종료 시 |
 | [03_ARCHITECTURE](03_ARCHITECTURE.md) | 폴더 · MD→빌드→docs 파이프라인 · 런타임 셸 | 구조가 헷갈릴 때 |
-| [06_SAMPLE_LIBRARY](06_SAMPLE_LIBRARY.md) | `sample/` 카탈로그 · 컴포넌트 재사용 | 레슨/컴포넌트 설계 시 |
+| [06_SAMPLE_LIBRARY](06_SAMPLE_LIBRARY.md) | `sample/` 참고 패턴 카탈로그(체험 정본은 `embeds/`) | 레슨 체험·컴포넌트 설계 시 |
 | [07_BROWSER_TESTING](07_BROWSER_TESTING.md) | preview 검증 · 스크린샷 한계 우회 | 브라우저 검증 시 |
 | [08_LESSON_SHELL_SPEC](08_LESSON_SHELL_SPEC.md) | 레슨 셸 표준(v2-C) · 이식 규칙 | 셸/빌드 이식 시 |
 | [09_CURRICULUM_LEDGER](09_CURRICULUM_LEDGER.md) | **커리큘럼 개념 원장(개요 SSOT)** — 챕터 맵 · CH18 classic↔modern 경계 · 관통예제 (레슨별 introduces/prereq는 front-matter) | 커리큘럼 구조·게이팅(R15) 점검 시 |
