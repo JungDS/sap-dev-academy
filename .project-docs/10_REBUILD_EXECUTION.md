@@ -1,85 +1,75 @@
-# 10. REBUILD EXECUTION — ABAP 전 트랙 CONTENT MD 생성 실행 프롬프트
+# 10. REBUILD EXECUTION — ABAP 전 트랙 CONTENT MD 리빌드 실행 핸드오프
 
-> 📅 최종수정: 2026-06-22 21:25 KST
-> 🎯 이 문서 = 리빌드 실행용 **핸드오프 프롬프트**(새 세션에 그대로 전달). 스펙 출처는 [09_CURRICULUM_LEDGER](09_CURRICULUM_LEDGER.md).
-> ⚠️ 표기: 범위는 전각 `～`(반각 `~`는 마크다운 취소선으로 깨짐). 단 ABAP 코드의 `table~field` 같은 *코드 틸드*는 반각 유지.
+> 📅 최종수정: 2026-06-29 05:07 KST
+> 🎯 이 문서 = **전면 품질 리빌드를 실행할 때** 새 세션에 그대로 전달하는 핸드오프 프롬프트. 스펙 출처 = [09_CURRICULUM_LEDGER](09_CURRICULUM_LEDGER.md)(개요·경계·관통예제) + **각 레슨 `.md` front-matter**(per-lesson SSOT) + `check/` 체크리스트.
+> ⚠️ **전제(중요):** 현재 **CH01～36 2트랙 본문은 이미 존재**하고, CH04(연산자·흐름 제어) 삽입과 전 챕터 리넘버도 **이미 반영 완료**다. 따라서 이 리빌드는 greenfield가 **아니라** 골든 5종 아키타입([08 §10](08_LESSON_SHELL_SPEC.md)) 기준의 **품질 일괄 상향/재생성**이다 — **리넘버 단계 없음.**
+> 표기: 범위는 전각 `～`(반각 `~`는 마크다운 취소선으로 깨짐). 단 ABAP 코드의 `table~field` 같은 *코드 틸드*는 반각 유지.
 
 ---
 
 ## 0. 목표·스코프 (엄수)
-- **`content/abap/**.md`(소스 MD)만** 생성·수정한다. **`docs/**`(생성물)·빌드·브라우저 검증은 하지 않는다** — docs는 사용자가 최종에 별도로 한다.
+- **`content/abap/**.md`(소스 MD)만** 생성·수정한다. **`docs/**`(생성물)·빌드·브라우저 검증은 하지 않는다** — docs는 사용자가 최종에 별도로 한다(R1/P2).
 - **양 트랙 전부**(Track-1 CH01～23 + Track-2 CH24～36) 한 번에. 누락 방지를 위해 Track-2도 포함.
 - 산출물 = ① 전 트랙 content MD ② `check/REBUILD-REVIEW.md`(전수 재검토·수렴 이력).
-- **샘플 HTML 신규 제작은 보류**: 본문엔 `::embed` 지시문만(기존 샘플 재사용은 경로 참조, 신규 필요분은 경로 + "필요 샘플 목록"으로 모은다). 실제 샘플·docs는 이후 단계.
+- **샘플/임베드 HTML 신규 제작은 보류**: 본문엔 `::embed` 지시문만(기존 위젯 재사용은 경로 참조, 신규 필요분은 "필요 학습수단 목록"으로 모은다). 실제 위젯·docs는 이후 단계.
 
 ## 1. 먼저 정독 (SSOT)
-1. `.project-docs/09_CURRICULUM_LEDGER.md` — 단일 스펙(§A 리넘버맵·§B 경계·§C 관통예제·§F 레슨별 introduces/prereq/prevRel·§G Track-2 경계·§H 결정/교정).
-2. `check/PLANNED-CURRICULUM.md`(타깃 전체본) · `check/RUNNING-EXAMPLES.md`(구구단/SFLIGHT/콘서트 스키마·정훈영) · `check/coverage-checklist*.md`(레슨별 요구 토픽).
-3. `.project-docs/01_AI_SYNC.md`(DoD) · `04_CONVENTIONS.md`(R1～R15) · `05_PITFALLS.md`(P1～P11) · `03_ARCHITECTURE.md`(소스 레이아웃) · `06_SAMPLE_LIBRARY.md`(샘플 카탈로그) · `08_LESSON_SHELL_SPEC.md`.
-※ `docs/abap/**`는 생성물 — 읽기만(R1/P2). 손대지 않는다.
+1. `.project-docs/09_CURRICULUM_LEDGER.md` — 챕터 맵 · §B 경계 · §C 관통예제 · §D 도구/DML 경계 · §E Track-2 관계.
+2. **각 레슨 `.md` front-matter** — `introduces`/`prereq`/`prevRel`/`foreshadow`/`advanceUse`가 **per-lesson 게이팅 SSOT**([04 R10](04_CONVENTIONS.md)). 09는 이를 표로 복제하지 않으므로, 레슨 단위 정보는 *해당 레슨 front-matter에서 직접* 읽는다.
+3. `check/PLANNED-CURRICULUM.md`(타깃 전체본) · `check/RUNNING-EXAMPLES.md`(구구단/SFLIGHT/콘서트 스키마·정훈영) · `check/coverage-checklist*.md`(레슨별 요구 토픽).
+4. `.project-docs/01_AI_SYNC.md`(DoD) · `04_CONVENTIONS.md`(R1～R15) · `05_PITFALLS.md`(P1～P11) · `03_ARCHITECTURE.md`(소스 레이아웃) · `06_SAMPLE_LIBRARY.md`(샘플 카탈로그) · `08_LESSON_SHELL_SPEC.md`.
+※ `docs/abap/**`는 생성물 — 읽기만. 손대지 않는다.
 
 ## 2. 적용할 "기능" + 에이전트 권장/비권장
-- **TodoWrite**로 Phase 1 단계·Phase 2 챕터·Phase 3 라운드를 추적(하나씩 in_progress→completed).
-- **git**: 새 브랜치, 단계/챕터 커밋(끝에 `Co-Authored-By: Claude ...`), main 금지(R7).
+- **TodoWrite**로 Phase A 단계·챕터, Phase B 라운드를 추적(하나씩 in_progress→completed).
+- **git**: 새 브랜치, 챕터 단위 커밋(끝에 `Co-Authored-By: Claude ...`), main 금지([04 R7](04_CONVENTIONS.md)).
 - **검증은 MD 레벨만**(빌드 X): front-matter 스키마·게이팅·cross-ref grep·구조 점검.
 
 | 구간 | 에이전트 | 이유 |
 |---|---|---|
-| Phase 1 리넘버 | ❌ 비권장 | 원자적 폴더 rename·ID 시프트 — 단일 스레드라야 충돌 0 |
-| 2A 파운데이션 CH01～08 | ❌ 비권장 | 글로서리 기반·구구단 thread·게이팅 누적의 출발점 = 연속성 필수 |
-| 2B 드래프팅 CH09～36 | ✅ 권장 | 챕터별 독립 폴더(파일 충돌 0) + tight brief로 병렬 |
+| Phase A1 파운데이션 CH01～08 | ❌ 비권장 | 글로서리 기반·구구단 thread·게이팅 누적의 출발점 = 연속성 필수 |
+| Phase A2 드래프팅 CH09～36 | ✅ 권장 | 챕터별 독립 폴더(파일 충돌 0) + tight brief로 병렬 |
 | 글로서리/02_PROGRESS 편집 | ❌ 비권장 | 공유 파일 동시편집 충돌 → `[[term]]` 마킹만, 병합은 메인 |
-| Phase 3 전수 재검토 | ✅ 강력 권장 | 읽기전용 fan-out(선노출·누락 점검)에 최적 |
+| Phase B 전수 재검토 | ✅ 강력 권장 | 읽기전용 fan-out(선노출·누락 점검)에 최적 |
+
+> ⚠️ 리넘버(구 PHASE 1)는 **이미 완료** — 다시 하지 않는다. CH04는 존재하고 36챕터 번호는 확정이다. 혹 챕터/레슨 추가가 필요하면 **리넘버 대신 append/분할**(ID 안정성 우선, [04 R11](04_CONVENTIONS.md)).
 
 ---
 
-## PHASE 1 — 리넘버 (메인 스레드 · 에이전트 X · 빌드 X)
-09 §A 매핑이 정답: CH03 뒤 신규 **CH04(연산자와 흐름 제어)** 삽입 → 구 CH04～CH35 전부 +1 → 신 CH05～CH36(총 36).
-1. 작업 브랜치 생성.
-2. `content/abap/CHnn` 폴더를 **역순(CH35→CH36 … CH04→CH05)** `git mv`로 +1(이력 보존).
-3. 각 폴더: 레슨 파일명 `CHxx`·front-matter `id:`·`_chapter.md`의 `id:`/`order:`를 새 번호로.
-4. 신규 `content/abap/CH04/` 생성: `_chapter.md`(id CH04·order 4·TRACK-01·title "연산자와 흐름 제어"·intro·keywords·difficulty 입문) + 레슨 7개(09 §F: 산술·날짜 / 문자열 / IF·조건식·boolean / CASE / DO·WHILE·sy-index / 디버깅 / 구구단). 본문은 Phase 2.
-5. **교차참조 +1 시프트**: 모든 MD 텍스트의 `CHnn`(nn≥04)·`CHnn-Lyy` → `CH(nn+1)`. **예외: `CH01-L05`(이송/패키지) → `CH01-L06`**(stale 교정). 끝나면 `grep`으로 잔여 구번호 참조 0 확인.
-6. `04_CONVENTIONS.md` **R6 교체**(09 §B): 순수 classic CH01～17 / New Syntax(인라인 `DATA()`·`VALUE`·`NEW`·`+=`·`|…|`) CH18 L3 / New Open SQL(`@`·콤마) CH19 L3 / `&&`는 CH04 예외 / DDIC 분산 CH03·05·07.
-7. 커밋: "refactor(curriculum): CH04 삽입 + 전 챕터 리넘버 + R6". **빌드는 하지 않는다.**
+## PHASE A — 본문 리빌드 (content MD · 양 트랙)
+공통: 모든 레슨은 **레슨 작성 루프(§3)**를 충족. 관통예제 스키마·인물은 `check/RUNNING-EXAMPLES.md` 고정값(`ZGUGUDAN`·`ZCONCERT`/`ZPERF`/`ZBOOKING`·정훈영·SFLIGHT).
 
----
-
-## PHASE 2 — 본문 작성 (content MD · 양 트랙)
-공통: 모든 레슨은 **레슨 루프(§6)**를 충족. 관통예제 스키마·인물은 `RUNNING-EXAMPLES.md` 고정값(ZGUGUDAN·ZCONCERT/ZPERF/ZBOOKING·정훈영·SFLIGHT).
-
-### 2A. 파운데이션 CH01～CH08 (메인 스레드 · 순차 · 에이전트 X)
+### A1. 파운데이션 CH01～CH08 (메인 스레드 · 순차 · 에이전트 X)
 - 이유: 핵심 글로서리·구구단 thread·디버거·SY·게이팅 누적의 출발점 = 연속성 필수.
-- 기존 본문(CH01～03,05～08)은 초안 → ledger+DoD+4차 추가분으로 **업그레이드**, 신규 CH04는 신작.
-- 4차 추가분: NEW-LINE·콜론 `/:`·F1/Ctrl+Space·inactive/active·SE93·TYPE/LIKE·offset·숫자표현·CONSTANTS·Text Symbol·boolean·날짜산술·CONDENSE/SHIFT/TRANSLATE·COLLECT/컨트롤레벨 AT/SUM·BINARY SEARCH·`INSERT INTO TABLE` 차이·`UP TO n ROWS`·MESSAGE 등.
-- 이 구간 완료 후 커밋. (콘서트 모델 스키마를 여기 말미 또는 CH09에서 확정해 후속 에이전트에 전달.)
+- 기존 본문을 ledger(09) + DoD + 골든 5종 기준으로 **업그레이드**(빈 곳은 신작). 압축 금지·체험 동반(R2).
+- 이 구간 완료 후 커밋. (콘서트 모델 스키마를 CH09 첫 웨이브에 전달.)
 
-### 2B. 병렬 드래프팅 CH09～CH23 + CH24～CH36 (에이전트 ✅ · 챕터 단위)
+### A2. 병렬 드래프팅 CH09～CH23 + CH24～CH36 (에이전트 ✅ · 챕터 단위)
 - 챕터마다 서브에이전트 1개. 서로 다른 폴더만 쓰므로 동시 실행 안전.
 - **각 에이전트 brief(반드시 전달)**:
-  - (i) 담당 챕터의 09 §F 행 전체(introduces·prereq·prevRel·foreshadow·advanceUse) + 해당 coverage-checklist 토픽.
-  - (ii) **가용 개념 목록** = CH01～(담당 직전) introduces 합집합(오케스트레이터가 09 §F로 계산해 전달).
-  - (iii) **게이팅 규칙**: 가용 개념 + 자기 introduces만 사용. 후속 개념 정의/문법 선노출 금지. foreshadow는 L1(1～2문장·코드없음), advanceUse는 `[선행 사용]`만(특히 `START-OF-SELECTION`·`TRY/CATCH cx_salv_msg`).
-  - (iv) 관통예제 컨텍스트(RUNNING-EXAMPLES 발췌: 그 챕터의 thread 역할·콘서트 스키마·SFLIGHT·정훈영).
-  - (v) R규칙(R2/R3/R5/R6/R9/R10/R15)·sample-first(§6-5)·front-matter 스펙·금지(§7).
-  - (vi) **출력 제약**: 자기 챕터 폴더 MD만. `reference/glossary.json`·`02_PROGRESS` 등 공유파일 편집 금지 — 용어는 `[[term]]` 마킹만, 신규 글로서리 후보·필요 샘플은 리턴 메시지에 목록으로.
-  - (vii) Track-2(CH24～36)는 §F가 챕터 단위뿐 → 토픽·공식 ABAP 키워드 문서·커리큘럼 철학 기반으로 레슨 본문 설계(DoD 준수), 단 §G 경계·Track-1 중복 금지.
+  - (i) 담당 챕터 **각 레슨의 front-matter**(introduces·prereq·prevRel·foreshadow·advanceUse) + 해당 `coverage-checklist` 토픽.
+  - (ii) **가용 개념 목록** = CH01～(담당 직전) `introduces` 합집합(오케스트레이터가 front-matter를 모아 계산해 전달).
+  - (iii) **게이팅 규칙**: 가용 개념 + 자기 `introduces`만 사용. 후속 개념 정의/문법 선노출 금지. `foreshadow`는 L1(1～2문장·코드없음), `advanceUse`는 `[선행 사용]`만(특히 `START-OF-SELECTION`·`TRY/CATCH cx_salv_msg`).
+  - (iv) 관통예제 컨텍스트(`RUNNING-EXAMPLES` 발췌: 그 챕터의 thread 역할·콘서트 스키마·SFLIGHT·정훈영).
+  - (v) R규칙(R2/R3/R5/R6/R9/R10/R15)·sample-first(§3-5)·front-matter 스펙·금지(§4).
+  - (vi) **출력 제약**: 자기 챕터 폴더 MD만. `reference/glossary.json`·`02_PROGRESS` 등 공유파일 편집 금지 — 용어는 `[[term]]` 마킹만, 신규 글로서리 후보·필요 학습수단은 리턴 메시지에 목록으로.
+  - (vii) Track-2(CH24～36)는 09 §E 경계·Track-1 중복 금지 준수(독립 내용 많아 챕터 내 순서만 게이팅).
 - 의존: 콘서트 모델은 CH09에서 정의되므로 CH09를 첫 웨이브에서 먼저 확정 후 스키마를 후속 에이전트에 전달.
 
-### 2C. 통합 (메인 스레드)
+### A3. 통합 (메인 스레드)
 - 에이전트 산출 취합. `[[term]]` 마킹 수집 → 글로서리 후보 목록(병합은 docs 단계, 지금은 목록만).
 - 챕터 간 cross-ref 정합 grep 점검. `02_PROGRESS` 갱신. 챕터(또는 트랙) 단위 커밋.
 
 ---
 
-## PHASE 3 — 전수 재검토 · 수렴 루프 (반복; 검토=에이전트 ✅ 읽기전용 / 수정=메인)
-> 원칙: **수정은 파급된다.** 한 군데 고치면 직·간접 영향처를 모두 다시 봐야 한다 → 수정이 생긴 라운드 뒤엔 **content/abap/** 전체를 처음부터 다시 점검**. 신규 수정 0건 라운드까지 반복(수렴).
+## PHASE B — 전수 재검토 · 수렴 루프 (반복; 검토=에이전트 ✅ 읽기전용 / 수정=메인)
+> 원칙: **수정은 파급된다.** 한 군데 고치면 직·간접 영향처를 모두 다시 봐야 한다 → 수정이 생긴 라운드 뒤엔 **`content/abap/**` 전체를 처음부터 다시 점검**. 신규 수정 0건 라운드까지 반복(수렴).
 
 **라운드 R 절차:**
 1. **전수 검토(읽기전용 fan-out)** — 챕터 묶음(5～6개)마다 read-only 에이전트 1개가 담당 범위 전부 점검, findings 리턴:
-   - (a) **선노출(R15)** — "가용 개념"(CH01～직전 introduces 합집합) 밖 개념·키워드 정의/사용? (최우선)
-   - (b) **§F 정합** — introduces/prereq/prevRel 선언 = 본문 실제와 일치? coverage-checklist 요구 토픽 누락?
-   - (c) R6(인라인 DATA/@ classic 침투)·R9(정훈영/이름 풀)·R5(fenced ```abap·다크 금지)·R2(코드=::embed)?
+   - (a) **선노출(R15)** — "가용 개념"(CH01～직전 `introduces` 합집합) 밖 개념·키워드 정의/사용? (최우선)
+   - (b) **front-matter 정합** — `introduces`/`prereq`/`prevRel` 선언 = 본문 실제와 일치? coverage-checklist 요구 토픽 누락?
+   - (c) R6(인라인 `DATA`/`@` classic 침투)·R9(정훈영/이름 풀)·R5(fenced ```abap·다크 금지)·R2(코드=`::embed`)?
    - (d) 관통예제 연속성(구구단/SFLIGHT/콘서트 스키마·인물)·cross-ref·stale 참조?
 2. **수정(메인 스레드)** — findings를 content MD에 반영.
 3. **영향 표면 판정(반드시)** — 각 수정마다 파급 대상 분류(전수 검토 범위는 유지하되 우선 표시):
@@ -96,26 +86,26 @@
 
 ---
 
-## 6. 레슨 작성 루프 (모든 레슨 공통)
-1. **스펙 로드**: 09 §F 그 레슨 행 + coverage-checklist 토픽 + PLANNED 해당 줄.
+## 3. 레슨 작성 루프 (모든 레슨 공통)
+1. **스펙 로드**: 그 레슨 **front-matter**(introduces/prereq/prevRel) + `coverage-checklist` 토픽 + `PLANNED-CURRICULUM` 해당 줄.
 2. **본문(DoD)**: 왜 필요 → 무엇 → 어떻게 → 실수/주의 → 정리. 용어 첫 등장 1줄 풀이 + `[[term]]`. 압축 금지. 친근 톤·이모지/SVG 상황껏(R3). 품질 기준선 = `sample/structure/beginner-lesson-template.html` + 인접 완성 레슨.
 3. **게이팅(R15)**: 이미 배운 것만으로 이해·실습 가능. 선노출 0. 예고 L1·선행사용 `[선행 사용]`.
 4. **관통예제(09 §C)**: 구구단(CH04→08)·SFLIGHT 읽기(CH08～13)·콘서트 빌드(CH09→23)·디버거 반복·SY 점진. 인물=이름 풀, 1번 정훈영(R9).
-5. **체험 = 샘플 우선(sample-first)**: ① 필요 체험 유형 판단 → ② `06_SAMPLE_LIBRARY.md`+`sample/index.html` 점검 → ③ 있으면 재사용/적응 `::embed 경로 | 제목::` → ④ 없으면 경로만 `::embed` + "필요 샘플 목록" 추가(HTML 제작 보류). 코드 1줄이라도 정적이면 미완(R2). 골든 5종·step-debugger 등은 **재사용 씨앗**이지 "맞춰야 할 틀"이 아니다.
-6. **front-matter(R10)**: id·title·direction·keywords·order + **introduces·prereq**(필수) + foreshadow·advanceUse·prevRel(09 §F대로).
-7. **MD 점검**: front-matter 스키마·게이팅 자체점검·`[[term]]` 일관·cross-ref 새 번호.
+5. **체험 = 학습수단 우선**: ① 필요 체험 유형 판단 → ② 기존 위젯/엔진 점검(`embeds/abap/_index.md`·`embeds/_engine/`·`06_SAMPLE_LIBRARY.md`) → ③ 있으면 재사용/적응 `::embed CHnn-Lnn-Snn | 제목 | 높이::` → ④ 없으면 "필요 학습수단 목록"에 추가(HTML 제작은 보류). 코드 1줄이라도 정적이면 미완(R2). 골든 5종은 **재사용 씨앗**이지 "맞춰야 할 틀"이 아니다.
+6. **front-matter(R10)**: id·title·direction·keywords·order + **introduces·prereq**(필수) + foreshadow·advanceUse·prevRel.
+7. **MD 점검**: front-matter 스키마·게이팅 자체점검·`[[term]]` 일관·cross-ref(링크는 실존 레슨 ID, [04 R5](04_CONVENTIONS.md)).
 
-## 7. 가드레일 (위반 금지)
-- **docs/ 생성·빌드·브라우저 검증 안 함**. content/abap/**.md 만.
-- **R1/P2**: docs/abap/** 손대지 않음.
-- **R6/P7**: CH01～17 본문에 인라인 `DATA()`/`VALUE`/`NEW`/`@`/`+=`/`|…|` 금지(`&&`만 CH04 예외). 기존 R6 위반(CH09-L04/L05·CH11-L02 inline DATA, CH09-L05 NEW) 교정.
-- **R9**: 'Kim'/'Lee' 등 → 이름 풀(정훈영).
-- **R5/P10**: fenced ```abap 만, 다크/직접 HTML 금지.
-- **R15/P11**: 선노출 금지. CH10 Class는 static-first·OO 0·NEW/인라인 금지(D9).
-- **제외**: Screen Table Control · classic 인터랙티브 리스트(`AT LINE-SELECTION`/`HIDE` 등).
+## 4. 가드레일 (위반 금지)
+- **docs/ 생성·빌드·브라우저 검증 안 함**. `content/abap/**.md` 만.
+- **R1/P2**: `docs/abap/**` 손대지 않음.
+- **R6/P7**: CH01～17 본문에 인라인 `DATA()`/`VALUE`/`NEW`/`@`/`+=`/`\|…\|` 금지(`&&`만 CH04 예외). New Open SQL은 CH19↑.
+- **R9**: 'Kim'/'Lee' 등 임의 작명 금지 → 이름 풀(1번 정훈영).
+- **R5/P10**: fenced ```abap 만, 다크/직접 HTML 금지(빌드가 code-copy-block로 변환).
+- **R15/P11**: 선노출 금지. CH10 모듈화는 static-first·본격 OO 0·`NEW`/인라인 금지.
+- **제외(합의)**: Screen Table Control · classic 인터랙티브 리스트(`AT LINE-SELECTION`/`HIDE`/`AT USER-COMMAND`/`TOP-OF-PAGE`) — ALV로 대체.
 - 공유파일(glossary·02_PROGRESS) 동시편집 금지(에이전트는 마킹/리턴만).
 
-## 8. 완료 기준
-- 전 트랙(CH01～36) content MD 작성 완료(파운데이션 순차 + 나머지 병렬).
-- **PHASE 3 수렴 루프가 "연속 1라운드 무수정"으로 종료**(또는 상한 도달 시 미해결 명시) — `check/REBUILD-REVIEW.md` 이력 포함.
+## 5. 완료 기준
+- 전 트랙(CH01～36) content MD 리빌드 완료(파운데이션 순차 + 나머지 병렬).
+- **PHASE B 수렴 루프가 "연속 1라운드 무수정"으로 종료**(또는 상한 도달 시 미해결 명시) — `check/REBUILD-REVIEW.md` 이력 포함.
 - 빌드/docs는 하지 않음 — 사용자 검토·수정 후 별도 단계.

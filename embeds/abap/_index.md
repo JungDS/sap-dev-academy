@@ -3,7 +3,7 @@
 > 레슨 웹페이지가 `::embed CHnn-Lnn-Snn`으로 부르는 실제 학습수단 목록.
 > 파일명만으론 종류를 모르므로(슬러그 없음) 여기서 **설명·엔진·연결레슨·상태**를 관리한다.
 > 정본 엔진 = `embeds/_engine/` · 공통 토큰 = `embeds/_engine/_base.css` · Mermaid 백업 = `embeds/_vendor/`.
-> 제작 계획 = [.project-docs/13_EMBED_BUILD_PLAN](../../.project-docs/13_EMBED_BUILD_PLAN.md) · 입력 감사 = `check/20260624_챕터별_점검결과/`.
+> 제작 계획(완료·아카이브) = [13_EMBED_BUILD_PLAN](../../.archive/2026-06-29-docs-cleanup/13_EMBED_BUILD_PLAN.md) · 입력 감사 = `check/20260624_챕터별_점검결과/`.
 > 상태: ⬜ 미작성 · 🔧 작성중 · ✅ 빌드+브라우저 검증 완료
 
 ## A. 인스턴스 목록 (레슨 순)

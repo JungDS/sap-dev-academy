@@ -1,67 +1,24 @@
-# 02. PROGRESS — 진행 현황 · 다음 할 일
+# 02. PROGRESS — 현재 초점 · 다음 할 일
 
-> 📅 **최종수정: 2026-06-25 10:18 KST**
-> 🎯 **목적:** 목표가 어디까지 왔고, 다음에 무엇을 할지. 작업 시작·종료 시 갱신.
-> 📖 **읽을 때:** 작업 시작 전(현황 파악) · 종료 후(갱신).
-> ⚡ **TL;DR:** ABAP 커리큘럼 골격+CH01~14 본문 완료(CH15+ 스텁). 이번에 `sample/` 독립형 라이브러리 구축 + 입문자 작성표준·이름 풀 확정.
+> 📅 **최종수정: 2026-06-29 05:07 KST**
+> 🎯 **현재 상태와 다음 할 일만 담는다.** 완료/과거 항목·세션 서사는 **즉시 제거** — 정본은 git 이력 + `.archive/` 원장 + 라이브 인덱스([04 R16](04_CONVENTIONS.md)). 코드·git·감사로 파생 가능한 현황은 **복창하지 말고 포인터**(아래 📍).
+> 📖 **읽을 때:** 작업 시작 전(현황 파악) · 종료 시 갱신 — **갱신은 같은 커밋에 포함**([01](01_AI_SYNC.md)).
 
-## 📦 ABAP 커리큘럼
-
-| 항목 | 상태 |
-|------|------|
-| 콘텐츠 파이프라인(`tools/build-curriculum.mjs`) | ✅ 동작 |
-| 런타임 셸(`assets/shell.js`/`shell.css`/`lesson.css`) | ✅ **v2-C 이식 Phase 1** — 앱바·설정(글자/다크/폭/전체화면)·좌측 레일(레슨/챕터/용어)·우측 여정(스크롤스파이·모바일 시트)·용어 hover/click·읽기진행·이전다음. 블루/그린+다크. **+T코드 공통 미니페이지(tcodes.json 2계층)·`::embed` 체험 임베드(R4)·글로서리 패리티 게이트.** 시안 D/E/F/G 사용금지(대체됨). [08](08_LESSON_SHELL_SPEC.md) |
-| 코드 블록 표시 | ✅ **code-copy-block 양식 강제**(빌드가 ```abap → `.abap-editor`: 네이비 헤더+줄번호+ABAP 토큰색+복사). 다크 금지([05 P10](05_PITFALLS.md)/[04 R5](04_CONVENTIONS.md)). `<details>` 클릭 단서·생성물 파일명 `CHxx-Lyy.html` 통일([04 R11](04_CONVENTIONS.md)). |
-| 전체 spine(35챕터/**194**레슨 스캐폴딩) | ✅ (CH01에 WRITE 심화 L05 신설 → 6레슨) |
-| CH01~CH14 본문(classic 기초 전체) | ✅ 완료 (단 CH14-L08 = `AT SELECTION-SCREEN ON` 심화 **예약 스텁**, 본문 추후) |
-| CH15~CH35 본문 | 🚧 스텁 골격 |
-| 커리큘럼 개요 MD(`docs/abap/curriculum.md` + 트랙/챕터별) | ✅ `npm run build:curriculum-md`로 전 챕터·레슨 구조+다룰내용 개요를 통합·트랙별·챕터별 MD로 생성(NotebookLM·AI 부분분석용). 생성물 — front-matter에서 고치고 재생성. |
-| 로드맵 `pages/abap.html` | ✅ 개편 — 챕터 아코디언 + 레슨 요약(direction)·키워드·**직접 점프** + 검색/트랙점프/전체펼치기. v2-C 조화(블루/그린). 레슨 상세는 `lessons/CHxx.json` 지연 로드 |
-| glossary(65용어, CH01~14 커버) | ✅ |
-| 브라우저 시각 스모크테스트 | ⚠️ 일부 미실시(미리보기 깊은 URL 제약 → [07](07_BROWSER_TESTING.md)) |
-
-## 🧩 학습수단 embed 아키텍처 이관 — ✅ 완료 (2026-06-24)
-
-- **배경**: 챕터별 학습수단(`::embed`) 전수 점검(`check/20260624_챕터별_점검결과/`) → 일부가 `sample/` generic을 레슨과 무관하게 그대로 사용(치명 오배치). 수정 + 신규 제작.
-- **새 구조**: `embeds/_engine/<엔진>.{js,css}`(공통 엔진) + `embeds/abap/CHnn-Lnn-Snn.html`(레슨 전용 위젯) + `embeds/_engine/_base.css`(토큰) + `embeds/_vendor/`(mermaid 백업) + `embeds/abap/_index.md`(현황). `sample/`은 참고 카탈로그로만 유지.
-- **빌드**: `::embed CHnn-Lnn-Snn` → `embeds/abap/…html`(유일 경로). 레거시 `sample/` 직접참조 분기 **제거 완료**(비형식 경로는 빌드 경고).
-- **결과**: 미이관 embed **0건**(CH01~CH22 전수) · 신규/이관 위젯 **36개** · 정착 엔진 **21종**(step-debugger·fill-blank·before-after·domain-builder·mermaid·write-output·write-format·se38·se93·case-branch-sim·state-change-grid·select-query-simulator·input-help-priority·salv-grid-simulator·select-options-filter-sim·join-aggregate-visualizer·event-lifecycle-buildup·process-flow-pbo-pai·dynpro-screen-elements·gui-alv-grid-simulator·diff-mapper·class-diagram·relationship-map + 공통 `_autoheight`).
-- **품질**: 전 위젯 게이팅 준수(classic↔modern 경계 R6·R15) · D2Coding 웹폰트(`assets/fonts/`) · 브라우저 전수 인터랙션 검증(콘솔 0) · 관통예제(콘서트앱 zconcert/zbooking·status N/C·이름풀) 데이터 일관.
-- **상세 현황**: [embeds/abap/_index.md](../embeds/abap/_index.md).
-
-## 🧩 CH08~CH11 체험수단 추가 보강 — ✅ 완료 (2026-06-25, `feature/lesson-design-polish`)
-
-- **배경**: `reference/codex_0625_v2/CHnn_REWRITE.md`(v2 기준 원고)의 "체험 설계"를 근거로, 체험수단이 **없던 레슨**에 신규 학습수단을 제작·연결. 사용자가 기존/신규를 직접 보고 선정하도록 **기존 학습수단은 그대로 보존**(대체 아님, 추가).
-- **신규 26개 위젯·신규 엔진 22종**:
-  - CH08(6): client-scope-filter·select-form-lab·into-target-board·where-filter-lab·key-condition-lens·empty-result-message.
-  - CH09(9): relation-gate·value-vs-fk·text-table-viewer·search-help-builder·collective-search-help·f4-attach-scope·f4-priority-lab(L07-S02)·validation-router·concert-model-checklist.
-  - CH10(7): perform-call-map·param-passing-board·call-function-box·local-class-stepper·global-class-blackbox·module-choice-cards·can-book-toggle(L07-S02).
-  - CH11(4): write-vs-salv·salv-function-switch·salv-pipeline-stepper·(L05=module-choice-cards 재사용).
-- **보존된 기존 embed**: CH08-L02-S01·CH09-L07-S01·CH10-L07-S01·CH11-L02/L06-S01(미수정).
-- **품질**: classic-first 게이팅 준수(미래 문법 0)·이름풀(정훈영)·빌드 parity 0·콘솔 0·브라우저 DOM 검증(뷰포트 폭 정상화 후 측정, [05 P3](05_PITFALLS.md))·`_index.md` 등재·`_dark.css` 재생성.
-
-## 🧪 샘플 라이브러리 (`sample/`) — 이번 세션 구축
-
-- 카테고리별 **독립형(self-contained) 학습수단·구조 샘플** + 카탈로그(`sample/index.html`). 상세 [06_SAMPLE_LIBRARY](06_SAMPLE_LIBRARY.md).
-- **디자인 결정 현황**:
-  - 스텝 디버거: ✅ **A안(라이트 IDE) 확정** → `code-learning/step-debugger.html`(ABAP 구문강조·콘솔 현재행/전체 토글·강조=실행 직전). 비교본 제거됨.
-  - Mermaid 흐름도: ✅ **A안(배지 카드) 확정** → `visuals/mermaid-flowchart.html`(역할 배지 카드·곡선 엣지·빈 라벨 박스 숨김·스타디움 라벨 클립 해제). 비교 시안 제거됨.
-  - 레슨 셸: ✅ **v2-C 확정(표준)** → `sample/structure/lesson-shell-v2-c.html`(레일=E · 학습여정=F · 용어모음=G · 헤더 그라데이션 · T코드 공통 미니페이지+객체 요약 2계층 · 용어 hover/click · 전체화면=와이드강제 · 다크/글자크기(±·리셋)/가독폭 localStorage · 체험 슬롯(R4) · 끝 미니퀴즈 · 본문 좌측정렬 flex-basis 애니메이션 · 모바일 하단 여정 시트). A/B 사용금지, D/E/F/G 대체됨. **이식 규칙 → [08_LESSON_SHELL_SPEC](08_LESSON_SHELL_SPEC.md)**. ⚠️ 색 테마(블루·그린 vs 웜) 결정 후 실제 셸 이식 착수.
-- **확정 규칙**(이번 세션): 입문자 작성표준([04 R3](04_CONVENTIONS.md)) · 이름 풀([04 R9](04_CONVENTIONS.md)).
-- **🎨 디자인 일관화 패스(2026-06-19)** — 전 샘플(39개)에 디자인 규율 적용 + 각 파일 `@design-applied`/`@design-notes` 주석. 코드 에디터 헤더 통일(#2c3666 + 브랜드 액센트 · 쿨톤 거터 #eef1f8). code-copy-block은 2프리셋(A 프로그램명 표시 / B 생략)으로 재구성. **현재 사용자 리뷰 대기 중** → 리뷰 완료 후 처리(보류):
-  - (A) **빌드 전파** — 샘플(스펙)의 코드블록 디자인을 실제 레슨(`lesson.css`/빌드 스크립트, [08](08_LESSON_SHELL_SPEC.md))에 이식.
-  - (B) **코드 예제 디자인 완전 통일** — code-copy-block(`.abap-editor`) 기준으로 나머지 코드 샘플(code-tour·bug-hunt·step-debugger·event-lifecycle·write-output·write-format·select-query·salv·**fill-blank·diff-mapper·beginner-template**·image-hotspot)의 잔여 차이(`tok-*` 색·복사버튼·헤더 구조) 정리. ※ 클래스 체계가 제각각(.abap-editor/.code/.code-tour/.bughunt/.dbg/.ed/.codebox)이라 *시각 토큰*만 통일, 동작 구조는 샘플별 유지.
-  - (C) **이모지 정책 정정 반영** — 이번에 이모지를 ✓/✗·SVG로 바꾼 변경은 [04 R3](04_CONVENTIONS.md) 신규 **이모지 권장** 정책과 반대 방향 → **복원 예정**(대상 독자=20대 비전공, 이모지=친근감 수단).
-  - (D) commit — 위 정리 후.
+## 🎯 현재 초점
+ABAP 커리큘럼 **2트랙 36챕터 237레슨 본문 완료** 상태. 다음 갈림길 = **전면 리빌드 여부 결정**(아래 1). 그 전까지는 잔여 깊이갭 보강·스모크테스트가 실작업.
 
 ## ▶️ 다음 할 일 (우선순위)
-1. **골든 템플릿 5종 ✅ 전부 완료** — 셸 이식(✅v2-C·T코드·`::embed`) + 골든 5종([08 §10](08_LESSON_SHELL_SPEC.md)) 모두 신규 시뮬레이터 제작·검증 완료: ✅ **#1 CH14-L01(흐름)** 이벤트 점진적 빌드업 · ✅ **#2 CH01-L04(코드)** WRITE 출력 · ✅ **#3 CH03-L01(DDIC)** Domain 생성(저장→검사→활성화) · ✅ **#4 CH07-L01(SQL)** SELECT 조회(projection+WHERE→classic→sy-subrc) · ✅ **#5 CH10-L02(ALV)** SALV factory→display(라벨 자동·정렬·합계). 오써링 체크리스트=[08 §11](08_LESSON_SHELL_SPEC.md).
-   - **▶ 다음**: 이 5 아키타입을 기준으로 나머지 레슨 양산(아래 2번).
-2. **나머지 레슨 양산** — **(선행) 전면 리빌드면 MD 작성 *전에* "커리큘럼 맵 + 개념 원장" 확정**: 챕터/레슨 목록(가감·분할 가능하나 ID 안정성 우선 = 리넘버보다 추가/분할) · 개념별 `introduces` 레슨 · `prereq` · CH18 경계 · 레슨 관계(`prevRel`). 그 위에서 골든 5종 기준 CH01~14 업그레이드 + CH15~ 본문. ⚠️ CH18 classic→modern 경계([04 R6](04_CONVENTIONS.md)) · **리빌딩 시 R15 게이팅(L0~L3)·선수지식 잠금이 핵심 지표** — 레슨마다 `introduces`/`prereq` 필수 선언 + DoD 학습순서 항목 통과([04 R15](04_CONVENTIONS.md)/[05 P11](05_PITFALLS.md)).
-3. **시각 스모크테스트** — 셸 인터랙션·로드맵·임베드 렌더 눈으로 확인.
-4. `index.html` 허브에서 ABAP 카드 → 로드맵 연결 점검.
+1. **전면 리빌드 여부 결정(미정)** — 전 챕터 본문 완료라, 선택지 = *점진 개선 유지* vs *골든 5종([08 §10·§11](08_LESSON_SHELL_SPEC.md)) 기준 전면 리빌드*. 리빌드 택하면 MD 작성 *전에* 커리큘럼 맵·개념 원장([09_CURRICULUM_LEDGER](09_CURRICULUM_LEDGER.md)) 확정 → 실행 절차 [10_REBUILD_EXECUTION](10_REBUILD_EXECUTION.md). ⚠️ CH18 classic→modern 경계([04 R6](04_CONVENTIONS.md)) · R15 게이팅이 핵심 지표([04 R15](04_CONVENTIONS.md)/[05 P11](05_PITFALLS.md)).
+2. **잔여 깊이갭 보강** — `node tools/audit-content-depth.mjs` 재생성 후 🟠빈약·🔴R2 플래그 레슨 우선(직전 측정 = 빈약 32·R2 16 → [.archive/_generated/CONTENT_DEPTH_AUDIT.md](../.archive/_generated/CONTENT_DEPTH_AUDIT.md)).
+3. **시각 스모크테스트** — 셸 인터랙션·로드맵·임베드 렌더 눈 확인 + `index.html` 허브 → ABAP 카드 → 로드맵 연결 점검([07](07_BROWSER_TESTING.md)).
+
+## 📍 현황은 라이브 소스에서 (02는 복창하지 않는다 — R16)
+- **콘텐츠 깊이/DoD 갭** → `.archive/_generated/CONTENT_DEPTH_AUDIT.md` (재생성물).
+- **학습수단(embed) 현황·위젯·엔진** → [embeds/abap/_index.md](../embeds/abap/_index.md).
+- **챕터/레슨 구조·경계·관통예제** → [09_CURRICULUM_LEDGER](09_CURRICULUM_LEDGER.md) + 각 레슨 front-matter.
+- **완료된 작업 이력**(키워드 감사·확장·Track2·embed 이관·다크모드 감사 등) → git log + `.archive/` 원장([00 아카이브 섹션](00_INDEX.md)).
+- **셸·빌드·코드블록·glossary** → [08](08_LESSON_SHELL_SPEC.md)/[03](03_ARCHITECTURE.md)/[04](04_CONVENTIONS.md)·`reference/glossary.json`.
+- **외부 참고 코퍼스·검색 규율** → [14_REFERENCE_CORPUS](14_REFERENCE_CORPUS.md).
 
 ## 🧠 메모리 핸드오프
-`~/.claude/projects/.../memory/`: sda-architecture · abap-curriculum-design · sapui5-readonly · user-working-style · example-name-pool · beginner-learning-page-style. 새 세션은 이걸로 재설명 없이 이어간다.
-
-> 과거 세션 상세는 git log 참조. (구 `PROGRESS-20260618.md`·`AUTHORING.md`는 이 번호 체계로 흡수됨.)
+`~/.claude/projects/…/memory/` — **`MEMORY.md`(인덱스)가 정본.** 새 세션은 그 인덱스로 재설명 없이 이어간다.

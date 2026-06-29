@@ -1,6 +1,7 @@
 /* audit-content-depth — 레슨별 콘텐츠 깊이/DoD 결손 진단 원장 생성기
    content/abap/**.md를 훑어 본문량·섹션·코드·체험임베드·용어·표를 집계하고,
-   DoD 결손(특히 R2: 코드 있는데 체험 임베드 없음)을 플래그해 .project-docs/CONTENT_DEPTH_AUDIT.md로 출력.
+   DoD 결손(특히 R2: 코드 있는데 체험 임베드 없음)을 플래그해 .archive/_generated/CONTENT_DEPTH_AUDIT.md로 출력.
+   (재생성물이라 frozen 원장과 분리된 .archive/_generated/에 둔다 — 매 실행 덮어쓰기·.project-docs 통독 시 미포함.)
    재실행: node tools/audit-content-depth.mjs  (콘텐츠가 늘면 다시 돌려 갱신). */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -8,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SRC = path.join(ROOT, 'content', 'abap');
-const OUT = path.join(ROOT, '.project-docs', 'CONTENT_DEPTH_AUDIT.md');
+const OUT = path.join(ROOT, '.archive', '_generated', 'CONTENT_DEPTH_AUDIT.md');
 
 // 임계 — 초반(CH01~08) 골드 스탠다드(본문 ~1640자·섹션 ~5.6) 대비
 const THIN = 900;        // 본문자 < THIN → 🟠 빈약
