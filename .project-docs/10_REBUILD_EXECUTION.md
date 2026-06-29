@@ -1,6 +1,6 @@
 # 10. REBUILD EXECUTION — ABAP 전 트랙 CONTENT MD 리빌드 실행 핸드오프
 
-> 📅 최종수정: 2026-06-29 17:59 KST
+> 📅 최종수정: 2026-06-29 19:07 KST
 > 🎯 이 문서 = **전면 품질 리빌드를 실행할 때** 새 세션에 그대로 전달하는 핸드오프 프롬프트. 스펙 출처 = [09_CURRICULUM_LEDGER](09_CURRICULUM_LEDGER.md)(개요·경계·관통예제) + **각 레슨 `.md` front-matter**(per-lesson SSOT) + `check/` 체크리스트.
 > ⚠️ **전제(중요):** 현재 **CH01～36 2트랙 본문은 이미 존재**하고, CH04(연산자·흐름 제어) 삽입과 전 챕터 리넘버도 **이미 반영 완료**다. 따라서 이 리빌드는 greenfield가 **아니라** 골든 5종 아키타입([08 §9](08_LESSON_SHELL_SPEC.md)) 기준의 **품질 일괄 상향/재생성**이다 — **리넘버 단계 없음.**
 > 표기: 범위는 전각 `～`(반각 `~`는 마크다운 취소선으로 깨짐). 단 ABAP 코드의 `table~field` 같은 *코드 틸드*는 반각 유지.
@@ -17,7 +17,7 @@
 1. `.project-docs/09_CURRICULUM_LEDGER.md` — 챕터 맵 · §B 경계 · §C 관통예제 · §D 도구/DML 경계 · §E Track-2 관계.
 2. **각 레슨 `.md` front-matter** — `introduces`/`prereq`/`prevRel`/`foreshadow`/`advanceUse`가 **per-lesson 게이팅 SSOT**([04 R10](04_CONVENTIONS.md)). 09는 이를 표로 복제하지 않으므로, 레슨 단위 정보는 *해당 레슨 front-matter에서 직접* 읽는다.
 3. `check/PLANNED-CURRICULUM.md`(타깃 전체본) · `check/RUNNING-EXAMPLES.md`(구구단/SFLIGHT/콘서트 스키마·정훈영) · `check/coverage-checklist*.md`(레슨별 요구 토픽).
-4. `.project-docs/01_AI_SYNC.md`(DoD) · `04_CONVENTIONS.md`(R1～R15) · `05_PITFALLS.md`(P1～P11) · `03_ARCHITECTURE.md`(소스 레이아웃) · `06_SAMPLE_LIBRARY.md`(샘플 카탈로그) · `08_LESSON_SHELL_SPEC.md`.
+4. `.project-docs/01_AI_SYNC.md`(DoD) · `04_CONVENTIONS.md`(규칙 단일 홈) · `05_PITFALLS.md`(함정) · `03_ARCHITECTURE.md`(소스 레이아웃) · `06_SAMPLE_LIBRARY.md`(샘플 카탈로그) · `08_LESSON_SHELL_SPEC.md`.
 ※ `docs/abap/**`는 생성물 — 읽기만. 손대지 않는다.
 
 ## 2. 적용할 "기능" + 에이전트 권장/비권장
