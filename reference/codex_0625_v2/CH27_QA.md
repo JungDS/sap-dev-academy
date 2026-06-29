@@ -1,7 +1,7 @@
 # CH27_QA - ALV 고급 Event 응용
 
-> 대상 파일: `reference/codex_0625_v2/CH27_REWRITE.md`  
-> 판정 기준: `reference/codex_0625/00_QUALITY_REVIEW.md`  
+> 대상 파일: `reference/codex_0625_v2/CH27_REWRITE.md`
+> 판정 기준: `reference/codex_0625/00_QUALITY_REVIEW.md`
 > 작업 단위: CH27 단일 챕터
 
 ## 1. 최종 판정

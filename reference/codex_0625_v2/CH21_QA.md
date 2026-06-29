@@ -1,7 +1,7 @@
 # CH21_QA · SALV/Grid ALV 표시 제어 심화 재작성 검수
 
-> 대상 산출물: `reference/codex_0625_v2/CH21_REWRITE.md`  
-> 기준 문서: `reference/codex_0625/00_QUALITY_REVIEW.md`  
+> 대상 산출물: `reference/codex_0625_v2/CH21_REWRITE.md`
+> 기준 문서: `reference/codex_0625/00_QUALITY_REVIEW.md`
 > 작업 단위: CH21 1개 챕터
 
 ## 1. 재작업 판정 반영

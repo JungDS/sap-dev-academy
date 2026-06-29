@@ -1,7 +1,7 @@
 # CH18_REWRITE · Modern ABAP Syntax
 
-> 기준: `reference/codex_0625/00_QUALITY_REVIEW.md`의 재작업 판정  
-> 원본: `content/abap/CH18/_chapter.md`, `content/abap/CH18/CH18-L01.md` ~ `CH18-L07.md`  
+> 기준: `reference/codex_0625/00_QUALITY_REVIEW.md`의 재작업 판정
+> 원본: `content/abap/CH18/_chapter.md`, `content/abap/CH18/CH18-L01.md` ~ `CH18-L07.md`
 > 목적: CH18을 템플릿 보강안이 아니라, 입문자가 classic ABAP에서 modern ABAP으로 안전하게 넘어가는 완성 강의자료 수준으로 재집필한다.
 
 ## CH18의 역할

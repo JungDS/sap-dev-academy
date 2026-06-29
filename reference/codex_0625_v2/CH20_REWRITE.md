@@ -1,7 +1,7 @@
 # CH20_REWRITE · OO ABAP 기본 설계
 
-> 기준: `reference/codex_0625/00_QUALITY_REVIEW.md`의 재작업 판정  
-> 원본: `content/abap/CH20/_chapter.md`, `content/abap/CH20/CH20-L01.md` ~ `CH20-L10.md`  
+> 기준: `reference/codex_0625/00_QUALITY_REVIEW.md`의 재작업 판정
+> 원본: `content/abap/CH20/_chapter.md`, `content/abap/CH20/CH20-L01.md` ~ `CH20-L10.md`
 > 목적: CH20을 템플릿 보강안이 아니라, 절차적 ABAP에서 OO ABAP으로 넘어가는 완성 강의자료 수준으로 재집필한다.
 
 ## CH20의 역할

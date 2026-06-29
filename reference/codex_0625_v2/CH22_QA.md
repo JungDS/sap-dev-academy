@@ -1,8 +1,8 @@
 # CH22_QA - CDS View Entity 기초
 
-> 대상 파일: `reference/codex_0625_v2/CH22_REWRITE.md`  
-> 기준 파일: `reference/codex_0625/00_QUALITY_REVIEW.md`  
-> 작업 단위: CH22 단일 챕터  
+> 대상 파일: `reference/codex_0625_v2/CH22_REWRITE.md`
+> 기준 파일: `reference/codex_0625/00_QUALITY_REVIEW.md`
+> 작업 단위: CH22 단일 챕터
 > 판정: 재작업 완료, 검증 필요 항목은 본 문서에 명시
 
 ## 1. 재작업 판정 반영
