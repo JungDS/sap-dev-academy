@@ -1,8 +1,8 @@
 # CH17_REWRITE - Grid ALV 기초
 
-> 기준: `reference/codex_0625/00_QUALITY_REVIEW.md`의 재작업 판정  
-> 대상 원본: `content/abap/CH17/_chapter.md`, `content/abap/CH17/CH17-L01.md` ~ `CH17-L10.md`  
-> 산출 목적: v1의 반복 템플릿을 제거하고, CH17을 실제 강의자료로 옮길 수 있는 수준의 재작성 원고로 정리한다.  
+> 기준: `reference/codex_0625/00_QUALITY_REVIEW.md`의 재작업 판정
+> 대상 원본: `content/abap/CH17/_chapter.md`, `content/abap/CH17/CH17-L01.md` ~ `CH17-L10.md`
+> 산출 목적: v1의 반복 템플릿을 제거하고, CH17을 실제 강의자료로 옮길 수 있는 수준의 재작성 원고로 정리한다.
 > 반영 범위: `content/abap` 원본은 수정하지 않는다. 이 문서는 CH17 재작업 준비 산출물이다.
 
 ## CH17 전체 설계

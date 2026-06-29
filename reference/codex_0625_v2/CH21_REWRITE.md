@@ -1,7 +1,7 @@
 # CH21_REWRITE · SALV/Grid ALV 표시 제어 심화
 
-> 기준: `reference/codex_0625/00_QUALITY_REVIEW.md`의 재작업 판정  
-> 원본: `content/abap/CH21/_chapter.md`, `content/abap/CH21/CH21-L01.md` ~ `CH21-L08.md`  
+> 기준: `reference/codex_0625/00_QUALITY_REVIEW.md`의 재작업 판정
+> 원본: `content/abap/CH21/_chapter.md`, `content/abap/CH21/CH21-L01.md` ~ `CH21-L08.md`
 > 목적: CH21을 반복 템플릿이 아니라, SALV와 Grid ALV의 표시 제어를 입문자가 실제로 따라갈 수 있는 완성 강의자료로 재집필한다.
 
 ## CH21의 역할

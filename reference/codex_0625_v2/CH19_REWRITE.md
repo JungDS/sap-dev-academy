@@ -1,7 +1,7 @@
 # CH19_REWRITE · New Open SQL / Modern ABAP SQL
 
-> 기준: `reference/codex_0625/00_QUALITY_REVIEW.md`의 재작업 판정  
-> 원본: `content/abap/CH19/_chapter.md`, `content/abap/CH19/CH19-L01.md` ~ `CH19-L08.md`  
+> 기준: `reference/codex_0625/00_QUALITY_REVIEW.md`의 재작업 판정
+> 원본: `content/abap/CH19/_chapter.md`, `content/abap/CH19/CH19-L01.md` ~ `CH19-L08.md`
 > 목적: CH19를 템플릿 보강안이 아니라, classic Open SQL에서 Modern ABAP SQL로 넘어가는 완성 강의자료 수준으로 재집필한다.
 
 ## CH19의 역할
@@ -818,19 +818,19 @@ CH19의 도구를 의사결정 표로 정리한다.
 
 다음 미니 퀴즈로 확인한다.
 
-1. "항공사 코드가 사용자가 입력한 `p_carrid`와 같은 행만 읽는다."  
+1. "항공사 코드가 사용자가 입력한 `p_carrid`와 같은 행만 읽는다."
    답: `WHERE carrid = @p_carrid`
 
-2. "좌석이 꽉 찼으면 `FULL`, 아니면 `OPEN` 컬럼을 결과에 추가한다."  
+2. "좌석이 꽉 찼으면 `FULL`, 아니면 `OPEN` 컬럼을 결과에 추가한다."
    답: SQL `CASE ... END AS seat_status`
 
-3. "조회 결과를 key 기반으로 자주 읽어야 한다."  
+3. "조회 결과를 key 기반으로 자주 읽어야 한다."
    답: `@DATA( )` inline table보다 명시 타입과 key를 가진 internal table 고려
 
-4. "이미 가져온 200행짜리 internal table을 항공사별로 정렬해서 보여 준다."  
+4. "이미 가져온 200행짜리 internal table을 항공사별로 정렬해서 보여 준다."
    답: `SELECT FROM @itab` 또는 `SORT` 모두 가능. SQL식 정렬/필터 연습이면 `FROM @itab`, 단순 정렬이면 `SORT`도 충분
 
-5. "CDS View를 만들어 재사용하고 UI annotation을 붙인다."  
+5. "CDS View를 만들어 재사용하고 UI annotation을 붙인다."
    답: CH22 범위. CH19에서는 SQL 감각만 예고
 
 ### 실수와 주의

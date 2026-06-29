@@ -1,7 +1,7 @@
 # CH22_REWRITE - CDS View Entity 기초
 
-> 재작업 기준: `reference/codex_0625/00_QUALITY_REVIEW.md`의 판정에 따라 기존 `codex_0625`식 반복 템플릿을 버리고, CH22 원본 7개 레슨을 완성 강의자료 수준으로 다시 작성한다.  
-> 원본 범위: `content/abap/CH22/_chapter.md`, `CH22-L01.md` ~ `CH22-L07.md`  
+> 재작업 기준: `reference/codex_0625/00_QUALITY_REVIEW.md`의 판정에 따라 기존 `codex_0625`식 반복 템플릿을 버리고, CH22 원본 7개 레슨을 완성 강의자료 수준으로 다시 작성한다.
+> 원본 범위: `content/abap/CH22/_chapter.md`, `CH22-L01.md` ~ `CH22-L07.md`
 > 공식 확인: `C:\ABAP_DOCU_HTML`의 CDS DDL/DCL 문서를 파일 단위로 열어 문법과 경계를 수동 확인했다.
 
 ## CH22의 자리
