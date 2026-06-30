@@ -7,8 +7,8 @@
    (pre-commit/CI 연결 가능 — FAIL이면 exit 1.)
 
    밴드 (사용자 합의 2026-06-30):
-   - FAIL(게이트, exit 1): 오탐≈0만 — M 기계계열 · S1 링크/경로 · S2a 안정ID ·
-     섹션참조 · S3 토큰예산 · S3b 타임스탬프형식.
+   - FAIL(게이트, exit 1): 오탐≈0만 — M 기계계열(+개수복창 span 금지) · S1 링크/경로 ·
+     S2a 안정ID(max는 04/05서 도출) · 섹션참조 · S3 토큰예산 · S3b 타임스탬프형식.
    - WARN(자문, exit 0, "클린"이라 말 안 함 → 거짓그린 차단): 6 포인터비대칭 · 8 point-of-use.
    - 제외: 7 중복면.   MANUAL(린트 밖, L2·L4): 9 제목↔본문.
    ============================================================= */
@@ -51,6 +51,11 @@ for (const rel of PD_FILES) {
   docSections[num] = set;
 }
 
+// 안정ID 참 최대 = 04/05의 정의 개수에서 *도출*(린트가 자기 max를 하드코딩하지 않게 — anti-복창 자기적용).
+const maxId = (rel, re) => Math.max(0, ...[...read(rel).matchAll(re)].map(m => +m[1]));
+const MAX_R = maxId('.project-docs/04_CONVENTIONS.md', /\*\*R(\d+)/g);
+const MAX_P = maxId('.project-docs/05_PITFALLS.md', /\*\*P(\d+)/g);
+
 for (const rel of DOC_FILES) {
   if (!fs.existsSync(rel2abs(rel))) continue;
   const txt = read(rel);
@@ -59,8 +64,8 @@ for (const rel of DOC_FILES) {
   /* ---------- FAIL: M 기계계열 ---------- */
   for (const m of txt.matchAll(/CH\d+~|\b\d~\d문장|R\d+~R\d+|P\d+~P\d+/g))
     F('M-tilde', rel, `반각 범위틸드 "${m[0]}" (${at(m.index)}) → 전각 ～`);
-  for (const m of txt.matchAll(/R1[~～]R15\b/g))
-    F('M-rrange', rel, `stale 규칙범위 "${m[0]}" (${at(m.index)}) → R1～R16`);
+  for (const m of txt.matchAll(/R1`?[~～]`?R\d+|P1`?[~～]`?P\d+/g))
+    F('M-span', rel, `개수복창 금지 — 범위 진술 "${m[0]}" (${at(m.index)}). 04·05 홈도 span 안 씀 → 참조는 "규칙/함정"으로`);
   for (const m of txt.matchAll(/::embed\s+<|sample\/ standalone|sample\/ iframe/g))
     F('M-embed', rel, `구 embed/sample 잔재 "${m[0]}" (${at(m.index)})`);
   for (const m of txt.matchAll(/192레슨|35챕터|6,248|6,105/g))
@@ -78,9 +83,9 @@ for (const rel of DOC_FILES) {
 
   /* ---------- FAIL: S2a 안정ID dangling ---------- */
   for (const m of txt.matchAll(/\bR(\d{1,2})\b/g))
-    if (+m[1] > 16) F('S2a-id', rel, `dangling R${m[1]} (>R16, ${at(m.index)})`);
+    if (+m[1] > MAX_R) F('S2a-id', rel, `dangling R${m[1]} (>R${MAX_R} 정의, ${at(m.index)})`);
   for (const m of txt.matchAll(/\bP(\d{1,2})\b/g))
-    if (+m[1] > 11) F('S2a-id', rel, `dangling P${m[1]} (>P11, ${at(m.index)})`);
+    if (+m[1] > MAX_P) F('S2a-id', rel, `dangling P${m[1]} (>P${MAX_P} 정의, ${at(m.index)})`);
 
   /* ---------- FAIL: 섹션참조 "NN §M" → 대상 보유? ---------- */
   for (const m of txt.matchAll(/\b(\d{2}) §(\d+)/g)) {

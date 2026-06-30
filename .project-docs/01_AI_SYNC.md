@@ -1,8 +1,8 @@
 # 01. AI SYNC — 단일 목표 · 완료 정의 · 체크리스트
 
-> 📅 최종수정: 2026-06-30 15:01 KST
+> 📅 최종수정: 2026-06-30 16:02 KST
 > 📖 모든 작업 시작 전 (최우선).
-> ⚡ 목표=동기부여형 SAP 학습 사이트(MD→빌드→정적 HTML). 콘텐츠는 **완전 입문자용**(용어 한 줄 풀이 · 압축 금지 · 작성법·흐름 [04 R3](04_CONVENTIONS.md)). **코드 나오면 그 페이지에서 체험 필수.** 규칙은 **[04 R1～R16](04_CONVENTIONS.md) 단일 홈 — 위반 금지.**
+> ⚡ 목표=동기부여형 SAP 학습 사이트(MD→빌드→정적 HTML). 콘텐츠는 **완전 입문자용**(용어 한 줄 풀이 · 압축 금지 · 작성법·흐름 [04 R3](04_CONVENTIONS.md)). **코드 나오면 그 페이지에서 체험 필수.** 규칙은 **[04](04_CONVENTIONS.md) 단일 홈 — 위반 금지.**
 
 ## 🎯 단일 집중 목표
 **"개발자 시선으로 0부터 — 동기부여형 + 이론·체험 병행."** 분류 암기가 아니라 **불편을 먼저 겪고 그 해결책으로 개념을 배우는** 과정. 1순위 = **ABAP 커리큘럼**(2트랙 36챕터 — 구조 [09_CURRICULUM_LEDGER](09_CURRICULUM_LEDGER.md)·현황 [02_PROGRESS](02_PROGRESS.md)). UI5/Fiori·모듈·통합실습은 이후.
@@ -21,11 +21,11 @@
 작업 단위 = **한 번에 하나의 레슨/컴포넌트**.
 
 ## 📏 규칙 · 함정
-- **규칙 R1～R16 = [04_CONVENTIONS](04_CONVENTIONS.md)가 단일 출처.** (여기 재진술하지 않는다 — 작업 전 04를 훑는다.)
-- **함정 P1～P11 = [05_PITFALLS](05_PITFALLS.md).** 막히면 즉시.
+- **규칙 = [04_CONVENTIONS](04_CONVENTIONS.md)가 단일 출처.** (여기 재진술하지 않는다 — 작업 전 04를 훑는다.)
+- **함정 = [05_PITFALLS](05_PITFALLS.md).** 막히면 즉시.
 
 ## 🧭 작업유형별 필독 (부팅 밖 *구속* 규칙 라우팅)
-> R1～R16·P1～P11은 [04](04_CONVENTIONS.md)/[05](05_PITFALLS.md)(자동로드). 아래는 *작업 시작 시 반드시 여는* on-demand 구속 문서 — 안 열면 비준수 산출.
+> 규칙·함정은 [04](04_CONVENTIONS.md)/[05](05_PITFALLS.md)(자동로드). 아래는 *작업 시작 시 반드시 여는* on-demand 구속 문서 — 안 열면 비준수 산출.
 - **레슨 집필** → [08 Part2](08_LESSON_SHELL_SPEC.md)(오써링·텍스트보강·T코드 prose 금지) · [14 §5](14_REFERENCE_CORPUS.md)(사실검증·버전매칭) · *위젯 제작 시* [embeds/_engine/AUTHORING.md](../embeds/_engine/AUTHORING.md)(집필 계약).
 - **챕터 리빌드** → [10_REBUILD_EXECUTION](10_REBUILD_EXECUTION.md)(수렴 루프·게이팅 합집합·공유파일 편집금지) · [09_CURRICULUM_LEDGER](09_CURRICULUM_LEDGER.md)(경계·관통예제).
 - **셸/빌드 수정** → [08 Part1](08_LESSON_SHELL_SPEC.md) · [03_ARCHITECTURE](03_ARCHITECTURE.md).
