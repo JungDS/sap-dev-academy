@@ -1,7 +1,7 @@
-# 08. LESSON SHELL SPEC — 레슨 셸 표준(v2-C) · 골든 템플릿
+# 08. LESSON SHELL & AUTHORING — 레슨 셸 표준(v2-C) + 레슨 오써링 레퍼런스
 
-> 📅 **최종수정: 2026-06-29 18:00 KST**
-> 🎯 **목적:** 레슨 셸 = **v2-C 확정·이식 완료**. 셸/뷰어/빌드 마크업을 고칠 때 지킬 규칙(§0–7) + 텍스트위주 지표(§8) · 골든 5 아키타입(§9) · 레슨 오써링 체크리스트(§10).
+> 📅 **최종수정: 2026-06-30 13:29 KST**
+> 🎯 **목적:** **두 부분** — ① **셸·페이지 스펙**(§0–7 · v2-C 확정·이식 완료 · 셸/빌드 마크업 수정 시) · ② **레슨 오써링 레퍼런스**(§8 텍스트지표 · §9 골든 5 아키타입 · §10 오써링 체크리스트 · 집필·리빌드 시).
 > 📖 **읽을 때:** 셸/빌드 마크업 수정 직전 · 레슨 작성 시(§8–§10).
 > ⚡ **TL;DR:**
 > - 표준 = **v2-C · 이식 완료**(shell.css/js·lesson.css·빌드 템플릿·`tcodes.json`·front-matter·beginner 템플릿 전부 적용). 레퍼런스 = `sample/structure/lesson-shell-v2-c.html`.
@@ -10,6 +10,8 @@
 > - 생성물(`docs/abap/**`)은 빌드로만(R1), 셸은 fetch라 HTTP 서빙([05 P1](05_PITFALLS.md)).
 
 ---
+
+> 🧩 **Part 1 — 셸·페이지 스펙** (§0–7, 셸/빌드 마크업 수정 시).
 
 ## 0. 무엇이 어디서 (셸 구성 파일)
 
@@ -53,17 +55,16 @@
 - **`goals`**(선택) 또는 챕터 objectives 재사용, 없으면 `direction` 대체.
 - 빌드가 위를 읽어 `lesson-head`(eyebrow·h1·태그·T코드 라벨·목표 카드)·여정 컨테이너·레일/설정 마크업 emit. 스키마 정본 = [04 R10](04_CONVENTIONS.md).
 
-## 6. 빌드/런타임 가드 (기존 규칙 재확인)
-- **R1/P2**: `docs/abap/**`는 생성물 — `content/**.md` + 빌드에서만 고치고 `npm run build:abap` 재생성.
-- **P1**: 셸이 `fetch`(curriculum/glossary/tcodes) → `file://` 금지, HTTP 서빙([05 P1](05_PITFALLS.md)/[07](07_BROWSER_TESTING.md)).
-- **R9/P8**: 예제 이름은 풀에서만, 1번 정훈영.
-- **R8**: `shell.js`·`*.css` 수정 전 인덱스 주석 + grep으로 기존 구현 확인.
+## 6. 빌드/런타임 가드
+> 셸/빌드 수정 시 준수: **R1/P2**(생성물=빌드로만 · `npm run build:abap`) · **P1**(셸 `fetch`→HTTP 서빙) · **R9/P8**(이름 풀·1번 정훈영) · **R8**(`shell.js`·`*.css` 수정 전 인덱스+grep). 정본 = [04](04_CONVENTIONS.md)·[05](05_PITFALLS.md)·[07](07_BROWSER_TESTING.md).
 
 ## 7. 이식 현황
 ✅ **v2-C 이식 완료** — `shell.css`/`shell.js`/`lesson.css`·빌드 템플릿·`tcodes.json`(2계층)·front-matter(`tcode`/`goals`)·T코드 모달·`beginner-lesson-template.html` 전부 적용, 전 레슨 페이지 재생성·CH01-L01 데스크톱/모바일/다크 검증·콘솔 0. 색 테마 블루/그린 확정.
 > 레퍼런스 구현(픽셀·동작 기준) = [`sample/structure/lesson-shell-v2-c.html`](../sample/structure/lesson-shell-v2-c.html).
 
 ---
+
+> ✍️ **Part 2 — 레슨 오써링 레퍼런스** (§8–10, 레슨 *집필·리빌드* 시 · DoD 정본 = [01](01_AI_SYNC.md)). Part 1(§0–7) = 셸·페이지 스펙.
 
 ## 8. 텍스트위주 검증 지표
 - `preview_eval`로 각 `.prose`(또는 섹션) 내 **시각/상호작용 노드**(`.embed`·`.term`·`table`·`blockquote/callout`·`img/svg`·`details`) 집계 → **요소 0인 순수 텍스트 섹션 = *리뷰 플래그*(게이트 아님 — 텍스트만으로 충분하면 통과, 장식 강제 금지).** 단 **레슨 전체가 텍스트-only면 보강 필수.** (01 DoD 시각화 항목의 진단 근거.)

@@ -1,6 +1,6 @@
 # 00. INDEX — 문서 지도
 
-> 📅 최종수정: 2026-06-29 15:36 KST
+> 📅 최종수정: 2026-06-30 13:29 KST
 > `.project-docs`는 AI 부팅용 컨텍스트. 원칙: **한 사실은 한 문서에만(SSOT)** · 번호≈우선순위(낮을수록 핵심; 11～13 공백 = 아카이브) · **완료된 이력 = git + `.archive`**(라이브 인덱스 포함, [04 R16](04_CONVENTIONS.md)).
 
 ## 자동 로드 (CLAUDE.md가 `@` 임포트 — 이미 컨텍스트에 있음)
@@ -16,7 +16,7 @@
 | [03_ARCHITECTURE](03_ARCHITECTURE.md) | 폴더 · MD→빌드→docs 파이프라인 · 런타임 셸 | 구조가 헷갈릴 때 |
 | [06_SAMPLE_LIBRARY](06_SAMPLE_LIBRARY.md) | `sample/` 참고 패턴 카탈로그(체험 정본은 `embeds/`) | 레슨 체험·컴포넌트 설계 시 |
 | [07_BROWSER_TESTING](07_BROWSER_TESTING.md) | preview 검증 · 스크린샷 한계 우회 | 브라우저 검증 시 |
-| [08_LESSON_SHELL_SPEC](08_LESSON_SHELL_SPEC.md) | 레슨 셸 표준(v2-C) · 이식 규칙 | 셸/빌드 이식 시 |
+| [08_LESSON_SHELL_SPEC](08_LESSON_SHELL_SPEC.md) | 레슨 셸 표준(v2-C) + 레슨 오써링 레퍼런스 | 셸/빌드 수정 · 레슨 집필/리빌드 시 |
 | [09_CURRICULUM_LEDGER](09_CURRICULUM_LEDGER.md) | **커리큘럼 개념 원장(개요 SSOT)** — 챕터 맵 · CH18 classic↔modern 경계 · 관통예제 (레슨별 introduces/prereq는 front-matter) | 커리큘럼 구조·게이팅(R15) 점검 시 |
 | [10_REBUILD_EXECUTION](10_REBUILD_EXECUTION.md) | **전 트랙 CONTENT MD 리빌드 실행 핸드오프**(새 세션 전달용 프롬프트) | 전면 리빌드 실행 시 |
 | [14_REFERENCE_CORPUS](14_REFERENCE_CORPUS.md) | **외부 참고 코퍼스**(cheat-sheets·keyword doc·Clean ABAP) + **§5 사실검증·검색 규율**(웹검색 대신 오프라인·공식 URL·NotebookLM) | 레슨 집필·사실검증 시 |

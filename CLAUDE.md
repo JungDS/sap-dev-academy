@@ -27,4 +27,4 @@
 - 폴더·빌드 파이프라인·런타임 셸 → [03_ARCHITECTURE](.project-docs/03_ARCHITECTURE.md)
 - 샘플 카탈로그·재사용 → [06_SAMPLE_LIBRARY](.project-docs/06_SAMPLE_LIBRARY.md)
 - 미리보기 검증 워크플로 → [07_BROWSER_TESTING](.project-docs/07_BROWSER_TESTING.md)
-- 레슨 셸 표준(v2-C)·이식 → [08_LESSON_SHELL_SPEC](.project-docs/08_LESSON_SHELL_SPEC.md)
+- 레슨 셸 표준(v2-C)·오써링 → [08_LESSON_SHELL_SPEC](.project-docs/08_LESSON_SHELL_SPEC.md)
