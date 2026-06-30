@@ -1,6 +1,6 @@
 # 03. ARCHITECTURE — 폴더 역할 · 빌드 파이프라인 · 런타임 셸
 
-> 📅 **최종수정: 2026-06-29 14:51 KST**
+> 📅 **최종수정: 2026-06-30 15:01 KST**
 > 🎯 **목적:** "무엇이 어디 있고, 무엇이 소스이고 무엇이 생성물인가"를 한눈에.
 > 📖 **읽을 때:** 파일을 어디에 둘지/고칠지 헷갈릴 때.
 > ⚡ **TL;DR:**
@@ -14,7 +14,7 @@
 | 경로 | 역할 | 구분 |
 |------|------|------|
 | `content/abap/**.md` | 레슨·챕터 **본문 소스**(손작성·검수 대상) | 소스 |
-| `embeds/` | **체험수단 정본** — `_engine/`(공통 엔진 js·css) · `abap/CHnn-Lnn-Snn.html`(레슨 위젯) · `_vendor/`(mermaid 백업). 본문 `::embed`가 부른다 | 소스 |
+| `embeds/` | **체험수단 정본** — `_engine/`(공통 엔진 js·css) · `abap/CHnn-Lnn-Snn.html`(레슨 위젯) · `_vendor/`(mermaid 백업). 본문 `::embed`가 부른다. **위젯 제작 계약 = [`_engine/AUTHORING.md`](../embeds/_engine/AUTHORING.md)** | 소스 |
 | `assets/` | 런타임 셸(`shell.js`·`shell.css`)·`base.css`·`lesson.css` | 소스 |
 | `reference/` | **참조 데이터(손작성·생성물 아님)** — `glossary.json`(런타임 용어팝업 + 빌드 마킹) · `tcodes.json`(런타임 T코드) · `autolink.json`(빌드 `[[ ]]` 자동링크) · `sap-examples-index.md`·`codex_0625*`(집필 참고) | 소스 |
 | `sample/` | 독립형 샘플 + 카탈로그 — **참고용**(체험 정본은 `embeds/`) | 소스(참고) |

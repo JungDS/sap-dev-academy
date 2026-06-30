@@ -1,10 +1,10 @@
 # 06. SAMPLE LIBRARY — 학습수단·페이지구조 샘플 카탈로그
 
-> 📅 **최종수정: 2026-06-29 15:20 KST**
+> 📅 **최종수정: 2026-06-30 15:01 KST**
 > 🎯 **목적:** `sample/` 독립형 샘플 = **패턴·아이디어 참고 카탈로그**. 실제 레슨 체험은 `embeds/`(`::embed`)로 제작하며, 여기서 패턴을 골라 **embeds/ 위젯으로 적응**한다.
 > 📖 **읽을 때:** 레슨 체험(`embeds/`) 설계 시 참고할 패턴을 고를 때(코드→체험 필수 [04 R2](04_CONVENTIONS.md)).
 > ⚡ **TL;DR:**
-> - ⚠️ **체험 정본 = `embeds/`** — 레슨 `::embed CHnn-Lnn-Snn` → `embeds/abap/`(엔진 `embeds/_engine/`). `sample/`은 그 위젯을 만들 때 **참고할 패턴 카탈로그**(직접 ::embed 아님, [03](03_ARCHITECTURE.md)).
+> - ⚠️ **체험 정본 = `embeds/`** — 레슨 `::embed CHnn-Lnn-Snn` → `embeds/abap/`(엔진 `embeds/_engine/` · **제작 계약 = [embeds/_engine/AUTHORING.md](../embeds/_engine/AUTHORING.md)**). `sample/`은 그 위젯을 만들 때 **참고할 패턴 카탈로그**(직접 ::embed 아님, [03](03_ARCHITECTURE.md)).
 > - 각 샘플은 **완전 self-contained 단일 HTML**(CSS·JS 내장, 외부의존 0; mermaid만 CDN).
 > - 카탈로그는 `sample/index.html`. 재사용은 그 파일의 `<style>`/`<script>` 블록만 옮기면 끝.
 > - 원본 아이디어는 구 repo `sapui5/sample/learning-methods-v3`. [[sapui5-readonly]]

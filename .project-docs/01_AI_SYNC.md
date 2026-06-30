@@ -1,6 +1,6 @@
 # 01. AI SYNC — 단일 목표 · 완료 정의 · 체크리스트
 
-> 📅 최종수정: 2026-06-29 17:59 KST
+> 📅 최종수정: 2026-06-30 15:01 KST
 > 📖 모든 작업 시작 전 (최우선).
 > ⚡ 목표=동기부여형 SAP 학습 사이트(MD→빌드→정적 HTML). 콘텐츠는 **완전 입문자용**(용어 한 줄 풀이 · 압축 금지 · 작성법·흐름 [04 R3](04_CONVENTIONS.md)). **코드 나오면 그 페이지에서 체험 필수.** 규칙은 **[04 R1～R16](04_CONVENTIONS.md) 단일 홈 — 위반 금지.**
 
@@ -24,6 +24,12 @@
 - **규칙 R1～R16 = [04_CONVENTIONS](04_CONVENTIONS.md)가 단일 출처.** (여기 재진술하지 않는다 — 작업 전 04를 훑는다.)
 - **함정 P1～P11 = [05_PITFALLS](05_PITFALLS.md).** 막히면 즉시.
 
+## 🧭 작업유형별 필독 (부팅 밖 *구속* 규칙 라우팅)
+> R1～R16·P1～P11은 [04](04_CONVENTIONS.md)/[05](05_PITFALLS.md)(자동로드). 아래는 *작업 시작 시 반드시 여는* on-demand 구속 문서 — 안 열면 비준수 산출.
+- **레슨 집필** → [08 Part2](08_LESSON_SHELL_SPEC.md)(오써링·텍스트보강·T코드 prose 금지) · [14 §5](14_REFERENCE_CORPUS.md)(사실검증·버전매칭) · *위젯 제작 시* [embeds/_engine/AUTHORING.md](../embeds/_engine/AUTHORING.md)(집필 계약).
+- **챕터 리빌드** → [10_REBUILD_EXECUTION](10_REBUILD_EXECUTION.md)(수렴 루프·게이팅 합집합·공유파일 편집금지) · [09_CURRICULUM_LEDGER](09_CURRICULUM_LEDGER.md)(경계·관통예제).
+- **셸/빌드 수정** → [08 Part1](08_LESSON_SHELL_SPEC.md) · [03_ARCHITECTURE](03_ARCHITECTURE.md).
+
 ## 🤖 작업 전 / 종료 체크리스트
-**시작:** ① 대상을 레슨/컴포넌트 1개로 좁힘 → ② [02_PROGRESS](02_PROGRESS.md) 현재 상태·우선순위 확인 → ③ 규칙([04](04_CONVENTIONS.md))·함정([05](05_PITFALLS.md)) 훑기 → ④ 코드 있으면 체험수단 = `embeds/`(기존 위젯 재사용 [embeds/abap/_index.md](../embeds/abap/_index.md))·신규 제작, 패턴은 [06](06_SAMPLE_LIBRARY.md) 참고 → ⑤ 구조·예제·사실검증은 [14_REFERENCE_CORPUS](14_REFERENCE_CORPUS.md) 참고 루틴(cheat-sheet 버전 매칭 + abap-docs grep, **웹검색 대신 오프라인 코퍼스 우선 · 공식 URL · NotebookLM=`nlm` CLI = [14 §5](14_REFERENCE_CORPUS.md)**, SAP 원문 verbatim 허용·예제 그대로·어려운 본문은 R3 각색).
+**시작:** ① 대상을 레슨/컴포넌트 1개로 좁힘 → ② [02_PROGRESS](02_PROGRESS.md) 현재 상태·우선순위 확인 → ③ 규칙([04](04_CONVENTIONS.md))·함정([05](05_PITFALLS.md)) 훑기 → ④ 코드 있으면 체험수단 = `embeds/`(기존 위젯 재사용 [embeds/abap/_index.md](../embeds/abap/_index.md))·신규 제작, 패턴은 [06](06_SAMPLE_LIBRARY.md) 참고 → ⑤ 구조·예제·사실검증은 [14_REFERENCE_CORPUS](14_REFERENCE_CORPUS.md) **필독 루틴**(선택 아님 · cheat-sheet 버전 매칭 + abap-docs grep, **웹검색 대신 오프라인 코퍼스 우선 · 공식 URL · NotebookLM=`nlm` CLI = [14 §5](14_REFERENCE_CORPUS.md)**, SAP 원문 verbatim 허용·예제 그대로·어려운 본문은 R3 각색).
 **종료:** ① `npm run build:abap` 통과 + 정적 점검(href 실존·glossary 패리티) → ② [02_PROGRESS](02_PROGRESS.md) 갱신 — **완료 항목 제거·현재상태/다음할일만, 파생 현황은 포인터([04 R16](04_CONVENTIONS.md))** → ③ 브랜치에서 `git add -A` → commit(02 갱신 **같은 커밋에 포함**, `Co-Authored-By`) → push (main 금지). *(타임스탬프는 pre-commit 훅이 자동, [04 R13](04_CONVENTIONS.md).)*

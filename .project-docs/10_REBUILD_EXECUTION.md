@@ -1,8 +1,8 @@
 # 10. REBUILD EXECUTION — ABAP 전 트랙 CONTENT MD 리빌드 실행 핸드오프
 
-> 📅 최종수정: 2026-06-29 19:07 KST
+> 📅 최종수정: 2026-06-30 15:01 KST
 > 🎯 이 문서 = **전면 품질 리빌드를 실행할 때** 새 세션에 그대로 전달하는 핸드오프 프롬프트. 스펙 출처 = [09_CURRICULUM_LEDGER](09_CURRICULUM_LEDGER.md)(개요·경계·관통예제) + **각 레슨 `.md` front-matter**(per-lesson SSOT) + `check/` 체크리스트.
-> ⚠️ **전제(중요):** 현재 **CH01～36 2트랙 본문은 이미 존재**하고, CH04(연산자·흐름 제어) 삽입과 전 챕터 리넘버도 **이미 반영 완료**다. 따라서 이 리빌드는 greenfield가 **아니라** 골든 5종 아키타입([08 §9](08_LESSON_SHELL_SPEC.md)) 기준의 **품질 일괄 상향/재생성**이다 — **리넘버 단계 없음.**
+> ⚠️ **전제(중요):** 현재 **CH01～36 2트랙 본문은 이미 존재**하고, CH04(연산자·흐름 제어) 삽입과 전 챕터 리넘버도 **이미 반영 완료**다. 따라서 이 리빌드는 greenfield가 **아니라** 골든 5종 아키타입([08 §9](08_LESSON_SHELL_SPEC.md), *품질 참조·재사용 씨앗*)을 활용한 **품질 일괄 상향/재생성**이다 — **리넘버 단계 없음.**
 > 표기: 범위는 전각 `～`(반각 `~`는 마크다운 취소선으로 깨짐). 단 ABAP 코드의 `table~field` 같은 *코드 틸드*는 반각 유지.
 
 ---
@@ -19,6 +19,7 @@
 3. `check/PLANNED-CURRICULUM.md`(타깃 전체본) · `check/RUNNING-EXAMPLES.md`(구구단/SFLIGHT/콘서트 스키마·정훈영) · `check/coverage-checklist*.md`(레슨별 요구 토픽).
 4. `.project-docs/01_AI_SYNC.md`(DoD) · `04_CONVENTIONS.md`(규칙 단일 홈) · `05_PITFALLS.md`(함정) · `03_ARCHITECTURE.md`(소스 레이아웃) · `06_SAMPLE_LIBRARY.md`(샘플 카탈로그) · `08_LESSON_SHELL_SPEC.md`.
 ※ `docs/abap/**`는 생성물 — 읽기만. 손대지 않는다.
+> ⚠️ **`check/`는 gitignore된 로컬 스크래치**(프레시 클론엔 없음). **권위 SSOT = 09 + 레슨 front-matter**이고, `check/`(PLANNED·coverage·RUNNING-EXAMPLES)는 그걸 펼친 *작업용 보조*다 — 없으면 09 §C·§F·front-matter에서 재구성한다. 산출물 `REBUILD-REVIEW.md`도 *로컬 수렴 이력*(커밋 대상 아님).
 
 ## 2. 적용할 "기능" + 에이전트 권장/비권장
 - **TodoWrite**로 Phase A 단계·챕터, Phase B 라운드를 추적(하나씩 in_progress→completed).
@@ -41,7 +42,7 @@
 
 ### A1. 파운데이션 CH01～CH08 (메인 스레드 · 순차 · 에이전트 X)
 - 이유: 핵심 글로서리·구구단 thread·디버거·SY·게이팅 누적의 출발점 = 연속성 필수.
-- 기존 본문을 ledger(09) + DoD + 골든 5종 기준으로 **업그레이드**(빈 곳은 신작). 압축 금지·체험 동반(R2).
+- 기존 본문을 ledger(09) + DoD 기준으로 **업그레이드**(골든 5종은 *참조·씨앗*이지 맞출 틀 아님, 빈 곳은 신작). 압축 금지·체험 동반(R2).
 - 이 구간 완료 후 커밋. (콘서트 모델 스키마를 CH09 첫 웨이브에 전달.)
 
 ### A2. 병렬 드래프팅 CH09～CH23 + CH24～CH36 (에이전트 ✅ · 챕터 단위)

@@ -1,6 +1,6 @@
 # 04. CONVENTIONS — 규칙 단일 홈 (R1～R16) · 이름 풀 · 입문자 작성법
 
-> 📅 최종수정: 2026-06-29 15:36 KST
+> 📅 최종수정: 2026-06-30 15:01 KST
 > 🎯 **이 문서가 규칙(R)의 단일 출처.** 01·05·06 등은 여기 ID를 참조한다(재진술 금지).
 > 🧭 **공통 원칙: 규칙은 형식을 강제하지 않는다 — 정직한 적합성이 우선.** 불편·시각요소·예고를 "칸을 채우려고" 인위적으로 만들지 말 것(맞는 곳에 맞는 것만).
 > 📖 파일을 쓰기/고치기 직전. 중요도 순(필수→높음→중), 안정 ID `R1`～`R16` — R15·R16은 중요도상 높음/중에 배치(번호 비순차는 안정 ID 유지).
@@ -61,7 +61,7 @@
 - 셀럽: 유재석, 손흥민, 강호동, 마동석, 박지성, 류현진, 차은우, 김연아, 아이유, 수지, 안유진, 신유빈, 전지현
 
 **R10 · front-matter + 제목** — 제목=기술형(서사 문구 금지), 동기는 `intro`(챕터)/`direction`(레슨).
-- `_chapter.md`: `id`(=폴더명)·`track`·`order`·`title`·`intro`·`keywords`·`difficulty`.
+- `_chapter.md`: `id`(=폴더명)·`track`(리터럴 **`TRACK-01`/`TRACK-02`** — `_tracks.md`와 일치, 빌드 join 키)·`order`·`title`·`intro`·`keywords`·`difficulty`.
 - 레슨 `.md`: `id`·`title`·`direction`·`keywords`·`order` · (선택) `tcode`·`tcodeBadge`·`goals`.
 - 레슨 `.md` **학습 경계(R15)**: `introduces`(이번에 L3 정식 도입할 개념)·`prereq`(전제 개념) = **리빌딩 시 필수**(게이팅 검증 근거) · `foreshadow`(L1 예고 허용)·`advanceUse`(L2 선행 사용 허용)·`prevRel`(이전 레슨과의 관계: `pain-solution`/`parallel`/`deepening`) = 선택. 빌드는 무시(메타 전용) — 리빌딩 때 경계·관계 선언 + 후속 정적 점검 근거.
 

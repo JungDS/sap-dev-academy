@@ -1,6 +1,6 @@
 # 09. CURRICULUM LEDGER — 커리큘럼 개념 원장 (개요 SSOT)
 
-> 📅 최종수정: 2026-06-29 18:11 KST
+> 📅 최종수정: 2026-06-30 15:01 KST
 > 🎯 **2트랙 36챕터의 챕터 맵 + 교차 설계 합의(경계·관통예제·도구 아크)의 단일 출처.**
 > 🧭 **per-lesson `introduces`/`prereq`/`prevRel`/`foreshadow`/`advanceUse` = 각 레슨 `.md` front-matter가 라이브 SSOT**([04 R10](04_CONVENTIONS.md)) — 이 문서는 레슨별 데이터를 중복하지 않고 *그 위의 개요·경계·관통설계*만 담는다(§F). 게이팅([04 R15](04_CONVENTIONS.md)) 점검 = front-matter ↔ 본문 ↔ R15.
 > ✅ 현행: 본문은 **CH01～36 전 레슨 작성 완료**(CH04 흐름제어 삽입·전 챕터 리넘버 반영 끝). 전면 리빌드는 *선택* — 실행 절차는 [10_REBUILD_EXECUTION](10_REBUILD_EXECUTION.md).
@@ -15,6 +15,7 @@
 ## A. 트랙·챕터 맵 (현행 36챕터)
 
 > 핵심 = 그 챕터가 **L3 정식 도입**하는 대표 개념(요지). 레슨별 상세는 front-matter.
+> ℹ️ 챕터 front-matter `track` **실값 = `TRACK-01`/`TRACK-02`**([04 R10](04_CONVENTIONS.md)) — 아래 "Track-1/2" 헤더는 표시 라벨.
 
 ### Track-1 — ABAP 기초～입문 실무 (CH01～23)
 | CH | 챕터 | L | 핵심(introduces 요지) |
@@ -62,11 +63,9 @@
 
 > Track-1 = 입문 게이팅(R15)이 핵심. Track-2 = 챕터 내 순서만 게이팅(서로 독립 내용 많음 — 상세 정책은 아카이브 [`TRACK2_ENRICHMENT.md`](../.archive/2026-06-29-docs-cleanup/TRACK2_ENRICHMENT.md) §규칙).
 
-## B. classic↔modern 경계 (R6 요약 — 규칙 단일 홈 = [04 R6](04_CONVENTIONS.md))
-- 순수 classic 구간 = **CH01～17**.
-- **New Syntax**(인라인 `DATA()`·`VALUE`·`NEW`·`+=`·`\|…\|`): CH17까지 L0 → **CH18 L3**.
-- **New Open SQL**(`@`·콤마): CH18까지 L0 → **CH19 L3** (CH08～17 Open SQL은 전부 classic).
-- 🔶 예외 — `&&`(문자열 잇기)는 **CH04 조기 도입**(매우 간단·고빈도). 대가로 classic `ADD`/`SUBTRACT`/`MULTIPLY`/`DIVIDE`도 CH04에서 소개(`+=`/`-=`는 CH18로 미룸).
+## B. classic↔modern 경계 (커리큘럼 위치 — 문법 메커니즘 단일 홈 = [04 R6](04_CONVENTIONS.md))
+- 순수 classic = **CH01～17** · New Syntax 도입 **CH18 L3** · New Open SQL 도입 **CH19 L3**(CH08～17 Open SQL 전부 classic) · `&&`만 **CH04** 조기.
+- *어느 문법이 언제 L0→L3 · `&&` 예외의 대가(classic `ADD` 등 CH04)* 같은 **메커니즘 상세는 재진술 안 함 → [04 R6](04_CONVENTIONS.md)**(5중 복창 드리프트 방지).
 - DDIC 코어 나선 = **CH03**(Domain·Data Element)·**CH05**(Structure)·**CH07**(Transparent Table).
 
 ## C. 🟢 관통 학습장치
