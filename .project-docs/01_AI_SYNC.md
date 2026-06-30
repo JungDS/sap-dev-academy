@@ -1,29 +1,35 @@
 # 01. AI SYNC — 단일 목표 · 완료 정의 · 체크리스트
 
-> 📅 최종수정: 2026-06-26 19:02 KST
+> 📅 최종수정: 2026-06-30 16:02 KST
 > 📖 모든 작업 시작 전 (최우선).
-> ⚡ 목표=동기부여형 SAP 학습 사이트(MD→빌드→정적 HTML). 콘텐츠는 **완전 입문자용**(용어 한 줄 풀이 · 왜→무엇→어떻게→주의→정리, 압축 금지). **코드 나오면 그 페이지에서 체험 필수.** 규칙은 **[04 R1~R15](04_CONVENTIONS.md) 단일 홈 — 위반 금지.**
+> ⚡ 목표=동기부여형 SAP 학습 사이트(MD→빌드→정적 HTML). 콘텐츠는 **완전 입문자용**(용어 한 줄 풀이 · 압축 금지 · 작성법·흐름 [04 R3](04_CONVENTIONS.md)). **코드 나오면 그 페이지에서 체험 필수.** 규칙은 **[04](04_CONVENTIONS.md) 단일 홈 — 위반 금지.**
 
 ## 🎯 단일 집중 목표
-**"개발자 시선으로 0부터 — 동기부여형 + 이론·체험 병행."** 분류 암기가 아니라 **불편을 먼저 겪고 그 해결책으로 개념을 배우는** 과정. 1순위 = **ABAP 커리큘럼**(35챕터/192레슨, 현황 [02_PROGRESS](02_PROGRESS.md)). UI5/Fiori·모듈·통합실습은 이후.
+**"개발자 시선으로 0부터 — 동기부여형 + 이론·체험 병행."** 분류 암기가 아니라 **불편을 먼저 겪고 그 해결책으로 개념을 배우는** 과정. 1순위 = **ABAP 커리큘럼**(2트랙 36챕터 — 구조 [09_CURRICULUM_LEDGER](09_CURRICULUM_LEDGER.md)·현황 [02_PROGRESS](02_PROGRESS.md)). UI5/Fiori·모듈·통합실습은 이후.
 > 학습 대상 = 개발 경험 없는 20대 전후 비전공 입문자. "개발자 시선으로"는 *가르치는 관점*이지 독자 수준이 아니다 → 친근한 톤·이모지 권장([04 R3](04_CONVENTIONS.md)).
 
 ## ✅ 완료 정의 (DoD) — 레슨/페이지 1개 기준
 - [ ] **입문자 가독성**: 완전 입문자가 따라올 수 있게(압축 0, [04 R3](04_CONVENTIONS.md)).
 - [ ] **흐름**: 왜 필요한가 → 무엇인가 → 어떻게 쓰나 → 실수/주의 → 정리.
 - [ ] **용어**: 첫 등장 시 인라인 한 줄 풀이 + glossary 등록([04 R12](04_CONVENTIONS.md)).
-- [ ] **학습 순서 무결성(R15)**: 이미 배운 것만으로 이해·실습 가능 / 후속 개념 정의 선노출 0 / 예고는 L1(1~2문장·코드없음) / 선행사용은 `[선행 사용]` 표기([04 R15](04_CONVENTIONS.md)).
-- [ ] **코드 = 체험(필수)**: 코드가 1줄이라도 나오면 그 페이지에서 체험/시뮬레이션([06_SAMPLE_LIBRARY](06_SAMPLE_LIBRARY.md)). 정적 코드만 = 미완.
-- [ ] **시각화 동반**: 텍스트 나열 대신 그림/표/인터랙션 — *필요·적합한 곳에*(텍스트만으로 충분한 섹션은 그대로 OK, 칸 채우기용 장식 금지). 단 **레슨 전체가 텍스트-only면 보강**([08 §9.4](08_LESSON_SHELL_SPEC.md)).
+- [ ] **학습 순서 무결성(R15)**: 이미 배운 것만으로 이해·실습 가능 / 후속 개념 정의 선노출 0 / 예고는 L1(1～2문장·코드없음) / 선행사용은 `[선행 사용]` 표기([04 R15](04_CONVENTIONS.md)).
+- [ ] **코드 = 체험(필수)**: 코드가 1줄이라도 나오면 그 페이지에서 체험/시뮬레이션(체험수단 정본 = `embeds/` · 패턴 참고 [06_SAMPLE_LIBRARY](06_SAMPLE_LIBRARY.md)). 정적 코드만 = 미완.
+- [ ] **시각화 동반**: 텍스트 나열 대신 그림/표/인터랙션 — *필요·적합한 곳에*(텍스트만으로 충분한 섹션은 그대로 OK, 칸 채우기용 장식 금지). 단 **레슨 전체가 텍스트-only면 보강**([08 §8](08_LESSON_SHELL_SPEC.md)).
 - [ ] **이름 풀 준수**: 1번은 항상 정훈영([04 R9](04_CONVENTIONS.md)).
 - [ ] **검증**: 빌드 통과 + 콘솔 오류 0 + 인터랙션 동작 확인([07_BROWSER_TESTING](07_BROWSER_TESTING.md)).
 
 작업 단위 = **한 번에 하나의 레슨/컴포넌트**.
 
 ## 📏 규칙 · 함정
-- **규칙 R1~R15 = [04_CONVENTIONS](04_CONVENTIONS.md)가 단일 출처.** (여기 재진술하지 않는다 — 작업 전 04를 훑는다.)
-- **함정 P1~P11 = [05_PITFALLS](05_PITFALLS.md).** 막히면 즉시.
+- **규칙 = [04_CONVENTIONS](04_CONVENTIONS.md)가 단일 출처.** (여기 재진술하지 않는다 — 작업 전 04를 훑는다.)
+- **함정 = [05_PITFALLS](05_PITFALLS.md).** 막히면 즉시.
+
+## 🧭 작업유형별 필독 (부팅 밖 *구속* 규칙 라우팅)
+> 규칙·함정은 [04](04_CONVENTIONS.md)/[05](05_PITFALLS.md)(자동로드). 아래는 *작업 시작 시 반드시 여는* on-demand 구속 문서 — 안 열면 비준수 산출.
+- **레슨 집필** → [08 Part2](08_LESSON_SHELL_SPEC.md)(오써링·텍스트보강·T코드 prose 금지) · [14 §5](14_REFERENCE_CORPUS.md)(사실검증·버전매칭) · *위젯 제작 시* [embeds/_engine/AUTHORING.md](../embeds/_engine/AUTHORING.md)(집필 계약).
+- **챕터 리빌드** → [10_REBUILD_EXECUTION](10_REBUILD_EXECUTION.md)(수렴 루프·게이팅 합집합·공유파일 편집금지) · [09_CURRICULUM_LEDGER](09_CURRICULUM_LEDGER.md)(경계·관통예제).
+- **셸/빌드 수정** → [08 Part1](08_LESSON_SHELL_SPEC.md) · [03_ARCHITECTURE](03_ARCHITECTURE.md).
 
 ## 🤖 작업 전 / 종료 체크리스트
-**시작:** ① 대상을 레슨/컴포넌트 1개로 좁힘 → ② [02_PROGRESS](02_PROGRESS.md) 현재 상태·우선순위 확인 → ③ 규칙([04](04_CONVENTIONS.md))·함정([05](05_PITFALLS.md)) 훑기 → ④ 코드 있으면 체험 수단을 [06](06_SAMPLE_LIBRARY.md)에서 선택 → ⑤ 구조·예제·사실검증은 [14_REFERENCE_CORPUS](14_REFERENCE_CORPUS.md) 참고 루틴(cheat-sheet 버전 매칭 + abap-docs grep, SAP 원문 verbatim 허용·예제 그대로·어려운 본문은 R3 각색).
-**종료:** ① `npm run build:abap` 통과 + 정적 점검(href 실존·glossary 패리티) → ② [02_PROGRESS](02_PROGRESS.md) 갱신 → ③ 브랜치에서 `git add -A` → commit(`Co-Authored-By` 포함) → push (main 금지). *(타임스탬프는 pre-commit 훅이 자동, [04 R13](04_CONVENTIONS.md).)*
+**시작:** ① 대상을 레슨/컴포넌트 1개로 좁힘 → ② [02_PROGRESS](02_PROGRESS.md) 현재 상태·우선순위 확인 → ③ 규칙([04](04_CONVENTIONS.md))·함정([05](05_PITFALLS.md)) 훑기 → ④ 코드 있으면 체험수단 = `embeds/`(기존 위젯 재사용 [embeds/abap/_index.md](../embeds/abap/_index.md))·신규 제작, 패턴은 [06](06_SAMPLE_LIBRARY.md) 참고 → ⑤ 구조·예제·사실검증은 [14_REFERENCE_CORPUS](14_REFERENCE_CORPUS.md) **필독 루틴**(선택 아님 · cheat-sheet 버전 매칭 + abap-docs grep, **웹검색 대신 오프라인 코퍼스 우선 · 공식 URL · NotebookLM=`nlm` CLI = [14 §5](14_REFERENCE_CORPUS.md)**, SAP 원문 verbatim 허용·예제 그대로·어려운 본문은 R3 각색).
+**종료:** ① `npm run build:abap` 통과 + 정적 점검(href 실존·glossary 패리티) → ② [02_PROGRESS](02_PROGRESS.md) 갱신 — **완료 항목 제거·현재상태/다음할일만, 파생 현황은 포인터([04 R16](04_CONVENTIONS.md))** → ③ 브랜치에서 `git add -A` → commit(02 갱신 **같은 커밋에 포함**, `Co-Authored-By`) → push (main 금지). *(타임스탬프는 pre-commit 훅이 자동, [04 R13](04_CONVENTIONS.md).)*

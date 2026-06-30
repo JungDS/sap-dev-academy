@@ -1,7 +1,8 @@
 #!/bin/sh
 # R13: 손작성 .md(content/, .project-docs/)의 '최종수정' 타임스탬프를 커밋 시 자동 갱신.
 # (사용자 확인용 표기. '최종수정:' 줄이 있는 파일만 대상 — 없는 파일은 건너뜀.)
-ts="$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
+# KST(UTC+9). POSIX 오프셋(KST-9)을 쓴다 — Git Bash는 IANA 'Asia/Seoul'을 못 읽어 UTC로 폴백한다.
+ts="$(TZ='KST-9' date '+%Y-%m-%d %H:%M KST')"
 files="$(git diff --cached --name-only --diff-filter=ACM | grep -E '^(content|\.project-docs)/.*\.md$' || true)"
 [ -z "$files" ] && exit 0
 for f in $files; do
