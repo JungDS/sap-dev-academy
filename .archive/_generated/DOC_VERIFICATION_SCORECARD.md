@@ -11,18 +11,18 @@
 | M 기계계열(틸드·번호·stale수치·embed잔재) | ②⑦ | **0** | 0 | ✅ |
 | S1 내부 링크·경로 실(實)미스 | ②③ | **0** (FP 1 별도) | 0 | ✅ |
 | S2a 안정ID dangling(R>16·P>11) | ② | **0** | 0 | ✅ |
-| R2 auto-load 부팅셋 크기 | ③① | **~16.5K자** (15.9K + V3 라우터 ~0.6K) | 상한 재합의 | ⚠️ V3로 +0.6K |
+| R2 auto-load 부팅셋 크기 | ③① | **16,578자** (~7.5–9.9K tok) | 상한 17,000(*고-ROI 초과 허용*, 2026-06-30) | ✅ 린트 감시 |
 | D1 중복면 | ② | _Phase2_ | 0(또는 정당화) | ⬜ |
 | D2 orphan / D3 포인터 비대칭 | ② | **0** (전 정본선언 실소유 일치 · P0 링크 0미스) | 0 | ✅ |
 | D4 비반증 주장 | ②⑦ | _Phase3_ | 0 | ⬜ |
 | R1 point-of-use 갭 / R3 매몰규칙 | ③ | _Phase4_ | 0 / 최소 | ⬜ |
 | C1 추측 / C2 모순 / C3 놓친구속 (red-team) | L4 | **raw A12·B7·C12(31건) → triage 유효 V1～V6** | 0 | ✅수집 |
-| D5 lint 커버리지 | ②⑦ | 0% | 기계계열 100% | ⬜ |
+| D5 lint 커버리지 | ②⑦ | **FAIL밴드 구축**(M·S1·S2a·섹션참조·예산·TS) | 기계계열 100% | ✅ |
 
 ## Phase 진행
 - **Phase 0 계측** ✅ — baseline 상세 아래.
 - **Phase 1 L4 red-team** ✅ — T1 A6·B3·C6 · T2 A4·B4·C5 · T3 A1 · T4 A1·C1. **Triage 완료**(아래 synthesis): 유효 V1～V6 · false/by-design/already-fixed 4건 분리.
-- **Phase 2 L3 SSOT(빠른확인)** ✅ — 정본/SSOT 선언 *비대칭 0* · 경계진술 전 문서 일관. **신규 V7**(경계 5중 복창=잠재 D1). · **Phase 3 L2** ⬜(B-lite로 생략) · **Phase 4 독자적합** ⬜(V3가 대표) · **Phase 5 lint** ⬜.
+- **Phase 2 L3 SSOT(빠른확인)** ✅ — 정본/SSOT 선언 *비대칭 0* · 경계진술 전 문서 일관. **신규 V7**(경계 5중 복창=잠재 D1). · **Phase 3 L2** ⬜(B-lite로 생략) · **Phase 4 독자적합** ⬜(V3가 대표) · **Phase 5 lint** ✅ `npm run lint:docs`(FAIL 0·WARN 15·부팅 16,578/17,000).
 
 ## lint 밴드 (Phase 5 사양 — 확정)
 - **FAIL(게이트):** 기계계열 + S1 링크/경로 · S2a 안정ID · R2 토큰예산 · S3b 구조불변식(타임스탬프·헤딩·번호연속+allowlist).
@@ -67,4 +67,5 @@
 - **V6** ✅ — 01 사실검증 "참고 루틴" → "필독 루틴(선택 아님)".
 - **V7** ✅ — 09 §B의 R6 verbatim 불릿 → 메커니즘 포인터로 축소(09 New Syntax 중복 0). P7/10/14는 이미 R6 인용·문맥별 고유 → 유지.
 - **검증:** S1 링크 148개 실미스 0(FP 1=`CHnn-Lmm.html` placeholder) · AUTHORING.md 경로 4/4 실존 · ID dangling 0.
-- **남은 것:** Phase 5 **lint(`tools/lint-project-docs.mjs`) 미착수**(seed=`scratchpad/phase0.cjs`) · S1 placeholder allowlist · D5 lint 커버리지 0%.
+- **Phase 5 lint 구축 ✅** = `npm run lint:docs`(`tools/lint-project-docs.mjs`) — FAIL 0·WARN 15. FAIL밴드(M·S1·S2a·섹션참조·예산·TS)·WARN(6·8 자문)·S1 placeholder allowlist 반영.
+- **남은 선택:** pre-commit/CI 연결(게이트화) · WARN(6·8) 정밀화(현 자문) · MANUAL 9(제목↔본문)은 영구히 사람·L4 몫(자동화 시 거짓그린).

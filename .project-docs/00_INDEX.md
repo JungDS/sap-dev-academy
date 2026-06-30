@@ -1,6 +1,6 @@
 # 00. INDEX — 문서 지도
 
-> 📅 최종수정: 2026-06-30 13:29 KST
+> 📅 최종수정: 2026-06-30 15:30 KST
 > `.project-docs`는 AI 부팅용 컨텍스트. 원칙: **한 사실은 한 문서에만(SSOT)** · 번호≈우선순위(낮을수록 핵심; 11～13 공백 = 아카이브) · **완료된 이력 = git + `.archive`**(라이브 인덱스 포함, [04 R16](04_CONVENTIONS.md)).
 
 ## 자동 로드 (CLAUDE.md가 `@` 임포트 — 이미 컨텍스트에 있음)
@@ -31,3 +31,4 @@
 
 **`.archive/_generated/`** (재생성물 — 덮어쓰기)
 - `CONTENT_DEPTH_AUDIT.md` 콘텐츠 깊이/DoD 결손 자동 진단 (`node tools/audit-content-depth.mjs`)
+- `DOC_VERIFICATION_SCORECARD.md` `.project-docs` 검증 스코어카드·결함 이력 (린트 = `npm run lint:docs`)
