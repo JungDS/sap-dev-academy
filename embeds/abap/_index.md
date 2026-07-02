@@ -30,6 +30,8 @@
 | CH02-L05-S01 | CH02-L05 | before-after | 매직넘버 pi(줄마다 '3.1415926'·'…27'·'3.14' 제각각·오타) vs 상수 gc_pi 하나 — bad/good + 변수 덮어쓰기 주의 note | ✅ |
 | CH02-L06-S01 | CH02-L06 | fill-blank | Text Symbol 빈칸(TEXT·001) | ✅ |
 | CH03-L01-S01 | CH03-L01 | domain-builder | SE11 Domain 생성(저장→검사→활성화·예제칩 6) | ✅ |
+| CH03-L02-S01 | CH03-L02 | ddic-layer-board | Domain(기술)→Data Element(의미) 1:N 상속 보드 — 길이 토글→DE 2개+화면 미리보기 동시 반영·직접 TYPE 사용→오류 데모 | ✅ |
+| CH03-L03-S01 | CH03-L03 | param-screen-lab | PARAMETERS 보상 실험 — pa_stat 타입 DE↔표준 타입 토글(라벨/F4 온·오프)·VALUE CHECK로만 고정값 검증(F4≠검증)·OBLIGATORY 차단·DEFAULT·LOWER CASE·실행 mock | ✅ |
 | CH04-L01-S01 | CH04-L01 | step-debugger | 산술 트레이스(7+3·2**10·DIV·MOD) | ✅ |
 | CH04-L05-S01 | CH04-L05 | step-debugger | DO·sy-index 트레이스(1→5) | ✅ |
 | CH04-L06-S01 | CH04-L06 | step-debugger | 구구단 중첩DO 디버거 홈(F5·gv_mul/res) | ✅ |
@@ -188,6 +190,8 @@
 | var-box | 2 | 공통(_engine)+_autoheight ✅ | CH02-L01-S02·CH02-L02-S01 | VB_CFG 주도 · 타입 라벨 박스+값 쪽지·선언 직후(기본값)↔대입 토글·initialFor(string/c/n/d/t/p-dec) 처리 |
 | len-shape-grid (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH02-L03-S01 | LSG_CFG 주도 · C/N 칸 그리드(패딩·잘림·앞0 자동채움)+P 바이트 칸(1칸=2자리·부호 반 칸=2×len−1·DECIMALS 점)+offset 패널(칸 하이라이트·범위초과 bad·부분쓰기 교체)·msg base 중립+ok/bad 명시(교훈3)·토큰/color-mix만 · 다크 |
 | type-stamp (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH02-L04-S01 | TS_CFG 주도 · TYPES 도면 카드(점선·0바이트)→DATA 실물 박스(실선·값)·DECIMALS 세그→전 변수 동시 갱신 flash·타입 대입 시도→bad·verdict base 중립+ok/bad 명시(교훈3)·토큰/color-mix만 · 다크 |
+| ddic-layer-board (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH03-L02-S01 | DLB_CFG 주도 · Domain 카드(기술·brand)→상속 케이블→DE 카드 2(의미·accent)+화면 미리보기(라벨=DE·칸수=Domain)·길이 토글→전층 동시 flash·직접 TYPE 시도→bad·verdict base 중립(교훈3)·토큰/color-mix만 · 다크 |
+| param-screen-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH03-L03-S01 | PSL_CFG 주도 · 타입 세그(DE/표준 타입)→라벨·F4 온오프·VALUE CHECK 토글=고정값 검증 분리(F4≠검증·raw 모드 disabled)·F4 팝업=고정값 목록·OBLIGATORY 빈값 차단·DEFAULT 미리채움·LOWER CASE off 시 대문자 변조 경고·실행→WRITE mock·out base 중립(교훈3)·토큰/color-mix만 · 다크 |
 | syntax-toggle-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH01-L03-S01 | STL_CFG 주도 · 코드 패널(행번호·kw/cmt 토큰색)+토글 4(마침표/별표 위치/인라인 */소문자)→구문 램프 ok/bad+원인 목록·이름 풀 정훈영(R9)·코드 base=var(--surface) 틴트 · 다크 |
 | diff-mapper | 2 | 공통(_engine)+_autoheight ✅ | CH18-L06·L07 (완료) | 데이터=마크업(data-link/title/desc) · classic/modern 중립 톤 추가 |
 | inline-decl-judge (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH18-L01-S01 | IDJ_CFG 주도 · 문장 카드 4종(READ/LOOP/계산/SELECT) 허용/보류 판정·계산 카드 DATA()/FINAL() 토글→재대입 ok/bad · 다크 |

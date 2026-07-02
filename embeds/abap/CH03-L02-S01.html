@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<!-- CH03-L02-S01 — 엔진: ddic-layer-board(신규) + _autoheight · _engine/_base.css. Domain→Data Element 상속 보드.
+     Domain 길이 토글→DE 2개+화면 미리보기 동시 반영 · DATA TYPE z도메인 직접 사용→오류 데모. config=window.DLB_CFG.
+     게이팅: Domain·Data Element·Field Label만(CH03-L02까지) — Foreign Key/Search Help 미언급. -->
+<html lang="ko" data-eng="ddic-layer-board">
+<head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Domain → Data Element 상속 보드 · CH03-L02-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/ddic-layer-board.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">Domain → Data Element 상속 보드 <small>(1 : N)</small></p>
+  <p class="lead">기술은 <b>Domain 한 곳</b>, 의미·라벨은 <b>Data Element 각자</b> — 같은 공항 코드(<code>CHAR 3</code>)를 "출발 공항"과 "도착 공항"이 나눠 씁니다. Domain의 길이를 바꿔 보세요. 상속받는 쪽이 어떻게 되나요?</p>
+  <div data-dlb></div>
+</div>
+<script>
+window.DLB_CFG = {
+  domain: { name:'ZDO_AIRPORT', type:'CHAR', len:3, altLen:4, desc:'공항 코드 — 기술 속성만 (의미는 모름)' },
+  elements: [
+    { name:'ZDE_FROM_AIRP', label:'출발 공항', sample:'ICN' },
+    { name:'ZDE_TO_AIRP',   label:'도착 공항', sample:'GMP' }
+  ],
+  tryDirect: {
+    code:"DATA gv_from TYPE zdo_airport.",
+    msg:'변수는 항상 <b>Data Element를 거쳐</b> 선언한다(<code>TYPE zde_from_airp</code>). Domain은 그 뒤에서 기술을 대는 층일 뿐.'
+  },
+  note: '화면 입력칸의 <b>라벨</b>은 Data Element에서, <b>칸 수</b>는 Domain에서 온다 — 계층이 나뉘어 있어서 기술 변경(길이)과 의미 변경(라벨)을 <b>서로 건드리지 않고</b> 따로 할 수 있습니다.'
+};
+</script>
+<script src="../_engine/ddic-layer-board.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>
