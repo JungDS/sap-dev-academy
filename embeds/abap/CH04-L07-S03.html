@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- CH04-L07-S03 — 엔진: fill-blank + _autoheight. 콘텐츠=레슨 §3단계(범위 출력, #C04-7).
-     효율형: p_from부터 (p_to-p_from+1)번만 반복 + 매 회차 단 1 증가. 루프 전 입력 점검은 아코디언으로 권장 제시.
+     효율형: pa_from부터 (pa_to-pa_from+1)번만 반복 + 매 회차 단 1 증가. 루프 전 입력 점검은 아코디언으로 권장 제시.
      게이팅: classic만(DO에 산술식=modern은 CH18↑ → 횟수를 gv_cnt 변수에). EXIT는 CH04-L05 도입. -->
 <html lang="ko" data-eng="fill-blank">
 <head>
@@ -93,13 +93,13 @@
 <body>
 <div class="wrap">
   <p class="hd">3단계 — 범위만큼만 반복 <small>(예: 3~5단)</small></p>
-  <p class="lead">1~9를 다 돌며 거르지 말고, <b><code>p_from</code>부터 필요한 횟수만큼만</b> 돌고 회차 끝에 단을 1 올립니다. 정답을 보기 전에 빈칸을 직접 채워 보세요. (아래 💡는 루프 전 입력 점검 권장 로직)</p>
+  <p class="lead">1~9를 다 돌며 거르지 말고, <b><code>pa_from</code>부터 필요한 횟수만큼만</b> 돌고 회차 끝에 단을 1 올립니다. 정답을 보기 전에 빈칸을 직접 채워 보세요. (아래 💡는 루프 전 입력 점검 권장 로직)</p>
 
   <div class="fillblank" data-fillblank
-       data-explain="p_from부터 (p_to - p_from + 1)번만 반복하고, 매 회차 끝에 gv_dan을 1 올립니다. 입력 점검은 루프 전에 한 번만 하면 됩니다."
-       data-hint="시작 = p_from · 반복 횟수 = gv_cnt · 다음 단 = gv_dan + 1">
+       data-explain="pa_from부터 (pa_to - pa_from + 1)번만 반복하고, 매 회차 끝에 gv_dan을 1 올립니다. 입력 점검은 루프 전에 한 번만 하면 됩니다."
+       data-hint="시작 = pa_from · 반복 횟수 = gv_cnt · 다음 단 = gv_dan + 1">
     <div class="fb-hd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span></div>
-<pre>PARAMETERS: p_from TYPE i, p_to TYPE i.
+<pre>PARAMETERS: pa_from TYPE i, pa_to TYPE i.
 DATA: gv_dan TYPE i, gv_mul TYPE i, gv_cnt TYPE i, gv_res TYPE i.</pre>
 
     <details class="tip">
@@ -132,10 +132,10 @@ DATA: gv_dan TYPE i, gv_mul TYPE i, gv_cnt TYPE i, gv_res TYPE i.</pre>
           <text class="fl-pt2" x="125" y="275" text-anchor="middle">해당 범위의 구구단 출력</text>
         </svg>
         <p class="tip__sub">두 관문을 <code>IF</code> / <code>ELSEIF</code>로 적으면:</p>
-<pre class="tip__code"><span class="k">IF</span> p_from &lt; 2 <span class="k">OR</span> p_to &gt; 9.
+<pre class="tip__code"><span class="k">IF</span> pa_from &lt; 2 <span class="k">OR</span> pa_to &gt; 9.
   <span class="k">WRITE</span>: / <span class="s">'단은 2~9 사이로 입력하세요.'</span>.
   <span class="k">EXIT</span>.
-<span class="k">ELSEIF</span> p_from &gt; p_to.
+<span class="k">ELSEIF</span> pa_from &gt; pa_to.
   <span class="k">WRITE</span>: / <span class="s">'시작 ≤ 종료로 입력하세요.'</span>.
   <span class="k">EXIT</span>.
 <span class="k">ENDIF</span>.</pre>
@@ -145,15 +145,15 @@ DATA: gv_dan TYPE i, gv_mul TYPE i, gv_cnt TYPE i, gv_res TYPE i.</pre>
 
           <div class="ig-group">
             <div class="ig-glabel">
-              <code class="ig-ifline">IF&nbsp; p_from &lt; 2&nbsp; OR&nbsp; p_to &gt; 9</code>
+              <code class="ig-ifline">IF&nbsp; pa_from &lt; 2&nbsp; OR&nbsp; pa_to &gt; 9</code>
               <p class="ig-gtext">한 IF가 <code>OR</code>로 두 가지를 함께 봅니다. <b>둘 중 하나라도 참이면</b> 오류 메시지를 내고 멈추죠. 그래서 아래 두 조건은 <b>같은 IF의 왼쪽·오른쪽</b>입니다.</p>
             </div>
             <div class="ig-row">
               <div class="ig-card c-blue">
-                <p class="ig-ct"><span class="ig-tag t-blue">IF 왼쪽 조건</span> <code>p_from &lt; 2</code></p>
+                <p class="ig-ct"><span class="ig-tag t-blue">IF 왼쪽 조건</span> <code>pa_from &lt; 2</code></p>
                 <ul class="ig-ul">
-                  <li><code>p_from</code> 이 <b>2보다 작으면 참</b> → WRITE문 실행 후 <b>프로그램 종료</b> (OR이라 오른쪽 조건 결과와 관계없이 참)</li>
-                  <li><code>p_from</code> 이 <b>2 이상이면 거짓</b> → <b>IF 오른쪽 조건</b> 검사</li>
+                  <li><code>pa_from</code> 이 <b>2보다 작으면 참</b> → WRITE문 실행 후 <b>프로그램 종료</b> (OR이라 오른쪽 조건 결과와 관계없이 참)</li>
+                  <li><code>pa_from</code> 이 <b>2 이상이면 거짓</b> → <b>IF 오른쪽 조건</b> 검사</li>
                 </ul>
                 <svg class="ig-ray" viewBox="0 0 330 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                   <text class="ray-n" x="165" y="14" text-anchor="middle">2</text>
@@ -168,10 +168,10 @@ DATA: gv_dan TYPE i, gv_mul TYPE i, gv_cnt TYPE i, gv_res TYPE i.</pre>
               </div>
 
               <div class="ig-card c-green">
-                <p class="ig-ct"><span class="ig-tag t-green">IF 오른쪽 조건</span> <code>p_to &gt; 9</code></p>
+                <p class="ig-ct"><span class="ig-tag t-green">IF 오른쪽 조건</span> <code>pa_to &gt; 9</code></p>
                 <ul class="ig-ul">
-                  <li><code>p_to</code> 가 <b>9보다 크면 참</b> → WRITE문 실행 후 <b>프로그램 종료</b></li>
-                  <li><code>p_to</code> 가 <b>9 이하면 거짓</b> → IF 두 조건 모두 거짓이므로 <b>ELSEIF로 이동</b></li>
+                  <li><code>pa_to</code> 가 <b>9보다 크면 참</b> → WRITE문 실행 후 <b>프로그램 종료</b></li>
+                  <li><code>pa_to</code> 가 <b>9 이하면 거짓</b> → IF 두 조건 모두 거짓이므로 <b>ELSEIF로 이동</b></li>
                 </ul>
                 <svg class="ig-ray" viewBox="0 0 330 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                   <text class="ray-n" x="165" y="14" text-anchor="middle">9</text>
@@ -188,18 +188,18 @@ DATA: gv_dan TYPE i, gv_mul TYPE i, gv_cnt TYPE i, gv_res TYPE i.</pre>
           </div>
 
           <div class="ig-card c-purple" style="margin-top:12px;">
-            <p class="ig-ct"><span class="ig-tag t-purple">ELSEIF 조건</span> <code>p_from &gt; p_to</code></p>
+            <p class="ig-ct"><span class="ig-tag t-purple">ELSEIF 조건</span> <code>pa_from &gt; pa_to</code></p>
             <div class="ig-steps">
               <div class="ig-mini">
                 <p class="ig-mt">ELSEIF는 <b>이전 IF가 거짓</b>일 때만 진행</p>
                 <ul class="ig-mul">
-                  <li><code>p_from &lt; 2</code> 가 거짓 → <b>p_from ≥ 2</b> (2 이상)</li>
-                  <li><code>p_to &gt; 9</code> 가 거짓 → <b>p_to ≤ 9</b> (9 이하)</li>
+                  <li><code>pa_from &lt; 2</code> 가 거짓 → <b>pa_from ≥ 2</b> (2 이상)</li>
+                  <li><code>pa_to &gt; 9</code> 가 거짓 → <b>pa_to ≤ 9</b> (9 이하)</li>
                 </ul>
               </div>
               <span class="ig-step-arr">➜</span>
               <div class="ig-mini">
-                <p class="ig-mt">ELSEIF <code>p_from &gt; p_to</code></p>
+                <p class="ig-mt">ELSEIF <code>pa_from &gt; pa_to</code></p>
                 <p><b>참</b>(시작 &gt; 종료)이면 → WRITE문 실행 후 <b>프로그램 종료</b><br><b>거짓</b>(시작 ≤ 종료)이면 → <b>ENDIF 다음 문장</b> 실행</p>
               </div>
               <div class="ig-segwrap">
@@ -213,9 +213,9 @@ DATA: gv_dan TYPE i, gv_mul TYPE i, gv_cnt TYPE i, gv_res TYPE i.</pre>
                   <line class="seg-stem-pt" x1="210" y1="37" x2="210" y2="74"/>
                   <text class="chain-n"  x="40"  y="94" text-anchor="middle">2</text>
                   <text class="chain-op" x="80"  y="94" text-anchor="middle">≤</text>
-                  <text class="chain-pf" x="120" y="94" text-anchor="middle">p_from</text>
+                  <text class="chain-pf" x="120" y="94" text-anchor="middle">pa_from</text>
                   <text class="chain-op" x="165" y="94" text-anchor="middle">≤</text>
-                  <text class="chain-pt" x="210" y="94" text-anchor="middle">p_to</text>
+                  <text class="chain-pt" x="210" y="94" text-anchor="middle">pa_to</text>
                   <text class="chain-op" x="255" y="94" text-anchor="middle">≤</text>
                   <text class="chain-n"  x="300" y="94" text-anchor="middle">9</text>
                 </svg>
@@ -223,31 +223,31 @@ DATA: gv_dan TYPE i, gv_mul TYPE i, gv_cnt TYPE i, gv_res TYPE i.</pre>
             </div>
             <div class="ig-row2">
               <div class="ig-card c-blue">
-                <p class="ig-ct"><span class="ig-tag t-blue">A</span> 왜 <code>p_from</code> 도 9 이하일까?</p>
+                <p class="ig-ct"><span class="ig-tag t-blue">A</span> 왜 <code>pa_from</code> 도 9 이하일까?</p>
                 <ul class="ig-ul">
-                  <li>IF 오른쪽이 거짓 → <b>p_to ≤ 9</b>, ELSEIF가 거짓(통과) → <b>p_from ≤ p_to</b>.</li>
-                  <li>이으면 <b>p_from ≤ p_to ≤ 9</b> → 그래서 p_from도 9 이하!</li>
+                  <li>IF 오른쪽이 거짓 → <b>pa_to ≤ 9</b>, ELSEIF가 거짓(통과) → <b>pa_from ≤ pa_to</b>.</li>
+                  <li>이으면 <b>pa_from ≤ pa_to ≤ 9</b> → 그래서 pa_from도 9 이하!</li>
                 </ul>
               </div>
               <div class="ig-card c-green">
-                <p class="ig-ct"><span class="ig-tag t-green">B</span> 왜 <code>p_to</code> 도 2 이상일까?</p>
+                <p class="ig-ct"><span class="ig-tag t-green">B</span> 왜 <code>pa_to</code> 도 2 이상일까?</p>
                 <ul class="ig-ul">
-                  <li>IF 왼쪽이 거짓 → <b>p_from ≥ 2</b>, ELSEIF가 거짓(통과) → <b>p_from ≤ p_to</b>.</li>
-                  <li>이으면 <b>2 ≤ p_from ≤ p_to</b> → 그래서 p_to도 2 이상!</li>
+                  <li>IF 왼쪽이 거짓 → <b>pa_from ≥ 2</b>, ELSEIF가 거짓(통과) → <b>pa_from ≤ pa_to</b>.</li>
+                  <li>이으면 <b>2 ≤ pa_from ≤ pa_to</b> → 그래서 pa_to도 2 이상!</li>
                 </ul>
               </div>
             </div>
             <div class="goalbar">
               <span class="goal-ico">🎯</span>
-              <p class="ig-goal">두 조건을 모두 통과한 순간 <b>p_from</b>·<b>p_to</b>는 자동으로 <b>둘 다 2~9 범위 안</b>에 있게 됩니다.</p>
+              <p class="ig-goal">두 조건을 모두 통과한 순간 <b>pa_from</b>·<b>pa_to</b>는 자동으로 <b>둘 다 2~9 범위 안</b>에 있게 됩니다.</p>
             </div>
           </div>
         </div>
       </div>
     </details>
 
-<pre>gv_cnt = p_to - p_from + 1.   <span class="cmt">" 출력할 단 개수</span>
-gv_dan = <input class="blank" data-answer="p_from" placeholder="______" aria-label="빈칸1">.            <span class="cmt">" 시작 단부터</span>
+<pre>gv_cnt = pa_to - pa_from + 1.   <span class="cmt">" 출력할 단 개수</span>
+gv_dan = <input class="blank" data-answer="pa_from" placeholder="______" aria-label="빈칸1">.            <span class="cmt">" 시작 단부터</span>
 
 DO <input class="blank" data-answer="gv_cnt" placeholder="______" aria-label="빈칸2"> TIMES.
   DO 9 TIMES.

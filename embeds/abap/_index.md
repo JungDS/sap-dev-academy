@@ -181,12 +181,21 @@
 | CH04-L07-S01 | CH04-L07 | fill-blank | 구구단 빈칸(TIMES·sy-index·*·ENDDO) | ✅ |
 | CH04-L03-S01 | CH04-L03 | mermaid | IF/ELSEIF/ELSE 분기 흐름도(p_amt: 큰금액/소액/0·음수) | ✅ |
 | CH04-L04-S01 | CH04-L04 | case-branch-sim | CASE…WHEN 시뮬(등급 A·B·C·그외→출력, OR묶기 토글) | ✅ |
+| CH04-L03-S02 | CH04-L03 | (bespoke SVG) | (등재 보완) AND/OR/NOT·괄호 논리 다이어그램 — 조건 묶임을 한눈에 | ✅ |
+| CH04-L03-S03 | CH04-L03 | (bespoke SVG) | (등재 보완) IS INITIAL 판정 다이어그램(pa_amt 0=참/500=거짓) | ✅ |
+| CH04-L04-S02 | CH04-L04 | mermaid | (등재 보완) 기본 CASE 4분기 — 흐름도+코드 2칼럼 | ✅ |
+| CH04-L04-S03 | CH04-L04 | mermaid | (등재 보완) WHEN 'A' OR 'B' 묶기 — 흐름도+코드 | ✅ |
+| CH04-L05-S02 | CH04-L05 | mermaid | (등재 보완) DO n TIMES 루프 — 흐름도+코드 | ✅ |
+| CH04-L05-S03 | CH04-L05 | mermaid | (등재 보완) WHILE 조건 루프 — 흐름도+코드 | ✅ |
+| CH04-L05-S04 | CH04-L05 | mermaid | (등재 보완) EXIT·CHECK 루프 제어 — 흐름도+코드 | ✅ |
+| CH04-L07-S02 | CH04-L07 | fill-blank | (등재 보완) 구구단 2단계 중첩 DO 빈칸(바깥 sy-index를 gv_dan에 담기) | ✅ |
+| CH04-L07-S03 | CH04-L07 | fill-blank | (등재 보완) 구구단 3단계 범위 반복 빈칸(pa_from~pa_to·횟수 계산) | ✅ |
 
 ## B. 엔진별 집계 (카테고리 현황 — 같은 종류 몇 개·어디서)
 | 엔진 (embeds/_engine/) | 그룹 | 공통/standalone | 사용 인스턴스 | 비고 |
 |---|---|---|---|---|
 | step-debugger | 6 | 공통(_engine)·config 주도 ✅ | CH04-L01·L05·L06·CH05-L01·L05·CH10-L07 (완료) | `.stepper-config` 트레이스(이미 주도형·리팩터 불요·하이픈키 ls_x-y OK) |
-| fill-blank | 3 | 공통(_engine)+_autoheight ✅ | CH02-L06·CH04-L02·L07 (전부 완료) | 데이터=마크업 |
+| fill-blank | 5 | 공통(_engine)+_autoheight ✅ | CH02-L06-S01·CH04-L02-S01·CH04-L07-S01/S02/S03 (전부 완료) | 데이터=마크업 |
 | before-after | 3 | 공통(CSS-only)+_autoheight ✅ | CH02-L01-S01·CH02-L05-S01·CH07-L03-S01 (완료) | 콘텐츠 정리 · 중립 톤(tone-warm/cool)·.note·.cmt 추가 · constant-circle-sim(폐기) 대체 |
 | var-box | 2 | 공통(_engine)+_autoheight ✅ | CH02-L01-S02·CH02-L02-S01 | VB_CFG 주도 · 타입 라벨 박스+값 쪽지·선언 직후(기본값)→대입→재대입(value2 opt-in·"마지막 값만 기억") 사이클·initialFor(string/c/n/d/t/p-dec) 처리 |
 | text-symbol-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH02-L06-S02 | TSL_CFG 주도 · 등록/미등록 seg×KO/EN seg→Text Elements 표 mock+출력 2줄 비교·미등록: TEXT-nnn=빈칸(bad dashed)·literal(nnn)=fallback(amber)·verdict ok/warn(교훈3)·근거 abentext_symbols.htm·토큰/color-mix만 · 다크 |
@@ -274,7 +283,7 @@
 | salv-grid-simulator | 2 | 공통(_engine)·자체 postHeight ✅ | CH11-L02-S01·CH11-L06-S01 (완료) | config 주입(SALV_CFG: itab·cols·data·sumKey·code) · ALV제목/토글 엔진설정 |
 | relationship-map | 1 | 공통 | _(미작성)_ | CSS-only |
 | state-change-grid | 1 | 공통(CSS-only)+_autoheight ✅ | CH06-L06-S01 | 스냅샷=마크업(lt_gugu 성장·정렬) · 빈 .js 제거 |
-| mermaid | 1 | 공통(+_vendor)+_autoheight ✅ | CH04-L03-S01 | 그래프=위젯 `.mermaid` 주입·CDN+로컬fallback·이벤트본 은퇴 |
+| mermaid | 6 | 공통(+_vendor)+_autoheight ✅ | CH04-L03-S01·L04-S02/S03·L05-S02/S03/S04 | 그래프=위젯 `.mermaid` 주입·CDN+로컬fallback·이벤트본 은퇴 |
 | domain-builder | 1 | 공통(_engine) ✅ | CH03-L01-S01 | SE11 폼(단일사용·데이터 inline) · 예제별 target 강제(검사/활성화는 목표 일치 시에만) |
 | input-help-priority | 1 | 공통(CSS-only)+_autoheight ✅ | CH09-L07-S01 | F4 사다리(콘텐츠=마크업·빈 .js 제거) |
 | write-output | 1 | 공통 ✅ | CH01-L04-S01 | WRITE 출력 파서 · config 주입 · **버그수정(따옴표無→오류)** |
