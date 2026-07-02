@@ -22,7 +22,7 @@ function metrics(t) {
   return {
     chars: b.length,
     sec: (b.match(/^##\s/gm) || []).length,
-    code: Math.floor((b.match(/^```/gm) || []).length / 2),
+    code: (b.match(/^```(?!text\b)[a-z]/gm) || []).length, // 여는 fence 중 ```text(스케치·비코드) 제외 — cds/bdef 등은 코드로 유지
     emb: (b.match(/::embed/g) || []).length,
     gloss: (b.match(/\[\[/g) || []).length,
     tbl: (b.match(/^\|.*\|/gm) || []).length > 0,

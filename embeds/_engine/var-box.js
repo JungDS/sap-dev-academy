@@ -10,6 +10,7 @@
     if(/string/.test(t)) return "''";
     if(/^c\b|^n\b|char/.test(t)) return "''";
     if(/^d\b/.test(t)) return "'00000000'";
+    if(/^t\b/.test(t)) return "'000000'";
     if(dec) return '0.' + new Array(+dec + 1).join('0');
     return '0';
   }

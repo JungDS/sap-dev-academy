@@ -21,6 +21,12 @@
 | CH01-L02-S06 | CH01-L02 | image-figure | 실제 SE11 ABAP Dictionary 첫 화면 스크린샷(§04) | ✅ |
 | CH01-L02-S07 | CH01-L02 | image-figure | 실제 SE80 Object Navigator 화면 스크린샷(§05) | ✅ |
 | CH01-L07-S01 | CH01-L07 | se93-tcode-create | SE93 T-code 생성→명령창 실행(Hello, ABAP!)+흔한실수 | ✅ |
+| CH01-L03-S01 | CH01-L03 | syntax-toggle-lab | 문법 상태 실험기 — 마침표 제거·별표 위치·인라인 *·키워드 소문자 토글→구문 검사 램프(ok/bad)+원인 설명 | ✅ |
+| CH02-L01-S01 | CH02-L01 | before-after | (등재 보완) 리터럴 반복 vs 변수 하나 — 값 바꿀 때 고칠 곳 비교 | ✅ |
+| CH02-L01-S02 | CH02-L01 | var-box | (등재 보완) 변수=타입 라벨 박스+값 쪽지 — 선언 직후(타입 기본값)↔값 대입 토글 | ✅ |
+| CH02-L02-S01 | CH02-L02 | var-box | (재사용) Complete 타입 5종(STRING/I/F/D/T) 박스 — 모양+타입 기본값↔값 대입·D/T 자릿수 뼈대 | ✅ |
+| CH02-L03-S01 | CH02-L03 | len-shape-grid | 길이 칸 실험실 — C 패딩/잘림·N 앞 0·P 바이트 칸(2×len−1)+부호 반 칸·offset 하이라이트/범위 초과/부분 쓰기 | ✅ |
+| CH02-L04-S01 | CH02-L04 | type-stamp | TYPES 도면(0바이트)→DATA 실물 — DECIMALS 2↔3 토글 시 변수 3개 동시 반영·타입에 값 대입→오류 데모 | ✅ |
 | CH02-L05-S01 | CH02-L05 | before-after | 매직넘버 pi(줄마다 '3.1415926'·'…27'·'3.14' 제각각·오타) vs 상수 gc_pi 하나 — bad/good + 변수 덮어쓰기 주의 note | ✅ |
 | CH02-L06-S01 | CH02-L06 | fill-blank | Text Symbol 빈칸(TEXT·001) | ✅ |
 | CH03-L01-S01 | CH03-L01 | domain-builder | SE11 Domain 생성(저장→검사→활성화·예제칩 6) | ✅ |
@@ -178,7 +184,11 @@
 |---|---|---|---|---|
 | step-debugger | 6 | 공통(_engine)·config 주도 ✅ | CH04-L01·L05·L06·CH05-L01·L05·CH10-L07 (완료) | `.stepper-config` 트레이스(이미 주도형·리팩터 불요·하이픈키 ls_x-y OK) |
 | fill-blank | 3 | 공통(_engine)+_autoheight ✅ | CH02-L06·CH04-L02·L07 (전부 완료) | 데이터=마크업 |
-| before-after | 2 | 공통(CSS-only)+_autoheight ✅ | CH02-L05-S01·CH07-L03-S01 (완료) | 콘텐츠 정리 · 중립 톤(tone-warm/cool)·.note·.cmt 추가 · constant-circle-sim(폐기) 대체 |
+| before-after | 3 | 공통(CSS-only)+_autoheight ✅ | CH02-L01-S01·CH02-L05-S01·CH07-L03-S01 (완료) | 콘텐츠 정리 · 중립 톤(tone-warm/cool)·.note·.cmt 추가 · constant-circle-sim(폐기) 대체 |
+| var-box | 2 | 공통(_engine)+_autoheight ✅ | CH02-L01-S02·CH02-L02-S01 | VB_CFG 주도 · 타입 라벨 박스+값 쪽지·선언 직후(기본값)↔대입 토글·initialFor(string/c/n/d/t/p-dec) 처리 |
+| len-shape-grid (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH02-L03-S01 | LSG_CFG 주도 · C/N 칸 그리드(패딩·잘림·앞0 자동채움)+P 바이트 칸(1칸=2자리·부호 반 칸=2×len−1·DECIMALS 점)+offset 패널(칸 하이라이트·범위초과 bad·부분쓰기 교체)·msg base 중립+ok/bad 명시(교훈3)·토큰/color-mix만 · 다크 |
+| type-stamp (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH02-L04-S01 | TS_CFG 주도 · TYPES 도면 카드(점선·0바이트)→DATA 실물 박스(실선·값)·DECIMALS 세그→전 변수 동시 갱신 flash·타입 대입 시도→bad·verdict base 중립+ok/bad 명시(교훈3)·토큰/color-mix만 · 다크 |
+| syntax-toggle-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH01-L03-S01 | STL_CFG 주도 · 코드 패널(행번호·kw/cmt 토큰색)+토글 4(마침표/별표 위치/인라인 */소문자)→구문 램프 ok/bad+원인 목록·이름 풀 정훈영(R9)·코드 base=var(--surface) 틴트 · 다크 |
 | diff-mapper | 2 | 공통(_engine)+_autoheight ✅ | CH18-L06·L07 (완료) | 데이터=마크업(data-link/title/desc) · classic/modern 중립 톤 추가 |
 | inline-decl-judge (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH18-L01-S01 | IDJ_CFG 주도 · 문장 카드 4종(READ/LOOP/계산/SELECT) 허용/보류 판정·계산 카드 DATA()/FINAL() 토글→재대입 ok/bad · 다크 |
 | value-builder (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH18-L02-S01 | key 토글·작업 버튼(make/base/replace/forgen/dup)→VALUE 식·결과 테이블(new 강조)·BASE 유무·중복 key 오류 · 다크 |
