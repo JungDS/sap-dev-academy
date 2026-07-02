@@ -79,7 +79,14 @@
     var r = offSel>=0 ? o.ranges[offSel] : null;
     var over = r && (r.off+r.len > val.length);
     var h = '<div class="lsg-t">offset/length — <code>+시작(길이)</code>는 어느 칸을 집나 <small>(시작은 0부터)</small></div>';
-    h += '<div class="lsg-varname"><code>'+esc(o.name)+'</code> = <code>\''+esc(val)+'\'</code></div>';
+    if(wrote){
+      // 초기값이 바뀐 게 아니라 "부분 쓰기로 현재 내용이 바뀐 것" — 전→후를 명시(혼동 방지)
+      h += '<div class="lsg-varname"><code>'+esc(o.name)+'</code> = <code class="lsg-was">\''+esc(o.value)+'\'</code>'
+         + '<span class="lsg-became">→</span><code class="lsg-now">\''+esc(val)+'\'</code>'
+         + '<small class="lsg-wtag">+'+o.write.off+'('+o.write.len+') 부분만 교체된 <b>현재 값</b></small></div>';
+    } else {
+      h += '<div class="lsg-varname"><code>'+esc(o.name)+'</code> = <code>\''+esc(val)+'\'</code></div>';
+    }
     h += '<div class="lsg-cells lsg-idx">';
     for(var i=0;i<val.length;i++){
       var hit = r && !over && i>=r.off && i<r.off+r.len;

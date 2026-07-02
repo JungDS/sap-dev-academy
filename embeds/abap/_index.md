@@ -29,6 +29,7 @@
 | CH02-L04-S01 | CH02-L04 | type-stamp | TYPES 도면(0바이트)→DATA 실물 — DECIMALS 2↔3 토글 시 변수 3개 동시 반영·타입에 값 대입→오류 데모 | ✅ |
 | CH02-L05-S01 | CH02-L05 | before-after | 매직넘버 pi(줄마다 '3.1415926'·'…27'·'3.14' 제각각·오타) vs 상수 gc_pi 하나 — bad/good + 변수 덮어쓰기 주의 note | ✅ |
 | CH02-L06-S01 | CH02-L06 | fill-blank | Text Symbol 빈칸(TEXT·001) | ✅ |
+| CH02-L06-S02 | CH02-L06 | text-symbol-lab | Text Symbol 실험기 — 등록/미등록×KO/EN 로그인→TEXT-001(미등록=빈칸·누락 들통) vs '금액'(001)(fallback·누락 숨음) 출력 비교 | ✅ |
 | CH03-L01-S01 | CH03-L01 | domain-builder | SE11 Domain 생성(저장→검사→활성화·예제칩 6) | ✅ |
 | CH03-L02-S01 | CH03-L02 | ddic-layer-board | Domain(기술)→Data Element(의미) 1:N 상속 보드 — 길이 토글→DE 2개+화면 미리보기 동시 반영·직접 TYPE 사용→오류 데모 | ✅ |
 | CH03-L03-S01 | CH03-L03 | param-screen-lab | PARAMETERS 보상 실험 — pa_stat 타입 DE↔표준 타입 토글(라벨/F4 온·오프)·VALUE CHECK로만 고정값 검증(F4≠검증)·OBLIGATORY 차단·DEFAULT·LOWER CASE·실행 mock | ✅ |
@@ -187,7 +188,8 @@
 | step-debugger | 6 | 공통(_engine)·config 주도 ✅ | CH04-L01·L05·L06·CH05-L01·L05·CH10-L07 (완료) | `.stepper-config` 트레이스(이미 주도형·리팩터 불요·하이픈키 ls_x-y OK) |
 | fill-blank | 3 | 공통(_engine)+_autoheight ✅ | CH02-L06·CH04-L02·L07 (전부 완료) | 데이터=마크업 |
 | before-after | 3 | 공통(CSS-only)+_autoheight ✅ | CH02-L01-S01·CH02-L05-S01·CH07-L03-S01 (완료) | 콘텐츠 정리 · 중립 톤(tone-warm/cool)·.note·.cmt 추가 · constant-circle-sim(폐기) 대체 |
-| var-box | 2 | 공통(_engine)+_autoheight ✅ | CH02-L01-S02·CH02-L02-S01 | VB_CFG 주도 · 타입 라벨 박스+값 쪽지·선언 직후(기본값)↔대입 토글·initialFor(string/c/n/d/t/p-dec) 처리 |
+| var-box | 2 | 공통(_engine)+_autoheight ✅ | CH02-L01-S02·CH02-L02-S01 | VB_CFG 주도 · 타입 라벨 박스+값 쪽지·선언 직후(기본값)→대입→재대입(value2 opt-in·"마지막 값만 기억") 사이클·initialFor(string/c/n/d/t/p-dec) 처리 |
+| text-symbol-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH02-L06-S02 | TSL_CFG 주도 · 등록/미등록 seg×KO/EN seg→Text Elements 표 mock+출력 2줄 비교·미등록: TEXT-nnn=빈칸(bad dashed)·literal(nnn)=fallback(amber)·verdict ok/warn(교훈3)·근거 abentext_symbols.htm·토큰/color-mix만 · 다크 |
 | len-shape-grid (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH02-L03-S01 | LSG_CFG 주도 · C/N 칸 그리드(패딩·잘림·앞0 자동채움)+P 바이트 칸(1칸=2자리·부호 반 칸=2×len−1·DECIMALS 점)+offset 패널(칸 하이라이트·범위초과 bad·부분쓰기 교체)·msg base 중립+ok/bad 명시(교훈3)·토큰/color-mix만 · 다크 |
 | type-stamp (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH02-L04-S01 | TS_CFG 주도 · TYPES 도면 카드(점선·0바이트)→DATA 실물 박스(실선·값)·DECIMALS 세그→전 변수 동시 갱신 flash·타입 대입 시도→bad·verdict base 중립+ok/bad 명시(교훈3)·토큰/color-mix만 · 다크 |
 | ddic-layer-board (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH03-L02-S01 | DLB_CFG 주도 · Domain 카드(기술·brand)→상속 케이블→DE 카드 2(의미·accent)+화면 미리보기(라벨=DE·칸수=Domain)·길이 토글→전층 동시 flash·직접 TYPE 시도→bad·verdict base 중립(교훈3)·토큰/color-mix만 · 다크 |

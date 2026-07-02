@@ -1,11 +1,11 @@
 # 02. PROGRESS — 현재 초점 · 다음 할 일
 
-> 📅 **최종수정: 2026-07-03 01:38 KST**
+> 📅 **최종수정: 2026-07-03 02:06 KST**
 > 🎯 **현재 상태와 다음 할 일만 담는다.** 완료/과거 항목·세션 서사는 **즉시 제거** — 정본은 git 이력 + `.archive/` 원장 + 라이브 인덱스([04 R16](04_CONVENTIONS.md)). 코드·git·감사로 파생 가능한 현황은 **복창하지 말고 포인터**(아래 📍).
 > 📖 **읽을 때:** 작업 시작 전(현황 파악) · 종료 시 갱신 — **갱신은 같은 커밋에 포함**([01](01_AI_SYNC.md)).
 
 ## 🎯 현재 초점
-**reference 리라이트 코퍼스 기반 content MD 챕터별 보강** 진행 중(브랜치 `content/enrich-md-from-rewrite-refs-2026-06-30`). 원칙: **content가 기준**, `reference/`(codex_0629_v3 1순위 · codex_0625 · antigravity_0629_v1 선별)는 순수 참고 — 보수적 외과 보강 + 델타 사실검증([14 §5](14_REFERENCE_CORPUS.md)) + front-matter 게이팅 선언 보완(R10/R15). 순서 CH01→CH36, **다음 = CH03**.
+**reference 리라이트 코퍼스 기반 content MD 챕터별 보강** 진행 중(브랜치 `content/enrich-md-from-rewrite-refs-2026-06-30`). 원칙: **content가 기준**, `reference/`(codex_0629_v3 1순위 · codex_0625 · antigravity_0629_v1 선별)는 순수 참고 — 보수적 외과 보강 + 델타 사실검증([14 §5](14_REFERENCE_CORPUS.md)) + front-matter 게이팅 선언 보완(R10/R15). 순서 CH01→CH36, **다음 = CH04**.
 
 ## ▶️ 다음 할 일 (우선순위)
 1. **CH04 보강** — 동일 프로토콜(챕터 전 레슨 정독 → 델타 식별 → `C:\ABAP_DOCU_HTML` 사실검증 → R3/R6/R15 통과분만 반영 → 챕터 단위 검수·1커밋) + **R2 갭 위젯 제작**(기존 엔진 재사용 우선·신규는 [AUTHORING](../embeds/_engine/AUTHORING.md) 계약·"개념의 모양을 그린다") + **기존 위젯 콘텐츠 검수·개선**(최종 산출물=docs 렌더 페이지=본문+iframe: ① 결함 검수 — 톤/저급어휘·사실·컨벤션 R9/R11/`pa_`·본문 정합·자산 실존 ② **개선 검토 — codex_0629_v3의 "체험형 학습 설계" 추천과 대조 + 자체 판단으로 기존 위젯 업그레이드/신규 제작**. "과거 검증됨 ≠ 손대지 않음" — v3 대조로 CH03 VALUE CHECK 사실 오류를 잡은 선례). ⚠️ PARAMETERS 접두어 `pa_` 통일(기존 `p_` 레슨은 각 패스에서 전환 — CH04 구구단 등) · **codex_0629_v3는 CH01～19 존재**(사용자가 계속 확장 중 — 매 챕터 시작 때 재확인)·CH20+는 codex_0625(메타)·antigravity(선별). 잔여 R2 목록 = `CONTENT_DEPTH_AUDIT`(재생성물).
