@@ -182,6 +182,50 @@ P1 정밀 판정의 결론은 다음과 같다.
 3. RAP EML transaction은 신규 장보다 **CH23 개념 지도 + CH36 capstone 실습**으로 회수하는 것이 맞다.
 4. generic Field Symbol과 RTTS/RTTI는 **CH26과 현 CH27 사이 신규 장**이 필요하다.
 
+## 4.2 P2 정밀 판정 결과
+
+> 시작일: 2026-07-03 KST
+> 범위: section 4의 P2 후보만 판정. P1 판정은 section 4.1을 따른다.
+
+P2는 P1처럼 즉시 치명적인 선행 누락은 아니지만, 그대로 두면 "알고 있어야 읽을 수 있는데 배운 적은 없는" 빈칸이 된다. 특히 CH18 이후 New Syntax 전용 장이 없고, CH35/CH36이 테스트와 RAP 운영을 마감하는 장이므로, 여기서 소유권을 확정하지 않으면 후속 챕터 작성 때 같은 보류가 반복된다.
+
+| P2 후보 | 공식문서 수동 확인 | 정밀 판정 | 필요한 조치 |
+|---|---|---|---|
+| CH18 `LET`, `THROW` expression | `C:\ABAP_DOCU_HTML\abaplet.htm`, `abenlet_abexa.htm`, `abenvalue_itab_let_abexa.htm`, `abenconditional_expression_result.htm`, `abenabap_exceptions.htm`, `abapraise_exception_message.htm` 확인 | **분할 보강 필요**. `LET`은 CH18의 constructor expression 독해 범위에서 소개해야 한다. `THROW`는 조건식 안에서 예외를 발생시키는 문법이므로 예외 클래스 학습 전인 CH18에서 깊게 다루면 R15 위반이다 | CH18에는 `LET ... IN`을 `VALUE`/`COND`/`REDUCE` 안 보조 변수로 읽는 법, 평가 순서, 이름 충돌, 과밀 표현 주의를 넣는다. CH18 끝에 `THROW`는 예외 학습 후 회수한다고 명시한다. CH20 예외 레슨에는 `COND`/`SWITCH`의 `ELSE THROW cx_...( )` 형태와 `RAISE EXCEPTION`과의 차이를 추가한다 |
+| OO 고급 언어 요소: `FRIENDS`, `ALIASES`, RTTI/RTTC, T100 예외 텍스트 | `C:\ABAP_DOCU_HTML\abenfriends.htm`, `abapclass_local_friends.htm`, `abapaliases.htm`, `abenrtti.htm`, `abencase_type_of_rtti_abexa.htm`, `abencreate_data_via_rttc_abexa.htm`, `abenexception_texts_t100.htm`, `abenif_t100_message.htm` 확인 | **분할 보강 필요**. 하나의 "고급 OO" 장으로 묶기보다 소유 개념별로 회수해야 한다. RTTI/RTTC는 P1의 Dynamic ABAP 신규 장 소유가 맞다. T100 예외 텍스트는 CH20 예외 실무성 보강이다. `FRIENDS`/`ALIASES`는 CH26에서 읽기용 고급 OO 키워드로 최소 설명한다 | CH20에 `IF_T100_MESSAGE`, `SCX_T100KEY`, 메시지 클래스 기반 예외 텍스트, `MESSAGE oref` 감각을 추가한다. 신규 Dynamic ABAP 장에는 RTTI/RTTC를 본문 레슨으로 배치한다. CH26에는 `FRIENDS`가 캡슐화 예외 통로이고 남용 위험이 크다는 점, `ALIASES`가 interface component 이름을 짧게 노출하는 문법이라는 점을 읽기용으로 정리한다 |
+| ABAP Test Double Framework, `TEST-SEAM`, `TEST-INJECTION` | `C:\ABAP_DOCU_HTML\abenabap_unit.htm`, `abentest_seams.htm`, `abaptest-seam.htm`, `abaptest-injection.htm`, `C:\ABAP_DOCU_DOWNLOAD\ABAP_DOCU\abap-docs-main\docs\cloud\md\ABENABAP_UNIT.md`, `abap-cheat-sheets-main\14_ABAP_Unit_Tests.md` 확인 | **CH35 보강 필요**. CH26은 Dependency Injection과 테스트 가능한 설계를 말하는 장이라 개념 예고는 가능하지만, 실제 도구 비교와 테스트 코드 작성은 ABAP Unit 운영 장이 맡아야 한다 | CH26에는 "테스트 가능한 설계를 만들면 CH35에서 test double 도구로 검증한다"는 연결만 둔다. CH35에는 manual fake/mock, `CL_ABAP_TESTDOUBLE`, ABAP SQL/CDS Test Double Framework, `TEST-SEAM`/`TEST-INJECTION`의 차이와 사용 조건을 비교한다. 특히 test seam은 공식 문서상 legacy code 보완용이며 신규 코드에서는 DI/인터페이스 분리를 우선한다는 경계를 넣는다 |
+| RAP Draft/Auth 고급 중 ETag/BDEF lock | `C:\ABAP_DOCU_DOWNLOAD\ABAP_DOCU\abap-docs-main\docs\cloud\md\ABENBDL_ETAG.md`, `ABENBDL_LOCKING.md`, `ABENBDL_DRAFT_HANDLING.md`, `ABENBDL_AUTHORIZATION.md`, `abap-cheat-sheets-main\36_RAP_Behavior_Definition_Language.md` 확인 | **CH36 보강 필요**. CH25의 classic lock 설명만으로 RAP ETag를 대체할 수 없다. CH36이 Draft/Auth/Capstone 마감 장이므로 BDEF lock, ETag, total ETag, authorization master/dependent를 한 흐름으로 회수해야 한다 | CH25에는 pessimistic/optimistic concurrency의 비교 지도만 둔다. CH36에는 `lock master`/`lock dependent`, `etag master`/`etag dependent`, draft의 mandatory `total etag`, Draft `Resume` 시 optimistic phase, managed/unmanaged에서 구현 책임이 달라지는 지점을 실습 전 체크리스트로 추가한다 |
+| regex/SUBMATCHES advanced string processing | `C:\ABAP_DOCU_HTML\abapfind_pattern.htm`, `abapfind_options.htm`, `abapreplace_pattern.htm`, `abapreplace_options.htm`, `abenregex_pcre_syntax.htm`, `abenregex_system_classes.htm`, `abenstring_functions_regex.htm` 확인 | **신규 장 필요**. CH04의 `FIND`/`REPLACE` 기초로는 `PCRE`, `REGEX`, `SUBMATCHES`, `RESULTS`, `CL_ABAP_REGEX`를 회수할 수 없다. Dynamic ABAP과 성격이 달라 같은 장에 합치면 초점이 흐려진다 | 권장 위치는 P1 신규 Dynamic ABAP 장 바로 뒤, 현 CH27 ALV event 장 앞이다. 번호 삽입 예시는 신규 CH27 `Dynamic ABAP`, 신규 CH28 `Advanced String Processing and Regex`이다. 최소 레슨은 PCRE 기초, `FIND PCRE`, `MATCH COUNT/OFFSET/LENGTH`, `SUBMATCHES`, `RESULTS`, `REPLACE PCRE`, `CL_ABAP_REGEX`/`CL_ABAP_MATCHER`, 로그/이메일/코드 패턴 검증 실습이다 |
+
+P2 정밀 판정의 결론은 다음과 같다.
+
+1. CH18은 `LET`을 보강하되, `THROW`는 CH20 예외 학습 후 회수한다.
+2. CH20은 T100 기반 예외 텍스트와 `THROW` expression을 보강해야 한다.
+3. CH26은 `FRIENDS`/`ALIASES`를 읽기용 고급 OO 키워드로 보강하고, test double은 CH35로 연결만 둔다.
+4. CH35는 ABAP Unit 심화 도구로 `CL_ABAP_TESTDOUBLE`, SQL/CDS test double, `TEST-SEAM`/`TEST-INJECTION` 비교를 보강해야 한다.
+5. CH36은 RAP `lock master`, ETag, total ETag, authorization master/dependent를 Draft/Auth 운영 흐름으로 보강해야 한다.
+6. regex/SUBMATCHES는 별도 신규 장이 필요하며, Dynamic ABAP 신규 장 직후 배치가 가장 자연스럽다.
+
+## 4.3 P3 정밀 판정 결과
+
+> 시작일: 2026-07-03 KST
+> 범위: section 4의 P3 후보만 판정. P1/P2 판정은 section 4.1/4.2를 따른다.
+
+P3는 "모르면 바로 다음 챕터를 읽을 수 없는 선행 개념"보다는, 실무에서 마주칠 가능성이 있으나 본 커리큘럼의 중심축과는 거리가 있는 항목이다. 따라서 P3 판정은 무리한 신규 장 생성보다, 이미 있는 장의 경계 설명과 후속 심화 위치를 확정하는 데 초점을 둔다.
+
+| P3 후보 | 공식문서/근거 확인 | 정밀 판정 | 필요한 조치 |
+|---|---|---|---|
+| Search Help exit / dynpro 동적 F4 제어 | `C:\ABAP_DOCU_HTML\abenabap_dynpros_value_help.htm`, `abenabap_dynpros_value_help_mod.htm`, `abenabap_dynpros_value_help_dynp.htm`, `abendynpro_f4_help_dic_abexa.htm`, `C:\ABAP_DOCU_DOWNLOAD\ABAP_DOCU\abap-cheat-sheets-main\18_Dynpro.md` 확인 | **CH16 보강에 흡수**. dynpro 동적 F4는 P1의 `PROCESS ON VALUE-REQUEST`와 같은 보강 묶음이다. Search Help exit는 DDIC Search Help를 확장하는 고급 기법이므로 CH16에서 구현까지 다루지는 않는다 | CH16 보강 시 "F4 우선순위: DDIC Search Help -> dynpro field binding -> Search Help exit 고려 -> POV 직접 구현" 흐름을 설명한다. 본문 실습은 `PROCESS ON VALUE-REQUEST`, `F4IF_INT_TABLE_VALUE_REQUEST`, `DYNP_VALUES_READ/UPDATE`까지만 작성한다. Search Help exit는 "DDIC Search Help 자체를 강화하는 고급 확장"으로 경계만 둔다 |
+| BRF+ rule engine | 로컬 ABAP Keyword 문서에는 독립 ABAP 언어 항목으로 존재하지 않음. SAP Help `Business Rule Framework plus (BRFplus)`와 S/4HANA Output Management/BRFplus 문서, `content/abap/CH34/CH34-L03.md`, `.project-docs/11_KEYWORD_AUDIT.md`의 CH34 Output Control 메모 확인 | **신규 ABAP 장 불필요, CH34 경계 보강**. BRF+는 ABAP 문법/OO 패턴 장에서 가르칠 주제가 아니라 별도 rule framework다. 다만 CH34 Output Control에서 "BRF+ 기반 Output Management"가 이미 등장하므로, 규칙 엔진이라는 정체성과 어디까지 배우는지 경계가 필요하다 | CH34-L03 보강 시 NAST와 BRF+ Output Management를 비교하고, BRF+가 조건/결정 테이블/규칙으로 출력 결정을 수행하는 rule framework라는 점을 설명한다. 하지만 BRF+ Application, Function, Ruleset, Decision Table을 직접 만드는 전체 실습은 본 Track의 범위 밖으로 명시한다 |
+| communication arrangement, package release contract | SAP Help `Communication Management`/`Communication Arrangements` 문서 확인. 로컬 ABAP Cloud 문서 `C:\ABAP_DOCU_DOWNLOAD\ABAP_DOCU\abap-docs-main\docs\cloud\md\ABENABAP_RELEASE_CONTRACTS.md`, `ABENC0_CONTRACT_GLOSRY.md`, `ABENC1_CONTRACT_GLOSRY.md`, `ABENRELEASED_API_GLOSRY.md`, `ABENRELEASED_APIS.md`, `ABENRESTRICTED_APIS_ATC_CHECKS.md` 확인 | **CH23/CH36 분담 보강**. communication arrangement는 ABAP Cloud/서비스 운영의 배포·연결 설정이고, package release contract는 Clean Core/released API 안정성의 실무판이다. 둘 다 신규 장보다는 RAP/ABAP Cloud 장의 운영 마감에서 회수해야 한다 | CH23-L08에는 released API, release contract C0/C1, API State, ATC 검사의 개념 지도를 추가한다. CH36 capstone에는 서비스 노출 후 통신 시나리오/통신 시스템/통신 사용자/communication arrangement가 어떤 순서로 등장하는지 운영 체크리스트를 넣는다. 실제 tenant별 설정 화면 세부 클릭 절차는 환경 의존이므로 본문은 절차 지도와 확인 포인트 중심으로 작성한다 |
+
+P3 정밀 판정의 결론은 다음과 같다.
+
+1. Search Help exit는 CH16에서 구현하지 않는다. 다만 dynpro 동적 F4 보강 시 "왜 직접 POV보다 Search Help/exit를 먼저 고려하는가"를 설명한다.
+2. BRF+ rule engine은 신규 장을 만들지 않는다. CH34 Output Control에서 BRF+ 기반 Output Management의 역할과 범위만 보강한다.
+3. communication arrangement와 package release contract는 CH23/CH36에 나눠 보강한다. CH23은 ABAP Cloud 안정성 개념, CH36은 서비스 운영 체크리스트가 소유한다.
+4. P3 확정 후에도 즉시 보강 우선순위는 P1이다. 특히 CH16 보강은 P1의 `PROCESS ON VALUE-REQUEST`/`TABLES dbtab`와 P3의 Search Help exit 경계를 한 번에 반영해야 한다.
+
 ## 5. 현재 기준으로 재작업 불필요한 대표 항목
 
 | 항목 | 이유 |
@@ -205,6 +249,20 @@ CH01~CH26 v3의 R15 보류는 대체로 정상적으로 회수되었다. 특히 
 4. CH19가 유일한 Modern SQL 장인데 CTE/window/set operation/subquery를 모두 "입문 범위 밖"으로 보류한 문제.
 5. RAP EML의 `MODIFY/COMMIT/ROLLBACK ENTITIES`와 unmanaged/saver/Draft/ETag 경계가 CH23, CH24, CH25, CH36 사이에서 충분히 회수되는지 불명확한 문제.
 
+P2 정밀 판정 후 추가로 확정된 보강 축은 다음과 같다.
+
+1. CH18/CH20 사이에서 `LET`과 `THROW` expression의 소유권을 분리해야 한다.
+2. CH20은 class-based exception만이 아니라 T100 message 기반 exception text까지 최소 실무 형태로 회수해야 한다.
+3. CH35는 ABAP Unit 마감 장으로서 Test Double Framework와 test seam의 사용 경계를 보강해야 한다.
+4. CH36은 RAP Draft/Auth 장으로서 BDEF lock, ETag, total ETag의 동시성 제어 흐름을 보강해야 한다.
+5. regex/SUBMATCHES는 신규 문자열 심화 장으로 독립 배치하는 것이 가장 안전하다.
+
+P3 정밀 판정 후 추가로 확정된 보강/경계 축은 다음과 같다.
+
+1. CH16은 P1 보강 때 Search Help exit와 직접 POV 구현의 경계를 함께 설명해야 한다.
+2. CH34는 BRF+ rule engine 전체를 가르치지 않고, Output Management에서 BRF+가 맡는 출력 결정 역할만 보강한다.
+3. CH23/CH36은 communication arrangement와 release contract를 각각 "ABAP Cloud 안정성 개념"과 "서비스 운영 체크리스트"로 나누어 회수한다.
+
 ## 6.1 신규 장 배치 검토 메모
 
 사용자 추가 검토 결과, 신규 장이 가장 필요한 항목은 "generic Field Symbol + generic type + dynamic assignment + RTTS/RTTI"이다. CH02는 표준 타입 입문이므로 generic type을 넣기에는 너무 이르다. CH06은 internal table을 배우는 시점이라 typed `LOOP ... ASSIGNING <fs>`까지만 다루는 것이 맞다. 하지만 이후 본격 Field Symbol을 가르치지 않으면 `TYPE any`, `ANY TABLE`, dynamic `ASSIGN`, RTTS/RTTI가 영구 누락된다.
@@ -223,16 +281,16 @@ CH01~CH26 v3의 R15 보류는 대체로 정상적으로 회수되었다. 특히 
 |---|---|---|
 | 신규 CH27 | Dynamic ABAP: Field Symbol 심화와 Generic Programming | L01 typed vs generic Field Symbol, L02 `TYPE any`/`ANY TABLE`/generic formal parameter, L03 `ASSIGN`/`UNASSIGN`/`IS ASSIGNED`, L04 `ASSIGN COMPONENT`, L05 `ASSIGN (name)`과 보안/덤프 위험, L06 `REF TO data`와 `CREATE DATA`, L07 RTTS/RTTI로 구조와 타입 읽기, L08 실습: 동적 구조 검사기 |
 
-regex/SUBMATCHES는 두 가지 선택지가 있다.
+regex/SUBMATCHES는 P2 정밀 판정 결과 별도 신규 장을 권장한다. 두 가지 선택지를 검토했으나, 최종 권고는 독립 장이다.
 
 | 선택지 | 판단 |
 |---|---|
-| 신규 CH28 `Advanced String Processing and Regex` | 가장 깔끔하다. `FIND PCRE`, `REPLACE PCRE`, `MATCH COUNT/OFFSET/LENGTH`, `SUBMATCHES`, `RESULTS`, `CL_ABAP_REGEX`, 로그/이메일/코드 패턴 검증을 체계적으로 다룰 수 있다. |
+| 신규 CH28 `Advanced String Processing and Regex` | 권장. `FIND PCRE`, `REPLACE PCRE`, `MATCH COUNT/OFFSET/LENGTH`, `SUBMATCHES`, `RESULTS`, `CL_ABAP_REGEX`, 로그/이메일/코드 패턴 검증을 체계적으로 다룰 수 있다. |
 | 신규 Dynamic ABAP 장의 후반 레슨으로 통합 | 장 수 증가를 줄일 수 있다. 다만 regex는 type/dynamic programming과 성격이 달라 한 장 안에서 초점이 흐려질 수 있다. |
 
-현재 감사 기준 권고는 **동적/제네릭 ABAP 신규 장은 필수**, regex/SUBMATCHES는 **별도 문자열 심화 장을 우선 검토**이다.
+현재 감사 기준 권고는 **동적/제네릭 ABAP 신규 장은 필수**, regex/SUBMATCHES는 **별도 문자열 심화 장으로 신규 개설**이다.
 
-이 문서는 1차 후보 수집 결과이며, P1은 section 4.1에서 정밀 판정을 시작했다. 다음 단계는 P1 판정에 따른 실제 챕터 재설계 지시서를 만들고, P2/P3 후보도 같은 방식으로 "보강 필요", "명시 제외", "후속 v3 작성 시 확인" 중 하나로 확정하는 것이다.
+이 문서는 1차 후보 수집 결과이며, P1은 section 4.1, P2는 section 4.2, P3는 section 4.3에서 정밀 판정을 확정했다. 다음 단계는 실제 보강 작업이다. 실행 순서는 P1부터 시작하고, 첫 대상은 CH16 보강이 가장 안전하다.
 
 ## 7. 검증 메모
 
@@ -244,6 +302,11 @@ rg 후보 키워드 in content/abap CH27~CH36, .project-docs, reference/codex_06
 Get-ChildItem content/abap CH01~CH36 _chapter.md title 추출
 rg --files / targeted rg in C:\ABAP_DOCU_HTML for P1 official docs
 rg --files / targeted rg in C:\ABAP_DOCU_DOWNLOAD\ABAP_DOCU for RAP EML official docs
+rg --files / targeted rg in C:\ABAP_DOCU_HTML for P2 LET/THROW/FRIENDS/ALIASES/RTTI/T100/test seam/regex official docs
+rg --files / targeted rg in C:\ABAP_DOCU_DOWNLOAD\ABAP_DOCU for P2 ABAP Unit Test Double and RAP ETag/BDL lock official docs
+rg --files / targeted rg in C:\ABAP_DOCU_HTML for P3 dynpro value help/Search Help official docs
+rg --files / targeted rg in C:\ABAP_DOCU_DOWNLOAD\ABAP_DOCU for P3 release contract/released API/ATC official docs
+SAP Help web lookup for P3 BRFplus and Communication Management/Communication Arrangement docs
 ```
 
 감사 중 확인한 중요한 현재 상태:
