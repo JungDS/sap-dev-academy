@@ -1,4 +1,4 @@
-# CH18_REWRITE - Modern ABAP Syntax
+# NEWCH18_OLDCH18_REWRITE - Modern ABAP Syntax
 
 > 기준 소스: `content/abap/CH18`
 > 보조 참고: `reference/codex_0625_v2/CH18_REWRITE.md`, `reference/codex_0625_v2/CH18_QA.md`, `.project-docs/09_CURRICULUM_LEDGER.md`, `.project-docs/11_KEYWORD_AUDIT.md`
@@ -23,14 +23,16 @@ CH18에서 정식으로 여는 문법:
 | `CONV` / `EXACT` | 불필요한 임시 변환 변수 | 변환 실패와 손실 가능성을 의식 |
 | `COND` / `SWITCH` | 값 하나를 만들기 위한 긴 `IF`/`CASE` | 흐름 제어가 아니라 값 생성일 때만 |
 | `REDUCE` / `FILTER` | 단순 합계 loop와 조건 추출 loop | 복잡한 누적 로직은 `LOOP` 유지 |
+| `LET ... IN` | 긴 expression 안의 반복 계산과 이름 없는 중간값 | `VALUE`/`COND`/`REDUCE` 안 독해 중심. 과밀하면 일반 변수로 분리 |
 | Calculation assignment | `lhs = lhs + rhs` 반복 | 왼쪽 변수는 이미 존재해야 함 |
 
 CH18에서 여전히 넘지 않는 경계:
 
 - Modern SQL의 host marker, comma field list, SQL inline target은 CH19다.
 - OO 본격 문법, exception handling 본격, object constructor expression은 CH20 이후다.
-- `LET`, `THROW`를 포함한 복잡한 expression 조합은 공식 문서에 존재하지만, CH18에서는 읽기 가능한 기본형만 다룬다.
-- CH18이 Modern ABAP Syntax의 유일한 정식 장이므로 `COND`, `SWITCH`, `REDUCE`, `FILTER`, `CONV`는 "나중에 배움"으로 미루지 않는다.
+- `LET ... IN`은 CH18에서 "expression 안 지역 이름을 읽는 법"까지만 다룬다. `LET` 안 field symbol, dynamic 접근, side effect가 있는 조합은 심화 범위다.
+- `THROW`는 `COND`/`SWITCH`의 결과 위치에 올 수 있지만, 예외 클래스와 `TRY...CATCH`를 알아야 안전하게 이해된다. CH18에서는 존재와 경계만 알리고 CH20에서 본격 회수한다.
+- CH18이 Modern ABAP Syntax의 유일한 정식 장이므로 `COND`, `SWITCH`, `REDUCE`, `FILTER`, `CONV`, `LET`은 "나중에 배움"으로 미루지 않는다.
 
 ## CH18-L01 - Inline Declaration
 
@@ -602,7 +604,122 @@ DATA(lt_not_open) = FILTER ty_booking_tab(
 
 `REDUCE`는 internal table을 합계나 하나의 결과로 줄이는 표현식이고, `FILTER`는 조건에 맞는 row만 새 table로 만드는 표현식이다. 둘 다 "단순한 반복 패턴"을 줄이는 데 쓰며, 복잡한 업무 흐름은 여전히 `LOOP`가 더 좋은 선택일 수 있다.
 
-## CH18-L09 - Legacy 코드의 Modern ABAP 리팩터링
+## CH18-L09 - `LET ... IN`으로 Expression 안 지역 이름 읽기
+
+### 왜 필요한가
+
+Modern syntax를 배우면 한 줄 안에서 값 생성, 조건 판단, 반복, 변환이 함께 보이기 시작한다. 처음에는 짧아서 좋아 보이지만, 계산식이 조금만 길어져도 "어떤 값이 먼저 만들어지고, 그 값이 어디에 쓰였는가"를 놓치기 쉽다.
+
+예를 들어 `VALUE`로 구조체를 만들면서 같은 계산을 여러 필드에 반복하거나, `COND`에서 같은 잔여석 계산을 여러 조건에 쓰거나, `REDUCE`에서 기준값 하나를 전체 누적에 반복해서 써야 할 수 있다. 이때 expression 밖에 임시 변수를 만들 수도 있지만, 그 임시 변수가 해당 expression 밖에서는 의미가 없다면 범위를 좁히는 편이 낫다.
+
+`LET ... IN`은 이런 상황에서 expression 안에만 살아 있는 보조 이름을 만든다.
+
+### 무엇인가
+
+`LET ... IN`은 constructor expression 안에서 지역 보조 필드를 정의하는 문법이다. 읽는 순서는 단순하다.
+
+```text
+LET 보조이름 = 값
+    보조이름2 = 보조이름을 사용한 값
+IN
+    실제 결과를 만드는 부분
+```
+
+ABAP은 `LET`에서 보조 이름을 먼저 계산한 뒤, `IN` 뒤의 expression을 계산한다. 보조 이름은 그 expression 안에서만 정적으로 읽을 수 있다. expression 바깥에서 다시 쓰는 일반 변수 선언이 아니다.
+
+`VALUE` 안에서 읽는 예:
+
+```abap
+DATA(ls_line) = VALUE ty_line(
+  LET lv_result = 2 * 3 IN
+  dan    = 2
+  mul    = 3
+  result = lv_result ).
+```
+
+이 코드는 `lv_result`를 먼저 6으로 만든 뒤, 구조체 필드 `result`에 넣는다. `lv_result`는 `ls_line`이 만들어지는 expression 안에서만 의미가 있다.
+
+`VALUE ... FOR` 안에서 반복 기준을 이름 붙이는 예:
+
+```abap
+DATA(lt_gugu) = VALUE ty_line_tab(
+  LET lv_dan = 2 IN
+  FOR lv_mul = 1 WHILE lv_mul <= 9
+  ( dan    = lv_dan
+    mul    = lv_mul
+    result = lv_dan * lv_mul ) ).
+```
+
+여기서 `lv_dan`은 전체 `VALUE` expression의 보조 값이고, `lv_mul`은 `FOR` 반복 변수다. 둘은 역할이 다르다. `lv_dan`은 구구단 몇 단인지 고정하고, `lv_mul`은 1부터 9까지 변한다.
+
+`COND` 안에서 조건 계산을 한 번만 이름 붙이는 예:
+
+```abap
+DATA(lv_status_text) = COND string(
+  LET lv_remaining = lv_capacity - lv_reserved IN
+  WHEN lv_remaining = 0  THEN '매진'
+  WHEN lv_remaining < 10 THEN |마감 임박: { lv_remaining }석|
+  ELSE                        |예매 가능: { lv_remaining }석| ).
+```
+
+같은 계산 `lv_capacity - lv_reserved`를 `WHEN`마다 반복하지 않고, `lv_remaining`이라는 이름으로 읽는다. 이때 `LET`은 첫 번째 `WHEN`보다 먼저 평가된다. `WHEN`들은 위에서 아래로 검사되고, 첫 번째로 참인 결과가 선택된다.
+
+`REDUCE` 안에서 기준값과 누적값을 구분하는 예:
+
+```abap
+DATA(lv_total_price) = REDUCE i(
+  LET lv_price_per_seat = 10000 IN
+  INIT sum = 0
+  FOR ls_book IN lt_booking
+  NEXT sum += ls_book-seats * lv_price_per_seat ).
+```
+
+`lv_price_per_seat`은 `LET`에서 만든 읽기용 보조 값이다. `sum`은 `INIT`에서 만든 누적 변수다. 둘을 섞어 이해하면 `REDUCE`가 어려워진다.
+
+| 위치 | 역할 | 값이 바뀌는가 |
+| --- | --- | --- |
+| `LET lv_price_per_seat = 10000` | expression 안 보조 값 | 일반적으로 바꾸지 않음 |
+| `INIT sum = 0` | 누적 결과의 시작값 | `NEXT`에서 반복마다 바뀜 |
+| `FOR ls_book IN lt_booking` | 반복 대상 row | row마다 바뀜 |
+| `NEXT sum += ...` | 다음 누적값 계산 | 반복마다 실행 |
+
+### 어떻게 확인하는가
+
+1. `VALUE` 예제에서 `LET lv_result = 2 * 3`이 먼저 계산되고 `result` 필드에 들어가는지 확인한다.
+2. `VALUE ... FOR` 예제에서 `lv_dan`은 계속 2이고, `lv_mul`만 1부터 9까지 변하는지 확인한다.
+3. `COND` 예제에서 `lv_remaining` 계산을 한 번 바꾸면 모든 `WHEN`과 string template 결과가 함께 바뀌는지 본다.
+4. `REDUCE` 예제에서 `lv_price_per_seat`은 기준값이고 `sum`은 누적값이라는 차이를 추적한다.
+5. expression 뒤에 `WRITE lv_remaining.`처럼 `LET` 보조 이름을 바깥에서 쓰려고 하면 문법적으로 접근할 수 없다는 점을 확인한다.
+6. 이미 같은 처리 블록에 있는 변수 이름을 `LET` 보조 이름으로 다시 쓰면 이름 충돌 위험이 있다는 점을 확인한다.
+
+### 체험 설계
+
+학습 장치는 "LET Expression 독해기"로 설계한다.
+
+- 탭: `VALUE`, `VALUE FOR`, `COND`, `REDUCE`.
+- 버튼: `LET 먼저 평가`, `IN 이후 계산`, `보조 이름 바깥에서 사용`, `이름 충돌 만들기`, `LET 제거 후 비교`.
+- 상태: helper fields, evaluation order, expression scope, accumulator, selected branch.
+- 데이터: 구구단 2단, 예매 잔여석, 좌석 단가, 예매 internal table.
+- 피드백:
+  - `LET` 보조 이름을 바깥에서 읽으려 하면 "이 이름은 expression 내부 보조 필드"라고 표시한다.
+  - `REDUCE`의 `LET` 값과 `INIT` 누적 변수를 같은 색으로 칠하면 "역할이 다름" 경고를 표시한다.
+  - expression이 6줄을 넘어가거나 `LET`, `FOR`, `COND`가 중첩되면 "짧지만 읽기 어렵다. 일반 변수와 LOOP로 분리 검토"를 표시한다.
+
+### 실수와 주의
+
+- `LET`은 일반 `DATA` 선언이 아니다. expression 안 보조 이름이다.
+- `LET`은 먼저 평가되고, `IN` 뒤에서 그 이름을 사용한다.
+- `LET` 보조 이름은 같은 expression의 namespace와 현재 처리 블록의 이름 충돌 규칙을 의식해야 한다.
+- `REDUCE`에서 `LET` 보조 값과 `INIT` 누적 변수를 구분한다.
+- `LET`을 쓰면 무조건 읽기 좋아지는 것이 아니다. 같은 계산을 한 번 이름 붙여야 더 명확할 때만 쓴다.
+- 복잡한 업무 검증, 메시지 출력, 예외 처리가 섞이면 expression 안에 밀어 넣지 말고 `IF`, `LOOP`, 일반 지역 변수로 분리한다.
+- 공식 문서에는 `THROW`가 `COND`/`SWITCH` 결과 위치에 올 수 있지만, CH18에서는 예외 처리 지식이 아직 부족하다. `ELSE THROW ...` 형태는 CH20에서 예외 클래스와 함께 다시 배운다.
+
+### 정리
+
+`LET ... IN`은 modern expression 안에서만 쓰는 작은 이름표다. 먼저 보조 값을 계산하고, `IN` 뒤에서 그 이름으로 결과를 만든다. `VALUE`, `COND`, `REDUCE`를 읽을 때 "LET 보조값, FOR 반복값, INIT 누적값, THEN/ELSE 결과값"을 구분하면 복잡한 modern syntax도 순서대로 해석할 수 있다.
+
+## CH18-L10 - Legacy 코드의 Modern ABAP 리팩터링
 
 ### 왜 필요한가
 
@@ -676,7 +793,7 @@ lv_total += lt_gugu[ 1 ]-result.
 
 좋은 modern refactor는 결과가 같고, 의도는 더 선명하며, 아직 배우지 않은 경계를 넘지 않는다. 짧아졌다는 사실만으로 좋은 코드가 되지는 않는다.
 
-## CH18-L10 - 실습: 콘서트앱 모던 리팩터
+## CH18-L11 - 실습: 콘서트앱 모던 리팩터
 
 ### 왜 필요한가
 
@@ -723,6 +840,20 @@ DATA(lv_status_text) = SWITCH string( ls_hit-status
   ELSE          '확인 필요' ).
 ```
 
+잔여석 안내 문구 만들기:
+
+```abap
+DATA(lv_capacity) = 120.
+
+DATA(lv_seat_text) = COND string(
+  LET lv_remaining = lv_capacity - lv_total IN
+  WHEN lv_remaining = 0  THEN '잔여석 없음'
+  WHEN lv_remaining < 10 THEN |잔여 { lv_remaining }석 - 마감 임박|
+  ELSE                        |잔여 { lv_remaining }석| ).
+```
+
+이 예제에서 `LET`은 `lv_capacity - lv_total` 잔여석 계산을 한 번 이름 붙이는 장치다. `lv_remaining`을 CH20에서 배울 예외 처리나 CH19의 SQL 계산으로 확장하지 않는다. CH18 실습에서는 "expression을 읽는 순서"를 확인하는 데 집중한다.
+
 이 실습에서 지키는 경계:
 
 - SQL 문장은 classic 형태로 둔다.
@@ -738,14 +869,15 @@ DATA(lv_status_text) = SWITCH string( ls_hit-status
 4. 없는 booking ID로 `line_exists` 분기가 안전하게 막는지 확인한다.
 5. string template 결과가 사용자가 읽을 수 있는 메시지인지 확인한다.
 6. `SWITCH`로 만든 상태 문구가 상태 코드별로 맞는지 확인한다.
+7. `COND ... LET`으로 만든 잔여석 문구에서 `LET` 계산이 먼저 읽히는지 확인한다.
 
 ### 체험 설계
 
 학습 장치는 "Concert Refactor Lab"으로 설계한다.
 
 - 데이터: `lt_book` 예매 3건, `lv_id`, 공연 ID, 좌석 수.
-- 버튼: `classic 실행`, `modern 실행`, `없는 ID 테스트`, `line_exists 제거`, `REDUCE 비교`, `SWITCH 상태`, `경계 검사`.
-- 상태: classic result, modern result, exception risk, message text, status text, boundary warnings.
+- 버튼: `classic 실행`, `modern 실행`, `없는 ID 테스트`, `line_exists 제거`, `REDUCE 비교`, `SWITCH 상태`, `COND LET 잔여석`, `경계 검사`.
+- 상태: classic result, modern result, exception risk, message text, status text, helper value, boundary warnings.
 - 피드백: 결과가 같으면 "의미 보존", 없는 ID에서 보호가 없으면 "table expression 위험"을 표시한다.
 
 ### 실수와 주의
@@ -754,12 +886,14 @@ DATA(lv_status_text) = SWITCH string( ls_hit-status
 - inline 변수 이름을 너무 짧게 만들지 않는다.
 - string template 안에 업무 계산을 과하게 넣지 않는다.
 - `COND`, `SWITCH`, `REDUCE`, `FILTER`를 배웠다고 모든 `IF`, `CASE`, `LOOP`를 바꾸지 않는다.
+- `LET`을 배웠다고 모든 중간값을 expression 안으로 숨기지 않는다.
 - CH18 실습은 modern syntax 리팩터링이지 modern SQL 실습이 아니다.
+- `THROW` expression은 CH20 예외 처리에서 회수한다. CH18 실습에서 예외 클래스를 끌어오지 않는다.
 - classic 코드와 modern 코드는 한동안 공존할 수 있다.
 
 ### 정리
 
-CH18-L10의 목표는 최신 문법 과시가 아니다. 이미 배운 콘서트 예매 흐름을 유지하면서 선언 위치를 좁히고, 값 생성은 `VALUE`로 표현하고, 한 행 조회는 table expression과 보호 조건으로 다루며, 메시지는 string template으로 읽기 좋게 만들고, 단순 합계와 상태 변환은 expression으로 안전하게 옮기는 것이다.
+CH18-L11의 목표는 최신 문법 과시가 아니다. 이미 배운 콘서트 예매 흐름을 유지하면서 선언 위치를 좁히고, 값 생성은 `VALUE`로 표현하고, 한 행 조회는 table expression과 보호 조건으로 다루며, 메시지는 string template으로 읽기 좋게 만들고, 단순 합계와 상태 변환은 expression으로 안전하게 옮기는 것이다. `LET`은 반복 계산에 작은 이름을 붙일 때만 사용하고, `THROW`처럼 예외 처리를 요구하는 expression은 CH20으로 넘긴다.
 
 ## CH18 마무리 체크리스트
 
@@ -780,8 +914,11 @@ CH18-L10의 목표는 최신 문법 과시가 아니다. 이미 배운 콘서트
 13. `SWITCH`와 `CASE`의 차이를 "값 생성 vs 흐름 제어" 관점에서 설명할 수 있는가?
 14. `REDUCE`의 `INIT`, `FOR`, `NEXT` 역할을 설명할 수 있는가?
 15. `FILTER`를 쓸 때 table type과 key를 왜 의식해야 하는가?
-16. `+=`는 inline declaration인가, calculation assignment인가?
-17. CH18에서 아직 열지 않는 SQL, OO, 예외 처리 경계는 무엇인가?
+16. `LET ... IN`은 언제 먼저 평가되고, 어디까지 읽을 수 있는가?
+17. `LET` 보조 값과 `REDUCE INIT` 누적 변수의 차이를 설명할 수 있는가?
+18. `+=`는 inline declaration인가, calculation assignment인가?
+19. CH18에서 아직 열지 않는 SQL, OO, 예외 처리 경계는 무엇인가?
+20. `THROW` expression은 왜 CH18에서 깊게 다루지 않고 CH20으로 넘기는가?
 
 핵심 문장:
 
