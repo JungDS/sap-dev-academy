@@ -1,6 +1,6 @@
-# CH20_QA · OO ABAP 기본 설계 검수
+# NEWCH21_OLDCH20_QA · OO ABAP 기본 설계 검수
 
-> 대상 산출물: `reference/codex_0629_v3/CH20_REWRITE.md`  
+> 대상 산출물: `reference/codex_0629_v3/NEWCH21_OLDCH20_REWRITE.md`
 > 작업 단위: CH20 1개 챕터  
 > 기준: `content/abap/CH20`, `.project-docs/04_CONVENTIONS.md` R6/R15, `.project-docs/09_CURRICULUM_LEDGER.md`, `.project-docs/11_KEYWORD_AUDIT.md`
 
@@ -10,7 +10,7 @@
 |---|---|
 | 챕터 | CH20 · OO ABAP 기본 설계 |
 | 원본 레슨 수 | L01~L10, 총 10개 |
-| 산출 파일 | `CH20_REWRITE.md`, `CH20_QA.md` |
+| 산출 파일 | `NEWCH21_OLDCH20_REWRITE.md`, `NEWCH21_OLDCH20_QA.md` |
 | 주 소스 | `content/abap/CH20` |
 | 보조 참고 | `reference/codex_0625_v2/CH20_REWRITE.md`, `reference/codex_0625_v2/CH20_QA.md` |
 | 품질 목표 | 절차적 ABAP에서 OO ABAP으로 넘어가는 완성 강의자료 |
@@ -27,7 +27,7 @@ CH20은 OO ABAP의 정식 도입 장이다. 따라서 클래스, 객체, 속성,
 | `CH20-L03.md` | `CH20-L03 · Constructor와 객체 초기화` | `constructor`, `class_constructor`, 객체 생성 시 필수 상태 초기화 |
 | `CH20-L04.md` | `CH20-L04 · Static Method와 Instance Method` | `->`, `=>`, `me->`, static/instance 선택 기준 |
 | `CH20-L05.md` | `CH20-L05 · Interface 기본 설계` | `INTERFACE`, `INTERFACES`, `interface~method`, interface reference |
-| `CH20-L06.md` | `CH20-L06 · Exception Class: TRY / CATCH / CX 계층` | `TRY/CATCH/CLEANUP`, `RAISE EXCEPTION`, `RAISING`, CX 계층 |
+| `CH20-L06.md` | `CH20-L06 · Exception Class: TRY / CATCH / CX 계층` | `TRY/CATCH/CLEANUP`, `RAISE EXCEPTION`, `RAISING`, CX 계층, T100 예외 텍스트, `THROW` expression |
 | `CH20-L07.md` | `CH20-L07 · Inheritance / Redefinition` | `INHERITING FROM`, `REDEFINITION`, `super->`, `ABSTRACT`, `FINAL` |
 | `CH20-L08.md` | `CH20-L08 · 다형성: CAST와 CASE TYPE OF` | upcast/downcast, `CAST`, `?=`, `CASE TYPE OF ... INTO ...` |
 | `CH20-L09.md` | `CH20-L09 · OO 이벤트: EVENTS / RAISE EVENT / SET HANDLER` | event 선언, 발생, handler 선언, handler 등록 |
@@ -58,13 +58,14 @@ CH20은 OO ABAP의 정식 도입 장이다. 따라서 클래스, 객체, 속성,
 | 객체 생성/참조 | `abapcreate_object.htm`, `abenconstructor_expression_new.htm`, `abenobject_reference_type.htm` |
 | selector | `abenobject_component_selector.htm`, `abenclass_component_selector.htm`, `abapcall_method_meth_ident_stat.htm`, `abenme.htm` |
 | interface | `abapinterface.htm`, `abapinterfaces.htm`, `abapinterfaces_class.htm` |
-| 예외 | `abaptry.htm`, `abapcatch_try.htm`, `abapcleanup.htm`, `abapraise_exception.htm`, `abapresume.htm` |
-| 예외 계층 | `abenabap_exception_classes.htm`, `abenexception_categories.htm`, `abenexception_texts.htm` |
+| 예외 | `abaptry.htm`, `abapcatch_try.htm`, `abapcleanup.htm`, `abapraise_exception.htm`, `abapraise_exception_class.htm`, `abapresume.htm` |
+| 예외 계층/텍스트 | `abenabap_exception_classes.htm`, `abenexception_categories.htm`, `abenexception_texts.htm`, `abenexception_texts_t100.htm`, `abenif_t100_message.htm`, `abenif_t100_dyn_msg.htm`, `abapraise_exception_message.htm` |
+| `THROW` expression | `abenconditional_expression_result.htm`, `abenabap_exceptions.htm` |
 | 상속/재정의 | `abapclass_options.htm`, `abapmethods_redefinition.htm`, `abapcall_method_meth_super.htm`, `abensingle_inheritance_glosry.htm` |
 | casting/type case | `abenconstructor_expression_cast.htm`, `abapmove_cast.htm`, `abapcase_type.htm` |
 | events | `abenevents.htm`, `abenevents_overview.htm`, `abapevents.htm`, `abapraise_event.htm`, `abapset_handler.htm`, `abapmethods_event_handler.htm` |
 
-확인 결과: 위 40개 파일이 모두 존재했다.
+확인 결과: 위 문서 파일이 모두 존재했다.
 
 ## 5. R15 게이팅 및 경계
 
@@ -79,6 +80,8 @@ CH20은 OO ABAP의 정식 도입 장이다. 따라서 클래스, 객체, 속성,
 | `constructor`, `class_constructor` | 객체 초기화 정식 도입 |
 | `INTERFACE`, `INTERFACES`, `interface~method` | interface 정식 도입 |
 | `TRY/CATCH/CLEANUP`, `RAISE EXCEPTION`, `RAISING` | CH20 예외 정식 도입 |
+| `IF_T100_MESSAGE`, `SCX_T100KEY`, `TEXTID`, `MESSAGE oref` | P2 정밀 판정에 따라 T100 기반 예외 텍스트 기본 회수 |
+| `COND`/`SWITCH` 결과 위치의 `THROW` | CH18에서 경계만 둔 `THROW` expression을 CH20 예외 학습 후 회수 |
 | `INHERITING FROM`, `REDEFINITION`, `super->` | 상속 정식 도입 |
 | `CAST`, `?=`, `CASE TYPE OF` | 다형성·casting 정식 도입 |
 | `EVENTS`, `RAISE EVENT`, `FOR EVENT`, `SET HANDLER` | OO 이벤트 정식 도입 |
@@ -93,7 +96,8 @@ CH20은 OO ABAP의 정식 도입 장이다. 따라서 클래스, 객체, 속성,
 | RAP/ABAP Cloud 코드 | CH23 범위 |
 | ALV 이벤트 심화 | CH21/CH27 범위 |
 | OO 고급 패턴 | CH26 범위 |
-| T100 예외 텍스트 프레임워크 심화 | CH20 기본 범위 밖 |
+| `IF_T100_DYN_MSG` 전체 활용, `USING MESSAGE`, dynamic message bridge | 기본 용도만 설명하고 실습 심화는 보류 |
+| `PREVIOUS` exception chain 분석, resumable/shortdump exception 심화 | CH20에서는 존재와 제한만 설명 |
 | RTTI/동적 접근 심화 | Track-2 또는 고급 범위 |
 
 판정: CH20에서 열리는 OO 기본은 정식 사용했고, 후속 챕터 범위는 코드로 앞당기지 않았다.
@@ -119,7 +123,7 @@ CH20은 OO ABAP의 정식 도입 장이다. 따라서 클래스, 객체, 속성,
 | L03 | Constructor Timeline | constructor input, object state, constructor count, ready state |
 | L04 | Arrow Selector Trainer | class/object/me left side, member kind, selector 오류 |
 | L05 | Contract Board | interface contract, implementing class, activation result |
-| L06 | Exception Flow Console | remaining seats, requested seats, exception class, catch target |
+| L06 | Exception Flow Console | remaining seats, requested seats, exception class, catch target, T100 key, message text, throw branch |
 | L07 | Redefinition Stepper | parent/subclass, executed method, `superCalled` |
 | L08 | Dynamic Type Inspector | static type, dynamic type, cast result, cast exception |
 | L09 | Event Wiring Panel | event source, handler object, handler log, registration state |
@@ -138,13 +142,15 @@ CH20은 OO ABAP의 정식 도입 장이다. 따라서 클래스, 객체, 속성,
 | v1 반복형 문구 | 반복 템플릿 흔적 없음 |
 | 후속 모델링 코드 | CDS/RAP 선언 코드 없음 |
 | 후속 데이터 변경 코드 | 실제 저장·취소 처리 코드 없음 |
+| `THROW`, `IF_T100_MESSAGE`, `SCX_T100KEY`, `MESSAGE lx_booked` | L06/L10 보강 대상이므로 존재해야 함 |
 | 공식 문서 파일 | QA에 적은 문서 파일 모두 존재 |
 
 ## 9. 남은 위험
 
 | 위험 | 대응 |
 |---|---|
-| 예외 클래스 텍스트 설계가 단순함 | CH20에서는 `get_text( )`와 계층 중심, T100 심화는 보류 |
+| T100 예외 텍스트가 과밀해질 위험 | CH20에서는 `IF_T100_MESSAGE`, `SCX_T100KEY`, `TEXTID`, `MESSAGE oref` 흐름만 다루고 `IF_T100_DYN_MSG` 심화는 보류 |
+| `THROW` expression 남용 위험 | 조건별 값 생성 중 실패 branch에서만 사용하고, 여러 문장 흐름은 `IF`와 `RAISE EXCEPTION`을 유지하도록 명시 |
 | constructor에서 존재하지 않는 공연 처리 | CH15 입력 검증 전제를 명시, 운영 설계에서는 별도 예외 가능 |
 | 상속 남용 가능성 | "is-a 관계인지 확인"과 interface 대안을 본문에 포함 |
 | CAST 남용 가능성 | 공통 method/interface 우선, CAST는 제한적으로 설명 |
@@ -159,6 +165,7 @@ CH20 v3 산출물은 다음 조건을 충족한다.
 - 입문자 기준으로 왜 필요한가 -> 무엇인가 -> 어떻게 확인하는가 -> 실수/주의 -> 정리 흐름을 레슨별로 작성했다.
 - 코드가 있는 레슨마다 체험/시뮬레이터/버튼/상태/데이터/피드백 설계를 구체화했다.
 - 공식 ABAP Keyword Documentation 파일을 `C:\ABAP_DOCU_HTML`에서 수동 확인했다.
+- P2 정밀 판정에서 남은 CH20 작업인 T100 기반 예외 텍스트와 `THROW` expression을 L06/L10에 반영했다.
 - R15 게이팅과 CH20 OO 기본 경계를 지켰다.
 
 판정: **통과**.
