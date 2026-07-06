@@ -47,6 +47,7 @@ CH26은 CH20의 OO 기본을 전제로 한다. `NEW`, 인터페이스, 다형성
 | Factory | `CLASS-METHODS create`, `CASE`, interface 반환, 구체 class 은닉 | DI container, reflection 기반 동적 factory |
 | Singleton | `CREATE PRIVATE`, `CLASS-DATA`, `get_instance` | shared memory singleton, cross-session singleton 보장 |
 | Strategy | interface, 구현 class 교체, constructor injection | 복잡한 policy engine, BRF+ rule engine |
+| Advanced OO keyword reading | `FRIENDS`, `LOCAL FRIENDS`, `ALIASES`를 읽고 위험을 판단하는 수준 | friendship 기반 설계 남용, framework 내부 권한 구조 설계 |
 | MVC | Model/View/Controller 역할 분리, report 구조화 | UI5 MVC, Fiori Elements architecture |
 | Testable design | dependency injection, local mock, ABAP Unit | ABAP Test Double Framework 상세, test seam/injection 상세 |
 | Syntax choice | CH18 학습분 사용 가능. 예제는 설명력 우선 | 패턴 설명을 흐리는 과밀 expression |
@@ -58,9 +59,11 @@ CH26은 CH20의 OO 기본을 전제로 한다. `NEW`, 인터페이스, 다형성
 | 주제 | 확인 문서 | 반영 포인트 |
 |---|---|---|
 | class option | `abapclass_options.htm`, `ABAPCLASS_OPTIONS.md` | `CREATE PRIVATE`, `FINAL`, `FOR TESTING`, instantiability |
+| friends | `abenfriends.htm`, `abapclass_options.htm`, `abapclass_local_friends.htm` | `FRIENDS`, `GLOBAL FRIENDS`, `LOCAL FRIENDS`, 단방향 friendship, friend 범위 확장 위험 |
 | static method | `abapclass-methods.htm`, `ABAPCLASS-METHODS.md` | `CLASS-METHODS`, functional static method, `RETURNING` |
 | interface | `abapinterface.htm`, `ABAPINTERFACE.md` | interface declaration has no implementation part |
 | interface implementation | `ABAPINTERFACES_CLASS.md` | `INTERFACES`, `intf~method`, class must implement methods |
+| aliases | `abapaliases.htm`, `abapinterfaces_class.htm` | `ALIASES alias FOR intf~comp`, interface component selector, alias visibility and namespace 주의 |
 | test class | `abapclass_for_testing.htm`, `ABAPCLASS_FOR_TESTING.md` | `CLASS ... FOR TESTING`, `RISK LEVEL`, `DURATION`, test doubles |
 | test method | `abapmethods_testing.htm`, `ABAPMETHODS_TESTING.md` | `METHODS ... FOR TESTING`, `CL_ABAP_UNIT_ASSERT` |
 | ABAP Unit | `abenabap_unit.htm`, `ABENABAP_UNIT.md` | local test classes, test methods, assert methods, test doubles |
@@ -306,6 +309,176 @@ ENDCLASS.
 
 Strategy는 바뀌는 알고리즘을 객체로 분리한다. 새 정책이 기존 호출부를 흔들지 않게 만들고 싶을 때, interface와 dependency injection을 함께 사용한다.
 
+## CH26-L03A · `FRIENDS`와 `ALIASES`: 고급 OO 코드를 읽기 위한 키워드
+
+### 왜 필요한가
+
+CH20에서 배운 캡슐화의 기본 원칙은 단순하다. class 내부 사정은 `PRIVATE SECTION`에 숨기고, 바깥에는 필요한 public method만 공개한다. 그래야 내부 구현을 바꿔도 호출부가 덜 흔들린다.
+
+그런데 실무 ABAP OO 코드를 읽다 보면 다음처럼 낯선 키워드를 만나게 된다.
+
+```abap
+CLASS lcl_booking_cache DEFINITION FINAL CREATE PRIVATE
+  FRIENDS lcl_booking_cache_test.
+```
+
+또는 interface 구현 class에서 이런 선언을 본다.
+
+```abap
+ALIASES calc_price FOR zif_price_strategy~calc.
+```
+
+입문자는 여기서 두 가지 오해를 하기 쉽다.
+
+- `FRIENDS`를 "친한 class니까 대충 접근해도 된다"는 느슨한 허용으로 이해한다.
+- `ALIASES`를 "새 method를 하나 더 만든 것"으로 이해한다.
+
+둘 다 정확하지 않다. `FRIENDS`는 캡슐화를 예외적으로 뚫는 강한 권한이고, `ALIASES`는 interface component의 긴 이름에 짧은 이름을 붙이는 읽기 보조 장치다. CH26에서 이 둘을 완전히 설계 도구로 남용할 단계는 아니지만, 고급 OO 코드와 테스트 코드를 읽으려면 반드시 구분해야 한다.
+
+### 무엇인가: `FRIENDS`
+
+`FRIENDS`는 어떤 class가 다른 class의 숨겨진 구성요소까지 접근할 수 있게 허락하는 선언이다. 공식 문서 기준으로 friend는 granting class의 모든 component에 visibility와 관계없이 접근할 수 있다. 즉 public만 보는 일반 사용자와 다르다.
+
+```abap
+CLASS lcl_booking_cache_test DEFINITION DEFERRED.
+
+CLASS lcl_booking_cache DEFINITION FINAL CREATE PRIVATE
+  FRIENDS lcl_booking_cache_test.
+  PUBLIC SECTION.
+    CLASS-METHODS get_instance
+      RETURNING VALUE(ro_cache) TYPE REF TO lcl_booking_cache.
+  PRIVATE SECTION.
+    CLASS-DATA go_cache TYPE REF TO lcl_booking_cache.
+    DATA mv_hit_count TYPE i.
+    METHODS reset_for_test.
+ENDCLASS.
+```
+
+위 선언에서 `lcl_booking_cache_test`는 `lcl_booking_cache`의 friend다. 따라서 일반 호출부라면 접근할 수 없는 `reset_for_test`나 `mv_hit_count`에 접근할 수 있다. 이 기능은 특히 테스트 class가 private 상태를 확인해야 할 때 등장할 수 있다.
+
+하지만 이것은 매우 강한 예외다. `PRIVATE SECTION`은 유지보수자를 보호하는 울타리인데, `FRIENDS`는 그 울타리에 특정 사람만 지나갈 수 있는 문을 만드는 것이다. 문을 많이 만들면 울타리 의미가 사라진다.
+
+```abap
+CLASS lcl_booking_cache_test DEFINITION FOR TESTING
+  DURATION SHORT
+  RISK LEVEL HARMLESS.
+  PRIVATE SECTION.
+    METHODS reset_clears_counter FOR TESTING.
+ENDCLASS.
+
+CLASS lcl_booking_cache_test IMPLEMENTATION.
+  METHOD reset_clears_counter.
+    DATA(lo_cache) = lcl_booking_cache=>get_instance( ).
+
+    lo_cache->mv_hit_count = 3.
+    lo_cache->reset_for_test( ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = lo_cache->mv_hit_count
+      exp = 0 ).
+  ENDMETHOD.
+ENDCLASS.
+```
+
+이 예제는 friend test class가 private attribute와 private method를 직접 건드리는 모습을 보여 주기 위한 것이다. 실제 설계에서는 먼저 "public 동작만으로 검증할 수 없는가?"를 물어야 한다. 테스트가 private 구현에 지나치게 붙으면 리팩터링할 때 기능은 그대로인데 테스트만 깨질 수 있다.
+
+`FRIENDS`에서 반드시 기억할 점은 다음과 같다.
+
+| 규칙 | 의미 |
+|---|---|
+| 권한은 단방향이다 | A가 B를 friend로 지정해도 B가 A를 friend로 지정한 것은 아니다 |
+| friend는 넓은 접근 권한을 가진다 | private/protected까지 접근할 수 있으므로 최소한으로 지정해야 한다 |
+| interface를 friend로 지정하면 범위가 커진다 | 그 interface를 구현하는 class들이 friend가 될 수 있어 영향 범위가 넓다 |
+| final class를 friend로 지정하는 편이 상대적으로 안전하다 | 상속으로 접근 범위가 퍼지는 위험을 줄일 수 있다 |
+| local test class friend는 테스트에서 등장할 수 있다 | 그래도 public behavior 검증을 우선하고, private 직접 검증은 예외로 둔다 |
+
+### 무엇인가: `ALIASES`
+
+ABAP에서 class가 interface를 구현하면 interface component는 보통 `intf~comp` 형태로 보인다.
+
+```abap
+INTERFACE zif_price_strategy.
+  METHODS calc
+    IMPORTING iv_seats        TYPE i
+    RETURNING VALUE(rv_price) TYPE p LENGTH 10 DECIMALS 2.
+ENDINTERFACE.
+
+CLASS zcl_regular_price DEFINITION PUBLIC FINAL CREATE PUBLIC.
+  PUBLIC SECTION.
+    INTERFACES zif_price_strategy.
+ENDCLASS.
+
+CLASS zcl_regular_price IMPLEMENTATION.
+  METHOD zif_price_strategy~calc.
+    rv_price = iv_seats * 50000.
+  ENDMETHOD.
+ENDCLASS.
+```
+
+`zif_price_strategy~calc`는 "이 method는 interface에서 온 calc다"라는 뜻이다. 이름이 길지만 출처가 분명하다.
+
+`ALIASES`는 이 interface component에 짧은 이름을 붙인다.
+
+```abap
+CLASS zcl_regular_price DEFINITION PUBLIC FINAL CREATE PUBLIC.
+  PUBLIC SECTION.
+    INTERFACES zif_price_strategy.
+    ALIASES calc_price FOR zif_price_strategy~calc.
+ENDCLASS.
+```
+
+이제 같은 method를 더 짧게 호출할 수 있다.
+
+```abap
+DATA(lo_price) = NEW zcl_regular_price( ).
+
+DATA(lv_total) = lo_price->calc_price( iv_seats = 2 ).
+```
+
+중요한 점은 `calc_price`가 완전히 새로운 method가 아니라는 것이다. `zif_price_strategy~calc`라는 interface method에 붙인 다른 이름이다. 따라서 코드를 읽을 때는 `ALIASES calc_price FOR zif_price_strategy~calc` 선언으로 돌아가 "이 이름의 원래 출처가 어느 interface인가"를 확인해야 한다.
+
+### 어떻게 확인하는가
+
+`FRIENDS`를 만나면 다음 순서로 읽는다.
+
+1. 누가 누구에게 권한을 열어 주는지 본다. `CLASS A ... FRIENDS B`라면 A가 B에게 접근을 허락한다.
+2. friend가 class인지 interface인지 확인한다. interface friend는 영향 범위가 커질 수 있다.
+3. friend가 private 생성자 접근 때문에 필요한지, private 상태 테스트 때문에 필요한지, 단순 편의인지 판단한다.
+4. 테스트 class가 friend라면 public method로 검증할 수 없는 이유가 있는지 확인한다.
+5. friend class가 늘어날수록 캡슐화가 약해진다는 점을 기록한다.
+
+`ALIASES`를 만나면 다음 순서로 읽는다.
+
+1. `ALIASES alias FOR intf~comp`에서 `intf~comp` 원본을 먼저 찾는다.
+2. alias가 public/protected/private 중 어느 section에 선언되었는지 확인한다.
+3. 호출부에서 alias와 `intf~comp` 전체 이름이 섞여 쓰이는지 본다.
+4. alias 이름이 원래 interface 출처를 너무 숨기지 않는지 판단한다.
+5. 같은 class의 다른 component 이름과 충돌하거나 의미가 모호하지 않은지 확인한다.
+
+### 실수와 주의
+
+- `FRIENDS`를 "테스트하기 편하게 private을 모두 열어도 된다"로 이해하면 안 된다. 테스트는 가능한 한 public behavior를 검증한다.
+- global interface를 friend로 지정하면 그 interface를 구현하는 많은 class가 접근 권한을 얻을 수 있다. 영향 범위를 반드시 계산한다.
+- A가 B를 friend로 지정했다고 해서 B도 A에게 private 접근을 허용한 것은 아니다.
+- `ALIASES`는 새 method 복사본이 아니다. 같은 interface component에 붙은 다른 이름이다.
+- alias가 너무 많으면 오히려 "이 method가 어느 interface에서 왔는지"가 흐려진다.
+- 같은 코드에서 `calc_price`와 `zif_price_strategy~calc`를 뒤섞으면 학습자와 유지보수자가 같은 method인지 헷갈릴 수 있다.
+
+### 체험형 학습 설계
+
+**OO Access Boundary Inspector**
+
+| 요소 | 설계 |
+|---|---|
+| 데이터 | class A의 public/protected/private component, friend 후보 class, interface method, alias name |
+| 버튼 | `friend 지정`, `friend 해제`, `private 접근 시도`, `alias 추가`, `interface 전체 이름 호출`, `alias 호출` |
+| 상태 | access allowed/denied, granting class, friend class, alias target, visible name list |
+| 피드백 | friend가 없는데 private 접근을 시도하면 "캡슐화 위반"을 표시하고, friend 지정 후에는 "권한은 열렸지만 설계 위험이 증가했다"를 표시한다. alias 호출이 성공하면 원래 target인 `intf~comp`를 함께 highlight한다. |
+
+### 정리
+
+`FRIENDS`와 `ALIASES`는 고급 OO 코드에서 자주 보이는 작은 키워드지만 의미는 가볍지 않다. `FRIENDS`는 캡슐화를 예외적으로 여는 권한 선언이고, `ALIASES`는 interface component에 더 짧은 이름을 붙이는 선언이다. CH26에서는 이 둘을 남용하는 설계 기술로 배우는 것이 아니라, 고급 코드를 읽을 때 "어느 경계가 열렸는가", "이 이름의 원래 출처가 무엇인가"를 파악하는 도구로 배운다.
+
 ## CH26-L04 · MVC 기반 Report 구조화
 
 ### 왜 필요한가
@@ -506,6 +679,8 @@ CH26에서 다룬 패턴과 설계 원칙은 모두 같은 방향을 가진다. 
 | Factory | 생성 책임을 한곳에 모은다 | 거대 생성 분기 class가 된다 |
 | Singleton | 하나만 있어야 하는 인스턴스를 통제한다 | 전역 상태가 되어 테스트를 망친다 |
 | Strategy | 알고리즘을 교체 가능한 객체로 만든다 | 간단한 분기도 과설계한다 |
+| FRIENDS | 특정 class/interface에 private 경계를 예외적으로 연다 | 캡슐화가 무너지고 테스트가 구현에 붙는다 |
+| ALIASES | interface component에 짧은 이름을 붙인다 | 원래 interface 출처가 숨겨진다 |
 | MVC | 화면·흐름·로직을 나눈다 | 작은 report까지 불필요하게 복잡하게 만든다 |
 | ABAP Unit/DI | 의존성을 바꿔 끼워 자동 테스트한다 | mock과 production code 경계가 흐려진다 |
 
