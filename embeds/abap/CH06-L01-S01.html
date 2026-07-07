@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<!-- CH06-L01-S01 — 엔진: step-debugger (embeds/_engine/step-debugger.{js,css}) + _autoheight.js
+     config=레슨 전용(Work Area→APPEND로 Internal Table이 자라는 과정, itab 워치 사용).
+     게이팅: CH06-L01 범위(TYPES/DATA·APPEND·CLEAR/FREE·DESCRIBE TABLE) — modern 문법 없음. -->
+<html lang="ko" data-eng="step-debugger">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Internal Table 성장 디버거 · CH06-L01-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/step-debugger.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">Work Area 한 건 → APPEND → 테이블이 자란다 <small>(스텝 디버거)</small></p>
+  <p class="lead"><b>다음 ⏭</b>을 누르며 보세요. <code>APPEND</code>는 <code>gs_person</code>의 <b>현재 값을 복사</b>해 <code>gt_person</code> 끝에 새 행을 만듭니다. 복사이기 때문에, 쌓인 뒤 Work Area를 바꿔도 <b>이미 쌓인 행은 그대로</b>입니다.</p>
+
+  <div class="dbg" data-stepper>
+    <div class="dbg__bar">
+      <button class="btn btn--primary" data-start>▶ 시작</button>
+      <button class="btn btn--step" data-next disabled>다음 ⏭</button>
+      <div class="progress"><i data-progress></i></div>
+      <span class="muted" data-counter>0 / 11</span>
+    </div>
+    <div class="dbg__main">
+      <div class="dbg__editorwrap"><div class="dbg__edhd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span></div><div class="dbg__editor" data-code></div></div>
+      <div class="dbg__watch">
+        <div class="watch__head">변수 모니터 — Work Area와 Internal Table</div>
+        <div class="watch__list" data-vars></div>
+      </div>
+    </div>
+    <div class="dbg__console">
+      <div class="console__head">
+        <span>콘솔</span>
+        <span class="leg"><span class="a">▶ 실행할 차례</span> · <span class="d">✓ 방금 실행</span></span>
+        <span class="sp"></span>
+        <span class="cmode"><button class="cmode__b on" data-cmode="cur">현재 행</button><button class="cmode__b" data-cmode="all">전체 출력</button></span>
+      </div>
+      <pre class="console__body" data-console>대기 중 — ▶ 시작을 누르세요.</pre>
+    </div>
+    <script type="application/json" class="stepper-config">
+    {
+      "code":[
+        "TYPES: BEGIN OF ts_person,",
+        "         name TYPE string,",
+        "         age  TYPE i,",
+        "       END OF ts_person.",
+        "",
+        "DATA: gs_person TYPE ts_person,",
+        "      gt_person TYPE TABLE OF ts_person,",
+        "      gv_cnt    TYPE i.",
+        "",
+        "gs_person-name = '정훈영'.",
+        "gs_person-age  = 30.",
+        "APPEND gs_person TO gt_person.",
+        "",
+        "CLEAR gs_person.",
+        "gs_person-name = '홍길동'.",
+        "gs_person-age  = 25.",
+        "APPEND gs_person TO gt_person.",
+        "",
+        "gs_person-age = 99.   \" Work Area만 변경",
+        "",
+        "DESCRIBE TABLE gt_person LINES gv_cnt.",
+        "CLEAR gt_person.",
+        "FREE  gt_person."
+      ],
+      "vars":[
+        {"label":"gs_person-name","sub":"Work Area · name","key":"gs_person-name","init":"( 공백 )"},
+        {"label":"gs_person-age","sub":"Work Area · age","key":"gs_person-age","init":"0"},
+        {"label":"gt_person","sub":"Internal Table · 명단","key":"gt_person","itab":{"cols":["name","age"],"num":[false,true]},"init":[]},
+        {"label":"gv_cnt","sub":"행 수","key":"gv_cnt","init":"0"}
+      ],
+      "steps":[
+        {"line":10,"vars":{"gs_person-name":"정훈영"},"console":"gs_person-name = '정훈영' — Work Area에 첫 사람을 채우는 중"},
+        {"line":11,"vars":{"gs_person-age":"30"},"console":"gs_person-age = 30 — 한 건 완성"},
+        {"line":12,"vars":{"gt_person":[["정훈영",30]]},"console":"APPEND — gs_person의 값이 복사되어 gt_person의 1번 행이 됨 (1행)"},
+        {"line":14,"vars":{"gs_person-name":"( 공백 )","gs_person-age":"0"},"console":"CLEAR gs_person — Work Area만 비움. 테이블의 1번 행은 그대로!"},
+        {"line":15,"vars":{"gs_person-name":"홍길동"},"console":"gs_person-name = '홍길동' — 두 번째 사람"},
+        {"line":16,"vars":{"gs_person-age":"25"},"console":"gs_person-age = 25"},
+        {"line":17,"vars":{"gt_person":[["정훈영",30],["홍길동",25]]},"console":"APPEND — 끝에 2번 행 추가 (2행)"},
+        {"line":19,"vars":{"gs_person-age":"99"},"console":"Work Area의 age만 99로 바뀜 — 테이블의 두 행은 변화 없음. APPEND는 '복사'라서 쌓인 행은 독립!"},
+        {"line":21,"vars":{"gv_cnt":"2"},"console":"DESCRIBE TABLE ... LINES — 행 수 2가 gv_cnt에 들어옴"},
+        {"line":22,"vars":{"gt_person":[]},"console":"CLEAR gt_person — 행 전체 삭제. 초기 할당 메모리는 남겨 둠(곧 다시 채울 때 유리)"},
+        {"line":23,"vars":{},"console":"FREE gt_person — 초기 할당분까지 메모리 전부 반환. 대용량 테이블을 다 쓰고 더 안 쓸 때 사용"}
+      ]
+    }
+    </script>
+  </div>
+  <div class="note">💡 <code>gt_person</code>은 <b>메모리에만</b> 있는 표입니다. 프로그램이 끝나면 행도 함께 사라집니다(영구 저장은 DB 테이블의 몫 — 다음 챕터).</div>
+</div>
+<script src="../_engine/step-debugger.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

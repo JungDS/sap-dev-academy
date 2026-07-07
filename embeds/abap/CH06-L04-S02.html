@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<!-- CH06-L04-S02 — 엔진: step-debugger (embeds/_engine/step-debugger.{js,css}) + _autoheight.js
+     config=레슨 전용(COLLECT 합산 → 컨트롤레벨 AT NEW/END OF·SUM 소계).
+     게이팅: CH06-L04 범위(COLLECT·SORT·AT NEW/END OF·SUM). -->
+<html lang="ko" data-eng="step-debugger">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>COLLECT와 컨트롤레벨 · CH06-L04-S02</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/step-debugger.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">COLLECT 합산 → 컨트롤레벨 소계 <small>(스텝 디버거)</small></p>
+  <p class="lead">1막: <code>COLLECT</code>는 같은 키를 만나면 행을 늘리지 않고 <b>숫자를 누적</b>합니다. 2막: 지역별 여러 건이 든 테이블에서 <code>AT NEW</code>/<code>AT END OF</code>·<code>SUM</code>으로 그룹 소계를 냅니다. 콘솔을 <b>전체 출력</b>으로 두면 소계 리포트가 완성되는 걸 볼 수 있습니다.</p>
+
+  <div class="dbg" data-stepper>
+    <div class="dbg__bar">
+      <button class="btn btn--primary" data-start>▶ 시작</button>
+      <button class="btn btn--step" data-next disabled>다음 ⏭</button>
+      <div class="progress"><i data-progress></i></div>
+      <span class="muted" data-counter>0 / 18</span>
+    </div>
+    <div class="dbg__main">
+      <div class="dbg__editorwrap"><div class="dbg__edhd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span></div><div class="dbg__editor" data-code></div></div>
+      <div class="dbg__watch">
+        <div class="watch__head">변수 모니터 — 두 테이블</div>
+        <div class="watch__list" data-vars></div>
+      </div>
+    </div>
+    <div class="dbg__console">
+      <div class="console__head">
+        <span>콘솔</span>
+        <span class="leg"><span class="a">▶ 실행할 차례</span> · <span class="d">✓ 방금 실행</span></span>
+        <span class="sp"></span>
+        <span class="cmode"><button class="cmode__b on" data-cmode="cur">현재 행</button><button class="cmode__b" data-cmode="all">전체 출력</button></span>
+      </div>
+      <pre class="console__body" data-console>대기 중 — ▶ 시작을 누르세요.</pre>
+    </div>
+    <script type="application/json" class="stepper-config">
+    {
+      "code":[
+        "\" ① 같은 키는 합산 — COLLECT",
+        "gs_sales-region = '서울'. gs_sales-amount = 100.",
+        "COLLECT gs_sales INTO gt_sales.",
+        "gs_sales-region = '부산'. gs_sales-amount = 50.",
+        "COLLECT gs_sales INTO gt_sales.",
+        "gs_sales-region = '서울'. gs_sales-amount = 30.",
+        "COLLECT gs_sales INTO gt_sales.   \" 행이 안 늘고 누적!",
+        "",
+        "\" ② 그룹 소계 — 지역별 여러 건이 든 gt_sales2로",
+        "SORT gt_sales2 BY region.",
+        "LOOP AT gt_sales2 INTO gs_sales.",
+        "  AT NEW region.",
+        "    WRITE: / '--- 지역:', gs_sales-region.",
+        "  ENDAT.",
+        "  WRITE: / gs_sales-amount.",
+        "  AT END OF region.",
+        "    SUM.",
+        "    WRITE: / '소계:', gs_sales-amount.",
+        "  ENDAT.",
+        "ENDLOOP."
+      ],
+      "vars":[
+        {"label":"gs_sales-region","sub":"Work Area · 지역(키)","key":"gs_sales-region","init":"( 공백 )"},
+        {"label":"gs_sales-amount","sub":"Work Area · 금액","key":"gs_sales-amount","init":"0"},
+        {"label":"gt_sales","sub":"① COLLECT 결과","key":"gt_sales","itab":{"cols":["region","amount"],"num":[false,true]},"init":[]},
+        {"label":"gt_sales2","sub":"② 지역별 여러 건","key":"gt_sales2","itab":{"cols":["region","amount"],"num":[false,true]},"init":[["서울",100],["부산",20],["서울",30],["부산",30]]}
+      ],
+      "steps":[
+        {"line":2,"vars":{"gs_sales-region":"서울","gs_sales-amount":"100"},"console":"서울 100 준비"},
+        {"line":3,"vars":{"gt_sales":[["서울",100]]},"focus":{"gt_sales":1},"console":"COLLECT — 키 '서울'이 없으니 새 행으로 삽입 (1행)"},
+        {"line":4,"vars":{"gs_sales-region":"부산","gs_sales-amount":"50"},"console":"부산 50 준비"},
+        {"line":5,"vars":{"gt_sales":[["서울",100],["부산",50]]},"focus":{"gt_sales":2},"console":"COLLECT — 새 키 '부산' → 새 행 (2행)"},
+        {"line":6,"vars":{"gs_sales-region":"서울","gs_sales-amount":"30"},"console":"서울 30 준비 — 이번엔 이미 있는 키!"},
+        {"line":7,"vars":{"gt_sales":[["서울",130],["부산",50]]},"focus":{"gt_sales":1},"console":"COLLECT — 키 '서울'이 이미 있음 → 행이 늘지 않고 amount 100+30 = 130 누적! (그냥 붙이고 싶다면 APPEND)"},
+        {"line":10,"vars":{"gt_sales2":[["부산",20],["부산",30],["서울",100],["서울",30]]},"console":"SORT BY region — 같은 지역끼리 인접. 컨트롤레벨의 전제는 그룹 키 정렬!"},
+        {"line":13,"vars":{"gs_sales-region":"부산","gs_sales-amount":"20"},"focus":{"gt_sales2":1},"console":"1행 부산/20 — region 그룹이 시작됨 → AT NEW 블록 실행\n[출력] --- 지역: 부산"},
+        {"line":15,"vars":{},"console":"[출력] 20"},
+        {"line":15,"vars":{"gs_sales-amount":"30"},"focus":{"gt_sales2":2},"console":"[출력] 30 (2행 — 같은 부산 그룹이라 AT NEW은 실행되지 않음)"},
+        {"line":17,"vars":{"gs_sales-amount":"50"},"console":"AT END OF — 부산 그룹의 마지막 행. SUM이 그룹 키 오른쪽 숫자 필드(amount)의 그룹 합계 50을 gs_sales에 채움"},
+        {"line":18,"vars":{},"console":"[출력] 소계: 50"},
+        {"line":13,"vars":{"gs_sales-region":"서울","gs_sales-amount":"100"},"focus":{"gt_sales2":3},"console":"3행 서울/100 — region 값이 바뀜 → AT NEW 실행\n[출력] --- 지역: 서울"},
+        {"line":15,"vars":{},"console":"[출력] 100"},
+        {"line":15,"vars":{"gs_sales-amount":"30"},"focus":{"gt_sales2":4},"console":"[출력] 30"},
+        {"line":17,"vars":{"gs_sales-amount":"130"},"console":"SUM — 서울 그룹 합계 130"},
+        {"line":18,"vars":{},"console":"[출력] 소계: 130"},
+        {"line":20,"vars":{},"console":"ENDLOOP — 그룹 소계 완성. 정렬이 안 돼 있었다면 같은 지역이 두 번 '시작'되는 등 경계가 어긋납니다"}
+      ]
+    }
+    </script>
+  </div>
+  <div class="note">💡 <code>COLLECT</code>를 쓰려면 키가 아닌 필드는 <b>모두 숫자</b>여야 합니다(합산 대상이므로). <code>SUM</code>은 <code>LOOP ... INTO</code>에서만 쓸 수 있습니다.</div>
+</div>
+<script src="../_engine/step-debugger.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

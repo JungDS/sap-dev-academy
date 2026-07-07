@@ -40,6 +40,25 @@ body{font-family:var(--font);color:var(--ink);background:transparent;line-height
 @keyframes valflash{0%{background:#fff0b8;}100%{background:transparent;}}
 .var__val.changed{animation:valflash .8s ease;}
 
+/* itab 워치 — Internal Table 행 미니테이블 */
+.dbg .var--itab{display:block;}
+.itw{margin-top:8px;overflow-x:auto;border:1px solid var(--line);border-radius:8px;}
+.itw__t{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:.76rem;}
+.itw__t th{background:#eef1f6;color:#5b6578;font-weight:700;padding:4px 8px;text-align:left;border-bottom:1px solid var(--line);}
+.itw__t td{padding:4px 8px;border-bottom:1px solid #eef1f6;color:var(--ink);}
+.itw__t tr:last-child td{border-bottom:none;}
+.itw__t .ix{width:30px;text-align:right;color:#aab3cf;background:#fbfcfe;font-size:.7rem;}
+.itw__t th.ix{background:#eef1f6;}
+.itw__t td.n{text-align:right;}
+.itw__t .itw__empty td{color:var(--ink-soft);font-style:italic;text-align:center;padding:8px;}
+@keyframes rowflash{0%{background:#dcf3e8;}100%{background:transparent;}}
+.itw__t tr.new td{animation:rowflash 1s ease;}
+.itw__t tr.new td.ix{color:#0b7250;font-weight:700;}
+@keyframes rowchg{0%{background:#fff0b8;}100%{background:transparent;}}
+.itw__t tr.chg td{animation:rowchg 1s ease;}
+.itw__t tr.focus td{background:#fff7d6;}
+.itw__t tr.focus td.ix{background:#fbeec4;color:#b8770a;font-weight:700;}
+
 /* 콘솔 모드 토글 + 범례 */
 .cmode{display:inline-flex;gap:2px;background:#e9edf4;border-radius:7px;padding:2px;}
 .cmode__b{border:0;background:none;border-radius:5px;padding:4px 10px;font:inherit;font-size:.72rem;font-weight:700;color:var(--ink-soft);cursor:pointer;}
@@ -56,11 +75,11 @@ body{font-family:var(--font);color:var(--ink);background:transparent;line-height
 .dbg__edhd .cb-dots{display:flex;gap:5px;} .dbg__edhd .cb-dots i{width:10px;height:10px;border-radius:50%;display:block;}
 .dbg__edhd .cb-dots i:nth-child(1){background:#ff5f56;} .dbg__edhd .cb-dots i:nth-child(2){background:#ffbd2e;} .dbg__edhd .cb-dots i:nth-child(3){background:#27c93f;}
 .dbg__edhd .cb-lang{color:#ffa03b;font-weight:bold;letter-spacing:1px;font-size:11px;}
-.dbg__editor{background:#fbfcfe;max-height:380px;overflow:auto;} /* 13~14줄 예제까지 스크롤 없이 */
+.dbg__editor{background:#fbfcfe;} /* 캡 없음 — 코드 전체 줄을 항상 표시(수직 스크롤 금지·사용자 선호). 높이는 _autoheight가 iframe에 전달 */
 .dbg__watch{display:flex;flex-direction:column;min-width:0;}
 .watch__head{padding:10px 14px;font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--ink-soft);border-bottom:1px solid var(--line);}
 .watch__head svg{width:14px;height:14px;vertical-align:-2px;margin-right:5px;}
-.watch__list{overflow:auto;max-height:410px;} /* 구조체 2개(6행 × 67px)까지 스크롤 없이 */
+.watch__list{} /* 캡 없음 — 변수·itab 워치를 전부 표시(수직 스크롤 금지) */
 .dbg .var{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 14px;border-bottom:1px solid #eef1f6;}
 .dbg__console{border-top:1px solid var(--line);}
 .console__head{padding:9px 14px;font-size:.74rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--ink-soft);background:#f4f6fa;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;}
@@ -92,3 +111,19 @@ html.dark .dbg .var{border-bottom-color:#2b3147;}
 html.dark .leg .a{color:#fbbf24;} html.dark .leg .d{color:#34d399;}
 @keyframes valflashDark{0%{background:rgba(251,191,36,.28);}100%{background:transparent;}}
 html.dark .var__val.changed{animation:valflashDark .8s ease;}
+html.dark .note{color:#8394be;}
+html.dark .note code{background:#1f2229;border-color:#2b3147;}
+html.dark .itw__t th,html.dark .itw__t th.ix{background:#222739;color:#9aa3ba;}
+html.dark .itw__t td{border-bottom-color:#2b3147;}
+html.dark .itw__t .ix{background:#1d2230;color:#6b7494;}
+@keyframes rowflashDark{0%{background:rgba(52,211,153,.2);}100%{background:transparent;}}
+html.dark .itw__t tr.new td{animation:rowflashDark 1s ease;}
+html.dark .itw__t tr.new td.ix{color:#34d399;}
+@keyframes rowchgDark{0%{background:rgba(251,191,36,.24);}100%{background:transparent;}}
+html.dark .itw__t tr.chg td{animation:rowchgDark 1s ease;}
+html.dark .itw__t tr.focus td{background:rgba(251,191,36,.13);}
+html.dark .itw__t tr.focus td.ix{background:rgba(251,191,36,.2);color:#fbbf24;}
+
+/* 하단 note (표준 패턴 — decision-tree와 동일) */
+.note{margin-top:11px;border-left:3px solid var(--brand);background:rgba(59,91,219,.06);border-radius:0 9px 9px 0;padding:9px 13px;font-size:.82rem;color:#2a3550;}
+.note code{font-family:var(--mono);background:#fff;border:1px solid var(--line);padding:0 5px;border-radius:4px;}

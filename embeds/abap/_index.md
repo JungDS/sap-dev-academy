@@ -48,7 +48,17 @@
 | CH05-L02-S01 | CH05-L02 | struct-viz | (재사용) ZST_PERSON 트리 — Component=Data Element(라벨 상속 표기)·name 대입 인터랙션 | ✅ |
 | CH05-L03-S01 | CH05-L03 | struct-reuse-board | 중첩/.INCLUDE/.APPEND 세그→다이어그램(하위 박스/펼침 그룹/잠긴 표준+확장)+접근 경로+경로 퀴즈 3문 | ✅ |
 | CH05-L04-S01 | CH05-L04 | move-mapping | MOVE-CORRESPONDING 매핑 보드(SAP BC400 표준 구도) — 상=원본·하=대상 스트립·같은 이름끼리 화살표(실행 전 점선→후 실선)·잔존 함정·CLEAR 토글 | ✅ |
-| CH06-L06-S01 | CH06-L06 | state-change-grid | 구구단 lt_gugu 성장 스냅샷(APPEND 1→9→81행 + SORT result DESC) | ✅ |
+| CH06-L01-S01 | CH06-L01 | step-debugger(itab워치) | Work Area→APPEND로 gt_person 성장 트레이스(11스텝·행 미니테이블 new 플래시·CLEAR/FREE·DESCRIBE·APPEND=복사 강조: WA age=99 바꿔도 쌓인 행 불변) | ✅ |
+| CH06-L02-S01 | CH06-L02 | code-anatomy | 테이블 타입 선언 한 줄 해부(tt_person/kind=STANDARD/line=TABLE OF/key=WITH NON-UNIQUE KEY/use) — 3속성 클릭 | ✅ |
+| CH06-L02-S02 | CH06-L02 | decision-tree | Table Kind 선택 트리(자주 하는 일→STANDARD/SORTED/HASHED·유일키·정렬유지 분기) | ✅ |
+| CH06-L03-S01 | CH06-L03 | step-debugger(itab워치) | 한 행 제어 실험실(INSERT INDEX·READ INDEX/WITH KEY·MODIFY TRANSPORTING·DELETE, focus 강조·sy-subrc/sy-tabix·READ 실패 후 WA 잔존 함정) | ✅ |
+| CH06-L03-S02 | CH06-L03 | step-debugger(itab워치) | BINARY SEARCH 함정 재현(정렬 없이→sy-subrc=4, SORT 후→발견) | ✅ |
+| CH06-L04-S01 | CH06-L04 | step-debugger(itab워치) | 반복 회차 vs sy-tabix 괴리(WHERE 걸러 돌기·focus 강조) + ASSIGNING <fs> 원본 직접 수정(전 행 age+1) | ✅ |
+| CH06-L04-S02 | CH06-L04 | step-debugger(itab워치) | COLLECT 키 합산(서울 100+30=130·행 불증) → 컨트롤레벨 AT NEW/END OF·SUM 지역 소계 리포트 | ✅ |
+| CH06-L04-S03 | CH06-L04 | state-change-grid | DELETE ADJACENT DUPLICATES 함정 스냅샷(정렬 없이 0삭제→SORT→인접 첫행만 남김·COMPARING name) | ✅ |
+| CH06-L05-S01 | CH06-L05 | judge-quiz | Flat vs Deep 판정 5문(전 숫자=Flat·string 하나=Deep·itab 포함=Deep·중첩≠deep·고정길이 회원카드) | ✅ |
+| CH06-L05-S02 | CH06-L05 | code-anatomy | ts_order 해부 — order_id/customer=Flat, items TYPE tt_item 한 줄이 전체를 Deep으로(원본 코드블록 체험·R2) | ✅ |
+| CH06-L06-S01 | CH06-L06 | state-change-grid | 구구단 gt_gugu 성장 스냅샷(APPEND 1→9→81행 + SORT result DESC) | ✅ |
 | CH07-L03-S01 | CH07-L03 | before-after | 메모리(휘발) vs 디스크(영속) 두 운명 — 중립 톤(tone-warm/cool) | ✅ |
 | CH08-L01-S01 | CH08-L01 | client-scope-filter | Client(MANDT) 자동 종속 — 현재 client 바꿔 같은 SELECT 실행→결과 달라짐(MANDT 미기재) | ✅ |
 | CH08-L02-S01 | CH08-L02 | select-query-simulator | classic SELECT 빌더(projection·WHERE·sy-subrc)·ZTPERSON 연습 샌드박스 | ✅ |
@@ -205,7 +215,7 @@
 ## B. 엔진별 집계 (카테고리 현황 — 같은 종류 몇 개·어디서)
 | 엔진 (embeds/_engine/) | 그룹 | 공통/standalone | 사용 인스턴스 | 비고 |
 |---|---|---|---|---|
-| step-debugger | 7 | 공통(_engine)·config 주도 ✅ | CH04-L01·L05·L06·CH05-L01-S01/S05·CH05-L05·CH10-L07 (완료) | `.stepper-config` 트레이스(이미 주도형·리팩터 불요·하이픈키 ls_x-y OK) |
+| step-debugger | 12 | 공통(_engine)·config 주도 ✅ | CH04-L01·L05·L06·CH05-L01-S01/S05·CH05-L05·CH10-L07·**CH06-L01-S01·L03-S01/S02·L04-S01/S02** (완료) | `.stepper-config` 트레이스(주도형·하이픈키 ls_x-y OK). **CH06 확장**: vars 항목에 `itab:{cols,num}` 주면 값(2차원 배열)을 행 미니테이블로 렌더(new/chg 플래시·num 우측정렬)·steps[i].focus={key:행번호}로 현재 행 강조·키워드 TRANSPORTING/BINARY/ASSIGNING/COLLECT/SUM 등 추가·다크 .note 오버라이드 추가 |
 | fill-blank | 5 | 공통(_engine)+_autoheight ✅ | CH02-L06-S01·CH04-L02-S01·CH04-L07-S01/S02/S03 (전부 완료) | 데이터=마크업 |
 | before-after | 6 | 공통(CSS-only)+_autoheight ✅ | CH02-L01-S01·CH02-L05-S01·CH04-L04-S04·CH05-L01-S06·CH05-L01-S07·CH07-L03-S01 (완료) | 콘텐츠 정리 · 중립 톤(tone-warm/cool)·.note·.cmt·메모리 도형(칩/미니)·확장 접기·.solo(단일 칼럼 pain-only) 추가 · constant-circle-sim(폐기) 대체 |
 | var-box | 2 | 공통(_engine)+_autoheight ✅ | CH02-L01-S02·CH02-L02-S01 | VB_CFG 주도 · 타입 라벨 박스+값 쪽지·선언 직후(기본값)→대입→재대입(value2 opt-in·"마지막 값만 기억") 사이클·initialFor(string/c/n/d/t/p-dec) 처리 |
@@ -297,7 +307,7 @@
 | report-run-simulator (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH15-L12-S01 | RRS_CFG 주도 · CH15 캡스톤·시나리오 칩+s_stat 세그→▶실행→4 event 타임라인(pass/fail/lock)·검증 막힘 메시지·결과 ALV테이블/0건 S메시지 · 다크 |
 | salv-grid-simulator | 2 | 공통(_engine)·자체 postHeight ✅ | CH11-L02-S01·CH11-L06-S01 (완료) | config 주입(SALV_CFG: itab·cols·data·sumKey·code) · ALV제목/토글 엔진설정 |
 | relationship-map | 1 | 공통 | _(미작성)_ | CSS-only |
-| state-change-grid | 1 | 공통(CSS-only)+_autoheight ✅ | CH06-L06-S01 | 스냅샷=마크업(lt_gugu 성장·정렬) · 빈 .js 제거 |
+| state-change-grid | 2 | 공통(CSS-only)+_autoheight ✅ | CH06-L04-S03·CH06-L06-S01 | 스냅샷=마크업(gt_gugu 성장·정렬 / DELETE ADJACENT DUPLICATES 함정) · cell-new/cell-del 강조 · .note 추가(다크 자동) |
 | mermaid | 6 | 공통(+_vendor)+_autoheight ✅ | CH04-L03-S01·L04-S02/S03·L05-S02/S03/S04 | 그래프=위젯 `.mermaid` 주입·CDN+로컬fallback·이벤트본 은퇴 |
 | domain-builder | 1 | 공통(_engine) ✅ | CH03-L01-S01 | SE11 폼(단일사용·데이터 inline) · 예제별 target 강제(검사/활성화는 목표 일치 시에만) |
 | input-help-priority | 1 | 공통(CSS-only)+_autoheight ✅ | CH09-L07-S01 | F4 사다리(콘텐츠=마크업·빈 .js 제거) |
@@ -333,9 +343,7 @@
 |---|---|
 | before-after = N+1 쿼리 | CH13-L06 / 성능 |
 | diff-mapper = SELECT 성능 | CH12·CH13 |
-| decision-tree = 내부테이블 타입 | CH06-L02 |
 | relationship-map = HR/SD FK | CH09 / CH13 |
 | static-svg = 풀스택 | CH31 / CH36 |
 | sap-gui-sandbox = SE16N 조회 | CH07 / SELECT |
 | mermaid = 이벤트 | (CH15에 더 우수본 있음 → 은퇴) |
-| state-change-grid = person/salary APPEND→SORT→DELETE | CH06-L04(집단행 조작) — 단 L04 현재 embed 없음 → 신규 추가라 현 스코프 밖, 후속 |

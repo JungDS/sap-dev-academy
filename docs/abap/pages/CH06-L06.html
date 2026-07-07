@@ -40,8 +40,41 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>구구단 전체를 메모리에 담는다</h2>
-<p>CH05에서 구구단 한 줄을 구조체로 묶었지만 <strong>한 번에 한 줄</strong>뿐이었다. 이제 같은
-모양의 행을 <strong>내부 테이블</strong>에 쌓으면 81줄을 통째로 들고 있을 수 있다.</p>
+<p><a href="CH05-L05.html">Chapter 5 · 구구단 캡스톤</a>에서 구구단 한 줄을 Structure로 묶었지만
+<strong>한 번에 한 줄</strong>뿐이었다. 이제 같은 모양의 행을 <button class="term" type="button" data-term="Internal Table">Internal Table</button>에 쌓으면 81줄을
+통째로 들고 있을 수 있다. 이 실습은 이번 챕터 전체의 결론이다.</p>
+<table>
+<thead>
+<tr>
+<th>배운 개념</th>
+<th>구구단에서의 역할</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Line Type</td>
+<td><code>dan</code>·<code>mul</code>·<code>result</code>를 묶은 행 모양(<code>ts_line</code>)</td>
+</tr>
+<tr>
+<td>Work Area</td>
+<td>지금 만들고 있는 한 줄(<code>gs_line</code>)</td>
+</tr>
+<tr>
+<td>Internal Table</td>
+<td>81줄을 담는 표(<code>gt_gugu</code>)</td>
+</tr>
+<tr>
+<td>APPEND</td>
+<td>한 줄씩 쌓기</td>
+</tr>
+<tr>
+<td>SORT</td>
+<td>결과 기준 재배열</td>
+</tr>
+<tr>
+<td>LOOP</td>
+<td>쌓인 81줄 출력</td>
+</tr>
+</tbody></table>
 </section><section class="lblock"><h2>쌓기 — 중첩 DO + APPEND</h2>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
@@ -59,14 +92,18 @@
 14
 15
 16
-17</pre><pre class="abap-editor__code"><code><span class="tok-kw">TYPES</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ty_line,
+17
+18
+19
+20</pre><pre class="abap-editor__code"><code><span class="tok-kw">TYPES</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ts_line,
          dan    <span class="tok-kw">TYPE</span> i,
          mul    <span class="tok-kw">TYPE</span> i,
          result <span class="tok-kw">TYPE</span> i,
-       <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ty_line.
+       <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ts_line.
 
-<span class="tok-kw">DATA</span>: gs_line <span class="tok-kw">TYPE</span> ty_line,
-      gt_gugu <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ty_line.
+<span class="tok-kw">DATA</span>: gs_line <span class="tok-kw">TYPE</span> ts_line,
+      gt_gugu <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ts_line,
+      gv_cnt  <span class="tok-kw">TYPE</span> i.
 
 <span class="tok-kw">DO</span> <span class="tok-num">8</span> <span class="tok-kw">TIMES</span>.
   gs_line-dan = sy-index + <span class="tok-num">1</span>.            <span class="tok-com">" 2~9단</span>
@@ -75,8 +112,10 @@
     gs_line-result = gs_line-dan * gs_line-mul.
     <span class="tok-kw">APPEND</span> gs_line <span class="tok-kw">TO</span> gt_gugu.           <span class="tok-com">" 한 줄씩 쌓는다</span>
   <span class="tok-kw">ENDDO</span>.
-<span class="tok-kw">ENDDO</span>.</code></pre></div></div>
-<p>이제 <code>gt_gugu</code>에는 구구단 81행이 <strong>전부</strong> 들어 있다 — 출력 후에도 사라지지 않고
+<span class="tok-kw">ENDDO</span>.
+
+<span class="tok-kw">DESCRIBE</span> <span class="tok-kw">TABLE</span> gt_gugu <span class="tok-kw">LINES</span> gv_cnt.     <span class="tok-com">" gv_cnt = 81</span></code></pre></div></div>
+<p>이제 <code>gt_gugu</code>에는 구구단 81행이 <strong>전부</strong> 들어 있다. 출력 후에도 사라지지 않고
 정렬·검색에 쓸 수 있다.</p>
 </section><section class="lblock"><h2>정렬해서 출력 — SORT + LOOP</h2>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
@@ -88,16 +127,26 @@
 <span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> gt_gugu <span class="tok-kw">INTO</span> gs_line.
   <span class="tok-kw">WRITE</span>: / gs_line-dan, <span class="tok-str">'x'</span>, gs_line-mul, <span class="tok-str">'='</span>, gs_line-result.
 <span class="tok-kw">ENDLOOP</span>.</code></pre></div></div>
-<p>한 줄씩 출력만 하던 CH05와 달리, <strong>모아 두었기에</strong> &quot;결과가 큰 순서&quot;처럼 마음대로
-재배열할 수 있다.</p>
+<p>한 줄씩 출력만 하던 <a href="CH05-L05.html">지난 챕터의 구구단</a>과 달리, <strong>모아 두었기에</strong>
+&quot;결과가 큰 순서&quot; 같은 원하는 기준으로 마음대로 재배열할 수 있다.</p>
 </section><section class="lblock"><h2>디버거로 행들 보기</h2>
-<p><code>APPEND</code> 다음 줄에 <code>BREAK-POINT</code>를 걸고 <code>gt_gugu</code>를 펼치면, 행이 하나씩 쌓여
-2개, 4개 … 81개가 되는 모습이 보인다(CH04-L06 디버거).</p>
+<p><code>APPEND</code> 다음 줄에 <code>BREAK-POINT</code>를 걸고(<a href="CH04-L06.html">디버깅 입문</a>) <code>gt_gugu</code>를
+펼치면, 행이 하나씩 쌓여 2개, 4개 … 81개가 되는 모습이 보인다.</p>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">행이 APPEND될 때마다 내부 테이블이 늘어나는 모습 보기</span><a class="embed__open" href="../../../embeds/abap/CH06-L06-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH06-L06-S01.html" loading="lazy" title="행이 APPEND될 때마다 내부 테이블이 늘어나는 모습 보기"></iframe></figure>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>바깥 <code>sy-index</code>와 안쪽 <code>sy-index</code> 혼동</strong> → 안쪽 루프에 들어가면 <button class="term" type="button" data-term="sy-index">sy-index</button>는
+안쪽 회차다. 그래서 바깥 단수는 안쪽 루프에 들어가기 <strong>전에</strong> <code>gs_line-dan</code>에 저장해 둔다.</li>
+<li><strong>APPEND 위치</strong> → <code>mul</code>·<code>result</code>가 채워진 <strong>뒤에</strong> 실행돼야 한다. 안쪽 루프 밖에 두면
+단마다 한 줄만 쌓인다.</li>
+<li><strong>정렬 후 원래 순서 기대</strong> → <code>SORT</code> 후에는 순서가 바뀐다. 원래 입력 순서가 필요하면
+정렬 전에 기준이 되는 필드를 따로 보존한다.</li>
+<li><strong>담았으니 저장됐다는 착각</strong> → <button class="term" type="button" data-term="메모리">메모리</button>에 담긴 것과 DB에 저장된 것은 다르다.</li>
+</ul>
 </section><section class="lblock"><h2>정리 — 그리고 다음 불편</h2>
 <p>구구단 전체를 <button class="term" type="button" data-term="메모리">메모리</button>에서 자유롭게 다뤘다. 그런데 프로그램이 끝나면 <code>gt_gugu</code>는
 <strong>흔적도 없이 사라진다.</strong> 다시 실행하면 또 처음부터 만들어야 한다. 값을 <strong>영구히
-저장</strong>해 두고 싶다 → <strong>CH07(Transparent Table)</strong>.</p>
+저장</strong>해 두고 싶다 → <a href="CH07-L01.html">Chapter 7 · Transparent Table</a>.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

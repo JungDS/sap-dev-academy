@@ -35,40 +35,84 @@
       <section class="lhead">
         <p class="lhead__eyebrow">Internal Table</p>
         <h1>Deep Structure 개념</h1>
-        <p class="lhead__direction">구조 안에 내부 테이블/문자열이 든 'Deep' 구조 — 개념 소개.</p>
+        <p class="lhead__direction">구조 안에 Internal Table·문자열이 든 'Deep' Structure — 개념과 분류.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 6</span><span class="tag tag--ls">Lesson 5</span><span class="tag tag--lv">초급</span></div>
       </section>
       <article class="prose">
 <section class="lblock"><h2>행 안에 또 목록이 있다면</h2>
-<p>주문 한 건에 &quot;주문 항목 여러 줄&quot;이 딸린다. 즉 <strong>한 행 안에 또 다른 내부 테이블</strong>
-이 들어가야 한다. 이렇게 구조 안에 테이블이나 문자열 같은 가변 요소가 든 것을
-<strong>Deep Structure</strong>(깊은 구조)라 한다. 여기선 <strong>개념만</strong> 잡는다(구현은 뒤에서).</p>
+<p>주문 한 건에는 &quot;주문 항목 여러 줄&quot;이 딸린다. 즉 <strong>한 행 안에 또 다른 <button class="term" type="button" data-term="Internal Table">Internal Table</button></strong>이
+들어가야 한다. 이렇게 Structure 안에 테이블이나 문자열 같은 가변 요소가 든 것을
+<button class="term" type="button" data-term="Deep Structure">Deep Structure</button>(깊은 구조)라 한다. 여기서는 <strong>개념과 분류만</strong> 잡는다(구현은 뒤에서).</p>
 </section><section class="lblock"><h2>Flat vs Deep</h2>
 <ul>
-<li><strong>Flat 구조</strong> — 모든 <button class="term" type="button" data-term="컴포넌트">컴포넌트</button>가 고정 길이 기본형(지금까지의 구조).</li>
-<li><strong>Deep 구조</strong> — 컴포넌트에 <button class="term" type="button" data-term="Internal Table">Internal Table</button>·STRING·참조 등 가변 요소가 포함.</li>
+<li><strong>Flat Structure</strong> — 모든 Component가 고정 길이 타입(<code>c LENGTH n</code>·<code>n</code>·<code>d</code>·<code>t</code>·<code>i</code>·<code>p</code> 등)이고,
+아래의 deep 요소가 하나도 없다.</li>
+<li><strong><button class="term" type="button" data-term="Deep Structure">Deep Structure</button></strong> — Component 중에 <strong>가변 요소</strong>가 하나라도 있다: <code>string</code>,
+<button class="term" type="button" data-term="Internal Table">Internal Table</button>, 참조(reference) 등.</li>
 </ul>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
-4</pre><pre class="abap-editor__code"><code><span class="tok-kw">TYPES</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ty_order,
-         <span class="tok-kw">id</span>    <span class="tok-kw">TYPE</span> i,
-         items <span class="tok-kw">TYPE</span> ty_person_tab,  <span class="tok-com">" 행 안에 테이블! → Deep</span>
-       <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ty_order.</code></pre></div></div>
+4
+5
+6
+7
+8
+9
+10
+11
+12</pre><pre class="abap-editor__code"><code><span class="tok-kw">TYPES</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ts_item,              <span class="tok-com">" 주문 항목 한 줄</span>
+         item <span class="tok-kw">TYPE</span> c <span class="tok-kw">LENGTH</span> <span class="tok-num">20</span>,
+         qty  <span class="tok-kw">TYPE</span> i,
+       <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ts_item.
+
+<span class="tok-kw">TYPES</span> tt_item <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ts_item.  <span class="tok-com">" 항목 여러 줄(테이블 타입)</span>
+
+<span class="tok-kw">TYPES</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ts_order,             <span class="tok-com">" 주문 한 건</span>
+         order_id <span class="tok-kw">TYPE</span> c <span class="tok-kw">LENGTH</span> <span class="tok-num">10</span>,
+         customer <span class="tok-kw">TYPE</span> c <span class="tok-kw">LENGTH</span> <span class="tok-num">20</span>,
+         items    <span class="tok-kw">TYPE</span> tt_item,       <span class="tok-com">" 행 안에 테이블! → Deep</span>
+       <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ts_order.</code></pre></div></div>
+<p><code>ts_order</code>는 <code>items</code> Component가 Internal Table이라 Deep Structure다.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">어느 줄이 구조를 Deep으로 만드나 — 클릭 해부</span><a class="embed__open" href="../../../embeds/abap/CH06-L05-S02.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH06-L05-S02.html" loading="lazy" title="어느 줄이 구조를 Deep으로 만드나 — 클릭 해부"></iframe></figure>
+</section><section class="lblock"><h2>사실, 우리는 이미 Deep을 쓰고 있었다</h2>
+<p>이 챕터 내내 쓴 <code>ts_person</code>도 알고 보면 이미 Deep이다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4</pre><pre class="abap-editor__code"><code><span class="tok-kw">TYPES</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ts_person,
+         name <span class="tok-kw">TYPE</span> string,   <span class="tok-com">" string은 길이 가변 → deep 요소!</span>
+         age  <span class="tok-kw">TYPE</span> i,
+       <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ts_person.</code></pre></div></div>
+<p><code>string</code>은 길이가 고정돼 있지 않은 가변 타입이라 deep 요소로 분류된다. 문자열 하나만
+있어도 그 Structure 전체가 Deep이 된다. 지금까지 아무 문제 없이 썼듯 Deep이라서 못 쓰는
+건 아니다. 다만 아래 상황들에서 Flat과 <strong>다르게 취급</strong>되므로 구분할 줄 알아야 한다.</p>
+</section><section class="lblock"><h2>중첩(Nested)과는 다른 개념</h2>
+<p>Structure 안에 <strong>Structure</strong>가 든 것은 중첩(nested)이다. 중첩이라도 안까지 전부 고정
+길이 타입이면 여전히 <strong>Flat</strong>이다. Deep 여부는 &quot;구조가 몇 겹인가&quot;가 아니라 <strong>가변
+요소(string·테이블·참조)가 있는가</strong>로만 정해진다.</p>
 </section><section class="lblock"><h2>왜 미리 알아두나</h2>
 <ul>
-<li>ALV 표시나 DB 저장에서 Deep 구조는 <strong>Flat과 다르게 취급</strong>된다.</li>
-<li>지금은 &quot;구조 안에 테이블이 들어갈 수 있다&quot;는 가능성만 기억하면 된다. 실제
-활용·제약은 ALV·구조 심화에서 다시 만난다.</li>
+<li><strong>DB 저장</strong>: DB 테이블의 컬럼은 단일(elementary) 타입 하나여야 해서, <button class="term" type="button" data-term="Internal Table">Internal Table</button>·
+참조·하위 Structure를 통째로 컬럼에 넣을 수 없다.</li>
+<li><strong>화면 출력</strong>: 결과를 표 형태 화면으로 보여 주는 도구(ALV, 뒤에서 배운다)도 기본적으로
+평평한 행을 전제한다.</li>
+<li>지금은 &quot;구조 안에 테이블이 들어갈 수 있다&quot;는 가능성과 분류 기준만 기억하면 된다.
+실제 활용과 제약은 나선형으로 뒤에서 깊어진다.</li>
 </ul>
 </section><section class="lblock"><h2>흔한 오해와 점검</h2>
 <ul>
-<li><strong>Deep을 투명 테이블 컬럼으로</strong> → 안 된다. 투명 테이블 행은 Flat이어야 한다(→ CH07).</li>
-<li><strong>지금 깊이 파지 말 것</strong> → 개념만. 나선형으로 뒤에서 깊어진다.</li>
+<li><strong>Deep을 DB 테이블 컬럼으로</strong> → 안 된다. DB 테이블(<a href="CH07-L01.html">Chapter 7 · Transparent
+Table</a>)의 한 행은 단일 타입 컬럼들로만 구성한다.</li>
+<li><strong>중첩 = Deep이라는 착각</strong> → 중첩은 &quot;겹&quot;의 문제, Deep은 &quot;가변 요소&quot;의 문제. 별개다.</li>
+<li><strong>지금 깊이 파려는 욕심</strong> → 개념·분류만. 구현은 뒤에서.</li>
 </ul>
+</section><section class="lblock"><h2>분류 연습</h2>
+<p>구조 정의를 보고 Flat인지 Deep인지 판정해 보자.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">Flat일까 Deep일까 — 판정 퀴즈</span><a class="embed__open" href="../../../embeds/abap/CH06-L05-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH06-L05-S01.html" loading="lazy" title="Flat일까 Deep일까 — 판정 퀴즈"></iframe></figure>
 <hr>
 <p>이제 구조와 테이블을 깊이까지 안다. 배운 걸 모아 <strong>구구단 전체를 <button class="term" type="button" data-term="Internal Table">Internal Table</button>로</strong>
-완성해 보자 → <strong>CH06-L06(구구단 전체 = Internal Table)</strong>.</p>
+완성해 보자 → <a href="CH06-L06.html">구구단 전체 = Internal Table</a>.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

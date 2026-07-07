@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<!-- CH06-L05-S01 — 엔진: judge-quiz (embeds/_engine/judge-quiz.{js,css}) · 공통토큰: _engine/_base.css
+     Flat vs Deep 판정 퀴즈. 게이팅: CH06-L05 범위(deep 요소 = string·Internal Table·참조, 중첩≠deep). -->
+<html lang="ko" data-eng="judge-quiz">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Flat vs Deep 판정 퀴즈 · CH06-L05-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/judge-quiz.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">Flat일까 Deep일까 — 판정 퀴즈</p>
+  <p class="lead">기준은 하나입니다. <b>가변 요소(<code>string</code>·Internal Table·참조)가 하나라도 있는가?</b> 각 구조를 보고 판정해 보세요.</p>
+
+  <div class="score"><span>점수</span><div class="bar"><i id="sbar"></i></div><span class="v" id="sv">0 / 0</span></div>
+  <div id="list"></div>
+  <div class="result" id="result"></div>
+
+  <script type="application/json" id="quiz">
+  {
+    "labels": ["🧱 Flat", "🕳 Deep"],
+    "items": [
+      { "q": "구구단 한 줄 — <code>dan TYPE i · mul TYPE i · result TYPE i</code>", "a": 0, "why": "전부 고정 길이 숫자(<code>i</code>) → 가변 요소 없음 = <b>Flat</b>." },
+      { "q": "명단 한 명 — <code>name TYPE string · age TYPE i</code>", "a": 1, "why": "<code>string</code>은 길이 가변 = deep 요소. <b>하나만 있어도 전체가 Deep</b>이 됩니다(우리가 이 챕터에서 쓴 ts_person!)." },
+      { "q": "주문 한 건 — <code>order_id TYPE c LENGTH 10 · items TYPE tt_item</code>(Internal Table)", "a": 1, "why": "행 안에 <b>Internal Table</b>이 통째로 들어감 → 대표적인 Deep." },
+      { "q": "구조 안에 '주소' Structure가 통째로 중첩 — 안의 필드는 전부 <code>c LENGTH n</code>", "a": 0, "why": "중첩(nested)과 Deep은 <b>별개 개념</b>. 안까지 전부 고정 길이면 겹이 있어도 Flat입니다." },
+      { "q": "회원 카드 — <code>name TYPE c LENGTH 20 · birth TYPE d · height TYPE p LENGTH 3 DECIMALS 1</code>", "a": 0, "why": "<code>c LENGTH n</code>·<code>d</code>·<code>p</code> 모두 고정 길이 → <b>Flat</b>. DB 테이블 행으로도 적합한 모양." }
+    ]
+  }
+  </script>
+</div>
+<script src="../_engine/judge-quiz.js" defer></script>
+</body>
+</html>
