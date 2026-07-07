@@ -1,5 +1,5 @@
 /* report-run-simulator 엔진 — CH15 캡스톤. 시나리오를 골라 ▶ 실행하면 4개 report event가 차례로 흐른다:
-   ① INITIALIZATION(기본값) ② AT SELECTION-SCREEN OUTPUT(화면 제어·p_note 활성여부) ③ AT SELECTION-SCREEN ON p_conc(입력/존재/권한 검증)
+   ① INITIALIZATION(기본값) ② AT SELECTION-SCREEN OUTPUT(화면 제어·pa_note 활성여부) ③ AT SELECTION-SCREEN ON pa_conc(입력/존재/권한 검증)
    ④ START-OF-SELECTION(검증 통과 시 zbooking 조회·SALV 표시·0건이면 S 메시지). 막힌 단계와 메시지, 결과 테이블을 보여 준다.
    골격 계약: .rrs-scen · .rrs-stat · #rrsScreen · [data-run] · .rrs-timeline · #rrsResult.
    config: window.RRS_CFG = { concerts, bookings, scenarios }. 높이: _autoheight.js. */
@@ -41,9 +41,9 @@
   function renderScreen() {
     var sc = cur(), noteActive = sc.mode === 'adv';
     screenEl.innerHTML = '<div class="snum">표준 선택화면 (1000)</div>' +
-      '<div class="rrs-srow"><span class="k">p_conc</span><span class="v ' + (sc.conc ? '' : 'empty') + '">' + (sc.conc ? esc(sc.conc) : '(공백)') + '</span></div>' +
-      '<div class="rrs-srow"><span class="k">p_mode</span><span class="v">' + (sc.mode === 'adv' ? 'A (고급)' : "' ' (일반)") + '</span></div>' +
-      '<div class="rrs-srow"><span class="k">p_note</span><span class="v ' + (noteActive ? '' : 'off') + '">' + (noteActive ? '입력 가능' : '비활성(숨김)') + '</span></div>' +
+      '<div class="rrs-srow"><span class="k">pa_conc</span><span class="v ' + (sc.conc ? '' : 'empty') + '">' + (sc.conc ? esc(sc.conc) : '(공백)') + '</span></div>' +
+      '<div class="rrs-srow"><span class="k">pa_mode</span><span class="v">' + (sc.mode === 'adv' ? 'A (고급)' : "' ' (일반)") + '</span></div>' +
+      '<div class="rrs-srow"><span class="k">pa_note</span><span class="v ' + (noteActive ? '' : 'off') + '">' + (noteActive ? '입력 가능' : '비활성(숨김)') + '</span></div>' +
       '<div class="rrs-srow"><span class="k">s_stat</span><span class="v">I EQ ' + esc(stat) + '</span></div>';
   }
   function stage(state, evt, msg) {
@@ -54,18 +54,18 @@
   function renderTimeline() {
     if (!ran) {
       timeEl.innerHTML = stage('', 'INITIALIZATION', '기본값 제안') + stage('', 'AT SELECTION-SCREEN OUTPUT', '화면 제어') +
-        stage('', 'AT SELECTION-SCREEN ON p_conc', '입력·존재·권한 검증') + stage('', 'START-OF-SELECTION', '조회·표시');
+        stage('', 'AT SELECTION-SCREEN ON pa_conc', '입력·존재·권한 검증') + stage('', 'START-OF-SELECTION', '조회·표시');
       return;
     }
     var r = evalRun();
-    var h = stage('pass', 'INITIALIZATION', 'p_conc=' + (cur().conc || '(공백)') + ' · s_stat=I EQ ' + stat);
-    h += stage('pass', 'AT SELECTION-SCREEN OUTPUT', 'p_note ' + (r.noteActive ? '활성' : '비활성(숨김)'));
+    var h = stage('pass', 'INITIALIZATION', 'pa_conc=' + (cur().conc || '(공백)') + ' · s_stat=I EQ ' + stat);
+    h += stage('pass', 'AT SELECTION-SCREEN OUTPUT', 'pa_note ' + (r.noteActive ? '활성' : '비활성(숨김)'));
     if (r.gate === 'pass') {
-      h += stage('pass', 'AT SELECTION-SCREEN ON p_conc', '입력·존재·권한 통과');
+      h += stage('pass', 'AT SELECTION-SCREEN ON pa_conc', '입력·존재·권한 통과');
       var label = r.rows.length ? 'SELECT zbooking → ' + r.rows.length + '건' : 'SELECT → 0건 → MESSAGE S';
       h += stage('pass', 'START-OF-SELECTION', label);
     } else {
-      h += stage('fail', 'AT SELECTION-SCREEN ON p_conc', r.msg);
+      h += stage('fail', 'AT SELECTION-SCREEN ON pa_conc', r.msg);
       h += stage('lock', 'START-OF-SELECTION', '🔒 검증 실패로 실행 안 됨');
     }
     timeEl.innerHTML = h;

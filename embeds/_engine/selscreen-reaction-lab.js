@@ -31,21 +31,21 @@
     var k = TABS[tab].key, h = '';
     if (k === 'block') {
       h = '<div class="srl-screen">' +
-        '<div class="srl-fld"><label>p_from</label><input type="text" data-f="from" value="' + esc(st.from) + '" maxlength="8"><span class="srl-hint">YYYYMMDD</span></div>' +
-        '<div class="srl-fld"><label>p_to</label><input type="text" data-f="to" value="' + esc(st.to) + '" maxlength="8"><span class="srl-hint">YYYYMMDD</span></div>' +
+        '<div class="srl-fld"><label>pa_from</label><input type="text" data-f="from" value="' + esc(st.from) + '" maxlength="8"><span class="srl-hint">YYYYMMDD</span></div>' +
+        '<div class="srl-fld"><label>pa_to</label><input type="text" data-f="to" value="' + esc(st.to) + '" maxlength="8"><span class="srl-hint">YYYYMMDD</span></div>' +
         '</div><button class="srl-act" data-run>▶ 블록 실행 (검증)</button>' +
         '<p class="srl-hint" style="margin:9px 0 0">날짜 하나를 비우거나 from &gt; to로 바꿔 실행해 보세요.</p>';
     } else if (k === 'radio') {
       h = '<div class="srl-screen"><div class="srl-radio">' +
-        '<label><input type="radio" name="srlr" data-r="sum"' + (st.radio === 'sum' ? ' checked' : '') + '> 요약 (p_sum)</label>' +
-        '<label><input type="radio" name="srlr" data-r="det"' + (st.radio === 'det' ? ' checked' : '') + '> 상세 (p_det)</label>' +
+        '<label><input type="radio" name="srlr" data-r="sum"' + (st.radio === 'sum' ? ' checked' : '') + '> 요약 (pa_sum)</label>' +
+        '<label><input type="radio" name="srlr" data-r="det"' + (st.radio === 'det' ? ' checked' : '') + '> 상세 (pa_det)</label>' +
         '</div></div><button class="srl-act" data-run>▶ Enter (그룹 검증)</button>';
     } else if (k === 'f1') {
-      h = '<div class="srl-screen"><div class="srl-fld"><label>p_conc</label>' +
+      h = '<div class="srl-screen"><div class="srl-fld"><label>pa_conc</label>' +
         '<input type="text" value="' + esc(CFG.concertId) + '" readonly></div></div>' +
         '<button class="srl-act" data-run>F1 누르기 (도움말)</button>';
     } else if (k === 'f4') {
-      h = '<div class="srl-screen"><div class="srl-fld"><label>p_carr</label>' +
+      h = '<div class="srl-screen"><div class="srl-fld"><label>pa_carr</label>' +
         '<input type="text" value="' + esc(st.carr) + '" placeholder="(F4로 선택)" readonly></div></div>' +
         '<button class="srl-act" data-run>F4 누르기 (입력 도움)</button>';
       if (st.f4open) {
@@ -88,9 +88,9 @@
     var carrRow = e.target.closest('.srl-f4row');
     if (carrRow) {
       st.carr = carrRow.getAttribute('data-carr'); st.f4open = false;
-      log = { dynpro: 'POV (Process On Value-Request)', abap: "AT SELECTION-SCREEN ON VALUE-REQUEST FOR p_carr",
-        result: 'P_CARR ← ' + esc(st.carr) + ' 선택됨', level: 'ok',
-        transport: 'P_CARR 한 필드만 운반 · 다른 필드(p_from 등)는 자동 운반 안 됨' };
+      log = { dynpro: 'POV (Process On Value-Request)', abap: "AT SELECTION-SCREEN ON VALUE-REQUEST FOR pa_carr",
+        result: 'PA_CARR ← ' + esc(st.carr) + ' 선택됨', level: 'ok',
+        transport: 'PA_CARR 한 필드만 운반 · 다른 필드(pa_from 등)는 자동 운반 안 됨' };
       render(); return;
     }
     if (!e.target.closest('[data-run]')) return;
@@ -100,13 +100,13 @@
       else if (st.from > st.to) log = { dynpro: 'PAI', abap: 'AT SELECTION-SCREEN ON BLOCK b_date', result: '✗ MESSAGE E "시작일이 종료일보다 늦습니다" → 화면 복귀', level: 'err' };
       else log = { dynpro: 'PAI', abap: 'AT SELECTION-SCREEN ON BLOCK b_date', result: '✓ 블록 검증 통과 (조합 OK)', level: 'ok' };
     } else if (k === 'radio') {
-      log = { dynpro: 'PAI', abap: 'AT SELECTION-SCREEN ON RADIOBUTTON GROUP g1', result: '✓ 그룹 이벤트 발생 · 선택: ' + (st.radio === 'sum' ? '요약(p_sum)' : '상세(p_det)'), level: 'ok' };
+      log = { dynpro: 'PAI', abap: 'AT SELECTION-SCREEN ON RADIOBUTTON GROUP g1', result: '✓ 그룹 이벤트 발생 · 선택: ' + (st.radio === 'sum' ? '요약(pa_sum)' : '상세(pa_det)'), level: 'ok' };
     } else if (k === 'f1') {
-      log = { dynpro: 'POH (Process On Help-Request)', abap: 'AT SELECTION-SCREEN ON HELP-REQUEST FOR p_conc', result: 'ℹ MESSAGE I "공연 코드는 ZCONCERT에 등록된 CONCERT_ID입니다"', level: 'info' };
+      log = { dynpro: 'POH (Process On Help-Request)', abap: 'AT SELECTION-SCREEN ON HELP-REQUEST FOR pa_conc', result: 'ℹ MESSAGE I "공연 코드는 ZCONCERT에 등록된 CONCERT_ID입니다"', level: 'info' };
     } else if (k === 'f4') {
       st.f4open = !st.f4open;
       if (!st.f4open) { render(); return; }
-      log = { dynpro: 'POV (Process On Value-Request)', abap: 'AT SELECTION-SCREEN ON VALUE-REQUEST FOR p_carr', result: 'SCARR 목록을 팝업으로 표시 — 행을 클릭해 선택하세요', level: 'info' };
+      log = { dynpro: 'POV (Process On Value-Request)', abap: 'AT SELECTION-SCREEN ON VALUE-REQUEST FOR pa_carr', result: 'SCARR 목록을 팝업으로 표시 — 행을 클릭해 선택하세요', level: 'info' };
     }
     render();
   });

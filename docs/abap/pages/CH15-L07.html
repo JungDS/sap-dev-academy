@@ -56,7 +56,7 @@
 </section><section class="lblock"><h2>존재 검증 — 진짜 있는 키인가</h2>
 <p>먼저 입력한 코드가 DB에 실제로 있는지 확인한다.
 <button class="term" type="button" data-term="SELECT SINGLE">SELECT SINGLE</button>로 한 건만 찾아보고, 못 찾으면(<code>sy-subrc &lt;&gt; 0</code>) 막는다.
-필드 하나(<code>p_conc</code>)만 검사하므로 <button class="term" type="button" data-term="AT SELECTION-SCREEN ON">AT SELECTION-SCREEN ON p_conc</button>에서 한다.</p>
+필드 하나(<code>pa_conc</code>)만 검사하므로 <button class="term" type="button" data-term="AT SELECTION-SCREEN ON">AT SELECTION-SCREEN ON pa_conc</button>에서 한다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -69,18 +69,18 @@
 10
 11
 12
-13</pre><pre class="abap-editor__code"><code><span class="tok-kw">PARAMETERS</span> p_conc <span class="tok-kw">TYPE</span> zconcert-concert_id.
+13</pre><pre class="abap-editor__code"><code><span class="tok-kw">PARAMETERS</span> pa_conc <span class="tok-kw">TYPE</span> zconcert-concert_id.
 
 <span class="tok-kw">DATA</span> gv_concert_id <span class="tok-kw">TYPE</span> zconcert-concert_id.
 
-<span class="tok-kw">AT</span> <span class="tok-kw">SELECTION-SCREEN</span> <span class="tok-kw">ON</span> p_conc.
+<span class="tok-kw">AT</span> <span class="tok-kw">SELECTION-SCREEN</span> <span class="tok-kw">ON</span> pa_conc.
   <span class="tok-com">" ① 존재 검증 — 이 공연 코드가 진짜 있나?</span>
   <span class="tok-kw">SELECT</span> <span class="tok-kw">SINGLE</span> concert_id
     <span class="tok-kw">FROM</span> zconcert
     <span class="tok-kw">INTO</span> gv_concert_id
-    <span class="tok-kw">WHERE</span> concert_id = p_conc.
+    <span class="tok-kw">WHERE</span> concert_id = pa_conc.
   <span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.
-    <span class="tok-kw">MESSAGE</span> e003(zmsg) <span class="tok-kw">WITH</span> p_conc.   <span class="tok-com">" "없는 공연 코드입니다: &amp;1"</span>
+    <span class="tok-kw">MESSAGE</span> e003(zmsg) <span class="tok-kw">WITH</span> pa_conc.   <span class="tok-com">" "없는 공연 코드입니다: &amp;1"</span>
   <span class="tok-kw">ENDIF</span>.</code></pre></div></div>
 <blockquote>
 <p>💡 <code>gv_concert_id</code>는 프로그램 맨 위에서 선언한 전역 변수라 <code>gv_</code>로 시작한다.
@@ -100,10 +100,10 @@ ABAP은 명시적 권한 확인에 <button class="term" type="button" data-term=
 6
 7</pre><pre class="abap-editor__code"><code>  <span class="tok-com">" ② 권한 검증 — 이 사용자가 볼 수 있나? (존재 검증을 통과한 뒤)</span>
   <span class="tok-kw">AUTHORITY-CHECK</span> <span class="tok-kw">OBJECT</span> <span class="tok-str">'Z_CONCERT'</span>
-    <span class="tok-kw">ID</span> <span class="tok-str">'CONCERT'</span> <span class="tok-kw">FIELD</span> p_conc
+    <span class="tok-kw">ID</span> <span class="tok-str">'CONCERT'</span> <span class="tok-kw">FIELD</span> pa_conc
     <span class="tok-kw">ID</span> <span class="tok-str">'ACTVT'</span>   <span class="tok-kw">FIELD</span> <span class="tok-str">'03'</span>.          <span class="tok-com">" 03 = 조회(display) 활동</span>
   <span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.
-    <span class="tok-kw">MESSAGE</span> e004(zmsg) <span class="tok-kw">WITH</span> p_conc.   <span class="tok-com">" "이 공연을 볼 권한이 없습니다: &amp;1"</span>
+    <span class="tok-kw">MESSAGE</span> e004(zmsg) <span class="tok-kw">WITH</span> pa_conc.   <span class="tok-com">" "이 공연을 볼 권한이 없습니다: &amp;1"</span>
   <span class="tok-kw">ENDIF</span>.</code></pre></div></div>
 <p><code>sy-subrc</code>의 의미(공식문서 기준):</p>
 <table>
@@ -150,7 +150,7 @@ ABAP은 명시적 권한 확인에 <button class="term" type="button" data-term=
 </section><section class="lblock"><h2>정리</h2>
 <ul>
 <li>선택화면 검증은 문법 검사가 아니라 <strong>업무 접근의 첫 관문</strong>이다.</li>
-<li><button class="term" type="button" data-term="SELECT SINGLE">SELECT SINGLE</button>로 <strong>존재</strong>를, <button class="term" type="button" data-term="AUTHORITY-CHECK">AUTHORITY-CHECK</button>로 <strong>권한</strong>을 확인한다 — 둘은
+<li><button class="term" type="button" data-term="SELECT SINGLE">SELECT SINGLE</button>로 <strong>존재</strong>를, <button class="term" type="button" data-term="AUTHORITY-CHECK">AUTHORITY-CHECK</button>로 <strong>권한</strong>을 확인한다. 둘은
 별개의 관문이다.</li>
 <li>두 검증을 분리하면 오류 메시지가 정확해지고, 위험한 입력이 조회 로직에 닿기 전에
 막힌다.</li>

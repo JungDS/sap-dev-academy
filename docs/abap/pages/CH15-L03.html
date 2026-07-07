@@ -55,14 +55,14 @@ report를 두 개 만들기보다, 화면이 그려지기 <strong>직전(PBO)</s
 9
 10
 11
-12</pre><pre class="abap-editor__code"><code><span class="tok-kw">PARAMETERS</span>: p_mode   <span class="tok-kw">TYPE</span> c <span class="tok-kw">LENGTH</span> <span class="tok-num">1</span>,
-            p_secret <span class="tok-kw">TYPE</span> c <span class="tok-kw">LENGTH</span> <span class="tok-num">10</span>.
+12</pre><pre class="abap-editor__code"><code><span class="tok-kw">PARAMETERS</span>: pa_mode   <span class="tok-kw">TYPE</span> c <span class="tok-kw">LENGTH</span> <span class="tok-num">1</span>,
+            pa_secret <span class="tok-kw">TYPE</span> c <span class="tok-kw">LENGTH</span> <span class="tok-num">10</span>.
 
 <span class="tok-kw">DATA</span> gs_screen <span class="tok-kw">TYPE</span> <span class="tok-kw">screen</span>.
 
 <span class="tok-kw">AT</span> <span class="tok-kw">SELECTION-SCREEN</span> <span class="tok-kw">OUTPUT</span>.
   <span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> <span class="tok-kw">SCREEN</span> <span class="tok-kw">INTO</span> gs_screen.
-    <span class="tok-kw">IF</span> gs_screen-name = <span class="tok-str">'P_SECRET'</span> <span class="tok-kw">AND</span> p_mode &lt;&gt; <span class="tok-str">'A'</span>.
+    <span class="tok-kw">IF</span> gs_screen-name = <span class="tok-str">'PA_SECRET'</span> <span class="tok-kw">AND</span> pa_mode &lt;&gt; <span class="tok-str">'A'</span>.
       gs_screen-active = <span class="tok-str">'0'</span>.            <span class="tok-com">" 화면에서 비활성(숨김)</span>
       <span class="tok-kw">MODIFY</span> <span class="tok-kw">SCREEN</span> <span class="tok-kw">FROM</span> gs_screen.      <span class="tok-com">" work area를 화면에 반영</span>
     <span class="tok-kw">ENDIF</span>.
@@ -75,8 +75,8 @@ report를 두 개 만들기보다, 화면이 그려지기 <strong>직전(PBO)</s
 </ul>
 <blockquote>
 <p>📌 <strong>명시 work area를 쓴다.</strong> 짧은 <code>LOOP AT SCREEN.</code>/<code>MODIFY SCREEN.</code>(내장 <code>screen</code>)
-형태는 공식문서상 피하는 표기다 — 기존 코드에서 만날 수는 있다. 또 <code>screen-name</code>은
-<strong>대문자 필드명</strong>(<code>P_SECRET</code>)으로 비교한다.</p>
+형태는 공식문서상 피하는 표기다(기존 코드에서 만날 수는 있다). 또 <code>screen-name</code>은
+<strong>대문자 필드명</strong>(<code>PA_SECRET</code>)으로 비교한다.</p>
 </blockquote>
 <p>아래에서 모드를 바꾸고 화면을 그려, work area 수정이 <code>MODIFY SCREEN</code> 후에야 화면에
 반영되는 걸 확인하자.</p>
@@ -85,7 +85,7 @@ report를 두 개 만들기보다, 화면이 그려지기 <strong>직전(PBO)</s
 <ul>
 <li><strong><code>MODIFY SCREEN</code> 누락</strong> → work area만 바꾸고 안 반영하면 화면은 그대로다.</li>
 <li><strong>loop 밖에서 MODIFY SCREEN</strong> → <code>LOOP AT SCREEN</code> <strong>안</strong>에서만 의미가 있다.</li>
-<li><strong><code>screen-name</code> 소문자 비교</strong> → 화면 필드명은 대문자다(<code>P_SECRET</code>).</li>
+<li><strong><code>screen-name</code> 소문자 비교</strong> → 화면 필드명은 대문자다(<code>PA_SECRET</code>).</li>
 <li><strong>OUTPUT에서 기본값 재대입</strong> → 매 화면마다 사용자 입력을 덮어쓴다. 기본값은
 <button class="term" type="button" data-term="INITIALIZATION">INITIALIZATION</button>(이전 레슨), 여기선 <strong>화면 속성만</strong>.</li>
 </ul>

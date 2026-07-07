@@ -50,11 +50,11 @@
 3
 4
 5
-6</pre><pre class="abap-editor__code"><code><span class="tok-kw">PARAMETERS</span> p_conc <span class="tok-kw">TYPE</span> zconcert-concert_id.   <span class="tok-com">" 표준 화면(1000)</span>
+6</pre><pre class="abap-editor__code"><code><span class="tok-kw">PARAMETERS</span> pa_conc <span class="tok-kw">TYPE</span> zconcert-concert_id.   <span class="tok-com">" 표준 화면(1000)</span>
 
 <span class="tok-kw">SELECTION-SCREEN</span> <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> <span class="tok-kw">SCREEN</span> <span class="tok-num">1100</span> <span class="tok-kw">AS</span> <span class="tok-kw">WINDOW</span> <span class="tok-kw">TITLE</span> TEXT-010.
-  <span class="tok-kw">PARAMETERS</span> p_max <span class="tok-kw">TYPE</span> i <span class="tok-kw">DEFAULT</span> <span class="tok-num">100</span>.         <span class="tok-com">" 고급: 최대 건수</span>
-  <span class="tok-kw">PARAMETERS</span> p_log <span class="tok-kw">AS</span> <span class="tok-kw">CHECKBOX</span>.                <span class="tok-com">" 고급: 로그 남기기</span>
+  <span class="tok-kw">PARAMETERS</span> pa_max <span class="tok-kw">TYPE</span> i <span class="tok-kw">DEFAULT</span> <span class="tok-num">100</span>.         <span class="tok-com">" 고급: 최대 건수</span>
+  <span class="tok-kw">PARAMETERS</span> pa_log <span class="tok-kw">AS</span> <span class="tok-kw">CHECKBOX</span>.                <span class="tok-com">" 고급: 로그 남기기</span>
 <span class="tok-kw">SELECTION-SCREEN</span> <span class="tok-kw">END</span> <span class="tok-kw">OF</span> <span class="tok-kw">SCREEN</span> <span class="tok-num">1100</span>.</code></pre></div></div>
 <ul>
 <li>기본 화면(1000) 외에 <strong>번호를 가진</strong> 선택화면을 따로 선언한다.</li>
@@ -68,7 +68,7 @@
 5
 6</pre><pre class="abap-editor__code"><code><span class="tok-kw">CALL</span> <span class="tok-kw">SELECTION-SCREEN</span> <span class="tok-num">1100</span> <span class="tok-kw">STARTING</span> <span class="tok-kw">AT</span> <span class="tok-num">10</span> <span class="tok-num">5</span>.   <span class="tok-com">" (열,행)에 modal 팝업</span>
 <span class="tok-kw">IF</span> sy-subrc = <span class="tok-num">0</span>.
-  <span class="tok-com">" 사용자가 Execute로 나옴 — p_max·p_log 적용</span>
+  <span class="tok-com">" 사용자가 Execute로 나옴 — pa_max·pa_log 적용</span>
 <span class="tok-kw">ELSE</span>.
   <span class="tok-com">" Back/Exit/Cancel로 나옴 (sy-subrc = 4) — 적용 안 함</span>
 <span class="tok-kw">ENDIF</span>.</code></pre></div></div>
@@ -109,7 +109,7 @@
 </ul>
 </section><section class="lblock"><h2>정리</h2>
 <ul>
-<li>선택화면은 하나만 있는 게 아니다 — 표준 <strong>1000</strong> 외에 보조 화면을 만들어 필요할 때 호출한다.</li>
+<li>선택화면은 하나만 있는 게 아니다. 표준 <strong>1000</strong> 외에 보조 화면을 만들어 필요할 때 호출한다.</li>
 <li>보조 화면은 <strong><code>CALL SELECTION-SCREEN</code></strong>(≠<code>CALL SCREEN</code>)으로 부르고, <strong><code>sy-subrc</code></strong> (0=실행/4=취소)로 사용자의 선택·취소를 안전하게 처리한다.</li>
 <li><strong><button class="term" type="button" data-term="Selection Screen Variant">Variant</button></strong>는 반복 입력을 줄여 주지만 <strong>검증을 대신하지 않는다.</strong></li>
 </ul>

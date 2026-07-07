@@ -33,7 +33,7 @@
   });
   runBtn.addEventListener('click', function () {
     ran = true; dept = CFG.defaultDept; changed = false; render();
-    setStatus('', '▶ 최초 실행 — 화면 전 1회 <b>INITIALIZATION</b>이 <code>s_dept-low=' + esc(CFG.defaultDept) + '</code>, <code>p_date=오늘</code>을 넣었습니다.');
+    setStatus('', '▶ 최초 실행 — 화면 전 1회 <b>INITIALIZATION</b>이 <code>s_dept-low=' + esc(CFG.defaultDept) + '</code>, <code>pa_date=오늘</code>을 넣었습니다.');
   });
   userBtn.addEventListener('click', function () {
     if (!ran) return; dept = CFG.userDept; changed = true; render();
