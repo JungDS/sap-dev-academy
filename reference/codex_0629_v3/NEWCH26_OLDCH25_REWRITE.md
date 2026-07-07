@@ -20,6 +20,8 @@ CH25의 핵심은 "수정하기 전에 먼저 작업권을 확보한다"이다. 
 | 충돌은 어떻게 알 수 있는가? | 같은 lock을 다른 사용자가 이미 갖고 있으면 enqueue function module이 `foreign_lock` 예외로 종료한다. |
 | 언제 풀리는가? | `DEQUEUE`, 프로그램 종료, `_SCOPE`와 SAP LUW/update 처리에 따른 commit/rollback 시점에서 풀릴 수 있다. |
 | 꼭 비관적 잠금만 써야 하는가? | 충돌 가능성이 낮으면 timestamp/ETag 같은 변경 추적값으로 optimistic 전략을 쓸 수 있다. |
+| 한 업무가 여러 테이블에 나뉘면 어떻게 잠그는가? | header/item처럼 같이 바뀌는 업무 단위는 하나의 root key로 보호하고, foreign key dependency 기반 Lock Object 설계를 검토한다. |
+| SM12에서 lock이 계속 보이면 개발자는 무엇을 확인해야 하는가? | 정상 대기인지, `_SCOPE`/`DEQUEUE` 누락인지, update/세션/인프라 문제인지 증거를 모아 운영 담당자에게 넘긴다. |
 
 ## CH25 R15 경계
 
@@ -27,10 +29,10 @@ CH25는 Classic ABAP의 SAP lock과 동시성 제어 장이다. CH24의 DML/comm
 
 | 구분 | CH25에서 정식 사용 | CH25에서 보류 |
 |---|---|---|
-| Lock Object | SE11 lock object, Primary Table, Lock Argument, generated lock function modules | 복잡한 multi-table foreign key lock 설계 심화 |
-| Lock function module | `ENQUEUE_EZ_BOOKING`, `DEQUEUE_EZ_BOOKING`, `foreign_lock`, `system_failure` | custom enqueue server 운영, SM12 관리 정책 심화 |
+| Lock Object | SE11 lock object, Primary Table, Lock Argument, foreign key dependency 기반 복합 업무 lock 설계 | cross-application lock framework 설계 |
+| Lock function module | `ENQUEUE_EZ_BOOKING`, `DEQUEUE_EZ_BOOKING`, `foreign_lock`, `system_failure` | custom enqueue server 구성/HA 운영 |
 | Lock mode | `S`, `E`, `X`, optimistic `O` 개념 | lock mode 조합 전체 운영 matrix 암기 |
-| Lock duration | `_SCOPE` 1/2/3 개념, commit/rollback 해제 조건의 주의 | update task 장애 복구 운영 상세 |
+| Lock duration | `_SCOPE` 1/2/3 개념, commit/rollback 해제 조건, SM12 확인과 stuck lock 에스컬레이션 경계 | update task 장애 복구 실무 운영 절차 |
 | 충돌 시나리오 | Lost Update, Pessimistic, Optimistic timestamp check | RAP ETag 구현 세부, HTTP OData concurrency protocol |
 | 통합 패턴 | ENQUEUE → READ → CHECK → UPDATE → COMMIT/ROLLBACK → DEQUEUE | ALV edit event 저장 흐름은 CH28, BAPI/RFC 통합은 CH30 |
 
@@ -42,9 +44,9 @@ Classic ABAP 관련 문서는 `C:\ABAP_DOCU_HTML`에서 직접 확인했다. Mar
 
 | 주제 | 확인 문서 | 반영 포인트 |
 |---|---|---|
-| SAP lock 개념 | `abensap_lock.htm`, `ABENSAP_LOCK.md` | SAP locks are based on lock objects, 중앙 lock table, `SM12`, `FOREIGN_LOCK`, `_SCOPE` |
+| SAP lock 개념 | `abensap_lock.htm`, `ABENSAP_LOCK.md` | SAP locks are based on lock objects, foreign key dependency, 중앙 lock table, `SM12`, `FOREIGN_LOCK`, `_SCOPE` |
 | enqueue/dequeue 예제 | `abenenqueue_abexa.htm`, `ABENENQUEUE_ABEXA.md` | `ENQUEUE_EDEMOFLHT`, `DEQUEUE_EDEMOFLHT`, `SM12`, locked row도 SQL 접근 가능 |
-| Lock Object | `abenlock_object_glosry.htm`, `ABENLOCK_OBJECT_GLOSRY.md` | ABAP Dictionary repository object, 생성 시 lock function module 자동 생성 |
+| Lock Object | `abenlock_object_glosry.htm`, `ABENLOCK_OBJECT_GLOSRY.md` | ABAP Dictionary repository object, lock argument와 foreign key dependency, 생성 시 lock function module 자동 생성 |
 | Lock Function Module | `abenlock_function_module_glosry.htm`, `ABENLOCK_FUNCTION_MODULE_GLOSRY.md` | `ENQUEUE_`는 설정, `DEQUEUE_`는 제거 |
 | Exclusive/Shared | `ABENEXCLUSIVE_LOCK_GLOSRY.md`, `ABENSHARED_LOCK_GLOSRY.md` | exclusive는 동시 lock 차단, shared는 다른 shared 허용·exclusive 차단 |
 | Optimistic control | `ABENOPTIMISTIC_CONC_CONTROL_GLOSRY.md` | RAP에서는 ETag로 보장하지만, CH25에서는 timestamp 비교 사고방식으로 설명 |
@@ -464,6 +466,231 @@ ENDIF.
 
 안전한 변경은 CH24와 CH25가 합쳐진 흐름이다. CH24의 원자성은 내 변경 묶음을 보호하고, CH25의 lock은 다른 사용자와의 충돌을 줄인다. 실무 저장 코드는 두 축을 함께 설계해야 한다.
 
+## CH25-L06 · 복합 Lock Object 설계: Header와 Item을 함께 보호하기
+
+### 왜 필요한가
+
+지금까지는 `ZBOOKING` 한 테이블의 `BOOKING_ID` 하나를 잠그는 단순 예제로 배웠다. 하지만 실무 업무는 한 테이블로 끝나지 않는 경우가 많다. 예매 업무를 조금만 현실적으로 보면 header와 item이 나뉜다.
+
+| 테이블 | 예 | 역할 |
+|---|---|---|
+| Header | `ZBOOK_H` | 예매 번호, 고객, 전체 상태, 최종 변경 시각 |
+| Item | `ZBOOK_I` | 예매 번호, 항목 번호, 좌석, 금액, 취소 여부 |
+
+사용자 A가 예매 header의 상태를 `확정`에서 `취소`로 바꾸고 있는데, 사용자 B가 같은 예매의 item 좌석을 추가하면 업무적으로 충돌할 수 있다. 반대로 item 하나만 수정하는 화면에서 전체 고객의 모든 예매를 잠그면 너무 넓다. 그래서 복합 업무에서는 "DB 테이블이 몇 개인가"보다 "사용자가 하나의 업무로 인식하는 변경 단위가 무엇인가"를 먼저 정해야 한다.
+
+### 무엇인가
+
+Lock Object는 ABAP Dictionary object이고, 공식 문서 기준 SAP lock은 Lock Object를 기반으로 하며 lock argument는 lock object의 key field와 foreign key dependency를 바탕으로 구성될 수 있다. 입문자에게 필요한 해석은 다음과 같다.
+
+| 개념 | 쉬운 해석 |
+|---|---|
+| Primary Table | 이 lock object의 기준이 되는 root table |
+| Dependent table | root key와 foreign key 관계로 함께 보호할 수 있는 세부 table |
+| Lock Argument | 실제로 어떤 업무 단위를 잠글지 결정하는 key 값 |
+| Foreign key dependency | header의 key가 item에도 이어져 "같은 예매"임을 알 수 있게 하는 Dictionary 관계 |
+
+예를 들어 예매 업무의 root가 `BOOKING_ID`라면, `ZBOOK_H`와 `ZBOOK_I`를 따로따로 아무 순서로 잠그는 것보다 `BOOKING_ID`를 중심으로 하나의 Lock Object 설계를 검토하는 편이 안전하다.
+
+```text
+업무 root: BOOKING_ID = 1001
+
+ZBOOK_H
+  MANDT
+  BOOKING_ID
+  STATUS
+  CHANGED_TS
+
+ZBOOK_I
+  MANDT
+  BOOKING_ID
+  ITEM_NO
+  SEAT_ID
+  PRICE
+
+의도:
+  BOOKING_ID = 1001 예매 전체를 변경 중이면
+  header 변경과 item 변경이 서로 엇갈리지 않게 보호한다.
+```
+
+SE11에서 복합 Lock Object를 설계할 때의 생각 순서는 다음과 같다.
+
+| 질문 | 판단 |
+|---|---|
+| 업무 root는 무엇인가? | 예매 전체를 하나로 본다면 `BOOKING_ID` |
+| item 한 줄만 독립 수정해도 되는가? | 독립 수정이 업무적으로 안전하면 `BOOKING_ID + ITEM_NO`도 후보 |
+| header 상태와 item 변경이 충돌하는가? | 충돌하면 root 단위 lock을 우선 검토 |
+| 고객 전체를 잠가야 하는가? | 대부분 과도하다. `CUSTOMER_ID` 단위 lock은 신중해야 한다. |
+| 여러 lock을 따로 잡아야 하는가? | 가능하면 같은 업무 root를 기준으로 일관된 lock 순서를 정한다. |
+
+### 설계 예시
+
+예매 전체를 수정하는 화면이라면 lock function module 호출은 root key 중심으로 읽히는 것이 좋다.
+
+```abap
+CALL FUNCTION 'ENQUEUE_EZ_BOOKING_BUS'
+  EXPORTING
+    mode_zbook_h = 'E'
+    mode_zbook_i = 'E'
+    booking_id   = lv_booking_id
+  EXCEPTIONS
+    foreign_lock   = 1
+    system_failure = 2
+    OTHERS         = 3.
+
+IF sy-subrc <> 0.
+  MESSAGE '이 예매는 다른 사용자가 변경 중입니다.' TYPE 'E'.
+ENDIF.
+```
+
+위 코드는 실제 시스템의 generated lock function module interface에 맞춰 조정해야 한다. 중요한 것은 함수명이나 parameter 이름을 외우는 것이 아니라, header와 item이 같은 업무 root로 보호되어야 하는지 판단하는 능력이다.
+
+다음은 설계 선택의 차이다.
+
+| 선택 | 효과 | 위험 |
+|---|---|---|
+| Header만 lock | 전체 상태 변경은 보호된다 | item 변경과 엇갈릴 수 있다 |
+| Item만 lock | 특정 item 수정은 좁게 보호된다 | header 취소/확정과 충돌할 수 있다 |
+| Header+Item을 `BOOKING_ID`로 lock | 예매 전체 변경이 일관된다 | 같은 예매의 다른 item 작업도 기다릴 수 있다 |
+| `CUSTOMER_ID`로 넓게 lock | 고객 단위 충돌은 줄어든다 | 같은 고객의 무관한 예매까지 막을 수 있다 |
+
+### 어떻게 확인하는가
+
+1. `SE11`에서 Lock Object의 table 구성을 확인한다.
+2. Primary Table이 업무 root를 대표하는지 본다.
+3. dependent table이 foreign key로 root와 연결되어 있는지 확인한다.
+4. generated `ENQUEUE_` function module interface에서 어떤 key field를 받는지 확인한다.
+5. `BOOKING_ID`만 넣었을 때와 `BOOKING_ID + ITEM_NO`를 넣었을 때 `SM12` lock entry가 어떻게 달라지는지 비교한다.
+6. 두 세션으로 header 변경과 item 변경을 동시에 시도해, 업무적으로 막아야 하는 조합이 실제로 `foreign_lock`으로 막히는지 본다.
+
+### 실수와 주의
+
+- "테이블이 두 개니까 lock도 두 개"라고 기계적으로 생각하지 않는다. 먼저 업무 root를 정한다.
+- header와 item을 별도 lock object로 잠글 때는 모든 프로그램이 같은 순서로 잠그는지 확인한다. A는 header→item, B는 item→header 순서로 잡으면 대기와 충돌 분석이 어려워진다.
+- key를 비워 넓게 잠그면 lock이 너무 강해진다. "안전"이 아니라 "시스템을 느리게 만드는 병목"이 될 수 있다.
+- foreign key가 Dictionary에 정확히 잡혀 있지 않으면 Lock Object 설계도 기대한 업무 관계를 표현하기 어렵다.
+- 복합 Lock Object는 DB의 foreign key constraint나 commit을 대신하지 않는다. 데이터 무결성, 트랜잭션, lock은 서로 다른 장치다.
+- item 하나만 독립적으로 바꾸는 업무와 예매 전체를 바꾸는 업무가 섞이면, 같은 lock 정책을 모든 프로그램에 공유해야 한다.
+
+### 체험형 학습 설계
+
+**복합 Lock Scope 디자이너**
+
+| 요소 | 설계 |
+|---|---|
+| 데이터 | `ZBOOK_H`, `ZBOOK_I`, `BOOKING_ID`, `ITEM_NO`, header 상태, item 좌석 목록 |
+| 버튼 | `Header만 잠금`, `Item만 잠금`, `Header+Item 잠금`, `BOOKING_ID 비우기`, `동시 수정 시도` |
+| 상태 | locked root key, affected header rows, affected item rows, blocked user, lock granularity |
+| 피드백 | item만 lock한 상태에서 header 취소가 통과하면 "업무 root 보호 누락"을 표시한다. `BOOKING_ID`를 비우면 "예매 전체가 아니라 더 넓은 범위가 잠김"을 경고한다. |
+
+시각 자료로는 왼쪽에 header table, 오른쪽에 item table을 두고 `BOOKING_ID` 선을 연결한다. 사용자가 lock argument를 선택하면 연결선이 굵어지고, 잠기는 row가 색으로 표시된다. `BOOKING_ID`만 선택하면 한 예매의 header와 item이 함께 강조되고, key를 비우면 전체 table이 붉게 변해야 한다.
+
+### 정리
+
+복합 Lock Object 설계의 핵심은 테이블 수가 아니라 업무 단위다. header와 item이 같은 업무 root로 함께 바뀌면 root key 중심으로 보호하고, item 독립 변경이 허용되는 경우에만 더 좁은 key를 검토한다. Lock Object는 foreign key dependency를 활용할 수 있지만, 최종 책임은 "어떤 변경 조합을 동시에 허용하면 안 되는가"를 설계자가 명확히 정하는 데 있다.
+
+## CH25-L07 · SM12 운영 확인과 잠금 장애 대응 경계
+
+### 왜 필요한가
+
+개발자는 "다른 사용자가 편집 중입니다"라는 메시지를 만들 수 있어야 하고, 사용자는 그 메시지를 보고 문의한다. 운영 중에는 더 복잡한 질문이 나온다.
+
+```text
+방금 저장했는데 아직도 잠겨 있습니다.
+사용자가 이미 로그아웃했는데 SM12에 lock이 남아 있습니다.
+계속 system_failure가 납니다.
+SM12에서 지워도 되나요?
+```
+
+CH25 초반의 `ENQUEUE`/`DEQUEUE` 지식만으로는 이 질문에 안전하게 답하기 어렵다. 개발자는 Basis 담당자처럼 enqueue server를 운영하지 않더라도, lock entry를 읽고 원인을 분류하고, 수동 삭제가 위험한 이유를 설명할 수 있어야 한다.
+
+### 무엇인가
+
+공식 문서 기준 lock function module은 중앙 lock table에 entry를 쓰고, 이 table은 `SM12`로 관리된다. 이 말은 두 가지를 뜻한다.
+
+| 관점 | 의미 |
+|---|---|
+| 개발자 관점 | `ENQUEUE_*` 성공/실패, `_SCOPE`, `DEQUEUE_*`, commit/rollback 흐름을 코드에서 점검한다. |
+| 운영 관점 | `SM12`에서 lock object, argument, user, time, client를 보고 현재 잠금 상태를 확인한다. |
+| Basis 관점 | enqueue work process/server, lock table 용량, 시스템 장애, HA/failover 같은 인프라를 관리한다. |
+
+CH25에서 배우는 운영 대응은 Basis 설정 절차가 아니다. 개발자가 해야 할 것은 "삭제 버튼을 누르기"가 아니라 "정상 lock인지, 코드 누락인지, 운영 장애인지 구분할 증거를 모으기"다.
+
+### SM12에서 봐야 할 정보
+
+SM12 화면의 실제 column은 시스템 버전에 따라 다를 수 있지만, 개발자가 확인해야 하는 정보는 대체로 다음과 같다.
+
+| 확인 항목 | 왜 보는가 |
+|---|---|
+| Client | 같은 client의 lock인지 확인 |
+| User | 누가 lock을 잡았는지 확인 |
+| Time | 방금 잡힌 정상 lock인지, 오래 남은 lock인지 판단 |
+| Lock object/table | 어떤 업무 lock인지 확인 |
+| Lock argument | `BOOKING_ID=1001`처럼 어느 key가 막혔는지 확인 |
+| Transaction/program 단서 | 어떤 화면이나 report가 lock을 만들었는지 추적 |
+
+`foreign_lock` 메시지를 받았다고 해서 바로 장애는 아니다. 다른 사용자가 실제로 수정 중이면 정상이다. 문제는 lock이 업무 흐름이 끝난 뒤에도 계속 남거나, 여러 사용자가 동시에 lock infrastructure 오류를 만나는 경우다.
+
+### 상황별 판정
+
+| 상황 | 1차 판정 | 개발자가 할 일 |
+|---|---|---|
+| 다른 사용자가 같은 예매를 편집 중 | 정상 `foreign_lock` | 재조회/재시도 안내, 긴 편집 lock 줄이기 |
+| commit 후 lock이 안 사라짐 | `_SCOPE`/update/dequeue 정책 확인 필요 | `_SCOPE`, `COMMIT WORK`, `ROLLBACK WORK`, `DEQUEUE_*` 위치 확인 |
+| 오류 경로 후 lock이 남음 | error path cleanup 누락 가능 | 예외 분기와 `MESSAGE ... TYPE 'E'` 탈출 경로 점검 |
+| 사용자가 종료했는데 잠깐 lock이 보임 | 세션 정리 지연 가능 | 즉시 삭제하지 말고 사용자/세션 상태 확인 |
+| 오래된 lock이 업무를 계속 막음 | 운영 판단 필요 | lock object, argument, user, time, 관련 문서번호를 기록해 담당자에게 전달 |
+| 여러 프로그램에서 `system_failure` | 인프라/권한/시스템 문제 가능 | 개발 코드보다 Basis/운영 담당자에게 에스컬레이션 |
+
+### 수동 삭제를 왜 조심해야 하는가
+
+SM12에서 lock entry를 수동으로 삭제할 수 있는 권한이 있더라도, 그것은 "문제가 해결됐다"는 뜻이 아니다. lock은 누군가 아직 변경 중이라는 표시일 수 있다. 이 entry를 지우면 다른 사용자가 같은 데이터를 수정할 수 있고, 먼저 작업 중이던 사용자가 나중에 저장하면서 데이터가 다시 꼬일 수 있다.
+
+수동 삭제는 다음 조건을 확인한 뒤 운영 절차로 처리해야 한다.
+
+1. lock owner가 실제 작업 중이 아닌지 확인한다.
+2. 해당 transaction/program이 update 중인지 확인한다.
+3. 관련 업무 문서가 저장/취소 중간 상태에 남아 있지 않은지 확인한다.
+4. 삭제 후 사용자가 어떤 화면을 다시 조회해야 하는지 안내한다.
+5. 같은 현상이 반복되면 코드의 `DEQUEUE`, `_SCOPE`, error path를 수정 대상으로 등록한다.
+
+초보 개발자가 기억할 문장은 하나다. "SM12 삭제는 디버깅 버튼이 아니라 운영 책임이 따르는 조치다."
+
+### 어떻게 확인하는가
+
+1. 두 세션으로 `booking_id = 1001` lock을 만든다.
+2. `SM12`에서 lock object와 argument를 확인한다.
+3. 세션 A에서 정상 `DEQUEUE_*`를 호출하고 entry가 사라지는지 본다.
+4. 같은 흐름에서 `COMMIT WORK`/`ROLLBACK WORK`와 `_SCOPE`별 결과를 비교한다.
+5. 예외가 발생하는 코드 경로를 만들어 lock이 남는지 본다.
+6. 남은 lock이 있으면 "코드 문제", "사용자 세션 문제", "운영 인프라 문제" 중 어느 쪽에 가까운지 기록한다.
+
+### 실수와 주의
+
+- `SM12`에 lock이 있다고 무조건 삭제 요청부터 하지 않는다.
+- `foreign_lock`을 system failure처럼 장애 메시지로 만들지 않는다. 정상 동시성 상황일 수 있다.
+- 오래 걸리는 화면 입력 전부터 lock을 잡으면 SM12에 오래 보이는 lock이 늘어난다.
+- `MESSAGE ... TYPE 'E'`나 `LEAVE PROGRAM` 경로에서 lock 해제가 빠질 수 있다.
+- `_SCOPE=2` 또는 `_SCOPE=3`을 사용하는 코드에서는 update 처리와 commit/rollback 시점을 함께 봐야 한다.
+- enqueue server 구성, failover, lock table 용량 관리는 CH25의 ABAP 코드 범위를 넘는 Basis 운영 영역이다. 개발자는 증상과 재현 절차를 정확히 넘겨야 한다.
+
+### 체험형 학습 설계
+
+**SM12 Lock Triage 콘솔**
+
+| 요소 | 설계 |
+|---|---|
+| 데이터 | lock object, argument, user, client, lock time, `_SCOPE`, program path, update registered flag |
+| 버튼 | `정상 foreign_lock`, `DEQUEUE 누락`, `오류 경로 탈출`, `세션 종료`, `system_failure`, `수동 삭제 검토` |
+| 상태 | normal/needs code fix/needs ops escalation, lock age, owner active, cleanup path found |
+| 피드백 | 수동 삭제 버튼을 누르면 즉시 삭제하지 않고 "owner 확인, 업무 문서 상태 확인, 운영 승인 필요" 체크리스트를 먼저 보여 준다. |
+
+이 시뮬레이터는 SM12를 실제 운영 도구처럼 흉내 내되, 삭제 기능을 게임처럼 쉽게 만들면 안 된다. 학습자는 lock entry를 클릭해 "정상 대기", "코드 cleanup 누락", "운영 에스컬레이션" 중 하나로 분류하고, 분류 근거를 선택해야 한다.
+
+### 정리
+
+SM12는 lock을 눈으로 확인하는 창이다. 개발자는 lock entry를 보고 코드의 `ENQUEUE`/`DEQUEUE`, `_SCOPE`, commit/rollback, 오류 경로를 점검해야 한다. 수동 삭제와 enqueue server 운영은 운영 책임이 따르는 영역이므로, CH25에서는 삭제 절차보다 안전한 판정과 에스컬레이션 기준을 배운다.
+
 ## CH25 최종 정리
 
 CH25의 핵심은 다음과 같다.
@@ -473,8 +700,10 @@ CH25의 핵심은 다음과 같다.
 | commit만으로 동시성을 해결하지 않는다 | commit/rollback은 내 LUW 제어이고, 동시 사용자 충돌에는 lock/check가 필요하다. |
 | Lock Object는 설계도다 | 실제 보호는 generated `ENQUEUE_`/`DEQUEUE_` 호출에서 시작된다. |
 | key 단위로 좁게 잠근다 | 넓은 lock은 안전해 보이지만 사용성을 크게 떨어뜨린다. |
+| 복합 업무는 root key로 본다 | header/item이 함께 바뀌면 테이블별이 아니라 업무 root 단위로 잠금 범위를 설계한다. |
 | `foreign_lock`은 정상 업무 상황이다 | 사용자를 탓하지 말고 재조회/재시도 안내를 제공한다. |
 | 해제 조건은 `_SCOPE`를 본다 | commit/rollback 자동 해제를 단정하지 않는다. |
+| SM12는 삭제 버튼이 아니라 판정 도구다 | lock object, argument, user, time을 보고 정상 대기와 코드/운영 문제를 구분한다. |
 | Lost Update를 시뮬레이션한다 | 동시성 사고를 눈으로 봐야 lock 전략을 제대로 선택한다. |
 | pessimistic과 optimistic을 구분한다 | 미리 막을지, 저장 직전 감지할지는 업무 충돌 빈도와 사용자 경험으로 결정한다. |
 
