@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Custom Control과 Container · Tabstrip · Subscreen · Screen Programming / Dynpro 기초 · SAP Developer Academy</title>
+<link rel="stylesheet" href="../../../assets/base.css">
+<link rel="stylesheet" href="../../../assets/lesson.css">
+<link rel="stylesheet" href="../../../assets/shell.css">
+<script>/* 읽기 설정 선적용(플래시 방지) */(function(){try{var L=localStorage,r=document.documentElement;if(L.getItem('sda.dark')==='1')r.classList.add('dark');if(L.getItem('sda.wide')==='1')r.classList.add('wide');var f=parseInt(L.getItem('sda.fontPx'),10);if(f>=13&&f<=20)r.style.fontSize=f+'px';}catch(e){}})();</script>
+</head>
+<body data-domain="abap" data-chapter-id="CH16" data-lesson-id="CH16-L09">
+<header class="appbar">
+  <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
+  <span class="appbar__sp"></span>
+  <span class="meta">Chapter 16 · Screen Programming / Dynpro 기초</span>
+  <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
+  <div class="tools">
+    <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
+    <button class="icon-btn" id="fsInc" title="글자 크게">A+</button>
+    <button class="icon-btn" id="fsReset" title="글자 크기 초기화">↺</button>
+    <button class="icon-btn" id="darkBtn" title="다크 모드">🌙</button>
+    <button class="icon-btn" id="widthBtn" title="가독 폭 넓게">↔</button>
+    <button class="icon-btn fs-btn" title="전체화면" aria-label="전체화면"></button>
+  </div>
+</header>
+<div class="read-progress"><i></i></div>
+<div class="scrim"></div>
+<nav class="rail" data-shell="rail"></nav>
+<button class="railFab" id="railFab" aria-label="네비 열기">☰</button>
+<div class="stage">
+  <div class="layout">
+    <main class="main">
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 16 › Lesson 9</nav>
+      <section class="lhead">
+        <p class="lhead__eyebrow">Screen Programming / Dynpro 기초</p>
+        <h1>Custom Control과 Container · Tabstrip · Subscreen</h1>
+        <p class="lhead__direction">화면 안에 ALV·트리를 박을 자리와 화면 분할 구조를 잡는다.</p>
+        <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 16</span><span class="tag tag--ls">Lesson 9</span><span class="tag tag--lv">중급</span></div>
+      </section>
+      <article class="prose">
+<section class="lblock"><h2>화면에 무엇을 얹을 자리</h2>
+<p>입력칸만으로 끝나는 업무는 많지 않다. 예매 화면에는 좌석표나 예매 목록을 ALV로
+보여 주고 싶고(<a href="CH17-L01.html">Grid ALV 기초</a>), 한 화면을 공연 정보·예매자 정보·상태로
+나누고 싶을 수도 있다. 이 레슨은 화면 안에 <strong>&quot;무엇을 얹을 자리&quot;</strong> 를 만드는 요소들을 다룬다.
+완성 ALV는 여기서 구현하지 않는다. <strong>자리와 구조</strong>만 잡는다.</p>
+<table>
+<thead>
+<tr>
+<th>요소</th>
+<th>역할</th>
+<th>이 챕터에서의 범위</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Custom Control</strong></td>
+<td>화면 안의 빈 <strong>사각 영역</strong></td>
+<td>ALV Grid를 얹을 자리</td>
+</tr>
+<tr>
+<td><strong><button class="term" type="button" data-term="Custom Container">Custom Container</button></strong></td>
+<td>Custom Control 영역과 control 객체를 <strong>연결</strong></td>
+<td><code>CL_GUI_CUSTOM_CONTAINER</code> 선행 사용</td>
+</tr>
+<tr>
+<td><strong>Tabstrip</strong></td>
+<td>한 화면을 여러 <strong>탭 페이지</strong>로 분리</td>
+<td>탭 title·function code·subscreen 연결</td>
+</tr>
+<tr>
+<td><strong>Subscreen Area</strong></td>
+<td>화면 안에 <strong>다른 화면을 끼워</strong> 넣는 영역</td>
+<td><code>CALL SUBSCREEN</code> 흐름</td>
+</tr>
+<tr>
+<td><strong>Status Icon</strong></td>
+<td>상태를 <strong>아이콘·텍스트</strong>로 표시</td>
+<td>매진·가능·오류 표시</td>
+</tr>
+</tbody></table>
+</section><section class="lblock"><h2>Custom Control과 Container</h2>
+<p>화면에 Custom Control 영역(<code>CONT100</code>)을 두고, 거기에 <button class="term" type="button" data-term="Custom Container">Custom Container</button> 객체를 연결한다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> go_cont <span class="tok-kw">TYPE</span> <span class="tok-kw">REF</span> <span class="tok-kw">TO</span> cl_gui_custom_container.
+
+<span class="tok-kw">MODULE</span> create_container_0100 <span class="tok-kw">OUTPUT</span>.
+  <span class="tok-kw">IF</span> go_cont <span class="tok-kw">IS</span> <span class="tok-kw">INITIAL</span>.                   <span class="tok-com">" 한 번만 생성</span>
+    <span class="tok-kw">CREATE</span> <span class="tok-kw">OBJECT</span> go_cont
+      <span class="tok-kw">EXPORTING</span> container_name = <span class="tok-str">'CONT100'</span>.  <span class="tok-com">" 화면 영역 이름과 같아야</span>
+  <span class="tok-kw">ENDIF</span>.
+<span class="tok-kw">ENDMODULE</span>.</code></pre></div></div>
+<blockquote>
+<p>🔎 <strong>[선행 사용]</strong> <code>TYPE REF TO</code>·<code>CREATE OBJECT</code>는 <a href="CH20-L01.html">Global Class 생성과 객체</a>에서
+정식으로 배운다. 여기선 &quot;Custom Control 이름 <code>CONT100</code>에 container 객체를 연결한다&quot;는
+블랙박스로만 받아들이면 된다.</p>
+</blockquote>
+<ul>
+<li>⚠️ Container를 <strong>PBO마다 새로</strong> 만들면 lifecycle 문제가 생긴다 → <code>IF go_cont IS INITIAL</code>로
+<strong>한 번만</strong> 생성한다.</li>
+<li>Custom Control은 <strong>내용물이 아니라 빈 사각 영역</strong>이다. container와 실제 control을
+만들어야 내용이 보인다(ALV는 <a href="CH17-L01.html">Grid ALV 기초</a>에서 이 <code>go_cont</code>에 얹는다).</li>
+</ul>
+</section><section class="lblock"><h2>Subscreen — 화면 안에 다른 화면</h2>
+<p><code>Subscreen Area</code>는 화면 안에 다른 dynpro를 끼워 넣는 영역이다. Flow Logic에서
+<code>CALL SUBSCREEN</code>으로 포함한다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6</pre><pre class="abap-editor__code"><code><span class="tok-kw">PROCESS</span> <span class="tok-kw">BEFORE</span> <span class="tok-kw">OUTPUT</span>.
+  <span class="tok-kw">CALL</span> SUBSCREEN sub_area INCLUDING sy-repid <span class="tok-str">'0110'</span>.
+
+<span class="tok-kw">PROCESS</span> <span class="tok-kw">AFTER</span> <span class="tok-kw">INPUT</span>.
+  <span class="tok-kw">CALL</span> SUBSCREEN sub_area.
+  <span class="tok-kw">MODULE</span> user_command_0100.</code></pre></div></div>
+<ul>
+<li>⚠️ <strong>Subscreen은 자체 OK field를 가질 수 없다</strong>(공식문서). 사용자 명령의 function
+code는 <strong>main 화면의 <code>OK_CODE</code>로 모인다</strong> — 처리 책임은 main의 PAI 흐름에 있다.</li>
+</ul>
+</section><section class="lblock"><h2>Tabstrip · Status Icon</h2>
+<ul>
+<li><strong>Tabstrip</strong> — 탭마다 <strong>title(function code)</strong> 과 <strong>subscreen area</strong>가 짝이다. ABAP에서
+<code>CONTROLS tab_main TYPE TABSTRIP.</code>으로 선언하고, <code>tab_main-activetab</code>에 활성 탭의
+function code를 보관한다.</li>
+<li><strong>Status Icon</strong> — 상태를 아이콘·텍스트·툴팁으로 보여 준다(예: 매진 🔴 / 가능 🟢 / 오류 ⚠).</li>
+</ul>
+<blockquote>
+<p>🔶 <strong>Table Control은 다루지 않는다.</strong> 공식문서엔 있지만, 표 형태 데이터 표시는 이 과정에서
+<a href="CH17-L01.html">Grid ALV 기초</a>로 대체한다.</p>
+</blockquote>
+</section><section class="lblock"><h2>직접 설계해 보기 — 화면 분할과 컨테이너 설계판</h2>
+<p>요소를 골라 Screen Painter 영역 이름과 ABAP 연결을 맞춰 보자. <code>container_name</code>이
+화면 영역과 다르면 어떤 경고가 나는지, 탭·subscreen·status icon이 어떻게 연결되는지 본다.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">화면 분할과 컨테이너 설계판</span><a class="embed__open" href="../../../embeds/abap/CH16-L09-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH16-L09-S01.html" loading="lazy" title="화면 분할과 컨테이너 설계판" style="height:620px"></iframe></figure>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>Container 이름 불일치</strong> → 화면 Custom Control 이름과 <code>container_name</code>이 같아야 붙는다.</li>
+<li><strong>컨테이너를 PBO마다 생성</strong> → <code>IF go_cont IS INITIAL</code>로 한 번만.</li>
+<li><strong>Subscreen에 OK field 기대</strong> → 없다. 명령은 main 화면 <code>OK_CODE</code>로 처리.</li>
+<li><strong>Tabstrip을 탭만 그리고 끝</strong> → 탭 title function code·<code>activetab</code>·subscreen area·<code>CALL SUBSCREEN</code>이 모두 맞아야 동작한다.</li>
+</ul>
+</section><section class="lblock"><h2>정리</h2>
+<ul>
+<li><strong>Custom Control</strong>은 ALV를 담을 <strong>자리</strong>, <strong>Subscreen·Tabstrip</strong>은 화면을 <strong>나누는 구조</strong>다.</li>
+<li>OO 문법과 Grid 구현은 뒤로 미루고, 지금은 <strong>&quot;화면 영역과 프로그램 연결&quot;</strong> 까지만 정확히 잡는다.</li>
+</ul>
+<hr>
+<p>화면에 컨트롤을 박을 자리를 마련했다. 배운 걸 <strong>콘서트앱</strong>에 적용해 예매 입력 화면을
+만들어 보자 → <a href="CH16-L10.html">실습 — 예매 입력 화면 (Dynpro)</a>.</p>
+</section>
+      </article>
+      <nav class="lesson-nav" data-shell="prevnext"></nav>
+      <footer class="foot">SAP Developer Academy · 배포자 SAP전문강사 정훈영</footer>
+    </main>
+    <aside class="journey" data-shell="journey"></aside>
+  </div>
+</div>
+<div class="term-popup" data-shell="popup" hidden></div>
+<div class="tmodal" data-shell="tmodal" hidden></div>
+<script>window.__SDA__={"domain":"abap","dataBase":"../","siteRoot":"../../../"};</script>
+<script src="../../../assets/shell.js" defer></script>
+</body>
+</html>

@@ -1,43 +1,49 @@
 <!DOCTYPE html>
-<!-- CH16-L08-S01 — 엔진: dynpro-form-simulator · _autoheight. 콘텐츠=레슨 전용(CH16 캡스톤 예매 입력 Dynpro 통합, CH16 L08).
-     config=window.DFS_CFG. 게이팅: classic PBO/PAI·OK_CODE/save_ok·CASE·can_book·MESSAGE·LEAVE 개념만 · modern 없음. -->
-<html lang="ko" data-eng="dynpro-form-simulator">
+<!-- CH16-L08-S01 — 엔진: toolbar-fcode-map · _autoheight. 콘텐츠=레슨 전용(PF-STATUS 툴바↔function code↔PAI CASE, CH16 L08).
+     config=window.TFM_CFG. 게이팅: classic SET PF-STATUS·EXCLUDING·SET TITLEBAR WITH·OK_CODE·CASE 개념만 · modern 없음. -->
+<html lang="ko" data-eng="toolbar-fcode-map">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>예매 입력 Dynpro 통합 시뮬레이터 · CH16-L08-S01</title>
+<title>Toolbar와 Function Code 매핑판 · CH16-L08-S01</title>
 <link rel="stylesheet" href="../_engine/_base.css" />
-<link rel="stylesheet" href="../_engine/dynpro-form-simulator.css" />
+<link rel="stylesheet" href="../_engine/toolbar-fcode-map.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">예매 입력 Dynpro 통합 시뮬레이터 <small>(CH16 종합)</small></p>
-  <p class="lead">화면 0100은 PBO에서 준비되어 있습니다. 좌석 수를 바꾸고 툴바 버튼을 눌러, PAI가 <code>OK_CODE</code>를 읽어 검증·종료하는 흐름을 따라가 보세요. <b>좌석 과다 입력 → 저장</b>은 <code>MESSAGE E</code>로 화면을 유지하고, <b>SAVE 뒤 Enter</b>는 재실행되지 않습니다.</p>
+  <p class="hd">Toolbar와 Function Code 매핑판 <small>(GUI Status ST100)</small></p>
+  <p class="lead">툴바 버튼을 누르면 그 function code가 <code>OK_CODE</code>로 전달되어 PAI <code>CASE</code>에서 처리됩니다. <code>gv_locked</code>로 <code>SAVE</code>를 <code>EXCLUDING</code>하면 어떻게 빠지는지, <b>CASE에 없는 버튼(HELP)</b>을 누르면 어떤 경고가 뜨는지 보세요.</p>
 
-  <div class="dfs-cols">
-    <div>
-      <p class="dfs-h">화면 0100 (PBO 준비됨)</p>
-      <div id="dfsScreen"></div>
-    </div>
-    <div class="dfs-side">
-      <div><p class="dfs-h">PBO / PAI 흐름</p><div id="dfsEvent"></div></div>
-      <div><p class="dfs-h">메시지</p><div id="dfsMsg"></div></div>
-    </div>
+  <div class="tfm-ctrl">
+    <span class="tfm-h" style="margin:0">화면 잠금 (EXCLUDING)</span>
+    <span class="tfm-lock"></span>
   </div>
 
-  <div class="note"><b>화면·검증까지가 이 챕터.</b> <code>SAVE</code>는 <code>can_book</code>으로 잔여석을 검증해 <code>MESSAGE S/E</code>를 냅니다(실제 <code>INSERT</code>·<code>COMMIT WORK</code>은 이후). <code>BACK</code>=<code>LEAVE TO SCREEN 0</code>(화면 종료), <code>EXIT</code>=<code>LEAVE PROGRAM</code>(프로그램 종료)로 구분합니다.</div>
+  <div class="tfm-win">
+    <div id="tfmTitle"></div>
+    <div class="tfm-toolbar"></div>
+    <div class="tfm-body">↑ application toolbar — 버튼을 클릭</div>
+  </div>
+
+  <p class="tfm-h">시스템 필드 · PAI 처리</p>
+  <div id="tfmStatus"></div>
+
+  <div class="note"><b>같은 function code 체계로.</b> Menu Painter(SE41) 버튼의 function code와 PAI <code>CASE save_ok</code> 값이 같아야 처리됩니다. <code>EXCLUDING</code>된 버튼은 화면에서 선택할 수 없고, 제목은 <code>SET TITLEBAR ... WITH</code>로 <code>&amp;1</code> 자리에 값을 채웁니다.</div>
 </div>
 
 <script>
-window.DFS_CFG = {
-  conc: 'C001', perf: '001', avail: 5,
-  statuses: [
-    { key: 'R', text: '예약' },
-    { key: 'W', text: '대기' }
+window.TFM_CFG = {
+  status: 'ST100', titleTemplate: '공연 &1 예매', titleArg: 'C001',
+  buttons: [
+    { fct: 'SAVE',   label: '저장',   handled: true,  action: 'PERFORM check_booking', excludable: true },
+    { fct: 'BACK',   label: '뒤로',   handled: true,  action: 'LEAVE TO SCREEN 0' },
+    { fct: 'EXIT',   label: '종료',   handled: true,  action: 'LEAVE PROGRAM' },
+    { fct: 'CANCEL', label: '취소',   handled: true,  action: 'LEAVE TO SCREEN 0' },
+    { fct: 'HELP',   label: '도움말', handled: false, action: null }
   ]
 };
 </script>
-<script src="../_engine/dynpro-form-simulator.js" defer></script>
+<script src="../_engine/toolbar-fcode-map.js" defer></script>
 <script src="../_engine/_autoheight.js" defer></script>
 </body>
 </html>

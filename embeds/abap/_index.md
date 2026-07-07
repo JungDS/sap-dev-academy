@@ -134,12 +134,14 @@
 | CH15-L12-S01 | CH15-L12 | report-run-simulator | CH15 캡스톤·6시나리오×4이벤트(INIT→OUTPUT→검증→START) 흐름·통과/막힘·so_stat R/C 필터·결과테이블/S메시지/ALV | ✅ |
 | CH16-L01-S01 | CH16-L01 | process-flow-pbo-pai | Module Pool 두 박자 순환(PBO→화면→입력→PAI→loop·다음박자 진행) | ✅ |
 | CH16-L02-S01 | CH16-L02 | screen-painter-wiring | Dynpro 4조각(Layout/Element List/Flow Logic/ABAP Source) 연결지도·시나리오로 깨기(MODULE 누락/이름불일치/OK field 누락)→활성화 오류 | ✅ |
-| CH16-L04-S01 | CH16-L04 | pbo-prep-stepper | PBO 6단계 진행(PF-STATUS·TITLEBAR·LOOP AT SCREEN·MODIFY SCREEN·표시)·잠금 토글→P_SEATS input=0 대기 vs MODIFY SCREEN 반영 체감 | ✅ |
-| CH16-L05-S01 | CH16-L05 | okcode-branch-lab | PAI ok_code→save_ok→CLEAR→CASE 분기 추적·버튼(SAVE/BACK/EXIT/CANCEL/Enter)·CLEAR 생략 시 SAVE→Enter 재실행(reexec) 데모·EXIT=LEAVE PROGRAM | ✅ |
-| CH16-L06-S01 | CH16-L06 | toolbar-fcode-map | GUI status 툴바 버튼→OK_CODE→PAI CASE 매핑·잠금→SAVE EXCLUDING·미처리 버튼(HELP) 경고·TITLEBAR WITH 치환 | ✅ |
-| CH16-L07-S01 | CH16-L07 | screen-extension-designer | 화면 확장요소 4탭(Custom Control 이름매칭·Subscreen OK field 없음→main·Tabstrip activetab/subscreen·Status Icon) | ✅ |
-| CH16-L08-S01 | CH16-L08 | dynpro-form-simulator | CH16 캡스톤·화면0100 PBO준비→좌석입력→SAVE(can_book 검증 S/E·화면유지)·BACK=LEAVE TO SCREEN0·EXIT=LEAVE PROGRAM·Enter 재실행방지 | ✅ |
+| CH16-L06-S01 | CH16-L06 | pbo-prep-stepper | PBO 6단계 진행(PF-STATUS·TITLEBAR·LOOP AT SCREEN·MODIFY SCREEN·표시)·잠금 토글→GV_SEATS input=0 대기 vs MODIFY SCREEN 반영 체감 | ✅ |
+| CH16-L07-S01 | CH16-L07 | okcode-branch-lab | PAI ok_code→save_ok→CLEAR→CASE 분기 추적·버튼(SAVE/BACK/EXIT/CANCEL/Enter)·CLEAR 생략 시 SAVE→Enter 재실행(reexec) 데모·EXIT=LEAVE PROGRAM | ✅ |
+| CH16-L08-S01 | CH16-L08 | toolbar-fcode-map | GUI status 툴바 버튼→OK_CODE→PAI CASE 매핑·잠금→SAVE EXCLUDING·미처리 버튼(HELP) 경고·TITLEBAR WITH 치환 | ✅ |
+| CH16-L09-S01 | CH16-L09 | screen-extension-designer | 화면 확장요소 4탭(Custom Control 이름매칭·Subscreen OK field 없음→main·Tabstrip activetab/subscreen·Status Icon) | ✅ |
+| CH16-L10-S01 | CH16-L10 | dynpro-form-simulator | CH16 캡스톤·화면0100 PBO준비→좌석입력→SAVE(can_book 검증 S/E·화면유지)·BACK=LEAVE TO SCREEN0·EXIT=LEAVE PROGRAM·Enter 재실행방지 | ✅ |
 | CH16-L03-S01 | CH16-L03 | dynpro-screen-elements | 예매 화면 요소↔변수(Input·Check·Radio·Dropdown VRM·Button→OK_CODE) | ✅ |
+| CH16-L04-S01 | CH16-L04 | dict-transport-tunnel | TABLES work area↔화면 운반 터널(TABLES on/off·PBO 프로그램→화면·PAI 화면→프로그램·이름 불일치 시 ZCONCERT-CONCERT_ID 미운반 vs GV_SEATS 운반) | ✅ |
+| CH16-L05-S01 | CH16-L05 | input-help-priority-pov | 입력도움 우선순위 결정기(DDIC/화면값필터/직접)+POV 실험실(공연ID→회차 F4·DYNP_VALUES_READ 후보 좁힘→F4IF_INT_TABLE_VALUE_REQUEST) | ✅ |
 | CH17-L01-S01 | CH17-L01 | container-bind-stepper | CL_GUI_CUSTOM_CONTAINER 바인딩 3단계(Screen Painter 확인→PBO→CREATE OBJECT)·이름 매칭→go_cont initial→bound/오타 fail | ✅ |
 | CH17-L02-S01 | CH17-L02 | alv-readiness-panel | CL_GUI_ALV_GRID 생성 2단계+준비 체크리스트(go_cont/go_grid ready·데이터/fcat/display 비어있음→표 안보이는게 정상)·i_parent 비움 fail | ✅ |
 | CH17-L03-S01 | CH17-L03 | alv-data-query | SELECT INTO TABLE 3시나리오(C001=4건·C999=0건subrc4 빈표정상·조건없이=전체 경고)·sy-subrc/sy-dbcnt/행수·lt_booking 미리보기 | ✅ |
@@ -335,11 +337,13 @@
 | process-flow-pbo-pai (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH16-L01-S01 | PBO/PAI 두 박자 순환(클릭 진행) |
 | dynpro-screen-elements (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH16-L03-S01 | 화면 요소↔변수 + FctCode→OK_CODE 시연 |
 | screen-painter-wiring (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH16-L02-S01 | SPW_CFG 주도 · 4패널(Layout/Element List/Flow Logic/ABAP Source) 연결 지도·시나리오로 깨기→활성화 오류(MODULE 누락·이름불일치·OK field) · 다크 |
-| pbo-prep-stepper (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH16-L04-S01 | PPS_CFG 주도 · PBO 단계 스텝퍼(steps config)·잠금 토글·sy-dynnr/pfkey/title·LOOP AT SCREEN input=0 대기 vs MODIFY SCREEN 반영·미리보기 · 다크 |
-| okcode-branch-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH16-L05-S01 | OBL_CFG 주도 · PAI 버튼→ok_code/save_ok/CLEAR/CASE 추적·CLEAR 생략 시 okReg 유지→Enter 재실행(reexec red)·EXIT=LEAVE PROGRAM · 다크 |
-| toolbar-fcode-map (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH16-L06-S01 | TFM_CFG 주도 · GUI status 툴바·잠금→EXCLUDING(SAVE disabled)·버튼→OK_CODE→CASE(handled/unhandled 경고)·TITLEBAR WITH·sy-pfkey/title · 다크 |
-| screen-extension-designer (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH16-L07-S01 | SED_CFG 주도 · 4탭(Custom Control container_name 매칭·Subscreen OK field 없음→main flow·Tabstrip activetab↔subscreen·Status Icon 상태) · 다크 |
-| dynpro-form-simulator (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH16-L08-S01 | DFS_CFG 주도 · CH16 캡스톤·화면0100 미리보기(좌석 입력)·툴바→PAI(OK_CODE/save_ok/CLEAR/CASE)·can_book 검증 S/E·LEAVE TO SCREEN0/PROGRAM·Enter 재실행방지 · 다크 |
+| pbo-prep-stepper (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH16-L06-S01 | PPS_CFG 주도 · PBO 단계 스텝퍼(steps config)·잠금 토글·sy-dynnr/pfkey/title·LOOP AT SCREEN input=0 대기 vs MODIFY SCREEN 반영·미리보기 · 다크 |
+| okcode-branch-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH16-L07-S01 | OBL_CFG 주도 · PAI 버튼→ok_code/save_ok/CLEAR/CASE 추적·CLEAR 생략 시 okReg 유지→Enter 재실행(reexec red)·EXIT=LEAVE PROGRAM · 다크 |
+| toolbar-fcode-map (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH16-L08-S01 | TFM_CFG 주도 · GUI status 툴바·잠금→EXCLUDING(SAVE disabled)·버튼→OK_CODE→CASE(handled/unhandled 경고)·TITLEBAR WITH·sy-pfkey/title · 다크 |
+| screen-extension-designer (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH16-L09-S01 | SED_CFG 주도 · 4탭(Custom Control container_name 매칭·Subscreen OK field 없음→main flow·Tabstrip activetab↔subscreen·Status Icon 상태) · 다크 |
+| dynpro-form-simulator (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH16-L10-S01 | DFS_CFG 주도 · CH16 캡스톤·화면0100 미리보기(좌석 입력)·툴바→PAI(OK_CODE/save_ok/CLEAR/CASE)·can_book 검증 S/E·LEAVE TO SCREEN0/PROGRAM·Enter 재실행방지 · 다크 |
+| dict-transport-tunnel (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH16-L04-S01 | TABLES work area 운반 터널·TABLES 토글·PBO/PAI 방향·이름 일치 운반 vs 미운반(ZCONCERT-CONCERT_ID) · 다크 |
+| input-help-priority-pov (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH16-L05-S01 | 입력도움 우선순위(3티어)+POV 후보 좁히기(공연ID→DYNP_VALUES_READ→F4IF_INT_TABLE_VALUE_REQUEST) · 다크 |
 | class-diagram (신규) | 3 | 공통(CSS-only)+_autoheight ✅ | CH20-L01·L07·L10 (완료) | UML 박스·인스턴스·상속 — class-object/inheritance/class-structure 통합 1엔진 |
 | relationship-map | 1 | 공통(CSS-only)+_autoheight ✅ | CH22-L03-S01 (완료) | A→B 관계 카드(CDS Association) · 빈 .js 제거 · static-svg-architecture 은퇴 |
 
