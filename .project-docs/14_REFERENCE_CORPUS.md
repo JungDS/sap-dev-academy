@@ -1,9 +1,9 @@
 # 14. REFERENCE CORPUS — 외부 참고 자료 인벤토리 · 관련성 · 활용 규칙
 
-> 📅 최종수정: 2026-06-29 19:18 KST
+> 📅 최종수정: 2026-07-07 20:20 KST
 > 🎯 `C:\ABAP_DOCU_DOWNLOAD\ABAP_DOCU\`에 모아둔 SAP 공식/오픈소스 자료를 **정밀 분석**한 결과와 **프로젝트 활용 규칙**. 이 코퍼스는 *참고 입력(input)*이며 빌드 파이프라인 밖이다 — `content/abap/**.md`를 쓸 때 사실·예제·구조의 **출처**로 쓴다.
 > ✅ **저작권: 본 과정은 SAP Korea 주관 강의 → SAP 공식문서·cheat-sheet 본문·예제 verbatim(원문 그대로) 사용 허용.** 단 이는 *저작권 허가*일 뿐 — **입문자 가독성(R3)은 별개 규칙으로 유지**: 예제 코드는 공식 원문 그대로 자유 사용하되, **본문 prose가 입문자에게 어려운 곳(영어·압축·non-semantic)은 한국어 입문 톤으로 각색**([04 R3](04_CONVENTIONS.md)). = "verbatim 허용 + R3 각색 유지".
-> 🔗 관련: 기존 오프라인 HTML 덤프(`C:\ABAP_DOCU_HTML\`)는 메모리 `abap-keyword-doc-links`가 단일 출처 — 본 문서는 그 **확장 코퍼스**의 카탈로그.
+> 🔗 관련: **오프라인 사실검증은 두 루트를 모두 grep한다**(§5-1, 사용자 확정 2026-07-07) — 루트 A `C:\ABAP_DOCU_HTML\`(keyword doc HTML 덤프·1차 권위) + 루트 B `C:\ABAP_DOCU_DOWNLOAD\ABAP_DOCU\`(본 문서가 카탈로그화하는 GitHub 코퍼스: cheat-sheet·MD 미러·Clean ABAP·예제). 메모리 `abap-keyword-doc-links`는 보조.
 
 ---
 
@@ -87,12 +87,19 @@
 
 > 그동안 메모리(`abap-keyword-doc-links`·`notebooklm-nlm-cli`·`notebooklm-sapui5-chapterids`)에만 있던 운영 규칙을 **여기로 승격** — 메모리가 없어도 `.project-docs`만으로 자립하게. (메모리는 보조로 유지.)
 
-### 5-1. 검색 우선순위 — **웹검색은 최후수단**
-사실·문법·정의 확인은 **일반 인터넷 검색(구글 등) 대신 오프라인 코퍼스를 먼저** 쓴다(사용자 지시 — 웹검색은 부정확·버전 혼선). 순서:
-1. **`C:\ABAP_DOCU_HTML\`** (공식 keyword doc HTML 덤프, **AS ABAP 758/8.16**, 6천여 파일) — **1차 grep 대상**. 용어정의=`aben<term>_glosry.htm` · 예제=`*abexa*.htm` · ToC=`abap_docu_tree.htm` · 진입=`index.htm`. (추출 패턴: script블록 제거 → 태그 제거 → `class="h1"` 이후 본문.)
-2. **`…\ABAP_DOCU\abap-docs-main\docs\standard\md`** (MD판) — grep·frontmatter `keywords` 검색이 쉬움. **R6 경계 판정 = `standard` vs `cloud` 동일 파일 존재 비교**(§2).
-3. **구조·예제** = 버전매칭 cheat-sheet(§1: classic→`-758/-816`, 모던→`-main`, RAP→`-rap`).
-4. 위에서 안 나올 때만 **공식 온라인 문서(§5-2 URL)** 또는 **NotebookLM(§5-3)**. 정의 확정은 항상 공식 원문(HTML 덤프 또는 `sourceUrl`)과 교차확인.
+### 5-1. 오프라인 사실검증 — **두 루트 병행 필수 · 웹검색은 최후수단**
+사실·문법·정의 확인은 **일반 인터넷 검색(구글 등) 대신 오프라인 코퍼스로** 한다(사용자 지시 — 웹검색은 부정확·버전 혼선). **사실검증은 아래 두 루트를 *모두* grep해 교차확인한다**(사용자 확정 2026-07-07 — 한쪽만 보지 말 것):
+
+**루트 A · `C:\ABAP_DOCU_HTML\`** (공식 keyword doc HTML 덤프, **AS ABAP 758/8.16**, 6천여 파일) = **문법·의미·정의의 1차 권위**.
+- 용어정의=`aben<term>_glosry.htm` · 예제=`*abexa*.htm` · ToC=`abap_docu_tree.htm` · 진입=`index.htm`. (추출: script블록 제거 → 태그 제거 → `class="h1"` 이후 본문.)
+
+**루트 B · `C:\ABAP_DOCU_DOWNLOAD\ABAP_DOCU\`** (SAP GitHub 코퍼스, 1.4만 파일·§1～3) = **MD 미러 + 예제/스타일 근거**.
+- `abap-docs-main/docs/standard/md`(·`/cloud/md`) — keyword doc **MD판**(frontmatter `keywords` grep 용이). **R6 classic↔modern 경계 = `standard` vs `cloud` 동일 파일 존재 비교**(§2).
+- `abap-cheat-sheets-{758,816,main,rap}` — **버전매칭 예제·구조 출처**(§1: classic→758/816·모던→main·RAP→rap).
+- `styleguides-main`(Clean ABAP) — 모던/OO 스타일 근거(§3, **R11/R6 상위규칙 아님**).
+- 실제 예제 소스 `*.abap`(214)·`*.asddls`·`*.asbdef`도 이 루트에서 grep 가능.
+
+**절차**: ① 주장의 권위 판정은 루트 A(또는 B의 MD 미러) keyword doc 원문으로. ② 사용례·버전·모던경계·예제는 루트 B에서 교차확인. ③ **한쪽에만 있고 다른 쪽과 어긋나면 그 불일치를 근거와 함께 보고**(HTML 덤프=758/8.16 고정, MD 미러=standard/cloud 최신일 수 있어 버전차 발생 가능). ④ 두 루트에서 못 찾을 때만 **공식 온라인(§5-2 URL)** 또는 **NotebookLM(§5-3)**; 정의 확정은 항상 공식 원문(HTML 덤프·MD 미러 또는 `sourceUrl`)과 교차확인.
 
 ### 5-2. 공식 ABAP Keyword Doc — canonical URL (검색하지 말고 이 URL을 그대로)
 - 최신 classic(Standard): `https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/ABENABAP.html`
