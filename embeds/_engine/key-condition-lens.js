@@ -4,7 +4,7 @@
 (function(){
   var cfg = window.KCL_CFG || {};
   var DATA = cfg.data || [];
-  var KEY = cfg.key || {carrid:'KE', connid:'0701', fldate:'2026-06-23'};   // full key 예시값
+  var KEY = cfg.key || {carrid:'KE', connid:'0701', fldate:'20260623'};   // full key 예시값
   var GEN = cfg.general || {field:'planetype', val:'747-400'};
   var $=function(id){return document.getElementById(id);};
   function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}

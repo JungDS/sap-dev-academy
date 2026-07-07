@@ -3,7 +3,7 @@
 // 어떻게 담기는지 탭으로 보여 준다. 데이터=window.ITB_CFG.
 (function(){
   var cfg = window.ITB_CFG || {};
-  var ROW = cfg.row || {carrid:'KE', connid:'0701', fldate:'2026-06-23', seatsocc:320, seatsmax:380};
+  var ROW = cfg.row || {carrid:'KE', connid:'0701', fldate:'20260623', seatsocc:320, seatsmax:380};
   var KEFLIGHTS = cfg.keFlights || [];
   var LHFLIGHTS = cfg.lhFlights || [];
   var $=function(id){return document.getElementById(id);};
@@ -18,7 +18,7 @@
   }
 
   function renderWA(){
-    code('<span class="tok-kw">SELECT SINGLE</span> * <span class="tok-kw">FROM</span> sflight\n  <span class="tok-kw">INTO</span> gs_flight\n  <span class="tok-kw">WHERE</span> carrid = <span class="tok-str">\'KE\'</span> <span class="tok-kw">AND</span> connid = <span class="tok-str">\'0701\'</span> <span class="tok-kw">AND</span> fldate = <span class="tok-str">\'2026-06-23\'</span>.');
+    code('<span class="tok-kw">SELECT SINGLE</span> * <span class="tok-kw">FROM</span> sflight\n  <span class="tok-kw">INTO</span> gs_flight\n  <span class="tok-kw">WHERE</span> carrid = <span class="tok-str">\'KE\'</span> <span class="tok-kw">AND</span> connid = <span class="tok-str">\'0701\'</span> <span class="tok-kw">AND</span> fldate = <span class="tok-str">\'20260623\'</span>.');
     var rowFlds = ['carrid','connid','fldate','seatsocc','seatsmax'].map(function(c){ return fldRow(c, ROW[c],'matched',{c:'ok',t:'담김'}); }).join('');
     $('board').innerHTML='<div class="flow">'
       +'<div><div class="col__t">조회한 한 행</div>'+['carrid','connid','fldate','seatsocc','seatsmax'].map(function(c){return fldRow(c,ROW[c]);}).join('')+'</div>'
@@ -52,7 +52,7 @@
   }
 
   function renderCorr(){
-    code('<span class="tok-kw">SELECT</span> carrid connid fldate <span class="tok-kw">FROM</span> sflight\n  <span class="tok-kw">INTO</span> <span class="tok-kw">CORRESPONDING FIELDS OF</span> gs_brief\n  <span class="tok-kw">WHERE</span> carrid = <span class="tok-str">\'KE\'</span> <span class="tok-kw">AND</span> connid = <span class="tok-str">\'0701\'</span>.');
+    code('<span class="tok-kw">SELECT SINGLE</span> carrid connid fldate <span class="tok-kw">FROM</span> sflight\n  <span class="tok-kw">INTO</span> <span class="tok-kw">CORRESPONDING FIELDS OF</span> gs_brief\n  <span class="tok-kw">WHERE</span> carrid = <span class="tok-str">\'KE\'</span> <span class="tok-kw">AND</span> connid = <span class="tok-str">\'0701\'</span>.');
     var read=['carrid','connid','fldate'];
     var target=[{f:'carrid',m:1},{f:'connid',m:1},{f:'fldate',m:1},{f:'cityfrom',m:0}];
     $('board').innerHTML='<div class="flow">'

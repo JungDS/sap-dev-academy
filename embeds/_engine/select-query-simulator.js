@@ -174,11 +174,11 @@
     if(matched.length===0){
       $('resTbl').innerHTML='<tbody><tr><td class="empty">조회 결과 없음 (0행)</td></tr></tbody>';
       $('resCnt').textContent='0행';
-      $('subrc').innerHTML='<span class="no">sy-subrc = 4</span> · sy-dbcnt = 0 · lines( '+ITAB+' ) = 0';
+      $('subrc').innerHTML='<span class="no">sy-subrc = 4</span> · sy-dbcnt = 0';
     } else {
       $('resTbl').innerHTML=thRow(cols)+'<tbody>'+matched.map(function(r){return tdRow(r,cols);}).join('')+'</tbody>';
       $('resCnt').textContent=matched.length+'행';
-      $('subrc').innerHTML='<span class="ok">sy-subrc = 0</span> · sy-dbcnt = '+matched.length+' · lines( '+ITAB+' ) = '+matched.length;
+      $('subrc').innerHTML='<span class="ok">sy-subrc = 0</span> · sy-dbcnt = '+matched.length;
     }
     postHeight();
   }
