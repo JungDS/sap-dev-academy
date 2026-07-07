@@ -44,7 +44,7 @@
       '<div class="rrs-srow"><span class="k">pa_conc</span><span class="v ' + (sc.conc ? '' : 'empty') + '">' + (sc.conc ? esc(sc.conc) : '(공백)') + '</span></div>' +
       '<div class="rrs-srow"><span class="k">pa_mode</span><span class="v">' + (sc.mode === 'adv' ? 'A (고급)' : "' ' (일반)") + '</span></div>' +
       '<div class="rrs-srow"><span class="k">pa_note</span><span class="v ' + (noteActive ? '' : 'off') + '">' + (noteActive ? '입력 가능' : '비활성(숨김)') + '</span></div>' +
-      '<div class="rrs-srow"><span class="k">s_stat</span><span class="v">I EQ ' + esc(stat) + '</span></div>';
+      '<div class="rrs-srow"><span class="k">so_stat</span><span class="v">I EQ ' + esc(stat) + '</span></div>';
   }
   function stage(state, evt, msg) {
     var icon = state === 'pass' ? '✓' : state === 'fail' ? '✗' : (state === 'lock' ? '·' : '');
@@ -58,7 +58,7 @@
       return;
     }
     var r = evalRun();
-    var h = stage('pass', 'INITIALIZATION', 'pa_conc=' + (cur().conc || '(공백)') + ' · s_stat=I EQ ' + stat);
+    var h = stage('pass', 'INITIALIZATION', 'pa_conc=' + (cur().conc || '(공백)') + ' · so_stat=I EQ ' + stat);
     h += stage('pass', 'AT SELECTION-SCREEN OUTPUT', 'pa_note ' + (r.noteActive ? '활성' : '비활성(숨김)'));
     if (r.gate === 'pass') {
       h += stage('pass', 'AT SELECTION-SCREEN ON pa_conc', '입력·존재·권한 통과');

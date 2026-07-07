@@ -58,13 +58,13 @@
 <span class="tok-kw">DATA</span> lt_book <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> zbooking.
 <span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> zbooking
   <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> lt_book
-  <span class="tok-kw">WHERE</span> concert_id <span class="tok-kw">IN</span> s_conc.
+  <span class="tok-kw">WHERE</span> concert_id <span class="tok-kw">IN</span> so_conc.
 
 <span class="tok-com">" modern</span>
 <span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> zbooking
-  <span class="tok-kw">WHERE</span> concert_id <span class="tok-kw">IN</span> @s_conc
+  <span class="tok-kw">WHERE</span> concert_id <span class="tok-kw">IN</span> @so_conc
   <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> @<span class="tok-kw">DATA</span>(lt_book).</code></pre></div></div>
-<p><code>s_conc</code>는 selection screen에서 만들어진 range table이다. SQL 안에선 ABAP 값이므로 **<code>@s_conc</code>**로 표시한다.</p>
+<p><code>so_conc</code>는 selection screen에서 만들어진 range table이다. SQL 안에선 ABAP 값이므로 **<code>@so_conc</code>**로 표시한다.</p>
 </section><section class="lblock"><h2>② 공연별 집계 — LEFT OUTER JOIN · COALESCE · CASE</h2>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
@@ -84,10 +84,10 @@
   <span class="tok-kw">LEFT</span> <span class="tok-kw">OUTER</span> <span class="tok-kw">JOIN</span> zbooking <span class="tok-kw">AS</span> b
     <span class="tok-kw">ON</span>  b~concert_id = c~concert_id
     <span class="tok-kw">AND</span> b~status &lt;&gt; <span class="tok-str">'C'</span>
-  <span class="tok-kw">WHERE</span> c~concert_id <span class="tok-kw">IN</span> @s_conc
+  <span class="tok-kw">WHERE</span> c~concert_id <span class="tok-kw">IN</span> @so_conc
   <span class="tok-kw">GROUP</span> <span class="tok-kw">BY</span> c~concert_id, c~artist, c~capacity
   <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> @<span class="tok-kw">DATA</span>(lt_stat).</code></pre></div></div>
-<p>여기 모던 SQL이 여럿 모였다 — 콤마 목록, <code>@s_conc</code>, <code>@DATA</code>, <strong><code>COALESCE</code></strong>(예매 없는 공연의 합계 null → 0), <strong><code>CASE</code></strong>(매진 상태 컬럼).</p>
+<p>여기 모던 SQL이 여럿 모였다 — 콤마 목록, <code>@so_conc</code>, <code>@DATA</code>, <strong><code>COALESCE</code></strong>(예매 없는 공연의 합계 null → 0), <strong><code>CASE</code></strong>(매진 상태 컬럼).</p>
 <blockquote>
 <p>🧩 <strong>별칭을 같은 SELECT 안에서 다시 못 쓴다.</strong> <code>SUM( b~seats ) AS booked</code>로 만든 <code>booked</code>를 같은 SELECT list의 <code>CASE</code>에서 바로 쓸 수 없다(SELECT list alias는 같은 list의 SQL expression operand로 불가). 그래서 <code>CASE</code> 안에서 <code>COALESCE( SUM( b~seats ), 0 )</code>를 <strong>반복</strong>한다. 길어 보여도 규칙을 지킨 코드다.</p>
 </blockquote>
@@ -100,7 +100,7 @@
 </ul>
 <p>예매 없는 공연도 보여 주는 게 목적이므로, <strong>오른쪽 테이블 조건은 <code>ON</code>에</strong> 둔다. 위 체험에서 직접 바꿔 보자.</p>
 </section><section class="lblock"><h2>결과 검증 ✅</h2>
-<p>샘플 데이터(<code>s_conc = C001·C002·C003</code>):</p>
+<p>샘플 데이터(<code>so_conc = C001·C002·C003</code>):</p>
 <table>
 <thead>
 <tr>
@@ -170,7 +170,7 @@
 </ol>
 </section><section class="lblock"><h2>흔한 실수와 점검 🚧</h2>
 <ul>
-<li><strong><code>@</code> 누락</strong> → 모던 SELECT의 ABAP 변수·<code>s_conc</code>엔 <code>@</code>. 컬럼엔 안 붙인다.</li>
+<li><strong><code>@</code> 누락</strong> → 모던 SELECT의 ABAP 변수·<code>so_conc</code>엔 <code>@</code>. 컬럼엔 안 붙인다.</li>
 <li><strong>콤마/공백 혼용</strong> → 모던은 필드 콤마. classic 공백과 섞지 않는다.</li>
 <li><strong>취소 조건을 WHERE에</strong> → 예매 없는 공연이 사라진다. 보존하려면 <code>ON</code>에.</li>
 <li><strong><code>COALESCE</code> 오해</strong> → DB null 대체다. 이미 <code>0</code>인 값을 바꾸는 게 아니다.</li>

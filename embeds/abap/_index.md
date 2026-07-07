@@ -97,12 +97,12 @@
 | CH11-L05-S01 | CH11-L05 | module-choice-cards | (재사용) SALV 1차 범위 분류(지금 CH11 / CH17·21·27·28) | ✅ |
 | CH11-L06-S01 | CH11-L06 | salv-grid-simulator | 예매목록 SALV(lt_book·set_all·Σ좌석수=17·STATUS N/C) | ✅ |
 | CH12-L01-S01 | CH12-L01 | range-row-builder | 조건 카드(사람 말)→Range Table 4칸 행(SIGN/OPTION/LOW/HIGH)·I/E·EQ/BT/CP·행별 사람말 해석·OR/제외 규칙 | ✅ |
-| CH12-L02-S01 | CH12-L02 | selopt-screen-mapper | 선택화면 From/To+다중선택→s_conc Range Table→LOOP AT 출력(From=EQ·From~To=BT·제외 E·8자) | ✅ |
+| CH12-L02-S01 | CH12-L02 | selopt-screen-mapper | 선택화면 From/To+다중선택→so_conc Range Table→LOOP AT 출력(From=EQ·From~To=BT·제외 E·8자) | ✅ |
 | CH12-L03-S01 | CH12-L03 | select-options-filter-sim | (재사용) classic WHERE..IN 평가 + #soSys(sy-subrc/sy-dbcnt)·시나리오(전체=6·C999=0건subrc4·AND) | ✅ |
 | CH12-L04-S01 | CH12-L04 | include-exclude-judge | 포함(I)/제외(E) 조건 쌓기→공연별 통과/탈락 판정·이유(포함 OR·제외 빼기·녹색/빨강=SIGN) | ✅ |
 | CH12-L05-S01 | CH12-L05 | option-compare-lab | 단일 조건 SIGN·OPTION(EQ/BT/CP)·LOW/HIGH 토글→후보 통과 비교·CP wildcard(*,+)·E 반전 | ✅ |
 | CH12-L06-S01 | CH12-L06 | range-append-stepper | 코드 한 줄씩(CLEAR→sign→option→low→APPEND→SELECT)·ls_stat↔lr_stat·APPEND 전 빈 table·결과 5행 | ✅ |
-| CH12-L07-S01 | CH12-L07 | select-options-filter-sim | SELECT-OPTIONS Range Table(s_conc·s_stat·I/E·EQ/BT/CP→zbooking 필터) | ✅ |
+| CH12-L07-S01 | CH12-L07 | select-options-filter-sim | SELECT-OPTIONS Range Table(so_conc·so_stat·I/E·EQ/BT/CP→zbooking 필터) | ✅ |
 | CH13-L01-S01 | CH13-L01 | join-match-board | INNER JOIN 짝 맞추기(사람3·부서2·ON dept_id·부서 숨김 실험→짝 없는 행 제외·sy-subrc/dbcnt) | ✅ |
 | CH13-L02-S01 | CH13-L02 | outer-join-switch | INNER↔LEFT OUTER 토글(공연3·예매·C003 보존/제외)+WHERE 오른쪽필터 함정(LEFT라도 빠짐) | ✅ |
 | CH13-L03-S01 | CH13-L03 | group-by-lab | 그룹 키(concert/status/복합)·모드(GROUP BY/DISTINCT) 토글→원본 색묶음→COUNT/SUM/MAX 접기 | ✅ |
@@ -131,7 +131,7 @@
 | CH15-L09-S01 | CH15-L09 | selscreen-layout-builder | 선택화면 미리보기에서 PUSHBUTTON/FUNCTION KEY→SSCRFIELDS-UCOMM(REF/FC01)·sy-ucomm 처리누락 경고·COMMENT FOR FIELD 연결약함 경고 | ✅ |
 | CH15-L10-S01 | CH15-L10 | option-switchboard | SELECT-OPTIONS 한 필드에 옵션(OBLIGATORY/LOWER CASE/NO-EXTENSION/NO INTERVALS) 토글→화면모양·내부행(SIGN/OPTION/LOW/HIGH)·복수선택·NO INTERVALS caveat | ✅ |
 | CH15-L11-S01 | CH15-L11 | selscreen-call-variant | 보조화면(1100) CALL SELECTION-SCREEN modal·Execute=sy-subrc0(적용)/Cancel=4(미적용)·Variant 불러오기(유효 복원/무효 무시) | ✅ |
-| CH15-L12-S01 | CH15-L12 | report-run-simulator | CH15 캡스톤·6시나리오×4이벤트(INIT→OUTPUT→검증→START) 흐름·통과/막힘·s_stat R/C 필터·결과테이블/S메시지/ALV | ✅ |
+| CH15-L12-S01 | CH15-L12 | report-run-simulator | CH15 캡스톤·6시나리오×4이벤트(INIT→OUTPUT→검증→START) 흐름·통과/막힘·so_stat R/C 필터·결과테이블/S메시지/ALV | ✅ |
 | CH16-L01-S01 | CH16-L01 | process-flow-pbo-pai | Module Pool 두 박자 순환(PBO→화면→입력→PAI→loop·다음박자 진행) | ✅ |
 | CH16-L02-S01 | CH16-L02 | screen-painter-wiring | Dynpro 4조각(Layout/Element List/Flow Logic/ABAP Source) 연결지도·시나리오로 깨기(MODULE 누락/이름불일치/OK field 누락)→활성화 오류 | ✅ |
 | CH16-L04-S01 | CH16-L04 | pbo-prep-stepper | PBO 6단계 진행(PF-STATUS·TITLEBAR·LOOP AT SCREEN·MODIFY SCREEN·표시)·잠금 토글→P_SEATS input=0 대기 vs MODIFY SCREEN 반영 체감 | ✅ |
@@ -307,7 +307,7 @@
 | selscreen-layout-builder (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH15-L09-S01 | SLB_CFG 주도 · 가짜 선택화면 미리보기(프레임·체크박스·라디오·본문버튼·툴바)→버튼 클릭 SSCRFIELDS-UCOMM·sy-ucomm/COMMENT 판단 토글 경고 · 다크 |
 | option-switchboard (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH15-L10-S01 | OSB_CFG 주도 · SELECT-OPTIONS 옵션 4종 토글→화면 미리보기·내부 selection table 첫 행(disp 대소문자)·복수선택 표시·NO INTERVALS&!NO-EXTENSION caveat · 다크 |
 | selscreen-call-variant (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH15-L11-S01 | SCV_CFG 주도 · 표준화면(1000)→고급조건→보조화면(1100) modal CALL·Execute/Cancel→sy-subrc 0/4·Variant 칩 불러오기(유효/무효) · 다크 |
-| report-run-simulator (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH15-L12-S01 | RRS_CFG 주도 · CH15 캡스톤·시나리오 칩+s_stat 세그→▶실행→4 event 타임라인(pass/fail/lock)·검증 막힘 메시지·결과 ALV테이블/0건 S메시지 · 다크 |
+| report-run-simulator (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH15-L12-S01 | RRS_CFG 주도 · CH15 캡스톤·시나리오 칩+so_stat 세그→▶실행→4 event 타임라인(pass/fail/lock)·검증 막힘 메시지·결과 ALV테이블/0건 S메시지 · 다크 |
 | salv-grid-simulator | 2 | 공통(_engine)·자체 postHeight ✅ | CH11-L02-S01·CH11-L06-S01 (완료) | config 주입(SALV_CFG: itab·cols·data·sumKey·code) · ALV제목/토글 엔진설정 |
 | relationship-map | 1 | 공통 | _(미작성)_ | CSS-only |
 | state-change-grid | 2 | 공통(CSS-only)+_autoheight ✅ | CH06-L04-S03·CH06-L06-S01 | 스냅샷=마크업(gt_gugu 성장·정렬 / DELETE ADJACENT DUPLICATES 함정) · cell-new/cell-del 강조 · .note 추가(다크 자동) |

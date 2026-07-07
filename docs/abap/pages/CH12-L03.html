@@ -40,13 +40,13 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>담기만 해선 줄지 않는다</h2>
-<p><a href="CH12-L02.html">SELECT-OPTIONS 기본 문법</a>에서 사용자의 조건이 <code>s_conc</code>·<code>s_stat</code> 같은 <button class="term" type="button" data-term="Range Table">Range Table</button>에 담겼다. 하지만
+<p><a href="CH12-L02.html">SELECT-OPTIONS 기본 문법</a>에서 사용자의 조건이 <code>so_conc</code>·<code>so_stat</code> 같은 <button class="term" type="button" data-term="Range Table">Range Table</button>에 담겼다. 하지만
 <strong>담기만 해서는</strong> 예매 목록이 줄어들지 않는다. 그 조건을 DB 조회 문장에 <strong>꽂아야</strong>
 실제로 걸러진다.</p>
 <p>핵심은 한 줄, <code>WHERE field IN range_table</code>이다. 이 한 줄이 사용자가 넣은 단일 값,
 여러 값, 범위, 제외 조건을 SELECT의 필터로 바꿔 준다.</p>
 <blockquote>
-<p>이 챕터는 <strong>classic</strong>이다. <code>WHERE concert_id IN s_conc</code>처럼 <strong><code>@</code> 없이</strong> 쓴다.
+<p>이 챕터는 <strong>classic</strong>이다. <code>WHERE concert_id IN so_conc</code>처럼 <strong><code>@</code> 없이</strong> 쓴다.
 호스트 변수 표시(<code>@</code>)와 콤마 필드 목록 같은 현대식 Open SQL은
 <a href="CH19-L01.html">Chapter 19 · Modern Open SQL</a>에서 배운다.</p>
 </blockquote>
@@ -58,8 +58,8 @@
 5</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> lt_book <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> zbooking.
 
 <span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> zbooking <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> lt_book
-  <span class="tok-kw">WHERE</span> concert_id <span class="tok-kw">IN</span> s_conc
-    <span class="tok-kw">AND</span> status     <span class="tok-kw">IN</span> s_stat.</code></pre></div></div>
+  <span class="tok-kw">WHERE</span> concert_id <span class="tok-kw">IN</span> so_conc
+    <span class="tok-kw">AND</span> status     <span class="tok-kw">IN</span> so_stat.</code></pre></div></div>
 <p>사람 말로 읽으면 이렇다.</p>
 <table>
 <thead>
@@ -69,11 +69,11 @@
 </tr>
 </thead>
 <tbody><tr>
-<td><code>concert_id IN s_conc</code></td>
+<td><code>concert_id IN so_conc</code></td>
 <td>공연ID가 사용자가 고른 공연 조건에 들면</td>
 </tr>
 <tr>
-<td><code>status IN s_stat</code></td>
+<td><code>status IN so_stat</code></td>
 <td>상태가 사용자가 고른 상태 조건에 들면</td>
 </tr>
 <tr>
@@ -82,7 +82,7 @@
 </tr>
 </tbody></table>
 <blockquote>
-<p>📌 <strong>빈 range는 true.</strong> <code>s_conc</code>가 비어 있으면 <code>concert_id IN s_conc</code>는 조건을 걸지
+<p>📌 <strong>빈 range는 true.</strong> <code>so_conc</code>가 비어 있으면 <code>concert_id IN so_conc</code>는 조건을 걸지
 않은 것처럼 동작한다(공식 문서: <em>initial ranges table → 조건이 DB에 전달되지 않아 결과는 항상 참</em>).
 그래서 둘 다 비우면 <strong>전체 예매</strong>가 조회된다. 편리하지만, 실수로 비우면 테이블 전체를
 읽어 버릴 수 있다는 뜻이기도 하다.</p>
@@ -92,8 +92,8 @@
 <table>
 <thead>
 <tr>
-<th>s_conc</th>
-<th>s_stat</th>
+<th>so_conc</th>
+<th>so_stat</th>
 <th>예상 결과</th>
 </tr>
 </thead>
@@ -134,7 +134,7 @@
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">WHERE … IN 필터 엔진 (sy-subrc · sy-dbcnt)</span><a class="embed__open" href="../../../embeds/abap/CH12-L03-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH12-L03-S01.html" loading="lazy" title="WHERE … IN 필터 엔진 (sy-subrc · sy-dbcnt)"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>빈 range의 의미를 거꾸로 기억한다</strong> → 빈 <code>s_conc</code>는 &quot;아무것도 선택 안 했으니
+<li><strong>빈 range의 의미를 거꾸로 기억한다</strong> → 빈 <code>so_conc</code>는 &quot;아무것도 선택 안 했으니
 0건&quot;이 아니라 &quot;<strong>공연 조건은 제한 안 함</strong>&quot;이다.</li>
 <li><strong>전체 조회를 정상 필터로 착각한다</strong> → 조건이 비어 전체가 나온 걸 결과로 믿으면
 위험하다(성능·권한). 입력 필수 검증은

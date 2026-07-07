@@ -1,7 +1,7 @@
 // ===== select-options-filter-sim 엔진 JS — SELECT-OPTIONS Range Table 필터 시뮬 (config 주도) =====
 // 위젯의 window.SO_CFG로 주입:
 //   SO_CFG = { table, cols[{key,label,num}], data[{}], selopts[{name,field,label,num}], presets[{label, ranges:{name:[{sign,opt,low,high}]}}] }
-// SELECT-OPTIONS = Range Table(SIGN I/E · OPTION EQ/NE/GT/LT/GE/LE/BT/CP · LOW/HIGH). classic `field IN s_xxx`.
+// SELECT-OPTIONS = Range Table(SIGN I/E · OPTION EQ/NE/GT/LT/GE/LE/BT/CP · LOW/HIGH). classic `field IN so_xxx`.
 (function(){
   var cfg = window.SO_CFG || {};
   var COLS = cfg.cols || [];
@@ -12,7 +12,7 @@
   var OPTS = ['EQ','NE','GT','LT','GE','LE','BT','CP'];
   var $ = function(id){return document.getElementById(id);};
 
-  // 상태: { s_conc:[{sign,opt,low,high}], s_stat:[...] }
+  // 상태: { so_conc:[{sign,opt,low,high}], so_stat:[...] }
   var st = {};
   SOPTS.forEach(function(s){ st[s.name] = []; });
 

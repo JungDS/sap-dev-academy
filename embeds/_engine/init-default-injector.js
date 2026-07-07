@@ -33,7 +33,7 @@
   });
   runBtn.addEventListener('click', function () {
     ran = true; dept = CFG.defaultDept; changed = false; render();
-    setStatus('', '▶ 최초 실행 — 화면 전 1회 <b>INITIALIZATION</b>이 <code>s_dept-low=' + esc(CFG.defaultDept) + '</code>, <code>pa_date=오늘</code>을 넣었습니다.');
+    setStatus('', '▶ 최초 실행 — 화면 전 1회 <b>INITIALIZATION</b>이 <code>so_dept-low=' + esc(CFG.defaultDept) + '</code>, <code>pa_date=오늘</code>을 넣었습니다.');
   });
   userBtn.addEventListener('click', function () {
     if (!ran) return; dept = CFG.userDept; changed = true; render();
@@ -48,7 +48,7 @@
     } else {
       // OUTPUT은 매 화면 → 기본값 다시 대입 → 사용자 입력 덮어씀
       dept = CFG.defaultDept; changed = false; render();
-      setStatus('warn', '⚠️ <b>OUTPUT</b>은 매 화면마다 도므로 <code>s_dept-low=' + esc(CFG.defaultDept) + '</code>를 <b>다시 대입</b> → 사용자가 넣은 ' + esc(CFG.userDept) + '가 사라졌습니다. 그래서 기본값은 INITIALIZATION에 둡니다.');
+      setStatus('warn', '⚠️ <b>OUTPUT</b>은 매 화면마다 도므로 <code>so_dept-low=' + esc(CFG.defaultDept) + '</code>를 <b>다시 대입</b> → 사용자가 넣은 ' + esc(CFG.userDept) + '가 사라졌습니다. 그래서 기본값은 INITIALIZATION에 둡니다.');
     }
   });
 

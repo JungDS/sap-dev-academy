@@ -126,12 +126,12 @@
       lo_alv     <span class="tok-kw">TYPE</span> <span class="tok-kw">REF</span> <span class="tok-kw">TO</span> cl_salv_table,
       gs_screen  <span class="tok-kw">TYPE</span> <span class="tok-kw">screen</span>.
 
-<span class="tok-kw">SELECT-OPTIONS</span> s_stat <span class="tok-kw">FOR</span> gv_status.
+<span class="tok-kw">SELECT-OPTIONS</span> so_stat <span class="tok-kw">FOR</span> gv_status.
 
 <span class="tok-kw">INITIALIZATION</span>.                              <span class="tok-com">" ① 첫 기본값</span>
   pa_conc = <span class="tok-str">'C001'</span>.
-  s_stat-sign = <span class="tok-str">'I'</span>. s_stat-option = <span class="tok-str">'EQ'</span>. s_stat-low = <span class="tok-str">'R'</span>.
-  <span class="tok-kw">APPEND</span> s_stat.
+  so_stat-sign = <span class="tok-str">'I'</span>. so_stat-option = <span class="tok-str">'EQ'</span>. so_stat-low = <span class="tok-str">'R'</span>.
+  <span class="tok-kw">APPEND</span> so_stat.
 
 <span class="tok-kw">AT</span> <span class="tok-kw">SELECTION-SCREEN</span> <span class="tok-kw">OUTPUT</span>.                   <span class="tok-com">" ② 화면 직전 제어</span>
   <span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> <span class="tok-kw">SCREEN</span> <span class="tok-kw">INTO</span> gs_screen.
@@ -162,7 +162,7 @@
 <span class="tok-kw">START-OF-SELECTION</span>.                           <span class="tok-com">" ④ 검증 후 본 처리(조회+표시)</span>
   <span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> zbooking <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> gt_booking
     <span class="tok-kw">WHERE</span> concert_id = pa_conc
-      <span class="tok-kw">AND</span> status <span class="tok-kw">IN</span> s_stat.
+      <span class="tok-kw">AND</span> status <span class="tok-kw">IN</span> so_stat.
 
   <span class="tok-kw">IF</span> gt_booking <span class="tok-kw">IS</span> <span class="tok-kw">INITIAL</span>.
     <span class="tok-kw">MESSAGE</span> <span class="tok-str">'조회된 예매가 없습니다'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'S'</span>.
@@ -185,7 +185,7 @@ SALV 표시는 <a href="CH15-L06.html">END-OF-SELECTION의 위치와 경계</a>�
 </blockquote>
 </section><section class="lblock"><h2>직접 실행해 보기 — 예매 리포트 실행 시뮬레이터</h2>
 <p>시나리오를 골라 ▶ 실행하면, <button class="term" type="button" data-term="이벤트">이벤트</button>가 차례로 흐르며 <strong>어디서 통과하고 어디서 막히는지</strong>,
-어떤 메시지가 나가고 결과 테이블이 어떻게 채워지는지 보인다. 상태 필터(<code>s_stat</code>)를
+어떤 메시지가 나가고 결과 테이블이 어떻게 채워지는지 보인다. 상태 필터(<code>so_stat</code>)를
 <code>R</code>↔<code>C</code>로 바꿔 결과가 달라지는 것도 확인하자.</p>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">예매 리포트 실행 시뮬레이터</span><a class="embed__open" href="../../../embeds/abap/CH15-L12-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH15-L12-S01.html" loading="lazy" title="예매 리포트 실행 시뮬레이터" style="height:700px"></iframe></figure>
 </section><section class="lblock"><h2>검증 시나리오</h2>
@@ -199,7 +199,7 @@ SALV 표시는 <a href="CH15-L06.html">END-OF-SELECTION의 위치와 경계</a>�
 </thead>
 <tbody><tr>
 <td>기본 실행</td>
-<td><code>pa_conc=C001</code>, <code>s_stat=R</code></td>
+<td><code>pa_conc=C001</code>, <code>so_stat=R</code></td>
 <td>예매 목록 조회</td>
 </tr>
 <tr>
