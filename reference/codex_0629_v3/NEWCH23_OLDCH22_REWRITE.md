@@ -1,7 +1,7 @@
 # CH22_REWRITE · CDS View Entity 기초
 
-> 주 소스: `content/abap/CH22/_chapter.md`, `content/abap/CH22/CH22-L01.md` ~ `CH22-L07.md`  
-> 보조 참고: `.project-docs/09_CURRICULUM_LEDGER.md`, `.project-docs/11_KEYWORD_AUDIT.md`, `reference/codex_0629_v3/CH21_REWRITE.md`  
+> 주 소스: `content/abap/CH22/_chapter.md`, `content/abap/CH22/CH22-L01.md` ~ `CH22-L07.md`
+> 보조 참고: `.project-docs/09_CURRICULUM_LEDGER.md`, `.project-docs/11_KEYWORD_AUDIT.md`, `reference/codex_0629_v3/NEWCH22_OLDCH21_REWRITE.md`
 > 목표: CH22를 IT 비전공자도 "테이블 위에 왜 모델 계층을 올리는가"부터 이해하도록 CDS View Entity 중심의 완성 강의자료로 재집필한다.
 
 ## CH22 전체 설계

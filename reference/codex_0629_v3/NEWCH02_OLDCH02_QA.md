@@ -1,6 +1,6 @@
 # CH02_QA - codex_0629_v3 품질 점검
 
-> 대상 파일: `reference/codex_0629_v3/CH02_REWRITE.md`
+> 대상 파일: `reference/codex_0629_v3/NEWCH02_OLDCH02_REWRITE.md`
 > 작업 단위: CH02 모든 레슨
 > 판정: CH02 v3 산출물 생성 완료. `content/abap` 원본을 기준으로 재집필했고, 기존 `codex_0625`의 템플릿 반복과 오매칭 공식 힌트는 재사용하지 않았다.
 

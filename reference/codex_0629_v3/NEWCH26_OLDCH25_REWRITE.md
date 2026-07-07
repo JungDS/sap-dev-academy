@@ -1,7 +1,7 @@
 # CH25_REWRITE · Lock Object와 동시성 제어
 
-> 주 소스: `content/abap/CH25/_chapter.md`, `content/abap/CH25/CH25-L01.md` ~ `CH25-L05.md`  
-> 보조 참고: `.project-docs/09_CURRICULUM_LEDGER.md`, `.project-docs/11_KEYWORD_AUDIT.md`, `reference/codex_0629_v3/CH24_REWRITE.md`  
+> 주 소스: `content/abap/CH25/_chapter.md`, `content/abap/CH25/CH25-L01.md` ~ `CH25-L05.md`
+> 보조 참고: `.project-docs/09_CURRICULUM_LEDGER.md`, `.project-docs/11_KEYWORD_AUDIT.md`, `reference/codex_0629_v3/NEWCH25_OLDCH24_REWRITE.md`
 > 목표: CH25를 Track-2의 동시성 제어 장으로 재집필하여, 입문자가 "데이터를 안전하게 바꾼다"에서 한 걸음 더 나아가 "여러 사용자가 동시에 바꿔도 안전하게 만든다"를 이해하게 한다.
 
 ## CH25 전체 설계

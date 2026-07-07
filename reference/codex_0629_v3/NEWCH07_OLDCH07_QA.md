@@ -1,6 +1,6 @@
 # CH07_QA - codex_0629_v3 품질 점검
 
-> 대상 파일: `reference/codex_0629_v3/CH07_REWRITE.md`
+> 대상 파일: `reference/codex_0629_v3/NEWCH07_OLDCH07_REWRITE.md`
 > 작업 단위: CH07 모든 레슨
 > 판정: CH07 v3 산출물 생성 완료. `content/abap` 원본 3개 레슨을 기준으로 재집필했고, 기존 `codex_0625`의 템플릿 반복은 재사용하지 않았다.
 

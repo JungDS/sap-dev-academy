@@ -1,6 +1,6 @@
 # CH10_QA - codex_0629_v3 품질 점검
 
-> 대상 파일: `reference/codex_0629_v3/CH10_REWRITE.md`
+> 대상 파일: `reference/codex_0629_v3/NEWCH10_OLDCH10_REWRITE.md`
 > 작업 단위: CH10 모든 레슨
 > 판정: CH10 v3 산출물 생성 완료. `content/abap/CH10`의 7개 레슨을 기준으로 재집필했고, 기존 `codex_0625_v2`는 보조 누락 방지 자료로만 사용했다.
 
@@ -110,10 +110,10 @@ CH10은 Track 1 Classic ABAP 모듈화 기초 챕터다. ABAP Cloud, RAP, Clean 
 
 ```text
 git diff --check
-rg -n "DATA\(|@DATA|@\w|VALUE #|NEW |\+=" reference\codex_0629_v3\CH10_REWRITE.md
-rg -n "\|[^\n`]*\{[^\n`]*\}|\{[^\n`]*\}[^\n`]*\|" reference\codex_0629_v3\CH10_REWRITE.md
-rg -n "\b(INSERT|UPDATE|DELETE|MODIFY|COMMIT|ROLLBACK|TRY|CATCH|CREATE OBJECT)\b" reference\codex_0629_v3\CH10_REWRITE.md
-rg -n "도입 불편|필요 학습수단|abapif\.htm|abapcase\.htm|abaploop_at_itab|공식 문서 체크 힌트" reference\codex_0629_v3\CH10_REWRITE.md
+rg -n "DATA\(|@DATA|@\w|VALUE #|NEW |\+=" reference\codex_0629_v3\NEWCH10_OLDCH10_REWRITE.md
+rg -n "\|[^\n`]*\{[^\n`]*\}|\{[^\n`]*\}[^\n`]*\|" reference\codex_0629_v3\NEWCH10_OLDCH10_REWRITE.md
+rg -n "\b(INSERT|UPDATE|DELETE|MODIFY|COMMIT|ROLLBACK|TRY|CATCH|CREATE OBJECT)\b" reference\codex_0629_v3\NEWCH10_OLDCH10_REWRITE.md
+rg -n "도입 불편|필요 학습수단|abapif\.htm|abapcase\.htm|abaploop_at_itab|공식 문서 체크 힌트" reference\codex_0629_v3\NEWCH10_OLDCH10_REWRITE.md
 ```
 
 점검 결과:
