@@ -34,7 +34,7 @@
     // ② Element List
     var elist = panel('② Element List', '이름·타입·OK field',
       row('', 'P_CONC <span class="tag">CHAR</span>') +
-      row(b === 'name' ? 'bad' : '', seatName + ' <span class="tag">NUMC</span>') +
+      row(b === 'name' ? 'bad' : '', seatName + ' <span class="tag">INT4</span>') +
       row(b === 'okfield' ? 'bad' : '', 'OK field: ' + (b === 'okfield' ? '(미지정)' : 'OK_CODE')));
     // ③ Flow Logic
     var flow = panel('③ Flow Logic', 'PBO/PAI → MODULE 호출',
