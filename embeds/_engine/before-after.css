@@ -7,6 +7,7 @@ body{font-family:var(--font);color:var(--ink);background:transparent;line-height
 .lead{margin:0 0 12px;color:var(--ink-soft);font-size:.86rem;}
 
 .ba{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.ba.solo{grid-template-columns:1fr;} /* 한쪽만 보여주는 pain-only 위젯(해결책은 본문 다음 섹션 몫) */
 .ba__col{border:1px solid #d7e1ee;border-radius:12px;background:#fff;overflow:hidden;box-shadow:var(--shadow);transition:transform .18s cubic-bezier(.16,1,.3,1),box-shadow .18s;}
 .ba__col:hover{transform:translateY(-3px);box-shadow:0 14px 28px rgba(20,28,51,.10);}
 .ba__head{padding:11px 16px;font-weight:800;color:#fff;font-size:.92rem;}
@@ -16,6 +17,12 @@ body{font-family:var(--font);color:var(--ink);background:transparent;line-height
 .ba__body pre b{font-weight:800;color:var(--bad);}
 .ba__col.after .ba__body pre b{color:#0b7250;}
 .ba__body pre .cmt{color:#9aa0ad;font-style:italic;}
+/* "말로 읽기" 블록 — 코드를 우리말로 풀어 읽는 패널(따옴표 말풍선 톤) */
+.ba__say{margin:0 0 12px;border-left:3px solid var(--line);border-radius:0 8px 8px 0;
+  background:color-mix(in srgb,var(--ink-soft) 5%,var(--surface));padding:10px 13px;
+  font-size:.88rem;line-height:1.75;color:var(--ink);}
+.ba__say p{margin:0 0 6px;} .ba__say p:last-child{margin:0;}
+.before .ba__say b{color:var(--bad);} .after .ba__say b{color:#0b7250;}
 .ba__list{margin:0;padding-left:1.1rem;color:var(--ink-soft);font-size:.9rem;}
 .ba__list li{margin:4px 0;}
 .ba__metric{display:inline-block;margin-top:8px;font-size:.78rem;font-weight:800;border-radius:999px;padding:3px 11px;}
@@ -26,6 +33,59 @@ body{font-family:var(--font);color:var(--ink);background:transparent;line-height
 .ba__col.tone-warm .ba__body pre b{color:#b45309;}
 .ba__col.tone-cool .ba__body pre b{color:#26336b;}
 .tone-warm .ba__metric{background:#fef3c7;color:#b45309;} .tone-cool .ba__metric{background:#e7edfb;color:#26336b;}
+/* 메모리 도형 — 코드가 만들어낼 변수를 모양으로(이름만, 상세 정보 없음 — 피드백 2026-07-03).
+   낱개 변수=칩 나열(묶음 없음) ↔ 구조체 변수=미니 박스(이름 라벨+같은 칸 구조 반복, struct-viz와 같은 시각 언어) */
+.ba__shapes{margin-top:12px;padding-top:10px;border-top:1px dashed var(--line);}
+.ba__shapes-cap{font-size:.74rem;font-weight:800;color:var(--ink-soft);margin-bottom:7px;}
+.ba__chips{display:flex;flex-wrap:wrap;gap:6px;}
+.ba__chip{font-family:var(--mono);font-size:.74rem;font-weight:700;color:var(--ink);
+  border:1.5px solid color-mix(in srgb,var(--ink-soft) 38%,var(--line));border-radius:8px;
+  background:var(--surface);padding:4px 9px;}
+.before .ba__chip b{color:var(--bad);}
+.ba__minis{display:flex;flex-direction:column;gap:7px;}
+.ba__mini{display:flex;align-items:center;gap:8px;border:2px solid color-mix(in srgb,var(--accent) 55%,var(--line));
+  border-radius:10px;background:color-mix(in srgb,var(--accent) 5%,var(--surface));padding:6px 9px;width:fit-content;}
+.ba__mini-name{font-family:var(--mono);font-size:.8rem;font-weight:800;color:var(--accent);
+  padding-right:8px;border-right:2px dashed color-mix(in srgb,var(--accent) 35%,var(--line));}
+.ba__mini-cells{display:flex;gap:5px;}
+.ba__mini-cells i{font-style:normal;font-family:var(--mono);font-size:.72rem;font-weight:700;color:var(--ink);
+  border:1.5px solid color-mix(in srgb,var(--ink-soft) 38%,var(--line));border-radius:7px;
+  background:var(--surface);padding:3px 8px;}
+/* 확장 시나리오(접기) — 두 번째 축의 pain(예: 사람이 아니라 속성이 늘 때) 비교. 곱셈 vs 덧셈 */
+.ba__more{margin-top:14px;border:1px solid var(--line);border-radius:10px;background:var(--surface);}
+.ba__more>summary{cursor:pointer;padding:10px 14px;font-size:.86rem;font-weight:800;color:var(--ink);}
+.ba__more>summary:hover{color:var(--brand);}
+.ba__more-body{padding:4px 14px 14px;display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.ba__more-hd{font-size:.82rem;font-weight:800;margin-bottom:8px;}
+.ba__more-hd.bad{color:#b02a55;} .ba__more-hd.good{color:#0b7250;}
+.ba__more pre{margin:0 0 10px;font-family:var(--mono);font-size:12.5px;line-height:1.55;white-space:pre-wrap;
+  color:#334155;background:#f6f8fa;border-radius:8px;padding:10px 12px;}
+.ba__more .before pre b{color:var(--bad);font-weight:800;}
+.ba__more .after pre b{color:#0b7250;font-weight:800;}
+.ba__more pre .cmt{color:#9aa0ad;font-style:italic;}
+.ba__more-cap{font-size:.8rem;color:var(--ink-soft);margin:8px 0 0;line-height:1.55;}
+.ba__chip.new{border-color:color-mix(in srgb,var(--bad) 55%,var(--line));background:color-mix(in srgb,var(--bad) 7%,var(--surface));}
+.ba__chip.warn{border-color:color-mix(in srgb,var(--bad) 55%,var(--line));background:color-mix(in srgb,var(--bad) 7%,var(--surface));}
+/* 숨은 실수 헌트(틀린 그림 찾기) — 반복 선언에 끼어드는 실수 강조(피드백 2026-07-03) */
+.ba__body pre .oops{text-decoration:underline dotted var(--bad) 2px;text-underline-offset:3px;}
+.ba__hunt{margin:10px 0 12px;border:1px dashed color-mix(in srgb,var(--bad) 45%,var(--line));border-radius:9px;
+  background:color-mix(in srgb,var(--bad) 4%,var(--surface));}
+.ba__hunt>summary{cursor:pointer;padding:8px 12px;font-size:.82rem;font-weight:800;color:#b02a55;}
+.ba__hunt-body{padding:0 12px 10px;font-size:.82rem;color:var(--ink-soft);line-height:1.6;}
+.ba__hunt-body b{color:var(--ink);} .ba__hunt-body code{font-family:var(--mono);}
+.ba__hunt-body ul{margin:4px 0;padding-left:1.2rem;} .ba__hunt-body li{margin:4px 0;}
+.ba__mini-cells i.new{border-color:color-mix(in srgb,var(--accent) 60%,var(--line));background:color-mix(in srgb,var(--accent) 10%,var(--surface));}
+.ba__mini-cells i.new::after{content:"NEW";margin-left:4px;font-size:.55rem;font-weight:900;color:#0b7250;vertical-align:1px;}
+/* "자동 반영" 라벨 — 타입 수정이 변수들로 흐르는 관계를 문장 대신 라벨 하나로(참고 이미지 채택 2026-07-03) */
+.ba__auto{text-align:center;margin:0 0 8px;}
+.ba__auto span{display:inline-block;font-size:.76rem;font-weight:800;color:var(--accent);
+  background:color-mix(in srgb,var(--accent) 10%,var(--surface));
+  border:1px dashed color-mix(in srgb,var(--accent) 45%,var(--line));border-radius:999px;padding:3px 12px;}
+.ba__more .ba__mini{width:auto;align-items:flex-start;}
+.ba__more .ba__mini-cells{flex-wrap:wrap;}
+.ba__punch{grid-column:1/-1;text-align:center;font-size:.84rem;font-weight:800;color:var(--ink);
+  border-top:1px dashed var(--line);padding-top:10px;}
+.ba__punch .x{color:#b02a55;} .ba__punch .o{color:#0b7250;}
 .note{margin-top:14px;border-left:3px solid var(--brand);background:rgba(59,91,219,.06);border-radius:0 9px 9px 0;padding:10px 14px;font-size:.86rem;color:#2a3550;line-height:1.6;}
 .note code{font-family:var(--mono);background:#fff;border:1px solid var(--line);padding:0 5px;border-radius:4px;}
 @media (max-width:560px){ .ba{grid-template-columns:1fr;} }

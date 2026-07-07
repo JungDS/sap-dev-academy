@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>구조 재사용 — 중첩 · .INCLUDE · .APPEND · Structure (Local · DDIC) · SAP Developer Academy</title>
+<title>Structure 재사용 — 중첩 · .INCLUDE · .APPEND · Structure (Local · DDIC) · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -34,44 +34,44 @@
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 5 › Lesson 3</nav>
       <section class="lhead">
         <p class="lhead__eyebrow">Structure (Local · DDIC)</p>
-        <h1>구조 재사용 — 중첩 · .INCLUDE · .APPEND</h1>
-        <p class="lhead__direction">구조를 구조로 — 끼워 넣고 펼쳐 담아 재사용한다.</p>
+        <h1>Structure 재사용 — 중첩 · .INCLUDE · .APPEND</h1>
+        <p class="lhead__direction">Structure 안에 Structure를 끼워 넣고, 펼쳐 담아 재사용한다.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 5</span><span class="tag tag--ls">Lesson 3</span><span class="tag tag--lv">초급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>구조를 또 짜기 싫다</h2>
-<p>주소(시·도·우편번호)나 감사필드(생성자·생성일)처럼 <strong>같은 필드 묶음</strong>을 여러 구조에
-매번 다시 적기는 번거롭다. DDIC는 <strong>이미 만든 구조를 다른 구조에 끼워 넣어</strong> 재사용한다.
+<section class="lblock"><h2>Structure를 또 짜기 싫다</h2>
+<p>주소(시·도·우편번호)나 생성 이력(만든 사람·만든 날짜)처럼 <strong>같은 필드 묶음</strong>을 여러 Structure에
+매번 다시 적기는 번거롭다. DDIC에서는 <strong>이미 만든 Structure를 다른 Structure에 끼워 넣어</strong> 재사용할 수 있다.
 방법이 세 가지인데, &quot;어떻게 들어가느냐&quot;가 다르다.</p>
-</section><section class="lblock"><h2>① 중첩 — 구조를 컴포넌트로</h2>
-<p><button class="term" type="button" data-term="컴포넌트">컴포넌트</button>의 타입에 <strong>다른 구조</strong>를 주면, 구조 안에 구조가 들어간다(중첩 구조).</p>
+</section><section class="lblock"><h2>① 중첩 — Structure를 Component로</h2>
+<p>Component의 타입에 <strong>다른 Structure</strong>를 주면, Structure 안에 Structure가 들어간다(중첩 Structure).</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
 4
 5
 6</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> gs_order,
-        head <span class="tok-kw">TYPE</span> zst_order_head,   <span class="tok-com">" 구조를 통째로 한 컴포넌트로</span>
+        head <span class="tok-kw">TYPE</span> zst_order_head,   <span class="tok-com">" Structure를 통째로 한 Component로</span>
         qty  <span class="tok-kw">TYPE</span> i,
       <span class="tok-kw">END</span> <span class="tok-kw">OF</span> gs_order.
 
 gs_order-head-customer = <span class="tok-str">'정훈영'</span>.   <span class="tok-com">" 한 단계 더 -로 파고든다</span></code></pre></div></div>
 <ul>
-<li>접근이 <code>gs_order-head-customer</code>처럼 <strong>단계가 생긴다</strong>(<code>-</code>를 두 번).</li>
+<li>접근 경로에 <code>gs_order-head-customer</code>처럼 <strong>단계가 생긴다</strong>(<code>-</code>를 두 번).</li>
 <li>&quot;고객 정보는 head 안에&quot;처럼 <strong>묶음이 그대로 보존</strong>된다.</li>
 </ul>
 </section><section class="lblock"><h2>② <code>.INCLUDE</code> — 펼쳐서 담기</h2>
-<p>DDIC Structure 편집 화면에서 다른 구조를 <code>.INCLUDE</code>로 포함하면, 그 구조의 필드들이
+<p>DDIC Structure 편집 화면에서 다른 Structure를 <code>.INCLUDE</code>로 포함하면, 그 Structure의 필드들이
 <strong>평평하게(직접 필드처럼)</strong> 들어온다.</p>
 <ul>
-<li>중첩은 <code>ls-head-customer</code>로 들어가지만, <code>.INCLUDE</code>는 펼쳐져 **<code>ls-customer</code>**로 바로 접근한다.</li>
+<li>중첩은 <code>ls-head-customer</code>로 들어가지만, <code>.INCLUDE</code>는 펼쳐져 <code>ls-customer</code>로 바로 접근한다.</li>
 <li>&quot;묶음 티 안 나게, 내 필드인 것처럼&quot; 쓰고 싶을 때.</li>
 </ul>
 <table>
 <thead>
 <tr>
 <th></th>
-<th>중첩(<button class="term" type="button" data-term="컴포넌트">컴포넌트</button>)</th>
+<th>중첩(Component)</th>
 <th><code>.INCLUDE</code></th>
 </tr>
 </thead>
@@ -87,20 +87,27 @@ gs_order-head-customer = <span class="tok-str">'정훈영'</span>.   <span class
 </tr>
 </tbody></table>
 </section><section class="lblock"><h2>③ <code>.APPEND</code> — 표준에 안전하게 더하기</h2>
-<p><strong><code>.APPEND</code></strong>(Append Structure)는 SAP <strong>표준</strong> 구조·테이블을 <strong>직접 고치지 않고</strong>, 내 필드를
-<strong>별도 구조로 덧붙인다.</strong> 표준 원본을 안 건드려 시스템 업그레이드에 안전하다(확장 주제 —
-자세히는 CH29).</p>
+<p><strong><code>.APPEND</code></strong>(Append Structure)는 SAP <strong>표준</strong> Structure·테이블을 <strong>직접 고치지 않고</strong>, 내 필드를
+<strong>별도 Structure로 덧붙인다.</strong> 표준 원본을 안 건드려 시스템 업그레이드에 안전하다(확장 주제, 자세히는 한참 뒤 챕터에서).</p>
 <blockquote>
 <p>끼워 넣기(<code>.INCLUDE</code>)=남의 필드를 내 것처럼 <strong>펼쳐 담기</strong>, 덧붙이기(<code>.APPEND</code>)=표준에
 <strong>안전하게 더하기</strong>. 묶음을 유지하려면 중첩.</p>
 </blockquote>
+</section><section class="lblock"><h2>세 방식을 눌러 비교</h2>
+<p>셋의 차이는 결국 &quot;<strong>어떤 모양으로 들어가고, 어떻게 접근하느냐</strong>&quot;다. 방식을 바꿔
+가며 Structure 다이어그램과 접근 경로가 어떻게 달라지는지 보고, 마지막 퀴즈로 경로
+감각을 점검해 보자.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">중첩 vs .INCLUDE vs .APPEND — 모양·접근 경로 비교</span><a class="embed__open" href="../../../embeds/abap/CH05-L03-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH05-L03-S01.html" loading="lazy" title="중첩 vs .INCLUDE vs .APPEND — 모양·접근 경로 비교" style="height:660px"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
 <li><strong>중첩인데 <code>-</code> 한 번</strong> → 중첩은 <code>ls-head-customer</code>(단계마다 <code>-</code>). 단계를 빠뜨리지 않는다.</li>
-<li><strong>표준 구조 직접 수정</strong> → 업그레이드 때 덮어쓰여 사라진다. 표준 확장은 <code>.APPEND</code>로.</li>
+<li><strong><code>.INCLUDE</code> 이름 충돌</strong> → 한 Structure 안 Component 이름은 <strong>유일</strong>해야 한다. 펼쳐
+들어오는 필드가 기존 필드와 겹치면 활성화가 거부된다. 공통 Structure의 필드명은
+전사적으로 일관되게 짓는다.</li>
+<li><strong>표준 Structure 직접 수정</strong> → 업그레이드 때 덮어쓰여 사라진다. 표준 확장은 <code>.APPEND</code>로.</li>
 </ul>
 <hr>
-<p>구조를 재사용하는 법까지 익혔다. 이제 묶은 구조체를 <strong>다루는 요령</strong>(복사·초기화)을
+<p>Structure를 재사용하는 법까지 익혔다. 이제 묶은 Structure를 <strong>다루는 요령</strong>(복사·초기화)을
 보자 → 다음 레슨.</p>
 </section>
       </article>

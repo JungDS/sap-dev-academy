@@ -36,8 +36,18 @@
 | CH04-L01-S01 | CH04-L01 | step-debugger | 산술 트레이스(7+3·2**10·DIV·MOD) | ✅ |
 | CH04-L05-S01 | CH04-L05 | step-debugger | DO·sy-index 트레이스(1→5) | ✅ |
 | CH04-L06-S01 | CH04-L06 | step-debugger | 구구단 중첩DO 디버거 홈(F5·gv_mul/res) | ✅ |
-| CH05-L01-S01 | CH05-L01 | step-debugger | Local Structure 트레이스(ls_person-name/age/amount 한 묶음 채움) | ✅ |
+| CH05-L01-S01 | CH05-L01 | step-debugger | §BEGIN OF+§Component 예제 통합 트레이스(선언→하이픈 대입→WRITE, 6스텝 — chain은 항목당 1스텝·출력 줄 점진 완성·TYPES 없음) | ✅ |
+| CH05-L01-S05 | CH05-L01 | step-debugger | §LIKE 오해 반박 — 원본 gs_p1 채운 뒤 LIKE 선언, 워치에 gs_p1·gs_p4 동시 표시(모양만 복사·값은 초기값, 4스텝) | ✅ |
 | CH05-L05-S01 | CH05-L05 | step-debugger | 구구단=구조체 캡스톤(ls_line-dan/mul/result·sy-index 반복 갱신) | ✅ |
+| CH05-L01-S02 | CH05-L01 | struct-viz(strip) | gs_person(string·i·p) 변수 박스 — 좌측=변수명 먼저·칸 헤더=이름(좌)·타입(우) 한 줄·외곽=한 덩어리·§BEGIN OF 전용(하이픈 접근은 S03 몫)·트리 병행 보기 | ✅ |
+| CH05-L01-S03 | CH05-L01 | struct-viz(strip+accessPick) | 포인팅 데모 — 전체 칩(gs_person=곡선 1가닥이 박스 자체+글로우 '한 몸') vs 필드 칩(-age=칸 하나+나머지 흐림)·곡선 커넥터(화살촉 없는 베지어+끝점 도트)·값 읽어주기·숫자 칸 우측 정렬 | ✅ |
+| CH05-L01-S04 | CH05-L01 | struct-viz(strip) | ts_person=값 없는 헤더 스트립+변수 3행 정렬(칸=모양+값)·칼럼 폭=길이감 인코딩(SAP 표준 표기)·CH06 행 스택 예고 | ✅ |
+| CH05-L01-S07 | CH05-L01 | before-after(.solo) | §도입 pain 시각화 — 단일 값 변수만으로 사람 셋(DATA 9줄 벽+칩 9개·해결책 미노출) + 숨은 실수 헌트(오타 gv_naem2·DECIMALS 누락·c 10, 점선 밑줄+정답 접기) | ✅ |
+| CH05-L01-S06 | CH05-L01 | before-after | 번호 변수 참사(gv_name2·3… 9줄) vs TYPES+DATA(사람 1명=1줄) — pain 증폭 + 하단 메모리 도형(낱개 칩 9 ↔ 같은 모양 구조체 박스 3, 이름만) + 실무 스케일 접기(정보 +7 → 변수 30개 vs TYPES 7줄, 곱셈 vs 덧셈 + 200개 투영) | ✅ |
+| CH05-L02-S02 | CH05-L02 | share-vs-local | 정의 위치 비교 — Local(프로그램마다 정의, 이름 같아도 구성 제각각=남남·수평 3열) vs DDIC(ZST_PERSON 한 곳→곡선 참조)·필드 추가 토글(수정 3곳 vs 1곳) | ✅ |
+| CH05-L02-S01 | CH05-L02 | struct-viz | (재사용) ZST_PERSON 트리 — Component=Data Element(라벨 상속 표기)·name 대입 인터랙션 | ✅ |
+| CH05-L03-S01 | CH05-L03 | struct-reuse-board | 중첩/.INCLUDE/.APPEND 세그→다이어그램(하위 박스/펼침 그룹/잠긴 표준+확장)+접근 경로+경로 퀴즈 3문 | ✅ |
+| CH05-L04-S01 | CH05-L04 | move-mapping | MOVE-CORRESPONDING 매핑 보드(SAP BC400 표준 구도) — 상=원본·하=대상 스트립·같은 이름끼리 화살표(실행 전 점선→후 실선)·잔존 함정·CLEAR 토글 | ✅ |
 | CH06-L06-S01 | CH06-L06 | state-change-grid | 구구단 lt_gugu 성장 스냅샷(APPEND 1→9→81행 + SORT result DESC) | ✅ |
 | CH07-L03-S01 | CH07-L03 | before-after | 메모리(휘발) vs 디스크(영속) 두 운명 — 중립 톤(tone-warm/cool) | ✅ |
 | CH08-L01-S01 | CH08-L01 | client-scope-filter | Client(MANDT) 자동 종속 — 현재 client 바꿔 같은 SELECT 실행→결과 달라짐(MANDT 미기재) | ✅ |
@@ -180,6 +190,7 @@
 | CH04-L02-S01 | CH04-L02 | fill-blank | 문자열 함수 빈칸(INTO·AT·strlen·FIND) | ✅ |
 | CH04-L07-S01 | CH04-L07 | fill-blank | 구구단 빈칸(TIMES·sy-index·*·ENDDO) | ✅ |
 | CH04-L03-S01 | CH04-L03 | mermaid | IF/ELSEIF/ELSE 분기 흐름도(p_amt: 큰금액/소액/0·음수) | ✅ |
+| CH04-L04-S04 | CH04-L04 | before-after(.ba__say) | §도입 "말로 읽기" — IF는 '하지만 그렇지 않다면 pa_grade가…' 반복 ↔ CASE는 한 호흡(사용자 문안) + 선택 기준 note(값=CASE·범위/복합=IF) | ✅ |
 | CH04-L04-S01 | CH04-L04 | case-branch-sim | CASE…WHEN 시뮬(등급 A·B·C·그외→출력, OR묶기 토글) | ✅ |
 | CH04-L03-S02 | CH04-L03 | (bespoke SVG) | (등재 보완) AND/OR/NOT·괄호 논리 다이어그램 — 조건 묶임을 한눈에 | ✅ |
 | CH04-L03-S03 | CH04-L03 | (bespoke SVG) | (등재 보완) IS INITIAL 판정 다이어그램(pa_amt 0=참/500=거짓) | ✅ |
@@ -194,15 +205,19 @@
 ## B. 엔진별 집계 (카테고리 현황 — 같은 종류 몇 개·어디서)
 | 엔진 (embeds/_engine/) | 그룹 | 공통/standalone | 사용 인스턴스 | 비고 |
 |---|---|---|---|---|
-| step-debugger | 6 | 공통(_engine)·config 주도 ✅ | CH04-L01·L05·L06·CH05-L01·L05·CH10-L07 (완료) | `.stepper-config` 트레이스(이미 주도형·리팩터 불요·하이픈키 ls_x-y OK) |
+| step-debugger | 7 | 공통(_engine)·config 주도 ✅ | CH04-L01·L05·L06·CH05-L01-S01/S05·CH05-L05·CH10-L07 (완료) | `.stepper-config` 트레이스(이미 주도형·리팩터 불요·하이픈키 ls_x-y OK) |
 | fill-blank | 5 | 공통(_engine)+_autoheight ✅ | CH02-L06-S01·CH04-L02-S01·CH04-L07-S01/S02/S03 (전부 완료) | 데이터=마크업 |
-| before-after | 3 | 공통(CSS-only)+_autoheight ✅ | CH02-L01-S01·CH02-L05-S01·CH07-L03-S01 (완료) | 콘텐츠 정리 · 중립 톤(tone-warm/cool)·.note·.cmt 추가 · constant-circle-sim(폐기) 대체 |
+| before-after | 6 | 공통(CSS-only)+_autoheight ✅ | CH02-L01-S01·CH02-L05-S01·CH04-L04-S04·CH05-L01-S06·CH05-L01-S07·CH07-L03-S01 (완료) | 콘텐츠 정리 · 중립 톤(tone-warm/cool)·.note·.cmt·메모리 도형(칩/미니)·확장 접기·.solo(단일 칼럼 pain-only) 추가 · constant-circle-sim(폐기) 대체 |
 | var-box | 2 | 공통(_engine)+_autoheight ✅ | CH02-L01-S02·CH02-L02-S01 | VB_CFG 주도 · 타입 라벨 박스+값 쪽지·선언 직후(기본값)→대입→재대입(value2 opt-in·"마지막 값만 기억") 사이클·initialFor(string/c/n/d/t/p-dec) 처리 |
 | text-symbol-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH02-L06-S02 | TSL_CFG 주도 · 등록/미등록 seg×KO/EN seg→Text Elements 표 mock+출력 2줄 비교·미등록: TEXT-nnn=빈칸(bad dashed)·literal(nnn)=fallback(amber)·verdict ok/warn(교훈3)·근거 abentext_symbols.htm·토큰/color-mix만 · 다크 |
 | len-shape-grid (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH02-L03-S01 | LSG_CFG 주도 · C/N 칸 그리드(패딩·잘림·앞0 자동채움)+P 바이트 칸(1칸=2자리·부호 반 칸=2×len−1·DECIMALS 점)+offset 패널(칸 하이라이트·범위초과 bad·부분쓰기 교체)·msg base 중립+ok/bad 명시(교훈3)·토큰/color-mix만 · 다크 |
 | type-stamp (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH02-L04-S01 | TS_CFG 주도 · TYPES 도면 카드(점선·0바이트)→DATA 실물 박스(실선·값)·DECIMALS 세그→전 변수 동시 갱신 flash·타입 대입 시도→bad·verdict base 중립+ok/bad 명시(교훈3)·토큰/color-mix만 · 다크 |
 | ddic-layer-board (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH03-L02-S01 | DLB_CFG 주도 · Domain 카드(기술·brand)→상속 케이블→DE 카드 2(의미·accent)+화면 미리보기(라벨=DE·칸수=Domain)·길이 토글→전층 동시 flash·직접 TYPE 시도→bad·verdict base 중립(교훈3)·토큰/color-mix만 · 다크 |
 | param-screen-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH03-L03-S01 | PSL_CFG 주도 · 타입 세그(DE/표준 타입)→라벨·F4 온오프·VALUE CHECK 토글=고정값 검증 분리(F4≠검증·raw 모드 disabled)·F4 팝업=고정값 목록·OBLIGATORY 빈값 차단·DEFAULT 미리채움·LOWER CASE off 시 대문자 변조 경고·실행→WRITE mock·out base 중립(교훈3)·토큰/color-mix만 · 다크 |
+| share-vs-local | 1 | 공통(_engine)+_autoheight ✅ | CH05-L02-S02 (완료) | SVL_CFG 주도 — 정의 공유(DDIC) vs 복제(Local) 비교 보드·필드 추가 토글·참조 곡선 |
+| struct-viz | 4 | 공통(_engine)+_autoheight ✅ | CH05-L01-S02~S04·CH05-L02-S01 | SV_CFG 주도 · 트리(root/kind/comps·초기값 유도·assign 인터랙션) + layout:'strip'(타입=값 없는 헤더 스트립·변수=정렬 행들 — 타입은 값 없음 명시, 사용자 피드백 2026-07-03) |
+| move-mapping (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH05-L04-S01 | MM_CFG 주도 · src/tgt 카드·같은 이름=초록 복사 flash·원본-only=주황 무시·대상-only=잔존(빨강 stale 함정)·CLEAR 먼저 토글→ok/warn verdict(교훈3)·classic 전용(FMB는 modern이라 미재사용)·토큰만 · 다크 |
+| struct-reuse-board (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH05-L03-S01 | SRB_CFG 주도 · 3모드 세그(중첩=amber 하위/INCLUDE=good 점선 펼침/APPEND=잠긴 표준+accent 확장)+접근 경로 칩+선택형 퀴즈(정오 good/bad+why)·토큰만 · 다크 |
 | syntax-toggle-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH01-L03-S01 | STL_CFG 주도 · 코드 패널(행번호·kw/cmt 토큰색)+토글 4(마침표/별표 위치/인라인 */소문자)→구문 램프 ok/bad+원인 목록·이름 풀 정훈영(R9)·코드 base=var(--surface) 틴트 · 다크 |
 | diff-mapper | 2 | 공통(_engine)+_autoheight ✅ | CH18-L06·L07 (완료) | 데이터=마크업(data-link/title/desc) · classic/modern 중립 톤 추가 |
 | inline-decl-judge (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH18-L01-S01 | IDJ_CFG 주도 · 문장 카드 4종(READ/LOOP/계산/SELECT) 허용/보류 판정·계산 카드 DATA()/FINAL() 토글→재대입 ok/bad · 다크 |

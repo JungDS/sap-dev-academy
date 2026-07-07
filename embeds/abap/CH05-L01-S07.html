@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<!-- CH05-L01-S07 — 엔진: before-after(.solo 단일 칼럼) + _autoheight · _engine/_base.css. §사람 한 명에 변수가 셋(#C05-1).
+     역할: 레슨 도입 pain을 텍스트가 아니라 코드 벽+도형으로 체감(§4의 Structure-이유 분리 이동, 피드백 2026-07-03).
+     숨은 실수 헌트(피드백 2026-07-03): 반복 선언은 양만 문제가 아니라 실수 유발 — 오타(gv_naem2)·DECIMALS 누락·string 대신 c 10,
+     점선 밑줄 3곳 + 정답 접기(셋 다 선언 시점엔 조용히 지나감). 오타 칩은 도형에도 반영(.warn).
+     게이팅: 단일 값 변수(DATA)만 — Structure·TYPES 등 해결책 언급 없음(해결은 본문 다음 섹션에서). -->
+<html lang="ko" data-eng="before-after">
+<head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>단일 값 변수만으로 사람 셋 · CH05-L01-S07</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/before-after.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">사람 셋을 담아 보면 <small>(단일 값 변수만으로)</small></p>
+  <p class="lead">이름·나이·금액을 가진 사람 <b>세 명</b>을, 지금까지 배운 단일 값 변수만으로 담아 보세요. 그런데 같은 선언을 반복해서 적다 보니 <b>실수도 끼어들었습니다</b>. 점선 밑줄 세 곳을 살펴보세요.</p>
+
+  <div class="ba solo">
+    <div class="ba__col before">
+      <div class="ba__head">✗ 선언만 9줄 — 게다가 실수까지 숨어든다</div>
+      <div class="ba__body">
+<pre>DATA gv_name   TYPE string.
+DATA gv_age    TYPE i.
+DATA gv_amount TYPE p LENGTH 8 DECIMALS 2.
+
+DATA <span class="oops">gv_naem<b>2</b></span>   TYPE string.   <span class="cmt">" 2번째 사람…</span>
+DATA gv_age<b>2</b>    TYPE i.
+DATA gv_amount<b>2</b> TYPE <span class="oops">p LENGTH 8</span>.
+
+DATA gv_name<b>3</b>   TYPE <span class="oops">c LENGTH 10</span>.   <span class="cmt">" 3번째 사람…</span>
+DATA gv_age<b>3</b>    TYPE i.
+DATA gv_amount<b>3</b> TYPE p LENGTH 8 DECIMALS 2.</pre>
+        <details class="ba__hunt">
+          <summary>⚠ 점선 밑줄 세 곳 — 뭐가 잘못됐을까? (정답 보기)</summary>
+          <div class="ba__hunt-body">
+            <ul>
+              <li><b>이름 오타</b> — <code>gv_naem2</code>. 선언 자체는 통과합니다. 나중에 <code>gv_name2</code>를 쓰는 순간에야 "없는 변수" 오류가 나고, 원인 찾기는 내 몫입니다.</li>
+              <li><b>DECIMALS 누락</b> — <code>p LENGTH 8</code>만 적으면 소수 자리가 0. 오류도 안 나고, <code>1500.50</code>을 넣으면 <b>반올림되어 1501</b>이 됩니다.</li>
+              <li><b>string 대신 c 10</b> — 10자가 넘는 이름은 <b>조용히 잘립니다</b>. 역시 아무 경고 없음.</li>
+            </ul>
+            같은 선언을 사람마다 반복하는 동안, 이런 실수를 <b>막아 줄 장치가 없습니다</b>.
+          </div>
+        </details>
+        <span class="ba__metric">사람 1명 추가 = 선언 3줄 + 번호 관리 + 실수 기회 3번</span>
+        <div class="ba__shapes">
+          <div class="ba__shapes-cap">이 코드가 메모리에 만드는 것 — 변수 <b>9개</b>가 따로따로 (오타 이름 그대로!)</div>
+          <div class="ba__chips">
+            <span class="ba__chip">gv_name</span><span class="ba__chip">gv_age</span><span class="ba__chip">gv_amount</span>
+            <span class="ba__chip warn">gv_naem<b>2</b></span><span class="ba__chip">gv_age<b>2</b></span><span class="ba__chip">gv_amount<b>2</b></span>
+            <span class="ba__chip">gv_name<b>3</b></span><span class="ba__chip">gv_age<b>3</b></span><span class="ba__chip">gv_amount<b>3</b></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note"><code>gv_naem2</code>·<code>gv_age2</code>·<code>gv_amount2</code>가 "같은 사람"이라는 사실은 코드 어디에도 없습니다 — 여러분 머릿속에만 있죠. 심지어 오타(<code>gv_naem2</code>)조차 그대로 변수가 됐습니다.</div>
+</div>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

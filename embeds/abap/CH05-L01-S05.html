@@ -1,33 +1,76 @@
 <!DOCTYPE html>
-<!-- CH05-L01-S05 — 엔진: struct-viz + _autoheight. 콘텐츠=레슨 §LIKE(gs_p4 LIKE gs_p1, #C05-1).
-     LIKE는 기존 변수를 보고 동일 구조 생성 → gs_p1과 같은 컴포넌트·타입·길이. 설정=window.SV_CFG. -->
-<html lang="ko" data-eng="struct-viz">
+<!-- CH05-L01-S05 — 엔진: step-debugger (embeds/_engine/step-debugger.{js,css}) + _autoheight.js
+     config=레슨 전용(§LIKE: 원본 gs_p1을 먼저 채운 뒤 DATA gs_p4 LIKE gs_p1 — "모양만 복사, 값은 초기값" 오해 반박, #C05-1).
+     디자인=S01과 동일한 스텝 디버거로 재설계 + 워치에 gs_p1·gs_p4 동시 표시(피드백 2026-07-03).
+     사실성: DATA 선언은 실행 스텝이 아님(실제 디버거와 동일) — gs_p4는 처음부터 초기값으로 존재. 게이팅: §5(TYPES·ts_person)까지만. -->
+<html lang="ko" data-eng="step-debugger">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>gs_p4 LIKE gs_p1 트리 · CH05-L01-S05</title>
+<title>LIKE 스텝 디버거 · CH05-L01-S05</title>
 <link rel="stylesheet" href="../_engine/_base.css" />
-<link rel="stylesheet" href="../_engine/struct-viz.css" />
+<link rel="stylesheet" href="../_engine/step-debugger.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">LIKE로 선언한 <code>gs_p4</code> <small>(선언 직후 → 값 전달)</small></p>
-  <p class="lead"><code>DATA gs_p4 LIKE gs_p1.</code> — <code>gs_p1</code>과 <b>똑같은 모양</b>이지만 선언 직후엔 전부 <b>초기값</b>(점선). 아래 <b>▶ 값 전달 실행</b>으로 <code>name</code>에 <code>'강호동'</code>이 기록되는 과정을 보세요.</p>
-  <div data-structviz></div>
+  <p class="hd">LIKE — 모양은 복사되고, 값은 복사되지 않는다 <small>(스텝 디버거)</small></p>
+  <p class="lead"><b>다음 ⏭</b>으로 한 줄씩 실행하며 오른쪽 두 변수를 지켜보세요. 원본 <code>gs_p1</code>을 다 채운 뒤에도 <code>LIKE</code>로 선언한 <b><code>gs_p4</code>는 전부 초기값</b>입니다. 넘어오는 건 <b>모양뿐</b>, 값이 아닙니다.</p>
+
+  <div class="dbg" data-stepper>
+    <div class="dbg__bar">
+      <button class="btn btn--primary" data-start>▶ 시작</button>
+      <button class="btn btn--step" data-next disabled>다음 ⏭</button>
+      <div class="progress"><i data-progress></i></div>
+      <span class="muted" data-counter>0 / 4</span>
+    </div>
+    <div class="dbg__main">
+      <div class="dbg__editorwrap"><div class="dbg__edhd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span></div><div class="dbg__editor" data-code></div></div>
+      <div class="dbg__watch">
+        <div class="watch__head">변수 모니터 — <code>gs_p1</code> · <code>gs_p4</code> 펼침</div>
+        <div class="watch__list" data-vars></div>
+      </div>
+    </div>
+    <div class="dbg__console">
+      <div class="console__head">
+        <span>콘솔</span>
+        <span class="leg"><span class="a">▶ 실행할 차례</span> · <span class="d">✓ 방금 실행</span></span>
+        <span class="sp"></span>
+        <span class="cmode"><button class="cmode__b on" data-cmode="cur">현재 행</button><button class="cmode__b" data-cmode="all">전체 출력</button></span>
+      </div>
+      <pre class="console__body" data-console>대기 중 — ▶ 시작을 누르세요.</pre>
+    </div>
+    <script type="application/json" class="stepper-config">
+    {
+      "code":[
+        "DATA gs_p1 TYPE ts_person.",
+        "",
+        "gs_p1-name   = '정훈영'.",
+        "gs_p1-age    = 30.",
+        "gs_p1-amount = '1500.50'.",
+        "",
+        "DATA gs_p4 LIKE gs_p1.   \" 모양만 복사!",
+        "",
+        "gs_p4-name = '강호동'."
+      ],
+      "vars":[
+        {"label":"gs_p1-name","sub":"name · string","key":"gs_p1-name","init":"( 공백 )"},
+        {"label":"gs_p1-age","sub":"age · i","key":"gs_p1-age","init":"0"},
+        {"label":"gs_p1-amount","sub":"amount · p DEC 2","key":"gs_p1-amount","init":"0.00"},
+        {"label":"gs_p4-name","sub":"name · string (LIKE gs_p1)","key":"gs_p4-name","init":"( 공백 )"},
+        {"label":"gs_p4-age","sub":"age · i (LIKE gs_p1)","key":"gs_p4-age","init":"0"},
+        {"label":"gs_p4-amount","sub":"amount · p DEC 2 (LIKE gs_p1)","key":"gs_p4-amount","init":"0.00"}
+      ],
+      "steps":[
+        {"line":3,"vars":{"gs_p1-name":"정훈영"},"console":"gs_p1-name = '정훈영'"},
+        {"line":4,"vars":{"gs_p1-age":"30"},"console":"gs_p1-age = 30"},
+        {"line":5,"vars":{"gs_p1-amount":"1500.50"},"console":"gs_p1-amount = '1500.50' (원본 gs_p1 완성) ← 그런데 gs_p4는 여전히 전부 초기값!"},
+        {"line":9,"vars":{"gs_p4-name":"강호동"},"console":"gs_p4-name = '강호동' ← 값이 필요하면 이렇게 따로 넣는다 (age·amount는 여전히 초기값)"}
+      ]
+    }
+    </script>
+  </div>
 </div>
-<script>
-window.SV_CFG = {
-  root: 'gs_p4',
-  comps: [
-    { name: 'name',   type: 'string' },
-    { name: 'age',    type: 'i' },
-    { name: 'amount', type: 'p LENGTH 8 DECIMALS 2' }
-  ],
-  assign: { comp: 'name', value: "'강호동'", stmt: "gs_p4-name = '강호동'." },
-  note: '<code>LIKE gs_p1</code> = <code>gs_p1</code>과 <b>모양만</b> 같게(이름·타입·길이) — 값은 복사되지 않고 선언 직후엔 모두 초기값(정수 0·문자열 \'\'·p 0.00). 버튼을 누르면 <code>name</code>에만 값이 기록되고, <b>age·amount는 여전히 초기값</b>입니다. <b>TYPE이든 LIKE이든 선언하면 변수는 반드시 초기값을 가집니다.</b>'
-};
-</script>
-<script src="../_engine/struct-viz.js" defer></script>
+<script src="../_engine/step-debugger.js" defer></script>
 <script src="../_engine/_autoheight.js" defer></script>
 </body>
 </html>

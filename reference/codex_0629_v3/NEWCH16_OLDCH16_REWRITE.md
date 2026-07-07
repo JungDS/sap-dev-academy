@@ -1,4 +1,4 @@
-# CH16_REWRITE - Screen Programming / Dynpro 기초
+# NEWCH16_OLDCH16_REWRITE - Screen Programming / Dynpro 기초
 
 > 기준 소스: `content/abap/CH16`
 > 보조 참고: `reference/codex_0625_v2/CH16_REWRITE.md`, `reference/codex_0625_v2/CH16_QA.md`, `.project-docs/09_CURRICULUM_LEDGER.md`, `.project-docs/11_KEYWORD_AUDIT.md`
@@ -23,6 +23,8 @@ Dynpro 화면은 PBO -> 화면 표시 -> 사용자 입력 -> PAI를 반복하며
 
 - Module Pool과 Dynpro는 classic SAP GUI 기술로 설명한다.
 - `START-OF-SELECTION` 같은 report event를 Module Pool에 기대하지 않는다.
+- Screen Painter에서 ABAP Dictionary field를 복사해 만든 classic dynpro field는 `TABLES dbtab` 기반 interface work area와 연결될 수 있음을 설명한다. 단, 이것을 일반 internal table header line이나 class 설계 방식으로 확장하지 않는다.
+- 직접 F4는 `PROCESS ON VALUE-REQUEST`에서 다루되, DDIC Search Help와 Search Help exit를 먼저 고려한 뒤 마지막 수단으로 설명한다.
 - Table Control은 공식 문서에는 있지만 이 커리큘럼에서는 제외한다. 화면 안의 표는 CH17 Grid ALV로 대체한다.
 - `TYPE REF TO`, `CREATE OBJECT`는 CH20 OO 이전의 선행 사용이다. CH16에서는 Custom Control 영역에 container 객체를 붙이는 블랙박스로만 다룬다.
 - 실제 데이터 생성, 변경, 저장, lock, LUW는 CH24와 CH25 범위다. CH16 실습은 화면 입력과 검증까지만 다룬다.
@@ -261,7 +263,231 @@ ENDMODULE.
 
 화면 요소는 모양이 아니라 데이터와 command의 통로다. 입력 field는 값을 운반하고, 버튼은 function code를 발생시키며, dropdown은 PBO에서 목록을 준비해야 한다.
 
-## CH16-L04 - PBO 처리 흐름
+## CH16-L04 - Dictionary 기반 화면 필드와 TABLES dbtab
+
+### 왜 필요한가
+
+Screen Painter에서 입력칸을 만들 때 개발자가 직접 이름과 타입을 줄 수도 있지만, ABAP Dictionary의 table field나 structure field를 끌어와서 만들 수도 있다. 예를 들어 공연 마스터 구조 `ZCONCERT`의 `CONCERT_ID`, `TITLE`, `HALL_ID`를 화면에 배치하면 길이, 타입, field label, F1/F4 도움말을 Dictionary와 맞추기 쉽다.
+
+그런데 이 방식에는 classic Dynpro 특유의 연결 규칙이 있다. 화면 field가 Dictionary field에서 복사되어 `ZCONCERT-CONCERT_ID` 같은 이름으로 만들어졌다면, ABAP program 쪽에도 같은 이름을 가진 interface work area가 있어야 PBO/PAI data transport가 일어난다. 이때 쓰는 classic 문장이 `TABLES zconcert.`다.
+
+이 내용이 빠지면 학습자는 화면에는 `ZCONCERT-CONCERT_ID`가 보이는데 ABAP 변수에는 값이 안 들어오는 상황을 이해하지 못한다. CH12에서 `SELECT-OPTIONS ... FOR dbtab-field` 때문에 보았던 `TABLES`와 이름은 같지만, CH16의 `TABLES dbtab`은 Screen Painter와 program data object 사이의 운반 통로라는 점을 따로 배워야 한다.
+
+### 무엇인가
+
+`TABLES dbtab.`은 ABAP Dictionary에 있는 같은 이름의 flat structure 또는 database table을 기준으로 table work area를 선언하는 classic 문장이다. 여기서 "table work area"는 internal table이 아니다. 한 줄짜리 structure 모양의 program-global work area라고 이해하면 된다.
+
+예:
+
+```abap
+PROGRAM sapmzconcert.
+
+TABLES zconcert.
+
+DATA: ok_code TYPE sy-ucomm,
+      save_ok TYPE sy-ucomm.
+```
+
+이 선언이 있으면 ABAP program에는 `zconcert-concert_id`, `zconcert-title`, `zconcert-hall_id` 같은 component를 가진 global work area가 생긴다. Screen Painter에서 ABAP Dictionary field를 복사해 만든 화면 field 이름도 보통 같은 형태가 된다.
+
+데이터 운반 감각:
+
+| 시점 | 운반 방향 | 의미 |
+| --- | --- | --- |
+| PBO 끝 | ABAP program -> dynpro field | `zconcert-concert_id` 값이 화면의 `ZCONCERT-CONCERT_ID`에 표시됨 |
+| 사용자 입력 후 PAI 전/중 | dynpro field -> ABAP program | 화면에서 바꾼 값이 `zconcert-concert_id`로 들어옴 |
+
+직접 만든 변수와 Dictionary field를 섞는 구조:
+
+```abap
+TABLES zconcert.
+
+DATA: p_seats TYPE i,
+      ok_code TYPE sy-ucomm.
+```
+
+이때 `ZCONCERT-CONCERT_ID`는 `TABLES zconcert`의 component와 연결되고, `P_SEATS`는 같은 이름의 `DATA p_seats`와 연결된다. 둘 다 화면 field와 ABAP global data object의 이름이 맞아야 한다는 원리는 같다. 다만 Dictionary에서 복사한 field는 `TABLES` work area가 연결점이 된다.
+
+`TABLES`를 지금도 아무 데나 쓰라는 뜻은 아니다. 이 장에서는 classic Dynpro 유지보수와 Screen Painter의 Dictionary field 연결을 이해하기 위해 다룬다. 신규 class 설계나 일반 업무 로직에서는 명시적 structure 변수, method parameter, internal table을 사용한다. `TABLES` work area를 business logic의 편한 전역 변수처럼 남용하면 프로그램 흐름이 흐려진다.
+
+### 어떻게 확인하는가
+
+1. Screen Painter Layout에서 입력 field가 ABAP Dictionary에서 복사된 field인지 확인한다.
+2. Element List에서 field 이름이 `ZCONCERT-CONCERT_ID`처럼 Dictionary structure-component 형태인지 본다.
+3. ABAP program top include에 `TABLES zconcert.`가 있는지 확인한다.
+4. PBO module에서 `zconcert-concert_id = 'C001'.`처럼 값을 넣고 화면에 표시되는지 본다.
+5. 화면에서 값을 바꾼 뒤 PAI module breakpoint에서 `zconcert-concert_id`가 바뀌었는지 확인한다.
+6. `TABLES zconcert.`를 제거하면 data transport가 깨지는지, 또는 activation/check에서 어떤 문제가 나오는지 비교한다.
+
+### 체험 설계
+
+학습 장치는 "Dictionary Field 운반 터널"로 설계한다.
+
+- 화면 왼쪽: Screen Painter element list에 `ZCONCERT-CONCERT_ID`, `ZCONCERT-TITLE`, `P_SEATS`, `OK_CODE`를 표시한다.
+- 화면 가운데: ABAP global area에 `TABLES zconcert`, `DATA p_seats`, `DATA ok_code`를 표시한다.
+- 화면 오른쪽: PBO/PAI 운반 방향 화살표를 표시한다.
+- 버튼: `Dictionary field 복사`, `TABLES 선언`, `PBO 값 넣기`, `화면에서 값 수정`, `PAI 확인`, `TABLES 제거`.
+- 상태: field 이름 일치 여부, transport 가능 여부, 현재 값.
+- 피드백: `ZCONCERT-CONCERT_ID` 화면 field는 있는데 `TABLES zconcert`가 없으면 "Dictionary 기반 dynpro field와 program work area가 연결되지 않음"을 표시한다. 반대로 `P_SEATS`처럼 직접 만든 field는 `DATA p_seats`와 연결된다고 비교한다.
+
+### 실수와 주의
+
+- `TABLES zconcert.`를 internal table 선언으로 오해하지 않는다. 이름은 TABLES지만 여기서는 table work area다.
+- CH12의 `SELECT-OPTIONS ... FOR zconcert-concert_id`에서 보았던 `TABLES`와 CH16의 목적을 구분한다. CH12는 selection screen 선언을 위한 Dictionary field 참조가 중심이고, CH16은 Dictionary 기반 dynpro field와 program work area의 data transport가 중심이다.
+- `TABLES` work area를 class 내부 설계나 신규 비즈니스 로직의 일반 자료구조로 확장하지 않는다.
+- 화면 field 이름, Dictionary structure 이름, ABAP work area 이름이 어긋나면 자동 transport를 기대할 수 없다.
+- Screen Painter에서 직접 타입을 지정한 field와 Dictionary에서 복사한 field는 확인 위치와 연결 방식이 다를 수 있다.
+
+### 정리
+
+Dynpro에서 ABAP Dictionary field를 화면에 복사하면 field label과 F1/F4 도움말을 자연스럽게 가져올 수 있다. 이때 program 쪽에는 `TABLES dbtab`으로 같은 이름의 table work area가 있어야 classic data transport가 성립한다. CH16에서 배우는 `TABLES`는 classic screen-program 연결 규칙이지, 새 설계에서 전역 work area를 남용하라는 권장이 아니다.
+
+## CH16-L05 - Dynpro F1/F4와 PROCESS ON VALUE-REQUEST
+
+### 왜 필요한가
+
+사용자는 공연 ID를 외우지 못한다. 입력칸 옆에서 F4를 눌렀을 때 공연 목록이 떠야 하고, F1을 눌렀을 때 그 field가 무엇인지 도움말이 나와야 한다. CH09에서 Search Help를 배웠고 CH15에서 selection screen의 `AT SELECTION-SCREEN ON VALUE-REQUEST`를 배웠지만, Dynpro 화면에서는 flow logic의 `PROCESS ON VALUE-REQUEST`와 `PROCESS ON HELP-REQUEST`가 이 역할을 맡는다.
+
+이 레슨은 "F4를 직접 코딩하는 법"만 가르치지 않는다. 더 중요한 것은 우선순위다. 좋은 classic Dynpro 설계는 먼저 ABAP Dictionary의 Search Help와 domain fixed value, check table 도움말을 활용한다. 그것으로 부족하면 dynpro field에 Search Help를 연결하거나 Search Help exit를 고려한다. 그래도 요구사항을 만족하지 못할 때 마지막으로 `PROCESS ON VALUE-REQUEST`에서 직접 input help를 만든다.
+
+### 무엇인가
+
+Dynpro input help의 우선순위:
+
+| 우선순위 | 방식 | 언제 쓰는가 |
+| --- | --- | --- |
+| 1 | ABAP Dictionary 기반 input help | data element search help, check table, domain fixed value, calendar/clock help로 충분할 때 |
+| 2 | Dynpro field에 Search Help 직접 연결 | 특정 화면 field만 별도 Search Help를 연결해야 할 때 |
+| 3 | Search Help exit 고려 | DDIC Search Help 자체의 선택/표시 로직을 확장해야 할 때 |
+| 4 | `PROCESS ON VALUE-REQUEST` 직접 구현 | 화면의 다른 입력값을 읽어 동적으로 후보를 만들거나, 표준/DDIC 도움말로 부족할 때 |
+
+Flow Logic의 기본형:
+
+```abap
+PROCESS ON VALUE-REQUEST.
+  FIELD zconcert-concert_id MODULE value_concert.
+  FIELD p_perf MODULE value_performance.
+
+PROCESS ON HELP-REQUEST.
+  FIELD zconcert-concert_id MODULE help_concert.
+```
+
+`PROCESS ON VALUE-REQUEST`는 F4 input help를 처리하는 block이다. `FIELD field MODULE mod.`는 해당 field의 F4 요청 때 어떤 dialog module을 부를지 지정한다. `PROCESS ON HELP-REQUEST`는 F1 field help를 처리한다. 두 block에서 호출되는 module은 ABAP program 쪽에 `MODULE ... INPUT` 형태로 정의한다.
+
+DDIC Search Help를 동적으로 호출하는 예:
+
+```abap
+MODULE value_concert INPUT.
+  CALL FUNCTION 'F4IF_FIELD_VALUE_REQUEST'
+    EXPORTING
+      tabname     = 'ZCONCERT'
+      fieldname   = 'CONCERT_ID'
+      dynpprog    = sy-repid
+      dynpnr      = sy-dynnr
+      dynprofield = 'ZCONCERT-CONCERT_ID'.
+ENDMODULE.
+```
+
+화면의 다른 값을 읽어 후보를 좁히는 예:
+
+```abap
+TYPES: BEGIN OF ty_perf_help,
+         perf_id TYPE c LENGTH 3,
+         text    TYPE c LENGTH 40,
+       END OF ty_perf_help.
+
+DATA: gt_dynp TYPE STANDARD TABLE OF dynpread,
+      gs_dynp TYPE dynpread,
+      gt_perf TYPE STANDARD TABLE OF ty_perf_help,
+      gs_perf TYPE ty_perf_help.
+
+MODULE value_performance INPUT.
+  CLEAR gt_dynp.
+  CLEAR gs_dynp.
+  gs_dynp-fieldname = 'ZCONCERT-CONCERT_ID'.
+  APPEND gs_dynp TO gt_dynp.
+
+  CALL FUNCTION 'DYNP_VALUES_READ'
+    EXPORTING
+      dyname     = sy-repid
+      dynumb     = sy-dynnr
+    TABLES
+      dynpfields = gt_dynp.
+
+  READ TABLE gt_dynp INTO gs_dynp INDEX 1.
+
+  CLEAR gt_perf.
+  IF gs_dynp-fieldvalue = 'C001'.
+    gs_perf-perf_id = '001'.
+    gs_perf-text    = '1회차 19:00'.
+    APPEND gs_perf TO gt_perf.
+
+    gs_perf-perf_id = '002'.
+    gs_perf-text    = '2회차 21:00'.
+    APPEND gs_perf TO gt_perf.
+  ENDIF.
+
+  CALL FUNCTION 'F4IF_INT_TABLE_VALUE_REQUEST'
+    EXPORTING
+      retfield    = 'PERF_ID'
+      dynpprog    = sy-repid
+      dynpnr      = sy-dynnr
+      dynprofield = 'P_PERF'
+      value_org   = 'S'
+    TABLES
+      value_tab   = gt_perf.
+ENDMODULE.
+```
+
+이 예제의 핵심은 `DYNP_VALUES_READ`다. POV 시점은 일반 PAI처럼 모든 화면값을 안정적으로 처리하는 시간이 아니다. F4를 누른 field의 후보를 만들기 위해 현재 화면에 입력된 다른 field 값을 읽어야 할 때 `DYNP_VALUES_READ` 같은 dynpro 전용 function module을 사용한다. 선택 결과를 별도로 화면에 반영해야 하는 경우에는 `DYNP_VALUES_UPDATE`가 필요할 수 있다.
+
+F1 도움말은 대부분 DDIC data element documentation에 맡기는 편이 좋다. 정말 화면 맥락별 설명이 필요할 때만 POH를 쓴다.
+
+```abap
+MODULE help_concert INPUT.
+  MESSAGE '공연 ID는 ZCONCERT에 등록된 공연을 의미합니다' TYPE 'I'.
+ENDMODULE.
+```
+
+이 예는 의도적으로 단순하다. 실제 프로젝트에서는 data element 문서, supplementary documentation, 사용자 매뉴얼과의 일관성을 먼저 확인해야 한다.
+
+### 어떻게 확인하는가
+
+1. `ZCONCERT-CONCERT_ID` field가 DDIC Search Help를 이미 가지고 있는지 확인한다.
+2. 기본 F4가 충분하면 `PROCESS ON VALUE-REQUEST`를 만들지 않는다.
+3. 직접 F4가 필요하면 Flow Logic에 `PROCESS ON VALUE-REQUEST` block이 있는지 확인한다.
+4. `FIELD zconcert-concert_id MODULE value_concert.`의 field 이름이 Element List의 field 이름과 일치하는지 본다.
+5. ABAP source에 `MODULE value_concert INPUT.`이 있는지 확인한다.
+6. F4를 눌렀을 때 PAI의 일반 `user_command_0100`이 아니라 POV module에 breakpoint가 걸리는지 본다.
+7. `DYNP_VALUES_READ`로 읽은 현재 화면값이 예상과 같은지 확인한다.
+8. 선택한 값이 target dynpro field에 들어가는지 확인한다.
+
+### 체험 설계
+
+학습 장치는 "F4 우선순위 결정기"와 "POV 화면값 읽기 실험실" 두 단계로 설계한다.
+
+- 1단계 화면: `ZCONCERT-CONCERT_ID` field에 대해 `DDIC Search Help 있음`, `Search Help exit 필요`, `직접 POV 필요` 선택지를 보여 준다.
+- 1단계 버튼: `DDIC로 충분`, `화면값 기반 필터 필요`, `Search Help exit 검토`, `직접 POV 구현`.
+- 1단계 피드백: DDIC로 충분한데 직접 POV를 선택하면 "표준 Search Help를 우선 사용해야 유지보수성이 좋음"을 표시한다.
+- 2단계 화면: 사용자가 공연 ID `C001`을 입력하고 회차 field `P_PERF`에서 F4를 누르는 상황을 보여 준다.
+- 2단계 상태: `ZCONCERT-CONCERT_ID`, `P_PERF`, `gt_dynp`, `gt_perf`, 선택 결과.
+- 2단계 버튼: `F4 누르기`, `DYNP_VALUES_READ`, `후보 목록 생성`, `회차 선택`, `DYNP_VALUES_UPDATE 비교`.
+- 2단계 피드백: 화면값을 읽지 않고 회차 F4를 만들면 "공연별 회차 필터가 적용되지 않음"을 보여 준다.
+
+### 실수와 주의
+
+- DDIC Search Help로 충분한 field에 습관적으로 `PROCESS ON VALUE-REQUEST`를 만들지 않는다. 직접 POV는 유지보수 책임이 커진다.
+- `PROCESS ON VALUE-REQUEST`와 `AT SELECTION-SCREEN ON VALUE-REQUEST`를 섞지 않는다. 전자는 Dynpro flow logic, 후자는 report selection screen event다.
+- `FIELD ... MODULE ...`의 field 이름은 Screen Painter element 이름과 맞아야 한다.
+- POV module은 일반 저장/검증 PAI가 아니다. DB 저장, lock, transaction 처리를 넣지 않는다.
+- Search Help exit는 DDIC Search Help 자체를 확장하는 고급 기법이다. CH16에서는 "직접 POV보다 먼저 고려할 수 있는 경계"만 설명하고 구현하지 않는다.
+- F4에서 다른 화면 field 값을 읽거나 결과를 반영할 때는 `DYNP_VALUES_READ`/`DYNP_VALUES_UPDATE` 같은 dynpro 전용 function module의 필요성을 이해한다.
+
+### 정리
+
+Dynpro F4의 기본은 ABAP Dictionary Search Help다. 직접 구현은 마지막 수단이다. 직접 구현해야 한다면 `PROCESS ON VALUE-REQUEST`, `FIELD field MODULE mod`, `F4IF_FIELD_VALUE_REQUEST`, `F4IF_INT_TABLE_VALUE_REQUEST`, `DYNP_VALUES_READ/UPDATE`의 역할을 구분한다. Search Help exit는 CH16 실습 범위가 아니라 DDIC Search Help를 더 깊게 확장하는 고급 경계로 남긴다.
+
+## CH16-L06 - PBO 처리 흐름
 
 ### 왜 필요한가
 
@@ -332,7 +558,7 @@ ENDMODULE.
 
 PBO는 사용자가 보기 전에 화면을 준비하는 단계다. GUI status, title, dropdown 목록, field 속성 제어를 여기서 수행한다.
 
-## CH16-L05 - PAI 처리 흐름: OK_CODE와 화면 떠나기
+## CH16-L07 - PAI 처리 흐름: OK_CODE와 화면 떠나기
 
 ### 왜 필요한가
 
@@ -407,7 +633,7 @@ ENDMODULE.
 
 PAI는 사용자의 행동을 해석하는 단계다. OK_CODE는 보조 변수로 복사하고 clear한 뒤 분기한다. 화면을 떠나는 문장은 종료 범위가 다르므로 의도를 정확히 선택해야 한다.
 
-## CH16-L06 - PF-STATUS와 TITLEBAR
+## CH16-L08 - PF-STATUS와 TITLEBAR
 
 ### 왜 필요한가
 
@@ -478,13 +704,13 @@ ENDMODULE.
 
 PF-STATUS는 화면 위 버튼과 function code의 설계도다. TITLEBAR는 현재 화면의 업무 맥락을 보여 준다. 둘 다 PBO에서 설정하고 PAI의 OK_CODE 처리와 맞춰야 한다.
 
-## CH16-L07 - Custom Control, Container, Tabstrip, Subscreen, Status Icon
+## CH16-L09 - Custom Control, Container, Tabstrip, Subscreen, Status Icon
 
 ### 왜 필요한가
 
 CH17에서는 화면 안에 Grid ALV를 넣어 좌석표나 예매 목록을 보여 준다. 그런데 ALV는 그냥 화면에 자동으로 생기지 않는다. 먼저 Dynpro layout에 control이 들어갈 사각 영역을 만들어야 한다. 이 영역이 Custom Control이다. ABAP program에서는 이 영역에 container 객체를 연결한다.
 
-또 화면이 커지면 한 화면 안을 tab이나 subscreen으로 나누어야 한다. CH16-L07은 "화면 안에 더 복잡한 구조를 넣을 자리"를 이해하는 레슨이다.
+또 화면이 커지면 한 화면 안을 tab이나 subscreen으로 나누어야 한다. CH16-L09는 "화면 안에 더 복잡한 구조를 넣을 자리"를 이해하는 레슨이다.
 
 ### 무엇인가
 
@@ -560,9 +786,9 @@ Table Control은 이 장에서 제외한다. 공식 문서에는 존재하지만
 
 ### 정리
 
-CH16-L07은 화면 확장 구조를 잡는 레슨이다. Custom Control은 CH17 ALV를 담을 자리이고, Tabstrip과 Subscreen은 화면을 나누는 구조다. OO와 Grid 구현은 뒤로 미루고, 지금은 화면 영역과 프로그램 연결을 정확히 잡는다.
+CH16-L09는 화면 확장 구조를 잡는 레슨이다. Custom Control은 CH17 ALV를 담을 자리이고, Tabstrip과 Subscreen은 화면을 나누는 구조다. OO와 Grid 구현은 뒤로 미루고, 지금은 화면 영역과 프로그램 연결을 정확히 잡는다.
 
-## CH16-L08 - 실습: 예매 입력 화면 만들기
+## CH16-L10 - 실습: 예매 입력 화면 만들기
 
 ### 왜 필요한가
 
@@ -580,7 +806,9 @@ CH16-L07은 화면 확장 구조를 잡는 레슨이다. Custom Control은 CH17 
 | T-code | `ZBOOK_DYN` |
 | Screen | 0100 |
 | Field | `P_CONC`, `P_PERF`, `P_SEATS`, `P_CUST`, `P_GRADE`, `OK_CODE` |
+| Dictionary field | 필요 시 `ZCONCERT-CONCERT_ID`와 `TABLES zconcert` 연결 |
 | PBO | status, titlebar, dropdown list |
+| POV/POH | 필요 시 `PROCESS ON VALUE-REQUEST`, `PROCESS ON HELP-REQUEST` |
 | PAI | OK_CODE 복사와 clear, SAVE/BACK/EXIT/CANCEL 처리 |
 | 검증 | CH10의 `can_book` subroutine 재사용 |
 | 경계 | 실제 데이터 생성은 CH24 |
@@ -594,11 +822,16 @@ PROCESS BEFORE OUTPUT.
 
 PROCESS AFTER INPUT.
   MODULE user_command_0100.
+
+PROCESS ON VALUE-REQUEST.
+  FIELD zconcert-concert_id MODULE value_concert.
 ```
 
 ABAP code:
 
 ```abap
+TABLES zconcert.
+
 DATA: p_conc  TYPE zconcert-concert_id,
       p_perf  TYPE zperf-perf_id,
       p_seats TYPE i,
@@ -641,20 +874,32 @@ MODULE user_command_0100 INPUT.
       LEAVE TO SCREEN 0.
   ENDCASE.
 ENDMODULE.
+
+MODULE value_concert INPUT.
+  CALL FUNCTION 'F4IF_FIELD_VALUE_REQUEST'
+    EXPORTING
+      tabname     = 'ZCONCERT'
+      fieldname   = 'CONCERT_ID'
+      dynpprog    = sy-repid
+      dynpnr      = sy-dynnr
+      dynprofield = 'ZCONCERT-CONCERT_ID'.
+ENDMODULE.
 ```
 
-`abap_true`는 CH04에서 ABAP boolean 처리로 다룬 값을 재사용한다. `PERFORM can_book`은 CH10 모듈화 실습의 예매 가능 여부 판단을 가져온다. 저장 단계는 아직 하지 않는다.
+`abap_true`는 CH04에서 ABAP boolean 처리로 다룬 값을 재사용한다. `PERFORM can_book`은 CH10 모듈화 실습의 예매 가능 여부 판단을 가져온다. 저장 단계는 아직 하지 않는다. `TABLES zconcert`와 `PROCESS ON VALUE-REQUEST`는 CH16-L04/L05에서 배운 classic screen 연결과 직접 F4 경계를 통합 실습에 얹은 것이다.
 
 ### 어떻게 확인하는가
 
 1. SE80에서 Module Pool과 screen 0100을 만든다.
 2. SE93에서 T-code가 program과 시작 screen 0100을 가리키는지 확인한다.
-3. PBO breakpoint에서 PF-STATUS와 TITLEBAR가 설정되는지 본다.
-4. dropdown 목록이 화면에 보이는지 확인한다.
-5. SAVE 버튼을 눌러 PAI에서 `save_ok = 'SAVE'`인지 확인한다.
-6. 좌석 수를 과하게 입력해 `MESSAGE TYPE 'E'`가 발생하는지 본다.
-7. BACK은 `LEAVE TO SCREEN 0`, EXIT는 `LEAVE PROGRAM` 흐름인지 확인한다.
-8. SAVE 후 Enter를 다시 눌러 이전 command가 반복되지 않는지 본다.
+3. Dictionary에서 복사한 field를 사용했다면 `TABLES zconcert.`와 화면 field 이름이 맞는지 확인한다.
+4. PBO breakpoint에서 PF-STATUS와 TITLEBAR가 설정되는지 본다.
+5. dropdown 목록이 화면에 보이는지 확인한다.
+6. `ZCONCERT-CONCERT_ID`에서 F4를 눌러 DDIC 또는 POV 기반 input help가 동작하는지 본다.
+7. SAVE 버튼을 눌러 PAI에서 `save_ok = 'SAVE'`인지 확인한다.
+8. 좌석 수를 과하게 입력해 `MESSAGE TYPE 'E'`가 발생하는지 본다.
+9. BACK은 `LEAVE TO SCREEN 0`, EXIT는 `LEAVE PROGRAM` 흐름인지 확인한다.
+10. SAVE 후 Enter를 다시 눌러 이전 command가 반복되지 않는지 본다.
 
 ### 체험 설계
 
@@ -663,14 +908,16 @@ ENDMODULE.
 - 화면 1: 실제 예매 입력 화면 wireframe.
 - 화면 2: PBO/PAI timeline.
 - 화면 3: 변수와 command monitor.
-- 버튼: `T-code 실행`, `PBO 준비`, `값 입력`, `SAVE`, `BACK`, `EXIT`, `좌석 과다 입력`, `Enter 반복`.
-- 상태: `P_CONC`, `P_PERF`, `P_SEATS`, `P_CUST`, `P_GRADE`, `OK_CODE`, `SAVE_OK`, `GV_OK`, message area.
+- 버튼: `T-code 실행`, `PBO 준비`, `F4 실행`, `값 입력`, `SAVE`, `BACK`, `EXIT`, `좌석 과다 입력`, `Enter 반복`.
+- 상태: `ZCONCERT-CONCERT_ID`, `P_CONC`, `P_PERF`, `P_SEATS`, `P_CUST`, `P_GRADE`, `OK_CODE`, `SAVE_OK`, `GV_OK`, message area.
 - 데이터: 공연 C001, 회차 P001, 남은 좌석 5개, 사용자가 입력한 좌석 수.
-- 피드백: SAVE 뒤 OK_CODE clear를 생략하면 Enter 반복 시 이전 SAVE가 다시 실행되는 모습을 보여 준다.
+- 피드백: `TABLES zconcert`를 빼면 Dictionary field transport가 깨지는 모습, DDIC Search Help를 무시하고 직접 POV를 만들 때 유지보수 위험, SAVE 뒤 OK_CODE clear를 생략하면 Enter 반복 시 이전 SAVE가 다시 실행되는 모습을 보여 준다.
 
 ### 실수와 주의
 
 - 화면 field와 ABAP variable 이름을 맞추지 않으면 값 transport가 깨진다.
+- Dictionary에서 복사한 화면 field는 `TABLES dbtab` interface work area와 연결되는지 확인해야 한다.
+- 직접 F4는 DDIC Search Help로 부족할 때만 사용한다.
 - PBO에서 매번 사용자의 입력값을 초기화하지 않는다.
 - PAI에서 `ok_code` clear를 빠뜨리지 않는다.
 - SAVE에서 실제 데이터 생성을 하지 않는다. 데이터 변경은 CH24 범위다.
@@ -689,18 +936,24 @@ CH16 실습은 직접 만든 화면의 생명주기를 한 번에 묶는다. PBO
 3. Flow Logic의 `MODULE` 호출과 ABAP source의 `MODULE ... ENDMODULE` 정의는 어떻게 다른가?
 4. PBO와 PAI는 각각 어떤 책임을 가지는가?
 5. 화면 field와 ABAP 전역 변수 이름은 왜 맞아야 하는가?
-6. Push Button은 왜 값을 보관하지 않고 function code를 보내는가?
-7. OK_CODE는 왜 보조 변수로 복사하고 clear하는가?
-8. `LEAVE TO SCREEN 0`, `LEAVE SCREEN`, `LEAVE PROGRAM`, `SET SCREEN`은 어떻게 다른가?
-9. PF-STATUS와 TITLEBAR는 왜 PBO에서 설정하는가?
-10. Custom Control은 왜 CH17 Grid ALV의 준비 단계인가?
-11. Table Control을 왜 이 커리큘럼에서 제외하는가?
-12. CH16 실습에서 실제 데이터 생성이 아니라 화면과 검증까지만 다루는 이유는 무엇인가?
+6. `TABLES dbtab`은 왜 Dictionary 기반 dynpro field와 program 사이의 classic interface work area인가?
+7. CH12의 `TABLES`와 CH16의 `TABLES dbtab`은 목적이 어떻게 다른가?
+8. Dynpro F4에서 DDIC Search Help, Search Help exit, `PROCESS ON VALUE-REQUEST`의 우선순위는 무엇인가?
+9. `DYNP_VALUES_READ`와 `DYNP_VALUES_UPDATE`는 POV 시점에서 왜 필요할 수 있는가?
+10. Push Button은 왜 값을 보관하지 않고 function code를 보내는가?
+11. OK_CODE는 왜 보조 변수로 복사하고 clear하는가?
+12. `LEAVE TO SCREEN 0`, `LEAVE SCREEN`, `LEAVE PROGRAM`, `SET SCREEN`은 어떻게 다른가?
+13. PF-STATUS와 TITLEBAR는 왜 PBO에서 설정하는가?
+14. Custom Control은 왜 CH17 Grid ALV의 준비 단계인가?
+15. Table Control을 왜 이 커리큘럼에서 제외하는가?
+16. CH16 실습에서 실제 데이터 생성이 아니라 화면과 검증까지만 다루는 이유는 무엇인가?
 
 핵심 문장:
 
 ```text
 PBO는 보여 주기 전 준비,
+TABLES dbtab은 Dictionary 화면 필드와 program work area의 classic 연결,
+POV는 DDIC 도움말로 부족할 때만 쓰는 직접 F4,
 PAI는 사용자가 행동한 뒤 처리,
 OK_CODE는 복사하고 지운 뒤 분기,
 화면 표는 Table Control이 아니라 CH17 Grid ALV로 이어진다.
