@@ -50,7 +50,7 @@
 <h3>요구사항</h3>
 <ul>
 <li>Module Pool을 만들고 T-code로 화면 <code>0100</code>을 실행한다(<a href="CH16-L01.html">Module Pool 프로그램 구조</a>).</li>
-<li>화면에 <code>P_CONC</code>(F4)·<code>P_PERF</code>·<code>P_SEATS</code>·<code>P_CUST</code>·<code>P_STAT</code>·<code>OK_CODE</code>를 둔다.</li>
+<li>화면에 <code>GV_CONC</code>(F4)·<code>GV_PERF</code>·<code>GV_SEATS</code>·<code>GV_CUST</code>·<code>GV_STAT</code>·<code>OK_CODE</code>를 둔다.</li>
 <li>PBO에서 PF-STATUS·TITLEBAR를 켜고 상태 드롭다운을 채운다.</li>
 <li>PAI에서 <code>OK_CODE</code>를 <code>save_ok</code>로 옮기고 <code>CLEAR</code>한 뒤, <code>SAVE</code>면
 <a href="CH10-L07.html">잔여석 계산·예매 판정</a>의 <code>can_book</code>으로 검증한다.</li>
@@ -88,11 +88,11 @@
 30
 31</pre><pre class="abap-editor__code"><code><span class="tok-kw">PROGRAM</span> sapmzconcert.
 
-<span class="tok-kw">DATA</span>: p_conc  <span class="tok-kw">TYPE</span> zconcert-concert_id,
-      p_perf  <span class="tok-kw">TYPE</span> c <span class="tok-kw">LENGTH</span> <span class="tok-num">3</span>,
-      p_seats <span class="tok-kw">TYPE</span> i,
-      p_cust  <span class="tok-kw">TYPE</span> c <span class="tok-kw">LENGTH</span> <span class="tok-num">30</span>,
-      p_stat  <span class="tok-kw">TYPE</span> c <span class="tok-kw">LENGTH</span> <span class="tok-num">1</span>,
+<span class="tok-kw">DATA</span>: gv_conc  <span class="tok-kw">TYPE</span> zconcert-concert_id,
+      gv_perf  <span class="tok-kw">TYPE</span> c <span class="tok-kw">LENGTH</span> <span class="tok-num">3</span>,
+      gv_seats <span class="tok-kw">TYPE</span> i,
+      gv_cust  <span class="tok-kw">TYPE</span> c <span class="tok-kw">LENGTH</span> <span class="tok-num">30</span>,
+      gv_stat  <span class="tok-kw">TYPE</span> c <span class="tok-kw">LENGTH</span> <span class="tok-num">1</span>,
       ok_code <span class="tok-kw">TYPE</span> sy-ucomm,
       save_ok <span class="tok-kw">TYPE</span> sy-ucomm.
 
@@ -107,7 +107,7 @@
 
 <span class="tok-kw">MODULE</span> status_0100 <span class="tok-kw">OUTPUT</span>.
   <span class="tok-kw">SET</span> <span class="tok-kw">PF-STATUS</span> <span class="tok-str">'ST100'</span>.
-  <span class="tok-kw">SET</span> <span class="tok-kw">TITLEBAR</span>  <span class="tok-str">'TB100'</span> <span class="tok-kw">WITH</span> p_conc.   <span class="tok-com">" 제목 "공연 &amp;1" → p_conc</span>
+  <span class="tok-kw">SET</span> <span class="tok-kw">TITLEBAR</span>  <span class="tok-str">'TB100'</span> <span class="tok-kw">WITH</span> gv_conc.   <span class="tok-com">" 제목 "공연 &amp;1" → gv_conc</span>
 <span class="tok-kw">ENDMODULE</span>.
 
 <span class="tok-kw">MODULE</span> fill_status_list <span class="tok-kw">OUTPUT</span>.        <span class="tok-com">" 상태 드롭다운 채우기</span>
@@ -115,7 +115,7 @@
   gs_value-key = <span class="tok-str">'R'</span>. gs_value-text = <span class="tok-str">'예약'</span>. <span class="tok-kw">APPEND</span> gs_value <span class="tok-kw">TO</span> gt_values.
   gs_value-key = <span class="tok-str">'W'</span>. gs_value-text = <span class="tok-str">'대기'</span>. <span class="tok-kw">APPEND</span> gs_value <span class="tok-kw">TO</span> gt_values.
   <span class="tok-kw">CALL</span> <span class="tok-kw">FUNCTION</span> <span class="tok-str">'VRM_SET_VALUES'</span>
-    <span class="tok-kw">EXPORTING</span> <span class="tok-kw">id</span> = <span class="tok-str">'P_STAT'</span> values = gt_values.
+    <span class="tok-kw">EXPORTING</span> <span class="tok-kw">id</span> = <span class="tok-str">'GV_STAT'</span> values = gt_values.
 <span class="tok-kw">ENDMODULE</span>.</code></pre></div></div>
 </section><section class="lblock"><h2>통합 코드 — 입력 처리(PAI)</h2>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
@@ -145,7 +145,7 @@
 
   <span class="tok-kw">CASE</span> save_ok.
     <span class="tok-kw">WHEN</span> <span class="tok-str">'SAVE'</span>.
-      <span class="tok-kw">PERFORM</span> can_book <span class="tok-kw">USING</span> p_conc p_perf p_seats <span class="tok-kw">CHANGING</span> lv_ok.
+      <span class="tok-kw">PERFORM</span> can_book <span class="tok-kw">USING</span> gv_conc gv_perf gv_seats <span class="tok-kw">CHANGING</span> lv_ok.
       <span class="tok-kw">IF</span> lv_ok = abap_true.
         <span class="tok-kw">MESSAGE</span> <span class="tok-str">'예매 가능 — 저장은 이후 단계에서'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'S'</span>.
       <span class="tok-kw">ELSE</span>.
@@ -187,7 +187,7 @@ Flow Logic은 Screen Painter에, <code>MODULE ... ENDMODULE</code>은 program so
 <tr>
 <td>상태 선택</td>
 <td>드롭다운 <code>예약</code></td>
-<td><code>p_stat = &#39;R&#39;</code></td>
+<td><code>gv_stat = &#39;R&#39;</code></td>
 </tr>
 <tr>
 <td>BACK</td>

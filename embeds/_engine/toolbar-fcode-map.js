@@ -17,12 +17,12 @@
   function titleText() { return CFG.titleTemplate.replace('&1', CFG.titleArg); }
 
   function renderLock() {
-    lockEl.innerHTML = [{ v: 0, l: "p_locked ' '" }, { v: 1, l: "p_locked 'X'" }].map(function (o) {
+    lockEl.innerHTML = [{ v: 0, l: "gv_locked ' '" }, { v: 1, l: "gv_locked 'X'" }].map(function (o) {
       return '<button type="button" data-v="' + o.v + '" aria-pressed="' + ((o.v === 1) === locked ? 'true' : 'false') + '">' + esc(o.l) + '</button>';
     }).join('');
   }
   function renderTitle() {
-    titleEl.innerHTML = '<span>' + esc(titleText()) + '</span><small>TITLEBAR ' + esc(CFG.titleArg ? "'TB100' WITH p_conc" : "'TB100'") + '</small>';
+    titleEl.innerHTML = '<span>' + esc(titleText()) + '</span><small>TITLEBAR ' + esc(CFG.titleArg ? "'TB100' WITH gv_conc" : "'TB100'") + '</small>';
   }
   function renderToolbar() {
     toolbarEl.innerHTML = CFG.buttons.map(function (b) {

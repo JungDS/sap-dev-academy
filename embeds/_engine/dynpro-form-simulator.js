@@ -1,5 +1,5 @@
 /* dynpro-form-simulator 엔진 — CH16 캡스톤. 예매 입력 화면 0100을 PBO 준비→입력→PAI(OK_CODE/검증/종료)로 한 번에 따라간다.
-   SAVE: can_book(p_seats<=잔여) 검증 → S/E 메시지(E면 화면 유지). BACK/CANCEL: LEAVE TO SCREEN 0. EXIT: LEAVE PROGRAM.
+   SAVE: can_book(gv_seats<=잔여) 검증 → S/E 메시지(E면 화면 유지). BACK/CANCEL: LEAVE TO SCREEN 0. EXIT: LEAVE PROGRAM.
    OK_CODE는 save_ok로 복사 후 CLEAR하므로 SAVE 뒤 Enter는 재실행되지 않는다.
    골격 계약: #dfsScreen · #dfsEvent · #dfsMsg.
    config: window.DFS_CFG = { conc, perf, avail, statuses:[{key,text}] }. 높이: _autoheight.js. */
@@ -27,10 +27,10 @@
         '<button class="dfs-tb enter" data-fct="ENTER">Enter</button>' +
       '</div>' +
       '<div class="dfs-form">' +
-        '<div class="dfs-fld"><span class="l">P_CONC</span><span class="ro">' + esc(CFG.conc) + '</span></div>' +
-        '<div class="dfs-fld"><span class="l">P_PERF</span><span class="ro">' + esc(CFG.perf) + '</span></div>' +
-        '<div class="dfs-fld"><span class="l">P_SEATS</span><input class="seats ' + (seatsBad ? 'bad' : '') + '" data-seats type="number" value="' + esc(seats) + '" min="1"><span class="avail">잔여 ' + CFG.avail + '석</span></div>' +
-        '<div class="dfs-fld"><span class="l">P_STAT</span><select data-stat>' + opts + '</select></div>' +
+        '<div class="dfs-fld"><span class="l">GV_CONC</span><span class="ro">' + esc(CFG.conc) + '</span></div>' +
+        '<div class="dfs-fld"><span class="l">GV_PERF</span><span class="ro">' + esc(CFG.perf) + '</span></div>' +
+        '<div class="dfs-fld"><span class="l">GV_SEATS</span><input class="seats ' + (seatsBad ? 'bad' : '') + '" data-seats type="number" value="' + esc(seats) + '" min="1"><span class="avail">잔여 ' + CFG.avail + '석</span></div>' +
+        '<div class="dfs-fld"><span class="l">GV_STAT</span><select data-stat>' + opts + '</select></div>' +
       '</div>';
   }
   function renderEvent() {

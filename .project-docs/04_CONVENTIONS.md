@@ -1,6 +1,6 @@
 # 04. CONVENTIONS — 규칙 단일 홈 · 이름 풀 · 입문자 작성법
 
-> 📅 최종수정: 2026-07-08 02:01 KST
+> 📅 최종수정: 2026-07-08 02:07 KST
 > 🎯 **이 문서가 규칙(R)의 단일 출처.** 01·05·06 등은 여기 ID를 참조한다(재진술 금지).
 > 🧭 **공통 원칙: 규칙은 형식을 강제하지 않는다 — 정직한 적합성이 우선.** 불편·시각요소·예고를 "칸을 채우려고" 인위적으로 만들지 말 것(맞는 곳에 맞는 것만).
 > 📖 파일을 쓰기/고치기 직전. 중요도 순(필수→높음→중), 안정 ID `Rn`(추가만·번호 재사용 금지) — R15·R16은 중요도상 높음/중에 배치(번호 비순차는 안정 ID 유지).
@@ -67,7 +67,7 @@
 - 레슨 `.md` **학습 경계(R15)**: `introduces`(이번에 L3 정식 도입할 개념)·`prereq`(전제 개념) = **리빌딩 시 필수**(게이팅 검증 근거) · `foreshadow`(L1 예고 허용)·`advanceUse`(L2 선행 사용 허용)·`prevRel`(이전 레슨과의 관계: `pain-solution`/`parallel`/`deepening`) = 선택. 빌드는 무시(메타 전용) — 리빌딩 때 경계·관계 선언 + 후속 정적 점검 근거.
 
 **R11 · 네이밍** — 챕터 폴더 = 챕터 ID(`CH01/`). 레슨 소스 = `<레슨ID>[-슬러그].md`. **생성물 HTML = `docs/abap/pages/<레슨ID>.html`**(슬러그 무관, 빌드 강제). 샘플 = `<카테고리>/<기능-케밥>.html`.
-- **ABAP 변수 접두어(스코프) ★** — Subroutine/Method(로컬 스코프) 도입 **전(=CH01～09)** 에는 모든 선언이 사실상 **전역**이다 → **`gv_`(스칼라)·`gs_`(Structure)·`gt_`(Internal Table)** 로 시작. 로컬 스코프(METHOD/FORM 안, **CH10 모듈화 기초↑**)에서 선언한 것만 `lv_`/`ls_`/`lt_`. 즉 g=global·l=local. **`it_`는 Header Line을 가진 Internal Table에만** (헤더라인 없는 일반 내부테이블은 `gt_`/`lt_`). [[abap-var-prefix-scope]]
+- **ABAP 변수 접두어(스코프) ★** — Subroutine/Method(로컬 스코프) 도입 **전(=CH01～09)** 에는 모든 선언이 사실상 **전역**이다 → **`gv_`(스칼라)·`gs_`(Structure)·`gt_`(Internal Table)** 로 시작. 로컬 스코프(METHOD/FORM 안, **CH10 모듈화 기초↑**)에서 선언한 것만 `lv_`/`ls_`/`lt_`. 즉 g=global·l=local. **`it_`는 Header Line을 가진 Internal Table에만** (헤더라인 없는 일반 내부테이블은 `gt_`/`lt_`). **Module Pool 화면필드에 묶인 전역 DATA도 `gv_`**(화면 요소명=변수명이라 Screen Painter 요소도 `GV_…`, `p_` 예외 없음 — 사용자 확정 2026-07-08). 단 **OK field는 프레임워크 관례명 `ok_code`/`save_ok` 유지**(스코프 접두어 미적용, `sy-ucomm`과 동류). [[abap-var-prefix-scope]]
 - **로컬 TYPES 이름 접두어** — 스칼라 `ty_` · **Structure 타입 `ts_`** · **Table Type `tt_`** (BC400 표준 교재 관례, 사용자 확정 2026-07-03. `ty_s_`/`ty_t_` 대안 대신 채택). 기존 `ty_` 구조체 타입은 챕터별 보강 패스에서 전환.
 - **PARAMETERS 접두어 = `pa_`** (표준 교재 관례 — 실무 축약 `p_`는 참고 언급만, 사용자 확정 2026-07-03). **SELECT-OPTIONS 접두어 = `so_`** (표준 관례 — 실무에선 `s_`로 줄여 쓰기도, `pa_`↔`p_`와 동형. 사용자 확정 2026-07-08). 이름은 8자 이내(`so_`+최대 5자).
 
