@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<!-- CH07-L03-S02 — 엔진: compare-matrix · _engine/_base.css. 같은 모양(dan·mul·result)의 네 쓰임 비교.
+     게이팅: CH07 범위(Structure·Internal Table·Table Type·Transparent Table) — SELECT/DML 없음. -->
+<html lang="ko" data-eng="compare-matrix">
+<head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>같은 모양, 네 쓰임 · CH07-L03-S02</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/compare-matrix.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">같은 <code>dan·mul·result</code>, 네 가지 쓰임 — 무엇이 어떻게 다른가</p>
+  <p class="lead">이름을 클릭하면 "언제 쓰나"가 나옵니다. 모양은 같아도 <b>담는 단위·사는 곳·수명</b>이 갈립니다.</p>
+  <p class="hint">💡 왼쪽 이름을 클릭</p>
+  <table><thead id="thead"></thead><tbody id="tbody"></tbody></table>
+  <div class="detail idle" id="detail">이름을 클릭하면 쓰임이 여기 나옵니다.</div>
+  <div class="note">💡 앞의 셋(Structure·Internal Table·Table Type)은 <b>메모리 세계의 도구</b>이고, <b>Transparent Table만 디스크에 영속</b>합니다. Table Type은 데이터를 담는 그릇이 아니라 내부 테이블의 <b>설계도(타입)</b>일 뿐입니다.</div>
+  <script type="application/json" id="cm-cfg">
+  {
+    "cols": ["담는 단위", "사는 곳", "수명", "선언 예"],
+    "rows": [
+      { "name": "Structure (Work Area)", "cells": [{"v":"한 건","r":"mid"},{"v":"메모리","r":"mid"},{"v":"실행 중","r":"lo"},{"v":"TYPE ts_line"}],
+        "detail": "한 줄(한 건)을 담아 다룰 때. 내부 테이블에서 한 행씩 꺼내 담는 그릇으로도 씁니다. 실행이 끝나면 사라집니다." },
+      { "name": "Internal Table", "cells": [{"v":"여러 건","r":"hi"},{"v":"메모리","r":"mid"},{"v":"실행 중","r":"lo"},{"v":"TYPE TABLE OF ts_line"}],
+        "detail": "여러 줄을 모아 정렬·검색·집계할 때. 강력하지만 <b>프로그램이 끝나면 통째로 사라집니다.</b>" },
+      { "name": "Table Type (설계도)", "cells": [{"v":"— (타입만)","r":"lo"},{"v":"SE11 정의","r":"mid"},{"v":"—","r":"lo"},{"v":"TYPE ZTT_LINE"}],
+        "detail": "내부 테이블의 모양을 <b>전역 설계도</b>로 정의해 둔 것. 여러 프로그램이 같은 내부 테이블 타입을 공유합니다. 그 자체는 데이터를 담는 저장소가 아닙니다." },
+      { "name": "Transparent Table", "cells": [{"v":"여러 건","r":"hi"},{"v":"디스크(DB)","r":"hi"},{"v":"영속","r":"hi"},{"v":"SE11 ZGUGUDAN"}],
+        "detail": "실행이 끝나도 남아야 하는 <b>업무 데이터</b>를 위한 DB 테이블. 프로그램이 끝나도, 껐다 켜도 그대로이고 다른 사용자도 조회합니다. 이게 본래 목적입니다." }
+    ]
+  }
+  </script>
+</div>
+<script src="../_engine/compare-matrix.js" defer></script>
+</body>
+</html>

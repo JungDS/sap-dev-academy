@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<!-- CH07-L01-S01 — 엔진: se11-table-builder (embeds/_engine/se11-table-builder.{js,css}) + _autoheight
+     config=window.STB_CFG(ZGUGUDAN 필드). 게이팅: SE11 DDIC 정의만 — SELECT/DML 없음(CH08/CH24 전). -->
+<html lang="ko" data-eng="se11-table-builder">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SE11 Table Builder · CH07-L01-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/se11-table-builder.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">SE11 Table Builder — <code>ZGUGUDAN</code>을 직접 만들어 보기</p>
+  <p class="lead">키를 켜고 끄고, 타입을 <b>Data Element ↔ Built-In</b>으로 바꿔 가며 <b>검사 → 활성화</b>를 눌러 보세요. 활성화해야 오른쪽 <b>DB 물리 테이블</b>이 생깁니다. 키를 잘못 두면 왜 막히는지도 보입니다.</p>
+
+  <div class="stb">
+    <div class="stb__bar">SE11 · Database Table <span class="t">ZGUGUDAN</span>
+      <span class="stb__badge b-new" id="stb-badge"><span class="d"></span>신규</span>
+    </div>
+    <table class="stb__fields" id="stb-grid"></table>
+    <div class="stb__actions">
+      <button class="btn btn--check" id="stb-check">✓ 검사(Check)</button>
+      <button class="btn btn--act" id="stb-activate">🔥 활성화(Activate)</button>
+      <button class="btn btn--reset" id="stb-reset">↻ 처음으로</button>
+    </div>
+    <div class="stb__split">
+      <div class="stb__panel">
+        <div class="stb__ph">📐 DDIC 설계도 (SE11)</div>
+        <div id="stb-design"></div>
+      </div>
+      <div class="stb__panel stb__panel--db off" id="stb-db-panel">
+        <div class="stb__ph">💾 DB 물리 테이블</div>
+        <div id="stb-db"></div>
+      </div>
+    </div>
+    <div class="stb__msg" id="stb-msg"></div>
+  </div>
+  <div class="note">💡 실험해 보세요: ① <code>MUL</code>의 키를 끄고 <code>RESULT</code>를 키로 켠 뒤 활성화 → "키는 맨 앞에 연속으로" 오류. ② <code>DAN</code>을 Built-In(INT4)으로 바꿔 검사 → Data Element 권장 경고. <code>MANDT</code>는 클라이언트 분리용 <code>CLNT</code> 키라 고정입니다.</div>
+  <script type="application/json" id="stb-cfg">
+  {
+    "table": "ZGUGUDAN",
+    "fields": [
+      { "name": "MANDT",  "fixed": true, "key": true, "type": "CLNT", "note": "클라이언트(자동)" },
+      { "name": "DAN",    "key": true,  "de": "ZDE_DAN",    "builtin": "INT4" },
+      { "name": "MUL",    "key": true,  "de": "ZDE_MUL",    "builtin": "INT4" },
+      { "name": "RESULT", "key": false, "de": "ZDE_RESULT", "builtin": "INT4" }
+    ]
+  }
+  </script>
+</div>
+<script src="../_engine/se11-table-builder.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

@@ -59,7 +59,10 @@
 | CH06-L05-S01 | CH06-L05 | judge-quiz | Flat vs Deep 판정 5문(전 숫자=Flat·string 하나=Deep·itab 포함=Deep·중첩≠deep·고정길이 회원카드) | ✅ |
 | CH06-L05-S02 | CH06-L05 | code-anatomy | ts_order 해부 — order_id/customer=Flat, items TYPE tt_item 한 줄이 전체를 Deep으로(원본 코드블록 체험·R2) | ✅ |
 | CH06-L06-S01 | CH06-L06 | state-change-grid | 구구단 gt_gugu 성장 스냅샷(APPEND 1→9→81행 + SORT result DESC) | ✅ |
-| CH07-L03-S01 | CH07-L03 | before-after | 메모리(휘발) vs 디스크(영속) 두 운명 — 중립 톤(tone-warm/cool) | ✅ |
+| CH07-L01-S01 | CH07-L01 | se11-table-builder(신규) | SE11 Transparent Table 생성 시뮬(ZGUGUDAN 필드·키 토글·타입 Data Element↔Built-In·검사→활성화→DB 물리테이블 생성·키 연속성/DE 검증) | ✅ |
+| CH07-L02-S01 | CH07-L02 | se11-create-entries(신규) | Create Entries 손입력 훈련기(DAN·MUL·RESULT 저장·키 중복 거부·RESULT≠DAN*MUL 경고+빨간행·MANDT 클라이언트 분리 100/200·2·3단 자동채움) | ✅ |
+| CH07-L03-S01 | CH07-L03 | before-after | 메모리(휘발) vs 디스크(영속) 두 운명 — 중립 톤(tone-warm/cool)·MANDT(Key)/Data Element 표기로 L01 정합 교정·ts_line | ✅ |
+| CH07-L03-S02 | CH07-L03 | compare-matrix | 같은 모양 네 쓰임 비교(Structure·Internal Table·Table Type·Transparent Table × 담는단위·사는곳·수명·선언예, 행 클릭 상세) | ✅ |
 | CH08-L01-S01 | CH08-L01 | client-scope-filter | Client(MANDT) 자동 종속 — 현재 client 바꿔 같은 SELECT 실행→결과 달라짐(MANDT 미기재) | ✅ |
 | CH08-L02-S01 | CH08-L02 | select-query-simulator | classic SELECT 빌더(projection·WHERE·sy-subrc)·ZTPERSON 연습 샌드박스 | ✅ |
 | CH08-L03-S01 | CH08-L03 | select-form-lab | SELECT 형태 비교(SINGLE/INTO TABLE/ENDSELECT/UP TO 3)·대상 모양·행수·반복 | ✅ |
@@ -315,6 +318,8 @@
 | write-format | 1 | 공통 ✅ | CH01-L05-S01 | WRITE 서식 토글 · config 주입 |
 | event-lifecycle-buildup | 1 | 공통(_engine·자체 mermaid+CDN/_vendor)·자체 postHeight ✅ | CH15-L01-S01 | bespoke 단일사용(STAGES inline) · #C15-1 stage1 inline DATA→classic 수정 |
 | se38-first-program | 3 | 공통(_engine) ✅ | CH01-L02-S01 | 개발루프 상태머신(bespoke·단일사용·데이터 inline) |
+| se11-table-builder (신규) | 1 | 공통(_engine·STB_CFG)+_autoheight ✅ | CH07-L01-S01 | SE11 Transparent Table 생성 시뮬 · config 주도(fields/key/de/builtin) · 검사→활성화 라이프사이클·배지(신규/검사/활성)·설계도↔물리테이블 split·키 연속성/DE 검증 · 다크 |
+| se11-create-entries (신규) | 1 | 공통(_engine·CE_CFG)+_autoheight ✅ | CH07-L02-S01 | Create Entries 손입력 훈련기 · config 주도(key/clients/seed) · 키 중복 거부·값 미검증 경고·클라이언트 분리 · 다크 |
 | se93-tcode-create | 3 | 공통(_engine) ✅ | CH01-L07-S01 | SE93 생성+명령창 실행(bespoke·단일사용) |
 | case-branch-sim | 2 | 공통(_engine)+_autoheight ✅ | CH04-L04-S01 | CASE…WHEN 시뮬·config 주도·OR묶기 토글(bespoke 신규) |
 | join-aggregate-visualizer | 1 | 공통(_engine)·자체 postHeight ✅ | CH13-L08-S01 | JOIN_CFG 주도 · LEFT/INNER 토글·GROUP BY SUM·ON 필터(취소 제외) |
