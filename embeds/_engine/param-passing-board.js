@@ -10,9 +10,9 @@
       expl:'<b>USING reference</b> — 원본과 연결된 채 넘어갑니다. FORM이 값을 바꾸면 <b>원본도 바뀝니다</b>(입력 의도라도 위험).'},
     uval:{label:'USING VALUE', changes:false, code:'USING VALUE(iv_amount)',
       expl:'<b>USING VALUE</b> — 복사본을 넘기므로 <b>원본이 보호</b>됩니다. 입력만 받는 값에 권장.'},
-    cref:{label:'CHANGING (ref)', changes:true, code:'CHANGING cv_amount',
+    cref:{label:'CHANGING (ref)', changes:true, code:'CHANGING cv_result',
       expl:'<b>CHANGING reference</b> — 결과를 돌려주려는 의도. 원본이 <b>바뀐 채</b> 돌아옵니다(정상).'},
-    cval:{label:'CHANGING VALUE', changes:true, code:'CHANGING VALUE(cv_amount)',
+    cval:{label:'CHANGING VALUE', changes:true, code:'CHANGING VALUE(cv_result)',
       expl:'<b>CHANGING VALUE</b> — 복사해 처리하고 <b>정상 종료 시</b> 원본으로 되돌립니다(중간 오류 땐 안 돌려줌).'}
   };
   var cur='uref';
