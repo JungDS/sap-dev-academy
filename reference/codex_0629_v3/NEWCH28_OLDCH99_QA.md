@@ -131,13 +131,13 @@
 | 실패 처리 | `ELSE UNASSIGN`, `sy-subrc`, `IS ASSIGNED`, `TRY...CATCH` 설명 존재 |
 | 감사표 반영 | `00_CONCEPT_GAP_AUDIT.md`에 NEWCH28 완료 로그 반영 |
 
-## 9. 남은 후속 작업
+## 9. 후속 연결 확인
 
 | 후속 | 상태 |
 |---|---|
-| NEWCH29_OLDCH99 Advanced String Processing and Regex | 아직 신규 작성 필요. NEWCH28에서 regex를 병합하지 않고 분리했다. |
-| 기존 OLDCH27 ALV event/editing 이후 번호 정책 | 신규 장 삽입 후 실제 커리큘럼 번호 반영 시 별도 정리가 필요하다. |
-| CH36 RAP capstone EML 실행 실습 | 감사표상 후속 유지. NEWCH28과 별개다. |
+| NEWCH29_OLDCH99 Advanced String Processing and Regex | 작성 완료. NEWCH28에서 regex를 병합하지 않고 독립 장으로 분리한 정책이 유지되었다. |
+| 기존 OLDCH27 ALV event/editing 이후 번호 정책 | 반영 완료. OLDCH27은 `NEWCH30_OLDCH27`로 이동했고, 이후 OLDCH28~OLDCH36도 `NEWCH31`~`NEWCH39`로 정리되었다. |
+| CH36 RAP capstone EML 실행 실습 | 회수 완료. `NEWCH39_OLDCH36` L06에서 외부 EML consumer 실행 흐름으로 반영되었다. |
 
 ## 10. 최종 판정
 
