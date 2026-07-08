@@ -1,7 +1,7 @@
 # CH19_QA · New Open SQL / Modern ABAP SQL 검수
 
-> 대상 산출물: `reference/codex_0629_v3/CH19_REWRITE.md`  
-> 작업 단위: CH19 1개 챕터  
+> 대상 산출물: `reference/codex_0629_v3/NEWCH19_OLDCH19_REWRITE.md`
+> 작업 단위: CH19 1개 챕터
 > 기준: `content/abap/CH19` 원본, `.project-docs/04_CONVENTIONS.md` R6/R15, `.project-docs/09_CURRICULUM_LEDGER.md`, `.project-docs/11_KEYWORD_AUDIT.md`
 
 ## 1. 작업 범위 확인
@@ -10,7 +10,7 @@
 |---|---|
 | 챕터 | CH19 · New Open SQL / Modern ABAP SQL |
 | 원본 레슨 수 | L01~L08, 총 8개 |
-| 산출 파일 | `CH19_REWRITE.md`, `CH19_QA.md` |
+| 산출 파일 | `NEWCH19_OLDCH19_REWRITE.md`, `NEWCH19_OLDCH19_QA.md` |
 | 주 소스 | `content/abap/CH19` |
 | 보조 참고 | `reference/codex_0625_v2/CH19_REWRITE.md`, `reference/codex_0625_v2/CH19_QA.md` |
 | 품질 목표 | IT 비전공 입문자 기준의 완성 강의자료 수준 재집필 |

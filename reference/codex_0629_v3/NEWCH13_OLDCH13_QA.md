@@ -1,6 +1,6 @@
 # CH13_QA - codex_0629_v3 품질 점검
 
-> 대상 파일: `reference/codex_0629_v3/CH13_REWRITE.md`
+> 대상 파일: `reference/codex_0629_v3/NEWCH13_OLDCH13_REWRITE.md`
 > 작업 단위: CH13 모든 레슨
 > 판정: CH13 v3 산출물 생성 완료. `content/abap/CH13`의 8개 레슨을 기준으로 재집필했고, 기존 `codex_0625_v2`는 보조 누락 방지 자료로만 사용했다.
 
@@ -110,10 +110,10 @@ CH13은 Track 1 Classic ABAP의 classic Open SQL 2차 챕터다. ABAP Cloud, RAP
 
 ```text
 git diff --check
-rg -n "DATA\(|@DATA|@\w|VALUE #|NEW |\+=|FINAL\(" reference\codex_0629_v3\CH13_REWRITE.md
-rg -n "\|[^\n`]*\{[^\n`]*\}|\{[^\n`]*\}[^\n`]*\|" reference\codex_0629_v3\CH13_REWRITE.md
-rg -n "\b(INSERT|UPDATE|DELETE|COMMIT|ROLLBACK|CREATE OBJECT|CL_GUI_ALV_GRID|LVC_T_FCAT)\b" reference\codex_0629_v3\CH13_REWRITE.md
-rg -n "도입 불편|필요 학습수단|abapparameters\.htm|abapif\.htm|abapcase\.htm|abapdo\.htm|abapwhile\.htm|공식 문서 체크 힌트" reference\codex_0629_v3\CH13_REWRITE.md
+rg -n "DATA\(|@DATA|@\w|VALUE #|NEW |\+=|FINAL\(" reference\codex_0629_v3\NEWCH13_OLDCH13_REWRITE.md
+rg -n "\|[^\n`]*\{[^\n`]*\}|\{[^\n`]*\}[^\n`]*\|" reference\codex_0629_v3\NEWCH13_OLDCH13_REWRITE.md
+rg -n "\b(INSERT|UPDATE|DELETE|COMMIT|ROLLBACK|CREATE OBJECT|CL_GUI_ALV_GRID|LVC_T_FCAT)\b" reference\codex_0629_v3\NEWCH13_OLDCH13_REWRITE.md
+rg -n "도입 불편|필요 학습수단|abapparameters\.htm|abapif\.htm|abapcase\.htm|abapdo\.htm|abapwhile\.htm|공식 문서 체크 힌트" reference\codex_0629_v3\NEWCH13_OLDCH13_REWRITE.md
 ```
 
 점검 결과:

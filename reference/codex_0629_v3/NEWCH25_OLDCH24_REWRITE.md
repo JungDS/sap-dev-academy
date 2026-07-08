@@ -1,7 +1,7 @@
 # CH24_REWRITE · 실무 데이터 변경과 트랜잭션 제어
 
-> 주 소스: `content/abap/CH24/_chapter.md`, `content/abap/CH24/CH24-L01.md` ~ `CH24-L05.md`  
-> 보조 참고: `.project-docs/09_CURRICULUM_LEDGER.md`, `.project-docs/11_KEYWORD_AUDIT.md`, `reference/codex_0629_v3/CH23_REWRITE.md`  
+> 주 소스: `content/abap/CH24/_chapter.md`, `content/abap/CH24/CH24-L01.md` ~ `CH24-L05.md`
+> 보조 참고: `.project-docs/09_CURRICULUM_LEDGER.md`, `.project-docs/11_KEYWORD_AUDIT.md`, `reference/codex_0629_v3/NEWCH24_OLDCH23_REWRITE.md`
 > 목표: CH24를 Track-2의 첫 실무 저장 장으로 재집필하여, 입문자가 "데이터를 바꾼다"는 일을 문법 암기가 아니라 복구 가능한 업무 트랜잭션 설계로 이해하게 한다.
 
 ## CH24 전체 설계

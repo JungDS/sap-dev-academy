@@ -6,7 +6,7 @@
 | --- | --- |
 | 대상 챕터 | CH17 - Grid ALV 기초 |
 | 입력 소스 | `content/abap/CH17/_chapter.md`, `CH17-L01.md`부터 `CH17-L10.md` |
-| 산출물 | `reference/codex_0629_v3/CH17_REWRITE.md`, `reference/codex_0629_v3/CH17_QA.md` |
+| 산출물 | `reference/codex_0629_v3/NEWCH17_OLDCH17_REWRITE.md`, `reference/codex_0629_v3/NEWCH17_OLDCH17_QA.md` |
 | 작업 방식 | v3 기준 신규 재집필. v2는 보조 품질 기준으로만 사용 |
 | 판정 | 완료 |
 

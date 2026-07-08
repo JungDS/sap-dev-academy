@@ -1,7 +1,7 @@
 # NEWCH24_OLDCH23_REWRITE · RAP / ABAP Cloud 입문
 
-> 주 소스: `content/abap/CH23/_chapter.md`, `content/abap/CH23/CH23-L01.md` ~ `CH23-L09.md`  
-> 보조 참고: `.project-docs/09_CURRICULUM_LEDGER.md`, `.project-docs/11_KEYWORD_AUDIT.md`, `reference/codex_0629_v3/CH22_REWRITE.md`  
+> 주 소스: `content/abap/CH23/_chapter.md`, `content/abap/CH23/CH23-L01.md` ~ `CH23-L09.md`
+> 보조 참고: `.project-docs/09_CURRICULUM_LEDGER.md`, `.project-docs/11_KEYWORD_AUDIT.md`, `reference/codex_0629_v3/NEWCH23_OLDCH22_REWRITE.md`
 > 목표: CH23을 Track-1의 마무리 장으로 재집필하여, CDS 모델 위에 RAP 트랜잭션 앱과 ABAP Cloud 원칙이 어떻게 올라가는지 입문자도 누락 없이 이해하게 한다.
 
 ## CH23 전체 설계

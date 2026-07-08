@@ -6,7 +6,7 @@
 | --- | --- |
 | 대상 챕터 | CH15 - Report Event와 Selection Screen 심화 |
 | 입력 소스 | `content/abap/CH15/_chapter.md`, `CH15-L01.md`부터 `CH15-L12.md` |
-| 산출물 | `reference/codex_0629_v3/CH15_REWRITE.md`, `reference/codex_0629_v3/CH15_QA.md` |
+| 산출물 | `reference/codex_0629_v3/NEWCH15_OLDCH15_REWRITE.md`, `reference/codex_0629_v3/NEWCH15_OLDCH15_QA.md` |
 | 작업 방식 | v3 기준 신규 재집필. v2는 보조 품질 기준으로만 사용 |
 | 판정 | 완료 |
 

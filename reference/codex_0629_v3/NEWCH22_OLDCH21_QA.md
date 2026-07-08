@@ -1,7 +1,7 @@
 # CH21_QA · SALV/Grid ALV 표시 제어 심화 검수
 
-> 대상 산출물: `reference/codex_0629_v3/CH21_REWRITE.md`  
-> 작업 단위: CH21 1개 챕터  
+> 대상 산출물: `reference/codex_0629_v3/NEWCH22_OLDCH21_REWRITE.md`
+> 작업 단위: CH21 1개 챕터
 > 기준: `content/abap/CH21`, `.project-docs/04_CONVENTIONS.md` R6/R15, `.project-docs/09_CURRICULUM_LEDGER.md`, `.project-docs/11_KEYWORD_AUDIT.md`
 
 ## 1. 작업 범위 확인
@@ -10,7 +10,7 @@
 |---|---|
 | 챕터 | CH21 · SALV/Grid ALV 표시 제어 심화 |
 | 원본 레슨 수 | L01~L08, 총 8개 |
-| 산출 파일 | `CH21_REWRITE.md`, `CH21_QA.md` |
+| 산출 파일 | `NEWCH22_OLDCH21_REWRITE.md`, `NEWCH22_OLDCH21_QA.md` |
 | 주 소스 | `content/abap/CH21` |
 | 보조 참고 | `reference/codex_0625_v2/CH21_REWRITE.md`, `reference/codex_0625_v2/CH21_QA.md` |
 | 품질 목표 | SALV/Grid ALV 표시 제어를 입문자 기준 완성 강의자료로 재작성 |

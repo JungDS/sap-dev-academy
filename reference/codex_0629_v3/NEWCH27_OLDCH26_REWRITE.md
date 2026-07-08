@@ -1,7 +1,7 @@
 # CH26_REWRITE · OO ABAP 고급 설계와 패턴
 
-> 주 소스: `content/abap/CH26/_chapter.md`, `content/abap/CH26/CH26-L01.md` ~ `CH26-L05.md`  
-> 보조 참고: `.project-docs/09_CURRICULUM_LEDGER.md`, `.project-docs/11_KEYWORD_AUDIT.md`, `reference/codex_0629_v3/CH20_REWRITE.md`, `reference/codex_0629_v3/CH25_REWRITE.md`  
+> 주 소스: `content/abap/CH26/_chapter.md`, `content/abap/CH26/CH26-L01.md` ~ `CH26-L05.md`
+> 보조 참고: `.project-docs/09_CURRICULUM_LEDGER.md`, `.project-docs/11_KEYWORD_AUDIT.md`, `reference/codex_0629_v3/NEWCH21_OLDCH20_REWRITE.md`, `reference/codex_0629_v3/NEWCH26_OLDCH25_REWRITE.md`
 > 목표: CH26을 Track-2의 OO 설계 심화 장으로 재집필하여, 입문자가 디자인 패턴 이름을 외우는 것이 아니라 생성 책임, 단일 인스턴스, 교체 가능한 알고리즘, 역할 분리, 테스트 가능성을 실제 ABAP 코드 구조로 이해하게 한다.
 
 ## CH26 전체 설계
