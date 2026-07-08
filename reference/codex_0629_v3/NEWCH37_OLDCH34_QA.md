@@ -34,8 +34,8 @@ PASS. `content/abap/CH34`의 다섯 레슨을 v3 파일명 규칙에 맞춰 `NEW
 
 | 감사 항목 | 이전 상태 | v3 처리 |
 |---|---|---|
-| CH26 `BRF+ rule engine` | CH34가 BRF+ Output Management를 짧게 언급했지만 rule engine 자체 소유가 불명확해 P3 정밀 판정 필요 | `NEWCH37-L03`에서 BRFplus를 rule framework로 설명하고, Output Management에서 출력 조건/parameter 결정에 쓰일 수 있음을 명시했다 |
-| 신규 장 필요 여부 | 독립 ABAP 장을 만들지 여부 검토 필요 | 신규 장 불필요로 확정. BRFplus full authoring은 ABAP 문법/OO Track이 아니라 별도 rule framework/모듈 설정 심화로 경계 처리 |
+| CH26 `BRF+ rule engine` | CH34가 BRF+ Output Management를 짧게 언급했지만 rule engine 자체 소유가 불명확해 P3 정밀 판정 후보였음 | `NEWCH37-L03`에서 BRFplus를 rule framework로 설명하고, Output Management에서 출력 조건/parameter 결정에 쓰일 수 있음을 명시했다 |
+| 신규 장 필요 여부 | 독립 ABAP 장을 만들지 여부가 검토 대상이었음 | 신규 장 불필요로 확정. BRFplus full authoring은 ABAP 문법/OO Track이 아니라 별도 rule framework/모듈 설정 심화로 경계 처리 |
 | 후속 영향 | CH26에서 rule engine을 함부로 다루기 어려움 | CH34가 Output Control 맥락의 BRFplus 역할을 회수하므로 CH26/CH18에는 추가 부담 없음 |
 
 ## Classic ABAP 공식 문서 수동 확인 내역
