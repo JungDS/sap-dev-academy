@@ -47,8 +47,41 @@
 <li>타입 <code>LVC_T_FCAT</code>은 컬럼 설정들의 <strong>내부 테이블</strong>, 각 행 <code>LVC_S_FCAT</code>은 <strong>한 컬럼의 설정</strong>이다.</li>
 <li>주요 칸: <code>fieldname</code>(어떤 데이터 필드와 연결), <code>coltext</code>(컬럼 제목), <code>outputlen</code>(출력 너비).</li>
 </ul>
+<p>자주 만지는 속성만 추려 두자. 세부는 필요할 때 찾아 쓴다.</p>
+<table>
+<thead>
+<tr>
+<th>속성</th>
+<th>뜻</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>fieldname</code></td>
+<td>어떤 데이터 필드의 컬럼인지</td>
+</tr>
+<tr>
+<td><code>coltext</code></td>
+<td>컬럼 제목(헤더)</td>
+</tr>
+<tr>
+<td><code>outputlen</code></td>
+<td>출력 너비</td>
+</tr>
+<tr>
+<td><code>no_out</code></td>
+<td>처음엔 숨김(사용자가 펼치면 보임)</td>
+</tr>
+<tr>
+<td><code>key</code></td>
+<td>키 컬럼으로 고정 표시</td>
+</tr>
+<tr>
+<td><code>do_sum</code></td>
+<td>숫자 컬럼 <strong>합계</strong>(맛보기 — <a href="CH21-L03.html">Grid ALV Column 제어 심화</a>)</td>
+</tr>
+</tbody></table>
 </section><section class="lblock"><h2>자동으로 만들기 — LVC_FIELDCATALOG_MERGE</h2>
-<p>행 구조가 DDIC에 있으면 함수로 기본 <button class="term" type="button" data-term="Field Catalog">Field Catalog</button>를 <strong>자동 생성</strong>한다.</p>
+<p>행 Structure가 DDIC에 있으면 함수로 기본 <button class="term" type="button" data-term="Field Catalog">Field Catalog</button>를 <strong>자동 생성</strong>한다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -63,13 +96,13 @@
 12
 13
 14
-15</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> lt_fcat <span class="tok-kw">TYPE</span> lvc_t_fcat.
+15</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> gt_fcat <span class="tok-kw">TYPE</span> lvc_t_fcat.
 
 <span class="tok-kw">CALL</span> <span class="tok-kw">FUNCTION</span> <span class="tok-str">'LVC_FIELDCATALOG_MERGE'</span>
   <span class="tok-kw">EXPORTING</span>
-    i_structure_name = <span class="tok-str">'ZBOOKING'</span>      <span class="tok-com">" ← DDIC 구조명(변수명 아님)</span>
+    i_structure_name = <span class="tok-str">'ZBOOKING'</span>      <span class="tok-com">" ← DDIC Structure 이름(변수명 아님)</span>
   <span class="tok-kw">CHANGING</span>
-    ct_fieldcat      = lt_fcat
+    ct_fieldcat      = gt_fcat
   <span class="tok-kw">EXCEPTIONS</span>
     inconsistent_interface = <span class="tok-num">1</span>
     program_error          = <span class="tok-num">2</span>
@@ -90,15 +123,15 @@
 8
 9</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> ls_fcat <span class="tok-kw">TYPE</span> lvc_s_fcat.
 
-<span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_fcat <span class="tok-kw">INTO</span> ls_fcat.
+<span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> gt_fcat <span class="tok-kw">INTO</span> ls_fcat.
   <span class="tok-kw">IF</span> ls_fcat-fieldname = <span class="tok-str">'SEATS'</span>.
     ls_fcat-coltext   = <span class="tok-str">'좌석수'</span>.            <span class="tok-com">" 컬럼 제목</span>
     ls_fcat-outputlen = <span class="tok-num">8</span>.                  <span class="tok-com">" 출력 너비</span>
-    <span class="tok-kw">MODIFY</span> lt_fcat <span class="tok-kw">FROM</span> ls_fcat <span class="tok-kw">INDEX</span> sy-tabix.   <span class="tok-com">" 현재 행에 반영</span>
+    <span class="tok-kw">MODIFY</span> gt_fcat <span class="tok-kw">FROM</span> ls_fcat <span class="tok-kw">INDEX</span> sy-tabix.   <span class="tok-com">" 현재 행에 반영</span>
   <span class="tok-kw">ENDIF</span>.
 <span class="tok-kw">ENDLOOP</span>.</code></pre></div></div>
 </section><section class="lblock"><h2>직접 편집해 보기 — 컬럼 설명서 편집기</h2>
-<p>왼쪽 <code>lt_booking</code> 미리보기를 보면서, 오른쪽 <code>lt_fcat</code>에서 컬럼 <strong>제목(<code>coltext</code>)·너비</strong>를
+<p>왼쪽 <code>gt_booking</code> 미리보기를 보면서, 오른쪽 <code>gt_fcat</code>에서 컬럼 <strong>제목(<code>coltext</code>)·너비</strong>를
 바꿔 보자. 헤더가 즉시 바뀐다. 단, <code>fieldname</code>을 <strong>소문자</strong>로 잡으면 DDIC 필드명과 맞지
 않아 수정이 적용되지 않는 것도 확인하자.</p>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">컬럼 설명서 편집기 (<button class="term" type="button" data-term="Field Catalog">Field Catalog</button>)</span><a class="embed__open" href="../../../embeds/abap/CH17-L04-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH17-L04-S01.html" loading="lazy" title="컬럼 설명서 편집기 (Field Catalog)" style="height:600px"></iframe></figure>
@@ -106,9 +139,9 @@
 <ul>
 <li><strong><code>fieldname</code> 오타·소문자</strong> → 출력 데이터 필드명(<code>&#39;SEATS&#39;</code>)과 정확히 같아야 적용된다.
 대소문자도 맞춰야 한다.</li>
-<li><strong><code>i_structure_name</code>에 변수명</strong> → DDIC <strong>구조명</strong>(<code>&#39;ZBOOKING&#39;</code>)을 넣어야 한다. 내부
+<li><strong><code>i_structure_name</code>에 변수명</strong> → DDIC <strong>Structure 이름</strong>(<code>&#39;ZBOOKING&#39;</code>)을 넣어야 한다. 내부
 테이블 변수명을 넣으면 의도대로 안 된다.</li>
-<li><strong>fcat 비움</strong> → &quot;데이터가 있는데 표가 이상하다&quot;면, 먼저 <code>lt_fcat</code>이 채워졌는지 확인한다.</li>
+<li><strong>fcat 비움</strong> → &quot;데이터가 있는데 표가 이상하다&quot;면, 먼저 <code>gt_fcat</code>이 채워졌는지 확인한다.</li>
 </ul>
 </section><section class="lblock"><h2>정리</h2>
 <ul>

@@ -40,7 +40,7 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>조각을 하나의 화면으로</h2>
-<p>지금까지는 조각을 하나씩 배웠다 — 자리·그리드·데이터·Field Catalog·Layout·Variant·display·refresh·색.
+<p>지금까지는 조각을 하나씩 배웠다: 자리·그리드·데이터·Field Catalog·Layout·Variant·display·refresh·색.
 실무에선 조각이 아니라 <strong>하나의 화면</strong>이 필요하다. 사용자가 공연 번호를 입력하고,
 <a href="CH16-L01.html">Module Pool 프로그램 구조</a>의 화면 0100 안 <code>CONT100</code> 영역에서 예매 목록을
 보고, 새로고침해도 화면이 안정적으로 유지되어야 한다.</p>
@@ -54,7 +54,7 @@
 8
 9</pre><pre class="abap-editor__code"><code>[Screen 0100]
 -------------------------------------------------
-| 공연번호 p_concert: C001       [조회] [뒤로]   |
+| 공연번호 gv_concert: C001       [조회] [뒤로]   |
 |                                               |
 | [Custom Control CONT100]                      |
 |   BOOKING_ID | CUSTOMER | SEATS | STATUS       |
@@ -87,10 +87,10 @@
 21
 22</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>: go_cont    <span class="tok-kw">TYPE</span> <span class="tok-kw">REF</span> <span class="tok-kw">TO</span> cl_gui_custom_container,
       go_grid    <span class="tok-kw">TYPE</span> <span class="tok-kw">REF</span> <span class="tok-kw">TO</span> cl_gui_alv_grid,
-      lt_booking <span class="tok-kw">TYPE</span> <span class="tok-kw">STANDARD</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> zbooking,
-      lt_fcat    <span class="tok-kw">TYPE</span> lvc_t_fcat,
-      ls_layout  <span class="tok-kw">TYPE</span> lvc_s_layo,
-      ls_variant <span class="tok-kw">TYPE</span> disvariant.
+      gt_booking <span class="tok-kw">TYPE</span> <span class="tok-kw">STANDARD</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> zbooking,
+      gt_fcat    <span class="tok-kw">TYPE</span> lvc_t_fcat,
+      gs_layout  <span class="tok-kw">TYPE</span> lvc_s_layo,
+      gs_variant <span class="tok-kw">TYPE</span> disvariant.
 
 <span class="tok-kw">MODULE</span> status_0100 <span class="tok-kw">OUTPUT</span>.
   <span class="tok-kw">IF</span> go_grid <span class="tok-kw">IS</span> <span class="tok-kw">INITIAL</span>.
@@ -165,8 +165,8 @@
 55
 56
 57</pre><pre class="abap-editor__code"><code><span class="tok-kw">FORM</span> select_booking.
-  <span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> zbooking <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> lt_booking
-    <span class="tok-kw">WHERE</span> concert_id = p_concert.
+  <span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> zbooking <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> gt_booking
+    <span class="tok-kw">WHERE</span> concert_id = gv_concert.
   <span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.
     <span class="tok-kw">MESSAGE</span> <span class="tok-str">'해당 공연의 예매 데이터가 없습니다.'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'S'</span>.   <span class="tok-com">" 빈 결과는 정상일 수 있음</span>
   <span class="tok-kw">ENDIF</span>.
@@ -181,33 +181,33 @@
   <span class="tok-kw">DATA</span> ls_fcat <span class="tok-kw">TYPE</span> lvc_s_fcat.
   <span class="tok-kw">CALL</span> <span class="tok-kw">FUNCTION</span> <span class="tok-str">'LVC_FIELDCATALOG_MERGE'</span>
     <span class="tok-kw">EXPORTING</span> i_structure_name = <span class="tok-str">'ZBOOKING'</span>
-    <span class="tok-kw">CHANGING</span>  ct_fieldcat      = lt_fcat
+    <span class="tok-kw">CHANGING</span>  ct_fieldcat      = gt_fcat
     <span class="tok-kw">EXCEPTIONS</span> <span class="tok-kw">OTHERS</span>          = <span class="tok-num">1</span>.
   <span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.
     <span class="tok-kw">MESSAGE</span> <span class="tok-str">'Field Catalog를 생성하지 못했습니다.'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'E'</span>.
   <span class="tok-kw">ENDIF</span>.
-  <span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_fcat <span class="tok-kw">INTO</span> ls_fcat.
+  <span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> gt_fcat <span class="tok-kw">INTO</span> ls_fcat.
     <span class="tok-kw">IF</span> ls_fcat-fieldname = <span class="tok-str">'SEATS'</span>.
       ls_fcat-coltext = <span class="tok-str">'좌석수'</span>. ls_fcat-outputlen = <span class="tok-num">8</span>.
-      <span class="tok-kw">MODIFY</span> lt_fcat <span class="tok-kw">FROM</span> ls_fcat <span class="tok-kw">INDEX</span> sy-tabix.
+      <span class="tok-kw">MODIFY</span> gt_fcat <span class="tok-kw">FROM</span> ls_fcat <span class="tok-kw">INDEX</span> sy-tabix.
     <span class="tok-kw">ENDIF</span>.
   <span class="tok-kw">ENDLOOP</span>.
 <span class="tok-kw">ENDFORM</span>.
 
 <span class="tok-kw">FORM</span> build_layout.
-  ls_layout-zebra      = abap_true.
-  ls_layout-grid_title = <span class="tok-str">'예매 목록'</span>.
-  ls_layout-cwidth_opt = abap_true.
-  ls_variant-report    = sy-repid.
+  gs_layout-zebra      = abap_true.
+  gs_layout-grid_title = <span class="tok-str">'예매 목록'</span>.
+  gs_layout-cwidth_opt = abap_true.
+  gs_variant-report    = sy-repid.
 <span class="tok-kw">ENDFORM</span>.
 
 <span class="tok-kw">FORM</span> display_grid.
   go_grid-&gt;set_table_for_first_display(
-    <span class="tok-kw">EXPORTING</span> is_layout  = ls_layout
-              is_variant = ls_variant
+    <span class="tok-kw">EXPORTING</span> is_layout  = gs_layout
+              is_variant = gs_variant
               i_save     = <span class="tok-str">'A'</span>
-    <span class="tok-kw">CHANGING</span>  it_outtab       = lt_booking
-              it_fieldcatalog = lt_fcat
+    <span class="tok-kw">CHANGING</span>  it_outtab       = gt_booking
+              it_fieldcatalog = gt_fcat
     <span class="tok-kw">EXCEPTIONS</span> <span class="tok-kw">OTHERS</span>          = <span class="tok-num">1</span> ).
   <span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.
     <span class="tok-kw">MESSAGE</span> <span class="tok-str">'ALV Grid를 처음 표시하지 못했습니다.'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'E'</span>.
@@ -241,11 +241,11 @@
 </tr>
 <tr>
 <td>데이터</td>
-<td><code>lt_booking</code> 행 수와 화면 행 수가 맞는가</td>
+<td><code>gt_booking</code> 행 수와 화면 행 수가 맞는가</td>
 </tr>
 <tr>
 <td>컬럼</td>
-<td><code>lt_fcat</code> 변경이 화면 컬럼 제목에 반영되는가</td>
+<td><code>gt_fcat</code> 변경이 화면 컬럼 제목에 반영되는가</td>
 </tr>
 <tr>
 <td>모양</td>
@@ -256,7 +256,20 @@
 <td>두 번째 PBO부터 display가 아니라 <strong>refresh</strong>가 호출되는가</td>
 </tr>
 </tbody></table>
-</section><section class="lblock"><h2>직접 해 볼 과제</h2>
+</section><section class="lblock"><h2>스스로 답해 보기</h2>
+<p>조각을 다 배웠다면 아래를 <strong>말로</strong> 답할 수 있어야 한다(막히면 해당 레슨으로).</p>
+<details>
+<summary>개념 자가점검 (펼치기)</summary><ul>
+<li><code>CONT100</code>과 <code>CL_GUI_CUSTOM_CONTAINER</code>는 어떻게 다른가? <code>go_cont</code>는 그중 무엇인가?</li>
+<li>그리드(<code>go_grid</code>)만 만들면 왜 표가 안 보이나? 무엇이 더 필요한가?</li>
+<li>Field Catalog와 출력용 Internal Table은 각각 무슨 역할인가?</li>
+<li>Layout과 Variant는 무엇이 다른가?</li>
+<li><code>set_table_for_first_display</code>와 <code>refresh_table_display</code>는 언제 각각 쓰나?</li>
+<li>Stable Refresh는 무엇을 지켜 주나?</li>
+<li>행 색상이 안 보일 때 점검할 네 가지는?</li>
+<li>셀 색상·<button class="term" type="button" data-term="이벤트">이벤트</button>·편집 Grid는 왜 이 챕터가 아니라 뒤 챕터인가?</li>
+</ul>
+</details></section><section class="lblock"><h2>직접 해 볼 과제</h2>
 <ol>
 <li><strong>매진 회차 행 색상</strong> — <a href="CH17-L09.html">행 색상 기초</a>의 <code>info_fname</code>에 색 컬럼을 더한다.</li>
 <li><strong>좌석수 합계</strong> — Field Catalog의 <code>SEATS</code>에 <code>do_sum = abap_true</code>(<a href="CH21-L03.html">Grid ALV Column 제어 심화</a> 맛보기).</li>
@@ -270,7 +283,7 @@
 <ul>
 <li><strong>&quot;처음 구성&quot;과 &quot;이후 갱신&quot; 섞기</strong> → <code>set_table_for_first_display</code>는 처음 한 번, <code>refresh_table_display</code>는 이후. 이 원칙을 화면 흐름에 고정한다.</li>
 <li><strong>Custom Control 이름 불일치</strong> → 화면과 코드의 <code>container_name</code>이 같아야 한다.</li>
-<li><strong>merge 실패 무시</strong> → <code>LVC_FIELDCATALOG_MERGE</code>가 실패했는데 <code>lt_fcat</code>을 확인 안 하고 display로 넘어가지 않는다.</li>
+<li><strong>merge 실패 무시</strong> → <code>LVC_FIELDCATALOG_MERGE</code>가 실패했는데 <code>gt_fcat</code>을 확인 안 하고 display로 넘어가지 않는다.</li>
 <li><strong>0건을 오류로</strong> → 조회 결과 없음은 정상 업무 상황일 수 있다.</li>
 </ul>
 </section><section class="lblock"><h2>정리</h2>

@@ -59,27 +59,32 @@
 13
 14
 15
-16</pre><pre class="abap-editor__code"><code><span class="tok-kw">TYPES</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ty_perf_alv,
+16</pre><pre class="abap-editor__code"><code><span class="tok-kw">TYPES</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ts_perf_alv,
          concert_id <span class="tok-kw">TYPE</span> zperf-concert_id,
          perf_date  <span class="tok-kw">TYPE</span> zperf-perf_date,
          seatsocc   <span class="tok-kw">TYPE</span> zperf-seatsocc,
          capacity   <span class="tok-kw">TYPE</span> zperf-capacity,
          rowcolor   <span class="tok-kw">TYPE</span> c <span class="tok-kw">LENGTH</span> <span class="tok-num">4</span>,        <span class="tok-com">" ← 색 코드 컬럼</span>
-       <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ty_perf_alv.
+       <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ts_perf_alv.
 
-<span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_perf <span class="tok-kw">INTO</span> ls_perf.
+<span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> gt_perf <span class="tok-kw">INTO</span> ls_perf.
   <span class="tok-kw">IF</span> ls_perf-seatsocc &gt;= ls_perf-capacity.   <span class="tok-com">" 매진이면</span>
     ls_perf-rowcolor = <span class="tok-str">'C610'</span>.               <span class="tok-com">" 빨강 계열 코드</span>
-    <span class="tok-kw">MODIFY</span> lt_perf <span class="tok-kw">FROM</span> ls_perf <span class="tok-kw">INDEX</span> sy-tabix.
+    <span class="tok-kw">MODIFY</span> gt_perf <span class="tok-kw">FROM</span> ls_perf <span class="tok-kw">INDEX</span> sy-tabix.
   <span class="tok-kw">ENDIF</span>.
 <span class="tok-kw">ENDLOOP</span>.
 
-ls_layout-info_fname = <span class="tok-str">'ROWCOLOR'</span>.            <span class="tok-com">" 색 코드가 든 '필드명'을 layout에</span></code></pre></div></div>
-<p>핵심은 <strong>두 가지</strong>다 — ① 데이터 행 안에 <strong>색 코드</strong>가 있어야 하고, ② layout이 그
-<strong>필드명</strong>을 알아야 한다. 둘 중 하나라도 빠지면 색이 보이지 않는다.</p>
+gs_layout-info_fname = <span class="tok-str">'ROWCOLOR'</span>.            <span class="tok-com">" 색 코드가 든 '필드명'을 layout에</span></code></pre></div></div>
+<p>색이 화면에 뜨려면 <strong>네 가지</strong>가 맞아야 한다. 하나라도 빠지면 색이 보이지 않는다.</p>
+<ol>
+<li>데이터 행에 <strong>색 코드 컬럼</strong>(예 <code>rowcolor</code>)이 있다.</li>
+<li>각 행의 색 코드 컬럼에 <strong>코드 값</strong>(예 <code>&#39;C610&#39;</code>)을 넣었다.</li>
+<li><code>gs_layout-info_fname</code>에 그 <strong>컬럼 이름</strong>(<code>&#39;ROWCOLOR&#39;</code>)을 지정했다.</li>
+<li><code>set_table_for_first_display</code>(또는 <code>refresh_table_display</code>)로 <strong>화면에 반영</strong>했다.</li>
+</ol>
 <blockquote class="cw">
 <p>⚠️ <code>info_fname</code>은 <strong>&quot;색 코드 값&quot;이 아니라 &quot;색 코드가 들어 있는 필드명&quot;</strong> 이다.
-<code>ls_layout-info_fname = &#39;C610&#39;</code>처럼 쓰면 안 된다 — <code>&#39;ROWCOLOR&#39;</code>(필드명)를 넣는다.
+<code>gs_layout-info_fname = &#39;C610&#39;</code>처럼 쓰면 안 된다. <code>&#39;ROWCOLOR&#39;</code>(필드명)를 넣는다.
 색 코드는 임의 RGB가 아니라 <code>C</code> + 색번호 + 강조 + 반전 형식(<code>C610</code>)이다.</p>
 </blockquote>
 </section><section class="lblock"><h2>직접 색칠해 보기 — 매진 판정과 색 연결</h2>
@@ -88,8 +93,8 @@ ls_layout-info_fname = <span class="tok-str">'ROWCOLOR'</span>.            <span
 안 보이는지도 확인한다.</p>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">매진 판정과 행 색상 (info_fname)</span><a class="embed__open" href="../../../embeds/abap/CH17-L09-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH17-L09-S01.html" loading="lazy" title="매진 판정과 행 색상 (info_fname)" style="height:620px"></iframe></figure>
 <blockquote>
-<p>🔶 <strong>셀 하나만</strong> 색을 다르게 하는 셀 색상·스타일·<button class="term" type="button" data-term="이벤트">이벤트</button>(더블클릭 등)는 표시 제어 심화인
-<a href="CH21-L01.html">SALV/Grid ALV 표시 제어 심화</a>에서 — 여기선 <strong>행 색상</strong>까지.</p>
+<p>🔶 <strong>셀 하나만</strong> 색·스타일을 다르게 하는 건 <a href="CH21-L01.html">SALV/Grid ALV 표시 제어 심화</a>,
+더블클릭 같은 <strong><button class="term" type="button" data-term="이벤트">이벤트</button></strong>는 <a href="CH27-L01.html">ALV 고급 Event 응용</a>에서 다룬다. 여기선 <strong>행 색상</strong>까지.</p>
 </blockquote>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>

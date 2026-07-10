@@ -40,7 +40,7 @@
     }).join('');
   }
   function renderMsg() {
-    if (!report) { msgEl.className = 'warn'; msgEl.innerHTML = '🚫 <code>report</code>가 비어 있음 — 어느 프로그램의 Variant인지 기준이 약해 저장/조회가 꼬일 수 있습니다. <code>ls_variant-report = sy-repid</code>를 넣으세요.'; return; }
+    if (!report) { msgEl.className = 'warn'; msgEl.innerHTML = '🚫 <code>report</code>가 비어 있음 — 어느 프로그램의 Variant인지 기준이 약해 저장/조회가 꼬일 수 있습니다. <code>gs_variant-report = sy-repid</code>를 넣으세요.'; return; }
     if (activeVar) { msgEl.className = 'ok'; msgEl.innerHTML = '✅ <b>' + esc(activeVar) + '</b>의 Variant를 열어 <b>컬럼 순서</b>를 복원했습니다. 저장된 건 데이터가 아니라 <b>표시 방식</b>입니다.'; return; }
     msgEl.className = ''; msgEl.innerHTML = '저장된 Variant를 <b>열기</b>하면 그 사용자의 컬럼 순서로 바뀝니다.';
   }

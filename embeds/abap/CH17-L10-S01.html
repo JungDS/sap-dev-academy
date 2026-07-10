@@ -36,7 +36,7 @@
 
 <script>
 window.ALVG_CFG = {
-  itab:'lt_booking', sumKey:'seats',
+  itab:'gt_booking', sumKey:'seats',
   cols:[
     {key:'booking_id',label:'BOOKING_ID',num:true},
     {key:'concert_id',label:'CONCERT_ID',num:false},
@@ -51,15 +51,15 @@ window.ALVG_CFG = {
     {booking_id:5006,concert_id:'C001',customer:'차은우',seats:5,status:'N'}
   ],
   steps:[
-    {n:1, nm:'데이터 선언·조회', sub:'SELECT INTO lt_booking', code:[
+    {n:1, nm:'데이터 선언·조회', sub:'SELECT INTO gt_booking', code:[
       "DATA: go_cont    TYPE REF TO cl_gui_custom_container,",
       "      go_grid    TYPE REF TO cl_gui_alv_grid,",
-      "      lt_booking TYPE TABLE OF zbooking,",
-      "      lt_fcat    TYPE lvc_t_fcat,",
-      "      ls_layout  TYPE lvc_s_layo.",
+      "      gt_booking TYPE TABLE OF zbooking,",
+      "      gt_fcat    TYPE lvc_t_fcat,",
+      "      gs_layout  TYPE lvc_s_layo.",
       "",
-      "SELECT * FROM zbooking INTO TABLE lt_booking",
-      "  WHERE concert_id = p_concert." ]},
+      "SELECT * FROM zbooking INTO TABLE gt_booking",
+      "  WHERE concert_id = gv_concert." ]},
     {n:2, nm:'Custom Container', sub:"CONT100", code:[
       "CREATE OBJECT go_cont",
       "  EXPORTING container_name = 'CONT100'." ]},
@@ -69,15 +69,15 @@ window.ALVG_CFG = {
     {n:4, nm:'Field Catalog + Layout', sub:'MERGE·zebra', code:[
       "CALL FUNCTION 'LVC_FIELDCATALOG_MERGE'",
       "  EXPORTING i_structure_name = 'ZBOOKING'",
-      "  CHANGING  ct_fieldcat      = lt_fcat.",
+      "  CHANGING  ct_fieldcat      = gt_fcat.",
       "",
-      "ls_layout-zebra      = abap_true.",
-      "ls_layout-grid_title = '예매 목록'." ]},
+      "gs_layout-zebra      = abap_true.",
+      "gs_layout-grid_title = '예매 목록'." ]},
     {n:5, nm:'set_table_for_first_display', sub:'그리드 출력', showGrid:true, code:[
       "go_grid->set_table_for_first_display(",
-      "  EXPORTING is_layout       = ls_layout",
-      "  CHANGING  it_outtab       = lt_booking",
-      "            it_fieldcatalog = lt_fcat )." ]}
+      "  EXPORTING is_layout       = gs_layout",
+      "  CHANGING  it_outtab       = gt_booking",
+      "            it_fieldcatalog = gt_fcat )." ]}
   ]
 };
 </script>
