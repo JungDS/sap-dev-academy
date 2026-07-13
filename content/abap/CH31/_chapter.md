@@ -2,10 +2,10 @@
 id: CH31
 track: TRACK-02
 order: 31
-title: "IDoc / ALE / Gateway"
-intro: "표준 메시지(IDoc)·게이트웨이로 시스템을 연계하고 싶다."
-keywords: ["IDoc","ALE","Gateway","OData"]
+title: "Editable Grid ALV와 입력 검증"
+intro: "ALV에서 직접 입력·수정하고 검증하고 싶다."
+keywords: ["Editable ALV","Data Changed","입력검증"]
 difficulty: "고급"
 ---
 
-표준 메시지(IDoc)·게이트웨이로 시스템을 연계하고 싶다.
+ALV에서 직접 입력·수정하고 검증하고 싶다.

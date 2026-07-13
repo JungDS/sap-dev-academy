@@ -1,44 +1,35 @@
 <!DOCTYPE html>
-<!-- CH25-L02-S01 — 엔진: enqueue-2session (embeds/_engine/enqueue-2session.{js,css}) · 공통토큰: _engine/_base.css
-     두 세션 ENQUEUE/DEQUEUE 동시성 체험 — foreign_lock 거절, DEQUEUE/COMMIT 해제, SM12풍 잠금목록. -->
-<html lang="ko" data-eng="enqueue-2session">
+<!-- CH25-L02-S01 — 엔진: txn-atomicity (embeds/_engine/txn-atomicity.{js,css}) · 공통토큰: _engine/_base.css
+     COMMIT/ROLLBACK 원자성 체험 — 미확정(메모리) ↔ 확정(DB), 항목 실패 토글로 반쪽 저장 위험. -->
+<html lang="ko" data-eng="txn-atomicity">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>2세션 잠금 데모 · CH25-L02-S01</title>
+<title>원자성 시뮬레이터 · CH25-L02-S01</title>
 <link rel="stylesheet" href="../_engine/_base.css" />
-<link rel="stylesheet" href="../_engine/enqueue-2session.css" />
+<link rel="stylesheet" href="../_engine/txn-atomicity.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">두 사용자가 같은 예매를 잠그면? — <code>ENQUEUE</code> / <code>DEQUEUE</code></p>
-  <p class="lead">A가 먼저 <code>booking_id=1001</code>을 잠근 뒤 B가 같은 예매를 잠가 보세요. <b>foreign_lock</b>으로 거절됩니다. A가 <b>DEQUEUE</b>하거나 <b>COMMIT</b>하면 그제야 B가 가능.</p>
+  <p class="hd">트랜잭션 원자성 — <b>전부 아니면 전무</b></p>
+  <p class="lead">예매 = <code>ZBOOKING</code>(헤더) + <code>ZBOOKING_ITEM</code>(좌석) 한 묶음. 항목 INSERT를 일부러 실패시키고 <b>COMMIT</b>해 보면 "반쪽 저장"이 무엇인지 보입니다.</p>
 
-  <div class="users">
-    <div class="user a">
-      <div class="user__h"><span class="dot"></span>User A (정훈영)<span class="own" id="ownA">🔒 잠금 보유</span></div>
-      <div class="user__b">
-        <div class="acts"><button class="b enq" id="enqA" type="button">ENQUEUE 1001</button><button class="b" id="deqA" type="button">DEQUEUE</button><button class="b" id="comA" type="button">COMMIT WORK</button></div>
-        <div class="ulog" id="logA"></div>
-      </div>
-    </div>
-    <div class="user b">
-      <div class="user__h"><span class="dot"></span>User B (손흥민)<span class="own" id="ownB">🔒 잠금 보유</span></div>
-      <div class="user__b">
-        <div class="acts"><button class="b enq" id="enqB" type="button">ENQUEUE 1001</button><button class="b" id="deqB" type="button">DEQUEUE</button><button class="b" id="comB" type="button">COMMIT WORK</button></div>
-        <div class="ulog" id="logB"></div>
-      </div>
-    </div>
+  <div class="bar">
+    <label class="alert-toggle"><input type="checkbox" id="failItem" /> 항목 INSERT 실패 시뮬</label>
+    <button class="btn go" id="process" type="button">① 예매 처리 (INSERT 2건)</button>
+    <button class="btn commit" id="commit" type="button" disabled>② COMMIT WORK</button>
+    <button class="btn rollback" id="rollback" type="button" disabled>③ ROLLBACK WORK</button>
+    <button class="reset" id="reset" type="button">↺ 초기화</button>
   </div>
 
-  <div class="sm12">
-    <div class="sm12__h">🔒 잠금 목록 (SM12) <small id="sm12n">0건</small></div>
-    <div class="sm12__b" id="sm12b"></div>
+  <div class="cols">
+    <div class="col mem"><div class="col__h">🧠 메모리 — 미확정 변경</div><div class="col__b" id="mem"></div></div>
+    <div class="col db"><div class="col__h">💾 DB — 확정됨</div><div class="col__b" id="db"></div></div>
   </div>
-  <button class="reset" id="reset" type="button">↺ 초기화</button>
 
-  <div class="note">💡 표준 패턴: ① <code>ENQUEUE</code>(잠금) → ② 읽기 → ③ 변경(DML) → ④ <code>COMMIT</code>(확정+자동해제) → (필요시 ⑤ <code>DEQUEUE</code>). 잠긴 행은 <b>SM12</b>에서 누가 잠갔는지 확인합니다.</div>
+  <div class="msg info" id="msg"></div>
+  <div class="note">💡 핵심: 실패를 확인하면 반드시 <code>ROLLBACK</code>해 반쪽 저장을 막습니다. 문장이 여러 개면 마지막 <code>sy-subrc</code>만 보지 말고 실패를 누적(<code>lv_failed</code>)해 <b>업무 단위 전체가 성공</b>했을 때만 <code>COMMIT</code>하세요.</div>
 </div>
-<script src="../_engine/enqueue-2session.js" defer></script>
+<script src="../_engine/txn-atomicity.js" defer></script>
 </body>
 </html>

@@ -2,10 +2,10 @@
 id: CH21
 track: TRACK-01
 order: 21
-title: "SALV/Grid ALV 표시 제어 심화"
-intro: "ALV 표시를 색·셀 단위까지 세밀하게 제어하고 싶다."
-keywords: ["Cell Color","Hotspot","Event","Layout 심화"]
+title: "OO ABAP 기본 설계"
+intro: "절차적 코드의 한계 — 객체로 구조화하고 싶다."
+keywords: ["CLASS","METHOD","인스턴스","상속","인터페이스"]
 difficulty: "고급"
 ---
 
-ALV 표시를 색·셀 단위까지 세밀하게 제어하고 싶다.
+절차적 코드의 한계 — 객체로 구조화하고 싶다.

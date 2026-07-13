@@ -1,35 +1,38 @@
 <!DOCTYPE html>
-<!-- CH24-L02-S01 — 엔진: txn-atomicity (embeds/_engine/txn-atomicity.{js,css}) · 공통토큰: _engine/_base.css
-     COMMIT/ROLLBACK 원자성 체험 — 미확정(메모리) ↔ 확정(DB), 항목 실패 토글로 반쪽 저장 위험. -->
-<html lang="ko" data-eng="txn-atomicity">
+<!-- CH24-L02-S01 — 엔진: root-entity-picker · _autoheight. 콘텐츠=레슨 전용(RAP Root Entity 판정기, #C23 L02).
+     게이팅: define root view entity(CH23 define view entity의 RAP 확장). 설계 판단(트랜잭션 단위·key 안정성).
+     관통예제=예매(zbooking). child/composition은 이후. -->
+<html lang="ko" data-eng="root-entity-picker">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>원자성 시뮬레이터 · CH24-L02-S01</title>
+<title>RAP Root Entity 판정기 · CH24-L02-S01</title>
 <link rel="stylesheet" href="../_engine/_base.css" />
-<link rel="stylesheet" href="../_engine/txn-atomicity.css" />
+<link rel="stylesheet" href="../_engine/root-entity-picker.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">트랜잭션 원자성 — <b>전부 아니면 전무</b></p>
-  <p class="lead">예매 = <code>ZBOOKING</code>(헤더) + <code>ZBOOKING_ITEM</code>(좌석) 한 묶음. 항목 INSERT를 일부러 실패시키고 <b>COMMIT</b>해 보면 "반쪽 저장"이 무엇인지 보입니다.</p>
+  <p class="hd">Root Entity 판정기 <small>(트랜잭션 단위는 무엇인가)</small></p>
+  <p class="lead">RAP의 첫 설계 질문은 "이 앱의 <b>트랜잭션 단위</b>가 무엇인가"입니다. 후보를 골라 사용자 행동이 거기 모이는지, key가 인스턴스를 안정적으로 가리키는지 판정해 보세요. root가 모호하면 뒤 계층이 모두 흔들립니다.</p>
 
-  <div class="bar">
-    <label class="alert-toggle"><input type="checkbox" id="failItem" /> 항목 INSERT 실패 시뮬</label>
-    <button class="btn go" id="process" type="button">① 예매 처리 (INSERT 2건)</button>
-    <button class="btn commit" id="commit" type="button" disabled>② COMMIT WORK</button>
-    <button class="btn rollback" id="rollback" type="button" disabled>③ ROLLBACK WORK</button>
-    <button class="reset" id="reset" type="button">↺ 초기화</button>
-  </div>
+  <p class="rep-cap">① 업무 후보 — 어느 것이 트랜잭션의 중심인가?</p>
+  <div class="rep-cards" id="repCards"></div>
 
-  <div class="cols">
-    <div class="col mem"><div class="col__h">🧠 메모리 — 미확정 변경</div><div class="col__b" id="mem"></div></div>
-    <div class="col db"><div class="col__h">💾 DB — 확정됨</div><div class="col__b" id="db"></div></div>
-  </div>
+  <p class="rep-cap">② 사용자 행동이 이 후보에 모이나?</p>
+  <div class="rep-acts" id="repActs"></div>
+  <p class="rep-keynote" id="repActNote"></p>
 
-  <div class="msg info" id="msg"></div>
-  <div class="note">💡 핵심: 실패를 확인하면 반드시 <code>ROLLBACK</code>해 반쪽 저장을 막습니다. 문장이 여러 개면 마지막 <code>sy-subrc</code>만 보지 말고 실패를 누적(<code>lv_failed</code>)해 <b>업무 단위 전체가 성공</b>했을 때만 <code>COMMIT</code>하세요.</div>
+  <p class="rep-cap">③ key 후보 — 인스턴스를 안정적으로 가리키나?</p>
+  <div class="rep-keys" id="repKeys"></div>
+  <p class="rep-keynote" id="repKeyNote"></p>
+
+  <div id="repCode"></div>
+  <div class="rep-verdict" id="repVerdict"></div>
+
+  <div class="note"><b>root는 DB 테이블이 아니라 업무 모델의 시작점입니다.</b> <code>zbooking</code>은 저장소, <code>ZI_Booking</code>은 RAP가 이해하는 예매라는 업무 객체의 뿌리예요. 보조 조회용 view나 value help까지 root로 만들면 구조가 흐려집니다.</div>
 </div>
-<script src="../_engine/txn-atomicity.js" defer></script>
+
+<script src="../_engine/root-entity-picker.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
 </body>
 </html>

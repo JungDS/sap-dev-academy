@@ -1,47 +1,29 @@
 <!DOCTYPE html>
-<!-- CH33-L02-S01 — 엔진: code-anatomy · _engine/_base.css. AMDP 메서드 해부(클릭 주석). -->
-<html lang="ko" data-eng="code-anatomy">
+<!-- CH33-L02-S01 — 엔진: rfc-call · _engine/_base.css. RFC 원격 호출 시나리오. -->
+<html lang="ko" data-eng="rfc-call">
 <head>
 <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>AMDP 해부 · CH33-L02-S01</title>
-<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/code-anatomy.css" />
+<title>RFC 호출 · CH33-L02-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/rfc-call.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">AMDP 메서드 해부 — 부분을 클릭해 보기</p>
-  <p class="lead">밑줄 친 부분을 클릭하면 그 구문이 무슨 역할인지 설명이 나옵니다. AMDP는 ABAP 메서드 안에 <b>SQLScript</b>를 담아 DB에서 실행합니다.</p>
-  <div class="anat">
-    <div class="anat__h"><span class="dot"></span>ZCL_BOOKING_AMDP (ABAP · AMDP)</div>
-<pre class="anat__code"><span class="kw">CLASS</span> zcl_booking_amdp <span class="kw">DEFINITION</span>.
-  <span class="kw">PUBLIC SECTION</span>.
-    <span class="mk" data-a="marker">INTERFACES if_amdp_marker_hdb</span>.
-    <span class="kw">METHODS</span> get_stats
-      <span class="kw">IMPORTING</span> <span class="kw">VALUE</span>(iv_concert) <span class="kw">TYPE</span> zconcert-concert_id
-      <span class="kw">EXPORTING</span> <span class="kw">VALUE</span>(et_stats)   <span class="kw">TYPE</span> ztt_stats.
-<span class="kw">ENDCLASS</span>.
-
-<span class="kw">CLASS</span> zcl_booking_amdp <span class="kw">IMPLEMENTATION</span>.
-  <span class="kw">METHOD</span> get_stats <span class="mk" data-a="byproc">BY DATABASE PROCEDURE FOR HDB LANGUAGE SQLSCRIPT</span>
-                   <span class="mk" data-a="using">USING zbooking</span> <span class="mk" data-a="readonly">OPTIONS READ-ONLY</span>.
-    et_stats = SELECT concert_id, <span class="mk" data-a="group">SUM( seats ) ... GROUP BY</span> concert_id
-               FROM zbooking
-               WHERE concert_id = <span class="mk" data-a="param">:iv_concert</span>;
-  <span class="kw">ENDMETHOD</span>.
-<span class="kw">ENDCLASS</span>.</pre>
+  <p class="hd">RFC — 다른 시스템의 함수를 부른다</p>
+  <p class="lead">시나리오를 고르고 <b>원격 호출</b>을 눌러 보세요. 원격 호출엔 <code>DESTINATION</code>(SM59 연결)이 필요하고, 통신 실패는 예외로 대비합니다.</p>
+  <div class="flow">
+    <div class="sys"><div class="t">호출 측(로컬)</div><div class="nm">내 프로그램</div></div>
+    <div class="conn" id="conn"><div class="line">⇄</div>SM59<br>'TARGET_SYS'</div>
+    <div class="sys remote"><div class="t">대상(원격)</div><div class="nm">Z_GET_BOOKINGS</div></div>
   </div>
-  <div class="anno idle" id="anno">밑줄 친 구문을 클릭하면 여기에 설명이 나옵니다.</div>
-  <div class="note">💡 본문은 <b>SQLScript</b>라 ABAP 문을 못 씁니다. 접근 테이블은 <code>USING</code>에 선언해야 하고, 읽기만 하면 <code>READ-ONLY</code>로 더 빠르고 안전하게.</div>
-  <script type="application/json" id="anno-cfg">
-  {
-    "marker": { "t": "INTERFACES if_amdp_marker_hdb", "d": "이 클래스가 AMDP임을 표시하는 마커 인터페이스. 없으면 AMDP로 인식되지 않습니다." },
-    "byproc": { "t": "BY DATABASE PROCEDURE FOR HDB LANGUAGE SQLSCRIPT", "d": "메서드 본문이 ABAP이 아니라 SQLScript이며, HANA(HDB)에서 DB 프로시저로 실행됨을 선언합니다." },
-    "using": { "t": "USING zbooking", "d": "SQLScript가 접근할 테이블/뷰를 명시적으로 선언(필수). 빠뜨리면 컴파일 오류." },
-    "readonly": { "t": "OPTIONS READ-ONLY", "d": "읽기 전용 선언. DB가 병렬·읽기 복제본으로 더 빠르게 처리하고, 실수로 쓰기를 넣으면 문법 검사가 막아줍니다." },
-    "group": { "t": "SUM(...) GROUP BY", "d": "집계를 DB에서 수행 — 원본 행을 ABAP으로 끌어오지 않고 결과만 돌려줍니다(Code-to-Data)." },
-    "param": { "t": ":iv_concert", "d": "ABAP 입력 파라미터는 SQLScript 안에서 콜론(:)을 붙여 참조합니다." }
-  }
-  </script>
+  <div class="bar">
+    <button class="sc on" data-s="ok" type="button">정상 호출</button>
+    <button class="sc" data-s="nodest" type="button">DESTINATION 누락</button>
+    <button class="sc" data-s="commfail" type="button">통신 실패</button>
+    <button class="run" id="run" type="button">▶ 원격 호출</button>
+  </div>
+  <div class="rfc-result" id="result"><span style="color:var(--soon);font-style:italic">▶ 원격 호출을 눌러 결과를 확인하세요.</span></div>
+  <div class="note">💡 SE37에서 함수를 <b>Remote-Enabled</b>로 만들고, 호출 측은 <code>DESTINATION</code>(SM59 등록)으로 대상을 지정합니다. <code>communication_failure</code>·<code>system_failure</code> 뒤 <code>MESSAGE lv_msg</code>로 실패 원인을 받습니다. 외부(Java·.NET)도 RFC로 ABAP 함수를 부릅니다.</div>
 </div>
-<script src="../_engine/code-anatomy.js" defer></script>
+<script src="../_engine/rfc-call.js" defer></script>
 </body>
 </html>

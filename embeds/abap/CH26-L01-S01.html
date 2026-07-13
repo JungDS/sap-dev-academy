@@ -1,34 +1,45 @@
 <!DOCTYPE html>
-<!-- CH26-L01-S01 — 엔진: factory-sim (embeds/_engine/factory-sim.{js,css}) · 공통토큰: _engine/_base.css
-     Factory 패턴 체험 — type 선택 → 팩토리가 만든 구체 클래스, 호출부 불변. -->
-<html lang="ko" data-eng="factory-sim">
+<!-- CH26-L01-S01 — 엔진: lock-mode-matrix (embeds/_engine/lock-mode-matrix.{js,css}) · 공통토큰: _engine/_base.css
+     잠금 모드(E/S/X) 호환 체험 — 보유 모드 × 요청 모드 → 허용/거절. -->
+<html lang="ko" data-eng="lock-mode-matrix">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Factory 시뮬 · CH26-L01-S01</title>
+<title>잠금 모드 매트릭스 · CH26-L01-S01</title>
 <link rel="stylesheet" href="../_engine/_base.css" />
-<link rel="stylesheet" href="../_engine/factory-sim.css" />
+<link rel="stylesheet" href="../_engine/lock-mode-matrix.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">Factory — 어느 클래스를 만들지 팩토리가 정한다</p>
-  <p class="lead">타입을 바꿔 보세요. <b>호출부 코드는 그대로</b>인데, 팩토리가 타입에 맞는 <b>구체 클래스</b>를 만들어 줍니다.</p>
+  <p class="hd">잠금 모드 호환 — 누가 같이 잠글 수 있나?</p>
+  <p class="lead">User A가 <code>booking_id=1001</code>을 잠근 상태에서, User B가 같은 행을 요청합니다. 모드를 바꿔 가며 <b>허용/거절</b>을 확인하세요.</p>
 
   <div class="pick">
-    <span class="t">type:</span>
-    <button class="ty on" data-t="V" type="button">'V'<small>VIP</small></button>
-    <button class="ty" data-t="G" type="button">'G'<small>일반</small></button>
-    <button class="ty" data-t="Z" type="button">'Z'<small>알 수 없음</small></button>
+    <div class="grp"><div class="t">A가 보유한 모드</div><div class="opts">
+      <button class="mode on" data-grp="held" data-m="E">E<small>쓰기</small></button>
+      <button class="mode" data-grp="held" data-m="S">S<small>읽기</small></button>
+      <button class="mode" data-grp="held" data-m="X">X<small>비누적</small></button>
+    </div></div>
+    <div class="grp"><div class="t">B가 요청한 모드</div><div class="opts">
+      <button class="mode on" data-grp="req" data-m="E">E<small>쓰기</small></button>
+      <button class="mode" data-grp="req" data-m="S">S<small>읽기</small></button>
+    </div></div>
   </div>
 
-  <div class="flow">
-    <div class="box const"><div class="bt">호출부(client) <span class="tag">안 바뀜</span></div><div class="code" id="client"></div></div>
-    <div class="arrow">→</div>
-    <div class="product" id="product"></div>
-  </div>
+  <div class="verdict ok" id="verdict"></div>
 
-  <div class="note">💡 호출부는 <code>zcl_booking_factory=>create( type )</code> 한 줄뿐 — 어떤 클래스가 나오는지 몰라도 됩니다. 새 예매 종류가 생기면 <b>팩토리만</b> 고치고 호출부는 그대로(인터페이스 <code>zif_booking</code> 반환 → 다형성).</div>
+  <table id="mtx">
+    <caption>호환 매트릭스 (다른 사용자 요청 기준) — 현재 조합이 강조됩니다</caption>
+    <thead><tr><th>보유 ＼ 요청</th><th>E (쓰기)</th><th>S (읽기)</th></tr></thead>
+    <tbody>
+      <tr><th>E</th><td class="n" data-cell="EE">✕</td><td class="n" data-cell="ES">✕</td></tr>
+      <tr><th>S</th><td class="n" data-cell="SE">✕</td><td class="y" data-cell="SS">✓</td></tr>
+      <tr><th>X</th><td class="n" data-cell="XE">✕</td><td class="n" data-cell="XS">✕</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">💡 변경 잠금은 거의 <b>E</b>(Exclusive). <b>S</b>(Shared)는 여럿이 동시에 읽을 때만 같이 걸 수 있고 쓰기(E)는 막습니다. <b>X</b>는 같은 사용자도 중첩 못 하는 강한 배타 잠금.</div>
 </div>
-<script src="../_engine/factory-sim.js" defer></script>
+<script src="../_engine/lock-mode-matrix.js" defer></script>
 </body>
 </html>

@@ -1,24 +1,21 @@
 <!DOCTYPE html>
-<!-- CH30-L01-S01 — 엔진: bapi-return · _engine/_base.css. BAPI 호출→RETURN→COMMIT/ROLLBACK 판정. -->
-<html lang="ko" data-eng="bapi-return">
+<!-- CH30-L01-S01 — 엔진: alv-events(mode=double) · _engine/_base.css. 행 더블클릭 → double_click 이벤트. -->
+<html lang="ko" data-eng="alv-events">
 <head>
 <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>BAPI Return · CH30-L01-S01</title>
-<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/bapi-return.css" />
+<title>Double Click · CH30-L01-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/alv-events.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">BAPI 호출 — RETURN을 보고 COMMIT/ROLLBACK</p>
-  <p class="lead">시나리오를 고르고 <b>BAPI 호출</b>을 눌러 보세요. <code>BAPIRET2</code>의 <code>type</code>에 <b>E</b>(오류)가 있으면 ROLLBACK, 없으면 COMMIT — 직접 판단해야 합니다.</p>
-  <div class="bar">
-    <button class="sc on" data-s="ok" type="button">정상 입력</button>
-    <button class="sc" data-s="err" type="button">오류 입력(고객 없음·필수 누락)</button>
-    <button class="run" id="run" type="button">▶ BAPI 호출</button>
-  </div>
-  <div class="panel"><div class="br-panel__h">RETURN ( TABLE OF bapiret2 )</div><div id="ret"></div></div>
-  <div class="decision" id="decision"></div>
-  <div class="note">💡 BAPI는 보통 <b>스스로 COMMIT하지 않습니다</b>. RETURN의 <code>type</code>(E/A=오류)을 확인해 오류면 <code>BAPI_TRANSACTION_ROLLBACK</code>, 정상이면 <code>BAPI_TRANSACTION_COMMIT</code>을 호출해야 저장이 확정됩니다.</div>
+  <p class="hd">행을 더블클릭하면 — <code>double_click</code></p>
+  <p class="lead">아래 표의 <b>행을 더블클릭</b>하면 핸들러 <code>on_double_click</code>이 클릭한 행/컬럼 정보와 함께 실행됩니다.</p>
+  <div class="alv"><div class="alvbar" id="bar"></div><table><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
+  <p class="hint">💡 표의 행을 <b>더블클릭</b>해 보세요 ↑</p>
+  <div class="log" id="log"><span class="ph">행을 더블클릭하면 이벤트가 여기 찍힙니다.</span></div>
+  <div class="note">💡 <code>SET HANDLER lo_h->on_double_click FOR go_grid.</code>로 연결합니다. <code>e_row-index</code>로 내부 테이블 행을 <code>READ</code>해 상세를 띄웁니다.</div>
+  <script type="application/json" id="alv-cfg">{ "mode": "double" }</script>
 </div>
-<script src="../_engine/bapi-return.js" defer></script>
+<script src="../_engine/alv-events.js" defer></script>
 </body>
 </html>

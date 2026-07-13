@@ -1,41 +1,30 @@
 <!DOCTYPE html>
-<!-- CH24-L05-S01 — 엔진: package-commit (embeds/_engine/package-commit.{js,css}) · 공통토큰: _engine/_base.css
-     대량 변경 패키지 단위 COMMIT 시각화 — 패키지 크기별 COMMIT 횟수·미커밋 버퍼 sawtooth. -->
-<html lang="ko" data-eng="package-commit">
+<!-- CH24-L05-S01 — 엔진: behavior-pool-tracer · _autoheight. 콘텐츠=레슨 전용(RAP Behavior Pool 호출 추적기, #C23 L05).
+     게이팅: behavior pool L3(cl_abap_behavior_handler·FOR VALIDATE ON SAVE·keys 집합·failed/reported). validation/action 상세는 L06+·EML 이후·DML CH25.
+     관통예제=예매(zbp_i_booking). keys=internal table(여러 instance 한 번에). -->
+<html lang="ko" data-eng="behavior-pool-tracer">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>패키지 커밋 시각화 · CH24-L05-S01</title>
+<title>RAP Behavior Pool 호출 추적기 · CH24-L05-S01</title>
 <link rel="stylesheet" href="../_engine/_base.css" />
-<link rel="stylesheet" href="../_engine/package-commit.css" />
+<link rel="stylesheet" href="../_engine/behavior-pool-tracer.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">패키지 커밋 — <b>20,000건</b>을 어떻게 나눌까?</p>
-  <p class="lead">패키지 크기를 바꿔 보세요. <b>COMMIT 횟수</b>와 <b>최대 미커밋 버퍼</b>(메모리·잠금 부담)가 어떻게 달라지는지 톱니 그래프로 보입니다.</p>
+  <p class="hd">Behavior Pool 호출 추적기 <small>(handler는 집합 지향)</small></p>
+  <p class="lead">검증 handler가 호출되는 흐름을 따라가 봅니다. 핵심은 <code>keys</code>가 <b>단건이 아니라 여러 예매</b>라는 점이에요 — RAP runtime은 여러 instance를 한 번에 넘깁니다. 순서대로 눌러 보고, <b>loop 안 EML</b> anti-pattern도 확인하세요.</p>
 
-  <div class="pick">
-    <span class="lbl">패키지 크기:</span>
-    <button class="psz" data-p="1000" type="button">1,000</button>
-    <button class="psz on" data-p="5000" type="button">5,000</button>
-    <button class="psz" data-p="10000" type="button">10,000</button>
-    <button class="psz single" data-p="20000" type="button">단일(전체)</button>
-  </div>
+  <div class="bpt-steps" id="bptSteps"></div>
+  <div style="display:flex;margin-bottom:10px;"><button class="bpt-eml" id="bptEml"></button></div>
 
-  <div class="stats">
-    <div class="stat"><div class="v" id="cTotal">20,000</div><div class="k">총 처리 건수</div></div>
-    <div class="stat"><div class="v" id="cCommit">4</div><div class="k">COMMIT 횟수</div></div>
-    <div class="stat"><div class="v" id="cBuf">5,000</div><div class="k">최대 미커밋 버퍼</div></div>
-  </div>
+  <div id="bptBody"></div>
+  <div class="bpt-msg" id="bptMsg"></div>
 
-  <div class="chart">
-    <div class="ttl">미커밋 버퍼(누적) — 진행에 따른 변화 ↓ (낮을수록 안전)</div>
-    <svg id="svg" viewBox="0 0 600 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"></svg>
-  </div>
-
-  <div class="msg ok" id="msg"></div>
-  <div class="note">💡 패키지마다 <code>COMMIT WORK</code>로 미커밋 버퍼를 비워 잠금·로그·롤백 세그먼트를 정리합니다. 작을수록 안전하나 COMMIT 오버헤드↑ → 보통 <b>1천~1만</b>에서 절충. 중간 실패 대비 <b>재시작점</b>(L04) 관리 필수.</div>
+  <div class="note"><b>behavior pool ≠ 일반 utility class.</b> RAP runtime이 호출하는 구현 위치예요 — 외부에서 마음대로 부르는 helper와 다릅니다. validation은 <b>실패를 알리는</b> 역할이라 그 안에서 데이터를 수정(<code>MODIFY ENTITIES</code>)하면 안 돼요. 값 자동 변경은 determination·action에서 합니다.</div>
 </div>
-<script src="../_engine/package-commit.js" defer></script>
+
+<script src="../_engine/behavior-pool-tracer.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
 </body>
 </html>

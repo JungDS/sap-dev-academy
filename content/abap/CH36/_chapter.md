@@ -2,10 +2,10 @@
 id: CH36
 track: TRACK-02
 order: 36
-title: "RAP + Fiori 실무 Capstone"
-intro: "배운 걸 모아 RAP+Fiori로 실전 앱을 완성한다."
-keywords: ["RAP","Fiori","Capstone","Full-Stack"]
+title: "AMDP / ADBC / Pushdown"
+intro: "DB 가까이에서 연산을 밀어넣어 가속하고 싶다."
+keywords: ["AMDP","ADBC","Code Pushdown","HANA"]
 difficulty: "고급"
 ---
 
-배운 걸 모아 RAP+Fiori로 실전 앱을 완성한다.
+DB 가까이에서 연산을 밀어넣어 가속하고 싶다.

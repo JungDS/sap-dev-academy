@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<!-- CH21-L10-S01 — 엔진: class-diagram (CSS-only) + _autoheight. 콘텐츠=레슨 전용(ZCL_BOOKING_MANAGER 구조, #C20).
+     게이팅: OO(메서드/속성·공개범위·RAISING 예외)·classic. -->
+<html lang="ko" data-eng="class-diagram">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ZCL_BOOKING_MANAGER 구조 · CH21-L10-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/class-diagram.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">ZCL_BOOKING_MANAGER — 속성·메서드 구조 <small>(캡슐화)</small></p>
+  <p class="lead">예약 로직을 클래스로 묶었습니다. <span style="color:#0b7250;font-weight:800">+</span> 공개(PUBLIC)는 외부에서 호출, <span style="color:#b02a55;font-weight:800">−</span> 비공개(PRIVATE)는 클래스 안에서만. 데이터(정원·회차)는 숨기고 <b>메서드로만</b> 다룹니다.</p>
+
+  <div class="uml-class" style="max-width:380px">
+    <div class="uml-class__name">ZCL_BOOKING_MANAGER<small>예약 관리 클래스</small></div>
+    <div class="uml-sec">
+      <div class="uml-sec__lbl">PUBLIC SECTION · 메서드</div>
+      <div class="uml-member"><span class="vis vis-pub">+</span><span class="mname">constructor</span><span class="msig">( iv_concert · iv_perf )</span></div>
+      <div class="uml-member"><span class="vis vis-pub">+</span><span class="mname">remaining</span><span class="msig">( ) RETURNING i</span></div>
+      <div class="uml-member"><span class="vis vis-pub">+</span><span class="mname">can_book</span><span class="msig">( iv_seats ) RETURNING abap_bool</span></div>
+      <div class="uml-member"><span class="vis vis-pub">+</span><span class="mname">book</span><span class="msig">( iv_seats ) RAISING zcx_fully_booked</span></div>
+    </div>
+    <div class="uml-sec">
+      <div class="uml-sec__lbl">PUBLIC SECTION · 이벤트</div>
+      <div class="uml-member"><span class="vis" style="color:#7c3aed;font-weight:800">↗</span><span class="mname">EVENTS sold_out</span><span class="msig">매진 시 발생 → handler가 반응</span></div>
+    </div>
+    <div class="uml-sec">
+      <div class="uml-sec__lbl">PRIVATE SECTION · 속성(상태)</div>
+      <div class="uml-member"><span class="vis vis-priv">−</span><span class="mname">mv_concert</span><span class="msig">공연 ID</span></div>
+      <div class="uml-member"><span class="vis vis-priv">−</span><span class="mname">mv_perf</span><span class="msig">회차</span></div>
+      <div class="uml-member"><span class="vis vis-priv">−</span><span class="mname">mv_cap</span><span class="msig">정원(capacity)</span></div>
+    </div>
+  </div>
+
+  <div class="note"><b>캡슐화</b> — 정원·회차 같은 <b>상태는 PRIVATE</b>로 숨기고, 외부는 <code>remaining( )</code>·<code>book( )</code> 같은 <b>PUBLIC 메서드로만</b> 다룹니다. 정원 초과는 <code>RAISING zcx_fully_booked</code> 예외로 알립니다(호출부가 <code>TRY…CATCH</code>로 잡음).</div>
+</div>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

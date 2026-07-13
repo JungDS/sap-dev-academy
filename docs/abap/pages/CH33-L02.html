@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AMDP 기본 구조 · AMDP / ADBC / Pushdown · SAP Developer Academy</title>
+<title>RFC Function Module 설계 · 인터페이스 실무: BAPI/RFC/BDC/File · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">Chapter 33 · AMDP / ADBC / Pushdown</span>
+  <span class="meta">Chapter 33 · 인터페이스 실무: BAPI/RFC/BDC/File</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,15 +33,15 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 33 › Lesson 2</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">AMDP / ADBC / Pushdown</p>
-        <h1>AMDP 기본 구조</h1>
-        <p class="lhead__direction">ABAP 메서드 안에 SQLScript를 담는다 — AMDP.</p>
+        <p class="lhead__eyebrow">인터페이스 실무: BAPI/RFC/BDC/File</p>
+        <h1>RFC Function Module 설계</h1>
+        <p class="lhead__direction">외부에서 호출 가능한 함수 — Remote-Enabled FM.</p>
         <div class="tags"><span class="tag tag--track">Track 2</span><span class="tag tag--ch">Chapter 33</span><span class="tag tag--ls">Lesson 2</span><span class="tag tag--lv">고급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>DB 프로시저를 ABAP 메서드로</h2>
-<p><button class="term" type="button" data-term="AMDP">AMDP</button>(ABAP Managed Database Procedure)는 ABAP <button class="term" type="button" data-term="Class">클래스</button> <button class="term" type="button" data-term="Method">메서드</button> 안에 <strong>SQLScript</strong>(HANA
-프로시저 언어)를 써서, DB에서 직접 실행되게 한다.</p>
+<section class="lblock"><h2>다른 시스템이 내 함수를 부르게</h2>
+<p><button class="term" type="button" data-term="RFC">RFC</button>(Remote Function Call)는 <strong>다른 시스템·외부 프로그램</strong>이 내 Function Module을
+부르게 한다. SE37에서 함수를 <strong>Remote-Enabled</strong>로 만든다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -50,49 +50,31 @@
 6
 7
 8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19</pre><pre class="abap-editor__code"><code><span class="tok-kw">CLASS</span> zcl_booking_amdp <span class="tok-kw">DEFINITION</span> <span class="tok-kw">PUBLIC</span>.
-  <span class="tok-kw">PUBLIC</span> <span class="tok-kw">SECTION</span>.
-    <span class="tok-kw">INTERFACES</span> if_amdp_marker_hdb.        <span class="tok-com">" AMDP 표시</span>
-    <span class="tok-kw">METHODS</span> get_stats
-      <span class="tok-kw">IMPORTING</span> <span class="tok-kw">VALUE</span>(iv_concert) <span class="tok-kw">TYPE</span> zconcert-concert_id
-      <span class="tok-kw">EXPORTING</span> <span class="tok-kw">VALUE</span>(et_stats)   <span class="tok-kw">TYPE</span> ztt_stats
-      AMDP <span class="tok-kw">OPTIONS</span> <span class="tok-kw">READ-ONLY</span>.             <span class="tok-com">" 읽기 전용 선언</span>
-<span class="tok-kw">ENDCLASS</span>.
+9</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> lv_msg <span class="tok-kw">TYPE</span> string.
 
-<span class="tok-kw">CLASS</span> zcl_booking_amdp <span class="tok-kw">IMPLEMENTATION</span>.
-  <span class="tok-kw">METHOD</span> get_stats <span class="tok-kw">BY</span> <span class="tok-kw">DATABASE</span> <span class="tok-kw">PROCEDURE</span> <span class="tok-kw">FOR</span> <span class="tok-kw">HDB</span>
-                   <span class="tok-kw">LANGUAGE</span> <span class="tok-kw">SQLSCRIPT</span>
-                   <span class="tok-kw">USING</span> zbooking.
-    et_stats = <span class="tok-kw">SELECT</span> concert_id, <span class="tok-kw">SUM</span>( seats ) <span class="tok-kw">AS</span> total
-               <span class="tok-kw">FROM</span> zbooking
-               <span class="tok-kw">WHERE</span> concert_id = :iv_concert
-               <span class="tok-kw">GROUP</span> <span class="tok-kw">BY</span> concert_id;
-  <span class="tok-kw">ENDMETHOD</span>.
-<span class="tok-kw">ENDCLASS</span>.</code></pre></div></div>
+<span class="tok-com">" 호출 측: 대상 시스템(RFC Destination)을 지정해 원격 호출</span>
+<span class="tok-kw">CALL</span> <span class="tok-kw">FUNCTION</span> <span class="tok-str">'Z_GET_BOOKINGS'</span>
+  <span class="tok-kw">DESTINATION</span> <span class="tok-str">'TARGET_SYS'</span>           <span class="tok-com">" SM59에 등록된 연결</span>
+  <span class="tok-kw">EXPORTING</span>  iv_concert = lv_id
+  <span class="tok-kw">IMPORTING</span>  et_booking = lt_booking
+  <span class="tok-kw">EXCEPTIONS</span> communication_failure = <span class="tok-num">1</span> <span class="tok-kw">MESSAGE</span> lv_msg
+             system_failure        = <span class="tok-num">2</span> <span class="tok-kw">MESSAGE</span> lv_msg.</code></pre></div></div>
 <ul>
-<li><code>INTERFACES if_amdp_marker_hdb</code> — AMDP 클래스 표시.</li>
-<li><code>BY DATABASE PROCEDURE FOR HDB LANGUAGE SQLSCRIPT</code> — 본문이 SQLScript.</li>
-<li><code>USING</code> — 접근할 테이블/뷰를 선언. <code>:파라미터</code>로 입력 참조.</li>
-<li><code>AMDP OPTIONS READ-ONLY</code> — 메서드가 <strong>읽기만</strong> 하면 선언에 붙인다. DB가 병렬·읽기복제본으로 더 빠르게 처리하고, 실수로 쓰기를 넣으면 문법 검사가 막아준다(이 예시는 SELECT뿐이라 READ-ONLY).</li>
+<li><strong>Remote-Enabled</strong> 함수는 <button class="term" type="button" data-term="파라미터">파라미터</button>에 제약(테이블·구조는 가능, 일부 타입 제한).</li>
+<li><code>SM59</code> — RFC Destination(대상 시스템 연결) 등록.</li>
+<li>RFC 전용 <button class="term" type="button" data-term="예외">예외</button> <code>communication_failure</code>·<code>system_failure</code> 뒤에 <code>MESSAGE lv_msg</code>를 붙이면 <strong>실패 원인 텍스트</strong>를 받아 로그·화면에 쓸 수 있다(원격 오류는 메시지가 핵심 단서).</li>
+<li>외부(Java·.NET 등)도 RFC로 ABAP 함수를 부른다.</li>
 </ul>
-<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">AMDP 메서드 해부 — 부분 클릭</span><a class="embed__open" href="../../../embeds/abap/CH33-L02-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH33-L02-S01.html" loading="lazy" title="AMDP 메서드 해부 — 부분 클릭" style="height:460px"></iframe></figure>
+</section><section class="lblock"><h2>원격 호출 시나리오</h2>
+<p>정상·DESTINATION 누락·통신 실패를 바꿔 가며 원격 호출 결과를 확인해 보라.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title"><button class="term" type="button" data-term="RFC">RFC</button> 원격 호출 — DESTINATION·통신 <button class="term" type="button" data-term="예외">예외</button></span><a class="embed__open" href="../../../embeds/abap/CH33-L02-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH33-L02-S01.html" loading="lazy" title="RFC 원격 호출 — DESTINATION·통신 예외" style="height:380px"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>USING 누락</strong> → 쓰는 테이블을 USING에 선언해야 한다.</li>
-<li><strong>ABAP 문법 혼입</strong> → 본문은 SQLScript다(ABAP 문 못 씀).</li>
+<li><strong>DESTINATION 누락</strong> → 원격 호출엔 대상 연결이 필요. SM59 등록.</li>
+<li><strong>통신 <button class="term" type="button" data-term="예외">예외</button> 미처리</strong> → 네트워크 실패를 <code>communication_failure</code>로 대비.</li>
 </ul>
 <hr>
-<p>SQLScript를 품었다. 더 낮은 수준의 Native SQL — ADBC → 다음 레슨.</p>
+<p>원격 호출을 봤다. 이제 화면을 자동으로 채우는 옛 방식 — BDC → 다음 레슨.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

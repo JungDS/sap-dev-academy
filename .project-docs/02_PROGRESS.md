@@ -1,22 +1,20 @@
 # 02. PROGRESS — 현재 초점 · 다음 할 일
 
-> 📅 **최종수정: 2026-07-13 20:21 KST**
+> 📅 **최종수정: 2026-07-14 04:26 KST**
 > 🎯 **현재 상태와 다음 할 일만 담는다.** 완료/과거 항목·세션 서사는 **즉시 제거** — 정본은 git 이력 + `.archive/` 원장 + 라이브 인덱스([04 R16](04_CONVENTIONS.md)). 코드·git·감사로 파생 가능한 현황은 **복창하지 말고 포인터**(아래 📍).
 > 📖 **읽을 때:** 작업 시작 전(현황 파악) · 종료 시 갱신 — **갱신은 같은 커밋에 포함**([01](01_AI_SYNC.md)).
 
 ## 🎯 현재 초점
-**reference 리라이트 코퍼스 기반 content MD 챕터별 보강** 진행 중(브랜치 `content/enrich-md-from-rewrite-refs-2026-06-30`). 원칙: **content가 기준**, `reference/`(codex_0629_v3 1순위 · codex_0625 · antigravity_0629_v1 선별)는 순수 참고 — 보수적 외과 보강 + 델타 사실검증([14 §5](14_REFERENCE_CORPUS.md)) + front-matter 게이팅 선언 보완(R10/R15). 순서 CH01→(기존 번호 기준, **CH01~19 완료**). CH20+는 사용자 지시 대기. **챕터 실행 프로토콜 = [10_REBUILD_EXECUTION](10_REBUILD_EXECUTION.md)**(보강=리빌드 단일·STEP 0～6·강도·신규 장 OLDCH99·codex NEW/OLD 매핑). v3에 레슨 추가 챕터는 신설 가능(리넘버 리플 전수 + 커리큘럼 갱신).
+**신규 3장 삽입 리넘버 완료 → 신규 장 집필 + CH21+ 보강** 단계(브랜치 `renumber/insert-new-chapters-2026-07-14`). **CH01～19 보강 완료·main 병합**(PR #14). **2026-07-14 리넘버**: 현 CH20(OO)～36 → **CH21～27(+1)/CH30～39(+3)**, 신규 슬롯 **CH20 Advanced SQL·CH28 Dynamic ABAP·CH29 Regex** 예약(미집필=폴더 없음, 로드맵 번호 공백·셸 정상). 원칙: content가 기준, `reference/codex_0629_v3` 참고 — 보수적 외과 보강 + 델타 사실검증([14 §5](14_REFERENCE_CORPUS.md)) + front-matter 게이팅(R10/R15). **챕터 실행 = [10_REBUILD_EXECUTION](10_REBUILD_EXECUTION.md)**(STEP 0～6·강도·신규장·codex 매핑). ⚠️ 리넘버 후 **우리 CHnn = codex NEWCHnn 일치**.
 
 ## ▶️ 다음 할 일 (우선순위)
-1. **CH20+ 보강**(사용자 지시 대기 — **CH07~19 완료**, 챕터별 세부·사실교정 = git log). **선착수 금지.** 실행 프로토콜 = [10_REBUILD_EXECUTION](10_REBUILD_EXECUTION.md)(STEP 0～6·강도 [보강]/[재작성]·모드 [기존]/[신규장]·codex NEW/OLD 매핑). **CH20부터 codex 파일은 OLD 번호로 매칭**(예: 우리 CH20 OO = `NEWCH21_OLDCH20`) · ⚠️ CH20 = **OO 본격 도입**(CH11/16/17에서 [선행사용]·경계로 미뤄 온 REF TO/CREATE OBJECT/메서드 회수 지점). **신규 장(OLDCH99: Advanced SQL·Dynamic ABAP·Regex)·CH20+ 리넘버 = 보류(사용자 대기).**
-   ✅ **CH19 New Open SQL 8레슨 완료 (2026-07-13)** — 사실검증 8/8 CONFIRMED(콤마+@ strict mode·@dobj/@( )·INTO @DATA·CASE/CAST/COALESCE·SQL함수·SELECT FROM @itab·**LEFT OUTER JOIN 필터 ON↔WHERE**·**alias 재사용 금지** 전부 keyword doc 정합)·게이팅 0(OO/CDS/DML/고급SQL 후속 유지). 구조 확장 없음(8레슨). `ty_flight`→`ts_flight`·위젯 `p_carrid`→`pa_carrid`·구조체→Structure·줄표 15·L04 prereq(CH13-L02 JOIN)·델타(L08 자기점검·L05 SQL함수 릴리스 가드·L07 데이터접근 계보). 잔여(저): concert-agg-join-lab CASE컬럼 표시 개선.
-   ✅ **CH18 완료(2026-07-10)**: Modern Syntax 7→11레슨 — 신규 CONV/EXACT·COND/SWITCH·REDUCE/FILTER·LET 4레슨+위젯·L06/L07→L10/L11 리넘버·`ty_`→`ts_`/`tt_`. 세부=git.
-   ✅ **CH17 완료(2026-07-08)**: Grid ALV 10레슨 — zabap_jhy 실코드 사실검증·OO L2 직관·`gt_`/`gs_` 전환·이벤트 라우팅 CH27 교정. 세부=git.
-   ✅ **결정 반영(R11 명문화, 세부=git)**: SELECT-OPTIONS=`so_`(전환 129) · Module Pool 화면필드 DATA=`gv_`(CH16 p_→gv_) · CH16 8→10레슨 확장(신규 L04 TABLES·L05 Dynpro F1/F4).
-   ⚠️ 잔여 컨벤션(각 챕터 패스에서 전환): 구조체 타입 `ts_`/Table Type `tt_`(CH05·06·07·13·17·18·19 완료 — 잔여 `ty_` 구조체: CH21·24 + 엔진 6종) · "컴포넌트"→Component(잔여 inline-target-viewer 엔진(CH19-L03 전용)) · 줄표(—) 절제(CH01～19 완료 — 잔여 CH20+) · PARAMETERS `pa_`(CH01～04·15·19 완료 — 잔여 CH20+) · 스코프 접두어 `gt_`/`gs_`(CH16·17 전역 전환 완료). **codex_0629_v3 파일 체계**: `NEWCHxx_OLDCHxx_QA/_REWRITE`(OLDCH99=신규 장 NEW20 Advanced SQL·NEW28 Dynamic ABAP·NEW29 Regex, OLDCH20~26→NEW21~27 밀림, `00_CONCEPT_GAP_AUDIT.md`=R15 감사표). **리넘버링·신규 장 집필=보류(사용자 대기)**. **잔여(저순위)**: CH09 L05-S02/L06 person↔concert·CH10 L05-S01 위젯(zcl_booking_calc)↔본문(zcl_util) 클래스명 불일치·CH10 L01/L02 델타(scope/RETURN·STATICS 본문 코드 예). CONSIDER 16건 보류([.archive/…/CONSIDER_BACKLOG.md](../.archive/2026-07-03-v3-recheck-ch01-05/CONSIDER_BACKLOG.md)). CH20+ 보조는 codex_0625(메타)·antigravity(선별). 잔여 R2 = `CONTENT_DEPTH_AUDIT`(재생성물).
-2. **전면 리빌드 여부 결정(미정)** — 선택지 = *점진 개선 유지(현 보강 패스)* vs *골든 5종([08 §9·§10](08_LESSON_SHELL_SPEC.md)) 기준 전면 리빌드*. 리빌드 택하면 MD 작성 *전에* 커리큘럼 맵·개념 원장([09_CURRICULUM_LEDGER](09_CURRICULUM_LEDGER.md)) 확정 → 실행 절차 [10_REBUILD_EXECUTION](10_REBUILD_EXECUTION.md). ⚠️ CH18 classic→modern 경계([04 R6](04_CONVENTIONS.md)) · R15 게이팅이 핵심 지표([04 R15](04_CONVENTIONS.md)/[05 P11](05_PITFALLS.md)).
-3. **잔여 깊이갭 보강** — `node tools/audit-content-depth.mjs` 재생성 후 🟠빈약·🔴R2 플래그 레슨 우선(수치·대상은 [.archive/_generated/CONTENT_DEPTH_AUDIT.md](../.archive/_generated/CONTENT_DEPTH_AUDIT.md) 참조).
-4. **시각 스모크테스트** — 셸 인터랙션·로드맵·임베드 렌더 눈 확인 + `index.html` 허브 → ABAP 카드 → 로드맵 연결 점검([07](07_BROWSER_TESTING.md)).
+1. **신규 장 CH20 Advanced ABAP SQL 집필**(Phase 2 — 리넘버 슬롯 확보됨, 폴더 미생성). codex `NEWCH20_OLDCH99`(7레슨: 필요성·CTE/`WITH`·Subquery/`EXISTS`·Set연산·Window·선택기준·실습). [10] STEP 0～6 [신규장]. ⚠️ **CH19의 "다음→" 링크를 새 CH20으로 재배선**(현재 리넘버로 CH21 OO를 가리킴). 위젯 5종·게이팅(CDS/RAP/Dynamic/Native SQL 선노출 0)·glossary.
+2. **CH21 OO 보강**(구 CH20). 조사 완료(홀드, 세부=이 세션 워크플로): **L06 T100 예외 텍스트 + `THROW` expression 부재(high)** · L10 raise T100 미연결(med) · L01~05 low(L02 `mv_capacity`/`mv_booked`→관통예제 이름 정렬·L01 `CREATE PUBLIC` 설명·L03 없는 공연ID 주의). codex `NEWCH21_OLDCH20`.
+3. **CH22+ 순차 보강**(구 CH21+). ⚠️ 리넘버 후 **codex 파일 = 우리 번호 일치**(CH21=`NEWCH21`…CH39=`NEWCH39`). 신규 CH28 Dynamic ABAP(8L)·CH29 Regex(8L)는 진도가 닿을 때 예약 슬롯에 집필(추가 리넘버 0).
+   ⚠️ 잔여 컨벤션(각 챕터 패스): 구조체 타입 `ts_`/`tt_`(CH01～19 완료 — 잔여 `ty_` 구조체: 구 CH21·24=현 CH22·25 등 + 엔진 6종) · "컴포넌트"→Component(잔여 inline-target-viewer 엔진(CH19-L03 전용)) · 줄표(—) 절제(CH01～19 완료 — 잔여 CH21+) · PARAMETERS `pa_`(CH01～19 해당분 완료 — 잔여 CH21+). **잔여(저)**: 구 CH09/10 소소(class명 불일치·델타 = git). CONSIDER 16건 보류([.archive/…/CONSIDER_BACKLOG.md](../.archive/2026-07-03-v3-recheck-ch01-05/CONSIDER_BACKLOG.md)). 잔여 R2 = `CONTENT_DEPTH_AUDIT`(재생성물).
+4. **전면 리빌드 여부 결정(미정)** — 선택지 = *점진 개선 유지(현 보강 패스)* vs *골든 5종([08 §9·§10](08_LESSON_SHELL_SPEC.md)) 기준 전면 리빌드*. 리빌드 택하면 MD 작성 *전에* 커리큘럼 맵·개념 원장([09_CURRICULUM_LEDGER](09_CURRICULUM_LEDGER.md)) 확정 → 실행 절차 [10_REBUILD_EXECUTION](10_REBUILD_EXECUTION.md). ⚠️ CH18 classic→modern 경계([04 R6](04_CONVENTIONS.md)) · R15 게이팅이 핵심 지표([04 R15](04_CONVENTIONS.md)/[05 P11](05_PITFALLS.md)).
+5. **잔여 깊이갭 보강** — `node tools/audit-content-depth.mjs` 재생성 후 🟠빈약·🔴R2 플래그 레슨 우선(수치·대상은 [.archive/_generated/CONTENT_DEPTH_AUDIT.md](../.archive/_generated/CONTENT_DEPTH_AUDIT.md) 참조).
+6. **시각 스모크테스트** — 셸 인터랙션·로드맵·임베드 렌더 눈 확인 + `index.html` 허브 → ABAP 카드 → 로드맵 연결 점검([07](07_BROWSER_TESTING.md)).
 
 ## 📍 현황은 라이브 소스에서 (02는 복창하지 않는다 — R16)
 - **콘텐츠 깊이/DoD 갭** → `.archive/_generated/CONTENT_DEPTH_AUDIT.md` (재생성물).

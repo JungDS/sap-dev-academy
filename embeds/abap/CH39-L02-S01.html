@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<!-- CH39-L02-S01 — 엔진: code-anatomy(재사용) · _engine/_base.css. ZI_ Interface View(CDS) 해부. -->
+<html lang="ko" data-eng="code-anatomy">
+<head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ZI_Booking 해부 · CH39-L02-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/code-anatomy.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">ZI_Booking 해부 — Interface View(CDS)</p>
+  <p class="lead">밑줄 부분을 클릭해 기반(ZI_) 뷰의 구성을 살펴보세요. 예매를 root로, 공연·회차를 association으로 잇습니다.</p>
+  <div class="anat">
+    <div class="anat__h"><span class="dot"></span>ZI_Booking (CDS View)</div>
+<pre class="anat__code"><span class="mk" data-a="root">define root view entity</span> ZI_Booking
+  as select from zbooking
+  <span class="mk" data-a="assoc">association [1..1] to ZI_Concert as _Concert</span>
+    on <span class="mk" data-a="proj">$projection.concert_id</span> = _Concert.concert_id
+{
+  <span class="mk" data-a="key">key booking_id</span>,
+      concert_id, perf_no, customer, seats, status,
+      <span class="mk" data-a="sem">@Semantics.user.createdBy: true</span>
+      created_by,
+      <span class="mk" data-a="expose">_Concert</span>, _Perf
+}</pre>
+  </div>
+  <div class="anno idle" id="anno">밑줄 친 구문을 클릭하면 설명이 나옵니다.</div>
+  <div class="note">💡 기반(ZI_)은 재사용·관계 중심, 화면용 주석은 다음 레슨의 Projection(ZC_)에. association은 <code>{ }</code>에 넣어야 소비 측에서 따라갈 수 있습니다.</div>
+  <script type="application/json" id="anno-cfg">
+  {
+    "root": { "t": "define root view entity", "d": "트랜잭션 대상이 되는 root 뷰. RAP의 동작(BDEF)은 이 root에 붙습니다." },
+    "assoc": { "t": "association [1..1] to ZI_Concert", "d": "예매→공연을 1:1 관계로 연결. 카디널리티를 관계에 맞게 정확히." },
+    "proj": { "t": "$projection.concert_id", "d": "현재 뷰(투영)의 필드를 가리키는 ON 조건 표기. 자기 필드 = 대상 필드." },
+    "key": { "t": "key booking_id", "d": "키 필드. RAP 인스턴스를 식별하는 기준." },
+    "sem": { "t": "@Semantics.user.createdBy", "d": "감사필드에 의미(시맨틱) 주석 — 생성자임을 시스템에 알림(CH25 stamp의 CDS 표현)." },
+    "expose": { "t": "_Concert (노출)", "d": "association을 본문 {}에 넣어야 소비 뷰·화면에서 따라갈 수 있습니다(노출 누락 주의)." }
+  }
+  </script>
+</div>
+<script src="../_engine/code-anatomy.js" defer></script>
+</body>
+</html>

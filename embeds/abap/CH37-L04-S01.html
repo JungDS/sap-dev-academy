@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<!-- CH37-L04-S01 — 엔진: code-anatomy(재사용) · _engine/_base.css. PDF 생성·다운로드 코드 해부. -->
+<html lang="ko" data-eng="code-anatomy">
+<head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PDF 생성 해부 · CH37-L04-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/code-anatomy.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">PDF 생성·다운로드 해부 — 부분을 클릭</p>
+  <p class="lead">Adobe Forms로 PDF 바이트를 받아 파일로 저장하는 코드입니다. 밑줄 부분을 클릭해 역할을 확인하세요.</p>
+  <div class="anat">
+    <div class="anat__h"><span class="dot"></span>예매 확인서 PDF 저장 (ABAP)</div>
+<pre class="anat__code"><span class="kw">CALL FUNCTION</span> 'FP_JOB_OPEN' <span class="kw">CHANGING</span> ie_outputparams = ls_out.
+<span class="kw">CALL FUNCTION</span> lv_fm <span class="kw">EXPORTING</span> is_booking = ls_booking
+  <span class="kw">IMPORTING</span> <span class="mk" data-a="formout">/1bcdwb/formoutput = ls_formout</span>.
+<span class="kw">CALL FUNCTION</span> 'FP_JOB_CLOSE'.
+
+<span class="kw">DATA</span>(lv_pdf) = <span class="mk" data-a="xstring">ls_formout-pdf</span>.   <span style="color:#9aa4bf">" XSTRING(PDF 바이트)</span>
+<span class="kw">DATA</span> lt_bin <span class="kw">TYPE</span> solix_tab.
+lt_bin = <span class="mk" data-a="convert">cl_bcs_convert=>xstring_to_solix( lv_pdf )</span>.
+cl_gui_frontend_services=>gui_download(
+  <span class="kw">EXPORTING</span> filename = 'ticket.pdf' <span class="mk" data-a="bin">filetype = 'BIN'</span>
+            bin_filesize = xstrlen( lv_pdf )
+  <span class="kw">CHANGING</span>  data_tab = lt_bin ).</pre>
+  </div>
+  <div class="anno idle" id="anno">밑줄 친 구문을 클릭하면 여기에 설명이 나옵니다.</div>
+  <div class="note">💡 PDF는 텍스트가 아니라 <b>바이너리(XSTRING)</b> — 저장은 반드시 <code>BIN</code> 모드. 출력은 <code>FP_JOB_OPEN</code>~<code>FP_JOB_CLOSE</code> 사이에서. 이메일 첨부는 BCS, 보관은 ArchiveLink/DMS.</div>
+  <script type="application/json" id="anno-cfg">
+  {
+    "formout": { "t": "/1bcdwb/formoutput", "d": "Adobe Forms 생성 함수가 돌려주는 출력 구조 — 그 안의 pdf 필드에 PDF 바이트가 들어 있습니다." },
+    "xstring": { "t": "ls_formout-pdf (XSTRING)", "d": "PDF는 텍스트가 아니라 바이너리. XSTRING으로 받아 저장·첨부·보관에 씁니다." },
+    "convert": { "t": "xstring_to_solix( )", "d": "XSTRING(PDF 바이트)을 다운로드용 바이너리 테이블(solix_tab)로 변환하는 헬퍼. 인코딩 실수 방지." },
+    "bin": { "t": "filetype = 'BIN'", "d": "반드시 BIN(바이너리) 모드로 저장. TEXT 모드로 저장하면 PDF가 깨집니다." }
+  }
+  </script>
+</div>
+<script src="../_engine/code-anatomy.js" defer></script>
+</body>
+</html>

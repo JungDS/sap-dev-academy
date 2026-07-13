@@ -2,10 +2,10 @@
 id: CH30
 track: TRACK-02
 order: 30
-title: "인터페이스 실무: BAPI/RFC/BDC/File"
-intro: "외부 시스템과 데이터를 주고받아야 한다."
-keywords: ["BAPI","RFC","BDC","File","Excel"]
+title: "ALV 고급 Event 응용"
+intro: "ALV에서 사용자 상호작용(이벤트)을 처리하고 싶다."
+keywords: ["ALV Event","Double Click","Toolbar","User Command"]
 difficulty: "고급"
 ---
 
-외부 시스템과 데이터를 주고받아야 한다.
+ALV에서 사용자 상호작용(이벤트)을 처리하고 싶다.

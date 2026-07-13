@@ -1,45 +1,36 @@
 <!DOCTYPE html>
-<!-- CH21-L08-S01 — 엔진: concert-alv-color-lab · _autoheight. 콘텐츠=레슨 전용(실습 매진 회차 색 강조 capstone, CH21 L08).
-     config=window.CACL_CFG. 게이팅: CH21 capstone(remaining→seats_left→cellcolors 조건→ctab_fname). 더블클릭/편집/DML은 CH24/27/28. 이름 풀(R9). -->
-<html lang="ko" data-eng="concert-alv-color-lab">
+<!-- CH21-L08-S01 — 엔진: dynamic-type-inspector · _autoheight. 콘텐츠=레슨 전용(다형성 CAST/CASE TYPE OF, CH21 L08).
+     config=window.DTI_CFG. 게이팅: CH21=OO 정식(CAST·?=·CASE TYPE OF·CX_SY_MOVE_CAST_ERROR). 상속/인터페이스(L05·L07) 위에서. -->
+<html lang="ko" data-eng="dynamic-type-inspector">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Concert ALV Color Lab · CH21-L08-S01</title>
+<title>Dynamic Type Inspector · CH21-L08-S01</title>
 <link rel="stylesheet" href="../_engine/_base.css" />
-<link rel="stylesheet" href="../_engine/concert-alv-color-lab.css" />
+<link rel="stylesheet" href="../_engine/dynamic-type-inspector.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">Concert ALV Color Lab <small>(잔여석 → 색)</small></p>
-  <p class="lead">회차별 잔여석을 <code>ZCL_BOOKING_MANAGER-&gt;remaining( )</code>으로 구하고, <b>잔여 0 → 빨강 · 잔여 ≤5 → 노랑</b>으로 셀을 칠합니다. 회차를 골라 <b>예매를 추가</b>하면 잔여석이 줄어 색이 바뀌어요. <code>ctab_fname</code>을 꺼 보면 색이 어떻게 사라지는지도 확인하세요.</p>
+  <p class="hd">Dynamic Type Inspector <small>(CAST vs CASE TYPE OF)</small></p>
+  <p class="lead">부모 타입 변수 <code>lo_mgr</code>에 어떤 실제 객체가 담겼는지 고르고, <code>CAST</code>(다운캐스트)와 <code>CASE TYPE OF</code> 중 무엇으로 다룰지 바꿔 보세요. <b>변수의 정적 타입은 같아도, 담긴 객체의 동적 타입</b>에 따라 결과가 달라집니다.</p>
 
-  <div class="cacl-ctrl">
-    <div class="cacl-grp"><span class="clbl">회차 선택</span><div class="cacl-seg cacl-sel"></div></div>
-    <div class="cacl-grp"><span class="clbl">동작</span><div class="cacl-act"></div></div>
+  <div class="dti-ctrl">
+    <div class="dti-grp"><span class="clbl">lo_mgr 에 담긴 실제 객체</span><div class="dti-seg dti-obj"></div></div>
+    <div class="dti-grp"><span class="clbl">다루는 방법</span><div class="dti-seg dti-op"></div></div>
   </div>
 
-  <div class="cacl-legend"><span><i class="red"></i> 잔여 0 = 매진(col_negative)</span><span><i class="yellow"></i> 잔여 ≤5 = 임박(col_total)</span></div>
+  <div id="dtiTypes"></div>
+  <p class="dti-h">코드</p>
+  <div id="dtiCode"></div>
+  <div id="dtiVerdict"></div>
 
-  <div id="caclTable"></div>
-  <div id="caclStatus"></div>
-
-  <div class="note"><b>완성 기준 = 세 단계가 이어지기.</b> 업무 계산(<code>remaining</code>)이 표시용 필드(<code>seats_left</code>)에 들어가고 → 조건에 따라 deep component(<code>cellcolors</code>)를 채우고 → layout(<code>ctab_fname</code>)이 ALV에 연결. <code>CELLCOLORS</code>는 화면 컬럼이 아니라 field catalog에서 <code>tech</code>로 숨깁니다. 더블클릭으로 예매 목록 열기는 <b>이후 ALV 이벤트 챕터</b>의 일이에요.</div>
+  <div class="note"><b>기본은 다형성, CAST는 최소화.</b> 가능하면 공통 메서드(<code>book( )</code> 재정의)로 풀고, 정말 구체 타입 기능이 필요할 때만 <code>CAST</code>/<code>CASE TYPE OF</code>를 씁니다. 타입별 분기가 자꾸 늘어나면 <b>설계(다형성)를 재검토</b>하세요. <code>CASE TYPE OF</code>의 순서는 <b>구체 타입부터</b>.</div>
 </div>
 
 <script>
-window.CACL_CFG = {
-  rows: [
-    { concert: 'C001', perf: '01', capacity: 100, booked: 60 },
-    { concert: 'C001', perf: '02', capacity: 50,  booked: 44 },
-    { concert: 'C002', perf: '01', capacity: 80,  booked: 78 },
-    { concert: 'C002', perf: '02', capacity: 100, booked: 100 },
-    { concert: 'C003', perf: '01', capacity: 60,  booked: 20 },
-    { concert: 'C003', perf: '02', capacity: 90,  booked: 87 }
-  ]
-};
+window.DTI_CFG = { baseClass: 'zcl_booking_manager', vipClass: 'zcl_vip_booking', vipMethod: 'apply_vip_coupon( )' };
 </script>
-<script src="../_engine/concert-alv-color-lab.js" defer></script>
+<script src="../_engine/dynamic-type-inspector.js" defer></script>
 <script src="../_engine/_autoheight.js" defer></script>
 </body>
 </html>

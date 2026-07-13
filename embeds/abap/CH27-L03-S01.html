@@ -1,21 +1,35 @@
 <!DOCTYPE html>
-<!-- CH27-L03-S01 — 엔진: alv-events(mode=toolbar) · _engine/_base.css. 커스텀 툴바 버튼 추가(toolbar 이벤트). -->
-<html lang="ko" data-eng="alv-events">
+<!-- CH27-L03-S01 — 엔진: strategy-sim (embeds/_engine/strategy-sim.{js,css}) · 공통토큰: _engine/_base.css
+     Strategy 체험 — 요금 전략 선택+좌석수 → 가격, 호출부 동일·전략만 교체. -->
+<html lang="ko" data-eng="strategy-sim">
 <head>
-<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Toolbar Event · CH27-L03-S01</title>
-<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/alv-events.css" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Strategy 시뮬 · CH27-L03-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/strategy-sim.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">툴바에 내 버튼 — <code>toolbar</code></p>
-  <p class="lead">표준 버튼(흐림) 옆에 <code>toolbar</code> 이벤트로 <b>커스텀 버튼</b>(파랑, <code>function=ZCANCEL</code>)을 끼워 넣었습니다. 눌러서 무엇이 등록됐는지 확인하세요(실제 동작은 다음 레슨).</p>
-  <div class="alv"><div class="alvbar" id="bar"></div><table><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
-  <p class="hint">💡 툴바의 파란 <b>🗑 예매 취소</b> 버튼을 눌러 보세요 ↑</p>
-  <div class="log" id="log"><span class="ph">커스텀 버튼을 누르면 등록 정보가 여기 찍힙니다.</span></div>
-  <div class="note">💡 <code>e_object->mt_toolbar</code>에 <code>function</code>·<code>icon</code>·<code>text</code>를 가진 버튼을 <code>APPEND</code>합니다. <code>function</code> 코드가 다음 레슨 <code>user_command</code>로 옵니다.</div>
-  <script type="application/json" id="alv-cfg">{ "mode": "toolbar" }</script>
+  <p class="hd">Strategy — 알고리즘을 갈아끼운다</p>
+  <p class="lead">요금 정책을 바꿔도 <b>호출부(checkout)는 그대로</b>입니다. 주입된 전략 객체만 달라지고, 계산 방식이 통째로 교체됩니다.</p>
+
+  <div class="ctrl">
+    <div class="grp"><div class="t">요금 전략</div><div class="strs">
+      <button class="str on" data-s="std" type="button">일반<small>정가</small></button>
+      <button class="str" data-s="vip" type="button">VIP<small>×1.5</small></button>
+      <button class="str" data-s="early" type="button">조기예매<small>-20%</small></button>
+    </div></div>
+    <div class="grp seats"><div class="t">좌석 수</div><input id="seats" type="number" min="1" max="99" value="2" /></div>
+  </div>
+
+  <div class="out">
+    <div class="box const"><div class="bt">호출부(checkout) <span class="tag">안 바뀜</span></div><div class="code" id="client"></div></div>
+    <div class="box"><div class="bt">주입된 전략 → 결과</div><div class="scls" id="scls"></div><div class="bt" id="sdesc" style="font-weight:600;margin-top:3px"></div><div class="price" id="price"></div></div>
+  </div>
+
+  <div class="note">💡 모든 전략은 <code>zif_price_strategy</code>(메서드 <code>calc</code>)를 구현합니다. 새 요금 정책이 생기면 <b>새 클래스 하나</b>를 추가할 뿐, 호출부는 손대지 않습니다(OCP — 확장엔 열리고 변경엔 닫힘).</div>
 </div>
-<script src="../_engine/alv-events.js" defer></script>
+<script src="../_engine/strategy-sim.js" defer></script>
 </body>
 </html>

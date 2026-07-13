@@ -1,46 +1,36 @@
 <!DOCTYPE html>
-<!-- CH21-L01-S01 — 엔진: salv-control-panel · _autoheight. 콘텐츠=레슨 전용(SALV Sort/Filter/Function 제어, CH21 L01).
-     config=window.SCP_CFG. 게이팅: CH21=SALV 표시 제어(get_functions/get_sorts/get_filters·display 전 지정). 이벤트/편집은 CH27/CH28. -->
-<html lang="ko" data-eng="salv-control-panel">
+<!-- CH21-L01-S01 — 엔진: class-diagram (CSS-only) + _autoheight. 콘텐츠=레슨 전용(클래스↔객체, #C20).
+     게이팅: OO(CLASS·NEW)·classic 허용. -->
+<html lang="ko" data-eng="class-diagram">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>SALV 초기 상태 조종 패널 · CH21-L01-S01</title>
+<title>클래스와 객체 · CH21-L01-S01</title>
 <link rel="stylesheet" href="../_engine/_base.css" />
-<link rel="stylesheet" href="../_engine/salv-control-panel.css" />
+<link rel="stylesheet" href="../_engine/class-diagram.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">SALV 초기 상태 조종 패널 <small>(display 전에 지정)</small></p>
-  <p class="lead">SALV는 <code>display( )</code> 한 번으로 끝나지 않습니다. <b>표시하기 전에</b> 표준 기능·기본 정렬·기본 필터를 지정할 수 있어요. 버튼을 눌러 회차 표(<code>lt_perf</code>)가 어떻게 달라지는지 보세요. 필드명을 틀리면 어떤 오류가 나는지도요.</p>
+  <p class="hd">클래스(설계도) → 객체(인스턴스) <small>(NEW)</small></p>
+  <p class="lead">클래스는 <b>설계도</b> 하나입니다. <code>NEW</code>(또는 <code>CREATE OBJECT</code>)로 그 설계도에서 <b>객체(인스턴스)를 여러 개</b> 찍어냅니다. 객체를 담는 변수는 <code>TYPE REF TO 클래스</code>입니다.</p>
 
-  <div class="scp-ctrl"></div>
+  <div class="cd-flow">
+    <div class="uml-class">
+      <div class="uml-class__name">ZCL_BOOKING_MANAGER<small>클래스 · 설계도</small></div>
+      <div class="uml-sec">
+        <div class="uml-sec__lbl">PUBLIC SECTION</div>
+        <div class="uml-member"><span class="vis vis-pub">+</span><span class="mname">book</span><span class="msig">( iv_seats )</span></div>
+      </div>
+    </div>
+    <div class="cd-arrow"><span class="ar">▶</span>NEW( )</div>
+    <div class="cd-objs">
+      <div class="cd-obj"><b>lo_a</b><small>객체 #1 · TYPE REF TO zcl_booking_manager</small></div>
+      <div class="cd-obj"><b>lo_vip</b><small>객체 #2 · 같은 설계도, 다른 인스턴스</small></div>
+    </div>
+  </div>
 
-  <p class="scp-h">display( ) 전 설정 코드</p>
-  <div id="scpCode"></div>
-  <p class="scp-h">첫 화면 (lt_perf)</p>
-  <div id="scpTable"></div>
-  <div id="scpStatus"></div>
-
-  <div class="note"><b>필터 ≠ DB 조건.</b> 여기 필터는 <b>이미 읽은 내부 테이블</b>을 표시 단계에서 거르는 것입니다. 성능 때문에 데이터를 줄이려면 <code>SELECT … WHERE</code>에서 먼저 제한하세요. 또 정렬·필터 컬럼명은 화면 제목이 아니라 <b>내부 필드명(대문자)</b>입니다.</div>
+  <div class="note"><b>설계도 1 → 객체 여러 개</b> — 클래스는 한 번 정의하고, <code>NEW zcl_booking_manager( )</code>로 필요한 만큼 객체를 만듭니다. 인스턴스 메서드는 <code>lo_a->book( )</code>처럼 <code>-&gt;</code>로 부릅니다. (modern <code>NEW</code> ↔ classic <code>CREATE OBJECT</code> 둘 다 유효.)</div>
 </div>
-
-<script>
-window.SCP_CFG = {
-  sortCol: 'PERF_DATE', filterCol: 'STATUS', badCol: 'PERFDATE',
-  rows: [
-    { perf_date: '20260712', status: 'A', capacity: 100, seatsocc: 40 },
-    { perf_date: '20260705', status: 'F', capacity: 50,  seatsocc: 50 },
-    { perf_date: '20260720', status: 'A', capacity: 80,  seatsocc: 10 },
-    { perf_date: '20260705', status: 'C', capacity: 100, seatsocc: 0 },
-    { perf_date: '20260712', status: 'A', capacity: 120, seatsocc: 90 },
-    { perf_date: '20260701', status: 'A', capacity: 60,  seatsocc: 20 },
-    { perf_date: '20260720', status: 'C', capacity: 80,  seatsocc: 0 },
-    { perf_date: '20260701', status: 'F', capacity: 90,  seatsocc: 90 }
-  ]
-};
-</script>
-<script src="../_engine/salv-control-panel.js" defer></script>
 <script src="../_engine/_autoheight.js" defer></script>
 </body>
 </html>

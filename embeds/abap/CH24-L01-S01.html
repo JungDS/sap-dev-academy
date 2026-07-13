@@ -1,47 +1,28 @@
 <!DOCTYPE html>
-<!-- CH24-L01-S01 — 엔진: dml-playground (embeds/_engine/dml-playground.{js,css}) · 공통토큰: _engine/_base.css
-     DML 4종(INSERT/UPDATE/MODIFY/DELETE)을 ZBOOKING 미니테이블에 실행해 보는 체험. -->
-<html lang="ko" data-eng="dml-playground">
+<!-- CH24-L01-S01 — 엔진: rap-layer-assembler · _autoheight. 콘텐츠=레슨 전용(RAP 계층 조립 보드, #C23 L01).
+     게이팅: RAP 큰 그림(CH23 CDS 위). 각 계층의 책임·빠지면 막히는 사용자 행동. 코드 없음(L01 개요).
+     관통예제=예매(ZI_Booking/ZC_Booking). 세부 BDEF/Service 문법은 이후 레슨. -->
+<html lang="ko" data-eng="rap-layer-assembler">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>DML 플레이그라운드 · CH24-L01-S01</title>
+<title>RAP 계층 조립 보드 · CH24-L01-S01</title>
 <link rel="stylesheet" href="../_engine/_base.css" />
-<link rel="stylesheet" href="../_engine/dml-playground.css" />
+<link rel="stylesheet" href="../_engine/rap-layer-assembler.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">DML 플레이그라운드 — <code>ZBOOKING</code>을 직접 바꿔 보기</p>
-  <p class="lead">연산을 고르고 값을 넣어 <b>실행</b>하면 테이블이 바뀝니다. 같은 키로 <code>INSERT</code> 두 번, <code>WHERE</code> 없는 <code>DELETE</code>도 해 보세요(내 테이블이라 안전).</p>
+  <p class="hd">RAP 계층 조립 보드 <small>(어디에 무엇을 놓나)</small></p>
+  <p class="lead">RAP Business Object는 파일 하나가 아니라 <b>여러 계층의 연결</b>입니다. 계층을 하나씩 켜 보고, 빠진 계층마다 <b>어떤 사용자 행동이 불가능해지는지</b> 확인하세요. RAP는 아래 계층이 단단해야 위 계층이 의미가 있습니다.</p>
 
-  <div class="panel">
-    <div class="ops">
-      <button class="op on" data-op="INSERT" type="button">INSERT</button>
-      <button class="op" data-op="UPDATE" type="button">UPDATE</button>
-      <button class="op" data-op="MODIFY" type="button">MODIFY</button>
-      <button class="op" data-op="DELETE" type="button">DELETE</button>
-    </div>
-    <div class="form">
-      <div class="fld" id="keyFld"><label>booking_id (키)</label><input id="key" placeholder="1003" maxlength="6" autocomplete="off" /></div>
-      <div class="fld"><label>승객</label><input id="pax" placeholder="아이유" maxlength="8" autocomplete="off" /></div>
-      <div class="fld"><label>좌석</label><input id="seats" placeholder="2" maxlength="3" autocomplete="off" /></div>
-      <div class="fld"><label>상태</label><select id="st"><option>O</option><option>X</option></select></div>
-      <label class="chkwrap" id="skipWrap" style="display:none"><input type="checkbox" id="skip" /> WHERE 생략(전체)</label>
-      <button class="reset" id="reset" type="button">↺ 초기화</button>
-      <button class="run" id="run" type="button">▶ 실행</button>
-    </div>
-    <div class="echo" id="echo"></div>
-    <div class="tblwrap">
-      <table>
-        <thead><tr><th>booking_id</th><th>승객</th><th>좌석</th><th>상태</th><th>created_by</th><th>created_on</th></tr></thead>
-        <tbody id="tbody"></tbody>
-      </table>
-    </div>
-    <div class="msg info" id="msg"></div>
-  </div>
+  <div class="ral-ctrl" id="ralCtrl"></div>
+  <div class="ral-stack" id="ralStack"></div>
+  <div class="ral-verdict" id="ralVerdict"></div>
 
-  <div class="note">💡 <b>INSERT</b> 중복키=덤프 · <b>MODIFY</b>=있으면 수정·없으면 추가(upsert) · <b>UPDATE/DELETE</b>는 <code>WHERE</code>를 빼면 전체에 적용(사고 주의). 신규 행엔 감사필드(<code>created_by</code>·<code>created_on</code>)가 자동으로 찍힙니다.</div>
+  <div class="note"><b>RAP ≠ CDS.</b> CDS는 RAP의 <b>데이터 모델</b>을 구성하지만, RAP는 그 위에 <b>behavior</b>(생성·수정·검증·액션)와 <b>service</b>(노출)까지 포함합니다. 그리고 <code>create/update/delete</code>는 BDEF에서 <b>operation을 허용하는 선언</b>이지, 테이블을 직접 바꾸는 SQL이 아니에요(그건 다음 장 DML).</div>
 </div>
-<script src="../_engine/dml-playground.js" defer></script>
+
+<script src="../_engine/rap-layer-assembler.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
 </body>
 </html>

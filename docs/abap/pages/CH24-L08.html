@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ABAP Cloud와 Released API 원칙 · RAP / ABAP Cloud 입문 · SAP Developer Academy</title>
+<link rel="stylesheet" href="../../../assets/base.css">
+<link rel="stylesheet" href="../../../assets/lesson.css">
+<link rel="stylesheet" href="../../../assets/shell.css">
+<script>/* 읽기 설정 선적용(플래시 방지) */(function(){try{var L=localStorage,r=document.documentElement;if(L.getItem('sda.dark')==='1')r.classList.add('dark');if(L.getItem('sda.wide')==='1')r.classList.add('wide');var f=parseInt(L.getItem('sda.fontPx'),10);if(f>=13&&f<=20)r.style.fontSize=f+'px';}catch(e){}})();</script>
+</head>
+<body data-domain="abap" data-chapter-id="CH24" data-lesson-id="CH24-L08">
+<header class="appbar">
+  <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
+  <span class="appbar__sp"></span>
+  <span class="meta">Chapter 24 · RAP / ABAP Cloud 입문</span>
+  <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
+  <div class="tools">
+    <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
+    <button class="icon-btn" id="fsInc" title="글자 크게">A+</button>
+    <button class="icon-btn" id="fsReset" title="글자 크기 초기화">↺</button>
+    <button class="icon-btn" id="darkBtn" title="다크 모드">🌙</button>
+    <button class="icon-btn" id="widthBtn" title="가독 폭 넓게">↔</button>
+    <button class="icon-btn fs-btn" title="전체화면" aria-label="전체화면"></button>
+  </div>
+</header>
+<div class="read-progress"><i></i></div>
+<div class="scrim"></div>
+<nav class="rail" data-shell="rail"></nav>
+<button class="railFab" id="railFab" aria-label="네비 열기">☰</button>
+<div class="stage">
+  <div class="layout">
+    <main class="main">
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 24 › Lesson 8</nav>
+      <section class="lhead">
+        <p class="lhead__eyebrow">RAP / ABAP Cloud 입문</p>
+        <h1>ABAP Cloud와 Released API 원칙</h1>
+        <p class="lhead__direction">클라우드 준비된 개발 — Released API·restricted scope·Clean Core.</p>
+        <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 24</span><span class="tag tag--ls">Lesson 8</span><span class="tag tag--lv">고급</span></div>
+      </section>
+      <article class="prose">
+<section class="lblock"><h2>왜 제한이 필요할까</h2>
+<p>이 과정에서 classic ABAP도 많이 배웠다. Dynpro, SALV, classic table maintenance, SAP GUI 기반 도구는 온프레미스
+유지보수와 기존 시스템에서 여전히 중요하다. 그러나 신규 S/4HANA Cloud나 cloud-ready 확장을 만들 때는 아무
+<button class="term" type="button" data-term="객체">객체</button>나 직접 호출하고, 표준을 직접 수정하고, SAP GUI 전용 흐름에 의존하는 방식이 맞지 않는다.</p>
+<p><strong>ABAP Cloud</strong>는 업그레이드에 강한 cloud-ready 개발을 위해 언어 범위와 API 접근을 제한한다. 이 제한은
+불편하게 하려는 규칙이 아니라, <strong>표준 코어를 깨지 않고 확장하기 위한 안전장치</strong>다.</p>
+</section><section class="lblock"><h2>무엇인가 — cloud-ready 개발의 원칙</h2>
+<p>ABAP Cloud는 cloud-ready·upgrade-stable 개발을 위한 ABAP development model이다. 여기서는 <strong>ABAP for Cloud
+Development</strong>라는 restricted ABAP language version을 쓰고, 다른 repository object에 접근할 때 <strong>released API만</strong>
+사용할 수 있다. 개발 도구도 ADT 중심이다.</p>
+<table>
+<thead>
+<tr>
+<th>원칙</th>
+<th>뜻</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Released API</strong></td>
+<td>ABAP Cloud에서 접근하도록 release된 repository object(또는 그 일부)만 쓴다.</td>
+</tr>
+<tr>
+<td><strong>Restricted language scope</strong></td>
+<td>모든 classic ABAP 구문·도구가 허용되는 것은 아니다.</td>
+</tr>
+<tr>
+<td><strong>ADT 중심 개발</strong></td>
+<td>ABAP Cloud 개발은 Eclipse 기반 ADT 흐름을 중심으로 한다.</td>
+</tr>
+<tr>
+<td><strong>RAP transactional model</strong></td>
+<td>ABAP Cloud의 트랜잭션 프로그래밍 모델은 RAP다.</td>
+</tr>
+<tr>
+<td><strong>Clean Core</strong></td>
+<td>SAP 표준 코어를 직접 바꾸지 않고 공개된 확장 지점·API를 사용한다.</td>
+</tr>
+</tbody></table>
+<p>중요한 균형이 있다 — <strong>classic ABAP을 배운 것은 낭비가 아니다.</strong> 기존 시스템을 읽고 유지보수하려면 classic
+지식이 필요하다. 다만 cloud-ready 신규 개발에서는 RAP·CDS·released API 원칙을 따른다.</p>
+</section><section class="lblock"><h2>직접 판정해 보기</h2>
+<p>아래에서 개발 시나리오가 ABAP Cloud에서 가능한지 판정해 보자. 제한되는 경우의 <strong>대안</strong>까지 보면, &quot;무엇이
+왜 막히는가&quot;가 또렷해진다. released 여부는 <em>이름으로 추측하면 안 된다</em>.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">Cloud 준비도 판정 카드</span><a class="embed__open" href="../../../embeds/abap/CH24-L08-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH24-L08-S01.html" loading="lazy" title="Cloud 준비도 판정 카드"></iframe></figure>
+</section><section class="lblock"><h2>어떻게 확인하는가</h2>
+<ol>
+<li><strong>language version</strong> — ABAP for Cloud Development로 설정된 <button class="term" type="button" data-term="객체">객체</button>는 classic 환경보다 엄격한 syntax/access check를 받는다.</li>
+<li><strong>released 여부</strong> — SE24에서 보이는 class, SE11에서 보이는 table이라고 cloud에서 쓸 수 있는 게 아니다. release
+contract와 visibility를 본다.</li>
+<li><strong>GUI/unreleased 의존</strong> — SAP GUI 전용 흐름이나 unreleased table 직접 접근에 의존하는지 본다. RAP 서비스
+모델은 ADT와 OData/Fiori 소비를 전제로 한다.</li>
+<li><strong>표준 직접 수정 여부</strong> — Clean Core 관점에서 표준 수정을 피하고 공개 확장 지점·released API를 쓴다.</li>
+</ol>
+</section><section class="lblock"><h2>흔한 실수와 점검 🚧</h2>
+<ul>
+<li><strong>ABAP Cloud = &quot;클라우드 서버 ABAP&quot;으로 이해</strong> → 핵심은 서버 위치가 아니라 restricted language version·released
+API·RAP 중심 개발 모델이다.</li>
+<li><strong>released 여부를 이름으로 추측</strong> → <code>CL_*</code>·<code>BAPI_*</code>·테이블 이름이 익숙하다고 released인 것은 아니다. 시스템의
+API release 정보를 확인한다.</li>
+<li><strong>classic 지식을 부정</strong> → 기존 온프레미스 시스템에는 classic 지식이 여전히 필요하다. cloud-ready 개발에서만
+허용 경계를 다르게 본다.</li>
+<li><strong>Clean Core = &quot;아무 확장도 하지 말라&quot;로 오해</strong> → Clean Core는 확장 금지가 아니라, 표준을 훼손하지 않는
+방식으로 확장하라는 원칙이다. 확장은 <a href="CH32-L01.html">Customer Exit / User Exit 개념</a>부터 이어지는 enhancement·BAdI로 한다.</li>
+</ul>
+<hr>
+<blockquote>
+<p><strong>Track-1을 마치며</strong> — 환경(<a href="CH01-L01.html">Chapter 1</a>)부터 RAP까지, <em>읽고 → 모델링하고 → 화면을 만들고 →
+<button class="term" type="button" data-term="객체">객체</button>로 설계하고 → 트랜잭션 앱</em>을 짓는 한 바퀴를 돌았다. 콘서트 예매 앱이 그 여정의 산출물이다.</p>
+</blockquote>
+<p>ABAP Cloud 원칙까지 정리했다. 마지막으로 예매 RAP 동작을 <strong>직접 구현</strong>해 Track-1을 마무리하자 →
+<a href="CH24-L09.html">실습 — 예매 RAP 동작 구현</a>.</p>
+</section>
+      </article>
+      <nav class="lesson-nav" data-shell="prevnext"></nav>
+      <footer class="foot">SAP Developer Academy · 배포자 SAP전문강사 정훈영</footer>
+    </main>
+    <aside class="journey" data-shell="journey"></aside>
+  </div>
+</div>
+<div class="term-popup" data-shell="popup" hidden></div>
+<div class="tmodal" data-shell="tmodal" hidden></div>
+<script>window.__SDA__={"domain":"abap","dataBase":"../","siteRoot":"../../../"};</script>
+<script src="../../../assets/shell.js" defer></script>
+</body>
+</html>

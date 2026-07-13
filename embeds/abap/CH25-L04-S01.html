@@ -1,30 +1,35 @@
 <!DOCTYPE html>
-<!-- CH25-L04-S01 — 엔진: lost-update-sim (embeds/_engine/lost-update-sim.{js,css}) · 공통토큰: _engine/_base.css
-     Lost Update와 낙관/비관 잠금 — 전략 토글로 A·B 타임라인 결과 비교. -->
-<html lang="ko" data-eng="lost-update-sim">
+<!-- CH25-L04-S01 — 엔진: reprocess-sim (embeds/_engine/reprocess-sim.{js,css}) · 공통토큰: _engine/_base.css
+     오류 로그·재처리 체험 — 배치 처리 → 실패 건 오류테이블 → 원인 해결 → 재처리. -->
+<html lang="ko" data-eng="reprocess-sim">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Lost Update 시뮬 · CH25-L04-S01</title>
+<title>재처리 시뮬레이터 · CH25-L04-S01</title>
 <link rel="stylesheet" href="../_engine/_base.css" />
-<link rel="stylesheet" href="../_engine/lost-update-sim.css" />
+<link rel="stylesheet" href="../_engine/reprocess-sim.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">잃어버린 갱신 — 전략에 따라 결과가 다르다</p>
-  <p class="lead">A와 B가 같은 예매의 좌석 수를 동시에 만집니다. <b>전략</b>을 바꿔, A의 변경이 사라지는지(Lost Update) 막아지는지 비교해 보세요.</p>
+  <p class="hd">재처리 시뮬레이터 — 실패는 남기고, 실패분만 다시</p>
+  <p class="lead">예매 5건을 일괄 처리합니다. 2건은 중복키라 실패 — <code>sy-subrc</code>를 보고 <b>오류 테이블</b>에 모았다가, 원인 해결 후 <b>실패분만</b> 재처리합니다.</p>
 
-  <div class="pick">
-    <button class="st on" data-s="none" type="button">전략 없음<small>그냥 저장</small></button>
-    <button class="st" data-s="pessimistic" type="button">Pessimistic<small>미리 잠금</small></button>
-    <button class="st" data-s="optimistic" type="button">Optimistic<small>저장 직전 비교</small></button>
+  <div class="bar">
+    <button class="btn" id="process" type="button">① 처리 (INSERT 루프)</button>
+    <button class="btn" id="fix" type="button">② 원인 해결</button>
+    <button class="btn" id="retry" type="button">③ 재처리 (MODIFY)</button>
+    <button class="reset" id="reset" type="button">↺ 초기화</button>
   </div>
 
-  <div class="tl" id="tl"></div>
-  <div class="out" id="out"></div>
+  <div class="cols">
+    <div class="col in"><div class="col__h">📥 입력 배치 <span class="n" id="nIn">5</span></div><div class="col__b" id="inbox"></div></div>
+    <div class="col ok"><div class="col__h">💾 DB (성공) <span class="n" id="nDb">0</span></div><div class="col__b" id="db"></div></div>
+    <div class="col err"><div class="col__h">❌ 오류 테이블 <span class="n" id="nErr">0</span></div><div class="col__b" id="err"></div></div>
+  </div>
 
-  <div class="note">💡 <b>Pessimistic</b>(비관) = 충돌 잦음·편집 긺 → 미리 <code>ENQUEUE</code>. <b>Optimistic</b>(낙관) = 충돌 드묾·읽기 위주 → 안 잠그고 저장 직전 <code>changed_at</code> 비교. 무조건 잠그면 동시성이 떨어지니 빈도를 보고 고른다.</div>
+  <div class="msg info" id="msg"></div>
+  <div class="note">💡 핵심 셋: ① 매 변경 뒤 <code>sy-subrc</code> 점검 · ② 실패는 <b>무시하지 말고 기록</b>(키·사유) · ③ 멱등성(<code>MODIFY</code>)으로 안전하게 재처리. 표준 <b>Application Log</b>(BAL·SLG1)는 CH38-L05에서.</div>
 </div>
-<script src="../_engine/lost-update-sim.js" defer></script>
+<script src="../_engine/reprocess-sim.js" defer></script>
 </body>
 </html>

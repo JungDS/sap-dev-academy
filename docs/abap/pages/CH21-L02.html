@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SALV Layout / Variant 심화 · SALV/Grid ALV 표시 제어 심화 · SAP Developer Academy</title>
+<title>Attribute / Method / Visibility · OO ABAP 기본 설계 · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">Chapter 21 · SALV/Grid ALV 표시 제어 심화</span>
+  <span class="meta">Chapter 21 · OO ABAP 기본 설계</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,39 +33,14 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 21 › Lesson 2</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">SALV/Grid ALV 표시 제어 심화</p>
-        <h1>SALV Layout / Variant 심화</h1>
-        <p class="lhead__direction">표시 설정·컬럼 텍스트·레이아웃 저장 — 개발자 기본값 + 사용자 보기.</p>
+        <p class="lhead__eyebrow">OO ABAP 기본 설계</p>
+        <h1>Attribute / Method / Visibility</h1>
+        <p class="lhead__direction">클래스가 가진 데이터와 행동, 그리고 공개 범위 — 캡슐화는 방어선.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 21</span><span class="tag tag--ls">Lesson 2</span><span class="tag tag--lv">고급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>왜 — 정렬·필터만으론 부족 🎨</h2>
-<p>정렬·필터를 줘도 긴 컬럼이 잘리고, 제목이 DDIC 기술명 그대로 나오고, 매번 같은 컬럼 순서를 다시 맞춰야 하면 보고서가 불편하다. SALV layout·variant는 이걸 줄인다 — **개발자는 &quot;처음 보기 좋은 기본값&quot;**을 주고, **사용자는 &quot;내 업무 방식 보기&quot;**를 저장한다.</p>
-</section><section class="lblock"><h2>세 층의 표시 설정 🧩</h2>
-<table>
-<thead>
-<tr>
-<th>층</th>
-<th><button class="term" type="button" data-term="객체">객체</button></th>
-<th>역할</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>표 전체</td>
-<td><code>get_display_settings( )</code></td>
-<td>제목(list header)·줄무늬</td>
-</tr>
-<tr>
-<td>컬럼 묶음</td>
-<td><code>get_columns( )</code></td>
-<td>폭 최적화·특정 컬럼 접근</td>
-</tr>
-<tr>
-<td>variant 저장</td>
-<td><code>get_layout( )</code></td>
-<td>report별 layout key·저장 허용</td>
-</tr>
-</tbody></table>
+<section class="lblock"><h2>데이터(속성)와 행동(메서드) 🧱</h2>
+<p>좋은 <button class="term" type="button" data-term="Class">클래스</button>는 <strong>&quot;무엇을 알고 있는가&quot;</strong>(속성)와 <strong>&quot;무엇을 할 수 있는가&quot;</strong>(<button class="term" type="button" data-term="Method">메서드</button>)를 함께 설계한다. 예약 관리자라면 공연 ID·회차·정원 같은 상태를 알고, 잔여석 계산·예약 처리 같은 행동을 한다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -73,49 +48,77 @@
 5
 6
 7
-8
-9
-10
-11
-12
-13
-14
-15</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>(lo_disp) = lo_salv-&gt;get_display_settings( ).
-lo_disp-&gt;set_striped_pattern( abap_true ).
-lo_disp-&gt;set_list_header( <span class="tok-str">'회차별 예매 현황'</span> ).
-
-<span class="tok-kw">DATA</span>(lo_cols) = lo_salv-&gt;get_columns( ).
-lo_cols-&gt;set_optimize( abap_true ).               <span class="tok-com">" 컬럼 폭 최적화</span>
-
-<span class="tok-kw">TRY</span>.
-    <span class="tok-kw">DATA</span>(lo_cap) = lo_cols-&gt;get_column( <span class="tok-str">'CAPACITY'</span> ).
-    lo_cap-&gt;set_short_text(  <span class="tok-str">'정원'</span> ).            <span class="tok-com">" ★ 셋 다 맞춘다</span>
-    lo_cap-&gt;set_medium_text( <span class="tok-str">'정원'</span> ).
-    lo_cap-&gt;set_long_text(   <span class="tok-str">'정원'</span> ).
-  <span class="tok-kw">CATCH</span> cx_salv_not_found.
-    <span class="tok-kw">MESSAGE</span> <span class="tok-str">'CAPACITY 컬럼을 찾을 수 없습니다.'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'E'</span>.
-<span class="tok-kw">ENDTRY</span>.</code></pre></div></div>
-<blockquote class="cw">
-<p>⚠️ <code>set_long_text</code>만 바꾸면 헤더가 그대로일 수 있다. SALV는 컬럼 폭에 따라 <strong>short/medium/long 중 하나를 골라</strong> 쓰므로, 셋을 함께 맞춰야 초보자 혼란이 없다.</p>
-</blockquote>
-<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">SALV Layout 실험실 (줄무늬·폭·컬럼 텍스트)</span><a class="embed__open" href="../../../embeds/abap/CH21-L02-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH21-L02-S01.html" loading="lazy" title="SALV Layout 실험실 (줄무늬·폭·컬럼 텍스트)"></iframe></figure>
-</section><section class="lblock"><h2>Variant 저장 💾</h2>
+8</pre><pre class="abap-editor__code"><code><span class="tok-kw">CLASS</span> zcl_booking_manager <span class="tok-kw">DEFINITION</span> <span class="tok-kw">PUBLIC</span> <span class="tok-kw">CREATE</span> <span class="tok-kw">PUBLIC</span>.
+  <span class="tok-kw">PUBLIC</span> <span class="tok-kw">SECTION</span>.
+    <span class="tok-kw">METHODS</span> book      <span class="tok-kw">IMPORTING</span> iv_seats <span class="tok-kw">TYPE</span> i.
+    <span class="tok-kw">METHODS</span> remaining <span class="tok-kw">RETURNING</span> <span class="tok-kw">VALUE</span>(rv_remaining) <span class="tok-kw">TYPE</span> i.
+  <span class="tok-kw">PRIVATE</span> <span class="tok-kw">SECTION</span>.
+    <span class="tok-kw">DATA</span> mv_capacity <span class="tok-kw">TYPE</span> i.          <span class="tok-com">" 인스턴스 속성</span>
+    <span class="tok-kw">DATA</span> mv_booked   <span class="tok-kw">TYPE</span> i.
+<span class="tok-kw">ENDCLASS</span>.</code></pre></div></div>
+<ul>
+<li><strong><button class="term" type="button" data-term="Attribute">속성</button></strong>: <code>DATA</code>는 <strong><button class="term" type="button" data-term="인스턴스">인스턴스</button></strong> 속성(<button class="term" type="button" data-term="객체">객체</button>마다 따로). <code>CLASS-DATA</code>는 <strong>정적</strong> 속성(클래스에 하나, 공용).</li>
+<li><strong>메서드</strong>: <code>METHODS</code>는 인스턴스 메서드, <code>CLASS-METHODS</code>는 정적 메서드.</li>
+<li><code>mv_</code>는 멤버 변수(member variable) 접두어 관례.</li>
+</ul>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2</pre><pre class="abap-editor__code"><code><span class="tok-kw">PRIVATE</span> <span class="tok-kw">SECTION</span>.
+  <span class="tok-kw">CLASS-DATA</span> gv_version <span class="tok-kw">TYPE</span> string <span class="tok-kw">VALUE</span> <span class="tok-str">'1.0'</span>.   <span class="tok-com">" 클래스 공용 — 객체 수와 무관하게 하나</span></code></pre></div></div>
+</section><section class="lblock"><h2>공개 범위 — Visibility 🚪</h2>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
-3</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>(lo_layout) = lo_salv-&gt;get_layout( ).
-lo_layout-&gt;set_key( <span class="tok-kw">VALUE</span> salv_s_layout_key( <span class="tok-kw">report</span> = sy-repid ) ).   <span class="tok-com">" 어느 리포트의 layout인지</span>
-lo_layout-&gt;set_save_restriction( if_salv_c_layout=&gt;restrict_none ).   <span class="tok-com">" 저장 허용</span></code></pre></div></div>
-<p><code>set_key</code>로 &quot;이 variant가 어느 리포트의 layout인지&quot; 식별한다(<code>sy-repid</code> = 현재 프로그램). 그래야 사용자가 컬럼 순서·숨김·폭을 자기 보기로 저장할 수 있다.</p>
+3
+4</pre><pre class="abap-editor__code"><code><span class="tok-kw">CLASS</span> ... <span class="tok-kw">DEFINITION</span> ...
+  <span class="tok-kw">PUBLIC</span> <span class="tok-kw">SECTION</span>.       <span class="tok-com">" 외부가 호출해야 하는 행동</span>
+  <span class="tok-kw">PROTECTED</span> <span class="tok-kw">SECTION</span>.    <span class="tok-com">" 상속 자식에게 열어 둘 내부 계약</span>
+  <span class="tok-kw">PRIVATE</span> <span class="tok-kw">SECTION</span>.      <span class="tok-com">" 외부가 직접 바꾸면 안 되는 상태</span></code></pre></div></div>
+<table>
+<thead>
+<tr>
+<th>섹션</th>
+<th>접근 가능</th>
+<th>설계 기준</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>PUBLIC SECTION</code></td>
+<td>누구나(외부·자신·자식)</td>
+<td>외부가 호출할 <button class="term" type="button" data-term="Method">메서드</button></td>
+</tr>
+<tr>
+<td><code>PROTECTED SECTION</code></td>
+<td>자신 + <strong><button class="term" type="button" data-term="상속">상속</button> 자식</strong></td>
+<td>상속 확장용 내부 계약</td>
+</tr>
+<tr>
+<td><code>PRIVATE SECTION</code></td>
+<td><strong>자신만</strong></td>
+<td>외부가 못 건드릴 상태</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>🛡️ 입문 기본 원칙 — <strong>&quot;데이터는 보통 private, 행동은 필요한 만큼 public.&quot;</strong> 캡슐화는 데이터를 숨기는 장식이 아니라, <strong>잘못된 상태 변경을 막는 방어선</strong>이다.</p>
+</blockquote>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">Visibility Gate Simulator (멤버·범위·호출자 → 접근 허용/차단)</span><a class="embed__open" href="../../../embeds/abap/CH21-L02-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH21-L02-S01.html" loading="lazy" title="Visibility Gate Simulator (멤버·범위·호출자 → 접근 허용/차단)"></iframe></figure>
+</section><section class="lblock"><h2>확인 — 일부러 잘못 접근해 보기 🔎</h2>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>(lo_mgr) = <span class="tok-kw">NEW</span> zcl_booking_manager( ).
+
+<span class="tok-kw">DATA</span>(lv_remaining) = lo_mgr-&gt;remaining( ).   <span class="tok-com">" PUBLIC 메서드 → OK</span>
+<span class="tok-com">" lo_mgr-&gt;mv_capacity = 100.                  " PRIVATE 속성 직접 접근 → 오류</span></code></pre></div></div>
+<p>private 접근 오류는 <strong>런타임이 아니라 컴파일(syntax check) 단계</strong>에서 난다. <button class="term" type="button" data-term="Class">클래스</button>의 경계는 실행 중 뒤늦게 드러나는 약속이 아니라, <strong>컴파일 시점에 검증되는 계약</strong>이다. (<button class="term" type="button" data-term="인스턴스">인스턴스</button> vs 정적도 <button class="term" type="button" data-term="객체">객체</button> 두 개를 만들어 비교해 보면, <code>DATA</code>는 객체마다 다르고 <code>CLASS-DATA</code>는 공용임이 드러난다.)</p>
 </section><section class="lblock"><h2>흔한 실수와 점검 🚧</h2>
 <ul>
-<li><strong><code>long_text</code>만 바꿈</strong> → 헤더가 안 바뀔 수 있다. short/medium/long을 <strong>함께</strong>.</li>
-<li><strong>컬럼명 오타</strong> → <code>get_column( )</code>은 화면 제목이 아니라 <strong>내부 필드명</strong>(대문자)으로 접근. 틀리면 <code>cx_salv_not_found</code>.</li>
-<li><strong>레이아웃 키 누락</strong> → variant를 저장하려면 <code>set_key</code>로 식별부터.</li>
-<li><strong>variant ≠ 데이터 변경</strong> → 컬럼 순서·숨김·폭 같은 <strong>표시 설정만</strong> 저장된다. 또 ALV 숨김은 <strong>권한 제어가 아니다</strong> — 보안상 숨길 값은 애초에 조회하지 않는다.</li>
+<li><strong>데이터를 PUBLIC</strong> → 외부가 정원을 마음대로 바꿔 <code>book( )</code>·<code>remaining( )</code>의 규칙을 우회. 데이터는 PRIVATE, 접근은 <button class="term" type="button" data-term="Method">메서드</button>로.</li>
+<li><strong>모든 걸 PRIVATE</strong> → 외부가 부를 메서드까지 닫으면 <button class="term" type="button" data-term="Class">클래스</button>가 쓸모없다. 공개할 것과 숨길 것을 <strong>나누는</strong> 게 설계.</li>
+<li><strong><code>PROTECTED</code> 남용</strong> → &quot;자식이 이 내부 계약에 의존해도 된다&quot;는 뜻. 확장 의도가 분명치 않으면 <strong>private으로 시작</strong>.</li>
+<li><strong><button class="term" type="button" data-term="인스턴스">인스턴스</button> vs 정적 혼동</strong> → <button class="term" type="button" data-term="객체">객체</button>마다 다른 값 = <code>DATA</code>, 클래스 공용 = <code>CLASS-DATA</code>.</li>
 </ul>
 <hr>
-<p>SALV를 다듬었다. 이제 Grid ALV의 컬럼을 field catalog로 더 세밀히 →
-<a href="CH21-L03.html">Grid ALV Column 제어 심화</a>.</p>
+<p>속성·메서드·범위를 정했다. 객체가 태어날 때 반드시 필요한 값을 받는 <strong>생성자</strong> →
+<a href="CH21-L03.html">Constructor와 객체 초기화</a>.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

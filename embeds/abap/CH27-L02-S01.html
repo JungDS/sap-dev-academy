@@ -1,21 +1,33 @@
 <!DOCTYPE html>
-<!-- CH27-L02-S01 — 엔진: alv-events(mode=hotspot) · _engine/_base.css. concert_id 링크 셀 → hotspot_click. -->
-<html lang="ko" data-eng="alv-events">
+<!-- CH27-L02-S01 — 엔진: singleton-sim (embeds/_engine/singleton-sim.{js,css}) · 공통토큰: _engine/_base.css
+     Singleton 체험 — get_instance ×N(같은 인스턴스) vs NEW ×N(매번 새 인스턴스). -->
+<html lang="ko" data-eng="singleton-sim">
 <head>
-<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Hotspot Click · CH27-L02-S01</title>
-<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/alv-events.css" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Singleton 시뮬 · CH27-L02-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/singleton-sim.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">셀을 링크처럼 — <code>hotspot_click</code></p>
-  <p class="lead"><code>concert_id</code> 컬럼이 <b>밑줄 링크</b>로 보입니다. <b>한 번 클릭</b>하면 <code>on_hotspot_click</code>이 실행돼 공연 상세로 보냅니다(더블클릭과 달리 단일 클릭).</p>
-  <div class="alv"><div class="alvbar" id="bar"></div><table><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
-  <p class="hint">💡 파란 밑줄 <b>concert_id</b>를 한 번 클릭해 보세요 ↑</p>
-  <div class="log" id="log"><span class="ph">링크 셀을 클릭하면 이벤트가 여기 찍힙니다.</span></div>
-  <div class="note">💡 fieldcat에서 해당 컬럼의 <code>hotspot = abap_true</code>로 링크를 만듭니다. 핸들러는 <code>e_row_id</code>·<code>e_column_id</code>를 받습니다.</div>
-  <script type="application/json" id="alv-cfg">{ "mode": "hotspot" }</script>
+  <p class="hd">Singleton — 몇 번을 불러도 같은 하나</p>
+  <p class="lead">양쪽을 여러 번 눌러 보세요. <code>get_instance()</code>는 늘 <b>같은 주소</b>(인스턴스 1개)를, <code>NEW</code>는 <b>매번 새 주소</b>(인스턴스 N개)를 만듭니다.</p>
+
+  <div class="cols">
+    <div class="col good">
+      <div class="col__h">✓ get_instance() <span class="cnt" id="sCnt">인스턴스 0개</span></div>
+      <div class="col__b"><button class="callbtn" id="sCall" type="button">zcl_config=>get_instance( )</button><div class="refs" id="sRefs"></div></div>
+    </div>
+    <div class="col bad">
+      <div class="col__h">⚠ NEW 매번 <span class="cnt" id="nCnt">인스턴스 0개</span></div>
+      <div class="col__b"><button class="callbtn" id="nCall" type="button">NEW zcl_config( )</button><div class="refs" id="nRefs"></div></div>
+    </div>
+  </div>
+  <button class="reset" id="reset" type="button">↺ 초기화</button>
+
+  <div class="note">💡 <code>CREATE PRIVATE</code>로 외부 <code>NEW</code>를 막고 <code>get_instance()</code>만 열어 두면, 최초 1회만 생성되고 이후엔 같은 인스턴스를 돌려줍니다 → 설정·캐시처럼 <b>하나여야 하는</b> 상태를 한 곳에. (단, 전역 상태 남용은 테스트·동시성을 어렵게 하니 꼭 필요할 때만.)</div>
 </div>
-<script src="../_engine/alv-events.js" defer></script>
+<script src="../_engine/singleton-sim.js" defer></script>
 </body>
 </html>

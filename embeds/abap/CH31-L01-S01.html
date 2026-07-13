@@ -1,23 +1,20 @@
 <!DOCTYPE html>
-<!-- CH31-L01-S01 — 엔진: idoc-structure · _engine/_base.css. IDoc 3층(Control/Data/Status) 클릭 탐색. -->
-<html lang="ko" data-eng="idoc-structure">
+<!-- CH31-L01-S01 — 엔진: editable-grid(mode=editcols) · _engine/_base.css. 편집모드 토글 → seats input↔text. -->
+<html lang="ko" data-eng="editable-grid">
 <head>
 <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>IDoc 구조 · CH31-L01-S01</title>
-<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/idoc-structure.css" />
+<title>Editable Field Catalog · CH31-L01-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/editable-grid.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">IDoc — 세 층으로 된 표준 메시지 봉투</p>
-  <p class="lead">각 층을 클릭해 무엇이 담기는지 살펴보세요. 봉투(Control) + 내용물(Data) + 처리 이력(Status)으로 한 문서가 완성됩니다.</p>
-  <div class="stack">
-    <div class="layer control" data-l="control"><span class="tag">EDIDC</span><span class="nm">Control Record</span><span class="sub">발신·수신·메시지 타입·방향</span></div>
-    <div class="layer data" data-l="data"><span class="tag">EDIDD</span><span class="nm">Data Records</span><span class="sub">실제 데이터 — Segment 묶음</span></div>
-    <div class="layer status" data-l="status"><span class="tag">EDIDS</span><span class="nm">Status Records</span><span class="sub">처리 상태 이력</span></div>
-  </div>
-  <div class="detail" id="detail"></div>
-  <div class="note">💡 <b>Basic Type</b>(예: <code>ORDERS05</code>)이 IDoc의 구조(어떤 Segment로 구성)를 정의합니다. <code>WE02</code>/<code>WE05</code>로 모니터링, <code>WE60</code>으로 구조 문서를 봅니다. 방향(Inbound/Outbound)을 분명히.</div>
+  <p class="hd">편집 가능 컬럼 — <code>fieldcat-edit</code></p>
+  <p class="lead"><b>편집 모드</b>를 켜면 <code>SEATS</code> 컬럼만 입력칸으로 바뀝니다. 키·표시 컬럼은 그대로 읽기전용 — 필요한 컬럼만 <code>edit = abap_true</code>.</p>
+  <div class="bar"><button class="toggle" id="editToggle" type="button">🔒 편집 모드: OFF</button></div>
+  <div class="alv"><div class="alvbar">ZBOOKING — Editable ALV</div><table><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
+  <div class="note">💡 <code>edit = abap_true</code>로 컬럼을 열고, <code>register_edit_event( mc_evt_modified )</code>로 변경 이벤트를 등록해야 프로그램이 입력값을 받습니다(둘 다 필요). 값이 바뀌는 순간 처리는 다음 레슨.</div>
+  <script type="application/json" id="eg-cfg">{ "mode": "editcols", "max": 10 }</script>
 </div>
-<script src="../_engine/idoc-structure.js" defer></script>
+<script src="../_engine/editable-grid.js" defer></script>
 </body>
 </html>

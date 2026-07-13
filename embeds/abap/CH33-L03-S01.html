@@ -1,36 +1,26 @@
 <!DOCTYPE html>
-<!-- CH33-L03-S01 — 엔진: mermaid + _autoheight. ADBC Native SQL 호출 경로. -->
-<html lang="ko" data-eng="mermaid">
+<!-- CH33-L03-S01 — 엔진: bdc-recorder · _engine/_base.css. 화면 동작을 BDCDATA에 녹화 → CALL TRANSACTION. -->
+<html lang="ko" data-eng="bdc-recorder">
 <head>
 <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>ADBC 흐름 · CH33-L03-S01</title>
-<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-<script>if(!window.mermaid){var s=document.createElement("script");s.src="../_vendor/mermaid.min.js";document.head.appendChild(s);}</script>
-<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/mermaid.css" />
+<title>BDC Recorder · CH33-L03-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/bdc-recorder.css" />
 </head>
 <body>
-  <div class="wrap">
-    <p class="hd">ADBC — DB에 직접 말 거는 경로</p>
-    <p class="lead"><code>CL_SQL_STATEMENT</code>로 DB 고유 Native SQL을 직접 실행합니다. 강력하지만 책임도 직접(client·injection).</p>
-    <div class="viz-card">
-      <p class="viz-card__title">ABAP → Native SQL → 결과</p>
-      <div class="mermaid" id="mm">
-flowchart LR
-  A["ABAP 프로그램"]:::sys
-  S["CL_SQL_STATEMENT<br/>execute_query( )"]:::soft
-  N["Native SQL<br/>(DB 고유 구문)"]:::warn
-  R["Result Set<br/>set_param_table"]:::soft
-  T["내부 테이블"]:::sys
-  A --> S --> N --> R --> T
-  N -.->|"⚠ client 자동종속 X · injection 주의"| N
-classDef sys fill:#eef2ff,stroke:#3b5bdb,stroke-width:2px,color:#1e3a8a;
-classDef soft fill:#ffffff,stroke:#94a3b8,stroke-width:1.6px,color:#334155;
-classDef warn fill:#fff0f5,stroke:#e11d48,stroke-width:2px,color:#b91c1c;
-      </div>
-      <p class="viz-note">Open SQL과 달리 <b>MANDT(client)를 자동으로 안 챙기고</b> 구문 검사도 없습니다 — 직접 조건에 넣고, 문자열 연결 대신 <b>파라미터 바인딩</b>으로 SQL 주입을 막습니다. DB 고유 기능이 꼭 필요할 때만(최후).</p>
-    </div>
+<div class="wrap">
+  <p class="hd">BDC — 화면 입력을 BDCDATA에 녹화</p>
+  <p class="lead"><b>다음 동작</b>을 눌러 화면·필드·값을 <code>BDCDATA</code>에 차곡차곡 채워 보세요(SHDB 녹화 느낌). 다 채우면 <code>CALL TRANSACTION</code>으로 한 번에 실행합니다.</p>
+  <div class="bar">
+    <button class="btn" id="next" type="button">다음 동작 ▶</button>
+    <button class="btn exec" id="exec" type="button" disabled>▶ CALL TRANSACTION</button>
+    <button class="reset" id="reset" type="button">↺ 초기화</button>
   </div>
-<script src="../_engine/mermaid.js" defer></script>
-<script src="../_engine/_autoheight.js" defer></script>
+  <div class="panel"><div class="panel__h">lt_bdc ( TABLE OF bdcdata )</div>
+    <table><thead><tr><th>PROGRAM</th><th>DYNPRO</th><th>BEGIN</th><th>FNAM = FVAL · 동작</th></tr></thead><tbody id="tbody"></tbody></table>
+  </div>
+  <div class="result" id="result"></div>
+  <div class="note">💡 <b>Call Transaction</b>=즉시 실행·결과 바로 확인 / <b>Session</b>(BDC_OPEN_GROUP)=<code>SM35</code> 큐에 쌓아 대량·야간 처리·재처리. 표준 화면이 바뀌면 BDC가 깨지니 <b>BAPI가 있으면 BAPI 우선</b>.</div>
+</div>
+<script src="../_engine/bdc-recorder.js" defer></script>
 </body>
 </html>

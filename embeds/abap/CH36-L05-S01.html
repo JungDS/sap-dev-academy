@@ -1,33 +1,32 @@
 <!DOCTYPE html>
-<!-- CH36-L05-S01 — 엔진: compare-matrix(재사용) · _engine/_base.css. Determination/Validation/Action 비교. -->
-<html lang="ko" data-eng="compare-matrix">
+<!-- CH36-L05-S01 — 엔진: judge-quiz · _engine/_base.css. AMDP/Native 적절성 판별. -->
+<html lang="ko" data-eng="judge-quiz">
 <head>
 <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>RAP 핸들러 비교 · CH36-L05-S01</title>
-<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/compare-matrix.css" />
+<title>푸시다운 적절성 · CH36-L05-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/judge-quiz.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">Determination vs Validation vs Action</p>
-  <p class="lead">세 핸들러의 자리를 비교하세요. 이름을 클릭하면 예매 앱에서의 역할이 나옵니다.</p>
-  <p class="hint">💡 행(핸들러)을 클릭</p>
-  <table><thead id="thead"></thead><tbody id="tbody"></tbody></table>
-  <div class="detail idle" id="detail">핸들러 이름을 클릭하면 역할이 나옵니다.</div>
-  <div class="note">💡 검증 실패는 <b>failed/reported</b>로 알려야 RAP이 저장을 막습니다. 핸들러 내부 읽기/수정은 보통 <code>IN LOCAL MODE</code>.</div>
-  <script type="application/json" id="cm-cfg">
+  <p class="hd">이 선택, 적절할까? — 푸시다운 판별</p>
+  <p class="lead">각 상황에서 AMDP/Native SQL 사용이 <b>적절</b>한지 <b>부적절(과용·리스크)</b>인지 골라 보세요.</p>
+  <div class="score"><span>점수</span><div class="bar"><i id="sbar"></i></div><span class="v" id="sv">0 / 0</span></div>
+  <div id="list"></div>
+  <div class="result" id="result"></div>
+  <script type="application/json" id="quiz">
   {
-    "cols": ["실행 시점", "목적", "실패 처리"],
-    "rows": [
-      { "name": "Determination", "cells": [{"v":"on modify","r":"mid"},{"v":"자동 채움","r":"hi"},{"v":"보통 없음","r":"hi"}],
-        "detail": "생성/수정 시 값을 <b>자동으로 채움</b> — 예매 생성 시 status='N', created_by=sy-uname(CH24 stamp의 RAP 버전)." },
-      { "name": "Validation", "cells": [{"v":"on save","r":"mid"},{"v":"규칙 검증","r":"hi"},{"v":"failed/reported","r":"lo"}],
-        "detail": "저장 직전 <b>규칙 검증</b> — 좌석 합계가 정원을 넘으면 failed/reported로 알려 RAP이 저장을 거부(ZCX_FULLY_BOOKED의 RAP 표현)." },
-      { "name": "Action", "cells": [{"v":"사용자 호출","r":"mid"},{"v":"커스텀 동작","r":"hi"},{"v":"result 반환","r":"mid"}],
-        "detail": "사용자가 버튼으로 실행하는 <b>커스텀 동작</b> — cancelBooking으로 status='C', result에 변경 인스턴스 반환." }
+    "labels": ["✓ 적절", "✗ 부적절"],
+    "items": [
+      { "q": "공연별 좌석 합계를 <b>Open SQL GROUP BY</b>로 구한다.", "a": 0, "why": "표준 SQL로 충분 — 이식성·검증·1순위. AMDP 불필요." },
+      { "q": "단순 단건 조회를 굳이 <b>AMDP</b>로 만든다.", "a": 1, "why": "과용. 대부분 Open SQL/CDS면 됨 — 복잡할 때만 AMDP." },
+      { "q": "임시테이블·루프가 필요한 복잡 알고리즘을 DB에서 <b>AMDP</b>로.", "a": 0, "why": "SQLScript 절차 로직이 꼭 DB에서 필요한 경우 — AMDP의 제자리." },
+      { "q": "곧 다른 DB로 이전할 시스템에서 <b>Native SQL</b>을 남발한다.", "a": 1, "why": "DB 종속 → 이전 시 발목. 이식성을 무시한 위험한 선택." },
+      { "q": "AMDP/Native를 <b>별도 클래스</b>로 격리하고 이유를 문서화한다.", "a": 0, "why": "운영 원칙 — 격리·문서화로 종속성을 관리. 권장." },
+      { "q": "<b>ABAP Cloud</b>에서 Native SQL로 핵심 로직을 짠다.", "a": 1, "why": "ABAP Cloud는 Native SQL이 제한적 — Released API·CDS로 가야 함." }
     ]
   }
   </script>
 </div>
-<script src="../_engine/compare-matrix.js" defer></script>
+<script src="../_engine/judge-quiz.js" defer></script>
 </body>
 </html>

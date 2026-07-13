@@ -1,39 +1,27 @@
 <!DOCTYPE html>
-<!-- CH36-L01-S01 — 엔진: mermaid + _autoheight. RAP+Fiori 풀스택 통합 지도. -->
-<html lang="ko" data-eng="mermaid">
+<!-- CH36-L01-S01 — 엔진: pushdown-flow · _engine/_base.css. Data-to-Code vs Code-to-Data 전송량. -->
+<html lang="ko" data-eng="pushdown-flow">
 <head>
 <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Capstone 통합 지도 · CH36-L01-S01</title>
-<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-<script>if(!window.mermaid){var s=document.createElement("script");s.src="../_vendor/mermaid.min.js";document.head.appendChild(s);}</script>
-<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/mermaid.css" />
+<title>Code Pushdown · CH36-L01-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/pushdown-flow.css" />
 </head>
 <body>
-  <div class="wrap">
-    <p class="hd">콘서트 예매 풀스택 — 계층 통합 지도</p>
-    <p class="lead">데이터에서 화면까지, 배운 조각이 한 앱으로 쌓입니다. 아래에서 위로 한 층씩.</p>
-    <div class="viz-card">
-      <p class="viz-card__title">데이터 → CDS → RAP → 서비스 → Fiori</p>
-      <div class="mermaid" id="mm">
-flowchart TD
-  DB[("ZBOOKING / ZPERF / ZCONCERT<br/>테이블 (CH03·07·09)")]:::db
-  ZI["ZI_Booking — Interface View<br/>root · association (CH22)"]:::cds
-  ZC["ZC_Booking — Projection + @UI<br/>(CH36-L03)"]:::cds
-  BD["BDEF / BIMP — 동작·검증·액션<br/>(CH23 · L04~L05)"]:::rap
-  SV["Service Binding — OData V4<br/>(L06)"]:::svc
-  FE["Fiori Elements — List/Object Page<br/>코드 없는 UI (L06)"]:::ui
-  DB --> ZI --> ZC --> SV --> FE
-  BD -.->|"behavior for"| ZI
-classDef db fill:#eef1f8,stroke:#94a3b8,stroke-width:2px,color:#334155;
-classDef cds fill:#eef2ff,stroke:#3b5bdb,stroke-width:2px,color:#1e3a8a;
-classDef rap fill:#fff7ed,stroke:#fb923c,stroke-width:2px,color:#c2410c;
-classDef svc fill:#f3eefe,stroke:#7c3aed,stroke-width:2px,color:#6d28d9;
-classDef ui fill:#ecfdf5,stroke:#10b981,stroke-width:2.4px,color:#0b7250;
-      </div>
-      <p class="viz-note">한 번에 다 만들지 말고 <b>아래부터(데이터→모델→동작→서비스→UI)</b> 순서대로. 핵심 흐름(예매·취소·검증)부터 완성하고 확장합니다.</p>
-    </div>
+<div class="wrap">
+  <p class="hd">데이터를 끌어올까, 코드를 내려보낼까?</p>
+  <p class="lead">공연별 좌석 합계를 구합니다. 어디서 집계하느냐에 따라 <b>DB→ABAP 전송량</b>이 천지차이입니다. 두 방식을 바꿔 보세요.</p>
+  <div class="pd-seg">
+    <button id="bUp" type="button">끌어오기 (Data-to-Code)</button>
+    <button id="bDown" class="on" type="button">내려보내기 (Code-to-Data)</button>
   </div>
-<script src="../_engine/mermaid.js" defer></script>
-<script src="../_engine/_autoheight.js" defer></script>
+  <div class="diagram">
+    <div class="node db"><div class="t">DB (HANA)</div><div class="nm">zbooking 100만 행</div><div class="calc" id="dbCalc"></div></div>
+    <div class="pipe" id="pipe"><div class="lbl" id="pipeLbl"></div><div class="flow"><i id="pipeBar"></i></div></div>
+    <div class="node abap"><div class="t">ABAP 서버</div><div class="nm">집계 결과 사용</div><div class="calc" id="abCalc"></div></div>
+  </div>
+  <div class="metric" id="metric"></div>
+  <div class="note">💡 우선순위: <b>Open/Modern SQL</b>(1순위·이식성) → <b>CDS</b>(재사용) → <b>AMDP</b>(복잡 절차) → <b>Native SQL</b>(최후). "데이터를 ABAP으로 끌어와 LOOP" 대신 "DB에서 집계해 결과만"이 핵심.</div>
+</div>
+<script src="../_engine/pushdown-flow.js" defer></script>
 </body>
 </html>

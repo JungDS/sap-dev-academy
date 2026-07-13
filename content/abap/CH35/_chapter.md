@@ -2,10 +2,10 @@
 id: CH35
 track: TRACK-02
 order: 35
-title: "운영 품질과 배포 관리 (이송 심화)"
-intro: "개발물을 안전하게 운영으로 배포·관리해야 한다. (CH01-L06 이송요청의 2단 심화)"
-keywords: ["Transport","Release","Import","CTS","Code Inspector"]
+title: "성능 분석과 튜닝"
+intro: "느리다 — 어디가 병목인지 찾아 튜닝하고 싶다."
+keywords: ["SAT","ST05","SQL Trace","성능"]
 difficulty: "고급"
 ---
 
-개발물을 안전하게 운영으로 배포·관리해야 한다. (CH01-L06 이송요청의 2단 심화)
+느리다 — 어디가 병목인지 찾아 튜닝하고 싶다.

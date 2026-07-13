@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<!-- CH39-L05-S01 — 엔진: compare-matrix(재사용) · _engine/_base.css. Determination/Validation/Action 비교. -->
+<html lang="ko" data-eng="compare-matrix">
+<head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RAP 핸들러 비교 · CH39-L05-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/compare-matrix.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">Determination vs Validation vs Action</p>
+  <p class="lead">세 핸들러의 자리를 비교하세요. 이름을 클릭하면 예매 앱에서의 역할이 나옵니다.</p>
+  <p class="hint">💡 행(핸들러)을 클릭</p>
+  <table><thead id="thead"></thead><tbody id="tbody"></tbody></table>
+  <div class="detail idle" id="detail">핸들러 이름을 클릭하면 역할이 나옵니다.</div>
+  <div class="note">💡 검증 실패는 <b>failed/reported</b>로 알려야 RAP이 저장을 막습니다. 핸들러 내부 읽기/수정은 보통 <code>IN LOCAL MODE</code>.</div>
+  <script type="application/json" id="cm-cfg">
+  {
+    "cols": ["실행 시점", "목적", "실패 처리"],
+    "rows": [
+      { "name": "Determination", "cells": [{"v":"on modify","r":"mid"},{"v":"자동 채움","r":"hi"},{"v":"보통 없음","r":"hi"}],
+        "detail": "생성/수정 시 값을 <b>자동으로 채움</b> — 예매 생성 시 status='N', created_by=sy-uname(CH25 stamp의 RAP 버전)." },
+      { "name": "Validation", "cells": [{"v":"on save","r":"mid"},{"v":"규칙 검증","r":"hi"},{"v":"failed/reported","r":"lo"}],
+        "detail": "저장 직전 <b>규칙 검증</b> — 좌석 합계가 정원을 넘으면 failed/reported로 알려 RAP이 저장을 거부(ZCX_FULLY_BOOKED의 RAP 표현)." },
+      { "name": "Action", "cells": [{"v":"사용자 호출","r":"mid"},{"v":"커스텀 동작","r":"hi"},{"v":"result 반환","r":"mid"}],
+        "detail": "사용자가 버튼으로 실행하는 <b>커스텀 동작</b> — cancelBooking으로 status='C', result에 변경 인스턴스 반환." }
+    ]
+  }
+  </script>
+</div>
+<script src="../_engine/compare-matrix.js" defer></script>
+</body>
+</html>

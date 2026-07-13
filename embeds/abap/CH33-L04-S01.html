@@ -1,35 +1,21 @@
 <!DOCTYPE html>
-<!-- CH33-L04-S01 — 엔진: compare-matrix · _engine/_base.css. Open SQL/CDS/AMDP/ADBC 비교. -->
-<html lang="ko" data-eng="compare-matrix">
+<!-- CH33-L04-S01 — 엔진: excel-upload · _engine/_base.css. 탭 구분 파일 → 파싱·검증 → 내부 테이블. -->
+<html lang="ko" data-eng="excel-upload">
 <head>
 <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>푸시다운 수단 비교 · CH33-L04-S01</title>
-<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/compare-matrix.css" />
+<title>Excel Upload · CH33-L04-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/excel-upload.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">푸시다운 수단 비교 — 무엇을 언제?</p>
-  <p class="lead">기법 이름을 클릭하면 "언제 쓰나"가 나옵니다. 위로 갈수록 이식성·유지보수·클라우드 친화적입니다.</p>
-  <p class="hint">💡 행(기법 이름)을 클릭</p>
-  <table><thead id="thead"></thead><tbody id="tbody"></tbody></table>
-  <div class="detail idle" id="detail">기법 이름을 클릭하면 권장 상황이 여기 나옵니다.</div>
-  <div class="note">💡 선택 순서: <b>Open/Modern SQL → CDS → AMDP → ADBC</b>. 대부분 SQL/CDS로 충분하고, AMDP/ADBC는 강력하지만 <b>DB 종속</b>이라 복잡·불가피할 때만.</div>
-  <script type="application/json" id="cm-cfg">
-  {
-    "cols": ["이식성", "복잡 절차", "재사용", "클라우드", "권장순위"],
-    "rows": [
-      { "name": "Open/Modern SQL", "cells": [{"v":"높음","r":"hi"},{"v":"낮음","r":"lo"},{"v":"보통","r":"mid"},{"v":"높음","r":"hi"},{"v":"①"}],
-        "detail": "집계·조인·식 — <b>대부분의 경우</b>. 이식성·간결·강한 구문 검사. 가장 먼저 시도." },
-      { "name": "CDS View", "cells": [{"v":"높음","r":"hi"},{"v":"보통","r":"mid"},{"v":"높음","r":"hi"},{"v":"높음","r":"hi"},{"v":"②"}],
-        "detail": "여러 곳에서 <b>공유할 모델·뷰 계층·시맨틱</b>이 필요할 때. 계산·관계를 선언적으로 재사용." },
-      { "name": "AMDP", "cells": [{"v":"낮음","r":"lo"},{"v":"높음","r":"hi"},{"v":"보통","r":"mid"},{"v":"제한","r":"lo"},{"v":"③"}],
-        "detail": "임시테이블·루프 같은 <b>절차적 복잡 로직</b>이 DB에서 꼭 필요할 때(SQLScript). DB 종속 주의." },
-      { "name": "ADBC / Native SQL", "cells": [{"v":"매우낮음","r":"lo"},{"v":"높음","r":"hi"},{"v":"낮음","r":"lo"},{"v":"제한","r":"lo"},{"v":"④ 최후"}],
-        "detail": "Open SQL이 못 하는 <b>DB 고유 기능</b>이 불가피할 때만. client·injection 직접 책임, 클라우드 제약." }
-    ]
-  }
-  </script>
+  <p class="hd">엑셀(탭 구분) 업로드 → 검증 → 내부 테이블</p>
+  <p class="lead">아래 원본 파일을 <b>업로드</b>하면 헤더를 건너뛰고 한 줄씩 <code>SPLIT</code>으로 파싱·검증합니다. 잘못된 행(숫자 아닌 좌석)은 등록에서 제외됩니다.</p>
+  <div class="file"><div class="file__h">원본 파일 (gui_upload, 탭 구분 ⇥)</div><pre class="file__b" id="file"></pre></div>
+  <div class="bar"><button class="run" id="run" type="button">▶ 업로드 (gui_upload + SPLIT)</button><button class="reset" id="reset" type="button">↺ 초기화</button></div>
+  <div class="panel ok" id="okPanel" style="display:none"><div class="panel__h" id="okHead"></div><div id="okBody"></div></div>
+  <div class="panel err" id="errPanel" style="display:none"><div class="panel__h" id="errHead"></div><div id="errBody"></div></div>
+  <div class="note">💡 <code>cl_gui_frontend_services=>gui_upload</code>로 읽고, 한 줄씩 <code>SPLIT … AT cl_abap_char_utilities=>horizontal_tab</code>으로 컬럼 분리. 첫 줄(헤더)은 건너뛰고, 외부 데이터는 <b>반드시 검증</b>(타입·필수·중복) 후 등록(BAPI/DML)합니다.</div>
 </div>
-<script src="../_engine/compare-matrix.js" defer></script>
+<script src="../_engine/excel-upload.js" defer></script>
 </body>
 </html>

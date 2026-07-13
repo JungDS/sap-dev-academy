@@ -1,25 +1,41 @@
 <!DOCTYPE html>
-<!-- CH32-L04-S01 — 엔진: select-in-loop · _engine/_base.css. LOOP 안 SELECT(1+N) vs FAE/JOIN(2) 왕복 대비. -->
-<html lang="ko" data-eng="select-in-loop">
+<!-- CH32-L04-S01 — 엔진: decision-tree · _engine/_base.css. 확장 수단 선택 트리. -->
+<html lang="ko" data-eng="decision-tree">
 <head>
 <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>SELECT in LOOP · CH32-L04-S01</title>
-<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/select-in-loop.css" />
+<title>확장 수단 선택 · CH32-L04-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/decision-tree.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">SELECT in LOOP — 1 + N의 재앙</p>
-  <p class="lead">예매 건수 <b>N</b>을 늘려 보세요. LOOP 안에서 매 행 SELECT하면 DB 왕복이 <b>1+N회</b>로 폭발하지만, 미리 한 번에 읽으면(FAE/JOIN) <b>2회</b>로 끝납니다.</p>
-  <div class="slider"><label>예매 건수 N</label><input id="n" type="range" min="0" max="6" value="4" /><span class="v" id="nv"></span></div>
-  <div class="cols">
-    <div class="card bad"><div class="t">❌ LOOP 안 SELECT</div><code>LOOP… SELECT SINGLE … ENDLOOP</code>
-      <div class="metric"><div class="lbl">DB 왕복</div><div class="big" id="bCalls"></div><div class="lbl" id="bTime"></div><div class="barwrap"><div class="bar" id="bBar"></div></div></div></div>
-    <div class="card good"><div class="t">✅ 사전 조회(FAE/JOIN)</div><code>SELECT … FOR ALL ENTRIES → READ</code>
-      <div class="metric"><div class="lbl">DB 왕복</div><div class="big" id="aCalls"></div><div class="lbl" id="aTime"></div><div class="barwrap"><div class="bar" id="aBar"></div></div></div></div>
-  </div>
-  <div class="verdict" id="verdict"></div>
-  <div class="note">💡 <b>FOR ALL ENTRIES</b>(CH13)나 <b>JOIN</b>으로 한 번에 읽고, 메모리에서 <code>READ TABLE … BINARY SEARCH</code>(CH06)로 찾습니다. FAE는 드라이버 테이블이 비면 전체 조회되니 <b>비었으면 건너뜁니다</b>. 중첩 SELECT는 금지.</div>
+  <p class="hd">어떤 확장 수단을 쓸까? — 결정 트리</p>
+  <p class="lead">질문에 답해 가며 상황에 맞는 확장 수단을 골라 보세요. 강도: <b>BAdI &gt; Explicit &gt; Implicit &gt; Modification</b>(위일수록 안전·권장).</p>
+  <div class="path" id="path"></div>
+  <div class="card" id="card"></div>
+  <div class="note">💡 가능한 한 <b>위쪽(BAdI·Explicit)</b>을 택합니다. Implicit은 메서드 시작/끝만 가능해 흐름 중간 개입엔 부적합하고, 표준 직접 수정(Modification)은 등록·이유가 필요한 <b>최후의 수단</b>입니다.</div>
+  <script type="application/json" id="dt-cfg">
+  {
+    "start": "n1",
+    "nodes": {
+      "n1": { "q": "표준에 <b>BAdI</b>(Enhancement Spot)가 마련돼 있나?", "opts": [
+        { "label": "있다 — SE18에서 확인됨", "ic": "✅", "result": "badi" },
+        { "label": "없다", "ic": "➡", "to": "n2" } ] },
+      "n2": { "q": "적절한 <b>Explicit Enhancement Point/Section</b>이 있나?", "opts": [
+        { "label": "있다 — 표준이 명시 지점을 심어 둠", "ic": "✅", "result": "explicit" },
+        { "label": "없다", "ic": "➡", "to": "n3" } ] },
+      "n3": { "q": "메서드/함수의 <b>시작·끝</b> 개입만으로 충분한가?", "opts": [
+        { "label": "충분하다 — 시작/끝에서 처리 가능", "ic": "✅", "result": "implicit" },
+        { "label": "흐름 중간을 바꿔야 한다", "ic": "⚠", "result": "modification" } ] }
+    },
+    "results": {
+      "badi": { "rank": "① 권장", "title": "BAdI (SE18/SE19)", "desc": "객체지향·필터·다형성이 자연스러운 가장 권장 방식. 인터페이스를 구현하면 표준이 호출." },
+      "explicit": { "rank": "② 권장", "title": "Explicit Enhancement Point/Section", "desc": "표준이 미리 심어 둔 명시 지점에 추가(Point)하거나 교체(Section). Section은 신중히." },
+      "implicit": { "rank": "③ 최소 개입", "title": "Implicit Enhancement", "desc": "모든 메서드·함수·FORM의 시작/끝에 늘 존재. 흐름 중간은 불가 — 최소한으로." },
+      "modification": { "rank": "④ 최후의 수단", "title": "표준 Modification", "desc": "표준 직접 수정 — 등록·이유 필요, 업그레이드에 취약. 가능한 다른 수단을 먼저.", "last": true }
+    }
+  }
+  </script>
 </div>
-<script src="../_engine/select-in-loop.js" defer></script>
+<script src="../_engine/decision-tree.js" defer></script>
 </body>
 </html>

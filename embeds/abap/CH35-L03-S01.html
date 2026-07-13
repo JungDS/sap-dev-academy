@@ -1,34 +1,39 @@
 <!DOCTYPE html>
-<!-- CH35-L03-S01 — 엔진: mermaid + _autoheight. Transport 경로 DEV→QAS→PRD. (기존 text 코드블록 흐름도 교체) -->
-<html lang="ko" data-eng="mermaid">
+<!-- CH35-L03-S01 — 엔진: sql-trace(재사용) · _engine/_base.css. SQLM 운영 누적 SQL 분석. -->
+<html lang="ko" data-eng="sql-trace">
 <head>
 <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Transport 경로 · CH35-L03-S01</title>
-<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-<script>if(!window.mermaid){var s=document.createElement("script");s.src="../_vendor/mermaid.min.js";document.head.appendChild(s);}</script>
-<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/mermaid.css" />
+<title>SQLM · CH35-L03-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/sql-trace.css" />
 </head>
 <body>
-  <div class="wrap">
-    <p class="hd">Transport 경로 — 개발에서 운영까지</p>
-    <p class="lead">이송요청(CH01-L06)이 어떤 시스템을 거쳐 운영에 도달하는지. 운영(PRD)은 직접 개발 금지 — 반드시 이송으로.</p>
-    <div class="viz-card">
-      <p class="viz-card__title">DEV → QAS → PRD</p>
-      <div class="mermaid" id="mm">
-flowchart LR
-  DEV["DEV · 개발<br/>SE09/SE10에서 release"]:::dev
-  QAS["QAS · 품질/테스트<br/>ATC · ABAP Unit · 기능"]:::qas
-  PRD["PRD · 운영<br/>직접 개발 금지"]:::prd
-  DEV -->|"release (이송요청)"| QAS
-  QAS -->|"import (STMS)"| PRD
-classDef dev fill:#eef2ff,stroke:#3b5bdb,stroke-width:2px,color:#1e3a8a;
-classDef qas fill:#fff7ed,stroke:#fb923c,stroke-width:2px,color:#c2410c;
-classDef prd fill:#ecfdf5,stroke:#10b981,stroke-width:2.4px,color:#0b7250;
-      </div>
-      <p class="viz-note">의존하는 객체는 <b>순서대로</b> 이송해야 합니다(역전 시 운영 깨짐). 이송 전 QAS에서 <b>ATC·ABAP Unit·기능 테스트</b>를 통과시키고, 한 요청에 관련 객체를 모두 담아 일관 이송합니다.</p>
-    </div>
-  </div>
-<script src="../_engine/mermaid.js" defer></script>
-<script src="../_engine/_autoheight.js" defer></script>
+<div class="wrap">
+  <p class="hd">SQLM — 운영 전체에서 무거운 SQL 우선순위</p>
+  <p class="lead">ST05가 한 실행을 본다면, SQLM은 <b>운영 전체</b>를 누적합니다. <b>총 실행시간</b> 순으로 정렬해 "어디부터 고칠지" 우선순위를 잡으세요.</p>
+  <p class="hint">💡 헤더를 클릭해 총시간·총횟수로 정렬</p>
+  <div class="panel"><div class="panel__h" id="phead">SQLM — SQL Monitor</div>
+    <table><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
+  <div class="callout" id="callout"></div>
+  <div class="note">💡 총 실행시간·횟수·레코드가 큰 SQL부터 개선합니다. 자주·느리게 도는 비키 조건은 <b>Secondary Index</b> 후보지만(CH08-L06), 인덱스는 쓰기 비용·공간이 들고 <b>S/4HANA에선 권장 제한</b>(엔진이 빠름) — 측정 근거 없이 남발 금지. <code>SWLT</code>로 코드 점검과 결합.</div>
+  <script type="application/json" id="trace-cfg">
+  {
+    "header": "SQLM — 지난 7일 누적",
+    "worstKey": "total",
+    "cols": [
+      { "k": "stmt", "label": "SQL (프로그램)" },
+      { "k": "execs", "label": "총 실행", "num": true },
+      { "k": "total", "label": "총 시간(ms)", "num": true },
+      { "k": "avg", "label": "평균(ms)", "num": true }
+    ],
+    "rows": [
+      { "stmt": "SELECT sflight (ZBOOK_RPT)", "execs": 53000, "total": 420000, "avg": 8 },
+      { "stmt": "SELECT zbooking (ZBOOK_SAVE)", "execs": 8000, "total": 96000, "avg": 12 },
+      { "stmt": "SELECT zconcert (ZBOOK_F4)", "execs": 210000, "total": 84000, "avg": 0.4 }
+    ],
+    "callout": "⚠ 1위: 총 <b>420초</b>(평균은 짧지만 5.3만 회) — 자주 도는 쿼리라 작은 개선도 큰 효과. 평균이 긴 2위와 함께 우선 대상."
+  }
+  </script>
+</div>
+<script src="../_engine/sql-trace.js" defer></script>
 </body>
 </html>

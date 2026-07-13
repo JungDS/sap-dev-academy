@@ -1,66 +1,30 @@
 <!DOCTYPE html>
-<!-- CH26-L04-S01 — 엔진: mvc-diagram (embeds/_engine/mvc-diagram.{js,css}) · 공통토큰: _engine/_base.css
-     MVC 관계도 + '이 계층 바꾸면 영향 범위' 하이라이트. -->
-<html lang="ko" data-eng="mvc-diagram">
+<!-- CH26-L04-S01 — 엔진: lost-update-sim (embeds/_engine/lost-update-sim.{js,css}) · 공통토큰: _engine/_base.css
+     Lost Update와 낙관/비관 잠금 — 전략 토글로 A·B 타임라인 결과 비교. -->
+<html lang="ko" data-eng="lost-update-sim">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>MVC 구조 · CH26-L04-S01</title>
+<title>Lost Update 시뮬 · CH26-L04-S01</title>
 <link rel="stylesheet" href="../_engine/_base.css" />
-<link rel="stylesheet" href="../_engine/mvc-diagram.css" />
+<link rel="stylesheet" href="../_engine/lost-update-sim.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">MVC — 무엇을 바꾸면 어디까지 영향이 갈까?</p>
-  <p class="lead">시나리오를 골라 보세요. 역할을 나눠 두면 한 계층을 바꿔도 <b>나머지는 그대로</b>입니다(관심사 분리).</p>
+  <p class="hd">잃어버린 갱신 — 전략에 따라 결과가 다르다</p>
+  <p class="lead">A와 B가 같은 예매의 좌석 수를 동시에 만집니다. <b>전략</b>을 바꿔, A의 변경이 사라지는지(Lost Update) 막아지는지 비교해 보세요.</p>
 
   <div class="pick">
-    <span class="t">바꿔 보기:</span>
-    <button class="sc on" data-s="view" type="button">화면 교체</button>
-    <button class="sc" data-s="model" type="button">로직 변경</button>
-    <button class="sc" data-s="ctrl" type="button">흐름 추가</button>
+    <button class="st on" data-s="none" type="button">전략 없음<small>그냥 저장</small></button>
+    <button class="st" data-s="pessimistic" type="button">Pessimistic<small>미리 잠금</small></button>
+    <button class="st" data-s="optimistic" type="button">Optimistic<small>저장 직전 비교</small></button>
   </div>
 
-  <div class="diagram">
-    <svg viewBox="0 0 560 312" xmlns="http://www.w3.org/2000/svg">
-      <defs><marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#94a3b8"/></marker></defs>
-      <!-- edges -->
-      <path class="edge" d="M250,84 C210,110 185,120 165,148"/>
-      <text class="elbl" x="178" y="120">① 호출</text>
-      <path class="edge" d="M312,84 C355,110 380,120 398,148"/>
-      <text class="elbl" x="360" y="120">③ 갱신</text>
-      <path class="edge" d="M150,210 L150,248"/>
-      <text class="elbl" x="158" y="234">조회</text>
-      <!-- Controller -->
-      <g class="lyr idle" id="lyr-ctrl">
-        <rect x="201" y="26" width="160" height="56" rx="11"/>
-        <text x="281" y="50" text-anchor="middle" font-size="14">Controller</text>
-        <text x="281" y="68" text-anchor="middle" font-size="10" class="role">흐름 조율(이벤트→Model→View)</text>
-        <text x="281" y="100" text-anchor="middle" class="badge" id="bdg-ctrl"></text>
-      </g>
-      <!-- Model -->
-      <g class="lyr idle" id="lyr-model">
-        <rect x="64" y="150" width="172" height="56" rx="11"/>
-        <text x="150" y="174" text-anchor="middle" font-size="14">Model</text>
-        <text x="150" y="192" text-anchor="middle" font-size="10" class="role">데이터·업무 로직(조회·계산)</text>
-        <text x="150" y="232" text-anchor="middle" class="badge" id="bdg-model"></text>
-      </g>
-      <!-- View -->
-      <g class="lyr idle" id="lyr-view">
-        <rect x="330" y="150" width="172" height="56" rx="11"/>
-        <text x="416" y="174" text-anchor="middle" font-size="14">View</text>
-        <text x="416" y="192" text-anchor="middle" font-size="10" class="role">표시(ALV / Dynpro)</text>
-        <text x="416" y="232" text-anchor="middle" class="badge" id="bdg-view"></text>
-      </g>
-      <!-- DB -->
-      <g class="lyr"><rect x="64" y="250" width="172" height="42" rx="9" fill="#f1f4fb" stroke="#cbd3e1"/>
-        <text x="150" y="276" text-anchor="middle" font-size="12" fill="#5b6478" font-weight="700">DB (ZBOOKING…)</text></g>
-    </svg>
-  </div>
+  <div class="tl" id="tl"></div>
+  <div class="out" id="out"></div>
 
-  <div class="msg" id="msg"></div>
-  <div class="note">💡 <b>Model</b>=순수 로직(화면 모름) · <b>View</b>=표시 전용 · <b>Controller</b>=둘을 잇는 흐름. 덕분에 화면을 바꿔도 로직이, 로직을 바꿔도 화면이 멀쩡합니다. 단, 작은 리포트까지 3계층은 과할 수 있어요(규모에 맞게).</div>
+  <div class="note">💡 <b>Pessimistic</b>(비관) = 충돌 잦음·편집 긺 → 미리 <code>ENQUEUE</code>. <b>Optimistic</b>(낙관) = 충돌 드묾·읽기 위주 → 안 잠그고 저장 직전 <code>changed_at</code> 비교. 무조건 잠그면 동시성이 떨어지니 빈도를 보고 고른다.</div>
 </div>
-<script src="../_engine/mvc-diagram.js" defer></script>
+<script src="../_engine/lost-update-sim.js" defer></script>
 </body>
 </html>

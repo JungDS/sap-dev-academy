@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Interface View와 Projection View 구분 · CDS View Entity 기초 · SAP Developer Academy</title>
+<title>SALV Layout / Variant 심화 · SALV/Grid ALV 표시 제어 심화 · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">Chapter 22 · CDS View Entity 기초</span>
+  <span class="meta">Chapter 22 · SALV/Grid ALV 표시 제어 심화</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,49 +33,39 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 22 › Lesson 2</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">CDS View Entity 기초</p>
-        <h1>Interface View와 Projection View 구분</h1>
-        <p class="lhead__direction">재사용용 기반 뷰와 소비용 뷰를 나눈다 — ZI_ / ZC_.</p>
+        <p class="lhead__eyebrow">SALV/Grid ALV 표시 제어 심화</p>
+        <h1>SALV Layout / Variant 심화</h1>
+        <p class="lhead__direction">표시 설정·컬럼 텍스트·레이아웃 저장 — 개발자 기본값 + 사용자 보기.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 22</span><span class="tag tag--ls">Lesson 2</span><span class="tag tag--lv">고급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>왜 뷰를 또 나눌까</h2>
-<p><a href="CH22-L01.html">CDS View Entity 기본 구조</a>에서 <code>ZI_Concert</code> 하나만 만들어도 프로그램은 조회할 수 있다.
-그런데 실무에서 CDS가 한 장으로 끝나는 경우는 드물다. <strong>같은 공연 데이터라도 소비처마다 원하는 모양이
-다르기 때문</strong>이다.</p>
-<ul>
-<li>운영 리포트는 내부 관리 필드까지 필요할 수 있다.</li>
-<li>화면 목록은 사용자에게 보여 줄 필드만 있으면 된다.</li>
-<li>나중에 서비스가 붙으면, 외부에 노출해도 되는 필드와 내부에만 둬야 하는 필드가 갈린다.</li>
-</ul>
-<p>이때 기반 모델 하나에 UI 주석·필드 제한·내부 계산을 전부 섞으면 CDS가 금세 지저분해진다. 그래서 CDS는
-보통 <strong>계층</strong>을 나눈다 — 데이터와 관계를 안정적으로 담는 계층, 그리고 특정 소비 목적에 맞게 필드를 고르는
-계층.</p>
-</section><section class="lblock"><h2>무엇인가 — 기반(ZI_)과 소비(ZC_)</h2>
-<p>이 프로젝트는 다음 이름 관습을 쓴다.</p>
+<section class="lblock"><h2>왜 — 정렬·필터만으론 부족 🎨</h2>
+<p>정렬·필터를 줘도 긴 컬럼이 잘리고, 제목이 DDIC 기술명 그대로 나오고, 매번 같은 컬럼 순서를 다시 맞춰야 하면 보고서가 불편하다. SALV layout·variant는 이걸 줄인다 — **개발자는 &quot;처음 보기 좋은 기본값&quot;**을 주고, **사용자는 &quot;내 업무 방식 보기&quot;**를 저장한다.</p>
+</section><section class="lblock"><h2>세 층의 표시 설정 🧩</h2>
 <table>
 <thead>
 <tr>
-<th>계층</th>
-<th>이름 관습</th>
+<th>층</th>
+<th><button class="term" type="button" data-term="객체">객체</button></th>
 <th>역할</th>
 </tr>
 </thead>
 <tbody><tr>
-<td><strong>Interface View</strong></td>
-<td><code>ZI_*</code></td>
-<td>테이블과 가까운 <strong>재사용 기반</strong> 모델. 필드·기본 계산·관계를 안정적으로 정의.</td>
+<td>표 전체</td>
+<td><code>get_display_settings( )</code></td>
+<td>제목(list header)·줄무늬</td>
 </tr>
 <tr>
-<td><strong>Projection View</strong></td>
-<td><code>ZC_*</code></td>
-<td>특정 소비처에 맞춘 <strong>노출 모델</strong>. 필요한 필드를 고르고 주석을 붙이는 출구.</td>
+<td>컬럼 묶음</td>
+<td><code>get_columns( )</code></td>
+<td>폭 최적화·특정 컬럼 접근</td>
+</tr>
+<tr>
+<td>variant 저장</td>
+<td><code>get_layout( )</code></td>
+<td>report별 layout key·저장 허용</td>
 </tr>
 </tbody></table>
-<p>여기서 가장 중요한 한마디 — <strong><code>ZI_</code>·<code>ZC_</code>는 ABAP 문법이 아니라 명명 관습</strong>이다. 시스템이 <code>ZI_</code>라서
-자동으로 interface view라고 판단하는 게 아니다. 이름으로 역할을 드러내 팀이 같은 구조를 유지하게 돕는
-장치일 뿐이다(이름을 <code>ABC_Concert</code>로 지어도 활성화는 된다 — 다만 팀 규칙을 잃는다).</p>
-<p>Projection View의 기본 형태는 이렇다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -84,89 +74,48 @@
 6
 7
 8
-9</pre><pre class="abap-editor__code"><code>@AccessControl.authorizationCheck: #NOT_REQUIRED
-define view <span class="tok-kw">entity</span> ZC_Concert
-  <span class="tok-kw">as</span> projection <span class="tok-kw">on</span> ZI_Concert
-{
-  <span class="tok-kw">key</span> concert_id,
-      artist,
-      venue,
-      capacity
-}</code></pre></div></div>
-<p><code>as projection on ZI_Concert</code>는 &quot;<code>ZC_Concert</code>가 <code>ZI_Concert</code>를 기반으로 한다&quot;는 뜻이다. 여기서 모든 필드를
-다시 가져올 필요는 없다 — <strong>소비처에 필요한 필드만</strong> 고른다.</p>
+9
+10
+11
+12
+13
+14
+15</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>(lo_disp) = lo_salv-&gt;get_display_settings( ).
+lo_disp-&gt;set_striped_pattern( abap_true ).
+lo_disp-&gt;set_list_header( <span class="tok-str">'회차별 예매 현황'</span> ).
+
+<span class="tok-kw">DATA</span>(lo_cols) = lo_salv-&gt;get_columns( ).
+lo_cols-&gt;set_optimize( abap_true ).               <span class="tok-com">" 컬럼 폭 최적화</span>
+
+<span class="tok-kw">TRY</span>.
+    <span class="tok-kw">DATA</span>(lo_cap) = lo_cols-&gt;get_column( <span class="tok-str">'CAPACITY'</span> ).
+    lo_cap-&gt;set_short_text(  <span class="tok-str">'정원'</span> ).            <span class="tok-com">" ★ 셋 다 맞춘다</span>
+    lo_cap-&gt;set_medium_text( <span class="tok-str">'정원'</span> ).
+    lo_cap-&gt;set_long_text(   <span class="tok-str">'정원'</span> ).
+  <span class="tok-kw">CATCH</span> cx_salv_not_found.
+    <span class="tok-kw">MESSAGE</span> <span class="tok-str">'CAPACITY 컬럼을 찾을 수 없습니다.'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'E'</span>.
+<span class="tok-kw">ENDTRY</span>.</code></pre></div></div>
+<blockquote class="cw">
+<p>⚠️ <code>set_long_text</code>만 바꾸면 헤더가 그대로일 수 있다. SALV는 컬럼 폭에 따라 <strong>short/medium/long 중 하나를 골라</strong> 쓰므로, 셋을 함께 맞춰야 초보자 혼란이 없다.</p>
+</blockquote>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">SALV Layout 실험실 (줄무늬·폭·컬럼 텍스트)</span><a class="embed__open" href="../../../embeds/abap/CH22-L02-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH22-L02-S01.html" loading="lazy" title="SALV Layout 실험실 (줄무늬·폭·컬럼 텍스트)"></iframe></figure>
+</section><section class="lblock"><h2>Variant 저장 💾</h2>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
-3
-4
-5
-6
-7
-8</pre><pre class="abap-editor__code"><code>@AccessControl.authorizationCheck: #NOT_REQUIRED
-define view <span class="tok-kw">entity</span> ZC_ConcertList
-  <span class="tok-kw">as</span> projection <span class="tok-kw">on</span> ZI_Concert
-{
-  <span class="tok-kw">key</span> concert_id,
-      artist,
-      venue
-}</code></pre></div></div>
-<p>이 예제는 <code>capacity</code>를 뺐다. 테이블에도 <code>ZI_Concert</code>에도 <code>capacity</code>는 여전히 있지만, <code>ZC_ConcertList</code>를
-보는 소비자는 그 필드를 보지 않는다. 이것이 projection의 가장 단순하고 중요한 효과다 — <strong>삭제가 아니라
-숨김</strong>.</p>
-</section><section class="lblock"><h2>직접 만들어 보기</h2>
-<p>아래 실험실에서 기반 <code>ZI_Concert</code>의 필드를 projection이 골라 노출해 보자. 두 동작의 <strong>차이</strong>가 핵심이다.</p>
-<ul>
-<li><code>ZC_</code>에서 필드를 <strong>숨김</strong> → 기반 <code>ZI_</code>는 그대로다(비파괴). 소비자만 안 볼 뿐.</li>
-<li><code>ZI_</code>에서 필드를 <strong>제거</strong> → projection도 더는 그 필드를 노출할 수 없다(연쇄). 기반에 없으니까.</li>
-</ul>
-<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">Interface vs Projection 계층 분리 실험실</span><a class="embed__open" href="../../../embeds/abap/CH22-L02-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH22-L02-S01.html" loading="lazy" title="Interface vs Projection 계층 분리 실험실"></iframe></figure>
-</section><section class="lblock"><h2>어떻게 확인하는가</h2>
-<p>확인은 두 방향으로 한다.</p>
-<ol>
-<li><strong>Data Preview 비교</strong> — <code>ZI_Concert</code>와 <code>ZC_Concert</code>를 각각 미리 보면, projection에서 노출하지 않은 필드는
-<code>ZC_</code> 쪽에 안 보인다. &quot;필드를 삭제했다&quot;가 아니라 <strong>소비 모델에서 숨긴 것</strong>임을 눈으로 확인한다.</li>
-<li><strong>ABAP SQL로 읽기</strong> — 소비 프로그램은 <code>ZC_</code>만 알면 된다.</li>
-</ol>
-<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
-2
-3</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> concert_id, artist, venue
-  <span class="tok-kw">FROM</span> ZC_Concert
-  <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> @<span class="tok-kw">DATA</span>(lt_concerts).</code></pre></div></div>
-<p>이렇게 해 두면 기반 <code>ZI_Concert</code>나 테이블 <code>zconcert</code>가 어느 정도 바뀌어도, <code>ZC_Concert</code>가 같은 계약을
-유지하는 한 소비 코드는 덜 흔들린다. 점검 기준은 간단하다.</p>
-<table>
-<thead>
-<tr>
-<th>질문</th>
-<th>정상 답</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>이 뷰는 테이블과 가까운가?</td>
-<td>그렇다면 <code>ZI_</code>에 둔다.</td>
-</tr>
-<tr>
-<td>이 뷰는 화면·서비스·리포트 같은 소비 출구인가?</td>
-<td>그렇다면 <code>ZC_</code>에 둔다.</td>
-</tr>
-<tr>
-<td>UI 주석이 기반 뷰에 잔뜩 들어갔는가?</td>
-<td>가능하면 <code>ZC_</code>나 Metadata Extension으로 옮긴다.</td>
-</tr>
-</tbody></table>
+3</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>(lo_layout) = lo_salv-&gt;get_layout( ).
+lo_layout-&gt;set_key( <span class="tok-kw">VALUE</span> salv_s_layout_key( <span class="tok-kw">report</span> = sy-repid ) ).   <span class="tok-com">" 어느 리포트의 layout인지</span>
+lo_layout-&gt;set_save_restriction( if_salv_c_layout=&gt;restrict_none ).   <span class="tok-com">" 저장 허용</span></code></pre></div></div>
+<p><code>set_key</code>로 &quot;이 variant가 어느 리포트의 layout인지&quot; 식별한다(<code>sy-repid</code> = 현재 프로그램). 그래야 사용자가 컬럼 순서·숨김·폭을 자기 보기로 저장할 수 있다.</p>
 </section><section class="lblock"><h2>흔한 실수와 점검 🚧</h2>
 <ul>
-<li><strong><code>ZI_</code>·<code>ZC_</code>를 문법으로 착각</strong> → 둘 다 그냥 이름 관습이다. 활성화는 다른 이름이어도 되지만, 관습을
-잃으면 &quot;어떤 뷰를 재사용해야 하는지&quot;가 모호해진다.</li>
-<li><strong>모든 뷰를 projection으로만 만들기</strong> → projection은 기반이 있어야 의미가 있다. 테이블에서 직접 읽어
-관계·의미를 정리하는 <code>ZI_</code>가 먼저고, 그 위에 소비용 <code>ZC_</code>가 올라간다.</li>
-<li><strong>다음 장(RAP)의 projection 개념을 미리 끌어오기</strong> → 공식 문서에는 provider contract 같은 내용도 있지만,
-이 챕터에선 <em>읽기 모델의 계층 분리</em>까지만 한다. RAP 트랜잭션 모델·service·behavior는
-<a href="CH23-L01.html">RAP 아키텍처 개요</a>에서 다룬다.</li>
+<li><strong><code>long_text</code>만 바꿈</strong> → 헤더가 안 바뀔 수 있다. short/medium/long을 <strong>함께</strong>.</li>
+<li><strong>컬럼명 오타</strong> → <code>get_column( )</code>은 화면 제목이 아니라 <strong>내부 필드명</strong>(대문자)으로 접근. 틀리면 <code>cx_salv_not_found</code>.</li>
+<li><strong>레이아웃 키 누락</strong> → variant를 저장하려면 <code>set_key</code>로 식별부터.</li>
+<li><strong>variant ≠ 데이터 변경</strong> → 컬럼 순서·숨김·폭 같은 <strong>표시 설정만</strong> 저장된다. 또 ALV 숨김은 <strong>권한 제어가 아니다</strong> — 보안상 숨길 값은 애초에 조회하지 않는다.</li>
 </ul>
 <hr>
-<p>기반과 소비를 나눴다. 그런데 콘서트 앱에서 공연·회차·예매는 늘 함께 등장한다 — 이 <strong>관계</strong>를 매번 JOIN으로
-반복하는 대신 모델에 이름 붙여 두는 방법 → <a href="CH22-L03.html">Association 기초</a>.</p>
+<p>SALV를 다듬었다. 이제 Grid ALV의 컬럼을 field catalog로 더 세밀히 →
+<a href="CH22-L03.html">Grid ALV Column 제어 심화</a>.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
