@@ -1,41 +1,39 @@
 <!DOCTYPE html>
-<!-- CH30-L05-S01 — 엔진: mermaid + _autoheight. 인터페이스 공통 흐름(수신→검증→등록→로그→재처리). -->
-<html lang="ko" data-eng="mermaid">
+<!-- CH30-L05-S01 — 엔진: alv-handler-wiring (embeds/_engine/alv-handler-wiring.{js,css}) · _engine/_base.css
+     ALV 이벤트 → 핸들러 메서드 SET HANDLER 배선 시각. -->
+<html lang="ko" data-eng="alv-handler-wiring">
 <head>
 <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>인터페이스 공통 흐름 · CH30-L05-S01</title>
-<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-<script>if(!window.mermaid){var s=document.createElement("script");s.src="../_vendor/mermaid.min.js";document.head.appendChild(s);}</script>
-<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/mermaid.css" />
+<title>핸들러 배선 · CH30-L05-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/alv-handler-wiring.css" />
 </head>
 <body>
-  <div class="wrap">
-    <p class="hd">인터페이스 공통 골격 — 수신 · 검증 · 등록 · 로그 · 재처리</p>
-    <p class="lead">BAPI·RFC·BDC·File 무엇이든 같은 흐름을 갖습니다. 실패는 로그에 남기고 재처리 잡으로 다시 돌립니다(CH24-L04와 같은 정신).</p>
-    <div class="viz-card">
-      <p class="viz-card__title">파일/메시지 한 건의 일생</p>
-      <div class="mermaid" id="mm">
-flowchart TD
-  S(["① 수신 (파일/메시지)"]):::term
-  V{"② 검증 통과?"}:::check
-  R["③ 등록 (BAPI/DML)"]:::main
-  L["④ 인터페이스 로그 기록"]:::soft
-  E["오류 로그 + 실패분 보관"]:::out
-  Q["⑤ 재처리 잡"]:::soft
-  S --> V
-  V -->|"예"| R --> L
-  V -->|"아니오"| E --> Q
-  Q -.->|"원인 해결 후 다시"| S
-classDef term fill:#eef2ff,stroke:#94a3b8,stroke-width:2px,color:#1c2233;
-classDef check fill:#fff7ed,stroke:#e11d48,stroke-width:2px,color:#1c2233;
-classDef main fill:#ffffff,stroke:#10b981,stroke-width:2.4px,color:#0b7250;
-classDef soft fill:#ffffff,stroke:#3b5bdb,stroke-width:2px,color:#1d4ed8;
-classDef out fill:#ffffff,stroke:#fb923c,stroke-width:2px,color:#c2410c;
-      </div>
-      <p class="viz-note">성공/실패를 <b>로그 테이블</b>에 남기고, 실패 건은 보관 후 <b>재처리 잡</b>으로. 중복 수신을 막는 <b>멱등성</b>(메시지ID·키 체크)도 공통 고려사항입니다.</p>
-    </div>
+<div class="wrap">
+  <p class="hd">한 클래스로 모은 핸들러 — <code>SET HANDLER</code> 배선</p>
+  <p class="lead">왼쪽 <b>이벤트</b>를 클릭하면, 그것을 받는 <b>핸들러 메서드</b>가 강조됩니다. 모든 배선은 생성자에서 <code>SET HANDLER</code> 한 번에 연결됩니다.</p>
+
+  <div class="wire">
+    <div><div class="colh">CL_GUI_ALV_GRID 이벤트</div><div class="col ev">
+      <div class="item" data-ev="double_click">double_click<small>행 더블클릭</small></div>
+      <div class="item" data-ev="hotspot_click">hotspot_click<small>링크 셀</small></div>
+      <div class="item" data-ev="toolbar">toolbar<small>버튼 추가</small></div>
+      <div class="item" data-ev="user_command">user_command<small>버튼 눌림</small></div>
+    </div></div>
+    <div class="mid"><div class="arrow">→</div>SET<br>HANDLER<div class="arrow">→</div></div>
+    <div><div class="colh">lcl_alv_handler 메서드</div><div class="col hd2">
+      <div class="item" data-m="on_double_click">on_double_click</div>
+      <div class="item" data-m="on_hotspot">on_hotspot</div>
+      <div class="item" data-m="on_toolbar">on_toolbar</div>
+      <div class="item" data-m="on_user_command">on_user_command</div>
+    </div></div>
   </div>
-<script src="../_engine/mermaid.js" defer></script>
-<script src="../_engine/_autoheight.js" defer></script>
+
+  <div class="code"><span class="kw">METHOD</span> constructor.
+  <span class="kw">SET HANDLER</span> on_double_click on_hotspot on_toolbar on_user_command <span class="kw">FOR</span> io_grid.
+<span class="kw">ENDMETHOD</span>.   <span class="cmt">" 모든 이벤트를 한 곳에서 배선</span></div>
+  <div class="fired idle" id="fired">왼쪽 이벤트를 클릭해 어느 메서드로 연결되는지 확인하세요.</div>
+  <div class="note">💡 흩어진 핸들러를 <b>전용 클래스 하나</b>(또는 CH27의 Controller)에 모으면 응집도가 오릅니다. 핸들러가 그리드 참조(<code>io_grid</code>)를 들고 있어야 갱신·선택 조회가 가능합니다.</div>
+</div>
+<script src="../_engine/alv-handler-wiring.js" defer></script>
 </body>
 </html>

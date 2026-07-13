@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RAP 아키텍처 개요 · RAP / ABAP Cloud 입문 · SAP Developer Academy</title>
+<title>CDS View Entity 기본 구조 · CDS View Entity 기초 · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">Chapter 23 · RAP / ABAP Cloud 입문</span>
+  <span class="meta">Chapter 23 · CDS View Entity 기초</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,24 +33,31 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 23 › Lesson 1</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">RAP / ABAP Cloud 입문</p>
-        <h1>RAP 아키텍처 개요</h1>
-        <p class="lhead__direction">현대 SAP 트랜잭션 앱의 표준 — RAP의 큰 그림.</p>
+        <p class="lhead__eyebrow">CDS View Entity 기초</p>
+        <h1>CDS View Entity 기본 구조</h1>
+        <p class="lhead__direction">DB 계층의 현대적 읽기 모델 — define view entity.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 23</span><span class="tag tag--ls">Lesson 1</span><span class="tag tag--lv">고급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>읽기를 넘어 — 쓰기·검증·서비스까지</h2>
-<p><a href="CH22-L01.html">CDS View Entity 기본 구조</a>에서 만든 CDS는 데이터를 <strong>읽기/모델링</strong>하는 데 강하다.
-<code>ZI_Concert</code>·<code>ZC_Concert</code>를 만들면 프로그램이 테이블을 직접 읽지 않고 재사용 가능한 모델을 소비할 수 있다.
-하지만 예매 앱의 핵심은 읽기에서 끝나지 않는다.</p>
-<p>사용자는 예매를 <strong>생성</strong>하고, 좌석 수를 <strong>수정</strong>하고, 취소 버튼을 누르고(<strong>삭제</strong>), 저장 전에 정원 초과를
-<strong>검증</strong>해야 한다. 그리고 그 기능은 <strong>Fiori 화면이나 OData API</strong>로 노출되어야 한다. 이걸 프로그램마다 직접
-짜면 구조가 금방 무너진다 — 화면·리포트·서비스마다 저장 로직·권한·메시지가 제각각이 된다.</p>
-<p>이 전부를 하나의 <strong>비즈니스 <button class="term" type="button" data-term="객체">객체</button></strong>로 묶는 현대 SAP 표준이 <button class="term" type="button" data-term="RAP">RAP</button>(RESTful Application Programming Model)다.</p>
-</section><section class="lblock"><h2>RAP는 &quot;파일 하나&quot;가 아니다 — 계층의 연결</h2>
-<p>입문자가 가장 먼저 버려야 할 기대는 &quot;<button class="term" type="button" data-term="RAP">RAP</button> 파일 하나&quot;를 찾는 것이다. RAP Business Object는 여러 구성요소의
-<strong>관계</strong>로 이루어진다. 아래에서 위로 계층을 본다.</p>
-<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">TEXT</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+<section class="lblock"><h2>왜 또 다른 &quot;뷰&quot;가 필요할까</h2>
+<p><a href="CH14-L01.html">Database View와 Open SQL JOIN 비교</a>에서 본 classic Database View는 SE11이라는
+화면(GUI)에서 클릭으로 정의하는 방식이었다. 학습 초반에는 그걸로 충분하다. 그런데 시스템이 커지면
+세 가지 불편이 쌓인다.</p>
+<ul>
+<li><strong>같은 조회가 프로그램마다 반복된다.</strong> 콘서트 목록을 보여주는 리포트·ALV·배치 점검이 전부
+<code>zconcert</code>를 직접 읽는다면, 프로그램마다 필드 선택·별칭·권한·라벨을 다시 맞춰야 한다.</li>
+<li><strong>데이터의 &quot;의도&quot;가 코드 밖에서 안 보인다.</strong> 테이블에는 값만 있다. &quot;이 금액은 어떤 통화와 짝인가&quot;,
+&quot;이 공연은 어떤 회차와 연결되나&quot; 같은 의미는 여기저기 흩어진다.</li>
+<li><strong>요즘 개발 흐름은 텍스트 소스를 좋아한다.</strong> ADT(Eclipse)·Git 기반에서는 화면으로 그린 뷰보다
+텍스트로 관리되는 모델이 훨씬 추적하기 좋다.</li>
+</ul>
+<p>이 불편의 해결책이 바로 <strong><button class="term" type="button" data-term="CDS View Entity">CDS View Entity</button></strong>다. 핵심 한마디는 &quot;프로그램을 하나 더 만든다&quot;가 아니라
+**&quot;읽기 모델을 재사용 가능한 이름으로 만든다&quot;**이다.</p>
+</section><section class="lblock"><h2>무엇인가 — 모델을 선언하는 파일</h2>
+<p><button class="term" type="button" data-term="CDS View Entity">CDS View Entity</button>에서 CDS는 <strong>Core Data Services</strong>(핵심 데이터 서비스)의 약자다. ABAP의 <code>REPORT</code>·<code>FORM</code>·<code>CLASS</code>와
+달리, CDS는 <strong>DDL</strong>(Data Definition Language, 데이터를 <em>정의</em>하는 언어)로 작성하고 ADT(Eclipse)에서 만든다.
+문법의 심장은 다음 한 줄이다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
 4
@@ -58,116 +65,105 @@
 6
 7
 8
-9</pre><pre class="abap-editor__code"><code>Fiori Elements / OData Client
-        │
-Service Binding          ← protocol(OData) 연결
-Service Definition       ← 노출할 entity 선언
-ZC_Booking (Projection)  ← 외부 소비 모델
-BDEF (Behavior Definition) ← 허용 operation 선언
-Behavior Pool            ← 동작 코드 구현
-ZI_Booking (Root View)   ← 업무 객체의 뿌리
-DB Table (ZBOOKING)      ← 지속 데이터</code></pre></div></div>
+9</pre><pre class="abap-editor__code"><code>@AccessControl.authorizationCheck: #NOT_REQUIRED
+define view <span class="tok-kw">entity</span> ZI_Concert
+  <span class="tok-kw">as</span> <span class="tok-kw">select</span> <span class="tok-kw">from</span> zconcert
+{
+  <span class="tok-kw">key</span> concert_id,
+      artist,
+      venue,
+      capacity
+}</code></pre></div></div>
+<p>읽는 순서는 이렇다.</p>
 <table>
 <thead>
 <tr>
-<th>계층</th>
-<th>역할</th>
+<th>코드</th>
+<th>뜻</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>Root Interface View</td>
-<td>RAP BO의 중심 entity(뿌리). 보통 <code>define root view entity</code>로 만든다.</td>
+<td><code>@AccessControl...: #NOT_REQUIRED</code></td>
+<td>이 첫 예제에선 권한 검사를 요구하지 않는다(권한은 뒤 레슨에서).</td>
 </tr>
 <tr>
-<td>Projection View</td>
-<td>외부에 보여 줄 소비 모델(<code>ZC_*</code>).</td>
+<td><code>define view entity ZI_Concert</code></td>
+<td><code>ZI_Concert</code>라는 CDS View Entity를 만든다.</td>
 </tr>
 <tr>
-<td>BDEF (Behavior Definition)</td>
-<td>어떤 operation을 허용할지 선언(create·update·delete·validation·determination·action).</td>
+<td><code>as select from zconcert</code></td>
+<td>기반 데이터 소스는 <code>zconcert</code> 테이블이다.</td>
 </tr>
 <tr>
-<td>Behavior Pool</td>
-<td>BDEF에 선언한 custom 동작의 실제 ABAP 코드를 담는다.</td>
+<td><code>key concert_id</code></td>
+<td><code>concert_id</code>를 키 요소로 노출한다.</td>
 </tr>
 <tr>
-<td>Service Definition</td>
-<td>어떤 CDS entity를 서비스로 노출할지 선언.</td>
-</tr>
-<tr>
-<td>Service Binding</td>
-<td>OData 같은 protocol과 연결해 실제 호출 가능한 서비스로 만든다.</td>
+<td><code>artist</code>, <code>venue</code>, <code>capacity</code></td>
+<td>소비처가 읽을 일반 필드다.</td>
 </tr>
 </tbody></table>
-</section><section class="lblock"><h2>managed vs unmanaged</h2>
-<table>
-<thead>
-<tr>
-<th>시나리오</th>
-<th>누가 저장하나</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>managed</strong></td>
-<td><button class="term" type="button" data-term="RAP">RAP</button> 런타임/provider가 표준 저장 처리의 상당 부분을 <strong>자동</strong>으로 맡는다.</td>
-</tr>
-<tr>
-<td><strong>unmanaged</strong></td>
-<td>기존 로직·특수 저장 절차를 개발자가 더 <strong>직접</strong> 구현한다(레거시 통합).</td>
-</tr>
-</tbody></table>
-<p>신규 학습·신규 개발은 보통 <strong>managed</strong>에서 시작한다(이해하기 좋고 코드가 적다). 단, managed라고 &quot;코드 0&quot;은
-아니다 — validation·action·메시지·권한 같은 custom 로직은 behavior pool에 들어간다.</p>
-</section><section class="lblock"><h2>직접 조립해 보기</h2>
-<p>아래 보드에서 6계층을 하나씩 켜 보자. 빠진 계층마다 <strong>어떤 사용자 행동이 불가능해지는지</strong>가 핵심이다.
-&quot;이 파일이 무엇을 하나&quot;보다 &quot;이 파일이 없으면 무엇을 못 하나&quot;로 보면 <button class="term" type="button" data-term="RAP">RAP</button> 구조가 또렷해진다.</p>
-<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">RAP 계층 조립 보드</span><a class="embed__open" href="../../../embeds/abap/CH23-L01-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH23-L01-S01.html" loading="lazy" title="RAP 계층 조립 보드"></iframe></figure>
+<p><code>{ }</code> 안의 select list는 <a href="CH19-L03.html">INTO TABLE @DATA(...) Inline Target</a>에서 익힌 SELECT 감각과
+닮았지만, <strong>지금 데이터를 가져오는 문장이 아니다.</strong> <code>SELECT ... INTO TABLE ...</code>처럼 당장 읽어 오는 게
+아니라, <strong>모델을 선언</strong>하는 자리다. 활성화하면 ABAP Dictionary에 CDS entity가 생기고, 그 다음부터
+ABAP SQL이나 다른 CDS가 <code>ZI_Concert</code>라는 이름을 데이터 소스처럼 쓴다.</p>
+<p>계산 요소도 간단히 만든다. 회차 테이블 <code>zperf</code>의 날짜를 또렷한 DATS 타입으로 노출하고 싶다면:</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9</pre><pre class="abap-editor__code"><code>@AccessControl.authorizationCheck: #NOT_REQUIRED
+define view <span class="tok-kw">entity</span> ZI_Perf
+  <span class="tok-kw">as</span> <span class="tok-kw">select</span> <span class="tok-kw">from</span> zperf
+{
+  <span class="tok-kw">key</span> concert_id,
+  <span class="tok-kw">key</span> perf_no,
+      perf_date,
+      <span class="tok-kw">cast</span>( perf_date <span class="tok-kw">as</span> abap.dats ) <span class="tok-kw">as</span> event_date
+}</code></pre></div></div>
+<p>여기서 <code>event_date</code>는 테이블의 물리 컬럼이 아니라 <strong>CDS가 조회될 때 보여 주는 계산 요소</strong>다.
+입문자가 가장 오해하는 지점이 여기다 — &quot;테이블에 컬럼이 새로 생겼다&quot;가 아니다. DB 구조는 그대로고,
+CDS entity를 읽을 때 보이는 요소를 정의했을 뿐이다.</p>
+</section><section class="lblock"><h2>직접 관찰해 보기</h2>
+<p>아래 위젯에서 <strong>원본 테이블 → DDL 작성 → 활성화 → Data Preview → ABAP SQL 소비</strong>의 다섯 단계를
+따라가 보자. <code>필드 오타 주입</code>을 켜면 활성화가 어떻게 실패하는지(CDS는 오류가 있으면 활성화되지 않는다),
+끄면 <code>SELECT FROM ZI_Concert</code>로 프로그램이 테이블 대신 모델을 소비하는 모습까지 이어진다.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title"><button class="term" type="button" data-term="CDS View Entity">CDS View Entity</button> 활성화 관찰기</span><a class="embed__open" href="../../../embeds/abap/CH23-L01-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH23-L01-S01.html" loading="lazy" title="CDS View Entity 활성화 관찰기"></iframe></figure>
 </section><section class="lblock"><h2>어떻게 확인하는가</h2>
-<p>파일 이름을 외우기보다 **&quot;계층이 빠짐없이 이어지는가&quot;**를 본다.</p>
-<table>
-<thead>
-<tr>
-<th>확인 질문</th>
-<th>정상 신호</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>root entity가 있는가?</td>
-<td><code>define root view entity ZI_Booking ...</code>가 있다.</td>
-</tr>
-<tr>
-<td>소비 projection이 있는가?</td>
-<td><code>ZC_Booking</code>이 <code>ZI_Booking</code>을 projection한다.</td>
-</tr>
-<tr>
-<td>behavior가 선언되어 있는가?</td>
-<td>BDEF에 <code>define behavior for ZI_Booking</code>이 있다.</td>
-</tr>
-<tr>
-<td>동작 코드 위치가 있는가?</td>
-<td>behavior pool의 local handler class가 있다.</td>
-</tr>
-<tr>
-<td>서비스로 노출되는가?</td>
-<td>service definition이 <code>expose ZC_Booking as Booking;</code>을 포함한다.</td>
-</tr>
-<tr>
-<td>protocol binding이 있는가?</td>
-<td>Service Binding이 활성화되어 URL/preview를 제공한다.</td>
-</tr>
-</tbody></table>
+<p>ADT에서 DDL Source를 만들고 활성화한 뒤 세 가지를 본다.</p>
+<ol>
+<li><strong>활성화 오류</strong> — 필드명 오타나 key 위치 오류가 있으면 활성화 단계에서 바로 드러난다. CDS는 오류가
+있으면 활성화 자체가 안 된다.</li>
+<li><strong>Data Preview</strong> — <code>ZI_Concert</code>를 열어 미리 보면 <code>concert_id</code>·<code>artist</code>·<code>venue</code>·<code>capacity</code>가 보인다.
+L01은 단순 select라 <strong>행 수가 원본 <code>zconcert</code>와 같아야</strong> 정상이다. 크게 다르면 where·join을 의심한다.</li>
+<li><strong>ABAP SQL로 읽기</strong> — 모델이 잘 만들어졌으면 프로그램에서 이름으로 읽는다.</li>
+</ol>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> *
+  <span class="tok-kw">FROM</span> ZI_Concert
+  <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> @<span class="tok-kw">DATA</span>(lt_concerts).</code></pre></div></div>
+<p>이 코드는 <a href="CH19-L03.html">INTO TABLE @DATA(...) Inline Target</a>에서 배운 모던 ABAP SQL(<code>@DATA</code>·host
+변수 <code>@</code>)을 그대로 쓴다. 중요한 확인 포인트는 <code>FROM zconcert</code>가 아니라 **<code>FROM ZI_Concert</code>**라는 점 —
+프로그램이 테이블에 직접 붙지 않고 <strong>CDS 모델을 소비</strong>하기 시작했다.</p>
 </section><section class="lblock"><h2>흔한 실수와 점검 🚧</h2>
 <ul>
-<li><strong><button class="term" type="button" data-term="RAP">RAP</button>를 CDS의 다른 이름으로 생각</strong> → CDS는 RAP의 <em>data model</em>을 구성하지만, RAP는 behavior와 service까지
-포함한다.</li>
-<li><strong><code>create/update/delete</code>를 직접 DB DML과 혼동</strong> → 이건 BDEF에서 BO operation을 <em>허용하는 선언</em>이다. 테이블을
-직접 바꾸는 SQL과 LUW는 <a href="CH24-L01.html">INSERT / UPDATE / MODIFY / DELETE 실무 기준</a>에서 다룬다.</li>
-<li><strong>managed = 코드 0으로 오해</strong> → 표준 저장은 줄지만 custom 로직은 behavior pool에 들어간다.</li>
-<li><strong>서비스부터 만들기</strong> → 아래 계층(root·BDEF)이 부실하면 서비스가 있어도 트랜잭션 앱으로 동작하지 않는다.</li>
+<li><strong>CDS를 ABAP 프로그램처럼 생각</strong> → DDL Source에는 <code>WRITE</code>·<code>LOOP</code>·<code>IF</code>·<code>sy-subrc</code>가 없다. 실행 흐름이
+아니라 <strong>결과 구조</strong>를 읽는 파일이다.</li>
+<li><strong><code>key</code>를 DB 기본키와 100% 같은 것으로 착각</strong> → CDS의 <code>key</code>는 <em>이 뷰가 노출하는 키 의미</em>다. 보통
+테이블 키를 따라가지만, projection·<button class="term" type="button" data-term="Aggregate">집계</button> 모델에선 설계에 따라 달라질 수 있다(이 레슨에선 테이블 키를
+그대로 올리는 수준만).</li>
+<li><strong><code>#NOT_REQUIRED</code>를 실무 보안 설정으로 외움</strong> → 아직 권한을 안 배웠으니 단순 조회용 최소 설정으로
+쓴 것뿐이다. 진짜 권한이 필요한 CDS는 뒤에서 DCL과 함께 다룬다.</li>
 </ul>
 <hr>
-<p>큰 그림을 봤다. 이제 RAP의 토대인 <strong>root Interface View</strong>부터 아래에서 위로 하나씩 쌓자 →
-<a href="CH23-L02.html">Interface View ZI_* 설계 (Root)</a>.</p>
+<p>뷰 하나는 만들었다. 그런데 실무는 같은 데이터라도 소비처마다 다른 모양이 필요해서, 뷰를 <strong>계층</strong>으로
+나눈다 — 재사용 기반(Interface)과 소비 출구(Projection) →
+<a href="CH23-L02.html">Interface View와 Projection View 구분</a>.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

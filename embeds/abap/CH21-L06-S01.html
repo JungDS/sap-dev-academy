@@ -1,48 +1,37 @@
 <!DOCTYPE html>
-<!-- CH21-L06-S01 — 엔진: module-choice-cards (재사용, embeds/_engine/module-choice-cards.{js,css}) · _autoheight.
-     체험: 색 단위 선택 퀴즈 — 상황을 행 색/컬럼 색/셀 색/색 안 쓰기 중 하나로 분류 → 정답·이유. 데이터=window.MCC_CFG.
-     게이팅: CH21 표시 제어(info_fname 행·emphasize 컬럼·ctab_fname 셀) 판단만 · 새 문법 도입 없음. -->
-<html lang="ko" data-eng="module-choice-cards">
+<!-- CH21-L06-S01 — 엔진: exception-flow-console · _autoheight. 콘텐츠=레슨 전용(Exception TRY/CATCH/CX, CH21 L06).
+     config=window.EFC_CFG. 게이팅: CH21=OO 정식(TRY/CATCH/CLEANUP·RAISE EXCEPTION·CX 계층). 실제 INSERT는 CH25 DML. -->
+<html lang="ko" data-eng="exception-flow-console">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>색 단위 선택 퀴즈 · CH21-L06-S01</title>
+<title>Exception Flow Console · CH21-L06-S01</title>
 <link rel="stylesheet" href="../_engine/_base.css" />
-<link rel="stylesheet" href="../_engine/module-choice-cards.css" />
+<link rel="stylesheet" href="../_engine/exception-flow-console.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">색 단위 선택 퀴즈 <small>(행 · 컬럼 · 셀)</small></p>
-  <p class="lead">행·컬럼·셀 색은 우열이 아니라 <b>목적이 다릅니다.</b> "행 전체 상태인가? 늘 중요한 컬럼인가? 조건부 한 칸인가?"를 먼저 묻고 고르세요. 각 상황에 가장 알맞은 단위를 분류해 보세요.</p>
+  <p class="hd">Exception Flow Console <small>(TRY · RAISE · CATCH)</small></p>
+  <p class="lead">잔여석은 <b>40</b>입니다. 좌석 수와 <code>CATCH</code> 순서를 바꿔 보세요. 정원을 넘으면 <code>RAISE EXCEPTION</code>이 발생해 <code>CATCH</code>로 점프합니다. <code>cx_root</code>를 먼저 두면 어떤 일이 생기는지도 확인하세요.</p>
 
-  <div class="scorebar">
-    <span class="score" id="score">정답 0 / 5</span>
-    <button class="reset" id="reset" type="button">다시</button>
+  <div class="efc-ctrl">
+    <div class="efc-grp"><span class="clbl">좌석 수</span><div class="efc-seg efc-seats"></div></div>
+    <div class="efc-grp"><span class="clbl">CATCH 순서</span><div class="efc-seg efc-order"></div></div>
   </div>
 
-  <div class="cards" id="cards"></div>
+  <p class="efc-h">코드</p>
+  <div id="efcCode"></div>
+  <p class="efc-h">실행 흐름</p>
+  <ul class="efc-flow" id="efcFlow"></ul>
+  <div id="efcVerdict"></div>
 
-  <div class="note"><b>고르는 기준.</b> 행 전체 상태 → <code>info_fname</code>(행 색) · 늘 중요한 컬럼 → fieldcat <code>emphasize</code>(컬럼 색) · 행마다 달라지는 한 칸 → <code>ctab_fname</code>+<code>LVC_T_SCOL</code>(셀 색) · 다 정상이면 색을 아끼기(남용 금지). 색은 의미가 일관돼야 하고, 색만으로 전달하지 말고 텍스트·아이콘을 함께.</div>
+  <div class="note"><b>역할 분리.</b> 클래스(<code>book</code>)는 업무 실패를 <b>예외로 던지고</b>, 화면 프로그램이 그 예외를 사용자 메시지로 바꿉니다. <code>CLEANUP</code>은 finally가 <b>아니라</b>, TRY 블록이 예외로 정리될 때만 실행되는 뒷정리 블록입니다. <code>RESUME</code>은 resumable 예외라는 특수 조건에서만 의미가 있어, 일반 복구 패턴으로 쓰지 않습니다.</div>
 </div>
 
 <script>
-window.MCC_CFG = {
-  choices: [
-    { key: 'row',  label: '행 색 (info_fname)' },
-    { key: 'col',  label: '컬럼 색 (emphasize)' },
-    { key: 'cell', label: '셀 색 (ctab_fname)' },
-    { key: 'none', label: '색 안 쓰기' }
-  ],
-  cards: [
-    { q: '회차 전체가 취소됐다 — 줄 전체가 무효 상태다.', ans: 'row', why: '행 전체가 같은 의미(취소)이니 info_fname으로 줄 색을 줍니다.' },
-    { q: '잔여석이 3석뿐인 위험한 칸만 눈에 띄게 하고 싶다.', ans: 'cell', why: '행마다 달라지는 한 칸 조건이라 ctab_fname+LVC_T_SCOL(셀 색)이 가장 정확합니다.' },
-    { q: '예매자 이름 컬럼은 업무상 늘 중요해 항상 강조한다.', ans: 'col', why: '특정 컬럼이 항상 중요하니 field catalog emphasize(컬럼 색)가 맞습니다.' },
-    { q: '정원 초과 오류가 난 회차 — 그 줄 전체가 문제다.', ans: 'row', why: '줄 전체가 오류 상태이므로 행 색(info_fname). 셀 색은 과합니다.' },
-    { q: '모든 수치가 정상인 일반 회차들.', ans: 'none', why: '다 칠하면 강조가 무의미해집니다. 정상은 색을 아끼고, 정말 중요한 것만 칠합니다.' }
-  ]
-};
+window.EFC_CFG = { remaining: 40, normalSeats: 2, overSeats: 100 };
 </script>
-<script src="../_engine/module-choice-cards.js" defer></script>
+<script src="../_engine/exception-flow-console.js" defer></script>
 <script src="../_engine/_autoheight.js" defer></script>
 </body>
 </html>

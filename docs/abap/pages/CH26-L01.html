@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Factory Pattern · OO ABAP 고급 설계와 패턴 · SAP Developer Academy</title>
+<title>Lock Object 설계 기준 · Lock Object와 동시성 제어 · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">Chapter 26 · OO ABAP 고급 설계와 패턴</span>
+  <span class="meta">Chapter 26 · Lock Object와 동시성 제어</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,68 +33,77 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 26 › Lesson 1</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">OO ABAP 고급 설계와 패턴</p>
-        <h1>Factory Pattern</h1>
-        <p class="lhead__direction">객체 생성을 한 곳에 모은다 — Factory.</p>
-        <div class="tags"><span class="tag tag--track">Track 2</span><span class="tag tag--ch">Chapter 26</span><span class="tag tag--ls">Lesson 1</span><span class="tag tag--lv">고급</span></div>
+        <p class="lhead__eyebrow">Lock Object와 동시성 제어</p>
+        <h1>Lock Object 설계 기준</h1>
+        <p class="lhead__direction">동시 변경을 막는 장치 — Lock Object와 잠금 모드.</p>
+        <div class="tags"><span class="tag tag--track">Track 2</span><span class="tag tag--ch">Chapter 26</span><span class="tag tag--ls">Lesson 1</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>NEW를 여기저기 흩뿌리면</h2>
-<p>코드 곳곳에서 <code>NEW zcl_...( )</code>로 <button class="term" type="button" data-term="객체">객체</button>를 만들면, 생성 방식이 바뀔 때(예: 종류에 따라
-다른 <button class="term" type="button" data-term="Class">클래스</button>) 전부 고쳐야 한다. 생성을 <strong>한 곳(팩토리)</strong> 에 모은다.</p>
-<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15</pre><pre class="abap-editor__code"><code><span class="tok-kw">CLASS</span> zcl_booking_factory <span class="tok-kw">DEFINITION</span> <span class="tok-kw">PUBLIC</span>.
-  <span class="tok-kw">PUBLIC</span> <span class="tok-kw">SECTION</span>.
-    <span class="tok-kw">CLASS-METHODS</span> <span class="tok-kw">create</span>
-      <span class="tok-kw">IMPORTING</span> iv_type       <span class="tok-kw">TYPE</span> c
-      <span class="tok-kw">RETURNING</span> <span class="tok-kw">VALUE</span>(ro_obj) <span class="tok-kw">TYPE</span> <span class="tok-kw">REF</span> <span class="tok-kw">TO</span> zif_booking.
-<span class="tok-kw">ENDCLASS</span>.
-
-<span class="tok-kw">CLASS</span> zcl_booking_factory <span class="tok-kw">IMPLEMENTATION</span>.
-  <span class="tok-kw">METHOD</span> <span class="tok-kw">create</span>.
-    <span class="tok-kw">CASE</span> iv_type.
-      <span class="tok-kw">WHEN</span> <span class="tok-str">'V'</span>.    ro_obj = <span class="tok-kw">NEW</span> zcl_vip_booking( ).      <span class="tok-com">" VIP 예매</span>
-      <span class="tok-kw">WHEN</span> <span class="tok-kw">OTHERS</span>. ro_obj = <span class="tok-kw">NEW</span> zcl_booking_manager( ).  <span class="tok-com">" 일반 예매</span>
-    <span class="tok-kw">ENDCASE</span>.
-  <span class="tok-kw">ENDMETHOD</span>.
-<span class="tok-kw">ENDCLASS</span>.</code></pre></div></div>
+<section class="lblock"><h2>동시에 같은 예매를 고치면</h2>
+<p><a href="CH25-L01.html">INSERT / UPDATE / MODIFY / DELETE 실무 기준</a>에서 데이터를 안전하게 <strong>바꾸는</strong> 법을 배웠다.
+그런데 실무 시스템은 <strong>여러 사람이 동시에</strong> 쓴다. A·B 두 직원이 같은 예매 <code>1001</code>(2석)을 동시에 열고, A가
+3석으로 고쳐 저장한 뒤 B가 <em>오래된 화면</em>에서 1석으로 저장하면 — 결과는 1석이다. <strong>A의 3석이 오류 없이
+사라진다.</strong> 이 현상을 <strong>Lost Update</strong>(잃어버린 갱신: 먼저 저장한 변경이 나중 저장에 덮여 사라짐)라고 한다.</p>
+<p><code>COMMIT</code>/<code>ROLLBACK</code>은 <em>내 <button class="term" type="button" data-term="트랜잭션">트랜잭션</button> 안</em>만 챙길 뿐, <strong>두 사람이 같은 예매를 동시에 편집했다는 사실</strong>은 못 막는다.
+그래서 &quot;이 행은 지금 내가 작업 중&quot;이라고 알리는 <strong>잠금</strong> 장치가 필요하다 — <button class="term" type="button" data-term="Lock Object">Lock Object</button>다.</p>
+</section><section class="lblock"><h2>Lock Object — SE11에서 만든다</h2>
+<p><code>SE11</code> → <button class="term" type="button" data-term="Lock Object">Lock Object</button> → <code>EZ_BOOKING</code>(관례: <code>E</code> + 테이블명)을 만든다. 구성은 단 두 가지다.</p>
 <ul>
-<li>호출부는 <code>zcl_booking_factory=&gt;create( &#39;V&#39; )</code>만 — 어느 클래스인지 몰라도 된다.</li>
-<li><button class="term" type="button" data-term="Interface">인터페이스</button>(<code>zif_booking</code>) 반환으로 <a href="CH20-L08.html">다형성 — CAST와 CASE TYPE OF</a>과 결합: static type은
-<code>zif_booking</code>이지만 runtime object는 <code>zcl_vip_booking</code>/<code>zcl_booking_manager</code>다.</li>
+<li><strong>Primary Table</strong> — 잠글 대상 테이블(<code>ZBOOKING</code>).</li>
+<li><strong>Lock Argument</strong> — <strong>무엇을 기준으로</strong> 잠글지. 보통 키 필드(<code>booking_id</code>) — &quot;1001번 예매만 잠금&quot;.</li>
+<li>활성화하면 잠그고/푸는 <strong>ENQUEUE/DEQUEUE 함수가 자동 생성</strong>된다(<code>ENQUEUE_EZ_BOOKING</code>·
+<code>DEQUEUE_EZ_BOOKING</code>). 우리가 함수 본문을 짤 필요 없이 <strong>호출만</strong> 하면 된다(다음 레슨).</li>
 </ul>
-</section><section class="lblock"><h2>타입을 바꿔 보기</h2>
-<p>타입을 바꿔도 <strong>호출부 코드는 그대로</strong>인데, 팩토리가 만들어 주는 <strong>구체 <button class="term" type="button" data-term="Class">클래스</button></strong>만 달라지는
-걸 직접 확인해 보라.</p>
-<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">Factory 시뮬 — 타입 → 구체 클래스</span><a class="embed__open" href="../../../embeds/abap/CH26-L01-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH26-L01-S01.html" loading="lazy" title="Factory 시뮬 — 타입 → 구체 클래스" style="height:380px"></iframe></figure>
+</section><section class="lblock"><h2>잠금 모드 — E / S / X</h2>
+<p>잠금에는 &quot;어떤 동시 접근을 허용할지&quot; 정하는 <strong>모드</strong>가 있다.</p>
+<table>
+<thead>
+<tr>
+<th>모드</th>
+<th>뜻</th>
+<th>다른 사용자에게 허용</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>E</code></td>
+<td>Exclusive(쓰기)</td>
+<td>아무도 못 — 가장 흔함</td>
+</tr>
+<tr>
+<td><code>S</code></td>
+<td>Shared(읽기)</td>
+<td>다른 <strong>S(읽기)</strong> 는 OK, <strong>E(쓰기)</strong> 는 차단</td>
+</tr>
+<tr>
+<td><code>X</code></td>
+<td>eXclusive 비누적</td>
+<td>같은 사용자도 중첩 불가(가장 강함)</td>
+</tr>
+</tbody></table>
+<p>말로는 헷갈리니, A가 어떤 모드로 잡고 있을 때 B의 요청이 <strong>허용되는지/거절되는지</strong> 직접
+바꿔 보자.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">잠금 모드 호환 매트릭스</span><a class="embed__open" href="../../../embeds/abap/CH26-L01-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH26-L01-S01.html" loading="lazy" title="잠금 모드 호환 매트릭스" style="height:470px"></iframe></figure>
+<blockquote>
+<p>대부분의 <strong>변경</strong> 잠금은 <code>E</code>(Exclusive)다 — &quot;내가 고치는 동안 아무도 손대지 마&quot;.</p>
+</blockquote>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>팩토리 우회</strong> → 어떤 곳은 직접 <code>NEW</code>, 어떤 곳은 팩토리 → 일관성 깨짐. 생성은 팩토리로 일원화(팀 규칙으로).</li>
-<li><strong>거대 팩토리</strong> → 예매·결제·할인·로그가 한 팩토리에 모이면 잡동사니 창고가 된다. 업무 영역별로 나눈다.</li>
-<li><strong>팩토리에 업무 로직</strong> → 팩토리는 <em>생성 규칙</em>만. 잔여석 계산·결제 승인 같은 업무 동작은 <em>생성된 <button class="term" type="button" data-term="객체">객체</button></em>의 책임이다.</li>
-<li><strong>알 수 없는 타입을 조용히 기본값으로</strong> → <code>OTHERS</code>를 일반 예매로 보내면 잘못된 코드 값을 숨긴다. 타입이
-customizing/DDIC check table에서 온다면 <strong>유효성 검사 먼저</strong>, 아니면 <button class="term" type="button" data-term="예외">예외</button>를 던질지 정책을 정한다.</li>
+<li><strong>Lock Argument 과다</strong> → key를 안 넘기면 한 건이 아니라 더 넓은 범위가 잠긴다. 한 사람이 한 예매를
+고치는데 다른 모든 예매 변경이 막히면 시스템은 안전해지는 게 아니라 <strong>멈춘다</strong>. 보통 <strong>키 단위</strong>로 좁게.</li>
+<li><strong>SAP Lock이 SQL을 자동으로 막는다고 착각</strong> → SAP Lock은 중앙 lock table의 **논리적 약속(자발적 규약)**이다.
+잠긴 행이라도 프로그램이 lock check를 <em>안 하면</em> ABAP SQL로 그냥 접근·변경된다. 즉 &quot;DB가 모든 UPDATE를
+거절하는 마법&quot;이 아니다 — 변경 프로그램이 <strong>먼저 <code>ENQUEUE_*</code>를 호출</strong>하고 실패하면 변경을 멈춰야 의미가 있다.</li>
+<li><strong>잠금 없이 변경</strong> → 동시 충돌 위험. 변경 <strong>전에</strong> 잠근다(<a href="CH26-L02.html">ENQUEUE / DEQUEUE Function Module</a>의 표준 패턴).</li>
+<li><strong>모드 오해</strong> → 단순 조회 보호엔 <code>S</code>, 변경엔 <code>E</code>. <code>X</code>(강한 배타)·<code>O</code>(optimistic)는 특수 상황.</li>
 </ul>
 </section><section class="lblock"><h2>정리</h2>
 <ul>
-<li>흩뿌린 <code>NEW</code>를 <strong>한 곳(팩토리)</strong> 으로 모은다 → 생성 규칙 변경이 한 곳만.</li>
-<li>팩토리는 <strong><button class="term" type="button" data-term="Interface">인터페이스</button></strong>를 반환 → 호출부는 구체 <button class="term" type="button" data-term="Class">클래스</button>를 몰라도 됨(다형성).</li>
+<li>동시 변경 충돌은 <code>COMMIT</code>으로 못 막는다 → <strong><button class="term" type="button" data-term="Lock Object">Lock Object</button></strong>(SE11)로 잠근다.</li>
+<li>구성 = <strong>Primary Table</strong> + <strong>Lock Argument</strong>(보통 키). 활성화 시 ENQUEUE/DEQUEUE 자동 생성.</li>
+<li>모드 = <code>E</code>(쓰기·기본)·<code>S</code>(읽기 공유)·<code>X</code>(강한 배타). S끼리만 동시 허용.</li>
 </ul>
 <hr>
-<p>생성을 모았다. 그런데 딱 <strong>하나만</strong> 있어야 하는 <button class="term" type="button" data-term="객체">객체</button>는? → Singleton(다음 레슨).</p>
+<p>잠금 장치(Lock Object)를 설계했다. 이제 실제로 <strong>잠그고 푸는</strong> 함수를 호출해 보자 → 다음 레슨.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

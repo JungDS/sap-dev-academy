@@ -1,40 +1,25 @@
 <!DOCTYPE html>
-<!-- CH34-L03-S01 — 엔진: mermaid + _autoheight. Output Control 결정 흐름. -->
-<html lang="ko" data-eng="mermaid">
+<!-- CH34-L03-S01 — 엔진: idoc-status · _engine/_base.css. IDoc 상태코드 생애주기 + 오류·BD87 재처리. -->
+<html lang="ko" data-eng="idoc-status">
 <head>
 <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Output Control · CH34-L03-S01</title>
-<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-<script>if(!window.mermaid){var s=document.createElement("script");s.src="../_vendor/mermaid.min.js";document.head.appendChild(s);}</script>
-<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/mermaid.css" />
+<title>IDoc 상태·재처리 · CH34-L03-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/idoc-status.css" />
 </head>
 <body>
-  <div class="wrap">
-    <p class="hd">Output Control — 언제·무엇을·누구에게 출력하나</p>
-    <p class="lead">양식을 만들었다고 자동으로 나가지 않습니다. <b>출력 결정</b>이 조건을 보고 양식·채널을 고릅니다.</p>
-    <div class="viz-card">
-      <p class="viz-card__title">업무 이벤트 → 출력 결정 → 양식·채널</p>
-      <div class="mermaid" id="mm">
-flowchart TD
-  E(["업무 이벤트<br/>(예: 예매 확정)"]):::term
-  D{"출력 결정<br/>NAST(조건) / BRF+(규칙)"}:::check
-  N["출력 안 함"]:::out
-  F["양식 선택<br/>Smart / Adobe"]:::soft
-  C["채널 선택<br/>인쇄 · 이메일 · EDI"]:::soft
-  O["고객에게 출력"]:::main
-  E --> D
-  D -->|"조건 불충족"| N
-  D -->|"조건 충족"| F --> C --> O
-classDef term fill:#eef2ff,stroke:#94a3b8,stroke-width:2px,color:#1c2233;
-classDef check fill:#fff7ed,stroke:#e11d48,stroke-width:2px,color:#1c2233;
-classDef main fill:#ffffff,stroke:#10b981,stroke-width:2.4px,color:#0b7250;
-classDef soft fill:#ffffff,stroke:#3b5bdb,stroke-width:2px,color:#1d4ed8;
-classDef out fill:#ffffff,stroke:#fb923c,stroke-width:2px,color:#c2410c;
-      </div>
-      <p class="viz-note">양식만 만들고 <b>출력 결정</b>을 안 하면 자동 출력이 안 됩니다. 전통은 <b>NAST</b>(조건 레코드), S/4HANA는 <b>BRF+ 기반 Output Management</b>(규칙)를 권장.</p>
-    </div>
+<div class="wrap">
+  <p class="hd">IDoc 상태코드로 추적·재처리</p>
+  <p class="lead">전송하고 수신 처리해 보세요. <b>오류 주입</b>을 켜면 <code>51</code>(오류)에 멈추고, <b>BD87 재처리</b>로 <code>53</code>(성공)에 도달합니다.</p>
+  <div class="bar">
+    <button class="btn" id="send" type="button">▶ 전송(Outbound)</button>
+    <button class="btn" id="recv" type="button">▶ 수신 처리(Inbound)</button>
+    <label class="alert-toggle"><input type="checkbox" id="err" /> 오류 주입</label>
+    <button class="btn re" id="re" type="button" disabled>↻ BD87 재처리</button>
+    <button class="reset" id="reset" type="button">↺ 초기화</button>
   </div>
-<script src="../_engine/mermaid.js" defer></script>
-<script src="../_engine/_autoheight.js" defer></script>
+  <div class="track" id="track"></div>
+  <div class="note">💡 <code>WE02</code>/<code>WE05</code>로 IDoc 상태를 조회하고, 상태 <b>51</b>(데이터 오류)은 마스터/매핑을 고친 뒤 <code>BD87</code>로 재처리합니다(CH25-L04·CH33-L05와 같은 정신). 51 방치 = 업무 문서 누락 → 정기 모니터링.</div>
+</div>
+<script src="../_engine/idoc-status.js" defer></script>
 </body>
 </html>

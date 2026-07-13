@@ -1,42 +1,36 @@
 <!DOCTYPE html>
-<!-- CH36-L03-S01 — 엔진: code-anatomy(재사용) · _engine/_base.css. ZC_ Projection View(CDS·@UI) 해부. -->
-<html lang="ko" data-eng="code-anatomy">
+<!-- CH36-L03-S01 — 엔진: mermaid + _autoheight. ADBC Native SQL 호출 경로. -->
+<html lang="ko" data-eng="mermaid">
 <head>
 <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>ZC_Booking 해부 · CH36-L03-S01</title>
-<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/code-anatomy.css" />
+<title>ADBC 흐름 · CH36-L03-S01</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>if(!window.mermaid){var s=document.createElement("script");s.src="../_vendor/mermaid.min.js";document.head.appendChild(s);}</script>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/mermaid.css" />
 </head>
 <body>
-<div class="wrap">
-  <p class="hd">ZC_Booking 해부 — Projection + @UI(CDS)</p>
-  <p class="lead">밑줄 부분을 클릭하세요. <b>@UI 주석</b>이 Fiori 화면(목록·상세)을 코드 없이 선언합니다.</p>
-  <div class="anat">
-    <div class="anat__h"><span class="dot"></span>ZC_Booking (CDS View · Projection)</div>
-<pre class="anat__code">define root view entity ZC_Booking
-  <span class="mk" data-a="contract">provider contract transactional_query</span>
-  <span class="mk" data-a="proj">as projection on ZI_Booking</span>
-{
-  <span class="mk" data-a="facet">@UI.facet: [{ type: #IDENTIFICATION_REFERENCE, position: 10 }]</span>
-  key booking_id,
-
-  <span class="mk" data-a="lineitem">@UI: { lineItem: [{ position: 10 }]</span>,
-      identification: [{ position: 10 }] }
-  @EndUserText.label: '공연'
-      concert_id,
-      customer, seats, status, _Concert, _Perf
-}</pre>
+  <div class="wrap">
+    <p class="hd">ADBC — DB에 직접 말 거는 경로</p>
+    <p class="lead"><code>CL_SQL_STATEMENT</code>로 DB 고유 Native SQL을 직접 실행합니다. 강력하지만 책임도 직접(client·injection).</p>
+    <div class="viz-card">
+      <p class="viz-card__title">ABAP → Native SQL → 결과</p>
+      <div class="mermaid" id="mm">
+flowchart LR
+  A["ABAP 프로그램"]:::sys
+  S["CL_SQL_STATEMENT<br/>execute_query( )"]:::soft
+  N["Native SQL<br/>(DB 고유 구문)"]:::warn
+  R["Result Set<br/>set_param_table"]:::soft
+  T["내부 테이블"]:::sys
+  A --> S --> N --> R --> T
+  N -.->|"⚠ client 자동종속 X · injection 주의"| N
+classDef sys fill:#eef2ff,stroke:#3b5bdb,stroke-width:2px,color:#1e3a8a;
+classDef soft fill:#ffffff,stroke:#94a3b8,stroke-width:1.6px,color:#334155;
+classDef warn fill:#fff0f5,stroke:#e11d48,stroke-width:2px,color:#b91c1c;
+      </div>
+      <p class="viz-note">Open SQL과 달리 <b>MANDT(client)를 자동으로 안 챙기고</b> 구문 검사도 없습니다 — 직접 조건에 넣고, 문자열 연결 대신 <b>파라미터 바인딩</b>으로 SQL 주입을 막습니다. DB 고유 기능이 꼭 필요할 때만(최후).</p>
+    </div>
   </div>
-  <div class="anno idle" id="anno">밑줄 친 구문을 클릭하면 설명이 나옵니다.</div>
-  <div class="note">💡 <code>@UI.lineItem</code>=목록(List Report) 컬럼 · <code>@UI.identification</code>/<code>facet</code>=상세(Object Page) 폼. 주석이 많으면 Metadata Extension(CH22-L05)으로 분리합니다.</div>
-  <script type="application/json" id="anno-cfg">
-  {
-    "contract": { "t": "provider contract transactional_query", "d": "트랜잭션 소비용 계약. RAP 동작(생성·수정)을 이 뷰로 노출하려면 필요." },
-    "proj": { "t": "as projection on ZI_Booking", "d": "기반(ZI_)을 투영 — 화면에 필요한 필드만 골라 소비 모델을 만듭니다." },
-    "facet": { "t": "@UI.facet", "d": "Object Page(상세)의 섹션 구성을 선언. IDENTIFICATION_REFERENCE = 식별 정보 폼." },
-    "lineitem": { "t": "@UI.lineItem / identification", "d": "lineItem=목록(List Report) 컬럼, identification=상세 폼 필드. 위치(position)로 순서 지정." }
-  }
-  </script>
-</div>
-<script src="../_engine/code-anatomy.js" defer></script>
+<script src="../_engine/mermaid.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
 </body>
 </html>

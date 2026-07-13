@@ -1,39 +1,37 @@
 <!DOCTYPE html>
-<!-- CH32-L01-S01 — 엔진: sql-trace · _engine/_base.css. ST05 SQL Trace 결과 분석(정렬·최악 강조). -->
-<html lang="ko" data-eng="sql-trace">
+<!-- CH32-L01-S01 — 엔진: inject-slots(exit) · _engine/_base.css. User/Customer Exit 자리에 내 코드 끼우기. -->
+<html lang="ko" data-eng="inject-slots">
 <head>
 <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>ST05 SQL Trace · CH32-L01-S01</title>
-<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/sql-trace.css" />
+<title>User/Customer Exit · CH32-L01-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/inject-slots.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">ST05 SQL Trace — 어떤 SELECT가 병목인가</p>
-  <p class="lead">트레이스 결과입니다. <b>컬럼 헤더를 클릭해 정렬</b>하며 가장 무거운 쿼리를 찾아보세요(빨간 행 = 총시간 1위).</p>
-  <p class="hint">💡 헤더(실행횟수·총 ms 등)를 클릭해 정렬</p>
-  <div class="panel"><div class="panel__h" id="phead">SQL Trace — Display</div>
-    <table><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
-  <div class="callout" id="callout"></div>
-  <div class="note">💡 <b>실행횟수가 비정상적으로 많은 동일 쿼리</b>는 LOOP 안 SELECT(L04) 신호입니다. <b>Identical Selects</b>는 버퍼링·한 번 읽기로, 느린 단일 쿼리는 인덱스·조건을 점검합니다. 운영 트레이스는 짧게·대상 한정.</div>
-  <script type="application/json" id="trace-cfg">
+  <p class="hd">표준이 마련한 빈 자리 — User / Customer Exit</p>
+  <p class="lead">SAP 표준은 직접 고치지 않습니다. 표준이 부르는 <b>빈 FORM/함수(Exit)</b>에 내 코드만 넣으면, <b>표준 소스는 그대로</b>인 채 동작이 확장됩니다. 토글로 켜고 꺼 보세요.</p>
+  <div class="bar"><button class="toggle" id="toggle" type="button"><span class="sw"></span><span id="swtxt">확장 적용: OFF</span></button><span class="badge">표준 소스 변경 0줄</span></div>
+  <div class="prog" id="prog"></div>
+  <div class="note">💡 <code>SMOD</code>(Exit 조회)·<code>CMOD</code>(프로젝트로 활성화). 오래된 방식이라 신규 개발은 <b>BAdI</b>·Enhancement Framework를 선호합니다.</div>
+  <script type="application/json" id="is-cfg">
   {
-    "header": "ST05 — 예매현황 리포트 트레이스",
-    "worstKey": "ms",
-    "cols": [
-      { "k": "stmt", "label": "SQL 문" },
-      { "k": "exec", "label": "실행횟수", "num": true },
-      { "k": "ms", "label": "총 시간(ms)", "num": true },
-      { "k": "rows", "label": "레코드", "num": true }
+    "progName": "SAPMV45A (표준 판매 처리)",
+    "slotLabel": "User Exit 자리 — 표준이 부르는 빈 FORM",
+    "lines": [
+      { "t": "std", "x": "FORM userexit_save_document_prepare." },
+      { "t": "slot" },
+      { "t": "std", "x": "ENDFORM." }
     ],
-    "rows": [
-      { "stmt": "SELECT artist FROM zconcert WHERE concert_id = ?", "exec": 1000, "ms": 870, "rows": 1000 },
-      { "stmt": "SELECT * FROM zbooking INTO TABLE", "exec": 1, "ms": 120, "rows": 1000 },
-      { "stmt": "SELECT * FROM scarr", "exec": 1, "ms": 6, "rows": 18 }
+    "my": [
+      "  \" 내 확장: VIP 고객이면 메모 자동 기록",
+      "  IF is_vip( kunnr ).",
+      "    vbak-bezei = 'VIP 우선 처리'.",
+      "  ENDIF."
     ],
-    "callout": "⚠ 1위 행: 같은 쿼리가 <b>1,000회</b> 실행 — 전형적인 <b>LOOP 안 SELECT</b>입니다. FOR ALL ENTRIES/JOIN으로 1~2회로 줄이면 870ms → 수십 ms (L04)."
+    "emptyMsg": "(비어 있음 — 표준 기본 저장 동작만)"
   }
   </script>
 </div>
-<script src="../_engine/sql-trace.js" defer></script>
+<script src="../_engine/inject-slots.js" defer></script>
 </body>
 </html>

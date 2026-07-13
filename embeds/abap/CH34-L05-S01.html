@@ -1,32 +1,24 @@
 <!DOCTYPE html>
-<!-- CH34-L05-S01 — 엔진: judge-quiz · _engine/_base.css. 양식 오류·변경 대응 판별. -->
-<html lang="ko" data-eng="judge-quiz">
+<!-- CH34-L05-S01 — 엔진: odata-query · _engine/_base.css. OData $filter/$top/$skip → EntitySet 결과. -->
+<html lang="ko" data-eng="odata-query">
 <head>
 <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>양식 운영 대응 · CH34-L05-S01</title>
-<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/judge-quiz.css" />
+<title>OData 조회 · CH34-L05-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/odata-query.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">양식 오류·변경 대응 — 올바른 처치는?</p>
-  <p class="lead">각 대응이 올바른지 판별해 보세요.</p>
-  <div class="score"><span>점수</span><div class="bar"><i id="sbar"></i></div><span class="v" id="sv">0 / 0</span></div>
-  <div id="list"></div>
-  <div class="result" id="result"></div>
-  <script type="application/json" id="quiz">
-  {
-    "labels": ["✓ 올바름", "✗ 잘못"],
-    "items": [
-      { "q": "양식이 안 나와서 먼저 <b>SP01(스풀)</b>·ADS 연결·출력 결정(L03)을 점검한다.", "a": 0, "why": "출력 경로를 단계로 확인 — 올바른 진단 순서." },
-      { "q": "데이터가 비어 나와서 <b>Form Interface에 넘긴 값</b>을 디버거로 확인한다.", "a": 0, "why": "데이터 누락은 인터페이스 입력부터 — 디버거(CH04)로 추적." },
-      { "q": "운영 양식을 급해서 <b>직접 수정</b>한다.", "a": 1, "why": "양식도 코드처럼 이송으로. 직접 수정 금지(CH01 이송요청)." },
-      { "q": "데이터 구조를 바꿨는데 <b>Form Interface는 그대로</b> 둔다.", "a": 1, "why": "구조가 바뀌면 인터페이스도 함께 수정·재활성화해야 함." },
-      { "q": "양식 변경 후 <b>샘플 데이터로 테스트 출력</b>해 검증하고 배포한다.", "a": 0, "why": "깨진 양식이 고객에게 나가지 않도록 — 테스트 출력은 필수." },
-      { "q": "법적 문구 변경을 <b>이송요청 없이</b> 운영에 반영한다.", "a": 1, "why": "이송·버전 관리로 추적 가능하게. 무이송 운영 변경 금지." }
-    ]
-  }
-  </script>
+  <p class="hd">OData 조회 — <code>$filter</code> · <code>$top</code> · <code>$skip</code></p>
+  <p class="lead">쿼리 옵션을 바꿔 보세요. URL이 바뀌고, <code>GET_ENTITYSET</code>이 이를 <b>SELECT 조건·페이징</b>으로 매핑해 돌려주는 결과가 갱신됩니다.</p>
+  <div class="ctrl">
+    <div class="fld"><label>$filter (venue)</label><select id="venue"><option value="">(전체)</option><option>서울</option><option>부산</option><option>대구</option><option>인천</option></select></div>
+    <div class="fld"><label>$top</label><input id="top" type="number" min="0" max="9" value="0" /></div>
+    <div class="fld"><label>$skip</label><input id="skip" type="number" min="0" max="9" value="0" /></div>
+  </div>
+  <div class="url" id="url"></div>
+  <div class="panel"><div class="oq-panel__h" id="cnt"></div><div id="body"></div></div>
+  <div class="note">💡 <code>$filter</code>를 안 받으면 전체 반환(성능·정합 문제) → 반드시 ABAP 조건으로 매핑. 대량은 <code>$top</code>/<code>$skip</code>을 <code>SELECT … UP TO @iv_top ROWS OFFSET @iv_skip</code>에 반영(OFFSET엔 <code>ORDER BY</code> 필요). 단건은 <code>GET_ENTITY</code>.</div>
 </div>
-<script src="../_engine/judge-quiz.js" defer></script>
+<script src="../_engine/odata-query.js" defer></script>
 </body>
 </html>

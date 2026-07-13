@@ -1,32 +1,41 @@
 <!DOCTYPE html>
-<!-- CH33-L05-S01 — 엔진: judge-quiz · _engine/_base.css. AMDP/Native 적절성 판별. -->
-<html lang="ko" data-eng="judge-quiz">
+<!-- CH33-L05-S01 — 엔진: mermaid + _autoheight. 인터페이스 공통 흐름(수신→검증→등록→로그→재처리). -->
+<html lang="ko" data-eng="mermaid">
 <head>
 <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>푸시다운 적절성 · CH33-L05-S01</title>
-<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/judge-quiz.css" />
+<title>인터페이스 공통 흐름 · CH33-L05-S01</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>if(!window.mermaid){var s=document.createElement("script");s.src="../_vendor/mermaid.min.js";document.head.appendChild(s);}</script>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/mermaid.css" />
 </head>
 <body>
-<div class="wrap">
-  <p class="hd">이 선택, 적절할까? — 푸시다운 판별</p>
-  <p class="lead">각 상황에서 AMDP/Native SQL 사용이 <b>적절</b>한지 <b>부적절(과용·리스크)</b>인지 골라 보세요.</p>
-  <div class="score"><span>점수</span><div class="bar"><i id="sbar"></i></div><span class="v" id="sv">0 / 0</span></div>
-  <div id="list"></div>
-  <div class="result" id="result"></div>
-  <script type="application/json" id="quiz">
-  {
-    "labels": ["✓ 적절", "✗ 부적절"],
-    "items": [
-      { "q": "공연별 좌석 합계를 <b>Open SQL GROUP BY</b>로 구한다.", "a": 0, "why": "표준 SQL로 충분 — 이식성·검증·1순위. AMDP 불필요." },
-      { "q": "단순 단건 조회를 굳이 <b>AMDP</b>로 만든다.", "a": 1, "why": "과용. 대부분 Open SQL/CDS면 됨 — 복잡할 때만 AMDP." },
-      { "q": "임시테이블·루프가 필요한 복잡 알고리즘을 DB에서 <b>AMDP</b>로.", "a": 0, "why": "SQLScript 절차 로직이 꼭 DB에서 필요한 경우 — AMDP의 제자리." },
-      { "q": "곧 다른 DB로 이전할 시스템에서 <b>Native SQL</b>을 남발한다.", "a": 1, "why": "DB 종속 → 이전 시 발목. 이식성을 무시한 위험한 선택." },
-      { "q": "AMDP/Native를 <b>별도 클래스</b>로 격리하고 이유를 문서화한다.", "a": 0, "why": "운영 원칙 — 격리·문서화로 종속성을 관리. 권장." },
-      { "q": "<b>ABAP Cloud</b>에서 Native SQL로 핵심 로직을 짠다.", "a": 1, "why": "ABAP Cloud는 Native SQL이 제한적 — Released API·CDS로 가야 함." }
-    ]
-  }
-  </script>
-</div>
-<script src="../_engine/judge-quiz.js" defer></script>
+  <div class="wrap">
+    <p class="hd">인터페이스 공통 골격 — 수신 · 검증 · 등록 · 로그 · 재처리</p>
+    <p class="lead">BAPI·RFC·BDC·File 무엇이든 같은 흐름을 갖습니다. 실패는 로그에 남기고 재처리 잡으로 다시 돌립니다(CH25-L04와 같은 정신).</p>
+    <div class="viz-card">
+      <p class="viz-card__title">파일/메시지 한 건의 일생</p>
+      <div class="mermaid" id="mm">
+flowchart TD
+  S(["① 수신 (파일/메시지)"]):::term
+  V{"② 검증 통과?"}:::check
+  R["③ 등록 (BAPI/DML)"]:::main
+  L["④ 인터페이스 로그 기록"]:::soft
+  E["오류 로그 + 실패분 보관"]:::out
+  Q["⑤ 재처리 잡"]:::soft
+  S --> V
+  V -->|"예"| R --> L
+  V -->|"아니오"| E --> Q
+  Q -.->|"원인 해결 후 다시"| S
+classDef term fill:#eef2ff,stroke:#94a3b8,stroke-width:2px,color:#1c2233;
+classDef check fill:#fff7ed,stroke:#e11d48,stroke-width:2px,color:#1c2233;
+classDef main fill:#ffffff,stroke:#10b981,stroke-width:2.4px,color:#0b7250;
+classDef soft fill:#ffffff,stroke:#3b5bdb,stroke-width:2px,color:#1d4ed8;
+classDef out fill:#ffffff,stroke:#fb923c,stroke-width:2px,color:#c2410c;
+      </div>
+      <p class="viz-note">성공/실패를 <b>로그 테이블</b>에 남기고, 실패 건은 보관 후 <b>재처리 잡</b>으로. 중복 수신을 막는 <b>멱등성</b>(메시지ID·키 체크)도 공통 고려사항입니다.</p>
+    </div>
+  </div>
+<script src="../_engine/mermaid.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
 </body>
 </html>

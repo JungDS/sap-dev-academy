@@ -1,38 +1,37 @@
 <!DOCTYPE html>
-<!-- CH25-L03-S01 — 엔진: judge-quiz (embeds/_engine/judge-quiz.{js,css}) · 공통토큰: _engine/_base.css
-     "잠금은 언제 풀리나?" 풀림/유지 판별 퀴즈. -->
-<html lang="ko" data-eng="judge-quiz">
+<!-- CH25-L03-S01 — 엔진: luw-timeline (embeds/_engine/luw-timeline.{js,css}) · 공통토큰: _engine/_base.css
+     SAP LUW / Update Task 타이밍 체험 — IN UPDATE TASK는 등록만, DB 기록은 COMMIT 시점. -->
+<html lang="ko" data-eng="luw-timeline">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>잠금 해제 판별 퀴즈 · CH25-L03-S01</title>
+<title>SAP LUW 타임라인 · CH25-L03-S01</title>
 <link rel="stylesheet" href="../_engine/_base.css" />
-<link rel="stylesheet" href="../_engine/judge-quiz.css" />
+<link rel="stylesheet" href="../_engine/luw-timeline.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">잠금은 언제 풀릴까? — 풀림 / 유지 판별</p>
-  <p class="lead">각 상황에서 내가 <code>1001</code>에 건 잠금이 <b>풀리는지</b> <b>유지되는지</b> 고르세요. 즉시 정답·해설이 나옵니다.</p>
+  <p class="hd">SAP LUW 타임라인 — <code>IN UPDATE TASK</code>는 언제 실행될까?</p>
+  <p class="lead">단계를 진행하며 <b>Update Task 대기 큐</b>와 <b>DB</b>가 어떻게 변하는지 보세요. 함수를 "호출"한 순간 DB에 들어갈까요?</p>
 
-  <div class="score"><span>점수</span><div class="bar"><i id="sbar"></i></div><span class="v" id="sv">0 / 0</span></div>
-  <div id="list"></div>
-  <div class="result" id="result"></div>
+  <div class="steps">
+    <span class="s on">① 화면 입력</span><span class="sep">→</span>
+    <span class="s">② UPDATE TASK 등록</span><span class="sep">→</span>
+    <span class="s">③ 추가 처리</span><span class="sep">→</span>
+    <span class="s">④ COMMIT WORK</span>
+  </div>
 
-  <script type="application/json" id="quiz">
-  {
-    "labels": ["🔓 풀림", "🔒 유지"],
-    "items": [
-      { "q": "<code>DEQUEUE_EZ_BOOKING</code>을 호출했다.", "a": 0, "why": "명시적 <b>DEQUEUE</b> 호출 → 그 잠금이 풀린다." },
-      { "q": "<code>COMMIT WORK</code>를 실행했다.", "a": 0, "why": "보통 트랜잭션 종료와 함께 <b>자동 해제</b>된다(가장 흔한 경로). 단, 정확한 수명은 <code>_scope</code>로 판단 — <code>_scope=2</code> update 연계 잠금은 update 완료까지 남을 수 있다." },
-      { "q": "<code>ROLLBACK WORK</code>를 실행했다.", "a": 0, "why": "ROLLBACK도 트랜잭션을 끝내며 <code>_scope=2</code> 잠금을 제거하는 흐름이다. 모든 잠금이 무조건 풀린다고 단정하지 말고 <code>_scope</code>를 본다." },
-      { "q": "사용자가 SAP 세션(모드)을 종료했다.", "a": 0, "why": "<b>세션 종료</b> 시 그 세션이 보유한 잠금은 모두 풀린다." },
-      { "q": "그 예매 행을 <code>SELECT</code>로 조회만 했다.", "a": 1, "why": "단순 읽기는 잠금과 무관 → 잠금은 <b>그대로 유지</b>." },
-      { "q": "다른 예매(<code>2002</code>)를 변경했다.", "a": 1, "why": "다른 키의 작업 → <code>1001</code> 잠금은 <b>유지</b>(키 단위 잠금)." },
-      { "q": "<code>DEQUEUE_ALL</code>을 호출했다.", "a": 0, "why": "현재 프로그램이 건 <b>모든 잠금</b>을 한 번에 푼다 → 1001도 풀림." }
-    ]
-  }
-  </script>
+  <div class="echo" id="echo"></div>
+
+  <div class="cols">
+    <div class="col q"><div class="col__h">📋 Update Task 대기 큐 <span class="pill" id="qPill">0건</span></div><div class="col__b" id="q"></div></div>
+    <div class="col db"><div class="col__h">💾 DB (확정) <span class="pill" id="dbPill">0건</span></div><div class="col__b" id="db"></div></div>
+  </div>
+
+  <div class="narr" id="narr"></div>
+  <div class="bar"><button class="btn" id="next" type="button">다음 단계 ▶</button><button class="reset" id="reset" type="button">↺ 처음부터</button></div>
+  <div class="note">💡 <b>SAP LUW</b>(업무 묶음, 여러 화면) 안에서 <code>IN UPDATE TASK</code>로 변경을 모아 두었다가, <code>COMMIT WORK</code> 한 순간 <b>Update Work Process</b>가 실제 DB 쓰기(<b>DB LUW</b>)를 수행합니다.</div>
 </div>
-<script src="../_engine/judge-quiz.js" defer></script>
+<script src="../_engine/luw-timeline.js" defer></script>
 </body>
 </html>

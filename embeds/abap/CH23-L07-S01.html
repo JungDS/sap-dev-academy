@@ -1,31 +1,47 @@
 <!DOCTYPE html>
-<!-- CH23-L07-S01 — 엔진: vda-classifier · _autoheight. 콘텐츠=레슨 전용(RAP V/D/A 분류 + 실행 타임라인, #C23 L07).
-     게이팅: Validation/Determination/Action L3 개요(목적·실행 시점). 핸들러 구현은 L05 연계·EML/draft 이후·side effects 심화 보류.
-     관통예제=예매. 입문자는 문법보다 실행 시점에서 자주 틀림. -->
-<html lang="ko" data-eng="vda-classifier">
+<!-- CH23-L07-S01 — 엔진: cds-builder-stepper · _autoheight. 콘텐츠=레슨 전용(콘서트 CDS 빌더 capstone, #C22 L07).
+     config=window.CBS_CFG. 게이팅: CDS 정식(전 L01~L06 종합). 순서 의존(ZI_Perf→ZI_Concert→ZC_Concert→DDLX). RAP/DML 코드 없음(CH24/CH25).
+     관통예제=콘서트. 이름 풀(R9: 아이유·손흥민·정훈영). -->
+<html lang="ko" data-eng="cds-builder-stepper">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>RAP V/D/A 분류 + 실행 타임라인 · CH23-L07-S01</title>
+<title>콘서트 CDS 빌더 · CH23-L07-S01</title>
 <link rel="stylesheet" href="../_engine/_base.css" />
-<link rel="stylesheet" href="../_engine/vda-classifier.css" />
+<link rel="stylesheet" href="../_engine/cds-builder-stepper.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">Validation · Determination · Action <small>(분류 + 실행 시점)</small></p>
-  <p class="lead">RAP의 비즈니스 로직 셋은 <b>목적과 실행 시점</b>이 다릅니다 — 검사(Validation) · 자동 채움(Determination) · 사용자 실행(Action). 상황을 분류해 보고, 아래 타임라인에서 각 로직이 <b>언제</b> 실행되는지 확인하세요.</p>
+  <p class="hd">콘서트 CDS 빌더 <small>(ZI_Perf → ZI_Concert → ZC_Concert → DDLX)</small></p>
+  <p class="lead">CH23에서 배운 걸 모아 콘서트 앱의 읽기 모델을 CDS로 올립니다. <b>순서가 중요</b>해요 — <code>ZI_Concert</code>의 <code>_Perf</code> association은 target <code>ZI_Perf</code>가 먼저 있어야 합니다. ②를 먼저 눌러 어떤 오류가 나는지도 확인하세요.</p>
 
-  <p class="vda-cap">① 이 상황은 무엇일까? (V / D / A)</p>
-  <div id="vdaCards"></div>
-  <div class="vda-score" id="vdaScore"></div>
+  <div class="cbs-steps" id="cbsSteps"></div>
+  <div class="cbs-arts" id="cbsArts"></div>
+  <div class="cbs-out" id="cbsOut"></div>
+  <div class="cbs-msg" id="cbsMsg"></div>
 
-  <p class="vda-cap">② 실행 타임라인 — 언제 실행되나</p>
-  <div class="vda-tl" id="vdaTl"></div>
+  <div class="cbs-chall">
+    <p class="cbs-chall__t">🏆 도전 과제 (CH23에서는 설계만 — 구현은 이후)</p>
+    <ul>
+      <li><b>잔여석 계산</b> — <code>capacity</code> − 예매 수. 예매 상태·취소·집계·권한·성능을 함께 봐야 하는 큰 주제.</li>
+      <li><b>예매 association</b> — <code>_Booking [0..*]</code>을 어느 뷰에 두는 게 자연스러울지.</li>
+      <li><b>권한</b> — DCL을 <code>venue</code> 기준으로 붙이면 사용자별 결과가 어떻게 달라질지.</li>
+    </ul>
+  </div>
 
-  <div class="note"><b>모든 로직을 action으로 만들지 마세요.</b> 사용자가 눌러야 하는 동작만 action이고, 저장 전에 반드시 지켜야 하는 규칙은 validation이 자연스럽습니다. 그리고 <b>validation에서 값을 고치면 안 돼요</b> — 값 자동 채움은 determination의 일입니다.</div>
+  <div class="note"><b>여기까지가 CH23의 끝.</b> CDS 뷰와 Metadata Extension이 최종 산출물입니다. <code>define behavior</code>·service binding·action 같은 <b>RAP 코드는 작성하지 않아요</b> — 그건 다음 장의 주제입니다. CH23는 RAP가 올라갈 <b>읽기 모델의 뼈대</b>를 만드는 단계예요.</div>
 </div>
 
-<script src="../_engine/vda-classifier.js" defer></script>
+<script>
+window.CBS_CFG = {
+  concerts: [
+    { id: 'C001', artist: '아이유', venue: '올림픽홀' },
+    { id: 'C002', artist: '손흥민', venue: '고척돔' },
+    { id: 'C003', artist: '정훈영', venue: 'KSPO돔' }
+  ]
+};
+</script>
+<script src="../_engine/cds-builder-stepper.js" defer></script>
 <script src="../_engine/_autoheight.js" defer></script>
 </body>
 </html>

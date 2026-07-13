@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<!-- CH38-L04-S01 — 엔진: mermaid + _autoheight. Background Job 생애주기(SM36/SM37). -->
+<html lang="ko" data-eng="mermaid">
+<head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Background Job · CH38-L04-S01</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>if(!window.mermaid){var s=document.createElement("script");s.src="../_vendor/mermaid.min.js";document.head.appendChild(s);}</script>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/mermaid.css" />
+</head>
+<body>
+  <div class="wrap">
+    <p class="hd">Background Job 생애주기 — 예약에서 완료까지</p>
+    <p class="lead">야간 정산·대량 인터페이스는 화면 없이 정해진 시각에 자동 실행됩니다. <code>SM36</code>으로 정의·스케줄, <code>SM37</code>로 모니터.</p>
+    <div class="viz-card">
+      <p class="viz-card__title">SM36 정의 → 실행 → SM37 모니터</p>
+      <div class="mermaid" id="mm">
+flowchart LR
+  S["예약 (SM36)<br/>주기·시작조건"]:::soft
+  R["릴리스<br/>(실행 대기)"]:::soft
+  A["활성<br/>(실행 중)"]:::run
+  F["완료"]:::ok
+  C["취소/중단"]:::out
+  S --> R --> A --> F
+  A -->|"오류"| C
+  C -.->|"원인 해결 후 재시작"| S
+classDef soft fill:#eef2ff,stroke:#3b5bdb,stroke-width:2px,color:#1e3a8a;
+classDef run fill:#fff7ed,stroke:#fb923c,stroke-width:2px,color:#c2410c;
+classDef ok fill:#ffffff,stroke:#10b981,stroke-width:2.4px,color:#0b7250;
+classDef out fill:#fff0f5,stroke:#e11d48,stroke-width:2px,color:#b91c1c;
+      </div>
+      <p class="viz-note"><code>SUBMIT … VIA JOB … AND RETURN</code>으로 잡에 넣습니다(<b>AND RETURN 필수</b>). 재시작 가능하게 설계(재시작점·로그), 실패 시 알림, 중복 실행은 스케줄·잠금으로 방지. 상태는 <code>SM37</code>에서 추적.</p>
+    </div>
+  </div>
+<script src="../_engine/mermaid.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

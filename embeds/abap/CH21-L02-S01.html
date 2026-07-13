@@ -1,48 +1,42 @@
 <!DOCTYPE html>
-<!-- CH21-L02-S01 — 엔진: salv-layout-lab · _autoheight. 콘텐츠=레슨 전용(SALV Layout/Variant 심화, CH21 L02).
-     config=window.SLL_CFG. 게이팅: CH21=SALV 표시 제어(display_settings·columns·layout). variant=표시설정 저장(데이터 변경 아님). -->
-<html lang="ko" data-eng="salv-layout-lab">
+<!-- CH21-L02-S01 — 엔진: visibility-gate-sim · _autoheight. 콘텐츠=레슨 전용(Attribute/Method/Visibility, CH21 L02).
+     config=window.VGS_CFG. 게이팅: CH21=OO 정식(visibility PUBLIC/PROTECTED/PRIVATE·캡슐화). 상속 자식은 다음 레슨들이라 개념만 비교용. -->
+<html lang="ko" data-eng="visibility-gate-sim">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Variant 저장 실험실 · CH21-L02-S01</title>
+<title>Visibility Gate Simulator · CH21-L02-S01</title>
 <link rel="stylesheet" href="../_engine/_base.css" />
-<link rel="stylesheet" href="../_engine/salv-layout-lab.css" />
+<link rel="stylesheet" href="../_engine/visibility-gate-sim.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">SALV Layout 실험실 <small>(줄무늬·폭·컬럼 텍스트)</small></p>
-  <p class="lead">SALV의 표시 설정을 바꿔 보세요. <b>줄무늬</b>·<b>폭 최적화</b>(긴 <code>ARTIST</code>가 안 잘림)·<b>컬럼 텍스트</b>를 토글합니다. 특히 <code>long_text</code>만 바꾸면 헤더가 안 바뀔 수 있어요 — <b>세 텍스트를 함께</b> 맞춰야 합니다. 컬럼명을 틀리면 어떤 오류인지도 보세요.</p>
+  <p class="hd">Visibility Gate Simulator <small>(누가 접근할 수 있나)</small></p>
+  <p class="lead">클래스 멤버를 <code>PUBLIC</code>·<code>PROTECTED</code>·<code>PRIVATE</code> 중 어디에 둘지, 누가 접근할지 바꿔 보세요. 접근이 <b>막히면 런타임이 아니라 컴파일(syntax check) 단계</b>에서 막힙니다. 멤버 종류에 맞는 <b>캡슐화 조언</b>도 함께 봅니다.</p>
 
-  <div class="sll-ctrl"></div>
+  <div class="vgs-ctrl">
+    <div class="vgs-grp"><span class="clbl">멤버</span><div class="vgs-seg vgs-mem"></div></div>
+    <div class="vgs-grp"><span class="clbl">공개 범위</span><div class="vgs-seg vgs-vis"></div></div>
+    <div class="vgs-grp"><span class="clbl">호출자</span><div class="vgs-seg vgs-caller"></div></div>
+  </div>
 
-  <p class="sll-h">display( ) 전 설정 코드</p>
-  <div id="sllCode"></div>
-  <p class="sll-h">첫 화면</p>
-  <div id="sllTable"></div>
-  <div id="sllStatus"></div>
-
-  <div class="note"><b>Variant = 사용자별 보기.</b> <code>get_layout( )->set_key( … report = sy-repid )</code>로 어느 리포트의 layout인지 식별하면, 사용자가 컬럼 순서·숨김·폭을 자기 보기로 저장할 수 있습니다. 단 <b>표시 설정만</b> 저장될 뿐 데이터는 안 바뀌고, 숨김은 권한 제어가 아닙니다(보안상 숨겨야 할 값은 애초에 조회하지 않기).</div>
+  <p class="vgs-h">코드</p>
+  <div id="vgsCode"></div>
+  <div id="vgsVerdict"></div>
+  <div id="vgsAdvice"></div>
+  <p class="vgs-h" style="margin-top:12px">접근 규칙 한눈에</p>
+  <div id="vgsMatrix"></div>
 </div>
 
 <script>
-window.SLL_CFG = {
-  capCol: 'CAPACITY', badCol: 'CAP', clipCol: 'ARTIST',
-  cols: [
-    { f: 'CONCERT_ID' }, { f: 'ARTIST' }, { f: 'PERF_DATE' },
-    { f: 'CAPACITY' }, { f: 'SEATSOCC' }, { f: 'STATUS' }
-  ],
-  rows: [
-    { CONCERT_ID: 'C001', ARTIST: '정훈영 Band',  PERF_DATE: '20260712', CAPACITY: 100, SEATSOCC: 40, STATUS: 'A' },
-    { CONCERT_ID: 'C002', ARTIST: 'ABAP Trio',   PERF_DATE: '20260705', CAPACITY: 50,  SEATSOCC: 50, STATUS: 'F' },
-    { CONCERT_ID: 'C003', ARTIST: 'UI5 Night',   PERF_DATE: '20260720', CAPACITY: 80,  SEATSOCC: 10, STATUS: 'A' },
-    { CONCERT_ID: 'C004', ARTIST: '손흥민 Live',  PERF_DATE: '20260705', CAPACITY: 100, SEATSOCC: 0,  STATUS: 'C' },
-    { CONCERT_ID: 'C005', ARTIST: '아이유 Concert', PERF_DATE: '20260712', CAPACITY: 120, SEATSOCC: 90, STATUS: 'A' },
-    { CONCERT_ID: 'C006', ARTIST: '차은우 Show',  PERF_DATE: '20260701', CAPACITY: 90,  SEATSOCC: 60, STATUS: 'A' }
+window.VGS_CFG = {
+  members: [
+    { v: 'cap', label: 'mv_cap (데이터)', kind: 'data', name: 'mv_cap' },
+    { v: 'rem', label: 'remaining( ) (행동)', kind: 'method', name: 'remaining( )' }
   ]
 };
 </script>
-<script src="../_engine/salv-layout-lab.js" defer></script>
+<script src="../_engine/visibility-gate-sim.js" defer></script>
 <script src="../_engine/_autoheight.js" defer></script>
 </body>
 </html>

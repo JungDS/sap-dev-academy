@@ -1,21 +1,66 @@
 <!DOCTYPE html>
-<!-- CH27-L04-S01 — 엔진: alv-events(mode=ucommand) · _engine/_base.css. 행 선택+버튼 → user_command 취소·refresh. -->
-<html lang="ko" data-eng="alv-events">
+<!-- CH27-L04-S01 — 엔진: mvc-diagram (embeds/_engine/mvc-diagram.{js,css}) · 공통토큰: _engine/_base.css
+     MVC 관계도 + '이 계층 바꾸면 영향 범위' 하이라이트. -->
+<html lang="ko" data-eng="mvc-diagram">
 <head>
-<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>USER_COMMAND · CH27-L04-S01</title>
-<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/alv-events.css" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MVC 구조 · CH27-L04-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/mvc-diagram.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">버튼이 눌리면 — <code>USER_COMMAND</code></p>
-  <p class="lead">행을 <b>체크</b>해 고르고 <b>🗑 예매 취소</b>를 누르면 <code>on_user_command</code>이 <code>e_ucomm='ZCANCEL'</code>로 와서 <b>선택 행</b>을 취소하고 화면을 갱신합니다.</p>
-  <div class="alv"><div class="alvbar" id="bar"></div><table><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
-  <p class="hint">💡 행을 체크하고 <b>예매 취소</b> 버튼을 눌러 보세요(선택 없이 누르면 안내) ↑</p>
-  <div class="log" id="log"><span class="ph">버튼을 누르면 명령 분기·선택 행이 여기 찍힙니다.</span></div>
-  <div class="note">💡 <code>CASE e_ucomm</code>로 분기 → <code>get_selected_rows( )</code>로 선택 행을 가져와 처리 → <code>refresh_table_display( )</code>로 갱신. 실제 변경은 DML·잠금 패턴이 필요합니다.</div>
-  <script type="application/json" id="alv-cfg">{ "mode": "ucommand" }</script>
+  <p class="hd">MVC — 무엇을 바꾸면 어디까지 영향이 갈까?</p>
+  <p class="lead">시나리오를 골라 보세요. 역할을 나눠 두면 한 계층을 바꿔도 <b>나머지는 그대로</b>입니다(관심사 분리).</p>
+
+  <div class="pick">
+    <span class="t">바꿔 보기:</span>
+    <button class="sc on" data-s="view" type="button">화면 교체</button>
+    <button class="sc" data-s="model" type="button">로직 변경</button>
+    <button class="sc" data-s="ctrl" type="button">흐름 추가</button>
+  </div>
+
+  <div class="diagram">
+    <svg viewBox="0 0 560 312" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#94a3b8"/></marker></defs>
+      <!-- edges -->
+      <path class="edge" d="M250,84 C210,110 185,120 165,148"/>
+      <text class="elbl" x="178" y="120">① 호출</text>
+      <path class="edge" d="M312,84 C355,110 380,120 398,148"/>
+      <text class="elbl" x="360" y="120">③ 갱신</text>
+      <path class="edge" d="M150,210 L150,248"/>
+      <text class="elbl" x="158" y="234">조회</text>
+      <!-- Controller -->
+      <g class="lyr idle" id="lyr-ctrl">
+        <rect x="201" y="26" width="160" height="56" rx="11"/>
+        <text x="281" y="50" text-anchor="middle" font-size="14">Controller</text>
+        <text x="281" y="68" text-anchor="middle" font-size="10" class="role">흐름 조율(이벤트→Model→View)</text>
+        <text x="281" y="100" text-anchor="middle" class="badge" id="bdg-ctrl"></text>
+      </g>
+      <!-- Model -->
+      <g class="lyr idle" id="lyr-model">
+        <rect x="64" y="150" width="172" height="56" rx="11"/>
+        <text x="150" y="174" text-anchor="middle" font-size="14">Model</text>
+        <text x="150" y="192" text-anchor="middle" font-size="10" class="role">데이터·업무 로직(조회·계산)</text>
+        <text x="150" y="232" text-anchor="middle" class="badge" id="bdg-model"></text>
+      </g>
+      <!-- View -->
+      <g class="lyr idle" id="lyr-view">
+        <rect x="330" y="150" width="172" height="56" rx="11"/>
+        <text x="416" y="174" text-anchor="middle" font-size="14">View</text>
+        <text x="416" y="192" text-anchor="middle" font-size="10" class="role">표시(ALV / Dynpro)</text>
+        <text x="416" y="232" text-anchor="middle" class="badge" id="bdg-view"></text>
+      </g>
+      <!-- DB -->
+      <g class="lyr"><rect x="64" y="250" width="172" height="42" rx="9" fill="#f1f4fb" stroke="#cbd3e1"/>
+        <text x="150" y="276" text-anchor="middle" font-size="12" fill="#5b6478" font-weight="700">DB (ZBOOKING…)</text></g>
+    </svg>
+  </div>
+
+  <div class="msg" id="msg"></div>
+  <div class="note">💡 <b>Model</b>=순수 로직(화면 모름) · <b>View</b>=표시 전용 · <b>Controller</b>=둘을 잇는 흐름. 덕분에 화면을 바꿔도 로직이, 로직을 바꿔도 화면이 멀쩡합니다. 단, 작은 리포트까지 3계층은 과할 수 있어요(규모에 맞게).</div>
 </div>
-<script src="../_engine/alv-events.js" defer></script>
+<script src="../_engine/mvc-diagram.js" defer></script>
 </body>
 </html>

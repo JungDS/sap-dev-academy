@@ -1,37 +1,43 @@
 <!DOCTYPE html>
-<!-- CH24-L03-S01 — 엔진: luw-timeline (embeds/_engine/luw-timeline.{js,css}) · 공통토큰: _engine/_base.css
-     SAP LUW / Update Task 타이밍 체험 — IN UPDATE TASK는 등록만, DB 기록은 COMMIT 시점. -->
-<html lang="ko" data-eng="luw-timeline">
+<!-- CH24-L03-S01 — 엔진: projection-contract-checker · _autoheight. 콘텐츠=레슨 전용(RAP Transactional Projection 계약 검사기, #C23 L03).
+     게이팅: define root view entity ... provider contract transactional_query as projection on. CH23 projection 위 RAP 계약.
+     관통예제=예매(ZI_Booking/ZC_Booking). UI annotation/Metadata Extension은 CH23 L04/L05. -->
+<html lang="ko" data-eng="projection-contract-checker">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>SAP LUW 타임라인 · CH24-L03-S01</title>
+<title>Transactional Projection 계약 검사기 · CH24-L03-S01</title>
 <link rel="stylesheet" href="../_engine/_base.css" />
-<link rel="stylesheet" href="../_engine/luw-timeline.css" />
+<link rel="stylesheet" href="../_engine/projection-contract-checker.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">SAP LUW 타임라인 — <code>IN UPDATE TASK</code>는 언제 실행될까?</p>
-  <p class="lead">단계를 진행하며 <b>Update Task 대기 큐</b>와 <b>DB</b>가 어떻게 변하는지 보세요. 함수를 "호출"한 순간 DB에 들어갈까요?</p>
+  <p class="hd">Transactional Projection 계약 검사기 <small>(ZI_Booking → ZC_Booking)</small></p>
+  <p class="lead">기반 root <code>ZI_Booking</code>을 소비용 <code>ZC_Booking</code>으로 투영합니다. <code>provider contract transactional_query</code>를 넣고 빼 보고, projection이 <b>root 위치</b>를 맞추는지, 어떤 필드를 외부에 노출할지 정해 보세요. 숨김은 삭제가 아니라 <b>소비 계약에서 제외</b>입니다.</p>
 
-  <div class="steps">
-    <span class="s on">① 화면 입력</span><span class="sep">→</span>
-    <span class="s">② UPDATE TASK 등록</span><span class="sep">→</span>
-    <span class="s">③ 추가 처리</span><span class="sep">→</span>
-    <span class="s">④ COMMIT WORK</span>
+  <div class="pcc-ctrl">
+    <button class="pcc-tog" id="pccContract"></button>
+    <button class="pcc-tog" id="pccRoot"></button>
+    <button class="pcc-tog" id="pccAllow"></button>
   </div>
 
-  <div class="echo" id="echo"></div>
+  <p style="font-size:.72rem;font-weight:800;color:var(--ink-soft);margin:0 0 6px;">노출 필드 (감사 필드는 기본 숨김)</p>
+  <div class="pcc-fields" id="pccFields"></div>
 
-  <div class="cols">
-    <div class="col q"><div class="col__h">📋 Update Task 대기 큐 <span class="pill" id="qPill">0건</span></div><div class="col__b" id="q"></div></div>
-    <div class="col db"><div class="col__h">💾 DB (확정) <span class="pill" id="dbPill">0건</span></div><div class="col__b" id="db"></div></div>
+  <div class="pcc-row">
+    <div class="pcc-card zi"><div class="pcc-card__hd">ZI_Booking (기반 root · 내부)</div><div class="pcc-card__b" id="pccZi"></div></div>
+    <div class="pcc-card zc"><div class="pcc-card__hd">ZC_Booking (소비 projection)</div><div class="pcc-card__b" id="pccZc"></div></div>
   </div>
 
-  <div class="narr" id="narr"></div>
-  <div class="bar"><button class="btn" id="next" type="button">다음 단계 ▶</button><button class="reset" id="reset" type="button">↺ 처음부터</button></div>
-  <div class="note">💡 <b>SAP LUW</b>(업무 묶음, 여러 화면) 안에서 <code>IN UPDATE TASK</code>로 변경을 모아 두었다가, <code>COMMIT WORK</code> 한 순간 <b>Update Work Process</b>가 실제 DB 쓰기(<b>DB LUW</b>)를 수행합니다.</div>
+  <p style="font-size:.72rem;font-weight:800;color:var(--ink-soft);margin:0 0 4px;">OData 소비자가 보는 payload</p>
+  <div id="pccPayload" style="margin-bottom:10px;"></div>
+
+  <div class="pcc-verdict" id="pccVerdict"></div>
+
+  <div class="note"><b>provider contract는 장식이 아니라 계약입니다.</b> <code>transactional_query</code>는 이 projection이 RAP transactional query 시나리오에 쓰인다는 걸 드러내요. 그리고 기반 <code>ZI_Booking</code>을 서비스에 <b>직접 노출하지 말고</b> 소비 계층 <code>ZC_*</code>를 두면 변경에 강합니다.</div>
 </div>
-<script src="../_engine/luw-timeline.js" defer></script>
+
+<script src="../_engine/projection-contract-checker.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
 </body>
 </html>

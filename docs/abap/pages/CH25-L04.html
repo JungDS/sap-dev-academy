@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>다중 사용자 변경 충돌 시나리오 · Lock Object와 동시성 제어 · SAP Developer Academy</title>
+<title>오류 로그와 재처리 구조 · 실무 데이터 변경과 트랜잭션 제어 · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">Chapter 25 · Lock Object와 동시성 제어</span>
+  <span class="meta">Chapter 25 · 실무 데이터 변경과 트랜잭션 제어</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,71 +33,85 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 25 › Lesson 4</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">Lock Object와 동시성 제어</p>
-        <h1>다중 사용자 변경 충돌 시나리오</h1>
-        <p class="lhead__direction">다중 사용자 환경에서 발생하는 데이터 수정 손실 문제와 낙관/비관적 잠금.</p>
+        <p class="lhead__eyebrow">실무 데이터 변경과 트랜잭션 제어</p>
+        <h1>오류 로그와 재처리 구조</h1>
+        <p class="lhead__direction">변경이 실패했을 때 — 기록하고 다시 처리한다.</p>
         <div class="tags"><span class="tag tag--track">Track 2</span><span class="tag tag--ch">Chapter 25</span><span class="tag tag--ls">Lesson 4</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>잃어버린 갱신 (Lost Update)</h2>
-<p>앞 레슨까지 &quot;잠그면 막힌다&quot;를 봤다. 그럼 <strong>안 잠그면</strong> 무슨 일이 날까? A와 B가 같은 예매를
-각자 읽고, A가 저장한 <strong>직후</strong> B가 (자기가 읽었던 <strong>옛 값</strong> 기준으로) 저장하면 — <strong>A의 변경이
-조용히 사라진다</strong>. 이게 <strong>Lost Update</strong>(잃어버린 갱신)다.</p>
-<p>아래에서 전략을 바꿔 가며, 같은 순서의 작업이 어떻게 다른 결과를 내는지 직접 비교해 보라.</p>
-<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">Lost Update 시뮬 — 전략별 결과 비교</span><a class="embed__open" href="../../../embeds/abap/CH25-L04-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH25-L04-S01.html" loading="lazy" title="Lost Update 시뮬 — 전략별 결과 비교" style="height:470px"></iframe></figure>
-<p>이걸 막는 두 전략이 있다.</p>
-<table>
-<thead>
-<tr>
-<th>전략</th>
-<th>방식</th>
-<th>언제</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Pessimistic</strong>(비관)</td>
-<td>미리 ENQUEUE로 <strong>잠그고</strong> 작업</td>
-<td>충돌 잦음·편집 긺</td>
-</tr>
-<tr>
-<td><strong>Optimistic</strong>(낙관)</td>
-<td>안 잠그고, 저장 직전 <strong>변경 여부 확인</strong></td>
-<td>충돌 드묾·읽기 위주</td>
-</tr>
-</tbody></table>
-</section><section class="lblock"><h2>Optimistic — 타임스탬프 비교</h2>
-<p>읽을 때의 변경시각을 들고 있다가, 저장 직전 DB의 현재 변경시각과 <strong>비교</strong>한다. 다르면
-&quot;그 사이 누가 바꿨다&quot; → 거절·재조회.</p>
+<section class="lblock"><h2>실패는 반드시 남긴다</h2>
+<p>수백 건을 한 번에 처리하다 보면 <strong>일부만 실패</strong>하는 일이 흔하다(중복키, 참조 오류 등).
+이때 실패를 <strong>그냥 흘려보내면</strong> 나중에 &quot;무엇이·왜 빠졌는지&quot; 알 길이 없다. 그래서 매 변경
+뒤 <code>sy-subrc</code>를 확인하고, 실패한 건을 <strong>오류 테이블/로그에 모아 둔다</strong>.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
 4
-5</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> <span class="tok-kw">SINGLE</span> changed_at <span class="tok-kw">FROM</span> zbooking
-  <span class="tok-kw">WHERE</span> booking_id = @lv_id <span class="tok-kw">INTO</span> @<span class="tok-kw">DATA</span>(lv_now).
-<span class="tok-kw">IF</span> lv_now &lt;&gt; lv_read_at.            <span class="tok-com">" 읽은 뒤 누가 바꿈</span>
-  <span class="tok-kw">MESSAGE</span> <span class="tok-str">'데이터가 변경되었습니다. 다시 조회하세요'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'E'</span>.
-<span class="tok-kw">ENDIF</span>.</code></pre></div></div>
-<blockquote>
-<p><strong>핵심은 &quot;저장 직전 비교&quot;다.</strong> <code>changed_at</code> 컬럼이 <em>있다는 사실만</em>으로는 충돌을 막지 못한다 — 저장 직전에
-읽은 값과 현재 값을 비교해 다르면 거절해야 비로소 낙관적 잠금이다. 그리고 <code>changed_at = sy-uzeit</code>는 학습용
-예시일 뿐 — 날짜가 빠지고 같은 초에 두 변경이 들어오면 구분이 약하다. 운영에선 <strong>timestamp·version
-counter·ETag</strong> 같은 더 안정적인 변경표식을 쓴다. ABAP Cloud/RAP에서는 ETag와
-<a href="CH23-L04.html">Behavior Definition 기초</a>의 <code>lock master</code>가 이 문제를 체계적으로 다룬다(이 챕터는 classic 중심).</p>
-</blockquote>
+5
+6
+7
+8</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> lt_error <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> zbooking.
+
+<span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_booking <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(ls).
+  <span class="tok-kw">INSERT</span> zbooking <span class="tok-kw">FROM</span> @ls.
+  <span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.                <span class="tok-com">" 단건 중복키면 sy-subrc=4</span>
+    <span class="tok-kw">APPEND</span> ls <span class="tok-kw">TO</span> lt_error.        <span class="tok-com">" 실패 건만 따로 모은다</span>
+  <span class="tok-kw">ENDIF</span>.
+<span class="tok-kw">ENDLOOP</span>.</code></pre></div></div>
+<p>실패 행만 모으는 것으로는 부족하다. 나중에 추적하려면 <strong>키 + 사유</strong>까지 남겨야 한다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13</pre><pre class="abap-editor__code"><code><span class="tok-kw">TYPES</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ty_error,
+         booking_id <span class="tok-kw">TYPE</span> zbooking-booking_id,
+         reason     <span class="tok-kw">TYPE</span> string,
+       <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ty_error.
+<span class="tok-kw">DATA</span> lt_error <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ty_error.
+
+<span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_booking <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(ls).
+  <span class="tok-kw">INSERT</span> zbooking <span class="tok-kw">FROM</span> @ls.
+  <span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.
+    <span class="tok-kw">APPEND</span> <span class="tok-kw">VALUE</span> #( booking_id = ls-booking_id
+                    reason     = |<span class="tok-kw">INSERT</span> 실패: sy-subrc={ sy-subrc }| ) <span class="tok-kw">TO</span> lt_error.
+  <span class="tok-kw">ENDIF</span>.
+<span class="tok-kw">ENDLOOP</span>.</code></pre></div></div>
+</section><section class="lblock"><h2>처리 → 실패 수집 → 재처리, 직접 해 보기</h2>
+<p>아래에서 예매 5건을 일괄 처리하면 2건(중복키)이 실패한다. 실패가 <strong>오류 테이블</strong>에 어떻게
+모이고, 원인을 고친 뒤 <strong>실패분만</strong> 다시 처리하는 흐름을 따라가 보라.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">재처리 시뮬레이터 — 실패 수집과 재처리</span><a class="embed__open" href="../../../embeds/abap/CH25-L04-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH25-L04-S01.html" loading="lazy" title="재처리 시뮬레이터 — 실패 수집과 재처리" style="height:540px"></iframe></figure>
+</section><section class="lblock"><h2>재처리 패턴</h2>
+<ul>
+<li>실패 건만 오류 테이블/스풀에 남겨 두었다가, <strong>원인 해결 후 그것만</strong> 다시 실행한다
+(처음부터 전부 다시 돌리지 않는다 — 오류 테이블이 곧 <strong>재시작점</strong>).</li>
+<li><strong>멱등성</strong>(같은 걸 두 번 처리해도 결과가 안전)을 고려한다 — <code>INSERT</code> 대신
+<code>MODIFY</code>(upsert)나 사전 중복 체크. 재처리가 또 중복키로 깨지면 안 되니까.</li>
+<li>표준 <strong>Application Log</strong>(BAL, T-code <code>SLG1</code>)에 성공·경고·오류 메시지를 남기는 방식이
+현업에서 흔하다(정식 학습은 <a href="CH38-L05.html">Application Log와 오류 추적</a>).</li>
+</ul>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>무조건 비관적 잠금</strong> → 동시성↓. 충돌 빈도를 보고 전략 선택.</li>
-<li><strong>타임스탬프 미비</strong> → 낙관적 잠금은 <code>changed_at</code> 같은 <strong>변경 추적 컬럼</strong>이 있어야 한다.</li>
-<li><strong>읽은 값으로 덮어쓰기</strong> → 낙관 전략 없이 옛 값을 그대로 <code>UPDATE</code>하면 Lost Update.</li>
+<li><strong>실패 무시</strong> → 일부 실패를 모른 채 COMMIT. 항상 <code>sy-subrc</code> 점검(<a href="CH25-L02.html">COMMIT WORK / ROLLBACK WORK</a>의 COMMIT 판단과 직결).</li>
+<li><strong>로그 없음</strong> → 무엇이 실패했는지 못 찾는다. 최소한 <strong>키 + 사유</strong>는 기록.</li>
+<li><strong>재처리가 또 깨짐</strong> → 멱등성 미고려. <code>MODIFY</code>/중복 체크로 두 번 처리해도 안전하게.</li>
 </ul>
 </section><section class="lblock"><h2>정리</h2>
 <ul>
-<li><strong>Lost Update</strong> = 안 잠그고 옛 값 기준으로 저장 → 남의 변경이 사라짐.</li>
-<li><strong>Pessimistic</strong>(미리 잠금) vs <strong>Optimistic</strong>(저장 직전 <code>changed_at</code> 비교) — 충돌 빈도로 선택.</li>
-<li>낙관 전략은 <strong>변경 추적 컬럼</strong>이 전제.</li>
+<li>실패는 흘려보내지 말고 <strong>오류 테이블/로그</strong>에 남긴다(<code>sy-subrc</code> 점검).</li>
+<li>재처리는 <strong>실패분만</strong> — 오류 테이블이 재시작점.</li>
+<li><strong>멱등성</strong>(MODIFY·중복 체크)으로 재처리를 안전하게.</li>
 </ul>
 <hr>
-<p>충돌 전략을 이해했다. 마지막으로 잠금을 <button class="term" type="button" data-term="트랜잭션">트랜잭션</button>과 묶는 <strong>안전 변경 패턴</strong> → 다음 레슨.</p>
+<p>실패 처리를 다뤘다. 그런데 애초에 <strong>수십만 건</strong>을 한 번에 바꾸면 <button class="term" type="button" data-term="메모리">메모리</button>·잠금이 터진다.
+나눠서 처리하는 법 → 다음 레슨(Package 처리).</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

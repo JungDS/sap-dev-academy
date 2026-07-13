@@ -1,38 +1,51 @@
 <!DOCTYPE html>
-<!-- CH23-L02-S01 — 엔진: root-entity-picker · _autoheight. 콘텐츠=레슨 전용(RAP Root Entity 판정기, #C23 L02).
-     게이팅: define root view entity(CH22 define view entity의 RAP 확장). 설계 판단(트랜잭션 단위·key 안정성).
-     관통예제=예매(zbooking). child/composition은 이후. -->
-<html lang="ko" data-eng="root-entity-picker">
+<!-- CH23-L02-S01 — 엔진: projection-layer-lab · _autoheight. 콘텐츠=레슨 전용(Interface ZI_ vs Projection ZC_, #C22 L02).
+     config=window.PLL_CFG. 게이팅: CDS 정식(as projection on). 핵심=ZC_ 숨김은 비파괴·ZI_ 제거는 연쇄.
+     관통예제=콘서트. 이름 풀(R9) 무관(필드만). -->
+<html lang="ko" data-eng="projection-layer-lab">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>RAP Root Entity 판정기 · CH23-L02-S01</title>
+<title>Interface vs Projection 계층 분리 실험실 · CH23-L02-S01</title>
 <link rel="stylesheet" href="../_engine/_base.css" />
-<link rel="stylesheet" href="../_engine/root-entity-picker.css" />
+<link rel="stylesheet" href="../_engine/projection-layer-lab.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">Root Entity 판정기 <small>(트랜잭션 단위는 무엇인가)</small></p>
-  <p class="lead">RAP의 첫 설계 질문은 "이 앱의 <b>트랜잭션 단위</b>가 무엇인가"입니다. 후보를 골라 사용자 행동이 거기 모이는지, key가 인스턴스를 안정적으로 가리키는지 판정해 보세요. root가 모호하면 뒤 계층이 모두 흔들립니다.</p>
+  <p class="hd">Interface(ZI_) vs Projection(ZC_) <small>(계층 분리 실험실)</small></p>
+  <p class="lead">기반 <code>ZI_Concert</code>의 필드를 소비용 <code>ZC_ConcertList</code>가 골라 노출합니다. <b>ZC_에서 숨김</b>은 기반을 건드리지 않지만(비파괴), <b>ZI_에서 제거</b>하면 projection도 더는 노출할 수 없습니다(연쇄). 두 동작의 차이를 직접 만들어 보세요.</p>
 
-  <p class="rep-cap">① 업무 후보 — 어느 것이 트랜잭션의 중심인가?</p>
-  <div class="rep-cards" id="repCards"></div>
+  <table class="pll-tbl">
+    <thead><tr><th>필드</th><th class="zi">ZI_Concert · 기반</th><th class="zc">ZC_ConcertList · 소비</th></tr></thead>
+    <tbody id="pllRows"></tbody>
+  </table>
 
-  <p class="rep-cap">② 사용자 행동이 이 후보에 모이나?</p>
-  <div class="rep-acts" id="repActs"></div>
-  <p class="rep-keynote" id="repActNote"></p>
+  <div class="pll-cards">
+    <div class="pll-card zi"><div class="pll-card__hd">ZI_Concert (기반 — 안정)</div><div class="pll-card__b" id="pllZi"></div></div>
+    <div class="pll-card zc"><div class="pll-card__hd">ZC_ConcertList (소비 — 출구)</div><div class="pll-card__b" id="pllZc"></div></div>
+  </div>
 
-  <p class="rep-cap">③ key 후보 — 인스턴스를 안정적으로 가리키나?</p>
-  <div class="rep-keys" id="repKeys"></div>
-  <p class="rep-keynote" id="repKeyNote"></p>
+  <div id="pllDdl"></div>
+  <div id="pllSql"></div>
 
-  <div id="repCode"></div>
-  <div class="rep-verdict" id="repVerdict"></div>
+  <div class="pll-msg" id="pllMsg"></div>
 
-  <div class="note"><b>root는 DB 테이블이 아니라 업무 모델의 시작점입니다.</b> <code>zbooking</code>은 저장소, <code>ZI_Booking</code>은 RAP가 이해하는 예매라는 업무 객체의 뿌리예요. 보조 조회용 view나 value help까지 root로 만들면 구조가 흐려집니다.</div>
+  <div class="note"><b>역할을 섞지 않기.</b> <code>ZI_</code>는 재사용 기반(테이블과 가까운 안정 모델), <code>ZC_</code>는 화면·서비스용 출구입니다. UI 주석은 가능하면 <code>ZC_</code>나 Metadata Extension에 둡니다. <code>ZI_</code>·<code>ZC_</code>는 ABAP 문법이 아니라 <b>명명 관습</b>이에요.</div>
 </div>
 
-<script src="../_engine/root-entity-picker.js" defer></script>
+<script>
+window.PLL_CFG = {
+  base: 'ZI_Concert',
+  proj: 'ZC_ConcertList',
+  fields: [
+    { name: 'concert_id', key: true },
+    { name: 'artist' },
+    { name: 'venue' },
+    { name: 'capacity' }
+  ]
+};
+</script>
+<script src="../_engine/projection-layer-lab.js" defer></script>
 <script src="../_engine/_autoheight.js" defer></script>
 </body>
 </html>

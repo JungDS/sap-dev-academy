@@ -1,63 +1,42 @@
 <!DOCTYPE html>
-<!-- CH22-L04-S01 — 엔진: annotation-effect-preview · _autoheight. 콘텐츠=레슨 전용(CDS Annotation 효과 미리보기, #C22 L04).
-     config=window.AEP_CFG. 게이팅: CDS 정식(@EndUserText/@UI.lineItem/@Semantics). 자기참조 오류=v2 교정 핵심.
-     관통예제=콘서트. @UI.lineItem은 position 중심(Fiori Elements 상세는 후속). -->
-<html lang="ko" data-eng="annotation-effect-preview">
+<!-- CH22-L04-S01 — 엔진: cell-color-microscope · _autoheight. 콘텐츠=레슨 전용(Deep Structure 기반 Cell Color, CH22 L04).
+     config=window.CCM_CFG. 게이팅: CH22=셀 색(LVC_T_SCOL deep·ctab_fname). 셀 style은 다음 레슨·편집 본격은 CH31. -->
+<html lang="ko" data-eng="cell-color-microscope">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>CDS Annotation 효과 미리보기 · CH22-L04-S01</title>
+<title>Cell Color 현미경 · CH22-L04-S01</title>
 <link rel="stylesheet" href="../_engine/_base.css" />
-<link rel="stylesheet" href="../_engine/annotation-effect-preview.css" />
+<link rel="stylesheet" href="../_engine/cell-color-microscope.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">Annotation 효과 미리보기 <small>(metadata는 도구가 읽는다)</small></p>
-  <p class="lead">Annotation은 예쁜 주석이 아니라 <b>활성화된 metadata</b>입니다 — UI·분석 도구가 읽어요. 라벨을 켜고/끄고, 금액 의미의 짝을 맞춰 보고, 목록 순서를 바꿔 효과를 직접 확인하세요.</p>
+  <p class="hd">Cell Color 현미경 <small>(2단계: 색 계산 → 연결)</small></p>
+  <p class="lead">행 전체가 아니라 <b>매진 회차의 <code>SEATSOCC</code> 셀 하나</b>만 빨강으로 칠합니다. 핵심은 <b>2단계</b>예요 — <code>cellcolors</code>(<code>LVC_T_SCOL</code>)를 채운다고 끝이 아니라, <code>ls_layout-ctab_fname</code>으로 <b>연결</b>해야 ALV가 색을 읽습니다. 버튼을 순서대로 눌러 보세요.</p>
 
-  <div class="aep-panel">
-    <p class="aep-cap">① <code>@EndUserText.label</code> — 헤더에 업무 라벨</p>
-    <button class="aep-toggle" id="aepLabelBtn"></button>
-    <div id="aepLabelPrev"></div>
-    <p class="aep-cap" id="aepLabelNote" style="margin:8px 0 0;font-weight:600;color:var(--ink-soft);"></p>
-  </div>
+  <div class="ccm-act"></div>
 
-  <div class="aep-panel">
-    <p class="aep-cap">② <code>@Semantics.amount.currencyCode</code> — 금액은 어떤 통화 필드를 가리킬까?</p>
-    <div class="aep-seg" id="aepSemSeg">
-      <button data-t="currency_code">→ currency_code</button>
-      <button data-t="ticket_price">→ ticket_price (자기참조)</button>
-      <button data-t="none">지정 안 함</button>
-    </div>
-    <div id="aepSemCode"></div>
-    <div class="aep-verdict" id="aepSemVerdict"></div>
-  </div>
+  <p class="ccm-h">화면 (매진 행은 왼쪽 빨간 막대)</p>
+  <div id="ccmTable"></div>
+  <div id="ccmScol"></div>
+  <div id="ccmStatus"></div>
 
-  <div class="aep-panel">
-    <p class="aep-cap">③ <code>@UI.lineItem</code> position — 목록 컬럼 순서</p>
-    <div class="aep-list" id="aepOrderList"></div>
-    <div id="aepOrderPrev"></div>
-  </div>
-
-  <div class="note"><b>annotation은 바로 아래 필드에 붙습니다.</b> <code>@UI.lineItem</code>을 <code>artist</code> 위에 쓰면 <code>artist</code>에 적용돼요 — 사이에 빈 줄이나 다른 필드가 끼면 의도와 다른 필드에 붙을 수 있습니다. 그리고 annotation은 <b>SAP가 정의한 것</b>만 도구가 읽습니다(이름만 그럴듯한 임의 annotation은 무시).</div>
+  <div class="note"><b>flat ↔ deep 분리.</b> DB는 <b>flat table</b>로 조회하고(deep는 SQL work area 제한), ALV 표시용 internal table에 <code>cellcolors TYPE lvc_t_scol</code> 같은 deep component를 더해 색을 채웁니다. <code>CELLCOLORS</code>는 화면 컬럼으로 보이면 안 되니 field catalog에서 숨깁니다. 셀 색은 <b>위험·경고·확정</b> 같은 제한된 의미에만.</div>
 </div>
 
 <script>
-window.AEP_CFG = {
-  priceField: 'ticket_price',
-  currencyField: 'currency_code',
-  order: ['concert_id', 'artist', 'venue', 'capacity'],
-  labels: {
-    concert_id: '공연 ID',
-    artist: '아티스트',
-    venue: '공연장',
-    capacity: '정원',
-    ticket_price: '티켓가격',
-    currency_code: '통화'
-  }
+window.CCM_CFG = {
+  colorCol: 'SEATSOCC', badName: 'SEATS_OCC',
+  rows: [
+    { concert: 'C001', perf: '01', seatsocc: 100, capacity: 100 },
+    { concert: 'C001', perf: '02', seatsocc: 95,  capacity: 100 },
+    { concert: 'C002', perf: '01', seatsocc: 50,  capacity: 50 },
+    { concert: 'C002', perf: '02', seatsocc: 30,  capacity: 80 },
+    { concert: 'C003', perf: '01', seatsocc: 20,  capacity: 60 }
+  ]
 };
 </script>
-<script src="../_engine/annotation-effect-preview.js" defer></script>
+<script src="../_engine/cell-color-microscope.js" defer></script>
 <script src="../_engine/_autoheight.js" defer></script>
 </body>
 </html>

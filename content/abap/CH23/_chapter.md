@@ -2,10 +2,10 @@
 id: CH23
 track: TRACK-01
 order: 23
-title: "RAP / ABAP Cloud 입문"
-intro: "현대 SAP 표준 — 트랜잭션 앱을 RAP로 짓고 싶다."
-keywords: ["RAP","Behavior Definition","ABAP Cloud","Fiori"]
+title: "CDS View Entity 기초"
+intro: "DB 계층에서 모델링하고 재사용하고 싶다."
+keywords: ["CDS","View Entity","Association","Annotation"]
 difficulty: "고급"
 ---
 
-현대 SAP 표준 — 트랜잭션 앱을 RAP로 짓고 싶다.
+DB 계층에서 모델링하고 재사용하고 싶다.

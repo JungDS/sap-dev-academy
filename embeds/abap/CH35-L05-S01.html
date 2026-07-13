@@ -1,25 +1,41 @@
 <!DOCTYPE html>
-<!-- CH35-L05-S01 — 엔진: bal-log · _engine/_base.css. Application Log(BAL) 뷰어 — 타입 필터(SLG1풍). -->
-<html lang="ko" data-eng="bal-log">
+<!-- CH35-L05-S01 — 엔진: decision-tree(재사용) · _engine/_base.css. 대량 처리 전략 선택. -->
+<html lang="ko" data-eng="decision-tree">
 <head>
 <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Application Log · CH35-L05-S01</title>
-<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/bal-log.css" />
+<title>대량 처리 전략 · CH35-L05-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/decision-tree.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">Application Log (BAL) — 운영의 블랙박스</p>
-  <p class="lead">야간 정산 잡이 남긴 로그입니다. 타입으로 걸러 <b>무엇이·왜·언제</b> 실패했는지 추적하세요(<code>SLG1</code>처럼).</p>
-  <div class="filters">
-    <span class="lbl">타입:</span>
-    <button class="fb on" data-f="ALL" type="button">전체</button>
-    <button class="fb" data-f="E" type="button">✕ 오류 <span class="n"></span></button>
-    <button class="fb" data-f="W" type="button">⚠ 경고 <span class="n"></span></button>
-    <button class="fb" data-f="S" type="button">✓ 성공 <span class="n"></span></button>
-  </div>
-  <div class="panel"><div class="panel__h">SLG1 — ZBOOK_SETTLE 로그 <small id="logn"></small></div><div id="log"></div></div>
-  <div class="note">💡 <code>WRITE</code>·임시 로그 대신 <b>검색·보관·권한</b>이 되는 표준 로그(BAL)를 씁니다(<code>BAL_LOG_CREATE → MSG_ADD → DB_SAVE</code>). 메시지는 컨텍스트(키·단계)와 함께 — 단, <b>민감정보는 남기지 않습니다</b>. 오류만 걸러 재처리(CH24·CH30)로 연결.</div>
+  <p class="hd">대량 데이터, 어떻게 처리할까? — 결정 트리</p>
+  <p class="lead">규모가 커지면 "잘 짠 SELECT" 이상의 설계가 필요합니다. 상황에 답해 전략을 골라 보세요.</p>
+  <div class="path" id="path"></div>
+  <div class="card" id="card"></div>
+  <div class="note">💡 우선순위: <b>가공은 DB로 내리고(Pushdown)</b> → 그래도 건수가 크면 <b>패키지</b> → 독립 분할이 되면 <b>병렬</b>. "데이터를 ABAP으로 끌어와 LOOP" 대신 "DB에서 집계해 결과만"이 핵심.</div>
+  <script type="application/json" id="dt-cfg">
+  {
+    "start": "n1",
+    "nodes": {
+      "n1": { "q": "가공(집계·정렬·필터)을 <b>DB에서</b> 할 수 있나?", "opts": [
+        { "label": "예 — GROUP BY/집계로 DB가 처리 가능", "ic": "✅", "result": "pushdown" },
+        { "label": "아니오 — ABAP 로직이 꼭 필요", "ic": "➡", "to": "n2" } ] },
+      "n2": { "q": "한 번에 메모리에 담으면 <b>위험할 만큼</b> 건수가 많나?", "opts": [
+        { "label": "아니오 — 적당한 규모", "ic": "✅", "result": "simple" },
+        { "label": "예 — 수십만~수백만 건", "ic": "➡", "to": "n3" } ] },
+      "n3": { "q": "작업을 <b>독립 조각</b>으로 나눠 동시에 돌릴 수 있나?", "opts": [
+        { "label": "예 — 회사코드·기간 등으로 분할 가능", "ic": "✅", "result": "parallel" },
+        { "label": "순차로 충분", "ic": "➡", "result": "package" } ] }
+    },
+    "results": {
+      "pushdown": { "rank": "권장", "title": "Code Pushdown (CDS/AMDP/Modern SQL)", "desc": "집계·정렬을 DB(HANA)에서 수행하고 결과만 받는다. 데이터를 ABAP으로 끌어오지 않는 게 핵심(CH19·CH36)." },
+      "package": { "rank": "안정", "title": "패키지 처리 (CH25-L05)", "desc": "일정 건수마다 처리·COMMIT으로 메모리·잠금·로그를 관리한다. 재시작점도 함께." },
+      "parallel": { "rank": "고급", "title": "병렬 처리 (aRFC/병렬 프레임워크)", "desc": "작업을 나눠 동시에 — 빠르지만 복잡·자원 고려가 필요. 분할 기준이 명확할 때." },
+      "simple": { "rank": "단순", "title": "단순 처리(잘 짠 SELECT)", "desc": "규모가 크지 않으면 SELECT-in-LOOP만 피하고(L04) 단순하게. 과설계 금물." }
+    }
+  }
+  </script>
 </div>
-<script src="../_engine/bal-log.js" defer></script>
+<script src="../_engine/decision-tree.js" defer></script>
 </body>
 </html>

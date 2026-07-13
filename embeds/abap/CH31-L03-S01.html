@@ -1,25 +1,21 @@
 <!DOCTYPE html>
-<!-- CH31-L03-S01 — 엔진: idoc-status · _engine/_base.css. IDoc 상태코드 생애주기 + 오류·BD87 재처리. -->
-<html lang="ko" data-eng="idoc-status">
+<!-- CH31-L03-S01 — 엔진: editable-grid(mode=finished) · _engine/_base.css. 변경 확정 후 DATA_CHANGED_FINISHED 합계 재계산. -->
+<html lang="ko" data-eng="editable-grid">
 <head>
 <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>IDoc 상태·재처리 · CH31-L03-S01</title>
-<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/idoc-status.css" />
+<title>DATA_CHANGED_FINISHED · CH31-L03-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/editable-grid.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">IDoc 상태코드로 추적·재처리</p>
-  <p class="lead">전송하고 수신 처리해 보세요. <b>오류 주입</b>을 켜면 <code>51</code>(오류)에 멈추고, <b>BD87 재처리</b>로 <code>53</code>(성공)에 도달합니다.</p>
-  <div class="bar">
-    <button class="btn" id="send" type="button">▶ 전송(Outbound)</button>
-    <button class="btn" id="recv" type="button">▶ 수신 처리(Inbound)</button>
-    <label class="alert-toggle"><input type="checkbox" id="err" /> 오류 주입</label>
-    <button class="btn re" id="re" type="button" disabled>↻ BD87 재처리</button>
-    <button class="reset" id="reset" type="button">↺ 초기화</button>
-  </div>
-  <div class="track" id="track"></div>
-  <div class="note">💡 <code>WE02</code>/<code>WE05</code>로 IDoc 상태를 조회하고, 상태 <b>51</b>(데이터 오류)은 마스터/매핑을 고친 뒤 <code>BD87</code>로 재처리합니다(CH24-L04·CH30-L05와 같은 정신). 51 방치 = 업무 문서 누락 → 정기 모니터링.</div>
+  <p class="hd">변경이 끝난 뒤 — <code>DATA_CHANGED_FINISHED</code></p>
+  <p class="lead"><code>SEATS</code>를 고치고 <b>Enter나 다른 칸으로 이동</b>(확정)하면, 변경이 내부 테이블에 반영된 뒤 <b>총 좌석 합계</b>가 재계산됩니다. 검증용 <code>data_changed</code>와 달리 <b>후처리</b>용.</p>
+  <div class="bar"><span class="sum" id="sum">총 좌석: 0</span></div>
+  <div class="alv"><div class="alvbar">ZBOOKING — SEATS 편집 후 확정</div><table><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
+  <div class="log" id="log"><span class="ph">SEATS를 고치고 Enter(또는 칸 이동)하면 data_changed_finished가 합계를 재계산합니다.</span></div>
+  <div class="note">💡 <code>data_changed_finished</code>는 변경이 모두 itab에 반영된 뒤 1회 → 합계·잔여석 같은 <b>파생값 재계산</b>에 적합. 끝에 stable refresh(편집 위치 보존 갱신). 재계산이 또 변경을 부르지 않게 주의(무한 갱신).</div>
+  <script type="application/json" id="eg-cfg">{ "mode": "finished", "max": 10 }</script>
 </div>
-<script src="../_engine/idoc-status.js" defer></script>
+<script src="../_engine/editable-grid.js" defer></script>
 </body>
 </html>

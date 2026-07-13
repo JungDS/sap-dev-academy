@@ -1,51 +1,48 @@
 <!DOCTYPE html>
-<!-- CH22-L06-S01 — 엔진: dcl-auth-comparator · _autoheight. 콘텐츠=레슨 전용(CDS DCL 권한 필터 결과 비교기, #C22 L06).
-     config=window.DAC_CFG. 게이팅: CDS 정식(DCL define role·grant select·aspect pfcg_auth·@AccessControl). RAP instance auth은 CH23+.
-     관통예제=콘서트. DCL role≠PFCG 사용자 배정. 이름 풀(R9: 아이유·손흥민·정훈영·김연아·유재석). -->
-<html lang="ko" data-eng="dcl-auth-comparator">
+<!-- CH22-L06-S01 — 엔진: module-choice-cards (재사용, embeds/_engine/module-choice-cards.{js,css}) · _autoheight.
+     체험: 색 단위 선택 퀴즈 — 상황을 행 색/컬럼 색/셀 색/색 안 쓰기 중 하나로 분류 → 정답·이유. 데이터=window.MCC_CFG.
+     게이팅: CH22 표시 제어(info_fname 행·emphasize 컬럼·ctab_fname 셀) 판단만 · 새 문법 도입 없음. -->
+<html lang="ko" data-eng="module-choice-cards">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>DCL 권한 필터 결과 비교기 · CH22-L06-S01</title>
+<title>색 단위 선택 퀴즈 · CH22-L06-S01</title>
 <link rel="stylesheet" href="../_engine/_base.css" />
-<link rel="stylesheet" href="../_engine/dcl-auth-comparator.css" />
+<link rel="stylesheet" href="../_engine/module-choice-cards.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">DCL 권한 필터 결과 비교기 <small>(같은 코드, 다른 결과)</small></p>
-  <p class="lead">사용자를 바꾸고 <code>@AccessControl</code>을 <code>#CHECK</code>↔<code>#NOT_REQUIRED</code>로 토글해 보세요. <b>같은 <code>SELECT FROM ZI_Concert</code></b>인데 권한(PFCG VENUE)에 따라 보이는 행이 달라집니다. <code>#NOT_REQUIRED</code>면 권한 밖 venue까지 노출되는 걸 직접 확인하세요.</p>
+  <p class="hd">색 단위 선택 퀴즈 <small>(행 · 컬럼 · 셀)</small></p>
+  <p class="lead">행·컬럼·셀 색은 우열이 아니라 <b>목적이 다릅니다.</b> "행 전체 상태인가? 늘 중요한 컬럼인가? 조건부 한 칸인가?"를 먼저 묻고 고르세요. 각 상황에 가장 알맞은 단위를 분류해 보세요.</p>
 
-  <div class="dac-grp"><span class="dac-glbl">사용자</span><span id="dacUsers"></span><span class="dac-pfcg" id="dacPfcg"></span></div>
-  <div class="dac-grp"><span class="dac-glbl">접근 제어</span><button class="dac-mode" id="dacMode"></button></div>
+  <div class="scorebar">
+    <span class="score" id="score">정답 0 / 5</span>
+    <button class="reset" id="reset" type="button">다시</button>
+  </div>
 
-  <pre class="dac-code" id="dacDcl"></pre>
-  <pre class="dac-code" id="dacSql"></pre>
+  <div class="cards" id="cards"></div>
 
-  <div class="dac-result"><div class="dac-result__hd" id="dacResultHd"></div><div id="dacResult"></div></div>
-
-  <div class="dac-verdict" id="dacVerdict"></div>
-
-  <div class="note"><b>DCL role ≠ 사용자에게 role 부여.</b> <code>define role</code>은 CDS 접근 규칙이고, <code>aspect pfcg_auth</code>는 기존 PFCG 권한 객체의 값을 조건으로 <b>참조</b>할 뿐입니다. 사용자에게 권한을 주는 작업(SU01/PFCG)은 별도 보안 설정이에요. 그리고 권한은 UI에서만 막으면 안 됩니다 — 모델을 직접 읽는 다른 소비처가 우회할 수 있으니까요.</div>
+  <div class="note"><b>고르는 기준.</b> 행 전체 상태 → <code>info_fname</code>(행 색) · 늘 중요한 컬럼 → fieldcat <code>emphasize</code>(컬럼 색) · 행마다 달라지는 한 칸 → <code>ctab_fname</code>+<code>LVC_T_SCOL</code>(셀 색) · 다 정상이면 색을 아끼기(남용 금지). 색은 의미가 일관돼야 하고, 색만으로 전달하지 말고 텍스트·아이콘을 함께.</div>
 </div>
 
 <script>
-window.DAC_CFG = {
-  entity: 'ZI_Concert',
-  users: [
-    { id: 'SEOUL_USER', auth: ['SEOUL'] },
-    { id: 'BUSAN_USER', auth: ['BUSAN'] },
-    { id: 'NO_AUTH_USER', auth: [] }
+window.MCC_CFG = {
+  choices: [
+    { key: 'row',  label: '행 색 (info_fname)' },
+    { key: 'col',  label: '컬럼 색 (emphasize)' },
+    { key: 'cell', label: '셀 색 (ctab_fname)' },
+    { key: 'none', label: '색 안 쓰기' }
   ],
-  concerts: [
-    { id: 'C001', artist: '아이유',  venue: 'SEOUL' },
-    { id: 'C002', artist: '손흥민',  venue: 'BUSAN' },
-    { id: 'C003', artist: '정훈영',  venue: 'SEOUL' },
-    { id: 'C004', artist: '김연아',  venue: 'BUSAN' },
-    { id: 'C005', artist: '유재석',  venue: 'JEJU' }
+  cards: [
+    { q: '회차 전체가 취소됐다 — 줄 전체가 무효 상태다.', ans: 'row', why: '행 전체가 같은 의미(취소)이니 info_fname으로 줄 색을 줍니다.' },
+    { q: '잔여석이 3석뿐인 위험한 칸만 눈에 띄게 하고 싶다.', ans: 'cell', why: '행마다 달라지는 한 칸 조건이라 ctab_fname+LVC_T_SCOL(셀 색)이 가장 정확합니다.' },
+    { q: '예매자 이름 컬럼은 업무상 늘 중요해 항상 강조한다.', ans: 'col', why: '특정 컬럼이 항상 중요하니 field catalog emphasize(컬럼 색)가 맞습니다.' },
+    { q: '정원 초과 오류가 난 회차 — 그 줄 전체가 문제다.', ans: 'row', why: '줄 전체가 오류 상태이므로 행 색(info_fname). 셀 색은 과합니다.' },
+    { q: '모든 수치가 정상인 일반 회차들.', ans: 'none', why: '다 칠하면 강조가 무의미해집니다. 정상은 색을 아끼고, 정말 중요한 것만 칠합니다.' }
   ]
 };
 </script>
-<script src="../_engine/dcl-auth-comparator.js" defer></script>
+<script src="../_engine/module-choice-cards.js" defer></script>
 <script src="../_engine/_autoheight.js" defer></script>
 </body>
 </html>

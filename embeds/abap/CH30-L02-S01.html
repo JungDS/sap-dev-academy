@@ -1,29 +1,21 @@
 <!DOCTYPE html>
-<!-- CH30-L02-S01 — 엔진: rfc-call · _engine/_base.css. RFC 원격 호출 시나리오. -->
-<html lang="ko" data-eng="rfc-call">
+<!-- CH30-L02-S01 — 엔진: alv-events(mode=hotspot) · _engine/_base.css. concert_id 링크 셀 → hotspot_click. -->
+<html lang="ko" data-eng="alv-events">
 <head>
 <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>RFC 호출 · CH30-L02-S01</title>
-<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/rfc-call.css" />
+<title>Hotspot Click · CH30-L02-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/alv-events.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">RFC — 다른 시스템의 함수를 부른다</p>
-  <p class="lead">시나리오를 고르고 <b>원격 호출</b>을 눌러 보세요. 원격 호출엔 <code>DESTINATION</code>(SM59 연결)이 필요하고, 통신 실패는 예외로 대비합니다.</p>
-  <div class="flow">
-    <div class="sys"><div class="t">호출 측(로컬)</div><div class="nm">내 프로그램</div></div>
-    <div class="conn" id="conn"><div class="line">⇄</div>SM59<br>'TARGET_SYS'</div>
-    <div class="sys remote"><div class="t">대상(원격)</div><div class="nm">Z_GET_BOOKINGS</div></div>
-  </div>
-  <div class="bar">
-    <button class="sc on" data-s="ok" type="button">정상 호출</button>
-    <button class="sc" data-s="nodest" type="button">DESTINATION 누락</button>
-    <button class="sc" data-s="commfail" type="button">통신 실패</button>
-    <button class="run" id="run" type="button">▶ 원격 호출</button>
-  </div>
-  <div class="rfc-result" id="result"><span style="color:var(--soon);font-style:italic">▶ 원격 호출을 눌러 결과를 확인하세요.</span></div>
-  <div class="note">💡 SE37에서 함수를 <b>Remote-Enabled</b>로 만들고, 호출 측은 <code>DESTINATION</code>(SM59 등록)으로 대상을 지정합니다. <code>communication_failure</code>·<code>system_failure</code> 뒤 <code>MESSAGE lv_msg</code>로 실패 원인을 받습니다. 외부(Java·.NET)도 RFC로 ABAP 함수를 부릅니다.</div>
+  <p class="hd">셀을 링크처럼 — <code>hotspot_click</code></p>
+  <p class="lead"><code>concert_id</code> 컬럼이 <b>밑줄 링크</b>로 보입니다. <b>한 번 클릭</b>하면 <code>on_hotspot_click</code>이 실행돼 공연 상세로 보냅니다(더블클릭과 달리 단일 클릭).</p>
+  <div class="alv"><div class="alvbar" id="bar"></div><table><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
+  <p class="hint">💡 파란 밑줄 <b>concert_id</b>를 한 번 클릭해 보세요 ↑</p>
+  <div class="log" id="log"><span class="ph">링크 셀을 클릭하면 이벤트가 여기 찍힙니다.</span></div>
+  <div class="note">💡 fieldcat에서 해당 컬럼의 <code>hotspot = abap_true</code>로 링크를 만듭니다. 핸들러는 <code>e_row_id</code>·<code>e_column_id</code>를 받습니다.</div>
+  <script type="application/json" id="alv-cfg">{ "mode": "hotspot" }</script>
 </div>
-<script src="../_engine/rfc-call.js" defer></script>
+<script src="../_engine/alv-events.js" defer></script>
 </body>
 </html>

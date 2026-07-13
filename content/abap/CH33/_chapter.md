@@ -2,10 +2,10 @@
 id: CH33
 track: TRACK-02
 order: 33
-title: "AMDP / ADBC / Pushdown"
-intro: "DB 가까이에서 연산을 밀어넣어 가속하고 싶다."
-keywords: ["AMDP","ADBC","Code Pushdown","HANA"]
+title: "인터페이스 실무: BAPI/RFC/BDC/File"
+intro: "외부 시스템과 데이터를 주고받아야 한다."
+keywords: ["BAPI","RFC","BDC","File","Excel"]
 difficulty: "고급"
 ---
 
-DB 가까이에서 연산을 밀어넣어 가속하고 싶다.
+외부 시스템과 데이터를 주고받아야 한다.

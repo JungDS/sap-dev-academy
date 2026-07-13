@@ -2,10 +2,10 @@
 id: CH26
 track: TRACK-02
 order: 26
-title: "OO ABAP 고급 설계와 패턴"
-intro: "규모가 커진다 — OO 설계 패턴으로 다스리고 싶다."
-keywords: ["디자인 패턴","Factory","Singleton","의존성"]
-difficulty: "고급"
+title: "Lock Object와 동시성 제어"
+intro: "여러 사용자가 동시에 같은 데이터를 건드린다 — 잠금이 필요하다."
+keywords: ["Lock Object","ENQUEUE","DEQUEUE"]
+difficulty: "중급"
 ---
 
-규모가 커진다 — OO 설계 패턴으로 다스리고 싶다.
+여러 사용자가 동시에 같은 데이터를 건드린다 — 잠금이 필요하다.

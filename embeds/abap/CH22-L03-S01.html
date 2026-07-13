@@ -1,42 +1,44 @@
 <!DOCTYPE html>
-<!-- CH22-L03-S01 — 엔진: relationship-map (CSS-only) + _autoheight. 콘텐츠=레슨 전용(CDS Association, #C22).
-     게이팅: CDS·modern 허용. 관통예제(공연→회차→예매) association 관계도. -->
-<html lang="ko" data-eng="relationship-map">
+<!-- CH22-L03-S01 — 엔진: fieldcat-builder · _autoheight. 콘텐츠=레슨 전용(Grid ALV Column 제어 심화 field catalog, CH22 L03).
+     config=window.FCB_CFG. 게이팅: CH22=Grid ALV 표시 제어(LVC_T_FCAT no_out/do_sum/just/key). 편집(edit) 본격은 CH31·이벤트 CH30. -->
+<html lang="ko" data-eng="fieldcat-builder">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>CDS Association 관계도 · CH22-L03-S01</title>
+<title>Field Catalog 조립대 · CH22-L03-S01</title>
 <link rel="stylesheet" href="../_engine/_base.css" />
-<link rel="stylesheet" href="../_engine/relationship-map.css" />
+<link rel="stylesheet" href="../_engine/fieldcat-builder.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">공연 – 회차 – 예매 <small>(CDS Association)</small></p>
-  <p class="lead">JOIN을 매번 쓰는 대신, 뷰 사이 <b>관계(Association)</b>를 선언해 두고 <code>_이름</code> 경로로 따라갑니다. <code>association [카디널리티] to 대상 as _이름 on 조건</code> — 선언 후 <code>{ }</code>에 노출하면 소비 측에서 따라갈 수 있습니다.</p>
+  <p class="hd">Field Catalog 조립대 <small>(표시 지시서 → 화면)</small></p>
+  <p class="lead"><code>LVC_T_FCAT</code>는 DB 구조가 아니라 <b>ALV에게 주는 화면 표시 지시서</b>예요. 버튼을 누르면 <b>field catalog 행이 먼저 바뀌고</b>, 그 지시대로 아래 화면이 구성됩니다. <code>no_out</code>(숨김)·<code>do_sum</code>(합계)·<code>just</code>(정렬)·<code>key</code>(고정 강조)를 만져 보세요.</p>
 
-  <div class="relmap-card">
-    <p class="relmap-card__title">ZI_Concert 를 축으로 한 association 경로</p>
-    <div class="relmap">
-      <div class="relmap__row">
-        <div class="relmap__node key"><strong>ZI_Concert</strong><code>공연</code></div>
-        <div class="relmap__rel">_Perf [0..*]<br>on concert_id</div>
-        <div class="relmap__node"><strong>ZI_Perf</strong><code>회차</code></div>
-      </div>
-      <div class="relmap__row">
-        <div class="relmap__node key"><strong>ZI_Perf</strong><code>회차</code></div>
-        <div class="relmap__rel">_Booking [0..*]<br>on perf_no</div>
-        <div class="relmap__node"><strong>ZI_Booking</strong><code>예매</code></div>
-      </div>
-      <div class="relmap__row">
-        <div class="relmap__node key"><strong>ZI_Booking</strong><code>예매</code></div>
-        <div class="relmap__rel">_Concert [1..1]<br>역방향 경로</div>
-        <div class="relmap__node"><strong>ZI_Concert</strong><code>공연</code></div>
-      </div>
-    </div>
-  </div>
+  <div class="fcb-act"></div>
 
-  <div class="note"><b>관계를 경로로</b> — <code>ZI_Concert</code>에서 <code>_Perf</code>로 회차를, 다시 <code>_Booking</code>으로 예매를 따라갑니다(예: <code>_Perf._Booking</code>). 선언만 하고 <code>{ }</code>에 <b>노출하지 않으면</b> 소비 측에서 못 따라갑니다. <code>on</code> 조건은 <code>$projection.필드 = _대상.필드</code>로 키를 정확히 잇습니다.</div>
+  <p class="fcb-h">field catalog (lt_fcat) — 컬럼별 표시 규칙</p>
+  <div id="fcbCatalog"></div>
+  <p class="fcb-h">화면 (그 지시대로 구성)</p>
+  <div id="fcbPreview"></div>
+  <div id="fcbStatus"></div>
+
+  <div class="note"><b>카탈로그를 바꿔도 DB·데이터는 그대로.</b> <code>no_out</code>으로 숨겨도 내부 테이블엔 값이 남아 있고, <code>do_sum</code>을 켜도 DB에 합계 행이 생기지 않습니다. 또 숨김은 <b>권한 제어가 아니며</b>(variant로 다시 보일 수 있음), <code>edit</code>로 입력 모양을 줘도 실제 입력·검증·저장은 이후 편집 챕터의 주제입니다.</div>
 </div>
+
+<script>
+window.FCB_CFG = {
+  cols: [
+    { f: 'MANDT', numeric: true }, { f: 'CONCERT_ID', numeric: false }, { f: 'PERF_NO', numeric: false },
+    { f: 'SEATS', numeric: true }, { f: 'STATUS', numeric: false }
+  ],
+  rows: [
+    { MANDT: '100', CONCERT_ID: 'C001', PERF_NO: '01', SEATS: 40, STATUS: 'A' },
+    { MANDT: '100', CONCERT_ID: 'C001', PERF_NO: '02', SEATS: 50, STATUS: 'F' },
+    { MANDT: '100', CONCERT_ID: 'C002', PERF_NO: '01', SEATS: 30, STATUS: 'A' }
+  ]
+};
+</script>
+<script src="../_engine/fieldcat-builder.js" defer></script>
 <script src="../_engine/_autoheight.js" defer></script>
 </body>
 </html>

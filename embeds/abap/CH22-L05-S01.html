@@ -1,50 +1,41 @@
 <!DOCTYPE html>
-<!-- CH22-L05-S01 — 엔진: metadata-extension-lab · _autoheight. 콘텐츠=레슨 전용(Metadata Extension 분리 실험실, #C22 L05).
-     config=window.MXL_CFG. 게이팅: CDS 정식(@Metadata.allowExtensions·annotate entity·@Metadata.layer). DDLX 세미콜론 vs DDL 쉼표.
-     관통예제=콘서트. 고객별 layer 충돌 운영전략은 후속. -->
-<html lang="ko" data-eng="metadata-extension-lab">
+<!-- CH22-L05-S01 — 엔진: cell-style-board · _autoheight. 콘텐츠=레슨 전용(Deep Structure 기반 Cell Style, CH22 L05).
+     config=window.CSB_CFG. 게이팅: CH22=셀 스타일 표시(LVC_T_STYL deep·stylefname·mc_style_disabled/enabled/button). 입력·검증·클릭 처리는 CH30/CH31. -->
+<html lang="ko" data-eng="cell-style-board">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Metadata Extension 분리 실험실 · CH22-L05-S01</title>
+<title>Cell Style 스위치보드 · CH22-L05-S01</title>
 <link rel="stylesheet" href="../_engine/_base.css" />
-<link rel="stylesheet" href="../_engine/metadata-extension-lab.css" />
+<link rel="stylesheet" href="../_engine/cell-style-board.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">본문(DDL) ↔ 메타데이터(DDLX) 분리 실험실 <small>(Metadata Extension)</small></p>
-  <p class="lead">UI 주석을 본문 <code>ZC_Concert</code>에 둘지, 별도 <b>Metadata Extension(DDLX)</b>으로 뺄지 토글해 보세요. 대상 entity가 <code>@Metadata.allowExtensions</code>를 허용해야 붙고, DDLX 블록은 요소 뒤에 <b>세미콜론(;)</b>을 씁니다. 두 파일이 어떻게 나뉘는지 보세요.</p>
+  <p class="hd">Cell Style 스위치보드 <small>(비활성 · 편집 · 버튼)</small></p>
+  <p class="lead">셀에 <b>색</b>이 아니라 <b>모양·동작</b>(비활성·편집 가능·버튼)을 줍니다. 색과 똑같이 deep 방식(<code>LVC_T_STYL</code>)이지만 layout 속성은 <code>stylefname</code>이에요. <b>① 스타일 적용 → ② stylefname 연결</b> 순서로 눌러 보고, 버튼 셀도 눌러 보세요.</p>
 
-  <div class="mxl-ctrl">
-    <span class="mxl-glbl">설정</span>
-    <button class="mxl-toggle" id="mxlLoc"></button>
-    <button class="mxl-toggle" id="mxlAllow"></button>
-    <button class="mxl-toggle" id="mxlSep"></button>
-  </div>
+  <div class="csb-act"></div>
 
-  <div class="mxl-files">
-    <div class="mxl-file ddl"><div class="mxl-file__hd"><span>DDL Source — ZC_Concert</span><span class="mxl-file__tag">데이터 구조</span></div><div id="mxlDdl"></div></div>
-    <div class="mxl-file ddlx"><div class="mxl-file__hd"><span>Metadata Extension (DDLX)</span><span class="mxl-file__tag">UI 주석</span></div><div id="mxlDdlx"></div></div>
-  </div>
+  <p class="csb-h">화면 (SEATSOCC 셀 모양)</p>
+  <div id="csbTable"></div>
+  <div id="csbStyl"></div>
+  <div id="csbStatus"></div>
 
-  <div class="mxl-status" id="mxlStatus"></div>
-
-  <div class="note"><b>Metadata Extension은 필드를 추가하는 도구가 아닙니다.</b> 기존 CDS entity에 <b>annotation만</b> 별도 source로 붙여요. 그래서 <code>annotate entity … with</code>이고, select source나 필드를 바꾸지 않습니다. <code>@Metadata.layer</code>는 여러 extension이 있을 때 평가 우선순위에 쓰입니다(고객별 덮어쓰기 전략은 이후 단계).</div>
+  <div class="note"><b>색 vs 스타일.</b> 색은 <code>ctab_fname</code>+<code>LVC_T_SCOL</code>(컬럼명 필드 <code>fname</code>), 모양은 <code>stylefname</code>+<code>LVC_T_STYL</code>(컬럼명 필드 <code>fieldname</code>) — 비슷해도 구조가 다릅니다. 또 비활성처럼 <b>보여도</b> 저장 전엔 서버 로직에서 반드시 검증해야 합니다(보이기 ≠ 검증).</div>
 </div>
 
 <script>
-window.MXL_CFG = {
-  entity: 'ZC_Concert',
-  base: 'ZI_Concert',
-  fields: [
-    { name: 'concert_id', key: true, pos: 10 },
-    { name: 'artist', pos: 20 },
-    { name: 'venue',  pos: 30 },
-    { name: 'capacity', pos: 40 }
+window.CSB_CFG = {
+  styleCol: 'SEATSOCC',
+  rows: [
+    { concert: 'C001', perf: '01', seatsocc: 40,  style: '',         label: '정상' },
+    { concert: 'C001', perf: '02', seatsocc: 100, style: 'disabled', label: '매진 → 비활성' },
+    { concert: 'C002', perf: '01', seatsocc: 30,  style: 'enabled',  label: '관리자 수정 가능' },
+    { concert: 'C002', perf: '02', seatsocc: 60,  style: 'button',   label: '상세 보기 버튼' }
   ]
 };
 </script>
-<script src="../_engine/metadata-extension-lab.js" defer></script>
+<script src="../_engine/cell-style-board.js" defer></script>
 <script src="../_engine/_autoheight.js" defer></script>
 </body>
 </html>

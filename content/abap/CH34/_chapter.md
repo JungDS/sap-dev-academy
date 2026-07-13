@@ -2,10 +2,10 @@
 id: CH34
 track: TRACK-02
 order: 34
-title: "Forms / Output / PDF"
-intro: "출력 양식(PDF·폼)을 만들어야 한다."
-keywords: ["SmartForms","Adobe Form","SAPscript","Output"]
-difficulty: "중급"
+title: "IDoc / ALE / Gateway"
+intro: "표준 메시지(IDoc)·게이트웨이로 시스템을 연계하고 싶다."
+keywords: ["IDoc","ALE","Gateway","OData"]
+difficulty: "고급"
 ---
 
-출력 양식(PDF·폼)을 만들어야 한다.
+표준 메시지(IDoc)·게이트웨이로 시스템을 연계하고 싶다.

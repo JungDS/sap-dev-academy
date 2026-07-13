@@ -2,10 +2,10 @@
 id: CH22
 track: TRACK-01
 order: 22
-title: "CDS View Entity 기초"
-intro: "DB 계층에서 모델링하고 재사용하고 싶다."
-keywords: ["CDS","View Entity","Association","Annotation"]
+title: "SALV/Grid ALV 표시 제어 심화"
+intro: "ALV 표시를 색·셀 단위까지 세밀하게 제어하고 싶다."
+keywords: ["Cell Color","Hotspot","Event","Layout 심화"]
 difficulty: "고급"
 ---
 
-DB 계층에서 모델링하고 재사용하고 싶다.
+ALV 표시를 색·셀 단위까지 세밀하게 제어하고 싶다.

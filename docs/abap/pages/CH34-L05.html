@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>양식 오류 추적과 변경 대응 · Forms / Output / PDF · SAP Developer Academy</title>
+<title>OData V2 EntitySet 조회 구현 · IDoc / ALE / Gateway · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">Chapter 34 · Forms / Output / PDF</span>
+  <span class="meta">Chapter 34 · IDoc / ALE / Gateway</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,44 +33,63 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 34 › Lesson 5</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">Forms / Output / PDF</p>
-        <h1>양식 오류 추적과 변경 대응</h1>
-        <p class="lhead__direction">양식이 안 나올 때·바뀔 때 대응한다.</p>
-        <div class="tags"><span class="tag tag--track">Track 2</span><span class="tag tag--ch">Chapter 34</span><span class="tag tag--ls">Lesson 5</span><span class="tag tag--lv">중급</span></div>
+        <p class="lhead__eyebrow">IDoc / ALE / Gateway</p>
+        <h1>OData V2 EntitySet 조회 구현</h1>
+        <p class="lhead__direction">GET_ENTITYSET로 목록을 돌려준다.</p>
+        <div class="tags"><span class="tag tag--track">Track 2</span><span class="tag tag--ch">Chapter 34</span><span class="tag tag--ls">Lesson 5</span><span class="tag tag--lv">고급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>양식이 안 나온다</h2>
+<section class="lblock"><h2>목록 조회 — GET_ENTITYSET</h2>
+<p>DPC_EXT <button class="term" type="button" data-term="Class">클래스</button>에서 EntitySet의 <code>..._GET_ENTITYSET</code> <button class="term" type="button" data-term="Method">메서드</button>를 재정의해 데이터를 돌려준다.
+CH08의 SELECT가 여기 쓰인다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11</pre><pre class="abap-editor__code"><code><span class="tok-kw">METHOD</span> concertset_get_entityset.
+  <span class="tok-com">" URL 필터를 ABAP 조건으로</span>
+  <span class="tok-kw">DATA</span>(lt_filter) = io_tech_request_context-&gt;get_filter( )-&gt;get_filter_select_options( ).
+
+  <span class="tok-kw">SELECT</span> concert_id, artist, venue, capacity
+    <span class="tok-kw">FROM</span> zconcert
+    <span class="tok-kw">ORDER</span> <span class="tok-kw">BY</span> concert_id                       <span class="tok-com">" OFFSET엔 정렬이 필요</span>
+    <span class="tok-kw">INTO</span> <span class="tok-kw">CORRESPONDING</span> <span class="tok-kw">FIELDS</span> <span class="tok-kw">OF</span> <span class="tok-kw">TABLE</span> @et_entityset
+    <span class="tok-kw">UP</span> <span class="tok-kw">TO</span> @iv_top <span class="tok-kw">ROWS</span>
+    <span class="tok-kw">OFFSET</span> @iv_skip.         <span class="tok-com">" $top(개수) + $skip(건너뛰기) 페이징</span>
+<span class="tok-kw">ENDMETHOD</span>.</code></pre></div></div>
 <ul>
-<li><strong>데이터 누락</strong> → Form Interface에 넘긴 데이터부터 확인(디버거 CH04).</li>
-<li><strong>렌더링 실패</strong>(Adobe) → ADS 연결·로그 확인.</li>
-<li><strong>출력 결정 안 됨</strong> → Output Control 조건(L03) 점검.</li>
-<li><strong>인쇄 큐</strong> → <code>SP01</code>(스풀)에서 출력 상태 확인.</li>
+<li><code>et_entityset</code> — 돌려줄 목록(모델 구조).</li>
+<li><code>$filter</code>·<code>$top</code>·<code>$skip</code>·<code>$orderby</code> 같은 OData 쿼리를 ABAP 조건으로 매핑.</li>
+<li>단건은 <code>GET_ENTITY</code>.</li>
 </ul>
-</section><section class="lblock"><h2>변경 대응</h2>
-<ul>
-<li>양식 레이아웃·로고·법적 문구는 자주 바뀐다 → <strong>이송·버전 관리</strong>(CH01 이송요청).</li>
-<li>데이터 구조가 바뀌면 Form Interface도 함께 — 활성화·재생성.</li>
-<li>운영 양식 변경은 <strong>테스트 출력</strong>(샘플 데이터)으로 검증 후 적용.</li>
-</ul>
-<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">양식 운영 대응 판별 퀴즈</span><a class="embed__open" href="../../../embeds/abap/CH34-L05-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH34-L05-S01.html" loading="lazy" title="양식 운영 대응 판별 퀴즈" style="height:520px"></iframe></figure>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">OData 조회 — $filter·$top·$skip</span><a class="embed__open" href="../../../embeds/abap/CH34-L05-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH34-L05-S01.html" loading="lazy" title="OData 조회 — $filter·$top·$skip" style="height:460px"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>운영 직접 변경</strong> → 양식도 코드처럼 이송으로. 직접 수정 금지.</li>
-<li><strong>테스트 없이 배포</strong> → 깨진 양식이 고객에게 나간다. 샘플 출력 검증.</li>
+<li><strong>필터 무시</strong> → <code>$filter</code>를 안 받으면 전체 반환(성능·정합 문제). 매핑한다.</li>
+<li><strong>페이징 무시</strong> → 대량은 <code>$top/$skip</code>을 SELECT에 반영.</li>
 </ul>
+<blockquote>
+<p>신규 개발은 <strong>RAP(CH24)</strong> 이 OData를 더 적은 코드로 노출한다 — SEGW는 기존 자산 이해용.</p>
+</blockquote>
 </section><section class="lblock"><h2>🧩 도전 과제 (서브퀘스트)</h2>
 <blockquote>
-<p>선택 과제 — 예매 확인서(티켓)를 출력한다.</p>
+<p>선택 과제 — 예매 데이터를 표준 메시지·서비스로 연계한다.</p>
 </blockquote>
 <ol>
-<li>예매 확인서 양식을 <strong>Adobe Forms</strong>(또는 Smart Forms)로 만든다(공연·회차·좌석·예매자).</li>
-<li>생성된 <strong>PDF(XSTRING)</strong> 를 파일로 저장하거나 메일 첨부한다(BIN).</li>
-<li>(심화) 예매 확정 시 <strong>Output Control</strong>로 확인서가 자동 출력되게 결정 규칙을 설계한다.</li>
+<li>예매 확정 시 <strong>IDoc</strong>(Outbound)으로 외부에 통지하는 흐름을 설계한다(Basic Type·Partner Profile).</li>
+<li>수신 실패 IDoc(상태 51)을 <code>WE02</code>로 찾아 <code>BD87</code>로 재처리한다.</li>
+<li>(심화) 예매 목록을 <strong>SEGW OData</strong>(GET_ENTITYSET·$filter)로 노출한다 — 신규라면 RAP(CH24)이 더 적은 코드.</li>
 </ol>
-<p>힌트: L01~L02(Forms)·L03(Output Control)·L04(PDF 다운로드)·L05(오류/변경).</p>
+<p>힌트: L01<del>L03(IDoc/ALE)·L04</del>L05(Gateway/OData).</p>
 <hr>
-<p>출력물까지 다뤘다. 이제 마지막 — 개발물을 안전하게 운영으로 배포·관리(CH01-L06
-이송요청의 심화) → <strong>CH35</strong>.</p>
+<p>시스템 연계(IDoc·OData)를 다뤘다. 이제 느린 프로그램을 빠르게 — 성능 분석·튜닝 →
+<strong>CH35</strong>.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

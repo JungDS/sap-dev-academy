@@ -1,51 +1,48 @@
 <!DOCTYPE html>
-<!-- CH22-L02-S01 — 엔진: projection-layer-lab · _autoheight. 콘텐츠=레슨 전용(Interface ZI_ vs Projection ZC_, #C22 L02).
-     config=window.PLL_CFG. 게이팅: CDS 정식(as projection on). 핵심=ZC_ 숨김은 비파괴·ZI_ 제거는 연쇄.
-     관통예제=콘서트. 이름 풀(R9) 무관(필드만). -->
-<html lang="ko" data-eng="projection-layer-lab">
+<!-- CH22-L02-S01 — 엔진: salv-layout-lab · _autoheight. 콘텐츠=레슨 전용(SALV Layout/Variant 심화, CH22 L02).
+     config=window.SLL_CFG. 게이팅: CH22=SALV 표시 제어(display_settings·columns·layout). variant=표시설정 저장(데이터 변경 아님). -->
+<html lang="ko" data-eng="salv-layout-lab">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Interface vs Projection 계층 분리 실험실 · CH22-L02-S01</title>
+<title>Variant 저장 실험실 · CH22-L02-S01</title>
 <link rel="stylesheet" href="../_engine/_base.css" />
-<link rel="stylesheet" href="../_engine/projection-layer-lab.css" />
+<link rel="stylesheet" href="../_engine/salv-layout-lab.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">Interface(ZI_) vs Projection(ZC_) <small>(계층 분리 실험실)</small></p>
-  <p class="lead">기반 <code>ZI_Concert</code>의 필드를 소비용 <code>ZC_ConcertList</code>가 골라 노출합니다. <b>ZC_에서 숨김</b>은 기반을 건드리지 않지만(비파괴), <b>ZI_에서 제거</b>하면 projection도 더는 노출할 수 없습니다(연쇄). 두 동작의 차이를 직접 만들어 보세요.</p>
+  <p class="hd">SALV Layout 실험실 <small>(줄무늬·폭·컬럼 텍스트)</small></p>
+  <p class="lead">SALV의 표시 설정을 바꿔 보세요. <b>줄무늬</b>·<b>폭 최적화</b>(긴 <code>ARTIST</code>가 안 잘림)·<b>컬럼 텍스트</b>를 토글합니다. 특히 <code>long_text</code>만 바꾸면 헤더가 안 바뀔 수 있어요 — <b>세 텍스트를 함께</b> 맞춰야 합니다. 컬럼명을 틀리면 어떤 오류인지도 보세요.</p>
 
-  <table class="pll-tbl">
-    <thead><tr><th>필드</th><th class="zi">ZI_Concert · 기반</th><th class="zc">ZC_ConcertList · 소비</th></tr></thead>
-    <tbody id="pllRows"></tbody>
-  </table>
+  <div class="sll-ctrl"></div>
 
-  <div class="pll-cards">
-    <div class="pll-card zi"><div class="pll-card__hd">ZI_Concert (기반 — 안정)</div><div class="pll-card__b" id="pllZi"></div></div>
-    <div class="pll-card zc"><div class="pll-card__hd">ZC_ConcertList (소비 — 출구)</div><div class="pll-card__b" id="pllZc"></div></div>
-  </div>
+  <p class="sll-h">display( ) 전 설정 코드</p>
+  <div id="sllCode"></div>
+  <p class="sll-h">첫 화면</p>
+  <div id="sllTable"></div>
+  <div id="sllStatus"></div>
 
-  <div id="pllDdl"></div>
-  <div id="pllSql"></div>
-
-  <div class="pll-msg" id="pllMsg"></div>
-
-  <div class="note"><b>역할을 섞지 않기.</b> <code>ZI_</code>는 재사용 기반(테이블과 가까운 안정 모델), <code>ZC_</code>는 화면·서비스용 출구입니다. UI 주석은 가능하면 <code>ZC_</code>나 Metadata Extension에 둡니다. <code>ZI_</code>·<code>ZC_</code>는 ABAP 문법이 아니라 <b>명명 관습</b>이에요.</div>
+  <div class="note"><b>Variant = 사용자별 보기.</b> <code>get_layout( )->set_key( … report = sy-repid )</code>로 어느 리포트의 layout인지 식별하면, 사용자가 컬럼 순서·숨김·폭을 자기 보기로 저장할 수 있습니다. 단 <b>표시 설정만</b> 저장될 뿐 데이터는 안 바뀌고, 숨김은 권한 제어가 아닙니다(보안상 숨겨야 할 값은 애초에 조회하지 않기).</div>
 </div>
 
 <script>
-window.PLL_CFG = {
-  base: 'ZI_Concert',
-  proj: 'ZC_ConcertList',
-  fields: [
-    { name: 'concert_id', key: true },
-    { name: 'artist' },
-    { name: 'venue' },
-    { name: 'capacity' }
+window.SLL_CFG = {
+  capCol: 'CAPACITY', badCol: 'CAP', clipCol: 'ARTIST',
+  cols: [
+    { f: 'CONCERT_ID' }, { f: 'ARTIST' }, { f: 'PERF_DATE' },
+    { f: 'CAPACITY' }, { f: 'SEATSOCC' }, { f: 'STATUS' }
+  ],
+  rows: [
+    { CONCERT_ID: 'C001', ARTIST: '정훈영 Band',  PERF_DATE: '20260712', CAPACITY: 100, SEATSOCC: 40, STATUS: 'A' },
+    { CONCERT_ID: 'C002', ARTIST: 'ABAP Trio',   PERF_DATE: '20260705', CAPACITY: 50,  SEATSOCC: 50, STATUS: 'F' },
+    { CONCERT_ID: 'C003', ARTIST: 'UI5 Night',   PERF_DATE: '20260720', CAPACITY: 80,  SEATSOCC: 10, STATUS: 'A' },
+    { CONCERT_ID: 'C004', ARTIST: '손흥민 Live',  PERF_DATE: '20260705', CAPACITY: 100, SEATSOCC: 0,  STATUS: 'C' },
+    { CONCERT_ID: 'C005', ARTIST: '아이유 Concert', PERF_DATE: '20260712', CAPACITY: 120, SEATSOCC: 90, STATUS: 'A' },
+    { CONCERT_ID: 'C006', ARTIST: '차은우 Show',  PERF_DATE: '20260701', CAPACITY: 90,  SEATSOCC: 60, STATUS: 'A' }
   ]
 };
 </script>
-<script src="../_engine/projection-layer-lab.js" defer></script>
+<script src="../_engine/salv-layout-lab.js" defer></script>
 <script src="../_engine/_autoheight.js" defer></script>
 </body>
 </html>
