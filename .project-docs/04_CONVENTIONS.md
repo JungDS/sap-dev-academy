@@ -1,6 +1,6 @@
 # 04. CONVENTIONS — 규칙 단일 홈 · 이름 풀 · 입문자 작성법
 
-> 📅 최종수정: 2026-06-30 16:02 KST
+> 📅 최종수정: 2026-07-08 02:07 KST
 > 🎯 **이 문서가 규칙(R)의 단일 출처.** 01·05·06 등은 여기 ID를 참조한다(재진술 금지).
 > 🧭 **공통 원칙: 규칙은 형식을 강제하지 않는다 — 정직한 적합성이 우선.** 불편·시각요소·예고를 "칸을 채우려고" 인위적으로 만들지 말 것(맞는 곳에 맞는 것만).
 > 📖 파일을 쓰기/고치기 직전. 중요도 순(필수→높음→중), 안정 ID `Rn`(추가만·번호 재사용 금지) — R15·R16은 중요도상 높음/중에 배치(번호 비순차는 안정 ID 유지).
@@ -17,6 +17,7 @@
 - 용어 **첫 등장 1회** 인라인 한 줄 풀이(반복은 glossary 팝업). 예: "Internal Table(메모리에 잠깐 두는 표)". **단 "한 줄"은 *스쳐가는 부수 용어*의 노출 형식** — 그 용어가 *이번 레슨의 주제 개념*이면 한 줄로 끝내지 말고 R15 **L3**로 본문 전체가 풀이(필요성→정의→구조…).
 - **ABAP 고유 용어는 영어 원문**(직역 금지): Internal Table·Data Element… 풀이는 괄호로. [[abap-terms-english]]
 - 흐름: 왜 필요한가 → 무엇인가 → 어떻게 쓰나 → 실수/주의 → 정리. 압축 설명 금지.
+- **줄표(—) 절제** — 제목·캡션·라벨의 "주제 — 부제" 구분에만 허용. **본문 문장 안 부연은 마침표 분리/괄호/콜론으로**(줄표 과용 = 호흡 길어져 입문자 가독성↓, 사용자 확정 2026-07-03). [[em-dash-restraint]]
 - 시각화·체험 동반(길면 `details` 접기). 참고 구현: `sample/structure/beginner-lesson-template.html`. [[beginner-learning-page-style]]
 
 **R4 · 검증 후 완료** — 관찰 가능한 변경은 빌드/콘솔/동작을 실제 확인한 뒤에만 "완료" 보고. 수정 후 또 고치면 **바뀐 부분만** 다시 검증([07](07_BROWSER_TESTING.md)).
@@ -66,9 +67,12 @@
 - 레슨 `.md` **학습 경계(R15)**: `introduces`(이번에 L3 정식 도입할 개념)·`prereq`(전제 개념) = **리빌딩 시 필수**(게이팅 검증 근거) · `foreshadow`(L1 예고 허용)·`advanceUse`(L2 선행 사용 허용)·`prevRel`(이전 레슨과의 관계: `pain-solution`/`parallel`/`deepening`) = 선택. 빌드는 무시(메타 전용) — 리빌딩 때 경계·관계 선언 + 후속 정적 점검 근거.
 
 **R11 · 네이밍** — 챕터 폴더 = 챕터 ID(`CH01/`). 레슨 소스 = `<레슨ID>[-슬러그].md`. **생성물 HTML = `docs/abap/pages/<레슨ID>.html`**(슬러그 무관, 빌드 강제). 샘플 = `<카테고리>/<기능-케밥>.html`.
-- **ABAP 변수 접두어(스코프) ★** — Subroutine/Method(로컬 스코프) 도입 **전(=CH01～09)** 에는 모든 선언이 사실상 **전역**이다 → **`gv_`(스칼라)·`gs_`(Structure)·`gt_`(Internal Table)** 로 시작. 로컬 스코프(METHOD/FORM 안, **CH10 모듈화 기초↑**)에서 선언한 것만 `lv_`/`ls_`/`lt_`. 즉 g=global·l=local. **`it_`는 Header Line을 가진 Internal Table에만** (헤더라인 없는 일반 내부테이블은 `gt_`/`lt_`). [[abap-var-prefix-scope]]
+- **ABAP 변수 접두어(스코프) ★** — Subroutine/Method(로컬 스코프) 도입 **전(=CH01～09)** 에는 모든 선언이 사실상 **전역**이다 → **`gv_`(스칼라)·`gs_`(Structure)·`gt_`(Internal Table)** 로 시작. 로컬 스코프(METHOD/FORM 안, **CH10 모듈화 기초↑**)에서 선언한 것만 `lv_`/`ls_`/`lt_`. 즉 g=global·l=local. **`it_`는 Header Line을 가진 Internal Table에만** (헤더라인 없는 일반 내부테이블은 `gt_`/`lt_`). **Module Pool 화면필드에 묶인 전역 DATA도 `gv_`**(화면 요소명=변수명이라 Screen Painter 요소도 `GV_…`, `p_` 예외 없음 — 사용자 확정 2026-07-08). 단 **OK field는 프레임워크 관례명 `ok_code`/`save_ok` 유지**(스코프 접두어 미적용, `sy-ucomm`과 동류). [[abap-var-prefix-scope]]
+- **로컬 TYPES 이름 접두어** — 스칼라 `ty_` · **Structure 타입 `ts_`** · **Table Type `tt_`** (BC400 표준 교재 관례, 사용자 확정 2026-07-03. `ty_s_`/`ty_t_` 대안 대신 채택). 기존 `ty_` 구조체 타입은 챕터별 보강 패스에서 전환.
+- **PARAMETERS 접두어 = `pa_`** (표준 교재 관례 — 실무 축약 `p_`는 참고 언급만, 사용자 확정 2026-07-03). **SELECT-OPTIONS 접두어 = `so_`** (표준 관례 — 실무에선 `s_`로 줄여 쓰기도, `pa_`↔`p_`와 동형. 사용자 확정 2026-07-08). 이름은 8자 이내(`so_`+최대 5자).
 
 **R12 · glossary 패리티** — 본문에서 마킹한 모든 용어 키는 `reference/glossary.json`에 존재(미정의 0). 빌드 후 정적 점검.
+- **약어 용어는 팝업에 풀 스펠링 필수**(사용자 확정 2026-07-03) — DDIC(Data Dictionary)·BAPI(Business Application Programming Interface)처럼 줄임말 용어의 title 또는 desc에 원어 전체가 반드시 등장. 공식 확장이 없는 약칭(SALV 등)은 유래(클래스명 등)를 밝힌다.
 
 **R13 · 타임스탬프** — 손작성 `.md`(content·.project-docs) 최상단 `최종수정: YYYY-MM-DD HH:MM KST`. **사용자 확인용이라 무조건 유지** — `.githooks/pre-commit`이 스테이징된 `.md`에 자동 스탬프하므로 수동 갱신 불필요.
 

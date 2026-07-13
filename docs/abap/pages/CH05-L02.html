@@ -35,18 +35,18 @@
       <section class="lhead">
         <p class="lhead__eyebrow">Structure (Local · DDIC)</p>
         <h1>DDIC Structure</h1>
-        <p class="lhead__direction">구조체 모양도 전역으로 — SE11에서 DDIC Structure로 공유한다.</p>
+        <p class="lhead__direction">SE11에서 DDIC Structure를 만들어 Structure Type을 전역으로 공유한다.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 5</span><span class="tag tag--ls">Lesson 2</span><span class="tag tag--lv">초급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>구조도 전역으로</h2>
-<p>CH03에서 타입을 전역(Domain·<button class="term" type="button" data-term="Data Element">Data Element</button>)으로 올렸듯, <strong>구조체 모양</strong>도 전역으로
-올릴 수 있다. 여러 프로그램·화면·테이블이 같은 구조를 공유하게 하는 게
+<section class="lblock"><h2>Structure도 전역으로</h2>
+<p><a href="CH03-L01.html">Chapter 3</a>에서 타입을 전역(<button class="term" type="button" data-term="Domain">Domain</button>·<button class="term" type="button" data-term="Data Element">Data Element</button>)으로 올렸듯, <strong><button class="term" type="button" data-term="Structure">Structure</button> Type</strong>도 전역으로
+올릴 수 있다. 여러 프로그램·화면·테이블이 같은 Structure를 공유하게 하는 게
 <button class="term" type="button" data-term="DDIC">DDIC</button> Structure다.</p>
 </section><section class="lblock"><h2>SE11에서 Structure 만들기</h2>
-<p><code>SE11</code> → Data Type → <strong>Structure</strong> → <code>ZST_PERSON</code> → Create.</p>
+<p><code>SE11</code> → Data Type → <strong><button class="term" type="button" data-term="Structure">Structure</button></strong> → <code>ZST_PERSON</code> → Create.</p>
 <ul>
-<li><button class="term" type="button" data-term="컴포넌트">컴포넌트</button>(필드)를 추가하고, 각 필드 타입은 보통 <button class="term" type="button" data-term="Data Element">Data Element</button>로 준다
+<li><button class="term" type="button" data-term="Component">Component</button>(필드)를 추가하고, 각 필드 타입은 보통 <button class="term" type="button" data-term="Data Element">Data Element</button>로 준다
 (라벨·도움말까지 상속).</li>
 </ul>
 <table>
@@ -55,25 +55,39 @@
 <th>Component</th>
 <th>Typing</th>
 <th>예</th>
+<th>데이터 타입</th>
+<th>길이</th>
+<th>설명</th>
 </tr>
 </thead>
 <tbody><tr>
 <td>NAME</td>
 <td>Data Element</td>
 <td><code>ZDE_NAME</code></td>
+<td>CHAR</td>
+<td>20</td>
+<td>이름</td>
 </tr>
 <tr>
 <td>AGE</td>
 <td>Data Element</td>
 <td><code>ZDE_AGE</code></td>
+<td>NUMC</td>
+<td>3</td>
+<td>나이</td>
 </tr>
 <tr>
 <td>AMOUNT</td>
 <td>Data Element</td>
 <td><code>ZDE_AMOUNT</code></td>
+<td>DEC</td>
+<td>8 (소수 2)</td>
+<td>금액</td>
 </tr>
 </tbody></table>
-<p>활성화하면 전역 구조 타입이 된다.</p>
+<p>데이터 타입·길이는 Data Element가 참조하는 <button class="term" type="button" data-term="Domain">Domain</button>에서, 설명(라벨)은 Data
+Element에서 온다. <a href="CH03-L02.html">Chapter 3</a>의 계층이 여기서 그대로 재사용된다.</p>
+<p>활성화하면 전역 Structure Type이 된다.</p>
 </section><section class="lblock"><h2>프로그램에서 쓰기</h2>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
@@ -82,15 +96,21 @@
 
 gs_person-name = <span class="tok-str">'정훈영'</span>.
 <span class="tok-kw">WRITE</span> gs_person-name.</code></pre></div></div>
-<p>로컬 구조(<code>BEGIN OF</code>)와 <strong>쓰는 법은 똑같다</strong> — 차이는 &quot;정의가 어디 사느냐&quot;뿐.
-전역이라 여러 곳에서 같은 모양을 공유하고, 한 곳만 고치면 전부 반영된다.</p>
+<p>Local <button class="term" type="button" data-term="Structure">Structure</button>(<code>BEGIN OF</code>)와 <strong>쓰는 법은 똑같다</strong>. 차이는 <strong>어디에 생성했는가</strong>뿐이다.
+프로그램 내부에 생성(선언)하면 Local, ABAP Dictionary(SE11)에서 생성(정의)하면
+Global이다. 전역으로 정의해 두면 여러 프로그램이 같은 모양을 공유하고, 한 곳만
+고치면 전부 반영된다. 아래에서 그 차이를 직접 비교해 보자.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">어디에 생성했는가 — 프로그램 내부(Local) vs ABAP Dictionary(Global)</span><a class="embed__open" href="../../../embeds/abap/CH05-L02-S02.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH05-L02-S02.html" loading="lazy" title="어디에 생성했는가 — 프로그램 내부(Local) vs ABAP Dictionary(Global)" style="height:560px"></iframe></figure>
+<p><button class="term" type="button" data-term="Component">Component</button>를 <button class="term" type="button" data-term="Data Element">Data Element</button>로 준 덕에 <strong>라벨까지 얹혀 있는</strong> 모습을 트리로 확인해 보자.
+<code>gs_person-name</code>에 값을 넣는 대입도 눌러 볼 수 있다.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">ZST_PERSON 트리 — Component마다 Data Element(라벨 상속)</span><a class="embed__open" href="../../../embeds/abap/CH05-L02-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH05-L02-S01.html" loading="lazy" title="ZST_PERSON 트리 — Component마다 Data Element(라벨 상속)" style="height:480px"></iframe></figure>
 </section><section class="lblock"><h2>DDIC 타입으로 쓸 수 있는 것 — Domain만 빼고</h2>
-<p>변수나 <button class="term" type="button" data-term="컴포넌트">컴포넌트</button>의 타입으로 줄 수 있는 <button class="term" type="button" data-term="DDIC">DDIC</button> 객체는 여럿이다. 단 <strong>Domain은 직접 못 준다</strong>(CH03 — Domain은 <button class="term" type="button" data-term="Data Element">Data Element</button>를 통해서만).</p>
+<p>변수나 <button class="term" type="button" data-term="Component">Component</button>의 타입으로 줄 수 있는 <button class="term" type="button" data-term="DDIC">DDIC</button> 객체는 여럿이다. 단 <strong><button class="term" type="button" data-term="Domain">Domain</button>은 직접 못 준다</strong>(<a href="CH03-L02.html">Chapter 3</a>에서 봤듯 Domain은 <button class="term" type="button" data-term="Data Element">Data Element</button>를 통해서만).</p>
 <table>
 <thead>
 <tr>
 <th>DDIC 객체</th>
-<th>변수/컴포넌트 타입으로?</th>
+<th>변수/Component 타입으로?</th>
 <th>비고</th>
 </tr>
 </thead>
@@ -100,9 +120,9 @@ gs_person-name = <span class="tok-str">'정훈영'</span>.
 <td>가장 흔함(라벨·도움말 상속)</td>
 </tr>
 <tr>
-<td><strong>Structure</strong></td>
+<td><strong><button class="term" type="button" data-term="Structure">Structure</button></strong></td>
 <td>✅</td>
-<td>구조 안에 구조(중첩)</td>
+<td>Structure 안에 Structure(중첩)</td>
 </tr>
 <tr>
 <td><strong>Transparent Table</strong></td>
@@ -117,34 +137,40 @@ gs_person-name = <span class="tok-str">'정훈영'</span>.
 <tr>
 <td><strong>Table Type</strong></td>
 <td>✅</td>
-<td>내부 테이블 타입(→ CH06)</td>
+<td>내부 테이블 타입(→ 다음 챕터)</td>
 </tr>
 <tr>
 <td><strong>Domain</strong></td>
 <td>❌</td>
-<td>변수 타입 직접 불가 — DE 경유</td>
+<td>변수 타입 직접 불가(DE 경유)</td>
 </tr>
 </tbody></table>
 <ul>
-<li>컴포넌트에 Data Element 대신 <strong>다른 구조</strong>를 주면 <strong>중첩 구조</strong>가 된다(다음 레슨에서 INCLUDE·APPEND와 함께).</li>
+<li>Component에 Data Element 대신 <strong>다른 Structure</strong>를 주면 <strong>중첩 Structure</strong>가 된다(다음 레슨에서 INCLUDE·APPEND와 함께).</li>
 </ul>
 <blockquote>
-<p>💡 <strong>심화(지금은 가볍게)</strong> — 컴포넌트가 <strong>전부 문자</strong>(C·N 등)인 구조는, 통째로 한 문자 변수처럼 다룰 수도 있다(예: <code>year</code>·<code>month</code>·<code>day</code> 8자리 구조에 <code>sy-datum</code>을 통째로 대입). &quot;그런 트릭이 있다&quot; 정도만 알아 두자.</p>
+<p>💡 <strong>심화(지금은 가볍게)</strong> — Component가 <strong>전부 문자</strong>(C·N 등)인 Structure는, 통째로 한 문자 변수처럼 다룰 수도 있다(예: <code>year</code>·<code>month</code>·<code>day</code> 8자리 Structure에 <code>sy-datum</code>을 통째로 대입). &quot;그런 트릭이 있다&quot; 정도만 알아 두자.</p>
 </blockquote>
 </section><section class="lblock"><h2>언제 로컬, 언제 DDIC?</h2>
 <ul>
-<li>그 프로그램에서만 쓰는 임시 묶음 → <strong>로컬</strong>(<code>BEGIN OF</code>).</li>
-<li>여러 프로그램·테이블이 공유 → <strong><button class="term" type="button" data-term="DDIC">DDIC</button> Structure</strong>.</li>
-<li>(참고) 다음 챕터의 투명 테이블도 사실 이 구조 위에 행이 쌓이는 형태다.</li>
+<li>그 프로그램에서만 잠깐 쓰는 <strong>임시 묶음</strong> → 로컬(<code>BEGIN OF</code>).</li>
+<li><strong>그 외에는 전부 <button class="term" type="button" data-term="DDIC">DDIC</button> <button class="term" type="button" data-term="Structure">Structure</button>를 권장.</strong> 사용처가 워낙 다양해서 일일이 나눌
+필요가 없다. &quot;여럿이 공유할 때만&quot;으로 좁혀 생각하지 말자. 한 프로그램에서 한 번만
+쓰더라도 DDIC로 만드는 경우가 흔하다.</li>
 </ul>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>필드를 표준 타입으로 직접</strong> → 가능하지만 라벨·도움말을 잃는다. 가능하면 Data
-Element 참조.</li>
+<li><strong><button class="term" type="button" data-term="Component">Component</button>에 Built-in Type 직접 지정</strong> → SE11에서 Component 타입은 <button class="term" type="button" data-term="Data Element">Data Element</button>
+대신 <strong>Built-in Type</strong>(CHAR·NUMC 같은 <button class="term" type="button" data-term="DDIC">DDIC</button> 기본 타입을 직접 지정)으로도 줄 수 있다.
+동작은 하지만 라벨·도움말을 잃는다. 가능하면 Data Element를 참조한다.</li>
 <li><strong>이름 규칙/활성화</strong> → <code>Z</code>/<code>Y</code> 시작, 활성화(Ctrl+F3) 안 하면 사용 불가.</li>
+<li><strong>밑줄(<code>_</code>) 위치 제한</strong> → DDIC <button class="term" type="button" data-term="Structure">Structure</button>·테이블 이름은 <strong>2·3번째 자리에 <code>_</code>가 올 수
+없다</strong>(이름 끝 <code>_</code>도 불가). <code>ZS_PERSON</code>(3번째가 <code>_</code>)은 거부되고 <code>ZST_PERSON</code>(4번째부터)은
+되는 이유다. 실무에서는 <code>ZSMM</code>·<code>ZSSD</code>·<code>ZSPP</code>나 <code>ZMMS</code>·<code>ZSDS</code>·<code>ZPPS</code>처럼 앞자리를
+밑줄 없이 채운 이름을 자주 본다.</li>
 </ul>
 <hr>
-<p>이제 한 건을 로컬·전역 양쪽으로 묶을 수 있다. 그런데 구조를 <strong>다른 구조에 재사용</strong>
+<p>이제 한 건을 로컬·전역 양쪽으로 묶을 수 있다. 그런데 Structure를 <strong>다른 Structure에 재사용</strong>
 (중첩·INCLUDE·APPEND)하려면? → 다음 레슨.</p>
 </section>
       </article>

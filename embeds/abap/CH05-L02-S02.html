@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<!-- CH05-L02-S02 — 엔진: share-vs-local + _autoheight. 콘텐츠=레슨 §프로그램에서 쓰기("어디에 생성했는가" 시각화, #C05-1).
+     상=Local(프로그램마다 선언·서로 남남) ↔ 하=DDIC(ZST_PERSON 한 곳→곡선 참조) · 토글=필드 추가 시 수정 3곳 vs 1곳(피드백 2026-07-03).
+     게이팅: DDIC Structure·Local BEGIN OF까지만(§2에서 ZST_PERSON 생성 후). 설정=window.SVL_CFG. -->
+<html lang="ko" data-eng="share-vs-local">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>어디에 생성했는가 · CH05-L02-S02</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/share-vs-local.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">어디에 생성했는가 <small>(Local ↔ Global)</small></p>
+  <p class="lead">위 Local Structure는 <b>프로그램 안에서 선언</b>한 것이라 프로그램끼리 <b>서로 독립</b>입니다. 아래 Global(DDIC) Structure는 <b>ABAP Dictionary에 한 번 정의</b>해 두고 모든 프로그램이 참조합니다. 맨 아래 버튼으로 <b>필드를 추가해야 할 때</b> 어떤 차이가 생기는지 비교해 보세요.</p>
+  <div data-svl></div>
+</div>
+<script>
+window.SVL_CFG = {
+  defName: 'ZST_PERSON',
+  fields: ['name', 'age', 'amount'],
+  addField: 'birth',
+  programs: ['ZPROG_A', 'ZPROG_B', 'ZPROG_C'],
+  // 로컬 선언은 프로그램마다 구성이 제각각 — 이름(gs_person)이 같아도 서로 독립임을 모양으로(피드백 2026-07-03)
+  localFields: [
+    ['name', 'age', 'amount'],
+    ['name', 'amount'],
+    ['name', 'age', 'phone']
+  ],
+  useStmt: 'DATA gs_person TYPE zst_person.'
+};
+</script>
+<script src="../_engine/share-vs-local.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

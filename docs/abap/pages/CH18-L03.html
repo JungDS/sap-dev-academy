@@ -40,13 +40,13 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>같은 데이터를 다른 모양으로</h2>
-<p>업무 프로그램은 같은 데이터를 다른 모양으로 옮기는 일이 많다 — DB 행을 화면 표시용
+<p>업무 프로그램은 같은 데이터를 다른 모양으로 옮기는 일이 많다. DB 행을 화면 표시용
 구조로, 입력 구조를 저장 구조로. classic은 같은 이름 필드를 자동으로 옮기는
 <code>MOVE-CORRESPONDING</code>을 썼다(<a href="CH05-L01.html">Local Structure (BEGIN OF ~ END OF)</a>).</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2</pre><pre class="abap-editor__code"><code><span class="tok-com">" classic</span>
 <span class="tok-kw">MOVE-CORRESPONDING</span> ls_source <span class="tok-kw">TO</span> ls_target.</code></pre></div></div>
-<p>modern에서는 <strong>값을 만드는 식</strong> 흐름 안에서 같은 일을 한다 — <code>CORRESPONDING</code> constructor.</p>
+<p>modern에서는 <strong>값을 만드는 식</strong> 흐름 안에서 같은 일을 한다: <code>CORRESPONDING</code> constructor.</p>
 </section><section class="lblock"><h2>같은 이름은 자동, 다른 이름은 MAPPING, 제외는 EXCEPT</h2>
 <p>표시용 구조에 이름이 다른 필드(<code>display_status</code>)와 원본에 없는 필드(<code>audit_user</code>)가 있다고 하자.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
@@ -60,15 +60,15 @@
 9
 10
 11
-12</pre><pre class="abap-editor__code"><code><span class="tok-kw">TYPES</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ty_booking_ui,
+12</pre><pre class="abap-editor__code"><code><span class="tok-kw">TYPES</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ts_booking_ui,
          booking_id     <span class="tok-kw">TYPE</span> zbooking-booking_id,
          customer       <span class="tok-kw">TYPE</span> zbooking-customer,
          seats          <span class="tok-kw">TYPE</span> zbooking-seats,
          display_status <span class="tok-kw">TYPE</span> zbooking-status,   <span class="tok-com">" 이름 다름</span>
          audit_user     <span class="tok-kw">TYPE</span> syuname,           <span class="tok-com">" 원본에 없음</span>
-       <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ty_booking_ui.
+       <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ts_booking_ui.
 
-<span class="tok-kw">DATA</span>(ls_ui) = <span class="tok-kw">CORRESPONDING</span> ty_booking_ui(
+<span class="tok-kw">DATA</span>(ls_ui) = <span class="tok-kw">CORRESPONDING</span> ts_booking_ui(
   ls_booking
   <span class="tok-kw">MAPPING</span> display_status = status      <span class="tok-com">" 대상 = 원본</span>
   <span class="tok-kw">EXCEPT</span>  audit_user ).</code></pre></div></div>
@@ -79,15 +79,15 @@
 </ul>
 <p>내부 테이블도 같은 규칙이 각 행에 적용된다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
-2</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>(lt_ui) = <span class="tok-kw">CORRESPONDING</span> ty_booking_ui_tab(
+2</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>(lt_ui) = <span class="tok-kw">CORRESPONDING</span> tt_booking_ui(
   lt_booking <span class="tok-kw">MAPPING</span> display_status = status <span class="tok-kw">EXCEPT</span> audit_user ).</code></pre></div></div>
 <blockquote>
 <p>💡 <code>CORRESPONDING</code>은 <strong>모든 것을 복사하는 도구가 아니다.</strong> <strong>대상 타입 기준</strong>으로 옮길 수
-있는 필드만 결과에 들어간다 — 원본에만 있는 필드(<code>created_by</code> 등)는 <strong>조용히 버려진다.</strong></p>
+있는 필드만 결과에 들어간다. 원본에만 있는 필드(<code>created_by</code> 등)는 <strong>조용히 버려진다.</strong></p>
 </blockquote>
 </section><section class="lblock"><h2>직접 매핑해 보기 — Field Mapping Board</h2>
 <p>원본·대상 구조의 필드가 어떻게 연결되는지 보자. 같은 이름은 자동, <code>status</code>→<code>display_status</code>는
-<code>MAPPING</code>으로, <code>audit_user</code>는 <code>EXCEPT</code>로. 생성되는 <code>CORRESPONDING</code> 코드와 결과 구조체가 어떻게 바뀌는지 확인한다.</p>
+<code>MAPPING</code>으로, <code>audit_user</code>는 <code>EXCEPT</code>로. 생성되는 <code>CORRESPONDING</code> 코드와 결과 Structure가 어떻게 바뀌는지 확인한다.</p>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">Field Mapping Board (CORRESPONDING)</span><a class="embed__open" href="../../../embeds/abap/CH18-L03-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH18-L03-S01.html" loading="lazy" title="Field Mapping Board (CORRESPONDING)" style="height:620px"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
@@ -101,7 +101,7 @@
 </blockquote>
 </section><section class="lblock"><h2>정리</h2>
 <ul>
-<li><code>CORRESPONDING</code>은 <strong>같은 이름 필드</strong>를 기준으로 구조체·테이블을 새 타입으로 옮기는 constructor다.</li>
+<li><code>CORRESPONDING</code>은 <strong>같은 이름 필드</strong>를 기준으로 Structure·테이블을 새 타입으로 옮기는 constructor다.</li>
 <li><code>MAPPING</code>은 이름이 다른 필드를 연결(<code>대상 = 원본</code>), <code>EXCEPT</code>는 <strong>대상 필드</strong>를 결과에서 제외한다.</li>
 <li>강력하지만, <strong>이름은 같고 의미가 다른</strong> 구조에는 주의해야 한다.</li>
 </ul>

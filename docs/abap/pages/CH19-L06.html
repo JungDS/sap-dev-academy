@@ -52,14 +52,14 @@
 8
 9
 10
-11</pre><pre class="abap-editor__code"><code><span class="tok-kw">TYPES</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ty_flight,
+11</pre><pre class="abap-editor__code"><code><span class="tok-kw">TYPES</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ts_flight,
          carrid   <span class="tok-kw">TYPE</span> sflight-carrid,
          connid   <span class="tok-kw">TYPE</span> sflight-connid,
          seatsocc <span class="tok-kw">TYPE</span> sflight-seatsocc,
-       <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ty_flight.
-<span class="tok-kw">TYPES</span> ty_flight_tab <span class="tok-kw">TYPE</span> <span class="tok-kw">STANDARD</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ty_flight <span class="tok-kw">WITH</span> EMPTY <span class="tok-kw">KEY</span>.
+       <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ts_flight.
+<span class="tok-kw">TYPES</span> tt_flight <span class="tok-kw">TYPE</span> <span class="tok-kw">STANDARD</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ts_flight <span class="tok-kw">WITH</span> EMPTY <span class="tok-kw">KEY</span>.
 
-<span class="tok-kw">DATA</span>(lt_flight) = <span class="tok-kw">VALUE</span> ty_flight_tab(
+<span class="tok-kw">DATA</span>(lt_flight) = <span class="tok-kw">VALUE</span> tt_flight(
   ( carrid = <span class="tok-str">'LH'</span> connid = <span class="tok-str">'0400'</span> seatsocc = <span class="tok-num">120</span> )
   ( carrid = <span class="tok-str">'LH'</span> connid = <span class="tok-str">'0401'</span> seatsocc = <span class="tok-num">80</span>  )
   ( carrid = <span class="tok-str">'AA'</span> connid = <span class="tok-str">'0017'</span> seatsocc = <span class="tok-num">50</span>  ) ).</code></pre></div></div>
@@ -92,7 +92,7 @@
 </section><section class="lblock"><h2>언제 쓰나 · 언제 쓰지 말까 ⚖️</h2>
 <ul>
 <li><strong>쓸 때</strong>: 이미 가져온 데이터를 <strong>다시 <button class="term" type="button" data-term="Aggregate">집계</button>/정렬</strong>하거나, 파일·인터페이스로 받은 데이터를 SQL식으로 다룰 때.</li>
-<li><strong>쓰지 말 때</strong>: DB에 있는 <strong>대량 데이터를 다 끌어와</strong> <button class="term" type="button" data-term="메모리">메모리</button>에서 <code>SELECT FROM @itab</code>으로 집계하는 것. 보통 나쁜 방향이다 — 가능하면 <strong>DB에서 직접</strong> 조건·집계를 처리한다.</li>
+<li><strong>쓰지 말 때</strong>: DB에 있는 <strong>대량 데이터를 다 끌어와</strong> <button class="term" type="button" data-term="메모리">메모리</button>에서 <code>SELECT FROM @itab</code>으로 집계하는 것. 보통 나쁜 방향이다. 가능하면 <strong>DB에서 직접</strong> 조건·집계를 처리한다.</li>
 </ul>
 <blockquote>
 <p>🔧 internal table을 source로 쓰는 SELECT는, <strong>ABAP SQL engine</strong>이 처리하는 경우와 임시로 DB에 데이터를 넘겨야 하는 경우로 나뉜다. 집계·join·복잡한 식이 섞이면 시스템이 경고를 낼 수 있는데, <strong>pragma로 숨기기 전에 &quot;왜 나는지&quot;부터</strong> 이해하자.</p>

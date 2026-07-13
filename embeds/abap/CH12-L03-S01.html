@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!-- CH12-L03-S01 — 엔진: select-options-filter-sim(재사용 · #soSys 옵션으로 sy-subrc/sy-dbcnt 표시) · 자체 postHeight.
      콘텐츠=레슨 전용(classic WHERE..IN 평가 + 시스템 필드, CH12 L03). config=window.SO_CFG(zbooking).
-     게이팅: classic `field IN s_xxx`(AND 결합) · @/콤마/modern Open SQL 없음. -->
+     게이팅: classic `field IN so_xxx`(AND 결합) · @/콤마/modern Open SQL 없음. -->
 <html lang="ko" data-eng="select-options-filter-sim">
 <head>
 <meta charset="utf-8" />
@@ -12,8 +12,8 @@
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">WHERE … IN 필터 엔진 <small>(s_conc · s_stat → sy-subrc · sy-dbcnt)</small></p>
-  <p class="lead">Range Table을 <code>WHERE field IN s_xxx</code>로 조회에 꽂으면 <code>zbooking</code> 목록이 줄어듭니다. 두 조건 사이는 <code>AND</code>입니다. <b>빈 범위는 true</b>라 비우면 전체가 나옵니다. 실행 후 <code>sy-subrc</code>·<code>sy-dbcnt</code>를 확인하세요.</p>
+  <p class="hd">WHERE … IN 필터 엔진 <small>(so_conc · so_stat → sy-subrc · sy-dbcnt)</small></p>
+  <p class="lead">Range Table을 <code>WHERE field IN so_xxx</code>로 조회에 꽂으면 <code>zbooking</code> 목록이 줄어듭니다. 두 조건 사이는 <code>AND</code>입니다. <b>빈 범위는 true</b>라 비우면 전체가 나옵니다. 실행 후 <code>sy-subrc</code>·<code>sy-dbcnt</code>를 확인하세요.</p>
 
   <div class="so-presets">
     <span class="lbl">시나리오:</span>
@@ -25,14 +25,14 @@
   </div>
 
   <div class="so-block">
-    <div class="so-block__hd">s_conc <small>FOR zbooking-concert_id</small></div>
-    <div class="so-rows" id="rows-s_conc"></div>
-    <button class="so-add" type="button" data-add="s_conc">+ 범위 행 추가</button>
+    <div class="so-block__hd">so_conc <small>FOR zbooking-concert_id</small></div>
+    <div class="so-rows" id="rows-so_conc"></div>
+    <button class="so-add" type="button" data-add="so_conc">+ 범위 행 추가</button>
   </div>
   <div class="so-block">
-    <div class="so-block__hd">s_stat <small>FOR zbooking-status (N 예약 · C 취소)</small></div>
-    <div class="so-rows" id="rows-s_stat"></div>
-    <button class="so-add" type="button" data-add="s_stat">+ 범위 행 추가</button>
+    <div class="so-block__hd">so_stat <small>FOR zbooking-status (N 예약 · C 취소)</small></div>
+    <div class="so-rows" id="rows-so_stat"></div>
+    <button class="so-add" type="button" data-add="so_stat">+ 범위 행 추가</button>
   </div>
 
   <div class="so-code">
@@ -70,15 +70,15 @@ window.SO_CFG = {
     {booking_id:5006,concert_id:'C001',perf_no:2,customer:'차은우',seats:5,status:'N'}
   ],
   selopts:[
-    {name:'s_conc', field:'concert_id', label:'FOR zbooking-concert_id', num:false},
-    {name:'s_stat', field:'status',     label:'FOR zbooking-status',     num:false}
+    {name:'so_conc', field:'concert_id', label:'FOR zbooking-concert_id', num:false},
+    {name:'so_stat', field:'status',     label:'FOR zbooking-status',     num:false}
   ],
   presets:[
     {label:'전체 (빈 범위)', ranges:{}},
-    {label:'공연 C001만', ranges:{s_conc:[{sign:'I',opt:'EQ',low:'C001'}]}},
-    {label:'예약 N만', ranges:{s_stat:[{sign:'I',opt:'EQ',low:'N'}]}},
-    {label:'C001 + N (AND)', ranges:{s_conc:[{sign:'I',opt:'EQ',low:'C001'}], s_stat:[{sign:'I',opt:'EQ',low:'N'}]}},
-    {label:'없는 공연 C999 (0건)', ranges:{s_conc:[{sign:'I',opt:'EQ',low:'C999'}]}}
+    {label:'공연 C001만', ranges:{so_conc:[{sign:'I',opt:'EQ',low:'C001'}]}},
+    {label:'예약 N만', ranges:{so_stat:[{sign:'I',opt:'EQ',low:'N'}]}},
+    {label:'C001 + N (AND)', ranges:{so_conc:[{sign:'I',opt:'EQ',low:'C001'}], so_stat:[{sign:'I',opt:'EQ',low:'N'}]}},
+    {label:'없는 공연 C999 (0건)', ranges:{so_conc:[{sign:'I',opt:'EQ',low:'C999'}]}}
   ]
 };
 </script>

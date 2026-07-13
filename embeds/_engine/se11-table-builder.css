@@ -1,0 +1,62 @@
+/* se11-table-builder — SE11 Transparent Table 생성 시뮬(필드·키·타입→검사→활성화→물리테이블).
+   config=window.STB_CFG. _base.css=토큰만 → 리셋·프리미티브 자체 보유. 자체 postHeight 없음 → _autoheight 동반. */
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:transparent;line-height:1.5;}
+.wrap{padding:14px;}
+.hd{font-weight:800;font-size:1rem;margin:0 0 4px;} .hd small{font-weight:600;color:var(--brand);}
+.lead{margin:0 0 12px;color:var(--ink-soft);font-size:.86rem;}
+.lead code{font-family:var(--mono);background:#eef2ff;color:var(--brand);padding:1px 5px;border-radius:5px;font-size:.92em;}
+.note{margin-top:11px;border-left:3px solid var(--brand);background:rgba(59,91,219,.06);border-radius:0 9px 9px 0;padding:9px 13px;font-size:.83rem;color:#2a3550;}
+.note code{font-family:var(--mono);background:#fff;border:1px solid var(--line);padding:0 5px;border-radius:4px;}
+
+.stb{border:1px solid var(--line);border-radius:13px;overflow:hidden;background:var(--surface);}
+.stb__bar{display:flex;align-items:center;gap:9px;background:#2c3666;border-bottom:2px solid var(--brand);color:#fff;padding:9px 13px;font-size:.84rem;font-weight:800;}
+.stb__bar .t{font-family:var(--mono);}
+.stb__badge{margin-left:auto;font-size:.72rem;font-weight:800;border-radius:999px;padding:3px 11px;display:flex;align-items:center;gap:5px;}
+.stb__badge .d{width:8px;height:8px;border-radius:50%;display:inline-block;}
+.b-new{background:#e9edf5;color:#5b6478;} .b-new .d{background:#94a0b8;}
+.b-inactive{background:#fff3e0;color:#b45309;} .b-inactive .d{background:#f59e0b;}
+.b-active{background:#d1fae5;color:#0b7250;} .b-active .d{background:#10b981;}
+
+/* 필드 그리드 */
+.stb__fields{width:100%;border-collapse:collapse;font-size:.82rem;}
+.stb__fields th{background:#f1f4fb;color:#38506d;font-weight:700;padding:7px 12px;text-align:left;border-bottom:1px solid var(--line);font-size:.74rem;}
+.stb__fields td{padding:7px 12px;border-bottom:1px solid #eef1f7;}
+.stb__fields tr:last-child td{border-bottom:none;}
+.stb__fields .fn{font-family:var(--mono);font-weight:700;color:var(--ink);}
+.stb__fields .fixed{color:var(--ink-soft);font-style:italic;font-size:.9em;}
+.keybox{display:inline-flex;align-items:center;gap:5px;cursor:pointer;user-select:none;font-weight:700;font-size:.78rem;}
+.keybox input{cursor:pointer;}
+.keychip{font-size:.66rem;font-weight:800;color:#b8770a;background:#fbeec4;border-radius:999px;padding:1px 7px;}
+/* 타입 토글 */
+.tytog{display:inline-flex;background:#e9edf4;border-radius:7px;padding:2px;}
+.tytog button{border:0;background:none;border-radius:5px;padding:3px 9px;font:inherit;font-size:.72rem;font-weight:700;color:var(--ink-soft);cursor:pointer;font-family:var(--mono);}
+.tytog button.on{background:#fff;color:var(--brand);box-shadow:0 1px 2px rgba(20,28,51,.12);}
+.tyval{font-family:var(--mono);font-size:.72rem;color:var(--ink-soft);margin-left:7px;}
+
+/* 액션 */
+.stb__actions{display:flex;gap:9px;padding:11px 13px;background:#fbfcfe;border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+.btn{border:1px solid transparent;border-radius:9px;padding:7px 15px;font-family:inherit;font-size:.82rem;font-weight:700;cursor:pointer;}
+.btn--check{background:#eef1f6;color:#42506b;border-color:var(--line);} .btn--check:hover{background:#e2e7f0;}
+.btn--act{background:var(--brand);color:#fff;} .btn--act:hover{background:#2f4bc0;}
+.btn--reset{background:none;color:var(--ink-soft);border-color:var(--line);margin-left:auto;} .btn--reset:hover{background:#f1f4fb;}
+
+/* 설계도 ↔ 물리테이블 split */
+.stb__split{display:grid;grid-template-columns:1fr 1fr;gap:0;}
+.stb__panel{padding:11px 13px;}
+.stb__panel+.stb__panel{border-left:1px dashed var(--line);}
+.stb__ph{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--ink-soft);margin-bottom:7px;display:flex;align-items:center;gap:6px;}
+.stb__pre{font-family:var(--mono);font-size:.74rem;line-height:1.7;color:#27425c;white-space:pre;overflow-x:auto;margin:0;}
+.stb__panel--db{transition:opacity .3s,filter .3s;}
+.stb__panel--db.off{opacity:.45;filter:grayscale(1);}
+.stb__db-empty{color:var(--ink-soft);font-style:italic;font-size:.76rem;}
+.arrow{color:var(--accent);font-weight:800;}
+
+/* 메시지 */
+.stb__msg{padding:10px 13px;font-size:.8rem;min-height:40px;background:#f8fafc;}
+.stb__msg .ln{display:flex;gap:7px;align-items:flex-start;padding:2px 0;}
+.stb__msg .ok{color:#0b7250;} .stb__msg .bad{color:#b02a55;} .stb__msg .warn{color:#b45309;}
+.stb__msg .ico{font-weight:800;}
+.stb__msg .idle{color:var(--ink-soft);}
+
+@media(max-width:620px){ .stb__split{grid-template-columns:1fr;} .stb__panel+.stb__panel{border-left:none;border-top:1px dashed var(--line);} }

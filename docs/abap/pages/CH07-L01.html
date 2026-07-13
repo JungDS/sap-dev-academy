@@ -40,9 +40,10 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>끝나면 사라진다</h2>
-<p>CH06에서 구구단 81행을 <button class="term" type="button" data-term="Internal Table">Internal Table</button> <code>gt_gugu</code>에 담았지만, 프로그램이 끝나면
-<strong><button class="term" type="button" data-term="메모리">메모리</button>째 사라졌다.</strong> 다시 실행하면 또 처음부터다. 값을 <strong>디스크에 영구 저장</strong>하고
-다른 사용자와도 공유하고 싶다 — 그게 <button class="term" type="button" data-term="Transparent Table">Transparent Table</button>(투명 테이블)다.</p>
+<p><a href="CH06-L06.html">Chapter 06 · 구구단 캡스톤</a>에서 구구단 81행을 <button class="term" type="button" data-term="Internal Table">Internal Table</button>
+<code>gt_gugu</code>에 담았지만, 프로그램이 끝나면 <strong><button class="term" type="button" data-term="메모리">메모리</button>째 사라졌다.</strong> 다시 실행하면 또
+처음부터다. 값을 <strong>디스크에 영구 저장</strong>하고 다른 사용자와도 공유하고 싶다. 그게
+<button class="term" type="button" data-term="Transparent Table">Transparent Table</button>(투명 테이블)다.</p>
 </section><section class="lblock"><h2>투명 테이블이란</h2>
 <p><button class="term" type="button" data-term="Transparent Table">Transparent Table</button>은 DDIC에 정의하는 테이블로, <strong>DB의 실제 물리 테이블과 1:1로
 대응</strong>한다. &quot;투명(transparent)&quot;은 DDIC 정의와 DB 테이블이 같은 모양으로 들여다보인다는 뜻.</p>
@@ -56,6 +57,11 @@
 DAN    (Key)  → 단
 MUL    (Key)  → 곱하는 수
 RESULT        → 결과</code></pre></div></div>
+<blockquote class="cw">
+<p>⚠️ <strong>키 필드는 맨 앞에 연속으로.</strong> 키로 지정한 필드들은 테이블 구조의 <strong>시작 부분에
+모여</strong> 있어야 한다. 키 필드 사이에 일반 필드가 끼면 활성화가 막힌다. <button class="term" type="button" data-term="MANDT">MANDT</button>·DAN·MUL을
+앞에, RESULT를 뒤에 둔 이유가 이것이다.</p>
+</blockquote>
 <table>
 <thead>
 <tr>
@@ -65,31 +71,38 @@ RESULT        → 결과</code></pre></div></div>
 </thead>
 <tbody><tr>
 <td>Delivery Class</td>
-<td>보통 <code>A</code>(application data)</td>
+<td>보통 <code>A</code>(업무 데이터용)</td>
 </tr>
 <tr>
 <td>Key</td>
-<td>행을 유일하게 식별(여기선 <button class="term" type="button" data-term="MANDT">MANDT</button>+DAN+MUL)</td>
+<td>행을 유일하게 식별(여기선 MANDT+DAN+MUL)</td>
 </tr>
 <tr>
 <td>Technical Settings</td>
 <td>데이터 클래스·크기 지정 후 활성화</td>
 </tr>
 </tbody></table>
-<p>활성화하는 순간 실제 DB 테이블이 생성된다.</p>
+<p><strong>Delivery Class</strong>는 이 테이블의 데이터가 설치·업그레이드·클라이언트 복사·이송 때
+어떻게 취급될지를 정한다. 우리 구구단은 업무(master·transaction) 데이터 성격이라 <code>A</code>가
+맞다. 그리고 <strong>활성화(Activate)하는 순간</strong> DDIC 정의에 대응하는 실제 DB 테이블이
+생성된다. 활성화 전에는 설계도일 뿐, 아직 쓸 수 있는 테이블이 아니다.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">SE11 Table Builder — 필드·키·타입을 정하고 활성화까지</span><a class="embed__open" href="../../../embeds/abap/CH07-L01-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH07-L01-S01.html" loading="lazy" title="SE11 Table Builder — 필드·키·타입을 정하고 활성화까지"></iframe></figure>
 </section><section class="lblock"><h2>필드 타입 — Data Element vs Built-In</h2>
 <p>각 컬럼의 타입을 주는 방법은 두 가지다.</p>
 <ul>
-<li><strong><button class="term" type="button" data-term="Data Element">Data Element</button> 참조(권장)</strong> — <code>DAN</code>에 <code>ZDE_DAN</code> 같은 Data Element를 주면, CH03에서
-봤듯 <strong>라벨·F4·도움말까지</strong> 따라온다. 화면·ALV가 똑똑해진다.</li>
+<li><strong><button class="term" type="button" data-term="Data Element">Data Element</button> 참조(권장)</strong> — <code>DAN</code>에 <code>ZDE_DAN</code> 같은 Data Element를 주면,
+<a href="CH03-L02.html">Chapter 03 · Data Element</a>에서 봤듯 <strong>라벨·F4·도움말까지</strong> 따라온다.
+화면·ALV가 똑똑해진다.</li>
 <li><strong>Built-In 타입 직접</strong> — <code>INT4</code>(정수) 같은 내장 타입을 바로 지정. 간단하지만 라벨·도움말이 없다.</li>
 </ul>
 <blockquote>
 <p>업무 테이블은 거의 항상 <strong>Data Element</strong>로 준다. 그래야 전사적으로 의미·라벨이 일관된다.</p>
 </blockquote>
 </section><section class="lblock"><h2>MANDT — 클라이언트 분리</h2>
-<p>대부분 업무 테이블의 첫 키는 <button class="term" type="button" data-term="MANDT">MANDT</button>(클라이언트)다. CH01에서 본 &quot;방(Client)&quot;별로
-데이터가 분리되는 장치다. 보통 직접 다루지 않아도 시스템이 챙긴다.</p>
+<p>대부분 업무 테이블의 첫 키는 <button class="term" type="button" data-term="MANDT">MANDT</button>(클라이언트)다. <a href="CH01-L01.html">Chapter 01 · 로그온</a>에서
+본 &quot;방(Client)&quot;별로 데이터가 분리되는 장치다. 정확히는 <strong>첫 키 필드의 타입이
+<code>CLNT</code>(클라이언트)이면 그 테이블은 클라이언트별로 데이터가 갈리는데, MANDT가 바로 그
+<code>CLNT</code> 타입 필드다.</strong> 보통 직접 다루지 않아도 시스템이 챙긴다.</p>
 </section><section class="lblock"><h2>Technical Settings — 저장 방식 지정</h2>
 <p>활성화 전, <strong>Technical Settings</strong>(기술 설정)에서 DB에 <strong>어떻게 저장할지</strong>를 정한다(앞 표의 그 항목).</p>
 <ul>
@@ -105,9 +118,12 @@ RESULT        → 결과</code></pre></div></div>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
 <li><strong>키 미지정</strong> → 최소 하나의 키 필드 필요. 보통 <button class="term" type="button" data-term="MANDT">MANDT</button> + 업무 키.</li>
+<li><strong>키 사이에 일반 필드</strong> → 키 필드는 맨 앞에 연속으로. 사이에 non-key가 끼면 활성화가 막힌다.</li>
 <li><strong>활성화 안 함</strong> → 활성화해야 DB 테이블이 실제로 생긴다.</li>
 <li><strong>필드를 Built-In으로만</strong> → 라벨·도움말을 잃는다. 가능하면 <button class="term" type="button" data-term="Data Element">Data Element</button>.</li>
-<li><strong>활성 후 타입·길이 변경</strong> ⚠️ → 이미 데이터가 든 테이블의 필드 타입·길이를 바꾸면 데이터 변환·손실·긴 잠금 위험이 있다. 운영 테이블 구조 변경은 신중히·이송 절차로(CH35).</li>
+<li><strong>활성 후 타입·길이 변경</strong> ⚠️ → 이미 데이터가 든 테이블의 필드 타입·길이를 바꾸면 데이터
+변환·손실·외래키 불일치 위험이 있고, 행이 많을수록 오래 걸린다. 운영 테이블 구조 변경은
+신중히·이송 절차로(<a href="CH35-L03.html">Chapter 35 · Transport 관리</a>).</li>
 </ul>
 <hr>
 <p>그릇(<code>ZGUGUDAN</code>)은 만들었다. 이제 <strong>값을 직접 넣어</strong> 보자 → Create Entries로

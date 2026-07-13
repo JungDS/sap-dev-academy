@@ -53,15 +53,21 @@
 </thead>
 <tbody><tr>
 <td><strong>Structure</strong>(Work Area)</td>
-<td><code>TYPE ty_line</code></td>
+<td><code>TYPE ts_line</code></td>
 <td><button class="term" type="button" data-term="메모리">메모리</button>(한 건)</td>
 <td>한 줄을 담아 다룸</td>
 </tr>
 <tr>
 <td><strong>Internal Table</strong></td>
-<td><code>TYPE TABLE OF ty_line</code></td>
+<td><code>TYPE TABLE OF ts_line</code></td>
 <td>메모리(여러 건)</td>
 <td>여러 줄을 모아 처리</td>
+</tr>
+<tr>
+<td><strong>Table Type</strong>(설계도)</td>
+<td>SE11 <code>ZTT_LINE</code></td>
+<td>— (타입 정의만)</td>
+<td>내부 테이블의 전역 설계도</td>
 </tr>
 <tr>
 <td><strong>Transparent Table</strong></td>
@@ -70,7 +76,10 @@
 <td>영구 저장·공유</td>
 </tr>
 </tbody></table>
-<p>핵심: <strong>앞의 둘은 메모리라 프로그램이 끝나면 사라지고, Transparent Table만 남는다.</strong></p>
+<p>핵심: <strong>Structure·Internal Table은 메모리라 프로그램이 끝나면 사라지고, Transparent
+Table만 디스크에 남는다.</strong> Table Type은 데이터를 담는 그릇이 아니라, 내부 테이블의 모양을
+전역으로 정의해 둔 <strong>설계도</strong>일 뿐이다(그 자체는 저장소가 아니다).</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">넷을 한눈에 — 담는 단위·사는 곳·수명 비교</span><a class="embed__open" href="../../../embeds/abap/CH07-L03-S02.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH07-L03-S02.html" loading="lazy" title="넷을 한눈에 — 담는 단위·사는 곳·수명 비교"></iframe></figure>
 </section><section class="lblock"><h2>DDIC 구조를 TYPE로 / TABLE OF로</h2>
 <p>전역 DDIC Structure(예: <code>ZST_LINE</code>) 하나를 만들어 두면, 프로그램에서 작업영역으로도
 내부 테이블로도 쓸 수 있다.</p>
@@ -82,15 +91,17 @@
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">메모리(끝나면 사라짐) vs 디스크(영속) — 같은 모양의 두 운명 비교</span><a class="embed__open" href="../../../embeds/abap/CH07-L03-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH07-L03-S01.html" loading="lazy" title="메모리(끝나면 사라짐) vs 디스크(영속) — 같은 모양의 두 운명 비교"></iframe></figure>
 </section><section class="lblock"><h2>Transparent Table 본래 목적 = 영속</h2>
 <p>Structure·Internal Table은 &quot;지금 이 실행 동안&quot; 쓰는 작업 도구다. Transparent Table은
-&quot;실행이 끝나도 남아야 하는 <strong>업무 데이터</strong>&quot;를 위한 것이다 — 이게 본래 목적이다.</p>
+&quot;실행이 끝나도 남아야 하는 <strong>업무 데이터</strong>&quot;를 위한 것이다. 이게 본래 목적이다.</p>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
 <li><strong><button class="term" type="button" data-term="메모리">메모리</button> 테이블에 영속 기대</strong> → 내부 테이블은 끝나면 사라진다. 영구 저장은 DB 테이블.</li>
-<li><strong>셋을 같은 것으로</strong> → 모양만 같을 뿐 사는 곳·수명이 다르다.</li>
+<li><strong>넷을 같은 것으로</strong> → 모양만 같을 뿐 사는 곳·수명이 다르다.</li>
+<li><strong>Table Type과 Transparent Table 혼동</strong> → <code>ZTT_LINE</code>(Table Type)은 내부 테이블의
+<strong>설계도</strong>, <code>ZGUGUDAN</code>(Transparent Table)은 <strong>DB 저장소</strong>다. 이름이 비슷해도 역할이 다르다.</li>
 </ul>
 <hr>
-<p>값을 영구히 저장했고, 셋의 차이도 정리했다. 그런데 손으로 넣은 18행을 <strong>프로그램에서
-다시 읽어</strong> 쓰려면? → <strong>CH08(Open SQL 기본 조회)</strong>.</p>
+<p>값을 영구히 저장했고, 넷의 차이도 정리했다. 그런데 손으로 넣은 18행을 <strong>프로그램에서
+다시 읽어</strong> 쓰려면? → <a href="CH08-L01.html">Chapter 08 · Open SQL 기본 조회</a>.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

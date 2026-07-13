@@ -1,9 +1,9 @@
 /* selopt-screen-mapper 엔진 — 선택화면 From/To 입력 + 다중선택 → Range Table 행 → LOOP AT 출력.
    골격 계약: .ssm-from · .ssm-to · [data-multi](팝업 토글) · .ssm-pop(+.ssm-chip[data-add]) · #ssmBody(tbody) · #ssmOut.
-   config: window.SSM_CFG = { name:'s_conc', field:'zbooking-concert_id', multi:[{label, row:{sign,opt,low,high}}] }.
+   config: window.SSM_CFG = { name:'so_conc', field:'zbooking-concert_id', multi:[{label, row:{sign,opt,low,high}}] }.
    높이: _autoheight.js가 처리. */
 (function () {
-  var CFG = window.SSM_CFG || { name: 's_xxx', field: '', multi: [] };
+  var CFG = window.SSM_CFG || { name: 'so_xxx', field: '', multi: [] };
   var extra = [];                       // 다중선택으로 추가된 행
   var fromEl = document.querySelector('.ssm-from');
   var toEl = document.querySelector('.ssm-to');
@@ -54,7 +54,7 @@
     renderOut();
   }
 
-  // LOOP AT s_conc INTO ls. WRITE: / sign option low high.
+  // LOOP AT so_conc INTO ls. WRITE: / sign option low high.
   function renderOut() {
     var rows = allRows();
     if (!rows.length) { outEl.textContent = '* ' + CFG.name + ' 가 비어 있음 → LOOP 0회 (조건 없음 = 전체 통과)'; return; }

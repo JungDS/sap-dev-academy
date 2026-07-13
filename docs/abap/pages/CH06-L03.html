@@ -40,22 +40,23 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>행을 콕 집어 다루기</h2>
-<p>전체 순회 말고 <strong>특정 한 행</strong>을 넣고·찾고·고치는 일이 잦다. 그때마다 결과는
-<code>sy-subrc</code>로 확인한다(0=성공).</p>
+<p>전체를 훑지 않고 <strong>특정 한 행</strong>을 넣고, 찾고, 고치고, 지우는 일이 잦다. 결과는
+그때그때 <button class="term" type="button" data-term="sy-subrc">sy-subrc</button>로 확인한다(0=성공).</p>
 </section><section class="lblock"><h2>넣기 — APPEND vs INSERT</h2>
 <ul>
-<li><code>APPEND ls TO lt.</code> — 맨 끝에 추가(STANDARD 테이블).</li>
-<li><code>INSERT ls INTO lt INDEX n.</code> — n번째 위치에 끼워 넣기.</li>
-<li><code>INSERT ls INTO TABLE lt.</code> — <strong>키 순서에 맞게</strong> 넣기(SORTED/HASHED의 표준 방식).</li>
+<li><code>APPEND gs_... TO gt_....</code> — 맨 끝에 추가(STANDARD 테이블의 기본).</li>
+<li><code>INSERT gs_... INTO gt_... INDEX n.</code> — n번째 위치에 끼워 넣기(Index Table 전용).</li>
+<li><code>INSERT gs_... INTO TABLE gt_....</code> — <strong>키에 맞는 자리</strong>에 넣기.</li>
 </ul>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3</pre><pre class="abap-editor__code"><code><span class="tok-kw">APPEND</span> gs_person <span class="tok-kw">TO</span> gt_person.            <span class="tok-com">" 끝에</span>
 <span class="tok-kw">INSERT</span> gs_person <span class="tok-kw">INTO</span> gt_person <span class="tok-kw">INDEX</span> <span class="tok-num">1</span>.  <span class="tok-com">" 맨 앞에</span>
-<span class="tok-kw">INSERT</span> gs_person <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> gt_person.    <span class="tok-com">" 키 기준(종류에 따라)</span></code></pre></div></div>
+<span class="tok-kw">INSERT</span> gs_person <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> gt_person.    <span class="tok-com">" 키 기준 자리</span></code></pre></div></div>
 <blockquote>
-<p><code>INTO</code>(위치 기반)와 <code>INTO TABLE</code>(키 기반)은 <strong>다른 문장</strong>이다. SORTED/HASHED엔
-<code>INTO TABLE</code>을 쓴다.</p>
+<p><code>INTO</code>(위치 기반)와 <code>INTO TABLE</code>(키 기반)은 <strong>다른 문장</strong>이다. HASHED는 번호가 없어
+<code>INTO TABLE</code>만 가능하다. SORTED는 <code>INDEX</code> 문법 자체는 되지만 삽입이 정렬 순서를 깨면
+런타임 오류가 난다. 그래서 SORTED/HASHED엔 <code>INTO TABLE</code>을 쓴다(자리는 시스템이 잡는다).</p>
 </blockquote>
 </section><section class="lblock"><h2>찾기 — READ TABLE</h2>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
@@ -67,50 +68,71 @@
 <span class="tok-kw">ENDIF</span>.</code></pre></div></div>
 <ul>
 <li><code>INDEX n</code> — n번째 행을 <strong>번호로 직접</strong> 읽기(예: <code>READ TABLE gt_person INTO gs_person INDEX 1.</code>).</li>
-<li><code>WITH KEY field = ...</code> — 아무 필드로나 찾기(STANDARD는 순차 탐색).</li>
-<li><code>WITH TABLE KEY ...</code> — <strong>정의된 키</strong>로 찾기(SORTED/HASHED에 최적).</li>
+<li><code>WITH KEY field = ...</code> — 아무 필드 조합(free key)으로 찾기(STANDARD는 순차 탐색).</li>
+<li><code>WITH TABLE KEY ...</code> — 선언에 <strong>정의된 키</strong>로 찾기(SORTED/HASHED에 최적).</li>
 <li>못 찾으면 <code>sy-subrc = 4</code>. <strong>반드시 확인</strong>한다.</li>
 </ul>
-<p>값은 필요 없고 <strong>있는지만</strong> 확인할 땐 <code>TRANSPORTING NO FIELDS</code>로 복사를 생략한다(빠름).</p>
+<p>찾기에 성공하면 시스템 필드 <button class="term" type="button" data-term="sy-tabix">sy-tabix</button>에 <strong>그 행의 번호</strong>가 들어온다. &quot;몇 번 행에서
+찾았나&quot;다. 잠시 뒤 고치기에서 바로 써먹는다.</p>
+<p>값은 필요 없고 <strong>있는지만</strong> 볼 땐 <code>TRANSPORTING NO FIELDS</code>로 복사를 생략한다(빠름).</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3</pre><pre class="abap-editor__code"><code><span class="tok-kw">READ</span> <span class="tok-kw">TABLE</span> gt_person <span class="tok-kw">TRANSPORTING</span> <span class="tok-kw">NO</span> <span class="tok-kw">FIELDS</span> <span class="tok-kw">WITH</span> <span class="tok-kw">KEY</span> name = <span class="tok-str">'정훈영'</span>.
 <span class="tok-kw">IF</span> sy-subrc = <span class="tok-num">0</span>.  <span class="tok-com">" 존재만 확인(Work Area 복사 없음)</span>
 <span class="tok-kw">ENDIF</span>.</code></pre></div></div>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">한 행 제어 실험실 — READ·MODIFY·DELETE와 <button class="term" type="button" data-term="sy-subrc">sy-subrc</button>·sy-tabix</span><a class="embed__open" href="../../../embeds/abap/CH06-L03-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH06-L03-S01.html" loading="lazy" title="한 행 제어 실험실 — READ·MODIFY·DELETE와 sy-subrc·sy-tabix"></iframe></figure>
+</section><section class="lblock"><h2>정렬 — SORT</h2>
+<p>키로 자주 찾을 테이블은 먼저 <strong>정렬</strong>해 두는 게 유리하다. 문법은 간단하다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2</pre><pre class="abap-editor__code"><code><span class="tok-kw">SORT</span> gt_person <span class="tok-kw">BY</span> name.              <span class="tok-com">" name 기준 오름차순(기본)</span>
+<span class="tok-kw">SORT</span> gt_person <span class="tok-kw">BY</span> age <span class="tok-kw">DESCENDING</span>.    <span class="tok-com">" 내림차순</span></code></pre></div></div>
+<p>참고로 SORTED TABLE은 키 순서가 선언으로 고정돼 있어 <code>SORT</code>로 다시 정렬할 수 없다
+(<code>SORT</code>의 대상은 STANDARD·HASHED).</p>
 <h3>빠른 탐색 — BINARY SEARCH</h3>
 <p>STANDARD 테이블에서 단건을 자주 찾으면 순차 탐색이 느리다. <strong>키로 정렬해 두고</strong>
 <code>BINARY SEARCH</code>를 붙이면 이진 탐색으로 빨라진다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
-3</pre><pre class="abap-editor__code"><code><span class="tok-kw">SORT</span> gt_person <span class="tok-kw">BY</span> name.                  <span class="tok-com">" 반드시 키로 먼저 정렬</span>
+3</pre><pre class="abap-editor__code"><code><span class="tok-kw">SORT</span> gt_person <span class="tok-kw">BY</span> name.                  <span class="tok-com">" 반드시 같은 키로 먼저 정렬</span>
 <span class="tok-kw">READ</span> <span class="tok-kw">TABLE</span> gt_person <span class="tok-kw">INTO</span> gs_person
      <span class="tok-kw">WITH</span> <span class="tok-kw">KEY</span> name = <span class="tok-str">'정훈영'</span> <span class="tok-kw">BINARY</span> <span class="tok-kw">SEARCH</span>.</code></pre></div></div>
 <blockquote class="cw">
-<p>⚠️ <code>BINARY SEARCH</code>는 <strong>그 키로 정렬돼 있어야</strong> 정확하다. 정렬 안 하고 쓰면
-있는 행도 &quot;없음(sy-subrc=4)&quot;으로 나온다.</p>
+<p>⚠️ <code>BINARY SEARCH</code>는 <strong>그 키로(오름차순) 정렬돼 있어야</strong> 정확하다. 정렬 안 하고 쓰면
+있는 행도 &quot;없음&quot;(<code>sy-subrc</code> ≠ 0)으로 나온다. 아래에서 직접 실패를 목격해 보자.</p>
 </blockquote>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">정렬 없이 BINARY SEARCH — 있는 행도 못 찾는 함정</span><a class="embed__open" href="../../../embeds/abap/CH06-L03-S02.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH06-L03-S02.html" loading="lazy" title="정렬 없이 BINARY SEARCH — 있는 행도 못 찾는 함정"></iframe></figure>
 </section><section class="lblock"><h2>고치기 · 지우기 — MODIFY · DELETE</h2>
+<p>찾은 행을 고치는 최빈 패턴은 이것이다. <code>READ</code>가 채워 준 <code>sy-tabix</code>로 바로 <code>MODIFY</code>.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
 4
-5</pre><pre class="abap-editor__code"><code><span class="tok-kw">MODIFY</span> gt_person <span class="tok-kw">FROM</span> gs_person <span class="tok-kw">INDEX</span> sy-tabix.  <span class="tok-com">" 현재 행 수정(LOOP 안)</span>
-<span class="tok-kw">MODIFY</span> <span class="tok-kw">TABLE</span> gt_person <span class="tok-kw">FROM</span> gs_person.           <span class="tok-com">" 키로 수정</span>
-<span class="tok-kw">MODIFY</span> gt_person <span class="tok-kw">FROM</span> gs_person <span class="tok-kw">INDEX</span> sy-tabix
-       <span class="tok-kw">TRANSPORTING</span> age.                         <span class="tok-com">" age 필드만 갱신(나머지 보존)</span>
-<span class="tok-kw">DELETE</span> gt_person <span class="tok-kw">WHERE</span> age &lt; <span class="tok-num">20</span>.                 <span class="tok-com">" 조건 삭제</span></code></pre></div></div>
-<blockquote>
-<p><code>TRANSPORTING f1 f2</code>를 붙이면 <strong>그 필드만</strong> 갱신하고 나머지는 그대로 둔다.</p>
-</blockquote>
+5
+6</pre><pre class="abap-editor__code"><code><span class="tok-kw">READ</span> <span class="tok-kw">TABLE</span> gt_person <span class="tok-kw">INTO</span> gs_person <span class="tok-kw">WITH</span> <span class="tok-kw">KEY</span> name = <span class="tok-str">'정훈영'</span>.
+<span class="tok-kw">IF</span> sy-subrc = <span class="tok-num">0</span>.
+  gs_person-age = <span class="tok-num">31</span>.
+  <span class="tok-kw">MODIFY</span> gt_person <span class="tok-kw">FROM</span> gs_person <span class="tok-kw">INDEX</span> sy-tabix
+         <span class="tok-kw">TRANSPORTING</span> age.               <span class="tok-com">" age 필드만 갱신(나머지 보존)</span>
+<span class="tok-kw">ENDIF</span>.</code></pre></div></div>
+<ul>
+<li><code>MODIFY gt_... FROM gs_... INDEX n.</code> — n번 행을 통째로 교체.</li>
+<li><code>MODIFY TABLE gt_... FROM gs_....</code> — 키로 행을 찾아 교체.</li>
+<li><code>TRANSPORTING f1 f2</code> — <strong>그 필드만</strong> 갱신하고 나머지는 그대로.</li>
+<li><code>DELETE gt_person WHERE age &lt; 20.</code> — 조건에 맞는 행 <strong>모두</strong> 삭제. 하나라도 지웠으면
+<code>sy-subrc = 0</code>, 지운 행이 없으면 4.</li>
+</ul>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>sy-subrc 미확인</strong> → READ 실패 후 옛 Work Area 값을 그대로 쓰는 버그.</li>
+<li><strong><button class="term" type="button" data-term="sy-subrc">sy-subrc</button> 미확인</strong> → READ 실패 시 Work Area엔 <strong>이전 값이 그대로</strong> 남는다. 그걸 새로
+읽은 값인 줄 알고 쓰는 버그가 잦다.</li>
 <li><strong>BINARY SEARCH 전에 SORT 안 함</strong> → 잘못된 &quot;없음&quot; 결과.</li>
 <li><strong>INTO vs INTO TABLE 혼동</strong> → 위치 기반인지 키 기반인지 구분.</li>
+<li><strong><button class="term" type="button" data-term="sy-tabix">sy-tabix</button>를 오래 보관</strong> → 그 사이 정렬·삭제가 일어나면 번호의 의미가 바뀐다.
+READ 직후 바로 쓴다.</li>
 </ul>
 <hr>
 <p>한 행은 자유자재로 다룬다. 이제 <strong>여러 행을 한꺼번에</strong> 훑고 집계하는 법이다 →
-순회·컨트롤레벨(다음 레슨).</p>
+<a href="CH06-L04.html">다중 행 제어</a>.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

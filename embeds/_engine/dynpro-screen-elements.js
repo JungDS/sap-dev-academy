@@ -5,7 +5,7 @@
   var root=document.querySelector('[data-dynpro]'); if(!root) return;
   var $=function(s){return root.querySelector(s);};
   // 상태(= 화면 필드에 연결된 전역 변수)
-  var st={ p_concert:'', p_seats:'', p_agree:'', p_pay:'CARD', p_grade:'VIP', ok_code:'' };
+  var st={ gv_conc:'', gv_seats:'', gv_vip:'', gv_stat:'R', ok_code:'' };
 
   function vrow(k,label,val){
     var empty = (val===''||val==null);
@@ -15,11 +15,10 @@
   function renderVars(){
     var m=$('[data-mon]');
     m.innerHTML =
-      vrow('p_concert','p_concert', st.p_concert)+
-      vrow('p_seats','p_seats', st.p_seats)+
-      vrow('p_agree',"p_agree (CHAR1)", st.p_agree)+
-      vrow('p_pay','p_pay', st.p_pay)+
-      vrow('p_grade','p_grade', st.p_grade)+
+      vrow('gv_conc','gv_conc', st.gv_conc)+
+      vrow('gv_seats','gv_seats', st.gv_seats)+
+      vrow('gv_vip',"gv_vip (CHAR1)", st.gv_vip)+
+      vrow('gv_stat','gv_stat', st.gv_stat)+
       vrow('ok_code','ok_code (sy-ucomm)', st.ok_code);
     var msg=$('[data-okmsg]');
     msg.innerHTML = st.ok_code

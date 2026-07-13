@@ -21,16 +21,48 @@
 | CH01-L02-S06 | CH01-L02 | image-figure | 실제 SE11 ABAP Dictionary 첫 화면 스크린샷(§04) | ✅ |
 | CH01-L02-S07 | CH01-L02 | image-figure | 실제 SE80 Object Navigator 화면 스크린샷(§05) | ✅ |
 | CH01-L07-S01 | CH01-L07 | se93-tcode-create | SE93 T-code 생성→명령창 실행(Hello, ABAP!)+흔한실수 | ✅ |
+| CH01-L03-S01 | CH01-L03 | syntax-toggle-lab | 문법 상태 실험기 — 마침표 제거·별표 위치·인라인 *·키워드 소문자 토글→구문 검사 램프(ok/bad)+원인 설명 | ✅ |
+| CH02-L01-S01 | CH02-L01 | before-after | (등재 보완) 리터럴 반복 vs 변수 하나 — 값 바꿀 때 고칠 곳 비교 | ✅ |
+| CH02-L01-S02 | CH02-L01 | var-box | (등재 보완) 변수=타입 라벨 박스+값 쪽지 — 선언 직후(타입 기본값)↔값 대입 토글 | ✅ |
+| CH02-L02-S01 | CH02-L02 | var-box | (재사용) Complete 타입 5종(STRING/I/F/D/T) 박스 — 모양+타입 기본값↔값 대입·D/T 자릿수 뼈대 | ✅ |
+| CH02-L03-S01 | CH02-L03 | len-shape-grid | 길이 칸 실험실 — C 패딩/잘림·N 앞 0·P 바이트 칸(2×len−1)+부호 반 칸·offset 하이라이트/범위 초과/부분 쓰기 | ✅ |
+| CH02-L04-S01 | CH02-L04 | type-stamp | TYPES 도면(0바이트)→DATA 실물 — DECIMALS 2↔3 토글 시 변수 3개 동시 반영·타입에 값 대입→오류 데모 | ✅ |
 | CH02-L05-S01 | CH02-L05 | before-after | 매직넘버 pi(줄마다 '3.1415926'·'…27'·'3.14' 제각각·오타) vs 상수 gc_pi 하나 — bad/good + 변수 덮어쓰기 주의 note | ✅ |
 | CH02-L06-S01 | CH02-L06 | fill-blank | Text Symbol 빈칸(TEXT·001) | ✅ |
+| CH02-L06-S02 | CH02-L06 | text-symbol-lab | Text Symbol 실험기 — 등록/미등록×KO/EN 로그인→TEXT-001(미등록=빈칸·누락 들통) vs '금액'(001)(fallback·누락 숨음) 출력 비교 | ✅ |
 | CH03-L01-S01 | CH03-L01 | domain-builder | SE11 Domain 생성(저장→검사→활성화·예제칩 6) | ✅ |
+| CH03-L02-S01 | CH03-L02 | ddic-layer-board | Domain(기술)→Data Element(의미) 1:N 상속 보드 — 길이 토글→DE 2개+화면 미리보기 동시 반영·직접 TYPE 사용→오류 데모 | ✅ |
+| CH03-L03-S01 | CH03-L03 | param-screen-lab | PARAMETERS 보상 실험 — pa_stat 타입 DE↔표준 타입 토글(라벨/F4 온·오프)·VALUE CHECK로만 고정값 검증(F4≠검증)·OBLIGATORY 차단·DEFAULT·LOWER CASE·실행 mock | ✅ |
 | CH04-L01-S01 | CH04-L01 | step-debugger | 산술 트레이스(7+3·2**10·DIV·MOD) | ✅ |
 | CH04-L05-S01 | CH04-L05 | step-debugger | DO·sy-index 트레이스(1→5) | ✅ |
 | CH04-L06-S01 | CH04-L06 | step-debugger | 구구단 중첩DO 디버거 홈(F5·gv_mul/res) | ✅ |
-| CH05-L01-S01 | CH05-L01 | step-debugger | Local Structure 트레이스(ls_person-name/age/amount 한 묶음 채움) | ✅ |
+| CH05-L01-S01 | CH05-L01 | step-debugger | §BEGIN OF+§Component 예제 통합 트레이스(선언→하이픈 대입→WRITE, 6스텝 — chain은 항목당 1스텝·출력 줄 점진 완성·TYPES 없음) | ✅ |
+| CH05-L01-S05 | CH05-L01 | step-debugger | §LIKE 오해 반박 — 원본 gs_p1 채운 뒤 LIKE 선언, 워치에 gs_p1·gs_p4 동시 표시(모양만 복사·값은 초기값, 4스텝) | ✅ |
 | CH05-L05-S01 | CH05-L05 | step-debugger | 구구단=구조체 캡스톤(ls_line-dan/mul/result·sy-index 반복 갱신) | ✅ |
-| CH06-L06-S01 | CH06-L06 | state-change-grid | 구구단 lt_gugu 성장 스냅샷(APPEND 1→9→81행 + SORT result DESC) | ✅ |
-| CH07-L03-S01 | CH07-L03 | before-after | 메모리(휘발) vs 디스크(영속) 두 운명 — 중립 톤(tone-warm/cool) | ✅ |
+| CH05-L01-S02 | CH05-L01 | struct-viz(strip) | gs_person(string·i·p) 변수 박스 — 좌측=변수명 먼저·칸 헤더=이름(좌)·타입(우) 한 줄·외곽=한 덩어리·§BEGIN OF 전용(하이픈 접근은 S03 몫)·트리 병행 보기 | ✅ |
+| CH05-L01-S03 | CH05-L01 | struct-viz(strip+accessPick) | 포인팅 데모 — 전체 칩(gs_person=곡선 1가닥이 박스 자체+글로우 '한 몸') vs 필드 칩(-age=칸 하나+나머지 흐림)·곡선 커넥터(화살촉 없는 베지어+끝점 도트)·값 읽어주기·숫자 칸 우측 정렬 | ✅ |
+| CH05-L01-S04 | CH05-L01 | struct-viz(strip) | ts_person=값 없는 헤더 스트립+변수 3행 정렬(칸=모양+값)·칼럼 폭=길이감 인코딩(SAP 표준 표기)·CH06 행 스택 예고 | ✅ |
+| CH05-L01-S07 | CH05-L01 | before-after(.solo) | §도입 pain 시각화 — 단일 값 변수만으로 사람 셋(DATA 9줄 벽+칩 9개·해결책 미노출) + 숨은 실수 헌트(오타 gv_naem2·DECIMALS 누락·c 10, 점선 밑줄+정답 접기) | ✅ |
+| CH05-L01-S06 | CH05-L01 | before-after | 번호 변수 참사(gv_name2·3… 9줄) vs TYPES+DATA(사람 1명=1줄) — pain 증폭 + 하단 메모리 도형(낱개 칩 9 ↔ 같은 모양 구조체 박스 3, 이름만) + 실무 스케일 접기(정보 +7 → 변수 30개 vs TYPES 7줄, 곱셈 vs 덧셈 + 200개 투영) | ✅ |
+| CH05-L02-S02 | CH05-L02 | share-vs-local | 정의 위치 비교 — Local(프로그램마다 정의, 이름 같아도 구성 제각각=남남·수평 3열) vs DDIC(ZST_PERSON 한 곳→곡선 참조)·필드 추가 토글(수정 3곳 vs 1곳) | ✅ |
+| CH05-L02-S01 | CH05-L02 | struct-viz | (재사용) ZST_PERSON 트리 — Component=Data Element(라벨 상속 표기)·name 대입 인터랙션 | ✅ |
+| CH05-L03-S01 | CH05-L03 | struct-reuse-board | 중첩/.INCLUDE/.APPEND 세그→다이어그램(하위 박스/펼침 그룹/잠긴 표준+확장)+접근 경로+경로 퀴즈 3문 | ✅ |
+| CH05-L04-S01 | CH05-L04 | move-mapping | MOVE-CORRESPONDING 매핑 보드(SAP BC400 표준 구도) — 상=원본·하=대상 스트립·같은 이름끼리 화살표(실행 전 점선→후 실선)·잔존 함정·CLEAR 토글 | ✅ |
+| CH06-L01-S01 | CH06-L01 | step-debugger(itab워치) | Work Area→APPEND로 gt_person 성장 트레이스(11스텝·행 미니테이블 new 플래시·CLEAR/FREE·DESCRIBE·APPEND=복사 강조: WA age=99 바꿔도 쌓인 행 불변) | ✅ |
+| CH06-L02-S01 | CH06-L02 | code-anatomy | 테이블 타입 선언 한 줄 해부(tt_person/kind=STANDARD/line=TABLE OF/key=WITH NON-UNIQUE KEY/use) — 3속성 클릭 | ✅ |
+| CH06-L02-S02 | CH06-L02 | decision-tree | Table Kind 선택 트리(자주 하는 일→STANDARD/SORTED/HASHED·유일키·정렬유지 분기) | ✅ |
+| CH06-L03-S01 | CH06-L03 | step-debugger(itab워치) | 한 행 제어 실험실(INSERT INDEX·READ INDEX/WITH KEY·MODIFY TRANSPORTING·DELETE, focus 강조·sy-subrc/sy-tabix·READ 실패 후 WA 잔존 함정) | ✅ |
+| CH06-L03-S02 | CH06-L03 | step-debugger(itab워치) | BINARY SEARCH 함정 재현(정렬 없이→sy-subrc=4, SORT 후→발견) | ✅ |
+| CH06-L04-S01 | CH06-L04 | step-debugger(itab워치) | 반복 회차 vs sy-tabix 괴리(WHERE 걸러 돌기·focus 강조) + ASSIGNING <fs> 원본 직접 수정(전 행 age+1) | ✅ |
+| CH06-L04-S02 | CH06-L04 | step-debugger(itab워치) | COLLECT 키 합산(서울 100+30=130·행 불증) → 컨트롤레벨 AT NEW/END OF·SUM 지역 소계 리포트 | ✅ |
+| CH06-L04-S03 | CH06-L04 | state-change-grid | DELETE ADJACENT DUPLICATES 함정 스냅샷(정렬 없이 0삭제→SORT→인접 첫행만 남김·COMPARING name) | ✅ |
+| CH06-L05-S01 | CH06-L05 | judge-quiz | Flat vs Deep 판정 5문(전 숫자=Flat·string 하나=Deep·itab 포함=Deep·중첩≠deep·고정길이 회원카드) | ✅ |
+| CH06-L05-S02 | CH06-L05 | code-anatomy | ts_order 해부 — order_id/customer=Flat, items TYPE tt_item 한 줄이 전체를 Deep으로(원본 코드블록 체험·R2) | ✅ |
+| CH06-L06-S01 | CH06-L06 | state-change-grid | 구구단 gt_gugu 성장 스냅샷(APPEND 1→9→81행 + SORT result DESC) | ✅ |
+| CH07-L01-S01 | CH07-L01 | se11-table-builder(신규) | SE11 Transparent Table 생성 시뮬(ZGUGUDAN 필드·키 토글·타입 Data Element↔Built-In·검사→활성화→DB 물리테이블 생성·키 연속성/DE 검증) | ✅ |
+| CH07-L02-S01 | CH07-L02 | se11-create-entries(신규) | Create Entries 손입력 훈련기(DAN·MUL·RESULT 저장·키 중복 거부·RESULT≠DAN*MUL 경고+빨간행·MANDT 클라이언트 분리 100/200·2·3단 자동채움) | ✅ |
+| CH07-L03-S01 | CH07-L03 | before-after | 메모리(휘발) vs 디스크(영속) 두 운명 — 중립 톤(tone-warm/cool)·MANDT(Key)/Data Element 표기로 L01 정합 교정·ts_line | ✅ |
+| CH07-L03-S02 | CH07-L03 | compare-matrix | 같은 모양 네 쓰임 비교(Structure·Internal Table·Table Type·Transparent Table × 담는단위·사는곳·수명·선언예, 행 클릭 상세) | ✅ |
 | CH08-L01-S01 | CH08-L01 | client-scope-filter | Client(MANDT) 자동 종속 — 현재 client 바꿔 같은 SELECT 실행→결과 달라짐(MANDT 미기재) | ✅ |
 | CH08-L02-S01 | CH08-L02 | select-query-simulator | classic SELECT 빌더(projection·WHERE·sy-subrc)·ZTPERSON 연습 샌드박스 | ✅ |
 | CH08-L03-S01 | CH08-L03 | select-form-lab | SELECT 형태 비교(SINGLE/INTO TABLE/ENDSELECT/UP TO 3)·대상 모양·행수·반복 | ✅ |
@@ -65,12 +97,12 @@
 | CH11-L05-S01 | CH11-L05 | module-choice-cards | (재사용) SALV 1차 범위 분류(지금 CH11 / CH17·21·27·28) | ✅ |
 | CH11-L06-S01 | CH11-L06 | salv-grid-simulator | 예매목록 SALV(lt_book·set_all·Σ좌석수=17·STATUS N/C) | ✅ |
 | CH12-L01-S01 | CH12-L01 | range-row-builder | 조건 카드(사람 말)→Range Table 4칸 행(SIGN/OPTION/LOW/HIGH)·I/E·EQ/BT/CP·행별 사람말 해석·OR/제외 규칙 | ✅ |
-| CH12-L02-S01 | CH12-L02 | selopt-screen-mapper | 선택화면 From/To+다중선택→s_conc Range Table→LOOP AT 출력(From=EQ·From~To=BT·제외 E·8자) | ✅ |
+| CH12-L02-S01 | CH12-L02 | selopt-screen-mapper | 선택화면 From/To+다중선택→so_conc Range Table→LOOP AT 출력(From=EQ·From~To=BT·제외 E·8자) | ✅ |
 | CH12-L03-S01 | CH12-L03 | select-options-filter-sim | (재사용) classic WHERE..IN 평가 + #soSys(sy-subrc/sy-dbcnt)·시나리오(전체=6·C999=0건subrc4·AND) | ✅ |
 | CH12-L04-S01 | CH12-L04 | include-exclude-judge | 포함(I)/제외(E) 조건 쌓기→공연별 통과/탈락 판정·이유(포함 OR·제외 빼기·녹색/빨강=SIGN) | ✅ |
 | CH12-L05-S01 | CH12-L05 | option-compare-lab | 단일 조건 SIGN·OPTION(EQ/BT/CP)·LOW/HIGH 토글→후보 통과 비교·CP wildcard(*,+)·E 반전 | ✅ |
 | CH12-L06-S01 | CH12-L06 | range-append-stepper | 코드 한 줄씩(CLEAR→sign→option→low→APPEND→SELECT)·ls_stat↔lr_stat·APPEND 전 빈 table·결과 5행 | ✅ |
-| CH12-L07-S01 | CH12-L07 | select-options-filter-sim | SELECT-OPTIONS Range Table(s_conc·s_stat·I/E·EQ/BT/CP→zbooking 필터) | ✅ |
+| CH12-L07-S01 | CH12-L07 | select-options-filter-sim | SELECT-OPTIONS Range Table(so_conc·so_stat·I/E·EQ/BT/CP→zbooking 필터) | ✅ |
 | CH13-L01-S01 | CH13-L01 | join-match-board | INNER JOIN 짝 맞추기(사람3·부서2·ON dept_id·부서 숨김 실험→짝 없는 행 제외·sy-subrc/dbcnt) | ✅ |
 | CH13-L02-S01 | CH13-L02 | outer-join-switch | INNER↔LEFT OUTER 토글(공연3·예매·C003 보존/제외)+WHERE 오른쪽필터 함정(LEFT라도 빠짐) | ✅ |
 | CH13-L03-S01 | CH13-L03 | group-by-lab | 그룹 키(concert/status/복합)·모드(GROUP BY/DISTINCT) 토글→원본 색묶음→COUNT/SUM/MAX 접기 | ✅ |
@@ -99,15 +131,17 @@
 | CH15-L09-S01 | CH15-L09 | selscreen-layout-builder | 선택화면 미리보기에서 PUSHBUTTON/FUNCTION KEY→SSCRFIELDS-UCOMM(REF/FC01)·sy-ucomm 처리누락 경고·COMMENT FOR FIELD 연결약함 경고 | ✅ |
 | CH15-L10-S01 | CH15-L10 | option-switchboard | SELECT-OPTIONS 한 필드에 옵션(OBLIGATORY/LOWER CASE/NO-EXTENSION/NO INTERVALS) 토글→화면모양·내부행(SIGN/OPTION/LOW/HIGH)·복수선택·NO INTERVALS caveat | ✅ |
 | CH15-L11-S01 | CH15-L11 | selscreen-call-variant | 보조화면(1100) CALL SELECTION-SCREEN modal·Execute=sy-subrc0(적용)/Cancel=4(미적용)·Variant 불러오기(유효 복원/무효 무시) | ✅ |
-| CH15-L12-S01 | CH15-L12 | report-run-simulator | CH15 캡스톤·6시나리오×4이벤트(INIT→OUTPUT→검증→START) 흐름·통과/막힘·s_stat R/C 필터·결과테이블/S메시지/ALV | ✅ |
+| CH15-L12-S01 | CH15-L12 | report-run-simulator | CH15 캡스톤·6시나리오×4이벤트(INIT→OUTPUT→검증→START) 흐름·통과/막힘·so_stat R/C 필터·결과테이블/S메시지/ALV | ✅ |
 | CH16-L01-S01 | CH16-L01 | process-flow-pbo-pai | Module Pool 두 박자 순환(PBO→화면→입력→PAI→loop·다음박자 진행) | ✅ |
 | CH16-L02-S01 | CH16-L02 | screen-painter-wiring | Dynpro 4조각(Layout/Element List/Flow Logic/ABAP Source) 연결지도·시나리오로 깨기(MODULE 누락/이름불일치/OK field 누락)→활성화 오류 | ✅ |
-| CH16-L04-S01 | CH16-L04 | pbo-prep-stepper | PBO 6단계 진행(PF-STATUS·TITLEBAR·LOOP AT SCREEN·MODIFY SCREEN·표시)·잠금 토글→P_SEATS input=0 대기 vs MODIFY SCREEN 반영 체감 | ✅ |
-| CH16-L05-S01 | CH16-L05 | okcode-branch-lab | PAI ok_code→save_ok→CLEAR→CASE 분기 추적·버튼(SAVE/BACK/EXIT/CANCEL/Enter)·CLEAR 생략 시 SAVE→Enter 재실행(reexec) 데모·EXIT=LEAVE PROGRAM | ✅ |
-| CH16-L06-S01 | CH16-L06 | toolbar-fcode-map | GUI status 툴바 버튼→OK_CODE→PAI CASE 매핑·잠금→SAVE EXCLUDING·미처리 버튼(HELP) 경고·TITLEBAR WITH 치환 | ✅ |
-| CH16-L07-S01 | CH16-L07 | screen-extension-designer | 화면 확장요소 4탭(Custom Control 이름매칭·Subscreen OK field 없음→main·Tabstrip activetab/subscreen·Status Icon) | ✅ |
-| CH16-L08-S01 | CH16-L08 | dynpro-form-simulator | CH16 캡스톤·화면0100 PBO준비→좌석입력→SAVE(can_book 검증 S/E·화면유지)·BACK=LEAVE TO SCREEN0·EXIT=LEAVE PROGRAM·Enter 재실행방지 | ✅ |
+| CH16-L06-S01 | CH16-L06 | pbo-prep-stepper | PBO 6단계 진행(PF-STATUS·TITLEBAR·LOOP AT SCREEN·MODIFY SCREEN·표시)·잠금 토글→GV_SEATS input=0 대기 vs MODIFY SCREEN 반영 체감 | ✅ |
+| CH16-L07-S01 | CH16-L07 | okcode-branch-lab | PAI ok_code→save_ok→CLEAR→CASE 분기 추적·버튼(SAVE/BACK/EXIT/CANCEL/Enter)·CLEAR 생략 시 SAVE→Enter 재실행(reexec) 데모·EXIT=LEAVE PROGRAM | ✅ |
+| CH16-L08-S01 | CH16-L08 | toolbar-fcode-map | GUI status 툴바 버튼→OK_CODE→PAI CASE 매핑·잠금→SAVE EXCLUDING·미처리 버튼(HELP) 경고·TITLEBAR WITH 치환 | ✅ |
+| CH16-L09-S01 | CH16-L09 | screen-extension-designer | 화면 확장요소 4탭(Custom Control 이름매칭·Subscreen OK field 없음→main·Tabstrip activetab/subscreen·Status Icon) | ✅ |
+| CH16-L10-S01 | CH16-L10 | dynpro-form-simulator | CH16 캡스톤·화면0100 PBO준비→좌석입력→SAVE(can_book 검증 S/E·화면유지)·BACK=LEAVE TO SCREEN0·EXIT=LEAVE PROGRAM·Enter 재실행방지 | ✅ |
 | CH16-L03-S01 | CH16-L03 | dynpro-screen-elements | 예매 화면 요소↔변수(Input·Check·Radio·Dropdown VRM·Button→OK_CODE) | ✅ |
+| CH16-L04-S01 | CH16-L04 | dict-transport-tunnel | TABLES work area↔화면 운반 터널(TABLES on/off·PBO 프로그램→화면·PAI 화면→프로그램·이름 불일치 시 ZCONCERT-CONCERT_ID 미운반 vs GV_SEATS 운반) | ✅ |
+| CH16-L05-S01 | CH16-L05 | input-help-priority-pov | 입력도움 우선순위 결정기(DDIC/화면값필터/직접)+POV 실험실(공연ID→회차 F4·DYNP_VALUES_READ 후보 좁힘→F4IF_INT_TABLE_VALUE_REQUEST) | ✅ |
 | CH17-L01-S01 | CH17-L01 | container-bind-stepper | CL_GUI_CUSTOM_CONTAINER 바인딩 3단계(Screen Painter 확인→PBO→CREATE OBJECT)·이름 매칭→go_cont initial→bound/오타 fail | ✅ |
 | CH17-L02-S01 | CH17-L02 | alv-readiness-panel | CL_GUI_ALV_GRID 생성 2단계+준비 체크리스트(go_cont/go_grid ready·데이터/fcat/display 비어있음→표 안보이는게 정상)·i_parent 비움 fail | ✅ |
 | CH17-L03-S01 | CH17-L03 | alv-data-query | SELECT INTO TABLE 3시나리오(C001=4건·C999=0건subrc4 빈표정상·조건없이=전체 경고)·sy-subrc/sy-dbcnt/행수·lt_booking 미리보기 | ✅ |
@@ -123,8 +157,12 @@
 | CH18-L03-S01 | CH18-L03 | field-mapping-board | CORRESPONDING 원본→대상 매핑(같은이름 자동·MAPPING/EXCEPT 토글·created_by 버려짐)→생성 코드 라이브 | ✅ |
 | CH18-L04-S01 | CH18-L04 | read-vs-tabexpr | 검색 id별 4방식 비교(READ TABLE sy-subrc·tab[ ] 없으면 예외·line_exists 안전·line_index 0)·B999→CX_SY_ITAB_LINE_NOT_FOUND | ✅ |
 | CH18-L05-S01 | CH18-L05 | string-template-composer | CONCATENATE↔String Template 비교·DATE/NUMBER=USER 서식·substring(off/len) 범위 초과 오류 | ✅ |
-| CH18-L06-S01 | CH18-L06 | diff-mapper | classic↔modern(VALUE·+=) hover 대응+설명 · 중립 톤 classic/modern | ✅ |
-| CH18-L07-S01 | CH18-L07 | diff-mapper | 콘서트앱 모던리팩터(인라인DATA·+=·VALUE·Table Expr) | ✅ |
+| CH18-L06-S01 | CH18-L06 | type-conversion-lab | CONV i/string·EXACT i 변환+위험(비숫자·소수 손실→예외) 비교 | ✅ |
+| CH18-L07-S01 | CH18-L07 | cond-switch-selector | 잔여석→COND(범위)·상태→SWITCH(상수) 값 선택·ELSE 제거 시 초기값 | ✅ |
+| CH18-L08-S01 | CH18-L08 | reduce-filter-lab | REDUCE 좌석합계 누적 스텝·FILTER status=N·EXCEPT 반대집합 | ✅ |
+| CH18-L09-S01 | CH18-L09 | let-reader | LET 보조값 먼저 평가→IN 결과·COND/REDUCE 문맥·보조값vs누적값 구분 | ✅ |
+| CH18-L10-S01 | CH18-L10 | diff-mapper | classic↔modern(VALUE·+=·Table Expr) hover 대응+설명 · 중립 톤 | ✅ |
+| CH18-L11-S01 | CH18-L11 | diff-mapper | 콘서트앱 모던리팩터(인라인DATA·+=·VALUE·line_exists·REDUCE/SWITCH) | ✅ |
 | CH19-L01-S01 | CH19-L01 | sql-modernize-stepper | classic→modern SQL 단계 변환(콤마·@·INTO 뒤로)·항공사 코드별 결과(행수·sy-subrc·sy-dbcnt) 동일 | ✅ |
 | CH19-L02-S01 | CH19-L02 | host-escape-inspector | WHERE 오른쪽 operand(ABAP변수/식/DB컬럼/리터럴)×@ on·off→정오 판정(escape 필요/불필요/누락)·host식 lossless·SQL식↔host식 구분 | ✅ |
 | CH19-L03-S01 | CH19-L03 | inline-target-viewer | SELECT 목록(*/필드/계산/계산+AS)×target(@DATA/DATA/@기존)→행 구조 chips·standard+empty key·계산 컬럼 AS 별칭 필요·@DATA↔DATA 구분 | ✅ |
@@ -171,20 +209,45 @@
 | CH04-L02-S01 | CH04-L02 | fill-blank | 문자열 함수 빈칸(INTO·AT·strlen·FIND) | ✅ |
 | CH04-L07-S01 | CH04-L07 | fill-blank | 구구단 빈칸(TIMES·sy-index·*·ENDDO) | ✅ |
 | CH04-L03-S01 | CH04-L03 | mermaid | IF/ELSEIF/ELSE 분기 흐름도(p_amt: 큰금액/소액/0·음수) | ✅ |
+| CH04-L04-S04 | CH04-L04 | before-after(.ba__say) | §도입 "말로 읽기" — IF는 '하지만 그렇지 않다면 pa_grade가…' 반복 ↔ CASE는 한 호흡(사용자 문안) + 선택 기준 note(값=CASE·범위/복합=IF) | ✅ |
 | CH04-L04-S01 | CH04-L04 | case-branch-sim | CASE…WHEN 시뮬(등급 A·B·C·그외→출력, OR묶기 토글) | ✅ |
+| CH04-L03-S02 | CH04-L03 | (bespoke SVG) | (등재 보완) AND/OR/NOT·괄호 논리 다이어그램 — 조건 묶임을 한눈에 | ✅ |
+| CH04-L03-S03 | CH04-L03 | (bespoke SVG) | (등재 보완) IS INITIAL 판정 다이어그램(pa_amt 0=참/500=거짓) | ✅ |
+| CH04-L04-S02 | CH04-L04 | mermaid | (등재 보완) 기본 CASE 4분기 — 흐름도+코드 2칼럼 | ✅ |
+| CH04-L04-S03 | CH04-L04 | mermaid | (등재 보완) WHEN 'A' OR 'B' 묶기 — 흐름도+코드 | ✅ |
+| CH04-L05-S02 | CH04-L05 | mermaid | (등재 보완) DO n TIMES 루프 — 흐름도+코드 | ✅ |
+| CH04-L05-S03 | CH04-L05 | mermaid | (등재 보완) WHILE 조건 루프 — 흐름도+코드 | ✅ |
+| CH04-L05-S04 | CH04-L05 | mermaid | (등재 보완) EXIT·CHECK 루프 제어 — 흐름도+코드 | ✅ |
+| CH04-L07-S02 | CH04-L07 | fill-blank | (등재 보완) 구구단 2단계 중첩 DO 빈칸(바깥 sy-index를 gv_dan에 담기) | ✅ |
+| CH04-L07-S03 | CH04-L07 | fill-blank | (등재 보완) 구구단 3단계 범위 반복 빈칸(pa_from~pa_to·횟수 계산) | ✅ |
 
 ## B. 엔진별 집계 (카테고리 현황 — 같은 종류 몇 개·어디서)
 | 엔진 (embeds/_engine/) | 그룹 | 공통/standalone | 사용 인스턴스 | 비고 |
 |---|---|---|---|---|
-| step-debugger | 6 | 공통(_engine)·config 주도 ✅ | CH04-L01·L05·L06·CH05-L01·L05·CH10-L07 (완료) | `.stepper-config` 트레이스(이미 주도형·리팩터 불요·하이픈키 ls_x-y OK) |
-| fill-blank | 3 | 공통(_engine)+_autoheight ✅ | CH02-L06·CH04-L02·L07 (전부 완료) | 데이터=마크업 |
-| before-after | 2 | 공통(CSS-only)+_autoheight ✅ | CH02-L05-S01·CH07-L03-S01 (완료) | 콘텐츠 정리 · 중립 톤(tone-warm/cool)·.note·.cmt 추가 · constant-circle-sim(폐기) 대체 |
-| diff-mapper | 2 | 공통(_engine)+_autoheight ✅ | CH18-L06·L07 (완료) | 데이터=마크업(data-link/title/desc) · classic/modern 중립 톤 추가 |
+| step-debugger | 12 | 공통(_engine)·config 주도 ✅ | CH04-L01·L05·L06·CH05-L01-S01/S05·CH05-L05·CH10-L07·**CH06-L01-S01·L03-S01/S02·L04-S01/S02** (완료) | `.stepper-config` 트레이스(주도형·하이픈키 ls_x-y OK). **CH06 확장**: vars 항목에 `itab:{cols,num}` 주면 값(2차원 배열)을 행 미니테이블로 렌더(new/chg 플래시·num 우측정렬)·steps[i].focus={key:행번호}로 현재 행 강조·키워드 TRANSPORTING/BINARY/ASSIGNING/COLLECT/SUM 등 추가·다크 .note 오버라이드 추가 |
+| fill-blank | 5 | 공통(_engine)+_autoheight ✅ | CH02-L06-S01·CH04-L02-S01·CH04-L07-S01/S02/S03 (전부 완료) | 데이터=마크업 |
+| before-after | 6 | 공통(CSS-only)+_autoheight ✅ | CH02-L01-S01·CH02-L05-S01·CH04-L04-S04·CH05-L01-S06·CH05-L01-S07·CH07-L03-S01 (완료) | 콘텐츠 정리 · 중립 톤(tone-warm/cool)·.note·.cmt·메모리 도형(칩/미니)·확장 접기·.solo(단일 칼럼 pain-only) 추가 · constant-circle-sim(폐기) 대체 |
+| var-box | 2 | 공통(_engine)+_autoheight ✅ | CH02-L01-S02·CH02-L02-S01 | VB_CFG 주도 · 타입 라벨 박스+값 쪽지·선언 직후(기본값)→대입→재대입(value2 opt-in·"마지막 값만 기억") 사이클·initialFor(string/c/n/d/t/p-dec) 처리 |
+| text-symbol-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH02-L06-S02 | TSL_CFG 주도 · 등록/미등록 seg×KO/EN seg→Text Elements 표 mock+출력 2줄 비교·미등록: TEXT-nnn=빈칸(bad dashed)·literal(nnn)=fallback(amber)·verdict ok/warn(교훈3)·근거 abentext_symbols.htm·토큰/color-mix만 · 다크 |
+| len-shape-grid (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH02-L03-S01 | LSG_CFG 주도 · C/N 칸 그리드(패딩·잘림·앞0 자동채움)+P 바이트 칸(1칸=2자리·부호 반 칸=2×len−1·DECIMALS 점)+offset 패널(칸 하이라이트·범위초과 bad·부분쓰기 교체)·msg base 중립+ok/bad 명시(교훈3)·토큰/color-mix만 · 다크 |
+| type-stamp (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH02-L04-S01 | TS_CFG 주도 · TYPES 도면 카드(점선·0바이트)→DATA 실물 박스(실선·값)·DECIMALS 세그→전 변수 동시 갱신 flash·타입 대입 시도→bad·verdict base 중립+ok/bad 명시(교훈3)·토큰/color-mix만 · 다크 |
+| ddic-layer-board (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH03-L02-S01 | DLB_CFG 주도 · Domain 카드(기술·brand)→상속 케이블→DE 카드 2(의미·accent)+화면 미리보기(라벨=DE·칸수=Domain)·길이 토글→전층 동시 flash·직접 TYPE 시도→bad·verdict base 중립(교훈3)·토큰/color-mix만 · 다크 |
+| param-screen-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH03-L03-S01 | PSL_CFG 주도 · 타입 세그(DE/표준 타입)→라벨·F4 온오프·VALUE CHECK 토글=고정값 검증 분리(F4≠검증·raw 모드 disabled)·F4 팝업=고정값 목록·OBLIGATORY 빈값 차단·DEFAULT 미리채움·LOWER CASE off 시 대문자 변조 경고·실행→WRITE mock·out base 중립(교훈3)·토큰/color-mix만 · 다크 |
+| share-vs-local | 1 | 공통(_engine)+_autoheight ✅ | CH05-L02-S02 (완료) | SVL_CFG 주도 — 정의 공유(DDIC) vs 복제(Local) 비교 보드·필드 추가 토글·참조 곡선 |
+| struct-viz | 4 | 공통(_engine)+_autoheight ✅ | CH05-L01-S02~S04·CH05-L02-S01 | SV_CFG 주도 · 트리(root/kind/comps·초기값 유도·assign 인터랙션) + layout:'strip'(타입=값 없는 헤더 스트립·변수=정렬 행들 — 타입은 값 없음 명시, 사용자 피드백 2026-07-03) |
+| move-mapping (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH05-L04-S01 | MM_CFG 주도 · src/tgt 카드·같은 이름=초록 복사 flash·원본-only=주황 무시·대상-only=잔존(빨강 stale 함정)·CLEAR 먼저 토글→ok/warn verdict(교훈3)·classic 전용(FMB는 modern이라 미재사용)·토큰만 · 다크 |
+| struct-reuse-board (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH05-L03-S01 | SRB_CFG 주도 · 3모드 세그(중첩=amber 하위/INCLUDE=good 점선 펼침/APPEND=잠긴 표준+accent 확장)+접근 경로 칩+선택형 퀴즈(정오 good/bad+why)·토큰만 · 다크 |
+| syntax-toggle-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH01-L03-S01 | STL_CFG 주도 · 코드 패널(행번호·kw/cmt 토큰색)+토글 4(마침표/별표 위치/인라인 */소문자)→구문 램프 ok/bad+원인 목록·이름 풀 정훈영(R9)·코드 base=var(--surface) 틴트 · 다크 |
+| diff-mapper | 2 | 공통(_engine)+_autoheight ✅ | CH18-L10·L11 (완료) | 데이터=마크업(data-link/title/desc) · classic/modern 중립 톤 추가 |
 | inline-decl-judge (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH18-L01-S01 | IDJ_CFG 주도 · 문장 카드 4종(READ/LOOP/계산/SELECT) 허용/보류 판정·계산 카드 DATA()/FINAL() 토글→재대입 ok/bad · 다크 |
 | value-builder (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH18-L02-S01 | key 토글·작업 버튼(make/base/replace/forgen/dup)→VALUE 식·결과 테이블(new 강조)·BASE 유무·중복 key 오류 · 다크 |
 | field-mapping-board (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH18-L03-S01 | FMB_CFG 주도 · 원본/대상 필드 매핑표(자동/MAPPING/EXCEPT/초기값 배지)·MAPPING/EXCEPT 토글→CORRESPONDING 코드·원본only 버려짐 · 다크 |
 | read-vs-tabexpr (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH18-L04-S01 | RVT_CFG 주도 · id 세그·데이터테이블(hit)·4 method 카드(READ TABLE/tab[ ]/line_exists/line_index)·없으면 예외(bad) · 다크 |
 | string-template-composer (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH18-L05-S01 | STC_CFG 주도 · mode(concat/template)·fmt(raw/user) 세그→코드/결과·substring 입력(범위초과 bad)·코드 base=var(--surface)로 틴트 다크 유지 · 다크 |
+| type-conversion-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH18-L06-S01 | 값 입력→CONV i/CONV string/EXACT i 변환·결과/위험(비숫자 변환불가·소수 손실→예외) · 다크 |
+| cond-switch-selector (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH18-L07-S01 | 잔여석→COND(범위 조건)·상태코드→SWITCH(상수 비교) 값 선택·ELSE 토글→초기값 · 다크 |
+| reduce-filter-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH18-L08-S01 | 예매테이블→REDUCE 좌석합계 누적 스텝·FILTER status=N·EXCEPT 반대집합 · 다크 |
+| let-reader (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH18-L09-S01 | LET 보조값 먼저 평가→IN 결과(COND/REDUCE 탭)·LET보조값 vs INIT누적값 색 구분 · 다크 |
 | sql-modernize-stepper (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH19-L01-S01 | SMS_CFG 주도 · stage 세그(classic/콤마/@/INTO 뒤로)→코드 변환(hl·esc 강조)·carr 세그(LH/AA/ZZ)→결과 카드(subrc 0/4·dbcnt)·표기 무관 결과 동일·base=var(--surface) · 다크 |
 | host-escape-inspector (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH19-L02-S01 | HEI_CFG.operands 주도 · op 세그(ABAP변수/식/DB컬럼/리터럴)×esc 세그(@ on/off)→WHERE 조건 렌더(col/esc/bad 강조)·정오 판정(correctOn=ABAP값만)·식=@( )·lossless·base=var(--surface) · 다크 |
 | inline-target-viewer (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH19-L03-S01 | ITV_CFG 주도 · list 세그(*/2필드/계산/계산+AS)→행 구조 chips(이름없음=noname red)·tgt 세그(@DATA/DATA/@기존)→verdict(badEscape/existing/ok)·계산 alias missing 경고·standard+empty key·base=var(--surface) · 다크 |
@@ -222,7 +285,7 @@
 | bdef-contract-editor (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH23-L04-S01 | 데이터 내장(OPS create/update/delete) · op 체크→소비자 행동 able/unable+토글3(table zbooking/zconcert·lock·keyRO)→BDEF 코드(managed implementation·define behavior·persistent table·lock master·field readonly·mapping)·verdict table 불일치=bad/lock off·key 수정가능=warn/ok(behavior pool 안내 교훈3)·tog base=var(--surface) · 다크 |
 | projection-contract-checker (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH23-L03-S01 | 데이터 내장(FIELDS·created_by 감사) · 토글3(contract/projRoot/allowExt)+필드 칩(shown/hidden·key 잠금)→ZI 카드+ZC DDL(provider contract·define root view)+payload chips·verdict !projRoot=bad/!contract=warn/ok(숨김 필드 안내)·교훈3 base 중립rgba·tog base=var(--surface) · 다크 |
 | cds-builder-stepper (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH22-L07-S01 | (capstone) CBS_CFG(concerts) 주도 · 6 step 버튼(ziPerf/ziConcert/zcConcert/mdext/preview/consume)→st 의존 검사(ziConcert needs ziPerf·zcConcert needs ziConcert·mdext needs zcConcert·preview needs zi&zc·consume needs zc)→어기면 msg bad/ok·산출물 4 art(ZI_Perf/ZI_Concert/ZC_Concert/DDLX) active opacity·preview ZI/ZC 표 행수 eq 배지·consume SELECT FROM ZC·리셋·도전과제 ul·msg base 중립rgba ok/bad(교훈3)·step done=#eafaf3 · 다크 |
-| select-query-simulator | 1 | 공통(_engine)·자체 postHeight ✅ | CH08-L02-S01 | config 주입(SQL_CFG) · #N1 주석 CH19 정정 · (CH12-L07은 SELECT-OPTIONS 전용 신규엔진로 분리) |
+| select-query-simulator | 1 | 공통(_engine)·자체 postHeight ✅ | CH08-L02-S01 | config 주입(SQL_CFG) · #N1 주석 CH19 정정 · **R6: 상태줄 lines( ) 제거(sy-subrc·sy-dbcnt만)** · 위젯 라벨 GT_PERSON 통일 · (CH12-L07은 SELECT-OPTIONS 전용 신규엔진로 분리) |
 | select-options-filter-sim | 2 | 공통(_engine)·자체 postHeight ✅ | CH12-L03-S01·CH12-L07-S01 | SO_CFG 주도 · Range Table(SIGN I/E·OPTION EQ/NE/GT/LT/GE/LE/BT/CP) 평가 · **opt-in `#soSys`**(있으면 sy-subrc/sy-dbcnt 표시, L03만) |
 | range-row-builder (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH12-L01-S01 | RRB_CFG.cards 주도 · 조건 카드→SIGN/OPTION/LOW/HIGH 행 빌더·행/종합 사람말 해석 · 다크 자동(토큰+gen-embed-dark) |
 | selopt-screen-mapper (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH12-L02-S01 | SSM_CFG 주도 · 선택화면 From/To+다중선택→Range Table→LOOP 출력 · 다크 자동(토큰+gen-embed-dark) |
@@ -254,17 +317,19 @@
 | selscreen-layout-builder (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH15-L09-S01 | SLB_CFG 주도 · 가짜 선택화면 미리보기(프레임·체크박스·라디오·본문버튼·툴바)→버튼 클릭 SSCRFIELDS-UCOMM·sy-ucomm/COMMENT 판단 토글 경고 · 다크 |
 | option-switchboard (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH15-L10-S01 | OSB_CFG 주도 · SELECT-OPTIONS 옵션 4종 토글→화면 미리보기·내부 selection table 첫 행(disp 대소문자)·복수선택 표시·NO INTERVALS&!NO-EXTENSION caveat · 다크 |
 | selscreen-call-variant (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH15-L11-S01 | SCV_CFG 주도 · 표준화면(1000)→고급조건→보조화면(1100) modal CALL·Execute/Cancel→sy-subrc 0/4·Variant 칩 불러오기(유효/무효) · 다크 |
-| report-run-simulator (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH15-L12-S01 | RRS_CFG 주도 · CH15 캡스톤·시나리오 칩+s_stat 세그→▶실행→4 event 타임라인(pass/fail/lock)·검증 막힘 메시지·결과 ALV테이블/0건 S메시지 · 다크 |
+| report-run-simulator (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH15-L12-S01 | RRS_CFG 주도 · CH15 캡스톤·시나리오 칩+so_stat 세그→▶실행→4 event 타임라인(pass/fail/lock)·검증 막힘 메시지·결과 ALV테이블/0건 S메시지 · 다크 |
 | salv-grid-simulator | 2 | 공통(_engine)·자체 postHeight ✅ | CH11-L02-S01·CH11-L06-S01 (완료) | config 주입(SALV_CFG: itab·cols·data·sumKey·code) · ALV제목/토글 엔진설정 |
 | relationship-map | 1 | 공통 | _(미작성)_ | CSS-only |
-| state-change-grid | 1 | 공통(CSS-only)+_autoheight ✅ | CH06-L06-S01 | 스냅샷=마크업(lt_gugu 성장·정렬) · 빈 .js 제거 |
-| mermaid | 1 | 공통(+_vendor)+_autoheight ✅ | CH04-L03-S01 | 그래프=위젯 `.mermaid` 주입·CDN+로컬fallback·이벤트본 은퇴 |
+| state-change-grid | 2 | 공통(CSS-only)+_autoheight ✅ | CH06-L04-S03·CH06-L06-S01 | 스냅샷=마크업(gt_gugu 성장·정렬 / DELETE ADJACENT DUPLICATES 함정) · cell-new/cell-del 강조 · .note 추가(다크 자동) |
+| mermaid | 6 | 공통(+_vendor)+_autoheight ✅ | CH04-L03-S01·L04-S02/S03·L05-S02/S03/S04 | 그래프=위젯 `.mermaid` 주입·CDN+로컬fallback·이벤트본 은퇴 |
 | domain-builder | 1 | 공통(_engine) ✅ | CH03-L01-S01 | SE11 폼(단일사용·데이터 inline) · 예제별 target 강제(검사/활성화는 목표 일치 시에만) |
 | input-help-priority | 1 | 공통(CSS-only)+_autoheight ✅ | CH09-L07-S01 | F4 사다리(콘텐츠=마크업·빈 .js 제거) |
 | write-output | 1 | 공통 ✅ | CH01-L04-S01 | WRITE 출력 파서 · config 주입 · **버그수정(따옴표無→오류)** |
 | write-format | 1 | 공통 ✅ | CH01-L05-S01 | WRITE 서식 토글 · config 주입 |
 | event-lifecycle-buildup | 1 | 공통(_engine·자체 mermaid+CDN/_vendor)·자체 postHeight ✅ | CH15-L01-S01 | bespoke 단일사용(STAGES inline) · #C15-1 stage1 inline DATA→classic 수정 |
 | se38-first-program | 3 | 공통(_engine) ✅ | CH01-L02-S01 | 개발루프 상태머신(bespoke·단일사용·데이터 inline) |
+| se11-table-builder (신규) | 1 | 공통(_engine·STB_CFG)+_autoheight ✅ | CH07-L01-S01 | SE11 Transparent Table 생성 시뮬 · config 주도(fields/key/de/builtin) · 검사→활성화 라이프사이클·배지(신규/검사/활성)·설계도↔물리테이블 split·키 연속성/DE 검증 · 다크 |
+| se11-create-entries (신규) | 1 | 공통(_engine·CE_CFG)+_autoheight ✅ | CH07-L02-S01 | Create Entries 손입력 훈련기 · config 주도(key/clients/seed) · 키 중복 거부·값 미검증 경고·클라이언트 분리 · 다크 |
 | se93-tcode-create | 3 | 공통(_engine) ✅ | CH01-L07-S01 | SE93 생성+명령창 실행(bespoke·단일사용) |
 | case-branch-sim | 2 | 공통(_engine)+_autoheight ✅ | CH04-L04-S01 | CASE…WHEN 시뮬·config 주도·OR묶기 토글(bespoke 신규) |
 | join-aggregate-visualizer | 1 | 공통(_engine)·자체 postHeight ✅ | CH13-L08-S01 | JOIN_CFG 주도 · LEFT/INNER 토글·GROUP BY SUM·ON 필터(취소 제외) |
@@ -280,11 +345,13 @@
 | process-flow-pbo-pai (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH16-L01-S01 | PBO/PAI 두 박자 순환(클릭 진행) |
 | dynpro-screen-elements (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH16-L03-S01 | 화면 요소↔변수 + FctCode→OK_CODE 시연 |
 | screen-painter-wiring (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH16-L02-S01 | SPW_CFG 주도 · 4패널(Layout/Element List/Flow Logic/ABAP Source) 연결 지도·시나리오로 깨기→활성화 오류(MODULE 누락·이름불일치·OK field) · 다크 |
-| pbo-prep-stepper (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH16-L04-S01 | PPS_CFG 주도 · PBO 단계 스텝퍼(steps config)·잠금 토글·sy-dynnr/pfkey/title·LOOP AT SCREEN input=0 대기 vs MODIFY SCREEN 반영·미리보기 · 다크 |
-| okcode-branch-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH16-L05-S01 | OBL_CFG 주도 · PAI 버튼→ok_code/save_ok/CLEAR/CASE 추적·CLEAR 생략 시 okReg 유지→Enter 재실행(reexec red)·EXIT=LEAVE PROGRAM · 다크 |
-| toolbar-fcode-map (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH16-L06-S01 | TFM_CFG 주도 · GUI status 툴바·잠금→EXCLUDING(SAVE disabled)·버튼→OK_CODE→CASE(handled/unhandled 경고)·TITLEBAR WITH·sy-pfkey/title · 다크 |
-| screen-extension-designer (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH16-L07-S01 | SED_CFG 주도 · 4탭(Custom Control container_name 매칭·Subscreen OK field 없음→main flow·Tabstrip activetab↔subscreen·Status Icon 상태) · 다크 |
-| dynpro-form-simulator (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH16-L08-S01 | DFS_CFG 주도 · CH16 캡스톤·화면0100 미리보기(좌석 입력)·툴바→PAI(OK_CODE/save_ok/CLEAR/CASE)·can_book 검증 S/E·LEAVE TO SCREEN0/PROGRAM·Enter 재실행방지 · 다크 |
+| pbo-prep-stepper (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH16-L06-S01 | PPS_CFG 주도 · PBO 단계 스텝퍼(steps config)·잠금 토글·sy-dynnr/pfkey/title·LOOP AT SCREEN input=0 대기 vs MODIFY SCREEN 반영·미리보기 · 다크 |
+| okcode-branch-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH16-L07-S01 | OBL_CFG 주도 · PAI 버튼→ok_code/save_ok/CLEAR/CASE 추적·CLEAR 생략 시 okReg 유지→Enter 재실행(reexec red)·EXIT=LEAVE PROGRAM · 다크 |
+| toolbar-fcode-map (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH16-L08-S01 | TFM_CFG 주도 · GUI status 툴바·잠금→EXCLUDING(SAVE disabled)·버튼→OK_CODE→CASE(handled/unhandled 경고)·TITLEBAR WITH·sy-pfkey/title · 다크 |
+| screen-extension-designer (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH16-L09-S01 | SED_CFG 주도 · 4탭(Custom Control container_name 매칭·Subscreen OK field 없음→main flow·Tabstrip activetab↔subscreen·Status Icon 상태) · 다크 |
+| dynpro-form-simulator (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH16-L10-S01 | DFS_CFG 주도 · CH16 캡스톤·화면0100 미리보기(좌석 입력)·툴바→PAI(OK_CODE/save_ok/CLEAR/CASE)·can_book 검증 S/E·LEAVE TO SCREEN0/PROGRAM·Enter 재실행방지 · 다크 |
+| dict-transport-tunnel (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH16-L04-S01 | TABLES work area 운반 터널·TABLES 토글·PBO/PAI 방향·이름 일치 운반 vs 미운반(ZCONCERT-CONCERT_ID) · 다크 |
+| input-help-priority-pov (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH16-L05-S01 | 입력도움 우선순위(3티어)+POV 후보 좁히기(공연ID→DYNP_VALUES_READ→F4IF_INT_TABLE_VALUE_REQUEST) · 다크 |
 | class-diagram (신규) | 3 | 공통(CSS-only)+_autoheight ✅ | CH20-L01·L07·L10 (완료) | UML 박스·인스턴스·상속 — class-object/inheritance/class-structure 통합 1엔진 |
 | relationship-map | 1 | 공통(CSS-only)+_autoheight ✅ | CH22-L03-S01 (완료) | A→B 관계 카드(CDS Association) · 빈 .js 제거 · static-svg-architecture 은퇴 |
 
@@ -293,9 +360,7 @@
 |---|---|
 | before-after = N+1 쿼리 | CH13-L06 / 성능 |
 | diff-mapper = SELECT 성능 | CH12·CH13 |
-| decision-tree = 내부테이블 타입 | CH06-L02 |
 | relationship-map = HR/SD FK | CH09 / CH13 |
 | static-svg = 풀스택 | CH31 / CH36 |
 | sap-gui-sandbox = SE16N 조회 | CH07 / SELECT |
 | mermaid = 이벤트 | (CH15에 더 우수본 있음 → 은퇴) |
-| state-change-grid = person/salary APPEND→SORT→DELETE | CH06-L04(집단행 조작) — 단 L04 현재 embed 없음 → 신규 추가라 현 스코프 밖, 후속 |

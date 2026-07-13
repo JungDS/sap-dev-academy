@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<!-- CH05-L01-S06 — 엔진: before-after(CSS-only) + _autoheight · _engine/_base.css. 번호 변수 참사 vs 구조체+타입(#C05-1).
+     pain 증폭(사용자 참고자료 이미지① 방식 2026-07-03): 사람이 늘수록 gv_name2·gv_name3… 번호 변수 폭발 ↔ TYPES+DATA 세 줄.
+     하단 메모리 도형(피드백 2026-07-03): 낱개 칩 9개(묶음 없음) ↔ 같은 모양의 구조체 박스 3개 — 이름만 표기.
+     확장 시나리오 접기(피드백 2026-07-03, 극단화 포함): 실무 스케일 정보 +7(성별·생일·부서·직급·입사일·연봉·연락처)
+     → 낱개=새 변수 21개·총 30개(곱셈, DATA 21줄 생략 없이) ↔ 구조체=TYPES 7줄(덧셈)·DATA gs_p1~p3 "그대로 — 수정 0줄".
+     펀치라인에 투영: 정보 20×사람 10 = 낱개 200개 ↔ TYPES 한 번+변수 10개. 애매한 비교 대신 "어쩔 수 없구나" 스케일.
+     텍스트 다이어트+참고 이미지 디자인 채택(피드백 2026-07-03): 필드 아이콘·i.new NEW 뱃지(CSS ::after)·"자동 반영" 라벨 — 문장 대신 시각 장치.
+     게이팅: DATA·TYPES·BEGIN OF만(CH05-L01까지). -->
+<html lang="ko" data-eng="before-after">
+<head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>번호 변수 vs Structure · CH05-L01-S06</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/before-after.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">사람이 늘면 변수가 폭발한다 <small>(3명만 담아 봐도)</small></p>
+  <p class="lead">이름·나이·금액을 가진 사람 <b>세 명</b>을 담아 보세요. Structure 없이(왼쪽) vs Structure로(오른쪽). 네 번째 사람이 등장하는 순간을 상상하면 차이가 분명해집니다.</p>
+
+  <div class="ba">
+    <div class="ba__col before">
+      <div class="ba__head">✗ 단일 값 변수 — 이름에 번호가 붙기 시작한다</div>
+      <div class="ba__body">
+<pre>DATA gv_name   TYPE string.
+DATA gv_age    TYPE i.
+DATA gv_amount TYPE p LENGTH 8 DECIMALS 2.
+
+DATA gv_name<b>2</b>   TYPE string.   <span class="cmt">" 2번째 사람…</span>
+DATA gv_age<b>2</b>    TYPE i.
+DATA gv_amount<b>2</b> TYPE p LENGTH 8 DECIMALS 2.
+
+DATA gv_name<b>3</b>   TYPE string.   <span class="cmt">" 3번째 사람…</span>
+DATA gv_age<b>3</b>    TYPE i.
+DATA gv_amount<b>3</b> TYPE p LENGTH 8 DECIMALS 2.</pre>
+        <ul class="ba__list">
+          <li>선언만 <b>9줄</b> — 사람마다 <b>3줄씩</b> 늘어난다</li>
+          <li><b>gv_name2</b>·<b>gv_age3</b>… 번호 붙은 이름은 "이 셋이 한 사람"이라는 걸 <b>사람 머릿속으로만</b> 묶는다</li>
+          <li>4번째 사람? → 또 3줄 + 대입·출력 코드 전부 복사</li>
+        </ul>
+        <span class="ba__metric">사람 1명 추가 = 선언 3줄 + 곳곳의 코드 수정</span>
+        <div class="ba__shapes">
+          <div class="ba__shapes-cap">이 코드가 메모리에 만드는 것 — 변수 <b>9개</b>가 따로따로</div>
+          <div class="ba__chips">
+            <span class="ba__chip">gv_name</span><span class="ba__chip">gv_age</span><span class="ba__chip">gv_amount</span>
+            <span class="ba__chip">gv_name<b>2</b></span><span class="ba__chip">gv_age<b>2</b></span><span class="ba__chip">gv_amount<b>2</b></span>
+            <span class="ba__chip">gv_name<b>3</b></span><span class="ba__chip">gv_age<b>3</b></span><span class="ba__chip">gv_amount<b>3</b></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ba__col after">
+      <div class="ba__head">✓ Structure + 타입 — 사람 1명 = 변수 1개</div>
+      <div class="ba__body">
+<pre><b>TYPES: BEGIN OF ts_person,
+         name   TYPE string,
+         age    TYPE i,
+         amount TYPE p LENGTH 8 DECIMALS 2,
+       END OF ts_person.</b>
+
+DATA gs_p1 TYPE ts_person.   <span class="cmt">" 정훈영</span>
+DATA gs_p2 TYPE ts_person.   <span class="cmt">" 손흥민</span>
+DATA gs_p3 TYPE ts_person.   <span class="cmt">" 유재석</span></pre>
+        <ul class="ba__list">
+          <li>모양은 <b>한 번만</b> 정의 — 사람은 <b>변수 하나</b>로 끝</li>
+          <li>"한 사람 = 한 묶음"이 <b>코드에 그대로</b> 보인다(<b>gs_p1-name</b>·<b>gs_p1-age</b>…)</li>
+          <li>4번째 사람? → <b>DATA gs_p4 TYPE ts_person.</b> 한 줄</li>
+        </ul>
+        <span class="ba__metric">사람 1명 추가 = 선언 1줄</span>
+        <div class="ba__shapes">
+          <div class="ba__shapes-cap">이 코드가 메모리에 만드는 것 — 변수 <b>3개</b>, 전부 같은 모양</div>
+          <div class="ba__minis">
+            <div class="ba__mini"><span class="ba__mini-name">gs_p1</span><span class="ba__mini-cells"><i>👤 name</i><i>🔢 age</i><i>💰 amount</i></span></div>
+            <div class="ba__mini"><span class="ba__mini-name">gs_p2</span><span class="ba__mini-cells"><i>👤 name</i><i>🔢 age</i><i>💰 amount</i></span></div>
+            <div class="ba__mini"><span class="ba__mini-name">gs_p3</span><span class="ba__mini-cells"><i>👤 name</i><i>🔢 age</i><i>💰 amount</i></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <details class="ba__more">
+    <summary>😱 실무 스케일 — 사람의 정보가 3개일 리 없다: 성별·생일·부서·직급·입사일·연봉·연락처 <b>+7</b></summary>
+    <div class="ba__more-body">
+      <div class="before">
+        <div class="ba__more-hd bad">✗ 단일 값 변수 — 새 변수 <b>21개</b> (정보 7 × 사람 3), 생략 없이 전부 적으면:</div>
+<pre>DATA gv_gender  TYPE c LENGTH 1.
+DATA gv_birth   TYPE d.
+DATA gv_dept    TYPE string.
+DATA gv_grade   TYPE string.
+DATA gv_hire    TYPE d.
+DATA gv_salary  TYPE i.
+DATA gv_phone   TYPE string.
+
+DATA gv_gender<b>2</b> TYPE c LENGTH 1.   <span class="cmt">" 2번째 사람 몫 7줄…</span>
+DATA gv_birth<b>2</b>  TYPE d.
+DATA gv_dept<b>2</b>   TYPE string.
+DATA gv_grade<b>2</b>  TYPE string.
+DATA gv_hire<b>2</b>   TYPE d.
+DATA gv_salary<b>2</b> TYPE i.
+DATA gv_phone<b>2</b>  TYPE string.
+
+DATA gv_gender<b>3</b> TYPE c LENGTH 1.   <span class="cmt">" 3번째 사람 몫 7줄…</span>
+DATA gv_birth<b>3</b>  TYPE d.
+DATA gv_dept<b>3</b>   TYPE string.
+DATA gv_grade<b>3</b>  TYPE string.
+DATA gv_hire<b>3</b>   TYPE d.
+DATA gv_salary<b>3</b> TYPE i.
+DATA gv_phone<b>3</b>  TYPE string.</pre>
+        <div class="ba__chips">
+          <span class="ba__chip new">gv_gender</span><span class="ba__chip new">gv_birth</span><span class="ba__chip new">gv_dept</span><span class="ba__chip new">gv_grade</span><span class="ba__chip new">gv_hire</span><span class="ba__chip new">gv_salary</span><span class="ba__chip new">gv_phone</span>
+          <span class="ba__chip new">gv_gender<b>2</b></span><span class="ba__chip new">gv_birth<b>2</b></span><span class="ba__chip new">gv_dept<b>2</b></span><span class="ba__chip new">gv_grade<b>2</b></span><span class="ba__chip new">gv_hire<b>2</b></span><span class="ba__chip new">gv_salary<b>2</b></span><span class="ba__chip new">gv_phone<b>2</b></span>
+          <span class="ba__chip new">gv_gender<b>3</b></span><span class="ba__chip new">gv_birth<b>3</b></span><span class="ba__chip new">gv_dept<b>3</b></span><span class="ba__chip new">gv_grade<b>3</b></span><span class="ba__chip new">gv_hire<b>3</b></span><span class="ba__chip new">gv_salary<b>3</b></span><span class="ba__chip new">gv_phone<b>3</b></span>
+        </div>
+        <p class="ba__more-cap">겨우 3명인데 <b>변수 30개</b>. <b>gv_salary2</b>가 누구 연봉인지는 머릿속으로만. 4번째 사람 = <b>또 10줄</b>.</p>
+      </div>
+      <div class="after">
+        <div class="ba__more-hd good">✓ Structure — <b>TYPES 안에 7줄</b>이 끝</div>
+<pre>TYPES: BEGIN OF ts_person,
+         name   TYPE string,
+         age    TYPE i,
+         amount TYPE p LENGTH 8 DECIMALS 2,
+<b>         gender TYPE c LENGTH 1,</b>   <span class="cmt">" + 추가는</span>
+<b>         birth  TYPE d,</b>            <span class="cmt">"   여기</span>
+<b>         dept   TYPE string,</b>       <span class="cmt">"   7줄뿐</span>
+<b>         grade  TYPE string,</b>
+<b>         hire   TYPE d,</b>
+<b>         salary TYPE i,</b>
+<b>         phone  TYPE string,</b>
+       END OF ts_person.
+
+DATA gs_p1 TYPE ts_person.   <span class="cmt">" 그대로 — 수정 0줄</span>
+DATA gs_p2 TYPE ts_person.   <span class="cmt">" 그대로</span>
+DATA gs_p3 TYPE ts_person.   <span class="cmt">" 그대로</span></pre>
+        <div class="ba__auto"><span>⬇ TYPES에 7줄 추가 → 세 변수에 <b>자동 반영</b></span></div>
+        <div class="ba__minis">
+          <div class="ba__mini"><span class="ba__mini-name">gs_p1</span><span class="ba__mini-cells"><i>👤 name</i><i>🔢 age</i><i>💰 amount</i><i class="new">🚻 gender</i><i class="new">🎂 birth</i><i class="new">🏢 dept</i><i class="new">🎖️ grade</i><i class="new">📅 hire</i><i class="new">💵 salary</i><i class="new">📞 phone</i></span></div>
+          <div class="ba__mini"><span class="ba__mini-name">gs_p2</span><span class="ba__mini-cells"><i>👤 name</i><i>🔢 age</i><i>💰 amount</i><i class="new">🚻 gender</i><i class="new">🎂 birth</i><i class="new">🏢 dept</i><i class="new">🎖️ grade</i><i class="new">📅 hire</i><i class="new">💵 salary</i><i class="new">📞 phone</i></span></div>
+          <div class="ba__mini"><span class="ba__mini-name">gs_p3</span><span class="ba__mini-cells"><i>👤 name</i><i>🔢 age</i><i>💰 amount</i><i class="new">🚻 gender</i><i class="new">🎂 birth</i><i class="new">🏢 dept</i><i class="new">🎖️ grade</i><i class="new">📅 hire</i><i class="new">💵 salary</i><i class="new">📞 phone</i></span></div>
+        </div>
+        <p class="ba__more-cap">변수 선언(<b>gs_p1～p3</b>)은 <b>한 글자도 안 바뀝니다</b>. 4번째 사람? 여전히 <b>1줄</b>.</p>
+      </div>
+      <div class="ba__punch"><span class="x">단일 값 변수 = 곱셈(사람 × 정보)</span>, <span class="o">Structure = 덧셈(정보만큼만)</span>.<br>정보 20개 · 사람 10명이면? 단일 값 변수는 <span class="x">200개</span>, Structure는 <span class="o">TYPES 한 번 + 변수 10개</span>.</div>
+    </div>
+  </details>
+
+  <div class="note">번호 붙은 변수(<code>gv_name2</code>…)가 보이기 시작하면 그건 "묶어야 한다"는 신호입니다. 관련된 값을 한 덩어리로 묶는 그릇, 그게 이 레슨의 <b>Structure</b>입니다.</div>
+</div>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

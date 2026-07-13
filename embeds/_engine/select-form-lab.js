@@ -5,7 +5,7 @@
 (function(){
   var cfg = window.SFL_CFG || {};
   var CARR = cfg.carrid || 'KE';
-  var SINGLE = cfg.single || {connid:'0701', fldate:'2026-06-23'};
+  var SINGLE = cfg.single || {connid:'0701', fldate:'20260623'};
   var CAP = cfg.cap || 3;
   var COLS = cfg.cols || ['connid','fldate','seatsocc','seatsmax'];
   var NUM = cfg.numeric || {seatsocc:true, seatsmax:true};

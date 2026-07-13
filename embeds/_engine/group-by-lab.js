@@ -55,7 +55,7 @@
         return '<tr>' + k.split(' · ').map(function (v) { return '<td>' + esc(v) + '</td>'; }).join('') + '</tr>';
       }).join('');
       resHost.innerHTML = '<table class="gbl-tbl gbl-res"><thead>' + head + '</thead><tbody>' + body + '</tbody></table>';
-      noteEl.innerHTML = '<b>SELECT DISTINCT ' + curKeys().join(', ') + '</b> — 중복만 제거한 <b>' + go.order.length + '행</b>. 집계(건수·합계)는 없습니다.';
+      noteEl.innerHTML = '<b>SELECT DISTINCT ' + curKeys().join(' ') + '</b> — 중복만 제거한 <b>' + go.order.length + '행</b>. 집계(건수·합계)는 없습니다.';
       return;
     }
     var aggs = aggregate();
@@ -67,7 +67,7 @@
       return '<tr>' + keyCells + '<td class="num">' + g.cnt + '</td><td class="num">' + g.sum + '</td><td class="num">' + g.max + '</td></tr>';
     }).join('');
     resHost.innerHTML = '<table class="gbl-tbl gbl-res"><thead>' + head + '</thead><tbody>' + body + '</tbody></table>';
-    noteEl.innerHTML = '원본 <b>' + CFG.rows.length + '행</b> → <b>GROUP BY ' + curKeys().join(', ') + '</b> → <b>' + aggs.length + '행</b>으로 접힘. 그룹 키가 아닌 평컬럼(예: 고객)은 한 그룹에 여러 값이라 그대로 못 고릅니다.';
+    noteEl.innerHTML = '원본 <b>' + CFG.rows.length + '행</b> → <b>GROUP BY ' + curKeys().join(' ') + '</b> → <b>' + aggs.length + '행</b>으로 접힘. 그룹 키가 아닌 평컬럼(예: 고객)은 한 그룹에 여러 값이라 그대로 못 고릅니다.';
   }
 
   function renderSeg(host, items, activeI, attr) {

@@ -69,16 +69,16 @@
 21
 22</pre><pre class="abap-editor__code"><code><span class="tok-kw">TABLES</span> zbooking.
 
-<span class="tok-kw">SELECT-OPTIONS</span>: s_conc <span class="tok-kw">FOR</span> zbooking-concert_id,
-                s_stat <span class="tok-kw">FOR</span> zbooking-status.
+<span class="tok-kw">SELECT-OPTIONS</span>: so_conc <span class="tok-kw">FOR</span> zbooking-concert_id,
+                so_stat <span class="tok-kw">FOR</span> zbooking-status.
 
 <span class="tok-kw">DATA</span>: lt_book <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> zbooking,
       lo_alv  <span class="tok-kw">TYPE</span> <span class="tok-kw">REF</span> <span class="tok-kw">TO</span> cl_salv_table.
 
 <span class="tok-kw">START-OF-SELECTION</span>.
   <span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> zbooking <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> lt_book
-    <span class="tok-kw">WHERE</span> concert_id <span class="tok-kw">IN</span> s_conc
-      <span class="tok-kw">AND</span> status     <span class="tok-kw">IN</span> s_stat.
+    <span class="tok-kw">WHERE</span> concert_id <span class="tok-kw">IN</span> so_conc
+      <span class="tok-kw">AND</span> status     <span class="tok-kw">IN</span> so_stat.
 
   <span class="tok-kw">TRY</span>.
       cl_salv_table=&gt;factory(
@@ -91,12 +91,12 @@
   <span class="tok-kw">ENDTRY</span>.</code></pre></div></div>
 <p>여기서 핵심은 SALV가 아니라 위에서 <strong>이 두 줄</strong>이다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
-2</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT-OPTIONS</span>: s_conc <span class="tok-kw">FOR</span> zbooking-concert_id,
-                s_stat <span class="tok-kw">FOR</span> zbooking-status.</code></pre></div></div>
+2</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT-OPTIONS</span>: so_conc <span class="tok-kw">FOR</span> zbooking-concert_id,
+                so_stat <span class="tok-kw">FOR</span> zbooking-status.</code></pre></div></div>
 <p>그리고 조건이다. 두 줄 사이는 <code>AND</code>라 <strong>둘 다</strong> 만족하는 예매만 남는다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
-2</pre><pre class="abap-editor__code"><code><span class="tok-kw">WHERE</span> concert_id <span class="tok-kw">IN</span> s_conc
-  <span class="tok-kw">AND</span> status     <span class="tok-kw">IN</span> s_stat.</code></pre></div></div>
+2</pre><pre class="abap-editor__code"><code><span class="tok-kw">WHERE</span> concert_id <span class="tok-kw">IN</span> so_conc
+  <span class="tok-kw">AND</span> status     <span class="tok-kw">IN</span> so_stat.</code></pre></div></div>
 <blockquote>
 <p>상태값은 업무 의미가 있다 — <strong><code>N</code> = 예약, <code>C</code> = 취소</strong>. 이런 고정값의 관리(Domain·
 고정값)는 <a href="CH03-L01.html">Chapter 3 · Domain</a>에서 배운 DDIC 개념으로 돌아가 확인한다.</p>
@@ -119,13 +119,13 @@
 <li><strong>두 조건을 OR로 오해</strong> → 코드에 <code>AND</code>가 있으니 공연·상태 <strong>둘 다</strong> 만족해야 한다.</li>
 <li><strong>0건과 SALV 오류 혼동</strong> → 조회가 0건이어도 SALV는 <strong>빈 표</strong>를 띄운다. SALV 생성
 실패(<code>cx_salv_msg</code>)와는 다른 문제다.</li>
-<li><strong>classic 유지</strong> → <code>IN s_conc</code>는 classic range다. modern <code>@</code>는
+<li><strong>classic 유지</strong> → <code>IN so_conc</code>는 classic range다. modern <code>@</code>는
 <a href="CH19-L01.html">Chapter 19 · Modern Open SQL</a>.</li>
 </ul>
 </section><section class="lblock"><h2>정리</h2>
 <ul>
 <li><button class="term" type="button" data-term="SELECT-OPTIONS">SELECT-OPTIONS</button>가 공연·상태 조건을 selection table로 만든다.</li>
-<li><code>WHERE concert_id IN s_conc AND status IN s_stat</code>는 <strong>두 조건을 모두</strong> 만족하는 예매만 조회한다.</li>
+<li><code>WHERE concert_id IN so_conc AND status IN so_stat</code>는 <strong>두 조건을 모두</strong> 만족하는 예매만 조회한다.</li>
 <li>빈 range는 전체 통과가 될 수 있으니 주의한다.</li>
 <li><a href="CH11-L01.html">Chapter 11 · SALV</a> 표시와 결합하면 <strong>조건 입력형 예매 목록 리포트</strong>가 된다.</li>
 </ul>

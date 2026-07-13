@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<!-- CH06-L02-S02 — 엔진: decision-tree · _engine/_base.css. Table Kind(STANDARD/SORTED/HASHED) 선택 트리.
+     게이팅: CH06-L02 범위(세 종류의 특징·인덱스 접근 유무). -->
+<html lang="ko" data-eng="decision-tree">
+<head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Table Kind 선택 · CH06-L02-S02</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/decision-tree.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">어떤 Table Kind를 쓸까? — 선택 트리</p>
+  <p class="lead">문법을 외우기 전에 "이 테이블로 <b>무엇을 자주 할 것인가</b>"를 먼저 물어보세요. 질문에 답하면 맞는 종류를 추천해 줍니다.</p>
+  <div class="path" id="path"></div>
+  <div class="card" id="card"></div>
+  <div class="note">💡 처음에는 <b>STANDARD</b>로 충분합니다. SORTED/HASHED는 접근 패턴이 분명하고 성능이 실제로 문제될 때 선택하세요. 성능을 재 보지도 않고 SORTED/HASHED가 무조건 빠르겠거니 고르는 것은 좋은 설계가 아닙니다.</div>
+  <script type="application/json" id="dt-cfg">
+  {
+    "start": "n1",
+    "nodes": {
+      "n1": { "q": "이 테이블로 <b>가장 자주 하는 일</b>은?", "opts": [
+        { "label": "쌓아 두고 순서대로 훑는다 (LOOP·출력)", "ic": "📜", "result": "standard" },
+        { "label": "특정 키로 한 건을 계속 찾는다", "ic": "🔍", "to": "n2" },
+        { "label": "항상 정렬된 상태를 유지하며 범위를 본다", "ic": "📶", "result": "sorted" } ] },
+      "n2": { "q": "찾는 키가 <b>유일</b>(중복 없음)하고 데이터가 많은가? (예: 사번으로 수만 명 중 한 명)", "opts": [
+        { "label": "그렇다 — 유일 키 · 대량 · 단건 조회 반복", "ic": "⚡", "result": "hashed" },
+        { "label": "아니다 — 중복이 있거나 데이터가 적다", "ic": "➡", "to": "n3" } ] },
+      "n3": { "q": "찾기와 함께 <b>정렬 상태 유지</b>도 필요한가?", "opts": [
+        { "label": "필요하다 — 늘 키 순서로 보고 싶다", "ic": "✅", "result": "sorted" },
+        { "label": "아니다 — 입력 순서면 충분", "ic": "✅", "result": "standard" } ] }
+    },
+    "results": {
+      "standard": { "rank": "기본 선택", "title": "STANDARD TABLE", "desc": "입력 순서를 유지하고 인덱스 접근(sy-tabix·INDEX)이 됩니다. 대부분의 입문·일반 처리는 이것으로 충분. 키로 자주 찾아야 하면 SORT 후 BINARY SEARCH 조합도 있습니다(다음 레슨)." },
+      "sorted": { "rank": "정렬 유지", "title": "SORTED TABLE", "desc": "키 순서가 자동으로 유지되고, 키 탐색이 이진 탐색으로 빠릅니다. 인덱스 접근도 됩니다. 정렬 상태·키 범위 탐색이 중요할 때 선택." },
+      "hashed": { "rank": "대량 단건 특화", "title": "HASHED TABLE", "desc": "해시로 단건 키 접근 속도가 행 수와 거의 무관합니다. 대신 키가 UNIQUE여야 하고, 인덱스 접근(sy-tabix·INDEX)은 불가 — 키로만 찾습니다." }
+    }
+  }
+  </script>
+</div>
+<script src="../_engine/decision-tree.js" defer></script>
+</body>
+</html>

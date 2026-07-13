@@ -19,18 +19,18 @@
 
   function renderPreview() {
     var cmt = comment === 'on'
-      ? '<span class="slb-comment-txt linked">※ 공연 코드를 입력하세요 (FOR FIELD p_conc 연결됨)</span>'
+      ? '<span class="slb-comment-txt linked">※ 공연 코드를 입력하세요 (FOR FIELD pa_conc 연결됨)</span>'
       : '<span class="slb-comment-txt weak">※ 공연 코드를 입력하세요 (FOR FIELD 없음 — 연결 약함)</span>';
     previewEl.innerHTML =
       '<div class="slb-toolbar"><span class="tlabel">application toolbar</span>' +
         '<button class="slb-fkey" data-uc="FC01" data-label="도움말">도움말 (FC01)</button></div>' +
       '<div class="slb-frame"><span class="ftitle">기본 조건</span>' +
-        '<div class="slb-line"><span class="flbl">p_conc</span><input type="text" value="' + esc(CFG.concertId) + '" readonly></div>' +
+        '<div class="slb-line"><span class="flbl">pa_conc</span><input type="text" value="' + esc(CFG.concertId) + '" readonly></div>' +
         '<div class="slb-line">' + cmt + '</div>' +
-        '<div class="slb-line"><span class="slb-chk"><input type="checkbox"> p_all (전체 포함)</span></div>' +
+        '<div class="slb-line"><span class="slb-chk"><input type="checkbox"> pa_all (전체 포함)</span></div>' +
         '<div class="slb-line"><span class="slb-radio">' +
-          '<span><i class="slb-dot ' + (radio === 'sum' ? 'on' : '') + '" data-r="sum"></i> 요약(p_sum)</span>' +
-          '<span><i class="slb-dot ' + (radio === 'det' ? 'on' : '') + '" data-r="det"></i> 상세(p_det)</span>' +
+          '<span><i class="slb-dot ' + (radio === 'sum' ? 'on' : '') + '" data-r="sum"></i> 요약(pa_sum)</span>' +
+          '<span><i class="slb-dot ' + (radio === 'det' ? 'on' : '') + '" data-r="det"></i> 상세(pa_det)</span>' +
         '</span></div>' +
         '<button class="slb-pushbtn" data-uc="REF" data-label="조건 새로고침">조건 새로고침 (REF)</button>' +
       '</div>';

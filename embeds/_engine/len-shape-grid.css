@@ -1,0 +1,94 @@
+/* len-shape-grid — C·N·P 칸 시각화 + offset 하이라이트. config=window.LSG_CFG.
+   색은 전부 토큰/color-mix — 다크는 _base.css 토큰 전환으로 자동. */
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:transparent;line-height:1.55;}
+.wrap{padding:14px;}
+.hd{font-weight:800;font-size:1rem;margin:0 0 4px;}
+.lead{margin:0 0 14px;color:var(--ink-soft);font-size:.86rem;}
+.lead code,.lsg-t code{font-family:var(--mono);background:color-mix(in srgb,var(--brand) 11%,var(--surface));color:var(--brand);padding:1px 5px;border-radius:5px;}
+
+.lsg-sec{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:12px 14px;margin-bottom:12px;}
+.lsg-t{font-weight:800;font-size:.9rem;margin-bottom:8px;}
+.lsg-t small{font-weight:600;color:var(--ink-soft);}
+.lsg-varname{margin-bottom:9px;display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+.lsg-varname code{font-family:var(--mono);font-size:.82rem;color:var(--ink);background:color-mix(in srgb,var(--ink-soft) 9%,var(--surface));padding:2px 7px;border-radius:6px;}
+/* 부분 쓰기 후: 처음 값(취소선·흐림) → 현재 값(강조) — 초기값이 바뀐 게 아님을 시각화 */
+.lsg-varname .lsg-was{text-decoration:line-through;color:var(--soon);background:var(--surface);border:1px dashed var(--line);}
+.lsg-varname .lsg-became{color:var(--ink-soft);font-weight:800;}
+.lsg-varname .lsg-now{color:var(--accent);border:1px solid color-mix(in srgb,var(--accent) 45%,var(--line));background:color-mix(in srgb,var(--accent) 10%,var(--surface));}
+.lsg-wtag{font-size:.72rem;color:var(--ink-soft);}
+.lsg-wtag b{color:var(--accent);}
+
+.lsg-chips{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px;}
+.lsg-chip{font-family:var(--mono);font-size:.8rem;font-weight:700;color:var(--ink);background:var(--surface);
+  border:1px solid var(--line);border-radius:999px;padding:4px 12px;cursor:pointer;}
+.lsg-chip.on{border-color:var(--brand);color:var(--brand);background:color-mix(in srgb,var(--brand) 10%,var(--surface));}
+
+/* "눌러 보세요" 넛지 — 그룹 첫 클릭 전까지 살랑살랑(발견가능성) */
+.lsg-nudge{display:inline-flex;align-items:center;gap:4px;font-size:.74rem;font-weight:800;color:var(--brand);
+  background:color-mix(in srgb,var(--brand) 10%,var(--surface));
+  border:1px dashed color-mix(in srgb,var(--brand) 45%,var(--line));
+  border-radius:999px;padding:3px 10px;animation:lsgnudge 1.5s ease-in-out infinite;}
+@keyframes lsgnudge{0%,100%{transform:translateY(0);}50%{transform:translateY(-3px);}}
+@media (prefers-reduced-motion: reduce){.lsg-nudge{animation:none;}}
+
+.lsg-cells{display:flex;flex-wrap:wrap;align-items:flex-end;gap:4px;margin:4px 0 8px;}
+.lsg-cell{display:inline-flex;align-items:center;justify-content:center;width:34px;height:38px;
+  border:2px solid color-mix(in srgb,var(--ink-soft) 42%,var(--line));border-radius:7px;
+  background:color-mix(in srgb,var(--ink-soft) 8%,var(--surface));
+  font-family:var(--mono);font-weight:800;font-size:1rem;color:var(--ink);}
+.lsg-cell.pad{color:var(--soon);font-weight:600;border-style:dashed;background:var(--surface);}
+.lsg-cell.zero{color:var(--amber);border-color:color-mix(in srgb,var(--amber) 55%,var(--line));
+  background:color-mix(in srgb,var(--amber) 10%,var(--surface));}
+.lsg-cell.cut{color:var(--bad);border-color:var(--bad);border-style:dashed;background:color-mix(in srgb,var(--bad) 9%,var(--surface));
+  text-decoration:line-through;opacity:.85;}
+.lsg-cell.hit{border-color:var(--brand);background:color-mix(in srgb,var(--brand) 16%,var(--surface));color:var(--brand);}
+.lsg-cell.wrote{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,var(--surface));color:var(--accent);}
+.lsg-cell.over{border-color:var(--bad);border-style:dashed;color:var(--bad);background:color-mix(in srgb,var(--bad) 9%,var(--surface));}
+.lsg-cell.part{border-color:var(--amber);color:var(--amber);background:color-mix(in srgb,var(--amber) 12%,var(--surface));}
+
+/* P 바이트 칸 — 1바이트 상자 안에 숫자 슬롯 2개(마지막 상자는 1개+부호) */
+.lsg-bytes{gap:6px;}
+.lsg-byte{display:inline-flex;gap:2px;align-items:center;padding:4px;border:2px solid color-mix(in srgb,var(--ink-soft) 42%,var(--line));
+  border-radius:8px;background:color-mix(in srgb,var(--ink-soft) 8%,var(--surface));}
+.lsg-slot{display:inline-flex;align-items:center;justify-content:center;width:20px;height:28px;border-radius:5px;
+  background:var(--surface);border:1px solid var(--line);
+  font-family:var(--mono);font-weight:800;font-size:.9rem;color:var(--ink);}
+.lsg-slot.pad{color:var(--soon);font-weight:600;}
+.lsg-slot.sign{color:var(--good);border-color:color-mix(in srgb,var(--good) 55%,var(--line));
+  background:color-mix(in srgb,var(--good) 10%,var(--surface));font-size:.8rem;}
+.lsg-dot{font-family:var(--mono);font-weight:800;color:var(--warn);align-self:flex-end;padding-bottom:2px;}
+
+/* offset 인덱스 라벨 */
+.lsg-cellwrap{display:inline-flex;flex-direction:column;align-items:center;gap:2px;}
+.lsg-i{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);}
+.lsg-i.bad-i{color:var(--bad);font-weight:800;}
+
+.lsg-btns{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0 4px;}
+.lsg-btn{font-family:var(--mono);font-size:.78rem;font-weight:700;color:var(--ink);background:var(--surface);
+  border:1px solid var(--line);border-radius:9px;padding:6px 12px;cursor:pointer;}
+.lsg-btn:hover{border-color:color-mix(in srgb,var(--brand) 55%,var(--line));}
+.lsg-btn.on{border-color:var(--brand);color:var(--brand);background:color-mix(in srgb,var(--brand) 10%,var(--surface));}
+.lsg-btn.wr.on{border-color:var(--accent);color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,var(--surface));}
+
+/* 부분 쓰기 소스 비교 — base=var(--surface) 틴트(다크에서 안 깨짐) */
+.lsg-code{margin:8px 0;font-family:var(--mono);font-size:.84rem;line-height:1.7;color:var(--ink);
+  background:color-mix(in srgb,var(--ink-soft) 7%,var(--surface));border:1px solid var(--line);
+  border-radius:9px;padding:9px 12px;overflow-x:auto;white-space:pre;}
+.lsg-code .cmt{color:var(--accent);font-style:italic;}
+.lsg-code .hl{color:var(--brand);font-weight:800;}
+
+/* 판정 메시지 — base 중립, 상태는 명시 클래스(교훈3) */
+.lsg-msg{font-size:.82rem;color:var(--ink-soft);border-left:3px solid var(--line);
+  background:color-mix(in srgb,var(--ink-soft) 6%,var(--surface));border-radius:0 8px 8px 0;padding:7px 11px;}
+.lsg-msg b{color:var(--ink);}
+.lsg-msg code{font-family:var(--mono);}
+.lsg-msg.ok{border-left-color:var(--good);background:color-mix(in srgb,var(--good) 8%,var(--surface));}
+.lsg-msg.ok b{color:var(--good);}
+.lsg-msg.bad{border-left-color:var(--bad);background:color-mix(in srgb,var(--bad) 8%,var(--surface));}
+.lsg-msg.bad b{color:var(--bad);}
+
+.note{margin-top:13px;border-left:3px solid var(--brand);background:color-mix(in srgb,var(--brand) 7%,var(--surface));
+  border-radius:0 9px 9px 0;padding:9px 13px;font-size:.83rem;color:var(--ink-soft);line-height:1.6;}
+.note b{color:var(--ink);}
+.note code{font-family:var(--mono);background:color-mix(in srgb,var(--brand) 12%,var(--surface));padding:1px 5px;border-radius:4px;}

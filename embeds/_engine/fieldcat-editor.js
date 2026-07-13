@@ -1,4 +1,4 @@
-/* fieldcat-editor 엔진 — lt_fcat의 coltext/outputlen을 편집하면 lt_booking 미리보기 헤더가 즉시 바뀐다.
+/* fieldcat-editor 엔진 — lt_fcat의 coltext/outputlen을 편집하면 gt_booking 미리보기 헤더가 즉시 바뀐다.
    LOOP의 IF ls_fcat-fieldname = 'SEATS'(대문자)면 SEATS 컬럼 수정이 적용되고, 'seats'(소문자)면 DDIC 필드명과 안 맞아 적용 안 됨.
    골격 계약: .fce-case · #fceEditor · #fcePreview · #fceMsg.
    config: window.FCE_CFG = { cols:[{fieldname,default,len}], rows:[{}], caseField }. 높이: _autoheight.js. */
@@ -27,7 +27,7 @@
     }).join('');
   }
   function renderPreview() {
-    previewEl.innerHTML = '<div class="fce-gtt">lt_booking 미리보기</div><table class="fce-tbl"><thead><tr>' +
+    previewEl.innerHTML = '<div class="fce-gtt">gt_booking 미리보기</div><table class="fce-tbl"><thead><tr>' +
       CFG.cols.map(function (c) { return '<th>' + esc(headerOf(c.fieldname)) + '<span class="fn">' + esc(c.fieldname) + '</span></th>'; }).join('') + '</tr></thead><tbody>' +
       CFG.rows.map(function (r) { return '<tr>' + CFG.cols.map(function (c) { return '<td>' + esc(r[c.fieldname]) + '</td>'; }).join('') + '</tr>'; }).join('') +
       '</tbody></table>';

@@ -41,7 +41,7 @@
       <article class="prose">
 <section class="lblock"><h2>왜 — SQL은 DB에서, 변수는 ABAP에서 🌉</h2>
 <p><code>SELECT</code> 문장은 <strong>데이터베이스</strong>에서 실행된다. 그런데 ABAP 변수 값은 <strong>애플리케이션 서버 <button class="term" type="button" data-term="메모리">메모리</button></strong>에 있다. 이 둘을 이으려면 &quot;이 이름은 DB 컬럼이 아니라 ABAP 값이다&quot;라는 <strong>표시</strong>가 필요하다. 그 표시가 바로 <code>@</code>다.</p>
-<p>classic에서는 이게 이름 규칙(<code>lv_</code>)에만 기댔다 — 문법으로는 드러나지 않았다.</p>
+<p>classic에서는 이게 이름 규칙(<code>lv_</code>)에만 기댔다. 문법으로는 드러나지 않았다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -76,7 +76,7 @@
   <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> @<span class="tok-kw">DATA</span>(lt_flight).</code></pre></div></div>
 <p>여기서 <code>carrid</code>·<code>fldate</code>는 <strong>DB 컬럼</strong>, <code>@lv_carr</code>·<code>@lv_date</code>는 <strong>ABAP 값</strong>이다.</p>
 </section><section class="lblock"><h2>@( ) Host Expression — 식도 통째로 넘긴다 🧮</h2>
-<p>변수 하나가 아니라 <strong>계산식</strong>의 결과도 SQL에 넘길 수 있다. 이때는 <code>@( ... )</code>로 감싼다 — 이것이 <strong>host expression</strong>이다.</p>
+<p>변수 하나가 아니라 <strong>계산식</strong>의 결과도 SQL에 넘길 수 있다. 이때는 <code>@( ... )</code>로 감싼다. 이것이 <strong>host expression</strong>이다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -88,9 +88,9 @@
   <span class="tok-kw">FROM</span> sflight
   <span class="tok-kw">WHERE</span> seatsmax &gt; @( lv_base + <span class="tok-num">100</span> )
   <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> @<span class="tok-kw">DATA</span>(lt_large).</code></pre></div></div>
-<p><code>@( lv_base + 100 )</code>은 ABAP에서 계산한 결과를 SQL operand로 넘긴다. 단, 아무 식이나 밀어 넣는 통로가 아니다 — 그 결과는 SQL 자리가 요구하는 타입으로 <strong>lossless</strong>(값 손실 없이) 변환될 수 있어야 한다.</p>
+<p><code>@( lv_base + 100 )</code>은 ABAP에서 계산한 결과를 SQL operand로 넘긴다. 단, 아무 식이나 밀어 넣는 통로가 아니다. 그 결과는 SQL 자리가 요구하는 타입으로 <strong>lossless</strong>(값 손실 없이) 변환될 수 있어야 한다.</p>
 <blockquote>
-<p>🧩 <strong>&quot;식&quot;이 둘이라 헷갈린다 — 실행되는 곳이 다르다.</strong>
+<p>🧩 <strong>&quot;식&quot;이 둘이라 헷갈린다: 실행되는 곳이 다르다.</strong>
 <code>@( lv_base + 100 )</code>(host expression)은 <strong>ABAP에서</strong> 계산해 SQL에 넘긴다.
 반면 <code>CASE</code>·<code>COALESCE</code>·<code>SUBSTRING</code> 같은 <strong>SQL expression</strong>(다음 레슨들)은 <strong>DB에서</strong> 계산된다.</p>
 </blockquote>

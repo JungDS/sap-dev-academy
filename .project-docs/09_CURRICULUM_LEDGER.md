@@ -1,6 +1,6 @@
 # 09. CURRICULUM LEDGER — 커리큘럼 개념 원장 (개요 SSOT)
 
-> 📅 최종수정: 2026-06-30 15:01 KST
+> 📅 최종수정: 2026-07-13 19:52 KST
 > 🎯 **2트랙 36챕터의 챕터 맵 + 교차 설계 합의(경계·관통예제·도구 아크)의 단일 출처.**
 > 🧭 **per-lesson `introduces`/`prereq`/`prevRel`/`foreshadow`/`advanceUse` = 각 레슨 `.md` front-matter가 라이브 SSOT**([04 R10](04_CONVENTIONS.md)) — 이 문서는 레슨별 데이터를 중복하지 않고 *그 위의 개요·경계·관통설계*만 담는다(§F). 게이팅([04 R15](04_CONVENTIONS.md)) 점검 = front-matter ↔ 본문 ↔ R15.
 > ✅ 현행: 본문은 **CH01～36 전 레슨 작성 완료**(CH04 흐름제어 삽입·전 챕터 리넘버 반영 끝). 전면 리빌드는 *선택* — 실행 절차는 [10_REBUILD_EXECUTION](10_REBUILD_EXECUTION.md).
@@ -35,9 +35,9 @@
 | 13 | Open SQL 2차: JOIN·집계 | 8 | INNER/LEFT JOIN·GROUP BY·집계·FOR ALL ENTRIES (classic) |
 | 14 | Classic DDIC View·유지보수 | 9 | Database/Projection/Maintenance View·TMG/SM30·SE16N |
 | 15 | Report Event·Selection Screen 심화 | 12 | Report Event·INITIALIZATION·AT SELECTION-SCREEN·MESSAGE 정식·화면 UI |
-| 16 | Screen Programming / Dynpro 기초 | 8 | Module Pool·Screen Painter·PBO/PAI·OK_CODE·BACK/EXIT |
+| 16 | Screen Programming / Dynpro 기초 | 10 | Module Pool·Screen Painter·화면요소·TABLES 운반·Dynpro F1/F4(POV)·PBO/PAI·OK_CODE·PF-STATUS·Custom Control |
 | 17 | Grid ALV 기초 | 10 | `CL_GUI_ALV_GRID`·Field Catalog·Layout·행 색 |
-| **18** | **Modern ABAP Syntax** | 7 | 🔶**문법 경계** — inline `DATA()`·`VALUE`·`CORRESPONDING`·Table Expr·`\|…\|`·`+=` |
+| **18** | **Modern ABAP Syntax** | 11 | 🔶**문법 경계** — inline `DATA()`·`VALUE`·`CORRESPONDING`·Table Expr·`\|…\|`·`CONV`/`EXACT`·`COND`/`SWITCH`·`REDUCE`/`FILTER`·`LET`·`+=` |
 | **19** | **New Open SQL / Modern ABAP SQL** | 8 | 🔶**SQL 경계** — `@`·`@DATA`·콤마·SQL식·Right/Full JOIN |
 | 20 | OO ABAP 기본 설계 | 10 | Class·Visibility·Constructor·Interface·Inheritance·OO Event·예외 TRY/CATCH·CAST |
 | 21 | SALV/Grid ALV 표시 제어 심화 | 8 | Cell Color/Style·Stable Refresh·SALV-OOP 이벤트 *체험* |

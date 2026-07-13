@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<!-- CH05-L03-S01 — 엔진: struct-reuse-board(신규) + _autoheight · _engine/_base.css. 구조 재사용 3방식 비교.
+     중첩(하위 박스)/.INCLUDE(펼쳐진 그룹)/.APPEND(잠긴 표준+확장) 세그 → 다이어그램+접근 경로 + 경로 퀴즈 3문. config=window.SRB_CFG.
+     게이팅: 중첩·INCLUDE·APPEND 개념만(CH05-L03까지) — 확장 전략 심화는 CH29. -->
+<html lang="ko" data-eng="struct-reuse-board">
+<head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Structure 재사용 3방식 · CH05-L03-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/struct-reuse-board.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">중첩 vs .INCLUDE vs .APPEND <small>(모양과 접근 경로)</small></p>
+  <p class="lead">같은 재료(주소·생성 이력 필드)를 넣어도 <b>어떤 모양으로 들어가느냐</b>가 다릅니다 — 방식을 바꿔 가며 다이어그램과 <b>접근 경로</b>를 비교하고, 아래 퀴즈로 감각을 점검하세요.</p>
+  <div data-srb></div>
+</div>
+<script>
+window.SRB_CFG = {
+  modes: {
+    nested: {
+      label: '① 중첩',
+      ownerName: 'gs_order (로컬)',
+      own: ['order_id', 'qty'],
+      ins: { name: 'head (TYPE zst_order_head)', fields: ['customer', 'order_date'] },
+      path: 'gs_order-head-customer',
+      pathNote: '묶음이 유지돼 단계마다 - 를 쓴다'
+    },
+    include: {
+      label: '② .INCLUDE',
+      ownerName: 'ZST_ORDER (DDIC)',
+      own: ['ORDER_ID', 'CUSTOMER', 'AMOUNT'],
+      ins: { name: 'ZST_AUDIT', fields: ['CREATED_BY', 'CREATED_ON'] },
+      path: 'gs_order-created_by',
+      pathNote: '펼쳐져 들어와 내 필드처럼 바로 접근'
+    },
+    append: {
+      label: '③ .APPEND',
+      ownerName: 'SAP 표준 Structure',
+      own: ['MANDT', 'MATNR', 'MAKTX'],
+      ins: { name: 'ZAPP_MY_EXT', fields: ['ZZGRADE', 'ZZMEMO'] },
+      path: 'gs_mat-zzgrade',
+      pathNote: '원본은 잠긴 채, 확장 필드는 바로 접근'
+    }
+  },
+  quiz: [
+    { q: '중첩 Structure에서 주문 헤더 안의 고객명은?',
+      choices: ['gs_order-customer', 'gs_order-head-customer', 'gs_order.head.customer'],
+      a: 1, why: '중첩은 묶음이 유지되므로 단계마다 하이픈 — head를 거쳐 들어간다.' },
+    { q: '.INCLUDE된 ZST_AUDIT의 생성자는?',
+      choices: ['gs_order-audit-created_by', 'gs_order-created_by', 'gs_order-include-created_by'],
+      a: 1, why: '.INCLUDE는 펼쳐져 들어와 내 필드처럼 한 단계로 접근한다.' },
+    { q: '.APPEND로 표준에 더한 ZZGRADE는?',
+      choices: ['gs_mat-zapp_my_ext-zzgrade', 'gs_mat-zzgrade', '표준이라 접근 불가'],
+      a: 1, why: '확장 필드도 펼쳐진 Component처럼 바로 접근한다 — 원본을 안 고쳤을 뿐.' }
+  ],
+  note: '<b>중첩=묶음 보존</b>(경로 깊어짐) · <b>.INCLUDE=공통 묶음 재사용</b>(펼쳐짐·이름 충돌 주의) · <b>.APPEND=표준 안전 확장</b>(원본 불변). 확장 전략은 한참 뒤 챕터에서 자세히 다룹니다.'
+};
+</script>
+<script src="../_engine/struct-reuse-board.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

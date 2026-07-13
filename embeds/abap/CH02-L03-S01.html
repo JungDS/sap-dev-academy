@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<!-- CH02-L03-S01 — 엔진: len-shape-grid(신규) + _autoheight · _engine/_base.css. 길이 칸 실험실.
+     C 패딩/잘림 · N 앞 0 · P 바이트 칸(2×len−1)+부호 반 칸 · offset 하이라이트/범위초과/부분쓰기. config=window.LSG_CFG.
+     게이팅: C·N·P·LENGTH·DECIMALS·offset만(CH02-L03까지). -->
+<html lang="ko" data-eng="len-shape-grid">
+<head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>길이 칸 실험실 · CH02-L03-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/len-shape-grid.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">길이 칸 실험실 <small>(변수의 "모양"을 칸으로)</small></p>
+  <p class="lead"><code>LENGTH</code>를 지정하면 그만큼의 <b>칸</b>이 생깁니다. 값 칩을 바꿔 가며 C의 빈칸 채움·잘림, N의 앞 0, P의 바이트 칸을 눈으로 확인하고, 아래에서 <code>+시작(길이)</code>가 어느 칸을 집는지 눌러 보세요.</p>
+  <div data-lsg></div>
+</div>
+<script>
+window.LSG_CFG = {
+  items: [
+    { kind:'c', name:'gv_code', len:4, samples:['AB','ABCD','ABCDE'],
+      label:'C LENGTH 4 — 고정 길이 문자' },
+    { kind:'n', name:'gv_zip', len:5, samples:['123','01234'],
+      label:'N LENGTH 5 — 숫자형 문자(앞 0 보존)' },
+    { kind:'p', name:'gv_amt', len:8, dec:2, sample:'123.45',
+      label:'P LENGTH 8 DECIMALS 2 — 압축 소수(한 칸에 숫자 2자리)' }
+  ],
+  offset: {
+    name:'gv_date', value:'20260630',
+    ranges:[
+      { off:0, len:4, lab:'+0(4) 연' },
+      { off:4, len:2, lab:'+4(2) 월' },
+      { off:6, len:2, lab:'+6(2) 일' },
+      { off:7, len:2, lab:'+7(2) 초과?' }
+    ],
+    write:{ off:6, len:2, val:'01' }
+  },
+  note: 'C·N의 LENGTH는 <b>글자 수</b>(한 칸 = 문자 1개)지만, P의 LENGTH는 <b>칸(바이트) 수</b>입니다. 한 칸에 숫자를 <b>2자리씩</b> 담고, <b>마지막 칸의 한 자리는 부호(+/−)가 차지</b>합니다. offset의 시작 위치는 <b>0부터</b> 세고, <b>시작+길이가 전체 길이를 넘으면</b> 오류입니다.'
+};
+</script>
+<script src="../_engine/len-shape-grid.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

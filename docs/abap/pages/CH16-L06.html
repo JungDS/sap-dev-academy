@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PF-STATUS와 TITLEBAR · Screen Programming / Dynpro 기초 · SAP Developer Academy</title>
+<title>PBO 처리 흐름 · Screen Programming / Dynpro 기초 · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -34,33 +34,31 @@
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 16 › Lesson 6</nav>
       <section class="lhead">
         <p class="lhead__eyebrow">Screen Programming / Dynpro 기초</p>
-        <h1>PF-STATUS와 TITLEBAR</h1>
-        <p class="lhead__direction">화면 위 메뉴·툴바·기능키와 제목을 달고, function code를 PAI와 맞춘다.</p>
+        <h1>PBO 처리 흐름</h1>
+        <p class="lhead__direction">화면을 그리기 직전 — 상태·제목·목록·필드 속성을 준비한다.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 16</span><span class="tag tag--ls">Lesson 6</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>화면 위 메뉴·툴바 — GUI Status</h2>
-<p>화면에는 입력칸만 있는 게 아니다. 위쪽에는 <strong>메뉴바·표준 툴바·application toolbar·
-function key</strong>가 있고, 사용자는 그 버튼으로 저장하거나 뒤로 가거나 도움말을 연다.
-이 상단 버튼들의 function code를 묶은 객체가 <button class="term" type="button" data-term="GUI Status">GUI Status</button>(PF-STATUS)다.
-<code>SE41</code>(Menu Painter)에서 만들고, 어떤 버튼을 둘지·각 버튼의 FctCode를 정한다.</p>
-</section><section class="lblock"><h2>PBO에서 켜기 — SET PF-STATUS · SET TITLEBAR</h2>
-<p><button class="term" type="button" data-term="GUI Status">GUI Status</button>와 제목은 <a href="CH16-L04.html">PBO 처리 흐름</a>의 <code>MODULE ... OUTPUT</code>에서 켠다.</p>
+<section class="lblock"><h2>화면을 그리기 직전 — PBO</h2>
+<p><button class="term" type="button" data-term="PBO">PBO</button>(Process Before Output)는 화면이 사용자에게 <strong>보이기 직전</strong>에 실행된다.
+사용자가 버튼을 누른 뒤 준비하면 이미 늦다. 제목·툴바를 붙이고, 드롭다운 목록을 채우고,
+특정 조건에서 입력칸을 읽기 전용으로 바꾸는 일은 <strong>화면이 뜨기 전에</strong> 끝나야 한다.</p>
+<p><code>PROCESS BEFORE OUTPUT</code> 블록에서 부른 <code>MODULE ... OUTPUT</code> 모듈들이 PBO에서 실행된다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
-4</pre><pre class="abap-editor__code"><code><span class="tok-kw">MODULE</span> status_0100 <span class="tok-kw">OUTPUT</span>.
-  <span class="tok-kw">SET</span> <span class="tok-kw">PF-STATUS</span> <span class="tok-str">'ST100'</span>.     <span class="tok-com">" 이 화면에 쓸 GUI Status</span>
-  <span class="tok-kw">SET</span> <span class="tok-kw">TITLEBAR</span>  <span class="tok-str">'TB100'</span>.     <span class="tok-com">" 제목 표시줄</span>
+4</pre><pre class="abap-editor__code"><code><span class="tok-kw">MODULE</span> status_0100 <span class="tok-kw">OUTPUT</span>.        <span class="tok-com">" OUTPUT = PBO에서 실행</span>
+  <span class="tok-kw">SET</span> <span class="tok-kw">PF-STATUS</span> <span class="tok-str">'ST100'</span>.          <span class="tok-com">" 메뉴·툴바</span>
+  <span class="tok-kw">SET</span> <span class="tok-kw">TITLEBAR</span>  <span class="tok-str">'TB100'</span>.          <span class="tok-com">" 제목</span>
 <span class="tok-kw">ENDMODULE</span>.</code></pre></div></div>
-<ul>
-<li><code>SET PF-STATUS</code>로 상태를 켜면, 그 버튼이 눌릴 때 FctCode가 <code>OK_CODE</code>로 온다
-(<a href="CH16-L05.html">PAI 처리 흐름 — OK_CODE와 화면 떠나기</a>).</li>
-<li>설정 후 <code>sy-pfkey</code>에 현재 status 이름이, <code>sy-title</code>에 제목이 들어온다.</li>
-</ul>
-</section><section class="lblock"><h2>버튼을 동적으로 숨기기 — EXCLUDING</h2>
-<p>특정 상황에서 일부 버튼만 비활성화하려면 <code>EXCLUDING</code>에 <strong>제외할 function code 목록</strong>을 넘긴다.
-(공식문서: <code>EXCLUDING</code>된 기능은 화면에서 선택할 수 없게 된다.)</p>
+<blockquote>
+<p>🔎 <strong>[선행 사용]</strong> <code>SET PF-STATUS</code>·<code>SET TITLEBAR</code>는 화면 위쪽 <strong>메뉴·툴바·제목</strong>을
+켜는 문장이다. 여기선 &quot;PBO가 이것도 준비한다&quot;만 알면 된다 — 자세한 문법은
+<a href="CH16-L08.html">PF-STATUS와 TITLEBAR</a>에서.</p>
+</blockquote>
+</section><section class="lblock"><h2>필드 속성 동적 제어 — LOOP AT SCREEN</h2>
+<p>상황에 따라 특정 칸을 <strong>읽기 전용/숨김</strong>으로 바꾸려면, 현재 화면의 요소 속성을
+<code>LOOP AT SCREEN</code>으로 하나씩 돌며 고친다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -70,49 +68,47 @@ function key</strong>가 있고, 사용자는 그 버튼으로 저장하거나 �
 7
 8
 9
-10
-11
-12
-13</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> gt_excl  <span class="tok-kw">TYPE</span> <span class="tok-kw">STANDARD</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> sy-ucomm.
-<span class="tok-kw">DATA</span> gv_fcode <span class="tok-kw">TYPE</span> sy-ucomm.
+10</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> gs_screen <span class="tok-kw">TYPE</span> <span class="tok-kw">screen</span>.
 
-<span class="tok-kw">MODULE</span> status_0100 <span class="tok-kw">OUTPUT</span>.
-  <span class="tok-kw">CLEAR</span> gt_excl.
-  <span class="tok-kw">IF</span> p_locked = <span class="tok-str">'X'</span>.
-    gv_fcode = <span class="tok-str">'SAVE'</span>.
-    <span class="tok-kw">APPEND</span> gv_fcode <span class="tok-kw">TO</span> gt_excl.          <span class="tok-com">" 잠금 상태면 SAVE 비활성</span>
-  <span class="tok-kw">ENDIF</span>.
-
-  <span class="tok-kw">SET</span> <span class="tok-kw">PF-STATUS</span> <span class="tok-str">'ST100'</span> EXCLUDING gt_excl.
-  <span class="tok-kw">SET</span> <span class="tok-kw">TITLEBAR</span>  <span class="tok-str">'TB100'</span> <span class="tok-kw">WITH</span> p_conc.     <span class="tok-com">" 아래 참고</span>
+<span class="tok-kw">MODULE</span> modify_screen_0100 <span class="tok-kw">OUTPUT</span>.
+  <span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> <span class="tok-kw">SCREEN</span> <span class="tok-kw">INTO</span> gs_screen.
+    <span class="tok-kw">IF</span> gs_screen-name = <span class="tok-str">'GV_SEATS'</span> <span class="tok-kw">AND</span> gv_locked = <span class="tok-str">'X'</span>.
+      gs_screen-input = <span class="tok-str">'0'</span>.              <span class="tok-com">" 0 = 읽기 전용 (1 = 입력 가능)</span>
+      <span class="tok-kw">MODIFY</span> <span class="tok-kw">SCREEN</span> <span class="tok-kw">FROM</span> gs_screen.       <span class="tok-com">" 반드시 반영</span>
+    <span class="tok-kw">ENDIF</span>.
+  <span class="tok-kw">ENDLOOP</span>.
 <span class="tok-kw">ENDMODULE</span>.</code></pre></div></div>
-</section><section class="lblock"><h2>제목에 값 넣기 — TITLEBAR ... WITH</h2>
-<p>제목 텍스트에 <code>&amp;1</code>~`&amp;9<code>자리표시자를 두고</code>WITH<code>로 값을 채운다. 제목 </code>TB100<code>이 **</code>공연 &amp;1 예매<code>** 라면, </code>SET TITLEBAR &#39;TB100&#39; WITH p_conc<code>는 </code>공연 C001 예매`가 된다.</p>
+<ul>
+<li><code>gs_screen-input = &#39;0&#39;</code> → 읽기 전용, <code>&#39;1&#39;</code> → 입력 가능. 바꾼 뒤 <strong><code>MODIFY SCREEN FROM gs_screen</code></strong> 을 해야 화면에 반영된다.</li>
+<li>⚠️ <strong>읽기 전용만 원하면 <code>input = 0</code></strong> 을 쓴다. <code>active = 0</code>은 입력·출력·표시에 <strong>모두</strong>
+영향을 줘 칸이 아예 사라질 수 있다.</li>
+<li>⚠️ 화면 속성은 <strong><button class="term" type="button" data-term="PBO">PBO</button>가 돌 때마다 기본값으로 다시 계산</strong>된다. 조건을 계속 유지하려면
+PBO에서 <strong>매번 다시</strong> 설정해야 한다.</li>
+</ul>
 <blockquote>
-<p>제목은 장식이 아니다 — 사용자가 <strong>지금 어느 공연·어느 업무 화면</strong>에 있는지 알려 주는 안전 장치다.</p>
+<p>📌 짧은 <code>LOOP AT SCREEN.</code>/<code>MODIFY SCREEN.</code>(내장 <code>screen</code>) 형식은 공식문서가 피하는
+표기다 — 명시 work area(<code>INTO gs_screen</code> … <code>FROM gs_screen</code>)를 쓴다.</p>
 </blockquote>
-</section><section class="lblock"><h2>직접 매핑해 보기 — Toolbar와 Function Code 매핑판</h2>
-<p>툴바 버튼을 눌러 그 <strong>function code가 <code>OK_CODE</code>로 전달</strong>되고 PAI <code>CASE</code>에서 처리되는지 보자.
-잠금으로 <code>SAVE</code>를 <code>EXCLUDING</code>하면 어떻게 빠지는지, 그리고 <strong>CASE에 없는 버튼(<code>HELP</code>)</strong> 을
-누르면 어떤 경고가 뜨는지 확인하자.</p>
-<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">Toolbar와 Function Code 매핑판</span><a class="embed__open" href="../../../embeds/abap/CH16-L06-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH16-L06-S01.html" loading="lazy" title="Toolbar와 Function Code 매핑판" style="height:600px"></iframe></figure>
+</section><section class="lblock"><h2>직접 준비해 보기 — PBO 화면 준비 스텝퍼</h2>
+<p><button class="term" type="button" data-term="PBO">PBO</button>를 한 단계씩 진행하며 <code>sy-pfkey</code>·<code>sy-title</code>이 설정되고, <code>LOOP AT SCREEN</code>에서
+<code>GV_SEATS</code>를 잡아 읽기 전용으로 바꾸는 과정을 보자. 특히 <strong><code>MODIFY SCREEN</code>을 누르기 전엔
+미리보기가 바뀌지 않는</strong> 것을 확인하자.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">PBO 화면 준비 스텝퍼</span><a class="embed__open" href="../../../embeds/abap/CH16-L06-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH16-L06-S01.html" loading="lazy" title="PBO 화면 준비 스텝퍼" style="height:640px"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>PF-STATUS 미설정</strong> → 표준 버튼만 떠 내 기능키가 없다. PBO에서 늦지 않게 <code>SET PF-STATUS</code>.</li>
-<li><strong>FctCode 불일치</strong> → Menu Painter의 버튼 코드와 <code>CASE save_ok</code> 값이 <strong>같아야</strong> 한다.
-다르면 버튼은 눌렸지만 처리할 branch가 없다.</li>
-<li><strong><code>EXCLUDING</code> 오타</strong> → 없는 function code를 넣으면 조용히 무시된다. 코드를 점검한다.</li>
-<li><strong>제목 placeholder 누락</strong> → <code>&amp;1</code>이 있는데 <code>WITH</code>를 안 주면 자리표시자가 그대로 보인다.</li>
+<li><strong><code>MODIFY SCREEN</code> 누락</strong> → 속성을 바꿔도 화면에 반영되지 않는다.</li>
+<li><strong><button class="term" type="button" data-term="PBO">PBO</button>에서 무거운 DB 조회 반복</strong> → 화면이 뜰 때마다 느려진다. 꼭 필요한 준비만.</li>
+<li><strong><code>active = 0</code>으로 읽기 전용 시도</strong> → 칸이 사라진다. 읽기 전용은 <code>input = 0</code>.</li>
+<li><strong>한 번 설정했으니 유지될 것이라 기대</strong> → 속성은 PBO마다 reset된다. 매 PBO에서 다시 설정.</li>
 </ul>
 </section><section class="lblock"><h2>정리</h2>
 <ul>
-<li><strong>PF-STATUS</strong>는 화면 위 버튼과 function code의 설계도, <strong>TITLEBAR</strong>는 현재 화면의 업무 맥락이다.</li>
-<li>둘 다 <strong>PBO에서</strong> 설정하고(<code>EXCLUDING</code>으로 동적 비활성화, <code>WITH</code>로 제목 값 채움),
-PAI의 <code>OK_CODE</code> 처리와 <strong>같은 function code 체계</strong>로 맞춘다.</li>
+<li><strong><button class="term" type="button" data-term="PBO">PBO</button></strong>는 사용자가 보기 전에 화면을 <strong>준비</strong>하는 단계다: 상태·제목·드롭다운·필드 속성.</li>
+<li>바꾼 화면 속성은 <code>MODIFY SCREEN FROM gs_screen</code>으로 반영하고, 속성은 <strong>PBO마다 다시 계산</strong>된다.</li>
 </ul>
 <hr>
-<p>화면·입력·메뉴까지 갖췄다. 이제 화면 안에 ALV·트리 같은 <strong>컨트롤</strong>을 박는 자리,
-Custom Control을 보자 → <a href="CH16-L07.html">Custom Control과 Container · Tabstrip · Subscreen</a>.</p>
+<p>화면을 준비해 띄웠다. 이제 사용자가 버튼을 누른 뒤, 입력을 처리하는 <strong>PAI</strong>를 보자
+→ <a href="CH16-L07.html">PAI 처리 흐름 — OK_CODE와 화면 떠나기</a>.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

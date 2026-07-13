@@ -26,10 +26,10 @@
     resultEl.innerHTML =
       '<div class="adq-box ' + (subrc ? 'zero' : '') + '"><div class="k">sy-subrc</div><div class="v">' + subrc + '</div></div>' +
       '<div class="adq-box ' + (n ? '' : 'zero') + '"><div class="k">sy-dbcnt</div><div class="v">' + n + '</div></div>' +
-      '<div class="adq-box ' + (n ? '' : 'zero') + '"><div class="k">lt_booking 행</div><div class="v">' + n + '</div></div>';
+      '<div class="adq-box ' + (n ? '' : 'zero') + '"><div class="k">gt_booking 행</div><div class="v">' + n + '</div></div>';
     // grid
-    if (!n) gridEl.innerHTML = '<div class="adq-gtt">lt_booking (출력용)</div><div class="adq-empty">0건 — 빈 internal table</div>';
-    else gridEl.innerHTML = '<div class="adq-gtt">lt_booking (' + n + '행)</div><table class="adq-tbl"><thead><tr>' +
+    if (!n) gridEl.innerHTML = '<div class="adq-gtt">gt_booking (출력용)</div><div class="adq-empty">0건 — 빈 internal table</div>';
+    else gridEl.innerHTML = '<div class="adq-gtt">gt_booking (' + n + '행)</div><table class="adq-tbl"><thead><tr>' +
       CFG.cols.map(function (c) { return '<th>' + esc(c.label) + '</th>'; }).join('') + '</tr></thead><tbody>' +
       rows.map(function (r) { return '<tr>' + CFG.cols.map(function (c) { return '<td>' + esc(r[c.key]) + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table>';
     // message

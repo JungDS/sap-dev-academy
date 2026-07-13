@@ -73,6 +73,27 @@ go_grid-&gt;refresh_table_display(
 <span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.
   <span class="tok-kw">MESSAGE</span> <span class="tok-str">'ALV Grid 새로고침 중 문제가 발생했습니다.'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'S'</span>.
 <span class="tok-kw">ENDIF</span>.</code></pre></div></div>
+<p>세 상황을 한눈에 구분하자.</p>
+<table>
+<thead>
+<tr>
+<th>상황</th>
+<th>호출</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>표를 <strong>처음</strong> 그림</td>
+<td><code>set_table_for_first_display</code></td>
+</tr>
+<tr>
+<td>데이터 바뀌어 <strong>다시</strong> 그림</td>
+<td><code>refresh_table_display</code></td>
+</tr>
+<tr>
+<td>다시 그리되 <strong>보던 위치 유지</strong></td>
+<td><code>refresh_table_display</code> + <code>is_stable</code></td>
+</tr>
+</tbody></table>
 </section><section class="lblock"><h2>직접 갱신해 보기 — 데이터 vs 화면</h2>
 <p>왼쪽은 내부 테이블, 오른쪽은 화면 Grid다. <strong>예약 상태 변경</strong>을 누르면 <strong>왼쪽만</strong> 바뀐다
 (화면은 아직 옛 값). <strong>일반 Refresh</strong>는 화면을 맞추지만 스크롤이 맨 위로 튀고,
@@ -85,7 +106,7 @@ go_grid-&gt;refresh_table_display(
 <li><strong>매번 display 재호출</strong> → Grid를 만든 뒤에는 display 재호출이 아니라 <strong>refresh</strong>가 맞다.
 처음 구성(display)과 이후 갱신(refresh)을 분리해야 화면이 안정적이다.</li>
 <li><strong>stable 미사용</strong> → 갱신마다 맨 위로 튄다. 편집·갱신이 잦으면 <code>is_stable</code>을 준다.
-(단 정렬이 크게 바뀌거나 행이 삭제되면 위치 유지가 어려울 수 있다 — 그래도 일반 refresh보다 친절하다.)</li>
+(단 정렬이 크게 바뀌거나 행이 삭제되면 위치 유지가 어려울 수 있다. 그래도 일반 refresh보다 친절하다.)</li>
 </ul>
 </section><section class="lblock"><h2>정리</h2>
 <ul>

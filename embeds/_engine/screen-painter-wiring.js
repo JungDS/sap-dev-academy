@@ -25,16 +25,16 @@
 
   function renderGrid() {
     var b = brk();
-    var seatName = b === 'name' ? 'P_SEAT' : 'P_SEATS';
+    var seatName = b === 'name' ? 'GV_SEAT' : 'GV_SEATS';
     // ① Layout
     var layout = panel('① Layout', '화면 0100',
-      row('', '<span class="tag">입력칸</span>P_CONC') +
+      row('', '<span class="tag">입력칸</span>GV_CONC') +
       row(b === 'name' ? 'bad' : '', '<span class="tag">입력칸</span>' + seatName) +
       row('', '<span class="tag">버튼</span><span class="spw-btn-el">예매</span> FctCode SAVE'));
     // ② Element List
     var elist = panel('② Element List', '이름·타입·OK field',
-      row('', 'P_CONC <span class="tag">CHAR</span>') +
-      row(b === 'name' ? 'bad' : '', seatName + ' <span class="tag">NUMC</span>') +
+      row('', 'GV_CONC <span class="tag">CHAR</span>') +
+      row(b === 'name' ? 'bad' : '', seatName + ' <span class="tag">INT4</span>') +
       row(b === 'okfield' ? 'bad' : '', 'OK field: ' + (b === 'okfield' ? '(미지정)' : 'OK_CODE')));
     // ③ Flow Logic
     var flow = panel('③ Flow Logic', 'PBO/PAI → MODULE 호출',
@@ -44,8 +44,8 @@
       row('', '&nbsp;&nbsp;MODULE user_command_0100.'));
     // ④ ABAP Source
     var src = panel('④ ABAP Source', 'MODULE 정의·DATA',
-      row('', 'DATA p_conc.') +
-      row(b === 'name' ? 'bad' : '', 'DATA p_seats.' + (b === 'name' ? '  <span class="spw-cmt">≠ ' + seatName + '</span>' : '')) +
+      row('', 'DATA gv_conc.') +
+      row(b === 'name' ? 'bad' : '', 'DATA gv_seats.' + (b === 'name' ? '  <span class="spw-cmt">≠ ' + seatName + '</span>' : '')) +
       (b === 'module'
         ? row('bad', 'MODULE status_0100 OUTPUT. <span class="spw-cmt">(정의 없음)</span>')
         : row('', 'MODULE status_0100 OUTPUT. ... ENDMODULE.')) +
@@ -62,7 +62,7 @@
     }
     consoleEl.className = 'err';
     if (b === 'module') consoleEl.innerHTML = '🚫 활성화 오류 — 호출 대상 없음<small>Flow Logic이 <code>MODULE status_0100.</code>을 부르는데 ABAP에 <code>MODULE status_0100 OUTPUT.</code> 정의가 없습니다. 같은 이름으로 정의해야 연결됩니다.</small>';
-    else if (b === 'name') consoleEl.innerHTML = '🚫 data transport 안 됨 — 이름 불일치<small>화면 요소 <code>P_SEAT</code>와 변수 <code>p_seats</code> 이름이 달라 값이 자동 운반되지 않습니다. 같은 이름으로 맞추세요.</small>';
+    else if (b === 'name') consoleEl.innerHTML = '🚫 data transport 안 됨 — 이름 불일치<small>화면 요소 <code>GV_SEAT</code>와 변수 <code>gv_seats</code> 이름이 달라 값이 자동 운반되지 않습니다. 같은 이름으로 맞추세요.</small>';
     else if (b === 'okfield') consoleEl.innerHTML = '🚫 function code 못 읽음 — OK field 미지정<small>Element List에서 OK field(<code>OK_CODE</code>)를 지정해야 버튼의 function code를 안정적으로 읽습니다.</small>';
   }
 

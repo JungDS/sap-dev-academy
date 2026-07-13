@@ -1,5 +1,5 @@
 /* alv-readiness-panel 엔진 — 컨테이너→그리드를 단계로 만들고, "표가 아직 안 보이는 이유"를 준비 체크리스트로 보여 준다.
-   go_cont / go_grid는 단계 진행으로 ready, lt_booking·lt_fcat·display는 이 레슨에선 계속 비어 있음(pending) → 그래서 표가 안 보이는 게 정상.
+   go_cont / go_grid는 단계 진행으로 ready, gt_booking·gt_fcat·display는 이 레슨에선 계속 비어 있음(pending) → 그래서 표가 안 보이는 게 정상.
    i_parent를 비우면 그리드 생성이 fail(연결 깨짐).
    골격 계약: .arp-parent · [data-next] · [data-reset] · .arp-steps · #arpCheck · #arpMsg.
    config: window.ARP_CFG = { steps:[{evt,detail}], checks:[{key,label,readyAt,pending}], gridAt }. 높이: _autoheight.js. */
@@ -49,7 +49,7 @@
     if (!reached(CFG.gridAt)) { msgEl.className = ''; msgEl.innerHTML = '<b>▶ 다음 단계</b>로 컨테이너와 그리드를 만들어 보세요.'; return; }
     if (gridFail()) { msgEl.className = 'bad'; msgEl.innerHTML = '🚫 <code>i_parent</code>가 initial — 그리드를 화면 영역에 붙일 수 없습니다. <code>go_cont</code>를 넘기세요.'; return; }
     msgEl.className = 'ok';
-    msgEl.innerHTML = '✅ 그리드 생성됨 — 하지만 <b>표는 아직 안 보입니다.</b> <code>lt_booking</code>(데이터)·<code>lt_fcat</code>(Field Catalog)·<code>display</code>가 비어 있어서입니다. <b>실패가 아니라 정상</b> — 다음 레슨들에서 채웁니다.';
+    msgEl.innerHTML = '✅ 그리드 생성됨 — 하지만 <b>표는 아직 안 보입니다.</b> <code>gt_booking</code>(데이터)·<code>gt_fcat</code>(Field Catalog)·<code>display</code>가 비어 있어서입니다. <b>실패가 아니라 정상</b> — 다음 레슨들에서 채웁니다.';
   }
   function render() {
     renderParent(); renderSteps(); renderCheck(); renderMsg();

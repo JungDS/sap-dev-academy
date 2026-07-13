@@ -15,10 +15,10 @@
 
   function renderMain() {
     var applied = st.applied
-      ? '<div class="scv-applied">적용된 고급조건: p_max=' + esc(st.applied.pmax) + ' · p_log=' + (st.applied.plog ? "'X'" : "' '") + '</div>'
+      ? '<div class="scv-applied">적용된 고급조건: pa_max=' + esc(st.applied.pmax) + ' · pa_log=' + (st.applied.plog ? "'X'" : "' '") + '</div>'
       : '';
     mainEl.innerHTML = '<div class="snum">표준 선택화면 (1000)</div>' +
-      '<div class="scv-fld"><label>p_conc</label><input type="text" value="' + esc(st.conc) + '" readonly></div>' +
+      '<div class="scv-fld"><label>pa_conc</label><input type="text" value="' + esc(st.conc) + '" readonly></div>' +
       applied +
       '<button class="scv-openbtn" data-act="open">🔼 고급조건 열기 (FC01)</button>';
   }
@@ -26,8 +26,8 @@
     if (!st.modal) { modalEl.innerHTML = ''; return; }
     modalEl.innerHTML = '<div class="scv-modal"><div class="mbar">보조 선택화면 (1100) <small>CALL SELECTION-SCREEN 1100 STARTING AT 10 5</small></div>' +
       '<div class="mbody">' +
-        '<div class="scv-fld"><label>p_max</label><input type="number" data-m="pmax" value="' + esc(st.pmax) + '"></div>' +
-        '<div class="scv-fld"><span class="scv-chk"><input type="checkbox" data-m="plog"' + (st.plog ? ' checked' : '') + '> p_log (로그 남기기)</span></div>' +
+        '<div class="scv-fld"><label>pa_max</label><input type="number" data-m="pmax" value="' + esc(st.pmax) + '"></div>' +
+        '<div class="scv-fld"><span class="scv-chk"><input type="checkbox" data-m="plog"' + (st.plog ? ' checked' : '') + '> pa_log (로그 남기기)</span></div>' +
       '</div>' +
       '<div class="scv-mbtns"><button class="scv-exec" data-act="exec">▶ Execute</button><button class="scv-cancel" data-act="cancel">✖ Cancel</button></div>' +
     '</div>';
@@ -42,7 +42,7 @@
     var h = row('현재 화면', st.modal ? '1100 (modal 열림)' : '1000', 'mono');
     if (st.subrc !== null) {
       h += row('sy-subrc', st.subrc + (st.subrc === 0 ? ' (Execute)' : ' (Back/Exit/Cancel)'), st.subrc === 0 ? 'ok' : 'bad');
-      h += row('고급조건 적용', st.subrc === 0 ? '적용됨 — p_max·p_log 반영' : '적용 안 함 — 취소', st.subrc === 0 ? 'ok' : 'bad');
+      h += row('고급조건 적용', st.subrc === 0 ? '적용됨 — pa_max·pa_log 반영' : '적용 안 함 — 취소', st.subrc === 0 ? 'ok' : 'bad');
     }
     if (st.vmsg) h += row('Variant', st.vmsg.text, st.vmsg.cls);
     consoleEl.innerHTML = h;
@@ -69,7 +69,7 @@
     var id = b.getAttribute('data-v');
     var v = CFG.variants.filter(function (x) { return x.id === id; })[0];
     if (!v || v.bad) { st.vmsg = { text: '\'' + esc(id) + '\' 변형이 없습니다 — 무시됨 (값 복원 안 함)', cls: 'warn' }; render(); return; }
-    st.conc = v.conc; st.vmsg = { text: '변형 \'' + esc(v.id) + '\' 적용 — p_conc ← ' + esc(v.conc), cls: 'ok' };
+    st.conc = v.conc; st.vmsg = { text: '변형 \'' + esc(v.id) + '\' 적용 — pa_conc ← ' + esc(v.conc), cls: 'ok' };
     render();
   });
 

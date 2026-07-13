@@ -89,6 +89,13 @@ gv_amt  = <span class="tok-num">7</span> / <span class="tok-num">2</span>.    <s
 <p><strong>왜 N을 쓰나?</strong> 우편번호 <code>01234</code>를 정수 <code>I</code>에 넣으면 앞의 0이 사라져 <code>1234</code>가
 된다. &quot;숫자처럼 보이지만 계산하지 않는 값&quot;은 <code>N</code>(또는 <code>C</code>)으로 둔다.</p>
 </blockquote>
+<blockquote>
+<p>💡 <strong><code>P</code>의 LENGTH는 &quot;글자 수&quot;가 아니라 칸(<button class="term" type="button" data-term="바이트">바이트</button>) 수</strong> — <code>LENGTH 1</code>이 곧 한 칸
+(= 1바이트)이다. 문자는 한 칸에 1개 들어가지만, <code>P</code>는 한 칸을 둘로 쪼개 숫자
+<strong>두 자리</strong>를 담는다. 단 <strong>마지막 칸의 한 자리는 숫자가 아니라 부호(+/−) 자리</strong>다.
+그래서 <code>LENGTH 8</code>이면 담을 수 있는 숫자는 최대 <strong>15자리</strong>(= 8×2−1, 소수 자릿수
+포함)다. <code>C</code>·<code>N</code>의 LENGTH(글자 수)와 의미가 다르니 헷갈리지 말 것.</p>
+</blockquote>
 </section><section class="lblock"><h2>일부만 떼어 보기 — offset/length</h2>
 <p>문자형(<code>C</code>·<code>N</code>) 변수는 <strong>일부 구간만</strong> 읽거나 쓸 수 있다. <code>변수+시작(길이)</code> 형태이고,
 시작 위치는 <strong>0부터</strong> 센다.</p>
@@ -104,15 +111,22 @@ gv_date+<span class="tok-num">6</span>(<span class="tok-num">2</span>) = <span c
 <blockquote>
 <p>날짜·코드처럼 <strong>자리마다 의미가 정해진</strong> 문자열에서 특정 부분만 다룰 때 유용하다.</p>
 </blockquote>
+</section><section class="lblock"><h2>칸으로 그려 보기</h2>
+<p>말보다 그림이 빠르다. <code>LENGTH</code>가 만드는 <strong>칸</strong>을 직접 보자. C의 빈칸 채움과 잘림, N의 앞 0,
+P의 <button class="term" type="button" data-term="바이트">바이트</button> 칸(그리고 부호 반 칸)이 한눈에 보이고, offset이 <strong>어느 칸을 집는지</strong>도
+눌러서 확인할 수 있다.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">길이 칸 실험실 — C 패딩·N 앞 0·P 바이트·offset</span><a class="embed__open" href="../../../embeds/abap/CH02-L03-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH02-L03-S01.html" loading="lazy" title="길이 칸 실험실 — C 패딩·N 앞 0·P 바이트·offset" style="height:700px"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>길이 누락</strong> → <code>DATA gv_x TYPE c.</code> 는 길이 1로 잘린다. <code>LENGTH</code>를 명시.</li>
+<li><strong>길이 누락</strong> → <code>DATA gv_x TYPE c.</code>는 길이 1로 선언된다. <code>LENGTH</code>를 명시.</li>
 <li><strong>금액에 F 사용</strong> → 부동소수점은 오차가 난다. 돈은 반드시 <code>P … DECIMALS</code>.</li>
 <li><strong>N에 알파벳 대입</strong> → <code>N</code>에는 숫자 문자만. 알파벳은 <code>C</code>.</li>
+<li><strong>offset 범위 초과</strong> → <code>+시작(길이)</code>가 변수 끝을 넘으면 오류다
+(<strong>시작+길이 ≤ 전체 길이</strong>). 8글자 변수에 <code>+7(2)</code>는 한 글자 벗어난다.</li>
 </ul>
 <hr>
-<p>이제 표준 타입은 다 봤다. 그런데 <code>p length 8 decimals 2</code>를 <strong>프로그램마다 또
-적자니</strong> 번거롭다 — &quot;한 번 정의해 재사용하고 싶다.&quot; 그게 <button class="term" type="button" data-term="TYPES">TYPES</button>다 → 다음 레슨.</p>
+<p>이제 표준 타입은 다 봤다. 그런데 <code>p length 8 decimals 2</code>를 <strong>변수마다 또
+적자니</strong> 번거롭다. &quot;한 번 정의해 재사용하고 싶다.&quot; 그게 <button class="term" type="button" data-term="TYPES">TYPES</button>다 → 다음 레슨.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

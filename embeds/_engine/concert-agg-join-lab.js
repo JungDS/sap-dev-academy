@@ -84,7 +84,7 @@
       '  <span class="fn">LEFT OUTER JOIN</span> zbooking <span class="fn">AS</span> b\n' +
       '    <span class="fn">ON</span>  b~concert_id = c~concert_id\n' +
       onLine + whLine + '\n' +
-      '  <span class="fn">WHERE</span> c~concert_id <span class="fn">IN</span> <span class="esc">@s_conc</span>\n' +
+      '  <span class="fn">WHERE</span> c~concert_id <span class="fn">IN</span> <span class="esc">@so_conc</span>\n' +
       '  <span class="fn">GROUP BY</span> c~concert_id, c~artist, c~capacity\n' +
       '  <span class="fn">INTO TABLE</span> <span class="esc">@DATA(lt_stat)</span>.';
   }

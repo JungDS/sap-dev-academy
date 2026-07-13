@@ -1,41 +1,33 @@
 <!DOCTYPE html>
-<!-- CH18-L06-S01 — 엔진: diff-mapper (embeds/_engine/diff-mapper.{js,css}) + _autoheight. 콘텐츠=레슨 전용(classic↔modern 리팩터, #C18).
-     게이팅: CH18=New ABAP Syntax 허용(DATA()·VALUE·+=). Open SQL modern(@·콤마)은 CH19이므로 미포함. -->
-<html lang="ko" data-eng="diff-mapper">
+<!-- CH18-L06-S01 — 엔진: type-conversion-lab · _autoheight. 콘텐츠=레슨 전용(CONV·EXACT 변환, CH18 L06).
+     게이팅: modern 변환 표현식 시연만 · 예외 처리는 CH20 경계로만 언급. -->
+<html lang="ko" data-eng="type-conversion-lab">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>classic ↔ modern 리팩터 · CH18-L06-S01</title>
+<title>타입 변환 실험실 · CH18-L06-S01</title>
 <link rel="stylesheet" href="../_engine/_base.css" />
-<link rel="stylesheet" href="../_engine/diff-mapper.css" />
+<link rel="stylesheet" href="../_engine/type-conversion-lab.css" />
 </head>
 <body>
-<div class="wrap">
-  <p class="hd">classic ↔ modern — 같은 로직, 두 표기 <small>(VALUE · +=)</small></p>
-  <p class="lead">왼쪽 <b>classic</b> 줄에 마우스를 올리면 오른쪽 <b>modern</b> 대응 줄이 함께 빛나고, 아래에 <b>무엇이 어떻게 짧아졌는지</b>가 나타납니다. classic도 현장에 있으니 읽을 줄 알아야 합니다.</p>
+<div class="wrap" data-tcl>
+  <p class="hd">타입 변환 실험실 <small>(CONV · EXACT)</small></p>
+  <p class="lead"><code>CONV</code>는 그 자리에서 타입을 바꾸고(소수는 반올림), <code>EXACT</code>는 <b>손실이 나면 막습니다</b>(예외). 값을 넣고 세 가지로 변환해 결과와 위험을 비교해 보세요.</p>
 
-  <div class="diff-mapper">
-    <div class="diff-mapper__bar">🔁 classic ↔ modern — 줄 위에 마우스를 올려 보세요</div>
-    <div class="diff-grid">
-      <div class="diff-pane classic">
-        <h4>classic (개선 전)</h4>
-<pre><span class="diff-line" data-link="1" data-title="구조체 채우고 APPEND" data-desc="변수를 따로 선언하고, 필드를 한 줄씩 채운 뒤 APPEND — 네 줄이 필요합니다.">DATA ls TYPE ty_line.
-DATA lt TYPE ty_line_tab.
-ls-dan = 2. ls-mul = 1. ls-result = 2.
-APPEND ls TO lt.</span>
-<span class="diff-line" data-link="2" data-title="누적 대입" data-desc="lv_total 을 양쪽에 두 번 써야 합니다.">lv_total = lv_total + ls-result.</span></pre>
-      </div>
-      <div class="diff-pane modern">
-        <h4>modern (권장)</h4>
-<pre><span class="diff-line" data-link="1" data-title="VALUE + 인라인 DATA" data-desc="DATA() 인라인 선언과 VALUE 생성자로 선언·초기화·APPEND를 한 식에 담습니다.">DATA(lt) = VALUE ty_line_tab(
-  ( dan = 2 mul = 1 result = 2 ) ).</span>
-<span class="diff-line" data-link="2" data-title="복합 대입 +=" data-desc="lv_total += ... 는 lv_total = lv_total + ... 과 같습니다. 이름을 한 번만 씁니다.">lv_total += ls-result.</span></pre>
-      </div>
-    </div>
-    <div class="diff-explain"><span class="ph">줄 위에 마우스를 올리면 바뀐 이유가 여기 표시됩니다.</span></div>
+  <div class="tcl-row">
+    <label for="tclVal">값(문자):</label>
+    <input type="text" id="tclVal" value="12.7" spellcheck="false">
   </div>
+  <div class="tcl-btns">
+    <button type="button" data-op="conv_i">CONV i( )</button>
+    <button type="button" data-op="conv_s">CONV string( )</button>
+    <button type="button" data-op="exact_i">EXACT i( )</button>
+  </div>
+  <div class="tcl-out" id="tclOut"></div>
+
+  <div class="note"><b>변환은 의미를 바꾼다.</b> <code>'12.7'</code>을 <code>CONV i</code>로 바꾸면 13(반올림·손실), <code>EXACT i</code>로 바꾸면 예외입니다. 금액·수량처럼 한 자리도 틀리면 안 되는 값엔 <code>EXACT</code>가 안전합니다.</div>
 </div>
-<script src="../_engine/diff-mapper.js" defer></script>
+<script src="../_engine/type-conversion-lab.js" defer></script>
 <script src="../_engine/_autoheight.js" defer></script>
 </body>
 </html>

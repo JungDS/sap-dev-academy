@@ -1,10 +1,10 @@
-/* option-switchboard 엔진 — SELECT-OPTIONS 한 필드(s_name)에 옵션을 켜고 끄며 화면 모양·내부 selection table 첫 행·복수선택 변화를 본다.
+/* option-switchboard 엔진 — SELECT-OPTIONS 한 필드(so_name)에 옵션을 켜고 끄며 화면 모양·내부 selection table 첫 행·복수선택 변화를 본다.
    OBLIGATORY(필수 배지) · LOWER CASE(대문자 변환 여부) · NO-EXTENSION(다중선택 버튼 숨김) · NO INTERVALS(To 칸 숨김).
    NO INTERVALS만 켠 상태의 다중선택 dialog interval 주의도 안내한다.
    골격 계약: .osb-opts · #osbField · #osbRow · #osbStatus.
    config: window.OSB_CFG = { fieldName, fromDefault, toDefault }. 높이: _autoheight.js. */
 (function () {
-  var CFG = window.OSB_CFG || { fieldName: 's_name', fromDefault: 'aida', toDefault: 'opera' };
+  var CFG = window.OSB_CFG || { fieldName: 'so_name', fromDefault: 'aida', toDefault: 'opera' };
   var opt = { oblig: false, lower: false, noext: false, noint: false };
   var fromVal = CFG.fromDefault, toVal = CFG.toDefault;
 

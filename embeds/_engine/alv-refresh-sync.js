@@ -1,4 +1,4 @@
-/* alv-refresh-sync 엔진 — 내부 테이블(lt_booking) 변경과 화면 Grid 갱신을 분리해 보여 준다.
+/* alv-refresh-sync 엔진 — 내부 테이블(gt_booking) 변경과 화면 Grid 갱신을 분리해 보여 준다.
    '상태 변경'은 내부만 바꾼다(화면 stale). '일반 Refresh'는 화면을 맞추지만 스크롤이 맨 위로 튄다.
    'Stable Refresh'는 화면을 맞추면서 보던 위치를 유지한다. 데이터변경/화면갱신/위치보존 3체크.
    골격 계약: [data-act] · #arsInternal · #arsScreen · #arsChecks.
@@ -41,7 +41,7 @@
     return idx;
   }
   function renderTables() {
-    intEl.innerHTML = tableHTML('내부 lt_booking', internal, { chgIdx: changedIdx() });
+    intEl.innerHTML = tableHTML('내부 gt_booking', internal, { chgIdx: changedIdx() });
     scrEl.innerHTML = tableHTML('화면 Grid', screen, { view: viewRow, stale: stale() });
   }
   function renderChecks() {

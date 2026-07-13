@@ -41,14 +41,76 @@
       <article class="prose">
 <section class="lblock"><h2>화면 안에 표를 박고 싶다</h2>
 <p><a href="CH11-L02.html">Chapter 11 · SALV 1차 (간단 ALV)</a>의 <button class="term" type="button" data-term="SALV">SALV</button>는 전체 화면을 차지하는
-간단한 표였다. 그런데 <a href="CH16-L07.html">Custom Control과 Container · Tabstrip · Subscreen</a>에서
+간단한 표였다. 그런데 <a href="CH16-L09.html">Custom Control과 Container · Tabstrip · Subscreen</a>에서
 만든 <strong>내 화면 안의 한 영역</strong>에 표를 박고, 버튼·입력칸과 함께 두고 싶다. 그러려면 더
 세밀한 <strong>Grid ALV</strong>(<button class="term" type="button" data-term="CL_GUI_ALV_GRID">CL_GUI_ALV_GRID</button>)와, 그것이 살 <strong>컨테이너</strong>가 필요하다.</p>
 <blockquote>
 <p>🔎 <strong>[선행 사용]</strong> 이 챕터는 객체(<code>TYPE REF TO</code>·<code>CREATE OBJECT</code>)와 메서드 호출을 많이 쓴다.
-본격 OO는 <a href="CH20-L01.html">Global Class 생성과 객체</a>에서 배우니, 지금은 &quot;표준 클래스로
-객체를 만들어 메서드를 부른다&quot;는 흐름만 따라가면 된다(분석·암기 불필요).</p>
+두 낱말만 감으로 잡아 두자. <strong><code>TYPE REF TO</code></strong> 는 객체를 직접 담는 상자가 아니라 <strong>만들어진
+객체를 가리키는 리모컨</strong> 같은 참조 변수를 만드는 것이고, <strong><code>CREATE OBJECT</code></strong> 는 <strong>표준
+클래스(설계도)로 객체를 하나 찍어내</strong> 그 리모컨에 물리는 것이다. 지금은 &quot;표준 클래스로
+객체를 만들어(<code>CREATE OBJECT</code>) 메서드를 부른다&quot;는 흐름만 따라가면 된다(분석·암기 불필요).
+클래스가 무엇이고 어떻게 설계하는지는 <a href="CH20-L01.html">Global Class 생성과 객체</a>에서 배운다.</p>
 </blockquote>
+</section><section class="lblock"><h2>전체 그림 — 조각을 쌓는 순서</h2>
+<p>Grid ALV는 부품이 많다. 레슨마다 조각 하나씩이니, 먼저 <strong>전체가 어떤 순서로 쌓이는지</strong>
+한눈에 보자. 비유하면 <strong>방을 잡고(컨테이너) → 방에 표를 놓고(그리드) → 자료·컬럼 설명서·
+보기 설정을 얹은 뒤 → &quot;그려라&quot;라고 말하는</strong> 흐름이다.</p>
+<table>
+<thead>
+<tr>
+<th>순서</th>
+<th>조각</th>
+<th>역할(비유)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td><code>CL_GUI_CUSTOM_CONTAINER</code></td>
+<td>표가 살 <strong>방</strong> (지금)</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>CL_GUI_ALV_GRID</code></td>
+<td>방에 놓는 <strong>표</strong></td>
+</tr>
+<tr>
+<td>3</td>
+<td>출력용 Internal Table</td>
+<td>표에 채울 <strong>자료</strong></td>
+</tr>
+<tr>
+<td>4</td>
+<td>Field Catalog</td>
+<td><strong>컬럼 설명서</strong>(제목·너비)</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Layout</td>
+<td><strong>표 보기 설정</strong>(줄무늬 등)</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Variant</td>
+<td><strong>내 보기 저장</strong></td>
+</tr>
+<tr>
+<td>7</td>
+<td><code>set_table_for_first_display</code></td>
+<td><strong>첫 표시</strong>(&quot;이제 그려라&quot;)</td>
+</tr>
+<tr>
+<td>8</td>
+<td><code>refresh_table_display</code></td>
+<td>자료 바뀌면 <strong>다시 그리기</strong></td>
+</tr>
+<tr>
+<td>9</td>
+<td>행 색상</td>
+<td>중요한 행 <strong>강조</strong></td>
+</tr>
+</tbody></table>
+<p>지금 레슨은 맨 위 <strong>방을 잡는</strong> 단계다. 각 조각이 왜 필요한지는 그 레슨에서 불편과 함께 만난다.</p>
 </section><section class="lblock"><h2>세 가지 이름을 구분하자</h2>
 <p>이 레슨에서 헷갈리기 쉬운 이름이 <strong>세 개</strong>다. 미리 갈라 두자.</p>
 <table>
@@ -80,7 +142,7 @@
 프레젠테이션 영역</strong>이다. 이름이 비슷해 헷갈리기 쉬우니 주의.</p>
 </blockquote>
 </section><section class="lblock"><h2>Custom Container 만들기</h2>
-<p><a href="CH16-L07.html">Custom Control과 Container · Tabstrip · Subscreen</a>에서 화면에 둔
+<p><a href="CH16-L09.html">Custom Control과 Container · Tabstrip · Subscreen</a>에서 화면에 둔
 Custom Control 영역(<code>CONT100</code>)에 <button class="term" type="button" data-term="Custom Container">Custom Container</button> 객체를 연결한다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
