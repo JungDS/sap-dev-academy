@@ -35,39 +35,39 @@
       <section class="lhead">
         <p class="lhead__eyebrow">Modern ABAP Syntax</p>
         <h1>VALUE Constructor Expression</h1>
-        <p class="lhead__direction">구조체·내부 테이블을 결과 모양 그대로 — VALUE</p>
+        <p class="lhead__direction">Structure·내부 테이블을 결과 모양 그대로 — VALUE</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 18</span><span class="tag tag--ls">Lesson 2</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
 <section class="lblock"><h2>한 줄 한 줄 채우기 — 절차가 의도를 가린다</h2>
-<p>classic에서는 구조체 필드를 하나씩 대입하고, 테이블엔 <code>APPEND</code>를 반복했다. 절차는
-분명하지만 <strong>값의 모양이 안 읽힌다</strong> — &quot;2단 1행을 만들고 싶다&quot;는 의도보다 &quot;변수 만들기·
+<p>classic에서는 Structure 필드를 하나씩 대입하고, 테이블엔 <code>APPEND</code>를 반복했다. 절차는
+분명하지만 <strong>값의 모양이 안 읽힌다</strong>. &quot;2단 1행을 만들고 싶다&quot;는 의도보다 &quot;변수 만들기·
 필드 채우기·append&quot;라는 작업이 더 커 보인다. 행이 늘면 <code>CLEAR</code> 누락 같은 실수도 는다.</p>
 <p><code>VALUE</code> constructor expression은 절차를 나열하는 대신 <strong>결과가 어떤 값인지</strong>를 표현한다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
-4</pre><pre class="abap-editor__code"><code><span class="tok-kw">TYPES</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ty_line,
+4</pre><pre class="abap-editor__code"><code><span class="tok-kw">TYPES</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ts_line,
          dan <span class="tok-kw">TYPE</span> i, mul <span class="tok-kw">TYPE</span> i, result <span class="tok-kw">TYPE</span> i,
-       <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ty_line.
-<span class="tok-kw">TYPES</span> ty_line_tab <span class="tok-kw">TYPE</span> <span class="tok-kw">STANDARD</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ty_line <span class="tok-kw">WITH</span> EMPTY <span class="tok-kw">KEY</span>.</code></pre></div></div>
-</section><section class="lblock"><h2>구조체 채우기</h2>
+       <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ts_line.
+<span class="tok-kw">TYPES</span> tt_line <span class="tok-kw">TYPE</span> <span class="tok-kw">STANDARD</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ts_line <span class="tok-kw">WITH</span> EMPTY <span class="tok-kw">KEY</span>.</code></pre></div></div>
+</section><section class="lblock"><h2>Structure 채우기</h2>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
 4
 5
 6</pre><pre class="abap-editor__code"><code><span class="tok-com">" classic</span>
-<span class="tok-kw">DATA</span> ls_line <span class="tok-kw">TYPE</span> ty_line.
+<span class="tok-kw">DATA</span> ls_line <span class="tok-kw">TYPE</span> ts_line.
 ls_line-dan = <span class="tok-num">2</span>. ls_line-mul = <span class="tok-num">3</span>. ls_line-result = <span class="tok-num">6</span>.
 
 <span class="tok-com">" modern — "이 값은 dan 2, mul 3, result 6이다"로 한 덩어리로 읽힘</span>
-<span class="tok-kw">DATA</span>(ls_line) = <span class="tok-kw">VALUE</span> ty_line( dan = <span class="tok-num">2</span> mul = <span class="tok-num">3</span> result = <span class="tok-num">6</span> ).</code></pre></div></div>
+<span class="tok-kw">DATA</span>(ls_line) = <span class="tok-kw">VALUE</span> ts_line( dan = <span class="tok-num">2</span> mul = <span class="tok-num">3</span> result = <span class="tok-num">6</span> ).</code></pre></div></div>
 </section><section class="lblock"><h2>내부 테이블 채우기 — 각 <code>( )</code>가 한 행</h2>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
-4</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>(lt_gugu) = <span class="tok-kw">VALUE</span> ty_line_tab(
+4</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>(lt_gugu) = <span class="tok-kw">VALUE</span> tt_line(
   ( dan = <span class="tok-num">2</span> mul = <span class="tok-num">1</span> result = <span class="tok-num">2</span> )
   ( dan = <span class="tok-num">2</span> mul = <span class="tok-num">2</span> result = <span class="tok-num">4</span> )
   ( dan = <span class="tok-num">2</span> mul = <span class="tok-num">3</span> result = <span class="tok-num">6</span> ) ).</code></pre></div></div>
@@ -82,13 +82,13 @@ ls_line-dan = <span class="tok-num">2</span>. ls_line-mul = <span class="tok-num
 <p>행을 일일이 적는 대신 <strong>반복</strong>으로 한꺼번에 만든다. 숫자 범위로:</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
-3</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>(lt_gugu_2) = <span class="tok-kw">VALUE</span> ty_line_tab(
+3</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>(lt_gugu_2) = <span class="tok-kw">VALUE</span> tt_line(
   <span class="tok-kw">FOR</span> i = <span class="tok-num">1</span> <span class="tok-kw">WHILE</span> i &lt;= <span class="tok-num">9</span>
   ( dan = <span class="tok-num">2</span> mul = i result = <span class="tok-num">2</span> * i ) ).   <span class="tok-com">" 9행</span></code></pre></div></div>
 <p>이미 있는 테이블을 <strong>돌며 변환</strong>할 수도 있다:</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
-3</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>(lt_double) = <span class="tok-kw">VALUE</span> ty_line_tab(
+3</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>(lt_double) = <span class="tok-kw">VALUE</span> tt_line(
   <span class="tok-kw">FOR</span> <span class="tok-kw">line</span> <span class="tok-kw">IN</span> lt_gugu_2
   ( dan = line-dan mul = line-mul result = line-result * <span class="tok-num">2</span> ) ).</code></pre></div></div>
 <ul>
@@ -102,7 +102,7 @@ ls_line-dan = <span class="tok-num">2</span>. ls_line-mul = <span class="tok-num
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">VALUE Builder (BASE·FOR·key 규칙)</span><a class="embed__open" href="../../../embeds/abap/CH18-L02-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH18-L02-S01.html" loading="lazy" title="VALUE Builder (BASE·FOR·key 규칙)" style="height:660px"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>타입 생략 <code>VALUE #( )</code></strong> → 좌변 타입이 분명할 때만 <code>#</code>. 처음엔 <code>VALUE ty_line( … )</code>처럼 타입을 명시.</li>
+<li><strong>타입 생략 <code>VALUE #( )</code></strong> → 좌변 타입이 분명할 때만 <code>#</code>. 처음엔 <code>VALUE ts_line( … )</code>처럼 타입을 명시.</li>
 <li><strong>BASE 빠뜨림</strong> → <code>VALUE</code>만 쓰면 기존 내용이 사라진다. 누적은 <code>BASE 기존테이블</code>.</li>
 <li><strong><code>FOR</code> 변수의 수명</strong> → <code>FOR line IN …</code>의 <code>line</code>은 그 식 <strong>안에서만</strong> 산다(밖에선 못 쓴다).</li>
 <li><strong>중복 key</strong> → sorted/hashed·unique key 테이블에 <code>VALUE</code>로 중복 행을 넣으면 런타임 오류다.
@@ -110,12 +110,12 @@ ls_line-dan = <span class="tok-num">2</span>. ls_line-mul = <span class="tok-num
 </ul>
 <blockquote>
 <p>💡 <code>VALUE #( FOR … )</code>가 읽기 어려울 만큼 길어지면 다시 <code>LOOP</code>가 낫다. Modern ABAP은 한 줄로
-압축하는 대회가 아니다 — 조건이 많고 중간 검증이 필요하면 절차형이 더 안전하고 교육적이다.</p>
+압축하는 대회가 아니다. 조건이 많고 중간 검증이 필요하면 절차형이 더 안전하고 교육적이다.</p>
 </blockquote>
 </section><section class="lblock"><h2>정리</h2>
 <ul>
-<li><code>VALUE</code>는 구조체·Internal Table을 <strong>결과 모양 그대로</strong> 만든다 — 한 건은 <code>VALUE ty_line( … )</code>,
-여러 건은 <code>VALUE ty_line_tab( ( … ) ( … ) )</code>.</li>
+<li><code>VALUE</code>는 Structure·Internal Table을 <strong>결과 모양 그대로</strong> 만든다. 한 건은 <code>VALUE ts_line( … )</code>,
+여러 건은 <code>VALUE tt_line( ( … ) ( … ) )</code>.</li>
 <li>기존을 유지하려면 <code>BASE</code>, 반복 생성엔 <code>FOR</code>. <code>#</code>의 타입 추론과 <code>BASE</code> 누락이 가장 자주 틀리는 지점이다.</li>
 </ul>
 <hr>

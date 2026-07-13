@@ -50,7 +50,7 @@
     }).join('');
   }
   function renderCode() {
-    var parts = ['DATA(ls_ui) = CORRESPONDING ty_booking_ui(', '  ls_booking'];
+    var parts = ['DATA(ls_ui) = CORRESPONDING ts_booking_ui(', '  ls_booking'];
     if (mapped) parts.push('  MAPPING ' + CFG.mapName + ' = ' + CFG.mapFrom);
     if (excepted) parts.push('  EXCEPT  ' + CFG.exceptName);
     var code = parts.join('\n') + ' ).';

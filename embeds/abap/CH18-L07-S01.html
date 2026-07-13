@@ -1,50 +1,39 @@
 <!DOCTYPE html>
-<!-- CH18-L07-S01 — 엔진: diff-mapper + _autoheight. 콘텐츠=레슨 전용(콘서트앱 모던 리팩터, #C18).
-     게이팅: CH18=New ABAP Syntax(인라인 DATA·+=·VALUE·Table Expression). SELECT 모던(@·콤마)은 CH19이라 SQL 밖만. -->
-<html lang="ko" data-eng="diff-mapper">
+<!-- CH18-L07-S01 — 엔진: cond-switch-selector · _autoheight. 콘텐츠=레슨 전용(COND·SWITCH, CH18 L07).
+     게이팅: 값 생성 표현식 시연만 · 흐름 제어(IF/CASE)와 구분 강조. -->
+<html lang="ko" data-eng="cond-switch-selector">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>콘서트앱 모던 리팩터 · CH18-L07-S01</title>
+<title>조건 표현식 선택기 · CH18-L07-S01</title>
 <link rel="stylesheet" href="../_engine/_base.css" />
-<link rel="stylesheet" href="../_engine/diff-mapper.css" />
+<link rel="stylesheet" href="../_engine/cond-switch-selector.css" />
 </head>
 <body>
-<div class="wrap">
-  <p class="hd">콘서트앱 — classic ↔ modern 리팩터 <small>(인라인 DATA · += · VALUE · Table Expr)</small></p>
-  <p class="lead">CH10-L07 잔여석 합산 등 콘서트앱 코드를 모던으로 다듬습니다. 줄에 마우스를 올려 대응을 확인하세요. (<code>SELECT</code> 자체의 모던화는 <code>@</code>가 필요한 <b>CH19</b> — 여기선 SQL 밖 ABAP 코드만.)</p>
+<div class="wrap" data-css>
+  <p class="hd">조건 표현식 선택기 <small>(COND · SWITCH)</small></p>
+  <p class="lead"><code>COND</code>는 범위 조건(잔여석)으로, <code>SWITCH</code>는 상수 비교(상태 코드)로 <b>값 하나</b>를 정합니다. 값을 바꿔 어떤 가지가 선택되는지, <code>ELSE</code>를 빼면 어떻게 되는지 보세요.</p>
 
-  <div class="diff-mapper">
-    <div class="diff-mapper__bar">🔁 classic ↔ modern — 줄 위에 마우스를 올려 보세요</div>
-    <div class="diff-grid">
-      <div class="diff-pane classic">
-        <h4>classic</h4>
-<pre><span class="diff-line" data-link="1" data-title="LOOP + 누적(classic)" data-desc="행 변수를 미리 선언하고 누적 대입으로 합산합니다.">DATA: ls_book TYPE zbooking, lv_sum TYPE i.
-LOOP AT lt_book INTO ls_book.
-  lv_sum = lv_sum + ls_book-seats.
-ENDLOOP.</span>
-<span class="diff-line" data-link="2" data-title="필드별 채우기" data-desc="구조체를 CLEAR 후 필드를 한 줄씩 대입합니다.">CLEAR ls_new.
-ls_new-concert_id = 'C001'.
-ls_new-customer   = '정훈영'.
-ls_new-seats      = 2.</span>
-<span class="diff-line" data-link="3" data-title="READ TABLE" data-desc="한 줄을 키로 찾을 때 READ TABLE ... WITH KEY.">READ TABLE lt_book INTO ls_book
-  WITH KEY booking_id = lv_id.</span></pre>
-      </div>
-      <div class="diff-pane modern">
-        <h4>modern</h4>
-<pre><span class="diff-line" data-link="1" data-title="인라인 DATA + +=" data-desc="LOOP에서 DATA(ls)로 바로 선언하고, += 로 누적합니다.">LOOP AT lt_book INTO DATA(ls).
-  lv_total += ls-seats.
-ENDLOOP.</span>
-<span class="diff-line" data-link="2" data-title="VALUE 생성자" data-desc="VALUE zbooking( ... )로 구조체를 한 식에 채웁니다.">DATA(ls_new) = VALUE zbooking(
-  concert_id = 'C001' customer = '정훈영'
-  seats = 2 status = 'N' ).</span>
-<span class="diff-line" data-link="3" data-title="Table Expression" data-desc="lt[ 키 = 값 ]으로 바로 집습니다. 없으면 예외 → line_exists( )로 보호.">DATA(ls_hit) = lt_book[ booking_id = lv_id ].</span></pre>
-      </div>
-    </div>
-    <div class="diff-explain"><span class="ph">줄 위에 마우스를 올리면 바뀐 이유가 여기 표시됩니다.</span></div>
+  <div class="css-ctrl">
+    <label>잔여석 <input type="number" id="cssRem" value="5" min="0" max="200"></label>
+    <label>상태
+      <select id="cssStat">
+        <option value="N">N</option>
+        <option value="C">C</option>
+        <option value="Z">Z(기타)</option>
+      </select>
+    </label>
+    <label><input type="checkbox" id="cssElse" checked> ELSE 포함</label>
   </div>
+
+  <div class="css-grid">
+    <div class="css-panel"><div class="css-ptt">COND string( 잔여석 )</div><div class="css-pbody" id="cssCond"></div></div>
+    <div class="css-panel"><div class="css-ptt">SWITCH string( 상태 )</div><div class="css-pbody" id="cssSwitch"></div></div>
+  </div>
+
+  <div class="note"><b>값을 만드는 도구</b>입니다. 조건마다 저장·화면 호출 같은 <b>동작</b>이 필요하면 표현식이 아니라 <code>IF</code>/<code>CASE</code>가 맞습니다. <code>ELSE</code>를 빼면 일치 없을 때 <b>초기값</b>(빈 문자)이 됩니다.</div>
 </div>
-<script src="../_engine/diff-mapper.js" defer></script>
+<script src="../_engine/cond-switch-selector.js" defer></script>
 <script src="../_engine/_autoheight.js" defer></script>
 </body>
 </html>

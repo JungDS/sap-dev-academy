@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>실습 — 콘서트앱 모던 리팩터 · Modern ABAP Syntax · SAP Developer Academy</title>
+<link rel="stylesheet" href="../../../assets/base.css">
+<link rel="stylesheet" href="../../../assets/lesson.css">
+<link rel="stylesheet" href="../../../assets/shell.css">
+<script>/* 읽기 설정 선적용(플래시 방지) */(function(){try{var L=localStorage,r=document.documentElement;if(L.getItem('sda.dark')==='1')r.classList.add('dark');if(L.getItem('sda.wide')==='1')r.classList.add('wide');var f=parseInt(L.getItem('sda.fontPx'),10);if(f>=13&&f<=20)r.style.fontSize=f+'px';}catch(e){}})();</script>
+</head>
+<body data-domain="abap" data-chapter-id="CH18" data-lesson-id="CH18-L11">
+<header class="appbar">
+  <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
+  <span class="appbar__sp"></span>
+  <span class="meta">Chapter 18 · Modern ABAP Syntax</span>
+  <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
+  <div class="tools">
+    <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
+    <button class="icon-btn" id="fsInc" title="글자 크게">A+</button>
+    <button class="icon-btn" id="fsReset" title="글자 크기 초기화">↺</button>
+    <button class="icon-btn" id="darkBtn" title="다크 모드">🌙</button>
+    <button class="icon-btn" id="widthBtn" title="가독 폭 넓게">↔</button>
+    <button class="icon-btn fs-btn" title="전체화면" aria-label="전체화면"></button>
+  </div>
+</header>
+<div class="read-progress"><i></i></div>
+<div class="scrim"></div>
+<nav class="rail" data-shell="rail"></nav>
+<button class="railFab" id="railFab" aria-label="네비 열기">☰</button>
+<div class="stage">
+  <div class="layout">
+    <main class="main">
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 18 › Lesson 11</nav>
+      <section class="lhead">
+        <p class="lhead__eyebrow">Modern ABAP Syntax</p>
+        <h1>실습 — 콘서트앱 모던 리팩터</h1>
+        <p class="lhead__direction">콘서트앱 — classic 코드를 모던 ABAP으로, 결과는 그대로 다듬는다.</p>
+        <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 18</span><span class="tag tag--ls">Lesson 11</span><span class="tag tag--lv">중급</span></div>
+      </section>
+      <article class="prose">
+<section class="lblock"><h2>🎫 콘서트앱을 모던으로 — 단, 결과는 그대로</h2>
+<p>문법은 작은 예제에서 배우지만, 실무 감각은 <strong>관통 예제</strong>에서 굳는다.
+<a href="CH10-L07.html">잔여석 계산·예매 판정 모듈화</a>에서 만든 콘서트 예매 흐름에, 지금까지 배운 모던 문법을 입힌다.
+목표는 앱을 새로 만드는 게 아니라, <strong>이미 잘 돌아가는 classic 코드의 일부를 더 읽기 좋게</strong> 바꾸는 것이다.</p>
+<blockquote>
+<p>🚧 <strong>이 실습의 경계 — 넘지 않는다.</strong></p>
+<ul>
+<li>예매 조회 <code>SELECT</code> 자체는 classic 그대로(모던 SQL <code>@</code>·콤마는 <a href="CH19-L01.html">Classic Open SQL과 Modern ABAP SQL 비교</a>에서).</li>
+<li>객체지향으로 다시 설계하지 않는다.</li>
+<li>예외 처리 문법을 새로 끌어오지 않는다.</li>
+<li><strong>업무 규칙(예약 판정)은 절대 바꾸지 않는다.</strong></li>
+</ul>
+<p>바꾸는 건 인라인 선언·<code>VALUE</code>·Table Expression 보호·String Template·누적 계산, 그리고
+<strong>단순 패턴이면</strong> 표현식(<code>REDUCE</code>·<code>SWITCH</code>)까지다.</p>
+</blockquote>
+</section><section class="lblock"><h2>① 좌석 합계 — LOOP를 모던으로</h2>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11</pre><pre class="abap-editor__code"><code><span class="tok-com">" classic</span>
+<span class="tok-kw">DATA</span>: ls_book <span class="tok-kw">TYPE</span> zbooking, lv_sum <span class="tok-kw">TYPE</span> i.
+<span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_book <span class="tok-kw">INTO</span> ls_book.
+  lv_sum = lv_sum + ls_book-seats.
+<span class="tok-kw">ENDLOOP</span>.
+
+<span class="tok-com">" modern</span>
+<span class="tok-kw">DATA</span>(lv_total) = <span class="tok-num">0</span>.
+<span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_book <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(ls_book).   <span class="tok-com">" 선언이 INTO 위치로</span>
+  lv_total += ls_book-seats.          <span class="tok-com">" 누적은 +=</span>
+<span class="tok-kw">ENDLOOP</span>.</code></pre></div></div>
+<p>바뀐 건 셋. <code>ls_book</code> 선언이 루프의 <code>INTO</code>로 내려왔고, 합계 변수는 필요한 자리에서 <code>DATA(lv_total) = 0</code>으로 시작하고, 누적은 <code>+=</code>로 짧아졌다.</p>
+</section><section class="lblock"><h2>② 새 예매 행 — VALUE 한 식으로</h2>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>(ls_new) = <span class="tok-kw">VALUE</span> zbooking(
+  concert_id = <span class="tok-str">'C001'</span>
+  perf_no    = <span class="tok-str">'01'</span>
+  customer   = <span class="tok-str">'정훈영'</span>
+  seats      = <span class="tok-num">2</span>
+  status     = <span class="tok-str">'N'</span> ).</code></pre></div></div>
+<p>여러 줄 필드 대입보다, **&quot;새 예매 행은 이런 필드를 가진다&quot;**는 의도가 더 빨리 보인다.</p>
+</section><section class="lblock"><h2>③ 한 줄 조회 — 반드시 보호하고 읽는다 🛡️</h2>
+<p>업무 입력값(<code>lv_id</code>)은 <strong>언제든 틀릴 수 있다.</strong> 그래서 Table Expression을 보호 없이 바로 읽지 않는다. <code>line_exists( )</code>로 먼저 막는다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7</pre><pre class="abap-editor__code"><code><span class="tok-kw">IF</span> line_exists( lt_book[ booking_id = lv_id ] ).
+  <span class="tok-kw">DATA</span>(ls_hit) = lt_book[ booking_id = lv_id ].
+  <span class="tok-kw">DATA</span>(lv_msg) = |예매자 { ls_hit-customer }님의 좌석 수는 { ls_hit-seats }석입니다.|.
+  <span class="tok-kw">WRITE</span> / lv_msg.
+<span class="tok-kw">ELSE</span>.
+  <span class="tok-kw">WRITE</span> / |예매번호 { lv_id }를 찾지 못했습니다.|.
+<span class="tok-kw">ENDIF</span>.</code></pre></div></div>
+<p>이 한 토막에 이 챕터의 모던 문법이 다 들어 있다: <code>line_exists</code>로 실패를 막고, <code>DATA(ls_hit)</code>로 필요한 자리에서 선언하고, String Template으로 사용자 메시지를 만든다. <strong>업무 결과는 그대로, 표현만 좋아진다.</strong></p>
+</section><section class="lblock"><h2>④ 한 걸음 더 — 표현식으로 줄이기</h2>
+<p>패턴이 <strong>단순하면</strong> 앞서 배운 표현식으로 더 줄일 수 있다. 단, 짧다고 다 좋은 건 아니다.
+누적에 검증이 섞이면 <code>LOOP</code>가 낫다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7</pre><pre class="abap-editor__code"><code><span class="tok-com">" 좌석 합계 — 단순 합계라면 REDUCE</span>
+<span class="tok-kw">DATA</span>(lv_total) = REDUCE i(
+  INIT <span class="tok-kw">sum</span> = <span class="tok-num">0</span> <span class="tok-kw">FOR</span> ls_book <span class="tok-kw">IN</span> lt_book NEXT <span class="tok-kw">sum</span> = <span class="tok-kw">sum</span> + ls_book-seats ).
+
+<span class="tok-com">" 상태 문구 — 값 하나를 고르는 거라면 SWITCH</span>
+<span class="tok-kw">DATA</span>(lv_label) = SWITCH string( ls_book-status
+  <span class="tok-kw">WHEN</span> <span class="tok-str">'N'</span> <span class="tok-kw">THEN</span> <span class="tok-str">'예약'</span> <span class="tok-kw">WHEN</span> <span class="tok-str">'C'</span> <span class="tok-kw">THEN</span> <span class="tok-str">'취소'</span> <span class="tok-kw">ELSE</span> <span class="tok-str">'알 수 없음'</span> ).</code></pre></div></div>
+<ul>
+<li>합계는 <a href="CH18-L08.html">REDUCE·FILTER 테이블 표현식</a>, 상태 문구는
+<a href="CH18-L07.html">COND·SWITCH 조건 표현식</a>에서 배운 그대로다.</li>
+<li><strong>판단 기준은 하나.</strong> &quot;값 하나를 만드는 단순 패턴&quot;이면 표현식, &quot;흐름을 나누거나 검증이
+섞이면&quot; <code>LOOP</code>/<code>IF</code>.</li>
+</ul>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">classic ↔ modern 코드를 짝지어 비교</span><a class="embed__open" href="../../../embeds/abap/CH18-L11-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH18-L11-S01.html" loading="lazy" title="classic ↔ modern 코드를 짝지어 비교"></iframe></figure>
+</section><section class="lblock"><h2>결과가 같은지 확인 — 특히 &quot;없는 번호&quot; ✅</h2>
+<p>같은 <code>lt_book</code>으로 classic과 modern을 돌려 결과를 맞춰 본다.</p>
+<table>
+<thead>
+<tr>
+<th>booking_id</th>
+<th>customer</th>
+<th align="right">seats</th>
+<th>status</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>B001</td>
+<td>정훈영</td>
+<td align="right">2</td>
+<td>N</td>
+</tr>
+<tr>
+<td>B002</td>
+<td>손흥민</td>
+<td align="right">1</td>
+<td>N</td>
+</tr>
+<tr>
+<td>B003</td>
+<td>아이유</td>
+<td align="right">4</td>
+<td>N</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>확인 항목</th>
+<th>기대 결과</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>좌석 합계</td>
+<td><code>2 + 1 + 4 = 7</code></td>
+</tr>
+<tr>
+<td>있는 번호 <code>B001</code></td>
+<td>예매자·좌석 수 메시지 출력</td>
+</tr>
+<tr>
+<td><strong>없는 번호 <code>B999</code></strong></td>
+<td>&quot;찾지 못했다&quot; 메시지, <strong>프로그램 중단 없음</strong></td>
+</tr>
+<tr>
+<td><code>SELECT</code> 문장</td>
+<td>모던으로 바꾸지 않음(다음 챕터 범위)</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>💡 <strong><code>B999</code>(없는 번호) 테스트가 제일 중요하다.</strong> Table Expression을 막 배우면 <em>있는 값</em>만 넣어 성공 화면만 보기 쉽다. 프로그램의 진짜 안정성은 <strong>없는 값</strong>에서 드러난다. <code>line_exists( )</code>가 그 차이를 만든다.</p>
+</blockquote>
+</section><section class="lblock"><h2>직접 해 볼 과제</h2>
+<ol>
+<li><code>get_remaining</code>의 <code>LOOP</code>를 인라인 <code>DATA</code>·<code>+=</code>로 바꾼다.</li>
+<li>새 예매 Structure를 <code>VALUE</code>로 한 식에 채운다.</li>
+<li><code>READ TABLE</code>을 <code>lt_book[ … ]</code>로 바꾸고 <code>line_exists( )</code>로 보호한 뒤, <strong><code>B999</code>로 안전 분기를 확인</strong>한다.</li>
+</ol>
+</section><section class="lblock"><h2>흔한 실수와 점검 🚧</h2>
+<ul>
+<li><strong>이름을 너무 짧게</strong> → 모던이 짧아져도 업무 이름은 정확해야 한다. <code>DATA(ls)</code>보다 <code>DATA(ls_book)</code>.</li>
+<li><strong>String Template에 업무 판단 넣기</strong> → 상태에 따라 문구를 바꾸는 로직은 먼저 <code>IF</code>/<code>CASE</code>로 정하고, template은 <strong>최종 문장 조립</strong>만 맡긴다.</li>
+<li><strong>보호 없는 조회</strong> → <code>DATA(ls_hit) = lt_book[ booking_id = lv_id ].</code>만 쓰면 없는 값에서 예외. 완성 코드엔 <code>line_exists( )</code>가 기본 방어선(<a href="CH18-L04.html">Table Expression 안전하게 읽기</a>).</li>
+<li><strong>섞여도 괜찮다</strong> → 한 파일에 오래된 SQL·classic LOOP·modern VALUE가 공존해도 된다. 중요한 건 팀 기준·학습 경계·읽는 사람의 이해다.</li>
+</ul>
+<hr>
+<p>ABAP 코드를 모던으로 다듬었다. 이제 <strong><code>SELECT</code> 자체</strong>를 모던 SQL로 바꿔 보자 →
+<a href="CH19-L01.html">Classic Open SQL과 Modern ABAP SQL 비교</a>.</p>
+</section>
+      </article>
+      <nav class="lesson-nav" data-shell="prevnext"></nav>
+      <footer class="foot">SAP Developer Academy · 배포자 SAP전문강사 정훈영</footer>
+    </main>
+    <aside class="journey" data-shell="journey"></aside>
+  </div>
+</div>
+<div class="term-popup" data-shell="popup" hidden></div>
+<div class="tmodal" data-shell="tmodal" hidden></div>
+<script>window.__SDA__={"domain":"abap","dataBase":"../","siteRoot":"../../../"};</script>
+<script src="../../../assets/shell.js" defer></script>
+</body>
+</html>

@@ -157,8 +157,12 @@
 | CH18-L03-S01 | CH18-L03 | field-mapping-board | CORRESPONDING 원본→대상 매핑(같은이름 자동·MAPPING/EXCEPT 토글·created_by 버려짐)→생성 코드 라이브 | ✅ |
 | CH18-L04-S01 | CH18-L04 | read-vs-tabexpr | 검색 id별 4방식 비교(READ TABLE sy-subrc·tab[ ] 없으면 예외·line_exists 안전·line_index 0)·B999→CX_SY_ITAB_LINE_NOT_FOUND | ✅ |
 | CH18-L05-S01 | CH18-L05 | string-template-composer | CONCATENATE↔String Template 비교·DATE/NUMBER=USER 서식·substring(off/len) 범위 초과 오류 | ✅ |
-| CH18-L06-S01 | CH18-L06 | diff-mapper | classic↔modern(VALUE·+=) hover 대응+설명 · 중립 톤 classic/modern | ✅ |
-| CH18-L07-S01 | CH18-L07 | diff-mapper | 콘서트앱 모던리팩터(인라인DATA·+=·VALUE·Table Expr) | ✅ |
+| CH18-L06-S01 | CH18-L06 | type-conversion-lab | CONV i/string·EXACT i 변환+위험(비숫자·소수 손실→예외) 비교 | ✅ |
+| CH18-L07-S01 | CH18-L07 | cond-switch-selector | 잔여석→COND(범위)·상태→SWITCH(상수) 값 선택·ELSE 제거 시 초기값 | ✅ |
+| CH18-L08-S01 | CH18-L08 | reduce-filter-lab | REDUCE 좌석합계 누적 스텝·FILTER status=N·EXCEPT 반대집합 | ✅ |
+| CH18-L09-S01 | CH18-L09 | let-reader | LET 보조값 먼저 평가→IN 결과·COND/REDUCE 문맥·보조값vs누적값 구분 | ✅ |
+| CH18-L10-S01 | CH18-L10 | diff-mapper | classic↔modern(VALUE·+=·Table Expr) hover 대응+설명 · 중립 톤 | ✅ |
+| CH18-L11-S01 | CH18-L11 | diff-mapper | 콘서트앱 모던리팩터(인라인DATA·+=·VALUE·line_exists·REDUCE/SWITCH) | ✅ |
 | CH19-L01-S01 | CH19-L01 | sql-modernize-stepper | classic→modern SQL 단계 변환(콤마·@·INTO 뒤로)·항공사 코드별 결과(행수·sy-subrc·sy-dbcnt) 동일 | ✅ |
 | CH19-L02-S01 | CH19-L02 | host-escape-inspector | WHERE 오른쪽 operand(ABAP변수/식/DB컬럼/리터럴)×@ on·off→정오 판정(escape 필요/불필요/누락)·host식 lossless·SQL식↔host식 구분 | ✅ |
 | CH19-L03-S01 | CH19-L03 | inline-target-viewer | SELECT 목록(*/필드/계산/계산+AS)×target(@DATA/DATA/@기존)→행 구조 chips·standard+empty key·계산 컬럼 AS 별칭 필요·@DATA↔DATA 구분 | ✅ |
@@ -234,12 +238,16 @@
 | move-mapping (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH05-L04-S01 | MM_CFG 주도 · src/tgt 카드·같은 이름=초록 복사 flash·원본-only=주황 무시·대상-only=잔존(빨강 stale 함정)·CLEAR 먼저 토글→ok/warn verdict(교훈3)·classic 전용(FMB는 modern이라 미재사용)·토큰만 · 다크 |
 | struct-reuse-board (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH05-L03-S01 | SRB_CFG 주도 · 3모드 세그(중첩=amber 하위/INCLUDE=good 점선 펼침/APPEND=잠긴 표준+accent 확장)+접근 경로 칩+선택형 퀴즈(정오 good/bad+why)·토큰만 · 다크 |
 | syntax-toggle-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH01-L03-S01 | STL_CFG 주도 · 코드 패널(행번호·kw/cmt 토큰색)+토글 4(마침표/별표 위치/인라인 */소문자)→구문 램프 ok/bad+원인 목록·이름 풀 정훈영(R9)·코드 base=var(--surface) 틴트 · 다크 |
-| diff-mapper | 2 | 공통(_engine)+_autoheight ✅ | CH18-L06·L07 (완료) | 데이터=마크업(data-link/title/desc) · classic/modern 중립 톤 추가 |
+| diff-mapper | 2 | 공통(_engine)+_autoheight ✅ | CH18-L10·L11 (완료) | 데이터=마크업(data-link/title/desc) · classic/modern 중립 톤 추가 |
 | inline-decl-judge (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH18-L01-S01 | IDJ_CFG 주도 · 문장 카드 4종(READ/LOOP/계산/SELECT) 허용/보류 판정·계산 카드 DATA()/FINAL() 토글→재대입 ok/bad · 다크 |
 | value-builder (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH18-L02-S01 | key 토글·작업 버튼(make/base/replace/forgen/dup)→VALUE 식·결과 테이블(new 강조)·BASE 유무·중복 key 오류 · 다크 |
 | field-mapping-board (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH18-L03-S01 | FMB_CFG 주도 · 원본/대상 필드 매핑표(자동/MAPPING/EXCEPT/초기값 배지)·MAPPING/EXCEPT 토글→CORRESPONDING 코드·원본only 버려짐 · 다크 |
 | read-vs-tabexpr (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH18-L04-S01 | RVT_CFG 주도 · id 세그·데이터테이블(hit)·4 method 카드(READ TABLE/tab[ ]/line_exists/line_index)·없으면 예외(bad) · 다크 |
 | string-template-composer (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH18-L05-S01 | STC_CFG 주도 · mode(concat/template)·fmt(raw/user) 세그→코드/결과·substring 입력(범위초과 bad)·코드 base=var(--surface)로 틴트 다크 유지 · 다크 |
+| type-conversion-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH18-L06-S01 | 값 입력→CONV i/CONV string/EXACT i 변환·결과/위험(비숫자 변환불가·소수 손실→예외) · 다크 |
+| cond-switch-selector (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH18-L07-S01 | 잔여석→COND(범위 조건)·상태코드→SWITCH(상수 비교) 값 선택·ELSE 토글→초기값 · 다크 |
+| reduce-filter-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH18-L08-S01 | 예매테이블→REDUCE 좌석합계 누적 스텝·FILTER status=N·EXCEPT 반대집합 · 다크 |
+| let-reader (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH18-L09-S01 | LET 보조값 먼저 평가→IN 결과(COND/REDUCE 탭)·LET보조값 vs INIT누적값 색 구분 · 다크 |
 | sql-modernize-stepper (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH19-L01-S01 | SMS_CFG 주도 · stage 세그(classic/콤마/@/INTO 뒤로)→코드 변환(hl·esc 강조)·carr 세그(LH/AA/ZZ)→결과 카드(subrc 0/4·dbcnt)·표기 무관 결과 동일·base=var(--surface) · 다크 |
 | host-escape-inspector (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH19-L02-S01 | HEI_CFG.operands 주도 · op 세그(ABAP변수/식/DB컬럼/리터럴)×esc 세그(@ on/off)→WHERE 조건 렌더(col/esc/bad 강조)·정오 판정(correctOn=ABAP값만)·식=@( )·lossless·base=var(--surface) · 다크 |
 | inline-target-viewer (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH19-L03-S01 | ITV_CFG 주도 · list 세그(*/2필드/계산/계산+AS)→행 구조 chips(이름없음=noname red)·tgt 세그(@DATA/DATA/@기존)→verdict(badEscape/existing/ok)·계산 alias missing 경고·standard+empty key·base=var(--surface) · 다크 |
