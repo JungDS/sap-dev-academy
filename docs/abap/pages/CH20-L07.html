@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>실습 — 콘서트 Advanced SQL · Advanced ABAP SQL · SAP Developer Academy</title>
+<link rel="stylesheet" href="../../../assets/base.css">
+<link rel="stylesheet" href="../../../assets/lesson.css">
+<link rel="stylesheet" href="../../../assets/shell.css">
+<script>/* 읽기 설정 선적용(플래시 방지) */(function(){try{var L=localStorage,r=document.documentElement;if(L.getItem('sda.dark')==='1')r.classList.add('dark');if(L.getItem('sda.wide')==='1')r.classList.add('wide');var f=parseInt(L.getItem('sda.fontPx'),10);if(f>=13&&f<=20)r.style.fontSize=f+'px';}catch(e){}})();</script>
+</head>
+<body data-domain="abap" data-chapter-id="CH20" data-lesson-id="CH20-L07">
+<header class="appbar">
+  <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
+  <span class="appbar__sp"></span>
+  <span class="meta">Chapter 20 · Advanced ABAP SQL</span>
+  <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
+  <div class="tools">
+    <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
+    <button class="icon-btn" id="fsInc" title="글자 크게">A+</button>
+    <button class="icon-btn" id="fsReset" title="글자 크기 초기화">↺</button>
+    <button class="icon-btn" id="darkBtn" title="다크 모드">🌙</button>
+    <button class="icon-btn" id="widthBtn" title="가독 폭 넓게">↔</button>
+    <button class="icon-btn fs-btn" title="전체화면" aria-label="전체화면"></button>
+  </div>
+</header>
+<div class="read-progress"><i></i></div>
+<div class="scrim"></div>
+<nav class="rail" data-shell="rail"></nav>
+<button class="railFab" id="railFab" aria-label="네비 열기">☰</button>
+<div class="stage">
+  <div class="layout">
+    <main class="main">
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 20 › Lesson 7</nav>
+      <section class="lhead">
+        <p class="lhead__eyebrow">Advanced ABAP SQL</p>
+        <h1>실습 — 콘서트 Advanced SQL</h1>
+        <p class="lhead__direction">CTE·EXISTS·EXCEPT·Window를 한 콘서트 조회에 모아 결과를 검증한다.</p>
+        <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 20</span><span class="tag tag--ls">Lesson 7</span><span class="tag tag--lv">고급</span></div>
+      </section>
+      <article class="prose">
+<section class="lblock"><h2>🎫 한 화면에서 만나는 고급 SQL</h2>
+<p>지금까지는 문법을 따로 봤다. 실무에선 이 문법들이 <strong>한 조회 화면</strong>에 함께 나온다. 콘서트 운영자는 이런 질문을 한 화면에서 보고 싶어 한다.</p>
+<ul>
+<li>공연별 정원·예약 좌석·잔여석은?</li>
+<li>예약이 있는 공연은?</li>
+<li>예약이 없는 공연은?</li>
+<li>예약 상세마다 공연 안 순번과 합계는?</li>
+</ul>
+<blockquote>
+<p>🚧 <strong>이 실습이 하지 않는 것</strong>: 예약 저장·취소(DML)·CDS/RAP. 모두 다음 챕터들의 주제다. 여기선 <strong>읽기·검증</strong>까지.</p>
+</blockquote>
+</section><section class="lblock"><h2>실습 데이터</h2>
+<p><code>zconcert</code></p>
+<table>
+<thead>
+<tr>
+<th>concert_id</th>
+<th>title</th>
+<th align="right">capacity</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>C001</td>
+<td>정훈영 밴드</td>
+<td align="right">100</td>
+</tr>
+<tr>
+<td>C002</td>
+<td>ABAP Trio</td>
+<td align="right">80</td>
+</tr>
+<tr>
+<td>C003</td>
+<td>UI5 Night</td>
+<td align="right">50</td>
+</tr>
+<tr>
+<td>C004</td>
+<td>Closed Show</td>
+<td align="right">60</td>
+</tr>
+</tbody></table>
+<p><code>zbooking</code></p>
+<table>
+<thead>
+<tr>
+<th>booking_id</th>
+<th>concert_id</th>
+<th align="right">seats</th>
+<th>status</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>B001</td>
+<td>C001</td>
+<td align="right">2</td>
+<td>N</td>
+</tr>
+<tr>
+<td>B002</td>
+<td>C001</td>
+<td align="right">3</td>
+<td>N</td>
+</tr>
+<tr>
+<td>B003</td>
+<td>C002</td>
+<td align="right">1</td>
+<td><strong>C</strong></td>
+</tr>
+<tr>
+<td>B004</td>
+<td>C004</td>
+<td align="right">4</td>
+<td>N</td>
+</tr>
+</tbody></table>
+</section><section class="lblock"><h2>과제 1: CTE로 잔여석 조회</h2>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12</pre><pre class="abap-editor__code"><code><span class="tok-kw">WITH</span>
+  +booked <span class="tok-kw">AS</span> (
+    <span class="tok-kw">SELECT</span> concert_id, <span class="tok-kw">SUM</span>( seats ) <span class="tok-kw">AS</span> booked_seats
+      <span class="tok-kw">FROM</span> zbooking
+      <span class="tok-kw">WHERE</span> status &lt;&gt; <span class="tok-str">'C'</span>
+      <span class="tok-kw">GROUP</span> <span class="tok-kw">BY</span> concert_id )
+  <span class="tok-kw">SELECT</span> c~concert_id, c~<span class="tok-kw">title</span>, c~capacity,
+         <span class="tok-kw">COALESCE</span>( b~booked_seats, <span class="tok-num">0</span> )              <span class="tok-kw">AS</span> booked,
+         c~capacity - <span class="tok-kw">COALESCE</span>( b~booked_seats, <span class="tok-num">0</span> ) <span class="tok-kw">AS</span> remaining
+    <span class="tok-kw">FROM</span> zconcert <span class="tok-kw">AS</span> c
+    <span class="tok-kw">LEFT</span> <span class="tok-kw">OUTER</span> <span class="tok-kw">JOIN</span> +booked <span class="tok-kw">AS</span> b <span class="tok-kw">ON</span> b~concert_id = c~concert_id
+    <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> @<span class="tok-kw">DATA</span>(lt_capacity).</code></pre></div></div>
+<p>예상 결과:</p>
+<table>
+<thead>
+<tr>
+<th>concert_id</th>
+<th align="right">booked</th>
+<th align="right">remaining</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>C001</td>
+<td align="right">5</td>
+<td align="right">95</td>
+</tr>
+<tr>
+<td>C002</td>
+<td align="right">0</td>
+<td align="right">80</td>
+</tr>
+<tr>
+<td>C003</td>
+<td align="right">0</td>
+<td align="right">50</td>
+</tr>
+<tr>
+<td>C004</td>
+<td align="right">4</td>
+<td align="right">56</td>
+</tr>
+</tbody></table>
+<p>검증 포인트: C002의 취소 예약 1석은 합계에서 빠진다. C003은 예약이 없어도 <code>LEFT OUTER JOIN</code> 덕분에 남는다. <code>COALESCE</code>가 없으면 예약 없는 공연의 합계가 null이 되어 잔여석이 어긋난다.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">Concert Advanced SQL Lab (CTE · EXISTS · EXCEPT · Window 통합)</span><a class="embed__open" href="../../../embeds/abap/CH20-L07-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH20-L07-S01.html" loading="lazy" title="Concert Advanced SQL Lab (CTE · EXISTS · EXCEPT · Window 통합)"></iframe></figure>
+</section><section class="lblock"><h2>과제 2: EXISTS로 예약 있는 공연 찾기</h2>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> c~concert_id, c~<span class="tok-kw">title</span>
+  <span class="tok-kw">FROM</span> zconcert <span class="tok-kw">AS</span> c
+  <span class="tok-kw">WHERE</span> EXISTS ( <span class="tok-kw">SELECT</span> concert_id
+                   <span class="tok-kw">FROM</span> zbooking <span class="tok-kw">AS</span> b
+                   <span class="tok-kw">WHERE</span> b~concert_id = c~concert_id
+                     <span class="tok-kw">AND</span> b~status    &lt;&gt; <span class="tok-str">'C'</span> )
+  <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> @<span class="tok-kw">DATA</span>(lt_has_booking).</code></pre></div></div>
+<p>예상 결과는 <strong>C001, C004</strong>다. C002는 취소 예약만 있어 제외, C003은 예약이 없어 제외.</p>
+</section><section class="lblock"><h2>과제 3: EXCEPT로 예약 없는 공연 찾기</h2>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> concert_id <span class="tok-kw">FROM</span> zconcert
+<span class="tok-kw">EXCEPT</span> <span class="tok-kw">DISTINCT</span>
+<span class="tok-kw">SELECT</span> concert_id <span class="tok-kw">FROM</span> zbooking <span class="tok-kw">WHERE</span> status &lt;&gt; <span class="tok-str">'C'</span>
+<span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> @<span class="tok-kw">DATA</span>(lt_without_booking).</code></pre></div></div>
+<p>예상 결과는 <strong>C002, C003</strong>다. C002는 취소 예약만 있으므로 &quot;취소 아닌 예약이 있는 공연&quot; 집합에 들지 않는다.</p>
+</section><section class="lblock"><h2>과제 4: Window로 상세에 합계·순번 붙이기</h2>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> concert_id, booking_id, seats,
+       <span class="tok-kw">SUM</span>( seats ) OVER( PARTITION <span class="tok-kw">BY</span> concert_id )                      <span class="tok-kw">AS</span> booked_total,
+       ROW_NUMBER( ) OVER( PARTITION <span class="tok-kw">BY</span> concert_id <span class="tok-kw">ORDER</span> <span class="tok-kw">BY</span> booking_id ) <span class="tok-kw">AS</span> row_in_concert
+  <span class="tok-kw">FROM</span> zbooking
+  <span class="tok-kw">WHERE</span> status &lt;&gt; <span class="tok-str">'C'</span>
+  <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> @<span class="tok-kw">DATA</span>(lt_window).</code></pre></div></div>
+<p>예상 결과:</p>
+<table>
+<thead>
+<tr>
+<th>booking_id</th>
+<th>concert_id</th>
+<th align="right">seats</th>
+<th align="right">booked_total</th>
+<th align="right">row_in_concert</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>B001</td>
+<td>C001</td>
+<td align="right">2</td>
+<td align="right">5</td>
+<td align="right">1</td>
+</tr>
+<tr>
+<td>B002</td>
+<td>C001</td>
+<td align="right">3</td>
+<td align="right">5</td>
+<td align="right">2</td>
+</tr>
+<tr>
+<td>B004</td>
+<td>C004</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="right">1</td>
+</tr>
+</tbody></table>
+</section><section class="lblock"><h2>직접 해 볼 과제</h2>
+<ol>
+<li>과제 1의 CTE에서 <code>WHERE status &lt;&gt; &#39;C&#39;</code>를 빼 보고, 취소 예약이 합계에 섞이는지 확인한다.</li>
+<li>과제 2의 <code>EXISTS</code>를 <code>INNER JOIN</code>으로 바꿔 보고, 공연 행이 예약 건수만큼 중복되는지 비교한다.</li>
+<li>과제 3의 <code>EXCEPT</code> 좌우를 바꿔 보고 결과가 달라지는지 확인한다.</li>
+</ol>
+</section><section class="lblock"><h2>흔한 실수와 점검 🚧</h2>
+<ul>
+<li><strong>취소 조건 누락</strong> → 합계·존재·차집합 모두 <code>status &lt;&gt; &#39;C&#39;</code>가 빠지면 결과가 달라진다.</li>
+<li><strong><code>COALESCE</code> 오해</strong> → DB null을 대체하는 것이다. 이미 <code>0</code>인 값을 바꾸는 게 아니다.</li>
+<li><strong><code>EXCEPT</code> 방향</strong> → 왼쪽에서 오른쪽을 뺀다. 방향을 뒤집으면 다른 답이 나온다.</li>
+<li><strong>window를 필터로</strong> → window는 <code>SELECT</code> list 계산 컬럼이다. <code>WHERE</code>에 직접 쓰지 않는다.</li>
+</ul>
+<hr>
+<p>데이터 접근을 고급까지 익혔다. 이제 데이터가 아니라 <strong>코드 구조 자체를 객체로</strong> 설계하는 OO ABAP으로 →
+<a href="CH21-L01.html">Global Class 생성과 객체</a>.</p>
+</section>
+      </article>
+      <nav class="lesson-nav" data-shell="prevnext"></nav>
+      <footer class="foot">SAP Developer Academy · 배포자 SAP전문강사 정훈영</footer>
+    </main>
+    <aside class="journey" data-shell="journey"></aside>
+  </div>
+</div>
+<div class="term-popup" data-shell="popup" hidden></div>
+<div class="tmodal" data-shell="tmodal" hidden></div>
+<script>window.__SDA__={"domain":"abap","dataBase":"../","siteRoot":"../../../"};</script>
+<script src="../../../assets/shell.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>선택 기준과 멈춤 기준 · Advanced ABAP SQL · SAP Developer Academy</title>
+<link rel="stylesheet" href="../../../assets/base.css">
+<link rel="stylesheet" href="../../../assets/lesson.css">
+<link rel="stylesheet" href="../../../assets/shell.css">
+<script>/* 읽기 설정 선적용(플래시 방지) */(function(){try{var L=localStorage,r=document.documentElement;if(L.getItem('sda.dark')==='1')r.classList.add('dark');if(L.getItem('sda.wide')==='1')r.classList.add('wide');var f=parseInt(L.getItem('sda.fontPx'),10);if(f>=13&&f<=20)r.style.fontSize=f+'px';}catch(e){}})();</script>
+</head>
+<body data-domain="abap" data-chapter-id="CH20" data-lesson-id="CH20-L06">
+<header class="appbar">
+  <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
+  <span class="appbar__sp"></span>
+  <span class="meta">Chapter 20 · Advanced ABAP SQL</span>
+  <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
+  <div class="tools">
+    <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
+    <button class="icon-btn" id="fsInc" title="글자 크게">A+</button>
+    <button class="icon-btn" id="fsReset" title="글자 크기 초기화">↺</button>
+    <button class="icon-btn" id="darkBtn" title="다크 모드">🌙</button>
+    <button class="icon-btn" id="widthBtn" title="가독 폭 넓게">↔</button>
+    <button class="icon-btn fs-btn" title="전체화면" aria-label="전체화면"></button>
+  </div>
+</header>
+<div class="read-progress"><i></i></div>
+<div class="scrim"></div>
+<nav class="rail" data-shell="rail"></nav>
+<button class="railFab" id="railFab" aria-label="네비 열기">☰</button>
+<div class="stage">
+  <div class="layout">
+    <main class="main">
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 20 › Lesson 6</nav>
+      <section class="lhead">
+        <p class="lhead__eyebrow">Advanced ABAP SQL</p>
+        <h1>선택 기준과 멈춤 기준</h1>
+        <p class="lhead__direction">SQL로 되느냐보다 읽기 쉽고 검증 가능하냐를 먼저 묻는다.</p>
+        <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 20</span><span class="tag tag--ls">Lesson 6</span><span class="tag tag--lv">고급</span></div>
+      </section>
+      <article class="prose">
+<section class="lblock"><h2>왜 — &quot;할 수 있다&quot;가 &quot;해야 한다&quot;는 아니다 🧭</h2>
+<p>CTE·subquery·집합·window를 배우면 모든 문제를 SQL 한 문장으로 풀고 싶어진다. 그러나 좋은 개발자는 &quot;SQL로 <strong>할 수 있는가</strong>&quot;보다 &quot;SQL로 표현하는 것이 더 <strong>읽기 쉽고 검증 가능한가</strong>&quot;를 먼저 묻는다.</p>
+</section><section class="lblock"><h2>무엇 — 상황별 선택 🗂️</h2>
+<table>
+<thead>
+<tr>
+<th>상황</th>
+<th>우선 고려</th>
+<th>이유</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>두 표의 컬럼을 옆으로 붙인다</td>
+<td><code>JOIN</code></td>
+<td>컬럼 결합이 목적</td>
+</tr>
+<tr>
+<td>관련 행 <strong>존재 여부</strong>만 필요하다</td>
+<td><code>EXISTS</code></td>
+<td>중복 없이 조건으로 판단</td>
+</tr>
+<tr>
+<td>한 문장에서 중간 결과 재사용·단계 이름이 필요</td>
+<td>CTE</td>
+<td>읽기 쉬운 단계로 나눔</td>
+</tr>
+<tr>
+<td>두 목록을 합·교·차</td>
+<td>Set operation</td>
+<td>집합 질문을 직접 표현</td>
+</tr>
+<tr>
+<td>상세 행을 <strong>유지</strong>하며 그룹 계산</td>
+<td>Window</td>
+<td><code>GROUP BY</code>로는 상세 행이 사라짐</td>
+</tr>
+<tr>
+<td>계산 규칙이 업무 정책이고 여러 곳에서 재사용</td>
+<td>ABAP 코드 / 후속 <a href="CH23-L01.html">CDS</a></td>
+<td>SQL 한 문장에 정책을 숨기지 않음</td>
+</tr>
+</tbody></table>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">고급 SQL 선택 가이드 (상황 → 도구 · 멈춤 신호)</span><a class="embed__open" href="../../../embeds/abap/CH20-L06-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH20-L06-S01.html" loading="lazy" title="고급 SQL 선택 가이드 (상황 → 도구 · 멈춤 신호)"></iframe></figure>
+</section><section class="lblock"><h2>어떻게 확인 — 리뷰 체크리스트 ✅</h2>
+<table>
+<thead>
+<tr>
+<th>질문</th>
+<th>확인 방법</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>결과 행 수가 예상과 맞나?</td>
+<td>입력표로 수작업 예상표를 먼저 만든다</td>
+</tr>
+<tr>
+<td>중복이 업무적으로 의도됐나?</td>
+<td><code>JOIN</code>·<code>UNION ALL</code>의 중복을 확인</td>
+</tr>
+<tr>
+<td>null 처리가 명시됐나?</td>
+<td>outer join·계산 컬럼에서 <code>COALESCE</code> 필요성</td>
+</tr>
+<tr>
+<td>조건 위치가 맞나?</td>
+<td>outer join 조건은 <code>ON</code>과 <code>WHERE</code> 차이(<a href="CH19-L08.html">지난 챕터</a>)</td>
+</tr>
+<tr>
+<td>SQL이 업무 정책을 숨기지 않나?</td>
+<td>읽는 사람이 한 화면에서 설명할 수 있는지</td>
+</tr>
+<tr>
+<td>후속 장 주제를 앞당기지 않나?</td>
+<td>CDS·RAP·동적 SQL이면 해당 장으로</td>
+</tr>
+</tbody></table>
+</section><section class="lblock"><h2>흔한 실수와 점검 🚧</h2>
+<ul>
+<li><strong>CTE 남발</strong> → 많아질수록 절차적 코드처럼 보이지만, 디버거로 한 줄씩 중간 표를 보긴 어렵다. 중간 결과는 <strong>머릿속 표</strong>로 검증한다.</li>
+<li><strong>성능 단정</strong> → subquery·window의 성능은 DB·상황마다 다르다. 측정 없이 단정하지 않는다.</li>
+<li><strong>단순 합계에 window</strong> → 상세 행이 필요 없으면 <code>GROUP BY</code>가 더 낫다.</li>
+<li><strong>집합 연산 모양 안 맞춤</strong> → 좌우 <code>SELECT</code> 컬럼·타입을 먼저 맞춘다.</li>
+</ul>
+<hr>
+<p>기준을 세웠다. 이제 배운 네 도구를 <strong>콘서트앱</strong>에 한 번에 적용해 검증하자 →
+<a href="CH20-L07.html">실습 — 콘서트 Advanced SQL</a>.</p>
+</section>
+      </article>
+      <nav class="lesson-nav" data-shell="prevnext"></nav>
+      <footer class="foot">SAP Developer Academy · 배포자 SAP전문강사 정훈영</footer>
+    </main>
+    <aside class="journey" data-shell="journey"></aside>
+  </div>
+</div>
+<div class="term-popup" data-shell="popup" hidden></div>
+<div class="tmodal" data-shell="tmodal" hidden></div>
+<script>window.__SDA__={"domain":"abap","dataBase":"../","siteRoot":"../../../"};</script>
+<script src="../../../assets/shell.js" defer></script>
+</body>
+</html>
