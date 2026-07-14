@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<!-- CH20-L07-S01 · 엔진: concert-adv-sql-lab · CH20 Advanced SQL 통합 실습(캡스톤): CTE 잔여석/EXISTS 예약공연/EXCEPT 미예약공연/Window 상세 + 취소조건 제거 실험 · config=JSON#concert-adv-sql-lab-cfg · 게이팅: CH20 Advanced SQL(CTE·Subquery·EXISTS·Set·Window)만, CDS/RAP/DML/OO 미노출. -->
+<html lang="ko" data-eng="concert-adv-sql-lab">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Concert Advanced SQL Lab · CH20-L07-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/concert-adv-sql-lab.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">Concert Advanced SQL Lab <small>(CH20 통합 실습)</small></p>
+  <p class="lead">콘서트 예매 두 테이블(<code>zconcert</code>·<code>zbooking</code>)로 이번 챕터의 고급 SQL 네 가지를 직접 돌려 봐요. 버튼으로 기법을 바꾸고, <b>조건 제거 실험</b>으로 취소된 예약(<code>status = 'C'</code>)이 결과를 어떻게 망가뜨리는지 확인합니다.</p>
+
+  <div class="csl-controls">
+    <div class="csl-modes" id="cslModes"></div>
+    <div class="csl-ctl">
+      <button type="button" id="cslExp" class="csl-toggle" aria-pressed="false">조건 제거 실험</button>
+      <button type="button" id="cslReset" class="csl-reset">초기화</button>
+    </div>
+  </div>
+
+  <div class="csl-sql" id="cslSql"></div>
+  <div class="csl-result" id="cslResult"></div>
+  <div class="csl-verify" id="cslVerify"></div>
+  <div class="csl-feedback" id="cslFeedback"></div>
+
+  <div class="note"><b>업무 규칙이 곧 SQL 조건이다.</b> "취소된 예약은 좌석을 차지하지 않는다"는 규칙 하나가 빠지면 잔여석·예약목록·집합·순번이 전부 어긋나요. 고급 SQL일수록 <code>WHERE status &lt;&gt; 'C'</code> 같은 <b>업무 조건을 정확히 거는 것</b>이 핵심입니다.</div>
+</div>
+
+<script type="application/json" id="concert-adv-sql-lab-cfg">
+{
+  "cancelStatus": "C",
+  "concerts": [
+    { "id": "C001", "name": "정훈영 밴드", "seats": 100 },
+    { "id": "C002", "name": "ABAP Trio", "seats": 80 },
+    { "id": "C003", "name": "UI5 Night", "seats": 50 },
+    { "id": "C004", "name": "Closed Show", "seats": 60 }
+  ],
+  "bookings": [
+    { "id": "B001", "concert": "C001", "qty": 2, "status": "N" },
+    { "id": "B002", "concert": "C001", "qty": 3, "status": "N" },
+    { "id": "B003", "concert": "C002", "qty": 1, "status": "C" },
+    { "id": "B004", "concert": "C004", "qty": 4, "status": "N" }
+  ],
+  "modes": [
+    {
+      "key": "cte",
+      "label": "CTE 잔여석",
+      "desc": "CTE(WITH) + LEFT JOIN — 공연별 잔여석",
+      "cols": [
+        { "key": "id", "label": "공연ID" },
+        { "key": "seats", "label": "총좌석" },
+        { "key": "booked", "label": "예약" },
+        { "key": "remaining", "label": "잔여" }
+      ],
+      "sql": [
+        { "t": "WITH +booked AS (" },
+        { "t": "  SELECT concert_id, SUM( qty ) AS booked" },
+        { "t": "    FROM zbooking" },
+        { "t": "   WHERE status <> 'C'", "cond": true },
+        { "t": "   GROUP BY concert_id )" },
+        { "t": "SELECT c~concert_id, c~seats," },
+        { "t": "       c~seats - COALESCE( b~booked, 0 ) AS remaining" },
+        { "t": "  FROM zconcert AS c" },
+        { "t": "  LEFT JOIN +booked AS b ON c~concert_id = b~concert_id" },
+        { "t": "  INTO TABLE @DATA(gt_free)." }
+      ],
+      "explain": "CTE(WITH)로 예약 합계를 먼저 모으고 LEFT JOIN해 공연 4개의 잔여석을 정확히 계산했어요. 취소(C)는 WHERE에서 제외됩니다.",
+      "failMsg": "취소된 B003(1석)이 C002 합계에 섞여 예약 1석·잔여 79석으로 잘못 계산됩니다."
+    },
+    {
+      "key": "exists",
+      "label": "EXISTS 예약 공연",
+      "desc": "상관 서브쿼리 EXISTS — 예약된 공연",
+      "cols": [
+        { "key": "id", "label": "공연ID" },
+        { "key": "name", "label": "공연명" }
+      ],
+      "sql": [
+        { "t": "SELECT concert_id, name" },
+        { "t": "  FROM zconcert AS c" },
+        { "t": " WHERE EXISTS ( SELECT 1 FROM zbooking" },
+        { "t": "                 WHERE concert_id = c~concert_id" },
+        { "t": "                   AND status <> 'C' )", "cond": true },
+        { "t": "  INTO TABLE @DATA(gt_booked)." }
+      ],
+      "explain": "EXISTS는 '예약이 하나라도 있나'만 확인해요. 취소만 있는 C002는 제외돼 실제 예약된 C001·C004만 남았습니다.",
+      "failMsg": "취소 예약만 있는 C002가 '예약된 공연'으로 잘못 포함됩니다."
+    },
+    {
+      "key": "except",
+      "label": "EXCEPT 미예약 공연",
+      "desc": "집합 연산 EXCEPT — 미예약 공연 (공연명은 표시용)",
+      "cols": [
+        { "key": "id", "label": "공연ID" },
+        { "key": "name", "label": "공연명" }
+      ],
+      "sql": [
+        { "t": "SELECT concert_id FROM zconcert" },
+        { "t": "EXCEPT" },
+        { "t": "SELECT concert_id FROM zbooking" },
+        { "t": " WHERE status <> 'C'", "cond": true },
+        { "t": "  INTO TABLE @DATA(gt_unbooked)." }
+      ],
+      "explain": "전체 공연에서 예약된 공연을 EXCEPT(차집합)로 빼 미예약 공연 C002·C003만 남겼어요.",
+      "failMsg": "C002가 예약된 것으로 취급돼 미예약 목록에서 빠집니다."
+    },
+    {
+      "key": "window",
+      "label": "Window 상세",
+      "desc": "Window 함수 SUM / ROW_NUMBER OVER PARTITION",
+      "cols": [
+        { "key": "id", "label": "예약ID" },
+        { "key": "concert", "label": "공연ID" },
+        { "key": "qty", "label": "좌석" },
+        { "key": "total", "label": "파티션 합계" },
+        { "key": "rn", "label": "순번" }
+      ],
+      "sql": [
+        { "t": "SELECT booking_id, concert_id, qty," },
+        { "t": "       SUM( qty )    OVER ( PARTITION BY concert_id ) AS total," },
+        { "t": "       ROW_NUMBER( ) OVER ( PARTITION BY concert_id" },
+        { "t": "                            ORDER BY booking_id ) AS rn" },
+        { "t": "  FROM zbooking" },
+        { "t": " WHERE status <> 'C'", "cond": true },
+        { "t": "  INTO TABLE @DATA(gt_detail)." }
+      ],
+      "explain": "Window 함수로 각 예약 옆에 공연별 합계(total)와 순번(rn)을 같이 보여 줘요. 원본 예약 행은 그대로 유지됩니다.",
+      "failMsg": "취소된 B003이 결과에 포함돼 C002 파티션(합계 1)이 생깁니다."
+    }
+  ]
+}
+</script>
+<script src="../_engine/concert-adv-sql-lab.js" defer></script>
+</body>
+</html>

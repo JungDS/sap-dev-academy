@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<!-- CH20-L04-S01 · 엔진: sql-set-board · 두 집합(전체 공연/예약 있는 공연)에 UNION·UNION ALL·INTERSECT·EXCEPT + 좌우 바꾸기를 적용, 벤다이어그램으로 A만/교집합/B만 강조 · config=window.SQL_SET_BOARD_CFG · 게이팅: CH20 Advanced SQL의 집합연산자만(CTE/EXISTS/Window는 형제 레슨, CDS/RAP/DML 미노출). -->
+<html lang="ko" data-eng="sql-set-board">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SQL 집합 보드 · CH20-L04-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/sql-set-board.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">SQL 집합 보드 <small>(UNION · INTERSECT · EXCEPT)</small></p>
+  <p class="lead">두 개의 결과 집합을 <b>하나로 겹쳐</b> 보는 실습이에요. 왼쪽 <code>zconcert</code>(전체 공연)와 오른쪽 <code>zbooking</code>(예약이 있는 공연)을 놓고, 버튼을 눌러 <b>합집합·교집합·차집합</b>이 각각 어떤 행을 남기는지 벤다이어그램으로 확인해 보세요.</p>
+
+  <div class="ssb"></div>
+
+  <div class="note"><b>집합 연산자는 "행을 세로로 합치는" 도구예요.</b> <code>UNION</code>은 중복을 지우고, <code>UNION ALL</code>은 그대로 두고(그래서 더 빠름), <code>INTERSECT</code>는 양쪽 공통만, <code>EXCEPT</code>는 한쪽에만 있는 행만 남깁니다. 특히 <code>EXCEPT</code>는 <b>방향(A−B ≠ B−A)</b>이 있다는 점을 기억하세요. 단, 두 <code>SELECT</code>의 <b>컬럼 개수와 타입이 같아야</b> 합니다.</div>
+</div>
+
+<script>
+window.SQL_SET_BOARD_CFG = {
+  left:  {
+    code: 'zconcert', title: '전체 공연 (A)',
+    select: 'SELECT concert_id\n  FROM zconcert',
+    rows: [
+      { id: 'C001', name: '정훈영 피아노 리사이틀' },
+      { id: 'C002', name: '재즈 나이트' },
+      { id: 'C003', name: '신년 오케스트라' }
+    ]
+  },
+  right: {
+    code: 'zbooking', title: '예약 있는 공연 (B)',
+    select: 'SELECT DISTINCT concert_id\n  FROM zbooking',
+    rows: [
+      { id: 'C001', name: '예약 12건' },
+      { id: 'C003', name: '예약 5건' },
+      { id: 'C004', name: '예약 3건' }
+    ]
+  },
+  ops: [
+    { key: 'union', label: 'UNION', badge: '중복 제거', kind: 'union', dedup: true,
+      msg: '두 집합을 합치되 같은 공연은 <b>한 번만</b> 남겨요. <b>C004</b>는 zconcert엔 없던 공연이라 여기서 새로 등장합니다. → 결과 4행.' },
+    { key: 'unionall', label: 'UNION ALL', badge: '중복 유지', kind: 'union', dedup: false,
+      msg: '중복을 지우지 않아 <b>C001·C003</b>이 두 번씩 나와 총 6행. 겹침을 걸러내는 정렬 작업이 없어 <b>UNION보다 빠릅니다</b> — 중복이 없다고 확신하면 ALL을 쓰는 게 이득이에요.' },
+    { key: 'intersect', label: 'INTERSECT', badge: '교집합', kind: 'intersect', dedup: true,
+      msg: '양쪽 <b>모두에</b> 있는 공연 = 실제로 예약이 잡힌 진짜 공연이에요. C001·C003만 남습니다.' },
+    { key: 'except', label: 'EXCEPT', badge: '차집합', kind: 'except', dedup: true,
+      msg: '왼쪽엔 있고 오른쪽엔 <b>없는</b> 공연. 지금은 <b>A − B</b> = 공연은 열렸지만 <b>예약이 0건인 공연</b>(C002)을 찾아냅니다. "안 팔린 공연 리스트"죠.',
+      msgSwap: '방향이 바뀌어 <b>B − A</b> = 예약 기록은 있는데 <b>공연 마스터엔 없는 유령 데이터</b>(C004)를 찾습니다. 데이터 정합성 점검에 딱 맞아요.' }
+  ],
+  swapWarn: '<b>차집합은 방향이 있습니다.</b> A − B(안 팔린 공연)와 B − A(유령 예약)는 완전히 다른 결과예요. 합집합·교집합은 방향과 무관합니다.'
+};
+</script>
+<script src="../_engine/sql-set-board.js" defer></script>
+</body>
+</html>

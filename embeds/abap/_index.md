@@ -171,6 +171,13 @@
 | CH19-L06-S01 | CH19-L06 | itab-sql-console | 내부 테이블을 @itab source로·WHERE/ORDER BY/GROUP BY×SELECT↔LOOP/SORT/COLLECT 비교·원본/결과 테이블·@ 필요·DB 대용 아님 | ✅ |
 | CH19-L07-S01 | CH19-L07 | module-choice-cards | (재사용) SQL Decision Cards 6문항→@host/@DATA/CASE/COALESCE/SELECT FROM @itab/ABAP·명시타입 분류·이유 | ✅ |
 | CH19-L08-S01 | CH19-L08 | concert-agg-join-lab | 콘서트 집계: 취소 제외 조건 ON↔WHERE 토글(C003 보존/소멸)·COALESCE null↔0·LEFT OUTER JOIN+GROUP BY·결과/검증 테이블 | ✅ |
+| CH20-L01-S01 | CH20-L01 | compare-matrix | (재사용) 고급 SQL 네 묶음 비교(CTE/Subquery/Set/Window)·업무질문→도구·이름 클릭 상세 | ✅ |
+| CH20-L02-S01 | CH20-L02 | cte-step-viewer | CTE 4단계(원본→+booked 합계→LEFT OUTER JOIN→잔여석)·취소 포함/제외 토글(WHERE 취소선+합계 경고)·예약 없는 공연 강조 | ✅ |
+| CH20-L03-S01 | CH20-L03 | exists-vs-join | JOIN↔EXISTS 토글·JOIN 행 중복 vs EXISTS 존재판정(공연 1행)·취소 조건 제거 실험 | ✅ |
+| CH20-L04-S01 | CH20-L04 | sql-set-board | 두 집합 A/B에 UNION/UNION ALL/INTERSECT/EXCEPT·좌우 바꾸기(EXCEPT 방향성)·벤 색구분 | ✅ |
+| CH20-L05-S01 | CH20-L05 | window-partition-sim | GROUP BY(행 접힘)↔PARTITION BY(행 유지)·ROW_NUMBER·RANK vs DENSE_RANK(gap)·PARTITION 제거 | ✅ |
+| CH20-L06-S01 | CH20-L06 | decision-tree | (재사용) 고급 SQL 선택 가이드(질문→JOIN/EXISTS/CTE/Set/Window 추천)+멈춤 신호 | ✅ |
+| CH20-L07-S01 | CH20-L07 | concert-adv-sql-lab | 통합 실습 4모드(CTE 잔여석·EXISTS 예약공연·EXCEPT 미예약·Window 상세)+조건제거 실험+예상/실제 검증 패널 | ✅ |
 | CH21-L01-S01 | CH21-L01 | class-diagram | 클래스(설계도)→NEW→객체(인스턴스) 흐름 | ✅ |
 | CH21-L02-S01 | CH21-L02 | visibility-gate-sim | 멤버(데이터/메서드)×visibility(PUBLIC/PROTECTED/PRIVATE)×호출자(외부/자기/자식)→접근 허용·차단(컴파일 단계)+캡슐화 조언+접근 매트릭스 | ✅ |
 | CH21-L03-S01 | CH21-L03 | constructor-timeline | 객체 생성/정적 호출→constructor(객체별 count)·class_constructor(클래스 1회) 실행 순서 타임라인+카운터+객체 카드(상태) | ✅ |
@@ -255,6 +262,11 @@
 | sql-function-workbench (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH19-L05-S01 | SFW_CFG 주도 · fn 세그 7종(CONCAT/SUBSTRING/UPPER/LOWER/LENGTH/DATS_ADD_DAYS/DATS_DAYS_BETWEEN)→코드+결과·SUBSTRING pos(1-기반)/len 입력→범위밖 bad+SQL↔ABAP off 비교행·DATS_ADD_DAYS days·base=var(--surface) · 다크 |
 | itab-sql-console (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH19-L06-S01 | ICS_CFG 주도 · 원본 테이블 + op 세그(WHERE/ORDER BY/GROUP BY)×impl 세그(SELECT@itab/LOOP·SORT·COLLECT)→코드(fn·esc·as 강조)+결과 테이블(res teal·agg)·위치 배지·op별 note·base=var(--surface) · 다크 |
 | concert-agg-join-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH19-L08-S01 | CAJL_CFG 주도 · zconcert/zbooking 원본+cond 세그(취소제외 ON/WHERE)×coal 세그(COALESCE 0/SUM)→aggregate()로 결과 테이블 계산(C003 ON=kept/WHERE=소멸·null↔0·FULL/OPEN)+코드 hot 강조+note good/warn·이름 풀(R9)·base=var(--surface) · 다크 |
+| cte-step-viewer (신규) | 1 | 공통(_engine)+자체 post ✅ | CH20-L02-S01 | cfg zbooking/zconcert 주도 · 4단계 nav(원본/+booked/조인/잔여석)·취소 토글→WHERE 취소선+합계 6 경고·COALESCE·base=var(--surface) · 다크 |
+| exists-vs-join (신규) | 1 | 공통(_engine)+자체 post ✅ | CH20-L03-S01 | JOIN 중복 vs EXISTS 존재판정 토글·취소 조건 제거·outerRows/duplicateRows 배지 · 다크 |
+| sql-set-board (신규) | 1 | 공통(_engine)+자체 post ✅ | CH20-L04-S01 | A/B 집합 카드·UNION/ALL/INTERSECT/EXCEPT·좌우 바꾸기(방향성)·fill-brand/good 벤 색 · 다크 |
+| window-partition-sim (신규) | 1 | 공통(_engine)+자체 post ✅ | CH20-L05-S01 | GROUP BY 행접힘 vs PARTITION 행유지·ROW_NUMBER·RANK/DENSE_RANK gap·PARTITION 제거 · 다크 |
+| concert-adv-sql-lab (신규) | 1 | 공통(_engine)+자체 post ✅ | CH20-L07-S01 | 통합 4모드+조건제거+예상/실제 검증패널·CTE 95/EXISTS C001·C004/EXCEPT C002·C003·Window row/total · 다크 |
 | visibility-gate-sim (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH21-L02-S01 | VGS_CFG.members 주도 · mem(데이터/메서드)×vis(PUBLIC/PROTECTED/PRIVATE)×caller(외부/자기/자식)→ALLOW 표로 접근 verdict(ok/bad=syntax)+kind별 캡슐화 advice(warn/ok)+접근 매트릭스(cur 강조)·base=var(--surface) · 다크 |
 | constructor-timeline (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH21-L03-S01 | CTL_CFG.presets 주도 · 액션 버튼(객체1/객체2/정적호출/리셋)→ctorCount(객체별++)·classCtorCount(최초 1회)·classInit 게이트→실행순서 타임라인(stat/inst/skip/state)+카운터+객체 카드(mv_concert/perf/cap)·base=var(--surface) · 다크 |
 | selector-trainer (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH21-L04-S01 | ST_CFG 주도 · left(class/ref)×sel(=>/->)×mem(static/instance) 세그→호출 조립 코드+verdict(ok/bad/warn). 규칙: => 클래스만·-> 참조만, class=>instance 오류, ref->static warn(공식 ABENCLASS_COMPONENT_SELECTOR 허용·Clean ABAP 권장X)·base=var(--surface)·3색 verdict base 중립rgba+.ok 명시(교훈3) · 다크 |

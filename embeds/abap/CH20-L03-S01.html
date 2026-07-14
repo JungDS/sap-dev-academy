@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<!-- CH20-L03-S01 · 엔진: exists-vs-join · 같은 데이터에 INNER JOIN(행 붙이기=중복) vs EXISTS(있나 확인=중복없음)를 적용해 '행 중복' 차이를 관찰 · '취소 조건 제거' 토글 · config=window.EVJ_CFG · 게이팅: CH20 Advanced SQL(EXISTS/JOIN/서브쿼리)만, CDS/RAP/DML/OO 미노출. -->
+<html lang="ko" data-eng="exists-vs-join">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EXISTS vs JOIN — 행 중복 비교기 · CH20-L03-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/exists-vs-join.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">EXISTS vs JOIN <small>(같은 데이터, 다른 결과)</small></p>
+  <p class="lead">"예약이 있는 공연을 찾아라"는 같은 목표를 <b>INNER JOIN</b>과 <b>EXISTS</b> 두 방식으로 조회해 봅니다. 두 방식이 <b>돌려주는 행 수</b>가 왜 달라지는지 눈으로 확인해 보세요.</p>
+
+  <p class="evj-h">원본 데이터</p>
+  <div class="evj-src"></div>
+
+  <div class="evj-controls">
+    <span class="evj-modes"></span>
+    <span class="evj-toggle"></span>
+  </div>
+
+  <p class="evj-h">실행되는 SQL</p>
+  <div class="evj-query"></div>
+
+  <div class="evj-badges"></div>
+  <div class="evj-result"></div>
+  <div class="evj-fb"></div>
+
+  <div class="note"><b>JOIN은 "옆에 붙이고", EXISTS는 "있는지 본다".</b> JOIN은 <code>zbooking</code>의 예약 행을 공연 옆에 하나씩 이어 붙이므로 예약이 여러 건이면 같은 공연이 그 수만큼 <b>중복</b>됩니다. 반면 EXISTS는 "예약이 하나라도 있나?"만 판단해 공연을 <b>한 번씩만</b> 돌려줍니다. "존재 여부"만 알고 싶을 땐 EXISTS가 중복 걱정이 없어요.</div>
+</div>
+
+<script>
+window.EVJ_CFG = {
+  concerts: [
+    { id: 'C001', title: '정훈영 밴드' },
+    { id: 'C002', title: 'ABAP Trio' },
+    { id: 'C003', title: 'UI5 Night' }
+  ],
+  bookings: [
+    { b: 'B001', c: 'C001', status: 'N' },
+    { b: 'B002', c: 'C001', status: 'N' },
+    { b: 'B003', c: 'C001', status: 'C' },
+    { b: 'B004', c: 'C002', status: 'C' }
+  ]
+};
+</script>
+<script src="../_engine/exists-vs-join.js" defer></script>
+</body>
+</html>
