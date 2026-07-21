@@ -1,9 +1,9 @@
 # 14. REFERENCE CORPUS — 외부 참고 자료 인벤토리 · 관련성 · 활용 규칙
 
-> 📅 최종수정: 2026-07-07 20:20 KST
-> 🎯 `C:\ABAP_DOCU_DOWNLOAD\ABAP_DOCU\`에 모아둔 SAP 공식/오픈소스 자료를 **정밀 분석**한 결과와 **프로젝트 활용 규칙**. 이 코퍼스는 *참고 입력(input)*이며 빌드 파이프라인 밖이다 — `content/abap/**.md`를 쓸 때 사실·예제·구조의 **출처**로 쓴다.
+> 📅 최종수정: 2026-07-22 02:37 KST
+> 🎯 `C:\Users\gosts\OneDrive\업무\교육자료_V2\2. ABAP Document\ABAP_DOCU_DOWNLOAD\ABAP_DOCU\`에 모아둔 SAP 공식/오픈소스 자료를 **정밀 분석**한 결과와 **프로젝트 활용 규칙**. 이 코퍼스는 *참고 입력(input)*이며 빌드 파이프라인 밖이다 — `content/abap/**.md`를 쓸 때 사실·예제·구조의 **출처**로 쓴다.
 > ✅ **저작권: 본 과정은 SAP Korea 주관 강의 → SAP 공식문서·cheat-sheet 본문·예제 verbatim(원문 그대로) 사용 허용.** 단 이는 *저작권 허가*일 뿐 — **입문자 가독성(R3)은 별개 규칙으로 유지**: 예제 코드는 공식 원문 그대로 자유 사용하되, **본문 prose가 입문자에게 어려운 곳(영어·압축·non-semantic)은 한국어 입문 톤으로 각색**([04 R3](04_CONVENTIONS.md)). = "verbatim 허용 + R3 각색 유지".
-> 🔗 관련: **오프라인 사실검증은 두 루트를 모두 grep한다**(§5-1, 사용자 확정 2026-07-07) — 루트 A `C:\ABAP_DOCU_HTML\`(keyword doc HTML 덤프·1차 권위) + 루트 B `C:\ABAP_DOCU_DOWNLOAD\ABAP_DOCU\`(본 문서가 카탈로그화하는 GitHub 코퍼스: cheat-sheet·MD 미러·Clean ABAP·예제). 메모리 `abap-keyword-doc-links`는 보조.
+> 🔗 관련: **오프라인 사실검증은 두 루트를 모두 grep한다**(§5-1, 사용자 확정 2026-07-07) — 루트 A `C:\Users\gosts\OneDrive\업무\교육자료_V2\2. ABAP Document\ABAP_DOCU_HTML\`(keyword doc HTML 덤프·1차 권위) + 루트 B `C:\Users\gosts\OneDrive\업무\교육자료_V2\2. ABAP Document\ABAP_DOCU_DOWNLOAD\ABAP_DOCU\`(본 문서가 카탈로그화하는 GitHub 코퍼스: cheat-sheet·MD 미러·Clean ABAP·예제). 메모리 `abap-keyword-doc-links`는 보조.
 
 ---
 
@@ -14,6 +14,7 @@
 | **abap-cheat-sheets** (758/816/main/rap) | SAP 공식 주제별 cheat sheet(36토픽)+실행예제 | ★★★★★ | **챕터 주제 1:1 매핑 · 예제/구조 출처**. 버전을 챕터에 맞춰 선택 |
 | **abap-docs-main** | 공식 keyword doc 전체를 **Markdown**으로(standard 7,906 + cloud 5,244) | ★★★★☆ | **사실검증·grep**. HTML 덤프의 MD 업그레이드 + **ABAP Cloud판 추가**(R6 경계 검증) |
 | **styleguides-main** (Clean ABAP) | Clean ABAP 스타일가이드 8개 언어(**한국어 포함**)+code-review | ★★★☆☆ | 모던 챕터 스타일 근거 · **한국어 용어 대조**. 단 R11과 충돌 주의 |
+| **CDS·RAP 공식 가이드 PDF** (2026-05, §6) | SAP 공식 CDS/RAP 학습 가이드(~245p · ~1,653p) | ★★★★★ | **CH23 CDS·CH24 RAP 1차 출처** — 최신 ABAP Cloud판, keyword doc보다 교육적·구조적 |
 
 > 🗑️ **abap-skills(Claude Code 스킬 모음)는 2026-06-27 폴더 삭제됨** — 대부분 모던/Cloud 초점이라 classic-first 입문 콘텐츠 *저작*과 결이 달라 코퍼스에서 제외. 향후 모던 트랙에서 필요하면 원본 레포(`github.com/likweitan/abap-skills`)를 온디맨드로 재확인.
 
@@ -45,7 +46,7 @@
 - `docs/standard/md/` — **Standard(classic) ABAP** 7,906파일
 - `docs/cloud/md/` — **ABAP Cloud** 5,244파일
 
-**기존 `C:\ABAP_DOCU_HTML\`(HTML, 758/8.16, 6천여 파일) 대비**
+**기존 `C:\Users\gosts\OneDrive\업무\교육자료_V2\2. ABAP Document\ABAP_DOCU_HTML\`(HTML, 758/8.16, 6천여 파일) 대비**
 - ✅ **MD라 grep·읽기 쉬움**(script/태그 제거됨) · frontmatter `keywords`로 주제 검색 · `sourceUrl`로 공식 페이지 즉시 링크.
 - ✅ **ABAP Cloud판이 추가** → "이 syntax가 Cloud에서 허용되나?"를 standard/cloud 두 폴더 존재 여부로 즉시 판정 → **R6(classic↔modern 경계)·[05 P7](05_PITFALLS.md) 검증의 결정적 근거**.
 - ⚠️ 변환 아티팩트 존재: 이스케이프(`\{`), 인라인 `*.html` 링크 잔재, 일부 description 깨짐 → **정의·문법 확정은 원문(HTML 덤프 또는 sourceUrl)과 교차확인**.
@@ -79,6 +80,8 @@
 3. **R6 경계 판정**("이 문법 Cloud 가능?") → `standard/md` vs `cloud/md` 동일 파일 존재 비교. classic-only면 classic 챕터에만, [05 P7](05_PITFALLS.md) 준수.
 4. **스타일 근거**(모던/OO 레슨 한정) → `styleguides-main/clean-abap/CleanABAP.md`, 한국어 용어 대조는 `CleanABAP_kr.md`. ⚠️ **R11(접두어)·R6를 덮어쓰지 않는다** — 입문 단계 가독성이 우선.
 
+> 🆕 **CH23(CDS)·CH24(RAP)는 §6 공식 가이드 PDF를 1차 출처로** — cheat-sheet(`-rap`)·keyword doc은 개별 문법 확정에 보조.
+
 **불변 가드레일**: SAP 본문·예제 **verbatim 사용 허용**(SAP Korea 주관) — 예제 코드는 그대로, 입문자에게 어려운 본문은 R3 각색([04 R3](04_CONVENTIONS.md)) · 우리 규칙(R6/R11/R15)이 외부 컨벤션보다 우선 · 사실은 항상 공식 원문과 교차확인.
 
 ---
@@ -90,10 +93,13 @@
 ### 5-1. 오프라인 사실검증 — **두 루트 병행 필수 · 웹검색은 최후수단**
 사실·문법·정의 확인은 **일반 인터넷 검색(구글 등) 대신 오프라인 코퍼스로** 한다(사용자 지시 — 웹검색은 부정확·버전 혼선). **사실검증은 아래 두 루트를 *모두* grep해 교차확인한다**(사용자 확정 2026-07-07 — 한쪽만 보지 말 것):
 
-**루트 A · `C:\ABAP_DOCU_HTML\`** (공식 keyword doc HTML 덤프, **AS ABAP 758/8.16**, 6천여 파일) = **문법·의미·정의의 1차 권위**.
+> 📍 **코퍼스 로컬 베이스 = `C:\Users\gosts\OneDrive\업무\교육자료_V2\2. ABAP Document\`** (2026-07-15 구 `C:\ABAP_DOCU_*`에서 이전). 이 폴더가 담는 것 = 루트 A(`ABAP_DOCU_HTML\`) · 루트 B(`ABAP_DOCU_DOWNLOAD\ABAP_DOCU\`) · SAP 공식 가이드 PDF 2종(§6).
+> ⚠️ **OneDrive 주의**: 경로에 공백·한글 → 명령에서 **따옴표 필수**. 파일이 OneDrive "온라인 전용(placeholder)"이면 grep이 `cloud operation unsuccessful`/`Permission denied`로 실패 → 폴더를 **'항상 이 장치에 유지'로 hydrate(로컬 다운로드)**한 상태여야 오프라인 검증이 작동. 텍스트 도구는 **PowerShell·ripgrep** 권장(Git Bash MSYS grep은 reparse point 취약).
+
+**루트 A · `C:\Users\gosts\OneDrive\업무\교육자료_V2\2. ABAP Document\ABAP_DOCU_HTML\`** (공식 keyword doc HTML 덤프, **AS ABAP 758/8.16**, 6천여 파일) = **문법·의미·정의의 1차 권위**.
 - 용어정의=`aben<term>_glosry.htm` · 예제=`*abexa*.htm` · ToC=`abap_docu_tree.htm` · 진입=`index.htm`. (추출: script블록 제거 → 태그 제거 → `class="h1"` 이후 본문.)
 
-**루트 B · `C:\ABAP_DOCU_DOWNLOAD\ABAP_DOCU\`** (SAP GitHub 코퍼스, 1.4만 파일·§1～3) = **MD 미러 + 예제/스타일 근거**.
+**루트 B · `C:\Users\gosts\OneDrive\업무\교육자료_V2\2. ABAP Document\ABAP_DOCU_DOWNLOAD\ABAP_DOCU\`** (SAP GitHub 코퍼스, 1.4만 파일·§1～3) = **MD 미러 + 예제/스타일 근거**.
 - `abap-docs-main/docs/standard/md`(·`/cloud/md`) — keyword doc **MD판**(frontmatter `keywords` grep 용이). **R6 classic↔modern 경계 = `standard` vs `cloud` 동일 파일 존재 비교**(§2).
 - `abap-cheat-sheets-{758,816,main,rap}` — **버전매칭 예제·구조 출처**(§1: classic→758/816·모던→main·RAP→rap).
 - `styleguides-main`(Clean ABAP) — 모던/OO 스타일 근거(§3, **R11/R6 상위규칙 아님**).
@@ -114,3 +120,20 @@
 - 질의: `nlm notebook query <노트북ID> "<질문>" --timeout 540 [--json]` · 후속(맥락유지) `-c <conversation-id>` · 소스한정 `-s <source-ids>`. ⚠️ 구문 = `nlm notebook query`(O), 옛 `nlm query notebook`(X). 단발 ~60초.
 - ⚠️ **질의는 구 repo `../sapui5`의 챕터ID로** 한다 — NotebookLM이 sapui5 커리큘럼 기준으로 구성됨. 새 `sap-dev-academy`의 `CHxx`로 물으면 답이 안 옴([04 R14](04_CONVENTIONS.md)).
 - 등록 노트북(2026-06-23 확인): ABAP `ad0e9cde-4dca-451e-b455-de200a9ed7b7`(185소스·ABAP Curriculum v5.4) · UI5 `979f34d8-73c1-4d45-95d2-79db4eee7d41` · Delta 7.0→7.51 `d3f062f5-0fef-4bfb-a4f5-ef9ad2b08625` · S/4HANA+ABAP `fed24390-d189-4874-8d15-ada65a5b636b`. 병렬 검증은 챕터 분담 에이전트로.
+
+---
+
+## 6. SAP 공식 가이드 PDF — CDS·RAP (CH23/24 1차 출처)
+
+**무엇** — 코퍼스 베이스(§5-1)에 둔 SAP 공식 학습 가이드 PDF 2종(PUBLIC, 2026-05, verbatim 사용 허용 = SAP Korea 주관). keyword doc(레퍼런스)과 달리 **개념→아키텍처→개발→테스트 흐름의 학습 가이드**라 챕터 서사·구조 설계에 특히 유용.
+
+| 파일 | 제목 | 발행 | 분량 | 대응 챕터 | 핵심 목차 |
+|---|---|---|---|---|---|
+| `CDS_20260715.pdf` | **ABAP Data Models** (ABAP CDS) | 2026-05-08 | ~245p | **CH23** | CDS 개념·Entity/Reuse Modeling·Annotations·Metadata Extensions·Access Control(DCL)·Table Function·Association·Golden Rules(성능) |
+| `RAP_20260715.pdf` | **ABAP RESTful Application Programming Model** | 2026-05-11 | **~1,653p** | **CH24** | Business Object·BDEF·EML·Managed/Unmanaged/Draft·Service Definition/Binding·**ABAP Flight Reference Scenario**(p.393)·Extensibility·Testing |
+
+**활용 규칙**
+- **CH23(CDS)·CH24(RAP) 집필·사실검증의 1차 출처**로 이 PDF를 연다. 두 주제는 최신 ABAP Cloud라 PDF(2026-05)가 758/8.16 HTML 덤프보다 **더 최신·정확**. keyword doc(§5)은 개별 문법 확정에 보조.
+- **RAP `ABAP Flight Reference Scenario`(/DMO/)** = SAP 공식 교육 예제 → 프로젝트 SFLIGHT·콘서트 관통예제([09 C-4](09_CURRICULUM_LEDGER.md)) 설계 대조에 활용.
+- 읽기 = `pdftotext -enc UTF-8 -layout "<파일>" out.txt` 후 grep/선별(**1,653p 통독 금지** — 목차→페이지 범위 특정 후 `-f/-l`로 해당 절만 추출). ※ Read 도구 이미지 렌더용 poppler `pdftoppm`은 미설치, 텍스트 추출용 `pdftotext`(`/mingw64/bin`)는 가용.
+- verbatim 허용이나 **입문자 가독성(R3)은 유지** — 예제 원문 그대로, 어려운 영어 본문은 한국어 입문 톤 각색.
