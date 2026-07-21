@@ -19,7 +19,7 @@
   }
   function curMode() { return cfg.modes[state.mode]; }
   function nameOf(id) {
-    for (var i = 0; i < cfg.concerts.length; i++) if (cfg.concerts[i].id === id) return cfg.concerts[i].name;
+    for (var i = 0; i < cfg.concerts.length; i++) if (cfg.concerts[i].id === id) return cfg.concerts[i].title;
     return id;
   }
 
@@ -33,24 +33,24 @@
     if (key === 'cte') {
       return cfg.concerts.map(function (c) {
         var booked = 0;
-        bks.forEach(function (b) { if (b.concert === c.id) booked += b.qty; });
-        return { id: c.id, seats: c.seats, booked: booked, remaining: c.seats - booked };
+        bks.forEach(function (b) { if (b.concert === c.id) booked += b.seats; });
+        return { id: c.id, capacity: c.capacity, booked: booked, remaining: c.capacity - booked };
       });
     }
     if (key === 'exists') {
       return cfg.concerts.filter(function (c) {
         return bks.some(function (b) { return b.concert === c.id; });
-      }).map(function (c) { return { id: c.id, name: c.name }; });
+      }).map(function (c) { return { id: c.id, title: c.title }; });
     }
     if (key === 'except') {
       var bookedIds = {};
       bks.forEach(function (b) { bookedIds[b.concert] = 1; });
       return cfg.concerts.filter(function (c) { return !bookedIds[c.id]; })
-        .map(function (c) { return { id: c.id, name: c.name }; });
+        .map(function (c) { return { id: c.id, title: c.title }; });
     }
     if (key === 'window') {
       var totals = {}, rn = {};
-      bks.forEach(function (b) { totals[b.concert] = (totals[b.concert] || 0) + b.qty; });
+      bks.forEach(function (b) { totals[b.concert] = (totals[b.concert] || 0) + b.seats; });
       var byC = {};
       bks.forEach(function (b) { (byC[b.concert] = byC[b.concert] || []).push(b); });
       Object.keys(byC).forEach(function (c) {
@@ -58,7 +58,7 @@
         byC[c].forEach(function (b, i) { rn[b.id] = i + 1; });
       });
       return bks.slice().sort(function (a, b) { return a.id < b.id ? -1 : a.id > b.id ? 1 : 0; })
-        .map(function (b) { return { id: b.id, concert: b.concert, qty: b.qty, total: totals[b.concert], rn: rn[b.id] }; });
+        .map(function (b) { return { id: b.id, concert: b.concert, seats: b.seats, total: totals[b.concert], rn: rn[b.id] }; });
     }
     return [];
   }

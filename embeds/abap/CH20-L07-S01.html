@@ -33,16 +33,16 @@
 {
   "cancelStatus": "C",
   "concerts": [
-    { "id": "C001", "name": "정훈영 밴드", "seats": 100 },
-    { "id": "C002", "name": "ABAP Trio", "seats": 80 },
-    { "id": "C003", "name": "UI5 Night", "seats": 50 },
-    { "id": "C004", "name": "Closed Show", "seats": 60 }
+    { "id": "C001", "title": "정훈영 밴드", "capacity": 100 },
+    { "id": "C002", "title": "ABAP Trio", "capacity": 80 },
+    { "id": "C003", "title": "UI5 Night", "capacity": 50 },
+    { "id": "C004", "title": "Closed Show", "capacity": 60 }
   ],
   "bookings": [
-    { "id": "B001", "concert": "C001", "qty": 2, "status": "N" },
-    { "id": "B002", "concert": "C001", "qty": 3, "status": "N" },
-    { "id": "B003", "concert": "C002", "qty": 1, "status": "C" },
-    { "id": "B004", "concert": "C004", "qty": 4, "status": "N" }
+    { "id": "B001", "concert": "C001", "seats": 2, "status": "N" },
+    { "id": "B002", "concert": "C001", "seats": 3, "status": "N" },
+    { "id": "B003", "concert": "C002", "seats": 1, "status": "C" },
+    { "id": "B004", "concert": "C004", "seats": 4, "status": "N" }
   ],
   "modes": [
     {
@@ -51,18 +51,19 @@
       "desc": "CTE(WITH) + LEFT JOIN — 공연별 잔여석",
       "cols": [
         { "key": "id", "label": "공연ID" },
-        { "key": "seats", "label": "총좌석" },
+        { "key": "capacity", "label": "정원" },
         { "key": "booked", "label": "예약" },
         { "key": "remaining", "label": "잔여" }
       ],
       "sql": [
         { "t": "WITH +booked AS (" },
-        { "t": "  SELECT concert_id, SUM( qty ) AS booked" },
+        { "t": "  SELECT concert_id, SUM( seats ) AS booked" },
         { "t": "    FROM zbooking" },
         { "t": "   WHERE status <> 'C'", "cond": true },
         { "t": "   GROUP BY concert_id )" },
-        { "t": "SELECT c~concert_id, c~seats," },
-        { "t": "       c~seats - COALESCE( b~booked, 0 ) AS remaining" },
+        { "t": "SELECT c~concert_id, c~capacity," },
+        { "t": "       COALESCE( b~booked, 0 ) AS booked," },
+        { "t": "       c~capacity - COALESCE( b~booked, 0 ) AS remaining" },
         { "t": "  FROM zconcert AS c" },
         { "t": "  LEFT JOIN +booked AS b ON c~concert_id = b~concert_id" },
         { "t": "  INTO TABLE @DATA(gt_free)." }
@@ -76,14 +77,14 @@
       "desc": "상관 서브쿼리 EXISTS — 예약된 공연",
       "cols": [
         { "key": "id", "label": "공연ID" },
-        { "key": "name", "label": "공연명" }
+        { "key": "title", "label": "공연명" }
       ],
       "sql": [
-        { "t": "SELECT concert_id, name" },
+        { "t": "SELECT c~concert_id, c~title" },
         { "t": "  FROM zconcert AS c" },
-        { "t": " WHERE EXISTS ( SELECT 1 FROM zbooking" },
-        { "t": "                 WHERE concert_id = c~concert_id" },
-        { "t": "                   AND status <> 'C' )", "cond": true },
+        { "t": " WHERE EXISTS ( SELECT concert_id FROM zbooking AS b" },
+        { "t": "                 WHERE b~concert_id = c~concert_id" },
+        { "t": "                   AND b~status <> 'C' )", "cond": true },
         { "t": "  INTO TABLE @DATA(gt_booked)." }
       ],
       "explain": "EXISTS는 '예약이 하나라도 있나'만 확인해요. 취소만 있는 C002는 제외돼 실제 예약된 C001·C004만 남았습니다.",
@@ -95,11 +96,11 @@
       "desc": "집합 연산 EXCEPT — 미예약 공연 (공연명은 표시용)",
       "cols": [
         { "key": "id", "label": "공연ID" },
-        { "key": "name", "label": "공연명" }
+        { "key": "title", "label": "공연명" }
       ],
       "sql": [
         { "t": "SELECT concert_id FROM zconcert" },
-        { "t": "EXCEPT" },
+        { "t": "EXCEPT DISTINCT" },
         { "t": "SELECT concert_id FROM zbooking" },
         { "t": " WHERE status <> 'C'", "cond": true },
         { "t": "  INTO TABLE @DATA(gt_unbooked)." }
@@ -114,13 +115,13 @@
       "cols": [
         { "key": "id", "label": "예약ID" },
         { "key": "concert", "label": "공연ID" },
-        { "key": "qty", "label": "좌석" },
+        { "key": "seats", "label": "좌석" },
         { "key": "total", "label": "파티션 합계" },
         { "key": "rn", "label": "순번" }
       ],
       "sql": [
-        { "t": "SELECT booking_id, concert_id, qty," },
-        { "t": "       SUM( qty )    OVER ( PARTITION BY concert_id ) AS total," },
+        { "t": "SELECT booking_id, concert_id, seats," },
+        { "t": "       SUM( seats )  OVER ( PARTITION BY concert_id ) AS total," },
         { "t": "       ROW_NUMBER( ) OVER ( PARTITION BY concert_id" },
         { "t": "                            ORDER BY booking_id ) AS rn" },
         { "t": "  FROM zbooking" },
