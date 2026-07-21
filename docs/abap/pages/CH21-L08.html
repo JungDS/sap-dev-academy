@@ -40,7 +40,7 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>부모 타입 변수에 자식 객체 🎭</h2>
-<p><button class="term" type="button" data-term="상속">상속</button>·<button class="term" type="button" data-term="Interface">인터페이스</button> 덕에 <strong>부모(또는 인터페이스) 타입 변수</strong>에 여러 자식 <button class="term" type="button" data-term="객체">객체</button>를 담아 <strong>똑같이</strong> 다룰 수 있다. 자식을 부모 타입에 담는 건 자연스럽다(<strong>upcast</strong>). 그런데 가끔 부모 타입에는 없는 <strong>실제 타입 전용 기능</strong>이 필요하다 — 예: VIP 전용 <code>apply_vip_coupon( )</code>.</p>
+<p><button class="term" type="button" data-term="상속">상속</button>·<button class="term" type="button" data-term="Interface">인터페이스</button> 덕에 <strong>부모(또는 인터페이스) 타입 변수</strong>에 여러 자식 <button class="term" type="button" data-term="객체">객체</button>를 담아 <strong>똑같이</strong> 다룰 수 있다. 자식을 부모 타입에 담는 건 자연스럽다(<strong>upcast</strong>). 그런데 가끔 부모 타입에는 없는 <strong>실제 타입 전용 기능</strong>이 필요하다. 예를 들어 VIP 전용 <code>apply_vip_coupon( )</code>이 그렇다.</p>
 </section><section class="lblock"><h2>내려보내기 — CAST ( ?= ) 🔽</h2>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
@@ -88,6 +88,7 @@ lo_mgr = <span class="tok-kw">NEW</span> zcl_vip_booking( iv_concert = <span cla
 <li><strong>downcast 실패 무시</strong> → 실제 타입이 불확실하면 <code>TRY/CATCH cx_sy_move_cast_error</code> 또는 <code>CASE TYPE OF</code>로.</li>
 <li><strong><code>CASE TYPE OF</code> 순서</strong> → <strong>구체 타입부터</strong>. 부모 타입을 먼저 두면 자식 <button class="term" type="button" data-term="객체">객체</button>가 부모 조건에 걸려 자식 전용 분기까지 못 간다.</li>
 <li><strong>타입별 분기가 자꾸 늘어남</strong> → 공통 <button class="term" type="button" data-term="Interface">인터페이스</button>·재정의 메서드로 풀 수 없는지 <strong>설계를 재검토</strong>한다.</li>
+<li><strong>구체 <button class="term" type="button" data-term="Class">클래스</button>로 내려 받기</strong> → 인터페이스·부모 참조를 구체 클래스로 downcast하면 그만큼 그 구현에 묶인다(결합도↑). 나중에 구현을 갈아끼우기 어려워진다.</li>
 </ul>
 <hr>
 <p>타입을 안전하게 다뤘다. 마지막으로 객체가 <strong>사건을 알리는</strong> <button class="term" type="button" data-term="이벤트">이벤트</button> →

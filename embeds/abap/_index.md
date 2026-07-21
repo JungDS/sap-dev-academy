@@ -178,7 +178,7 @@
 | CH20-L05-S01 | CH20-L05 | window-partition-sim | GROUP BY(행 접힘)↔PARTITION BY(행 유지)·ROW_NUMBER·RANK vs DENSE_RANK(gap)·PARTITION 제거 | ✅ |
 | CH20-L06-S01 | CH20-L06 | decision-tree | (재사용) 고급 SQL 선택 가이드(질문→JOIN/EXISTS/CTE/Set/Window 추천)+멈춤 신호 | ✅ |
 | CH20-L07-S01 | CH20-L07 | concert-adv-sql-lab | 통합 실습 4모드(CTE 잔여석·EXISTS 예약공연·EXCEPT 미예약·Window 상세)+조건제거 실험+예상/실제 검증 패널 | ✅ |
-| CH21-L01-S01 | CH21-L01 | class-diagram | 클래스(설계도)→NEW→객체(인스턴스) 흐름 | ✅ |
+| CH21-L01-S01 | CH21-L01 | class-object-builder | 클래스(설계도)→NEW로 객체 생성·참조 bound↔initial·**initial 참조 호출 실패** 체험(객체 카드+상태+피드백) | ✅ |
 | CH21-L02-S01 | CH21-L02 | visibility-gate-sim | 멤버(데이터/메서드)×visibility(PUBLIC/PROTECTED/PRIVATE)×호출자(외부/자기/자식)→접근 허용·차단(컴파일 단계)+캡슐화 조언+접근 매트릭스 | ✅ |
 | CH21-L03-S01 | CH21-L03 | constructor-timeline | 객체 생성/정적 호출→constructor(객체별 count)·class_constructor(클래스 1회) 실행 순서 타임라인+카운터+객체 카드(상태) | ✅ |
 | CH21-L04-S01 | CH21-L04 | selector-trainer | 왼쪽(클래스명/참조변수)×선택자(=>/->)×멤버(정적/인스턴스)→호출 정오 판정(class=>static OK·class=>instance 오류·ref->instance OK·ref->static 동작하나 권장X) | ✅ |
@@ -194,8 +194,8 @@
 | CH22-L06-S01 | CH22-L06 | module-choice-cards | (재사용) 색 단위 선택 퀴즈 5문항→행 색(info_fname)/컬럼 색(emphasize)/셀 색(ctab_fname)/색 안 쓰기 분류·이유 | ✅ |
 | CH22-L07-S01 | CH22-L07 | refresh-shake-comparator | 실제 스크롤 표(40행)·28행 스크롤→데이터 갱신+refresh: is_stable-row on=위치 유지/off=첫줄 튐·컬럼 구조 변경=재초기화·refresh≠DB조회 | ✅ |
 | CH22-L08-S01 | CH22-L08 | concert-alv-color-lab | (capstone) 회차 6행 잔여석(remaining)→≤0 빨강·≤5 노랑·회차 선택+예매 추가→seats_left 줄어 색 변화·ctab_fname 끄기→색 사라짐(데이터는 남음) | ✅ |
-| CH21-L07-S01 | CH21-L07 | class-diagram | 상속 계층(부모 ZCL_BOOKING_MANAGER←자식 ZCL_VIP_BOOKING·REDEFINITION/super·ABSTRACT/FINAL) | ✅ |
-| CH21-L10-S01 | CH21-L10 | class-diagram | UML 클래스 구조(PUBLIC 메서드·PRIVATE 속성·캡슐화·RAISING) | ✅ |
+| CH21-L07-S01 | CH21-L07 | redefinition-stepper | 상속 계층 그림 + 부모/자식 객체 담기→**동적 디스패치**(정적↔동적 타입)·super-> 토글로 부모 공통 검증 누락 체험 | ✅ |
+| CH21-L10-S01 | CH21-L10 | booking-manager-lab | UML 구조 + 좌석수×SET HANDLER→remaining(취소 제외)·can_book·book 분기(정상/sold_out 이벤트/ZCX_FULLY_BOOKED 예외) 체험 | ✅ |
 | CH23-L01-S01 | CH23-L01 | cds-activation-observer | CDS View Entity 활성화 관찰기 5단계(원본 테이블→DDL 작성→활성화→Data Preview→ABAP SQL 소비)·필드 오타 토글→활성화 실패→Preview/SQL 차단·행수 비교 배지·관점 전환 | ✅ |
 | CH23-L02-S01 | CH23-L02 | projection-layer-lab | Interface(ZI_)/Projection(ZC_) 계층 분리·ZC_ 숨김=비파괴(ZI_ 불변)·ZI_ 제거=연쇄(ZC_ 노출불가)·필드별 토글→ZI/ZC 칩+DDL+SELECT 라이브 | ✅ |
 | CH23-L03-S01 | CH23-L03 | relationship-map | CDS Association 관계도(공연 ZI_Concert→회차 ZI_Perf→예매 ZI_Booking) | ✅ |
@@ -364,7 +364,10 @@
 | dynpro-form-simulator (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH16-L10-S01 | DFS_CFG 주도 · CH16 캡스톤·화면0100 미리보기(좌석 입력)·툴바→PAI(OK_CODE/save_ok/CLEAR/CASE)·can_book 검증 S/E·LEAVE TO SCREEN0/PROGRAM·Enter 재실행방지 · 다크 |
 | dict-transport-tunnel (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH16-L04-S01 | TABLES work area 운반 터널·TABLES 토글·PBO/PAI 방향·이름 일치 운반 vs 미운반(ZCONCERT-CONCERT_ID) · 다크 |
 | input-help-priority-pov (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH16-L05-S01 | 입력도움 우선순위(3티어)+POV 후보 좁히기(공연ID→DYNP_VALUES_READ→F4IF_INT_TABLE_VALUE_REQUEST) · 다크 |
-| class-diagram (신규) | 3 | 공통(CSS-only)+_autoheight ✅ | CH21-L01·L07·L10 (완료) | UML 박스·인스턴스·상속 — class-object/inheritance/class-structure 통합 1엔진 |
+| class-diagram | 0 (시각 레이어) | 공통 CSS-only ✅ | CH21-L01·L07·L10이 **스타일시트로 재사용** | UML 박스·인스턴스·상속 시각 + **공용 실행 패널**(.cd-run/.cd-run__btns/.cd-state/.cd-log — 색 100% var(--token)) · data-eng는 각 레슨 엔진 |
+| class-object-builder (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH21-L01-S01 | COB_CFG 주도 · NEW/메서드 호출/CLEAR/리셋 → objects[]·boundIdx 상태머신 → 객체 카드(누가 가리키는지)+참조 initial↔bound+피드백 · **initial 참조 호출 실패**(L01 흔한 실수 #1)를 체험으로 · 토큰 전용 · 다크 |
+| redefinition-stepper (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH21-L07-S01 | RDS_CFG 주도 · 부모/자식 담기 × super-> 토글 × 실행 → 정적 타입 고정·동적 타입 변화·실행된 구현(부모 원본↔자식 REDEFINITION) → **동적 디스패치**와 super 누락 시 부모 검증 실종을 체험 · 토큰 전용 · 다크 |
+| booking-manager-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH21-L10-S01 | BML_CFG 주도(bookings에 취소행 포함) · 좌석 세그(0/1/2/3) × SET HANDLER 토글 → remaining=cap−SUM(취소 제외)·can_book·book 4분기(정상 / 좌석=잔여석→RAISE EVENT sold_out / 초과·0→RAISE EXCEPTION) · 저장(INSERT) 없음=DML 챕터 경계 · 토큰 전용 · 다크 |
 | relationship-map | 1 | 공통(CSS-only)+_autoheight ✅ | CH23-L03-S01 (완료) | A→B 관계 카드(CDS Association) · 빈 .js 제거 · static-svg-architecture 은퇴 |
 
 ## C. 재배치 보류 (원본 sample/ 보존 · 정적 홈은 후속 신규)

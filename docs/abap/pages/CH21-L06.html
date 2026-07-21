@@ -46,7 +46,7 @@
 3</pre><pre class="abap-editor__code"><code><span class="tok-kw">IF</span> iv_seats &gt; lv_remaining.
   <span class="tok-kw">MESSAGE</span> <span class="tok-str">'매진입니다'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'E'</span>.    <span class="tok-com">" 클래스가 직접 화면 메시지?</span>
 <span class="tok-kw">ENDIF</span>.</code></pre></div></div>
-<p>이러면 같은 예약 로직을 <strong>배치·테스트에서 재사용하기 어렵다</strong>(화면이 없으니까). 또 호출자는 <em>무엇이</em> 실패했는지 구조적으로 구분하기 힘들다. <strong>예외</strong>는 오류를 <strong><button class="term" type="button" data-term="객체">객체</button></strong>로 전달한다. <button class="term" type="button" data-term="Class">클래스</button>는 &quot;정원 초과라 예약 불가&quot;라는 사실을 <button class="term" type="button" data-term="예외">예외</button> 객체로 던지고, 호출자가 화면·배치·테스트 상황에 맞게 잡는다. (<a href="CH11-L02.html">SALV FACTORY</a>에서 <code>cx_salv_msg</code>를 <code>TRY/CATCH</code>로 잡았던 그 메커니즘 — 이제 <em>내 예외</em>도 만든다.)</p>
+<p>이러면 같은 예약 로직을 <strong>배치·테스트에서 재사용하기 어렵다</strong>(화면이 없으니까). 또 호출자는 <em>무엇이</em> 실패했는지 구조적으로 구분하기 힘들다. <strong>예외</strong>는 오류를 <strong><button class="term" type="button" data-term="객체">객체</button></strong>로 전달한다. <button class="term" type="button" data-term="Class">클래스</button>는 &quot;정원 초과라 예약 불가&quot;라는 사실을 <button class="term" type="button" data-term="예외">예외</button> 객체로 던지고, 호출자가 화면·배치·테스트 상황에 맞게 잡는다. (<a href="CH11-L02.html">SALV FACTORY</a>에서 <code>cx_salv_msg</code>를 <code>TRY/CATCH</code>로 잡았던 그 메커니즘이다. 이제 <em>내 예외</em>도 만든다.)</p>
 </section><section class="lblock"><h2>내 예외 만들기 · 던지기 🚀</h2>
 <p><code>ZCX_FULLY_BOOKED</code>(예외 <button class="term" type="button" data-term="Class">클래스</button>, SE24에서 <code>CX_STATIC_CHECK</code> <button class="term" type="button" data-term="상속">상속</button>)를 만든다. 예외를 던질 수 있는 <button class="term" type="button" data-term="Method">메서드</button>는 <strong>시그니처에 <code>RAISING</code>으로 선언</strong>한다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
@@ -79,7 +79,28 @@
   <span class="tok-kw">CLEANUP</span>.
     <span class="tok-com">" TRY 블록이 예외로 정리될 때 필요한 뒷정리(자원 해제 등)</span>
 <span class="tok-kw">ENDTRY</span>.</code></pre></div></div>
-<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">Exception Flow Console (TRY · RAISE · CATCH 순서)</span><a class="embed__open" href="../../../embeds/abap/CH21-L06-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH21-L06-S01.html" loading="lazy" title="Exception Flow Console (TRY · RAISE · CATCH 순서)"></iframe></figure>
+</section><section class="lblock"><h2>표현식에서 던지기 — THROW 🎯</h2>
+<p><a href="CH18-L07.html">COND·SWITCH 조건 표현식</a>에서 &quot;값 하나를 만드는 표현식&quot;을 배웠다. 그때 정상 값을 만들 수 없는 갈래는 나중에 채운다고 미뤄 뒀는데, 그 자리를 채우는 게 <button class="term" type="button" data-term="THROW">THROW</button>다. <code>COND</code>나 <code>SWITCH</code>의 결과 위치에서 예외를 던진다.</p>
+<p><code>RAISE EXCEPTION</code>은 문장이고 <code>THROW</code>는 표현식이다. 하는 일은 같고(예외를 던진다), 쓰는 자리가 다르다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4</pre><pre class="abap-editor__code"><code><span class="tok-com">" 문장: 흐름 중간에서 실패하면 던진다</span>
+<span class="tok-kw">IF</span> iv_seats &gt; me-&gt;remaining( ).
+  <span class="tok-kw">RAISE</span> <span class="tok-kw">EXCEPTION</span> <span class="tok-kw">TYPE</span> zcx_fully_booked.
+<span class="tok-kw">ENDIF</span>.</code></pre></div></div>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4</pre><pre class="abap-editor__code"><code><span class="tok-com">" 표현식: 값을 만들다가, 정상 값을 못 만드는 갈래에서 던진다</span>
+<span class="tok-kw">DATA</span>(lv_status) = COND string(
+    <span class="tok-kw">WHEN</span> iv_seats &lt;= me-&gt;remaining( ) <span class="tok-kw">THEN</span> |예약 가능: { iv_seats }석|
+    <span class="tok-kw">ELSE</span> THROW zcx_fully_booked( ) ).</code></pre></div></div>
+<p><code>THROW</code> 뒤 예외 <button class="term" type="button" data-term="Class">클래스</button>에는 괄호 <code>( )</code>가 붙고, <code>RAISE EXCEPTION TYPE</code>과 달리 <code>EXPORTING</code>을 쓰지 않는다. 던져진 예외는 똑같이 바깥의 <code>TRY/CATCH</code>가 잡는다. <code>book( )</code>처럼 checked 예외를 던지는 <button class="term" type="button" data-term="Method">메서드</button>라면 <code>THROW</code>를 써도 <code>RAISING zcx_fully_booked</code> 선언은 그대로 필요하다.</p>
+<blockquote class="cw">
+<p>⚠️ THROW를 배웠다고 모든 <code>IF</code>를 <code>COND … THROW</code>로 바꾸지 않는다. 조건에 따라 값 하나를 만들 때만 어울린다. 검증·로그·여러 단계 보정이 섞이면 <code>IF</code>와 <code>RAISE EXCEPTION</code>이 더 읽기 좋다.</p>
+</blockquote>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">Exception Flow Console (RAISE · THROW · CATCH)</span><a class="embed__open" href="../../../embeds/abap/CH21-L06-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH21-L06-S01.html" loading="lazy" title="Exception Flow Console (RAISE · THROW · CATCH)"></iframe></figure>
 </section><section class="lblock"><h2>CX 계층 — 세 갈래 🌳</h2>
 <p>모든 class-based 예외는 최상위 <code>CX_ROOT</code>에서 내려오고, 처리 강제 수준에 따라 셋으로 나뉜다.</p>
 <table>
@@ -106,7 +127,33 @@
 <td>어디서나 발생 가능·강제 부적절</td>
 </tr>
 </tbody></table>
-<p><code>CX_ROOT</code>의 <code>get_text( )</code>로 메시지를 얻는다. <code>RESUME</code>은 <em>resumable 예외</em>를 <code>CATCH BEFORE UNWIND</code>로 잡은 뒤 발생 지점부터 재개하는 특수 문장 — <strong>존재와 제약만 알고</strong>, 일반 업무 예외 패턴으로는 쓰지 않는다.</p>
+<p><code>CX_ROOT</code>의 <code>get_text( )</code>로 메시지를 얻는다. <code>RESUME</code>은 <em>resumable 예외</em>를 <code>CATCH BEFORE UNWIND</code>로 잡은 뒤 발생 지점부터 재개하는 특수 문장이다. <strong>존재와 제약만 알고</strong>, 일반 업무 예외 패턴으로는 쓰지 않는다.</p>
+<h3>get_text( )는 어디서 문장을 가져오나 🗂️</h3>
+<p><code>get_text( )</code>가 돌려주는 문장은 어디서 올까. 예외 <button class="term" type="button" data-term="Class">클래스</button>를 SE24에서 만들 때 정의한 <strong>예외 텍스트</strong>(exception text)에서 온다. 이 텍스트는 고정 문장일 수도 있고, 회사 표준처럼 메시지 클래스(Message Class, 메시지를 번호로 묶어 두는 저장소)의 한 줄에 연결할 수도 있다.</p>
+<table>
+<thead>
+<tr>
+<th>요소</th>
+<th>예</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Message Class</td>
+<td><code>ZBOOKING</code></td>
+</tr>
+<tr>
+<td>Message Number</td>
+<td><code>001</code></td>
+</tr>
+<tr>
+<td>Message Text</td>
+<td><code>공연 &amp;1 잔여석은 &amp;2석입니다.</code></td>
+</tr>
+</tbody></table>
+<p>예외 클래스가 <code>IF_T100_MESSAGE</code>(예외와 메시지 저장소를 잇는 표준 interface)를 구현하면 <code>get_text( )</code>는 <code>ZBOOKING 001</code>의 문장을 돌려주고, <code>&amp;1</code>·<code>&amp;2</code> 자리는 예외 <button class="term" type="button" data-term="객체">객체</button>가 담아 온 값으로 채워진다.</p>
+<blockquote>
+<p>지금은 &quot;메시지가 SE24 예외 텍스트(필요하면 메시지 클래스)에서 온다&quot;까지만 알면 된다. 실행 중에 메시지를 동적으로 갈아 끼우는 <code>IF_T100_DYN_MSG</code>나 <code>MESSAGE 예외객체</code> 심화는 이 과정 범위를 넘어 다루지 않는다.</p>
+</blockquote>
 </section><section class="lblock"><h2>흔한 실수와 점검 🚧</h2>
 <ul>
 <li><strong>예외 무시</strong> → <code>TRY/CATCH</code> 없이 던지면 덤프. 적절히 잡는다.</li>
