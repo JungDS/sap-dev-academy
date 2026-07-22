@@ -1,19 +1,29 @@
-/* refresh-shake-comparator 엔진 — 데이터 갱신 후 refresh_table_display를 호출할 때 is_stable을 켜면 보던 스크롤 위치가 유지되고,
-   끄면 첫 줄로 튀는 차이를 실제 스크롤로 보여 준다. 컬럼 구조 변경은 soft refresh만으로 부족(재초기화)임도 보여 준다.
+/* refresh-shake-comparator 엔진 — 값 갱신 후 refresh_table_display를 호출할 때 세 옵션의 효과를 실제로 관찰한다.
+   is_stable-row=보던 세로 위치 유지 · is_stable-col=가로 스크롤 위치 유지 · i_soft_refresh=사용자가 건 정렬/필터 유지(끄면 초기 순서로 되돌아감).
+   컬럼 구조가 바뀌면 refresh_table_display로는 부족 — field catalog를 다시 만들어 set_table_for_first_display로 재초기화해야 한다(옵션과 무관).
    골격 계약: .rsc-opt(토글) · .rsc-act(버튼) · #rscCode · #rscScroll · #rscStatus.
-   config: window.RSC_CFG = { rowCount, jumpRow }. 높이: _autoheight.js. */
+   config: window.RSC_CFG = { rowCount, jumpRow }. 스키마: 회차 표시행(concert_id·perf_no·capacity·booked·seats_left). 높이: _autoheight.js. */
 (function () {
   var CFG = window.RSC_CFG || { rowCount: 40, jumpRow: 28 };
   var opt = { row: false, col: false, soft: false };
-  var extraCol = false, markRow = 0;
+  var extraCol = false, markRow = 0, userSorted = false;
 
   var optEl = document.querySelector('.rsc-opt');
   var actEl = document.querySelector('.rsc-act');
   var codeEl = document.getElementById('rscCode');
   var scrollEl = document.getElementById('rscScroll');
   var statusEl = document.getElementById('rscStatus');
+  scrollEl.style.overflow = 'auto';   // 세로(CSS) + 가로(is_stable-col 관찰용)
 
   function h(s) { return String(s).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); }
+
+  // 고정 시드 데이터(회차 표시행) — 스키마: capacity=공연 정원, booked=예약 합계, seats_left=잔여석
+  var rows = [];
+  for (var i = 1; i <= CFG.rowCount; i++) {
+    var cap = 50 + (i % 5) * 20;
+    var booked = (i * 13) % (cap + 1);
+    rows.push({ n: i, concert: 'C' + (1000 + ((i - 1) % 6 + 1)), perf: ('0' + ((i % 3) + 1)).slice(-2), capacity: cap, booked: booked, left: cap - booked });
+  }
 
   function renderOpts() {
     optEl.innerHTML = [['row', 'is_stable-row'], ['col', 'is_stable-col'], ['soft', 'i_soft_refresh']].map(function (it) {
@@ -31,48 +41,62 @@
       '    i_soft_refresh = <span class="' + (opt.soft ? 'on' : 'off') + '">' + v(opt.soft) + '</span> ).';
   }
 
+  function orderedRows() {
+    if (!userSorted) return rows;
+    return rows.slice().sort(function (a, b) { return a.left - b.left; });
+  }
+
   function renderTable() {
-    var head = '<tr><th>#</th><th>CONCERT</th><th>SEATS_LEFT</th>' + (extraCol ? '<th class="extra">STATUS(신규)</th>' : '') + '</tr>';
-    var body = '';
-    for (var i = 1; i <= CFG.rowCount; i++) {
-      var cls = (i === markRow ? 'mark ' : '') + (i === CFG.jumpRow ? 'target' : '');
-      body += '<tr class="' + cls.trim() + '"><td>' + i + '</td><td>C' + (1000 + i) + '</td><td>' + ((i * 7) % 50) + '</td>' +
-        (extraCol ? '<td class="extra">' + (i % 2 ? 'A' : 'F') + '</td>' : '') + '</tr>';
-    }
-    scrollEl.innerHTML = '<table class="rsc-tbl"><thead>' + head + '</thead><tbody>' + body + '</tbody></table>';
+    var ord = orderedRows();
+    var head = '<tr><th>#</th><th>CONCERT_ID</th><th>PERF_NO</th><th>CAPACITY</th><th>BOOKED</th><th class="' + (userSorted ? 'sortedcol' : '') + '">SEATS_LEFT</th>' + (extraCol ? '<th class="extra">정원대비</th>' : '') + '</tr>';
+    var body = ord.map(function (r) {
+      var cls = (r.n === markRow ? 'mark ' : '') + (r.n === CFG.jumpRow ? 'target' : '');
+      return '<tr class="' + cls.trim() + '"><td>' + r.n + '</td><td>' + r.concert + '</td><td>' + r.perf + '</td><td>' + r.capacity + '</td><td>' + r.booked + '</td><td>' + r.left + '</td>' +
+        (extraCol ? '<td class="extra">' + Math.round(r.booked / r.capacity * 100) + '%</td>' : '') + '</tr>';
+    }).join('');
+    scrollEl.innerHTML = '<table class="rsc-tbl" style="min-width:600px">' + '<thead>' + head + '</thead><tbody>' + body + '</tbody></table>';
   }
 
-  function scrollToTarget() {
-    var tr = scrollEl.querySelector('.rsc-tbl tbody tr.target');
-    if (tr) scrollEl.scrollTop = tr.offsetTop - 60;
+  function targetTr() { return scrollEl.querySelector('.rsc-tbl tbody tr.target'); }
+  function scrollToTarget() { var tr = targetTr(); if (tr) { scrollEl.scrollTop = tr.offsetTop - 60; scrollEl.scrollLeft = 120; } }
+
+  function doSort() {
+    userSorted = true; renderTable();
+    statusEl.className = '';
+    statusEl.innerHTML = '↕ <b>SEATS_LEFT 오름차순으로 정렬</b>했습니다(사용자가 화면에서 건 정렬). 이 상태로 <b>값 갱신 + refresh</b>를 눌러 <code>i_soft_refresh</code> on/off가 정렬을 어떻게 다루는지 보세요.';
   }
 
-  // 데이터 갱신 후 refresh — stable이면 위치 유지, 아니면 0으로 튐
   function doRefresh() {
-    var keep = scrollEl.scrollTop;
-    markRow = CFG.jumpRow;                 // 그 줄의 값이 바뀌었다고 표시
+    var keepTop = scrollEl.scrollTop, keepLeft = scrollEl.scrollLeft;
+    markRow = CFG.jumpRow;                       // 그 회차의 예약이 바뀌었다고 표시
+    var lostSort = userSorted && !opt.soft;
+    if (lostSort) userSorted = false;            // soft 아니면 정렬이 풀려 초기 순서로
     renderTable();
-    if (opt.row) { scrollEl.scrollTop = keep;
-      statusEl.className = 'ok';
-      statusEl.innerHTML = '✅ <b>is_stable-row 켜짐</b> — 데이터가 바뀌어도 보던 <b>' + CFG.jumpRow + '행 위치가 유지</b>됩니다. 사용자가 흐름을 잃지 않아요.';
-    } else { scrollEl.scrollTop = 0;
-      statusEl.className = 'warn';
-      statusEl.innerHTML = '⚠️ <b>첫 줄로 튐</b> — is_stable 없이 refresh하면 보던 위치가 풀립니다. <code>is_stable-row</code>를 켜고 다시 갱신해 보세요.';
-    }
+    scrollEl.scrollTop = opt.row ? keepTop : 0;
+    scrollEl.scrollLeft = opt.col ? keepLeft : 0;
+
+    var parts = [];
+    parts.push(opt.row ? '세로 위치 <b>유지</b>' : '세로 <b>첫 줄로 튐</b>');
+    parts.push(opt.col ? '가로 위치 <b>유지</b>' : '가로 <b>왼쪽으로 튐</b>');
+    if (opt.soft) parts.push('정렬 <b>유지</b>(soft)');
+    else if (lostSort) parts.push('정렬 <b>풀림</b>(soft off)');
+    var good = opt.row && opt.col && (!lostSort);
+    statusEl.className = good ? 'ok' : 'warn';
+    statusEl.innerHTML = (good ? '✅ ' : '⚠️ ') + parts.join(' · ') + '. <code>is_stable</code>는 스크롤 위치를, <code>i_soft_refresh</code>는 사용자가 건 정렬·필터를 지킵니다.';
   }
 
   function doStructChange() {
-    extraCol = !extraCol;
-    markRow = 0; renderTable(); scrollEl.scrollTop = 0;
+    extraCol = !extraCol; markRow = 0; renderTable();
+    scrollEl.scrollTop = 0; scrollEl.scrollLeft = 0;
     statusEl.className = 'bad';
-    statusEl.innerHTML = '🔻 <b>컬럼 구조 변경</b> — field catalog/layout이 바뀌면 <code>i_soft_refresh</code>만으론 부족해 <b>초기 표시를 다시 구성</b>해야 합니다(위치 유지 한계). 값 변경과 구조 변경을 구분하세요.';
+    statusEl.innerHTML = '🔻 <b>컬럼 구조 변경</b>은 <code>refresh_table_display</code>로 안 됩니다. field catalog를 다시 만들어 <code>set_table_for_first_display</code>로 <b>재초기화</b>했습니다(그래서 위치·정렬이 처음으로 돌아갑니다). <code>is_stable</code>·<code>i_soft_refresh</code>는 <b>값 변경</b>용입니다.';
   }
 
   function reset() {
-    opt = { row: false, col: false, soft: false }; extraCol = false; markRow = 0;
-    renderTable(); scrollEl.scrollTop = 0;
+    opt = { row: false, col: false, soft: false }; extraCol = false; markRow = 0; userSorted = false;
+    renderTable(); scrollEl.scrollTop = 0; scrollEl.scrollLeft = 0;
     statusEl.className = '';
-    statusEl.innerHTML = '<b>① 28행으로 스크롤</b> → <b>② 데이터 갱신 + refresh</b> 순서로, <code>is_stable-row</code> on/off에 따라 위치가 어떻게 달라지는지 보세요.';
+    statusEl.innerHTML = '<b>① 28행으로 스크롤</b> → (선택) <b>SEATS_LEFT 정렬</b> → <b>값 갱신 + refresh</b> 순서로, 세 옵션 on/off에 따라 위치와 정렬이 어떻게 달라지는지 보세요.';
     render();
   }
 
@@ -83,6 +107,7 @@
     var b = e.target.closest('button'); if (!b) return;
     var a = b.getAttribute('data-a');
     if (a === 'scroll') scrollToTarget();
+    else if (a === 'sort') doSort();
     else if (a === 'refresh') doRefresh();
     else if (a === 'struct') doStructChange();
     else if (a === 'reset') reset();
