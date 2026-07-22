@@ -75,11 +75,36 @@
   <span class="tok-kw">CLEAR</span> &lt;perf&gt;-cellcolors.
   <span class="tok-kw">IF</span> &lt;perf&gt;-booked &gt;= &lt;perf&gt;-capacity.              <span class="tok-com">" 매진</span>
     <span class="tok-kw">APPEND</span> <span class="tok-kw">VALUE</span> lvc_s_scol(
-      fname     = <span class="tok-str">'SEATSOCC'</span>                         <span class="tok-com">" 어느 셀</span>
-      color-col = col_negative                       <span class="tok-com">" 빨강 계열</span>
-      color-int = abap_true ) <span class="tok-kw">TO</span> &lt;perf&gt;-cellcolors.
+      fname     = <span class="tok-str">'BOOKED'</span>                            <span class="tok-com">" 어느 셀</span>
+      color-col = col_negative                        <span class="tok-com">" 빨강 계열(색 번호)</span>
+      color-int = <span class="tok-num">1</span> ) <span class="tok-kw">TO</span> &lt;perf&gt;-cellcolors.           <span class="tok-com">" 진하게(1) / 연하게(0)</span>
   <span class="tok-kw">ENDIF</span>.
 <span class="tok-kw">ENDLOOP</span>.</code></pre></div></div>
+<p>색 한 칸(<code>lvc_s_scol</code>)은 <strong>어느 셀에</strong>(<code>fname</code>) <strong>무슨 색을</strong>(<code>color</code>) 줄지 담는다. <code>color</code>는 다시 세 부분이다.</p>
+<table>
+<thead>
+<tr>
+<th>요소</th>
+<th>뜻</th>
+<th>예</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>color-col</code></td>
+<td>색 번호(1～7). <code>col_negative</code>(빨강)·<code>col_total</code>(노랑)·<code>col_positive</code>(초록) 같은 상수로 쓴다</td>
+<td><code>col_negative</code></td>
+</tr>
+<tr>
+<td><code>color-int</code></td>
+<td>진하게 표시(<code>1</code>) / 연하게(<code>0</code>)</td>
+<td><code>1</code></td>
+</tr>
+<tr>
+<td><code>color-inv</code></td>
+<td>글자색↔배경색 반전(<code>1</code>/<code>0</code>)</td>
+<td><code>0</code></td>
+</tr>
+</tbody></table>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">Cell Color 현미경 (색 계산 → ctab_fname 연결)</span><a class="embed__open" href="../../../embeds/abap/CH22-L04-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH22-L04-S01.html" loading="lazy" title="Cell Color 현미경 (색 계산 → ctab_fname 연결)"></iframe></figure>
 </section><section class="lblock"><h2>핵심 — 연결해야 보인다 🔌</h2>
 <p><code>cellcolors</code>에 색 줄을 넣기만 하면 ALV가 <strong>자동으로 읽지 않는다.</strong> layout에 &quot;이 컬럼이 셀 색 테이블&quot;이라고 알려야 한다.</p>
