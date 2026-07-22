@@ -105,7 +105,16 @@ lo_cols-&gt;set_optimize( abap_true ).               <span class="tok-com">" 컬
 3</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>(lo_layout) = lo_salv-&gt;get_layout( ).
 lo_layout-&gt;set_key( <span class="tok-kw">VALUE</span> salv_s_layout_key( <span class="tok-kw">report</span> = sy-repid ) ).   <span class="tok-com">" 어느 리포트의 layout인지</span>
 lo_layout-&gt;set_save_restriction( if_salv_c_layout=&gt;restrict_none ).   <span class="tok-com">" 저장 허용</span></code></pre></div></div>
-<p><code>set_key</code>로 &quot;이 variant가 어느 리포트의 layout인지&quot; 식별한다(<code>sy-repid</code> = 현재 프로그램). 그래야 사용자가 컬럼 순서·숨김·폭을 자기 보기로 저장할 수 있다.</p>
+<p><code>set_key</code>로 &quot;이 variant가 어느 리포트의 layout인지&quot; 식별한다(<code>sy-repid</code> = 현재 프로그램). 그래야 사용자가 컬럼 순서·숨김·폭을 자기 보기로 저장할 수 있다. <code>set_save_restriction( restrict_none )</code>은 저장을 허용한다는 뜻이고, 사용자별/전역 저장을 제한하는 상수도 따로 있다.</p>
+<blockquote class="cw">
+<p>⚠️ <strong>저장한 variant는 개발자 기본을 덮어쓴다.</strong> 사용자가 variant를 저장하면, 다음에 프로그램이 떠도 개발자가 코드로 준 기본 보기가 아니라 <strong>그 사용자의 variant</strong>가 먼저 적용된다. &quot;코드를 고쳤는데 화면이 그대로&quot;인 대표 원인이니, 위 체험의 <em>다시 실행</em>으로 직접 확인하자.</p>
+</blockquote>
+</section><section class="lblock"><h2>정리 📌</h2>
+<ul>
+<li><strong>layout</strong> = 개발자가 주는 <em>첫 보기</em>(줄무늬·폭·컬럼 텍스트). <strong>variant</strong> = 사용자가 저장한 <em>내 보기</em>.</li>
+<li>컬럼 텍스트는 short/medium/long을 <strong>함께</strong> 맞춰야 폭에 상관없이 헤더가 바뀐다.</li>
+<li>variant는 <strong>표시 설정만</strong> 저장할 뿐 데이터·권한과는 무관하다.</li>
+</ul>
 </section><section class="lblock"><h2>흔한 실수와 점검 🚧</h2>
 <ul>
 <li><strong><code>long_text</code>만 바꿈</strong> → 헤더가 안 바뀔 수 있다. short/medium/long을 <strong>함께</strong>.</li>
