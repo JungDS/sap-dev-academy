@@ -1,5 +1,5 @@
 /* cell-color-microscope 엔진 — 셀 단위 색은 행에 LVC_T_SCOL(cellcolors)을 품는 deep structure로 만든다.
-   핵심은 2단계다: ① 색 계산으로 cellcolors 내부 테이블을 채워도 ② ls_layout-ctab_fname으로 연결해야 화면이 칠해진다.
+   핵심은 2단계다: ① 색 계산으로 cellcolors 내부 테이블을 채워도 ② gs_layout-ctab_fname으로 연결해야 화면이 칠해진다.
    fname을 틀리면 색 정보는 있어도 적용되지 않는다.
    골격 계약: .ccm-act(버튼) · #ccmTable · #ccmScol · #ccmStatus.
    config: window.CCM_CFG = { rows, colorCol, badName }. 높이: _autoheight.js. */
@@ -62,7 +62,7 @@
     }
     if (!st.connected) {
       statusEl.className = 'warn';
-      statusEl.innerHTML = '⚠️ <b>아직 화면은 그대로</b> — <code>cellcolors</code>에 색 줄은 생겼지만, <code>ls_layout-ctab_fname = \'CELLCOLORS\'</code>로 <b>연결해야</b> ALV가 색을 읽습니다. <b>② ctab_fname 연결</b>을 누르세요.';
+      statusEl.innerHTML = '⚠️ <b>아직 화면은 그대로</b> — <code>cellcolors</code>에 색 줄은 생겼지만, <code>gs_layout-ctab_fname = \'CELLCOLORS\'</code>로 <b>연결해야</b> ALV가 색을 읽습니다. <b>② ctab_fname 연결</b>을 누르세요.';
       return;
     }
     statusEl.className = 'ok';

@@ -74,7 +74,7 @@
     var on = CFG.cols.filter(function (c) { var a = attr[c.f]; return a.no_out || a.do_sum || a.just || a.key; });
     if (!on.length) { statusEl.className = ''; statusEl.innerHTML = '버튼을 눌러 field catalog 행 속성을 바꿔 보세요. <b>카탈로그가 먼저 바뀌고</b>, 그 지시대로 화면이 구성됩니다.'; return; }
     statusEl.className = 'ok';
-    statusEl.innerHTML = '✅ field catalog 변경 반영 — <code>lt_fcat</code>를 바꿨을 뿐 <b>DB 테이블 구조·데이터는 그대로</b>입니다. <code>no_out</code>으로 숨겨도 내부 테이블엔 값이 남아 있어요.';
+    statusEl.innerHTML = '✅ field catalog 변경 반영 — <code>gt_fcat</code>를 바꿨을 뿐 <b>DB 테이블 구조·데이터는 그대로</b>입니다. <code>no_out</code>으로 숨겨도 내부 테이블엔 값이 남아 있어요.';
   }
 
   function render() { renderActs(); renderCatalog(); renderPreview(); renderStatus(); }

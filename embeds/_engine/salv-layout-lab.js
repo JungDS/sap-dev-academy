@@ -48,19 +48,19 @@
   function renderCode() {
     function ln(on, html) { return '<span class="' + (on ? 'on' : 'off') + '">' + html + '</span>'; }
     var txt;
-    if (st.text === 'all') txt = 'lo_col-&gt;<span class="fn">set_short_text</span>( \'정원\' ).  \" + medium + long 모두';
-    else if (st.text === 'long') txt = 'lo_col-&gt;<span class="fn">set_long_text</span>( \'정원\' ).         \" long만';
-    else txt = 'lo_col-&gt;set_long_text( ... ).';
+    if (st.text === 'all') txt = 'go_col-&gt;<span class="fn">set_short_text</span>( \'정원\' ).  \" + medium + long 모두';
+    else if (st.text === 'long') txt = 'go_col-&gt;<span class="fn">set_long_text</span>( \'정원\' ).         \" long만';
+    else txt = 'go_col-&gt;set_long_text( ... ).';
     var getCol = st.bad
-      ? 'DATA(lo_col) = lo_cols-&gt;<span class="fn">get_column</span>( \'<span class="bad">' + CFG.badCol + '</span>\' ).'
-      : 'DATA(lo_col) = lo_cols-&gt;<span class="fn">get_column</span>( \'' + CFG.capCol + '\' ).';
+      ? 'DATA(go_col) = go_cols-&gt;<span class="fn">get_column</span>( \'<span class="bad">' + CFG.badCol + '</span>\' ).'
+      : 'DATA(go_col) = go_cols-&gt;<span class="fn">get_column</span>( \'' + CFG.capCol + '\' ).';
     codeEl.innerHTML =
-      ln(st.striped, 'lo-&gt;<span class="fn">get_display_settings</span>( )-&gt;set_striped_pattern( abap_true ).') + '\n' +
-      ln(st.opt, 'lo_cols-&gt;<span class="fn">set_optimize</span>( abap_true ).') + '\n' +
+      ln(st.striped, 'go_salv-&gt;<span class="fn">get_display_settings</span>( )-&gt;set_striped_pattern( abap_true ).') + '\n' +
+      ln(st.opt, 'go_cols-&gt;<span class="fn">set_optimize</span>( abap_true ).') + '\n' +
       ln(st.text !== 'none', getCol) + '\n' +
       ln(st.text !== 'none', txt) + '\n' +
-      'lo-&gt;<span class="fn">get_layout</span>( )-&gt;set_key( <span class="fn">VALUE</span> salv_s_layout_key( report = sy-repid ) ).\n' +
-      'lo-&gt;display( ).';
+      'go_salv-&gt;<span class="fn">get_layout</span>( )-&gt;set_key( <span class="fn">VALUE</span> salv_s_layout_key( report = sy-repid ) ).\n' +
+      'go_salv-&gt;display( ).';
   }
 
   function renderTable() {

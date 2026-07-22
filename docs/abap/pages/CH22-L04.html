@@ -61,7 +61,7 @@
          seats_left <span class="tok-kw">TYPE</span> i,                  <span class="tok-com">" 잔여석 = capacity - booked</span>
          cellcolors <span class="tok-kw">TYPE</span> lvc_t_scol,         <span class="tok-com">" 셀 색 정보(테이블 in 행)</span>
        <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ts_perf_alv.
-<span class="tok-kw">DATA</span> lt_perf_alv <span class="tok-kw">TYPE</span> <span class="tok-kw">STANDARD</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ts_perf_alv.</code></pre></div></div>
+<span class="tok-kw">DATA</span> gt_perf_alv <span class="tok-kw">TYPE</span> <span class="tok-kw">STANDARD</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ts_perf_alv.</code></pre></div></div>
 <p>각 행에서 색을 줄 셀을 지정한다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
@@ -71,7 +71,7 @@
 6
 7
 8
-9</pre><pre class="abap-editor__code"><code><span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_perf_alv <span class="tok-kw">ASSIGNING</span> <span class="tok-kw">FIELD-SYMBOL</span>(&lt;perf&gt;).
+9</pre><pre class="abap-editor__code"><code><span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> gt_perf_alv <span class="tok-kw">ASSIGNING</span> <span class="tok-kw">FIELD-SYMBOL</span>(&lt;perf&gt;).
   <span class="tok-kw">CLEAR</span> &lt;perf&gt;-cellcolors.
   <span class="tok-kw">IF</span> &lt;perf&gt;-booked &gt;= &lt;perf&gt;-capacity.              <span class="tok-com">" 매진</span>
     <span class="tok-kw">APPEND</span> <span class="tok-kw">VALUE</span> lvc_s_scol(
@@ -109,8 +109,8 @@
 </section><section class="lblock"><h2>핵심 — 연결해야 보인다 🔌</h2>
 <p><code>cellcolors</code>에 색 줄을 넣기만 하면 ALV가 <strong>자동으로 읽지 않는다.</strong> layout에 &quot;이 컬럼이 셀 색 테이블&quot;이라고 알려야 한다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
-2</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> ls_layout <span class="tok-kw">TYPE</span> lvc_s_layo.
-ls_layout-ctab_fname = <span class="tok-str">'CELLCOLORS'</span>.     <span class="tok-com">" 셀색 컬럼 이름을 Layout에 연결</span></code></pre></div></div>
+2</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> gs_layout <span class="tok-kw">TYPE</span> lvc_s_layo.
+gs_layout-ctab_fname = <span class="tok-str">'CELLCOLORS'</span>.     <span class="tok-com">" 셀색 컬럼 이름을 Layout에 연결</span></code></pre></div></div>
 <ul>
 <li><code>LVC_T_SCOL</code> 한 줄 = (어느 컬럼 <code>fname</code> + 색 <code>color</code>).</li>
 <li><strong><code>ctab_fname</code></strong> = 그 색 목록이 든 component 이름을 ALV layout에 알려 주는 <em>연결선</em>.</li>

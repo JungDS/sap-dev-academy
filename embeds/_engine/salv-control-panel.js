@@ -30,11 +30,11 @@
     var sortName = st.bad ? '<span class="bad">\'' + CFG.badCol + '\'</span>' : '\'' + CFG.sortCol + '\'';
     function ln(on, html) { return '<span class="' + (on ? 'on' : 'off') + '">' + html + '</span>'; }
     codeEl.innerHTML =
-      '<span class="fn">cl_salv_table=&gt;factory</span>( IMPORTING r_salv_table = DATA(lo_salv) CHANGING t_table = lt_perf ).\n' +
-      ln(st.func, 'lo_salv-&gt;<span class="fn">get_functions</span>( )-&gt;set_all( abap_true ).') + '\n' +
-      ln(st.sort || st.bad, 'lo_salv-&gt;<span class="fn">get_sorts</span>( )-&gt;add_sort( ' + sortName + ' ).') + '\n' +
-      ln(st.filter, 'lo_salv-&gt;<span class="fn">get_filters</span>( )-&gt;add_filter(\n    columnname = \'PERF_DATE\' sign = \'I\' option = \'GE\' low = sy-datum ).') + '\n' +
-      'lo_salv-&gt;<span class="fn">display</span>( ).';
+      '<span class="fn">cl_salv_table=&gt;factory</span>( IMPORTING r_salv_table = DATA(go_salv) CHANGING t_table = gt_perf ).\n' +
+      ln(st.func, 'go_salv-&gt;<span class="fn">get_functions</span>( )-&gt;set_all( abap_true ).') + '\n' +
+      ln(st.sort || st.bad, 'go_salv-&gt;<span class="fn">get_sorts</span>( )-&gt;add_sort( ' + sortName + ' ).') + '\n' +
+      ln(st.filter, 'go_salv-&gt;<span class="fn">get_filters</span>( )-&gt;add_filter(\n    columnname = \'PERF_DATE\' sign = \'I\' option = \'GE\' low = sy-datum ).') + '\n' +
+      'go_salv-&gt;<span class="fn">display</span>( ).';
   }
 
   function renderTable() {

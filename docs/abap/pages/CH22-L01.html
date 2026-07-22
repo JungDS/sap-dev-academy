@@ -74,7 +74,7 @@
 </tr>
 </tbody></table>
 <blockquote class="cw">
-<p>⚠️ <code>CL_SALV_TABLE=&gt;FACTORY</code>는 값을 <em>돌려주는</em> 식이 아니라 <strong>static method 호출</strong>이다. SALV 객체는 **<code>IMPORTING r_salv_table</code>**으로 받는다(<code>DATA(lo_salv) = factory(...)</code>가 아니다).</p>
+<p>⚠️ <code>CL_SALV_TABLE=&gt;FACTORY</code>는 값을 <em>돌려주는</em> 식이 아니라 <strong>static method 호출</strong>이다. SALV 객체는 **<code>IMPORTING r_salv_table</code>**으로 받는다(<code>DATA(go_salv) = factory(...)</code>가 아니다).</p>
 </blockquote>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
@@ -101,27 +101,27 @@
 23
 24</pre><pre class="abap-editor__code"><code><span class="tok-kw">PARAMETERS</span> pa_conc <span class="tok-kw">TYPE</span> zperf-concert_id.
 
-<span class="tok-kw">DATA</span> lt_perf <span class="tok-kw">TYPE</span> <span class="tok-kw">STANDARD</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> zperf.
-<span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> zperf <span class="tok-kw">WHERE</span> concert_id = @pa_conc <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> @lt_perf.
+<span class="tok-kw">DATA</span> gt_perf <span class="tok-kw">TYPE</span> <span class="tok-kw">STANDARD</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> zperf.
+<span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> zperf <span class="tok-kw">WHERE</span> concert_id = @pa_conc <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> @gt_perf.
 
 <span class="tok-kw">TRY</span>.
     cl_salv_table=&gt;factory(
-      <span class="tok-kw">IMPORTING</span> r_salv_table = <span class="tok-kw">DATA</span>(lo_salv)
-      <span class="tok-kw">CHANGING</span>  t_table      = lt_perf ).
+      <span class="tok-kw">IMPORTING</span> r_salv_table = <span class="tok-kw">DATA</span>(go_salv)
+      <span class="tok-kw">CHANGING</span>  t_table      = gt_perf ).
 
     <span class="tok-com">" 표준 기능 켜기</span>
-    lo_salv-&gt;get_functions( )-&gt;set_all( abap_true ).
+    go_salv-&gt;get_functions( )-&gt;set_all( abap_true ).
 
     <span class="tok-com">" 공연일 오름차순</span>
-    lo_salv-&gt;get_sorts( )-&gt;add_sort( <span class="tok-str">'PERF_DATE'</span> ).
+    go_salv-&gt;get_sorts( )-&gt;add_sort( <span class="tok-str">'PERF_DATE'</span> ).
 
     <span class="tok-com">" 지난 회차는 빼고 오늘 이후만</span>
-    lo_salv-&gt;get_filters( )-&gt;add_filter(
+    go_salv-&gt;get_filters( )-&gt;add_filter(
       columnname = <span class="tok-str">'PERF_DATE'</span> sign = <span class="tok-str">'I'</span> option = <span class="tok-str">'GE'</span> low = sy-datum ).
 
-    lo_salv-&gt;display( ).
-  <span class="tok-kw">CATCH</span> cx_salv_msg cx_salv_not_found <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(lx_salv).
-    <span class="tok-kw">MESSAGE</span> lx_salv-&gt;get_text( ) <span class="tok-kw">TYPE</span> <span class="tok-str">'E'</span>.
+    go_salv-&gt;display( ).
+  <span class="tok-kw">CATCH</span> cx_salv_msg cx_salv_not_found <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(gx_salv).
+    <span class="tok-kw">MESSAGE</span> gx_salv-&gt;get_text( ) <span class="tok-kw">TYPE</span> <span class="tok-str">'E'</span>.
 <span class="tok-kw">ENDTRY</span>.</code></pre></div></div>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">SALV 초기 상태 조종 패널 (표준기능·정렬·필터)</span><a class="embed__open" href="../../../embeds/abap/CH22-L01-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH22-L01-S01.html" loading="lazy" title="SALV 초기 상태 조종 패널 (표준기능·정렬·필터)"></iframe></figure>
 </section><section class="lblock"><h2>화면에서 이렇게 확인한다 🔍</h2>

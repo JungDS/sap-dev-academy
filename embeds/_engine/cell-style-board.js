@@ -53,7 +53,7 @@
   function renderStatus() {
     if (st.lastInfo) { statusEl.className = 'info'; statusEl.innerHTML = st.lastInfo; return; }
     if (!st.applied) { statusEl.className = ''; statusEl.innerHTML = '<b>① 스타일 적용</b>으로 행마다 <code>cellstyles</code>에 스타일 줄을 채워 보세요(매진=비활성·관리자=편집·상세=버튼).'; return; }
-    if (!st.connected) { statusEl.className = 'warn'; statusEl.innerHTML = '⚠️ <b>아직 화면은 기본 모양</b> — <code>cellstyles</code>는 채웠지만 <code>ls_layout-stylefname = \'CELLSTYLES\'</code>로 <b>연결해야</b> 적용됩니다. (색은 <code>ctab_fname</code>, 모양은 <code>stylefname</code>.)'; return; }
+    if (!st.connected) { statusEl.className = 'warn'; statusEl.innerHTML = '⚠️ <b>아직 화면은 기본 모양</b> — <code>cellstyles</code>는 채웠지만 <code>gs_layout-stylefname = \'CELLSTYLES\'</code>로 <b>연결해야</b> 적용됩니다. (색은 <code>ctab_fname</code>, 모양은 <code>stylefname</code>.)'; return; }
     statusEl.className = 'ok';
     statusEl.innerHTML = '✅ <b>연결됨</b> — 매진 셀은 <b>비활성(🔒)</b>, 관리자 셀은 <b>편집 모양</b>, 상세 셀은 <b>버튼</b>으로 보입니다. 모양만일 뿐, 실제 입력·검증·저장은 이후 편집 챕터의 일입니다.';
   }
