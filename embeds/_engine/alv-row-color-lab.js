@@ -1,11 +1,11 @@
 /* alv-row-color-lab 엔진 — 매진 판정으로 색 코드(C610)를 채우고 layout info_fname에 '필드명'을 연결하면 매진 행에 색이 입혀진다.
-   seatsocc를 바꿔 상태(여유/임박/매진)를 만들고, ① 색 코드 쓰기 ② info_fname 연결 ③ 표시 순서로 색이 보이게 한다.
+   booked를 바꿔 상태(여유/임박/매진)를 만들고, ① 색 코드 쓰기 ② info_fname 연결 ③ 표시 순서로 색이 보이게 한다.
    info_fname을 틀린 필드명(ROW_COLOR)으로 두면 색이 안 보인다. 3체크: 색코드 존재 / 필드명 일치 / 화면 갱신.
    골격 계약: [data-act] · .arc-fname · #arcTable · #arcChecks.
    config: window.ARC_CFG = { rows, color, goodFname, badFname }. 높이: _autoheight.js. */
 (function () {
   var CFG = window.ARC_CFG || { rows: [], color: 'C610', goodFname: 'ROWCOLOR', badFname: 'ROW_COLOR' };
-  var occ = CFG.rows.map(function (r) { return r.seatsocc; });
+  var occ = CFG.rows.map(function (r) { return r.booked; });
   var codeWritten = false, fname = CFG.goodFname, displayed = false;
 
   var fnameEl = document.querySelector('.arc-fname');
@@ -49,7 +49,7 @@
     var act = b.getAttribute('data-act');
     if (act === 'code') codeWritten = true;
     else if (act === 'display') displayed = true;
-    else if (act === 'reset') { codeWritten = false; fname = CFG.goodFname; displayed = false; occ = CFG.rows.map(function (r) { return r.seatsocc; }); }
+    else if (act === 'reset') { codeWritten = false; fname = CFG.goodFname; displayed = false; occ = CFG.rows.map(function (r) { return r.booked; }); }
     render();
   });
   fnameEl.addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; fname = b.getAttribute('data-v'); render(); });

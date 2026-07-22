@@ -41,7 +41,7 @@
       <article class="prose">
 <section class="lblock"><h2>행이 아니라 셀 하나만 🎯</h2>
 <p><a href="CH17-L09.html">행 색상 기초</a>에서 행 <em>전체</em> 색을 봤다. 그런데 공연명·날짜·정원은 정상인데 <strong>잔여석만 위험</strong>하다면, 행 전체를 칠하는 것보다 <strong>그 셀 하나</strong>만 칠하는 게 정확하다.</p>
-<p>방법은 행 구조에 <strong>색 정보 테이블</strong>(<code>LVC_T_SCOL</code>)을 컬럼으로 품는 것 — 한 행 안에서도 여러 셀에 각각 다른 색이 붙을 수 있으니, 색 정보는 단일 값이 아니라 <em>목록</em>이다. 여기서 <a href="CH06-L05.html">Deep Structure 개념</a>(<button class="term" type="button" data-term="Deep Structure">Deep Structure</button>)이 쓰인다.</p>
+<p>방법은 행 구조에 <strong>색 정보 테이블</strong>(<code>LVC_T_SCOL</code>)을 컬럼으로 품는 것이다. 한 행 안에서도 여러 셀에 각각 다른 색이 붙을 수 있으니, 색 정보는 단일 값이 아니라 <em>목록</em>이다. 여기서 <a href="CH06-L05.html">Deep Structure 개념</a>(<button class="term" type="button" data-term="Deep Structure">Deep Structure</button>)이 쓰인다.</p>
 <blockquote>
 <p>🧱 <strong>flat ↔ deep 분리.</strong> DB는 <strong>flat table</strong>로 조회한다(deep component를 가진 work area는 SQL에서 제한). 표시용 internal table을 따로 두고 거기에 색 deep component를 채운다.</p>
 </blockquote>
@@ -51,13 +51,17 @@
 4
 5
 6
-7</pre><pre class="abap-editor__code"><code><span class="tok-kw">TYPES</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ty_perf_alv,
+7
+8
+9</pre><pre class="abap-editor__code"><code><span class="tok-kw">TYPES</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ts_perf_alv,
          concert_id <span class="tok-kw">TYPE</span> zperf-concert_id,
-         seatsocc   <span class="tok-kw">TYPE</span> i,
-         capacity   <span class="tok-kw">TYPE</span> i,
-         cellcolors <span class="tok-kw">TYPE</span> lvc_t_scol,        <span class="tok-com">" 셀 색 정보(테이블 in 행)</span>
-       <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ty_perf_alv.
-<span class="tok-kw">DATA</span> lt_perf_alv <span class="tok-kw">TYPE</span> <span class="tok-kw">STANDARD</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ty_perf_alv.</code></pre></div></div>
+         perf_no    <span class="tok-kw">TYPE</span> zperf-perf_no,
+         capacity   <span class="tok-kw">TYPE</span> zconcert-capacity,  <span class="tok-com">" 정원은 공연 마스터에서</span>
+         booked     <span class="tok-kw">TYPE</span> i,                  <span class="tok-com">" 예약 좌석 합계(ZBOOKING 집계)</span>
+         seats_left <span class="tok-kw">TYPE</span> i,                  <span class="tok-com">" 잔여석 = capacity - booked</span>
+         cellcolors <span class="tok-kw">TYPE</span> lvc_t_scol,         <span class="tok-com">" 셀 색 정보(테이블 in 행)</span>
+       <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ts_perf_alv.
+<span class="tok-kw">DATA</span> lt_perf_alv <span class="tok-kw">TYPE</span> <span class="tok-kw">STANDARD</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ts_perf_alv.</code></pre></div></div>
 <p>각 행에서 색을 줄 셀을 지정한다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
@@ -69,7 +73,7 @@
 8
 9</pre><pre class="abap-editor__code"><code><span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_perf_alv <span class="tok-kw">ASSIGNING</span> <span class="tok-kw">FIELD-SYMBOL</span>(&lt;perf&gt;).
   <span class="tok-kw">CLEAR</span> &lt;perf&gt;-cellcolors.
-  <span class="tok-kw">IF</span> &lt;perf&gt;-seatsocc &gt;= &lt;perf&gt;-capacity.            <span class="tok-com">" 매진</span>
+  <span class="tok-kw">IF</span> &lt;perf&gt;-booked &gt;= &lt;perf&gt;-capacity.              <span class="tok-com">" 매진</span>
     <span class="tok-kw">APPEND</span> <span class="tok-kw">VALUE</span> lvc_s_scol(
       fname     = <span class="tok-str">'SEATSOCC'</span>                         <span class="tok-com">" 어느 셀</span>
       color-col = col_negative                       <span class="tok-com">" 빨강 계열</span>

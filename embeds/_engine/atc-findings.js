@@ -3,9 +3,9 @@
 (function () {
   var $ = function (id) { return document.getElementById(id); };
   var F = [
-    { p: 1, cat: '성능', m: 'SELECT in LOOP (ZBOOK_RPT) — FAE/JOIN으로(CH32)' },
+    { p: 1, cat: '성능', m: 'SELECT in LOOP (ZBOOK_RPT) — FAE/JOIN으로(성능 분석과 튜닝 장)' },
     { p: 1, cat: '보안', m: '문자열 연결 SQL — SQL injection 위험(파라미터 바인딩으로)' },
-    { p: 2, cat: '표준', m: 'Released API 외 비공개 객체 접근(CH23-L08)' },
+    { p: 2, cat: '표준', m: 'Released API 외 비공개 객체 접근(RAP·ABAP Cloud 장)' },
     { p: 2, cat: '성능', m: '비키 조건 — 인덱스 검토(SQLM)' },
     { p: 3, cat: '문법', m: '미사용 변수 lv_tmp' }
   ];
