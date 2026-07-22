@@ -80,12 +80,12 @@
   function renderStatus() {
     if (st.bad) {
       statusEl.className = 'bad';
-      statusEl.innerHTML = '🚫 <code>cx_salv_not_found</code> — 컬럼 <code>' + CFG.badCol + '</code>를 찾을 수 없습니다. <code>get_column</code>은 화면 제목이 아니라 <b>내부 필드명 <code>' + CFG.capCol + '</code></b>로 접근합니다.';
+      statusEl.innerHTML = '🚫 <code>cx_salv_not_found</code>. 컬럼 <code>' + CFG.badCol + '</code>를 찾을 수 없습니다. <code>get_column</code>은 화면 제목이 아니라 <b>내부 필드명 <code>' + CFG.capCol + '</code></b>로 접근합니다.';
       return;
     }
     if (st.text === 'long') {
       statusEl.className = 'warn';
-      statusEl.innerHTML = '⚠️ <b><code>long_text</code>만 바꿈</b> — SALV는 폭에 따라 short/medium/long 중 하나를 고릅니다. 헤더가 그대로일 수 있으니 <b>세 텍스트를 함께</b> 맞추세요(\'셋 다\').';
+      statusEl.innerHTML = '⚠️ <b><code>long_text</code>만 바꿈.</b> SALV는 폭에 따라 short/medium/long 중 하나를 고릅니다. 헤더가 그대로일 수 있으니 <b>세 텍스트를 함께</b> 맞추세요(\'셋 다\').';
       return;
     }
     var parts = [];

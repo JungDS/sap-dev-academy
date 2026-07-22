@@ -84,7 +84,7 @@
     var k = b.getAttribute('data-k');
     lastMsg = { cls: '', html: '' };
     if (k === 'reset') { CFG.cols.forEach(function (c) { attr[c.f] = { no_out: false, do_sum: false, just: '', key: false }; }); }
-    else if (k === 'charsum') { lastMsg = { cls: 'warn', html: '⚠️ <code>STATUS</code>는 숫자 컬럼이 아니라 <code>do_sum</code> 합계가 의미 없습니다. <b><code>do_sum</code>은 숫자 컬럼에만.</b>' }; }
+    else if (k === 'charsum') { attr['STATUS'].do_sum = !attr['STATUS'].do_sum; lastMsg = { cls: 'warn', html: '⚠️ 카탈로그엔 <code>STATUS</code>의 <code>do_sum</code>이 켜졌지만, STATUS는 <b>숫자 컬럼이 아니라</b> 화면엔 합계(Σ)가 안 나옵니다. <b><code>do_sum</code>은 숫자 컬럼에만.</b>' }; }
     else if (k === 'typo') { lastMsg = { cls: 'bad', html: '🚫 <code>fieldname</code>이 output table component와 안 맞습니다(예: <code>SEAT</code> ≠ <code>SEATS</code>). DDIC 설명·화면 제목이 아니라 <b>내부 필드명</b>이라야 적용됩니다.' }; }
     else if (k.indexOf('|') >= 0) {
       var p = k.split('|'), a = attr[p[0]];

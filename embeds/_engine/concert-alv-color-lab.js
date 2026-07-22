@@ -47,7 +47,7 @@
   function renderStatus() {
     if (ctabOff) {
       statusEl.className = 'warn';
-      statusEl.innerHTML = '⚠️ <code>ctab_fname</code> <b>끔</b> — <code>cellcolors</code> 데이터는 각 행에 그대로 있지만, layout에 연결을 끊으니 <b>화면 색이 사라집니다</b>. 색은 연결돼야 보입니다(L04).';
+      statusEl.innerHTML = '⚠️ <code>ctab_fname</code> <b>끔</b> — <code>cellcolors</code> 데이터는 각 행에 그대로 있지만, layout에 연결을 끊으니 <b>화면 색이 사라집니다</b>. 색은 layout에 연결돼야 보입니다(셀 색 연결 = ctab_fname).';
       return;
     }
     var reds = CFG.rows.filter(function (r, i) { return colorOf(i) === 'red'; }).length;
