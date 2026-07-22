@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<!-- CH20-L01-S01 — 엔진: compare-matrix · _engine/_base.css. 고급 SQL 네 묶음 비교(업무 질문 → 도구).
+     게이팅: CH20 Advanced SQL 개요(CTE·Subquery/EXISTS·Set·Window) — 코드 없이 '언제 무엇' 판단. -->
+<html lang="ko" data-eng="compare-matrix">
+<head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>고급 SQL 네 묶음 · CH20-L01-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/compare-matrix.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">고급 SQL 네 묶음 — 업무 질문에 맞는 도구 고르기</p>
+  <p class="lead">문법을 외우기 전에 <b>"무엇을 하고 싶은가"</b>부터 봅니다. 왼쪽 도구 이름을 클릭하면 "언제 쓰나"가 나옵니다.</p>
+  <p class="hint">💡 왼쪽 이름을 클릭</p>
+  <table><thead id="thead"></thead><tbody id="tbody"></tbody></table>
+  <div class="detail idle" id="detail">이름을 클릭하면 쓰임이 여기 나옵니다.</div>
+  <div class="note">💡 네 도구는 모두 <b>읽기 전용 SELECT</b>입니다. 저장·변경(DML)·CDS·RAP는 다음 챕터들의 주제예요. 여기선 "DB에 질문을 설계"하는 법만.</div>
+  <script type="application/json" id="cm-cfg">
+  {
+    "cols": ["무엇을 하나", "대표 질문", "행에 미치는 영향"],
+    "rows": [
+      { "name": "CTE (WITH)", "cells": [{"v":"중간 결과에 이름"},{"v":"합계 먼저 → 조인"},{"v":"단계로 나눔","r":"mid"}],
+        "detail": "복잡한 SELECT를 '중간 표 만들기 → 다시 읽기'로 나눌 때. 예약 합계를 <code>+booked</code>로 먼저 만든 뒤 공연 마스터와 조인합니다. 실제 DB 테이블이 아니라 그 문장 안에서만 사는 임시 이름이에요." },
+      { "name": "Subquery / EXISTS", "cells": [{"v":"조건 안 SELECT"},{"v":"예약 있는 공연만"},{"v":"존재 판정","r":"hi"}],
+        "detail": "관련 행의 상세 컬럼이 아니라 <b>있나 없나</b>만 필요할 때. <code>EXISTS</code>는 JOIN과 달리 바깥 공연 행을 예약 건수만큼 중복시키지 않습니다." },
+      { "name": "Set (UNION·EXCEPT)", "cells": [{"v":"두 목록 합·교·차"},{"v":"예약된 공연 빼기"},{"v":"위아래로 병합","r":"hi"}],
+        "detail": "두 SELECT 결과를 <b>집합</b>처럼 다룹니다. 전체 공연에서 '예약된 공연'을 빼면(<code>EXCEPT</code>) 예약 없는 공연이 남아요. JOIN이 컬럼을 옆으로 붙인다면 이건 같은 모양의 행을 위아래로." },
+      { "name": "Window (OVER)", "cells": [{"v":"상세 유지 + 그룹계산"},{"v":"행마다 합계·순번"},{"v":"행 유지","r":"hi"}],
+        "detail": "<code>GROUP BY</code>는 상세 행이 사라지지만, window는 <b>상세 행을 두고</b> 같은 공연의 합계·순번·순위를 옆 칸에 붙입니다. <code>OVER( PARTITION BY … )</code>로 씁니다." }
+    ]
+  }
+  </script>
+</div>
+<script src="../_engine/compare-matrix.js" defer></script>
+</body>
+</html>

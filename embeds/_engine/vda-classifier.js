@@ -1,4 +1,4 @@
-// ===== vda-classifier 엔진 JS — RAP Validation/Determination/Action 분류 + 실행 타임라인 (CH23-L07) =====
+// ===== vda-classifier 엔진 JS — RAP Validation/Determination/Action 분류 + 실행 타임라인 (CH24-L07) =====
 // 상황 카드를 V/D/A로 분류(목적·실행 시점). 타임라인: 요청→modify(determination)→save(validation)→커밋, action은 별도 lane.
 // 입문자는 문법보다 실행 시점에서 자주 틀림. 데이터 내장. 교훈3: 카드 피드백 ok/bad·score base 중립.
 (function(){

@@ -1,4 +1,4 @@
-/* strategy-sim — Strategy 패턴 체험 (CH26-L03).
+/* strategy-sim — Strategy 패턴 체험 (CH27-L03).
    요금 전략(일반/VIP/조기) 선택 + 좌석수 → 가격 계산. 호출부(checkout)는 전략을 주입받아 그대로 호출 → 동일.
    새 정책 = 새 클래스 추가(기존 코드 불변, OCP). */
 (function () {

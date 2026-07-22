@@ -36,17 +36,19 @@
         '    DATA(lo_vip) = <span class="fn">CAST</span> ' + h(CFG.vipClass) + '( lo_mgr ).\n' +
         '    lo_vip-&gt;' + h(CFG.vipMethod) + '.\n' +
         '  <span class="fn">CATCH</span> <span class="cx">cx_sy_move_cast_error</span>.\n' +
-        '    <span class="fn">MESSAGE</span> \'VIP 객체가 아닙니다\' <span class="fn">TYPE</span> \'I\'.\n' +
+        '    <span class="fn">MESSAGE</span> \'VIP 예약 객체가 아닙니다.\' <span class="fn">TYPE</span> \'I\'.\n' +
         '<span class="fn">ENDTRY</span>.';
     } else {
       var vipHit = isVip() ? ' hit' : '';
       var baseHit = !isVip() ? ' hit' : '';
       codeEl.innerHTML =
         '<span class="fn">CASE TYPE OF</span> lo_mgr.\n' +
-        '  <span class="fn">WHEN TYPE</span> <span class="' + (vipHit ? 'hit' : '') + '">' + h(CFG.vipClass) + ' INTO DATA(lo_v)</span>.\n' +
-        '    lo_v-&gt;' + h(CFG.vipMethod) + '.\n' +
-        '  <span class="fn">WHEN TYPE</span> <span class="' + (baseHit ? 'hit' : '') + '">' + h(CFG.baseClass) + ' INTO DATA(lo_b)</span>.\n' +
-        '    lo_b-&gt;book( iv_seats = 1 ).\n' +
+        '  <span class="fn">WHEN TYPE</span> <span class="' + (vipHit ? 'hit' : '') + '">' + h(CFG.vipClass) + ' INTO DATA(lo_vip)</span>.\n' +
+        '    lo_vip-&gt;' + h(CFG.vipMethod) + '.\n' +
+        '  <span class="fn">WHEN TYPE</span> <span class="' + (baseHit ? 'hit' : '') + '">' + h(CFG.baseClass) + ' INTO DATA(lo_base)</span>.\n' +
+        '    lo_base-&gt;book( iv_seats = 1 ).\n' +
+        '  <span class="fn">WHEN OTHERS</span>.\n' +
+        '    <span class="fn">MESSAGE</span> \'처리할 수 없는 예약 객체입니다.\' <span class="fn">TYPE</span> \'I\'.\n' +
         '<span class="fn">ENDCASE</span>.';
     }
   }

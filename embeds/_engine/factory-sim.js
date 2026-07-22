@@ -1,4 +1,4 @@
-/* factory-sim — Factory 패턴 체험 (CH26-L01).
+/* factory-sim — Factory 패턴 체험 (CH27-L01).
    type 선택 → 팩토리가 그에 맞는 구체 클래스를 만들어 zif_booking으로 반환.
    호출부(client) 코드는 type만 다를 뿐 '구조가 늘 같다'는 점을 강조. */
 (function () {

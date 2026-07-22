@@ -1,4 +1,4 @@
-/* luw-timeline — SAP LUW / Update Task 타이밍 체험 (CH24-L03).
+/* luw-timeline — SAP LUW / Update Task 타이밍 체험 (CH25-L03).
    단계 진행: 화면입력 → IN UPDATE TASK 등록(큐에만!) → 추가 처리 → COMMIT WORK(이때 DB 기록).
    핵심 학습: 함수를 '호출'해도 IN UPDATE TASK면 즉시 실행 안 됨 → COMMIT 시점에 update work process가 실행. */
 (function () {

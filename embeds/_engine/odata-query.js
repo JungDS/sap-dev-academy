@@ -1,4 +1,4 @@
-/* odata-query — OData $filter/$top/$skip → EntitySet 결과 체험 (CH31-L05).
+/* odata-query — OData $filter/$top/$skip → EntitySet 결과 체험 (CH34-L05).
    venue 필터 + top/skip → 결과 미리보기 + OData URL. GET_ENTITYSET이 이 쿼리를 SELECT로 매핑함을 보여 준다. */
 (function () {
   var $ = function (id) { return document.getElementById(id); };

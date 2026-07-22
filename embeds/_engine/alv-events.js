@@ -1,4 +1,4 @@
-/* alv-events — ALV 이벤트 시뮬 엔진 (CH27 L01~L04 공통).
+/* alv-events — ALV 이벤트 시뮬 엔진 (CH30 L01~L04 공통).
    위젯의 <script type="application/json" id="alv-cfg">에서 { mode } 를 읽는다.
    mode: 'double'(더블클릭) | 'hotspot'(링크 셀) | 'toolbar'(커스텀 버튼 추가) | 'ucommand'(선택+버튼→취소).
    상호작용 → 이벤트 로그(핸들러 메서드 + e_* 파라미터)로 보여 준다. */

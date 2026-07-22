@@ -1,4 +1,4 @@
-// ===== behavior-pool-tracer 엔진 JS — RAP Behavior Pool 호출 추적기 (CH23-L05) =====
+// ===== behavior-pool-tracer 엔진 JS — RAP Behavior Pool 호출 추적기 (CH24-L05) =====
 // 4단계: ①저장 요청(keys 3행 internal table) ②READ ENTITIES(집합 read) ③정원 검사(seats vs remaining) ④failed/reported 기록.
 // 순서 의존. loop 안 EML 토글=anti-pattern warn. handler는 단건 함수가 아니라 집합 지향 runtime callback. 데이터 내장.
 (function(){

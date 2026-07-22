@@ -1,4 +1,4 @@
-// ===== rap-layer-assembler 엔진 JS — RAP 계층 조립 보드 (CH23-L01) =====
+// ===== rap-layer-assembler 엔진 JS — RAP 계층 조립 보드 (CH24-L01) =====
 // 6계층 토글(root/proj/bdef/pool/svcdef/svcbind)→스택 채움. 빠진 계층마다 "어떤 사용자 행동이 불가능한가" 표시.
 // 다 채우면 RAP BO 완성(ok). 아니면 누락 결과(warn). 데이터 내장. 교훈3: verdict base 중립 rgba.
 (function(){

@@ -171,7 +171,14 @@
 | CH19-L06-S01 | CH19-L06 | itab-sql-console | 내부 테이블을 @itab source로·WHERE/ORDER BY/GROUP BY×SELECT↔LOOP/SORT/COLLECT 비교·원본/결과 테이블·@ 필요·DB 대용 아님 | ✅ |
 | CH19-L07-S01 | CH19-L07 | module-choice-cards | (재사용) SQL Decision Cards 6문항→@host/@DATA/CASE/COALESCE/SELECT FROM @itab/ABAP·명시타입 분류·이유 | ✅ |
 | CH19-L08-S01 | CH19-L08 | concert-agg-join-lab | 콘서트 집계: 취소 제외 조건 ON↔WHERE 토글(C003 보존/소멸)·COALESCE null↔0·LEFT OUTER JOIN+GROUP BY·결과/검증 테이블 | ✅ |
-| CH21-L01-S01 | CH21-L01 | class-diagram | 클래스(설계도)→NEW→객체(인스턴스) 흐름 | ✅ |
+| CH20-L01-S01 | CH20-L01 | compare-matrix | (재사용) 고급 SQL 네 묶음 비교(CTE/Subquery/Set/Window)·업무질문→도구·이름 클릭 상세 | ✅ |
+| CH20-L02-S01 | CH20-L02 | cte-step-viewer | CTE 4단계(원본→+booked 합계→LEFT OUTER JOIN→잔여석)·취소 포함/제외 토글(WHERE 취소선+합계 경고)·예약 없는 공연 강조 | ✅ |
+| CH20-L03-S01 | CH20-L03 | exists-vs-join | JOIN↔EXISTS 토글·JOIN 행 중복 vs EXISTS 존재판정(공연 1행)·취소 조건 제거 실험 | ✅ |
+| CH20-L04-S01 | CH20-L04 | sql-set-board | 두 집합 A/B에 UNION/UNION ALL/INTERSECT/EXCEPT·좌우 바꾸기(EXCEPT 방향성)·벤 색구분 | ✅ |
+| CH20-L05-S01 | CH20-L05 | window-partition-sim | GROUP BY(행 접힘)↔PARTITION BY(행 유지)·ROW_NUMBER·RANK vs DENSE_RANK(gap)·PARTITION 제거 | ✅ |
+| CH20-L06-S01 | CH20-L06 | decision-tree | (재사용) 고급 SQL 선택 가이드(질문→JOIN/EXISTS/CTE/Set/Window 추천)+멈춤 신호 | ✅ |
+| CH20-L07-S01 | CH20-L07 | concert-adv-sql-lab | 통합 실습 4모드(CTE 잔여석·EXISTS 예약공연·EXCEPT 미예약·Window 상세)+조건제거 실험+예상/실제 검증 패널 | ✅ |
+| CH21-L01-S01 | CH21-L01 | class-object-builder | 클래스(설계도)→NEW로 객체 생성·참조 bound↔initial·**initial 참조 호출 실패** 체험(객체 카드+상태+피드백) | ✅ |
 | CH21-L02-S01 | CH21-L02 | visibility-gate-sim | 멤버(데이터/메서드)×visibility(PUBLIC/PROTECTED/PRIVATE)×호출자(외부/자기/자식)→접근 허용·차단(컴파일 단계)+캡슐화 조언+접근 매트릭스 | ✅ |
 | CH21-L03-S01 | CH21-L03 | constructor-timeline | 객체 생성/정적 호출→constructor(객체별 count)·class_constructor(클래스 1회) 실행 순서 타임라인+카운터+객체 카드(상태) | ✅ |
 | CH21-L04-S01 | CH21-L04 | selector-trainer | 왼쪽(클래스명/참조변수)×선택자(=>/->)×멤버(정적/인스턴스)→호출 정오 판정(class=>static OK·class=>instance 오류·ref->instance OK·ref->static 동작하나 권장X) | ✅ |
@@ -180,15 +187,15 @@
 | CH21-L08-S01 | CH21-L08 | dynamic-type-inspector | 실제 객체(일반/VIP)×연산(CAST/CASE TYPE OF)→정적/동적 타입·CAST 성공/실패(CX_SY_MOVE_CAST_ERROR)·CASE TYPE OF 안전 분기 | ✅ |
 | CH21-L09-S01 | CH21-L09 | event-wiring-panel | 발생 객체 lo_mgr + handler 2(monitor/logger) SET HANDLER 등록 토글·RAISE EVENT→등록된 handler만 동기 호출 로그·미등록 무반응·다중 handler 순서 미보장 | ✅ |
 | CH22-L01-S01 | CH22-L01 | salv-control-panel | SALV display 전 설정 토글(표준기능/PERF_DATE 정렬/취소 제외 필터/필드명 오타)→표 재정렬·필터·코드 강조·필드명 오타 오류·필터≠DB조건 | ✅ |
-| CH22-L02-S01 | CH22-L02 | salv-layout-lab | SALV 표시 설정(줄무늬/폭 최적화 ARTIST clip/CAPACITY 텍스트 기본·long만·셋다/컬럼명 오타)→표 변화·코드·long만 경고·cx_salv_not_found·variant=표시설정만 | ✅ |
+| CH22-L02-S01 | CH22-L02 | salv-layout-lab | SALV 표시 설정(줄무늬/폭 최적화 ARTIST clip/CAPACITY 텍스트 기본·long만·셋다/컬럼명 오타)→표 변화·코드·long만 경고·cx_salv_not_found + **Variant 저장→다시 실행 시 개발자 기본 덮어쓰기 체험**(ZCONCERT 스키마 정합) | ✅ |
 | CH22-L03-S01 | CH22-L03 | fieldcat-builder | field catalog(MANDT 숨김/SEATS 합계/STATUS 가운데/PERF_NO 키/문자합계/오타)→카탈로그 행 변화+화면 preview 반영·문자합계 경고·오타 오류·카탈로그≠DB | ✅ |
 | CH22-L04-S01 | CH22-L04 | cell-color-microscope | 셀 색 2단계(①색 계산 cellcolors 채움→armed ②ctab_fname 연결→painted)·fname 오타·매진 행 SEATSOCC 셀만 빨강·LVC_T_SCOL deep·flat↔deep 분리 | ✅ |
 | CH22-L05-S01 | CH22-L05 | cell-style-board | 셀 스타일 2단계(①적용 cellstyles ②stylefname 연결)→disabled🔒/enabled 편집/button 표시·버튼 클릭→CH30 경계 info·LVC_T_STYL fieldname≠색 fname | ✅ |
-| CH22-L06-S01 | CH22-L06 | module-choice-cards | (재사용) 색 단위 선택 퀴즈 5문항→행 색(info_fname)/컬럼 색(emphasize)/셀 색(ctab_fname)/색 안 쓰기 분류·이유 | ✅ |
+| CH22-L06-S01 | CH22-L06 | color-unit-comparator | 같은 회차 표에 행 색(info_fname)/컬럼 색(emphasize)/셀 색(ctab_fname)/색 없음을 실제로 칠해 세 단위를 시각 비교 + 연결 코드·기준 | ✅ |
 | CH22-L07-S01 | CH22-L07 | refresh-shake-comparator | 실제 스크롤 표(40행)·28행 스크롤→데이터 갱신+refresh: is_stable-row on=위치 유지/off=첫줄 튐·컬럼 구조 변경=재초기화·refresh≠DB조회 | ✅ |
 | CH22-L08-S01 | CH22-L08 | concert-alv-color-lab | (capstone) 회차 6행 잔여석(remaining)→≤0 빨강·≤5 노랑·회차 선택+예매 추가→seats_left 줄어 색 변화·ctab_fname 끄기→색 사라짐(데이터는 남음) | ✅ |
-| CH21-L07-S01 | CH21-L07 | class-diagram | 상속 계층(부모 ZCL_BOOKING_MANAGER←자식 ZCL_VIP_BOOKING·REDEFINITION/super·ABSTRACT/FINAL) | ✅ |
-| CH21-L10-S01 | CH21-L10 | class-diagram | UML 클래스 구조(PUBLIC 메서드·PRIVATE 속성·캡슐화·RAISING) | ✅ |
+| CH21-L07-S01 | CH21-L07 | redefinition-stepper | 상속 계층 그림 + 부모/자식 객체 담기→**동적 디스패치**(정적↔동적 타입)·super-> 토글로 부모 공통 검증 누락 체험 | ✅ |
+| CH21-L10-S01 | CH21-L10 | booking-manager-lab | UML 구조 + 좌석수×SET HANDLER→remaining(취소 제외)·can_book·book 분기(정상/sold_out 이벤트/ZCX_FULLY_BOOKED 예외) 체험 | ✅ |
 | CH23-L01-S01 | CH23-L01 | cds-activation-observer | CDS View Entity 활성화 관찰기 5단계(원본 테이블→DDL 작성→활성화→Data Preview→ABAP SQL 소비)·필드 오타 토글→활성화 실패→Preview/SQL 차단·행수 비교 배지·관점 전환 | ✅ |
 | CH23-L02-S01 | CH23-L02 | projection-layer-lab | Interface(ZI_)/Projection(ZC_) 계층 분리·ZC_ 숨김=비파괴(ZI_ 불변)·ZI_ 제거=연쇄(ZC_ 노출불가)·필드별 토글→ZI/ZC 칩+DDL+SELECT 라이브 | ✅ |
 | CH23-L03-S01 | CH23-L03 | relationship-map | CDS Association 관계도(공연 ZI_Concert→회차 ZI_Perf→예매 ZI_Booking) | ✅ |
@@ -255,6 +262,11 @@
 | sql-function-workbench (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH19-L05-S01 | SFW_CFG 주도 · fn 세그 7종(CONCAT/SUBSTRING/UPPER/LOWER/LENGTH/DATS_ADD_DAYS/DATS_DAYS_BETWEEN)→코드+결과·SUBSTRING pos(1-기반)/len 입력→범위밖 bad+SQL↔ABAP off 비교행·DATS_ADD_DAYS days·base=var(--surface) · 다크 |
 | itab-sql-console (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH19-L06-S01 | ICS_CFG 주도 · 원본 테이블 + op 세그(WHERE/ORDER BY/GROUP BY)×impl 세그(SELECT@itab/LOOP·SORT·COLLECT)→코드(fn·esc·as 강조)+결과 테이블(res teal·agg)·위치 배지·op별 note·base=var(--surface) · 다크 |
 | concert-agg-join-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH19-L08-S01 | CAJL_CFG 주도 · zconcert/zbooking 원본+cond 세그(취소제외 ON/WHERE)×coal 세그(COALESCE 0/SUM)→aggregate()로 결과 테이블 계산(C003 ON=kept/WHERE=소멸·null↔0·FULL/OPEN)+코드 hot 강조+note good/warn·이름 풀(R9)·base=var(--surface) · 다크 |
+| cte-step-viewer (신규) | 1 | 공통(_engine)+자체 post ✅ | CH20-L02-S01 | cfg zbooking/zconcert 주도 · 4단계 nav(원본/+booked/조인/잔여석)·취소 토글→WHERE 취소선+합계 6 경고·COALESCE·base=var(--surface) · 다크 |
+| exists-vs-join (신규) | 1 | 공통(_engine)+자체 post ✅ | CH20-L03-S01 | JOIN 중복 vs EXISTS 존재판정 토글·취소 조건 제거·outerRows/duplicateRows 배지 · 다크 |
+| sql-set-board (신규) | 1 | 공통(_engine)+자체 post ✅ | CH20-L04-S01 | A/B 집합 카드·UNION/ALL/INTERSECT/EXCEPT·좌우 바꾸기(방향성)·fill-brand/good 벤 색 · 다크 |
+| window-partition-sim (신규) | 1 | 공통(_engine)+자체 post ✅ | CH20-L05-S01 | GROUP BY 행접힘 vs PARTITION 행유지·ROW_NUMBER·RANK/DENSE_RANK gap·PARTITION 제거 · 다크 |
+| concert-adv-sql-lab (신규) | 1 | 공통(_engine)+자체 post ✅ | CH20-L07-S01 | 통합 4모드+조건제거+예상/실제 검증패널·CTE 95/EXISTS C001·C004/EXCEPT C002·C003·Window row/total · 다크 |
 | visibility-gate-sim (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH21-L02-S01 | VGS_CFG.members 주도 · mem(데이터/메서드)×vis(PUBLIC/PROTECTED/PRIVATE)×caller(외부/자기/자식)→ALLOW 표로 접근 verdict(ok/bad=syntax)+kind별 캡슐화 advice(warn/ok)+접근 매트릭스(cur 강조)·base=var(--surface) · 다크 |
 | constructor-timeline (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH21-L03-S01 | CTL_CFG.presets 주도 · 액션 버튼(객체1/객체2/정적호출/리셋)→ctorCount(객체별++)·classCtorCount(최초 1회)·classInit 게이트→실행순서 타임라인(stat/inst/skip/state)+카운터+객체 카드(mv_concert/perf/cap)·base=var(--surface) · 다크 |
 | selector-trainer (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH21-L04-S01 | ST_CFG 주도 · left(class/ref)×sel(=>/->)×mem(static/instance) 세그→호출 조립 코드+verdict(ok/bad/warn). 규칙: => 클래스만·-> 참조만, class=>instance 오류, ref->static warn(공식 ABENCLASS_COMPONENT_SELECTOR 허용·Clean ABAP 권장X)·base=var(--surface)·3색 verdict base 중립rgba+.ok 명시(교훈3) · 다크 |
@@ -263,11 +275,12 @@
 | dynamic-type-inspector (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH21-L08-S01 | DTI_CFG 주도 · obj 세그(일반/VIP)×op 세그(CAST/CASE TYPE OF)→정적/동적 타입 패널+코드(hit 강조)+verdict(CAST: VIP ok/일반 bad=CX_SY_MOVE_CAST_ERROR; CASE TYPE OF 항상 ok 안전분기)·base 중립rgba+.ok/.bad 명시(교훈3)·base=var(--surface) · 다크 |
 | event-wiring-panel (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH21-L09-S01 | EWP_CFG.handlers 주도 · 발행 박스(lo_mgr EVENTS)+handler 박스(등록 토글 on/off)·매진발생/리셋 버튼→RAISE EVENT 시 reg된 handler만 로그 호출(raise/call/none/warn)·다중 handler 순서 미보장 경고·prim 버튼 base=var(--surface) · 다크 |
 | salv-control-panel (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH22-L01-S01 | SCP_CFG.rows 주도 · 토글(func/sort/filter/bad)→코드 라인 on/off·bad 강조+표(sort 정렬·filter STATUS=C hidden·stat-c/f 색)+status(ok/bad)·필드명 오타→컬럼 못찾음·base=var(--surface)·3색 status 교훈3 패턴 · 다크 |
-| salv-layout-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH22-L02-S01 | SLL_CFG 주도 · striped/opt 토글+text 세그(none/long/all)+bad 버튼→코드 라인 on/off+표(striped zebra·opt clip 해제·CAPACITY 헤더 정렬 renamed)+status(ok/warn long만/bad cx_salv_not_found)·교훈3 3색·base=var(--surface) · 다크 |
+| salv-layout-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH22-L02-S01 | SLL_CFG 주도 · striped/opt 토글+text 세그(none/long/all)+bad 버튼→코드 라인 on/off+표(striped zebra·opt clip 해제·CAPACITY 헤더 정렬 renamed)+status(ok/warn long만/bad cx_salv_not_found) + **.sll-variant**(현재 보기 저장→savedVariant / 프로그램 다시 실행→저장분이 개발자 DEFAULT를 덮어씀 warn / 초기화)·ZCONCERT 스키마·교훈3 3색·base=var(--surface) · 다크 |
 | fieldcat-builder (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH22-L03-S01 | FCB_CFG 주도 · 액션 버튼(MANDT no_out/SEATS do_sum/STATUS just/PERF_NO key/문자합계 warn/오타 bad/리셋)→attr per 컬럼→fcat 테이블(set teal)+preview 테이블(no_out 숨김·just 정렬·do_sum Σ행·key 강조)+status(ok/warn/bad 교훈3)·카탈로그≠DB·base=var(--surface) · 다크 |
 | cell-color-microscope (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH22-L04-S01 | CCM_CFG.rows 주도 · 버튼(①compute ②connect/typo/reset)·st(computed/connected/typo)→표(매진 full 막대·SEATSOCC armed 테두리→painted 빨강)+scol 패널(cellcolors 내용)+status(없음/warn 연결전·bad/warn 오타·ok 연결)·교훈3 3색·base=var(--surface) · 다크 |
 | cell-style-board (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH22-L05-S01 | CSB_CFG.rows 주도 · 버튼(①apply ②connect/reset)·st(applied/connected)→표(armed→cell-disabled 🔒/cell-enabled 편집테두리/cell-button .btn)+styl 패널(cellstyles fieldname)+버튼 클릭→info(CH30 경계)·status(warn 연결전/ok/info)·base=var(--surface) · 다크 |
-| refresh-shake-comparator (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH22-L07-S01 | RSC_CFG 주도 · opt 토글(is_stable row/col·i_soft_refresh)→코드 on/off + 실제 스크롤 div(40행)·act(28행 scroll/데이터 갱신 refresh/구조 변경/리셋)→stable row면 scrollTop 보존 ok/아니면 0 warn·구조 변경 bad 재초기화·target/mark 강조·scroll-behavior smooth 제거(교훈4)·base=var(--surface) · 다크 |
+| refresh-shake-comparator (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH22-L07-S01 | RSC_CFG 주도 · opt 토글 3종 **모두 관찰 가능**(is_stable-row=세로 scrollTop·is_stable-col=가로 scrollLeft(표 min-width로 가로스크롤)·i_soft_refresh=사용자 정렬 SEATS_LEFT 유지↔off면 풀림)·act(28행 scroll/SEATS_LEFT 정렬/값 갱신 refresh/구조 변경/리셋)→구조 변경은 refresh 불가=set_table_for_first_display 재초기화 bad·스키마 정합(concert/perf/capacity/booked/seats_left)·인라인 overflow(CSS 무변경)·base=var(--surface) · 다크 |
+| color-unit-comparator (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH22-L06-S01 | CUC_CFG.rows 주도 · 단위 버튼(행/컬럼/셀/없음)→같은 표를 실제로 칠함: 행=지난 회차 줄 전체 .cuc-row-past·컬럼=SEATS_LEFT 전체 .cuc-col-emph·셀=잔여 0 그 칸만 .cuc-cell-danger + 연결 코드(info_fname/emphasize/ctab_fname)·기준 설명(why) · 색은 의미 토큰(--bad/--good/--soon) → gen-embed-dark 커버 · 다크 |
 | concert-alv-color-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH22-L08-S01 | CACL_CFG.rows 주도(capstone) · sel 세그(회차)+act(+1/+5 예매·ctab 끄기·리셋)→added per row·leftOf=cap-booked·colorOf(≤0 red/≤5 yellow)→표 셀 left-red/left-yellow·예매 추가→색 변화·ctab off→색 제거 warn·status ok/warn·base=var(--surface) · 다크 |
 | cds-activation-observer (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH23-L01-S01 | CAO_CFG 주도 · 5단계 레일(table/ddl/activate/preview/consume)+오타 토글→ok()면 Active·Preview(원본=CDS 행수 eq 배지)·SELECT FROM ZI_·아니면 활성화 실패+Preview/SQL blocked·status inactive/active/fail(교훈3 3색)·step base=var(--surface)·active=var(--brand)·DDL 영역 태그 · 다크 |
 | projection-layer-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH23-L02-S01 | PLL_CFG.fields 주도 · 필드별 inBase(ZI 포함/제거)·inProj(ZC 노출/숨김) 토글·key 잠금→ZI 칩(inBase)/ZC 칩(exposed)+DDL(as projection on)+SELECT 라이브·ZC 숨김=비파괴(ZI 불변)·ZI 제거=연쇄(proj 노출불가 disabled+warn)·toggle base=var(--surface) · 다크 |
@@ -352,7 +365,10 @@
 | dynpro-form-simulator (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH16-L10-S01 | DFS_CFG 주도 · CH16 캡스톤·화면0100 미리보기(좌석 입력)·툴바→PAI(OK_CODE/save_ok/CLEAR/CASE)·can_book 검증 S/E·LEAVE TO SCREEN0/PROGRAM·Enter 재실행방지 · 다크 |
 | dict-transport-tunnel (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH16-L04-S01 | TABLES work area 운반 터널·TABLES 토글·PBO/PAI 방향·이름 일치 운반 vs 미운반(ZCONCERT-CONCERT_ID) · 다크 |
 | input-help-priority-pov (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH16-L05-S01 | 입력도움 우선순위(3티어)+POV 후보 좁히기(공연ID→DYNP_VALUES_READ→F4IF_INT_TABLE_VALUE_REQUEST) · 다크 |
-| class-diagram (신규) | 3 | 공통(CSS-only)+_autoheight ✅ | CH21-L01·L07·L10 (완료) | UML 박스·인스턴스·상속 — class-object/inheritance/class-structure 통합 1엔진 |
+| class-diagram | 0 (시각 레이어) | 공통 CSS-only ✅ | CH21-L01·L07·L10이 **스타일시트로 재사용** | UML 박스·인스턴스·상속 시각 + **공용 실행 패널**(.cd-run/.cd-run__btns/.cd-state/.cd-log — 색 100% var(--token)) · data-eng는 각 레슨 엔진 |
+| class-object-builder (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH21-L01-S01 | COB_CFG 주도 · NEW/메서드 호출/CLEAR/리셋 → objects[]·boundIdx 상태머신 → 객체 카드(누가 가리키는지)+참조 initial↔bound+피드백 · **initial 참조 호출 실패**(L01 흔한 실수 #1)를 체험으로 · 토큰 전용 · 다크 |
+| redefinition-stepper (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH21-L07-S01 | RDS_CFG 주도 · 부모/자식 담기 × super-> 토글 × 실행 → 정적 타입 고정·동적 타입 변화·실행된 구현(부모 원본↔자식 REDEFINITION) → **동적 디스패치**와 super 누락 시 부모 검증 실종을 체험 · 토큰 전용 · 다크 |
+| booking-manager-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH21-L10-S01 | BML_CFG 주도(bookings에 취소행 포함) · 좌석 세그(0/1/2/3) × SET HANDLER 토글 → remaining=cap−SUM(취소 제외)·can_book·book 4분기(정상 / 좌석=잔여석→RAISE EVENT sold_out / 초과·0→RAISE EXCEPTION) · 저장(INSERT) 없음=DML 챕터 경계 · 토큰 전용 · 다크 |
 | relationship-map | 1 | 공통(CSS-only)+_autoheight ✅ | CH23-L03-S01 (완료) | A→B 관계 카드(CDS Association) · 빈 .js 제거 · static-svg-architecture 은퇴 |
 
 ## C. 재배치 보류 (원본 sample/ 보존 · 정적 홈은 후속 신규)

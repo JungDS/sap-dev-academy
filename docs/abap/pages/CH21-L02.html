@@ -48,18 +48,20 @@
 5
 6
 7
-8</pre><pre class="abap-editor__code"><code><span class="tok-kw">CLASS</span> zcl_booking_manager <span class="tok-kw">DEFINITION</span> <span class="tok-kw">PUBLIC</span> <span class="tok-kw">CREATE</span> <span class="tok-kw">PUBLIC</span>.
+8
+9</pre><pre class="abap-editor__code"><code><span class="tok-kw">CLASS</span> zcl_booking_manager <span class="tok-kw">DEFINITION</span> <span class="tok-kw">PUBLIC</span> <span class="tok-kw">CREATE</span> <span class="tok-kw">PUBLIC</span>.
   <span class="tok-kw">PUBLIC</span> <span class="tok-kw">SECTION</span>.
     <span class="tok-kw">METHODS</span> book      <span class="tok-kw">IMPORTING</span> iv_seats <span class="tok-kw">TYPE</span> i.
     <span class="tok-kw">METHODS</span> remaining <span class="tok-kw">RETURNING</span> <span class="tok-kw">VALUE</span>(rv_remaining) <span class="tok-kw">TYPE</span> i.
   <span class="tok-kw">PRIVATE</span> <span class="tok-kw">SECTION</span>.
-    <span class="tok-kw">DATA</span> mv_capacity <span class="tok-kw">TYPE</span> i.          <span class="tok-com">" 인스턴스 속성</span>
-    <span class="tok-kw">DATA</span> mv_booked   <span class="tok-kw">TYPE</span> i.
+    <span class="tok-kw">DATA</span> mv_concert <span class="tok-kw">TYPE</span> zconcert-concert_id.   <span class="tok-com">" 인스턴스 속성(객체마다 따로)</span>
+    <span class="tok-kw">DATA</span> mv_perf    <span class="tok-kw">TYPE</span> zbooking-perf_no.
+    <span class="tok-kw">DATA</span> mv_cap     <span class="tok-kw">TYPE</span> i.
 <span class="tok-kw">ENDCLASS</span>.</code></pre></div></div>
 <ul>
 <li><strong><button class="term" type="button" data-term="Attribute">속성</button></strong>: <code>DATA</code>는 <strong><button class="term" type="button" data-term="인스턴스">인스턴스</button></strong> 속성(<button class="term" type="button" data-term="객체">객체</button>마다 따로). <code>CLASS-DATA</code>는 <strong>정적</strong> 속성(클래스에 하나, 공용).</li>
 <li><strong>메서드</strong>: <code>METHODS</code>는 인스턴스 메서드, <code>CLASS-METHODS</code>는 정적 메서드.</li>
-<li><code>mv_</code>는 멤버 변수(member variable) 접두어 관례.</li>
+<li><code>mv_</code>는 멤버 변수(member variable) 접두어 관례. 정적 속성(<code>CLASS-DATA</code>)은 객체가 아니라 클래스에 하나뿐이라 <code>gv_</code>(클래스 공용)로 구분해 쓴다.</li>
 </ul>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2</pre><pre class="abap-editor__code"><code><span class="tok-kw">PRIVATE</span> <span class="tok-kw">SECTION</span>.
@@ -97,7 +99,7 @@
 </tr>
 </tbody></table>
 <blockquote>
-<p>🛡️ 입문 기본 원칙 — <strong>&quot;데이터는 보통 private, 행동은 필요한 만큼 public.&quot;</strong> 캡슐화는 데이터를 숨기는 장식이 아니라, <strong>잘못된 상태 변경을 막는 방어선</strong>이다.</p>
+<p>🛡️ 입문 기본 원칙 — <strong>&quot;데이터는 보통 private, 행동은 필요한 만큼 public.&quot;</strong> <button class="term" type="button" data-term="캡슐화">캡슐화</button>는 데이터를 숨기는 장식이 아니라, <strong>잘못된 상태 변경을 막는 방어선</strong>이다.</p>
 </blockquote>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">Visibility Gate Simulator (멤버·범위·호출자 → 접근 허용/차단)</span><a class="embed__open" href="../../../embeds/abap/CH21-L02-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH21-L02-S01.html" loading="lazy" title="Visibility Gate Simulator (멤버·범위·호출자 → 접근 허용/차단)"></iframe></figure>
 </section><section class="lblock"><h2>확인 — 일부러 잘못 접근해 보기 🔎</h2>
@@ -107,7 +109,7 @@
 4</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>(lo_mgr) = <span class="tok-kw">NEW</span> zcl_booking_manager( ).
 
 <span class="tok-kw">DATA</span>(lv_remaining) = lo_mgr-&gt;remaining( ).   <span class="tok-com">" PUBLIC 메서드 → OK</span>
-<span class="tok-com">" lo_mgr-&gt;mv_capacity = 100.                  " PRIVATE 속성 직접 접근 → 오류</span></code></pre></div></div>
+<span class="tok-com">" lo_mgr-&gt;mv_cap = 100.                       " PRIVATE 속성 직접 접근 → 오류</span></code></pre></div></div>
 <p>private 접근 오류는 <strong>런타임이 아니라 컴파일(syntax check) 단계</strong>에서 난다. <button class="term" type="button" data-term="Class">클래스</button>의 경계는 실행 중 뒤늦게 드러나는 약속이 아니라, <strong>컴파일 시점에 검증되는 계약</strong>이다. (<button class="term" type="button" data-term="인스턴스">인스턴스</button> vs 정적도 <button class="term" type="button" data-term="객체">객체</button> 두 개를 만들어 비교해 보면, <code>DATA</code>는 객체마다 다르고 <code>CLASS-DATA</code>는 공용임이 드러난다.)</p>
 </section><section class="lblock"><h2>흔한 실수와 점검 🚧</h2>
 <ul>

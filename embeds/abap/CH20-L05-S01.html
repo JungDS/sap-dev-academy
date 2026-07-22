@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<!-- CH20-L05-S01 · 엔진: window-partition-sim · GROUP BY(행 접힘) vs Window PARTITION BY(행 유지) + ROW_NUMBER/RANK/DENSE_RANK 시뮬 · config=window.WPS_CFG · 게이팅: CH20 Advanced SQL(Window/aggregate)만 · CDS/RAP/DML/OO 미노출. -->
+<html lang="ko" data-eng="window-partition-sim">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Window vs GROUP BY 시뮬레이터 · CH20-L05-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/window-partition-sim.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">Window vs GROUP BY 시뮬레이터 <small>(PARTITION BY / RANK)</small></p>
+  <p class="lead">같은 <code>zbooking</code> 예약 4건(status <code>N</code>)을 두고, 버튼으로 집계 방식을 바꿔 보세요. GROUP BY는 행을 <b>접고</b>, Window(<code>PARTITION BY</code>)는 행을 <b>남긴 채</b> 옆에 계산값을 붙입니다.</p>
+
+  <div class="wps">
+    <div class="wps-btns" id="wpsBtns"></div>
+    <div class="wps-shape" id="wpsShape"></div>
+    <div class="wps-sql" id="wpsSql"></div>
+    <div class="wps-tablewrap"><table class="wps-table"><thead id="wpsHead"></thead><tbody id="wpsBody"></tbody></table></div>
+    <div class="wps-fb" id="wpsFb"></div>
+  </div>
+
+  <div class="note"><b>핵심.</b> GROUP BY는 같은 그룹을 <b>한 행으로 접는</b> 집계(합계만 남음). Window는 상세 행을 <b>그대로 두고</b> partition 단위 계산을 <b>덧붙이는</b> 방식이라, 상세와 요약을 한 번에 볼 수 있어요.</div>
+</div>
+
+<script>
+window.WPS_CFG = {
+  table: 'zbooking',
+  // 예약 상세 4건 (status = 'N'). part = concert_id.
+  rows: [
+    { id: 'B001', part: 'C001', seats: 2 },
+    { id: 'B002', part: 'C001', seats: 3 },
+    { id: 'B003', part: 'C001', seats: 3 },
+    { id: 'B004', part: 'C002', seats: 4 }
+  ],
+  modes: [
+    {
+      key: 'group',
+      btn: 'GROUP BY 보기',
+      tone: 'brand',
+      sql: "SELECT concert_id,\n       SUM( seats ) AS booked_total\n  FROM zbooking\n  WHERE status = 'N'\n  GROUP BY concert_id\n  INTO TABLE @DATA(lt_sum).",
+      desc: "GROUP BY는 같은 <code>concert_id</code> 행을 <b>하나로 접습니다</b>. 상세 4행이 concert별 2행으로 줄고, 개별 booking_id·seats는 사라져요. 합계만 필요할 때 쓰죠."
+    },
+    {
+      key: 'partition',
+      btn: 'PARTITION BY 적용',
+      tone: 'good',
+      sql: "SELECT booking_id, concert_id, seats,\n       SUM( seats ) OVER( PARTITION BY concert_id )\n         AS booked_total\n  FROM zbooking\n  WHERE status = 'N'\n  INTO TABLE @DATA(lt_win).",
+      desc: "Window의 <code>PARTITION BY</code>는 행을 <b>접지 않습니다</b>. 상세 4행을 그대로 두고, 각 행 옆에 그 concert의 합계 <code>booked_total</code>을 나란히 붙여요. '상세도 보고 합계도 보고'가 됩니다."
+    },
+    {
+      key: 'rownum',
+      btn: 'ROW_NUMBER',
+      tone: 'brand',
+      sql: "SELECT booking_id, concert_id, seats,\n       ROW_NUMBER( ) OVER( PARTITION BY concert_id\n                           ORDER BY booking_id )\n         AS row_num\n  FROM zbooking\n  WHERE status = 'N'\n  INTO TABLE @DATA(lt_rn).",
+      desc: "<code>ROW_NUMBER</code>는 각 partition(concert) 안에서 <code>ORDER BY</code> 순서대로 1·2·3… 번호를 매깁니다. C001은 booking_id 순으로 1·2·3, C002는 혼자라 1이에요."
+    },
+    {
+      key: 'rank',
+      btn: 'RANK vs DENSE_RANK',
+      tone: 'amber',
+      sql: "SELECT booking_id, concert_id, seats,\n       RANK( )       OVER( PARTITION BY concert_id\n                           ORDER BY seats DESCENDING ) AS rank,\n       DENSE_RANK( ) OVER( PARTITION BY concert_id\n                           ORDER BY seats DESCENDING ) AS dense_rank\n  FROM zbooking\n  WHERE status = 'N'\n  INTO TABLE @DATA(lt_rank).",
+      desc: "둘 다 seats 내림차순 순위입니다. C001의 3·3은 공동 <b>1위</b>. 그다음 2는 — <b>RANK</b>는 앞의 동점 2건을 세어 <b>3위</b>로 건너뛰고(주황 = gap), <b>DENSE_RANK</b>는 빈칸 없이 <b>2위</b>로 잇습니다."
+    },
+    {
+      key: 'noPartition',
+      btn: 'PARTITION 제거',
+      tone: 'amber',
+      sql: "SELECT booking_id, concert_id, seats,\n       SUM( seats ) OVER( )  AS total_all\n  FROM zbooking\n  WHERE status = 'N'\n  INTO TABLE @DATA(lt_all).",
+      desc: "<code>PARTITION BY</code>를 빼면 partition이 하나뿐 — <b>전체 예약이 하나의 계산 묶음</b>이 되었습니다. 그래서 모든 행의 <code>total_all</code>이 전체 합계 <b>12</b>로 똑같아져요."
+    }
+  ]
+};
+</script>
+<script src="../_engine/window-partition-sim.js" defer></script>
+</body>
+</html>

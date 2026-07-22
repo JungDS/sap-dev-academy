@@ -33,7 +33,7 @@
     }
     ctorCount++;
     steps.push({ ic: '③', cls: 'inst', t: '<b>constructor</b> 실행 — 이번 객체를 위해(객체마다 실행)' });
-    steps.push({ ic: '④', cls: 'state', t: '<code>SELECT capacity</code> → <code>mv_cap=' + p.cap + '</code>, <code>mv_concert=\'' + p.concert + '\'</code> 대입' });
+    steps.push({ ic: '④', cls: 'state', t: '<code>SELECT capacity</code> → <code>mv_cap=' + p.cap + '</code>, <code>mv_concert=\'' + p.concert + '\'</code>, <code>mv_perf=\'' + p.perf + '\'</code> 대입' });
     steps.push({ ic: '⑤', t: '참조 변수 <code>' + name + '</code>에 객체 연결 — <b>바로 사용 가능</b>' });
     objects.push({ name: name, concert: p.concert, perf: p.perf, cap: p.cap });
     timeline(steps);
@@ -42,14 +42,14 @@
 
   function callStatic() {
     var steps = [];
-    steps.push({ ic: '①', t: '<code>zcl_booking_manager=>get_version( )</code> — 객체 없이 <b>정적</b> 호출(<code>=&gt;</code>)' });
+    steps.push({ ic: '①', t: '<code>zcl_booking_manager</code>를 <b>객체 없이</b> 처음 사용(아직 <code>NEW</code>를 안 했다)' });
     if (!classInit) {
       classInit = true; classCtorCount++;
       steps.push({ ic: '②', cls: 'stat', t: '<b>class_constructor</b> 실행 — 클래스 최초 사용이라 한 번' });
     } else {
       steps.push({ ic: '②', cls: 'skip', t: 'class_constructor — 이미 실행됨, 다시 안 함' });
     }
-    steps.push({ ic: '③', t: '정적 메서드 본문 실행 — <b>constructor는 실행되지 않음</b>(객체를 안 만들었으니까)' });
+    steps.push({ ic: '③', t: '클래스 공용 초기화만 끝남 — <b>constructor는 실행되지 않음</b>(객체를 안 만들었으니까)' });
     timeline(steps);
     render();
   }

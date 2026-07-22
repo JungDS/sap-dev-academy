@@ -1,9 +1,9 @@
 # 09. CURRICULUM LEDGER — 커리큘럼 개념 원장 (개요 SSOT)
 
-> 📅 최종수정: 2026-07-14 04:26 KST
+> 📅 최종수정: 2026-07-14 09:11 KST
 > 🎯 **2트랙 36챕터의 챕터 맵 + 교차 설계 합의(경계·관통예제·도구 아크)의 단일 출처.**
 > 🧭 **per-lesson `introduces`/`prereq`/`prevRel`/`foreshadow`/`advanceUse` = 각 레슨 `.md` front-matter가 라이브 SSOT**([04 R10](04_CONVENTIONS.md)) — 이 문서는 레슨별 데이터를 중복하지 않고 *그 위의 개요·경계·관통설계*만 담는다(§F). 게이팅([04 R15](04_CONVENTIONS.md)) 점검 = front-matter ↔ 본문 ↔ R15.
-> ✅ 현행: 본문은 **CH01～36 전 레슨 작성 완료**(CH04 흐름제어 삽입·전 챕터 리넘버 반영 끝). 전면 리빌드는 *선택* — 실행 절차는 [10_REBUILD_EXECUTION](10_REBUILD_EXECUTION.md).
+> ✅ 현행: **최종 39번호(신규 3장 삽입 리넘버 완료, 2026-07-14)** · 본문 **37챕터 작성 완료**(CH20 Advanced SQL 신설 · **CH28 Dynamic·CH29 Regex 예약 미집필**). 전면 리빌드는 *선택* — 실행 절차는 [10_REBUILD_EXECUTION](10_REBUILD_EXECUTION.md).
 
 ## 범례
 - `prevRel`: **ps**=pain-solution · **par**=parallel · **deep**=deepening · **next**=next-step.
@@ -12,7 +12,7 @@
 
 ---
 
-## A. 트랙·챕터 맵 (현행 36챕터)
+## A. 트랙·챕터 맵 (37챕터 작성 · 최종 39번호)
 
 > 핵심 = 그 챕터가 **L3 정식 도입**하는 대표 개념(요지). 레슨별 상세는 front-matter.
 > ℹ️ 챕터 front-matter `track` **실값 = `TRACK-01`/`TRACK-02`**([04 R10](04_CONVENTIONS.md)) — 아래 "Track-1/2" 헤더는 표시 라벨.
@@ -64,7 +64,7 @@
 | 38 | 운영 품질과 배포 관리 (이송 심화) | 5 | ATC·BAL 로그·SUBMIT VIA JOB·이송 |
 | 39 | RAP + Fiori 실무 Capstone | 7 | RAP+Fiori 통합 캡스톤 |
 
-> 🆕 **CH20 Advanced SQL · CH28 Dynamic ABAP · CH29 Regex = 신규 장** — 2026-07-14 리넘버로 슬롯 확보(codex `NEWCH20/28/29_OLDCH99`). **본문 미집필 = 폴더 미생성**(로드맵 번호 공백, 셸은 정상). 집필 시 예약 슬롯에 삽입(추가 리넘버 0).
+> 🆕 신규 장(codex `NEWCH20/28/29_OLDCH99`) — **CH20 Advanced SQL = 집필 완료(7레슨)**. **CH28 Dynamic ABAP · CH29 Regex = 미집필**(폴더 미생성·로드맵 번호 공백, 셸 정상 — 집필 시 예약 슬롯에 삽입, 추가 리넘버 0).
 
 > Track-1 = 입문 게이팅(R15)이 핵심. Track-2 = 챕터 내 순서만 게이팅(서로 독립 내용 많음 — 상세 정책은 아카이브 [`TRACK2_ENRICHMENT.md`](../.archive/2026-06-29-docs-cleanup/TRACK2_ENRICHMENT.md) §규칙).
 

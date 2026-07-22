@@ -1,4 +1,4 @@
-/* inject-slots — 표준 코드의 확장 자리에 내 코드를 끼우는 체험 (CH29 L01·L02).
+/* inject-slots — 표준 코드의 확장 자리에 내 코드를 끼우는 체험 (CH32 L01·L02).
    위젯 <script id="is-cfg">: { progName, lines:[{t:'std',x}|{t:'slot'}], slotLabel, my:[...], emptyMsg }.
    토글로 확장 ON/OFF → slot이 내 코드(초록) ↔ 비어 있음(주황). 표준 라인은 항상 그대로(변경 0). */
 (function () {

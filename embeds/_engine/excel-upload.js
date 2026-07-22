@@ -1,4 +1,4 @@
-/* excel-upload — 엑셀/파일 업로드 체험 (CH30-L04).
+/* excel-upload — 엑셀/파일 업로드 체험 (CH33-L04).
    탭 구분 원본(헤더+데이터+오류행) → 업로드 시 헤더 건너뛰고 SPLIT 파싱·검증 → 유효행은 내부 테이블, 오류행은 따로. */
 (function () {
   var $ = function (id) { return document.getElementById(id); };

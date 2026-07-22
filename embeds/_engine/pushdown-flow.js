@@ -1,4 +1,4 @@
-/* pushdown-flow — Data-to-Code vs Code-to-Data 데이터 이동량 체험 (CH33-L01).
+/* pushdown-flow — Data-to-Code vs Code-to-Data 데이터 이동량 체험 (CH36-L01).
    끌어오기: DB가 100만 행을 ABAP으로 전송 → ABAP이 LOOP 집계 (전송 폭발).
    내려보내기: DB가 집계 → 결과 18행만 전송 (가볍고 빠름). */
 (function () {

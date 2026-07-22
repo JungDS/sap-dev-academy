@@ -40,7 +40,7 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>🎫 상태를 색으로 — 세 단계가 이어지기</h2>
-<p>회차 현황을 ALV로 띄우되, <strong>매진은 빨강·잔여 적으면 노랑</strong>으로 강조한다. 완성 기준은 &quot;색이 예쁘다&quot;가 아니라 <strong>세 단계가 이어지는 것</strong>이다: 업무 계산(<code>remaining</code>) → 표시용 필드(<code>seats_left</code>) → deep component(<code>cellcolors</code>) → layout(<code>ctab_fname</code>) 연결.</p>
+<p>회차 현황을 ALV로 띄우되, <strong>매진은 빨강·잔여 적으면 노랑</strong>으로 강조한다. 완성 기준은 &quot;색이 예쁘다&quot;가 아니라 <strong>세 단계가 이어지는 것</strong>이다: 업무 계산(<code>remaining</code>) → 표시용 필드(<code>seats_left</code>) → deep component(<button class="term" type="button" data-term="Cell Color">cellcolors</button>) → layout(<code>ctab_fname</code>) 연결.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -64,31 +64,45 @@
 21
 22
 23
-24</pre><pre class="abap-editor__code"><code><span class="tok-kw">TYPES</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ty_row,
+24
+25
+26
+27
+28
+29
+30
+31</pre><pre class="abap-editor__code"><code><span class="tok-kw">TYPES</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ts_row,
          concert_id <span class="tok-kw">TYPE</span> zconcert-concert_id,
          perf_no    <span class="tok-kw">TYPE</span> zbooking-perf_no,
          capacity   <span class="tok-kw">TYPE</span> i,
          seats_left <span class="tok-kw">TYPE</span> i,
          cellcolors <span class="tok-kw">TYPE</span> lvc_t_scol,        <span class="tok-com">" ALV 표시용 deep(DB 저장 아님)</span>
-       <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ty_row.
+       <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ts_row.
+<span class="tok-kw">DATA</span> gt_row <span class="tok-kw">TYPE</span> <span class="tok-kw">STANDARD</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ts_row.
 
-<span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_row <span class="tok-kw">ASSIGNING</span> <span class="tok-kw">FIELD-SYMBOL</span>(&lt;r&gt;).
-  <span class="tok-kw">DATA</span>(lo_mgr) = <span class="tok-kw">NEW</span> zcl_booking_manager(
+<span class="tok-com">" ① 회차 목록을 표시용 테이블에 적재(정원은 공연 마스터에서)</span>
+<span class="tok-kw">SELECT</span> p~concert_id, p~perf_no, c~capacity
+  <span class="tok-kw">FROM</span> zperf <span class="tok-kw">AS</span> p <span class="tok-kw">INNER</span> <span class="tok-kw">JOIN</span> zconcert <span class="tok-kw">AS</span> c <span class="tok-kw">ON</span> c~concert_id = p~concert_id
+  <span class="tok-kw">INTO</span> <span class="tok-kw">CORRESPONDING</span> <span class="tok-kw">FIELDS</span> <span class="tok-kw">OF</span> <span class="tok-kw">TABLE</span> @gt_row.
+
+<span class="tok-com">" ② 회차마다 잔여석을 계산하고 상태에 따라 셀 색을 채운다</span>
+<span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> gt_row <span class="tok-kw">ASSIGNING</span> <span class="tok-kw">FIELD-SYMBOL</span>(&lt;r&gt;).
+  <span class="tok-kw">DATA</span>(go_mgr) = <span class="tok-kw">NEW</span> zcl_booking_manager(
     iv_concert = &lt;r&gt;-concert_id iv_perf = &lt;r&gt;-perf_no ).
-  &lt;r&gt;-seats_left = lo_mgr-&gt;remaining( ).             <span class="tok-com">" 업무 계산(이전 챕터 클래스)</span>
+  &lt;r&gt;-seats_left = go_mgr-&gt;remaining( ).             <span class="tok-com">" 업무 계산(이전 챕터 클래스)</span>
   <span class="tok-kw">CLEAR</span> &lt;r&gt;-cellcolors.
   <span class="tok-kw">IF</span> &lt;r&gt;-seats_left &lt;= <span class="tok-num">0</span>.
     <span class="tok-kw">APPEND</span> <span class="tok-kw">VALUE</span> lvc_s_scol( fname = <span class="tok-str">'SEATS_LEFT'</span>
-      color-col = col_negative color-int = abap_true ) <span class="tok-kw">TO</span> &lt;r&gt;-cellcolors.   <span class="tok-com">" 빨강</span>
+      color-col = col_negative color-int = <span class="tok-num">1</span> ) <span class="tok-kw">TO</span> &lt;r&gt;-cellcolors.   <span class="tok-com">" 빨강</span>
   <span class="tok-kw">ELSEIF</span> &lt;r&gt;-seats_left &lt;= <span class="tok-num">5</span>.
     <span class="tok-kw">APPEND</span> <span class="tok-kw">VALUE</span> lvc_s_scol( fname = <span class="tok-str">'SEATS_LEFT'</span>
-      color-col = col_total color-int = abap_true ) <span class="tok-kw">TO</span> &lt;r&gt;-cellcolors.      <span class="tok-com">" 노랑</span>
+      color-col = col_total color-int = <span class="tok-num">1</span> ) <span class="tok-kw">TO</span> &lt;r&gt;-cellcolors.      <span class="tok-com">" 노랑</span>
   <span class="tok-kw">ENDIF</span>.
 <span class="tok-kw">ENDLOOP</span>.
 
-<span class="tok-kw">DATA</span> ls_layout <span class="tok-kw">TYPE</span> lvc_s_layo.
-ls_layout-ctab_fname = <span class="tok-str">'CELLCOLORS'</span>.                 <span class="tok-com">" 셀색 컬럼 연결(이전 레슨)</span></code></pre></div></div>
-<p>표시할 때 layout과 field catalog를 함께 넘기고, <code>CELLCOLORS</code>는 화면에 보일 컬럼이 아니라 <strong>기술용</strong>으로 숨긴다.</p>
+<span class="tok-kw">DATA</span> gs_layout <span class="tok-kw">TYPE</span> lvc_s_layo.
+gs_layout-ctab_fname = <span class="tok-str">'CELLCOLORS'</span>.                 <span class="tok-com">" 셀색 컬럼 연결(이전 레슨)</span></code></pre></div></div>
+<p>Grid와 field catalog 준비는 <a href="CH17-L07.html">Grid ALV 기초</a>와 같다. 표시할 때 layout과 field catalog를 함께 넘기고, <code>CELLCOLORS</code>는 화면에 보일 컬럼이 아니라 <strong>기술용</strong>으로 숨긴다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -96,31 +110,38 @@ ls_layout-ctab_fname = <span class="tok-str">'CELLCOLORS'</span>.               
 5
 6
 7
-8</pre><pre class="abap-editor__code"><code><span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_fcat <span class="tok-kw">ASSIGNING</span> <span class="tok-kw">FIELD-SYMBOL</span>(&lt;fc&gt;).
+8
+9
+10
+11</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> go_grid <span class="tok-kw">TYPE</span> <span class="tok-kw">REF</span> <span class="tok-kw">TO</span> cl_gui_alv_grid.       <span class="tok-com">" Container에 붙인 Grid(CH17)</span>
+<span class="tok-kw">DATA</span> gt_fcat <span class="tok-kw">TYPE</span> lvc_t_fcat.                    <span class="tok-com">" ts_row 구조에서 생성(CH17)</span>
+
+<span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> gt_fcat <span class="tok-kw">ASSIGNING</span> <span class="tok-kw">FIELD-SYMBOL</span>(&lt;fc&gt;).
   <span class="tok-kw">IF</span> &lt;fc&gt;-fieldname = <span class="tok-str">'CELLCOLORS'</span>. &lt;fc&gt;-tech = abap_true. <span class="tok-kw">ENDIF</span>.   <span class="tok-com">" 화면에서 숨김</span>
 <span class="tok-kw">ENDLOOP</span>.
 
 go_grid-&gt;set_table_for_first_display(
-  <span class="tok-kw">EXPORTING</span>  is_layout       = ls_layout
-  <span class="tok-kw">CHANGING</span>   it_outtab       = lt_row
-             it_fieldcatalog = lt_fcat ).</code></pre></div></div>
+  <span class="tok-kw">EXPORTING</span>  is_layout       = gs_layout
+  <span class="tok-kw">CHANGING</span>   it_outtab       = gt_row
+             it_fieldcatalog = gt_fcat ).</code></pre></div></div>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">Concert ALV Color Lab (잔여석 → 색)</span><a class="embed__open" href="../../../embeds/abap/CH22-L08-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH22-L08-S01.html" loading="lazy" title="Concert ALV Color Lab (잔여석 → 색)"></iframe></figure>
 </section><section class="lblock"><h2>직접 해 볼 과제</h2>
 <ol>
 <li>회차별 잔여석을 <a href="CH21-L10.html">ZCL_BOOKING_MANAGER</a>의 <code>remaining( )</code>으로 계산해 <code>seats_left</code>에 채운다.</li>
 <li>잔여석 <code>0</code>·<code>3</code>·<code>12</code>인 테스트 회차를 두고, 매진(0)→빨강·임박(≤5)→노랑이 입혀지는지 확인.</li>
-<li>예매 1건을 더해 잔여석 6 → 5가 되면 그 셀이 노랑으로 바뀌는지(refresh) 본다.</li>
-<li>(도전) 더블클릭 시 그 회차 예매 목록 열기 — 본격 <button class="term" type="button" data-term="이벤트">이벤트</button>는 <strong>이후 ALV 이벤트 챕터</strong>.</li>
+<li>예매 1건을 더해 잔여석 6 → 5가 되면, 색을 다시 계산하고 <code>refresh_table_display( is_stable = ... )</code>로 <a href="CH22-L07.html">보던 위치를 지키며</a> 다시 그려 그 셀이 노랑으로 바뀌는지 본다.</li>
+<li>(도전) 더블클릭 시 그 회차 예매 목록 열기. 본격 <button class="term" type="button" data-term="이벤트">이벤트</button>는 <a href="CH30-L01.html">ALV 고급 Event 응용</a>의 몫이다.</li>
 </ol>
 </section><section class="lblock"><h2>흔한 실수와 점검 🚧</h2>
 <ul>
 <li><strong><code>fname</code> ≠ 필드명</strong> → 색 줄의 <code>fname</code>은 output table component 이름(<code>SEATS_LEFT</code>)과 정확히 같아야. 틀리면 그 셀 색이 안 먹는다.</li>
 <li><strong><code>ctab_fname</code> 미지정</strong> → 색 컬럼을 둬도 layout에 안 알리면 무시된다(<a href="CH22-L04.html">셀 색 연결</a>).</li>
-<li><strong>루프마다 매니저 생성</strong> → 학습용으론 명확하지만 대량 데이터엔 비효율(이후 성능 장에서 batch/<button class="term" type="button" data-term="Aggregate">집계</button>로).</li>
+<li><strong>루프마다 매니저 생성</strong> → 학습용으론 명확하지만 대량 데이터엔 비효율(<a href="CH35-L01.html">성능 분석과 튜닝</a>에서 batch/<button class="term" type="button" data-term="Aggregate">집계</button>로).</li>
 <li><strong>색 = 검증 착각</strong> → 색은 <em>표시 결과</em>다. 매진 여부의 진짜 검증은 <code>ZCL_BOOKING_MANAGER</code> 서버 로직에서.</li>
+<li><strong>색만 믿기</strong> → 색맹·시스템 테마·프린트 출력에서는 색이 사라질 수 있다. 잔여석 숫자와 상태 텍스트(매진/임박)를 색과 <strong>함께</strong> 둔다.</li>
 </ul>
 <hr>
-<p>상태를 색으로 보여 줬다. 이 챕터는 &quot;내부 테이블을 ALV로 잘 보여 주는 기술&quot;이었다 — 이제 <strong>데이터 모델 자체를 재사용 가능한 뷰</strong>로 정의하는 CDS로 →
+<p>상태를 색으로 보여 줬다. 이 챕터는 &quot;내부 테이블을 ALV로 잘 보여 주는 기술&quot;이었다. 이제 <strong>데이터 모델 자체를 재사용 가능한 뷰</strong>로 정의하는 CDS로 →
 <a href="CH23-L01.html">CDS View Entity 기본 구조</a>.</p>
 </section>
       </article>

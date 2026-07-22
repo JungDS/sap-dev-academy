@@ -1,4 +1,4 @@
-/* enqueue-2session — 두 세션 ENQUEUE/DEQUEUE 동시성 체험 (CH25-L02).
+/* enqueue-2session — 두 세션 ENQUEUE/DEQUEUE 동시성 체험 (CH26-L02).
    같은 예매(1001)에 대해 한쪽이 E 잠금을 잡으면 다른 쪽 ENQUEUE는 foreign_lock(거절).
    DEQUEUE 또는 COMMIT WORK(자동 해제)로 풀리면 상대가 잠글 수 있다. SM12풍 잠금 목록 표시. */
 (function () {

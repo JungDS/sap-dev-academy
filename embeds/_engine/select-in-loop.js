@@ -1,4 +1,4 @@
-/* select-in-loop — SELECT in LOOP 안티패턴 vs 사전 조회 체험 (CH32-L04).
+/* select-in-loop — SELECT in LOOP 안티패턴 vs 사전 조회 체험 (CH35-L04).
    N(예매 건수) 슬라이더 → ❌ LOOP 안 SELECT = 1+N회 왕복 / ✅ FAE·JOIN = 2회. DB 왕복·예상 시간 대비. */
 (function () {
   var $ = function (id) { return document.getElementById(id); };

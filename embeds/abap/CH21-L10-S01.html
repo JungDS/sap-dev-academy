@@ -1,18 +1,19 @@
 <!DOCTYPE html>
-<!-- CH21-L10-S01 — 엔진: class-diagram (CSS-only) + _autoheight. 콘텐츠=레슨 전용(ZCL_BOOKING_MANAGER 구조, #C20).
-     게이팅: OO(메서드/속성·공개범위·RAISING 예외)·classic. -->
-<html lang="ko" data-eng="class-diagram">
+<!-- CH21-L10-S01 · 엔진: booking-manager-lab (구조 시각은 class-diagram.css 재사용) · _autoheight.
+     콘텐츠=레슨 전용(ZCL_BOOKING_MANAGER 구조 + remaining/can_book/book 분기 체험, CH21 L10 캡스톤). config=window.BML_CFG.
+     게이팅: OO(속성·메서드·공개범위·예외 RAISING·이벤트)·modern SQL 표기. 저장(INSERT/UPDATE)은 이후 DML 챕터라 랩에서도 저장 없음. -->
+<html lang="ko" data-eng="booking-manager-lab">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>ZCL_BOOKING_MANAGER 구조 · CH21-L10-S01</title>
+<title>ZCL_BOOKING_MANAGER 랩 · CH21-L10-S01</title>
 <link rel="stylesheet" href="../_engine/_base.css" />
 <link rel="stylesheet" href="../_engine/class-diagram.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">ZCL_BOOKING_MANAGER — 속성·메서드 구조 <small>(캡슐화)</small></p>
-  <p class="lead">예약 로직을 클래스로 묶었습니다. <span style="color:#0b7250;font-weight:800">+</span> 공개(PUBLIC)는 외부에서 호출, <span style="color:#b02a55;font-weight:800">−</span> 비공개(PRIVATE)는 클래스 안에서만. 데이터(정원·회차)는 숨기고 <b>메서드로만</b> 다룹니다.</p>
+  <p class="hd">ZCL_BOOKING_MANAGER — 구조와 동작 <small>(캡슐화 · 예외 · 이벤트)</small></p>
+  <p class="lead">예약 로직을 클래스로 묶었습니다. <span class="vis vis-pub">+</span> 공개(PUBLIC)는 외부에서 호출, <span class="vis vis-priv">−</span> 비공개(PRIVATE)는 클래스 안에서만. 아래에서 좌석 수를 바꿔 가며 <code>book( )</code>을 직접 실행해 보세요.</p>
 
   <div class="uml-class" style="max-width:380px">
     <div class="uml-class__name">ZCL_BOOKING_MANAGER<small>예약 관리 클래스</small></div>
@@ -25,7 +26,7 @@
     </div>
     <div class="uml-sec">
       <div class="uml-sec__lbl">PUBLIC SECTION · 이벤트</div>
-      <div class="uml-member"><span class="vis" style="color:#7c3aed;font-weight:800">↗</span><span class="mname">EVENTS sold_out</span><span class="msig">매진 시 발생 → handler가 반응</span></div>
+      <div class="uml-member"><span class="vis vis-evt">↗</span><span class="mname">EVENTS sold_out</span><span class="msig">매진 시 발생 → handler가 반응</span></div>
     </div>
     <div class="uml-sec">
       <div class="uml-sec__lbl">PRIVATE SECTION · 속성(상태)</div>
@@ -35,8 +36,30 @@
     </div>
   </div>
 
-  <div class="note"><b>캡슐화</b> — 정원·회차 같은 <b>상태는 PRIVATE</b>로 숨기고, 외부는 <code>remaining( )</code>·<code>book( )</code> 같은 <b>PUBLIC 메서드로만</b> 다룹니다. 정원 초과는 <code>RAISING zcx_fully_booked</code> 예외로 알립니다(호출부가 <code>TRY…CATCH</code>로 잡음).</div>
+  <div class="cd-run">
+    <div class="uml-sec__lbl">좌석 수 (iv_seats)</div>
+    <div class="cd-run__btns" id="bmlSeats"></div>
+    <div class="uml-sec__lbl">동작</div>
+    <div class="cd-run__btns" id="bmlBtns"></div>
+    <div class="cd-state" id="bmlState"></div>
+    <div class="cd-log" id="bmlLog"></div>
+  </div>
+
+  <div class="note"><b>캡슐화.</b> 정원·회차 같은 <b>상태는 PRIVATE</b>로 숨기고, 외부는 <code>remaining( )</code>·<code>book( )</code> 같은 <b>PUBLIC 메서드로만</b> 다룹니다. 실패는 <code>RAISING zcx_fully_booked</code> 예외로, 매진이라는 사건은 <code>EVENTS sold_out</code>으로 알립니다. 실제 저장은 이후 DML 챕터의 몫입니다.</div>
 </div>
+
+<script>
+window.BML_CFG = {
+  concert: 'C001', perf: '01', cap: 100,
+  bookings: [
+    { id: 'B001', seats: 60, status: 'N' },
+    { id: 'B002', seats: 38, status: 'N' },
+    { id: 'B003', seats: 5, status: 'C' }
+  ],
+  seatChoices: [0, 1, 2, 3]
+};
+</script>
+<script src="../_engine/booking-manager-lab.js" defer></script>
 <script src="../_engine/_autoheight.js" defer></script>
 </body>
 </html>

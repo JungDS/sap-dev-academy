@@ -1,4 +1,4 @@
-/* dml-playground — DML 4종을 ZBOOKING 미니 테이블에 실행해 보는 체험 (CH24-L01).
+/* dml-playground — DML 4종을 ZBOOKING 미니 테이블에 실행해 보는 체험 (CH25-L01).
    INSERT(단건 중복키=sy-subrc 4·삽입 안 됨)·UPDATE(WHERE 생략=전체)·MODIFY(upsert)·DELETE(WHERE 생략=전체삭제).
    실행 시 생성 ABAP 문 + 결과(sy-subrc) + 행 변화 애니메이션을 보여 준다.
    감사필드(created_by=sy-uname·created_on=sy-datum)는 INSERT/MODIFY 신규행에 자동 stamp. */

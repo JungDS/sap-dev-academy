@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<!-- CH20-L02-S01 · 엔진 cte-step-viewer · CTE를 4단계로 진행(원본→+booked 합계→LEFT OUTER JOIN→잔여석)하며 중간 표 렌더, 취소포함/예약없음 토글 시연 · config=window CTE_CFG(script id=cte-step-viewer-cfg) · 게이팅: CH20 Advanced SQL(CTE/JOIN/COALESCE)만, CDS/RAP/DML/OO 노출 금지. -->
+<html lang="ko" data-eng="cte-step-viewer">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CTE 단계 뷰어 · CH20-L02-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/cte-step-viewer.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">CTE 단계 뷰어 <small>(WITH … +booked → 잔여석)</small></p>
+  <p class="lead">공연별 <b>잔여석</b>을 한 번에 구하는 SQL은 복잡해 보여요. <code>WITH</code>로 <b>중간 표(+booked)</b>를 먼저 만들고, 그걸 <code>zconcert</code>에 이어 붙이는 <b>4단계</b>로 쪼개 보세요. 아래 토글로 "취소 예약"이 합계에 섞이면 결과가 어떻게 틀어지는지도 직접 확인할 수 있습니다.</p>
+
+  <div class="cte-badges" id="cteBadges"></div>
+  <div class="cte-toggles" id="cteToggles"></div>
+  <div class="cte-steps" id="cteSteps"></div>
+  <div class="cte-nav" id="cteNav"></div>
+  <div id="cteBody"></div>
+
+  <div class="note"><b>CTE는 "이름 붙인 중간 표"입니다.</b> <code>WITH +booked AS ( … )</code>로 합계를 먼저 계산해 두고, 본 <code>SELECT</code>에서 마치 진짜 테이블처럼 <code>LEFT OUTER JOIN</code> 합니다. 업무 조건(<code>WHERE status &lt;&gt; 'C'</code>)은 <b>합계를 내는 CTE 안</b>에서 걸러야 하고, 빈 값은 <code>coalesce( …, 0 )</code>로 메꿉니다.</div>
+</div>
+
+<script type="application/json" id="cte-step-viewer-cfg">
+{
+  "zbooking": [
+    { "booking_id": "B001", "concert_id": "C001", "seats": 2, "status": "N" },
+    { "booking_id": "B002", "concert_id": "C001", "seats": 3, "status": "N" },
+    { "booking_id": "B003", "concert_id": "C001", "seats": 1, "status": "C" },
+    { "booking_id": "B004", "concert_id": "C002", "seats": 4, "status": "N" }
+  ],
+  "zconcert": [
+    { "concert_id": "C001", "title": "정훈영 밴드", "capacity": 100 },
+    { "concert_id": "C002", "title": "ABAP Trio", "capacity": 80 },
+    { "concert_id": "C003", "title": "UI5 Night", "capacity": 50 }
+  ]
+}
+</script>
+<script src="../_engine/cte-step-viewer.js" defer></script>
+</body>
+</html>

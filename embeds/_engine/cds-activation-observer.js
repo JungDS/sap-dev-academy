@@ -1,4 +1,4 @@
-// ===== cds-activation-observer 엔진 JS — CDS View Entity 활성화 관찰기 (CH22-L01) =====
+// ===== cds-activation-observer 엔진 JS — CDS View Entity 활성화 관찰기 (CH23-L01) =====
 // 5단계: ①원본 테이블 ②DDL 작성 ③활성화 ④Data Preview ⑤ABAP SQL 소비.
 // 필드 오타 토글 → ③활성화 실패 → ④⑤는 미리볼 수 없음(CDS는 오류 있으면 활성화 안 됨).
 // 핵심 메시지: "바꾼 것은 테이블 데이터가 아니라 모델 정의". 데이터=window.CAO_CFG.

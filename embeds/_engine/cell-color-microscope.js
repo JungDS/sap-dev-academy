@@ -1,10 +1,10 @@
 /* cell-color-microscope 엔진 — 셀 단위 색은 행에 LVC_T_SCOL(cellcolors)을 품는 deep structure로 만든다.
-   핵심은 2단계다: ① 색 계산으로 cellcolors 내부 테이블을 채워도 ② ls_layout-ctab_fname으로 연결해야 화면이 칠해진다.
+   핵심은 2단계다: ① 색 계산으로 cellcolors 내부 테이블을 채워도 ② gs_layout-ctab_fname으로 연결해야 화면이 칠해진다.
    fname을 틀리면 색 정보는 있어도 적용되지 않는다.
    골격 계약: .ccm-act(버튼) · #ccmTable · #ccmScol · #ccmStatus.
    config: window.CCM_CFG = { rows, colorCol, badName }. 높이: _autoheight.js. */
 (function () {
-  var CFG = window.CCM_CFG || { rows: [], colorCol: 'SEATSOCC', badName: 'SEATS_OCC' };
+  var CFG = window.CCM_CFG || { rows: [], colorCol: 'BOOKED', badName: 'SEATS_OCC' };
   var st = { computed: false, connected: false, typo: false };
 
   var actEl = document.querySelector('.ccm-act');
@@ -13,7 +13,7 @@
   var statusEl = document.getElementById('ccmStatus');
 
   function h(s) { return String(s).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); }
-  function isFull(r) { return r.seatsocc >= r.capacity; }
+  function isFull(r) { return r.booked >= r.capacity; }
   function fnameUsed() { return st.typo ? CFG.badName : CFG.colorCol; }
 
   function renderActs() {
@@ -27,13 +27,13 @@
   function painted(r) { return st.computed && st.connected && !st.typo && isFull(r); }
 
   function renderTable() {
-    var head = '<tr><th>CONCERT_ID</th><th>PERF_NO</th><th>SEATSOCC</th><th>CAPACITY</th></tr>';
+    var head = '<tr><th>CONCERT_ID</th><th>PERF_NO</th><th>BOOKED</th><th>CAPACITY</th></tr>';
     var body = CFG.rows.map(function (r) {
       var full = isFull(r);
       // 색 계산은 됐지만 아직 연결 전이면 armed(테두리만), 연결되면 painted(칠)
       var seatCls = painted(r) ? 'painted' : ((st.computed && full && st.connected === false) ? 'armed' : '');
       return '<tr class="' + (full ? 'full' : '') + '"><td>' + h(r.concert) + '</td><td>' + h(r.perf) + '</td>' +
-        '<td class="' + seatCls + '">' + r.seatsocc + '</td><td>' + r.capacity + '</td></tr>';
+        '<td class="' + seatCls + '">' + r.booked + '</td><td>' + r.capacity + '</td></tr>';
     }).join('');
     tblEl.innerHTML = '<table class="ccm-tbl"><thead>' + head + '</thead><tbody>' + body + '</tbody></table>';
   }
@@ -62,7 +62,7 @@
     }
     if (!st.connected) {
       statusEl.className = 'warn';
-      statusEl.innerHTML = '⚠️ <b>아직 화면은 그대로</b> — <code>cellcolors</code>에 색 줄은 생겼지만, <code>ls_layout-ctab_fname = \'CELLCOLORS\'</code>로 <b>연결해야</b> ALV가 색을 읽습니다. <b>② ctab_fname 연결</b>을 누르세요.';
+      statusEl.innerHTML = '⚠️ <b>아직 화면은 그대로</b> — <code>cellcolors</code>에 색 줄은 생겼지만, <code>gs_layout-ctab_fname = \'CELLCOLORS\'</code>로 <b>연결해야</b> ALV가 색을 읽습니다. <b>② ctab_fname 연결</b>을 누르세요.';
       return;
     }
     statusEl.className = 'ok';

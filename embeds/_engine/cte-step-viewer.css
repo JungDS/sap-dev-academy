@@ -1,0 +1,73 @@
+/* ===== cte-step-viewer 엔진 CSS — CTE(WITH …)를 4단계로 진행하며 중간 표를 렌더, 취소 포함/예약없음 토글로 결과 변화를 시연 (config 주도) =====
+   골격 계약(HTML 제공): #cteBadges · #cteToggles · #cteSteps · #cteNav · #cteBody.
+   config = <script id="cte-step-viewer-cfg"> { zbooking:[], zconcert:[] }.
+   색은 오직 var(--token) + color-mix(토큰 틴트) — 하드코딩 hex 0 → 다크모드 자동 적응. 높이: 자체 post(). */
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:transparent;line-height:1.5;}
+.wrap{max-width:760px;margin:0 auto;padding:14px 16px 18px;}
+.hd{margin:0 0 4px;font-weight:800;font-size:1.04rem;color:var(--ink);}
+.hd small{font-weight:600;color:var(--ink-soft);font-size:.8rem;}
+.lead{margin:0 0 12px;color:var(--ink-soft);font-size:.9rem;}
+.lead code,.cte-fb code,.note code,.cte-warn code{font-family:var(--mono);background:color-mix(in srgb,var(--brand) 12%,var(--surface));color:var(--brand);padding:1px 5px;border-radius:5px;}
+
+/* 상태 배지 */
+.cte-badges{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:11px;}
+.cte-badge{font-size:.72rem;font-weight:700;border:1px solid var(--line);border-radius:999px;padding:3px 11px;color:var(--ink-soft);background:var(--surface);}
+.cte-badge b{color:var(--ink);font-weight:800;margin-left:3px;}
+.cte-badge.good{border-color:var(--good);color:var(--good);background:color-mix(in srgb,var(--good) 12%,var(--surface));}
+.cte-badge.good b{color:var(--good);}
+.cte-badge.bad{border-color:var(--bad);color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,var(--surface));}
+.cte-badge.bad b{color:var(--bad);}
+
+/* 토글 스위치 */
+.cte-toggles{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:13px;}
+.cte-toggles button{border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--ink-soft);font:inherit;font-size:.78rem;font-weight:700;padding:7px 12px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;}
+.cte-toggles button .dot{width:26px;height:15px;border-radius:999px;background:var(--line);position:relative;transition:background .15s;flex:none;}
+.cte-toggles button .dot::after{content:"";position:absolute;top:1px;left:1px;width:11px;height:11px;border-radius:50%;background:var(--surface);border:1px solid var(--line);transition:left .15s;}
+.cte-toggles button[aria-pressed="true"]{color:var(--ink);border-color:var(--brand);}
+.cte-toggles button[aria-pressed="true"] .dot{background:var(--brand);}
+.cte-toggles button[aria-pressed="true"] .dot::after{left:13px;border-color:var(--brand);}
+.cte-toggles button.warnable[aria-pressed="true"]{color:var(--bad);border-color:var(--bad);}
+.cte-toggles button.warnable[aria-pressed="true"] .dot{background:var(--bad);}
+.cte-toggles button.warnable[aria-pressed="true"] .dot::after{border-color:var(--bad);}
+
+/* 단계 스텝퍼 */
+.cte-steps{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:11px;}
+.cte-steps .st{border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink-soft);font:inherit;font-size:.76rem;font-weight:700;padding:6px 11px;cursor:pointer;}
+.cte-steps .st[aria-pressed="true"]{border-color:var(--brand);background:color-mix(in srgb,var(--brand) 12%,var(--surface));color:var(--ink);box-shadow:inset 0 0 0 1px var(--brand);}
+.cte-steps .arrow{color:var(--soon);font-size:.8rem;}
+
+/* 이전/다음 */
+.cte-nav{display:flex;gap:8px;margin-bottom:12px;}
+.cte-nav button{border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);font:inherit;font-size:.78rem;font-weight:700;padding:7px 14px;cursor:pointer;}
+.cte-nav button:disabled{opacity:.4;cursor:default;}
+
+/* 경고 배너 */
+.cte-warn{border:1px solid var(--amber);background:color-mix(in srgb,var(--amber) 13%,var(--surface));color:var(--amber);border-radius:9px;padding:9px 12px;font-size:.83rem;font-weight:600;margin-bottom:11px;}
+.cte-warn b{color:var(--bad);}
+
+/* SQL 코드 블록 */
+.cte-sql{font-family:var(--mono);font-size:.78rem;line-height:1.55;background:color-mix(in srgb,var(--ink) 5%,var(--surface));border:1px solid var(--line);border-radius:9px;padding:11px 13px;margin:0 0 11px;overflow-x:auto;color:var(--ink);white-space:pre;}
+.cte-sql code{font-family:inherit;}
+.cte-sql .sl-hi{background:color-mix(in srgb,var(--good) 22%,transparent);border-radius:4px;font-weight:700;}
+.cte-sql .sl-strike{text-decoration:line-through;color:var(--soon);opacity:.75;}
+.cte-cap{font-size:.72rem;font-weight:800;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em;margin:0 0 6px;}
+
+/* 중간 결과 표 */
+.cte-tbl{border-collapse:collapse;width:100%;font-size:.8rem;margin:0 0 11px;}
+.cte-tbl th,.cte-tbl td{border:1px solid var(--line);padding:6px 10px;text-align:center;}
+.cte-tbl th{background:var(--bg);color:var(--ink-soft);font-weight:800;font-size:.71rem;text-transform:uppercase;letter-spacing:.03em;}
+.cte-tbl td{font-family:var(--mono);color:var(--ink);}
+.cte-tbl td.txt{font-family:var(--font);text-align:left;}
+.cte-tbl tr.cancel td{background:color-mix(in srgb,var(--bad) 10%,var(--surface));color:var(--bad);}
+.cte-tbl tr.warn td{background:color-mix(in srgb,var(--amber) 13%,var(--surface));}
+.cte-tbl tr.empty td{background:color-mix(in srgb,var(--brand) 10%,var(--surface));}
+.cte-tbl td.num-good{color:var(--good);font-weight:800;}
+.cte-tbl td.nullv{color:var(--soon);font-style:italic;}
+
+/* 피드백 */
+.cte-fb{border-left:3px solid var(--brand);background:color-mix(in srgb,var(--brand) 7%,var(--surface));border-radius:0 9px 9px 0;padding:9px 13px;font-size:.84rem;color:var(--ink);}
+.cte-fb.good{border-left-color:var(--good);background:color-mix(in srgb,var(--good) 9%,var(--surface));}
+.cte-fb b{font-weight:800;}
+
+.note{margin-top:12px;border-left:3px solid var(--brand);background:color-mix(in srgb,var(--brand) 7%,var(--surface));border-radius:0 9px 9px 0;padding:9px 13px;font-size:.83rem;color:var(--ink);}

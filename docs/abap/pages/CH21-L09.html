@@ -41,7 +41,7 @@
       <article class="prose">
 <section class="lblock"><h2>왜 — 누가 들을지 몰라도 알린다 📣</h2>
 <p>예약 관리자가 정원 초과를 <em><button class="term" type="button" data-term="예외">예외</button>로 던지는 것</em>은 <strong>실패 처리</strong>다. 반면 &quot;방금 매진됐다&quot;는 실패가 아니라 <strong>사건</strong>이다. 누군가는 이 사건을 듣고 ALV 행을 빨갛게 칠하거나, 로그를 남기거나, 알림을 띄울 수 있다.</p>
-<p><button class="term" type="button" data-term="Method">메서드</button> 호출은 호출자가 대상을 알고 직접 부른다. <strong><button class="term" type="button" data-term="이벤트">이벤트</button>는 반대다</strong> — 발생시키는 <button class="term" type="button" data-term="객체">객체</button>는 <em>누가 들을지 모른다</em>. 관심 있는 객체가 미리 handler를 등록해 두고, 사건이 나면 반응한다. (ALV의 더블클릭·버튼 같은 상호작용이 모두 이 구조 — 이후 ALV 챕터에서 그대로 쓴다.)</p>
+<p><button class="term" type="button" data-term="Method">메서드</button> 호출은 호출자가 대상을 알고 직접 부른다. <strong><button class="term" type="button" data-term="이벤트">이벤트</button>는 반대다.</strong> 발생시키는 <button class="term" type="button" data-term="객체">객체</button>는 <em>누가 들을지 모른다</em>. 관심 있는 객체가 미리 handler를 등록해 두고, 사건이 나면 반응한다. (ALV의 더블클릭·버튼 같은 상호작용이 모두 이 구조다. 이후 ALV 챕터에서 그대로 쓴다.)</p>
 </section><section class="lblock"><h2>선언 · 발생 — EVENTS / RAISE EVENT 🔔</h2>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
@@ -71,7 +71,7 @@
   <span class="tok-kw">ENDIF</span>.
 <span class="tok-kw">ENDMETHOD</span>.</code></pre></div></div>
 </section><section class="lblock"><h2>반응 등록 — Handler / SET HANDLER 🔌</h2>
-<p>반응하는 쪽은 <code>FOR EVENT</code>로 handler <button class="term" type="button" data-term="Method">메서드</button>를 선언한다(전달값 + <code>sender</code>를 받음).</p>
+<p>반응하는 쪽은 <code>FOR EVENT</code>로 handler <button class="term" type="button" data-term="Method">메서드</button>를 선언한다. 이때 <button class="term" type="button" data-term="이벤트">이벤트</button>가 넘긴 값과 함께 <code>sender</code>(이벤트를 일으킨 <button class="term" type="button" data-term="객체">객체</button> 자신)를 받는다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -95,7 +95,7 @@
     <span class="tok-kw">MESSAGE</span> |{ iv_concert }/{ iv_perf } 매진| <span class="tok-kw">TYPE</span> <span class="tok-str">'I'</span>.
   <span class="tok-kw">ENDMETHOD</span>.
 <span class="tok-kw">ENDCLASS</span>.</code></pre></div></div>
-<p>마지막으로 <code>SET HANDLER</code>로 <strong>어떤 발생 <button class="term" type="button" data-term="객체">객체</button>의 <button class="term" type="button" data-term="이벤트">이벤트</button>를 들을지</strong> 연결한다.</p>
+<p>마지막으로 <code>SET HANDLER</code>로 <strong>어떤 발생 객체의 이벤트를 들을지</strong> 연결한다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -107,7 +107,7 @@
 <p>흐름은 <strong>네 단계</strong>다: ① <code>EVENTS</code> 선언 → ② <code>FOR EVENT</code> handler 선언 → ③ <code>SET HANDLER</code>로 발생 객체에 등록 → ④ <code>RAISE EVENT</code>가 실행되면 등록된 handler가 <strong>동기적으로</strong>(다음 문장 전에) 호출된다.</p>
 </section><section class="lblock"><h2>흔한 실수와 점검 🚧</h2>
 <ul>
-<li><strong><code>SET HANDLER</code> 누락</strong> → <button class="term" type="button" data-term="이벤트">이벤트</button>가 나도 아무도 안 듣는다. 선언만으로 연결되지 않는다 — <strong>등록</strong>해야 한다.</li>
+<li><strong><code>SET HANDLER</code> 누락</strong> → <button class="term" type="button" data-term="이벤트">이벤트</button>가 나도 아무도 안 듣는다. 선언만으로 연결되지 않는다. <strong>등록</strong>해야 한다.</li>
 <li><strong>이벤트를 <button class="term" type="button" data-term="예외">예외</button>처럼</strong> → 실패를 중단·책임 전가하면 예외, 단지 <em>알리는</em> 것이면 이벤트. 둘은 용도가 다르다.</li>
 <li><strong>handler 순서 의존</strong> → 여러 handler가 등록될 수 있고 <strong>호출 순서는 정해지지 않는다</strong>. 순서가 꼭 필요하면 한 handler 안에서 명시적으로 구성한다.</li>
 <li><strong>handler <button class="term" type="button" data-term="객체">객체</button> 수명</strong> → handler 객체도 참조로 등록된다. 불필요한 등록을 오래 유지하지 않는다.</li>

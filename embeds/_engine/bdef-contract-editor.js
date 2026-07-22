@@ -1,4 +1,4 @@
-// ===== bdef-contract-editor 엔진 JS — RAP BDEF 계약 편집기 (CH23-L04) =====
+// ===== bdef-contract-editor 엔진 JS — RAP BDEF 계약 편집기 (CH24-L04) =====
 // operation(create/update/delete) 체크→소비자 행동 활성/비활성. persistent table 일치·lock master·key readonly 검사.
 // table 불일치=bad · lock off=warn · key 수정가능=warn · else ok(BDEF는 동작 선언이지 ABAP 코드 아님). 데이터 내장.
 (function(){

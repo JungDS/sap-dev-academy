@@ -1,0 +1,61 @@
+/* ===== window-partition-sim 엔진 CSS — GROUP BY(행 접힘) vs Window PARTITION BY(행 유지) 비교 + ROW_NUMBER/RANK/DENSE_RANK =====
+   골격 계약(HTML 제공): #wpsBtns · #wpsShape · #wpsSql · #wpsHead · #wpsBody · #wpsFb.
+   config=window.WPS_CFG. 색은 오직 var(--token) + color-mix(토큰 기반 옅은 틴트 → 다크 자동 적응).
+   on-fill 텍스트만 #fff(참조 엔진 관례, --fill-* 토큰이 다크에서 톤다운). 높이: 엔진 자체 post(). */
+* { box-sizing: border-box; } html, body { margin: 0; }
+body { font-family: var(--font); color: var(--ink); background: transparent; line-height: 1.5; }
+.wrap { max-width: 780px; margin: 0 auto; padding: 14px 16px 18px; }
+.hd { margin: 0 0 4px; font-weight: 800; font-size: 1.04rem; color: var(--ink); }
+.hd small { font-weight: 600; color: var(--ink-soft); font-size: .8rem; }
+.lead { margin: 0 0 13px; color: var(--ink-soft); font-size: .9rem; }
+.lead code { font-family: var(--mono); background: color-mix(in srgb, var(--brand) 12%, var(--surface)); color: var(--brand); padding: 1px 5px; border-radius: 5px; }
+
+/* 모드 버튼 */
+.wps-btns { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 12px; }
+.wps-btns button { border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); font: inherit; font-size: .78rem; font-weight: 700; padding: 8px 12px; cursor: pointer; }
+.wps-btns button:hover { border-color: var(--brand); }
+.wps-btns button[aria-pressed="true"] { background: var(--brand); color: #fff; border-color: var(--brand); }
+
+/* 행 접힘 vs 유지 미니 도식 */
+.wps-shape { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px; margin-bottom: 12px; }
+.wps-col { flex: 1 1 180px; min-width: 140px; }
+.wps-cl { display: block; font-size: .68rem; font-weight: 800; color: var(--ink-soft); text-transform: uppercase; letter-spacing: .03em; margin-bottom: 6px; }
+.wps-cl.ok { color: var(--good); }
+.wps-cl.warn { color: var(--amber); }
+.wps-pills { display: flex; flex-direction: column; gap: 5px; }
+.wps-pill { font-family: var(--mono); font-size: .74rem; font-weight: 700; color: var(--ink); border: 1px solid var(--line); border-radius: 7px; padding: 4px 9px; }
+.wps-pill.g0 { background: color-mix(in srgb, var(--brand) 10%, var(--surface)); }
+.wps-pill.g1 { background: color-mix(in srgb, var(--accent) 13%, var(--surface)); }
+.wps-pill.whole { background: color-mix(in srgb, var(--amber) 13%, var(--surface)); }
+.wps-arrow { color: var(--ink-soft); font-size: 1.15rem; font-weight: 800; flex: 0 0 auto; }
+
+/* SQL 박스 */
+.wps-sql { background: color-mix(in srgb, var(--brand) 5%, var(--surface)); border: 1px solid var(--line); border-radius: 9px; padding: 10px 12px; margin-bottom: 12px; }
+.wps-sqllbl { display: block; font-size: .62rem; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-soft); margin-bottom: 5px; }
+.wps-sql pre { margin: 0; font-family: var(--mono); font-size: .76rem; line-height: 1.5; color: var(--ink); white-space: pre-wrap; overflow-x: auto; }
+
+/* 결과 표 */
+.wps-tablewrap { overflow-x: auto; }
+.wps-table { border-collapse: collapse; width: 100%; font-size: .82rem; }
+.wps-table th, .wps-table td { border: 1px solid var(--line); padding: 6px 10px; text-align: center; font-family: var(--mono); }
+.wps-table th { background: color-mix(in srgb, var(--brand) 8%, var(--surface)); color: var(--ink); font-weight: 800; font-size: .74rem; }
+.wps-table tr.g0 td { background: color-mix(in srgb, var(--brand) 8%, var(--surface)); }
+.wps-table tr.g1 td { background: color-mix(in srgb, var(--accent) 11%, var(--surface)); }
+.wps-table tr.whole td { background: color-mix(in srgb, var(--amber) 11%, var(--surface)); }
+.wps-table tr td.gap { background: color-mix(in srgb, var(--amber) 24%, var(--surface)); color: var(--amber); font-weight: 800; }
+.wps-badge { display: inline-block; font-family: var(--mono); font-weight: 800; font-size: .74rem; color: #fff; border-radius: 6px; padding: 1px 8px; }
+.wps-badge.brand { background: var(--fill-brand); }
+.wps-badge.good { background: var(--fill-good); }
+.wps-badge.amber { background: var(--fill-amber); }
+
+/* 피드백 문구 */
+.wps-fb { margin-top: 12px; border-radius: 9px; padding: 10px 13px; font-size: .84rem; line-height: 1.55; color: var(--ink); border-left: 3px solid var(--brand); background: color-mix(in srgb, var(--brand) 7%, var(--surface)); }
+.wps-fb.good { border-left-color: var(--good); background: color-mix(in srgb, var(--good) 9%, var(--surface)); }
+.wps-fb.amber { border-left-color: var(--amber); background: color-mix(in srgb, var(--amber) 11%, var(--surface)); }
+.wps-fb code { font-family: var(--mono); background: var(--surface); border: 1px solid var(--line); padding: 0 5px; border-radius: 4px; }
+.wps-fb b { color: var(--ink); }
+.wps-fb.amber b { color: var(--amber); }
+
+/* 정리 노트 */
+.note { margin-top: 13px; border-left: 3px solid var(--brand); background: color-mix(in srgb, var(--brand) 6%, var(--surface)); border-radius: 0 9px 9px 0; padding: 9px 13px; font-size: .83rem; color: var(--ink); }
+.note b { color: var(--ink); }
