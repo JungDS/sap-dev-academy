@@ -1,14 +1,18 @@
 /* salv-layout-lab 엔진 — SALV의 표시 설정을 바꿔 가며 화면이 어떻게 달라지는지 본다.
-   줄무늬(set_striped_pattern)·폭 최적화(set_optimize)·컬럼 텍스트(set_short/medium/long_text)·variant(get_layout) 개념을 체험한다.
-   특히 long_text만 바꾸면 헤더가 안 바뀔 수 있고(셋 다 맞춰야 함), 컬럼명을 틀리면 cx_salv_not_found가 난다.
-   골격 계약: .sll-ctrl(토글 버튼) · .sll-text(세그) · #sllCode · #sllTable · #sllStatus.
+   줄무늬(set_striped_pattern)·폭 최적화(set_optimize)·컬럼 텍스트(set_short/medium/long_text)를 체험하고,
+   Variant(사용자별 보기)를 저장 → 프로그램을 다시 실행하면 개발자 기본이 아니라 저장한 variant가 먼저 적용됨(실무 함정)을 재현한다.
+   long_text만 바꾸면 헤더가 안 바뀔 수 있고, 컬럼명을 틀리면 cx_salv_not_found가 난다.
+   골격 계약: .sll-ctrl(토글) · .sll-text(세그) · .sll-variant(variant 조작) · #sllCode · #sllTable · #sllStatus.
    config: window.SLL_CFG = { cols:[{f,label}], rows, capCol, badCol, clipCol }. 높이: _autoheight.js. */
 (function () {
   var CFG = window.SLL_CFG || { cols: [], rows: [], capCol: 'CAPACITY', badCol: 'CAP', clipCol: 'CONCERT_ID' };
+  var DEFAULT = { striped: false, opt: false, text: 'none' };   // 개발자 기본 보기
   var st = { striped: false, opt: false, text: 'none', bad: false };  // text: none | long | all
+  var savedVariant = null, variantMsg = '';
 
   var ctrlEl = document.querySelector('.sll-ctrl');
   var textEl = document.querySelector('.sll-text');
+  var variantEl = document.querySelector('.sll-variant');
   var codeEl = document.getElementById('sllCode');
   var tblEl = document.getElementById('sllTable');
   var statusEl = document.getElementById('sllStatus');
@@ -27,6 +31,18 @@
     }).join('');
   }
 
+  function renderVariant() {
+    var saved = savedVariant ? '있음(내 보기)' : '없음';
+    var warn = savedVariant && variantMsg.indexOf('먼저') >= 0;
+    variantEl.innerHTML =
+      '<span class="sll-vlbl">Variant(사용자별 보기)</span>' +
+      '<button type="button" data-v="save">현재 보기 저장</button>' +
+      '<button type="button" data-v="rerun">프로그램 다시 실행</button>' +
+      '<button type="button" data-v="clear">Variant 초기화</button>' +
+      '<span class="sll-vstate">저장됨: <b>' + saved + '</b></span>' +
+      (variantMsg ? '<div class="sll-vmsg' + (warn ? ' warn' : '') + '">' + variantMsg + '</div>' : '');
+  }
+
   function capHeader() { return st.text === 'all' ? '정원' : CFG.capCol; }
 
   function renderCode() {
@@ -36,7 +52,7 @@
     else if (st.text === 'long') txt = 'lo_col-&gt;<span class="fn">set_long_text</span>( \'정원\' ).         \" long만';
     else txt = 'lo_col-&gt;set_long_text( ... ).';
     var getCol = st.bad
-      ? 'DATA(lo_col) = lo_cols-&gt;<span class="fn">get_column</span>( \'<span style="color:#8a1538;font-weight:700">' + CFG.badCol + '</span>\' ).'
+      ? 'DATA(lo_col) = lo_cols-&gt;<span class="fn">get_column</span>( \'<span class="bad">' + CFG.badCol + '</span>\' ).'
       : 'DATA(lo_col) = lo_cols-&gt;<span class="fn">get_column</span>( \'' + CFG.capCol + '\' ).';
     codeEl.innerHTML =
       ln(st.striped, 'lo-&gt;<span class="fn">get_display_settings</span>( )-&gt;set_striped_pattern( abap_true ).') + '\n' +
@@ -80,14 +96,37 @@
     statusEl.innerHTML = parts.join(' · ') + '. variant는 <b>사용자별 보기</b>(컬럼 순서·숨김·폭)일 뿐 데이터 변경이 아닙니다.';
   }
 
-  function render() { renderCtrl(); renderCode(); renderTable(); renderStatus(); }
+  function render() { renderCtrl(); renderVariant(); renderCode(); renderTable(); renderStatus(); }
 
   ctrlEl.addEventListener('click', function (e) {
     var b = e.target.closest('button'); if (!b) return;
     var k = b.getAttribute('data-k'), t = b.getAttribute('data-t');
+    variantMsg = '';
     if (t) { st.text = t; st.bad = false; }
     else if (k === 'bad') { st.bad = !st.bad; }
     else if (k) { st[k] = !st[k]; }
+    render();
+  });
+
+  variantEl.addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    var v = b.getAttribute('data-v');
+    if (v === 'save') {
+      savedVariant = { striped: st.striped, opt: st.opt, text: st.text };
+      variantMsg = '현재 화면 보기를 <b>내 variant</b>로 저장했습니다. 이제 <b>프로그램 다시 실행</b>을 눌러 보세요.';
+    } else if (v === 'rerun') {
+      st.bad = false;
+      if (savedVariant) {
+        st.striped = savedVariant.striped; st.opt = savedVariant.opt; st.text = savedVariant.text;
+        variantMsg = '프로그램이 다시 떠도 <b>개발자 기본이 아니라 저장한 variant</b>가 먼저 적용됩니다. "코드를 고쳤는데 화면이 그대로"인 대표 원인이에요.';
+      } else {
+        st.striped = DEFAULT.striped; st.opt = DEFAULT.opt; st.text = DEFAULT.text;
+        variantMsg = '저장된 variant가 없어 <b>개발자 기본 보기</b>로 떴습니다.';
+      }
+    } else if (v === 'clear') {
+      savedVariant = null;
+      variantMsg = 'variant를 지웠습니다. 다시 실행하면 <b>개발자 기본 보기</b>로 돌아갑니다.';
+    }
     render();
   });
 
