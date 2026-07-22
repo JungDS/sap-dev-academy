@@ -1,4 +1,4 @@
-/* mvc-diagram — MVC 구조 시각+체험 (CH26-L04).
+/* mvc-diagram — MVC 구조 시각+체험 (CH27-L04).
    시나리오(화면 교체/로직 변경/흐름 추가) 선택 → 바뀌는 계층(빨강)과 안 바뀌는 계층(초록) 하이라이트.
    관심사 분리(separation of concerns)의 효과를 눈으로. */
 (function () {

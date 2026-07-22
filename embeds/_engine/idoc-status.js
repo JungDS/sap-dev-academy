@@ -1,4 +1,4 @@
-/* idoc-status — IDoc 상태코드 생애주기·재처리 체험 (CH31-L03).
+/* idoc-status — IDoc 상태코드 생애주기·재처리 체험 (CH34-L03).
    30 생성 → 03 전송 → (수신 처리) 53 성공 또는 51 오류 → BD87 재처리 → 53. '오류 주입' 토글. */
 (function () {
   var $ = function (id) { return document.getElementById(id); };

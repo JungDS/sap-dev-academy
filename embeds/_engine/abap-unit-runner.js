@@ -1,4 +1,4 @@
-/* abap-unit-runner — ABAP Unit 테스트 러너 체험 (CH26-L05).
+/* abap-unit-runner — ABAP Unit 테스트 러너 체험 (CH27-L05).
    Run → 각 테스트 메서드의 assert_equals(act/exp) 결과를 ✓/✗로. '버그 주입' 시 한 메서드가 잘못된 값을 반환 → red.
    Mock으로 DB 없이 로직만 검증한다는 점을 강조. */
 (function () {

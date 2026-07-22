@@ -1,4 +1,4 @@
-/* time-profile — SAT Hit List 시각 (CH32-L02). 코드 블록별 ABAP+DB 시간을 막대로, 총시간 내림차순. */
+/* time-profile — SAT Hit List 시각 (CH35-L02). 코드 블록별 ABAP+DB 시간을 막대로, 총시간 내림차순. */
 (function () {
   var $ = function (id) { return document.getElementById(id); };
   var ROWS = [

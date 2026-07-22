@@ -1,4 +1,4 @@
-// ===== projection-layer-lab 엔진 JS — Interface(ZI_) vs Projection(ZC_) 계층 분리 (CH22-L02) =====
+// ===== projection-layer-lab 엔진 JS — Interface(ZI_) vs Projection(ZC_) 계층 분리 (CH23-L02) =====
 // 비대칭이 핵심: ZC_에서 필드를 숨겨도 ZI_은 불변(비파괴) / ZI_에서 필드를 제거하면 ZC_도 노출 불가(연쇄).
 // 각 필드: inBase(ZI_ 존재) · inProj(ZC_ 노출). key는 항상 잠금. DDL·SELECT 라이브. 데이터=window.PLL_CFG.
 (function(){

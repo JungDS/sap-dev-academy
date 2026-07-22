@@ -1,4 +1,4 @@
-// ===== cds-builder-stepper 엔진 JS — 콘서트 CDS 빌더 (CH22-L07 capstone) =====
+// ===== cds-builder-stepper 엔진 JS — 콘서트 CDS 빌더 (CH23-L07 capstone) =====
 // 6단계 순서 의존: ①ZI_Perf ②ZI_Concert(+_Perf assoc, target=ZI_Perf 필요) ③ZC_Concert(projection) ④Metadata Extension(zc 필요)
 // ⑤Data Preview(zi&zc 필요) ⑥소비 코드(zc 필요). 순서 어기면 bad. 산출물 4개 active 다이어그램. 데이터=window.CBS_CFG.
 (function(){

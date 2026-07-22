@@ -1,4 +1,4 @@
-/* atc-findings — ATC/Code Inspector 점검 체험 (CH35-L01).
+/* atc-findings — ATC/Code Inspector 점검 체험 (CH38-L01).
    findings(P1 에러·P2 경고·P3 정보) → '수정 후 재검사'로 에러(P1) 해결 → 에러 0이면 이송 게이트 통과. */
 (function () {
   var $ = function (id) { return document.getElementById(id); };

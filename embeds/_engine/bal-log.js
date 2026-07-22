@@ -1,4 +1,4 @@
-/* bal-log — Application Log(BAL) 뷰어 체험 (CH35-L05). 타입(S/W/E) 필터로 SLG1처럼 조회. */
+/* bal-log — Application Log(BAL) 뷰어 체험 (CH38-L05). 타입(S/W/E) 필터로 SLG1처럼 조회. */
 (function () {
   var $ = function (id) { return document.getElementById(id); };
   var LOG = [

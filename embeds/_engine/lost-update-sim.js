@@ -1,4 +1,4 @@
-/* lost-update-sim — Lost Update와 낙관/비관 잠금 체험 (CH25-L04).
+/* lost-update-sim — Lost Update와 낙관/비관 잠금 체험 (CH26-L04).
    같은 예매 seats를 A·B가 동시에 만지는 시나리오. 전략별로 결과가 달라진다.
    none = B가 옛 값 기준으로 덮어써 A의 변경 소실 / pessimistic = 잠금 대기 후 최신값 재작업 /
    optimistic = changed_at 비교로 B 저장 거절 → 재조회. */

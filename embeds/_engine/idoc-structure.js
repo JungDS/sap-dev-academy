@@ -1,4 +1,4 @@
-/* idoc-structure — IDoc 3층 구조 체험 (CH31-L01). Control/Data/Status 레이어 클릭 → 상세 표시. */
+/* idoc-structure — IDoc 3층 구조 체험 (CH34-L01). Control/Data/Status 레이어 클릭 → 상세 표시. */
 (function () {
   var $ = function (id) { return document.getElementById(id); };
   var D = {

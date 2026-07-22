@@ -1,4 +1,4 @@
-/* package-commit — 대량 변경 패키지 단위 COMMIT 시각화 (CH24-L05).
+/* package-commit — 대량 변경 패키지 단위 COMMIT 시각화 (CH25-L05).
    총 TOTAL건을 패키지 크기 P마다 COMMIT → COMMIT 횟수 = ceil(TOTAL/P), 최대 미커밋 버퍼 = P.
    단일(전체) COMMIT은 버퍼가 TOTAL까지 차올라 메모리·잠금·롤백세그먼트 폭발.
    sawtooth 그래프(버퍼 over 진행)로 fill-flush 패턴을 보여 준다. */

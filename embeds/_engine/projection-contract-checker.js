@@ -1,4 +1,4 @@
-// ===== projection-contract-checker 엔진 JS — RAP Transactional Projection 계약 검사기 (CH23-L03) =====
+// ===== projection-contract-checker 엔진 JS — RAP Transactional Projection 계약 검사기 (CH24-L03) =====
 // ZI_Booking(기반 root) → ZC_Booking(소비). 토글: contract(provider contract transactional_query)·projRoot·allowExt·노출 필드.
 // !projRoot(기반이 root인데 projection 아님)=bad · !contract=warn · 정상=ok. 숨김=계약 제외(삭제 아님). 데이터 내장.
 (function(){

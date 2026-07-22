@@ -1,4 +1,4 @@
-// ===== root-entity-picker 엔진 JS — RAP Root Entity 판정기 (CH23-L02) =====
+// ===== root-entity-picker 엔진 JS — RAP Root Entity 판정기 (CH24-L02) =====
 // 업무 후보(공연/회차/예매) 중 트랜잭션 단위 고르기 → 사용자 행동이 모이나 + key 안정성 판정.
 // 예매+안정 key(booking_id) → root 적합(ok). 다른 후보 → action 대상 불안정(warn). 불안정 key → bad. 데이터 내장.
 (function(){

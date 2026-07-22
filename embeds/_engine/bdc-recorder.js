@@ -1,4 +1,4 @@
-/* bdc-recorder — BDC/Batch Input 체험 (CH30-L03).
+/* bdc-recorder — BDC/Batch Input 체험 (CH33-L03).
    '다음 동작'을 누를 때마다 화면 입력 과정을 BDCDATA 한 줄씩 채운다(SHDB 녹화 느낌).
    모든 동작을 채우면 CALL TRANSACTION으로 실행 → 결과. MODE N(무화면) 강조. */
 (function () {

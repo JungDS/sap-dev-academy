@@ -1,4 +1,4 @@
-// ===== service-exposure-board 엔진 JS — RAP Service 노출 점검판 (CH23-L06) =====
+// ===== service-exposure-board 엔진 JS — RAP Service 노출 점검판 (CH24-L06) =====
 // Service Definition(expose ZC_Booking) + Service Binding(type·activate). expose 없으면 metadata 비고·binding inactive면 URL 없음.
 // 두 오류 구분: expose+!active=warn(Activate 필요) · !expose+active=warn(metadata 비어 있음) · expose+active=ok. UI vs Web API. 데이터 내장.
 (function(){

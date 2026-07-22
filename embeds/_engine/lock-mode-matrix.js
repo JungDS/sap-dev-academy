@@ -1,4 +1,4 @@
-/* lock-mode-matrix — 잠금 모드 호환 체험 (CH25-L01).
+/* lock-mode-matrix — 잠금 모드 호환 체험 (CH26-L01).
    User A 보유 모드(E/S/X) × User B 요청 모드(E/S) → 허용/거절.
    호환 규칙: S+S만 동시 허용. E/X는 다른 어떤 잠금과도 충돌(다른 사용자 기준). */
 (function () {

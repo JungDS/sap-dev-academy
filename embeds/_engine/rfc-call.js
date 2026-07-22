@@ -1,4 +1,4 @@
-/* rfc-call — RFC 원격 호출 체험 (CH30-L02).
+/* rfc-call — RFC 원격 호출 체험 (CH33-L02).
    시나리오: 정상 / DESTINATION 누락 / 통신 실패 → 호출 결과와 예외 메시지를 보여 준다. */
 (function () {
   var $ = function (id) { return document.getElementById(id); };

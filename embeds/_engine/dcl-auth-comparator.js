@@ -1,4 +1,4 @@
-// ===== dcl-auth-comparator 엔진 JS — CDS DCL 권한 필터 결과 비교기 (CH22-L06) =====
+// ===== dcl-auth-comparator 엔진 JS — CDS DCL 권한 필터 결과 비교기 (CH23-L06) =====
 // 같은 SELECT FROM ZI_Concert를 사용자별로 실행. mode=#CHECK→DCL 행 필터(venue∈auth만), #NOT_REQUIRED→필터 없음.
 // #NOT_REQUIRED에서 권한 밖 venue가 보이면 보안 실패(bad). 행 단위 권한은 결과집합 내용이 핵심. 데이터=window.DAC_CFG.
 (function(){

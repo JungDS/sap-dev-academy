@@ -1,4 +1,4 @@
-/* concert-alv-color-lab 엔진 — CH21 capstone. ZCL_BOOKING_MANAGER->remaining()으로 구한 잔여석(seats_left)을 조건에 따라 색칠한다.
+/* concert-alv-color-lab 엔진 — CH22 capstone. ZCL_BOOKING_MANAGER->remaining()으로 구한 잔여석(seats_left)을 조건에 따라 색칠한다.
    seats_left <= 0 → 빨강(col_negative), <= 5 → 노랑(col_total). cellcolors deep를 ctab_fname으로 ALV에 연결해야 보인다.
    예매를 추가하면 잔여석이 줄어 셀 색이 노랑→빨강으로 바뀐다. ctab_fname을 끄면 색 데이터는 남아도 화면 색은 사라진다.
    골격 계약: .cacl-sel(세그) · .cacl-act(버튼) · #caclTable · #caclStatus.

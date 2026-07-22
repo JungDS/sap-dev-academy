@@ -1,4 +1,4 @@
-/* sql-trace — SQL Trace/Monitor 결과 분석 체험 (CH32 L01·L03).
+/* sql-trace — SQL Trace/Monitor 결과 분석 체험 (CH35 L01·L03).
    위젯 <script id="trace-cfg">: { header, cols:[{k,label,num?}], rows:[...], worstKey, callout }.
    컬럼 헤더 클릭 → 그 컬럼 내림차순 정렬. worstKey 최대 행 강조. */
 (function () {

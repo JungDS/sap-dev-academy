@@ -1,4 +1,4 @@
-/* singleton-sim — Singleton 패턴 체험 (CH26-L02).
+/* singleton-sim — Singleton 패턴 체험 (CH27-L02).
    왼쪽 get_instance() ×N → 항상 같은 인스턴스(동일 id, 생성 1회) / 오른쪽 NEW ×N → 매번 새 인스턴스. */
 (function () {
   var $ = function (id) { return document.getElementById(id); };

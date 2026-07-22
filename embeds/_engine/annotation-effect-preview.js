@@ -1,4 +1,4 @@
-// ===== annotation-effect-preview 엔진 JS — CDS Annotation 효과 미리보기 (CH22-L04) =====
+// ===== annotation-effect-preview 엔진 JS — CDS Annotation 효과 미리보기 (CH23-L04) =====
 // 3패널: ①라벨 토글(헤더 기술명↔업무라벨) ②@Semantics.amount.currencyCode 짝(currency_code=ok·자기참조=bad·없음=warn)
 // ③@UI.lineItem 순서(▲▼→컬럼 순서+position 재할당). annotation은 활성화된 metadata. 데이터=window.AEP_CFG.
 (function(){

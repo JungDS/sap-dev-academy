@@ -1,4 +1,4 @@
-// ===== rap-booking-runtime 엔진 JS — 예매 RAP 런타임 시뮬레이터 (CH23-L09 capstone) =====
+// ===== rap-booking-runtime 엔진 JS — 예매 RAP 런타임 시뮬레이터 (CH24-L09 capstone) =====
 // create→determination(status='N')→validation(seats vs 잔여)→save/reject, cancel=action(status='C'). V/D/A를 한 흐름에서.
 // 정원 초과는 failed/reported로 거부, 취소는 명시 action(중복 취소=no-op). 데이터 내장. 교훈3: msg base 중립·ok/warn/bad 명시.
 (function(){

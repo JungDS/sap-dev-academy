@@ -1,4 +1,4 @@
-/* alv-handler-wiring — ALV 이벤트 → 핸들러 메서드 SET HANDLER 배선 (CH27-L05).
+/* alv-handler-wiring — ALV 이벤트 → 핸들러 메서드 SET HANDLER 배선 (CH30-L05).
    이벤트(왼쪽) 클릭 → 짝이 되는 핸들러 메서드(오른쪽) 강조 + 라우팅 메시지. 모든 배선은 생성자 SET HANDLER 한 번에. */
 (function () {
   var $ = function (id) { return document.getElementById(id); };

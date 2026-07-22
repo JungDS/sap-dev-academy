@@ -1,4 +1,4 @@
-// ===== metadata-extension-lab 엔진 JS — 본문(DDL)과 메타데이터(DDLX) 분리 실험실 (CH22-L05) =====
+// ===== metadata-extension-lab 엔진 JS — 본문(DDL)과 메타데이터(DDLX) 분리 실험실 (CH23-L05) =====
 // uiLoc: UI 주석을 본문(inline)에 둘지 별도 DDLX(ext)로 뺄지. allow: @Metadata.allowExtensions. sep: DDLX 구분자 ;/, .
 // ext + !allow → 활성화 실패(bad). ext + sep=',' → 세미콜론 아님 실패(bad). ext + allow + ';' → 분리 완료(ok). 데이터=window.MXL_CFG.
 (function(){

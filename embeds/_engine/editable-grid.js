@@ -1,4 +1,4 @@
-/* editable-grid — 편집 가능 ALV 시뮬 엔진 (CH28 공통).
+/* editable-grid — 편집 가능 ALV 시뮬 엔진 (CH31 공통).
    위젯의 <script type="application/json" id="eg-cfg">에서 { mode, max } 를 읽는다.
    mode: editcols | datachanged | finished | cellstyle | validate | save.
    seats 컬럼이 편집 대상. 유효값 = 1~max 정수. 입력 시 전체 rebuild 없이 셀만 패치(포커스 보존). */

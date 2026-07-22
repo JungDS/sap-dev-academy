@@ -1,4 +1,4 @@
-/* bapi-return — BAPI 호출·RETURN 처리 체험 (CH30-L01).
+/* bapi-return — BAPI 호출·RETURN 처리 체험 (CH33-L01).
    시나리오(정상/오류) → BAPI 호출 → BAPIRET2 메시지 → type에 E/A 있으면 ROLLBACK, 없으면 COMMIT.
    BAPI는 스스로 COMMIT 안 함 → BAPI_TRANSACTION_COMMIT 필요를 강조. */
 (function () {

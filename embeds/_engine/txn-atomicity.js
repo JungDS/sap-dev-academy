@@ -1,4 +1,4 @@
-/* txn-atomicity — COMMIT/ROLLBACK 원자성 체험 (CH24-L02).
+/* txn-atomicity — COMMIT/ROLLBACK 원자성 체험 (CH25-L02).
    ① 예매 처리 = 헤더 INSERT + 항목 INSERT를 '미확정(메모리)'에 쌓는다('항목 실패' 토글 시 항목 sy-subrc=4).
    ② COMMIT WORK = 미확정 → DB 확정(단, 항목 실패인데 COMMIT하면 헤더만 남는 '반쪽 저장' 사고를 보여 준다).
    ③ ROLLBACK WORK = 미확정 전부 폐기(DB 그대로). 핵심 = 문장마다 실패 누적(lv_failed)→업무 단위 전체 성공일 때만 COMMIT, 아니면 ROLLBACK. */
