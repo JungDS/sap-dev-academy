@@ -59,7 +59,7 @@
     return '<pre class="cao-sql">'+
       '<span class="k">SELECT</span> *\n'+
       '  <span class="k">FROM</span> <span class="ent">'+esc(ENT)+'</span>\n'+
-      '  <span class="k">INTO TABLE</span> <span class="host">@DATA(lt_concerts)</span>.</pre>';
+      '  <span class="k">INTO TABLE</span> <span class="host">@DATA(gt_concerts)</span>.</pre>';
   }
 
   function setMsg(t,warn){ var m=$('caoMsg'); m.className='cao-msg'+(warn?' warn':''); m.innerHTML=t; }

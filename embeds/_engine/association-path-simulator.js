@@ -52,7 +52,7 @@
         '  <span class="k">FROM</span> <span class="src">zconcert</span> <span class="k">AS</span> c\n'+
         '  <span class="k">INNER JOIN</span> <span class="src">zperf</span> <span class="k">AS</span> p\n'+
         '    <span class="k">ON</span> c~concert_id = p~concert_id\n'+
-        '  <span class="k">INTO TABLE</span> @<span class="as">DATA</span>(lt_rows).</pre>';
+        '  <span class="k">INTO TABLE</span> @<span class="as">DATA</span>(gt_rows).</pre>';
     }
     var idLine = st.keepId
       ? '  <span class="kw">key</span> concert_id,'

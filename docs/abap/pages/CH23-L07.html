@@ -40,21 +40,22 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>🎫 흩어진 문법을 하나로</h2>
-<p>지금까지 배운 문법을 따로 보면 각각은 작아 보인다. 그러나 실무 가치는 <strong>조합</strong>에서 나온다. 콘서트 앱의
-테이블 위에 <code>ZI_Concert</code>·<code>ZI_Perf</code>·<code>ZC_Concert</code>를 만들면 이런 변화가 생긴다.</p>
+<p>지금까지 배운 문법을 따로 보면 각각은 작아 보인다. 그러나 실무 가치는 <strong>조합</strong>에서 나온다. 예매자
+정훈영이 보는 공연 목록 하나에도 이 계층이 전부 깔린다. 콘서트 앱의 테이블 위에
+<code>ZI_Concert</code>·<code>ZI_Perf</code>·<code>ZC_Concert</code>를 만들면 이런 변화가 생긴다.</p>
 <ul>
 <li>프로그램은 테이블 대신 <strong>CDS entity</strong>를 읽는다.</li>
 <li>공연과 회차의 관계는 <strong>association</strong>으로 모델에 남는다.</li>
-<li>화면 목록에 필요한 필드는 <strong>projection</strong>에서 고른다.</li>
+<li>화면 목록에 필요한 필드는 **소비 뷰(<code>ZC_</code>)**에서 고른다.</li>
 <li>UI 주석은 <strong>Metadata Extension</strong>으로 분리한다.</li>
-<li>권한이 필요하면 <strong>DCL</strong>로 row-level filter를 붙인다.</li>
+<li>권한이 필요하면 <strong>DCL</strong>로 row-level filter를 붙인다(뷰마다 각각).</li>
 </ul>
 <p>이 실습은 <a href="CH24-L01.html">RAP 아키텍처 개요</a>로 가기 전의 마지막 기반 작업이다. RAP를 만들지는 않지만, <strong>RAP가
 올라갈 수 있는 읽기 모델의 뼈대</strong>를 만든다.</p>
 </section><section class="lblock"><h2>순서대로 만들기</h2>
 <p>활성화에는 <strong>순서</strong>가 있다. <code>ZI_Concert</code>가 <code>ZI_Perf</code>를 association target으로 참조하므로, target이 먼저 있어야 한다.</p>
 <p>먼저 회차 기반 뷰를 만든다.</p>
-<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">CDS View</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
 4
@@ -62,7 +63,7 @@
 6
 7
 8</pre><pre class="abap-editor__code"><code>@AccessControl.authorizationCheck: #NOT_REQUIRED
-define view <span class="tok-kw">entity</span> ZI_Perf
+<span class="tok-kw">define</span> <span class="tok-kw">view</span> <span class="tok-kw">entity</span> ZI_Perf
   <span class="tok-kw">as</span> <span class="tok-kw">select</span> <span class="tok-kw">from</span> zperf
 {
   <span class="tok-kw">key</span> concert_id,
@@ -70,7 +71,7 @@ define view <span class="tok-kw">entity</span> ZI_Perf
       perf_date
 }</code></pre></div></div>
 <p>다음으로 공연 기반 뷰를 만들고 회차 association을 연결한다(<a href="CH23-L03.html">Association 기초</a>).</p>
-<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">CDS View</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
 4
@@ -82,10 +83,10 @@ define view <span class="tok-kw">entity</span> ZI_Perf
 10
 11
 12</pre><pre class="abap-editor__code"><code>@AccessControl.authorizationCheck: #NOT_REQUIRED
-define view <span class="tok-kw">entity</span> ZI_Concert
+<span class="tok-kw">define</span> <span class="tok-kw">view</span> <span class="tok-kw">entity</span> ZI_Concert
   <span class="tok-kw">as</span> <span class="tok-kw">select</span> <span class="tok-kw">from</span> zconcert
-  association [<span class="tok-num">0</span>..*] <span class="tok-kw">to</span> ZI_Perf <span class="tok-kw">as</span> _Perf
-    <span class="tok-kw">on</span> $projection.concert_id = _Perf.concert_id
+  <span class="tok-kw">association</span> [<span class="tok-num">0</span>..*] <span class="tok-kw">to</span> ZI_Perf <span class="tok-kw">as</span> _Perf
+    <span class="tok-kw">on</span> $<span class="tok-kw">projection</span>.concert_id = _Perf.concert_id
 {
   <span class="tok-kw">key</span> concert_id,
       artist,
@@ -93,8 +94,8 @@ define view <span class="tok-kw">entity</span> ZI_Concert
       capacity,
       _Perf
 }</code></pre></div></div>
-<p>그 위에 소비용 projection을 만든다. extension을 받을 수 있게 <code>@Metadata.allowExtensions: true</code>도 켠다.</p>
-<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+<p>그 위에 소비용 뷰를 <strong>기반 위에 얹어</strong>(nesting) 만든다. extension을 받을 수 있게 <code>@Metadata.allowExtensions: true</code>도 켠다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">CDS View</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
 4
@@ -106,8 +107,8 @@ define view <span class="tok-kw">entity</span> ZI_Concert
 10
 11</pre><pre class="abap-editor__code"><code>@AccessControl.authorizationCheck: #NOT_REQUIRED
 @Metadata.allowExtensions: true
-define view <span class="tok-kw">entity</span> ZC_Concert
-  <span class="tok-kw">as</span> projection <span class="tok-kw">on</span> ZI_Concert
+<span class="tok-kw">define</span> <span class="tok-kw">view</span> <span class="tok-kw">entity</span> ZC_Concert
+  <span class="tok-kw">as</span> <span class="tok-kw">select</span> <span class="tok-kw">from</span> ZI_Concert
 {
   <span class="tok-kw">key</span> concert_id,
       artist,
@@ -116,7 +117,7 @@ define view <span class="tok-kw">entity</span> ZC_Concert
       _Perf
 }</code></pre></div></div>
 <p>마지막으로 UI 목록 주석을 Metadata Extension(DDLX)으로 분리한다(<a href="CH23-L05.html">Metadata Extension 기초</a>).</p>
-<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">Metadata Extension</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
 4
@@ -128,7 +129,7 @@ define view <span class="tok-kw">entity</span> ZC_Concert
 10
 11
 12</pre><pre class="abap-editor__code"><code>@Metadata.layer: #CORE
-annotate <span class="tok-kw">entity</span> ZC_Concert <span class="tok-kw">with</span>
+<span class="tok-kw">annotate</span> <span class="tok-kw">entity</span> ZC_Concert <span class="tok-kw">with</span>
 {
   @UI.lineItem: [{ position: <span class="tok-num">10</span> }]
   concert_id;
@@ -163,7 +164,7 @@ annotate <span class="tok-kw">entity</span> ZC_Concert <span class="tok-kw">with
 </tr>
 <tr>
 <td><code>ZC_Concert</code> 활성화</td>
-<td>projection이 필요한 필드와 <code>_Perf</code>를 노출한다.</td>
+<td>소비 뷰가 필요한 필드와 <code>_Perf</code>를 노출한다.</td>
 </tr>
 <tr>
 <td>Metadata Extension 활성화</td>
@@ -177,11 +178,13 @@ annotate <span class="tok-kw">entity</span> ZC_Concert <span class="tok-kw">with
 </section><section class="lblock"><h2>흔한 실수와 점검 🚧</h2>
 <ul>
 <li><strong>활성화 순서 무시</strong> → <code>ZI_Concert</code>가 <code>ZI_Perf</code>를 참조하므로 target이 먼저 존재해야 한다.</li>
-<li><strong>projection에서 association 빠뜨림</strong> → 소비자가 회차 경로를 따라가야 한다면 <code>ZC_Concert</code>에서도 <code>_Perf</code>를
+<li><strong>소비 뷰에서 association 빠뜨림</strong> → 소비자가 회차 경로를 따라가야 한다면 <code>ZC_Concert</code>에서도 <code>_Perf</code>를
 노출해야 한다(빼는 것도 <em>설계</em>일 수 있으니 실수인지 의도인지 구분).</li>
 <li><strong><code>@Metadata.allowExtensions: true</code> 빠뜨림</strong> → DDLX만 만들어서는 붙지 않는다.</li>
-<li><strong>RAP 내용 섞기</strong> → 이 챕터의 최종 산출물은 CDS 뷰와 metadata extension이다. <code>define behavior</code>·service
-binding·action은 작성하지 않는다.</li>
+<li><strong>기반에만 권한 걸고 안심</strong> → DCL은 위 계층으로 <button class="term" type="button" data-term="상속">상속</button>되지 않는다(<a href="CH23-L06.html">DCL 개요</a>). <code>ZC_Concert</code>를
+보호하려면 그 뷰에도 access control을 따로 건다.</li>
+<li><strong>RAP 내용 섞기</strong> → 이 챕터의 최종 산출물은 CDS 뷰와 metadata extension이다. RAP의 동작 정의(behavior)·서비스
+바인딩·액션은 작성하지 않는다.</li>
 <li><strong>잔여석 계산을 성급히</strong> → 단순해 보여도 예매 상태·취소·<button class="term" type="button" data-term="Aggregate">집계</button>·권한·성능을 함께 봐야 한다. 여기서는 설계만 한다.</li>
 </ul>
 <hr>

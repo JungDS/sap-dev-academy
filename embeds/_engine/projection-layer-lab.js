@@ -34,7 +34,7 @@
     var ex=exposed();
     var lines=[];
     lines.push('<span class="k">define view entity</span> <span class="ent">'+esc(PROJ)+'</span>');
-    lines.push('  <span class="k">as projection on</span> <span class="base">'+esc(BASE)+'</span>');
+    lines.push('  <span class="k">as select from</span> <span class="base">'+esc(BASE)+'</span>');
     lines.push('{');
     ex.forEach(function(f,i){
       var pre=f.key?'  <span class="kw">key</span> ':'      ';
@@ -47,7 +47,7 @@
     var names=exposed().map(function(f){return f.name;});
     return '<pre class="pll-code"><span class="k">SELECT</span> '+esc(names.join(', '))+'\n'+
       '  <span class="k">FROM</span> <span class="ent">'+esc(PROJ)+'</span>\n'+
-      '  <span class="k">INTO TABLE</span> <span class="host">@DATA(lt_list)</span>.</pre>';
+      '  <span class="k">INTO TABLE</span> <span class="host">@DATA(gt_list)</span>.</pre>';
   }
 
   function setMsg(t,warn){ var m=$('pllMsg'); m.className='pll-msg'+(warn?' warn':''); m.innerHTML=t; }

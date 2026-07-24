@@ -906,5 +906,55 @@
     "title": "Window Expression (윈도우 식)",
     "desc": "상세 행을 유지한 채 같은 그룹의 합계·순번·순위를 각 행에 붙이는 SQL 식. 함수 뒤 OVER( PARTITION BY … )로 쓴다. GROUP BY가 행을 접는 것과 달리 행이 사라지지 않는다.",
     "analogy": "성적표에 내 점수는 그대로 두고 옆 칸에 반 평균과 석차를 나란히 적어 주는 것."
+  },
+  "Calculated Element": {
+    "title": "Calculated Element (계산 요소)",
+    "desc": "CDS 뷰의 select list에서 식(연산·CASE·함수 등)으로 만들어 조회 시점에 계산해 보여 주는 요소. 테이블에 물리 컬럼이 새로 생기는 것이 아니라, 뷰를 읽을 때 계산된다.",
+    "analogy": "영수증 맨 아래 '합계' 칸 — 저장돼 있던 값이 아니라 볼 때 더해서 보여 주는 값."
+  },
+  "Nesting": {
+    "title": "Nesting (뷰 위에 뷰 쌓기)",
+    "desc": "CDS View Entity를 다른 View Entity 위에 as select from으로 얹는 것. 재사용·모듈화를 위해 기반 뷰(ZI_) 위에 소비 뷰(ZC_)를 쌓는다. 아래 뷰의 annotation은 위로 상속된다.",
+    "analogy": "이미 손질한 재료(기반 뷰) 위에 접시별로 다시 담아내는 것 — 재료를 새로 사지 않는다."
+  },
+  "Interface View": {
+    "title": "Interface View (ZI_ · 기반 뷰)",
+    "desc": "테이블과 가까운 재사용 기반 CDS 뷰. 필드·기본 계산·관계(association)를 안정적으로 정의한다. 이름 앞 ZI_는 문법이 아니라 명명 관습이다.",
+    "analogy": "여러 요리에 공통으로 쓰는 밑재료 — 한 번 잘 손질해 두고 두고 쓴다."
+  },
+  "Consumption View": {
+    "title": "Consumption View (ZC_ · 소비 뷰)",
+    "desc": "기반 뷰(ZI_) 위에 nesting으로 얹어, 특정 소비처(화면·리포트·서비스)에 맞게 필드를 고르고 주석을 붙이는 CDS 뷰. ZC_는 명명 관습이다. RAP의 Projection View와 달리 provider contract가 없는 읽기 전용 계층이다.",
+    "analogy": "밑재료를 손님상에 맞게 접시별로 담아내는 것 — 필요한 것만 골라 낸다."
+  },
+  "Association": {
+    "title": "Association (뷰 사이 관계 선언)",
+    "desc": "CDS에서 뷰끼리의 관계에 이름을 붙여 모델에 새기는 선언. JOIN 조건을 소비처마다 반복하지 않고 한 번 선언해 경로(_Perf 등)로 따라간다. 실제 사용 시 내부적으로 JOIN으로 변환될 수 있다.",
+    "analogy": "지도에 길을 하나 그려 이름을 붙여 두는 것 — 갈 때마다 경로를 새로 설명하지 않는다."
+  },
+  "Cardinality": {
+    "title": "Cardinality (관계 개수 기대치)",
+    "desc": "association에서 source와 target이 각각 몇 개의 상대와 짝지어지는지 나타내는 지정. [0..*]는 target이 0개 이상, [1..1]은 정확히 하나. 단어형(one to many 등)으로도 쓴다. 데이터 현실에 맞춰야 한다.",
+    "analogy": "한 반에 학생은 여럿(1:다), 학생 한 명의 담임은 하나(1:1) — 관계의 '몇 대 몇'."
+  },
+  "Annotation": {
+    "title": "Annotation (@metadata 선언)",
+    "desc": "CDS에서 @로 시작해 뷰·필드에 업무 의미(라벨·UI 힌트·금액/통화 짝 등)를 붙이는 활성화된 metadata. 일반 주석과 달리 도구가 읽으므로 틀리면 화면·분석·서비스에서 실제 문제가 된다.",
+    "analogy": "상품에 붙은 규격 라벨 — 장식이 아니라 기계가 읽어 처리하는 정보."
+  },
+  "Metadata Extension": {
+    "title": "Metadata Extension (DDLX)",
+    "desc": "CDS 본문(DDL)에서 annotation만 별도 DDLX source로 분리하는 것. 대상 뷰에 @Metadata.allowExtensions: true가 있어야 하고, extension의 annotation이 본문보다 우선한다. annotate entity … with { } 구문을 쓴다.",
+    "analogy": "책 본문은 그대로 두고 포스트잇으로 표시를 따로 붙이는 것 — 붙인 쪽이 우선."
+  },
+  "DCL": {
+    "title": "DCL (Data Control Language)",
+    "desc": "CDS entity에 대한 접근 규칙을 별도 DCL source로 정의하는 언어. define role + grant select on으로 행 단위 권한(row-level)을 건다. 상위 소비 뷰로 상속되지 않아 보호가 필요한 entity마다 각각 정의한다.",
+    "analogy": "출입문마다 각각 다는 카드 리더기 — 1층에 달았다고 2층이 자동으로 잠기지 않는다."
+  },
+  "Access Control": {
+    "title": "Access Control (CDS 접근 제어)",
+    "desc": "CDS 뷰를 누가 어떤 행까지 볼 수 있는지 정하는 장치. 뷰의 @AccessControl.authorizationCheck로 검사 여부를 선언하고(#CHECK/#NOT_REQUIRED), 실제 규칙은 DCL(Data Control Language)로 정의한다.",
+    "analogy": "도서관 열람 권한 — 누구는 일반실만, 누구는 귀중본실까지."
   }
 }

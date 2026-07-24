@@ -36,7 +36,7 @@
       '    <span class="k">where</span> ( venue ) = <span class="k">aspect</span> pfcg_auth( Z_VENUE_AUTH, VENUE, ACTVT = \'03\' );\n}';
     var sql='<span class="k">SELECT</span> concert_id, artist, venue\n'+
       '  <span class="k">FROM</span> <span class="ent">'+esc(ENT)+'</span>\n'+
-      '  <span class="k">INTO TABLE</span> <span class="host">@DATA(lt_allowed_concerts)</span>.';
+      '  <span class="k">INTO TABLE</span> <span class="host">@DATA(gt_allowed_concerts)</span>.';
     $('dacDcl').className='dac-code mode-'+(st.mode==='CHECK'?'check':'notreq');
     $('dacDcl').innerHTML=acc+'\n\n'+dcl;
     $('dacSql').innerHTML=sql;

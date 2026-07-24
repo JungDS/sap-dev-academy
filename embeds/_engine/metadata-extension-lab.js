@@ -18,7 +18,7 @@
       ? '<span class="allow">@Metadata.allowExtensions: true</span>'
       : '<span class="miss">// @Metadata.allowExtensions 없음</span>');
     lines.push('<span class="k">define view entity</span> <span class="ent">'+esc(ENT)+'</span>');
-    lines.push('  <span class="k">as projection on</span> <span class="base">'+esc(BASE)+'</span>');
+    lines.push('  <span class="k">as select from</span> <span class="base">'+esc(BASE)+'</span>');
     lines.push('{');
     F.forEach(function(f,i){
       if(st.uiLoc==='inline') lines.push('  '+lineItem(f.pos));
