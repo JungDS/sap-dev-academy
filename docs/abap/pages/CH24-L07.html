@@ -43,7 +43,7 @@
 <p>트랜잭션 앱은 저장 버튼만 있으면 안 된다. 사용자가 잘못된 좌석 수를 입력하면 <strong>저장 전에 막아야</strong> 하고,
 새 예매의 기본 상태는 <strong>자동으로 채워야</strong> 하며, 취소처럼 사용자가 <strong>명시적으로 실행</strong>하는 업무 버튼도 필요하다.
 이 세 종류의 로직을 같은 곳에 섞으면 <em>언제 실행되는지</em> 알기 어렵다.</p>
-<p>RAP는 이 로직을 <strong>Validation · Determination · Action</strong>으로 나눈다. 이 구분을 이해해야 BDEF를 읽을 수 있고,
+<p>RAP는 이 로직을 **<button class="term" type="button" data-term="Validation">Validation</button> · <button class="term" type="button" data-term="Determination">Determination</button> · <button class="term" type="button" data-term="Action">Action</button>**으로 나눈다. 이 구분을 이해해야 BDEF를 읽을 수 있고,
 behavior pool의 구현 위치도 찾을 수 있다.</p>
 </section><section class="lblock"><h2>무엇인가 — 목적과 실행 시점이 다르다</h2>
 <table>
@@ -56,26 +56,26 @@ behavior pool의 구현 위치도 찾을 수 있다.</p>
 </tr>
 </thead>
 <tbody><tr>
-<td><strong>Validation</strong></td>
+<td><strong><button class="term" type="button" data-term="Validation">Validation</button></strong></td>
 <td>저장해도 되는지 검사</td>
-<td>save sequence</td>
+<td><button class="term" type="button" data-term="save sequence">save sequence</button></td>
 <td>정원 초과 예매 거부</td>
 </tr>
 <tr>
-<td><strong>Determination</strong></td>
+<td><strong><button class="term" type="button" data-term="Determination">Determination</button></strong></td>
 <td>값을 자동으로 계산·채움</td>
 <td>on modify 또는 on save</td>
 <td>생성 시 <code>status = &#39;N&#39;</code> 기본값</td>
 </tr>
 <tr>
-<td><strong>Action</strong></td>
+<td><strong><button class="term" type="button" data-term="Action">Action</button></strong></td>
 <td>사용자가 명시적으로 실행</td>
 <td>버튼·API 호출</td>
 <td>예매 취소</td>
 </tr>
 </tbody></table>
 <p>BDEF 선언은 이렇게 한다.</p>
-<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">Behavior Definition</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
 4
@@ -105,7 +105,7 @@ behavior pool의 구현 위치도 찾을 수 있다.</p>
 <li><strong>BDEF 선언</strong> — behavior pool에 method만 만들어서는 RAP runtime이 그 동작을 알 수 없다. BDEF에 선언이 있어야 한다.</li>
 <li><strong>behavior pool method</strong> — <code>validate_capacity</code>는 <code>FOR VALIDATE ON SAVE</code>, <code>set_status_new</code>는 <code>FOR DETERMINE ON MODIFY</code>, <code>cancel</code>은 action handler로 구현한다(<a href="CH24-L05.html">Behavior Implementation 기초</a>).</li>
 <li><strong>실패 반응</strong> — validation이 실패하면 <code>failed</code>·<code>reported</code>에 <button class="term" type="button" data-term="인스턴스">인스턴스</button>·메시지를 기록한다. validation 실패는
-transactional buffer를 거부할 수 있으므로 &quot;오류 메시지만 띄우고 계속 저장&quot;이 아니다.</li>
+<button class="term" type="button" data-term="transactional buffer">transactional buffer</button>를 거부할 수 있으므로 &quot;오류 메시지만 띄우고 계속 저장&quot;이 아니다.</li>
 </ol>
 </section><section class="lblock"><h2>흔한 실수와 점검 🚧</h2>
 <ul>

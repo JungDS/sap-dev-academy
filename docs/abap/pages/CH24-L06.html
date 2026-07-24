@@ -40,21 +40,20 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>왜 서비스로 노출할까</h2>
-<p>RAP BO가 시스템 안에서만 존재하면 사용자가 앱으로 쓸 수 없다. Fiori 화면, 외부 OData client, 테스트 도구가
-접근하려면 <strong>business service</strong>로 노출해야 한다. 여기서 두 단계가 필요하다 — 무엇을 노출할지 정하는 <strong>Service
-Definition</strong>, 어떤 protocol로 실제 접근 가능하게 만들지 정하는 <strong>Service Binding</strong>이다.</p>
+<p>RAP BO가 시스템 안에서만 존재하면 사용자가 앱으로 쓸 수 없다. Fiori 화면, 외부 <button class="term" type="button" data-term="OData">OData</button> client, 테스트 도구가
+접근하려면 <strong>business service</strong>로 노출해야 한다. 여기서 두 단계가 필요하다 — 무엇을 노출할지 정하는 <strong><button class="term" type="button" data-term="Service Definition">Service Definition</button></strong>, 어떤 protocol로 실제 접근 가능하게 만들지 정하는 **<button class="term" type="button" data-term="Service Binding">Service Binding</button>**이다.</p>
 <p>이 둘을 섞으면 문제 해결이 어려워진다. <code>expose</code>를 안 해서 entity가 서비스에 없는데 binding만 만지거나,
 binding을 활성화하지 않았는데 service definition만 보고 URL을 찾는 식의 혼란이 생긴다.</p>
 </section><section class="lblock"><h2>무엇인가 — 노출(Definition)과 연결(Binding)</h2>
-<p><strong>① Service Definition</strong>은 CDS entity를 RAP business service로 노출하는 SDL source다.</p>
-<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+<p><strong>① <button class="term" type="button" data-term="Service Definition">Service Definition</button></strong>은 CDS entity를 RAP business service로 노출하는 SDL source다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">Service Definition</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3</pre><pre class="abap-editor__code"><code><span class="tok-kw">define</span> service ZUI_Booking {
   expose ZC_Booking <span class="tok-kw">as</span> Booking;
 }</code></pre></div></div>
 <p><code>ZC_Booking</code>은 <a href="CH24-L03.html">Projection View ZC_* 설계</a>에서 만든 소비 projection이고, <code>Booking</code>은 서비스에서
 보일 노출 이름이다. <strong>Service Definition에 넣은 entity만 외부에 노출된다.</strong></p>
-<p><strong>② Service Binding</strong>은 ADT의 form-based repository object로, Service Definition을 OData 같은 RESTful protocol과
+<p><strong>② <button class="term" type="button" data-term="Service Binding">Service Binding</button></strong>은 ADT의 form-based repository object로, Service Definition을 <button class="term" type="button" data-term="OData">OData</button> 같은 RESTful protocol과
 연결한다. binding type에는 OData V2/V4, UI용·Web API용 변형이 있다. <strong>UI용</strong>은 SAPUI5/Fiori가 쓸 control
 information을 포함할 수 있고, <strong>Web API용</strong>은 data-only 성격이 강하다. ADT에서 binding을 <strong>Activate</strong>하면 URL과
 preview를 쓸 수 있다.</p>
