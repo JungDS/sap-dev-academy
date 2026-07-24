@@ -57,10 +57,10 @@
 12
 13</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> lv_failed <span class="tok-kw">TYPE</span> abap_bool.
 
-<span class="tok-kw">INSERT</span> zbooking <span class="tok-kw">FROM</span> @ls_booking.            <span class="tok-com">" 헤더(예매 1건)</span>
+<span class="tok-kw">INSERT</span> zbooking <span class="tok-kw">FROM</span> @ls_fri.                <span class="tok-com">" 금요일 회차 예매</span>
 <span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>. lv_failed = abap_true. <span class="tok-kw">ENDIF</span>.
 
-<span class="tok-kw">INSERT</span> zbooking_item <span class="tok-kw">FROM</span> <span class="tok-kw">TABLE</span> @lt_items.   <span class="tok-com">" 항목(좌석 2석)</span>
+<span class="tok-kw">INSERT</span> zbooking <span class="tok-kw">FROM</span> @ls_sat.                <span class="tok-com">" 토요일 회차 예매</span>
 <span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>. lv_failed = abap_true. <span class="tok-kw">ENDIF</span>.
 
 <span class="tok-kw">IF</span> lv_failed = abap_false.
@@ -74,11 +74,11 @@
 성공&quot;**일 때만 호출한다 — 그래서 문장마다 결과를 누적한다.</p>
 </blockquote>
 </section><section class="lblock"><h2>왜 중요한가 — 전부 아니면 전무 (원자성)</h2>
-<p>예매 한 건은 보통 <strong>헤더(누가·언제)+항목(어느 좌석)</strong> 여러 행으로 나뉜다. 만약 &quot;헤더는
-저장됐는데 항목 저장은 실패&quot;한다면? <strong>예매는 있는데 좌석이 없는</strong> 깨진 데이터가 남는다.
-이런 <strong>반쪽 저장</strong>을 막으려고, 묶여야 할 변경들을 <strong>하나의 단위로</strong> 다룬다 — 전부 확정
+<p>정훈영이 <strong>금·토 두 회차를 한 묶음으로</strong> 예매한다고 하자. 두 예매는 업무상 함께 성립해야 한다 —
+&quot;금요일은 잡혔는데 토요일은 실패&quot;한다면? 고객은 한 자리만 얻고 다른 자리는 놓친, <strong>반쪽짜리 묶음
+예매</strong>가 남는다. 이런 반쪽 저장을 막으려고, 묶여야 할 변경들을 <strong>하나의 단위로</strong> 다룬다 — 전부 확정
 (<code>COMMIT</code>)되거나 전부 취소(<code>ROLLBACK</code>)되거나. 이 &quot;전부 아니면 전무&quot; 성질이 <strong>원자성</strong>이다.</p>
-<p>아래에서 항목 INSERT를 일부러 실패시키고 <code>COMMIT</code>을 눌러, <strong>반쪽 저장이 실제로 어떻게
+<p>아래에서 둘째 INSERT를 일부러 실패시키고 <code>COMMIT</code>을 눌러, <strong>반쪽 저장이 실제로 어떻게
 나는지</strong> 직접 만들어 보라. 그리고 올바른 선택(<code>ROLLBACK</code>)과 비교해 보라.</p>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">원자성 시뮬레이터 — COMMIT vs ROLLBACK</span><a class="embed__open" href="../../../embeds/abap/CH25-L02-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH25-L02-S01.html" loading="lazy" title="원자성 시뮬레이터 — COMMIT vs ROLLBACK" style="height:520px"></iframe></figure>
 </section><section class="lblock"><h2>COMMIT 시점은 신중하게</h2>

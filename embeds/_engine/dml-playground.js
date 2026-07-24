@@ -6,8 +6,8 @@
   var $ = function (id) { return document.getElementById(id); };
   var UNAME = 'JHY', TODAY = '20260625';          // 로그온 사용자(정훈영)·오늘
   var SEED = [
-    { id: '1001', pax: '정훈영', seats: '2', st: 'O', by: 'JHY', on: '20260601' },
-    { id: '1002', pax: '손흥민', seats: '4', st: 'O', by: 'MSON', on: '20260603' }
+    { id: '1001', pax: '정훈영', seats: '2', st: 'N', by: 'JHY', on: '20260601' },
+    { id: '1002', pax: '손흥민', seats: '4', st: 'N', by: 'MSON', on: '20260603' }
   ];
   var rows = [], op = 'INSERT';
 
@@ -28,7 +28,7 @@
   }
 
   function curVals() {
-    return { id: $('key').value.trim(), pax: $('pax').value.trim(), seats: $('seats').value.trim(), st: ($('st').value || 'O') };
+    return { id: $('key').value.trim(), pax: $('pax').value.trim(), seats: $('seats').value.trim(), st: ($('st').value || 'N') };
   }
   function find(id) { for (var i = 0; i < rows.length; i++) if (rows[i].id === id) return i; return -1; }
 
@@ -37,7 +37,7 @@
     var kw = function (s) { return '<span class="kw">' + s + '</span>'; };
     if (op === 'INSERT') e = kw('INSERT') + ' zbooking ' + kw('FROM') + ' @ls_booking.';
     else if (op === 'MODIFY') e = kw('MODIFY') + ' zbooking ' + kw('FROM') + ' @ls_booking.';
-    else if (op === 'UPDATE') e = kw('UPDATE') + ' zbooking ' + kw('SET') + " status = '" + (v.st || 'O') + "'" + (skip ? '.' : ' ' + kw('WHERE') + ' booking_id = @\'' + (v.id || '?') + '\'.');
+    else if (op === 'UPDATE') e = kw('UPDATE') + ' zbooking ' + kw('SET') + " status = '" + (v.st || 'N') + "'" + (skip ? '.' : ' ' + kw('WHERE') + ' booking_id = @\'' + (v.id || '?') + '\'.');
     else if (op === 'DELETE') e = kw('DELETE') + ' ' + kw('FROM') + ' zbooking' + (skip ? '.' : ' ' + kw('WHERE') + ' booking_id = @\'' + (v.id || '?') + '\'.');
     $('echo').innerHTML = e;
   }
@@ -60,14 +60,14 @@
     }
     if (op === 'INSERT') {
       if (find(v.id) >= 0) return setMsg('bad', '✕ <b>INSERT 중복키</b> — booking_id <code>' + v.id + '</code>가 이미 있어 <b>삽입되지 않았습니다</b> (sy-subrc=<b>4</b>, 덤프 아님). 중복은 성공이 아니므로 실패로 분기하고, 있으면 갱신하려면 <b>MODIFY</b>(upsert). ※대량 <code>INSERT FROM TABLE</code> 중복은 런타임 오류.');
-      rows.push({ id: v.id, pax: v.pax || '신규승객', seats: v.seats || '1', st: v.st, by: UNAME, on: TODAY });
+      rows.push({ id: v.id, pax: v.pax || '신규예매자', seats: v.seats || '1', st: v.st, by: UNAME, on: TODAY });
       render({ ids: [v.id], cls: 'ins' });
       return setMsg('ok', '✓ <b>INSERT</b> 1행 추가 (sy-subrc=0). 감사필드 <code>created_by=' + UNAME + '</code>·<code>created_on=' + TODAY + '</code> 자동 stamp.');
     }
     if (op === 'MODIFY') {
       var i = find(v.id);
       if (i >= 0) { rows[i].pax = v.pax || rows[i].pax; rows[i].seats = v.seats || rows[i].seats; rows[i].st = v.st; render({ ids: [v.id], cls: 'upd' }); return setMsg('ok', '✓ <b>MODIFY</b> — 키가 <b>있어</b> 기존 행을 <b>수정</b>(upsert)했습니다 (sy-subrc=0).'); }
-      rows.push({ id: v.id, pax: v.pax || '신규승객', seats: v.seats || '1', st: v.st, by: UNAME, on: TODAY });
+      rows.push({ id: v.id, pax: v.pax || '신규예매자', seats: v.seats || '1', st: v.st, by: UNAME, on: TODAY });
       render({ ids: [v.id], cls: 'ins' });
       return setMsg('ok', '✓ <b>MODIFY</b> — 키가 <b>없어</b> 새 행을 <b>추가</b>(upsert)했습니다. INSERT는 중복키면 sy-subrc=4로 실패하지만, MODIFY는 조용히 덮어씁니다.');
     }
