@@ -1046,5 +1046,40 @@
     "title": "save sequence (저장 시퀀스)",
     "desc": "COMMIT ENTITIES가 트리거하는 RAP의 실제 저장 단계. transactional buffer의 변경을 검증·조정한 뒤 DB에 all-or-nothing으로 반영한다. behavior pool(provider)은 이 안에서 직접 COMMIT WORK를 호출하지 않는다.",
     "analogy": "주문 확정 처리 — 장바구니를 실제 배송(DB 반영)으로 넘기는 마무리 절차."
+  },
+  "LUW": {
+    "title": "LUW (Logical Unit of Work · 논리 작업 단위)",
+    "desc": "전부 성공하거나 전부 실패해야 하는 변경들의 묶음(원자적 작업 단위). DB LUW는 하나의 database commit까지의 물리 단위, SAP LUW는 업무 관점의 단위로 여러 DB LUW·Update Module에 걸칠 수 있다. COMMIT WORK가 SAP LUW를 끝낸다.",
+    "analogy": "은행 이체 — 출금과 입금이 하나의 단위. 둘 다 되거나 둘 다 안 되거나."
+  },
+  "DB LUW": {
+    "title": "DB LUW (Database LUW)",
+    "desc": "데이터베이스가 보장하는 물리적 트랜잭션 단위 — 하나의 database commit(또는 rollback)까지. 한 work process의 화면 전환·RFC 등에서 끊길 수 있어, 업무 단위(SAP LUW)와 항상 일치하지는 않는다.",
+    "analogy": "영수증 한 장 단위의 정산 — DB가 한 번에 확정하는 최소 묶음."
+  },
+  "SAP LUW": {
+    "title": "SAP LUW (SAP Logical Unit of Work)",
+    "desc": "업무 관점의 작업 단위. 여러 DB LUW·Update Module(IN UPDATE TASK)에 걸쳐 있다가 COMMIT WORK 한 번으로 함께 확정된다. 화면을 넘나드는 업무도 하나의 SAP LUW로 묶어 일관성을 지킨다.",
+    "analogy": "쇼핑 전체 여정 — 여러 매장(DB LUW)을 돌아도 마지막 결제(COMMIT WORK) 한 번으로 확정."
+  },
+  "Update Module": {
+    "title": "Update Module (갱신 모듈 · V1/V2)",
+    "desc": "CALL FUNCTION … IN UPDATE TASK로 등록해 두었다가 COMMIT WORK 시점에 한꺼번에 실행되는 갱신용 Function Module. 변경 로직을 대화 프로그램에서 분리해 SAP LUW 끝에 모아 처리한다. V1(핵심·즉시)·V2(부가·지연)로 나뉜다.",
+    "analogy": "예약 주문서 — 지금 접수만 해 두고(등록) 마감(COMMIT) 때 주방이 한꺼번에 조리."
+  },
+  "IN UPDATE TASK": {
+    "title": "IN UPDATE TASK (갱신 태스크 등록)",
+    "desc": "CALL FUNCTION 'Z_…' IN UPDATE TASK로 갱신 로직을 즉시 실행하지 않고 COMMIT WORK까지 예약 등록하는 구문. 등록 직후 sy-subrc는 정의되지 않으며(등록만 한 것), 실제 실행·성패는 COMMIT WORK(AND WAIT) 시점에 판가름난다.",
+    "analogy": "'결제 시 실행' 예약 걸어 두기 — 지금은 접수, 실행은 확정 순간."
+  },
+  "감사필드": {
+    "title": "감사필드 (Audit Fields)",
+    "desc": "행을 누가·언제 만들고 바꿨는지 기록하는 컬럼(created_by/on/at·changed_by/on/at). SY 시스템 변수(sy-uname·sy-datum·sy-uzeit)로 stamp한다. 생성 시엔 created_*, 변경 시엔 changed_*만 갱신(created_by 덮어쓰기 금지). 추적·낙관적 잠금(changed_at)의 근거.",
+    "analogy": "문서의 작성자·작성일·수정자·수정일 도장 — 이력을 남겨 책임을 가린다."
+  },
+  "Package 처리": {
+    "title": "Package 처리 (패키지 단위 대량 변경)",
+    "desc": "수십만 건을 한 번에 바꾸면 메모리·롤백 세그먼트·잠금이 과부하되므로, 일정 건수(예: 5,000건)씩 잘라 처리하고 주기적으로 COMMIT WORK하는 패턴. 실패 시 재처리 범위를 좁히는 이점도 있다.",
+    "analogy": "이삿짐을 한 번에 못 옮기니 상자 단위로 나눠 나르고 중간중간 정리."
   }
 }

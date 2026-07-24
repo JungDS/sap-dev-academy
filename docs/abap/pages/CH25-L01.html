@@ -43,6 +43,8 @@
 <p><a href="CH08-L02.html">SELECT 4요소 · <code>*</code> vs 필드</a>에서 배운 <code>SELECT</code>는 <strong>읽기 전용</strong>이었다. 데이터를 화면에 보여 줄 수는 있었지만,
 &quot;예매가 들어왔다&quot;, &quot;취소됐다&quot; 같은 <strong>변화를 DB에 남기지는</strong> 못했다. 실무 프로그램의
 절반은 결국 <strong>데이터를 바꾸는</strong> 일이다.</p>
+<p>직전 <a href="CH24-L01.html">RAP</a>에서는 프레임워크가 저장을 대신해 줬다(우리는 동작만 선언했다). 이제 Track-2에서는
+그 아래에서 <strong>직접 DB를 바꾸는</strong> 기본기를 익힌다 — 프레임워크가 대신 해 주던 일을 손으로 하는 셈이다.</p>
 <p>DB의 행을 직접 바꾸는 네 개의 문장을 묶어 <button class="term" type="button" data-term="DML">DML</button>(Data Manipulation Language)이라고
 부른다. 읽기(<code>SELECT</code>)와 짝이 되는 <strong>쓰기 4형제</strong>다.</p>
 <table>
@@ -83,9 +85,9 @@
 2
 3
 4</pre><pre class="abap-editor__code"><code><span class="tok-kw">INSERT</span> zbooking <span class="tok-kw">FROM</span> @ls_booking.                          <span class="tok-com">" 새 예매 1건</span>
-<span class="tok-kw">UPDATE</span> zbooking <span class="tok-kw">SET</span> status = <span class="tok-str">'X'</span> <span class="tok-kw">WHERE</span> booking_id = @lv_id. <span class="tok-com">" 상태만 수정</span>
+<span class="tok-kw">UPDATE</span> zbooking <span class="tok-kw">SET</span> status = <span class="tok-str">'C'</span> <span class="tok-kw">WHERE</span> booking_id = @lv_id. <span class="tok-com">" 취소로 상태 변경</span>
 <span class="tok-kw">MODIFY</span> zbooking <span class="tok-kw">FROM</span> @ls_booking.                          <span class="tok-com">" 있으면 수정·없으면 추가</span>
-<span class="tok-kw">DELETE</span> <span class="tok-kw">FROM</span> zbooking <span class="tok-kw">WHERE</span> booking_id = @lv_id.            <span class="tok-com">" 예매 취소</span></code></pre></div></div>
+<span class="tok-kw">DELETE</span> <span class="tok-kw">FROM</span> zbooking <span class="tok-kw">WHERE</span> booking_id = @lv_id.            <span class="tok-com">" 행 자체를 삭제</span></code></pre></div></div>
 <blockquote>
 <p>네 문장의 <strong>차이가 헷갈리는 게 정상</strong>이다. 아래에서 직접 실행해 보면 한 번에 잡힌다.</p>
 </blockquote>
@@ -105,20 +107,35 @@ TO n ROWS</a>에서 &quot;조회 결과 itab을 통째로 저장하고 싶다&qu
 <p>단, <code>INSERT ... FROM TABLE</code>에서 <strong>중복 키가 섞이면</strong> 단건과 달리 런타임 오류가 난다(필요하면
 <code>ACCEPTING DUPLICATE KEYS</code>로 건너뛴다). 대량 처리의 실패 회수는 뒤 레슨에서 다시 잡는다.</p>
 </blockquote>
-</section><section class="lblock"><h2>누가·언제 바꿨나 — 감사필드 자동 stamp</h2>
-<p>업무 테이블에는 보통 &quot;이 행을 <strong>누가·언제</strong> 만들었나&quot;를 남기는 컬럼(<code>created_by</code>·
-<code>created_on</code>)을 둔다. 나중에 문제를 추적하거나 책임을 가릴 때 필수다. 값은 <button class="term" type="button" data-term="SY 시스템 변수">SY 변수</button>로
-채운다 — 시스템이 로그온 사용자·날짜·시각을 알아서 들고 있다.</p>
+</section><section class="lblock"><h2>누가·언제 바꿨나 — <button class="term" type="button" data-term="감사필드">감사필드</button> 자동 stamp</h2>
+<p><a href="CH09-L09.html">ZBOOKING을 만들 때</a> 자리를 잡아 둔 <strong>감사필드</strong>가 여기서 쓸모를 얻는다. &quot;이 행을
+<strong>누가·언제</strong> 만들고 바꿨나&quot;를 남기는 컬럼(<code>created_by</code>·<code>created_on</code>·<code>created_at</code> + <code>changed_*</code>)이다.
+나중에 문제를 추적하거나 책임을 가릴 때 필수다. 값은 <button class="term" type="button" data-term="SY 시스템 변수">SY 변수</button>로 채운다 — 시스템이
+로그온 사용자·날짜·시각을 알아서 들고 있다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
-4</pre><pre class="abap-editor__code"><code>ls_booking-created_by = sy-uname.   <span class="tok-com">" 로그온 사용자 ID</span>
+4
+5</pre><pre class="abap-editor__code"><code><span class="tok-com">" 생성할 때 — created_* 를 찍는다</span>
+ls_booking-created_by = sy-uname.   <span class="tok-com">" 로그온 사용자 ID</span>
 ls_booking-created_on = sy-datum.   <span class="tok-com">" 오늘 날짜</span>
 ls_booking-created_at = sy-uzeit.   <span class="tok-com">" 현재 시각</span>
 <span class="tok-kw">INSERT</span> zbooking <span class="tok-kw">FROM</span> @ls_booking.</code></pre></div></div>
+<p>바꿀 때는 <strong>생성 필드는 그대로 두고 변경 필드만</strong> 갱신한다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6</pre><pre class="abap-editor__code"><code><span class="tok-com">" 수정할 때 — changed_* 만 갱신(created_* 는 건드리지 않음)</span>
+<span class="tok-kw">UPDATE</span> zbooking
+  <span class="tok-kw">SET</span> status     = <span class="tok-str">'C'</span>,
+      changed_by = @sy-uname,
+      changed_on = @sy-datum
+  <span class="tok-kw">WHERE</span> booking_id = @lv_id.</code></pre></div></div>
 <blockquote>
-<p>위 플레이그라운드에서 <code>INSERT</code>/<code>MODIFY</code>로 새 행을 만들면 <code>created_by</code>·<code>created_on</code>이
-자동으로 찍히는 걸 볼 수 있다.</p>
+<p>🚧 <strong><code>UPDATE</code> 때 <code>created_by</code>를 덮어쓰면 최초 생성자를 잃는다.</strong> 생성 이력은 한 번 찍으면 끝까지 보존하고,
+바뀔 때마다 갱신되는 건 <code>changed_*</code>뿐이다. 위 플레이그라운드에서 새 행을 만들면 <code>created_*</code>가 찍히는 걸 볼 수 있다.</p>
 </blockquote>
 </section><section class="lblock"><h2>⚠️ 표준 테이블은 직접 쓰지 않는다</h2>
 <p><code>SCARR</code>·<code>SFLIGHT</code> 같은 <strong>SAP 표준 테이블</strong>은 <code>INSERT</code>/<code>UPDATE</code>로 <strong>직접 바꾸면 안 된다</strong>.
@@ -140,7 +157,7 @@ ls_booking-created_at = sy-uzeit.   <span class="tok-com">" 현재 시각</span>
 <ul>
 <li>쓰기 4형제 = <code>INSERT</code>(추가)·<code>UPDATE</code>(수정)·<code>MODIFY</code>(upsert)·<code>DELETE</code>(삭제).</li>
 <li>여러 건은 <code>FROM TABLE</code>로 한 번에 — 빠르다.</li>
-<li>업무 테이블엔 감사필드(<code>created_by</code>·<code>created_on</code>)를 <code>SY</code> 변수로 stamp.</li>
+<li>업무 테이블엔 <button class="term" type="button" data-term="감사필드">감사필드</button>를 <code>SY</code> 변수로 stamp — 생성은 <code>created_*</code>, 변경은 <code>changed_*</code>만(생성자 보존).</li>
 <li>표준 테이블은 직접 <button class="term" type="button" data-term="DML">DML</button> 금지 → BAPI.</li>
 </ul>
 <hr>

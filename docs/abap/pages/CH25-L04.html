@@ -52,10 +52,10 @@
 7
 8</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> lt_error <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> zbooking.
 
-<span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_booking <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(ls).
-  <span class="tok-kw">INSERT</span> zbooking <span class="tok-kw">FROM</span> @ls.
-  <span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.                <span class="tok-com">" 단건 중복키면 sy-subrc=4</span>
-    <span class="tok-kw">APPEND</span> ls <span class="tok-kw">TO</span> lt_error.        <span class="tok-com">" 실패 건만 따로 모은다</span>
+<span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_booking <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(ls_booking).
+  <span class="tok-kw">INSERT</span> zbooking <span class="tok-kw">FROM</span> @ls_booking.
+  <span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.                    <span class="tok-com">" 단건 중복키면 sy-subrc=4</span>
+    <span class="tok-kw">APPEND</span> ls_booking <span class="tok-kw">TO</span> lt_error.     <span class="tok-com">" 실패 건만 따로 모은다</span>
   <span class="tok-kw">ENDIF</span>.
 <span class="tok-kw">ENDLOOP</span>.</code></pre></div></div>
 <p>실패 행만 모으는 것으로는 부족하다. 나중에 추적하려면 <strong>키 + 사유</strong>까지 남겨야 한다.</p>
@@ -71,16 +71,16 @@
 10
 11
 12
-13</pre><pre class="abap-editor__code"><code><span class="tok-kw">TYPES</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ty_error,
+13</pre><pre class="abap-editor__code"><code><span class="tok-kw">TYPES</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ts_error,
          booking_id <span class="tok-kw">TYPE</span> zbooking-booking_id,
          reason     <span class="tok-kw">TYPE</span> string,
-       <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ty_error.
-<span class="tok-kw">DATA</span> lt_error <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ty_error.
+       <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ts_error.
+<span class="tok-kw">DATA</span> lt_error <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ts_error.
 
-<span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_booking <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(ls).
-  <span class="tok-kw">INSERT</span> zbooking <span class="tok-kw">FROM</span> @ls.
+<span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_booking <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(ls_booking).
+  <span class="tok-kw">INSERT</span> zbooking <span class="tok-kw">FROM</span> @ls_booking.
   <span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.
-    <span class="tok-kw">APPEND</span> <span class="tok-kw">VALUE</span> #( booking_id = ls-booking_id
+    <span class="tok-kw">APPEND</span> <span class="tok-kw">VALUE</span> #( booking_id = ls_booking-booking_id
                     reason     = |<span class="tok-kw">INSERT</span> 실패: sy-subrc={ sy-subrc }| ) <span class="tok-kw">TO</span> lt_error.
   <span class="tok-kw">ENDIF</span>.
 <span class="tok-kw">ENDLOOP</span>.</code></pre></div></div>

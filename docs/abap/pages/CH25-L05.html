@@ -43,7 +43,7 @@
 <p>수십만 건을 <strong>하나의 <button class="term" type="button" data-term="트랜잭션">트랜잭션</button></strong>으로 바꾸면 어떻게 될까? COMMIT 전까지의 모든 변경이
 <button class="term" type="button" data-term="메모리">메모리</button>(<button class="term" type="button" data-term="ROLLBACK WORK">롤백</button> 세그먼트)에 쌓이고, 건드린 행마다 잠금이 걸린 채 유지된다. 결국 <strong>메모리·DB
 잠금·로그가 폭발</strong>하고, 중간에 한 건만 실패해도 <strong>전부 롤백</strong>된다.</p>
-<p>해법은 단순하다 — <strong>일정 건수(패키지)마다</strong> 처리하고 <code>COMMIT</code>해서, 쌓인 부담을 주기적으로
+<p>해법은 단순하다 — <strong>일정 건수(<button class="term" type="button" data-term="Package 처리">패키지</button>)마다</strong> 처리하고 <code>COMMIT</code>해서, 쌓인 부담을 주기적으로
 비운다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
@@ -67,7 +67,7 @@
 <span class="tok-kw">ENDLOOP</span>.
 <span class="tok-kw">COMMIT</span> <span class="tok-kw">WORK</span>.                  <span class="tok-com">" 루프 후 남은 것 확정(빠뜨리기 쉬움)</span></code></pre></div></div>
 </section><section class="lblock"><h2>패키지 크기, 직접 바꿔 보기</h2>
-<p>패키지를 작게/크게 잡거나 &quot;단일(전체)&quot;로 두면 <strong>COMMIT 횟수</strong>와 <strong>최대 미<button class="term" type="button" data-term="COMMIT WORK">커밋</button> 버퍼</strong>가
+<p><button class="term" type="button" data-term="Package 처리">패키지</button>를 작게/크게 잡거나 &quot;단일(전체)&quot;로 두면 <strong>COMMIT 횟수</strong>와 <strong>최대 미<button class="term" type="button" data-term="COMMIT WORK">커밋</button> 버퍼</strong>가
 어떻게 달라질까? 아래에서 크기를 바꿔, 버퍼가 톱니처럼 <strong>차고 비우는</strong> 패턴과 단일 COMMIT의
 <strong>버퍼 폭발</strong>을 비교해 보라.</p>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">패키지 커밋 시각화 — 크기별 COMMIT·버퍼</span><a class="embed__open" href="../../../embeds/abap/CH25-L05-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH25-L05-S01.html" loading="lazy" title="패키지 커밋 시각화 — 크기별 COMMIT·버퍼" style="height:540px"></iframe></figure>
@@ -85,7 +85,7 @@ COMMIT 횟수가 늘어 <strong>오버헤드</strong>가 커진다 — 절충점
 </blockquote>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>전체 단일 COMMIT</strong> → 대량에서 자원 폭발. 반드시 패키지로 쪼갠다.</li>
+<li><strong>전체 단일 COMMIT</strong> → 대량에서 자원 폭발. 반드시 <button class="term" type="button" data-term="Package 처리">패키지</button>로 쪼갠다.</li>
 <li><strong>루프 뒤 마지막 COMMIT 누락</strong> → 패키지 배수가 아닌 <strong>나머지 건</strong>이 확정 안 됨. 루프 후 한 번 더 — 단,
 실제 변경이 있었을 때만 commit하도록 <code>lv_pending</code> 플래그를 두면 더 명확하다.</li>
 <li><strong>재시작점 없음</strong> → 중간 실패 후 처음부터 다시. 진행 위치를 기록(<a href="CH25-L04.html">오류 로그와 재처리 구조</a>).</li>
@@ -94,7 +94,7 @@ COMMIT 횟수가 늘어 <strong>오버헤드</strong>가 커진다 — 절충점
 </ul>
 </section><section class="lblock"><h2>정리</h2>
 <ul>
-<li>대량 변경은 <strong>패키지 단위 COMMIT</strong>으로 — 미<button class="term" type="button" data-term="COMMIT WORK">커밋</button> 버퍼를 주기적으로 비운다.</li>
+<li>대량 변경은 <strong><button class="term" type="button" data-term="Package 처리">패키지</button> 단위 COMMIT</strong>으로 — 미<button class="term" type="button" data-term="COMMIT WORK">커밋</button> 버퍼를 주기적으로 비운다.</li>
 <li>크기는 1천~1만에서 절충(작을수록 안전, COMMIT 오버헤드↑).</li>
 <li>루프 뒤 <strong>남은 건 마지막 COMMIT</strong> + <strong>재시작점</strong> 관리를 잊지 않는다.</li>
 </ul>
@@ -106,7 +106,7 @@ COMMIT 횟수가 늘어 <strong>오버헤드</strong>가 커진다 — 절충점
 <li><a href="CH16-L10.html">실습 — 예매 입력 화면 (Dynpro)</a>에서 만든 예매 입력 화면의 SAVE에 실제 <code>INSERT zbooking</code>을
 붙이고 <code>COMMIT WORK</code>로 확정한다.</li>
 <li>저장 시 감사필드(<code>created_by</code>=sy-uname·<code>created_on</code>=sy-datum)를 자동 stamp한다.</li>
-<li>(심화) 엑셀에서 받은 예매 100건을 <strong>패키지 단위 COMMIT</strong>(이 레슨)으로 일괄 등록한다.</li>
+<li>(심화) 엑셀에서 받은 예매 100건을 <strong><button class="term" type="button" data-term="Package 처리">패키지</button> 단위 COMMIT</strong>(이 레슨)으로 일괄 등록한다.</li>
 </ol>
 <p>힌트: <a href="CH25-L01.html">INSERT / UPDATE / MODIFY / DELETE 실무 기준</a>(INSERT·감사필드)·<a href="CH25-L02.html">COMMIT WORK / ROLLBACK
 WORK</a>(COMMIT)·이 레슨(패키지). 표준 테이블은 직접 DML 금지(BAPI).</p>
