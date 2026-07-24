@@ -272,10 +272,10 @@ function autolinkGlossary(html, rawBody, chapterNum) {
   forms.sort((a, b) => b.length - a.length);   // greedy: 긴 표면형 우선
   const tagRe = /<\/?([a-zA-Z0-9]+)(?:\s[^>]*)?\/?>/g;
   const seen = new Set();                     // 현재 h2 섹션에서 이미 링크한 글로서리 키
-  let out = '', last = 0, skip = 0, mt;
+  let out = '', last = 0, skip = 0, titleSkip = 0, mt;
   while ((mt = tagRe.exec(html))) {
     const seg = html.slice(last, mt.index);
-    out += skip > 0 ? seg : linkTermsInText(seg, forms, formToKey, seen);
+    out += (skip > 0 || titleSkip > 0) ? seg : linkTermsInText(seg, forms, formToKey, seen);
     out += mt[0];
     const name = mt[1].toLowerCase(), isClose = mt[0][1] === '/';
     const selfClose = /\/>$/.test(mt[0]) || ['br','hr','img','input','meta','link'].includes(name);
@@ -283,10 +283,15 @@ function autolinkGlossary(html, rawBody, chapterNum) {
     if (name === 'button' && !isClose) {                             // 명시 [[ ]] 버튼도 '첫 등장'으로 카운트
       const dm = /data-term="([^"]*)"/.exec(mt[0]); if (dm) { seen.add(dm[1]); }
     }
+    // 코드블록 헤더의 타입 라벨(span.abap-editor__title)은 자동 링크 제외 — 'CDS View'·'Behavior Definition' 등
+    // 라벨이 글로서리 키와 겹칠 때 헤더에 용어 버튼이 박히는 문제 방지(제목 안 제외 원칙).
+    // ※ 임베드 캡션(embed__title)은 서술형이라 제외하지 않음(용어 링크가 학습에 유용).
+    if (name === 'span' && !isClose && /class="[^"]*abap-editor__title/.test(mt[0])) { titleSkip++; }
+    else if (name === 'span' && isClose && titleSkip > 0) { titleSkip = Math.max(0, titleSkip - 1); }
     if (AUTOLINK_SKIP.has(name) && !selfClose) { skip = isClose ? Math.max(0, skip - 1) : skip + 1; }
     last = tagRe.lastIndex;
   }
-  out += skip > 0 ? html.slice(last) : linkTermsInText(html.slice(last), forms, formToKey, seen);
+  out += (skip > 0 || titleSkip > 0) ? html.slice(last) : linkTermsInText(html.slice(last), forms, formToKey, seen);
   return out;
 }
 

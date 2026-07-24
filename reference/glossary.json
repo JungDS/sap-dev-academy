@@ -956,5 +956,95 @@
     "title": "Access Control (CDS 접근 제어)",
     "desc": "CDS 뷰를 누가 어떤 행까지 볼 수 있는지 정하는 장치. 뷰의 @AccessControl.authorizationCheck로 검사 여부를 선언하고(#CHECK/#NOT_REQUIRED), 실제 규칙은 DCL(Data Control Language)로 정의한다.",
     "analogy": "도서관 열람 권한 — 누구는 일반실만, 누구는 귀중본실까지."
+  },
+  "managed": {
+    "title": "managed (RAP managed 시나리오)",
+    "desc": "RAP Business Object 구현 방식 중 하나. RAP 런타임/provider가 표준 저장(create·update·delete)과 transactional buffer 처리의 상당 부분을 자동으로 맡는다. 신규 개발의 기본. 반대는 unmanaged.",
+    "analogy": "자동 변속 차 — 기어 조작(표준 저장)을 차가 알아서, 운전자는 목적지(업무 로직)에 집중."
+  },
+  "unmanaged": {
+    "title": "unmanaged (RAP unmanaged 시나리오)",
+    "desc": "RAP Business Object 구현 방식 중 하나. 저장·잠금 등 트랜잭션 처리를 개발자가 직접 구현한다. 보통 기존 로직·특수 저장 절차가 있는 레거시 통합에 쓴다. 반대는 managed.",
+    "analogy": "수동 변속 차 — 기어(저장 절차)를 직접 조작. 손은 많이 가지만 세밀하게 통제."
+  },
+  "provider contract": {
+    "title": "provider contract (RAP 제공자 계약)",
+    "desc": "RAP Projection View가 어떤 소비 시나리오에 쓰이는지 선언하는 계약. transactional_query(트랜잭션 UI/서비스)·transactional_interface·analytical_query 3종이 있다. 이 계약이 있어야 정식 Projection View이고, 없으면 obsolete다.",
+    "analogy": "출입증 종류 표시 — '방문객/직원/납품'처럼 어떤 용도로 드나드는지 미리 밝히는 것."
+  },
+  "RAP Projection View": {
+    "title": "RAP Projection View (transactional projection)",
+    "desc": "RAP BO의 root를 소비자(Fiori·OData)에게 노출하는 CDS projection view. as projection on + provider contract로 만든다. CH23의 읽기 전용 Consumption View(nesting·계약 없음)와 달리 트랜잭션 BO에 소속된다는 점이 갈림길이다. classic DDIC Projection View와는 이름만 같고 다른 개념.",
+    "analogy": "매장 진열대 — 창고(root) 물건 중 손님에게 보일 것만, 거래 규칙(contract)을 붙여 내놓는다."
+  },
+  "Behavior Pool": {
+    "title": "Behavior Pool (동작 구현 클래스)",
+    "desc": "BDEF(Behavior Definition)에 선언한 custom 동작(validation·determination·action 등)의 실제 ABAP 코드를 담는 클래스 묶음. managed라도 표준 저장 외의 업무 로직은 여기에 구현한다. handler/saver 클래스로 구성된다.",
+    "analogy": "메뉴판(BDEF)에 적힌 요리를 실제로 만드는 주방."
+  },
+  "Behavior Implementation": {
+    "title": "Behavior Implementation (BIMP · 동작 구현)",
+    "desc": "BDEF가 선언한 동작을 실제 ABAP 코드로 구현하는 것. Behavior Pool 클래스의 handler 메서드(FOR VALIDATE ON SAVE·FOR DETERMINE ON MODIFY·FOR MODIFY 등)로 작성한다. 선언(BDEF)과 구현(BIMP)의 분리가 RAP 핵심.",
+    "analogy": "설계도(BDEF)와 실제 시공(BIMP) — 계약을 적는 일과 지어 내는 일은 다르다."
+  },
+  "Service Definition": {
+    "title": "Service Definition (서비스 정의)",
+    "desc": "어떤 CDS entity를 RAP business service로 노출할지 선언하는 SDL source. define service … { expose ZC_… as …; } 형태. 여기에 넣은 entity만 외부에 노출된다.",
+    "analogy": "손님에게 낼 메뉴 목록을 정하는 것 — 주방에 있어도 메뉴에 없으면 못 시킨다."
+  },
+  "Service Binding": {
+    "title": "Service Binding (서비스 바인딩)",
+    "desc": "Service Definition을 OData(V2/V4·UI용/Web API용) 같은 실제 protocol과 연결하는 repository object. Activate하면 URL·Fiori Preview를 쓸 수 있다. Definition(무엇을)과 Binding(어떻게 접근)은 역할이 다르다.",
+    "analogy": "정한 메뉴를 실제 매장·배달앱에 등록해 주문 가능하게 만드는 단계."
+  },
+  "Validation": {
+    "title": "Validation (RAP 검증)",
+    "desc": "RAP에서 저장해도 되는지 검사하는 로직. save 시점에 돌며, 실패하면 예외를 던지지 않고 failed·reported 구조에 실패 인스턴스·메시지를 기록한다. 값을 고치는 게 아니라 검사·거부가 목적.",
+    "analogy": "탑승 게이트 검사 — 조건이 안 맞으면 통과(저장)를 막는다. 승객을 바꾸지는 않는다."
+  },
+  "Determination": {
+    "title": "Determination (RAP 자동 결정)",
+    "desc": "RAP에서 값을 자동으로 계산·채우는 로직. on modify 또는 on save 시점에 돌며, 예: 생성 시 status를 'N'으로 기본 설정. 검사(validation)와 달리 데이터를 채우는 게 목적.",
+    "analogy": "서식의 자동 채움 — 날짜·번호처럼 시스템이 알아서 넣어 주는 칸."
+  },
+  "Action": {
+    "title": "Action (RAP 액션)",
+    "desc": "사용자가 명시적으로 실행하는 RAP 업무 명령(예: 예매 취소). Fiori 버튼처럼 보이지만 표준 CUD가 아니라 별도로 선언·구현하는 동작이다. result [1] $self로 실행 후 자기 인스턴스를 돌려줄 수 있다.",
+    "analogy": "엘리베이터의 '문 닫기' 버튼 — 기본 동작 외에 사용자가 눌러 실행하는 별도 명령."
+  },
+  "ABAP Cloud": {
+    "title": "ABAP Cloud (현대 ABAP 개발 모델)",
+    "desc": "released API와 제약된 ABAP 언어 버전만 사용해 업그레이드에 안전한 앱을 만드는 SAP의 현대 개발 모델. RAP·CDS·released API가 기본 도구이며 Clean Core 원칙을 따른다.",
+    "analogy": "정식 부품(released API)만 쓰는 조립 — 나중에 본체를 업그레이드해도 안 깨진다."
+  },
+  "Released API": {
+    "title": "Released API (릴리스된 API)",
+    "desc": "SAP이 안정적 사용을 보장(release contract)한 공개 객체. ABAP Cloud에서는 released 되지 않은 SAP 객체에 의존하면 ATC가 막는다. 업그레이드 후에도 계약이 유지된다.",
+    "analogy": "정식 출시된 공식 부품 — 단종·규격 변경 없이 계속 쓸 수 있게 보증된 것."
+  },
+  "Clean Core": {
+    "title": "Clean Core (클린 코어 원칙)",
+    "desc": "SAP 표준(core)을 직접 수정하지 않고 released API·확장 지점으로만 커스터마이징해, 표준을 '깨끗하게' 유지하는 원칙. 업그레이드·클라우드 전환을 쉽게 한다. ABAP Cloud의 바탕 철학.",
+    "analogy": "세입자가 벽을 부수지 않고 가구·소품으로만 꾸미기 — 집주인(SAP)이 리모델링해도 문제없다."
+  },
+  "OData": {
+    "title": "OData (Open Data Protocol)",
+    "desc": "SAP Fiori·외부 client가 데이터를 읽고 쓰는 표준 REST 기반 프로토콜. RAP 서비스는 Service Binding으로 OData(V2/V4)로 노출된다. entity·metadata·CRUD·action을 표준 URL로 제공한다.",
+    "analogy": "만국 공통 콘센트 규격 — 어느 앱이든 같은 규격으로 데이터에 꽂아 쓴다."
+  },
+  "EML": {
+    "title": "EML (Entity Manipulation Language)",
+    "desc": "ABAP 프로그램에서 RAP BO를 직접 읽고 바꾸는 언어. READ/MODIFY/COMMIT/ROLLBACK ENTITIES 문으로 구성된다. MODIFY ENTITIES는 transactional buffer만 바꾸고, COMMIT ENTITIES가 실제 DB 저장(save sequence)을 트리거한다.",
+    "analogy": "장바구니 조작 언어 — 담기(MODIFY)와 결제(COMMIT)가 다른 단계."
+  },
+  "transactional buffer": {
+    "title": "transactional buffer (트랜잭션 버퍼)",
+    "desc": "RAP가 변경을 DB에 바로 쓰지 않고 잠시 모아 두는 메모리 영역. MODIFY ENTITIES·create/update는 여기에 반영되고, COMMIT ENTITIES 시 save sequence를 거쳐 DB에 저장된다. 그래서 저장 직후 SELECT해도 안 보일 수 있다.",
+    "analogy": "쇼핑 장바구니 — 결제(commit) 전까지는 담아 둔 상태일 뿐 아직 내 것이 아니다."
+  },
+  "save sequence": {
+    "title": "save sequence (저장 시퀀스)",
+    "desc": "COMMIT ENTITIES가 트리거하는 RAP의 실제 저장 단계. transactional buffer의 변경을 검증·조정한 뒤 DB에 all-or-nothing으로 반영한다. behavior pool(provider)은 이 안에서 직접 COMMIT WORK를 호출하지 않는다.",
+    "analogy": "주문 확정 처리 — 장바구니를 실제 배송(DB 반영)으로 넘기는 마무리 절차."
   }
 }
