@@ -46,11 +46,11 @@
 <p>공연 목록에서 회차를 따라가야 하고, 회차에서 예매를 따라가야 하며, 예매에서 다시 공연 정보를 보여 줘야
 한다. 이 관계를 매번 JOIN 조건으로 쓰면 <code>concert_id</code>·<code>perf_no</code>를 잇는 규칙이 여러 곳에 흩어진다. 누군가
 한 곳에서 조건을 잘못 쓰면 같은 업무 관계가 화면마다 다르게 해석된다.</p>
-<p>CDS <strong>Association</strong>(뷰 사이 관계 선언)은 이 관계를 데이터 모델 안에 새겨 둔다. 핵심은 &quot;JOIN을 없앤다&quot;가
+<p>CDS <button class="term" type="button" data-term="Association">Association</button>(뷰 사이 관계 선언)은 이 관계를 데이터 모델 안에 새겨 둔다. 핵심은 &quot;JOIN을 없앤다&quot;가
 아니라 **&quot;관계를 이름 붙여 재사용한다&quot;**이다.</p>
 </section><section class="lblock"><h2>무엇인가 — 관계에 이름을 붙이기</h2>
-<p>Association의 기본 구조는 이렇다.</p>
-<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+<p><button class="term" type="button" data-term="Association">Association</button>의 기본 구조는 이렇다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">CDS View</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
 4
@@ -62,10 +62,10 @@
 10
 11
 12</pre><pre class="abap-editor__code"><code>@AccessControl.authorizationCheck: #NOT_REQUIRED
-define view <span class="tok-kw">entity</span> ZI_Concert
+<span class="tok-kw">define</span> <span class="tok-kw">view</span> <span class="tok-kw">entity</span> ZI_Concert
   <span class="tok-kw">as</span> <span class="tok-kw">select</span> <span class="tok-kw">from</span> zconcert
-  association [<span class="tok-num">0</span>..*] <span class="tok-kw">to</span> ZI_Perf <span class="tok-kw">as</span> _Perf
-    <span class="tok-kw">on</span> $projection.concert_id = _Perf.concert_id
+  <span class="tok-kw">association</span> [<span class="tok-num">0</span>..*] <span class="tok-kw">to</span> ZI_Perf <span class="tok-kw">as</span> _Perf
+    <span class="tok-kw">on</span> $<span class="tok-kw">projection</span>.concert_id = _Perf.concert_id
 {
   <span class="tok-kw">key</span> concert_id,
       artist,
@@ -95,8 +95,9 @@ define view <span class="tok-kw">entity</span> ZI_Concert
 </tr>
 </tbody></table>
 <ul>
-<li><strong><code>[0..*]</code>는 cardinality(관계의 개수 기대치)다.</strong> 한 공연에 회차가 없을 수도, 여러 개일 수도 있다는 뜻.
-단순 주석이 아니라 모델을 읽는 사람·도구에게 관계의 형태를 알려 주므로 <strong>데이터 현실에 맞춰야</strong> 한다.</li>
+<li><strong><code>[0..*]</code>는 <button class="term" type="button" data-term="Cardinality">target cardinality</button>(대상 쪽 개수 기대치)다.</strong> 한 공연이 <strong>대상인 회차를 몇 개</strong>
+가리키는지 — 없을 수도(0), 여러 개일 수도(<code>*</code>) 있다는 뜻. 단순 주석이 아니라 모델을 읽는 사람·도구에게
+관계의 형태를 알려 주므로 <strong>데이터 현실에 맞춰야</strong> 한다. (숫자 대신 단어로 <code>association of one to many to ZI_Perf</code>처럼 쓰는 표기도 있다.)</li>
 <li><strong><code>$projection</code>은 &quot;현재 뷰가 노출하는 요소를 기준으로 ON 조건을 쓴다&quot;는 표시</strong>다. association을 select
 list에 노출하면, ON 조건의 source 쪽 필드(<code>concert_id</code>)는 반드시 <code>{ }</code> 안에 있어야 한다.</li>
 </ul>
@@ -106,7 +107,7 @@ list에 노출하면, ON 조건의 source 쪽 필드(<code>concert_id</code>)는
 <p>아래 시뮬레이터에서 공연을 골라 <code>_Perf</code> 경로로 회차를 따라가 보자. <code>_Perf</code> 노출을 끄면 소비자가 경로를 못
 보고, <code>concert_id</code>를 빼면 ON 조건의 source가 사라진다. cardinality를 <code>[1..1]</code>로 바꿨는데 회차가 여러 개면
 어떤 경고가 뜨는지, 같은 관계를 JOIN으로 보면 어떤 모습인지도 비교해 보자.</p>
-<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">Association 경로 시뮬레이터</span><a class="embed__open" href="../../../embeds/abap/CH23-L03-S02.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH23-L03-S02.html" loading="lazy" title="Association 경로 시뮬레이터"></iframe></figure>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title"><button class="term" type="button" data-term="Association">Association</button> 경로 시뮬레이터</span><a class="embed__open" href="../../../embeds/abap/CH23-L03-S02.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH23-L03-S02.html" loading="lazy" title="Association 경로 시뮬레이터"></iframe></figure>
 <blockquote>
 <p><strong>association은 JOIN과 무관한 마법 통로가 아니다.</strong> path를 실제로 사용하면 내부적으로 JOIN으로 변환될 수
 있다. 차이는 JOIN 조건을 소비처마다 반복하지 않고 <strong>모델에 한 번 선언</strong>한다는 점이다.</p>
@@ -116,9 +117,9 @@ list에 노출하면, ON 조건의 source 쪽 필드(<code>concert_id</code>)는
 <li><strong>활성화</strong> — ON 조건에 쓴 필드가 source와 target 양쪽에 있어야 한다. 대상 필드는 <code>_Perf.concert_id</code>처럼
 association 이름으로 접근한다.</li>
 <li><strong>ADT outline</strong> — <code>_Perf</code>가 단순 필드가 아니라 <em>관계 항목</em>으로 보이면 의도대로 선언된 것이다.</li>
-<li><strong>projection으로 전달</strong> — 소비 계층이 관계를 이어받는지 본다.</li>
+<li><strong>소비 뷰로 전달</strong> — 소비 계층이 관계를 이어받는지 본다.</li>
 </ol>
-<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">CDS View</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
 4
@@ -128,8 +129,8 @@ association 이름으로 접근한다.</li>
 8
 9
 10</pre><pre class="abap-editor__code"><code>@AccessControl.authorizationCheck: #NOT_REQUIRED
-define view <span class="tok-kw">entity</span> ZC_Concert
-  <span class="tok-kw">as</span> projection <span class="tok-kw">on</span> ZI_Concert
+<span class="tok-kw">define</span> <span class="tok-kw">view</span> <span class="tok-kw">entity</span> ZC_Concert
+  <span class="tok-kw">as</span> <span class="tok-kw">select</span> <span class="tok-kw">from</span> ZI_Concert
 {
   <span class="tok-kw">key</span> concert_id,
       artist,

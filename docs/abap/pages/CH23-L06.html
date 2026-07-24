@@ -45,17 +45,17 @@
 봐야 할 수 있다.</p>
 <p>이 권한 필터를 프로그램마다 <a href="CH15-L07.html">AUTHORITY-CHECK</a>와 WHERE 조건으로 반복하면 위험하다. 어떤
 프로그램은 권한을 적용하고, 어떤 프로그램은 빠뜨릴 수 있다. CDS의 장점은 <strong>읽기 모델 가까이에 접근 제어를
-선언</strong>해 여러 소비처가 같은 보안 규칙을 따르게 하는 것이다.</p>
+선언</strong>해, 그 뷰를 읽는 프로그램마다 권한 코드를 다시 쓰지 않아도 된다는 점이다.</p>
 </section><section class="lblock"><h2>무엇인가 — DCL로 행 단위 권한</h2>
-<p><strong>DCL</strong>(Data Control Language)은 CDS entity에 대한 접근 규칙을 별도 DCL source로 정의한다.</p>
-<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+<p><button class="term" type="button" data-term="DCL">DCL</button>(Data Control Language)은 CDS entity에 대한 <button class="term" type="button" data-term="Access Control">접근 규칙</button>을 별도 DCL source로 정의한다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">Access Control (DCL)</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
 4
 5</pre><pre class="abap-editor__code"><code>@MappingRole: true
-define role ZI_Concert_Role {
-  grant <span class="tok-kw">select</span> <span class="tok-kw">on</span> ZI_Concert
-    <span class="tok-kw">where</span> ( venue ) = aspect pfcg_auth( Z_VENUE_AUTH, VENUE, ACTVT = <span class="tok-str">'03'</span> );
+<span class="tok-kw">define</span> <span class="tok-kw">role</span> ZI_Concert_Role {
+  <span class="tok-kw">grant</span> <span class="tok-kw">select</span> <span class="tok-kw">on</span> ZI_Concert
+    <span class="tok-kw">where</span> ( venue ) = <span class="tok-kw">aspect</span> pfcg_auth( Z_VENUE_AUTH, VENUE, ACTVT = <span class="tok-str">'03'</span> );
 }</code></pre></div></div>
 <table>
 <thead>
@@ -82,7 +82,7 @@ define role ZI_Concert_Role {
 </tr>
 </tbody></table>
 <p>대상 CDS 뷰는 권한 검사를 의도에 맞게 선언해야 한다.</p>
-<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">CDS View</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
 4
@@ -91,7 +91,7 @@ define role ZI_Concert_Role {
 7
 8
 9</pre><pre class="abap-editor__code"><code>@AccessControl.authorizationCheck: #<span class="tok-kw">CHECK</span>
-define view <span class="tok-kw">entity</span> ZI_Concert
+<span class="tok-kw">define</span> <span class="tok-kw">view</span> <span class="tok-kw">entity</span> ZI_Concert
   <span class="tok-kw">as</span> <span class="tok-kw">select</span> <span class="tok-kw">from</span> zconcert
 {
   <span class="tok-kw">key</span> concert_id,
@@ -101,16 +101,22 @@ define view <span class="tok-kw">entity</span> ZI_Concert
 }</code></pre></div></div>
 <p><code>#CHECK</code>는 access control이 <strong>있어야 한다</strong>는 기대를 분명히 드러낸다. <code>#NOT_REQUIRED</code>는 access control이
 없어도 된다는 뜻으로 초기 단순 조회 예제에 적합하다. 이 챕터에서는 이 둘의 차이만 확실히 잡는다.</p>
+<blockquote>
+<p>🚨 <strong>DCL은 위 계층으로 <button class="term" type="button" data-term="상속">상속</button>되지 않는다.</strong> <code>ZI_Concert</code>에 접근 제어를 걸었다고 해서, 그 위에 얹은
+<code>ZC_Concert</code>가 <strong>자동으로 보호되지는 않는다.</strong> 소비 뷰를 <code>SELECT</code>하면 기반의 DCL을 거치지 않고 데이터에
+그대로 접근한다. 그래서 공식 규칙은 **&quot;보호가 필요한 entity마다 각각 DCL을 정의하라&quot;**이다. 기반 하나만
+막고 안심하는 것이 CDS 권한에서 가장 위험한 착각이다.</p>
+</blockquote>
 <p>중요한 구분이 하나 있다 — <strong>DCL role은 사용자에게 PFCG role을 배정하는 행위 그 자체가 아니다.</strong> DCL은 CDS
 access rule이고, <code>aspect pfcg_auth</code>는 classic PFCG 권한 <button class="term" type="button" data-term="객체">객체</button>의 <em>값을 조건으로 참조</em>할 뿐이다. 권한 객체 설계와
 사용자 권한 부여(SU01/PFCG)는 별도 보안 설정이다.</p>
 </section><section class="lblock"><h2>직접 비교해 보기</h2>
 <p>아래에서 사용자를 바꾸고 <code>@AccessControl</code>을 <code>#CHECK</code> ↔ <code>#NOT_REQUIRED</code>로 토글해 보자. <strong>같은 SELECT</strong>인데
 사용자 권한에 따라 보이는 행이 달라지고, <code>#NOT_REQUIRED</code>면 권한 밖 venue까지 노출되는 것을 직접 확인할 수 있다.</p>
-<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">DCL 권한 필터 결과 비교기</span><a class="embed__open" href="../../../embeds/abap/CH23-L06-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH23-L06-S01.html" loading="lazy" title="DCL 권한 필터 결과 비교기"></iframe></figure>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title"><button class="term" type="button" data-term="DCL">DCL</button> 권한 필터 결과 비교기</span><a class="embed__open" href="../../../embeds/abap/CH23-L06-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH23-L06-S01.html" loading="lazy" title="DCL 권한 필터 결과 비교기"></iframe></figure>
 </section><section class="lblock"><h2>어떻게 확인하는가</h2>
 <ol>
-<li><strong>DCL source 활성화</strong> — <code>@MappingRole: true</code> 누락, role 이름 오류, 대상 entity 오타, 권한 <button class="term" type="button" data-term="객체">객체</button>·필드명 오류가
+<li><strong><button class="term" type="button" data-term="DCL">DCL</button> source 활성화</strong> — <code>@MappingRole: true</code> 누락, role 이름 오류, 대상 entity 오타, 권한 <button class="term" type="button" data-term="객체">객체</button>·필드명 오류가
 있으면 활성화 단계에서 드러난다.</li>
 <li><strong>대상 뷰의 <code>@AccessControl</code></strong> — 권한을 보여 주는 예제에서는 <code>#CHECK</code>로 의도를 명확히 한다.</li>
 <li><strong>사용자별 결과 비교</strong> — 같은 <code>SELECT FROM ZI_Concert</code>를 실행했을 때 사용자 A(<code>SEOUL</code>)와 B(<code>BUSAN</code>)가 보는
@@ -120,6 +126,8 @@ access rule이고, <code>aspect pfcg_auth</code>는 classic PFCG 권한 <button 
 </ol>
 </section><section class="lblock"><h2>흔한 실수와 점검 🚧</h2>
 <ul>
+<li><strong><button class="term" type="button" data-term="DCL">DCL</button>이 위 계층까지 지켜 준다고 생각</strong> → <button class="term" type="button" data-term="상속">상속</button>되지 않는다. 기반 <code>ZI_</code>에만 걸고 소비 <code>ZC_</code>에 안 걸면,
+<code>ZC_</code>를 읽는 소비자는 필터 없이 데이터를 본다. <strong>보호가 필요한 entity마다 각각</strong> 정의한다.</li>
 <li><strong>DCL을 만들면 자동으로 무조건 적용된다고 생각</strong> → entity의 access control 설정·privileged access·소비 방식에
 따라 적용 여부를 확인해야 한다.</li>
 <li><strong><code>#NOT_REQUIRED</code>를 &quot;권한이 필요하다&quot;로 이해</strong> → 이름과 반대다. 권한 예제에서는 <code>#CHECK</code>를 써서 의도를 분명히 한다.</li>

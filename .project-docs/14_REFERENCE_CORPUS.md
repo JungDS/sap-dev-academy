@@ -1,6 +1,6 @@
 # 14. REFERENCE CORPUS — 외부 참고 자료 인벤토리 · 관련성 · 활용 규칙
 
-> 📅 최종수정: 2026-07-22 02:37 KST
+> 📅 최종수정: 2026-07-24 10:48 KST
 > 🎯 `C:\Users\gosts\OneDrive\업무\교육자료_V2\2. ABAP Document\ABAP_DOCU_DOWNLOAD\ABAP_DOCU\`에 모아둔 SAP 공식/오픈소스 자료를 **정밀 분석**한 결과와 **프로젝트 활용 규칙**. 이 코퍼스는 *참고 입력(input)*이며 빌드 파이프라인 밖이다 — `content/abap/**.md`를 쓸 때 사실·예제·구조의 **출처**로 쓴다.
 > ✅ **저작권: 본 과정은 SAP Korea 주관 강의 → SAP 공식문서·cheat-sheet 본문·예제 verbatim(원문 그대로) 사용 허용.** 단 이는 *저작권 허가*일 뿐 — **입문자 가독성(R3)은 별개 규칙으로 유지**: 예제 코드는 공식 원문 그대로 자유 사용하되, **본문 prose가 입문자에게 어려운 곳(영어·압축·non-semantic)은 한국어 입문 톤으로 각색**([04 R3](04_CONVENTIONS.md)). = "verbatim 허용 + R3 각색 유지".
 > 🔗 관련: **오프라인 사실검증은 두 루트를 모두 grep한다**(§5-1, 사용자 확정 2026-07-07) — 루트 A `C:\Users\gosts\OneDrive\업무\교육자료_V2\2. ABAP Document\ABAP_DOCU_HTML\`(keyword doc HTML 덤프·1차 권위) + 루트 B `C:\Users\gosts\OneDrive\업무\교육자료_V2\2. ABAP Document\ABAP_DOCU_DOWNLOAD\ABAP_DOCU\`(본 문서가 카탈로그화하는 GitHub 코퍼스: cheat-sheet·MD 미러·Clean ABAP·예제). 메모리 `abap-keyword-doc-links`는 보조.
@@ -42,13 +42,21 @@
 
 ## 2. abap-docs-main — ★★★★☆ (사실검증 인프라 업그레이드)
 
-**무엇** — 공식 ABAP Keyword Documentation을 **Markdown + YAML frontmatter**로 변환한 스크레이퍼 산출물(87MB). 각 파일에 `title/description/keywords/category/sourceUrl/abapFile` 메타. 두 라이브러리 동시 보유:
-- `docs/standard/md/` — **Standard(classic) ABAP** 7,906파일
-- `docs/cloud/md/` — **ABAP Cloud** 5,244파일
+**무엇** — 공식 ABAP Keyword Documentation을 **Markdown + YAML frontmatter**로 변환한 스크레이퍼 산출물. 각 파일에 `title/description/keywords/category/sourceUrl/abapFile` 메타. 두 라이브러리 동시 보유:
+- `docs/standard/md/` — **Standard(classic) ABAP**
+- `docs/cloud/md/` — **ABAP Cloud**
+
+> 🔄 **신선도 = 재생성물(사용자가 주기적으로 새로 뽑음).** 최근 재생성 = **2026-07-23**(사용자 확인 — "최신 버전이라 믿고 사용해도 된다"). 전 파일 mtime이 단일 패스로 찍히므로 **신선도는 폴더 mtime으로 즉시 판정**한다. 파일 수·용량은 재생성마다 바뀌므로 **여기 숫자를 박지 않는다** — 필요하면 그 자리에서 센다:
+> ```powershell
+> $md='...\abap-docs-main\docs'; foreach($l in 'standard','cloud'){ $f=gci -LiteralPath "$md\$l\md" -File -Filter *.md; "$l : $($f.Count)개 / $([math]::Round(($f|measure Length -sum).Sum/1MB,1))MB / $((gi "$md\$l\md").LastWriteTime)" }
+> ```
+
+**📂 파일명 규칙 (grep 실패의 주원인 — 반드시 준수)** — **평면 구조**(하위 폴더 없음) · **전부 대문자** · 두 계열: **`ABAP<키워드>.md`**(구문: `ABAPSELECT.md`·`ABAPAPPEND.md`) + **`ABEN<개념·용어>.md`**(개념/용어: `ABENABAP_CDS_GLOSRY.md`·`ABENCDS_*_ANNO.md`). 소문자로 찾으면 전량 miss.
 
 **기존 `C:\Users\gosts\OneDrive\업무\교육자료_V2\2. ABAP Document\ABAP_DOCU_HTML\`(HTML, 758/8.16, 6천여 파일) 대비**
 - ✅ **MD라 grep·읽기 쉬움**(script/태그 제거됨) · frontmatter `keywords`로 주제 검색 · `sourceUrl`로 공식 페이지 즉시 링크.
 - ✅ **ABAP Cloud판이 추가** → "이 syntax가 Cloud에서 허용되나?"를 standard/cloud 두 폴더 존재 여부로 즉시 판정 → **R6(classic↔modern 경계)·[05 P7](05_PITFALLS.md) 검증의 결정적 근거**.
+  - **판정법 실측 검증됨(2026-07-23)**: `ABAPCALL_TRANSACTION.md`·`ABAPSUBMIT.md` = standard만(classic-only ✓) · `ABAPSELECT.md`·`ABAPAPPEND.md` = 양쪽(허용 ✓). 실제 Cloud 제약과 일치 → 이 방법 그대로 사용.
 - ⚠️ 변환 아티팩트 존재: 이스케이프(`\{`), 인라인 `*.html` 링크 잔재, 일부 description 깨짐 → **정의·문법 확정은 원문(HTML 덤프 또는 sourceUrl)과 교차확인**.
 - 콘텐츠 자체는 SAP 저작물이나 **SAP Korea 주관 강의라 verbatim 사용 허용**(예제 그대로, 어려운 본문은 R3 각색).
 
@@ -97,6 +105,8 @@
 > ⚠️ **OneDrive 주의**: 경로에 공백·한글 → 명령에서 **따옴표 필수**. 파일이 OneDrive "온라인 전용(placeholder)"이면 grep이 `cloud operation unsuccessful`/`Permission denied`로 실패 → 폴더를 **'항상 이 장치에 유지'로 hydrate(로컬 다운로드)**한 상태여야 오프라인 검증이 작동. 텍스트 도구는 **PowerShell·ripgrep** 권장(Git Bash MSYS grep은 reparse point 취약).
 
 **루트 A · `C:\Users\gosts\OneDrive\업무\교육자료_V2\2. ABAP Document\ABAP_DOCU_HTML\`** (공식 keyword doc HTML 덤프, **AS ABAP 758/8.16**, 6천여 파일) = **문법·의미·정의의 1차 권위**.
+
+> ⚠️ **신선도 역전 — 최신 ABAP Cloud 주제(CDS·RAP 등)에서는 이 순서가 뒤집힌다.** 루트 A는 **758/8.16 고정**이라 최신 Cloud 기능이 아예 없거나 낡았다. 반면 루트 B의 MD 미러는 **재생성물(§2, 최근 2026-07-23)**, §6 PDF는 2026-05판이다. → **CDS/RAP·ABAP Cloud 주제의 1차 권위 = §6 PDF + 루트 B `cloud/md`**, 루트 A는 교차확인용. classic 주제(CH01～17)는 기존대로 루트 A가 1차.
 - 용어정의=`aben<term>_glosry.htm` · 예제=`*abexa*.htm` · ToC=`abap_docu_tree.htm` · 진입=`index.htm`. (추출: script블록 제거 → 태그 제거 → `class="h1"` 이후 본문.)
 
 **루트 B · `C:\Users\gosts\OneDrive\업무\교육자료_V2\2. ABAP Document\ABAP_DOCU_DOWNLOAD\ABAP_DOCU\`** (SAP GitHub 코퍼스, 1.4만 파일·§1～3) = **MD 미러 + 예제/스타일 근거**.
