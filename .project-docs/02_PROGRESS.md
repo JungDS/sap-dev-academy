@@ -1,15 +1,15 @@
 # 02. PROGRESS — 현재 초점 · 다음 할 일
 
-> 📅 **최종수정: 2026-07-27 01:28 KST**
+> 📅 **최종수정: 2026-07-27 02:01 KST**
 > 🎯 **현재 상태와 다음 할 일만 담는다.** 완료/과거 항목·세션 서사는 **즉시 제거** — 정본은 git 이력 + `.archive/` 원장 + 라이브 인덱스([04 R16](04_CONVENTIONS.md)). 코드·git·감사로 파생 가능한 현황은 **복창하지 말고 포인터**(아래 📍).
 > 📖 **읽을 때:** 작업 시작 전(현황 파악) · 종료 시 갱신 — **갱신은 같은 커밋에 포함**([01](01_AI_SYNC.md)).
 
 ## 🎯 현재 초점
-**CH26 Lock/동시성 보강 완료 → 다음 CH27(OO 고급 패턴) 순차 보강**(브랜치 `content/ch26-lock`, main=`63759c2`). 리넘버·CH01～25 **main 병합**(최근 PR #19=CH25). 원칙: content 기준, `reference/codex_0629_v3` 참고(QA+REWRITE 동시 대조) + 델타 사실검증([14 §5·§6](14_REFERENCE_CORPUS.md)) + 게이팅(R10/R15). **챕터 실행 = [10_REBUILD_EXECUTION](10_REBUILD_EXECUTION.md)**. ⚠️ 리넘버 후 **우리 CHnn = codex NEWCHnn 일치**.
+**CH27 OO 고급 패턴 보강 완료 → 다음 CH30(ALV 고급 Event) 순차 보강**(브랜치 `content/ch27-oo-patterns` — ch26-lock 위에 스택, PR #20 병합 후 PR 예정). ⚠️ **CH28 Dynamic·CH29 Regex = 예약 슬롯 미집필**(신규 집필은 사용자 사인오프 필요) → 순차 보강의 다음 기존 챕터 = CH30. 원칙: content 기준, `reference/codex_0629_v3` 참고(QA+REWRITE 동시 대조) + 델타 사실검증([14 §5·§6](14_REFERENCE_CORPUS.md)) + 게이팅(R10/R15). **챕터 실행 = [10_REBUILD_EXECUTION](10_REBUILD_EXECUTION.md)**.
 
 ## ▶️ 다음 할 일 (우선순위)
-1. **CH27(OO 고급 패턴)+ 순차 보강**. ⚠️ codex 파일 = 우리 번호 일치(CH27=`NEWCH27`…CH39=`NEWCH39`). 신규 CH28 Dynamic ABAP(8L)·CH29 Regex(8L)는 진도 닿을 때 예약 슬롯 집필(추가 리넘버 0).
-   ℹ️ **CH26 배제 판정(codex)**: L06 복합 Lock Object(ZBOOK_H/I 가공 테이블)·L07 SM12 운영 triage 신설·`changed_ts` 가공 필드·O 모드 표 편입 = 전부 배제(과범위·정본 위반). SM12 수동삭제 경고 1줄만 L03에 흡수됨.
+1. **CH30(ALV 고급 Event)+ 순차 보강** — 또는 CH28/CH29 신규 집필 착수(사용자 결정, [신규장] 프로토콜=STEP 1 사인오프). ⚠️ codex 파일 = 우리 번호 일치(CH30=`NEWCH30`…). ⚠️ codex 본문 내 리넘버 매핑: 구CH27(ALV 이벤트)→우리 CH30·구CH28(editable)→CH31(+3, 일괄 +1 아님).
+   ℹ️ **CH27 배제 판정(codex)**: L03A FRIENDS/ALIASES 신설(DEFERRED 등 미도입 문법+ABAP Unit 선노출로 R15 위반 배치)·설계어휘 7종 선주입·codex Factory의 zcl_booking_manager 차용(정본 충돌)·정원 100 하드코딩 repo = 배제. FRIENDS/ALIASES는 필요 시 별도 결정.
    ⚠️ **RAP 2단(입문 CH24 ↔ 심화 CH39)** — 사용자 지시 2026-07-24([09 §E CH39](09_CURRICULUM_LEDGER.md)·[[rap-intro-ch24-advanced-ch39]]): 심화는 CH39. **현행 CH39(7L)는 NEWCH39(9L) 미반영 — CH39 착수 시 재구성**. 그때 CH24-L09의 CH39-L01 링크가 정확한 EML consumer 레슨을 가리키는지 재확인.
    ℹ️ **코퍼스 교훈**: `abap-docs-main` MD 미러는 예제 코드 붕괴 → 코드는 **HTML 덤프/PDF+cheat-sheet/`.asbdef`/`.asddls`**, prose·문법만 MD. classic 주제(CH25~)는 HTML 덤프 758/8.16 + cheat-sheet 우선.
    ⚠️ 잔여 컨벤션(각 챕터 패스): 구조체 타입 `ts_`/`tt_`(CH01～25 — 잔여 `ty_`: 구 CH24=현 CH25 등 + 엔진 6종) · "컴포넌트"→Component(잔여 inline-target-viewer 엔진) · 줄표(잔여 CH26+ 톤 패스). **잔여(저)**: 구 CH09/10 소소(델타 = git). CONSIDER 16건 보류([.archive/…/CONSIDER_BACKLOG.md](../.archive/2026-07-03-v3-recheck-ch01-05/CONSIDER_BACKLOG.md)). 잔여 R2 = `CONTENT_DEPTH_AUDIT`(재생성물).
