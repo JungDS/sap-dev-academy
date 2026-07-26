@@ -228,6 +228,14 @@
 | CH27-L03-S01 | CH27-L03 | strategy-sim | Strategy 시뮬·전략(일반/VIP/조기) 교체+좌석 수 입력→가격 변화·호출부 calc() 한 줄 불변 | ✅ |
 | CH27-L04-S01 | CH27-L04 | mvc-diagram | MVC 영향 범위 시각화·변경 요구(ALV→list/계산식/재조회) 선택→바뀌는 계층만 하이라이트·분리 깨짐 신호 | ✅ |
 | CH27-L05-S01 | CH27-L05 | abap-unit-runner | ABAP Unit 러너·테스트 실행→✓/✗·버그 주입 토글→remaining_calc(exp=50) 빨강 실패·assert_equals(act/exp) 표시 | ✅ |
+| CH28-L01-S01 | CH28-L01 | dyn-lab | mode=pointer·메모리 상자(gs_booking)+typed/generic 이름표·할당 전 사용 거절·generic 필드 직접 접근 거절·원본 변경 관찰 | ✅ |
+| CH28-L02-S01 | CH28-L02 | dyn-lab | mode=gate·입력 종류(구조/테이블/낱값) 세그→허용 작업 목록 변화·필드 직접 접근 불가 사유 표시 | ✅ |
+| CH28-L03-S01 | CH28-L03 | dyn-lab | mode=state·ASSIGN 상태 기계·실패 시 이전 할당 유지(ELSE 없음) vs ELSE UNASSIGN·CLEAR=원본 초기화 vs UNASSIGN=연결 해제·sy-subrc/IS ASSIGNED 분리 | ✅ |
+| CH28-L04-S01 | CH28-L04 | dyn-lab | mode=picker·필드 이름 입력→ASSIGN COMPONENT·성공/미존재(subrc4)/whitelist 거절 3분기·구조 표 셀 하이라이트 | ✅ |
+| CH28-L05-S01 | CH28-L05 | dyn-lab | mode=lookup·이름 선택→검색 사다리(로컬→속성→전역) 하이라이트·whitelist 토글·구조 필드는 COMPONENT 모드 권장 피드백 | ✅ |
+| CH28-L06-S01 | CH28-L06 | dyn-lab | mode=factory·타입 선택→①CREATE DATA ②dref->* 역참조 ③ASSIGN COMPONENT 순서 의존·UNKNOWN_TYPE=예외(cx_sy_create_data_error) | ✅ |
+| CH28-L07-S01 | CH28-L07 | dyn-lab | mode=lens·낱값/구조/테이블 카드→describe(type_kind)·구조만 components 열림·잘못된 CAST=cx_sy_move_cast_error | ✅ |
+| CH28-L08-S01 | CH28-L08 | dyn-lab | mode=inspector·(capstone) 입력/요청 필드 토글→describe→metadata 대조→ASSIGN→결과 표·낱값 입력=①서 거절·UNKNOWN=안내 행 | ✅ |
 | CH30-L01-S01 | CH30-L01 | alv-events | mode=double·예매 ALV 행 더블클릭→double_click 핸들러+e_row/e_column 이벤트 로그 | ✅ |
 | CH30-L02-S01 | CH30-L02 | alv-events | mode=hotspot·concert_id 링크 셀 한 번 클릭→hotspot_click+e_row_id/e_column_id·컬럼 필터링 | ✅ |
 | CH30-L03-S01 | CH30-L03 | alv-events | mode=toolbar·커스텀 버튼(ZCANCEL) 추가만(toolbar 이벤트)·처리는 L04로 분리 강조 | ✅ |
@@ -308,6 +316,7 @@
 | annotation-effect-preview (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH23-L04-S01 | AEP_CFG(labels/priceField/currencyField/order) 주도 · 3패널: ①label 토글→헤더 dt(기술 UPPERCASE↔업무라벨) ②@Semantics seg(currency_code/ticket_price/none)→code(자기참조 .bad span)+verdict ok/bad/warn(교훈3 base 중립rgba) ③lineItem ▲▼ 순서→position (i+1)*10 재할당+컬럼 미리보기·toggle base=var(--surface) · 다크 |
 | metadata-extension-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH23-L05-S01 | MXL_CFG(entity/base/fields pos) 주도 · 토글 3(uiLoc inline/ext·allow·sep ;/,)→DDL 파일(@Metadata.allowExtensions·inline 시 @UI.lineItem interleave)+DDLX 파일(annotate entity with·요소 뒤 sep·ext일 때만)·status: ext+!allow=bad·ext+sep,=bad(sep-bad span)·ext+;+allow=ok·inline=중립 base(교훈3)·활성화 badge act/fail·toggle base=var(--surface) · 다크 |
 | dcl-auth-comparator (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH23-L06-S01 | DAC_CFG(entity/users auth/concerts venue) 주도 · 사용자 seg+PFCG 배지·mode 토글(CHECK/NOT_REQUIRED)→DCL+@AccessControl code+SELECT code+결과 표(CHECK=venue∈auth만·NOT_REQUIRED=전부·권한밖 행 .unauth rgba 빨강+tag)·verdict: NOT_REQUIRED+leak=bad/CHECK=ok(0건도 정상)·교훈3 base 중립rgba·seg base=var(--surface) · 다크 |
+| dyn-lab (신규) | 8 | 공통(_engine)·자체 postHeight ✅ | CH28-L01～L08-S01 | dyn-cfg JSON {mode: pointer/gate/state/picker/lookup/factory/lens/inspector} 주도·Dynamic ABAP 8모드(이름표·generic 게이트·ASSIGN 상태기계·필드선택+whitelist·이름검색 사다리·CREATE DATA 3단계·RTTS 렌즈·캡스톤 파이프라인)·정본 B0001/C1000/2/N |
 | alv-events (신규) | 4 | 공통(_engine)·자체 postHeight ✅ | CH30-L01～L04-S01 | alv-cfg JSON {mode: double/hotspot/toolbar/ucommand} 주도·예매 미니 ALV+이벤트 로그(핸들러 메서드+e_* 파라미터)·ucommand는 선택→취소→refresh까지 |
 | alv-handler-wiring (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH30-L05-S01 | 이벤트→핸들러 메서드 배선 맵·클릭 시 짝 강조·생성자 SET HANDLER 일괄 배선 메시지 |
 | factory-sim (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH27-L01-S01 | 타입 세그(V/G/Z)→생성 클래스·설명 전환·호출부 코드 고정 표시 |
