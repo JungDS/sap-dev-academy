@@ -40,8 +40,8 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>잘못된 입력을 그 자리에서</h2>
-<p><a href="CH31-L02.html">DATA_CHANGED Event</a>에서 검증하는 법을 배웠다. 여기선 거기에 <strong>UX</strong>를 더한다
-— 사용자는 <em>&quot;어느 행·어느 셀·왜&quot;</em> 틀렸는지 알아야 고친다. 여러 셀이 동시에 틀릴 수 있으니,
+<p><a href="CH31-L02.html">DATA_CHANGED Event</a>에서 검증하는 법을 배웠다. 여기선 거기에 <strong>UX</strong>를 더한다.
+사용자는 <em>&quot;어느 행·어느 셀·왜&quot;</em> 틀렸는지 알아야 고친다. 여러 셀이 동시에 틀릴 수 있으니,
 <strong>셀은 빨갛게 + 오류는 목록으로 모아</strong> 보여 준다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
@@ -67,7 +67,16 @@
 22
 23
 24
-25</pre><pre class="abap-editor__code"><code><span class="tok-kw">METHOD</span> on_data_changed.
+25
+26
+27
+28
+29
+30
+31
+32</pre><pre class="abap-editor__code"><code><span class="tok-kw">METHOD</span> on_data_changed.
+  <span class="tok-kw">DATA</span> lv_error <span class="tok-kw">TYPE</span> abap_bool.
+
   <span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> er_data_changed-&gt;mt_good_cells <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(ls_cell).
     <span class="tok-kw">IF</span> ls_cell-fieldname &lt;&gt; <span class="tok-str">'SEATS'</span>.
       <span class="tok-kw">CONTINUE</span>.
@@ -80,6 +89,7 @@
           i_msgv1 = <span class="tok-str">'숫자를 입력하세요'</span>
           i_fieldname = ls_cell-fieldname
           i_row_id    = ls_cell-row_id ).
+        lv_error = abap_true.
         <span class="tok-kw">CONTINUE</span>.
     <span class="tok-kw">ENDTRY</span>.
     <span class="tok-kw">IF</span> lv_seats &lt; <span class="tok-num">1</span> <span class="tok-kw">OR</span> lv_seats &gt; <span class="tok-num">10</span>.
@@ -88,15 +98,21 @@
         i_msgv1 = <span class="tok-str">'좌석 수는 1부터 10까지'</span>
         i_fieldname = ls_cell-fieldname
         i_row_id    = ls_cell-row_id ).
+      lv_error = abap_true.
     <span class="tok-kw">ENDIF</span>.
   <span class="tok-kw">ENDLOOP</span>.
-  er_data_changed-&gt;display_protocol( ).      <span class="tok-com">" 누적 오류 목록 표시</span>
+
+  <span class="tok-kw">IF</span> lv_error = abap_true.
+    er_data_changed-&gt;display_protocol( ).    <span class="tok-com">" 오류가 있을 때만 목록 표시</span>
+  <span class="tok-kw">ENDIF</span>.
 <span class="tok-kw">ENDMETHOD</span>.</code></pre></div></div>
 <ul>
 <li><code>add_protocol_entry</code> — 오류 <strong>메시지 + 셀 위치</strong>(<code>i_fieldname</code>·<code>i_row_id</code>)를 함께 등록.</li>
-<li><code>display_protocol( )</code> — 누적된 오류 <strong>목록</strong>을 사용자에게 보여 준다.</li>
-<li><code>i_msgid</code>는 <a href="CH15-L04.html">메시지 클래스</a>(SE91)다 — 메시지 ID·번호로 &quot;어디가 왜 틀렸는지&quot;를
-엮는다.</li>
+<li><code>display_protocol( )</code> — 누적된 오류 <strong>목록</strong>을 사용자에게 보여 준다. 오류가 하나라도
+등록됐을 때만 부르는 것이 관례다(멀쩡한데 빈 목록을 띄울 이유가 없다).</li>
+<li><code>i_msgid</code>는 <a href="CH15-L04.html">메시지 클래스</a>(SE91)다. 메시지 ID·번호로 &quot;어디가 왜 틀렸는지&quot;를
+엮는다(위 예제의 003·004번 메시지는 본문이 <code>&amp;1</code> 자리표시자라서 <code>i_msgv1</code>의 문구가 그대로
+들어간다고 가정).</li>
 </ul>
 </section><section class="lblock"><h2>오류를 만들어 보기</h2>
 <p><code>SEATS</code>에 잘못된 값(<code>0</code>·<code>11</code>·문자·빈칸)을 넣어, 셀이 빨개지고 <strong>오류 목록</strong>에 모이는 걸
@@ -107,7 +123,7 @@
 <li><strong>추상적 오류 메시지</strong> → &quot;입력 오류&quot;보다 <strong>&quot;좌석 수는 1부터 10까지&quot;</strong> 처럼 <em>다음에 할
 행동</em>을 담는다.</li>
 <li><strong>오류 등록하고 저장 통과</strong> → 이 단계의 프로토콜은 <em>화면 단계 피드백</em>이다. 저장 전 전체
-검증은 <strong>다음 레슨</strong>에서 다시 — 입력 편의(여기)와 무결성 방어선(저장)은 역할이 다르다.</li>
+검증은 <strong>다음 레슨</strong>에서 다시 본다. 입력 편의(여기)와 무결성 방어선(저장)은 역할이 다르다.</li>
 <li><strong>무조건 팝업</strong> → 많은 셀을 연속 편집하는 화면에선 <em>하단 오류 목록</em>이 팝업보다 편하다.
 화면 성격에 맞게 패널·상태바·팝업을 고른다.</li>
 </ul>
@@ -115,7 +131,7 @@
 <ul>
 <li>Editable ALV 검증은 사용자가 <strong>어느 셀을 어떻게</strong> 고칠지 알려 줘야 한다.</li>
 <li><code>add_protocol_entry</code>(메시지+위치) → <code>display_protocol</code>(목록)으로 <em>오류를 모아</em> 보여 준다.</li>
-<li>이 단계는 입력을 친절하게 고치게 하는 자리 — <strong>최종 저장 가능 여부는 저장 직전에 다시
+<li>이 단계는 입력을 친절하게 고치게 하는 자리다. <strong>최종 저장 가능 여부는 저장 직전에 다시
 판단</strong>한다.</li>
 </ul>
 <hr>

@@ -96,17 +96,18 @@
   <span class="tok-kw">ENDLOOP</span>.
 <span class="tok-kw">ENDMETHOD</span>.</code></pre></div></div>
 <ul>
-<li><code>er_data_changed</code> — <strong>변경 프로토콜</strong>(바뀐 셀·유효성·오류 메시지를 ALV에 알리는 통로).</li>
+<li><code>er_data_changed</code> — <strong>변경 프로토콜</strong>(바뀐 셀·유효성·오류 메시지를 ALV에 알리는 통로).
+타입은 <code>CL_ALV_CHANGED_DATA_PROTOCOL</code> <button class="term" type="button" data-term="Class">클래스</button>다.</li>
 <li><code>mt_good_cells</code> — 이름과 달리 <em>&quot;이미 좋은 셀&quot;이 아니다</em>. ALV가 넘긴 <strong>변경 후보</strong>를 순회하며
 업무 규칙으로 다시 판단한다.</li>
 <li>오류는 <strong>셀 색을 직접 바꾸지 말고</strong> <code>add_protocol_entry</code>로 등록 → ALV가 그 셀을 빨갛게
 표시·막는다.</li>
-<li>화면 입력은 문자라 숫자 변환이 실패할 수 있다 — <a href="CH21-L06.html">예외 처리</a>로 덤프 대신
+<li>화면 입력은 문자라 숫자 변환이 실패할 수 있다. <a href="CH21-L06.html">예외 처리</a>로 덤프 대신
 <strong>셀 오류</strong>로 바꾼다.</li>
 </ul>
 </section><section class="lblock"><h2>직접 고쳐 보기</h2>
-<p><code>SEATS</code>를 고칠 때마다 <code>data_changed</code>가 발생해 검증하는 걸 확인해 보라(<code>99</code>·<code>0</code>·빈칸·문자처럼
-1~10 밖이면 셀이 빨개진다).</p>
+<p><code>SEATS</code>를 고치고 확정할 때마다 <code>data_changed</code>가 발생해 검증하는 걸 확인해 보라
+(<code>99</code>·<code>0</code>·빈칸·문자처럼 1~10 밖이면 셀이 빨개진다).</p>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">DATA_CHANGED — 셀 변경 즉시 검증</span><a class="embed__open" href="../../../embeds/abap/CH31-L02-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH31-L02-S01.html" loading="lazy" title="DATA_CHANGED — 셀 변경 즉시 검증" style="height:460px"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
@@ -115,13 +116,14 @@
 <li><strong>매번 전체 내부 테이블 검사</strong> → <code>data_changed</code>는 <em>지금 바뀐 셀</em>을 빠르게 보는 자리다. 정원
 합계·중복·여러 행 관계 같은 무거운 규칙은 저장 전 검증(이 챕터 뒤)에서 다룬다.</li>
 <li><strong>문자 입력 미고려</strong> → 화면 값은 사용자가 타이핑한 것이라 숫자 변환이 깨질 수 있다. 변환
-<button class="term" type="button" data-term="예외">예외</button>를 프로토콜 메시지로 바꿔 <strong>덤프 대신 셀 오류</strong>를 보여 준다.</li>
+<button class="term" type="button" data-term="예외">예외</button>를 프로토콜 메시지로 바꿔 <strong>덤프 대신 셀 오류</strong>를 보여 준다. (참고: 컬럼이 숫자
+타입이면 ALV가 자체 변환 검사로 먼저 거르기도 한다. 그래도 핸들러 쪽 방어는 유지한다.)</li>
 </ul>
 </section><section class="lblock"><h2>정리</h2>
 <ul>
 <li><code>data_changed</code> = 셀이 바뀐 <strong>직후</strong> 발생 → 그 자리에서 즉시 검증.</li>
 <li>오류는 <code>add_protocol_entry</code>로 ALV에 알려 <strong>셀을 빨갛게</strong>(직접 막지 않음).</li>
-<li><code>mt_good_cells</code>는 &quot;검증된 셀&quot;이 아니라 <strong>변경 후보</strong> — 프로그램이 규칙으로 다시 판단한다.</li>
+<li><code>mt_good_cells</code>는 &quot;검증된 셀&quot;이 아니라 <strong>변경 후보</strong>다. 프로그램이 규칙으로 다시 판단한다.</li>
 </ul>
 <hr>
 <p>바뀌는 순간을 잡았다. 이제 모든 변경이 <strong>끝난 뒤</strong> 한 번 처리하는 DATA_CHANGED_FINISHED →

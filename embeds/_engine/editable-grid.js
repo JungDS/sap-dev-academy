@@ -1,15 +1,16 @@
 /* editable-grid — 편집 가능 ALV 시뮬 엔진 (CH31 공통).
    위젯의 <script type="application/json" id="eg-cfg">에서 { mode, max } 를 읽는다.
    mode: editcols | datachanged | finished | cellstyle | validate | save.
-   seats 컬럼이 편집 대상. 유효값 = 1~max 정수. 입력 시 전체 rebuild 없이 셀만 패치(포커스 보존). */
+   seats 컬럼이 편집 대상. 유효값 = 1~max 정수. 입력 시 전체 rebuild 없이 셀만 패치(포커스 보존).
+   데이터 정본 = ZBOOKING 부분집합(booking_id 0001~/concert_id C001~/고객 정훈영 외 이름 풀). */
 (function () {
   var $ = function (id) { return document.getElementById(id); };
   var cfg; try { cfg = JSON.parse($('eg-cfg').textContent); } catch (e) { cfg = { mode: 'editcols', max: 10 }; }
   var mode = cfg.mode, MAX = cfg.max || 10;
   var ROWS = [
-    { id: '1001', concert: 'C-NOVA', pax: '정훈영', seats: '2', sold: false },
-    { id: '1002', concert: 'C-AURA', pax: '아이유', seats: '4', sold: false },
-    { id: '1003', concert: 'C-NOVA', pax: '손흥민', seats: '2', sold: false }
+    { id: '0001', concert: 'C001', cust: '정훈영', seats: '2', sold: false },
+    { id: '0002', concert: 'C002', cust: '아이유', seats: '4', sold: false },
+    { id: '0003', concert: 'C001', cust: '손흥민', seats: '2', sold: false }
   ];
   var editOn = (mode !== 'editcols');   // editcols만 토글로 시작
 
@@ -32,10 +33,10 @@
   }
   function paint() {
     var soldCol = (mode === 'cellstyle');
-    $('thead').innerHTML = '<tr><th>booking_id</th><th>concert</th><th>승객</th><th>seats</th>' + (soldCol ? '<th>매진?</th>' : '') + '</tr>';
+    $('thead').innerHTML = '<tr><th>booking_id</th><th>concert_id</th><th>고객</th><th>seats</th>' + (soldCol ? '<th>매진?</th>' : '') + '</tr>';
     $('tbody').innerHTML = ROWS.map(function (r, i) {
       var sold = soldCol ? '<td><button class="soldbtn' + (r.sold ? ' on' : '') + '" data-sold="' + i + '" type="button">' + (r.sold ? '매진' : '여석') + '</button></td>' : '';
-      return '<tr class="' + (r.sold ? 'sold' : '') + '"><td>' + r.id + '</td><td>' + r.concert + '</td><td>' + r.pax + '</td>' + seatsCell(r, i) + sold + '</tr>';
+      return '<tr class="' + (r.sold ? 'sold' : '') + '"><td>' + r.id + '</td><td>' + r.concert + '</td><td>' + r.cust + '</td>' + seatsCell(r, i) + sold + '</tr>';
     }).join('');
     bind();
     if ($('sum')) $('sum').textContent = '총 좌석: ' + sumSeats();
