@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>정규식 입문 — FIND PCRE와 형식 검증 · 고급 문자열 처리: PCRE 정규식 · SAP Developer Academy</title>
+<link rel="stylesheet" href="../../../assets/base.css">
+<link rel="stylesheet" href="../../../assets/lesson.css">
+<link rel="stylesheet" href="../../../assets/shell.css">
+<script>/* 읽기 설정 선적용(플래시 방지) */(function(){try{var L=localStorage,r=document.documentElement;if(L.getItem('sda.dark')==='1')r.classList.add('dark');if(L.getItem('sda.wide')==='1')r.classList.add('wide');var f=parseInt(L.getItem('sda.fontPx'),10);if(f>=13&&f<=20)r.style.fontSize=f+'px';}catch(e){}})();</script>
+</head>
+<body data-domain="abap" data-chapter-id="CH29" data-lesson-id="CH29-L01">
+<header class="appbar">
+  <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
+  <span class="appbar__sp"></span>
+  <span class="meta">Chapter 29 · 고급 문자열 처리: PCRE 정규식</span>
+  <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
+  <div class="tools">
+    <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
+    <button class="icon-btn" id="fsInc" title="글자 크게">A+</button>
+    <button class="icon-btn" id="fsReset" title="글자 크기 초기화">↺</button>
+    <button class="icon-btn" id="darkBtn" title="다크 모드">🌙</button>
+    <button class="icon-btn" id="widthBtn" title="가독 폭 넓게">↔</button>
+    <button class="icon-btn fs-btn" title="전체화면" aria-label="전체화면"></button>
+  </div>
+</header>
+<div class="read-progress"><i></i></div>
+<div class="scrim"></div>
+<nav class="rail" data-shell="rail"></nav>
+<button class="railFab" id="railFab" aria-label="네비 열기">☰</button>
+<div class="stage">
+  <div class="layout">
+    <main class="main">
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 29 › Lesson 1</nav>
+      <section class="lhead">
+        <p class="lhead__eyebrow">고급 문자열 처리: PCRE 정규식</p>
+        <h1>정규식 입문 — FIND PCRE와 형식 검증</h1>
+        <p class="lhead__direction">substring 검색의 한계를 겪고, 패턴을 찾는 FIND PCRE로 넘어간다.</p>
+        <div class="tags"><span class="tag tag--track">Track 2</span><span class="tag tag--ch">Chapter 29</span><span class="tag tag--ls">Lesson 1</span><span class="tag tag--lv">중급</span></div>
+      </section>
+      <article class="prose">
+<section class="lblock"><h2>📮 운영팀의 새 요청</h2>
+<p>콘서트 예매 시스템에 제휴 티켓 파트너가 생겼다. 파트너사에서 넘어오는 접수 텍스트에는
+<strong>접수번호</strong>가 섞여 있다. 우리 시스템의 예매번호는 <code>0001</code>처럼 4자리지만, 파트너 접수번호는
+형식이 다르다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">TEXT</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1</pre><pre class="abap-editor__code"><code>Booking B-2026-0007 failed for user HUNYOUNG</code></pre></div></div>
+<p>운영팀 정훈영이 요청한다. &quot;접수 텍스트가 <code>B-연도4자리-일련번호4자리</code> 형식인지 <strong>검사</strong>해
+주세요. 형식이 깨진 건 반려해야 해요.&quot;</p>
+<p><a href="CH04-L02.html">Chapter 4 · 문자열 다루기</a>에서 배운 <code>FIND</code>를 먼저 떠올려 보자.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>(gv_text) = <span class="tok-str">`Booking B-2026-0007 failed`</span>.
+
+<span class="tok-kw">FIND</span> <span class="tok-str">`failed`</span> <span class="tok-kw">IN</span> gv_text.
+<span class="tok-kw">IF</span> sy-subrc = <span class="tok-num">0</span>.
+  <span class="tok-kw">WRITE</span> / <span class="tok-str">`실패 로그 발견`</span>.
+<span class="tok-kw">ENDIF</span>.</code></pre></div></div>
+<p>이 코드는 충분히 좋다. <code>failed</code>라는 <strong>고정 단어</strong>를 찾는 요구에는 이걸로 끝이다.
+그런데 접수번호 검사는 사정이 다르다.</p>
+<ul>
+<li><code>B-2026-0007</code>도, <code>B-2026-0008</code>도, <code>B-2027-1234</code>도 <strong>전부 통과</strong>해야 한다.</li>
+<li><code>B-26-7</code>, <code>X-2026-0007</code>, <code>B-2026-ABCD</code>는 <strong>전부 반려</strong>해야 한다.</li>
+</ul>
+<p><code>FIND &#39;B-2026-0007&#39;</code>처럼 글자 그대로 찾는 방식으로는 접수번호가 하나 늘 때마다 코드를
+고쳐야 한다. 우리가 찾고 싶은 건 특정 글자가 아니라 <strong>&quot;이런 모양의 글자들&quot;</strong>, 즉 형식이다.</p>
+</section><section class="lblock"><h2>정규식 — 형식을 표현하는 작은 언어</h2>
+<p>이럴 때 쓰는 도구가 <button class="term" type="button" data-term="정규식">정규식</button>(Regular Expression, 문자열의 &#39;모양&#39;을 표현하는 작은 언어)이다.
+접수번호 형식을 정규식으로 쓰면 이렇게 된다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">TEXT</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1</pre><pre class="abap-editor__code"><code>B-\d{4}-\d{4}</code></pre></div></div>
+<p>기호를 하나씩 읽어 보자. 지금은 이 세 개면 충분하다(전체 문법은 다음 레슨).</p>
+<table>
+<thead>
+<tr>
+<th>표현</th>
+<th>의미</th>
+<th><code>B-2026-0007</code>에서</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>B-</code></td>
+<td>문자 <code>B-</code> 그대로</td>
+<td>맨 앞 <code>B-</code></td>
+</tr>
+<tr>
+<td><code>\d</code></td>
+<td>숫자 한 자리</td>
+<td><code>2</code>, <code>0</code>, <code>7</code>...</td>
+</tr>
+<tr>
+<td><code>\d{4}</code></td>
+<td>숫자 정확히 네 자리</td>
+<td><code>2026</code>, <code>0007</code></td>
+</tr>
+</tbody></table>
+<p>ABAP에서 정규식을 쓸 때는 <code>FIND</code> 뒤에 <code>PCRE</code>를 붙인다. <button class="term" type="button" data-term="PCRE">PCRE</button>(Perl Compatible Regular
+Expressions, ABAP가 채택한 표준 정규식 문법)는 &quot;이 검색어는 글자 그대로가 아니라
+패턴이다&quot;라는 선언이다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>(gv_text) = <span class="tok-str">`Booking B-2026-0007 failed`</span>.
+
+<span class="tok-kw">FIND</span> PCRE <span class="tok-str">`B-\d{4}-\d{4}`</span> <span class="tok-kw">IN</span> gv_text.
+
+<span class="tok-kw">IF</span> sy-subrc = <span class="tok-num">0</span>.
+  <span class="tok-kw">WRITE</span> / <span class="tok-str">`접수번호 형식 발견`</span>.
+<span class="tok-kw">ENDIF</span>.</code></pre></div></div>
+<p><code>FIND</code>가 성공/실패를 <button class="term" type="button" data-term="sy-subrc">sy-subrc</button>로 알려 주는 건 substring 검색 때와 똑같다.
+달라진 건 <strong>무엇을 찾느냐</strong>뿐이다.</p>
+</section><section class="lblock"><h2>함정 — &quot;포함&quot;과 &quot;전체 형식&quot;은 다르다</h2>
+<p>그런데 위 패턴에는 함정이 하나 있다. 맞는 것만 통과시키는지, <strong>틀린 것도 걸러내는지</strong>
+같이 확인해야 한다.</p>
+<table>
+<thead>
+<tr>
+<th>입력</th>
+<th><code>B-\d{4}-\d{4}</code> 결과</th>
+<th>기대</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>B-2026-0007</code></td>
+<td>✅ 발견</td>
+<td>통과</td>
+</tr>
+<tr>
+<td><code>B-2026-1234</code></td>
+<td>✅ 발견</td>
+<td>통과</td>
+</tr>
+<tr>
+<td><code>B-26-0007</code></td>
+<td>❌ 없음</td>
+<td>반려</td>
+</tr>
+<tr>
+<td><code>X-2026-0007</code></td>
+<td>❌ 없음</td>
+<td>반려</td>
+</tr>
+<tr>
+<td><code>안내: B-2026-0007 접수됨</code></td>
+<td>✅ 발견?!</td>
+<td><strong>반려해야 하는데?</strong></td>
+</tr>
+</tbody></table>
+<p>마지막 행이 문제다. 문장 <strong>안에</strong> 접수번호 모양이 들어 있기만 해도 <code>FIND</code>는 성공한다.
+&quot;이 텍스트 전체가 접수번호인가&quot;를 물으려면 <button class="term" type="button" data-term="Anchor">Anchor</button>(닻: 패턴의 시작 <code>^</code>과 끝 <code>$</code>을
+고정하는 기호)를 붙인다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> gt_text <span class="tok-kw">TYPE</span> <span class="tok-kw">STANDARD</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> string <span class="tok-kw">WITH</span> EMPTY <span class="tok-kw">KEY</span>.
+
+gt_text = <span class="tok-kw">VALUE</span> #(
+  ( <span class="tok-str">`B-2026-0007`</span> )
+  ( <span class="tok-str">`B-26-0007`</span> )
+  ( <span class="tok-str">`X-2026-0007`</span> )
+  ( <span class="tok-str">`안내: B-2026-0007 접수됨`</span> )
+).
+
+<span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> gt_text <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(gv_line).
+  <span class="tok-kw">FIND</span> PCRE <span class="tok-str">`^B-\d{4}-\d{4}$`</span> <span class="tok-kw">IN</span> gv_line.
+
+  <span class="tok-kw">IF</span> sy-subrc = <span class="tok-num">0</span>.
+    <span class="tok-kw">WRITE</span> / |통과: { gv_line }|.
+  <span class="tok-kw">ELSE</span>.
+    <span class="tok-kw">WRITE</span> / |반려: { gv_line }|.
+  <span class="tok-kw">ENDIF</span>.
+<span class="tok-kw">ENDLOOP</span>.</code></pre></div></div>
+<ul>
+<li><code>^</code> = 문자열의 <strong>시작</strong>부터</li>
+<li><code>$</code> = 문자열의 <strong>끝</strong>까지</li>
+</ul>
+<p>이제 <code>안내: B-2026-0007 접수됨</code>은 시작이 <code>B-</code>가 아니므로 반려된다. <strong>&quot;일부에 포함되어
+있는가&quot;는 anchor 없이, &quot;전체가 이 형식인가&quot;는 anchor를 붙여서</strong>. 이 구분이 <button class="term" type="button" data-term="정규식">정규식</button>
+검증의 첫 습관이다.</p>
+</section><section class="lblock"><h2>직접 비교해 보기</h2>
+<p>substring 검색과 <button class="term" type="button" data-term="PCRE">PCRE</button> 검색, anchor 유무가 판정을 어떻게 바꾸는지 눌러 보자.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">Substring vs 패턴 — 무엇이 통과되나</span><a class="embed__open" href="../../../embeds/abap/CH29-L01-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH29-L01-S01.html" loading="lazy" title="Substring vs 패턴 — 무엇이 통과되나" style="height:560px"></iframe></figure>
+</section><section class="lblock"><h2>흔한 실수와 점검 🚧</h2>
+<ul>
+<li><strong>고정 단어에 <button class="term" type="button" data-term="정규식">정규식</button></strong> — <code>FIND &#39;failed&#39;</code>로 충분한 곳에 정규식을 쓰면 읽기만 어려워진다.
+정규식은 <strong>형식을 찾을 때만</strong>.</li>
+<li><strong>anchor 빠뜨림</strong> — <code>^</code>·<code>$</code> 없는 검증은 &quot;포함 검사&quot;다. 전체 형식 검증이 목적이면 반드시
+붙인다.</li>
+<li><strong>빈 패턴</strong> — <button class="term" type="button" data-term="PCRE">PCRE</button> 패턴이 빈 문자열이면 실행 중 오류가 날 수 있다. 사용자 입력을
+패턴으로 쓸 일이 있으면 비어 있지 않은지 먼저 확인한다.</li>
+<li><strong>옛 문법(POSIX)</strong> — ABAP에는 <code>PCRE</code> 이전의 POSIX 정규식 문법도 남아 있지만
+obsolete(구식 판정)다. 새 코드는 항상 <code>PCRE</code>.</li>
+</ul>
+</section><section class="lblock"><h2>정리 📌</h2>
+<ul>
+<li>substring 검색 = &quot;이 글자가 그대로 있는가&quot;. <button class="term" type="button" data-term="정규식">정규식</button> = &quot;<strong>이런 모양</strong>의 글자가 있는가&quot;.</li>
+<li>ABAP 정규식은 <code>FIND PCRE &#39;패턴&#39; IN 텍스트</code>. 성공/실패는 여전히 <code>sy-subrc</code>.</li>
+<li><code>^</code>(시작)·<code>$</code>(끝) anchor를 붙여야 &quot;포함&quot;이 아니라 &quot;전체 형식&quot; 검증이 된다.</li>
+</ul>
+<hr>
+<p><code>\d{4}</code>가 어떻게 만들어진 기호인지 아직 절반만 안다. 숫자 말고 문자는? 반복 횟수가
+유동적이면? 다음 레슨에서 <button class="term" type="button" data-term="PCRE">PCRE</button>의 기본 토큰을 표로 정리한다.</p>
+</section>
+      </article>
+      <nav class="lesson-nav" data-shell="prevnext"></nav>
+      <footer class="foot">SAP Developer Academy · 배포자 SAP전문강사 정훈영</footer>
+    </main>
+    <aside class="journey" data-shell="journey"></aside>
+  </div>
+</div>
+<div class="term-popup" data-shell="popup" hidden></div>
+<div class="tmodal" data-shell="tmodal" hidden></div>
+<script>window.__SDA__={"domain":"abap","dataBase":"../","siteRoot":"../../../"};</script>
+<script src="../../../assets/shell.js" defer></script>
+</body>
+</html>

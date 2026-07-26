@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>REPLACE PCRE — 패턴 치환과 $1 그룹 재사용 · 고급 문자열 처리: PCRE 정규식 · SAP Developer Academy</title>
+<link rel="stylesheet" href="../../../assets/base.css">
+<link rel="stylesheet" href="../../../assets/lesson.css">
+<link rel="stylesheet" href="../../../assets/shell.css">
+<script>/* 읽기 설정 선적용(플래시 방지) */(function(){try{var L=localStorage,r=document.documentElement;if(L.getItem('sda.dark')==='1')r.classList.add('dark');if(L.getItem('sda.wide')==='1')r.classList.add('wide');var f=parseInt(L.getItem('sda.fontPx'),10);if(f>=13&&f<=20)r.style.fontSize=f+'px';}catch(e){}})();</script>
+</head>
+<body data-domain="abap" data-chapter-id="CH29" data-lesson-id="CH29-L05">
+<header class="appbar">
+  <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
+  <span class="appbar__sp"></span>
+  <span class="meta">Chapter 29 · 고급 문자열 처리: PCRE 정규식</span>
+  <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
+  <div class="tools">
+    <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
+    <button class="icon-btn" id="fsInc" title="글자 크게">A+</button>
+    <button class="icon-btn" id="fsReset" title="글자 크기 초기화">↺</button>
+    <button class="icon-btn" id="darkBtn" title="다크 모드">🌙</button>
+    <button class="icon-btn" id="widthBtn" title="가독 폭 넓게">↔</button>
+    <button class="icon-btn fs-btn" title="전체화면" aria-label="전체화면"></button>
+  </div>
+</header>
+<div class="read-progress"><i></i></div>
+<div class="scrim"></div>
+<nav class="rail" data-shell="rail"></nav>
+<button class="railFab" id="railFab" aria-label="네비 열기">☰</button>
+<div class="stage">
+  <div class="layout">
+    <main class="main">
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 29 › Lesson 5</nav>
+      <section class="lhead">
+        <p class="lhead__eyebrow">고급 문자열 처리: PCRE 정규식</p>
+        <h1>REPLACE PCRE — 패턴 치환과 $1 그룹 재사용</h1>
+        <p class="lhead__direction">패턴으로 바꾸고, 그룹 값을 치환문에 재사용하고, 결과를 검증한다.</p>
+        <div class="tags"><span class="tag tag--track">Track 2</span><span class="tag tag--ch">Chapter 29</span><span class="tag tag--ls">Lesson 5</span><span class="tag tag--lv">중급</span></div>
+      </section>
+      <article class="prose">
+<section class="lblock"><h2>🧹 찾기의 반대편 — 정리하기</h2>
+<p>정규식은 찾기 전용이 아니다. 파트너에서 온 지저분한 텍스트를 <strong>표준 형식으로 정리</strong>할
+때가 진짜 실력 발휘다.</p>
+<ul>
+<li>금액 <code>KRW 120,000</code>에서 숫자만 남기기</li>
+<li>이름 사이 여러 공백을 하나로</li>
+<li>공연일 <code>2026/07/06</code>을 우리 표기 <code>2026-07-06</code>으로</li>
+</ul>
+<p><a href="CH04-L02.html">Chapter 4 · 문자열 다루기</a>의 <code>REPLACE ... OF &#39;old&#39; ... WITH &#39;new&#39;</code>가
+고정 문자열 치환이었다면, <code>REPLACE PCRE</code>는 <strong>패턴 치환</strong>이다.</p>
+</section><section class="lblock"><h2>기본형 — 숫자만 남기기·공백 정리</h2>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>(gv_amount) = <span class="tok-str">`KRW 120,000`</span>.
+
+<span class="tok-kw">REPLACE</span> <span class="tok-kw">ALL</span> OCCURRENCES <span class="tok-kw">OF</span> PCRE <span class="tok-str">`\D`</span>
+        <span class="tok-kw">IN</span> gv_amount <span class="tok-kw">WITH</span> <span class="tok-str">``</span>.
+
+<span class="tok-kw">WRITE</span> / gv_amount.                       <span class="tok-com">" 120000</span></code></pre></div></div>
+<p><code>\D</code>(숫자가 아닌 문자)를 전부 빈 문자열로 바꿨다. 통화 표기·콤마가 한 번에 사라진다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>(gv_name) = <span class="tok-str">`정훈영    ABAP     Academy`</span>.
+
+<span class="tok-kw">REPLACE</span> <span class="tok-kw">ALL</span> OCCURRENCES <span class="tok-kw">OF</span> PCRE <span class="tok-str">`\s+`</span>
+        <span class="tok-kw">IN</span> gv_name <span class="tok-kw">WITH</span> <span class="tok-str">` `</span>.
+
+<span class="tok-kw">WRITE</span> / gv_name.                         <span class="tok-com">" 정훈영 ABAP Academy</span></code></pre></div></div>
+<p><code>\s+</code>(공백 1개 이상 연속)를 공백 하나로. 연속 공백이 몇 개든 한 방이다.</p>
+<blockquote class="cw">
+<p>⚠️ <code>FIND</code>와 달리 <code>REPLACE</code>는 <strong>원본 변수를 바꾼다</strong>. 원본이 필요하면 복사본을 먼저
+만들어 두는 습관을.</p>
+</blockquote>
+</section><section class="lblock"><h2>group substitution — 잡은 값을 다시 끼워 넣기</h2>
+<p>날짜 구분자 표준화가 백미다. 연·월·일을 그룹으로 잡고, 치환문에서 <code>$1</code>·<code>$2</code>·<code>$3</code>으로
+되부른다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>(gv_date) = <span class="tok-str">`2026/07/06`</span>.
+
+<span class="tok-kw">REPLACE</span> FIRST OCCURRENCE <span class="tok-kw">OF</span> PCRE
+        <span class="tok-str">`^(\d{4})/(\d{2})/(\d{2})$`</span>
+        <span class="tok-kw">IN</span> gv_date
+        <span class="tok-kw">WITH</span> <span class="tok-str">`$1-$2-$3`</span>.
+
+<span class="tok-kw">WRITE</span> / gv_date.                         <span class="tok-com">" 2026-07-06</span></code></pre></div></div>
+<table>
+<thead>
+<tr>
+<th>치환문 표기</th>
+<th>뜻</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>$0</code></td>
+<td>매치 전체</td>
+</tr>
+<tr>
+<td><code>$1</code>, <code>$2</code>, ...</td>
+<td>1번째, 2번째 캡처 그룹의 값</td>
+</tr>
+</tbody></table>
+<p>값(2026, 07, 06)은 그대로 두고 <strong>형식만</strong> 바꿨다. 이게 group substitution의 힘이다.</p>
+</section><section class="lblock"><h2>VERBATIM — &quot;$1을 진짜 글자로 넣고 싶은데?&quot;</h2>
+<p>가끔은 치환 결과에 문자 그대로의 <code>$1</code>을 넣어야 한다(예: 안내 문구 템플릿 생성).
+<button class="term" type="button" data-term="VERBATIM">VERBATIM</button>(축자 — 치환문의 특수문자 해석을 끄는 옵션)을 붙이면 치환문이 전부
+literal이 된다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>(gv_text) = <span class="tok-str">`A123`</span>.
+
+<span class="tok-com">" VERBATIM 없음: $1 = 그룹 값       → 123</span>
+<span class="tok-com">" VERBATIM 있음: $1 = 문자 그대로   → $1</span>
+<span class="tok-kw">REPLACE</span> PCRE <span class="tok-str">`A(\d+)`</span> <span class="tok-kw">IN</span> gv_text
+        <span class="tok-kw">WITH</span> <span class="tok-str">`$1`</span>
+        VERBATIM.
+
+<span class="tok-kw">WRITE</span> / gv_text.                         <span class="tok-com">" $1</span></code></pre></div></div>
+</section><section class="lblock"><h2>치환 결과 검증 — REPLACEMENT COUNT</h2>
+<p>치환은 원본을 바꾸는 만큼 <code>FIND</code>보다 더 검증이 중요하다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>(gv_text2) = <span class="tok-str">`A  B   C`</span>.
+
+<span class="tok-kw">REPLACE</span> <span class="tok-kw">ALL</span> OCCURRENCES <span class="tok-kw">OF</span> PCRE <span class="tok-str">`\s+`</span>
+        <span class="tok-kw">IN</span> gv_text2 <span class="tok-kw">WITH</span> <span class="tok-str">` `</span>
+        REPLACEMENT <span class="tok-kw">COUNT</span> <span class="tok-kw">DATA</span>(gv_count).
+
+<span class="tok-kw">WRITE</span>: / gv_text2,                       <span class="tok-com">" A B C</span>
+       / |치환 횟수: { gv_count }|.      <span class="tok-com">" 2</span></code></pre></div></div>
+<ul>
+<li><code>REPLACEMENT COUNT</code> = 몇 번 바뀌었나. <strong>0이면 패턴이 아무것도 못 잡았다는 경고
+신호</strong>다(치환문 오타보다 패턴 미스가 훨씬 흔하다).</li>
+<li><code>REPLACEMENT OFFSET</code>/<code>LENGTH</code>도 있다. 단, ALL 치환에서는 앞선 치환 때문에 위치가
+<strong>밀린 뒤의 값</strong>이라 <code>FIND</code>의 <code>MATCH OFFSET</code>과 같은 감각으로 읽으면 안 된다.</li>
+<li>발견별 치환 위치가 표로 필요하면 여기도 <code>RESULTS</code>가 있다(역시 OFFSET/LENGTH와는
+같은 문장에서 택일). <code>REPLACE</code>의 RESULTS 줄에는 <code>FIND</code> 때와 달리 <code>submatches</code>
+필드가 없다(치환이 끝난 뒤라 그룹 위치가 의미 없기 때문).</li>
+</ul>
+</section><section class="lblock"><h2>직접 바꿔 보기</h2>
+<p>네 가지 원문으로 치환 전/후, <button class="term" type="button" data-term="VERBATIM">VERBATIM</button> 유무, 치환 횟수를 확인해 보라.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">Regex Replace Workshop — 치환·$1·VERBATIM</span><a class="embed__open" href="../../../embeds/abap/CH29-L05-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH29-L05-S01.html" loading="lazy" title="Regex Replace Workshop — 치환·$1·VERBATIM" style="height:620px"></iframe></figure>
+</section><section class="lblock"><h2>흔한 실수와 점검 🚧</h2>
+<ul>
+<li><strong>원본 파괴</strong> — <code>REPLACE</code>는 제자리 치환이다. 원본 보존이 필요하면 복사 후 작업.</li>
+<li><strong>그룹 번호 변경 사고</strong> — 패턴에 괄호를 하나 추가하면 <code>$2</code>가 가리키는 그룹이
+달라진다. 패턴 수정 시 치환문도 같이 점검.</li>
+<li><strong><code>$1</code>을 literal로</strong> — escape(<code>\$1</code>)도 되지만 <code>VERBATIM</code>이 더 명확하고 빠르다.
+단 치환문 <strong>전체</strong>가 literal이 되므로 그룹 재사용과 병행은 불가.</li>
+<li><strong>고정 길이 필드 절단</strong> — <code>c</code> 타입 필드에 더 긴 치환 결과를 넣으면 잘린다
+(<code>sy-subrc = 2</code>). 문자열 작업은 <code>string</code> 타입에서.</li>
+<li><strong>빈 패턴 + ALL</strong> — 빈 패턴을 ALL로 치환하면 무한 루프 <button class="term" type="button" data-term="예외">예외</button>
+(<code>CX_SY_REPLACE_INFINITE_LOOP</code>)가 난다. 패턴이 비지 않았는지 먼저 확인.</li>
+</ul>
+</section><section class="lblock"><h2>정리 📌</h2>
+<ul>
+<li><code>REPLACE PCRE</code> = 패턴 치환. <code>\D</code> 제거·<code>\s+</code> 정리처럼 &quot;모양 기준 청소&quot;에 강하다.</li>
+<li><code>$1</code>·<code>$2</code>로 그룹 값을 치환문에 재사용: 값은 두고 형식만 바꾼다.</li>
+<li><code>VERBATIM</code> = 치환문 특수문자 해석 끄기.</li>
+<li>치환 후에는 <code>REPLACEMENT COUNT</code>로 몇 건 바뀌었는지 확인하는 습관.</li>
+</ul>
+<hr>
+<p>문장 단위 도구는 다 모았다. 그런데 같은 패턴을 <strong>수천 줄</strong>에 반복 적용한다면? 패턴을
+한 번만 컴파일해 재사용하는 <button class="term" type="button" data-term="객체">객체</button> API, <code>CL_ABAP_REGEX</code>로 간다.</p>
+</section>
+      </article>
+      <nav class="lesson-nav" data-shell="prevnext"></nav>
+      <footer class="foot">SAP Developer Academy · 배포자 SAP전문강사 정훈영</footer>
+    </main>
+    <aside class="journey" data-shell="journey"></aside>
+  </div>
+</div>
+<div class="term-popup" data-shell="popup" hidden></div>
+<div class="tmodal" data-shell="tmodal" hidden></div>
+<script>window.__SDA__={"domain":"abap","dataBase":"../","siteRoot":"../../../"};</script>
+<script src="../../../assets/shell.js" defer></script>
+</body>
+</html>

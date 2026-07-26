@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PCRE 기본 문법 — 문자 클래스·수량자·그룹 · 고급 문자열 처리: PCRE 정규식 · SAP Developer Academy</title>
+<link rel="stylesheet" href="../../../assets/base.css">
+<link rel="stylesheet" href="../../../assets/lesson.css">
+<link rel="stylesheet" href="../../../assets/shell.css">
+<script>/* 읽기 설정 선적용(플래시 방지) */(function(){try{var L=localStorage,r=document.documentElement;if(L.getItem('sda.dark')==='1')r.classList.add('dark');if(L.getItem('sda.wide')==='1')r.classList.add('wide');var f=parseInt(L.getItem('sda.fontPx'),10);if(f>=13&&f<=20)r.style.fontSize=f+'px';}catch(e){}})();</script>
+</head>
+<body data-domain="abap" data-chapter-id="CH29" data-lesson-id="CH29-L02">
+<header class="appbar">
+  <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
+  <span class="appbar__sp"></span>
+  <span class="meta">Chapter 29 · 고급 문자열 처리: PCRE 정규식</span>
+  <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
+  <div class="tools">
+    <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
+    <button class="icon-btn" id="fsInc" title="글자 크게">A+</button>
+    <button class="icon-btn" id="fsReset" title="글자 크기 초기화">↺</button>
+    <button class="icon-btn" id="darkBtn" title="다크 모드">🌙</button>
+    <button class="icon-btn" id="widthBtn" title="가독 폭 넓게">↔</button>
+    <button class="icon-btn fs-btn" title="전체화면" aria-label="전체화면"></button>
+  </div>
+</header>
+<div class="read-progress"><i></i></div>
+<div class="scrim"></div>
+<nav class="rail" data-shell="rail"></nav>
+<button class="railFab" id="railFab" aria-label="네비 열기">☰</button>
+<div class="stage">
+  <div class="layout">
+    <main class="main">
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 29 › Lesson 2</nav>
+      <section class="lhead">
+        <p class="lhead__eyebrow">고급 문자열 처리: PCRE 정규식</p>
+        <h1>PCRE 기본 문법 — 문자 클래스·수량자·그룹</h1>
+        <p class="lhead__direction">실무 초반에 실제로 쓰는 토큰만 추려 조합 감각을 만든다.</p>
+        <div class="tags"><span class="tag tag--track">Track 2</span><span class="tag tag--ch">Chapter 29</span><span class="tag tag--ls">Lesson 2</span><span class="tag tag--lv">중급</span></div>
+      </section>
+      <article class="prose">
+<section class="lblock"><h2>🔤 기호가 많아 보이지만</h2>
+<p>정규식이 어렵게 느껴지는 이유는 기호가 많아서다. 하지만 이메일, 접수번호, 로그 날짜,
+공백 정리 정도를 처리하는 데 필요한 기호는 생각보다 적다. 이번 레슨의 표 두 개가
+이 챕터 전체에서 쓸 재료의 거의 전부다.</p>
+</section><section class="lblock"><h2>문자 클래스 — &quot;어떤 글자 한 개&quot;</h2>
+<table>
+<thead>
+<tr>
+<th>기호</th>
+<th>의미</th>
+<th>예</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>.</code></td>
+<td>줄바꿈 제외 임의 문자 <strong>한 개</strong></td>
+<td><code>A.B</code> → <code>A1B</code>, <code>A-B</code> 모두</td>
+</tr>
+<tr>
+<td><code>\d</code></td>
+<td>숫자 한 자리 (digit)</td>
+<td><code>0</code>～<code>9</code></td>
+</tr>
+<tr>
+<td><code>\D</code></td>
+<td>숫자가 <strong>아닌</strong> 문자 한 개</td>
+<td><code>A</code>, <code>-</code>, 공백</td>
+</tr>
+<tr>
+<td><code>\w</code></td>
+<td>단어 문자 한 개 (word: 글자·숫자·<code>_</code>)</td>
+<td><code>H</code>, <code>7</code>, <code>_</code></td>
+</tr>
+<tr>
+<td><code>\s</code></td>
+<td>공백류 한 개 (space·tab 등)</td>
+<td><code> </code></td>
+</tr>
+<tr>
+<td><code>[ABC]</code></td>
+<td>대괄호 안 문자 중 <strong>하나</strong></td>
+<td><code>A</code> 또는 <code>B</code> 또는 <code>C</code></td>
+</tr>
+<tr>
+<td><code>[A-Z]</code></td>
+<td>범위 — A부터 Z까지 중 하나</td>
+<td>대문자 한 개</td>
+</tr>
+<tr>
+<td><code>[^0-9]</code></td>
+<td>대괄호 안 <code>^</code> = <strong>제외</strong></td>
+<td>숫자가 아닌 것</td>
+</tr>
+</tbody></table>
+<p>전부 &quot;글자 <strong>한 개</strong>&quot;를 뜻한다는 점이 중요하다. <code>\d</code>는 숫자 하나, <code>\d\d</code>는 숫자 둘.</p>
+</section><section class="lblock"><h2>수량자 — &quot;몇 번 반복&quot;</h2>
+<p>문자 <button class="term" type="button" data-term="Class">클래스</button> 뒤에 붙어 반복 횟수를 정한다.</p>
+<table>
+<thead>
+<tr>
+<th>기호</th>
+<th>의미</th>
+<th>예</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>*</code></td>
+<td>0번 이상</td>
+<td><code>\d*</code> = 숫자 없거나 여러 개</td>
+</tr>
+<tr>
+<td><code>+</code></td>
+<td>1번 이상</td>
+<td><code>\d+</code> = 숫자 최소 하나</td>
+</tr>
+<tr>
+<td><code>?</code></td>
+<td>0번 또는 1번</td>
+<td><code>-?</code> = 하이픈 있어도 없어도</td>
+</tr>
+<tr>
+<td><code>{4}</code></td>
+<td>정확히 4번</td>
+<td><code>\d{4}</code> = 숫자 네 자리</td>
+</tr>
+<tr>
+<td><code>{2,4}</code></td>
+<td>2번 이상 4번 이하</td>
+<td><code>\d{2,4}</code></td>
+</tr>
+</tbody></table>
+</section><section class="lblock"><h2>그룹과 선택</h2>
+<table>
+<thead>
+<tr>
+<th>기호</th>
+<th>의미</th>
+<th>예</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>( )</code></td>
+<td>묶음 — <button class="term" type="button" data-term="Capture Group">Capture Group</button>(캡처 그룹, 괄호로 잡아 나중에 꺼내 쓸 수 있는 부분 패턴)</td>
+<td><code>(\d{4})</code></td>
+</tr>
+<tr>
+<td><code>|</code></td>
+<td>또는 (alternation)</td>
+<td><code>N|C</code> = <code>N</code> 또는 <code>C</code></td>
+</tr>
+</tbody></table>
+<p><code>N|C</code>가 낯익지 않은가? 우리 예매 상태값(신규 <code>N</code>/취소 <code>C</code>)이다. &quot;상태 문자가 둘 중
+하나인가&quot;를 물을 때 <code>^(N|C)$</code>처럼 쓴다.</p>
+</section><section class="lblock"><h2>조합해서 읽어 보기</h2>
+<p>지난 레슨의 접수번호 패턴을 이제 완전히 해석할 수 있다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">TEXT</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2</pre><pre class="abap-editor__code"><code>^B-\d{4}-\d{4}$
+= 시작(^) + 'B-' 그대로 + 숫자 4자리 + '-' + 숫자 4자리 + 끝($)</code></pre></div></div>
+<p>로그에서 접수번호를 찾아 위치까지 받아 보자. <code>MATCH OFFSET</code>(발견 시작 위치)과
+<code>MATCH LENGTH</code>(발견 길이)는 다음 레슨의 주인공인데, 여기서는 &quot;결과를 원문에서 다시
+잘라 눈으로 확인&quot;하는 용도로만 먼저 쓴다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>(gv_log) =
+  <span class="tok-str">`Booking B-2026-0007 failed at 2026-07-06 14:30:05`</span>.
+
+<span class="tok-kw">FIND</span> PCRE <span class="tok-str">`B-\d{4}-\d{4}`</span> <span class="tok-kw">IN</span> gv_log
+     MATCH <span class="tok-kw">OFFSET</span> <span class="tok-kw">DATA</span>(gv_offset)
+     MATCH <span class="tok-kw">LENGTH</span> <span class="tok-kw">DATA</span>(gv_length).
+
+<span class="tok-kw">IF</span> sy-subrc = <span class="tok-num">0</span>.
+  <span class="tok-kw">DATA</span>(gv_found) = <span class="tok-kw">substring</span>( val = gv_log
+                              off = gv_offset
+                              len = gv_length ).
+  <span class="tok-kw">WRITE</span> / gv_found.                 <span class="tok-com">" B-2026-0007</span>
+<span class="tok-kw">ENDIF</span>.</code></pre></div></div>
+<p><code>substring( )</code>은 <a href="CH18-L05.html">Chapter 18 · String Template과 내장 함수</a>에서 배운
+그 함수다. <strong>정규식 결과를 믿기만 하지 말고 원문을 다시 잘라 확인하는 습관</strong>. 패턴
+실수를 가장 빨리 잡는 방법이다.</p>
+<p>날짜는 그룹으로 나눠 볼 수 있다. 그룹 값을 변수로 꺼내는 <code>SUBMATCHES</code>는
+<a href="CH29-L04.html">L04</a>에서 정식으로 다루고, 여기서는 &quot;괄호가 조각을 만든다&quot;는 감각만.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">TEXT</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2</pre><pre class="abap-editor__code"><code>^(\d{4})-(\d{2})-(\d{2})$   ← 2026-07-06
+  그룹1      그룹2    그룹3</code></pre></div></div>
+</section><section class="lblock"><h2>greedy — 수량자는 욕심쟁이</h2>
+<p><code>*</code>와 <code>+</code>에는 성격이 있다. 기본은 <button class="term" type="button" data-term="Greedy">Greedy</button>(탐욕적: 가능한 <strong>많이</strong> 잡으려는 수량자의
+기본 성질)다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>(gv_html) = <span class="tok-str">`&lt;i&gt;ABAP&lt;/i&gt;&lt;i&gt;UI5&lt;/i&gt;`</span>.
+
+<span class="tok-com">" greedy: 가능한 많이 → &lt;i&gt;ABAP&lt;/i&gt;&lt;i&gt;UI5&lt;/i&gt; 전체가 잡힌다</span>
+<span class="tok-kw">FIND</span> PCRE <span class="tok-str">`&lt;i&gt;.*&lt;/i&gt;`</span> <span class="tok-kw">IN</span> gv_html
+     MATCH <span class="tok-kw">LENGTH</span> <span class="tok-kw">DATA</span>(gv_len_greedy).      <span class="tok-com">" 21 (전체)</span>
+
+<span class="tok-com">" non-greedy: 가능한 적게 → &lt;i&gt;ABAP&lt;/i&gt; 첫 태그만</span>
+<span class="tok-kw">FIND</span> PCRE <span class="tok-str">`&lt;i&gt;.*?&lt;/i&gt;`</span> <span class="tok-kw">IN</span> gv_html
+     MATCH <span class="tok-kw">LENGTH</span> <span class="tok-kw">DATA</span>(gv_len_lazy).        <span class="tok-com">" 11 (첫 태그)</span></code></pre></div></div>
+<p>수량자 뒤에 <code>?</code>를 붙이면 non-greedy(가능한 <strong>적게</strong>)로 바뀐다. 첫 태그 하나만 잡고
+싶은데 문서 끝까지 삼켜 버리는 사고. greedy를 모르면 반드시 한 번은 겪는다.</p>
+<blockquote class="cw">
+<p>⚠️ 이 예제는 greedy 차이를 보는 용도다. HTML/XML <strong>전체를 정규식으로 파싱하는 것은
+금물</strong> — 그건 전용 파서의 일이다.</p>
+</blockquote>
+</section><section class="lblock"><h2>직접 조립해 보기</h2>
+<p>토큰 버튼으로 패턴을 조립해 접수번호·날짜·태그에 실행해 보라. greedy 비교 버튼도 있다.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">PCRE 토큰 조립기 — 문자·반복·그룹·greedy</span><a class="embed__open" href="../../../embeds/abap/CH29-L02-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH29-L02-S01.html" loading="lazy" title="PCRE 토큰 조립기 — 문자·반복·그룹·greedy" style="height:600px"></iframe></figure>
+</section><section class="lblock"><h2>흔한 실수와 점검 🚧</h2>
+<ul>
+<li><strong><code>.</code> 남용</strong> — &quot;아무거나&quot;는 너무 넓게 잡힌다. 숫자면 <code>\d</code>, 단어면 <code>\w</code>처럼 <strong>구체적인
+<button class="term" type="button" data-term="Class">클래스</button></strong>를 우선한다.</li>
+<li><strong><code>\d+</code>로 자릿수 검증</strong> — <code>+</code>는 1자리든 100자리든 통과시킨다. 자릿수가 정해져 있으면
+<code>{4}</code>처럼 개수를 명시한다.</li>
+<li><strong><code>.*</code> 선두 배치</strong> — 패턴 앞머리의 <code>.*</code>는 과도한 매칭과 성능 문제의 단골 원인이다.</li>
+<li><strong>공백 함정 ★</strong> — ABAP의 PCRE는 <strong>extended mode가 기본</strong>이라, 패턴 안의 escape되지
+않은 공백을 <strong>무시한다</strong>. <code>B- \d{4}</code>라고 띄어 써도 <code>B-\d{4}</code>로 해석된다는 뜻.
+공백 자체를 찾으려면 <code>\s</code>를 쓴다(또는 <code>\ </code>처럼 escape).</li>
+<li>괄호를 쓸 때는 <strong>묶음이 목적인지, 값을 꺼낼 그룹인지</strong> 의도를 분명히 한다
+(<a href="CH29-L04.html">L04</a>에서 구분법을 배운다).</li>
+</ul>
+</section><section class="lblock"><h2>정리 📌</h2>
+<ul>
+<li>문자 <button class="term" type="button" data-term="Class">클래스</button>(<code>\d</code> <code>\w</code> <code>\s</code> <code>[ ]</code>) = 어떤 글자 한 개. 수량자(<code>*</code> <code>+</code> <code>?</code> <code>{m,n}</code>) = 몇 번.</li>
+<li><code>( )</code> = 그룹, <code>|</code> = 또는, <code>^</code>·<code>$</code> = 시작·끝 고정.</li>
+<li>수량자 기본 성질은 greedy(많이). <code>?</code>를 붙이면 non-greedy(적게).</li>
+<li>ABAP PCRE는 extended mode가 기본. 패턴 속 맨 공백은 무시되니 공백은 <code>\s</code>로.</li>
+<li>lookaround(전후 문맥 조건) 같은 고급 문법도 존재하지만 이 과정 범위 밖이다. 여기 나온
+토큰만으로 실무 초급 패턴은 대부분 읽고 쓸 수 있다.</li>
+</ul>
+<hr>
+<p>패턴을 조립할 수 있게 됐다. 그런데 <code>sy-subrc = 0</code>은 &quot;찾았다&quot;까지만 말해 준다. <strong>몇 개</strong>
+찾았는지, <strong>어디서</strong> 찾았는지 검증하려면? 다음 레슨에서 <code>FIND</code>의 결과 옵션을 전부 꺼낸다.</p>
+</section>
+      </article>
+      <nav class="lesson-nav" data-shell="prevnext"></nav>
+      <footer class="foot">SAP Developer Academy · 배포자 SAP전문강사 정훈영</footer>
+    </main>
+    <aside class="journey" data-shell="journey"></aside>
+  </div>
+</div>
+<div class="term-popup" data-shell="popup" hidden></div>
+<div class="tmodal" data-shell="tmodal" hidden></div>
+<script>window.__SDA__={"domain":"abap","dataBase":"../","siteRoot":"../../../"};</script>
+<script src="../../../assets/shell.js" defer></script>
+</body>
+</html>

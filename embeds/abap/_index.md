@@ -236,6 +236,14 @@
 | CH28-L06-S01 | CH28-L06 | dyn-lab | mode=factory·타입 선택→①CREATE DATA ②dref->* 역참조 ③ASSIGN COMPONENT 순서 의존·UNKNOWN_TYPE=예외(cx_sy_create_data_error) | ✅ |
 | CH28-L07-S01 | CH28-L07 | dyn-lab | mode=lens·낱값/구조/테이블 카드→describe(type_kind)·구조만 components 열림·잘못된 CAST=cx_sy_move_cast_error | ✅ |
 | CH28-L08-S01 | CH28-L08 | dyn-lab | mode=inspector·(capstone) 입력/요청 필드 토글→describe→metadata 대조→ASSIGN→결과 표·낱값 입력=①서 거절·UNKNOWN=안내 행 | ✅ |
+| CH29-L01-S01 | CH29-L01 | regex-lab | mode=compare·6줄 입력 substring vs PCRE vs ^$ anchor·잘못 통과/반려 판정 표·포함≠전체형식 | ✅ |
+| CH29-L02-S01 | CH29-L02 | regex-lab | mode=tokens·토큰 버튼 패턴 조립→매치/그룹 하이라이트·빈 패턴=예외·공백=extended mode 경고·greedy 비교(MATCH LENGTH) | ✅ |
+| CH29-L03-S01 | CH29-L03 | regex-lab | mode=inspect·FIRST OFFSET/LENGTH·ALL COUNT·ALL+OFFSET=마지막 함정·RESULTS 표(택일이라 화면 분리) | ✅ |
+| CH29-L04-S01 | CH29-L04 | regex-lab | mode=groups·SUBMATCHES 그룹↔변수 색 연결·optional 불참=초기값·(?:) 번호 밀림 데모·RESULTS 메타=위치정보 | ✅ |
+| CH29-L05-S01 | CH29-L05 | regex-lab | mode=replace·프리셋 4(금액\D·날짜$1-$2-$3·공백\s+·VERBATIM)·전후 비교+REPLACEMENT COUNT·0건=경고 | ✅ |
+| CH29-L06-S01 | CH29-L06 | regex-lab | mode=matcher·①CREATE_PCRE(도장)→matcher(손)→match( )=전체일치 vs find_next( ) 전진·get_submatch(2)=cx_sy_invalid_submatch | ✅ |
+| CH29-L07-S01 | CH29-L07 | regex-lab | mode=functions·6함수 탭(contains/matches/count/find/match/replace)+식 표기·contains vs matches 비교표·find 실패=-1 | ✅ |
+| CH29-L08-S01 | CH29-L08 | regex-lab | mode=gate·(capstone) 5줄 입력·검사 3종(로그 E\d{3}/이메일 1차/\bSEARCH\b)·소문자 search=IGNORING CASE·RESEARCH=\b 오탐 방지·마스킹 미리보기 | ✅ |
 | CH30-L01-S01 | CH30-L01 | alv-events | mode=double·예매 ALV 행 더블클릭→double_click 핸들러+e_row/e_column 이벤트 로그 | ✅ |
 | CH30-L02-S01 | CH30-L02 | alv-events | mode=hotspot·concert_id 링크 셀 한 번 클릭→hotspot_click+e_row_id/e_column_id·컬럼 필터링 | ✅ |
 | CH30-L03-S01 | CH30-L03 | alv-events | mode=toolbar·커스텀 버튼(ZCANCEL) 추가만(toolbar 이벤트)·처리는 L04로 분리 강조 | ✅ |
@@ -316,7 +324,8 @@
 | annotation-effect-preview (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH23-L04-S01 | AEP_CFG(labels/priceField/currencyField/order) 주도 · 3패널: ①label 토글→헤더 dt(기술 UPPERCASE↔업무라벨) ②@Semantics seg(currency_code/ticket_price/none)→code(자기참조 .bad span)+verdict ok/bad/warn(교훈3 base 중립rgba) ③lineItem ▲▼ 순서→position (i+1)*10 재할당+컬럼 미리보기·toggle base=var(--surface) · 다크 |
 | metadata-extension-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH23-L05-S01 | MXL_CFG(entity/base/fields pos) 주도 · 토글 3(uiLoc inline/ext·allow·sep ;/,)→DDL 파일(@Metadata.allowExtensions·inline 시 @UI.lineItem interleave)+DDLX 파일(annotate entity with·요소 뒤 sep·ext일 때만)·status: ext+!allow=bad·ext+sep,=bad(sep-bad span)·ext+;+allow=ok·inline=중립 base(교훈3)·활성화 badge act/fail·toggle base=var(--surface) · 다크 |
 | dcl-auth-comparator (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH23-L06-S01 | DAC_CFG(entity/users auth/concerts venue) 주도 · 사용자 seg+PFCG 배지·mode 토글(CHECK/NOT_REQUIRED)→DCL+@AccessControl code+SELECT code+결과 표(CHECK=venue∈auth만·NOT_REQUIRED=전부·권한밖 행 .unauth rgba 빨강+tag)·verdict: NOT_REQUIRED+leak=bad/CHECK=ok(0건도 정상)·교훈3 base 중립rgba·seg base=var(--surface) · 다크 |
-| dyn-lab (신규) | 8 | 공통(_engine)·자체 postHeight ✅ | CH28-L01～L08-S01 | dyn-cfg JSON {mode: pointer/gate/state/picker/lookup/factory/lens/inspector} 주도·Dynamic ABAP 8모드(이름표·generic 게이트·ASSIGN 상태기계·필드선택+whitelist·이름검색 사다리·CREATE DATA 3단계·RTTS 렌즈·캡스톤 파이프라인)·정본 B0001/C1000/2/N |
+| dyn-lab (신규) | 8 | 공통(_engine)·자체 postHeight ✅ | CH28-L01～L08-S01 | dyn-cfg JSON {mode: pointer/gate/state/picker/lookup/factory/lens/inspector} 주도·Dynamic ABAP 8모드(이름표·generic 게이트·ASSIGN 상태기계·필드선택+whitelist·이름검색 사다리·CREATE DATA 3단계·RTTS 렌즈·캡스톤 파이프라인)·정본 0001/C001/정훈영/2/N |
+| regex-lab (신규) | 8 | 공통(_engine)·자체 postHeight ✅ | CH29-L01～L08-S01 | rx-cfg JSON {mode: compare/tokens/inspect/groups/replace/matcher/functions/gate} 주도·PCRE 8모드(substring vs 패턴·토큰 조립·결과 옵션·SUBMATCHES·치환/VERBATIM·matcher 도장/손·함수 콘솔·품질 게이트)·JS RegExp 'd' 플래그로 그룹 위치까지 실행(\w ASCII 한계로 한글 \w 데모는 본문 전용)·데이터=파트너 접수번호 B-YYYY-NNNN(외부 표기)+로그 E100/W210/E404+정훈영/HUNYOUNG |
 | alv-events (신규) | 4 | 공통(_engine)·자체 postHeight ✅ | CH30-L01～L04-S01 | alv-cfg JSON {mode: double/hotspot/toolbar/ucommand} 주도·예매 미니 ALV+이벤트 로그(핸들러 메서드+e_* 파라미터)·ucommand는 선택→취소→refresh까지 |
 | alv-handler-wiring (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH30-L05-S01 | 이벤트→핸들러 메서드 배선 맵·클릭 시 짝 강조·생성자 SET HANDLER 일괄 배선 메시지 |
 | factory-sim (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH27-L01-S01 | 타입 세그(V/G/Z)→생성 클래스·설명 전환·호출부 코드 고정 표시 |
