@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SUBMATCHES — Capture Group으로 값 추출 · 고급 문자열 처리: PCRE 정규식 · SAP Developer Academy</title>
+<link rel="stylesheet" href="../../../assets/base.css">
+<link rel="stylesheet" href="../../../assets/lesson.css">
+<link rel="stylesheet" href="../../../assets/shell.css">
+<script>/* 읽기 설정 선적용(플래시 방지) */(function(){try{var L=localStorage,r=document.documentElement;if(L.getItem('sda.dark')==='1')r.classList.add('dark');if(L.getItem('sda.wide')==='1')r.classList.add('wide');var f=parseInt(L.getItem('sda.fontPx'),10);if(f>=13&&f<=20)r.style.fontSize=f+'px';}catch(e){}})();</script>
+</head>
+<body data-domain="abap" data-chapter-id="CH29" data-lesson-id="CH29-L04">
+<header class="appbar">
+  <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
+  <span class="appbar__sp"></span>
+  <span class="meta">Chapter 29 · 고급 문자열 처리: PCRE 정규식</span>
+  <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
+  <div class="tools">
+    <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
+    <button class="icon-btn" id="fsInc" title="글자 크게">A+</button>
+    <button class="icon-btn" id="fsReset" title="글자 크기 초기화">↺</button>
+    <button class="icon-btn" id="darkBtn" title="다크 모드">🌙</button>
+    <button class="icon-btn" id="widthBtn" title="가독 폭 넓게">↔</button>
+    <button class="icon-btn fs-btn" title="전체화면" aria-label="전체화면"></button>
+  </div>
+</header>
+<div class="read-progress"><i></i></div>
+<div class="scrim"></div>
+<nav class="rail" data-shell="rail"></nav>
+<button class="railFab" id="railFab" aria-label="네비 열기">☰</button>
+<div class="stage">
+  <div class="layout">
+    <main class="main">
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 29 › Lesson 4</nav>
+      <section class="lhead">
+        <p class="lhead__eyebrow">고급 문자열 처리: PCRE 정규식</p>
+        <h1>SUBMATCHES — Capture Group으로 값 추출</h1>
+        <p class="lhead__direction">괄호 그룹의 값을 변수로 꺼내고, optional·non-capturing까지 관리한다.</p>
+        <div class="tags"><span class="tag tag--track">Track 2</span><span class="tag tag--ch">Chapter 29</span><span class="tag tag--ls">Lesson 4</span><span class="tag tag--lv">중급</span></div>
+      </section>
+      <article class="prose">
+<section class="lblock"><h2>✂️ 매치 전체가 아니라 &quot;그 안의 값&quot;</h2>
+<p>파트너 장애 로그 한 줄에서 보고서를 만들어야 한다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">TEXT</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1</pre><pre class="abap-editor__code"><code>Booking B-2026-0007 failed for user HUNYOUNG</code></pre></div></div>
+<p>필요한 건 매치 전체가 아니라 그 안의 조각들이다.</p>
+<table>
+<thead>
+<tr>
+<th>원하는 값</th>
+<th>예</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>접수 연도</td>
+<td><code>2026</code></td>
+</tr>
+<tr>
+<td>일련번호</td>
+<td><code>0007</code></td>
+</tr>
+<tr>
+<td>사용자</td>
+<td><code>HUNYOUNG</code></td>
+</tr>
+</tbody></table>
+<p><a href="CH29-L02.html">L02</a>에서 괄호 <code>( )</code>가 <button class="term" type="button" data-term="Capture Group">Capture Group</button>을 만든다고 했다. <code>SUBMATCHES</code>는
+그 그룹들의 값을 <strong>왼쪽 괄호 순서대로</strong> 변수에 담아 준다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>(gv_text) =
+  <span class="tok-str">`Booking B-2026-0007 failed for user HUNYOUNG`</span>.
+
+<span class="tok-kw">FIND</span> PCRE <span class="tok-str">`B-(\d{4})-(\d{4}).*user\s+(\w+)`</span>
+     <span class="tok-kw">IN</span> gv_text
+     SUBMATCHES <span class="tok-kw">DATA</span>(gv_year) <span class="tok-kw">DATA</span>(gv_serial) <span class="tok-kw">DATA</span>(gv_user).
+
+<span class="tok-kw">IF</span> sy-subrc = <span class="tok-num">0</span>.
+  <span class="tok-kw">WRITE</span>: / gv_year, gv_serial, gv_user.   <span class="tok-com">" 2026  0007  HUNYOUNG</span>
+<span class="tok-kw">ENDIF</span>.</code></pre></div></div>
+<table>
+<thead>
+<tr>
+<th>그룹</th>
+<th>패턴 조각</th>
+<th>담기는 값</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td><code>(\d{4})</code></td>
+<td><code>2026</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>(\d{4})</code></td>
+<td><code>0007</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>(\w+)</code></td>
+<td><code>HUNYOUNG</code></td>
+</tr>
+</tbody></table>
+</section><section class="lblock"><h2>변수 개수와 그룹 개수가 어긋나면?</h2>
+<p>공식 규칙이 정해져 있다. 오류가 아니라 <strong>조용히</strong> 처리되니 더 조심해야 한다.</p>
+<ul>
+<li>변수가 그룹보다 <strong>적으면</strong> → 남는 그룹은 무시된다.</li>
+<li>변수가 그룹보다 <strong>많으면</strong> → 남는 변수는 초기값이 된다.</li>
+<li><code>ALL OCCURRENCES</code>와 함께 쓰면 → <strong>마지막 발견</strong>의 그룹 값이 담긴다
+(<a href="CH29-L03.html">L03</a>의 <code>MATCH OFFSET</code>과 같은 규칙).</li>
+</ul>
+</section><section class="lblock"><h2>여러 발견의 그룹 정보 — RESULTS의 submatches</h2>
+<p>발견이 여러 개라면 <code>SUBMATCHES</code> 대신 <code>RESULTS</code>를 쓴다. 지난 레슨에 보였던
+<code>submatches</code> 필드가 여기서 열린다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>(gv_list) = <span class="tok-str">`B-2026-0007 B-2026-0008`</span>.
+
+<span class="tok-kw">FIND</span> <span class="tok-kw">ALL</span> OCCURRENCES <span class="tok-kw">OF</span> PCRE <span class="tok-str">`B-(\d{4})-(\d{4})`</span>
+     <span class="tok-kw">IN</span> gv_list
+     RESULTS <span class="tok-kw">DATA</span>(gt_result).
+
+<span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> gt_result <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(gs_result).
+  <span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> gs_result-submatches <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(gs_sub).
+    <span class="tok-kw">DATA</span>(gv_piece) = <span class="tok-kw">substring</span>( val = gv_list
+                                off = gs_sub-offset
+                                len = gs_sub-length ).
+    <span class="tok-kw">WRITE</span>: / |그룹 값: { gv_piece }|.
+  <span class="tok-kw">ENDLOOP</span>.
+<span class="tok-kw">ENDLOOP</span>.</code></pre></div></div>
+<p>🚨 <strong>가장 중요한 구분</strong>: <code>RESULTS</code>의 <code>submatches</code>에 들어 있는 것은 그룹의 <strong>값이 아니라
+offset/length</strong>(위치 정보)다. 값이 필요하면 위처럼 원문에서 <code>substring( )</code>으로 잘라야
+한다. 반면 <code>SUBMATCHES s1 s2 ...</code>는 <strong>값 자체</strong>를 준다. 이름이 비슷해서 정말 자주
+헷갈린다.</p>
+<table>
+<thead>
+<tr>
+<th>도구</th>
+<th>주는 것</th>
+<th>몇 건에 대해</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>SUBMATCHES DATA(v1) ...</code></td>
+<td>그룹 <strong>값</strong></td>
+<td>한 건(ALL이면 마지막)</td>
+</tr>
+<tr>
+<td><code>RESULTS</code>의 <code>submatches</code></td>
+<td>그룹 <strong>위치</strong>(offset/length)</td>
+<td>모든 발견</td>
+</tr>
+</tbody></table>
+</section><section class="lblock"><h2>optional group — 있을 수도, 없을 수도</h2>
+<p>파트너 로그에는 좌석 수가 붙기도 하고 안 붙기도 한다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">TEXT</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2</pre><pre class="abap-editor__code"><code>Booking B-2026-0007 seats=2
+Booking B-2026-0008</code></pre></div></div>
+<p><code>( )?</code>로 그룹 전체를 0회 또는 1회로 만들면 두 줄 다 매치된다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3</pre><pre class="abap-editor__code"><code><span class="tok-kw">FIND</span> PCRE <span class="tok-str">`Booking\s+(B-\d{4}-\d{4})(?:\s+seats=(\d+))?`</span>
+     <span class="tok-kw">IN</span> gv_text
+     SUBMATCHES <span class="tok-kw">DATA</span>(gv_booking_id) <span class="tok-kw">DATA</span>(gv_seats).</code></pre></div></div>
+<p>두 가지 새 얼굴이 있다.</p>
+<ul>
+<li><strong><code>(?: ... )</code></strong> — non-capturing group. &quot;묶기만 하고 값은 안 꺼낼&quot; 괄호다. 이걸 안 쓰면
+<code>\s+seats=...</code> 묶음도 그룹 번호를 하나 차지해 <code>SUBMATCHES</code> 순서가 밀린다.</li>
+<li><strong>optional group이 매치에 불참하면</strong> — <code>gv_seats</code>는 <strong>초기값</strong>(빈 문자열)이 된다.
+&quot;seats가 없는 예약&quot;을 업무 로직으로 처리해야 한다(0으로 볼지, 별도 안내할지).</li>
+</ul>
+</section><section class="lblock"><h2>직접 추출해 보기</h2>
+<p>그룹별 색상으로 원문↔변수 연결을 확인하고, optional·non-capturing을 켜 보라.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title"><button class="term" type="button" data-term="Capture Group">Capture Group</button> Lab — 그룹→변수 연결</span><a class="embed__open" href="../../../embeds/abap/CH29-L04-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH29-L04-S01.html" loading="lazy" title="Capture Group Lab — 그룹→변수 연결" style="height:620px"></iframe></figure>
+</section><section class="lblock"><h2>흔한 실수와 점검 🚧</h2>
+<ul>
+<li><strong>그룹 순서 헷갈림</strong> — 그룹 번호는 <strong>여는 괄호의 순서</strong>다. 그룹이 4개를 넘으면
+순서 실수가 급증한다. 패턴을 쪼개거나 주석을 붙인다.</li>
+<li><strong>값만 꺼낼 게 아닌 괄호</strong> — 단순 묶음이면 <code>(?: )</code>로. 그룹 번호가 줄어 관리가 쉽다.</li>
+<li><strong><code>RESULTS</code>의 submatches를 값으로 착각</strong> — 위치 정보다. <code>substring( )</code>으로 잘라야 값.</li>
+<li><strong>optional group 미대비</strong> — 불참 그룹의 변수는 초기값. <code>IS INITIAL</code> 분기를 준비한다.</li>
+</ul>
+</section><section class="lblock"><h2>정리 📌</h2>
+<ul>
+<li><code>SUBMATCHES</code> = 괄호 그룹의 <strong>값</strong>을 왼쪽 괄호 순서대로 변수에.</li>
+<li>변수/그룹 개수 불일치는 오류 없이 조용히 처리된다. 순서·개수는 스스로 관리한다.</li>
+<li>여러 발견의 그룹 정보는 <code>RESULTS</code>(단, submatches = 위치 정보).</li>
+<li><code>(?: )</code> = 묶지만 캡처하지 않는 괄호. optional group 불참 = 변수 초기값.</li>
+</ul>
+<hr>
+<p>찾고, 세고, 꺼냈다. 이제 반대 방향, 패턴으로 <strong>바꾸는</strong> 차례다. 그룹 값을 치환문에
+다시 끼워 넣는 <code>$1</code>이 등장한다.</p>
+</section>
+      </article>
+      <nav class="lesson-nav" data-shell="prevnext"></nav>
+      <footer class="foot">SAP Developer Academy · 배포자 SAP전문강사 정훈영</footer>
+    </main>
+    <aside class="journey" data-shell="journey"></aside>
+  </div>
+</div>
+<div class="term-popup" data-shell="popup" hidden></div>
+<div class="tmodal" data-shell="tmodal" hidden></div>
+<script>window.__SDA__={"domain":"abap","dataBase":"../","siteRoot":"../../../"};</script>
+<script src="../../../assets/shell.js" defer></script>
+</body>
+</html>

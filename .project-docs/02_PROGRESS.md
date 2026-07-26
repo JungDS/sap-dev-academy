@@ -1,15 +1,15 @@
 # 02. PROGRESS — 현재 초점 · 다음 할 일
 
-> 📅 **최종수정: 2026-07-27 03:32 KST**
+> 📅 **최종수정: 2026-07-27 04:37 KST**
 > 🎯 **현재 상태와 다음 할 일만 담는다.** 완료/과거 항목·세션 서사는 **즉시 제거** — 정본은 git 이력 + `.archive/` 원장 + 라이브 인덱스([04 R16](04_CONVENTIONS.md)). 코드·git·감사로 파생 가능한 현황은 **복창하지 말고 포인터**(아래 📍).
 > 📖 **읽을 때:** 작업 시작 전(현황 파악) · 종료 시 갱신 — **갱신은 같은 커밋에 포함**([01](01_AI_SYNC.md)).
 
 ## 🎯 현재 초점
-**CH28 Dynamic ABAP 신규 집필 완료(8레슨+dyn-lab 엔진 8모드) → 다음 CH31(Editable Grid ALV) 순차 보강**(브랜치 `content/ch28-dynamic`, main=`4cc0687`). ⚠️ **CH29 Regex = 예약 슬롯 미집필**(신규 집필은 사용자 지시 필요). 원칙: content 기준, `reference/codex_0629_v3` 참고(QA+REWRITE 동시 대조) + 델타 사실검증([14 §5·§6](14_REFERENCE_CORPUS.md)) + 게이팅(R10/R15). **챕터 실행 = [10_REBUILD_EXECUTION](10_REBUILD_EXECUTION.md)**.
+**CH29 PCRE 정규식 신규 집필 완료(8레슨+regex-lab 엔진 8모드 — 이로써 39챕터 전량 작성) → 다음 CH31(Editable Grid ALV) 순차 보강**(브랜치 `content/ch29-regex`, main=`3b10dab`). 원칙: content 기준, `reference/codex_0629_v3` 참고(QA+REWRITE 동시 대조) + 델타 사실검증([14 §5·§6](14_REFERENCE_CORPUS.md)) + 게이팅(R10/R15). **챕터 실행 = [10_REBUILD_EXECUTION](10_REBUILD_EXECUTION.md)**.
 
 ## ▶️ 다음 할 일 (우선순위)
-1. **CH31(Editable Grid ALV)+ 순차 보강** — 또는 CH29 Regex 신규 집필(사용자 결정). ⚠️ codex 파일 = 우리 번호 일치(CH31=`NEWCH31`…). ⚠️ codex 본문 내 리넘버: 구CH28(editable)→우리 CH31(+3).
-   ℹ️ **CH28 스코프 확정(codex 판정 채택)**: 동적 SQL/동적 호출은 보류(09 행 정정 완료) — L08 말미 L1 예고로 CH36 ADBC 계열 안내만. 불편 체인 CH27→CH28→(CH29 공백)→CH30 연결됨.
+1. **CH31(Editable Grid ALV)+ 순차 보강**. ⚠️ codex 파일 = 우리 번호 일치(CH31=`NEWCH31`…). ⚠️ codex 본문 내 리넘버: 구CH28(editable)→우리 CH31(+3).
+   ℹ️ **CH29 집필 메모(계승 교훈)**: codex 치명 오류 1건 교정 — `CL_ABAP_MATCHER->match( )`=**전체 일치**(`matches( )` 동치, 공식 abenregex_mtch)라 검색 예제는 `find_next( )` 루프로 재구성. 추가 확정: MATCH OFFSET/LENGTH↔RESULTS **같은 문장 택일** · REGEX 객체 사용 시 CASE addition 불허 · 빈 패턴 예외 = 문장 `CX_SY_INVALID_REGEX`/함수 `CX_SY_STRG_PAR_VAL` · ABAP PCRE `\w`=유니코드(한글 매칭, JS 위젯과 달라 위젯엔 한글 \w 데모 미사용). 접수번호 `B-YYYY-NNNN`은 **외부 파트너 표기**로 프레이밍(ZBOOKING booking_id '0001' 정본과 구분). lookaround·SQL/CDS regex·비-regex 문자열 심화는 보류(09 행 참조).
    ⚠️ **CH31 착수 주의(CH30서 발견)**: CH31-L01도 `REFERENCE INTO`(데이터 참조 — 커리큘럼 L3 미도입) 사용 — CH30-L02처럼 `ASSIGNING FIELD-SYMBOL`(CH06 기도입)로 교체 검토. CL_GUI_ALV_GRID 이벤트·메서드 시그니처는 코퍼스 0건(SE24 영역)이라 "미검증" 원칙 유지(14 §5).
    ℹ️ **CH30 미검증 영역(코퍼스 부재·본문 유지)**: double_click/hotspot_click/toolbar/user_command 파라미터명·mt_toolbar/stb_button·get_selected_rows·set_toolbar_interactive·icon_delete 상수 — 전부 SE24 클래스 문서 영역. 언어 문법(FOR EVENT·SET HANDLER 등)은 keyword doc 정합 확인됨.
    ⚠️ **RAP 2단(입문 CH24 ↔ 심화 CH39)** — 사용자 지시 2026-07-24([09 §E CH39](09_CURRICULUM_LEDGER.md)·[[rap-intro-ch24-advanced-ch39]]): 심화는 CH39. **현행 CH39(7L)는 NEWCH39(9L) 미반영 — CH39 착수 시 재구성**. 그때 CH24-L09의 CH39-L01 링크가 정확한 EML consumer 레슨을 가리키는지 재확인.

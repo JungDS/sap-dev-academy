@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>실습 — 로그·이메일·코드 패턴 검증기 · 고급 문자열 처리: PCRE 정규식 · SAP Developer Academy</title>
+<link rel="stylesheet" href="../../../assets/base.css">
+<link rel="stylesheet" href="../../../assets/lesson.css">
+<link rel="stylesheet" href="../../../assets/shell.css">
+<script>/* 읽기 설정 선적용(플래시 방지) */(function(){try{var L=localStorage,r=document.documentElement;if(L.getItem('sda.dark')==='1')r.classList.add('dark');if(L.getItem('sda.wide')==='1')r.classList.add('wide');var f=parseInt(L.getItem('sda.fontPx'),10);if(f>=13&&f<=20)r.style.fontSize=f+'px';}catch(e){}})();</script>
+</head>
+<body data-domain="abap" data-chapter-id="CH29" data-lesson-id="CH29-L08">
+<header class="appbar">
+  <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
+  <span class="appbar__sp"></span>
+  <span class="meta">Chapter 29 · 고급 문자열 처리: PCRE 정규식</span>
+  <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
+  <div class="tools">
+    <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
+    <button class="icon-btn" id="fsInc" title="글자 크게">A+</button>
+    <button class="icon-btn" id="fsReset" title="글자 크기 초기화">↺</button>
+    <button class="icon-btn" id="darkBtn" title="다크 모드">🌙</button>
+    <button class="icon-btn" id="widthBtn" title="가독 폭 넓게">↔</button>
+    <button class="icon-btn fs-btn" title="전체화면" aria-label="전체화면"></button>
+  </div>
+</header>
+<div class="read-progress"><i></i></div>
+<div class="scrim"></div>
+<nav class="rail" data-shell="rail"></nav>
+<button class="railFab" id="railFab" aria-label="네비 열기">☰</button>
+<div class="stage">
+  <div class="layout">
+    <main class="main">
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 29 › Lesson 8</nav>
+      <section class="lhead">
+        <p class="lhead__eyebrow">고급 문자열 처리: PCRE 정규식</p>
+        <h1>실습 — 로그·이메일·코드 패턴 검증기</h1>
+        <p class="lhead__direction">챕터 전부를 조립한다 — 패턴·입력·결과·피드백을 분리한 검사기.</p>
+        <div class="tags"><span class="tag tag--track">Track 2</span><span class="tag tag--ch">Chapter 29</span><span class="tag tag--ls">Lesson 8</span><span class="tag tag--lv">중급</span></div>
+      </section>
+      <article class="prose">
+<section class="lblock"><h2>🛡️ 운영팀의 Quality Gate</h2>
+<p>정훈영의 최종 요청이다. &quot;파트너에서 들어오는 텍스트를 등록 전에 한 번 거르는 <strong>품질
+게이트</strong>를 만들어 주세요. 통과/반려만 말고, <strong>뭐가 왜 걸렸는지</strong>까지요.&quot;</p>
+<p>검사 대상은 세 종류다.</p>
+<table>
+<thead>
+<tr>
+<th>대상</th>
+<th>요구</th>
+<th>사용 부품</th>
+<th>레슨</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>운영 로그</td>
+<td>오류 코드 <code>E***</code>를 전부 찾아 위치 표시</td>
+<td><code>FIND ALL ... RESULTS</code></td>
+<td><a href="CH29-L03.html">L03</a></td>
+</tr>
+<tr>
+<td>이메일</td>
+<td>이메일처럼 보이는지 1차 검증</td>
+<td><code>matches( pcre )</code></td>
+<td><a href="CH29-L07.html">L07</a></td>
+</tr>
+<tr>
+<td>코드 텍스트</td>
+<td>obsolete 명령 <code>SEARCH</code> 사용 적발</td>
+<td><code>FIND PCRE</code> + <code>\b</code></td>
+<td><a href="CH29-L01.html">L01</a>·<a href="CH29-L03.html">L03</a></td>
+</tr>
+</tbody></table>
+</section><section class="lblock"><h2>설계 — 패턴·입력·결과·피드백의 분리</h2>
+<p>정규식 도구의 안전 설계는 네 가지를 분리하는 것이다. 결과 행 타입부터 정의한다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10</pre><pre class="abap-editor__code"><code><span class="tok-kw">TYPES</span>:
+  <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ts_check,
+    category <span class="tok-kw">TYPE</span> string,     <span class="tok-com">" LOG / EMAIL / CODE</span>
+    <span class="tok-kw">input</span>    <span class="tok-kw">TYPE</span> string,     <span class="tok-com">" 검사한 원문</span>
+    ok       <span class="tok-kw">TYPE</span> abap_bool,  <span class="tok-com">" 통과 여부</span>
+    <span class="tok-kw">message</span>  <span class="tok-kw">TYPE</span> string,     <span class="tok-com">" 왜 통과/반려인지</span>
+  <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ts_check,
+  tt_check <span class="tok-kw">TYPE</span> <span class="tok-kw">STANDARD</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ts_check <span class="tok-kw">WITH</span> EMPTY <span class="tok-kw">KEY</span>.
+
+<span class="tok-kw">DATA</span> gt_result <span class="tok-kw">TYPE</span> tt_check.</code></pre></div></div>
+<p>들어올 입력 샘플은 이런 네 줄이라고 하자.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">TEXT</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4</pre><pre class="abap-editor__code"><code>E100 booking failed for hunyoung@example.com
+W210 retry scheduled
+E404 concert missing
+SEARCH gv_text FOR 'ABAP'.</code></pre></div></div>
+</section><section class="lblock"><h2>검사 ① 로그 오류 코드 — 위치까지 표로</h2>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>(gv_log) =
+  <span class="tok-str">`E100 booking failed, W210 retry scheduled, E404 concert missing`</span>.
+
+<span class="tok-kw">FIND</span> <span class="tok-kw">ALL</span> OCCURRENCES <span class="tok-kw">OF</span> PCRE <span class="tok-str">`E\d{3}`</span>
+     <span class="tok-kw">IN</span> gv_log
+     RESULTS <span class="tok-kw">DATA</span>(gt_error).
+
+<span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> gt_error <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(gs_error).
+  <span class="tok-kw">APPEND</span> <span class="tok-kw">VALUE</span> #(
+    category = <span class="tok-str">`LOG`</span>
+    <span class="tok-kw">input</span>    = <span class="tok-kw">substring</span>( val = gv_log
+                          off = gs_error-offset
+                          len = gs_error-length )
+    ok       = abap_false
+    <span class="tok-kw">message</span>  = |오류 코드 발견 (<span class="tok-kw">offset</span> { gs_error-offset })|
+  ) <span class="tok-kw">TO</span> gt_result.
+<span class="tok-kw">ENDLOOP</span>.</code></pre></div></div>
+<p>오류 코드는 &quot;발견 = 반려 신호&quot;이므로 <code>ok = abap_false</code>로 적재한다. offset을 메시지에
+남겨 두면 원문 어디를 보라는 안내가 된다.</p>
+</section><section class="lblock"><h2>검사 ② 이메일 1차 검증 — matches</h2>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>(gv_email)   = <span class="tok-str">`hunyoung@example.com`</span>.
+<span class="tok-kw">DATA</span>(gv_pattern) = <span class="tok-str">`[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}`</span>.
+
+<span class="tok-kw">APPEND</span> <span class="tok-kw">VALUE</span> #(
+  category = <span class="tok-str">`EMAIL`</span>
+  <span class="tok-kw">input</span>    = gv_email
+  ok       = xsdbool( matches( val = gv_email pcre = gv_pattern ) )
+  <span class="tok-kw">message</span>  = COND #( <span class="tok-kw">WHEN</span> matches( val = gv_email pcre = gv_pattern ) = abap_true
+                     <span class="tok-kw">THEN</span> <span class="tok-str">`이메일 1차 형식 통과`</span>
+                     <span class="tok-kw">ELSE</span> <span class="tok-str">`이메일 형식 아님`</span> )
+) <span class="tok-kw">TO</span> gt_result.</code></pre></div></div>
+<p>패턴을 <code>gv_pattern</code> 변수로 분리한 것에 주목하라. <a href="CH29-L07.html">L07</a>의 습관이다. 그리고
+이건 여전히 <strong>1차 검사</strong>다. 게이트의 역할은 &quot;명백히 이상한 것 거르기&quot;지 국제 표준
+검증기가 아니다.</p>
+</section><section class="lblock"><h2>검사 ③ obsolete 명령 적발 — word boundary</h2>
+<p><a href="CH04-L02.html">Chapter 4 · 문자열 다루기</a>에서 &quot;<code>SEARCH</code>는 옛 명령, 우리는 <code>FIND</code>&quot;라고
+배웠다. 코드 리뷰 게이트로 만들어 보자.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>(gv_code) = <span class="tok-str">`SEARCH gv_text FOR 'ABAP'.`</span>.
+
+<span class="tok-kw">FIND</span> PCRE <span class="tok-str">`\bSEARCH\b`</span>
+     <span class="tok-kw">IN</span> gv_code
+     IGNORING <span class="tok-kw">CASE</span>
+     MATCH <span class="tok-kw">OFFSET</span> <span class="tok-kw">DATA</span>(gv_offset).
+
+<span class="tok-kw">IF</span> sy-subrc = <span class="tok-num">0</span>.
+  <span class="tok-kw">APPEND</span> <span class="tok-kw">VALUE</span> #(
+    category = <span class="tok-str">`CODE`</span>
+    <span class="tok-kw">input</span>    = gv_code
+    ok       = abap_false
+    <span class="tok-kw">message</span>  = |obsolete 명령 <span class="tok-kw">SEARCH</span> (<span class="tok-kw">offset</span> { gv_offset }) — <span class="tok-kw">FIND</span>로 교체|
+  ) <span class="tok-kw">TO</span> gt_result.
+<span class="tok-kw">ENDIF</span>.</code></pre></div></div>
+<p>새 얼굴 <code>\b</code>는 word boundary(단어 경계: 단어 문자와 비단어 문자의 사이 지점)다.
+이게 없으면 <code>RESEARCH</code> 안의 <code>SEARCH</code>까지 잡는 오탐이 난다. <code>IGNORING CASE</code>는
+<code>search</code>라고 소문자로 써도 잡기 위해서다.</p>
+</section><section class="lblock"><h2>결과 출력</h2>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6</pre><pre class="abap-editor__code"><code><span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> gt_result <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(gs_check).
+  <span class="tok-kw">WRITE</span>: / gs_check-category,
+           COND string( <span class="tok-kw">WHEN</span> gs_check-ok = abap_true
+                        <span class="tok-kw">THEN</span> <span class="tok-str">`✔`</span> <span class="tok-kw">ELSE</span> <span class="tok-str">`✘`</span> ),
+           gs_check-message.
+<span class="tok-kw">ENDLOOP</span>.</code></pre></div></div>
+<table>
+<thead>
+<tr>
+<th>category</th>
+<th>판정</th>
+<th>message</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>LOG</td>
+<td>✘</td>
+<td>오류 코드 발견 (offset 0)</td>
+</tr>
+<tr>
+<td>LOG</td>
+<td>✘</td>
+<td>오류 코드 발견 (offset 44)</td>
+</tr>
+<tr>
+<td>EMAIL</td>
+<td>✔</td>
+<td>이메일 1차 형식 통과</td>
+</tr>
+<tr>
+<td>CODE</td>
+<td>✘</td>
+<td>obsolete 명령 SEARCH (offset 0) — FIND로 교체</td>
+</tr>
+</tbody></table>
+</section><section class="lblock"><h2>직접 게이트를 돌려 보기</h2>
+<p>검사 종류를 바꿔 실행하고, IGNORING CASE 토글·마스킹 미리보기까지 확인해 보라.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">Regex Quality Gate — 로그·이메일·코드 검사기</span><a class="embed__open" href="../../../embeds/abap/CH29-L08-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH29-L08-S01.html" loading="lazy" title="Regex Quality Gate — 로그·이메일·코드 검사기" style="height:640px"></iframe></figure>
+</section><section class="lblock"><h2>확인 체크리스트</h2>
+<table>
+<thead>
+<tr>
+<th>입력</th>
+<th>기대 결과</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>E100 ...</code>, <code>E404 ...</code> 로그</td>
+<td>LOG 반려 행 2건 + offset 표시</td>
+</tr>
+<tr>
+<td><code>W210 retry scheduled</code></td>
+<td><code>E\d{3}</code> 미해당 — 결과 행 없음</td>
+</tr>
+<tr>
+<td><code>hunyoung@example.com</code></td>
+<td>EMAIL 통과</td>
+</tr>
+<tr>
+<td><code>SEARCH ...</code> / <code>search ...</code></td>
+<td>CODE 반려(IGNORING CASE 덕에 둘 다)</td>
+</tr>
+<tr>
+<td><code>RESEARCH 계획</code></td>
+<td><code>\b</code> 덕에 <strong>미적발</strong>(오탐 방지)</td>
+</tr>
+</tbody></table>
+</section><section class="lblock"><h2>흔한 실수와 점검 🚧</h2>
+<ul>
+<li><strong>정규식 만능주의</strong> — 로그 검사는 파서가 아니다. 필드가 구조화될 수 있으면 구조가
+먼저고, 정규식은 텍스트로만 올 때의 차선이다.</li>
+<li><strong>완벽한 이메일 정규식 추구</strong> — 끝이 없는 길이다. 게이트의 요구 수준을 먼저 정한다.</li>
+<li><strong>사용자 입력을 패턴으로 그대로 실행</strong> — 빈 패턴 <button class="term" type="button" data-term="예외">예외</button>·<code>CX_SY_REGEX_TOO_COMPLEX</code>·
+성능 문제의 입구다. 패턴은 개발자가 관리하는 목록에서만.</li>
+<li><strong>성공 케이스만 시연</strong> — 검사기의 가치는 <strong>반려 사유 안내</strong>에 있다. 실패 피드백이
+없는 게이트는 절반짜리다.</li>
+</ul>
+</section><section class="lblock"><h2>정리 📌</h2>
+<ul>
+<li>검증기의 뼈대 = <strong>패턴·입력·결과·피드백의 분리</strong>. 결과는 <code>ts_check</code> 같은 행 타입으로.</li>
+<li>도구 선택 복습: 전부 찾아 표로 = <code>RESULTS</code> · 전체 형식 판정 = <code>matches</code> · 단어 단위
+적발 = <code>\b</code> + <code>IGNORING CASE</code>.</li>
+<li>정규식은 강력하지만 읽기 어려운 도구다. 좋은 코드는 &quot;짧은 패턴 한 줄&quot;이 아니라
+패턴 이름·테스트 케이스·실패 피드백이 함께 있는 코드다.</li>
+</ul>
+<hr>
+<p>텍스트를 패턴으로 검증하는 눈을 얻었다. 다음 장부터는 화면 쪽 기술로 돌아간다:
+ALV 리스트가 클릭에 반응하는 <strong>본격 <button class="term" type="button" data-term="이벤트">이벤트</button></strong>의 세계,
+<a href="CH30-L01.html">Chapter 30 · ALV 고급 Event 응용</a>이다.</p>
+</section>
+      </article>
+      <nav class="lesson-nav" data-shell="prevnext"></nav>
+      <footer class="foot">SAP Developer Academy · 배포자 SAP전문강사 정훈영</footer>
+    </main>
+    <aside class="journey" data-shell="journey"></aside>
+  </div>
+</div>
+<div class="term-popup" data-shell="popup" hidden></div>
+<div class="tmodal" data-shell="tmodal" hidden></div>
+<script>window.__SDA__={"domain":"abap","dataBase":"../","siteRoot":"../../../"};</script>
+<script src="../../../assets/shell.js" defer></script>
+</body>
+</html>

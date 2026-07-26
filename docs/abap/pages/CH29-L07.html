@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>정규식 내장 함수 — 식 안에서 쓰는 pcre 인자 · 고급 문자열 처리: PCRE 정규식 · SAP Developer Academy</title>
+<link rel="stylesheet" href="../../../assets/base.css">
+<link rel="stylesheet" href="../../../assets/lesson.css">
+<link rel="stylesheet" href="../../../assets/shell.css">
+<script>/* 읽기 설정 선적용(플래시 방지) */(function(){try{var L=localStorage,r=document.documentElement;if(L.getItem('sda.dark')==='1')r.classList.add('dark');if(L.getItem('sda.wide')==='1')r.classList.add('wide');var f=parseInt(L.getItem('sda.fontPx'),10);if(f>=13&&f<=20)r.style.fontSize=f+'px';}catch(e){}})();</script>
+</head>
+<body data-domain="abap" data-chapter-id="CH29" data-lesson-id="CH29-L07">
+<header class="appbar">
+  <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
+  <span class="appbar__sp"></span>
+  <span class="meta">Chapter 29 · 고급 문자열 처리: PCRE 정규식</span>
+  <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
+  <div class="tools">
+    <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
+    <button class="icon-btn" id="fsInc" title="글자 크게">A+</button>
+    <button class="icon-btn" id="fsReset" title="글자 크기 초기화">↺</button>
+    <button class="icon-btn" id="darkBtn" title="다크 모드">🌙</button>
+    <button class="icon-btn" id="widthBtn" title="가독 폭 넓게">↔</button>
+    <button class="icon-btn fs-btn" title="전체화면" aria-label="전체화면"></button>
+  </div>
+</header>
+<div class="read-progress"><i></i></div>
+<div class="scrim"></div>
+<nav class="rail" data-shell="rail"></nav>
+<button class="railFab" id="railFab" aria-label="네비 열기">☰</button>
+<div class="stage">
+  <div class="layout">
+    <main class="main">
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 29 › Lesson 7</nav>
+      <section class="lhead">
+        <p class="lhead__eyebrow">고급 문자열 처리: PCRE 정규식</p>
+        <h1>정규식 내장 함수 — 식 안에서 쓰는 pcre 인자</h1>
+        <p class="lhead__direction">contains·matches·count·find·match·replace의 pcre 인자를 식 안에서 쓴다.</p>
+        <div class="tags"><span class="tag tag--track">Track 2</span><span class="tag tag--ch">Chapter 29</span><span class="tag tag--ls">Lesson 7</span><span class="tag tag--lv">중급</span></div>
+      </section>
+      <article class="prose">
+<section class="lblock"><h2>🎛️ 문장 말고 식 안에서</h2>
+<p><code>FIND PCRE</code>는 명령문이라 결과를 받으려면 변수·<code>sy-subrc</code>를 거친다. 그런데 실무 코드의
+절반은 <strong>조건식</strong> 안에서 판단한다. &quot;이메일처럼 보이면 통과&quot; 같은 로직을 <code>IF</code> 한 줄에
+쓰고 싶다.</p>
+<p><a href="CH18-L05.html">Chapter 18 · String Template과 내장 함수</a>에서 배운 <button class="term" type="button" data-term="내장함수">내장함수</button>들이
+여기서 다시 등장한다. 이번엔 <code>pcre</code> 인자를 들고 온다.</p>
+</section><section class="lblock"><h2>판정 두 형제 — contains와 matches</h2>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>(gv_email) = <span class="tok-str">`hunyoung@example.com`</span>.
+
+<span class="tok-com">" 포함 검사: 안에 @가 든 단어 모양이 있는가</span>
+<span class="tok-kw">IF</span> contains( val = gv_email pcre = <span class="tok-str">`\w+@\w+`</span> ).
+  <span class="tok-kw">WRITE</span> / <span class="tok-str">`@ 형태 포함`</span>.
+<span class="tok-kw">ENDIF</span>.
+
+<span class="tok-com">" 전체 일치 검사: 문자열 전체가 이메일 1차 형식인가</span>
+<span class="tok-kw">IF</span> matches( val  = gv_email
+            pcre = <span class="tok-str">`[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}`</span> ).
+  <span class="tok-kw">WRITE</span> / <span class="tok-str">`이메일처럼 보임`</span>.
+<span class="tok-kw">ENDIF</span>.</code></pre></div></div>
+<table>
+<thead>
+<tr>
+<th>함수</th>
+<th>묻는 것</th>
+<th>anchor 필요?</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>contains( )</code></td>
+<td>패턴이 <strong>어딘가에 포함</strong>되는가</td>
+<td>전체 검증엔 <code>^...$</code> 필요</td>
+</tr>
+<tr>
+<td><code>matches( )</code></td>
+<td><strong>전체가</strong> 패턴과 일치하는가</td>
+<td><strong>불필요</strong>(자동 전체 일치)</td>
+</tr>
+</tbody></table>
+<p><code>matches( )</code>는 지난 레슨 <code>CL_ABAP_MATCHER-&gt;match( )</code>와 같은 의미(전체 일치)의 함수판이다.
+형식 검증이 목적이면 anchor를 손으로 붙이는 <code>contains</code>보다 <code>matches</code>가 정본이다.</p>
+<blockquote>
+<p>💡 이 이메일 패턴은 어디까지나 <strong>1차 검사</strong>다. 국제 표준의 모든 이메일 규칙을 다루지
+않는다(실무에선 요구 수준부터 정한다). 참고로 ABAP PCRE의 <code>\w</code>는 유니코드를 존중해서
+<strong>한글도 단어 문자로 통과</strong>한다 — &quot;영문만 허용&quot;이 요건이면 <code>[A-Za-z0-9.+-]</code>처럼
+명시적으로 좁혀야 한다.</p>
+</blockquote>
+</section><section class="lblock"><h2>세고, 찾고, 꺼내고 — count·find·match</h2>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>(gv_log) = <span class="tok-str">`E100 W210 E404`</span>.
+
+<span class="tok-kw">DATA</span>(gv_count) = <span class="tok-kw">count</span>( val = gv_log pcre = <span class="tok-str">`E\d{3}`</span> ).
+<span class="tok-com">" 2  (오류 코드 개수)</span>
+
+<span class="tok-kw">DATA</span>(gv_pos) = <span class="tok-kw">find</span>( val = gv_log pcre = <span class="tok-str">`W\d{3}`</span> ).
+<span class="tok-com">" 5  (W210의 시작 offset. 못 찾으면 -1)</span>
+
+<span class="tok-kw">DATA</span>(gv_first) = match( val = gv_log pcre = <span class="tok-str">`E\d{3}`</span> ).
+<span class="tok-com">" E100  (첫 매치 문자열 자체)</span></code></pre></div></div>
+<p>문장형과 짝을 지어 두면 외울 게 없다.</p>
+<table>
+<thead>
+<tr>
+<th>함수</th>
+<th>문장형 대응</th>
+<th>반환</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>count( )</code></td>
+<td><code>FIND ALL ... MATCH COUNT</code></td>
+<td>개수</td>
+</tr>
+<tr>
+<td><code>find( )</code></td>
+<td><code>FIND ... MATCH OFFSET</code></td>
+<td>위치(실패 시 <strong>-1</strong>)</td>
+</tr>
+<tr>
+<td><code>match( )</code></td>
+<td><code>FIND ... + substring</code></td>
+<td>매치 문자열</td>
+</tr>
+</tbody></table>
+</section><section class="lblock"><h2>함수형 replace — 원본은 그대로</h2>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>(gv_messy) = <span class="tok-str">`A   B    C`</span>.
+
+<span class="tok-kw">DATA</span>(gv_clean) = <span class="tok-kw">replace</span>( val  = gv_messy
+                          pcre = <span class="tok-str">`\s+`</span>
+                          <span class="tok-kw">with</span> = <span class="tok-str">` `</span>
+                          occ  = <span class="tok-num">0</span> ).
+
+<span class="tok-kw">WRITE</span>: / gv_messy,                       <span class="tok-com">" A   B    C  (원본 불변!)</span>
+       / gv_clean.                       <span class="tok-com">" A B C</span></code></pre></div></div>
+<p>문장 <code>REPLACE</code>와 두 가지가 다르다.</p>
+<ul>
+<li><strong>원본을 바꾸지 않고</strong> 바뀐 결과를 <strong>반환값</strong>으로 준다(식 안에서 바로 사용 가능).</li>
+<li>몇 건 바꿀지는 <code>occ</code> 인자: 생략하면 첫 1건, <strong><code>occ = 0</code>이면 전부</strong>.</li>
+</ul>
+</section><section class="lblock"><h2>직접 눌러 보기</h2>
+<p>여섯 함수를 탭으로 오가며, 특히 contains ↔ matches의 판정 차이를 같은 입력으로 비교해
+보라.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">Regex Function Console — 식 안의 정규식</span><a class="embed__open" href="../../../embeds/abap/CH29-L07-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH29-L07-S01.html" loading="lazy" title="Regex Function Console — 식 안의 정규식" style="height:600px"></iframe></figure>
+</section><section class="lblock"><h2>흔한 실수와 점검 🚧</h2>
+<ul>
+<li><strong>contains로 전체 검증</strong> — anchor를 잊으면 &quot;포함&quot;이다. 전체 일치는 <code>matches( )</code>.</li>
+<li><strong>함수 결과로 원본이 바뀌길 기대</strong> — 함수는 값을 돌려줄 뿐이다. 원본 치환은 문장
+<code>REPLACE</code>(그쪽은 반대로 원본을 바꾼다).</li>
+<li><strong>함수형 replace에 VERBATIM</strong> — 없다. <code>$1</code>을 literal로 넣으려면 escape(<code>\$1</code>)뿐.</li>
+<li><strong>긴 패턴을 식에 직접</strong> — <code>IF matches( ... pcre = &#39;아주긴패턴&#39; )</code>은 읽기 고문이다.
+<code>DATA(gv_pattern) = ...</code>로 이름을 붙이고 넣는다.</li>
+<li><strong>빈 패턴</strong> — 함수의 <code>pcre</code>가 빈 문자열이면 <button class="term" type="button" data-term="예외">예외</button>(<code>CX_SY_STRG_PAR_VAL</code>)다. 문장형의
+<code>CX_SY_INVALID_REGEX</code>와 이름이 다를 뿐 결론은 같다: 패턴은 비면 안 된다.</li>
+<li><strong>패턴이 너무 복잡</strong> — 문장이든 함수든 한계를 넘으면 <code>CX_SY_REGEX_TOO_COMPLEX</code>가
+난다. 정규식이 자라기 시작하면 쪼개거나 파서를 검토한다.</li>
+<li>ABAP SQL/CDS에도 regex 함수가 있지만(DB에서 실행) 여기 함수들과 실행 위치·규칙이
+다르다(이 챕터는 ABAP <button class="term" type="button" data-term="메모리">메모리</button> 안 이야기다).</li>
+</ul>
+</section><section class="lblock"><h2>정리 📌</h2>
+<ul>
+<li><code>pcre</code> 인자를 주면 내장 함수들이 정규식 도구가 된다: <strong>식 안에서 바로</strong>.</li>
+<li>판정: <code>contains</code>(포함) vs <code>matches</code>(전체 일치·anchor 불필요).</li>
+<li><code>count</code>/<code>find</code>/<code>match</code> = 문장형 옵션들의 함수판. <code>find</code> 실패는 -1.</li>
+<li>함수형 <code>replace</code>는 원본 불변·반환값 사용·<code>occ = 0</code> = 전부.</li>
+<li>이 밖에 <code>substring_from( )</code>처럼 pcre를 받는 함수가 더 있다. 필요할 때 같은 감각으로
+찾아 쓰면 된다.</li>
+</ul>
+<hr>
+<p>부품이 모두 모였다. 찾기(문장·<button class="term" type="button" data-term="객체">객체</button>·함수), 검증(COUNT·OFFSET·RESULTS), 추출(SUBMATCHES),
+치환($1·VERBATIM). 마지막 레슨에서 이걸 전부 조립해 <strong>로그·이메일·코드 검사기</strong>를 만든다.</p>
+</section>
+      </article>
+      <nav class="lesson-nav" data-shell="prevnext"></nav>
+      <footer class="foot">SAP Developer Academy · 배포자 SAP전문강사 정훈영</footer>
+    </main>
+    <aside class="journey" data-shell="journey"></aside>
+  </div>
+</div>
+<div class="term-popup" data-shell="popup" hidden></div>
+<div class="tmodal" data-shell="tmodal" hidden></div>
+<script>window.__SDA__={"domain":"abap","dataBase":"../","siteRoot":"../../../"};</script>
+<script src="../../../assets/shell.js" defer></script>
+</body>
+</html>
