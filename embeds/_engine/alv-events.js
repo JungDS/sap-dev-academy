@@ -7,9 +7,9 @@
   var cfg; try { cfg = JSON.parse($('alv-cfg').textContent); } catch (e) { cfg = { mode: 'double' }; }
   var mode = cfg.mode;
   var ROWS = [
-    { id: '1001', concert: 'C-NOVA', pax: '정훈영', seats: 2, st: 'O' },
-    { id: '1002', concert: 'C-AURA', pax: '아이유', seats: 4, st: 'O' },
-    { id: '1003', concert: 'C-NOVA', pax: '손흥민', seats: 2, st: 'O' }
+    { id: '1001', concert: 'C-NOVA', pax: '정훈영', seats: 2, st: 'N' },
+    { id: '1002', concert: 'C-AURA', pax: '아이유', seats: 4, st: 'N' },
+    { id: '1003', concert: 'C-NOVA', pax: '손흥민', seats: 2, st: 'N' }
   ];
   var sel = {};
 
@@ -27,7 +27,7 @@
     $('bar').innerHTML = bar;
     // 헤더
     var selCol = (mode === 'ucommand') ? '<th class="sel">☐</th>' : '';
-    $('thead').innerHTML = '<tr>' + selCol + '<th>booking_id</th><th>concert_id</th><th>승객</th><th>좌석</th><th>상태</th></tr>';
+    $('thead').innerHTML = '<tr>' + selCol + '<th>booking_id</th><th>concert_id</th><th>고객</th><th>좌석</th><th>상태</th></tr>';
     // 바디
     $('tbody').innerHTML = ROWS.map(function (r, i) {
       var sc = (mode === 'ucommand') ? '<td class="sel"><input type="checkbox" data-i="' + i + '" ' + (sel[i] ? 'checked' : '') + '></td>' : '';
@@ -42,10 +42,13 @@
 
   function bind() {
     if (mode === 'double') {
+      var COLS = ['BOOKING_ID', 'CONCERT_ID', 'CUSTOMER', 'SEATS', 'STATUS'];
       [].forEach.call($('tbody').querySelectorAll('tr'), function (tr) {
-        tr.addEventListener('dblclick', function () {
+        tr.addEventListener('dblclick', function (ev) {
           var r = ROWS[+tr.dataset.i];
-          log('on_double_click', 'e_row-index=' + (+tr.dataset.i + 1) + '  e_column=BOOKING_ID  → 예매 ' + r.id + ' 상세');
+          var td = ev.target.closest ? ev.target.closest('td') : null;
+          var col = COLS[td ? td.cellIndex : 0] || 'BOOKING_ID';   // 클릭한 셀의 컬럼을 그대로 로깅
+          log('on_double_click', 'e_row-index=' + (+tr.dataset.i + 1) + '  e_column=' + col + '  → 예매 ' + r.id + ' 상세');
         });
       });
     }
@@ -69,7 +72,7 @@
         var picked = Object.keys(sel).filter(function (k) { return sel[k]; }).map(Number);
         if (!picked.length) { log('on_user_command', 'e_ucomm=ZCANCEL  ⚠ 선택된 행 없음 — 안내 후 종료'); return; }
         log('on_user_command', 'e_ucomm=ZCANCEL  선택 행=' + picked.map(function (i) { return ROWS[i].id; }).join(',') + '  → 취소 처리(실제는 DML·잠금 필요)');
-        picked.forEach(function (i) { ROWS[i].st = 'X'; sel[i] = false; });
+        picked.forEach(function (i) { ROWS[i].st = 'C'; sel[i] = false; });
         render(); log('refresh_table_display', '취소 반영 후 갱신');
       });
     }
