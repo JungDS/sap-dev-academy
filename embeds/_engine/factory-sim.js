@@ -4,9 +4,9 @@
 (function () {
   var $ = function (id) { return document.getElementById(id); };
   var P = {
-    V: { cls: 'zcl_vip_booking', desc: 'VIP 전용 예매 — 라운지·우선 좌석 로직 포함.' },
-    G: { cls: 'zcl_booking_manager', desc: '일반 예매 — 기본 예약/취소 로직.' },
-    Z: { cls: 'zcl_booking_manager', desc: '알 수 없는 타입 → OTHERS 분기로 일반 예매(기본값).' }
+    V: { cls: 'zcl_booking_vip', desc: 'VIP 전용 예매 — 라운지·우선 좌석 로직 포함.' },
+    G: { cls: 'zcl_booking_regular', desc: '일반 예매 — 기본 예약/취소 로직.' },
+    Z: { cls: 'zcl_booking_regular', desc: '알 수 없는 타입 → OTHERS 분기로 일반 예매(기본값).' }
   };
   var cur = 'V';
   function render() {

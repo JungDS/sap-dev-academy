@@ -41,7 +41,7 @@
       <article class="prose">
 <section class="lblock"><h2>NEW를 여기저기 흩뿌리면</h2>
 <p>코드 곳곳에서 <code>NEW zcl_...( )</code>로 <button class="term" type="button" data-term="객체">객체</button>를 만들면, 생성 방식이 바뀔 때(예: 종류에 따라
-다른 <button class="term" type="button" data-term="Class">클래스</button>) 전부 고쳐야 한다. 생성을 <strong>한 곳(팩토리)</strong> 에 모은다.</p>
+다른 <button class="term" type="button" data-term="Class">클래스</button>) 전부 고쳐야 한다. 생성을 <strong>한 곳</strong>에 모으는 것이 <button class="term" type="button" data-term="Factory Pattern">팩토리 패턴</button>이다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -66,15 +66,18 @@
 <span class="tok-kw">CLASS</span> zcl_booking_factory <span class="tok-kw">IMPLEMENTATION</span>.
   <span class="tok-kw">METHOD</span> <span class="tok-kw">create</span>.
     <span class="tok-kw">CASE</span> iv_type.
-      <span class="tok-kw">WHEN</span> <span class="tok-str">'V'</span>.    ro_obj = <span class="tok-kw">NEW</span> zcl_vip_booking( ).      <span class="tok-com">" VIP 예매</span>
-      <span class="tok-kw">WHEN</span> <span class="tok-kw">OTHERS</span>. ro_obj = <span class="tok-kw">NEW</span> zcl_booking_manager( ).  <span class="tok-com">" 일반 예매</span>
+      <span class="tok-kw">WHEN</span> <span class="tok-str">'V'</span>.    ro_obj = <span class="tok-kw">NEW</span> zcl_booking_vip( ).      <span class="tok-com">" VIP 예매</span>
+      <span class="tok-kw">WHEN</span> <span class="tok-kw">OTHERS</span>. ro_obj = <span class="tok-kw">NEW</span> zcl_booking_regular( ).  <span class="tok-com">" 일반 예매</span>
     <span class="tok-kw">ENDCASE</span>.
   <span class="tok-kw">ENDMETHOD</span>.
 <span class="tok-kw">ENDCLASS</span>.</code></pre></div></div>
 <ul>
 <li>호출부는 <code>zcl_booking_factory=&gt;create( &#39;V&#39; )</code>만 — 어느 클래스인지 몰라도 된다.</li>
 <li><button class="term" type="button" data-term="Interface">인터페이스</button>(<code>zif_booking</code>) 반환으로 <a href="CH21-L08.html">다형성 — CAST와 CASE TYPE OF</a>과 결합: static type은
-<code>zif_booking</code>이지만 runtime object는 <code>zcl_vip_booking</code>/<code>zcl_booking_manager</code>다.</li>
+<code>zif_booking</code>이지만 runtime object는 <code>zcl_booking_vip</code>/<code>zcl_booking_regular</code>다.</li>
+<li>(두 클래스는 이 레슨용으로 새로 만든, <code>zif_booking</code>을 구현하는 <strong>예매 유형별 클래스</strong>다.
+<a href="CH21-L10.html">Chapter 21</a>의 <code>ZCL_BOOKING_MANAGER</code>·<button class="term" type="button" data-term="상속">상속</button> 예제의 <code>zcl_vip_booking</code>은 생성자 인자가
+필요한 별개 계열이라 여기 예제에 그대로 쓰지 않는다.)</li>
 </ul>
 </section><section class="lblock"><h2>타입을 바꿔 보기</h2>
 <p>타입을 바꿔도 <strong>호출부 코드는 그대로</strong>인데, 팩토리가 만들어 주는 <strong>구체 <button class="term" type="button" data-term="Class">클래스</button></strong>만 달라지는

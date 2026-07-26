@@ -50,7 +50,7 @@
 <li>더블클릭 상세, 엑셀 다운로드, 권한별 버튼</li>
 </ul>
 <p>조회 SQL·계산·화면·<button class="term" type="button" data-term="이벤트">이벤트</button>·메시지가 <strong>한 report에 뒤엉키면</strong> 고칠 때 영향 범위를 알 수 없다.
-<em>화면만 바꾸려는데 계산이 깨지고, 계산만 바꾸려는데 이벤트가 깨진다.</em> <strong>MVC</strong>(Model·View·
+<em>화면만 바꾸려는데 계산이 깨지고, 계산만 바꾸려는데 이벤트가 깨진다.</em> <button class="term" type="button" data-term="MVC">MVC</button>(Model·View·
 Controller — 데이터/로직·표시·흐름을 나누는 구조)는 이 섞임을 푸는 방법이다.</p>
 </section><section class="lblock"><h2>세 역할로 나누기</h2>
 <table>
@@ -95,11 +95,11 @@ Controller — 데이터/로직·표시·흐름을 나누는 구조)는 이 섞�
 15</pre><pre class="abap-editor__code"><code><span class="tok-kw">CLASS</span> zcl_booking_model <span class="tok-kw">DEFINITION</span>.
   <span class="tok-kw">PUBLIC</span> <span class="tok-kw">SECTION</span>.
     <span class="tok-kw">METHODS</span> constructor
-      <span class="tok-kw">IMPORTING</span> iv_concert <span class="tok-kw">TYPE</span> zconcert_id.
+      <span class="tok-kw">IMPORTING</span> iv_concert <span class="tok-kw">TYPE</span> zconcert-concert_id.
     <span class="tok-kw">METHODS</span> get_bookings
       <span class="tok-kw">RETURNING</span> <span class="tok-kw">VALUE</span>(rt_bookings) <span class="tok-kw">TYPE</span> ztt_booking.
   <span class="tok-kw">PRIVATE</span> <span class="tok-kw">SECTION</span>.
-    <span class="tok-kw">DATA</span> mv_concert <span class="tok-kw">TYPE</span> zconcert_id.
+    <span class="tok-kw">DATA</span> mv_concert <span class="tok-kw">TYPE</span> zconcert-concert_id.
 <span class="tok-kw">ENDCLASS</span>.
 
 <span class="tok-kw">CLASS</span> zcl_booking_view <span class="tok-kw">DEFINITION</span>.
@@ -115,16 +115,17 @@ Controller — 데이터/로직·표시·흐름을 나누는 구조)는 이 섞�
 5
 6
 7</pre><pre class="abap-editor__code"><code><span class="tok-kw">METHOD</span> run.
-  <span class="tok-kw">DATA</span>(lo_model) = <span class="tok-kw">NEW</span> zcl_booking_model( iv_concert = p_concert ).
+  <span class="tok-kw">DATA</span>(lo_model) = <span class="tok-kw">NEW</span> zcl_booking_model( iv_concert = pa_conc ).
   <span class="tok-kw">DATA</span>(lt_bookings) = lo_model-&gt;get_bookings( ).
 
   <span class="tok-kw">DATA</span>(lo_view) = <span class="tok-kw">NEW</span> zcl_booking_view( ).
   lo_view-&gt;display( it_bookings = lt_bookings ).
 <span class="tok-kw">ENDMETHOD</span>.</code></pre></div></div>
 <p>중요한 건 class <strong>이름</strong>이 아니다. <em>&quot;조회·계산은 Model, 표시는 View, 실행 순서는
-Controller&quot;</em> 라는 <strong>책임 분리</strong>다.</p>
+Controller&quot;</em> 라는 <strong>책임 분리</strong>다. (<code>ztt_booking</code>은 SE11에서 만든 Table Type — <code>RETURNING</code>엔
+완전한 타입이 필요해서 이름 있는 테이블 타입을 쓴다. <code>pa_conc</code>는 선택화면 <button class="term" type="button" data-term="파라미터">파라미터</button>.)</p>
 </section><section class="lblock"><h2>한 계층을 바꾸면 어디까지?</h2>
-<p>MVC가 잘 됐는지는 <strong>변경 시나리오</strong>로 확인한다. 한 가지를 바꿀 때 <em>바뀌어야 하는 곳</em>은
+<p><button class="term" type="button" data-term="MVC">MVC</button>가 잘 됐는지는 <strong>변경 시나리오</strong>로 확인한다. 한 가지를 바꿀 때 <em>바뀌어야 하는 곳</em>은
 분명하고, <em>나머지는 그대로</em>여야 한다.</p>
 <table>
 <thead>

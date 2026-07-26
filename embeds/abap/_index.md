@@ -223,6 +223,11 @@
 | CH26-L03-S01 | CH26-L03 | judge-quiz | 잠금 해제 판별 퀴즈·상황별(DEQUEUE·COMMIT/ROLLBACK·세션종료·SELECT·다른 키) 풀림/유지 즉시 정답·해설 | ✅ |
 | CH26-L04-S01 | CH26-L04 | lost-update-sim | Lost Update 시뮬·A/B 동시 수정 타임라인·전략(무잠금/비관 ENQUEUE/낙관 changed_at 비교)별 결과 비교 | ✅ |
 | CH26-L05-S01 | CH26-L05 | mermaid | 안전 변경 패턴 흐름도(ENQUEUE→READ→UPDATE→COMMIT/ROLLBACK→DEQUEUE)·마름모 분기·CH25+CH26 통합 | ✅ |
+| CH27-L01-S01 | CH27-L01 | factory-sim | Factory 시뮬·타입(V/G/Z) 선택→팩토리가 만드는 구체 클래스(zcl_booking_vip/zcl_booking_regular) 변화·호출부 코드는 불변 강조 | ✅ |
+| CH27-L02-S01 | CH27-L02 | singleton-sim | Singleton 시뮬·get_instance() 반복=같은 주소 vs NEW 반복=매번 다른 주소 비교 | ✅ |
+| CH27-L03-S01 | CH27-L03 | strategy-sim | Strategy 시뮬·전략(일반/VIP/조기) 교체+좌석 수 입력→가격 변화·호출부 calc() 한 줄 불변 | ✅ |
+| CH27-L04-S01 | CH27-L04 | mvc-diagram | MVC 영향 범위 시각화·변경 요구(ALV→list/계산식/재조회) 선택→바뀌는 계층만 하이라이트·분리 깨짐 신호 | ✅ |
+| CH27-L05-S01 | CH27-L05 | abap-unit-runner | ABAP Unit 러너·테스트 실행→✓/✗·버그 주입 토글→remaining_calc(exp=50) 빨강 실패·assert_equals(act/exp) 표시 | ✅ |
 | CH04-L02-S01 | CH04-L02 | fill-blank | 문자열 함수 빈칸(INTO·AT·strlen·FIND) | ✅ |
 | CH04-L07-S01 | CH04-L07 | fill-blank | 구구단 빈칸(TIMES·sy-index·*·ENDDO) | ✅ |
 | CH04-L03-S01 | CH04-L03 | mermaid | IF/ELSEIF/ELSE 분기 흐름도(p_amt: 큰금액/소액/0·음수) | ✅ |
@@ -298,6 +303,11 @@
 | annotation-effect-preview (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH23-L04-S01 | AEP_CFG(labels/priceField/currencyField/order) 주도 · 3패널: ①label 토글→헤더 dt(기술 UPPERCASE↔업무라벨) ②@Semantics seg(currency_code/ticket_price/none)→code(자기참조 .bad span)+verdict ok/bad/warn(교훈3 base 중립rgba) ③lineItem ▲▼ 순서→position (i+1)*10 재할당+컬럼 미리보기·toggle base=var(--surface) · 다크 |
 | metadata-extension-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH23-L05-S01 | MXL_CFG(entity/base/fields pos) 주도 · 토글 3(uiLoc inline/ext·allow·sep ;/,)→DDL 파일(@Metadata.allowExtensions·inline 시 @UI.lineItem interleave)+DDLX 파일(annotate entity with·요소 뒤 sep·ext일 때만)·status: ext+!allow=bad·ext+sep,=bad(sep-bad span)·ext+;+allow=ok·inline=중립 base(교훈3)·활성화 badge act/fail·toggle base=var(--surface) · 다크 |
 | dcl-auth-comparator (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH23-L06-S01 | DAC_CFG(entity/users auth/concerts venue) 주도 · 사용자 seg+PFCG 배지·mode 토글(CHECK/NOT_REQUIRED)→DCL+@AccessControl code+SELECT code+결과 표(CHECK=venue∈auth만·NOT_REQUIRED=전부·권한밖 행 .unauth rgba 빨강+tag)·verdict: NOT_REQUIRED+leak=bad/CHECK=ok(0건도 정상)·교훈3 base 중립rgba·seg base=var(--surface) · 다크 |
+| factory-sim (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH27-L01-S01 | 타입 세그(V/G/Z)→생성 클래스·설명 전환·호출부 코드 고정 표시 |
+| singleton-sim (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH27-L02-S01 | get_instance vs NEW 버튼→인스턴스 주소 목록·같음/다름 판정 |
+| strategy-sim (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH27-L03-S01 | 전략 세그+좌석 입력→단가×석 가격 계산·client 코드 불변 |
+| mvc-diagram (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH27-L04-S01 | 변경 요구 선택→M/V/C 계층 박스 하이라이트·영향 범위 예측 훈련 |
+| abap-unit-runner (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH27-L05-S01 | 테스트 2건 실행 ✓/✗·버그 주입 시 remaining_calc(exp 50→48) 실패·assert_equals 렌더 |
 | lock-mode-matrix (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH26-L01-S01 | A가 1001을 E/S/X로 잠금→B 요청 모드별 허용/거절 매트릭스·변경=E 기본 강조 |
 | enqueue-2session (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH26-L02-S01 | 2세션(A/B) 잠금 경쟁·ENQUEUE→foreign_lock 거절·DEQUEUE/COMMIT 후 획득 가능·가운데 SM12 잠금 목록 라이브 |
 | lost-update-sim (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH26-L04-S01 | A/B 동시 수정 타임라인·전략 3종(무잠금=Lost Update·비관 ENQUEUE·낙관 changed_at 비교 거절→재조회) 결과 비교 |
