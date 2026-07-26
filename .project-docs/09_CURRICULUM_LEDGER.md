@@ -1,7 +1,7 @@
 # 09. CURRICULUM LEDGER — 커리큘럼 개념 원장 (개요 SSOT)
 
 > 📅 최종수정: 2026-07-27 03:33 KST
-> 🎯 **2트랙 36챕터의 챕터 맵 + 교차 설계 합의(경계·관통예제·도구 아크)의 단일 출처.**
+> 🎯 **2트랙(최종 39번호) 챕터 맵 + 교차 설계 합의(경계·관통예제·도구 아크)의 단일 출처.**
 > 🧭 **per-lesson `introduces`/`prereq`/`prevRel`/`foreshadow`/`advanceUse` = 각 레슨 `.md` front-matter가 라이브 SSOT**([04 R10](04_CONVENTIONS.md)) — 이 문서는 레슨별 데이터를 중복하지 않고 *그 위의 개요·경계·관통설계*만 담는다(§F). 게이팅([04 R15](04_CONVENTIONS.md)) 점검 = front-matter ↔ 본문 ↔ R15.
 > ✅ 현행: **최종 39번호(신규 3장 삽입 리넘버 완료, 2026-07-14)** · 본문 **38챕터 작성 완료**(CH20 Advanced SQL·CH28 Dynamic ABAP 신설 집필 · **CH29 Regex 예약 미집필**). 전면 리빌드는 *선택* — 실행 절차는 [10_REBUILD_EXECUTION](10_REBUILD_EXECUTION.md).
 
@@ -12,7 +12,7 @@
 
 ---
 
-## A. 트랙·챕터 맵 (37챕터 작성 · 최종 39번호)
+## A. 트랙·챕터 맵 (38챕터 작성 · 최종 39번호)
 
 > 핵심 = 그 챕터가 **L3 정식 도입**하는 대표 개념(요지). 레슨별 상세는 front-matter.
 > ℹ️ 챕터 front-matter `track` **실값 = `TRACK-01`/`TRACK-02`**([04 R10](04_CONVENTIONS.md)) — 아래 "Track-1/2" 헤더는 표시 라벨.
