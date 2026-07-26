@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<!-- CH31-L06-S02 — 엔진: mermaid + _autoheight. 챕터 전체 흐름 지도(편집 준비→입력 중 검증/후처리→저장 게이트).
+     게이팅: CH31 배운 것만(edit·register_edit_event·SET HANDLER·data_changed(_finished)·Cell Style·check_changed_data·MODIFY/COMMIT).
+     그래프 정의는 .mermaid textContent에. -->
+<html lang="ko" data-eng="mermaid">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Editable ALV 전체 흐름 · CH31-L06-S02</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>if(!window.mermaid){var s=document.createElement("script");s.src="../_vendor/mermaid.min.js";document.head.appendChild(s);}</script>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/mermaid.css" />
+</head>
+<body>
+  <div class="wrap">
+    <p class="hd">Editable ALV — 챕터 전체 흐름 <small>(입력에서 저장까지)</small></p>
+    <p class="lead">여섯 레슨이 사실 <b>한 트랜잭션</b>입니다. 입력칸 준비 → 입력 중 검증·후처리 → 저장 게이트.</p>
+    <div class="mermaid" id="mm">
+flowchart TD
+  P["편집 준비 — edit 컬럼 열기<br/>+ register_edit_event + SET HANDLER (L01)"]:::prep
+  IN["입력 중 — data_changed 셀 검증(L02·L05)<br/>data_changed_finished 후처리(L03)<br/>Cell Style 행별 잠금(L04)"]:::loop
+  S1["저장 버튼 — check_changed_data<br/>(e_valid: 셀 오류 남았으면 중단)"]:::save
+  S2{"전체 규칙<br/>재검증"}:::dec
+  NO["저장 거부 — DB에 쓰지 않음"]:::bad
+  OK["감사 stamp → MODIFY<br/>→ COMMIT (실패 시 ROLLBACK)"]:::ok
+  P --> IN
+  IN --> S1
+  S1 --> S2
+  S2 -->|"오류"| NO
+  S2 -->|"통과"| OK
+classDef prep fill:#eef2ff,stroke:#94a3b8,stroke-width:2px,color:#1c2233;
+classDef loop fill:#ffffff,stroke:#3b5bdb,stroke-width:2px,color:#1d4ed8;
+classDef save fill:#ffffff,stroke:#d97706,stroke-width:2px,color:#b45309;
+classDef dec fill:#fff7ed,stroke:#d97706,stroke-width:2px,color:#b45309;
+classDef bad fill:#ffffff,stroke:#dc2626,stroke-width:2px,color:#b91c1c;
+classDef ok fill:#ffffff,stroke:#10b981,stroke-width:2.4px,color:#0b7250;
+    </div>
+    <p class="viz-note">화면 검증(입력 중)은 <b>편의</b>, 저장 게이트는 <b>무결성의 마지막 방어선</b> — 역할이 다릅니다.</p>
+  </div>
+<script src="../_engine/mermaid.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

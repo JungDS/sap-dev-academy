@@ -41,7 +41,7 @@
       <article class="prose">
 <section class="lblock"><h2>행마다 다른 입력 규칙</h2>
 <p><a href="CH31-L01.html">Editable Field Catalog 설정</a>의 <code>edit</code>는 <strong>컬럼 전체</strong>를 여닫는 설정이다.
-그런데 실무에선 <em>같은 컬럼이라도 행마다</em> 규칙이 다르다 — &quot;매진 회차는 좌석 수 수정 불가,
+그런데 실무에선 <em>같은 컬럼이라도 행마다</em> 규칙이 다르다. &quot;매진 회차는 좌석 수 수정 불가,
 그 외는 가능&quot;처럼. 이건 <a href="CH22-L05.html">Deep Structure 기반 Cell Style</a>의 <strong>Cell
 Style</strong>(<code>LVC_T_STYL</code>)로 셀 단위로 제어한다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
@@ -55,39 +55,46 @@ Style</strong>(<code>LVC_T_STYL</code>)로 셀 단위로 제어한다.</p>
 9
 10
 11
-12</pre><pre class="abap-editor__code"><code><span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> lt_perf <span class="tok-kw">ASSIGNING</span> <span class="tok-kw">FIELD-SYMBOL</span>(&lt;ls_perf&gt;).
-  <span class="tok-kw">DATA</span> lv_style <span class="tok-kw">TYPE</span> i.
-  <span class="tok-kw">IF</span> &lt;ls_perf&gt;-seatsocc &gt;= &lt;ls_perf&gt;-capacity.
-    lv_style = cl_gui_alv_grid=&gt;mc_style_disabled.  <span class="tok-com">" 매진=잠금</span>
+12
+13
+14</pre><pre class="abap-editor__code"><code><span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> gt_perf_alv <span class="tok-kw">ASSIGNING</span> <span class="tok-kw">FIELD-SYMBOL</span>(&lt;ls_perf&gt;).
+  <span class="tok-kw">CLEAR</span> &lt;ls_perf&gt;-cellstyles.
+  <span class="tok-kw">IF</span> &lt;ls_perf&gt;-booked &gt;= &lt;ls_perf&gt;-capacity.
+    <span class="tok-kw">APPEND</span> <span class="tok-kw">VALUE</span> #( fieldname = <span class="tok-str">'SEATS'</span>
+                    style     = cl_gui_alv_grid=&gt;mc_style_disabled )
+           <span class="tok-kw">TO</span> &lt;ls_perf&gt;-cellstyles.           <span class="tok-com">" 매진=잠금</span>
   <span class="tok-kw">ELSE</span>.
-    lv_style = cl_gui_alv_grid=&gt;mc_style_enabled.   <span class="tok-com">" 그외=편집</span>
+    <span class="tok-kw">APPEND</span> <span class="tok-kw">VALUE</span> #( fieldname = <span class="tok-str">'SEATS'</span>
+                    style     = cl_gui_alv_grid=&gt;mc_style_enabled )
+           <span class="tok-kw">TO</span> &lt;ls_perf&gt;-cellstyles.           <span class="tok-com">" 그외=편집</span>
   <span class="tok-kw">ENDIF</span>.
-  &lt;ls_perf&gt;-cellstyles = <span class="tok-kw">VALUE</span> #(
-    ( fieldname = <span class="tok-str">'SEATS'</span> style = lv_style ) ).
 <span class="tok-kw">ENDLOOP</span>.
 
-ls_layout-stylefname = <span class="tok-str">'CELLSTYLES'</span>.</code></pre></div></div>
+gs_layout-stylefname = <span class="tok-str">'CELLSTYLES'</span>.</code></pre></div></div>
 <p>구조는 <strong>2단계</strong>다. 먼저 Field Catalog에서 <code>SEATS</code> 컬럼을 편집 가능하게 열고, 그다음 행별
-<code>cellstyles</code>로 &quot;이 행의 SEATS는 잠글지 열지&quot;를 정한다 — <strong>전체 허용 + <button class="term" type="button" data-term="예외">예외</button> 제어</strong>의 분리다.</p>
+<code>cellstyles</code>로 &quot;이 행의 SEATS는 잠글지 열지&quot;를 정한다. <strong>전체 허용 + <button class="term" type="button" data-term="예외">예외</button> 제어</strong>의 분리다.</p>
 </section><section class="lblock"><h2>매진 토글로 확인</h2>
 <p>행을 <strong>매진</strong>으로 바꾸면 그 행의 <code>SEATS</code> 셀만 읽기전용으로 잠기는 걸 확인해 보라(같은 컬럼,
 셀마다 다른 스타일).</p>
-<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">Cell Style — 매진 행 입력 잠금</span><a class="embed__open" href="../../../embeds/abap/CH31-L04-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH31-L04-S01.html" loading="lazy" title="Cell Style — 매진 행 입력 잠금" style="height:360px"></iframe></figure>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title"><button class="term" type="button" data-term="Cell Style">Cell Style</button> — 매진 행 입력 잠금</span><a class="embed__open" href="../../../embeds/abap/CH31-L04-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH31-L04-S01.html" loading="lazy" title="Cell Style — 매진 행 입력 잠금" style="height:360px"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
 <li><strong>fieldcat <code>edit</code>을 꺼 둠</strong> → cell style만으론 입력 제어가 기대처럼 안 보인다. <em>기본은
 컬럼을 열고</em>, <button class="term" type="button" data-term="예외">예외</button> 셀만 disabled로 덮는다.</li>
 <li><strong>style을 한 번만 계산</strong> → 행 상태가 바뀌면(잔여석 0이 됨 등) <code>cellstyles</code>를 <strong>다시
 계산</strong>해야 한다. 안 그러면 매진인데도 셀이 열려 보인다.</li>
-<li><strong>셀 잠금을 보안으로 착각</strong> → Cell Style은 <em>UI 입력 제어</em>일 뿐이다. 악의적 조작·동시
+<li><strong>여러 필드를 한 행에서 잠글 때 APPEND 남발</strong> → <code>cellstyles</code>(<code>LVC_T_STYL</code>)는 <strong>정렬
+테이블</strong>이라 아무 순서로 APPEND하면 깨질 수 있다. 위 예제처럼 <code>CLEAR</code> 후 한 건은
+안전하지만, 여러 필드를 넣을 땐 <code>INSERT ... INTO TABLE</code>로 넣는다.</li>
+<li><strong>셀 잠금을 보안으로 착각</strong> → <button class="term" type="button" data-term="Cell Style">Cell Style</button>은 <em>UI 입력 제어</em>일 뿐이다. 악의적 조작·동시
 변경·다른 프로그램의 변경은 UI 잠금으로 못 막는다. <strong>저장 전 전체 검증</strong>(이 챕터 마지막)이
 따로 필요하다.</li>
 </ul>
 </section><section class="lblock"><h2>정리</h2>
 <ul>
-<li>Field Catalog <code>edit</code> = <strong>컬럼 단위</strong> 허용, Cell Style = <strong>셀 단위</strong> <button class="term" type="button" data-term="예외">예외</button> 제어.</li>
+<li>Field Catalog <code>edit</code> = <strong>컬럼 단위</strong> 허용, <button class="term" type="button" data-term="Cell Style">Cell Style</button> = <strong>셀 단위</strong> <button class="term" type="button" data-term="예외">예외</button> 제어.</li>
 <li>같은 <code>SEATS</code>라도 매진 행은 disabled, 일반 행은 enabled로 만든다(<code>stylefname</code>으로 연결).</li>
-<li>데이터 상태가 바뀌면 style도 다시 계산 — <strong>UI 잠금은 저장 전 검증을 대신하지 않는다.</strong></li>
+<li>데이터 상태가 바뀌면 style도 다시 계산한다. <strong>UI 잠금은 저장 전 검증을 대신하지 않는다.</strong></li>
 </ul>
 <hr>
 <p>입력 가능 여부를 셀별로 제어했다. 이제 입력값을 검증하고 <strong>어디가 왜 틀렸는지</strong> 보여주자 →

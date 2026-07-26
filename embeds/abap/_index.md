@@ -249,6 +249,13 @@
 | CH30-L03-S01 | CH30-L03 | alv-events | mode=toolbar·커스텀 버튼(ZCANCEL) 추가만(toolbar 이벤트)·처리는 L04로 분리 강조 | ✅ |
 | CH30-L04-S01 | CH30-L04 | alv-events | mode=ucommand·행 선택+예매 취소 버튼→user_command(e_ucomm=ZCANCEL) 분기·선택없음 안내·refresh | ✅ |
 | CH30-L05-S01 | CH30-L05 | alv-handler-wiring | 이벤트(왼쪽) 클릭→짝 핸들러 메서드(오른쪽) 강조·생성자 SET HANDLER 한 곳 배선 강조 | ✅ |
+| CH31-L01-S01 | CH31-L01 | editable-grid | mode=editcols·편집 모드 토글→SEATS만 입력칸(키 컬럼 보호)·edit+register_edit_event 한 쌍 | ✅ |
+| CH31-L02-S01 | CH31-L02 | editable-grid | mode=datachanged·셀 수정 즉시 on_data_changed 로그·1~10 밖=add_protocol_entry(셀 빨강) | ✅ |
+| CH31-L03-S01 | CH31-L03 | editable-grid | mode=finished·확정(change) 시 on_data_changed_finished→총 좌석 합계 재계산+stable refresh 메시지 | ✅ |
+| CH31-L04-S01 | CH31-L04 | editable-grid | mode=cellstyle·행별 매진/여석 토글→그 행 SEATS만 disabled(셀 단위 잠금) | ✅ |
+| CH31-L05-S01 | CH31-L05 | editable-grid | mode=validate·오류 셀 빨강+하단 오류 목록 패널(add_protocol_entry 누적)·정상값=목록 소거 | ✅ |
+| CH31-L06-S01 | CH31-L06 | editable-grid | mode=save·(capstone) 저장→check_changed_data→전체 재검증 거부 vs MODIFY+COMMIT 로그 | ✅ |
+| CH31-L06-S02 | CH31-L06 | mermaid | 챕터 전체 흐름 지도(편집 준비→입력 중 검증/후처리/잠금→check_changed_data e_valid→재검증 분기→stamp·MODIFY·COMMIT) | ✅ |
 | CH04-L02-S01 | CH04-L02 | fill-blank | 문자열 함수 빈칸(INTO·AT·strlen·FIND) | ✅ |
 | CH04-L07-S01 | CH04-L07 | fill-blank | 구구단 빈칸(TIMES·sy-index·*·ENDDO) | ✅ |
 | CH04-L03-S01 | CH04-L03 | mermaid | IF/ELSEIF/ELSE 분기 흐름도(p_amt: 큰금액/소액/0·음수) | ✅ |
@@ -328,6 +335,7 @@
 | regex-lab (신규) | 8 | 공통(_engine)·자체 postHeight ✅ | CH29-L01～L08-S01 | rx-cfg JSON {mode: compare/tokens/inspect/groups/replace/matcher/functions/gate} 주도·PCRE 8모드(substring vs 패턴·토큰 조립·결과 옵션·SUBMATCHES·치환/VERBATIM·matcher 도장/손·함수 콘솔·품질 게이트)·JS RegExp 'd' 플래그로 그룹 위치까지 실행(\w ASCII 한계로 한글 \w 데모는 본문 전용)·데이터=파트너 접수번호 B-YYYY-NNNN(외부 표기)+로그 E100/W210/E404+정훈영/HUNYOUNG |
 | alv-events (신규) | 4 | 공통(_engine)·자체 postHeight ✅ | CH30-L01～L04-S01 | alv-cfg JSON {mode: double/hotspot/toolbar/ucommand} 주도·예매 미니 ALV+이벤트 로그(핸들러 메서드+e_* 파라미터)·ucommand는 선택→취소→refresh까지 |
 | alv-handler-wiring (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH30-L05-S01 | 이벤트→핸들러 메서드 배선 맵·클릭 시 짝 강조·생성자 SET HANDLER 일괄 배선 메시지 |
+| editable-grid | 6 | 공통(_engine)·자체 postHeight ✅ | CH31-L01～L06-S01 | eg-cfg JSON {mode: editcols/datachanged/finished/cellstyle/validate/save}·편집 ALV 시뮬(SEATS 편집·즉시 검증 로그·합계 재계산·매진 잠금·오류 목록·저장 게이트)·정본 0001~/C001~/정훈영·유효값 1~max |
 | factory-sim (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH27-L01-S01 | 타입 세그(V/G/Z)→생성 클래스·설명 전환·호출부 코드 고정 표시 |
 | singleton-sim (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH27-L02-S01 | get_instance vs NEW 버튼→인스턴스 주소 목록·같음/다름 판정 |
 | strategy-sim (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH27-L03-S01 | 전략 세그+좌석 입력→단가×석 가격 계산·client 코드 불변 |
@@ -387,7 +395,7 @@
 | salv-grid-simulator | 2 | 공통(_engine)·자체 postHeight ✅ | CH11-L02-S01·CH11-L06-S01 (완료) | config 주입(SALV_CFG: itab·cols·data·sumKey·code) · ALV제목/토글 엔진설정 |
 | relationship-map | 1 | 공통 | _(미작성)_ | CSS-only |
 | state-change-grid | 2 | 공통(CSS-only)+_autoheight ✅ | CH06-L04-S03·CH06-L06-S01 | 스냅샷=마크업(gt_gugu 성장·정렬 / DELETE ADJACENT DUPLICATES 함정) · cell-new/cell-del 강조 · .note 추가(다크 자동) |
-| mermaid | 14 | 공통(+_vendor)+_autoheight ✅ | CH04-L04-S02/S03·L05-S02/S03/S04 · CH26-L05 · CH33-L05 · CH34-L02 · CH36-L03 · CH37-L03 · CH38-L03/L04 · CH39-L01/L06 | 그래프=위젯 `.mermaid` 주입·CDN+로컬fallback·이벤트본 은퇴 |
+| mermaid | 15 | 공통(+_vendor)+_autoheight ✅ | CH04-L04-S02/S03·L05-S02/S03/S04 · CH26-L05 · CH31-L06-S02 · CH33-L05 · CH34-L02 · CH36-L03 · CH37-L03 · CH38-L03/L04 · CH39-L01/L06 | 그래프=위젯 `.mermaid` 주입·CDN+로컬fallback·이벤트본 은퇴 |
 | judge-quiz | 6 | 공통(_engine)+_autoheight ✅ | CH06-L05 · CH26-L03 · CH32-L05 · CH36-L05 · CH37-L05 · CH39-L07 | 범용 판별 퀴즈(문항=위젯 config)·즉시 정답·해설 |
 | domain-builder | 1 | 공통(_engine) ✅ | CH03-L01-S01 | SE11 폼(단일사용·데이터 inline) · 예제별 target 강제(검사/활성화는 목표 일치 시에만) |
 | input-help-priority | 1 | 공통(CSS-only)+_autoheight ✅ | CH09-L07-S01 | F4 사다리(콘텐츠=마크업·빈 .js 제거) |
