@@ -218,6 +218,11 @@
 | CH25-L03-S01 | CH25-L03 | luw-timeline | SAP LUW 타임라인·CALL FUNCTION IN UPDATE TASK=등록(지연)·COMMIT WORK 시점에 대기큐→DB 실행·호출 직후 sy-subrc 미정의·단계 진행으로 큐/DB 채워지는 타이밍 관찰 | ✅ |
 | CH25-L04-S01 | CH25-L04 | reprocess-sim | 대량 처리→일부 실패 수집→재처리·예매 5건 중 2건 중복키 실패→오류 테이블(키+사유) 누적·원인 해결 후 실패분만 재실행·멱등성(MODIFY/중복체크) | ✅ |
 | CH25-L05-S01 | CH25-L05 | package-commit | 패키지 단위 COMMIT 시각화·크기별(소/대/단일) COMMIT 횟수·최대 미커밋 버퍼 톱니 SVG·단일 COMMIT 버퍼 폭발 대비·주기적 비우기 | ✅ |
+| CH26-L01-S01 | CH26-L01 | lock-mode-matrix | 잠금 모드 호환 매트릭스·A가 1001을 E/S/X로 잠근 상태에서 B 요청 모드별 허용/거절·변경=E 기본 | ✅ |
+| CH26-L02-S01 | CH26-L02 | enqueue-2session | 2세션 잠금 데모·A ENQUEUE→B foreign_lock 거절→A DEQUEUE/COMMIT 후 B 가능·가운데 SM12 잠금 목록 표시 | ✅ |
+| CH26-L03-S01 | CH26-L03 | judge-quiz | 잠금 해제 판별 퀴즈·상황별(DEQUEUE·COMMIT/ROLLBACK·세션종료·SELECT·다른 키) 풀림/유지 즉시 정답·해설 | ✅ |
+| CH26-L04-S01 | CH26-L04 | lost-update-sim | Lost Update 시뮬·A/B 동시 수정 타임라인·전략(무잠금/비관 ENQUEUE/낙관 changed_at 비교)별 결과 비교 | ✅ |
+| CH26-L05-S01 | CH26-L05 | mermaid | 안전 변경 패턴 흐름도(ENQUEUE→READ→UPDATE→COMMIT/ROLLBACK→DEQUEUE)·마름모 분기·CH25+CH26 통합 | ✅ |
 | CH04-L02-S01 | CH04-L02 | fill-blank | 문자열 함수 빈칸(INTO·AT·strlen·FIND) | ✅ |
 | CH04-L07-S01 | CH04-L07 | fill-blank | 구구단 빈칸(TIMES·sy-index·*·ENDDO) | ✅ |
 | CH04-L03-S01 | CH04-L03 | mermaid | IF/ELSEIF/ELSE 분기 흐름도(p_amt: 큰금액/소액/0·음수) | ✅ |
@@ -293,6 +298,9 @@
 | annotation-effect-preview (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH23-L04-S01 | AEP_CFG(labels/priceField/currencyField/order) 주도 · 3패널: ①label 토글→헤더 dt(기술 UPPERCASE↔업무라벨) ②@Semantics seg(currency_code/ticket_price/none)→code(자기참조 .bad span)+verdict ok/bad/warn(교훈3 base 중립rgba) ③lineItem ▲▼ 순서→position (i+1)*10 재할당+컬럼 미리보기·toggle base=var(--surface) · 다크 |
 | metadata-extension-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH23-L05-S01 | MXL_CFG(entity/base/fields pos) 주도 · 토글 3(uiLoc inline/ext·allow·sep ;/,)→DDL 파일(@Metadata.allowExtensions·inline 시 @UI.lineItem interleave)+DDLX 파일(annotate entity with·요소 뒤 sep·ext일 때만)·status: ext+!allow=bad·ext+sep,=bad(sep-bad span)·ext+;+allow=ok·inline=중립 base(교훈3)·활성화 badge act/fail·toggle base=var(--surface) · 다크 |
 | dcl-auth-comparator (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH23-L06-S01 | DAC_CFG(entity/users auth/concerts venue) 주도 · 사용자 seg+PFCG 배지·mode 토글(CHECK/NOT_REQUIRED)→DCL+@AccessControl code+SELECT code+결과 표(CHECK=venue∈auth만·NOT_REQUIRED=전부·권한밖 행 .unauth rgba 빨강+tag)·verdict: NOT_REQUIRED+leak=bad/CHECK=ok(0건도 정상)·교훈3 base 중립rgba·seg base=var(--surface) · 다크 |
+| lock-mode-matrix (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH26-L01-S01 | A가 1001을 E/S/X로 잠금→B 요청 모드별 허용/거절 매트릭스·변경=E 기본 강조 |
+| enqueue-2session (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH26-L02-S01 | 2세션(A/B) 잠금 경쟁·ENQUEUE→foreign_lock 거절·DEQUEUE/COMMIT 후 획득 가능·가운데 SM12 잠금 목록 라이브 |
+| lost-update-sim (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH26-L04-S01 | A/B 동시 수정 타임라인·전략 3종(무잠금=Lost Update·비관 ENQUEUE·낙관 changed_at 비교 거절→재조회) 결과 비교 |
 | dml-playground (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH25-L01-S01 | SEED 2행(정훈영/손흥민 status N) · DML 4종 실행→생성 ABAP 문+sy-subrc+행변화 애니·단건 중복=sy-subrc4(덤프 아님, 대량 FROM TABLE만 런타임오류)·WHERE 생략=전체 경고·MODIFY upsert·created_by/on 자동 stamp·status N/C·예매자 라벨 |
 | txn-atomicity (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH25-L02-S01 | 금·토 두 회차 묶음 예매(ZBOOKING 2건 INSERT)·둘째(토) 실패 토글→미확정(메모리) 쌓기→COMMIT 시 반쪽저장(금만) vs ROLLBACK·메모리↔DB 2열·lv_failed 누적 강조 |
 | luw-timeline (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH25-L03-S01 | SAP LUW 타임라인·IN UPDATE TASK=등록(지연)·단계 진행→대기큐/DB 채워지는 타이밍·COMMIT WORK 시점 실행·호출 직후 sy-subrc 미정의 |
@@ -344,7 +352,8 @@
 | salv-grid-simulator | 2 | 공통(_engine)·자체 postHeight ✅ | CH11-L02-S01·CH11-L06-S01 (완료) | config 주입(SALV_CFG: itab·cols·data·sumKey·code) · ALV제목/토글 엔진설정 |
 | relationship-map | 1 | 공통 | _(미작성)_ | CSS-only |
 | state-change-grid | 2 | 공통(CSS-only)+_autoheight ✅ | CH06-L04-S03·CH06-L06-S01 | 스냅샷=마크업(gt_gugu 성장·정렬 / DELETE ADJACENT DUPLICATES 함정) · cell-new/cell-del 강조 · .note 추가(다크 자동) |
-| mermaid | 6 | 공통(+_vendor)+_autoheight ✅ | CH04-L03-S01·L04-S02/S03·L05-S02/S03/S04 | 그래프=위젯 `.mermaid` 주입·CDN+로컬fallback·이벤트본 은퇴 |
+| mermaid | 14 | 공통(+_vendor)+_autoheight ✅ | CH04-L04-S02/S03·L05-S02/S03/S04 · CH26-L05 · CH33-L05 · CH34-L02 · CH36-L03 · CH37-L03 · CH38-L03/L04 · CH39-L01/L06 | 그래프=위젯 `.mermaid` 주입·CDN+로컬fallback·이벤트본 은퇴 |
+| judge-quiz | 6 | 공통(_engine)+_autoheight ✅ | CH06-L05 · CH26-L03 · CH32-L05 · CH36-L05 · CH37-L05 · CH39-L07 | 범용 판별 퀴즈(문항=위젯 config)·즉시 정답·해설 |
 | domain-builder | 1 | 공통(_engine) ✅ | CH03-L01-S01 | SE11 폼(단일사용·데이터 inline) · 예제별 target 강제(검사/활성화는 목표 일치 시에만) |
 | input-help-priority | 1 | 공통(CSS-only)+_autoheight ✅ | CH09-L07-S01 | F4 사다리(콘텐츠=마크업·빈 .js 제거) |
 | write-output | 1 | 공통 ✅ | CH01-L04-S01 | WRITE 출력 파서 · config 주입 · **버그수정(따옴표無→오류)** |

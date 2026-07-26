@@ -1081,5 +1081,35 @@
     "title": "Package 처리 (패키지 단위 대량 변경)",
     "desc": "수십만 건을 한 번에 바꾸면 메모리·롤백 세그먼트·잠금이 과부하되므로, 일정 건수(예: 5,000건)씩 잘라 처리하고 주기적으로 COMMIT WORK하는 패턴. 실패 시 재처리 범위를 좁히는 이점도 있다.",
     "analogy": "이삿짐을 한 번에 못 옮기니 상자 단위로 나눠 나르고 중간중간 정리."
+  },
+  "ENQUEUE": {
+    "title": "ENQUEUE (잠금 요청)",
+    "desc": "Lock Object 활성화 시 자동 생성되는 ENQUEUE_* Function Module을 호출해 잠금을 거는 것. 키 값을 넘기면 그 행만 잠긴다. 이미 남이 잠갔으면 foreign_lock 예외로 떨어지므로 반드시 분기해 안내한다.",
+    "analogy": "회의실 예약 — 비어 있으면 내 이름이 걸리고, 차 있으면 '사용 중' 안내를 받는다."
+  },
+  "DEQUEUE": {
+    "title": "DEQUEUE (잠금 해제)",
+    "desc": "ENQUEUE로 건 잠금을 푸는 DEQUEUE_* Function Module 호출. ENQUEUE와 같은 키·모드·_scope로 대응시킨다. COMMIT WORK/ROLLBACK WORK가 _scope에 따라 자동 해제하기도 한다.",
+    "analogy": "회의실 사용 끝나고 예약을 지우는 것 — 그래야 다음 사람이 쓴다."
+  },
+  "Lock Argument": {
+    "title": "Lock Argument (잠금 인수)",
+    "desc": "Lock Object에서 잠금의 기준이 되는 테이블 키 필드들. 어느 범위가 잠기는지는 호출 시 어떤 키 값을 넘기느냐로 정해진다 — 값을 넘기면 그 행만, 키를 비우면 더 넓은 범위가 잠긴다(generic).",
+    "analogy": "자물쇠에 꽂는 열쇠 홈 — 몇 번 방을 잠글지는 꽂는 번호가 정한다."
+  },
+  "Lost Update": {
+    "title": "Lost Update (잃어버린 갱신)",
+    "desc": "두 사용자가 같은 데이터를 각자 읽은 뒤, 나중 저장이 옛 값 기준으로 덮어써 먼저 저장한 변경이 오류 없이 조용히 사라지는 현상. 잠금(비관) 또는 저장 직전 변경표식 비교(낙관)로 막는다.",
+    "analogy": "두 사람이 같은 문서를 복사해 각자 고친 뒤 차례로 덮어쓰면, 먼저 낸 사람의 수정이 사라진다."
+  },
+  "Pessimistic Lock": {
+    "title": "Pessimistic Lock (비관적 잠금)",
+    "desc": "충돌이 날 것이라 보고 작업 전에 미리 잠그는(ENQUEUE) 전략. 편집이 길거나 충돌이 잦은 데이터에 적합하다. 동시성은 낮아진다.",
+    "analogy": "탈의실 문을 잠그고 옷을 갈아입는 것 — 확실하지만 그동안 남은 못 쓴다."
+  },
+  "Optimistic Lock": {
+    "title": "Optimistic Lock (낙관적 잠금)",
+    "desc": "잠그지 않고 작업하다가 저장 직전에 '읽은 뒤 누가 바꿨나'를 변경표식(changed_at·timestamp·version 등) 비교로 확인해, 바뀌었으면 저장을 거절하는 전략. 충돌이 드문 읽기 위주 데이터에 적합하다.",
+    "analogy": "문 안 잠그고 옷 갈아입되, 나가기 전에 거울로 뒤를 확인하는 것 — 겹치면 그때 멈춘다."
   }
 }

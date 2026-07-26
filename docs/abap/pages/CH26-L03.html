@@ -66,12 +66,16 @@ Module</a>에서 본 <code>_scope</code>로 판단한다 — 특히 <code>_scope
 4
 5
 6
-7</pre><pre class="abap-editor__code"><code><span class="tok-kw">CALL</span> <span class="tok-kw">FUNCTION</span> <span class="tok-str">'ENQUEUE_EZ_BOOKING'</span>
+7
+8
+9</pre><pre class="abap-editor__code"><code><span class="tok-kw">CALL</span> <span class="tok-kw">FUNCTION</span> <span class="tok-str">'ENQUEUE_EZ_BOOKING'</span>
   <span class="tok-kw">EXPORTING</span>  booking_id = lv_id
   <span class="tok-kw">EXCEPTIONS</span> foreign_lock = <span class="tok-num">1</span> <span class="tok-kw">OTHERS</span> = <span class="tok-num">2</span>.
 
 <span class="tok-kw">IF</span> sy-subrc = <span class="tok-num">1</span>.
   <span class="tok-kw">MESSAGE</span> <span class="tok-str">'다른 사용자가 편집 중입니다'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'E'</span>.
+<span class="tok-kw">ELSEIF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.
+  <span class="tok-kw">MESSAGE</span> <span class="tok-str">'잠금 처리 중 시스템 오류'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'E'</span>.   <span class="tok-com">" foreign_lock과 구분해 안내</span>
 <span class="tok-kw">ENDIF</span>.</code></pre></div></div>
 <blockquote class="cw">
 <p>⚠️ <strong>누가 잠갔는지</strong>(잠금 소유자)는 <code>sy-msgv1</code> 같은 시스템 변수에 <strong>항상 채워진다고
@@ -81,7 +85,11 @@ Module</a>에서 본 <code>_scope</code>로 판단한다 — 특히 <code>_scope
 <ul>
 <li><strong>장시간 잠금</strong> → 사용자가 편집 화면을 켜 둔 채 자리를 비우면 남이 막힌다. 가능하면 <strong>짧게</strong> 잠그고 푼다.</li>
 <li><strong><button class="term" type="button" data-term="예외">예외</button> 안 잡음</strong> → <code>foreign_lock</code>을 무시하면 사용자 경험이 나쁘다. 반드시 안내한다.</li>
+<li><strong>오류 경로에서 잠금 방치</strong> → 잠금을 잡은 <em>뒤</em> 검증 실패 등으로 흐름을 빠져나갈 때, 그 경로에서도 잠금이
+풀리는지 확인한다(세션 종료까지 남으면 남이 막힌다).</li>
 <li><strong>누가 잠갔나 가정</strong> → 잠금 소유자는 시스템 변수에 항상 채워진다고 믿지 말고 <code>SM12</code>/조회 함수로 확인.</li>
+<li><strong><code>SM12</code>에서 잠금 수동 삭제</strong> → 디버깅 버튼이 아니다. 작업 중인 사용자의 보호를 없애는 운영 개입이므로,
+소유자 확인·상황 파악 없이 지우지 않는다.</li>
 </ul>
 </section><section class="lblock"><h2>정리</h2>
 <ul>
