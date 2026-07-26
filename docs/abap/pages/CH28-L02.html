@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TYPE any · ANY TABLE 파라미터 · Dynamic ABAP: Field Symbol 심화와 Generic · SAP Developer Academy</title>
+<link rel="stylesheet" href="../../../assets/base.css">
+<link rel="stylesheet" href="../../../assets/lesson.css">
+<link rel="stylesheet" href="../../../assets/shell.css">
+<script>/* 읽기 설정 선적용(플래시 방지) */(function(){try{var L=localStorage,r=document.documentElement;if(L.getItem('sda.dark')==='1')r.classList.add('dark');if(L.getItem('sda.wide')==='1')r.classList.add('wide');var f=parseInt(L.getItem('sda.fontPx'),10);if(f>=13&&f<=20)r.style.fontSize=f+'px';}catch(e){}})();</script>
+</head>
+<body data-domain="abap" data-chapter-id="CH28" data-lesson-id="CH28-L02">
+<header class="appbar">
+  <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
+  <span class="appbar__sp"></span>
+  <span class="meta">Chapter 28 · Dynamic ABAP: Field Symbol 심화와 Generic</span>
+  <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
+  <div class="tools">
+    <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
+    <button class="icon-btn" id="fsInc" title="글자 크게">A+</button>
+    <button class="icon-btn" id="fsReset" title="글자 크기 초기화">↺</button>
+    <button class="icon-btn" id="darkBtn" title="다크 모드">🌙</button>
+    <button class="icon-btn" id="widthBtn" title="가독 폭 넓게">↔</button>
+    <button class="icon-btn fs-btn" title="전체화면" aria-label="전체화면"></button>
+  </div>
+</header>
+<div class="read-progress"><i></i></div>
+<div class="scrim"></div>
+<nav class="rail" data-shell="rail"></nav>
+<button class="railFab" id="railFab" aria-label="네비 열기">☰</button>
+<div class="stage">
+  <div class="layout">
+    <main class="main">
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 28 › Lesson 2</nav>
+      <section class="lhead">
+        <p class="lhead__eyebrow">Dynamic ABAP: Field Symbol 심화와 Generic</p>
+        <h1>TYPE any · ANY TABLE 파라미터</h1>
+        <p class="lhead__direction">어떤 데이터든 받는 메서드 — 대신 확인 책임이 생긴다.</p>
+        <div class="tags"><span class="tag tag--track">Track 2</span><span class="tag tag--ch">Chapter 28</span><span class="tag tag--ls">Lesson 2</span><span class="tag tag--lv">고급</span></div>
+      </section>
+      <article class="prose">
+<section class="lblock"><h2>구조마다 메서드를 또 만들 텐가</h2>
+<p>&quot;값을 로그로 남기는 공통 도구&quot;를 만든다고 하자. 예매 구조도, 고객 구조도, 메시지 구조도
+받아야 한다면 —</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3</pre><pre class="abap-editor__code"><code><span class="tok-kw">METHODS</span> write_booking  <span class="tok-kw">IMPORTING</span> is_booking  <span class="tok-kw">TYPE</span> ts_booking.
+<span class="tok-kw">METHODS</span> write_customer <span class="tok-kw">IMPORTING</span> is_customer <span class="tok-kw">TYPE</span> ts_customer.
+<span class="tok-kw">METHODS</span> write_message  <span class="tok-kw">IMPORTING</span> is_message  <span class="tok-kw">TYPE</span> ts_message.</code></pre></div></div>
+<p>구조가 늘 때마다 <button class="term" type="button" data-term="Method">메서드</button>가 늘어난다. 공통 도구일수록 이 중복이 아프다. 해결책은 <button class="term" type="button" data-term="파라미터">파라미터</button>
+자리의 타입을 넓게 잡는 **<button class="term" type="button" data-term="Generic Type">generic 파라미터</button>**다.</p>
+</section><section class="lblock"><h2>무엇인가 — 넓게 받는 자리</h2>
+<table>
+<thead>
+<tr>
+<th>generic type</th>
+<th>뜻</th>
+<th>주 사용처</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>TYPE any</code></td>
+<td>어떤 데이터든 받는다</td>
+<td>값 표시·구조 검사 도구</td>
+</tr>
+<tr>
+<td><code>TYPE data</code></td>
+<td><code>any</code>처럼 일반 데이터를 받는 generic typing</td>
+<td>동적 할당 문맥</td>
+</tr>
+<tr>
+<td><code>TYPE ANY TABLE</code></td>
+<td>어떤 내부 테이블이든 받는다</td>
+<td>행 수 세기·범용 표시 도구</td>
+</tr>
+<tr>
+<td><code>TYPE STANDARD TABLE</code></td>
+<td>테이블 종류만 고정, 줄 타입은 열어 둠</td>
+<td>테이블 처리 도구</td>
+</tr>
+</tbody></table>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12</pre><pre class="abap-editor__code"><code><span class="tok-kw">CLASS</span> lcl_value_inspector <span class="tok-kw">DEFINITION</span>.
+  <span class="tok-kw">PUBLIC</span> <span class="tok-kw">SECTION</span>.
+    <span class="tok-kw">METHODS</span> count_rows
+      <span class="tok-kw">IMPORTING</span> it_table        <span class="tok-kw">TYPE</span> ANY <span class="tok-kw">TABLE</span>
+      <span class="tok-kw">RETURNING</span> <span class="tok-kw">VALUE</span>(rv_count) <span class="tok-kw">TYPE</span> i.
+<span class="tok-kw">ENDCLASS</span>.
+
+<span class="tok-kw">CLASS</span> lcl_value_inspector <span class="tok-kw">IMPLEMENTATION</span>.
+  <span class="tok-kw">METHOD</span> count_rows.
+    rv_count = <span class="tok-kw">lines</span>( it_table ).     <span class="tok-com">" 줄 타입 몰라도 행 수는 셀 수 있다</span>
+  <span class="tok-kw">ENDMETHOD</span>.
+<span class="tok-kw">ENDCLASS</span>.</code></pre></div></div>
+<p>핵심 감각: <button class="term" type="button" data-term="Generic Type">generic 파라미터</button>로 <strong>&quot;가능한 작업&quot;과 &quot;불가능한 작업&quot;이 갈린다</strong>. 행 수 세기는
+줄 타입을 몰라도 되지만, <code>&lt;ls_line&gt;-booking_id</code>처럼 <strong>특정 필드 접근은 불가능</strong>하다 —
+<code>ANY TABLE</code>은 줄의 모양을 모르니까.</p>
+</section><section class="lblock"><h2>문으로 통과시켜 보기</h2>
+<p>아래 게이트에 구조·테이블·낱값을 넣어 보라. 입력 종류에 따라 <strong>허용되는 작업 목록</strong>이
+어떻게 바뀌는지, 필드 직접 접근이 왜 막히는지 확인해 보라.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">Generic <button class="term" type="button" data-term="파라미터">파라미터</button> 게이트 — 무엇이 가능한가</span><a class="embed__open" href="../../../embeds/abap/CH28-L02-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH28-L02-S01.html" loading="lazy" title="Generic 파라미터 게이트 — 무엇이 가능한가" style="height:520px"></iframe></figure>
+</section><section class="lblock"><h2>어떻게 확인하는가</h2>
+<p>generic 테이블에서 첫 줄을 꺼내는 코드로 경계를 확인한다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9</pre><pre class="abap-editor__code"><code><span class="tok-kw">METHOD</span> show_first_line.
+  <span class="tok-kw">FIELD-SYMBOLS</span> &lt;ls_line&gt; <span class="tok-kw">TYPE</span> any.
+
+  <span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> it_table <span class="tok-kw">ASSIGNING</span> &lt;ls_line&gt;.
+    <span class="tok-com">" &lt;ls_line&gt;-booking_id 라고 바로 쓰면 → syntax 오류(줄 타입을 모름)</span>
+    <span class="tok-kw">WRITE</span> / &lt;ls_line&gt;.               <span class="tok-com">" 낱값이면 출력됨. 구조면 기대와 다를 수 있음</span>
+    <span class="tok-kw">EXIT</span>.
+  <span class="tok-kw">ENDLOOP</span>.
+<span class="tok-kw">ENDMETHOD</span>.</code></pre></div></div>
+<ol>
+<li><code>TYPE ANY TABLE</code>만으로는 <strong>줄의 구조를 알 수 없다</strong>.</li>
+<li>필드가 필요하면 <strong>실행 중 확인</strong>을 거쳐야 한다 — 그 도구가 <a href="CH28-L04.html">ASSIGN COMPONENT</a>와
+<a href="CH28-L07.html">RTTS</a>다(뒤 레슨).</li>
+</ol>
+</section><section class="lblock"><h2>흔한 실수와 점검 🚧</h2>
+<ul>
+<li><strong>시그니처만 유연, 내부 검증 없음</strong> → <button class="term" type="button" data-term="Generic Type">generic 파라미터</button>를 쓰는 순간 <button class="term" type="button" data-term="Method">메서드</button> 안의 확인 코드는
+<strong>늘어나는 게 정상</strong>이다. 줄었다면 뭔가 안 하고 있는 것.</li>
+<li><strong>&quot;어떤 테이블이든 받는다&quot; = &quot;같은 업무 규칙을 적용할 수 있다&quot;로 착각</strong> → 받는 것과
+처리하는 것은 다른 문제다.</li>
+<li><strong><code>TYPE any</code>에 바로 산술·필드 접근·테이블 연산</strong> → 타입 확인이 먼저다.</li>
+<li><strong>업무 규칙까지 generic 도구에</strong> → 공통 도구가 업무 규칙을 알아야 한다면, generic이 아니라
+업무별 class·interface(<a href="CH27-L03.html">Chapter 27</a>의 설계)가 맞을 수 있다.</li>
+</ul>
+</section><section class="lblock"><h2>정리 📌</h2>
+<ul>
+<li><button class="term" type="button" data-term="Generic Type">generic 파라미터</button>(<code>TYPE any</code>·<code>ANY TABLE</code>)는 <strong>공통 도구</strong>를 위한 문 — 무엇이든 받되,
+들어온 것을 <strong>확인한 범위 안에서만</strong> 다룬다.</li>
+<li>가능한 작업(행 수 세기 등)과 불가능한 작업(필드 직접 접근)을 구분하는 게 이 레슨의 전부다.</li>
+</ul>
+<hr>
+<p>받긴 받았는데, 이름표가 <strong>지금 무엇을 가리키는지</strong>는 어떻게 관리하나 — ASSIGN의 상태 →
+<a href="CH28-L03.html">ASSIGN · UNASSIGN · IS ASSIGNED</a>.</p>
+</section>
+      </article>
+      <nav class="lesson-nav" data-shell="prevnext"></nav>
+      <footer class="foot">SAP Developer Academy · 배포자 SAP전문강사 정훈영</footer>
+    </main>
+    <aside class="journey" data-shell="journey"></aside>
+  </div>
+</div>
+<div class="term-popup" data-shell="popup" hidden></div>
+<div class="tmodal" data-shell="tmodal" hidden></div>
+<script>window.__SDA__={"domain":"abap","dataBase":"../","siteRoot":"../../../"};</script>
+<script src="../../../assets/shell.js" defer></script>
+</body>
+</html>

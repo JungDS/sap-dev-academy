@@ -1,6 +1,6 @@
 # 09. CURRICULUM LEDGER — 커리큘럼 개념 원장 (개요 SSOT)
 
-> 📅 최종수정: 2026-07-24 14:47 KST
+> 📅 최종수정: 2026-07-27 03:32 KST
 > 🎯 **2트랙 36챕터의 챕터 맵 + 교차 설계 합의(경계·관통예제·도구 아크)의 단일 출처.**
 > 🧭 **per-lesson `introduces`/`prereq`/`prevRel`/`foreshadow`/`advanceUse` = 각 레슨 `.md` front-matter가 라이브 SSOT**([04 R10](04_CONVENTIONS.md)) — 이 문서는 레슨별 데이터를 중복하지 않고 *그 위의 개요·경계·관통설계*만 담는다(§F). 게이팅([04 R15](04_CONVENTIONS.md)) 점검 = front-matter ↔ 본문 ↔ R15.
 > ✅ 현행: **최종 39번호(신규 3장 삽입 리넘버 완료, 2026-07-14)** · 본문 **37챕터 작성 완료**(CH20 Advanced SQL 신설 · **CH28 Dynamic·CH29 Regex 예약 미집필**). 전면 리빌드는 *선택* — 실행 절차는 [10_REBUILD_EXECUTION](10_REBUILD_EXECUTION.md).
@@ -51,7 +51,7 @@
 | 25 | 실무 데이터 변경과 트랜잭션 제어 | 5 | DML(INSERT/UPDATE/MODIFY/DELETE)·COMMIT/ROLLBACK·LUW·감사필드 stamp |
 | 26 | Lock Object와 동시성 제어 | 5 | Lock Object·ENQUEUE/DEQUEUE |
 | 27 | OO ABAP 고급 설계와 패턴 | 5 | 디자인 패턴·고급 OO 설계 |
-| 28 | Dynamic ABAP: Field Symbol 심화·Generic 🆕 | 8 | Field Symbol 심화·`ASSIGN`·RTTS/RTTI·동적 SQL/호출 |
+| 28 | Dynamic ABAP: Field Symbol 심화·Generic 🆕 | 8 | generic Field Symbol·`TYPE any`·`ASSIGN`(COMPONENT/(name)/ELSE UNASSIGN)·`CREATE DATA`·RTTS — *동적 SQL/호출은 보류(codex 판정: 범위=type/memory access, SQL 문자열 실행은 CH36 ADBC 계열)* |
 | 29 | Advanced String / Regex 🆕 | 8 | PCRE 정규식·`FIND`/`REPLACE … REGEX`·문자열 처리 심화 |
 | 30 | ALV 고급 Event 응용 | 5 | ALV 이벤트 본격(더블클릭·toolbar·user_command) |
 | 31 | Editable Grid ALV와 입력 검증 | 6 | 편집형 Grid ALV·입력 검증 |
@@ -66,7 +66,7 @@
 
 > 🔶 **RAP 2단(입문 CH24 ↔ 심화 CH39)** — 사용자 지시(2026-07-24, [[rap-intro-ch24-advanced-ch39]]): **CH24 = 입문**(managed BO 기본 흐름 상한 — Draft·Lock·ETag·EML 상세·Comm Arrangement 전부 CH39로 유예, L0/L1만). **CH39 = 심화**. 심화가 한 장으로 벅차면 **나중에 여러 챕터로 분할** 가능(미확정, 진도 닿을 때 재판단). CH24-L09가 EML 개념 지도만 두고 실전은 CH39로 foreshadow. ⚠️ 현행 CH39(7L)는 NEWCH39(9L) 구조 미반영 — CH39 착수 시 재구성 필요.
 
-> 🆕 신규 장(codex `NEWCH20/28/29_OLDCH99`) — **CH20 Advanced SQL = 집필 완료(7레슨)**. **CH28 Dynamic ABAP · CH29 Regex = 미집필**(폴더 미생성·로드맵 번호 공백, 셸 정상 — 집필 시 예약 슬롯에 삽입, 추가 리넘버 0).
+> 🆕 신규 장(codex `NEWCH20/28/29_OLDCH99`) — **CH20 Advanced SQL = 집필 완료(7레슨)** · **CH28 Dynamic ABAP = 집필 완료(8레슨, 2026-07-27)**. **CH29 Regex = 미집필**(폴더 미생성·로드맵 번호 공백, 셸 정상 — 집필 시 예약 슬롯에 삽입, 추가 리넘버 0). 불편 체인은 CH27→CH28→(CH29 공백)→CH30으로 연결됨.
 
 > Track-1 = 입문 게이팅(R15)이 핵심. Track-2 = 챕터 내 순서만 게이팅(서로 독립 내용 많음 — 상세 정책은 아카이브 [`TRACK2_ENRICHMENT.md`](../.archive/2026-06-29-docs-cleanup/TRACK2_ENRICHMENT.md) §규칙).
 
