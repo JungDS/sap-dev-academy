@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<!-- CH36-L02-S02 — 엔진: amdp-steps · _engine/_base.css. SQLScript 체이닝(한 번 집계→두 출력 재사용) 단계 실행.
+     코드·수치는 본문 CH36-L02 get_report 정본의 축약(가상 예시). mandt 열은 지면상 생략. -->
+<html lang="ko" data-eng="amdp-steps">
+<head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SQLScript 체이닝 · CH36-L02-S02</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/amdp-steps.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">한 번 집계해서 두 번 쓰기 — 단계 실행</p>
+  <p class="lead">단계 버튼을 순서대로 누르면, 해당 SQLScript가 강조되고 그 시점의 <b>테이블 변수 내용</b>이 오른쪽에 나타납니다.</p>
+  <div id="steps"></div>
+  <div class="panes">
+    <div class="codebox"><div class="cap">get_report 구현부 (SQLScript · 축약)</div><pre id="code"></pre></div>
+    <div class="out" id="out"></div>
+  </div>
+  <div id="final">🎉 <b>체이닝 완주</b> — 무거운 집계(단계 1)는 한 번만 돌았고, 두 출력이 <code>:lt_stat</code>을 나눠 썼습니다. Open SQL이었다면 같은 집계를 두 번 돌리거나 전 행을 ABAP으로 끌어와야 했습니다.</div>
+  <div class="note">💡 <code>:lt_stat</code>처럼 콜론으로 참조하는 것이 SQLScript의 테이블 변수 재사용입니다. (수치는 가상 예시 · mandt 열은 지면상 생략)</div>
+  <script type="application/json" id="as-cfg">
+  {
+    "code": [
+      "lt_stat = SELECT b.concert_id, c.capacity,",
+      "                 SUM( b.seats ) AS booked",
+      "            FROM zbooking AS b",
+      "            INNER JOIN zconcert AS c ON …",
+      "           WHERE b.mandt = :iv_client",
+      "             AND b.status <> 'C'",
+      "           GROUP BY …;",
+      "",
+      "et_hot  = SELECT * FROM :lt_stat",
+      "           WHERE booked >= capacity * 0.8",
+      "           ORDER BY booked DESC;",
+      "",
+      "et_slow = SELECT * FROM :lt_stat",
+      "           WHERE booked < capacity * 0.3",
+      "           ORDER BY booked ASC;"
+    ],
+    "steps": [
+      { "from": 0, "to": 6, "label": "① 집계 → lt_stat", "tname": "lt_stat (테이블 변수)",
+        "cols": ["concert_id", "capacity", "booked"],
+        "rows": [["C001", "500", "460"], ["C002", "300", "80"], ["C003", "400", "350"], ["C004", "200", "50"]],
+        "desc": "무거운 조인+집계가 <b>여기서 한 번만</b> 실행됩니다. 결과는 DB 안의 테이블 변수에 담겨 아직 ABAP으로 넘어오지 않습니다." },
+      { "from": 8, "to": 10, "label": "② 재사용 1 → et_hot", "ref": true, "tname": "et_hot (예매율 ≥ 80%)",
+        "cols": ["concert_id", "capacity", "booked"],
+        "rows": [["C001", "500", "460"], ["C003", "400", "350"]],
+        "desc": "<code>FROM :lt_stat</code> — 단계 1의 결과를 <b>다시 계산하지 않고</b> 필터만 겁니다. C001(92%)·C003(87.5%)이 매진 임박." },
+      { "from": 12, "to": 14, "label": "③ 재사용 2 → et_slow", "ref": true, "tname": "et_slow (예매율 < 30%)",
+        "cols": ["concert_id", "capacity", "booked"],
+        "rows": [["C004", "200", "50"], ["C002", "300", "80"]],
+        "desc": "같은 <code>:lt_stat</code>을 두 번째로 재사용합니다. C004(25%)·C002(26.7%)가 부진 공연. 두 결과가 EXPORTING 두 벌로 ABAP에 돌아갑니다." }
+    ]
+  }
+  </script>
+</div>
+<script src="../_engine/amdp-steps.js" defer></script>
+</body>
+</html>

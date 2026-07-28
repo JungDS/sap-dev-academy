@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- CH36-L04-S01 — 엔진: compare-matrix · _engine/_base.css. Open SQL/CDS/AMDP/ADBC 비교. -->
+<!-- CH36-L04-S01 — 엔진: compare-matrix · _engine/_base.css. 수단 비교(책임 순위) + 상황 버튼 6종. -->
 <html lang="ko" data-eng="compare-matrix">
 <head>
 <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,24 +8,34 @@
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">푸시다운 수단 비교 — 무엇을 언제?</p>
-  <p class="lead">기법 이름을 클릭하면 "언제 쓰나"가 나옵니다. 위로 갈수록 이식성·유지보수·클라우드 친화적입니다.</p>
-  <p class="hint">💡 행(기법 이름)을 클릭</p>
+  <p class="hd">수단 비교 — 속도 순위가 아니라 책임 순위</p>
+  <p class="lead">상황 버튼을 누르면 추천 수단이 강조됩니다. 행 이름을 클릭하면 "언제 쓰나"도 볼 수 있어요.</p>
+  <div class="cases" id="cases"></div>
   <table><thead id="thead"></thead><tbody id="tbody"></tbody></table>
-  <div class="detail idle" id="detail">기법 이름을 클릭하면 권장 상황이 여기 나옵니다.</div>
-  <div class="note">💡 선택 순서: <b>Open/Modern SQL → CDS → AMDP → ADBC</b>. 대부분 SQL/CDS로 충분하고, AMDP/ADBC는 강력하지만 <b>DB 종속</b>이라 복잡·불가피할 때만.</div>
+  <div class="detail idle" id="detail">상황 버튼이나 행 이름을 클릭해 보세요.</div>
+  <div class="note">💡 선택 순서 = <b>Open SQL → CDS → AMDP → ADBC</b>. 아래 칸으로 내려가려면 "위 칸으로 안 되는 이유 + 측정 근거"가 필요합니다.</div>
   <script type="application/json" id="cm-cfg">
   {
-    "cols": ["이식성", "복잡 절차", "재사용", "클라우드", "권장순위"],
+    "cols": ["플랫폼 보호", "절차 로직", "재사용", "Cloud 친화", "순위"],
     "rows": [
-      { "name": "Open/Modern SQL", "cells": [{"v":"높음","r":"hi"},{"v":"낮음","r":"lo"},{"v":"보통","r":"mid"},{"v":"높음","r":"hi"},{"v":"①"}],
-        "detail": "집계·조인·식 — <b>대부분의 경우</b>. 이식성·간결·강한 구문 검사. 가장 먼저 시도." },
+      { "name": "Open/Modern SQL", "cells": [{"v":"높음","r":"hi"},{"v":"제한","r":"lo"},{"v":"보통","r":"mid"},{"v":"높음","r":"hi"},{"v":"①"}],
+        "detail": "집계·조인·필터·SQL 식이면 여기서 끝. 가장 단순하고 문법 검사·이식성이 좋습니다. <b>대부분의 정답.</b>" },
       { "name": "CDS View", "cells": [{"v":"높음","r":"hi"},{"v":"보통","r":"mid"},{"v":"높음","r":"hi"},{"v":"높음","r":"hi"},{"v":"②"}],
-        "detail": "여러 곳에서 <b>공유할 모델·뷰 계층·시맨틱</b>이 필요할 때. 계산·관계를 선언적으로 재사용." },
-      { "name": "AMDP", "cells": [{"v":"낮음","r":"lo"},{"v":"높음","r":"hi"},{"v":"보통","r":"mid"},{"v":"제한","r":"lo"},{"v":"③"}],
-        "detail": "임시테이블·루프 같은 <b>절차적 복잡 로직</b>이 DB에서 꼭 필요할 때(SQLScript). DB 종속 주의." },
-      { "name": "ADBC / Native SQL", "cells": [{"v":"매우낮음","r":"lo"},{"v":"높음","r":"hi"},{"v":"낮음","r":"lo"},{"v":"제한","r":"lo"},{"v":"④ 최후"}],
-        "detail": "Open SQL이 못 하는 <b>DB 고유 기능</b>이 불가피할 때만. client·injection 직접 책임, 클라우드 제약." }
+        "detail": "여러 소비자(리포트·OData·RAP)가 <b>같은 의미 모델</b>을 공유할 때. SQL 복사본이 아니라 재사용 모델입니다." },
+      { "name": "AMDP", "cells": [{"v":"중간","r":"mid"},{"v":"강함","r":"hi"},{"v":"보통","r":"mid"},{"v":"조건부","r":"mid"},{"v":"③"}],
+        "detail": "DB 안에서 <b>여러 단계 절차(SQLScript)</b>가 꼭 필요할 때. client·테스트·디버깅 책임이 따라옵니다." },
+      { "name": "CDS Table Function", "cells": [{"v":"중간","r":"mid"},{"v":"강함","r":"hi"},{"v":"높음","r":"hi"},{"v":"조건부","r":"mid"},{"v":"③′"}],
+        "detail": "SQLScript 계산 결과를 <b>CDS 엔티티처럼 SELECT</b>해야 할 때. 다음 레슨에서 정식으로 배웁니다." },
+      { "name": "ADBC / Native SQL", "cells": [{"v":"낮음","r":"lo"},{"v":"직접","r":"mid"},{"v":"낮음","r":"lo"},{"v":"낮음","r":"lo"},{"v":"④ 최후"}],
+        "detail": "DB 고유 SQL이 <b>불가피할 때만.</b> client·injection·이식성·오류 처리가 전부 개발자 책임입니다." }
+    ],
+    "cases": [
+      { "label": "공연별 좌석 합계", "row": "Open/Modern SQL", "why": "GROUP BY + SUM 한 문장으로 충분합니다. 더 강한 수단은 복잡도만 늘립니다." },
+      { "label": "리포트·OData·배치가 공유", "row": "CDS View", "why": "같은 계산이 여러 곳에서 반복되면 의미 모델로 올립니다." },
+      { "label": "DB 안 다단계 중간 결과", "row": "AMDP", "why": "SQLScript 절차 로직의 제자리. 단, Open SQL로 안 되는 이유를 문서로 남기세요." },
+      { "label": "함수 결과를 CDS에서 SELECT", "row": "CDS Table Function", "why": "AMDP 함수와 CDS를 잇는 다리입니다(다음 레슨)." },
+      { "label": "DB 전용 SQL 직접 실행", "row": "ADBC / Native SQL", "why": "최후의 수단. client·injection·이식성 책임을 문서화할 수 있을 때만." },
+      { "label": "Cloud 전환 예정 핵심 로직", "row": "CDS View", "why": "Cloud·Clean Core 기준은 released API와 CDS/RAP 우선입니다. DB 종속 코드는 승인 대상." }
     ]
   }
   </script>

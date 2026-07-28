@@ -1,17 +1,17 @@
 # 02. PROGRESS — 현재 초점 · 다음 할 일
 
-> 📅 **최종수정: 2026-07-29 04:52 KST**
+> 📅 **최종수정: 2026-07-29 06:26 KST**
 > 🎯 **현재 상태와 다음 할 일만 담는다.** 완료/과거 항목·세션 서사는 **즉시 제거** — 정본은 git 이력 + `.archive/` 원장 + 라이브 인덱스([04 R16](04_CONVENTIONS.md)). 코드·git·감사로 파생 가능한 현황은 **복창하지 말고 포인터**(아래 📍).
 > 📖 **읽을 때:** 작업 시작 전(현황 파악) · 종료 시 갱신 — **갱신은 같은 커밋에 포함**([01](01_AI_SYNC.md)).
 
 ## 🎯 현재 초점
-**CH35 성능 분석과 튜닝 재작성급 보강 완료(측정 루프 관통·도구 3종 역할 분리·FAE 함정 2종·Package 설계, 사용자 확정 지시 2026-07-28) → 다음 CH36(AMDP/ADBC/Pushdown) 순차 보강**(브랜치 `content/ch35-performance`, main=`e5ab73d`). 원칙: content 기준, `reference/codex_0629_v3` 참고(QA+REWRITE 동시 대조) + 델타 사실검증([14 §5·§6](14_REFERENCE_CORPUS.md)) + 게이팅(R10/R15). **챕터 실행 = [10_REBUILD_EXECUTION](10_REBUILD_EXECUTION.md)**.
+**CH36 AMDP/ADBC/Pushdown 재작성급 보강 완료(수단 사다리 관통·CDS Table Function L06 신설·ADBC 바인딩 정본, 2026-07-29) → 다음 CH37(Forms/Output/PDF) 순차 보강**(브랜치 `content/ch36-pushdown`, main=`57dc0bc`). 원칙: content 기준, `reference/codex_0629_v3` 참고(QA+REWRITE 동시 대조) + 델타 사실검증([14 §5·§6](14_REFERENCE_CORPUS.md)) + 게이팅(R10/R15). **챕터 실행 = [10_REBUILD_EXECUTION](10_REBUILD_EXECUTION.md)**.
 
 ## ▶️ 다음 할 일 (우선순위)
-1. **CH36(AMDP/ADBC/Pushdown)+ 순차 보강**. ⚠️ codex 파일명 = `NEWCH36_OLDCH33_*` 예상 · codex 본문 내 구번호·`:::embed`+구ID 잔재 복붙 금지 · 꼬리 링크 라벨 구번호 스테일 grep(CH31→"29"·CH32→"30"·CH34→"35"·CH35→"36" 연속 발생 — 착수 시 우선).
-   ⚠️ **`embeds/abap/_index.md` 등재 갭**: CH36～39 위젯이 A/B 미등재 — 각 챕터 패스에서 자기 몫 등재(CH31～35 완료). CH36+ 엔진 'C-NOVA' 시드 잔재도 그 패스에서.
-   ℹ️ **CH35 노트(2026-07-29)**: FAE 함정 2종 = 공식 확정(빈 driver→WHERE 전체 무시 = ABENWHERE_ALL_ENTRIES · 결과 중복 제거 = DISTINCT 동등→집계 왜곡). CH35-L05가 푸시다운 방향만 L1 예고 — **본격 구현(AMDP/ADBC)은 CH36 몫**. ST05/SAT/SQLM/SWLT 화면·컬럼 = 미검증(도구영역, SAP Help 근거·수치는 가상 예시 프레이밍). pkg-tuner 엔진은 `_dark.css` 오버라이드 0건이 정상(토큰 변수+중간 휘도 채움색만 사용).
-   ℹ️ **codex 오류 패턴(계승)**: NEWCH32 `TYPE REF TO if_ex_...` · NEWCH33 RFC MESSAGE `TYPE string`(flat 위반) · NEWCH35 customer_id(정본 = customer) — CH36 착수 시 codex 코드는 시그니처·타입·필드명 계열 우선 의심.
+1. **CH37(Forms/Output/PDF)+ 순차 보강**. ⚠️ codex 파일명 = `NEWCH37_OLDCH34_*` 예상 · codex 본문 내 구번호·`:::embed`+구ID 잔재 복붙 금지 · 꼬리 링크 라벨 구번호 스테일 grep(CH31→"29"～CH35→"36" 연속 발생 — 착수 시 우선).
+   ⚠️ **`embeds/abap/_index.md` 등재 갭**: CH37～39 위젯이 A/B 미등재 — 각 챕터 패스에서 자기 몫 등재(CH31～36 완료). CH37+ 엔진 'C-NOVA' 시드 잔재도 그 패스에서.
+   ℹ️ **CH36 노트(2026-07-29)**: 레슨 6개로 재구성(L05=CDS Table Function 신설 — 커리큘럼 유일 L3 도입). ADBC 패턴·next_package(UPTO 없으면 전량)·CX_SQL_EXCEPTION 속성·FOR TABLE FUNCTION(DDL 선행) 전부 공식 확정. **학습자 시뮬레이션(페르소나 3인) 2라운드 적용**: 1차 L02 7.3/L03 6.3/L05 6.7 → 재보강 → 재평가 8.7/8.8/7.8. 교훈 = SQLScript 몸통 주석은 `--`(ABAP식 " 금지)·can-do(생성 절차+호출 껍데기)·예제 존재증명. Smart Forms/Adobe(CH37)는 도구 화면 영역이라 미검증 프레이밍 예상.
+   ℹ️ **codex 오류 패턴(계승)**: NEWCH32 `TYPE REF TO if_ex_...` · NEWCH33 RFC MESSAGE `TYPE string` · NEWCH35 customer_id · NEWCH36 zbooking에 없는 amount/booking_date 필드 발명(정본 = seats·created_on으로 교정) — codex 코드는 시그니처·타입·필드명 계열 우선 의심.
    ⚠️ **RAP 2단** — 경계·분할 여지 = [09 §A CH39 노트](09_CURRICULUM_LEDGER.md). **현행 CH39(7L)는 NEWCH39(9L) 미반영 — 착수 시 재구성 + CH24-L09 링크 재확인.**
    ⚠️ 잔여 컨벤션(각 챕터 패스, 대상은 grep 실측): 구조체 타입 `ts_`/`tt_` · "컴포넌트"→Component · 줄표(CH26+) · **병합 챕터 위젯 시드 정본화 잔재**('1001'/'C-NOVA' — `alv-events`(CH30)·`dml-playground`(CH25)·`enqueue-2session`(CH26) 미세 패스 1회. CH22 salv-* persid 1001은 별개 도메인이라 무관). CONSIDER 16건 보류([.archive/…/CONSIDER_BACKLOG.md](../.archive/2026-07-03-v3-recheck-ch01-05/CONSIDER_BACKLOG.md)). 잔여 R2 = `CONTENT_DEPTH_AUDIT`(재생성물).
 2. **전면 리빌드 여부 결정(미정)** — 선택지 = *점진 개선 유지(현 보강 패스)* vs *골든 5종([08 §9·§10](08_LESSON_SHELL_SPEC.md)) 기준 전면 리빌드*. 리빌드 택하면 MD 작성 *전에* 커리큘럼 맵·개념 원장([09_CURRICULUM_LEDGER](09_CURRICULUM_LEDGER.md)) 확정 → 실행 절차 [10_REBUILD_EXECUTION](10_REBUILD_EXECUTION.md). ⚠️ CH18 classic→modern 경계([04 R6](04_CONVENTIONS.md)) · R15 게이팅이 핵심 지표([04 R15](04_CONVENTIONS.md)/[05 P11](05_PITFALLS.md)).

@@ -17,12 +17,14 @@
       <div class="mermaid" id="mm">
 flowchart LR
   A["ABAP 프로그램"]:::sys
-  S["CL_SQL_STATEMENT<br/>execute_query( )"]:::soft
-  N["Native SQL<br/>(DB 고유 구문)"]:::warn
-  R["Result Set<br/>set_param_table"]:::soft
+  S["CL_SQL_STATEMENT /<br/>PREPARED_STATEMENT"]:::soft
+  N["Native SQL 문자열<br/>(값은 ? + set_param)"]:::warn
+  R["CL_SQL_RESULT_SET<br/>set_param_table →<br/>next_package → close"]:::soft
   T["내부 테이블"]:::sys
+  X["CX_SQL_EXCEPTION<br/>SQL code·message 로그"]:::warn
   A --> S --> N --> R --> T
-  N -.->|"⚠ client 자동종속 X · injection 주의"| N
+  N -.->|"⚠ client 조건 직접 · injection은 바인딩으로"| N
+  S -.-> X
 classDef sys fill:#eef2ff,stroke:#3b5bdb,stroke-width:2px,color:#1e3a8a;
 classDef soft fill:#ffffff,stroke:#94a3b8,stroke-width:1.6px,color:#334155;
 classDef warn fill:#fff0f5,stroke:#e11d48,stroke-width:2px,color:#b91c1c;
