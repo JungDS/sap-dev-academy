@@ -1,9 +1,9 @@
 # 09. CURRICULUM LEDGER — 커리큘럼 개념 원장 (개요 SSOT)
 
-> 📅 최종수정: 2026-07-29 04:27 KST
+> 📅 최종수정: 2026-07-29 04:52 KST
 > 🎯 **2트랙(최종 39번호) 챕터 맵 + 교차 설계 합의(경계·관통예제·도구 아크)의 단일 출처.**
 > 🧭 **per-lesson `introduces`/`prereq`/`prevRel`/`foreshadow`/`advanceUse` = 각 레슨 `.md` front-matter가 라이브 SSOT**([04 R10](04_CONVENTIONS.md)) — 이 문서는 레슨별 데이터를 중복하지 않고 *그 위의 개요·경계·관통설계*만 담는다(§F). 게이팅([04 R15](04_CONVENTIONS.md)) 점검 = front-matter ↔ 본문 ↔ R15.
-> ✅ 현행: **최종 39번호(신규 3장 삽입 리넘버 완료, 2026-07-14)** · 본문 **39챕터 전량 작성 완료**(신규 3장 CH20 Advanced SQL·CH28 Dynamic ABAP·CH29 PCRE Regex 집필 종료). 전면 리빌드는 *선택* — 실행 절차는 [10_REBUILD_EXECUTION](10_REBUILD_EXECUTION.md).
+> ✅ 현행: **최종 39번호(2026-07-14 리넘버)** · 본문 **39챕터 전량 작성 완료**. 전면 리빌드는 *선택* — 절차 = [10_REBUILD_EXECUTION](10_REBUILD_EXECUTION.md).
 
 ## 범례
 - `prevRel`: **ps**=pain-solution · **par**=parallel · **deep**=deepening · **next**=next-step.
@@ -37,7 +37,7 @@
 | 15 | Report Event·Selection Screen 심화 | 12 | Report Event·INITIALIZATION·AT SELECTION-SCREEN·MESSAGE 정식·화면 UI |
 | 16 | Screen Programming / Dynpro 기초 | 10 | Module Pool·Screen Painter·화면요소·TABLES 운반·Dynpro F1/F4(POV)·PBO/PAI·OK_CODE·PF-STATUS·Custom Control |
 | 17 | Grid ALV 기초 | 10 | `CL_GUI_ALV_GRID`·Field Catalog·Layout·행 색 |
-| **18** | **Modern ABAP Syntax** | 11 | 🔶**문법 경계** — inline `DATA`·`VALUE`·`CORRESPONDING`·Table Expr·`\|…\|`·`CONV`/`EXACT`·`COND`/`SWITCH`·`REDUCE`/`FILTER`·`LET`·`+=` |
+| **18** | **Modern ABAP Syntax** | 11 | 🔶**문법 경계** — inline `DATA()`·`VALUE`·`CORRESPONDING`·Table Expr·`\|…\|`·`CONV`/`EXACT`·`COND`/`SWITCH`·`REDUCE`/`FILTER`·`LET`·`+=` |
 | **19** | **New Open SQL / Modern ABAP SQL** | 8 | 🔶**SQL 경계** — `@`·`@DATA`·콤마·SQL식·Right/Full JOIN |
 | 20 | Advanced ABAP SQL 🆕 | 7 | CTE(`WITH` `+cte`)·Subquery/`EXISTS`·Set(`UNION`/`INTERSECT`/`EXCEPT`)·Window(`OVER`·`PARTITION BY`·`ROW_NUMBER`/`RANK`) — CH19 이후 보류분 회수 |
 | 21 | OO ABAP 기본 설계 | 10 | Class·Visibility·Constructor·Interface·Inheritance·OO Event·예외 TRY/CATCH·CAST |
@@ -65,8 +65,6 @@
 | 39 | RAP + Fiori 실무 Capstone (**RAP 심화**) | 7 | RAP 심화·통합 캡스톤: Draft·Lock·ETag/Total ETag·EML consumer(MODIFY→COMMIT/ROLLBACK)·Service Binding·Communication Arrangement·Released API/ATC. 정본 참조 = `reference/codex_0629_v3/NEWCH39_OLDCH36_REWRITE.md`(9레슨) |
 
 > 🔶 **RAP 2단(입문 CH24 ↔ 심화 CH39)** — 사용자 지시(2026-07-24): **CH24 = 입문**(managed BO 기본 흐름 상한 — Draft·Lock·ETag·EML 상세·Comm Arrangement 전부 CH39로 유예, L0/L1만). **CH39 = 심화**. 심화가 한 장으로 벅차면 **나중에 여러 챕터로 분할** 가능(미확정, 진도 닿을 때 재판단). CH24-L09가 EML 개념 지도만 두고 실전은 CH39로 foreshadow. ⚠️ 현행 CH39(7L)는 NEWCH39(9L) 구조 미반영 — CH39 착수 시 재구성 필요.
-
-> 🆕 신규 장(codex `NEWCH20/28/29_OLDCH99`) — **3장 전부 집필 완료**: CH20 Advanced SQL(7레슨) · CH28 Dynamic ABAP(8레슨) · CH29 PCRE Regex(8레슨, 2026-07-27 — codex 치명 오류 1건 교정: `CL_ABAP_MATCHER->match`는 전체 일치라 검색 예제는 `find_next`로 재구성). 불편 체인 CH27→CH28→CH29→CH30 완결, 추가 리넘버 0.
 
 > Track-1 = 입문 게이팅(R15)이 핵심. Track-2 = 챕터 내 순서만 게이팅(서로 독립 내용 많음 — 상세 정책은 아카이브 [`TRACK2_ENRICHMENT.md`](../.archive/2026-06-29-docs-cleanup/TRACK2_ENRICHMENT.md) §규칙).
 

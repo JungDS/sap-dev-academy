@@ -1,6 +1,6 @@
 # 10. CHAPTER EXECUTION — content MD 챕터 실행 (보강 = 리빌드, 단일 프로토콜)
 
-> 📅 최종수정: 2026-07-29 04:27 KST
+> 📅 최종수정: 2026-07-29 04:52 KST
 > 🎯 이 문서 = `content/abap` 챕터를 **실행**(보강/재작성)할 때의 단일 핸드오프. **리빌드와 보강은 같은 파이프라인이고 차이는 강도뿐** — 별도 문서로 나누지 않는다. 스펙 출처 = [09_CURRICULUM_LEDGER](09_CURRICULUM_LEDGER.md)(개요·경계·관통예제) + **각 레슨 `.md` front-matter**(per-lesson SSOT) + `reference/codex_0629_v3`(참고) + `check/` 체크리스트.
 > 🧭 규칙은 여기서 **재진술하지 않는다** — [04](04_CONVENTIONS.md)(R) · [14 §5](14_REFERENCE_CORPUS.md)(사실검증) · [05](05_PITFALLS.md)(함정) · [09](09_CURRICULUM_LEDGER.md)(구조)로 포인터만(SSOT).
 > 표기: 범위는 전각 `～`(반각 `~`는 취소선). ABAP 코드의 `table~field` 틸드는 반각 유지.
@@ -10,7 +10,7 @@
 ## 파라미터 (실행 시 지정)
 - **대상** = `CHnn`(한 번에 한 챕터) — 또는 전 트랙(강도 [재작성] 시).
 - **강도**:
-  - **[보강]** 보수적 델타 — 현행 유지 + 외과 보강. **full loop**: content + R2 위젯 + `build:abap` + 브라우저 검증 + 챕터 1커밋·푸시. (CH07～16에서 검증된 기본 모드.)
+  - **[보강]** 보수적 델타 — 현행 유지 + 외과 보강. **full loop**: content + R2 위젯 + `build:abap` + 브라우저 검증 + 챕터 1커밋·푸시.
   - **[재작성]** 전면 재생성 — 골든 5종([08 §9](08_LESSON_SHELL_SPEC.md)) 씨앗으로 대량 병렬. **content MD만**, docs/빌드/브라우저는 이후 사용자 단계. (세부 = 부록 A/B.)
 - **모드**(대상 성격, STEP 0에서 판별):
   - **[기존]** 현행 content 있음 → STEP 1～6.
@@ -24,7 +24,7 @@
    - 예: CH21 OO = `NEWCH21_OLDCH20` · CH20 Advanced SQL = `NEWCH20_OLDCH99` · CH39 Capstone = `NEWCH39_OLDCH36`.
    - `OLDCH99` = **신규 장**(CH20 Advanced SQL·CH28 Dynamic ABAP·CH29 Regex) — 리넘버로 슬롯 예약, **미집필 = 폴더 없음**. 집필 시 예약 슬롯에 삽입(추가 리넘버 0).
 3. **모드 판별**: [기존] vs [신규장]. 신규장이면 STEP 1 필수(삽입 위치·번호·리넘버 범위).
-4. **구조 권고**: codex QA §2(커버리지 맵) vs 현행 → 레슨 추가/분리 필요 여부(챕터마다 다름: CH16=8→10 확장, CH17=권고 없음).
+4. **구조 권고**: codex QA §2(커버리지 맵) vs 현행 → 레슨 추가/분리 필요 여부(챕터마다 다름).
 5. **게이팅 지형**: 이 챕터가 아직 안 배운 개념(modern 문법·OO·미래 API·이벤트·DML 등)을 어디서 쓰는가 → 각 개념을 L0/L1/L2 중 무엇으로 둘지 초안. 근거 = [04 R6](04_CONVENTIONS.md)·[09](09_CURRICULUM_LEDGER.md)·codex QA §4·§5·§8.
 6. **관통예제·연결**: 이 챕터의 모델(`ZCONCERT`/`ZPERF`/`ZBOOKING` 또는 SFLIGHT) + 직전 챕터 산출물 연결점([09 §C-4](09_CURRICULUM_LEDGER.md)). 이름풀 1번 = 정훈영([04 R9](04_CONVENTIONS.md)).
 7. **사실검증 커버리지**: 주제가 keyword doc으로 검증되는가, 아니면 GUI control·Class API처럼 코퍼스가 얇은가(codex QA §3이 "SE24/Class Builder 영역"이라 하면 얇음) → 얇으면 `zabap_jhy` repo·SE24 보완 계획.
@@ -40,7 +40,7 @@ STEP 0에서 **전 챕터 코드 스타일/구조를 좌우하는 결정**이 �
 3. **게이팅(R6/R15)** — STEP 1 결정대로. modern·미래 개념 선노출 0, L2는 `[선행 사용]` 표기·이론 확장 금지, QA가 그은 후속 경계 당겨오지 않음. 해당 챕터 아니면 DML/lock/LUW 없음.
 4. **컨벤션([04 R11](04_CONVENTIONS.md))** — 스코프 접두어(전역 `gv_/gs_/gt_` · 메서드 로컬 `l*_` · `it_`=헤더라인 있을 때만) · 타입 `ts_/tt_` · 선택화면 `pa_/so_`. 기존 잔여(`ty_` 구조체·`p_/s_` 등) 이 챕터분 전환.
 5. **R2(코드=체험)** — 코드가 나오는 모든 레슨(신규 포함)에 위젯. 기존 엔진 재사용 우선, 신규는 [AUTHORING](../embeds/_engine/AUTHORING.md).
-6. **톤·문체([04 R3](04_CONVENTIONS.md))** — 기존 CH 본문 기준(친근·용어 첫등장 한 줄·**줄표 절제**: 본문 부연은 마침표/괄호/콜론). **AI 말투·번역투·어색·저렴 표현 금지**(·[[term-declare-over-define]]).
+6. **톤·문체([04 R3](04_CONVENTIONS.md))** — 기존 CH 본문 기준(친근·용어 첫등장 한 줄·**줄표 절제**: 본문 부연은 마침표/괄호/콜론). **AI 말투·번역투·어색·저렴 표현 금지**(어휘 기준 = [08 §10](08_LESSON_SHELL_SPEC.md)).
 7. **참조 = 링크**([04 R5](04_CONVENTIONS.md), raw CHxx 금지) · 코드블록은 fenced만(빌드가 code-copy-block 변환·다크 금지).
 
 ## STEP 3 — 파이프라인 (CH07～16 검증됨 · 강도 [보강])
@@ -59,7 +59,7 @@ STEP 0에서 **전 챕터 코드 스타일/구조를 좌우하는 결정**이 �
 - 커리큘럼 반영 = 빌드가 `order`로 자동 + **[09_CURRICULUM_LEDGER](09_CURRICULUM_LEDGER.md) 챕터맵 수동 갱신**.
 
 ## STEP 6 — 완료 정의 · 종료 ([01 종료 체크리스트](01_AI_SYNC.md))
-- **[보강]**: `npm run build:abap` 통과 + glossary parity 0 + 브라우저 검증(preview_eval: 본문↔위젯 정합·인터랙션·다크·**수평스크롤 없음·콘솔 0**) + CSS 변경 시 `node tools/gen-embed-dark.mjs` + 새 용어 glossary 등록([04 R12](04_CONVENTIONS.md)·약어 풀스펠) + **[02_PROGRESS](02_PROGRESS.md) 갱신(같은 커밋, prune-only [04 R16](04_CONVENTIONS.md))** + 브랜치 커밋·**푸시**(main 금지, `Co-Authored-By`).
+- **[보강]**: `npm run build:abap` 통과 + glossary parity 0 + 브라우저 검증(DOM 실측: 본문↔위젯 정합·인터랙션·다크·**수평스크롤 없음·콘솔 0**) + CSS 변경 시 `node tools/gen-embed-dark.mjs` + 새 용어 glossary 등록([04 R12](04_CONVENTIONS.md)·약어 풀스펠) + **[02_PROGRESS](02_PROGRESS.md) 갱신(같은 커밋, prune-only [04 R16](04_CONVENTIONS.md))** + 브랜치 커밋·**푸시**(main 금지, `Co-Authored-By`).
 - **[재작성]**: 부록 B 수렴 루프가 "연속 1라운드 무수정"으로 종료(또는 상한 도달 시 미해결 명시). 빌드/docs는 사용자 별도 단계.
 
 ---
@@ -92,7 +92,7 @@ STEP 0에서 **전 챕터 코드 스타일/구조를 좌우하는 결정**이 �
 
 ## C. [재작성] 가드레일 (위반 금지)
 - docs/ 생성·빌드·브라우저 검증 안 함(R1/P2). `content/abap/**.md`만.
-- R6/P7: CH01～17 본문에 인라인 `DATA`/`VALUE`/`NEW`/`@`/`+=`/`|…|` 금지(`&&`만 CH04 예외). New Open SQL은 CH19↑.
+- R6/P7: CH01～17 본문에 인라인 `DATA()`/`VALUE`/`NEW`/`@`/`+=`/`|…|` 금지(`&&`만 CH04 예외). New Open SQL은 CH19↑.
 - R9: 임의 작명 금지 → 이름 풀(1번 정훈영). R5/P10: fenced ```` ```abap ````만·다크 금지. R15/P11: 선노출 금지·CH10은 static-first(본격 OO 0).
 - 제외(합의): Screen Table Control · classic 인터랙티브 리스트(`AT LINE-SELECTION`/`HIDE`/`AT USER-COMMAND`/`TOP-OF-PAGE`) → ALV 대체.
 - 공유파일(glossary·02) 동시편집 금지(에이전트는 마킹/리턴만).

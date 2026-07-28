@@ -1,6 +1,6 @@
 # 08. LESSON SHELL & AUTHORING — 레슨 셸 표준(v2-C) + 레슨 오써링 레퍼런스
 
-> 📅 **최종수정: 2026-07-29 04:27 KST**
+> 📅 **최종수정: 2026-07-29 04:52 KST**
 > 🎯 **목적:** **두 부분** — ① **셸·페이지 스펙**(§0–7 · v2-C 확정·이식 완료 · 셸/빌드 마크업 수정 시) · ② **레슨 오써링 레퍼런스**(§8 텍스트지표 · §9 골든 5 아키타입 · §10 오써링 체크리스트 · 집필·리빌드 시).
 > 📖 **읽을 때:** 셸/빌드 마크업 수정 직전 · 레슨 작성 시(§8–§10).
 > ⚡ **TL;DR:**
@@ -59,15 +59,14 @@
 > 셸/빌드 수정 시 준수: **R1/P2**(생성물=빌드로만 · `npm run build:abap`) · **P1**(셸 `fetch`→HTTP 서빙) · **R9/P8**(이름 풀·1번 정훈영) · **R8**(`shell.js`·`*.css` 수정 전 인덱스+grep). 정본 = [04](04_CONVENTIONS.md)·[05](05_PITFALLS.md)·[07](07_BROWSER_TESTING.md).
 
 ## 7. 이식 현황
-✅ **v2-C 이식 완료** — `shell.css`/`shell.js`/`lesson.css`·빌드 템플릿·`tcodes.json`(2계층)·front-matter(`tcode`/`goals`)·T코드 모달·`beginner-lesson-template.html` 전부 적용, 전 레슨 페이지 재생성·CH01-L01 데스크톱/모바일/다크 검증·콘솔 0. 색 테마 블루/그린 확정.
-> 레퍼런스 구현(픽셀·동작 기준) = [`sample/structure/lesson-shell-v2-c.html`](../sample/structure/lesson-shell-v2-c.html).
+✅ **v2-C 이식 완료**(TL;DR 참조 — 상세 이력 = git). 레퍼런스 구현(픽셀·동작 기준) = [`sample/structure/lesson-shell-v2-c.html`](../sample/structure/lesson-shell-v2-c.html).
 
 ---
 
 > ✍️ **Part 2 — 레슨 오써링 레퍼런스** (§8–10, 레슨 *집필·리빌드* 시 · DoD 정본 = [01](01_AI_SYNC.md)). Part 1(§0–7) = 셸·페이지 스펙.
 
 ## 8. 텍스트위주 검증 지표
-- `preview_eval`로 각 `.prose`(또는 섹션) 내 **시각/상호작용 노드**(`.embed`·`.term`·`table`·`blockquote/callout`·`img/svg`·`details`) 집계 → **요소 0인 순수 텍스트 섹션 = *리뷰 플래그*(게이트 아님 — 텍스트만으로 충분하면 통과, 장식 강제 금지).** 단 **레슨 전체가 텍스트-only면 보강 필수.** (01 DoD 시각화 항목의 진단 근거.)
+- 브라우저 eval로 각 `.prose`(또는 섹션) 내 **시각/상호작용 노드**(`.embed`·`.term`·`table`·`blockquote/callout`·`img/svg`·`details`) 집계 → **요소 0인 순수 텍스트 섹션 = *리뷰 플래그*(게이트 아님 — 텍스트만으로 충분하면 통과, 장식 강제 금지).** 단 **레슨 전체가 텍스트-only면 보강 필수.** (01 DoD 시각화 항목의 진단 근거.)
 
 ## 9. 골든 5 아키타입 (예시 레슨)
 > ⚠️ 당초 "이 5종으로 나머지 레슨 양산" 계획은 **실현 안 됨** — 실제 콘텐츠는 레슨별 전용 embed로 제작됨. 아래는 **아키타입별 예시 레슨**으로, **전면 리빌드(미정) 시 품질 기준**으로만 참조한다.

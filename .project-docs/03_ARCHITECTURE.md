@@ -1,6 +1,6 @@
 # 03. ARCHITECTURE — 폴더 역할 · 빌드 파이프라인 · 런타임 셸
 
-> 📅 **최종수정: 2026-07-29 04:27 KST**
+> 📅 **최종수정: 2026-07-29 04:52 KST**
 > 🎯 **목적:** "무엇이 어디 있고, 무엇이 소스이고 무엇이 생성물인가"를 한눈에.
 > 📖 **읽을 때:** 파일을 어디에 둘지/고칠지 헷갈릴 때.
 > ⚡ **TL;DR:**
@@ -16,7 +16,7 @@
 | `content/abap/**.md` | 레슨·챕터 **본문 소스**(손작성·검수 대상) | 소스 |
 | `embeds/` | **체험수단 정본** — `_engine/`(공통 엔진 js·css) · `abap/CHnn-Lnn-Snn.html`(레슨 위젯) · `_vendor/`(mermaid 백업). 본문 `::embed`가 부른다. **위젯 제작 계약 = [`_engine/AUTHORING.md`](../embeds/_engine/AUTHORING.md)** | 소스 |
 | `assets/` | 런타임 셸(`shell.js`·`shell.css`)·`base.css`·`lesson.css` | 소스 |
-| `reference/` | **참조 데이터(손작성·생성물 아님)** — `glossary.json`(런타임 용어팝업 + 빌드 마킹) · `tcodes.json`(런타임 T코드) · `autolink.json`(빌드 `[[]]` 자동링크) · `sap-examples-index.md`·`codex_0625*`(집필 참고) | 소스 |
+| `reference/` | **참조 데이터(손작성·생성물 아님)** — `glossary.json`(런타임 용어팝업 + 빌드 마킹) · `tcodes.json`(런타임 T코드) · `autolink.json`(빌드 `[[ ]]` 자동링크) · `sap-examples-index.md`·`codex_0625*`(집필 참고) | 소스 |
 | `sample/` | 독립형 샘플 + 카탈로그 — **참고용**(체험 정본은 `embeds/`) | 소스(참고) |
 | `pages/abap.html` | ABAP 로드맵(데이터 주도, `curriculum.json` 렌더) | 소스 |
 | `index.html` | 학습 허브(도메인 카드) | 소스 |
@@ -38,7 +38,7 @@ content/abap/**.md   (소스 · 본문에 ::embed CHnn-Lnn-Snn 지시문 포함)
         ▼
 docs/abap/curriculum.json · lessons/CHxx.json · pages/*.html · curriculum*.md  (생성물)
    ├ 본문 ::embed CHnn-Lnn-Snn  →  embeds/abap/…html 을 iframe 위젯으로 삽입
-   └ reference/ — glossary·tcodes(런타임 직접 fetch) · autolink(빌드 `[[]]` 변환 입력)
+   └ reference/ — glossary·tcodes(런타임 직접 fetch) · autolink(빌드 `[[ ]]` 변환 입력)
         │  런타임
         ▼
 assets/shell.js  →  상단바·설정 · 좌측 레일(레슨/챕터/용어) · 우측 "이 레슨의 여정"(스크롤스파이) · 이전다음 · 용어 hover/click 주입
@@ -61,7 +61,7 @@ content/abap/
 - **폴더명 = 챕터 ID**(`CH01/`) → ID만 알면 경로 직행.
 - 레슨 파일 = `<레슨ID>[-슬러그].md`. 슬러그는 가독성용(선택), 스캐폴드는 순수 ID.
 - front-matter 스키마·본문 MD 규칙은 [04_CONVENTIONS](04_CONVENTIONS.md).
-- **참조 데이터는 `content/abap`이 아니라 루트 `reference/`** — 손작성(생성물 아님). 런타임(shell.js)이 glossary·tcodes를 `siteRoot+reference/`로 직접 fetch하고, autolink은 빌드가 `[[]]` 변환에 쓴다. glossary는 도메인 공용(cross-cutting).
+- **참조 데이터 = 루트 `reference/`**(위 폴더 표 참조) — glossary는 도메인 공용(cross-cutting).
 
 ## 🖥️ 런타임 셸 (assets/shell.js)
 정적 페이지에 주입: 상단바·설정(글자/다크/폭/전체화면) · **좌측 레일(레슨/챕터/용어)** · **우측 "이 레슨의 여정"(스크롤스파이)** · 이전다음 · 핵심용어 hover(임시)/click(고정) 팝업. 표준 = v2-C([08](08_LESSON_SHELL_SPEC.md)).

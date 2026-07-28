@@ -1,13 +1,12 @@
 # 06. SAMPLE LIBRARY — 학습수단·페이지구조 샘플 카탈로그
 
-> 📅 **최종수정: 2026-07-29 04:27 KST**
+> 📅 **최종수정: 2026-07-29 04:52 KST**
 > 🎯 **목적:** `sample/` 독립형 샘플 = **패턴·아이디어 참고 카탈로그**. 실제 레슨 체험은 `embeds/`(`::embed`)로 제작하며, 여기서 패턴을 골라 **embeds/ 위젯으로 적응**한다.
 > 📖 **읽을 때:** 레슨 체험(`embeds/`) 설계 시 참고할 패턴을 고를 때(코드→체험 필수 [04 R2](04_CONVENTIONS.md)).
 > ⚡ **TL;DR:**
 > - ⚠️ **체험 정본 = `embeds/`** — 레슨 `::embed CHnn-Lnn-Snn` → `embeds/abap/`(엔진 `embeds/_engine/` · **제작 계약 = [embeds/_engine/AUTHORING.md](../embeds/_engine/AUTHORING.md)**). `sample/`은 그 위젯을 만들 때 **참고할 패턴 카탈로그**(직접 ::embed 아님, [03](03_ARCHITECTURE.md)).
 > - 각 샘플은 **완전 self-contained 단일 HTML**(CSS·JS 내장, 외부의존 0; mermaid만 CDN).
 > - 카탈로그는 `sample/index.html`. 재사용은 그 파일의 `<style>`/`<script>` 블록만 옮기면 끝.
-> - 원본 아이디어는 구 repo `sapui5/sample/learning-methods-v3`.
 
 ## 카테고리
 
@@ -36,6 +35,4 @@
 - 입문자 톤은 `structure/beginner-lesson-template.html`이 기준 구현([04 R3](04_CONVENTIONS.md)).
 
 ## 디자인 결정 현황
-- 스텝 디버거: ✅ **A안 확정** → `code-learning/step-debugger.html`(ABAP 구문강조·콘솔 토글·강조=실행 직전). 비교 초안 제거됨.
-- Mermaid 흐름도: ✅ **A안(배지 카드) 확정** → `visuals/mermaid-flowchart.html`(역할 배지 카드·곡선 엣지·빈 라벨 박스 숨김). 비교 시안(v2) 제거됨.
-- 레슨 셸: ✅ **v2-C 확정(표준)** → `structure/lesson-shell-v2-c.html`. A/B 사용금지, D/E/F/G 대체됨. 실제 셸/빌드 이식 규칙은 **[08_LESSON_SHELL_SPEC](08_LESSON_SHELL_SPEC.md)**(색 테마 결정 → tcodes.json → front-matter 확장 → shell.css/js → 입문자 템플릿 순).
+- ✅ 확정본: 스텝 디버거 = `code-learning/step-debugger.html` · Mermaid = `visuals/mermaid-flowchart.html` · 레슨 셸 = `structure/lesson-shell-v2-c.html`(**v2-C 표준** — 셸/빌드 규칙 [08](08_LESSON_SHELL_SPEC.md)). 비교 시안들은 제거됨.
