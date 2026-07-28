@@ -43,8 +43,8 @@
 <p><a href="CH32-L01.html">Customer Exit</a>는 SAP가 함수 exit를 <em>만들어 둔 곳</em>에서만 쓸 수 있었다. 하지만
 표준엔 &quot;이 줄 다음에 한 줄 더 끼우고 싶다&quot;, &quot;이 계산 블록만 우리 것으로 바꾸고 싶다&quot;는
 자리가 더 많다. <strong>Enhancement Framework</strong>가 이걸 더 일반적인 <em>소스 코드 확장</em>으로 다룬다.</p>
-<p>핵심은 <strong>추가(Point) vs 대체(Section)의 책임 차이</strong>다. Point는 표준 흐름 <em>옆에</em> 내 코드를
-놓고, Section은 표준 흐름 <em>일부를 대신 맡는다</em>. 대체가 더 강력하지만 — <strong>테스트·업그레이드
+<p>핵심은 <strong>추가(Point) vs 대체(Section)의 책임 차이</strong>다. <button class="term" type="button" data-term="Enhancement Point">Enhancement Point</button>는 표준 흐름 <em>옆에</em> 내 코드를
+놓고, Section은 표준 흐름 <em>일부를 대신 맡는다</em>. 대체가 더 강력하지만, <strong>테스트·업그레이드
 책임도 그만큼 커진다.</strong></p>
 <table>
 <thead>
@@ -83,7 +83,7 @@ ENHANCEMENT-POINT ep_before_save SPOTS es_order.
     <span class="tok-com">" 저장 전 VIP 검증 추가</span>
   <span class="tok-kw">ENDIF</span>.
 <span class="tok-kw">ENDENHANCEMENT</span>.</code></pre></div></div>
-<p>Section은 <em>구간 자체</em>를 정의한다 — plug-in이 없으면 표준 코드가, 있으면 내 코드가 그 구간을
+<p>Section은 <em>구간 자체</em>를 정의한다. plug-in이 없으면 표준 코드가, 있으면 내 코드가 그 구간을
 실행한다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
@@ -97,12 +97,12 @@ ENHANCEMENT-SECTION es_amount_check SPOTS es_order.
   <span class="tok-kw">ENDIF</span>.
 END-ENHANCEMENT-SECTION.</code></pre></div></div>
 <ul>
-<li><button class="term" type="button" data-term="Method">메서드</button>·함수의 시작/끝엔 <a href="CH32-L04.html">Implicit Enhancement</a>가 늘 있다(SAP가 표시
-안 해도).</li>
-<li>구현은 손으로 막 쓰지 않고 <strong>Enhancement Builder로 생성·활성화</strong>한다 — 활성화해야 동작.</li>
+<li><button class="term" type="button" data-term="Method">메서드</button>·함수의 시작/끝 같은 정해진 자리엔 <a href="CH32-L04.html">Implicit Enhancement</a>가 거의
+항상 있다(SAP가 표시 안 해도 — <button class="term" type="button" data-term="예외">예외</button>도 있는데 다음 레슨에서).</li>
+<li>구현은 손으로 막 쓰지 않고 <strong>Enhancement Builder로 생성·활성화</strong>한다. 활성화해야 동작한다.</li>
 </ul>
 </section><section class="lblock"><h2>라인 사이에 끼워 보기</h2>
-<p>표준 코드 라인 사이의 Enhancement Point에 <code>ENHANCEMENT</code> 블록을 넣고 빼 보라 — 표준 라인은
+<p>표준 코드 라인 사이의 <button class="term" type="button" data-term="Enhancement Point">Enhancement Point</button>에 <code>ENHANCEMENT</code> 블록을 넣고 빼 보라. 표준 라인은
 그대로다.</p>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">Enhancement Point — 라인 사이 코드 추가</span><a class="embed__open" href="../../../embeds/abap/CH32-L02-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH32-L02-S01.html" loading="lazy" title="Enhancement Point — 라인 사이 코드 추가" style="height:380px"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
@@ -112,6 +112,9 @@ END-ENHANCEMENT-SECTION.</code></pre></div></div>
 <li><strong>explicit 지점이 없는데 억지로</strong> → 명시적 point가 시점과 안 맞으면 <a href="CH32-L04.html">확장 방식
 판단</a>으로 돌아간다(BAdI 있나 → implicit로 충분한가 → 그래도 안 되면
 modification 심사).</li>
+<li><strong>같은 point에 plug-in 여러 개</strong> → 여러 구현이 순서대로 실행될 수 있지만 <strong>그 순서를
+가정하고 로직을 짜면 안 된다</strong>(다른 팀 plug-in이 끼는 순간 깨진다). 각 plug-in은 서로
+독립적으로 성립해야 한다.</li>
 <li><strong>표준 내부 변수에 과의존</strong> → enhancement를 &quot;어디서든 값에 접근하는 편한 구멍&quot;으로 쓰면,
 표준 패치로 변수·흐름이 바뀔 때 바로 깨진다. <em>안정적 계약</em>인지 <em>우연히 보이는 내부 상태</em>인지
 구분한다.</li>
@@ -120,13 +123,13 @@ modification 심사).</li>
 </ul>
 </section><section class="lblock"><h2>정리</h2>
 <ul>
-<li>Enhancement Point = 위치에 코드 <strong>추가</strong>, Enhancement Section = 구간을 코드로 <strong>대체</strong>.</li>
+<li><button class="term" type="button" data-term="Enhancement Point">Enhancement Point</button> = 위치에 코드 <strong>추가</strong>, Enhancement Section = 구간을 코드로 <strong>대체</strong>.</li>
 <li>둘 다 표준 소스를 안 고치고 plug-in을 단다(<code>SPOTS</code>·<code>ENHANCEMENT</code>).</li>
 <li>신규는 <strong>BAdI 같은 더 구조적인 지점 먼저</strong> → source 확장이면 <strong>Point 우선</strong>(Section은
 책임·테스트 범위가 크다).</li>
 </ul>
 <hr>
-<p>코드에 끼웠다. 이제 가장 권장되는 <button class="term" type="button" data-term="객체">객체</button>지향 확장 — BAdI →
+<p>코드에 끼웠다. 이제 가장 권장되는 <button class="term" type="button" data-term="객체">객체</button>지향 확장, BAdI →
 <a href="CH32-L03.html">BAdI 정의와 구현</a>(다음 레슨).</p>
 </section>
       </article>

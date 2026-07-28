@@ -43,7 +43,7 @@
 <p>확장은 요구를 빨리 푸는 도구지만, 잘못 쌓이면 표준을 점점 무겁게 만든다. 처음엔 작은 exit
 하나였는데, 몇 년 뒤엔 <em>업그레이드마다 깨지는 표준 변경·어디서 실행되는지 모르는 implicit·
 내부 테이블 직접 접근 Z 로직</em>이 쌓인다. 기능은 많아도 <strong>바꾸기 어려운</strong> 시스템이 된다.</p>
-<p><strong>Clean Core</strong>(<a href="CH24-L08.html">ABAP Cloud와 Released API 원칙</a>에서 본 그 원칙)는 표준 핵심을
+<p><button class="term" type="button" data-term="Clean Core">Clean Core</button>(<a href="CH24-L08.html">ABAP Cloud와 Released API 원칙</a>에서 본 그 원칙)는 표준 핵심을
 깨끗이 유지하고, 확장은 <strong>표준이 허용한 안정적 지점·공개 계약</strong>으로 분리하자는 사고방식이다.
 유행어 암기가 아니라, 앞에서 배운 확장 수단을 운영에 넣을 때 <em>&quot;미래 업그레이드·Cloud-ready를
 해치지 않는가&quot;</em> 를 판단하는 기준이다.</p>
@@ -68,7 +68,7 @@
 </thead>
 <tbody><tr>
 <td><strong>Released API</strong></td>
-<td>ABAP Cloud에서 접근이 <em>허용(release)된</em> 객체</td>
+<td>ABAP Cloud에서 접근이 <em>허용(release)된</em> 객체(또는 객체의 일부)</td>
 </tr>
 <tr>
 <td><strong>Developer Extensibility</strong></td>
@@ -80,19 +80,60 @@
 </tr>
 </tbody></table>
 </section><section class="lblock"><h2>친화 여부 가려내기</h2>
-<p>각 확장 방식이 Clean Core에 맞는지 퀴즈로 가려 보라.</p>
+<p>각 확장 방식이 <button class="term" type="button" data-term="Clean Core">Clean Core</button>에 맞는지 퀴즈로 가려 보라.</p>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">Clean Core 친화 판별 퀴즈</span><a class="embed__open" href="../../../embeds/abap/CH32-L05-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH32-L05-S01.html" loading="lazy" title="Clean Core 친화 판별 퀴즈" style="height:520px"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>&quot;Clean Core는 Cloud 얘기&quot;로 치부</strong> → on-premise도 업그레이드·패치·운영 분석·개발자 교체가
+<li><strong>&quot;<button class="term" type="button" data-term="Clean Core">Clean Core</button>는 Cloud 얘기&quot;로 치부</strong> → on-premise도 업그레이드·패치·운영 분석·개발자 교체가
 있다. 깨끗한 코어는 classic에서도 비용을 줄인다.</li>
 <li><strong>Released API = SAP 표준 <button class="term" type="button" data-term="객체">객체</button>로 착각</strong> → SAP가 만든 객체라고 다 <em>release된 API</em>는 아니다.
-release contract·제한 언어 버전 visibility 기준이 따로 있다.</li>
+SAP가 <strong>release 계약</strong>으로 &quot;이 객체는 공개 API&quot;라고 선언한 것만 해당하고, ABAP for Cloud
+Development(제한 언어 버전)에서 실제로 보이는지가 그 판정 기준이다.</li>
 <li><strong>implicit을 Clean Core <button class="term" type="button" data-term="예외">예외</button> 구멍으로</strong> → modification이 아니어도 내부 변수·순서에 깊게
-붙으면 업그레이드에 약하다. <em>&quot;표준 안 고쳤다&quot;만으로 부족 — &quot;안정적 계약을 썼다&quot;까지.</em></li>
+붙으면 업그레이드에 약하다. <em>&quot;표준 안 고쳤다&quot;만으로 부족, &quot;안정적 계약을 썼다&quot;까지.</em></li>
 <li><strong>확장을 문서화 안 함</strong> → 어느 BAdI에 어떤 filter로, 어떤 업무 규칙을, 비활성화하면 뭐가
 사라지는지 없으면 장애 분석이 지옥. 문서가 곧 <strong>운영 안전장치</strong>.</li>
 </ul>
+</section><section class="lblock"><h2>챕터 총정리 — 여섯 수단 한 표</h2>
+<table>
+<thead>
+<tr>
+<th>수단</th>
+<th>언제 쓰나</th>
+<th>조심할 점</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="CH32-L03.html">BAdI</a></td>
+<td>신규 요구 1순위 — <button class="term" type="button" data-term="Interface">인터페이스</button> 계약이 있을 때</td>
+<td>filter·활성화가 안 맞으면 호출 자체가 없음</td>
+</tr>
+<tr>
+<td><a href="CH32-L02.html">Explicit Point</a></td>
+<td>SAP가 표시한 위치에 코드 <strong>추가</strong></td>
+<td>point 시점이 요구와 맞는지 먼저</td>
+</tr>
+<tr>
+<td><a href="CH32-L02.html">Explicit Section</a></td>
+<td>SAP가 허용한 블록 <strong>교체</strong></td>
+<td>표준 책임을 대신 짐 — 회귀 테스트 폭증</td>
+</tr>
+<tr>
+<td><a href="CH32-L04.html">Implicit</a></td>
+<td>시작·끝 등 정해진 자리 최소 보강</td>
+<td>내부 상태 의존 금지 — 패치에 약함</td>
+</tr>
+<tr>
+<td><a href="CH32-L01.html">Customer Exit</a></td>
+<td>레거시 유지보수(신규엔 비권장)</td>
+<td>SMOD≠구현 — CMOD 활성화까지</td>
+</tr>
+<tr>
+<td>Modification</td>
+<td>다른 길이 전부 막혔을 때 <button class="term" type="button" data-term="예외">예외</button> 심사</td>
+<td>등록·사유·업그레이드 비용 각오</td>
+</tr>
+</tbody></table>
 </section><section class="lblock"><h2>정리</h2>
 <ul>
 <li>이 챕터의 결론 = &quot;확장을 <em>할 수 있다</em>&quot;가 아니라 &quot;표준을 <strong>깨끗하게 유지하며</strong> 확장한다.&quot;</li>
@@ -109,11 +150,11 @@ Modification(최후).</li>
 설계한다.</li>
 <li>BAdI가 없는 지점은 <a href="CH32-L02.html">Enhancement Point</a>로 최소 개입하는 방안을
 제시한다(<a href="CH32-L04.html">어느 수단을 쓸지 판단</a>).</li>
-<li>(심화) 같은 확장을 <strong>Clean Core</strong>(Released API·별도 패키지) 관점에서 재검토한다.</li>
+<li>(심화) 같은 확장을 <strong><button class="term" type="button" data-term="Clean Core">Clean Core</button></strong>(Released API·별도 패키지) 관점에서 재검토한다.</li>
 </ol>
 <hr>
 <p>표준을 안전하게 확장하는 법까지 익혔다. 이제 외부 시스템과 데이터를 주고받는 <button class="term" type="button" data-term="Interface">인터페이스</button> →
-<a href="CH33-L01.html">Chapter 30 · 인터페이스 실무: BAPI/RFC/BDC/File</a>(다음 챕터).</p>
+<a href="CH33-L01.html">Chapter 33 · 인터페이스 실무: BAPI/RFC/BDC/File</a>(다음 챕터).</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

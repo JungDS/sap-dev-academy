@@ -256,6 +256,11 @@
 | CH31-L05-S01 | CH31-L05 | editable-grid | mode=validate·오류 셀 빨강+하단 오류 목록 패널(add_protocol_entry 누적)·정상값=목록 소거 | ✅ |
 | CH31-L06-S01 | CH31-L06 | editable-grid | mode=save·(capstone) 저장→check_changed_data→전체 재검증 거부 vs MODIFY+COMMIT 로그 | ✅ |
 | CH31-L06-S02 | CH31-L06 | mermaid | 챕터 전체 흐름 지도(편집 준비→입력 중 검증/후처리/잠금→check_changed_data e_valid→재검증 분기→stamp·MODIFY·COMMIT) | ✅ |
+| CH32-L01-S01 | CH32-L01 | inject-slots | 표준 프로그램의 Exit 빈 자리(slot)에 내 코드 ON/OFF·표준 라인 변경 0 강조 | ✅ |
+| CH32-L02-S01 | CH32-L02 | inject-slots | ENHANCEMENT-POINT slot 삽입/제거 + Section 교체 토글(표준 구간 취소선↔내 plug-in 대신 실행) | ✅ |
+| CH32-L03-S01 | CH32-L03 | badi-socket | 구현 on/off + filter KR/US 데모(표준 호출=KR·US면 구현 켜져도 선택 안 됨)→GET/CALL BADI 로그 | ✅ |
+| CH32-L04-S01 | CH32-L04 | decision-tree | (재사용) 확장 수단 선택 트리(BAdI→Explicit Point→Section→Implicit→Modification 순 판단) | ✅ |
+| CH32-L05-S01 | CH32-L05 | judge-quiz | (재사용) Clean Core 친화 판별 퀴즈(수단별 O/X+해설) | ✅ |
 | CH04-L02-S01 | CH04-L02 | fill-blank | 문자열 함수 빈칸(INTO·AT·strlen·FIND) | ✅ |
 | CH04-L07-S01 | CH04-L07 | fill-blank | 구구단 빈칸(TIMES·sy-index·*·ENDDO) | ✅ |
 | CH04-L03-S01 | CH04-L03 | mermaid | IF/ELSEIF/ELSE 분기 흐름도(p_amt: 큰금액/소액/0·음수) | ✅ |
@@ -336,6 +341,9 @@
 | alv-events (신규) | 4 | 공통(_engine)·자체 postHeight ✅ | CH30-L01～L04-S01 | alv-cfg JSON {mode: double/hotspot/toolbar/ucommand} 주도·예매 미니 ALV+이벤트 로그(핸들러 메서드+e_* 파라미터)·ucommand는 선택→취소→refresh까지 |
 | alv-handler-wiring (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH30-L05-S01 | 이벤트→핸들러 메서드 배선 맵·클릭 시 짝 강조·생성자 SET HANDLER 일괄 배선 메시지 |
 | editable-grid | 6 | 공통(_engine)·자체 postHeight ✅ | CH31-L01～L06-S01 | eg-cfg JSON {mode: editcols/datachanged/finished/cellstyle/validate/save}·편집 ALV 시뮬(SEATS 편집·즉시 검증 로그·합계 재계산·매진 잠금·오류 목록·저장 게이트)·정본 0001~/C001~/정훈영·유효값 1~max |
+| inject-slots | 2 | 공통(_engine)·자체 postHeight ✅ | CH32-L01~L02-S01 | is-cfg JSON {progName, lines(std/slot), my[], (선택)sect{std/my}} 주도·확장 slot 토글(표준 라인 불변 강조)+Section 교체 토글(std 취소선 .rep)·L01=Exit 자리(zzmemo=.APPEND 회수)·L02=Point+Section |
+| badi-socket | 1 | 공통(_engine)·자체 postHeight ✅ | CH32-L03-S01 | 구현 on/off+선택 filter KR/US(#fKR/#fUS 있으면)→GET BADI FILTERS 일치/불일치·CALL BADI 로그·빈 소켓=기본 동작·IF_EX_BOOKING_CHECK |
+| decision-tree | 3 | 공통(_engine)+_autoheight ✅ | CH06-L02-S02 · CH20-L06-S01 · CH32-L04-S01 | 범용 선택 트리(질문 분기=위젯 config)·Table Kind/고급 SQL/확장 수단 선택 |
 | factory-sim (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH27-L01-S01 | 타입 세그(V/G/Z)→생성 클래스·설명 전환·호출부 코드 고정 표시 |
 | singleton-sim (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH27-L02-S01 | get_instance vs NEW 버튼→인스턴스 주소 목록·같음/다름 판정 |
 | strategy-sim (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH27-L03-S01 | 전략 세그+좌석 입력→단가×석 가격 계산·client 코드 불변 |
