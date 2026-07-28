@@ -25,10 +25,10 @@ const slash = r => r.replace(/\\/g, '/');
 const PD_FILES = fs.readdirSync(PD).filter(f => f.endsWith('.md')).map(f => '.project-docs/' + f);
 const DOC_FILES = [...PD_FILES, 'README.md', 'CLAUDE.md', 'embeds/_engine/AUTHORING.md'];
 
-// R2 부팅셋 = CLAUDE @-임포트. 상한: 2026-06-30 수용 ~16.5K + 여유(고-ROI 초과는 여기서 의식적으로 올림).
+// R2 부팅셋 = CLAUDE @-임포트. 상한: 2026-07-29 20K 상향(사용자 확정 — 전수 다이어트 후 16.7K 기준 여유. 여유가 생겨도 규칙은 정본·이력은 git, R16).
 const AUTOLOAD = ['README.md', '.project-docs/00_INDEX.md', '.project-docs/01_AI_SYNC.md',
   '.project-docs/04_CONVENTIONS.md', '.project-docs/05_PITFALLS.md', 'CLAUDE.md'];
-const BUDGET_CHARS = 17000;
+const BUDGET_CHARS = 20000;
 
 // on-demand 문서(부팅 밖) — point-of-use(WARN8) 대상
 const ONDEMAND = ['02', '03', '06', '07', '08', '09', '10', '14'];

@@ -1,6 +1,6 @@
 # 14. REFERENCE CORPUS — 외부 참고 자료 인벤토리 · 관련성 · 활용 규칙
 
-> 📅 최종수정: 2026-07-29 04:27 KST
+> 📅 최종수정: 2026-07-29 04:52 KST
 > 🎯 `C:\Users\gosts\OneDrive\업무\교육자료_V2\2. ABAP Document\ABAP_DOCU_DOWNLOAD\ABAP_DOCU\`에 모아둔 SAP 공식/오픈소스 자료를 **정밀 분석**한 결과와 **프로젝트 활용 규칙**. 이 코퍼스는 *참고 입력(input)*이며 빌드 파이프라인 밖이다 — `content/abap/**.md`를 쓸 때 사실·예제·구조의 **출처**로 쓴다.
 > ✅ **저작권: 본 과정은 SAP Korea 주관 강의 → SAP 공식문서·cheat-sheet 본문·예제 verbatim(원문 그대로) 사용 허용.** 단 이는 *저작권 허가*일 뿐 — **입문자 가독성(R3)은 별개 규칙으로 유지**: 예제 코드는 공식 원문 그대로 자유 사용하되, **본문 prose가 입문자에게 어려운 곳(영어·압축·non-semantic)은 한국어 입문 톤으로 각색**([04 R3](04_CONVENTIONS.md)). = "verbatim 허용 + R3 각색 유지".
 > 🔗 관련: **오프라인 사실검증은 두 루트를 모두 grep한다**(§5-1, 사용자 확정 2026-07-07) — 루트 A `C:\Users\gosts\OneDrive\업무\교육자료_V2\2. ABAP Document\ABAP_DOCU_HTML\`(keyword doc HTML 덤프·1차 권위) + 루트 B `C:\Users\gosts\OneDrive\업무\교육자료_V2\2. ABAP Document\ABAP_DOCU_DOWNLOAD\ABAP_DOCU\`(본 문서가 카탈로그화하는 GitHub 코퍼스: cheat-sheet·MD 미러·Clean ABAP·예제).
@@ -34,7 +34,7 @@
 **36토픽**(main): 01 Internal Tables · 02 Structures · 03 ABAP SQL · 04 OO · 05 Constructor Expr · 06 Dynamic · 07 String · 08 EML/RAP · 13 Program Flow · 14 Unit Tests · 16 Data Types & Objects · 23 Date/Time · 24 Builtin Functions · 27 Exceptions · 28 Regex · 29 Numeric · 32 Performance · 34 OO Design Patterns · 35 BAdIs · 36 RAP BDL … → **우리 챕터 주제와 거의 1:1.**
 
 **활용 규칙**
-- 레슨 작성 시 해당 주제 cheat sheet를 **구조·예제의 출처**로 연다. 예제 코드는 **공식 원문 그대로 사용 가능**(SAP Korea 주관). 단 SAP 예제는 "non-semantic·best-practice 아님" → 입문자에게 맥락이 약하면 **입문자 시나리오·이름 풀([04 R9](04_CONVENTIONS.md))로 각색**(가독성 판단, 강제는 아님).
+- 레슨 작성 시 해당 주제 cheat sheet를 **구조·예제의 출처**로 연다. 예제 verbatim 가능(헤더 ✅). 단 SAP 예제는 "non-semantic·best-practice 아님" → 입문자에게 맥락이 약하면 **입문자 시나리오·이름 풀([04 R9](04_CONVENTIONS.md))로 각색**(가독성 판단, 강제는 아님).
 - **버전 선택이 곧 R6 준수**: classic 레슨(CH01～17)은 **758/816**을, 모던(CH18+)은 **main**을 본다. main은 Cloud 초점이라 classic-only(예: dynpro, `WRITE` 리스트)는 758/816에만 있음 — 섞으면 [05 P7](05_PITFALLS.md) 위반.
 - 예제 코드 fence는 ```` ```abap ````로만(빌드가 code-copy-block 변환, [05 P10](05_PITFALLS.md)).
 
@@ -57,8 +57,7 @@
 - ✅ **MD라 grep·읽기 쉬움**(script/태그 제거됨) · frontmatter `keywords`로 주제 검색 · `sourceUrl`로 공식 페이지 즉시 링크.
 - ✅ **ABAP Cloud판이 추가** → "이 syntax가 Cloud에서 허용되나?"를 standard/cloud 두 폴더 존재 여부로 즉시 판정 → **R6(classic↔modern 경계)·[05 P7](05_PITFALLS.md) 검증의 결정적 근거**.
   - **판정법 실측 검증됨(2026-07-23)**: `ABAPCALL_TRANSACTION.md`·`ABAPSUBMIT.md` = standard만(classic-only ✓) · `ABAPSELECT.md`·`ABAPAPPEND.md` = 양쪽(허용 ✓). 실제 Cloud 제약과 일치 → 이 방법 그대로 사용.
-- ⚠️ 변환 아티팩트 존재: 이스케이프(`\{`), 인라인 `*.html` 링크 잔재, 일부 description 깨짐 → **정의·문법 확정은 원문(HTML 덤프 또는 sourceUrl)과 교차확인**.
-- 콘텐츠 자체는 SAP 저작물이나 **SAP Korea 주관 강의라 verbatim 사용 허용**(예제 그대로, 어려운 본문은 R3 각색).
+- ⚠️ 변환 아티팩트 존재: 이스케이프(`\{`), 인라인 `*.html` 링크 잔재, 일부 description 깨짐 → **정의·문법 확정은 원문(HTML 덤프 또는 sourceUrl)과 교차확인**. **예제 코드 블록 붕괴도 잦음 → 코드는 HTML 덤프/PDF·cheat-sheet에서, prose·문법만 MD 미러로.**
 
 **활용 규칙** — 키워드 감사(완료·아카이브 [11_KEYWORD_AUDIT](../.archive/2026-06-29-docs-cleanup/11_KEYWORD_AUDIT.md))·용어 정의([04 R12](04_CONVENTIONS.md) glossary) 작업 시 **1차 grep 대상**으로 HTML 덤프와 병행. classic 사실은 `standard/md`, 경계 판정은 standard vs cloud 비교.
 
@@ -72,10 +71,10 @@
 - `abap-code-review/ABAPCodeReview.md` — 코드리뷰 체크리스트.
 
 **⚠️ 우리 규칙과의 충돌 — 반드시 인지**
-- Clean ABAP는 **헝가리안 표기(접두어)를 *지양*** 한다. 그러나 우리는 **의도적으로** classic-first 입문 단계에서 `gv_/gs_/gt_`·`lv_/ls_/lt_` 스코프 접두어를 쓴다([04 R11](04_CONVENTIONS.md), 메모리 `abap-var-prefix-scope`). → **Clean ABAP를 R11의 상위 규칙으로 삼지 말 것.** 입문 단계 가독성 > 모던 컨벤션이라는 우리 결정이 우선.
+- Clean ABAP는 **헝가리안 표기(접두어)를 *지양*** 한다. 그러나 우리는 **의도적으로** classic-first 입문 단계에서 `gv_/gs_/gt_`·`lv_/ls_/lt_` 스코프 접두어를 쓴다([04 R11](04_CONVENTIONS.md)). → **Clean ABAP를 R11의 상위 규칙으로 삼지 말 것.** 입문 단계 가독성 > 모던 컨벤션이라는 우리 결정이 우선.
 - Clean ABAP는 모던/OO·functional 전제 → **CH18+ 모던 챕터·OO 챕터의 스타일 근거**로는 적합. classic 초반엔 부분 적용.
 
-**활용 규칙** — 모던/OO 레슨의 "좋은 코드" 기준·명명 원칙 인용 시 출처표기. 한국어판은 **용어 번역 일관성** 참고(영어 원문 우선 원칙 [04 R3](04_CONVENTIONS.md)/메모리 `abap-terms-english`는 유지).
+**활용 규칙** — 모던/OO 레슨의 "좋은 코드" 기준·명명 원칙 인용 시 출처표기. 한국어판은 **용어 번역 일관성** 참고(영어 원문 우선 = [04 R3](04_CONVENTIONS.md)).
 
 ---
 
@@ -83,14 +82,14 @@
 
 레슨 1개를 쓸 때 — [01 작업 전 체크리스트](01_AI_SYNC.md) 직후 — 아래를 표준 참고로 연다:
 
-1. **구조·예제** → 그 레슨 주제의 **cheat-sheet** 파일을 **버전 매칭**으로 연다(§1 표): classic 레슨(CH01～17)=`abap-cheat-sheets-758/`(없으면 `-816`), 모던(CH18+)=`-main`, RAP=`-rap`. **예제 코드는 원문 그대로 사용 가능**; 입문자에게 맥락이 약하면 시나리오·이름 풀([04 R9](04_CONVENTIONS.md))로 각색(가독성 판단).
+1. **구조·예제** → 그 레슨 주제의 **cheat-sheet** 파일을 **버전 매칭**으로 연다(§1 표): classic 레슨(CH01～17)=`abap-cheat-sheets-758/`(없으면 `-816`), 모던(CH18+)=`-main`, RAP=`-rap`. 예제 verbatim·각색 기준 = §1.
 2. **사실·문법·정의 검증** → `abap-docs-main/docs/standard/md`를 grep(classic 사실), 용어는 frontmatter `keywords`로 검색. 정의 확정은 `sourceUrl`/HTML 덤프와 교차확인.
 3. **R6 경계 판정**("이 문법 Cloud 가능?") → `standard/md` vs `cloud/md` 동일 파일 존재 비교. classic-only면 classic 챕터에만, [05 P7](05_PITFALLS.md) 준수.
 4. **스타일 근거**(모던/OO 레슨 한정) → `styleguides-main/clean-abap/CleanABAP.md`, 한국어 용어 대조는 `CleanABAP_kr.md`. ⚠️ **R11(접두어)·R6를 덮어쓰지 않는다** — 입문 단계 가독성이 우선.
 
 > 🆕 **CH23(CDS)·CH24(RAP)는 §6 공식 가이드 PDF를 1차 출처로** — cheat-sheet(`-rap`)·keyword doc은 개별 문법 확정에 보조.
 
-**불변 가드레일**: SAP 본문·예제 **verbatim 사용 허용**(SAP Korea 주관) — 예제 코드는 그대로, 입문자에게 어려운 본문은 R3 각색([04 R3](04_CONVENTIONS.md)) · 우리 규칙(R6/R11/R15)이 외부 컨벤션보다 우선 · 사실은 항상 공식 원문과 교차확인.
+**불변 가드레일**: verbatim + R3 각색(헤더 ✅) · 우리 규칙(R6/R11/R15) > 외부 컨벤션 · 사실은 항상 공식 원문과 교차확인.
 
 ---
 
@@ -150,4 +149,3 @@
 - **CH23(CDS)·CH24(RAP) 집필·사실검증의 1차 출처**로 이 PDF를 연다. 두 주제는 최신 ABAP Cloud라 PDF(2026-05)가 758/8.16 HTML 덤프보다 **더 최신·정확**. keyword doc(§5)은 개별 문법 확정에 보조.
 - **RAP `ABAP Flight Reference Scenario`(/DMO/)** = SAP 공식 교육 예제 → 프로젝트 SFLIGHT·콘서트 관통예제([09 C-4](09_CURRICULUM_LEDGER.md)) 설계 대조에 활용.
 - 읽기 = `pdftotext -enc UTF-8 -layout "<파일>" out.txt` 후 grep/선별(**1,653p 통독 금지** — 목차→페이지 범위 특정 후 `-f/-l`로 해당 절만 추출). ※ Read 도구 이미지 렌더용 poppler `pdftoppm`은 미설치, 텍스트 추출용 `pdftotext`(`/mingw64/bin`)는 가용.
-- verbatim 허용이나 **입문자 가독성(R3)은 유지** — 예제 원문 그대로, 어려운 영어 본문은 한국어 입문 톤 각색.
