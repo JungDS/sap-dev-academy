@@ -13,6 +13,7 @@
   <p class="hint">💡 헤더를 클릭해 총시간·총횟수로 정렬</p>
   <div class="panel"><div class="panel__h" id="phead">SQLM — SQL Monitor</div>
     <table><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
+  <div class="bar" style="margin:8px 0"><button id="swlt" type="button" style="border:1px solid #3b5bdb;background:#3b5bdb;color:#fff;border-radius:8px;padding:6px 12px;font-size:.85rem;cursor:pointer">🔗 소스 위치 연결 (SWLT)</button></div>
   <div class="callout" id="callout"></div>
   <div class="note">💡 총 실행시간·횟수·레코드가 큰 SQL부터 개선합니다. 자주·느리게 도는 비키 조건은 <b>Secondary Index</b> 후보지만(CH08-L06), 인덱스는 쓰기 비용·공간이 들고 <b>S/4HANA에선 권장 제한</b>(엔진이 빠름) — 측정 근거 없이 남발 금지. <code>SWLT</code>로 코드 점검과 결합.</div>
   <script type="application/json" id="trace-cfg">
@@ -31,6 +32,8 @@
       { "stmt": "SELECT zconcert (ZBOOK_F4)", "execs": 210000, "total": 84000, "avg": 0.4 }
     ],
     "callout": "⚠ 1위: 총 <b>420초</b>(평균은 짧지만 5.3만 회) — 자주 도는 쿼리라 작은 개선도 큰 효과. 평균이 긴 2위와 함께 우선 대상."
+  ,
+    "swltCallout": "🔗 <b>SWLT 연결</b>: 3위 SQL(총 실행 210,000회)의 소스 = <code>ZBOOK_F4</code>의 F4 도움말 SELECT. 다음 단계 — 그 실행 조건으로 <b>ST05 정밀 검사</b> → 호출 위치 줄이기/버퍼 검토. 우선순위(SQLM) → 위치(SWLT) → 정밀(ST05) 흐름이 완성됩니다."
   }
   </script>
 </div>

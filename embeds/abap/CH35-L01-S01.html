@@ -8,16 +8,17 @@
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">ST05 SQL Trace — 어떤 SELECT가 병목인가</p>
-  <p class="lead">트레이스 결과입니다. <b>컬럼 헤더를 클릭해 정렬</b>하며 가장 무거운 쿼리를 찾아보세요(빨간 행 = 총시간 1위).</p>
-  <p class="hint">💡 헤더(실행횟수·총 ms 등)를 클릭해 정렬</p>
+  <p class="hd">ST05 SQL Trace — 정렬·분류·재측정</p>
+  <p class="lead"><b>컬럼 헤더 클릭 정렬</b>로 "비싼 SQL"(총 시간)과 "반복 SQL"(실행횟수)을 각각 찾아보세요. 그다음 <b>수정 후 재측정</b>으로 수치가 어떻게 남는지 확인!</p>
+  <p class="hint">💡 헤더(실행횟수·총 ms 등)를 클릭해 정렬 · 빨간 행 = 총시간 1위</p>
   <div class="panel"><div class="panel__h" id="phead">SQL Trace — Display</div>
     <table><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
+  <div class="bar" style="margin:8px 0"><button id="retest" type="button" style="border:1px solid #3b5bdb;background:#3b5bdb;color:#fff;border-radius:8px;padding:6px 12px;font-size:.85rem;cursor:pointer">▶ 수정 후 재측정 (L04 적용 가정)</button></div>
   <div class="callout" id="callout"></div>
-  <div class="note">💡 <b>실행횟수가 비정상적으로 많은 동일 쿼리</b>는 LOOP 안 SELECT(L04) 신호입니다. <b>Identical Selects</b>는 버퍼링·한 번 읽기로, 느린 단일 쿼리는 인덱스·조건을 점검합니다. 운영 트레이스는 짧게·대상 한정.</div>
+  <div class="note">💡 <b>실행횟수가 비정상적으로 많은 동일 쿼리</b>는 LOOP 안 SELECT(L04) 신호. 좋은 튜닝 기록은 "빨라졌다"가 아니라 <b>before/after 수치</b>입니다. 운영 트레이스는 짧게·대상 한정. (수치는 가상 예시)</div>
   <script type="application/json" id="trace-cfg">
   {
-    "header": "ST05 — 예매현황 리포트 트레이스",
+    "header": "ST05 — 예매현황 리포트 트레이스 (수정 전)",
     "worstKey": "ms",
     "cols": [
       { "k": "stmt", "label": "SQL 문" },
@@ -30,7 +31,13 @@
       { "stmt": "SELECT * FROM zbooking INTO TABLE", "exec": 1, "ms": 120, "rows": 1000 },
       { "stmt": "SELECT * FROM scarr", "exec": 1, "ms": 6, "rows": 18 }
     ],
-    "callout": "⚠ 1위 행: 같은 쿼리가 <b>1,000회</b> 실행 — 전형적인 <b>LOOP 안 SELECT</b>입니다. FOR ALL ENTRIES/JOIN으로 1~2회로 줄이면 870ms → 수십 ms (L04)."
+    "callout": "⚠ 실행횟수 정렬 시 1위: 같은 쿼리 <b>1,000회</b> — 전형적인 <b>LOOP 안 SELECT</b>(L04). 총 시간 정렬과 실행횟수 정렬을 모두 해 봐야 반쪽 진단을 피합니다.",
+    "after": [
+      { "stmt": "SELECT concert_id, artist FROM zconcert FAE", "exec": 2, "ms": 11, "rows": 240 },
+      { "stmt": "SELECT * FROM zbooking INTO TABLE", "exec": 1, "ms": 120, "rows": 1000 },
+      { "stmt": "SELECT * FROM scarr", "exec": 1, "ms": 6, "rows": 18 }
+    ],
+    "afterCallout": "✓ <b>재측정 기록</b>: 동일 SELECT 1,000회 → <b>2회</b>, 870ms → <b>11ms</b> (같은 조건). 이 한 줄이 튜닝의 완료 조건입니다 — 수치 없는 '빨라졌다'는 보고가 아닙니다."
   }
   </script>
 </div>

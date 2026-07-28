@@ -35,32 +35,94 @@
       <section class="lhead">
         <p class="lhead__eyebrow">성능 분석과 튜닝</p>
         <h1>SQL Monitor / SQLM</h1>
-        <p class="lhead__direction">운영 전체에서 무거운 SQL을 찾는다 — SQLM.</p>
+        <p class="lhead__direction">건강검진 통계 — 운영 전체에서 무엇부터 고칠지 우선순위를 정한다.</p>
         <div class="tags"><span class="tag tag--track">Track 2</span><span class="tag tag--ch">Chapter 35</span><span class="tag tag--ls">Lesson 3</span><span class="tag tag--lv">고급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>운영 전체를 보는 눈</h2>
-<p>ST05는 한 실행을 본다. <strong>SQLM</strong>(SQL Monitor)은 <strong>운영 시스템 전체</strong>에서 실제로
-무거운 SQL을 누적 <button class="term" type="button" data-term="Aggregate">집계</button>해, &quot;어디를 먼저 고칠지&quot; 우선순위를 준다.</p>
+<section class="lblock"><h2>🏥 전 직원 건강검진</h2>
+<p>ST05·SAT는 환자 한 명(한 실행)을 깊게 본다. 그런데 운영 책임자의 질문은 다르다.
+<strong>&quot;수백 개 프로그램 중 무엇부터 고쳐야 효과가 가장 큰가?&quot;</strong> 어떤 SQL은 1회 실행은
+빠르지만 하루 20만 번 돌아 누적 비용이 크고, 어떤 SQL은 한 번은 느리지만 한 달에 한 번
+돈다. 튜닝 자원은 한정돼 있으니 골라야 한다.</p>
+<p><button class="term" type="button" data-term="SQLM">SQLM</button>(SQL Monitor)이 그 통계다. 운영 시스템에서 일정 기간 실제 실행된 SQL의 누적
+정보를 모아, 재현 없이도 &quot;<strong>운영 사용량 기준으로</strong> 비싼 SQL&quot;을 보여 준다. 개별 병목
+분석(ST05)이 아니라 <strong>우선순위 선정</strong>이 SQLM의 일이다.</p>
+</section><section class="lblock"><h2>세 가지 정렬, 세 가지 처방</h2>
+<table>
+<thead>
+<tr>
+<th>정렬 기준</th>
+<th>잡히는 것</th>
+<th>처방 방향</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Total time</strong>(기간 누적)</td>
+<td>운영 전체 비용이 큰 SQL</td>
+<td>최우선 후보 — 아래 둘로 다시 분해</td>
+</tr>
+<tr>
+<td><strong>Executions</strong>(횟수)</td>
+<td>자주 불려 쌓이는 SQL</td>
+<td>호출 위치 줄이기·한 번 읽기·버퍼 검토</td>
+</tr>
+<tr>
+<td><strong>Average time</strong>(1회 평균)</td>
+<td>단일 실행이 느린 SQL</td>
+<td>WHERE·JOIN·<button class="term" type="button" data-term="인덱스">인덱스</button>·<button class="term" type="button" data-term="Aggregate">집계</button> 검토</td>
+</tr>
+</tbody></table>
+<p>같은 &quot;비싸다&quot;라도 성격이 다르다: 평균 0.4ms인데 21만 번 도는 SQL과, 평균 900ms인데
+하루 10번 도는 SQL은 처방이 다르다. <strong>평균만 보고 우선순위를 정하는 것이 가장 흔한
+실수</strong>다.</p>
+<p>우선순위를 정했으면 코드 위치로 내려간다. <strong>SWLT</strong>(SQL Performance Tuning Worklist)가
+<button class="term" type="button" data-term="SQLM">SQLM</button>의 누적 데이터와 정적 점검 결과를 <strong>소스 위치 기준으로 결합</strong>해, &quot;어느 프로그램의
+어느 줄&quot;을 고칠지 좁혀 준다. 자연스러운 흐름:</p>
+<blockquote>
+<p>SQLM으로 후보 선정 → SWLT로 소스 위치 연결 → ST05로 그 실행 정밀 검사 → (필요하면)
+SAT로 ABAP 시간 확인.</p>
+</blockquote>
+</section><section class="lblock"><h2>Secondary Index — 데이터로 판단</h2>
+<p><a href="CH08-L06.html">Chapter 8 · 인덱스</a>에서 본 보조 <button class="term" type="button" data-term="인덱스">인덱스</button>를 여기서 <strong>데이터로</strong> 판단한다.
+자주·느리게 도는 비키 조건이 <button class="term" type="button" data-term="SQLM">SQLM</button>에 잡히면 인덱스 후보다. 단:</p>
 <ul>
-<li><code>SQLM</code> 활성화 → 일정 기간 운영 데이터 수집 → 분석.</li>
-<li><strong>총 실행시간·횟수·<button class="term" type="button" data-term="레코드">레코드</button> 수</strong>가 큰 SQL부터 개선.</li>
-<li><code>SWLT</code>(SQL Performance Tuning Worklist)로 코드 점검과 결합.</li>
+<li>인덱스는 읽기를 도울 수 있지만 <strong>쓰기 비용·저장 공간</strong>을 늘린다.</li>
+<li>S/4HANA(HANA 컬럼 저장소)에서는 전통적 보조 인덱스의 효용이 다르고 제약도 있다.
+측정 근거 + Basis/DBA 협의 없이 추가하지 않는다.</li>
 </ul>
-<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">SQLM — 운영 누적 SQL 우선순위</span><a class="embed__open" href="../../../embeds/abap/CH35-L03-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH35-L03-S01.html" loading="lazy" title="SQLM — 운영 누적 SQL 우선순위" style="height:420px"></iframe></figure>
-</section><section class="lblock"><h2>Secondary Index 판단</h2>
-<p>CH08-L06에서 본 보조 <button class="term" type="button" data-term="인덱스">인덱스</button>를, 여기서 <strong>데이터로 판단</strong>한다.</p>
+</section><section class="lblock"><h2>어떻게 확인하는가</h2>
+<ol>
+<li><strong>수집 기간·대상 확인</strong> — 어떤 시스템·기간의 통계인지부터. 하루치와 한 달치는
+말하는 바가 다르다.</li>
+<li><strong>Total → 횟수 → 평균 순으로 정렬</strong>하며 후보 성격을 분류한다.</li>
+<li><strong>소스 위치 연결(SWLT)</strong> — 위치를 모르면 고칠 수 없다.</li>
+<li><strong>상세는 ST05로</strong> — <button class="term" type="button" data-term="SQLM">SQLM</button>은 통계다. 특정 실행의 실제 조건·값은 정밀 검사로 본다.</li>
+<li><strong>업무 중요도와 함께</strong> — 총비용이 작아도 마감 업무를 막는 SQL이면 우선순위가 높을
+수 있다. 숫자와 업무를 같이 본다.</li>
+</ol>
+</section><section class="lblock"><h2>직접 우선순위를 정해 보기</h2>
+<p>정렬 기준을 바꿔 가며 1순위가 어떻게 달라지는지 보라. <strong>소스 위치 연결</strong>을 누르면
+후보가 프로그램·위치와 이어지고 다음 단계(ST05 정밀 검사) 안내가 나온다.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title"><button class="term" type="button" data-term="SQLM">SQLM</button> — 정렬 기준이 바꾸는 우선순위</span><a class="embed__open" href="../../../embeds/abap/CH35-L03-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH35-L03-S01.html" loading="lazy" title="SQLM — 정렬 기준이 바꾸는 우선순위" style="height:560px"></iframe></figure>
+</section><section class="lblock"><h2>흔한 실수와 점검 🚧</h2>
 <ul>
-<li>자주·느리게 도는 비키 조건 → 인덱스 후보.</li>
-<li>단, 인덱스는 쓰기 비용·공간이 들고 <strong>S/4HANA에선 권장 제한</strong>(엔진이 빠름).</li>
+<li><strong>평균 시간만으로 우선순위</strong> → 평균 5ms×20만 회가 평균 100ms×10회보다 비싸다.
+Total과 횟수를 함께.</li>
+<li><strong><button class="term" type="button" data-term="SQLM">SQLM</button>만 보고 바로 수정</strong> → 통계로 고르고, 상세는 ST05로 확인한 뒤 고친다.</li>
+<li><strong><button class="term" type="button" data-term="인덱스">인덱스</button> 남발</strong> → 쓰기 비용·공간·HANA 특성·표준 <button class="term" type="button" data-term="객체">객체</button> 제약. 측정 근거 + 협의가 먼저.</li>
+<li><strong>수집 권한·정책 무시</strong> → 운영 성능 데이터 수집은 기간·범위·권한을 운영 정책에
+맞춘다.</li>
 </ul>
-</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+</section><section class="lblock"><h2>정리 📌</h2>
 <ul>
-<li><strong>로컬 측정만</strong> → 운영의 실제 부하는 SQLM으로.</li>
-<li><strong><button class="term" type="button" data-term="인덱스">인덱스</button> 남발</strong> → 측정 근거 없이 추가 금지.</li>
+<li><button class="term" type="button" data-term="SQLM">SQLM</button> = 운영 전체의 건강검진 통계. <strong>우선순위 선정</strong> 도구다.</li>
+<li>Total·횟수·평균 세 정렬은 각각 다른 처방을 가리킨다. 평균 단독 판단 금지.</li>
+<li>흐름: SQLM(후보) → SWLT(소스 위치) → ST05(정밀) → SAT(ABAP 시간).</li>
+<li><button class="term" type="button" data-term="인덱스">인덱스</button>는 데이터와 협의로 판단한다.</li>
 </ul>
 <hr>
-<p>병목을 찾았다. 가장 흔한 원인 — LOOP 안 SELECT를 없애자 → 다음 레슨.</p>
+<p>도구 삼총사를 다 갖췄다. 이제 이 도구들이 <strong>가장 자주 잡아내는 범인</strong>을 직접 잡으러
+간다: LOOP 안의 SELECT.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
