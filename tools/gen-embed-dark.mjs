@@ -7,6 +7,7 @@
      - color: 흰 글자(L≥0.82, 액센트 위 글자)는 유지 · 어두운 중립 텍스트 → 밝은 잉크 · 채도 액센트 텍스트는 밝게 보정.
      - gradient/box-shadow 선언은 건드리지 않음(토큰/그대로).
    이미 수동 html.dark 블록이 있는 엔진(예: step-debugger)은 존중하여 스킵.
+   출력 규칙은 html.dark[data-eng="<엔진>"]로 엔진별 스코프 — 전 위젯이 _dark.css 한 파일을 공유 로드하므로 스코프 없으면 동명 클래스 누수.
    재실행: node tools/gen-embed-dark.mjs  (엔진 css 색이 바뀌면 다시 돌려 _dark.css 갱신). 미세조정은 해당 엔진 css에 html.dark 규칙으로(소스 순서상 우선). */
 import fs from 'node:fs';
 import path from 'node:path';

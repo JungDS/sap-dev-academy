@@ -1,9 +1,9 @@
 # 14. REFERENCE CORPUS — 외부 참고 자료 인벤토리 · 관련성 · 활용 규칙
 
-> 📅 최종수정: 2026-07-24 10:48 KST
+> 📅 최종수정: 2026-07-29 04:27 KST
 > 🎯 `C:\Users\gosts\OneDrive\업무\교육자료_V2\2. ABAP Document\ABAP_DOCU_DOWNLOAD\ABAP_DOCU\`에 모아둔 SAP 공식/오픈소스 자료를 **정밀 분석**한 결과와 **프로젝트 활용 규칙**. 이 코퍼스는 *참고 입력(input)*이며 빌드 파이프라인 밖이다 — `content/abap/**.md`를 쓸 때 사실·예제·구조의 **출처**로 쓴다.
 > ✅ **저작권: 본 과정은 SAP Korea 주관 강의 → SAP 공식문서·cheat-sheet 본문·예제 verbatim(원문 그대로) 사용 허용.** 단 이는 *저작권 허가*일 뿐 — **입문자 가독성(R3)은 별개 규칙으로 유지**: 예제 코드는 공식 원문 그대로 자유 사용하되, **본문 prose가 입문자에게 어려운 곳(영어·압축·non-semantic)은 한국어 입문 톤으로 각색**([04 R3](04_CONVENTIONS.md)). = "verbatim 허용 + R3 각색 유지".
-> 🔗 관련: **오프라인 사실검증은 두 루트를 모두 grep한다**(§5-1, 사용자 확정 2026-07-07) — 루트 A `C:\Users\gosts\OneDrive\업무\교육자료_V2\2. ABAP Document\ABAP_DOCU_HTML\`(keyword doc HTML 덤프·1차 권위) + 루트 B `C:\Users\gosts\OneDrive\업무\교육자료_V2\2. ABAP Document\ABAP_DOCU_DOWNLOAD\ABAP_DOCU\`(본 문서가 카탈로그화하는 GitHub 코퍼스: cheat-sheet·MD 미러·Clean ABAP·예제). 메모리 `abap-keyword-doc-links`는 보조.
+> 🔗 관련: **오프라인 사실검증은 두 루트를 모두 grep한다**(§5-1, 사용자 확정 2026-07-07) — 루트 A `C:\Users\gosts\OneDrive\업무\교육자료_V2\2. ABAP Document\ABAP_DOCU_HTML\`(keyword doc HTML 덤프·1차 권위) + 루트 B `C:\Users\gosts\OneDrive\업무\교육자료_V2\2. ABAP Document\ABAP_DOCU_DOWNLOAD\ABAP_DOCU\`(본 문서가 카탈로그화하는 GitHub 코퍼스: cheat-sheet·MD 미러·Clean ABAP·예제).
 
 ---
 
@@ -96,7 +96,7 @@
 
 ## 5. 사실검증·검색 규율 (커밋된 단일 출처)
 
-> 그동안 메모리(`abap-keyword-doc-links`·`notebooklm-nlm-cli`·`notebooklm-sapui5-chapterids`)에만 있던 운영 규칙을 **여기로 승격** — 메모리가 없어도 `.project-docs`만으로 자립하게. (메모리는 보조로 유지.)
+> 사실검증·검색 운영 규칙의 **단일 출처** — `.project-docs`만으로 자립.
 
 ### 5-1. 오프라인 사실검증 — **두 루트 병행 필수 · 웹검색은 최후수단**
 사실·문법·정의 확인은 **일반 인터넷 검색(구글 등) 대신 오프라인 코퍼스로** 한다(사용자 지시 — 웹검색은 부정확·버전 혼선). **사실검증은 아래 두 루트를 *모두* grep해 교차확인한다**(사용자 확정 2026-07-07 — 한쪽만 보지 말 것):
@@ -126,10 +126,14 @@
 - 학습 사이트 내 노출 = `sample/foundations/official-links.html`.
 
 ### 5-3. NotebookLM — **`nlm` CLI로만**
-- 접근 = `nlm` CLI(`c:\users\goott\.local\bin\nlm.exe`, Google 로그인 상시). 구 `notebooklm` MCP는 제거됨 → `mcp__notebooklm__*` 쓰지 말 것.
+- 접근 = `nlm` CLI(`C:\Users\gosts\AppData\Local\Programs\Python\Python313\Scripts\nlm.exe` — PATH 등록, `pip install notebooklm-mcp-cli`, 2026-07-29 재설치·인증 검증). 재인증 필요 시 `nlm login`(Google 로그인은 사용자가 직접).
 - 질의: `nlm notebook query <노트북ID> "<질문>" --timeout 540 [--json]` · 후속(맥락유지) `-c <conversation-id>` · 소스한정 `-s <source-ids>`. ⚠️ 구문 = `nlm notebook query`(O), 옛 `nlm query notebook`(X). 단발 ~60초.
 - ⚠️ **질의는 구 repo `../sapui5`의 챕터ID로** 한다 — NotebookLM이 sapui5 커리큘럼 기준으로 구성됨. 새 `sap-dev-academy`의 `CHxx`로 물으면 답이 안 옴([04 R14](04_CONVENTIONS.md)).
 - 등록 노트북(2026-06-23 확인): ABAP `ad0e9cde-4dca-451e-b455-de200a9ed7b7`(185소스·ABAP Curriculum v5.4) · UI5 `979f34d8-73c1-4d45-95d2-79db4eee7d41` · Delta 7.0→7.51 `d3f062f5-0fef-4bfb-a4f5-ef9ad2b08625` · S/4HANA+ABAP `fed24390-d189-4874-8d15-ada65a5b636b`. 병렬 검증은 챕터 분담 에이전트로.
+
+### 5-4. zabap_jhy — 사용자 실코드 참고 repo
+- `C:\SAP\ZABAP_JHY`(별도 git repo, abapGit 패키지, **읽기 전용 참고**) = 사용자가 직접 작성한 실제 SAP ABAP 예제. 레슨 코드의 정답 대조·시나리오 원천(keyword doc이 얇은 GUI control·Class API 영역 보완, [10 STEP 0-7](10_REBUILD_EXECUTION.md)).
+- 구조: `src/zabap_jhy_01`～`11`(classic 본편: 타입·제어문·Selection Screen·Module Pool·Open SQL·ALV 등) · `zabap_jhy_99`(고급 GUI/Tree · `99_10～19` 입문 재정리 세트 · CDS/OData/UI5 풀스택). **그대로 이식 금지** — classic+modern 혼용이라 [04 R6](04_CONVENTIONS.md) 게이팅에 맞춰 골라 쓴다.
 
 ---
 
