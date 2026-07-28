@@ -1,6 +1,6 @@
 # 09. CURRICULUM LEDGER — 커리큘럼 개념 원장 (개요 SSOT)
 
-> 📅 최종수정: 2026-07-29 02:02 KST
+> 📅 최종수정: 2026-07-29 02:45 KST
 > 🎯 **2트랙(최종 39번호) 챕터 맵 + 교차 설계 합의(경계·관통예제·도구 아크)의 단일 출처.**
 > 🧭 **per-lesson `introduces`/`prereq`/`prevRel`/`foreshadow`/`advanceUse` = 각 레슨 `.md` front-matter가 라이브 SSOT**([04 R10](04_CONVENTIONS.md)) — 이 문서는 레슨별 데이터를 중복하지 않고 *그 위의 개요·경계·관통설계*만 담는다(§F). 게이팅([04 R15](04_CONVENTIONS.md)) 점검 = front-matter ↔ 본문 ↔ R15.
 > ✅ 현행: **최종 39번호(신규 3장 삽입 리넘버 완료, 2026-07-14)** · 본문 **39챕터 전량 작성 완료**(신규 3장 CH20 Advanced SQL·CH28 Dynamic ABAP·CH29 PCRE Regex 집필 종료). 전면 리빌드는 *선택* — 실행 절차는 [10_REBUILD_EXECUTION](10_REBUILD_EXECUTION.md).
@@ -58,7 +58,7 @@
 | 32 | Enhancement / BAdI / User Exit | 5 | Enhancement Framework·BAdI·User Exit |
 | 33 | 인터페이스 실무: BAPI/RFC/BDC/File | 5 | BAPI·RFC·BDC·OPEN DATASET |
 | 34 | IDoc / ALE / Gateway | 5 | IDoc 3층 구조·ALE 부품(모델/Partner Profile/Port)·상태 추적/BD87 재처리·SEGW/OData(`GET_ENTITYSET`)·**`SELECT … OFFSET` 페이징 L3 도입(L05)** |
-| 35 | 성능 분석과 튜닝 | 5 | SQL Trace·런타임 분석·SELECT 최적화 |
+| 35 | 성능 분석과 튜닝 | 5 | 측정 루프(측정→분류→수정→재측정→기록)·ST05/SAT/SQLM·SWLT 역할 분리·SELECT-in-LOOP 제거(FAE 함정 2종)·대량 처리(푸시다운/Package/병렬 기준) |
 | 36 | AMDP / ADBC / Pushdown | 5 | AMDP·ADBC·코드 푸시다운 |
 | 37 | Forms / Output / PDF | 5 | SmartForms·Adobe Form·출력 |
 | 38 | 운영 품질과 배포 관리 (이송 심화) | 5 | ATC·BAL 로그·SUBMIT VIA JOB·이송 |

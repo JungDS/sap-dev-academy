@@ -35,43 +35,169 @@
       <section class="lhead">
         <p class="lhead__eyebrow">성능 분석과 튜닝</p>
         <h1>대량 데이터 처리와 Package 설계</h1>
-        <p class="lhead__direction">수백만 건을 안정적으로 — 패키지·병렬·푸시다운.</p>
+        <p class="lhead__direction">수백만 건은 속도가 아니라 설계 — 푸시다운·패키지·재시작·병렬 기준.</p>
         <div class="tags"><span class="tag tag--track">Track 2</span><span class="tag tag--ch">Chapter 35</span><span class="tag tag--ls">Lesson 5</span><span class="tag tag--lv">고급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>규모가 커지면 설계가 다르다</h2>
-<p>수백만 건은 &quot;잘 짠 SELECT&quot; 이상의 <strong>설계</strong>가 필요하다.</p>
-<ul>
-<li><strong>패키지 처리</strong>(CH25-L05) — 일정 건수마다 처리·COMMIT로 <button class="term" type="button" data-term="메모리">메모리</button>·잠금 관리.</li>
-<li><strong>병렬 처리</strong> — 작업을 나눠 동시에(<code>aRFC</code>·병렬 프레임워크). 단 복잡·자원 고려.</li>
-<li><strong>Code Pushdown</strong> — 가공을 ABAP이 아니라 <strong>DB(HANA)에서</strong> 하도록 — CDS·AMDP(CH36)·
-modern SQL 식(CH19). &quot;데이터를 ABAP으로 끌어와 LOOP&quot; 대신 <strong>DB에서 <button class="term" type="button" data-term="Aggregate">집계</button>해 결과만</strong>.</li>
-</ul>
-<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">대량 처리 전략 선택 트리</span><a class="embed__open" href="../../../embeds/abap/CH35-L05-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH35-L05-S01.html" loading="lazy" title="대량 처리 전략 선택 트리" style="height:380px"></iframe></figure>
+<section class="lblock"><h2>🏗️ 빠른 SELECT로도 부족한 세계</h2>
+<p><a href="CH35-L04.html">1+N</a>을 없앴는데도 수백만 건 처리는 여전히 위험하다. 전부를 내부
+테이블에 담으면 <button class="term" type="button" data-term="메모리">메모리</button>가 터지고, 한 <button class="term" type="button" data-term="트랜잭션">트랜잭션</button>이 너무 오래 <a href="CH26-L01.html">잠금</a>을 잡고,
+중간에 실패하면 <strong>처음부터 다시</strong> 돌려야 한다. 대량 처리는 속도 문제가 아니라 <strong>설계
+문제</strong>다: 속도와 안정성을 함께 본다.</p>
+<p>설계는 네 가지 질문으로 갈린다.</p>
+<table>
+<thead>
+<tr>
+<th>질문</th>
+<th>예</th>
+<th>방향</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>DB가 잘하는 일인가</td>
+<td><button class="term" type="button" data-term="Aggregate">집계</button>·정렬·필터·JOIN</td>
+<td><strong>푸시다운</strong> — DB에서 줄여서 결과만</td>
+</tr>
+<tr>
+<td>한 번에 메모리에 담아도 되나</td>
+<td>수천 건 vs 수백만 건</td>
+<td>크면 <strong>패키지 처리</strong></td>
+</tr>
+<tr>
+<td>실패 후 이어서 시작해야 하나</td>
+<td>야간 배치·파일 처리</td>
+<td><strong>재시작 key·상태 로그</strong></td>
+</tr>
+<tr>
+<td>독립 분할이 가능한가</td>
+<td>공연별·기간별·번호 구간별</td>
+<td><strong>병렬 후보</strong>(조건부)</td>
+</tr>
+</tbody></table>
+</section><section class="lblock"><h2>푸시다운 — 데이터를 끌어오지 말고 일을 내려보내라</h2>
+<p><button class="term" type="button" data-term="Code Pushdown">Code Pushdown</button>(가공을 ABAP이 아니라 DB에서 하게 하는 원칙)의 출발은 이미 배웠다.
+<a href="CH13-L03.html">Chapter 13 · GROUP BY와 Aggregate</a>의 <button class="term" type="button" data-term="Aggregate">집계</button>와 <a href="CH20-L01.html">Chapter 20</a>의
+고급 SQL이 그 도구다. 원칙은 하나: <strong>ABAP으로 100만 행을 끌어와 LOOP로 합산하지 말고, DB에서 합계를
+만들어 결과 몇 줄만 받아라.</strong> <code>GROUP BY</code>와 집계는 DB에서 만들어져 ABAP 서버로 옮길
+데이터 양 자체를 줄인다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
-4</pre><pre class="abap-editor__code"><code><span class="tok-com">" 끌어와서 ABAP 집계(느림) 대신</span>
-<span class="tok-kw">SELECT</span> carrid, <span class="tok-kw">SUM</span>( seatsocc ) <span class="tok-kw">AS</span> occ      <span class="tok-com">" DB에서 집계(빠름)</span>
-  <span class="tok-kw">FROM</span> sflight <span class="tok-kw">GROUP</span> <span class="tok-kw">BY</span> carrid
-  <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> @<span class="tok-kw">DATA</span>(lt).</code></pre></div></div>
-</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+4
+5
+6
+7
+8</pre><pre class="abap-editor__code"><code><span class="tok-com">" ❌ 전 행을 끌어와 ABAP에서 합산 (네트워크·메모리 낭비)</span>
+<span class="tok-com">" ✅ DB에서 집계해 결과만 — 공연별 예매 좌석 합계</span>
+<span class="tok-kw">SELECT</span> concert_id,
+       <span class="tok-kw">SUM</span>( seats ) <span class="tok-kw">AS</span> total_seats
+  <span class="tok-kw">FROM</span> zbooking
+  <span class="tok-kw">WHERE</span> status = <span class="tok-str">'N'</span>
+  <span class="tok-kw">GROUP</span> <span class="tok-kw">BY</span> concert_id
+  <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> @<span class="tok-kw">DATA</span>(gt_seat_sum).</code></pre></div></div>
+<p>더 강한 푸시다운 수단(AMDP·ADBC)은 <a href="CH36-L01.html">Chapter 36</a>의 주제다. 이 레슨은
+&quot;어떤 일을 DB로 내릴지&quot; <strong>판단 기준</strong>까지만이다.</p>
+</section><section class="lblock"><h2>패키지 처리 — 전체를 한 번에 대신, 안전한 단위로</h2>
+<p>ABAP 쪽 업무 검증이 꼭 필요해서 데이터를 가져와야 한다면, <strong>끊어서</strong> 가져온다.
+<a href="CH25-L05.html">Chapter 25 · Package 처리</a>에서 본 그 정신이다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> gv_last_id   <span class="tok-kw">TYPE</span> zbooking-booking_id.
+<span class="tok-kw">DATA</span> gv_pack_size <span class="tok-kw">TYPE</span> i <span class="tok-kw">VALUE</span> <span class="tok-num">10000</span>.
+
+<span class="tok-kw">DO</span>.
+  <span class="tok-kw">SELECT</span> booking_id, customer, status
+    <span class="tok-kw">FROM</span> zbooking
+    <span class="tok-kw">WHERE</span> booking_id &gt; @gv_last_id
+    <span class="tok-kw">ORDER</span> <span class="tok-kw">BY</span> booking_id
+    <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> @<span class="tok-kw">DATA</span>(gt_pack)
+    <span class="tok-kw">UP</span> <span class="tok-kw">TO</span> @gv_pack_size <span class="tok-kw">ROWS</span>.
+
+  <span class="tok-kw">IF</span> gt_pack <span class="tok-kw">IS</span> <span class="tok-kw">INITIAL</span>.
+    <span class="tok-kw">EXIT</span>.                            <span class="tok-com">" 더 없음 — 종료</span>
+  <span class="tok-kw">ENDIF</span>.
+
+  <span class="tok-com">" 한 패키지 검증·처리 + 성공/실패 로그(재시작 근거)</span>
+
+  gv_last_id = gt_pack[ <span class="tok-kw">lines</span>( gt_pack ) ]-booking_id.
+  <span class="tok-kw">COMMIT</span> <span class="tok-kw">WORK</span>.                       <span class="tok-com">" 패키지 단위 확정</span>
+<span class="tok-kw">ENDDO</span>.</code></pre></div></div>
 <ul>
-<li><strong>전부 <button class="term" type="button" data-term="메모리">메모리</button>로</strong> → 수백만 건을 한 번에 itab에 담으면 메모리 폭발. 패키지·스트리밍.</li>
-<li><strong>ABAP에서 <button class="term" type="button" data-term="Aggregate">집계</button></strong> → DB가 잘하는 일(집계·정렬)은 DB로 내린다.</li>
+<li>마지막 처리 key(<code>gv_last_id</code>)를 로그에 남기면, 실패해도 <strong>그 지점부터 재시작</strong>할 수
+있다. 실패는 <button class="term" type="button" data-term="예외">예외</button>가 아니라 설계 대상이다(<a href="CH25-L04.html">Chapter 25 · 재처리</a>).</li>
+<li><strong>패키지 크기는 트레이드오프</strong>다: 너무 작으면 commit·왕복 횟수가 폭증하고, 너무 크면
+<button class="term" type="button" data-term="메모리">메모리</button>·잠금·실패 시 재처리 범위가 커진다. 정답 수치는 없고, 운영 최대 건수를 알고
+실측으로 정한다.</li>
+</ul>
+</section><section class="lblock"><h2>병렬 — 마지막에, 조건이 맞을 때만</h2>
+<p>작업을 나눠 동시에 돌리면(aRFC 등) 시간이 줄 수 있다. 하지만 병렬은 성능 만능 키가
+아니라 <strong>조건부 카드</strong>다.</p>
+<ul>
+<li><strong>독립 분할이 가능</strong>하고(공연별·기간별처럼 서로 안 겹침),</li>
+<li><strong>같은 key·같은 잠금을 동시에 잡지 않고</strong>(<a href="CH26-L01.html">Chapter 26</a>의 충돌이
+병렬에서는 배로 위험),</li>
+<li><strong>패키지 단위로 실패를 추적</strong>할 수 있을 때만 검토한다.</li>
+</ul>
+<p>그리고 병렬 수를 늘리면 DB·work process·잠금·RFC 자원을 <strong>시스템 전체와 나눠</strong> 쓴다.
+&quot;내 프로그램만 빨라지는가&quot;가 아니라 &quot;시스템에 부담을 주지 않는가&quot;까지가 판단이다.</p>
+</section><section class="lblock"><h2>직접 설계해 보기</h2>
+<p>시나리오별로 전략(푸시다운/패키지/병렬/단순 처리)을 골라 보고, <strong>패키지 크기
+슬라이더</strong>로 commit 횟수·피크 <button class="term" type="button" data-term="메모리">메모리</button>·실패 시 재처리 범위가 어떻게 맞바뀌는지 확인해
+보라.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">대량 처리 전략 선택 트리</span><a class="embed__open" href="../../../embeds/abap/CH35-L05-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH35-L05-S01.html" loading="lazy" title="대량 처리 전략 선택 트리" style="height:420px"></iframe></figure>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">Package 크기 튜너 — commit·메모리·재처리 범위</span><a class="embed__open" href="../../../embeds/abap/CH35-L05-S02.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH35-L05-S02.html" loading="lazy" title="Package 크기 튜너 — commit·메모리·재처리 범위" style="height:520px"></iframe></figure>
+</section><section class="lblock"><h2>흔한 실수와 점검 🚧</h2>
+<ul>
+<li><strong>전부 <button class="term" type="button" data-term="메모리">메모리</button>로</strong> → 테스트에선 되고 운영에선 터진다. 규모 추정(건수·건당 크기)이
+설계의 첫 단추.</li>
+<li><strong>ABAP에서 <button class="term" type="button" data-term="Aggregate">집계</button></strong> → 합계·개수·정렬·필터는 DB가 잘한다. DB에서 100건으로 줄일 것을
+100만 건 끌어오지 말 것.</li>
+<li><strong>commit이 너무 잦거나 너무 늦거나</strong> → 잦으면 성능·원자성이, 늦으면 잠금·<button class="term" type="button" data-term="ROLLBACK WORK">롤백</button>
+부담이 커진다. &quot;업무상 함께 성공해야 하는 단위&quot;와 &quot;재시작 가능한 단위&quot;를 같이 본다.</li>
+<li><strong>병렬 만능주의</strong> → 같은 key를 갱신하는 작업의 병렬화는 충돌 제조기다. 독립 분할이
+먼저다.</li>
+<li><strong>AMDP/ADBC 앞당기기</strong> → 이 장에서는 배운 SQL(<code>GROUP BY</code>·집계)의 푸시다운까지만.
+구현 문법은 <a href="CH36-L01.html">Chapter 36</a>에서.</li>
+</ul>
+</section><section class="lblock"><h2>정리 📌</h2>
+<ul>
+<li>대량 처리 = <strong>줄이고(푸시다운) → 끊고(패키지) → 남기고(재시작 로그) → 조건이 맞으면
+나눈다(병렬)</strong>.</li>
+<li>패키지 크기는 commit 횟수 ↔ <button class="term" type="button" data-term="메모리">메모리</button>·재처리 범위의 트레이드오프. 실측으로 정한다.</li>
+<li>병렬은 독립 분할 + 잠금 무충돌 + 실패 추적이 될 때만.</li>
 </ul>
 </section><section class="lblock"><h2>🧩 도전 과제 (서브퀘스트)</h2>
 <blockquote>
 <p>선택 과제 — 예매현황 리포트를 빠르게 만든다.</p>
 </blockquote>
 <ol>
-<li>예매현황 리포트를 <strong>ST05</strong>로 트레이스해 가장 느린 SELECT를 찾는다.</li>
-<li>LOOP 안 SELECT가 있으면 <strong>FOR ALL ENTRIES/JOIN</strong>(CH13)으로 제거한다.</li>
-<li>(심화) 대량 <button class="term" type="button" data-term="Aggregate">집계</button>를 <strong>Code Pushdown</strong>(GROUP BY를 DB에서)으로 바꿔 ABAP LOOP 합산을 없앤다.</li>
+<li>리포트를 <a href="CH35-L01.html">ST05</a>로 측정해 &quot;비싼 SQL&quot;과 &quot;반복 SQL&quot;을 분류하고 수치를
+기록한다.</li>
+<li>LOOP 안 SELECT를 <a href="CH35-L04.html">사전 조회 패턴</a>으로 제거하고, 같은 조건으로
+재측정해 before/after를 남긴다.</li>
+<li>(심화) 공연별 <button class="term" type="button" data-term="Aggregate">집계</button>를 <a href="CH35-L05.html">푸시다운</a>으로 바꾸고, 대량 구간은 패키지
+처리로 재설계한다. 판단이 막히면 <a href="CH35-L03.html">SQLM</a> 우선순위로 돌아온다.</li>
 </ol>
-<p>힌트: L01(ST05)·L02(SAT)·L04(SELECT-in-LOOP)·L05(Pushdown).</p>
 <hr>
-<p>성능 분석·튜닝을 다뤘다. DB에서 직접 도는 로직 — AMDP·ADBC → <strong>CH36</strong>.</p>
+<p>측정하고, 잡고, 설계했다. 다음은 푸시다운의 본격 구현: DB 안에서 직접 도는 로직,
+<a href="CH36-L01.html">Chapter 36 · AMDP / ADBC / Pushdown</a>으로 간다.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

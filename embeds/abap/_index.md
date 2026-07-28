@@ -273,6 +273,12 @@
 | CH34-L03-S01 | CH34-L03 | idoc-status | 01→03→64→51/53 생애주기·원인 수정 게이트(미수정 재처리=51 반복)·운영 이력 로그 | ✅ |
 | CH34-L04-S01 | CH34-L04 | odata-tree | SEGW 5부품 트리+시나리오 4(정상/미등록404/모델불일치400/주방미구현 0건)→HTTP 배지·로그 힌트 | ✅ |
 | CH34-L05-S01 | CH34-L05 | odata-query | 쿼리→URL+대응 SELECT 줄 동기 표시·정렬 끄기(페이지 셔플)·filter 미반영 사고 데모·정본 C001~/이름 풀 | ✅ |
+| CH35-L01-S01 | CH35-L01 | sql-trace | 트레이스 표 헤더 정렬(비싼 SQL↔반복 SQL 분류)·수정 후 재측정(#retest)=before/after 수치 기록 | ✅ |
+| CH35-L02-S01 | CH35-L02 | time-profile | Hit List 막대(ABAP/DB/외부 3색)·행 클릭→다음 행동 3버튼(ST05/내부 테이블/외부) 정오 피드백 | ✅ |
+| CH35-L03-S01 | CH35-L03 | sql-trace | (재사용) SQLM 누적 표 — total/횟수/평균 정렬로 우선순위 변화·SWLT 소스 연결(#swlt) | ✅ |
+| CH35-L04-S01 | CH35-L04 | select-in-loop | N 슬라이더(0 포함)→1+N vs 2회 왕복·FAE guard 체크(#guard)=빈 driver 전체 조회 사고·중복 제거 key 수 | ✅ |
+| CH35-L05-S01 | CH35-L05 | decision-tree | (재사용) 대량 처리 전략 선택 트리(푸시다운/패키지/병렬/단순) | ✅ |
+| CH35-L05-S02 | CH35-L05 | pkg-tuner | 패키지 크기 슬라이더(1천/1만/10만)→commit 횟수↔피크 메모리↔재처리 범위 막대·양극단 경고 | ✅ |
 | CH04-L02-S01 | CH04-L02 | fill-blank | 문자열 함수 빈칸(INTO·AT·strlen·FIND) | ✅ |
 | CH04-L07-S01 | CH04-L07 | fill-blank | 구구단 빈칸(TIMES·sy-index·*·ENDDO) | ✅ |
 | CH04-L03-S01 | CH04-L03 | mermaid | IF/ELSEIF/ELSE 분기 흐름도(p_amt: 큰금액/소액/0·음수) | ✅ |
@@ -365,7 +371,11 @@
 | ale-config (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH34-L02-S02 | PARTS 5 토글→발행 시 첫 누락 부품에서 단계 트랙 정지(stopAt)·진단 버튼=누락 목록·전부 켜면 ④ 수신까지 |
 | odata-tree | 1 | 공통(_engine)·자체 postHeight ✅ | CH34-L04-S01 | 정적 details 트리(5부품)+시나리오(#httpBadge/#scBody/#scHint)·복구 이력: JS 실종이던 엔진을 신규 작성 |
 | odata-query | 1 | 공통(_engine)·자체 postHeight ✅ | CH34-L05-S01 | 쿼리 입력→URL·대응 SELECT(#sel)·결과 표·#nosort=셔플(ORDER BY 없음 사고)·#nofilter=조건 불변 사고·정본 C001~C005 |
-| decision-tree | 3 | 공통(_engine)+_autoheight ✅ | CH06-L02-S02 · CH20-L06-S01 · CH32-L04-S01 | 범용 선택 트리(질문 분기=위젯 config)·Table Kind/고급 SQL/확장 수단 선택 |
+| sql-trace | 2 | 공통(_engine)·자체 postHeight ✅ | CH35-L01-S01 · CH35-L03-S01 | trace-cfg JSON {cols/rows/worstKey/callout+(선택)after·afterCallout(#retest)/swltCallout(#swlt)} 주도·헤더 정렬·worst 강조·ST05/SQLM 겸용 |
+| time-profile | 1 | 공통(_engine)·자체 postHeight ✅ | CH35-L02-S01 | Hit List 막대(ABAP/DB/외부 ext)·행 클릭(#acts)→다음 행동 3버튼 정오 피드백(ans: st05/it/ext) |
+| select-in-loop | 1 | 공통(_engine)·자체 postHeight ✅ | CH35-L04-S01 | N 슬라이더 STEPS(0~1만)→1+N vs 2회·#guard 체크=빈 driver 전체 조회 경고(공식 FAE 함정)·#dk=중복 제거 key 수 |
+| pkg-tuner (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH35-L05-S02 | 총 100만 건 가정·크기 3단(1천/1만/10만)→commit(log 스케일)/메모리/재처리 범위 막대·양극단 warn·가운데=실측 안내 |
+| decision-tree | 4 | 공통(_engine)+_autoheight ✅ | CH06-L02-S02 · CH20-L06-S01 · CH32-L04-S01 · CH35-L05-S01 | 범용 선택 트리(질문 분기=위젯 config)·Table Kind/고급 SQL/확장 수단/대량 처리 전략 선택 |
 | factory-sim (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH27-L01-S01 | 타입 세그(V/G/Z)→생성 클래스·설명 전환·호출부 코드 고정 표시 |
 | singleton-sim (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH27-L02-S01 | get_instance vs NEW 버튼→인스턴스 주소 목록·같음/다름 판정 |
 | strategy-sim (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH27-L03-S01 | 전략 세그+좌석 입력→단가×석 가격 계산·client 코드 불변 |

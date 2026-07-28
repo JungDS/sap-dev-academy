@@ -1,11 +1,14 @@
 /* sql-trace — SQL Trace/Monitor 결과 분석 체험 (CH35 L01·L03).
-   위젯 <script id="trace-cfg">: { header, cols:[{k,label,num?}], rows:[...], worstKey, callout }.
+   위젯 <script id="trace-cfg">: { header, cols:[{k,label,num?}], rows:[...], worstKey, callout,
+     (선택) after:[...]+afterCallout(#retest 버튼: 수정 후 재측정 — rows 교체·before/after),
+     (선택) swltCallout(#swlt 버튼: 소스 위치 연결 안내) }.
    컬럼 헤더 클릭 → 그 컬럼 내림차순 정렬. worstKey 최대 행 강조. */
 (function () {
   var $ = function (id) { return document.getElementById(id); };
   var cfg; try { cfg = JSON.parse($('trace-cfg').textContent); } catch (e) { cfg = { cols: [], rows: [] }; }
   var rows = cfg.rows.slice(), sortKey = cfg.worstKey, desc = true;
   var worstVal = Math.max.apply(null, cfg.rows.map(function (r) { return +r[cfg.worstKey] || 0; }));
+  function recalcWorst() { worstVal = Math.max.apply(null, rows.map(function (r) { return +r[cfg.worstKey] || 0; })); }
   function render() {
     $('thead').innerHTML = '<tr>' + cfg.cols.map(function (c) {
       var ar = (c.k === sortKey) ? ' <span class="ar">' + (desc ? '▼' : '▲') + '</span>' : '';
@@ -30,6 +33,14 @@
   }
   if (cfg.callout) $('callout').innerHTML = cfg.callout;
   if (cfg.header) $('phead').textContent = cfg.header;
+  if ($('retest') && cfg.after) $('retest').addEventListener('click', function () {
+    rows = cfg.after.slice(); recalcWorst(); render();
+    if (cfg.afterCallout) $('callout').innerHTML = cfg.afterCallout;
+    $('retest').disabled = true;
+  });
+  if ($('swlt') && cfg.swltCallout) $('swlt').addEventListener('click', function () {
+    $('callout').innerHTML = cfg.swltCallout;
+  });
   function post() { try { if (document.documentElement.clientWidth < 60) return; var el = document.querySelector('.wrap'); var h = Math.ceil(el ? el.getBoundingClientRect().height : document.body.scrollHeight) + 6; parent.postMessage({ sda: 'embed-height', h: h }, '*'); } catch (e) {} }
   window.addEventListener('load', post); window.addEventListener('resize', post);
   render();
