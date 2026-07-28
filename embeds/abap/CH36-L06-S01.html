@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<!-- CH36-L06-S01 — 엔진: judge-quiz · _engine/_base.css. 푸시다운 운영 적절성 판정(구 CH36-L05-S01 이동·보강). -->
+<html lang="ko" data-eng="judge-quiz">
+<head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>운영 적절성 판정 · CH36-L06-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/judge-quiz.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">이 선택, 운영에 들여도 될까?</p>
+  <p class="lead">각 상황이 <b>적절</b>한지 <b>부적절(과용·리스크)</b>인지 판정해 보세요. 승인 체크리스트 7항목이 판단 기준입니다.</p>
+  <div class="score"><span>점수</span><div class="bar"><i id="sbar"></i></div><span class="v" id="sv">0 / 0</span></div>
+  <div id="list"></div>
+  <div class="result" id="result"></div>
+  <script type="application/json" id="quiz">
+  {
+    "labels": ["✓ 적절", "✗ 부적절"],
+    "items": [
+      { "q": "공연별 좌석 합계를 <b>Open SQL GROUP BY</b>로 구한다.", "a": 0, "why": "사다리 1순위. 표준 SQL로 충분하면 거기서 끝냅니다." },
+      { "q": "단순 단건 조회를 굳이 <b>AMDP</b>로 만든다.", "a": 1, "why": "과용. 옮기는 것만으로 빨라지지 않고, client·테스트 책임만 늘어납니다." },
+      { "q": "다단계 중간 결과가 필요한 로직을 <b>측정 근거와 함께 AMDP</b>로 만든다.", "a": 0, "why": "SQLScript 절차 로직의 제자리. 측정 근거(before/after)가 있어야 승인됩니다." },
+      { "q": "곧 다른 DB로 이전할 시스템에서 <b>Native SQL</b>을 남발한다.", "a": 1, "why": "DB 종속은 이전 날의 발목입니다. 이식성 리스크를 문서 없이 키우는 선택." },
+      { "q": "AMDP/ADBC를 <b>별도 클래스로 격리</b>하고 사유·측정을 기록한다.", "a": 0, "why": "승인 체크리스트 6번. DB가 바뀌는 날 그 클래스만 교체하면 됩니다." },
+      { "q": "<b>ABAP Cloud</b> 대상 핵심 로직을 Native SQL로 짠다.", "a": 1, "why": "Cloud 기준은 released API·CDS/RAP 우선입니다. Native SQL은 제한이 큽니다." }
+    ]
+  }
+  </script>
+</div>
+<script src="../_engine/judge-quiz.js" defer></script>
+</body>
+</html>

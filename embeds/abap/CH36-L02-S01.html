@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<!-- CH36-L02-S01 — 엔진: code-anatomy · _engine/_base.css. AMDP 메서드 해부(클릭 주석). -->
+<!-- CH36-L02-S01 — 엔진: code-anatomy · _engine/_base.css. AMDP 해부(클릭 주석) + 오류 카드 4종.
+     코드는 본문 CH36-L02 정본과 동일(iv_client·CLASS-METHODS·선언/구현 READ-ONLY). -->
 <html lang="ko" data-eng="code-anatomy">
 <head>
 <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,36 +10,59 @@
 <body>
 <div class="wrap">
   <p class="hd">AMDP 메서드 해부 — 부분을 클릭해 보기</p>
-  <p class="lead">밑줄 친 부분을 클릭하면 그 구문이 무슨 역할인지 설명이 나옵니다. AMDP는 ABAP 메서드 안에 <b>SQLScript</b>를 담아 DB에서 실행합니다.</p>
+  <p class="lead">밑줄 부분을 클릭하면 역할 설명이 나옵니다. 다 봤다면 아래 <b>오류 카드 4장</b>으로 "무엇이 왜 깨지는지"까지 확인하세요.</p>
   <div class="anat">
-    <div class="anat__h"><span class="dot"></span>ZCL_BOOKING_AMDP (ABAP · AMDP)</div>
-<pre class="anat__code"><span class="kw">CLASS</span> zcl_booking_amdp <span class="kw">DEFINITION</span>.
+    <div class="anat__h"><span class="dot"></span>ZCL_BOOKING_AMDP (ADT에서 편집)</div>
+<pre class="anat__code"><span class="kw">CLASS</span> zcl_booking_amdp <span class="kw">DEFINITION</span> <span class="kw">PUBLIC FINAL CREATE PUBLIC</span>.
   <span class="kw">PUBLIC SECTION</span>.
     <span class="mk" data-a="marker">INTERFACES if_amdp_marker_hdb</span>.
-    <span class="kw">METHODS</span> get_stats
-      <span class="kw">IMPORTING</span> <span class="kw">VALUE</span>(iv_concert) <span class="kw">TYPE</span> zconcert-concert_id
-      <span class="kw">EXPORTING</span> <span class="kw">VALUE</span>(et_stats)   <span class="kw">TYPE</span> ztt_stats.
+    <span class="cm">" ts_stat/tt_stat TYPES 선언은 본문 코드와 동일(지면 생략)</span>
+    <span class="kw">CLASS-METHODS</span> get_stats
+      <span class="kw">IMPORTING</span> <span class="kw">VALUE</span>(iv_client)  <span class="kw">TYPE</span> mandt
+                <span class="kw">VALUE</span>(iv_concert) <span class="kw">TYPE</span> zconcert-concert_id
+      <span class="kw">EXPORTING</span> <span class="kw">VALUE</span>(et_stats)   <span class="kw">TYPE</span> tt_stat
+      <span class="mk" data-a="rodecl">AMDP OPTIONS READ-ONLY</span>.
 <span class="kw">ENDCLASS</span>.
 
 <span class="kw">CLASS</span> zcl_booking_amdp <span class="kw">IMPLEMENTATION</span>.
-  <span class="kw">METHOD</span> get_stats <span class="mk" data-a="byproc">BY DATABASE PROCEDURE FOR HDB LANGUAGE SQLSCRIPT</span>
-                   <span class="mk" data-a="using">USING zbooking</span> <span class="mk" data-a="readonly">OPTIONS READ-ONLY</span>.
-    et_stats = SELECT concert_id, <span class="mk" data-a="group">SUM( seats ) ... GROUP BY</span> concert_id
-               FROM zbooking
-               WHERE concert_id = <span class="mk" data-a="param">:iv_concert</span>;
+  <span class="kw">METHOD</span> get_stats <span class="mk" data-a="byproc">BY DATABASE PROCEDURE FOR HDB</span>
+                   <span class="mk" data-a="lang">LANGUAGE SQLSCRIPT</span>
+                   <span class="mk" data-a="roimpl">OPTIONS READ-ONLY</span>
+                   <span class="mk" data-a="using">USING zbooking</span>.
+    et_stats =
+      SELECT mandt, concert_id,
+             COUNT(*) AS booking_cnt, SUM( seats ) AS total_seats
+        FROM zbooking
+       WHERE <span class="mk" data-a="client">mandt = :iv_client</span>
+         AND concert_id = <span class="mk" data-a="param">:iv_concert</span>
+       GROUP BY mandt, concert_id;
   <span class="kw">ENDMETHOD</span>.
 <span class="kw">ENDCLASS</span>.</pre>
   </div>
-  <div class="anno idle" id="anno">밑줄 친 구문을 클릭하면 여기에 설명이 나옵니다.</div>
-  <div class="note">💡 본문은 <b>SQLScript</b>라 ABAP 문을 못 씁니다. 접근 테이블은 <code>USING</code>에 선언해야 하고, 읽기만 하면 <code>READ-ONLY</code>로 더 빠르고 안전하게.</div>
+  <div class="anno idle" id="anno">밑줄 친 부분을 클릭해 보세요.</div>
+  <div class="bugs" id="bugs"></div>
+  <div class="anno idle" id="bugOut">🚨 오류 카드를 클릭하면 무엇이 깨지는지 나옵니다.</div>
+  <div class="note">💡 AMDP는 <b>ADT(Eclipse)</b>에서만 편집·디버깅됩니다(SE38은 열람만). 이 페이지의 코드는 구조 학습용 시뮬레이션입니다.</div>
   <script type="application/json" id="anno-cfg">
   {
-    "marker": { "t": "INTERFACES if_amdp_marker_hdb", "d": "이 클래스가 AMDP임을 표시하는 마커 인터페이스. 없으면 AMDP로 인식되지 않습니다." },
-    "byproc": { "t": "BY DATABASE PROCEDURE FOR HDB LANGUAGE SQLSCRIPT", "d": "메서드 본문이 ABAP이 아니라 SQLScript이며, HANA(HDB)에서 DB 프로시저로 실행됨을 선언합니다." },
-    "using": { "t": "USING zbooking", "d": "SQLScript가 접근할 테이블/뷰를 명시적으로 선언(필수). 빠뜨리면 컴파일 오류." },
-    "readonly": { "t": "OPTIONS READ-ONLY", "d": "읽기 전용 선언. DB가 병렬·읽기 복제본으로 더 빠르게 처리하고, 실수로 쓰기를 넣으면 문법 검사가 막아줍니다." },
-    "group": { "t": "SUM(...) GROUP BY", "d": "집계를 DB에서 수행 — 원본 행을 ABAP으로 끌어오지 않고 결과만 돌려줍니다(Code-to-Data)." },
-    "param": { "t": ":iv_concert", "d": "ABAP 입력 파라미터는 SQLScript 안에서 콜론(:)을 붙여 참조합니다." }
+    "marker":  { "t": "① Tag Interface", "d": "이 클래스에 HANA AMDP가 있다는 표시. <code>IF_AMDP_MARKER_HDB</code>가 없으면 AMDP 구현 자체가 불가능합니다." },
+    "rodecl":  { "t": "② 선언부 READ-ONLY", "d": "읽기 전용 AMDP 선언. <b>성능 옵션이 아니라 쓰기 금지 제약</b>입니다. 호출 가능한 다른 AMDP도 읽기 전용으로 제한됩니다." },
+    "byproc":  { "t": "③ BY DATABASE PROCEDURE FOR HDB", "d": "이 메서드의 몸이 ABAP이 아니라 <b>HANA에서 실행되는 DB 프로시저</b>라는 선언입니다." },
+    "lang":    { "t": "③ LANGUAGE SQLSCRIPT", "d": "구현부 언어 = SQLScript. <code>DATA</code>·<code>LOOP</code> 같은 ABAP 문장은 쓸 수 없습니다." },
+    "roimpl":  { "t": "③ 구현부 OPTIONS READ-ONLY", "d": "구현부에도 읽기 전용 표시. 선언(②)과 함께 이 프로시저 안의 DB 변경을 막습니다." },
+    "using":   { "t": "④ USING", "d": "SQLScript가 접근하는 테이블·뷰·다른 AMDP의 의존성 목록. 빠뜨리면 활성화가 실패하고 where-used 추적이 끊깁니다." },
+    "client":  { "t": "client 직접 처리", "d": "Open SQL과 달리 <b>자동 client 조건이 없습니다.</b> client를 파라미터로 받아 <code>WHERE mandt = :iv_client</code>로 직접 제한합니다." },
+    "param":   { "t": ":파라미터 표기", "d": "SQLScript 안에서 입력 파라미터는 <code>:iv_concert</code>처럼 콜론으로 참조합니다. ABAP SQL의 <code>@</code>가 아닙니다." }
+  }
+  </script>
+  <script type="application/json" id="bug-cfg">
+  {
+    "bugs": [
+      { "c": "USING 삭제", "t": "활성화 실패", "d": "SQLScript가 zbooking을 읽는데 <code>USING zbooking</code>이 없으면 의존성을 알 수 없어 활성화 단계에서 깨집니다." },
+      { "c": "WHERE concert_id = @iv_concert", "t": "표기법 오류", "d": "SQLScript 안에서 <code>@</code>는 ABAP SQL 표기입니다. <code>:iv_concert</code>로 써야 합니다." },
+      { "c": "mandt 조건 삭제", "t": "client 혼입 위험", "d": "자동 client 조건이 없으므로 모든 client의 예매가 섞여 나옵니다. 운영에서 치명적인 데이터 사고입니다." },
+      { "c": "UPDATE zbooking …", "t": "READ-ONLY 위반", "d": "읽기 전용 AMDP 안의 쓰기 문장은 제약 위반입니다. READ-ONLY가 이런 실수를 구조적으로 막아 줍니다." }
+    ]
   }
   </script>
 </div>

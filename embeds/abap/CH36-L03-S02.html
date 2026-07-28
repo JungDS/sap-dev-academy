@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<!-- CH36-L03-S02 — 엔진: judge-quiz · _engine/_base.css. ADBC 위험 카드 판정(적절/위험). -->
+<html lang="ko" data-eng="judge-quiz">
+<head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ADBC 위험 판정 · CH36-L03-S02</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/judge-quiz.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">이 ADBC 코드, 적절할까 위험할까?</p>
+  <p class="lead">다섯 장의 코드 카드를 판정해 보세요. ADBC에서 개발자에게 넘어온 책임(client·injection·자원·로그)이 기준입니다.</p>
+  <div class="score"><span>점수</span><div class="bar"><i id="sbar"></i></div><span class="v" id="sv">0 / 0</span></div>
+  <div id="list"></div>
+  <div class="result" id="result"></div>
+  <script type="application/json" id="quiz">
+  {
+    "labels": ["✓ 적절", "⚠ 위험"],
+    "items": [
+      { "q": "<code>`WHERE concert_id = '` && pa_conc && `'`</code> — 사용자 입력을 문자열에 잇는다.", "a": 1,
+        "why": "SQL injection. 입력이 SQL 문법으로 해석될 수 있습니다. 값은 <code>?</code> + <code>set_param</code> 바인딩으로." },
+      { "q": "<code>WHERE mandt = ?</code>에 <code>sy-mandt</code>를 바인딩하고 조회한다.", "a": 0,
+        "why": "client를 직접 챙기는 올바른 패턴입니다. Native SQL엔 자동 client 조건이 없습니다." },
+      { "q": "client 조건 없이 <code>SELECT … FROM zbooking</code>을 그대로 보낸다.", "a": 1,
+        "why": "모든 client의 데이터가 섞여 나옵니다. 운영에서 치명적인 데이터 사고입니다." },
+      { "q": "결과를 다 읽은 뒤 <code>close( )</code> 없이 끝낸다.", "a": 1,
+        "why": "결과셋 자원이 새어 나갑니다. 읽었으면 닫는 것까지가 한 세트입니다." },
+      { "q": "<code>CATCH cx_sql_exception</code>에서 SQL code·message를 로그에 남긴다.", "a": 0,
+        "why": "운영 관찰성의 기본입니다. 오류를 삼키면 원인 추적과 재처리가 불가능해집니다." }
+    ]
+  }
+  </script>
+</div>
+<script src="../_engine/judge-quiz.js" defer></script>
+</body>
+</html>

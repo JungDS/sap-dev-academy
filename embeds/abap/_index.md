@@ -279,6 +279,14 @@
 | CH35-L04-S01 | CH35-L04 | select-in-loop | N 슬라이더(0 포함)→1+N vs 2회 왕복·FAE guard 체크(#guard)=빈 driver 전체 조회 사고·중복 제거 key 수 | ✅ |
 | CH35-L05-S01 | CH35-L05 | decision-tree | (재사용) 대량 처리 전략 선택 트리(푸시다운/패키지/병렬/단순) | ✅ |
 | CH35-L05-S02 | CH35-L05 | pkg-tuner | 패키지 크기 슬라이더(1천/1만/10만)→commit 횟수↔피크 메모리↔재처리 범위 막대·양극단 경고 | ✅ |
+| CH36-L01-S01 | CH36-L01 | pushdown-flow | 끌어오기/내려보내기 전송량 비교 + 상황 카드 4(#pf-cfg)→수단 추천(Open SQL/CDS/AMDP/ADBC) | ✅ |
+| CH36-L02-S01 | CH36-L02 | code-anatomy | AMDP 정본 해부(marker/READ-ONLY 선언·구현/BY DATABASE PROCEDURE/USING/:param/client) + 오류 카드 4(#bug-cfg) | ✅ |
+| CH36-L02-S02 | CH36-L02 | amdp-steps | SQLScript 체이닝 단계 실행(집계 1회→:lt_stat 재사용 2회)·중간 테이블 변수 표시·완주 노트 | ✅ |
+| CH36-L03-S01 | CH36-L03 | mermaid | ADBC 호출 경로(statement→Native SQL→result set next_package·close→itab + CX_SQL_EXCEPTION 로그) | ✅ |
+| CH36-L03-S02 | CH36-L03 | judge-quiz | (재사용) ADBC 위험 카드 판정 5(injection/client/close/로그) | ✅ |
+| CH36-L04-S01 | CH36-L04 | compare-matrix | (재사용) 수단 5행(TF 포함) 책임 순위 비교 + 상황 버튼 6(cfg.cases)→추천 행 강조 | ✅ |
+| CH36-L05-S01 | CH36-L05 | tf-link-map | CDS Table Function 3조각(DDL·AMDP 클래스·SELECT 소비) 단계 연결 지도·client 점검 | ✅ |
+| CH36-L06-S01 | CH36-L06 | judge-quiz | (재사용) 운영 적절성 판정 6(승인 체크리스트 기준, 구 L05-S01 이동) | ✅ |
 | CH04-L02-S01 | CH04-L02 | fill-blank | 문자열 함수 빈칸(INTO·AT·strlen·FIND) | ✅ |
 | CH04-L07-S01 | CH04-L07 | fill-blank | 구구단 빈칸(TIMES·sy-index·*·ENDDO) | ✅ |
 | CH04-L03-S01 | CH04-L03 | mermaid | IF/ELSEIF/ELSE 분기 흐름도(p_amt: 큰금액/소액/0·음수) | ✅ |
@@ -375,6 +383,8 @@
 | time-profile | 1 | 공통(_engine)·자체 postHeight ✅ | CH35-L02-S01 | Hit List 막대(ABAP/DB/외부 ext)·행 클릭(#acts)→다음 행동 3버튼 정오 피드백(ans: st05/it/ext) |
 | select-in-loop | 1 | 공통(_engine)·자체 postHeight ✅ | CH35-L04-S01 | N 슬라이더 STEPS(0~1만)→1+N vs 2회·#guard 체크=빈 driver 전체 조회 경고(공식 FAE 함정)·#dk=중복 제거 key 수 |
 | pkg-tuner (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH35-L05-S02 | 총 100만 건 가정·크기 3단(1천/1만/10만)→commit(log 스케일)/메모리/재처리 범위 막대·양극단 warn·가운데=실측 안내 |
+| tf-link-map (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH36-L05-S01 | CDS TF 3카드(DDL/클래스/소비) 단계 버튼(ddl→link→run→consume→client)·연결선 강조·상태 칩 |
+| amdp-steps (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH36-L02-S02 | as-cfg JSON(code/steps) 단계 버튼→코드 하이라이트+테이블 변수 스냅샷·재사용 배지·완주 노트 |
 | decision-tree | 4 | 공통(_engine)+_autoheight ✅ | CH06-L02-S02 · CH20-L06-S01 · CH32-L04-S01 · CH35-L05-S01 | 범용 선택 트리(질문 분기=위젯 config)·Table Kind/고급 SQL/확장 수단/대량 처리 전략 선택 |
 | factory-sim (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH27-L01-S01 | 타입 세그(V/G/Z)→생성 클래스·설명 전환·호출부 코드 고정 표시 |
 | singleton-sim (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH27-L02-S01 | get_instance vs NEW 버튼→인스턴스 주소 목록·같음/다름 판정 |
@@ -436,7 +446,10 @@
 | relationship-map | 1 | 공통 | _(미작성)_ | CSS-only |
 | state-change-grid | 2 | 공통(CSS-only)+_autoheight ✅ | CH06-L04-S03·CH06-L06-S01 | 스냅샷=마크업(gt_gugu 성장·정렬 / DELETE ADJACENT DUPLICATES 함정) · cell-new/cell-del 강조 · .note 추가(다크 자동) |
 | mermaid | 15 | 공통(+_vendor)+_autoheight ✅ | CH04-L04-S02/S03·L05-S02/S03/S04 · CH26-L05 · CH31-L06-S02 · CH33-L05-S01 · CH34-L02-S01 · CH36-L03 · CH37-L03 · CH38-L03/L04 · CH39-L01/L06 | 그래프=위젯 `.mermaid` 주입·CDN+로컬fallback·이벤트본 은퇴 |
-| judge-quiz | 6 | 공통(_engine)+_autoheight ✅ | CH06-L05 · CH26-L03 · CH32-L05 · CH36-L05 · CH37-L05 · CH39-L07 | 범용 판별 퀴즈(문항=위젯 config)·즉시 정답·해설 |
+| judge-quiz | 8 | 공통(_engine)+_autoheight ✅ | CH06-L05 · CH26-L03 · CH32-L05 · CH36-L03-S02 · CH36-L06 · CH37-L05 · CH39-L07 | 범용 판별 퀴즈(문항=위젯 config)·즉시 정답·해설 |
+| code-anatomy | 3 | 공통(_engine)·자체 postHeight ✅ | CH06-L02-S01 · CH06-L05-S02 · CH36-L02-S01 | 마커(.mk[data-a]) 클릭 해부(anno-cfg JSON) + (확장) #bug-cfg 오류 카드→해설 |
+| compare-matrix | 3 | 공통(_engine)·자체 postHeight ✅ | CH07-L03-S02 · CH20-L01-S01 · CH36-L04-S01 | cm-cfg JSON(cols/rows/detail) 행 클릭 상세 + (확장) cfg.cases 상황 버튼→추천 행 강조 |
+| pushdown-flow | 1 | 공통(_engine)·자체 postHeight ✅ | CH36-L01-S01 | 끌어오기/내려보내기 전송량 파이프 + (확장) #pf-cfg 상황 카드→수단 추천 |
 | domain-builder | 1 | 공통(_engine) ✅ | CH03-L01-S01 | SE11 폼(단일사용·데이터 inline) · 예제별 target 강제(검사/활성화는 목표 일치 시에만) |
 | input-help-priority | 1 | 공통(CSS-only)+_autoheight ✅ | CH09-L07-S01 | F4 사다리(콘텐츠=마크업·빈 .js 제거) |
 | write-output | 1 | 공통 ✅ | CH01-L04-S01 | WRITE 출력 파서 · config 주입 · **버그수정(따옴표無→오류)** |

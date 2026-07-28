@@ -1,32 +1,68 @@
 <!DOCTYPE html>
-<!-- CH36-L05-S01 — 엔진: judge-quiz · _engine/_base.css. AMDP/Native 적절성 판별. -->
-<html lang="ko" data-eng="judge-quiz">
+<!-- CH36-L05-S01 — 엔진: tf-link-map · _engine/_base.css. CDS Table Function 3조각 연결 지도.
+     코드 조각은 본문 CH36-L05 정본(ZTF_BOOKING_STAT·zcl_booking_tf) 축약판. -->
+<html lang="ko" data-eng="tf-link-map">
 <head>
 <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>푸시다운 적절성 · CH36-L05-S01</title>
-<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/judge-quiz.css" />
+<title>CDS Table Function 지도 · CH36-L05-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/tf-link-map.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">이 선택, 적절할까? — 푸시다운 판별</p>
-  <p class="lead">각 상황에서 AMDP/Native SQL 사용이 <b>적절</b>한지 <b>부적절(과용·리스크)</b>인지 골라 보세요.</p>
-  <div class="score"><span>점수</span><div class="bar"><i id="sbar"></i></div><span class="v" id="sv">0 / 0</span></div>
-  <div id="list"></div>
-  <div class="result" id="result"></div>
-  <script type="application/json" id="quiz">
-  {
-    "labels": ["✓ 적절", "✗ 부적절"],
-    "items": [
-      { "q": "공연별 좌석 합계를 <b>Open SQL GROUP BY</b>로 구한다.", "a": 0, "why": "표준 SQL로 충분 — 이식성·검증·1순위. AMDP 불필요." },
-      { "q": "단순 단건 조회를 굳이 <b>AMDP</b>로 만든다.", "a": 1, "why": "과용. 대부분 Open SQL/CDS면 됨 — 복잡할 때만 AMDP." },
-      { "q": "임시테이블·루프가 필요한 복잡 알고리즘을 DB에서 <b>AMDP</b>로.", "a": 0, "why": "SQLScript 절차 로직이 꼭 DB에서 필요한 경우 — AMDP의 제자리." },
-      { "q": "곧 다른 DB로 이전할 시스템에서 <b>Native SQL</b>을 남발한다.", "a": 1, "why": "DB 종속 → 이전 시 발목. 이식성을 무시한 위험한 선택." },
-      { "q": "AMDP/Native를 <b>별도 클래스</b>로 격리하고 이유를 문서화한다.", "a": 0, "why": "운영 원칙 — 격리·문서화로 종속성을 관리. 권장." },
-      { "q": "<b>ABAP Cloud</b>에서 Native SQL로 핵심 로직을 짠다.", "a": 1, "why": "ABAP Cloud는 Native SQL이 제한적 — Released API·CDS로 가야 함." }
-    ]
-  }
-  </script>
+  <p class="hd">CDS Table Function — 세 조각 연결 지도</p>
+  <p class="lead">단계 버튼을 순서대로 눌러 DDL(계약) → AMDP 클래스(몸) → SELECT(소비)가 어떻게 이어지는지 확인하세요.</p>
+  <div class="steps">
+    <button id="st-ddl" type="button">① DDL 보기</button>
+    <button id="st-link" type="button">② 클래스 연결</button>
+    <button id="st-run" type="button">③ DB에서 실행</button>
+    <button id="st-consume" type="button">④ SELECT 소비</button>
+    <button id="st-client" type="button">⑤ client 점검</button>
+  </div>
+  <div class="tmap">
+    <div class="tcard" id="cDdl">
+      <div class="t">CDS DDL (계약)</div>
+      <pre>define table function
+  ZTF_BOOKING_STAT
+with parameters
+  p_client : abap.clnt, …
+returns { client; concert_id;
+          booking_cnt; total_seats; }
+implemented by method
+  zcl_booking_tf=&gt;get_stat;</pre>
+      <span class="badge" id="cliBadge">⚠ p_client 확인</span>
+    </div>
+    <div class="lnk" id="lnk1"></div>
+    <div class="tcard" id="cCls">
+      <div class="t">AMDP 클래스 (몸)</div>
+      <pre>INTERFACES if_amdp_marker_hdb.
+CLASS-METHODS get_stat
+  FOR TABLE FUNCTION
+    ztf_booking_stat.
+…
+METHOD get_stat
+  BY DATABASE FUNCTION FOR HDB
+  LANGUAGE SQLSCRIPT
+  OPTIONS READ-ONLY
+  USING zbooking.
+  RETURN SELECT … ;</pre>
+    </div>
+    <div class="lnk" id="lnk2"></div>
+    <div class="tcard" id="cSel">
+      <div class="t">소비 (ABAP SQL / CDS)</div>
+      <pre>SELECT FROM
+  ztf_booking_stat(
+    p_client = @sy-mandt,
+    p_from   = @gv_from,
+    p_to     = @gv_to )
+  FIELDS concert_id,
+         booking_cnt, total_seats
+  INTO TABLE @DATA(gt_stat).</pre>
+    </div>
+  </div>
+  <div class="chips" id="chips"></div>
+  <div class="fb" id="fb"></div>
+  <div class="note">💡 핵심: 클래스 메서드를 <b>직접 호출하지 않습니다.</b> CDS Table Function이라는 엔티티를 SELECT하면 뒤에서 AMDP 함수가 DB 안에서 돕니다. (코드는 본문 정본의 축약판)</div>
 </div>
-<script src="../_engine/judge-quiz.js" defer></script>
+<script src="../_engine/tf-link-map.js" defer></script>
 </body>
 </html>

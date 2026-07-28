@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- CH36-L01-S01 — 엔진: pushdown-flow · _engine/_base.css. Data-to-Code vs Code-to-Data 전송량. -->
+<!-- CH36-L01-S01 — 엔진: pushdown-flow · _engine/_base.css. 전송량 비교 + 상황 카드(수단 고르기). -->
 <html lang="ko" data-eng="pushdown-flow">
 <head>
 <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,7 +9,7 @@
 <body>
 <div class="wrap">
   <p class="hd">데이터를 끌어올까, 코드를 내려보낼까?</p>
-  <p class="lead">공연별 좌석 합계를 구합니다. 어디서 집계하느냐에 따라 <b>DB→ABAP 전송량</b>이 천지차이입니다. 두 방식을 바꿔 보세요.</p>
+  <p class="lead">공연별 좌석 합계를 구합니다. 어디서 집계하느냐에 따라 <b>DB→ABAP 전송량</b>이 달라집니다. 두 방식을 바꿔 본 뒤, 아래 상황 카드에서 알맞은 수단을 골라 보세요.</p>
   <div class="pd-seg">
     <button id="bUp" type="button">끌어오기 (Data-to-Code)</button>
     <button id="bDown" class="on" type="button">내려보내기 (Code-to-Data)</button>
@@ -20,7 +20,23 @@
     <div class="node abap"><div class="t">ABAP 서버</div><div class="nm">집계 결과 사용</div><div class="calc" id="abCalc"></div></div>
   </div>
   <div class="metric" id="metric"></div>
-  <div class="note">💡 우선순위: <b>Open/Modern SQL</b>(1순위·이식성) → <b>CDS</b>(재사용) → <b>AMDP</b>(복잡 절차) → <b>Native SQL</b>(최후). "데이터를 ABAP으로 끌어와 LOOP" 대신 "DB에서 집계해 결과만"이 핵심.</div>
+  <div class="cards" id="cards"></div>
+  <div class="card-out" id="cardOut"></div>
+  <div class="note">💡 사다리 순서: <b>Open/Modern SQL</b>(1순위) → <b>CDS</b>(공유 모델) → <b>AMDP</b>(DB 안 절차) → <b>ADBC</b>(최후). 아래로 갈수록 보호가 줄고 책임이 늡니다. (건수는 가상 예시)</div>
+  <script type="application/json" id="pf-cfg">
+  {
+    "cards": [
+      { "label": "공연별 좌석 합계만 필요", "rec": "Modern Open SQL",
+        "why": "GROUP BY + SUM 한 문장으로 끝. 가장 단순하고 문법 검사·이식성이 좋습니다." },
+      { "label": "같은 집계를 리포트·OData·배치가 공유", "rec": "CDS View",
+        "why": "재사용되는 의미 모델. SQL 복사가 아니라 한 곳에 선언하고 여러 소비자가 읽습니다." },
+      { "label": "DB 안에서 중간 결과를 여러 번 조합", "rec": "AMDP",
+        "why": "SQLScript 절차 로직이 DB에서 꼭 필요한 경우. 단, client·테스트 책임이 따라옵니다." },
+      { "label": "DB 전용 SQL 기능을 직접 호출", "rec": "ADBC (최후)",
+        "why": "위 셋으로 안 될 때만. 문법 검사·client·보안이 전부 개발자 책임이 됩니다." }
+    ]
+  }
+  </script>
 </div>
 <script src="../_engine/pushdown-flow.js" defer></script>
 </body>
