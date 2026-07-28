@@ -41,12 +41,13 @@
       <article class="prose">
 <section class="lblock"><h2>표준을 직접 고치면 안 된다</h2>
 <p>SAP 표준 프로그램을 직접 수정하면 <strong>업그레이드 때 덮어써지고</strong>, SAP Note·패치 후 원인
-분석도 어렵다. 그런데 회사마다 규칙은 다르다 — <em>판매오더 저장 전 VIP 메모, 특정 자재 조합
+분석도 어렵다. 그런데 회사마다 규칙은 다르다. <em>판매오더 저장 전 VIP 메모, 특정 자재 조합
 금지, 출고 직전 자체 번호 검증</em>… SAP가 이걸 다 표준에 넣을 순 없다. 그래서 표준 흐름 안에
-<strong>빈 자리(확장 지점)</strong> 를 미리 마련해 둔다.</p>
-<p>여기서 감각 하나 — <em>&quot;내가 표준을 호출하는 게 아니라, 표준이 나를 호출한다.&quot;</em> 평소엔 내가
+<strong>빈 자리(확장 지점)</strong> 를 미리 마련해 둔다. 낯설지 않은 그림이다. 표준 <strong>테이블</strong>에는
+<a href="CH05-L03.html">.APPEND 구조</a>로 필드를 더했다. 이번엔 표준 <strong>코드</strong>에 같은 철학을 적용한다.</p>
+<p>여기서 감각 하나: <em>&quot;내가 표준을 호출하는 게 아니라, 표준이 나를 호출한다.&quot;</em> 평소엔 내가
 <code>CALL FUNCTION</code>으로 부르지만, exit는 <strong>표준이 자기 흐름 중간에 내 코드 자리를 부른다.</strong>
-그 옛 방식이 User/Customer Exit다.</p>
+그 옛 방식이 <button class="term" type="button" data-term="User Exit">User/Customer Exit</button>다.</p>
 <table>
 <thead>
 <tr>
@@ -58,7 +59,7 @@
 <tbody><tr>
 <td><strong>User Exit</strong></td>
 <td>표준 include의 빈 <code>FORM userexit_...</code>(주로 SD)</td>
-<td>고객 영역에 작성</td>
+<td>SAP가 고객용으로 비워 둔 include를 채움(<button class="term" type="button" data-term="예외">예외</button>적 직접 편집)</td>
 </tr>
 <tr>
 <td><strong>Customer Exit</strong></td>
@@ -90,27 +91,35 @@
 <li><strong>활성화 안 하면 호출 위치가 있어도 실행 안 된다.</strong> 오래된 방식이라 신규는
 <a href="CH32-L03.html">BAdI</a>·<a href="CH32-L02.html">Enhancement Point</a>를 먼저 본다.</li>
 </ul>
+<p>동작을 <strong>확인하는 순서</strong>도 습관으로 만들자.</p>
+<ol>
+<li>요구의 <strong>시점</strong>을 한 문장으로 고정한다(&quot;판매오더 <em>저장 직전</em>에 검증&quot;).</li>
+<li><code>SMOD</code>에서 그 시점의 exit <strong>정의</strong>를 찾고, <code>CMOD</code> 프로젝트로 <strong>활성화</strong>한다.</li>
+<li>exit 함수에 breakpoint를 걸고 표준 <button class="term" type="button" data-term="트랜잭션">트랜잭션</button>을 실행 — <strong>정말 그 시점에 멈추는지</strong>
+<a href="CH04-L06.html">디버거</a>로 확인한다.</li>
+<li>마지막 점검: 표준 소스 <strong>변경 0줄</strong>인지.</li>
+</ol>
 </section><section class="lblock"><h2>자리에 끼워 보기</h2>
-<p>표준이 마련한 Exit 자리에 내 코드를 넣고 빼 보라 — <strong>표준 소스는 한 줄도 안 바뀌는데</strong>
+<p>표준이 마련한 Exit 자리에 내 코드를 넣고 빼 보라. <strong>표준 소스는 한 줄도 안 바뀌는데</strong>
 동작만 확장된다.</p>
-<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">User/Customer Exit — 빈 자리에 내 코드</span><a class="embed__open" href="../../../embeds/abap/CH32-L01-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH32-L01-S01.html" loading="lazy" title="User/Customer Exit — 빈 자리에 내 코드" style="height:360px"></iframe></figure>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title"><button class="term" type="button" data-term="User Exit">User/Customer Exit</button> — 빈 자리에 내 코드</span><a class="embed__open" href="../../../embeds/abap/CH32-L01-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH32-L01-S01.html" loading="lazy" title="User/Customer Exit — 빈 자리에 내 코드" style="height:360px"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>표준 include 직접 수정</strong> → User Exit란 이름만 듣고 표준을 바로 고치면, 업그레이드
+<li><strong>표준 include 직접 수정</strong> → <button class="term" type="button" data-term="User Exit">User Exit</button>란 이름만 듣고 표준을 바로 고치면, 업그레이드
 충돌·패치 후 원인 분석 지옥. 제공된 빈 자리에만 쓴다. 목표는 <em>&quot;표준 소스 변경 0줄.&quot;</em></li>
 <li><strong><code>SMOD</code>/<code>CMOD</code> 역할 혼동</strong> → <code>SMOD</code>에서 <em>봤다고 구현된 게 아니다</em>. <code>CMOD</code> 프로젝트로
 <strong>활성화</strong>해야 동작한다. &quot;코드 썼는데 안 돈다&quot;의 절반은 활성화·프로젝트 연결 문제.</li>
 <li><strong>obsolete 경계 무시</strong> → Customer Exit는 <em>레거시 이해용</em>이다. 신규 요구엔 같은 시점에
-<a href="CH32-L03.html">BAdI</a>가 있는지 먼저 — 더 구조적이고 테스트하기 쉽다.</li>
+<a href="CH32-L03.html">BAdI</a>가 있는지 먼저 본다(더 구조적이고 테스트하기 쉽다).</li>
 <li><strong>exit에 업무 과부하</strong> → exit는 표준 <button class="term" type="button" data-term="트랜잭션">트랜잭션</button> 중간에서 불린다. 느린 <code>SELECT</code>·외부 통신·화면
 의존 로직을 넣으면 표준 전체가 불안정해진다. exit엔 <em>판단·위임</em>만, 복잡한 건 별도 Z
 <button class="term" type="button" data-term="Class">클래스</button>로 분리한다.</li>
 </ul>
 </section><section class="lblock"><h2>정리</h2>
 <ul>
-<li>User/Customer Exit = 표준을 안 고치고 <strong>빈 자리에 고객 로직</strong>을 꽂는 옛 확장 방식.</li>
+<li><button class="term" type="button" data-term="User Exit">User/Customer Exit</button> = 표준을 안 고치고 <strong>빈 자리에 고객 로직</strong>을 꽂는 옛 확장 방식.</li>
 <li>Customer Exit = <code>CALL CUSTOMER-FUNCTION</code> → <code>FUNCTION EXIT_...</code> + <code>SMOD</code>(정의)/<code>CMOD</code>(활성화).</li>
-<li><em>레거시 이해엔 중요</em>하지만 신규 최우선은 아니다 — BAdI·Enhancement가 있으면 그쪽 먼저.</li>
+<li><em>레거시 이해엔 중요</em>하지만 신규 최우선은 아니다. BAdI·Enhancement가 있으면 그쪽 먼저.</li>
 </ul>
 <hr>
 <p>옛 방식을 봤다. 이제 표준 <strong>코드 어디에나</strong> 끼우는 Enhancement Point →
