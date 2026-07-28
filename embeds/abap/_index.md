@@ -261,6 +261,12 @@
 | CH32-L03-S01 | CH32-L03 | badi-socket | 구현 on/off + filter KR/US 데모(표준 호출=KR·US면 구현 켜져도 선택 안 됨)→GET/CALL BADI 로그 | ✅ |
 | CH32-L04-S01 | CH32-L04 | decision-tree | (재사용) 확장 수단 선택 트리(BAdI→Explicit Point→Section→Implicit→Modification 순 판단) | ✅ |
 | CH32-L05-S01 | CH32-L05 | judge-quiz | (재사용) Clean Core 친화 판별 퀴즈(수단별 O/X+해설) | ✅ |
+| CH33-L01-S01 | CH33-L01 | bapi-return | 시나리오(정상/오류/경고)→BAPIRET2 판정→COMMIT/ROLLBACK·경고 정책 스위치로 W의 운명 갈림·운영 로그 | ✅ |
+| CH33-L02-S01 | CH33-L02 | rfc-call | 시나리오 4(정상/빈 DEST/통신실패/원격 덤프)→sy-subrc·gv_msg 카드+운영 로그 누적 | ✅ |
+| CH33-L03-S01 | CH33-L03 | bdc-recorder | 다음 동작→BDCDATA 녹화(SHDB 감각)·오류 만들기→BDCMSGCOLL E 수집·Session→SM35 큐·ZBK01/C001 | ✅ |
+| CH33-L04-S01 | CH33-L04 | excel-upload | 검증만 실행(dry run)→행별 OK/오류(숫자·필수·중복)+행 번호 사유→성공 행만 등록 | ✅ |
+| CH33-L05-S01 | CH33-L05 | mermaid | (재사용) 인터페이스 공통 골격 흐름도(수신→검증→등록→로그→재처리) | ✅ |
+| CH33-L05-S02 | CH33-L05 | iface-ops | (capstone) 운영 한 바퀴: 수신→OPEN(권한 오류)→행 검증→처리→오류 파일→재처리(retry)→중복 재수신 멱등 차단 | ✅ |
 | CH04-L02-S01 | CH04-L02 | fill-blank | 문자열 함수 빈칸(INTO·AT·strlen·FIND) | ✅ |
 | CH04-L07-S01 | CH04-L07 | fill-blank | 구구단 빈칸(TIMES·sy-index·*·ENDDO) | ✅ |
 | CH04-L03-S01 | CH04-L03 | mermaid | IF/ELSEIF/ELSE 분기 흐름도(p_amt: 큰금액/소액/0·음수) | ✅ |
@@ -343,6 +349,11 @@
 | editable-grid | 6 | 공통(_engine)·자체 postHeight ✅ | CH31-L01～L06-S01 | eg-cfg JSON {mode: editcols/datachanged/finished/cellstyle/validate/save}·편집 ALV 시뮬(SEATS 편집·즉시 검증 로그·합계 재계산·매진 잠금·오류 목록·저장 게이트)·정본 0001~/C001~/정훈영·유효값 1~max |
 | inject-slots | 2 | 공통(_engine)·자체 postHeight ✅ | CH32-L01~L02-S01 | is-cfg JSON {progName, lines(std/slot), my[], (선택)sect{std/my}} 주도·확장 slot 토글(표준 라인 불변 강조)+Section 교체 토글(std 취소선 .rep)·L01=Exit 자리(zzmemo=.APPEND 회수)·L02=Point+Section |
 | badi-socket | 1 | 공통(_engine)·자체 postHeight ✅ | CH32-L03-S01 | 구현 on/off+선택 filter KR/US(#fKR/#fUS 있으면)→GET BADI FILTERS 일치/불일치·CALL BADI 로그·빈 소켓=기본 동작·IF_EX_BOOKING_CHECK |
+| bapi-return | 1 | 공통(_engine)·자체 postHeight ✅ | CH33-L01-S01 | 시나리오 3종+경고 정책 토글(#pol)→BAPIRET2 rows·E/A(+정책상 W)=ROLLBACK·운영 로그(#blog)·예매 도메인 C001/정훈영 |
+| rfc-call | 1 | 공통(_engine)·자체 postHeight ✅ | CH33-L02-S01 | 시나리오 4종(빈 DEST=사전 차단·comm=1·dump=2)→sy-subrc/gv_msg 카드(#subrc/#gvmsg)+로그(#rlog)·Z_GET_BOOKINGS/C001 |
+| bdc-recorder | 1 | 공통(_engine)·자체 postHeight ✅ | CH33-L03-S01 | STEPS 6(SAPMZBOOK 0100/0200·C001)→녹화·오류 만들기(#breakBtn)=SEATS 제거→BDCMSGCOLL E·Session(#toSession)=SM35 큐(#queue)·ZBK01 |
+| excel-upload | 1 | 공통(_engine)·자체 postHeight ✅ | CH33-L04-S01 | RAW 6행(헤더+정상3+숫자오류+필수누락+중복)→dry run 판정·오류=행 번호+사유·성공 행 등록(#post) 분리 |
+| iface-ops (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH33-L05-S02 | 단계 강제(수신→OPEN→검증→처리)·권한 오류 토글(#perm)·오류 파일→재처리 큐(retry)·처리 이력 key로 중복 재수신 차단·서버 파일 5행(EXT-101~105) |
 | decision-tree | 3 | 공통(_engine)+_autoheight ✅ | CH06-L02-S02 · CH20-L06-S01 · CH32-L04-S01 | 범용 선택 트리(질문 분기=위젯 config)·Table Kind/고급 SQL/확장 수단 선택 |
 | factory-sim (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH27-L01-S01 | 타입 세그(V/G/Z)→생성 클래스·설명 전환·호출부 코드 고정 표시 |
 | singleton-sim (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH27-L02-S01 | get_instance vs NEW 버튼→인스턴스 주소 목록·같음/다름 판정 |
@@ -403,7 +414,7 @@
 | salv-grid-simulator | 2 | 공통(_engine)·자체 postHeight ✅ | CH11-L02-S01·CH11-L06-S01 (완료) | config 주입(SALV_CFG: itab·cols·data·sumKey·code) · ALV제목/토글 엔진설정 |
 | relationship-map | 1 | 공통 | _(미작성)_ | CSS-only |
 | state-change-grid | 2 | 공통(CSS-only)+_autoheight ✅ | CH06-L04-S03·CH06-L06-S01 | 스냅샷=마크업(gt_gugu 성장·정렬 / DELETE ADJACENT DUPLICATES 함정) · cell-new/cell-del 강조 · .note 추가(다크 자동) |
-| mermaid | 15 | 공통(+_vendor)+_autoheight ✅ | CH04-L04-S02/S03·L05-S02/S03/S04 · CH26-L05 · CH31-L06-S02 · CH33-L05 · CH34-L02 · CH36-L03 · CH37-L03 · CH38-L03/L04 · CH39-L01/L06 | 그래프=위젯 `.mermaid` 주입·CDN+로컬fallback·이벤트본 은퇴 |
+| mermaid | 15 | 공통(+_vendor)+_autoheight ✅ | CH04-L04-S02/S03·L05-S02/S03/S04 · CH26-L05 · CH31-L06-S02 · CH33-L05-S01 · CH34-L02 · CH36-L03 · CH37-L03 · CH38-L03/L04 · CH39-L01/L06 | 그래프=위젯 `.mermaid` 주입·CDN+로컬fallback·이벤트본 은퇴 |
 | judge-quiz | 6 | 공통(_engine)+_autoheight ✅ | CH06-L05 · CH26-L03 · CH32-L05 · CH36-L05 · CH37-L05 · CH39-L07 | 범용 판별 퀴즈(문항=위젯 config)·즉시 정답·해설 |
 | domain-builder | 1 | 공통(_engine) ✅ | CH03-L01-S01 | SE11 폼(단일사용·데이터 inline) · 예제별 target 강제(검사/활성화는 목표 일치 시에만) |
 | input-help-priority | 1 | 공통(CSS-only)+_autoheight ✅ | CH09-L07-S01 | F4 사다리(콘텐츠=마크업·빈 .js 제거) |

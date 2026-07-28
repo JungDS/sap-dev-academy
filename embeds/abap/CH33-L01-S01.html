@@ -9,15 +9,18 @@
 <body>
 <div class="wrap">
   <p class="hd">BAPI 호출 — RETURN을 보고 COMMIT/ROLLBACK</p>
-  <p class="lead">시나리오를 고르고 <b>BAPI 호출</b>을 눌러 보세요. <code>BAPIRET2</code>의 <code>type</code>에 <b>E</b>(오류)가 있으면 ROLLBACK, 없으면 COMMIT — 직접 판단해야 합니다.</p>
+  <p class="lead">시나리오를 고르고 <b>BAPI 호출</b>을 눌러 보세요. <b>경고(W) 입력</b>은 정책 스위치에 따라 같은 입력의 운명(COMMIT↔ROLLBACK)이 갈립니다.</p>
   <div class="bar">
     <button class="sc on" data-s="ok" type="button">정상 입력</button>
-    <button class="sc" data-s="err" type="button">오류 입력(고객 없음·필수 누락)</button>
+    <button class="sc" data-s="err" type="button">오류 입력</button>
+    <button class="sc" data-s="warn" type="button">경고 입력(대량 예매)</button>
     <button class="run" id="run" type="button">▶ BAPI 호출</button>
+    <label style="font-size:.8rem;display:inline-flex;align-items:center;gap:4px"><input type="checkbox" id="pol" /> 경고도 실패 처리</label>
   </div>
   <div class="panel"><div class="br-panel__h">RETURN ( TABLE OF bapiret2 )</div><div id="ret"></div></div>
   <div class="decision" id="decision"></div>
-  <div class="note">💡 BAPI는 보통 <b>스스로 COMMIT하지 않습니다</b>. RETURN의 <code>type</code>(E/A=오류)을 확인해 오류면 <code>BAPI_TRANSACTION_ROLLBACK</code>, 정상이면 <code>BAPI_TRANSACTION_COMMIT</code>을 호출해야 저장이 확정됩니다.</div>
+  <div class="panel"><div class="br-panel__h">운영 로그</div><div id="blog" style="max-height:120px;overflow-y:auto;font-family:'D2Coding',Consolas,monospace;font-size:.8rem;line-height:1.6;padding:4px 8px"><span class="ph">호출·판정이 여기 기록됩니다.</span></div></div>
+  <div class="note">💡 BAPI는 보통 <b>스스로 COMMIT하지 않습니다</b>. RETURN의 <code>type</code>(E/A=오류)을 확인해 오류면 <code>BAPI_TRANSACTION_ROLLBACK</code>, 정상이면 <code>BAPI_TRANSACTION_COMMIT</code>(wait=X). <b>W(경고)는 업무 정책으로</b> 실패/통과를 정합니다.</div>
 </div>
 <script src="../_engine/bapi-return.js" defer></script>
 </body>

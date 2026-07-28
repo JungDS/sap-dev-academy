@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<!-- CH33-L05-S02 — 엔진: iface-ops · _engine/_base.css. File Interface 운영 한 바퀴(수신→OPEN→검증→처리→오류파일→재처리→멱등 차단).
+     데이터: 서버 파일 5행(정상3·타입오류1·기처리 key 1)·정본 C001~/이름 풀. 게이팅: CH33 소유(IDoc/aRFC/배치 스케줄 보류). -->
+<html lang="ko" data-eng="iface-ops">
+<head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>File Interface 운영 · CH33-L05-S02</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/iface-ops.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">File Interface 운영 한 바퀴 <small>(검증·로그·재처리·멱등성)</small></p>
+  <p class="lead">① 수신 → ② OPEN(권한 오류도 겪어 보기) → ③ 행 검증 → ④ 처리 → ⑤ 오류 파일 → ⑥ 재처리 → ⑦ 같은 파일 재수신(멱등성 차단) 순서로 눌러 보세요.</p>
+  <div class="bar">
+    <button id="bRecv" type="button" class="prim">① 파일 수신</button>
+    <button id="bOpen" type="button">② OPEN DATASET</button>
+    <label><input type="checkbox" id="perm" /> 권한 오류 만들기</label>
+    <button id="bValid" type="button">③ 행 검증</button>
+    <button id="bPost" type="button">④ 처리 실행</button>
+    <span class="phase" id="phase">대기</span>
+  </div>
+  <div class="bar">
+    <button id="bErrf" type="button">⑤ 오류 파일 생성</button>
+    <button id="bRetry" type="button">⑥ 재처리</button>
+    <button id="bDup" type="button">⑦ 중복 파일 재수신</button>
+    <button id="bReset" type="button">↺ 초기화</button>
+  </div>
+  <div class="panel"><div class="panel__h">서버 파일 BOOKING_20260729.TXT — 행별 상태</div><div class="panel__b" id="rows"></div></div>
+  <div class="panel"><div class="panel__h">운영 로그</div><div class="panel__b" id="olog"></div></div>
+  <div class="panel"><div class="panel__h">재처리 큐</div><div class="panel__b" id="rqueue"></div></div>
+  <div class="panel"><div class="panel__h">처리 이력 key (멱등성 근거)</div><div class="panel__b ikeys" id="ikeys"></div></div>
+  <div class="note">💡 파일을 <b>읽는</b> 능력이 아니라, 실패를 <b>보관하고 안전하게 다시 처리</b>하고 <b>중복을 막는</b> 능력이 운영 품질입니다.</div>
+</div>
+<script src="../_engine/iface-ops.js" defer></script>
+</body>
+</html>
