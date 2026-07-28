@@ -12,14 +12,17 @@
   <p class="lead"><b>다음 동작</b>을 눌러 화면·필드·값을 <code>BDCDATA</code>에 차곡차곡 채워 보세요(SHDB 녹화 느낌). 다 채우면 <code>CALL TRANSACTION</code>으로 한 번에 실행합니다.</p>
   <div class="bar">
     <button class="btn" id="next" type="button">다음 동작 ▶</button>
+    <button class="btn" id="breakBtn" type="button" disabled>⚠ 오류 만들기(필수 필드 제거)</button>
     <button class="btn exec" id="exec" type="button" disabled>▶ CALL TRANSACTION</button>
+    <button class="btn" id="toSession" type="button" disabled>Session으로 보내기</button>
     <button class="reset" id="reset" type="button">↺ 초기화</button>
   </div>
-  <div class="panel"><div class="panel__h">lt_bdc ( TABLE OF bdcdata )</div>
+  <div class="panel"><div class="panel__h">gt_bdc ( TABLE OF bdcdata )</div>
     <table><thead><tr><th>PROGRAM</th><th>DYNPRO</th><th>BEGIN</th><th>FNAM = FVAL · 동작</th></tr></thead><tbody id="tbody"></tbody></table>
   </div>
   <div class="result" id="result"></div>
-  <div class="note">💡 <b>Call Transaction</b>=즉시 실행·결과 바로 확인 / <b>Session</b>(BDC_OPEN_GROUP)=<code>SM35</code> 큐에 쌓아 대량·야간 처리·재처리. 표준 화면이 바뀌면 BDC가 깨지니 <b>BAPI가 있으면 BAPI 우선</b>.</div>
+  <div class="panel"><div class="panel__h">SM35 세션 큐</div><div id="queue" style="padding:6px 10px;font-size:.82rem"><div class="ph">Session으로 보내면 여기(SM35 큐)에 쌓입니다.</div></div></div>
+  <div class="note">💡 <b>Call Transaction</b>=즉시 실행·결과 바로 확인 / <b>Session</b>(BDC_OPEN_GROUP)=<code>SM35</code> 큐에 쌓아 대량·야간 처리·재처리. 실패 원인은 <code>MESSAGES INTO</code>가 모으는 <b>화면 메시지</b>(BDCMSGCOLL)에 있습니다. 표준 화면이 바뀌면 BDC가 깨지니 <b>BAPI가 있으면 BAPI 우선</b>.</div>
 </div>
 <script src="../_engine/bdc-recorder.js" defer></script>
 </body>

@@ -8,10 +8,10 @@
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">엑셀(탭 구분) 업로드 → 검증 → 내부 테이블</p>
-  <p class="lead">아래 원본 파일을 <b>업로드</b>하면 헤더를 건너뛰고 한 줄씩 <code>SPLIT</code>으로 파싱·검증합니다. 잘못된 행(숫자 아닌 좌석)은 등록에서 제외됩니다.</p>
+  <p class="hd">엑셀(탭 구분) 업로드 → 검증 관문 → 등록</p>
+  <p class="lead">먼저 <b>검증만 실행</b>(dry run)으로 행별 판정과 오류 목록(행 번호+사유)을 확인하고, 그다음 <b>성공 행만 등록</b>하세요. 숫자 오류·필수 누락·중복이 숨어 있습니다.</p>
   <div class="file"><div class="file__h">원본 파일 (gui_upload, 탭 구분 ⇥)</div><pre class="file__b" id="file"></pre></div>
-  <div class="bar"><button class="run" id="run" type="button">▶ 업로드 (gui_upload + SPLIT)</button><button class="reset" id="reset" type="button">↺ 초기화</button></div>
+  <div class="bar"><button class="run" id="run" type="button">▶ 검증만 실행 (SPLIT+검증, 저장 없음)</button><button class="run" id="post" type="button" disabled>성공 행 등록</button><button class="reset" id="reset" type="button">↺ 초기화</button></div>
   <div class="panel ok" id="okPanel" style="display:none"><div class="panel__h" id="okHead"></div><div id="okBody"></div></div>
   <div class="panel err" id="errPanel" style="display:none"><div class="panel__h" id="errHead"></div><div id="errBody"></div></div>
   <div class="note">💡 <code>cl_gui_frontend_services=>gui_upload</code>로 읽고, 한 줄씩 <code>SPLIT … AT cl_abap_char_utilities=>horizontal_tab</code>으로 컬럼 분리. 첫 줄(헤더)은 건너뛰고, 외부 데이터는 <b>반드시 검증</b>(타입·필수·중복) 후 등록(BAPI/DML)합니다.</div>

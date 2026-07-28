@@ -35,12 +35,17 @@
       <section class="lhead">
         <p class="lhead__eyebrow">인터페이스 실무: BAPI/RFC/BDC/File</p>
         <h1>File Interface와 재처리</h1>
-        <p class="lhead__direction">파일 기반 인터페이스의 공통 — 검증·로그·재처리.</p>
+        <p class="lhead__direction">서버 파일 입출력과 운영 구조 — 로그·재처리·멱등성까지가 인터페이스다.</p>
         <div class="tags"><span class="tag tag--track">Track 2</span><span class="tag tag--ch">Chapter 33</span><span class="tag tag--ls">Lesson 5</span><span class="tag tag--lv">고급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>서버 파일과 자동화</h2>
-<p>PC 파일(L04)과 달리, 배치 <button class="term" type="button" data-term="Interface">인터페이스</button>는 <strong>서버 파일</strong>을 읽고 쓴다.</p>
+<section class="lblock"><h2>🌙 새벽 2시, 파일이 도착한다</h2>
+<p>운영 <button class="term" type="button" data-term="Interface">인터페이스</button>는 사람이 버튼을 누르는 방식으로 끝나지 않는다. 물류 시스템이 매일 밤
+서버 경로에 결과 파일을 내려놓고, SAP 배치 job이 새벽에 읽어 상태를 갱신한다. 이때
+주인공은 <strong>application server의 파일</strong>이다. PC 파일(<code>gui_upload</code>)과 무대가 다르다.</p>
+<p>기술 키워드는 네 개지만, 이 레슨의 진짜 목표는 문법 암기가 아니다. <strong>파일 수신부터
+재처리까지의 운영 구조</strong>를 한 바퀴 도는 것이다.</p>
+</section><section class="lblock"><h2>OPEN → READ → (TRANSFER) → CLOSE</h2>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -54,55 +59,151 @@
 11
 12
 13
-14</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> lv_msg <span class="tok-kw">TYPE</span> string.
+14
+15
+16
+17
+18
+19</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> gv_path <span class="tok-kw">TYPE</span> string <span class="tok-kw">VALUE</span> <span class="tok-str">'/usr/sap/interfaces/in/booking_20260729.txt'</span>.
+<span class="tok-kw">DATA</span> gv_msg  <span class="tok-kw">TYPE</span> string.
 
-<span class="tok-kw">OPEN</span> <span class="tok-kw">DATASET</span> lv_path <span class="tok-kw">FOR</span> <span class="tok-kw">INPUT</span> <span class="tok-kw">IN</span> <span class="tok-kw">TEXT</span> <span class="tok-kw">MODE</span> <span class="tok-kw">ENCODING</span> UTF-8
-  <span class="tok-kw">MESSAGE</span> lv_msg.                  <span class="tok-com">" 실패 시 OS 오류 원인이 lv_msg에</span>
+<span class="tok-kw">OPEN</span> <span class="tok-kw">DATASET</span> gv_path <span class="tok-kw">FOR</span> <span class="tok-kw">INPUT</span> <span class="tok-kw">IN</span> <span class="tok-kw">TEXT</span> <span class="tok-kw">MODE</span> <span class="tok-kw">ENCODING</span> UTF-8
+  <span class="tok-kw">MESSAGE</span> gv_msg.
 <span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.
-  <span class="tok-kw">MESSAGE</span> lv_msg <span class="tok-kw">TYPE</span> <span class="tok-str">'E'</span>.         <span class="tok-com">" 못 열면 즉시 중단</span>
+  <span class="tok-com">" gv_path·sy-subrc·gv_msg(OS 원인)를 로그로 남기고 중단</span>
+  RETURN.
 <span class="tok-kw">ENDIF</span>.
 
 <span class="tok-kw">DO</span>.
-  <span class="tok-kw">READ</span> <span class="tok-kw">DATASET</span> lv_path <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(lv_rec).
-  <span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>. <span class="tok-kw">EXIT</span>. <span class="tok-kw">ENDIF</span>.   <span class="tok-com">" 더 읽을 줄 없음 → 종료</span>
-  <span class="tok-com">" 파싱·검증·등록</span>
+  <span class="tok-kw">READ</span> <span class="tok-kw">DATASET</span> gv_path <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(gv_record).
+  <span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.
+    <span class="tok-kw">EXIT</span>.                            <span class="tok-com">" 더 읽을 줄 없음</span>
+  <span class="tok-kw">ENDIF</span>.
+  <span class="tok-com">" 한 행 파싱 → 검증 → 처리</span>
 <span class="tok-kw">ENDDO</span>.
-<span class="tok-kw">CLOSE</span> <span class="tok-kw">DATASET</span> lv_path.</code></pre></div></div>
+
+<span class="tok-kw">CLOSE</span> <span class="tok-kw">DATASET</span> gv_path.</code></pre></div></div>
 <ul>
-<li><code>FOR INPUT</code>(읽기)·<code>FOR OUTPUT</code>(새로 쓰기)·<code>FOR APPENDING</code>(이어쓰기). 쓸 때는 <code>TRANSFER &lt;데이터&gt; TO lv_path</code>로 한 줄씩 내보낸다.</li>
-<li><strong>항상 <code>MESSAGE</code>로 연다</strong> — 못 열면 OS 원인(권한·경로)을 받아 로그에 남기고 <code>sy-subrc</code>를 확인.</li>
+<li><code>FOR INPUT</code>(읽기) · <code>FOR OUTPUT</code>(새로 쓰기) · <code>FOR APPENDING</code>(이어쓰기).</li>
+<li><strong><code>MESSAGE gv_msg</code>를 항상 붙인다</strong> — 못 열었을 때 <code>sy-subrc</code>만으론 권한 문제인지
+경로 오타인지 파일 없음인지 알 수 없다. OS 오류 텍스트가 로그의 핵심이다.</li>
+<li>쓸 때는 <code>TRANSFER &lt;데이터&gt; TO &lt;경로&gt;</code>로 한 줄씩 내보낸다. 오류 행만 모은 <strong>오류
+파일</strong>을 만들 때도 이 조합이다.</li>
 </ul>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6</pre><pre class="abap-editor__code"><code><span class="tok-kw">OPEN</span> <span class="tok-kw">DATASET</span> gv_err_path <span class="tok-kw">FOR</span> <span class="tok-kw">OUTPUT</span> <span class="tok-kw">IN</span> <span class="tok-kw">TEXT</span> <span class="tok-kw">MODE</span> <span class="tok-kw">ENCODING</span> UTF-8
+  <span class="tok-kw">MESSAGE</span> gv_msg.
+<span class="tok-kw">IF</span> sy-subrc = <span class="tok-num">0</span>.
+  TRANSFER gv_err_line <span class="tok-kw">TO</span> gv_err_path.
+  <span class="tok-kw">CLOSE</span> <span class="tok-kw">DATASET</span> gv_err_path.
+<span class="tok-kw">ENDIF</span>.</code></pre></div></div>
 <blockquote class="cw">
-<p>⚠️ <strong>보안 — 경로 검증 필수.</strong> 외부에서 받은 파일명을 그대로 <code>OPEN DATASET</code>에 넣으면 <strong>Directory Traversal</strong>(상위 경로 <code>../</code>로 시스템 파일에 접근)에 노출된다. 외부 입력 경로는 화이트리스트·정규화로 반드시 검증한다(SAP 공식 보안 경고).</p>
+<p>⚠️ <strong>경로 보안 — Directory Traversal.</strong> 외부에서 받은 파일명을 그대로 경로에 붙이면,
+<code>../</code>가 섞인 이름으로 <strong>허용하지 않은 상위 경로</strong>에 접근당할 수 있다. 고정 root
+디렉터리 + 파일명 whitelist·확장자 검사·경로 정규화로 반드시 막는다.</p>
 </blockquote>
-</section><section class="lblock"><h2>인터페이스 공통 — 검증·로그·재처리</h2>
-<p>BAPI·RFC·BDC·File 모두 같은 골격이 필요하다(CH25-L04와 같은 정신).</p>
-<ol>
-<li><strong>읽기/수신</strong> → 2. <strong>검증</strong> → 3. <strong>등록</strong>(BAPI/DML) → 4. <strong>결과 로그</strong> → 5. <strong>실패분 재처리</strong>.</li>
-</ol>
-<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title"><button class="term" type="button" data-term="Interface">인터페이스</button> 공통 흐름도</span><a class="embed__open" href="../../../embeds/abap/CH33-L05-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH33-L05-S01.html" loading="lazy" title="인터페이스 공통 흐름도" style="height:460px"></iframe></figure>
+</section><section class="lblock"><h2>운영 구조 — 한 바퀴가 전부 있어야 한다</h2>
+<p>BAPI·RFC·BDC·Excel·File, 기술 이름은 달라도 운영 골격은 같다.</p>
+<table>
+<thead>
+<tr>
+<th>단계</th>
+<th>하는 일</th>
+<th>로그에 남길 것</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>수신</td>
+<td>지정 경로에 파일 확인</td>
+<td>파일명·크기·수신 시각</td>
+</tr>
+<tr>
+<td>열기</td>
+<td><code>OPEN DATASET ... MESSAGE</code></td>
+<td><code>sy-subrc</code>·OS 메시지</td>
+</tr>
+<tr>
+<td>검증</td>
+<td>행별 필수·타입·중복·업무 규칙</td>
+<td>행 번호·오류 사유</td>
+</tr>
+<tr>
+<td>처리</td>
+<td>BAPI·DML 등으로 등록</td>
+<td>처리 방식·Return</td>
+</tr>
+<tr>
+<td>확정</td>
+<td>commit 단위 결정</td>
+<td>성공/실패 건수</td>
+</tr>
+<tr>
+<td>보관</td>
+<td>처리 완료 파일 이동·오류 파일 생성</td>
+<td>보관 경로·처리 ID</td>
+</tr>
+<tr>
+<td>재처리</td>
+<td>실패 건 수정 후 재투입</td>
+<td>retry 횟수·마지막 오류</td>
+</tr>
+</tbody></table>
+<p>여기에 하나 더, <button class="term" type="button" data-term="멱등성">멱등성</button>(Idempotency). <strong>같은 파일·같은 행이 두 번 들어와도 중복
+등록되지 않는 성질</strong>이다. 외부 시스템은 같은 파일을 다시 보낼 수 있고, 배치는 중간
+실패 후 재실행된다. 파일 ID·행 key·외부 문서번호를 처리 이력과 대조해 &quot;이미 처리한
+건&quot;을 걸러야 한다. <a href="CH25-L04.html">Chapter 25 · 오류 로그와 재처리</a>에서 세운 원칙이
+파일 세계로 확장된 것이다.</p>
 <ul>
-<li>성공/실패를 <strong>인터페이스 로그 테이블</strong>에 남긴다.</li>
-<li>실패 건은 보관 후 원인 해결 시 <strong>재처리 잡</strong>으로.</li>
-<li>멱등성(중복 수신 방지: 메시지ID·키 체크)을 고려.</li>
+<li><strong>commit 단위</strong>도 정책이다: 파일 전체 한 <a href="CH25-L03.html">LUW</a>(정합성↑, 한 건 오류에
+전체 정지) vs 행/묶음 단위 commit(재처리 쉬움, 부분 성공 관리 필요).</li>
 </ul>
-</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+</section><section class="lblock"><h2>운영 흐름 체험</h2>
+<p>파일 수신부터 재처리까지 한 바퀴 돌려 보라. <strong>권한 오류로 못 여는 경우</strong>, 오류 행의
+<strong>오류 파일 생성과 재처리 큐</strong>, 같은 파일을 다시 받았을 때 <strong><button class="term" type="button" data-term="멱등성">멱등성</button> 차단</strong>까지.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">File Interface 운영 — 검증·로그·재처리·멱등성</span><a class="embed__open" href="../../../embeds/abap/CH33-L05-S02.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH33-L05-S02.html" loading="lazy" title="File Interface 운영 — 검증·로그·재처리·멱등성" style="height:620px"></iframe></figure>
+<p>전체 <button class="term" type="button" data-term="Interface">인터페이스</button> 공통 골격은 지도 한 장으로 정리해 두자.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">인터페이스 공통 흐름도</span><a class="embed__open" href="../../../embeds/abap/CH33-L05-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH33-L05-S01.html" loading="lazy" title="인터페이스 공통 흐름도" style="height:460px"></iframe></figure>
+</section><section class="lblock"><h2>흔한 실수와 점검 🚧</h2>
 <ul>
-<li><strong>CLOSE DATASET 누락</strong> → 파일 핸들 누수.</li>
-<li><strong>재처리 없음</strong> → 일시 오류로 누락된 데이터가 영영 안 들어온다.</li>
+<li><strong><code>CLOSE DATASET</code> 누락</strong> → 파일 핸들 누수. 프로그램 종료가 치워 주길 기대하지 말고
+명시적으로 닫는다.</li>
+<li><strong>외부 파일명 신뢰</strong> → 파일명도 입력 데이터다. 경로 조작·이상 확장자·재전송을 전부
+의심한다.</li>
+<li><strong>실패 파일 즉시 삭제</strong> → 원인 분석도 재처리도 불가능해진다. 원본과 오류 로그는 보관
+정책대로 남긴다.</li>
+<li><strong><button class="term" type="button" data-term="멱등성">멱등성</button> 미설계</strong> → 배치 재실행 시 성공했던 행이 또 등록된다. 외부 key+처리 이력으로
+중복을 막는다.</li>
+<li><strong>실패를 개발자만 아는 구조</strong> → 운영자가 파일명·행 번호·key·메시지·재처리 상태를
+화면/로그에서 직접 볼 수 있어야 한다.</li>
+</ul>
+</section><section class="lblock"><h2>정리 📌</h2>
+<ul>
+<li>서버 파일은 <code>OPEN DATASET</code>(+<code>MESSAGE</code>) → <code>READ DATASET</code> → <code>TRANSFER</code> →
+<code>CLOSE DATASET</code>. PC 파일(<code>gui_upload</code>)과 무대가 다르다.</li>
+<li>운영 품질 = 경로 보안 + 행 검증 + commit 단위 + 로그 + 재처리 + <button class="term" type="button" data-term="멱등성">멱등성</button>. <strong>파일을
+읽는 능력이 아니라 실패를 안전하게 다시 처리하는 능력</strong>이 <button class="term" type="button" data-term="Interface">인터페이스</button> 실력이다.</li>
+<li>이 골격은 BAPI·RFC·BDC·Excel에도 똑같이 적용된다.</li>
 </ul>
 </section><section class="lblock"><h2>🧩 도전 과제 (서브퀘스트)</h2>
 <blockquote>
 <p>선택 과제 — 예매 데이터를 외부와 주고받는다.</p>
 </blockquote>
 <ol>
-<li>예매 조회를 <strong>RFC</strong> 함수(Remote-Enabled)로 노출해 외부에서 호출 가능하게 한다.</li>
-<li>엑셀 예매 파일을 업로드해 <strong>검증 후</strong> 등록(BAPI/DML)하고 실패 건을 로그에 남긴다.</li>
-<li>(심화) 표준 <button class="term" type="button" data-term="트랜잭션">트랜잭션</button> 등록은 <strong>BDC Session</strong>(<code>SHDB</code>로 녹화)으로 대량 처리한다.</li>
+<li>예매 조회를 <strong>RFC</strong> 함수(Remote-Enabled)로 노출해 외부에서 호출 가능하게
+한다(<a href="CH33-L02.html">RFC 설계</a>).</li>
+<li>엑셀 예매 파일을 업로드해 <strong>검증 후</strong> 등록하고(<a href="CH33-L04.html">Excel Upload</a> ·
+<a href="CH33-L01.html">BAPI</a>), 실패 건을 로그에 남긴다.</li>
+<li>(심화) 서버 파일 배치로 바꾸고 <strong>재처리 큐와 <button class="term" type="button" data-term="멱등성">멱등성</button> key</strong>를 설계한다. 표준 <button class="term" type="button" data-term="트랜잭션">트랜잭션</button>
+등록이 필요하면 <a href="CH33-L03.html">BDC Session</a>으로.</li>
 </ol>
-<p>힌트: L01(BAPI)·L02(RFC)·L03(BDC/SHDB)·L04(엑셀)·L05(서버파일/재처리).</p>
 <hr>
-<p>외부 <button class="term" type="button" data-term="Interface">인터페이스</button>를 두루 다뤘다. 이제 표준 메시지 기반 연계 — IDoc/ALE → <strong>CH34</strong>.</p>
+<p>단건·파일 <button class="term" type="button" data-term="Interface">인터페이스</button>를 두루 다뤘다. 다음은 표준 <strong>메시지 기반</strong> 연계다. 문서를
+전자문서(IDoc)로 주고받고 서비스로 노출하는 세계,
+<a href="CH34-L01.html">Chapter 34 · IDoc / ALE / Gateway</a>로 간다.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
