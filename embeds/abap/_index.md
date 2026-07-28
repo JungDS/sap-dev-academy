@@ -267,6 +267,12 @@
 | CH33-L04-S01 | CH33-L04 | excel-upload | 검증만 실행(dry run)→행별 OK/오류(숫자·필수·중복)+행 번호 사유→성공 행만 등록 | ✅ |
 | CH33-L05-S01 | CH33-L05 | mermaid | (재사용) 인터페이스 공통 골격 흐름도(수신→검증→등록→로그→재처리) | ✅ |
 | CH33-L05-S02 | CH33-L05 | iface-ops | (capstone) 운영 한 바퀴: 수신→OPEN(권한 오류)→행 검증→처리→오류 파일→재처리(retry)→중복 재수신 멱등 차단 | ✅ |
+| CH34-L01-S01 | CH34-L01 | idoc-structure | 3층(송장/내용물/이력) 클릭 탐색·오류 IDoc 모드=51 상태↔원인 Segment(고객 10000001) 연결 읽기 | ✅ |
+| CH34-L02-S01 | CH34-L02 | mermaid | (재사용) ALE 분배 흐름도(모델→계약→통로→수신) | ✅ |
+| CH34-L02-S02 | CH34-L02 | ale-config | 다섯 부품 토글(주소록/규칙표/배포/계약서/통로)→발행 시 멈춤 지점 단계 트랙+진단 피드백 | ✅ |
+| CH34-L03-S01 | CH34-L03 | idoc-status | 01→03→64→51/53 생애주기·원인 수정 게이트(미수정 재처리=51 반복)·운영 이력 로그 | ✅ |
+| CH34-L04-S01 | CH34-L04 | odata-tree | SEGW 5부품 트리+시나리오 4(정상/미등록404/모델불일치400/주방미구현 0건)→HTTP 배지·로그 힌트 | ✅ |
+| CH34-L05-S01 | CH34-L05 | odata-query | 쿼리→URL+대응 SELECT 줄 동기 표시·정렬 끄기(페이지 셔플)·filter 미반영 사고 데모·정본 C001~/이름 풀 | ✅ |
 | CH04-L02-S01 | CH04-L02 | fill-blank | 문자열 함수 빈칸(INTO·AT·strlen·FIND) | ✅ |
 | CH04-L07-S01 | CH04-L07 | fill-blank | 구구단 빈칸(TIMES·sy-index·*·ENDDO) | ✅ |
 | CH04-L03-S01 | CH04-L03 | mermaid | IF/ELSEIF/ELSE 분기 흐름도(p_amt: 큰금액/소액/0·음수) | ✅ |
@@ -354,6 +360,11 @@
 | bdc-recorder | 1 | 공통(_engine)·자체 postHeight ✅ | CH33-L03-S01 | STEPS 6(SAPMZBOOK 0100/0200·C001)→녹화·오류 만들기(#breakBtn)=SEATS 제거→BDCMSGCOLL E·Session(#toSession)=SM35 큐(#queue)·ZBK01 |
 | excel-upload | 1 | 공통(_engine)·자체 postHeight ✅ | CH33-L04-S01 | RAW 6행(헤더+정상3+숫자오류+필수누락+중복)→dry run 판정·오류=행 번호+사유·성공 행 등록(#post) 분리 |
 | iface-ops (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH33-L05-S02 | 단계 강제(수신→OPEN→검증→처리)·권한 오류 토글(#perm)·오류 파일→재처리 큐(retry)·처리 이력 key로 중복 재수신 차단·서버 파일 5행(EXT-101~105) |
+| idoc-structure | 1 | 공통(_engine)·자체 postHeight ✅ | CH34-L01-S01 | 3층 레이어 클릭→상세·오류 모드(#modeErr)=DERR 세트(51+원인 Segment .bad 하이라이트)·상태 대표값 01/03/53(오류 64/51) |
+| idoc-status | 1 | 공통(_engine)·자체 postHeight ✅ | CH34-L03-S01 | 상태 트랙 01/03/64/51/53·오류 주입(#err)·원인 수정 게이트(#fix — 미수정 BD87=51 반복)·운영 이력(#slog) |
+| ale-config (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH34-L02-S02 | PARTS 5 토글→발행 시 첫 누락 부품에서 단계 트랙 정지(stopAt)·진단 버튼=누락 목록·전부 켜면 ④ 수신까지 |
+| odata-tree | 1 | 공통(_engine)·자체 postHeight ✅ | CH34-L04-S01 | 정적 details 트리(5부품)+시나리오(#httpBadge/#scBody/#scHint)·복구 이력: JS 실종이던 엔진을 신규 작성 |
+| odata-query | 1 | 공통(_engine)·자체 postHeight ✅ | CH34-L05-S01 | 쿼리 입력→URL·대응 SELECT(#sel)·결과 표·#nosort=셔플(ORDER BY 없음 사고)·#nofilter=조건 불변 사고·정본 C001~C005 |
 | decision-tree | 3 | 공통(_engine)+_autoheight ✅ | CH06-L02-S02 · CH20-L06-S01 · CH32-L04-S01 | 범용 선택 트리(질문 분기=위젯 config)·Table Kind/고급 SQL/확장 수단 선택 |
 | factory-sim (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH27-L01-S01 | 타입 세그(V/G/Z)→생성 클래스·설명 전환·호출부 코드 고정 표시 |
 | singleton-sim (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH27-L02-S01 | get_instance vs NEW 버튼→인스턴스 주소 목록·같음/다름 판정 |
@@ -414,7 +425,7 @@
 | salv-grid-simulator | 2 | 공통(_engine)·자체 postHeight ✅ | CH11-L02-S01·CH11-L06-S01 (완료) | config 주입(SALV_CFG: itab·cols·data·sumKey·code) · ALV제목/토글 엔진설정 |
 | relationship-map | 1 | 공통 | _(미작성)_ | CSS-only |
 | state-change-grid | 2 | 공통(CSS-only)+_autoheight ✅ | CH06-L04-S03·CH06-L06-S01 | 스냅샷=마크업(gt_gugu 성장·정렬 / DELETE ADJACENT DUPLICATES 함정) · cell-new/cell-del 강조 · .note 추가(다크 자동) |
-| mermaid | 15 | 공통(+_vendor)+_autoheight ✅ | CH04-L04-S02/S03·L05-S02/S03/S04 · CH26-L05 · CH31-L06-S02 · CH33-L05-S01 · CH34-L02 · CH36-L03 · CH37-L03 · CH38-L03/L04 · CH39-L01/L06 | 그래프=위젯 `.mermaid` 주입·CDN+로컬fallback·이벤트본 은퇴 |
+| mermaid | 15 | 공통(+_vendor)+_autoheight ✅ | CH04-L04-S02/S03·L05-S02/S03/S04 · CH26-L05 · CH31-L06-S02 · CH33-L05-S01 · CH34-L02-S01 · CH36-L03 · CH37-L03 · CH38-L03/L04 · CH39-L01/L06 | 그래프=위젯 `.mermaid` 주입·CDN+로컬fallback·이벤트본 은퇴 |
 | judge-quiz | 6 | 공통(_engine)+_autoheight ✅ | CH06-L05 · CH26-L03 · CH32-L05 · CH36-L05 · CH37-L05 · CH39-L07 | 범용 판별 퀴즈(문항=위젯 config)·즉시 정답·해설 |
 | domain-builder | 1 | 공통(_engine) ✅ | CH03-L01-S01 | SE11 폼(단일사용·데이터 inline) · 예제별 target 강제(검사/활성화는 목표 일치 시에만) |
 | input-help-priority | 1 | 공통(CSS-only)+_autoheight ✅ | CH09-L07-S01 | F4 사다리(콘텐츠=마크업·빈 .js 제거) |
