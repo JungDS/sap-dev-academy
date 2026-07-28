@@ -1,6 +1,6 @@
 # 00. INDEX — 문서 지도
 
-> 📅 최종수정: 2026-07-09 18:39 KST
+> 📅 최종수정: 2026-07-29 04:27 KST
 > `.project-docs`는 AI 부팅용 컨텍스트. 원칙: **한 사실은 한 문서에만(SSOT)** · 번호≈우선순위(낮을수록 핵심; 11～13 공백 = 아카이브) · **완료된 이력 = git + `.archive`**(라이브 인덱스 포함, [04 R16](04_CONVENTIONS.md)).
 
 ## 자동 로드 (CLAUDE.md가 `@` 임포트 — 이미 컨텍스트에 있음)
@@ -23,7 +23,7 @@
 
 ## 아카이브 (`.archive/` — 부팅 컨텍스트 밖)
 > 완료된 작업 원장·재생성물은 **루트 `.archive/`**(이 폴더 밖)로 분리 — `.project-docs` 통독 명령에 딸려오지 않게. 끝난 일의 정본 = **git 이력 + `.archive` 원장**(02는 prune-only·완료이력 비보유, [04 R16](04_CONVENTIONS.md)). 필요 시에만 직접 열어봄.
-> 구조: **보관 묶음 = 날짜 배치 하위폴더**(`.archive/<날짜-주제>/`, 동명 충돌 방지·출처 보존) · **재생성물 = `.archive/_generated/`**(도구가 매번 덮어씀). 규약 = [[project-docs-archive-convention]].
+> 구조: **보관 묶음 = 날짜 배치 하위폴더**(`.archive/<날짜-주제>/`, 동명 충돌 방지·출처 보존) · **재생성물 = `.archive/_generated/`**(도구가 매번 덮어씀). git 처리: 순수 이사 = `git mv` · 같은 자리 재작성 = archive에 **복사본** + 원본 제자리 수정(`git mv` 금지 — blame 유지).
 
 **`.archive/2026-06-29-docs-cleanup/`** (frozen — 완료/대체된 원장)
 - `11_KEYWORD_AUDIT` 공식 keyword doc 대비 감사(CH01～36) · `12_EXPANSION_PLAN` 체크리스트 확장 배치(38건) · `13_EMBED_BUILD_PLAN` 학습수단 제작 패스

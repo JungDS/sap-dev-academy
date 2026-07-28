@@ -1,6 +1,6 @@
 # 07. BROWSER TESTING — 미리보기 검증 워크플로
 
-> 📅 **최종수정: 2026-06-29 15:54 KST**
+> 📅 **최종수정: 2026-07-29 04:27 KST**
 > 🎯 **목적:** 이 프로젝트에서 브라우저로 동작을 검증하는 **절차 + 서버 specifics**. (eval/DOM-우선 원리·헤드리스 함정의 *근거*는 [05 P3·P4](05_PITFALLS.md), 일반 preview 워크플로는 하네스 기본 지침 — 여기선 중복하지 않고 *이 프로젝트 고유분*만.)
 > 📖 **읽을 때:** 브라우저로 동작을 확인해야 할 때.
 
@@ -17,6 +17,7 @@
 
 ## 이 프로젝트 고유 함정 (05 P3·P4 외 추가분)
 - **scrollspy 등 스크롤 검증**: programmatic `window.scrollTo`가 `scroll` 이벤트를 즉시 안 쏠 수 있음 → 필요 시 `dispatchEvent(new Event('scroll'))`로 핸들러 직접 호출해 확인.
+- **수정한 엔진 JS/CSS·임베드 재검증 = 캐시 버스트 필수**: 브라우저 memory-cache로 구버전이 렌더됨 → `fetch(url,{cache:'reload'})`로 최신본 적재 후 `iframe.contentWindow.location.reload(true)`. lazy iframe(화면 밖)은 `scrollIntoView` 후 로드 확인.
 - (헤드리스 트랜지션/애니메이션 멈춤 = [05 P4](05_PITFALLS.md).)
 
 ## 합격 기준

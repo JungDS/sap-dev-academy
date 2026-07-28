@@ -1,6 +1,6 @@
 # 10. CHAPTER EXECUTION — content MD 챕터 실행 (보강 = 리빌드, 단일 프로토콜)
 
-> 📅 최종수정: 2026-07-22 02:37 KST
+> 📅 최종수정: 2026-07-29 04:27 KST
 > 🎯 이 문서 = `content/abap` 챕터를 **실행**(보강/재작성)할 때의 단일 핸드오프. **리빌드와 보강은 같은 파이프라인이고 차이는 강도뿐** — 별도 문서로 나누지 않는다. 스펙 출처 = [09_CURRICULUM_LEDGER](09_CURRICULUM_LEDGER.md)(개요·경계·관통예제) + **각 레슨 `.md` front-matter**(per-lesson SSOT) + `reference/codex_0629_v3`(참고) + `check/` 체크리스트.
 > 🧭 규칙은 여기서 **재진술하지 않는다** — [04](04_CONVENTIONS.md)(R) · [14 §5](14_REFERENCE_CORPUS.md)(사실검증) · [05](05_PITFALLS.md)(함정) · [09](09_CURRICULUM_LEDGER.md)(구조)로 포인터만(SSOT).
 > 표기: 범위는 전각 `～`(반각 `~`는 취소선). ABAP 코드의 `table~field` 틸드는 반각 유지.
@@ -30,17 +30,17 @@
 7. **사실검증 커버리지**: 주제가 keyword doc으로 검증되는가, 아니면 GUI control·Class API처럼 코퍼스가 얇은가(codex QA §3이 "SE24/Class Builder 영역"이라 하면 얇음) → 얇으면 `zabap_jhy` repo·SE24 보완 계획.
 
 ## STEP 1 — 선결 사인오프 (코드 스타일·게이팅·구조를 좌우하는 결정만)
-STEP 0에서 **전 챕터 코드 스타일/구조를 좌우하는 결정**이 나오면 집필 전 사용자 확인(p_→gv_ 선례, [[abap-var-prefix-scope]]).
+STEP 0에서 **전 챕터 코드 스타일/구조를 좌우하는 결정**이 나오면 집필 전 사용자 확인(p_→gv_ 선례).
 - **[신규장]이면 항상 사인오프**(삽입 위치·번호·리넘버 범위).
 - 예(CH17): "OO(`REF TO`·`CREATE OBJECT`·메서드)를 **L2 [선행 사용]** + 이론 확장 금지(정식=CH21)로 둔다 — codex 방침 유지?"
 
 ## STEP 2 — 규율 체크리스트 (전 레슨 공통)
-1. **QA + REWRITE 동시 대조**([[codex-v3-qa-plus-rewrite]]) — REWRITE 델타 + QA **§2 커버리지·§4 gotcha·§5 게이팅·§8 잔여리스크**를 현행에 교차검증.
-2. **사실검증 = 두 루트 병행**([14 §5-1](14_REFERENCE_CORPUS.md): 루트 A(HTML keyword doc) + 루트 B(GitHub 코퍼스) — 경로·OneDrive hydrate 주의는 14 §5-1, 교차·불일치 보고). 코퍼스 얇은 주제(STEP 0-7)는 `zabap_jhy`([[zabap-jhy-reference-repo]], 이식 X)·공식 URL로 보완, **확인 불가 API는 단정 금지·"미검증" 표기**.
+1. **QA + REWRITE 동시 대조** — REWRITE 델타 + QA **§2 커버리지·§4 gotcha·§5 게이팅·§8 잔여리스크**를 현행에 교차검증.
+2. **사실검증 = 두 루트 병행**([14 §5-1](14_REFERENCE_CORPUS.md): 루트 A(HTML keyword doc) + 루트 B(GitHub 코퍼스) — 경로·OneDrive hydrate 주의는 14 §5-1, 교차·불일치 보고). 코퍼스 얇은 주제(STEP 0-7)는 `zabap_jhy`(, 이식 X)·공식 URL로 보완, **확인 불가 API는 단정 금지·"미검증" 표기**.
 3. **게이팅(R6/R15)** — STEP 1 결정대로. modern·미래 개념 선노출 0, L2는 `[선행 사용]` 표기·이론 확장 금지, QA가 그은 후속 경계 당겨오지 않음. 해당 챕터 아니면 DML/lock/LUW 없음.
 4. **컨벤션([04 R11](04_CONVENTIONS.md))** — 스코프 접두어(전역 `gv_/gs_/gt_` · 메서드 로컬 `l*_` · `it_`=헤더라인 있을 때만) · 타입 `ts_/tt_` · 선택화면 `pa_/so_`. 기존 잔여(`ty_` 구조체·`p_/s_` 등) 이 챕터분 전환.
 5. **R2(코드=체험)** — 코드가 나오는 모든 레슨(신규 포함)에 위젯. 기존 엔진 재사용 우선, 신규는 [AUTHORING](../embeds/_engine/AUTHORING.md).
-6. **톤·문체([04 R3](04_CONVENTIONS.md))** — 기존 CH 본문 기준(친근·용어 첫등장 한 줄·**줄표 절제**: 본문 부연은 마침표/괄호/콜론). **AI 말투·번역투·어색·저렴 표현 금지**([[em-dash-restraint]]·[[abap-terms-english]]·[[term-declare-over-define]]).
+6. **톤·문체([04 R3](04_CONVENTIONS.md))** — 기존 CH 본문 기준(친근·용어 첫등장 한 줄·**줄표 절제**: 본문 부연은 마침표/괄호/콜론). **AI 말투·번역투·어색·저렴 표현 금지**(·[[term-declare-over-define]]).
 7. **참조 = 링크**([04 R5](04_CONVENTIONS.md), raw CHxx 금지) · 코드블록은 fenced만(빌드가 code-copy-block 변환·다크 금지).
 
 ## STEP 3 — 파이프라인 (CH07～16 검증됨 · 강도 [보강])
@@ -92,7 +92,7 @@ STEP 0에서 **전 챕터 코드 스타일/구조를 좌우하는 결정**이 �
 
 ## C. [재작성] 가드레일 (위반 금지)
 - docs/ 생성·빌드·브라우저 검증 안 함(R1/P2). `content/abap/**.md`만.
-- R6/P7: CH01～17 본문에 인라인 `DATA()`/`VALUE`/`NEW`/`@`/`+=`/`|…|` 금지(`&&`만 CH04 예외). New Open SQL은 CH19↑.
+- R6/P7: CH01～17 본문에 인라인 `DATA`/`VALUE`/`NEW`/`@`/`+=`/`|…|` 금지(`&&`만 CH04 예외). New Open SQL은 CH19↑.
 - R9: 임의 작명 금지 → 이름 풀(1번 정훈영). R5/P10: fenced ```` ```abap ````만·다크 금지. R15/P11: 선노출 금지·CH10은 static-first(본격 OO 0).
 - 제외(합의): Screen Table Control · classic 인터랙티브 리스트(`AT LINE-SELECTION`/`HIDE`/`AT USER-COMMAND`/`TOP-OF-PAGE`) → ALV 대체.
 - 공유파일(glossary·02) 동시편집 금지(에이전트는 마킹/리턴만).
