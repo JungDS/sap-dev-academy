@@ -1,43 +1,58 @@
 <!DOCTYPE html>
-<!-- CH39-L04-S01 — 엔진: code-anatomy(재사용) · _engine/_base.css. BDEF(Behavior Definition) 해부. -->
+<!-- CH39-L04-S01 — 엔진: code-anatomy · _engine/_base.css. 운영 BDEF 해부 + 계약 누락 카드 4(#bug-cfg). -->
 <html lang="ko" data-eng="code-anatomy">
 <head>
 <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>BDEF 해부 · CH39-L04-S01</title>
+<title>운영 BDEF 해부 · CH39-L04-S01</title>
 <link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/code-anatomy.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">Behavior Definition 해부 — 예매 앱의 동작 선언</p>
-  <p class="lead">밑줄 부분을 클릭하세요. managed RAP이 CUD·초안·잠금을 대부분 자동으로 처리합니다.</p>
+  <p class="hd">운영 BDEF — 조항을 클릭</p>
+  <p class="lead">밑줄 조항의 역할을 확인한 뒤, <b>계약 누락 카드 4장</b>으로 빠지면 무슨 일이 나는지 판별하세요.</p>
   <div class="anat">
-    <div class="anat__h"><span class="dot"></span>ZI_Booking (Behavior Definition)</div>
-<pre class="anat__code"><span class="mk" data-a="managed">managed</span> implementation in class zbp_i_booking unique;
-define behavior for ZI_Booking alias Booking
-<span class="mk" data-a="persist">persistent table zbooking</span>
-<span class="mk" data-a="draft">draft table zbooking_d</span>
-<span class="mk" data-a="lock">lock master</span>
+    <div class="anat__h"><span class="dot"></span>ZI_Booking BDEF (본문 코드 축약)</div>
+<pre class="anat__code">managed implementation in class zbp_i_booking unique;
+<span class="mk" data-a="strict">strict ( 2 );</span>
+<span class="mk" data-a="draft">with draft;</span>
+
+<span class="kw">define behavior for</span> ZI_Booking <span class="kw">alias</span> Booking
+persistent table zbooking
+<span class="mk" data-a="dtable">draft table zbooking_d</span>
+lock master
+<span class="mk" data-a="tetag">total etag LastChangedAt</span>
+etag master LastChangedAt
+<span class="mk" data-a="auth">authorization master ( global, instance )</span>
 {
   create; update; delete;
-  field ( readonly ) booking_id, created_by;
-  <span class="mk" data-a="det">determination setDefaults on modify { create; }</span>
-  <span class="mk" data-a="val">validation validateCapacity on save { field seats; }</span>
-  <span class="mk" data-a="act">action ( features : instance ) cancelBooking result [1] $self;</span>
-  <span class="mk" data-a="map">mapping for zbooking { booking_id = booking_id; }</span>
+  validation validateCapacity on save { field Seats; }
+  action ( features : instance ) cancelBooking result [1] $self;
+  <span class="mk" data-a="dact">draft action Edit; draft action Resume;
+  draft action Activate optimized; draft action Discard;</span>
 }</pre>
   </div>
-  <div class="anno idle" id="anno">밑줄 친 구문을 클릭하면 설명이 나옵니다.</div>
-  <div class="note">💡 <b>determination</b>=자동 채움 · <b>validation</b>=저장 전 검증 · <b>action</b>=사용자 동작(취소). 알맹이는 Behavior Pool(다음 레슨)에 구현합니다.</div>
+  <div class="anno idle" id="anno">밑줄 친 조항을 클릭해 보세요.</div>
+  <div class="bugs" id="bugs"></div>
+  <div class="anno idle" id="bugOut">🚨 계약 누락 카드를 클릭하면 무슨 일이 나는지 나옵니다.</div>
+  <div class="note">💡 입문 BDEF(CH24)와의 차이 = <b>Draft·total etag·authorization</b> 조항. 계약이 자리(구현 메서드)를 만들고, 자리는 판단(L05·L08)으로 채웁니다.</div>
   <script type="application/json" id="anno-cfg">
   {
-    "managed": { "t": "managed", "d": "관리형 RAP — 저장·잠금·초안 등 표준 처리를 프레임워크가 자동 제공(unmanaged는 직접 구현)." },
-    "persist": { "t": "persistent table zbooking", "d": "이 동작이 영속화할 실제 DB 테이블." },
-    "draft": { "t": "draft table zbooking_d", "d": "미저장 변경을 초안(Draft)으로 보관할 테이블 — 이어 하기·복구(L07)." },
-    "lock": { "t": "lock master", "d": "root가 잠금을 주관 — 동시성 제어(CH26)를 RAP이 관리." },
-    "det": { "t": "determination ... on modify", "d": "생성/수정 시 자동으로 값을 채움(상태·감사필드). CH25 stamp의 RAP 버전." },
-    "val": { "t": "validation ... on save", "d": "저장 직전 규칙 검증(정원 초과 등). 실패면 RAP이 저장을 막음." },
-    "act": { "t": "action ... cancelBooking", "d": "사용자가 버튼으로 실행하는 커스텀 동작(예매 취소). result로 변경 인스턴스 반환." },
-    "map": { "t": "mapping for zbooking", "d": "CDS 필드 ↔ DB 컬럼 이름이 다를 때 매핑." }
+    "strict": { "t": "strict ( 2 ) — 엄격 모드", "d": "계약 누락·모호함을 활성화 단계에서 잡아 줍니다. Cloud 개발의 기본 자세." },
+    "draft": { "t": "with draft — 초안 켜기", "d": "쓰다 만 데이터를 별도 테이블에 보관하는 Draft를 BO 전체에 켭니다. 이 한 줄이 draft table·total etag·draft action을 전부 요구하기 시작합니다." },
+    "dtable": { "t": "draft table — 초안의 집", "d": "ADT quick fix가 생성해 주는 초안 저장 테이블. framework 관리 대상이라 직접 SQL로 고치는 곳이 아닙니다." },
+    "tetag": { "t": "total etag — draft BO의 필수 조항", "d": "초안에서 active로 돌아올 때 '그사이 active가 바뀌었나'를 비교할 기준. draft를 켰다면 없이는 활성화가 안 됩니다." },
+    "auth": { "t": "authorization master — 권한 계약", "d": "global(이 BO를 다룰 자격)·instance(이 건을 다룰 자격) 판단 자리를 만듭니다. 선언만으로는 전부 허용 — 구현(L08)까지가 계약 이행." },
+    "dact": { "t": "draft action 5종 — 초안의 표준 동작", "d": "Edit(편집 시작)·Resume(재개)·Activate(확정)·Discard(폐기)·Prepare(저장 전 정리). Fiori의 초안 배너·이어쓰기 버튼이 전부 이 선언에서 나옵니다." }
+  }
+  </script>
+  <script type="application/json" id="bug-cfg">
+  {
+    "bugs": [
+      { "c": "with draft인데 total etag 누락", "t": "활성화 실패", "d": "draft-enabled BO의 필수 조항입니다. 시스템이 활성화 단계에서 막아 줍니다 — 계약 누락을 기계가 잡는 경험." },
+      { "c": "draft table을 SE16/SQL로 정리", "t": "framework 침범", "d": "초안 metadata가 꼬입니다. 초안 폐기는 Discard draft action으로 — 테이블처럼 보여도 framework의 영역." },
+      { "c": "authorization 선언 후 구현 방치", "t": "전부 허용", "d": "선언은 자리를 만들 뿐입니다. 비워 두면 '권한 설계 완료'가 아니라 '권한 없음 통과' — 위험이 조용히 지나갑니다." },
+      { "c": "LastChangedAt을 readonly에서 제외", "t": "추적 오염", "d": "사용자 입력이 변경 추적 필드를 덮어쓰면 ETag 비교(L08)의 기준 자체가 무너집니다. 시스템이 쓰는 필드는 readonly." }
+    ]
   }
   </script>
 </div>

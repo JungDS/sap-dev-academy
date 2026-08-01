@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<!-- CH39-L01-S02 — 엔진: judge-quiz · _engine/_base.css. 요구 카드 → 계층 책임 판별. -->
+<html lang="ko" data-eng="judge-quiz">
+<head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>계층 책임 판별 · CH39-L01-S02</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/judge-quiz.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">이 요구, 어느 계층의 책임인가</p>
+  <p class="lead">기준은 하나 — <b>서버(Behavior·모델)가 지켜야 하는 규칙인가, 표면(UI·주석·설정)의 일인가.</b></p>
+  <div class="score"><span>점수</span><div class="bar"><i id="sbar"></i></div><span class="v" id="sv">0 / 0</span></div>
+  <div id="list"></div>
+  <div class="result" id="result"></div>
+  <script type="application/json" id="quiz">
+  {
+    "labels": ["🧠 Behavior/모델", "🎨 표면(UI·주석·설정)"],
+    "items": [
+      { "q": "\"정원이 넘으면 저장을 막아 주세요\"", "a": 0,
+        "why": "업무 규칙 — Behavior validation의 몫이다. UI에서만 막으면 EML·API가 그대로 우회한다." },
+      { "q": "\"목록에 고객명이 두 번째 컬럼으로 보였으면 해요\"", "a": 1,
+        "why": "화면 배치 — @UI.lineItem의 position이 정하는 표면의 일이다." },
+      { "q": "\"취소된 예매는 다시 취소 못 하게 해 주세요\"", "a": 0,
+        "why": "instance 권한/상태 규칙 — 버튼을 숨기는 것만으로는 부족하고, 서버(BDEF authorization·상태 판단)가 거부해야 한다." },
+      { "q": "\"쓰다 만 예매가 안 날아가게 해 주세요\"", "a": 0,
+        "why": "Draft — 화면 기능처럼 보이지만 BDEF의 with draft 계약(모델·동작 계층)이 만든다." },
+      { "q": "\"외부 파트너 시스템도 예매를 넣을 수 있어야 해요\"", "a": 1,
+        "why": "노출·연결 — Service Binding과 통신 설정(운영 계층)의 일이다. 단, 그 호출이 지킬 규칙 자체는 Behavior에 이미 있어야 한다." },
+      { "q": "\"상세 화면 첫 구역에 예매 정보를 모아 주세요\"", "a": 1,
+        "why": "Object Page 구역 — @UI.facet(Metadata Extension)의 일이다." }
+    ]
+  }
+  </script>
+</div>
+<script src="../_engine/judge-quiz.js" defer></script>
+</body>
+</html>

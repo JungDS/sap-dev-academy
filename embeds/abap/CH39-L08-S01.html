@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<!-- CH39-L08-S01 — 엔진: stage-chips · _engine/_base.css. 동시 수정 실험실 — 잠금·만료·ETag·권한. -->
+<html lang="ko" data-eng="stage-chips">
+<head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>동시 수정 실험실 · CH39-L08-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/stage-chips.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">동시 수정 실험실 — 무엇이 사고를 막았나</p>
+  <p class="lead">시나리오를 누르면 <b>권한 → 잠금 → (만료 후) ETag → total ETag</b> 중 어느 장치가 작동했는지 신호등이 켜집니다.</p>
+  <div id="chips"></div>
+  <div id="cases"></div>
+  <div class="verdict" id="verdict"></div>
+  <div class="note">💡 잠금(편집 중·비관) → 만료 → ETag(저장 시점·낙관) → Draft 복귀는 total ETag — 대체재가 아니라 <b>릴레이</b>입니다. (정훈영·유재석 시나리오는 교육용 가상)</div>
+  <script type="application/json" id="sc-cfg">
+  {
+    "chips": ["① 권한(볼/할 자격)", "② Lock(편집 중)", "③ ETag(저장 비교)", "④ total ETag(Draft 복귀)"],
+    "scenarios": [
+      { "label": "정훈영 편집 중, 유재석이 같은 건 편집 시도", "states": ["ok", "bad", "off", "off"], "warn": true,
+        "verdict": "⛔ <b>② Lock</b> — '정훈영이 편집 중입니다'로 거부. 먼저 잡은 사람의 배타 점유(비관적 제어)가 작동했습니다." },
+      { "label": "유재석이 읽은 뒤 정훈영이 저장 → 유재석 저장 시도", "states": ["ok", "ok", "bad", "off"], "warn": true,
+        "verdict": "⛔ <b>③ ETag</b> — 유재석이 읽었던 LastChangedAt과 서버의 현재 값이 다릅니다. 조용한 덮어쓰기 대신 '다시 읽고 고치세요'로 거부." },
+      { "label": "초안 두고 퇴근(잠금 만료) → 남이 active 수정 → 내일 Resume", "states": ["ok", "warn", "off", "bad"], "warn": true,
+        "verdict": "⛔ <b>④ total ETag</b> — 배타 잠금은 만료됐지만(optimistic phase), 복귀 순간 active의 변경이 감지돼 위험한 이어쓰기가 막혔습니다. draft BO에 total etag가 필수인 이유." },
+      { "label": "남이 만든 예매를 EML로 취소 시도(버튼은 안 보였지만)", "states": ["bad", "off", "off", "off"], "warn": true,
+        "verdict": "⛔ <b>① 권한</b> — 버튼 숨김은 경험일 뿐, 서버의 instance authorization(소유자 판정)이 거부했습니다. 이미 취소된 건의 재취소는 자격이 아니라 상태의 문제라 features가 막습니다." },
+      { "label": "혼자 조용히 수정 → 저장", "states": ["ok", "ok", "ok", "off"],
+        "verdict": "✅ 충돌 없음 — 네 장치는 평소엔 보이지 않다가, 여럿이 겹치는 순간에만 각자의 질문에 답합니다." }
+    ]
+  }
+  </script>
+</div>
+<script src="../_engine/stage-chips.js" defer></script>
+</body>
+</html>
