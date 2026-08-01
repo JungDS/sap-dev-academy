@@ -41,30 +41,31 @@
       <article class="prose">
 <section class="lblock"><h2>모든 필드를 다 보여줄 필요는 없다</h2>
 <p>테이블을 만들면 모든 필드를 그대로 보여 주는 게 자연스러워 보인다. 하지만 실무는
-다르다. 공연 테이블에 가격·내부 상태·생성자·변경일·기술 키가 함께 있어도, 어떤
-사용자는 <strong>공연 코드와 공연명만</strong> 필요하다. 다 보여 주면 화면이 복잡해지고, 안 봐도
-될 정보가 노출되며, 엉뚱한 필드를 업무 필드로 착각한다.</p>
+다르다. 예매 테이블에 감사 필드(누가·언제 만들고 고쳤나) 여섯 개가 함께 있어도,
+업무 담당자는 <strong>예매 번호·공연·좌석·상태만</strong> 필요하다. 다 보여 주면 화면이
+복잡해지고, 안 봐도 될 정보가 노출되며, 엉뚱한 필드를 업무 필드로 착각한다.</p>
 <p><button class="term" type="button" data-term="Projection View">Projection View</button>는 &quot;같은 테이블을 <strong>더 좁게</strong> 보여 주는 관점&quot;이다.</p>
 </section><section class="lblock"><h2>Projection View — 한 테이블, 열 솎아내기</h2>
 <p><button class="term" type="button" data-term="Projection View">Projection View</button>는 <strong>하나의 basis table</strong>에서 일부 필드만 보이게 하는 DDIC View다.
 <button class="term" type="button" data-term="JOIN">조인</button>도 계산도 하지 않고, 행을 거르는 selection condition도 두지 않는다. 공식문서상
 별도의 database SQL view도 만들어지지 않는다. 한마디로 <strong>&quot;한 테이블에서 열을 줄이는 View&quot;</strong> 다.</p>
-<p><code>zconcert</code>에 <code>concert_id, perf_id, date, hall_id, base_price, internal_status, created_by, changed_at</code>이 있다고 하자. 업무 담당자가 기본 목록만 보면 된다면
-Projection View <code>ZPV_CONCERT_BASIC</code>은 앞 네 필드만 노출할 수 있다. 읽는 모습은
-테이블 읽기와 거의 같다.</p>
+<p>우리 <code>zbooking</code>이 정확히 그렇다 — 업무 필드 여섯(<code>booking_id, concert_id, perf_no, customer, seats, status</code>)에 감사 필드 여섯(<code>created_by</code>부터
+<code>changed_at</code>까지)이 붙어 열두 필드다. 업무 담당자가 기본 목록만 보면 된다면
+Projection View <code>ZPV_BOOKING_BASIC</code>은 업무 여섯 필드만 노출할 수 있다. 읽는
+모습은 테이블 읽기와 거의 같다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
-4</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> gt_basic <span class="tok-kw">TYPE</span> <span class="tok-kw">STANDARD</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> zpv_concert_basic.
+4</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> gt_basic <span class="tok-kw">TYPE</span> <span class="tok-kw">STANDARD</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> zpv_booking_basic.
 
-<span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> zpv_concert_basic
+<span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> zpv_booking_basic
   <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> gt_basic.</code></pre></div></div>
 <p>아래에서 노출할 필드를 켜고 끄며 사용자가 보게 되는 결과가 어떻게 바뀌는지,
 key 필드를 빼면 무슨 일이 생기는지 직접 보자.</p>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">필드 커튼 — Projection View 필드 선택</span><a class="embed__open" href="../../../embeds/abap/CH14-L02-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH14-L02-S01.html" loading="lazy" title="필드 커튼 — Projection View 필드 선택"></iframe></figure>
 </section><section class="lblock"><h2>한계와 오해</h2>
 <ul>
-<li><strong>행을 거르는 필터 View가 아니다</strong> → 특정 <code>hall_id</code>만 보이게 하는 <strong>행 조건</strong>은
+<li><strong>행을 거르는 필터 View가 아니다</strong> → 특정 <code>status</code>만 보이게 하는 <strong>행 조건</strong>은
 <button class="term" type="button" data-term="Projection View">Projection View</button>의 역할이 아니다. 이 레슨에서는 <strong>열을 줄이는</strong> 도구로만 본다.</li>
 <li><strong>key 필드를 빼지 말 것</strong> → 결과가 깔끔해 보여도 어떤 행인지 식별 못 하면 못 쓴다.
 최소한 업무 식별 key와 설명 필드는 남긴다.</li>

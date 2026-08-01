@@ -41,15 +41,15 @@
       <article class="prose">
 <section class="lblock"><h2>테이블 하나로는 부족할 때</h2>
 <p><a href="CH14-L05.html">Chapter 14 · TMG/SM30</a>의 SM30은 <strong>한 테이블/뷰</strong>를 유지보수한다. 그런데 &quot;공연 → 회차 → 좌석등급&quot;처럼
-<strong>연관된 여러 테이블</strong>을 늘 함께 손봐야 하면, 화면을 오가며 따로 관리하기 번거롭다.
+<strong>연관된 여러 테이블</strong>(우리로 치면 공연과 그 회차들)을 늘 함께 손봐야 하면, 화면을 오가며 따로 관리하기 번거롭다.
 여러 유지보수 뷰/테이블을 <strong>하나로 묶어</strong> 계층적으로 다루는 게 <button class="term" type="button" data-term="View Cluster">View Cluster</button>(뷰 클러스터)다.</p>
 </section><section class="lblock"><h2>View Cluster (SE54)</h2>
 <p><code>SE54</code>로 <strong>정의</strong>하고(Edit <button class="term" type="button" data-term="View Cluster">View Cluster</button>), 실제 계층 유지보수는 <strong>SM34</strong>(View Cluster Maintenance)로 실행한다. 관련 뷰·테이블을 <strong>헤더 → 상세 → 상세의 상세</strong> 계층으로 엮는다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">TEXT</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
-2
-3</pre><pre class="abap-editor__code"><code>공연(헤더)            ← 상위에서 한 건 선택
- └ 회차(상세)         ← 그 공연의 회차들
-    └ 좌석등급(상세)  ← 그 회차의 좌석등급들</code></pre></div></div>
+2</pre><pre class="abap-editor__code"><code>공연(헤더)      ← 상위에서 한 건 선택 (zconcert)
+ └ 회차(상세)   ← 그 공연의 회차들 (zperf)</code></pre></div></div>
+<p>(우리 모델은 2단이면 충분하다. 회차 아래 좌석등급 테이블을 두는 시스템이라면
+같은 방식으로 3단·4단으로 늘어난다.)</p>
 <ul>
 <li>상위에서 한 건을 고르면 그에 딸린 하위 항목으로 <strong>자연스럽게 내려가며</strong> 유지보수한다.</li>
 <li>각 단계는 결국 <button class="term" type="button" data-term="Foreign Key">Foreign Key</button> 관계(<a href="CH09-L01.html">Chapter 9 · DDIC 관계</a>)로 이어진 테이블들이다.</li>

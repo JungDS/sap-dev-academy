@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- CH13-L04-S01 — 엔진: where-having-pipeline · _autoheight. 콘텐츠=레슨 전용(WHERE↔HAVING 2단 필터, CH13 L04).
+<!-- CH13-L04-S01 — 엔진: where-having-pipeline · _autoheight. 콘텐츠=레슨 전용(WHERE↔HAVING 2단 필터 — sflight, CH13 L04).
      config=window.WHP_CFG. 게이팅: classic WHERE/GROUP BY/HAVING/COUNT 개념만 · ORDER BY/modern/comma 없음. -->
 <html lang="ko" data-eng="where-having-pipeline">
 <head>
@@ -12,7 +12,7 @@
 <body>
 <div class="wrap">
   <p class="hd">WHERE·HAVING 2단 필터 파이프라인 <small>(행 필터 vs 그룹 필터)</small></p>
-  <p class="lead">한 단계씩 진행하며 <code>WHERE</code>는 <b>개별 행</b>을, <code>HAVING</code>은 <b>그룹 전체</b>를 어떻게 떨어뜨리는지 보세요. 집계 조건(<code>COUNT</code>)은 그룹이 생긴 <b>뒤</b>에야 의미가 있어 <code>HAVING</code>에 둡니다.</p>
+  <p class="lead">운항편(<code>sflight</code>)을 한 단계씩 걸러 봅니다. <code>WHERE</code>는 <b>개별 행</b>을, <code>HAVING</code>은 <b>그룹(항공사) 전체</b>를 어떻게 떨어뜨리는지 보세요. 집계 조건(<code>COUNT</code>)은 그룹이 생긴 <b>뒤</b>에야 의미가 있어 <code>HAVING</code>에 둡니다.</p>
 
   <div class="whp-stages"></div>
 
@@ -30,28 +30,38 @@
 
   <div id="whpData"></div>
 
-  <div class="note"><b>순서가 핵심.</b> <code>WHERE → GROUP BY → HAVING</code>. WHERE는 묶기 전 행을, HAVING은 묶은 뒤 그룹을 거릅니다. <code>WHERE COUNT(*) &gt;= 2</code>처럼 집계 조건을 WHERE에 두면 오류 — 아직 COUNT가 없기 때문입니다.</div>
+  <div class="note"><b>순서가 핵심.</b> <code>WHERE → GROUP BY → HAVING</code>. WHERE는 묶기 전 행을, HAVING은 묶은 뒤 그룹을 거릅니다. <code>WHERE COUNT(*) &gt;= 2</code>처럼 집계 조건을 WHERE에 두면 오류 — 아직 COUNT가 없기 때문입니다. (본문 예시는 <code>HAVING COUNT( * ) &gt;= 5</code>지만, 여기선 시연용 소량 데이터라 기준을 <code>&gt;= 2</code>로 낮췄습니다.)</div>
 </div>
 
 <script>
 window.WHP_CFG = {
-  whereField: 'age', whereVal: 20,
-  groupKey: 'dept_id', havingVal: 2,
-  hlMap: { where: 2, group: 3, having: 4 },
+  whereField: 'seatsocc', whereOp: '>', whereVal: 0,
+  groupKey: 'carrid', havingVal: 2,
+  sumField: 'seatsocc', sumLabel: 'SUM(seatsocc)',
+  rowNoun: '운항편', groupNoun: '항공사',
+  rowCols: [
+    { key: 'carrid', label: 'carrid' },
+    { key: 'connid', label: 'connid' },
+    { key: 'seatsocc', label: 'seatsocc', num: true }
+  ],
+  hlMap: { where: 3, group: 4, having: 5 },
   code: [
-    'SELECT dept_id COUNT( * ) AS cnt',
-    '  FROM ztperson',
-    '  WHERE age >= 20',
-    '  GROUP BY dept_id',
+    'SELECT carrid COUNT( * ) AS cnt',
+    '  FROM sflight',
+    '  INTO CORRESPONDING FIELDS OF TABLE gt_sum',
+    '  WHERE seatsocc > 0',
+    '  GROUP BY carrid',
     '  HAVING COUNT( * ) >= 2.'
   ],
-  people: [
-    { dept_id: 10, age: 25, salary: 300 },
-    { dept_id: 10, age: 31, salary: 400 },
-    { dept_id: 10, age: 17, salary: 200 },
-    { dept_id: 20, age: 42, salary: 500 },
-    { dept_id: 30, age: 22, salary: 350 },
-    { dept_id: 30, age: 29, salary: 450 }
+  rows: [
+    { carrid: 'AA', connid: '17',   seatsocc: 120 },
+    { carrid: 'AA', connid: '64',   seatsocc: 95 },
+    { carrid: 'AA', connid: '26',   seatsocc: 88 },
+    { carrid: 'LH', connid: '400',  seatsocc: 210 },
+    { carrid: 'LH', connid: '402',  seatsocc: 175 },
+    { carrid: 'LH', connid: '2402', seatsocc: 0 },
+    { carrid: 'SQ', connid: '15',   seatsocc: 60 },
+    { carrid: 'SQ', connid: '26',   seatsocc: 0 }
   ]
 };
 </script>

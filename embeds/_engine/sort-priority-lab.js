@@ -1,9 +1,10 @@
 /* sort-priority-lab 엔진 — ORDER BY 정렬 기준을 바꿔 결과 재정렬·동률 2차기준·"정렬 없으면 순서 보장 없음"을 보여 준다.
    골격 계약: .spl-chips · #splHead(thead tr) · #splBody · #splFb.
-   config: window.SPL_CFG = { people:[..], cols:[{key,label,num}], presets:[{label, keys:[{field,dir}]}] }.
+   config: window.SPL_CFG = { rows:[..], cols:[{key,label,num}], presets:[{label, keys:[{field,dir}]}] }.
    높이: _autoheight.js. */
 (function () {
-  var CFG = window.SPL_CFG || { people: [], cols: [], presets: [] };
+  var CFG = window.SPL_CFG || { rows: [], cols: [], presets: [] };
+  var ROWS = CFG.rows || [];
   var idx = 0;
   var chipsEl = document.querySelector('.spl-chips');
   var headEl = document.getElementById('splHead');
@@ -15,7 +16,7 @@
 
   function sorted() {
     var ks = keys();
-    var arr = CFG.people.map(function (p, i) { return { p: p, i: i }; });  // i = 원본 순서(안정정렬 tie-break)
+    var arr = ROWS.map(function (p, i) { return { p: p, i: i }; });  // i = 원본 순서(안정정렬 tie-break)
     if (!ks.length) return arr;       // 정렬 없음 → 원본 순서
     arr.sort(function (a, b) {
       for (var j = 0; j < ks.length; j++) {

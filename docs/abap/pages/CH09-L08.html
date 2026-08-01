@@ -41,8 +41,8 @@
       <article class="prose">
 <section class="lblock"><h2>검증은 누가 하나</h2>
 <p>DDIC의 <button class="term" type="button" data-term="Foreign Key">Foreign Key</button>·<button class="term" type="button" data-term="고정값">고정값</button>·<button class="term" type="button" data-term="Search Help">Search Help</button>는 <strong>선언적 검증</strong>을 해준다.
-그런데 &quot;퇴직자는 못 고른다&quot;, &quot;금액 &gt; 한도면 거부&quot; 같은 <strong>업무 규칙</strong>은? 어디까지
-DDIC가 하고 어디부터 코드가 해야 하는지 가른다.</p>
+그런데 &quot;취소된 공연은 못 고른다&quot;, &quot;좌석 수가 잔여보다 크면 거부&quot; 같은 <strong>업무
+규칙</strong>은? 어디까지 DDIC가 하고 어디부터 코드가 해야 하는지 가른다.</p>
 </section><section class="lblock"><h2>두 계층</h2>
 <table>
 <thead>
@@ -55,12 +55,12 @@ DDIC가 하고 어디부터 코드가 해야 하는지 가른다.</p>
 <tbody><tr>
 <td><strong>존재/형식</strong></td>
 <td>DDIC(선언적)</td>
-<td>국가코드가 실제 존재? <button class="term" type="button" data-term="고정값">고정값</button> 범위?</td>
+<td>공연 코드가 실제 존재? <button class="term" type="button" data-term="고정값">고정값</button> 범위?</td>
 </tr>
 <tr>
 <td><strong>업무 규칙</strong></td>
 <td>프로그램(코드)</td>
-<td>한도 초과? 상태 전이 허용? 권한?</td>
+<td>잔여석 초과? 상태 전이 허용? 권한?</td>
 </tr>
 </tbody></table>
 </section><section class="lblock"><h2>DDIC 검증의 한계</h2>
@@ -75,10 +75,10 @@ DDIC가 하고 어디부터 코드가 해야 하는지 가른다.</p>
 4
 5
 6</pre><pre class="abap-editor__code"><code><span class="tok-com">" 직접 쓰기 전, 존재 여부를 코드로 확인(예)</span>
-<span class="tok-kw">SELECT</span> <span class="tok-kw">SINGLE</span> country <span class="tok-kw">FROM</span> ztcountry
-  <span class="tok-kw">INTO</span> gv_dummy <span class="tok-kw">WHERE</span> country = gs_person-country.
+<span class="tok-kw">SELECT</span> <span class="tok-kw">SINGLE</span> concert_id <span class="tok-kw">FROM</span> zconcert
+  <span class="tok-kw">INTO</span> gv_dummy <span class="tok-kw">WHERE</span> concert_id = gs_booking-concert_id.
 <span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.
-  <span class="tok-com">" 잘못된 국가코드 — 업무 처리(메시지/중단)</span>
+  <span class="tok-com">" 잘못된 공연 코드 — 업무 처리(메시지/중단)</span>
 <span class="tok-kw">ENDIF</span>.</code></pre></div></div>
 </section><section class="lblock"><h2>원칙</h2>
 <ul>

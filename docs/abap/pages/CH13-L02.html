@@ -40,21 +40,23 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>매칭 없어도 남기고 싶다</h2>
-<p>부서가 아직 배정 안 된 사람도 명단에 <strong>남기고</strong> 싶다. <button class="term" type="button" data-term="INNER JOIN">INNER JOIN</button>은 그런 행을
-떨군다. <strong>LEFT OUTER JOIN</strong>은 왼쪽(기준) 테이블 행을 <strong>전부</strong> 남긴다.</p>
+<p>운항편이 아직 등록 안 된 노선(<code>SPFLI</code>)도 목록에 <strong>남기고</strong> 싶다. <button class="term" type="button" data-term="INNER JOIN">INNER JOIN</button>은
+그런 행을 떨군다. <strong>LEFT OUTER JOIN</strong>은 왼쪽(기준) 테이블 행을 <strong>전부</strong> 남긴다.</p>
 </section><section class="lblock"><h2>LEFT OUTER JOIN (classic)</h2>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
 4
-5</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> p~persid p~name d~deptname
-  <span class="tok-kw">FROM</span> ztperson <span class="tok-kw">AS</span> p
-  <span class="tok-kw">LEFT</span> <span class="tok-kw">OUTER</span> <span class="tok-kw">JOIN</span> ztdept <span class="tok-kw">AS</span> d
-    <span class="tok-kw">ON</span> p~dept_id = d~dept_id
-  <span class="tok-kw">INTO</span> <span class="tok-kw">CORRESPONDING</span> <span class="tok-kw">FIELDS</span> <span class="tok-kw">OF</span> <span class="tok-kw">TABLE</span> lt_out.</code></pre></div></div>
+5
+6</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> sp~carrid sp~connid f~fldate
+  <span class="tok-kw">FROM</span> spfli <span class="tok-kw">AS</span> sp
+  <span class="tok-kw">LEFT</span> <span class="tok-kw">OUTER</span> <span class="tok-kw">JOIN</span> sflight <span class="tok-kw">AS</span> f
+    <span class="tok-kw">ON</span>  f~carrid = sp~carrid
+    <span class="tok-kw">AND</span> f~connid = sp~connid       <span class="tok-com">" 키가 둘이라 AND — 앞 레슨 규칙 그대로</span>
+  <span class="tok-kw">INTO</span> <span class="tok-kw">CORRESPONDING</span> <span class="tok-kw">FIELDS</span> <span class="tok-kw">OF</span> <span class="tok-kw">TABLE</span> gt_out.</code></pre></div></div>
 <ul>
-<li>왼쪽(<code>ztperson</code>) 행은 모두 결과에 남는다.</li>
-<li>매칭되는 오른쪽이 없으면 그 컬럼(<code>deptname</code>)은 DB의 <strong>NULL</strong> → ABAP에선
+<li>왼쪽(<code>spfli</code> — 노선)은 모두 결과에 남는다.</li>
+<li>매칭되는 오른쪽(운항편)이 없으면 그 컬럼(<code>fldate</code>)은 DB의 <strong>NULL</strong> → ABAP에선
 <strong>초기값</strong>(빈 문자/0)으로 들어온다.</li>
 </ul>
 </section><section class="lblock"><h2>INNER vs LEFT — 직접 켜고 보기</h2>

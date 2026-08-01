@@ -1,7 +1,7 @@
 /* f4-help-flow 엔진 — 입력 필드에 F4 → Help View 결과 팝업 → 행 선택 시 key가 화면으로 복귀.
    토글: 설명 누락(보조 테이블 outer → primary 유지·설명 빈칸), Export OFF(선택해도 복귀 안 함).
    골격 계약: #f4Input · [data-f4] · .f4-pop · #f4PopBody · [data-miss] · [data-exp] · #f4Status.
-   config: window.F4_CFG = { field, cols:[{key,label}], rows:[{perf_id,perf_name,genre,description}], missId }. 높이: _autoheight.js. */
+   config: window.F4_CFG = { field, cols:[{key,label}], rows:[{concert_id,name,artist,venue}], missId }. 높이: _autoheight.js. */
 (function () {
   var CFG = window.F4_CFG || { rows: [], cols: [] };
   var val = '', miss = false, exp = false;
@@ -14,7 +14,7 @@
 
   function esc(s) { return String(s).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); }
 
-  function descOf(r) { return (miss && r.perf_id === CFG.missId) ? '' : r.description; }
+  function descOf(r) { return (miss && r.concert_id === CFG.missId) ? '' : r.name; }
 
   function renderInput() {
     inputEl.textContent = val || '(비어 있음)';
@@ -23,8 +23,9 @@
   function renderPop() {
     popBody.innerHTML = CFG.rows.map(function (r) {
       var d = descOf(r);
-      return '<tr data-id="' + r.perf_id + '"><td>' + esc(r.perf_id) + '</td><td>' + esc(r.perf_name) + '</td><td>' + esc(r.genre) + '</td>' +
-        '<td class="' + (d ? '' : 'blank') + '">' + (d ? esc(d) : '(설명 없음)') + '</td></tr>';
+      return '<tr data-id="' + r.concert_id + '"><td>' + esc(r.concert_id) + '</td>' +
+        '<td class="' + (d ? '' : 'blank') + '">' + (d ? esc(d) : '(공연명 없음)') + '</td>' +
+        '<td>' + esc(r.artist) + '</td><td>' + esc(r.venue) + '</td></tr>';
     }).join('');
   }
   function setStatus(cls, html) { statusEl.className = 'f4-status' + (cls ? ' ' + cls : ''); statusEl.innerHTML = html; }
