@@ -1,42 +1,45 @@
-# CH14 · Report Event·Selection Screen 심화 — 커리큘럼 개요
+# CH14 · Classic DDIC View·유지보수 객체 — 커리큘럼 개요
 
 > 🤖 **생성물** — `tools/export-curriculum-md.mjs`(= `npm run build:curriculum-md`)로 자동 생성. **직접 수정 금지**, 내용은 `content/abap/**.md` front-matter에서 고치고 재생성한다.
 > 🎯 **TRACK-01 · ABAP 기초** 소속 챕터 1개 전용 뷰 — 전체는 curriculum.md.
-> 📊 레슨 8
-> 🕒 생성: 2026-06-22T07:11:31.769Z
+> 📊 레슨 9
+> 🕒 생성: 2026-08-01T15:40:09.589Z
 
 학습 철학: 분류 순서로 외우지 않고, **불편을 먼저 겪고 그 해결책으로 개념을 배우는** 동기부여형. SQL은 CH07~16 classic → CH18+ modern 경계.
 
 ---
 
-### CH14 · Report Event·Selection Screen 심화 _(난이도: 중급)_
+### CH14 · Classic DDIC View·유지보수 객체 _(난이도: 중급)_
 
-> 실행 흐름의 적절한 시점에 코드를 끼우고, 선택화면을 다듬고 싶다.
+> 테이블을 더 보기 좋게 보여주고, 마스터데이터를 유지보수하고 싶다.
 
-**키워드**: INITIALIZATION, AT SELECTION-SCREEN, START-OF-SELECTION
+**키워드**: Database View, Maintenance View, Table Maintenance
 
-**레슨 (8)**
-- **CH14-L01 · ABAP Report Event 전체 흐름** _(order 1)_ · T-code: `SE38`(복습)
-  - 다룰 내용: 실행형 프로그램의 이벤트 순서 — 언제 무엇이 실행되나.
-  - 키워드: Report Event, INITIALIZATION, START-OF-SELECTION, 흐름
-- **CH14-L02 · INITIALIZATION 기본값 설정** _(order 2)_
-  - 다룰 내용: 화면 뜨기 전 1회 — PARAMETERS/SELECT-OPTIONS 기본값.
-  - 키워드: INITIALIZATION, PARAMETERS, SELECT-OPTIONS, 기본값
-- **CH14-L03 · AT SELECTION-SCREEN OUTPUT 동적 화면 제어** _(order 3)_
-  - 다룰 내용: 화면 그리기 직전(PBO) — 필드를 동적으로 숨김/잠금.
-  - 키워드: AT SELECTION-SCREEN OUTPUT, LOOP AT SCREEN, PBO
-- **CH14-L04 · AT SELECTION-SCREEN 입력 검증** _(order 4)_
-  - 다룰 내용: 사용자가 실행할 때(PAI) — 입력값을 검증하고, 화면 전체로도 필드 하나로도 막는다.
-  - 키워드: AT SELECTION-SCREEN, AT SELECTION-SCREEN ON, MESSAGE, 입력검증, PAI
-- **CH14-L05 · START-OF-SELECTION 조회 실행** _(order 5)_
-  - 다룰 내용: 본 처리의 자리 — 조회·가공을 여기서.
-  - 키워드: START-OF-SELECTION, Open SQL, 본처리
-- **CH14-L06 · END-OF-SELECTION 출력 마무리** _(order 6)_
-  - 다룰 내용: 본 처리 후 마무리 — 출력·요약을 정리.
-  - 키워드: END-OF-SELECTION, 출력, ALV
-- **CH14-L07 · Selection Screen 권한/존재 여부 검증 기초** _(order 7)_
-  - 다룰 내용: 입력 단계에서 권한과 존재를 확인하는 기초.
-  - 키워드: AUTHORITY-CHECK, 입력검증, 권한, AT SELECTION-SCREEN
-- **CH14-L08 · Selection Screen 고급 — 블록·그룹 검증과 커스텀 F1·F4** _(order 8)_
-  - 다룰 내용: 필드 하나를 넘어 — 블록/라디오그룹 검증과, 코드로 직접 만드는 F1 도움말·F4 입력 도움.
-  - 키워드: AT SELECTION-SCREEN ON, ON BLOCK, ON RADIOBUTTON GROUP, ON HELP-REQUEST, ON VALUE-REQUEST, F1, F4
+**레슨 (9)**
+- **CH14-L01 · Database View와 Open SQL JOIN 비교** _(order 1)_
+  - 다룰 내용: 반복되는 JOIN을 DDIC에 등록해 재사용 — Database View vs 코드 JOIN.
+  - 키워드: Database View, JOIN, DDIC, SE11, inner join
+- **CH14-L02 · Projection View 개념과 한계** _(order 2)_
+  - 다룰 내용: 한 테이블에서 필요한 필드만 노출 — Projection View와 그 한계.
+  - 키워드: Projection View, DDIC, 필드 제한
+- **CH14-L03 · Help View와 Search Help 연결** _(order 3)_
+  - 다룰 내용: F4 도움말을 풍부하게 — 여러 테이블을 묶는 Help View.
+  - 키워드: Help View, Search Help, F4, DDIC, outer join
+- **CH14-L04 · Maintenance View와 Foreign Key 관계** _(order 4)_
+  - 다룰 내용: 관련 테이블을 표준 화면에서 함께 유지보수 — Maintenance View와 Foreign Key.
+  - 키워드: Maintenance View, Foreign Key, 유지보수, SE54
+- **CH14-L05 · Table Maintenance Generator / SM30** _(order 5)_
+  - 다룰 내용: 테이블/뷰에 표준 유지보수 화면을 생성 — SM30로 운영.
+  - 키워드: Table Maintenance Generator, SM30, 유지보수
+- **CH14-L06 · View Cluster — 관련 뷰를 묶어 유지보수** _(order 6)_
+  - 다룰 내용: 마스터+종속 테이블을 한 흐름으로 — SE54 View Cluster.
+  - 키워드: View Cluster, SE54, 유지보수, 계층
+- **CH14-L07 · SE16N 데이터 브라우저** _(order 7)_
+  - 다룰 내용: 테이블 내용을 빠르게 조회하는 만능 브라우저 — SE16N.
+  - 키워드: SE16N, 데이터 브라우저, Table Contents
+- **CH14-L08 · Classic View와 CDS 비교** _(order 8)_
+  - 다룰 내용: 클래식 뷰가 푼 문제와, 현대 CDS로의 경계(예고).
+  - 키워드: Classic View, CDS, View Entity, 비교
+- **CH14-L09 · 실습 — 공연 등록 화면 (View · SM30)** _(order 9)_
+  - 다룰 내용: 콘서트앱 — 챕터의 도구를 '공연 등록과 확인' 한 흐름으로 묶기.
+  - 키워드: 실습, 콘서트앱, Database View, SM30, Maintenance View, F4

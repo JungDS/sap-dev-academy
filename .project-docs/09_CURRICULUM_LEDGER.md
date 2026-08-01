@@ -1,6 +1,6 @@
 # 09. CURRICULUM LEDGER — 커리큘럼 개념 원장 (개요 SSOT)
 
-> 📅 최종수정: 2026-08-01 22:17 KST
+> 📅 최종수정: 2026-08-02 00:45 KST
 > 🎯 **2트랙(최종 39번호) 챕터 맵 + 교차 설계 합의(경계·관통예제·도구 아크)의 단일 출처.**
 > 🧭 **per-lesson `introduces`/`prereq`/`prevRel`/`foreshadow`/`advanceUse` = 각 레슨 `.md` front-matter가 라이브 SSOT**([04 R10](04_CONVENTIONS.md)) — 이 문서는 레슨별 데이터를 중복하지 않고 *그 위의 개요·경계·관통설계*만 담는다(§F). 게이팅([04 R15](04_CONVENTIONS.md)) 점검 = front-matter ↔ 본문 ↔ R15.
 > ✅ 현행: **최종 39번호(2026-07-14 리넘버)** · 본문 **39챕터 전량 작성 완료**. 전면 리빌드는 *선택* — 절차 = [10_REBUILD_EXECUTION](10_REBUILD_EXECUTION.md).
@@ -67,6 +67,8 @@
 > 🔶 **RAP 2단(입문 CH24 ↔ 심화 CH39)** — 사용자 지시(2026-07-24): **CH24 = 입문**(managed BO 기본 흐름 상한 — Draft·Lock·ETag·EML 상세·Comm Arrangement 전부 CH39로 유예, L0/L1만). **CH39 = 심화**. 심화가 한 장으로 벅차면 **나중에 여러 챕터로 분할** 가능(미확정, 진도 닿을 때 재판단). CH24-L09가 EML 개념 지도만 두고 실전은 CH39-L06으로 foreshadow(회수 완료). CH39는 9레슨으로 재구성 완료(2026-08-01) — 분할 없이 단일 챕터 유지.
 
 > Track-1 = 입문 게이팅(R15)이 핵심. Track-2 = 챕터 내 순서만 게이팅(서로 독립 내용 많음 — 상세 정책은 아카이브 [`TRACK2_ENRICHMENT.md`](../.archive/2026-06-29-docs-cleanup/TRACK2_ENRICHMENT.md) §규칙).
+
+> 🧩 **관통예제(콘서트 예매) 소속 구분** (사용자 확정 2026-08-02) — 관통 = CH01～31·33·36·37·39. **독립 모듈(관통 밖) = CH32·34·35·38** — `_chapter.md` `thread: false`([04 R10](04_CONVENTIONS.md))로 선언, 빌드가 로드맵 칩("🧩 관통예제 밖 · 독립 모듈")·레슨 태그("독립 모듈")로 표시. 키 없음 = 관통(기본값). 트랙·순서·번호는 불변(라벨만).
 
 ## B. classic↔modern 경계 (커리큘럼 위치 — 문법 메커니즘 단일 홈 = [04 R6](04_CONVENTIONS.md))
 - 순수 classic = **CH01～17** · New Syntax 도입 **CH18 L3** · New Open SQL 도입 **CH19 L3**(CH08～17 Open SQL 전부 classic) · `&&`만 **CH04** 조기.
