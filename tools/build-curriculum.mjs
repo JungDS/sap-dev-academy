@@ -341,7 +341,8 @@ function renderLessonPage(ch, lesson, trackNo) {
     `<span class="tag tag--track">Track ${esc(String(trackNo || 1))}</span>` +
     `<span class="tag tag--ch">Chapter ${esc(String(ch.meta.order ?? ''))}</span>` +
     `<span class="tag tag--ls">Lesson ${esc(String(lesson.data.order ?? ''))}</span>` +
-    (ch.meta.difficulty ? `<span class="tag tag--lv">${esc(ch.meta.difficulty)}</span>` : '');
+    (ch.meta.difficulty ? `<span class="tag tag--lv">${esc(ch.meta.difficulty)}</span>` : '') +
+    (ch.meta.thread === false ? `<span class="tag tag--standalone">독립 모듈</span>` : '');
   const tcodeBlock = tcodeList.length
     ? `      <section class="lcard tcode">
         <p class="lcard__h"><span class="ic">🖥️</span>이번 Lesson에서 다루는 트랜잭션 코드</p>
@@ -457,6 +458,7 @@ function main() {
         id: ch.meta.id, title: ch.meta.title, intro: ch.meta.intro || '',
         objectives: ch.meta.objectives || [], keywords: ch.meta.keywords || [],
         difficulty: ch.meta.difficulty || '', order: ch.meta.order ?? 0,
+        thread: ch.meta.thread !== false,   // false = 콘서트앱 관통예제 밖(독립 모듈)
         lessonCount: lessonsSlim.length, lessons: lessonsSlim,
       };
     });

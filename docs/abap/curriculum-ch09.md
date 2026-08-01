@@ -1,36 +1,45 @@
-# CH09 · 모듈화 기초 — 커리큘럼 개요
+# CH09 · DDIC 관계와 입력도움말(F4) — 커리큘럼 개요
 
 > 🤖 **생성물** — `tools/export-curriculum-md.mjs`(= `npm run build:curriculum-md`)로 자동 생성. **직접 수정 금지**, 내용은 `content/abap/**.md` front-matter에서 고치고 재생성한다.
 > 🎯 **TRACK-01 · ABAP 기초** 소속 챕터 1개 전용 뷰 — 전체는 curriculum.md.
-> 📊 레슨 6
-> 🕒 생성: 2026-06-22T07:11:31.767Z
+> 📊 레슨 9
+> 🕒 생성: 2026-08-01T15:40:09.585Z
 
 학습 철학: 분류 순서로 외우지 않고, **불편을 먼저 겪고 그 해결책으로 개념을 배우는** 동기부여형. SQL은 CH07~16 classic → CH18+ modern 경계.
 
 ---
 
-### CH09 · 모듈화 기초 _(난이도: 초급)_
+### CH09 · DDIC 관계와 입력도움말(F4) _(난이도: 초급)_
 
-> 같은 코드가 여기저기 반복된다 — 묶어서 재사용하고 싶다.
+> 아무 값이나 입력된다 — 올바른 값만 받도록 관계·검색도움말이 필요하다.
 
-**키워드**: FORM, PERFORM, Function Module, 모듈화
+**키워드**: Foreign Key, Check Table, Search Help, F4
 
-**레슨 (6)**
-- **CH09-L01 · FORM / PERFORM 기본 호출** _(order 1)_
-  - 다룰 내용: 반복 코드를 묶는 첫 도구 — 서브루틴(FORM/PERFORM).
-  - 키워드: Subroutine, FORM, PERFORM, 모듈화
-- **CH09-L02 · USING / CHANGING 파라미터** _(order 2)_
-  - 다룰 내용: 서브루틴에 값을 주고(USING) 결과를 돌려받는다(CHANGING).
-  - 키워드: USING, CHANGING, Subroutine, 파라미터
-- **CH09-L03 · CALL FUNCTION 기본 구조** _(order 3)_
-  - 다룰 내용: 여러 프로그램이 공유하는 재사용 단위 — Function Module.
-  - 키워드: Function Module, CALL FUNCTION, SE37, EXPORTING, IMPORTING
-- **CH09-L04 · Local Class 정의와 Method 호출** _(order 4)_
-  - 다룰 내용: 현대 모듈화의 중심 — 로컬 클래스와 메서드(맛보기).
-  - 키워드: Class, Method, 로컬 클래스, OO
-- **CH09-L05 · Global Class 호출 기초** _(order 5)_
-  - 다룰 내용: SE24의 전역 클래스를 가져다 쓰는 기초.
-  - 키워드: Global Class, SE24, Method, 인스턴스
-- **CH09-L06 · Subroutine / Function / Class 선택 기준** _(order 6)_
-  - 다룰 내용: 셋 중 무엇을 — 상황별 모듈화 선택 기준.
-  - 키워드: Subroutine, Function Module, Class, 모듈화
+**레슨 (9)**
+- **CH09-L01 · Foreign Key와 Check Table** _(order 1)_
+  - 다룰 내용: 아무 값이나 막는다 — Foreign Key로 입력을 다른 테이블 값으로 제한.
+  - 키워드: Foreign Key, Check Table, DDIC, 입력검증
+- **CH09-L02 · Value Table과 Foreign Key의 차이** _(order 2)_
+  - 다룰 내용: Domain의 Value Table은 '제안', Foreign Key는 '실제 관계'.
+  - 키워드: Value Table, Foreign Key, Domain, Check Table, 변환루틴
+- **CH09-L03 · Text Table — 코드 옆 이름표** _(order 3)_
+  - 다룰 내용: 코드만 든 마스터에 사람이 읽을 이름을 — 언어별 Text Table.
+  - 키워드: Text Table, SPRAS, Foreign Key, 언어
+- **CH09-L04 · Elementary Search Help** _(order 4)_
+  - 다룰 내용: F4 목록을 설계한다 — 단일 소스 Elementary Search Help.
+  - 키워드: Search Help, Elementary, F4, SE11
+- **CH09-L05 · Collective Search Help 기초** _(order 5)_
+  - 다룰 내용: 여러 Elementary를 묶어 탭으로 — Collective Search Help.
+  - 키워드: Collective Search Help, Elementary, F4
+- **CH09-L06 · PARAMETERS와 DDIC F4 Help 연결** _(order 6)_
+  - 다룰 내용: DDIC의 검증·F4가 PARAMETERS 화면으로 자동 연결되는 원리.
+  - 키워드: PARAMETERS, F4, Search Help, Data Element
+- **CH09-L07 · Input Help 호출 우선순위** _(order 7)_
+  - 다룰 내용: F4를 누르면 어떤 도움말이 뜨나 — 위에서부터 정해지는 순서.
+  - 키워드: Input Help, F4, Search Help, 우선순위, Fixed Values
+- **CH09-L08 · DDIC 검증과 프로그램 검증의 역할 분리** _(order 8)_
+  - 다룰 내용: 선언적 DDIC 검증과 코드 검증의 경계 — 무엇을 어디서.
+  - 키워드: 입력검증, DDIC, 비즈니스 로직, 역할 분리
+- **CH09-L09 · 실습 — 콘서트 모델 만들기 (DDIC)** _(order 9)_
+  - 다룰 내용: 우리 앱의 토대 — ZCONCERT·ZPERF·ZBOOKING과 FK·F4를 직접 만든다.
+  - 키워드: 실습, 콘서트앱, ZCONCERT, ZBOOKING, Foreign Key

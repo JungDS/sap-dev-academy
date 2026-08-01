@@ -12,7 +12,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ABAP 커리큘럼 · SAP Developer Academy</title>
-  <meta name="description" content="동기부여형 ABAP 커리큘럼 — 불편 체인으로 연결되는 35개 챕터 로드맵" />
+  <meta name="description" content="동기부여형 ABAP 커리큘럼 — 불편 체인으로 연결되는 39개 챕터 로드맵" />
   <link rel="stylesheet" href="../assets/base.css" />
   <style>
     :root{ --r-maxw:1040px; }
@@ -73,9 +73,10 @@
     .chip{ font-size:.72rem; font-weight:700; border-radius:999px; padding:3px 10px; white-space:nowrap; }
     .chip--diff{ background:rgba(12,166,120,.12); color:#0b7250; }
     .chip--count{ background:rgba(20,28,51,.05); color:var(--ink-soft); }
+    .chip--standalone{ background:#fdf3e4; color:#92510e; border:1px dashed #d9a45f; }
     .r-chap__chev{ color:var(--soon); font-size:.8rem; transition:transform .22s ease; flex:0 0 auto; }
     .r-chap.is-open .r-chap__chev{ transform:rotate(180deg); }
-    @media(max-width:640px){ .r-chap__why{ display:none; } .chip--diff{ display:none; } }
+    @media(max-width:640px){ .r-chap__why{ display:none; } .chip--diff{ display:none; } .chip--standalone{ display:none; } }
 
     /* 레슨 목록 (펼침) */
     .r-lessons{ border-top:1px solid var(--line); padding:6px 10px 12px; }
@@ -184,7 +185,7 @@
     /* ---- 챕터 아코디언 ---- */
     function chapterCard(ch) {
       var card = el("div", "r-chap");
-      card.setAttribute("data-search", (ch.title + " " + (ch.intro || "") + " " + (ch.keywords || []).join(" ") + " " + (ch.difficulty || "")).toLowerCase());
+      card.setAttribute("data-search", (ch.title + " " + (ch.intro || "") + " " + (ch.keywords || []).join(" ") + " " + (ch.difficulty || "") + (ch.thread === false ? " 독립 모듈" : "")).toLowerCase());
       var head = el("button", "r-chap__head");
       head.type = "button";
       head.innerHTML =
@@ -194,6 +195,7 @@
           (ch.intro ? '<p class="r-chap__why">' + esc(ch.intro) + '</p>' : '') +
         '</span>' +
         '<span class="r-chap__meta">' +
+          (ch.thread === false ? '<span class="chip chip--standalone">🧩 관통예제 밖 · 독립 모듈</span>' : '') +
           (ch.difficulty ? '<span class="chip chip--diff">' + esc(ch.difficulty) + '</span>' : '') +
           '<span class="chip chip--count">레슨 ' + (ch.lessonCount || (ch.lessons || []).length) + '</span>' +
         '</span>' +
