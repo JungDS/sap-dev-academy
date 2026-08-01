@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Application Log — 운영 표준 로그 · 운영 품질과 배포 관리 (이송 심화) · SAP Developer Academy</title>
+<link rel="stylesheet" href="../../../assets/base.css">
+<link rel="stylesheet" href="../../../assets/lesson.css">
+<link rel="stylesheet" href="../../../assets/shell.css">
+<script>/* 읽기 설정 선적용(플래시 방지) */(function(){try{var L=localStorage,r=document.documentElement;if(L.getItem('sda.dark')==='1')r.classList.add('dark');if(L.getItem('sda.wide')==='1')r.classList.add('wide');var f=parseInt(L.getItem('sda.fontPx'),10);if(f>=13&&f<=20)r.style.fontSize=f+'px';}catch(e){}})();</script>
+</head>
+<body data-domain="abap" data-chapter-id="CH38" data-lesson-id="CH38-L06">
+<header class="appbar">
+  <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
+  <span class="appbar__sp"></span>
+  <span class="meta">Chapter 38 · 운영 품질과 배포 관리 (이송 심화)</span>
+  <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
+  <div class="tools">
+    <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
+    <button class="icon-btn" id="fsInc" title="글자 크게">A+</button>
+    <button class="icon-btn" id="fsReset" title="글자 크기 초기화">↺</button>
+    <button class="icon-btn" id="darkBtn" title="다크 모드">🌙</button>
+    <button class="icon-btn" id="widthBtn" title="가독 폭 넓게">↔</button>
+    <button class="icon-btn fs-btn" title="전체화면" aria-label="전체화면"></button>
+  </div>
+</header>
+<div class="read-progress"><i></i></div>
+<div class="scrim"></div>
+<nav class="rail" data-shell="rail"></nav>
+<button class="railFab" id="railFab" aria-label="네비 열기">☰</button>
+<div class="stage">
+  <div class="layout">
+    <main class="main">
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 38 › Lesson 6</nav>
+      <section class="lhead">
+        <p class="lhead__eyebrow">운영 품질과 배포 관리 (이송 심화)</p>
+        <h1>Application Log — 운영 표준 로그</h1>
+        <p class="lhead__direction">&quot;실패했다&quot;가 아니라 &quot;무엇이 왜&quot;를 남긴다 — BAL 기록과 SLG1 조회.</p>
+        <div class="tags"><span class="tag tag--track">Track 2</span><span class="tag tag--ch">Chapter 38</span><span class="tag tag--ls">Lesson 6</span><span class="tag tag--lv">고급</span></div>
+      </section>
+      <article class="prose">
+<section class="lblock"><h2>&quot;실패했습니다&quot;만 남은 새벽</h2>
+<p>야간 정산 잡이 Canceled로 끝났다. 운영자가 아침에 확인할 수 있는 것: &quot;실패했다.&quot;
+끝이다. 어떤 예매가, 어느 단계에서, 왜 실패했는지가 없다. 개발자가 코드에 임시로
+넣어 둔 <code>WRITE</code>는 잡이 끝나면 볼 수 없고, Internal Table에 모아 둔 오류 목록은
+프로그램이 죽는 순간 <button class="term" type="button" data-term="메모리">메모리</button>와 함께 사라졌다.</p>
+<p><a href="CH25-L04.html">Chapter 25 · 오류 로그와 재처리 구조</a>에서 &quot;오류는 검색 가능한
+기록으로 남긴다&quot;는 원칙과 우리만의 로그 테이블 설계를 배웠다. 이 레슨은 그 원칙의
+<strong>SAP 표준 구현</strong>이다. 직접 만든 로그 테이블은 우리 프로그램만 알지만, 표준 로그는
+<strong>운영자가 이미 아는 화면 하나로 모든 프로그램의 로그를 검색</strong>할 수 있다.</p>
+</section><section class="lblock"><h2>BAL — 표준 로그의 구조</h2>
+<p>그 표준이 <button class="term" type="button" data-term="BAL">BAL</button>(Business Application Log. SAP의 표준 업무 로그 저장·조회
+체계)이고, 조회 화면이 <code>SLG1</code>이다. 로그 한 건의 뼈대는 다섯 조각이다.</p>
+<table>
+<thead>
+<tr>
+<th>구성</th>
+<th>의미</th>
+<th>우리 예</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Object</strong></td>
+<td>큰 업무 영역(검색의 대분류)</td>
+<td><code>ZBOOK</code>(예매 업무)</td>
+</tr>
+<tr>
+<td><strong>Subobject</strong></td>
+<td>세부 처리 영역(중분류)</td>
+<td><code>SETTLE</code>(정산)·<code>CANCEL</code>(취소)</td>
+</tr>
+<tr>
+<td><strong>External number</strong></td>
+<td>실행 한 판을 식별하는 값</td>
+<td><code>RUN-20260801-020000</code>(그날 그 잡)</td>
+</tr>
+<tr>
+<td><strong>Message</strong></td>
+<td>실제 성공/경고/오류 메시지</td>
+<td>&quot;예매 0001 정산 실패: 정원 초과&quot;</td>
+</tr>
+<tr>
+<td><strong>Context</strong></td>
+<td>재처리 판단용 부가 정보(구조로 첨부 — 정의가 필요해 이 과정에선 개요만, 예제는 msgv의 key까지)</td>
+<td>공연 ID·예매 ID·단계</td>
+</tr>
+</tbody></table>
+<p>이 구조가 곧 검색 조건이다. 운영자는 <code>SLG1</code> 선택화면의 같은 이름 필드(Object·
+Subobject·기간)에 &quot;ZBOOK·SETTLE·오늘&quot;을 넣고 실행해, 결과 트리에서 로그를 펼쳐
+어젯밤 정산의 전말을 본다. External number가 잡 한 판을 식별하니, <a href="CH38-L05.html">앞
+레슨</a>의 job log(기술 증거)와 이 업무 로그가 같은 실행으로
+연결된다(잡이 자기 식별자를 알게 하는 가장 단순한 길은 <strong>실행 일시로 문자열을
+조립하는 것</strong>이고, 아래 예제 코드가 정확히 그렇게 한다).</p>
+<blockquote>
+<p>Object/Subobject는 <strong>미리 등록해 두는 분류 체계</strong>다(등록 화면 = <code>SLG0</code> —
+Object 이름과 설명을 새로 만들고, 그 아래 Subobject들을 추가하는 단순한 목록
+화면이다. 프로젝트에서는 보통 정해진 체계를 받아 쓰고, 연습 시스템이라면
+<code>ZBOOK</code>을 직접 만들어 볼 수 있다). 등록되지 않은 이름으로 로그를 만들려 하면
+생성 단계부터 실패하니, 코드보다 등록이 먼저다. 그리고 이 등록도 <strong>이송 대상
+오브젝트</strong>다 — 코드만 이송하고 등록을 안 태우면 QAS에서 <code>BAL_LOG_CREATE</code>가
+실패한다(<a href="CH38-L04.html">Chapter 38 · Transport</a>에서 경고한 &quot;<button class="term" type="button" data-term="객체">객체</button> 누락&quot; 사고의
+한 사례). 우리가 설계할 것은 &quot;어떤 분류와 실행 식별자로 남길 것인가&quot;다.</p>
+</blockquote>
+</section><section class="lblock"><h2>남기는 코드 — 만들고, 담고, 저장한다</h2>
+<p>기록 흐름은 3박자다: <strong>로그 생성 → 메시지 추가(반복) → DB 저장</strong>(SAP Help의 표준
+흐름).</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> gs_log    <span class="tok-kw">TYPE</span> bal_s_log.       <span class="tok-com">" 로그 머리(분류·식별자)</span>
+<span class="tok-kw">DATA</span> gv_handle <span class="tok-kw">TYPE</span> balloghndl.      <span class="tok-com">" 생성된 로그를 가리키는 손잡이</span>
+
+<span class="tok-com">" ① 로그 생성 — 분류와 실행 식별자를 머리에 담는다</span>
+gs_log-object    = <span class="tok-str">'ZBOOK'</span>.
+gs_log-subobject = <span class="tok-str">'SETTLE'</span>.
+gs_log-extnumber = |RUN-{ sy-datum }-{ sy-uzeit }|.  <span class="tok-com">" 실행 일시로 식별자 조립</span>
+<span class="tok-kw">CALL</span> <span class="tok-kw">FUNCTION</span> <span class="tok-str">'BAL_LOG_CREATE'</span>
+  <span class="tok-kw">EXPORTING</span>  i_s_log      = gs_log
+  <span class="tok-kw">IMPORTING</span>  e_log_handle = gv_handle
+  <span class="tok-kw">EXCEPTIONS</span> <span class="tok-kw">OTHERS</span>       = <span class="tok-num">1</span>.
+<span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.
+  <span class="tok-kw">MESSAGE</span> <span class="tok-str">'로그를 생성할 수 없습니다'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'E'</span>.  <span class="tok-com">" Object 미등록(SLG0)이 단골 원인</span>
+<span class="tok-kw">ENDIF</span>.
+
+<span class="tok-com">" ② 메시지 추가 — 처리 중 오류가 날 때마다 반복 호출</span>
+<span class="tok-com">"    (message class ZBOOK 001: '예매 &amp;1 정산 실패: 단계 &amp;2' — CH15의 SE91.</span>
+<span class="tok-com">"     msgv1~msgv4가 &amp;1~&amp;4 자리에 순서대로 들어간다)</span>
+<span class="tok-kw">CALL</span> <span class="tok-kw">FUNCTION</span> <span class="tok-str">'BAL_LOG_MSG_ADD'</span>
+  <span class="tok-kw">EXPORTING</span>
+    i_log_handle = gv_handle
+    i_s_msg      = <span class="tok-kw">VALUE</span> bal_s_msg(
+      msgty     = <span class="tok-str">'E'</span>      <span class="tok-com">" 오류(S/W/E — CH15의 메시지 타입 그대로)</span>
+      probclass = <span class="tok-str">'1'</span>      <span class="tok-com">" 문제 등급(1=매우 중요~4=참고) — SLG1의 핵심 필터</span>
+      msgid     = <span class="tok-str">'ZBOOK'</span>  <span class="tok-com">" message class</span>
+      msgno     = <span class="tok-str">'001'</span>
+      msgv1     = <span class="tok-str">'0001'</span>   <span class="tok-com">" &amp;1 = 실패한 예매의 key</span>
+      msgv2     = <span class="tok-str">'저장'</span> ) <span class="tok-com">" &amp;2 = 실패한 단계</span>
+  <span class="tok-kw">EXCEPTIONS</span> <span class="tok-kw">OTHERS</span> = <span class="tok-num">1</span>.
+
+<span class="tok-com">" (처리 루프가 끝나면) 성공 요약도 한 줄로 담는다</span>
+<span class="tok-com">"  예: msgty 'S' + '&amp;1건 중 &amp;2건 성공, &amp;3건 실패' — 세어 둔 카운터를 msgv로</span>
+
+<span class="tok-com">" ③ DB 저장 — 이게 없으면 SLG1에서 영원히 못 찾는다</span>
+<span class="tok-com">"   i_save_all = 이 세션의 '모든' 로그 저장(교육용 최소형 — 실무는</span>
+<span class="tok-com">"   핸들 목록을 넘겨 내 로그만 저장하는 쪽을 쓴다)</span>
+<span class="tok-kw">CALL</span> <span class="tok-kw">FUNCTION</span> <span class="tok-str">'BAL_DB_SAVE'</span>
+  <span class="tok-kw">EXPORTING</span>  i_save_all = abap_true
+  <span class="tok-kw">EXCEPTIONS</span> <span class="tok-kw">OTHERS</span>     = <span class="tok-num">1</span>.
+
+<span class="tok-com">" ④ 확정 — 로그도 DB 변경이므로 커밋으로 확정한다(CH25의 LUW 그대로)</span>
+<span class="tok-kw">COMMIT</span> <span class="tok-kw">WORK</span>.</code></pre></div></div>
+<p>부품은 전부 아는 것의 조합이다: 메시지는 <a href="CH15-L04.html">Chapter 15의 message
+class</a>(SE91) 그대로이고, ①～④는 CH37-CH38에서 반복해 본
+&quot;열고-쓰고-닫고&quot; 리듬이다. <strong>함정은 ③④다.</strong> ①②는 <button class="term" type="button" data-term="메모리">메모리</button> 안에서만 일어나고,
+③ <code>BAL_DB_SAVE</code>가 DB에 쓰며, ④ <code>COMMIT WORK</code>가 확정한다(<a href="CH25-L02.html">Chapter 25 ·
+LUW</a> 규칙 그대로 — 답을 분명히 하면, <strong>저장 후 <button class="term" type="button" data-term="COMMIT WORK">커밋</button>까지 내가
+쓴다</strong>).</p>
+<p>여기서 CH25를 배운 사람이라면 무서운 질문이 하나 나온다: <strong>정산이 실패해서
+<code>ROLLBACK WORK</code>를 하면, 실패 이유를 담은 로그도 같이 쓸려가지 않나?</strong> 정확히
+가르자. 메모리 위의 로그(①②)는 DB <button class="term" type="button" data-term="ROLLBACK WORK">롤백</button>과 무관하니 안 쓸려간다. 위험한 조합은
+둘이다: ⓐ <strong>저장(③)까지 했는데 커밋 전에 롤백이 돌면</strong> 저장분이 취소되고,
+ⓑ 반대로 로그를 커밋하는 그 <code>COMMIT WORK</code>가 <strong>실패한 업무 변경까지 함께 확정</strong>해
+버릴 수 있다. 그래서 순서가 규칙이다:</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12</pre><pre class="abap-editor__code"><code><span class="tok-com">" 실패 처리의 순서 — 업무는 되돌리고, 로그만 확정한다</span>
+<span class="tok-kw">IF</span> gv_settle_failed = abap_true.
+  <span class="tok-kw">ROLLBACK</span> <span class="tok-kw">WORK</span>.                       <span class="tok-com">" ⓐ 업무 변경 취소가 먼저</span>
+  <span class="tok-kw">CALL</span> <span class="tok-kw">FUNCTION</span> <span class="tok-str">'BAL_LOG_MSG_ADD'</span>      <span class="tok-com">" ⓑ 그 다음 실패 로그를 담고</span>
+    <span class="tok-kw">EXPORTING</span> i_log_handle = gv_handle
+              i_s_msg      = gs_fail_msg
+    <span class="tok-kw">EXCEPTIONS</span> <span class="tok-kw">OTHERS</span> = <span class="tok-num">1</span>.
+  <span class="tok-kw">CALL</span> <span class="tok-kw">FUNCTION</span> <span class="tok-str">'BAL_DB_SAVE'</span>
+    <span class="tok-kw">EXPORTING</span>  i_save_all = abap_true
+    <span class="tok-kw">EXCEPTIONS</span> <span class="tok-kw">OTHERS</span>     = <span class="tok-num">1</span>.
+  <span class="tok-kw">COMMIT</span> <span class="tok-kw">WORK</span>.                         <span class="tok-com">" 이 커밋은 로그만 확정한다</span>
+<span class="tok-kw">ENDIF</span>.</code></pre></div></div>
+<p>같은 이유로 대량 처리에서는 끝에 한 번이 아니라 <strong>구간마다 저장·커밋</strong>한다(구간 =
+CH25에서 정한 업무 커밋 단위 그대로 — 정산 N건을 커밋할 때 로그도 같이 저장).
+그래야 프로그램이 중간에 죽어도 거기까지의 로그는 남는다 — 도입부의 &quot;죽으면
+사라지는 Internal Table&quot;과의 진짜 차이가 이 지점이다.</p>
+<p>이 예제는 <code>SE38</code> 수동 실행으로 연습하는 전제다(message class <code>ZBOOK</code>이 없다면
+<a href="CH15-L04.html">SE91에서 먼저 만들자</a> — 준비물이다). 야간 잡 안에서 돈다면
+<code>MESSAGE TYPE &#39;E&#39;</code> 같은 화면 의존은 쓰지 않는다 — background에서 E 메시지는
+<strong>잡을 그 자리에서 Canceled로 끝낸다</strong>(<a href="CH38-L05.html">앞 레슨</a>의 그 상태). 오류는
+로그에 담고 조용히 다음 건으로 넘어가는 구조가 잡용 프로그램의 기본형이다.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title"><button class="term" type="button" data-term="BAL">BAL</button> 3박자 해부 — 어디를 빠뜨리면 뭐가 사라지나</span><a class="embed__open" href="../../../embeds/abap/CH38-L06-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH38-L06-S01.html" loading="lazy" title="BAL 3박자 해부 — 어디를 빠뜨리면 뭐가 사라지나" style="height:620px"></iframe></figure>
+</section><section class="lblock"><h2>좋은 로그의 조건 — 재처리가 되는가</h2>
+<p>로그의 품질 기준은 하나다: <strong>운영자가 이 로그만 보고 다음 행동을 정할 수 있는가.</strong></p>
+<ul>
+<li><strong>key가 있는가</strong> — &quot;정산 실패 17건&quot;은 행동 불가. &quot;예매 0001·0007·0012 실패&quot;라야
+재처리 대상을 고를 수 있다(메시지 변수 <code>msgv1</code>～<code>msgv4</code>에 key를 싣는 이유).</li>
+<li><strong>단계가 있는가</strong> — 같은 실패라도 &quot;조회 단계&quot;와 &quot;저장 단계&quot;는 대응이 다르다.</li>
+<li><strong>성공도 요약으로</strong> — &quot;10,000건 중 9,983건 성공, 17건 실패&quot; 한 줄이 있어야 실패
+17건의 무게를 안다. 단, 성공 1만 건을 낱개로 남기면 노이즈다.</li>
+<li><strong>민감정보는 남기지 않는다</strong> — 로그는 오래 보관되고 여러 사람이 본다. 비밀번호·
+카드번호·개인정보는 절대 금지다.</li>
+</ul>
+<p>어느 로그가 합격인지 판별해 보자.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">이 로그, 운영자가 쓸 수 있나</span><a class="embed__open" href="../../../embeds/abap/CH38-L06-S02.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH38-L06-S02.html" loading="lazy" title="이 로그, 운영자가 쓸 수 있나" style="height:560px"></iframe></figure>
+</section><section class="lblock"><h2>흔한 실수와 점검 🚧</h2>
+<ul>
+<li><strong><code>WRITE</code>를 로그로 착각</strong> → 화면 출력은 잡이 끝나면 추적이 약하다. 운영 기록은
+<button class="term" type="button" data-term="BAL">BAL</button>로.</li>
+<li><strong><code>BAL_DB_SAVE</code> 누락</strong> → 로그를 열심히 담고도 SLG1에서 못 찾는 1순위 원인.</li>
+<li><strong>&quot;실패&quot; 한 단어 메시지</strong> → key·단계·원인 없는 로그는 재처리를 막는다
+(<a href="CH25-L04.html">Chapter 25</a>와 <a href="CH37-L05.html">Chapter 37</a>에서 반복한 그 원칙).</li>
+<li><strong>전 건 성공 로그</strong> → 노이즈에 실패가 묻힌다. 성공은 요약, 실패는 낱개.</li>
+<li><strong>민감정보 기록</strong> → 로그 정책 위반. 남기기 전에 &quot;이 값이 화면에 떠도 되나&quot;를
+묻는다.</li>
+<li><strong>쌓기만 하고 안 지움</strong> → 로그 헤더에는 만료일(삭제 예정일)이 있고, 비워 두면
+사실상 영구 보존이다. 야간 잡이 매일 수만 건씩 남기면 로그 테이블이 수백 GB로
+자라 <strong>DB 용량 장애</strong>가 된다. 보관 기간을 정하고 표준 삭제(SLG2 계열)를 주기
+잡으로 돌리는 것까지가 로그 설계다.</li>
+</ul>
+</section><section class="lblock"><h2>정리 📌</h2>
+<ul>
+<li>Application Log(<button class="term" type="button" data-term="BAL">BAL</button>) = <strong>운영자가 SLG1 한 화면으로 검색하는 표준 업무 로그.</strong>
+구조 = Object/Subobject(분류) + External number(실행 식별) + Message/Context.</li>
+<li>기록 리듬 = <code>BAL_LOG_CREATE</code> → <code>BAL_LOG_MSG_ADD</code>(반복) → <strong><code>BAL_DB_SAVE</code> +
+<code>COMMIT WORK</code>(잊으면 전부 증발).</strong> 실패 시 순서 = <strong>ROLLBACK 먼저, 로그
+저장·<button class="term" type="button" data-term="COMMIT WORK">커밋</button>은 그 다음</strong>(로그가 <button class="term" type="button" data-term="ROLLBACK WORK">롤백</button>에 쓸려가지 않게).</li>
+<li>좋은 로그 = key + 단계 + 성공 요약 + 민감정보 0. 기준은 &quot;<strong>재현 없이 다음 행동을
+정할 수 있는가.</strong>&quot;</li>
+</ul>
+</section><section class="lblock"><h2>🧩 도전 과제 (서브퀘스트)</h2>
+<blockquote>
+<p>선택 과제 — 야간 정산을 운영 품질 체인 위에 올린다.</p>
+</blockquote>
+<ol>
+<li>정산 로직의 업무 약속 2개를 <a href="CH38-L02.html">ABAP Unit 테스트</a>로 남기고, 잔여
+좌석 조회의 DB 의존을 <a href="CH38-L03.html">SQL Test Double</a>로 격리한다.</li>
+<li><a href="CH38-L01.html">ATC</a>를 실행해 finding을 수정/<button class="term" type="button" data-term="예외">예외</button>로 분류하고, 이송
+release(<a href="CH38-L04.html">L04</a>) 전 3점검(object list·의존 순서·게이트)을 수행한다.</li>
+<li>정산 리포트를 <a href="CH38-L05.html">Background Job</a>으로 예약한다(variant 포함). 실패
+상황을 가정해 job log·spool·SLG1 세 겹의 증거로 원인을 좁히는 시나리오를 적어
+본다.</li>
+<li>(설계) 정산 로그의 Object/Subobject/External number 체계와 &quot;성공 요약 + 실패
+낱개&quot; 메시지 설계를 표로 만든다.</li>
+</ol>
+<hr>
+<p>개발물이 검사받고, 검증되고, 안전하게 이송되고, 무인으로 돌고, 추적된다 — 운영
+품질의 다섯 도구가 갖춰졌다. 이제 이 모든 것을 실전 앱 하나로 묶는 마지막 여정,
+<a href="CH39-L01.html">Chapter 39 · RAP 심화</a>로 간다.</p>
+</section>
+      </article>
+      <nav class="lesson-nav" data-shell="prevnext"></nav>
+      <footer class="foot">SAP Developer Academy · 배포자 SAP전문강사 정훈영</footer>
+    </main>
+    <aside class="journey" data-shell="journey"></aside>
+  </div>
+</div>
+<div class="term-popup" data-shell="popup" hidden></div>
+<div class="tmodal" data-shell="tmodal" hidden></div>
+<script>window.__SDA__={"domain":"abap","dataBase":"../","siteRoot":"../../../"};</script>
+<script src="../../../assets/shell.js" defer></script>
+</body>
+</html>

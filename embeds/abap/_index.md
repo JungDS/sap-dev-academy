@@ -296,6 +296,16 @@
 | CH37-L04-S01 | CH37-L04 | code-anatomy | (재사용) PDF 파이프라인 해부(xstring/xstrlen/변환/BIN/gui_download) + 고장 카드 4(#bug-cfg) | ✅ |
 | CH37-L05-S01 | CH37-L05 | judge-quiz | (재사용) 양식 운영 대응 판별 6(이송·샘플 검증·구조 짝 변경) | ✅ |
 | CH37-L05-S02 | CH37-L05 | stage-chips | 출력 장애 티켓 5(데이터→매핑→결정→렌더링→전달 — 멈춘 단계 찾기) | ✅ |
+| CH38-L01-S01 | CH38-L01 | stage-chips | (재사용) ATC 게이트 신호등(실행→finding→수정/예외→release, 가짜 초록·Cloud readiness 포함 5) | ✅ |
+| CH38-L01-S02 | CH38-L01 | judge-quiz | (재사용) finding 대응 판별 5(수정 vs 근거 있는 exemption) | ✅ |
+| CH38-L02-S01 | CH38-L02 | abap-unit-runner | (재사용+확장) 회귀 러너 — ur-cfg 주입(약속 3건)·버그 주입→canceled_seats red·release gate READY/BLOCKED | ✅ |
+| CH38-L02-S02 | CH38-L02 | judge-quiz | (재사용) 게이트감 테스트 판별 6(외부 무의존·선언=실제·공개 동작) | ✅ |
+| CH38-L03-S01 | CH38-L03 | judge-quiz | (재사용) 의존성별 double 선택 6(직접 Mock/DI 충분 vs 전문 도구 — 해설에 SQL/CDS double·TEST-SEAM) | ✅ |
+| CH38-L04-S02 | CH38-L04 | stage-chips | (재사용) 이송 흐름 보드(task→request→QAS→승인→PRD, 미release·순서 역전·RC4 삼킴·절차 위반 5) | ✅ |
+| CH38-L04-S01 | CH38-L04 | mermaid | (재사용·구 L03-S01 부활) Transport 경로 DEV→QAS→PRD 흐름도 | ✅ |
+| CH38-L05-S01 | CH38-L05 | stage-chips | (재사용) 잡의 일생(정의→Released→Active→Finished→업무 성공 — Finished≠성공·중복 정산 티켓 5) | ✅ |
+| CH38-L06-S01 | CH38-L06 | code-anatomy | (재사용) BAL 3박자 해부(object/extnumber/CREATE/msgv1 key/DB_SAVE) + 고장 카드 4(#bug-cfg) | ✅ |
+| CH38-L06-S02 | CH38-L06 | bal-log | (재사용·구 L05-S01 이동) SLG1풍 로그 뷰어 — 타입 필터·key/단계 확인 | ✅ |
 | CH04-L02-S01 | CH04-L02 | fill-blank | 문자열 함수 빈칸(INTO·AT·strlen·FIND) | ✅ |
 | CH04-L07-S01 | CH04-L07 | fill-blank | 구구단 빈칸(TIMES·sy-index·*·ENDDO) | ✅ |
 | CH04-L03-S01 | CH04-L03 | mermaid | IF/ELSEIF/ELSE 분기 흐름도(p_amt: 큰금액/소액/0·음수) | ✅ |
@@ -394,13 +404,13 @@
 | pkg-tuner (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH35-L05-S02 | 총 100만 건 가정·크기 3단(1천/1만/10만)→commit(log 스케일)/메모리/재처리 범위 막대·양극단 warn·가운데=실측 안내 |
 | tf-link-map (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH36-L05-S01 | CDS TF 3카드(DDL/클래스/소비) 단계 버튼(ddl→link→run→consume→client)·연결선 강조·상태 칩 |
 | amdp-steps (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH36-L02-S02 | as-cfg JSON(code/steps) 단계 버튼→코드 하이라이트+테이블 변수 스냅샷·재사용 배지·완주 노트 |
-| stage-chips (신규) | 3 | 공통(_engine)·자체 postHeight ✅ | CH37-L01-S02 · CH37-L02-S02 · CH37-L05-S02 | sc-cfg JSON(chips/scenarios) 단계 신호등(ok/warn/bad)+시나리오 버튼→판정문 — 층 판별 범용 |
+| stage-chips | 6 | 공통(_engine)·자체 postHeight ✅ | CH37-L01-S02 · CH37-L02-S02 · CH37-L05-S02 · CH38-L01-S01 · CH38-L04-S02 · CH38-L05-S01 | sc-cfg JSON(chips/scenarios) 단계 신호등(ok/warn/bad)+시나리오 버튼→판정문 — 층 판별 범용 |
 | decision-tree | 4 | 공통(_engine)+_autoheight ✅ | CH06-L02-S02 · CH20-L06-S01 · CH32-L04-S01 · CH35-L05-S01 | 범용 선택 트리(질문 분기=위젯 config)·Table Kind/고급 SQL/확장 수단/대량 처리 전략 선택 |
 | factory-sim (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH27-L01-S01 | 타입 세그(V/G/Z)→생성 클래스·설명 전환·호출부 코드 고정 표시 |
 | singleton-sim (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH27-L02-S01 | get_instance vs NEW 버튼→인스턴스 주소 목록·같음/다름 판정 |
 | strategy-sim (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH27-L03-S01 | 전략 세그+좌석 입력→단가×석 가격 계산·client 코드 불변 |
 | mvc-diagram (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH27-L04-S01 | 변경 요구 선택→M/V/C 계층 박스 하이라이트·영향 범위 예측 훈련 |
-| abap-unit-runner (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH27-L05-S01 | 테스트 2건 실행 ✓/✗·버그 주입 시 remaining_calc(exp 50→48) 실패·assert_equals 렌더 |
+| abap-unit-runner | 2 | 공통(_engine)·자체 postHeight ✅ | CH27-L05-S01 · CH38-L02-S01 | 테스트 실행 ✓/✗·버그 주입→red·assert_equals 렌더 · (확장) 선택 cfg `#ur-cfg`{tests,gate} — 없으면 CH27 기본값, gate:true면 release READY/BLOCKED |
 | lock-mode-matrix (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH26-L01-S01 | A가 1001을 E/S/X로 잠금→B 요청 모드별 허용/거절 매트릭스·변경=E 기본 강조 |
 | enqueue-2session (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH26-L02-S01 | 2세션(A/B) 잠금 경쟁·ENQUEUE→foreign_lock 거절·DEQUEUE/COMMIT 후 획득 가능·가운데 SM12 잠금 목록 라이브 |
 | lost-update-sim (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH26-L04-S01 | A/B 동시 수정 타임라인·전략 3종(무잠금=Lost Update·비관 ENQUEUE·낙관 changed_at 비교 거절→재조회) 결과 비교 |
@@ -455,9 +465,10 @@
 | salv-grid-simulator | 2 | 공통(_engine)·자체 postHeight ✅ | CH11-L02-S01·CH11-L06-S01 (완료) | config 주입(SALV_CFG: itab·cols·data·sumKey·code) · ALV제목/토글 엔진설정 |
 | relationship-map | 1 | 공통 | _(미작성)_ | CSS-only |
 | state-change-grid | 2 | 공통(CSS-only)+_autoheight ✅ | CH06-L04-S03·CH06-L06-S01 | 스냅샷=마크업(gt_gugu 성장·정렬 / DELETE ADJACENT DUPLICATES 함정) · cell-new/cell-del 강조 · .note 추가(다크 자동) |
-| mermaid | 15 | 공통(+_vendor)+_autoheight ✅ | CH04-L04-S02/S03·L05-S02/S03/S04 · CH26-L05 · CH31-L06-S02 · CH33-L05-S01 · CH34-L02-S01 · CH36-L03 · CH37-L03 · CH38-L03/L04 · CH39-L01/L06 | 그래프=위젯 `.mermaid` 주입·CDN+로컬fallback·이벤트본 은퇴 |
-| judge-quiz | 9 | 공통(_engine)+_autoheight ✅ | CH06-L05 · CH26-L03 · CH32-L05 · CH36-L03-S02 · CH36-L06 · CH37-L03-S02 · CH37-L05 · CH39-L07 | 범용 판별 퀴즈(문항=위젯 config)·즉시 정답·해설 |
-| code-anatomy | 4 | 공통(_engine)·자체 postHeight ✅ | CH06-L02-S01 · CH06-L05-S02 · CH36-L02-S01 · CH37-L04-S01 | 마커(.mk[data-a]) 클릭 해부(anno-cfg JSON) + (확장) #bug-cfg 오류 카드→해설 |
+| mermaid | 15 | 공통(+_vendor)+_autoheight ✅ | CH04-L04-S02/S03·L05-S02/S03/S04 · CH26-L05 · CH31-L06-S02 · CH33-L05-S01 · CH34-L02-S01 · CH36-L03 · CH37-L03 · CH38-L04-S01 · CH39-L01/L06 | 그래프=위젯 `.mermaid` 주입·CDN+로컬fallback·이벤트본 은퇴 |
+| judge-quiz | 13 | 공통(_engine)+_autoheight ✅ | CH06-L05 · CH26-L03 · CH32-L05 · CH36-L03-S02 · CH36-L06 · CH37-L03-S02 · CH37-L05 · CH38-L01-S02 · CH38-L02-S02 · CH38-L03-S01 · CH39-L07 | 범용 판별 퀴즈(문항=위젯 config)·즉시 정답·해설 |
+| code-anatomy | 5 | 공통(_engine)·자체 postHeight ✅ | CH06-L02-S01 · CH06-L05-S02 · CH36-L02-S01 · CH37-L04-S01 · CH38-L06-S01 | 마커(.mk[data-a]) 클릭 해부(anno-cfg JSON) + (확장) #bug-cfg 오류 카드→해설 |
+| bal-log | 1 | 공통(_engine)·자체 postHeight ✅ | CH38-L06-S02 | SLG1풍 BAL 로그 뷰어 — 타입(E/W/S) 필터·건수 배지 |
 | compare-matrix | 4 | 공통(_engine)·자체 postHeight ✅ | CH07-L03-S02 · CH20-L01-S01 · CH36-L04-S01 · CH37-L02-S01 | cm-cfg JSON(cols/rows/detail) 행 클릭 상세 + (확장) cfg.cases 상황 버튼→추천 행 강조 |
 | pushdown-flow | 1 | 공통(_engine)·자체 postHeight ✅ | CH36-L01-S01 | 끌어오기/내려보내기 전송량 파이프 + (확장) #pf-cfg 상황 카드→수단 추천 |
 | domain-builder | 1 | 공통(_engine) ✅ | CH03-L01-S01 | SE11 폼(단일사용·데이터 inline) · 예제별 target 강제(검사/활성화는 목표 일치 시에만) |

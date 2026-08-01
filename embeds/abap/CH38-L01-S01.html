@@ -1,23 +1,37 @@
 <!DOCTYPE html>
-<!-- CH38-L01-S01 — 엔진: atc-findings · _engine/_base.css. ATC 점검 → 수정 후 재검사 → 이송 게이트. -->
-<html lang="ko" data-eng="atc-findings">
+<!-- CH38-L01-S01 — 엔진: stage-chips · _engine/_base.css. ATC 게이트 — finding/priority/exemption/release 신호등. -->
+<html lang="ko" data-eng="stage-chips">
 <head>
 <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>ATC 점검 · CH38-L01-S01</title>
-<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/atc-findings.css" />
+<title>ATC 게이트 신호등 · CH38-L01-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/stage-chips.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">ATC 점검 — 에러를 0으로 만들어 게이트 통과</p>
-  <p class="lead">ATC가 성능·보안·표준 위반을 우선순위로 찾아냅니다. <b>P1(에러)</b>가 있으면 이송이 막힙니다. <b>수정 후 재검사</b>로 에러를 없애 보세요.</p>
-  <div class="bar">
-    <button class="btn" id="recheck" type="button">🔧 수정 후 재검사</button>
-    <button class="reset" id="reset" type="button">↺ 초기화</button>
-    <span class="gate block" id="gate"></span>
-  </div>
-  <div class="list" id="list"></div>
-  <div class="note">💡 이송 전 <b>ATC 통과를 게이트</b>로 둡니다. 경고(P2)·정보(P3)는 근거 있는 예외로 둘 수 있지만, <b>모든 경고를 끄면</b> 진짜 문제를 놓칩니다. Code Inspector(SCI)의 상위 도구가 ATC.</div>
+  <p class="hd">ATC 결과 — release 게이트는 언제 열리나</p>
+  <p class="lead">상황을 누르면 <b>검사 → finding → 대응 → 게이트</b>의 신호등이 켜집니다. 게이트가 빨간 이유를 읽어 보세요.</p>
+  <div id="chips"></div>
+  <div id="cases"></div>
+  <div class="verdict" id="verdict"></div>
+  <div class="note">💡 게이트의 질문은 하나 — <b>P1/P2가 "수정" 또는 "승인된 예외"로 정리됐는가.</b> 근거 없는 무시는 정리가 아닙니다. (사례는 교육용 가상)</div>
+  <script type="application/json" id="sc-cfg">
+  {
+    "chips": ["① ATC 실행", "② Finding", "③ 수정/예외 정리", "④ Release gate"],
+    "scenarios": [
+      { "label": "P1 미해결로 release 시도", "states": ["ok", "bad", "off", "bad"], "warn": true,
+        "verdict": "⛔ <b>BLOCKED</b> — SELECT without WHERE(P1)가 남았습니다. 게이트가 연동돼 있으면 release 버튼 자체가 막힙니다. 고치고 다시." },
+      { "label": "P1 수정 후 재검사", "states": ["ok", "ok", "ok", "ok"],
+        "verdict": "✅ <b>READY</b> — 수정 후 재실행에서 P1이 사라졌습니다. '한 번 돌렸다'가 아니라 '고친 뒤 다시 초록 확인'까지가 한 사이클입니다." },
+      { "label": "P2를 근거 있는 예외로 승인", "states": ["ok", "warn", "ok", "ok"], "warn": true,
+        "verdict": "✅ <b>READY(예외 포함)</b> — 표준 복사 코드의 관례 finding을 근거·승인자·만료와 함께 exemption 처리했습니다. 기록이 남는 예외는 게이트를 통과합니다." },
+      { "label": "경고를 전부 끈 variant로 통과", "states": ["warn", "off", "off", "warn"], "warn": true,
+        "verdict": "🚨 <b>가짜 초록</b> — 느슨한 variant의 통과는 품질 근거가 아닙니다. finding이 0인 게 아니라 검사를 안 한 것에 가깝습니다." },
+      { "label": "Cloud readiness finding 방치", "states": ["ok", "warn", "off", "ok"], "warn": true,
+        "verdict": "⚠ 지금 게이트는 통과할 수 있지만, unreleased API 사용은 Cloud 이행 때 막힌다는 예고입니다. 최소한 목록으로 관리하세요." }
+    ]
+  }
+  </script>
 </div>
-<script src="../_engine/atc-findings.js" defer></script>
+<script src="../_engine/stage-chips.js" defer></script>
 </body>
 </html>

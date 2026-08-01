@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<!-- CH38-L02-S02 — 엔진: judge-quiz · _engine/_base.css. 게이트감 테스트 판별. -->
+<html lang="ko" data-eng="judge-quiz">
+<head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>게이트에 넣어도 되나 · CH38-L02-S02</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/judge-quiz.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">이 테스트, release gate에 넣어도 되나</p>
+  <p class="lead">기준 세 가지 — 외부 상태 무의존 · 선언=실제 · 공개 동작 검증. 여섯 테스트를 판별해 보세요.</p>
+  <div class="score"><span>점수</span><div class="bar"><i id="sbar"></i></div><span class="v" id="sv">0 / 0</span></div>
+  <div id="list"></div>
+  <div class="result" id="result"></div>
+  <script type="application/json" id="quiz">
+  {
+    "labels": ["✅ 게이트감", "🚫 아직"],
+    "items": [
+      { "q": "Mock을 주입해 잔여 좌석 계산만 검증. 외부 접근 없음, <code>DURATION SHORT</code>.", "a": 0,
+        "why": "외부 무의존 + 빠름 + 공개 동작 검증 — 게이트의 모범생이다." },
+      { "q": "실 <code>zbooking</code> 테이블에서 예매 '0001'을 읽어 결과를 비교한다.", "a": 1,
+        "why": "그 데이터가 지워지면 코드가 멀쩡해도 red. 데이터 사정에 흔들리는 테스트는 게이트에서 '늑대 소년'이 된다. SQL Test Double로 격리부터." },
+      { "q": "\"오늘이 공연일이면 취소 불가\" 로직을 <code>sy-datum</code> 그대로 사용해 검증한다.", "a": 1,
+        "why": "공연일 당일에만 결과가 달라지는 시한폭탄이다. 날짜를 파라미터나 double로 통제해야 게이트감이 된다." },
+      { "q": "<code>RISK LEVEL HARMLESS</code>로 선언했지만 실제로는 테스트 데이터를 INSERT하고 지우지 않는다.", "a": 1,
+        "why": "선언과 실제가 다르면 프레임워크도 사람도 그 테스트를 신뢰할 수 없다. 선언을 고치거나 동작을 고친다." },
+      { "q": "결과 대신 private 내부 변수 <code>mv_temp_sum</code>의 중간값을 검증한다.", "a": 1,
+        "why": "구현 세부에 붙은 테스트는 리팩터링만 해도 억울하게 깨진다. 공개 동작(결과)을 검증한다." },
+      { "q": "버그 수정 후, 그 버그를 재현하는 테스트를 추가했다. Mock 기반, 밀리초 단위 실행.", "a": 0,
+        "why": "회귀를 겪은 지점의 재현 테스트는 게이트 1순위 — 같은 사고가 두 번 나는 것을 구조로 막는다." }
+    ]
+  }
+  </script>
+</div>
+<script src="../_engine/judge-quiz.js" defer></script>
+</body>
+</html>

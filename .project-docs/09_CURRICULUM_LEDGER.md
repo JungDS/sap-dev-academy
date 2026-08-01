@@ -1,6 +1,6 @@
 # 09. CURRICULUM LEDGER — 커리큘럼 개념 원장 (개요 SSOT)
 
-> 📅 최종수정: 2026-08-01 19:37 KST
+> 📅 최종수정: 2026-08-01 21:10 KST
 > 🎯 **2트랙(최종 39번호) 챕터 맵 + 교차 설계 합의(경계·관통예제·도구 아크)의 단일 출처.**
 > 🧭 **per-lesson `introduces`/`prereq`/`prevRel`/`foreshadow`/`advanceUse` = 각 레슨 `.md` front-matter가 라이브 SSOT**([04 R10](04_CONVENTIONS.md)) — 이 문서는 레슨별 데이터를 중복하지 않고 *그 위의 개요·경계·관통설계*만 담는다(§F). 게이팅([04 R15](04_CONVENTIONS.md)) 점검 = front-matter ↔ 본문 ↔ R15.
 > ✅ 현행: **최종 39번호(2026-07-14 리넘버)** · 본문 **39챕터 전량 작성 완료**. 전면 리빌드는 *선택* — 절차 = [10_REBUILD_EXECUTION](10_REBUILD_EXECUTION.md).
@@ -61,7 +61,7 @@
 | 35 | 성능 분석과 튜닝 | 5 | 측정 루프(측정→분류→수정→재측정→기록)·ST05/SAT/SQLM·SWLT 역할 분리·SELECT-in-LOOP 제거(FAE 함정 2종)·대량 처리(푸시다운/Package/병렬 기준) |
 | 36 | AMDP / ADBC / Pushdown | 6 | Code-to-Data 수단 사다리(Open SQL→CDS→AMDP→ADBC)·AMDP(BY DATABASE PROCEDURE·client 직접)·ADBC(CL_SQL_* API·바인딩=injection 방어)·**CDS Table Function+AMDP Function L3 도입(L05, 커리큘럼 유일)**·운영 승인 체크리스트 |
 | 37 | Forms / Output / PDF | 5 | Smart Forms(구조·SSF 조회 호출·동적 CALL FUNCTION)·Adobe Forms(3층+ADS·FP_JOB 4박자)·Output Control(NAST/BRFplus 역할·경계)·**xstring/xstrlen L3 도입(L04)**·바이너리 다운로드(BIN)·출력 장애 5단계 추적(SP01) |
-| 38 | 운영 품질과 배포 관리 (이송 심화) | 5 | ATC·BAL 로그·SUBMIT VIA JOB·이송 |
+| 38 | 운영 품질과 배포 관리 (이송 심화) | 6 | ATC/SCI(finding·exemption·release gate)·ABAP Unit 운영(회귀·게이트)·**Test Double 심화 L03 신설**(CL_ABAP_TESTDOUBLE·SQL/CDS Test Double·TEST-SEAM — 새 코드는 DI 우선)·Transport 심화(task/request·RC·의존 순서)·**SUBMIT L3 도입(L05)**+JOB 3박자·BAL/SLG1 |
 | 39 | RAP + Fiori 실무 Capstone (**RAP 심화**) | 7 | RAP 심화·통합 캡스톤: Draft·Lock·ETag/Total ETag·EML consumer(MODIFY→COMMIT/ROLLBACK)·Service Binding·Communication Arrangement·Released API/ATC. 정본 참조 = `reference/codex_0629_v3/NEWCH39_OLDCH36_REWRITE.md`(9레슨) |
 
 > 🔶 **RAP 2단(입문 CH24 ↔ 심화 CH39)** — 사용자 지시(2026-07-24): **CH24 = 입문**(managed BO 기본 흐름 상한 — Draft·Lock·ETag·EML 상세·Comm Arrangement 전부 CH39로 유예, L0/L1만). **CH39 = 심화**. 심화가 한 장으로 벅차면 **나중에 여러 챕터로 분할** 가능(미확정, 진도 닿을 때 재판단). CH24-L09가 EML 개념 지도만 두고 실전은 CH39로 foreshadow. ⚠️ 현행 CH39(7L)는 NEWCH39(9L) 구조 미반영 — CH39 착수 시 재구성 필요.
