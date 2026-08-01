@@ -3,7 +3,7 @@
 > 🤖 **생성물** — `tools/export-curriculum-md.mjs`(= `npm run build:curriculum-md`)로 자동 생성. **직접 수정 금지**, 내용은 `content/abap/**.md` front-matter에서 고치고 재생성한다.
 > 🎯 **목적** — ABAP 기초 — Classic 완결 트랙 전용 뷰. 전체는 curriculum.md.
 > 📊 트랙 1 · 챕터 17 · 레슨 122
-> 🕒 생성: 2026-08-01T17:42:33.182Z
+> 🕒 생성: 2026-08-01T18:57:10.053Z
 
 학습 철학: 분류 순서로 외우지 않고, **불편을 먼저 겪고 그 해결책으로 개념을 배우는** 동기부여형. SQL은 CH07~16 classic → CH18+ modern 경계.
 
@@ -171,7 +171,7 @@
   - 다룰 내용: 구조 안에 Internal Table·문자열이 든 'Deep' Structure — 개념과 분류.
   - 키워드: Deep Structure, Flat, Nested, Internal Table
 - **CH06-L06 · 구구단 전체 = Internal Table (캡스톤)** _(order 6)_
-  - 다룰 내용: 구구단 81줄을 내부 테이블에 쌓아 정렬·출력한다.
+  - 다룰 내용: 구구단 72줄을 내부 테이블에 쌓아 정렬·출력한다.
   - 키워드: 구구단, Internal Table, APPEND, LOOP, SORT, 캡스톤
 
 ### CH07 · Transparent Table (SE11) _(난이도: 초급)_
