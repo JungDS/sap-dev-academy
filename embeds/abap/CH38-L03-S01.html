@@ -1,34 +1,38 @@
 <!DOCTYPE html>
-<!-- CH38-L03-S01 — 엔진: mermaid + _autoheight. Transport 경로 DEV→QAS→PRD. (기존 text 코드블록 흐름도 교체) -->
-<html lang="ko" data-eng="mermaid">
+<!-- CH38-L03-S01 — 엔진: judge-quiz · _engine/_base.css. 의존성별 test double 선택 판별. -->
+<html lang="ko" data-eng="judge-quiz">
 <head>
 <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Transport 경로 · CH38-L03-S01</title>
-<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-<script>if(!window.mermaid){var s=document.createElement("script");s.src="../_vendor/mermaid.min.js";document.head.appendChild(s);}</script>
-<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/mermaid.css" />
+<title>어떤 double? · CH38-L03-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/judge-quiz.css" />
 </head>
 <body>
-  <div class="wrap">
-    <p class="hd">Transport 경로 — 개발에서 운영까지</p>
-    <p class="lead">이송요청(CH01-L06)이 어떤 시스템을 거쳐 운영에 도달하는지. 운영(PRD)은 직접 개발 금지 — 반드시 이송으로.</p>
-    <div class="viz-card">
-      <p class="viz-card__title">DEV → QAS → PRD</p>
-      <div class="mermaid" id="mm">
-flowchart LR
-  DEV["DEV · 개발<br/>SE09/SE10에서 release"]:::dev
-  QAS["QAS · 품질/테스트<br/>ATC · ABAP Unit · 기능"]:::qas
-  PRD["PRD · 운영<br/>직접 개발 금지"]:::prd
-  DEV -->|"release (이송요청)"| QAS
-  QAS -->|"import (STMS)"| PRD
-classDef dev fill:#eef2ff,stroke:#3b5bdb,stroke-width:2px,color:#1e3a8a;
-classDef qas fill:#fff7ed,stroke:#fb923c,stroke-width:2px,color:#c2410c;
-classDef prd fill:#ecfdf5,stroke:#10b981,stroke-width:2.4px,color:#0b7250;
-      </div>
-      <p class="viz-note">의존하는 객체는 <b>순서대로</b> 이송해야 합니다(역전 시 운영 깨짐). 이송 전 QAS에서 <b>ATC·ABAP Unit·기능 테스트</b>를 통과시키고, 한 요청에 관련 객체를 모두 담아 일관 이송합니다.</p>
-    </div>
-  </div>
-<script src="../_engine/mermaid.js" defer></script>
-<script src="../_engine/_autoheight.js" defer></script>
+<div class="wrap">
+  <p class="hd">이 의존성, 직접 Mock으로 충분한가</p>
+  <p class="lead">여섯 상황을 판별해 보세요. <b>단순한 수단(CH27식 직접 Mock/DI) 먼저</b>가 원칙 — 해설에서 "필요하다면 무엇"까지 확인.</p>
+  <div class="score"><span>점수</span><div class="bar"><i id="sbar"></i></div><span class="v" id="sv">0 / 0</span></div>
+  <div id="list"></div>
+  <div class="result" id="result"></div>
+  <script type="application/json" id="quiz">
+  {
+    "labels": ["✋ 직접 Mock/DI로 충분", "🧰 전문 도구 필요"],
+    "items": [
+      { "q": "메서드 2개짜리 <code>zif_booking_repo</code> 뒤로 분리된 DB 접근.", "a": 0,
+        "why": "CH27에서 만든 그대로 — 가짜 class 몇 줄이 가장 읽기 쉽다. framework는 과잉이다." },
+      { "q": "메서드 12개짜리 interface인데 이번 테스트에 필요한 응답은 1개.", "a": 1,
+        "why": "가짜 class로 12개를 다 구현하면 노동이다 — <code>CL_ABAP_TESTDOUBLE</code>이 생성을 대신하고 필요한 호출만 설정한다." },
+      { "q": "메서드가 <code>zbooking</code>을 직접 SELECT — repository 분리가 안 돼 있고 이번에 구조를 바꿀 수 없다.", "a": 1,
+        "why": "주입할 자리가 없다 — <b>ABAP SQL Test Double</b>(CL_OSQL_TEST_ENVIRONMENT)로 SELECT가 읽는 대상 자체를 격리한다." },
+      { "q": "CDS view에 담긴 집계 로직 자체를 검증하고 싶다.", "a": 1,
+        "why": "CDS entity의 의존을 끊는 자매 도구 — <b>CDS Test Double</b>(CL_CDS_TEST_ENVIRONMENT) 영역이다." },
+      { "q": "지금 새로 설계하는 class. \"나중에 테스트하기 쉽게 TEST-SEAM을 미리 넣어 둘까?\"", "a": 0,
+        "why": "경고 신호다 — 새 코드의 정답은 interface 분리+DI(CH27)이지 seam이 아니다. seam은 legacy 보완용." },
+      { "q": "10년 된 legacy Form 루틴 속 직접 SELECT. 구조 변경은 승인 불가, 그래도 회귀 테스트는 필요.", "a": 1,
+        "why": "분리가 막힌 legacy의 최후 수단 — <b>TEST-SEAM/TEST-INJECTION</b>으로 그 구간만 갈아끼운다(새 코드엔 금지)." }
+    ]
+  }
+  </script>
+</div>
+<script src="../_engine/judge-quiz.js" defer></script>
 </body>
 </html>

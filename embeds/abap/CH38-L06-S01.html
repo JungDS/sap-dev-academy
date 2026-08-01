@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<!-- CH38-L06-S01 — 엔진: code-anatomy · _engine/_base.css. BAL 3박자 해부 + 고장 카드 4(#bug-cfg).
+     코드는 본문 CH38-L06 정본의 축약. -->
+<html lang="ko" data-eng="code-anatomy">
+<head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BAL 3박자 해부 · CH38-L06-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/code-anatomy.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">BAL 3박자 — 부분을 클릭</p>
+  <p class="lead">밑줄 부분을 클릭해 역할을 확인한 뒤, <b>고장 카드 4장</b>으로 무엇을 빠뜨리면 무엇이 사라지는지 판별하세요.</p>
+  <div class="anat">
+    <div class="anat__h"><span class="dot"></span>야간 정산 로그 남기기 (본문 코드 축약)</div>
+<pre class="anat__code">gs_log-object    = <span class="mk" data-a="obj">'ZBOOK'</span>.
+gs_log-subobject = 'SETTLE'.
+gs_log-extnumber = <span class="mk" data-a="ext">'RUN-20260801-020000'</span>.
+<span class="kw">CALL FUNCTION</span> <span class="mk" data-a="create">'BAL_LOG_CREATE'</span>
+  <span class="kw">EXPORTING</span> i_s_log      = gs_log
+  <span class="kw">IMPORTING</span> e_log_handle = gv_handle.
+
+<span class="kw">CALL FUNCTION</span> 'BAL_LOG_MSG_ADD'
+  <span class="kw">EXPORTING</span>
+    i_log_handle = gv_handle
+    i_s_msg      = <span class="kw">VALUE</span> bal_s_msg(
+      msgty = 'E'  msgid = 'ZBOOK'  msgno = '001'
+      <span class="mk" data-a="key">msgv1 = '0001'</span> ).   <span class="cm">" 실패한 예매의 key</span>
+
+<span class="kw">CALL FUNCTION</span> <span class="mk" data-a="save">'BAL_DB_SAVE'</span>
+  <span class="kw">EXPORTING</span> i_save_all = abap_true.
+<span class="kw">COMMIT WORK</span>.                       <span class="cm">" 저장 확정(CH25 LUW)</span></pre>
+  </div>
+  <div class="anno idle" id="anno">밑줄 친 구문을 클릭해 보세요.</div>
+  <div class="bugs" id="bugs"></div>
+  <div class="anno idle" id="bugOut">🚨 고장 카드를 클릭하면 무엇이 사라지는지 나옵니다.</div>
+  <div class="note">💡 3박자 = 생성(CREATE) → 담기(MSG_ADD 반복) → <b>저장(DB_SAVE)</b>. 저장 전까지는 전부 메모리 위의 이야기입니다.</div>
+  <script type="application/json" id="anno-cfg">
+  {
+    "obj": { "t": "Object/Subobject — 검색의 분류", "d": "SLG1에서 운영자가 거는 첫 필터. 이 분류가 엉키면 로그가 있어도 <b>못 찾는</b> 로그가 됩니다." },
+    "ext": { "t": "External number — 실행 한 판의 식별자", "d": "그날 그 잡의 로그만 묶어 보는 열쇠. SM37의 job log(기술 증거)와 이 업무 로그를 같은 실행으로 이어 줍니다." },
+    "create": { "t": "BAL_LOG_CREATE — 로그 생성", "d": "분류·식별자를 담은 머리를 만들고 손잡이(handle)를 돌려받습니다. 이후 메시지는 이 손잡이에 담습니다." },
+    "key": { "t": "msgv1 — 메시지 변수에 key를", "d": "'실패 17건'은 행동 불가, '예매 0001 실패'라야 재처리 대상을 고릅니다. &1~&4 자리(CH15의 메시지 변수)에 key를 싣는 이유." },
+    "save": { "t": "BAL_DB_SAVE + COMMIT — 없으면 전부 증발", "d": "CREATE와 MSG_ADD는 메모리 안 작업입니다. 저장하고 <b>커밋까지</b> 해야 SLG1에 남습니다. 실패 상황이라면 <b>ROLLBACK 먼저, 로그 저장·커밋은 그 다음</b> — 로그가 롤백에 쓸려가지 않게." }
+  }
+  </script>
+  <script type="application/json" id="bug-cfg">
+  {
+    "bugs": [
+      { "c": "BAL_DB_SAVE 호출 누락", "t": "로그 증발", "d": "실행 중엔 멀쩡해 보이지만 SLG1에서 영원히 못 찾습니다. 'WRITE로 확인했는데요'가 통하지 않는 이유." },
+      { "c": "extnumber를 비워 둠", "t": "실행 구분 불가", "d": "매일 도는 잡의 로그가 한 덩어리로 섞입니다. 어젯밤 실패가 어느 판의 것인지 아무도 못 가립니다." },
+      { "c": "메시지가 '정산 실패' 한 단어", "t": "재처리 불가", "d": "어떤 예매가, 어느 단계에서, 왜인지가 없으면 운영자는 다음 행동을 못 정합니다. key·단계·원인이 로그의 자격." },
+      { "c": "고객 카드번호를 context에 기록", "t": "정책 위반", "d": "로그는 오래 보관되고 여러 사람이 봅니다. 민감정보는 절대 금지 — '이 값이 화면에 떠도 되나'로 자문하세요." }
+    ]
+  }
+  </script>
+</div>
+<script src="../_engine/code-anatomy.js" defer></script>
+</body>
+</html>
