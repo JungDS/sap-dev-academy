@@ -1,0 +1,331 @@
+# GATING_AUDIT — R15 게이팅·R6 경계 정적 감사 (자동 생성)
+
+> 재생성: `node tools/audit-gating.mjs` (이 파일을 직접 수정하지 말 것)
+> ⚠️ 아래는 전부 **후보**다 — 오탐(나선 재방문·L1 예고·동음이의)을 모델/사람이 판정한 뒤에만 위반으로 확정한다.
+
+## 요약
+| 섹션 | 건수 |
+|---|---|
+| STRUCT (필수키·id) | 0 |
+| PREREQ (실존·전방참조) | 0 |
+| DUP-INTRO (중복 도입 선언) | 8 |
+| EARLY-USE — **REVIEW(요판정)** | 141 |
+| EARLY-USE — LOW(같은 챕터 인접) | 111 |
+| EARLY-USE — DECLARED(예고/선행 선언) | 38 |
+| R6 경계 (classic 구간 modern 토큰) | 0 |
+| 검사 규모 | 레슨 270 · 추적 키워드 411 |
+
+## STRUCT
+- 없음
+
+## PREREQ
+- 없음
+
+## DUP-INTRO
+- `TYPES` — CH02-L04 와 CH05-L01 가 모두 introduces (나선 재방문이면 정상 — 판정 필요)
+- `LIKE` — CH02-L01 와 CH05-L01 가 모두 introduces (나선 재방문이면 정상 — 판정 필요)
+- `Work Area` — CH05-L01 와 CH06-L01 가 모두 introduces (나선 재방문이면 정상 — 판정 필요)
+- `LIKE` — CH02-L01 와 CH08-L05 가 모두 introduces (나선 재방문이면 정상 — 판정 필요)
+- `INITIALIZATION` — CH15-L01 와 CH15-L02 가 모두 introduces (나선 재방문이면 정상 — 판정 필요)
+- `LOOP AT SCREEN` — CH15-L03 와 CH16-L06 가 모두 introduces (나선 재방문이면 정상 — 판정 필요)
+- `CAST` — CH19-L04 와 CH21-L08 가 모두 introduces (나선 재방문이면 정상 — 판정 필요)
+- `Stable Refresh` — CH17-L08 와 CH22-L07 가 모두 introduces (나선 재방문이면 정상 — 판정 필요)
+
+## EARLY-USE · REVIEW (요판정 — 미선언·비인접)
+- CH01-L02:37 — `DATA` (도입 = CH02-L01)
+- CH01-L02:37 — `Domain` (도입 = CH03-L01)
+- CH01-L02:39 — `Data Element` (도입 = CH03-L02)
+- CH01-L02:37 — `Search Help` (도입 = CH09-L04)
+- CH01-L04:83 — `DATA` (도입 = CH02-L01)
+- CH01-L04:83 — `PARAMETERS` (도입 = CH03-L03)
+- CH01-L06:13 — `DDIC` (도입 = CH03-L01)
+- CH01-L06:37 — `STMS` (도입 = CH38-L04)
+- CH01-L07:19 — `Selection Screen` (도입 = CH12-L02)
+- CH02-L03:38 — `offset` (도입 = CH04-L02)
+- CH02-L06:52 — `Domain` (도입 = CH03-L01)
+- CH03-L01:58 — `Value Table` (도입 = CH09-L02)
+- CH03-L02:65 — `ALV` (도입 = CH11-L01)
+- CH04-L05:58 — `Internal Table` (도입 = CH06-L01)
+- CH04-L05:44 — `MANDT` (도입 = CH07-L01)
+- CH05-L02:60 — `APPEND` (도입 = CH06-L01)
+- CH05-L02:60 — `Include` (도입 = CH12-L04)
+- CH05-L03:24 — `Include` (도입 = CH12-L04)
+- CH06-L03:11 — `INTO TABLE` (도입 = CH08-L03)
+- CH06-L04:109 — `ASSIGN` (도입 = CH28-L05)
+- CH06-L06:79 — `Transparent Table` (도입 = CH07-L01)
+- CH07-L01:49 — `ALV` (도입 = CH11-L01)
+- CH08-L01:21 — `JOIN` (도입 = CH13-L01)
+- CH08-L04:53 — `JOIN` (도입 = CH13-L01)
+- CH08-L05:47 — `SELECT-OPTIONS` (도입 = CH12-L02)
+- CH08-L05:31 — `NULL` (도입 = CH13-L02)
+- CH08-L07:49 — `Foreign Key` (도입 = CH09-L01)
+- CH09-L01:46 — `Cardinality` (도입 = CH23-L03)
+- CH09-L04:14 — `METHOD` (도입 = CH10-L04)
+- CH09-L07:13 — `Report Event` (도입 = CH15-L01)
+- CH09-L07:13 — `AT SELECTION-SCREEN` (도입 = CH15-L04)
+- CH09-L09:26 — `METHOD` (도입 = CH10-L04)
+- CH09-L09:5 — `RAP` (도입 = CH24-L01)
+- CH10-L01:21 — `START-OF-SELECTION` (도입 = CH15-L05)
+- CH10-L02:16 — `START-OF-SELECTION` (도입 = CH15-L05)
+- CH10-L03:27 — `TABLES` (도입 = CH16-L04)
+- CH10-L05:31 — `CL_SALV_TABLE` (도입 = CH11-L01)
+- CH10-L05:31 — `ALV` (도입 = CH11-L01)
+- CH10-L05:5 — `Global Class` (도입 = CH21-L01)
+- CH10-L07:74 — `ALV` (도입 = CH11-L01)
+- CH10-L07:9 — `JOIN` (도입 = CH13-L01)
+- CH11-L04:13 — `START-OF-SELECTION` (도입 = CH15-L05)
+- CH11-L06:37 — `SELECT-OPTIONS` (도입 = CH12-L02)
+- CH12-L01:90 — `Multiple Selection` (도입 = CH12-L04)
+- CH12-L01:90 — `Include` (도입 = CH12-L04)
+- CH12-L01:90 — `Exclude` (도입 = CH12-L04)
+- CH12-L07:86 — `JOIN` (도입 = CH13-L01)
+- CH12-L07:13 — `TABLES` (도입 = CH16-L04)
+- CH14-L02:44 — `CDS View Entity` (도입 = CH23-L01)
+- CH14-L05:50 — `Dynpro` (도입 = CH16-L01)
+- CH14-L08:22 — `Association` (도입 = CH23-L03)
+- CH14-L08:44 — `Annotation` (도입 = CH23-L04)
+- CH14-L08:23 — `RAP` (도입 = CH24-L01)
+- CH14-L09:60 — `Report Event` (도입 = CH15-L01)
+- CH15-L01:26 — `AT SELECTION-SCREEN` (도입 = CH15-L04)
+- CH15-L01:27 — `PAI` (도입 = CH15-L04)
+- CH15-L01:4 — `START-OF-SELECTION` (도입 = CH15-L05)
+- CH15-L01:29 — `END-OF-SELECTION` (도입 = CH15-L06)
+- CH15-L01:38 — `PROCESS BEFORE OUTPUT` (도입 = CH16-L06)
+- CH15-L01:39 — `PROCESS AFTER INPUT` (도입 = CH16-L07)
+- CH15-L02:42 — `START-OF-SELECTION` (도입 = CH15-L05)
+- CH15-L04:52 — `ON BLOCK` (도입 = CH15-L08)
+- CH15-L04:53 — `ON RADIOBUTTON GROUP` (도입 = CH15-L08)
+- CH15-L04:53 — `RADIOBUTTON GROUP` (도입 = CH15-L09)
+- CH15-L04:53 — `Radiobutton` (도입 = CH16-L03)
+- CH15-L08:28 — `Radiobutton` (도입 = CH16-L03)
+- CH15-L08:75 — `TABLES` (도입 = CH16-L04)
+- CH15-L09:44 — `Checkbox` (도입 = CH16-L03)
+- CH15-L09:46 — `Radiobutton` (도입 = CH16-L03)
+- CH15-L09:61 — `TABLES` (도입 = CH16-L04)
+- CH15-L10:4 — `Checkbox` (도입 = CH16-L03)
+- CH15-L10:28 — `Radiobutton` (도입 = CH16-L03)
+- CH15-L11:16 — `Checkbox` (도입 = CH16-L03)
+- CH15-L12:137 — `Module Pool` (도입 = CH16-L01)
+- CH16-L01:33 — `PROCESS BEFORE OUTPUT` (도입 = CH16-L06)
+- CH16-L01:34 — `PROCESS AFTER INPUT` (도입 = CH16-L07)
+- CH16-L01:24 — `OK_CODE` (도입 = CH16-L07)
+- CH16-L02:31 — `PROCESS BEFORE OUTPUT` (도입 = CH16-L06)
+- CH16-L02:33 — `PROCESS AFTER INPUT` (도입 = CH16-L07)
+- CH16-L02:24 — `OK_CODE` (도입 = CH16-L07)
+- CH16-L02:5 — `Layout` (도입 = CH17-L05)
+- CH16-L03:14 — `OK_CODE` (도입 = CH16-L07)
+- CH16-L09:32 — `Global Class` (도입 = CH21-L01)
+- CH16-L10:7 — `COMMIT WORK` (도입 = CH25-L02)
+- CH17-L01:27 — `Field Catalog` (도입 = CH17-L04)
+- CH17-L01:28 — `Layout` (도입 = CH17-L05)
+- CH17-L01:30 — `set_table_for_first_display` (도입 = CH17-L07)
+- CH17-L01:31 — `refresh_table_display` (도입 = CH17-L08)
+- CH17-L01:14 — `Global Class` (도입 = CH21-L01)
+- CH17-L02:23 — `Layout` (도입 = CH17-L05)
+- CH17-L02:31 — `set_table_for_first_display` (도입 = CH17-L07)
+- CH18-L01:80 — `CONSTRUCTOR` (도입 = CH21-L03)
+- CH18-L02:8 — `CONSTRUCTOR` (도입 = CH21-L03)
+- CH18-L03:13 — `CONSTRUCTOR` (도입 = CH21-L03)
+- CH18-L10:86 — `CONSTRUCTOR` (도입 = CH21-L03)
+- CH19-L07:41 — `CTE` (도입 = CH20-L02)
+- CH19-L08:118 — `CTE` (도입 = CH20-L02)
+- CH19-L08:6 — `RAP` (도입 = CH24-L01)
+- CH20-L01:23 — `Set operation` (도입 = CH20-L04)
+- CH20-L01:51 — `DEFINE VIEW ENTITY` (도입 = CH23-L01)
+- CH20-L01:51 — `Association` (도입 = CH23-L03)
+- CH20-L01:52 — `RAP` (도입 = CH24-L01)
+- CH20-L06:28 — `RAP` (도입 = CH24-L01)
+- CH20-L07:123 — `Global Class` (도입 = CH21-L01)
+- CH20-L07:11 — `RAP` (도입 = CH24-L01)
+- CH22-L08:76 — `CDS View Entity` (도입 = CH23-L01)
+- CH23-L02:96 — `Metadata Extension` (도입 = CH23-L05)
+- CH23-L02:105 — `RAP` (도입 = CH24-L01)
+- CH23-L07:14 — `RAP` (도입 = CH24-L01)
+- CH24-L01:25 — `Behavior Definition` (도입 = CH24-L04)
+- CH24-L01:23 — `Service Definition` (도입 = CH24-L06)
+- CH24-L01:22 — `Service Binding` (도입 = CH24-L06)
+- CH24-L02:5 — `Validation` (도입 = CH24-L07)
+- CH24-L02:5 — `Determination` (도입 = CH24-L07)
+- CH24-L02:5 — `Action` (도입 = CH24-L07)
+- CH24-L03:19 — `provider contract transactional_query` (도입 = CH39-L03)
+- CH24-L04:8 — `Action` (도입 = CH24-L07)
+- CH24-L08:53 — `User Exit` (도입 = CH32-L01)
+- CH24-L08:53 — `Customer Exit` (도입 = CH32-L01)
+- CH24-L09:87 — `Draft` (도입 = CH39-L04)
+- CH24-L09:86 — `COMMIT/ROLLBACK ENTITIES` (도입 = CH39-L06)
+- CH25-L04:50 — `Application Log` (도입 = CH38-L06)
+- CH25-L05:74 — `Lock Object` (도입 = CH26-L01)
+- CH26-L05:72 — `Factory Pattern` (도입 = CH27-L01)
+- CH27-L02:44 — `ABAP Unit` (도입 = CH27-L05)
+- CH28-L01:76 — `ASSIGN COMPONENT` (도입 = CH28-L04)
+- CH28-L01:34 — `ASSIGN` (도입 = CH28-L05)
+- CH28-L02:68 — `ASSIGN` (도입 = CH28-L05)
+- CH28-L08:113 — `AMDP` (도입 = CH36-L02)
+- CH28-L08:113 — `ADBC` (도입 = CH36-L03)
+- CH31-L06:107 — `User Exit` (도입 = CH32-L01)
+- CH32-L04:43 — `AMDP` (도입 = CH36-L02)
+- CH33-L04:20 — `CL_GUI_FRONTEND_SERVICES` (도입 = CH37-L04)
+- CH35-L05:37 — `AMDP` (도입 = CH36-L02)
+- CH35-L05:37 — `ADBC` (도입 = CH36-L03)
+- CH36-L03:68 — `Application Log` (도입 = CH38-L06)
+- CH36-L06:92 — `Smart Forms` (도입 = CH37-L01)
+- CH37-L05:134 — `ATC` (도입 = CH38-L01)
+- CH37-L05:134 — `Code Inspector` (도입 = CH38-L01)
+- CH39-L01:35 — `Draft` (도입 = CH39-L04)
+- CH39-L01:46 — `projection behavior` (도입 = CH39-L04)
+
+## EARLY-USE · LOW (같은 챕터·도입 인접 — 여정 언급일 가능성 높음)
+- CH01-L03:82 — `WRITE` (도입 = CH01-L04)
+- CH01-L06:69 — `SE93` (도입 = CH01-L07)
+- CH02-L01:15 — `STRING` (도입 = CH02-L02)
+- CH02-L03:72 — `TYPES` (도입 = CH02-L04)
+- CH02-L04:62 — `CONSTANTS` (도입 = CH02-L05)
+- CH02-L05:59 — `Text Symbol` (도입 = CH02-L06)
+- CH03-L01:67 — `VALUE CHECK` (도입 = CH03-L03)
+- CH04-L04:60 — `WHILE` (도입 = CH04-L05)
+- CH06-L04:117 — `Deep Structure` (도입 = CH06-L05)
+- CH08-L01:30 — `INTO TABLE` (도입 = CH08-L03)
+- CH08-L02:22 — `INTO TABLE` (도입 = CH08-L03)
+- CH08-L02:39 — `INTO CORRESPONDING FIELDS OF` (도입 = CH08-L04)
+- CH08-L06:41 — `MESSAGE` (도입 = CH08-L07)
+- CH09-L02:54 — `Text Table` (도입 = CH09-L03)
+- CH09-L03:22 — `Search Help` (도입 = CH09-L04)
+- CH09-L04:42 — `Collective Search Help` (도입 = CH09-L05)
+- CH10-L01:42 — `USING` (도입 = CH10-L02)
+- CH10-L01:42 — `CHANGING` (도입 = CH10-L02)
+- CH10-L02:64 — `Function Module` (도입 = CH10-L03)
+- CH11-L01:40 — `factory` (도입 = CH11-L02)
+- CH13-L01:72 — `LEFT OUTER JOIN` (도입 = CH13-L02)
+- CH13-L02:60 — `GROUP BY` (도입 = CH13-L03)
+- CH13-L03:52 — `HAVING` (도입 = CH13-L04)
+- CH13-L04:41 — `ORDER BY` (도입 = CH13-L05)
+- CH13-L05:49 — `FOR ALL ENTRIES` (도입 = CH13-L06)
+- CH14-L01:69 — `Projection View` (도입 = CH14-L02)
+- CH14-L02:54 — `Help View` (도입 = CH14-L03)
+- CH14-L03:57 — `Maintenance View` (도입 = CH14-L04)
+- CH14-L04:16 — `SM30` (도입 = CH14-L05)
+- CH14-L05:62 — `View Cluster` (도입 = CH14-L06)
+- CH15-L01:26 — `AT SELECTION-SCREEN OUTPUT` (도입 = CH15-L03)
+- CH15-L01:26 — `PBO` (도입 = CH15-L03)
+- CH15-L02:35 — `AT SELECTION-SCREEN OUTPUT` (도입 = CH15-L03)
+- CH15-L02:35 — `AT SELECTION-SCREEN` (도입 = CH15-L04)
+- CH15-L03:6 — `AT SELECTION-SCREEN` (도입 = CH15-L04)
+- CH15-L03:51 — `START-OF-SELECTION` (도입 = CH15-L05)
+- CH15-L04:94 — `START-OF-SELECTION` (도입 = CH15-L05)
+- CH15-L05:50 — `END-OF-SELECTION` (도입 = CH15-L06)
+- CH15-L08:28 — `RADIOBUTTON GROUP` (도입 = CH15-L09)
+- CH16-L01:52 — `Screen Number` (도입 = CH16-L02)
+- CH16-L01:11 — `Screen Painter` (도입 = CH16-L02)
+- CH16-L01:46 — `Flow Logic` (도입 = CH16-L02)
+- CH16-L03:92 — `TABLES` (도입 = CH16-L04)
+- CH16-L06:72 — `OK_CODE` (도입 = CH16-L07)
+- CH16-L08:77 — `Custom Control` (도입 = CH16-L09)
+- CH16-L08:77 — `Tabstrip` (도입 = CH16-L09)
+- CH17-L02:23 — `Field Catalog` (도입 = CH17-L04)
+- CH17-L03:15 — `Field Catalog` (도입 = CH17-L04)
+- CH17-L04:84 — `Layout` (도입 = CH17-L05)
+- CH17-L05:36 — `set_table_for_first_display` (도입 = CH17-L07)
+- CH17-L06:19 — `set_table_for_first_display` (도입 = CH17-L07)
+- CH17-L07:53 — `Stable Refresh` (도입 = CH17-L08)
+- CH18-L05:74 — `CONV` (도입 = CH18-L06)
+- CH18-L05:74 — `EXACT` (도입 = CH18-L06)
+- CH18-L06:62 — `COND` (도입 = CH18-L07)
+- CH18-L06:62 — `SWITCH` (도입 = CH18-L07)
+- CH18-L07:64 — `REDUCE` (도입 = CH18-L08)
+- CH18-L07:64 — `FILTER` (도입 = CH18-L08)
+- CH19-L02:58 — `COALESCE` (도입 = CH19-L04)
+- CH19-L03:78 — `CAST` (도입 = CH19-L04)
+- CH19-L03:78 — `COALESCE` (도입 = CH19-L04)
+- CH20-L01:4 — `CTE` (도입 = CH20-L02)
+- CH20-L01:4 — `Subquery` (도입 = CH20-L03)
+- CH20-L02:80 — `Subquery` (도입 = CH20-L03)
+- CH20-L02:81 — `EXISTS` (도입 = CH20-L03)
+- CH20-L04:65 — `Window expression` (도입 = CH20-L05)
+- CH21-L01:63 — `Visibility` (도입 = CH21-L02)
+- CH21-L01:50 — `CONSTRUCTOR` (도입 = CH21-L03)
+- CH21-L02:67 — `CONSTRUCTOR` (도입 = CH21-L03)
+- CH21-L06:108 — `REDEFINITION` (도입 = CH21-L07)
+- CH21-L07:60 — `CASE TYPE OF` (도입 = CH21-L08)
+- CH21-L08:53 — `EVENTS` (도입 = CH21-L09)
+- CH21-L08:53 — `RAISE EVENT` (도입 = CH21-L09)
+- CH21-L08:53 — `SET HANDLER` (도입 = CH21-L09)
+- CH23-L01:113 — `Interface View` (도입 = CH23-L02)
+- CH23-L01:113 — `Consumption View` (도입 = CH23-L02)
+- CH23-L02:111 — `Association` (도입 = CH23-L03)
+- CH23-L02:62 — `Annotation` (도입 = CH23-L04)
+- CH23-L03:99 — `Annotation` (도입 = CH23-L04)
+- CH23-L04:85 — `Metadata Extension` (도입 = CH23-L05)
+- CH23-L05:89 — `DCL` (도입 = CH23-L06)
+- CH24-L03:74 — `Behavior Definition` (도입 = CH24-L04)
+- CH24-L04:84 — `Behavior Implementation` (도입 = CH24-L05)
+- CH24-L05:78 — `Service Definition` (도입 = CH24-L06)
+- CH24-L05:78 — `Service Binding` (도입 = CH24-L06)
+- CH24-L05:14 — `Validation` (도입 = CH24-L07)
+- CH24-L05:70 — `Determination` (도입 = CH24-L07)
+- CH24-L05:4 — `Action` (도입 = CH24-L07)
+- CH24-L06:56 — `Validation` (도입 = CH24-L07)
+- CH24-L06:56 — `Determination` (도입 = CH24-L07)
+- CH24-L06:56 — `Action` (도입 = CH24-L07)
+- CH24-L07:67 — `ABAP Cloud` (도입 = CH24-L08)
+- CH27-L04:101 — `ABAP Unit` (도입 = CH27-L05)
+- CH28-L01:44 — `TYPE ANY TABLE` (도입 = CH28-L02)
+- CH28-L02:68 — `ASSIGN COMPONENT` (도입 = CH28-L04)
+- CH28-L03:47 — `ASSIGN COMPONENT` (도입 = CH28-L04)
+- CH28-L03:11 — `ASSIGN` (도입 = CH28-L05)
+- CH28-L04:14 — `ASSIGN` (도입 = CH28-L05)
+- CH28-L05:86 — `CREATE DATA` (도입 = CH28-L06)
+- CH29-L04:47 — `match` (도입 = CH29-L06)
+- CH29-L05:100 — `match` (도입 = CH29-L06)
+- CH32-L01:41 — `Enhancement Point` (도입 = CH32-L02)
+- CH35-L01:17 — `SAT` (도입 = CH35-L02)
+- CH35-L01:18 — `SQLM` (도입 = CH35-L03)
+- CH35-L02:79 — `SQLM` (도입 = CH35-L03)
+- CH36-L01:27 — `Native SQL` (도입 = CH36-L03)
+- CH36-L02:286 — `ADBC` (도입 = CH36-L03)
+- CH37-L02:221 — `Output Control` (도입 = CH37-L03)
+- CH38-L05:133 — `Application Log` (도입 = CH38-L06)
+- CH39-L02:5 — `Draft` (도입 = CH39-L04)
+- CH39-L03:131 — `Draft` (도입 = CH39-L04)
+
+## EARLY-USE · DECLARED (foreshadow/advanceUse 선언 — 수위만 점검)
+- CH01-L01:62 — `T-code` (도입 = CH01-L02) [foreshadow 선언]
+- CH01-L05:77 — `DATA` (도입 = CH02-L01) [advanceUse 선언]
+- CH01-L07:36 — `Module Pool` (도입 = CH16-L01) [foreshadow 선언]
+- CH01-L07:37 — `Dynpro` (도입 = CH16-L01) [foreshadow 선언]
+- CH02-L01:19 — `Subroutine` (도입 = CH10-L01) [foreshadow 선언]
+- CH02-L04:41 — `DDIC` (도입 = CH03-L01) [foreshadow 선언]
+- CH02-L06:44 — `MESSAGE` (도입 = CH08-L07) [foreshadow 선언]
+- CH03-L01:22 — `Data Element` (도입 = CH03-L02) [foreshadow 선언]
+- CH03-L01:63 — `Foreign Key` (도입 = CH09-L01) [foreshadow 선언]
+- CH03-L02:72 — `PARAMETERS` (도입 = CH03-L03) [foreshadow 선언]
+- CH04-L07:49 — `Structure` (도입 = CH05-L01) [foreshadow 선언]
+- CH05-L02:55 — `Transparent Table` (도입 = CH07-L01) [foreshadow 선언]
+- CH05-L03:37 — `APPEND` (도입 = CH06-L01) [foreshadow 선언]
+- CH05-L05:58 — `Internal Table` (도입 = CH06-L01) [foreshadow 선언]
+- CH06-L01:21 — `Transparent Table` (도입 = CH07-L01) [foreshadow 선언]
+- CH06-L02:34 — `Transparent Table` (도입 = CH07-L01) [foreshadow 선언]
+- CH06-L05:59 — `ALV` (도입 = CH11-L01) [foreshadow 선언]
+- CH09-L07:13 — `PROCESS ON VALUE-REQUEST` (도입 = CH16-L05) [foreshadow 선언]
+- CH12-L01:102 — `SELECT-OPTIONS` (도입 = CH12-L02) [foreshadow 선언]
+- CH12-L02:24 — `START-OF-SELECTION` (도입 = CH15-L05) [advanceUse 선언]
+- CH12-L02:17 — `TABLES` (도입 = CH16-L04) [advanceUse 선언]
+- CH12-L07:21 — `START-OF-SELECTION` (도입 = CH15-L05) [advanceUse 선언]
+- CH14-L08:14 — `CDS View Entity` (도입 = CH23-L01) [foreshadow 선언]
+- CH16-L06:12 — `SET PF-STATUS` (도입 = CH16-L08) [advanceUse 선언]
+- CH16-L06:13 — `SET TITLEBAR` (도입 = CH16-L08) [advanceUse 선언]
+- CH23-L01:107 — `DCL` (도입 = CH23-L06) [foreshadow 선언]
+- CH24-L01:35 — `Validation` (도입 = CH24-L07) [foreshadow 선언]
+- CH24-L01:35 — `Determination` (도입 = CH24-L07) [foreshadow 선언]
+- CH24-L01:35 — `Action` (도입 = CH24-L07) [foreshadow 선언]
+- CH24-L04:78 — `Lock Object` (도입 = CH26-L01) [foreshadow 선언]
+- CH29-L02:78 — `SUBMATCHES` (도입 = CH29-L04) [foreshadow 선언]
+- CH29-L02:54 — `match` (도입 = CH29-L06) [foreshadow 선언]
+- CH29-L03:85 — `SUBMATCHES` (도입 = CH29-L04) [foreshadow 선언]
+- CH29-L03:20 — `match` (도입 = CH29-L06) [foreshadow 선언]
+- CH36-L01:26 — `AMDP` (도입 = CH36-L02) [foreshadow 선언]
+- CH36-L01:27 — `ADBC` (도입 = CH36-L03) [foreshadow 선언]
+- CH36-L01:30 — `CDS Table Function` (도입 = CH36-L05) [foreshadow 선언]
+- CH36-L04:56 — `CDS Table Function` (도입 = CH36-L05) [foreshadow 선언]
+
+## R6 경계
+- 없음
