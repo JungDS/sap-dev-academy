@@ -13,7 +13,7 @@
   <div id="chips"></div>
   <div id="cases"></div>
   <div class="verdict" id="verdict"></div>
-  <div class="note">💡 데이터 → 매핑 → 결정 → 렌더링 → 전달. output item이 없으면(3단계) 양식 binding(2단계)을 붙잡고 있어도 소용없습니다. (티켓은 교육용 가상)</div>
+  <div class="note">💡 데이터 → 매핑 → 결정 → 렌더링 → 전달. output item이 없으면(3단계) 양식 매핑(2단계)을 붙잡고 있어도 소용없습니다. (티켓은 교육용 가상)</div>
   <script type="application/json" id="sc-cfg">
   {
     "chips": ["① 데이터", "② 매핑", "③ 결정", "④ 렌더링", "⑤ 전달"],
@@ -21,11 +21,11 @@
       { "label": "티켓1: 고객명이 비어서 나감", "states": ["bad", "off", "off", "off", "off"], "warn": true,
         "verdict": "🚨 <b>① 데이터</b> — 문서는 나갔지만 값이 비었습니다. 디버거로 입력 구조부터. 양식·결정·채널은 전부 무죄." },
       { "label": "티켓2: 값은 있는데 PDF에 없음", "states": ["ok", "bad", "off", "off", "off"], "warn": true,
-        "verdict": "🚨 <b>② 매핑</b> — Context에 CUSTOMER 필드가 빠져 있습니다. ABAP 코드가 아니라 양식 계약·binding을 수정합니다." },
+        "verdict": "🚨 <b>② 매핑</b> — Form Interface 계약이나 Node 참조(&amp;IS_BOOKING-…&amp;)가 끊겼습니다. ABAP 코드가 아니라 양식 쪽 계약·참조를 수정합니다." },
       { "label": "티켓3: 예매 확정해도 안 나감", "states": ["ok", "ok", "bad", "off", "off"], "warn": true,
         "verdict": "🚨 <b>③ 결정</b> — output item이 아예 없습니다. NAST 조건 레코드 또는 BRFplus rule이 '출력하라'고 판정하지 않은 것. 양식을 고칠 문제가 아닙니다." },
       { "label": "티켓4: item은 있는데 PDF 실패", "states": ["ok", "ok", "ok", "bad", "off"], "warn": true,
-        "verdict": "🚨 <b>④ 렌더링</b> — 결정까지 성공했고 ADS 단계에서 실패(usage error). ADS 연결·로그·폰트를 봅니다." },
+        "verdict": "🚨 <b>④ 렌더링</b> — 결정까지 성공했고 렌더링·변환에서 실패. OTF 수령(getotf)·CONVERT_OTF 반환·폰트를 봅니다." },
       { "label": "티켓5: PDF는 됐는데 미도착", "states": ["ok", "ok", "ok", "ok", "bad"], "warn": true,
         "verdict": "🚨 <b>⑤ 전달</b> — SP01의 spool request가 오류 상태(또는 메일 발송 실패). 프린터·수신자 주소·채널 설정을 봅니다." }
     ]

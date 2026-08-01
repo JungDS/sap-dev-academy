@@ -1,31 +1,33 @@
 <!DOCTYPE html>
-<!-- CH37-L02-S02 — 엔진: stage-chips · _engine/_base.css. Adobe Forms 4층(Interface/Context/Layout/ADS) 신호등. -->
+<!-- CH37-L02-S02 — 엔진: stage-chips · _engine/_base.css. OTF→PDF 네 걸음(조회→옵션→OTF 수령→변환) 신호등. -->
 <html lang="ko" data-eng="stage-chips">
 <head>
 <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>네 층 신호등 · CH37-L02-S02</title>
+<title>OTF→PDF 네 걸음 · CH37-L02-S02</title>
 <link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/stage-chips.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">네 층 신호등 — 어디서 멈췄나</p>
-  <p class="lead">Adobe Forms의 문제는 층으로 갈립니다. 시나리오를 눌러 <b>데이터 문제</b>와 <b>렌더링 인프라 문제</b>를 구분해 보세요.</p>
+  <p class="hd">OTF→PDF 네 걸음 — 어디서 멈췄나</p>
+  <p class="lead">시나리오를 누르면 <b>이름 조회 → 옵션 → 호출·OTF 수령 → CONVERT_OTF</b>의 신호등이 켜집니다.</p>
   <div id="chips"></div>
   <div id="cases"></div>
   <div class="verdict" id="verdict"></div>
-  <div class="note">💡 Interface(계약) → Context(재료) → Layout(binding) → ADS(렌더링). 셋이 초록인데 마지막이 빨강이면 코드가 아니라 <b>인프라</b>를 봐야 합니다. (사례는 교육용 가상)</div>
+  <div class="note">💡 옵션(getotf)과 결과(otfdata)는 항상 짝 — 옵션 없는 실패는 <b>오류 없이 조용히</b> 일어나는 게 특징입니다. (수치는 교육용 가상)</div>
   <script type="application/json" id="sc-cfg">
   {
-    "chips": ["Interface", "Context", "Layout binding", "ADS 렌더링"],
+    "chips": ["① FM 이름 조회", "② 옵션 3종 세트", "③ 호출 → OTF 수령", "④ CONVERT_OTF → PDF"],
     "scenarios": [
-      { "label": "정상 렌더링", "states": ["ok", "ok", "ok", "ok"],
-        "verdict": "✓ 계약·재료·binding·렌더링이 모두 통과 — PDF가 정상 생성됩니다." },
-      { "label": "필드가 빈 PDF ①", "states": ["ok", "bad", "warn", "off"], "warn": true,
-        "verdict": "🚨 <b>Context 누락</b> — Interface에 필드는 있는데 Context(레이아웃에 넘길 재료 목록)에 안 담았습니다. Layout은 재료가 없어 노란불. SFP에서 Context에 필드를 추가하세요." },
-      { "label": "필드가 빈 PDF ②", "states": ["ok", "ok", "bad", "off"], "warn": true,
-        "verdict": "🚨 <b>Binding 오류</b> — 재료는 준비됐는데 Layout 필드가 Context 필드에 묶이지 않았습니다. 디자이너에서 binding을 확인하세요." },
-      { "label": "PDF 자체가 안 만들어짐", "states": ["ok", "ok", "ok", "bad"], "warn": true,
-        "verdict": "🚨 <b>ADS 오류</b> — 데이터·매핑은 전부 정상입니다. ABAP 코드를 고칠 문제가 아니라 <b>ADS 연결·구성·로그</b>(Basis 영역)를 확인할 문제입니다." }
+      { "label": "3종 세트 켜고 실행", "states": ["ok", "ok", "ok", "ok"],
+        "verdict": "✅ otfdata에 OTF가 담기고 변환까지 통과 — 'PDF 데이터 생성 완료, 38,412바이트'. 창은 아무것도 안 뜨는 게 정상입니다." },
+      { "label": "getotf를 안 켜고 실행", "states": ["ok", "bad", "warn", "off"], "warn": true,
+        "verdict": "🚨 <b>② 옵션 누락</b> — 출력은 인쇄 경로로 가고 otfdata는 빈 테이블. <b>오류가 안 나서</b> 더 위험합니다. ④까지 가면 변환이 실패하거나(흔히 err_bad_otf) 빈 결과로 드러납니다." },
+      { "label": "Form을 저장만 하고 활성화 안 함", "states": ["bad", "off", "off", "off"], "warn": true,
+        "verdict": "⛔ <b>① 이름 조회 실패</b> — 생성 함수가 아직 없습니다(no_function_module). L01의 다섯 걸음 중 '활성화'로 돌아갈 문제." },
+      { "label": "getotf만 켜고 no_dialog는 안 켬", "states": ["ok", "warn", "warn", "off"], "warn": true,
+        "verdict": "⚠ <b>대화상자가 함께 뜬다</b> — 화면에서는 사람이 눌러 넘어가지만, 사람이 없는 배치에서는 그대로 실패합니다. 파일 경로 코드에는 두 옵션을 함께." },
+      { "label": "변환 sy-subrc를 안 보고 다음 단계로", "states": ["ok", "ok", "ok", "bad"], "warn": true,
+        "verdict": "🚨 <b>④ 변환 실패를 모른 채 진행</b> — 빈 결과가 다음 단계(저장·발송)로 흘러가 엉뚱한 곳에서 고장이 드러납니다. CONVERT_OTF 직후 sy-subrc와 bin_filesize를 확인하세요." }
     ]
   }
   </script>

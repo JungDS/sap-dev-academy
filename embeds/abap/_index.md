@@ -289,8 +289,8 @@
 | CH36-L06-S01 | CH36-L06 | judge-quiz | (재사용) 운영 적절성 판정 6(승인 체크리스트 기준, 구 L05-S01 이동) | ✅ |
 | CH37-L01-S01 | CH37-L01 | odata-tree | (재사용) Smart Forms 구조 트리(Form/Interface/Pages·Windows/Node 펼치기) | ✅ |
 | CH37-L01-S02 | CH37-L01 | stage-chips | 값 누락 원인 층 판별(ABAP 데이터/Interface/Node/생성 FM, 고장 4+정상 1) | ✅ |
-| CH37-L02-S01 | CH37-L02 | compare-matrix | (재사용) Smart vs Adobe 비교(요구 기준 프레이밍) | ✅ |
-| CH37-L02-S02 | CH37-L02 | stage-chips | Adobe 4층 신호등(Interface/Context/binding/ADS — 데이터 문제 vs 인프라 문제 분리) | ✅ |
+| CH37-L02-S01 | CH37-L02 | compare-matrix | (재사용) 인쇄 경로 vs PDF 경로(SSFCTRLOP 옵션으로 갈리는 목적지) | ✅ |
+| CH37-L02-S02 | CH37-L02 | stage-chips | OTF→PDF 네 걸음 신호등(조회/옵션/OTF 수령/CONVERT_OTF — 조용한 실패 포함 5) | ✅ |
 | CH37-L03-S01 | CH37-L03 | mermaid | (재사용) 출력 결정 흐름(이벤트→결정(NAST/BRFplus)→양식·채널→렌더링→전달) | ✅ |
 | CH37-L03-S02 | CH37-L03 | judge-quiz | (재사용) 증상→층 판별 5(양식·매핑 vs 결정·채널) | ✅ |
 | CH37-L04-S01 | CH37-L04 | code-anatomy | (재사용) PDF 파이프라인 해부(xstring/xstrlen/변환/BIN/gui_download) + 고장 카드 4(#bug-cfg) | ✅ |

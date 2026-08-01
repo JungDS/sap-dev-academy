@@ -40,7 +40,7 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>화면은 됐고, 이제 &quot;문서&quot;다</h2>
-<p><a href="CH36-L06.html">Chapter 36</a>까지 우리는 데이터를 빠르게 만들고 화면에 보여주는 법을
+<p><a href="CH36-L01.html">Chapter 36</a>까지 우리는 데이터를 빠르게 만들고 화면에 보여주는 법을
 배웠다. 그런데 공연 예매가 확정되면 고객에게 <strong>예매 확인서</strong>가 나가야 한다. 회사
 로고가 정해진 자리에 있고, 공연명·좌석이 정확한 위치에 찍히고, 하단에 취소 규정이
 들어간 <strong>문서</strong>다.</p>
@@ -48,10 +48,10 @@
 문구를 다루는 도구가 아니다. 더 위험한 대안은 ABAP 코드로 위치와 줄바꿈을 전부
 조립하는 것이다. 문구 하나 바뀔 때마다 프로그램을 수정·이송해야 한다.</p>
 <p>그래서 SAP은 <strong>계산은 ABAP, 모양은 양식 도구</strong>로 책임을 나눈다. 전통 도구가
-<button class="term" type="button" data-term="Smart Forms">Smart Forms</button>(<code>SMARTFORMS</code>에서 만드는 SAP의 고전 양식 도구)다. 신규 개발의
-기본값은 아니지만(다음 레슨의 Adobe Forms와 비교한다), 기존 시스템에 Smart Forms
-자산이 많아 <strong>유지보수에서 반드시 만난다.</strong> 이 레슨의 목표는 구조를 읽고 호출하는
-것이다.</p>
+<button class="term" type="button" data-term="Smart Forms">Smart Forms</button>(<code>SMARTFORMS</code>에서 만드는 SAP의 고전 양식 도구)다. 고전이라고
+과거형이 아니다. 기존 시스템에 자산이 많아 <strong>유지보수에서 반드시 만나고</strong>, 이
+챕터에서는 인쇄부터 PDF 파일까지 이 도구 하나로 완주한다. 이 레슨의 목표는
+구조를 읽고 호출하는 것이다.</p>
 <blockquote>
 <p>🔭 <strong>기대 관리</strong> — 양식 자체는 <code>SMARTFORMS</code> 화면(트리 + 그래픽 편집기)에서
 만든다. 코드가 아니라 도구 조작이라 이 페이지에서는 구조를 시뮬레이션으로
@@ -113,9 +113,12 @@
 이름은 그대로 구조 타입으로 쓸 수 있다 — <a href="CH07-L01.html">Chapter 7</a>에서 배운
 그대로). 접두어 <code>is_</code>는 Interface의 Import 구조 파라미터에 흔히 쓰는
 관례다(i = importing, s = structure). 프로그램 안의 <code>gv_</code>/<code>gs_</code>와는 다른 축의
-이름 규칙이니 헷갈리지 말자. 좌석 목록처럼 <strong>여러 줄인 재료는 테이블
-파라미터</strong>(<code>IT_SEATS</code> 등, Tables 영역)로 여기서 함께 선언해야 양식이 받을 수
-있다.</li>
+이름 규칙이니 헷갈리지 말자. 좌석 목록처럼 <strong>여러 줄인 재료도 Import
+파라미터로</strong> 함께 선언한다: 이름 <code>IT_SEATS</code>, 타입은 DDIC <strong>Table
+Type</strong>(<a href="CH06-L02.html">Chapter 6</a>에서 만든 <code>ZTT_…</code> 그것이다). 이 <code>it_</code>도
+<button class="term" type="button" data-term="Interface">인터페이스</button> 파라미터 관례(i=import, t=table)로, 프로그램 변수의 Header Line
+규칙과는 다른 축이다. (화면에 보이는 구형 Tables 탭은 옛 호환용 자리라 새로
+쓸 일이 없다.)</li>
 <li><strong>Page/Window 배치</strong> — 첫 페이지에 <code>HEADER</code>(로고)·<code>MAIN</code>(본문)·<code>FOOTER</code>(규정).</li>
 <li><strong>Node 작성</strong> — <code>MAIN</code> window 아래에 Text node를 만들고
 <code>&amp;IS_BOOKING-CUSTOMER&amp;</code>처럼 쓴다. <strong><code>&amp;…&amp;</code>로 감싸는 것은 <button class="term" type="button" data-term="Smart Forms">Smart Forms</button> 전용
@@ -226,13 +229,15 @@ Form 이름까지다.</p>
 확장이고, <a href="CH37-L05.html">L05의 도전 과제</a>에서 직접 해 본다.</p>
 <blockquote>
 <p>⚠ <strong>자동·배치 출력이라면</strong> — 대화상자 기본값은 사람이 앉아 있는 화면 전용이다.
-배치에서는 대화상자를 띄울 수 없어 그대로 실패하고, 생성 함수의 출력 제어
-파라미터(대화상자 끄기·출력장치 지정, 그리고 사용자 개인 인쇄 설정이 옵션을
-덮어쓰지 않게 하는 <code>user_settings</code> 해제)를 명시적으로 넘겨야 한다. 세부는 여기서
-다루지 않지만, &quot;옵션을 안 넘긴 코드가 배치로 가면 사고&quot;라는 것만 기억하자.</p>
+배치에서는 대화상자를 띄울 수 없어 그대로 실패하고, 생성 함수의 <strong>호출 제어
+옵션</strong>(대화상자 끄기 등)을 명시적으로 넘겨야 한다. 그 옵션 구조는 바로 다음
+레슨에서 직접 쓰게 되니, 지금은 &quot;옵션을 안 넘긴 코드가 배치로 가면 사고&quot;라는
+것만 기억하자.</p>
 </blockquote>
 </section><section class="lblock"><h2>값이 안 나올 때 — 어디부터 보나</h2>
-<p>빈칸의 원인은 세 층 중 하나다. 순서대로 좁힌다.</p>
+<p>빈칸의 원인은 세 층 중 하나다. 순서대로 좁힌다. (값 이전에 <strong>호출 자체가
+실패</strong>한다면 그건 층이 아니라 앞 단계 문제다 — 활성화 누락·이름 조회 실패.
+아래 시뮬레이터의 네 번째 신호등이 그 자리다.)</p>
 <ol>
 <li><strong>ABAP 데이터</strong> — <code>gs_booking-customer</code>가 채워졌는가(디버거,
 <a href="CH04-L06.html">Chapter 4 · 디버깅 입문</a>).</li>
@@ -261,8 +266,9 @@ Form 이름까지다.</p>
 <li>빈 값 추적 순서 = ABAP 데이터 → Interface 계약 → Node 배치.</li>
 </ul>
 <hr>
-<p>전통 양식을 읽을 수 있게 됐다. 그런데 요즘 출력물의 중심은 PDF다. PDF 네이티브
-도구, Adobe Forms로 간다.</p>
+<p>만들고 부르고 인쇄 미리보기까지 됐다. 그런데 고객은 종이가 아니라 <strong>이메일로
+받을 PDF 파일</strong>을 원한다. 인쇄 대화상자 어디에도 우리 프로그램이 쥘 수 있는
+파일은 없다. 출력의 원형 데이터를 돌려받아 PDF로 바꾸는 길로 간다.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

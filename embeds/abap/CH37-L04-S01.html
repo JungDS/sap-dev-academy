@@ -13,10 +13,11 @@
   <p class="lead">밑줄 부분을 클릭해 역할을 확인한 뒤, 아래 <b>고장 카드 4장</b>으로 무엇이 왜 깨지는지 판별하세요.</p>
   <div class="anat">
     <div class="anat__h"><span class="dot"></span>예매 확인서 PDF 저장 (본문 코드 축약)</div>
-<pre class="anat__code">gv_pdf = <span class="mk" data-a="formout">gs_formout-pdf</span>.        <span class="cm">" L02 결과 구조의 PDF</span>
+<pre class="anat__code"><span class="cm">" L02의 ④ CONVERT_OTF에서 IMPORTING 한 줄을 추가해 받았다:</span>
+<span class="cm">"   </span><span class="mk" data-a="binfile">bin_file = gv_pdf</span><span class="cm">   ← PDF 한 덩어리(xstring)</span>
 
 <span class="kw">IF</span> <span class="mk" data-a="xstrlen">xstrlen( gv_pdf )</span> = 0.
-  <span class="cm">" 비었으면 저장이 아니라 생성(ADS·양식) 문제부터</span>
+  <span class="cm">" 비었으면 저장이 아니라 생성·변환(양식·L02) 문제부터</span>
   <span class="kw">MESSAGE</span> 'PDF가 생성되지 않았습니다' <span class="kw">TYPE</span> 'E'.
 <span class="kw">ENDIF</span>.
 
@@ -34,19 +35,19 @@ cl_gui_frontend_services=><span class="mk" data-a="gui">gui_download</span>(
   <div class="note">💡 파이프라인 = 결과 구조 → <b>xstring</b> → (빈 값 검사) → 바이너리 테이블 → <b>BIN 저장</b>. gui_download는 SAP GUI 대화 전용입니다.</div>
   <script type="application/json" id="anno-cfg">
   {
-    "formout": { "t": "gs_formout-pdf", "d": "L02의 생성 함수가 돌려준 결과 구조 안의 PDF 바이트. 여기서부터 파이프라인이 시작됩니다." },
-    "xstrlen": { "t": "xstrlen( ) — 바이트 길이", "d": "글자 수(strlen)가 아니라 <b>바이트 수</b>를 셉니다. 0이면 생성 실패이므로 저장 코드를 의심하기 전에 양식·ADS부터 봅니다." },
+    "binfile": { "t": "bin_file → gv_pdf", "d": "CONVERT_OTF가 돌려준 PDF 전체 바이트(xstring). lines의 조각 테이블과 달리 <b>한 덩어리</b>라 길이 검사·변환·저장이 그대로 이어집니다." },
+    "xstrlen": { "t": "xstrlen( ) — 바이트 길이", "d": "글자 수(strlen)가 아니라 <b>바이트 수</b>를 셉니다. 0이면 생성·변환 실패이므로 저장 코드를 의심하기 전에 양식 호출·CONVERT_OTF(L02)부터 봅니다." },
     "convert": { "t": "xstring_to_solix( )", "d": "xstring을 다운로드·첨부가 요구하는 바이너리 테이블(solix_tab)로 바꾸는 시스템 제공 헬퍼. 손으로 자르지 않습니다." },
     "gui": { "t": "gui_download — SAP GUI 전용", "d": "SAP GUI 창을 통해 <b>사용자 PC</b>에 파일을 씁니다. 배치·서버 처리·ABAP Cloud에서는 쓸 수 없습니다(실행 위치의 경계)." },
-    "bin": { "t": "filetype = 'BIN'", "d": "문자 변환 없이 바이트 그대로 저장. PDF는 바이트 순서가 생명이라 TEXT 모드면 깨집니다." }
+    "bin": { "t": "filetype = 'BIN'", "d": "문자 변환 없이 바이트 그대로 저장. PDF는 바이트 순서가 생명이라 텍스트 모드('ASC')면 깨집니다." }
   }
   </script>
   <script type="application/json" id="bug-cfg">
   {
     "bugs": [
-      { "c": "filetype = 'ASC'(텍스트)로 저장", "t": "PDF 깨짐", "d": "문자 코드 변환이 끼어들어 바이트가 바뀝니다. 뷰어가 열지 못하는 파일이 됩니다. PDF는 반드시 <code>BIN</code>." },
-      { "c": "bin_filesize = strlen( … )", "t": "크기 계산 오류", "d": "strlen은 글자 수, xstrlen은 바이트 수. 바이너리에서는 둘이 달라 파일이 잘리거나 넘칩니다." },
-      { "c": "빈 PDF인데 저장 코드만 수정", "t": "층 혼동", "d": "xstrlen( ) = 0이면 생성(양식 호출·ADS) 문제입니다. 저장 파이프라인을 아무리 고쳐도 빈 파일만 나옵니다." },
+      { "c": "filetype = 'ASC'(텍스트)로 저장", "t": "PDF 깨짐", "d": "문자 코드 변환이 끼어들어 바이트가 바뀝니다. 원본과 달라진 시점에 이미 실패 — 못 열거나 깨진 내용이 됩니다. PDF는 반드시 <code>BIN</code>." },
+      { "c": "bin_filesize를 생략(또는 행수×255 어림)", "t": "크기 오류", "d": "solix_tab 마지막 행의 패딩까지 기록돼 원본과 바이트가 달라집니다. 참고로 strlen은 문자 전용이라 xstring에는 컴파일조차 안 됩니다 — 답은 <code>xstrlen</code>." },
+      { "c": "빈 PDF인데 저장 코드만 수정", "t": "층 혼동", "d": "xstrlen( ) = 0이면 생성·변환(양식 호출·getotf·CONVERT_OTF) 문제입니다. 저장 파이프라인을 아무리 고쳐도 빈 파일만 나옵니다." },
       { "c": "배치 작업에서 gui_download 호출", "t": "실행 위치 위반", "d": "배치에는 사용자 PC(SAP GUI)가 없습니다. 서버 파일(Chapter 33)이나 스풀·메일 첨부 경로로 설계해야 합니다." }
     ]
   }
