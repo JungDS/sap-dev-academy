@@ -1,6 +1,6 @@
 # 09. CURRICULUM LEDGER — 커리큘럼 개념 원장 (개요 SSOT)
 
-> 📅 최종수정: 2026-08-02 02:44 KST
+> 📅 최종수정: 2026-08-02 04:01 KST
 > 🎯 **3트랙(최종 39번호) 챕터 맵 + 교차 설계 합의(경계·관통예제·도구 아크)의 단일 출처.**
 > 🧭 **per-lesson `introduces`/`prereq`/`prevRel`/`foreshadow`/`advanceUse` = 각 레슨 `.md` front-matter가 라이브 SSOT**([04 R10](04_CONVENTIONS.md)) — 이 문서는 레슨별 데이터를 중복하지 않고 *그 위의 개요·경계·관통설계*만 담는다(§F). 게이팅([04 R15](04_CONVENTIONS.md)) 점검 = front-matter ↔ 본문 ↔ R15.
 > ✅ 현행: **최종 39번호(2026-07-14 리넘버)** · 본문 **39챕터 전량 작성 완료**. 전면 리빌드는 *선택* — 절차 = [10_REBUILD_EXECUTION](10_REBUILD_EXECUTION.md).
@@ -130,3 +130,9 @@
   - 관통예제 스키마·인물(`ZGUGUDAN`·`ZCONCERT`/`ZPERF`/`ZBOOKING`·SFLIGHT·정훈영) = `check/RUNNING-EXAMPLES.md`
   - 레슨별 요구 토픽 = `check/coverage-checklist*.md`
   - 공식 keyword doc 대비 감사 결과 = `.archive/2026-06-29-docs-cleanup/11_KEYWORD_AUDIT.md`(완료)
+
+## G. 확장 백로그 — 실무 갭 (W2 축4, 2026-08-02)
+
+> 정본 = [.archive/2026-08-02-w1-audit/AXIS4_PRACTICE_GAPS.md](../.archive/2026-08-02-w1-audit/AXIS4_PRACTICE_GAPS.md)(갭 17 — 높음 7·중간 7·낮음 3, Codex 발견·본선 검증). **여기엔 복창하지 않는다.** 채택·집필은 전면 리빌드/확장 결정과 연동(사용자 결정 대기).
+> 🔸 **미니 편입 후보 3**(기존 관통 서사에 자연 결합 지점 있음 — 저비용): TVARVC(→ CH38 Job 하드코딩 제거 소재) · Number Range(→ CH25 채번) · 메일 발송 CL_BCS(→ CH37 확인서 발송 과제 회수, CH39-L09 도전과제 6과 연결).
+> ⚠️ "Adobe Forms/ADS" 항목은 갭이 아니라 **사용자 확정 배제**(2026-08-02).

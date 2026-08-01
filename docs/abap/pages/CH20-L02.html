@@ -71,7 +71,7 @@
       <span class="tok-kw">WHERE</span> status &lt;&gt; <span class="tok-str">'C'</span>
       <span class="tok-kw">GROUP</span> <span class="tok-kw">BY</span> concert_id )
   <span class="tok-kw">SELECT</span> c~concert_id,
-         c~<span class="tok-kw">title</span>,
+         c~artist,
          c~capacity,
          <span class="tok-kw">COALESCE</span>( b~booked_seats, <span class="tok-num">0</span> )              <span class="tok-kw">AS</span> booked,
          c~capacity - <span class="tok-kw">COALESCE</span>( b~booked_seats, <span class="tok-num">0</span> ) <span class="tok-kw">AS</span> remaining
@@ -112,6 +112,11 @@
 <td>예약 없는 공연의 null 합계를 0으로(<a href="CH19-L04.html">지난 챕터</a>)</td>
 </tr>
 </tbody></table>
+<blockquote class="cw">
+<p>⚠️ <strong>단순화 주의</strong> — 여기서는 CTE 연습을 위해 <strong>회차를 접고 공연 단위로 합산</strong>했다.
+정본 잔여석 계산은 <strong>회차별</strong>이다(정원은 공연 단위, 소진은 회차별 —
+<a href="CH10-L07.html">Chapter 10 · 콘서트 모듈화 캡스톤</a>의 <code>get_remaining</code>이 그 기준).</p>
+</blockquote>
 <p><code>+booked</code>는 <strong>실제 DB 테이블을 새로 만드는 게 아니다.</strong> 지금 이 <code>SELECT</code> 문장 안에서만 살아 있는 이름 붙은 결과다.</p>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">CTE Step Viewer (예약 합계 → <button class="term" type="button" data-term="JOIN">조인</button> → 잔여석)</span><a class="embed__open" href="../../../embeds/abap/CH20-L02-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH20-L02-S01.html" loading="lazy" title="CTE Step Viewer (예약 합계 → 조인 → 잔여석)"></iframe></figure>
 </section><section class="lblock"><h2>어떻게 확인 — <code>+booked</code>를 먼저 그려라 🖊️</h2>

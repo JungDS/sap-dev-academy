@@ -3,7 +3,7 @@
 > 🤖 **생성물** — `tools/export-curriculum-md.mjs`(= `npm run build:curriculum-md`)로 자동 생성. **직접 수정 금지**, 내용은 `content/abap/**.md` front-matter에서 고치고 재생성한다.
 > 🎯 **TRACK-03 · ABAP 실무 심화** 소속 챕터 1개 전용 뷰 — 전체는 curriculum.md.
 > 📊 레슨 9
-> 🕒 생성: 2026-08-01T17:42:33.212Z
+> 🕒 생성: 2026-08-01T18:57:10.082Z
 
 학습 철학: 분류 순서로 외우지 않고, **불편을 먼저 겪고 그 해결책으로 개념을 배우는** 동기부여형. SQL은 CH07~16 classic → CH18+ modern 경계.
 
@@ -20,7 +20,7 @@
   - 다룰 내용: 마지막 장은 축하가 아니라 조립이다 — 요구를 계층 책임으로 번역한다.
   - 키워드: Capstone, 시나리오, RAP, 계층 책임
 - **CH39-L02 · ZI_* Interface View 심화 — 관계와 변경 추적** _(order 2)_
-  - 다룰 내용: CH24의 뼈대에 운영급 재료를 — association 노출·ETag 후보 필드·composition 지도.
+  - 다룰 내용: 입문 장(RAP)의 뼈대에 운영급 재료를 — association 노출·ETag 후보 필드·composition 지도.
   - 키워드: Interface View, Association, Composition, 변경 추적 필드
 - **CH39-L03 · ZC_* Projection View와 UI Annotation 심화** _(order 3)_
   - 다룰 내용: 소비자 계약을 의도적으로 — provider contract·@UI 배치·Metadata Extension.

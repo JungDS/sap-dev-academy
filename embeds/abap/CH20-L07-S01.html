@@ -33,16 +33,16 @@
 {
   "cancelStatus": "C",
   "concerts": [
-    { "id": "C001", "title": "정훈영 밴드", "capacity": 100 },
-    { "id": "C002", "title": "ABAP Trio", "capacity": 80 },
-    { "id": "C003", "title": "UI5 Night", "capacity": 50 },
-    { "id": "C004", "title": "Closed Show", "capacity": 60 }
+    { "id": "C001", "artist": "안유진", "capacity": 100 },
+    { "id": "C002", "artist": "ABAP Trio", "capacity": 50 },
+    { "id": "C003", "artist": "UI5 Night", "capacity": 80 },
+    { "id": "C004", "artist": "Closed Show", "capacity": 60 }
   ],
   "bookings": [
-    { "id": "B001", "concert": "C001", "seats": 2, "status": "N" },
-    { "id": "B002", "concert": "C001", "seats": 3, "status": "N" },
-    { "id": "B003", "concert": "C002", "seats": 1, "status": "C" },
-    { "id": "B004", "concert": "C004", "seats": 4, "status": "N" }
+    { "id": "0001", "concert": "C001", "seats": 2, "status": "N" },
+    { "id": "0002", "concert": "C001", "seats": 3, "status": "N" },
+    { "id": "0003", "concert": "C002", "seats": 1, "status": "C" },
+    { "id": "0004", "concert": "C004", "seats": 4, "status": "N" }
   ],
   "modes": [
     {
@@ -69,7 +69,7 @@
         { "t": "  INTO TABLE @DATA(gt_free)." }
       ],
       "explain": "CTE(WITH)로 예약 합계를 먼저 모으고 LEFT JOIN해 공연 4개의 잔여석을 정확히 계산했어요. 취소(C)는 WHERE에서 제외됩니다.",
-      "failMsg": "취소된 B003(1석)이 C002 합계에 섞여 예약 1석·잔여 79석으로 잘못 계산됩니다."
+      "failMsg": "취소된 0003(1석)이 C002 합계에 섞여 예약 1석·잔여 79석으로 잘못 계산됩니다."
     },
     {
       "key": "exists",
@@ -77,10 +77,10 @@
       "desc": "상관 서브쿼리 EXISTS — 예약된 공연",
       "cols": [
         { "key": "id", "label": "공연ID" },
-        { "key": "title", "label": "공연명" }
+        { "key": "artist", "label": "artist" }
       ],
       "sql": [
-        { "t": "SELECT c~concert_id, c~title" },
+        { "t": "SELECT c~concert_id, c~artist" },
         { "t": "  FROM zconcert AS c" },
         { "t": " WHERE EXISTS ( SELECT concert_id FROM zbooking AS b" },
         { "t": "                 WHERE b~concert_id = c~concert_id" },
@@ -96,7 +96,7 @@
       "desc": "집합 연산 EXCEPT — 미예약 공연 (공연명은 표시용)",
       "cols": [
         { "key": "id", "label": "공연ID" },
-        { "key": "title", "label": "공연명" }
+        { "key": "artist", "label": "artist" }
       ],
       "sql": [
         { "t": "SELECT concert_id FROM zconcert" },
