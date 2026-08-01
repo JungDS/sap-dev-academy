@@ -61,16 +61,37 @@ SUBMIT zbook_settle
   <span class="tok-kw">USING</span> SELECTION-SET <span class="tok-str">'NIGHTLY'</span>   <span class="tok-com">" 저장해 둔 variant로 선택화면을 채움</span>
   <span class="tok-kw">AND</span> RETURN.</code></pre></div></div>
 <ul>
-<li><code>USING SELECTION-SET</code> — 선택화면 값을 사람이 입력할 수 없으니, <a href="CH15-L11.html">Chapter 15 ·
+<li><p><code>USING SELECTION-SET</code> — 선택화면 값을 사람이 입력할 수 없으니, <a href="CH15-L11.html">Chapter 15 ·
 Variant</a>에서 배운 <strong>variant</strong>로 채운다(만들기는 SE38 실행
 화면에서 값을 넣고 저장 버튼 → 이름 <code>NIGHTLY</code>). 무인 실행에서 variant가 필수인
 이유가 이것이다. 함정 하나: <strong>날짜 조건을 고정값으로 저장하면 매일 도는 잡이
 영원히 그 날짜만 처리한다</strong>(에러도 없이 0건 처리 — 가장 조용한 사고). 우리
 정산처럼 &quot;미처리 건만 집는&quot; 설계면 날짜 <button class="term" type="button" data-term="파라미터">파라미터</button> 자체가 없어 안전하고, 날짜가
 꼭 필요한 잡은 variant의 <strong>동적 날짜 기능</strong>(저장 화면의 선택 변수 — &quot;어제&quot;,
-&quot;전월 말일&quot; 등)을 쓴다는 것만 알아 두자.</li>
-<li><code>AND RETURN</code> — 실행이 끝나면 호출한 프로그램으로 돌아온다. 없으면 제어가 넘어간
-채 돌아오지 않는다.</li>
+&quot;전월 말일&quot; 등)을 쓴다는 것만 알아 두자.</p>
+</li>
+<li><p><strong>기준값은 <button class="term" type="button" data-term="TVARVC">TVARVC</button>로</strong> — 마감 시각·<button class="term" type="button" data-term="예외">예외</button> 공연 코드처럼 <strong>운영자가 가끔 바꾸는
+기준값</strong>을 코드나 variant에 박으면, 바뀔 때마다 개발·이송이 필요하다. 실무
+표준은 범용 파라미터 테이블 <code>TVARVC</code>에 이름을 정해 넣어 두고 프로그램이 읽는
+것이다. 운영자가 SM30으로 값을 바꾸면 <strong>프로그램 수정 없이</strong> 다음 실행부터
+동작이 바뀐다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7</pre><pre class="abap-editor__code"><code><span class="tok-com">" 이름 ZBOOK_CUTOFF로 등록해 둔 마감 기준값을 읽는다 (P = 단일값)</span>
+<span class="tok-kw">SELECT</span> <span class="tok-kw">SINGLE</span> low <span class="tok-kw">FROM</span> tvarvc
+  <span class="tok-kw">INTO</span> @<span class="tok-kw">DATA</span>(lv_cutoff)
+  <span class="tok-kw">WHERE</span> name = <span class="tok-str">'ZBOOK_CUTOFF'</span> <span class="tok-kw">AND</span> <span class="tok-kw">type</span> = <span class="tok-str">'P'</span>.
+<span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.
+  <span class="tok-com">" 기준값 미등록 — 기본값으로 갈지, 중단할지는 설계 결정이다</span>
+<span class="tok-kw">ENDIF</span>.</code></pre></div></div>
+</li>
+<li><p><code>AND RETURN</code> — 실행이 끝나면 호출한 프로그램으로 돌아온다. 없으면 제어가 넘어간
+채 돌아오지 않는다.</p>
+</li>
 </ul>
 </section><section class="lblock"><h2>잡으로 감싸기 — 열고, 넣고, 닫는다</h2>
 <p><code>SUBMIT</code>을 지금 즉시가 아니라 &quot;새벽 2시에, background로&quot; 실행하려면 잡이라는

@@ -257,7 +257,7 @@ Class</a>에서 배운 클래스 <button class="term" type="button" data-term="�
 <tr>
 <td>자동 이메일 발송</td>
 <td>❌</td>
-<td>BCS 메일 첨부(이름만 알아 둔다, 이 과정 범위 밖)</td>
+<td>BCS 메일 첨부(아래 개요 절)</td>
 </tr>
 <tr>
 <td>ABAP Cloud</td>
@@ -265,6 +265,30 @@ Class</a>에서 배운 클래스 <button class="term" type="button" data-term="�
 <td>released API 기반 출력 서비스(<a href="CH24-L08.html">Chapter 24</a>)</td>
 </tr>
 </tbody></table>
+</section><section class="lblock"><h2>메일로 보내려면 — CL_BCS 네 박자 (개요)</h2>
+<p>고객은 파일을 내려받는 게 아니라 <strong>메일로 받고 싶어 한다.</strong> 같은 <code>gv_pdf</code>
+<button class="term" type="button" data-term="바이트">바이트</button>에서 출발하는 표준 발송 서비스가 BCS(Business Communication Services)다.
+전체 구현은 이 과정 범위 밖이지만, 네 박자 골격만 눈에 익혀 두자.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>(lo_send) = cl_bcs=&gt;create_persistent( ).          <span class="tok-com">" ① 발송 요청 생성</span>
+lo_send-&gt;set_document( cl_document_bcs=&gt;create_document(
+  i_type    = <span class="tok-str">'RAW'</span>
+  i_subject = <span class="tok-str">'예매 확인서'</span>
+  i_text    = <span class="tok-kw">VALUE</span> #( ( <span class="tok-kw">line</span> = <span class="tok-str">'첨부를 확인하세요'</span> ) ) ) ).
+<span class="tok-com">" ② 문서에 PDF 첨부(add_attachment — gv_pdf를 solix로 변환해 전달)</span>
+<span class="tok-com">" ③ 수신자 추가(add_recipient — 이메일 주소)</span>
+lo_send-&gt;send( ).                                      <span class="tok-com">" ④ 발송 요청 등록</span>
+<span class="tok-kw">COMMIT</span> <span class="tok-kw">WORK</span>.                                           <span class="tok-com">" ← 이게 있어야 실제 발송 큐로</span></code></pre></div></div>
+<p>핵심 함정 하나만: <code>send( )</code>는 발송을 <strong>요청</strong>할 뿐이고, <code>COMMIT WORK</code>가 있어야
+발송 큐(<code>SOST</code>, <a href="CH37-L05.html">오류 추적 레슨</a>의 그 화면)로 넘어간다. 잊으면
+오류도 없이 메일만 안 나가는 조용한 실패다.</p>
 </section><section class="lblock"><h2>텍스트 모드로 저장하면 어떻게 되나 — 해부와 고장 카드</h2>
 <p>코드 부품을 클릭해 역할을 확인하고, 고장 카드 4장(<code>&#39;ASC&#39;</code> 저장·크기 생략·빈
 PDF·배치에서 gui_download)으로 무엇이 왜 깨지는지 판별해 보라.</p>
