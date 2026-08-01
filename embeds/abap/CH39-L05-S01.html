@@ -1,33 +1,37 @@
 <!DOCTYPE html>
-<!-- CH39-L05-S01 — 엔진: compare-matrix(재사용) · _engine/_base.css. Determination/Validation/Action 비교. -->
-<html lang="ko" data-eng="compare-matrix">
+<!-- CH39-L05-S01 — 엔진: stage-chips · _engine/_base.css. 동작 로직 흐름 — 생성→기본값→검증→저장/거부→취소. -->
+<html lang="ko" data-eng="stage-chips">
 <head>
 <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>RAP 핸들러 비교 · CH39-L05-S01</title>
-<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/compare-matrix.css" />
+<title>동작 로직 시뮬레이터 · CH39-L05-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/stage-chips.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">Determination vs Validation vs Action</p>
-  <p class="lead">세 핸들러의 자리를 비교하세요. 이름을 클릭하면 예매 앱에서의 역할이 나옵니다.</p>
-  <p class="hint">💡 행(핸들러)을 클릭</p>
-  <table><thead id="thead"></thead><tbody id="tbody"></tbody></table>
-  <div class="detail idle" id="detail">핸들러 이름을 클릭하면 역할이 나옵니다.</div>
-  <div class="note">💡 검증 실패는 <b>failed/reported</b>로 알려야 RAP이 저장을 막습니다. 핸들러 내부 읽기/수정은 보통 <code>IN LOCAL MODE</code>.</div>
-  <script type="application/json" id="cm-cfg">
+  <p class="hd">동작 로직 시뮬레이터 — 요청은 어디까지 가나</p>
+  <p class="lead">시나리오를 누르면 <b>생성 → 기본값 → 검증 → 저장 → 취소</b>의 신호등이 켜집니다. 각 단계의 담당 로직을 떠올려 보세요.</p>
+  <div id="chips"></div>
+  <div id="cases"></div>
+  <div class="verdict" id="verdict"></div>
+  <div class="note">💡 기본값 = determination(자동 보정) · 저장 가부 = validation(판정만) · 취소 = action(명시 명령). 거부는 언제나 <b>failed(어느 건)+reported(왜)</b>의 짝. (수치는 교육용 가상)</div>
+  <script type="application/json" id="sc-cfg">
   {
-    "cols": ["실행 시점", "목적", "실패 처리"],
-    "rows": [
-      { "name": "Determination", "cells": [{"v":"on modify","r":"mid"},{"v":"자동 채움","r":"hi"},{"v":"보통 없음","r":"hi"}],
-        "detail": "생성/수정 시 값을 <b>자동으로 채움</b> — 예매 생성 시 status='N', created_by=sy-uname(CH25 stamp의 RAP 버전)." },
-      { "name": "Validation", "cells": [{"v":"on save","r":"mid"},{"v":"규칙 검증","r":"hi"},{"v":"failed/reported","r":"lo"}],
-        "detail": "저장 직전 <b>규칙 검증</b> — 좌석 합계가 정원을 넘으면 failed/reported로 알려 RAP이 저장을 거부(ZCX_FULLY_BOOKED의 RAP 표현)." },
-      { "name": "Action", "cells": [{"v":"사용자 호출","r":"mid"},{"v":"커스텀 동작","r":"hi"},{"v":"result 반환","r":"mid"}],
-        "detail": "사용자가 버튼으로 실행하는 <b>커스텀 동작</b> — cancelBooking으로 status='C', result에 변경 인스턴스 반환." }
+    "chips": ["① 생성 요청", "② 기본값(determination)", "③ 검증(validation)", "④ 저장", "⑤ 취소(action)"],
+    "scenarios": [
+      { "label": "정상 예매 2석 → 저장", "states": ["ok", "ok", "ok", "ok", "off"],
+        "verdict": "✅ 생성 → Status 'N' 자동 세팅 → 정원 여유(잔여 50 ≥ 2) → 저장. determination과 validation이 각자의 일만 했습니다." },
+      { "label": "정원 초과 60석 → 저장 시도", "states": ["ok", "ok", "bad", "off", "off"], "warn": true,
+        "verdict": "⛔ <b>③ validation 거부</b> — failed(이 건)와 reported('남은 좌석보다 많은…')가 짝으로 채워져 화면 메시지가 됩니다. DB에는 아무것도 없습니다." },
+      { "label": "저장된 예매를 취소", "states": ["ok", "ok", "ok", "ok", "ok"],
+        "verdict": "✅ <b>⑤ action</b> — 사용자가 명시적으로 누른 업무 명령으로만 상태가 C로 갑니다. result [1] $self 계약대로 바뀐 모습을 돌려줘 화면이 갱신됩니다." },
+      { "label": "100건 일괄 생성(다건 요청)", "states": ["ok", "ok", "warn", "warn", "off"], "warn": true,
+        "verdict": "⚠ <b>다건이 기본</b> — keys의 첫 건만 처리하는 handler는 여기서 무너집니다. 전 건이 각각 판정되고, 거부된 일부만 failed에 담기는 것이 정상 동작." },
+      { "label": "validation 안에서 좌석 수를 '보정'", "states": ["ok", "ok", "bad", "off", "off"], "warn": true,
+        "verdict": "🚨 <b>책임 위반</b> — validation은 판정만 합니다. 고치는 일은 determination의 몫. 섞으면 '왜 값이 바뀌었지'를 아무도 추적 못 합니다." }
     ]
   }
   </script>
 </div>
-<script src="../_engine/compare-matrix.js" defer></script>
+<script src="../_engine/stage-chips.js" defer></script>
 </body>
 </html>

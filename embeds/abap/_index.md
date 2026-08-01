@@ -306,6 +306,16 @@
 | CH38-L05-S01 | CH38-L05 | stage-chips | (재사용) 잡의 일생(정의→Released→Active→Finished→업무 성공 — Finished≠성공·중복 정산 티켓 5) | ✅ |
 | CH38-L06-S01 | CH38-L06 | code-anatomy | (재사용) BAL 3박자 해부(object/extnumber/CREATE/msgv1 key/DB_SAVE) + 고장 카드 4(#bug-cfg) | ✅ |
 | CH38-L06-S02 | CH38-L06 | bal-log | (재사용·구 L05-S01 이동) SLG1풍 로그 뷰어 — 타입 필터·key/단계 확인 | ✅ |
+| CH39-L01-S01 | CH39-L01 | mermaid | (재사용·갱신) 풀스택 계층 지도(데이터→CDS→RAP→서비스→Fiori, 라벨 L07 정합) | ✅ |
+| CH39-L01-S02 | CH39-L01 | judge-quiz | (재사용) 요구→계층 책임 판별 6(Behavior/모델 vs 표면 — 우회 가능성 기준) | ✅ |
+| CH39-L02-S01 | CH39-L02 | code-anatomy | (재사용) ZI 심화 해부(association/$projection/@Semantics/ETag 후보/관계 노출) | ✅ |
+| CH39-L03-S01 | CH39-L03 | code-anatomy | (재사용) ZC 소비 계약 해부(provider contract/@UI.lineItem·identification/facet/allowExtensions) | ✅ |
+| CH39-L04-S01 | CH39-L04 | code-anatomy | (재사용) 운영 BDEF 해부(strict/draft/draft table/total etag/auth/draft action) + 계약 누락 카드 4(#bug-cfg) | ✅ |
+| CH39-L05-S01 | CH39-L05 | stage-chips | (재사용) 동작 로직 신호등(생성→기본값→검증→저장→취소, 다건·책임 위반 포함 5) | ✅ |
+| CH39-L06-S01 | CH39-L06 | stage-chips | (재사용) EML 트랜잭션 콘솔(MODIFY 버퍼→FAILED 관문→COMMIT→save sequence→DB, 5) | ✅ |
+| CH39-L07-S01 | CH39-L07 | mermaid | (재사용·구 L06-S01 이동) Service Definition→Binding(Publish)→Fiori Elements 흐름 | ✅ |
+| CH39-L08-S01 | CH39-L08 | stage-chips | (재사용) 동시 수정 실험실(권한→Lock→ETag→total ETag 릴레이, 시나리오 5) | ✅ |
+| CH39-L09-S01 | CH39-L09 | judge-quiz | (재사용·구 L07-S01 대체) 릴리스 판별 6 — 졸업 퀴즈(Arrangement·released API·서버 권한·EML 검증) | ✅ |
 | CH04-L02-S01 | CH04-L02 | fill-blank | 문자열 함수 빈칸(INTO·AT·strlen·FIND) | ✅ |
 | CH04-L07-S01 | CH04-L07 | fill-blank | 구구단 빈칸(TIMES·sy-index·*·ENDDO) | ✅ |
 | CH04-L03-S01 | CH04-L03 | mermaid | IF/ELSEIF/ELSE 분기 흐름도(p_amt: 큰금액/소액/0·음수) | ✅ |
@@ -404,7 +414,7 @@
 | pkg-tuner (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH35-L05-S02 | 총 100만 건 가정·크기 3단(1천/1만/10만)→commit(log 스케일)/메모리/재처리 범위 막대·양극단 warn·가운데=실측 안내 |
 | tf-link-map (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH36-L05-S01 | CDS TF 3카드(DDL/클래스/소비) 단계 버튼(ddl→link→run→consume→client)·연결선 강조·상태 칩 |
 | amdp-steps (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH36-L02-S02 | as-cfg JSON(code/steps) 단계 버튼→코드 하이라이트+테이블 변수 스냅샷·재사용 배지·완주 노트 |
-| stage-chips | 6 | 공통(_engine)·자체 postHeight ✅ | CH37-L01-S02 · CH37-L02-S02 · CH37-L05-S02 · CH38-L01-S01 · CH38-L04-S02 · CH38-L05-S01 | sc-cfg JSON(chips/scenarios) 단계 신호등(ok/warn/bad)+시나리오 버튼→판정문 — 층 판별 범용 |
+| stage-chips | 9 | 공통(_engine)·자체 postHeight ✅ | CH37-L01-S02 · CH37-L02-S02 · CH37-L05-S02 · CH38-L01-S01 · CH38-L04-S02 · CH38-L05-S01 · CH39-L05-S01 · CH39-L06-S01 · CH39-L08-S01 | sc-cfg JSON(chips/scenarios) 단계 신호등(ok/warn/bad)+시나리오 버튼→판정문 — 층 판별 범용 |
 | decision-tree | 4 | 공통(_engine)+_autoheight ✅ | CH06-L02-S02 · CH20-L06-S01 · CH32-L04-S01 · CH35-L05-S01 | 범용 선택 트리(질문 분기=위젯 config)·Table Kind/고급 SQL/확장 수단/대량 처리 전략 선택 |
 | factory-sim (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH27-L01-S01 | 타입 세그(V/G/Z)→생성 클래스·설명 전환·호출부 코드 고정 표시 |
 | singleton-sim (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH27-L02-S01 | get_instance vs NEW 버튼→인스턴스 주소 목록·같음/다름 판정 |
@@ -465,9 +475,9 @@
 | salv-grid-simulator | 2 | 공통(_engine)·자체 postHeight ✅ | CH11-L02-S01·CH11-L06-S01 (완료) | config 주입(SALV_CFG: itab·cols·data·sumKey·code) · ALV제목/토글 엔진설정 |
 | relationship-map | 1 | 공통 | _(미작성)_ | CSS-only |
 | state-change-grid | 2 | 공통(CSS-only)+_autoheight ✅ | CH06-L04-S03·CH06-L06-S01 | 스냅샷=마크업(gt_gugu 성장·정렬 / DELETE ADJACENT DUPLICATES 함정) · cell-new/cell-del 강조 · .note 추가(다크 자동) |
-| mermaid | 15 | 공통(+_vendor)+_autoheight ✅ | CH04-L04-S02/S03·L05-S02/S03/S04 · CH26-L05 · CH31-L06-S02 · CH33-L05-S01 · CH34-L02-S01 · CH36-L03 · CH37-L03 · CH38-L04-S01 · CH39-L01/L06 | 그래프=위젯 `.mermaid` 주입·CDN+로컬fallback·이벤트본 은퇴 |
-| judge-quiz | 13 | 공통(_engine)+_autoheight ✅ | CH06-L05 · CH26-L03 · CH32-L05 · CH36-L03-S02 · CH36-L06 · CH37-L03-S02 · CH37-L05 · CH38-L01-S02 · CH38-L02-S02 · CH38-L03-S01 · CH39-L07 | 범용 판별 퀴즈(문항=위젯 config)·즉시 정답·해설 |
-| code-anatomy | 5 | 공통(_engine)·자체 postHeight ✅ | CH06-L02-S01 · CH06-L05-S02 · CH36-L02-S01 · CH37-L04-S01 · CH38-L06-S01 | 마커(.mk[data-a]) 클릭 해부(anno-cfg JSON) + (확장) #bug-cfg 오류 카드→해설 |
+| mermaid | 15 | 공통(+_vendor)+_autoheight ✅ | CH04-L04-S02/S03·L05-S02/S03/S04 · CH26-L05 · CH31-L06-S02 · CH33-L05-S01 · CH34-L02-S01 · CH36-L03 · CH37-L03 · CH38-L04-S01 · CH39-L01-S01 · CH39-L07-S01 | 그래프=위젯 `.mermaid` 주입·CDN+로컬fallback·이벤트본 은퇴 |
+| judge-quiz | 15 | 공통(_engine)+_autoheight ✅ | CH06-L05 · CH26-L03 · CH32-L05 · CH36-L03-S02 · CH36-L06 · CH37-L03-S02 · CH37-L05 · CH38-L01-S02 · CH38-L02-S02 · CH38-L03-S01 · CH39-L01-S02 · CH39-L09-S01 | 범용 판별 퀴즈(문항=위젯 config)·즉시 정답·해설 |
+| code-anatomy | 8 | 공통(_engine)·자체 postHeight ✅ | CH06-L02-S01 · CH06-L05-S02 · CH36-L02-S01 · CH37-L04-S01 · CH38-L06-S01 · CH39-L02-S01 · CH39-L03-S01 · CH39-L04-S01 | 마커(.mk[data-a]) 클릭 해부(anno-cfg JSON) + (확장) #bug-cfg 오류 카드→해설 |
 | bal-log | 1 | 공통(_engine)·자체 postHeight ✅ | CH38-L06-S02 | SLG1풍 BAL 로그 뷰어 — 타입(E/W/S) 필터·건수 배지 |
 | compare-matrix | 4 | 공통(_engine)·자체 postHeight ✅ | CH07-L03-S02 · CH20-L01-S01 · CH36-L04-S01 · CH37-L02-S01 | cm-cfg JSON(cols/rows/detail) 행 클릭 상세 + (확장) cfg.cases 상황 버튼→추천 행 강조 |
 | pushdown-flow | 1 | 공통(_engine)·자체 postHeight ✅ | CH36-L01-S01 | 끌어오기/내려보내기 전송량 파이프 + (확장) #pf-cfg 상황 카드→수단 추천 |

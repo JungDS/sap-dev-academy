@@ -1,35 +1,37 @@
 <!DOCTYPE html>
-<!-- CH39-L06-S01 — 엔진: mermaid + _autoheight. Service Definition→Binding→Fiori Elements. -->
-<html lang="ko" data-eng="mermaid">
+<!-- CH39-L06-S01 — 엔진: stage-chips · _engine/_base.css. EML 트랜잭션 콘솔 — MODIFY→판정→COMMIT/ROLLBACK. -->
+<html lang="ko" data-eng="stage-chips">
 <head>
 <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Service→Fiori · CH39-L06-S01</title>
-<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-<script>if(!window.mermaid){var s=document.createElement("script");s.src="../_vendor/mermaid.min.js";document.head.appendChild(s);}</script>
-<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/mermaid.css" />
+<title>RAP 트랜잭션 콘솔 · CH39-L06-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/stage-chips.css" />
 </head>
 <body>
-  <div class="wrap">
-    <p class="hd">노출에서 화면까지 — Service → Fiori Elements</p>
-    <p class="lead">@UI 주석(L03)만으로 Fiori Elements가 화면을 자동 생성합니다. ABAP UI 코드 0줄.</p>
-    <div class="viz-card">
-      <p class="viz-card__title">정의 → 바인딩 → 미리보기</p>
-      <div class="mermaid" id="mm">
-flowchart LR
-  SD["Service Definition<br/>expose ZC_Booking"]:::svc
-  SB["Service Binding<br/>OData V4 / UI · Activate"]:::svc
-  UI["@UI 주석 (ZC_Booking)"]:::cds
-  FE["Fiori Elements<br/>List Report · Object Page"]:::ui
-  SD --> SB --> FE
-  UI -.->|"화면 자동 생성"| FE
-classDef svc fill:#f3eefe,stroke:#7c3aed,stroke-width:2px,color:#6d28d9;
-classDef cds fill:#eef2ff,stroke:#3b5bdb,stroke-width:2px,color:#1e3a8a;
-classDef ui fill:#ecfdf5,stroke:#10b981,stroke-width:2.4px,color:#0b7250;
-      </div>
-      <p class="viz-note">Binding을 <b>Activate</b>하고 <b>Preview</b>로 목록·상세를 띄웁니다. 상세에서 좌석 수정·<b>취소 액션</b> 버튼, 정원 초과 시 검증 메시지(L05)가 화면에 — Dynpro(CH16)와 비교하면 격세지감.</p>
-    </div>
-  </div>
-<script src="../_engine/mermaid.js" defer></script>
-<script src="../_engine/_autoheight.js" defer></script>
+<div class="wrap">
+  <p class="hd">RAP 트랜잭션 콘솔 — 언제 DB에 저장되나</p>
+  <p class="lead">시나리오를 누르면 <b>MODIFY(버퍼) → 관문① → COMMIT(save sequence) → 관문② → DB</b>의 신호등이 켜집니다.</p>
+  <div id="chips"></div>
+  <div id="cases"></div>
+  <div class="verdict" id="verdict"></div>
+  <div class="note">💡 거부의 관문은 둘 — MODIFY 직후의 FAILED와, COMMIT의 save sequence(우리 정원 검증이 도는 곳). 둘 다 확인해야 consumer의 책임 완수입니다.</div>
+  <script type="application/json" id="sc-cfg">
+  {
+    "chips": ["① MODIFY(버퍼)", "② FAILED 관문", "③ COMMIT", "④ save sequence 관문", "⑤ DB 반영"],
+    "scenarios": [
+      { "label": "정상 예매 생성 → COMMIT", "states": ["ok", "ok", "ok", "ok", "ok"],
+        "verdict": "✅ 버퍼 → 관문 통과 → save sequence(검증 포함) 통과 → DB. MAPPED에서 %cid 'NEW1'이 실제 key와 짝지어졌습니다." },
+      { "label": "MODIFY 직후 다른 세션에서 SELECT", "states": ["ok", "ok", "off", "off", "bad"], "warn": true,
+        "verdict": "🚨 <b>아직 버퍼</b> — COMMIT 전이라 DB에 없습니다. 'MODIFY = 저장'이 EML 최대의 오해." },
+      { "label": "정원 초과 데이터 → COMMIT 시도", "states": ["ok", "ok", "ok", "bad", "off"], "warn": true,
+        "verdict": "⛔ <b>④ save sequence 거부</b> — 우리 validation(on save)이 화면 없이도 막았습니다. sy-subrc를 확인하고 ROLLBACK ENTITIES로 정리." },
+      { "label": "요청 형식 오류 → MODIFY 응답", "states": ["ok", "bad", "off", "off", "off"], "warn": true,
+        "verdict": "⛔ <b>② 첫 관문 거부</b> — FAILED가 즉시 채워집니다. 이걸 안 보고 COMMIT으로 직행하면 실패를 성공으로 착각합니다." },
+      { "label": "실패 후 ROLLBACK 생략", "states": ["ok", "bad", "off", "off", "warn"], "warn": true,
+        "verdict": "⚠ <b>정리 안 된 트랜잭션</b> — 버퍼·잠금이 남은 채 다음 작업으로 넘어갑니다. 실패 경로에도 ROLLBACK ENTITIES까지가 한 벌." }
+    ]
+  }
+  </script>
+</div>
+<script src="../_engine/stage-chips.js" defer></script>
 </body>
 </html>

@@ -1,39 +1,45 @@
 <!DOCTYPE html>
-<!-- CH39-L03-S01 — 엔진: code-anatomy(재사용) · _engine/_base.css. ZC_ Projection View(CDS·@UI) 해부. -->
+<!-- CH39-L03-S01 — 엔진: code-anatomy · _engine/_base.css. ZC_Booking 소비 계약 해부(provider contract·@UI·facet). -->
 <html lang="ko" data-eng="code-anatomy">
 <head>
 <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>ZC_Booking 해부 · CH39-L03-S01</title>
+<title>ZC 소비 계약 해부 · CH39-L03-S01</title>
 <link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/code-anatomy.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">ZC_Booking 해부 — Projection + @UI(CDS)</p>
-  <p class="lead">밑줄 부분을 클릭하세요. <b>@UI 주석</b>이 Fiori 화면(목록·상세)을 코드 없이 선언합니다.</p>
+  <p class="hd">소비자 계약 — 부분을 클릭</p>
+  <p class="lead">각 조각이 화면의 <b>어디</b>를 만드는지 확인하세요. 화면을 만들지 "규칙"은 만들지 않는다는 점도.</p>
   <div class="anat">
-    <div class="anat__h"><span class="dot"></span>ZC_Booking (CDS View · Projection)</div>
-<pre class="anat__code">define root view entity ZC_Booking
+    <div class="anat__h"><span class="dot"></span>ZC_Booking + Metadata Extension (축약)</div>
+<pre class="anat__code"><span class="mk" data-a="allow">@Metadata.allowExtensions: true</span>
+<span class="kw">define root view entity</span> ZC_Booking
   <span class="mk" data-a="contract">provider contract transactional_query</span>
-  <span class="mk" data-a="proj">as projection on ZI_Booking</span>
+  <span class="kw">as projection on</span> ZI_Booking
 {
-  <span class="mk" data-a="facet">@UI.facet: [{ type: #IDENTIFICATION_REFERENCE, position: 10 }]</span>
-  key booking_id,
+  <span class="kw">key</span> BookingId,
+      <span class="mk" data-a="line">@UI.lineItem: [ { position: 30, label: 'Customer' } ]</span>
+      <span class="mk" data-a="ident">@UI.identification: [ { position: 30 } ]</span>
+      Customer,
+      Seats, Status, LastChangedAt, _Concert
+}
 
-  <span class="mk" data-a="lineitem">@UI: { lineItem: [{ position: 10 }]</span>,
-      identification: [{ position: 10 }] }
-  @EndUserText.label: '공연'
-      concert_id,
-      customer, seats, status, _Concert, _Perf
+<span class="cm">// Metadata Extension (별도 파일)</span>
+<span class="kw">annotate view</span> ZC_Booking <span class="kw">with</span>
+{
+  <span class="mk" data-a="facet">@UI.facet: [ { type: #IDENTIFICATION_REFERENCE, ... } ]</span>
+  BookingId;
 }</pre>
   </div>
-  <div class="anno idle" id="anno">밑줄 친 구문을 클릭하면 설명이 나옵니다.</div>
-  <div class="note">💡 <code>@UI.lineItem</code>=목록(List Report) 컬럼 · <code>@UI.identification</code>/<code>facet</code>=상세(Object Page) 폼. 주석이 많으면 Metadata Extension(CH23-L05)으로 분리합니다.</div>
+  <div class="anno idle" id="anno">밑줄 친 구문을 클릭해 보세요.</div>
+  <div class="note">💡 lineItem=목록 컬럼 · identification=상세 필드 · facet=상세 구역. <b>facet 없이 identification만 달면 상세 화면이 비어 보입니다.</b></div>
   <script type="application/json" id="anno-cfg">
   {
-    "contract": { "t": "provider contract transactional_query", "d": "트랜잭션 소비용 계약. RAP 동작(생성·수정)을 이 뷰로 노출하려면 필요." },
-    "proj": { "t": "as projection on ZI_Booking", "d": "기반(ZI_)을 투영 — 화면에 필요한 필드만 골라 소비 모델을 만듭니다." },
-    "facet": { "t": "@UI.facet", "d": "Object Page(상세)의 섹션 구성을 선언. IDENTIFICATION_REFERENCE = 식별 정보 폼." },
-    "lineitem": { "t": "@UI.lineItem / identification", "d": "lineItem=목록(List Report) 컬럼, identification=상세 폼 필드. 위치(position)로 순서 지정." }
+    "allow": { "t": "allowExtensions — 확장 허가", "d": "화면 annotation을 별도 파일(Metadata Extension)로 얹도록 허락하는 스위치. 데이터 계약과 화면 배치를 분리하는 관례의 출발점." },
+    "contract": { "t": "provider contract — 용도 선언", "d": "'이 projection은 트랜잭션형 UI·서비스 소비용'이라는 계약. 용도를 밝히면 시스템이 그에 맞는 규칙을 검사해 줍니다." },
+    "line": { "t": "@UI.lineItem — 목록 컬럼", "d": "List Report의 컬럼 후보와 순서(position)·라벨. 컬럼을 만들 뿐, 정원 초과를 막는 것은 Behavior validation(L05)." },
+    "ident": { "t": "@UI.identification — 상세 필드", "d": "Object Page에 나올 필드 후보. 단, 이 필드들이 나타날 '구역'은 facet이 만듭니다." },
+    "facet": { "t": "@UI.facet — 상세 화면의 구역", "d": "#IDENTIFICATION_REFERENCE facet이 있어야 identification 필드들이 그 구역에 보입니다. '상세 화면이 비어요'의 1순위 원인 = facet 누락." }
   }
   </script>
 </div>

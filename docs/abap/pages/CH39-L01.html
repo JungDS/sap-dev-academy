@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Capstone 업무 시나리오 정의 · RAP + Fiori 실무 Capstone · SAP Developer Academy</title>
+<title>Capstone 업무 시나리오 정의 · RAP + Fiori 실무 Capstone (RAP 심화) · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -13,7 +13,7 @@
 <header class="appbar">
   <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
   <span class="appbar__sp"></span>
-  <span class="meta">Chapter 39 · RAP + Fiori 실무 Capstone</span>
+  <span class="meta">Chapter 39 · RAP + Fiori 실무 Capstone (RAP 심화)</span>
   <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
   <div class="tools">
     <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
@@ -33,68 +33,183 @@
     <main class="main">
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 39 › Lesson 1</nav>
       <section class="lhead">
-        <p class="lhead__eyebrow">RAP + Fiori 실무 Capstone</p>
+        <p class="lhead__eyebrow">RAP + Fiori 실무 Capstone (RAP 심화)</p>
         <h1>Capstone 업무 시나리오 정의</h1>
-        <p class="lhead__direction">배운 걸 모아 만들 것 — 콘서트 예매 풀스택 앱.</p>
+        <p class="lhead__direction">마지막 장은 축하가 아니라 조립이다 — 요구를 계층 책임으로 번역한다.</p>
         <div class="tags"><span class="tag tag--track">Track 2</span><span class="tag tag--ch">Chapter 39</span><span class="tag tag--ls">Lesson 1</span><span class="tag tag--lv">고급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>여정의 종착점 — 내 앱을 완성한다</h2>
-<p>CH01의 첫 <code>WRITE</code>부터 여기까지, 콘서트 예매(<code>ZCONCERT</code>/<code>ZPERF</code>/<code>ZBOOKING</code>)를 한 단계씩
-키웠다. 이제 <strong>RAP + Fiori</strong>로 전체를 하나의 실전 앱으로 완성한다.</p>
-</section><section class="lblock"><h2>시나리오</h2>
+<section class="lblock"><h2>&quot;예매 앱 하나 만들어 주세요&quot;</h2>
+<p>실무 요청은 기술 이름으로 오지 않는다. 사용자는 &quot;BDEF와 projection view를 만들어
+주세요&quot;라고 말하지 않는다. 이렇게 말한다: <strong>&quot;공연을 골라 예매하고, 정원이 넘으면
+막고, 취소할 수 있고, 쓰다 만 내용은 날아가지 않게 해 주세요. 아, 다른 시스템에서도
+예매를 넣을 수 있어야 해요.&quot;</strong></p>
+<p>&quot;CH24에서 만든 앱이 이미 있는데?&quot;라고 생각했다면 정확하다 — 화면도 떴었다. 하지만
+그 앱을 운영에 내놓으면 첫 주에 이런 티켓이 온다: 두 담당자가 같은 예매를 고쳐
+<strong>나중에 저장한 쪽이 조용히 이겼다</strong>, 입력하다 회의 다녀왔더니 <strong>쓰던 내용이
+증발했다</strong>, 화면에선 버튼을 숨겼는데 <strong>API로는 취소가 됐다.</strong> 입문 앱과 운영 앱의
+거리가 이 챕터의 내용이다.</p>
+<p>Capstone의 첫 작업은 코딩이 아니라 <strong>번역</strong>이다: 사용자의 문장을 계층별 책임으로
+나누는 것. 이 번역이 흐리면 화면부터 만들고, 나중에 검증을 붙이고, 다시 권한을
+고치다가 구조를 계속 되돌리게 된다.</p>
 <blockquote>
-<p>사용자(정훈영)가 Fiori 화면에서 공연·회차를 보고 <strong>예매</strong>한다. 정원을 넘으면 막고,
-매진을 표시하며, <strong>취소</strong>도 가능하다. 변경은 저장 전 <strong>Draft</strong>로 보관된다.</p>
+<p>🧰 <strong>이 챕터의 준비물</strong> — 관통예제 그대로 간다: <code>zbooking</code>·<code>zconcert</code>·<code>zperf</code>
+테이블(<a href="CH09-L09.html">Chapter 9</a>)과 실습 데이터, <a href="CH24-L02.html">Chapter 24</a>에서
+만든 <code>ZI_Booking</code>/<code>ZC_Booking</code>/BDEF/behavior pool. 시작 전에 ADT(<a href="CH23-L01.html">Chapter
+23</a>)에서 이 이름들을 열어 <strong>활성 상태인지 확인</strong>하자(없거나
+지웠다면 CH24 실습을 먼저 복원). <strong>CH24의 그 앱을 버리지 않고 운영 가능한
+수준으로 키우는 것</strong>이 이 챕터다 — 새로 만드는 오브젝트(CDS 확장·projection
+behavior·Metadata Extension 등)는 각 레슨이 그 자리에서 안내한다. 기준 환경은
+온프렘/S4 + ADT이고, Cloud 특유의 것은 L09에서 경계로 다룬다.</p>
 </blockquote>
-</section><section class="lblock"><h2>무엇을 쓰나 — 통합 지도</h2>
+</section><section class="lblock"><h2>요구를 계층으로 나누면</h2>
+<p>업무 시나리오를 정확히 적으면 이렇다.</p>
+<ol>
+<li>사용자는 Fiori 목록에서 예매를 보고, 새 예매를 만든다.</li>
+<li>저장 시 <strong>남은 좌석보다 많은 요청은 거부</strong>되고 메시지가 보인다.</li>
+<li>정상 예매는 상태 <code>N</code>, **취소하면 <code>C</code>**가 된다.</li>
+<li><strong>쓰다 만 예매는 Draft로 보관</strong>됐다가 이어서 쓸 수 있다.</li>
+<li>두 사람이 같은 예매를 동시에 고치면 <strong>잠금과 ETag</strong>가 사고를 막는다.</li>
+<li>권한 없는 사용자는 보지도, 취소하지도 못한다.</li>
+<li>**외부 프로그램(EML)**도 예매를 만들 수 있다 — 화면과 같은 규칙으로.</li>
+<li>운영 노출에는 통신 설정·released API·ATC·이송 확인이 따른다.</li>
+</ol>
 <table>
 <thead>
 <tr>
 <th>계층</th>
-<th>기술</th>
-<th>챕터</th>
+<th>산출물</th>
+<th>책임</th>
+<th>배운 곳</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>데이터</td>
-<td>테이블·DDIC</td>
-<td>CH03·07·09</td>
+<td>저장</td>
+<td><code>zbooking</code> + 확장 필드</td>
+<td>영속 데이터</td>
+<td>CH07·CH09·CH25</td>
 </tr>
 <tr>
-<td>모델</td>
-<td>CDS(ZI_/ZC_·Association)</td>
-<td>CH23</td>
+<td>Interface View</td>
+<td><code>ZI_Booking</code></td>
+<td>업무 <button class="term" type="button" data-term="객체">객체</button>의 뼈대(root)</td>
+<td>CH24-L02 → <a href="CH39-L02.html">L02</a></td>
 </tr>
 <tr>
-<td>동작</td>
-<td>RAP(BDEF/BIMP·Action·Validation)</td>
-<td>CH24</td>
+<td>Projection View</td>
+<td><code>ZC_Booking</code></td>
+<td>소비자가 볼 표면 + UI 주석</td>
+<td>CH24-L03 → <a href="CH39-L03.html">L03</a></td>
 </tr>
 <tr>
-<td>서비스</td>
-<td>Service Binding(OData)</td>
-<td>CH24</td>
+<td>Behavior</td>
+<td>BDEF + behavior pool(구현 <button class="term" type="button" data-term="Class">클래스</button> — CH24 그대로) + projection behavior</td>
+<td>동작 계약: CUD·검증·action + <strong>Draft·Lock·ETag·권한</strong></td>
+<td>CH24-L04～07 → <a href="CH39-L04.html">L04</a>·<a href="CH39-L05.html">L05</a></td>
 </tr>
 <tr>
-<td>UI</td>
-<td>Fiori Elements</td>
-<td>CH39-L06</td>
+<td>EML consumer</td>
+<td>ABAP 프로그램</td>
+<td>화면 밖에서 BO를 다루는 길</td>
+<td>CH24-L09 지도 → <a href="CH39-L06.html">L06</a> 실전</td>
+</tr>
+<tr>
+<td>Service</td>
+<td>Definition/Binding</td>
+<td>OData V4로 노출</td>
+<td>CH24-L06 → <a href="CH39-L07.html">L07</a></td>
+</tr>
+<tr>
+<td>동시성·권한</td>
+<td>lock·ETag·Draft·DCL/BDEF auth</td>
+<td>여러 사용자의 세계</td>
+<td>CH25·CH26 감각 → <a href="CH39-L08.html">L08</a></td>
 </tr>
 <tr>
 <td>운영</td>
-<td>권한·이송·로그</td>
-<td>CH32·35</td>
+<td>통신 설정·release contract·ATC·이송</td>
+<td>다른 시스템·운영자의 세계</td>
+<td>CH38 → <a href="CH39-L09.html">L09</a></td>
 </tr>
 </tbody></table>
-<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">Capstone 통합 지도 — 데이터→Fiori</span><a class="embed__open" href="../../../embeds/abap/CH39-L01-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH39-L01-S01.html" loading="lazy" title="Capstone 통합 지도 — 데이터→Fiori" style="height:420px"></iframe></figure>
-</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">풀스택 계층 지도 — 데이터에서 화면까지</span><a class="embed__open" href="../../../embeds/abap/CH39-L01-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH39-L01-S01.html" loading="lazy" title="풀스택 계층 지도 — 데이터에서 화면까지" style="height:520px"></iframe></figure>
+<p>표와 지도로 구조가 잡혔으면, 요구 카드를 직접 배치해 보자 — 이 판별이 Capstone
+내내 쓰는 근육이다.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">이 요구, 어느 계층의 책임인가</span><a class="embed__open" href="../../../embeds/abap/CH39-L01-S02.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH39-L01-S02.html" loading="lazy" title="이 요구, 어느 계층의 책임인가" style="height:560px"></iframe></figure>
+</section><section class="lblock"><h2>완료 기준 — &quot;화면이 뜨면 끝&quot;이 아니다</h2>
+<p>이 챕터의 완료 기준을 미리 고정한다. 마지막 레슨에서 이 표로 스스로 채점한다.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>기준</th>
+<th>확인 방법</th>
+<th>증명하는 레슨</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>정원 초과가 <strong>DB에 저장되지 않는다</strong></td>
+<td>화면과 EML 양쪽에서 거부되는지</td>
+<td>L05·L06·L07</td>
+</tr>
+<tr>
+<td>2</td>
+<td>취소는 <strong>action</strong>으로만 된다</td>
+<td>상태 필드를 직접 고치는 길이 없는지</td>
+<td>L05·L07</td>
+</tr>
+<tr>
+<td>3</td>
+<td>쓰다 만 예매가 <strong>Draft로 복구</strong>된다</td>
+<td>나갔다 들어와서 Resume</td>
+<td>L04·L07</td>
+</tr>
+<tr>
+<td>4</td>
+<td>동시 수정이 <strong>잠금/ETag로 통제</strong>된다</td>
+<td>두 <button class="term" type="button" data-term="세션">세션</button> 시나리오</td>
+<td>L08</td>
+</tr>
+<tr>
+<td>5</td>
+<td>권한 없는 사용자가 <strong>서버에서</strong> 거부된다</td>
+<td>버튼 숨김이 아니라</td>
+<td>L08</td>
+</tr>
+<tr>
+<td>6</td>
+<td>외부 호출이 <strong>통신 설정·released API</strong> 위에서 동작한다</td>
+<td>운영 체크리스트</td>
+<td>L09</td>
+</tr>
+</tbody></table>
+<p>(마지막 레슨의 릴리스 보드는 이 여섯 기준을 <strong>계층별 여덟 행</strong>으로 펼쳐 채점한다
+— 기준이 늘어나는 게 아니라 같은 기준을 산출물 단위로 다시 세는 것이다.)</p>
+</section><section class="lblock"><h2>흔한 실수와 점검 🚧</h2>
 <ul>
-<li><strong>한 번에 다 만들기</strong> → 계층을 순서대로(데이터→모델→동작→서비스→UI) 쌓는다.</li>
-<li><strong>범위 과욕</strong> → 핵심 흐름(예매·취소·검증)부터 완성하고 확장.</li>
+<li><strong>&quot;화면이 뜨면 완성&quot;</strong> → Fiori Preview는 검증 도구다. 위 완료 기준 여섯 줄이
+진짜 완성이다.</li>
+<li><strong>검증을 UI에만</strong> → 화면 검증은 경험을 좋게 할 뿐이다. API·EML이 우회할 수
+있으므로 <strong>업무 규칙은 Behavior에</strong> 있어야 한다(2번 요구가 7번 요구와 만나는
+지점).</li>
+<li><strong>Draft·잠금·ETag를 &quot;동시성&quot; 한 단어로 뭉개기</strong> → 셋은 다른 물건이다: 잠금 =
+편집 중 보호(비관), ETag = 읽은 상태와 저장 시점 비교(낙관), Draft = 쓰다 만
+것의 보관. <a href="CH39-L08.html">L08</a>에서 정확히 가른다.</li>
+<li><strong>기술 나열식 설계</strong> → 계층 표의 &quot;책임&quot; 칸이 비는 산출물은 만들 이유가 없는
+것이다.</li>
+</ul>
+</section><section class="lblock"><h2>정리 📌</h2>
+<ul>
+<li>Capstone = 배운 것의 나열이 아니라 <strong>한 시나리오를 계층 책임으로 번역해 끝까지
+연결</strong>하는 것.</li>
+<li>우리 앱 = CH24의 예매 RAP BO를 <strong>운영 가능한 수준</strong>(Draft·잠금·ETag·권한·EML·
+통신 설정)으로 키우기.</li>
+<li>완료 기준 여섯 줄을 고정했다 — 마지막에 이 표로 돌아온다.</li>
 </ul>
 <hr>
-<p>만들 것을 정의했다. 토대인 Interface View부터 → 다음 레슨.</p>
+<p>번역이 끝났으니 첫 계층부터 손본다. CH24의 <code>ZI_Booking</code>이 운영급 계약(관계·변경
+추적)을 담으려면 무엇이 더 필요한가.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>
