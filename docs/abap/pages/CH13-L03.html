@@ -40,16 +40,16 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>묶어서 요약하기</h2>
-<p>&quot;부서별 인원수&quot;, &quot;부서별 급여합계&quot;처럼 <strong>그룹마다 요약</strong>하고 싶다. <code>GROUP BY</code>와
+<p>&quot;항공사별 운항편 수&quot;, &quot;항공사별 예약 좌석 합계&quot;처럼 <strong>그룹마다 요약</strong>하고 싶다. <code>GROUP BY</code>와
 <button class="term" type="button" data-term="Aggregate">Aggregate</button>(집계 함수)다.</p>
 </section><section class="lblock"><h2>GROUP BY + 집계 (classic)</h2>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
-4</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> dept_id <span class="tok-kw">COUNT</span>( * ) <span class="tok-kw">AS</span> cnt <span class="tok-kw">SUM</span>( salary ) <span class="tok-kw">AS</span> total
-  <span class="tok-kw">FROM</span> ztperson
-  <span class="tok-kw">INTO</span> <span class="tok-kw">CORRESPONDING</span> <span class="tok-kw">FIELDS</span> <span class="tok-kw">OF</span> <span class="tok-kw">TABLE</span> lt_sum
-  <span class="tok-kw">GROUP</span> <span class="tok-kw">BY</span> dept_id.</code></pre></div></div>
+4</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> carrid <span class="tok-kw">COUNT</span>( * ) <span class="tok-kw">AS</span> cnt <span class="tok-kw">SUM</span>( seatsocc ) <span class="tok-kw">AS</span> total
+  <span class="tok-kw">FROM</span> sflight
+  <span class="tok-kw">INTO</span> <span class="tok-kw">CORRESPONDING</span> <span class="tok-kw">FIELDS</span> <span class="tok-kw">OF</span> <span class="tok-kw">TABLE</span> gt_sum
+  <span class="tok-kw">GROUP</span> <span class="tok-kw">BY</span> carrid.</code></pre></div></div>
 <ul>
 <li><button class="term" type="button" data-term="Aggregate">집계</button> 함수: <code>COUNT( * )</code>, <code>SUM( )</code>, <code>MAX( )</code>, <code>MIN( )</code>, <code>AVG( )</code>.</li>
 <li><strong>그룹 키가 아닌 컬럼</strong>은 집계 함수로 감싸야 한다(GROUP BY에 없는 평컬럼 금지).</li>
@@ -62,9 +62,9 @@
 <p><button class="term" type="button" data-term="Aggregate">집계</button>까지 필요 없고 <strong>중복 행만 제거</strong>하고 싶을 땐 <code>DISTINCT</code>를 쓴다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
-3</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> <span class="tok-kw">DISTINCT</span> dept_id
-  <span class="tok-kw">FROM</span> ztperson
-  <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> lt_dept.        <span class="tok-com">" 등장한 부서 ID를 중복 없이</span></code></pre></div></div>
+3</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> <span class="tok-kw">DISTINCT</span> carrid
+  <span class="tok-kw">FROM</span> sflight
+  <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> gt_carr.        <span class="tok-com">" 등장한 항공사 코드를 중복 없이</span></code></pre></div></div>
 <p><code>GROUP BY</code>가 &quot;묶어서 <strong>요약(집계)</strong>&quot;이라면, <code>DISTINCT</code>는 &quot;<strong>중복 행만</strong> 제거&quot;다.</p>
 </section><section class="lblock"><h2>직접 묶어 보기</h2>
 <p>그룹 키를 바꾸면 결과 행 수가 어떻게 달라지는지, GROUP BY와 DISTINCT가 어떻게
@@ -77,7 +77,7 @@
 <li><strong>콤마/@</strong> → classic이라 공백 구분, <code>@</code> 없이.</li>
 </ul>
 <hr>
-<p>그룹 요약은 됐다. &quot;인원 5명 이상인 부서만&quot;처럼 <strong>집계 결과로 필터</strong>하려면? → HAVING(다음 레슨).</p>
+<p>그룹 요약은 됐다. &quot;운항편 5편 이상인 항공사만&quot;처럼 <strong>집계 결과로 필터</strong>하려면? → HAVING(다음 레슨).</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

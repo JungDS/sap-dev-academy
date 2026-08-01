@@ -1,14 +1,14 @@
 # 02. PROGRESS — 현재 초점 · 다음 할 일
 
-> 📅 **최종수정: 2026-08-02 04:01 KST**
+> 📅 **최종수정: 2026-08-02 05:49 KST**
 > 🎯 **현재 상태와 다음 할 일만 담는다.** 완료/과거 항목·세션 서사는 **즉시 제거** — 정본은 git 이력 + `.archive/` 원장 + 라이브 인덱스([04 R16](04_CONVENTIONS.md)). 코드·git·감사로 파생 가능한 현황은 **복창하지 말고 포인터**(아래 📍).
 > 📖 **읽을 때:** 작업 시작 전(현황 파악) · 종료 시 갱신 — **갱신은 같은 커밋에 포함**([01](01_AI_SYNC.md)).
 
 ## 🎯 현재 초점
-**W3-A(수정 웨이브 1단) 완료(2026-08-02, 브랜치 `fix/w3a-consistency`) → W3-B(재작성급) 착수 여부 결정 대기.** W3-A 실행분 = 기술 오류 2(CH39-L08 ETag 표식·CH36-L02 회차별 산식) + 정본 자명 클러스터(상태코드 N/C·booking_id '0001'계 전면·표시 필드 artist/venue·잔여석 정의 콜아웃·72줄 5챕터·좌석 1～100·정원 스왑 복원) + 단건 소수정 20여 건 + 인물 최소 복원(안유진 아티스트·강호동 담당자·CH15 임베드 풀 인물 재시드) + CH39-L08 좌석 경합 시나리오(임베드 6번째) + 축4 갭 등재([09 §G](09_CURRICULUM_LEDGER.md)). 감사 정본 = `.archive/2026-08-02-w1-audit/`.
+**W3 수정 웨이브 완주(2026-08-02): W3-A(정합성 소수정) + W3-B(재작성급 — 브랜치 `fix/w3b-rewrite`) 전량 완료 → 감사 사이클 종료, 다음 대형 결정(전면 리빌드·축4 갭 편입) 대기.** W3-B 실행분 = CH14 모델 역전 교정(정본 ZV_PERF·본문 9레슨+전용 엔진 6종+임베드 7종) · CH11/13 SFLIGHT thread 복원(ztperson 퇴출·임베드 5종+엔진 4종 config화) · CH09-L04～L08 콘서트 소재화 · CH18-L02/L05/L10 구구단 회귀 제거(value-builder 엔진 포함) · CH15-L02 소재·CH26 인물 명명·CH17→18 약속 정직화·CH23↔CH39 ZI_Concert 모순 해소(+CH24-L02 브리지) · 09 §C-4 실현 기록. 무인물 구간(CH21·22·30·31) 재주입은 자연 주입점 부재로 **보류 판정**(억지 주입 금지 원칙).
 
 ## ▶️ 다음 할 일 (우선순위)
-1. **W3-B 착수 여부 결정**(범위 = [AXIS2_5 E절](../.archive/2026-08-02-w1-audit/AXIS2_5_THREAD_READABILITY.md)): ① CH14 모델 역전 교정(중) ② CH11·13 본편 소재 — 권장 ⓐ SFLIGHT thread 복원(원장 §C-4 실현·CH15-L08 정합 부수효과, 대안 ⓑ ztperson 정식 구축) + CH09-L04～L08 person 구간(대) ③ CH15-L02 소재·인물 재주입(CH21·22·26·30·31)(소～중) ④ 옵션: CH23→24 브리지·CH17→18 약속·CH18 구구단 회귀. 예상 총 2～3세션.
+1. **다음 대형 결정 대기** — ① 전면 리빌드 여부(아래 2) ② 축4 갭 17 편입(09 §G — 미니 편입 후보 3 포함) ③ CH39 확장 2·3축(취소표·다건 파급 — 좌석 경합은 W3-A에서 반영 완료). W3 발견·판정 정본 = `.archive/2026-08-02-w1-audit/`.
    ℹ️ **W1 잔여 백로그(수정 범위 밖 확정)**: 축6 D절 품질미달(빈약 desc 10여 키)·dead 키 8·[추정] Database View·CH15-L08↔L09 순서 역전(L08 [선행 사용] 처리로 최소 봉합)·도구 v2(동음이의 4쌍 제외·정확 일치 매칭).
    ℹ️ **CH37 노트(2026-08-02)**: 스팟 시뮬레이션(은서 통독+기술 감수)이 잡은 것 — 생성 FM **표준 파라미터** 정체 문단 신설(L01 "내가 선언" 모델과 충돌 해소), 무인 호출 = **3종 세트**(control_parameters+output_options `tddest`+`user_settings = space`, 감수 "실행 막는 급"), `gui_download` filetype에 `'TEXT'` 값 없음→`'ASC'`, `strlen(xstring)`은 컴파일 불가(고장 카드를 "크기 생략"으로 교체), OTF "장치 중립"→"프린터 언어 중립+폰트는 장치 종속", NAST 조건 탐색 VIP 예시 논리 역전 교정, "설정=무이송"→조건 레코드(무이송)/Customizing(이송) 분리, ENTRY는 NAST를 공용 영역으로 수령, Smart Forms 다줄 재료 = Import+DDIC Table Type(구형 Tables 탭은 호환용), CH38-L05 Released는 릴리스 권한 전제. 잔여 지적 = 환경 의존(tcode front-matter 미선언은 CH16+ 공통 — 축6에서 다룸).
    ℹ️ **CH39 노트(2026-08-01)**: 9레슨 재구성(분할 없이 단일 유지). codex UUID 모델 기각(booking_id 정본 유지 + `local_last_changed_at`/`last_changed_at` TIMESTAMPL 2필드 확장 — 표준 관례). 기술 감수가 활성화 차단급 문법 2건 적발·교정: **`lock master total etag F`는 한 줄**(독립 절 아님)·**strict draft BO는 validation을 `draft determine action Prepare { validation …; }`에 배정 필수**(둘 다 cheat-sheets-rap 실행예제로 검증). 학습자 3인이 잡은 구조 결함: projection behavior 부재→신설, CreatedBy 자동/수동 모순→@Semantics 자동으로 통일, Status readonly 누락(완료 기준 2 불성립)→잠금, ZBOOKAUTH 자기부정 코드→"실습은 비워 둔다" 지시화. R1 5.9→R2 7.2(은서 7.8/준호 6.9/수민 6.8) 후 확정 지적 전량 반영.

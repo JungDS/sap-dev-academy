@@ -40,7 +40,7 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>집계한 다음에 거르기</h2>
-<p><code>WHERE</code>는 <strong>그룹 짓기 전</strong> 행을 거른다. &quot;인원 5명 이상인 부서만&quot;처럼 <strong><button class="term" type="button" data-term="Aggregate">집계</button>
+<p><code>WHERE</code>는 <strong>그룹 짓기 전</strong> 행을 거른다. &quot;운항편 5편 이상인 항공사만&quot;처럼 <strong><button class="term" type="button" data-term="Aggregate">집계</button>
 결과로</strong> 거르려면 <code>HAVING</code>이 필요하다.</p>
 </section><section class="lblock"><h2>WHERE vs HAVING</h2>
 <table>
@@ -67,17 +67,17 @@
 3
 4
 5
-6</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> dept_id <span class="tok-kw">COUNT</span>( * ) <span class="tok-kw">AS</span> cnt
-  <span class="tok-kw">FROM</span> ztperson
-  <span class="tok-kw">INTO</span> <span class="tok-kw">CORRESPONDING</span> <span class="tok-kw">FIELDS</span> <span class="tok-kw">OF</span> <span class="tok-kw">TABLE</span> lt_sum
-  <span class="tok-kw">WHERE</span> age &gt;= <span class="tok-num">20</span>          <span class="tok-com">" 먼저 개별 행 필터</span>
-  <span class="tok-kw">GROUP</span> <span class="tok-kw">BY</span> dept_id
+6</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> carrid <span class="tok-kw">COUNT</span>( * ) <span class="tok-kw">AS</span> cnt
+  <span class="tok-kw">FROM</span> sflight
+  <span class="tok-kw">INTO</span> <span class="tok-kw">CORRESPONDING</span> <span class="tok-kw">FIELDS</span> <span class="tok-kw">OF</span> <span class="tok-kw">TABLE</span> gt_sum
+  <span class="tok-kw">WHERE</span> seatsocc &gt; <span class="tok-num">0</span>       <span class="tok-com">" 먼저 개별 행 필터(예약 있는 운항편만)</span>
+  <span class="tok-kw">GROUP</span> <span class="tok-kw">BY</span> carrid
   <span class="tok-kw">HAVING</span> <span class="tok-kw">COUNT</span>( * ) &gt;= <span class="tok-num">5</span>.  <span class="tok-com">" 그 다음 그룹 필터</span></code></pre></div></div>
 </section><section class="lblock"><h2>두 번 거른다 — 단계로 보기</h2>
 <p>이 한 문장은 <strong>두 번</strong> 거른다.</p>
 <ol>
-<li><code>WHERE age &gt;= 20</code> — 20세 미만은 <strong>그룹 만들기 전</strong>에 제외(개별 <strong>행</strong>).</li>
-<li><code>HAVING COUNT( * ) &gt;= 5</code> — 남은 사람을 부서별로 센 뒤, 5명 미만 부서는 제외(<strong>그룹</strong>).</li>
+<li><code>WHERE seatsocc &gt; 0</code> — 예약 없는 운항편은 <strong>그룹 만들기 전</strong>에 제외(개별 <strong>행</strong>).</li>
+<li><code>HAVING COUNT( * ) &gt;= 5</code> — 남은 운항편을 항공사별로 센 뒤, 5편 미만 항공사는 제외(<strong>그룹</strong>).</li>
 </ol>
 <p><button class="term" type="button" data-term="Aggregate">집계</button> 조건(<code>COUNT</code>·<code>SUM</code>)은 그룹이 생긴 <strong>뒤</strong>에야 의미가 있으므로 <code>WHERE</code>가 아니라
 <code>HAVING</code>에 둔다. <code>WHERE COUNT( * ) &gt;= 5</code>는 잘못된 방향이다(아직 COUNT가 없다).</p>

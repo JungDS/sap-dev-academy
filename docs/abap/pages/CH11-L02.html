@@ -46,7 +46,10 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>SALV 객체 만들기 — factory</h2>
-<p>앞 레슨에서 <button class="term" type="button" data-term="SALV">SALV</button>가 &quot;표로 보여 주는 가장 단순한 길&quot;임을 봤다. 이제 실제로 띄워 보자.
+<p>앞 레슨에서 <button class="term" type="button" data-term="SALV">SALV</button>가 &quot;표로 보여 주는 가장 단순한 길&quot;임을 봤다. 이제 실제로 띄워
+보자. 문법 연습은 어느 시스템에나 있는 표준 연습 테이블 <strong>SFLIGHT</strong>(<a href="CH08-L01.html">Chapter 8 ·
+읽기 연습</a>의 그 운항편)로 하고, 우리 예매 데이터 적용은
+<a href="CH11-L06.html">이 챕터의 캡스톤</a>에서 한다.
 SALV는 정적 메서드 <code>factory( )</code>로 <button class="term" type="button" data-term="Internal Table">Internal Table</button>(<button class="term" type="button" data-term="메모리">메모리</button>에 잠깐 두는 표)을 받아 <button class="term" type="button" data-term="ALV">ALV</button> 객체를 만든다.
 (<a href="CH10-L04.html">Chapter 10 · 정적 메서드</a>의 <code>=&gt;</code> 호출이다.)</p>
 <blockquote>
@@ -62,12 +65,14 @@ SALV는 정적 메서드 <code>factory( )</code>로 <button class="term" type="b
 6
 7
 8
-9</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> lo_alv <span class="tok-kw">TYPE</span> <span class="tok-kw">REF</span> <span class="tok-kw">TO</span> cl_salv_table.
+9
+10</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> gt_flight <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> sflight.
+<span class="tok-kw">DATA</span> go_alv    <span class="tok-kw">TYPE</span> <span class="tok-kw">REF</span> <span class="tok-kw">TO</span> cl_salv_table.
 
 <span class="tok-kw">TRY</span>.
     cl_salv_table=&gt;factory(
-      <span class="tok-kw">IMPORTING</span> r_salv_table = lo_alv      <span class="tok-com">" 만들어진 ALV 객체</span>
-      <span class="tok-kw">CHANGING</span>  t_table      = lt_person ). <span class="tok-com">" 표시할 내부 테이블</span>
+      <span class="tok-kw">IMPORTING</span> r_salv_table = go_alv       <span class="tok-com">" 만들어진 ALV 객체</span>
+      <span class="tok-kw">CHANGING</span>  t_table      = gt_flight ). <span class="tok-com">" 표시할 내부 테이블</span>
   <span class="tok-kw">CATCH</span> cx_salv_msg.
     <span class="tok-com">" 생성 실패 처리</span>
 <span class="tok-kw">ENDTRY</span>.</code></pre></div></div>
@@ -86,8 +91,9 @@ SALV는 정적 메서드 <code>factory( )</code>로 <button class="term" type="b
 <strong>② display( )</strong> 까지 눌러야 비로소 그리드가 화면에 나타난다. 이 차이가 이 레슨의 핵심이다.</p>
 </blockquote>
 </section><section class="lblock"><h2>컬럼 제목은 자동</h2>
-<p>방금 그리드의 컬럼 제목이 <code>PERSID</code>가 아니라 <strong>&quot;사번&quot;</strong>, <code>NAME</code>이 아니라 <strong>&quot;이름&quot;</strong> 으로
-떴다. 테이블 행이 <button class="term" type="button" data-term="Data Element">Data Element</button>로 타입팅돼 있으면 <strong>컬럼 제목(라벨)이 자동</strong>으로 붙기 때문이다.</p>
+<p>방금 그리드의 컬럼 제목이 <code>CARRID</code>가 아니라 <strong>&quot;항공사&quot;</strong>, <code>CONNID</code>가 아니라
+<strong>&quot;노선&quot;</strong> 처럼 사람 말로 떴다. 테이블 행이 <button class="term" type="button" data-term="Data Element">Data Element</button>로 타입팅돼 있으면
+<strong>컬럼 제목(라벨)이 자동</strong>으로 붙기 때문이다.</p>
 <blockquote>
 <p>🎁 <a href="CH03-L01.html">Chapter 03 · Data Element</a>에서 라벨을 채워 둔 수고가 <strong>여기서 보상</strong>받는다. 라벨을 비워 뒀다면
 컬럼 제목이 기술명이나 빈칸으로 떠 볼품없어진다.</p>

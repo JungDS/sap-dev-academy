@@ -103,11 +103,11 @@
 | CH12-L05-S01 | CH12-L05 | option-compare-lab | 단일 조건 SIGN·OPTION(EQ/BT/CP)·LOW/HIGH 토글→후보 통과 비교·CP wildcard(*,+)·E 반전 | ✅ |
 | CH12-L06-S01 | CH12-L06 | range-append-stepper | 코드 한 줄씩(CLEAR→sign→option→low→APPEND→SELECT)·ls_stat↔lr_stat·APPEND 전 빈 table·결과 5행 | ✅ |
 | CH12-L07-S01 | CH12-L07 | select-options-filter-sim | SELECT-OPTIONS Range Table(so_conc·so_stat·I/E·EQ/BT/CP→zbooking 필터) | ✅ |
-| CH13-L01-S01 | CH13-L01 | join-match-board | INNER JOIN 짝 맞추기(사람3·부서2·ON dept_id·부서 숨김 실험→짝 없는 행 제외·sy-subrc/dbcnt) | ✅ |
+| CH13-L01-S01 | CH13-L01 | join-match-board | INNER JOIN 짝 맞추기(운항편3·항공사2·ON carrid·항공사 숨김 실험→짝 없는 행 제외·sy-subrc/dbcnt) | ✅ |
 | CH13-L02-S01 | CH13-L02 | outer-join-switch | INNER↔LEFT OUTER 토글(공연3·예매·C003 보존/제외)+WHERE 오른쪽필터 함정(LEFT라도 빠짐) | ✅ |
 | CH13-L03-S01 | CH13-L03 | group-by-lab | 그룹 키(concert/status/복합)·모드(GROUP BY/DISTINCT) 토글→원본 색묶음→COUNT/SUM/MAX 접기 | ✅ |
 | CH13-L04-S01 | CH13-L04 | where-having-pipeline | 원본→WHERE(행 제외)→GROUP BY→HAVING(그룹 제외) 4단계 스텝퍼·코드 하이라이트 | ✅ |
-| CH13-L05-S01 | CH13-L05 | sort-priority-lab | ORDER BY 정렬 기준 토글(없음·age▼·age▼name▲·name▲)→재정렬·동률 2차기준·순서보장없음 경고 | ✅ |
+| CH13-L05-S01 | CH13-L05 | sort-priority-lab | ORDER BY 정렬 기준 토글(없음·fldate▼·fldate▼carrid▲·carrid▲)→재정렬·동률 2차기준·순서보장없음 경고 | ✅ |
 | CH13-L06-S01 | CH13-L06 | fae-safety-sim | FOR ALL ENTRIES 기준목록×안전장치 토글→실행: 제한조회/빈목록보호/⚠️전체조회 위험·중복제거 | ✅ |
 | CH13-L07-S01 | CH13-L07 | module-choice-cards | (재사용) 조회 전략 의사결정 카드 5문항→JOIN/FAE/ABAP/GROUP BY/LEFT OUTER 분류·이유 | ✅ |
 | CH13-L08-S01 | CH13-L08 | join-aggregate-visualizer | LEFT OUTER JOIN+GROUP BY SUM(공연별 booked·LEFT/INNER 토글·취소 제외) | ✅ |
@@ -446,7 +446,7 @@
 | include-exclude-judge (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH12-L04-S01 | IEJ_CFG 주도 · 포함/제외 조건→후보별 통과/탈락 판정+이유(matchOpt EQ/BT/CP…) · 다크 자동 |
 | option-compare-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH12-L05-S01 | OCL_CFG 주도 · 단일 조건 SIGN/OPTION/LOW/HIGH 편집→후보 매칭·CP wildcard·HIGH BT시만 표시 · 다크 자동 |
 | range-append-stepper (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH12-L06-S01 | RAS_CFG 주도 · 코드 한 줄씩 실행→ls_stat/lr_stat/SELECT 결과·ABAP 하이라이트·result는 lr로 data 필터 · 다크 자동 |
-| join-match-board (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH13-L01-S01 | JMB_CFG 주도 · 사람·부서 카드 ON 매칭→INNER 결과·부서 숨김 실험·sy-subrc/dbcnt · 다크 자동 |
+| join-match-board (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH13-L01-S01 | JMB_CFG 주도 · 운항편·항공사 카드 ON 매칭→INNER 결과·마스터 숨김 실험·sy-subrc/dbcnt · 다크 자동 |
 | outer-join-switch (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH13-L02-S01 | OJS_CFG 주도 · INNER↔LEFT 토글+WHERE 오른쪽필터 함정·SQL 미리보기·보존 점검 · 다크 자동 |
 | group-by-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH13-L03-S01 | GBL_CFG 주도 · 그룹키/모드 토글→원본 색묶음·COUNT/SUM/MAX·DISTINCT 비교 · 다크 자동(seg base=surface) |
 | where-having-pipeline (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH13-L04-S01 | WHP_CFG 주도 · 4단계 스텝퍼(원본→WHERE→GROUP BY→HAVING)·행 vs 그룹 필터·코드 하이라이트 · 다크 자동 |

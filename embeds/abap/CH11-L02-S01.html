@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- CH11-L02-S01 — 엔진: salv-grid-simulator (embeds/_engine/salv-grid-simulator.{js,css}) · 자체 postHeight.
-     ✅ copy(내용 정확) — config=window.SALV_CFG(generic person/salary). 게이팅: OO ALV(SALV)·classic. REF TO·TRY/CATCH는 advanceUse(L2 선행). -->
+     ✅ copy(내용 정확) — config=window.SALV_CFG(SFLIGHT 표준 연습 테이블). 게이팅: OO ALV(SALV)·classic. REF TO·TRY/CATCH는 advanceUse(L2 선행). -->
 <html lang="ko" data-eng="salv-grid-simulator">
 <head>
 <meta charset="utf-8" />
@@ -25,7 +25,7 @@
     <div class="codebox__body"><pre class="code-gut" id="codeGut">1</pre><pre class="code" id="code"></pre></div>
   </div>
 
-  <button class="lt-toggle" id="ltToggle" type="button">▾ lt_person 데이터 보기</button>
+  <button class="lt-toggle" id="ltToggle" type="button">▾ gt_flight 데이터 보기</button>
   <div class="lt-data" id="ltData" hidden></div>
 
   <div class="steps">
@@ -54,34 +54,35 @@
 
 <script>
 window.SALV_CFG = {
-  itab:'lt_person', sumKey:'salary',
+  itab:'gt_flight', sumKey:'seatsocc',
   cols:[
-    {key:'persid', label:'사번', num:true},
-    {key:'name',   label:'이름', num:false},
-    {key:'age',    label:'나이', num:true},
-    {key:'city',   label:'도시', num:false},
-    {key:'salary', label:'급여', num:true}
+    {key:'carrid',   label:'항공사', num:false},
+    {key:'connid',   label:'노선', num:true},
+    {key:'fldate',   label:'운항일', num:false},
+    {key:'seatsmax', label:'좌석 수', num:true},
+    {key:'seatsocc', label:'예약 좌석', num:true}
   ],
   data:[
-    {persid:1001,name:'정훈영',age:33,city:'Seoul',salary:5200},
-    {persid:1002,name:'손흥민',age:31,city:'London',salary:4800},
-    {persid:1003,name:'아이유',age:30,city:'Seoul',salary:4100},
-    {persid:1004,name:'유재석',age:51,city:'Seoul',salary:6000},
-    {persid:1005,name:'김연아',age:33,city:'Busan',salary:3900},
-    {persid:1006,name:'차은우',age:26,city:'Incheon',salary:3500}
+    {carrid:'AA', connid:17,  fldate:'2026-07-01', seatsmax:385, seatsocc:371},
+    {carrid:'AA', connid:17,  fldate:'2026-07-08', seatsmax:385, seatsocc:120},
+    {carrid:'LH', connid:400, fldate:'2026-07-02', seatsmax:280, seatsocc:275},
+    {carrid:'LH', connid:402, fldate:'2026-07-03', seatsmax:280, seatsocc:64},
+    {carrid:'SQ', connid:15,  fldate:'2026-07-05', seatsmax:310, seatsocc:305},
+    {carrid:'SQ', connid:15,  fldate:'2026-07-12', seatsmax:310, seatsocc:98}
   ],
   code:[
-    {t:'DATA lo_alv TYPE REF TO cl_salv_table.', g:'factory'},
+    {t:'DATA gt_flight TYPE TABLE OF sflight.', g:'factory'},
+    {t:'DATA go_alv    TYPE REF TO cl_salv_table.', g:'factory'},
     {t:'', g:''},
     {t:'TRY.', g:'factory'},
     {t:'    cl_salv_table=>factory(', g:'factory'},
-    {t:'      IMPORTING r_salv_table = lo_alv      " 만들어진 ALV 객체', g:'factory'},
-    {t:'      CHANGING  t_table      = lt_person ). " 표시할 내부 테이블', g:'factory'},
+    {t:'      IMPORTING r_salv_table = go_alv       " 만들어진 ALV 객체', g:'factory'},
+    {t:'      CHANGING  t_table      = gt_flight ). " 표시할 내부 테이블', g:'factory'},
     {t:'  CATCH cx_salv_msg.', g:'factory'},
     {t:'    " 생성 실패 처리', g:'factory'},
     {t:'ENDTRY.', g:'factory'},
     {t:'', g:''},
-    {t:'lo_alv->display( ).            " 화면에 그리드 표시', g:'display'}
+    {t:'go_alv->display( ).            " 화면에 그리드 표시', g:'display'}
   ]
 };
 </script>
