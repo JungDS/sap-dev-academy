@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<!-- CH37-L01-S02 — 엔진: stage-chips(신규 범용) · _engine/_base.css. Smart Forms 값 누락 원인 층 판별. -->
+<html lang="ko" data-eng="stage-chips">
+<head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>원인 층 찾기 · CH37-L01-S02</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/stage-chips.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">값이 안 나오는 원인 찾기</p>
+  <p class="lead">고장 시나리오를 누르면 어느 층에서 멈췄는지 신호등이 켜집니다. <b>양식을 열기 전에 층부터 좁히는</b> 습관을 만드세요.</p>
+  <div id="chips"></div>
+  <div id="cases"></div>
+  <div class="verdict" id="verdict"></div>
+  <div class="note">💡 순서 = ABAP 데이터 → Interface 계약 → Node 배치 → 생성 FM. 앞 층이 빨간불이면 뒤 층은 죄가 없습니다. (사례는 교육용 가상)</div>
+  <script type="application/json" id="sc-cfg">
+  {
+    "chips": ["ABAP 데이터", "Form Interface", "Window/Node", "생성 FM 호출"],
+    "scenarios": [
+      { "label": "고객명이 빈칸", "states": ["bad", "off", "off", "off"], "warn": true,
+        "verdict": "🚨 <b>1층: ABAP 데이터</b> — 디버거로 보면 gs_booking-customer가 initial입니다. 양식 문제가 아니라 <b>프로그램의 데이터 준비</b> 문제. 조회 조건부터 고치세요." },
+      { "label": "값은 있는데 안 찍힘", "states": ["ok", "bad", "off", "off"], "warn": true,
+        "verdict": "🚨 <b>2층: Interface 계약</b> — ABAP은 is_ticket으로 넘기는데 양식은 IS_BOOKING을 기대합니다. 호출 파라미터와 Form Interface <b>이름을 맞추세요.</b>" },
+      { "label": "2쪽부터 좌석이 잘림", "states": ["ok", "ok", "bad", "off"], "warn": true,
+        "verdict": "🚨 <b>3층: Node 배치</b> — 좌석 목록이 HEADER(고정 영역)에 있습니다. 줄 수가 변하는 내용은 <b>MAIN window</b>로 옮겨야 페이지를 타고 흐릅니다." },
+      { "label": "운영 이송 후 호출 실패", "states": ["ok", "ok", "ok", "bad"], "warn": true,
+        "verdict": "🚨 <b>4층: 생성 FM</b> — /1BCDWB/SF00000123을 하드코딩했군요. 시스템마다 이름이 다릅니다. <b>SSF_FUNCTION_MODULE_NAME</b>으로 조회해 호출하세요." },
+      { "label": "정상 출력", "states": ["ok", "ok", "ok", "ok"],
+        "verdict": "✓ 네 층이 모두 초록불 — 데이터가 계약을 타고 올바른 자리에 배치되어, 조회한 생성 FM으로 출력됐습니다." }
+    ]
+  }
+  </script>
+</div>
+<script src="../_engine/stage-chips.js" defer></script>
+</body>
+</html>
