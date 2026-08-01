@@ -19,18 +19,18 @@
   <div class="dvj-cols">
     <div class="dvj-card code">
       <div class="dvj-card__hd">① 코드 JOIN (CH13 스타일)</div>
-      <div class="dvj-card__bd"><pre><span class="kw">SELECT</span> c~concert_id p~perf_name
-       c~date c~hall_id
-  <span class="kw">FROM</span> zconcert <span class="kw">AS</span> c
-  <span class="kw">INNER JOIN</span> zperf <span class="kw">AS</span> p
-    <span class="kw">ON</span> c~perf_id = p~perf_id
+      <div class="dvj-card__bd"><pre><span class="kw">SELECT</span> p~concert_id p~perf_no
+       p~perf_date c~artist
+  <span class="kw">FROM</span> zperf <span class="kw">AS</span> p
+  <span class="kw">INNER JOIN</span> zconcert <span class="kw">AS</span> c
+    <span class="kw">ON</span> c~concert_id = p~concert_id
   <span class="kw">INTO TABLE</span> gt_out.</pre></div>
     </div>
     <div class="dvj-card view">
-      <div class="dvj-card__hd">② Database View ZV_CONCERT (SE11)</div>
+      <div class="dvj-card__hd">② Database View ZV_PERF (SE11)</div>
       <div class="dvj-card__bd">
-        <div class="dvj-row">Basis: <b>zconcert</b>, <b>zperf</b></div>
-        <div class="dvj-row">Join: zconcert~perf_id = zperf~perf_id</div>
+        <div class="dvj-row">Basis: <b>zperf</b>, <b>zconcert</b></div>
+        <div class="dvj-row">Join: zperf~concert_id = zconcert~concert_id</div>
         <div class="dvj-h" style="margin:8px 0 4px">View Fields</div>
         <div class="dvj-fields" id="dvjFields"></div>
       </div>
@@ -52,17 +52,18 @@
 window.DVJ_CFG = {
   baseFields: [
     { key: 'concert_id', label: 'concert_id' },
-    { key: 'perf_name', label: 'perf_name' },
-    { key: 'date', label: 'date' },
-    { key: 'hall_id', label: 'hall_id' }
+    { key: 'perf_no', label: 'perf_no' },
+    { key: 'perf_date', label: 'perf_date' },
+    { key: 'artist', label: 'artist' }
   ],
-  narrowDrop: 'perf_name',
-  perf: { P001: '클래식 갈라', P002: '재즈 나이트' },
-  concert: [
-    { concert_id: 'C001', perf_id: 'P001', date: '2026-07-01', hall_id: 'H01' },
-    { concert_id: 'C002', perf_id: 'P002', date: '2026-07-03', hall_id: 'H02' }
+  narrowDrop: 'artist',
+  master: { C001: '안유진', C002: 'ABAP Trio' },
+  perfRows: [
+    { concert_id: 'C001', perf_no: '001', perf_date: '2026-07-01' },
+    { concert_id: 'C001', perf_no: '002', perf_date: '2026-07-02' },
+    { concert_id: 'C002', perf_no: '001', perf_date: '2026-07-03' }
   ],
-  extraRow: { concert_id: 'C003', perf_id: 'P999', date: '2026-07-05', hall_id: 'H01' }
+  extraRow: { concert_id: 'C999', perf_no: '001', perf_date: '2026-07-05' }
 };
 </script>
 <script src="../_engine/db-view-vs-join.js" defer></script>
