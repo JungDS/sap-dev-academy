@@ -1,6 +1,6 @@
 ---
 id: CH24
-track: TRACK-01
+track: TRACK-02
 order: 24
 title: "RAP / ABAP Cloud 입문"
 intro: "현대 SAP 표준 — 트랜잭션 앱을 RAP로 짓고 싶다."

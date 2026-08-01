@@ -1,15 +1,15 @@
 # 02. PROGRESS — 현재 초점 · 다음 할 일
 
-> 📅 **최종수정: 2026-08-02 02:08 KST**
+> 📅 **최종수정: 2026-08-02 03:00 KST**
 > 🎯 **현재 상태와 다음 할 일만 담는다.** 완료/과거 항목·세션 서사는 **즉시 제거** — 정본은 git 이력 + `.archive/` 원장 + 라이브 인덱스([04 R16](04_CONVENTIONS.md)). 코드·git·감사로 파생 가능한 현황은 **복창하지 말고 포인터**(아래 📍).
 > 📖 **읽을 때:** 작업 시작 전(현황 파악) · 종료 시 갱신 — **갱신은 같은 커밋에 포함**([01](01_AI_SYNC.md)).
 
 ## 🎯 현재 초점
-**승인 플랜 3작업 전량 완료(2026-08-02) → 사용자 결정 대기.** ① 배지(PR #36) · ② CH37 OTF(PR #37) · ③ W0+W1 감사(브랜치 `audit/w0-w1` — 도구 신작 + 축1·3·6 리포트 = [`.archive/2026-08-02-w1-audit/W1_SUMMARY.md`](../.archive/2026-08-02-w1-audit/W1_SUMMARY.md)). 결정 대기 3건 = **수정 실행 승인 범위(축1 게이팅 13건·축6 상위 10·부수) / 축3 트랙 3분할(B안) 채택 여부 / W2(축2·4·5) 진행 여부**. 관통 확정 범위 = CH01～31·33·36·37·39([09 §A](09_CURRICULUM_LEDGER.md)).
+**6축 전수 감사 완주(2026-08-02) → W3(수정 웨이브) 결정 대기.** W1 결정 3건 실행 완료(수정 전량·트랙 3분할 17/7/15·W2 진행 — 브랜치 `exec/w1-decisions`) + W2 보고 완료([`W2_SUMMARY`](../.archive/2026-08-02-w1-audit/W2_SUMMARY.md)): 축2 = 서사·스키마 건강 / 데이터 정합성 균열(횡단 클러스터 10 + 단건 14, 기술 오류 2 포함), 축4 = 실무 갭 17(Codex), 축5 = 패턴 6군, CH39 밀도 = 충족(빈 축 3 확장 후보). 관통 확정 범위 = CH01～31·33·36·37·39([09 §A](09_CURRICULUM_LEDGER.md)).
 
 ## ▶️ 다음 할 일 (우선순위)
-1. **사용자 결정 반영**(위 3건) — 승인분부터 실행. 감사 발견 정본 = `.archive/2026-08-02-w1-audit/`(축1 조치 A～E 목록 포함) + `.archive/_generated/GATING_AUDIT.md`(재생성물, `node tools/audit-gating.mjs`).
-   ℹ️ **W1 핵심(2026-08-02)**: 게이팅 건강(STRUCT/PREREQ/R6 전량 0 — classic 구간 modern 토큰 실측 0). 실질 = START-OF-SELECTION 선행사용 3(CH10-L01/L02·CH11-L04)·경계 10·introduces 원장 정리 7. 축6 사실 오류 3건 [확실](`내장함수`의 mod·CDS View Entity "DB 계층" 서술·tcodes SE21 $TMP 문장) + CDS 풀스펠 전무 + 백틱 47키 팝업 노출(shell.js 미변환) + tcodes objects 5종 빈 팝업. 축3 권고 = 3트랙(CH01～17/18～24/25～39, prev/next 무영향 실측).
+1. **W3 결정 반영** — 대기 3건: ① 수정 웨이브 범위(1순위 = 기술 오류 2 + 정본 자명 클러스터 A1/A2/A3/A5/A9 + 단건 소수정 · 재작성급 = CH14 모델 역전·CH11/13 ztperson 본편·CH15 임베드 · 인물 복원) ② 축4 갭 17 반영 여부(전면 리빌드 결정과 연동 권장) ③ CH39 확장 3축. 발견 정본 = `.archive/2026-08-02-w1-audit/`(W1+W2 리포트 6종) + `GATING_AUDIT.md`(재생성물).
+   ℹ️ **W1 잔여 백로그(수정 범위 밖 확정)**: 축6 D절 품질미달(빈약 desc 10여 키)·dead 키 8·[추정] Database View·CH15-L08↔L09 순서 역전(L08 [선행 사용] 처리로 최소 봉합)·도구 v2(동음이의 4쌍 제외·정확 일치 매칭).
    ℹ️ **CH37 노트(2026-08-02)**: 스팟 시뮬레이션(은서 통독+기술 감수)이 잡은 것 — 생성 FM **표준 파라미터** 정체 문단 신설(L01 "내가 선언" 모델과 충돌 해소), 무인 호출 = **3종 세트**(control_parameters+output_options `tddest`+`user_settings = space`, 감수 "실행 막는 급"), `gui_download` filetype에 `'TEXT'` 값 없음→`'ASC'`, `strlen(xstring)`은 컴파일 불가(고장 카드를 "크기 생략"으로 교체), OTF "장치 중립"→"프린터 언어 중립+폰트는 장치 종속", NAST 조건 탐색 VIP 예시 논리 역전 교정, "설정=무이송"→조건 레코드(무이송)/Customizing(이송) 분리, ENTRY는 NAST를 공용 영역으로 수령, Smart Forms 다줄 재료 = Import+DDIC Table Type(구형 Tables 탭은 호환용), CH38-L05 Released는 릴리스 권한 전제. 잔여 지적 = 환경 의존(tcode front-matter 미선언은 CH16+ 공통 — 축6에서 다룸).
    ℹ️ **CH39 노트(2026-08-01)**: 9레슨 재구성(분할 없이 단일 유지). codex UUID 모델 기각(booking_id 정본 유지 + `local_last_changed_at`/`last_changed_at` TIMESTAMPL 2필드 확장 — 표준 관례). 기술 감수가 활성화 차단급 문법 2건 적발·교정: **`lock master total etag F`는 한 줄**(독립 절 아님)·**strict draft BO는 validation을 `draft determine action Prepare { validation …; }`에 배정 필수**(둘 다 cheat-sheets-rap 실행예제로 검증). 학습자 3인이 잡은 구조 결함: projection behavior 부재→신설, CreatedBy 자동/수동 모순→@Semantics 자동으로 통일, Status readonly 누락(완료 기준 2 불성립)→잠금, ZBOOKAUTH 자기부정 코드→"실습은 비워 둔다" 지시화. R1 5.9→R2 7.2(은서 7.8/준호 6.9/수민 6.8) 후 확정 지적 전량 반영.
    ℹ️ **CH38 노트(2026-08-01)**: 게이팅 실측 — ABAP Unit/DI/Mock 정식 도입 = **CH27-L05**(codex "CH26"은 구번호), `SUBMIT`·`CL_ABAP_TESTDOUBLE`·`CL_OSQL_TEST_ENVIRONMENT`·`TEST-SEAM` = CH38 첫 등장 L3. CL_ABAP_TESTDOUBLE 공식 패턴(CAST+create→configure_call→빈 호출 바인딩)은 cheat-sheets-main 실행예제로 검증(codex 스켈레톤의 동적 호출은 오류였음). 시뮬레이션 R1 6.0 → R2 은서 7.8/준호 6.8/수민 7.3 — R2가 재보강 유발 오류 2건(L06 롤백 문답·L02 회귀 서사 불성립)을 적발, 기술 감수 [확실] 20건+(CVA 라이선스·RC8 부분반영/RC12·선행 import 추월·ST22·동시실행 ENQUEUE·BAL 만료/SLG2 등) 반영. 잔여는 환경 의존(ADT/QAS/팀 부재)뿐.

@@ -1,6 +1,6 @@
 ---
 id: CH33
-track: TRACK-02
+track: TRACK-03
 order: 33
 title: "인터페이스 실무: BAPI/RFC/BDC/File"
 intro: "외부 시스템과 데이터를 주고받아야 한다."

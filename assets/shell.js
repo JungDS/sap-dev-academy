@@ -4,6 +4,7 @@
    §0 진입 시 항상 최상단(scrollRestoration='manual' + pageshow) — 이전/다음 왕복 시 중간 시작 방지.
    embedTheme: 체험 iframe(same-origin)에 .dark 주입 — 다크모드 동기화(로드/토글 시).
    데이터: curriculum.json은 __SDA__.dataBase(docs/abap), glossary·tcodes는 __SDA__.siteRoot+reference/ 기준 fetch. fetch라 HTTP 서빙 필수.
+   fmtCode(): esc 후 `백틱` 조각을 <code>로 — 용어 팝업·용어 레일 목록·T-code 모달/요약 팝업의 desc 계열 공통.
    레퍼런스: sample/structure/lesson-shell-v2-c.html · 규칙: .project-docs/08_LESSON_SHELL_SPEC.md
    ※ T-code 미니페이지 모달은 Phase 2(tcodes.json + front-matter tcode)에서 추가. */
 (function () {
@@ -21,6 +22,7 @@
   function q(s) { return doc.querySelector(s); }
   function qa(s) { return Array.prototype.slice.call(doc.querySelectorAll(s)); }
   function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+  function fmtCode(s) { return esc(s).replace(/`([^`]+)`/g, "<code>$1</code>"); }  // desc의 `백틱`을 인라인 코드로
   function slug(s) { return String(s).trim().toLowerCase().replace(/[^\w가-힣]+/g, "-").replace(/^-+|-+$/g, "") || "sec"; }
   function isMobile() { return window.matchMedia("(max-width:1000px)").matches; }
   var LS = (function () { try { return window.localStorage; } catch (e) { return null; } })();
@@ -141,7 +143,7 @@
     }).join("");
     var seen = {}, termsArr = [];
     qa(".prose .term").forEach(function (t) { var k = t.getAttribute("data-term"); if (!k || seen[k]) return; seen[k] = 1; termsArr.push(k); });
-    var termsHtml = termsArr.map(function (k) { var g = (gloss && gloss[k]) || {}; return "<li><b>" + esc(g.title || k) + "</b><span>" + esc(g.desc || "") + "</span></li>"; }).join("");
+    var termsHtml = termsArr.map(function (k) { var g = (gloss && gloss[k]) || {}; return "<li><b>" + esc(g.title || k) + "</b><span>" + fmtCode(g.desc || "") + "</span></li>"; }).join("");
     host.innerHTML =
       '<div class="rail__icons">' +
         '<button class="rail__btn on" data-rtab="lesson" title="레슨">📑</button>' +
@@ -186,8 +188,8 @@
       pop.innerHTML =
         '<button class="term-popup__x" aria-label="닫기">×</button>' +
         '<b class="term-popup__title">' + esc(g.title || t.getAttribute("data-term")) + "</b>" +
-        '<span class="term-popup__desc">' + esc(g.desc || "") + "</span>" +
-        (g.analogy ? '<p class="term-popup__analogy">' + esc(g.analogy) + "</p>" : "") +
+        '<span class="term-popup__desc">' + fmtCode(g.desc || "") + "</span>" +
+        (g.analogy ? '<p class="term-popup__analogy">' + fmtCode(g.analogy) + "</p>" : "") +
         '<span class="term-popup__pin">📌 클릭하면 고정</span>';
       pop.hidden = false; place(t);
       pop.querySelector(".term-popup__x").onclick = function () { destroy(true); };
@@ -236,10 +238,10 @@
       }).join("");
     }
     function renderBody(d) {
-      var h = "<h4>📌 한 줄 정의</h4><p>" + esc(d.intro) + "</p>";
+      var h = "<h4>📌 한 줄 정의</h4><p>" + fmtCode(d.intro) + "</p>";
       if (d.open) h += '<h4>🚪 어떻게 여나요?</h4><p>명령 필드에 입력하고 Enter:</p><div class="cmdfield">' + esc(d.open) + "</div>";
       if (d.groups && d.groups.length) h += '<h4>🛠️ 여기서 다루는 객체</h4><p class="dim">항목을 누르면 한 줄 설명이 떠요.</p>' + objChips(d.groups);
-      if (d.pitfalls && d.pitfalls.length) h += "<h4>⚠️ 자주 걸리는 점</h4><ul>" + d.pitfalls.map(function (p) { return "<li>" + p + "</li>"; }).join("") + "</ul>";
+      if (d.pitfalls && d.pitfalls.length) h += "<h4>⚠️ 자주 걸리는 점</h4><ul>" + d.pitfalls.map(function (p) { return "<li>" + fmtCode(p) + "</li>"; }).join("") + "</ul>";
       if (d.related && d.related.length) h += '<h4>🔗 함께 보는 트랜잭션</h4><div class="related">' + d.related.map(function (r) {
         var code = r[0], label = r[1] || "";
         return tcodes[code]   // 정의된 T-code면 클릭해서 그 미니페이지로 이동
@@ -254,7 +256,7 @@
       closeSum();
       var key = chip.getAttribute("data-sum");
       sumPop = doc.createElement("div"); sumPop.className = "sum-popup";
-      sumPop.innerHTML = "<b>" + esc(key) + "</b><span>" + esc(objects[key] || "") + "</span>";
+      sumPop.innerHTML = "<b>" + esc(key) + "</b><span>" + fmtCode(objects[key] || "") + "</span>";
       doc.body.appendChild(sumPop);
       var r = chip.getBoundingClientRect();
       sumPop.style.left = Math.min(r.left, window.innerWidth - sumPop.offsetWidth - 12) + "px";

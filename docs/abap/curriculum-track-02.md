@@ -1,400 +1,252 @@
-# ABAP 커리큘럼 — TRACK-02 · ABAP 실무
+# ABAP 커리큘럼 — TRACK-02 · Modern ABAP과 새 개발 모델
 
 > 🤖 **생성물** — `tools/export-curriculum-md.mjs`(= `npm run build:curriculum-md`)로 자동 생성. **직접 수정 금지**, 내용은 `content/abap/**.md` front-matter에서 고치고 재생성한다.
-> 🎯 **목적** — ABAP 실무 트랙 전용 뷰. 전체는 curriculum.md.
-> 📊 트랙 1 · 챕터 15 · 레슨 88
-> 🕒 생성: 2026-08-01T16:40:30.495Z
+> 🎯 **목적** — Modern ABAP과 새 개발 모델 트랙 전용 뷰. 전체는 curriculum.md.
+> 📊 트랙 1 · 챕터 7 · 레슨 60
+> 🕒 생성: 2026-08-01T17:42:33.183Z
 
 학습 철학: 분류 순서로 외우지 않고, **불편을 먼저 겪고 그 해결책으로 개념을 배우는** 동기부여형. SQL은 CH07~16 classic → CH18+ modern 경계.
 
 ---
 
-## TRACK-02 · ABAP 실무
+## TRACK-02 · Modern ABAP과 새 개발 모델
 
-현업 시나리오로 응용·고급 개발을 다룬다.
+문법이 새 세대로 바뀐다 — Modern Syntax·새 SQL·OO·CDS·RAP 입문.
 
-### CH25 · 실무 데이터 변경과 트랜잭션 제어 _(난이도: 중급)_
+### CH18 · Modern ABAP Syntax _(난이도: 중급)_
 
-> 실제로 데이터를 바꾸고 커밋·롤백을 제어해야 한다.
+> 장황한 고전 구문이 번거롭다 — 현대 ABAP으로 간결하게.
 
-**키워드**: INSERT, UPDATE, MODIFY, COMMIT WORK, LUW
+**키워드**: inline DATA, VALUE, FOR, string template, CORRESPONDING
 
-**레슨 (5)**
-- **CH25-L01 · INSERT / UPDATE / MODIFY / DELETE 실무 기준** _(order 1)_
-  - 다룰 내용: 직접 DB를 바꾼다 — 네 가지 DML과 감사필드.
-  - 키워드: INSERT, UPDATE, MODIFY, DELETE, 감사필드
-- **CH25-L02 · COMMIT WORK / ROLLBACK WORK** _(order 2)_
-  - 다룰 내용: 변경을 확정하거나 되돌린다 — 트랜잭션 제어.
-  - 키워드: COMMIT WORK, ROLLBACK WORK, 트랜잭션
-- **CH25-L03 · DB LUW와 SAP LUW 차이** _(order 3)_
-  - 다룰 내용: 트랜잭션의 두 단위 — DB LUW와 SAP LUW.
-  - 키워드: LUW, SAP LUW, Update Module, CALL FUNCTION IN UPDATE TASK
-- **CH25-L04 · 오류 로그와 재처리 구조** _(order 4)_
-  - 다룰 내용: 변경이 실패했을 때 — 기록하고 다시 처리한다.
-  - 키워드: 오류 로그, 재처리, BAL, sy-subrc
-- **CH25-L05 · 대량 변경 시 Package 처리** _(order 5)_
-  - 다룰 내용: 수십만 건을 나눠서 — 패키지 단위 COMMIT.
-  - 키워드: Package, 대량처리, COMMIT, 메모리
+**레슨 (11)**
+- **CH18-L01 · Inline Declaration** _(order 1)_
+  - 다룰 내용: 선언 위치를 의도 가까이로 — DATA()/FINAL() 인라인 선언.
+  - 키워드: inline, DATA(), FINAL(), declaration position, Modern
+- **CH18-L02 · VALUE Constructor Expression** _(order 2)_
+  - 다룰 내용: Structure·내부 테이블을 결과 모양 그대로 — VALUE
+  - 키워드: VALUE #(), Constructor, Internal Table, BASE, FOR
+- **CH18-L03 · CORRESPONDING과 구조 매핑** _(order 3)_
+  - 다룰 내용: 이름이 같은 필드를 새 타입으로 옮긴다 — CORRESPONDING·MAPPING·EXCEPT.
+  - 키워드: CORRESPONDING #(), MAPPING, EXCEPT, MOVE-CORRESPONDING
+- **CH18-L04 · Table Expression** _(order 4)_
+  - 다룰 내용: 한 행을 값처럼 읽는다 — tab[ ]·line_exists·line_index (짧지만 안전하게).
+  - 키워드: Table Expression, line_exists, line_index, CX_SY_ITAB_LINE_NOT_FOUND
+- **CH18-L05 · String Template과 내장 함수** _(order 5)_
+  - 다룰 내용: 출력 문장 모양 그대로 — | … { } … | 템플릿과 함수형 문자열 함수.
+  - 키워드: String Template, | |, to_upper, substring, strlen
+- **CH18-L06 · CONV·EXACT 변환 표현식** _(order 6)_
+  - 다룰 내용: 임시 변수 없이 그 자리에서 타입을 바꾸는 CONV, 손실을 막는 EXACT.
+  - 키워드: CONV, EXACT, 타입 변환, constructor expression
+- **CH18-L07 · COND·SWITCH 조건 표현식** _(order 7)_
+  - 다룰 내용: 조건에 따라 값 하나를 만드는 표현식 — 흐름을 나누는 IF/CASE와 구분한다.
+  - 키워드: COND, SWITCH, 조건 표현식, constructor expression
+- **CH18-L08 · REDUCE·FILTER 테이블 표현식** _(order 8)_
+  - 다룰 내용: 여러 행을 하나로 줄이는 REDUCE, 조건 행만 새 테이블로 뽑는 FILTER.
+  - 키워드: REDUCE, FILTER, 집계, 테이블 표현식
+- **CH18-L09 · LET으로 표현식 속 이름 읽기** _(order 9)_
+  - 다룰 내용: 표현식 안에서만 사는 보조 이름 — LET으로 중간값을 한 번만 이름 붙인다.
+  - 키워드: LET, IN, constructor expression, 보조 이름
+- **CH18-L10 · Legacy 코드의 Modern ABAP 리팩터링** _(order 10)_
+  - 다룰 내용: classic 코드를 모던으로 — "짧게"가 아니라 "또렷하게", 결과는 그대로. += 까지.
+  - 키워드: 리팩터링, +=, Modern, before-after, 동작보존
+- **CH18-L11 · 실습 — 콘서트앱 모던 리팩터** _(order 11)_
+  - 다룰 내용: 콘서트앱 — classic 코드를 모던 ABAP으로, 결과는 그대로 다듬는다.
+  - 키워드: 실습, 콘서트앱, 모던리팩터, 인라인, VALUE, line_exists
 
-### CH26 · Lock Object와 동시성 제어 _(난이도: 중급)_
+### CH19 · New Open SQL / Modern ABAP SQL _(난이도: 중급)_
 
-> 여러 사용자가 동시에 같은 데이터를 건드린다 — 잠금이 필요하다.
+> 고전 Open SQL이 투박하다 — @·인라인으로 현대화. ★ 여기부터 modern SQL.
 
-**키워드**: Lock Object, ENQUEUE, DEQUEUE
-
-**레슨 (5)**
-- **CH26-L01 · Lock Object 설계 기준** _(order 1)_
-  - 다룰 내용: 동시 변경을 막는 장치 — Lock Object와 잠금 모드.
-  - 키워드: Lock Object, SE11, 잠금 모드, ENQUEUE
-- **CH26-L02 · ENQUEUE / DEQUEUE Function Module** _(order 2)_
-  - 다룰 내용: 잠그고 푼다 — 자동 생성된 ENQUEUE/DEQUEUE 호출.
-  - 키워드: ENQUEUE, DEQUEUE, Function Module
-- **CH26-L03 · Lock 해제와 예외 처리** _(order 3)_
-  - 다룰 내용: 언제 풀리나 — COMMIT/ROLLBACK과 자동 해제.
-  - 키워드: DEQUEUE_ALL, foreign_lock, 자동 해제
-- **CH26-L04 · 다중 사용자 변경 충돌 시나리오** _(order 4)_
-  - 다룰 내용: 다중 사용자 환경에서 발생하는 데이터 수정 손실 문제와 낙관/비관적 잠금.
-  - 키워드: Lost Update, Optimistic, Pessimistic, 충돌
-- **CH26-L05 · Lock Object와 COMMIT/ROLLBACK 연결** _(order 5)_
-  - 다룰 내용: 잠금–읽기–변경–커밋–해제의 한 흐름.
-  - 키워드: Lock, COMMIT, ROLLBACK, 패턴
-
-### CH27 · OO ABAP 고급 설계와 패턴 _(난이도: 고급)_
-
-> 규모가 커진다 — OO 설계 패턴으로 다스리고 싶다.
-
-**키워드**: 디자인 패턴, Factory, Singleton, 의존성
-
-**레슨 (5)**
-- **CH27-L01 · Factory Pattern** _(order 1)_
-  - 다룰 내용: 객체 생성을 한 곳에 모은다 — Factory.
-  - 키워드: Factory, Pattern, 생성, OO
-- **CH27-L02 · Singleton Pattern** _(order 2)_
-  - 다룰 내용: 인스턴스를 단 하나만 — Singleton.
-  - 키워드: Singleton, Pattern, 정적, OO
-- **CH27-L03 · Strategy Pattern** _(order 3)_
-  - 다룰 내용: 알고리즘을 갈아끼운다 — Strategy.
-  - 키워드: Strategy, Pattern, Interface, 다형성
-- **CH27-L04 · MVC 기반 Report 구조화** _(order 4)_
-  - 다룰 내용: 화면·로직·데이터를 분리한다 — MVC.
-  - 키워드: MVC, Model, View, Controller, 구조화
-- **CH27-L05 · Testable Class 설계와 ABAP Unit** _(order 5)_
-  - 다룰 내용: 검증 가능한 설계 — 의존성 분리와 단위 테스트.
-  - 키워드: ABAP Unit, Testable, 의존성 주입, Mock
-
-### CH28 · Dynamic ABAP: Field Symbol 심화와 Generic _(난이도: 고급)_
-
-> 타입을 미리 모르는 데이터를 안전하게 다루고 싶다 — 동적 ABAP.
-
-**키워드**: Field Symbol, TYPE any, ASSIGN, RTTS, CREATE DATA
+**키워드**: @, @DATA, 콤마 필드리스트, host 변수 escape
 
 **레슨 (8)**
-- **CH28-L01 · typed vs generic Field Symbol** _(order 1)_
-  - 다룰 내용: 이름표의 두 얼굴 — 모양을 아는 이름표와 모르는 이름표.
-  - 키워드: Field Symbol, TYPE any, typed, generic
-- **CH28-L02 · TYPE any · ANY TABLE 파라미터** _(order 2)_
-  - 다룰 내용: 어떤 데이터든 받는 메서드 — 대신 확인 책임이 생긴다.
-  - 키워드: TYPE any, ANY TABLE, generic, 파라미터
-- **CH28-L03 · ASSIGN · UNASSIGN · IS ASSIGNED** _(order 3)_
-  - 다룰 내용: 지금 무엇을 가리키나 — 할당 상태와 ELSE UNASSIGN 함정.
-  - 키워드: ASSIGN, UNASSIGN, IS ASSIGNED, ELSE UNASSIGN, sy-subrc
-- **CH28-L04 · ASSIGN COMPONENT — 필드를 실행 중에 고르기** _(order 4)_
-  - 다룰 내용: 구조의 필드 이름이 실행 시점에 정해질 때의 공식 도구.
-  - 키워드: ASSIGN COMPONENT, 동적 필드, whitelist, sy-subrc
-- **CH28-L05 · ASSIGN (name) — 이름 문자열로 찾기** _(order 5)_
-  - 다룰 내용: 문자열이 변수 이름으로 해석된다 — 강력한 만큼 위험한 문법.
-  - 키워드: ASSIGN (name), 동적 이름, search order, whitelist
-- **CH28-L06 · REF TO data와 CREATE DATA** _(order 6)_
-  - 다룰 내용: 실행 중에 데이터를 만든다 — 이름 없는 데이터와 손잡이.
-  - 키워드: CREATE DATA, REF TO data, dref->*, TYPE HANDLE
-- **CH28-L07 · RTTS — 실행 중 타입 정보 읽기** _(order 7)_
-  - 다룰 내용: 들어온 값의 정체를 묻는다 — 타입 설명서와 describe.
-  - 키워드: RTTS, RTTI, cl_abap_typedescr, describe_by_data, components
-- **CH28-L08 · 실습 — 동적 구조 검사기** _(order 8)_
-  - 다룰 내용: 챕터 전부를 조립한다 — describe → 검증 → ASSIGN → 결과.
-  - 키워드: 실습, 동적, 구조 검사기, RTTS, ASSIGN COMPONENT
+- **CH19-L01 · Classic Open SQL과 Modern ABAP SQL 비교** _(order 1)_
+  - 다룰 내용: 같은 조회를 classic과 modern으로 — 무엇이, 왜 달라졌나.
+  - 키워드: Open SQL, ABAP SQL, modern, 콤마, @, strict
+- **CH19-L02 · @ Host Variable과 Host Expression** _(order 2)_
+  - 다룰 내용: ABAP 값을 SQL에 안전하게 넣는다 — @변수와 @( 식 ).
+  - 키워드: @, Host Variable, Host Expression, lossless
+- **CH19-L03 · INTO TABLE @DATA(...) Inline Target** _(order 3)_
+  - 다룰 내용: 결과 테이블을 SELECT 자리에서 바로 선언한다.
+  - 키워드: @DATA, inline, INTO TABLE, AS alias, empty key
+- **CH19-L04 · SQL Expression — CASE / CAST / COALESCE** _(order 4)_
+  - 다룰 내용: SELECT 안에서 값을 계산·변환·치환한다 — DB가 직접.
+  - 키워드: SQL Expression, CASE, CAST, COALESCE, AS alias
+- **CH19-L05 · SQL String / Date Function** _(order 5)_
+  - 다룰 내용: SELECT 안에서 문자열·날짜를 다루는 SQL 함수 — 단, ABAP 함수와 헷갈리지 않기.
+  - 키워드: SQL Function, CONCAT, SUBSTRING, UPPER, DATS_ADD_DAYS
+- **CH19-L06 · SELECT FROM @itab 기초** _(order 6)_
+  - 다룰 내용: 내부 테이블을 SQL 소스처럼 조회한다 — DB 왕복 없이.
+  - 키워드: SELECT FROM @itab, Internal Table, SQL, GROUP BY
+- **CH19-L07 · ABAP SQL 정리 — 다음 단계로** _(order 7)_
+  - 다룰 내용: 모던 ABAP SQL을 "언제 무엇을 쓸지"로 정리하고, 코드 구조의 OO로 넘어간다.
+  - 키워드: ABAP SQL, 정리, 의사결정, CDS, OO
+- **CH19-L08 · 실습 — 콘서트앱 모던 SQL** _(order 8)_
+  - 다룰 내용: 콘서트앱 — 조회를 @·콤마·@DATA로 현대화하되, 업무 결과를 검증한다.
+  - 키워드: 실습, 콘서트앱, 모던SQL, @DATA, COALESCE, LEFT OUTER JOIN
 
-### CH29 · 고급 문자열 처리: PCRE 정규식 _(난이도: 중급)_
+### CH20 · Advanced ABAP SQL _(난이도: 고급)_
 
-> 글자 그대로가 아니라 '형식'을 찾고 싶다 — PCRE 정규식.
+> modern SQL 기본으론 벅찬 질문 — 데이터베이스에 '질문을 설계'하고 싶다.
 
-**키워드**: 정규식, PCRE, FIND, REPLACE, SUBMATCHES
+**키워드**: CTE, WITH, Subquery, EXISTS, Window, UNION
+
+**레슨 (7)**
+- **CH20-L01 · 고급 SQL은 언제 필요한가** _(order 1)_
+  - 다룰 내용: modern SQL 기본을 넘는 네 도구를 언제 꺼내는지 — 문법보다 판단.
+  - 키워드: 고급 SQL, CTE, Subquery, Set operation, Window
+- **CH20-L02 · WITH와 CTE — 중간 결과에 이름 붙이기** _(order 2)_
+  - 다룰 내용: 복잡한 SELECT를 "중간 표를 만든다 → 다시 읽는다"로 나누기.
+  - 키워드: CTE, WITH, 중간 결과, LEFT OUTER JOIN, COALESCE
+- **CH20-L03 · Subquery와 EXISTS — 조건 안에서 다시 묻기** _(order 3)_
+  - 다룰 내용: JOIN이 행을 붙인다면, 조건 안 SELECT는 존재·포함을 묻는다.
+  - 키워드: Subquery, EXISTS, IN, correlated, NOT EXISTS
+- **CH20-L04 · UNION · INTERSECT · EXCEPT — 결과 집합 다루기** _(order 4)_
+  - 다룰 내용: JOIN이 컬럼을 옆으로 붙인다면, 집합 연산은 행을 위아래로 합·교·차.
+  - 키워드: Set operation, UNION, UNION ALL, INTERSECT, EXCEPT
+- **CH20-L05 · Window Expression — 행을 유지하며 그룹 계산** _(order 5)_
+  - 다룰 내용: GROUP BY는 행을 접지만, window는 상세 행을 두고 합계·순번을 붙인다.
+  - 키워드: Window, OVER, PARTITION BY, ROW_NUMBER, RANK
+- **CH20-L06 · 선택 기준과 멈춤 기준** _(order 6)_
+  - 다룰 내용: SQL로 되느냐보다 읽기 쉽고 검증 가능하냐를 먼저 묻는다.
+  - 키워드: 선택 기준, JOIN, EXISTS, CTE, Window
+- **CH20-L07 · 실습 — 콘서트 Advanced SQL** _(order 7)_
+  - 다룰 내용: CTE·EXISTS·EXCEPT·Window를 한 콘서트 조회에 모아 결과를 검증한다.
+  - 키워드: 실습, 콘서트, CTE, EXISTS, EXCEPT, Window
+
+### CH21 · OO ABAP 기본 설계 _(난이도: 고급)_
+
+> 절차적 코드의 한계 — 객체로 구조화하고 싶다.
+
+**키워드**: CLASS, METHOD, 인스턴스, 상속, 인터페이스
+
+**레슨 (10)**
+- **CH21-L01 · Global Class 생성과 객체** _(order 1)_
+  - 다룰 내용: SE24로 전역 클래스를 만들고 객체를 생성한다 — 흩어진 로직을 한 덩어리로.
+  - 키워드: Global Class, SE24, NEW, CREATE OBJECT, 객체, REF TO
+- **CH21-L02 · Attribute / Method / Visibility** _(order 2)_
+  - 다룰 내용: 클래스가 가진 데이터와 행동, 그리고 공개 범위 — 캡슐화는 방어선.
+  - 키워드: Attribute, Method, PUBLIC, PROTECTED, PRIVATE, CLASS-DATA
+- **CH21-L03 · Constructor와 객체 초기화** _(order 3)_
+  - 다룰 내용: 객체가 태어날 때 자동 실행되는 생성자 — 바로 쓸 수 있는 상태로.
+  - 키워드: CONSTRUCTOR, CLASS_CONSTRUCTOR, 초기화, IMPORTING
+- **CH21-L04 · Static Method와 Instance Method** _(order 4)_
+  - 다룰 내용: 클래스로 직접(=>) vs 객체로(->) — 객체 상태가 필요한가로 가른다.
+  - 키워드: Static, Instance, =>, ->, me
+- **CH21-L05 · Interface 기본 설계** _(order 5)_
+  - 다룰 내용: 같은 부모가 아니라 같은 약속으로 묶는다 — Interface와 다형성.
+  - 키워드: Interface, INTERFACES, 다형성, intf~method
+- **CH21-L06 · Exception Class — TRY / CATCH / CX 계층** _(order 6)_
+  - 다룰 내용: 오류를 메시지·숫자코드가 아니라 객체로 다룬다 — 예외 클래스와 TRY/CATCH.
+  - 키워드: Exception, TRY/CATCH, RAISE EXCEPTION, RAISING, CX_ROOT
+- **CH21-L07 · Inheritance / Redefinition** _(order 7)_
+  - 다룰 내용: 공통은 부모에, 차이만 자식에 — 물려받아 확장·재정의한다.
+  - 키워드: Inheritance, INHERITING FROM, REDEFINITION, super, ABSTRACT, FINAL
+- **CH21-L08 · 다형성 — CAST와 CASE TYPE OF** _(order 8)_
+  - 다룰 내용: 부모 타입으로 다루되, 정말 필요할 때만 실제 타입을 확인한다.
+  - 키워드: CAST, CASE TYPE OF, 다형성, ?=, CX_SY_MOVE_CAST_ERROR
+- **CH21-L09 · OO 이벤트 — EVENTS / RAISE EVENT / SET HANDLER** _(order 9)_
+  - 다룰 내용: 객체가 사건을 알리고, 등록된 다른 객체가 반응한다 — 결합도를 낮추는 구조.
+  - 키워드: EVENTS, RAISE EVENT, SET HANDLER, FOR EVENT, 이벤트
+- **CH21-L10 · 실습 — ZCL_BOOKING_MANAGER 클래스** _(order 10)_
+  - 다룰 내용: 콘서트앱 — 예약 로직을 객체로 종합 설계(상태·검증·예외·이벤트).
+  - 키워드: 실습, 콘서트앱, 클래스, 예외, 이벤트, ZCX_FULLY_BOOKED
+
+### CH22 · SALV/Grid ALV 표시 제어 심화 _(난이도: 고급)_
+
+> ALV 표시를 색·셀 단위까지 세밀하게 제어하고 싶다.
+
+**키워드**: Cell Color, Stable Refresh, Event, Layout 심화
 
 **레슨 (8)**
-- **CH29-L01 · 정규식 입문 — FIND PCRE와 형식 검증** _(order 1)_
-  - 다룰 내용: substring 검색의 한계를 겪고, 패턴을 찾는 FIND PCRE로 넘어간다.
-  - 키워드: 정규식, PCRE, FIND, 형식 검증, Anchor
-- **CH29-L02 · PCRE 기본 문법 — 문자 클래스·수량자·그룹** _(order 2)_
-  - 다룰 내용: 실무 초반에 실제로 쓰는 토큰만 추려 조합 감각을 만든다.
-  - 키워드: PCRE, 문자 클래스, 수량자, Capture Group, greedy
-- **CH29-L03 · FIND PCRE 결과 검증 — MATCH COUNT·OFFSET·LENGTH·RESULTS** _(order 3)_
-  - 다룰 내용: "찾았다"에서 멈추지 않고 몇 개·어디서·얼마나를 검증한다.
-  - 키워드: FIND, MATCH COUNT, MATCH OFFSET, MATCH LENGTH, RESULTS
-- **CH29-L04 · SUBMATCHES — Capture Group으로 값 추출** _(order 4)_
-  - 다룰 내용: 괄호 그룹의 값을 변수로 꺼내고, optional·non-capturing까지 관리한다.
-  - 키워드: SUBMATCHES, Capture Group, non-capturing, RESULTS, 추출
-- **CH29-L05 · REPLACE PCRE — 패턴 치환과 $1 그룹 재사용** _(order 5)_
-  - 다룰 내용: 패턴으로 바꾸고, 그룹 값을 치환문에 재사용하고, 결과를 검증한다.
-  - 키워드: REPLACE, PCRE, 치환, group substitution, VERBATIM
-- **CH29-L06 · CL_ABAP_REGEX·CL_ABAP_MATCHER — 정규식 재사용** _(order 6)_
-  - 다룰 내용: 패턴을 객체로 만들어 재사용하고, match와 find_next의 의미 차이를 가른다.
-  - 키워드: CL_ABAP_REGEX, CL_ABAP_MATCHER, CREATE_PCRE, match, find_next
-- **CH29-L07 · 정규식 내장 함수 — 식 안에서 쓰는 pcre 인자** _(order 7)_
-  - 다룰 내용: contains·matches·count·find·match·replace의 pcre 인자를 식 안에서 쓴다.
-  - 키워드: 내장 함수, contains, matches, count, replace, pcre
-- **CH29-L08 · 실습 — 로그·이메일·코드 패턴 검증기** _(order 8)_
-  - 다룰 내용: 챕터 전부를 조립한다 — 패턴·입력·결과·피드백을 분리한 검사기.
-  - 키워드: 실습, 검증기, RESULTS, matches, word boundary
+- **CH22-L01 · SALV Sort / Filter / Function 제어** _(order 1)_
+  - 다룰 내용: SALV 객체로 정렬·필터·툴바 기능을 코드로 — display 전에 지정한다.
+  - 키워드: SALV, Sort, Filter, Function, FACTORY
+- **CH22-L02 · SALV Layout / Variant 심화** _(order 2)_
+  - 다룰 내용: 표시 설정·컬럼 텍스트·레이아웃 저장 — 개발자 기본값 + 사용자 보기.
+  - 키워드: SALV, Display Settings, Columns, Layout, Variant
+- **CH22-L03 · Grid ALV Column 제어 심화** _(order 3)_
+  - 다룰 내용: Field Catalog로 컬럼을 숨기고·합계·정렬·키 강조 — 화면 표시 지시서.
+  - 키워드: Field Catalog, Column, no_out, do_sum, just, key
+- **CH22-L04 · Deep Structure 기반 Cell Color** _(order 4)_
+  - 다룰 내용: 행이 아니라 셀 하나만 — 행 구조에 색 정보 테이블을 품는다.
+  - 키워드: Cell Color, LVC_T_SCOL, Deep Structure, ctab_fname
+- **CH22-L05 · Deep Structure 기반 Cell Style** _(order 5)_
+  - 다룰 내용: 셀 단위 모양·동작 — 비활성·편집·버튼. 색과 같은 deep, 다른 연결.
+  - 키워드: Cell Style, LVC_T_STYL, Deep Structure, stylefname
+- **CH22-L06 · Row / Column / Cell Color 선택 기준** _(order 6)_
+  - 다룰 내용: 행·컬럼·셀 — 색을 줄 단위를 상황에 맞게 고른다.
+  - 키워드: Row Color, Column Color, Cell Color, info_fname, emphasize, ctab_fname
+- **CH22-L07 · Stable Refresh와 표시 상태 보존** _(order 7)_
+  - 다룰 내용: 갱신해도 스크롤·선택·정렬을 지킨다 — 사용자 흐름 보존.
+  - 키워드: Stable Refresh, soft refresh, is_stable, refresh_table_display
+- **CH22-L08 · 실습 — 매진 회차 색 강조** _(order 8)_
+  - 다룰 내용: 콘서트앱 — 잔여석 계산을 셀 색으로(매진 빨강·임박 노랑).
+  - 키워드: 실습, 콘서트앱, Cell Color, 매진, ctab_fname
 
-### CH30 · ALV 고급 Event 응용 _(난이도: 고급)_
+### CH23 · CDS View Entity 기초 _(난이도: 고급)_
 
-> ALV에서 사용자 상호작용(이벤트)을 처리하고 싶다.
+> DB 계층에서 모델링하고 재사용하고 싶다.
 
-**키워드**: ALV Event, Double Click, Toolbar, User Command
+**키워드**: CDS, View Entity, Association, Annotation
 
-**레슨 (5)**
-- **CH30-L01 · Double Click Event** _(order 1)_
-  - 다룰 내용: 행을 더블클릭하면 상세로 — ALV 이벤트의 시작.
-  - 키워드: double_click, Event, SET HANDLER, ALV
-- **CH30-L02 · Hotspot Click Event** _(order 2)_
-  - 다룰 내용: 셀을 링크처럼 — 한 번 클릭으로 이동.
-  - 키워드: hotspot, hotspot_click, Event
-- **CH30-L03 · Toolbar Event** _(order 3)_
-  - 다룰 내용: ALV 툴바에 내 버튼을 추가한다.
-  - 키워드: toolbar, Event, 커스텀 버튼
-- **CH30-L04 · USER_COMMAND 처리** _(order 4)_
-  - 다룰 내용: 툴바 버튼이 눌리면 — 명령을 분기 처리한다.
-  - 키워드: user_command, Event, 선택 행
-- **CH30-L05 · ALV Event Handler Class 설계** _(order 5)_
-  - 다룰 내용: 이벤트 처리를 한 클래스로 모아 깔끔하게.
-  - 키워드: Event Handler, Class, 설계
+**레슨 (7)**
+- **CH23-L01 · CDS View Entity 기본 구조** _(order 1)_
+  - 다룰 내용: DB 계층의 현대적 읽기 모델 — define view entity.
+  - 키워드: CDS, View Entity, define view entity, DDL, Data Preview, Calculated Element, ZI_Flight
+- **CH23-L02 · Interface View와 Consumption View 계층** _(order 2)_
+  - 다룰 내용: 재사용 기반 뷰 위에 소비용 뷰를 쌓는다 — nesting(ZI_/ZC_).
+  - 키워드: Interface View, Consumption View, ZI_, ZC_, as select from, Nesting
+- **CH23-L03 · Association 기초** _(order 3)_
+  - 다룰 내용: 뷰끼리 관계를 선언하고 경로로 따라간다 — Association.
+  - 키워드: Association, _Perf, $projection, cardinality, CDS
+- **CH23-L04 · Annotation과 의미 부여** _(order 4)_
+  - 다룰 내용: 뷰·필드에 업무 의미를 단다 — @Annotation.
+  - 키워드: Annotation, @EndUserText, @UI.lineItem, @Semantics
+- **CH23-L05 · Metadata Extension 기초** _(order 5)_
+  - 다룰 내용: UI 주석을 본문에서 분리한다 — annotate entity (DDLX).
+  - 키워드: Metadata Extension, annotate entity, @Metadata.allowExtensions, @Metadata.layer
+- **CH23-L06 · DCL / Authorization 개요** _(order 6)_
+  - 다룰 내용: 누가 어떤 행을 볼 수 있나 — CDS 접근 제어(DCL).
+  - 키워드: DCL, Access Control, define role, aspect pfcg_auth
+- **CH23-L07 · 실습 — 콘서트 CDS 뷰 (ZI_/ZC_)** _(order 7)_
+  - 다룰 내용: 콘서트앱 — 데이터 모델을 재사용 가능한 CDS 계층으로.
+  - 키워드: 실습, 콘서트앱, CDS, ZI_Concert, ZC_Concert, Association
 
-### CH31 · Editable Grid ALV와 입력 검증 _(난이도: 고급)_
+### CH24 · RAP / ABAP Cloud 입문 _(난이도: 고급)_
 
-> ALV에서 직접 입력·수정하고 검증하고 싶다.
+> 현대 SAP 표준 — 트랜잭션 앱을 RAP로 짓고 싶다.
 
-**키워드**: Editable ALV, Data Changed, 입력검증
-
-**레슨 (6)**
-- **CH31-L01 · Editable Field Catalog 설정** _(order 1)_
-  - 다룰 내용: ALV에서 직접 입력받게 — 편집 가능 컬럼 설정.
-  - 키워드: edit, Field Catalog, Editable ALV
-- **CH31-L02 · DATA_CHANGED Event** _(order 2)_
-  - 다룰 내용: 셀이 바뀌는 순간 검증한다 — DATA_CHANGED.
-  - 키워드: data_changed, CL_ALV_CHANGED_DATA_PROTOCOL, 검증
-- **CH31-L03 · DATA_CHANGED_FINISHED Event** _(order 3)_
-  - 다룰 내용: 변경이 모두 반영된 뒤 — 합계·연동 갱신.
-  - 키워드: data_changed_finished, 재계산, 연동
-- **CH31-L04 · Cell Style 기반 입력 제어** _(order 4)_
-  - 다룰 내용: 셀마다 편집 가능/불가를 동적으로 — Cell Style.
-  - 키워드: Cell Style, LVC_T_STYL, 입력 제어
-- **CH31-L05 · Grid 입력값 검증과 오류 표시** _(order 5)_
-  - 다룰 내용: 잘못된 입력을 셀에 빨갛게 표시한다.
-  - 키워드: 검증, 오류 표시, add_protocol_entry
-- **CH31-L06 · 변경 데이터 DB 반영 전 검증** _(order 6)_
-  - 다룰 내용: 저장 직전 최종 점검 후 DML로 반영한다.
-  - 키워드: 저장 검증, check_changed_data, DML
-
-### CH32 · Enhancement / BAdI / User Exit _(난이도: 고급)_
-
-> 표준 기능을 건드리지 않고 확장하고 싶다.
-
-**키워드**: BAdI, Enhancement, User Exit
-
-**레슨 (5)**
-- **CH32-L01 · Customer Exit / User Exit 개념** _(order 1)_
-  - 다룰 내용: 표준을 안 건드리고 끼어드는 옛 방식들.
-  - 키워드: User Exit, Customer Exit, SMOD, CMOD
-- **CH32-L02 · Enhancement Point / Section** _(order 2)_
-  - 다룰 내용: 표준 코드 사이에 내 코드를 끼운다.
-  - 키워드: Enhancement Point, Enhancement Section, ENHANCEMENT
-- **CH32-L03 · BAdI 정의와 구현** _(order 3)_
-  - 다룰 내용: 객체지향 확장점 — BAdI 인터페이스 구현.
-  - 키워드: BAdI, Interface, Enhancement Spot, SE18
-- **CH32-L04 · Implicit / Explicit Enhancement 판단** _(order 4)_
-  - 다룰 내용: 어떤 확장 수단을 쓸지 고른다.
-  - 키워드: Implicit, Explicit, Enhancement, 선택
-- **CH32-L05 · Clean Core 관점의 확장 기준** _(order 5)_
-  - 다룰 내용: 업그레이드에 강한 확장 — Clean Core.
-  - 키워드: Clean Core, Released API, Extension, ABAP Cloud
-
-### CH33 · 인터페이스 실무: BAPI/RFC/BDC/File _(난이도: 고급)_
-
-> 외부 시스템과 데이터를 주고받아야 한다.
-
-**키워드**: BAPI, RFC, BDC, File, Excel
-
-**레슨 (5)**
-- **CH33-L01 · BAPI 호출과 Return 처리** _(order 1)_
-  - 다룰 내용: 호출 성공이 아니라 Return 판정이 저장을 결정한다.
-  - 키워드: BAPI, BAPIRET2, COMMIT, ROLLBACK, 경고 정책
-- **CH33-L02 · RFC Function Module 설계** _(order 2)_
-  - 다룰 내용: 원격 호출은 함수 로직이 아니라 연결·계약·예외·로그를 설계하는 일이다.
-  - 키워드: RFC, Remote-Enabled, SM59, DESTINATION, communication_failure
-- **CH33-L03 · BDC / Batch Input 실무 기준** _(order 3)_
-  - 다룰 내용: 화면 입력을 흉내 내는 최후 수단 — 녹화·모드·메시지·재처리까지.
-  - 키워드: BDC, Batch Input, CALL TRANSACTION, BDCDATA, SM35
-- **CH33-L04 · Excel Upload 처리** _(order 4)_
-  - 다룰 내용: 파일 읽기가 아니라 검증 관문을 만든다 — 파싱·행 검증·오류 피드백.
-  - 키워드: Excel, Upload, GUI_UPLOAD, SPLIT, 검증
-- **CH33-L05 · File Interface와 재처리** _(order 5)_
-  - 다룰 내용: 서버 파일 입출력과 운영 구조 — 로그·재처리·멱등성까지가 인터페이스다.
-  - 키워드: File Interface, OPEN DATASET, 재처리, 멱등성, 서버 파일
-
-### CH34 · IDoc / ALE / Gateway _(난이도: 고급)_
-
-> 표준 메시지(IDoc)·게이트웨이로 시스템을 연계하고 싶다.
-
-**키워드**: IDoc, ALE, Gateway, OData
-
-**레슨 (5)**
-- **CH34-L01 · IDoc 기본 구조** _(order 1)_
-  - 다룰 내용: 표준 메시지 봉투 — Control(송장)·Data(내용물)·Status(배송 이력) 3층을 읽는다.
-  - 키워드: IDoc, Control Record, Segment, Status, WE02
-- **CH34-L02 · ALE Distribution Model** _(order 2)_
-  - 다룰 내용: 배송망 설계 — 주소록·배포 규칙·계약서·통로가 다 맞아야 흐른다.
-  - 키워드: ALE, Distribution Model, Partner Profile, Port, BD64
-- **CH34-L03 · IDoc 오류 추적과 재처리** _(order 3)_
-  - 다룰 내용: 상태는 결과다 — 원인을 고친 뒤에만 재처리가 성공한다.
-  - 키워드: IDoc, Status, BD87, 재처리, 상태코드
-- **CH34-L04 · Gateway SEGW 프로젝트 구조** _(order 4)_
-  - 다룰 내용: URL 하나가 열리기까지 — 메뉴판·주방·창구 등록·시식·불만 접수의 연결.
-  - 키워드: Gateway, SEGW, OData, EntityType, DPC_EXT
-- **CH34-L05 · OData V2 EntitySet 조회 구현** _(order 5)_
-  - 다룰 내용: URL 쿼리를 SELECT로 번역한다 — $filter·$top·$skip과 OFFSET 페이징.
-  - 키워드: OData, GET_ENTITYSET, $filter, 페이징, OFFSET
-
-### CH35 · 성능 분석과 튜닝 _(난이도: 고급)_
-
-> 느리다 — 어디가 병목인지 찾아 튜닝하고 싶다.
-
-**키워드**: SAT, ST05, SQL Trace, 성능
-
-**레슨 (5)**
-- **CH35-L01 · ST05 SQL Trace** _(order 1)_
-  - 다룰 내용: 감이 아니라 측정 — 한 실행의 DB 대화를 기록해 병목을 분류한다.
-  - 키워드: ST05, SQL Trace, 측정, 병목, 재측정
-- **CH35-L02 · SAT Runtime Analysis** _(order 2)_
-  - 다룰 내용: 전신 촬영 — 시간이 ABAP·DB·외부 중 어디서 새는지 가른다.
-  - 키워드: SAT, Runtime Analysis, Hit List, 프로파일링
-- **CH35-L03 · SQL Monitor / SQLM** _(order 3)_
-  - 다룰 내용: 건강검진 통계 — 운영 전체에서 무엇부터 고칠지 우선순위를 정한다.
-  - 키워드: SQLM, SQL Monitor, SWLT, 우선순위, 인덱스
-- **CH35-L04 · SELECT in LOOP 제거** _(order 4)_
-  - 다룰 내용: 1+N 왕복 폭발을 잡는다 — 키 모으기·한 번에 읽기·메모리에서 찾기.
-  - 키워드: SELECT in LOOP, FOR ALL ENTRIES, JOIN, BINARY SEARCH
-- **CH35-L05 · 대량 데이터 처리와 Package 설계** _(order 5)_
-  - 다룰 내용: 수백만 건은 속도가 아니라 설계 — 푸시다운·패키지·재시작·병렬 기준.
-  - 키워드: 대량처리, Package, Code Pushdown, 병렬, 재시작
-
-### CH36 · AMDP / ADBC / Pushdown _(난이도: 고급)_
-
-> DB 가까이에서 연산을 밀어넣어 가속하고 싶다.
-
-**키워드**: AMDP, ADBC, Code Pushdown, HANA
-
-**레슨 (6)**
-- **CH36-L01 · Code Pushdown과 수단 선택** _(order 1)_
-  - 다룰 내용: 무엇을 내릴지는 배웠다 — 이제 무엇으로 내릴지 고른다.
-  - 키워드: Code Pushdown, Code-to-Data, HANA, 수단 선택
-- **CH36-L02 · AMDP 기본 구조** _(order 2)_
-  - 다룰 내용: ABAP 클래스 메서드 안에 DB 프로시저를 담는다 — 만들고, 부르고, 체이닝한다.
-  - 키워드: AMDP, SQLScript, BY DATABASE PROCEDURE, IF_AMDP_MARKER_HDB
-- **CH36-L03 · ADBC Native SQL** _(order 3)_
-  - 다룰 내용: DB 고유 SQL을 문자열로 직접 실행한다 — 보호막 없이.
-  - 키워드: ADBC, Native SQL, CL_SQL_STATEMENT, SQL injection
-- **CH36-L04 · 푸시다운 수단 비교와 선택** _(order 4)_
-  - 다룰 내용: 속도 순위가 아니라 책임 순위로 고른다.
-  - 키워드: Open SQL, CDS, AMDP, ADBC, 선택 기준
-- **CH36-L05 · CDS Table Function과 AMDP Function** _(order 5)_
-  - 다룰 내용: AMDP 함수의 결과를 CDS 뷰처럼 읽는 다리를 잇는다.
-  - 키워드: CDS Table Function, BY DATABASE FUNCTION, FOR TABLE FUNCTION, AMDP
-- **CH36-L06 · 운영 리스크와 DB 종속성** _(order 6)_
-  - 다룰 내용: 강한 수단을 운영에 들이는 조건 — 책임의 목록을 만든다.
-  - 키워드: DB 종속성, SQL injection, client, Clean Core, 운영 리스크
-
-### CH37 · Forms / Output / PDF _(난이도: 중급)_
-
-> 출력 양식(PDF·폼)을 만들어야 한다.
-
-**키워드**: Smart Forms, OTF, PDF, Output
-
-**레슨 (5)**
-- **CH37-L01 · Smart Forms 기본 구조** _(order 1)_
-  - 다룰 내용: 화면 출력이 아니라 "문서"를 만든다 — 전통 양식의 구조와 호출.
-  - 키워드: Smart Forms, SMARTFORMS, Form Interface, SSF_FUNCTION_MODULE_NAME
-- **CH37-L02 · Smart Forms에서 PDF로 — OTF와 변환** _(order 2)_
-  - 다룰 내용: 인쇄 대화상자 대신 출력의 원형(OTF)을 받아 CONVERT_OTF로 PDF 데이터를 만든다.
-  - 키워드: OTF, CONVERT_OTF, getotf, SSFCTRLOP
-- **CH37-L03 · Output Control 개요** _(order 3)_
-  - 다룰 내용: 양식과 출력 결정은 다른 층이다 — 언제·무엇을·누구에게·어떤 채널로.
-  - 키워드: Output Control, NAST, BRFplus, Output Management
-- **CH37-L04 · PDF 바이트와 다운로드** _(order 4)_
-  - 다룰 내용: PDF는 글자가 아니라 바이트다 — xstring으로 받아 BIN으로 저장한다.
-  - 키워드: PDF, xstring, xstrlen, GUI_DOWNLOAD
-- **CH37-L05 · 양식 오류 추적과 변경 대응** _(order 5)_
-  - 다룰 내용: "안 나와요" 티켓을 다섯 단계로 좁힌다 — 그리고 양식도 코드처럼 이송한다.
-  - 키워드: 양식 오류, SP01, Spool, 변경 통제
-
-### CH38 · 운영 품질과 배포 관리 (이송 심화) _(난이도: 고급)_
-
-> 코드가 돈다에서 멈추지 않는다 — 자동 검사·회귀 방어·안전한 이송·무인 실행·표준 로그로 운영을 지킨다. (CH01-L06 이송요청의 2단 심화)
-
-**키워드**: ATC, ABAP Unit, Test Double, Transport, Background Job, Application Log
-
-**레슨 (6)**
-- **CH38-L01 · ATC / Code Inspector — 자동 품질 게이트** _(order 1)_
-  - 다룰 내용: 사람 눈이 놓치는 것을 기계가 잡는다 — 출시 전 자동 검사와 release gate.
-  - 키워드: ATC, Code Inspector, SCI, Finding, Exemption
-- **CH38-L02 · ABAP Unit 운영 — 회귀를 막는 게이트** _(order 2)_
-  - 다룰 내용: 고친 코드가 기존 약속을 깨지 않았는가 — 테스트를 운영 게이트로 쓴다.
-  - 키워드: ABAP Unit, 회귀, Regression, Release Gate
-- **CH38-L03 · Test Double 심화 — 의존성을 끊는 도구들** _(order 3)_
-  - 다룰 내용: DB·CDS·legacy 의존을 어떻게 끊나 — 의존성 모양별 test double 선택.
-  - 키워드: Test Double, CL_ABAP_TESTDOUBLE, TEST-SEAM, SQL Test Double
-- **CH38-L04 · Transport 관리 — DEV에서 PRD까지** _(order 4)_
-  - 다룰 내용: 검증된 변경만, 올바른 순서로 — 이송요청의 2단 심화(release·import·의존).
-  - 키워드: Transport, STMS, SE09, Import, Return Code
-- **CH38-L05 · Background Job 운영 — 무인 실행** _(order 5)_
-  - 다룰 내용: 사람이 없는 시간의 실행 — SUBMIT과 잡 스케줄, 상태와 증거.
-  - 키워드: Background Job, SM36, SM37, SUBMIT
-- **CH38-L06 · Application Log — 운영 표준 로그** _(order 6)_
-  - 다룰 내용: "실패했다"가 아니라 "무엇이 왜"를 남긴다 — BAL 기록과 SLG1 조회.
-  - 키워드: Application Log, BAL, SLG1, BAL_DB_SAVE
-
-### CH39 · RAP + Fiori 실무 Capstone (RAP 심화) _(난이도: 고급)_
-
-> 배운 전부를 하나의 운영 가능한 앱으로 — 예매 RAP BO에 Draft·Lock·ETag·권한·EML·통신 설정까지 얹어 완성한다.
-
-**키워드**: RAP, Draft, ETag, EML, Fiori Elements, Communication Arrangement
+**키워드**: RAP, Behavior Definition, ABAP Cloud, Fiori
 
 **레슨 (9)**
-- **CH39-L01 · Capstone 업무 시나리오 정의** _(order 1)_
-  - 다룰 내용: 마지막 장은 축하가 아니라 조립이다 — 요구를 계층 책임으로 번역한다.
-  - 키워드: Capstone, 시나리오, RAP, 계층 책임
-- **CH39-L02 · ZI_* Interface View 심화 — 관계와 변경 추적** _(order 2)_
-  - 다룰 내용: CH24의 뼈대에 운영급 재료를 — association 노출·ETag 후보 필드·composition 지도.
-  - 키워드: Interface View, Association, Composition, 변경 추적 필드
-- **CH39-L03 · ZC_* Projection View와 UI Annotation 심화** _(order 3)_
-  - 다룰 내용: 소비자 계약을 의도적으로 — provider contract·@UI 배치·Metadata Extension.
-  - 키워드: Projection View, provider contract, @UI, Metadata Extension
-- **CH39-L04 · BDEF 심화 — Draft·Lock·ETag·권한 계약** _(order 4)_
-  - 다룰 내용: CH24의 계약에 운영 조항을 얹는다 — with draft·lock master·total etag·authorization master.
-  - 키워드: BDEF, Draft, lock master, total etag, authorization master
-- **CH39-L05 · Action / Validation / Determination 구현 완성** _(order 5)_
-  - 다룰 내용: 계약이 약속한 판단을 채운다 — 다건 안전·failed/reported·action result.
-  - 키워드: Validation, Determination, Action, failed/reported
-- **CH39-L06 · 외부 EML Consumer — MODIFY에서 COMMIT까지** _(order 6)_
-  - 다룰 내용: 화면 밖에서 RAP BO를 다룬다 — buffer·save sequence·FAILED/REPORTED 실전.
-  - 키워드: EML, MODIFY ENTITIES, COMMIT ENTITIES, ROLLBACK ENTITIES
-- **CH39-L07 · Service Binding과 Fiori Elements Preview** _(order 7)_
-  - 다룰 내용: 계약이 화면이 되는 순간 — OData V4 노출과 Preview 검증 체크리스트.
-  - 키워드: Service Definition, Service Binding, Fiori Elements, OData V4
-- **CH39-L08 · Draft · Lock · ETag · Authorization 심화** _(order 8)_
-  - 다룰 내용: 여럿이 같은 데이터를 만질 때 — 네 장치의 역할 분담과 충돌 시나리오.
-  - 키워드: Draft, Lock, ETag, Authorization
-- **CH39-L09 · Communication Arrangement와 운영 마감** _(order 9)_
-  - 다룰 내용: 화면 너머의 소비자 — 통신 설정·release contract·최종 릴리스 보드.
-  - 키워드: Communication Arrangement, Release Contract, Released API, Clean Core
+- **CH24-L01 · RAP 아키텍처 개요** _(order 1)_
+  - 다룰 내용: 현대 SAP 트랜잭션 앱의 표준 — RAP의 큰 그림.
+  - 키워드: RAP, ABAP Cloud, managed, unmanaged, OData
+- **CH24-L02 · Interface View ZI_* 설계 (Root)** _(order 2)_
+  - 다룰 내용: RAP의 토대 — 트랜잭션 단위를 정하는 root Interface View.
+  - 키워드: Interface View, root entity, define root view entity, RAP
+- **CH24-L03 · Projection View ZC_* 설계** _(order 3)_
+  - 다룰 내용: 서비스·화면에 노출할 소비용 뷰 — transactional projection.
+  - 키워드: Projection View, ZC_, provider contract, transactional_query
+- **CH24-L04 · Behavior Definition 기초** _(order 4)_
+  - 다룰 내용: 무엇을 할 수 있나 — create·update·delete를 선언한다.
+  - 키워드: Behavior Definition, BDEF, managed, create/update/delete, lock master
+- **CH24-L05 · Behavior Implementation 기초** _(order 5)_
+  - 다룰 내용: 동작의 실제 코드 — Behavior Pool과 집합 지향 handler.
+  - 키워드: Behavior Implementation, BIMP, behavior pool, FOR VALIDATE ON SAVE, keys
+- **CH24-L06 · Service Definition / Service Binding** _(order 6)_
+  - 다룰 내용: 앱을 OData 서비스로 노출한다 — Definition + Binding.
+  - 키워드: Service Definition, Service Binding, OData, expose, Fiori
+- **CH24-L07 · Validation / Determination / Action 개요** _(order 7)_
+  - 다룰 내용: 검증·자동결정·액션 — RAP의 비즈니스 로직 셋.
+  - 키워드: Validation, Determination, Action, RAP
+- **CH24-L08 · ABAP Cloud와 Released API 원칙** _(order 8)_
+  - 다룰 내용: 클라우드 준비된 개발 — Released API·restricted scope·Clean Core.
+  - 키워드: ABAP Cloud, Released API, Clean Core, ABAP for Cloud Development
+- **CH24-L09 · 실습 — 예매 RAP 동작 구현** _(order 9)_
+  - 다룰 내용: 콘서트 예매 RAP — 정원 validation·취소 action·상태 determination.
+  - 키워드: 실습, 콘서트앱, RAP, Validation, Determination, Action
 
 ---

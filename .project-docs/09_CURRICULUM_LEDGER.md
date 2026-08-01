@@ -1,7 +1,7 @@
 # 09. CURRICULUM LEDGER — 커리큘럼 개념 원장 (개요 SSOT)
 
-> 📅 최종수정: 2026-08-02 01:42 KST
-> 🎯 **2트랙(최종 39번호) 챕터 맵 + 교차 설계 합의(경계·관통예제·도구 아크)의 단일 출처.**
+> 📅 최종수정: 2026-08-02 02:44 KST
+> 🎯 **3트랙(최종 39번호) 챕터 맵 + 교차 설계 합의(경계·관통예제·도구 아크)의 단일 출처.**
 > 🧭 **per-lesson `introduces`/`prereq`/`prevRel`/`foreshadow`/`advanceUse` = 각 레슨 `.md` front-matter가 라이브 SSOT**([04 R10](04_CONVENTIONS.md)) — 이 문서는 레슨별 데이터를 중복하지 않고 *그 위의 개요·경계·관통설계*만 담는다(§F). 게이팅([04 R15](04_CONVENTIONS.md)) 점검 = front-matter ↔ 본문 ↔ R15.
 > ✅ 현행: **최종 39번호(2026-07-14 리넘버)** · 본문 **39챕터 전량 작성 완료**. 전면 리빌드는 *선택* — 절차 = [10_REBUILD_EXECUTION](10_REBUILD_EXECUTION.md).
 
@@ -15,9 +15,9 @@
 ## A. 트랙·챕터 맵 (39챕터 작성 · 최종 39번호)
 
 > 핵심 = 그 챕터가 **L3 정식 도입**하는 대표 개념(요지). 레슨별 상세는 front-matter.
-> ℹ️ 챕터 front-matter `track` **실값 = `TRACK-01`/`TRACK-02`**([04 R10](04_CONVENTIONS.md)) — 아래 "Track-1/2" 헤더는 표시 라벨.
+> ℹ️ 챕터 front-matter `track` **실값 = `TRACK-01`/`TRACK-02`/`TRACK-03`**([04 R10](04_CONVENTIONS.md)) — 아래 "Track-1/2/3" 헤더는 표시 라벨. **3분할(사용자 확정 2026-08-02, W1 축3 B안)**: 경계 = CH18 BOUNDARY(classic→modern)·CH24/25(입문 정점→실무 재출발). 순서·번호·URL 불변.
 
-### Track-1 — ABAP 기초～입문 실무 (CH01～24)
+### Track-1 — ABAP 기초 · Classic 완결 (CH01～17)
 | CH | 챕터 | L | 핵심(introduces 요지) |
 |---|---|---|---|
 | 01 | 개발 환경과 첫 프로그램 | 7 | SAPGUI·SE38·REPORT·WRITE·개발 패키지/이송·SE93 |
@@ -37,6 +37,9 @@
 | 15 | Report Event·Selection Screen 심화 | 12 | Report Event·INITIALIZATION·AT SELECTION-SCREEN·MESSAGE 정식·화면 UI |
 | 16 | Screen Programming / Dynpro 기초 | 10 | Module Pool·Screen Painter·화면요소·TABLES 운반·Dynpro F1/F4(POV)·PBO/PAI·OK_CODE·PF-STATUS·Custom Control |
 | 17 | Grid ALV 기초 | 10 | `CL_GUI_ALV_GRID`·Field Catalog·Layout·행 색 |
+### Track-2 — Modern ABAP과 새 개발 모델 (CH18～24)
+| CH | 챕터 | L | 핵심(introduces 요지) |
+|---|---|---|---|
 | **18** | **Modern ABAP Syntax** | 11 | 🔶**문법 경계** — inline `DATA()`·`VALUE`·`CORRESPONDING`·Table Expr·`\|…\|`·`CONV`/`EXACT`·`COND`/`SWITCH`·`REDUCE`/`FILTER`·`LET`·`+=` |
 | **19** | **New Open SQL / Modern ABAP SQL** | 8 | 🔶**SQL 경계** — `@`·`@DATA`·콤마·SQL식·Right/Full JOIN |
 | 20 | Advanced ABAP SQL 🆕 | 7 | CTE(`WITH` `+cte`)·Subquery/`EXISTS`·Set(`UNION`/`INTERSECT`/`EXCEPT`)·Window(`OVER`·`PARTITION BY`·`ROW_NUMBER`/`RANK`) — CH19 이후 보류분 회수 |
@@ -45,7 +48,7 @@
 | 23 | CDS View Entity 기초 | 7 | View Entity·Association·Annotation·Metadata Extension·DCL |
 | 24 | RAP / ABAP Cloud 입문 | 9 | RAP·`ZI_*`/`ZC_*`·BDEF/BIMP·Service Definition |
 
-### Track-2 — 실무 심화 (CH25～39)
+### Track-3 — ABAP 실무 심화 (CH25～39)
 | CH | 챕터 | L | 핵심(introduces 요지) |
 |---|---|---|---|
 | 25 | 실무 데이터 변경과 트랜잭션 제어 | 5 | DML(INSERT/UPDATE/MODIFY/DELETE)·COMMIT/ROLLBACK·LUW·감사필드 stamp |
@@ -66,9 +69,9 @@
 
 > 🔶 **RAP 2단(입문 CH24 ↔ 심화 CH39)** — 사용자 지시(2026-07-24): **CH24 = 입문**(managed BO 기본 흐름 상한 — Draft·Lock·ETag·EML 상세·Comm Arrangement 전부 CH39로 유예, L0/L1만). **CH39 = 심화**. 심화가 한 장으로 벅차면 **나중에 여러 챕터로 분할** 가능(미확정, 진도 닿을 때 재판단). CH24-L09가 EML 개념 지도만 두고 실전은 CH39-L06으로 foreshadow(회수 완료). CH39는 9레슨으로 재구성 완료(2026-08-01) — 분할 없이 단일 챕터 유지.
 
-> Track-1 = 입문 게이팅(R15)이 핵심. Track-2 = 챕터 내 순서만 게이팅(서로 독립 내용 많음 — 상세 정책은 아카이브 [`TRACK2_ENRICHMENT.md`](../.archive/2026-06-29-docs-cleanup/TRACK2_ENRICHMENT.md) §규칙).
+> Track-1·2 = 입문 게이팅(R15)이 핵심. Track-3 = 챕터 내 순서만 게이팅(서로 독립 내용 많음 — 상세 정책은 아카이브 [`TRACK2_ENRICHMENT.md`](../.archive/2026-06-29-docs-cleanup/TRACK2_ENRICHMENT.md) §규칙. 문서명의 "Track2"는 2분할 시절 구명칭 — 현 Track-3 구간을 가리킨다).
 
-> 🧩 **관통예제(콘서트 예매) 소속 구분** (사용자 확정 2026-08-02) — 관통 = CH01～31·33·36·37·39. **독립 모듈(관통 밖) = CH32·34·35·38** — `_chapter.md` `thread: false`([04 R10](04_CONVENTIONS.md))로 선언, 빌드가 로드맵 칩("🧩 관통예제 밖 · 독립 모듈")·레슨 태그("독립 모듈")로 표시. 키 없음 = 관통(기본값). 트랙·순서·번호는 불변(라벨만).
+> 🧩 **관통예제(콘서트 예매) 소속 구분** (사용자 확정 2026-08-02) — 관통 = CH01～31·33·36·37·39. **독립 모듈(관통 밖) = CH32·34·35·38** — `_chapter.md` `thread: false`([04 R10](04_CONVENTIONS.md))로 선언, 빌드가 로드맵 칩("🧩 관통예제 밖 · 독립 모듈")·레슨 태그("독립 모듈")로 표시. 키 없음 = 관통(기본값). 순서·번호는 불변(라벨만).
 
 ## B. classic↔modern 경계 (커리큘럼 위치 — 문법 메커니즘 단일 홈 = [04 R6](04_CONVENTIONS.md))
 - 순수 classic = **CH01～17** · New Syntax 도입 **CH18 L3** · New Open SQL 도입 **CH19 L3**(CH08～17 Open SQL 전부 classic) · `&&`만 **CH04** 조기.

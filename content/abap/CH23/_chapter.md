@@ -1,6 +1,6 @@
 ---
 id: CH23
-track: TRACK-01
+track: TRACK-02
 order: 23
 title: "CDS View Entity 기초"
 intro: "DB 계층에서 모델링하고 재사용하고 싶다."
