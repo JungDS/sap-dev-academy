@@ -1,6 +1,6 @@
 ---
 id: CH31
-track: TRACK-02
+track: TRACK-03
 order: 31
 title: "Editable Grid ALV와 입력 검증"
 intro: "ALV에서 직접 입력·수정하고 검증하고 싶다."

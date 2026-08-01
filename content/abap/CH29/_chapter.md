@@ -1,6 +1,6 @@
 ---
 id: CH29
-track: TRACK-02
+track: TRACK-03
 order: 29
 title: "고급 문자열 처리: PCRE 정규식"
 intro: "글자 그대로가 아니라 '형식'을 찾고 싶다 — PCRE 정규식."

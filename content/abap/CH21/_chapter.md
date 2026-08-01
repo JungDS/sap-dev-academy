@@ -1,6 +1,6 @@
 ---
 id: CH21
-track: TRACK-01
+track: TRACK-02
 order: 21
 title: "OO ABAP 기본 설계"
 intro: "절차적 코드의 한계 — 객체로 구조화하고 싶다."
