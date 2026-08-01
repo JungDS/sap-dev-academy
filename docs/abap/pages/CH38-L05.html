@@ -74,10 +74,9 @@ Variant</a>에서 배운 <strong>variant</strong>로 채운다(만들기는 SE38
 </ul>
 </section><section class="lblock"><h2>잡으로 감싸기 — 열고, 넣고, 닫는다</h2>
 <p><code>SUBMIT</code>을 지금 즉시가 아니라 &quot;새벽 2시에, background로&quot; 실행하려면 잡이라는
-틀에 넣어야 한다. 리듬은 <a href="CH37-L02.html">Chapter 37의 FP_JOB</a>과 같은 &quot;열고-넣고-
-닫고&quot; 3박자다: <strong>JOB_OPEN(잡 생성) → <button class="term" type="button" data-term="SUBMIT">SUBMIT</button> VIA JOB(단계 등록) →
-JOB_CLOSE(확정·예약)</strong>. 이름이 비슷하지만 <strong>다른 물건</strong>이라는 것도 같이 기억하자:
-FP_JOB은 PDF 양식의 출력 작업, JOB_OPEN은 background 잡이다 — 리듬만 닮았다.</p>
+틀에 넣어야 한다. 리듬은 &quot;열고-넣고-닫고&quot; 3박자다: <strong>JOB_OPEN(잡 생성) →
+<button class="term" type="button" data-term="SUBMIT">SUBMIT</button> VIA JOB(단계 등록) → JOB_CLOSE(확정·예약)</strong>. 열기와 닫기가 짝이고,
+등록은 그 사이에서만 유효하다는 규율까지 한 묶음이다.</p>
 <p>이 예약 리포트 자체는 <strong>사람이 화면에서 실행하는 dialog 프로그램</strong>이다(예매
 마감을 확인한 담당자가 정산을 예약하는 그림). 그래서 오류를 <code>MESSAGE</code>로 띄워도
 된다 — background 세계의 제약은 이 리포트가 아니라 <strong>예약되는 쪽</strong>(<code>zbook_settle</code>)
@@ -149,7 +148,8 @@ FP_JOB은 PDF 양식의 출력 작업, JOB_OPEN은 background 잡이다 — 리�
 단계&quot;로 등록만 되고, 실행은 ③에서 확정된 시작 조건이 정한다. 그래서 <code>VIA JOB</code>에는
 <code>AND RETURN</code>이 문법 규칙으로 강제된다(등록 후 반드시 이 코드로 돌아와 ③을 마쳐야
 하므로). ③이 끝나면 잡은 상태표(아래)의 <strong>Released</strong>가 된다 — 시작 조건이 확정돼
-때를 기다리는 상태다. <code>gv_jobcount</code>가 필요한 이유도 여기 있다: 매일 도는 정산
+때를 기다리는 상태다(단, 실행 계정에 잡 릴리스 권한이 없으면 <strong>Scheduled에
+머문다</strong> — 상태표 첫 줄이 실제로 쓰이는 순간이다). <code>gv_jobcount</code>가 필요한 이유도 여기 있다: 매일 도는 정산
 잡은 <strong>이름은 같고 실행마다 번호가 다른</strong> 여러 개가 쌓인다(SM37에서 이름으로
 찾으면 날짜별로 여러 줄이 나오는 게 정상이다).</p>
 <p><strong>같은 잡을 화면으로 만드는 길</strong>이 실무에선 더 흔하다. <code>SM36</code>에서 네 걸음이다:
