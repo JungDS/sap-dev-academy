@@ -287,6 +287,15 @@
 | CH36-L04-S01 | CH36-L04 | compare-matrix | (재사용) 수단 5행(TF 포함) 책임 순위 비교 + 상황 버튼 6(cfg.cases)→추천 행 강조 | ✅ |
 | CH36-L05-S01 | CH36-L05 | tf-link-map | CDS Table Function 3조각(DDL·AMDP 클래스·SELECT 소비) 단계 연결 지도·client 점검 | ✅ |
 | CH36-L06-S01 | CH36-L06 | judge-quiz | (재사용) 운영 적절성 판정 6(승인 체크리스트 기준, 구 L05-S01 이동) | ✅ |
+| CH37-L01-S01 | CH37-L01 | odata-tree | (재사용) Smart Forms 구조 트리(Form/Interface/Pages·Windows/Node 펼치기) | ✅ |
+| CH37-L01-S02 | CH37-L01 | stage-chips | 값 누락 원인 층 판별(ABAP 데이터/Interface/Node/생성 FM, 고장 4+정상 1) | ✅ |
+| CH37-L02-S01 | CH37-L02 | compare-matrix | (재사용) Smart vs Adobe 비교(요구 기준 프레이밍) | ✅ |
+| CH37-L02-S02 | CH37-L02 | stage-chips | Adobe 4층 신호등(Interface/Context/binding/ADS — 데이터 문제 vs 인프라 문제 분리) | ✅ |
+| CH37-L03-S01 | CH37-L03 | mermaid | (재사용) 출력 결정 흐름(이벤트→결정(NAST/BRFplus)→양식·채널→렌더링→전달) | ✅ |
+| CH37-L03-S02 | CH37-L03 | judge-quiz | (재사용) 증상→층 판별 5(양식·매핑 vs 결정·채널) | ✅ |
+| CH37-L04-S01 | CH37-L04 | code-anatomy | (재사용) PDF 파이프라인 해부(xstring/xstrlen/변환/BIN/gui_download) + 고장 카드 4(#bug-cfg) | ✅ |
+| CH37-L05-S01 | CH37-L05 | judge-quiz | (재사용) 양식 운영 대응 판별 6(이송·샘플 검증·구조 짝 변경) | ✅ |
+| CH37-L05-S02 | CH37-L05 | stage-chips | 출력 장애 티켓 5(데이터→매핑→결정→렌더링→전달 — 멈춘 단계 찾기) | ✅ |
 | CH04-L02-S01 | CH04-L02 | fill-blank | 문자열 함수 빈칸(INTO·AT·strlen·FIND) | ✅ |
 | CH04-L07-S01 | CH04-L07 | fill-blank | 구구단 빈칸(TIMES·sy-index·*·ENDDO) | ✅ |
 | CH04-L03-S01 | CH04-L03 | mermaid | IF/ELSEIF/ELSE 분기 흐름도(p_amt: 큰금액/소액/0·음수) | ✅ |
@@ -385,6 +394,7 @@
 | pkg-tuner (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH35-L05-S02 | 총 100만 건 가정·크기 3단(1천/1만/10만)→commit(log 스케일)/메모리/재처리 범위 막대·양극단 warn·가운데=실측 안내 |
 | tf-link-map (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH36-L05-S01 | CDS TF 3카드(DDL/클래스/소비) 단계 버튼(ddl→link→run→consume→client)·연결선 강조·상태 칩 |
 | amdp-steps (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH36-L02-S02 | as-cfg JSON(code/steps) 단계 버튼→코드 하이라이트+테이블 변수 스냅샷·재사용 배지·완주 노트 |
+| stage-chips (신규) | 3 | 공통(_engine)·자체 postHeight ✅ | CH37-L01-S02 · CH37-L02-S02 · CH37-L05-S02 | sc-cfg JSON(chips/scenarios) 단계 신호등(ok/warn/bad)+시나리오 버튼→판정문 — 층 판별 범용 |
 | decision-tree | 4 | 공통(_engine)+_autoheight ✅ | CH06-L02-S02 · CH20-L06-S01 · CH32-L04-S01 · CH35-L05-S01 | 범용 선택 트리(질문 분기=위젯 config)·Table Kind/고급 SQL/확장 수단/대량 처리 전략 선택 |
 | factory-sim (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH27-L01-S01 | 타입 세그(V/G/Z)→생성 클래스·설명 전환·호출부 코드 고정 표시 |
 | singleton-sim (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH27-L02-S01 | get_instance vs NEW 버튼→인스턴스 주소 목록·같음/다름 판정 |
@@ -446,9 +456,9 @@
 | relationship-map | 1 | 공통 | _(미작성)_ | CSS-only |
 | state-change-grid | 2 | 공통(CSS-only)+_autoheight ✅ | CH06-L04-S03·CH06-L06-S01 | 스냅샷=마크업(gt_gugu 성장·정렬 / DELETE ADJACENT DUPLICATES 함정) · cell-new/cell-del 강조 · .note 추가(다크 자동) |
 | mermaid | 15 | 공통(+_vendor)+_autoheight ✅ | CH04-L04-S02/S03·L05-S02/S03/S04 · CH26-L05 · CH31-L06-S02 · CH33-L05-S01 · CH34-L02-S01 · CH36-L03 · CH37-L03 · CH38-L03/L04 · CH39-L01/L06 | 그래프=위젯 `.mermaid` 주입·CDN+로컬fallback·이벤트본 은퇴 |
-| judge-quiz | 8 | 공통(_engine)+_autoheight ✅ | CH06-L05 · CH26-L03 · CH32-L05 · CH36-L03-S02 · CH36-L06 · CH37-L05 · CH39-L07 | 범용 판별 퀴즈(문항=위젯 config)·즉시 정답·해설 |
-| code-anatomy | 3 | 공통(_engine)·자체 postHeight ✅ | CH06-L02-S01 · CH06-L05-S02 · CH36-L02-S01 | 마커(.mk[data-a]) 클릭 해부(anno-cfg JSON) + (확장) #bug-cfg 오류 카드→해설 |
-| compare-matrix | 3 | 공통(_engine)·자체 postHeight ✅ | CH07-L03-S02 · CH20-L01-S01 · CH36-L04-S01 | cm-cfg JSON(cols/rows/detail) 행 클릭 상세 + (확장) cfg.cases 상황 버튼→추천 행 강조 |
+| judge-quiz | 9 | 공통(_engine)+_autoheight ✅ | CH06-L05 · CH26-L03 · CH32-L05 · CH36-L03-S02 · CH36-L06 · CH37-L03-S02 · CH37-L05 · CH39-L07 | 범용 판별 퀴즈(문항=위젯 config)·즉시 정답·해설 |
+| code-anatomy | 4 | 공통(_engine)·자체 postHeight ✅ | CH06-L02-S01 · CH06-L05-S02 · CH36-L02-S01 · CH37-L04-S01 | 마커(.mk[data-a]) 클릭 해부(anno-cfg JSON) + (확장) #bug-cfg 오류 카드→해설 |
+| compare-matrix | 4 | 공통(_engine)·자체 postHeight ✅ | CH07-L03-S02 · CH20-L01-S01 · CH36-L04-S01 · CH37-L02-S01 | cm-cfg JSON(cols/rows/detail) 행 클릭 상세 + (확장) cfg.cases 상황 버튼→추천 행 강조 |
 | pushdown-flow | 1 | 공통(_engine)·자체 postHeight ✅ | CH36-L01-S01 | 끌어오기/내려보내기 전송량 파이프 + (확장) #pf-cfg 상황 카드→수단 추천 |
 | domain-builder | 1 | 공통(_engine) ✅ | CH03-L01-S01 | SE11 폼(단일사용·데이터 inline) · 예제별 target 강제(검사/활성화는 목표 일치 시에만) |
 | input-help-priority | 1 | 공통(CSS-only)+_autoheight ✅ | CH09-L07-S01 | F4 사다리(콘텐츠=마크업·빈 .js 제거) |

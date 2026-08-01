@@ -1,38 +1,54 @@
 <!DOCTYPE html>
-<!-- CH37-L04-S01 — 엔진: code-anatomy(재사용) · _engine/_base.css. PDF 생성·다운로드 코드 해부. -->
+<!-- CH37-L04-S01 — 엔진: code-anatomy · _engine/_base.css. PDF 바이트 파이프라인 해부 + 고장 카드 4(#bug-cfg).
+     코드는 본문 CH37-L04 정본의 축약. -->
 <html lang="ko" data-eng="code-anatomy">
 <head>
 <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>PDF 생성 해부 · CH37-L04-S01</title>
+<title>PDF 파이프라인 해부 · CH37-L04-S01</title>
 <link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/code-anatomy.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">PDF 생성·다운로드 해부 — 부분을 클릭</p>
-  <p class="lead">Adobe Forms로 PDF 바이트를 받아 파일로 저장하는 코드입니다. 밑줄 부분을 클릭해 역할을 확인하세요.</p>
+  <p class="hd">PDF 바이트 파이프라인 — 부분을 클릭</p>
+  <p class="lead">밑줄 부분을 클릭해 역할을 확인한 뒤, 아래 <b>고장 카드 4장</b>으로 무엇이 왜 깨지는지 판별하세요.</p>
   <div class="anat">
-    <div class="anat__h"><span class="dot"></span>예매 확인서 PDF 저장 (ABAP)</div>
-<pre class="anat__code"><span class="kw">CALL FUNCTION</span> 'FP_JOB_OPEN' <span class="kw">CHANGING</span> ie_outputparams = ls_out.
-<span class="kw">CALL FUNCTION</span> lv_fm <span class="kw">EXPORTING</span> is_booking = ls_booking
-  <span class="kw">IMPORTING</span> <span class="mk" data-a="formout">/1bcdwb/formoutput = ls_formout</span>.
-<span class="kw">CALL FUNCTION</span> 'FP_JOB_CLOSE'.
+    <div class="anat__h"><span class="dot"></span>예매 확인서 PDF 저장 (본문 코드 축약)</div>
+<pre class="anat__code">gv_pdf = <span class="mk" data-a="formout">gs_formout-pdf</span>.        <span class="cm">" L02 결과 구조의 PDF</span>
 
-<span class="kw">DATA</span>(lv_pdf) = <span class="mk" data-a="xstring">ls_formout-pdf</span>.   <span style="color:#9aa4bf">" XSTRING(PDF 바이트)</span>
-<span class="kw">DATA</span> lt_bin <span class="kw">TYPE</span> solix_tab.
-lt_bin = <span class="mk" data-a="convert">cl_bcs_convert=>xstring_to_solix( lv_pdf )</span>.
-cl_gui_frontend_services=>gui_download(
-  <span class="kw">EXPORTING</span> filename = 'ticket.pdf' <span class="mk" data-a="bin">filetype = 'BIN'</span>
-            bin_filesize = xstrlen( lv_pdf )
-  <span class="kw">CHANGING</span>  data_tab = lt_bin ).</pre>
+<span class="kw">IF</span> <span class="mk" data-a="xstrlen">xstrlen( gv_pdf )</span> = 0.
+  <span class="cm">" 비었으면 저장이 아니라 생성(ADS·양식) 문제부터</span>
+  <span class="kw">MESSAGE</span> 'PDF가 생성되지 않았습니다' <span class="kw">TYPE</span> 'E'.
+<span class="kw">ENDIF</span>.
+
+gt_bin = <span class="mk" data-a="convert">cl_bcs_convert=>xstring_to_solix( gv_pdf )</span>.
+
+cl_gui_frontend_services=><span class="mk" data-a="gui">gui_download</span>(
+  <span class="kw">EXPORTING</span> filename     = 'C:\temp\ticket.pdf'
+            <span class="mk" data-a="bin">filetype     = 'BIN'</span>
+            bin_filesize = xstrlen( gv_pdf )
+  <span class="kw">CHANGING</span>  data_tab     = gt_bin ).</pre>
   </div>
-  <div class="anno idle" id="anno">밑줄 친 구문을 클릭하면 여기에 설명이 나옵니다.</div>
-  <div class="note">💡 PDF는 텍스트가 아니라 <b>바이너리(XSTRING)</b> — 저장은 반드시 <code>BIN</code> 모드. 출력은 <code>FP_JOB_OPEN</code>~<code>FP_JOB_CLOSE</code> 사이에서. 이메일 첨부는 BCS, 보관은 ArchiveLink/DMS.</div>
+  <div class="anno idle" id="anno">밑줄 친 구문을 클릭해 보세요.</div>
+  <div class="bugs" id="bugs"></div>
+  <div class="anno idle" id="bugOut">🚨 고장 카드를 클릭하면 무엇이 깨지는지 나옵니다.</div>
+  <div class="note">💡 파이프라인 = 결과 구조 → <b>xstring</b> → (빈 값 검사) → 바이너리 테이블 → <b>BIN 저장</b>. gui_download는 SAP GUI 대화 전용입니다.</div>
   <script type="application/json" id="anno-cfg">
   {
-    "formout": { "t": "/1bcdwb/formoutput", "d": "Adobe Forms 생성 함수가 돌려주는 출력 구조 — 그 안의 pdf 필드에 PDF 바이트가 들어 있습니다." },
-    "xstring": { "t": "ls_formout-pdf (XSTRING)", "d": "PDF는 텍스트가 아니라 바이너리. XSTRING으로 받아 저장·첨부·보관에 씁니다." },
-    "convert": { "t": "xstring_to_solix( )", "d": "XSTRING(PDF 바이트)을 다운로드용 바이너리 테이블(solix_tab)로 변환하는 헬퍼. 인코딩 실수 방지." },
-    "bin": { "t": "filetype = 'BIN'", "d": "반드시 BIN(바이너리) 모드로 저장. TEXT 모드로 저장하면 PDF가 깨집니다." }
+    "formout": { "t": "gs_formout-pdf", "d": "L02의 생성 함수가 돌려준 결과 구조 안의 PDF 바이트. 여기서부터 파이프라인이 시작됩니다." },
+    "xstrlen": { "t": "xstrlen( ) — 바이트 길이", "d": "글자 수(strlen)가 아니라 <b>바이트 수</b>를 셉니다. 0이면 생성 실패이므로 저장 코드를 의심하기 전에 양식·ADS부터 봅니다." },
+    "convert": { "t": "xstring_to_solix( )", "d": "xstring을 다운로드·첨부가 요구하는 바이너리 테이블(solix_tab)로 바꾸는 시스템 제공 헬퍼. 손으로 자르지 않습니다." },
+    "gui": { "t": "gui_download — SAP GUI 전용", "d": "SAP GUI 창을 통해 <b>사용자 PC</b>에 파일을 씁니다. 배치·서버 처리·ABAP Cloud에서는 쓸 수 없습니다(실행 위치의 경계)." },
+    "bin": { "t": "filetype = 'BIN'", "d": "문자 변환 없이 바이트 그대로 저장. PDF는 바이트 순서가 생명이라 TEXT 모드면 깨집니다." }
+  }
+  </script>
+  <script type="application/json" id="bug-cfg">
+  {
+    "bugs": [
+      { "c": "filetype = 'ASC'(텍스트)로 저장", "t": "PDF 깨짐", "d": "문자 코드 변환이 끼어들어 바이트가 바뀝니다. 뷰어가 열지 못하는 파일이 됩니다. PDF는 반드시 <code>BIN</code>." },
+      { "c": "bin_filesize = strlen( … )", "t": "크기 계산 오류", "d": "strlen은 글자 수, xstrlen은 바이트 수. 바이너리에서는 둘이 달라 파일이 잘리거나 넘칩니다." },
+      { "c": "빈 PDF인데 저장 코드만 수정", "t": "층 혼동", "d": "xstrlen( ) = 0이면 생성(양식 호출·ADS) 문제입니다. 저장 파이프라인을 아무리 고쳐도 빈 파일만 나옵니다." },
+      { "c": "배치 작업에서 gui_download 호출", "t": "실행 위치 위반", "d": "배치에는 사용자 PC(SAP GUI)가 없습니다. 서버 파일(Chapter 33)이나 스풀·메일 첨부 경로로 설계해야 합니다." }
+    ]
   }
   </script>
 </div>

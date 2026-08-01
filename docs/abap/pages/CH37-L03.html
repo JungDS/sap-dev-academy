@@ -35,26 +35,154 @@
       <section class="lhead">
         <p class="lhead__eyebrow">Forms / Output / PDF</p>
         <h1>Output Control 개요</h1>
-        <p class="lhead__direction">언제 무엇을 누구에게 출력하나 — 출력 결정.</p>
+        <p class="lhead__direction">양식과 출력 결정은 다른 층이다 — 언제·무엇을·누구에게·어떤 채널로.</p>
         <div class="tags"><span class="tag tag--track">Track 2</span><span class="tag tag--ch">Chapter 37</span><span class="tag tag--ls">Lesson 3</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>출력은 자동으로 결정된다</h2>
-<p>&quot;주문이 저장되면 확인서를 고객에게 이메일·인쇄&quot;처럼, <strong>언제·무엇을·누구에게·어떻게</strong>
-출력할지는 <strong>Output Control</strong>이 조건으로 결정한다.</p>
+<section class="lblock"><h2>양식이 있는데 왜 안 나가지?</h2>
+<p>L01·L02에서 양식을 만들고 호출했다. 하지만 실무의 예매 확인서는 개발자가 리포트를
+실행해서 나가는 게 아니다. <strong>예매가 확정되는 순간 시스템이 알아서</strong> 보내야 한다.
+그러려면 시스템이 알아야 할 것이 있다: 어떤 업무 <button class="term" type="button" data-term="이벤트">이벤트</button>에서, 누구에게, 어떤
+양식으로, 인쇄인지 이메일인지, 지금 보낼지 모아서 보낼지.</p>
+<p>이 결정을 담당하는 층이 <button class="term" type="button" data-term="Output Control">Output Control</button>(업무 이벤트 발생 시 출력 여부·양식·
+수신자·채널·시점을 결정하는 메커니즘)이다. <strong>양식은 문서의 모양이고, Output
+Control은 그 문서의 발송 결정이다.</strong> 층이 다르다는 것을 아는 순간, &quot;양식은 멀쩡한데
+왜 안 나가지?&quot;라는 질문의 답 찾을 곳이 달라진다.</p>
+<p>조건을 ABAP 코드에 <code>IF</code>로 박아 넣으면 안 되나? 처음엔 되지만, 문서 종류와 조건이
+늘수록 코드가 비대해지고 <strong>운영자가 조건을 바꿀 때마다 개발·이송이 필요</strong>해진다.
+출력 결정을 설정·규칙의 영역으로 분리하는 이유다.</p>
+</section><section class="lblock"><h2>두 갈래 — 전통 NAST와 S/4HANA Output Management</h2>
+<p>낯선 명사 셋을 먼저 풀고 표로 가자.</p>
 <ul>
-<li><strong>전통(NAST)</strong> — 메시지 결정 절차(조건 <button class="term" type="button" data-term="레코드">레코드</button>·출력 유형).</li>
-<li><strong>현대(BRF+ 기반 Output Management, S/4HANA)</strong> — 규칙으로 출력 결정.</li>
-<li>결정되면 연결된 <strong>양식</strong>(Smart/Adobe)과 <strong>채널</strong>(인쇄·이메일·EDI)로 나간다.</li>
+<li><strong>출력 유형(output type)</strong> — &quot;예매 확인서&quot;, &quot;주문서&quot;처럼 <strong>출력물의 종류에 붙는
+이름</strong>. 어떤 양식을 쓰고 어떤 채널이 기본인지가 이 이름 밑에 등록된다.</li>
+<li><strong>조건 <button class="term" type="button" data-term="레코드">레코드</button>(condition record)</strong> — &quot;이 문서 유형이 이 조건이면 이 출력 유형을
+실행하라&quot;를 코드가 아니라 <strong>데이터 한 줄(레코드)로 저장</strong>해 둔 것. 운영자가
+설정 화면에서 등록하므로, 조건이 바뀌어도 개발·이송이 없다(위에서 <code>IF</code>로 박지
+않는 이유가 바로 이것이다).</li>
+<li><strong>output item</strong> — S/4HANA Output Management에서 <strong>출력 요청 한 건</strong>을 가리키는
+단위. 규칙이 &quot;출력하라&quot;고 판정하면 문서에 output item이 생기고, 그 상태(성공·
+오류·대기)로 진행을 추적한다.</li>
 </ul>
-<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">Output Control 결정 흐름</span><a class="embed__open" href="../../../embeds/abap/CH37-L03-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH37-L03-S01.html" loading="lazy" title="Output Control 결정 흐름" style="height:440px"></iframe></figure>
-</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<table>
+<thead>
+<tr>
+<th>관점</th>
+<th>전통 <button class="term" type="button" data-term="NAST">NAST</button>(Message Control)</th>
+<th><button class="term" type="button" data-term="BRFplus">BRFplus</button> 기반 Output Management</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>결정 방식</td>
+<td>출력 유형 + 조건 레코드(condition record)</td>
+<td>비즈니스 규칙·decision table 평가</td>
+</tr>
+<tr>
+<td>대표 산출물</td>
+<td>NAST 레코드·메시지 상태</td>
+<td>output item·rule 결과</td>
+</tr>
+<tr>
+<td>주 무대</td>
+<td>기존 SD/MM 등 classic 영역</td>
+<td>S/4HANA 표준 전환 영역</td>
+</tr>
+<tr>
+<td>문제 확인</td>
+<td>문서의 메시지 상태·조건 레코드</td>
+<td>output item 상태·rule/채널 설정</td>
+</tr>
+</tbody></table>
+<p><code>NAST</code>는 <strong>판정 결과(메시지 상태)가 저장되는 테이블 이름</strong>에서 온 통칭으로, 이
+전통 방식 전체(Message Control)를 가리키는 말로 굳었다(테이블이니 SE16으로 열어
+직접 볼 수도 있다). 조건 레코드의 판정도 한 줄만 알아 두자: 레코드는 낱개로
+찾아지는 게 아니라 <strong>&quot;구체적인 조건부터 일반 조건 순서로&quot;</strong> 탐색된다. &quot;VIP
+고객용 설정은 먹는데 전체 기본 설정이 안 먹네?&quot; 류의 수수께끼가 대부분 이 탐색
+순서에서 나온다.</p>
+<p>S/4HANA가 새 방식을 만든 이유도 한 줄로: 조건 레코드 방식은 업무 영역마다 설정
+체계가 제각각이어서, 문서 종류가 늘수록 <strong>하나의 규칙 프레임워크로 통일</strong>할 필요가
+커졌기 때문이다. 그리고 실무 판단에 중요한 제약 하나 — <strong>새 Output Management로
+가는 문서는 양식 선택지가 사실상 Adobe 계열로 좁혀진다</strong>(Smart Forms는 새 OM의
+표준 대상이 아니다). L02의 도구 선택 기준에 이 조건도 함께 넣어 두자.</p>
+<p>BRFplus(Business Rule Framework plus. 비즈니스 규칙을 정의·평가하는
+프레임워크)는 여기서 처음 만나는 이름인데, 위치를 정확히 잡자. <strong>ABAP 문법이
+아니다.</strong> <code>COND</code>나 <code>SWITCH</code> 같은 문법 차원이 아니라, &quot;이 조건이면 어떤 출력이 어떤
+채널로&quot;를 규칙 표로 관리하는 별도 프레임워크이고, Output Management가 출력 결정에
+그것을 쓴다. 이 과정에서는 <strong>역할과 확인 지점까지만</strong> 배우고, BRFplus로 규칙을
+만드는 것 자체는 범위 밖이다(모듈·운영 설정 심화 영역).</p>
+<p>한 가지 더: 한 시스템 안에서도 업무 영역별로 두 방식이 <strong>공존</strong>할 수 있다.
+&quot;S/4니까 무조건 BRFplus&quot;도, &quot;구형이니까 무조건 NAST&quot;도 아니다. 대상 업무 문서가
+어느 프레임워크를 쓰는지부터 확인한다(가장 빠른 확인법은 그 문서를 담당하는 모듈
+담당자·운영자에게 묻는 것이다 — 문서마다 다르고, 설정 화면도 모듈마다 다르다).</p>
+<blockquote>
+<p>🔭 <strong>기대 관리</strong> — 조건 레코드·rule을 <strong>등록하는 설정 화면은 업무 모듈(SD/MM
+등)·운영 설정 영역</strong>이라 이 과정 범위 밖이다(모듈마다 화면이 다르다). 문서의
+메시지 상태·output item도 해당 <strong>업무 문서 화면의 출력(Output) 메뉴</strong>에서 보는
+것이라, 화면 위치는 실습하는 모듈에 따라 다르다. 이 레슨에서 고정할 것은 화면이
+아니라 <strong>층의 구분과 추적 순서</strong>다.</p>
+</blockquote>
+</section><section class="lblock"><h2>그럼 개발자인 나는 뭘 하나</h2>
+<p>이 층의 설정은 운영·모듈 영역이라고 했다. 그렇다고 개발자가 구경만 하는 것은
+아니다. 예매 확인서가 자동으로 나가기까지 역할이 이렇게 나뉜다.</p>
+<ol>
+<li><strong>개발자</strong> — 양식(<code>ZSF_TICKET</code>/<code>ZAF_TICKET</code>)을 만든다(L01·L02). 전통 <button class="term" type="button" data-term="NAST">NAST</button>
+방식에서는 그 양식을 부르는 <strong>출력 프로그램</strong>도 개발자가 만든다. 조회 후 동적
+호출이라는 뼈대는 L01 리포트와 같지만, <strong>진입 계약이 다르다</strong>: 시스템이 정해진
+이름의 서브루틴(관례상 <code>ENTRY</code>)을 호출하면서 &quot;어느 문서를 출력할지&quot;가 담긴
+NAST <button class="term" type="button" data-term="레코드">레코드</button>를 넘겨 준다(내가 <code>SELECT</code>로 고르는 게 아니다). 실물 작성은 표준
+출력 프로그램을 참고하는 영역이라 이 과정 범위 밖이고, 여기서는 &quot;실행형
+리포트가 아니라 정해진 진입 루틴&quot;이라는 사실만 고정하자.</li>
+<li><strong>설정 담당(모듈·운영)</strong> — 출력 유형을 정의하고, 거기에 개발자가 만든 **양식
+이름과 출력 프로그램(+진입 루틴 이름)**을 등록하고, 조건 레코드나 rule로 &quot;언제
+누구에게 어떤 채널&quot;을 정한다. 등록하는 이름은 언제나 안정적인 쪽(Form 이름)이다
+— 생성 함수명이 아니다(L01의 규칙 그대로).</li>
+<li><strong>장애가 나면</strong> — 개발자는 층을 판별한다. 양식·매핑 문제면 내 몫, 결정·채널
+문제면 설정 담당과 함께 본다. 이 판별이 이 레슨과 L05의 목적이다.</li>
+</ol>
+</section><section class="lblock"><h2>결정에서 전달까지 — 흐름 한 장</h2>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title"><button class="term" type="button" data-term="Output Control">Output Control</button> 결정 흐름</span><a class="embed__open" href="../../../embeds/abap/CH37-L03-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH37-L03-S01.html" loading="lazy" title="Output Control 결정 흐름" style="height:470px"></iframe></figure>
+<p>흐름의 각 마디가 곧 확인 지점이다.</p>
+<ol>
+<li><strong>업무 <button class="term" type="button" data-term="이벤트">이벤트</button></strong> — 예매 확정·주문 저장처럼 출력이 시작될 사건이 있었는가. 수동
+미리보기는 되는데 저장 시 안 나가면, 양식이 아니라 여기부터다.</li>
+<li><strong>조건/규칙 평가</strong> — 조건 <button class="term" type="button" data-term="레코드">레코드</button>(<button class="term" type="button" data-term="NAST">NAST</button>) 또는 rule(<button class="term" type="button" data-term="BRFplus">BRFplus</button>)이 &quot;출력하라&quot;고
+판정했는가. 판정이 없으면 output item 자체가 안 생긴다. NAST 쪽은 <strong>전송
+시점</strong>도 함께 본다: &quot;즉시 전송&quot;이 아니라 &quot;모아서 전송&quot;으로 설정돼 있으면,
+메시지는 생겼는데 <strong>정기 발송 작업이 돌 때까지 안 나가는 게 정상</strong>이다.
+&quot;안 나가요&quot;의 단골 원인 중 하나다.</li>
+<li><strong>양식·채널 연결</strong> — 결정된 출력이 <code>ZSF_TICKET</code>/<code>ZAF_TICKET</code> 중 무엇으로, 인쇄·
+이메일 중 어디로 가는가. 같은 양식이라도 채널이 다르면 실패 지점이 다르다.</li>
+<li><strong>생성 결과</strong> — NAST면 메시지 상태, Output Management면 output item 상태. 인쇄
+채널이면 스풀(<a href="CH37-L05.html">이 챕터의 오류 추적 레슨</a>에서 SP01로 본다)까지.</li>
+</ol>
+</section><section class="lblock"><h2>원인 위치를 판별해 보기</h2>
+<p>다섯 상황이 각각 어느 마디의 문제인지 판정해 보라. &quot;양식을 고칠 문제인가,
+결정·채널을 볼 문제인가&quot;의 감각이 이 레슨의 전부다.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">출력 안 나감 — 원인 마디 판별</span><a class="embed__open" href="../../../embeds/abap/CH37-L03-S02.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH37-L03-S02.html" loading="lazy" title="출력 안 나감 — 원인 마디 판별" style="height:560px"></iframe></figure>
+</section><section class="lblock"><h2>흔한 실수와 점검 🚧</h2>
 <ul>
-<li><strong>양식만 만들고 결정 없음</strong> → 자동 출력이 안 된다. Output 조건을 설정.</li>
-<li><strong>NAST vs BRF+</strong> → 시스템 버전에 맞는 방식 사용(S/4는 BRF+ 권장).</li>
+<li><strong>양식만 만들고 결정 미설정</strong> → 시스템 입장에선 그 양식을 언제 쓸지 정해진 적이
+없다. 자동 출력엔 결정 층이 필수.</li>
+<li><strong><button class="term" type="button" data-term="BRFplus">BRFplus</button>를 ABAP 문법처럼 학습</strong> → rule 프레임워크다. 이 과정에선 역할·확인
+지점까지. 규칙 authoring은 별도 심화.</li>
+<li><strong>한 방식만 있다고 단정</strong> → 같은 시스템에 <button class="term" type="button" data-term="NAST">NAST</button>와 Output Management가 공존할 수
+있다. 문서별 프레임워크부터 확인.</li>
+<li><strong>채널을 가볍게 봄</strong> → output item은 생겼는데 전달이 안 되면 채널(수신자 주소·
+프린터·설정) 문제다. 양식 잘못이 아니다.</li>
+</ul>
+</section><section class="lblock"><h2>정리 📌</h2>
+<ul>
+<li><strong>양식 ≠ 출력 결정.</strong> <button class="term" type="button" data-term="Output Control">Output Control</button>이 언제·무엇을·누구에게·어떤 채널로를 정한다.</li>
+<li>두 갈래 = 전통 <strong><button class="term" type="button" data-term="NAST">NAST</button></strong>(조건 <button class="term" type="button" data-term="레코드">레코드</button>) · S/4HANA <strong><button class="term" type="button" data-term="BRFplus">BRFplus</button> 기반 Output
+Management</strong>(rule). 공존 가능, 문서별로 확인.</li>
+<li>BRFplus는 ABAP 문법이 아니라 rule 프레임워크. 여기서는 역할과 확인 지점까지만.</li>
+<li>역할 분담 = 개발자는 <strong>양식(+NAST 방식이면 출력 프로그램)</strong>, 설정 담당은 <strong>출력
+유형·조건·채널 등록</strong>, 장애 시 개발자는 <strong>층 판별</strong>.</li>
+<li>추적 순서 = <button class="term" type="button" data-term="이벤트">이벤트</button> → 조건/규칙 → 양식·채널 → 생성 결과(상태·스풀).</li>
 </ul>
 <hr>
-<p>출력 결정을 봤다. 이제 양식을 PDF로 만들어 내려받자 → 다음 레슨.</p>
+<p>결정까지 이어졌다. 이제 L02에서 돌려받은 PDF <button class="term" type="button" data-term="바이트">바이트</button>를 실제로 파일로 만들어 보자.
+바이트의 세계다.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

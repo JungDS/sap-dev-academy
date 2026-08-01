@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<!-- CH37-L02-S02 — 엔진: stage-chips · _engine/_base.css. Adobe Forms 4층(Interface/Context/Layout/ADS) 신호등. -->
+<html lang="ko" data-eng="stage-chips">
+<head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>네 층 신호등 · CH37-L02-S02</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/stage-chips.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">네 층 신호등 — 어디서 멈췄나</p>
+  <p class="lead">Adobe Forms의 문제는 층으로 갈립니다. 시나리오를 눌러 <b>데이터 문제</b>와 <b>렌더링 인프라 문제</b>를 구분해 보세요.</p>
+  <div id="chips"></div>
+  <div id="cases"></div>
+  <div class="verdict" id="verdict"></div>
+  <div class="note">💡 Interface(계약) → Context(재료) → Layout(binding) → ADS(렌더링). 셋이 초록인데 마지막이 빨강이면 코드가 아니라 <b>인프라</b>를 봐야 합니다. (사례는 교육용 가상)</div>
+  <script type="application/json" id="sc-cfg">
+  {
+    "chips": ["Interface", "Context", "Layout binding", "ADS 렌더링"],
+    "scenarios": [
+      { "label": "정상 렌더링", "states": ["ok", "ok", "ok", "ok"],
+        "verdict": "✓ 계약·재료·binding·렌더링이 모두 통과 — PDF가 정상 생성됩니다." },
+      { "label": "필드가 빈 PDF ①", "states": ["ok", "bad", "warn", "off"], "warn": true,
+        "verdict": "🚨 <b>Context 누락</b> — Interface에 필드는 있는데 Context(레이아웃에 넘길 재료 목록)에 안 담았습니다. Layout은 재료가 없어 노란불. SFP에서 Context에 필드를 추가하세요." },
+      { "label": "필드가 빈 PDF ②", "states": ["ok", "ok", "bad", "off"], "warn": true,
+        "verdict": "🚨 <b>Binding 오류</b> — 재료는 준비됐는데 Layout 필드가 Context 필드에 묶이지 않았습니다. 디자이너에서 binding을 확인하세요." },
+      { "label": "PDF 자체가 안 만들어짐", "states": ["ok", "ok", "ok", "bad"], "warn": true,
+        "verdict": "🚨 <b>ADS 오류</b> — 데이터·매핑은 전부 정상입니다. ABAP 코드를 고칠 문제가 아니라 <b>ADS 연결·구성·로그</b>(Basis 영역)를 확인할 문제입니다." }
+    ]
+  }
+  </script>
+</div>
+<script src="../_engine/stage-chips.js" defer></script>
+</body>
+</html>
