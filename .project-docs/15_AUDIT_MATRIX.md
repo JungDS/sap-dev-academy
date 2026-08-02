@@ -1,6 +1,6 @@
 # 15. AUDIT MATRIX — 4모델 × 10종 검수 매트릭스 프로토콜
 
-> 📅 최종수정: 2026-08-03 03:57 KST
+> 📅 최종수정: 2026-08-03 04:04 KST
 > 🎯 **목적:** 39챕터 전량을 **동일 설계 에이전트 10종 × 4모델 완전 중복**으로 감사해 ① 챕터별 품질 최종평가와 ② **모델별 성능 데이터(스코어카드)** 를 동시에 얻는다. **발견·평가까지만 — 수정 없음**(보강·재집필 = 챕터별 별도 지시).
 > 📖 **읽을 때:** 매트릭스 감사 캠페인 실행·재개 시. §1이 사용자 확정 원장, §2가 발견자 정본 프롬프트(SSOT).
 
@@ -137,7 +137,7 @@ URL 열람 → 소스 정독). 검증용 로컬 서버 주소가 주어지면 �
 실행한 것처럼 서술하지 말고 confidence="추정"으로 남겨라.
 ```
 
-> **비고(결정 이력)**: ① 당초 B안 = Opus/Sonnet만 브라우저 실조작 → ② 통제 순도·패널 경합을 이유로 "4모델 소스 기반 통일"을 제안 → ③ 리허설 실증(2026-08-03, CH37-L04-S01)에서 스택별 실제 능력 차가 확인 — codex는 자작 인메모리 DOM 하네스로 엔진 실행·클릭 검증까지 수행(+실결함 1건 적발), agy는 원본 HTML 수신만(`#bugs` 빈 div 판별 · 상호작용 도구 부재 · **agy 자가검증으로 판정 전량 확인**, 공식 명세 "No JavaScript execution") → ④ **사용자 결정(2026-08-03): 도구 자유화 채택**(§1) — 각 스택이 가진 수단 전부로 검증하고 method를 자가보고, AG02 결과는 스택 비교로 해석. "추정" 발견의 최종 확증은 여전히 본선 브라우저가 맡는다.
+> **비고(결정 이력)**: ① 당초 B안 = Opus/Sonnet만 브라우저 실조작 → ② 통제 순도·패널 경합을 이유로 "4모델 소스 기반 통일"을 제안 → ③ 리허설 실증(2026-08-03, CH37-L04-S01)에서 스택별 실제 능력 차가 확인 — codex는 자작 인메모리 DOM 하네스로 엔진 실행·클릭 검증까지 수행(+실결함 1건 적발 — 기제·재현은 codex 자가검증으로 확인: `node -e`+`vm.runInNewContext`+최소 DOM 심, 파일 쓰기 불요), agy는 원본 HTML 수신만(`#bugs` 빈 div 판별 · 상호작용 도구 부재 · **agy 자가검증으로 판정 전량 확인**, 공식 명세 "No JavaScript execution") → ④ **사용자 결정(2026-08-03): 도구 자유화 채택**(§1) — 각 스택이 가진 수단 전부로 검증하고 method를 자가보고, AG02 결과는 스택 비교로 해석. "추정" 발견의 최종 확증은 여전히 본선 브라우저가 맡는다.
 
 ### AG03 경력자 독자 (질문 10)
 
@@ -385,17 +385,17 @@ codex `--output-schema`·agy `--json-schema`에 그대로 전달. Claude 발견�
 | 계열 | 호출 | 동시성 |
 |---|---|---|
 | opus / sonnet | Agent 도구(`claude` 타입, `model` 지정, 백그라운드) — 반환 JSON을 본선이 검증 후 저장 | 2～4 병렬 |
-| gpt-5.6-sol | `Get-Content <prompt> -Raw \| codex exec -m gpt-5.6-sol --sandbox read-only --ephemeral -C C:\SAP\sap-dev-academy --output-schema tools\audit-matrix\schema.json -o <out.json> -` | 2 병렬 |
+| gpt-5.6-sol | `cat <prompt> \| codex exec -m gpt-5.6-sol --sandbox read-only --ephemeral -C /c/SAP/sap-dev-academy -c 'web_search="disabled"' --output-schema tools/audit-matrix/schema.json -o <out.json> -` (Bash 경유 — UTF-8 보장) | 2 병렬 |
 | gemini-3.6-flash-high | `agy -p (Get-Content <prompt> -Raw) --model gemini-3.6-flash-high --sandbox --output-format json --json-schema tools\audit-matrix\schema.json --print-timeout 15m` (cwd=저장소, stdout→저장) | 1～2 순차 |
 
 - **발사 방식**: 전 계열 **백그라운드 작업으로 병렬 발사**(§1) — 어떤 계열도 다른 계열을 기다리지 않는다. 수거는 완료 알림 기준.
 - **서버·포트**: 발견자 프롬프트에 서버·프로세스 기동/종료 금지를 명시(인프라 수명주기 = 본선 소유). fetch 검증 변형 시 포트 배정은 §1 규칙.
 - **인코딩**: codex 프롬프트 전달은 UTF-8 보장 경로(Bash `cat <prompt> | codex exec … -`)로 표준화(PowerShell 파이프의 코드페이지 변환 회피).
 - **실행 능력 현황(스코어카드 각주)**: Claude=브라우저 패널 실조작 가능 · codex=읽기 전용 샌드박스 안 node 실행 가능(정적+동적 JS 검증) · agy=명령 실행 자동 거부(`command(*): ask`)로 파일 읽기+URL 열람까지 — AG02는 §1 도구 자유화에 따라 **스택 비교**로 해석.
-- **AG02 도구 자유화 운영**: 본선이 배치 시작 시 스택별 포트(§1 규칙)로 로컬 서버를 기동해 `{{SERVE_URL}}`로 치환 제공(종료도 본선만). Claude 계열 AG02는 브라우저 패널이 세션당 1개이므로 **opus → sonnet 직렬 실행**(그동안 본선은 패널 미사용, P3/P4 회피는 DOM 측정 우선 [07](07_BROWSER_TESTING.md)). codex의 localhost 도달 가능 여부는 확인 대기(사용자 심문 Q3 결과 반영) — 불가면 codex는 node 경로 사용. agy에 명령 실행 권한은 부여하지 않는다(read_file 1줄 유지).
+- **AG02 도구 자유화 운영**: 본선이 배치 시작 시 스택별 포트(§1 규칙)로 로컬 서버를 기동해 `{{SERVE_URL}}`로 치환 제공(종료도 본선만). Claude 계열 AG02는 브라우저 패널이 세션당 1개이므로 **opus → sonnet 직렬 실행**(그동안 본선은 패널 미사용, P3/P4 회피는 DOM 측정 우선 [07](07_BROWSER_TESTING.md)). codex는 **localhost 도달 불가 실증**(web.run = 별도 웹 조회 서비스 — 로컬 서버에 요청 자체가 미도달, 반환도 렌더 DOM 아닌 추출 텍스트) → **node 인메모리 DOM 하네스 경로 확정**. 등가 범위 = JS 분기·리스너·상태 전환까지이며 CSS/페인트/이벤트 전파/CSP/`defer` 타이밍/콘솔 오류는 검증 밖(심 부정확 시 오탐 가능 — codex 자가고지, 스코어카드 해석 각주). agy에 명령 실행 권한은 부여하지 않는다(read_file 1줄 유지).
 - **실패 처리**: 타임아웃·스키마 불합격 → 동일 프롬프트 1회 재시도 → 재실패 시 **결측 기록**(캠페인은 계속, 스코어카드에 반영). 결측 보고를 본선이 임의 대필하지 않는다.
 - **agy 쿼터 페이싱**: 주간 컴퓨트 캡 전제 — 배치 시작 전 잔량 확인(`agy -p "/usage"` 가용 여부는 파일럿에서 확정, 불가 시 실패 감지로 대체). 소진 시 **Gemini 층만 지연**하고 나머지 3계열 계속, 결측으로 기록.
-- **차단 규약**: agy 실행 스크립트에 모델명 하드코딩(목록의 claude·gpt-oss 사용 금지 — 벤더 오염 방지).
+- **차단 규약**: agy 실행 스크립트에 모델명 하드코딩(목록의 claude·gpt-oss 사용 금지 — 벤더 오염 방지). **codex 웹 차단 공식 키(0.145, codex 자가확인 2026-08-03)**: `-c 'web_search="disabled"'`(현행 — `tools.web_search=false`·`features.web_search=false`는 레거시) + 보수적 동봉 `-c features.browser_use=false -c features.browser_use_external=false -c features.in_app_browser=false`. 셸 외부 네트워크는 read-only 샌드박스가 차단(실측: 샌드박스 안 curl 17ms 실패 vs 밖 200) → codex 웹 금지는 **프롬프트+설정+샌드박스 3중 잠금**.
 
 ## §5 본선 검증·최종평가 (Fable 5)
 
