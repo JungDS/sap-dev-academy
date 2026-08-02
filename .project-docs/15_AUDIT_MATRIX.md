@@ -1,6 +1,6 @@
 # 15. AUDIT MATRIX — 4모델 × 10종 검수 매트릭스 프로토콜
 
-> 📅 최종수정: 2026-08-03 04:53 KST
+> 📅 최종수정: 2026-08-03 05:11 KST
 > 🎯 **목적:** 39챕터 전량을 **동일 설계 에이전트 10종 × 4모델 완전 중복**으로 감사해 ① 챕터별 품질 최종평가와 ② **모델별 성능 데이터(스코어카드)** 를 동시에 얻는다. **발견·평가까지만 — 수정 없음**(보강·재집필 = 챕터별 별도 지시).
 > 📖 **읽을 때:** 매트릭스 감사 캠페인 실행·재개 시. §1이 사용자 확정 원장, §2가 발견자 정본 프롬프트(SSOT).
 
@@ -386,14 +386,15 @@ codex `--output-schema`·agy `--json-schema`에 그대로 전달. Claude 발견�
 | 계열 | 호출 | 동시성 |
 |---|---|---|
 | opus / sonnet | Agent 도구(`claude` 타입, `model` 지정, 백그라운드) — 반환 JSON을 본선이 검증 후 저장 | 2～4 병렬 |
-| gpt-5.6-sol | `cat <prompt> \| codex exec -m gpt-5.6-sol --sandbox read-only --ephemeral -C /c/SAP/sap-dev-academy -c 'web_search="disabled"' --output-schema tools/audit-matrix/schema.json -o <out.json> -` (Bash 경유 — UTF-8 보장) | 2 병렬 |
+| gpt-5.6-sol | `cat <prompt> \| codex exec -m gpt-5.6-sol --sandbox read-only --ephemeral -C /c/SAP/sap-dev-academy -c 'web_search="disabled"' -c 'approval_policy="never"' --strict-config --color never --json --output-schema tools/audit-matrix/schema.json -o <고유출력명.json> - > <trace.jsonl>` (Bash 경유 — UTF-8 보장 · trace = method 교차검증, codex 자가권고 2026-08-03) | 2 병렬 |
 | gemini-3.6-flash-high | `agy -p "Read the UTF-8 file at <prompt.md> and follow ALL instructions exactly." --model gemini-3.6-flash-high --sandbox --output-format json --json-schema tools\audit-matrix\schema.json --print-timeout 15m` (**ASCII 포인터 필수** — 한글 인라인 `-p` 금지, 지시서는 UTF-8 파일로 · cwd=**스크래치패드 고정**, stdout→저장) | 1～2 순차 |
 
 - **발사 방식**: 전 계열 **백그라운드 작업으로 병렬 발사**(§1) — 어떤 계열도 다른 계열을 기다리지 않는다. 수거는 완료 알림 기준.
 - **서버·포트**: 발견자 프롬프트에 서버·프로세스 기동/종료 금지를 명시(인프라 수명주기 = 본선 소유). fetch 검증 변형 시 포트 배정은 §1 규칙.
 - **인코딩**: codex 프롬프트 전달은 UTF-8 보장 경로(Bash `cat <prompt> | codex exec … -`)로 표준화(PowerShell 파이프의 코드페이지 변환 회피).
-- **실행 능력 현황(스코어카드 각주)**: Claude=브라우저 패널 실조작 · codex=읽기 샌드박스 안 node 인메모리 DOM · agy=**Chrome 헤드리스 CDP 실브라우저**(§1 command(*) 등재 후) — 4계열 중 3계열이 실행형 검증 보유. AG02는 §1 도구 자유화에 따라 **스택 비교**로 해석.
-- **AG02 도구 자유화 운영**: 본선이 배치 시작 시 스택별 포트(§1 규칙)로 로컬 서버를 기동해 `{{SERVE_URL}}`로 치환 제공(종료도 본선만). Claude 계열 AG02는 브라우저 패널이 세션당 1개이므로 **opus → sonnet 직렬 실행**(그동안 본선은 패널 미사용, P3/P4 회피는 DOM 측정 우선 [07](07_BROWSER_TESTING.md)). codex는 **localhost 도달 불가 실증**(web.run = 별도 웹 조회 서비스 — 로컬 서버에 요청 자체가 미도달, 반환도 렌더 DOM 아닌 추출 텍스트) → **node 인메모리 DOM 하네스 경로 확정**. 등가 범위 = JS 분기·리스너·상태 전환까지이며 CSS/페인트/이벤트 전파/CSP/`defer` 타이밍/콘솔 오류는 검증 밖(심 부정확 시 오탐 가능 — codex 자가고지, 스코어카드 해석 각주). agy 명령 권한은 §1 후속 결정으로 허용됨(`command(*)` — 사용자 직접 등재).
+- **실행 능력 현황(스코어카드 각주)**: Claude=브라우저 패널 실조작 · codex=**Playwright Chromium 실브라우저**(AG02 전용 프로필, 그 외 read-only+node) · agy=**Chrome 헤드리스 CDP 실브라우저**(§1 command(*) 등재 후) — **AG02는 전 스택 실브라우저 검증 체계**. 해석은 §1 도구 자유화에 따라 스택 비교.
+- **CLI 출력 래퍼 절차(codex 자가권고 채택)**: 실행별 **고유 출력 파일명** → exit code 확인 → JSON 파싱+스키마 재검증 → 최종 이름으로 이동. 실패 시 이전 성공 파일 오인 차단. 결과에는 원문 DOM·전체 로그 대신 **요약+증거 위치만**(토큰 한도로 구조화 출력 자체가 실패할 수 있음). `--ephemeral`은 resume 불가 — 재시도 = 전체 재실행(기존 1회 재시도 규칙과 부합).
+- **AG02 도구 자유화 운영**: 본선이 배치 시작 시 스택별 포트(§1 규칙)로 로컬 서버를 기동해 `{{SERVE_URL}}`로 치환 제공(종료도 본선만). Claude 계열 AG02는 브라우저 패널이 세션당 1개이므로 **opus → sonnet 직렬 실행**(그동안 본선은 패널 미사용, P3/P4 회피는 DOM 측정 우선 [07](07_BROWSER_TESTING.md)). codex의 web.run은 localhost 미도달(실증 — 별도 웹 조회 서비스)이나, **AG02 한정 Playwright 실브라우저 프로필로 승격**(스모크 성공 2026-08-03: Chromium 캐시·렌더 5카드·콘솔 0·클릭 반응·temp 쓰기 격리): `--sandbox workspace-write -C <스크래치패드 작업폴더>`(쓰기 = 그 폴더+temp 한정, 저장소는 읽기 전용 유지) + `-c 'sandbox_workspace_write.network_access=true'` + 전역 Playwright **절대 경로 require**(`C:\Users\gosts\AppData\Roaming\npm\node_modules\playwright` — 저장소 로컬 require는 실패, codex 실측) + 포트 8141 서버(본선 기동). 텍스트 감사 종(AG01·03～09)의 codex는 기존 read-only 유지(심층 방어). agy 명령 권한은 §1 후속 결정으로 허용됨(`command(*)` — 사용자 직접 등재).
 - **agy 전달·작업 규칙(실측 2026-08-03)**: 한글 프롬프트의 `-p` 인라인 전달은 인코딩 오인 유발 가능(agy가 복구용 python 실행을 시도하다 command 거부로 사망 — 실측) → **ASCII 포인터 + UTF-8 지시서 파일이 표준**. cwd는 스크래치패드 고정(cwd=저장소 시 `.gemini/` 프로젝트 부산물 생성). **헤드리스 브라우저 = command 권한 의존(이력)**: agy 브라우저 경로는 RunCommand 기반(환경 프로브 → 사전 설치 Chrome 헤드리스 기동 → CDP 제어) — command 미부여 상태에서 3회 거부됐고, 사용자의 `command(*)` 등재(§1) 후 **무플래그 자율 실행 성공 실증**(2026-08-03, 렌더·콘솔·클릭·보고서 전 항목). 운영 규칙: **AG02의 agy 호출만 `--sandbox` 없이**(브라우저 명령 필요), 그 외 종(AG01·03～09)은 `--sandbox` 유지(텍스트 감사에 명령 불요 — 심층 방어).
 - **실패 처리**: 타임아웃·스키마 불합격 → 동일 프롬프트 1회 재시도 → 재실패 시 **결측 기록**(캠페인은 계속, 스코어카드에 반영). 결측 보고를 본선이 임의 대필하지 않는다.
 - **agy 쿼터 페이싱**: 주간 컴퓨트 캡 전제 — 배치 시작 전 잔량 확인(`agy -p "/usage"` 가용 여부는 파일럿에서 확정, 불가 시 실패 감지로 대체). 소진 시 **Gemini 층만 지연**하고 나머지 3계열 계속, 결측으로 기록.
