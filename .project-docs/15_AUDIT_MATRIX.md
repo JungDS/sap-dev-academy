@@ -1,6 +1,6 @@
 # 15. AUDIT MATRIX — 4모델 × 10종 검수 매트릭스 프로토콜
 
-> 📅 최종수정: 2026-08-03 05:23 KST
+> 📅 최종수정: 2026-08-03 05:42 KST
 > 🎯 **목적:** 39챕터 전량을 **동일 설계 에이전트 10종 × 4모델 완전 중복**으로 감사해 ① 챕터별 품질 최종평가와 ② **모델별 성능 데이터(스코어카드)** 를 동시에 얻는다. **발견·평가까지만 — 수정 없음**(보강·재집필 = 챕터별 별도 지시).
 > 📖 **읽을 때:** 매트릭스 감사 캠페인 실행·재개 시. §1이 사용자 확정 원장, §2가 발견자 정본 프롬프트(SSOT).
 
@@ -39,7 +39,7 @@
 | 2026-08-03 | **AG02 도구 자유화** — 검증 도구의 4계열 동일성 요구 철회(소스 기반 통일안 기각). 각 스택은 자기 하네스에서 **허용된 도구 전부**를 동원해 가장 강한 검증을 한다(Claude=브라우저 패널 실조작 · codex=읽기 샌드박스 내 node 등 · agy=파일 읽기+URL 열람). 프롬프트 텍스트는 여전히 4모델 동일(과제 동일성 유지), 실제 사용 수단은 `method` 필드로 자가보고. 스코어카드의 AG02는 모델 비교가 아니라 **스택(모델+도구) 비교**로 해석. 권한 경계 불변 — 거부된 권한(agy 명령 실행 등)을 추가 부여하지 않는다. |
 | 2026-08-03 | **agy 명령 실행 허용** — 사용자가 `command(*)`를 agy settings.json에 **직접** 등재(전면 명령 권한 부여는 분류기상 본선 대행 불가 — 사용자 손 원칙). 앞 행의 "agy 명령 미부여" 경계를 대체. 이로써 **agy AG02 상한 = Chrome 헤드리스 CDP 실브라우저 검증**(수동·자율 각 1회 실증: 렌더 `#bugs` 5카드·콘솔 인터셉트·`.mk` 클릭 반응·보고서 파일 쓰기 — 전부 사전 설치 도구만 사용). 방어선 = 지시서 제약(무설치·URL 허용목록·서버 무조작) + cwd 스크래치패드 + 사후 `git status` 검증. |
 | 2026-08-03 | **4등급 기준 승인** — §5의 경계 규칙(유지=치명·높음 0 / 경미 수정=높음≤2 국소 / 보강 권장=높음 3+ 또는 구조 결함 / 재집필 권장=치명 또는 근본 결함) 그대로 확정. 경계 사례는 본선 재량 + 사유 명기. |
-| (제안·확정 대기) | 파일럿 합격선(§8) |
+| 2026-08-03 | **파일럿 합격선 승인** — §8 그대로 확정(스키마 유효 ≥26/28 · 앵커 실존율 기준선 채집 · 수합 스팟 오류 ≤2/10 · 비용 실측→외삽 보고 후 전량 go/no-go는 사용자). **확정 대기 0 — 설계 완결.** |
 
 ## §2 발견자 10종 정본
 
@@ -323,7 +323,7 @@ codex `--output-schema`·agy `--json-schema`에 그대로 전달. Claude 발견�
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "additionalProperties": false,
-  "required": ["agent", "model", "target", "persona_ack", "files_read", "findings", "overall"],
+  "required": ["agent", "model", "target", "persona_ack", "method", "errors", "files_read", "findings", "overall"],
   "properties": {
     "agent":       { "type": "string", "enum": ["AG01","AG02","AG03","AG04","AG05","AG06","AG07","AG08","AG09"] },
     "model":       { "type": "string", "enum": ["opus","sonnet","gpt-5.6-sol","gemini-3.6-flash-high"] },
@@ -337,7 +337,7 @@ codex `--output-schema`·agy `--json-schema`에 그대로 전달. Claude 발견�
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["seq", "file", "quote", "category", "severity", "confidence", "claim", "evidence"],
+        "required": ["seq", "file", "quote", "category", "severity", "confidence", "claim", "evidence", "suggestion"],
         "properties": {
           "seq":        { "type": "integer" },
           "file":       { "type": "string" },
@@ -365,6 +365,7 @@ codex `--output-schema`·agy `--json-schema`에 그대로 전달. Claude 발견�
 ```
 
 - `quote` = 위치 앵커(줄번호 대신 원문 인용 — 모델이 안정적으로 낼 수 있고, **실존 여부를 기계 검증**할 수 있다 → §6 앵커 실존율).
+- **전 키 required** — OpenAI strict 구조화 출력이 properties 전 키의 required 등재를 요구(2026-08-03 E2E에서 400 `invalid_json_schema` 실측 후 확정). 선택 의미는 빈 값(`""`·`[]`)으로 표현: `method`(도구 미사용 종은 빈 문자열)·`errors`(정상 시 빈 배열)·`suggestion`(제안 없으면 빈 문자열).
 
 ### §3-2 수합본 스키마(요지) — AG10 출력
 
@@ -394,7 +395,8 @@ codex `--output-schema`·agy `--json-schema`에 그대로 전달. Claude 발견�
 
 - **발사 방식**: 전 계열 **백그라운드 작업으로 병렬 발사**(§1) — 어떤 계열도 다른 계열을 기다리지 않는다. 수거는 완료 알림 기준.
 - **서버·포트**: 발견자 프롬프트에 서버·프로세스 기동/종료 금지를 명시(인프라 수명주기 = 본선 소유). fetch 검증 변형 시 포트 배정은 §1 규칙.
-- **인코딩**: codex 프롬프트 전달은 UTF-8 보장 경로(Bash `cat <prompt> | codex exec … -`)로 표준화(PowerShell 파이프의 코드페이지 변환 회피).
+- **인코딩(구현 확정)**: codex 프롬프트 전달은 `run-one.ps1`이 `$OutputEncoding = UTF-8(no BOM)` 명시 후 `Get-Content -Raw -Encoding UTF8` 파이프로 수행(codex 자가권고 채택 — Bash `cat` 경유는 동등 대안). 레인 프롬프트 파일도 BOM 없는 UTF-8로 기록.
+- **하네스 구현체**(`tools/audit-matrix/` — 2026-08-03): `preamble.md`+`AG01～10.md`(프롬프트 정본은 이 문서 §2와 동일 — 어긋나면 이 문서가 정본) · `schema.json`/`schema-merged.json` · `assemble.mjs`(조립 — {{MODEL_ID}}/{{SERVE_URL}}은 발사 시 치환) · `run-one.ps1`(외부 레인 실행기 — 래퍼 절차 내장, AG02 레인별 프로필 분기) · `validate.mjs`(스키마+**앵커 실존** 검사) · `scorecard.mjs`(§6 재생성). AG02 조립본에는 4레인 동일 텍스트의 [환경 정보] 블록(서버 URL·playwright 절대 경로·CDP 세션 패턴·temp 규칙·무설치)이 포함된다 — 스택별 힌트를 공통 블록으로 제공해 프롬프트 동일성 유지.
 - **실행 능력 현황(스코어카드 각주)**: Claude=브라우저 패널 실조작 · codex=**Playwright Chromium 실브라우저**(AG02 전용 프로필, 그 외 read-only+node) · agy=**Chrome 헤드리스 CDP 실브라우저**(§1 command(*) 등재 후) — **AG02는 전 스택 실브라우저 검증 체계**. 해석은 §1 도구 자유화에 따라 스택 비교.
 - **CLI 출력 래퍼 절차(codex 자가권고 채택)**: 실행별 **고유 출력 파일명** → exit code 확인 → JSON 파싱+스키마 재검증 → 최종 이름으로 이동. 실패 시 이전 성공 파일 오인 차단. 결과에는 원문 DOM·전체 로그 대신 **요약+증거 위치만**(토큰 한도로 구조화 출력 자체가 실패할 수 있음). `--ephemeral`은 resume 불가 — 재시도 = 전체 재실행(기존 1회 재시도 규칙과 부합).
 - **AG02 도구 자유화 운영**: 본선이 배치 시작 시 스택별 포트(§1 규칙)로 로컬 서버를 기동해 `{{SERVE_URL}}`로 치환 제공(종료도 본선만). Claude 계열 AG02는 브라우저 패널이 세션당 1개이므로 **opus → sonnet 직렬 실행**(그동안 본선은 패널 미사용, P3/P4 회피는 DOM 측정 우선 [07](07_BROWSER_TESTING.md)). codex의 web.run은 localhost 미도달(실증 — 별도 웹 조회 서비스)이나, **AG02 한정 Playwright 실브라우저 프로필로 승격**(스모크 성공 2026-08-03: Chromium 캐시·렌더 5카드·콘솔 0·클릭 반응·temp 쓰기 격리): `--sandbox workspace-write -C <스크래치패드 작업폴더>`(쓰기 = 그 폴더+temp 한정, 저장소는 읽기 전용 유지) + `-c 'sandbox_workspace_write.network_access=true'` + 전역 Playwright **절대 경로 require**(`C:\Users\gosts\AppData\Roaming\npm\node_modules\playwright` — 저장소 로컬 require는 실패, codex 실측) + 포트 8141 서버(본선 기동). 텍스트 감사 종(AG01·03～09)의 codex는 기존 read-only 유지(심층 방어). agy 명령 권한은 §1 후속 결정으로 허용됨(`command(*)` — 사용자 직접 등재).
