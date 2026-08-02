@@ -1,6 +1,6 @@
 # 00. INDEX — 문서 지도
 
-> 📅 최종수정: 2026-07-29 04:52 KST
+> 📅 최종수정: 2026-08-03 03:02 KST
 > `.project-docs`는 AI 부팅용 컨텍스트. 원칙: **한 사실은 한 문서에만(SSOT)** · 번호≈우선순위(낮을수록 핵심; 11～13 공백 = 아카이브) · **완료된 이력 = git + `.archive`**(라이브 인덱스 포함, [04 R16](04_CONVENTIONS.md)).
 
 ## 자동 로드 (CLAUDE.md가 `@` 임포트 — 이미 컨텍스트에 있음)
@@ -20,6 +20,7 @@
 | [09_CURRICULUM_LEDGER](09_CURRICULUM_LEDGER.md) | **커리큘럼 개념 원장(개요 SSOT)** — 챕터 맵 · CH18 classic↔modern 경계 · 관통예제 (레슨별 introduces/prereq는 front-matter) | 커리큘럼 구조·게이팅(R15) 점검 시 |
 | [10_REBUILD_EXECUTION](10_REBUILD_EXECUTION.md) | **content MD 챕터 실행 핸드오프**(보강=리빌드 단일 프로토콜 · 강도 [보강]/[재작성] · 신규 장 OLDCH99 포함 · STEP 0～6) | 챕터 보강/재작성 실행 시 |
 | [14_REFERENCE_CORPUS](14_REFERENCE_CORPUS.md) | **외부 참고 코퍼스**(cheat-sheets·keyword doc·Clean ABAP) + **§5 사실검증·검색 규율**(웹검색 대신 오프라인·공식 URL·NotebookLM) | 레슨 집필·사실검증 시 |
+| [15_AUDIT_MATRIX](15_AUDIT_MATRIX.md) | **4모델×10종 검수 매트릭스 프로토콜** — 발견자 정본 프롬프트(SSOT)·공통 스키마·실행 하네스·Fable 수합/최종평가·모델 스코어카드. 발견·평가만, 수정은 별도 지시 | 매트릭스 감사 캠페인 실행·재개 시 |
 
 ## 아카이브 (`.archive/` — 부팅 컨텍스트 밖)
 > 완료된 작업 원장·재생성물은 **루트 `.archive/`**(이 폴더 밖)로 분리 — `.project-docs` 통독 명령에 딸려오지 않게. 끝난 일의 정본 = **git 이력 + `.archive` 원장**(02는 prune-only·완료이력 비보유, [04 R16](04_CONVENTIONS.md)). 필요 시에만 직접 열어봄.
@@ -31,3 +32,4 @@
 **`.archive/_generated/`** (재생성물 — 덮어쓰기)
 - `CONTENT_DEPTH_AUDIT.md` 콘텐츠 깊이/DoD 결손 자동 진단 (`node tools/audit-content-depth.mjs`)
 - `DOC_VERIFICATION_SCORECARD.md` `.project-docs` 검증 스코어카드·결함 이력 (린트 = `npm run lint:docs`)
+- `GATING_AUDIT.md` 게이팅(R15/R6) 정적 감사 (`node tools/audit-gating.mjs`)
