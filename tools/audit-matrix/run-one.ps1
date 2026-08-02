@@ -64,7 +64,13 @@ function Invoke-Lane([string]$TmpOut, [int]$Try) {
     if ($Agent -ne 'AG02') { $flags += '--sandbox' }   # AG02만 무샌드박스(브라우저 명령), 그 외 샌드박스 유지
     if ($DryRun) { Write-Host "[DryRun agy] agy $($flags -join ' ')  (cwd=$Ws)"; return 0 }
     Push-Location $Ws
-    try { & "$env:LOCALAPPDATA\agy\bin\agy.exe" @flags > $TmpOut } finally { Pop-Location }
+    $prevOut = [Console]::OutputEncoding
+    try {
+      # agy는 UTF-8로 stdout을 낸다 — PS 기본 콘솔 디코딩(CP949)·`>` 리다이렉트(UTF-16)를 피해 원문 보존
+      [Console]::OutputEncoding = [Text.UTF8Encoding]::new($false)
+      $out = & "$env:LOCALAPPDATA\agy\bin\agy.exe" @flags
+      [IO.File]::WriteAllText($TmpOut, ($out | Out-String), [Text.UTF8Encoding]::new($false))
+    } finally { [Console]::OutputEncoding = $prevOut; Pop-Location }
     return $LASTEXITCODE
   }
 }

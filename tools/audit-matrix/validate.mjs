@@ -30,7 +30,7 @@ function extractJson(text) {
       const o = JSON.parse(s);
       if (o && typeof o === 'object') {
         if (o.agent) return o;
-        for (const k of ['response', 'result', 'output', 'final']) {
+        for (const k of ['structured_output', 'response', 'result', 'output', 'final']) {
           const v = o[k];
           if (typeof v === 'string') { try { const i = JSON.parse(v); if (i && i.agent) return i; } catch {} }
           if (v && typeof v === 'object' && v.agent) return v;
@@ -79,11 +79,14 @@ function readTarget(rel) {
   return fileCache.get(abs);
 }
 
-/** 앵커 검사 — 공백 정규화 완화 매칭 포함 */
+/** 앵커 검사 — 공백 정규화 완화 매칭 + 상대 파일명 폴백(content/abap/<target>/) */
 function checkAnchors(o) {
   let anchored = 0, missing = 0, fileMiss = 0;
   for (const f of o.findings || []) {
-    const body = typeof f.file === 'string' ? readTarget(f.file) : null;
+    let body = typeof f.file === 'string' ? readTarget(f.file) : null;
+    if (body === null && typeof f.file === 'string' && typeof o.target === 'string') {
+      body = readTarget(path.join('content', 'abap', o.target, path.basename(f.file)));
+    }
     if (body === null) { fileMiss++; continue; }
     const q = String(f.quote || '');
     const norm = (s) => s.replace(/\s+/g, ' ').trim();

@@ -28,8 +28,10 @@ function collect(campDir) {
       if (f.endsWith('.MISSING.txt')) { missing.push({ chapter: ch, name: f }); continue; }
       if (!f.endsWith('.json') || f.startsWith('_')) continue;
       try {
-        const o = JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8'));
+        let o = JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8'));
+        if (o && !o.agent && o.structured_output && o.structured_output.agent) o = o.structured_output; // agy 봉투 언랩
         if (o && o.agent && o.model) rows.push({ chapter: ch, ...oMeta(o) });
+        else missing.push({ chapter: ch, name: f + ' (형식 불명)' });
       } catch { missing.push({ chapter: ch, name: f + ' (파싱 실패)' }); }
     }
   }
