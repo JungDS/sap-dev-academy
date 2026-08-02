@@ -155,7 +155,7 @@
   },
   "고정값": {
     "title": "고정값 (Fixed Values)",
-    "desc": "Domain에 정의하는 허용 값 목록. 입력을 이 목록으로 제한하고, 화면에서 F4 선택·입력검증으로 되돌아온다. 예: O=Open, C=Closed."
+    "desc": "Domain에 정의하는 허용 값 목록. 입력을 이 목록으로 제한하며, 화면에서는 F4 선택 목록과 입력 검증으로 나타난다. 예: O=Open, C=Closed."
   },
   "활성화": {
     "title": "활성화 (Activation)",
@@ -452,7 +452,7 @@
   },
   "WATCH POINT": {
     "title": "WATCH POINT",
-    "desc": "특정 변수가 바뀌는 순간 자동으로 멈추는 디버거 장치.",
+    "desc": "특정 변수 값이 바뀌는 순간 실행을 자동으로 멈추는 디버거 장치(공식 표기 Watchpoint). 중단점(BREAK-POINT)이 \"이 줄에 오면 멈춰\"라면, 이것은 \"이 값이 변하면 멈춰\"다 — 누가 값을 바꾸는지 범인을 찾을 때 쓴다.",
     "analogy": "값에 거는 '바뀌면 알려줘' 알람."
   },
   "I": {
@@ -512,7 +512,7 @@
   },
   "Global Class": {
     "title": "Global Class (전역 클래스)",
-    "desc": "여러 프로그램이 공유하도록 SE24에 만든 전역 클래스(`ZCL_`).",
+    "desc": "SE24/ADT로 시스템 저장소(Repository)에 만드는 클래스(`ZCL_` 관례). 한 프로그램 안에만 사는 Local Class와 달리 모든 프로그램이 불러 쓸 수 있고, 이송으로 배포된다.",
     "analogy": null
   },
   "Dynpro": {
@@ -522,7 +522,7 @@
   },
   "Module Pool": {
     "title": "Module Pool",
-    "desc": "화면(Dynpro) 중심으로 동작하는 프로그램 유형. T-code로만 실행된다.",
+    "desc": "화면(Dynpro)들을 중심으로 동작하는 프로그램 유형(타입 M). SE38 리포트처럼 F8로 직접 실행하지 못하고 T-code에 시작 화면을 묶어 실행한다. 화면 흐름은 PBO/PAI 모듈이 담당한다.",
     "analogy": null
   },
   "Screen Painter": {
@@ -535,7 +535,7 @@
   },
   "PBO": {
     "title": "PBO (Process Before Output)",
-    "desc": "화면이 그려지기 직전 실행되는 흐름. 초기값·상태(메뉴·필드 속성)를 준비한다.",
+    "desc": "Process Before Output. Dynpro 화면이 그려지기 직전에 도는 처리 구간으로, 초기값·드롭다운 목록·메뉴(PF-STATUS)·필드 속성(입력 가능/숨김)을 준비한다. 사용자가 입력한 뒤에 도는 PAI와 짝이다.",
     "analogy": null
   },
   "PAI": {
@@ -600,8 +600,8 @@
   },
   "ROLLBACK WORK": {
     "title": "ROLLBACK WORK",
-    "desc": "확정 전 DB 변경을 모두 취소해 직전 상태로 되돌리는 문.",
-    "analogy": "결제 전 장바구니 비우기."
+    "desc": "이번 SAP LUW에서 쌓인 DB 변경 요청을 전부 버리고 마지막 COMMIT WORK 시점 상태로 되돌리는 문. 일부만 저장된 어정쩡한 상태를 막는 전량 취소 스위치라, 오류 감지 시 저장 대신 부른다.",
+    "analogy": "결제 전 장바구니 비우기 — 담았던 것 전부가 한 번에 취소된다."
   },
   "Lock Object": {
     "title": "Lock Object (잠금 객체)",
@@ -645,12 +645,12 @@
   },
   "ST05": {
     "title": "ST05 (SQL Trace)",
-    "desc": "DB 접근(SQL)의 시간·횟수를 추적해 병목을 찾는 성능 분석 도구.",
+    "desc": "프로그램이 실행한 SQL을 한 건씩 기록(trace)해 시간·횟수·중복 접근을 보여 주는 성능 분석 도구(SQL Trace). \"어떤 SELECT가 몇 번, 얼마나 걸렸나\"를 실측할 때 1순위로 켠다. 켜고→실행하고→끄고→목록 분석의 4박자로 쓴다.",
     "analogy": null
   },
   "SAT": {
     "title": "SAT (Runtime Analysis)",
-    "desc": "ABAP 코드 실행의 시간 소모를 분석하는 프로파일링 도구(구 SE30).",
+    "desc": "프로그램 실행 시간을 구간별로 재서 \"어느 코드가 시간을 먹는지\" 보여 주는 실행 시간 분석 도구(구 SE30). ST05가 DB 쪽을 본다면 SAT는 ABAP 처리 쪽을 본다 — 병목이 SQL인지 루프인지 가르는 짝이다.",
     "analogy": null
   },
   "ATC": {
@@ -665,12 +665,12 @@
   },
   "Background Job": {
     "title": "Background Job (배치 잡)",
-    "desc": "정해진 시각에 화면 없이 자동 실행되는 작업(SM36 정의·SM37 모니터).",
+    "desc": "정해진 시각·주기에 화면 없이 서버가 자동 실행하는 작업. SM36으로 정의(잡 이름·스텝·시작 조건)하고 SM37로 상태(Scheduled/Released/Active/Finished/Canceled)를 지켜본다. 화면이 없어 MESSAGE E는 잡을 Canceled로 끝낸다.",
     "analogy": null
   },
   "Smart Forms": {
     "title": "Smart Forms",
-    "desc": "인쇄·PDF 출력 양식을 만드는 전통적 도구(SMARTFORMS).",
+    "desc": "인쇄 양식을 만드는 SAP의 고전 양식 도구(트랜잭션 SMARTFORMS). 구조는 Form→Page→Window→Node이고 데이터는 Form Interface로 받는다. 산출물 원형은 OTF라 CONVERT_OTF로 PDF도 만든다. 기존 자산이 많아 유지보수에서 반드시 만난다.",
     "analogy": null
   },
   "BAdI": {
@@ -700,7 +700,7 @@
   },
   "SE93": {
     "title": "SE93",
-    "desc": "실행할 T-code(트랜잭션 코드)를 만드는 트랜잭션.",
+    "desc": "프로그램·화면을 명령어 하나로 실행하도록 T-code(트랜잭션 코드)를 등록하는 도구 화면. 만든 코드는 명령 필드에 입력해 부르고, 이송 대상 오브젝트다.",
     "analogy": null
   },
   "관통예제": {
@@ -780,7 +780,7 @@
   },
   "파라미터": {
     "title": "파라미터 (Parameter)",
-    "desc": "함수·메서드·서브루틴에 값을 건네주거나(`IMPORTING`) 결과를 돌려받는(`EXPORTING`/`RETURNING`) 통로. 호출하는 쪽이 실제로 넣는 값은 '인자(argument)'다. (선택화면 입력문 `PARAMETERS`와는 다른, 더 일반적인 개념.)",
+    "desc": "함수·메서드·서브루틴에 값을 건네주거나(`IMPORTING`) 결과를 돌려받는(`EXPORTING`/`RETURNING`) 통로. 호출하는 쪽이 실제로 넣는 값은 '인자(argument)'다. (선택화면 입력문 `PARAMETERS`와는 다른, 더 일반적인 개념.) 주의: 이 키워드들은 **선언하는 쪽 기준**이다 — 호출하는 쪽 문법에서는 방향 표현이 반대로 보일 수 있다(내가 값을 넘기는 자리가 EXPORTING).",
     "analogy": "자판기의 투입구(넣는 값)와 배출구(받는 값)."
   },
   "모듈화": {
@@ -1033,11 +1033,6 @@
     "desc": "COMMIT ENTITIES가 트리거하는 RAP의 실제 저장 단계. transactional buffer의 변경을 검증·조정한 뒤 DB에 all-or-nothing으로 반영한다. behavior pool(provider)은 이 안에서 직접 COMMIT WORK를 호출하지 않는다.",
     "analogy": "주문 확정 처리 — 장바구니를 실제 배송(DB 반영)으로 넘기는 마무리 절차."
   },
-  "LUW": {
-    "title": "LUW (Logical Unit of Work · 논리 작업 단위)",
-    "desc": "전부 성공하거나 전부 실패해야 하는 변경들의 묶음(원자적 작업 단위). DB LUW는 하나의 database commit까지의 물리 단위, SAP LUW는 업무 관점의 단위로 여러 DB LUW·Update Module에 걸칠 수 있다. COMMIT WORK가 SAP LUW를 끝낸다.",
-    "analogy": "은행 이체 — 출금과 입금이 하나의 단위. 둘 다 되거나 둘 다 안 되거나."
-  },
   "DB LUW": {
     "title": "DB LUW (Database LUW)",
     "desc": "데이터베이스가 보장하는 물리적 트랜잭션 단위 — 하나의 database commit(또는 rollback)까지. 한 work process의 화면 전환·RFC 등에서 끊길 수 있어, 업무 단위(SAP LUW)와 항상 일치하지는 않는다.",
@@ -1263,10 +1258,20 @@
     "desc": "업무 이벤트가 발생했을 때 출력 여부·양식·수신자·채널·시점을 결정하는 메커니즘. 양식(문서 모양)과는 다른 층으로, 전통 NAST 방식과 S/4HANA의 BRFplus 기반 Output Management가 있다.",
     "analogy": "문서가 편지라면 Output Control은 우체국 접수 규정 — 언제 누구에게 어떤 방법으로 보낼지 정한다."
   },
+  "TVARVC": {
+    "title": "TVARVC",
+    "desc": "프로그램이 읽는 운영 기준값(마감 시각·예외 코드 등)을 이름 붙여 보관하는 SAP 표준 파라미터 테이블(Table of Variant Variables, Client-specific). type P = 단일값, S = 범위. 운영자가 SM30으로 값을 바꾸면 프로그램 수정·이송 없이 다음 실행부터 반영된다.",
+    "analogy": "가게 벽의 화이트보드 — \"오늘 마감 22시\"를 벽에 쓰면, 직원(프로그램)은 코드를 고치지 않고 벽만 보고 움직인다."
+  },
+  "Number Range": {
+    "title": "Number Range (번호 범위)",
+    "desc": "전표·예매번호처럼 겹치면 안 되는 새 번호를 동시성 안전하게 발급하는 SAP 표준 채번 장치. SNRO에 오브젝트·구간을 등록하고 NUMBER_GET_NEXT로 받는다. 버퍼링(묶음 선발급) 때문에 번호가 건너뛸 수 있다 — 연속성이 요건이면 설정을 따로 본다.",
+    "analogy": "은행 번호표 기계 — 동시에 눌러도 서로 다른 번호가 나온다. MAX+1은 옆 사람과 같은 번호를 뽑는 수제 번호표다."
+  },
   "NAST": {
     "title": "NAST",
-    "desc": "전통 SAP의 메시지/출력 결정 방식(Message Control)이 쓰는 테이블·메커니즘 이름(테이블명 NAST는 독일어 Nachrichtenstatus = 메시지 상태에서 유래). 출력 유형과 조건 레코드(condition record)로 출력을 결정하며, 문서의 메시지 상태로 결과를 확인한다.",
-    "analogy": null
+    "desc": "전통 SAP의 메시지/출력 결정 방식(Message Control)이 쓰는 테이블·메커니즘 이름(테이블명 NAST는 독일어 Nachrichtenstatus = 메시지 상태에서 유래). 여기서 \"메시지\" = 오류 문구가 아니라 출력물 한 건이다. 출력 유형과 조건 레코드(condition record)로 출력을 결정하고, 문서의 메시지 상태로 결과를 추적하며, 테이블이라 SE16으로 직접 볼 수도 있다.",
+    "analogy": "우체국 접수 대장 — 보낼지 말지의 판정과 발송 상태가 한 줄씩 기록된다."
   },
   "BRFplus": {
     "title": "BRFplus",

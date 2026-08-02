@@ -101,6 +101,22 @@ for (const l of lessons) {
 
 /* ── 5. EARLY-USE 스캔 ─────────────────────────────────── */
 // 도입 시점(abs)보다 앞 레슨 본문에 키워드 등장 → 후보. 단어 경계 매칭(식별자성 키워드).
+// v2: 동음이의 제외 — 키워드별 "제외 문맥" 정규식(매치 주변 ±60자에 걸리면 스킵).
+//     W1 판정에서 확정된 4쌍(TABLES=함수 파라미터절 · Method=Selection Method ·
+//     CHECKBOX/RADIOBUTTON GROUP=PARAMETERS 애드온 · Include/APPEND=DDIC .INCLUDE/.APPEND).
+const AMBIG = new Map([
+  ['tables', /call function|exporting|importing|changing|value_tab|파라미터 종류|레거시 방식/i],
+  ['method', /selection method/i],
+  ['checkbox', /parameters|as checkbox/i],
+  ['radiobutton group', /parameters|라디오 그룹 검증|on radiobutton/i],
+  ['include', /\.include|\.append|include·append|include\/exclude/i],
+  ['append', /\.append|\.include/i],
+]);
+function ambigSkip(keyLower, body, idx) {
+  const re = AMBIG.get(keyLower);
+  if (!re) return false;
+  return re.test(body.slice(Math.max(0, idx - 60), idx + keyLower.length + 60));
+}
 const early = [];
 const entries = [...firstIntro.values()].filter((e) => e.key.length >= 3);
 for (const l of lessons) {
@@ -109,11 +125,11 @@ for (const l of lessons) {
     if (l.abs >= e.abs) continue;                    // 도입 이후 등장은 자유
     const kl = e.key.toLowerCase();
     let idx = bodyLower.indexOf(kl);
-    // 단어 경계 확인 루프(부분 문자열 오탐 컷: 좌우가 영숫자/_이면 스킵)
+    // 단어 경계 확인 루프(부분 문자열 오탐 컷: 좌우가 영숫자/_이면 스킵) + 동음이의 문맥 스킵(v2)
     while (idx !== -1) {
       const before = bodyLower[idx - 1] || ' ';
       const after = bodyLower[idx + kl.length] || ' ';
-      if (!/[a-z0-9_]/.test(before) && !/[a-z0-9_]/.test(after)) break;
+      if (!/[a-z0-9_]/.test(before) && !/[a-z0-9_]/.test(after) && !ambigSkip(kl, bodyLower, idx)) break;
       idx = bodyLower.indexOf(kl, idx + 1);
     }
     if (idx === -1) continue;

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<!-- CH25-L01-S02 — 엔진: judge-quiz · _engine/_base.css. 채번 판별 — MAX+1 vs Number Range. -->
+<html lang="ko" data-eng="judge-quiz">
+<head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>채번 판별 · CH25-L01-S02</title>
+<link rel="stylesheet" href="../_engine/_base.css" /><link rel="stylesheet" href="../_engine/judge-quiz.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">채번 판별 — 이 번호 발급, 안전한가</p>
+  <p class="lead">새 예매 번호를 만드는 세 가지 방법을 판정하세요.</p>
+  <div class="score"><span>점수</span><div class="bar"><i id="sbar"></i></div><span class="v" id="sv">0 / 0</span></div>
+  <div id="list"></div>
+  <div class="result" id="result"></div>
+  <script type="application/json" id="quiz">
+  {
+    "labels": ["✅ 안전", "🚨 사고"],
+    "items": [
+      { "q": "SELECT MAX( booking_id ) + 1 로 새 번호를 만든다. 지금까지 테스트에서 한 번도 안 겹쳤다.", "a": 1,
+        "why": "혼자 테스트하면 영원히 안 겹친다 — 사고는 두 요청이 '동시에' 같은 MAX를 읽는 순간 난다. 테스트 통과가 안전의 증거가 아니다." },
+      { "q": "SNRO에 ZBOOKING 구간을 등록하고 NUMBER_GET_NEXT로 발급받는다.", "a": 0,
+        "why": "표준 채번 — 동시 요청에도 시스템이 서로 다른 번호를 보장한다. 새 키 발급의 실무 기본값." },
+      { "q": "Number Range를 쓰는데 번호가 1, 2, 3, 7, 8로 건너뛰었다 — 버그라고 판단하고 MAX+1로 되돌렸다.", "a": 1,
+        "why": "건너뜀은 버퍼링(번호를 묶음으로 미리 떼 두는 최적화)의 정상 동작이다. '연속'이 법적 요건이면 버퍼링 설정을 조정할 일이지, MAX+1로 돌아가면 동시성 사고를 다시 초대한다." }
+    ]
+  }
+  </script>
+</div>
+<script src="../_engine/judge-quiz.js" defer></script>
+</body>
+</html>

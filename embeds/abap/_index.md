@@ -214,6 +214,7 @@
 | CH24-L08-S01 | CH24-L08 | cloud-readiness-judge | ABAP Cloud 준비도 판정 카드(5 시나리오→Cloud-ready/제한됨·표준테이블 UPDATE/Dynpro 신규/unreleased CL_ 호출=제한+대안·released CDS/RAP service=ok·정오+대안+score)+classic vs cloud split panel·released는 이름 추측 금지 | ✅ |
 | CH24-L09-S01 | CH24-L09 | rap-booking-runtime | (capstone) 예매 RAP 런타임 시뮬레이터·정상예매(좌석2)→determination status=N+validation 통과→저장·정원초과(좌석12>잔여)→failed/reported 거부·취소(action)→status C·중복취소 no-op warn·실행 타임라인(create→det→val→save/reject)·잔여 라이브·직접 DML 우회 금지 | ✅ |
 | CH25-L01-S01 | CH25-L01 | dml-playground | DML 4종(INSERT/UPDATE/MODIFY/DELETE)을 미니 ZBOOKING에 실행·단건 중복키=sy-subrc4(덤프 아님)·WHERE 생략=전체 적용 경고·MODIFY upsert·신규행 감사필드(created_by/on) 자동 stamp·status N/C·예매자 라벨 | ✅ |
+| CH25-L01-S02 | CH25-L01 | judge-quiz | (재사용) 채번 판별 3(MAX+1 동시성 사고·NUMBER_GET_NEXT·버퍼링 건너뜀은 정상 — W4 편입) | ✅ |
 | CH25-L02-S01 | CH25-L02 | txn-atomicity | 원자성(전부 아니면 전무)·금·토 두 회차 묶음 예매(ZBOOKING 2건)·둘째 실패 토글→COMMIT 시 반쪽 저장 사고 vs ROLLBACK·미확정(메모리)↔확정(DB) 2열·lv_failed 누적 교훈 | ✅ |
 | CH25-L03-S01 | CH25-L03 | luw-timeline | SAP LUW 타임라인·CALL FUNCTION IN UPDATE TASK=등록(지연)·COMMIT WORK 시점에 대기큐→DB 실행·호출 직후 sy-subrc 미정의·단계 진행으로 큐/DB 채워지는 타이밍 관찰 | ✅ |
 | CH25-L04-S01 | CH25-L04 | reprocess-sim | 대량 처리→일부 실패 수집→재처리·예매 5건 중 2건 중복키 실패→오류 테이블(키+사유) 누적·원인 해결 후 실패분만 재실행·멱등성(MODIFY/중복체크) | ✅ |
