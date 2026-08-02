@@ -1,6 +1,6 @@
 # 02. PROGRESS — 현재 초점 · 다음 할 일
 
-> 📅 **최종수정: 2026-08-03 03:02 KST**
+> 📅 **최종수정: 2026-08-03 03:57 KST**
 > 🎯 **현재 상태와 다음 할 일만 담는다.** 완료/과거 항목·세션 서사는 **즉시 제거** — 정본은 git 이력 + `.archive/` 원장 + 라이브 인덱스([04 R16](04_CONVENTIONS.md)). 코드·git·감사로 파생 가능한 현황은 **복창하지 말고 포인터**(아래 📍).
 > 📖 **읽을 때:** 작업 시작 전(현황 파악) · 종료 시 갱신 — **갱신은 같은 커밋에 포함**([01](01_AI_SYNC.md)).
 
@@ -8,7 +8,7 @@
 **4모델×10종 검수 매트릭스 캠페인 — 설계서([15_AUDIT_MATRIX](15_AUDIT_MATRIX.md)) 작성 완료(2026-08-03, 브랜치 `docs/15-audit-matrix`), 사용자 확정 대기.** 구조 = 발견자 7종×4모델(opus·sonnet·gpt-5.6-sol·gemini-3.6-flash-high, 동일 프롬프트 완전 중복 = 모델 차이 측정) 챕터당 28벌 + 커리큘럼 축 AG07 게이팅/AG08 연속성 + **Fable 5 수합·검증·최종평가**(발견·평가만 — 수정은 챕터별 별도 지시). 헤드리스 스모크 완료: codex `-m gpt-5.6-sol` · agy `--model gemini-3.6-flash-high`(둘 다 스키마 강제 플래그 보유). W0～W4 사이클과의 중복 재감사는 사용자 확정(다중 점검 선호).
 
 ## ▶️ 다음 할 일 (우선순위)
-1. **매트릭스 캠페인 진행** — 설계서(15) 확정 → 하네스 구현(`tools/audit-matrix/` 프롬프트 파일화·`run-chapter.ps1`·`scorecard.mjs`) → **CH01 파일럿 28+1벌**([15 §8](15_AUDIT_MATRIX.md) 합격 기준) → go/no-go 보고 → 전량(하루 3～5챕터, [15 §7](15_AUDIT_MATRIX.md)). ⚠️ agy 주간 쿼터 페이싱·검토 대기 3건 = AG02 소스 통일·4등급 기준·파일럿 합격선([15 §1](15_AUDIT_MATRIX.md) 제안 행).
+1. **매트릭스 캠페인 진행** — 설계서(15) 확정 → 하네스 구현(`tools/audit-matrix/` 프롬프트 파일화·`run-chapter.ps1`·`scorecard.mjs`) → **CH01 파일럿 28+1벌**([15 §8](15_AUDIT_MATRIX.md) 합격 기준) → go/no-go 보고 → 전량(하루 3～5챕터, [15 §7](15_AUDIT_MATRIX.md)). ⚠️ agy 주간 쿼터 페이싱·검토 대기 2건 = 4등급 기준·파일럿 합격선([15 §1](15_AUDIT_MATRIX.md) 제안 행 — AG02는 도구 자유화로 확정 2026-08-03).
 2. **UI5/Fiori 커리큘럼 착수 여부 결정 대기**(README 로드맵의 다음 도메인 — Gateway 관통예제 계획 포함. 매트릭스 캠페인 종료 후 재상정). 착수 시 축4 잔여 갭 14(09 §G)·CH39 3축 재평가를 설계 입력으로.
    ℹ️ **W1 잔여 백로그(수정 범위 밖 확정)**: 축6 D절 품질미달(빈약 desc 10여 키)·dead 키 8·[추정] Database View·CH15-L08↔L09 순서 역전(L08 [선행 사용] 처리로 최소 봉합)·도구 v2(동음이의 4쌍 제외·정확 일치 매칭).
    ℹ️ **CH37 노트(2026-08-02)**: 스팟 시뮬레이션(은서 통독+기술 감수)이 잡은 것 — 생성 FM **표준 파라미터** 정체 문단 신설(L01 "내가 선언" 모델과 충돌 해소), 무인 호출 = **3종 세트**(control_parameters+output_options `tddest`+`user_settings = space`, 감수 "실행 막는 급"), `gui_download` filetype에 `'TEXT'` 값 없음→`'ASC'`, `strlen(xstring)`은 컴파일 불가(고장 카드를 "크기 생략"으로 교체), OTF "장치 중립"→"프린터 언어 중립+폰트는 장치 종속", NAST 조건 탐색 VIP 예시 논리 역전 교정, "설정=무이송"→조건 레코드(무이송)/Customizing(이송) 분리, ENTRY는 NAST를 공용 영역으로 수령, Smart Forms 다줄 재료 = Import+DDIC Table Type(구형 Tables 탭은 호환용), CH38-L05 Released는 릴리스 권한 전제. 잔여 지적 = 환경 의존(tcode front-matter 미선언은 CH16+ 공통 — 축6에서 다룸).
