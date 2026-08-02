@@ -1,6 +1,6 @@
 # 15. AUDIT MATRIX — 4모델 × 10종 검수 매트릭스 프로토콜
 
-> 📅 최종수정: 2026-08-03 05:11 KST
+> 📅 최종수정: 2026-08-03 05:16 KST
 > 🎯 **목적:** 39챕터 전량을 **동일 설계 에이전트 10종 × 4모델 완전 중복**으로 감사해 ① 챕터별 품질 최종평가와 ② **모델별 성능 데이터(스코어카드)** 를 동시에 얻는다. **발견·평가까지만 — 수정 없음**(보강·재집필 = 챕터별 별도 지시).
 > 📖 **읽을 때:** 매트릭스 감사 캠페인 실행·재개 시. §1이 사용자 확정 원장, §2가 발견자 정본 프롬프트(SSOT).
 
@@ -80,6 +80,7 @@
 [출력 — 스키마 준수]
 - 아래 JSON 스키마를 정확히 따르는 JSON 객체 **하나만** 출력한다. 마크다운 펜스·설명문·인사말 금지.
 - finding.quote는 대상 파일에 **실제로 존재하는 원문을 그대로 복사**(240자 이내)한다 — 앵커로 기계 검증된다.
+- 작업 일부가 실패해도 **스키마 구조를 유지**한다 — 실패 사유는 errors 배열에 기록하고, 스키마를 이탈한 응답을 만들지 마라(검증 못 한 것을 발견으로 만들지도 마라).
 - agent="{{AGENT_ID}}", model="{{MODEL_ID}}", target="{{TARGET}}" 값을 그대로 넣는다. 모든 서술은 한국어.
 
 {{SCHEMA_JSON}}
@@ -328,6 +329,7 @@ codex `--output-schema`·agy `--json-schema`에 그대로 전달. Claude 발견�
     "target":      { "type": "string" },
     "persona_ack": { "type": "string" },
     "method":      { "type": "string", "description": "실제 사용한 검증 수단 — 도구를 쓰는 종(특히 AG02)은 반드시 기입" },
+    "errors":      { "type": "array", "items": { "type": "string" }, "description": "부분 실패 사유 — 작업이 일부 실패해도 스키마를 유지하고 여기에 기록" },
     "files_read":  { "type": "array", "items": { "type": "string" } },
     "findings": {
       "type": "array",
@@ -395,7 +397,8 @@ codex `--output-schema`·agy `--json-schema`에 그대로 전달. Claude 발견�
 - **실행 능력 현황(스코어카드 각주)**: Claude=브라우저 패널 실조작 · codex=**Playwright Chromium 실브라우저**(AG02 전용 프로필, 그 외 read-only+node) · agy=**Chrome 헤드리스 CDP 실브라우저**(§1 command(*) 등재 후) — **AG02는 전 스택 실브라우저 검증 체계**. 해석은 §1 도구 자유화에 따라 스택 비교.
 - **CLI 출력 래퍼 절차(codex 자가권고 채택)**: 실행별 **고유 출력 파일명** → exit code 확인 → JSON 파싱+스키마 재검증 → 최종 이름으로 이동. 실패 시 이전 성공 파일 오인 차단. 결과에는 원문 DOM·전체 로그 대신 **요약+증거 위치만**(토큰 한도로 구조화 출력 자체가 실패할 수 있음). `--ephemeral`은 resume 불가 — 재시도 = 전체 재실행(기존 1회 재시도 규칙과 부합).
 - **AG02 도구 자유화 운영**: 본선이 배치 시작 시 스택별 포트(§1 규칙)로 로컬 서버를 기동해 `{{SERVE_URL}}`로 치환 제공(종료도 본선만). Claude 계열 AG02는 브라우저 패널이 세션당 1개이므로 **opus → sonnet 직렬 실행**(그동안 본선은 패널 미사용, P3/P4 회피는 DOM 측정 우선 [07](07_BROWSER_TESTING.md)). codex의 web.run은 localhost 미도달(실증 — 별도 웹 조회 서비스)이나, **AG02 한정 Playwright 실브라우저 프로필로 승격**(스모크 성공 2026-08-03: Chromium 캐시·렌더 5카드·콘솔 0·클릭 반응·temp 쓰기 격리): `--sandbox workspace-write -C <스크래치패드 작업폴더>`(쓰기 = 그 폴더+temp 한정, 저장소는 읽기 전용 유지) + `-c 'sandbox_workspace_write.network_access=true'` + 전역 Playwright **절대 경로 require**(`C:\Users\gosts\AppData\Roaming\npm\node_modules\playwright` — 저장소 로컬 require는 실패, codex 실측) + 포트 8141 서버(본선 기동). 텍스트 감사 종(AG01·03～09)의 codex는 기존 read-only 유지(심층 방어). agy 명령 권한은 §1 후속 결정으로 허용됨(`command(*)` — 사용자 직접 등재).
-- **agy 전달·작업 규칙(실측 2026-08-03)**: 한글 프롬프트의 `-p` 인라인 전달은 인코딩 오인 유발 가능(agy가 복구용 python 실행을 시도하다 command 거부로 사망 — 실측) → **ASCII 포인터 + UTF-8 지시서 파일이 표준**. cwd는 스크래치패드 고정(cwd=저장소 시 `.gemini/` 프로젝트 부산물 생성). **헤드리스 브라우저 = command 권한 의존(이력)**: agy 브라우저 경로는 RunCommand 기반(환경 프로브 → 사전 설치 Chrome 헤드리스 기동 → CDP 제어) — command 미부여 상태에서 3회 거부됐고, 사용자의 `command(*)` 등재(§1) 후 **무플래그 자율 실행 성공 실증**(2026-08-03, 렌더·콘솔·클릭·보고서 전 항목). 운영 규칙: **AG02의 agy 호출만 `--sandbox` 없이**(브라우저 명령 필요), 그 외 종(AG01·03～09)은 `--sandbox` 유지(텍스트 감사에 명령 불요 — 심층 방어).
+- **agy 전달·작업 규칙(실측 2026-08-03)**: 한글 프롬프트의 `-p` 인라인 전달은 인코딩 오인 유발 가능(agy가 복구용 python 실행을 시도하다 command 거부로 사망 — 실측) → **ASCII 포인터 + UTF-8 지시서 파일이 표준**. cwd는 스크래치패드 고정(cwd=저장소 시 `.gemini/` 프로젝트 부산물 생성). **헤드리스 브라우저 = command 권한 의존(이력)**: agy 브라우저 경로는 RunCommand 기반(환경 프로브 → 사전 설치 Chrome 헤드리스 기동 → CDP 제어) — command 미부여 상태에서 3회 거부됐고, 사용자의 `command(*)` 등재(§1) 후 **무플래그 자율 실행 성공 실증**(2026-08-03, 렌더·콘솔·클릭·보고서 전 항목). 운영 규칙: **AG02의 agy 호출만 `--sandbox` 없이**(브라우저 명령 필요 — 샌드박스가 CDP 포트·루프백을 차단할 위험, agy 자가확인), 그 외 종(AG01·03～09)은 `--sandbox` 유지(텍스트 감사에 명령 불요 — 심층 방어).
+- **agy CDP 세션 패턴(agy 자가권고 2026-08-03 — AG02 지시서에 명시)**: Chrome 프로세스는 챕터당 **1회만 기동** → **위젯마다 새 탭(Page) 생성·검증·닫기** → 전체 순회 후 프로세스 종료. 근거: 위젯마다 프로세스 재기동 = Windows CDP 포트 바인딩 지연·EADDRINUSE 위험 / 단일 탭 URL 순회 = 전역 JS 상태 오염(직전 위젯의 리스너·전역 객체 잔존). `--mode` 미지정 유지(accept-edits는 파일 편집 승인용 — 불필요), `--print-timeout 15m` 적정(위젯 10개 기준 CDP 2～4분 예상 + 여유).
 - **실패 처리**: 타임아웃·스키마 불합격 → 동일 프롬프트 1회 재시도 → 재실패 시 **결측 기록**(캠페인은 계속, 스코어카드에 반영). 결측 보고를 본선이 임의 대필하지 않는다.
 - **agy 쿼터 페이싱**: 주간 컴퓨트 캡 전제 — 배치 시작 전 잔량 확인(`agy -p "/usage"` 가용 여부는 파일럿에서 확정, 불가 시 실패 감지로 대체). 소진 시 **Gemini 층만 지연**하고 나머지 3계열 계속, 결측으로 기록.
 - **차단 규약**: agy 실행 스크립트에 모델명 하드코딩(목록의 claude·gpt-oss 사용 금지 — 벤더 오염 방지). **codex 웹 차단 공식 키(0.145, codex 자가확인 2026-08-03)**: `-c 'web_search="disabled"'`(현행 — `tools.web_search=false`·`features.web_search=false`는 레거시) + 보수적 동봉 `-c features.browser_use=false -c features.browser_use_external=false -c features.in_app_browser=false`. 셸 외부 네트워크는 read-only 샌드박스가 차단(실측: 샌드박스 안 curl 17ms 실패 vs 밖 200) → codex 웹 금지는 **프롬프트+설정+샌드박스 3중 잠금**.
