@@ -1,0 +1,112 @@
+{
+  "agent": "AG01",
+  "model": "sonnet",
+  "target": "CH04",
+  "persona_ack": "나는 개발·전공 경험이 없는 24세 문과 출신 입문자 '은서'로서, CH04 레슨을 첫 레슨부터 순서대로 처음 읽는 사람 입장에서 통독하며 막히는 지점을 기록했다.",
+  "method": "",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L07.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L03.md",
+      "quote": "IF ( pa_amt > 5000 OR pa_vip = 'X' ) AND NOT pa_block = 'X'.",
+      "category": "생략",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "pa_vip와 pa_block이 선언 없이 등장한다.",
+      "evidence": "바로 위 예제는 PARAMETERS pa_amt TYPE i.로 pa_amt를 선언한 뒤 썼는데, 이 예제의 pa_vip·pa_block은 이 레슨 어디에서도 선언되지 않는다. 은서는 '이 두 변수는 언제 생긴 거지? 나도 따라 치면 오류가 나지 않을까'라는 의문에서 멈추고, 레슨을 몇 번 다시 읽어도 그 답을 텍스트 안에서 찾을 수 없다(재독으로 해결되지 않음).",
+      "suggestion": "PARAMETERS pa_vip TYPE c LENGTH 1.과 PARAMETERS pa_block TYPE c LENGTH 1. 선언을 코드 블록 위에 추가하거나, 최소한 '(pa_vip·pa_block도 pa_amt처럼 미리 선언되어 있다고 가정)' 주석을 덧붙인다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L04.md",
+      "quote": "TRANSLATE pa_grade TO UPPER CASE.",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "TRANSLATE 구문이 실제 문법 예시 없이 완성된 코드 형태로 처음 등장한다.",
+      "evidence": "앞 레슨(CH04-L02)은 TRANSLATE를 '대소문자/치환'이라는 이름만 스쳐 지나가듯 언급했을 뿐, TO UPPER CASE 같은 실제 문법을 보여준 적이 없다. 은서는 '왜 하필 TO UPPER CASE라고 쓰는지, 다른 옵션은 없는지' 알 길이 없어 이 팁 문장에서 살짝 멈추지만, 재독하면 '일단 이렇게 쓰는구나' 정도로는 넘어갈 수 있다.",
+      "suggestion": "이 시점에 TRANSLATE ... TO UPPER/LOWER CASE 문법을 한 줄로 짚어주거나, CH04-L02에서 TRANSLATE를 처음 언급할 때 이 구문 예시를 함께 보여준다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L02.md",
+      "quote": "`ipow( base = 2 exp = 8 )`(256)",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "abs·sqrt는 값만 넣는데 ipow만 base = / exp = 같은 이름 붙은 인자를 쓰는 이유가 설명되지 않는다.",
+      "evidence": "같은 문장 안에서 abs( -5 )·sqrt( 9 )는 괄호 안에 값만 있고, ipow( base = 2 exp = 8 )만 'base ='·'exp ='라는 낯선 표기가 붙는다. 은서는 '왜 이것만 이름을 써야 하지?'에서 잠깐 멈추지만, 문장의 요지(내장함수로 계산한다)를 이해하는 데는 지장이 없다.",
+      "suggestion": "'인자가 여러 개일 때는 이름 = 값 형태로 구분해 적는다'는 한 줄 설명을 ipow 예시 옆에 덧붙인다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L05.md",
+      "quote": "프로그램 어디서나 읽을 수 있고, 자주 쓰는 것들은 외워 두면 좋다.",
+      "category": "과부하",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "sy-index 외에 8개의 SY 필드가 코드 예제 없이 표 하나로 한꺼번에 제시된다.",
+      "evidence": "sy-index만 앞뒤로 코드·임베드 체험이 있고, 나머지 sy-datum·sy-uzeit·sy-uname·sy-mandt·sy-langu·sy-tcode·sy-repid·sy-subrc 8개는 '담긴 값·쓰임 예' 한 줄씩만 표로 나열된다. 은서는 이 표에서 '이걸 지금 다 알아야 하나' 하는 부담을 느끼고, 특히 sy-mandt의 '독립된 방'이라는 비유는 그 자체로 또 다른 궁금증을 남긴다. 다만 저자도 '외워 두면 좋다' 정도로 톤을 낮춰 강제 암기를 요구하진 않는다.",
+      "suggestion": "sy-index만 본문에서 다루고, 나머지 표 앞에 '지금은 훑어만 보고 필요할 때 다시 찾아보는 참고표'라는 안내 문장을 추가한다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L07.md",
+      "quote": "바깥의 회차는 안쪽 루프가 [[sy-index]]를 덮어쓰기 전에",
+      "category": "단절",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "중첩 DO에서 안쪽 루프가 sy-index를 덮어쓴다는 사실이 앞 레슨(CH04-L05)에서 다뤄진 적 없이 여기서 처음 나온다.",
+      "evidence": "CH04-L05는 DO를 한 겹만 다뤘고 'sy-index는 프로그램 전체에 하나뿐이라 중첩되면 안쪽이 덮어쓴다'는 언급이 없었다. 은서는 '왜 안쪽 루프가 바깥 값을 덮어써? sy-index가 여러 개 아니었어?'라는 의문이 들지만, 바로 다음 문장에서 '변수에 담아 둔다'는 해법이 나와 한 번 더 읽으면 흐름은 이해된다.",
+      "suggestion": "'sy-index는 프로그램 전체에 단 하나뿐이라 중첩 루프에서는 안쪽 값이 바깥 값을 덮어쓴다'는 문장을 CH04-L05 또는 이 레슨 도입부에 명시적으로 추가한다."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L01.md",
+      "quote": "DATA gv_dec TYPE p LENGTH 8 DECIMALS 2.",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "LENGTH 8과 DECIMALS 2 숫자가 각각 무엇을 뜻하는지 이 챕터 안에서 설명되지 않는다.",
+      "evidence": "DECIMALS 2는 바로 아래 결과 '2.50'(소수점 2자리)으로 유추라도 할 수 있지만, LENGTH 8이 전체 자릿수인지 다른 의미인지는 본문 어디에도 없다. 은서는 '8은 어디서 나온 숫자지?'에서 살짝 멈추지만, 예제의 핵심(나눗셈 결과가 소수로 남는다)을 이해하는 데는 지장이 없다.",
+      "suggestion": "LENGTH가 전체 자릿수(부호·소수점 포함)를 뜻한다는 점을 괄호로 한 줄 덧붙인다."
+    },
+    {
+      "seq": 7,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L05.md",
+      "quote": "DO n TIMES.`는 안쪽을 **n번** 반복하고 `ENDDO`로 닫는다.",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "DO·WHILE 절은 이 챕터의 다른 절과 달리 본문에 실행 가능한 fenced 코드 예제 없이 임베드로만 넘어간다.",
+      "evidence": "L01~L04의 절들은 ```abap 코드 블록을 먼저 보여준 뒤 필요하면 임베드를 덧붙였는데, DO·WHILE 절은 코드 블록 없이 바로 ::embed::로 넘어간다. 은서가 임베드를 열지 않고 글만 먼저 훑으면, 실제 DO 5 TIMES. 같은 완성된 코드를 텍스트로는 한 번도 못 보고 지나간다.",
+      "suggestion": "다른 절처럼 DO 5 TIMES. … ENDDO. 같은 짧은 fenced 코드 예제를 임베드 앞에 추가한다."
+    },
+    {
+      "seq": 8,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L01.md",
+      "quote": "단 `**`끼리 이어질 때만 예외로 **오른쪽부터** 계산한다",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "제곱 연산자가 연달아 이어질 때 오른쪽부터 계산한다는 예외 규칙에 실제 숫자 예제가 없다.",
+      "evidence": "곱하기·더하기 우선순위는 2 + 3 * 4 같은 구체적 코드 예제로 보여주는데, `**`가 연달아 나올 때의 결과 비교 예제는 없어서 은서는 이 규칙이 실제로 어떻게 계산되는지 상상만 해야 한다.",
+      "suggestion": "gv_n = 2 ** 3 ** 2. \" 512 (9**2가 아니라 2**(3**2)) 같은 대조 예제를 한 줄 추가한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "산술→문자열→IF→CASE→DO/WHILE→디버깅→구구단으로 이어지는 '다음 불편' 전환 문장 덕분에 레슨 사이가 끊기지 않고 하나의 이야기처럼 읽혔고, 특히 abap_bool 절의 ❌/✅ 대조와 디버깅 레슨이 CH04-L01의 0-나눗셈 오류를 Short Dump 사례로 다시 불러오는 부분이 인상 깊었다. 다만 CH04-L03의 pa_vip·pa_block 미선언처럼 재독으로도 못 푸는 국소적 지점이 있어 경미한 보완이 필요하다."
+  }
+}

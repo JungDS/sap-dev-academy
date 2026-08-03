@@ -1,0 +1,45 @@
+{
+  "agent": "AG09",
+  "model": "opus",
+  "target": "CH02",
+  "persona_ack": "나는 발견자 AG09 — ABAP 정적 검사기를 시늉하는 코드 전용 감사자다. 산문·교수법은 판단 대상에서 제외하고 ```abap 코드 블록만 줄 단위로 봤다. 점검 축은 ①활성화 차단급(미선언 변수·마침표 누락·타입 불일치·존재하지 않는 구문·시그니처) ②네이밍 규약(CH01～09 전역 gv_/gs_/gt_, 로컬 lv_/ls_/lt_는 CH10+, it_는 Header Line 전용, pa_/so_, ty_/ts_/tt_) ③경계 규약(CH01～17 modern 문법 금지, CH01～18 New Open SQL 금지, &&·classic 산술은 CH04부터) ④주석·출력 문자열의 명백한 오류다. 읽기 전용·블라인드 감사로 수행했고, 실행 환경(SAP 시스템)이 없으므로 컴파일 확신이 아니라 정적 판단임을 밝힌다. 억지 발견은 하지 않았다.",
+  "method": "Read 도구로 대상 7개 파일 전문 정독 → Grep(^```abap)으로 코드 블록 총수 대조(14개: L01=5, L02=3, L03=2, L04=2, L05=1, L06=1, _chapter.md=0) → 각 블록을 줄 단위로 수기 파싱(선언-사용 순서, 문장 종결 마침표, 체인 콜론/쉼표, offset+length 산술, 리터럴-타입 정합) → finding quote는 Grep -n content 출력으로 공백까지 원문 대조. SAP 시스템·ABAP 컴파일러 미사용(환경 없음), 웹 검색 미사용, 다른 감사 산출물 미열람.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH02\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH02\\CH02-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH02\\CH02-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH02\\CH02-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH02\\CH02-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH02\\CH02-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH02\\CH02-L06.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH02\\CH02-L03.md",
+      "quote": "gv_amt  = 7 / 2.    \" 3.50 (정확)",
+      "category": "계산 결과 오류(주석과 실제 동작 불일치)",
+      "severity": "높음",
+      "confidence": "추정",
+      "claim": "주석은 결과가 3.50이라고 단언하지만, 피연산자 7과 2가 모두 정수 리터럴(타입 I)이라 산술식의 계산 타입이 I로 결정된다. 즉 3.5가 먼저 4로 반올림된 뒤 gv_amt에 대입되어 실제 출력은 4.00이 될 가능성이 높다. ABAP은 계산 타입을 피연산자만으로 정하며, 대입 대상 변수(gv_amt, TYPE p DECIMALS 2)의 타입은 계산 타입 결정에 관여하지 않는다.",
+      "evidence": "바로 앞 레슨 CH02-L02의 코드 블록이 `gv_r = 7 / 2.     \" 3.5 → 4 (반올림)`로 동일 식의 정수 나눗셈 반올림을 이미 보여준다. 두 블록의 차이는 대입 대상 타입(I → P)뿐인데, 계산 타입이 피연산자로만 정해진다면 반올림은 그대로 일어나므로 결과는 3.50이 아니라 4.00이다. 이 예제는 '소수를 정확히 다루려면 P가 필요하다'(L02 말미)는 레슨 연결의 증명 코드 역할을 하므로, 학습자가 SE38에서 그대로 실행해 4.00을 보면 챕터의 핵심 주장이 화면에서 반박된다. 실행 환경이 없어 정적 판단이며 confidence=추정으로 낮춰 보고한다.",
+      "suggestion": "P 정밀도를 보이려면 피연산자 중 하나가 P여야 한다. 예: `gv_amt = 7.` 한 줄을 먼저 두고 `gv_amt = gv_amt / 2.    \" 3.50` 로 분리하거나, 나누는 값을 P 타입 변수/상수로 선언해 사용한다. 현행 한 줄을 유지한다면 주석을 '4.00 — 정수끼리 나누면 계산 단계에서 반올림'으로 고치고, 본문에 정수 리터럴 나눗셈 함정(P 변수에 담아도 늦다)을 한 문단 추가하는 편이 오히려 교육 가치가 크다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH02\\CH02-L06.md",
+      "quote": "WRITE: / TEXT-001, gv_amt.     \" TEXT-001 = '금액'(한국어) / 'Amount'(영어)",
+      "category": "미선언 변수 사용",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "이 블록에서 gv_amt가 선언 없이 사용된다. CH02-L06 전체에 DATA 문이 한 줄도 없어, 블록을 그대로 복사해 실행하면 'gv_amt is unknown' 활성화 오류로 막힌다.",
+      "evidence": "CH02-L06.md의 유일한 ```abap 블록이 위 한 줄이며, 파일 어디에도 DATA/CONSTANTS 선언이 없다. gv_amt 선언(`gv_amt  TYPE p LENGTH 8 DECIMALS 2`)은 다른 레슨 CH02-L03에만 존재하고 서로 다른 프로그램이므로 유효 범위가 이어지지 않는다. 이 커리큘럼의 코드 블록은 복사 버튼이 달린 양식으로 렌더링되어 학습자가 통째로 붙여넣는 경로가 실제로 있고, 갓 배운 CH02-L01의 '선언 안 한 변수 사용 → is unknown 오류' 경고와 정면으로 어긋나는 예시가 된다.",
+      "suggestion": "블록을 자체 완결형으로 만든다. 앞에 `DATA gv_amt TYPE p LENGTH 8 DECIMALS 2.`와 값 대입 한 줄(예: `gv_amt = '1500.00'.`)을 추가하거나, Text Symbol만 보이는 것이 목적이라면 변수를 빼고 `WRITE: / TEXT-001.`로 축약한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH02 6개 레슨의 ```abap 블록 14개를 줄 단위로 검사했다. 문법 골격은 전반적으로 건강하다 — 모든 문장이 마침표로 종결되고, 체인(DATA:/TYPES:/WRITE:)의 쉼표·종결 마침표가 정확하며, LENGTH/DECIMALS 지정과 리터럴-타입 정합(TYPE d에 '20260623', TYPE c LENGTH 4에 'ABCD')도 어긋남이 없다. CH02-L03의 offset/length 예제는 자리 계산까지 맞다(+0(4)='2026', +4(2)='06', +6(2) 교체 → '20260601'). 네이밍은 CH01～09 전역 규약대로 전부 gv_(상수 gc_, 로컬 타입 ty_)이고 lv_/it_ 오용이나 pa_/so_ 위반은 없다. 경계 규약 위반도 없다 — 인라인 DATA()·VALUE 생성자·NEW·+=·문자열 템플릿이 전무하고 Open SQL 자체가 등장하지 않는다(CH02-L01의 `DATA gv_qty TYPE i VALUE 10.`은 classic DATA의 VALUE 추가지 modern VALUE 연산자가 아니므로 위반 아님). 결함은 두 곳뿐이다: ①CH02-L03의 `gv_amt = 7 / 2.` 주석이 3.50을 단언하나 정수 리터럴끼리의 나눗셈이라 4.00이 될 것으로 보이는 점(높음·추정, 챕터의 핵심 주장을 실행 결과가 반박하는 자리라 영향이 크다) ②CH02-L06의 gv_amt 미선언(중간·확실). 둘 다 한두 줄 국소 수정으로 해소되고 구조·규약 결함은 없으므로 재집필이 아니라 경미 수정으로 판단한다."
+  }
+}

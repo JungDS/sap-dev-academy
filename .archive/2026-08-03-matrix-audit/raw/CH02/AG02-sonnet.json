@@ -1,0 +1,69 @@
+{
+  "agent": "AG02",
+  "model": "sonnet",
+  "target": "CH02",
+  "persona_ack": "실습형 학습자 '준호' — CH02 6개 레슨 본문과 8개 체험 위젯을 브라우저로 직접 눌러보며 변수명·값·시나리오가 서로 맞아떨어지는지 대조했다.",
+  "method": "Claude Browser(MCP)로 http://localhost:8144 에서 8개 임베드 파일 전부를 실제 로드(각 위젯 URL로 navigate). read_console_messages로 매 위젯 콘솔 오류 0건 확인. javascript_tool(DOM 실측)로 var-box(CH02-L01-S02, CH02-L02-S01)의 선언 직후→대입→재대입 3단계, len-shape-grid(CH02-L03-S01)의 C/N 값 칩 전환·offset 4버튼(+7(2) 범위초과 포함)·부분쓰기 토글, type-stamp(CH02-L04-S01)의 DECIMALS 2↔3 토글과 '도면에 값 대입' 오류 데모, text-symbol-lab(CH02-L06-S02)의 등록/미등록×KO/EN 4조합, fill-blank(CH02-L06-S01)의 정답/오답/reveal 분기를 각각 실행해 렌더 결과를 소스(JS/JSON cfg)와 대조했다. computer 툴의 left_click 좌표 클릭이 이 백그라운드 탭에서 리스너를 트리거하지 못하고(screenshot도 헤드리스 컴포지팅 실패로 타임아웃) 이후 전 구간은 동일 이벤트 경로를 타는 실제 DOM 클릭(element.click())으로 대체해 실행하고 결과를 read_page/get_page_text/javascript_tool로 재확인했다 — 상호작용 자체는 실제로 실행·검증했다. 정적 CSS-only before-after 위젯 2종(CH02-L01-S01, CH02-L05-S01)은 인터랙션이 없어 get_page_text로 렌더 텍스트를 소스와 대조했다. 8개 임베드가 참조하는 엔진 5종(var-box.js·len-shape-grid.js·type-stamp.js·text-symbol-lab.js·fill-blank.js)도 정독해 계산 로직(P 타입 바이트/자릿수 분해, offset 범위검사, 반올림 등)을 검증했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH02\\CH02-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH02\\CH02-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH02\\CH02-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH02\\CH02-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH02\\CH02-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH02\\CH02-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH02\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH02-L01-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH02-L01-S02.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH02-L02-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH02-L03-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH02-L04-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH02-L05-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH02-L06-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH02-L06-S02.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\var-box.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\len-shape-grid.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\type-stamp.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\text-symbol-lab.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\fill-blank.js"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH02-L01-S02.html",
+      "quote": "type: 'p DECIMALS 2'",
+      "category": "불일치(선행 개념 노출)",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "CH02-L01-S02 위젯의 세 번째 박스(gv_price)가 'TYPE p DECIMALS 2'(LENGTH 없음)로 표시되는데, P 타입(Incomplete 타입)은 이 레슨이 아니라 CH02-L03에서 처음 정식 도입된다. 이 위젯은 CH02-L01 본문의 'DATA로 변수 선언' 섹션(string·i 두 타입만 다룸) 바로 뒤에 배치돼 있어, 아직 배우지 않은 P/DECIMALS 개념을 예고(L1)도 없이 노출한다(front-matter foreshadow는 'lv_·Subroutine'만 언급). 게다가 같은 레슨 뒤쪽 'TYPE 말고 LIKE' 섹션의 본문 코드는 같은 변수명 gv_price를 'TYPE p LENGTH 8 DECIMALS 2'로 선언해, 위젯(LENGTH 없음)과 본문(LENGTH 8 명시) 표기가 서로 다르게 보인다.",
+      "evidence": "embeds/abap/CH02-L01-S02.html의 window.VB_CFG.vars 3번째 항목이 { name: 'gv_price', type: 'p DECIMALS 2', value: \"'99.90'\", value2: \"'120.50'\" }이고, 브라우저 실측(DOM)에서도 'gv_price / TYPE p DECIMALS 2 / 0.00 → 99.90 → 120.50'으로 그대로 렌더됨을 확인(선언 직후·대입·재대입 3단계 모두 클릭으로 실행해 확인). 반면 content/abap/CH02/CH02-L01.md의 'TYPE 말고 LIKE' 섹션 코드는 'DATA gv_price TYPE p LENGTH 8 DECIMALS 2.'이며, P·LENGTH·DECIMALS의 정식 설명은 content/abap/CH02/CH02-L03.md(Incomplete 타입)에서만 등장한다.",
+      "suggestion": "S02 위젯에서 세 번째 박스를 빼거나, 이 레슨에서 이미 나온 타입(예: VALUE 섹션의 gv_tag TYPE c LENGTH 1)으로 교체한다. P 타입을 굳이 보이려면 최소한 본문 LIKE 섹션과 동일하게 LENGTH 8을 명시해 표기를 일치시킨다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH02\\CH02-L02.md",
+      "quote": "gv_r = 7 / 2.     \" 3.5 → 4 (반올림)",
+      "category": "체험 공백",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "CH02-L02 페이지의 임베드는 S01(Complete 타입 5종 박스 모양·기본값) 하나뿐이며, 문서 순서상 '다섯 타입의 모양을 눈으로' 섹션 직후에 배치돼 있다. 그 뒤에 이어지는 '숫자를 적는 법'(소수는 따옴표로 감싸야 하는 규칙)과 '정수 연산의 함정'(7/2가 반올림돼 4가 되는 규칙) 두 섹션은 이 페이지 안에서 어떤 위젯으로도 재현되지 않고 텍스트 설명·주석뿐이다. 특히 정수 나눗셈 반올림은 '흔한 실수와 점검'에서 재차 강조하는 이 레슨의 핵심 함정인데, 직접 다른 피제수·제수를 넣어 반올림 규칙을 확인해 볼 수단이 전혀 없다.",
+      "evidence": "S01(embeds/abap/CH02-L02-S01.html)의 window.VB_CFG.vars는 gv_text/gv_qty/gv_rate/gv_today/gv_now 5개의 정적 값 대입만 다루며 연산(나눗셈)이 없다 — 브라우저 실측(선언 직후→대입 토글)으로도 5개 박스가 정적 값만 오갈 뿐 연산 UI가 없음을 확인했다. CH02-L02.md 전체에 ::embed:: 참조는 S01 하나뿐이다.",
+      "suggestion": "피제수·제수를 입력해 I 타입 나눗셈 결과(반올림)를 직접 계산해 보는 소형 위젯을 추가하거나, 최소한 S01의 note에 소수 따옴표 규칙과 정수 나눗셈 반올림 사례를 보강한다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH02\\CH02-L05.md",
+      "quote": "\" gc_10 = 20.                   \" ✗ 문법 오류 — 상수는 다시 대입할 수 없다",
+      "category": "체험 공백",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "CONSTANTS의 정의적 특징(재대입 불가)이 본문에서 주석 처리된 코드 한 줄과 서술로만 설명되고, 실제로 눌러서 '재대입을 시도하면 어떻게 되는지'를 확인할 체험 수단이 이 페이지에 없다. 유일한 임베드(S01)는 before-after 정적 비교(pi 매직넘버 vs 상수)로 버튼·상호작용이 전혀 없는 CSS-only 엔진이다. 같은 챕터의 CH02-L04(TYPES)가 '도면에 값 대입 시도 → 구문 오류' 버튼 인터랙션으로 유사한 '이 대상엔 이렇게 못 한다' 규칙을 직접 체험하게 해 둔 것과 대비된다.",
+      "evidence": "embeds/abap/CH02-L05-S01.html은 <script>로 _autoheight.js만 로드하는 정적 before-after 마크업이며, 브라우저 실측(read_page interactive 필터)에서도 클릭 가능한 컨트롤이 하나도 없음을 확인했다. 반면 CH02-L04-S01.html(type-stamp)은 data-try 버튼 클릭 시 '구문 오류! ty_amount은 타입(도면)이지 변수가 아니다'라는 판정을 실제로 렌더링하는 것을 직접 클릭해 확인했다.",
+      "suggestion": "S01에 '상수에 재대입 시도' 버튼을 추가해 CH02-L04의 type-stamp처럼 실제 오류 문구를 보여주거나, before-after 우측 컬럼에 재대입 시도 줄과 그 결과(✗ 문법 오류)를 명시적으로 포함한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "보강 권장",
+    "summary": "CH02(변수·Complete/Incomplete 타입·TYPES·CONSTANTS·Text Symbol) 8개 위젯은 브라우저 실측 결과 콘솔 오류 없이 전부 정상 동작했고, 특히 len-shape-grid(L03)·type-stamp(L04)·text-symbol-lab(L06-S02)·fill-blank(L06-S01)는 본문의 수치·판정 문구와 정확히 일치했다(offset 범위초과, P 바이트/자릿수 분해, DECIMALS 동시 반영, 미등록 시 TEXT-nnn 공백 vs 리터럴 폴백 등 모두 소스·라이브 실행 양쪽에서 확인). 다만 (1) L01-S02가 아직 배우지 않은 P 타입을 LENGTH 없이 보여줘 같은 레슨 뒤쪽 LIKE 섹션 표기와 어긋나고 커리큘럼 게이팅(R15)상으로도 이르며, (2) L02는 정수 나눗셈 반올림·소수 따옴표 규칙에 대응하는 체험이 전혀 없고, (3) L05는 CONSTANTS의 핵심(재대입 불가)을 주석으로만 보여줄 뿐 L04식 인터랙션 검증이 없다. 기능적 결함(버그)은 발견되지 않았고, 셋 다 콘텐츠 보강 성격의 개선점이다."
+  }
+}

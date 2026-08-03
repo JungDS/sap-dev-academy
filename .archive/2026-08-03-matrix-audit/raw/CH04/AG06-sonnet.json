@@ -1,0 +1,35 @@
+{
+  "agent": "AG06",
+  "model": "sonnet",
+  "target": "CH04",
+  "persona_ack": "20년차 SAP ABAP 아키텍트(ECC~S/4HANA 개발·운영·성능·이관 경험)로서, CH04(연산자와 흐름 제어) 레슨 7개와 챕터 개요를 기술 사실 관점에서 감사했다. 사실 오류·예시 적절성·위험한 생략·안티패턴 4가지 축만 보고, 게이팅·문체·용어 표기 등 다른 축은 이 감사 범위 밖으로 뒀다.",
+  "method": "도구·브라우저·웹검색 미사용(제약사항 준수). 대상 8개 파일을 정독하고, ABAP 표준 동작(연산자 우선순위, 타입별 반올림, 날짜/시간 특수 산술, PARAMETERS 선택화면 자동 대문자 변환, IF/CASE 비교연산, DO/WHILE·SY 시스템 필드, 디버거 단축키 F5~F8, Short Dump·ST22)에 대한 실무 지식으로 교차검증.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L07.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L04.md",
+      "quote": "- **소문자 입력에 안 걸림** → 사용자가 `a`를 넣으면 `WHEN 'A'`와 **다르다**.",
+      "category": "사실 오류",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "본문은 `PARAMETERS pa_grade TYPE c LENGTH 1.`로 선언된 필드에 사용자가 소문자 'a'를 입력하면 `WHEN 'A'`와 매칭되지 않는다고 서술하지만, 이 코드는 그 실패를 실제로 재현하지 못한다. LOWER CASE 추가어가 없는 문자형 PARAMETERS/SELECT-OPTIONS는 SAP 선택화면이 사용자의 입력을 프로그램 로직 실행 전에 자동으로 대문자로 변환하기 때문에, 화면에 'a'를 입력해도 pa_grade에는 이미 'A'가 들어와 있고 CASE는 정상적으로 'A' 분기를 탄다.",
+      "evidence": "ABAP 선택화면 프레임워크는 C/N 등 문자형 PARAMETERS·SELECT-OPTIONS 필드에 기본적으로 '입력을 대문자로 변환' 속성이 켜져 있다. 이를 끄고 소문자를 그대로 받으려면 선언에 `LOWER CASE` 추가어가 필요하다(`PARAMETERS pa_grade TYPE c LENGTH 1 LOWER CASE.`). 이 동작은 Dynpro/선택화면 프레임워크의 오래된 기본값으로 ECC부터 S/4HANA까지 릴리스에 무관하게 동일하다. 본문 코드는 이 추가어 없이 선언되어 있으므로 예시가 설명하는 시나리오는 실제로 일어나지 않는다.",
+      "suggestion": "① 예제를 `PARAMETERS pa_grade TYPE c LENGTH 1 LOWER CASE.`로 바꿔 시나리오가 실제로 재현되게 하거나, ② PARAMETERS 대신 내부테이블·문자열 조합처럼 자동 대문자 변환이 적용되지 않는 값 출처로 예시를 교체. `TRANSLATE ... TO UPPER CASE` 조언 자체(방어적 습관)는 유효하니 그대로 둬도 된다 — 근거 시나리오만 바로잡으면 된다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH04(연산자와 흐름 제어) 7개 레슨 + 챕터 개요를 20년차 ABAP 아키텍트 시각에서 감사했다. 산술 연산자·연산 순서·정수 반올림·DIV/MOD·날짜 산술, 문자열 함수(CONCATENATE·&&·SPLIT·FIND/REPLACE·CONDENSE), IF/CASE의 비교연산자·abap_bool 관례, DO/WHILE과 SY 시스템 필드, 디버거 단축키(F5~F8)와 Short Dump/ST22 서술은 실무 동작과 정확히 일치해 전반적으로 매우 탄탄했다. 유일한 발견은 CH04-L04의 '소문자 입력' 경고 예시 — PARAMETERS 필드의 선택화면 자동 대문자 변환을 반영하지 못해 서술된 실패 시나리오가 실제로는 일어나지 않는다. 이 챕터 범위(연산자·분기·반복, DB 접근 이전)에서 COMMIT 규율·잠금·권한 검사류의 위험한 생략은 해당 사항이 없었고, legacy 구문(MOVE·ADD류)도 매번 '표준 아님'을 명확히 caveat해 안티패턴 없이 서술했다."
+  }
+}

@@ -40,7 +40,8 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>&quot;길이를 안 적어도 되는&quot; 타입</h2>
-<p>타입 중에는 <strong>그 자체로 완전해서 길이를 추가로 지정할 필요가 없는</strong> 것들이
+<p>앞 레슨에서 <code>TYPE</code> 뒤에 무엇을 적을지는 미뤄 뒀다. 이제 그 자리를 채울 차례다.
+타입 중에는 <strong>그 자체로 완전해서 길이를 추가로 지정할 필요가 없는</strong> 것들이
 있다. 이를 <button class="term" type="button" data-term="Complete 타입">Complete 타입</button>이라 한다. 입문 단계에서 가장 자주 쓴다.</p>
 </section><section class="lblock"><h2>대표 Complete 타입</h2>
 <table>
@@ -67,8 +68,8 @@
 <tr>
 <td><code>F</code></td>
 <td><button class="term" type="button" data-term="부동소수점">부동소수점</button>(float)</td>
-<td><strong>8바이트</strong> · 약 ±1.8 × 10³⁰⁸까지 · <strong>근삿값</strong>(유효숫자 15～16자리)</td>
-<td><code>3.14</code></td>
+<td><strong>8바이트</strong> · 아주 큰 수까지 담지만 값이 미세하게 어긋날 수 있는 <strong>근삿값</strong></td>
+<td><code>&#39;3.14&#39;</code></td>
 </tr>
 <tr>
 <td><code>D</code></td>
@@ -84,11 +85,20 @@
 </tr>
 </tbody></table>
 <blockquote>
-<p>💡 <strong>왜 Complete인가</strong> — <code>I·F·D·T</code>는 <strong>길이가 고정</strong>돼 있고 <code>STRING</code>은 <strong>가변</strong>(내용만큼 자람)이라,
-어느 쪽도 길이를 따로 적을 필요가 없다. 그래서 <em>Complete</em>다. (±21억을 넘는 정수가 필요하면
-<code>INT8</code>(8바이트)도 있다.)</p>
+<p>💡 <strong>왜 Complete인가</strong> — <code>I·F·D·T</code>는 길이가 <strong>아예 고정</strong>이고, <code>STRING</code>은 <strong>알아서 늘어난다.</strong>
+어느 쪽도 길이를 따로 적을 일이 없어서 <em>Complete</em>다. (±21억을 넘는 정수가 필요하면
+<code>INT8</code>(8바이트)도 있는데, 비교적 최신 시스템에만 있다. 연습 시스템에서 문법 오류가 나면
+그 시스템엔 없는 타입이라고 보면 된다.)</p>
 </blockquote>
-<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+<blockquote class="cw">
+<p>⚠️ <strong><code>F</code>는 왜 &quot;근삿값&quot;인가</strong> — <code>F</code>는 숫자를 이진법(0과 1)으로 쪼개 저장한다. 그런데 <code>0.1</code> 같은
+소수는 이진법으로 딱 떨어지지 않아서, 아주 가까운 값으로 <strong>근사해</strong> 담긴다. <code>0.1</code>을 열 번
+더해도 정확히 <code>1</code>이 되지 않고 미세하게 어긋난다. 그래서 <strong>돈 계산에는 <code>F</code>를 쓰지 않는다.</strong></p>
+</blockquote>
+<details>
+<summary>F가 담는 범위와 자릿수 (더 보기)</summary><p><code>F</code>는 약 ±1.8 × 10³⁰⁸까지 담고, 믿을 수 있는 자릿수(유효숫자)는 15～16자리다.
+과학 계산처럼 아주 크거나 아주 작은 수를 다룰 때 쓰는 타입이다.</p>
+</details><div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
 4
@@ -107,14 +117,19 @@ gv_today = <span class="tok-str">'20260623'</span>.   <span class="tok-com">" �
 적어 넣는다.</p>
 </blockquote>
 </section><section class="lblock"><h2>다섯 타입의 &quot;모양&quot;을 눈으로</h2>
-<p>선언문은 실행해 볼 로직이 없다. 대신 <strong>어떤 모양의 박스가 생기는지</strong>를 보면 된다.
-<button class="term" type="button" data-term="STRING">STRING</button>은 내용만큼 늘어나는 가변 박스, <code>D</code>·<code>T</code>는 자릿수가 정해진 문자 박스.
+<p>변수를 선언하기만 해서는 화면에 보이는 동작이 없다. 대신 <strong>어떤 모양의 박스가 생기는지</strong>를
+보면 된다. <button class="term" type="button" data-term="STRING">STRING</button>은 담는 내용에 맞춰 크기가 변하고, <code>D</code>·<code>T</code>는 자릿수가 정해진 문자 박스다.
 선언 직후엔 뭐가 들어 있는지(타입 기본값), 값을 넣으면 어떻게 바뀌는지 토글해 보자.</p>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title"><button class="term" type="button" data-term="Complete 타입">Complete 타입</button> 5종 — 박스 모양과 타입 기본값</span><a class="embed__open" href="../../../embeds/abap/CH02-L02-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH02-L02-S01.html" loading="lazy" title="Complete 타입 5종 — 박스 모양과 타입 기본값" style="height:460px"></iframe></figure>
 </section><section class="lblock"><h2>숫자를 적는 법</h2>
 <p>숫자 <button class="term" type="button" data-term="리터럴">리터럴</button>은 따옴표 없이 그대로 적는다. 정수 <code>42</code>, 음수 <code>-7</code>. 그런데 <strong>소수</strong>는
 따옴표로 감싼다: <code>&#39;123.45&#39;</code>. ABAP에서 마침표 <code>.</code>는 <strong>문장의 끝</strong>이라, 따옴표 없이
 <code>123.45</code>라고 쓰면 <code>123</code> 다음에서 문장이 끊겨 버리기 때문이다.</p>
+<blockquote>
+<p>🔎 <strong>[선행 사용]</strong> 아래 예제에 나오는 <code>TYPE p LENGTH 8 DECIMALS 2</code>는 <strong>소수를 정확히 담는
+타입</strong>이고, <a href="CH02-L03.html">다음 레슨</a>에서 정식으로 배운다. 지금은 <em>분석도 암기도 하지 말고</em>
+<strong>소수를 적는 방법</strong>(따옴표로 감싼다)만 보면 된다.</p>
+</blockquote>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -122,9 +137,11 @@ gv_today = <span class="tok-str">'20260623'</span>.   <span class="tok-com">" �
 
 gv_price = <span class="tok-str">'123.45'</span>.    <span class="tok-com">" O — 소수는 따옴표 안에</span>
 <span class="tok-com">" gv_price = 123.45.    " X — '.'이 문장 끝으로 해석됨</span></code></pre></div></div>
-<blockquote>
-<p>타입이 다른 값을 대입하면 ABAP이 <strong>자동으로 변환</strong>한다(예: 문자 <code>&#39;10&#39;</code> → 정수
-<code>10</code>). 다만 받는 변수가 짧으면 <strong>잘릴</strong> 수 있으니 길이에 주의한다.</p>
+<blockquote class="cw">
+<p>⚠️ <strong>자동 변환은 편한 만큼 위험하다</strong> — 타입이 다른 값을 대입하면 ABAP이 <strong>자동으로 변환</strong>한다
+(예: 문자 <code>&#39;10&#39;</code> → 정수 <code>10</code>). 받는 변수가 짧으면 값이 <strong>조용히 잘린다.</strong> 더 나쁜 경우도 있다.
+숫자로 읽을 수 없는 문자를 숫자 타입에 넣거나, 담을 수 있는 범위를 넘기면 프로그램이 그
+자리에서 <strong>멈춰 버린다</strong>(실행 중 오류). 그래서 숫자로 쓸 값은 애초에 숫자 타입에 담는다.</p>
 </blockquote>
 </section><section class="lblock"><h2>정수 연산의 함정</h2>
 <p><code>I</code>는 정수라 나눗셈 결과가 <strong>반올림</strong>된다.</p>
@@ -134,14 +151,28 @@ gv_price = <span class="tok-str">'123.45'</span>.    <span class="tok-com">" O �
 gv_r = <span class="tok-num">7</span> / <span class="tok-num">2</span>.     <span class="tok-com">" 3.5 → 4 (반올림)</span>
 <span class="tok-kw">WRITE</span> gv_r.</code></pre></div></div>
 <p>소수를 정확히 다루려면 다음 레슨의 <code>P</code>(packed) 타입이 필요하다.</p>
+<blockquote>
+<p>🧑‍💻 <strong>다른 언어를 해 봤다면</strong> 여기가 가장 자주 놀라는 지점이다. Java·C#·파이썬의 정수
+나눗셈은 <strong>버림</strong>이라 <code>7 / 2</code>가 3이지만, ABAP은 <strong>반올림</strong>이라 4다. 방향이 정반대이니
+다른 언어에서 옮겨온 계산식은 이 줄부터 확인하는 게 좋다.</p>
+</blockquote>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">정수 나눗셈 실험실 — 같은 나눗셈, 담는 그릇이 다르면</span><a class="embed__open" href="../../../embeds/abap/CH02-L02-S02.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH02-L02-S02.html" loading="lazy" title="정수 나눗셈 실험실 — 같은 나눗셈, 담는 그릇이 다르면" style="height:720px"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
 <li><strong>날짜를 순수 숫자로 착각</strong> → <code>D</code>는 내부적으로 8자리 문자다. <code>&#39;20260618&#39;</code>처럼 다룬다.</li>
 <li><strong>정수 나눗셈 반올림</strong> → <code>7 / 2</code>가 4가 된다. 의도와 다르면 <code>P</code> 타입을 쓴다.</li>
 </ul>
+</section><section class="lblock"><h2>정리</h2>
+<ul>
+<li><button class="term" type="button" data-term="Complete 타입">Complete 타입</button>은 <strong>길이를 따로 안 적어도 되는</strong> 타입이다. <code>I</code>·<code>F</code>·<code>D</code>·<code>T</code>는 길이가 고정이고, <button class="term" type="button" data-term="STRING">STRING</button>은 알아서 늘어난다.</li>
+<li>숫자 <button class="term" type="button" data-term="리터럴">리터럴</button>은 그냥 적지만(<code>42</code>), <strong>소수는 따옴표로 감싼다</strong>(<code>&#39;123.45&#39;</code>). 마침표가 문장의 끝이기 때문이다.</li>
+<li><code>D</code>(날짜 8자리)·<code>T</code>(시간 6자리)는 숫자처럼 보여도 <strong>문자</strong>다. 따옴표로 다룬다.</li>
+<li><code>F</code>는 <strong>근삿값</strong>이라 돈 계산에 쓰지 않는다. 정확한 소수는 다음 레슨의 <code>P</code>가 맡는다.</li>
+<li>타입이 다른 값을 대입하면 <strong>자동 변환</strong>된다. 잘리거나 실행이 멈출 수 있으니 처음부터 맞는 타입에 담는다.</li>
+</ul>
 <hr>
-<p>여기까진 길이를 안 적었다. 그런데 &quot;이름은 최대 10글자&quot;, &quot;금액은 소수 2자리&quot;
-처럼 <strong>길이·자릿수를 내가 정해야</strong> 하는 타입이 있다 → 다음 레슨(Incomplete).</p>
+<p>여기까진 길이를 안 적었다. 그런데 &quot;이름은 최대 10글자&quot;, &quot;금액은 소수 2자리&quot;처럼
+<strong>길이·자릿수를 내가 정해야</strong> 하는 타입이 있다 → 다음 레슨(Incomplete).</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

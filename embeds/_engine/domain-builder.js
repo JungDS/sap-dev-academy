@@ -106,7 +106,10 @@
 
   /* ---- 검증 ---- */
   function validate(){
-    var t=TYPES[dtype.value], name=dname.value.trim().toUpperCase(), len=parseInt(dlen.value,10), dec=parseInt(ddec.value,10)||0;
+    var t=TYPES[dtype.value];
+    // 타입 미선택 방어 — 아래 검사는 전부 t의 속성을 읽는다(호출부 가드가 빠져도 터지지 않게)
+    if(!t) return [{ok:false, msg:'먼저 <b>데이터 타입</b>을 선택하세요.'}];
+    var name=dname.value.trim().toUpperCase(), len=parseInt(dlen.value,10), dec=parseInt(ddec.value,10)||0;
     var c=[];
     var nameOk=/^[YZ][A-Z0-9_]{1,29}$/.test(name);
     c.push({ok:nameOk, msg: nameOk?('이름 '+name+' — 명명 규칙 OK'):'이름은 Z 또는 Y로 시작하고 영문·숫자·_만 (2~30자).'});
@@ -204,6 +207,8 @@
   }
   function doActivate(){
     if(state==='new'){ return showMsg('bad','⛔ 활성화 전','먼저 <b>💾 저장</b>한 뒤 활성화하세요.'); }
+    // 저장 뒤 타입을 '— 선택 —'으로 되돌려도 눌릴 수 있다 → doCheck()과 같은 가드 필요
+    if(!dtype.value){ return showMsg('bad','⛔ 활성화 불가','먼저 <b>데이터 타입</b>을 선택하세요. (타입을 비우면 정의가 성립하지 않아 활성화할 수 없습니다.)'); }
     autofillOut();
     var c=targetChecks().concat(validate()), allOk=c.every(function(x){return x.ok;});
     if(!allOk){ return showChecks('bad','⛔ 활성화 실패 — 예제 목표와 다릅니다', c); }

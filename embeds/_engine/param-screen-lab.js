@@ -1,27 +1,39 @@
 // ===== param-screen-lab 엔진 JS — PARAMETERS 보상 실험(선택화면 mock) =====
 // "F4는 마법이 아니라 Dictionary 메타데이터의 결과"를 몸으로:
-// ① 같은 칸의 타입을 Data Element ↔ 표준 타입 직접 지정으로 토글 → 라벨·F4가 붙었다 떨어진다
-// ② F4 ≠ 검증 — 고정값 검증은 VALUE CHECK를 켜야 수행(abapparameters_value.htm Addition 5).
+// ① 같은 칸의 타입을 Data Element ↔ 표준 타입 직접 지정으로 토글 → F4가 붙었다 떨어진다
+// ② 라벨은 한 단계 더 — Selection Text의 'Dictionary 참조'를 켜야 Field Label을 이어받는다.
+//    꺼져 있으면 기술명(PA_STAT 대문자)이 그대로 보인다(abapparameters.htm: 출력은 이름 또는 셀렉션 텍스트).
+// ③ F4 ≠ 검증 — 고정값 검증은 VALUE CHECK를 켜야 수행(abapparameters_value.htm Addition 5).
 //    VALUE CHECK는 DDIC 타입 참조일 때만 가능 → 표준 타입 모드에선 비활성.
-// ③ OBLIGATORY(빈값 실행 차단)·DEFAULT(미리 채움)·LOWER CASE(대문자 변환 방지) 토글
-// ④ 실행(F8) → 통과 시 WRITE 출력 mock / 막히면 원인 표시
-// 설정 = window.PSL_CFG { de:{param,name,rawType,label,fixed:[{val,txt}]}, nameField:{param,label,sample}, note? }
+// ④ OBLIGATORY(빈값 실행 차단)·DEFAULT(미리 채움)·LOWER CASE(대문자 변환 방지) 토글
+//    DEFAULT는 '화면에 미리 채워 줄 뿐' — 사용자가 지우면 빈값(statTouched로 기록)이라 OBLIGATORY가 막는다.
+// ⑤ 실행(F8) → 통과 시 WRITE 출력 mock / 막히면 원인 표시
+// 설정 = window.PSL_CFG { de:{param,name,rawType,label,fixed:[{val,txt}]}, nameField:{param,label,sample,len?}, note? }
+//        nameField.len = 표준 타입 칸의 LENGTH(생성 코드·maxlength 공용, 기본 20)
 (function(){
   var cfg = window.PSL_CFG; if(!cfg) return;
   var root = document.querySelector('[data-psl]'); if(!root) return;
   function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
   // 상태
-  var useDe = true, oblig = true, defOn = false, lower = false, vcheck = false;
-  var valStat = '', valName = '', f4Open = false;
+  var useDe = true, oblig = true, defOn = false, lower = false, vcheck = false, dictRef = false;
+  var valStat = '', valName = '', f4Open = false, statTouched = false;
   var result = null;   // {kind:'ok'|'block'|'invalid', ...}
+  var nameLen = (cfg.nameField && cfg.nameField.len) || 20;   // 본문 예제와 같은 길이를 config에서 받는다
 
   function code(){
     var l1 = 'PARAMETERS ' + cfg.de.param + ' TYPE ' + (useDe ? cfg.de.name : cfg.de.rawType)
            + (oblig ? ' OBLIGATORY' : '') + (defOn ? " DEFAULT '" + cfg.de.fixed[0].val + "'" : '')
            + (useDe && vcheck ? ' VALUE CHECK' : '') + '.';
-    var l2 = 'PARAMETERS ' + cfg.nameField.param + ' TYPE c LENGTH 10' + (lower ? ' LOWER CASE' : '') + '.';
+    var l2 = 'PARAMETERS ' + cfg.nameField.param + ' TYPE c LENGTH ' + nameLen + (lower ? ' LOWER CASE' : '') + '.';
     return l1 + '\n' + l2;
+  }
+
+  // 화면에 실제로 뜨는 값 — DEFAULT는 사용자가 아직 손대지 않았을 때만 채운다.
+  // (지운 뒤에도 되살아나면 OBLIGATORY가 막는 장면이 성립하지 않는다.)
+  function screenStat(){
+    if(statTouched) return valStat;
+    return defOn ? cfg.de.fixed[0].val : '';
   }
 
   function render(){
@@ -36,13 +48,21 @@
        + '<button type="button" class="psl-opt'+(defOn?' on':'')+'" data-opt="def">DEFAULT \''+esc(cfg.de.fixed[0].val)+'\'</button>'
        + '<button type="button" class="psl-opt'+(vcheck?' on':'')+'" data-opt="vcheck"'+(useDe?'':' disabled title="DDIC 타입을 참조할 때만 붙일 수 있다"')+'>VALUE CHECK</button>'
        + '<button type="button" class="psl-opt'+(lower?' on':'')+'" data-opt="lower">LOWER CASE <small>('+esc(cfg.nameField.param)+')</small></button>'
-       + '</div></div>';
+       + '</div>'
+       // Selection Text — 라벨을 이어받는 '체크 한 번'(코드가 아니라 프로그램 텍스트 요소라 코드 미리보기엔 안 나온다)
+       + '<div class="psl-seg"><span class="psl-seg__lab">Selection Texts</span>'
+       + '<button type="button" class="psl-chk'+(dictRef && useDe ? ' on':'')+'" data-opt="dict"'
+       + (useDe ? '' : ' disabled title="표준 타입 직접 지정 칸은 이어받을 Data Element가 없다"')+'>'
+       + (dictRef && useDe ? '☑' : '☐')+' Dictionary 참조 <small>('+esc(String(cfg.de.param).toUpperCase())+' 행)</small></button>'
+       + '<small class="psl-seg__hint">Goto → Text Elements → Selection Texts</small></div>'
+       + '</div>';
     // 코드 미리보기
     h += '<pre class="psl-code">'+esc(code())+'</pre>';
     // 선택화면 mock
-    var stat = defOn && !valStat ? cfg.de.fixed[0].val : valStat;
+    var stat = screenStat();
+    var labelOn = useDe && dictRef;   // 라벨 = DDIC 타입 + Dictionary 참조 체크, 둘 다 있어야 이어받는다
     h += '<div class="psl-scr"><div class="psl-scr__hd">선택화면 <small>(프로그램 실행 시 먼저 뜨는 입력 화면)</small></div>';
-    h += '<div class="psl-row"><span class="psl-label">'+(useDe ? esc(cfg.de.label) : '<i class="psl-nolabel">'+esc(cfg.de.param)+'</i>')+'</span>'
+    h += '<div class="psl-row"><span class="psl-label">'+(labelOn ? esc(cfg.de.label) : '<i class="psl-nolabel">'+esc(String(cfg.de.param).toUpperCase())+'</i>')+'</span>'
        + '<input class="psl-in" id="pslStat" maxlength="1" value="'+esc(stat)+'" aria-label="'+esc(cfg.de.param)+'" />'
        + (useDe ? '<button type="button" class="psl-f4" data-f4 title="F4 — 허용 값 목록">🔍 F4</button>' : '<span class="psl-nof4">F4 없음</span>')
        + '</div>';
@@ -53,14 +73,17 @@
       });
       h += '</div>';
     }
-    h += '<div class="psl-row"><span class="psl-label">'+esc(cfg.nameField.label)+'</span>'
-       + '<input class="psl-in wide" id="pslName" maxlength="10" value="'+esc(valName)+'" placeholder="'+esc(cfg.nameField.sample)+'" aria-label="'+esc(cfg.nameField.param)+'" />'
+    h += '<div class="psl-row"><span class="psl-label">'+esc(cfg.nameField.label)
+       + '<small class="psl-hand" title="표준 타입 칸이라 이어받을 Field Label이 없다 — Selection Text에 손으로 적어 둔 라벨">직접 입력</small></span>'
+       + '<input class="psl-in wide" id="pslName" maxlength="'+nameLen+'" value="'+esc(valName)+'" placeholder="'+esc(cfg.nameField.sample)+'" aria-label="'+esc(cfg.nameField.param)+'" />'
        + '</div>';
     h += '<div class="psl-run"><button type="button" class="psl-runbtn" data-run>▶ 실행 (F8)</button></div></div>';
     // 결과
     if(result){
       if(result.kind==='block'){
-        h += '<div class="psl-out bad"><b>실행 차단!</b> <code>OBLIGATORY</code> 필드가 비었다 — "필수 필드를 모두 채우십시오." 본문은 시작조차 안 한다.</div>';
+        h += '<div class="psl-out bad"><b>실행 차단!</b> <code>OBLIGATORY</code> 필드가 비었다 — "필수 필드를 모두 채우십시오." 본문은 시작조차 안 한다.'
+           + (result.defCleared ? '<div class="psl-warn">💡 <code>DEFAULT</code>는 화면에 <b>미리 채워 줄 뿐</b>이다 — 사용자가 지우면 빈값이고, 그때 막아 주는 건 <code>OBLIGATORY</code>다.</div>' : '')
+           + '</div>';
       } else if(result.kind==='invalid'){
         h += '<div class="psl-out bad"><b>입력 거부!</b> <code>VALUE CHECK</code>가 \''+esc(result.val)+'\'를 Domain 고정값('+cfg.de.fixed.map(function(f){return f.val;}).join('/')+')과 대조해 거부했다 — 상태바에 오류 메시지가 뜨고 실행이 막힌다.</div>';
       } else {
@@ -76,7 +99,8 @@
     if(cfg.note) h += '<div class="note">'+cfg.note+'</div>';   // note는 신뢰된 HTML(레슨 작성자)
     root.innerHTML = h;
     var si = root.querySelector('#pslStat'), ni = root.querySelector('#pslName');
-    if(si) si.addEventListener('input', function(){ valStat = si.value; });
+    // 지우는 것도 '사용자가 손댄' 입력 — DEFAULT 자동 복원을 여기서 끊는다
+    if(si) si.addEventListener('input', function(){ valStat = si.value; statTouched = true; });
     if(ni) ni.addEventListener('input', function(){ valName = ni.value; });
   }
 
@@ -86,18 +110,21 @@
     var o = e.target.closest('[data-opt]');
     if(o && !o.disabled){
       var k = o.getAttribute('data-opt');
-      if(k==='oblig') oblig=!oblig; else if(k==='def') defOn=!defOn;
-      else if(k==='vcheck') vcheck=!vcheck; else lower=!lower;
+      if(k==='oblig') oblig=!oblig;
+      else if(k==='def'){ defOn=!defOn; if(defOn) statTouched=false; }   // 켜면 '프로그램을 새로 실행한 화면' = 기본값 다시 채움
+      else if(k==='vcheck') vcheck=!vcheck;
+      else if(k==='dict') dictRef=!dictRef;                              // Selection Text의 Dictionary 참조 체크
+      else lower=!lower;
       result=null; render(); return;
     }
     if(e.target.closest('[data-f4]')){ f4Open=!f4Open; render(); return; }
     var p = e.target.closest('[data-pick]');
-    if(p){ valStat = p.getAttribute('data-pick'); f4Open=false; result=null; render(); return; }
+    if(p){ valStat = p.getAttribute('data-pick'); statTouched=true; f4Open=false; result=null; render(); return; }
     if(e.target.closest('[data-run]')){
-      var stat = (defOn && !valStat) ? cfg.de.fixed[0].val : valStat;
+      var stat = screenStat();
       var name = valName;
       var inFixed = !stat || cfg.de.fixed.some(function(f){ return f.val===stat.toUpperCase(); });
-      if(oblig && !stat){ result={kind:'block'}; }
+      if(oblig && !stat){ result={kind:'block', defCleared: defOn && statTouched}; }
       else if(useDe && vcheck && !inFixed){                        // 검증은 VALUE CHECK가 있을 때만!
         result={kind:'invalid', val:stat};
       } else {
