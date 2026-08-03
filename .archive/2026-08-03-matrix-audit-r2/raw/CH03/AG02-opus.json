@@ -1,0 +1,81 @@
+{
+  "agent": "AG02",
+  "model": "opus",
+  "target": "CH03",
+  "persona_ack": "나는 '준호'다 — 배운 건 그 자리에서 직접 해봐야 직성이 풀리는 실습형 학습자. CH03 세 레슨의 본문 코드·설명과 체험 위젯 3종을 실제로 눌러 보며 대조했고, 체험 공백·불일치·헛체험·위젯 결함 네 가지만 본다. 없으면 없다고 적었다.",
+  "method": "① 대상 7개 파일 정독 + 위젯이 참조하는 공통 엔진 3종(_engine/domain-builder.js·ddic-layer-board.js·param-screen-lab.js) 정독 → ② 하네스가 띄워 둔 로컬 서버(http://localhost:8143)에서 위젯 3종을 브라우저로 실제 로드(캐시버스터 ?v= 부착, 서버·프로세스는 기동/종료하지 않음) → ③ 렌더된 DOM을 페이지 내 JS로 측정하고 실제 click/input 이벤트를 디스패치해 인터랙션을 끝까지 실행 → ④ 콘솔 로그 확인(3종 모두 오류·경고 0). 실조작으로 검증한 시나리오: [L01] 금액 ZDO_AMOUNT(DEC 8,2) 저장→검사→활성화 완주, 활성 후 길이 수정 시 배지 비활성 복귀, 이름 'AMOUNT' 차단, 상태 ZDO_STATUS(CHAR 1 + 고정값 O/C) 완주, 값테이블+고정값 동시 사용 차단, CHAR 길이 200의 출력 길이 경계. [L02] Domain 길이 3↔4 토글이 DE 2개와 화면 칸 수에 동시 반영, Field Label 편집 시 해당 칸 라벨만 변경·빈 라벨 표시, Domain 직접 선언 오류 데모와 DE 선언 성공 데모. [L03] Dictionary 참조 체크로 라벨 이어받기, F4 목록(O/C) 열기·선택, 목록 밖 값 X에 대한 VALUE CHECK off(통과+경고)/on(거부), 표준 타입 전환 시 F4 사라짐·VALUE CHECK/Dictionary 참조 비활성, DEFAULT 값을 지운 뒤 OBLIGATORY 차단, LOWER CASE on/off의 대문자 변환.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH03\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH03\\CH03-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH03\\CH03-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH03\\CH03-L03.md",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH03-L01-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH03-L02-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH03-L03-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\domain-builder.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\ddic-layer-board.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\param-screen-lab.js"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH03-L02-S01.html",
+      "quote": "labelSlot: 'Medium',",
+      "category": "체험 공백",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L02가 이번 레슨에서 정식 도입하는 Field Label 4종(Short/Medium/Long/Heading) 가운데 위젯은 Medium 한 칸만 노출한다. 그래서 '자리 넓이가 다르니 시스템이 자리에 맞는 라벨을 골라 쓴다'는 이 개념의 핵심 동작을 페이지에서 해 볼 수 없다.",
+      "evidence": "브라우저 실측: 렌더된 Field Label 입력칸은 Data Element 카드당 1개씩 총 2개뿐이고 둘 다 안내가 'Field Label (Medium) — 직접 고쳐 보세요'(maxlength=20)다. 페이지 전체 텍스트에 'Short'·'Long'·'Heading' 문자열이 하나도 없다(정규식 검사 결과 false). 반면 본문은 4행 표(Short 10 / Medium 20 / Long 40 / Heading 55)와 '넷을 다 채워 두면 어느 화면에서도 빈 라벨이 나오지 않는다'는 설명을 두었고, front-matter introduces에도 'Field Label(Short/Medium/Long/Heading)'을 올려 두었다. 즉 본문이 L3로 도입한 개념의 절반이 체험 밖에 있다.",
+      "suggestion": "DLB_CFG가 labelSlot 하나 대신 4칸 라벨을 받게 하고, 화면 미리보기를 '좁은 목록 / 일반 입력칸 / 상세 화면 / 표의 열 제목'으로 전환해 같은 Data Element가 자리마다 다른 라벨을 꺼내 쓰는 것을 보여 준다. 최소안으로는 Short 한 칸만 더 노출해 '자리가 좁으면 다른 라벨이 쓰인다'와 '비워 두면 그 자리만 빈 라벨'까지 확인시켜도 목적이 선다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH03\\CH03-L02.md",
+      "quote": "DATA gv_amount TYPE zde_amount.",
+      "category": "체험 공백",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L02 본문의 유일한 코드와 이 레슨이 지시하는 산출물 만들기(ZDE_AMOUNT·ZDE_STATUS 생성 → 라벨 채우기 → 저장 → 활성화)가 페이지의 위젯에서는 다뤄지지 않는다. 위젯은 공항 예제 전용이라 챕터 관통 산출물의 중간 고리만 손으로 만들어 볼 데가 없다.",
+      "evidence": "브라우저 실측: 위젯이 제공하는 선언 데모는 'DATA gv_from TYPE zdo_airport. 시도'(오류)와 'DATA gv_from TYPE zde_from_airp. 시도'(성공) 둘뿐이고, 등장하는 이름도 ZDO_AIRPORT·ZDE_FROM_AIRP·ZDE_TO_AIRP뿐이다. 선언 패턴 자체는 같지만 본문이 만들라고 한 zde_amount·zde_status는 위젯 어디에도 없다. L01은 Domain 생성 시뮬레이터로 ZDO_AMOUNT·ZDO_STATUS를 실제로 저장·활성화해 보고, L03은 pa_stat으로 zde_status를 실제로 써 보는 것과 대비된다 — 세 레슨 중 L02만 자기 산출물을 손으로 만들 수단이 없다.",
+      "suggestion": "상속 보드는 그대로 두고, 앞 레슨의 SE11 시뮬레이터 골격을 재사용한 짧은 'Data Element 만들기'(참조 Domain 입력 → 라벨 입력 → 저장 → 활성화) 단계를 덧붙이거나, 상속 보드 cfg를 금액/상태 산출물로 한 번 더 인스턴스화해 관통 예제와 이어 준다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH03-L01-S01.html",
+      "quote": "<button class=\"chip\" type=\"button\" data-ex=\"1\">상태 도메인 (CHAR 1 + 고정값)</button>",
+      "category": "불일치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "상태 예제의 목표 안내문이 이 Domain을 '주문 상태 코드'라고 부르는데, 같은 산출물을 본문과 다음 두 레슨은 '예매 상태'(콘서트 예매 시나리오)로 부른다. 학습자는 같은 ZDO_STATUS/ZDE_STATUS를 두 이름으로 만난다.",
+      "evidence": "브라우저 실측: 상태 칩을 누르면 목표 배너에 '주문 상태 코드 Domain을 만들어 보세요. 목표: 이름 ZDO_STATUS, 타입 CHAR, 길이 1. \"값 범위\" 탭에서 고정값 O(Open)·C(Closed)를 추가하세요.'가 표시된다(문구 원본은 _engine/domain-builder.js의 EXAMPLES[1].goal). 반면 CH03-L02는 'ZDE_STATUS … 라벨은 \"예매 상태\"로'라 지시하고, CH03-L03 본문은 'zde_status(예매 상태)', 위젯 CH03-L03-S01의 cfg label도 '예매 상태'다. 이름·타입·길이·고정값 등 나머지 목표값은 본문과 정확히 일치한다.",
+      "suggestion": "EXAMPLES[1].goal의 '주문 상태 코드'를 '예매 상태'로 바꿔 챕터 관통 시나리오(콘서트 예매)와 용어를 맞춘다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH03\\CH03-L01.md",
+      "quote": "| **부호(Sign)** | **음수를 담을 수 있는지.** 음수가 필요한 숫자 값이면 켠다(예: 금액의 마이너스, 재고 증감). 참고로 NUMC는 음수를 담지 못한다 |",
+      "category": "불일치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "본문은 부호(Sign)를 켜는 대표 사례로 '금액의 마이너스'를 먼저 든다. 그런데 위젯의 금액 예제는 부호를 켜면 오답으로 판정하고 활성화까지 막는다. 본문 설명대로 따라 해 본 학습자가 '틀렸다'는 신호를 받는다.",
+      "evidence": "브라우저 실측: 금액 예제(ZDO_AMOUNT·DEC·길이 8·소수 2)를 목표대로 채워 검사 통과·활성화까지 성공한 뒤 '음수 허용(Sign)'만 추가로 체크하고 ✓검사를 누르면 '✕ 이 예제는 음수 허용을 쓰지 않습니다 — 체크를 해제하세요.'가 뜨고, 🔥활성화는 '⛔ 활성화 실패 — 예제 목표와 다릅니다'로 막힌다. 목표 배너에는 부호에 대한 언급이 아예 없어(이름·타입·길이·소수만 제시) 학습자가 사전에 알 방법도 없다. 참고로 DEC 타입에서 부호 행 자체는 정상적으로 노출된다.",
+      "suggestion": "금액 예제의 목표 문구에 '부호는 이번엔 켜지 않는다'를 명시하거나, 부호를 목표 외 자유 옵션으로 두어 판정에서 제외하고 재고 증감 예제에서만 강제한다. 아니면 본문의 부호 예시에서 '금액의 마이너스'를 빼고 '재고 증감'만 남겨 위젯과 어긋나지 않게 한다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH03-L01-S01.html",
+      "quote": "<div class=\"hint\">화면에 표시될 칸 너비. 보통 길이와 같지만, 부호·천단위 구분기호 때문에 더 길 수 있습니다.</div>",
+      "category": "위젯 결함",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "출력 길이 검증 규칙이 CHAR 길이 100 이상 구간에서 자기모순이라, 어떤 값을 넣어도 검사·활성화를 통과할 수 없는 막다른 상태가 된다.",
+      "evidence": "브라우저 실측: 위젯이 스스로 '최대 길이: 1333'이라고 안내하는 CHAR에서 길이 200으로 저장하면 출력 길이가 200으로 자동 계산돼 채워진다. 그 상태로 ✓검사를 누르면 '✕ 출력 길이는 길이(200) 이상이어야 합니다(최대 99).'가 뜬다. 99로 낮춰도, 다시 200으로 올려도 같은 실패가 반복된다(엔진 규칙이 out>=len && out<=99라 len>99면 만족 불가). 다만 챕터가 제시하는 여섯 예제는 최대 길이가 80이라 안내된 경로에서는 이 상태에 닿지 않고, 자유 탐색 시에만 발생한다.",
+      "suggestion": "출력 길이 상한을 길이 상한과 정합되게 풀거나(CHAR는 길이까지 허용), 시뮬레이터가 다루는 길이 범위를 실제로 제한하고 초과 시 '이 시뮬레이터는 길이 99까지만 다룹니다'처럼 원인을 분리해 안내한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "세 레슨 모두 embed가 하나씩 붙어 있고, 브라우저에서 직접 눌러 본 결과 위젯 3종 전부 정상 동작했다(콘솔 오류 0). 특히 CH03-L03은 본문이 약속한 실험 — Dictionary 참조 체크로 라벨 이어받기, Domain 고정값에서 온 F4 목록, 목록 밖 값 X를 VALUE CHECK가 껐다 켰다에 따라 통과/거부, 표준 타입으로 갈아 끼우면 F4·VALUE CHECK가 함께 사라짐, DEFAULT를 지웠을 때 OBLIGATORY의 차단, LOWER CASE의 대문자 변환 — 이 전부가 실제로 재현돼 발견이 없다. CH03-L01 시뮬레이터도 본문이 장담한 동작(활성화 후 수정하면 비활성 복귀, 'AMOUNT' 이름 차단, 값 테이블과 고정값 동시 사용 차단, 여섯 예제 칩)이 그대로 확인됐다. 남은 약점은 CH03-L02의 체험 밀도다. 1:N 상속과 라벨 편집은 잘 만들어졌지만, 이번 레슨이 정식 도입하는 Field Label 4종은 Medium 한 칸만 노출돼 절반이 체험 밖이고, 이 레슨의 산출물(ZDE_AMOUNT·ZDE_STATUS)을 만들어 보는 수단이 없어 L01·L03 사이에서 손으로 할 일이 눈에 띄게 적다. 나머지 셋은 문구·판정 수준의 국소 어긋남(주문 상태↔예매 상태, 금액 예제의 부호 오답 판정, 출력 길이 상한 모순)이라 좁은 수정으로 정리된다."
+  }
+}

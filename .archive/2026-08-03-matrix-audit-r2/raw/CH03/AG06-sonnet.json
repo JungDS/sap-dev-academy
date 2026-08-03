@@ -1,0 +1,31 @@
+{
+  "agent": "AG06",
+  "model": "sonnet",
+  "target": "CH03",
+  "persona_ack": "20년차 SAP ABAP 아키텍트(ECC~S/4HANA 개발·운영·성능·이관 경험) 페르소나로 CH03(Domain·Data Element·PARAMETERS) 학습 콘텐츠 4개 파일의 기술 사실을 감사함.",
+  "method": "대상 파일 4개(CH03-L01.md, CH03-L02.md, CH03-L03.md, _chapter.md) 전문을 직접 읽고, ABAP/DDIC 표준 동작(BC400 계열 지식) 기준으로 원문 서술을 문장 단위 대조. 셸 명령·브라우저 실행·웹 검색은 사용하지 않음(정적 지식 기반 검토).",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH03\\CH03-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH03\\CH03-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH03\\CH03-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH03\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH03\\CH03-L01.md",
+      "quote": "값 테이블은 뒤 챕터의 외래 키와 연결돼야 일한다. 지금 당장 목록을 보이게 하려면 [[고정값|Fixed Values]]다.",
+      "category": "사실 오류(일반화 가능성)",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "레슨은 Value Table(값 테이블)이 Foreign Key로 연결되기 전까지는 F4·입력 검사에 전혀 관여하지 않는다고 단정한다(Fixed Values vs Value Table 표의 '이어짐' 행과 '흔한 실수' 항목에서 동일 주장을 두 번 반복). 그러나 이는 트랜잭션 테이블 필드 기준의 설명이다. 이 챕터가 실제로 다루는 PARAMETERS 같은, 테이블에 매이지 않은 화면(선택화면) 필드는 참조하는 Domain에 Value Table만 지정돼 있어도 시스템이 자동으로 존재 검사와 F4를 수행하는 것으로 알고 있다 — Foreign Key는 테이블-대-테이블 관계에 쓰는 개념이라 선택화면 파라미터에는 애초에 적용 대상이 아니기 때문이다.",
+      "evidence": "SAP ABAP Dictionary 표준 교육 자료(BC400 계열)는 '테이블 필드'와 '테이블에 매이지 않은 화면 필드'를 구분해서 설명한다 — 전자는 Foreign Key를 명시적으로 걸어야 검사가 동작하지만, 후자(다이나프로·선택화면 필드)는 Domain의 Value Table 지정만으로 자동 검사·F4가 동작한다고 기억한다. 다만 웹 검색·시스템 실측이 금지된 조건이라 현재 릴리스 기준 재확인은 못 했다 — 그래서 confidence를 '확실'이 아닌 '추정'으로 표기한다.",
+      "suggestion": "표와 '흔한 실수' 문구에 '(테이블 필드 기준)' 단서를 덧붙이거나, PARAMETERS 레슨(CH03-L03)에서 Value Table을 가진 Domain으로 실제 SE11 선택화면 테스트를 한 번 재현해 자동 검사 여부를 확정한 뒤 문구를 다듬을 것을 권장. 실측 결과 레슨 서술이 맞다면(선택화면에서도 FK 없이는 정말 검사가 안 된다면) 이 발견은 기각해도 된다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH03 세 레슨(Domain→Data Element→PARAMETERS)은 '기술 속성 / 의미·라벨 / 화면'이라는 3계층 구도를 시종일관 정확하고 일관되게 유지한다. DEC 자릿수↔TYPE P 바이트 환산(8바이트=15자리), Domain=CHAR·변수=c 표기 차이, PARAMETERS 이름 8자 제한, Selection Text의 Dictionary 참조 체크 경로, F4≠VALUE CHECK 구분, VALUE CHECK가 DDIC 참조 필드에만 허용되는 제약 등 검증 가능한 세부 사실은 모두 정확했다. 금액 예제(ZDO_AMOUNT)가 실무 CURR 타입의 단순화판임을 레슨 스스로 미리 밝혀 두는 등 정직한 스코프 관리도 돋보인다. 유일한 지적은 Value Table을 'Foreign Key 연결 전엔 전혀 미작동'으로 일반화한 서술이 테이블 필드 기준 설명이라, 이 챕터가 실제로 다루는 PARAMETERS(선택화면 필드)에는 그대로 적용 안 될 가능성이 있다는 점(추정, 재확인 권장)뿐이다. 그 외 위험한 생략이나 안티패턴 시연은 발견하지 못했다."
+  }
+}
