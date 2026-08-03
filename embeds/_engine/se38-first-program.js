@@ -1,7 +1,10 @@
 /* se38-first-program — 가상 SE38 개발 루프 시뮬레이터 (bespoke 단일사용 · #C01-1)
    3-step 진행형: ① 명령창에 SE38 입력→엔터 / ② Program 이름 입력→생성 / ③ 에디터(REPORT)+저장→활성화→실행.
    한 단계만 보이고, 다음으로 넘어가면 이전 단계 UI는 사라진다(한 번에 다 보여주지 않음).
-   게이팅: 코드는 자동 골격 `REPORT <prog>.`만(WRITE·변수는 CH01-L04↑). */
+   게이팅: 코드는 자동 골격 `REPORT <prog>.`만(WRITE·변수는 뒤 레슨).
+   실수 체험(C079): ③ 진입 뒤 저장·활성화·실행 버튼을 모두 열어 둔다. 다음에 눌러야 할 버튼만
+     `.ready`로 강조하고, 순서를 어겨 눌러도 막지 않는다 → '활성화 없이 실행'을 직접 저지르고 경고를 만난다.
+   섹션: showStep / treeHTML / setBadge·setMsg·renderCode / ① 명령창 / ② 생성 / ③ 저장·활성화·실행 / 리셋 / 단축키 / post. */
 (function(){
   var $=function(id){return document.getElementById(id);};
   var st={ step:1, prog:'', code:'new' };  // code: new|saved|active
@@ -49,31 +52,34 @@
     var p=$('prog').value.trim().toUpperCase();
     if(!/^[ZY][A-Z0-9_]*$/.test(p)){ return setMsg('bad','이름은 <b>Z 또는 Y로 시작</b>해야 합니다(Name range 규칙). 예: <code>ZHELLO</code>.'); }
     st.prog=p; st.code='new'; renderCode(); setBadge('new');
+    // 세 버튼 모두 활성 — 다음에 눌러야 할 것만 .ready로 안내하고, 순서를 어겨도 막지 않는다(실수 체험).
     $('bSave').disabled=false; $('bSave').classList.add('ready');
-    $('bAct').disabled=true;  $('bAct').classList.remove('ready');
-    $('bRun').disabled=true;  $('bRun').classList.remove('ready');
+    $('bAct').disabled=false;  $('bAct').classList.remove('ready');
+    $('bRun').disabled=false;  $('bRun').classList.remove('ready');
     $('list').innerHTML='<span class="ph">실행하면 리스트(출력 화면)가 여기 떠요.</span>';
-    setMsg('ok','✓ <b>'+p+'</b> 생성 (Type = Executable Program). 자동 골격 <code>REPORT</code>가 들어왔어요 — 이제 <b>💾 저장</b>.');
+    setMsg('ok','✓ <b>'+p+'</b> 생성 (Type = Executable Program). 자동 골격 <code>REPORT</code>가 들어왔어요 — 이제 <b>💾 저장</b>. (순서를 어겨 <b>▶ 실행</b>부터 눌러 봐도 됩니다. 무슨 일이 나는지 직접 보세요.)');
     showStep(3);
   });
   /* ③ 저장 → 활성화 → 실행 */
   $('bSave').addEventListener('click',function(){
     if(!st.prog) return;
     st.code='saved'; setBadge('saved');
-    $('bSave').classList.remove('ready'); $('bAct').disabled=false; $('bAct').classList.add('ready');
-    setMsg('info','💾 저장 시 “어느 패키지?” → <b>Local Object</b> 선택 → <code>$TMP</code>에 보관(이송·공유 불가). 상태 <b>비활성</b> — 아직 실행본이 아니에요. <b>🔥 활성화</b>!');
+    $('bSave').classList.remove('ready'); $('bAct').classList.add('ready');
+    setMsg('info','💾 저장 시 “어느 패키지?” → <b>Local Object</b> 선택 → <code>$TMP</code>에 보관(다른 서버로 <b>이송 불가</b>, 같은 서버 동료는 조회·실행 가능). 상태 <b>비활성</b> — 아직 실행본이 아니에요. <b>🔥 활성화</b>!');
   });
   $('bAct').addEventListener('click',function(){
     if(st.code==='new') return setMsg('bad','먼저 <b>💾 저장</b>하세요.');
     st.code='active'; setBadge('active');
-    $('bAct').classList.remove('ready'); $('bRun').disabled=false; $('bRun').classList.add('ready');
+    $('bAct').classList.remove('ready'); $('bRun').classList.add('ready');
     setMsg('ok','🔥 <b>활성화 완료</b> → 실행본(active) 생성. 이제 <b>▶ 실행(F8)</b>!');
   });
   $('bRun').addEventListener('click',function(){
+    if(!st.prog) return;
+    if(st.code==='new'){ return setMsg('bad','⚠ 아직 <b>저장</b>도 안 했어요. 실행본이 없으니 이 프로그램은 실행되지 않습니다 — <b>💾 저장 → 🔥 활성화</b> 순서로!'); }
     if(st.code!=='active'){ return setMsg('bad','⚠ <b>활성화 안 된 변경은 실행에 반영되지 않아요</b> — 🔥 활성화부터! (가장 흔한 실수)'); }
     $('bRun').classList.remove('ready');
     $('list').innerHTML='<span class="ph">(빈 리스트 — 실행됐지만 아직 출력문이 없어요)</span>';
-    setMsg('ok','▶ 실행됨! <b>작성 → 저장 → 활성화 → 실행</b> 개발 루프 한 바퀴 완료 🎉 화면에 글자를 찍는 <b>WRITE</b>는 <b>다음 레슨(CH01-L04)</b>이라, 지금 리스트는 비어 있어요.');
+    setMsg('ok','▶ 실행됨! <b>작성 → 저장 → 활성화 → 실행</b> 개발 루프 한 바퀴 완료 🎉 화면에 글자를 찍는 <b>WRITE</b>는 <b>뒤 레슨</b>에서 배우니, 지금 리스트는 비어 있어요.');
   });
 
   /* 처음부터 다시 */
