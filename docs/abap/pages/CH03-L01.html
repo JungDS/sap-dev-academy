@@ -35,7 +35,7 @@
       <section class="lhead">
         <p class="lhead__eyebrow">DDIC Domain·Data Element + PARAMETERS</p>
         <h1>Domain — 기술 속성 정의</h1>
-        <p class="lhead__direction">타입의 기술 속성(타입·길이·대소문자·허용값)을 Domain에 한 번 정의해 전역으로 쓰고, 저장 → 검사 → 활성화 흐름을 직접 체험한다.</p>
+        <p class="lhead__direction">타입의 기술 속성(타입·길이·대소문자·부호·허용값)을 Domain에 한 번 정의해 전역으로 쓰고, 저장 → 검사 → 활성화 흐름을 직접 체험한다.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 3</span><span class="tag tag--ls">Lesson 1</span><span class="tag tag--lv">입문</span></div>
       </section>
       <section class="lcard tcode">
@@ -49,8 +49,9 @@
 <p><a href="CH02-L04.html">Chapter 2</a>의 <button class="term" type="button" data-term="TYPES">TYPES</button>는 편했지만 <strong>그 프로그램 안에서만</strong> 유효하다. 회사 전체가 쓰는 &quot;금액&quot;, &quot;통화코드&quot;
 같은 타입을 매 프로그램이 또 정의하는 건 낭비고, 정의가 갈리면 사고다.</p>
 <blockquote>
-<p>😵 A 프로그램은 금액을 <code>DEC 8,2</code>, B 프로그램은 <code>DEC 11,2</code>로 정의했다면? 같은 &quot;금액&quot;인데 자릿수가
-달라 데이터가 어긋난다. <strong>한 곳에서 한 번만</strong> 정의하고 싶다.</p>
+<p>😵 A 프로그램은 금액을 <code>DEC 8,2</code>, B 프로그램은 <code>DEC 11,2</code>로 정의했다면?
+(<code>DEC 8,2</code>는 &quot;십진수 8자리, 그중 소수가 2자리&quot;라는 뜻이다. 곧 배운다.)
+같은 &quot;금액&quot;인데 자릿수가 달라 데이터가 어긋난다. <strong>한 곳에서 한 번만</strong> 정의하고 싶다.</p>
 </blockquote>
 <p>이제 타입을 <strong>전역</strong>으로 올린다. 그 시작이 <button class="term" type="button" data-term="DDIC">DDIC</button>의 <button class="term" type="button" data-term="Domain">Domain</button>이다.</p>
 </section><section class="lblock"><h2>Domain의 역할 — 기술 속성만</h2>
@@ -68,20 +69,26 @@
 <td>이 값이 &quot;금액&quot;인지 &quot;단가&quot;인지 (<strong>의미</strong>)</td>
 </tr>
 <tr>
-<td>(선택) 허용 값 = <button class="term" type="button" data-term="고정값">고정값</button> 또는 [[<button class="term" type="button" data-term="Value Table">Value Table</button></td>
-<td>값 테이블]]</td>
+<td>(선택) 허용 값 = <button class="term" type="button" data-term="고정값">Fixed Values</button>(고정값) 또는 <button class="term" type="button" data-term="Value Table">Value Table</button></td>
+<td>화면에 뜰 <strong>라벨</strong></td>
 </tr>
 </tbody></table>
 <blockquote>
 <p>의미·라벨은 다음 레슨의 <button class="term" type="button" data-term="Data Element">Data Element</button>가 맡는다. <strong>기술은 Domain, 의미는 Data Element</strong>로 역할이 갈린다.</p>
 </blockquote>
+<blockquote>
+<p>🧭 <strong>이름에 속지 말 것</strong> — 다른 개발 분야에서 &quot;도메인&quot;이라고 하면 보통 업무 의미 쪽을 가리킨다.
+그런데 DDIC의 Domain은 정반대로 <strong>의미를 뺀 기술 계층</strong>이다. 의미를 맡는 쪽은 Data Element다.</p>
+</blockquote>
 <blockquote class="cw">
-<p>⚠️ Domain은 타입과 길이 정보가 있어 프로그램에서 변수 선언 시 사용할 수 있을 것처럼
-보여서 주의가 필요하다. <strong>Domain은 항상 Data Element에만 사용된다</strong>는 점을 꼭
-기억하자. Data Element는 다음 레슨에서 다룬다.</p>
+<p>⚠️ Domain에는 타입과 길이가 들어 있다. 그래서 프로그램에서 변수를 선언할 때 바로 갖다 쓸 수 있을 것처럼 보인다.
+하지만 <strong>Domain은 항상 Data Element에만 사용된다</strong>는 점을 꼭 기억하자. Data Element는 다음 레슨에서 다룬다.</p>
 </blockquote>
 </section><section class="lblock"><h2>Domain의 속성, 하나씩</h2>
 <p><button class="term" type="button" data-term="Domain">Domain</button>을 만들 때 채우는 칸들이다. 하나씩 차분히 보자.</p>
+<blockquote>
+<p>⏩ 다른 언어에서 타입·길이를 이미 다뤄 봤다면, 이 절은 표 두 개만 훑고 다음 절로 건너뛰어도 된다.</p>
+</blockquote>
 <p><strong>① 데이터 타입</strong> — 값이 &quot;어떻게 생겼는지&quot;. 자주 쓰는 것만:</p>
 <table>
 <thead>
@@ -117,9 +124,15 @@
 <td><code>TYPE d</code></td>
 </tr>
 </tbody></table>
+<blockquote>
+<p>📌 이 표는 <strong>키워드끼리의 짝</strong>일 뿐이다. 길이·소수는 함께 따라오지 않아 변수 쪽에 따로 적어야 한다
+(<a href="CH02-L03.html">Chapter 2</a>의 <code>LENGTH</code>·<code>DECIMALS</code>). 게다가 길이를 세는 단위도 다르다.
+DDIC의 <code>DEC 8</code>은 <strong>자릿수 8</strong>이지만, ABAP <code>TYPE p LENGTH 8</code>은 <strong>8<button class="term" type="button" data-term="바이트">바이트</button></strong>(자릿수로는 15자리)다.
+숫자만 베껴 옮기면 엉뚱한 크기가 된다.</p>
+</blockquote>
 <blockquote class="cw">
-<p>⚠️ <strong>헷갈리기 쉬운 점</strong> — 문자 타입이 <strong>DDIC(도메인)에서는 <code>CHAR</code></strong>, 그런데 <strong>ABAP 변수를 선언할 땐 키워드가 <code>c</code></strong> 다.
-같은 &quot;문자&quot;인데 이름이 다르다. (<a href="CH02-L03.html">Chapter 2</a>에서 <code>DATA gv_x TYPE c</code>를 봤다면, 그 <strong>도메인 버전이 <code>CHAR</code></strong>.)</p>
+<p>⚠️ <strong>헷갈리기 쉬운 점</strong> — 문자 타입이 <strong>DDIC의 Domain에서는 <code>CHAR</code></strong>, 그런데 <strong>ABAP 변수를 선언할 땐 키워드가 <code>c</code>이다.</strong>
+같은 &quot;문자&quot;인데 이름이 다르다. (<a href="CH02-L03.html">Chapter 2</a>에서 <code>DATA gv_x TYPE c</code>를 봤다면, 그 <strong>Domain 버전이 <code>CHAR</code></strong>.)</p>
 </blockquote>
 <p><strong>② 그 밖의 속성</strong>:</p>
 <table>
@@ -139,38 +152,89 @@
 </tr>
 <tr>
 <td><strong>소수(Decimals)</strong></td>
-<td>소수점 이하 자릿수 (DEC 전용, 길이보다 작아야 함)</td>
+<td>소수점 이하 자릿수 (DEC 등 십진 타입에서 지정, 길이보다 작아야 함)</td>
+</tr>
+<tr>
+<td><strong>부호(Sign)</strong></td>
+<td><strong>음수를 담을 수 있는지.</strong> 음수가 필요한 숫자 값이면 켠다(예: 금액의 마이너스, 재고 증감). 참고로 NUMC는 음수를 담지 못한다</td>
 </tr>
 <tr>
 <td><strong>대소문자(Lower Case)</strong></td>
-<td>체크 안 하면 입력이 <strong>자동으로 대문자</strong>로 바뀐다(CHAR 기본). 소문자를 살리려면 체크</td>
+<td>체크 안 하면 <strong>화면에서 입력할 때</strong> 자동으로 대문자로 바뀐다(CHAR 기본). 소문자를 살리려면 체크. 코드에서 대입한 소문자는 그대로 남는다</td>
 </tr>
 </tbody></table>
-</section><section class="lblock"><h2>값을 제한하는 두 가지 — 고정값 vs 값 테이블</h2>
+</section><section class="lblock"><h2>값을 제한하는 두 가지 — Fixed Values vs Value Table</h2>
 <p>특정 값만 받게 하려면 <strong>두 가지</strong> 방법이 있다. 상황에 따라 <strong>둘 중 하나</strong>를 쓴다.</p>
-<p>| | <button class="term" type="button" data-term="고정값">고정값</button> (Fixed Values) | <button class="term" type="button" data-term="Value Table">값 테이블</button> (Value Table) |
-|---|---|---|
-| 무엇 | <button class="term" type="button" data-term="Domain">Domain</button> 안에 <strong>직접 적은</strong> 허용 값 목록 | 허용 값이 든 <strong>다른 테이블</strong>을 가리킴 |
-| 잘 맞는 곳 | 거의 안 바뀌는 <strong>몇 개</strong>의 값 | 자주 바뀌는 <strong>목록</strong> |
-| 예 | <code>O</code>=Open, <code>C</code>=Closed | 항공사 목록 테이블 <code>SCARR</code> |
-| 이어짐 | 화면 <button class="term" type="button" data-term="F4">F4</button>·입력검증(뒤 챕터) | 외래 키(Foreign Key)의 바탕(뒤 챕터) |</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><button class="term" type="button" data-term="고정값">Fixed Values</button>(고정값)</th>
+<th><button class="term" type="button" data-term="Value Table">Value Table</button>(값 테이블)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>무엇</td>
+<td><button class="term" type="button" data-term="Domain">Domain</button> 안에 <strong>직접 적은</strong> 허용 값 목록</td>
+<td>허용 값이 든 <strong>다른 테이블</strong>을 가리킴</td>
+</tr>
+<tr>
+<td>잘 맞는 곳</td>
+<td>거의 안 바뀌는 <strong>몇 개</strong>의 값</td>
+<td>자주 바뀌는 <strong>목록</strong></td>
+</tr>
+<tr>
+<td>예</td>
+<td><code>O</code>=Open, <code>C</code>=Closed</td>
+<td>항공사 목록 테이블 <code>SCARR</code></td>
+</tr>
+<tr>
+<td>이어짐</td>
+<td>화면 <button class="term" type="button" data-term="F4">F4</button>·입력 검증(이 챕터 마지막 레슨)</td>
+<td>외래 키(Foreign Key)의 바탕(뒤 챕터)</td>
+</tr>
+</tbody></table>
+<p>오른쪽 칸의 <strong>테이블</strong>은 값이 줄줄이 저장된 표다(정식으로는 뒤 챕터에서 만든다). 예로 든 <code>SCARR</code>은
+SAP가 연습용으로 기본 제공하는 <strong>항공사 목록 표</strong>다.</p>
 <blockquote>
-<p>💡 둘 다 &quot;허용 값을 제한&quot;하지만 <strong>동시에 쓰지 않는다.</strong> 값이 고정이면 고정값, 값이 계속 늘어나는 목록이면 값 테이블.
-단, <strong>값 테이블은 적어 두는 것만으로는 검사가 일어나지 않는다.</strong> 뒤 챕터의 외래 키(Foreign Key)와
-연결될 때 비로소 검사·F4의 바탕이 된다(고정값은 그 자체로 F4·<code>VALUE CHECK</code> 검증에 쓰인다).</p>
+<p>🧑‍💻 <strong>다른 언어를 해 봤다면</strong> — Fixed Values는 <code>enum</code>에, Value Table은 &quot;허용 값이 든 다른 표를 가리키는 참조&quot;에 가깝다.</p>
+</blockquote>
+<blockquote>
+<p>💡 둘 다 &quot;허용 값을 제한&quot;하지만 <strong>동시에 쓰지 않는다.</strong> 값이 고정이면 Fixed Values, 값이 계속 늘어나는 목록이면 Value Table.
+단, <strong>Value Table은 적어 두는 것만으로는 검사가 일어나지 않는다.</strong> 뒤 챕터에서 외래 키(Foreign Key)로 연결해야
+비로소 검사·F4의 바탕이 된다. 반면 <strong>Fixed Values는 그 자체로 F4 목록이 되고, 입력 검증에도 그대로 쓰인다</strong>
+(검증을 켜는 방법은 <a href="CH03-L03.html">이 챕터의 PARAMETERS 레슨</a>에서 배운다).</p>
 </blockquote>
 </section><section class="lblock"><h2>SE11에서 직접 만들기</h2>
 <p>이제 속성을 알았으니 직접 만들어 보자. <code>SE11</code>(Dictionary) → <button class="term" type="button" data-term="Domain">Domain</button> → 이름(우리는 금액용 <code>ZDO_AMOUNT</code>) → Create.
 아래 시뮬레이터에서 값을 채우고 <strong>💾 저장 → ✓ 검사 → 🔥 <button class="term" type="button" data-term="활성화">활성화</button></strong> 순서로 눌러, <button class="term" type="button" data-term="DDIC">DDIC</button> 객체가
 활성화되는 과정을 따라가 보자.</p>
+<blockquote>
+<p>📦 <strong>실제 SE11에서 처음 저장하면</strong> — &quot;이 오브젝트를 어느 패키지에 넣을까?&quot; 창이 먼저 뜬다.
+학습 단계라면 <strong>Local Object</strong>를 눌러 <button class="term" type="button" data-term="$TMP">$TMP</button>에 두면 된다.
+(<a href="CH01-L02.html">Chapter 1 · T-code와 SE38 첫 실행</a>에서 프로그램을 저장할 때 한 것과 똑같다.)</p>
+</blockquote>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">Domain 생성 시뮬레이터 — 속성·저장·검사·활성화</span><a class="embed__open" href="../../../embeds/abap/CH03-L01-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH03-L01-S01.html" loading="lazy" title="Domain 생성 시뮬레이터 — 속성·저장·검사·활성화" style="height:640px"></iframe></figure>
 <blockquote>
-<p>🖱️ 예제 칩을 바꿔 보라. <strong>금액</strong>(DEC 8,2), <strong>상태</strong>(CHAR 1 + <button class="term" type="button" data-term="고정값">고정값</button> O/C), <strong>항공사 코드</strong>(CHAR 3 + <button class="term" type="button" data-term="Value Table">값 테이블</button> SCARR).
+<p>🖱️ 예제 칩을 눌러 보라. <strong>금액</strong>(DEC 8,2), <strong>상태</strong>(CHAR 1 + <button class="term" type="button" data-term="고정값">Fixed Values</button> O/C),
+<strong>항공사 코드</strong>(CHAR 3 + <button class="term" type="button" data-term="Value Table">Value Table</button> SCARR), <strong>이메일</strong>(CHAR + 소문자 허용),
+<strong>재고 증감</strong>(INT4 + 부호), <strong>대기번호·연도</strong>(NUMC)까지 여섯 가지가 준비돼 있다.
 데이터 타입을 바꾸면 위에 <strong>&quot;ABAP 변수로는 TYPE …&quot;</strong> 대응이 뜨고, CHAR일 때만 <strong>대소문자</strong> 옵션이 나타난다.</p>
+</blockquote>
+<p><strong>금액 Domain을 만들었다면, 같은 요령으로 상태 Domain도 하나 더 만들어 두자.</strong> 이름 <code>ZDO_STATUS</code>,
+데이터 타입 CHAR, 길이 1, 값 범위 탭에 Fixed Values <code>O</code>(Open)와 <code>C</code>(Closed). 시뮬레이터의
+<strong>상태</strong> 칩이 그대로 이 목표다. 이 상태 Domain은 <a href="CH03-L03.html">이 챕터 마지막 레슨</a>에서 화면 F4와
+입력 검증을 직접 확인할 때 다시 쓴다.</p>
+<blockquote>
+<p>💬 <strong>금액 예제에 한 가지만 미리</strong> — 우리 <code>ZDO_AMOUNT</code>는 배우기 좋게 단순화한 금액이다.
+실무의 금액 필드는 통화마다 소수 자릿수가 달라서, 금액 값 옆에 <strong>어느 통화인지 알려 주는 키</strong>를
+짝으로 두는 전용 타입을 쓴다. 그 짝은 테이블을 배우는 뒤 챕터에서 만난다.</p>
 </blockquote>
 </section><section class="lblock"><h2>활성화 — DDIC의 철칙</h2>
 <p>방금 봤듯, <strong>저장만 하면 객체는 &quot;비활성(inactive)&quot;</strong> 상태라 <button class="term" type="button" data-term="런타임">런타임</button>에서 쓸 수 없다.
-<button class="term" type="button" data-term="활성화">활성화</button>(Ctrl+F3)를 해야 <strong>런타임 객체가 생성</strong>되고, 비로소 다른 객체가 이 <button class="term" type="button" data-term="Domain">Domain</button>을 참조할 수 있다.</p>
+<button class="term" type="button" data-term="활성화">활성화</button>(Ctrl+F3)를 해야 <strong>런타임 객체가 생성</strong>되고, 비로소 다른 객체가 이 <button class="term" type="button" data-term="Domain">Domain</button>을 참조할 수 있다.
+여기서 <strong>런타임 객체</strong>는 시스템이 실제 실행에 쓰려고 내부에 따로 만들어 두는 완성본이다.
+우리가 SE11 화면에 적은 정의가 설계도라면, 런타임 객체는 그 설계도로 찍어 낸 실물인 셈이다.</p>
 <table>
 <thead>
 <tr>
@@ -187,13 +251,19 @@
 <td>런타임 객체 생성됨(참조·실행 가능)</td>
 </tr>
 </tbody></table>
+<blockquote>
+<p>🔁 <strong>활성화는 껐다 켜는 스위치가 아니다</strong> — 정의를 실행 가능한 형태로 <strong>한 번 변환</strong>하는 일에 가깝다.
+프로그램을 컴파일하는 것과 비슷하다고 보면 된다. 그래서 정의를 고칠 때마다 다시 해 줘야 한다.</p>
+</blockquote>
 <blockquote class="cw">
-<p>⚠️ 활성화한 뒤 정의를 바꾸면 다시 <strong>비활성</strong>이 된다. 반영하려면 <strong>재활성화</strong>해야 한다.
+<p>⚠️ 활성화한 뒤 정의를 바꾸면 그 변경은 <strong>새 비활성 버전</strong>으로 저장되고, <strong>기존 활성 버전은 그대로 남는다.</strong>
+즉 재활성화 전까지 런타임은 예전 활성판을 계속 쓴다. 바꾼 내용을 실제로 반영하려면 <strong>재활성화</strong>해야 한다.
 (시뮬레이터에서 활성화 후 길이를 고치면 배지가 바로 &quot;비활성&quot;으로 돌아간다.)</p>
 </blockquote>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <blockquote class="cw">
-<p>⚠️ <strong>CHAR ↔ c 혼동</strong> — <button class="term" type="button" data-term="Domain">Domain</button> 데이터 타입은 <code>CHAR</code>, 변수 선언 키워드는 <code>c</code>. 둘은 같은 &quot;문자&quot;지만 쓰는 자리가 다르다.</p>
+<p>⚠️ <strong>검사에서 타입 오류가 난다</strong> — <button class="term" type="button" data-term="Domain">Domain</button> 칸에 <code>c</code>라고 적지 않았는지 보라. Domain 데이터 타입은 <code>CHAR</code>,
+변수 선언 키워드가 <code>c</code>다. 둘은 같은 &quot;문자&quot;지만 쓰는 자리가 다르다.</p>
 </blockquote>
 <blockquote class="cw">
 <p>⚠️ <strong>이름 규칙</strong> — 전역 객체도 <code>Z</code>/<code>Y</code>로 시작. (시뮬레이터에서 <code>AMOUNT</code>로 검사하면 막힌다.)</p>
@@ -202,14 +272,16 @@
 <p>⚠️ <strong>저장만 하고 끝</strong> — 비활성이라 아무도 못 쓴다. 반드시 <strong><button class="term" type="button" data-term="활성화">활성화</button></strong> 까지.</p>
 </blockquote>
 <blockquote class="cw">
-<p>⚠️ <strong><button class="term" type="button" data-term="Value Table">값 테이블</button> + <button class="term" type="button" data-term="고정값">고정값</button> 동시 사용</strong> — 보통 둘 중 하나만. 값이 고정이면 고정값, 목록이면 값 테이블.</p>
+<p>⚠️ <strong>허용 값을 적어 뒀는데 화면에서 아무 일도 안 일어난다</strong> — <button class="term" type="button" data-term="Value Table">Value Table</button> 쪽에만 적어 둔 경우다.
+값 테이블은 뒤 챕터의 외래 키와 연결돼야 일한다. 지금 당장 목록을 보이게 하려면 <button class="term" type="button" data-term="고정값">Fixed Values</button>다.</p>
 </blockquote>
 </section><section class="lblock"><h2>정리</h2>
 <ul>
 <li>같은 타입을 프로그램마다 다시 정의하는 낭비를 막으려 타입을 <strong>전역</strong>으로 올린다 → <button class="term" type="button" data-term="DDIC">DDIC</button>의 <button class="term" type="button" data-term="Domain">Domain</button>.</li>
-<li>Domain은 <strong>기술 속성</strong>(데이터 타입·길이·출력길이·소수·대소문자·허용값)만 담는다. 의미·라벨은 <button class="term" type="button" data-term="Data Element">Data Element</button> 몫.</li>
-<li>문자 타입은 <strong>DDIC=<code>CHAR</code>, 변수=<code>c</code></strong>. 허용 값은 <strong><button class="term" type="button" data-term="고정값">고정값</button> 또는 <button class="term" type="button" data-term="Value Table">값 테이블</button></strong>(둘 중 하나).</li>
+<li>Domain은 <strong>기술 속성</strong>(데이터 타입·길이·출력길이·소수·부호·대소문자·허용값)만 담는다. 의미·라벨은 <button class="term" type="button" data-term="Data Element">Data Element</button> 몫.</li>
+<li>문자 타입은 <strong>DDIC=<code>CHAR</code>, 변수=<code>c</code></strong>. 허용 값은 <strong><button class="term" type="button" data-term="고정값">Fixed Values</button> 또는 <button class="term" type="button" data-term="Value Table">Value Table</button></strong>(둘 중 하나).</li>
 <li>DDIC 객체는 <strong><button class="term" type="button" data-term="활성화">활성화</button>해야</strong> <button class="term" type="button" data-term="런타임">런타임</button>에서 쓸 수 있다. 저장만 하면 비활성이다.</li>
+<li>이 레슨의 산출물은 둘이다. 금액용 <code>ZDO_AMOUNT</code>, 상태용 <code>ZDO_STATUS</code>. 다음 레슨에서 여기에 의미를 입힌다.</li>
 </ul>
 <hr>
 <p>기술 속성은 정의했다. 그런데 이 값이 화면에 어떤 <strong>이름표</strong>로 뜨고 무슨 <strong>의미</strong>인지는 누가 정하나?

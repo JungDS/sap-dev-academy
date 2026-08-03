@@ -9,11 +9,11 @@
 | STRUCT (필수키·id) | 0 |
 | PREREQ (실존·전방참조) | 0 |
 | DUP-INTRO (중복 도입 선언) | 7 |
-| EARLY-USE — **REVIEW(요판정)** | 120 |
-| EARLY-USE — LOW(같은 챕터 인접) | 112 |
-| EARLY-USE — DECLARED(예고/선행 선언) | 45 |
+| EARLY-USE — **REVIEW(요판정)** | 125 |
+| EARLY-USE — LOW(같은 챕터 인접) | 111 |
+| EARLY-USE — DECLARED(예고/선행 선언) | 48 |
 | R6 경계 (classic 구간 modern 토큰) | 0 |
-| 검사 규모 | 레슨 270 · 추적 키워드 409 |
+| 검사 규모 | 레슨 270 · 추적 키워드 411 |
 
 ## STRUCT
 - 없음
@@ -40,10 +40,15 @@
 - CH01-L06:18 — `DDIC` (도입 = CH03-L01)
 - CH01-L06:62 — `STMS` (도입 = CH38-L04)
 - CH01-L07:33 — `Selection Screen` (도입 = CH12-L02)
-- CH02-L06:52 — `Domain` (도입 = CH03-L01)
-- CH03-L02:65 — `ALV` (도입 = CH11-L01)
-- CH04-L05:58 — `Internal Table` (도입 = CH06-L01)
-- CH04-L05:44 — `MANDT` (도입 = CH07-L01)
+- CH02-L01:59 — `NULL` (도입 = CH13-L02)
+- CH02-L06:73 — `Domain` (도입 = CH03-L01)
+- CH03-L01:62 — `SIGN` (도입 = CH12-L01)
+- CH03-L03:11 — `Selection Screen` (도입 = CH12-L02)
+- CH04-L02:63 — `WHILE` (도입 = CH04-L05)
+- CH04-L03:73 — `NULL` (도입 = CH13-L02)
+- CH04-L04:33 — `SWITCH` (도입 = CH18-L07)
+- CH04-L05:92 — `Internal Table` (도입 = CH06-L01)
+- CH04-L05:75 — `MANDT` (도입 = CH07-L01)
 - CH05-L02:60 — `APPEND` (도입 = CH06-L01)
 - CH06-L03:11 — `INTO TABLE` (도입 = CH08-L03)
 - CH06-L04:109 — `ASSIGN` (도입 = CH28-L03)
@@ -155,12 +160,11 @@
 ## EARLY-USE · LOW (같은 챕터·도입 인접 — 여정 언급일 가능성 높음)
 - CH01-L03:105 — `WRITE` (도입 = CH01-L04)
 - CH01-L06:113 — `SE93` (도입 = CH01-L07)
-- CH02-L01:15 — `STRING` (도입 = CH02-L02)
-- CH02-L03:72 — `TYPES` (도입 = CH02-L04)
-- CH02-L04:62 — `CONSTANTS` (도입 = CH02-L05)
-- CH02-L05:59 — `Text Symbol` (도입 = CH02-L06)
-- CH03-L01:67 — `VALUE CHECK` (도입 = CH03-L03)
-- CH04-L04:60 — `WHILE` (도입 = CH04-L05)
+- CH02-L01:16 — `STRING` (도입 = CH02-L02)
+- CH02-L04:69 — `CONSTANTS` (도입 = CH02-L05)
+- CH02-L05:70 — `Text Symbol` (도입 = CH02-L06)
+- CH03-L01:84 — `PARAMETERS` (도입 = CH03-L03)
+- CH04-L04:67 — `WHILE` (도입 = CH04-L05)
 - CH06-L04:117 — `Deep Structure` (도입 = CH06-L05)
 - CH08-L01:30 — `INTO TABLE` (도입 = CH08-L03)
 - CH08-L02:22 — `INTO TABLE` (도입 = CH08-L03)
@@ -272,13 +276,16 @@
 - CH01-L05:162 — `ALV` (도입 = CH11-L01) [foreshadow 선언]
 - CH01-L07:25 — `Module Pool` (도입 = CH16-L01) [foreshadow 선언]
 - CH01-L07:26 — `Dynpro` (도입 = CH16-L01) [foreshadow 선언]
-- CH02-L01:19 — `Subroutine` (도입 = CH10-L01) [foreshadow 선언]
-- CH02-L04:41 — `DDIC` (도입 = CH03-L01) [foreshadow 선언]
-- CH02-L06:44 — `MESSAGE` (도입 = CH08-L07) [foreshadow 선언]
-- CH03-L01:22 — `Data Element` (도입 = CH03-L02) [foreshadow 선언]
-- CH03-L01:63 — `Foreign Key` (도입 = CH09-L01) [foreshadow 선언]
-- CH03-L02:72 — `PARAMETERS` (도입 = CH03-L03) [foreshadow 선언]
-- CH04-L07:49 — `Structure` (도입 = CH05-L01) [foreshadow 선언]
+- CH02-L01:23 — `Subroutine` (도입 = CH10-L01) [foreshadow 선언]
+- CH02-L03:108 — `TYPES` (도입 = CH02-L04) [foreshadow 선언]
+- CH02-L04:44 — `DDIC` (도입 = CH03-L01) [foreshadow 선언]
+- CH02-L06:64 — `MESSAGE` (도입 = CH08-L07) [foreshadow 선언]
+- CH03-L01:23 — `Data Element` (도입 = CH03-L02) [foreshadow 선언]
+- CH03-L01:74 — `Foreign Key` (도입 = CH09-L01) [foreshadow 선언]
+- CH03-L02:112 — `PARAMETERS` (도입 = CH03-L03) [foreshadow 선언]
+- CH03-L02:96 — `ALV` (도입 = CH11-L01) [foreshadow 선언]
+- CH03-L03:52 — `Search Help` (도입 = CH09-L04) [foreshadow 선언]
+- CH04-L07:91 — `Structure` (도입 = CH05-L01) [foreshadow 선언]
 - CH05-L02:55 — `Transparent Table` (도입 = CH07-L01) [foreshadow 선언]
 - CH05-L05:58 — `Internal Table` (도입 = CH06-L01) [foreshadow 선언]
 - CH06-L01:21 — `Transparent Table` (도입 = CH07-L01) [foreshadow 선언]

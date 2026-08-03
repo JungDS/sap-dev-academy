@@ -1,5 +1,8 @@
 <!DOCTYPE html>
 <!-- CH04-L03-S02 — §04 AND/OR/NOT/괄호 논리 다이어그램(커스텀 SVG·자체 _autoheight). 중립=var() 토큰, 강조 고정 중간톤.
+     ⚡ 조작: pa_amt 슬라이더 + pa_vip/pa_block 스위치를 켜면 각 조건 칩이 참(초록)/거짓(분홍)으로 물들고
+        아래 판정 보드가 괄호 → NOT → AND 순서대로 실시간 계산을 보여 준다.
+     코드 스트립은 본문과 동일하게 pa_vip·pa_block 선언 포함형(활성화 차단 방지, C001 정합).
      게이팅: 비교·AND/OR/NOT·괄호만. -->
 <html lang="ko">
 <head>
@@ -18,10 +21,47 @@
   .dgm{display:block;width:100%;max-width:440px;height:auto;margin:0 auto;}
   .note{margin:12px 0 0;font-size:.84rem;color:var(--ink-soft);background:color-mix(in srgb,var(--brand) 7%,var(--surface));border:1px solid var(--line);border-radius:10px;padding:9px 12px;line-height:1.7;}
   .note b{color:var(--ink);} .note code{font-family:var(--mono);}
+  /* 조작 패널 */
+  .sim{border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:11px 13px;margin:0 0 12px;}
+  .sim__row{display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
+  .sim__lb{font-size:.83rem;font-weight:800;color:var(--ink);font-family:var(--mono);}
+  .sim__num{width:96px;font-family:var(--mono);font-size:.9rem;font-weight:700;color:var(--ink);background:var(--surface);
+            border:1.5px solid var(--line);border-radius:8px;padding:5px 8px;}
+  .sim__num:focus{outline:none;border-color:var(--brand);}
+  .sim__rng{flex:1 1 150px;min-width:120px;accent-color:var(--brand);}
+  .sim__sw{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+  .sw{display:inline-flex;align-items:center;gap:7px;border:1.4px solid var(--line);border-radius:9px;padding:5px 11px;
+      font-family:var(--mono);font-size:.8rem;font-weight:700;color:var(--ink-soft);cursor:pointer;background:var(--surface);}
+  .sw input{accent-color:var(--brand);margin:0;}
+  .sw:hover{border-color:var(--brand);}
+  .sw b{color:var(--ink);}
+  /* 판정 보드 */
+  .board{margin:12px 0 0;border:1.5px solid var(--line);border-radius:12px;background:var(--surface);padding:11px 13px;}
+  .board__r{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-family:var(--mono);font-size:.82rem;
+            font-weight:700;color:var(--ink);padding:5px 0;border-bottom:1px dashed var(--line);}
+  .board__r:last-child{border-bottom:0;}
+  .board__k{color:var(--ink-soft);font-family:var(--font);font-size:.78rem;font-weight:800;min-width:74px;}
+  .bg{display:inline-block;border-radius:6px;padding:1px 8px;font-size:.76rem;font-weight:800;color:#fff;}
+  .bg-t{background:var(--fill-good);} .bg-f{background:var(--fill-bad);}
+  .board__fin{margin-top:8px;font-family:var(--font);font-size:.88rem;font-weight:800;border-radius:9px;padding:8px 11px;}
+  .fin-t{color:var(--ink);background:color-mix(in srgb,var(--good) 14%,var(--surface));border:1.4px solid color-mix(in srgb,var(--good) 45%,var(--line));}
+  .fin-f{color:var(--ink);background:color-mix(in srgb,var(--bad) 11%,var(--surface));border:1.4px solid color-mix(in srgb,var(--bad) 40%,var(--line));}
+  /* 코드 스트립 — 본문과 동일(선언 포함) */
+  .cs{margin:12px 0 0;border:1.5px solid var(--line);border-radius:11px;overflow:hidden;background:color-mix(in srgb,var(--brand) 4%,var(--surface));}
+  .cs__hd{display:flex;align-items:center;gap:7px;padding:5px 11px;border-bottom:1px solid var(--line);
+          font-size:.72rem;font-weight:800;color:var(--ink-soft);letter-spacing:.04em;}
+  .cs__b{margin:0;padding:9px 12px;font-family:var(--mono);font-size:12.5px;line-height:1.8;color:var(--ink);white-space:pre-wrap;}
+  .cs__b .k{color:var(--brand);font-weight:700;} .cs__b .s{color:var(--accent);} .cs__b .c{color:var(--ink-soft);font-style:italic;}
+  /* SVG 상태 */
+  [data-node]{transition:opacity .18s;}
   .grp-or{fill:color-mix(in srgb,#4263eb 8%,var(--surface));stroke:#4263eb;stroke-width:1.7;}
   .grp-not{fill:color-mix(in srgb,#f08c00 9%,var(--surface));stroke:#f08c00;stroke-width:1.7;}
   .grp-res{fill:color-mix(in srgb,var(--accent) 11%,var(--surface));stroke:var(--accent);stroke-width:2;}
-  .chip{fill:var(--surface);stroke:var(--line);stroke-width:1.4;}
+  .chip{fill:var(--surface);stroke:var(--line);stroke-width:1.4;transition:stroke .18s,fill .18s;}
+  .st-t .chip{stroke:var(--good);stroke-width:2.6;fill:color-mix(in srgb,var(--good) 14%,var(--surface));}
+  .st-f .chip{stroke:var(--bad);stroke-width:2;fill:color-mix(in srgb,var(--bad) 10%,var(--surface));}
+  .st-f{opacity:.62;}
+  .res-f .grp-res{stroke:var(--bad);fill:color-mix(in srgb,var(--bad) 10%,var(--surface));}
   .lbl-or{fill:#4263eb;font-size:11px;font-weight:800;font-family:var(--font);}
   .lbl-not{fill:#d9480f;font-size:11px;font-weight:800;font-family:var(--font);}
   .t{fill:var(--ink);font-size:12.5px;font-weight:700;font-family:var(--font);}
@@ -38,7 +78,20 @@
 <body>
 <div class="wrap">
   <p class="hd">AND · OR · NOT · 괄호 — 여러 조건을 묶는다 <small>(VIP 혜택 판정)</small></p>
-  <p class="lead"><code>( pa_amt &gt; 5000 OR pa_vip = 'X' ) AND NOT pa_block = 'X'</code>. 괄호부터, 그다음 NOT, 마지막 AND 순으로 봅니다.</p>
+  <p class="lead"><code>( pa_amt &gt; 5000 OR pa_vip = 'X' ) AND NOT pa_block = 'X'</code>. 괄호부터, 그다음 NOT, 마지막 AND 순으로 봅니다. <b>세 값을 직접 바꿔</b> 어떻게 판정이 뒤집히는지 확인해 보세요.</p>
+
+  <div class="sim">
+    <div class="sim__row">
+      <label class="sim__lb" for="amt">pa_amt =</label>
+      <input id="amt" class="sim__num" type="number" value="3000" step="500" />
+      <input id="amtr" class="sim__rng" type="range" min="0" max="12000" step="250" value="3000"
+             aria-label="pa_amt 값 슬라이더" />
+    </div>
+    <div class="sim__sw">
+      <label class="sw"><input id="vip" type="checkbox" /> <b>pa_vip</b> = 'X' (VIP 회원)</label>
+      <label class="sw"><input id="blk" type="checkbox" /> <b>pa_block</b> = 'X' (거래 정지)</label>
+    </div>
+  </div>
 
   <svg class="dgm" viewBox="0 0 440 300" xmlns="http://www.w3.org/2000/svg" role="img"
        aria-label="괄호 안 OR(둘 중 하나) 그리고 NOT(차단 아님)이 모두 참이면 VIP 혜택">
@@ -49,11 +102,15 @@
     <!-- 괄호 OR 그룹 -->
     <rect class="grp-or" x="24" y="32" width="392" height="82" rx="12"/>
     <text class="lbl-or" x="40" y="52">괄호 ( ) 먼저 — OR : 둘 중 하나라도 참이면 참</text>
-    <rect class="chip" x="44" y="62" width="150" height="36" rx="8"/>
-    <text class="tc" x="119" y="85" text-anchor="middle">pa_amt &gt; 5000</text>
+    <g data-node="c1">
+      <rect class="chip" x="44" y="62" width="150" height="36" rx="8"/>
+      <text class="tc" x="119" y="85" text-anchor="middle">pa_amt &gt; 5000</text>
+    </g>
     <text class="op" x="212" y="85" text-anchor="middle">OR</text>
-    <rect class="chip" x="232" y="62" width="142" height="36" rx="8"/>
-    <text class="tc" x="303" y="85" text-anchor="middle">pa_vip = 'X'</text>
+    <g data-node="c2">
+      <rect class="chip" x="232" y="62" width="142" height="36" rx="8"/>
+      <text class="tc" x="303" y="85" text-anchor="middle">pa_vip = 'X'</text>
+    </g>
 
     <!-- AND 배지 -->
     <rect class="pill" x="128" y="120" width="184" height="26" rx="13"/>
@@ -62,21 +119,82 @@
     <!-- NOT 그룹 -->
     <rect class="grp-not" x="24" y="152" width="392" height="62" rx="12"/>
     <text class="lbl-not" x="40" y="172">NOT — 뒤집기 : 차단이 '아니어야' 참</text>
-    <rect class="chip" x="44" y="180" width="160" height="28" rx="8"/>
-    <text class="tc" x="124" y="199" text-anchor="middle">pa_block = 'X'</text>
+    <g data-node="c3">
+      <rect class="chip" x="44" y="180" width="160" height="28" rx="8"/>
+      <text class="tc" x="124" y="199" text-anchor="middle">pa_block = 'X'</text>
+    </g>
     <text class="sm" x="218" y="199">→ 거짓이어야 (차단 아님)</text>
 
     <path class="arr" d="M220,214 L220,234" marker-end="url(#ah)"/>
 
     <!-- 결과 -->
-    <rect class="grp-res" x="106" y="236" width="228" height="36" rx="10"/>
-    <text class="t" x="220" y="259" text-anchor="middle">✅ 둘 다 참 → 'VIP 혜택' 출력</text>
+    <g data-res>
+      <rect class="grp-res" x="106" y="236" width="228" height="36" rx="10"/>
+      <text class="t" x="220" y="259" text-anchor="middle" data-restext>✅ 둘 다 참 → 'VIP 혜택' 출력</text>
+    </g>
 
     <text class="sm" x="220" y="292" text-anchor="middle">AND 둘 다 참 · OR 하나라도 참 · NOT 뒤집기</text>
   </svg>
 
+  <div class="board" aria-live="polite">
+    <div class="board__r"><span class="board__k">① 괄호 안</span>
+      <span>pa_amt &gt; 5000</span><span data-b1></span><span>OR</span>
+      <span>pa_vip = 'X'</span><span data-b2></span><span>→</span><span data-bor></span></div>
+    <div class="board__r"><span class="board__k">② NOT</span>
+      <span>pa_block = 'X'</span><span data-b3></span><span>→ 뒤집으면</span><span data-bnot></span></div>
+    <div class="board__r"><span class="board__k">③ AND</span>
+      <span>① 과 ② 가 둘 다 참인가?</span><span data-band></span></div>
+    <p class="board__fin" data-fin>…</p>
+  </div>
+
+  <div class="cs">
+    <div class="cs__hd">ABAP · 위 판정을 그대로 옮긴 코드</div>
+<pre class="cs__b"><span class="k">PARAMETERS</span>: pa_amt   <span class="k">TYPE</span> i,
+            pa_vip   <span class="k">TYPE</span> c <span class="k">LENGTH</span> 1,    <span class="c">" VIP 회원이면 'X'</span>
+            pa_block <span class="k">TYPE</span> c <span class="k">LENGTH</span> 1.    <span class="c">" 거래 정지면 'X'</span>
+
+<span class="k">IF</span> ( pa_amt &gt; 5000 <span class="k">OR</span> pa_vip = <span class="s">'X'</span> ) <span class="k">AND</span> <span class="k">NOT</span> pa_block = <span class="s">'X'</span>.
+  <span class="k">WRITE</span>: / <span class="s">'VIP 혜택'</span>.
+<span class="k">ENDIF</span>.</pre>
+  </div>
+
   <p class="note"><b>섞이면 괄호로</b> 의도를 분명히 합니다. 괄호 안 <code>OR</code>(하나라도)를 먼저 묶고, <code>NOT</code>으로 차단을 뒤집은 뒤, <code>AND</code>로 둘을 모두 요구합니다. 괄호 안쪽도 <code>( pa_amt &gt; 5000 )</code>처럼 <b>앞뒤 공백</b>을 둡니다.</p>
 </div>
+<script>
+(function(){
+  var num=document.getElementById('amt'), rng=document.getElementById('amtr');
+  var vip=document.getElementById('vip'), blk=document.getElementById('blk');
+  var c1=document.querySelector('[data-node="c1"]'), c2=document.querySelector('[data-node="c2"]'),
+      c3=document.querySelector('[data-node="c3"]'), resG=document.querySelector('[data-res]'),
+      resT=document.querySelector('[data-restext]');
+  var b1=document.querySelector('[data-b1]'), b2=document.querySelector('[data-b2]'), b3=document.querySelector('[data-b3]'),
+      bor=document.querySelector('[data-bor]'), bnot=document.querySelector('[data-bnot]'),
+      band=document.querySelector('[data-band]'), fin=document.querySelector('[data-fin]');
+  function badge(el,v){ el.className='bg '+(v?'bg-t':'bg-f'); el.textContent=v?'참':'거짓'; }
+  function state(g,v){ g.classList.toggle('st-t',v); g.classList.toggle('st-f',!v); }
+  function paint(){
+    var v=parseInt(num.value,10); if(isNaN(v)) v=0;
+    var big=v>5000, isVip=vip.checked, isBlk=blk.checked;
+    var or=big||isVip, notBlk=!isBlk, ok=or&&notBlk;
+    state(c1,big); state(c2,isVip);
+    // c3는 "pa_block = 'X'가 참이냐"를 그대로 칠한다 — 참이면 차단이라 결과가 막힌다
+    c3.classList.toggle('st-t',isBlk); c3.classList.toggle('st-f',!isBlk);
+    badge(b1,big); badge(b2,isVip); badge(b3,isBlk);
+    badge(bor,or); badge(bnot,notBlk); badge(band,ok);
+    resG.classList.toggle('res-f',!ok);
+    resT.textContent = ok ? "✅ 둘 다 참 → 'VIP 혜택' 출력" : '⛔ 조건 불충족 → 아무것도 출력 안 함';
+    fin.className='board__fin '+(ok?'fin-t':'fin-f');
+    fin.textContent = ok
+      ? "IF가 참 → WRITE: / 'VIP 혜택'. 이 실행됩니다."
+      : (isBlk ? "거래 정지(pa_block = 'X')라 NOT이 거짓 → AND가 깨져 IF 안으로 못 들어갑니다."
+               : "금액도 5000 이하이고 VIP도 아니라 괄호 안 OR이 거짓 → IF 안으로 못 들어갑니다.");
+  }
+  num.addEventListener('input',function(){ var v=parseInt(num.value,10); if(!isNaN(v)) rng.value=Math.max(0,Math.min(12000,v)); paint(); });
+  rng.addEventListener('input',function(){ num.value=rng.value; paint(); });
+  vip.addEventListener('change',paint); blk.addEventListener('change',paint);
+  paint();
+})();
+</script>
 <script src="../_engine/_autoheight.js" defer></script>
 </body>
 </html>

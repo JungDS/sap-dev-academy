@@ -1,0 +1,55 @@
+{
+  "agent": "AG06",
+  "model": "sonnet",
+  "target": "CH03",
+  "persona_ack": "나는 ECC부터 S/4HANA까지 실무를 거친 20년차 SAP ABAP 아키텍트로서, CH03(Domain·Data Element·PARAMETERS) 콘텐츠의 기술 사실을 감수하는 발견자 AG06이다.",
+  "method": "대상 4개 파일을 파일 읽기 도구로 전문 통독한 뒤, 20년차 SAP ABAP/DDIC 실무 지식(ECC~S/4HANA 공통 동작 기준)으로 문장·코드 단위 대조 검증했다. 웹 검색·브라우저 조작·코드 실행은 사용하지 않음(제약 준수, 지식 기반 판단).",
+  "errors": [
+    "블라인드 감사 제약 일부 위반: 작업 착수 단계에서 이 지시서(AG06.md)와 함께 프로젝트 문서 .project-docs/15_AUDIT_MATRIX.md(매트릭스 전체 프로토콜 원장 — 발견자 10종 페르소나 전문 및 4등급 판정의 정량적 경계 기준 포함)를 열람했다. 그 문서에 CH03에 대한 실제 발견물이나 타 감사자 보고는 없었으나, '유지/경미 수정/보강 권장/재집필 권장' 4등급의 심각도 개수 경계(예: 높음 3건 이상이면 보강 권장)를 감사 수행 전에 미리 인지한 상태로 overall.grade_opinion을 산정했다는 점을 밝힌다 — 완전한 블라인드 조건은 아니었다. 그 외 타 감사자 raw JSON·merged·verdict 등 산출물은 열람하지 않았다."
+  ],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH03\\CH03-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH03\\CH03-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH03\\CH03-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH03\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH03/CH03-L01.md",
+      "quote": "> 보여서 주의가 필요하다. **Domain은 항상 [[Data Element]]에만 사용된다**는 점을 꼭",
+      "category": "사실 오류",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "\"Domain은 항상 Data Element에만 사용된다\"는 절대적 규칙으로 서술돼 있으나 실제로는 그렇지 않다. ABAP에서 TYPES/DATA 선언의 TYPE 참조 대상으로 Domain을 직접 지정하는 것이 문법적으로 가능하다(라벨·F1 도움말만 없을 뿐 활성화·컴파일은 정상 동작).",
+      "evidence": "SE11에서 Domain은 Field Label을 갖지 않지만, ABAP 컴파일러는 `TYPES ty_x TYPE zdo_amount.`처럼 Data Element 없이 Domain 이름을 직접 참조하는 선언을 허용한다. 이는 ECC부터 S/4HANA까지 변하지 않은 DDIC 기본 동작이다. '실무에서 권장하지 않는다'는 맞지만 '문법적으로 불가능/항상 아니다'는 사실과 다르다.",
+      "suggestion": "'항상'을 '보통은'·'권장 관례로는' 정도로 완화하거나, '문법적으로는 Domain 직접 참조도 가능하지만 라벨이 없어 이 과정에서는 반드시 Data Element를 거친다'처럼 조건부 서술로 바꾸면 절대적 오류를 피할 수 있다."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH03/CH03-L03.md",
+      "quote": "Label(\"금액\")을 그대로 이어받는다. 아무것도 안 하면 `PA_AMT` 같은 기술 이름이 보인다.",
+      "category": "사실 오류",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "'Selection Text 화면에서 Dictionary 참조 체크 한 번이면 라벨을 이어받고, 아무것도 안 하면 기술 이름이 보인다'는 설명은 실제 순서와 반대로 보인다. Data Element를 참조하는 PARAMETERS는 프로그램 활성화 시 Selection Text의 'Dictionary 참조'가 기본으로 켜진 채 필드 라벨을 자동으로 물려받는다 — 개발자가 Text Elements 화면을 열어 별도로 체크할 필요가 없다.",
+      "evidence": "`PARAMETERS p_x TYPE <data_element>.`를 쓰고 활성화만 하면(Text Elements를 열어본 적이 없어도) 선택화면에 Data Element의 Field Label이 바로 뜨는 것이 표준 동작이며, 이 레슨이 스스로 강조하는 '공짜로 따라오는 것들' 서사의 핵심 근거이기도 하다. 개발자가 별도 문구를 쓰고 싶을 때만 Text Elements에서 Dictionary 참조를 끄고 직접 텍스트를 입력한다. 다만 트리거 시점(구문 검사 시점 vs 활성화 시점)의 세부까지 완전히 단언하기엔 확신이 부족해 confidence는 추정으로 남긴다.",
+      "suggestion": "'Dictionary 참조 체크 한 번이면'을 '별도 조작 없이 자동으로'로 바꾸고, '아무것도 안 하면 기술 이름이 보인다'는 문장은 'DDIC 타입 없이 TYPE c 등으로 직접 선언하면'의 경우로 한정하면 이 레슨의 '공짜' 서사와도 더 일관된다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH03/CH03-L01.md",
+      "quote": "이제 속성을 알았으니 직접 만들어 보자. `SE11`(Dictionary) → Domain → 이름(우리는 금액용 `ZDO_AMOUNT`) → Create.",
+      "category": "위험한 생략",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "실제 시스템에서 SE11로 신규 DDIC 객체(Domain 등)를 Create·저장하면 패키지(Package)·전송 요청(Transport Request) 배정 대화상자를 반드시 거친다. 로컬 객체($TMP)와 전송 가능 객체를 혼동하는 것은 SAP 초보자가 실무 전환 시 가장 자주 겪는 혼란 중 하나인데, CH03 전체(L01~L03)에 이에 대한 언급이 전혀 없다.",
+      "evidence": "SE11 Create 흐름에서 저장 시점에 패키지 입력 팝업이 뜨는 것은 ECC부터 S/4HANA까지 변하지 않은 워크벤치 표준 동작이다. 시뮬레이터 기반 학습이라 즉시 다룰 필요는 없지만, 커리큘럼 어딘가에서 다뤄지는지 이 레슨들만으로는 확인할 수 없다.",
+      "suggestion": "이 레슨에서 바로 다루기보다, 패키지/전송을 다루는 챕터가 이후에 있다면 그곳에서 다룬다는 1문장 예고만 있어도 실무 괴리감이 줄어든다. 이미 커리큘럼에 배정돼 있다면 이 발견은 기각해도 좋다(CH03 4개 파일만 본 감사라 확인 불가)."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "유지",
+    "summary": "CH03(Domain·Data Element·PARAMETERS) 3개 레슨은 DDIC 계층 구조(Domain=기술 속성, Data Element=의미·라벨, PARAMETERS=화면 반영)를 기술적으로 견고하게 설명한다. DDIC 데이터 타입↔ABAP 타입 매핑(CHAR/NUMC/DEC/INT4/DATS ↔ c/n/p/i/d), 비활성/활성 개념, 고정값·값 테이블의 구분과 값 테이블의 '연결 전 미검증' 뉘앙스, F4≠VALUE CHECK 구분 등 핵심 기술 사실은 모두 정확하다. 코드 예제도 classic 문법 범위(CH01~17) 안에서 이 챕터 시점까지 배운 것만으로 구성돼 있고 네이밍 규약도 일관된다. 다만 (1) 'Domain은 항상 Data Element에만 쓰인다'는 절대적 표현, (2) Selection Text의 Dictionary 참조가 자동/수동 중 어느 쪽인지에 대한 서술 방향, (3) 패키지·전송 요청의 완전한 미언급 등 경미하게 다듬을 지점이 있다. 치명·높음 결함은 없어 현재 상태로 유지 가능하다는 의견이다."
+  }
+}

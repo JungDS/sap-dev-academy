@@ -1,0 +1,130 @@
+{
+  "agent": "AG02",
+  "model": "sonnet",
+  "target": "CH04",
+  "persona_ack": "나는 준호다. 배운 코드는 그 자리에서 직접 눌러봐야 직성이 풀린다. CH04의 7개 레슨과 18개 체험 위젯을 본문과 하나씩 대조하며, 위젯이 실제로 실행되는지 브라우저에서 직접 조작해 확인했다.",
+  "method": "1) content/abap/CH04/*.md 7개 레슨 + _chapter.md, embeds/abap/CH04-*.html 18개 위젯 소스, embeds/_engine/step-debugger.js 엔진을 전문 정독. 2) 하네스가 이미 기동한 로컬 서버(http://localhost:8144, 기동/종료 안 함)에 Claude Browser로 접속해 대표 위젯을 실제 렌더링: get_page_text·read_console_messages로 콘솔 오류 0 확인. 3) javascript_tool로 위젯 내부 로직을 직접 실행 — CH04-L04-S01(case-branch-sim)에서 'Z·그 외' 칩을 dispatch-click해 실행 결과가 '등급 없음'으로 뜨는 것을 실측(참고: computer 도구의 좌표 클릭이 이 위젯에서 1회 반응하지 않아 javascript_tool의 직접 click()으로 대체 검증함 — headless 배경 탭이라 screenshot API 자체가 'not compositing frames' 오류로 실패했기 때문, DOM 측정으로 우회). CH04-L01-S01 step-debugger를 실제 시작·스텝 실행해 산술 4단계(7+3·2**10·DIV·MOD)만 존재하고 날짜 산술 코드가 전무함을 codeText로 확인. CH04-L07-S02 fill-blank는 정답 입력 시 및 대소문자 변형 입력 시 모두 정상 채점됨을 실측(결함 아님, 오히려 ABAP 대소문자 무관 특성을 잘 반영). 4) CH04-L02-S01은 렌더된 페이지 텍스트로 &&·REPLACE·CONDENSE 미포함을 재확인. 5) 순수 정적 SVG 위젯(L03 S01~S03, L04 S03)은 소스=렌더 결과가 결정적이라 정독만으로 충분해 소스 검증에 그침. 웹 검색·외부 네트워크 미사용.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L07.md",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH04-L01-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH04-L02-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH04-L03-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH04-L03-S02.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH04-L03-S03.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH04-L04-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH04-L04-S02.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH04-L04-S03.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH04-L04-S04.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH04-L05-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH04-L05-S02.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH04-L05-S03.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH04-L05-S04.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH04-L06-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH04-L07-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH04-L07-S02.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH04-L07-S03.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\step-debugger.js"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH04/CH04-L01.md",
+      "quote": "gv_date = gv_date + 1.      \" 보통 산술이면 '20260132'를 기대하지만,",
+      "category": "체험 공백",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "레슨 제목에 '날짜 산술'이 명시될 만큼 비중 있는 주제인데, 이 레슨의 유일한 위젯(CH04-L01-S01)은 날짜 산술을 전혀 다루지 않는다. 대입/CLEAR·우선순위 괄호·정수 대 Packed 나눗셈·ADD/SUBTRACT/MULTIPLY/DIVIDE도 마찬가지로 빠져 있다.",
+      "evidence": "CH04-L01-S01.html의 stepper-config를 실제로 시작·스텝 실행해 codeText를 읽어보면 'DATA gv_result...gv_result=7+3...2**10...gv_q=17 DIV 5...gv_r=17 MOD 5' 네 단계만 존재한다(codeHasDate:false로 실측). 반면 본문은 '20260131'+1이 '20260132'가 아니라 달력 규칙에 따라 '20260201'이 되는, 입문자에게 가장 놀랍고 직접 눌러보고 싶을 대목을 gv_start/gv_due/gv_days 예제까지 포함해 별도 섹션으로 다룬다. R2(코드=체험 필수) 기준으로 보면 이 레슨은 7개 남짓한 개별 코드 블록 중 2개(사칙연산·DIV/MOD)만 체험되고 나머지는 읽기만 하고 지나간다.",
+      "suggestion": "CH04-L01-S01의 스텝 목록에 날짜 산술(gv_date+1의 월말 롤오버, gv_due-gv_start) 트레이스를 추가하거나, 날짜 산술 전용의 별도 스텝 디버거 위젯을 신설한다."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH04/CH04-L02.md",
+      "quote": "REPLACE 'ABAP' IN gv_text WITH 'HANA'.   \" gv_text = 'SAP HANA'",
+      "category": "체험 공백",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "본문은 CONCATENATE·&&·SPLIT·strlen·FIND·REPLACE·CONDENSE+offset을 모두 실제 코드 블록으로 보여주지만, 유일한 위젯(CH04-L02-S01)의 빈칸 문제는 CONCATENATE·SPLIT·strlen·FIND 네 가지만 다룬다.",
+      "evidence": "http://localhost:8144/embeds/abap/CH04-L02-S01.html을 렌더링해 페이지 텍스트를 읽으면 '잇기(CONCATENATE)·쪼개기(SPLIT)·길이(strlen)·찾기(FIND)' 네 빈칸뿐이고 &&·REPLACE·CONDENSE 문항은 없다(콘솔 오류 0). 특히 REPLACE는 FIND 바로 다음 줄, 같은 코드 블록 안에 있는데도 빈칸 대상에서 빠졌다.",
+      "suggestion": "빈칸 문제에 REPLACE(또는 CONDENSE·&&) 항목을 1~2개 추가해 본문 코드 블록과의 커버리지를 맞춘다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH04/CH04-L03.md",
+      "quote": "boolean 타입 대신 `abap_bool` (중요)",
+      "category": "체험 공백",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "'abap_bool·abap_true/abap_false·XSDBOOL' 섹션은 소제목에 '(중요)'라고 명시하고 실행 가능한 코드를 2개(선언+대입, XSDBOOL 사용)나 제시하지만, 이 섹션에는 물론이고 레슨 전체에서 이 개념을 다루는 위젯이 하나도 없다.",
+      "evidence": "CH04-L03의 대상 임베드는 S01(IF/ELSEIF/ELSE)·S02(AND/OR/NOT)·S03(IS INITIAL) 세 개뿐이며, 모두 abap_bool 섹션보다 앞선 섹션에 배치되어 있다. abap_bool·abap_true·xsdbool 문자열은 세 위젯 소스 어디에도 등장하지 않는다. R2(코드 1줄이라도 있으면 체험 필수)를 이 섹션만 놓치고 있다.",
+      "suggestion": "abap_bool 섹션 바로 뒤에 'pa_amt 값을 바꾸면 xsdbool( pa_amt > 1000 )의 결과(abap_true/false)가 어떻게 변하는지' 확인하는 소형 위젯을 추가한다."
+    },
+    {
+      "seq": 4,
+      "file": "embeds/abap/CH04-L04-S02.html",
+      "quote": "<span class=\"tok-str\">'등급 없음'</span>",
+      "category": "불일치",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "본문 CASE 예제의 WHEN OTHERS는 'WRITE: / '확인 필요'.'인데, 이 위젯의 오른쪽 코드 카드는 같은 자리에서 '등급 없음'을 출력한다. 이 파일의 작성자 주석 자체가 '우=그 ABAP 코드(레슨과 동일)'라고 명시하는데도 실제로는 동일하지 않다.",
+      "evidence": "http://localhost:8144/embeds/abap/CH04-L04-S02.html을 렌더링해 get_page_text로 읽으면 'WHEN OTHERS. WRITE: / '등급 없음'.'이 그대로 출력된다(콘솔 오류 0). 반면 CH04-L04.md 원문은 'WHEN OTHERS.\\n    WRITE: / '확인 필요'.'다. 학습자가 본문을 읽고 위젯을 보면 같은 코드인데 출력 문구가 다른 것을 발견하게 된다.",
+      "suggestion": "S02의 WHEN OTHERS 출력 텍스트를 본문과 동일하게 '확인 필요'로 수정한다."
+    },
+    {
+      "seq": 5,
+      "file": "embeds/abap/CH04-L04-S01.html",
+      "quote": "out:'등급 없음'",
+      "category": "불일치",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "같은 WHEN OTHERS 문구 불일치가 이 시뮬레이터(case-branch-sim)에도 동일하게 있다 — '기본' variant의 OTHERS 출력이 본문의 '확인 필요' 대신 '등급 없음'이다.",
+      "evidence": "실제 위젯을 브라우저에서 열어 'Z · 그 외' 칩을 클릭(javascript_tool로 직접 dispatch)하니 '실행 결과' 영역에 '등급 없음'이 표시됨을 실측했다. CH04-L04.md의 실제 WHEN OTHERS 출력은 '확인 필요'다. S02(seq4)와 동일한 원인으로 보이며, 두 파일을 함께 고치지 않으면 한쪽만 수정돼도 다른 쪽에서 같은 혼란이 재발한다.",
+      "suggestion": "S01의 CASE_CFG 기본 variant OTHERS 출력도 '확인 필요'로 통일한다(S02와 동시 수정 권장)."
+    },
+    {
+      "seq": 6,
+      "file": "embeds/abap/CH04-L04-S04.html",
+      "quote": "'D'와 같다면 '미흡'을 출력한다",
+      "category": "불일치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "이 위젯은 IF와 CASE를 '말로 읽어' 비교하며 'A·B·C·D 네 등급 + 그 외'를 예시로 쓰지만, 같은 레슨의 도입부(\"등급이 A면 …, B면 …, C면 …, 그 외엔 …\")와 실제 CASE 코드는 모두 'A·B·C 세 등급 + OTHERS'만 쓴다. 등급 개수가 위젯과 본문에서 어긋난다.",
+      "evidence": "CH04-L04.md 도입부 문장(\"등급이 A면 …, B면 …, C면 …, 그 외엔 …\")과 실제 CASE 코드(WHEN 'A'/'B'/'C'/OTHERS, D 없음)를 대조하면 D 등급이 어디에도 없다. S04는 같은 레슨 안에서 갑자기 D를 등장시켜 '나란히 비교'라는 취지와 달리 서로 다른 예제를 비교하는 셈이 된다.",
+      "suggestion": "S04의 IF 예시도 본문과 동일하게 A/B/C/그 외 3단계로 맞추거나, 확장 예시임을 명시하는 문구를 추가한다."
+    },
+    {
+      "seq": 7,
+      "file": "embeds/abap/CH04-L06-S01.html",
+      "quote": "<b>다음 ⏭</b> = F5(한 줄 실행).",
+      "category": "헛체험",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "이 위젯은 'WATCH POINT — 값이 바뀌는 순간 잡기' 섹션(변수가 바뀌면 그 줄에서 자동으로 멈추는 기능을 설명) 바로 뒤에 배치되어 있지만, 실제로는 WATCH POINT를 전혀 구현하지 않고 몇 섹션 앞에서 이미 배운 F5 한 줄씩 실행을 구구단 예제로 재탕한다. '해보나 마나'인 체험이다.",
+      "evidence": "embeds/_engine/step-debugger.js 엔진 전체를 정독한 결과 '시작→다음 한 줄씩'만 지원할 뿐 특정 변수를 지정해 두면 그 값이 바뀌는 순간 자동으로 멈추는 watch-point 트리거 로직이 전혀 없다. 위젯 자체의 리드 문구도 'F5(한 줄 실행)'이라고만 밝힌다. 실제 브라우저에서 시작→스텝 실행까지 실행해 봐도 콘솔 오류 없이 정상 동작하지만, 하는 일은 '한 줄씩 실행'뿐이며 WATCH POINT라는 이름값에 해당하는 자동 정지 시연이 레슨 전체에 하나도 없다.",
+      "suggestion": "WATCH POINT 섹션 뒤에는 '감시할 변수를 지정하고 계속 실행하면 그 값이 바뀌는 줄에서 자동으로 멈춘다'는 동작을 흉내 낸 위젯을 새로 만들거나, 이 위젯을 F5 복습용으로 재배치하고 캡션에서 WATCH POINT 전용 체험이 아님을 명시한다."
+    },
+    {
+      "seq": 8,
+      "file": "content/abap/CH04/CH04-L07.md",
+      "quote": "단도 1~9로 바꾸면 **반복 안에 반복**(중첩 [[DO]])이 된다.",
+      "category": "불일치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "이 문장은 단(gv_dan) 범위를 '1~9'라고 서술하지만, 같은 섹션의 소제목은 '전체(2~9단) 출력'이고 실제 위젯(S02)도 DO 8 TIMES로 2~9단만 구현한다(1단은 이미 1단계에서 다룸). 서술과 소제목·위젯 구현이 서로 다른 범위를 말한다.",
+      "evidence": "http://localhost:8144/embeds/abap/CH04-L07-S02.html을 렌더링하면 코드 주석이 그대로 '  gv_dan = ___ + 1.   \" 2~9단'으로 표시된다(DO 8 TIMES → sy-index 1~8 → gv_dan 2~9). 소제목 '2단계 — 전체(2~9단) 출력'과는 일치하지만, 바로 아래 본문 문장의 '단도 1~9로 바꾸면'과는 어긋난다.",
+      "suggestion": "본문 문장을 '단도 2~9로 바꾸면'으로 소제목·위젯과 통일한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "보강 권장",
+    "summary": "CH04은 흐름 자체는 탄탄하다 — L03(IF)·L05(DO/WHILE)의 위젯은 본문 코드·변수명·시나리오가 정확히 일치했고, L07의 세 단계 구구단 빈칸도 로직·범위·채점(대소문자 무관 포함)이 실제 조작 검증에서 모두 정상이었다. 다만 반복되는 패턴이 하나 보인다: 레슨이 여러 하위 개념을 코드로 보여줄 때 위젯은 그중 일부만 골라 체험시키고 나머지(L01의 날짜 산술, L02의 REPLACE/CONDENSE/&&, L03의 abap_bool·XSDBOOL)는 읽기로만 남긴다. 특히 abap_bool 섹션은 '(중요)'라 표시해 놓고 체험이 전혀 없다. 더 확실한 결함은 CH04-L04의 CASE 위젯 두 개(S01·S02)가 WHEN OTHERS 출력을 본문의 '확인 필요' 대신 '등급 없음'으로 잘못 표시하는 것(실제 클릭·렌더로 재현 확인)과, CH04-L06-S01이 'WATCH POINT' 섹션 바로 뒤에서 정작 WATCH POINT를 구현하지 않고 이미 배운 F5 스텝퍼를 구구단으로 재탕하는 것이다. 나머지 두 건(L04-S04 등급 개수, L07 1~9/2~9 서술)은 영향이 작은 문구 수준 불일치다."
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "agent": "AG05",
+  "model": "sonnet",
+  "target": "CH03",
+  "persona_ack": "20년차 학습 교재·코스 설계 전문가 페르소나(AG05)로서 CH03(Domain·Data Element·PARAMETERS)을 챕터 구성·섹션 흐름·복습/예습 장치·불편-해결 서사·인지 부하 5축 교수설계 관점에서만 감사했다. ABAP/DDIC 기술적 사실 정확성은 이 페르소나의 범위 밖으로 두었다.",
+  "method": "Read 도구로 대상 4개 파일(_chapter.md, CH03-L01~L03.md) 전문을 직접 읽고, 파일 간 텍스트를 대조해 섹션 헤딩 유무·흐름 순서(왜→무엇→어떻게→실수→정리)·복습/예고 문장·front-matter(introduces/prereq/foreshadow/prevRel)를 정적으로 비교했다. 빌드 실행이나 브라우저 렌더링은 이 축(교수설계)에는 불필요해 사용하지 않았다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH03\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH03\\CH03-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH03\\CH03-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH03\\CH03-L03.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH03\\CH03-L02.md",
+      "quote": "전역으로 정의는 했다. 그런데 이 수고가 **어디서 빛을 보나?** 바로 화면에서다.",
+      "category": "섹션 흐름 — 정리(요약) 단계 누락",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "CH03-L01은 '## 정리' 섹션에서 핵심 사실 4개를 불릿으로 재정리하는데, CH03-L02는 '흔한 실수와 점검' 다음 곧장 다음 레슨 예고 문단으로 넘어가 별도의 '정리' 단계가 없다.",
+      "evidence": "L01은 '## 정리' 헤딩 아래 4개 불릿(타입 전역화→DDIC/Domain, Domain=기술 속성, CHAR↔c 대응, 활성화 필요)으로 요약한다. 반면 L02는 '## 흔한 실수와 점검' 섹션 이후 정리 헤딩 없이 곧바로 인용한 전환 문단으로 끝난다. 챕터가 스스로 세운 '왜→무엇→어떻게→실수→정리' 템플릿과 어긋나며, 셸이 만드는 '이 레슨의 여정' 스텝퍼에도 L01만 정리 스텝이 노출되고 L02는 빠지는 비일관성이 생긴다.",
+      "suggestion": "'흔한 실수와 점검'과 마무리 전환 문단 사이에 '## 정리' 섹션을 추가해 Domain vs Data Element 역할 차이·1:N 재사용·Parameter ID(존재만) 등 핵심 3~4가지를 불릿으로 재정리."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH03\\CH03-L03.md",
+      "quote": "전역 정의(Domain·Data Element)의 가치를 화면에서 확인했다.",
+      "category": "섹션 흐름 — 정리(요약) 단계 누락",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "CH03-L03도 L01과 달리 '흔한 실수와 점검' 이후 별도 '## 정리' 섹션 없이 곧바로 CH04 예고 문단으로 마무리된다.",
+      "evidence": "L03은 PARAMETERS 기본 문법에 더해 OBLIGATORY/DEFAULT/LOWER CASE/VALUE CHECK 4개 옵션과 F4≠검증 구분까지 다뤄 L01 못지않게 정보량이 많은데도, '## 흔한 실수와 점검' 다음 헤딩 없이 인용한 전환 문단으로 바로 넘어간다. 챕터 내 3개 레슨 중 L01만 명시적 정리 불릿을 갖고 있어 일관성이 떨어진다.",
+      "suggestion": "'흔한 실수와 점검' 다음에 '## 정리'를 추가해 PARAMETERS 기본형·라벨/F4 자동 적용 조건·VALUE CHECK 필요성을 3~4개 불릿으로 재정리한 뒤 CH04 예고 문단을 잇는다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH03\\CH03-L03.md",
+      "quote": "## 유용한 PARAMETERS 옵션",
+      "category": "인지 부하 — 옵션 밀도",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "'유용한 PARAMETERS 옵션' 섹션이 OBLIGATORY·DEFAULT·LOWER CASE·VALUE CHECK 4개를 한 코드블록에 동시 제시해, 앞선 라벨/F4 자동화·VALUE CHECK 구분 설명과 합쳐 이 레슨의 신규 개념 밀도가 다소 높다.",
+      "evidence": "front-matter의 introduces 배열이 PARAMETERS·OBLIGATORY·DEFAULT·LOWER CASE·VALUE CHECK·선택화면까지 6개 항목이다. 다만 4개 옵션은 각각 한 줄 코드+주석으로 분리 제시되고 바로 뒤 시뮬레이터에서 토글 실습이 가능해, 완전히 새로운 부담이라기보다 참고표에 가깝다고 볼 여지도 있다 — 그래서 severity는 낮음, confidence는 추정으로 둔다. 명확히 '학습 효과를 해치는' 수준이라고 단정할 근거는 부족하다.",
+      "suggestion": "확신이 있다면 OBLIGATORY/DEFAULT/LOWER CASE(경미)와 VALUE CHECK(F4와 구분 필요해 더 무거움)를 시각적으로 분리하거나, VALUE CHECK 비중을 '흔한 실수' 섹션과 더 밀착시켜 명확히 하는 것을 고려."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH03은 '로컬 타입의 한계'라는 실제 불편에서 출발해 Domain(기술)→Data Element(의미·라벨)→PARAMETERS(화면 보상)로 이어지는 3레슨 구성이 논리적이고, 각 레슨의 왜→무엇→어떻게→실수 흐름과 이전 개념 복습(Chapter 2 TYPES·DATA gv_x TYPE c 연결 등)·다음 레슨 1~2문장 예고가 대체로 잘 지켜진다. prevRel을 L01·L02는 pain-solution, L03은 next로 정확히 구분해 L03의 '보상' 프레이밍을 억지 불편으로 만들지 않은 점도 좋다. New Syntax/New Open SQL 등 후속 문법 노출도 없어 R6/R15 게이팅과 충돌하지 않는다. 다만 L01에만 있는 명시적 '정리' 섹션이 L02·L03에는 없어 챕터 내 일관성이 떨어지고(발견 1, 2), L03의 옵션 4종 밀집은 인지 부하 관점에서 다소 조밀한 편이다(발견 3, 추정). 구조적 결함이라기보다 경미한 보완으로 충분한 수준이다."
+  }
+}

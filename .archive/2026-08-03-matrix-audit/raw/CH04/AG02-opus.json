@@ -1,0 +1,145 @@
+{
+  "agent": "AG02",
+  "model": "opus",
+  "target": "CH04",
+  "persona_ack": "나는 '준호' — 배운 건 그 자리에서 직접 해봐야 직성이 풀리는 실습형 학습자다. CH04의 본문 코드·설명과 체험 위젯 17종을 대조해 체험 공백·불일치·헛체험·위젯 결함만 발견하고, 수정은 하지 않았다.",
+  "method": "브라우저 실조작 + 렌더 DOM 측정(가장 강한 수단). 하네스가 띄운 http://localhost:8143 에 MCP 브라우저 탭으로 접속해 CH04 임베드 17개를 전부 실제 로드(모두 HTTP 200·렌더 확인). ① 스텝 디버거 3종(L01-S01·L05-S01·L06-S01)은 '시작→다음' 버튼을 끝까지 클릭해 회차 카운터·활성 줄·변수 모니터 값을 매 스텝 DOM에서 측정(L01-S01 4/4 gv_result=1024·gv_q=3·gv_r=2, L05-S01 13/13 gv_sum=15, L06-S01 11/11). ② fill-blank 4종(L02-S01·L07-S01/S02/S03)은 정답·소문자·공백·오답 변형을 실제 입력하고 채점하기를 눌러 판정 문자열을 확인(norm=trim+소문자라 대소문자·공백 허용됨을 실측). ③ case-branch-sim(L04-S01)은 런타임 생성 버튼 6개를 값별로 클릭해 점등 분기·실행 결과를 측정(변형1에서 'Z'→OTHERS→'등급 없음' 확인). ④ mermaid 5종은 iframe 렌더 후 svg·nodeLabel 존재를 측정해 정상 렌더 확인(_vendor/mermaid.min.js 폴백 파일 실존 확인). ⑤ L03-S01/S02/S03·L04-S04는 button/input 개수를 파싱해 조작 요소 0개임을 수치로 확인. ⑥ 콘솔/onerror 수집 결과 오류 0. ⑦ 모든 finding의 quote는 서버로 원문을 fetch해 indexOf 완전일치로 앵커 검증(11/11 통과). 엔진 소스(fill-blank.js·step-debugger.js·case-branch-sim.js)도 정독해 채점·라인 인덱싱 로직을 확인했다. Playwright/헤드리스 CDP는 사용하지 않았고 서버·프로세스는 기동/종료하지 않았다.",
+  "errors": [
+    "임베드 17개를 한 번에 iframe으로 순회하며 콘솔 오류를 수집하려던 스크립트가 30초 도구 제한으로 1회 타임아웃됨. 이후 배치를 쪼개고 위젯별 개별 로드·조작으로 대체 검증했으며, 최종적으로 17개 전부 렌더·동작을 확인했다(수집된 런타임 오류 0)."
+  ],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L07.md",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH04-L01-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH04-L02-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH04-L03-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH04-L03-S02.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH04-L03-S03.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH04-L04-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH04-L04-S02.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH04-L04-S03.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH04-L04-S04.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH04-L05-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH04-L05-S02.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH04-L05-S03.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH04-L05-S04.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH04-L06-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH04-L07-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH04-L07-S02.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH04-L07-S03.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\fill-blank.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\step-debugger.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\case-branch-sim.js"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH04-L04-S01.html",
+      "quote": "{ keys:['*OTHERS*'], code:[\"WHEN OTHERS.\",\"  WRITE: / '등급 없음'.\"], out:'등급 없음' }",
+      "category": "불일치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "같은 CASE 프로그램인데 WHEN OTHERS의 출력 문자열이 본문과 위젯에서 다르다. 본문은 '확인 필요', 위젯 S01·S02는 '등급 없음'이다. 게다가 같은 페이지의 S04는 '확인 필요'라서 한 레슨 안에서 두 값이 동시에 돌아다닌다.",
+      "evidence": "본문 CH04-L04.md의 CASE 예제는 \"  WHEN OTHERS.\\n    WRITE: / '확인 필요'.\"로 끝난다. 브라우저에서 L04-S01을 실제 조작해 'Z'(그 외)를 고르니 점등 분기와 실행 결과가 모두 '등급 없음'으로 측정됐고, 코드 패널 텍스트도 \"WHEN OTHERS. WRITE: / '등급 없음'.\"이었다. L04-S02의 코드 패널도 동일하게 '등급 없음'인데, 정작 그 파일 상단 주석은 \"우=그 ABAP 코드(레슨과 동일…)\"라고 적어 두어 본문과 같다고 주장한다. 반면 L04-S04는 \"<p><b>하지만 그 외라면</b> '확인 필요'를 출력한다.</p>\"로 본문을 따른다. 본문 코드를 그대로 쳐서 돌려 본 학습자는 위젯과 출력이 달라 자기가 틀린 줄 안다.",
+      "suggestion": "네 곳(본문·S01·S02·S04) 중 하나로 문자열을 통일한다. 본문과 S04가 이미 '확인 필요'이므로 S01의 cfg out/code와 S02의 코드 패널을 '확인 필요'로 맞추는 편이 변경량이 가장 적다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L03.md",
+      "quote": "gv_flag = xsdbool( pa_amt > 1000 ).   \" 큰 금액이면 'X'",
+      "category": "체험 공백",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "IF와 조건식 레슨은 CH04에서 가장 핵심적인 판단 개념을 다루고 코드 블록도 5개나 되는데, 붙어 있는 임베드 3개가 전부 정적 SVG 그림이라 이 레슨에는 직접 만져 볼 체험이 하나도 없다. 특히 본문이 \"(중요)\"라고 못 박은 abap_bool·xsdbool 절은 코드가 있는데 임베드 자체가 없다.",
+      "evidence": "브라우저에서 CH04-L03-S01/S02/S03의 DOM을 측정하니 button 0개·input 0개·details 0개였고 로드되는 스크립트도 _autoheight.js 하나뿐이었다(조작 요소가 물리적으로 존재하지 않는다). 세 임베드는 각각 IF 흐름도·논리 묶기 그림·IS INITIAL 대비 카드로, 읽을 수는 있어도 값을 넣어 분기를 따라가 볼 수는 없다. 반면 같은 챕터의 L04-S01은 값을 골라 분기가 점등되는 시뮬이 실제로 동작한다 — 즉 도구가 없어서가 아니라 IF 레슨에만 안 붙은 것이다. abap_bool 절(위 quote 포함)에는 ::embed:: 지시가 아예 없다.",
+      "suggestion": "이미 있는 case-branch-sim 계열 엔진을 재사용해 pa_amt 값을 직접 넣으면 IF/ELSEIF/ELSE 중 어느 가지가 켜지는지 보여 주는 체험을 L03에 하나 붙이고, abap_bool 절에는 조건 결과가 'X'/공백으로 담기는 걸 눈으로 보는 체험(또는 최소한 xsdbool 결과 토글)을 추가한다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L01.md",
+      "quote": "지금까지의 **사칙연산·제곱·`DIV`·`MOD`**가 한 줄씩 실행되며 변수 값이 어떻게",
+      "category": "불일치",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "임베드를 소개하는 본문 문장은 '사칙연산'을 따라가 본다고 예고하지만, 실제 위젯은 덧셈 하나(7 + 3)와 제곱·DIV·MOD만 보여 준다. 뺄셈·곱셈·나눗셈은 한 스텝도 없고, 이 레슨에서 가장 중요한 함정인 정수 나눗셈 반올림(10 / 4 → 3 vs 2.50)과 ADD/SUBTRACT/MULTIPLY/DIVIDE 문장형, 날짜 산술은 체험 밖에 남는다.",
+      "evidence": "브라우저에서 L01-S01을 끝까지 조작한 결과 총 스텝은 4개뿐이었고(카운터 4/4), 실행된 줄은 \"gv_result = 7 + 3.\"·\"gv_result = 2 ** 10.\"·\"gv_q = 17 DIV 5.\"·\"gv_r = 17 MOD 5.\"였다(변수 모니터 최종값 gv_result=1024·gv_q=3·gv_r=2). 본문에는 위젯 뒤로도 ADD 10 TO gv_n 계열 4줄과 날짜 산술 2블록('20260131' + 1 → '20260201')이 이어지는데, 하필 이 둘이 '보통 산술과 다르게 동작하는' 대목이라 한 줄씩 실행해 보는 가치가 가장 큰 부분이다. 즉 위젯 자체는 정상 동작하나 레슨을 절반만 덮는다.",
+      "suggestion": "위젯 스텝에 gv_i = 10 / 4(→3)와 gv_dec = 10 / 4(→2.50)를 나란히 넣어 타입 차이를 눈으로 보게 하고, ADD/SUBTRACT류와 날짜 +1의 월 넘김을 스텝으로 추가한다. 아니면 본문 문장을 위젯이 실제 덮는 범위(덧셈·제곱·DIV·MOD)로 정직하게 줄인다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L07.md",
+      "quote": "단도 1~9로 바꾸면 **반복 안에 반복**(중첩 [[DO]])이 된다. 바깥은 단, 안쪽은",
+      "category": "불일치",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "본문은 바깥 루프를 '1~9'로 바꾸라고 설명하는데, 바로 아래 빈칸 위젯은 'DO 8 TIMES'에 'gv_dan = sy-index + 1'(2~9단)로 고정돼 있다. 같은 섹션의 제목도 '전체(2~9단) 출력'이라 본문 문장만 홀로 어긋난다.",
+      "evidence": "L07-S02를 브라우저에서 열어 템플릿 원문을 읽으니 \"DO 8 TIMES.\"와 \"gv_dan = [빈칸] + 1.   \\\" 2~9단\"으로 고정이고, 빈칸 정답은 순서대로 sy-index·DO·sy-index·*·ENDDO였다. 본문 문장대로 '1~9'를 떠올린 학습자는 바깥을 DO 9 TIMES·gv_dan = sy-index로 예상하는데, 위젯은 8회에 +1 보정을 쓰므로 빈칸 앞에서 예상이 어긋난다(정작 채점은 sy-index를 요구해 통과는 되지만 왜 +1인지 본문에 설명이 없다). 실제로 정답을 입력해 채점하기를 누르면 '✓ 정답입니다!'가 뜨는 것까지 확인했다.",
+      "suggestion": "본문 문장을 제목·위젯과 같은 '2~9단'으로 고치고, 왜 8번만 돌면서 sy-index + 1로 단을 만드는지 한 줄 덧붙인다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH04-L07-S03.html",
+      "quote": "<p><b>참</b>(시작 &gt; 종료)이면 → WRITE문 실행 후 <b>프로그램 종료</b><br><b>거짓</b>(시작 ≤ 종료)이면 → <b>ENDIF 다음 문장</b> 실행</p>",
+      "category": "위젯 결함",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "위젯의 💡 힌트 코드가 루프가 전혀 없는 자리에서 EXIT를 두 번 쓰고 이를 '프로그램 종료'라고 설명한다. 학습자가 직전 레슨에서 배운 EXIT의 정의는 '반복을 빠져나간다'뿐이라, 반복이 없는데 EXIT로 프로그램이 끝난다는 새 의미가 설명 없이 등장한다.",
+      "evidence": "L07-S03의 details를 펼쳐 tip 코드를 읽으면 \"IF pa_from < 2 OR pa_to > 9. … EXIT. ELSEIF pa_from > pa_to. … EXIT. ENDIF.\"로 EXIT가 2회 나오는데 감싸는 DO/WHILE이 없다. 그런데 같은 위젯의 인포그래픽은 위 quote처럼 그 EXIT를 '프로그램 종료'로 못 박는다. 한편 CH04-L05.md의 표는 EXIT를 \"반복을 **즉시 완전히** 빠져나간다\"로만 정의했다. 실제 ABAP에서 루프 밖 EXIT는 현재 처리 블록을 벗어나는 별개 용법이라 설명 자체가 틀린 건 아니지만, 배운 적 없는 두 번째 의미를 예고 없이 쓰는 셈이다.",
+      "suggestion": "힌트 코드에서 EXIT 대신 이미 배운 범위로 표현하거나(예: 점검 통과일 때만 루프를 실행하는 구조), EXIT를 유지한다면 '루프 밖 EXIT는 처리 블록을 끝낸다 — 자세한 건 뒤에서'라는 한 줄을 위젯 안에 덧붙인다."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L06.md",
+      "quote": "어디서 값이 바뀌는지 모를 때 [[WATCH POINT]]를 건다. \"`gv_n`이 바뀌면 멈춰라\"라고",
+      "category": "체험 공백",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "디버깅 레슨이 가르치는 도구는 BREAK-POINT 심기·/h·F5/F6/F7/F8·WATCH POINT인데, WATCH POINT 절 바로 아래 붙은 유일한 임베드는 F5 한 줄 실행만 흉내 낸다. 정작 그 절의 주제인 WATCH POINT는 손으로 걸어 볼 수단이 없다.",
+      "evidence": "브라우저에서 L06-S01을 끝까지 조작(11/11 스텝 완주)하고 위젯 전체 텍스트를 정규식으로 검사하니 'WATCH POINT'·'BREAK-POINT'·'F8' 문자열이 모두 0건이었다. 버튼 라벨은 '다음 ⏭ (F5)' 하나뿐이라 F5 스텝 외의 동작은 눌러 볼 수 없다. 본문은 또 \"[앞 레슨]의 반복문을 디버거로 열고 F5를…\"이라며 L05의 루프를 실습 대상으로 지목하는데, 위젯이 띄우는 코드는 구구단 2단이라 지목 대상과도 다르다.",
+      "suggestion": "위젯에 '변수가 바뀌는 순간 자동으로 멈춤'을 보여 주는 모드(예: gv_res 변경 스텝에서 자동 정지)를 넣어 WATCH POINT를 체감시키거나, 임베드 위치를 F5/F8 절 아래로 옮기고 WATCH POINT 절에는 별도 체험을 붙인다."
+    },
+    {
+      "seq": 7,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L07.md",
+      "quote": "**정답을 보기 전에**, 반복(`DO`)·회차(`sy-index`)·곱셈(`*`)을 떠올리며 빈칸을 직접 채워 보자.",
+      "category": "헛체험",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "본문은 1단계 빈칸을 '정답을 보기 전에' 스스로 채우라고 하지만, 그 정답 코드가 직전 레슨의 디버거 위젯에 이미 완성형으로 통째 노출돼 있다. 바로 앞 페이지에서 본 코드를 그대로 옮겨 적는 셈이라 빈칸의 회상 효과가 반감된다.",
+      "evidence": "L07-S01의 빈칸 정답은 TIMES·sy-index·*·ENDDO 네 개다(브라우저에서 입력·채점해 확인). 그런데 L06-S01의 스텝 디버거 코드에는 \"DO 9 TIMES.\" / \"  gv_mul = sy-index.\" / \"  gv_res = gv_dan * gv_mul.\" / \"ENDDO.\"가 전부 그대로 들어 있어 네 정답이 한 화면에 다 보인다. 두 위젯을 각각 실제로 로드해 코드 패널 텍스트를 비교해 확인했다.",
+      "suggestion": "L06-S01의 예시 코드를 구구단이 아닌 L05의 합계 누적 루프(본문이 실습 대상으로 지목한 코드)로 바꾸면 디버깅 레슨의 취지도 살고 L07 빈칸의 회상 효과도 보존된다."
+    },
+    {
+      "seq": 8,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH04-L07-S02.html",
+      "quote": "<input class=\"blank\" data-answer=\"DO\" placeholder=\"__\">",
+      "category": "위젯 결함",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "빈칸 5개 중 두 번째(안쪽 DO)만 aria-label이 빠져 있다. 나머지 4개는 빈칸1·빈칸3·빈칸4·빈칸5로 라벨이 붙어 있어 번호도 중간이 비고, 화면 낭독기 사용자는 이 칸만 무엇을 넣는 자리인지 안내받지 못한다.",
+      "evidence": "브라우저에서 L07-S02의 input[data-answer] 5개의 aria-label을 읽으니 [빈칸1, null, 빈칸3, 빈칸4, 빈칸5]로 두 번째만 null이었다(누락 1건). 같은 엔진을 쓰는 L02-S01·L07-S01·L07-S03은 모든 빈칸에 라벨이 붙어 있어 이 파일만 예외다.",
+      "suggestion": "해당 input에 aria-label=\"빈칸2\"를 추가해 다른 fill-blank 위젯과 표기를 맞춘다."
+    },
+    {
+      "seq": 9,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L02.md",
+      "quote": "REPLACE 'ABAP' IN gv_text WITH 'HANA'.   \" gv_text = 'SAP HANA'",
+      "category": "체험 공백",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "문자열 레슨의 유일한 체험이 CONCATENATE·SPLIT·strlen·FIND 네 키워드만 다뤄, 본문에 코드로 등장하는 REPLACE·CONDENSE·offset 접근·그리고 조기 도입된 && 는 한 번도 손으로 해보지 못한 채 지나간다.",
+      "evidence": "브라우저에서 L02-S01의 빈칸을 확인하니 정답은 INTO·AT·strlen·FIND 네 개뿐이었다(소문자·앞뒤 공백까지 정상 채점되는 것도 실측). 본문에는 위 quote의 REPLACE, CONDENSE gv_raw, WRITE gv_date+4(2), 그리고 gv_full = '정훈영' && '님'.이 각각 코드로 나온다. 특히 &&는 본문이 \"아주 자주 쓰여 미리 익혀 둔다\"며 규칙상 예외로 앞당겨 도입한 연산자인데도 체험이 없다.",
+      "suggestion": "같은 fill-blank 위젯에 REPLACE … IN … WITH 와 && 빈칸을 두 줄 더하거나, 문자열을 넣으면 CONDENSE·offset 결과가 즉시 보이는 작은 체험을 하나 추가한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "보강 권장",
+    "summary": "위젯 자체의 품질은 좋다. CH04 임베드 17개를 전부 브라우저로 로드해 조작한 결과 깨진 위젯·콘솔 오류는 0건이었고, 스텝 디버거 3종의 회차·변수 값 추적(gv_sum 15, gv_result 1024 등), fill-blank 4종의 채점 판정(대소문자·공백 허용), CASE 시뮬의 분기 점등, mermaid 5종 렌더가 모두 설계대로 동작했다. 문제는 '동작'이 아니라 '덮는 범위'다. ① 판단을 가르치는 L03은 코드가 다섯 블록인데 임베드 3개가 전부 조작 요소 0개인 정적 그림이라 손으로 해 볼 체험이 하나도 없고, 본문이 (중요)라고 강조한 abap_bool 절은 임베드조차 없다. ② L01은 '사칙연산'을 따라가 본다고 해 놓고 덧셈 하나만 보여 주며, 정수 나눗셈 반올림·날짜 산술 같은 이 레슨의 핵심 함정이 체험 밖이다. ③ L02도 본문 코드의 절반(REPLACE·CONDENSE·offset·&&)이 체험 밖이다. 여기에 손볼 곳이 분명한 불일치 세 건이 겹친다 — CASE의 WHEN OTHERS 출력이 본문 '확인 필요' vs 위젯 '등급 없음'으로 갈리고(같은 페이지 S04는 본문 편), L07 본문의 '1~9'가 위젯의 2~9단(DO 8 TIMES)과 어긋나며, L07-S03 힌트는 배운 적 없는 '루프 밖 EXIT'를 프로그램 종료로 쓴다. 문자열 불일치와 aria-label 누락은 즉시 고칠 수 있는 경미한 건이지만, L03의 체험 공백은 새 위젯이 필요해 '보강 권장'으로 판단했다."
+  }
+}

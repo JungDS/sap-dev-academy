@@ -1,6 +1,14 @@
 // ===== 컴포넌트 JS — ABAP 하이라이터 + 스텝 디버거 엔진 =====
 // vars 항목에 itab:{cols:[..],num:[..]}을 주면 값(2차원 배열)을 행 미니테이블로 렌더 —
 // 추가/변경 행 플래시, steps[i].focus={key:1기준행번호}로 현재 처리 행 강조. (CH06+ Internal Table 워치)
+//
+// [선택 레이어] Watchpoint — 인스턴스 HTML에 [data-wp] 마크업이 있을 때만 배선한다(config 변경 없음).
+//   마크업 훅: [data-wp](루트) · [data-wp-open](만들기 버튼) · [data-wp-form](입력줄) ·
+//              [data-wp-name](변수 이름 입력) · [data-wp-names](datalist·엔진이 채움) ·
+//              [data-wp-add](저장) · [data-wp-cancel] · [data-wp-list](목록) ·
+//              [data-wp-run](계속 F8) · [data-wp-msg](상태줄)
+//   동작: 감시 변수가 바뀌는 스텝을 만나면 그 줄에서 자동 정지. 걸어 둔 게 없으면 끝까지 실행.
+//   ⚠️ [data-wp]가 없는 기존 소비자(CH04-L01/L05·CH05·CH06·CH10)는 이 블록에 진입하지 않는다.
 (function(){
   const ABAP_KW = new Set("DATA TYPE TYPES VALUE TABLE OF LIKE LINE BEGIN END REF TO LOOP AT INTO ENDLOOP APPEND WRITE IF ELSE ELSEIF ENDIF SELECT FROM WHERE INNER LEFT OUTER JOIN ON READ WITH KEY SORT BY CLEAR REFRESH MOVE CORRESPONDING FIELDS SINGLE STANDARD SORTED HASHED INSERT DELETE MODIFY DESCRIBE LINES DO ENDDO WHILE ENDWHILE CASE WHEN OTHERS ENDCASE CALL METHOD FUNCTION FORM PERFORM PARAMETERS RANGES CHECK EXIT CONTINUE RETURN ADD SUBTRACT MULTIPLY DIVIDE CONCATENATE SPLIT CONDENSE ASCENDING DESCENDING AND OR NOT IS INITIAL BOUND NEW LENGTH DECIMALS TIMES TRANSPORTING NO BINARY SEARCH ASSIGNING FIELD SYMBOLS COLLECT ADJACENT DUPLICATES COMPARING SUM ENDAT FREE INDEX UNIQUE".split(/\s+/));
   const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
@@ -80,6 +88,70 @@
     startBtn.addEventListener("click",()=>{ started=true; cur=0; history=[]; startBtn.textContent="↻ 다시"; nextBtn.disabled=false; if(progress) progress.style.transition="width .35s"; render(); });
     nextBtn.addEventListener("click",()=>{ if(!started||cur>=steps.length) return; const s=steps[cur]; history.push((cur+1)+". [line "+s.line+" 실행] "+(s.console||"")); cur++; render(); if(cur>=steps.length) nextBtn.disabled=true; });
     cmodeBtns.forEach(b=>b.addEventListener("click",()=>{ mode=b.dataset.cmode; cmodeBtns.forEach(x=>x.classList.toggle("on",x===b)); paintConsole(); }));
+
+    // ---- Watchpoint 레이어(선택) — [data-wp] 마크업이 있을 때만 배선 ----
+    const wpRoot = root.querySelector("[data-wp]");
+    if(wpRoot){
+      const wpOpen=wpRoot.querySelector("[data-wp-open]"), wpForm=wpRoot.querySelector("[data-wp-form]"),
+            wpName=wpRoot.querySelector("[data-wp-name]"), wpNames=wpRoot.querySelector("[data-wp-names]"),
+            wpAdd=wpRoot.querySelector("[data-wp-add]"), wpCancel=wpRoot.querySelector("[data-wp-cancel]"),
+            wpList=wpRoot.querySelector("[data-wp-list]"), wpRun=wpRoot.querySelector("[data-wp-run]"),
+            wpMsg=wpRoot.querySelector("[data-wp-msg]");
+      const watched=new Set();                         // 감시 중인 vars key
+      const byLabel=s=>cfg.vars.find(v=>v.label.toLowerCase()===s || v.key.toLowerCase()===s);
+      const labelOf=k=>{ const d=cfg.vars.find(v=>v.key===k); return d?d.label:k; };
+      if(wpNames) wpNames.innerHTML=cfg.vars.map(v=>'<option value="'+v.label+'"></option>').join("");
+      function say(t,cls){ if(!wpMsg) return; wpMsg.className="wp__msg"+(cls?" "+cls:""); wpMsg.innerHTML=t; }
+      function paintWp(){
+        if(wpList) wpList.innerHTML = watched.size
+          ? [...watched].map(k=>'<span class="wp__chip">👁 '+labelOf(k)+
+              '<button class="wp__x" type="button" data-wp-del="'+k+'" aria-label="'+labelOf(k)+' Watchpoint 삭제">✕</button></span>').join("")
+          : '<span class="wp__none">아직 없음 — 걸어 두면 그 변수가 <b>바뀌는 줄</b>에서 자동으로 멈춥니다.</span>';
+        if(wpRun) wpRun.textContent = watched.size ? "▶▶ 계속 (F8) — Watchpoint까지" : "▶▶ 계속 (F8) — 끝까지";
+      }
+      function openForm(o){ if(!wpForm) return; wpForm.hidden=!o; if(o&&wpName){ wpName.value=""; wpName.focus({preventScroll:true}); } }
+      function save(){
+        const raw=(wpName&&wpName.value||"").trim(), d=byLabel(raw.toLowerCase());
+        if(!raw){ say("감시할 <b>변수 이름</b>을 적어 주세요."); return; }
+        if(!d){ say("<b>"+raw+"</b> 라는 변수가 이 프로그램에 없습니다 — 오른쪽 <b>변수 모니터</b>에 있는 이름으로 적어 주세요."); return; }
+        if(watched.has(d.key)){ say("<b>"+d.label+"</b>에는 이미 Watchpoint가 걸려 있습니다."); paintWp(); return; }
+        watched.add(d.key); paintWp(); openForm(false);
+        say("✅ <b>"+d.label+"</b> Watchpoint 저장 — 이제 <b>계속 (F8)</b>을 누르면 이 값이 바뀌는 줄에서 자동으로 멈춥니다.");
+      }
+      function runToWatch(){
+        if(!started){ say("먼저 <b>▶ 시작</b>을 눌러 주세요."); return; }
+        if(cur>=steps.length){ say("이미 끝까지 실행했습니다 — <b>↻ 다시</b>로 처음부터 해 보세요."); return; }
+        let hit=null;
+        while(cur<steps.length){
+          const s=steps[cur], before=accVars(cur);
+          history.push((cur+1)+". [line "+s.line+" 실행] "+(s.console||""));
+          cur++;
+          const keys=Object.keys(s.vars||{}).filter(k=>watched.has(k)&&String(before[k])!==String(s.vars[k]));
+          if(keys.length){ hit={line:s.line,keys:keys,before:before,after:accVars(cur)}; break; }
+        }
+        render();
+        if(cur>=steps.length) nextBtn.disabled=true;
+        if(hit) say("⏸ <b>Watchpoint 정지</b> — "+hit.line+"번 줄에서 "+
+              hit.keys.map(k=>"<b>"+labelOf(k)+"</b>: "+hit.before[k]+" → "+hit.after[k]).join(" · ")+
+              " (값이 바뀐 그 줄을 실행한 직후 멈췄습니다)","hit");
+        else if(watched.size) say("■ 끝까지 실행했습니다 — 남은 구간에서는 감시 변수가 <b>바뀌지 않았습니다</b>.","end");
+        else say("■ 끝까지 실행했습니다 — <b>걸어 둔 Watchpoint가 없으면 F8은 이렇게 끝까지 가 버립니다.</b>","end");
+      }
+      if(wpOpen)   wpOpen.addEventListener("click",()=>openForm(wpForm&&wpForm.hidden));
+      if(wpAdd)    wpAdd.addEventListener("click",save);
+      if(wpCancel) wpCancel.addEventListener("click",()=>openForm(false));
+      if(wpName)   wpName.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); save(); } });
+      if(wpRun)    wpRun.addEventListener("click",runToWatch);
+      if(wpList)   wpList.addEventListener("click",e=>{ const b=e.target.closest("[data-wp-del]"); if(!b) return;
+                     const k=b.dataset.wpDel; watched.delete(k); paintWp();
+                     say("🗑 <b>"+labelOf(k)+"</b> Watchpoint를 지웠습니다."); });
+      startBtn.addEventListener("click",()=>{ say(watched.size
+        ? "처음부터 다시 — 걸어 둔 Watchpoint는 <b>그대로</b> 살아 있습니다(세션 동안 유지)."
+        : "처음부터 다시 — <b>＋ Watchpoint 만들기</b>로 감시할 변수를 걸어 보세요."); });
+      paintWp();
+      say("<b>＋ Watchpoint 만들기</b> → 감시할 변수 이름 입력 → <b>저장</b> 순서로 걸어 봅니다.");
+    }
+
     render();
   }
   document.querySelectorAll("[data-stepper]").forEach(initStepper);

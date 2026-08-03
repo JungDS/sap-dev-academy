@@ -1,0 +1,61 @@
+/* int-div-lab — 정수 나눗셈 반올림 실험실(입력 2칸 + 프리셋 칩 → 타입별 결과 카드 대조).
+   config=window.IDL_CFG. 색은 전부 토큰/color-mix — 다크 자동(하드코딩 hex 0). */
+*{box-sizing:border-box;} html,body{margin:0;}
+body{font-family:var(--font);color:var(--ink);background:transparent;line-height:1.55;}
+.wrap{padding:14px;}
+.hd{font-weight:800;font-size:1rem;margin:0 0 4px;} .hd small{font-weight:600;color:var(--brand);}
+.lead{margin:0 0 14px;color:var(--ink-soft);font-size:.86rem;}
+.lead code{font-family:var(--mono);background:color-mix(in srgb,var(--brand) 11%,var(--surface));color:var(--brand);padding:1px 5px;border-radius:5px;}
+
+/* 입력 — 피제수 ÷ 제수 */
+.idl-ctl{display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap;}
+.idl-f{display:flex;flex-direction:column;gap:4px;flex:1 1 150px;min-width:130px;}
+.idl-f span{font-size:.74rem;font-weight:700;color:var(--ink-soft);}
+.idl-f input{width:100%;font-family:var(--mono);font-size:1rem;font-weight:800;color:var(--ink);
+  background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:8px 11px;}
+.idl-f input:focus{outline:2px solid color-mix(in srgb,var(--brand) 55%,transparent);outline-offset:1px;border-color:var(--brand);}
+.idl-op{font-size:1.1rem;font-weight:800;color:var(--ink-soft);padding-bottom:9px;}
+
+.idl-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px;}
+.idl-chip{font-family:var(--mono);font-size:.78rem;font-weight:800;color:var(--brand);background:color-mix(in srgb,var(--brand) 8%,var(--surface));
+  border:1px solid color-mix(in srgb,var(--brand) 35%,var(--line));border-radius:999px;padding:5px 12px;cursor:pointer;}
+.idl-chip:hover{background:color-mix(in srgb,var(--brand) 16%,var(--surface));}
+
+/* 코드 패널 — 지금 실험 중인 두 줄 */
+.idl-code{display:block;white-space:pre;overflow-x:auto;font-family:var(--mono);font-size:.83rem;line-height:1.6;color:var(--ink);
+  background:color-mix(in srgb,var(--ink-soft) 8%,var(--surface));border:1px solid var(--line);border-radius:10px;padding:11px 13px;margin:13px 0 0;}
+
+/* 결과 카드 2장 */
+.idl-cards{display:flex;gap:11px;flex-wrap:wrap;margin-top:11px;}
+.idl-card{flex:1 1 210px;min-width:190px;border:2px solid var(--line);border-radius:12px;background:var(--surface);
+  padding:11px 13px;box-shadow:var(--shadow);}
+.idl-card__hd{display:flex;align-items:center;gap:7px;flex-wrap:wrap;font-size:.78rem;}
+.idl-card__hd code{font-family:var(--mono);font-weight:800;font-size:.86rem;color:var(--ink);}
+.idl-tag{font-family:var(--mono);font-size:.68rem;font-weight:800;color:var(--ink-soft);
+  background:color-mix(in srgb,var(--ink-soft) 12%,var(--surface));border-radius:999px;padding:2px 8px;}
+.idl-badge{font-size:.66rem;font-weight:800;color:var(--amber);background:color-mix(in srgb,var(--amber) 13%,var(--surface));
+  border-radius:999px;padding:2px 8px;}
+.idl-card__val{font-family:var(--mono);font-weight:800;font-size:1.5rem;color:var(--ink);margin-top:7px;}
+.idl-card__why{font-size:.75rem;color:var(--ink-soft);margin-top:2px;min-height:1.1em;}
+.idl-card.warn{border-color:color-mix(in srgb,var(--bad) 60%,var(--line));background:color-mix(in srgb,var(--bad) 6%,var(--surface));}
+.idl-card.warn .idl-card__val{color:var(--bad);}
+.idl-card.keep{border-color:color-mix(in srgb,var(--good) 60%,var(--line));background:color-mix(in srgb,var(--good) 6%,var(--surface));}
+.idl-card.keep .idl-card__val{color:var(--good);}
+.idl-card.bad{border-style:dashed;border-color:color-mix(in srgb,var(--bad) 50%,var(--line));}
+.idl-card.bad .idl-card__val{color:var(--ink-soft);}
+
+/* 판정 — base 중립, 상태는 명시 클래스만(교훈3) */
+.idl-verdict{margin-top:12px;font-size:.84rem;color:var(--ink-soft);border-left:3px solid var(--line);
+  background:color-mix(in srgb,var(--ink-soft) 6%,var(--surface));border-radius:0 9px 9px 0;padding:9px 13px;line-height:1.65;}
+.idl-verdict b{color:var(--ink);}
+.idl-verdict code{font-family:var(--mono);}
+.idl-verdict.ok{border-left-color:var(--good);background:color-mix(in srgb,var(--good) 8%,var(--surface));}
+.idl-verdict.ok b{color:var(--good);}
+.idl-verdict.bad{border-left-color:var(--bad);background:color-mix(in srgb,var(--bad) 8%,var(--surface));}
+.idl-verdict.bad b{color:var(--bad);}
+.idl-other{display:block;margin-top:5px;font-size:.79rem;color:var(--ink-soft);}
+
+.note{margin-top:12px;border-left:3px solid var(--brand);background:color-mix(in srgb,var(--brand) 7%,var(--surface));
+  border-radius:0 9px 9px 0;padding:9px 13px;font-size:.83rem;color:var(--ink-soft);line-height:1.6;}
+.note b{color:var(--ink);}
+.note code{font-family:var(--mono);background:color-mix(in srgb,var(--brand) 12%,var(--surface));padding:1px 5px;border-radius:4px;}

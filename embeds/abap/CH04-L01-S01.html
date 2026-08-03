@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <!-- CH04-L01-S01 — 엔진: step-debugger (embeds/_engine/step-debugger.{js,css}) + _autoheight.js
-     ⚠️ config=레슨 전용(산술 트레이스, #C04-1). 게이팅: 내부테이블·inline DATA() 없음. -->
+     ⚠️ config=레슨 전용(산술 트레이스, #C04-1). 커버: 사칙연산 4종 · ** 우결합(2**3**2=512) ·
+     정수 나눗셈 함정(10/4 → I는 3 / DIV는 2 / P는 2.50) · MOD · 날짜 산술(달 넘김).
+     문장형(ADD류)은 본문에서 details로 강등돼 제외. 게이팅: 내부테이블·inline DATA() 없음. -->
 <html lang="ko" data-eng="step-debugger">
 <head>
 <meta charset="utf-8" />
@@ -12,14 +14,14 @@
 <body>
 <div class="wrap">
   <p class="hd">산술 — 한 줄씩 실행하며 변수 보기 <small>(스텝 디버거)</small></p>
-  <p class="lead"><b>다음 ⏭</b>을 누를 때마다 한 줄씩 실행돼 변수 값이 바뀝니다. 강조된 줄 = <b>실행할 차례</b>(아직 실행 전), 초록 = 방금 실행.</p>
+  <p class="lead"><b>다음 ⏭</b>을 누를 때마다 한 줄씩 실행돼 변수 값이 바뀝니다. 강조된 줄 = <b>실행할 차례</b>(아직 실행 전), 초록 = 방금 실행. <b>같은 <code>10 / 4</code>가 담는 그릇에 따라 어떻게 달라지는지</b>, <b>날짜에 <code>+ 1</code>을 하면 달이 어떻게 넘어가는지</b>를 특히 눈여겨보세요.</p>
 
   <div class="dbg" data-stepper>
     <div class="dbg__bar">
       <button class="btn btn--primary" data-start>▶ 시작</button>
       <button class="btn btn--step" data-next disabled>다음 ⏭</button>
       <div class="progress"><i data-progress></i></div>
-      <span class="muted" data-counter>0 / 4</span>
+      <span class="muted" data-counter>0 / 10</span>
     </div>
     <div class="dbg__main">
       <div class="dbg__editorwrap"><div class="dbg__edhd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span></div><div class="dbg__editor" data-code></div></div>
@@ -41,25 +43,45 @@
     {
       "code":[
         "DATA gv_result TYPE i.",
+        "DATA gv_i      TYPE i.",
+        "DATA gv_q      TYPE i.",
+        "DATA gv_r      TYPE i.",
+        "DATA gv_dec    TYPE p LENGTH 8 DECIMALS 2.",
+        "DATA gv_date   TYPE d.",
         "",
         "gv_result = 7 + 3.",
-        "gv_result = 2 ** 10.",
+        "gv_result = 7 - 3.",
+        "gv_result = 7 * 3.",
+        "gv_result = 2 ** 3 ** 2.",
         "",
-        "DATA gv_q TYPE i.",
-        "gv_q = 17 DIV 5.",
-        "DATA gv_r TYPE i.",
-        "gv_r = 17 MOD 5."
+        "gv_i   = 10 / 4.",
+        "gv_q   = 10 DIV 4.",
+        "gv_dec = 10 / 4.",
+        "",
+        "gv_r = 17 MOD 5.",
+        "",
+        "gv_date = '20260131'.",
+        "gv_date = gv_date + 1."
       ],
       "vars":[
-        {"label":"gv_result","sub":"TYPE i","key":"gv_result","init":"0"},
+        {"label":"gv_result","sub":"TYPE i · 사칙연산·제곱","key":"gv_result","init":"0"},
+        {"label":"gv_i","sub":"TYPE i · 나눗셈 결과","key":"gv_i","init":"0"},
         {"label":"gv_q","sub":"몫(DIV)","key":"gv_q","init":"0"},
-        {"label":"gv_r","sub":"나머지(MOD)","key":"gv_r","init":"0"}
+        {"label":"gv_r","sub":"나머지(MOD)","key":"gv_r","init":"0"},
+        {"label":"gv_dec","sub":"TYPE p · 소수 2자리","key":"gv_dec","init":"0.00"},
+        {"label":"gv_date","sub":"TYPE d · 날짜","key":"gv_date","init":"00000000"}
       ],
       "steps":[
-        {"line":3,"vars":{"gv_result":"10"},"console":"7 + 3 = 10"},
-        {"line":4,"vars":{"gv_result":"1024"},"console":"2 ** 10 = 1024 (제곱)"},
-        {"line":7,"vars":{"gv_q":"3"},"console":"17 DIV 5 → 몫 3"},
-        {"line":9,"vars":{"gv_r":"2"},"console":"17 MOD 5 → 나머지 2"}
+        {"line":8,"vars":{"gv_result":"10"},"console":"7 + 3 = 10"},
+        {"line":9,"vars":{"gv_result":"4"},"console":"7 - 3 = 4"},
+        {"line":10,"vars":{"gv_result":"21"},"console":"7 * 3 = 21"},
+        {"line":11,"vars":{"gv_result":"512"},"console":"2 ** 3 ** 2 = 512 — ** 끼리는 오른쪽부터! 먼저 3 ** 2 = 9, 그다음 2 ** 9 = 512.\n(왼쪽부터였다면 ( 2 ** 3 ) ** 2 = 64였을 것)"},
+        {"line":13,"vars":{"gv_i":"3"},"console":"10 / 4 = 2.5 인데 gv_i는 TYPE i → 3 (버림이 아니라 반올림!)"},
+        {"line":14,"vars":{"gv_q":"2"},"console":"10 DIV 4 → 몫 2 (소수를 아예 버린다)\n바로 윗줄 gv_i(3)와 비교해 보세요 — / 와 DIV는 정반대입니다."},
+        {"line":15,"vars":{"gv_dec":"2.50"},"console":"같은 10 / 4 인데 gv_dec는 TYPE p DECIMALS 2 → 2.50 (소수가 살아남는다)"},
+        {"line":17,"vars":{"gv_r":"2"},"console":"17 MOD 5 → 나머지 2 (17 = 5 × 3 + 2)"},
+        {"line":19,"vars":{"gv_date":"20260131"},"console":"날짜 변수에 8자리 문자를 넣으면 날짜로 알아듣는다 → 2026년 1월 31일"},
+        {"line":20,"vars":{"gv_date":"20260201"},"console":"gv_date + 1 → 20260201.\n'20260132' 같은 없는 날짜로 가지 않고 달을 넘겨 2월 1일이 된다."}
       ]
     }
     </script>

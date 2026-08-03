@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <!-- CH04-L07-S03 — 엔진: fill-blank + _autoheight. 콘텐츠=레슨 §3단계(범위 출력, #C04-7).
      효율형: pa_from부터 (pa_to-pa_from+1)번만 반복 + 매 회차 단 1 증가. 루프 전 입력 점검은 아코디언으로 권장 제시.
-     게이팅: classic만(DO에 산술식=modern은 CH18↑ → 횟수를 gv_cnt 변수에). EXIT는 CH04-L05 도입. -->
+     게이팅: classic만(DO에 산술식=modern은 CH18↑ → 횟수를 gv_cnt 변수에).
+     ⚠️ 힌트 코드는 본문 3단계 확정형(IF … WRITE 안내 … ELSEIF … ELSE 반복 … ENDIF)과 동일 —
+     루프 밖 EXIT 금지(EXIT = 반복 탈출 전용, CH04-L05 정의). 양 끝 관문(2～9)은 본문에 없는 '추가 규칙'으로 명시. -->
 <html lang="ko" data-eng="fill-blank">
 <head>
 <meta charset="utf-8" />
@@ -92,8 +94,8 @@
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">3단계 — 범위만큼만 반복 <small>(예: 3~5단)</small></p>
-  <p class="lead">1~9를 다 돌며 거르지 말고, <b><code>pa_from</code>부터 필요한 횟수만큼만</b> 돌고 회차 끝에 단을 1 올립니다. 정답을 보기 전에 빈칸을 직접 채워 보세요. (아래 💡는 루프 전 입력 점검 권장 로직)</p>
+  <p class="hd">3단계 — 범위만큼만 반복 <small>(예: 3～5단)</small></p>
+  <p class="lead">1～9를 다 돌며 거르지 말고, <b><code>pa_from</code>부터 필요한 횟수만큼만</b> 돌고 회차 끝에 단을 1 올립니다. 정답을 보기 전에 빈칸을 직접 채워 보세요. (아래 💡는 루프 전 입력 점검 권장 로직)</p>
 
   <div class="fillblank" data-fillblank
        data-explain="pa_from부터 (pa_to - pa_from + 1)번만 반복하고, 매 회차 끝에 gv_dan을 1 올립니다. 입력 점검은 루프 전에 한 번만 하면 됩니다."
@@ -105,7 +107,8 @@ DATA: gv_dan TYPE i, gv_mul TYPE i, gv_cnt TYPE i, gv_res TYPE i.</pre>
     <details class="tip">
       <summary>💡 시작·종료 범위를 점검하는 로직은 여기(루프 전)에 추가하는 게 좋습니다(펼쳐 보기)</summary>
       <div class="tip__body">
-        <p class="tip__note">루프 <b>전에 두 번만</b> 확인하면 됩니다: ① <b>양 끝</b>(시작 ≥ 2 · 종료 ≤ 9) → ② <b>순서</b>(시작 ≤ 종료). 둘 다 통과해야 실행하고, 어긋나면 안내 후 멈춥니다. 신기하게도 <b>이 둘이면 시작·종료가 모두 2~9 안</b>에 들어옵니다(까닭은 <b>맨 아래에서 그림으로</b>).</p>
+        <p class="tip__note">루프 <b>전에 두 번만</b> 확인하면 됩니다: ① <b>양 끝</b>(시작 ≥ 2 · 종료 ≤ 9) → ② <b>순서</b>(시작 ≤ 종료). 둘 다 통과해야 반복을 돌고, 어긋나면 <b>안내만 찍고 반복은 건너뜁니다</b>. 신기하게도 <b>이 둘이면 시작·종료가 모두 2～9 안</b>에 들어옵니다(까닭은 <b>맨 아래에서 그림으로</b>).</p>
+        <p class="tip__note">📌 본문 3단계가 꼭 하라고 한 것은 <b>②번(시작 ≤ 종료)</b> 하나입니다. ①번 양 끝 관문은 "구구단인데 12단을 달라고 하면?"까지 막아 보는 <b>추가 규칙</b>이니, 부담되면 ②번만 만들어도 충분합니다.</p>
         <svg class="fl-svg" viewBox="0 0 440 292" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="입력 점검 흐름: 범위 관문과 순서 관문을 통과해야 실행, 아니면 안내 후 중단">
           <defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="fl-ah"/></marker></defs>
           <rect class="fl-box" x="28" y="8" width="194" height="34" rx="9"/>
@@ -116,7 +119,7 @@ DATA: gv_dan TYPE i, gv_mul TYPE i, gv_cnt TYPE i, gv_res TYPE i.</pre>
           <text class="fl-sm" x="195" y="91">예</text>
           <path class="fl-arrow" d="M187,98 L247,98" marker-end="url(#ah)"/>
           <rect class="fl-rej" x="250" y="80" width="178" height="36" rx="9"/>
-          <text class="fl-rt" x="339" y="103" text-anchor="middle">⛔ '단은 2~9' → 중단</text>
+          <text class="fl-rt" x="339" y="103" text-anchor="middle">⛔ '단은 2～9' 안내 · 반복 건너뜀</text>
           <text class="fl-sm" x="133" y="143">아니오</text>
           <path class="fl-arrow" d="M125,126 L125,152" marker-end="url(#ah)"/>
           <polygon class="fl-dia" points="125,154 187,182 125,210 63,182"/>
@@ -124,35 +127,36 @@ DATA: gv_dan TYPE i, gv_mul TYPE i, gv_cnt TYPE i, gv_res TYPE i.</pre>
           <text class="fl-sm" x="195" y="175">예</text>
           <path class="fl-arrow" d="M187,182 L247,182" marker-end="url(#ah)"/>
           <rect class="fl-rej" x="250" y="164" width="178" height="36" rx="9"/>
-          <text class="fl-rt" x="339" y="187" text-anchor="middle">⛔ '시작 ≤ 종료' → 중단</text>
+          <text class="fl-rt" x="339" y="187" text-anchor="middle">⛔ '시작 ≤ 종료' 안내 · 건너뜀</text>
           <text class="fl-sm" x="133" y="227">아니오</text>
           <path class="fl-arrow" d="M125,210 L125,238" marker-end="url(#ah)"/>
           <rect class="fl-pass" x="20" y="238" width="210" height="48" rx="11"/>
           <text class="fl-pt" x="125" y="257" text-anchor="middle">✅ 통과</text>
           <text class="fl-pt2" x="125" y="275" text-anchor="middle">해당 범위의 구구단 출력</text>
         </svg>
-        <p class="tip__sub">두 관문을 <code>IF</code> / <code>ELSEIF</code>로 적으면:</p>
+        <p class="tip__sub">두 관문을 <code>IF</code> / <code>ELSEIF</code> / <code>ELSE</code>로 적으면:</p>
 <pre class="tip__code"><span class="k">IF</span> pa_from &lt; 2 <span class="k">OR</span> pa_to &gt; 9.
-  <span class="k">WRITE</span>: / <span class="s">'단은 2~9 사이로 입력하세요.'</span>.
-  <span class="k">EXIT</span>.
+  <span class="k">WRITE</span>: / <span class="s">'단은 2～9 사이로 입력하세요.'</span>.
 <span class="k">ELSEIF</span> pa_from &gt; pa_to.
   <span class="k">WRITE</span>: / <span class="s">'시작 ≤ 종료로 입력하세요.'</span>.
-  <span class="k">EXIT</span>.
+<span class="k">ELSE</span>.
+  <span class="cmt">" 통과했을 때만 — 아래 반복(구구단 출력)을 이 자리에 넣는다</span>
 <span class="k">ENDIF</span>.</pre>
+        <p class="tip__note">안내만 찍고 <b>반복을 건너뛰는 방법</b>은 <code>ELSE</code>다. <code>EXIT</code>는 <b>반복을 빠져나오는 문</b>이라 반복 밖인 이 자리에서는 쓰지 않는다.</p>
         <div class="ig">
           <p class="ig-h"><svg class="ig-hico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6.5" fill="none" stroke="currentColor" stroke-width="2.2"/><line x1="15" y1="15" x2="20.5" y2="20.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg> 구구단 점검 로직, 왜 이렇게 검사할까?</p>
-          <p class="ig-sub">조건문이 어떻게 <b>시작·종료를 모두 2~9</b>로 가두는지, IF와 ELSEIF를 한 조각씩 뜯어 봅니다.</p>
+          <p class="ig-sub">조건문이 어떻게 <b>시작·종료를 모두 2～9</b>로 가두는지, IF와 ELSEIF를 한 조각씩 뜯어 봅니다.</p>
 
           <div class="ig-group">
             <div class="ig-glabel">
               <code class="ig-ifline">IF&nbsp; pa_from &lt; 2&nbsp; OR&nbsp; pa_to &gt; 9</code>
-              <p class="ig-gtext">한 IF가 <code>OR</code>로 두 가지를 함께 봅니다. <b>둘 중 하나라도 참이면</b> 오류 메시지를 내고 멈추죠. 그래서 아래 두 조건은 <b>같은 IF의 왼쪽·오른쪽</b>입니다.</p>
+              <p class="ig-gtext">한 IF가 <code>OR</code>로 두 가지를 함께 봅니다. <b>둘 중 하나라도 참이면</b> 안내를 찍고 <b>반복은 건너뜁니다</b>. 그래서 아래 두 조건은 <b>같은 IF의 왼쪽·오른쪽</b>입니다.</p>
             </div>
             <div class="ig-row">
               <div class="ig-card c-blue">
                 <p class="ig-ct"><span class="ig-tag t-blue">IF 왼쪽 조건</span> <code>pa_from &lt; 2</code></p>
                 <ul class="ig-ul">
-                  <li><code>pa_from</code>이 <b>2보다 작으면 참</b> → WRITE문 실행 후 <b>프로그램 종료</b> (OR이라 오른쪽 조건 결과와 관계없이 참)</li>
+                  <li><code>pa_from</code>이 <b>2보다 작으면 참</b> → 안내를 <code>WRITE</code>로 찍고 <b>반복은 건너뜀</b> (OR이라 오른쪽 조건 결과와 관계없이 참)</li>
                   <li><code>pa_from</code>이 <b>2 이상이면 거짓</b> → <b>IF 오른쪽 조건</b> 검사</li>
                 </ul>
                 <svg class="ig-ray" viewBox="0 0 330 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -170,7 +174,7 @@ DATA: gv_dan TYPE i, gv_mul TYPE i, gv_cnt TYPE i, gv_res TYPE i.</pre>
               <div class="ig-card c-green">
                 <p class="ig-ct"><span class="ig-tag t-green">IF 오른쪽 조건</span> <code>pa_to &gt; 9</code></p>
                 <ul class="ig-ul">
-                  <li><code>pa_to</code>가 <b>9보다 크면 참</b> → WRITE문 실행 후 <b>프로그램 종료</b></li>
+                  <li><code>pa_to</code>가 <b>9보다 크면 참</b> → 안내를 <code>WRITE</code>로 찍고 <b>반복은 건너뜀</b></li>
                   <li><code>pa_to</code>가 <b>9 이하면 거짓</b> → IF 두 조건 모두 거짓이므로 <b>ELSEIF로 이동</b></li>
                 </ul>
                 <svg class="ig-ray" viewBox="0 0 330 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -200,7 +204,7 @@ DATA: gv_dan TYPE i, gv_mul TYPE i, gv_cnt TYPE i, gv_res TYPE i.</pre>
               <span class="ig-step-arr">➜</span>
               <div class="ig-mini">
                 <p class="ig-mt">ELSEIF <code>pa_from &gt; pa_to</code></p>
-                <p><b>참</b>(시작 &gt; 종료)이면 → WRITE문 실행 후 <b>프로그램 종료</b><br><b>거짓</b>(시작 ≤ 종료)이면 → <b>ENDIF 다음 문장</b> 실행</p>
+                <p><b>참</b>(시작 &gt; 종료)이면 → 안내를 <code>WRITE</code>로 찍고 <b>반복은 건너뜀</b><br><b>거짓</b>(시작 ≤ 종료)이면 → <b>ELSE 안의 반복</b> 실행</p>
               </div>
               <div class="ig-segwrap">
                 <svg class="ig-seg2" viewBox="0 0 340 108" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -239,7 +243,7 @@ DATA: gv_dan TYPE i, gv_mul TYPE i, gv_cnt TYPE i, gv_res TYPE i.</pre>
             </div>
             <div class="goalbar">
               <span class="goal-ico">🎯</span>
-              <p class="ig-goal">두 조건을 모두 통과한 순간 <b>pa_from</b>·<b>pa_to</b>는 자동으로 <b>둘 다 2~9 범위 안</b>에 있게 됩니다.</p>
+              <p class="ig-goal">두 조건을 모두 통과한 순간 <b>pa_from</b>·<b>pa_to</b>는 자동으로 <b>둘 다 2～9 범위 안</b>에 있게 됩니다.</p>
             </div>
           </div>
         </div>

@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <!-- CH04-L03-S01 — §03 IF/ELSEIF/ELSE 흐름도(커스텀 SVG·자체 _autoheight). 중립=var() 토큰(테마 자동), 강조는 고정 중간톤.
+     ⚡ 조작: pa_amt를 직접 넣으면(입력·슬라이더·프리셋) 참이 되는 가지만 켜지고 나머지는 흐려진다 —
+        "처음 참이 되는 가지 하나만"을 눈으로 확인. 색은 전부 var() 토큰이라 다크 자동 적응.
      게이팅: IF 분기 흐름만(이벤트 블록·내부테이블 없음). -->
 <html lang="ko">
 <head>
@@ -18,11 +20,36 @@
   .dgm{display:block;width:100%;max-width:460px;height:auto;margin:0 auto;}
   .note{margin:12px 0 0;font-size:.84rem;color:var(--ink-soft);background:color-mix(in srgb,var(--brand) 7%,var(--surface));border:1px solid var(--line);border-radius:10px;padding:9px 12px;line-height:1.65;}
   .note b{color:var(--ink);} .note code{font-family:var(--mono);}
+  /* 조작 패널 */
+  .sim{border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:11px 13px;margin:0 0 12px;}
+  .sim__row{display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
+  .sim__lb{font-size:.83rem;font-weight:800;color:var(--ink);font-family:var(--mono);}
+  .sim__num{width:96px;font-family:var(--mono);font-size:.9rem;font-weight:700;color:var(--ink);background:var(--surface);
+            border:1.5px solid var(--line);border-radius:8px;padding:5px 8px;}
+  .sim__num:focus{outline:none;border-color:var(--brand);}
+  .sim__rng{flex:1 1 160px;min-width:130px;accent-color:var(--brand);}
+  .sim__pre{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px;}
+  .sim__b{font-family:var(--mono);font-size:.78rem;font-weight:700;color:var(--ink-soft);background:var(--surface);
+          border:1.4px solid var(--line);border-radius:8px;padding:4px 10px;cursor:pointer;}
+  .sim__b:hover{border-color:var(--brand);color:var(--brand);}
+  .sim__out{margin:10px 0 0;font-size:.86rem;font-weight:700;color:var(--ink);background:color-mix(in srgb,var(--accent) 10%,var(--surface));
+            border:1.4px solid color-mix(in srgb,var(--accent) 40%,var(--line));border-radius:9px;padding:7px 11px;}
+  .sim__out code{font-family:var(--mono);}
+  /* SVG 노드 상태 — 켜짐/흐림 */
+  [data-node]{transition:opacity .18s;}
+  [data-node].dim{opacity:.22;}
   .nbox{fill:var(--surface);stroke:var(--line);stroke-width:1.5;}
   .ndia{fill:var(--surface);stroke:var(--brand);stroke-width:1.7;}
   .ngreen{fill:var(--surface);stroke:var(--accent);stroke-width:2;}
   .nblue{fill:var(--surface);stroke:#4263eb;stroke-width:2;}
   .namber{fill:var(--surface);stroke:#f08c00;stroke-width:2;}
+  .hot .ngreen,.hot .nblue,.hot .namber,.hot .ndia{stroke-width:3.4;}
+  .hot .ngreen{fill:color-mix(in srgb,var(--accent) 14%,var(--surface));}
+  .hot .nblue{fill:color-mix(in srgb,#4263eb 13%,var(--surface));}
+  .hot .namber{fill:color-mix(in srgb,#f08c00 15%,var(--surface));}
+  .hot .ndia{fill:color-mix(in srgb,var(--brand) 12%,var(--surface));}
+  .hot .arr{stroke:var(--ink);stroke-width:2.6;}
+  .hot .sm{fill:var(--ink);}
   .t{fill:var(--ink);font-size:13px;font-weight:700;font-family:var(--font);}
   .tc{fill:var(--ink);font-size:12.5px;font-weight:800;font-family:var(--mono);}
   .sm{fill:var(--ink-soft);font-size:11px;font-weight:800;font-family:var(--font);}
@@ -33,40 +60,108 @@
 <body>
 <div class="wrap">
   <p class="hd">IF / ELSEIF / ELSE — 흐름이 갈라진다 <small>(pa_amt 금액 분류)</small></p>
-  <p class="lead">한 값 <code>pa_amt</code>를 위에서부터 검사해 <b>처음 참이 되는 가지 하나만</b> 실행합니다.</p>
+  <p class="lead">한 값 <code>pa_amt</code>를 위에서부터 검사해 <b>처음 참이 되는 가지 하나만</b> 실행합니다. <b>값을 직접 넣어</b> 어느 가지가 켜지는지 확인해 보세요.</p>
+
+  <div class="sim">
+    <div class="sim__row">
+      <label class="sim__lb" for="amt">pa_amt =</label>
+      <input id="amt" class="sim__num" type="number" value="2500" step="100" />
+      <input id="amtr" class="sim__rng" type="range" min="-500" max="3000" step="50" value="2500"
+             aria-label="pa_amt 값 슬라이더" />
+    </div>
+    <div class="sim__pre">
+      <button class="sim__b" type="button" data-v="2500">2500</button>
+      <button class="sim__b" type="button" data-v="1000">1000</button>
+      <button class="sim__b" type="button" data-v="500">500</button>
+      <button class="sim__b" type="button" data-v="0">0</button>
+      <button class="sim__b" type="button" data-v="-100">-100</button>
+    </div>
+    <p class="sim__out" data-out aria-live="polite">…</p>
+  </div>
 
   <svg class="dgm" viewBox="0 0 460 272" xmlns="http://www.w3.org/2000/svg" role="img"
        aria-label="pa_amt 입력 → pa_amt>1000 이면 큰 금액, 아니면 pa_amt>0 이면 소액, 아니면 0 또는 음수">
     <defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker></defs>
 
     <rect class="nbox" x="70" y="8" width="150" height="34" rx="9"/>
-    <text class="t" x="145" y="30" text-anchor="middle">pa_amt 입력</text>
+    <text class="t" x="145" y="30" text-anchor="middle" data-val>pa_amt = 2500</text>
     <path class="arr" d="M145,42 L145,63" marker-end="url(#ah)"/>
 
-    <polygon class="ndia" points="145,66 231,92 145,118 59,92"/>
-    <text class="tc" x="145" y="96" text-anchor="middle">pa_amt &gt; 1000?</text>
-    <text class="sm" x="240" y="85">예</text>
-    <path class="arr" d="M231,92 L300,92" marker-end="url(#ah)"/>
-    <rect class="ngreen" x="302" y="75" width="126" height="34" rx="9"/>
-    <text class="t" x="365" y="96" text-anchor="middle">'큰 금액' 출력</text>
-    <text class="sm" x="153" y="136">아니오</text>
-    <path class="arr" d="M145,118 L145,147" marker-end="url(#ah)"/>
+    <g data-node="d1">
+      <polygon class="ndia" points="145,66 231,92 145,118 59,92"/>
+      <text class="tc" x="145" y="96" text-anchor="middle">pa_amt &gt; 1000?</text>
+    </g>
+    <g data-node="y1">
+      <text class="sm" x="240" y="85">예</text>
+      <path class="arr" d="M231,92 L300,92" marker-end="url(#ah)"/>
+    </g>
+    <g data-node="b1">
+      <rect class="ngreen" x="302" y="75" width="126" height="34" rx="9"/>
+      <text class="t" x="365" y="96" text-anchor="middle">'큰 금액' 출력</text>
+    </g>
+    <g data-node="n1">
+      <text class="sm" x="153" y="136">아니오</text>
+      <path class="arr" d="M145,118 L145,147" marker-end="url(#ah)"/>
+    </g>
 
-    <polygon class="ndia" points="145,150 231,176 145,202 59,176"/>
-    <text class="tc" x="145" y="180" text-anchor="middle">pa_amt &gt; 0?</text>
-    <text class="sm" x="240" y="169">예</text>
-    <path class="arr" d="M231,176 L300,176" marker-end="url(#ah)"/>
-    <rect class="nblue" x="302" y="159" width="126" height="34" rx="9"/>
-    <text class="t" x="365" y="180" text-anchor="middle">'소액' 출력</text>
-    <text class="sm" x="153" y="220">아니오</text>
-    <path class="arr" d="M145,202 L145,231" marker-end="url(#ah)"/>
+    <g data-node="d2">
+      <polygon class="ndia" points="145,150 231,176 145,202 59,176"/>
+      <text class="tc" x="145" y="180" text-anchor="middle">pa_amt &gt; 0?</text>
+    </g>
+    <g data-node="y2">
+      <text class="sm" x="240" y="169">예</text>
+      <path class="arr" d="M231,176 L300,176" marker-end="url(#ah)"/>
+    </g>
+    <g data-node="b2">
+      <rect class="nblue" x="302" y="159" width="126" height="34" rx="9"/>
+      <text class="t" x="365" y="180" text-anchor="middle">'소액' 출력</text>
+    </g>
+    <g data-node="n2">
+      <text class="sm" x="153" y="220">아니오</text>
+      <path class="arr" d="M145,202 L145,231" marker-end="url(#ah)"/>
+    </g>
 
-    <rect class="namber" x="70" y="232" width="150" height="34" rx="9"/>
-    <text class="t" x="145" y="254" text-anchor="middle">'0 또는 음수' 출력</text>
+    <g data-node="b3">
+      <rect class="namber" x="70" y="232" width="150" height="34" rx="9"/>
+      <text class="t" x="145" y="254" text-anchor="middle">'0 또는 음수' 출력</text>
+    </g>
   </svg>
 
   <p class="note"><b>마름모</b>=조건(<code>IF</code>·<code>ELSEIF</code> 줄), <b>사각형</b>=실행할 <code>WRITE</code> 줄. <code>pa_amt &gt; 1000</code>이 참이면 거기서 끝입니다. 아래 <code>ELSEIF/ELSE</code>는 보지 않습니다. 어느 가지로 가든 실행 후 <b><code>ENDIF</code>에서 하나로</b> 합쳐집니다.</p>
 </div>
+<script>
+(function(){
+  var num=document.getElementById('amt'), rng=document.getElementById('amtr');
+  var out=document.querySelector('[data-out]'), valTxt=document.querySelector('[data-val]');
+  var nodes=document.querySelectorAll('[data-node]');
+  // 값 → 켜질 노드 집합 + 설명(첫 참 가지 하나만)
+  function routeOf(v){
+    if(v>1000)  return {on:['d1','y1','b1'],
+      msg:'<code>pa_amt &gt; 1000</code> → <b>참</b> · 출력: <b>\'큰 금액\'</b> (아래 ELSEIF/ELSE는 아예 보지 않습니다)'};
+    if(v>0)     return {on:['d1','n1','d2','y2','b2'],
+      msg:'<code>pa_amt &gt; 1000</code> → 거짓 → <code>pa_amt &gt; 0</code> → <b>참</b> · 출력: <b>\'소액\'</b>'};
+    return {on:['d1','n1','d2','n2','b3'],
+      msg:'두 조건 모두 거짓 → <code>ELSE</code>로 · 출력: <b>\'0 또는 음수\'</b>'};
+  }
+  function paint(){
+    var v=parseInt(num.value,10); if(isNaN(v)) v=0;
+    var r=routeOf(v);
+    nodes.forEach(function(g){
+      var on=r.on.indexOf(g.dataset.node)>=0;
+      g.classList.toggle('dim',!on); g.classList.toggle('hot',on);
+    });
+    valTxt.textContent='pa_amt = '+v;
+    out.innerHTML=r.msg;
+  }
+  function sync(v){ num.value=v; rng.value=Math.max(-500,Math.min(3000,v)); paint(); }
+  num.addEventListener('input',function(){ var v=parseInt(num.value,10); if(!isNaN(v)) rng.value=Math.max(-500,Math.min(3000,v)); paint(); });
+  rng.addEventListener('input',function(){ num.value=rng.value; paint(); });
+  document.querySelectorAll('.sim__b').forEach(function(b){
+    b.addEventListener('click',function(){ sync(parseInt(b.dataset.v,10)); });
+  });
+  paint();
+})();
+</script>
 <script src="../_engine/_autoheight.js" defer></script>
 </body>
 </html>

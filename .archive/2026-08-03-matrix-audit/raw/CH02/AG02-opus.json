@@ -1,0 +1,115 @@
+{
+  "agent": "AG02",
+  "model": "opus",
+  "target": "CH02",
+  "persona_ack": "나는 준호다 — 배운 건 그 자리에서 직접 해봐야 직성이 풀리는 실습형 학습자. CH02 여섯 레슨의 본문 코드·설명과 임베드 위젯 8개를 브라우저에서 실제로 눌러 가며 대조했고, 체험 공백·불일치·헛체험·위젯 결함 네 갈래에 한해서만 발견을 보고한다. 눌러 보지 않고 짐작한 것은 발견으로 올리지 않았다.",
+  "method": "브라우저 실조작 + 렌더 DOM 측정(최강 수준). 하네스 로컬 서버(http://localhost:8143)에서 위젯 8개를 전부 실제 로드해 javascript_tool로 렌더 DOM을 측정하고 이벤트를 조작했다 — var-box 3단계 토글(L01-S02)·2단계 토글(L02-S01), len-shape-grid 샘플 칩 전환·offset 4종 클릭·부분 쓰기 토글(L03-S01), type-stamp DECIMALS 2↔3 전환·타입 대입 오류 버튼(L04-S01), text-symbol-lab 등록×언어 4조합 전수(L06-S02), fill-blank 4가지 입력 채점·정답보기·다시하기(L06-S01), 정적 패널 2종은 상호작용 요소 개수 실측(L01-S01·L05-S01). read_console_messages로 콘솔 오류 0건 확인. 초기 뷰포트가 0x0으로 보고돼 read_page 접근성 트리가 비었고 스크린샷·좌표 클릭이 불가해, DOM 측정과 element.click()/input 이벤트 디스패치로 대체했다(1280x900 리사이즈 후에도 동일 방식 유지). 병행해 대상 MD 7개·위젯 HTML 8개·공통 엔진 JS 5종을 소스 정독했고, 보고한 인용문 8건은 node 스크립트로 원문에 literal 존재하는지 대조 검증했다.",
+  "errors": [
+    "read_page가 Viewport 0x0으로 빈 접근성 트리를 반환해 좌표 기반 실클릭·스크린샷 경로는 사용 불가했다. javascript_tool의 렌더 DOM 측정과 실제 이벤트 디스패치(element.click(), input 이벤트)로 대체했고, 위젯 8개 검증 자체는 모두 완료했다."
+  ],
+  "files_read": [
+    "content/abap/CH02/_chapter.md",
+    "content/abap/CH02/CH02-L01.md",
+    "content/abap/CH02/CH02-L02.md",
+    "content/abap/CH02/CH02-L03.md",
+    "content/abap/CH02/CH02-L04.md",
+    "content/abap/CH02/CH02-L05.md",
+    "content/abap/CH02/CH02-L06.md",
+    "embeds/abap/CH02-L01-S01.html",
+    "embeds/abap/CH02-L01-S02.html",
+    "embeds/abap/CH02-L02-S01.html",
+    "embeds/abap/CH02-L03-S01.html",
+    "embeds/abap/CH02-L04-S01.html",
+    "embeds/abap/CH02-L05-S01.html",
+    "embeds/abap/CH02-L06-S01.html",
+    "embeds/abap/CH02-L06-S02.html",
+    "embeds/_engine/var-box.js",
+    "embeds/_engine/len-shape-grid.js",
+    "embeds/_engine/type-stamp.js",
+    "embeds/_engine/fill-blank.js",
+    "embeds/_engine/text-symbol-lab.js"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH02/CH02-L05.md",
+      "quote": "상수를 왼쪽에 두고 재대입(`gc_10 = 20.`)하면 **문법 오류**다. 실행 전 [[컴파일]] 단계에서 막힌다.",
+      "category": "체험 공백",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L05의 핵심 주장인 '상수는 재대입하면 문법 오류'를 학습자가 직접 해 볼 수 없다. 이 페이지의 유일한 임베드(CH02-L05-S01)는 조작 요소가 하나도 없는 정적 비교 패널이라, 레슨 전체에 누를 수 있는 것이 0개다.",
+      "evidence": "브라우저로 CH02-L05-S01.html을 로드해 DOM을 실측한 결과 querySelectorAll('button,input,select,textarea,a,[onclick],[tabindex]').length === 0이었고, 로드되는 스크립트는 높이 보정용 _autoheight.js 하나뿐이었다(엔진도 CSS 전용 before-after). 반면 같은 저장소의 type-stamp 엔진은 '도면에 값 대입 시도 → 구문 오류' 버튼을 이미 구현해 두었고, CH02-L04-S01에서 실제로 눌러 보니 정상 동작했다(판정 영역 클래스가 ts-verdict bad로 바뀌며 '구문 오류!' 문구 출력). 즉 필요한 패턴이 이미 있는데 L05만 정적으로 남아 있다.",
+      "suggestion": "CH02-L04-S01의 오류 데모 패턴을 재사용해 'gc_pi = 3.15. 대입해 보기' 버튼을 붙이고, 누르면 컴파일 단계에서 막히는 구문 오류 판정이 뜨게 한다. 대비로 같은 재대입을 DATA 변수(gv_pi)에 하면 조용히 성공해 이후 계산이 틀어지는 것까지 보여 주면, 본문이 말로만 설명하는 '왜 변수가 아니라 상수인가'가 체험으로 완성된다."
+    },
+    {
+      "seq": 2,
+      "file": "embeds/abap/CH02-L06-S01.html",
+      "quote": "data-hint=\"TEXT-nnn (세 자리) · '기본값'(nnn)\"",
+      "category": "위젯 결함",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "빈칸 채우기의 힌트가 오답을 유도한다. 첫 빈칸의 정답은 키워드 `TEXT`뿐인데(뒤의 `-001`은 입력칸 밖 고정 텍스트) 힌트는 `TEXT-nnn`이라고 알려 준다. 힌트를 그대로 따라 `TEXT-001`을 적으면 오답 처리되고, 실패 메시지가 같은 힌트를 다시 띄워 학습자가 빠져나올 단서가 없다.",
+      "evidence": "브라우저에서 실제로 값을 입력하고 채점하기를 눌러 측정했다. 빈칸1='TEXT-001', 빈칸2='001' → 출력 '✗ 1/2 정답. TEXT-nnn (세 자리) · \\'기본값\\'(nnn)', 빈칸1 클래스가 'blank bad'로 표시됐다. 빈칸1을 'TEXT'로만 바꾸자 즉시 '✓ 정답입니다!'로 전환됐다. 판정 로직 자체는 건전하다 — fill-blank.js의 norm()이 소문자화 비교라 'text'도 정답 처리되고(ABAP은 대소문자 무관이라 타당), 빈칸2에 '1'을 넣으면 오답이라 본문의 '세 자리 번호' 규칙과도 맞는다. 문제는 판정이 아니라 안내문이다.",
+      "suggestion": "① 힌트를 빈칸 단위 표현으로 바꾸거나(예: '키워드만 — 번호는 뒤에 이미 적혀 있음'), ② data-answer가 'TEXT'와 'TEXT-001'을 함께 허용하도록 하거나, ③ 입력 범위를 `TEXT-001` 전체로 넓혀 `-001` 고정 텍스트를 없앤다. 셋 중 ③이 힌트 문구를 그대로 살릴 수 있어 가장 깔끔하다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH02/CH02-L02.md",
+      "quote": "`I`는 정수라 나눗셈 결과가 **반올림**된다.",
+      "category": "체험 공백",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L02가 front-matter introduces에 정식으로 올린 '정수 나눗셈 반올림'(7 / 2 → 4)에 체험이 없다. 이 레슨의 유일한 임베드는 선언 직후 기본값과 대입 후 모습을 토글할 뿐 연산을 다루지 않아, 레슨에서 가장 놀라운 함정이 정적 코드로만 남는다.",
+      "evidence": "브라우저 실측 — CH02-L02-S01은 박스 5개(string·i·f·d·t)와 2단계 토글(선언 직후 ↔ 값을 넣은 뒤)이 전부이고 산술 요소가 0이다. 위젯 소스 상단 주석도 '게이팅: … 연산·P 타입 미사용'이라고 스스로 밝힌다. 게다가 이 함정은 다음 레슨에서 같은 식을 P로 다시 계산해(gv_amt = 7 / 2 → 3.50) 대비시키는 구조인데, 그 대비 역시 CH02-L03-S01에 없다 — 실측 결과 P 행은 sample '123.45' 고정이고 값 변경 칩 자체가 렌더되지 않는다(엔진이 kind==='p'일 때 칩을 건너뜀).",
+      "suggestion": "L02 위젯에 `gv_r TYPE i` 한 칸을 더 두고 `gv_r = 7 / 2.`를 실행하면 3.5가 아니라 4가 담기는 걸 눈으로 보여 준다(P는 L03 도입이므로 여기선 I만 써서 게이팅 유지). 그리고 L03의 P 행에 '7 / 2' 샘플을 추가하면 4 vs 3.50 대비가 체험으로 이어져 '왜 P가 필요한가'가 살아난다."
+    },
+    {
+      "seq": 4,
+      "file": "embeds/abap/CH02-L01-S02.html",
+      "quote": "{ name: 'gv_price', type: 'p DECIMALS 2',",
+      "category": "불일치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "같은 변수명 gv_price인데 타입 표기가 본문과 다르다. 본문은 `DATA gv_price TYPE p LENGTH 8 DECIMALS 2.`로 적는데 위젯 박스 라벨은 LENGTH가 빠진 `TYPE p DECIMALS 2`로 렌더된다.",
+      "evidence": "브라우저 실측 — 세 번째 박스의 .vb__type 텍스트가 'TYPE p DECIMALS 2', 선언 직후 기본값 '0.00', 대입값 \"'99.90'\"이었다. 문법 자체는 유효하다(P는 LENGTH 생략 시 기본 8바이트). 다만 CH02-L03은 P를 '길이와 소수 자릿수를 함께 지정해야 완성되는 Incomplete 타입'으로 가르치고 흔한 실수로 '길이 누락'을 드는데, 위젯이 그 반대 표기를 두 레슨 앞에서 먼저 보여 주는 셈이다. 덧붙여 이 위젯은 'DATA로 변수 선언' 절 직후에 놓이는데 P·DECIMALS는 L03, 소수 리터럴을 따옴표로 감싸는 이유는 L02에서야 설명된다 — 실제로 L02 위젯 note는 그 이유를 적어 두었으나 이 위젯 note에는 없다.",
+      "suggestion": "type을 'p LENGTH 8 DECIMALS 2'로 본문과 맞춘다. 더 나아가 이 시점에 이미 배운 타입(string·i)만으로 세 박스를 구성하고 P 예시는 L03 위젯에 맡기면 학습 순서도 함께 정리된다."
+    },
+    {
+      "seq": 5,
+      "file": "embeds/abap/CH02-L03-S01.html",
+      "quote": "name:'gv_date', value:'20260630',",
+      "category": "불일치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "offset 실습에 쓰는 gv_date 값이 본문과 다르다. 본문은 `DATA gv_date TYPE c LENGTH 8 VALUE '20260623'.`로 선언해 놓고 자릿수를 따라가는데, 위젯의 같은 이름 변수는 '20260630'이라 +6(2)가 본문 기준의 '23'이 아니라 '30'을 집는다.",
+      "evidence": "브라우저에서 offset 버튼을 하나씩 눌러 측정했다 — 패널 상단이 \"gv_date = '20260630'\"이고 +6(2) 클릭 시 \"gv_date+6(2) → '30' 를 집었다\"가 출력됐다. 나머지 동작은 본문과 정확히 일치한다: +0(4) → '2026', +4(2) → '06', +7(2) → '범위 초과!' 판정(시작 7 + 길이 2 = 9 > 전체 8), 부분 쓰기 +6(2) = '01' → '20260601'. 즉 로직은 옳고 예시 리터럴만 어긋나 있다.",
+      "suggestion": "value를 '20260623'으로 바꿔 본문과 통일한다. 부분 쓰기 결과가 '20260601'인 것은 그대로 성립하므로 다른 설정은 손댈 필요가 없다."
+    },
+    {
+      "seq": 6,
+      "file": "embeds/abap/CH02-L05-S01.html",
+      "quote": "gv_c = 2 * <b>'3.1415926'</b> * 3.",
+      "category": "위젯 결함",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "비교 코드에 쓰인 gv_c·gv_a가 양쪽 칼럼 어디에도 선언돼 있지 않다. 바로 앞 L01이 '선언 안 한 변수 사용 → gv_xxx is unknown 오류'를 흔한 실수로 못 박았기 때문에, 화면 코드를 그대로 SE38에 옮겨 적는 실습형 학습자는 문법 오류를 만난다.",
+      "evidence": "렌더된 pre 텍스트를 실측한 결과 왼쪽 칼럼은 주석 '\" 반지름 3' 다음 곧장 대입문으로 시작하고, 오른쪽 칼럼도 CONSTANTS 한 줄 뒤 바로 대입문이다. 두 칼럼 어디에도 DATA gv_c / DATA gv_a가 없다. 같은 before-after 엔진을 쓰는 CH02-L01-S01은 오른쪽 칼럼에 'DATA gv_msg TYPE string.'을 포함하고 있어 대비된다. 참고로 CONSTANTS 선언 자체는 정확하다 — p LENGTH 8은 15자리를 담으므로 DECIMALS 7과 '3.1415926'이 문제없이 들어간다.",
+      "suggestion": "양쪽 칼럼 맨 위에 `DATA: gv_c TYPE p LENGTH 8 DECIMALS 2,` / `      gv_a TYPE p LENGTH 8 DECIMALS 2.` 두 줄을 넣어 그대로 따라 쳐도 돌아가게 한다."
+    },
+    {
+      "seq": 7,
+      "file": "content/abap/CH02/CH02-L01.md",
+      "quote": "`TYPE` 뒤에는 **타입 이름**을 적지만, `LIKE` 뒤에는 **이미 선언한 변수**를 적는다.",
+      "category": "체험 공백",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L01의 임베드 2개가 모두 레슨 앞부분에 몰려 있어, 뒤에 이어지는 세 절(VALUE 초기값·선언 체인·LIKE)의 코드에는 눌러 볼 것이 없다. 특히 LIKE는 front-matter introduces에 오른 정식 도입 개념이고 '원본이 바뀌면 따라 바뀐다'는 성질과 선언 순서 규칙까지 설명하는데, 확인할 체험이 없다.",
+      "evidence": "L01의 임베드는 '리터럴의 한계' 절의 CH02-L01-S01과 'DATA로 변수 선언' 절의 CH02-L01-S02 둘뿐이고, 그 뒤로 VALUE·체인·LIKE 코드블록이 이어진다. 실측한 CH02-L01-S02(var-box)는 변수 3개의 선언 직후 ↔ 대입 ↔ 재대입 3단계 토글만 제공하며 VALUE 초기값이나 LIKE 파생 변수 표현이 전혀 없다. 마침 var-box 엔진 설정에는 선언 직후 값을 덮어쓰는 init 필드가 이미 있어(설정 스키마 {name,type,value,value2?,init?}) VALUE 표현에 그대로 쓸 수 있다.",
+      "suggestion": "var-box 설정에 init으로 초기값을 준 변수 한 개(VALUE 10 → 선언 직후부터 0이 아닌 10)와 LIKE로 파생된 변수 한 개를 추가해, '초기값이 다르게 시작한다'와 '원본 타입을 바꾸면 짝 변수도 따라 바뀐다'를 같은 위젯에서 눌러 확인하게 한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "보강 권장",
+    "summary": "위젯 8개를 전부 로컬 서버에서 실제 로드해 눌러 봤고 콘솔 오류는 0건이었다. 완성도가 높은 축이 분명하다 — L03 길이 칸 실험실은 P의 바이트 레이아웃을 '0000000000123.45+'로 정확히 그려 내고(15자리 = 8×2−1, 마지막 반 칸은 부호) offset 범위 초과와 부분 쓰기까지 본문과 한 치도 어긋나지 않았다. L04는 DECIMALS 한 줄을 바꾸면 변수 3개가 함께 따라오는 '한 곳에서 관리'를 정확히 체현했고, L06-S02는 등록×언어 4조합 전수에서 미등록 시 TEXT-001은 빈칸·'금액'(001)은 기본값 fallback으로 갈리는 본문 표를 그대로 재현했다. 남은 문제는 두 갈래다. ① 체험의 공백 — L05는 페이지 전체에 조작 요소가 0개라 '상수 재대입 = 문법 오류'라는 이 레슨의 존재 이유를 해 볼 수 없고, L02는 introduces에 올린 정수 나눗셈 반올림(7/2 → 4)이 정적 코드로만 남으며, L01은 VALUE·체인·LIKE가 위젯 뒤에 방치된다. ② 국소 결함 — L06-S01은 힌트가 오답(TEXT-001)을 유도하고, L01-S02의 P 타입 표기와 L03-S01의 gv_date 값이 본문과 어긋난다. ②는 설정값·문구 수준이라 즉시 고칠 수 있지만 ①은 새 상호작용을 붙여야 해 '경미 수정'을 넘어선다. 다만 재사용할 패턴(type-stamp의 오류 데모, var-box의 init 필드)이 이미 저장소에 있어 보강 비용은 낮다. 억지로 채우지 않았다 — L03·L04·L06-S02에서는 대조할 만한 불일치를 찾지 못했고, 그건 결함이 아니라 잘 만들어졌다는 뜻이다."
+  }
+}

@@ -1,0 +1,147 @@
+{
+  "agent": "AG05",
+  "model": "opus",
+  "target": "CH04",
+  "persona_ack": "나는 20년차 학습 교재·코스 설계 전문가로서 발견자 AG05 역할을 수행했다. CH04를 교수설계 관점 5축(챕터 구성·섹션 흐름·복습/예습 장치·불편→해결 서사·인지 부하)에서만 감사했고, 문법 정확성·사실검증은 내 소관이 아니라 판단 근거로만 참고했다. 읽기 전용·블라인드 원칙을 지켜 대상 8개 파일 외에는 열람하지 않았고, 파일 수정·웹 검색·타 감사 산출물 조회는 하지 않았다. 형식 강제(5단계 흐름의 기계적 준수)는 결함으로 삼지 않고, 학습 효과를 실제로 해치는 구조 문제만 보고했다.",
+  "method": "Read 도구로 대상 8개 파일(_chapter.md 및 CH04-L01～L07.md) 전문 정독(부분 읽기·요약 없음). front-matter(introduces·prereq·foreshadow·advanceUse·prevRel) 선언과 본문 섹션 구조·코드 블록·::embed 배치·레슨 간 상호 링크를 대조해 구성/흐름/부하를 판정. 외부 네트워크·빌드 산출물·다른 감사 산출물 미사용.",
+  "errors": [
+    "::embed 위젯 내부 콘텐츠(embeds/abap/CH04-*.html)는 대상 파일 목록 밖이라 열람하지 않았다 — 위젯 안에 코드가 어떻게 제시되는지는 미검증이며, 이에 의존하는 발견(seq 8)은 confidence='추정'으로 낮춰 표기했다."
+  ],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L07.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH04/_chapter.md",
+      "quote": "intro: \"값을 받았지만 계산·분기·반복을 못 한다. 연산자와 흐름 제어로 프로그램에 '판단'과 '되풀이'를 넣는다.\"",
+      "category": "챕터 구성 · 챕터 intro의 동기 판매",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "챕터 intro가 파는 축은 '계산·분기·반복' 셋뿐인데 실제 챕터에는 문자열 처리(L02)라는 넷째 축이 들어 있다. 7개 레슨 중 한 레슨이 챕터의 동기 서사 바깥에 놓여 '이걸 왜 지금 배우지?'가 해소되지 않는다.",
+      "evidence": "intro·title(연산자와 흐름 제어) 어디에도 문자열이 없고, 같은 파일 keywords도 [\"연산자\",\"IF\",\"CASE\",\"DO\",\"WHILE\",\"디버깅\",\"구구단\"]으로 문자열 키워드가 0개다. 반면 CH04-L02는 CONCATENATE·SPLIT·FIND·REPLACE·CONDENSE 등 12개 개념을 introduces에 올린 정식 레슨이다. L02 자체 도입부도 '숫자를 계산했으니, 이번엔 문자열이다'라는 순서상 전환일 뿐 필요성을 팔지 않고(prevRel: parallel로 정직하게 선언된 점은 좋음), 종합실습 L07의 prereq에도 L02가 없어 챕터 안에서 회수되지 않는다.",
+      "suggestion": "① intro를 '계산·분기·반복 + 값 다듬기(문자열)'까지 포괄하도록 한 문장 확장하고 keywords에 문자열 대표어(CONCATENATE·SPLIT 등)를 넣거나, ② 문자열을 이 챕터에서 떼어 별도 위치로 옮기는 두 방향 중 택일. 유지한다면 L02 도입부에 '왜 지금 문자열인가'(예: 입력받은 값을 화면·메시지로 조립해야 한다)를 한 문단 추가."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH04/CH04-L04.md",
+      "quote": "비교 전에 `TRANSLATE pa_grade TO UPPER CASE.`([앞 레슨](CH04-L02.html))로 통일한다.",
+      "category": "빠진 징검다리 · 복습 장치",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "학습자가 문법을 한 번도 본 적 없는 TRANSLATE 구문을 '앞 레슨' 링크와 함께 그대로 쓰라고 지시한다. 링크를 따라가도 문법이 없어 복습 장치가 헛돈다.",
+      "evidence": "CH04-L02는 TRANSLATE를 '이 밖에 SHIFT(밀기)·TRANSLATE(대소문자/치환)·OVERLAY(겹쳐쓰기)…도 같은 갈래의 도구다'라는 한 문장 나열로만 스치고, 예제·구문(TO UPPER CASE)·실행 결과를 전혀 보여주지 않는다. 같은 문장에 묶인 SHIFT·OVERLAY·WRITE TO도 동일하게 이름만 존재한다. 그 상태에서 L04는 실전 처방으로 완성 구문을 요구하므로, 입문자는 'TO UPPER CASE'가 어디서 온 절인지 확인할 곳이 없다.",
+      "suggestion": "L02의 나열 문장을 최소한 TRANSLATE만이라도 2～3줄 예제(입력→결과)로 승격하거나, L04 쪽 문구를 '대소문자 통일이 필요하다(방법은 문자열 레슨의 TRANSLATE)'처럼 개념 지시로 낮춘다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH04/CH04-L01.md",
+      "quote": "## 대입과 초기화 — `=` 와 `CLEAR`",
+      "category": "섹션 흐름 · 순서 역전(왜→무엇)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "챕터의 첫 레슨이 동기(불편) 대신 문법으로 시작해 '왜 필요한가 → 무엇인가' 순서가 뒤집혔다. 챕터 진입 화면에서 학습자가 먼저 만나는 것이 필요성이 아니라 대입·CLEAR 문법이다.",
+      "evidence": "L01의 첫 섹션이 이 대입/초기화 문법이고, 불편 제기 섹션인 '## 값을 받았지만, 계산을 못 한다'(‘입력받은 두 수를 더하고 싶고…’)는 그다음에 온다. front-matter는 prevRel: pain-solution으로 선언되어 있어 선언과 실제 배치도 어긋난다. 첫 섹션 첫 문장이 '계산에 들어가기 전에 가장 기본부터 짚고 가자'로, 저자 스스로 이 섹션이 본론 이전의 준비임을 밝히고 있어 순서를 바꿔도 내용 손실이 없다.",
+      "suggestion": "'값을 받았지만, 계산을 못 한다' 섹션을 레슨 맨 앞으로 올리고, 대입·CLEAR를 그 해결의 첫 단계(= 계산 결과를 어디에 담나)로 이어 붙인다. 두 섹션의 순서만 교체하면 되며 본문 수정은 거의 없다."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH04/CH04-L03.md",
+      "quote": "비교 결과를 바로 플래그에 담고 싶으면 `XSDBOOL( )`(또는 `BOOLC( )`)를 쓴다.",
+      "category": "인지 부하 · 레슨당 신규 개념 과다",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "'IF와 조건식' 레슨 말미에 boolean 표현 체계(abap_bool·abap_true/abap_false·CONSTANTS·XSDBOOL·BOOLC)가 통째로 얹혀, 이 레슨의 핵심(조건 판단)과 별개인 신규 개념 묶음이 한 번에 5개 더 들어온다. 특히 XSDBOOL과 BOOLC를 차이 설명 없이 괄호로 병기해 '둘 중 뭘 써야 하나'라는 미해결 부하를 남긴다.",
+      "evidence": "같은 레슨이 이미 비교연산자 6종(기호·영문 2표기)·AND/OR/NOT·괄호 규칙·IS INITIAL·IF/ELSEIF/ELSE를 도입한 뒤다. introduces도 'ABAP boolean(abap_bool·abap_true/abap_false·'X'/공백·BOOLC/XSDBOOL)' 한 줄에 5개를 몰아 선언한다. 플래그 변수는 이 레슨의 어떤 불편도 해결하지 않으며(IF는 flag 없이도 성립), foreshadow에 'abap_bool 재등장(CH10 모듈화)'가 있어 실제 활용처도 뒤 챕터다.",
+      "suggestion": "abap_bool·abap_true/abap_false까지만 남기고 XSDBOOL/BOOLC는 한 줄 예고(L1)로 낮추거나, boolean 표현 전체를 플래그가 실제로 필요해지는 지점(CH10 모듈화 또는 별도 짧은 레슨)으로 이관. 유지한다면 XSDBOOL을 표준으로 하나만 제시하고 BOOLC는 '옛 코드에서 보이는 것' 정도로 각주 처리."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH04/CH04-L03.md",
+      "quote": "IF ( pa_amt > 5000 OR pa_vip = 'X' ) AND NOT pa_block = 'X'.",
+      "category": "인지 부하 · 예제 설계(미선언 변수)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "논리 연산을 처음 만나는 예제에 선언된 적 없는 변수 두 개(pa_vip·pa_block)가 갑자기 등장한다. 그대로 따라 치면 실행되지 않고, 동시에 괄호·OR·AND·NOT·'X' 관례까지 한 줄에 겹쳐 첫 노출 부하가 높다.",
+      "evidence": "이 레슨에서 선언된 입력은 앞 코드 블록의 'PARAMETERS pa_amt TYPE i.' 하나뿐이며, pa_vip·pa_block은 레슨 어디에도 PARAMETERS/DATA 선언이 없다. 게다가 'X'로 참을 표현하는 관례는 이 코드보다 한참 뒤의 'boolean 타입 대신 abap_bool' 섹션에서야 설명되므로, 학습자는 아직 뜻을 모르는 리터럴을 조건식 안에서 먼저 만난다.",
+      "suggestion": "예제 블록 앞에 pa_vip·pa_block의 PARAMETERS 선언 2줄을 넣고, 첫 노출은 AND/OR 각각의 단순 예로 나눈 뒤 괄호+NOT 조합은 그다음 단계로 분리한다. 'X' 관례가 필요하면 이 예제를 abap_bool 섹션 뒤로 옮기는 편이 순서상 맞다."
+    },
+    {
+      "seq": 6,
+      "file": "content/abap/CH04/CH04-L05.md",
+      "quote": "프로그램 어디서나 읽을 수 있고, 자주 쓰는 것들은 외워 두면 좋다.",
+      "category": "인지 부하 · 레슨 범위 이탈(목록 암기)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "루프 레슨 한복판에서 SY 시스템 변수 9종 표를 통째로 제시하고 암기를 권한다. 이 레슨에 실제로 필요한 것은 sy-index 하나뿐이며, 나머지 8종은 '불편을 먼저 겪고 해결책으로 배운다'는 이 커리큘럼의 설계 원칙과 정반대로 분류 목록을 먼저 외우게 한다.",
+      "evidence": "표에는 sy-datum·uzeit·uname·mandt·langu·tcode·repid·subrc가 함께 나열되는데, 이 중 어느 것도 DO/WHILE 학습에 쓰이지 않는다. sy-mandt 행은 '쓰임 예' 칸이 '—'로 비어 있어 저자 스스로 이 시점의 용처를 대지 못하고, sy-subrc는 '0이면 성공(뒤에서 핵심)'·'뒤 챕터에서 본격적으로 활용한다'로 두 번이나 유예된다(foreshadow에도 CH06·CH08로 선언). 즉 표의 대부분이 이 레슨에서 회수되지 않는 예고성 목록이다.",
+      "suggestion": "이 레슨에는 sy-index(+ 필요 시 sy-datum) 정도만 남기고, 전체 SY 목록은 각 필드가 실제로 필요해지는 레슨에서 도입하거나 레퍼런스(글로서리·부록)로 빼서 '외워 두면 좋다'는 지시를 걷어낸다."
+    },
+    {
+      "seq": 7,
+      "file": "content/abap/CH04/CH04-L07.md",
+      "quote": "prereq: [\"CH04-L01\", \"CH04-L03\", \"CH04-L05\", \"CH04-L06\"]",
+      "category": "복습 장치 · 챕터 통합(종합 실습의 회수 범위)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "챕터를 닫는 '종합 실습'이 7개 레슨 중 3개(L02 문자열·L04 CASE, 그리고 사실상 L03 IF)를 회수하지 않는다. 챕터 마지막 복습 장치가 절반만 작동해, 분기(판단)를 배운 성취가 최종 산출물에서 확인되지 않는다.",
+      "evidence": "prereq에서 L02·L04가 빠져 있고, 본문에서도 CASE와 문자열 처리는 한 번도 쓰이지 않는다. IF는 3단계 설명에서 '1~9를 다 돌며 IF로 범위 밖을 거르는 것보다 효율적이다'라며 오히려 쓰지 않는 방법으로만 언급되고, '흔한 실수와 점검'의 '범위 입력 역전 → … 입력 점검' 역시 IF 가드를 요구하는 자리인데 실습에 반영되지 않는다. 레슨 도입부는 '산술·판단·반복·디버깅을 한 번에 쓸 차례다'라고 선언하므로 선언과 실제 통합 범위가 어긋난다.",
+      "suggestion": "3단계에 IF 입력 가드(pa_from > pa_to면 메시지 후 종료)를 한 단계로 넣어 판단을 실제로 회수하고, 결과 한 줄을 CONCATENATE/&&로 조립하는 선택 과제를 붙이면 L02·L03이 함께 살아난다. 통합을 넓히지 않을 거라면 도입 문구를 '산술·반복·디버깅'으로 정직하게 좁힌다."
+    },
+    {
+      "seq": 8,
+      "file": "content/abap/CH04/CH04-L05.md",
+      "quote": "- **`ENDDO`/`ENDWHILE` 짝** → `DO`는 `ENDDO`, `WHILE`은 `ENDWHILE`.",
+      "category": "섹션 흐름 · 참조 가능한 완성 예제(worked example) 부재",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "이 레슨 본문에는 DO·WHILE 루프의 완성된 코드 형태가 한 번도 제시되지 않는데, '흔한 실수' 항목은 학습자가 본 적 없는 형태(블록 열고 닫기 짝)의 실수를 경고한다. 입문자가 되돌아와 확인할 정적 참조 예제가 본문에 없다.",
+      "evidence": "L05의 코드 블록은 'WRITE: / '오늘은', sy-datum, …' 한 개뿐이고, DO·WHILE·EXIT/CONTINUE/CHECK는 모두 산문과 표, ::embed 위젯으로만 제시된다(문법은 인라인 코드 조각 'DO n TIMES.'·'ENDDO' 수준). 같은 챕터의 L01～L04는 모두 본문에 ```abap 블록으로 완성 예제를 두고 있어 레슨 간 제시 방식도 어긋난다. 다만 위젯 제목이 '흐름과 코드'라 위젯 안에는 코드가 있을 가능성이 높고, 위젯 내부는 감사 대상 밖이라 확인하지 못했다 — 그래서 확신도를 낮췄다.",
+      "suggestion": "DO와 WHILE 각각에 5줄 내외의 최소 완성 예제(선언→루프→ENDDO/ENDWHILE→출력)를 본문 코드 블록으로 추가한다. 체험 위젯은 그대로 두고, 본문에는 복습 시 눈으로 훑을 앵커만 두면 충분하다."
+    },
+    {
+      "seq": 9,
+      "file": "content/abap/CH04/CH04-L06.md",
+      "quote": "::embed CH04-L06-S01 | F5로 한 줄씩 실행하며 변수 값을 관찰 — 디버거 체험::",
+      "category": "섹션 흐름 · 체험 배치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "체험 위젯의 주제(F5 한 줄 실행 + 변수 관찰)가 두 섹션 앞의 내용인데 배치는 WATCH POINT 섹션 끝이라, 설명 직후 곧바로 해보는 연결이 끊긴다.",
+      "evidence": "이 임베드가 다루는 F5 단계 실행은 '## 한 줄씩 실행하기 — F5 · F6 · F7 · F8', 변수 관찰은 '## 변수 값 보기 (그리고 바꾸기)' 섹션의 내용이다. 그런데 임베드는 그 뒤의 '## WATCH POINT — 값이 바뀌는 순간 잡기' 마지막 줄에 놓여, 정작 WATCH POINT 체험은 아니면서 앞 두 섹션의 확인 기회는 뒤로 밀린다. 같은 챕터의 L03은 섹션마다 해당 임베드를 붙여 대비된다.",
+      "suggestion": "임베드를 '변수 값 보기' 섹션 끝(F5 설명 직후)으로 올린다. WATCH POINT는 그 뒤에 이어져도 흐름이 자연스럽다."
+    },
+    {
+      "seq": 10,
+      "file": "content/abap/CH04/CH04-L06.md",
+      "quote": "introduces: [\"BREAK-POINT\", \"/h\", \"F5(Step)/F6(Execute)/F7(Return)/F8(Continue)\", \"WATCH POINT\", \"변수 값 확인/수정\"]",
+      "category": "챕터 구성 · 학습 경계 선언과 본문 불일치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "본문이 Short Dump와 ST22라는 별개 개념 2종을 정식 도입(정의·구성요소·조회 경로)하는데 introduces에는 선언되어 있지 않다. 레슨의 실제 범위가 선언보다 넓어, 이후 챕터에서 '이미 배운 것'을 판별하는 근거가 비게 된다.",
+      "evidence": "'## 프로그램이 갑자기 죽으면 — Short Dump와 ST22' 섹션은 덤프의 정의·오류 종류(BCD_ZERODIVIDE)·멈춘 줄·변수 값·호출 경로, 그리고 ST22(Dump Analysis)의 용도까지 설명한다. 이는 예고(L1) 수준이 아니라 정식 도입인데 front-matter의 introduces·keywords 어디에도 Short Dump·ST22가 없다(keywords도 BREAK-POINT·/h·F키·WATCH POINT까지만).",
+      "suggestion": "introduces에 'Short Dump'·'ST22(Dump Analysis)'를 추가하고 keywords에도 반영한다. 내용 자체는 L01의 0 나눗셈 경고와 잘 이어져 배치는 적절하다."
+    },
+    {
+      "seq": 11,
+      "file": "content/abap/CH04/CH04-L07.md",
+      "quote": "시작·끝 단을 입력받아 그 범위만 출력한다. `pa_from`부터 시작해 **필요한 횟수만큼만**",
+      "category": "인지 부하 · 압축 설명",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "종합 실습의 마지막 단계에서 알고리즘(반복 횟수 계산식)과 최적화 비교(IF 필터링 대비 효율)를 코드 없이 한 문단에 압축했다. 입문자의 첫 종합 실습 마무리 지점에서 부하가 급격히 오른다.",
+      "evidence": "해당 문단은 'pa_to - pa_from + 1번 돌고, 회차 끝에 단을 1씩 올린다'는 계산식과 '1~9를 다 돌며 IF로 범위 밖을 거르는 것보다 효율적이다'라는 대안 비교를 두 문장에 담고 곧바로 빈칸 채우기 임베드로 넘어간다. 앞선 1·2단계가 각각 한 가지 새 요소(DO 반복, 중첩)만 추가한 것에 비해 이 단계만 새 계산식+누적 변수+효율 논거가 동시에 들어온다.",
+      "suggestion": "반복 횟수 계산을 구체 숫자로 한 번 풀어 보이고(예: 3～5단이면 5 - 3 + 1 = 3회), 효율 비교는 '더 알아보기' 접기나 정리 섹션의 한 줄로 분리한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH04의 교수설계 척추는 건강하다. L03(늘 같은 일만 하는 프로그램)·L05(72줄 복붙)·L06(WRITE 찍기의 한계)·L07(변수 세 개를 따로 들고 다님 → Structure)의 도입/마무리 불편은 억지가 없고 진짜 결핍에서 출발하며, 예고는 모두 1～2문장·코드 없음으로 절제돼 있고, 형제 관계 레슨은 prevRel: parallel과 'IF냐 CASE냐 — 도구 선택'처럼 정직하게 표기돼 억지 불편 체인을 만들지 않았다. 발견은 치명·높음 없이 중간 8·낮음 3이다. 핵심은 세 갈래다. ① 프레이밍: 챕터 intro와 keywords가 문자열(L02) 축을 전혀 팔지 않아 한 레슨이 서사 밖에 뜬다. ② 회수 실패: 종합 실습 L07이 IF·CASE·문자열을 회수하지 않아 챕터 복습 장치가 반쪽이고, L02가 이름만 스친 TRANSLATE를 L04가 완성 구문으로 쓰라고 지시해 징검다리가 비었다. ③ 국소 부하: L03의 boolean 표현 5종 동시 도입과 미선언 변수 예제, L05의 SY 변수 9종 암기 권유가 레슨 주제 밖에서 부하를 올린다. 대부분 섹션 순서 교체(L01)·표 축소(L05)·선언 2줄 추가(L03)·문구 조정 수준의 국소 수정으로 해소되며, 추가 집필이 필요한 것은 L05 루프 완성 예제와 L07 통합 확대 두 곳뿐이라 재집필·전면 보강 단계는 아니다."
+  }
+}

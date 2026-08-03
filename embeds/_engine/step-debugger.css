@@ -1,5 +1,8 @@
 /* step-debugger — 한 줄씩 실행 트레이스 디버거. 엔진=step-debugger.js(.stepper-config JSON 읽음).
-   자체 postHeight 없음 → 위젯에 _autoheight.js 동반. _base.css=토큰만 → 리셋·프리미티브 자체 보유. */
+   자체 postHeight 없음 → 위젯에 _autoheight.js 동반. _base.css=토큰만 → 리셋·프리미티브 자체 보유.
+   섹션: 버튼·프로그레스 / 코드+토큰색 / 변수 / itab 워치 / 콘솔 / 레이아웃 / 다크 / Watchpoint(맨 아래) / note.
+   ⚠️ 이 파일은 gen-embed-dark가 "수동 html.dark 보유"로 스킵 → 새 규칙은 var() 토큰만 쓰거나
+      위 html.dark 블록에 짝을 직접 추가할 것. (Watchpoint 섹션은 전부 토큰이라 짝 불필요.) */
 *{box-sizing:border-box;} html,body{margin:0;}
 body{font-family:var(--font);color:var(--ink);background:transparent;line-height:1.6;}
 .wrap{padding:14px;}
@@ -123,6 +126,37 @@ html.dark .itw__t tr.new td.ix{color:#34d399;}
 html.dark .itw__t tr.chg td{animation:rowchgDark 1s ease;}
 html.dark .itw__t tr.focus td{background:rgba(251,191,36,.13);}
 html.dark .itw__t tr.focus td.ix{background:rgba(251,191,36,.2);color:#fbbf24;}
+
+/* ===== Watchpoint 레이어(선택) — 인스턴스에 [data-wp] 마크업이 있을 때만 엔진이 배선.
+   실제 디버거 절차와 같은 순서(만들기 버튼 → 변수 이름 → 저장 → 목록에서 확인·삭제).
+   색은 전부 var() 토큰 → 다크 자동 적응(위 html.dark 블록에 짝 규칙 불필요). ===== */
+.wp{border-top:1px solid var(--line);padding:11px 14px;background:color-mix(in srgb,var(--brand) 5%,var(--surface));}
+.wp__hd{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:8px;}
+.wp__ttl{font-size:.76rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--ink-soft);}
+.wp__b{border:1.4px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;
+       padding:5px 11px;font:inherit;font-size:.78rem;font-weight:700;cursor:pointer;}
+.wp__b:hover{border-color:var(--brand);color:var(--brand);}
+.wp__b--go{background:var(--brand);color:#fff;border-color:var(--brand);}
+.wp__b--go:hover{color:#fff;filter:brightness(1.08);}
+.wp__form{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:8px;}
+.wp__form[hidden]{display:none;}
+.wp__lb{font-size:.76rem;font-weight:700;color:var(--ink-soft);}
+.wp__in{font-family:var(--mono);font-size:.82rem;font-weight:700;color:var(--ink);background:var(--surface);
+        border:1.5px solid var(--line);border-radius:8px;padding:5px 9px;width:150px;}
+.wp__in:focus{outline:none;border-color:var(--brand);}
+.wp__list{display:flex;align-items:center;gap:6px;flex-wrap:wrap;min-height:26px;}
+.wp__chip{display:inline-flex;align-items:center;gap:5px;border:1.4px solid var(--amber);
+          background:color-mix(in srgb,var(--amber) 15%,var(--surface));color:var(--ink);border-radius:999px;
+          padding:3px 6px 3px 11px;font-family:var(--mono);font-size:.78rem;font-weight:800;}
+.wp__x{border:0;background:none;color:var(--ink-soft);cursor:pointer;font:inherit;font-size:.78rem;line-height:1;padding:2px 4px;border-radius:50%;}
+.wp__x:hover{color:var(--bad);}
+.wp__none{font-size:.76rem;color:var(--ink-soft);}
+.wp__none b{color:var(--ink);}
+.wp__msg{margin:9px 0 0;font-size:.8rem;font-weight:700;color:var(--ink-soft);border-radius:8px;padding:7px 10px;
+         background:color-mix(in srgb,var(--ink-soft) 9%,var(--surface));border:1px solid var(--line);}
+.wp__msg b{color:var(--ink);}
+.wp__msg.hit{color:var(--ink);background:color-mix(in srgb,var(--amber) 16%,var(--surface));border-color:color-mix(in srgb,var(--amber) 45%,var(--line));}
+.wp__msg.end{color:var(--ink);background:color-mix(in srgb,var(--accent) 12%,var(--surface));border-color:color-mix(in srgb,var(--accent) 40%,var(--line));}
 
 /* 하단 note (표준 패턴 — decision-tree와 동일) */
 .note{margin-top:11px;border-left:3px solid var(--brand);background:rgba(59,91,219,.06);border-radius:0 9px 9px 0;padding:9px 13px;font-size:.82rem;color:#2a3550;}

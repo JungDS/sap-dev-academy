@@ -21,19 +21,20 @@
 | CH01-L07-S01 | CH01-L07 | se93-tcode-create | SE93 T-code 생성→명령창 실행(Hello, ABAP!)+흔한실수 | ✅ |
 | CH01-L03-S01 | CH01-L03 | syntax-toggle-lab | 문법 상태 실험기 — 마침표 제거·별표 위치·인라인 *·키워드 소문자 토글→구문 검사 램프(ok/bad)+원인 설명 | ✅ |
 | CH02-L01-S01 | CH02-L01 | before-after | (등재 보완) 리터럴 반복 vs 변수 하나 — 값 바꿀 때 고칠 곳 비교 | ✅ |
-| CH02-L01-S02 | CH02-L01 | var-box | (등재 보완) 변수=타입 라벨 박스+값 쪽지 — 선언 직후(타입 기본값)↔값 대입 토글 | ✅ |
+| CH02-L01-S02 | CH02-L01 | var-box | (등재 보완) 변수=타입 라벨 박스+값 쪽지 — 선언 직후(기본값·`VALUE`)↔대입↔재대입 3단 토글 · `LIKE gv_price` 짝 변수·체인 선언 4박스 | ✅ |
 | CH02-L02-S01 | CH02-L02 | var-box | (재사용) Complete 타입 5종(STRING/I/F/D/T) 박스 — 모양+타입 기본값↔값 대입·D/T 자릿수 뼈대 | ✅ |
+| CH02-L02-S02 | CH02-L02 | int-div-lab | 정수 나눗셈 실험실 — 피제수·제수 입력/칩 → `I`(반올림 4) vs `P DECIMALS 2`(3.50) 결과 카드 대조·버림 언어 대조 줄·제수 0=실행 중 멈춤 | ✅ |
 | CH02-L03-S01 | CH02-L03 | len-shape-grid | 길이 칸 실험실 — C 패딩/잘림·N 앞 0·P 바이트 칸(2×len−1)+부호 반 칸·offset 하이라이트/범위 초과/부분 쓰기 | ✅ |
 | CH02-L04-S01 | CH02-L04 | type-stamp | TYPES 도면(0바이트)→DATA 실물 — DECIMALS 2↔3 토글 시 변수 3개 동시 반영·타입에 값 대입→오류 데모 | ✅ |
-| CH02-L05-S01 | CH02-L05 | before-after | 매직넘버 pi(줄마다 '3.1415926'·'…27'·'3.14' 제각각·오타) vs 상수 gc_pi 하나 — bad/good + 변수 덮어쓰기 주의 note | ✅ |
+| CH02-L05-S01 | CH02-L05 | before-after + const-lock-lab | 매직넘버 pi(줄마다 '3.1415926'·'…27'·'3.14' 제각각·오타) vs 상수 gc_pi 하나 — bad/good(양쪽 gv_c·gv_a 선언 포함) + **상수 재대입 시도 실험**(문장 4장 → `gc_max_seats = 20.`만 문법 오류·값 불변) + 변수 덮어쓰기 주의 note | ✅ |
 | CH02-L06-S01 | CH02-L06 | fill-blank | Text Symbol 빈칸(TEXT·001) | ✅ |
 | CH02-L06-S02 | CH02-L06 | text-symbol-lab | Text Symbol 실험기 — 등록/미등록×KO/EN 로그인→TEXT-001(미등록=빈칸·누락 들통) vs '금액'(001)(fallback·누락 숨음) 출력 비교 | ✅ |
 | CH03-L01-S01 | CH03-L01 | domain-builder | SE11 Domain 생성(저장→검사→활성화·예제칩 6) | ✅ |
-| CH03-L02-S01 | CH03-L02 | ddic-layer-board | Domain(기술)→Data Element(의미) 1:N 상속 보드 — 길이 토글→DE 2개+화면 미리보기 동시 반영·직접 TYPE 사용→오류 데모 | ✅ |
-| CH03-L03-S01 | CH03-L03 | param-screen-lab | PARAMETERS 보상 실험 — pa_stat 타입 DE↔표준 타입 토글(라벨/F4 온·오프)·VALUE CHECK로만 고정값 검증(F4≠검증)·OBLIGATORY 차단·DEFAULT·LOWER CASE·실행 mock | ✅ |
-| CH04-L01-S01 | CH04-L01 | step-debugger | 산술 트레이스(7+3·2**10·DIV·MOD) | ✅ |
+| CH03-L02-S01 | CH03-L02 | ddic-layer-board | Domain(기술)→Data Element(의미) 1:N 상속 보드 — 길이 토글→DE 2개+화면 미리보기 동시 반영·**Field Label 직접 편집→그 칸 라벨만 변경**·직접 TYPE 사용→오류 / DE 참조→성공 선언 데모 | ✅ |
+| CH03-L03-S01 | CH03-L03 | param-screen-lab | PARAMETERS 보상 실험 — pa_stat 타입 DE↔표준 타입 토글(F4 온·오프)·**Selection Texts의 Dictionary 참조 체크로 라벨 이어받기**(꺼짐=기술명 PA_STAT)·VALUE CHECK로만 고정값 검증(F4≠검증)·OBLIGATORY 차단·DEFAULT(지우면 빈값 유지)·LOWER CASE·실행 mock | ✅ |
+| CH04-L01-S01 | CH04-L01 | step-debugger | 산술 트레이스 10스텝 — 사칙연산 4종 · `2 ** 3 ** 2`=512(우결합) · **정수 나눗셈 함정**(`10 / 4`: I는 3·DIV는 2·P는 2.50 동시 표시) · MOD · **날짜 산술**(`+ 1`이 1/31→2/1로 달 넘김) | ✅ |
 | CH04-L05-S01 | CH04-L05 | step-debugger | DO·sy-index 트레이스(1→5) | ✅ |
-| CH04-L06-S01 | CH04-L06 | step-debugger | 구구단 중첩DO 디버거 홈(F5·gv_mul/res) | ✅ |
+| CH04-L06-S01 | CH04-L06 | step-debugger **(+Watchpoint 레이어)** | Watchpoint 체험 홈 — 만들기 버튼→변수 이름→저장(본문 절차 동일)→**계속(F8)이 그 값 바뀌는 줄에서 자동 정지**·칩 삭제·미등록 시 F8은 끝까지. 예제=합계 누적(gv_total이 루프 6번 + 할인 10번에서 바뀜). 구구단 아님 = **CH04-L07-S01 정답 선노출 회피** · 스텝은 마지막 줄까지 1:1 | ✅ |
 | CH05-L01-S01 | CH05-L01 | step-debugger | §BEGIN OF+§Component 예제 통합 트레이스(선언→하이픈 대입→WRITE, 6스텝 — chain은 항목당 1스텝·출력 줄 점진 완성·TYPES 없음) | ✅ |
 | CH05-L01-S05 | CH05-L01 | step-debugger | §LIKE 오해 반박 — 원본 gs_p1 채운 뒤 LIKE 선언, 워치에 gs_p1·gs_p4 동시 표시(모양만 복사·값은 초기값, 4스텝) | ✅ |
 | CH05-L05-S01 | CH05-L05 | step-debugger | 구구단=구조체 캡스톤(ls_line-dan/mul/result·sy-index 반복 갱신) | ✅ |
@@ -315,33 +316,36 @@
 | CH39-L07-S01 | CH39-L07 | mermaid | (재사용·구 L06-S01 이동) Service Definition→Binding(Publish)→Fiori Elements 흐름 | ✅ |
 | CH39-L08-S01 | CH39-L08 | stage-chips | (재사용) 동시 수정 실험실(권한→Lock→ETag→total ETag 릴레이, 시나리오 5) | ✅ |
 | CH39-L09-S01 | CH39-L09 | judge-quiz | (재사용·구 L07-S01 대체) 릴리스 판별 6 — 졸업 퀴즈(Arrangement·released API·서버 권한·EML 검증) | ✅ |
-| CH04-L02-S01 | CH04-L02 | fill-blank | 문자열 함수 빈칸(INTO·AT·strlen·FIND) | ✅ |
+| CH04-L02-S01 | CH04-L02 | fill-blank | 문자열 함수 빈칸 **9개** — INTO·`&&`·AT·strlen·FIND·REPLACE·CONDENSE·offset(`+4(2)`)·TRANSLATE(레슨이 코드로 가르치는 전부). 강등된 SHIFT·OVERLAY·WRITE TO는 제외 | ✅ |
 | CH04-L07-S01 | CH04-L07 | fill-blank | 구구단 빈칸(TIMES·sy-index·*·ENDDO) | ✅ |
-| CH04-L03-S01 | CH04-L03 | mermaid | IF/ELSEIF/ELSE 분기 흐름도(p_amt: 큰금액/소액/0·음수) | ✅ |
-| CH04-L04-S04 | CH04-L04 | before-after(.ba__say) | §도입 "말로 읽기" — IF는 '하지만 그렇지 않다면 pa_grade가…' 반복 ↔ CASE는 한 호흡(사용자 문안) + 선택 기준 note(값=CASE·범위/복합=IF) | ✅ |
-| CH04-L04-S01 | CH04-L04 | case-branch-sim | CASE…WHEN 시뮬(등급 A·B·C·그외→출력, OR묶기 토글) | ✅ |
-| CH04-L03-S02 | CH04-L03 | (bespoke SVG) | (등재 보완) AND/OR/NOT·괄호 논리 다이어그램 — 조건 묶임을 한눈에 | ✅ |
-| CH04-L03-S03 | CH04-L03 | (bespoke SVG) | (등재 보완) IS INITIAL 판정 다이어그램(pa_amt 0=참/500=거짓) | ✅ |
-| CH04-L04-S02 | CH04-L04 | mermaid | (등재 보완) 기본 CASE 4분기 — 흐름도+코드 2칼럼 | ✅ |
+| CH04-L03-S01 | CH04-L03 | (bespoke SVG) | (엔진 표기 정정: mermaid 아님) IF/ELSEIF/ELSE 분기 흐름도 — **pa_amt 입력·슬라이더·프리셋으로 참이 되는 가지만 켜지고 나머지는 흐려짐**(처음 참 하나만) + 판정 문장 실시간 | ✅ |
+| CH04-L04-S04 | CH04-L04 | before-after(.ba__say) | §도입 "말로 읽기" — IF는 '하지만 그렇지 않다면 pa_grade가…' 반복 ↔ CASE는 한 호흡(사용자 문안) + 선택 기준 note(값=CASE·범위/복합=IF). **등급 = 본문과 동일 A·B·C+그 외**(본문에 없던 D '미흡' 제거) | ✅ |
+| CH04-L04-S01 | CH04-L04 | case-branch-sim | CASE…WHEN 시뮬(등급 A·B·C·그외→출력, OR묶기 토글) · OTHERS 출력 = 본문 정본 **'확인 필요'** | ✅ |
+| CH04-L03-S02 | CH04-L03 | (bespoke SVG) | AND/OR/NOT·괄호 논리 — **pa_amt 슬라이더 + pa_vip·pa_block 스위치**로 각 조건 칩이 참(초록)/거짓(분홍)으로 물들고, 판정 보드가 괄호→NOT→AND 순서를 실시간 계산 + **선언 포함 코드 스트립**(C001 정합) | ✅ |
+| CH04-L03-S03 | CH04-L03 | (bespoke SVG) | IS INITIAL 판정 — 값 입력 시 해당 카드만 점등 + 프리셋 **[아무것도 입력 안 함]/[0 직접 입력]이 둘 다 참**으로 나와 "빈 입력과 0을 구분 못 함" 주의를 손으로 체감(둘 다 눌러야 경고 노출). 출력 문구=본문과 동일 '금액이 0입니다' | ✅ |
+| CH04-L03-S04 | CH04-L03 | (bespoke SVG) | **(신규)** abap_bool 절 체험 — pa_amt를 바꾸면 ①조건 참/거짓 → ②`xsdbool( )`이 gv_flag **한 글자 칸**에 담는 `'X'`/공백 → ③`IF gv_flag = abap_true` 실행 여부까지 파이프라인. 본문대로 **xsdbool만**(boolc는 각주라 제외)·`TYPE abap_bool` 선언 포함 | ✅ |
+| CH04-L04-S02 | CH04-L04 | mermaid | (등재 보완) 기본 CASE 4분기 — 흐름도+코드 2칼럼 · OTHERS 출력 = 본문 정본 **'확인 필요'** | ✅ |
 | CH04-L04-S03 | CH04-L04 | mermaid | (등재 보완) WHEN 'A' OR 'B' 묶기 — 흐름도+코드 | ✅ |
 | CH04-L05-S02 | CH04-L05 | mermaid | (등재 보완) DO n TIMES 루프 — 흐름도+코드 | ✅ |
 | CH04-L05-S03 | CH04-L05 | mermaid | (등재 보완) WHILE 조건 루프 — 흐름도+코드 | ✅ |
 | CH04-L05-S04 | CH04-L05 | mermaid | (등재 보완) EXIT·CHECK 루프 제어 — 흐름도+코드 | ✅ |
 | CH04-L07-S02 | CH04-L07 | fill-blank | (등재 보완) 구구단 2단계 중첩 DO 빈칸(바깥 sy-index를 gv_dan에 담기) | ✅ |
-| CH04-L07-S03 | CH04-L07 | fill-blank | (등재 보완) 구구단 3단계 범위 반복 빈칸(pa_from~pa_to·횟수 계산) | ✅ |
+| CH04-L07-S03 | CH04-L07 | fill-blank | (등재 보완) 구구단 3단계 범위 반복 빈칸(pa_from～pa_to·횟수 계산) · **힌트 코드 = 본문 확정형 `IF … ELSEIF … ELSE 반복 … ENDIF`(루프 밖 EXIT 제거)** · 양 끝 관문(2～9)은 '추가 규칙'으로 명시 | ✅ |
 
 ## B. 엔진별 집계 (카테고리 현황 — 같은 종류 몇 개·어디서)
 | 엔진 (embeds/_engine/) | 그룹 | 공통/standalone | 사용 인스턴스 | 비고 |
 |---|---|---|---|---|
-| step-debugger | 12 | 공통(_engine)·config 주도 ✅ | CH04-L01·L05·L06·CH05-L01-S01/S05·CH05-L05·CH10-L07·**CH06-L01-S01·L03-S01/S02·L04-S01/S02** (완료) | `.stepper-config` 트레이스(주도형·하이픈키 ls_x-y OK). **CH06 확장**: vars 항목에 `itab:{cols,num}` 주면 값(2차원 배열)을 행 미니테이블로 렌더(new/chg 플래시·num 우측정렬)·steps[i].focus={key:행번호}로 현재 행 강조·키워드 TRANSPORTING/BINARY/ASSIGNING/COLLECT/SUM 등 추가·다크 .note 오버라이드 추가 |
+| step-debugger | 12 | 공통(_engine)·config 주도 ✅ | CH04-L01·L05·L06·CH05-L01-S01/S05·CH05-L05·CH10-L07-S01·**CH06-L01-S01·L03-S01/S02·L04-S01/S02** (완료) | `.stepper-config` 트레이스(주도형·하이픈키 ls_x-y OK). **CH06 확장**: vars 항목에 `itab:{cols,num}` 주면 값(2차원 배열)을 행 미니테이블로 렌더(new/chg 플래시·num 우측정렬)·steps[i].focus={key:행번호}로 현재 행 강조·키워드 TRANSPORTING/BINARY/ASSIGNING/COLLECT/SUM 등 추가·다크 .note 오버라이드 추가. **CH04-L06 확장(Watchpoint 레이어)**: 인스턴스에 `[data-wp]` 마크업이 있을 때만 배선되는 선택 기능 — 변수 이름으로 감시 등록(datalist=cfg.vars 자동)·목록/삭제·`[data-wp-run]`이 감시값이 바뀌는 스텝에서 자동 정지(미등록이면 끝까지). **config 스키마 무변경 → 마크업 없는 나머지 11개는 코드 경로 자체에 진입하지 않음**(전수 브라우저 회귀 확인 — 11/11 스텝 완주·wp 패널 미생성). CSS는 `.wp*` 전부 var() 토큰이라 gen-embed-dark 짝 규칙 불필요 |
 | fill-blank | 5 | 공통(_engine)+_autoheight ✅ | CH02-L06-S01·CH04-L02-S01·CH04-L07-S01/S02/S03 (전부 완료) | 데이터=마크업 |
-| before-after | 6 | 공통(CSS-only)+_autoheight ✅ | CH02-L01-S01·CH02-L05-S01·CH04-L04-S04·CH05-L01-S06·CH05-L01-S07·CH07-L03-S01 (완료) | 콘텐츠 정리 · 중립 톤(tone-warm/cool)·.note·.cmt·메모리 도형(칩/미니)·확장 접기·.solo(단일 칼럼 pain-only) 추가 · constant-circle-sim(폐기) 대체 |
-| var-box | 2 | 공통(_engine)+_autoheight ✅ | CH02-L01-S02·CH02-L02-S01 | VB_CFG 주도 · 타입 라벨 박스+값 쪽지·선언 직후(기본값)→대입→재대입(value2 opt-in·"마지막 값만 기억") 사이클·initialFor(string/c/n/d/t/p-dec) 처리 |
+| before-after | 6 | 공통(CSS-only)+_autoheight ✅ | CH02-L01-S01·CH02-L05-S01·CH04-L04-S04·CH05-L01-S06·CH05-L01-S07·CH07-L03-S01 (완료) | 콘텐츠 정리 · 중립 톤(tone-warm/cool)·.note·.cmt·메모리 도형(칩/미니)·확장 접기·.solo(단일 칼럼 pain-only) 추가 · constant-circle-sim(폐기) 대체 · CH02-L05-S01은 const-lock-lab 조각과 동거(주 엔진=이쪽, data-eng 유지) |
+| var-box | 2 | 공통(_engine)+_autoheight ✅ | CH02-L01-S02·CH02-L02-S01 | VB_CFG 주도 · 타입 라벨 박스+값 쪽지·선언 직후(기본값)→대입→재대입(value2 opt-in·"마지막 값만 기억") 사이클·initialFor(string/c/n/d/t/p-dec) 처리 · **opt-in**: `decl`(박스 라벨을 `LIKE gv_price`·`TYPE i VALUE 10`처럼 그대로 표기)·`stageLabels`(상태 문구 덮어쓰기) |
+| int-div-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH02-L02-S02 | IDL_CFG 주도 · 피제수/제수 number 입력+프리셋 칩 → 실험 코드 2줄 라이브 갱신·결과 카드 2장(I=반올림 warn / P DECIMALS 2=keep)·verdict base 중립+ok/bad 명시(교훈3)·{trunc}/{round} 치환 버림언어 대조 줄(같으면 숨김)·제수 0=bad·상용 반올림(0에서 먼 쪽)·토큰/color-mix만 · 다크 |
+| const-lock-lab (신규) | 1 | 조각(주 엔진 CSS와 동거)+_autoheight ✅ | CH02-L05-S01 | CL_CFG 주도 · 선언 블록+값 칩(상수 🔒)+문장 카드 4장 → ok(값 갱신)/bad(문법 오류·값 불변 부기)·리셋·verdict base 중립(교훈3)·**.cl-* 조각 CSS만**(리셋·.wrap·.hd·.note 없음 → 단독 사용 시 주 엔진 CSS 필요)·토큰만 · 다크 |
 | text-symbol-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH02-L06-S02 | TSL_CFG 주도 · 등록/미등록 seg×KO/EN seg→Text Elements 표 mock+출력 2줄 비교·미등록: TEXT-nnn=빈칸(bad dashed)·literal(nnn)=fallback(amber)·verdict ok/warn(교훈3)·근거 abentext_symbols.htm·토큰/color-mix만 · 다크 |
 | len-shape-grid (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH02-L03-S01 | LSG_CFG 주도 · C/N 칸 그리드(패딩·잘림·앞0 자동채움)+P 바이트 칸(1칸=2자리·부호 반 칸=2×len−1·DECIMALS 점)+offset 패널(칸 하이라이트·범위초과 bad·부분쓰기 교체)·msg base 중립+ok/bad 명시(교훈3)·토큰/color-mix만 · 다크 |
 | type-stamp (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH02-L04-S01 | TS_CFG 주도 · TYPES 도면 카드(점선·0바이트)→DATA 실물 박스(실선·값)·DECIMALS 세그→전 변수 동시 갱신 flash·타입 대입 시도→bad·verdict base 중립+ok/bad 명시(교훈3)·토큰/color-mix만 · 다크 |
-| ddic-layer-board (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH03-L02-S01 | DLB_CFG 주도 · Domain 카드(기술·brand)→상속 케이블→DE 카드 2(의미·accent)+화면 미리보기(라벨=DE·칸수=Domain)·길이 토글→전층 동시 flash·직접 TYPE 시도→bad·verdict base 중립(교훈3)·토큰/color-mix만 · 다크 |
-| param-screen-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH03-L03-S01 | PSL_CFG 주도 · 타입 세그(DE/표준 타입)→라벨·F4 온오프·VALUE CHECK 토글=고정값 검증 분리(F4≠검증·raw 모드 disabled)·F4 팝업=고정값 목록·OBLIGATORY 빈값 차단·DEFAULT 미리채움·LOWER CASE off 시 대문자 변조 경고·실행→WRITE mock·out base 중립(교훈3)·토큰/color-mix만 · 다크 |
+| ddic-layer-board (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH03-L02-S01 | DLB_CFG 주도 · Domain 카드(기술·brand)→상속 케이블→DE 카드 2(의미·accent)+화면 미리보기(라벨=DE·칸수=Domain)·길이 토글→전층 동시 flash·**DE 카드 Field Label 입력(labelSlot)→해당 화면 라벨만 갱신(포커스 유지 위해 부분 갱신)**·직접 TYPE 시도→bad / **tryOk(DE 참조 선언)→ok**·verdict base 중립(교훈3)·토큰/color-mix만 · 다크 |
+| param-screen-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH03-L03-S01 | PSL_CFG 주도 · 타입 세그(DE/표준 타입)→F4 온오프·**Selection Texts 'Dictionary 참조' 체크→Field Label 이어받기(꺼짐/raw=기술명 대문자 폴백, raw에선 disabled)**·VALUE CHECK 토글=고정값 검증 분리(F4≠검증·raw 모드 disabled)·F4 팝업=고정값 목록·OBLIGATORY 빈값 차단·**DEFAULT는 미접촉 시에만 채움(statTouched)→지우면 빈값 유지**·nameField.len=표준 타입 칸 LENGTH(코드·maxlength 공용)·LOWER CASE off 시 대문자 변조 경고·실행→WRITE mock·out base 중립(교훈3)·토큰/color-mix만 · 다크 |
 | share-vs-local | 1 | 공통(_engine)+_autoheight ✅ | CH05-L02-S02 (완료) | SVL_CFG 주도 — 정의 공유(DDIC) vs 복제(Local) 비교 보드·필드 추가 토글·참조 곡선 |
 | struct-viz | 4 | 공통(_engine)+_autoheight ✅ | CH05-L01-S02~S04·CH05-L02-S01 | SV_CFG 주도 · 트리(root/kind/comps·초기값 유도·assign 인터랙션) + layout:'strip'(타입=값 없는 헤더 스트립·변수=정렬 행들 — 타입은 값 없음 명시, 사용자 피드백 2026-07-03) |
 | move-mapping (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH05-L04-S01 | MM_CFG 주도 · src/tgt 카드·같은 이름=초록 복사 flash·원본-only=주황 무시·대상-only=잔존(빨강 stale 함정)·CLEAR 먼저 토글→ok/warn verdict(교훈3)·classic 전용(FMB는 modern이라 미재사용)·토큰만 · 다크 |

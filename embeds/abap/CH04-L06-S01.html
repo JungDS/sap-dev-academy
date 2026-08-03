@@ -1,25 +1,31 @@
 <!DOCTYPE html>
-<!-- CH04-L06-S01 — 엔진: step-debugger + _autoheight. config=레슨 전용(구구단 중첩DO, #C04-6).
-     디버깅 입문의 정당한 홈. 게이팅: DATA·VALUE·DO·sy-index·* (내부테이블·inline DATA() 없음). -->
+<!-- CH04-L06-S01 — 엔진: step-debugger(+Watchpoint 레이어) + _autoheight. config=레슨 전용(합계 누적, #C04-6).
+     Watchpoint 절의 체험 홈: ① 만들기 버튼 → 변수 이름 → 저장(본문 절차와 동일) → ② 계속(F8)이
+     그 변수가 바뀌는 줄에서 자동 정지. gv_total은 루프 안(6번)뿐 아니라 할인 줄(10번)에서도 바뀌어
+     "어디서 값이 바뀌는지 모를 때"라는 본문 동기가 실제로 재현된다.
+     ⚠️ 예제는 일부러 구구단이 아닌 합계 누적 — 다음 레슨(CH04-L07-S01) 빈칸 정답을 선노출하지 않기 위함.
+     스텝은 마지막 줄(WRITE)까지 1:1 — 중간에 '완료' 처리되지 않는다.
+     게이팅: DATA·VALUE·DO·sy-index·+·-·/ (내부테이블·inline DATA() 없음). -->
 <html lang="ko" data-eng="step-debugger">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>구구단 디버거 · CH04-L06-S01</title>
+<title>Watchpoint 디버거 · CH04-L06-S01</title>
 <link rel="stylesheet" href="../_engine/_base.css" />
 <link rel="stylesheet" href="../_engine/step-debugger.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">디버거로 구구단 따라가기 <small>(F5처럼 한 줄씩)</small></p>
-  <p class="lead"><b>다음 ⏭</b> = F5(한 줄 실행). 반복마다 <code>sy-index</code>·<code>gv_mul</code>·<code>gv_res</code>가 어떻게 바뀌는지 변수 모니터로 관찰하세요(2단 예시).</p>
+  <p class="hd">Watchpoint — 값이 바뀌는 순간에서 자동으로 멈추기 <small>(F5 · F8 함께)</small></p>
+  <p class="lead">티켓 값을 네 번 더한 뒤 할인을 빼는 코드입니다. <b>다음 ⏭</b>은 <code>F5</code>(한 줄씩), <b>계속</b>은 <code>F8</code>입니다.<br />
+  아래 <b>＋ Watchpoint 만들기</b>로 <code>gv_total</code>을 걸고 <b>계속 (F8)</b>을 눌러 보세요. 한 줄씩 따라가지 않아도 <b>그 값이 바뀌는 줄마다</b> 알아서 멈춥니다. (걸지 않고 <code>F8</code>을 누르면 어떻게 되는지도 꼭 확인해 보세요.)</p>
 
   <div class="dbg" data-stepper>
     <div class="dbg__bar">
       <button class="btn btn--primary" data-start>▶ 시작</button>
       <button class="btn btn--step" data-next disabled>다음 ⏭ (F5)</button>
       <div class="progress"><i data-progress></i></div>
-      <span class="muted" data-counter>0 / 11</span>
+      <span class="muted" data-counter>0 / 10</span>
     </div>
     <div class="dbg__main">
       <div class="dbg__editorwrap"><div class="dbg__edhd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span></div><div class="dbg__editor" data-code></div></div>
@@ -37,41 +43,62 @@
       </div>
       <pre class="console__body" data-console>대기 중 — ▶ 시작을 누르세요.</pre>
     </div>
+
+    <div class="wp" data-wp>
+      <div class="wp__hd">
+        <span class="wp__ttl">Watchpoint</span>
+        <button class="wp__b" type="button" data-wp-open>＋ Watchpoint 만들기</button>
+        <button class="wp__b wp__b--go" type="button" data-wp-run>▶▶ 계속 (F8) — 끝까지</button>
+      </div>
+      <div class="wp__form" data-wp-form hidden>
+        <label class="wp__lb" for="wpname">감시할 변수 이름</label>
+        <input class="wp__in" id="wpname" data-wp-name list="wpvars" placeholder="gv_total" autocomplete="off" />
+        <datalist id="wpvars" data-wp-names></datalist>
+        <button class="wp__b wp__b--go" type="button" data-wp-add>저장</button>
+        <button class="wp__b" type="button" data-wp-cancel>취소</button>
+      </div>
+      <div class="wp__list" data-wp-list></div>
+      <p class="wp__msg" data-wp-msg></p>
+    </div>
+
     <script type="application/json" class="stepper-config">
     {
       "code":[
-        "DATA gv_dan TYPE i VALUE 2.",
-        "DATA gv_mul TYPE i.",
-        "DATA gv_res TYPE i.",
+        "DATA gv_total TYPE i.",
+        "DATA gv_price TYPE i VALUE 1200.",
+        "DATA gv_disc  TYPE i.",
         "",
-        "DO 9 TIMES.",
-        "  gv_mul = sy-index.",
-        "  gv_res = gv_dan * gv_mul.",
-        "  WRITE: / gv_dan, 'x', gv_mul, '=', gv_res.",
-        "ENDDO."
+        "DO 4 TIMES.",
+        "  gv_total = gv_total + gv_price.",
+        "ENDDO.",
+        "",
+        "gv_disc  = gv_total / 10.",
+        "gv_total = gv_total - gv_disc.",
+        "WRITE: / '합계:', gv_total."
       ],
       "vars":[
-        {"label":"gv_dan","sub":"단","key":"gv_dan","init":"0"},
-        {"label":"gv_mul","sub":"곱하는 수","key":"gv_mul","init":"0"},
-        {"label":"gv_res","sub":"결과","key":"gv_res","init":"0"},
+        {"label":"gv_total","sub":"누적 합계","key":"gv_total","init":"0"},
+        {"label":"gv_price","sub":"티켓 한 장 값","key":"gv_price","init":"0"},
+        {"label":"gv_disc","sub":"할인액","key":"gv_disc","init":"0"},
         {"label":"sy-index","sub":"회차","key":"sy","init":"-"}
       ],
       "steps":[
-        {"line":1,"vars":{"gv_dan":"2"},"console":"gv_dan = 2 (2단)"},
-        {"line":5,"vars":{},"console":"DO 9 TIMES 시작"},
-        {"line":6,"vars":{"gv_mul":"1","sy":"1"},"console":"1회차 · sy-index=1 → gv_mul=1"},
-        {"line":7,"vars":{"gv_res":"2"},"console":"gv_res = 2 * 1 = 2"},
-        {"line":8,"vars":{},"console":"출력: 2 x 1 = 2"},
-        {"line":6,"vars":{"gv_mul":"2","sy":"2"},"console":"2회차 · sy-index=2 → gv_mul=2"},
-        {"line":7,"vars":{"gv_res":"4"},"console":"gv_res = 2 * 2 = 4"},
-        {"line":8,"vars":{},"console":"출력: 2 x 2 = 4"},
-        {"line":6,"vars":{"gv_mul":"3","sy":"3"},"console":"3회차 · sy-index=3 → gv_mul=3"},
-        {"line":7,"vars":{"gv_res":"6"},"console":"gv_res = 2 * 3 = 6"},
-        {"line":8,"vars":{},"console":"출력: 2 x 3 = 6 … (이후 9까지 같은 패턴)"}
+        {"line":2,"vars":{"gv_price":"1200"},"console":"gv_price = 1200 (티켓 한 장 값)"},
+        {"line":5,"vars":{},"console":"DO 4 TIMES 시작 — 네 번 반복한다"},
+        {"line":6,"vars":{"gv_total":"1200","sy":"1"},"console":"1회차 · gv_total = 0 + 1200 = 1200"},
+        {"line":6,"vars":{"gv_total":"2400","sy":"2"},"console":"2회차 · gv_total = 1200 + 1200 = 2400"},
+        {"line":6,"vars":{"gv_total":"3600","sy":"3"},"console":"3회차 · gv_total = 2400 + 1200 = 3600"},
+        {"line":6,"vars":{"gv_total":"4800","sy":"4"},"console":"4회차 · gv_total = 3600 + 1200 = 4800"},
+        {"line":7,"vars":{},"console":"ENDDO — 네 번 다 돌아 루프를 빠져나간다"},
+        {"line":9,"vars":{"gv_disc":"480"},"console":"gv_disc = 4800 / 10 = 480 (10% 할인액)"},
+        {"line":10,"vars":{"gv_total":"4320"},"console":"gv_total = 4800 - 480 = 4320\n루프가 끝난 뒤에도 gv_total이 또 바뀌었다 — Watchpoint를 걸어 두면 이 줄도 놓치지 않는다."},
+        {"line":11,"vars":{},"console":"출력: 합계: 4320  ■ 마지막 줄까지 실행 완료"}
       ]
     }
     </script>
   </div>
+
+  <p class="note"><b>Watchpoint</b>는 <b>지금 세션 동안만</b> 살아 있습니다(↻ 다시를 눌러도 걸어 둔 건 그대로). 목록의 <b>✕</b>로 지울 수 있고, 실제 디버거에서도 순서는 똑같습니다 — <b>만들기 버튼 → 변수 이름 → 저장</b>.</p>
 </div>
 <script src="../_engine/step-debugger.js" defer></script>
 <script src="../_engine/_autoheight.js" defer></script>

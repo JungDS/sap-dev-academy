@@ -1,7 +1,10 @@
 <!DOCTYPE html>
-<!-- CH02-L05-S01 — 엔진: before-after (embeds/_engine/before-after.css, CSS-only) + _autoheight.
-     콘텐츠=레슨 전용(매직넘버 pi vs 상수 gc_pi). bad=줄마다 다른 pi(실수 강조), good=상수 하나.
-     게이팅: CH02(선언·대입·산술 *). ABAP 소수 리터럴은 따옴표('3.14') — CH02-L02 규칙. -->
+<!-- CH02-L05-S01 — 엔진: before-after (embeds/_engine/before-after.css, CSS-only) + const-lock-lab(조각)
+     + _autoheight. 콘텐츠=레슨 전용(매직넘버 pi vs 상수 gc_pi). bad=줄마다 다른 pi(실수 강조), good=상수 하나.
+     아래쪽 .cl 패널 = 상수 재대입 시도 실험(config=window.CL_CFG) — 본문 gc_max_seats/gv_seats 예제와 같은 이름.
+     ⚠️ data-eng는 주 엔진 before-after 유지(_dark.css가 [data-eng] 스코프로 .ba 색을 덮음). const-lock-lab.css는
+        토큰 전용 조각이라 다크 오버라이드가 필요 없다.
+     게이팅: CH02(선언·대입·산술 *·CONSTANTS). ABAP 소수 리터럴은 따옴표('3.14') — CH02-L02 규칙. -->
 <html lang="ko" data-eng="before-after">
 <head>
 <meta charset="utf-8" />
@@ -9,6 +12,7 @@
 <title>매직 넘버 pi vs 상수 · CH02-L05-S01</title>
 <link rel="stylesheet" href="../_engine/_base.css" />
 <link rel="stylesheet" href="../_engine/before-after.css" />
+<link rel="stylesheet" href="../_engine/const-lock-lab.css" />
 </head>
 <body>
 <div class="wrap">
@@ -19,7 +23,10 @@
     <div class="ba__col before">
       <div class="ba__head">✗ pi를 줄마다 직접</div>
       <div class="ba__body">
-<pre><span class="cmt">" 반지름 3</span>
+<pre>DATA: gv_c TYPE p LENGTH 8 DECIMALS 2,
+      gv_a TYPE p LENGTH 8 DECIMALS 2.
+
+<span class="cmt">" 반지름 3</span>
 gv_c = 2 * <b>'3.1415926'</b> * 3.
 gv_a = <b>'3.1415927'</b> * 3 * 3.   <span class="cmt">" …27 오타!</span>
 
@@ -36,7 +43,9 @@ gv_a = <b>'3.14159'</b> * 5 * 5.</pre>
     <div class="ba__col after">
       <div class="ba__head">✓ 상수 gc_pi 하나</div>
       <div class="ba__body">
-<pre><b>CONSTANTS gc_pi TYPE p LENGTH 8 DECIMALS 7 VALUE '3.1415926'.</b>
+<pre>DATA: gv_c TYPE p LENGTH 8 DECIMALS 2,
+      gv_a TYPE p LENGTH 8 DECIMALS 2.
+<b>CONSTANTS gc_pi TYPE p LENGTH 8 DECIMALS 7 VALUE '3.1415926'.</b>
 
 <span class="cmt">" 반지름 3</span>
 gv_c = 2 * <b>gc_pi</b> * 3.
@@ -54,8 +63,38 @@ gv_a = <b>gc_pi</b> * 5 * 5.</pre>
     </div>
   </div>
 
+  <div class="cl">
+    <p class="cl-hd">직접 시도해 보기 — 상수에 다시 대입하면?</p>
+    <p class="cl-lead">아래 선언에서 <code>gv_seats</code>는 <b>변수</b>, <code>gc_max_seats</code>는 <b>상수</b>입니다. 문장을 하나씩 눌러 실행을 시도해 보세요.</p>
+    <div data-cl></div>
+  </div>
+
   <div class="note">변수로도 같은 계산을 할 수 있습니다. 하지만 변수는 실수로 덮어써져도 ABAP이 막지 않아 이후 계산이 조용히 틀어집니다. <code>gc_pi</code>처럼 절대 바뀌면 안 되는 값을 상수로 못 박으면 재대입 자체가 문법 오류라 그런 사고가 원천 차단됩니다.</div>
 </div>
+<script>
+window.CL_CFG = {
+  decl: [
+    'DATA      gv_seats     TYPE i.',
+    'CONSTANTS gc_max_seats TYPE i VALUE 10.   " 한 회차 최대 좌석'
+  ],
+  state: [
+    { name: 'gv_seats',     value: '0' },
+    { name: 'gc_max_seats', value: '10', locked: true }
+  ],
+  tries: [
+    { code: 'gv_seats = gc_max_seats.', ok: true, set: { gv_seats: '10' },
+      msg: '상수를 <b>오른쪽</b>에 두고 값을 <b>읽어</b> 변수에 넣었다. 읽기는 언제든 된다.' },
+    { code: 'gv_seats = gc_max_seats + gc_max_seats.', ok: true, set: { gv_seats: '20' },
+      msg: '두 회차 좌석을 더했다. 이것도 상수를 <b>읽기만</b> 한 것이라 문제없다.' },
+    { code: 'gc_max_seats = 20.', ok: false,
+      msg: '상수는 등호 <b>왼쪽</b>에 올 수 없다. 프로그램을 실행하기 전 <b>컴파일</b> 단계에서 걸리기 때문에, 실행 중 사고가 나는 게 아니라 <b>아예 실행 자체가 안 된다</b>.' },
+    { code: 'gv_seats = 25.', ok: true, set: { gv_seats: '25' },
+      msg: '변수는 새 값을 얼마든지 받는다. 이것이 변수와 상수의 차이다.' }
+  ],
+  hint: '문장을 하나씩 눌러 보자 — 네 줄 중 어느 것이 거부되는지 직접 확인한다.'
+};
+</script>
+<script src="../_engine/const-lock-lab.js" defer></script>
 <script src="../_engine/_autoheight.js" defer></script>
 </body>
 </html>

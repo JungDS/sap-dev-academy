@@ -1,7 +1,10 @@
 // ===== var-box 엔진 JS — 변수 박스 비유(타입 라벨 박스 + 값 쪽지) =====
 // 선언 직후(타입 기본값) → 값 넣기(대입) [→ 재대입: 이전 값 소멸·마지막 값만 기억] 사이클.
 // 재대입 단계는 vars에 value2가 하나라도 있으면 활성(opt-in — 기존 인스턴스 2단계 호환).
-// 설정 = window.VB_CFG { vars[{name,type,value,value2?,init?}], note? }
+// 설정 = window.VB_CFG { vars[{name,type,value,value2?,init?,decl?}], stageLabels?, note? }
+//   decl       = 박스 라벨에 그대로 찍을 선언 조각(예 'LIKE gv_price'·'TYPE i VALUE 10').
+//                없으면 'TYPE '+type. 기본값 계산(initialFor)은 언제나 type 기준.
+//   stageLabels= [선언직후, 대입, 재대입] 상태 문구 덮어쓰기(opt-in). 없으면 기본 문구.
 (function(){
   var cfg = window.VB_CFG; if(!cfg) return;
   var root = document.querySelector('[data-varbox]'); if(!root) return;
@@ -26,13 +29,15 @@
                 : (v.value2 != null ? v.value2 : v.value);
       h += '<div class="vb"><div class="vb__paper' + (stage === 0 ? ' init' : '') + '">' + esc(paper) + '</div>'
          + '<div class="vb__box"><div class="vb__name">' + esc(v.name) + '</div>'
-         + '<div class="vb__type">TYPE ' + esc(v.type) + '</div></div></div>';
+         + '<div class="vb__type">' + (v.decl ? esc(v.decl) : 'TYPE ' + esc(v.type)) + '</div></div></div>';
     });
     h += '</div>';
     var btn = stage === 0 ? '▶ 값 넣기 (대입 =)'
             : (stage === 1 && hasRe) ? '▶ 다른 값 다시 넣기 (재대입)'
             : '↺ 선언 직후로';
-    var lab = stage === 0 ? '선언 직후 — 타입 기본값'
+    var labs = cfg.stageLabels || [];
+    var lab = labs[stage] != null ? labs[stage]
+            : stage === 0 ? '선언 직후 — 타입 기본값'
             : stage === 1 ? '값을 넣은 뒤'
             : '재대입 뒤 — 이전 값은 사라졌다(변수는 마지막 값만 기억)';
     h += '<div class="vb-ctl"><button type="button" class="vb-ctl__btn" data-toggle>' + btn + '</button>'
