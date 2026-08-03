@@ -11,12 +11,10 @@
 |---|---|---|---|---|
 | CH01-L01-S01 | CH01-L01 | image-figure | 실제 SAP 로그온 화면 스크린샷(assets/img/abap/CH01-L01-logon.png) | 🖼️ |
 | CH01-L01-S02 | CH01-L01 | image-figure | 실제 SAP Easy Access 첫 화면 스크린샷(assets/img/abap/CH01-L01-easy-access.png) | 🖼️ |
-| CH01-L04-S01 | CH01-L04 | write-output | WRITE 출력 시뮬(편집→F8→리스트, /·콜론체인·리터럴) | ✅ |
-| CH01-L05-S01 | CH01-L05 | write-format | WRITE 서식 플레이그라운드(폭·정렬·COLOR·ULINE·SKIP) | ✅ |
+| CH01-L04-S01 | CH01-L04 | write-output | WRITE 출력 시뮬(편집→F8→리스트, /·콜론체인 `/:`·리터럴 · NEW-LINE/SKIP/ULINE · 컬럼1 주석·마침표 누락 검출·미지원 문장 안내) | ✅ |
+| CH01-L05-S01 | CH01-L05 | write-format | WRITE 서식 플레이그라운드(폭·정렬·COLOR·INVERSE·ULINE·SKIP + NO-ZERO·DECIMALS·CURRENCY·날짜 형식 · 폭 초과 시 숫자 `*`) | ✅ |
 | CH01-L02-S01 | CH01-L02 | se38-first-program | 가상 SE38 개발루프 — **3-step 진행형**(①명령창 SE38→②생성 ZHELLO→③저장·활성화·실행, 단계별 노출) | ✅ |
-| CH01-L02-S02 | (보류) | command-field-sim | 풀 시뮬(Easy Access vs SE11 → 이동/오류/새창/로그오프). S03 mock+S04 카드로 대체 검토 — 파일 보존, 본문 미참조 | 🔁 |
 | CH01-L02-S03 | CH01-L02 | sap-easy-access-mock | **2단 플레이그라운드** — 좌: Easy Access↔SE38/SE11/SE80 인터랙티브(접두어 없는 코드=Easy Access 전용·다른 화면 /n 필수·/nex 로그아웃+다시하기) / 우: 자주 쓰는 접두어 reference | ✅ |
-| CH01-L02-S04 | (보류) | tcode-prefix-cards | 접두어 카드(클릭 펼침)+함정 한 컷. S03 2단에 통합 — 파일 보존, 본문 미참조 | 🔁 |
 | CH01-L02-S05 | CH01-L02 | image-figure | 실제 SE38 ABAP Editor 첫 화면 스크린샷(§03) | ✅ |
 | CH01-L02-S06 | CH01-L02 | image-figure | 실제 SE11 ABAP Dictionary 첫 화면 스크린샷(§04) | ✅ |
 | CH01-L02-S07 | CH01-L02 | image-figure | 실제 SE80 Object Navigator 화면 스크린샷(§05) | ✅ |

@@ -11,7 +11,7 @@
 | DUP-INTRO (중복 도입 선언) | 7 |
 | EARLY-USE — **REVIEW(요판정)** | 120 |
 | EARLY-USE — LOW(같은 챕터 인접) | 112 |
-| EARLY-USE — DECLARED(예고/선행 선언) | 44 |
+| EARLY-USE — DECLARED(예고/선행 선언) | 45 |
 | R6 경계 (classic 구간 modern 토큰) | 0 |
 | 검사 규모 | 레슨 270 · 추적 키워드 409 |
 
@@ -31,15 +31,15 @@
 - `ASSIGN` — CH28-L03 와 CH28-L05 가 모두 introduces (나선 재방문이면 정상 — 판정 필요)
 
 ## EARLY-USE · REVIEW (요판정 — 미선언·비인접)
-- CH01-L02:37 — `DATA` (도입 = CH02-L01)
-- CH01-L02:37 — `Domain` (도입 = CH03-L01)
-- CH01-L02:39 — `Data Element` (도입 = CH03-L02)
-- CH01-L02:37 — `Search Help` (도입 = CH09-L04)
-- CH01-L04:83 — `DATA` (도입 = CH02-L01)
-- CH01-L04:83 — `PARAMETERS` (도입 = CH03-L03)
-- CH01-L06:13 — `DDIC` (도입 = CH03-L01)
-- CH01-L06:37 — `STMS` (도입 = CH38-L04)
-- CH01-L07:19 — `Selection Screen` (도입 = CH12-L02)
+- CH01-L02:79 — `DATA` (도입 = CH02-L01)
+- CH01-L02:79 — `Domain` (도입 = CH03-L01)
+- CH01-L02:79 — `Data Element` (도입 = CH03-L02)
+- CH01-L04:91 — `DATA` (도입 = CH02-L01)
+- CH01-L04:91 — `PARAMETERS` (도입 = CH03-L03)
+- CH01-L06:19 — `DATA` (도입 = CH02-L01)
+- CH01-L06:18 — `DDIC` (도입 = CH03-L01)
+- CH01-L06:62 — `STMS` (도입 = CH38-L04)
+- CH01-L07:33 — `Selection Screen` (도입 = CH12-L02)
 - CH02-L06:52 — `Domain` (도입 = CH03-L01)
 - CH03-L02:65 — `ALV` (도입 = CH11-L01)
 - CH04-L05:58 — `Internal Table` (도입 = CH06-L01)
@@ -153,8 +153,8 @@
 - CH39-L01:46 — `projection behavior` (도입 = CH39-L04)
 
 ## EARLY-USE · LOW (같은 챕터·도입 인접 — 여정 언급일 가능성 높음)
-- CH01-L03:82 — `WRITE` (도입 = CH01-L04)
-- CH01-L06:69 — `SE93` (도입 = CH01-L07)
+- CH01-L03:105 — `WRITE` (도입 = CH01-L04)
+- CH01-L06:113 — `SE93` (도입 = CH01-L07)
 - CH02-L01:15 — `STRING` (도입 = CH02-L02)
 - CH02-L03:72 — `TYPES` (도입 = CH02-L04)
 - CH02-L04:62 — `CONSTANTS` (도입 = CH02-L05)
@@ -267,10 +267,11 @@
 - CH39-L03:131 — `Draft` (도입 = CH39-L04)
 
 ## EARLY-USE · DECLARED (foreshadow/advanceUse 선언 — 수위만 점검)
-- CH01-L01:62 — `T-code` (도입 = CH01-L02) [foreshadow 선언]
-- CH01-L05:77 — `DATA` (도입 = CH02-L01) [advanceUse 선언]
-- CH01-L07:36 — `Module Pool` (도입 = CH16-L01) [foreshadow 선언]
-- CH01-L07:37 — `Dynpro` (도입 = CH16-L01) [foreshadow 선언]
+- CH01-L01:78 — `T-code` (도입 = CH01-L02) [foreshadow 선언]
+- CH01-L05:89 — `DATA` (도입 = CH02-L01) [advanceUse 선언]
+- CH01-L05:162 — `ALV` (도입 = CH11-L01) [foreshadow 선언]
+- CH01-L07:25 — `Module Pool` (도입 = CH16-L01) [foreshadow 선언]
+- CH01-L07:26 — `Dynpro` (도입 = CH16-L01) [foreshadow 선언]
 - CH02-L01:19 — `Subroutine` (도입 = CH10-L01) [foreshadow 선언]
 - CH02-L04:41 — `DDIC` (도입 = CH03-L01) [foreshadow 선언]
 - CH02-L06:44 — `MESSAGE` (도입 = CH08-L07) [foreshadow 선언]

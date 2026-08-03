@@ -46,9 +46,18 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>출력은 됐는데, 투박하다</h2>
-<p>앞 레슨에서 <button class="term" type="button" data-term="WRITE">WRITE</button>로 화면에 글자를 찍었다. 그런데 숫자를 여러 줄 출력해 보면 <strong>자릿수가 안 맞아</strong>
-들쭉날쭉하고, 중요한 합계도 평범한 글자로 묻힌다. ABAP의 WRITE는 사실 <strong>출력 서식 옵션</strong>을
-풍부하게 갖고 있다. 이 레슨에서 그걸 꺼내 쓴다.</p>
+<p>앞 레슨에서 <button class="term" type="button" data-term="WRITE">WRITE</button>로 글자를 찍어 봤다. 이번엔 이름과 값을 나란히 찍어 보자.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3</pre><pre class="abap-editor__code"><code><span class="tok-kw">WRITE</span>: / <span class="tok-str">'노트북'</span>, <span class="tok-num">1250000</span>.
+<span class="tok-kw">WRITE</span>: / <span class="tok-str">'무선 키보드'</span>, <span class="tok-num">980</span>.
+<span class="tok-kw">WRITE</span>: / <span class="tok-str">'모니터'</span>, <span class="tok-num">45300</span>.</code></pre></div></div>
+<p>숫자는 따옴표 없이 그냥 적는다. 앞 레슨에서 따옴표 없는 <code>gv_name</code>은 변수였는데,
+이렇게 <strong>숫자로만 된 것은 그대로 수</strong>로 읽는다. 따옴표로 감싸면 글자가 된다.</p>
+<p>실행해 보면 이름 길이가 줄마다 달라서 <strong>뒤따르는 숫자 칸이 통째로 밀린다.</strong> 어디서부터
+숫자를 찍을지 내가 정해 주지 않았기 때문이다. 표처럼 줄을 맞추려면 &quot;이 칸은 몇 글자&quot;라고
+<strong>폭을 지정</strong>해야 한다. 게다가 중요한 합계도 평범한 글자로 묻힌다.
+ABAP의 WRITE는 이런 걸 위한 <strong>출력 서식 옵션</strong>을 풍부하게 갖고 있다. 이 레슨에서 그걸 꺼내 쓴다.</p>
 <blockquote>
 <p>🧾 리스트 출력은 결국 <strong>표처럼 줄을 맞춰</strong> 보여줄 때가 많다. 그래서 &quot;폭과 정렬&quot;이 첫 번째 도구다.</p>
 </blockquote>
@@ -57,26 +66,33 @@
 폭은 <code>WRITE /(len)</code>처럼 괄호로, 정렬은 키워드로 지정한다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
-3</pre><pre class="abap-editor__code"><code><span class="tok-kw">WRITE</span>: /(<span class="tok-num">16</span>) <span class="tok-str">'정훈영'</span>.                  <span class="tok-com">" 폭 16, 기본(왼쪽)</span>
-<span class="tok-kw">WRITE</span>: /(<span class="tok-num">16</span>) <span class="tok-num">1250000</span> <span class="tok-kw">RIGHT-JUSTIFIED</span>.   <span class="tok-com">" 폭 16, 오른쪽 정렬</span>
-<span class="tok-kw">WRITE</span>: /(<span class="tok-num">16</span>) <span class="tok-str">'합 계'</span> <span class="tok-kw">CENTERED</span>.          <span class="tok-com">" 폭 16, 가운데</span></code></pre></div></div>
+3
+4</pre><pre class="abap-editor__code"><code><span class="tok-kw">WRITE</span>: /(<span class="tok-num">16</span>) <span class="tok-str">'정훈영'</span>.                    <span class="tok-com">" 폭 16, 글자는 왼쪽부터</span>
+<span class="tok-kw">WRITE</span>: /(<span class="tok-num">16</span>) <span class="tok-num">1250000</span>.                     <span class="tok-com">" 폭 16, 수는 오른쪽에 붙는다</span>
+<span class="tok-kw">WRITE</span>: /(<span class="tok-num">16</span>) <span class="tok-str">'합 계'</span> <span class="tok-kw">CENTERED</span>.            <span class="tok-com">" 폭 16, 가운데</span>
+<span class="tok-kw">WRITE</span>: /(<span class="tok-num">16</span>) <span class="tok-str">'1250000'</span> <span class="tok-kw">RIGHT-JUSTIFIED</span>.   <span class="tok-com">" 따옴표에 든 숫자는 직접 오른쪽으로</span></code></pre></div></div>
 <table>
 <thead>
 <tr>
-<th>정렬 키워드</th>
+<th>정렬 지정</th>
 <th>뜻</th>
 <th>잘 쓰는 곳</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>(기본) / <code>LEFT-JUSTIFIED</code></td>
+<td>(지정 안 함)</td>
+<td>글자는 왼쪽, 수는 오른쪽</td>
+<td>대부분의 경우</td>
+</tr>
+<tr>
+<td><code>LEFT-JUSTIFIED</code></td>
 <td>왼쪽 붙임</td>
 <td>텍스트</td>
 </tr>
 <tr>
 <td><code>RIGHT-JUSTIFIED</code></td>
 <td>오른쪽 붙임</td>
-<td><strong>숫자</strong>(자릿수 정렬)</td>
+<td>따옴표에 담긴 숫자, 자릿수 맞추기</td>
 </tr>
 <tr>
 <td><code>CENTERED</code></td>
@@ -126,44 +142,67 @@
 <li><code>ULINE</code> — 가로 구분선을 긋는다(표의 칸 구분에 자주 쓴다).</li>
 </ul>
 </section><section class="lblock"><h2>숫자·날짜 다듬기</h2>
-<p>숫자와 날짜는 전용 옵션으로 더 깔끔하게 만든다. 아래는 <strong>그대로 복사해 실행</strong>해 보며
-<em>같은 값이 옵션에 따라 어떻게 달라지는지</em> 비교해 보자(변수 선언·값까지 함께 적었다).</p>
+<p>숫자와 날짜는 전용 옵션으로 더 깔끔해진다. 먼저 읽고 넘어갈 안내가 하나 있다.</p>
+<blockquote>
+<p>🔎 <strong>[선행 사용]</strong> 아래 예제의 <code>DATA … VALUE …</code>(값을 담아 두는 선언)와 <code>sy-datum</code>(오늘 날짜)은
+<strong><a href="CH02-L01.html">Chapter 2 · 변수</a>·<a href="CH04-L01.html">Chapter 4 · 날짜</a></strong> 에서 정식으로 배운다.
+지금은 <em>분석도 암기도 하지 말고</em> 통째로 복사해 실행한 뒤, <strong>옵션에 따라 같은 값이 어떻게
+달라지는지</strong>만 보면 된다.</p>
+</blockquote>
+<p>숫자부터 보자. 값 두 개를 미리 담아 두고, 거기에 옵션을 하나씩 붙인다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
 4
-5
-6
-7</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> gv_qty <span class="tok-kw">TYPE</span> n <span class="tok-kw">LENGTH</span> <span class="tok-num">4</span> <span class="tok-kw">VALUE</span> <span class="tok-str">'0001'</span>.               <span class="tok-com">" 수량(앞 0 포함)</span>
+5</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> gv_qty <span class="tok-kw">TYPE</span> n <span class="tok-kw">LENGTH</span> <span class="tok-num">4</span> <span class="tok-kw">VALUE</span> <span class="tok-str">'0001'</span>.               <span class="tok-com">" 수량(앞 0 포함)</span>
 <span class="tok-kw">DATA</span> gv_amt <span class="tok-kw">TYPE</span> p <span class="tok-kw">LENGTH</span> <span class="tok-num">8</span> <span class="tok-kw">DECIMALS</span> <span class="tok-num">2</span> <span class="tok-kw">VALUE</span> <span class="tok-str">'100.00'</span>.  <span class="tok-com">" 금액(소수 2자리)</span>
 
-<span class="tok-kw">WRITE</span>: / gv_qty   <span class="tok-kw">NO-ZERO</span>.         <span class="tok-com">" 0001 → '   1' (앞의 의미 없는 0 숨김)</span>
-<span class="tok-kw">WRITE</span>: / gv_amt   <span class="tok-kw">DECIMALS</span> <span class="tok-num">4</span>.      <span class="tok-com">" 100.00 → 100.0000 (옵션이 소수 자리를 바꿈)</span>
-<span class="tok-kw">WRITE</span>: / gv_amt   <span class="tok-kw">CURRENCY</span> <span class="tok-str">'KRW'</span>.  <span class="tok-com">" 100.00 → 10,000  (KRW는 소수 0자리!)</span>
-<span class="tok-kw">WRITE</span>: / sy-datum <span class="tok-kw">DD</span>/<span class="tok-kw">MM</span>/<span class="tok-kw">YY</span>.        <span class="tok-com">" 오늘 날짜를 구분자·2자리 연도로</span></code></pre></div></div>
+<span class="tok-kw">WRITE</span>: / gv_qty <span class="tok-kw">NO-ZERO</span>.       <span class="tok-com">" 0001 → '   1' (앞의 의미 없는 0 숨김)</span>
+<span class="tok-kw">WRITE</span>: / gv_amt <span class="tok-kw">DECIMALS</span> <span class="tok-num">4</span>.    <span class="tok-com">" 100.00 → 100.0000 (옵션이 소수 자리를 바꿈)</span></code></pre></div></div>
 <ul>
 <li><code>NO-ZERO</code> — <strong>앞의 의미 없는 0</strong>을 공백으로(<code>0001</code> → <code>1</code>). 값이 통째로 0이어도 빈칸이 된다.</li>
-<li><code>DECIMALS n</code> — 출력할 소수 자리 수. <strong>필드에 정해진 자리수를 덮어쓴다</strong>(<code>100.00</code>을 <code>DECIMALS 4</code> → <code>100.0000</code>).</li>
-<li><code>CURRENCY cur</code> — <strong>통화별 소수 자리 규칙</strong>대로 표시한다(USD·EUR = 2자리, <strong>KRW·JPY = 0자리</strong>). 같은 저장값도 통화에 따라 다르게 보인다.</li>
-<li><code>DD/MM/YY</code> — 날짜를 구분자와 <strong>2자리 연도</strong>로(<code>DD/MM/YYYY</code>면 4자리). 실제 일·월 순서·구분자는 시스템의 국가 설정을 따른다.</li>
+<li><code>DECIMALS n</code> — 출력할 소수 자릿수. <strong>필드에 정해진 자릿수를 덮어쓴다</strong>(<code>100.00</code>을 <code>DECIMALS 4</code> → <code>100.0000</code>).</li>
+</ul>
+<p>금액은 <strong>통화</strong>에 따라 보이는 모습이 또 달라진다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1</pre><pre class="abap-editor__code"><code><span class="tok-kw">WRITE</span>: / gv_amt <span class="tok-kw">CURRENCY</span> <span class="tok-str">'KRW'</span>.   <span class="tok-com">" 100.00 → 10,000</span></code></pre></div></div>
+<ul>
+<li><code>CURRENCY cur</code> — 그 <strong>통화의 소수 자리 규칙</strong>대로 표시한다(USD·EUR = 2자리, <strong>KRW·JPY = 0자리</strong>).
+저장된 값이 같아도 통화에 따라 다르게 보인다.</li>
 </ul>
 <blockquote>
-<p>💡 <strong>통화가 자릿수를 바꾼다</strong> — 똑같이 저장된 <code>100.00</code>이 <code>CURRENCY &#39;KRW&#39;</code>에선 <strong><code>10,000</code></strong> 으로 나온다.
-금액은 내부적으로 소수 2자리(<code>100.00</code> = 숫자 <code>10000</code>)로 들고 있는데, KRW는 소수 자리가 <strong>0</strong>이라 그 <code>10000</code>을
-소수점 없이 그대로 보여 주기 때문이다. <strong>통화 코드가 표시 자릿수를 정한다</strong>는 걸 꼭 기억하자.</p>
+<p>💡 <strong>통화가 자릿수를 바꾼다</strong> — <code>100.00</code>이 왜 <code>10,000</code>이 될까? 순서대로 따라가 보자.</p>
+<ol>
+<li>금액 칸은 소수점 자리를 <strong>미리 두 자리로 정해 두고</strong> 값을 담는다. 그래서 <code>100.00</code>은 속으로는
+소수점을 뗀 <strong><code>10000</code></strong> 이라는 숫자 하나로 들고 있다(<code>1.00</code>을 <code>100</code>으로 세어 두는 셈).</li>
+<li>화면에 보여 줄 때 그 <code>10000</code>의 <strong>어디에 소수점을 찍을지</strong>는 통화가 정한다.</li>
+<li>USD처럼 소수 2자리인 통화면 뒤에서 두 칸 앞에 찍어 <code>100.00</code>. KRW는 소수 자리가 <strong>0</strong>이라
+찍을 곳이 없으니 <code>10000</code>을 그대로 보여 준다(자리 구분 쉼표만 붙어 <code>10,000</code>).</li>
+</ol>
+<p>저장된 값은 하나인데 <strong>통화 코드가 보이는 자릿수를 정한다</strong>는 것. 이것만 가져가면 된다.</p>
 </blockquote>
 <blockquote>
-<p>🔎 <strong>[선행 사용]</strong> 앞 두 줄 <code>DATA … VALUE …</code>(변수 선언과 값)와 <code>sy-datum</code>(오늘 날짜)은
-<strong><a href="CH02-L01.html">Chapter 2 · 변수</a>·<a href="CH04-L01.html">Chapter 4 · 날짜</a></strong> 에서 정식으로 배운다. 지금은 <em>분석·암기 없이</em> 통째로 복사해
-실행하고 <strong>서식이 어떻게 달라지는지</strong>만 보면 된다(날짜를 그냥 출력하면 <code>20260619</code>처럼
-붙어 나온다).</p>
+<p>📎 이 &quot;통화별 소수 자리&quot;는 시스템의 통화 설정 표에 들어 있다. 그래서 시스템에 따라 값이 다를
+수도 있다. 실습 결과가 여기 설명과 다르면 그 설정을 확인하면 된다.</p>
 </blockquote>
+<p>이번엔 날짜다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2</pre><pre class="abap-editor__code"><code><span class="tok-kw">WRITE</span>: / sy-datum.             <span class="tok-com">" 시스템에 설정된 날짜 형식 그대로</span>
+<span class="tok-kw">WRITE</span>: / sy-datum <span class="tok-kw">DD</span>/<span class="tok-kw">MM</span>/<span class="tok-kw">YY</span>.    <span class="tok-com">" 일/월/연 순서로 못 박고, 연도는 2자리</span></code></pre></div></div>
+<ul>
+<li>날짜는 속으로 <code>20260619</code>처럼 붙여서 저장돼 있지만, 그냥 출력하면 <strong>사용자별 날짜 형식 설정</strong>
+대로 바뀌어 나온다(예: <code>19.06.2026</code>).</li>
+<li><code>DD/MM/YY</code> — 그 형식을 <strong>코드에서 못 박는</strong> 옵션이다. 일·월·연 순서가 이 이름 그대로 고정된다
+(<code>DD/MM/YYYY</code>면 연도가 4자리). 미국식이 필요하면 <code>MM/DD/YY</code>처럼 순서가 다른 옵션을 따로 쓴다.
+즉 <strong>설정을 따르는 건 이런 옵션을 안 붙였을 때</strong>다.</li>
+</ul>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <blockquote class="cw">
 <p>⚠️ <strong>폭보다 긴 값</strong> — 폭(len)보다 값이 길면 잘리거나 <code>*</code>로 표시된다. 폭을 넉넉히 준다.</p>
 </blockquote>
 <blockquote class="cw">
-<p>⚠️ <strong>숫자를 왼쪽 정렬</strong> — 숫자는 보통 <code>RIGHT-JUSTIFIED</code>로 자릿수를 맞춰야 읽기 좋다.</p>
+<p>⚠️ <strong>따옴표에 담긴 숫자는 왼쪽으로 흐른다</strong> — 수로 다루는 값은 그냥 찍어도 오른쪽에 붙어
+자릿수가 맞는다. 문제는 <code>&#39;1250000&#39;</code>처럼 <strong>따옴표 안에 든 숫자</strong>다. ABAP은 이걸 글자로 보기
+때문에 왼쪽에 붙어 표가 어긋난다. 이럴 땐 <code>RIGHT-JUSTIFIED</code>로 오른쪽에 맞춰 준다.</p>
 </blockquote>
 <blockquote class="cw">
 <p>⚠️ <strong>색·강조 남발</strong> — 다 강조하면 아무것도 강조가 안 된다. 정말 중요한 값에만.</p>
@@ -180,6 +219,12 @@
 <li><strong>SKIP</strong>(빈 줄)·<strong>ULINE</strong>(구분선)으로 읽기 좋게 띄운다.</li>
 <li>숫자·날짜는 <code>NO-ZERO</code>·<code>DECIMALS</code>·<code>CURRENCY</code>·<code>DD/MM/YYYY</code> 같은 전용 옵션으로 다듬는다.</li>
 </ul>
+<blockquote>
+<p>🧭 <strong>여기서 배운 건 기본기다</strong> — 실무 화면은 대부분 표 모양으로 뽑아 주는 <strong>ALV</strong>라는 도구로
+만들고, 그건 <a href="CH11-L01.html">Chapter 11 · ALV 표 출력</a>에서 배운다. 그래도 폭·정렬·색이라는
+감각은 그대로 이어지니, 옵션 이름을 통째로 외우기보다 <strong>어떤 서식이 있는지 손에 익히는
+정도</strong>면 충분하다.</p>
+</blockquote>
 <hr>
 <p>출력을 마음대로 다듬었다. 그런데 이 프로그램, 지금 <strong>어디에 저장</strong>돼 있더라? 학습용 <code>$TMP</code>를
 넘어 <strong>제대로 보관·이송</strong>하는 법 → 개발 패키지·이송요청(다음 레슨).</p>
