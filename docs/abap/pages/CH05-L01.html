@@ -51,6 +51,11 @@
 줄 장치도 없다. 아래에서 직접 눈으로 확인해 보자. <strong>숨은 실수 세 개</strong>도 찾아보자.</p>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">단일 값 변수만으로 사람 셋 — 선언의 벽</span><a class="embed__open" href="../../../embeds/abap/CH05-L01-S07.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH05-L01-S07.html" loading="lazy" title="단일 값 변수만으로 사람 셋 — 선언의 벽" style="height:560px"></iframe></figure>
 <p>관련된 값을 <strong>하나로 묶는 그릇</strong>이 필요하다. 그게 <button class="term" type="button" data-term="Structure">Structure</button>(구조체)다.</p>
+<blockquote>
+<p>🧑‍💻 <strong>다른 언어를 해 봤다면</strong> — Structure는 C의 <code>struct</code>나 파이썬의 <code>dataclass</code>처럼
+<strong>값만 묶어 두는 그릇</strong>이다. 여기에 동작(메서드)을 붙이지는 않는다. 데이터와 동작을
+함께 묶는 도구는 한참 뒤 챕터에서 따로 배운다.</p>
+</blockquote>
 </section><section class="lblock"><h2>BEGIN OF ~ END OF</h2>
 <p><button class="term" type="button" data-term="DATA">DATA</button> 문에서 <code>BEGIN OF</code> 뒤에 <button class="term" type="button" data-term="Structure">Structure</button> 이름을 적고, <code>END OF</code>로 닫기 전까지 묶을 필드를 나열하면 Structure 변수가 선언된다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
@@ -63,7 +68,8 @@
         amount <span class="tok-kw">TYPE</span> p <span class="tok-kw">LENGTH</span> <span class="tok-num">8</span> <span class="tok-kw">DECIMALS</span> <span class="tok-num">2</span>,
       <span class="tok-kw">END</span> <span class="tok-kw">OF</span> gs_person.</code></pre></div></div>
 <p><code>BEGIN OF</code>와 <code>END OF</code> 사이에 적은 <code>name</code>·<code>age</code>·<code>amount</code>는 Structure를 구성하는 <button class="term" type="button" data-term="Component">Component</button>(구성 요소)라 부른다.
-ABAP에서는 이렇게 만든 Structure 변수를 <button class="term" type="button" data-term="Work Area">Work Area</button>(작업 영역)라고 부르기도 하며, 주로 한 건(<button class="term" type="button" data-term="레코드">레코드</button>)을 담는 목적으로 쓰인다.</p>
+이렇게 만든 Structure 변수가 <strong>한 건(<button class="term" type="button" data-term="레코드">레코드</button>)을 담아 처리하는 자리</strong>에 놓이면, ABAP에서는 그 변수를 <button class="term" type="button" data-term="Work Area">Work Area</button>(작업 영역)라고 부른다.
+새로운 타입이 아니라 <strong>쓰임새에 붙은 이름</strong>이다. <code>gs_person</code>은 여전히 그냥 Structure 변수이고, 한 사람의 정보를 담아 처리하는 동안 맡은 역할이 Work Area인 것이다.</p>
 <p>변수를 선언할 때는 아래처럼 <strong>접두어</strong>만으로 변수의 모양을 파악할 수 있도록 한다.</p>
 <table>
 <thead>
@@ -87,6 +93,19 @@ ABAP에서는 이렇게 만든 Structure 변수를 <button class="term" type="bu
 <td><code>gs_person</code></td>
 </tr>
 </tbody></table>
+<blockquote class="cw">
+<p>⚠️ 여기서 <code>g</code>(global)는 <strong>한 프로그램 안 어디서나 쓸 수 있다</strong>는 뜻이다. 다음 레슨에
+나오는 <button class="term" type="button" data-term="DDIC">DDIC</button>의 &#39;Global&#39;은 <strong>여러 프로그램이 함께 쓴다</strong>는 더 넓은 뜻이라, 같은
+단어지만 가리키는 범위가 다르다. 지금 만든 <code>gs_person</code>은 이 프로그램 밖으로는 나가지
+못한다.</p>
+</blockquote>
+<blockquote>
+<p>🧑‍💻 <strong>다른 언어를 해 봤다면</strong> — 이름 앞에 타입을 박아 넣는 방식(헝가리안 표기법)을
+안티패턴으로 배웠을 수 있다. ABAP은 사정이 조금 다르다. 한 프로그램이 수천 줄이고
+선언은 저 위에 몰려 있어서, 접두어가 <strong>지금 이 변수가 값 하나인지 묶음인지</strong>를 알려
+주는 거의 유일한 단서다. 그래서 SAP 표준 교재와 대부분의 프로젝트 가이드가 지금도 이
+관례를 쓴다.</p>
+</blockquote>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">예제에서 선언된 gs_person은 어떤 모양의 변수일까?</span><a class="embed__open" href="../../../embeds/abap/CH05-L01-S02.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH05-L01-S02.html" loading="lazy" title="예제에서 선언된 gs_person은 어떤 모양의 변수일까?"></iframe></figure>
 </section><section class="lblock"><h2>Component 접근 — 하이픈(-)</h2>
 <p><button class="term" type="button" data-term="Structure">Structure</button> 안의 <button class="term" type="button" data-term="Component">Component</button>는 <strong>하이픈 <code>-</code></strong> 으로 접근한다. 아래 예제로 사용법을 확인해 보자.</p>
@@ -105,20 +124,17 @@ gs_person-amount = <span class="tok-str">'1500.50'</span>.
          gs_person-amount.</code></pre></div></div>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">이 표현식은 어느 칸일까 — 하이픈(-) 접근</span><a class="embed__open" href="../../../embeds/abap/CH05-L01-S03.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH05-L01-S03.html" loading="lazy" title="이 표현식은 어느 칸일까 — 하이픈(-) 접근"></iframe></figure>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">한 줄씩 실행 — gs_person이 채워지는 과정(디버거)</span><a class="embed__open" href="../../../embeds/abap/CH05-L01-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH05-L01-S01.html" loading="lazy" title="한 줄씩 실행 — gs_person이 채워지는 과정(디버거)"></iframe></figure>
-</section><section class="lblock"><h2>여러 명 담기 — 이번엔 모양 선언이 반복된다</h2>
-<p><code>gs_person</code>으로 한 명은 깔끔하게 묶었다. 그런데 사람이 <strong>두 명, 세 명</strong>이 되면?
-첫 섹션의 번호 참사로 돌아갈 수는 없으니 사람마다 <button class="term" type="button" data-term="Structure">Structure</button> 변수를 만들 텐데, 그러면
-<code>BEGIN OF ~ END OF</code> <strong>모양 선언이 통째로 반복</strong>된다. 사람마다 5줄씩이다. 모양은
-<strong>한 번만</strong> 적고, 변수만 여러 개 찍어내고 싶다.</p>
-<p>얼마나 나아지는지는 규모로 체감된다. 실무의 &quot;사람&quot;은 정보가 셋일 리 없다.
-성별·생일·부서·직급·입사일·연봉·연락처만 더해도 <strong>정보 10개</strong>다. 단일 값 변수는
-<strong>사람 수 × 정보 수</strong>로 폭발하지만(겨우 3명인데 <strong>변수 30개</strong>), Structure와 타입을
-쓰면 얘기가 달라진다. 아래 비교와 &quot;실무 스케일&quot;을 열어 확인해 보자.</p>
-<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">번호 변수 참사 vs Structure — 사람 1명 추가의 비용</span><a class="embed__open" href="../../../embeds/abap/CH05-L01-S06.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH05-L01-S06.html" loading="lazy" title="번호 변수 참사 vs Structure — 사람 1명 추가의 비용" style="height:620px"></iframe></figure>
-<blockquote>
-<p>💡 <code>gv_name2</code> 같은 <strong>번호 붙은 변수</strong>가 보이면 그건 &quot;묶어야 한다&quot;는 신호다.
-단일 값 변수 9줄이 아래에서 <strong>타입 정의 한 번 + 변수 세 줄</strong>로 줄어든다.</p>
-</blockquote>
+</section><section class="lblock"><h2>잠깐 정리 — 여기까지가 Structure의 기본</h2>
+<ul>
+<li><strong>만들기</strong> — <code>DATA:</code> 뒤에 <code>BEGIN OF &lt;이름&gt;</code>을 적고, 담을 칸을 나열한 뒤 <code>END OF &lt;이름&gt;.</code>으로 닫는다.</li>
+<li><strong>넣고 읽기</strong> — <code>&lt;이름&gt;-&lt;Component&gt;</code>, 하이픈 하나로 칸 안에 들어간다.</li>
+<li><strong>이름 짓기</strong> — 값 하나면 <code>gv_</code>, 묶음이면 <code>gs_</code>.</li>
+</ul>
+<p>여기까지가 <button class="term" type="button" data-term="Structure">Structure</button>의 뼈대 전부다. 남은 이야기는 이 뼈대를 <strong>덜 반복해서 쓰는 요령</strong>이다.</p>
+</section><section class="lblock"><h2>이번엔 모양 선언이 반복된다</h2>
+<p><code>gs_person</code>으로 한 명은 깔끔하게 묶었다. 그런데 사람이 <strong>두 명, 세 명</strong>이 되면 사람마다
+<button class="term" type="button" data-term="Structure">Structure</button> 변수를 만들 텐데, 그때마다 <code>BEGIN OF ~ END OF</code> <strong>모양 선언이 통째로 따라붙는다.</strong>
+사람마다 5줄씩이다. 모양은 <strong>한 번만</strong> 적고, 변수만 여러 개 찍어내고 싶다.</p>
 </section><section class="lblock"><h2>타입으로 빼두기 (재사용)</h2>
 <p><button class="term" type="button" data-term="Structure">Structure</button>의 <strong>모양</strong>을 <button class="term" type="button" data-term="TYPES">TYPES</button>로 선언하면 <strong>여러 변수가 같은 모양을 공유</strong>한다. 모양은
 한 번만 선언하고, 변수는 <code>TYPE ts_person</code>으로 여러 개 만든다. 한 명이 아니라 여러
@@ -159,17 +175,30 @@ gs_p1-name   = <span class="tok-str">'정훈영'</span>.
 gs_p1-age    = <span class="tok-num">30</span>.
 gs_p1-amount = <span class="tok-str">'1500.50'</span>.
 
-gs_p2-name   = <span class="tok-str">'손흥민'</span>.
-gs_p2-age    = <span class="tok-num">32</span>.
+gs_p2-name   = <span class="tok-str">'손흥민'</span>.     <span class="tok-com">" 이 사람은 amount를 일부러 비워 둔다</span>
+gs_p2-age    = <span class="tok-num">32</span>.          <span class="tok-com">" 안 넣은 칸은 초기값 0.00으로 남는다</span>
 
 gs_p3-name   = <span class="tok-str">'유재석'</span>.
 gs_p3-age    = <span class="tok-num">51</span>.
 gs_p3-amount = <span class="tok-str">'980.00'</span>.</code></pre></div></div>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">타입 재사용 — ts_person 하나로 변수 여러 개</span><a class="embed__open" href="../../../embeds/abap/CH05-L01-S04.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH05-L01-S04.html" loading="lazy" title="타입 재사용 — ts_person 하나로 변수 여러 개"></iframe></figure>
-</section><section class="lblock"><h2>LIKE — 기존 변수와 똑같은 모양으로</h2>
+<p>타입으로 묶으면 얼마나 나아지는지는 규모가 커질수록 또렷해진다. 실무의 &quot;사람&quot;은 정보가
+셋일 리 없다. 성별·생일·부서·직급·입사일·연봉·연락처만 더해도 <strong>정보 10개</strong>다. 단일 값
+변수는 <strong>사람 수 × 정보 수</strong>로 폭발하지만(겨우 3명인데 <strong>변수 30개</strong>), 타입 하나로 묶으면
+얘기가 달라진다. 아래 비교와 &quot;실무 스케일&quot;을 열어 확인해 보자.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">번호 변수 참사 vs TYPES + Structure — 사람 1명 추가의 비용</span><a class="embed__open" href="../../../embeds/abap/CH05-L01-S06.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH05-L01-S06.html" loading="lazy" title="번호 변수 참사 vs TYPES + Structure — 사람 1명 추가의 비용" style="height:620px"></iframe></figure>
+<blockquote>
+<p>💡 <code>gv_name2</code> 같은 <strong>번호 붙은 변수</strong>가 보이면 그건 &quot;묶어야 한다&quot;는 신호다.
+단일 값 변수 9줄이 여기서 <strong>타입 정의 한 번 + 변수 세 줄</strong>로 줄어들었다.</p>
+</blockquote>
+</section><section class="lblock"><h2>LIKE 다시 만나기 — 변수를 보고 똑같은 모양으로</h2>
+<p><code>LIKE</code>는 <a href="CH02-L01.html">Chapter 2 · 변수 선언(DATA)</a>에서 이미 배운 키워드다. 거기서는
+단일 값 변수를 다른 변수와 같은 모양으로 선언했는데, <strong><button class="term" type="button" data-term="Structure">Structure</button>에도 그대로 쓴다.</strong>
+새 문법을 배우는 게 아니라, 아는 문법을 묶음에 적용해 보는 자리다.</p>
 <p><code>TYPE</code>이 <strong>타입을 보고</strong> 만든다면, <code>LIKE</code>는 <strong>이미 선언된 변수를 보고</strong> 똑같은
-모양으로 만든다. 타입을 따로 선언하지 않았어도, 잘 만든 변수 하나가 있으면 같은
-모양을 바로 찍어낼 수 있다.</p>
+모양으로 만든다. 그래서 둘은 쓰는 자리가 갈린다. 모양에 이름을 붙여 여러 곳에서 쓸
+거라면 앞 절의 <code>TYPES</code>, 잘 만들어 둔 변수가 이미 하나 있고 그 짝을 하나 더 두고 싶을
+뿐이라면 <code>LIKE</code>다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -188,18 +217,34 @@ gs_p4-name = <span class="tok-str">'강호동'</span>.       <span class="tok-co
 복사되는 건 <strong>모양뿐</strong>이고, 원본 <code>gs_p1</code>에 들어 있던 값(정훈영·30·1500.50)은 <strong>한 글자도
 넘어오지 않는다.</strong> <code>gs_p4</code>는 선언되는 순간 모든 Component가 <strong>타입별 초기값</strong>(정수 <code>0</code>,
 문자열 <code>&#39;&#39;</code>, <code>p</code>는 <code>0.00</code>)으로 시작한다. 아래 디버거에서 직접 확인해 보자.</p>
+<p>코드에서 <code>DATA gs_p4</code>가 중간에 끼어 있다고 해서 &quot;이 줄에 도달해야 변수가 생긴다&quot;고 읽으면
+안 된다. <code>DATA</code> 같은 <strong>선언문은 실행 순서와 상관없이</strong> 프로그램이 시작될 때 한꺼번에
+처리된다. <code>gs_p4</code>는 첫 줄부터 이미 빈 그릇으로 준비돼 있다. 디버거에서 선언문에는 아예
+멈추지 않는 이유이기도 하다. 그래도 읽는 사람을 생각하면 선언은 코드 위쪽에 모아 두는
+편이 좋다.</p>
 <blockquote>
 <p>💡 <strong><code>TYPE</code>이든 <code>LIKE</code>이든, 변수는 선언되는 순간 반드시 초기값을 가진다.</strong> ABAP에는
 &quot;값이 없는(미지정) 변수&quot;가 없다. 안 넣었으면 그건 그냥 그 타입의 <strong>초기값</strong>이다.</p>
+</blockquote>
+<blockquote>
+<p>🧑‍💻 <strong>SQL을 해 봤다면</strong> — 여기 <code>LIKE</code>는 SQL의 패턴 검색 <code>LIKE</code>와 <strong>이름만 같고 아무
+관계가 없다.</strong> 선언문에서 쓰는 <code>LIKE</code>는 &quot;이 변수와 같은 모양으로&quot;라는 뜻이다.</p>
 </blockquote>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">LIKE 디버깅 — gs_p1을 다 채워도 gs_p4는 초기값</span><a class="embed__open" href="../../../embeds/abap/CH05-L01-S05.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH05-L01-S05.html" loading="lazy" title="LIKE 디버깅 — gs_p1을 다 채워도 gs_p4는 초기값"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
 <li><strong>END OF 이름</strong> → <code>END OF gs_person.</code> 처럼 같은 이름으로 닫는다.</li>
+<li><strong>선언 체인의 구두점</strong> → <code>DATA:</code>로 시작했으면 항목마다 <strong>쉼표</strong>로 잇고 <strong>맨 끝에만
+마침표</strong>를 찍는다. <code>BEGIN OF</code>와 <code>END OF</code> 사이의 <button class="term" type="button" data-term="Component">Component</button>도 쉼표로 잇는다.</li>
+<li><strong>칸에 들어갈 땐 하이픈(<code>-</code>)</strong> → <code>gs_person.name</code>처럼 점을 찍으면 거기서 문장이 끝난
+것으로 읽혀 오류가 난다. <button class="term" type="button" data-term="Structure">Structure</button> 안으로 들어가는 문은 하이픈 하나뿐이다.</li>
+<li><strong>LIKE는 값까지 복사하지 않는다</strong> → <code>LIKE</code>로 만든 변수는 <strong>모양만</strong> 같고 값은 초기값이다.
+값이 필요하면 따로 넣는다.</li>
 </ul>
 <hr>
-<p>사람 한 명을 깔끔히 묶었다. 그런데 이 <button class="term" type="button" data-term="Structure">Structure</button>도 <strong>프로그램마다 또 선언</strong>하긴
-마찬가지다. 전역으로 공유하고 싶다 → <button class="term" type="button" data-term="DDIC">DDIC</button> Structure(다음 레슨).</p>
+<p>사람 한 명을 깔끔히 묶었다. 그런데 이 Structure도 <strong>프로그램마다 또 선언</strong>하긴
+마찬가지다. 프로그램 밖으로 꺼내 여러 프로그램이 함께 쓰고 싶다 →
+<a href="CH05-L02.html">DDIC Structure</a>.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

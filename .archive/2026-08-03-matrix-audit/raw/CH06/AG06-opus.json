@@ -1,0 +1,100 @@
+{
+  "agent": "AG06",
+  "model": "opus",
+  "target": "CH06",
+  "persona_ack": "20년차 SAP ABAP 아키텍트로서 CH06(Internal Table) 6개 레슨 + _chapter.md를 기술 검수했다. 문법·런타임 동작 사실성, 예시가 실무 표준인지, 사고로 이어질 위험한 생략, 교정 없이 시연되는 안티패턴 네 축으로만 판단했고 문체·커리큘럼 규칙은 다루지 않았다.",
+  "method": "Read 도구로 대상 7개 파일 전문을 통독하고, 각 ABAP 문장(APPEND/INSERT/READ TABLE/SORT/BINARY SEARCH/MODIFY/DELETE/LOOP/COLLECT/AT·SUM/DESCRIBE/CLEAR·FREE)의 문법 형태와 런타임 동작을 내 지식과 1:1 대조했다. 웹 검색·외부 네트워크·타 감사 산출물은 사용하지 않았고, 실제 시스템 구문 체크는 돌리지 못해 순서 의존 문법 1건은 confidence=추정으로 남겼다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L06.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L04.md",
+      "quote": "- `AT FIRST`/`AT LAST` — 테이블 전체의 처음/끝(여기서 `SUM`은 전체 합계).",
+      "category": "위험한 생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "컨트롤레벨 블록 안에서 Work Area의 비(非)그룹키 필드가 별표('*')·초기값으로 덮여 있다는 핵심 동작이 통째로 빠졌다. ABAP 초보가 가장 자주 겪는 '왜 값이 ****로 나오죠?' 함정인데 경고가 없다.",
+      "evidence": "AT NEW f / AT END OF f 블록 안에서는 그룹 키(f와 그 왼쪽 필드) 외의 컴포넌트가 문자계열이면 '*'로 채워지고 숫자계열이면 초기값이 된다. AT FIRST / AT LAST 블록에서는 '모든' 컴포넌트가 그렇게 채워진다. 본문 예제는 AT NEW 안에서 그룹 키인 gs_sales-region만 출력해 우연히 정상 동작하고, AT END OF에서도 SUM이 먼저 채워 주기 때문에 학습자가 이 규칙을 눈치챌 단서가 전혀 없다. 그래서 학습자가 AT NEW region 안에서 gs_sales-amount나 고객명을 찍는 순간 '****'가 나오고 원인을 못 찾는다.",
+      "suggestion": "컨트롤레벨 절 주의사항에 ④를 추가: 'AT 블록 안의 Work Area는 그룹 키 밖 필드가 문자면 *, 숫자면 0으로 덮인다(AT FIRST/AT LAST는 전 필드). 그래서 AT 블록 안에서는 그룹 키 필드와 SUM 결과만 신뢰해서 쓰고, 다른 필드가 필요하면 AT 블록 밖(LOOP 본문)에서 읽어 둔다.' 임베드 스텝 디버거에도 별표 상태를 한 스텝 보여 주면 확실해진다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L04.md",
+      "quote": "- 무조건 뒤에 붙이고 싶은 거라면 `COLLECT`가 아니라 `APPEND`다.",
+      "category": "위험한 생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "COLLECT와 APPEND/INSERT를 같은 테이블에 섞어 쓰면 안 된다는 경고 없이, 오히려 둘을 나란히 놓아 혼용을 유도한다. 실무에서 합계가 조용히 틀어지는 대표 사고 패턴이다.",
+      "evidence": "STANDARD 테이블에 대한 COLLECT는 내부적으로 임시 해시 관리를 만들어 키 일치 행을 찾는다. 같은 테이블을 APPEND·INSERT·MODIFY·SORT 등 다른 문장으로 건드리면 이 해시 관리가 무효화되어 (1) 이후 COLLECT가 선형 탐색으로 떨어져 대량 데이터에서 급격히 느려지고, (2) COLLECT라면 만들지 않았을 '같은 키의 중복 행'이 이미 테이블에 들어가 있어 합계가 여러 행으로 쪼개진다. 또 COLLECT의 키는 명시 키가 없으면 standard key(문자·바이트 계열 필드 전부)라서, 예제처럼 gt_sales의 타입 선언조차 보여 주지 않으면 학습자는 무엇을 기준으로 합산되는지 알 수 없다.",
+      "suggestion": "① gt_sales/ts_sales 타입 선언(예: region TYPE c LENGTH 10, amount TYPE p LENGTH 9 DECIMALS 2)을 코드에 노출해 '문자 필드=키, 숫자 필드=합산 대상'이 눈에 보이게 한다. ② 주의 문구 추가: 'COLLECT로 채우는 테이블에는 APPEND/INSERT를 섞지 않는다 — 섞으면 같은 키 행이 중복 생성돼 합계가 갈라지고 성능도 나빠진다. 누적이 목적이면 처음부터 COLLECT만, 단순 나열이 목적이면 APPEND만 쓴다.'"
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L04.md",
+      "quote": "LOOP AT gt_person FROM 2 TO 5 INTO gs_person.",
+      "category": "사실 오류(문법 순서)",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "LOOP AT의 추가어 순서가 표준과 뒤집혀 있다. 표준형은 결과 지정(INTO wa)이 먼저, 범위 조건(FROM/TO/WHERE)이 뒤다 — 그대로 붙여넣으면 구문 오류가 날 가능성이 높다.",
+      "evidence": "ABAP 키워드 문서의 LOOP AT 구문은 'LOOP AT itab result [cond].' 형태로, result(INTO wa | ASSIGNING <fs> | REFERENCE INTO | TRANSPORTING NO FIELDS)가 먼저 오고 그다음에 [FROM idx1] [TO idx2] [WHERE ...]가 온다. 바로 위 예제인 'LOOP AT gt_person INTO gs_person WHERE age >= 20.'은 이 순서를 지켰는데, FROM/TO 예제만 INTO를 뒤로 보냈다. 캡스톤을 포함해 이 챕터의 다른 LOOP는 모두 INTO가 앞이다. 다만 나는 실제 시스템 구문 체크로 확인하지 못했고 일부 문장은 추가어 순서에 관대한 사례가 있어 확실 대신 추정으로 둔다.",
+      "suggestion": "'LOOP AT gt_person INTO gs_person FROM 2 TO 5.   \" 2~5번째 행만'으로 바꾼다(WHERE 예제와 같은 순서로 통일). 반영 전 SE38 구문 체크로 두 형태를 한 번 확인하면 확정된다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L02.md",
+      "quote": "키를 명시하지 않고 `TYPE TABLE OF`만 쓰면(지금까지 우리가 한 방식) **standard key**가",
+      "category": "사실 오류(불완전 일반화)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "standard key를 '문자 계열 필드 전부'라고만 설명해, 같은 레슨에서 바로 앞에 소개한 비구조 행 타입(TYPE TABLE OF i)의 경우 standard key가 '비어 있다'는 사실과 어긋난다.",
+      "evidence": "standard key는 행 타입이 Structure일 때만 '모든 문자계열·바이트계열 컴포넌트'다. 행 타입이 구조체가 아닌 단일 타입이면, 그 타입이 문자·바이트 계열일 때만 행 전체가 키가 되고 숫자 계열(i·p·f 등)이면 standard key는 '빈 키'가 된다. 이 레슨은 ① Line Type 절에서 'DATA gt_num TYPE TABLE OF i.'를 먼저 보여 준 뒤 ② Primary Key 절에서 위 문장을 단정하므로, 학습자는 gt_num에도 키가 있다고 오해한다. 빈 키는 뒤에 배울 DELETE ADJACENT DUPLICATES(COMPARING 생략 시)·COLLECT·WITH TABLE KEY 동작에 그대로 영향을 준다.",
+      "suggestion": "한 문장만 덧붙인다: '행 모양이 Structure면 문자·바이트 계열 필드 전부가, 행 모양이 숫자 하나(i 등)면 키가 아예 비어 있는 상태가 standard key다. 키가 필요하면 WITH ... KEY로 직접 정한다.'"
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L05.md",
+      "quote": "- **Deep을 DB 테이블 컬럼으로** → 안 된다.",
+      "category": "사실 오류(과잉 단정)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "이 레슨은 string을 deep 요소로 분류해 놓고 'Deep은 DB 테이블 컬럼 불가'라고 단정한다. 두 문장을 이으면 'string 필드는 DB 테이블에 못 만든다'는 잘못된 결론이 나온다.",
+      "evidence": "DDIC 투명 테이블은 데이터 타입 STRING·RAWSTRING 컬럼을 지원한다(DB에는 LOB으로 저장). 키 필드로 못 쓰고 SELECT의 WHERE·ORDER BY 등에서 제약이 있지만 컬럼 자체는 정상적으로 만들 수 있다. 정말로 컬럼이 될 수 없는 것은 Internal Table 타입 컴포넌트와 참조(reference)다. 바로 위 '왜 미리 알아두나' 절은 'Internal Table·참조·하위 Structure를 통째로 컬럼에 넣을 수 없다'로 정확히 썼는데, 점검 목록의 이 줄에서만 범위가 Deep 전체로 넓어져 앞 문장과도 어긋난다.",
+      "suggestion": "'Deep을 DB 테이블 컬럼으로 → Internal Table·참조는 컬럼이 될 수 없다. (문자열은 예외적으로 STRING 컬럼이 있지만 키로 못 쓰는 등 제약이 있어, 지금은 고정 길이 문자 타입으로 배운다.)' 정도로 범위를 좁힌다."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L06.md",
+      "quote": "`APPEND` 다음 줄에 `BREAK-POINT`를 걸고([디버깅 입문](CH04-L06.html)) `gt_gugu`를",
+      "category": "안티패턴",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "소스에 BREAK-POINT 문장을 직접 심는 방식을 교정 없이 시연한다. 하드코딩 BREAK-POINT는 그대로 이관되면 운영에서 사고를 내는 대표 안티패턴이다.",
+      "evidence": "BREAK-POINT는 소스에 남는 '정적' 중단점이라 사용자를 가리지 않고 그 코드를 실행하는 누구에게나 디버거가 뜬다. 배치(백그라운드) 잡이나 RFC·업데이트 태스크에서 걸리면 디버거를 못 띄운 채 잡이 죽거나 대기 상태로 남는다. 이 때문에 실무에서는 소스에 심지 않고 SE38/디버거에서 세션 중단점(외부/세션 breakpoint)을 걸며, 코드 스캔(ATC/Code Inspector)도 BREAK-POINT 잔존을 지적한다. 게다가 이 예제는 72회 도는 루프 안에 심는 형태라 중단점이 72번 걸린다.",
+      "suggestion": "본문을 '에디터에서 APPEND 줄 왼쪽을 더블클릭해 (소스에 남지 않는) 세션 중단점을 건다'로 바꾸고, BREAK-POINT 문장을 소개하려면 '실습 후 반드시 지운다 — 이관되면 다른 사람 실행에서도 디버거가 뜬다'는 경고를 같은 자리에 붙인다."
+    },
+    {
+      "seq": 7,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L06.md",
+      "quote": "펼치면, 행이 하나씩 쌓여 2개, 4개 … 72개가 되는 모습이 보인다.",
+      "category": "사실 오류(동작 서술)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "디버거에서 관찰되는 행 수 진행을 '2개, 4개'로 적었으나, 앞 절과 코드대로면 1개, 2개, 3개 … 순으로 하나씩 증가한다. 같은 문장 안의 '하나씩 쌓여'와도 모순된다.",
+      "evidence": "예제는 안쪽 DO 루프 안에서 APPEND를 1회 실행하므로, APPEND 다음 줄의 중단점에서 멈출 때마다 gt_gugu의 행 수는 1 → 2 → 3 → ... → 72로 1씩 늘어난다. 2개, 4개처럼 2씩 뛰는 구간은 존재하지 않는다. 학습자가 화면에서 본 숫자와 본문이 어긋나면 '내가 잘못 짰나' 하고 되돌아가게 된다.",
+      "suggestion": "'행이 하나씩 쌓여 1개, 2개, 3개 … 72개가 되는 모습이 보인다.'로 고친다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH06은 기술적으로 상당히 견실하다. Internal Table ≠ DB Table 구분, CLEAR와 FREE의 초기 할당 메모리 차이, REFRESH·Header Line을 인식용 obsolete로만 다룬 처리, INSERT INTO(위치)와 INSERT INTO TABLE(키)의 구분, SORTED에 INDEX 삽입 시 정렬 위반 런타임 오류, SORT 대상은 STANDARD·HASHED, BINARY SEARCH의 선행 정렬 필수와 그 실패를 임베드로 직접 목격시키는 구성, LOOP WHERE/FROM-TO에서 sy-tabix가 실제 행 번호라는 점, HASHED LOOP에서 sy-tabix=0, SUM이 그룹 키 오른쪽 숫자 필드만 합산하고 ASSIGNING과 병용 불가라는 점, DELETE ADJACENT DUPLICATES의 정렬 선행, Deep의 판정 기준이 '겹'이 아니라 '가변 요소'라는 정리, 캡스톤의 중첩 DO에서 안쪽 루프 종료 후 sy-index가 복원되는 동작까지 — 입문 교재에서 흔히 틀리는 지점들을 대체로 정확히 짚었다. 치명·높음 결함은 없었다. 다만 실무 사고로 이어지는 두 가지 생략이 눈에 띈다. ① 컨트롤레벨(AT) 블록 안에서 Work Area의 비그룹키 필드가 '*'·초기값으로 덮이는 동작이 아예 없어, 학습자가 AT NEW 안에서 다른 필드를 찍는 순간 원인 모를 '****'를 만난다. ② COLLECT를 쓰는 테이블에 APPEND를 섞으면 중복 키가 생겨 합계가 갈라지고 해시 관리 무효화로 성능도 떨어지는데, 본문은 오히려 두 문장을 나란히 놓아 혼용을 유도한다. 그 밖에 LOOP AT의 FROM/TO와 INTO 순서(표준은 INTO가 먼저, 구문 오류 가능 — 추정), standard key 설명의 비구조 행 타입 예외 누락, 'Deep은 DB 컬럼 불가'라는 과잉 단정(STRING 컬럼은 실제로 존재), 캡스톤의 하드코딩 BREAK-POINT 시연과 '2개, 4개' 행 수 서술 오류가 있다. 모두 문장 추가·치환 수준으로 교정 가능하므로 재집필이나 대규모 보강은 불필요하고, 위 7건의 경미 수정을 권한다."
+  }
+}

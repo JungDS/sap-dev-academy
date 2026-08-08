@@ -37,37 +37,40 @@
 | CH04-L06-S01 | CH04-L06 | step-debugger **(+Watchpoint 레이어)** | Watchpoint 체험 홈 — 만들기 버튼→변수 이름→저장(본문 절차 동일)→**계속(F8)이 그 값 바뀌는 줄에서 자동 정지**·칩 삭제·미등록 시 F8은 끝까지. 예제=합계 누적(gv_total이 루프 6번 + 할인 10번에서 바뀜). 구구단 아님 = **CH04-L07-S01 정답 선노출 회피** · 스텝은 마지막 줄까지 1:1 | ✅ |
 | CH05-L01-S01 | CH05-L01 | step-debugger | §BEGIN OF+§Component 예제 통합 트레이스(선언→하이픈 대입→WRITE, 6스텝 — chain은 항목당 1스텝·출력 줄 점진 완성·TYPES 없음) | ✅ |
 | CH05-L01-S05 | CH05-L01 | step-debugger | §LIKE 오해 반박 — 원본 gs_p1 채운 뒤 LIKE 선언, 워치에 gs_p1·gs_p4 동시 표시(모양만 복사·값은 초기값, 4스텝) | ✅ |
-| CH05-L05-S01 | CH05-L05 | step-debugger | 구구단=구조체 캡스톤(ls_line-dan/mul/result·sy-index 반복 갱신) | ✅ |
-| CH05-L01-S02 | CH05-L01 | struct-viz(strip) | gs_person(string·i·p) 변수 박스 — 좌측=변수명 먼저·칸 헤더=이름(좌)·타입(우) 한 줄·외곽=한 덩어리·§BEGIN OF 전용(하이픈 접근은 S03 몫)·트리 병행 보기 | ✅ |
+| CH05-L05-S01 | CH05-L05 | step-debugger | 구구단=구조체 캡스톤(gs_line-dan/mul/result·sy-index 반복 갱신) — **스텝=문장 1:1 30스텝**: 회차마다 mul 대입(10행)→result 계산(11행)→WRITE(12행) 순환 강조 + DO(9행)·ENDDO(13행) 각 1스텝(CH04-L05-S01과 동일 반복 표기 규약) | ✅ |
+| CH05-L05-S02 | CH05-L05 | step-debugger | (신규) §배운 것을 한 번에 회수 — 반복 직후 gs_line(2·9·18)에서 시작해 gs_keep 통째 복사 → MOVE-CORRESPONDING(dan·result만 건너가고 mul 무시·note 잔존) → CLEAR gs_line(보관본 gs_keep은 무사), 5스텝. **본문 ::embed 미연결(본선 후속)** | 🔁 |
+| CH05-L01-S02 | CH05-L01 | struct-viz(strip) | gs_person(string·i·p) 변수 박스 — 좌측=변수명 먼저·칸 헤더=이름(좌)·타입(우) 한 줄·외곽=한 덩어리·§BEGIN OF 전용(하이픈 접근은 S03 몫)·트리 병행 보기. 타입 표기는 본문 선언문 그대로 `p LENGTH 8 DECIMALS 2`(S03·S04 공통, 축약 `p 8,2` 폐기) | ✅ |
 | CH05-L01-S03 | CH05-L01 | struct-viz(strip+accessPick) | 포인팅 데모 — 전체 칩(gs_person=곡선 1가닥이 박스 자체+글로우 '한 몸') vs 필드 칩(-age=칸 하나+나머지 흐림)·곡선 커넥터(화살촉 없는 베지어+끝점 도트)·값 읽어주기·숫자 칸 우측 정렬 | ✅ |
 | CH05-L01-S04 | CH05-L01 | struct-viz(strip) | ts_person=값 없는 헤더 스트립+변수 3행 정렬(칸=모양+값)·칼럼 폭=길이감 인코딩(SAP 표준 표기)·CH06 행 스택 예고 | ✅ |
 | CH05-L01-S07 | CH05-L01 | before-after(.solo) | §도입 pain 시각화 — 단일 값 변수만으로 사람 셋(DATA 9줄 벽+칩 9개·해결책 미노출) + 숨은 실수 헌트(오타 gv_naem2·DECIMALS 누락·c 10, 점선 밑줄+정답 접기) | ✅ |
 | CH05-L01-S06 | CH05-L01 | before-after | 번호 변수 참사(gv_name2·3… 9줄) vs TYPES+DATA(사람 1명=1줄) — pain 증폭 + 하단 메모리 도형(낱개 칩 9 ↔ 같은 모양 구조체 박스 3, 이름만) + 실무 스케일 접기(정보 +7 → 변수 30개 vs TYPES 7줄, 곱셈 vs 덧셈 + 200개 투영) | ✅ |
 | CH05-L02-S02 | CH05-L02 | share-vs-local | 정의 위치 비교 — Local(프로그램마다 정의, 이름 같아도 구성 제각각=남남·수평 3열) vs DDIC(ZST_PERSON 한 곳→곡선 참조)·필드 추가 토글(수정 3곳 vs 1곳) | ✅ |
-| CH05-L02-S01 | CH05-L02 | struct-viz | (재사용) ZST_PERSON 트리 — Component=Data Element(라벨 상속 표기)·name 대입 인터랙션 | ✅ |
-| CH05-L03-S01 | CH05-L03 | struct-reuse-board | 중첩/.INCLUDE/.APPEND 세그→다이어그램(하위 박스/펼침 그룹/잠긴 표준+확장)+접근 경로+경로 퀴즈 3문 | ✅ |
-| CH05-L04-S01 | CH05-L04 | move-mapping | MOVE-CORRESPONDING 매핑 보드(SAP BC400 표준 구도) — 상=원본·하=대상 스트립·같은 이름끼리 화살표(실행 전 점선→후 실선)·잔존 함정·CLEAR 토글 | ✅ |
-| CH06-L01-S01 | CH06-L01 | step-debugger(itab워치) | Work Area→APPEND로 gt_person 성장 트레이스(11스텝·행 미니테이블 new 플래시·CLEAR/FREE·DESCRIBE·APPEND=복사 강조: WA age=99 바꿔도 쌓인 행 불변) | ✅ |
+| CH05-L02-S01 | CH05-L02 | struct-viz | (재사용) ZST_PERSON 트리 — Component=Data Element(라벨 상속 표기)·name 대입 인터랙션. 초기값은 DDIC 타입대로 CHAR 20=`''`·NUMC 3=`'000'`·DEC 8,2=`0.00` | ✅ |
+| CH05-L03-S01 | CH05-L03 | struct-reuse-board | 중첩/.INCLUDE/.APPEND 세그→다이어그램(하위 박스/펼침 그룹/잠긴 표준+확장)+접근 경로+경로 퀴즈 3문(정답 위치 0·2·1로 분산 — 한 자리만 눌러 만점 불가) | ✅ |
+| CH05-L04-S01 | CH05-L04 | move-mapping | MOVE-CORRESPONDING 매핑 보드(SAP BC400 표준 구도) — 상=원본·하=대상 스트립·같은 이름끼리 화살표(실행 전 점선→후 실선)·잔존 함정·CLEAR 토글. 칸 값=따옴표 없는 맨값·타입은 본문 선언문 그대로(`c LENGTH 20`·`p LENGTH 8 DECIMALS 2`) | ✅ |
+| CH05-L04-S02 | CH05-L04 | step-debugger | (신규) §통째로 대입/초기화 — `gs_b = gs_a` 뒤 `CLEAR gs_a`로 **값 복사라 둘은 남남**임을 증명(gs_a만 초기값으로, gs_b는 그대로), 본문 코드 6줄과 1:1·3스텝. **본문 ::embed 미연결(본선 후속)** | 🔁 |
+| CH06-L01-S01 | CH06-L01 | step-debugger(itab워치) | Work Area→APPEND로 gt_person 성장 트레이스(11스텝·행 미니테이블 new 플래시·DESCRIBE·APPEND=복사 강조: WA age=99 바꿔도 쌓인 행 불변) + **메모리 워치**로 CLEAR(초기 메모리 유지)↔FREE(반환됨·0) 대비 관찰 | ✅ |
 | CH06-L02-S01 | CH06-L02 | code-anatomy | 테이블 타입 선언 한 줄 해부(tt_person/kind=STANDARD/line=TABLE OF/key=WITH NON-UNIQUE KEY/use) — 3속성 클릭 | ✅ |
 | CH06-L02-S02 | CH06-L02 | decision-tree | Table Kind 선택 트리(자주 하는 일→STANDARD/SORTED/HASHED·유일키·정렬유지 분기) | ✅ |
-| CH06-L03-S01 | CH06-L03 | step-debugger(itab워치) | 한 행 제어 실험실(INSERT INDEX·READ INDEX/WITH KEY·MODIFY TRANSPORTING·DELETE, focus 강조·sy-subrc/sy-tabix·READ 실패 후 WA 잔존 함정) | ✅ |
+| CH06-L03-S01 | CH06-L03 | step-debugger(itab워치) | 한 행 제어 실험실 13스텝(INSERT INDEX·**INSERT INTO TABLE**=STANDARD면 맨 끝·READ INDEX/WITH KEY·**TRANSPORTING NO FIELDS**=WA 미복사 존재확인·MODIFY TRANSPORTING·DELETE, focus 강조·sy-subrc/sy-tabix·READ 실패 시 **sy-tabix=0** + WA 잔존 함정) | ✅ |
 | CH06-L03-S02 | CH06-L03 | step-debugger(itab워치) | BINARY SEARCH 함정 재현(정렬 없이→sy-subrc=4, SORT 후→발견) | ✅ |
-| CH06-L04-S01 | CH06-L04 | step-debugger(itab워치) | 반복 회차 vs sy-tabix 괴리(WHERE 걸러 돌기·focus 강조) + ASSIGNING <fs> 원본 직접 수정(전 행 age+1) | ✅ |
-| CH06-L04-S02 | CH06-L04 | step-debugger(itab워치) | COLLECT 키 합산(서울 100+30=130·행 불증) → 컨트롤레벨 AT NEW/END OF·SUM 지역 소계 리포트 | ✅ |
+| CH06-L04-S01 | CH06-L04 | step-debugger(itab워치) | 3막 19스텝 — 1막 WHERE로 걸러 돌 때 반복 회차 vs sy-tabix 괴리 · 2막 **FROM 2 TO 5**(번호 구간, `LOOP AT … INTO … FROM 2 TO 5` 어순) · 3막 ASSIGNING <fs> 원본 직접 수정(전 행 age+1). focus 강조 | ✅ |
+| CH06-L04-S02 | CH06-L04 | step-debugger(itab워치) | COLLECT 키 합산(서울 100+30=130·행 불증) → 컨트롤레벨 소계 28스텝. **LOOP AT·AT NEW·ENDAT·AT END OF·ENDLOOP 줄을 모두 스텝으로 짚고**, AT 진입 시 Work Area 마스킹(그룹 키 오른쪽 amount→0)·ENDAT 복원·SUM 충전까지 관찰(근거 ABAPAT_ITAB/ABAPSUM) | ✅ |
 | CH06-L04-S03 | CH06-L04 | state-change-grid | DELETE ADJACENT DUPLICATES 함정 스냅샷(정렬 없이 0삭제→SORT→인접 첫행만 남김·COMPARING name) | ✅ |
+| CH06-L04-S04 | CH06-L04 | step-debugger(itab워치) | (신규) APPEND LINES OF — gt_a(지점 명단) 2행이 gt_b(전체 명단) **끝에** 붙음·DESCRIBE로 원본 gt_a 불변(복사) 확인·한 번 더 실행하면 중복. 4스텝. **본문 ::embed 미연결(본선 후속 — L04 `APPEND LINES OF` 설명 문단 뒤)** | 🔁 |
 | CH06-L05-S01 | CH06-L05 | judge-quiz | Flat vs Deep 판정 5문(전 숫자=Flat·string 하나=Deep·itab 포함=Deep·중첩≠deep·고정길이 회원카드) | ✅ |
 | CH06-L05-S02 | CH06-L05 | code-anatomy | ts_order 해부 — order_id/customer=Flat, items TYPE tt_item 한 줄이 전체를 Deep으로(원본 코드블록 체험·R2) | ✅ |
-| CH06-L06-S01 | CH06-L06 | state-change-grid | 구구단 gt_gugu 성장 스냅샷(APPEND 1→9→81행 + SORT result DESC) | ✅ |
+| CH06-L06-S01 | CH06-L06 | step-debugger(itab워치·max) | 구구단 캡스톤 13스텝 — 중첩 DO로 gt_gugu가 1→2→3→4행 **하나씩** 쌓이고 9→18→**72행**(2~9단 × 9)으로 완성, DESCRIBE gv_cnt=72, SORT result DESC. `itab.max=6`으로 가운데 접힘(⋮ n행 생략). *구 state-change-grid 정적 스냅샷(81행 오기)에서 전환* | ✅ |
 | CH07-L01-S01 | CH07-L01 | se11-table-builder(신규) | SE11 Transparent Table 생성 시뮬(ZGUGUDAN 필드·키 토글·타입 Data Element↔Built-In·검사→활성화→DB 물리테이블 생성·키 연속성/DE 검증) | ✅ |
-| CH07-L02-S01 | CH07-L02 | se11-create-entries(신규) | Create Entries 손입력 훈련기(DAN·MUL·RESULT 저장·키 중복 거부·RESULT≠DAN*MUL 경고+빨간행·MANDT 클라이언트 분리 100/200·2·3단 자동채움) | ✅ |
-| CH07-L03-S01 | CH07-L03 | before-after | 메모리(휘발) vs 디스크(영속) 두 운명 — 중립 톤(tone-warm/cool)·MANDT(Key)/Data Element 표기로 L01 정합 교정·ts_line | ✅ |
-| CH07-L03-S02 | CH07-L03 | compare-matrix | 같은 모양 네 쓰임 비교(Structure·Internal Table·Table Type·Transparent Table × 담는단위·사는곳·수명·선언예, 행 클릭 상세) | ✅ |
+| CH07-L02-S01 | CH07-L02 | se11-create-entries(신규) | Create Entries 손입력 훈련기(DAN·MUL·RESULT 저장·키 중복 거부·RESULT≠DAN*MUL 경고+빨간행·MANDT 클라이언트 분리 100/200·2·3단 자동채움). **seed 비움 = 빈 테이블에서 시작**(본문 "빈 테이블"·"2×1부터"와 정합, 키 중복은 학습자가 직접 만들어 겪음) + **↻ 처음으로** | ✅ |
+| CH07-L03-S01 | CH07-L03 | before-after **+ type-borrow-lab(조각)** | 메모리(휘발) vs 디스크(영속) 두 운명 — 중립 톤(tone-warm/cool)·MANDT(Key)/Data Element 표기로 L01 정합 교정·ts_line·`" 72행 쌓기`(2~9단×9). 아래 `.tb` 패널 = 본문 코드 대응 실험(모양 출처 ts_line↔zgugudan → 필드 3↔4·개수 TYPE↔TYPE TABLE OF → 한 건↔여러 건, 판정은 "어느 쪽이든 메모리") | ✅ |
+| CH07-L03-S02 | CH07-L03 | compare-matrix | 같은 모양 네 쓰임 비교(Structure·Internal Table·Table Type·Transparent Table × 담는단위·사는곳·수명·선언예, 행 클릭 상세). Table Type 선언예=**ZTT_PERSON**(실제 생성 객체)·note는 Table Type을 메모리 3인방에서 분리(설계도·비거주) | ✅ |
 | CH08-L01-S01 | CH08-L01 | client-scope-filter | Client(MANDT) 자동 종속 — 현재 client 바꿔 같은 SELECT 실행→결과 달라짐(MANDT 미기재) | ✅ |
-| CH08-L02-S01 | CH08-L02 | select-query-simulator | classic SELECT 빌더(projection·WHERE·sy-subrc)·ZTPERSON 연습 샌드박스 | ✅ |
+| CH08-L02-S01 | CH08-L02 | select-query-simulator | classic SELECT 빌더(projection·WHERE·sy-subrc)·**데이터셋 2종 전환**(본문 대표 예제 ZGUGUDAN 18행 ↔ 조건 연습 ZTPERSON) | ✅ |
 | CH08-L03-S01 | CH08-L03 | select-form-lab | SELECT 형태 비교(SINGLE/INTO TABLE/ENDSELECT/UP TO 3)·대상 모양·행수·반복 | ✅ |
-| CH08-L04-S01 | CH08-L04 | into-target-board | INTO 대상 4탭(Work Area·변수묶음 순서·CORRESPONDING 이름매칭·APPENDING vs INTO) | ✅ |
-| CH08-L05-S01 | CH08-L05 | where-filter-lab | WHERE 칩 조합(=,>,BETWEEN,LIKE,IN,IS NULL)·AND/OR·행별 통과/제외 사유 | ✅ |
-| CH08-L06-S01 | CH08-L06 | key-condition-lens | 키 조건 좁히기 vs 일반필드 훑기 vs 보조인덱스 개념(속도 ms 단정 안 함) | ✅ |
+| CH08-L04-S01 | CH08-L04 | into-target-board | INTO 대상 4탭(Work Area·변수묶음 순서·CORRESPONDING 이름매칭·APPENDING vs INTO) · **CORRESPONDING = TABLE(본문 정본)↔Work Area(짝 없는 칸 잔존값 ⚠️) 토글** · SINGLE은 전부 키 전체 | ✅ |
+| CH08-L05-S01 | CH08-L05 | where-filter-lab | WHERE 칩 조합(비교 6종 `= <> < > <= >=`·BETWEEN·LIKE·IN·IS NULL)·AND/OR·**NOT( ) 뒤집기**·행별 통과/제외 사유 | ✅ |
+| CH08-L06-S01 | CH08-L06 | key-condition-lens | 키 조건 좁히기 vs 일반필드 훑기 vs 보조인덱스 개념(속도 ms 단정 안 함) · **선두 접두 규칙 판정**(선두 키 없으면 전체 훑기) | ✅ |
 | CH08-L07-S01 | CH08-L07 | empty-result-message | sy-subrc 분기(dan 2·3 있음/5 없음)·WRITE vs MESSAGE S(상태바)·I(팝업) | ✅ |
 | CH09-L01-S01 | CH09-L01 | relation-gate | Foreign Key/Check Table 통과·거부(C001/C999/F4)·연결선 끊김 | ✅ |
 | CH09-L02-S01 | CH09-L02 | value-vs-fk | Value Table(제안) vs Foreign Key(검증) 토글 4-state + ALPHA 변환 | ✅ |
@@ -335,9 +338,9 @@
 ## B. 엔진별 집계 (카테고리 현황 — 같은 종류 몇 개·어디서)
 | 엔진 (embeds/_engine/) | 그룹 | 공통/standalone | 사용 인스턴스 | 비고 |
 |---|---|---|---|---|
-| step-debugger | 12 | 공통(_engine)·config 주도 ✅ | CH04-L01·L05·L06·CH05-L01-S01/S05·CH05-L05·CH10-L07-S01·**CH06-L01-S01·L03-S01/S02·L04-S01/S02** (완료) | `.stepper-config` 트레이스(주도형·하이픈키 ls_x-y OK). **CH06 확장**: vars 항목에 `itab:{cols,num}` 주면 값(2차원 배열)을 행 미니테이블로 렌더(new/chg 플래시·num 우측정렬)·steps[i].focus={key:행번호}로 현재 행 강조·키워드 TRANSPORTING/BINARY/ASSIGNING/COLLECT/SUM 등 추가·다크 .note 오버라이드 추가. **CH04-L06 확장(Watchpoint 레이어)**: 인스턴스에 `[data-wp]` 마크업이 있을 때만 배선되는 선택 기능 — 변수 이름으로 감시 등록(datalist=cfg.vars 자동)·목록/삭제·`[data-wp-run]`이 감시값이 바뀌는 스텝에서 자동 정지(미등록이면 끝까지). **config 스키마 무변경 → 마크업 없는 나머지 11개는 코드 경로 자체에 진입하지 않음**(전수 브라우저 회귀 확인 — 11/11 스텝 완주·wp 패널 미생성). CSS는 `.wp*` 전부 var() 토큰이라 gen-embed-dark 짝 규칙 불필요 |
+| step-debugger | 16 | 공통(_engine)·config 주도 ✅ | CH04-L01·L05·L06·CH05-L01-S01/S05·**CH05-L04-S02**·CH05-L05-S01/**S02**·CH10-L07-S01·**CH06-L01-S01·L03-S01/S02·L04-S01/S02/S04·L06-S01** (완료) | `.stepper-config` 트레이스(주도형·하이픈키 ls_x-y OK). **CH06 확장**: vars 항목에 `itab:{cols,num}` 주면 값(2차원 배열)을 행 미니테이블로 렌더(new/chg 플래시·num 우측정렬)·steps[i].focus={key:행번호}로 현재 행 강조·키워드 TRANSPORTING/BINARY/ASSIGNING/COLLECT/SUM 등 추가·다크 .note 오버라이드 추가. **CH06 감사 확장(itab.max)**: `itab:{…,max:N}` 지정 시 행이 N보다 많으면 앞/뒤만 렌더하고 가운데를 `⋮ n행 생략`(`.itw__more`)으로 접는다(focus 행은 항상 포함) — CH06-L06 구구단 72행 워치용. **max 미지정이면 전 행 렌더로 종전과 완전 동일**(도입 시 step-debugger 소비 16/16 전수 브라우저 회귀 — 스텝 완주·콘솔 0·기존 itab 행수/높이 무변화). `.itw__more`는 var() 토큰만 써 gen-embed-dark 짝 규칙 불필요(생성기가 step-debugger.css를 수동 html.dark 보유로 스킵). **CH04-L06 확장(Watchpoint 레이어)**: 인스턴스에 `[data-wp]` 마크업이 있을 때만 배선되는 선택 기능 — 변수 이름으로 감시 등록(datalist=cfg.vars 자동)·목록/삭제·`[data-wp-run]`이 감시값이 바뀌는 스텝에서 자동 정지(미등록이면 끝까지). **config 스키마 무변경 → 마크업 없는 나머지 인스턴스는 코드 경로 자체에 진입하지 않음**(도입 당시 전수 브라우저 회귀 확인 — 11/11 스텝 완주·wp 패널 미생성). CSS는 `.wp*` 전부 var() 토큰이라 gen-embed-dark 짝 규칙 불필요 |
 | fill-blank | 5 | 공통(_engine)+_autoheight ✅ | CH02-L06-S01·CH04-L02-S01·CH04-L07-S01/S02/S03 (전부 완료) | 데이터=마크업 |
-| before-after | 6 | 공통(CSS-only)+_autoheight ✅ | CH02-L01-S01·CH02-L05-S01·CH04-L04-S04·CH05-L01-S06·CH05-L01-S07·CH07-L03-S01 (완료) | 콘텐츠 정리 · 중립 톤(tone-warm/cool)·.note·.cmt·메모리 도형(칩/미니)·확장 접기·.solo(단일 칼럼 pain-only) 추가 · constant-circle-sim(폐기) 대체 · CH02-L05-S01은 const-lock-lab 조각과 동거(주 엔진=이쪽, data-eng 유지) |
+| before-after | 6 | 공통(CSS-only)+_autoheight ✅ | CH02-L01-S01·CH02-L05-S01·CH04-L04-S04·CH05-L01-S06·CH05-L01-S07·CH07-L03-S01 (완료) | 콘텐츠 정리 · 중립 톤(tone-warm/cool)·.note·.cmt·메모리 도형(칩/미니)·확장 접기·.solo(단일 칼럼 pain-only) 추가 · constant-circle-sim(폐기) 대체 · CH02-L05-S01은 const-lock-lab 조각과, **CH07-L03-S01은 type-borrow-lab 조각과 동거**(주 엔진=이쪽, data-eng 유지 — 조각 CSS는 토큰 전용이라 다크 오버라이드 불필요) · **≤560px에서 `.ba__more-body`도 1단**(접기 안 코드 칼럼이 짓눌려 ABAP 줄이 꺾이던 문제 — `.ba__more`는 CH05-L01-S06 전용이라 타 인스턴스 영향 0, 5종 회귀 확인) |
 | var-box | 2 | 공통(_engine)+_autoheight ✅ | CH02-L01-S02·CH02-L02-S01 | VB_CFG 주도 · 타입 라벨 박스+값 쪽지·선언 직후(기본값)→대입→재대입(value2 opt-in·"마지막 값만 기억") 사이클·initialFor(string/c/n/d/t/p-dec) 처리 · **opt-in**: `decl`(박스 라벨을 `LIKE gv_price`·`TYPE i VALUE 10`처럼 그대로 표기)·`stageLabels`(상태 문구 덮어쓰기) |
 | int-div-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH02-L02-S02 | IDL_CFG 주도 · 피제수/제수 number 입력+프리셋 칩 → 실험 코드 2줄 라이브 갱신·결과 카드 2장(I=반올림 warn / P DECIMALS 2=keep)·verdict base 중립+ok/bad 명시(교훈3)·{trunc}/{round} 치환 버림언어 대조 줄(같으면 숨김)·제수 0=bad·상용 반올림(0에서 먼 쪽)·토큰/color-mix만 · 다크 |
 | const-lock-lab (신규) | 1 | 조각(주 엔진 CSS와 동거)+_autoheight ✅ | CH02-L05-S01 | CL_CFG 주도 · 선언 블록+값 칩(상수 🔒)+문장 카드 4장 → ok(값 갱신)/bad(문법 오류·값 불변 부기)·리셋·verdict base 중립(교훈3)·**.cl-* 조각 CSS만**(리셋·.wrap·.hd·.note 없음 → 단독 사용 시 주 엔진 CSS 필요)·토큰만 · 다크 |
@@ -347,9 +350,9 @@
 | ddic-layer-board (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH03-L02-S01 | DLB_CFG 주도 · Domain 카드(기술·brand)→상속 케이블→DE 카드 2(의미·accent)+화면 미리보기(라벨=DE·칸수=Domain)·길이 토글→전층 동시 flash·**DE 카드 Field Label 입력(labelSlot)→해당 화면 라벨만 갱신(포커스 유지 위해 부분 갱신)**·직접 TYPE 시도→bad / **tryOk(DE 참조 선언)→ok**·verdict base 중립(교훈3)·토큰/color-mix만 · 다크 |
 | param-screen-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH03-L03-S01 | PSL_CFG 주도 · 타입 세그(DE/표준 타입)→F4 온오프·**Selection Texts 'Dictionary 참조' 체크→Field Label 이어받기(꺼짐/raw=기술명 대문자 폴백, raw에선 disabled)**·VALUE CHECK 토글=고정값 검증 분리(F4≠검증·raw 모드 disabled)·F4 팝업=고정값 목록·OBLIGATORY 빈값 차단·**DEFAULT는 미접촉 시에만 채움(statTouched)→지우면 빈값 유지**·nameField.len=표준 타입 칸 LENGTH(코드·maxlength 공용)·LOWER CASE off 시 대문자 변조 경고·실행→WRITE mock·out base 중립(교훈3)·토큰/color-mix만 · 다크 |
 | share-vs-local | 1 | 공통(_engine)+_autoheight ✅ | CH05-L02-S02 (완료) | SVL_CFG 주도 — 정의 공유(DDIC) vs 복제(Local) 비교 보드·필드 추가 토글·참조 곡선 |
-| struct-viz | 4 | 공통(_engine)+_autoheight ✅ | CH05-L01-S02~S04·CH05-L02-S01 | SV_CFG 주도 · 트리(root/kind/comps·초기값 유도·assign 인터랙션) + layout:'strip'(타입=값 없는 헤더 스트립·변수=정렬 행들 — 타입은 값 없음 명시, 사용자 피드백 2026-07-03) |
-| move-mapping (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH05-L04-S01 | MM_CFG 주도 · src/tgt 카드·같은 이름=초록 복사 flash·원본-only=주황 무시·대상-only=잔존(빨강 stale 함정)·CLEAR 먼저 토글→ok/warn verdict(교훈3)·classic 전용(FMB는 modern이라 미재사용)·토큰만 · 다크 |
-| struct-reuse-board (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH05-L03-S01 | SRB_CFG 주도 · 3모드 세그(중첩=amber 하위/INCLUDE=good 점선 펼침/APPEND=잠긴 표준+accent 확장)+접근 경로 칩+선택형 퀴즈(정오 good/bad+why)·토큰만 · 다크 |
+| struct-viz | 4 | 공통(_engine)+_autoheight ✅ | CH05-L01-S02~S04·CH05-L02-S01 | SV_CFG 주도 · 트리(root/kind/comps·초기값 유도·assign 인터랙션) + layout:'strip'(타입=값 없는 헤더 스트립·변수=정렬 행들 — 타입은 값 없음 명시, 사용자 피드백 2026-07-03) · **initialFor가 DDIC 표기도 인식**(`NUMC 3`→`'000'` · `DEC 8,2`→`0.00`; 전엔 둘 다 `0`으로 떨어졌다) · **≤560px에서 칸 헤더 두 줄 허용**(데스크톱은 한 줄 유지 — 긴 타입 표기가 스트립을 밀어내던 문제) |
+| move-mapping (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH05-L04-S01 | MM_CFG 주도 · src/tgt 카드·같은 이름=초록 복사 flash·원본-only=주황 무시·대상-only=잔존(빨강 stale 함정)·CLEAR 먼저 토글→ok/warn verdict(교훈3)·classic 전용(FMB는 modern이라 미재사용)·토큰만 · 다크 · 잔존값 verdict는 값을 괄호로 감싼다(맨값이라 뒤에 조사를 붙이면 받침에 따라 어긋남) |
+| struct-reuse-board (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH05-L03-S01 | SRB_CFG 주도 · 3모드 세그(중첩=amber 하위/INCLUDE=good 점선 펼침/APPEND=잠긴 표준+accent 확장)+접근 경로 칩+선택형 퀴즈(정오 good/bad+why·정답 인덱스는 문항마다 분산해 둘 것)·토큰만 · 다크 |
 | syntax-toggle-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH01-L03-S01 | STL_CFG 주도 · 코드 패널(행번호·kw/cmt 토큰색)+토글 4(마침표/별표 위치/인라인 */소문자)→구문 램프 ok/bad+원인 목록·이름 풀 정훈영(R9)·코드 base=var(--surface) 틴트 · 다크 |
 | diff-mapper | 2 | 공통(_engine)+_autoheight ✅ | CH18-L10·L11 (완료) | 데이터=마크업(data-link/title/desc) · classic/modern 중립 톤 추가 |
 | inline-decl-judge (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH18-L01-S01 | IDJ_CFG 주도 · 문장 카드 4종(READ/LOOP/계산/SELECT) 허용/보류 판정·계산 카드 DATA()/FINAL() 토글→재대입 ok/bad · 다크 |
@@ -442,7 +445,7 @@
 | bdef-contract-editor (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH24-L04-S01 | 데이터 내장(OPS create/update/delete) · op 체크→소비자 행동 able/unable+토글3(table zbooking/zconcert·lock·keyRO)→BDEF 코드(managed implementation·define behavior·persistent table·lock master·field readonly·mapping)·verdict table 불일치=bad/lock off·key 수정가능=warn/ok(behavior pool 안내 교훈3)·tog base=var(--surface) · 다크 |
 | projection-contract-checker (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH24-L03-S01 | 데이터 내장(FIELDS·created_by 감사) · 토글3(contract/projRoot/allowExt)+필드 칩(shown/hidden·key 잠금)→ZI 카드+ZC DDL(provider contract·define root view)+payload chips·verdict !projRoot=bad/!contract=warn/ok(숨김 필드 안내)·교훈3 base 중립rgba·tog base=var(--surface) · 다크 |
 | cds-builder-stepper (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH23-L07-S01 | (capstone) CBS_CFG(concerts) 주도 · 6 step 버튼(ziPerf/ziConcert/zcConcert/mdext/preview/consume)→st 의존 검사(ziConcert needs ziPerf·zcConcert needs ziConcert·mdext needs zcConcert·preview needs zi&zc·consume needs zc)→어기면 msg bad/ok·산출물 4 art(ZI_Perf/ZI_Concert/ZC_Concert/DDLX) active opacity·preview ZI/ZC 표 행수 eq 배지·consume SELECT FROM ZC·리셋·도전과제 ul·msg base 중립rgba ok/bad(교훈3)·step done=#eafaf3 · 다크 |
-| select-query-simulator | 1 | 공통(_engine)·자체 postHeight ✅ | CH08-L02-S01 | config 주입(SQL_CFG) · #N1 주석 CH19 정정 · **R6: 상태줄 lines( ) 제거(sy-subrc·sy-dbcnt만)** · 위젯 라벨 GT_PERSON 통일 · (CH12-L07은 SELECT-OPTIONS 전용 신규엔진로 분리) |
+| select-query-simulator | 1 | 공통(_engine)·자체 postHeight ✅ | CH08-L02-S01 | config 주입(SQL_CFG) · #N1 주석 CH19 정정 · **R6: 상태줄 lines( ) 제거(sy-subrc·sy-dbcnt만)** · **`datasets[]` 다중 테이블 전환**(단일 config도 그대로 동작) · **INTO 짝은 필드 목록을 따름**(`*`→INTO TABLE) · **자격 미달 조건(빈 값·숫자컬럼 비숫자)은 문장·판정 양쪽에서 제외** · **LIKE는 문자 컬럼 전용** · (CH12-L07은 SELECT-OPTIONS 전용 신규엔진로 분리) |
 | select-options-filter-sim | 2 | 공통(_engine)·자체 postHeight ✅ | CH12-L03-S01·CH12-L07-S01 | SO_CFG 주도 · Range Table(SIGN I/E·OPTION EQ/NE/GT/LT/GE/LE/BT/CP) 평가 · **opt-in `#soSys`**(있으면 sy-subrc/sy-dbcnt 표시, L03만) |
 | range-row-builder (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH12-L01-S01 | RRB_CFG.cards 주도 · 조건 카드→SIGN/OPTION/LOW/HIGH 행 빌더·행/종합 사람말 해석 · 다크 자동(토큰+gen-embed-dark) |
 | selopt-screen-mapper (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH12-L02-S01 | SSM_CFG 주도 · 선택화면 From/To+다중선택→Range Table→LOOP 출력 · 다크 자동(토큰+gen-embed-dark) |
@@ -477,7 +480,7 @@
 | report-run-simulator (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH15-L12-S01 | RRS_CFG 주도 · CH15 캡스톤·시나리오 칩+so_stat 세그→▶실행→4 event 타임라인(pass/fail/lock)·검증 막힘 메시지·결과 ALV테이블/0건 S메시지 · 다크 |
 | salv-grid-simulator | 2 | 공통(_engine)·자체 postHeight ✅ | CH11-L02-S01·CH11-L06-S01 (완료) | config 주입(SALV_CFG: itab·cols·data·sumKey·code) · ALV제목/토글 엔진설정 |
 | relationship-map | 1 | 공통 | _(미작성)_ | CSS-only |
-| state-change-grid | 2 | 공통(CSS-only)+_autoheight ✅ | CH06-L04-S03·CH06-L06-S01 | 스냅샷=마크업(gt_gugu 성장·정렬 / DELETE ADJACENT DUPLICATES 함정) · cell-new/cell-del 강조 · .note 추가(다크 자동) |
+| state-change-grid | 1 | 공통(CSS-only)+_autoheight ✅ | CH06-L04-S03 | 스냅샷=마크업(DELETE ADJACENT DUPLICATES 함정) · cell-new/cell-del 강조 · .note 추가(다크 자동). *CH06-L06-S01은 감사 C042(헛체험)로 step-debugger 전환 — 이 엔진 소비 2→1* |
 | mermaid | 15 | 공통(+_vendor)+_autoheight ✅ | CH04-L04-S02/S03·L05-S02/S03/S04 · CH26-L05 · CH31-L06-S02 · CH33-L05-S01 · CH34-L02-S01 · CH36-L03 · CH37-L03 · CH38-L04-S01 · CH39-L01-S01 · CH39-L07-S01 | 그래프=위젯 `.mermaid` 주입·CDN+로컬fallback·이벤트본 은퇴 |
 | judge-quiz | 15 | 공통(_engine)+_autoheight ✅ | CH06-L05 · CH26-L03 · CH32-L05 · CH36-L03-S02 · CH36-L06 · CH37-L03-S02 · CH37-L05 · CH38-L01-S02 · CH38-L02-S02 · CH38-L03-S01 · CH39-L01-S02 · CH39-L09-S01 | 범용 판별 퀴즈(문항=위젯 config)·즉시 정답·해설 |
 | code-anatomy | 8 | 공통(_engine)·자체 postHeight ✅ | CH06-L02-S01 · CH06-L05-S02 · CH36-L02-S01 · CH37-L04-S01 · CH38-L06-S01 · CH39-L02-S01 · CH39-L03-S01 · CH39-L04-S01 | 마커(.mk[data-a]) 클릭 해부(anno-cfg JSON) + (확장) #bug-cfg 오류 카드→해설 |
@@ -490,8 +493,9 @@
 | write-format | 1 | 공통 ✅ | CH01-L05-S01 | WRITE 서식 토글 · config 주입 |
 | event-lifecycle-buildup | 1 | 공통(_engine·자체 mermaid+CDN/_vendor)·자체 postHeight ✅ | CH15-L01-S01 | bespoke 단일사용(STAGES inline) · #C15-1 stage1 inline DATA→classic 수정 |
 | se38-first-program | 3 | 공통(_engine) ✅ | CH01-L02-S01 | 개발루프 상태머신(bespoke·단일사용·데이터 inline) |
-| se11-table-builder (신규) | 1 | 공통(_engine·STB_CFG)+_autoheight ✅ | CH07-L01-S01 | SE11 Transparent Table 생성 시뮬 · config 주도(fields/key/de/builtin) · 검사→활성화 라이프사이클·배지(신규/검사/활성)·설계도↔물리테이블 split·키 연속성/DE 검증 · 다크 |
-| se11-create-entries (신규) | 1 | 공통(_engine·CE_CFG)+_autoheight ✅ | CH07-L02-S01 | Create Entries 손입력 훈련기 · config 주도(key/clients/seed) · 키 중복 거부·값 미검증 경고·클라이언트 분리 · 다크 |
+| se11-table-builder (신규) | 1 | 공통(_engine·STB_CFG)+_autoheight ✅ | CH07-L01-S01 | SE11 Transparent Table 생성 시뮬 · config 주도(fields/key/de/builtin) · 검사→활성화 라이프사이클·배지(신규/검사/활성)·설계도↔물리테이블 split·키 연속성/DE 검증 · 다크 · **showMsg(list, headOk): 경고 0건이어도 활성화 완료 문구 유지**(잘했을 때만 완료 문구가 사라지던 역전 수정, 5경로 회귀 확인) |
+| se11-create-entries (신규) | 1 | 공통(_engine·CE_CFG)+_autoheight ✅ | CH07-L02-S01 | Create Entries 손입력 훈련기 · config 주도(key/clients/seed) · 키 중복 거부·값 미검증 경고·클라이언트 분리 · 다크 · **seed는 선택**(비우면 빈 테이블 시작) · `#ce-reset` 있으면 **처음으로**(seed 복원) 연결, `.btn--reset`은 토큰 전용이라 _dark.css 무변동 |
+| type-borrow-lab (신규·조각) | 1 | 조각(_engine·TBLAB_CFG)+주 엔진 CSS 동반 ✅ | CH07-L03-S01 | 선언 2축 실험 — 모양 출처(로컬 타입↔DB 테이블 → 필드 수 변화·딸려 온 필드는 `.extra`)×담는 개수(TYPE↔TYPE TABLE OF → 한 건↔여러 건) → DATA 선언 한 줄 생성 + 메모리 모양 그림 + 고정 판정. **리셋·.wrap/.hd/.lead/.note 미보유**(주 엔진 몫, data-eng는 주 엔진 유지) · **토큰 전용(하드코딩 hex 0) → _dark.css 오버라이드 불필요**(const-lock-lab 방식) · 여러 건 라벨은 `1행·2행`(표 표현식 `gt[ ]` 회피, R6) |
 | se93-tcode-create | 3 | 공통(_engine) ✅ | CH01-L07-S01 | SE93 생성+명령창 실행(bespoke·단일사용) |
 | case-branch-sim | 2 | 공통(_engine)+_autoheight ✅ | CH04-L04-S01 | CASE…WHEN 시뮬·config 주도·OR묶기 토글(bespoke 신규) |
 | join-aggregate-visualizer | 1 | 공통(_engine)·자체 postHeight ✅ | CH13-L08-S01 | JOIN_CFG 주도 · LEFT/INNER 토글·GROUP BY SUM·ON 필터(취소 제외) |

@@ -61,7 +61,8 @@
       if(!clearFirst && staleF.length){
         h += '<div class="mm-verdict warn"><b>함정 재현!</b> 화살표가 이어진 같은 이름('
            + cfg.tgt.fields.filter(function(f){return srcNames.indexOf(f.n)>=0;}).map(function(f){return f.n;}).join('·')
-           + ')만 건너왔고, 대상에만 있는 <b>'+esc(staleF[0].n)+'</b>에는 이전 값 <b>'+esc(staleF[0].pre)+'</b>가 '
+           // 값은 맨값(따옴표 없음)이라 뒤에 조사를 붙이면 받침에 따라 어긋난다 → 괄호로 감싸 '값'에 조사를 붙인다
+           + ')만 건너왔고, 대상에만 있는 <b>'+esc(staleF[0].n)+'</b>에는 이전 값(<b>'+esc(staleF[0].pre)+'</b>)이 '
            + '<b>그대로 남았다</b>. 새 건을 채울 거면 <code>CLEAR</code> 먼저.</div>';
       } else {
         h += '<div class="mm-verdict ok"><b>깨끗하게 이동!</b> <code>CLEAR</code>로 대상을 비운 뒤 옮겨서, '

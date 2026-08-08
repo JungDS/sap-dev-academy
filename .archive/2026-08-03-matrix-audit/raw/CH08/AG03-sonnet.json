@@ -1,0 +1,79 @@
+{
+  "agent": "AG03",
+  "model": "sonnet",
+  "target": "CH08",
+  "persona_ack": "타 언어(Java/C# 계열) 백엔드 3～5년차 개발자가 ABAP을 빠르게 훑어 익히는 관점으로 CH08(_chapter.md, L01～L07) 전체를 통독하고, 과잉·오개념 유발·지름길 부재·용어 충돌 네 축으로 점검함.",
+  "method": "대상 8개 MD 파일(_chapter.md, CH08-L01～L07)을 Read 도구로 전문 통독 후 경력 개발자 관점으로 수동 분석. 코드 실행·빌드·외부 검색은 사용하지 않음.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH08-L01.md",
+      "quote": "[Chapter 07 · Transparent Table](CH07-L01.html)에서 본 [[MANDT]](클라이언트)를 기억하는가? 업무 테이블의 첫 키는 보통 MANDT다.",
+      "category": "용어 충돌",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "ABAP/SAP의 'Client'(MANDT)는 일반 개발 용어의 'client'(client-server 구조에서 요청을 보내는 쪽)와 뜻이 전혀 다른데, 그 차이를 명시적으로 짚어주지 않는다.",
+      "evidence": "본문은 '로그인 client'·'클라이언트'라는 표현만 쓸 뿐, 이게 client-server의 client(프론트엔드/호출자)가 아니라 한 시스템 안의 독립된 테넌트/사업 파티션(회사 구획)이라는 대비를 주지 않는다. Java/C# 백엔드 개발자는 'client'를 API를 호출하는 쪽으로 먼저 떠올리기 쉬워, MANDT 자동 필터를 '요청자별 필터링' 같은 다른 개념으로 오해할 소지가 있다.",
+      "suggestion": "MANDT 최초 언급부에 '여기서 client는 client-server의 client(요청자)가 아니라 한 시스템 안의 테넌트/사업 구획'이라는 한 줄 대비를 추가."
+    },
+    {
+      "seq": 2,
+      "file": "CH08-L02.md",
+      "quote": "성공 여부는 [[sy-subrc]](0 = 1건 이상), 읽은 행 수는 [[sy-dbcnt]]다.",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "sy-subrc는 예외(Exception)가 아니라 매 SQL 문장 뒤 직접 확인해야 하는 전역 상태값인데, 이 차이가 명시되지 않아 예외 기반 언어 경력자가 '실패하면 뭔가 던져지겠지'라고 무의식적으로 기대할 위험이 있다.",
+      "evidence": "Java/C#은 조회 실패·예외 상황을 보통 예외(throw/try-catch)나 null 반환으로 처리한다. 반면 classic Open SQL은 실패해도 예외를 던지지 않고 sy-subrc를 갱신할 뿐이며, 이 값은 다음 문장에서 바로 덮어써진다. 본문은 'IF sy-subrc = 0'을 보여주긴 하지만, '예외가 아니라 매번 확인해야 하는 값'이라는 대비를 명시적으로 말하지 않아 경력자가 확인을 누락할 개연성을 남긴다(L07에서 관련 함정을 다루지만 이 근본 차이 자체는 여전히 미설명).",
+      "suggestion": "sy-subrc 최초 도입부에 'Java/C#의 예외처럼 자동으로 던져지지 않는다. 매 문장 뒤 개발자가 직접 확인해야 한다'는 한 줄 대비를 추가."
+    },
+    {
+      "seq": 3,
+      "file": "CH08-L02.md",
+      "quote": "SELECT 한 문장은 네 가지를 정하는 일이다.",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "FROM·필드·WHERE는 어느 언어의 SQL이든 동일한 개념이라 경력자에겐 새롭지 않은데, INTO(결과를 어디에 담을지)만 ABAP 고유라는 점을 짚지 않고 네 요소를 동등하게 나열한다.",
+      "evidence": "'SELECT 4요소'로 FROM·필드·WHERE·INTO를 나란히 제시하지만, 실제로 ABAP 고유 개념은 INTO(Work Area/Internal Table 바인딩) 하나뿐이다. 어느 언어든 SQL을 다뤄본 경력자에게는 이 구성이 '이미 아는 3개 + 새로운 1개'로 읽혀, 넷 다 새로 배우는 것처럼 제시된 현재 구성이 약간 답답하게 느껴질 수 있다.",
+      "suggestion": "'FROM·필드·WHERE는 익숙한 SQL과 같다. 다른 점은 INTO뿐'이라는 한 줄을 추가해 경력자가 바로 INTO로 건너뛸 수 있게."
+    },
+    {
+      "seq": 4,
+      "file": "CH08-L05.md",
+      "quote": "WHERE carrid = gv_carr.",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "classic Open SQL에서 host 변수를 이스케이프 없이 그대로 WHERE에 적는 모습이, 문자열 결합 방식의 동적 SQL(SQL Injection 취약)처럼 보일 수 있는데 실제로는 컴파일러가 바인딩하는 안전한 방식이라는 설명이 없다.",
+      "evidence": "PreparedStatement·파라미터 바인딩에 익숙한 경력 개발자는 'WHERE carrid = gv_carr'처럼 변수를 그대로 붙이는 모습을 보면 문자열 결합형 동적 쿼리(SQL Injection 위험)를 먼저 떠올리기 쉽다. 그러나 실제로는 Open SQL의 host 변수 참조는 텍스트 결합이 아니라 ABAP 컴파일러/런타임이 값으로 바인딩하는 방식이라 그 자체로는 SQL Injection에 노출되지 않는다. 본문은 '(현대식 escape는 Chapter 19)'로만 안내해, 경력자가 classic 표기를 안전성이 낮은 임시방편으로 오해할 여지가 있다.",
+      "suggestion": "host 변수를 그대로 쓰는 게 문자열 결합이 아니라 컴파일러 바인딩이라 그 자체로는 SQL Injection에 안전하다는 한 줄을 추가('@' escape는 문법 통일을 위한 것이지 보안 때문이 아니라는 점까지 짚으면 더 좋음)."
+    },
+    {
+      "seq": 5,
+      "file": "CH08-L06.md",
+      "quote": "DB는 **Primary Key**로 정렬·색인돼 있어 키로 찾으면 빠르다.",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'키로 찾으면 빠르고 일반 필드는 느릴 수 있다', 'Secondary Index로 보완한다'는 내용은 어느 RDBMS를 쓰든 경력 개발자에게 이미 익숙한 인덱싱 기본기라, 레슨 대부분이 복습처럼 읽힌다. ABAP 고유 정보(SE11에서 정의·S/4HANA 컬럼 저장 DB에서는 덜 권장)만 새로운데 스킵 안내가 없다.",
+      "evidence": "'키 필드 검색이 빠르다'·'Secondary Index' 두 섹션 대부분이 일반 DB 인덱스 개념 설명이다. 경력자에게 실제로 새로운 정보는 '인덱스는 SE11에서 정의한다'와 'HANA 컬럼 저장 엔진에서는 보조 인덱스가 덜 권장되는 경우가 많다' 두 가지뿐인데, 이 둘을 찾으려면 인덱스 기본 설명을 다시 통과해야 한다.",
+      "suggestion": "섹션 서두에 'DB 인덱스 개념을 이미 안다면 SE11 정의 방법과 HANA 특이사항만 보고 넘어가도 됨' 같은 스킵 안내를 추가."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH08은 classic Open SQL 기초를 다루며 입문자 대상 설명·흔한 실수 콜아웃이 충실하다. 타 언어(Java/C# 계열) 경력 개발자 관점에서는 (1) L01의 'Client/MANDT'가 일반적인 client-server 용어와 뜻이 달라 대비 설명이 아쉽고, (2) L02의 sy-subrc가 예외 대신 매번 수동 확인이 필요한 상태값이라는 차이가 안 짚였으며, (3) L05의 host 변수 직접 대입이 SQL Injection처럼 보일 수 있는데 안전성 설명이 없고, (4) L02 SELECT 4요소·L06 인덱스 기초 섹션은 대부분 일반 SQL/DB 지식이라 경력자를 위한 스킵 안내가 있으면 좋겠다. 모두 낮음～중간 수준의 보완 사항이며 전체 골격은 유지 가능하다."
+  }
+}

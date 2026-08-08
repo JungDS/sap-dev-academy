@@ -1,0 +1,44 @@
+{
+  "agent": "AG09",
+  "model": "opus",
+  "target": "CH05",
+  "persona_ack": "나는 발견자 AG09, ABAP 정적 검사기를 시늉하는 코드 전용 감사자다. CH05의 ```abap 코드 블록 9개만 줄 단위로 읽고 (1) 활성화 차단급 문법·타입·선언 오류 (2) 네이밍 규약(CH01~09 = gv_/gs_/gt_, TYPES = ty_/ts_/tt_) (3) 경계 규약(CH01~17 modern 문법 금지·CH01~18 New Open SQL 금지) (4) 주석·출력 문자열의 명백한 오류를 점검했다. 교육적 구성·서술 품질 등 산문 축은 판단하지 않았다. 다만 코드 블록에서 선언한 변수를 가리키는 인라인 코드 식별자가 코드 블록과 어긋나는 경우는 (4) 변수명 불일치로 취급했다. 읽기 전용·블라인드(다른 감사 산출물 미열람)·웹검색 없음 제약을 지켰고, 실행 환경이 없어 컴파일 확신이 아닌 정적 판단임을 confidence에 반영했다.",
+  "method": "Read 도구로 대상 6개 파일 전문 통독. Grep(^```)으로 코드펜스 인벤토리를 확정해 ```abap 블록 9개(L01 4개·L02 1개·L03 1개·L04 2개·L05 1개)를 빠짐없이 대조. Grep으로 식별자 교차검증(`ls-`·`zst_order_head`·`head-customer` 출현 위치). SAP 시스템·문법 검사기 미사용, 순수 정적 판독.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L03.md",
+      "quote": "- 중첩은 `ls-head-customer`로 들어가지만, `.INCLUDE`는 펼쳐져 `ls-customer`로 바로 접근한다.",
+      "category": "네이밍 규약",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "같은 레슨의 코드 블록은 `gs_order`를 선언하고 `gs_order-head-customer`로 접근하는데, 접근 경로 설명·비교표·점검 목록에서는 존재하지 않는 변수 `ls`를 써서 `ls-head-customer`/`ls-customer`로 표기한다. 변수명이 코드 블록과 어긋나고, 접두어도 규약 위반이다.",
+      "evidence": "L03 코드 블록(23~30행)은 `DATA: BEGIN OF gs_order,` … `gs_order-head-customer = '정훈영'.`이고, 바로 다음 32행 설명도 `gs_order-head-customer`를 쓴다. 그런데 40행(.INCLUDE 설명)·45행(비교표 '접근' 행)·66행(흔한 실수) 세 곳은 `ls-head-customer`/`ls-customer`로 바뀐다. ① 코드 블록에 `ls`라는 변수는 선언된 적이 없어 학습자가 대응 관계를 잃는다. ② 이 커리큘럼 규약상 로컬 스코프 접두어 `ls_`는 FORM/METHOD가 도입되는 CH10 이후에만 쓰고 CH01~09 선언은 `gs_`여야 하므로, CH05에서 `ls`는 아직 배우지 않은 표기다. ③ 접두어 형태 자체도 `ls_`가 아니라 밑줄 없는 `ls`라 규약 어느 쪽과도 맞지 않는다.",
+      "suggestion": "세 곳(40·45·66행)의 `ls-head-customer`·`ls-customer`를 코드 블록과 같은 `gs_order-head-customer`·`gs_order-customer`로 통일한다(비교표는 `gs_order-head-customer` vs `gs_order-customer` 형태). `.INCLUDE`가 펼쳐진 상태를 가정한 표기임을 한 줄 덧붙이면 더 명확하다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L03.md",
+      "quote": "head TYPE zst_order_head,   \" Structure를 통째로 한 Component로",
+      "category": "활성화 차단(미정의 타입 참조)",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "중첩 예제가 참조하는 DDIC Structure `zst_order_head`와 그 Component `customer`는 CH05 어디에서도 만들지 않아, 학습자가 이 코드를 그대로 입력하면 '타입 zst_order_head가 존재하지 않음'으로 활성화되지 않는다.",
+      "evidence": "CH05에서 생성 절차를 안내하는 DDIC Structure는 L02의 `ZST_PERSON`뿐이고(SE11 → Structure → ZST_PERSON → Create, Component NAME·AGE·AMOUNT), `ZST_ORDER_HEAD`나 그 안의 `customer` Component를 만들라는 지시·정의는 대상 파일 6개 어디에도 없다. 코드는 문법적으로는 정상이지만 실행 가능한 예제가 아니라 가정 예시다. 블라인드 감사라 다른 챕터 파일은 열지 않았으므로 CH05 밖에서 생성될 가능성은 배제하지 못해 confidence=추정.",
+      "suggestion": "① 코드 블록 위에 '`ZST_ORDER_HEAD`(customer 등)는 SE11에 이미 있다고 가정한 예시' 한 줄을 달거나, ② L02에서 만든 `ZST_PERSON`을 재사용해 `head TYPE zst_person.` 형태로 바꿔 학습자가 실제로 활성화·실행할 수 있게 한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH05의 ```abap 블록 9개를 전수 점검했다. 활성화 차단급 결함은 사실상 없다 — 마침표 누락 0, `DATA:`/`TYPES:` 체인과 `BEGIN OF ~ END OF` 짝 정상(END OF 이름 일치 포함), `DO 9 TIMES.`~`ENDDO.` 짝 정상, `MOVE-CORRESPONDING gs_src TO gs_tgt.` 시그니처 정상, `TYPE p LENGTH 8 DECIMALS 2`·`TYPE c LENGTH 20`·`DATA gs_p4 LIKE gs_p1.` 모두 유효한 classic 구문이며 미선언 변수 사용도 없다(선언은 항상 사용보다 앞선다). 경계 규약도 깨끗하다: 인라인 `DATA()`·`VALUE`·`NEW`·`+=`·`|…|` 0건, Open SQL 자체가 등장하지 않아 `@`·콤마 위반 0건. 네이밍도 규약대로다 — 모든 변수가 `gs_`(gs_person·gs_p1~gs_p4·gs_a·gs_b·gs_src·gs_tgt·gs_order·gs_line), Structure 타입은 `ts_person`, `it_`/`lv_`/`ls_` 오용 없음, PARAMETERS·SELECT-OPTIONS 미사용. 코드 내 주석·출력 문자열도 본문과 일치한다(L04의 '대상엔 없는 필드'/'원본엔 없는 필드' 주석, L05의 `sy-index` 기반 2단 결과가 본문 표 1→2 … 9→18과 일치). 발견 2건은 모두 L03에 몰려 있고 문법이 아니라 표기·재현성 문제다: 코드 블록의 `gs_order`와 어긋나는 `ls-head-customer` 표기(3곳), 그리고 만든 적 없는 `zst_order_head` 참조. 둘 다 문장·타입명 치환 수준으로 끝나므로 코드 축 판정은 경미 수정."
+  }
+}

@@ -42,7 +42,7 @@
 <section class="lblock"><h2>구구단 전체를 메모리에 담는다</h2>
 <p><a href="CH05-L05.html">Chapter 5 · 구구단 캡스톤</a>에서 구구단 한 줄을 Structure로 묶었지만
 <strong>한 번에 한 줄</strong>뿐이었다. 이제 같은 모양의 행을 <button class="term" type="button" data-term="Internal Table">Internal Table</button>에 쌓으면 72줄을
-통째로 들고 있을 수 있다. 이 실습은 이번 챕터 전체의 결론이다.</p>
+통째로 들고 있을 수 있다. 이 실습은 이번 챕터에서 배운 것들을 한 프로그램에 모으는 자리다.</p>
 <table>
 <thead>
 <tr>
@@ -131,17 +131,42 @@
 &quot;결과가 큰 순서&quot; 같은 원하는 기준으로 마음대로 재배열할 수 있다.</p>
 </section><section class="lblock"><h2>디버거로 행들 보기</h2>
 <p><code>APPEND</code> 다음 줄에 <code>BREAK-POINT</code>를 걸고(<a href="CH04-L06.html">디버깅 입문</a>) <code>gt_gugu</code>를
-펼치면, 행이 하나씩 쌓여 2개, 4개 … 72개가 되는 모습이 보인다.</p>
+펼치면, 안쪽 루프가 한 번 돌 때마다 행이 1개, 2개, 3개 … 72개로 하나씩 늘어나는 모습이 보인다.</p>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">행이 APPEND될 때마다 내부 테이블이 늘어나는 모습 보기</span><a class="embed__open" href="../../../embeds/abap/CH06-L06-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH06-L06-S01.html" loading="lazy" title="행이 APPEND될 때마다 내부 테이블이 늘어나는 모습 보기"></iframe></figure>
+</section><section class="lblock"><h2>더 해 보기 — 미션 둘</h2>
+<p>쌓아 두면 정렬 말고도 할 수 있는 일이 많다. 이번 챕터에서 배운 문장을 이 프로그램에 직접
+붙여 보자.</p>
+<ul>
+<li><strong>미션 1 · 한 줄만 콕 집어 찾기</strong> — <code>gt_gugu</code>에서 &quot;7 x 8&quot; 줄을 찾아 결과만 출력해 보자.
+<code>READ TABLE gt_gugu INTO gs_line WITH KEY dan = 7 mul = 8.</code>으로 찾고, 찾았는지는
+<code>sy-subrc = 0</code>으로 확인한다. 없는 값(<code>mul = 10</code>)으로 실패도 한 번 겪어 보자.</li>
+<li><strong>미션 2 · 단마다 소계 내기</strong> — <code>SORT gt_gugu BY dan.</code>으로 단 순서를 맞춘 다음, <code>LOOP</code> 안에
+<code>AT END OF dan.</code>과 <code>SUM.</code>을 넣어 단별 합계를 찍어 보자. <code>dan</code>이 첫 필드라 그룹 키가
+단순하다. <code>AT</code> 블록 안에서 <code>mul</code>을 같이 찍어 보면 값이 가려진다는 그 규칙도 눈으로 확인된다.</li>
+</ul>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
 <li><strong>바깥 <code>sy-index</code>와 안쪽 <code>sy-index</code> 혼동</strong> → 안쪽 루프에 들어가면 <button class="term" type="button" data-term="sy-index">sy-index</button>는
-안쪽 회차다. 그래서 바깥 단수는 안쪽 루프에 들어가기 <strong>전에</strong> <code>gs_line-dan</code>에 저장해 둔다.</li>
+안쪽 회차다. 그래서 바깥쪽에서 정한 단 값은 안쪽 루프에 들어가기 <strong>전에</strong>
+<code>gs_line-dan</code>에 저장해 둔다.</li>
 <li><strong>APPEND 위치</strong> → <code>mul</code>·<code>result</code>가 채워진 <strong>뒤에</strong> 실행돼야 한다. 안쪽 루프 밖에 두면
 단마다 한 줄만 쌓인다.</li>
-<li><strong>정렬 후 원래 순서 기대</strong> → <code>SORT</code> 후에는 순서가 바뀐다. 원래 입력 순서가 필요하면
-정렬 전에 기준이 되는 필드를 따로 보존한다.</li>
-<li><strong>담았으니 저장됐다는 착각</strong> → <button class="term" type="button" data-term="메모리">메모리</button>에 담긴 것과 DB에 저장된 것은 다르다.</li>
+<li><strong>정렬 후 원래 순서 기대</strong> → <code>SORT</code> 후에는 순서가 바뀌고, 그것만으로는 되돌릴 방법이 없다.
+원래 순서가 필요하면 쌓을 때 <strong>순번을 담는 필드</strong>를 하나 더 두고 1, 2, 3 … 을 같이 넣어
+둔다. 나중에 그 필드로 <code>SORT</code>하면 입력 순서로 돌아온다.</li>
+</ul>
+<details>
+<summary>다른 언어를 해 봤다면 — 이번 챕터 개념 대조표 (더 보기)</summary><p>낯선 이름이 많았지만, 대부분은 이미 쓰던 물건에 다른 이름이 붙은 것이다.</p>
+<ul>
+<li><strong>STANDARD / SORTED / HASHED</strong> — 순서대로 담는 리스트 / 키 순서가 유지되는 맵 /
+해시로 찾는 맵에 각각 대응한다.</li>
+<li><strong><code>COLLECT</code></strong> — 키로 묶어 합계를 내는 그룹 합산이다. SQL을 안다면 <code>GROUP BY</code> 뒤의 합계,
+맵을 쓴다면 &quot;키가 있으면 더하고 없으면 새로 넣기&quot;와 같다.</li>
+<li><strong><code>ASSIGNING &lt;fs&gt;</code></strong> — 복사가 아니라 그 자리를 가리키는 참조다. 다른 언어에서는 이쪽이
+오히려 기본 동작이라, 특별한 기법이 아니라 익숙한 그것이라고 보면 된다.</li>
+<li><strong><code>sy-subrc</code> 확인</strong> — 실패를 예외로 던지지 않고 <strong>반환 코드</strong>로 알리는 방식이다.
+확인하지 않으면 프로그램은 아무 일 없다는 듯 그대로 진행한다. <code>READ</code> 다음 줄의
+<code>IF sy-subrc = 0</code>이 습관이어야 하는 이유이자, 경력자가 가장 자주 걸리는 지점이다.</details></li>
 </ul>
 </section><section class="lblock"><h2>정리 — 그리고 다음 불편</h2>
 <p>구구단 전체를 <button class="term" type="button" data-term="메모리">메모리</button>에서 자유롭게 다뤘다. 그런데 프로그램이 끝나면 <code>gt_gugu</code>는

@@ -1,0 +1,77 @@
+{
+  "agent": "AG05",
+  "model": "sonnet",
+  "target": "CH05",
+  "persona_ack": "20년차 학습 교재·코스 설계 전문가로서 인지부하 관리와 동기 설계(불편→해결) 관점을 채택해 CH05(Structure) 레슨 5개와 챕터 개요를 감사함.",
+  "method": "Read 도구로 대상 6개 .md 원문(front-matter 포함)을 처음부터 끝까지 직접 통독. 임베드(embeds/abap/*.html) 실제 구현, 빌드 산출물(docs/abap/**), 다른 챕터, 과거 감사 산출물(.archive 등)은 열람하지 않음(블라인드 감사 제약 준수). 웹 검색·외부 네트워크 미사용.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH05-L01.md",
+      "quote": "introduces: [\"Structure\", \"BEGIN OF / END OF\", \"Work Area\", \"Component(-) 접근\", \"TYPES(Structure 모양 재사용)\", \"LIKE(동일 모양 선언)\"]",
+      "category": "인지부하",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L01 한 레슨에 신규 개념 6개(Structure·BEGIN OF/END OF·Work Area·하이픈 접근·TYPES 재사용·LIKE)와 임베드 7개(S07·S02·S03·S01·S06·S04·S05)가 몰려 있어, 같은 챕터의 다른 레슨(L02 1개, L04 2개, L05 0개)에 비해 인지 부하가 뚜렷이 높다.",
+      "evidence": "front-matter introduces 배열 자체가 6개 항목이고, 본문도 '사람 한 명에 변수가 셋'(도입)→BEGIN OF/END OF→하이픈 접근→여러 명 담기(2차 불편)→TYPES→LIKE로 두 번의 불편-해결 사이클이 한 레슨 안에 겹쳐 있다. L03(재사용: 중첩/.INCLUDE/.APPEND)이 이미 'DDIC 차원의 재사용'을 별도 레슨으로 떼어낸 것과 대비하면, L01 꼬리의 TYPES·LIKE(로컬 차원의 재사용)도 밀도 조정 여지가 있다.",
+      "suggestion": "TYPES/LIKE 구간을 더 명확한 소제목·중간 요약으로 한 번 더 끊어주거나, 챕터 전체 레슨 배분 재검토 시 로컬 재사용(TYPES/LIKE)을 별도 소단원으로 분리하는 안을 검토."
+    },
+    {
+      "seq": 2,
+      "file": "CH05-L01.md",
+      "quote": "`TYPE`이 **타입을 보고** 만든다면, `LIKE`는 **이미 선언된 변수를 보고** 똑같은",
+      "category": "섹션흐름(왜 필요한가)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "LIKE 도입부에 '왜 필요한가' 단계가 약하다. 바로 직전에 TYPES가 '모양 반복 선언' 문제의 해결책으로 제시됐는데, 곧바로 또 다른 방법(LIKE)이 이유 설명 없이 등장해 '방금 푼 문제를 왜 또 다른 방법으로 푸는가'라는 의문이 남을 수 있다.",
+      "evidence": "TYPES 섹션 말미는 '얼마나 나아지는지는 규모로 체감된다'며 강한 필요성을 제시하지만, LIKE 섹션은 'TYPE이 타입을 보고 만든다면, LIKE는...'처럼 정의·대조로 바로 들어가고 별도의 불편 문장이 없다. TYPES와 LIKE의 선택 기준(언제 TYPES, 언제 LIKE)도 명시되지 않는다.",
+      "suggestion": "'타입을 따로 선언할 정도는 아닌 1회성 변수인데 모양만 베끼고 싶을 때'처럼 LIKE만의 존재 이유·TYPES 대비 선택 기준을 한두 문장 먼저 제시한 뒤 정의로 들어가면 흐름이 매끄러워진다."
+    },
+    {
+      "seq": 3,
+      "file": "CH05-L01.md",
+      "quote": "- **END OF 이름** → `END OF gs_person.` 처럼 같은 이름으로 닫는다.",
+      "category": "복습·점검장치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "레슨이 6개 개념을 다루는데 '흔한 실수와 점검' 항목은 1개뿐이라, 점검 체크리스트로서 커버리지가 얕다.",
+      "evidence": "본문 중간에 LIKE가 값을 복사하지 않는다는 함정은 💡 콜아웃으로만 다뤄지고 마지막 체크리스트에는 재수록되지 않는다. TYPES/LIKE/하이픈 접근 관련 실수는 체크리스트에 전혀 없다(L02·L03·L04는 각각 3개·3개·3개 항목을 갖춰 대비된다).",
+      "suggestion": "LIKE는 모양만 복사하고 값은 복사하지 않는다는 점, gv_/gs_ 접두어 혼동 등을 흔한 실수 목록에도 명시적으로 추가."
+    },
+    {
+      "seq": 4,
+      "file": "CH05-L01.md",
+      "quote": "전역으로 공유하고 싶다 → [[DDIC]] Structure(다음 레슨).",
+      "category": "예습장치/네비게이션 일관성",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L01→L02, L02→L03, L03→L04의 챕터 말미 '다음 레슨' 예고는 실제 하이퍼링크가 없는 평문인 반면, L04→L05·L05→CH06은 `[제목](CHnn-Lmm.html)` 형태의 실제 링크로 되어 있어 같은 챕터 안에서 다음 단계 안내 방식이 일관되지 않는다.",
+      "evidence": "L01 종결부는 '→ [[DDIC]] Structure(다음 레슨).'(용어 마킹만, 링크 아님), L02는 '...하려면? → 다음 레슨.'(순수 텍스트), L03도 '...보자 → 다음 레슨.'(순수 텍스트)인데, L04는 '→ [구구단 한 줄 = Structure](CH05-L05.html).', L05는 '→ [Chapter 6 · Internal Table 기초](CH06-L01.html).'로 실제 링크를 사용한다.",
+      "suggestion": "L01~L03의 '다음 레슨' 문구도 L04·L05와 동일하게 `[레슨 제목](CHnn-Lmm.html)` 링크로 통일."
+    },
+    {
+      "seq": 5,
+      "file": "CH05-L03.md",
+      "quote": "DDIC Structure 편집 화면에서 다른 Structure를 `.INCLUDE`로 포함하면, 그 Structure의 필드들이",
+      "category": "섹션흐름(어떻게 쓰나)",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": ".INCLUDE/.APPEND 설명이 '무엇이 되는가'(필드가 펼쳐진다/덧붙는다)는 명확히 전달하지만, SE11 화면에서 실제로 어느 칸에 무엇을 입력해야 하는지(예: Component 열에 `.INCLUDE`를 적고 옆에 구조체명을 지정)는 본문 텍스트만으로는 구체적으로 드러나지 않는다. L02는 SE11 생성 절차를 'SE11 → Data Type → Structure → ZST_PERSON → Create'와 컴포넌트 표로 구체적으로 제시한 것과 대비된다.",
+      "evidence": "본문에 SE11 메뉴 경로나 입력 칸 예시가 없다. 다만 동반 임베드(CH05-L03-S01, '모양·접근 경로 비교')가 이를 시각적으로 보여줄 가능성이 있어 텍스트만으로 단정하기는 어렵다(임베드 실 구현은 감사 범위 밖).",
+      "suggestion": "임베드가 SE11 입력 방식을 보여주지 않는다면, L02와 동일한 수준의 구체성(어느 열에 `.INCLUDE`/`.APPEND`를 입력하는지 한 줄)을 본문에 보충."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH05는 '단일 값 변수 난립 → Structure로 묶기'라는 불편-해결 서사를 L01에서 설득력 있게 전개하고, 로컬(L01)→전역/DDIC(L02)→재사용(L03)→다루기(L04)→캡스톤(L05) 순서가 논리적으로 이어진다. prevRel을 parallel(L02)·deepening(L03·L04)으로 정직하게 구분해 억지 불편을 만들지 않았고, L05가 introduces:[]로 새 개념 없이 복습·통합에 집중한 점, CH04 구구단과 CH05-L01을 명시적으로 되짚는 점 등은 학습 순서·복습 장치 설계가 탄탄함을 보여준다. 다만 L01이 6개 신규 개념과 임베드 7개를 한 레슨에 몰아 챕터 내 다른 레슨 대비 밀도가 높고, LIKE 도입부의 '왜' 단계가 약하며, 그 밀도에 비해 '흔한 실수' 체크리스트가 1건에 그친다. 또한 L01~L03의 '다음 레슨' 안내가 L04·L05와 달리 실제 링크가 아니어서 챕터 내 내비게이션 일관성이 떨어지고, L03의 .INCLUDE/.APPEND는 SE11 조작의 구체성이 L02보다 낮다(단, 임베드 미확인이라 추정). 모두 학습을 근본적으로 막는 결함이라기보다 다듬을 여지에 가까워 경미 수정으로 판단한다."
+  }
+}

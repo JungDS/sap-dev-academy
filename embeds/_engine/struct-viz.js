@@ -15,6 +15,10 @@
     var t = String(type || '').toLowerCase().trim();
     var dec = (String(type).match(/decimals\s+(\d+)/i) || [])[1];
     if(dec == null){ var pm = String(type).match(/^p[^,]*,\s*(\d+)/i); if(pm) dec = pm[1]; }  // 'p 8,2' 축약 표기
+    // DDIC 표기(SE11 Components 탭: 'ZDE_X → NUMC 3' · 'DEC 8,2')도 인식 — 안 그러면 NUMC/DEC가 전부 '0'으로 떨어진다.
+    var nm = String(type).match(/\bnumc\s*(\d+)/i);
+    if(nm) return "'" + new Array(+nm[1] + 1).join('0') + "'";      // NUMC 3 → '000' (자릿수만큼 0, 문자형)
+    if(dec == null){ var dm = String(type).match(/\bdec\b\s*(\d+)\s*,\s*(\d+)/i); if(dm) dec = dm[2]; }  // 'DEC 8,2'
     if(/string/.test(t)) return "''";
     if(/^c\b|^n\b|char|clnt/.test(t)) return "''";
     if(/^d\b|datum/.test(t)) return "'00000000'";

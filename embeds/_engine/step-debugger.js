@@ -1,6 +1,8 @@
 // ===== 컴포넌트 JS — ABAP 하이라이터 + 스텝 디버거 엔진 =====
 // vars 항목에 itab:{cols:[..],num:[..]}을 주면 값(2차원 배열)을 행 미니테이블로 렌더 —
 // 추가/변경 행 플래시, steps[i].focus={key:1기준행번호}로 현재 처리 행 강조. (CH06+ Internal Table 워치)
+//   · itab.max(선택, 기본 없음): 행이 max보다 많으면 앞/뒤만 보이고 가운데는 "⋮ n행 생략"으로 접는다
+//     (focus 행은 항상 포함). 대량 테이블(CH06-L06 구구단 72행)용 — max 미지정이면 전 행 렌더로 종전과 동일.
 //
 // [선택 레이어] Watchpoint — 인스턴스 HTML에 [data-wp] 마크업이 있을 때만 배선한다(config 변경 없음).
 //   마크업 훅: [data-wp](루트) · [data-wp-open](만들기 버튼) · [data-wp-form](입력줄) ·
@@ -50,15 +52,29 @@
     function accVars(k){ const v={}; cfg.vars.forEach(d=>v[d.key]=d.init); for(let i=0;i<k;i++) Object.assign(v, steps[i].vars||{}); return v; }
     // itab 워치 — 행 미니테이블(추가=new·변경=chg 플래시, focus=현재 처리 행, 숫자 열=우측 정렬)
     function itabHTML(d, rows, prevRows, focusIdx){
-      const cols=d.itab.cols||[], num=d.itab.num||[];
+      const cols=d.itab.cols||[], num=d.itab.num||[], max=d.itab.max|0;
       let h='<table class="itw__t"><thead><tr><th class="ix">#</th>'+cols.map(c=>'<th>'+esc(c)+'</th>').join('')+'</tr></thead><tbody>';
       if(!rows||!rows.length){ h+='<tr class="itw__empty"><td colspan="'+(cols.length+1)+'">비어 있음 · 0행</td></tr>'; }
-      else rows.forEach((r,i)=>{
-        const p=prevRows?prevRows[i]:r;
-        const isNew=!p, isChg=!!p&&JSON.stringify(p)!==JSON.stringify(r);
-        const cls=[(i+1)===focusIdx?'focus':'', isNew?'new':(isChg?'chg':'')].filter(Boolean).join(' ');
-        h+='<tr'+(cls?' class="'+cls+'"':'')+'><td class="ix">'+(i+1)+'</td>'+r.map((c,j)=>'<td'+(num[j]?' class="n"':'')+'>'+esc(String(c))+'</td>').join('')+'</tr>';
-      });
+      else{
+        // 렌더할 행 인덱스 — max 미지정(0)이면 전 행(종전 동작), 지정 시 앞/뒤 + focus 행만
+        let show;
+        if(max>0 && rows.length>max){
+          const head=Math.ceil(max/2), tail=max-head, keep=new Set();
+          for(let i=0;i<head;i++) keep.add(i);
+          for(let i=rows.length-tail;i<rows.length;i++) keep.add(i);
+          if(focusIdx) keep.add(focusIdx-1);
+          show=[...keep].sort((a,b)=>a-b);
+        } else show=rows.map((_,i)=>i);
+        let prev=-1;
+        show.forEach(i=>{
+          if(i>prev+1) h+='<tr class="itw__more"><td colspan="'+(cols.length+1)+'">⋮ '+(i-prev-1)+'행 생략</td></tr>';
+          prev=i;
+          const r=rows[i], p=prevRows?prevRows[i]:r;
+          const isNew=!p, isChg=!!p&&JSON.stringify(p)!==JSON.stringify(r);
+          const cls=[(i+1)===focusIdx?'focus':'', isNew?'new':(isChg?'chg':'')].filter(Boolean).join(' ');
+          h+='<tr'+(cls?' class="'+cls+'"':'')+'><td class="ix">'+(i+1)+'</td>'+r.map((c,j)=>'<td'+(num[j]?' class="n"':'')+'>'+esc(String(c))+'</td>').join('')+'</tr>';
+        });
+      }
       return h+'</tbody></table>';
     }
     function curMsg(){

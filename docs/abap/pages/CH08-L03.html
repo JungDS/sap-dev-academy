@@ -40,9 +40,14 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>결과가 한 건? 여러 건?</h2>
-<p>읽는 결과의 모양에 따라 SELECT 형태가 다르다.</p>
+<p>읽는 결과의 모양에 따라 SELECT 형태가 달라진다. 앞 레슨에서 정리한 네 가지 중 <strong>INTO</strong>를
+무엇으로 두느냐의 문제다.</p>
+<p>이번 레슨부터는 예제에 <code>WHERE</code>가 붙는다. WHERE의 연산자와 조합은
+<a href="CH08-L05.html">Chapter 08 · WHERE 상세</a>에서 제대로 다루니, 여기서는 &quot;<strong><code>=</code> 로 값을 지정해
+그 행만 고른다</strong>&quot; 정도로만 읽고 넘어가면 된다.</p>
 </section><section class="lblock"><h2>SELECT SINGLE — 키로 딱 한 건</h2>
-<p>특정 한 행이 필요하면 <button class="term" type="button" data-term="SELECT SINGLE">SELECT SINGLE</button>. 결과는 <button class="term" type="button" data-term="Work Area">Work Area</button> 하나(<code>INTO gs_</code>).</p>
+<p>특정 한 행이 필요하면 <button class="term" type="button" data-term="SELECT SINGLE">SELECT SINGLE</button>. 결과는 <button class="term" type="button" data-term="Work Area">Work Area</button> 하나(<code>INTO gs_</code>)에 담긴다.
+Work Area는 <a href="CH06-L01.html">Chapter 06 · Internal Table 기초</a>에서 쓰던 &quot;한 행짜리 그릇&quot;과 같다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -51,7 +56,7 @@
 6
 7
 8
-9</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> gs_flight <span class="tok-kw">TYPE</span> sflight.
+9</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> gs_flight <span class="tok-kw">TYPE</span> sflight.   <span class="tok-com">" 한 행을 담을 Work Area</span>
 
 <span class="tok-kw">SELECT</span> <span class="tok-kw">SINGLE</span> * <span class="tok-kw">FROM</span> sflight
   <span class="tok-kw">INTO</span> gs_flight
@@ -61,32 +66,64 @@
   <span class="tok-kw">WRITE</span>: / gs_flight-seatsocc, <span class="tok-str">'/'</span>, gs_flight-seatsmax.
 <span class="tok-kw">ENDIF</span>.</code></pre></div></div>
 <ul>
-<li><strong>키 전체</strong>로 조회하면 정확히 한 행이 보장된다.</li>
+<li><strong>키 전체</strong>로 조회하면 결과는 <strong>많아야 한 행</strong>이다. 같은 키를 가진 행이 둘일 수 없기
+때문이다. 다만 &quot;반드시 한 행이 나온다&quot;는 뜻은 아니다. 그런 키를 가진 행이 아예 없으면
+0건이니, 위 예제처럼 <code>sy-subrc</code>부터 확인하고 값을 쓴다.</li>
 </ul>
+<blockquote>
+<p>💡 <strong>따옴표가 붙은 값과 안 붙은 값.</strong> <code>connid = &#39;0701&#39;</code>·<code>fldate = &#39;20260623&#39;</code>을 따옴표로 감싼
+이유는 이 컬럼들이 숫자처럼 보여도 <strong>문자 계열</strong>이기 때문이다. 날짜(DATS)는 <code>YYYYMMDD</code>
+8자리 문자이고, 노선 번호(NUMC)는 숫자만 담되 자리수가 고정된 문자다. 따옴표를 빼고
+<code>connid = 701</code>이라 쓰면 앞의 0이 사라져 찾지 못한다. 반대로 진짜 정수 컬럼은 따옴표 없이
+<code>dan = 5</code>처럼 적는다.</p>
+</blockquote>
 </section><section class="lblock"><h2>INTO TABLE — 여러 건 한 번에</h2>
-<p>여러 행은 <code>INTO TABLE</code>로 내부 테이블에 통째로 담는다(= Array Fetch, 빠르다).</p>
-<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> sflight <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> gt_flight <span class="tok-kw">WHERE</span> carrid = <span class="tok-str">'KE'</span>.</code></pre></div></div>
-</section><section class="lblock"><h2>SELECT … ENDSELECT — 한 행씩 (지양)</h2>
-<p><code>INTO gs_</code>로 받으면 한 행씩 반복 처리하는 <code>SELECT…ENDSELECT</code> 루프가 된다.</p>
+<p>여러 행은 앞 레슨에서 이미 쓴 <code>INTO TABLE</code>로 그대로 담는다(= <button class="term" type="button" data-term="Array Fetch">Array Fetch</button>).</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
-3</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> sflight <span class="tok-kw">INTO</span> gs_flight <span class="tok-kw">WHERE</span> carrid = <span class="tok-str">'KE'</span>.
+3
+4</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> gt_flight <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> sflight.
+
+<span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> sflight <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> gt_flight
+  <span class="tok-kw">WHERE</span> carrid = <span class="tok-str">'KE'</span>.</code></pre></div></div>
+</section><section class="lblock"><h2>SELECT … ENDSELECT — 한 행씩 (지양)</h2>
+<p>담을 곳을 <code>INTO gs_</code>(한 행짜리 그릇)로 두고 <strong><code>SINGLE</code>을 붙이지 않으면</strong>, 조건에 맞는 행을
+한 행씩 넘겨받는 <code>SELECT…ENDSELECT</code> 루프가 된다. 같은 <code>INTO gs_</code>라도 SINGLE이 있으면 한
+건으로 끝나고, 없으면 루프가 된다는 것이 갈림길이다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> sflight <span class="tok-kw">INTO</span> gs_flight
+  <span class="tok-kw">WHERE</span> carrid = <span class="tok-str">'KE'</span>.
   <span class="tok-kw">WRITE</span>: / gs_flight-fldate.
 <span class="tok-kw">ENDSELECT</span>.</code></pre></div></div>
 <blockquote class="cw">
-<p>⚠️ <code>SELECT…ENDSELECT</code>는 DB를 여러 번 왕복해 <strong>느리다.</strong> 가능하면 <code>INTO TABLE</code>로
-한 번에 가져와 <code>LOOP</code>로 처리한다. <strong>중첩 SELECT는 절대 금지</strong>(성능 최악).</p>
+<p>⚠️ <code>SELECT…ENDSELECT</code>는 <strong>DB와의 연결을 오래 붙들고 있는 방식</strong>이다. 행마다 DB를 한 번씩
+왕복하는 건 아니고 여러 행을 한 묶음씩 미리 받아 두지만, 루프가 끝날 때까지 읽던 자리를
+잡고 있어야 한다. 가능하면 <code>INTO TABLE</code>로 한 번에 받아 놓고 <code>LOOP</code>로 처리하는 편이 낫다.</p>
+</blockquote>
+<blockquote class="cw">
+<p>⚠️ <strong>루프 안의 SELECT는 특히 조심한다.</strong> 바깥 SELECT가 도는 동안 그 안에서 또 SELECT를
+부르는 모양이다. 바깥이 100행이면 조회가 1 + 100 = <strong>101번</strong> 일어난다.</p>
+<p><code>SELECT 노선 100건</code> → 한 행마다 → <code>SELECT 그 노선의 운항편</code> … 100번 반복</p>
+<p>이렇게 조회 수가 불어나는 모양을 <strong>N+1 문제</strong>라 부른다. 해결책은 두 테이블을 한 문장으로
+합쳐 읽는 것이고, 그게 <a href="CH13-L01.html">Chapter 13 · INNER JOIN</a>이다. 지금은 &quot;루프 안에
+SELECT가 보이면 의심한다&quot;만 챙겨 두자.</p>
 </blockquote>
 </section><section class="lblock"><h2>UP TO n ROWS — 줄여 읽기</h2>
-<p>처음 몇 건만 필요하면 행 수를 제한한다.</p>
+<p>전부는 필요 없고 <strong>몇 건만</strong> 보고 싶을 때 행 수를 제한한다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> sflight <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> gt_flight <span class="tok-kw">UP</span> <span class="tok-kw">TO</span> <span class="tok-num">10</span> <span class="tok-kw">ROWS</span>.</code></pre></div></div>
+<p>주의할 점이 하나 있다. 여기서 오는 10건은 &quot;처음 10건&quot;이 아니라 <strong>아무 10건</strong>이다. DB
+테이블에는 정해진 순서라는 게 없어서, 정렬을 지정하지 않으면 어느 10건이 올지 보장되지
+않는다. 같은 문장을 두 번 실행하면 다른 10건이 올 수도 있다. 순서가 중요하면 정렬을 함께
+지정해야 하고, 그 방법은 <a href="CH13-L05.html">Chapter 13 · ORDER BY 정렬 조회</a>에서 배운다.</p>
 <p>아래 실험실에서 같은 데이터를 네 형태로 바꿔 보며 <strong>담기는 모양·행 수·반복 횟수</strong>를 비교해 보자.</p>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">SELECT 형태 비교 실험실 — SINGLE·INTO TABLE·ENDSELECT·UP TO</span><a class="embed__open" href="../../../embeds/abap/CH08-L03-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH08-L03-S01.html" loading="lazy" title="SELECT 형태 비교 실험실 — SINGLE·INTO TABLE·ENDSELECT·UP TO"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>부분 키로 SINGLE</strong> → 임의의 한 행이 온다. 단건은 <strong>전체 키</strong>로.</li>
-<li><strong>SINGLE에 UP TO 같이 쓰기</strong> → SINGLE은 이미 한 건이다. <code>UP TO</code>와 함께 쓰지 않는다. 처음 몇 건 = <code>UP TO</code>(TABLE), 의도한 단건 = <code>SINGLE</code>.</li>
-<li><strong>ENDSELECT 남용</strong> → 대량은 <code>INTO TABLE</code>. 중첩 SELECT 금지.</li>
+<li><strong>부분 키로 SINGLE</strong> → 조건에 맞는 행이 여럿이면 그중 <strong>아무 한 행</strong>이 온다. 의도한 단건은 <strong>키 전체</strong>로.</li>
+<li><strong>SINGLE에 UP TO 같이 쓰기</strong> → SINGLE은 이미 한 건이다. <code>UP TO</code>와 함께 쓰지 않는다. 몇 건만 = <code>UP TO</code>(TABLE), 의도한 단건 = <code>SINGLE</code>.</li>
+<li><strong>ENDSELECT 남용</strong> → 대량은 <code>INTO TABLE</code>. 루프 안의 SELECT는 특히 의심한다.</li>
 <li><strong>sy-subrc 미확인</strong> → SINGLE도 없음(4)일 수 있다.</li>
 </ul>
 <hr>

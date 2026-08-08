@@ -1,0 +1,156 @@
+{
+  "agent": "AG03",
+  "model": "opus",
+  "target": "CH08",
+  "persona_ack": "타 언어(Java/C#) 백엔드 3～5년차 개발자로서 ABAP을 빠르게 훑어 익히는 관점으로 CH08 7개 레슨과 _chapter.md를 통독했다. 과잉·오개념 유발·지름길 부재·용어 충돌 네 축으로만 기록했고, 채택 기준에 따라 '입문자에겐 필요하나 경력자에겐 아는 내용'은 낮음 또는 suggestion으로 분류했다. 이 사이트의 1독자가 비전공 입문자임을 전제로 severity를 눌러 잡았다.",
+  "method": "Read 도구로 대상 8개 파일 전문 통독 → 경력자 시선 후보 발견 목록화 → Grep(ripgrep 정규식, 메타문자 이스케이프)으로 인용문 12건이 원문에 축자로 존재하는지 앵커 사전 검증(전건 일치 확인). 웹검색·외부 네트워크 미사용, 타 감사자 산출물 및 과거 감사 아티팩트 미열람.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L07.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L01.md",
+      "quote": "**Open SQL은 SELECT할 때 현재 로그인 client의 행만 자동으로** 가져온다. WHERE에",
+      "category": "용어 충돌",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "타 언어 개발자에게 client는 클라이언트-서버의 클라이언트(호출 측·프런트엔드·접속 단말)를 뜻한다. 여기서의 client(MANDT)는 한 시스템을 여러 조직이 데이터만 나눠 쓰는 멀티테넌시의 '테넌트'인데, 그 의미 차이를 챕터 어디에서도 명시하지 않는다.",
+      "evidence": "L01은 MANDT를 \"(클라이언트)\"로 직역해 병기하고, 콜아웃에서 \"지금 이 방(client)의 데이터만\"이라는 비유만 준다. 경력자는 '현재 로그인 client'를 세션·접속 단말로 읽게 되고, 그 오독 상태에서는 \"왜 SELECT가 자동으로 필터링되나\"가 납득되지 않는다. 반대로 '테넌트'라는 단어 하나면 행 단위 테넌트 격리(프레임워크가 WHERE를 자동 주입)로 즉시 이해된다.",
+      "suggestion": "MANDT 첫 등장에 한 줄 추가: \"일반 개발에서 말하는 클라이언트(호출 측)가 아니라, 한 시스템을 여러 회사·조직이 데이터만 나눠 쓰는 '테넌트' 개념\". 입문자 본문 길이는 거의 그대로면서 경력자의 오독은 사라진다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L02.md",
+      "quote": "- 성공 여부는 [[sy-subrc]](0 = 1건 이상), 읽은 행 수는 [[sy-dbcnt]]다.",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "예외(Exception)와 반환값에 익숙한 경력자에게 sy-subrc는 errno식 전역 가변 상태인데, \"SELECT 직후에 검사해야 하고 중간에 다른 문장이 끼면 덮어써진다\"는 핵심 제약이 7개 레슨 어디에도 없다.",
+      "evidence": "L02는 sy-subrc/sy-dbcnt를 '성공 여부·행 수'로만 소개하고, L07의 실수 목록도 \"결과 미확인 진행\"·\"SINGLE 실패 후 Work Area 신뢰\"까지만 다룬다. L04의 \"sy-dbcnt는 직전 SELECT가 넘긴 행 수\"가 유일한 간접 힌트다. 이 상태로는 경력자가 sy-subrc를 SELECT 결과 객체의 속성처럼 보존되는 값으로 가정해, WRITE나 다른 호출을 끼운 뒤 검사하는 코드를 짜게 된다(값이 이미 다른 문장 결과로 바뀌어 있다).",
+      "suggestion": "L02에 한 줄: \"sy-subrc는 함수의 반환값이 아니라 문장마다 갱신되는 전역 시스템 필드다. SELECT 바로 다음 줄에서 검사하고, 나중에 쓸 값이면 별도 변수에 옮겨 둔다.\" 입문자에게도 필요한 정보라 삭제가 아닌 추가 대상이다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L05.md",
+      "quote": "AND carrid IN ('KE', 'LH', 'AA')",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L02가 \"classic은 콤마 ✕\"를 네 번 강조한 뒤, L05는 IN 목록에서 콤마를 아무 설명 없이 쓴다. 콤마 금지가 'SELECT 필드 목록'에만 걸리는 규칙이라는 범위 한정이 없어 규칙이 자기모순처럼 읽힌다.",
+      "evidence": "L02는 상단 콜아웃·본문·코드 주석·실수 목록(\"`SELECT dan, mul`은 classic에서 오류\")으로 콤마 금지를 반복 각인시킨다. 그 규칙을 그대로 들고 온 독자는 L05의 IN('KE', 'LH', 'AA')를 오류로 의심하거나, 반대로 \"콤마 써도 되는구나\"로 규칙 자체를 무너뜨린다. IN 목록의 콤마는 classic Open SQL에서도 정상 문법이므로 예제는 옳고, 빠진 것은 규칙의 적용 범위다.",
+      "suggestion": "L05의 IN 설명 항목에 반 줄: \"콤마 금지는 **SELECT 필드 목록**에만 해당 — IN 목록 안의 콤마는 classic에서도 정상이다.\""
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L05.md",
+      "quote": "SELECT * FROM spfli INTO TABLE gt_spfli WHERE fltime IS NULL.",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "DDIC로 생성한 투명 테이블의 필드는 통상 NOT NULL(초기값 0·공백)로 만들어져, 표준 데모 테이블 SPFLI의 FLTIME에는 NULL이 들어가지 않는다. 옳은 설명(\"NULL은 초기값과 다르다\")을 실행하면 사실상 항상 0건인 예제로 마무리한다.",
+      "evidence": "바로 앞 문장 \"NULL은 ABAP 초기값(0·공백)과 다르다. DB에 값 자체가 존재하지 않는 특별 상태다\"는 정확하다. 그런데 그 초기값 규칙 때문에 ABAP 업무 테이블에서 NULL을 실제로 만나는 경로는 (a) OUTER JOIN의 미매칭 측, (b) 운영 중 나중에 추가된 컬럼, (c) DB 뷰·Native SQL 정도로 한정된다. 결과적으로 경력자는 \"그럼 ABAP에서 IS NULL을 언제 쓰나\"라는 가장 중요한 질문에 답을 못 받고, 입문자는 예제를 따라 해도 빈 결과만 본다.",
+      "suggestion": "예제를 남기려면 한 문장 추가: \"ABAP DDIC 테이블은 대개 NOT NULL이라 이 조회는 보통 0건이다 — NULL은 주로 OUTER JOIN 결과나 나중에 추가된 컬럼에서 만난다.\" 또는 IS NULL 절을 JOIN 챕터로 옮기고 여기서는 \"초기값(0/공백) ≠ NULL\" 개념만 남긴다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L06.md",
+      "quote": "**S/4HANA(컬럼 저장 DB)에서는 권장되지 않는 경우가 많다**",
+      "category": "용어 충돌",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "컬럼 저장 DB는 SAP HANA이고, S/4HANA는 그 위에서 도는 ERP 애플리케이션 스위트다. 괄호로 S/4HANA = 컬럼 저장 DB라고 등치시켜 제품 계층(DB/애플리케이션)을 뒤섞는다.",
+      "evidence": "같은 문장이 \"(엔진이 이미 빠르다)\"로 DB 엔진 이야기를 이어가므로 필자가 가리키려던 대상은 HANA DB다. 경력자는 제품명 계층(DB=SAP HANA / 앱=S/4HANA / 구 ERP=ECC)으로 문서 신뢰도를 재기 때문에, 챕터의 첫 성능 문단에서 이 등치가 나오면 뒤 서술 전체를 의심하게 된다. 입문자에게도 이후 챕터에서 계속 등장할 이름을 처음부터 잘못 각인시킨다.",
+      "suggestion": "\"SAP HANA(컬럼 저장 DB) 기반 시스템에서는 …\"으로 고친다. 필요하면 한 번만 \"S/4HANA는 그 HANA 위에서 도는 ERP\"로 구분해 준다."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L06.md",
+      "quote": "DB는 **Primary Key**로 정렬·색인돼 있어 키로 찾으면 빠르다. 키 일부 또는 키가 아닌",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "복합키 인덱스의 핵심 규칙은 '왼쪽(선행) 필드부터 채워야 인덱스를 탄다'인데, 본문은 \"키 일부\"를 일반 필드와 한 묶음에 넣어 '부분 키 = 느림'으로 읽히게 한다. 선행 필드만 주는 조회는 인덱스를 그대로 탄다.",
+      "evidence": "SFLIGHT 키는 CARRID·CONNID·FLDATE 순이라, 앞 레슨들이 대표 예제로 반복 사용한 `WHERE carrid = 'KE'`(L03·L04)는 선행 프리픽스라 빠르다. 그런데 L06의 서술대로면 이 조회가 \"키 일부라 많은 행을 훑어 느려질 수 있음\"으로 분류된다 — 앞 레슨 예제와 성능 설명이 서로 어긋난다. 정작 진짜 느린 경우(선행 carrid를 건너뛰고 connid만 주는 조회)와의 구분이 없다.",
+      "suggestion": "\"키는 **앞 필드부터 차례로** 채울 때만 빨라진다 — carrid만 줘도 빠르지만, carrid를 건너뛰고 connid만 주면 인덱스를 못 탄다\" 한 줄 추가. L06의 위젯(키 조건 렌즈: 키를 하나씩 채우며 후보가 좁혀지는 장면)이 이미 이 규칙을 보여주는 구조라 본문만 맞추면 된다."
+    },
+    {
+      "seq": 7,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L03.md",
+      "quote": "**중첩 SELECT는 절대 금지**(성능 최악).",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "경력자가 한눈에 알아보는 N+1 쿼리 문제인데, 이름도 대안(JOIN·FOR ALL ENTRIES)도 '어디 가면 배우는지'도 없이 금지만 남는다. 두 테이블을 엮어야 하는 독자는 이 레슨에서 갈 곳을 못 찾는다.",
+      "evidence": "챕터 전체에서 JOIN 링크는 L04의 별칭(AS) 설명에 딸린 한 곳뿐이고, 이 경고 자리에는 포인터가 없다. 같은 문서가 다른 지점에서는 classic↔modern([Chapter 19]), MESSAGE 타입([Chapter 15]), Range([Chapter 12])를 모두 링크로 안내하고 있어 이 자리만 예외적으로 비어 있다.",
+      "suggestion": "경고 뒤에 반 줄: \"두 테이블을 엮어야 하면 루프 안 SELECT 대신 [Chapter 13 · JOIN](CH13-L01.html)\". 경력자는 이 한 줄로 절 전체를 건너뛰고 필요한 챕터로 직행할 수 있다."
+    },
+    {
+      "seq": 8,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L03.md",
+      "quote": "WHERE carrid = 'KE' AND connid = '0701' AND fldate = '20260623'.",
+      "category": "용어 충돌",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "타 언어 개발자에게 날짜는 날짜 타입, 편명은 숫자다. 여기선 날짜가 '20260623' 문자 리터럴, 편명이 선행 0이 붙은 '0701' 문자 리터럴인데 이 챕터 안에는 그 이유(DATS·NUMC가 문자 계열 타입)에 대한 언급이 한 줄도 없다.",
+      "evidence": "같은 챕터 L07은 반대로 `WHERE dan = 5`처럼 따옴표 없이 쓴다. 규칙 설명 없이 두 표기가 공존하니 경력자는 \"언제 따옴표를 붙이나\"를 눈치로 익히게 되고, 날짜를 20260623(정수)로 쓰거나 `connid = 701`로 써서 선행 0 때문에 0건이 나오는 대표 실수를 그대로 밟는다. 앞 챕터(데이터 타입)에서 DATS/NUMC를 다뤘을 가능성이 있어 확실 대신 추정으로 둔다 — 다만 SELECT 리터럴 맥락에서 이 규칙이 필요해지는 것은 이 챕터가 처음이다.",
+      "suggestion": "L03 첫 코드 아래 한 줄: \"SAP에서 날짜는 DATS(YYYYMMDD 8자리 문자), 편명은 NUMC(선행 0 유지)라 따옴표로 적는다. 순수 숫자 필드만 따옴표 없이.\" 흔한 실수 목록에 \"connid = 701 → 선행 0 누락으로 0건\"을 한 항목 추가하면 더 좋다."
+    },
+    {
+      "seq": 9,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L02.md",
+      "quote": "전부(`*`)보다 **필요한 컬럼만** 읽는 게 빠르다. classic은 필드를 **공백**으로 나열한다(콤마 ✕).",
+      "category": "과잉",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "같은 사실(classic = 공백 구분, 콤마 금지)이 한 레슨 안에서 네 번 반복된다. 챕터 전체로는 다섯 번이다. 두 곳이면 충분하다.",
+      "evidence": "L02 안의 반복 지점 — ① 상단 📌 콜아웃 \"필드를 공백으로 나열한다(콤마 ✕)\", ② 이 문장, ③ 코드 주석 \" 콤마 없이 공백 구분 (classic)\", ④ 실수 목록 \"콤마로 필드 나열\". 여기에 L05의 modern escape 습관 경고까지 더해진다. 다만 이건 입문자에게 실제로 빈발하는 함정이므로 삭제가 아니라 축약 대상이며, 그래서 낮음으로 둔다.",
+      "suggestion": "콜아웃(규칙 선언)과 코드 주석(현장 확인) 두 곳만 남기고, 본문 문장은 \"전부(`*`)보다 필요한 컬럼만 읽는 게 빠르다\"까지로 줄인다. 실수 목록 항목은 성격이 달라 유지."
+    },
+    {
+      "seq": 10,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\_chapter.md",
+      "quote": "intro: \"저장한 데이터를 다시 읽어오고 싶다. (classic 구문)\"",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "SQL을 이미 아는 독자에게 이 챕터에서 진짜 새로운 것은 다섯 가지(client 자동 필터·classic 공백 구문·INTO 대상 종류·sy-subrc식 결과 확인·DDIC의 NOT NULL 기본값)뿐인데, 어디가 그 다섯인지 알려 주는 표지가 챕터 어디에도 없다.",
+      "evidence": "7개 레슨 중 L05의 비교·논리 연산자 절(=, <>, <, >, BETWEEN, LIKE, IN)과 L06의 인덱스 기초는 SQL 경험자에겐 사실상 전부 기존 지식이다. 그럼에도 \"이 절은 SQL을 아는 사람은 건너뛰어도 좋다\" 류 안내나 챕터 도입의 '표준 SQL과 다른 점' 요약이 없어, 경력자는 차이점을 스스로 골라내려고 7개 레슨을 전부 통독해야 한다.",
+      "suggestion": "_chapter.md intro 또는 L01 도입에 접이식(details) 박스 하나 — \"SQL을 이미 아신다면: 이 챕터의 차이점은 ①client 자동 필터 ②classic 공백 구문 ③INTO 대상 ④sy-subrc 확인 ⑤NOT NULL 기본값\" + 각 레슨 링크. 입문자 본문은 손대지 않고 경력자만 건너뛸 수 있다."
+    },
+    {
+      "seq": 11,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L02.md",
+      "quote": "4. **INTO** — 어디에 담을지 (Work Area / Internal Table)",
+      "category": "용어 충돌",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "다른 DB의 `SELECT … INTO 새테이블`은 DB에 테이블을 만드는 문법이다. ABAP의 `INTO TABLE gt_x`는 DB가 아니라 프로그램 메모리 변수에 담는다는 뜻인데, 하필 뒤 단어가 TABLE이라 SQL Server 계열 경험자에겐 DDL로 읽힐 여지가 있다. 그 차이를 짚지 않는다.",
+      "evidence": "본문은 대상을 \"Work Area / Internal Table\"로 적어 ABAP 자료형임을 암시하지만, 그 둘이 메모리 변수라는 사실은 앞 챕터 지식에 기댄다. `SELECT * FROM sflight INTO TABLE gt_flight` 한 줄만 떼어 보면 표기상 DDL과 구분되지 않는다. 오독 가능성의 크기는 독자의 이전 DB 배경에 달려 있어 추정으로 둔다.",
+      "suggestion": "INTO 항목에 반 줄: \"INTO 뒤는 DB 오브젝트가 아니라 **프로그램 메모리 변수**다(다른 DB의 SELECT INTO처럼 테이블을 만드는 게 아니다).\""
+    },
+    {
+      "seq": 12,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L04.md",
+      "quote": "SELECT 필드와 받는 Structure의 **같은 이름 필드끼리** 자동으로 맞춰 담는다(순서 무관).",
+      "category": "오개념 유발",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "\"자동으로 맞춰 담는다(순서 무관)\"만 읽으면 공짜 편의 기능으로 보여 기본값처럼 쓰게 된다. 실제로는 실행 중 이름을 대조하는 비용이 붙어, 필드 순서를 맞춘 직접 INTO보다 느리다는 대가가 언급되지 않는다.",
+      "evidence": "같은 챕터 L02는 \"전부(*)보다 필요한 컬럼만 읽는 게 빠르다\"로 성능 감각을 심고 L06은 아예 성능 레슨인데, L04만 편의 기능의 대가를 말하지 않는다. ORM의 자동 매핑 비용을 겪어 본 경력자는 \"이건 공짜인가\"를 반드시 묻고, 답이 없으면 이후 코드에서 습관적으로 CORRESPONDING을 붙이게 된다. 체감 차이의 크기는 릴리스·데이터량에 좌우되어 추정으로 둔다.",
+      "suggestion": "절 끝에 한 줄: \"편한 대신 이름을 실행 중에 맞추느라 조금 느리다 — 필드 순서를 맞출 수 있으면 그냥 `INTO TABLE`이 낫다.\""
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "경력자 눈으로 보면 CH08은 오히려 군더더기가 적다. 7개 레슨이 모두 50～75줄대로 짧고, 각 레슨 말미의 '흔한 실수와 점검'은 실무에서 실제로 밟는 함정(부분 키 SELECT SINGLE·INTO vs APPENDING·SINGLE 실패 후 Work Area 신뢰·sy-dbcnt를 누적 행 수로 오해)을 정확히 짚는다. 과잉으로 지적할 곳은 classic 콤마 금지의 5회 반복 정도(낮음)라 '압축' 축에서는 손댈 게 거의 없다. 대신 정확도 쪽에 손볼 지점이 모였다 — S/4HANA를 컬럼 저장 DB로 등치(제품 계층 혼동), SPFLI-FLTIME IS NULL 예제가 DDIC의 NOT NULL 관행상 사실상 0건, 부분 키를 선행 프리픽스 구분 없이 '느림'으로 묶은 인덱스 설명, L02의 콤마 금지 규칙과 L05 IN 목록 콤마의 충돌 미해소. 용어 축에서는 client(=테넌트)·sy-subrc(=errno식 전역 상태)·SELECT INTO(=메모리 변수)가 일반 개발 상식과 정면으로 부딪히는데 그 차이를 한 번도 명시하지 않아, 경력자는 매번 스스로 번역해 가며 읽어야 한다. 지름길 안내(SQL 경험자용 '다른 점만 보기' 박스)와 중첩 SELECT 금지 자리의 대안 링크는 각각 한 줄이면 해결된다. 모두 문장·예제 단위 국소 수정이고 구조나 학습 순서를 흔들 필요는 없어 '경미 수정'으로 판정한다."
+  }
+}

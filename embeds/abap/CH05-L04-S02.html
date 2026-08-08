@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<!-- CH05-L04-S02 — 엔진: step-debugger (embeds/_engine/step-debugger.{js,css}) + _autoheight.js
+     config=레슨 전용(§통째로 대입/초기화: gs_b = gs_a → CLEAR gs_a — "값 복사라 둘은 남남"이 핵심).
+     본문 코드 블록과 줄 1:1(6줄·실행 스텝 3). 초기값 표기는 ZST_PERSON 기준(CHAR 20=공백·NUMC 3='000'·DEC 8,2=0.00).
+     게이팅: 통째 대입(=)·CLEAR·DDIC Structure 타입만(CH05-L04까지) — MOVE-CORRESPONDING은 S01 몫, REFRESH는 CH06. -->
+<html lang="ko" data-eng="step-debugger">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>통째 대입과 CLEAR · CH05-L04-S02</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/step-debugger.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">통째로 대입하고, 비우기 <small>(스텝 디버거)</small></p>
+  <p class="lead"><b>다음 ⏭</b>으로 한 줄씩 실행하며 오른쪽 <b>두 변수</b>를 지켜보세요. <code>gs_a</code>에 채운 건 <code>name</code> 하나지만 <code>=</code> 한 줄이 옮기는 건 <b>세 칸 전부</b>입니다. 마지막 줄에서 <code>gs_a</code>를 비워도 <b><code>gs_b</code>는 그대로</b>인지도 확인해 보세요.</p>
+
+  <div class="dbg" data-stepper>
+    <div class="dbg__bar">
+      <button class="btn btn--primary" data-start>▶ 시작</button>
+      <button class="btn btn--step" data-next disabled>다음 ⏭</button>
+      <div class="progress"><i data-progress></i></div>
+      <span class="muted" data-counter>0 / 3</span>
+    </div>
+    <div class="dbg__main">
+      <div class="dbg__editorwrap"><div class="dbg__edhd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span></div><div class="dbg__editor" data-code></div></div>
+      <div class="dbg__watch">
+        <div class="watch__head">변수 모니터 — <code>gs_a</code> · <code>gs_b</code> 펼침</div>
+        <div class="watch__list" data-vars></div>
+      </div>
+    </div>
+    <div class="dbg__console">
+      <div class="console__head">
+        <span>콘솔</span>
+        <span class="leg"><span class="a">▶ 실행할 차례</span> · <span class="d">✓ 방금 실행</span></span>
+        <span class="sp"></span>
+        <span class="cmode"><button class="cmode__b on" data-cmode="cur">현재 행</button><button class="cmode__b" data-cmode="all">전체 출력</button></span>
+      </div>
+      <pre class="console__body" data-console>대기 중 — ▶ 시작을 누르세요.</pre>
+    </div>
+    <script type="application/json" class="stepper-config">
+    {
+      "code":[
+        "DATA: gs_a TYPE zst_person,",
+        "      gs_b TYPE zst_person.",
+        "",
+        "gs_a-name = '정훈영'.",
+        "gs_b = gs_a.        \" 모든 Component 복사",
+        "CLEAR gs_a.         \" gs_a를 초기값으로"
+      ],
+      "vars":[
+        {"label":"gs_a-name","sub":"name · CHAR 20","key":"gs_a-name","init":"( 공백 )"},
+        {"label":"gs_a-age","sub":"age · NUMC 3","key":"gs_a-age","init":"'000'"},
+        {"label":"gs_a-amount","sub":"amount · DEC 8,2","key":"gs_a-amount","init":"0.00"},
+        {"label":"gs_b-name","sub":"name · CHAR 20","key":"gs_b-name","init":"( 공백 )"},
+        {"label":"gs_b-age","sub":"age · NUMC 3","key":"gs_b-age","init":"'000'"},
+        {"label":"gs_b-amount","sub":"amount · DEC 8,2","key":"gs_b-amount","init":"0.00"}
+      ],
+      "steps":[
+        {"line":4,"vars":{"gs_a-name":"정훈영"},"console":"gs_a-name = '정훈영' — 세 칸 중 name만 채웠다"},
+        {"line":5,"vars":{"gs_b-name":"정훈영"},"console":"gs_b = gs_a — 모양이 같으니 세 칸이 한꺼번에 넘어간다(값을 안 넣은 age·amount는 그 초기값 그대로 복사). 베끼는 순간부터 둘은 남남이다"},
+        {"line":6,"vars":{"gs_a-name":"( 공백 )"},"console":"CLEAR gs_a — gs_a만 타입별 초기값으로 되돌아간다. 방금 베껴 담은 gs_b는 '정훈영' 그대로! 대입이 별명이 아니라 값 복사라는 증거다"}
+      ]
+    }
+    </script>
+  </div>
+  <div class="note"><b><code>=</code> 는 값 복사</b>입니다. <code>gs_b</code>는 <code>gs_a</code>의 별명이 아니라 내용만 같은 <b>별개의 변수</b>라서, 한쪽을 비워도 다른 쪽은 멀쩡합니다. 단 통째 대입은 <b>Component 구성이 같을 때</b>만 씁니다 — 구성이 다르면 <code>MOVE-CORRESPONDING</code> 차례입니다.</div>
+</div>
+<script src="../_engine/step-debugger.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

@@ -2,7 +2,9 @@
    config = window.STB_CFG { table, fields:[{name, fixed?, key, type?(고정), de, builtin, note?}] }.
    필드 key 토글 + 타입(Data Element/Built-In) 토글 → Check(검사) / Activate(활성화).
    검증: 키 최소 1개 · 키 연속성(맨 앞에 연속, 사이에 non-key 금지) · Data Element 권장(경고).
-   활성화 성공 시 오른쪽 '물리 DB 테이블' 패널이 회색→생성. 상태배지 신규/비활성/활성. */
+   활성화 성공 시 오른쪽 '물리 DB 테이블' 패널이 회색→생성. 상태배지 신규/비활성/활성.
+   showMsg(list, headOk): headOk면 목록이 비어도(경고 0건) 완료 문구를 남긴다 — 잘했을 때만
+   완료 문구가 사라지던 역전 방지. list도 headOk도 없을 때만 초기 안내(idle). */
 (function () {
   var cfg;
   try { cfg = JSON.parse(document.getElementById('stb-cfg').textContent); }
@@ -105,8 +107,9 @@
     return out;
   }
 
+  // headOk=활성화 성공. 목록이 비어도(=경고 0건, 가장 잘한 구성) 완료 문구는 반드시 남긴다.
   function showMsg(list, headOk) {
-    if (!list.length) { elMsg.innerHTML = '<div class="ln idle">필드·키·타입을 정한 뒤 <b>검사</b> 또는 <b>활성화</b>를 눌러 보세요.</div>'; return; }
+    if (!list.length && !headOk) { elMsg.innerHTML = '<div class="ln idle">필드·키·타입을 정한 뒤 <b>검사</b> 또는 <b>활성화</b>를 눌러 보세요.</div>'; return; }
     var html = (headOk ? '<div class="ln ok"><span class="ico">✔</span><span>활성화 완료 — DB에 물리 테이블이 생성됐습니다.</span></div>' : '');
     html += list.map(function (m) {
       var ico = m.level === 'bad' ? '✕' : (m.level === 'warn' ? '⚠' : '✔');

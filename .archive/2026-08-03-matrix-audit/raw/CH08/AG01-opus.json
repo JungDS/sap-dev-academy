@@ -1,0 +1,202 @@
+{
+  "agent": "AG01",
+  "model": "opus",
+  "target": "CH08",
+  "persona_ack": "나는 개발·전공 경험이 전혀 없는 24세 문과 출신 입문자 '은서'로서, CH08을 L01부터 순서대로 처음 읽는 독자의 눈으로 통독했다. 내 사전 지식으로 빈틈을 메우지 않고, 풀이가 그 자리(또는 같은 챕터의 앞 레슨)에 없는 말과 코드에서는 멈춘 것으로 기록했다. 없는 흠을 만들지 않았고, 잘 읽힌 장치는 summary에 남겼다.",
+  "method": "Read 도구로 대상 8개 파일(_chapter.md, CH08-L01～L07) 전문 통독. Grep으로 CH08 폴더 안의 DATA 선언문과 gt_flight·gt_spfli·gs_line 사용 위치만 교차 확인(변수 선언 누락 검증 목적). 웹검색·외부 네트워크·타 감사 산출물 미사용.",
+  "errors": [
+    "각 레슨의 체험 임베드(::embed CH08-Lnn-S01::)는 대상 파일 목록 밖의 HTML이라 열지 않았다. 따라서 모든 판단은 MD 본문 텍스트 기준이며, 임베드가 메워 줄 수 있는 부분(예: L03 형태 비교, L06 키 조회 시각화)은 보수적으로 다뤘다."
+  ],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L07.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L01.md",
+      "quote": "DB에서 읽는 언어가 [[Open SQL]]이다.",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "챕터 제목이자 중심 개념인 Open SQL이 관계절 한 줄로만 소개된다. SQL이 무엇인지, 왜 앞에 'Open'이 붙는지가 챕터 어디에도 없다.",
+      "evidence": "나는 'SQL'이라는 말을 여기서 처음 본다. 'DB에서 읽는 언어'라는 다섯 글자 말고는, SQL이 사람이 쓰는 문장 같은 건지 프로그램 이름인지 알 수 없다. L02에서 다시 '현대식 Open SQL 구문'이라는 말이 나오는데, 그때도 'Open'이 무슨 뜻인지 몰라서 classic과 modern의 차이가 이름 놀이처럼만 보인다.",
+      "suggestion": "L01 도입부에 2～3문장 추가. 'SQL = DB에게 말을 거는 문장 형식', 'Open SQL = SAP이 한 겹 감싼 SQL이라 밑에 깔린 DB 제품이 바뀌어도 같은 문장이 통한다' 정도로 이름의 유래까지 풀어 주기."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L01.md",
+      "quote": "SELECT * FROM sflight INTO TABLE gt_flight.",
+      "category": "단절",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "챕터의 첫 코드가 SELECT 문법 설명(L02의 4요소)보다 먼저 나오는데, `*`·`INTO TABLE`·`gt_flight`가 각각 무엇인지 한마디도 없다.",
+      "evidence": "이 시점까지 본문이 알려 준 것은 'Open SQL로 읽는다'뿐이다. 별표가 '전부'라는 것도, INTO TABLE이 '내부 테이블에 담기'라는 것도 다음 레슨에서야 나온다. 코드 옆 주석은 client 이야기만 하고 있어서, 이번 레슨의 요점(client 자동 필터)에 닿기 전에 '이 문장 자체가 뭐지?'에서 먼저 멈춘다.",
+      "suggestion": "코드 앞에 '문법은 다음 레슨에서 하나씩 뜯는다. 지금은 이 테이블을 통째로 읽어 오라는 뜻으로만 보자' 한 줄을 넣고, 코드 조각별 뜻을 주석·라벨로 표시."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L01.md",
+      "quote": "이 셋은 \"항공사 → 노선 → 운항편\"으로 이어지는 master-detail 구조다.",
+      "category": "멈춤",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "master-detail이 풀이 없이 영어 그대로 나오고, 용어 버튼(클릭 팝업)도 붙어 있지 않다.",
+      "evidence": "앞의 화살표 덕분에 위아래 관계라는 짐작은 되지만, 'master'와 'detail'이 각각 무엇을 가리키는지(하나의 항공사 아래 여러 노선, 하나의 노선 아래 여러 운항편) 문장이 없다. 다른 용어들은 눌러 볼 수 있는데 이건 눌러 볼 데도 없어서 그냥 지나칠 수밖에 없었다.",
+      "suggestion": "'master-detail(하나의 master 밑에 여러 detail이 딸리는 구조)'처럼 괄호 한 줄 풀이를 붙이거나 용어 마킹으로 glossary 팝업 연결."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L01.md",
+      "quote": "**데모 데이터 없음** → 교육 시스템에 데모 데이터가 없으면 강사 안내(생성 프로그램)를 따른다.",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "혼자 공부하는 독자에게 '강사 안내를 따르라'는 해결책은 막다른 길이다. 데이터가 있는지 확인하는 방법도, 없을 때 스스로 만드는 방법도 없다.",
+      "evidence": "나는 이 사이트로 혼자 공부하고 있어서 물어볼 강사가 없다. 게다가 이 챕터의 예제는 L03부터 끝까지 거의 전부 SFLIGHT·SPFLI를 쓰기 때문에, 데이터가 없으면 여기서 실습이 통째로 끊긴다. '생성 프로그램'이라는 말만 있고 이름도 실행 방법도 없다.",
+      "suggestion": "데이터 존재를 스스로 확인하는 방법(테이블 내용 조회 트랜잭션)과 표준 생성 프로그램 이름·실행 순서를 한 줄씩 명시. 그래도 없으면 체험 임베드로 따라올 수 있다는 안내 추가."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L02.md",
+      "quote": "이 챕터는 **classic 구문** — 필드를 **공백**으로 나열한다(콤마 ✕).",
+      "category": "멈춤",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "classic이 무슨 뜻인지, 왜 지금 그것부터 배우는지 없이 라벨만 붙는다. 이어지는 '섞으면 경계가 무너진다'도 학습자에게 무슨 일이 일어난다는 건지 알 수 없다.",
+      "evidence": "'옛날 방식'이라는 뜻으로 짐작했는데, 그렇다면 나중에 쓸 최신 방식을 두고 왜 옛날 것을 먼저 익혀야 하는지 이유가 없어서 의욕이 꺾인다. '경계'가 커리큘럼 설계상의 경계인지, 내 코드에 문법 오류가 난다는 뜻인지도 구분되지 않는다.",
+      "suggestion": "왜 classic부터 배우는지 이유 한 줄(현장에서 마주칠 코드/기초 문법의 뼈대 등)을 붙이고, '섞으면 경계가 무너진다'를 학습자 관점의 결과(문법 오류가 난다)로 구체화."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L02.md",
+      "quote": "여러 테이블을 다룰 땐 `테이블~필드`(예: `sflight~carrid`)로 어느 테이블 컬럼인지 밝힌다.",
+      "category": "단절",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "아직 한 테이블만 읽어 본 상태에서 '여러 테이블을 다루는' 상황과 `~` 표기가 예고 없이 튀어나온다.",
+      "evidence": "한 SELECT로 여러 테이블을 읽는 방법은 이 챕터 어디에도 없고, 이 줄에는 전체 문장 예제도 없어서 `sflight~carrid`를 문장의 어디에 적는 건지 알 수 없다. 지금 외워야 하는 건지 나중 이야기인지 표시도 없다. 같은 챕터 L04에서는 별칭을 말할 때 JOIN 레슨 링크를 달아 주는데, 정작 여기엔 그 안내가 없다.",
+      "suggestion": "'여러 테이블을 함께 읽는 방법은 JOIN 레슨에서 배운다' 링크를 붙여 예고임을 밝히거나, 이번 챕터에서 실제로 쓰지 않는 표기라면 JOIN 레슨으로 옮기기."
+    },
+    {
+      "seq": 7,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L03.md",
+      "quote": "WHERE carrid = 'KE' AND connid = '0701' AND fldate = '20260623'.",
+      "category": "생략",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "챕터 내내 쓰는 SCARR·SPFLI·SFLIGHT의 컬럼 목록과 키가 어디에도 없어서, 필드 이름이 전부 암호처럼 보인다.",
+      "evidence": "L01의 표는 테이블 이름·설명·예시뿐이고 컬럼을 보여 주지 않는다. 그런데 carrid·connid·fldate·seatsocc·seatsmax·planetype·fltime이 아무 풀이 없이 계속 나온다. 특히 바로 아래 '키 전체로 조회하면 정확히 한 행이 보장된다'는 문장은, 이 셋이 키라는 사실을 모르면 확인할 방법이 없다. carrid·connid·fldate가 키라는 말은 네 레슨이나 지난 L06에 가서야 괄호 안에 처음 나온다.",
+      "suggestion": "L01에 세 테이블의 주요 컬럼·키를 보여 주는 표(또는 SE11 화면 그림)를 넣고, 필드 이름의 뜻(carrid=항공사 코드, connid=노선 번호, fldate=운항 날짜, seatsocc/seatsmax=예약/전체 좌석 등)을 한 번에 풀어 주기."
+    },
+    {
+      "seq": 8,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L03.md",
+      "quote": "`INTO gs_`로 받으면 한 행씩 반복 처리하는 `SELECT…ENDSELECT` 루프가 된다.",
+      "category": "멈춤",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "바로 앞 SELECT SINGLE 예제도 `INTO gs_flight`인데 루프가 아니었다. 같은 'INTO gs_'가 어떨 때 한 건이고 어떨 때 루프인지(SINGLE 유무)를 문장으로 짚지 않는다.",
+      "evidence": "내 눈에는 두 코드의 INTO가 똑같다. 이 문장을 그대로 믿으면 앞의 SELECT SINGLE도 루프여야 하는데 거기엔 ENDSELECT가 없다. 차이가 SINGLE이라는 단어에 있다는 말이 어디에도 없어서, 앞뒤를 몇 번 오가도 규칙이 잡히지 않았다.",
+      "suggestion": "'SINGLE 없이 INTO gs_로 받으면'으로 조건을 명시하고, SINGLE 유무 대비표(문장 / 결과가 한 건인지 여러 건인지 / ENDSELECT 필요 여부)를 추가."
+    },
+    {
+      "seq": 9,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L03.md",
+      "quote": "**중첩 SELECT는 절대 금지**(성능 최악).",
+      "category": "멈춤",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'중첩 SELECT'가 어떤 코드인지 한 번도 보여 주지 않고 금지만 한다.",
+      "evidence": "SELECT 안에 SELECT를 넣는 모양을 본 적이 없어서, 내가 그걸 쓰고 있는지 아닌지 판단할 수가 없다. '흔한 실수와 점검'에서 한 번 더 금지하는데 거기서도 형태는 나오지 않아서, 조심하라는 말만 두 번 듣고 끝난다.",
+      "suggestion": "접기(details) 안에 중첩 SELECT 예시 3～4줄과 '왜 왕복이 늘어나는지' 한 줄을 넣거나, 최소한 'LOOP 안에서 다시 SELECT를 부르는 모양'이라고 말로 풀어 주기."
+    },
+    {
+      "seq": 10,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L03.md",
+      "quote": "SELECT * FROM sflight INTO TABLE gt_flight WHERE carrid = 'KE'.",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "`gt_flight`는 챕터 전체에서 한 번도 선언되지 않는데 L01·L03·L04·L05·L06 예제가 계속 이 이름을 쓴다. `gt_spfli`(L05)·`gs_line`(L07)도 마찬가지다.",
+      "evidence": "CH08 폴더 안에서 선언이 있는 건 gt_gugu(L02)·gs_flight(L03)·gv_occ/gv_max(L04)·gv_carr(L05)뿐이다. L02에서는 `DATA gt_gugu TYPE TABLE OF zgugudan.`을 예제와 함께 보여 줬기 때문에, 나는 예제를 그대로 옮겨 적으면 되는 완성 코드로 읽는다. 그런데 gt_flight 쪽은 담을 그릇을 만든 적이 없어 그대로 치면 실행되지 않는다. 어느 줄이 빠진 건지 스스로 알아낼 수 없다.",
+      "suggestion": "각 레슨 첫 예제에 `DATA gt_flight TYPE TABLE OF sflight.` 같은 선언 줄을 함께 넣거나, 챕터 공통 선언 블록을 L01에 한 번 두고 이후 예제에 '위 선언을 전제로 한다'는 표시를 달기."
+    },
+    {
+      "seq": 11,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L05.md",
+      "quote": "`=`(EQ) · `<>`(NE) · `<`(LT) · `>`(GT) · `<=`(LE) · `>=`(GE), 그리고 `AND`/`OR`/`NOT`·괄호.",
+      "category": "과부하",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "한 줄에 연산자 아홉 개가 쏟아지는데 예제도 설명도 없고, 괄호 안의 EQ/NE/LT/GT/LE/GE가 무엇인지(코드에 그렇게 적어도 되는 다른 표기인지, 그냥 읽는 이름인지) 밝히지 않는다.",
+      "evidence": "이 섹션은 제목 한 줄과 이 한 줄이 전부다. 나는 `<>`가 '다르다'라는 뜻인 것도 처음 봤고, EQ를 코드에 적어도 되는지 알 수 없다. 바로 다음 섹션의 코드에는 이 연산자들이 하나도 쓰이지 않아서 확인할 기회조차 없다.",
+      "suggestion": "표(기호 / 문자 표기 / 뜻 / 짧은 예)로 펼치고, `<>`와 `>=`가 실제로 들어간 예제를 하나 넣기. AND/OR/NOT과 괄호는 조합 예제로 따로 분리."
+    },
+    {
+      "seq": 12,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L05.md",
+      "quote": "**modern escape 습관** → 이 챕터는 classic이라 host 변수를 그대로 쓴다",
+      "category": "멈춤",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "host 변수와 escape 둘 다 풀이가 없다. 배운 적 없는 '습관'을 조심하라는 말을 듣는 셈이다.",
+      "evidence": "본문 코드 주석에도 'classic: host 변수 그대로'라고만 적혀 있어서, host 변수가 'WHERE 조건에 넣는 ABAP 쪽 변수'라는 것을 알려 주는 문장이 챕터에 없다. escape는 무엇을 무엇으로부터 감싼다는 건지조차 알 수 없다. 둘 다 용어 버튼도 없어서 눌러 볼 수 없다.",
+      "suggestion": "첫 등장(도입부 문장)에서 'host 변수(= WHERE 조건에 끼워 넣는 ABAP 쪽 변수)'로 한 줄 풀이 + 용어 마킹. modern escape는 이름만 남기고 나머지는 CH19 링크로 미루기."
+    },
+    {
+      "seq": 13,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L05.md",
+      "quote": "값이 채워지지 않은(NULL) 행을 가린다. NULL은 ABAP 초기값(0·공백)과 다르다. DB에 **값 자체가 존재하지 않는** 특별 상태다.",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "NULL이 무엇인지는 설명했는데 '그런 행이 언제 생기는지'가 없어서, 예제를 왜 쓰는지도 결과가 맞는지도 알 수 없다.",
+      "evidence": "앞 챕터에서 내가 만든 테이블은 값을 넣어 저장했으니, 값 자체가 없는 행이 어디서 생기는지 상상이 안 된다. 예제 `SELECT * FROM spfli INTO TABLE gt_spfli WHERE fltime IS NULL.`을 실제로 돌렸을 때 0건이 나오면, 내가 잘못한 건지 원래 그런 건지 판단할 근거가 본문에 없다.",
+      "suggestion": "NULL이 생기는 대표 상황을 한 줄 예시로 주고(어떤 경우에 값이 아예 비어 있게 되는지), 예제 결과가 0건일 수 있음을 미리 알려 주기."
+    },
+    {
+      "seq": 14,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L06.md",
+      "quote": "DB는 **Primary Key**로 정렬·색인돼 있어 키로 찾으면 빠르다.",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'색인'이라는 말이 뜻풀이 없이 쓰이고, 왜 색인이 있으면 빠른지 이유가 없다. 이번 레슨이 정식으로 도입한다는 Secondary Index도 설명이 두 문장에 그친다.",
+      "evidence": "색인이 무엇인지(값과 위치를 미리 적어 둔 찾아보기 같은 것) 본문에 한 줄도 없어서, '키로 찾으면 빠르다'가 그냥 외워야 하는 규칙이 된다. Secondary Index는 'SE11에서 정의'라는 한마디 뒤 곧바로 S/4HANA 단서로 넘어가 버려서, 어떻게 만드는지도 언제 만드는지도 남지 않는다.",
+      "suggestion": "색인 비유(책 뒤 찾아보기) 2～3문장과, 키로 바로 찾는 그림 대 전체를 훑는 그림 한 장을 본문에 넣기. Secondary Index는 '언제 고려하나' 판단 기준을 한 줄로 명시."
+    },
+    {
+      "seq": 15,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L06.md",
+      "quote": "**S/4HANA(컬럼 저장 DB)에서는 권장되지 않는 경우가 많다**(엔진이 이미 빠르다)",
+      "category": "과부하",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "한 문장에 S/4HANA·컬럼 저장 DB·엔진이라는 모르는 말이 세 개 겹친다.",
+      "evidence": "괄호 안 풀이인 '컬럼 저장 DB'가 또 다른 모르는 말이고, '엔진'이 무엇을 가리키는지도 없다. 앞 문장은 인덱스를 만들면 빨라진다고 했는데 이 문장은 권장되지 않는다고 해서, 결국 만들라는 건지 말라는 건지 결론을 못 내린 채 넘어갔다.",
+      "suggestion": "이 단계에서는 '요즘 SAP의 최신 DB에서는 굳이 안 만들기도 한다' 정도로 낮추고, 이유와 용어는 성능 챕터로 미루기(링크 포함)."
+    },
+    {
+      "seq": 16,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L07.md",
+      "quote": "그런데 공연 ID만 입력해도 공연 정보가 F4 목록으로 뜨면",
+      "category": "단절",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "챕터 마지막 줄에서 갑자기 '공연'이 나온다. 이 챕터의 예제는 구구단과 항공편뿐이라 공연이 어디서 나온 이야기인지 알 수 없고, F4도 이름만 나온다.",
+      "evidence": "L01부터 L07까지 공연·예매 이야기는 한 번도 없었다. 마지막 문장에서 처음 등장하니 '내가 앞에서 뭘 놓쳤나' 싶어 다시 훑어보게 된다. F4가 '키보드 F4를 눌러 고를 수 있는 값 목록'이라는 것도 여기서는 알 수 없어서, 다음 챕터가 기대되기보다 어리둥절하게 끝난다.",
+      "suggestion": "다음 챕터 예고를 이 챕터가 실제로 쓴 소재(항공사 코드 carrid를 손으로 외워 입력하는 불편)로 바꾸거나, 공연 예제를 이 챕터 안에서 한 번이라도 연결해 두기. F4는 '키를 눌러 값을 고르는 목록'이라는 한 줄 풀이 추가."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "보강 권장",
+    "summary": "레슨 순서(읽을 대상 → SELECT 4요소 → 형태 → 담는 그릇 → WHERE → 키/속도 → 실패 처리)는 따라가기 좋았고, 특히 client를 '지금 이 방'으로 비유한 콜아웃과 레슨마다 하나씩 붙은 체험 임베드, 매 레슨 끝의 '흔한 실수와 점검' 목록은 초보자에게 든든하게 읽혔다. 다만 챕터 내내 쓰는 SCARR·SPFLI·SFLIGHT의 컬럼과 키를 한 번도 보여 주지 않아 carrid·connid·fldate 같은 이름이 끝까지 암호로 남고(가장 큰 걸림돌), gt_flight·gt_spfli·gs_line은 선언 없이 예제에 등장해 그대로 따라 칠 수 없다. 여기에 Open SQL·classic·host 변수·escape·master-detail·색인처럼 풀이 없이 지나가는 말이 겹치고, L05의 연산자 나열은 한 줄에 아홉 개를 쏟아붓는다. 구조를 갈아엎을 정도는 아니지만, 데모 테이블 필드 표·선언 줄·용어 한 줄 풀이·연산자 표를 채워 넣는 보강이 필요하다."
+  }
+}

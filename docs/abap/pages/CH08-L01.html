@@ -42,44 +42,99 @@
 <section class="lblock"><h2>저장한 걸 다시 읽고 싶다</h2>
 <p><a href="CH07-L02.html">Chapter 07 · Create Entries</a>에서 구구단 18행을 <code>ZGUGUDAN</code>에 손으로 넣어 영구 저장했다. 이제 프로그램에서
 그 값을 <strong>읽어</strong> 와야 쓸모가 있다. DB에서 읽는 언어가 <button class="term" type="button" data-term="Open SQL">Open SQL</button>이다.</p>
+<p>SQL은 DB에게 &quot;이런 값을 달라&quot;고 요청하는 표준 질의 언어다. 어느 DB 제품에서든 대체로
+통한다. ABAP은 그 SQL을 ABAP 문장으로 감싼 자기 버전을 쓰는데, 그게 Open SQL이다.
+앞에 <strong>Open</strong>이 붙은 이유는 DB 제품을 가리지 않기 때문이다. 우리가 <code>SELECT</code>를 한 번 써
+두면 밑에 깔린 DB가 무엇이든 SAP이 그 DB의 말로 번역해 준다.</p>
 <p>연습은 우리 <code>ZGUGUDAN</code>뿐 아니라, SAP이 기본 제공하는 <strong>풍부한 표준 데이터</strong>로도 한다.</p>
-</section><section class="lblock"><h2>SAP 항공 데모 테이블</h2>
+<details>
+<summary>🧑‍💻 SQL을 이미 해 봤다면 — 같은 것과 다른 것</summary><p>다른 언어에서 SQL을 써 봤다면 이 챕터의 절반은 이미 아는 내용이다. 아래만 새로 맞춰 두면
+된다. 하나하나는 뒤 레슨에서 차례로 다루니 지금 외울 필요는 없다.</p>
+<ul>
+<li><strong>같은 것</strong> — 무엇을 고르고(SELECT) 어디서 가져와(FROM) 어느 행만 남길지(WHERE) 정하는
+뼈대, 그리고 비교·논리 연산자는 알던 그대로다.</li>
+<li><strong>client</strong> — 한 시스템 안을 회사·조직 단위로 나눈 독립 데이터 공간이다. 웹에서 말하는
+클라이언트(요청하는 쪽·프런트엔드)와는 전혀 다른 뜻이니 갈아 끼워야 한다.</li>
+<li><strong>필드는 공백으로 나열</strong> — 이 챕터가 쓰는 classic 표기는 읽을 컬럼 사이에 콤마를 넣지
+않는다.</li>
+<li><strong>INTO</strong> — 다른 DB의 <code>SELECT … INTO 새테이블</code>(테이블을 만드는 명령)이 아니다. 읽은 값을
+<strong>프로그램 안 변수에 담는다</strong>는 뜻이다.</li>
+<li><strong>결과 확인</strong> — 조회 실패가 예외로 튀어나오지 않는다. 문장이 끝난 직후 시스템이 남긴
+성공·실패 코드를 프로그램이 직접 확인한다.</li>
+<li><strong>NULL이 거의 없다</strong> — SE11로 만든 테이블의 컬럼은 비어 있는 대신 초기값(0·공백)으로
+채워진다.</li>
+</ul>
+</details></section><section class="lblock"><h2>SAP 항공 데모 테이블</h2>
 <p>SAP에는 학습·예제용 <strong>항공 예약 데모 데이터</strong>가 들어 있다. 관계까지 잘 갖춰져 있어
-SELECT·조인 연습에 안성맞춤이다.</p>
+SELECT·JOIN 연습에 안성맞춤이다.</p>
 <table>
 <thead>
 <tr>
 <th>테이블</th>
-<th>내용</th>
-<th>예</th>
+<th>우리말 호칭</th>
+<th>키 필드</th>
+<th>그 밖의 주요 컬럼</th>
 </tr>
 </thead>
 <tbody><tr>
 <td><code>SCARR</code></td>
 <td>항공사</td>
-<td>대한항공(KE)</td>
+<td><code>MANDT</code>·<code>CARRID</code></td>
+<td><code>CARRNAME</code>(항공사 이름)·<code>CURRCODE</code>(통화)</td>
 </tr>
 <tr>
 <td><code>SPFLI</code></td>
-<td>항공편 스케줄(노선)</td>
-<td>KE 인천→나리타</td>
+<td>노선</td>
+<td><code>MANDT</code>·<code>CARRID</code>·<code>CONNID</code></td>
+<td><code>CITYFROM</code>·<code>CITYTO</code>(출발·도착 도시)·<code>FLTIME</code>(비행 시간)</td>
 </tr>
 <tr>
 <td><code>SFLIGHT</code></td>
-<td>항공편(날짜별 좌석·예약)</td>
-<td>KE 0701, 2026-06-23</td>
+<td>운항편</td>
+<td><code>MANDT</code>·<code>CARRID</code>·<code>CONNID</code>·<code>FLDATE</code></td>
+<td><code>SEATSMAX</code>(총 좌석)·<code>SEATSOCC</code>(예약된 좌석)·<code>PRICE</code>(운임)</td>
 </tr>
 </tbody></table>
-<p>이 셋은 &quot;항공사 → 노선 → 운항편&quot;으로 이어지는 master-detail 구조다. 앞으로 SELECT·
-WHERE·JOIN을 이 데이터로 연습한다.</p>
-</section><section class="lblock"><h2>Open SQL은 Client를 자동으로 챙긴다</h2>
-<p><a href="CH07-L01.html">Chapter 07 · Transparent Table</a>에서 본 <button class="term" type="button" data-term="MANDT">MANDT</button>(클라이언트)를 기억하는가? 업무 테이블의 첫 키는 보통 MANDT다.
-<strong><button class="term" type="button" data-term="Open SQL">Open SQL</button>은 SELECT할 때 현재 로그인 client의 행만 자동으로</strong> 가져온다. WHERE에
+<p>세 테이블에 계속 나오는 이름 셋만 익혀 두면 편하다. <code>CARRID</code>는 항공사 코드(<code>KE</code>·<code>LH</code>),
+<code>CONNID</code>는 노선 번호(<code>0701</code>), <code>FLDATE</code>는 운항 날짜다. 키 맨 앞의 <code>MANDT</code>는
+<a href="CH07-L01.html">Chapter 07 · Transparent Table</a>에서 본 그 필드다.</p>
+<p>이 셋은 &quot;항공사 → 노선 → 운항편&quot;으로 이어지는 master-detail 구조다. master(위)가 큰
+단위이고 detail(아래)이 거기 딸린 세부 항목이라는 뜻이다. 항공사 하나에 노선이 여러 개
+매달리고, 노선 하나에 날짜별 운항편이 여러 개 매달린다. 앞으로 SELECT·WHERE·JOIN을 이
+데이터로 연습한다.</p>
+<blockquote class="cw">
+<p>⚠️ <strong>KE(대한항공)는 우리가 각색한 값이다.</strong> SAP 표준 데모 데이터에 들어 있는 항공사는
+<code>AA</code>·<code>LH</code>·<code>UA</code> 같은 코드이고 <code>KE</code>는 없다. 이 사이트의 체험 위젯에는 KE 데이터를 넣어 두어
+예제가 그대로 돌아가지만, 실제 시스템에서 같은 코드를 치면 한 건도 안 나올 수 있다.
+<code>SE16</code>으로 <code>SCARR</code>·<code>SPFLI</code>·<code>SFLIGHT</code>를 열어 <strong>내 시스템에 실제로 있는 CARRID·CONNID·FLDATE를
+확인해 바꿔 넣자.</strong></p>
+</blockquote>
+</section><section class="lblock"><h2>Open SQL은 client를 자동으로 챙긴다</h2>
+<p><a href="CH07-L01.html">Chapter 07 · Transparent Table</a>에서 업무 테이블의 첫 키가 보통 <button class="term" type="button" data-term="MANDT">MANDT</button>였던 것을 기억하는가?
+MANDT는 client 번호를 담는 컬럼이다. <strong>client</strong>란 한 시스템 안을 회사·조직 단위로 나눈
+독립된 데이터 공간이다. 같은 테이블이라도 client 100의 행과 client 200의 행은 서로 남남이다.
+이렇게 행이 client별로 나뉘는 테이블을 <strong>client 종속</strong> 테이블이라 하고, 이 레슨 제목의
+&#39;종속&#39;이 바로 그 뜻이다.</p>
+<p><strong><button class="term" type="button" data-term="Open SQL">Open SQL</button>은 SELECT할 때 현재 로그인한 client의 행만 자동으로</strong> 가져온다. WHERE에
 <code>MANDT</code>를 적지 않아도 된다(적지 않는다).</p>
-<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> sflight <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> gt_flight.   <span class="tok-com">" 현재 client 행만 자동 조회</span></code></pre></div></div>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> gt_flight <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> sflight.   <span class="tok-com">" 읽은 행을 담아 둘 그릇</span>
+
+<span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> sflight <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> gt_flight.   <span class="tok-com">" 현재 client 행만 자동 조회</span></code></pre></div></div>
+<p><code>*</code>·<code>INTO TABLE</code>·<code>gt_flight</code>가 각각 무슨 뜻인지는 지금 몰라도 된다. <strong>다음 레슨에서 이 한
+문장을 통째로 뜯는다.</strong> 여기서 볼 것은 딱 하나, WHERE에 <code>MANDT</code>가 없다는 점이다.</p>
 <blockquote>
 <p>💡 그래서 Open SQL 코드에는 보통 MANDT가 안 보인다. 시스템이 뒤에서 &quot;지금 이 방
 (client)의 데이터만&quot;으로 한정해 준다.</p>
+</blockquote>
+<p>이 자동 필터는 <strong>client 종속 테이블</strong>에 적용된다. 첫 키가 MANDT가 아닌 테이블(모든 client가
+함께 쓰는 설정 표 등)도 드물게 있는데, 그런 테이블은 애초에 나뉘어 있지 않아 걸러 낼 것도 없다.</p>
+<blockquote class="cw">
+<p>⚠️ 자동으로 챙겨 주는 건 <strong>client 하나뿐이다.</strong> 이 사용자가 이 데이터를 봐도 되는지(권한)는
+Open SQL이 검사하지 않는다. 권한 확인은 프로그램이 직접 해야 하고, 그 방법은
+<a href="CH15-L07.html">Chapter 15 · 권한 검증 기초</a>에서 배운다. 지금은 &quot;client는 자동, 권한은 수동&quot;만
+기억해 두자.</p>
 </blockquote>
 <p>아래에서 <strong>현재 로그인 client를 바꿔 가며</strong> 같은 SELECT를 실행해 보자. 같은 코드인데
 결과가 달라지는 장면, 즉 MANDT를 적지 않아도 시스템이 챙기는 장면을 직접 확인할 수 있다.</p>
@@ -87,11 +142,14 @@ WHERE·JOIN을 이 데이터로 연습한다.</p>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
 <li><strong>WHERE에 <button class="term" type="button" data-term="MANDT">MANDT</button> 직접</strong> → <button class="term" type="button" data-term="Open SQL">Open SQL</button>에선 불필요(오히려 피한다). 시스템이 챙긴다.</li>
-<li><strong>데모 데이터 없음</strong> → 교육 시스템에 데모 데이터가 없으면 강사 안내(생성 프로그램)를 따른다.</li>
+<li><strong>데모 데이터 없음</strong> → <code>SE16</code>으로 <code>SCARR</code>를 열었는데 비어 있다면 데모 데이터가 아직
+만들어지지 않은 것이다. <code>SE38</code>에서 <code>SAPBC_DATA_GENERATOR</code>를 실행하면 항공 데모 데이터가
+생성된다. 실행 권한이 없으면 관리자·강사에게 요청하고, 그때까지는 이 페이지의 체험
+위젯으로 연습해도 된다.</li>
 </ul>
 <hr>
-<p>읽을 대상(우리 <code>ZGUGUDAN</code>·표준 <code>SFLIGHT</code>)을 알았다. 이제 SELECT의 <strong>네 가지 핵심
-요소</strong>부터 차근차근 → 다음 레슨.</p>
+<p>읽을 대상(우리 <code>ZGUGUDAN</code>·표준 <code>SFLIGHT</code>)을 알았다. 이제 위 한 문장을 뜯어서, 손으로 넣어
+둔 구구단 18행부터 되찾아 온다 → 다음 레슨.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

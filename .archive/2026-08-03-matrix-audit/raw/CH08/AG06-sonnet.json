@@ -1,0 +1,68 @@
+{
+  "agent": "AG06",
+  "model": "sonnet",
+  "target": "CH08",
+  "persona_ack": "20년차 SAP ABAP 아키텍트(ECC~S/4HANA 개발·운영·성능·이관 경험, 후배 교재 기술 검수 다수 수행)로서 CH08(Open SQL 기본 조회) 레슨 7편과 챕터 메타를 감사했다.",
+  "method": "지정된 8개 파일을 Read 도구로 전문 통독. 웹 검색·외부 네트워크·다른 감사자 산출물·과거 감사 아카이브 열람 없이, classic ABAP Open SQL 문법과 DDIC 동작(필드 NOT NULL 기본값, INTO/APPENDING 의미론, sy-subrc/sy-dbcnt 동작, 표준 항공 데모 모델 구조 등)에 대한 자체 지식만으로 사실 오류·예시 적절성·위험한 생략·안티패턴을 판정했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L05.md",
+      "quote": "SELECT * FROM spfli INTO TABLE gt_spfli WHERE fltime IS NULL.",
+      "category": "예시 적절성 / 위험한 생략",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "WHERE fltime IS NULL 예시가 일반 업무 테이블(SPFLI)의 평범한 필드에 대한 단일 테이블 SELECT로 제시됐다. ABAP DDIC 필드는 'Initial Value' 설정에 따라 기본적으로 NOT NULL이라(값이 없으면 0·공백 같은 초기값이 들어감), 이런 조건은 실무에서 걸리는 행이 거의 없을 수 있다. IS NULL이 실제로 의미를 갖는 대표 상황은 LEFT OUTER JOIN에서 매치되지 않은 쪽 컬럼이다.",
+      "evidence": "바로 위 문장에서 'NULL은 ABAP 초기값(0·공백)과 다르다. DB에 값 자체가 존재하지 않는 특별 상태다'라고 정확히 짚어 놓고도, 뒤따르는 코드 예시는 그 특별 상태가 일반 단일 테이블 조회에서 흔히 발생하는 것처럼 보여준다. FLTIME 필드가 예외적으로 nullable로 정의돼 있지 않다면 이 SELECT는 상시 0건일 가능성이 있다. 이 필드의 실제 SE11 nullable 설정은 시스템에서 직접 확인하지 못해 confidence는 추정으로 표기한다.",
+      "suggestion": "단일 테이블의 일반 필드 대신 (추후 JOIN 챕터의) LEFT OUTER JOIN에서 미매치 컬럼이 NULL이 되는 상황으로 예시를 옮기거나, 최소한 '이 필드가 nullable로 정의된 경우에 한해'라는 전제를 본문에 명시한다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L03.md",
+      "quote": "**키 전체**로 조회하면 정확히 한 행이 보장된다.",
+      "category": "사실 정확성(표현)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "SELECT SINGLE에 전체 키를 지정해도 '정확히 한 행이 보장'되는 것은 아니다. 보장되는 것은 '최대 한 행(유일성)'이지 '존재(그 행이 반드시 있음)'가 아니다. 해당 키 조합의 데이터가 없으면 결과 0건, sy-subrc <> 0이 된다.",
+      "evidence": "바로 아래 예제 코드가 IF sy-subrc = 0으로 분기해 결과 없음 가능성에 스스로 대비하고 있어, 코드와 설명 문장이 미묘하게 어긋난다. 입문자가 문장만 읽으면 '키를 다 채우면 무조건 결과가 나온다'로 오해할 소지가 있다.",
+      "suggestion": "'정확히 한 행이 보장된다'를 '두 행 이상 나오는 일은 없다(유일성 보장)' 또는 '있다면 정확히 한 행'처럼 존재와 유일성을 분리해 표현한다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L01.md",
+      "quote": "SAP이 기본 제공하는 **풍부한 표준 데이터**로도 한다.",
+      "category": "사실 정확성(예시 데이터 출처)",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "SCARR 예시로 든 '대한항공(KE)'과 이후 레슨들에서 반복되는 KE/0701/2026-06-23 조합이, SAP가 실제로 기본 배포하는 항공 데모 데이터(SCARR/SPFLI/SFLIGHT)의 표준 구성인지 확신하기 어렵다. 국제적으로 흔히 인용되는 기본 데모 항공사는 AA·LH·UA·SQ·JL 등이며, KE가 모든 시스템의 기본 세트에 포함되는지는 시스템·생성 프로그램(SAPBC_DATA_GENERATOR 등)에 따라 달라질 수 있다.",
+      "evidence": "본문이 'SAP이 기본 제공하는 풍부한 표준 데이터'라고 단정적으로 서술한다. 이 사이트의 체험은 시뮬레이션(embed)이라 실제 SAP 시스템과의 불일치가 학습에 큰 지장은 없지만, 문장 자체는 어느 SAP 시스템에서든 이 데이터가 그대로 있다는 인상을 준다.",
+      "suggestion": "'SAP이 기본 제공하는' 대신 '이 코스가 학습용으로 준비한(SAP 표준 항공 데모 모델 기반)' 식으로 한 단계 완충하거나, 실제 배포 데이터와 일치하는지 확인 후 문구를 확정한다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L06.md",
+      "quote": "SELECT * FROM sflight INTO TABLE gt_flight WHERE planetype = '747-400'.",
+      "category": "안티패턴(교정 누락)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L02에서 'SELECT * 남용 → 큰 테이블 전체는 성능 위험. WHERE로 줄인다'고 명확히 경고했지만, 이후 L03~L06의 실습 코드 대부분이 계속 SELECT *를 기본형으로 사용해 그 교훈이 코드 예시로는 보강되지 않는다.",
+      "evidence": "L06은 특히 '무엇으로 찾느냐가 속도를 가른다'는 성능 주제를 다루는 레슨인데도 제시된 예시가 SELECT *다. 프로젝션 관점의 성능 습관이 이후 예시로 재확인되지 않아, 입문자에게는 'SELECT *가 기본형'이라는 인상이 누적될 수 있다.",
+      "suggestion": "L03~L06 중 최소 한 곳에서 WHERE와 함께 필드를 명시한 SELECT 예시를 섞어 L02의 교훈을 코드로도 재확인시킨다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH08은 classic Open SQL 기본 조회(SELECT 4요소·SINGLE/INTO TABLE/ENDSELECT/UP TO·INTO 대상·WHERE 상세·키/인덱스·조회 실패)를 다루는 7개 레슨으로, 문법·흐름 설명은 전반적으로 정확하고 견고하다. sy-dbcnt를 누적 행 수로 오인하기 쉬운 함정, SELECT SINGLE 실패 시 Work Area에 이전 값이 남는 함정, 중첩 SELECT 금지, S/4HANA에서 인덱스 남용 주의 등 전문가가 짚을 만한 위험 요소들을 이미 스스로 잘 짚고 있다. 다만 (1) WHERE...IS NULL 예시가 NOT NULL이 기본인 일반 DDIC 필드에 대한 단일 테이블 조회로 제시돼 실무 대표성이 낮고, (2) 'SELECT SINGLE + 전체 키 = 정확히 한 행 보장'이라는 표현이 존재와 유일성을 혼동할 여지가 있으며, (3) SCARR 예시의 '대한항공(KE)'을 SAP 기본 제공 데이터로 단정한 부분은 확인이 필요하고, (4) L02가 경고한 SELECT * 남용이 이후 예시 코드에서 반복되며 교정되지 않는다. 모두 사고로 이어질 수준은 아닌 경미 수정 대상이다."
+  }
+}

@@ -1,14 +1,16 @@
 /* se11-create-entries — SE11 Create Entries 손입력 훈련기 엔진.
    config = window.CE_CFG { table, key:['DAN','MUL'], clients:['100','200'], seed:[{client,dan,mul,result}] }.
    저장: 키(현재 client+DAN+MUL) 중복이면 거부. RESULT != DAN*MUL 이면 저장은 되나 경고(값 미검증).
-   클라이언트 칩 전환 → 그 client 행만 보임(MANDT 분리). Table Contents 표시. */
+   클라이언트 칩 전환 → 그 client 행만 보임(MANDT 분리). Table Contents 표시.
+   seed는 선택 — 비우면 빈 테이블에서 시작한다(키 중복 실험을 학습자가 직접 만들어 겪게).
+   #ce-reset 버튼이 있으면 '처음으로'(seed 상태 복원) 연결. */
 (function () {
   var cfg;
   try { cfg = JSON.parse(document.getElementById('ce-cfg').textContent); }
   catch (e) { cfg = { table: 'ZTABLE', clients: ['100', '200'], seed: [] }; }
   var clients = cfg.clients || ['100', '200'];
   var cur = clients[0];
-  var rows = (cfg.seed || []).map(function (r) { return { client: String(r.client), dan: +r.dan, mul: +r.mul, result: +r.result }; });
+  var rows = seedRows();   // seed 없으면 빈 테이블에서 시작(레슨 서술과 동일)
 
   var $ = function (id) { return document.getElementById(id); };
   var iDan = $('ce-dan'), iMul = $('ce-mul'), iRes = $('ce-res'),
@@ -76,10 +78,25 @@
     post();
   }
 
+  function seedRows() {
+    return (cfg.seed || []).map(function (r) { return { client: String(r.client), dan: +r.dan, mul: +r.mul, result: +r.result }; });
+  }
+
+  // 처음으로 — seed 상태(보통 빈 테이블)로 되돌린다. 실험을 몇 번이든 다시 할 수 있게.
+  function reset() {
+    rows = seedRows();
+    cur = clients[0];
+    iDan.value = ''; iMul.value = ''; iRes.value = '';
+    renderChips(); renderTable();
+    msg('idle', '처음으로 되돌렸습니다 — 빈 테이블에서 다시 시작해 보세요.');
+    post();
+  }
+
   function post() { try { if (document.documentElement.clientWidth < 60) return; var el = document.querySelector('.wrap'); var h = Math.ceil(el ? el.getBoundingClientRect().height : document.body.scrollHeight) + 6; parent.postMessage({ sda: 'embed-height', h: h }, '*'); } catch (e) {} }
 
   $('ce-save').addEventListener('click', save);
   var fb = $('ce-fill'); if (fb) fb.addEventListener('click', fill2and3);
+  var rb = $('ce-reset'); if (rb) rb.addEventListener('click', reset);
   [iDan, iMul, iRes].forEach(function (i) { i.addEventListener('keydown', function (e) { if (e.key === 'Enter') save(); }); });
   renderChips(); renderTable(); msg('idle', 'DAN·MUL·RESULT를 넣고 저장해 보세요. 같은 키를 두 번 넣거나, 계산이 틀린 값을 넣어 보세요.');
   window.addEventListener('load', post); window.addEventListener('resize', post); post();

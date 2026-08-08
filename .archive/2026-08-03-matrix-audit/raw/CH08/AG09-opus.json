@@ -1,0 +1,57 @@
+{
+  "agent": "AG09",
+  "model": "opus",
+  "target": "CH08",
+  "persona_ack": "나는 발견자 AG09 — ABAP 정적 검사기를 시늉하는 코드 전용 감사자다. CH08의 산문·표·콜아웃은 무시하고 ```abap 코드 블록만 줄 단위로 읽어, (1) 활성화 차단급 오류(미선언 변수·마침표 누락·타입 불일치·없는 구문·시그니처), (2) 네이밍 규약(CH01～09 = gv_/gs_/gt_, it_는 Header Line 전용, pa_/so_, ty_/ts_/tt_), (3) 경계 규약(CH01～17 modern 문법 금지, CH01～18 New Open SQL 금지), (4) 주석·출력 문자열의 명백한 오류만 판정했다. 빈 줄·정렬 같은 스타일 선호는 결함으로 세지 않았고, 실행 환경이 없으므로 컴파일 확신 대신 정적 판단으로 confidence를 정직하게 표기했다. 블라인드 감사로 다른 감사자 산출물·과거 감사 기록은 열지 않았다.",
+  "method": "Read 도구로 대상 8개 파일 전문을 읽고, Grep(정규식)으로 (a) ```abap 블록 개수 집계(7개 파일 합계 17블록), (b) DATA/DATA: 선언문 전수 추출, (c) modern 문법·New Open SQL 흔적(@host·인라인 DATA()·VALUE #(·NEW·+=·|{ }|·SELECT 필드 콤마) 전수 검색, (d) 인용문 앵커의 원문 일치 확인을 수행했다. 검색·읽기 범위는 content/abap/CH08/ 내부로 한정했고 외부 네트워크·다른 감사 산출물은 사용하지 않았다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L07.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH08/CH08-L07.md",
+      "quote": "LOOP AT gt_gugu INTO gs_line.",
+      "category": "미선언 변수",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "LOOP의 Work Area `gs_line`이 CH08 어디에도 선언돼 있지 않다. 이 블록은 SELECT→IF/ELSE→LOOP까지 갖춘 완결형이라 입문자가 그대로 붙여 넣으면 \"gs_line is not defined\"로 활성화(Activate)가 막힌다.",
+      "evidence": "CH08 7개 레슨의 DATA 선언은 총 4건뿐이다 — L02:30 `DATA gt_gugu TYPE TABLE OF zgugudan.`, L03:21 `DATA gs_flight TYPE sflight.`, L04:30 `DATA: gv_occ TYPE sflight-seatsocc,`(+gv_max), L05:18 `DATA gv_carr TYPE sflight-carrid VALUE 'KE'.` (Grep 전수 확인). `gs_line`은 이 목록에 없고 L07에서 처음이자 유일하게 등장한다. 같은 성격의 누락이 `gt_flight`(L01:40에서 첫 사용 후 L03·L04·L06에서 계속 쓰이나 선언 없음)와 `gt_spfli`(L05:46)에도 있다. 즉 챕터가 선언을 보여주는 곳(gt_gugu·gs_flight·gv_occ/gv_max·gv_carr)과 생략하는 곳이 뒤섞여 있어, 학습자는 어느 쪽이 규칙인지 알 수 없다.",
+      "suggestion": "L07 첫 블록 맨 위에 `DATA gs_line TYPE zgugudan.`(챕터 규약상 gs_ 접두어 유지)을 추가한다. 같은 원칙으로 `gt_flight`는 최초 사용처인 L01 블록에 `DATA gt_flight TYPE TABLE OF sflight.`를, `gt_spfli`는 L05 IS NULL 블록에 `DATA gt_spfli TYPE TABLE OF spfli.`를 붙여 챕터 전체에서 '쓰기 전에 선언한다'를 일관되게 보인다."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH08/CH08-L03.md",
+      "quote": "WHERE carrid = 'KE' AND connid = '0701' AND fldate = '20260623'.",
+      "category": "예제 데이터 불일치",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "코드가 조회하는 키 값 'KE'/'0701'/'20260623'은 SAP 표준 항공 데모 데이터(SCARR/SPFLI/SFLIGHT)에 존재하지 않는 값으로 보인다. 문법은 정상이지만 실 시스템에서 실행하면 sy-subrc=4로 IF 블록이 통째로 건너뛰어져, 입문자는 '내가 코드를 잘못 썼나'로 오해한다.",
+      "evidence": "표준 데모 데이터의 SCARR-CARRID는 AA·AZ·DL·JL·LH·QF·SQ·UA 계열이고 대한항공 'KE'는 포함되지 않는다. SPFLI-CONNID도 LH 0400·AA 0017 같은 값이라 '0701'과 맞지 않는다. FLDATE는 데모 데이터 생성 프로그램이 시스템 일자를 기준으로 만들어 넣으므로 '20260623' 같은 절대 일자 하드코딩은 거의 일치하지 않는다. 같은 상수 조합이 L03:25·L04:19·L04:35·L06:24에 반복되고 L03:39·L04:20·L04:45의 `WHERE carrid = 'KE'`, L05:33의 `AND carrid IN ('KE', 'LH', 'AA')`까지 이어진다. 특히 L04:53은 `WHERE carrid = 'LH'`로 표준 항공사를 쓰고 있어 챕터 안에서 표준값과 비표준값이 섞여 있다(환경 확인 불가라 confidence=추정).",
+      "suggestion": "실행 검증이 가능한 표준값으로 바꾼다 — 예: `WHERE carrid = 'LH' AND connid = '0400'`. 일자는 하드코딩 대신 `SELECT SINGLE`을 키 앞부분만 쓰거나, 산문에서 '날짜는 각자 시스템의 SFLIGHT 값으로 바꿔 넣으라'고 명시한다. 'KE'를 교육 효과 때문에 유지하려면 L01의 데모 테이블 표에서 KE를 표준 제공 데이터가 아니라 '설명용 가상 예'로 분리 표기하고, 실행 코드에는 표준 항공사를 쓴다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH08/CH08-L05.md",
+      "quote": "SELECT * FROM spfli INTO TABLE gt_spfli WHERE fltime IS NULL.",
+      "category": "예제 타당성",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "IS NULL 설명 예제로 고른 컬럼 SPFLI-FLTIME이 부적절하다. 표준 DDIC의 SPFLI-FLTIME은 INT4(비행시간, 분) 필드로 NOT NULL·초기값이 걸려 있어, 이 SELECT는 어떤 시스템에서 돌려도 항상 0건(sy-subrc=4)이다. 'NULL 행을 가려낸다'는 문장을 코드로 확인할 방법이 없다.",
+      "evidence": "SPFLI의 FLTIME은 데이터 요소 S_FLTIME 기반 INT4다. DDIC 투명 테이블 필드는 초기값 설정으로 NOT NULL 제약이 붙는 것이 표준이라, 실제 NULL은 (a) 기존 데이터가 있는 테이블에 새 필드를 append했을 때, (b) LEFT OUTER JOIN의 미매칭 쪽 컬럼에서 주로 나타난다. 바로 위 본문도 'NULL은 ABAP 초기값(0·공백)과 다르다'고 정확히 구분해 놓았는데, 정작 코드는 그 차이를 눈으로 볼 수 없는 컬럼을 골랐다. DDIC 초기값 플래그는 시스템별로 다를 수 있어 confidence=추정.",
+      "suggestion": "IS NULL은 CH13 JOIN(특히 LEFT OUTER JOIN) 맥락에서 결과셋에 실제 NULL이 생기는 장면과 함께 보여주는 편이 정직하다. CH08에 남긴다면 코드 아래에 '표준 테이블 컬럼은 NOT NULL이라 이 조회는 보통 0건이다 — NULL은 주로 JOIN 결과나 나중에 추가된 필드에서 만난다'는 한 줄을 붙여, 결과가 비는 것이 정상임을 미리 알린다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH08의 ```abap 블록 17개를 줄 단위로 정적 검사했다. (1) 순수 문법면은 매우 깨끗하다 — 문장 마침표 누락 0건, 존재하지 않는 구문 0건이며 `SELECT SINGLE ... INTO gs_` / `INTO TABLE` / `INTO (v1, v2)` / `INTO CORRESPONDING FIELDS OF TABLE` / `APPENDING TABLE` / `INTO TABLE ... UP TO 10 ROWS` / `SELECT...ENDSELECT` 모두 classic 절 순서를 지켰다. 특히 L02에서 필드 일부만(`dan mul result`) 읽을 때 `INTO CORRESPONDING FIELDS OF TABLE`을 쓴 것은 client 종속 테이블의 선두 MANDT 때문에 위치 기반 INTO가 어긋나는 함정을 정확히 피한 처리다. (2) 네이밍 규약 위반 0건 — CH08은 CH01～09 구간이라 전역 접두어가 맞고 등장 변수 gt_gugu·gt_flight·gt_spfli·gs_flight·gs_line·gv_occ·gv_max·gv_carr가 전부 gv_/gs_/gt_를 따른다. 오용 위험이 큰 it_·lv_/ls_/lt_는 한 건도 없다. (3) 경계 규약 위반 0건 — 인라인 DATA()·VALUE #(·NEW·+=·문자열 템플릿, New Open SQL의 @host 변수·필드 콤마를 전수 검색했으나 검출 0. L05:18의 `VALUE 'KE'`는 DATA의 classic VALUE 부가어이지 VALUE 생성자 연산자가 아니므로 정상이며, L04의 `INTO (gv_occ, gv_max)`와 L05의 `IN ('KE', 'LH', 'AA')` 안의 콤마도 classic이 원래 허용하는 자리라 위반이 아니다. (4) 주석·출력 문자열은 본문과 일치한다(L02의 `\" 18`은 CH07에서 넣은 2·3단 18행과 맞고, L06의 `\" 빠름: 키(carrid·connid·fldate)로 조회`도 SFLIGHT 키 구성과 맞다). 남은 결함은 실행 가능성 쪽 3건이다 — Work Area `gs_line` 미선언(+`gt_flight`·`gt_spfli` 선언 누락)으로 완결형 블록이 활성화에서 막히는 점, 키 상수 'KE'/'0701'/'20260623'이 표준 데모 데이터와 어긋나 챕터 예제 다수가 0건으로 끝나는 점, IS NULL 예제가 NOT NULL 컬럼이라 개념을 눈으로 확인할 수 없는 점. 셋 다 구조·서술을 손대지 않고 DATA 몇 줄 추가와 상수 교체로 해결되므로 '경미 수정'으로 본다."
+  }
+}

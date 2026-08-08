@@ -1,0 +1,154 @@
+{
+  "agent": "AG05",
+  "model": "opus",
+  "target": "CH05",
+  "persona_ack": "20년차 학습 교재·코스 설계 전문가로서 CH05를 교수설계 관점(챕터 구성·레슨 분할·섹션 흐름·복습/예습 장치·불편→해결 서사·인지 부하)에서만 감사했다. 문법 사실검증·표기 규칙 준수 여부는 내 소관이 아니므로 학습 효과를 직접 해치는 경우에만 다뤘고, 흐름 5단계의 자연스러운 변형은 결함으로 보지 않았다.",
+  "method": "Read 도구로 대상 6개 파일 전문을 통독하고, 각 레슨의 front-matter(introduces·prereq·prevRel·foreshadow)와 본문 섹션 제목·코드 블록·::embed:: 배치를 레슨 간 교차 대조했다. 개념 수·임베드 수·점검 항목 수는 파일 본문에서 직접 세었다. 외부 네트워크·웹 검색·다른 감사 산출물은 사용하지 않았다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L05.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L05.md",
+      "quote": "introduces: []\nprereq: [\"CH05-L01\"]",
+      "category": "챕터 구성 · 복습 장치",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'캡스톤'을 표방한 마지막 레슨이 챕터 4개 레슨 중 L01만 통합한다. L02(DDIC Structure)·L03(중첩·.INCLUDE·.APPEND)·L04(통째 대입·CLEAR·MOVE-CORRESPONDING)는 캡스톤에서 한 번도 재사용되지 않아, 챕터를 닫는 시점에 인출(retrieval) 연습을 받는 개념이 첫 레슨 것뿐이다.",
+      "evidence": "front-matter의 prereq가 CH05-L01 하나뿐이고 introduces는 비어 있다. 본문 코드도 BEGIN OF ~ END OF로 gs_line을 선언해 DO 루프로 채우는 L01 수준에 머물며, zst_person(L02)·중첩 접근(L03)·MOVE-CORRESPONDING/CLEAR(L04)는 코드에도 서술에도 등장하지 않는다. 결과적으로 챕터 중반 세 레슨은 마지막 회수 없이 끝난다.",
+      "suggestion": "캡스톤 코드에 L04의 CLEAR·통째 대입(예: 직전 줄을 gs_prev = gs_line으로 보관한 뒤 CLEAR)이나 L02의 DDIC Structure 타입 사용을 최소 하나씩 엮고, '정리' 절에 로컬/DDIC/재사용/다루기 4갈래 회수 체크리스트를 붙인다. 통합이 어렵다면 제목의 '캡스톤' 표기를 '연결 레슨'류로 정직하게 낮춘다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L05.md",
+      "quote": "출력은 됐지만, 72줄을 **동시에 들고 있다가**",
+      "category": "인지 부하 · 예제 정합성",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "레슨 코드가 만드는 줄 수는 9줄(단을 2로 고정한 DO 9 TIMES)인데, 다음 챕터로 넘기는 불편 진술에서 근거 없이 '72줄'이 등장한다. 72(=2단～9단 × 9)의 출처가 본문에 없어 입문자는 자기 계산이 틀렸다고 느끼고, 정작 가장 중요한 전환점(한 행의 한계 → Internal Table)에서 주의가 숫자 검증으로 새어 나간다.",
+      "evidence": "같은 레슨이 '화면 출력은 9줄 쌓이지만'이라고 명시하고 회차 표도 1～9까지만 제시한다. 코드에는 gs_line-dan = 2로 단을 고정하는 줄만 있고 단을 도는 반복은 없다. 그런데 두 섹션 뒤에서 72줄, 마지막 '정리'에서 '72개든 1000개든'으로 숫자가 바뀐다.",
+      "suggestion": "'지금 코드는 2단만 돌려 9줄이지만, 2단～9단을 다 돌리면 72줄이 된다' 정도의 한 문장을 넣어 9→72 전환 근거를 밝히거나, 이 레슨 안에서는 숫자를 9줄로 통일한다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L01.md",
+      "quote": "introduces: [\"Structure\", \"BEGIN OF / END OF\", \"Work Area\", \"Component(-) 접근\", \"TYPES(Structure 모양 재사용)\", \"LIKE(동일 모양 선언)\"]",
+      "category": "인지 부하 · 레슨 분할",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L01 한 레슨에 신규 개념 6개와 체험 임베드 7개가 몰려 있다. 같은 챕터의 L02는 1개·L03은 2개·L04는 2개·L05는 0개를 도입하므로 부하가 첫 레슨에 심하게 편중되고, 개념 사이를 끊어 주는 중간 정리·즉시 확인 장치가 없어 입문자가 어디까지 소화했는지 스스로 점검할 지점이 없다.",
+      "evidence": "front-matter introduces가 6개 항목이고, 본문 임베드는 S07·S02·S03·S01·S06·S04·S05로 7개다(L02 2개, L03·L04·L05 각 1개). 특히 'TYPES로 빼두기'와 'LIKE'는 서로 독립된 선언 방식인데 Structure 선언·Component 접근을 막 배운 직후 연달아 나오고, S03과 S01은 사이에 설명 문장 없이 연속으로 붙어 있다.",
+      "suggestion": "LIKE 절을 별도 레슨(또는 심화 접기)으로 분리하거나, 최소한 'TYPES로 빼두기' 절 끝에 3～4줄 미니 정리와 즉시 확인 문항을 넣어 개념 덩어리를 끊는다. 연속 배치된 임베드 사이에는 무엇을 보라는 안내 문장을 한 줄씩 넣는다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L01.md",
+      "quote": "## 흔한 실수와 점검\n\n- **END OF 이름** → `END OF gs_person.` 처럼 같은 이름으로 닫는다.",
+      "category": "섹션 흐름(실수·주의 단계)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "챕터에서 가장 무거운 레슨인데 '실수·주의' 단계가 항목 하나로 사실상 비어 있다. 신규 개념 6개를 쏟아낸 뒤 회수되는 오류 유형이 END OF 이름 하나뿐이라, 흐름의 네 번째 단계가 형식만 남았다.",
+      "evidence": "L02·L03·L04는 모두 '흔한 실수와 점검'에 3개 항목을 갖췄는데 L01만 1개다. 정작 이 레슨에서 입문자가 가장 자주 틀리는 지점 — Component 접근을 밑줄(gs_person_name)로 쓰는 실수, DATA: 체인에서 쉼표와 마침표 위치, TYPE과 LIKE의 혼동 — 은 어느 것도 점검 항목으로 회수되지 않는다.",
+      "suggestion": "Component 접근 기호는 하이픈(-), DATA 체인 구두점(항목은 쉼표·마지막만 마침표), TYPE↔LIKE 구분(LIKE는 모양만·값은 안 넘어옴) 3개를 점검 항목으로 추가한다. 본문에서 이미 다룬 LIKE 초기값 오개념도 여기서 한 번 더 회수하면 정착률이 올라간다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L02.md",
+      "quote": "| **View** | ✅ | 뷰의 행 모양 |",
+      "category": "인지 부하 · 미정의 개념 노출",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'DDIC 타입으로 쓸 수 있는 것' 표가 아직 배우지 않은 DDIC 객체 4종(Structure 중첩·Transparent Table·View·Table Type)을 한 화면에 몰아 노출한다. 특히 View는 이 레슨의 예습(foreshadow) 선언에도 없고 본문 어디에도 한 줄 풀이가 없어 '뷰의 행 모양'이라는 설명이 입문자에게는 모르는 말로 모르는 말을 푸는 자기참조가 된다.",
+      "evidence": "front-matter foreshadow에는 Table Type·Internal Table(CH06)과 Transparent Table(CH07)만 선언돼 있고 View는 빠져 있다. 그런데 본문 표에는 View 행이 그대로 있고, 표 앞뒤 어느 문장도 View가 무엇인지 설명하지 않는다. 표 아래 심화 콜아웃(문자형 Structure에 sy-datum 통째 대입)까지 겹쳐 이 절의 미학습 정보 밀도가 레슨 중 가장 높다.",
+      "suggestion": "View 행을 빼거나, '이미 있는 테이블을 골라 조합해 보여 주는 가상 테이블(나중 챕터)' 수준의 한 줄 풀이를 붙이고 foreshadow에도 선언한다. 표 위에 '지금 쓸 것은 Data Element와 Structure 둘뿐, 나머지는 배울 때 다시 온다'는 안내를 두어 나머지 행의 인지 우선순위를 낮춘다."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L03.md",
+      "quote": "DDIC Structure 편집 화면에서 다른 Structure를 `.INCLUDE`로 포함하면, 그 Structure의 필드들이\n**평평하게(직접 필드처럼)** 들어온다.",
+      "category": "섹션 흐름(어떻게 쓰나 단계 누락)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "세 방식 중 중첩만 코드로 '어떻게 쓰나'가 제시되고, .INCLUDE와 .APPEND는 개념 설명과 비교표뿐이라 실제로 만드는 절차가 통째로 없다. 학습자는 이 레슨을 다 읽고도 SE11에서 손으로 재현할 수 없어, 흐름의 세 번째 단계가 두 방식에서 비어 있다.",
+      "evidence": "바로 앞 L02는 'SE11 → Data Type → Structure → ZST_PERSON → Create'처럼 실행 경로를 단계로 제시해 절차 패턴을 세워 놓았다. 반면 L03의 .INCLUDE 절은 'DDIC Structure 편집 화면에서'라는 한 마디로 끝나고, .APPEND 절도 어디서 어떤 메뉴로 만드는지가 없다. 임베드 S01은 세 방식의 모양·접근 경로 비교이지 생성 절차가 아니다.",
+      "suggestion": "SE11 Component 화면에서 필드명 자리에 .INCLUDE를 적고 타입 자리에 포함할 Structure 이름을 넣는 절차, .APPEND Structure 생성 경로를 L02와 같은 단계 표기로 3～4줄씩 추가한다."
+    },
+    {
+      "seq": 7,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L03.md",
+      "quote": "| 접근 | `ls-head-customer` | `ls-customer`(펼쳐짐) |",
+      "category": "일관성 · 예제 정합성",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "핵심 비교표와 설명 불릿이 이 레슨 어디에도 선언된 적 없는 변수 ls를 쓴다. 같은 레슨의 코드 예제는 gs_order이고 챕터 전체(L01·L02·L04·L05)도 gs_ 접두어로 통일돼 있어, 입문자는 ls가 새 문법인지 다른 예제의 변수인지 판단할 근거가 없다. 하필 이 표가 세 방식의 차이를 압축한 결론부라 오해가 그대로 굳는다.",
+      "evidence": "본문 코드 블록은 DATA: BEGIN OF gs_order로 선언하고 gs_order-head-customer로 접근하는데, 바로 아래 불릿('중첩은 ls-head-customer로 들어가지만…')과 비교표는 ls로 표기한다. ls의 선언문은 레슨 어디에도 없다.",
+      "suggestion": "표와 불릿의 ls를 코드와 같은 gs_order로 통일한다(gs_order-head-customer ↔ gs_order-customer). 다른 이름을 유지해야 한다면 표 앞에 그 변수를 선언하는 한 줄을 먼저 보여 준다."
+    },
+    {
+      "seq": 8,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L03.md",
+      "quote": "**`.APPEND`**(Append Structure)는 SAP **표준** Structure·테이블을 **직접 고치지 않고**, 내 필드를\n**별도 Structure로 덧붙인다.**",
+      "category": "인지 부하 · 도입 시점",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": ".APPEND는 'SAP 표준 오브젝트'와 '시스템 업그레이드'라는 배경이 있어야 필요성이 성립하는 개념인데, CH05 시점 학습자에게는 그 배경이 없다. 그런데도 번호 붙은 독립 절·비교 콜아웃·비교 임베드·흔한 실수 항목까지 정식 도입에 가까운 지면을 차지해, 필요성을 체감할 수 없는 개념이 레슨의 3분의 1을 점유한다.",
+      "evidence": "같은 챕터 L02의 foreshadow가 Transparent Table을 CH07로 예고하고 있어 이 시점엔 테이블조차 미학습이다. 본문도 '확장 주제, 자세히는 한참 뒤 챕터에서'로 유예하고 front-matter는 CH32를 예고하면서, 정작 비교표·임베드·점검 항목에는 계속 등장시켜 예고(L1)와 도입(L3) 사이에 어정쩡하게 걸쳐 있다.",
+      "suggestion": ".APPEND는 이름과 존재만 1～2문장으로 예고하고 비교 임베드·점검 항목에서는 빼는 편이 부하가 낮다. 이 레슨에 남긴다면 '표준 화면의 테이블에 회사 고유 필드를 하나 더 넣어야 하는데 원본을 고치면 업그레이드 때 사라진다'는 상황을 한 문장 사례로 먼저 제시해 필요성부터 세운다."
+    },
+    {
+      "seq": 9,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L04.md",
+      "quote": "DATA: gs_a TYPE zst_person,\n      gs_b TYPE zst_person.",
+      "category": "복습 장치 · 선수지식 선언",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L04의 첫 예제가 L02에서 만든 DDIC Structure zst_person을 아무 설명 없이 쓰는데, front-matter prereq는 CH05-L01만 선언하고 본문에도 출처를 되짚어 주는 문장이나 링크가 없다. 두 레슨 사이에 시간이 벌어진 학습자는 zst_person이 어디서 온 이름인지 확인할 단서가 없다.",
+      "evidence": "L04 front-matter는 prereq에 CH05-L01만 두었고, 본문 어디에도 L02 링크나 'SE11에서 만든 그 Structure'라는 상기가 없다. 대비되게 L05는 CH04 구구단 레슨과 디버거 레슨을 링크로 되짚고, L01·L02도 앞 챕터를 링크로 회수한다.",
+      "suggestion": "prereq에 CH05-L02를 추가하고, 코드 앞에 'DDIC Structure 레슨에서 만든 ZST_PERSON을 그대로 쓴다'는 한 줄과 링크를 넣는다."
+    },
+    {
+      "seq": 10,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\_chapter.md",
+      "quote": "intro: \"단일 값 변수가 난립한다. 관련된 값을 하나로 묶고 싶다.\"",
+      "category": "챕터 intro(동기 설계)",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "챕터 intro가 불편 한 문장 + 바람 한 문장으로 끝나고 본문도 같은 문장을 그대로 반복할 뿐이라, 챕터 단위의 '왜 배우나'가 사실상 없다. 이 챕터를 마치면 무엇을 할 수 있게 되는지(도착점)와 실무에서 Structure가 어디에 쓰이는지가 빠져 있어 동기 설계가 레슨 안으로만 미뤄져 있다.",
+      "evidence": "_chapter.md는 front-matter intro와 본문 한 줄이 완전히 같은 문장이고 그 밖의 서술이 없다. 반면 가장 강한 동기 장면(번호 붙은 변수 참사, 사람 3명 × 정보 10개 = 변수 30개)은 L01 안에만 존재한다. 다만 intro 필드가 로드맵 칩용 짧은 문구로 설계된 것일 수 있어 확실 판정은 보류한다.",
+      "suggestion": "L01의 '변수 30개' 같은 수치 장면을 챕터 본문으로 한 단락 끌어올리고, '이 챕터를 마치면 한 건(레코드)을 로컬·전역 양쪽으로 묶고 복사·초기화까지 할 수 있다'는 도착점 한 줄을 덧붙인다. intro 필드는 칩 길이 그대로 두어도 된다."
+    },
+    {
+      "seq": 11,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L02.md",
+      "quote": "- **그 외에는 전부 DDIC Structure를 권장.** 사용처가 워낙 다양해서 일일이 나눌\n  필요가 없다.",
+      "category": "레슨 간 정합성 · 판단 기준",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "레슨 하나를 통째로 들여 배운 로컬 Structure가 다음 레슨에서 '임시 묶음' 외에는 쓰지 말라는 취지로 축소된다. 그런데 '임시'의 기준이 제시되지 않아 학습자는 언제 BEGIN OF를 쓸지 판단할 수 없고, 직전 레슨을 왜 그렇게 길게 배웠는지도 흐려진다.",
+      "evidence": "'언제 로컬, 언제 DDIC?' 절은 로컬 쪽 기준을 '그 프로그램에서만 잠깐 쓰는 임시 묶음' 한 줄로만 두고 나머지는 전부 DDIC 권장으로 넘기며, 로컬이 적절한 구체 상황 예시는 하나도 없다. 실무 관행으로는 타당한 서술이지만, 판단 기준으로는 관찰 가능하지 않다.",
+      "suggestion": "로컬이 적절한 구체 사례 1～2개(예: 화면에 뿌리기 직전 한 줄 조립, 계산 중간 결과 묶음)를 붙여 기준을 관찰 가능하게 만들고, '문법은 똑같고 정의 위치만 다르다'는 연결을 한 번 더 명시해 L01 학습이 무의미해지지 않게 한다."
+    },
+    {
+      "seq": 12,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L01.md",
+      "quote": "gs_p2-name   = '손흥민'.\ngs_p2-age    = 32.",
+      "category": "예제 잡음",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "TYPES 재사용 예제에서 gs_p2만 amount를 채우지 않는데 그 이유가 본문 어디에도 없다. 의도가 초기값 대비라면 설명이 필요하고, 아니면 예제 누락으로 읽혀 학습자의 주의가 '타입 재사용'이라는 이번 절의 핵심에서 잠깐 벗어난다.",
+      "evidence": "같은 코드 블록에서 gs_p1과 gs_p3는 name·age·amount 셋을 모두 채우는데 gs_p2만 두 줄이다. 본문 설명은 '같은 타입으로 변수 여러 개'라는 재사용 포인트만 다루고 이 비대칭은 언급하지 않는다.",
+      "suggestion": "gs_p2에도 amount를 채워 대칭을 맞추거나, 주석으로 '금액은 안 넣었다 → 초기값 0.00이 된다'고 밝혀 바로 다음 절(LIKE의 초기값 설명)의 복선으로 쓴다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "보강 권장",
+    "summary": "동기 축은 강하다. 챕터를 여는 불편(번호 붙은 변수 참사)이 진짜 불편이고, L01 안에서 '모양 선언이 또 반복된다'는 2차 불편을 만들어 TYPES로 해소하는 내부 루프가 특히 잘 설계됐다. LIKE의 대표 오개념(값까지 복사된다)을 정면으로 깨 주는 점, L04를 억지 불편 대신 deepening으로 정직하게 선언한 점, L05가 '한 행이 한계'라는 다음 챕터의 필요성을 자연스럽게 세우는 점도 우수하다. 다만 구조적으로 세 가지가 걸린다. ① 캡스톤이 L02～L04를 전혀 회수하지 않아 챕터를 닫는 시점의 인출 연습이 첫 레슨 내용뿐이다. ② 신규 개념 6개·임베드 7개가 L01에 몰린 반면 그 레슨의 '흔한 실수와 점검'은 단 1줄이라 부하와 회수가 정확히 반대로 놓였다. ③ L03의 .INCLUDE·.APPEND는 '어떻게 쓰나' 절차가 통째로 비어 있어, 바로 앞 L02가 세운 SE11 단계 패턴이 끊긴다. 여기에 L05의 72줄, L03의 미선언 변수 ls, L02의 풀이 없는 View처럼 학습자가 멈칫할 국소 불일치가 겹친다. 서사를 다시 쓸 문제는 아니고 순서 역전이나 빠진 징검다리도 없지만, 캡스톤 통합·L03 절차·L01 점검 항목은 문장 교정이 아니라 내용 추가가 필요하므로 경미 수정보다 한 단계 위인 보강 권장으로 본다."
+  }
+}

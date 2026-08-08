@@ -1,0 +1,100 @@
+{
+  "agent": "AG02",
+  "model": "sonnet",
+  "target": "CH06",
+  "persona_ack": "나는 준호다. 배운 코드는 그 자리에서 직접 눌러보고 확인해야 직성이 풀리는 실습형 학습자로서, CH06 6개 레슨의 모든 코드 블록을 그 페이지의 체험 위젯 11종과 하나하나 대조했다.",
+  "method": "Read 도구로 대상 18개 파일(레슨 6종 + _chapter.md + 임베드 11종)을 전문 정독한 뒤, harness가 기동한 로컬 서버(http://localhost:8144, 캐시버스터 ?v=b2)에 Claude_Browser 도구로 실제 접속해 임베드 11종을 전부 개별 로드했다. step-debugger 위젯(L01-S01·L03-S01·L03-S02·L04-S01·L04-S02) 5종은 '시작'·'다음' 버튼을 실제 클릭(및 JS dispatch 병행, coordinate 클릭이 연타 시 씹히는 경우가 있어 병행)해 끝까지 스텝을 실행하며 변수 모니터·콘솔 로그를 소스 JSON과 전수 대조했다(L01-S01·L03-S01은 처음부터 끝까지 수동 클릭, L03-S02는 '전체 출력' 모드로 3/3 완주, L04-S01·L04-S02는 JS로 14/14·18/18 완주). code-anatomy 위젯(L02-S01·L05-S02)은 클릭 가능한 span 전부를 dispatchEvent로 클릭해 주석 패널 내용을 검증했고, decision-tree(L02-S02)는 실제 옵션을 순차 클릭해 HASHED 결과 도달까지 확인했으며, judge-quiz(L05-S01)는 정답으로 예상한 5문항을 모두 클릭해 5/5 정답 판정을 확인했다. 정적 스냅샷(L04-S03·L06-S01)은 get_page_text로 렌더링 텍스트를 직접 대조했다. 모든 세션에서 read_console_messages로 JS 오류 유무를 확인했다(전부 오류 없음). 추가로 대상 목록 밖이지만 과제 지시문이 명시한 검증 입력인 빌드 결과물 http://localhost:8144/docs/abap/pages/CH06-L02·L03·L04·L06.html?v=b2 를 열어, 본문 코드 블록과 임베드 iframe의 실제 페이지 내 배치 순서를 재확인해 '체험 공백' 판정의 구조적 근거로 삼았다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH06-L01-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH06-L02-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH06-L02-S02.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH06-L03-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH06-L03-S02.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH06-L04-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH06-L04-S02.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH06-L04-S03.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH06-L05-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH06-L05-S02.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH06-L06-S01.html"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH06-L06-S01.html",
+      "quote": "<span class=\"scg__cnt\">81행</span>③ 2~9단 전체<span class=\"scg__op\">바깥 DO 8 TIMES 완료</span>",
+      "category": "불일치",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "위젯이 gt_gugu의 최종 행 수를 리드 문단(\"1개 → 9개 → 81개로 늘어나\")과 ③·④ 단계 라벨(\"81행\", 마지막 행 idx=\"81\") 등 총 5곳에서 모두 81로 표시하지만, 이 레슨의 실제 결과는 72다.",
+      "evidence": "레슨 코드는 바깥 DO 8 TIMES(2~9단, 8회) × 안쪽 DO 9 TIMES(9회) = 72줄을 쌓고, DESCRIBE TABLE 옆 주석도 \" gv_cnt = 72\"라 명시한다. 같은 레슨의 '디버거로 행들 보기' 문단도 이 위젯 바로 위에서 \"행이 하나씩 쌓여 2개, 4개 … 72개가 되는 모습이 보인다\"라며 72를 예고하고, CH06-L01.md도 \"2～9단 72줄\"이라 못 박는다. 그런데 브라우저로 CH06-L06-S01.html을 직접 렌더링해 get_page_text로 확인한 결과 리드 문단, ③단계(\"바깥 DO 8 TIMES 완료\"), ④단계(SORT 후) 모두 81을 쓰며, ③단계 마지막 행의 idx도 81이다(정답은 72). 81은 1~9단 전체(9×9)를 가정했을 때의 셀 수로, 이 레슨이 실제로 쓰는 2~9단(8×9=72) 범위와 어긋난다. dan=9·mul=9·result=81 값 자체는 맞지만 그 행의 idx(순번)가 72가 아니라 81로 잘못 표기됐다.",
+      "suggestion": "위젯 내 '81행' 2곳, 리드 문단의 '81개' 1곳, ③단계 마지막 행 idx='81', ④단계 첫/마지막 행 idx='81' 등 표기를 모두 '72'로 수정."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L03.md",
+      "quote": "INSERT gs_person INTO TABLE gt_person.",
+      "category": "체험 공백",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "front-matter가 \"INSERT vs INSERT INTO TABLE\"을 이 레슨의 대조 도입 개념으로 명시했지만, 체험 위젯은 INDEX 기반 INSERT만 실행하고 키 기반 'INSERT ... INTO TABLE'은 페이지 어디서도 실행되지 않는다.",
+      "evidence": "CH06-L03-S01.html의 code/steps를 전수 확인하고 브라우저에서 시작부터 '위험!' 시점을 지나 끝까지 실제 클릭 실행했다. INSERT 관련 스텝은 'INSERT gs_person INTO gt_person INDEX 1.' 하나뿐이며 INTO TABLE 변형은 없다. 같은 페이지의 두 번째 위젯(CH06-L03-S02, BINARY SEARCH 전용)도 INSERT와 무관하다. 빌드된 docs/abap/pages/CH06-L03.html에서도 APPEND/INSERT 3줄 코드 블록 바로 다음에 오는 유일한 체험이 이 S01이라, 페이지 전체에서 INTO TABLE 변형을 체험할 곳이 없다.",
+      "suggestion": "S01에 'INSERT gs_person INTO TABLE gt_person.' 키 기준 삽입을 보여주는 스텝을 1개 추가하거나, INDEX 기반과 INTO TABLE 기반을 나란히 비교하는 미니 데모를 보강."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L03.md",
+      "quote": "READ TABLE gt_person TRANSPORTING NO FIELDS WITH KEY name = '정훈영'.",
+      "category": "체험 공백",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "값 없이 존재 여부만 확인하는 TRANSPORTING NO FIELDS 패턴이 전용 코드 블록(주석 포함)으로 소개되지만, 이 페이지의 두 위젯 어디에도 이 구문이 실행되지 않는다.",
+      "evidence": "CH06-L03-S01.html의 READ TABLE 관련 스텝은 INDEX 기반 1회, WITH KEY(값 복사) 기반 2회뿐이고 TRANSPORTING NO FIELDS 스텝은 없다(브라우저로 전 스텝 실행해 재확인). CH06-L03-S02.html은 BINARY SEARCH 전용이라 무관하다.",
+      "suggestion": "우선순위는 낮음. 여유가 되면 S01에 '값 복사 없이 존재만 확인' 비교 스텝을 하나 추가."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L04.md",
+      "quote": "LOOP AT gt_person FROM 2 TO 5 INTO gs_person.",
+      "category": "체험 공백",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "front-matter가 \"LOOP (FROM/TO·WHERE)\"라 하여 FROM/TO도 이번 레슨의 도입 대상으로 명시했지만, 체험 위젯(S01)은 제목부터 \"WHERE와 ASSIGNING을 직접 확인\"이라 밝히듯 WHERE만 다루고 FROM/TO 범위 지정은 페이지 어디서도 실행되지 않는다.",
+      "evidence": "CH06-L04-S01.html의 code/steps를 브라우저에서 끝까지 실제 실행(14/14, 콘솔 로그 전 스텝 대조)해 확인한 결과 1막은 WHERE 필터 루프, 2막은 ASSIGNING이며 FROM 2 TO 5류 코드는 전혀 없다. 같은 페이지의 S02(COLLECT/컨트롤레벨)·S03(중복 제거)도 FROM/TO와 무관해, 페이지 전체에서 FROM/TO는 본문 텍스트로만 설명되고 체험이 없다.",
+      "suggestion": "S01에 FROM/TO 범위 루프가 sy-tabix와 어떻게 맞물리는지 보여주는 3막(스텝)을 추가하거나 별도 짧은 위젯으로 보강."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L04.md",
+      "quote": "APPEND LINES OF gt_a TO gt_b.",
+      "category": "체험 공백",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "front-matter의 introduces 목록에 \"APPEND LINES OF\"가 명시돼 있고 전용 코드+주석까지 있지만, 페이지의 세 위젯(S01/S02/S03) 어디에도 이 구문이나 그 대상인 gt_a/gt_b가 등장하지 않는다.",
+      "evidence": "S01(WHERE/ASSIGNING, 브라우저 14/14 완주 확인)·S02(COLLECT/컨트롤레벨, 브라우저 18/18 완주 확인)·S03(SORT+DELETE ADJACENT DUPLICATES 스냅샷, 렌더링 텍스트 확인) 세 소스를 모두 정독하고 실제로 로드했으나 APPEND LINES OF·gt_a·gt_b는 어디에도 없다. 완전히 미체험 상태로 남아 있다.",
+      "suggestion": "S03과 같은 state-change-grid 패턴으로 두 테이블이 합쳐지는 전/후 스냅샷을 짧게 추가."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L02.md",
+      "quote": "DATA gt_person TYPE ztt_person.",
+      "category": "체험 공백",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "front-matter introduces에 \"Local/Global Table Type\"이 명시돼 있고 전역 Table Type 선언 코드가 나오지만, 페이지의 두 위젯(S01: 로컬 선언 3속성 해부, S02: Table Kind 선택 트리) 모두 로컬 선언 기준이라 전역(SE11) 쪽은 어디서도 다루지 않는다.",
+      "evidence": "S01(클릭 가능한 5개 span 전부 dispatch로 검증)·S02(HASHED 결과까지 실제 경로 클릭 검증) 모두 tt_person(로컬) 기준이며 ztt_person·SE11 언급이 없다. 빌드된 docs/abap/pages/CH06-L02.html에서도 '로컬 vs 전역' 단락이 두 임베드보다 뒤, 즉 페이지 맨 끝(다음 임베드 없음)에 위치해 이 섹션만 체험 없이 끝난다. 다만 SE11 GUI 자체를 가벼운 위젯으로 재현하기 어려운 성격상 다른 DDIC 관련 챕터에서도 유사한 패턴(SE11 언급은 텍스트로만)이 반복되는 의도적 설계일 가능성이 있어, 확답 대신 추정으로 남긴다.",
+      "suggestion": "SE11 화면 재현이 부담스럽다면 최소한 '로컬 선언 vs 전역 선언' 코드를 나란히 놓고 차이를 짚는 간단한 비교 카드 정도는 검토."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "보강 권장",
+    "summary": "CH06 위젯 11개 중 10개(L01-S01·L02-S01·L02-S02·L03-S01·L03-S02·L04-S01·L04-S02·L04-S03·L05-S01·L05-S02)는 브라우저 실조작(버튼 클릭·퀴즈 5/5 완주·디시전트리 실제 경로·코드해부 클릭·스텝 디버거 전 스텝 실행)으로 값·변수명·시나리오·정답 판정을 검증했고 전부 레슨 본문과 정확히 일치했으며 콘솔 오류도 없었다 — 특히 L03-S01의 'READ 실패 후 Work Area에 이전 값이 남는' 위험 시나리오, L03-S02의 BINARY SEARCH 정렬 함정, L04-S01의 반복 회차 vs sy-tabix 어긋남은 실제 실행으로 재현해 봐도 매우 정교했다. 다만 캡스톤 위젯 CH06-L06-S01은 gt_gugu 최종 행 수를 리드 문단과 두 단계 라벨·인덱스 등 5곳 모두에서 81로 표시하는데, 레슨 코드(DO 8 TIMES×9=72)와 본문이 명시한 72(gv_cnt=72, \"72개가 되는 모습\")와 정면으로 어긋난다 — 위젯 동작 자체는 정상이라 치명적이진 않지만 챕터를 마무리하는 숫자가 틀려 있어 수정이 필요하다. 그 외 front-matter가 '이번 레슨 도입'이라 명시한 코드 패턴 5가지(INSERT INTO TABLE·TRANSPORTING NO FIELDS·LOOP FROM/TO·APPEND LINES OF·전역 Table Type)는 본문에 코드로 나오지만 해당 페이지 어떤 위젯에서도 실행되지 않는 체험 공백으로 남아 있다(전역 Table Type 건은 SE11 특성상 의도적 설계일 가능성도 있어 추정으로 남김). 전반적으로 위젯 설계·구현 품질은 높은 편이며, 81/72 수치 정정과 소수 체험 공백 보강이 남은 과제다."
+  }
+}

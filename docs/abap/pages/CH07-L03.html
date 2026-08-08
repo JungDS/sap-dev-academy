@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Transparent ↔ Structure ↔ Table Type 비교 · Transparent Table (SE11) · SAP Developer Academy</title>
+<title>Structure·Internal Table·Table Type ↔ Transparent Table 비교 · Transparent Table (SE11) · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -34,73 +34,84 @@
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 7 › Lesson 3</nav>
       <section class="lhead">
         <p class="lhead__eyebrow">Transparent Table (SE11)</p>
-        <h1>Transparent ↔ Structure ↔ Table Type 비교</h1>
-        <p class="lhead__direction">같은 DDIC 모양이 쓰임에 따라 작업영역·내부테이블·영속테이블이 된다.</p>
+        <h1>Structure·Internal Table·Table Type ↔ Transparent Table 비교</h1>
+        <p class="lhead__direction">같은 구구단 한 줄이 메모리와 디스크에서 어떻게 갈리는지 넷을 견준다.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 7</span><span class="tag tag--ls">Lesson 3</span><span class="tag tag--lv">초급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>같은 모양, 다른 쓰임</h2>
-<p>지금까지 &quot;구구단 한 줄&quot;(dan·mul·result)이라는 같은 모양을 세 가지로 썼다. 헷갈리기
-쉬우니 한 번에 정리한다.</p>
+<section class="lblock"><h2>같은 모양, 네 가지 쓰임</h2>
+<p>지금까지 &quot;구구단 한 줄&quot;(dan·mul·result)이라는 같은 모양을 <strong>네 가지</strong>로 써 봤다. 이름이
+서로 닮아 헷갈리기 쉬우니 한 번에 정리한다.</p>
 <table>
 <thead>
 <tr>
 <th>무엇</th>
-<th>어떻게</th>
+<th>선언·정의</th>
 <th>사는 곳</th>
 <th>용도</th>
 </tr>
 </thead>
 <tbody><tr>
-<td><strong>Structure</strong>(Work Area)</td>
-<td><code>TYPE ts_line</code></td>
-<td><button class="term" type="button" data-term="메모리">메모리</button>(한 건)</td>
-<td>한 줄을 담아 다룸</td>
+<td><strong>Structure</strong>(한 줄 모양 타입)</td>
+<td>프로그램에서 <code>TYPES … ts_line</code>(<a href="CH06-L06.html">Chapter 06 · 구구단 캡스톤</a>), 또는 SE11 DDIC Structure</td>
+<td>타입 자체는 정의만. 이 타입으로 <strong>선언한 변수</strong>가 <button class="term" type="button" data-term="메모리">메모리</button>에 한 건</td>
+<td>한 줄의 모양을 정한다. 그 변수를 &quot;지금 다루는 한 줄&quot;로 쓰는 <strong>역할</strong>이 <button class="term" type="button" data-term="Work Area">Work Area</button></td>
 </tr>
 <tr>
-<td><strong>Internal Table</strong></td>
-<td><code>TYPE TABLE OF ts_line</code></td>
+<td><strong>Internal Table</strong>(변수)</td>
+<td><code>DATA gt_gugu TYPE TABLE OF ts_line</code></td>
 <td>메모리(여러 건)</td>
-<td>여러 줄을 모아 처리</td>
+<td>여러 줄을 모아 정렬·검색</td>
 </tr>
 <tr>
-<td><strong>Table Type</strong>(설계도)</td>
-<td>SE11 <code>ZTT_LINE</code></td>
-<td>— (타입 정의만)</td>
-<td>내부 테이블의 전역 설계도</td>
+<td><strong>Table Type</strong>(여러 줄 모양 타입)</td>
+<td>SE11 Table Type <code>ZTT_PERSON</code> · 🔁 <a href="CH06-L02.html">Chapter 06 · Internal Table</a>에서 만든 것</td>
+<td>정의만(데이터 없음)</td>
+<td>Internal Table의 모양을 전역으로 공유</td>
 </tr>
 <tr>
-<td><strong>Transparent Table</strong></td>
-<td>SE11 DB 테이블</td>
-<td><strong>디스크(영속)</strong></td>
-<td>영구 저장·공유</td>
+<td><strong>Transparent Table</strong>(DB 테이블)</td>
+<td>SE11 Database Table <code>ZGUGUDAN</code></td>
+<td><strong>디스크</strong></td>
+<td>실행이 끝나도 남아야 하는 업무 데이터</td>
 </tr>
 </tbody></table>
-<p>핵심: <strong>Structure·Internal Table은 메모리라 프로그램이 끝나면 사라지고, Transparent
-Table만 디스크에 남는다.</strong> Table Type은 데이터를 담는 그릇이 아니라, 내부 테이블의 모양을
-전역으로 정의해 둔 <strong>설계도</strong>일 뿐이다(그 자체는 저장소가 아니다).</p>
+<p>핵심은 사는 곳이다. <strong>Structure·Internal Table은 메모리라 프로그램이 끝나면 사라지고,
+Transparent Table만 디스크에 남는다.</strong> 이렇게 실행이 끝나도 값이 남는 성질을
+<strong>영속</strong>(영구 저장)이라 부르고, Transparent Table은 바로 그것을 위한 도구다. Table Type은
+데이터를 담는 그릇이 아니라 Internal Table의 모양을 전역으로 정의해 둔 <strong>설계도</strong>다.</p>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">넷을 한눈에 — 담는 단위·사는 곳·수명 비교</span><a class="embed__open" href="../../../embeds/abap/CH07-L03-S02.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH07-L03-S02.html" loading="lazy" title="넷을 한눈에 — 담는 단위·사는 곳·수명 비교"></iframe></figure>
-</section><section class="lblock"><h2>DDIC 구조를 TYPE로 / TABLE OF로</h2>
-<p>전역 DDIC Structure(예: <code>ZST_LINE</code>) 하나를 만들어 두면, 프로그램에서 작업영역으로도
-내부 테이블로도 쓸 수 있다.</p>
+</section><section class="lblock"><h2>DB 테이블을 그대로 타입으로 쓰기</h2>
+<p><code>ZGUGUDAN</code>을 만들어 두면 프로그램에서 <strong>그 테이블 이름을 타입으로</strong> 쓸 수 있다. 한 줄짜리
+변수로도, 여러 줄짜리 변수로도 된다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
-2</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> gs_line <span class="tok-kw">TYPE</span> zst_line.            <span class="tok-com">" 작업영역(한 건)</span>
-<span class="tok-kw">DATA</span> gt_line <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> zst_line.   <span class="tok-com">" 내부 테이블(여러 건)</span></code></pre></div></div>
-<p>DB에 영구 저장이 필요하면 같은 모양을 <strong>Transparent Table</strong>로 만든다. 즉 <strong>모양은
-공유, 쓰임(<button class="term" type="button" data-term="메모리">메모리</button>냐 디스크냐)만 다르다.</strong></p>
+2</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> gs_line <span class="tok-kw">TYPE</span> zgugudan.            <span class="tok-com">" 한 줄 (Work Area 역할)</span>
+<span class="tok-kw">DATA</span> gt_line <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> zgugudan.   <span class="tok-com">" 여러 줄 (Internal Table)</span></code></pre></div></div>
+<p><a href="CH06-L02.html">Chapter 06 · Internal Table</a>에서 &quot;DB 테이블의 행 모양도 그대로 <strong>Line
+Type</strong>으로 줄 수 있다&quot;고 예고했던 것이 이것이다. 모양을 두 번 적을 필요가 없으니 실무에서
+가장 흔한 방식이다.</p>
+<p>단 하나 다른 점이 있다. <code>ZGUGUDAN</code>에는 첫 필드로 <code>MANDT</code>가 있으니 <code>gs_line</code>은
+<code>mandt</code>·<code>dan</code>·<code>mul</code>·<code>result</code> <strong>네 필드</strong>를 갖는다. <button class="term" type="button" data-term="메모리">메모리</button>에서 직접 만들었던 <code>ts_line</code>
+(dan·mul·result 셋)보다 하나 많다.</p>
+<blockquote>
+<p>💡 원한다면 <a href="CH05-L02.html">Chapter 05 · DDIC Structure</a> 방식으로 <code>ZST_GUGU</code> 같은 DDIC
+Structure를 따로 만들어 그것을 타입으로 줄 수도 있다. MANDT 없이 원하는 필드만 담을 수
+있다. 다만 그건 테이블 정의와 <strong>별개의 정의</strong>라, 한쪽 필드를 고쳐도 다른 쪽이 자동으로
+따라 바뀌지는 않는다.</p>
+</blockquote>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">메모리(끝나면 사라짐) vs 디스크(영속) — 같은 모양의 두 운명 비교</span><a class="embed__open" href="../../../embeds/abap/CH07-L03-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH07-L03-S01.html" loading="lazy" title="메모리(끝나면 사라짐) vs 디스크(영속) — 같은 모양의 두 운명 비교"></iframe></figure>
-</section><section class="lblock"><h2>Transparent Table 본래 목적 = 영속</h2>
-<p>Structure·Internal Table은 &quot;지금 이 실행 동안&quot; 쓰는 작업 도구다. Transparent Table은
-&quot;실행이 끝나도 남아야 하는 <strong>업무 데이터</strong>&quot;를 위한 것이다. 이게 본래 목적이다.</p>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong><button class="term" type="button" data-term="메모리">메모리</button> 테이블에 영속 기대</strong> → 내부 테이블은 끝나면 사라진다. 영구 저장은 DB 테이블.</li>
-<li><strong>넷을 같은 것으로</strong> → 모양만 같을 뿐 사는 곳·수명이 다르다.</li>
-<li><strong>Table Type과 Transparent Table 혼동</strong> → <code>ZTT_LINE</code>(Table Type)은 내부 테이블의
-<strong>설계도</strong>, <code>ZGUGUDAN</code>(Transparent Table)은 <strong>DB 저장소</strong>다. 이름이 비슷해도 역할이 다르다.</li>
+<li><strong><button class="term" type="button" data-term="메모리">메모리</button>에 영속 기대</strong> → Internal Table은 실행이 끝나면 사라진다. 영구 저장은 DB 테이블 몫.</li>
+<li><strong>넷을 같은 것으로</strong> → 모양만 같을 뿐 사는 곳과 쓰임이 다르다.</li>
+<li><strong>Table Type과 Transparent Table 혼동</strong> → 두 이름에 <code>Table</code>이 겹쳐 헷갈리기 쉽다.
+<code>ZTT_PERSON</code>(Table Type)은 Internal Table의 <strong>설계도</strong>, <code>ZGUGUDAN</code>(Transparent Table)은
+<strong>DB 저장소</strong>다.</li>
+<li><strong><code>TYPE zgugudan</code>이면 DB와 이어져 있다는 착각</strong> → 모양만 빌려 온 <strong>메모리 변수</strong>다. 실제로
+값을 읽거나 쓰려면 별도의 명령이 필요하다(다음 챕터).</li>
 </ul>
 <hr>
-<p>값을 영구히 저장했고, 넷의 차이도 정리했다. 그런데 손으로 넣은 18행을 <strong>프로그램에서
+<p>값을 영구히 저장했고, 넷의 차이도 정리했다. 그런데 손으로 넣은 행을 <strong>프로그램에서
 다시 읽어</strong> 쓰려면? → <a href="CH08-L01.html">Chapter 08 · Open SQL 기본 조회</a>.</p>
 </section>
       </article>

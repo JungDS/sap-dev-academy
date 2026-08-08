@@ -43,7 +43,8 @@
 <p>Structure를 통째로 복사하거나, 비우거나, <strong>이름이 같은 필드만 골라 옮기는</strong> 일이
 자주 생긴다. 기본기 몇 가지를 익힌다.</p>
 </section><section class="lblock"><h2>통째로 대입 / 초기화</h2>
-<p>같은 타입이면 Structure끼리 <strong>통째로</strong> 대입된다. <code>CLEAR</code>로 전체를 비운다.</p>
+<p>같은 타입이면 Structure끼리 <strong>통째로</strong> 대입된다. <code>CLEAR</code>로 전체를 비운다. 아래
+<code>zst_person</code>은 <a href="CH05-L02.html">DDIC Structure</a> 레슨에서 SE11에 만들어 둔 그 Structure다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -55,6 +56,14 @@
 gs_a-name = <span class="tok-str">'정훈영'</span>.
 gs_b = gs_a.        <span class="tok-com">" 모든 Component 복사</span>
 <span class="tok-kw">CLEAR</span> gs_a.         <span class="tok-com">" gs_a를 초기값으로</span></code></pre></div></div>
+<p><code>gs_b = gs_a.</code>는 <strong>값을 통째로 베껴 담는다.</strong> 베끼고 나면 두 변수는 서로 남남이라, 바로
+다음 줄에서 <code>gs_a</code>를 비워도 <code>gs_b</code>에 담긴 값은 그대로 남는다.</p>
+<blockquote>
+<p>🧑‍💻 <strong>다른 언어를 해 봤다면</strong> — 객체를 대입하면 둘이 같은 것을 함께 가리키게 되는
+언어와 달리, ABAP의 Structure 대입은 <strong>값 복사</strong>다. <code>gs_b</code>는 <code>gs_a</code>의 별명이 아니라
+내용만 같은 별개의 변수다.</p>
+</blockquote>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">통째 대입과 CLEAR — gs_a를 비워도 gs_b는 그대로</span><a class="embed__open" href="../../../embeds/abap/CH05-L04-S02.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH05-L04-S02.html" loading="lazy" title="통째 대입과 CLEAR — gs_a를 비워도 gs_b는 그대로" style="height:620px"></iframe></figure>
 </section><section class="lblock"><h2>MOVE-CORRESPONDING — 이름이 같은 필드만</h2>
 <p>타입이 다른 두 Structure 사이에서 <strong>이름이 같은 Component만</strong> 골라 옮긴다. 어떤 필드가
 옮겨지고 어떤 필드가 남는지, 세 가지 경우가 다 들어 있는 예로 보자.</p>
@@ -106,17 +115,30 @@ gs_tgt-city   = <span class="tok-str">'Seoul'</span>.
 그대로 남는다.</strong> 새로 채우는 Structure라면 옮기기 전에 <code>CLEAR gs_tgt.</code>부터. 안 그러면
 <strong>지난 건의 값이 이번 건에 섞인다.</strong></p>
 </blockquote>
+<blockquote class="cw">
+<p>⚠️ <strong>이름이 같아도 모양까지 같은 건 아니다</strong> — <button class="term" type="button" data-term="MOVE-CORRESPONDING">MOVE-CORRESPONDING</button>은 <strong>이름만 보고</strong>
+옮긴다. 원본 <code>name</code>이 30자인데 대상 <code>name</code>이 20자면 뒤 10자가 <strong>조용히 잘리고</strong>, 글자가
+담긴 칸을 숫자 칸으로 옮기면 실행 중 오류로 멈추기도 한다. 이름이 같다고 안심하지 말고
+<strong>길이와 타입도 같은지</strong> 확인한다.</p>
+</blockquote>
+<blockquote>
+<p>🧑‍💻 <strong>다른 언어를 해 봤다면</strong> — 이름이 같은 필드끼리 자동으로 옮겨 주는 도구(자바의
+ModelMapper, C#의 AutoMapper 같은 것)를 써 봤다면 그 자리에 해당한다. 다른 점은 ABAP에서는
+라이브러리가 아니라 <strong>문법에 들어 있다</strong>는 것이다.</p>
+</blockquote>
 </section><section class="lblock"><h2>매핑을 눈으로 — 같은 이름만 건너간다</h2>
 <p>아래에서 <strong>실행</strong>을 눌러 어떤 필드가 건너가고 어떤 필드가 남는지 확인해 보자.
 <code>CLEAR gs_tgt 먼저</code>를 끄고 실행하면 잔존값 함정이 그대로 재현된다.</p>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title"><button class="term" type="button" data-term="MOVE-CORRESPONDING">MOVE-CORRESPONDING</button> 매핑 보드 — 같은 이름만·잔존값 함정</span><a class="embed__open" href="../../../embeds/abap/CH05-L04-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH05-L04-S01.html" loading="lazy" title="MOVE-CORRESPONDING 매핑 보드 — 같은 이름만·잔존값 함정" style="height:640px"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>타입 다른데 통째 대입</strong> → Component 구성이 다르면 오류/엉뚱한 결과. 다르면
-<button class="term" type="button" data-term="MOVE-CORRESPONDING">MOVE-CORRESPONDING</button>.</li>
+<li><strong>모양이 다른데 통째 대입</strong> → 통째 대입(<code>=</code>)은 <strong>Component 구성이 같을 때</strong> 쓴다. 구성이
+다르면 문법 오류가 나거나, 문자 계열로만 이뤄진 Structure끼리는 이름과 상관없이
+<strong>앞에서부터 자리로</strong> 밀려 들어가 엉뚱한 값이 조용히 섞인다. <strong>Component 구성이 다르면</strong>
+<button class="term" type="button" data-term="MOVE-CORRESPONDING">MOVE-CORRESPONDING</button>으로 옮긴다.</li>
 <li><strong>대상 잔존값</strong> → 대상에만 있는 필드는 이전 값이 남는다. 새 건을 채울 땐
 <code>CLEAR</code> 먼저.</li>
-<li><strong>CLEAR vs REFRESH</strong> → Structure는 <code>CLEAR</code>. (여러 행을 담는 내부 테이블 비우기는
+<li><strong>CLEAR vs REFRESH</strong> → Structure는 <code>CLEAR</code>. (여러 행을 담는 <button class="term" type="button" data-term="Internal Table">Internal Table</button> 비우기는
 다음 챕터에서.)</li>
 </ul>
 <hr>

@@ -8,12 +8,12 @@
 |---|---|
 | STRUCT (필수키·id) | 0 |
 | PREREQ (실존·전방참조) | 0 |
-| DUP-INTRO (중복 도입 선언) | 7 |
-| EARLY-USE — **REVIEW(요판정)** | 125 |
+| DUP-INTRO (중복 도입 선언) | 6 |
+| EARLY-USE — **REVIEW(요판정)** | 133 |
 | EARLY-USE — LOW(같은 챕터 인접) | 111 |
-| EARLY-USE — DECLARED(예고/선행 선언) | 48 |
+| EARLY-USE — DECLARED(예고/선행 선언) | 56 |
 | R6 경계 (classic 구간 modern 토큰) | 0 |
-| 검사 규모 | 레슨 270 · 추적 키워드 411 |
+| 검사 규모 | 레슨 270 · 추적 키워드 413 |
 
 ## STRUCT
 - 없음
@@ -23,7 +23,6 @@
 
 ## DUP-INTRO
 - `TYPES` — CH02-L04 와 CH05-L01 가 모두 introduces (나선 재방문이면 정상 — 판정 필요)
-- `LIKE` — CH02-L01 와 CH05-L01 가 모두 introduces (나선 재방문이면 정상 — 판정 필요)
 - `LIKE` — CH02-L01 와 CH08-L05 가 모두 introduces (나선 재방문이면 정상 — 판정 필요)
 - `LOOP AT SCREEN` — CH15-L03 와 CH16-L06 가 모두 introduces (나선 재방문이면 정상 — 판정 필요)
 - `CAST` — CH19-L04 와 CH21-L08 가 모두 introduces (나선 재방문이면 정상 — 판정 필요)
@@ -49,16 +48,24 @@
 - CH04-L04:33 — `SWITCH` (도입 = CH18-L07)
 - CH04-L05:92 — `Internal Table` (도입 = CH06-L01)
 - CH04-L05:75 — `MANDT` (도입 = CH07-L01)
-- CH05-L02:60 — `APPEND` (도입 = CH06-L01)
-- CH06-L03:11 — `INTO TABLE` (도입 = CH08-L03)
-- CH06-L04:109 — `ASSIGN` (도입 = CH28-L03)
-- CH06-L06:79 — `Transparent Table` (도입 = CH07-L01)
-- CH07-L01:49 — `ALV` (도입 = CH11-L01)
-- CH08-L01:21 — `JOIN` (도입 = CH13-L01)
-- CH08-L04:53 — `JOIN` (도입 = CH13-L01)
-- CH08-L05:47 — `SELECT-OPTIONS` (도입 = CH12-L02)
-- CH08-L05:31 — `NULL` (도입 = CH13-L02)
-- CH08-L07:49 — `Foreign Key` (도입 = CH09-L01)
+- CH05-L02:99 — `APPEND` (도입 = CH06-L01)
+- CH06-L03:11 — `INTO TABLE` (도입 = CH08-L02)
+- CH06-L04:175 — `ASSIGN` (도입 = CH28-L03)
+- CH06-L06:108 — `Transparent Table` (도입 = CH07-L01)
+- CH06-L06:95 — `GROUP BY` (도입 = CH13-L03)
+- CH07-L01:135 — `Check Table` (도입 = CH09-L01)
+- CH07-L01:85 — `SALV` (도입 = CH11-L01)
+- CH08-L01:38 — `JOIN` (도입 = CH13-L01)
+- CH08-L01:30 — `NULL` (도입 = CH13-L02)
+- CH08-L02:68 — `JOIN` (도입 = CH13-L01)
+- CH08-L02:68 — `INNER JOIN` (도입 = CH13-L01)
+- CH08-L03:72 — `INNER JOIN` (도입 = CH13-L01)
+- CH08-L04:74 — `JOIN` (도입 = CH13-L01)
+- CH08-L04:74 — `INNER JOIN` (도입 = CH13-L01)
+- CH08-L05:92 — `SELECT-OPTIONS` (도입 = CH12-L02)
+- CH08-L05:80 — `LEFT OUTER JOIN` (도입 = CH13-L02)
+- CH08-L07:69 — `Foreign Key` (도입 = CH09-L01)
+- CH08-L07:69 — `Check Table` (도입 = CH09-L01)
 - CH09-L01:46 — `Cardinality` (도입 = CH23-L03)
 - CH09-L07:13 — `Report Event` (도입 = CH15-L01)
 - CH09-L07:13 — `AT SELECTION-SCREEN` (도입 = CH15-L04)
@@ -165,11 +172,11 @@
 - CH02-L05:70 — `Text Symbol` (도입 = CH02-L06)
 - CH03-L01:84 — `PARAMETERS` (도입 = CH03-L03)
 - CH04-L04:67 — `WHILE` (도입 = CH04-L05)
-- CH06-L04:117 — `Deep Structure` (도입 = CH06-L05)
-- CH08-L01:30 — `INTO TABLE` (도입 = CH08-L03)
-- CH08-L02:22 — `INTO TABLE` (도입 = CH08-L03)
-- CH08-L02:39 — `INTO CORRESPONDING FIELDS OF` (도입 = CH08-L04)
-- CH08-L06:41 — `MESSAGE` (도입 = CH08-L07)
+- CH05-L01:191 — `DDIC Structure` (도입 = CH05-L02)
+- CH06-L03:76 — `LOOP` (도입 = CH06-L04)
+- CH06-L04:186 — `Deep Structure` (도입 = CH06-L05)
+- CH08-L01:75 — `INTO TABLE` (도입 = CH08-L02)
+- CH08-L06:83 — `MESSAGE` (도입 = CH08-L07)
 - CH09-L02:54 — `Text Table` (도입 = CH09-L03)
 - CH09-L03:22 — `Search Help` (도입 = CH09-L04)
 - CH09-L04:42 — `Collective Search Help` (도입 = CH09-L05)
@@ -286,11 +293,19 @@
 - CH03-L02:105 — `ALV` (도입 = CH11-L01) [foreshadow 선언]
 - CH03-L03:53 — `Search Help` (도입 = CH09-L04) [foreshadow 선언]
 - CH04-L07:91 — `Structure` (도입 = CH05-L01) [foreshadow 선언]
-- CH05-L02:55 — `Transparent Table` (도입 = CH07-L01) [foreshadow 선언]
-- CH05-L05:58 — `Internal Table` (도입 = CH06-L01) [foreshadow 선언]
+- CH05-L03:71 — `APPEND` (도입 = CH06-L01) [foreshadow 선언]
+- CH05-L04:90 — `Internal Table` (도입 = CH06-L01) [foreshadow 선언]
+- CH05-L05:98 — `Internal Table` (도입 = CH06-L01) [foreshadow 선언]
 - CH06-L01:21 — `Transparent Table` (도입 = CH07-L01) [foreshadow 선언]
-- CH06-L02:34 — `Transparent Table` (도입 = CH07-L01) [foreshadow 선언]
-- CH06-L05:59 — `ALV` (도입 = CH11-L01) [foreshadow 선언]
+- CH06-L02:37 — `Transparent Table` (도입 = CH07-L01) [foreshadow 선언]
+- CH06-L05:74 — `ALV` (도입 = CH11-L01) [foreshadow 선언]
+- CH07-L01:135 — `Foreign Key` (도입 = CH09-L01) [foreshadow 선언]
+- CH07-L01:84 — `ALV` (도입 = CH11-L01) [foreshadow 선언]
+- CH08-L02:58 — `INTO CORRESPONDING FIELDS OF` (도입 = CH08-L04) [advanceUse 선언]
+- CH08-L03:72 — `JOIN` (도입 = CH13-L01) [foreshadow 선언]
+- CH08-L03:86 — `ORDER BY` (도입 = CH13-L05) [foreshadow 선언]
+- CH08-L05:80 — `JOIN` (도입 = CH13-L01) [foreshadow 선언]
+- CH08-L05:61 — `NULL` (도입 = CH13-L02) [foreshadow 선언]
 - CH09-L07:13 — `PROCESS ON VALUE-REQUEST` (도입 = CH16-L05) [foreshadow 선언]
 - CH10-L01:20 — `START-OF-SELECTION` (도입 = CH15-L05) [advanceUse 선언]
 - CH10-L02:16 — `START-OF-SELECTION` (도입 = CH15-L05) [advanceUse 선언]
