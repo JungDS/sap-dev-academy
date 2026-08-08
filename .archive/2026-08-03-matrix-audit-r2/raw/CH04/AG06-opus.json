@@ -1,0 +1,90 @@
+{
+  "agent": "AG06",
+  "model": "opus",
+  "target": "CH04",
+  "persona_ack": "20년차 SAP ABAP 아키텍트로서 CH04(연산자·문자열·IF/CASE·DO/WHILE·디버깅·구구단 종합실습) 레슨 7개와 _chapter.md를 읽기 전용으로 기술 검수했다. 사실 오류·예시 적절성·위험한 생략·안티패턴 네 갈래로만 보았고, 문서를 수정하지 않았다.",
+  "method": "Read 도구로 대상 8개 파일 전문을 정독(빌드·브라우저·셸 실행 없음). 웹 검색·외부 네트워크 미사용, 내부 ABAP 지식만으로 판정했으며 릴리스·설정 의존 항목은 발견에서 제외하거나 추정으로 낮췄다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L07.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L05.md",
+      "quote": "| `EXIT` | 지금 도는 반복을 **즉시** 빠져나간다(반복이 겹쳐 있으면 **가장 안쪽 하나만**) |",
+      "category": "위험한 생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "EXIT를 '반복 전용 탈출문'으로만 소개해, 반복 밖에서의 전혀 다른 동작(현재 처리 블록 자체를 끝냄)을 빠뜨렸다. 같은 표 바로 아래 CHECK에 대해서는 '반복 밖에서 쓰면 다른 뜻'이라고 따로 짚어 준 것과 대비돼, 학습자는 EXIT를 루프 전용으로 잘못 굳히게 된다.",
+      "evidence": "ABAP에서 EXIT는 루프 안이면 루프 탈출이지만, 루프 밖에서 실행되면 현재 처리 블록(START-OF-SELECTION 같은 이벤트 블록·FORM·METHOD)을 즉시 종료한다. 리포트 본문 중간에 EXIT가 들어가면 오류 하나 없이 뒤 코드 전체가 실행되지 않아, 입문자가 원인을 못 찾는 대표적 버그가 된다. 실제로 CH04-L07 3단계는 이 불완전한 모델 위에서 'EXIT는 반복을 빠져나오는 문이라 이 자리에서는 쓰지 않는다'고 설명하는데, 정확히는 '이 자리의 EXIT는 프로그램 처리 자체를 끝내 버린다'가 이유다.",
+      "suggestion": "CHECK 콜아웃과 같은 방식으로 EXIT에도 한 줄 추가: '반복 밖에서 쓰면 지금 처리 덩어리(프로그램 처리)를 통째로 끝낸다 — 자세한 건 모듈화 챕터에서.' CH04-L07의 괄호 설명도 '반복 밖 EXIT는 프로그램 처리를 끝내 버려서 여기서는 IF/ELSE로 거른다'로 근거를 바로잡는다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L01.md",
+      "quote": "변수를 **처음 상태로 비우려면** [[CLEAR]]를 쓴다(숫자는 0, 문자는 공백으로 돌아간다).",
+      "category": "사실 오류(오해 유발 서술)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "CLEAR를 '처음 상태로 되돌린다'로 설명했으나, CLEAR는 선언할 때 VALUE로 준 시작값이 아니라 타입 고유 초기값(숫자 0·문자 공백)으로만 되돌린다. 하필 바로 다음 예제가 VALUE 500으로 선언한 변수라, 오해가 가장 잘 생기는 자리에서 표현이 흐리다.",
+      "evidence": "예제는 DATA gv_amount TYPE i VALUE 500. 뒤에 CLEAR gv_amount. → 0 이라고 결과를 맞게 적어 두었다. 즉 서술('처음 상태')과 결과(500이 아니라 0)가 서로 어긋나 보인다. ABAP에는 '선언 시 시작값으로 복원'하는 기능 자체가 없고, CLEAR·초기화는 언제나 타입 초기값 기준이다.",
+      "suggestion": "'처음 상태'를 '타입 초기값'으로 바꾸고 한 줄 덧붙인다: '선언할 때 VALUE로 준 값(500)으로 돌아가는 게 아니라, 타입이 정한 초기값(0)으로 간다.'"
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L01.md",
+      "quote": "시간([[T]])도 똑같아서 `HHMMSS` 6자리 문자를",
+      "category": "위험한 생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "시간(T) 산술을 날짜(D)와 '똑같다'고 묶었지만, 두 타입은 경계 처리가 다르다. D는 달·해를 정확히 넘겨 주는 반면 T는 자정을 넘으면 날짜로 올라가지 못하고 000000으로 되돌아간다(24시간 모듈로). 이 차이가 빠져 있다.",
+      "evidence": "TYPE t 값 '235959'에 1초를 더하면 '000000'이 되고 '하루가 넘었다'는 정보는 어디에도 남지 않는다. 반대로 종료시각 - 시작시각도 자정을 넘기면 음수나 엉뚱한 값이 나온다. 야간 배치·근무시간 계산이 자정에서 깨지는 것은 현업의 고전적 결함이고, 원리는 이 레슨 수준에서도 한 문장으로 전달 가능하다.",
+      "suggestion": "날짜 설명 뒤에 한 문장 추가: '단 시간은 자정을 넘으면 날짜로 올라가지 못하고 000000으로 돌아간다 — 자정을 넘는 시간 차이는 날짜(D)와 함께 봐야 한다.'"
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L03.md",
+      "quote": "pa_vip   TYPE c LENGTH 1,    \" VIP 회원이면 'X'",
+      "category": "예시 적절성",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "선택화면에서 참/거짓 플래그를 한 글자 자유 입력칸(TYPE c LENGTH 1)으로 받아 사용자가 'X'를 직접 타이핑하게 하는 화면은 실무 표준이 아니다. 표준은 PARAMETERS ... AS CHECKBOX다.",
+      "evidence": "AS CHECKBOX로 선언하면 화면에 체크박스가 뜨고 값이 자동으로 'X'(체크)/공백(해제)으로 들어와, 같은 레슨 후반이 강조하는 abap_true/abap_false 관례와 정확히 맞물린다. 반면 자유 입력 한 칸은 사용자가 'Y'·'1'·'O'를 넣는 것을 막지 못하고, 그 순간 이 레슨의 조건식(= 'X')이 오류 없이 조용히 거짓이 된다 — 입문자가 가장 오래 헤매는 유형의 결함이다.",
+      "suggestion": "예제를 PARAMETERS: pa_amt TYPE i, pa_vip AS CHECKBOX, pa_block AS CHECKBOX. 로 바꾸고 '체크박스는 체크하면 X, 아니면 공백이 들어온다'는 한 줄을 붙인다. 자유 입력칸을 유지한다면 '실무에서는 이런 플래그를 AS CHECKBOX로 받는다'는 주석이라도 남긴다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L06.md",
+      "quote": "**① 코드에 [[BREAK-POINT]] 심기** — 멈추고 싶은 줄에 한 문장 넣는다. 실행이 그 줄에",
+      "category": "안티패턴 / 위험한 생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "코드에 BREAK-POINT를 직접 심는 방식을 ①번, 즉 기본 수단처럼 앞세웠다. 뒤쪽 '흔한 실수'에서 이송 위험은 짚었지만, 하드코딩 브레이크포인트가 공유 개발·QA 시스템에서 그 프로그램을 실행하는 다른 사용자까지 디버거로 세운다는 점은 빠져 있다.",
+      "evidence": "BREAK-POINT는 조건 없는 정지라, 디버깅 권한이 있는 사람이면 누가 그 코드를 타든 디버거가 열린다. 같은 개발 시스템에서 테스터·다른 개발자가 그 프로그램을 돌리면 영문 모른 채 디버거에 갇힌다. 반면 ③ 세션 브레이크포인트는 내 세션에만 걸리고 코드에 흔적이 남지 않아, 현업에서 기본으로 쓰는 수단이다. 즉 소개 순서가 실무의 권장 순서와 반대다.",
+      "suggestion": "순서를 ③ 세션 브레이크포인트 → ② /h → ① BREAK-POINT로 뒤집거나, ① 옆에 경고를 붙인다: '코드에 남는 방식이라 같은 시스템의 다른 사람 실행까지 세운다. 급할 때만 쓰고 확인이 끝나면 즉시 지운다.'"
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L05.md",
+      "quote": "> 다른 문장이 끼면 값이 덮여 엉뚱한 결과를 보게 된다. `sy-subrc`는 뒤 챕터",
+      "category": "사실 오류",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'사이에 다른 문장이 끼면 값이 덮여'는 사실과 다르다. sy-subrc는 그 값을 설정하도록 정해진 명령만 덮어쓰며, 단순 대입이나 WRITE 같은 문장은 sy-subrc를 건드리지 않는다. 같은 콜아웃 바로 앞 문장('아무 문장이나 채워 주는 값이 아니라')과도 서로 어긋난다.",
+      "evidence": "gv_x = 1. 이나 WRITE 문 뒤에도 직전 FIND의 sy-subrc는 그대로 남아 있다. 실제 위험은 '아무 문장'이 아니라 sy-subrc를 설정하는 또 다른 명령(FIND·READ TABLE·SELECT·CALL FUNCTION 등)이 사이에 끼는 경우다. 지금 서술대로 외우면 나중에 '중간에 계산 한 줄 넣었으니 sy-subrc가 깨졌겠지' 같은 잘못된 진단으로 이어진다.",
+      "suggestion": "'sy-subrc를 채우는 또 다른 명령이 사이에 끼면 앞의 결과가 덮인다. 그래서 확인은 그 명령 바로 다음 줄에서 하는 습관을 들인다'로 고쳐, 앞 문장과 논리를 일치시킨다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH04 7개 레슨의 문법·동작 서술은 기술적으로 견고하다. 연산자 앞뒤 공백 강제, 산술 우선순위와 `**`의 우측 결합(2 ** 3 ** 2 = 512), 정수 대입 시 반올림(10 / 4 → 3)과 DIV의 절사 대비, MOD, 날짜 D 타입의 월말 넘김, 문자 변수의 +offset(길이)가 덧셈이 아니라는 경고, SEARCH의 obsolete 판정, CASE의 fall-through 부재와 선택화면 대문자 변환, DO/WHILE·EXIT/CONTINUE/CHECK, SY 필드 목록, 디버거 F5/F6/F7/F8 매핑과 세션 브레이크포인트 수명, COMPUTE_INT_ZERODIVIDE·BCD_ZERODIVIDE·ST22, boolc( )가 string이라 abap_bool 비교·IS INITIAL에서 어긋난다는 경고까지 모두 실제와 일치했다 — 명백한 사실 오류(틀린 문법·틀린 동작)는 발견하지 못했다. 남은 것은 경계 조건과 실무 관례의 보완 6건이다. 가장 중요한 것은 EXIT의 '반복 밖 = 처리 블록 종료' 의미 누락으로, 같은 표에서 CHECK만 이중 의미를 짚어 준 비대칭이며 CH04-L07의 설명 근거까지 흔든다. 나머지는 CLEAR와 VALUE 시작값 혼동, 시간(T)의 자정 랩어라운드, 플래그 파라미터의 AS CHECKBOX, 하드코딩 BREAK-POINT의 공유 시스템 파급, sy-subrc 덮어쓰기 서술의 부정확이며 전부 한두 줄 문장 보완으로 해결된다. 구조 재작성은 불필요하다."
+  }
+}

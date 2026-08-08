@@ -1,0 +1,56 @@
+{
+  "agent": "AG05",
+  "model": "sonnet",
+  "target": "CH02",
+  "persona_ack": "20년차 학습 교재·커리큘럼 설계 전문가로서 CH02(_chapter.md + L01~L06)를 챕터 구성, 섹션 흐름, 복습/예습 장치, 불편-해결 서사, 인지부하 다섯 축으로 감사했다.",
+  "method": "대상 .md 7개 파일을 Read로 전문 통독. 코드 블록마다 선언된 변수와 실제 대입·WRITE 사용 여부를 줄 단위로 대조하고, front-matter의 introduces·prevRel·foreshadow·advanceUse 선언이 본문 서술·라벨링과 일치하는지 확인했다. 브라우저·빌드·검색 도구는 사용하지 않음(정적 텍스트 분석만).",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH02\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH02\\CH02-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH02\\CH02-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH02\\CH02-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH02\\CH02-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH02\\CH02-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH02\\CH02-L06.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH02\\CH02-L02.md",
+      "quote": "DATA: gv_text  TYPE string,\n      gv_qty   TYPE i,\n      gv_today TYPE d.\n\ngv_qty   = 10 + 5.\ngv_today = '20260623'.   \" 날짜는 따옴표 안 8자리(YYYYMMDD)\nWRITE: / gv_qty, / gv_today.",
+      "category": "인지부하(예제 설계)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "다섯 타입을 예고하는 첫 코드 예제에서 gv_text를 선언만 하고 이후 대입·WRITE 어디에도 쓰지 않는다.",
+      "evidence": "같은 블록에서 gv_qty·gv_today는 각각 대입되고 WRITE: / gv_qty, / gv_today.로 출력되지만, gv_text(STRING)는 선언 이후 파일 전체에서 다시 등장하지 않는다. 이 레슨이 다루는 5개 타입 중 STRING 하나만 예제 코드에서 실제 동작 없이 '선언만' 되어, 처음 여러 변수를 한 블록에서 보는 입문자에게 '왜 있는데 안 쓰지'라는 불필요한 의문을 남긴다.",
+      "suggestion": "gv_text에 값을 대입하고 WRITE 목록에도 포함시켜 5종 중 다뤄지는 타입은 실제로 동작을 보여주거나, 예제 목적이 I·D 두 타입이면 gv_text 선언 자체를 빼서 예제를 단순화한다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH02\\CH02-L03.md",
+      "quote": "      gv_zip  TYPE n LENGTH 5,            \" 우편번호(숫자 문자)",
+      "category": "인지부하(예제 설계)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "C·N·P 세 타입을 보여주는 도입 코드 예제에서 gv_zip(N 타입)을 선언만 하고 이후 대입·WRITE 어디에도 쓰지 않는다.",
+      "evidence": "같은 블록에서 gv_code는 'ABCD'가 대입되고, gv_amt는 7/2 결과가 대입되며, 두 변수 모두 WRITE: / gv_code, / gv_amt.로 출력된다. 반면 gv_zip은 선언 후 파일 전체에서 다시 등장하지 않아 N 타입만 예제에서 실제 동작을 못 보여준다. 바로 앞 레슨(L02)의 gv_text와 동일한 패턴이 반복돼, 이 챕터의 '타입 소개' 예제들에서 되풀이되는 습관으로 보인다.",
+      "suggestion": "gv_zip에도 값을 대입하고(예: gv_zip = '01234'.) WRITE 목록에 포함시켜 N의 '앞 0 보존' 특성을 코드로 직접 보여주면, 본문에서 말로만 설명한 내용(우편번호 앞 0)을 실행 예제와 바로 연결할 수 있다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH02\\CH02-L02.md",
+      "quote": "introduces: [\"Complete 타입\", \"STRING\", \"I\", \"F\", \"D\", \"T\", \"숫자 리터럴 표기(소수는 따옴표)\", \"정수 나눗셈 반올림\"]",
+      "category": "인지부하",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "L02 한 레슨에 걸린 신규 개념 태그가 8개(타입 5종 + 리터럴 표기 규칙 + 정수 나눗셈 반올림)로, 챕터 뒷부분 L04~L06(각 2~3개)보다 뚜렷이 많다. 바로 앞 L01도 7개로 비슷하게 챕터 앞쪽에 신규 개념이 몰려 있다.",
+      "evidence": "STRING·I·F·D·T는 한 표로 묶여 제시되고, F의 근사값 상세와 P LENGTH 계산은 details 접기로, 타입별 모양은 임베드로 분산되어 있어 태그 수만큼 체감 부담이 크지는 않을 수 있다. 다만 표 5종 암기에 더해 '소수는 따옴표로 감싼다'는 리터럴 표기 규칙, 자동 변환 시 잘림·런타임 오류 위험, 정수 나눗셈이 버림이 아니라 반올림이라는 반직관적 사실까지 한 레슨에서 처리해야 해, CH01 직후 두 번째 실질 레슨치고는 한 차시 분량이 타이트하다.",
+      "suggestion": "정수 나눗셈 반올림(및 관련 자동 변환 경고)을 P 타입으로 정확한 소수 계산을 다루는 L03 도입부로 옮기거나, F의 근사값 details처럼 별도 심화 상자로 접어 본문 필수 학습량을 '5종 타입 표 + 리터럴 표기'로 가볍게 하는 것을 고려."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "챕터 구성과 순서는 논리적이다(리터럴 한계→변수→Complete/Incomplete 타입→TYPES 재사용→CONSTANTS→Text Symbol이 서로 자연스럽게 이어짐). 불편-해결 서사가 정직하다 — prevRel 메타(pain-solution/next/parallel)가 실제 본문 프레이밍과 어긋나지 않고, L02→L03처럼 억지로 '불편'을 지어내지 않고 '다음 도구'로 솔직하게 넘어간다. 복습 장치도 우수하다 — L04의 '전역이 두 번 나온다' 절은 L01에서 배운 뜻과 지금의 뜻을 명시적으로 대조해 준다. 예습(L1)·선행사용(L2) 라벨링도 규칙을 정확히 지킨다 — L02의 P 타입 [선행 사용] 표기, L04의 '두 가지 습관' 중 하나만 이름을 밝히는 절제된 예고가 그 예다. 다만 두 가지는 다듬을 여지가 있다. ① L02·L03의 타입 소개 코드에 선언만 되고 끝까지 안 쓰이는 변수(gv_text, gv_zip)가 있어 사소한 의문을 남긴다. ② L01·L02에 신규 개념이 상대적으로 몰려 있고, 특히 L02는 타입 5종 표에 리터럴 표기·자동 변환·정수 나눗셈까지 겹쳐 한 레슨치고 다소 빡빡하다. 구조를 바꿔야 할 결함은 없고, 예제 정리와 L02 후반부 일부 재배치 수준의 경미한 손질로 충분해 보인다."
+  }
+}

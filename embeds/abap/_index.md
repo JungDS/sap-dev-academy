@@ -32,7 +32,7 @@
 | CH03-L01-S01 | CH03-L01 | domain-builder | SE11 Domain 생성(저장→검사→활성화·예제칩 6) | ✅ |
 | CH03-L02-S01 | CH03-L02 | ddic-layer-board | Domain(기술)→Data Element(의미) 1:N 상속 보드 — 길이 토글→DE 2개+화면 미리보기 동시 반영·**Field Label 직접 편집→그 칸 라벨만 변경**·직접 TYPE 사용→오류 / DE 참조→성공 선언 데모 | ✅ |
 | CH03-L03-S01 | CH03-L03 | param-screen-lab | PARAMETERS 보상 실험 — pa_stat 타입 DE↔표준 타입 토글(F4 온·오프)·**Selection Texts의 Dictionary 참조 체크로 라벨 이어받기**(꺼짐=기술명 PA_STAT)·VALUE CHECK로만 고정값 검증(F4≠검증)·OBLIGATORY 차단·DEFAULT(지우면 빈값 유지)·LOWER CASE·실행 mock | ✅ |
-| CH04-L01-S01 | CH04-L01 | step-debugger | 산술 트레이스 10스텝 — 사칙연산 4종 · `2 ** 3 ** 2`=512(우결합) · **정수 나눗셈 함정**(`10 / 4`: I는 3·DIV는 2·P는 2.50 동시 표시) · MOD · **날짜 산술**(`+ 1`이 1/31→2/1로 달 넘김) | ✅ |
+| CH04-L01-S01 | CH04-L01 | step-debugger | 산술 트레이스 12스텝 — 사칙연산 4종(`2 ** 10`=1024, 본문 사칙연산 절) · `2 ** 3 ** 2`=512(우결합, 본문 변수 `gv_n`) · **정수 나눗셈 함정**(`10 / 4`: I는 3·P는 2.50 / `10 DIV 4`는 2) · DIV·MOD(17) · **날짜 산술**(`+ 1`이 1/31→2/1로 달 넘김) | ✅ |
 | CH04-L05-S01 | CH04-L05 | step-debugger | DO·sy-index 트레이스(1→5) | ✅ |
 | CH04-L06-S01 | CH04-L06 | step-debugger **(+Watchpoint 레이어)** | Watchpoint 체험 홈 — 만들기 버튼→변수 이름→저장(본문 절차 동일)→**계속(F8)이 그 값 바뀌는 줄에서 자동 정지**·칩 삭제·미등록 시 F8은 끝까지. 예제=합계 누적(gv_total이 루프 6번 + 할인 10번에서 바뀜). 구구단 아님 = **CH04-L07-S01 정답 선노출 회피** · 스텝은 마지막 줄까지 1:1 | ✅ |
 | CH05-L01-S01 | CH05-L01 | step-debugger | §BEGIN OF+§Component 예제 통합 트레이스(선언→하이픈 대입→WRITE, 6스텝 — chain은 항목당 1스텝·출력 줄 점진 완성·TYPES 없음) | ✅ |

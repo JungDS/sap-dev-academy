@@ -1,0 +1,75 @@
+{
+  "agent": "AG06",
+  "model": "opus",
+  "target": "CH03",
+  "persona_ack": "20년차 SAP ABAP 아키텍트(ECC~S/4HANA 개발·운영·성능·이관 경험, 후배 교재 기술검수 다수) 시선으로 CH03의 기술 사실·예시 적절성·위험한 생략·안티패턴만 감사했다. 읽기 전용 준수(파일 수정·생성 없음), 대상 4개 파일 외 접근 없음, 웹 검색·외부 네트워크 미사용, 다른 감사자 산출물·과거 감사 문서 미열람.",
+  "method": "Read 도구로 대상 4개 파일 전문을 통독(셸·브라우저·웹 미사용). 판단 근거는 내부 SAP/ABAP 지식이며, 릴리스·설정에 좌우되는 항목은 confidence=추정으로 분리했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH03\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH03\\CH03-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH03\\CH03-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH03\\CH03-L03.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH03\\_chapter.md",
+      "quote": "PARAMETERS 한 줄로 입력칸을 만들면 라벨과 F4 선택 목록이 따라붙는다.",
+      "category": "사실 정확성 / 내부 정합성",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "챕터 소개문이 '선언 한 줄이면 라벨도 따라붙는다'로 읽힌다. 그러나 선택화면 라벨(Selection Text)은 선언만으로 붙지 않는다. Selection Texts 화면에서 Dictionary 참조(Dictionary Reference)를 체크해야 Data Element의 Field Label이 라벨로 나온다. F4만 선언(타입 바인딩)만으로 동작한다.",
+      "evidence": "같은 챕터의 CH03-L03이 이 사실을 정확히 설명한다 — '아무것도 안 하면 이 자리가 비어 있어서 화면에는 PA_AMT 같은 기술 이름이 그대로 보인다', 그리고 'Goto → Text Elements → Selection Texts … Dictionary 참조 칸에 체크'. 즉 라벨은 자동이 아니라 체크가 전제이며, 소개문만 이 전제를 빼먹어 L03 본문과 어긋난다. 소개문을 먼저 읽은 학습자는 실기에서 기술명(PA_AMT)이 뜨는 이유를 자기 잘못으로 오해하기 쉽다.",
+      "suggestion": "소개문을 '라벨은 체크 한 번으로, F4 선택 목록은 곧바로 따라붙는다' 정도로 고쳐 전제(Selection Texts의 Dictionary 참조)를 한 마디 넣는다. front-matter intro와 본문 문장이 동일 문장이므로 두 곳 모두 수정."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH03\\CH03-L02.md",
+      "quote": "`SE11` → Data Element → `ZDE_AMOUNT` → Create.",
+      "category": "실습 절차 정확성(SE11 화면 경로)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "SE11 초기 화면에는 'Data Element'라는 선택 항목이 없다. 라디오 버튼은 Database table / View / Data type / Type Group / Domain / Search help / Lock object이고, Data Element는 'Data type(데이터 유형)'을 고른 뒤 이름을 넣고 Create를 누르면 뜨는 팝업(Data element / Structure / Table type)에서 선택한다. 문장 그대로 따라 하면 화면에서 항목을 못 찾는다.",
+      "evidence": "대비되는 근거가 같은 챕터 안에 있다. CH03-L01의 'SE11(Dictionary) → Domain → 이름(우리는 금액용 ZDO_AMOUNT) → Create.'는 Domain이 초기 화면의 독립 라디오 버튼이라 정확하다. Data Element만 한 단계(Data type 선택 → 유형 선택 팝업)가 더 있는데 L02가 그 단계를 생략했다. 대상 학습자가 완전 입문자라 화면에 없는 항목을 찾는 데서 막힌다.",
+      "suggestion": "'SE11 → Data type(데이터 유형) 선택 → 이름 `ZDE_AMOUNT` 입력 → Create → 팝업에서 Data element 선택'으로 한 단계를 명시한다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH03\\CH03-L01.md",
+      "quote": "**음수를 담을 수 있는지.** 음수가 필요한 숫자 값이면 켠다(예: 금액의 마이너스, 재고 증감). 참고로 NUMC는 음수를 담지 못한다",
+      "category": "용어·정의 정확성(DDIC Domain 속성)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "Domain의 부호(Sign) 플래그는 '값을 음수로 담을 수 있는지'가 아니라, 화면에서 부호를 입력·표시할 수 있는지(출력 길이에 부호 한 자리를 확보할지)를 정하는 설정이다. 저장 가능 여부를 좌우하지 않는다.",
+      "evidence": "DEC 도메인은 ABAP packed(TYPE p) / DB DECIMAL로 내려가고 이 표현형은 부호를 항상 포함한다. 따라서 플래그를 꺼도 프로그램에서 음수를 대입·저장하는 것 자체는 막히지 않는다. 플래그가 꺼진 필드는 화면 입력에서 부호가 거부되고 출력 폭에 부호 자리가 없을 뿐이다(같은 표의 '출력 길이' 행이 이미 '부호 때문에 더 길 수 있다'고 설명하므로 두 행이 서로 맞물린다). 'NUMC는 음수를 담지 못한다'는 서술은 정확하다.",
+      "suggestion": "'음수를 화면에서 입력·표시할 수 있는지(켜면 출력 길이에 부호 자리 한 칸을 더 잡는다)'로 한 줄만 정밀화한다. 실무 지침('음수가 필요한 값이면 켠다')은 그대로 유지해도 된다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH03\\CH03-L03.md",
+      "quote": "이 Selection Text가 **Data Element의 Field Label을 가져오도록** 체크 한 번만 해 주면, 화면 라벨이 \"금액\"으로 바뀐다.",
+      "category": "내부 정합성(예시 값 불일치) / 설명 누락",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "Dictionary 참조를 켰을 때 Field Label 4종 중 어느 것이 선택화면 라벨로 오는지 어느 레슨에도 없고, 두 레슨의 예시 값이 서로 어긋난다. CH03-L02 표는 Medium(20자)을 '일반 화면의 입력칸 옆'에 배정하고 금액의 Medium 라벨을 '송장 금액'으로 적었는데, L03은 같은 입력칸 라벨이 '금액'(L02가 Short에 배정한 값)으로 바뀐다고 한다.",
+      "evidence": "CH03-L02 표: 'Short | 10 | 자리가 좁은 화면·목록 | 금액', 'Medium | 20 | 일반 화면의 입력칸 옆 | 송장 금액'. PARAMETERS 라벨은 정확히 '입력칸 옆' 자리다. 학습자가 L02 표대로 네 칸을 다르게 채운 뒤 L03을 실습하면 화면에 뜬 글자가 교재와 달라 '내가 뭘 잘못했나' 하고 멈춘다. 실제로 어느 라벨이 선택되는지는 라벨 영역 폭에 좌우되므로 단정하지 않더라도, 두 레슨의 예시 값 통일과 '자리 폭에 맞는 것을 시스템이 고른다'는 한 줄은 필요하다.",
+      "suggestion": "L02·L03의 금액 라벨 예시를 한 값으로 통일하고(예: 양쪽 모두 Medium '송장 금액'), L03에 '네 칸 중 라벨 자리 폭에 맞는 것이 쓰인다'는 한 문장을 덧붙인다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH03\\CH03-L03.md",
+      "quote": "단, `VALUE CHECK`는 **DDIC 타입(Data Element)을 참조하는 입력칸에만** 붙일 수 있다.",
+      "category": "문법 전제 불완전 / 위험한 생략",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "VALUE CHECK의 전제를 'DDIC 타입 참조'로만 좁혀 적었으나, 실제 조건은 그보다 강하다 — 참조한 타입의 Domain에 고정값(또는 값 테이블/체크 테이블)이 있어야 한다. 고정값이 없는 `zde_amount`에 붙이면 통과하지 못할 가능성이 크다. 덧붙여 VALUE CHECK를 켜면 공란(초기값)도 허용 목록 밖이라 사실상 필수 입력처럼 동작한다고 알려져 있어, '옵션은 화면 편의 셋과 검증 하나로 갈린다 / 둘은 별개 스위치다'라는 정리와 어긋날 수 있다.",
+      "evidence": "레슨은 같은 절에서 '고정값이 없는 zde_amount(금액)는 라벨만 따라오고'라고 밝혀 두고도 VALUE CHECK 전제는 'DDIC 타입 참조'로만 서술한다. 이 규칙만 보고 따라 하는 학습자는 고정값 없는 Data Element에 VALUE CHECK를 붙여 보게 된다. 또 임베드 실험이 OBLIGATORY와 VALUE CHECK를 독립 토글로 제공하므로, 실제 시스템이 VALUE CHECK만으로도 공란을 거부한다면 시뮬레이터와 실기가 달라진다. 웹 검색이 금지돼 릴리스별 정확한 허용 조건·메시지는 확인하지 못했으므로 추정으로 남긴다.",
+      "suggestion": "전제를 '고정값(또는 값 테이블)이 있는 DDIC 타입을 참조하는 칸에만'으로 좁힌다. 그리고 실기 시스템에서 ① 고정값 없는 Data Element + VALUE CHECK 구문 통과 여부 ② VALUE CHECK만 켠 상태에서 공란 실행 시 거부 여부 두 가지를 확인해 본문과 임베드 동작을 맞춘다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "기술 검수 관점에서 CH03의 핵심 서술은 입문 교재 평균을 크게 웃돈다. 특히 입문서가 자주 틀리는 지점을 정확히 짚었다 — Value Table은 적어 두는 것만으로 검사가 일어나지 않고 뒤 챕터의 외래 키 연결이 있어야 한다는 점, Domain은 Data Element를 통해서만 쓰인다는 점(프로그램에서 직접 타입으로 못 씀), 저장=비활성/활성화=런타임 객체 생성과 재활성화 전까지 옛 활성판이 쓰인다는 점, DDIC DEC 8(자릿수)와 ABAP TYPE p LENGTH 8(바이트=15자리)의 단위 차이, Field Label 4종의 최대 길이(10/20/40/55)와 Heading이 리스트 열 제목이라는 점, PARAMETERS 이름 8자 제한, F4는 도움말이고 검증은 VALUE CHECK라는 분리, Lower Case 플래그가 화면 입력에만 걸리고 코드 대입 값은 그대로라는 점 모두 맞다. 안티패턴 시연도 발견되지 않았다. 금액을 DEC 8,2로 단순화한 대목은 '실무 금액 필드는 통화 키와 짝을 이루는 전용 타입을 쓴다'고 먼저 밝혀 두어 잘못된 모델링 습관을 심는 수준은 아니고, Domain 변경 시 Where-Used 확인과 길이 축소로 값이 잘릴 위험도 짚어 두었다. 발견 5건은 모두 낮음 수준이며 문장 단위 교정으로 해소된다: (1) 챕터 소개문의 '라벨 자동' 표현이 L03의 Dictionary 참조 체크 전제와 어긋남, (2) SE11에서 Data Element를 만드는 경로가 한 단계 빠짐(Data type → 팝업), (3) 부호(Sign) 플래그를 '저장 가능 여부'로 정의한 정밀도, (4) 선택화면 라벨이 Field Label 4종 중 무엇인지 미설명 + L02/L03 예시 값 불일치, (5) VALUE CHECK 전제 조건(고정값·값 테이블 필요)과 공란 처리의 불완전. 구조·서술 흐름을 손댈 이유는 없어 재집필·보강이 아니라 경미 수정으로 판정한다."
+  }
+}

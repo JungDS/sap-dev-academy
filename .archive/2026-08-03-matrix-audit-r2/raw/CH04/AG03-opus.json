@@ -1,0 +1,79 @@
+{
+  "agent": "AG03",
+  "model": "opus",
+  "target": "CH04",
+  "persona_ack": "타 언어(Java/C#) 백엔드 3～5년차 개발자로서 ABAP을 빠르게 훑는 시선으로 CH04 전체를 통독했다. 변수·조건문·루프·SQL·OOP 기본기는 이미 아는 상태를 전제로, 과잉 설명·오개념 유발·지름길 부재·용어 충돌 네 가지만 기록했다. 이 사이트의 1독자는 비전공 입문자라는 점을 감안해, 입문자에게도 불필요한 장황함이 아닌 '경력자에게만 걸리는 지점'은 낮음 또는 suggestion으로 낮춰 분류했다.",
+  "method": "Read 도구로 대상 8개 파일(_chapter.md, CH04-L01～L07.md) 전문을 통독. 코드 실행·빌드·브라우저·웹 검색은 사용하지 않았고, ABAP 문법·런타임 동작 판단은 모델 내부 지식에 근거한다. finding.quote는 각 파일의 한 줄 안에서 연속된 원문을 그대로 복사했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L07.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L01.md",
+      "quote": "그때 `DIV`(몫)와 `MOD`(나머지)를 쓴다. 둘 다 `+ - * /`와 같은 갈래의 산술 연산자다.",
+      "category": "용어 충돌",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "`MOD`를 그냥 '나머지'로만 소개해, 타 언어의 `%`와 음수 처리가 다르다는 점을 짚지 않았다. 경력자는 `MOD` = `%`로 읽고 그대로 넘어간다.",
+      "evidence": "ABAP `MOD`는 나누는 수가 양수면 결과가 항상 0 이상이다(예: -5 MOD 3 = 1). 반면 Java/C#의 `%`는 피제수 부호를 따라가 -5 % 3 = -2다. 같은 레슨 끝의 '`n MOD 2`가 `0`이면 짝수, `1`이면 홀수' 팁도 ABAP에서는 음수 입력까지 성립하지만, 경력자가 머릿속에서 `%`로 치환해 옮겨 적는 순간 음수에서 어긋난다. 조용히 다른 값이 나오는 자리라 이름만 같고 뜻이 갈리는 전형적 충돌 지점이다.",
+      "suggestion": "`DIV`·`MOD` 코드 블록 아래에 한 줄 각주만 추가: '다른 언어의 `%`와 달리 ABAP `MOD`는 나누는 수가 양수면 결과가 음수로 내려가지 않는다(-5 MOD 3 = 1).' 입문자 본문은 손대지 말고 각주나 접기(details)로 분리하면 부담이 없다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\_chapter.md",
+      "quote": "ABAP에서만 다른 지점(연산자 앞뒤 공백이 필수, 정수 나눗셈은 버림이 아니라 반올림,",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "경력자용 요약의 '정수 나눗셈은 버림이 아니라 반올림'이라는 문장이, 정작 진짜 정수 나눗셈 연산자인 `DIV`(버림)와 정면으로 어긋난다.",
+      "evidence": "ABAP에는 '정수끼리 나누면 정수'라는 별도 연산이 없다. `/`는 언제나 정확히 계산하고, 그 결과를 [[I]] 변수에 대입하는 순간 반올림된다 — CH04-L01의 `gv_i = 10 / 4.`(3)와 `gv_dec = 10 / 4.`(2.50) 대비가 바로 그 증거다. 반면 같은 레슨이 가르치는 `DIV`는 `10 DIV 4` = 2로 실제로 '버림'이다. 이 요약만 믿은 경력자는 `DIV`도 반올림한다고 오독하거나, Java의 `int/int` 감각을 어디에 대응시켜야 할지 되짚게 된다. 이 콜아웃은 경력자가 유일하게 신뢰하고 넘어가는 요약이라 정확도 부담이 크다.",
+      "suggestion": "'정수 변수에 나눗셈 결과를 담으면 버림이 아니라 반올림(진짜 정수 나눗셈은 별도 연산자 `DIV`이고 이쪽이 버림)'처럼 반올림 시점(대입)과 연산자(`/` vs `DIV`)를 구분해 적는다. 길이는 반 줄만 늘어난다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L03.md",
+      "quote": "`IS INITIAL`을 null 검사로 읽기 쉽지만, ABAP에는 `null`이",
+      "category": "오개념 유발",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'ABAP에는 null이 아예 없다'는 무조건 진술이라, 경력자가 뒤에서 만날 초기 상태의 참조 변수·DB의 NULL과 충돌한다.",
+      "evidence": "정확히는 elementary 타입 변수에 'null 상태'가 없다는 뜻이다. 참조 변수(object/data reference)는 초기 상태가 사실상 null이고 그대로 접근하면 런타임 오류가 나며, Open SQL로 읽는 DB 컬럼에도 NULL은 존재한다(ABAP 변수로 받아 오면 초기값으로 바뀔 뿐이다). OOP를 아는 경력자는 '없다'를 언어 전반의 보장으로 받아들이기 때문에, 나중에 참조·DB를 배울 때 이 문장을 되짚어 취소해야 한다. 입문자에게는 지금 단계에서 유용한 단순화라 문장 자체를 없앨 필요는 없다.",
+      "suggestion": "범위만 한정한다: '변수(값 타입)에는 null이라는 상태가 없다 — 참조 변수·DB 쪽 이야기는 뒤 챕터에서 다시.' 입문자 기준 분량은 거의 그대로다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L03.md",
+      "quote": "두 값을 비교하면 **참**(true) 또는 **거짓**(false)이 나온다. 기호와 영문 둘 다 쓸 수 있다.",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L01·L06·L07에 있는 도입부 '⏩ … 훑고 넘어가도 된다' 지름길 안내가 L03에는 없어, 레슨 전반부(비교 연산자 표 · IF/ELSEIF/ELSE · AND/OR/NOT · 괄호)를 어디까지 건너뛰어도 되는지 알 수 없다.",
+      "evidence": "L03에서 경력자에게 실제로 새로운 것은 `IS INITIAL`(null이 아님) · `abap_bool`/`abap_true` 관례 · `xsdbool( )` 대 `boolc( )` 세 곳뿐이고, 앞의 비교 연산자·IF/ELSEIF·논리 결합은 타 언어와 동일하다(EQ/NE 같은 영문 별칭 정도가 추가). L03에도 🧑‍💻 콜아웃 두 개가 있지만 그것은 '차이 설명'이지 '건너뛰기 안내'가 아니다. 같은 챕터의 L01은 도입부 ⏩ 콜아웃에서 '다른 세 지점만 확인하고 나머지는 훑고 넘어가도 된다'로 정확히 그 역할을 한다. 챕터 intro가 'IF·CASE는 낯설지 않다'고 총론으로 말하지만 레슨 안 어느 절을 건너뛸지는 가리키지 않는다.",
+      "suggestion": "도입부에 한 줄 추가: '⏩ 다른 언어를 해 봤다면 비교 연산자·IF/ELSEIF는 훑고, `IS INITIAL` 절과 `abap_bool` 절부터 보면 된다.' 본문 축약은 하지 말 것 — 입문자에게는 현재 분량이 적정하다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L05.md",
+      "quote": "`EXIT`가 `break`, `CONTINUE`가 `continue`에 해당하고,",
+      "category": "용어 충돌",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'EXIT = break, 이름만 다르다'는 대응이 두 군데서 헐겁다. ① 바로 앞 CASE 레슨은 'ABAP에는 그런 문장(break)도 없다'고 못 박았고, ② `EXIT`는 반복 밖에서 뜻이 달라지는데 같은 표의 `CHECK`에만 그 이중 의미를 짚어 줬다.",
+      "evidence": "CH04-L04에는 '빠져나가려고 `break`를 적을 필요도 없고, ABAP에는 그런 문장도 없다'가 있어, 순서대로 읽은 경력자는 다음 레슨의 'EXIT가 break'와 부딪친다(L04의 문장은 CASE 문맥으로 읽어야 화해되지만, 빠르게 훑는 독자에게는 그 범위가 안 보인다). 또 ABAP `EXIT`는 반복 안에서는 루프 탈출이지만 반복 밖에서는 현재 처리 블록을 벗어나는 문장이라, 이름값이 `break`보다 넓다 — 같은 레슨이 `CHECK`에 대해서는 '반복 밖에서 쓰면 다른 뜻'이라고 별도 콜아웃까지 뒀기에 `EXIT`만 빠진 게 비대칭으로 보인다. 타 언어 경력자에게 `EXIT`라는 이름은 프로그램 종료(System.exit)로도 읽히는 자리다.",
+      "suggestion": "① L04 문장을 'C 계열 switch의 `break`에 해당하는 문장이 여기서는 필요 없다'로 범위를 좁히고, ② L05의 EXIT 행 또는 🧑‍💻 콜아웃에 `CHECK`와 같은 톤으로 '반복 밖에서 쓰면 뜻이 달라진다(모듈화 챕터에서)' 한 줄을 대칭으로 붙인다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "경력자 시선에서 CH04는 이미 상당히 잘 정비돼 있다. 챕터 intro와 L01·L06·L07에 ⏩ 지름길 콜아웃이, L02～L05에 🧑‍💻 차이 콜아웃이 배치돼 있어 '과잉'과 '지름길 부재'는 대부분 선제적으로 해소됐고, 타 언어 경력자가 실제로 걸려 넘어지는 ABAP 고유 함정(연산자 앞뒤 공백 필수, 문자 변수 뒤 `+숫자(길이)`가 offset으로 조용히 해석됨, I 대입 시 반올림, `&&`는 논리 AND가 아니라 문자열 잇기, CASE에 fall-through 없음, `xsdbool( )`과 `boolc( )`의 반환 타입 차이, F6=Step Over/F7=Step Out 대응, COMPUTE_INT_ZERODIVIDE 대 BCD_ZERODIVIDE)도 정확하고 빠짐이 적다. 남은 것은 재집필급 문제가 아니라 정밀도 손질이다. ① `MOD`의 음수 동작이 `%`와 다르다는 한 줄이 없고, ② 챕터 intro의 '정수 나눗셈은 버림이 아니라 반올림'이 정작 버림인 `DIV`와 충돌하며(이 요약은 경력자가 유일하게 믿고 넘어가는 문장이라 영향이 크다), ③ 'null이 아예 없다'가 참조·DB까지 포괄하는 과잉 일반화이고, ④ L03만 도입부 지름길 안내가 빠졌으며, ⑤ `EXIT`↔`break` 대응이 L04의 'break 문장도 없다'와 국소적으로 어긋난다. 다섯 건 모두 문장 한 줄 추가 또는 범위 한정으로 끝나고 입문자용 본문 분량에는 영향이 없다. 반대로 '입문자에게도 불필요하게 장황한 곳'은 찾지 못해 과잉 항목은 발견으로 올리지 않았다."
+  }
+}

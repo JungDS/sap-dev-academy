@@ -1,0 +1,57 @@
+{
+  "agent": "AG06",
+  "model": "sonnet",
+  "target": "CH04",
+  "persona_ack": "20년차 SAP ABAP 아키텍트(ECC~S/4HANA 개발·운영·성능·이관 경험) 페르소나로 CH04(연산자·문자열·IF·CASE·DO/WHILE·디버깅) 8개 파일의 기술 사실을 감사함.",
+  "method": "대상 8개 파일을 Read로 전문 읽고, 웹 검색·코드 실행 없이 ABAP 언어 지식(기억)만으로 각 코드 예제의 계산 결과·문법·시스템 동작 설명을 검산·대조하는 정적 검토를 수행함.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH04-L01.md",
+      "quote": "마지막 줄이 `**`의 '오른쪽부터'를 보여 준다. 왼쪽부터 계산했다면 `( 2 ** 3 ) ** 2`,",
+      "category": "사실 오류 — 연산자 결합 방향",
+      "severity": "높음",
+      "confidence": "추정",
+      "claim": "`2 ** 3 ** 2`가 오른쪽부터 계산되어 512가 된다는 서술이 실제와 반대일 가능성이 높다. ABAP의 거듭제곱 `**`는 일반 수학 표기·Python 등과 달리 왼쪽결합이라, 실제로는 `( 2 ** 3 ) ** 2` = 64가 맞는 결과다.",
+      "evidence": "ABAP 산술식에서 `**`의 결합 방향은 수학 관례와 다르게 왼쪽부터라고 알고 있다 — 바로 이 `2 ** 3 ** 2` 예시(결과 64)로 그 점을 설명하는 것을 본 기억이 있다. 본문은 이를 정반대로, 오른쪽부터 계산한 512가 정답이고 64는 '왼쪽부터 계산한 결과'라고 서술한다. 웹 검색이 금지돼 기억에만 의존한 판단이라 확실도는 '추정'이지만, 실제 시스템에서 `WRITE 2 ** 3 ** 2.`를 실행하면 즉시 기계적으로 검증 가능한 사실이라 오류라면 영향이 크다(뒤이은 코드 주석·설명 전부가 이 전제 위에 서 있음).",
+      "suggestion": "실제 ABAP 시스템 또는 공식 ABAP Keyword Documentation의 산술식(arithmetic expression) 설명에서 `2 ** 3 ** 2`를 직접 검증할 것. `**`가 왼쪽결합이면 본문의 '오른쪽부터/512(정답)'·'왼쪽부터/64(오답)' 서술을 서로 맞바꿔야 한다."
+    },
+    {
+      "seq": 2,
+      "file": "CH04-L03.md",
+      "quote": "타입이 **문자열**이라, `abap_bool` 변수와 비교하거나 `IS INITIAL`로 물으면 기대와 다르게",
+      "category": "사실 오류 — 내장함수 반환 타입(불확실)",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "`boolc( )`가 STRING(문자열) 타입을 돌려줘서 `abap_bool`/`IS INITIAL`과 어긋난다는 서술의 정확성이 불확실하다. `boolc( )`도 `xsdbool( )`과 마찬가지로 `c length 1`을 돌려줄 가능성이 있고, 그렇다면 본문이 말하는 구체적 부작용은 성립하지 않는다.",
+      "evidence": "`boolc( )`와 `xsdbool( )`은 논리식을 'X'/공백 값으로 바꿔 주는 오래된-새로운 짝으로 알고 있으나, `boolc( )`의 정확한 반환 타입(문자열 vs `c length 1`)과 도입 릴리스(본문 표기 7.02)는 기억이 분명하지 않다.",
+      "suggestion": "ABAP Keyword Documentation에서 `BOOLC`의 반환 타입·도입 릴리스를 재확인. 만약 `c length 1`을 돌려준다면 '문자열이라 어긋난다'는 대비 설명 전체를 재작성하거나 삭제."
+    },
+    {
+      "seq": 3,
+      "file": "CH04-L06.md",
+      "quote": "소수용 [[P]] 타입이면 `BCD_ZERODIVIDE`처럼 이름이 달라진다.",
+      "category": "사실 오류 — 런타임 오류 ID 표기",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "정수 0나눗셈 오류 `COMPUTE_INT_ZERODIVIDE`와 짝을 이루는 Packed(P)용 오류명은 `BCD_ZERODIVIDE`가 아니라 `COMPUTE_BCD_ZERODIVIDE`(COMPUTE_ 접두 포함)일 가능성이 높다.",
+      "evidence": "같은 문장에서 정수용은 접두 COMPUTE_를 포함해 정확히 표기했는데(`COMPUTE_INT_ZERODIVIDE`), 소수용만 대조를 위해 접두를 뺀 `BCD_ZERODIVIDE`로 적었다. 학습자가 ST22에서 실제로 검색할 문자열은 접두가 포함된 전체 이름이라, 그대로 찾으면 안 나올 수 있다.",
+      "suggestion": "`COMPUTE_BCD_ZERODIVIDE`로 접두를 포함해 표기."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH04 7개 레슨은 전반적으로 기술적으로 탄탄하다. 정수 나눗셈의 반올림(버림 아님), 연산자 앞뒤 공백 규칙과 offset 접근(`+n(m)`)과의 충돌, DIV/MOD 차이, 날짜(D)·시간(T) 특수 산술, SPLIT의 초과 조각 처리, SY 시스템 필드 설명, CASE의 non-fall-through, 중첩 DO에서 안쪽 루프가 sy-index를 덮어쓰는 함정, 디버거 F5~F8 키·Watchpoint·Short Dump/ST22 설명까지 핵심 사실이 대부분 정확했다. 다만 (1) L01의 `2 ** 3 ** 2` 결합방향 예제가 실제와 반대로 서술됐을 가능성(왼쪽결합이면 64가 정답인데 본문은 512를 정답으로 제시)이 가장 눈에 띄는 문제이고, (2) L03의 `boolc( )` 반환 타입 대비 설명의 정확성이 불확실하며, (3) L06의 Packed 0나눗셈 오류명에서 COMPUTE_ 접두가 누락됐다. 세 건 모두 웹 검색 없이 기억에 의존한 '추정' 판정이므로 실제 시스템 또는 공식 문서로 재검증 후 반영을 권한다. 예시 적절성·위험한 생략·안티패턴 관점에서는 legacy 문법(MOVE·ADD류·SEARCH·boolc)을 전부 '읽기용'으로 정확히 구분해 현업 관행과 어긋나는 곳이 없었다."
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "agent": "AG03",
+  "model": "sonnet",
+  "target": "CH02",
+  "persona_ack": "Java/C# 계열 백엔드 3～5년차 개발자 — 변수·조건문·루프·SQL·OOP 등 프로그래밍 기본기는 이미 알고, ABAP을 빠르게 훑어 실무에 옮기려 이 사이트를 읽는다는 페르소나로 CH02 전 레슨(_chapter.md, L01～L06)을 통독함.",
+  "method": "Read 도구로 대상 .md 7개 파일(_chapter.md, CH02-L01～L06) 원문을 직접 읽고 통독 — 브라우저·빌드·실행 도구는 쓰지 않고 텍스트 분석만 수행. 다른 감사자의 산출물(raw/CH02의 기존 파일)은 열어 보지 않음(블라인드 감사 준수).",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH02\\CH02-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH02\\CH02-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH02\\CH02-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH02\\CH02-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH02\\CH02-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH02\\CH02-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH02\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH02\\CH02-L05.md",
+      "quote": "> 🧑‍💻 **다른 언어를 해 봤다면** 여기까지는 이미 몸에 익은 이야기다. 아래 `CONSTANTS` 문법과",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "경력자용 스킵 안내가 매직 넘버 설명을 이미 다 읽은 뒤(문단 끝)에 나와서 실제로는 읽기 시간을 아껴주지 못한다.",
+      "evidence": "'코드에 박힌 정체불명의 값들' 절은 매직 넘버 개념과 세 가지 문제(뜻이 안 보임·바꾸기 어려움·오타)를 먼저 전부 설명한 다음에야 '여기까지는 이미 몸에 익은 이야기다'라는 스킵 안내가 나온다. Java/C# 3～5년차 개발자에게 매직 넘버 회피는 매우 익숙한 상식이라, 스킵 안내가 있다는 사실 자체는 좋지만 위치가 늦어 이미 그 내용을 다 읽은 뒤에야 '건너뛰어도 됐다'는 걸 알게 된다.",
+      "suggestion": "스킵 안내 콜아웃을 '코드에 박힌 정체불명의 값들' 소제목 바로 아래(매직 넘버 설명 시작 전)로 옮기면 경력자가 실제로 그 문단을 건너뛸 수 있다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH02\\CH02-L01.md",
+      "quote": "ABAP에는 다른 언어의 `null`(값이 아예 없는 상태) 같은 게 없다. 선언만 해도 이미 빈 값이",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "'ABAP엔 null 같은 게 없다'는 사실 이 챕터가 다루는 스칼라 타입 한정 설명인데 범위 한정 없이 언어 전체에 대한 단정으로 서술돼, 나중에 참조 변수(reference variable)의 unbound/초기 상태를 배울 때 경력자가 이 문장과 충돌한다고 느낄 수 있다.",
+      "evidence": "이 챕터는 스칼라 변수(DATA gv_x TYPE i 등)만 다루므로 '선언만 해도 빈 값(초기값)이 들어 있다'는 설명 자체는 정확하다. 그러나 문장이 '스칼라 타입은'이 아니라 'ABAP에는'이라는 언어 전체 단정으로 쓰여 있다. Java/C#에서 온 경력자는 참조 타입의 null을 아주 잘 알기 때문에, 나중에 클래스 레퍼런스 변수가 IS NOT BOUND·초기 상태를 갖는다는 걸 배우면 이 문장이 틀렸다고 느낄 위험이 있다.",
+      "suggestion": "'(적어도 지금까지 배운 스칼라 타입에는)' 같은 범위 한정 어구를 덧붙이면 나중 챕터(레퍼런스 타입)와 충돌하지 않는다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH02\\CH02-L05.md",
+      "quote": "매번 `'X'`/공백을 직접 쓰는 대신, SAP가 제공하는 표준 상수 `abap_true`(='X')·",
+      "category": "용어 충돌",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "abap_true/abap_false를 'true/false'라는 이름으로만 소개하고, 이것이 Java의 boolean·C#의 bool 같은 전용 타입이 아니라 문자 'X'/공백 값을 가진 상수일 뿐이라는 점은 짚지 않는다.",
+      "evidence": "본문은 'abap_true(='X')·abap_false(=공백)'라고만 적어 실제 값이 문자라는 힌트는 주지만, '이것은 별도 Boolean 타입이 아니라 문자 상수 관례다'라는 명시적 진술은 없다. true/false라는 이름 때문에 경력자는 전용 불리언 타입을 떠올리기 쉽고, 나중에 IF 조건에서 'gv_flag = abap_true'처럼 명시적 비교가 필요하다는 걸 알면(참·거짓으로 바로 안 쓰이는 점) 혼란스러울 수 있다.",
+      "suggestion": "abap_true·abap_false 소개 옆에 '문자 상수일 뿐, 전용 Boolean 타입이 아니다(IF에선 명시 비교로 쓴다)'는 한 줄을 덧붙이면 좋겠다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH02\\CH02-L02.md",
+      "quote": "> ⚠️ **`F`는 왜 \"근삿값\"인가** — `F`는 숫자를 이진법(0과 1)으로 쪼개 저장한다. 그런데 `0.1` 같은",
+      "category": "과잉",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "부동소수점 이진 근사(0.1 반복 합산 오차) 설명은 경력자에게는 CS 기본 상식이라 장황하게 느껴지는데, 같은 레슨의 정수 나눗셈 반올림 설명과 달리 이 부분엔 '다른 언어를 해봤다면' 스킵 안내가 없어 레슨 내에서 처리가 비일관적이다.",
+      "evidence": "같은 레슨(CH02-L02) 뒤쪽 '정수 연산의 함정' 절은 '다른 언어를 해봤다면 여기가 가장 자주 놀라는 지점이다'라는 콜아웃으로 경력자 눈높이를 챙기는데, 앞쪽 F 타입의 이진 근사 설명(⚠️ 박스)에는 그런 안내가 없다. 다만 이 설명 자체는 입문자에게 '왜 F로 돈 계산을 하면 안 되는가'를 알려주는 필수 내용이라 완전히 불필요하진 않다.",
+      "suggestion": "⚠️ 박스 끝에 '이진 부동소수점 오차를 이미 안다면 근삿값이라는 결론만 기억하고 넘어가도 됨' 같은 한 줄을 추가해 레슨 내 스킵 안내를 통일하면 좋겠다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH02\\CH02-L06.md",
+      "quote": "`WRITE '금액'.`처럼 화면에 보일 텍스트를 코드에 직접 적으면, **영어 사용자가",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "CH02-L01·L04·L05와 달리 L06에는 '다른 언어를 해봤다면' 식의 경력자용 안내가 전혀 없다 — 다국어 처리(i18n) 개념 자체는 익숙하니 '개념은 아는데 ABAP 구현 방식(SE38·TEXT-nnn)은 낯설다'는 구분을 짚어주면 좋았을 곳이다.",
+      "evidence": "L01·L04·L05는 모두 '다른 언어를 해 봤다면' 콜아웃으로 경력자가 뭘 훑고 뭘 새로 봐야 하는지 안내하지만 L06은 그런 문장이 한 번도 없다. 다만 챕터 인트로(_chapter.md)가 이미 'ABAP에만 있는 지점 세 가지' 중 하나로 '화면 글자는 번호로 관리한다'를 짚어 L06 전체가 새 내용임을 예고했으므로, 의도적 생략일 가능성도 있다.",
+      "suggestion": "'i18n 개념 자체는 익숙하겠지만 SE38 Text Elements·TEXT-nnn 문법은 ABAP 고유이니 훑지 말고 읽어야 한다' 정도의 한 줄을 도입부에 추가하면 다른 레슨과 안내 방식이 일관돼진다."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH02\\CH02-L04.md",
+      "quote": "TYPES ty_amount TYPE p LENGTH 8 DECIMALS 2.",
+      "category": "용어 충돌",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "'TYPES 문(타입 정의 명령어)'과 '(DATA/TYPES 안에서 타입을 지정하는) TYPE 키워드'가 같은 줄에 나란히 등장해, 빠르게 통독하는 경력자에겐 순간적으로 헷갈릴 수 있다.",
+      "evidence": "예제 코드 'TYPES ty_amount TYPE p LENGTH 8 DECIMALS 2.'에서 TYPES(명령문)와 TYPE(키워드)이 한 줄에 함께 나온다. L01에서 이미 'DATA x TYPE i'의 TYPE에 익숙해진 상태로 넘어오면, 복수형 TYPES가 완전히 다른 문장(타입 정의문)의 이름이라는 걸 순간적으로 놓치고 지나칠 여지가 있다. 레슨 본문은 이후 'TYPES는 타입을 정의할 뿐'이라고 바로잡아주지만, 그 앞에 'TYPE과 TYPES는 다른 키워드다'라는 명시적 구분은 없다.",
+      "suggestion": "TYPES 소개 첫 문장에 'TYPE(타입 지정)과는 다른 별도 명령문이다'처럼 괄호로 한 번 짚어주면 빠르게 훑는 경력자도 바로 구분된다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "Java/C# 백엔드 경력자 시선으로 보면 CH02는 이미 스킵 콜아웃(L01·L04·L05 도입부, L02·L03의 개별 지점)을 상당히 잘 갖춰 두어 통독 부담이 적은 편이다. 다만 (1) L05의 스킵 안내가 매직 넘버 설명 뒤에 위치해 실효성이 떨어지고, (2) 'ABAP엔 null이 없다'(L01)·abap_true/false를 boolean처럼 소개(L05)하는 두 지점은 이후 챕터(레퍼런스 타입·IF 조건문)와 만났을 때 경력자의 기존 지식과 살짝 충돌할 여지가 있으며, (3) L06엔 유일하게 경력자용 안내가 없고, (4) L02의 부동소수점 근사 설명은 같은 레슨의 정수 나눗셈 설명과 달리 스킵 안내가 없어 처리가 비일관적이다. 모두 치명적이진 않고 문구 추가·위치 조정 수준의 경미한 보완으로 해결 가능하다."
+  }
+}
