@@ -1,0 +1,66 @@
+{
+  "agent": "AG06",
+  "model": "sonnet",
+  "target": "CH05",
+  "persona_ack": "나는 ECC부터 S/4HANA까지 개발·운영·성능·이관을 두루 겪은 20년차 SAP ABAP 아키텍트로서, 후배 교재를 감수하는 자세로 CH05(Structure) 6개 파일의 기술적 정확성을 감사했다.",
+  "method": "대상 6개 MD 파일(_chapter.md + L01~L05)을 정독하고, ABAP 팩드 타입(P LENGTH=바이트)·DDIC Domain 길이 규칙(DEC=자릿수)·SE11 오브젝트 체계(Data Element/Structure/Append Structure) 등 실무 지식으로 로컬↔DDIC 대응 관계를 교차 검증함. 웹 검색·외부 도구·코드 실행은 사용하지 않음(제약 준수).",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH05-L02.md",
+      "quote": "| AGE | Data Element | `ZDE_AGE` | NUMC | 3 | 나이 |",
+      "category": "사실 오류",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "같은 '사람' 예제의 age 필드가 CH05-L01 로컬 Structure에서는 TYPE i(정수)인데, 이를 전역화했다는 CH05-L02 DDIC Structure에서는 NUMC 3(0으로 좌측 채움하는 문자 기반 숫자)으로 바뀐다. 레슨은 '로컬과 DDIC는 쓰는 법이 똑같고 차이는 생성 위치뿐'이라 서술하지만 실제로는 데이터 표현 자체가 달라진다.",
+      "evidence": "NUMC는 내부적으로 문자열이며 자릿수를 0으로 채우는 식별자성 필드(전표번호·회계연도 등)에 주로 쓰는 타입이다. 나이처럼 비교·산술에 쓰는 수량을 NUMC로 두면 값을 넣었을 때 로컬 버전(i)과 다르게 자릿수가 0으로 채워져 표시되는 등 동작이 갈린다. 같은 챕터 안에서 같은 개념의 로컬↔DDIC 대응이 어긋나 있어, 두 예제를 이어서 실습하면 같은 값인데 다른 결과를 보게 될 소지가 있다.",
+      "suggestion": "ZDE_AGE가 참조하는 Domain을 산술 친화적 타입(DEC 등)으로 맞추거나, NUMC를 의도적으로 쓴 것이라면 '왜 나이인데 NUMC인지'와 '로컬 i와 달리 0으로 채워진다'는 점을 흔한 실수 절에 한 줄 짚어준다."
+    },
+    {
+      "seq": 2,
+      "file": "CH05-L02.md",
+      "quote": "| AMOUNT | Data Element | `ZDE_AMOUNT` | DEC | 8 (소수 2) | 금액 |",
+      "category": "사실 오류",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "CH05-L01 로컬 선언 `amount TYPE p LENGTH 8 DECIMALS 2`의 '8'은 바이트 수(최대 15자리, 정수부 13자리+소수 2자리)인 반면, DDIC Domain에서 데이터 타입 DEC에 적는 '길이 8'은 전체 자릿수(정수부 6자리+소수 2자리)를 뜻해 활성화 시 훨씬 작은 바이트 수의 P 필드로 매핑된다. 같은 필드를 로컬↔DDIC로 이어가면서 두 '8'이 서로 다른 단위를 가리키는 점을 언급하지 않아, DDIC DEC(8,2)가 로컬 P LENGTH 8 DECIMALS 2와 동일한 표현범위라고 오인하게 만든다.",
+      "evidence": "ABAP `TYPE p LENGTH n`의 n은 바이트 길이이고, SE11 Domain의 데이터 타입 DEC에 입력하는 '길이'는 자릿수(소수 자릿수 포함 총 digit 수)다. 이 예제 값(1500.50)은 양쪽 다 문제없이 들어가 증상이 바로 드러나지는 않지만, 학습자가 더 큰 금액으로 실험하면 로컬 버전에서는 되던 값이 DDIC 버전에서는 자릿수 초과로 잘리거나 오류가 날 수 있다.",
+      "suggestion": "표에 '이 길이는 자릿수(정수부+소수부)이며 로컬 TYPE p LENGTH의 바이트 수와 단위가 다르다'는 각주를 달거나, 두 선언이 실제로 대응되는 자릿수가 되도록 예제 수치를 맞춰준다."
+    },
+    {
+      "seq": 3,
+      "file": "CH05-L03.md",
+      "quote": "**`.APPEND`**(Append Structure)는 SAP **표준** Structure·테이블을 **직접 고치지 않고**, 내 필드를",
+      "category": "사실 오류",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "레슨은 중첩·.INCLUDE·.APPEND를 '세 방식'으로 나란히 비교하며 셋 다 지금 편집 중인 그 Structure의 Component 목록에 비슷하게 끼워 넣는 선택지처럼 서술한다. 그러나 .INCLUDE는 실제로 그 Structure 자신의 Component 목록에 '.INCLUDE' 특수 행을 직접 입력해 추가하는 반면, Append Structure는 완전히 별도의 DDIC 오브젝트(오브젝트 타입 자체가 다름)를 새로 만들어 기준 테이블에 붙이는 것이라 만드는 화면과 절차 자체가 다르다.",
+      "evidence": "SE11에서 .INCLUDE는 편집 중인 Structure의 Component 이름 칸에 '.INCLUDE'를 직접 입력해 추가하지만, Append Structure는 별도 오브젝트를 생성해 대상(주로 SAP 표준) 테이블에 지정하는 방식이며 대상 테이블 자신의 Component 목록을 편집하는 게 아니다. 용도도 다르다 — .INCLUDE는 내가 만드는 Structure를 조립하는 일반 재사용 수단이고, Append는 '내가 못 고치는 표준 오브젝트'를 건드리지 않고 확장하는 특수 목적 수단이라 내 Z Structure에 습관적으로 쓸 일이 거의 없다.",
+      "suggestion": "'세 방식 비교' 프레이밍에서 .APPEND는 '같은 화면에서 고르는 세 번째 선택지'가 아니라 '표준 오브젝트 확장을 위한 별도 오브젝트'임을 한 문장으로 구분한다. 예: '중첩·.INCLUDE는 내가 만드는 Structure 안에서 고르는 두 방식이고, .APPEND는 아예 다른 화면에서 별도 오브젝트를 만들어 표준에 붙이는 방식'."
+    },
+    {
+      "seq": 4,
+      "file": "CH05-L04.md",
+      "quote": "타입이 다른 두 Structure 사이에서 **이름이 같은 Component만** 골라 옮긴다.",
+      "category": "위험한 생략",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "MOVE-CORRESPONDING이 '이름이 같은 필드만 옮긴다'는 편의는, 반대로 두 Structure에 우연히 같은 이름이지만 의미가 다른 필드가 있으면 의도치 않게 잘못된 값이 매핑되는 위험도 된다는 언급이 없다. 대상 잔존값 함정은 잘 짚었지만 '이름 일치 ≠ 의미 일치'라는 반대 방향 위험은 다루지 않는다.",
+      "evidence": "실무에서 Structure가 각자 다른 팀·다른 시점에 만들어지면 필드명이 우연히 겹치는 일이 드물지 않고, 이 경우 MOVE-CORRESPONDING은 조용히 잘못된 값을 옮긴다(컴파일 오류도 안 남). 현재 챕터엔 내부 테이블·반복문이 아직 없어 대량 반복 시 성능 비용까지 체감되긴 이르지만, 개념 자체는 이 규모의 예제에서도 한 줄로 짚을 가치가 있다고 판단한다(다만 이 부분은 저자의 의도적 범위 조절일 수도 있어 추정으로 남긴다).",
+      "suggestion": "흔한 실수 절에 '이름이 같다고 의미도 같은 건 아니다 — 필드명이 우연히 겹치면 의도치 않게 값이 넘어갈 수 있다'는 한 줄만 추가한다. 반복 처리 성능 이야기는 Internal Table 도입(CH06) 이후로 미뤄도 충분하다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "6개 파일 모두 문법적으로 유효한 ABAP/DDIC이며, LIKE가 '모양만 복사하고 값은 안 온다'는 설명, MOVE-CORRESPONDING의 대상 잔존값 함정 경고, .APPEND의 업그레이드 안전성 취지 등 실무 감각이 살아 있는 대목이 많다. 다만 CH05-L01(로컬)과 CH05-L02(DDIC)가 '같은 사람 예제'를 이어가면서 age(로컬 i ↔ DDIC NUMC)·amount(로컬 P LENGTH=바이트 ↔ DDIC DEC 길이=자릿수)의 실제 표현이 은근히 달라지는데도 '쓰는 법이 똑같다'로만 서술해 잠재적 혼선이 있고, CH05-L03의 '세 방식 비교' 프레이밍은 .APPEND를 .INCLUDE와 같은 층위의 컴포넌트 목록 조작처럼 보이게 해 실제 SE11에서는 다른 화면(별도 오브젝트)이라 당황할 수 있다. 치명·높음 결함은 없고 전부 국소적 정정으로 충분한 수준이다."
+  }
+}

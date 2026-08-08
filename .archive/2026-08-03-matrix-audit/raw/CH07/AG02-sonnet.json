@@ -1,0 +1,67 @@
+{
+  "agent": "AG02",
+  "model": "sonnet",
+  "target": "CH07",
+  "persona_ack": "나는 준호다. 배운 건 그 자리에서 직접 해봐야 직성이 풀리는 실습형 학습자로서, CH07(Transparent Table·SE11) 세 레슨의 본문 코드·설명과 임베드 위젯 넷(CH07-L01-S01, CH07-L02-S01, CH07-L03-S01, CH07-L03-S02)을 하나하나 직접 조작하며 대조 감사했다.",
+  "method": "브라우저(mcp Claude_Browser)로 로컬 서버(http://localhost:8144, ?v=b2/b3 캐시버스터)에서 4개 위젯을 실제 로드 → read_page로 인터랙션 요소 식별 → 클릭·체크박스 토글·폼 입력을 직접 수행하며 스크린샷과 콘솔 로그로 결과를 관찰했다. 구체적으로: (1) CH07-L01-S01은 키 재배치→활성화 시도(연속성 오류 재현), Built-In 전환→검사(Data Element 권장 경고 재현), 정상 설정 활성화(성공 배지·DB패널 vs 메시지 불일치 재현)까지 3회 활성화 사이클을 수행. (2) CH07-L02-S01은 저장·중복키 거부·자동채움(18행 합계 검증)·클라이언트 전환(0행 격리 확인)·오답 계산 저장(빨간 행 확인)·위젯 안내문이 예시로 든 '2×2인데 5' 입력을 문자 그대로 재현해 실패 여부를 확인. (3) CH07-L03-S01은 정적 렌더링·콘솔만 확인(CSS-only 엔진). (4) CH07-L03-S02는 행 이름 클릭으로 상세 패널 전환을 확인. 모든 페이지에서 read_console_messages로 콘솔 오류 0건을 확인했고, read_network_requests로 정적 자산 200 OK를 확인했다. 추가로 빌드된 실제 레슨 페이지(docs/abap/pages/CH07-L01~03.html)를 열어 iframe src가 올바른 위젯을 가리키는지, code-copy-block 렌더링과 콘솔 오류 유무를 재확인했다. 마지막으로 엔진 소스(se11-table-builder.js, se11-create-entries.js, compare-matrix.js)를 정독해 검증/판정 로직(validate·save·dup 체크)을 직접 추적했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\CH07-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\CH07-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\CH07-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH07-L01-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH07-L02-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH07-L03-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH07-L03-S02.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\se11-table-builder.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\se11-create-entries.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\compare-matrix.js",
+    "http://localhost:8144/embeds/abap/CH07-L01-S01.html (실조작 검증: 키 토글·타입 토글·검사·활성화·리셋)",
+    "http://localhost:8144/embeds/abap/CH07-L02-S01.html (실조작 검증: 저장·중복·자동채움·클라이언트 전환·오답 저장)",
+    "http://localhost:8144/embeds/abap/CH07-L03-S01.html (렌더·콘솔 검증)",
+    "http://localhost:8144/embeds/abap/CH07-L03-S02.html (실조작 검증: 행 클릭 상세 전환)",
+    "http://localhost:8144/docs/abap/pages/CH07-L01.html (빌드 페이지·iframe·콘솔 검증)",
+    "http://localhost:8144/docs/abap/pages/CH07-L02.html (빌드 페이지·iframe·콘솔 검증)",
+    "http://localhost:8144/docs/abap/pages/CH07-L03.html (빌드 페이지·iframe·콘솔 검증)"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "embeds/_engine/se11-table-builder.js",
+      "quote": "if (!list.length) { elMsg.innerHTML",
+      "category": "위젯 결함",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "CH07-L01-S01(SE11 Table Builder)에서 경고 없이 완벽한 설정(기본 제공값: MANDT+DAN+MUL 키, 전부 Data Element)으로 '활성화'를 누르면 배지는 '활성(Active)'로, DB 패널은 '✔ DB 테이블 생성됨'으로 정상 갱신되지만, 메시지 영역만은 여전히 최초 idle 안내문('필드·키·타입을 정한 뒤 검사 또는 활성화를 눌러 보세요')을 보여줘 마치 아직 아무것도 안 한 것처럼 보인다.",
+      "evidence": "브라우저로 직접 재현: 리셋 후 기본 설정 그대로 활성화 버튼을 눌렀더니 배지='활성 (Active)', DB 물리 테이블 패널='✔ DB 테이블 생성됨 / TABLE ZGUGUDAN ...'로 정상 표시되었으나, 메시지 박스는 '필드·키·타입을 정한 뒤 검사 또는 활성화를 눌러 보세요.'라는 최초 상태 문구 그대로였다. 원인은 se11-table-builder.js의 showMsg(list, headOk) 함수가 'if (!list.length) { ...idle...; return; }'로 headOk 값을 확인하기도 전에 조기 반환하기 때문이다. onActivate()는 성공 시 showMsg(v.filter(warn), true)를 호출하는데, 경고가 0건이면 filter 결과가 빈 배열이 되어 headOk=true임에도 idle 분기로 빠진다. 반면 onCheck()는 v.length===0일 때 v=[{level:'ok',...}]로 치환해 이 함정을 피해가므로, 활성화 경로에만 있는 결함이다. 이 결함은 준호처럼 안내문의 실험(①②)만 해보고 정상 경로로도 활성화해보는 학습자가 가장 먼저 마주치는, 회피 불가능한 기본 경로에서 발생한다.",
+      "suggestion": "showMsg에서 '성공(headOk=true) 여부'를 list가 비어있는지 검사하기 전에 먼저 확인하도록 순서를 바꾼다. 예: if (!list.length && !headOk) { idle 처리 } 로 변경하거나, onActivate 성공 시 onCheck처럼 v가 비었을 때 안내용 ok 메시지를 합성해 넘긴다."
+    },
+    {
+      "seq": 2,
+      "file": "embeds/abap/CH07-L02-S01.html",
+      "quote": "계산이 틀린 값(2×2인데 5)도",
+      "category": "불일치",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "위젯 자신의 안내문이 직접 예로 든 '2×2인데 5를 넣으면 저장은 되지만 경고가 뜬다'는 시나리오를, 그 예시 그대로(DAN=2, MUL=2, RESULT=5) 실행하면 실제로는 '저장됨(경고)'이 아니라 '저장 실패: 같은 키 조합이 이미 있습니다'로 거부된다 — 위젯이 자기 안내문과 모순되는 동작을 보인다.",
+      "evidence": "브라우저로 직접 재현: DAN=2, MUL=2, RESULT=5를 입력하고 저장을 눌렀더니 '✕ 저장 실패: 같은 키 조합(MANDT 100 + DAN 2 + MUL 2)이 이미 있습니다. 키는 중복될 수 없습니다.'가 떴다(cfg의 seed에 이미 {dan:2,mul:2,result:4}가 들어있어 DAN·MUL 키가 선점된 탓). 안내문이 약속한 '저장되지만 계산이 틀렸다는 경고(빨간 행)' 결과는 나오지 않는다. 같은 원인으로, 레슨(CH07-L02.md)이 '2단과 3단을 손으로 넣어 보자 — 2×1 … 2×9'라며 2×1부터 순서대로 입력하도록 안내하는데, 정확히 그 첫 입력(DAN=2,MUL=1,RESULT=2)조차 이미 seed로 들어 있어 즉시 '이미 있습니다' 거부를 겪는다. 또한 CH07-L02.md의 섹션 제목 '빈 테이블 채우기'와 달리 위젯은 시작부터 Table Contents 2행이 채워진 상태로 로드된다(자체 확인: 최초 로드 시 '2행' 표시).",
+      "suggestion": "seed를 완전히 비우거나(진짜 '빈 테이블'로 시작), 안내문의 예시 값(2×2인데 5)을 seed와 겹치지 않는 조합(예: 아직 안 쓴 4×4인데 17)으로 바꾼다. seed를 유지하려면 레슨 텍스트의 '빈 테이블 채우기'·'2×1부터' 서술도 이미 채워진 2행을 언급하도록 조정한다."
+    },
+    {
+      "seq": 3,
+      "file": "embeds/abap/CH07-L03-S01.html",
+      "quote": "81행 쌓기",
+      "category": "불일치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "CH07-L03-S01 위젯의 코드 스니펫 주석은 gt_gugu에 '81행'이 쌓인다고 적었는데, 같은 gt_gugu(CH06 구구단 캡스톤)를 가리키는 CH07-L01.md 본문은 '구구단 72행'이라고 적어 같은 대상의 행 수가 서로 다르다.",
+      "evidence": "CH07-L01.md: '[Chapter 06 · 구구단 캡스톤](CH06-L06.html)에서 구구단 72행을 [[Internal Table]] `gt_gugu`에 담았지만...' / CH07-L03-S01.html의 코드 패널: 'DATA gt_gugu TYPE TABLE OF ts_line. ... APPEND gs_line TO gt_gugu.  \" 81행 쌓기'. 두 문장 모두 동일한 CH06 캡스톤의 gt_gugu를 가리키는데 행 수가 72행/81행으로 어긋난다. 이 불일치는 빌드된 실제 레슨 페이지(docs/abap/pages/CH07-L03.html)의 임베드에도 그대로 노출되어 있어, 이 챕터를 순서대로 읽는 학습자가 직접 마주치는 위치다(CH07-L01→L03 사이 한 챕터 간격에서 같은 값이 바뀜).",
+      "suggestion": "CH06-L06(구구단 캡스톤)의 실제 행 수에 맞춰 CH07-L01.md의 '72행'과 CH07-L03-S01.html의 '81행 쌓기' 중 틀린 쪽을 통일한다(1~9단 전체면 81행, 2~9단이면 72행)."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH07 세 레슨과 임베드 위젯 넷은 전반적으로 본문 설명·필드명·시나리오가 위젯과 잘 맞아떨어진다. SE11 Table Builder(L01)는 키 연속성·Data Element 권장 검증이 안내문 그대로 정확히 동작했고, Create Entries(L02)는 중복 키 거부·오답 계산 허용·클라이언트 분리를 모두 정확히 재현했으며, L03의 두 비교 위젯도 본문의 4分 비교(Structure/Internal Table/Table Type/Transparent Table)와 메모리 vs 디스크 대비를 충실히 시각화한다. 다만 실조작 검증 과정에서 세 가지 결함을 확인했다: (1) L01 위젯은 '완벽하게' 활성화했을 때(경고 0건) 성공 메시지가 표시되지 않고 idle 안내문이 남는 코드 버그(위젯 결함, 중간), (2) L02 위젯은 seed로 2행이 이미 채워진 채 시작해 위젯 자신이 예로 든 '2×2인데 5' 시나리오조차 안내문과 다르게(경고 대신 거부로) 동작하고 레슨의 '빈 테이블' 서술과도 어긋남(불일치, 높음), (3) L01 본문의 '구구단 72행'과 L03 위젯의 '81행 쌓기'가 같은 대상을 가리키며 수치가 다름(불일치, 낮음). 세 건 모두 국소적인 코드/데이터 수정으로 해결 가능한 수준이라 '경미 수정'으로 판단한다."
+  }
+}

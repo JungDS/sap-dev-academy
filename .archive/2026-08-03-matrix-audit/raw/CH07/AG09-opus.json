@@ -1,0 +1,19 @@
+{
+  "agent": "AG09",
+  "model": "opus",
+  "target": "CH07",
+  "persona_ack": "나는 발견자 AG09, ABAP 정적 검사기를 시늉하는 코드 전용 감사자다. 산문·표·서술은 판정 대상에서 제외하고 ```abap 코드 블록만 줄 단위로 본다. 활성화 차단급 결함(미선언 변수·마침표 누락·타입 불일치·없는 구문·시그니처 오류), 네이밍 규약(CH01～09 전역 gv_/gs_/gt_, it_는 Header Line 전용, pa_/so_, ty_/ts_/tt_), 경계 규약(CH01～17 modern 문법 금지·CH01～18 New Open SQL 금지), 주석·출력 문자열의 명백한 오류만 기록한다. 읽기 전용이며 대상 파일 외 접근·웹 검색·타 감사자 산출물 열람은 하지 않았다. 억지 발견은 하지 않는다.",
+  "method": "Read 도구로 대상 4개 파일 전문 통독 후, Grep(정규식 ^``` , 경로 content/abap/CH07)으로 챕터 내 모든 코드 펜스의 위치·언어 태그를 열거해 감사 범위를 확정했다. 결과: ```abap 블록은 CH07-L03.md 35～38행 단 하나이며, CH07-L01.md 29～34행·CH07-L02.md 24～30행은 ```text(SE11 필드 배치도·입력 데이터 표)라 ABAP 문법 잣대 대상이 아니다. 유일한 abap 블록은 두 DATA 문을 줄 단위로 검사했다 — 문장 종결 마침표 유무, 타입 참조 대상의 본문 내 도입 여부, 변수 접두어와 챕터 스코프 정합, modern 문법·New Open SQL 혼입 여부, 인라인 주석과 선언 대상의 일치. 실행 환경(SAP 시스템)이 없으므로 활성화 여부는 컴파일 확인이 아닌 정적 판단이다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\CH07-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\CH07-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\CH07-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\_chapter.md"
+  ],
+  "findings": [],
+  "overall": {
+    "grade_opinion": "유지",
+    "summary": "코드 전용 관점에서 CH07은 결함 0건이다. 챕터 전체의 ```abap 블록은 CH07-L03.md의 두 줄(`DATA gs_line TYPE zst_line.` / `DATA gt_line TYPE TABLE OF zst_line.`)이 전부이며, 네 항목 모두 통과했다. ① 활성화 차단급 — 두 문장 모두 마침표로 종결되고, 참조 타입 `zst_line`은 같은 절 도입부에서 전역 DDIC Structure 예시로 제시되어 미선언 참조가 아니다. `TYPE TABLE OF <DDIC 구조>`는 표준 테이블(기본 키) 축약형으로 classic 구간에서 정상 구문이며, 없는 구문·애드온·시그니처 오류는 없다. ② 네이밍 — CH07은 로컬 스코프 도입 이전(CH01～09) 구간이라 선언이 사실상 전역이므로 구조체 `gs_`·내부 테이블 `gt_` 접두어가 규약과 정확히 맞는다. Header Line이 없으므로 `it_`를 쓰지 않은 것도 옳고, PARAMETERS·SELECT-OPTIONS·로컬 TYPES 선언은 블록에 등장하지 않아 해당 규약의 적용 대상이 아니다. ③ 경계 — 인라인 DATA()·VALUE·NEW·+=·문자열 템플릿 등 modern 문법과 `@`·콤마 구분자 등 New Open SQL이 전혀 없다. 애초에 SQL 문장 자체가 없어 CH01～17 classic-first 경계를 위반할 여지가 없다. ④ 주석·문자열 — 인라인 주석 \"작업영역(한 건)\"은 `gs_line`, \"내부 테이블(여러 건)\"은 `gt_line`에 각각 정확히 대응하며 변수명 오타나 본문과의 어긋남이 없다. 참고로 CH07-L01·L02의 코드 펜스는 ```text 태그의 SE11 필드 배치도와 입력 데이터 표라서 문법 감사 대상이 아니며, 그 안에도 ABAP 문장으로 오해될 표기는 없었다. 챕터 성격상 SE11 GUI 작업이 중심이라 실행 코드 자체가 극히 적다는 점은 관찰되지만, 이는 코드 커버리지·체험 설계 축의 판단 영역이지 정적 검사기가 낼 결함이 아니므로 발견으로 올리지 않았다. 정적 판단이 가능한 범위에서 오탐 없이 결함 0건으로 종결한다."
+  }
+}

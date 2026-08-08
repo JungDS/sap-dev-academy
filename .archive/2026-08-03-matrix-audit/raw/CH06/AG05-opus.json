@@ -1,0 +1,100 @@
+{
+  "agent": "AG05",
+  "model": "opus",
+  "target": "CH06",
+  "persona_ack": "20년차 학습 교재·코스 설계 전문가로서 CH06(Internal Table)을 교수설계 관점으로만 감사했다. 즉 챕터 구성·레슨 분할과 순서, 각 레슨의 왜→무엇→어떻게→주의→정리 흐름, 복습·예습 장치, 불편→해결 서사의 진정성, 인지부하(신규 개념 밀도·예제 변수 수)를 본다. ABAP 문법의 사실 정확성·표기 규칙·빌드 산출물은 이 축의 대상이 아니므로 판단하지 않았다.",
+  "method": "Read 도구로 대상 7개 파일(_chapter.md, L01～L06) 전문을 정독한 뒤 교차 분석했다. ① 각 레슨 front-matter의 introduces 항목을 세어 신규 개념 밀도 비교, ② 레슨별 도입부가 불편/필요에서 시작하는지 대조, ③ 예제에 등장하는 식별자(gt_person·gt_sales 등)가 챕터 안에서 선언·설명되는지 추적, ④ 캡스톤(L06) 코드가 L01～L05에서 도입한 개념 중 어디까지 재사용하는지 대조. 외부 네트워크·타 감사 산출물·챕터 외 파일은 사용하지 않았다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L06.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH06/_chapter.md",
+      "quote": "intro: \"한 건이 아니라 여러 건(레코드)을 다뤄야 한다.\"",
+      "category": "챕터 intro 동기부여 부족",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "챕터 intro가 사실 진술 한 문장뿐이고, 본문 영역도 그 한 문장을 그대로 반복해 '이 챕터를 왜 배우는가'를 팔지 못한다.",
+      "evidence": "front-matter의 intro와 본문 11행이 동일 문장 '한 건이 아니라 여러 건(레코드)을 다뤄야 한다.'로 완전히 겹친다. 챕터 전체 분량이 이 한 문장이라, 학습자가 챕터 첫 화면에서 얻는 것은 '여러 건을 다룬다'는 요약뿐이다. L01 도입부는 '구구단에서 gs_line이 덮어써졌다'는 구체적 장면으로 훨씬 잘 설득하는데, 정작 챕터 관문에는 그 장면이 없다. 다만 intro가 로드맵 카드용 한 줄 블러브로 설계된 사이트 공통 관례일 가능성이 있어(다른 챕터 미열람·블라인드 감사) confidence는 추정으로 둔다.",
+      "suggestion": "본문 영역만이라도 intro 복제 대신 2～4문장으로 확장한다. 예: 지난 챕터에서 구구단 72줄을 만들었지만 메모리에 남은 건 마지막 한 줄뿐이었다는 손실 장면 → 명단·주문목록 같은 업무 장면 → 이 챕터가 주는 능력(쌓고·찾고·정렬하고·집계) 예고 순."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH06/CH06-L02.md",
+      "quote": "처음엔 **STANDARD**로 충분하다. SORTED/HASHED는 접근 패턴이 분명하고 성능이 절실할 때 다시 본다.",
+      "category": "레슨 순서 역전(불편보다 분류가 먼저)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L02가 키·Table Kind 분류를 학습자가 그 필요를 느끼기 전에 먼저 배치해, 이 사이트가 표방하는 '불편 먼저 → 해결책으로 개념 도입' 순서가 뒤집혔다. 레슨 스스로 '지금은 필요 없다'고 인정하는 대목이 그 증거다.",
+      "evidence": "① SORTED/HASHED를 정당화하는 실제 불편은 한 레슨 뒤 L03에 나온다 — 'STANDARD 테이블에서 단건을 자주 찾으면 순차 탐색이 느리다'(L03 74행). 즉 해결책 분류(L02)가 그 동기(L03)보다 먼저 온다. ② L02 도입부는 불편 없이 'TYPE TABLE OF ts_person 한 줄에는 사실 세 가지 속성이 들어 있다'는 분류 선언으로 시작해 '왜 필요한가' 단계가 사실상 비어 있다. ③ L01에서 행을 쌓은 학습자는 아직 LOOP·READ를 배우지 않아 쌓은 내용을 꺼내 볼 수단이 없는데, 그 갈증 상태에서 L02 분류 한 레슨을 더 통과해야 L03에서야 첫 조회가 가능하다(징검다리 지연). ④ 말미의 '로컬 vs 전역(DDIC) Table Type' 절은 SE11 전역 타입이라는 별개 개념을 체험 없이 4줄로 덧붙여 밀도만 더한다.",
+      "suggestion": "세 갈래가 가능하다. (a) L02의 ① Line Type만 남겨 L01에 흡수하고, ② Primary Key·③ Table Kind는 L03의 BINARY SEARCH 절(순차 탐색이 느리다는 불편) 직후로 옮겨 '느리다 → 그래서 키·종류' 순서를 회복한다. (b) 순서를 유지하려면 L02 도입부에 '지금 gt_person에서 정훈영을 찾으려면 처음부터 한 줄씩 훑는 수밖에 없다' 같은 체감 불편을 먼저 넣는다. (c) 전역 Table Type 절은 CH07(DDIC)로 이관하거나 L1 예고로 축약한다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH06/CH06-L04.md",
+      "quote": "introduces: [\"LOOP (FROM/TO·WHERE)\", \"LOOP ASSIGNING <fs>(Field Symbol 기초)\", \"COLLECT\", \"DELETE ADJACENT DUPLICATES\", \"컨트롤레벨(AT FIRST/LAST·AT NEW/END OF·SUM)\", \"APPEND LINES OF\"]",
+      "category": "인지부하 과다 / 과대 레슨",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "L04 한 레슨에 성격이 다른 대형 개념 6군이 몰려 있고, 그중 Field Symbol(간접 참조)과 컨트롤레벨(그룹 경계 처리)은 각각 독립 레슨급 난도라 비전공 입문자에게 과부하다.",
+      "evidence": "한 레슨 안에서 LOOP 3형(기본·WHERE·FROM/TO)과 sy-tabix 어긋남 주의 → Field Symbol 도입(꺾쇠 문법·복사 대신 직접 지시라는 새 사고방식) → COLLECT의 누적 의미론과 '키가 아닌 필드는 모두 숫자 타입' 제약 → AT FIRST/LAST·AT NEW/END OF·SUM과 그에 딸린 '주의 셋'(그룹 키 = f와 왼쪽 모든 필드 / 정렬 선행 / SUM은 INTO에서만) → DELETE ADJACENT DUPLICATES → APPEND LINES OF가 연속된다. 특히 Field Symbol은 '여기서는 기초만 보고, 본격 활용은 뒤에서 배운다'며 반쯤 열어 두는데, 챕터에서 가장 추상적인 개념을 밀도 높은 레슨 중간의 곁가지로 처리하면 얕은 기억만 남는다. 흔한 실수 절이 5개 항목으로 불어난 것도 한 레슨이 담은 표면적이 넓다는 방증이다. (앞 레슨 L03도 INSERT 2형·READ 3형·sy-tabix·SORT·BINARY SEARCH·MODIFY 2형·TRANSPORTING·DELETE WHERE로 밀도가 높아, 챕터의 신규 문법이 L03～L04 두 레슨에 집중돼 있다.)",
+      "suggestion": "L04를 두 레슨으로 분할한다. (1) 순회 — LOOP 기본/WHERE/FROM-TO·sy-tabix 어긋남·ASSIGNING(복사 없이 고치기)까지. (2) 집계와 그룹 — COLLECT·AT NEW/END OF·SUM·DELETE ADJACENT DUPLICATES·APPEND LINES OF. 분할이 어려우면 최소한 Field Symbol을 별도 절이 아닌 '(2)에서 MODIFY 반복이 번거롭다'는 불편 뒤로 옮기고, 컨트롤레벨의 '주의 셋'은 예제 하나로 눈에 보이게 풀어 준다."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH06/CH06-L04.md",
+      "quote": "COLLECT gs_sales INTO gt_sales.",
+      "category": "예제 선언 누락(따라 할 수 없는 코드)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "COLLECT·컨트롤레벨 절이 챕터 내내 쓰던 gt_person을 버리고 gt_sales/gs_sales라는 새 예제로 갈아타면서, 그 타입 선언(region·amount 필드)을 한 번도 보여 주지 않아 학습자가 규칙을 검증하거나 따라 해 볼 수 없다.",
+      "evidence": "L04에는 gt_sales·gs_sales의 TYPES/DATA 선언이 전혀 없는데, 이어지는 예제는 gs_sales-region·gs_sales-amount를 당연한 듯 사용한다. 하필 이 절의 핵심 규칙이 구조에 의존한다 — '키가 아닌 필드는 **모두 숫자 타입**이어야 한다(합산 대상이므로)', 그리고 '그룹 키는 f와 그 왼쪽의 모든 필드다'. 필드 순서와 타입을 보여 주지 않은 채 '필드 순서가 그룹 키를 정한다'고 가르치므로 규칙이 공중에 뜬다. 같은 레슨의 'APPEND LINES OF gt_a TO gt_b.'도 선언 없는 gt_a·gt_b를 쓴다(이쪽은 자리표시자 성격이라 영향이 작다). 앞 레슨들이 gt_person 하나로 일관되게 끌고 온 것과 대비된다.",
+      "suggestion": "COLLECT 절 앞에 ts_sales(region 먼저, amount 뒤) 4～6줄 선언과 원본 3～4행 샘플 데이터를 제시하고, 같은 예제로 COLLECT → SORT → AT NEW/END OF·SUM까지 이어 간다. 필드 순서가 그룹 키를 정한다는 규칙이 선언에서 눈으로 확인된다."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH06/CH06-L05.md",
+      "quote": "여기서는 **개념과 분류만** 잡는다(구현은 뒤에서).",
+      "category": "레슨 배치 / 불편-해결 미완결",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "L05는 새 조작 능력 없이 분류만 다루는 개념 전용 레슨인데, 하필 기능 학습의 정점(L04)과 캡스톤(L06) 사이에 끼어 챕터의 마무리 추진력을 끊는다. 도입부에서 제기한 불편(주문 한 건에 항목 여러 줄)도 같은 레슨에서 해소되지 않는다.",
+      "evidence": "L05의 prereq는 [\"CH06-L01\", \"CH05\"]로 L02～L04에 전혀 의존하지 않는다고 스스로 선언한다. 즉 현재 위치는 의존성이 아니라 편의로 정해진 자리다. 내용도 '주문 항목 여러 줄' 불편을 제기한 뒤 곧바로 구현을 뒤 챕터로 미루므로, 불편→해결 고리가 이 레슨 안에서 닫히지 않고 열린 채 남는다. 반면 '사실, 우리는 이미 Deep을 쓰고 있었다'(ts_person의 string) 대목은 이미 쓰던 코드를 되돌아보게 하는 훌륭한 회고 장치라, 오히려 ts_person을 처음 만든 시점 가까이에 있을 때 효과가 크다. 배치 판단이므로 confidence는 추정.",
+      "suggestion": "두 안 중 택일. (a) L05를 L01～L02 직후로 앞당겨 'Line Type에 무엇이 올 수 있나'의 연장선에서 Flat/Deep을 다루고, L04 → L06 캡스톤 흐름을 끊지 않는다. (b) 현 위치를 유지한다면 도입 불편을 '항목 여러 줄' 대신 'L04까지 만든 gt_person을 나중에 DB에 저장하려 할 때 무엇이 걸림돌인가'로 바꿔, 바로 다음 챕터로 이어지는 예고 성격을 분명히 한다."
+    },
+    {
+      "seq": 6,
+      "file": "content/abap/CH06/CH06-L01.md",
+      "quote": "`it_`는 Header Line을 가진 옛 방식 테이블에만 쓴다.",
+      "category": "레슨 내 용어 선노출(정의 전 사용)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L01 선언 절에서 'Header Line'을 이미 아는 용어처럼 쓰지만, 그 정의는 같은 레슨의 한참 뒤(CLEAR/FREE 절의 🕰️ 콜아웃)에야 나온다.",
+      "evidence": "48행에서 접두어 관례를 설명하며 Header Line을 언급하고, 정의('테이블에 같은 이름의 Work Area가 딸리는 옛 단축 방식')는 90행에 가서야 등장한다. 그 사이 40여 행 동안 학습자는 뜻 모를 용어를 안고 간다. 첫 레슨 첫 코드 직후라 '내가 놓친 게 있나' 하는 불안을 만들기 쉽다. 다만 뒤에서 회수되므로 영향은 국소적이다.",
+      "suggestion": "48행에서는 'it_는 지금 안 쓰는 옛 방식 전용 접두어다(이유는 이 레슨 끝에서)' 정도로만 두고 이름은 뒤 콜아웃에서 처음 꺼내거나, 반대로 48행에 '(같은 이름의 작업영역이 딸린 옛 방식 — 뒤에서 설명)'을 괄호로 붙여 즉시 해소한다."
+    },
+    {
+      "seq": 7,
+      "file": "content/abap/CH06/CH06-L06.md",
+      "quote": "이 실습은 이번 챕터 전체의 결론이다.",
+      "category": "캡스톤 커버리지 부족(복습 장치 결손)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'챕터 전체의 결론'이라 선언한 캡스톤이 실제로는 L01·L04 일부(APPEND·SORT·LOOP)만 재사용하고, L02(키·Table Kind)·L03(READ/MODIFY/DELETE·sy-subrc·sy-tabix)·L05(Deep)는 한 번도 다시 쓰지 않아 챕터 절반이 통합 복습 없이 끝난다.",
+      "evidence": "L06 코드에 등장하는 문장은 TYPES·DATA·중첩 DO·APPEND·DESCRIBE·SORT·LOOP·WRITE·BREAK-POINT가 전부다. READ TABLE·MODIFY·DELETE·INSERT·COLLECT·키 선언(WITH ... KEY)은 하나도 없다. 레슨 앞의 '배운 개념' 대조표 자체가 Line Type·Work Area·Internal Table·APPEND·SORT·LOOP 6줄뿐이어서, L02·L03·L05가 목록에서도 빠져 있음을 문서가 스스로 드러낸다. 특히 L03의 sy-subrc 확인 습관은 챕터에서 가장 실무 사고와 직결된 항목인데 캡스톤에서 한 번도 요구되지 않아, 배운 즉시 쓰지 않고 지나가는 형태가 된다.",
+      "suggestion": "캡스톤 뒤에 3～5줄짜리 통합 과제를 덧붙인다. 예: 쌓인 gt_gugu에서 'result가 가장 큰 줄'을 READ TABLE로 찾아 sy-subrc·sy-tabix를 확인하고, 그 행의 result를 MODIFY로 표시하거나 'result가 10 미만인 행을 DELETE ... WHERE로 지운 뒤 DESCRIBE로 남은 개수 확인' 같은 미니 미션. 대조표에도 READ/MODIFY/DELETE·키 행을 추가한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "보강 권장",
+    "summary": "CH06은 교수설계 기본기가 탄탄한 챕터다. L01의 '구구단에서 마지막 한 줄만 남았다'는 도입 불편은 억지가 아니라 직전 챕터 경험에서 실제로 자란 것이고, L04의 'READ가 채워 주던 sy-tabix가 LOOP에서는…'이나 L06의 '배운 개념 → 구구단에서의 역할' 대조표 같은 복습 장치, 모든 레슨의 '흔한 실수와 점검' 절, 레슨마다 붙은 체험 임베드는 입문자용 구성으로 모범적이다. 레슨 끝 예고도 전부 1～2문장으로 절제돼 과잉 선행 설명이 없다. 문제는 무게 배분과 순서다. ① L04가 LOOP 3형·Field Symbol·COLLECT·컨트롤레벨·중복 제거·테이블 병합까지 6군을 한 레슨에 담아 챕터에서 가장 추상적인 개념(Field Symbol)이 곁가지로 처리된다(높음, 분할 권고). ② L02의 키·Table Kind 분류가 그것을 정당화하는 불편(L03의 '순차 탐색이 느리다')보다 먼저 나와 사이트의 불편-우선 원칙과 역행하고, 레슨 스스로 '처음엔 STANDARD로 충분하다'고 인정한다. ③ COLLECT·컨트롤레벨 예제가 선언 없는 gt_sales로 갈아타 '필드 순서가 그룹 키를 정한다'는 핵심 규칙을 확인할 수 없다. ④ '챕터 전체의 결론'이라는 캡스톤이 L02·L03·L05를 재사용하지 않아 통합 복습이 절반만 이뤄진다. ⑤ 챕터 intro는 한 문장이 본문에 그대로 복제돼 관문에서 동기를 팔지 못한다(사이트 공통 관례 가능성 있어 추정). 재집필이 필요한 수준은 아니지만, L04 분할·예제 선언 보충·캡스톤 과제 확장은 문구 손질이 아니라 콘텐츠 추가를 요하므로 '경미 수정'보다 한 단계 위인 보강 권장으로 판정한다."
+  }
+}

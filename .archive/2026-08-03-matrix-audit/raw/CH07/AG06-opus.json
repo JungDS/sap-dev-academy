@@ -1,0 +1,108 @@
+{
+  "agent": "AG06",
+  "model": "opus",
+  "target": "CH07",
+  "persona_ack": "20년차 SAP ABAP 아키텍트로서 ECC부터 S/4HANA까지의 개발·운영·이관 경험을 기준으로 CH07(Transparent Table/SE11)의 기술 사실, 예시 적절성, 위험한 생략, 안티패턴만 감사했다. 읽기 전용을 준수했고 대상 4개 파일 외에는 어떤 파일도 열지 않았으며, 웹 검색·타 감사 산출물 참조도 하지 않았다.",
+  "method": "Read 도구로 대상 4개 파일(_chapter.md, L01, L02, L03) 전문을 정독. 도구 사용은 대상 파일 읽기와 출력 폴더 생성에 한정. 판정은 DDIC/SE11 동작에 대한 자체 지식으로만 수행했고, 릴리스·시스템 설정에 따라 갈리는 항목은 confidence=추정으로 낮춰 표기. 인용은 원문에서 줄바꿈을 넘지 않는 구간을 그대로 복사.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\CH07-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\CH07-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\CH07-L03.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\CH07-L01.md",
+      "quote": "[Chapter 03 · Data Element](CH03-L02.html)에서 봤듯 **라벨·F4·도움말까지** 따라온다.",
+      "category": "사실 오류",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "Data Element를 지정하면 F4(입력 도움말)까지 자동으로 따라온다고 단정했다. Data Element가 자동으로 주는 것은 필드 라벨과 F1 문서이고, F4는 별도 조건이 갖춰져야만 나온다.",
+      "evidence": "SE11에서 F4(입력 도움말)는 ① Data Element에 Search Help가 연결돼 있거나 ② Domain에 고정값(Fixed Values)이 있거나 ③ 그 필드에 Check Table 외래키가 걸렸을 때 생긴다. 아무것도 붙지 않은 순수 Data Element(예: 정수 도메인의 ZDE_DAN)를 지정해도 F4 목록은 뜨지 않는다. 반면 라벨(짧은·중간·긴·헤딩)과 F1 문서는 Data Element에서 바로 따라온다. 학습자가 직접 만들어 F4를 눌러 보면 교재와 다른 결과를 만난다.",
+      "suggestion": "'라벨과 F1 문서는 Data Element에서 바로 따라오고, F4는 Search Help 연결·Domain 고정값·Check Table이 있을 때 붙는다'로 문장을 둘로 나눈다. 예로 ZDE_DAN의 Domain에 1～9 고정값을 넣으면 F4가 생긴다는 한 줄을 덧붙이면 인과가 분명해진다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\CH07-L03.md",
+      "quote": "DB에 영구 저장이 필요하면 같은 모양을 **Transparent Table**로 만든다.",
+      "category": "사실 오류",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "메모리 구조체(ZST_LINE)와 Transparent Table(ZGUGUDAN)이 '같은 모양'이고 쓰임만 다르다고 서술했지만, L01에서 만든 테이블의 첫 키는 MANDT라 두 구조는 실제로 필드 수가 다르다. 이 서술을 그대로 믿고 다음 챕터의 SELECT를 쓰면 바로 어긋난다.",
+      "evidence": "클라이언트 종속 테이블의 첫 필드는 CLNT 타입 MANDT이고(같은 레슨 L01이 그렇게 설계했다), classic Open SQL의 SELECT * 결과 필드 목록에는 MANDT가 포함된다. 자동 클라이언트 처리는 WHERE 조건에만 작용할 뿐 필드 목록에서 MANDT를 빼 주지 않는다. 따라서 dan·mul·result 3필드짜리 ZST_LINE을 작업영역으로 삼아 SELECT * INTO를 쓰면 값이 한 칸씩 밀려 들어간다. CH08 조회 레슨으로 바로 이어지는 구간이라 영향이 크다.",
+      "suggestion": "'모양은 공유'를 '업무 필드는 같지만 DB 테이블에는 MANDT가 맨 앞에 하나 더 붙는다'로 정정하고, DB 행을 담을 때는 DATA gs_line TYPE zgugudan처럼 테이블 타입을 그대로 쓰거나 SELECT에서 dan mul result를 명시한다는 한 줄을 덧붙인다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\CH07-L01.md",
+      "quote": "구구단을 영구 저장할 테이블 `ZGUGUDAN`을 만든다.",
+      "category": "위험한 생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "SE11에서 Z 테이블을 만드는 절차에 Package(개발 클래스) 지정과 Workbench 전송요청(Transport Request) 단계가 통째로 빠져 있다. 실제 시스템에서는 저장 순간 반드시 뜨는 필수 관문이다.",
+      "evidence": "Z*/Y* 테이블을 저장하면 Create Object Directory Entry(패키지 지정) 화면이 먼저 뜬다. 로컬 오브젝트($TMP)를 고르면 이후 다른 시스템으로 이송할 수 없고, 이송 가능한 패키지를 고르면 Workbench 요청 번호를 받아야 저장이 끝난다. 첫 실습에서 무심코 고른 값이 그대로 남아 나중에 이송 불가로 되돌아오는데, 레슨은 전송을 '활성 후 타입·길이 변경' 주의 항목에서만 스치듯 언급한다.",
+      "suggestion": "'Create → 필드·키 입력 → 저장 시 패키지 지정($TMP=연습용, 이송 불가 / 일반 패키지=Workbench 요청 필요) → Technical Settings → 활성화'로 절차 한 단계를 넣고, 연습은 $TMP로 충분하다는 안내를 붙인다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\CH07-L02.md",
+      "quote": "**입력 권한/설정** → 교육 시스템 안내를 따른다. 활성화된 테이블이라야 입력된다.",
+      "category": "위험한 생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "Create Entries가 열리려면 테이블 정의의 Delivery and Maintenance 탭에 있는 Data Browser/Table View Maint.(테이블 유지보수 허용)가 켜져 있어야 하는데, 그 전제를 '교육 시스템 안내를 따른다'로 뭉갰다. L01의 설정 표에도 Delivery Class만 있고 이 항목이 없다.",
+      "evidence": "SE11/SE16 데이터 브라우저에서 행을 새로 만들거나 고치는 기능은 테이블 정의의 Data Browser/Table View Maint. 값이 유지보수 허용(또는 제한적 허용)일 때만 열린다. 표시 전용이면 Create Entries 메뉴 자체가 막힌다. 여기에 S_TABU_DIS(또는 S_TABU_NAM) 권한이 더해져야 실제 입력이 된다. 즉 L02 실습이 되고 안 되고는 L01에서 이미 결정되는데 L01이 그 스위치를 다루지 않는다.",
+      "suggestion": "L01의 설정 표에 'Delivery and Maintenance 탭 → Data Browser/Table View Maint. = 유지보수 허용' 행을 추가하고, L02의 '입력 권한/설정' 항목을 '이 설정 + S_TABU_DIS 권한'으로 구체화한다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\CH07-L02.md",
+      "quote": "입력 화면이 뜨면 DAN·MUL·RESULT를 채우고 저장한다.",
+      "category": "안티패턴",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "업무 테이블에 SE11 Create Entries로 값을 직접 넣는 방식을 경고 없이 표준 절차처럼 시연했다. 실무에서 운영 시스템의 직접 테이블 편집은 금지·감사 대상이며, 커스텀 테이블을 유지하는 정상 수단은 Table Maintenance Generator로 만든 SM30 화면이다.",
+      "evidence": "Create Entries는 애플리케이션 로직·입력 검증·변경 이력을 모두 우회하고 저장 즉시 DB에 커밋된다(되돌리기 없음). 그래서 운영에서는 S_TABU_DIS/S_TABU_NAM 권한 자체를 막고, 필요할 때도 SM30 유지보수 화면이나 프로그램·BAPI를 거치게 한다. 레슨은 '대량은 프로그램'이라는 효율 관점만 짚어서, 왜 이 방식이 개발/교육 시스템 전용인지는 남지 않는다.",
+      "suggestion": "'이 방식은 개발·교육 시스템 전용이고 운영 테이블을 SE11/SE16으로 직접 고치는 것은 금지'라는 경고 한 줄과, '사용자에게 커스텀 테이블을 열어 줄 때는 SE11 → Utilities → Table Maintenance Generator로 SM30 화면을 만든다'는 다음 단계 안내를 추가한다."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\CH07-L01.md",
+      "quote": "입문 단계에선 **기본값으로 두고 활성화**해도 된다.",
+      "category": "사실 오류",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "Technical Settings를 기본값으로 두고 활성화해도 된다고 했지만, Data Class와 Size Category는 값을 골라 저장해야 하는 필수 항목이다. 같은 레슨의 표는 '데이터 클래스·크기 지정 후 활성화'라고 적혀 있어 서로 어긋나기도 한다.",
+      "evidence": "투명 테이블은 기술 설정이 없으면 활성화 로그에 기술설정 누락이 걸리고 DB 테이블 생성으로 넘어가지 못한다. Technical Settings 화면에서도 Data Class(APPL0 마스터·APPL1 트랜잭션·APPL2 조직/커스터마이징)와 Size Category는 비운 채로 저장되지 않는다. 다만 릴리스·시스템에 따라 값이 제안되는 경우가 있어 화면 기본값 유무는 단언하지 않는다.",
+      "suggestion": "'기본값으로 두고'를 '고민하지 말고 APPL1(트랜잭션 데이터)과 크기 범주 0을 골라 저장하면 된다'처럼 구체값 제시로 바꾼다. 그러면 앞의 표(지정 후 활성화)와도 일치한다."
+    },
+    {
+      "seq": 7,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\CH07-L01.md",
+      "quote": "활성화 전, **Technical Settings**(기술 설정)에서 DB에 **어떻게 저장할지**를 정한다(앞 표의 그 항목).",
+      "category": "위험한 생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "Technical Settings를 Data Class·Size Category 둘로만 소개했다. 같은 화면에 있는 Buffering(버퍼링)과 Log Data Changes(변경 로그)는 ABAP 개발자가 실제로 사고를 내는 스위치인데 이름조차 나오지 않는다.",
+      "evidence": "버퍼링을 켠 테이블은 각 애플리케이션 서버가 사본을 들고 읽기 때문에 방금 바뀐 값을 곧바로 못 읽는 지연(stale read)이 생긴다. 자주 바뀌는 트랜잭션 테이블에 버퍼링을 켜는 것이 대표적 사고 패턴이다. 레슨은 DBA 소관인 Fragmentation까지 이름을 짚으면서 정작 개발자 소관인 버퍼링을 뺐다는 점에서 균형이 맞지 않는다.",
+      "suggestion": "'Buffering — 거의 안 바뀌는 작은 설정·마스터 테이블만 켠다. 자주 바뀌는 테이블에 켜면 옛 값이 보일 수 있다'와 'Log Data Changes — 변경 이력 기록' 두 줄을 이름 수준으로 추가한다."
+    },
+    {
+      "seq": 8,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\CH07-L01.md",
+      "quote": "**활성화 안 함** → 활성화해야 DB 테이블이 실제로 생긴다.",
+      "category": "위험한 생략",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "활성화 절차에 Enhancement Category(확장 범주, Extras 메뉴) 지정이 빠져 있어, 실제 시스템에서 활성화하면 학습자가 교재에 없는 경고 메시지를 만난다.",
+      "evidence": "NetWeaver 7.0 이후 릴리스에서 테이블·구조체는 확장 범주를 지정하지 않으면 활성화 로그에 확장 범주 미지정 경고가 남는다. 경고라서 활성화 자체는 진행되지만, 입문자는 경고 목록에서 자기가 뭘 잘못했는지 몰라 멈춘다. 경고 표시 여부가 릴리스·시스템 설정에 따라 달라 confidence는 추정으로 둔다.",
+      "suggestion": "활성화 직전 단계에 'Extras → Enhancement Category를 한 번 지정해 두면 경고가 사라진다(어떤 값인지는 지금 몰라도 된다)' 정도의 한 줄을 넣는다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "보강 권장",
+    "summary": "CH07은 핵심 사실 관계가 대체로 정확하다. 투명 테이블과 DB 물리 테이블의 1:1 대응, 키 필드는 앞쪽에 연속 배치, 첫 키 필드가 CLNT 타입이면 클라이언트 종속, 활성화 시점에 DB 테이블이 생성됨, Delivery Class A의 성격, 키는 중복만 막고 값의 업무적 정합성은 별개라는 서술까지 모두 맞다. classic 문법만 쓴 점도 문제없다. 다만 기술 부정확 2건이 남는다. Data Element만 주면 F4까지 따라온다는 단정(F4는 Search Help·고정값·Check Table이 있어야 생긴다)과, 메모리 구조체와 DB 테이블이 같은 모양이라는 서술(실제로는 MANDT 한 필드가 더 있어 SELECT * 사용 시 어긋난다)이다. 여기에 실제 SE11 실습의 필수 관문인 패키지·전송요청, Create Entries를 가능하게 하는 테이블 유지보수 허용 설정, 운영에서의 직접 입력 금지 규율이 빠져 있고, 기술 설정에서는 버퍼링이 통째로 누락됐다. 개념 골격과 서술 흐름은 그대로 살릴 수 있으므로 재집필이 아니라 위 항목의 추가·정정으로 충분하다. 블라인드 제약상 CH03·CH06·CH08 원문은 열지 않았으므로 교차 참조의 적절성은 판정에서 제외했다."
+  }
+}

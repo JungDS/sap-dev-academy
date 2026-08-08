@@ -43,13 +43,24 @@
 <p>주문 한 건에는 &quot;주문 항목 여러 줄&quot;이 딸린다. 즉 <strong>한 행 안에 또 다른 <button class="term" type="button" data-term="Internal Table">Internal Table</button></strong>이
 들어가야 한다. 이렇게 Structure 안에 테이블이나 문자열 같은 가변 요소가 든 것을
 <button class="term" type="button" data-term="Deep Structure">Deep Structure</button>(깊은 구조)라 한다. 여기서는 <strong>개념과 분류만</strong> 잡는다(구현은 뒤에서).</p>
+<p>새 문장을 배우는 자리는 아니다. 마지막 캡스톤으로 가기 전에, 지금까지 만들어 온 Structure와
+테이블을 <strong>분류하는 눈</strong>을 한 번 정리하고 넘어가는 짧은 레슨이다.</p>
 </section><section class="lblock"><h2>Flat vs Deep</h2>
+<p>먼저 낱말 하나. 여기서 말하는 <button class="term" type="button" data-term="Component">Component</button>는 <a href="CH05-L01.html">Chapter 5 · Local Structure</a>에서
+&quot;필드&quot;라 부르던 그것이다. Structure를 이루는 한 칸을 가리키는 공식 용어다.</p>
 <ul>
-<li><strong>Flat Structure</strong> — 모든 Component가 고정 길이 타입(<code>c LENGTH n</code>·<code>n</code>·<code>d</code>·<code>t</code>·<code>i</code>·<code>p</code> 등)이고,
-아래의 deep 요소가 하나도 없다.</li>
-<li><strong><button class="term" type="button" data-term="Deep Structure">Deep Structure</button></strong> — Component 중에 <strong>가변 요소</strong>가 하나라도 있다: <code>string</code>,
-<button class="term" type="button" data-term="Internal Table">Internal Table</button>, 참조(reference) 등.</li>
+<li><strong>Flat Structure</strong> — 모든 Component가 <strong>고정 길이</strong> 타입(<code>c LENGTH n</code>·<code>n</code>·<code>d</code>·<code>t</code>·<code>i</code>·<code>p</code> 등)이다.
+담기는 값이 무엇이든 차지하는 자리의 크기가 처음부터 정해져 있다.</li>
+<li><strong><button class="term" type="button" data-term="Deep Structure">Deep Structure</button></strong> — Component 중에 <strong>가변 요소</strong>가 하나라도 있다. <code>string</code>,
+<button class="term" type="button" data-term="Internal Table">Internal Table</button>, 참조(reference) 셋이 그것이다.</li>
 </ul>
+<p>가변 요소란 담기는 내용에 따라 <strong>크기가 달라지는</strong> 것들이다. 글자 수가 늘면 그만큼 커지는
+<code>string</code>, 행이 계속 늘어나는 Internal Table이 그렇다. 참조(reference)는 값을 직접 담지 않고
+값이 있는 자리를 가리키기만 하는 것으로, <a href="CH06-L04.html">앞 레슨</a>에서 잠깐 본 Field Symbol과
+비슷한 종류다. 지금은 &quot;가변 요소가 셋 있구나&quot;까지만 알면 되고, 참조는 뒤에서 따로 배운다.</p>
+<p>고정 길이만 모인 Structure는 <button class="term" type="button" data-term="메모리">메모리</button>에서 <strong>한 덩어리</strong>로 붙어 있다. 그래서 통째로 복사하거나
+넘기기 쉽다. 가변 요소가 끼면 그 부분은 크기가 그때그때 달라져 다른 자리에 따로 놓이고,
+Structure는 그 자리를 가리키기만 한다. 둘을 굳이 나눠 부르는 이유가 여기 있다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -81,10 +92,10 @@
 2
 3
 4</pre><pre class="abap-editor__code"><code><span class="tok-kw">TYPES</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ts_person,
-         name <span class="tok-kw">TYPE</span> string,   <span class="tok-com">" string은 길이 가변 → deep 요소!</span>
+         name <span class="tok-kw">TYPE</span> string,   <span class="tok-com">" string은 길이가 가변 → 가변 요소!</span>
          age  <span class="tok-kw">TYPE</span> i,
        <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ts_person.</code></pre></div></div>
-<p><code>string</code>은 길이가 고정돼 있지 않은 가변 타입이라 deep 요소로 분류된다. 문자열 하나만
+<p><code>string</code>은 길이가 고정돼 있지 않으니 앞에서 본 <strong>가변 요소</strong>다. 문자열 하나만
 있어도 그 Structure 전체가 Deep이 된다. 지금까지 아무 문제 없이 썼듯 Deep이라서 못 쓰는
 건 아니다. 다만 아래 상황들에서 Flat과 <strong>다르게 취급</strong>되므로 구분할 줄 알아야 한다.</p>
 </section><section class="lblock"><h2>중첩(Nested)과는 다른 개념</h2>
@@ -98,12 +109,13 @@
 <li><strong>화면 출력</strong>: 결과를 표 형태 화면으로 보여 주는 도구(ALV, 뒤에서 배운다)도 기본적으로
 평평한 행을 전제한다.</li>
 <li>지금은 &quot;구조 안에 테이블이 들어갈 수 있다&quot;는 가능성과 분류 기준만 기억하면 된다.
-실제 활용과 제약은 나선형으로 뒤에서 깊어진다.</li>
+실제로 어떻게 쓰고 어디까지 되는지는 뒤에서 차근차근 넓혀 간다.</li>
 </ul>
 </section><section class="lblock"><h2>흔한 오해와 점검</h2>
 <ul>
-<li><strong>Deep을 DB 테이블 컬럼으로</strong> → 안 된다. DB 테이블(<a href="CH07-L01.html">Chapter 7 · Transparent
-Table</a>)의 한 행은 단일 타입 컬럼들로만 구성한다.</li>
+<li><strong>&quot;Deep이면 DB에 못 넣는다&quot;는 뭉뚱그린 결론</strong> → 컬럼 하나에 넣을 수 없는 건 Internal
+Table과 참조다. 표를 통째로 한 칸에 담을 수는 없기 때문이다. 반면 <code>string</code>은 문자열을
+담는 컬럼 타입이 따로 있어 DB에도 넣을 수 있다(그 얘기는 DB 테이블을 만들 때 다시 본다).</li>
 <li><strong>중첩 = Deep이라는 착각</strong> → 중첩은 &quot;겹&quot;의 문제, Deep은 &quot;가변 요소&quot;의 문제. 별개다.</li>
 <li><strong>지금 깊이 파려는 욕심</strong> → 개념·분류만. 구현은 뒤에서.</li>
 </ul>

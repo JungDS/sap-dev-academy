@@ -1,0 +1,79 @@
+{
+  "agent": "AG05",
+  "model": "sonnet",
+  "target": "CH08",
+  "persona_ack": "20년차 학습 교재·코스 설계 전문가(기업 IT 교육 커리큘럼 다수 설계, 인지부하 관리·동기 설계 전문) 페르소나로 CH08 'Open SQL 기본 조회'(_chapter.md + CH08-L01~L07)를 챕터 구성, 섹션 흐름, 복습/예습 장치, 불편→해결 서사, 인지부하 다섯 관점에서 감사함.",
+  "method": "대상 8개 파일(_chapter.md, CH08-L01.md~L07.md) 전문을 직접 읽고, 레슨 간 개념 재등장(introduces 중복 여부) · 전환 문장의 소재 일관성 · 코드 블록의 변수 선언 여부를 레슨 간 교차 대조하는 방식으로 검증함. 웹 검색 · 외부 도구 · 다른 챕터 파일 접근 없음(과제 제약 준수).",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L07.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L02.md",
+      "quote": "여러 테이블을 다룰 땐 `테이블~필드`(예: `sflight~carrid`)로 어느 테이블 컬럼인지 밝힌다.",
+      "category": "개념 조기 도입 — 사용처 없는 표기",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "L02가 `테이블~필드` 표기를 front-matter introduces에 정식 항목으로 올리지만, 이 표기가 실제로 필요해지는 상황(한 SELECT에서 여러 테이블을 다루는 JOIN)은 CH13에서야 나온다. 당장 써먹을 데 없는 문법을 5개 챕터 앞서 정식 개념으로 못박아 이 레슨의 인지부하만 늘리는 모양새다.",
+      "evidence": "CH08-L02.md는 이 표기를 introduces 목록 정규 항목으로 올렸지만 본문에는 단 한 문장, 다중 테이블 코드 예제 없이 스쳐 지나간다. CH08-L04.md의 '흔한 실수' 항목이 같은 이슈(별칭)를 '[Chapter 13 · JOIN](CH13-L01.html)의 AS'로 미루는 것을 보면, 저자도 이 표기의 진짜 쓰임이 JOIN 도입 이후라는 점을 인지하고 있는 것으로 보인다.",
+      "suggestion": "front-matter에서 `테이블~필드`를 introduces 대신 foreshadow(L1 예고)로 재분류하거나, CH13(JOIN)에서 실제 예제와 함께 정식 도입하도록 옮긴다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L03.md",
+      "quote": "여러 행은 `INTO TABLE`로 내부 테이블에 통째로 담는다(= Array Fetch, 빠르다).",
+      "category": "개념 정식 도입 중복 — R10 위반 소지",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L03이 front-matter introduces에 'INTO TABLE(Array Fetch)'를 올려 이 레슨에서 처음 정식 도입하는 것처럼 선언하지만, 실제로는 L02가 이미 같은 등식(INTO TABLE = Array Fetch)을 글로서리 태그까지 붙여 설명했다.",
+      "evidence": "CH08-L02.md에 '`INTO TABLE`은 결과 전체를 내부 테이블에 채운다([[Array Fetch]]).'라는 문장이 있고 [[Array Fetch]]는 정식 글로서리 마킹이다. CH08-L03.md는 같은 내용을 인용한 문장으로 다시 설명하면서 L02에서 이미 나왔다는 상기(복습 장치) 없이 신규처럼 제시한다. R10은 '개념당 한 곳(최초 도입 레슨)에서만' 정식 도입하도록 규정한다.",
+      "suggestion": "L03 front-matter introduces에서 'Array Fetch'를 제거하거나(이미 L02 소유), L03 본문에 'L02에서 잠깐 본 것처럼' 같은 명시적 리마인드를 붙여 복습 장치로 전환한다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L02.md",
+      "quote": "컬럼 일부만 읽을 땐, 같은 이름 필드에 맞춰 담는 `INTO CORRESPONDING FIELDS OF TABLE`.",
+      "category": "개념 선행사용 미표기 — R15 L2",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "L02가 'INTO CORRESPONDING FIELDS OF TABLE'을 실제 동작 코드와 함께 설명하는데, 이 개념의 공식 정식 도입은 L04(front-matter introduces: 'INTO CORRESPONDING FIELDS OF')다. R15의 L2(선행사용)에 해당한다면 [선행 사용] 표시가 있어야 하는데 없고, L04도 L02에서 이미 다뤘다는 언급 없이 처음처럼 재설명한다.",
+      "evidence": "CH08-L02.md 코드 블록 'SELECT dan mul result FROM zgugudan INTO CORRESPONDING FIELDS OF TABLE gt_gugu.'와 뒤이은 설명이 실제로 동작하는 사용법을 이미 보여준다. CH08-L04.md는 별도 섹션 'CORRESPONDING FIELDS OF — 이름 맞춰 담기'로 같은 내용을(순서 무관 특성 추가) 다시 설명하지만 L02 언급을 상기시키지 않는다.",
+      "suggestion": "L02의 언급에 [선행 사용] 표시를 붙이거나, L04 도입부에 'L02에서 잠깐 써본 INTO CORRESPONDING FIELDS OF TABLE을 여기서 제대로 본다'는 복습 연결 문장을 추가한다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L03.md",
+      "quote": "SELECT * FROM sflight INTO TABLE gt_flight WHERE carrid = 'KE'.",
+      "category": "코드 예제 완비성 — 미선언 변수",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "챕터 전체(L01·L03·L04·L05·L06)에서 반복 사용되는 `gt_flight`(SFLIGHT Internal Table)가 어느 레슨에서도 DATA 선언 없이 바로 등장한다. 같은 역할의 `gs_flight`(L03에서 'DATA gs_flight TYPE sflight.'로 선언)나 `gt_gugu`(L02에서 'DATA gt_gugu TYPE TABLE OF zgugudan.'로 선언)는 각각 최소 한 번은 명시적으로 선언되는 것과 대조적이다.",
+      "evidence": "CH08-L01.md의 SELECT 예제, CH08-L03.md의 세 SELECT 예제(SINGLE 절 제외), CH08-L04.md 두 곳, CH08-L05.md 두 곳, CH08-L06.md 한 곳이 전부 gt_flight를 바로 사용하지만 이 챕터 어느 코드 블록에도 그 DATA 선언문이 없다. 완전 입문자가 지문 코드를 그대로 따라 치면 '이 변수는 어디서 왔지'라는 의문이 남을 수 있다(체험용 embed 안에는 선언이 있을 수 있으나 지문 코드 블록만으로는 확인 불가).",
+      "suggestion": "gt_flight를 처음 쓰는 지점(L01 또는 L03)에서 한 번 'DATA gt_flight TYPE TABLE OF sflight.' 선언을 보여주고, 이후 레슨에서는 '이미 선언한 gt_flight를 재사용'이라는 한 줄을 덧붙인다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L07.md",
+      "quote": "그런데 공연 ID만 입력해도 공연 정보가 F4 목록으로 뜨면",
+      "category": "챕터 전환 서사 — 소재 불일치",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "CH08 종료부(L07)의 다음 챕터 예고가 이 챕터에서 전혀 쓰이지 않은 '공연' 도메인(공연 ID, 공연 정보)을 갑자기 등장시킨다. CH08은 처음부터 끝까지 ZGUGUDAN(구구단)과 SAP 항공 데모(SCARR/SPFLI/SFLIGHT) 두 소재만 사용했고 '공연' 관련 언급은 L01~L06 어디에도 없다.",
+      "evidence": "L01~L06 전체를 훑어도 '공연'이라는 단어가 한 번도 등장하지 않는다(항공사·항공편·구구단만 사용). 그런데 L07의 챕터 마무리 문장은 갑자기 F4 예고를 '공연 ID'·'공연 정보' 시나리오로 제시한다. 커리큘럼 전체의 관통예제(콘서트 예매)를 가리키는 것으로 보이나, CH08 안에서는 그 맥락이 전혀 준비되지 않아 독자가 '갑자기 웬 공연?' 하고 이탈감을 느낄 수 있다. 불편(pain)-해결(solution) 서사는 직전 체험과 맞닿아 있어야 설득력이 있는데, 여기서는 이 챕터의 체험(항공편 조회)과 다음 챕터 예고(공연 조회)가 소재부터 어긋난다.",
+      "suggestion": "예고 문장의 예시를 이 챕터에서 실제로 다룬 소재(예: 항공편 CARRID만 입력해도 항공사명이 F4로 뜨면 좋겠다는 SFLIGHT/SCARR 기반 시나리오)로 바꾸거나, 콘서트 도메인으로 전환하는 이유를 한 문장 브리지로 짚어준다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH08은 ZGUGUDAN 되찾기와 SAP 항공 데모(SCARR/SPFLI/SFLIGHT)라는 두 축의 예제를 일관되게 오가며 SELECT 4요소 → 형태 → INTO 대상 → WHERE 상세 → 키/인덱스 → 실패 처리로 자연스럽게 확장되는 구성이다. 레슨 끝 예고는 대부분 1~2문장으로 절제되어 있고, L01의 MANDT 콜백처럼 이전 챕터 개념을 명시적으로 상기시키는 장치도 잘 작동하며, 각 레슨 도입부의 불편 프레이밍도 대체로 억지스럽지 않다. 다만 (1) L07의 다음 챕터 예고가 이 챕터에서 전혀 쓰이지 않은 '공연' 소재로 갑자기 전환되어 서사가 끊기고, (2) gt_flight 변수가 챕터 전체에서 반복 사용되면서도 어느 코드 블록에도 선언문이 없으며, (3) Array Fetch · CORRESPONDING FIELDS OF TABLE · 테이블~필드 세 개념이 각각의 정식 도입(introduces) 레슨보다 앞선 레슨에서 이미 코드와 함께 등장해 '개념당 한 곳에서만 정식 도입'이라는 원칙과 어긋난다. 모두 국소적인 손질로 해결 가능한 수준이라 경미 수정을 제안한다."
+  }
+}

@@ -1,0 +1,97 @@
+{
+  "agent": "AG01",
+  "model": "opus",
+  "target": "CH07",
+  "persona_ack": "나는 은서다. 개발·전공 경험이 전혀 없는 24세 문과 출신이고, 이 사이트로 ABAP을 처음 공부한다. CH07을 _chapter → L01 → L02 → L03 순서로 처음 읽는 사람으로서 통독했고, 내 바깥 지식으로 빈틈을 메우지 않았다. 용어 풀이가 그 자리나 같은 챕터 앞 레슨에 없으면 막힌 것으로 기록했다.",
+  "method": "Read 도구로 대상 4개 파일 전문을 순서대로 통독(_chapter.md → CH07-L01 → CH07-L02 → CH07-L03). 이후 Grep으로 (1) 각 finding의 quote가 원문에 그대로 존재하는지, (2) 내가 막힌 용어(ALV·F4·master/transaction·이송·ts_line·ZTT_LINE·ZST_LINE·CLNT)가 CH07 세 레슨 안 어딘가에서 풀이되는지를 확인했다. 웹 검색·외부 자료·다른 감사 산출물은 보지 않았다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\CH07-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\CH07-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\CH07-L03.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\CH07-L01.md",
+      "quote": "화면·ALV가 똑똑해진다.",
+      "category": "단절 — 풀이 없는 용어가 갑자기 나옴",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'ALV'가 아무 설명 없이 튀어나와 여기서 멈췄다. 이 문장은 'Data Element를 쓰는 게 왜 좋은가'의 핵심 근거인데, ALV가 무엇인지 모르니 장점이 하나도 와닿지 않고 그냥 넘겨야 했다.",
+      "evidence": "CH07 세 레슨 전체를 통틀어 ALV는 이 한 줄에만 등장하고, 괄호 한 줄 풀이도 용어 팝업 마킹도 '나중에 배운다'는 안내도 없다. 같은 줄의 'F4' 역시 풀이가 없어서 '라벨·F4·도움말까지'가 무엇 세 가지를 나열한 것인지 알 수 없었다. 앞 레슨(_chapter·L01 앞부분)에도 두 단어 모두 나온 적이 없다.",
+      "suggestion": "ALV는 '표 형식으로 목록을 보여 주는 화면 도구(나중 챕터에서 배움)' 정도로 한 줄 풀이하거나, 입문 단계에선 빼고 '화면·목록이 똑똑해진다'로 바꾼다. F4도 '입력 도움말(F4)'처럼 풀어 쓴다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\CH07-L01.md",
+      "quote": "각 컬럼의 타입을 주는 방법은 두 가지다.",
+      "category": "생략 — 실습 중간 단계 누락",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "타입 주는 방법이 두 가지라고 배웠는데, 정작 앞의 ZGUGUDAN 만들기 실습 블록에는 어느 필드에 어떤 타입을 넣는지가 하나도 적혀 있지 않다. 따라 만들다가 타입 칸에서 손이 멈췄다.",
+      "evidence": "실습 블록은 'MANDT (Key) → 클라이언트(자동)', 'DAN (Key) → 단', 'MUL (Key) → 곱하는 수', 'RESULT → 결과'처럼 필드명과 한글 설명만 있고 타입 값이 없다. ZDE_DAN도 'DAN에 ZDE_DAN 같은'이라는 예시로만 나와서 그걸 언제 어디서 만들었는지, MUL·RESULT에는 무엇을 넣어야 하는지 알 수 없다. 게다가 뒤의 MANDT 절에서 갑자기 'CLNT 타입 필드'라고 하는데 앞 블록에는 CLNT라는 글자가 없어서 더 헷갈렸다. (체험 위젯 제목이 '필드·키·타입을 정하고'라서 위젯 쪽에서 보완될 여지는 있어 확신은 낮춘다.)",
+      "suggestion": "실습 블록에 타입 열을 함께 보여 준다(예: MANDT=CLNT, DAN·MUL=INT4 또는 ZDE_DAN, RESULT=INT4). ZDE_DAN을 쓸 거면 '앞 챕터에서 만든 것'인지 '여기서 새로 만드는 것'인지 한 줄로 밝혀 준다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\CH07-L01.md",
+      "quote": "**Delivery Class**는 이 테이블의 데이터가 설치·업그레이드·클라이언트 복사·이송 때",
+      "category": "멈춤 — 미설명 업무 용어가 한 문단에 몰림",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "한 문장 안에 '설치·업그레이드·클라이언트 복사·이송'이, 바로 다음 문장에 'master·transaction 데이터'가 풀이 없이 쏟아진다. 여러 번 읽어도 왜 우리 구구단이 A인지 판단할 근거를 못 찾아서, A라는 결론만 외우고 넘어갔다.",
+      "evidence": "'이송'은 CH07 안에 풀이가 없고, 레슨 맨 끝 '이송 절차로(Chapter 38 · Transport 관리)' 링크에서 한 번 더 쓰일 뿐이다(31개 챕터 뒤라 지금 확인할 수 없다). 'master·transaction 데이터'도 챕터 어디에도 설명이 없어서 '업무(master·transaction) 데이터 성격이라 A가 맞다'가 어떤 기준으로 맞는 건지 알 수 없었다. '클라이언트 복사'도 마찬가지다.",
+      "suggestion": "이 문단은 '지금은 A로 두면 된다 — 업무용 데이터라는 뜻'까지만 남기고, 이송·클라이언트 복사·master/transaction은 각각 괄호 한 줄 풀이를 붙이거나 뒤 챕터로 미룬다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\CH07-L01.md",
+      "quote": "> 🔎 **Where-Used List** — SE11에서 어떤 Data Element·Domain·테이블을 **어디서 쓰는지** 한 번에 찾아 준다.",
+      "category": "과부하 — 곁가지 새 이름이 한꺼번에 몰림",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "Technical Settings 절 끝에서 Fragmentation → DBA → Where-Used List가 연달아 나오는데, 셋 다 '테이블 만들기'라는 이번 실습과 직접 상관이 없어서 '이걸 지금 알아야 하나' 하는 부담만 남았다.",
+      "evidence": "L01 한 레슨에 Transparent Table·Key·MANDT·CLNT·Delivery Class·Data Element·Built-In·Data Class·Size Category·Fragmentation·DBA·Where-Used List·이송까지 처음 보는 이름이 열 개 넘게 들어 있다. 특히 Where-Used List는 절 제목인 'Technical Settings — 저장 방식 지정'과 내용이 이어지지 않아 왜 여기 있는지 알 수 없었다. Technical Settings 자체도 앞의 표에서 이미 한 번 나와 같은 내용을 두 번 읽는 느낌이었다.",
+      "suggestion": "Where-Used List·Fragmentation·DBA는 접기(details)나 '나중에' 박스로 빼고, L01 본문은 필드 정의 → 키 → 타입 → 활성화까지로 좁힌다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\CH07-L02.md",
+      "quote": "이제 18행이 디스크에 **영구히** 남았다. 그런데 같은 DDIC 모양을 프로그램에선 작업",
+      "category": "단절 — 겪지 않은 경험을 전제한 예고",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "'같은 DDIC 모양을 프로그램에선 작업 영역으로도, 내부 테이블로도 썼다'고 하는데, 이번 챕터에서 나는 SE11로 표를 만들고 손으로 18행을 넣은 게 전부다. 프로그램에서 그 모양을 쓴 기억이 없어서 다음 레슨 예고가 남의 이야기처럼 들렸다.",
+      "evidence": "CH07 L01·L02에는 ABAP 코드가 한 줄도 나오지 않는다. ZGUGUDAN을 프로그램에서 읽는 것은 L03 마지막 줄이 가리키는 Chapter 08부터다. '작업 영역'이라는 말도 이 문장이 챕터 내 첫 등장인데 풀이가 없다(L03 표에 가서야 'Structure(Work Area)'로 나온다).",
+      "suggestion": "'앞 챕터에서 구구단 한 줄을 작업 영역으로, 72행을 내부 테이블로 다뤘다'처럼 어느 레슨의 경험인지 링크로 짚어 주고, '작업 영역'에 한 줄 풀이를 붙인다."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\CH07-L03.md",
+      "quote": "| **Table Type**(설계도) | SE11 `ZTT_LINE` | — (타입 정의만) | 내부 테이블의 전역 설계도 |",
+      "category": "단절 — 정리표의 예제 이름이 챕터 예제와 다름",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "이 챕터 내내 본 것은 ZGUGUDAN과 DAN·MUL·RESULT뿐인데, 총정리 표의 '어떻게' 칸에는 ts_line·ZTT_LINE처럼 처음 보는 이름이 들어 있다. '같은 모양을 세 가지로 썼다'는 표의 전제가 나에게는 성립하지 않아서, 표를 보며 무엇이 무엇인지 짝지을 수 없었다.",
+      "evidence": "바로 위 문장이 '지금까지 구구단 한 줄(dan·mul·result)이라는 같은 모양을 세 가지로 썼다'인데, 정작 표는 ts_line(Structure)·ts_line(Internal Table)·ZTT_LINE(Table Type)으로 이름이 바뀐다. ts_line은 CH07 세 레슨 어디에도 정의가 없고 이 표 두 줄에만 나온다. ZTT_LINE도 이번 챕터에서 만든 적이 없는데 '설계도'로 소개된다.",
+      "suggestion": "표의 예제 이름을 챕터 관통 예제(구구단 한 줄)로 통일하거나, 앞 챕터에서 만든 것이라면 어느 레슨에서 만든 무엇인지 링크로 밝혀 준다."
+    },
+    {
+      "seq": 7,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\CH07-L03.md",
+      "quote": "전역 DDIC Structure(예: `ZST_LINE`) 하나를 만들어 두면, 프로그램에서 작업영역으로도",
+      "category": "생략 — 만든 적 없는 객체를 전제 + 표와 코드의 이름 불일치",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'ZST_LINE 하나를 만들어 두면'이라고 전제하는데 나는 그걸 만든 적도, 만드는 법을 배운 적도 없다. 게다가 바로 위 표는 작업영역을 ts_line, 설계도를 ZTT_LINE이라고 했는데 코드에는 zst_line만 나와서, 세 이름이 같은 것인지 다른 것인지 판단하지 못한 채 코드를 읽었다.",
+      "evidence": "코드는 'DATA gs_line TYPE zst_line'과 'DATA gt_line TYPE TABLE OF zst_line' 두 줄뿐인데, 표가 '내부 테이블의 전역 설계도'라고 소개한 ZTT_LINE은 코드에 한 번도 쓰이지 않는다. ts_line(소문자)·ZST_LINE·ZTT_LINE의 관계를 설명하는 문장이 CH07 어디에도 없다. 그래서 '흔한 실수'의 'Table Type과 Transparent Table 혼동' 항목을 읽을 때도 ZTT_LINE이 실제로 어떻게 쓰이는 물건인지 그려지지 않았다.",
+      "suggestion": "표의 이름과 코드의 이름을 하나로 맞추고, 로컬 TYPES(ts_)와 전역 DDIC 객체(ZST_/ZTT_)의 차이를 한 줄로 구분해 준다. ZTT_LINE을 실제로 쓰는 줄(예: TYPE ztt_line)을 코드에 넣어 표와 코드가 이어지게 한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "'프로그램이 끝나면 사라진다 → 디스크에 남기고 싶다'는 도입 불편이 선명해서 왜 이 챕터를 배우는지는 처음부터 이해됐고, 특히 L02의 '키는 중복만 막는다 — 2×2인데 RESULT=5도 들어간다'는 경고와 '18행 손입력 vs 프로그램 72행' 대비, L03 마지막의 '메모리는 사라지고 디스크만 남는다'는 한 줄 정리는 비전공자인 나도 바로 이해되고 오래 기억에 남았다. 다만 L01이 새 이름을 너무 많이 담아 곁가지(Where-Used List·Fragmentation·이송·master/transaction)에서 자주 멈췄고, 특히 ALV처럼 풀이가 전혀 없는 단어가 근거 문장에 박혀 있어 장점을 납득하지 못했다. 실습 블록에 필드 타입이 없어 따라 만들다 멈춘 것과, L03 총정리 표·코드가 챕터 관통 예제(ZGUGUDAN·DAN·MUL·RESULT) 대신 ts_line·ZST_LINE·ZTT_LINE이라는 처음 보는 이름을 쓰는 것이 가장 크게 걸렸다 — 정리 레슨인데 오히려 새로 헷갈렸다. 다만 전부 문장·이름 수준의 국소 수정으로 해소될 문제라 구조를 다시 짤 정도는 아니라고 본다."
+  }
+}

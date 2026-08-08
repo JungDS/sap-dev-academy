@@ -1,0 +1,100 @@
+{
+  "agent": "AG03",
+  "model": "sonnet",
+  "target": "CH06",
+  "persona_ack": "AG03 — Java/C# 백엔드 3～5년차 경력자 페르소나로 CH06(Internal Table) 7개 파일을 통독. ABAP을 빠르게 훑어 익히려는 목적으로 읽었다.",
+  "method": "브라우저·외부 도구·웹검색 미사용. 대상 7개 파일을 Read로 전문 통독 후 지식 기반으로 판단. SERVE_URL은 이 감사 항목의 대상(정적 .md 텍스트)과 무관해 사용하지 않았다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L06.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L01.md",
+      "quote": "테이블 안으로 옮기는 게 아니라 **현재 값을 복사해 새 행을 만든다**. 그래서 쌓은 뒤에",
+      "category": "용어 충돌 — 값복사 vs 참조복사 패러다임",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "APPEND가 Work Area를 복사해 새 행을 만든다는 사실만 서술하고, Java/C# 등 참조 시맨틱 언어 출신 독자가 기본으로 가정하는 '컬렉션에 넣은 객체는 참조라 나중에 원본을 바꾸면 같이 바뀐다'는 전제와 정반대라는 대조가 없다.",
+      "evidence": "본문은 'APPEND는 Work Area를 테이블 안으로 옮기는 게 아니라 현재 값을 복사해 새 행을 만든다'고만 설명한다. Java의 List.add(obj) 이후 obj 필드를 바꾸면 리스트 안 값도 함께 바뀌는 참조 시맨틱과 정반대 동작인데, 그 대조가 명시되지 않아 경력자가 '왜 굳이 강조하지' 하고 무심히 지나치기 쉽다.",
+      "suggestion": "콜아웃에 한 줄 추가: 'Java/C#처럼 객체를 참조로 다루는 언어라면 리스트에 넣은 뒤 원본을 바꾸면 같이 바뀌지만, ABAP Structure는 값 타입이라 여기서는 안 바뀐다.'"
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L02.md",
+      "quote": "처음엔 **STANDARD**로 충분하다. SORTED/HASHED는 접근 패턴이 분명하고 성능이 절실할 때 다시 본다.",
+      "category": "지름길 부재 — 컬렉션 프레임워크 유추 누락",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "STANDARD/SORTED/HASHED 세 종류를 저장·탐색 방식으로만 설명하고, 경력자가 이미 아는 List/TreeMap(SortedList)/HashMap과의 대응을 짚어주지 않아 세 용어를 처음부터 새로 외워야 하는 것처럼 읽힌다.",
+      "evidence": "표는 '입력 순서 유지+순차 탐색', '키 순서 자동 유지+이진 탐색', '해시로 단건 탐색'만 서술한다. 이는 각각 Java의 List/ArrayList, TreeMap 계열, HashMap과 거의 그대로 대응되는 트레이드오프인데 그 유추가 본문에 없다.",
+      "suggestion": "표 옆에 괄호로 'STANDARD≈List, SORTED≈TreeMap/SortedList, HASHED≈HashMap' 같은 한 줄 유추를 곁들이면 경력자는 즉시 감을 잡는다(완전 대응은 아니므로 '비슷한 감' 정도로 톤 조절)."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L03.md",
+      "quote": "그때그때 [[sy-subrc]]로 확인한다(0=성공).",
+      "category": "용어 충돌 — 반환코드 vs 예외 처리 패러다임",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "READ/MODIFY/DELETE 등 레슨 전체가 sy-subrc 반환코드 확인 패턴을 반복 사용하는데, 예외(try/catch) 기반 에러 처리에 익숙한 경력자에게 '왜 예외가 아니라 매번 코드를 확인하나'라는 의문이 남을 수 있고, 이 챕터 파일 안에서는 그 대조가 짚어지지 않는다.",
+      "evidence": "L03 전체(READ TABLE·MODIFY·DELETE)가 IF sy-subrc = 0 패턴을 반복하지만, classic ABAP 문장이 예외가 아니라 반환코드 방식이라는 점이나 그 이유(OO ABAP 예외는 나중에 배운다는 안내)가 이 챕터 파일들 안에는 없다. 다른 챕터(sy-subrc 최초 도입 지점)에서 이미 다뤘을 가능성이 있어 확인하지 못했다.",
+      "suggestion": "sy-subrc 첫 등장부에 괄호로 짧게 '(Java의 try/catch 예외와 달리 classic ABAP 문장은 반환코드로 성공/실패를 알린다. 예외는 나중 챕터)' 같은 한 줄을 곁들이면 경력자의 궁금증이 바로 해소된다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L04.md",
+      "quote": "`INTO gs_...`는 행을 **복사**해 온다. 복사본을 고쳐도 테이블은 안 바뀌므로 `MODIFY`가",
+      "category": "용어 충돌 — Field Symbol의 필요성과 참조 시맨틱",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "ASSIGNING <fs>가 왜 필요한지는 '복사 없이 직접 고친다'로 설명하지만, 이것이 Java/C#에서 for-each로 객체를 순회하며 필드를 바로 바꾸는 것(기본 참조 시맨틱)과 동급이라는 연결을 짚지 않아, 경력자가 Field Symbol을 ABAP만의 특수 최적화 기법으로 오해하기 쉽다.",
+      "evidence": "본문은 'INTO gs_...는 복사, ASSIGNING <fs>는 직접 참조'라는 사실만 제시한다. Java/C# 컬렉션은 원소가 기본적으로 참조라 이 대조 자체가 낯설 수 있는데, '당신의 모국어에서는 이게 기본값이었다'는 언급이 없다.",
+      "suggestion": "ASSIGNING 소개 문단에 '참고로 Java/C# 컬렉션은 원소가 기본적으로 참조라 이 방식이 디폴트다. ABAP은 반대로 값복사가 기본이라 이 문법이 별도로 필요하다' 한 줄을 추가하면 CH06-L01의 값복사 대목과도 자연스럽게 이어진다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L05.md",
+      "quote": "`string`은 길이가 고정돼 있지 않은 가변 타입이라 deep 요소로 분류된다.",
+      "category": "용어 충돌 — 고정 메모리 레이아웃 vs 관리형 참조 모델",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "Flat/Deep 구분은 사실상 고정폭 메모리 레이아웃 개념인데, Java/C#처럼 문자열·리스트가 애초에 다 참조(객체)인 언어 출신 독자에게는 '어차피 다 참조인데 왜 이걸 따로 분류하나'라는 감이 안 잡힐 수 있다. DB/ALV 제약이라는 실용적 이유는 짚어주지만 '이건 값 타입 언어 특유의 개념'이라는 배경 설명은 없다.",
+      "evidence": "레슨은 DB 컬럼 제약·ALV 평평한 행 요구사항으로 '왜 미리 알아두나'는 설명하지만, Flat/Deep 분류 자체가 왜 필요한지(고정 크기 메모리 레이아웃 vs 가변 크기)는 명시하지 않는다. Java/C# 개발자는 평소 이런 구분을 언어 차원에서 의식할 일이 없다.",
+      "suggestion": "'왜 미리 알아두나' 앞에 한 줄: 'Java/C#은 문자열·컬렉션이 원래 다 참조 객체라 이런 구분이 안 보이지만, ABAP Structure는 고정폭 메모리에 값이 그대로 박히는 방식이라 가변 요소가 섞이면 별도로 취급해야 한다.'"
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L04.md",
+      "quote": "`COLLECT`는 **키가 같은 행이 이미 있으면 숫자 필드를 합산**하고, 없으면 새 행으로 넣는다.",
+      "category": "지름길 부재 — group-by/merge 유추 누락",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "COLLECT의 동작(같은 키면 합산, 없으면 새 행)은 SQL의 GROUP BY SUM이나 Java의 Map.merge(key, val, Integer::sum) / Collectors.groupingBy(..., summingInt(...))와 개념적으로 거의 동일한데 그 유추가 없어, 경력자가 완전히 새로운 개념으로 받아들이며 필요 이상 긴장하게 된다.",
+      "evidence": "본문은 COLLECT의 규칙만 서술하고 비교 대상을 제시하지 않는다. SQL/Java 경험자는 'GROUP BY + SUM' 또는 'Map 누적 병합'과 즉시 연결할 수 있는 개념이다.",
+      "suggestion": "한 줄 유추 추가: '이미 아는 SQL의 GROUP BY … SUM(amount)나 Map.merge 누적 패턴을 떠올리면 빠르다.'"
+    },
+    {
+      "seq": 7,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L01.md",
+      "quote": "같은 모양의 행을 **여러 개** 쌓아 두는 그릇이 필요하다. 그게",
+      "category": "지름길 부재 — 경험자용 스킵 안내 부재(챕터 전반)",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "CH06 6개 레슨 어디에도 '이미 컬렉션/배열 개념을 아는 경력자는 이 절 건너뛰어도 된다'류의 안내가 없다. '왜 여러 건을 다뤄야 하나' 같은 동기부여 도입부는 입문자에겐 꼭 필요하지만 경력자에겐 반복적으로 이미 아는 이야기라, 스킵 안내가 있었으면 통독 속도가 빨랐을 것이다.",
+      "evidence": "L01의 '한 건으로는 부족하다' 도입, L04의 LOOP 기본 동작 설명 등 여러 곳이 일반 프로그래밍 상식(컬렉션이 왜 필요한가, for-each가 뭔가)과 겹치지만, 6개 레슨 전체에 '경력자는 여기부터'류의 앵커나 요약 박스가 하나도 없다.",
+      "suggestion": "각 레슨 상단에 '요약: 이미 아는 개념이면 표/코드 블록만 훑고 흔한 실수 절로 이동' 같은 1줄 네비게이션을 붙이면 경력자 이탈 없이 완주율이 올라간다(사이트 톤상 과하면 산만해질 수 있어 챕터 1곳에만 시범 적용 권장)."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "유지",
+    "summary": "CH06(Internal Table) 6개 레슨을 Java/C# 백엔드 경력자 시점으로 통독. 사실 오류나 입문자에게 불필요한 장황함은 발견되지 않았고 구조·설명 흐름도 탄탄하다. 다만 경력자의 기존 지식(값복사 vs 참조, 컬렉션 프레임워크, 예외 처리, group-by 집계)과 연결하는 한 줄 유추가 대부분 빠져 있어 낮음 severity로 7건을 기록했다(L01～L05에 분포, 캡스톤인 L06은 해당 없음). 전부 입문자 경험은 해치지 않는 선택적 보강이라 전체 판정은 '유지'."
+  }
+}

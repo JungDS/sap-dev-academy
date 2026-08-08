@@ -1,0 +1,53 @@
+{
+  "agent": "AG05",
+  "model": "sonnet",
+  "target": "CH07",
+  "persona_ack": "나는 20년차 학습 교재·코스 설계 전문가로서 CH07을 챕터 구성·섹션 흐름·복습/예습 장치·불편-해결 서사·인지 부하 다섯 축으로 감사했다.",
+  "method": "대상 MD 4개 파일(_chapter.md, L01~L03) 전문을 직접 읽고 텍스트만으로 구조·흐름·인지부하를 분석. 임베드 HTML·브라우저 실행은 스코프 밖이라 사용하지 않음. (발견자는 프로토콜 15 §4에 따라 JSON만 반환했고, 본선이 앵커 3/3 실존을 grep으로 검증한 뒤 저장함.)",
+  "errors": [],
+  "files_read": [
+    "content/abap/CH07/_chapter.md",
+    "content/abap/CH07/CH07-L01.md",
+    "content/abap/CH07/CH07-L02.md",
+    "content/abap/CH07/CH07-L03.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH07/CH07-L01.md",
+      "quote": "## Technical Settings — 저장 방식 지정",
+      "category": "인지 부하",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "L01 한 레슨에 신규 개념이 과다하게 밀집되어 있다 — Transparent Table 정의·키 배치 규칙·Delivery Class·활성화·Data Element vs Built-in·MANDT/CLNT·Technical Settings(Data Class·Size Category)·Where-Used List까지 7개 섹션에 걸쳐 한 번에 제시된다.",
+      "evidence": "front-matter introduces는 4개(Transparent Table·Key·MANDT·필드 타입)만 선언하지만, 본문은 Delivery Class·Technical Settings·Where-Used List까지 추가로 정식 설명한다. 각 하위 주제에 완화 장치는 있으나(예: '입문 단계에선 기본값으로 두고 활성화해도 된다'), 첫 SE11 실습 레슨이 다루는 새 명사 수가 뒤 두 레슨(L02 5섹션, L03 4섹션·introduces=[])보다 뚜렷이 많다.",
+      "suggestion": "Technical Settings 세부(Data Class·Size Category)와 Where-Used List를 더 짧게 압축하거나 접기(details) 박스로 분리해, 핵심 흐름(정의→키 규칙→Data Element→MANDT)과 시각적으로 구분하면 밀도가 완화된다."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH07/CH07-L01.md",
+      "quote": "::embed CH07-L01-S01 | SE11 Table Builder — 필드·키·타입을 정하고 활성화까지::",
+      "category": "섹션 흐름",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "임베드가 '필드·키·타입을 정하고'(타입 결정 포함)를 실습 범위로 명시하는데, 이 임베드는 '필드 타입 — Data Element vs Built-In' 설명 섹션보다 앞서 배치되어, 학습자가 타입 선택의 의미를 배우기 전에 먼저 타입을 정하는 실습을 마주칠 수 있다.",
+      "evidence": "본문 순서상 '## SE11에서 ZGUGUDAN 만들기'(임베드 포함) 다음에야 '## 필드 타입 — Data Element vs Built-In' 섹션이 나온다. 임베드 자체(HTML)의 안내문 내용은 이 감사 스코프(MD 전용)에서 확인 불가 — 위젯이 그 자리에서 자체 설명을 제공한다면 우려가 상쇄될 수 있다.",
+      "suggestion": "임베드 안내문이 Data Element·Built-in 차이를 그 자리에서 짧게 짚어주는지 확인하고, 없다면 필드 타입 절 핵심 한두 문장을 임베드 바로 앞으로 옮기는 것을 고려."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH07/CH07-L03.md",
+      "quote": "**Table Type**(설계도) | SE11 `ZTT_LINE` | — (타입 정의만) | 내부 테이블의 전역 설계도",
+      "category": "인지 부하",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "'Table Type'(SE11 전역 내부테이블 설계도, 예: ZTT_LINE)이 비교표에 한 줄로만 등장하고 별도 도입 설명이 없는데, 이 레슨의 front-matter introduces는 빈 배열이다.",
+      "evidence": "L03 전체에서 Table Type 설명은 비교표 한 줄과 '흔한 실수' 절의 이름 대조 한 문장뿐이며, SE11에서 만드는 절차나 실제 사용 시점은 다루지 않는다. 다만 표 자체가 '내부 테이블의 전역 설계도'라는 한 줄 풀이를 담고 있고 이 레슨의 목적이 Table Type 교육이 아니라 넷 중 하나로 대조하는 것이라, 스쳐가는 부수 용어로 보면 허용 범위일 수 있다. CH05·CH06(이 감사 스코프 밖)에서 이미 다뤘는지는 확인 불가.",
+      "suggestion": "Table Type을 실제로 만들고 쓰는 절차가 이후 챕터에서 다뤄지는지 확인하고, 없다면 CH07-L03 비교표 옆에 '다음에 실습' 식 1줄 예고를 추가."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH07은 '만들기(L01)→채우기(L02)→비교·정리(L03)' 3단 구성이 학습 단위로 명확히 나뉘고, 각 레슨이 왜→무엇→어떻게→실수→정리 흐름을 대체로 따른다. 도입부 불편(CH06 구구단이 프로그램 종료 시 사라짐)이 억지스럽지 않고 직전 챕터의 실제 산출물에 근거해 설득력 있다. 복습 장치(CH03·CH05·CH06 재호출)와 예습 장치(레슨 말미 1～2문장 예고, 링크 형식 준수)도 규정대로 잘 작동한다. 다만 L01의 신규 개념 밀도가 다른 두 레슨보다 높고, 필드타입 임베드 배치 순서, L03의 Table Type 한 줄 설명은 재확인할 가치가 있다. 셋 다 학습을 무너뜨리는 수준은 아니라 경미 수정 의견이다."
+  }
+}

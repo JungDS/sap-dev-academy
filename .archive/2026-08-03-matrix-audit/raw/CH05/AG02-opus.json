@@ -1,0 +1,129 @@
+{
+  "agent": "AG02",
+  "model": "opus",
+  "target": "CH05",
+  "persona_ack": "나는 '준호'다 — 배운 건 그 자리에서 직접 눌러 봐야 직성이 풀리는 실습형 학습자. CH05 다섯 레슨의 본문 코드·설명을 읽고, 각 레슨에 붙은 체험 위젯 12개를 실제로 로드해 끝까지 조작해 보면서 (1)체험 공백 (2)본문↔위젯 불일치 (3)헛체험 (4)위젯 결함 네 가지를 대조 감사했다. 없는 걸 만들어 내지 않았고, 확인 못 한 건 발견으로 올리지 않았다.",
+  "method": "① 대상 MD 6개·위젯 HTML 12개·위젯이 쓰는 공통 엔진 7개(struct-viz.js, step-debugger.js, move-mapping.js, share-vs-local.js, struct-reuse-board.js, before-after.css, _autoheight.js) 전문 정독. ② 브라우저(MCP)로 http://localhost:8143/embeds/abap/<위젯ID>.html 을 캐시버스팅 쿼리(?v=fix)로 12개 전부 실제 로드 — file:// 폴백은 한 번도 쓰지 않았다(하네스가 공지한 초기 404 구간에는 아직 검증을 시작하지 않았고, 서버 재기동 후 HTTP 실측만으로 전 항목을 수행했다). ③ 렌더 DOM 측정 + 스크립트 실행으로 상호작용을 직접 구동: S03 표현식 칩 4개 전부 클릭·재클릭 해제까지, S01(6스텝)·S05(4스텝)·L05-S01(10스텝) 스텝 디버거를 시작부터 끝까지 눌러 매 스텝의 강조 줄·변수 모니터·콘솔 문구를 캡처, L02-S01 값 전달 실행/되돌리기, L02-S02 필드 추가 토글 왕복, L03-S01 세그 3모드 전환 + 퀴즈 3문항(오답→정답 순으로) 클릭, L04-S01 실행/다시하기/CLEAR 토글 조합 4가지 전부 실행. ④ getComputedStyle·getBoundingClientRect로 그리드 단수·코드 블록 폭/렌더 줄수를 실측하고 뷰포트 497px↔1100px 두 조건에서 비교. ⑤ 페이지 컨텍스트 fetch(cache:'no-store')로 위젯 12개와 각 위젯이 참조하는 CSS/JS 전부의 HTTP 상태 확인 — 전부 200, 콘솔 오류 0.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L05.md",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH05-L01-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH05-L01-S02.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH05-L01-S03.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH05-L01-S04.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH05-L01-S05.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH05-L01-S06.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH05-L01-S07.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH05-L02-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH05-L02-S02.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH05-L03-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH05-L04-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH05-L05-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\struct-viz.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\step-debugger.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\move-mapping.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\share-vs-local.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\struct-reuse-board.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\before-after.css",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\_autoheight.js"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH05-L05-S01.html",
+      "quote": "{\"line\":11,\"vars\":{\"sy-index\":\"1\",\"gs_line-mul\":\"1\",\"gs_line-result\":\"2\"},\"console\":\"2 x 1 = 2\"}",
+      "category": "위젯 결함 — 스텝 디버거의 줄↔동작 대응이 틀림",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "캡스톤 디버거의 반복 스텝 9개가 전부 11번 줄로 지정돼 있는데, 11번 줄은 `gs_line-result = gs_line-dan * gs_line-mul.`(곱셈 대입)이고 콘솔에 찍히는 '2 x 1 = 2'는 12번 줄 WRITE의 출력이다. 같은 스텝에 묻힌 10번 줄(`gs_line-mul = sy-index.`)은 어디에도 귀속되지 않고, DO(9번)·WRITE(12번)·ENDDO(13번)는 10스텝 내내 단 한 번도 강조되지 않는다.",
+      "evidence": "브라우저에서 시작→다음 10회를 끝까지 눌러 실측했다. 매 반복 스텝의 콘솔 문구가 '✓ 방금 11번 줄 실행 → 2 x 1 = 2'로 출력되고, 강조(active/done) 줄은 계속 11번(`gs_line-result = gs_line-dan * gs_line-mul.`)에 머문다. '전체 출력' 모드에서도 '2. [line 11 실행] 2 x 1 = 2' … '10. [line 11 실행] 2 x 9 = 18'로 9줄 전부 line 11로 기록된다. 반면 같은 엔진을 쓰는 CH05-L01-S01은 7·8·9·11·12·13번 줄이 콘솔 내용과 정확히 1:1로 맞아떨어져(6스텝 전수 확인), 학습자는 '강조된 줄 = 방금 실행된 그 문장'이라고 믿도록 훈련된 상태로 이 위젯에 온다. 본문도 '`DO` 안에 `BREAK-POINT`를 걸고 … 반복마다 `mul`·`result`가 갱신되는 것도 한눈에 들어온다'며 문장 단위 관찰을 약속한다.",
+      "suggestion": "반복 한 바퀴를 한 스텝으로 유지할 거면 line을 출력이 나오는 12번(WRITE)으로 바꾸고 console 문구를 'mul·result 갱신 후 출력'처럼 한 바퀴 요약임이 드러나게 적는다. 문장 단위 충실도를 살리려면 회차마다 10→11→12 세 스텝으로 쪼개고(총 28스텝) 첫 회차만 3스텝, 이후는 요약 스텝으로 두는 절충도 가능하다. 어느 쪽이든 DO/ENDDO 줄이 한 번은 강조되게 해 반복문의 진입·회귀를 눈으로 보게 한다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L04.md",
+      "quote": "gs_a-name = '정훈영'.\ngs_b = gs_a.        \" 모든 Component 복사\nCLEAR gs_a.         \" gs_a를 초기값으로",
+      "category": "체험 공백 — 섹션 코드에 대응하는 체험 없음",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L04의 첫 섹션 '통째로 대입 / 초기화'가 도입하는 두 동작(같은 타입 Structure의 통째 대입 `gs_b = gs_a.`, `CLEAR`로 전체 비우기)은 이 페이지 어디서도 눌러 볼 수 없다. 페이지에 붙은 유일한 체험 CH05-L04-S01은 MOVE-CORRESPONDING 전용이고, 거기서의 CLEAR는 '옮기기 전에 대상을 비웠다 치는' 사전 토글일 뿐 CLEAR 자체가 Structure를 초기값으로 되돌리는 장면을 보여 주지 않는다. front-matter가 `introduces`로 선언한 'Structure CLEAR'가 체험 없이 지나간다.",
+      "evidence": "L04 본문에는 코드 블록이 둘인데(§통째로 대입/초기화, §MOVE-CORRESPONDING), 임베드는 `::embed CH05-L04-S01 | MOVE-CORRESPONDING 매핑 보드 …` 하나뿐이다. 위젯을 실제로 구동해 4가지 조합(초기·CLEAR 없이 실행·다시하기·CLEAR 토글 후 실행)을 전부 눌러 확인한 결과, 화면에 뜨는 코드는 `CLEAR gs_tgt.` + `MOVE-CORRESPONDING gs_src TO gs_tgt.`뿐이고 `gs_b = gs_a` 형태의 통째 대입은 등장하지 않는다. 게다가 CH05-L01-S03 위젯의 전체 선택 안내문이 '필드 3개가 한 몸으로 움직인다(한꺼번에 복사·초기화하는 법은 이 챕터 뒤에서)'라고 명시적으로 예고하는데(브라우저에서 __ALL__ 칩 클릭해 문구 확인), 그 약속을 받는 지점이 바로 이 섹션이고 여기서 체험이 끊긴다.",
+      "suggestion": "CH05-L04-S01에 '통째 대입/CLEAR' 모드를 얹는 게 가장 싸다 — 같은 타입 두 Structure를 나란히 놓고 ① `gs_b = gs_a.` 실행 시 세 칸이 한꺼번에 건너가는 애니메이션, ② `CLEAR gs_a.` 실행 시 원본이 타입별 초기값(''/0/0.00)으로 돌아가는 장면을 보여 주면 L01-S03의 예고가 회수되고 'CLEAR vs MOVE-CORRESPONDING'의 차이도 한 화면에서 잡힌다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L03.md",
+      "quote": "- 중첩은 `ls-head-customer`로 들어가지만, `.INCLUDE`는 펼쳐져 `ls-customer`로 바로 접근한다.",
+      "category": "불일치 — 본문 접근 경로 표기 vs 코드·위젯",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L03에서 접근 경로를 설명하는 산문·비교표는 `ls-head-customer`/`ls-customer`라고 쓰는데, 같은 레슨의 코드 블록과 체험 위젯은 전부 `gs_order-head-customer`를 쓴다. `ls`라는 변수는 이 레슨(및 CH05 전체) 어디에도 선언된 적이 없고, `l`(local) 접두어는 로컬 스코프를 배우는 CH10 이후에나 등장하는 표기다. 이 레슨의 핵심 요약인 비교표가 위젯과 다른 이름을 쓰는 바람에, 위젯을 눌러 본 뒤 표로 돌아온 학습자가 둘을 같은 예제로 잇지 못한다.",
+      "evidence": "본문 코드 블록은 `DATA: BEGIN OF gs_order,` … `gs_order-head-customer = '정훈영'.`로 `gs_`를 쓰는데, 바로 아래 §.INCLUDE 산문과 비교표(`| 접근 | ls-head-customer | ls-customer(펼쳐짐) |`), §흔한 실수의 '중첩은 `ls-head-customer`(단계마다 `-`)'까지 세 곳이 `ls-`다. 위젯 CH05-L03-S01을 브라우저에서 세 모드로 전환해 실측하니 접근 경로 칩은 각각 `gs_order-head-customer`·`gs_order-created_by`·`gs_mat-zzgrade`이고 퀴즈 선택지도 전부 `gs_order-`/`gs_mat-`이다. 덧붙여 본문 표는 같은 필드(`customer`)를 중첩↔INCLUDE로 대조하겠다고 예고하는데, 위젯의 INCLUDE 모드는 ZST_ORDER + ZST_AUDIT(CREATED_BY/CREATED_ON)라는 다른 시나리오라서 표가 약속한 '`-customer` 한 단계로 펼쳐짐'을 위젯에서 확인할 수 없다.",
+      "suggestion": "본문의 `ls-`를 코드·위젯과 같은 `gs_order-`로 통일한다(R11상 CH05 시점 선언은 전역이라 `gs_`가 맞다). 여력이 되면 위젯 INCLUDE 모드의 예시를 본문 표와 같은 축(`customer`가 head 안에 있느냐, 펼쳐져 바로 붙느냐)으로 맞춰, 세그를 토글하면 같은 필드의 경로만 달라지는 A/B가 되게 한다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH05-L02-S01.html",
+      "quote": "{ name: 'amount', type: 'ZDE_AMOUNT → DEC 8,2 (라벨: 금액)' }",
+      "category": "위젯 결함 — 초기값 표기 오류·챕터 내 불일치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "ZST_PERSON 트리에서 값을 안 넣은 칸의 초기값이 amount(DEC 8,2)·age(NUMC 3) 모두 `0`으로 뜬다. 그런데 같은 챕터 L01의 위젯들은 동일한 amount 칸의 초기값을 `0.00`으로 보여 준다. 또 NUMC(3)의 실제 초기값은 `000`이지 `0`이 아니다. 칸에는 '선언 시 자동 초기값'이라는 툴팁이 단언으로 붙어 있어, 틀린 값이 사실처럼 제시된다.",
+      "evidence": "브라우저에서 위젯을 로드해 세 칸의 렌더 값을 읽으니 name=`''`, age=`0`(툴팁 '선언 시 자동 초기값'), amount=`0`이었고, '값 전달 실행' 클릭 후에도 age·amount는 `0` 그대로였다. 반면 CH05-L01-S02는 amount=`0.00`, CH05-L01-S04는 gs_p2의 빈 amount 칸이 `0.00`, 스텝 디버거 S01/S05의 워치도 `0.00`으로 시작한다 — 전부 실측. 원인은 공통 엔진 struct-viz.js의 initialFor()가 소수 자릿수를 `DECIMALS n` 또는 `p 8,2` 축약형에서만 뽑아내고, DDIC 표기 `DEC 8,2`나 `NUMC 3`은 어느 분기에도 걸리지 않아 기본값 `0`으로 떨어지기 때문이다.",
+      "suggestion": "initialFor()에 DDIC 표기를 인식하는 분기를 더한다 — `DEC|CURR|QUAN\\s+\\d+\\s*,\\s*(\\d+)` → 소수 자리만큼 0을 채우고, `NUMC\\s+(\\d+)` → 자릿수만큼 '0' 반복('000'), `CHAR` → `''`. 엔진을 건드리기 부담스러우면 위젯 cfg의 comps에 초기값을 명시로 넣을 수 있게 하고 여기서 amount='0.00', age='000'을 지정한다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH05-L03-S01.html",
+      "quote": "a: 1, why: '중첩은 묶음이 유지되므로 단계마다 하이픈 — head를 거쳐 들어간다.' },",
+      "category": "위젯 결함 — 퀴즈 정답 위치 편중",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "경로 퀴즈 3문항의 정답이 전부 `a: 1`, 즉 세 선택지 중 항상 가운데다. 아무것도 이해하지 못한 학습자가 가운데만 세 번 눌러도 3문항 만점을 받고, 위젯이 '경로 감각을 점검'한다는 목적이 무력해진다.",
+      "evidence": "소스의 quiz 배열 세 항목이 모두 `a: 1`이고, 브라우저에서 실제로 각 문항의 2번(index 1) 선택지만 클릭해 세 문항 연속 '⭕' 판정을 받는 것을 확인했다(선택지 텍스트도 실측: 1번 `gs_order-head-customer`, 2번 `gs_order-created_by`, 3번 `gs_mat-zzgrade`가 각각 가운데 위치). 오답을 눌러도 정답 선택지에 good 클래스가 즉시 켜지고 해설이 뜨므로 재클릭으로 정답을 확인하는 것도 자유롭다.",
+      "suggestion": "정답 위치를 문항마다 흩어 놓는다(예: a를 1·0·2로). 선택지 순서를 렌더 시 셔플하고 정답을 값으로 판정하게 바꾸면 근본적으로 해결된다."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH05-L04-S01.html",
+      "quote": "{ n: 'name',   v: \"'정훈영'\",   t: 'string' },",
+      "category": "불일치 — 메모리 값 표기 규약 이탈",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "매핑 보드의 원본·대상 칸에 저장 값이 따옴표까지 포함된 `'정훈영'`·`'1500.50'`·`'Seoul'`로 표시된다. CH05의 다른 위젯들은 칸에는 맨값(따옴표 없음)만 넣고 따옴표는 실행문에만 쓰는 규약을 지키고 있어, 이 위젯만 어긋난다. MOVE-CORRESPONDING 실행 후 대상 칸에 `'정훈영'`이 찍히면 입문자는 따옴표까지 메모리로 건너간 것처럼 읽는다.",
+      "evidence": "실행/CLEAR 토글 4가지 조합을 눌러 가며 칸 텍스트를 읽으니 원본 name=`'정훈영'`, amount=`'1500.50'`, 대상 city=`'Seoul'`이고 실행 후 대상 name도 `'정훈영'`으로 채워진다. 대조로 CH05-L01-S03의 같은 값은 `정훈영`·`1500.50`(맨값)이고 CH05-L02-S01의 대입 결과도 `정훈영`이다 — 둘 다 실측. 두 위젯 소스에는 이 규약이 주석으로 명시돼 있다('칸 = 저장된 값(맨값 표기) — 소스 리터럴이 아니라 메모리 값', '칸 값=맨값(따옴표는 실행문에만)').",
+      "suggestion": "MM_CFG의 v/pre 값을 따옴표 없는 맨값(정훈영·1500.50·Seoul)으로 바꾼다. 따옴표는 위젯 상단의 `MOVE-CORRESPONDING …` 코드 pre에만 남기면 챕터 전체 표기가 통일된다."
+    },
+    {
+      "seq": 7,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH05-L01-S02.html",
+      "quote": "{ name: 'amount', type: 'p 8,2',  w: 1.3 }",
+      "category": "불일치 — 타입 표기가 본문 코드와 다름",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "위젯이 amount 칸의 타입을 `TYPE p 8,2`로 렌더한다. 본문 코드는 `amount TYPE p LENGTH 8 DECIMALS 2`이고, `TYPE p 8,2`는 ABAP에서 성립하지 않는 문법이다. 'TYPE'이라는 키워드까지 붙여 소스처럼 보여 주기 때문에, 그대로 따라 적어 보는 실습형 학습자는 문법 오류를 만난다. 같은 레슨 안에서 표기가 셋으로 갈리는 문제도 있다(본문 `p LENGTH 8 DECIMALS 2` · 구조 위젯 `p 8,2` · 스텝 디버거 워치 `p DEC 2`).",
+      "evidence": "브라우저 렌더 결과 S02·S03·S04 세 위젯 모두 칸 부제가 `TYPE p 8,2`로 출력된다(실측). 같은 페이지의 스텝 디버거 CH05-L01-S01은 코드 창에 `amount TYPE p LENGTH 8 DECIMALS 2,`를 정확히 표시하면서 워치 부제만 `amount · p DEC 2`로 쓴다. 한 레슨을 훑는 동안 동일 필드의 타입이 세 가지 표기로 스쳐 간다.",
+      "suggestion": "구조 위젯의 타입 라벨을 본문과 같은 `p LENGTH 8 DECIMALS 2`로 맞추거나, 칸이 좁아 축약이 필요하면 'TYPE'을 떼고 `p(8,2)`처럼 문법이 아니라 요약임이 드러나는 표기로 바꾼다. 챕터 안에서 한 가지로 통일하는 게 핵심이다."
+    },
+    {
+      "seq": 8,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH05-L01-S06.html",
+      "quote": "<summary>😱 실무 스케일 — 사람의 정보가 3개일 리 없다: 성별·생일·부서·직급·입사일·연봉·연락처 <b>+7</b></summary>",
+      "category": "위젯 결함 — 좁은 폭에서 코드 레이아웃 붕괴",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "화면이 좁아지면 위쪽 좌우 비교(.ba)는 1단으로 접히는데, '실무 스케일' 접기 안의 본문(.ba__more-body)만 2단 고정이라 코드 칼럼이 약 206px로 짓눌리고 ABAP 줄이 중간에서 꺾인다. 이 접기의 설득력은 '선언이 21줄로 불어난다'를 줄 수로 체감시키는 데 있는데, 줄이 임의로 접히면 그 카운트 감각이 깨진다.",
+      "evidence": "뷰포트 497px에서 실측 — `.ba`의 grid-template-columns는 1단(454px)인데 `.ba__more-body`는 2단(205.7px + 205.8px)이었고, 접기 안 좌측 pre는 소스 23줄이 27줄로, 우측은 16줄이 24줄로 렌더됐다(높이÷line-height). 뷰포트 1100px로 넓히면 각각 507px 폭에 23→24줄·16→17줄로 정상 복귀한다. 원인은 before-after.css에 `@media (max-width: 560px) .ba { grid-template-columns: 1fr; }`는 있는데 `.ba__more-body`에는 대응 규칙이 없기 때문(CSS 규칙 덤프로 확인).",
+      "suggestion": "before-after.css의 560px 미디어쿼리에 `.ba__more-body{grid-template-columns:1fr;}`를 한 줄 추가한다. 같은 엔진을 쓰는 다른 챕터의 before-after 위젯도 함께 좋아진다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "실습형 관점에서 CH05는 상태가 좋다. 위젯 12개 전부 HTTP 200으로 로드되고 참조 자산도 전부 200, 콘솔 오류 0이며, 내가 직접 눌러 본 모든 인터랙션(칩 선택·스텝 진행·값 전달·필드 추가 토글·모드 전환·퀴즈 채점·MOVE 실행/CLEAR 조합)이 의도대로 동작했다. 페이지 단위로 보면 코드가 나오는 레슨마다 체험이 붙어 있어 '체험 없는 코드 페이지'는 0이고, '눌러도 배울 게 없는' 헛체험도 0이다. 특히 L01-S07(숨은 실수 3개 헌트)→S06(규모 폭발)→S03(하이픈 짚기)→S01/S05(디버거)로 이어지는 동선과 L04-S01이 잔존값 함정을 실제로 재현했다가 CLEAR로 해소해 보이는 설계는 이 챕터의 강점이다. 고칠 건 국소적이다. 무게가 있는 건 셋 — ① 캡스톤 디버거(L05-S01)가 반복 스텝을 전부 11번 줄로 표기해 '방금 11번 줄 실행 → 2 x 1 = 2'처럼 강조 줄과 실제 출력(12번 WRITE)이 어긋나는 점(같은 엔진의 L01-S01은 완벽히 1:1이라 대비된다), ② L04 §통째로 대입/초기화의 코드가 어디서도 눌러 볼 수 없어 L01-S03이 걸어 둔 '한꺼번에 복사·초기화는 이 챕터 뒤에서'라는 예고가 회수되지 않는 점, ③ L03 본문 비교표만 `ls-` 표기를 써서 코드·위젯의 `gs_order-`와 어긋나는 점이다. 나머지 다섯은 표기 통일(초기값 0 vs 0.00, 따옴표 포함 값, `TYPE p 8,2`)·퀴즈 정답 위치 편중·좁은 폭 CSS 한 줄 같은 마감 이슈다. 전부 국소 수정으로 닫히고 구조를 다시 짤 이유는 없어 '경미 수정'으로 본다."
+  }
+}

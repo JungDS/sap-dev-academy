@@ -1,7 +1,11 @@
 <!DOCTYPE html>
-<!-- CH07-L03-S01 — 엔진: before-after (embeds/_engine/before-after.css, CSS-only) + _autoheight.js
-     콘텐츠=레슨 전용(메모리 vs 디스크 '두 운명', #C07-1). 중립 톤(tone-warm/cool — 우열 아님).
-     게이팅: SELECT/FOR ALL ENTRIES 없음(CH08 전·classic) — 오른쪽은 SE11 DDIC 정의만. -->
+<!-- CH07-L03-S01 — 엔진: before-after (embeds/_engine/before-after.css, CSS-only) + type-borrow-lab(조각)
+     + _autoheight.js. 콘텐츠=레슨 전용(메모리 vs 디스크 '두 운명', #C07-1). 중립 톤(tone-warm/cool — 우열 아님).
+     아래쪽 .tb 패널 = 본문 코드(DATA gs_line TYPE zgugudan. / gt_line TYPE TABLE OF zgugudan.) 대응 실험
+     (config=window.TBLAB_CFG) — 모양 출처 ts_line↔zgugudan(필드 3↔4)·개수 TYPE↔TYPE TABLE OF를 갈아 끼운다.
+     ⚠️ data-eng는 주 엔진 before-after 유지(_dark.css가 [data-eng] 스코프로 .ba 색을 덮음). type-borrow-lab.css는
+        토큰 전용 조각이라 다크 오버라이드가 필요 없다.
+     게이팅: SELECT/FOR ALL ENTRIES 없음(CH08 전·classic) — 오른쪽은 SE11 DDIC 정의만. 표 표현식 gt[ ] 미사용. -->
 <html lang="ko" data-eng="before-after">
 <head>
 <meta charset="utf-8" />
@@ -9,6 +13,7 @@
 <title>메모리 vs 디스크 — 두 운명 · CH07-L03-S01</title>
 <link rel="stylesheet" href="../_engine/_base.css" />
 <link rel="stylesheet" href="../_engine/before-after.css" />
+<link rel="stylesheet" href="../_engine/type-borrow-lab.css" />
 </head>
 <body>
 <div class="wrap">
@@ -22,7 +27,7 @@
 <pre>" 메모리(내부 테이블)
 DATA gt_gugu TYPE TABLE OF ts_line.
 
-APPEND gs_line TO gt_gugu.   " 81행 쌓기
+APPEND gs_line TO gt_gugu.   " 72행 쌓기
 " 프로그램이 끝나면 → <b>gt_gugu 통째로 사라짐</b></pre>
         <ul class="ba__list">
           <li>실행이 끝나면 <b>흔적도 없이 소멸</b></li>
@@ -51,7 +56,34 @@ TABLE <b>ZGUGUDAN</b>
       </div>
     </div>
   </div>
+
+  <div class="tb" data-tb></div>
 </div>
+<script>
+window.TBLAB_CFG = {
+  hd: '타입을 갈아 끼워 보기 — 모양은 어디서 빌려 오고, 몇 건을 담나',
+  lead: '본문의 두 줄이 어떻게 갈리는지 직접 바꿔 보세요. <b>모양 출처</b>를 바꾸면 필드 구성이, <b>담는 개수</b>를 바꾸면 담기는 줄 수가 달라집니다.',
+  srcLabel: '모양 출처',
+  cntLabel: '담는 개수',
+  sources: [
+    { key: 'local', btn: 'ts_line (내가 만든 타입)', type: 'ts_line',
+      fields: [{ n: 'dan' }, { n: 'mul' }, { n: 'result' }] },
+    { key: 'ddic', btn: 'zgugudan (DB 테이블)', type: 'zgugudan',
+      fields: [{ n: 'mandt', extra: true }, { n: 'dan' }, { n: 'mul' }, { n: 'result' }] }
+  ],
+  counts: [
+    { key: 'one', btn: 'TYPE (한 줄)', kw: 'TYPE', varName: 'gs_line', rows: 1,
+      cmt: '한 줄 (Work Area 역할)', shapeCap: '메모리에 잡히는 모양 (한 건)' },
+    { key: 'many', btn: 'TYPE TABLE OF (여러 줄)', kw: 'TYPE TABLE OF', varName: 'gt_line', rows: 9,
+      cmt: '여러 줄 (Internal Table)', shapeCap: '메모리에 잡히는 모양 (여러 건)' }
+  ],
+  verdict: '어느 조합을 골라도 이 변수가 사는 곳은 <b>메모리</b>다. 프로그램이 끝나면 통째로 사라진다.',
+  caution: {
+    ddic: 'DB 테이블에서 모양을 빌려 왔으니 <code>mandt</code>가 딸려 와 <b>필드가 하나 많다</b>. 그래도 빌려 온 것은 <b>모양뿐</b> — 이 변수가 디스크의 <code>ZGUGUDAN</code>과 이어져 있는 것은 아니다. 값을 실제로 읽거나 쓰려면 별도의 명령이 필요하다.'
+  }
+};
+</script>
+<script src="../_engine/type-borrow-lab.js" defer></script>
 <script src="../_engine/_autoheight.js" defer></script>
 </body>
 </html>

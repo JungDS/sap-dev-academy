@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- CH06-L01-S01 — 엔진: step-debugger (embeds/_engine/step-debugger.{js,css}) + _autoheight.js
-     config=레슨 전용(Work Area→APPEND로 Internal Table이 자라는 과정, itab 워치 사용).
+     config=레슨 전용(Work Area→APPEND로 Internal Table이 자라는 과정, itab 워치 + 메모리 워치로 CLEAR↔FREE 대비).
      게이팅: CH06-L01 범위(TYPES/DATA·APPEND·CLEAR/FREE·DESCRIBE TABLE) — modern 문법 없음. -->
 <html lang="ko" data-eng="step-debugger">
 <head>
@@ -13,7 +13,7 @@
 <body>
 <div class="wrap">
   <p class="hd">Work Area 한 건 → APPEND → 테이블이 자란다 <small>(스텝 디버거)</small></p>
-  <p class="lead"><b>다음 ⏭</b>을 누르며 보세요. <code>APPEND</code>는 <code>gs_person</code>의 <b>현재 값을 복사</b>해 <code>gt_person</code> 끝에 새 행을 만듭니다. 복사이기 때문에, 쌓인 뒤 Work Area를 바꿔도 <b>이미 쌓인 행은 그대로</b>입니다.</p>
+  <p class="lead"><b>다음 ⏭</b>을 누르며 보세요. <code>APPEND</code>는 <code>gs_person</code>의 <b>현재 값을 복사</b>해 <code>gt_person</code> 끝에 새 행을 만듭니다. 복사이기 때문에, 쌓인 뒤 Work Area를 바꿔도 <b>이미 쌓인 행은 그대로</b>입니다. 마지막 두 줄에서는 <code>CLEAR</code>와 <code>FREE</code>가 <b>메모리 칸</b>을 어떻게 다르게 다루는지도 함께 보세요.</p>
 
   <div class="dbg" data-stepper>
     <div class="dbg__bar">
@@ -69,7 +69,8 @@
         {"label":"gs_person-name","sub":"Work Area · name","key":"gs_person-name","init":"( 공백 )"},
         {"label":"gs_person-age","sub":"Work Area · age","key":"gs_person-age","init":"0"},
         {"label":"gt_person","sub":"Internal Table · 명단","key":"gt_person","itab":{"cols":["name","age"],"num":[false,true]},"init":[]},
-        {"label":"gv_cnt","sub":"행 수","key":"gv_cnt","init":"0"}
+        {"label":"gv_cnt","sub":"행 수","key":"gv_cnt","init":"0"},
+        {"label":"gt_person 메모리","sub":"CLEAR와 FREE가 다르게 다루는 부분","key":"mem","init":"초기 메모리 확보됨"}
       ],
       "steps":[
         {"line":10,"vars":{"gs_person-name":"정훈영"},"console":"gs_person-name = '정훈영' — Work Area에 첫 사람을 채우는 중"},
@@ -81,8 +82,8 @@
         {"line":17,"vars":{"gt_person":[["정훈영",30],["홍길동",25]]},"console":"APPEND — 끝에 2번 행 추가 (2행)"},
         {"line":19,"vars":{"gs_person-age":"99"},"console":"Work Area의 age만 99로 바뀜 — 테이블의 두 행은 변화 없음. APPEND는 '복사'라서 쌓인 행은 독립!"},
         {"line":21,"vars":{"gv_cnt":"2"},"console":"DESCRIBE TABLE ... LINES — 행 수 2가 gv_cnt에 들어옴"},
-        {"line":22,"vars":{"gt_person":[]},"console":"CLEAR gt_person — 행 전체 삭제. 초기 할당 메모리는 남겨 둠(곧 다시 채울 때 유리)"},
-        {"line":23,"vars":{},"console":"FREE gt_person — 초기 할당분까지 메모리 전부 반환. 대용량 테이블을 다 쓰고 더 안 쓸 때 사용"}
+        {"line":22,"vars":{"gt_person":[],"mem":"초기 메모리 확보됨 (행만 비움)"},"console":"CLEAR gt_person — 행 전체 삭제. 초기 메모리는 남겨 둡니다(곧 다시 채울 때 유리). 메모리 칸이 아직 '확보됨'인 것에 주목"},
+        {"line":23,"vars":{"mem":"반환됨 · 0"},"console":"FREE gt_person — 초기 메모리까지 전부 반환. 메모리 칸이 '반환됨 · 0'으로 바뀌었습니다. 이것이 CLEAR와의 차이 — 대용량 테이블을 다 쓰고 더 안 쓸 때 사용"}
       ]
     }
     </script>

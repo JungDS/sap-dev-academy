@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<!-- CH05-L05-S02 — 엔진: step-debugger (embeds/_engine/step-debugger.{js,css}) + _autoheight.js
+     config=레슨 전용(§배운 것을 한 번에: 반복이 끝난 gs_line → gs_keep 통째 복사 → MOVE-CORRESPONDING → CLEAR).
+     시작 상태 = DO 9바퀴 직후(gs_line = 2·9·18) — 본문 흐름을 그대로 이어받는다. 본문 코드 블록과 줄 1:1(16줄·실행 스텝 5).
+     게이팅: LIKE(CH02)·통째 대입·MOVE-CORRESPONDING·CLEAR(CH05-L04)까지 — 내부테이블·New Syntax 없음(classic). -->
+<html lang="ko" data-eng="step-debugger">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>캡스톤 회수 — 복사·옮기기·비우기 · CH05-L05-S02</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/step-debugger.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">배운 것을 한 번에 — 복사 · 옮기기 · 비우기 <small>(스텝 디버거)</small></p>
+  <p class="lead">반복이 <b>막 끝난 시점</b>부터 시작합니다 — <code>gs_line</code>에는 마지막 줄(<code>dan 2</code> · <code>mul 9</code> · <code>result 18</code>)이 남아 있습니다. <b>다음 ⏭</b>으로 한 줄씩 실행하며 <b>통째 복사</b> · <b>이름이 같은 칸만 옮기기</b> · <b>비우기</b>가 각각 어떻게 다른지 비교해 보세요.</p>
+
+  <div class="dbg" data-stepper>
+    <div class="dbg__bar">
+      <button class="btn btn--primary" data-start>▶ 시작</button>
+      <button class="btn btn--step" data-next disabled>다음 ⏭</button>
+      <div class="progress"><i data-progress></i></div>
+      <span class="muted" data-counter>0 / 5</span>
+    </div>
+    <div class="dbg__main">
+      <div class="dbg__editorwrap"><div class="dbg__edhd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span></div><div class="dbg__editor" data-code></div></div>
+      <div class="dbg__watch">
+        <div class="watch__head">변수 모니터 — <code>gs_line</code> · <code>gs_keep</code> · <code>gs_report</code> 펼침</div>
+        <div class="watch__list" data-vars></div>
+      </div>
+    </div>
+    <div class="dbg__console">
+      <div class="console__head">
+        <span>콘솔</span>
+        <span class="leg"><span class="a">▶ 실행할 차례</span> · <span class="d">✓ 방금 실행</span></span>
+        <span class="sp"></span>
+        <span class="cmode"><button class="cmode__b on" data-cmode="cur">현재 행</button><button class="cmode__b" data-cmode="all">전체 출력</button></span>
+      </div>
+      <pre class="console__body" data-console>대기 중 — ▶ 시작을 누르세요.</pre>
+    </div>
+    <script type="application/json" class="stepper-config">
+    {
+      "code":[
+        "DATA gs_keep LIKE gs_line.        \" ① 같은 모양의 그릇 하나 더",
+        "",
+        "DATA: BEGIN OF gs_report,",
+        "        dan    TYPE i,",
+        "        result TYPE i,",
+        "        note   TYPE c LENGTH 10,",
+        "      END OF gs_report.",
+        "",
+        "gs_keep = gs_line.                \" ② 통째로 복사, 마지막 줄을 따로 보관",
+        "gs_report-note = '검토'.",
+        "",
+        "MOVE-CORRESPONDING gs_line TO gs_report.   \" ③ 이름이 같은 칸만 건너간다",
+        "",
+        "WRITE: / gs_report-dan, gs_report-result, gs_report-note.",
+        "",
+        "CLEAR gs_line.                    \" ④ 다음 단을 받기 전에 그릇을 비운다"
+      ],
+      "vars":[
+        {"label":"gs_line-dan","sub":"dan · 반복이 남긴 값","key":"gs_line-dan","init":"2"},
+        {"label":"gs_line-mul","sub":"mul · 반복이 남긴 값","key":"gs_line-mul","init":"9"},
+        {"label":"gs_line-result","sub":"result · 반복이 남긴 값","key":"gs_line-result","init":"18"},
+        {"label":"gs_keep-dan","sub":"dan · LIKE gs_line","key":"gs_keep-dan","init":"0"},
+        {"label":"gs_keep-mul","sub":"mul · LIKE gs_line","key":"gs_keep-mul","init":"0"},
+        {"label":"gs_keep-result","sub":"result · LIKE gs_line","key":"gs_keep-result","init":"0"},
+        {"label":"gs_report-dan","sub":"dan · i","key":"gs_report-dan","init":"0"},
+        {"label":"gs_report-result","sub":"result · i","key":"gs_report-result","init":"0"},
+        {"label":"gs_report-note","sub":"note · c LENGTH 10","key":"gs_report-note","init":"( 공백 )"}
+      ],
+      "steps":[
+        {"line":9,"vars":{"gs_keep-dan":"2","gs_keep-mul":"9","gs_keep-result":"18"},"console":"gs_keep = gs_line — 모양이 같으니 = 하나로 세 칸이 통째로 넘어간다. 마지막 줄을 따로 보관해 뒀다"},
+        {"line":10,"vars":{"gs_report-note":"검토"},"console":"gs_report-note = '검토' — 옮기기 전에 미리 채워 둔 칸(원본 gs_line에는 없는 칸이다)"},
+        {"line":12,"vars":{"gs_report-dan":"2","gs_report-result":"18"},"console":"MOVE-CORRESPONDING — 이름이 같은 dan·result만 건너갔다. mul은 gs_report에 없어 무시되고, note는 원본에 없어 '검토'가 그대로 남았다"},
+        {"line":14,"vars":{},"console":"[출력] 2 18 검토  ← 옮겨온 두 칸 + 남아 있던 note"},
+        {"line":16,"vars":{"gs_line-dan":"0","gs_line-mul":"0","gs_line-result":"0"},"console":"CLEAR gs_line — 세 칸이 한꺼번에 초기값으로. 따로 보관한 gs_keep(2 · 9 · 18)은 멀쩡하다"}
+      ]
+    }
+    </script>
+  </div>
+  <div class="note"><b>세 도구가 하는 일이 각각 다릅니다.</b> <code>=</code>는 모양이 같을 때 <b>통째로</b> 베끼고, <code>MOVE-CORRESPONDING</code>은 모양이 달라도 <b>이름이 같은 칸만</b> 옮기며, <code>CLEAR</code>는 한 Structure를 <b>타입별 초기값</b>으로 되돌립니다. 마지막 스텝의 <code>gs_keep</code>이 말해 주듯, 베껴 둔 값은 원본을 비워도 남습니다.</div>
+</div>
+<script src="../_engine/step-debugger.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

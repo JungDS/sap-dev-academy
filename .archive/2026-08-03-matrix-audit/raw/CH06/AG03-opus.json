@@ -1,0 +1,122 @@
+{
+  "agent": "AG03",
+  "model": "opus",
+  "target": "CH06",
+  "persona_ack": "타 언어(Java/C#) 백엔드 3～5년차 개발자로서 ABAP을 빠르게 훑어 익히려는 시선으로 CH06 전체를 통독했다. 과잉·오개념 유발·지름길 부재·용어 충돌 네 갈래로 기록하되, 이 사이트의 1독자가 비전공 입문자라는 점을 지켜 '입문자에게도 장황한 곳'만 무겁게 보고 '입문자에겐 필요하지만 나에겐 이미 아는 내용'은 낮음 또는 suggestion으로 내렸다.",
+  "method": "Read 도구로 대상 7개 파일 전문을 통독(발췌 아님). 웹 검색·외부 네트워크·다른 감사 산출물 참조 없음. 판단 근거는 (1) 레슨 간 진술 상호 대조(L02 키 설명 ↔ L05 deep 분류, L03 sy-subrc ↔ BINARY SEARCH 등), (2) 각 레슨 '흔한 실수와 점검' 목록의 결손 확인, (3) 내 ABAP 문법 지식. 오프라인에서 확정 못 한 규정은 confidence=추정으로 남겼다. 인용문은 원문 줄에서 그대로 복사.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L06.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L02.md",
+      "quote": "STANDARD·SORTED는 **Index Table**이다.",
+      "category": "용어 충돌",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "Internal Table의 행 번호가 1부터 시작한다는 사실이 챕터 어디에도 명시되지 않는다. 0-based 언어(Java/C#/JS)에서 온 독자는 INDEX 1을 '두 번째 행'으로 읽어 조용한 off-by-one을 만든다.",
+      "evidence": "L02는 '행마다 번호가 붙어'라고만 하고 시작값을 말하지 않는다. L03의 INSERT gs_person INTO gt_person INDEX 1 옆 주석('맨 앞에')과 L04의 '조건에 걸린 첫 행이 3번 행이면 sy-tabix = 3' 설명으로 암시될 뿐, '1부터'라는 명시 문장은 7개 파일 어디에도 없다. 그런데 CH06은 INDEX·sy-tabix·FROM 2 TO 5·MODIFY ... INDEX sy-tabix를 전면적으로 쓴다.",
+      "suggestion": "L02의 Index Table 설명에 한 문장 추가 — '번호는 1부터 센다(첫 행 = 1). 0번 행은 없다.' 여기에 '0부터 세는 언어를 쓰던 사람이 가장 자주 틀리는 지점'을 한 줄 덧붙이면 경력자 오독이 사라지고, 입문자에게도 비용이 없다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L04.md",
+      "quote": "- **AT NEW/END OF 전에 정렬 안 함** → 그룹 경계가 어긋난다. 그룹 키로 SORT 먼저.",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "컨트롤레벨(AT NEW/AT END OF) 블록 안에서는 그룹 키 오른쪽 필드가 Work Area에서 '*'(문자 계열)·초기값(숫자)으로 덮여 보인다는 ABAP 고유 동작이 빠져 있다. 다른 언어의 group-by 콜백 상식으로 접근하면 값이 ***로 찍히는 걸 자기 버그로 오해한다.",
+      "evidence": "본문 예제는 AT NEW region 안에서 마침 컨트롤 필드인 region만 출력해 함정을 비껴간다. 점검 목록에도 정렬 선행만 있고 마스킹 항목은 없다. 실제로는 AT/ENDAT 안에서 그룹 키 오른쪽 필드를 그대로 읽으면 문자 필드는 '*'로, 숫자 필드는 초기값으로 보이며(SUM 실행 뒤에야 합계가 채워진다), 이건 다른 언어에는 대응물이 없는 ABAP 전용 동작이다.",
+      "suggestion": "AT 블록 설명에 '이 블록 안에서 그룹 키 오른쪽 필드는 *·초기값으로 마스킹된다 — 원래 값이 필요하면 AT 밖에서 미리 보관' 한 줄, 점검 목록에 같은 항목 1개 추가. 예제도 AT NEW region 안에서 다른 필드를 한 번 찍어 보이면 체감이 확실해진다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L04.md",
+      "quote": "- 키가 아닌 필드는 **모두 숫자 타입**이어야 한다(합산 대상이므로).",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "COLLECT 제약을 '키 아닌 필드는 숫자'로만 제시했는데, 행 타입 자체가 flat이어야 한다는 조건이 빠진 것으로 보인다. 그 결과 이 챕터의 주력 예제인 ts_person에 COLLECT를 대입해 보는 독자는 이유를 모른 채 막힌다.",
+      "evidence": "L05가 'string은 길이가 고정돼 있지 않은 가변 타입이라 deep 요소로 분류된다'며 ts_person(name TYPE string)이 이미 Deep이라고 밝힌다. 내가 아는 한 COLLECT는 deep 행 타입을 허용하지 않는데(오프라인이라 규정 원문 확인 불가 → 추정), 본문의 COLLECT 예제에 쓰인 gs_sales/gt_sales는 선언조차 나오지 않아 독자가 손에 든 유일한 테이블은 gt_person이다.",
+      "suggestion": "COLLECT 제약에 '행 타입은 flat이어야 한다(string·Internal Table·참조가 하나라도 들어가면 못 쓴다)' 한 줄 추가. 더불어 gs_sales/gt_sales의 최소 선언(region TYPE c LENGTH 10, amount TYPE p 등)을 두세 줄로 보여 주면 '왜 이 테이블은 되고 저 테이블은 안 되나'가 저절로 설명된다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L03.md",
+      "quote": "- 못 찾으면 `sy-subrc = 4`. **반드시 확인**한다.",
+      "category": "오개념 유발",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'못 찾으면 4'로 단정했지만, 같은 레슨 아래에서 배우는 BINARY SEARCH는 못 찾았을 때 4 외에 8도 낸다(찾는 키가 마지막 행보다 큰 경우). 상태코드를 정확히 비교하는 습관이 있는 경력자가 IF sy-subrc = 4로 분기하면 조용히 어긋난다.",
+      "evidence": "L03은 READ 일반 규칙으로 '못 찾으면 4'를 못박은 뒤, 40여 줄 아래에서 BINARY SEARCH를 도입한다. BINARY SEARCH 실패 경고문 자체는 'sy-subrc ≠ 0'이라고 정확하게 썼지만, 앞의 '4' 단정과의 불일치는 해소되지 않은 채 남는다.",
+      "suggestion": "'못 찾으면 sy-subrc ≠ 0(보통 4, BINARY SEARCH에서는 8도 나온다). 그래서 판정은 언제나 sy-subrc = 0 인지로 한다'로 한 줄 보정. 입문자에겐 '0인지만 보면 된다'는 결론이 오히려 더 단순해진다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L03.md",
+      "quote": "(`SORT`의 대상은 STANDARD·HASHED).",
+      "category": "오개념 유발",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "순서도 번호도 없다고 배운 HASHED가 SORT 대상이라는 사실만 괄호로 던져 놓고, '해시 테이블을 정렬한다'가 대체 무엇을 바꾸는지(저장 구조가 아니라 LOOP가 행을 꺼내는 순서) 설명이 없다.",
+      "evidence": "바로 앞 레슨 L02에서 HASHED는 '행을 관리하는 인덱스가 없어 번호 접근이 안 되고 키로만 찾는다'로 배웠다. '순서 없는 자료구조를 정렬한다'는 진술은 다른 언어의 HashMap 상식과 정면으로 부딪히는데, 본문은 대상 목록만 제시하고 지나간다.",
+      "suggestion": "괄호를 한 문장으로 풀기 — 'HASHED도 SORT는 되지만, 이때 바뀌는 건 저장 방식이 아니라 LOOP가 행을 꺼내는 순서다.' 지금 단계에서 무겁다면 아예 'SORT는 STANDARD에 쓴다, SORTED는 이미 정렬돼 있어 못 쓴다'로만 줄이고 HASHED는 빼는 편이 오해가 적다."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L02.md",
+      "quote": "- 처음엔 **STANDARD**로 충분하다. SORTED/HASHED는 접근 패턴이 분명하고 성능이 절실할 때 다시 본다.",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "3종 Table Kind는 다른 언어 자료구조와 사실상 1:1로 대응하는데(ArrayList·TreeMap/정렬셋·HashMap) 그 대응이 챕터 전체에 한 번도 언급되지 않는다. 또 '경험자는 이 절을 건너뛰어도 된다'류의 안내가 6개 레슨 통틀어 0건이라, 이미 아는 독자도 처음부터 다 읽어야 한다.",
+      "evidence": "L01(선언·APPEND·건수 세기·CLEAR)은 리스트 자료구조 기본기 그대로이고, L02의 Table Kind 표는 대응 한 줄이면 즉시 이해되는 내용을 저장/탐색 특성으로 처음부터 서술한다. 어느 레슨에도 스킵 힌트나 타 언어 비유가 없다.",
+      "suggestion": "L02에 접기(details) 한 덩이 — '다른 언어에서 왔다면: STANDARD ≈ ArrayList/List<T>, SORTED ≈ TreeMap/정렬 셋, HASHED ≈ HashMap/Dictionary, Work Area ≈ 행 하나를 담는 값 복사 변수'. L01 도입부엔 '리스트 자료구조를 이미 안다면 선언·APPEND 절은 훑고 넘어가도 좋다' 한 줄. 접혀 있으면 입문자 동선은 그대로다."
+    },
+    {
+      "seq": 7,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L06.md",
+      "quote": "- **담았으니 저장됐다는 착각** → 메모리에 담긴 것과 DB에 저장된 것은 다르다.",
+      "category": "과잉",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'Internal Table은 메모리일 뿐 저장이 아니다'가 한 챕터 안에서 네 번 반복된다. 마지막 마무리는 CH07로 넘기는 불편 체인이라 필요하지만, L06 점검 항목은 같은 말의 네 번째라 무게를 잃는다.",
+      "evidence": "① L01 콜아웃 'Internal Table ≠ Database Table — 가장 흔한 입문 오해다' ② L01 점검 'Internal Table에 넣었으니 저장됐다는 착각 → 메모리일 뿐이다' ③ L06 점검(인용문) ④ L06 마무리 '프로그램이 끝나면 gt_gugu는 흔적도 없이 사라진다'. ②와 ③은 거의 같은 문장이고, ③과 ④는 같은 페이지에서 연달아 나온다.",
+      "suggestion": "L06 점검의 이 항목만 삭제하고 마무리 문단(다음 불편 → CH07)이 그 역할을 받게 한다. 덧붙이자면 이 챕터에서 압축 후보는 사실상 여기 정도이고, 나머지 서술은 입문자 기준으로 과하지 않다 — 경력자에게 답답한 대목은 '장황해서'가 아니라 '스킵 안내가 없어서'다(seq 6)."
+    },
+    {
+      "seq": 8,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L02.md",
+      "quote": "행 타입의 문자 계열(문자·바이트) 필드 전부를 묶은 느슨한 키다.",
+      "category": "용어 충돌",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "standard key를 '문자 계열 필드 전부'로 설명했는데, 챕터 내내 쓰는 ts_person의 유일한 문자 필드 name은 L05에서 'deep 요소'로 재분류된다. string이 standard key에 포함되는지가 미해소로 남아, 키 의미를 따지는 독자는 INSERT INTO TABLE·MODIFY TABLE·READ WITH TABLE KEY가 실제로 무엇을 기준으로 매칭하는지 판단할 수 없다.",
+      "evidence": "L02는 키를 명시하지 않으면 standard key가 잡힌다고 하고, L05는 'string은 길이가 고정돼 있지 않은 가변 타입이라 deep 요소로 분류된다'고 한다. 두 진술이 겹치는 지점(문자 계열이면서 deep인 string)이 어느 쪽으로 처리되는지는 어디에도 없다. 정확한 규정은 오프라인에서 확인할 수 없어 사실 판정이 아니라 '미해소'로만 보고한다.",
+      "suggestion": "L02 문장을 '고정 길이 문자·바이트 필드'인지 여부까지 명확히 하고, 우리 예제에서 그 키가 결국 무엇인지 한 줄로 못박기. 또는 이 챕터 예제를 WITH NON-UNIQUE KEY name처럼 항상 명시 키로 통일하면 모호함 자체가 사라지고 키 개념도 더 또렷해진다."
+    },
+    {
+      "seq": 9,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L04.md",
+      "quote": "- **`<fs>` 미할당 사용** → ASSIGN 안 된 Field Symbol 접근은 런타임 오류(덤프).",
+      "category": "용어 충돌",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "LOOP를 도는 중에 그 테이블 자체를 바꾸는 경우(행 삭제·삽입)의 위험이 빠졌다. 다른 언어라면 ConcurrentModificationException 같은 안전장치가 즉시 잡아 주지만, ABAP은 번호가 밀려 행을 조용히 건너뛰거나 ASSIGNING이 가리키던 행이 사라져 덤프로 간다.",
+      "evidence": "같은 레슨에서 LOOP·ASSIGNING을 배우고 앞 레슨(L03)에서 DELETE ... WHERE를 배운 독자가 'LOOP 안에서 조건에 맞는 행을 지운다'로 합치는 건 자연스러운 동선인데, 점검 목록은 '미할당 사용'과 'HASHED에서 sy-tabix' 두 가지만 다룬다.",
+      "suggestion": "점검 항목 하나 추가 — 'LOOP를 도는 중에 그 테이블에 행을 지우거나 넣지 말 것(번호가 밀려 건너뛰거나, ASSIGNING이면 가리키던 행이 사라져 덤프). 조건 삭제는 LOOP 밖에서 DELETE ... WHERE 한 줄로 끝낸다.' 마침 DELETE WHERE를 이미 배웠으므로 대안 제시까지 자연스럽다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "경력자 눈으로도 CH06은 밀도가 좋다. 흐름(선언 → 3속성 → 단일 행 → 다중 행 → Deep → 캡스톤)에 군더더기가 없고, 특히 'APPEND는 옮기는 게 아니라 복사다'(값 시맨틱), 'BINARY SEARCH 전에 SORT', 'sy-tabix를 오래 보관하지 말라' 같은 대목은 다른 언어에서 온 사람이 실제로 걸리는 지점을 이미 정확히 짚어 둔 것이라 인상적이다. 과잉은 사실상 없다 — 압축 후보는 한 챕터에서 네 번 반복되는 '메모리 ≠ 저장' 경고 정도다. 부족한 쪽은 세 갈래다. ① 0-based 언어에서 온 독자를 위한 '번호는 1부터' 명시가 없어 off-by-one 위험이 남는다. ② ABAP 고유 함정 중 컨트롤레벨 * 마스킹, LOOP 중 테이블 변경, BINARY SEARCH의 sy-subrc 8이 점검 목록에서 빠졌다 — 셋 다 다른 언어 상식으로는 예측 불가라 경력자일수록 걸린다. ③ 타 언어 자료구조 대응표와 스킵 안내가 0건이라 아는 독자도 전부 정독해야 한다(접기로 넣으면 입문자 동선은 그대로 유지된다). 또 COLLECT의 flat 제약과 standard key의 string 취급은 챕터 안 진술끼리 어긋난 채 남아 있어 확인이 필요하다(둘 다 추정으로 보고). 모두 한두 줄 삽입·삭제로 해결되는 규모이고 구조·순서·사실관계의 뼈대는 건강하므로 재집필이나 대규모 보강은 불필요하다."
+  }
+}

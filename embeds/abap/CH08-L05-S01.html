@@ -20,6 +20,8 @@
   <div class="connrow">
     <span class="connrow__lbl">조건 연결:</span>
     <div class="tgl" id="connTgl"><button class="on" data-c="AND">AND (모두 만족)</button><button data-c="OR">OR (하나라도)</button></div>
+    <span class="connrow__lbl">뒤집기:</span>
+    <div class="tgl" id="notTgl"><button class="on" data-n="0">그대로</button><button data-n="1">NOT ( … )</button></div>
     <button class="clr" id="clr" type="button">조건 초기화</button>
   </div>
 
@@ -30,7 +32,9 @@
 
   <div id="grid"></div>
 
-  <div class="note"><b>와일드카드</b> — <code>LIKE '07%'</code>의 <code>%</code>는 임의 길이, <code>_</code>는 한 글자. <b>IS NULL</b>은 DB에 값 자체가 없는 특별 상태(ABAP 초기값과 다름). 여러 후보는 <code>IN ( … )</code>. <b>SELECT-OPTIONS의 Range</b>를 이용한 동적 조건은 <a href="CH12-L07.html">Chapter 12</a>에서 배웁니다.</div>
+  <div class="note"><b>와일드카드</b> — <code>LIKE '07%'</code>의 <code>%</code>는 임의 길이(0글자여도 됩니다), <code>_</code>는 정확히 한 글자. 여러 후보는 <code>IN ( … )</code>. <b>NOT</b>을 켜면 조건 전체가 괄호로 묶여 <code>NOT ( … )</code>로 뒤집힙니다. <b>SELECT-OPTIONS의 Range</b>를 이용한 동적 조건은 <a href="../../docs/abap/pages/CH12-L02.html" target="_top">Chapter 12 · SELECT-OPTIONS 기본</a>에서 배웁니다.</div>
+
+  <div class="note"><b>IS NULL 안내</b> — <code>IS NULL</code>은 DB에 <b>값 자체가 없는</b> 특별 상태로, ABAP 초기값(0·공백)과 다릅니다. 이 실험실은 그 장면을 보여 주려고 <code>connid 0712</code> 한 행의 <code>fltime</code>을 <b>일부러 비워 뒀습니다.</b> 실제 <code>SPFLI</code> 같은 DDIC 테이블은 컬럼을 비워 둘 수 없어 이 조건이 <b>늘 0건</b>입니다.</div>
 </div>
 
 <script>
@@ -48,13 +52,17 @@ window.WFL_CFG = {
     {carrid:'AA', connid:'0017', cityfrom:'NEWYORK', cityto:'SANFRAN', fltime:365, distance:4100}
   ],
   conds:[
-    {id:'c1', label:"carrid = 'KE'",            sql:"carrid = 'KE'",            field:'carrid',   type:'eq',   val:'KE'},
-    {id:'c2', label:"cityfrom = 'SEOUL'",       sql:"cityfrom = 'SEOUL'",       field:'cityfrom', type:'eq',   val:'SEOUL'},
-    {id:'c3', label:"distance > 1000",          sql:"distance > 1000",          field:'distance', type:'gt',   val:1000},
-    {id:'c4', label:"connid LIKE '07%'",        sql:"connid LIKE '07%'",        field:'connid',   type:'like', val:'07%'},
-    {id:'c5', label:"cityfrom IN ('SEOUL','TOKYO')", sql:"cityfrom IN ( 'SEOUL', 'TOKYO' )", field:'cityfrom', type:'in', val:['SEOUL','TOKYO']},
-    {id:'c6', label:"fltime BETWEEN 60 AND 120",sql:"fltime BETWEEN 60 AND 120",field:'fltime',   type:'between', lo:60, hi:120},
-    {id:'c7', label:"fltime IS NULL",           sql:"fltime IS NULL",           field:'fltime',   type:'isnull'}
+    {id:'c1',  group:'비교 (= <> < > <= >=)', label:"carrid = 'KE'",  sql:"carrid = 'KE'",     field:'carrid',   type:'eq', val:'KE'},
+    {id:'c2',  label:"cityfrom = 'SEOUL'",     sql:"cityfrom = 'SEOUL'",  field:'cityfrom', type:'eq', val:'SEOUL'},
+    {id:'c8',  label:"carrid <> 'KE'",         sql:"carrid <> 'KE'",      field:'carrid',   type:'ne', val:'KE'},
+    {id:'c9',  label:"fltime < 120",           sql:"fltime < 120",        field:'fltime',   type:'lt', val:120},
+    {id:'c3',  label:"distance > 1000",        sql:"distance > 1000",     field:'distance', type:'gt', val:1000},
+    {id:'c10', label:"distance <= 1000",       sql:"distance <= 1000",    field:'distance', type:'le', val:1000},
+    {id:'c11', label:"fltime >= 400",          sql:"fltime >= 400",       field:'fltime',   type:'ge', val:400},
+    {id:'c6',  group:'범위 · 목록 · 패턴 · NULL', label:"fltime BETWEEN 60 AND 120", sql:"fltime BETWEEN 60 AND 120", field:'fltime', type:'between', lo:60, hi:120},
+    {id:'c5',  label:"cityfrom IN ('SEOUL','TOKYO')", sql:"cityfrom IN ( 'SEOUL', 'TOKYO' )", field:'cityfrom', type:'in', val:['SEOUL','TOKYO']},
+    {id:'c4',  label:"connid LIKE '07%'",      sql:"connid LIKE '07%'",   field:'connid',   type:'like', val:'07%'},
+    {id:'c7',  label:"fltime IS NULL",         sql:"fltime IS NULL",      field:'fltime',   type:'isnull'}
   ]
 };
 </script>

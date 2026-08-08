@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <!-- CH08-L02-S01 — 엔진: select-query-simulator (embeds/_engine/select-query-simulator.{js,css}) · 자체 postHeight.
-     ✅ copy(내용 정확) — config=window.SQL_CFG(연습용 ZTPERSON). 게이팅: classic Open SQL(필드 공백·@없음·콤마없음). #N1 주석 CH19로 정정. -->
+     ✅ copy(내용 정확) — config=window.SQL_CFG. 데이터셋 2종: 본문 대표 예제 ZGUGUDAN(18행) + 조건 연습용 ZTPERSON.
+     게이팅: classic Open SQL(필드 공백·@없음·콤마없음). #N1 주석 CH19로 정정. -->
 <html lang="ko" data-eng="select-query-simulator">
 <head>
 <meta charset="utf-8" />
@@ -12,7 +13,9 @@
 <body>
 <div class="wrap">
   <p class="hd">SELECT 조회 시뮬레이터 <small>(classic Open SQL)</small></p>
-  <p class="lead">읽을 <b>컬럼</b>과 <b>WHERE 조건</b>을 고르면 아래에 <b>classic SELECT 코드</b>가 만들어집니다. <b>▶ 실행(F8)</b>을 누르면 연습용 DB 테이블 <code>ZTPERSON</code>에서 조건에 맞는 행이 내부 테이블 <code>GT_PERSON</code>으로 담깁니다. (레슨 본문의 <code>zgugudan</code> 대신, 조건이 다채로운 인물 표로 연습합니다.)</p>
+  <p class="lead">읽을 <b>컬럼</b>과 <b>WHERE 조건</b>을 고르면 아래에 <b>classic SELECT 코드</b>가 만들어집니다. <b>▶ 실행(F8)</b>을 누르면 그 문장 그대로 조회돼 결과가 내부 테이블에 담깁니다. 표는 둘 중에 고르세요 — 본문에서 되찾는 <code>ZGUGUDAN</code> 18행, 조건을 다채롭게 걸어 볼 인물 표 <code>ZTPERSON</code>.</p>
+
+  <div class="presets" id="dsets"></div>
 
   <div class="presets" id="presets">
     <span class="presets__lbl">예제:</span>
@@ -49,40 +52,68 @@
 
   <div class="tables">
     <div class="tcard src">
-      <div class="tcard__hd">DB 테이블 · ZTPERSON <span class="cnt" id="srcCnt"></span></div>
+      <div class="tcard__hd">DB 테이블 · <span id="srcName">ZGUGUDAN</span> <span class="cnt" id="srcCnt"></span></div>
       <div style="overflow-x:auto"><table class="dt" id="srcTbl"></table></div>
     </div>
     <div class="tcard res">
-      <div class="tcard__hd">내부 테이블 · GT_PERSON <span class="cnt" id="resCnt"></span></div>
+      <div class="tcard__hd">내부 테이블 · <span id="resName">GT_GUGU</span> <span class="cnt" id="resCnt"></span></div>
       <div style="overflow-x:auto"><table class="dt" id="resTbl"></table></div>
     </div>
   </div>
 
-  <div class="note"><b>classic 규칙</b> — 필드는 <b>공백</b>으로 나열(콤마 ✕), 값은 <code>@</code> 없이 그대로. 컬럼을 고르면 <code>INTO CORRESPONDING FIELDS OF TABLE</code>, 전체(<code>*</code>)면 <code>INTO TABLE</code>. <code>@</code>·콤마는 CH19(modern)부터.</div>
+  <div class="note"><b>classic 규칙</b> — 필드는 <b>공백</b>으로 나열(콤마 ✕), 값은 <code>@</code> 없이 그대로. 고른 컬럼이 있으면 <code>INTO CORRESPONDING FIELDS OF TABLE</code>, 전체(<code>*</code>)면 <code>INTO TABLE</code>(컬럼 선택 모드에서 하나도 안 고르면 전체로 봅니다). <code>@</code>·콤마는 CH19(modern)부터.</div>
+
+  <div class="note"><b>이 시뮬레이터의 규칙</b> — <code>LIKE</code>는 <b>문자 컬럼 전용</b>이라 숫자 컬럼(<code>dan</code>·<code>age</code> 등)을 고르면 연산자 목록에서 빠집니다. 값이 비어 있는 조건은 <b>문장에도 넣지 않고</b> 결과에도 반영하지 않습니다 — 화면의 코드와 결과가 늘 같도록.</div>
 </div>
 
 <script>
 window.SQL_CFG = {
-  dbTable:'ztperson', itab:'gt_person',
-  cols:['persid','name','age','city'],
-  numeric:{persid:true, age:true},
-  data:[
-    {persid:1001,name:'정훈영',age:33,city:'서울'},
-    {persid:1002,name:'손흥민',age:31,city:'런던'},
-    {persid:1003,name:'아이유',age:30,city:'서울'},
-    {persid:1004,name:'유재석',age:51,city:'서울'},
-    {persid:1005,name:'김연아',age:33,city:'부산'},
-    {persid:1006,name:'차은우',age:26,city:'서울'},
-    {persid:1007,name:'마동석',age:54,city:'인천'},
-    {persid:1008,name:'박지성',age:43,city:'수원'},
-    {persid:1009,name:'류현진',age:37,city:'부산'},
-    {persid:1010,name:'수지',age:30,city:'서울'}
-  ],
-  presets:[
-    {label:'전체 조회 (SELECT *)', selAll:true, cols:{}, whereOn:false},
-    {label:'컬럼만 (name age)', selAll:false, cols:{name:true,age:true}, whereOn:false},
-    {label:'조건 (age >= 33)', selAll:true, cols:{}, whereOn:true, c1:{f:'age',op:'>=',v:'33'}},
-    {label:"문자 조건 (city = '서울')", selAll:true, cols:{}, whereOn:true, c1:{f:'city',op:'=',v:'서울'}}
+  datasets:[
+    {
+      key:'gugu', label:'ZGUGUDAN (본문 예제 · 18행)',
+      dbTable:'zgugudan', itab:'gt_gugu',
+      cols:['dan','mul','result'],
+      numeric:{dan:true, mul:true, result:true},
+      data:[
+        {dan:2,mul:1,result:2},  {dan:2,mul:2,result:4},  {dan:2,mul:3,result:6},
+        {dan:2,mul:4,result:8},  {dan:2,mul:5,result:10}, {dan:2,mul:6,result:12},
+        {dan:2,mul:7,result:14}, {dan:2,mul:8,result:16}, {dan:2,mul:9,result:18},
+        {dan:3,mul:1,result:3},  {dan:3,mul:2,result:6},  {dan:3,mul:3,result:9},
+        {dan:3,mul:4,result:12}, {dan:3,mul:5,result:15}, {dan:3,mul:6,result:18},
+        {dan:3,mul:7,result:21}, {dan:3,mul:8,result:24}, {dan:3,mul:9,result:27}
+      ],
+      presets:[
+        {label:'본문 예제 — 18행 되찾기 (SELECT *)', selAll:true, cols:{}, whereOn:false},
+        {label:'컬럼 골라 담기 (dan mul result)', selAll:false, cols:{dan:true,mul:true,result:true}, whereOn:false},
+        {label:'조건 (dan = 3)', selAll:true, cols:{}, whereOn:true, c1:{f:'dan',op:'=',v:'3'}},
+        {label:'조건 (mul >= 7)', selAll:true, cols:{}, whereOn:true, c1:{f:'mul',op:'>=',v:'7'}}
+      ]
+    },
+    {
+      key:'person', label:'ZTPERSON (조건 연습)',
+      dbTable:'ztperson', itab:'gt_person',
+      cols:['persid','name','age','city'],
+      numeric:{persid:true, age:true},
+      data:[
+        {persid:1001,name:'정훈영',age:33,city:'서울'},
+        {persid:1002,name:'손흥민',age:31,city:'런던'},
+        {persid:1003,name:'아이유',age:30,city:'서울'},
+        {persid:1004,name:'유재석',age:51,city:'서울'},
+        {persid:1005,name:'김연아',age:33,city:'부산'},
+        {persid:1006,name:'차은우',age:26,city:'서울'},
+        {persid:1007,name:'마동석',age:54,city:'인천'},
+        {persid:1008,name:'박지성',age:43,city:'수원'},
+        {persid:1009,name:'류현진',age:37,city:'부산'},
+        {persid:1010,name:'수지',age:30,city:'서울'}
+      ],
+      presets:[
+        {label:'전체 조회 (SELECT *)', selAll:true, cols:{}, whereOn:false},
+        {label:'컬럼만 (name age)', selAll:false, cols:{name:true,age:true}, whereOn:false},
+        {label:'조건 (age >= 33)', selAll:true, cols:{}, whereOn:true, c1:{f:'age',op:'>=',v:'33'}},
+        {label:"문자 조건 (city = '서울')", selAll:true, cols:{}, whereOn:true, c1:{f:'city',op:'=',v:'서울'}},
+        {label:"패턴 (name LIKE '김%')", selAll:true, cols:{}, whereOn:true, c1:{f:'name',op:'LIKE',v:'김%'}}
+      ]
+    }
   ]
 };
 </script>

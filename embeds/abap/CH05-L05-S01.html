@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <!-- CH05-L05-S01 — 엔진: step-debugger (embeds/_engine/step-debugger.{js,css}) + _autoheight.js
-     config=레슨 전용(구구단 한 줄=Structure 캡스톤 gs_line, #C05-2). 게이팅: 내부테이블·inline DATA() 없음(classic). -->
+     config=레슨 전용(구구단 한 줄=Structure 캡스톤 gs_line, #C05-2). 게이팅: 내부테이블·inline DATA() 없음(classic).
+     스텝=문장 1:1(2026-08-09 교정): 회차마다 10(mul)→11(result)→12(WRITE)를 순환 강조하고 DO(9)·ENDDO(13)도 각각 한 스텝.
+     이전에는 9회차가 전부 11번 줄로 지정돼 강조 줄과 콘솔 출력이 어긋났다(CH04-L05-S01과 같은 반복 표기 규약으로 통일). -->
 <html lang="ko" data-eng="step-debugger">
 <head>
 <meta charset="utf-8" />
@@ -12,14 +14,14 @@
 <body>
 <div class="wrap">
   <p class="hd">구구단 한 줄 = Structure — 반복마다 갱신 <small>(스텝 디버거)</small></p>
-  <p class="lead"><b>다음 ⏭</b>을 누를 때마다 <code>DO</code>가 한 바퀴 돕니다. <code>gs_line</code> 안의 <code>mul</code>·<code>result</code>가 회차(<code>sy-index</code>)마다 갱신되는 모습을 보세요.</p>
+  <p class="lead"><b>다음 ⏭</b>을 누를 때마다 <b>한 문장</b>씩 실행됩니다. <code>DO</code> 안의 세 줄(<code>mul</code> 대입 → <code>result</code> 계산 → <code>WRITE</code>)이 <b>9바퀴</b> 도는 동안, <code>gs_line</code>의 <code>mul</code>·<code>result</code>가 회차(<code>sy-index</code>)마다 덮어써지는 모습을 보세요.</p>
 
   <div class="dbg" data-stepper>
     <div class="dbg__bar">
       <button class="btn btn--primary" data-start>▶ 시작</button>
       <button class="btn btn--step" data-next disabled>다음 ⏭</button>
       <div class="progress"><i data-progress></i></div>
-      <span class="muted" data-counter>0 / 10</span>
+      <span class="muted" data-counter>0 / 30</span>
     </div>
     <div class="dbg__main">
       <div class="dbg__editorwrap"><div class="dbg__edhd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span></div><div class="dbg__editor" data-code></div></div>
@@ -62,15 +64,35 @@
       ],
       "steps":[
         {"line":7,"vars":{"gs_line-dan":"2"},"console":"gs_line-dan = 2 → 2단 준비"},
-        {"line":11,"vars":{"sy-index":"1","gs_line-mul":"1","gs_line-result":"2"},"console":"2 x 1 = 2"},
-        {"line":11,"vars":{"sy-index":"2","gs_line-mul":"2","gs_line-result":"4"},"console":"2 x 2 = 4"},
-        {"line":11,"vars":{"sy-index":"3","gs_line-mul":"3","gs_line-result":"6"},"console":"2 x 3 = 6"},
-        {"line":11,"vars":{"sy-index":"4","gs_line-mul":"4","gs_line-result":"8"},"console":"2 x 4 = 8"},
-        {"line":11,"vars":{"sy-index":"5","gs_line-mul":"5","gs_line-result":"10"},"console":"2 x 5 = 10"},
-        {"line":11,"vars":{"sy-index":"6","gs_line-mul":"6","gs_line-result":"12"},"console":"2 x 6 = 12"},
-        {"line":11,"vars":{"sy-index":"7","gs_line-mul":"7","gs_line-result":"14"},"console":"2 x 7 = 14"},
-        {"line":11,"vars":{"sy-index":"8","gs_line-mul":"8","gs_line-result":"16"},"console":"2 x 8 = 16"},
-        {"line":11,"vars":{"sy-index":"9","gs_line-mul":"9","gs_line-result":"18"},"console":"2 x 9 = 18 — 9바퀴 끝, mul·result가 매번 갱신됨"}
+        {"line":9,"vars":{},"console":"DO 9 TIMES — 여기서 9바퀴가 시작된다"},
+        {"line":10,"vars":{"sy-index":"1","gs_line-mul":"1"},"console":"1회차 · gs_line-mul = sy-index → 1"},
+        {"line":11,"vars":{"gs_line-result":"2"},"console":"gs_line-result = dan × mul = 2 × 1 → 2"},
+        {"line":12,"vars":{},"console":"[출력] 2 x 1 = 2"},
+        {"line":10,"vars":{"sy-index":"2","gs_line-mul":"2"},"console":"2회차 · gs_line-mul = sy-index → 2"},
+        {"line":11,"vars":{"gs_line-result":"4"},"console":"gs_line-result = dan × mul = 2 × 2 → 4"},
+        {"line":12,"vars":{},"console":"[출력] 2 x 2 = 4"},
+        {"line":10,"vars":{"sy-index":"3","gs_line-mul":"3"},"console":"3회차 · gs_line-mul = sy-index → 3"},
+        {"line":11,"vars":{"gs_line-result":"6"},"console":"gs_line-result = dan × mul = 2 × 3 → 6"},
+        {"line":12,"vars":{},"console":"[출력] 2 x 3 = 6"},
+        {"line":10,"vars":{"sy-index":"4","gs_line-mul":"4"},"console":"4회차 · gs_line-mul = sy-index → 4"},
+        {"line":11,"vars":{"gs_line-result":"8"},"console":"gs_line-result = dan × mul = 2 × 4 → 8"},
+        {"line":12,"vars":{},"console":"[출력] 2 x 4 = 8"},
+        {"line":10,"vars":{"sy-index":"5","gs_line-mul":"5"},"console":"5회차 · gs_line-mul = sy-index → 5"},
+        {"line":11,"vars":{"gs_line-result":"10"},"console":"gs_line-result = dan × mul = 2 × 5 → 10"},
+        {"line":12,"vars":{},"console":"[출력] 2 x 5 = 10"},
+        {"line":10,"vars":{"sy-index":"6","gs_line-mul":"6"},"console":"6회차 · gs_line-mul = sy-index → 6"},
+        {"line":11,"vars":{"gs_line-result":"12"},"console":"gs_line-result = dan × mul = 2 × 6 → 12"},
+        {"line":12,"vars":{},"console":"[출력] 2 x 6 = 12"},
+        {"line":10,"vars":{"sy-index":"7","gs_line-mul":"7"},"console":"7회차 · gs_line-mul = sy-index → 7"},
+        {"line":11,"vars":{"gs_line-result":"14"},"console":"gs_line-result = dan × mul = 2 × 7 → 14"},
+        {"line":12,"vars":{},"console":"[출력] 2 x 7 = 14"},
+        {"line":10,"vars":{"sy-index":"8","gs_line-mul":"8"},"console":"8회차 · gs_line-mul = sy-index → 8"},
+        {"line":11,"vars":{"gs_line-result":"16"},"console":"gs_line-result = dan × mul = 2 × 8 → 16"},
+        {"line":12,"vars":{},"console":"[출력] 2 x 8 = 16"},
+        {"line":10,"vars":{"sy-index":"9","gs_line-mul":"9"},"console":"9회차 · gs_line-mul = sy-index → 9"},
+        {"line":11,"vars":{"gs_line-result":"18"},"console":"gs_line-result = dan × mul = 2 × 9 → 18"},
+        {"line":12,"vars":{},"console":"[출력] 2 x 9 = 18  ← 9바퀴째 출력"},
+        {"line":13,"vars":{},"console":"ENDDO — 9바퀴 완료. 화면엔 9줄이 쌓였지만 gs_line에 남은 건 마지막 한 줄(mul 9 · result 18)뿐"}
       ]
     }
     </script>

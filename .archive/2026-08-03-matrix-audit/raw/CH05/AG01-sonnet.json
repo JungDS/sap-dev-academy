@@ -1,0 +1,88 @@
+{
+  "agent": "AG01",
+  "model": "sonnet",
+  "target": "CH05",
+  "persona_ack": "나는 개발·전공 경험이 없는 24세 문과 출신 입문자 '은서'로서, SAP 학습 사이트로 ABAP을 처음 배운다는 관점에서 CH05 레슨을 처음부터 순서대로 통독했다.",
+  "method": "",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L05.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L01.md",
+      "quote": "gs_person-amount = '1500.50'.",
+      "category": "표기 미설명",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "amount 필드는 TYPE p LENGTH 8 DECIMALS 2(숫자형)로 선언됐는데, 값을 넣을 때는 따옴표를 두른 '1500.50'을 대입한다. 왜 숫자 필드에 문자처럼 따옴표를 쓰는지 이 레슨 어디에도 설명이 없다.",
+      "evidence": "L01 안에서 '1500.50'·'980.00' 형태가 하이픈 접근 예제·타입 재사용 예제·LIKE 예제까지 3번 반복되는데, 매번 그냥 그렇게 쓰라는 듯 지나간다. name 필드(TYPE string)의 '정훈영'과 표기가 똑같아서, amount도 문자로 착각하거나 왜 숫자에 따옴표가 붙는지 멈춰서 고민하게 된다.",
+      "suggestion": "첫 등장 지점에 '따옴표를 둘러도 대입 시 숫자로 자동 변환된다' 정도의 짧은 주석이나 콜아웃을 붙이면 해소된다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L02.md",
+      "quote": "| AGE | Data Element | `ZDE_AGE` | NUMC | 3 | 나이 |",
+      "category": "단절",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "바로 앞 레슨(L01)에서 age는 TYPE i(정수)로 배웠는데, 이 표에서는 같은 age가 NUMC(3)으로 나온다. 같은 사람의 같은 나이 필드인데 타입이 왜 달라졌는지 설명이 없다.",
+      "evidence": "L01 코드에는 'age    TYPE i,'로 되어 있고, L02 표에는 AGE의 데이터 타입이 NUMC·길이 3으로 되어 있다. CHAR·DEC·NUMC 같은 DDIC 타입 이름도 이 표에서 처음 보는데 풀이가 없어서, i와 NUMC이 같은 셈인지 다른 건지 두 번 읽어도 확신이 안 선다.",
+      "suggestion": "표 옆에 'Local의 TYPE i와 달리 DDIC은 NUMC(문자처럼 저장되는 숫자)를 쓴다' 같은 한 줄 대응 설명을 추가한다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L02.md",
+      "quote": "| **Transparent Table** | ✅ | 그 테이블의 **행 한 줄** 모양 |",
+      "category": "선노출",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "같은 표에서 Table Type 행에만 '(→ 다음 챕터)'라고 아직 안 배운 개념임을 알려주는데, Transparent Table과 View는 똑같이 처음 보는 용어인데도 그런 안내가 없어 지금 당장 알아야 하는 것처럼 보인다.",
+      "evidence": "Transparent Table·View는 [[ ]] 용어 풀이도 없고 '나중에 배운다'는 말도 없이 체크(✅)만 붙어 있다. 바로 아래 Table Type 행에만 '(→ 다음 챕터)'가 있어서 형평이 안 맞고, 나머지 둘을 지금 몰라도 되는 건지 판단이 안 서서 멈추게 된다.",
+      "suggestion": "Transparent Table·View의 비고에도 '(뒤 챕터에서)' 같은 짧은 예고를 동일하게 붙이거나, 이 표에서는 Data Element·Structure·Domain만 남긴다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L03.md",
+      "quote": "head TYPE zst_order_head,",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "중첩 예제가 zst_order_head라는 DDIC Structure 타입을 코드에 바로 쓰는데, 이 챕터 어디에서도 zst_order_head를 SE11에서 만드는 과정이 나오지 않는다.",
+      "evidence": "L02는 ZST_PERSON을 SE11 Create부터 Component 표까지 차근차근 보여줬는데, L03의 zst_order_head는 설명 없이 등장한다. gs_order-head-customer로 customer 필드가 있다는 건 짐작되지만, 그 외에 어떤 필드가 있는지, 언제 만들어진 건지 알 길이 없어 멈칫하게 된다.",
+      "suggestion": "zst_order_head도 L02처럼 SE11 Component 표를 짧게 보여주거나, '이미 만들어져 있다고 가정' 같은 한 줄 안내를 덧붙인다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L03.md",
+      "quote": "중첩은 `ls-head-customer`로 들어가지만, `.INCLUDE`는 펼쳐져 `ls-customer`로 바로 접근한다.",
+      "category": "네이밍 불일치",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "L01에서 분명히 gv_/gs_ 접두어(전역 스코프)만 배웠는데, L03의 비교 표·이 문장·흔한 실수 항목까지 총 3곳에서 처음 보는 ls 접두어(ls-head-customer, ls-customer)가 설명 없이 등장한다.",
+      "evidence": "바로 위 코드 예제는 gs_order-head-customer로 gs_를 쓰는데, 이어지는 비교 표와 이 문장, 그리고 뒤의 '흔한 실수와 점검'에서는 전부 ls-head-customer/ls-customer로 바뀐다. ls가 무엇의 줄임인지, gs와 어떻게 다른지 이 챕터 어디에도 안 나와서 같은 변수를 가리키는 게 맞는지 헷갈린다. 오타인지 아직 안 배운 새 개념인지 판단이 안 서서 여러 번 다시 읽어도 불확실하다.",
+      "suggestion": "표·설명·흔한실수 항목의 ls-를 코드 예제와 같은 gs_order-로 통일한다."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L05.md",
+      "quote": "출력은 됐지만, 72줄을 **동시에 들고 있다가**",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "이 레슨 코드는 2단 하나만 DO 9 TIMES로 돌려 9줄을 출력하는데, 갑자기 '72줄'이라는 숫자가 나온다. 72가 어디서 나온 건지 레슨 안에서 계산이나 설명이 없다.",
+      "evidence": "2~9단까지 8개 단 × 9줄 = 72줄이라는 건 구구단을 다 아는 사람이면 추측할 수 있지만, 이 레슨 본문·코드에는 2단 예제(9줄)만 있을 뿐 8개 단 전체를 도는 코드나 언급이 없다. '정리' 문단에서도 '72개든 1000개든'으로 다시 나와 같은 의문이 반복된다.",
+      "suggestion": "'72 = (2~9단) 8단 × 9줄'이라는 계산을 괄호로 짧게 짚어주면 바로 이해된다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "BEGIN OF~END OF에서 TYPES·LIKE로 이어지는 단계적 구성, LIKE가 '모양만 복사하고 값은 안 옮긴다'는 오해를 미리 짚어주는 설명, MOVE-CORRESPONDING의 잔존값 함정을 미리 경고하는 콜아웃은 특히 잘 읽혔다. 다만 L03의 ls- 접두어가 L01에서 배운 gs_ 규칙과 충돌하고, zst_order_head가 설명 없이 등장하며, L02의 age 타입(NUMC)이 L01(TYPE i)과 조용히 달라지고, L05의 '72줄'이 본문 예제(9줄)에서 바로 계산되지 않는 등 국소적인 설명 공백이 반복돼 멈칫하게 되는 지점이 여럿 있었다."
+  }
+}

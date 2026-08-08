@@ -1,0 +1,56 @@
+{
+  "agent": "AG09",
+  "model": "opus",
+  "target": "CH06",
+  "persona_ack": "나는 ABAP 정적 검사기를 시늉하는 코드 전용 감사자 AG09이다. 산문·서사·구성·교수법은 판단 대상에서 제외하고 ```abap 코드 블록만 줄 단위로 읽었다. 본 것은 (1) 활성화 차단급 결함(미선언 식별자·마침표 누락·타입 불일치·존재하지 않는 구문/부가어 순서), (2) 네이밍 규약(CH06은 CH01～09 구간이라 gv_/gs_/gt_, 로컬 lv_/ls_/lt_는 CH10+ 한정, it_는 Header Line 전용, TYPES는 ty_/ts_/tt_), (3) 경계 규약(CH01～17에 인라인 DATA()·VALUE·NEW·+=·|…| 금지, New Open SQL 금지), (4) 주석·출력 문자열의 명백한 오류다. 실행/문법검사 환경이 없으므로 컴파일 확신이 아니라 정적 판단이며, 확신이 없는 건은 confidence=\"추정\"으로 정직하게 표기했다. 스타일 선호(빈 줄·정렬)는 결함으로 세지 않았다.",
+  "method": "Read 도구로 대상 7개 파일 전문을 읽고, ```abap 펜스 블록 23개(L01 4 · L02 3 · L03 6 · L04 6 · L05 2 · L06 2 · _chapter 0)를 추출해 문장 단위로 검사했다. 점검 항목 = 문장 마침표·부가어 순서·식별자 선언 유무·타입 일치·접두어 규약·modern 문법 사용 여부·주석과 코드 동작의 일치. 계산이 걸린 블록은 손으로 추적했다(L06 중첩 DO: 바깥 8회×안쪽 9회=72행, 바깥 sy-index를 안쪽 진입 전에 gs_line-dan에 저장 → 주석 'gv_cnt = 72'와 '2~9단' 일치 확인 / L01 APPEND 2회 → 'gv_cnt = 2' 일치 확인). 인용 앵커의 공백 개수는 PowerShell로 해당 줄을 재출력해 대조했다(대상 파일 읽기 목적에 한정). ABAP 시스템 문법검사기는 사용 불가.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L03.md",
+      "quote": "INSERT gs_person INTO TABLE gt_person.    \" 키 기준 자리",
+      "category": "주석 오류(코드 동작과 불일치)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "STANDARD 테이블인 gt_person에 `INSERT ... INTO TABLE`을 쓰면서 주석에 \"키 기준 자리\"라고 단 것은 실제 실행 결과와 어긋난다. 이 줄은 키 자리가 아니라 맨 끝에 행을 붙인다.",
+      "evidence": "gt_person은 CH06-L01에서 `gt_person TYPE TABLE OF ts_person.`(키 미지정 = STANDARD)으로, L02에서도 `TYPES tt_person TYPE STANDARD TABLE OF ts_person`으로 선언된 STANDARD 테이블이다. ABAP에서 `INSERT wa INTO TABLE itab`의 삽입 위치는 테이블 종류가 결정한다 — SORTED면 정렬 자리, HASHED면 해시 자리, 그러나 STANDARD면 APPEND와 동일하게 마지막 행 뒤에 붙는다. 따라서 같은 블록의 앞줄 `APPEND gs_person TO gt_person.`과 결과가 같아지고, 주석만 보면 학습자는 STANDARD 테이블도 name 키 순서로 끼워 넣어진다고 오해한다. 블록 아래 인용문은 SORTED/HASHED의 제약만 설명하고 STANDARD에서의 이 동작을 짚지 않아 오해가 교정되지 않는다.",
+      "suggestion": "주석을 동작 그대로 고친다 — 예: `\" 키 기준 자리(STANDARD면 끝에 추가)`. 또는 이 줄만 SORTED 테이블 변수(예: gt_person_srt)로 바꿔 키 기준 삽입이 실제로 관찰되게 하고, 세 문장의 차이를 표로 대조한다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L04.md",
+      "quote": "LOOP AT gt_person FROM 2 TO 5 INTO gs_person.   \" 2~5번째 행만",
+      "category": "문법(부가어 순서)",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "LOOP AT의 부가어 순서가 표준과 반대다. 결과 지정(`INTO gs_person`)이 범위 지정(`FROM 2 TO 5`) 뒤에 와 있어 문법 오류로 활성화가 막힐 소지가 있다.",
+      "evidence": "ABAP 키워드 문서의 LOOP AT 구문은 `LOOP AT itab [USING KEY key] result [FROM idx1] [TO idx2] [WHERE ...]` 순서로, `INTO wa`는 언제나 FROM/TO/WHERE 앞자리다(USING KEY만 result보다 앞). 같은 레슨의 다른 예 `LOOP AT gt_person INTO gs_person WHERE age >= 20.`은 이 순서를 지키는데 이 줄만 어긋나, 챕터 안에서 형태도 일관되지 않는다. 다만 READ TABLE이 `TRANSPORTING NO FIELDS ... WITH KEY ...`처럼 결과·키 순서를 관대하게 받아들이는 전례가 있어 실 시스템 문법검사기가 이 형태도 통과시킬 가능성을 배제할 수 없다 — 그래서 확실이 아니라 추정으로 둔다. 통과하더라도 입문자 교재의 유일한 FROM/TO 예시를 비표준 순서로 보여 주는 것은 그 자체로 위험하다.",
+      "suggestion": "`LOOP AT gt_person INTO gs_person FROM 2 TO 5.`로 표준 순서에 맞춘다. 바로 위 WHERE 예제와 형태가 같아져 \"result 먼저, 범위·조건 나중\"이라는 규칙이 예제만으로도 전달된다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L04.md",
+      "quote": "COLLECT gs_sales INTO gt_sales.   \" 같은 키면 금액 누적, 새 키면 새 행",
+      "category": "미선언 식별자",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "gs_sales·gt_sales는 CH06 어디에도 TYPES/DATA 선언이 없다. 이어지는 컨트롤레벨 예제가 같은 미선언 변수의 region·amount Component를 계속 쓰므로, 두 블록 모두 그대로 입력하면 활성화되지 않는다.",
+      "evidence": "CH06 6개 레슨의 ```abap 블록 23개를 전부 훑어도 gs_sales/gt_sales와 그 Component(region·amount)의 선언이 없다. 같은 챕터의 다른 예제는 모두 선언을 함께 보여 준다(L01 `DATA: gs_person TYPE ts_person, gt_person TYPE TABLE OF ts_person.` / L06 `DATA: gs_line TYPE ts_line, gt_gugu TYPE TABLE OF ts_line, gv_cnt TYPE i.`)라서 이 블록만 예외다. 선언이 없으면 본문이 강조한 두 제약을 코드로 확인할 수 없다는 부작용도 있다 — COLLECT의 \"키가 아닌 필드는 모두 숫자 타입\"(행 타입이 안 보임), `AT NEW region`의 \"그룹 키 = region과 그 왼쪽 전부\"(region이 첫 Component인지 확인 불가). 같은 레슨의 `APPEND LINES OF gt_a TO gt_b.`도 gt_a/gt_b가 미선언이다(이쪽은 한 줄짜리 형태 예시라 영향은 더 작다).",
+      "suggestion": "COLLECT 블록 앞에 최소 선언을 붙인다 — 예: `TYPES: BEGIN OF ts_sales, region TYPE c LENGTH 10, amount TYPE i, END OF ts_sales.` + `DATA: gs_sales TYPE ts_sales, gt_sales TYPE TABLE OF ts_sales.`(region을 첫 Component에 두면 본문의 그룹 키 설명과 정확히 맞는다). gt_a/gt_b도 gt_person/gt_new처럼 챕터에서 쓰던 실제 이름으로 바꾼다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "코드 품질 자체는 양호하다. 23개 블록 전부에서 문장 마침표 누락·명백한 타입 불일치·오탈자 키워드는 없었고, 네이밍 규약(gv_/gs_/gt_ 전역 접두어, ts_/tt_ 타입 접두어, it_ 미사용, Field Symbol <fs_person>)은 CH06 구간 규칙과 어긋나는 곳이 없다. 경계 규약도 깨끗하다 — 인라인 DATA()·VALUE·NEW·+=·문자열 템플릿이 한 곳도 없고(`<fs_person>-age = <fs_person>-age + 1.`처럼 classic 대입으로 일관), Open SQL은 아예 등장하지 않아 @·콤마 위반 여지가 없다. 계산이 걸린 블록도 손으로 검산해 통과했다(L06 8×9=72행, 바깥 sy-index를 안쪽 루프 진입 전에 dan에 저장 / L01 APPEND 2회 = gv_cnt 2 / MODIFY ... INDEX sy-tabix가 READ 직후라 인덱스 유효). 남은 지적은 셋이다 — ① L03의 `INSERT ... INTO TABLE` 주석이 STANDARD 테이블의 실제 동작(끝에 추가)과 어긋나 개념 오해를 부르는 점(확실·중간), ② L04의 `LOOP AT ... FROM ... TO ... INTO ...` 부가어 순서가 표준(result 먼저)과 반대라 활성화 실패 소지가 있는 점(추정·중간), ③ L04의 gs_sales/gt_sales·gt_a/gt_b 미선언으로 두 블록이 그대로는 안 도는 점(확실·낮음). 셋 다 국소 수정으로 끝나므로 재집필이 아니라 경미 수정이다. 범위 한계 하나를 밝혀 둔다 — `zde_amount`·`ztt_person`·`ZST_PERSON` 같은 DDIC 객체와 CH05에서 넘어온 ts_person 정의는 CH06 밖에서 만들어지는 것이라, 접근이 CH06 파일로 제한된 이번 감사에서는 존재 여부를 검증하지 못했다(그래서 발견으로 세지 않았다)."
+  }
+}

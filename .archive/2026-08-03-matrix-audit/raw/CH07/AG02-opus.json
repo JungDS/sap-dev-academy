@@ -1,0 +1,83 @@
+{
+  "agent": "AG02",
+  "model": "opus",
+  "target": "CH07",
+  "persona_ack": "나는 준호 — 배운 건 그 자리에서 직접 눌러 봐야 직성이 풀리는 실습형 학습자다. CH07 세 레슨의 본문 코드·설명과 체험 위젯 4종을 로컬 서버에서 실제로 열어 클릭·입력하며 한 줄씩 대조했다. 소스만 읽고 넘긴 위젯은 하나도 없다.",
+  "method": "브라우저 실조작 검증 — 로컬 서버 http://localhost:8143 에서 위젯 4종을 각각 로드(?v=b2 캐시버스팅), 렌더 DOM·콘솔을 측정한 뒤 JS 이벤트 디스패치로 실제 조작했다. (1) CH07-L01-S01: 기본 구성 검사·활성화 → MUL 키 끄고 RESULT 키 켠 뒤 활성화(키 연속성 오류 재현) → 처음으로 → DAN을 Built-In으로 전환 후 검사·활성화(경고 경로 재현), 배지·메시지줄·DB 패널 텍스트를 단계마다 채집. (2) CH07-L02-S01: 중복 키 저장(2×2), 안내문이 시키는 그대로 2×2=5 저장, 틀린 값 2×3=7 저장(bad-calc 클래스 확인), 클라이언트 100↔200 전환, 5×5 추가 후 2·3단 자동채움까지 실행하고 행 수·메시지 대조. (3) CH07-L03-S02: 4개 행 이름을 모두 클릭해 detail 출력·행 강조 확인, 이름 외 셀 클릭 무반응까지 확인. (4) CH07-L03-S01: 조작 요소 수를 계측(button/input/details/a/[tabindex] 전부 0, 로드 스크립트 _autoheight.js 하나)하고 좌우 pre 원문 채집. 추가로 빌드 산출물 docs/abap/pages/CH07-L03.html은 DOM으로, CH07-L01/L02.html은 fetch(cache:'no-store')로 열어 ::embed → iframe 실존을 확인했다. 소스 정독 = 대상 위젯 4개 + 공통 엔진 se11-table-builder.js·se11-create-entries.js·compare-matrix.js·_autoheight.js. 전 위젯 콘솔 오류 0건. 서버·프로세스 기동/종료는 하지 않았다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\CH07-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\CH07-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\CH07-L03.md",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH07-L01-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH07-L02-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH07-L03-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH07-L03-S02.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\se11-table-builder.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\se11-create-entries.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\compare-matrix.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\_autoheight.js"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH07-L02-S01.html",
+      "quote": "② 계산이 틀린 값(2×2인데 5)도 <b>들어감</b>",
+      "category": "위젯 결함 — cfg(seed)와 안내문 충돌로 대표 실험이 정반대 결과",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "위젯이 스스로 시키는 대표 실험 \"2×2인데 RESULT=5\"를 기본 클라이언트(MANDT 100)에서 그대로 하면 '들어감'이 아니라 '키 중복'으로 거부된다. 같은 파일 cfg의 seed에 (100, 2, 2, 4)가 이미 박혀 있기 때문이다. 학습자는 본문·안내문과 정반대 결론을 체험하게 된다.",
+      "evidence": "실조작 — 클라이언트 100에서 DAN=2·MUL=2·RESULT=5를 넣고 저장을 누르면 \"저장 실패: 같은 키 조합(MANDT 100 + DAN 2 + MUL 2)이 이미 있습니다. 키는 중복될 수 없습니다.\"만 뜨고 행은 늘지 않았다(행 수 3행 유지, 빨간 bad-calc 행 생성 안 됨). 원인은 같은 위젯의 seed 행 { \"client\": \"100\", \"dan\": 2, \"mul\": 2, \"result\": 4 }. 그런데 이 위젯의 note도 \"2×2=5 같은 틀린 값도 들어갑니다(빨간 행)\", 본문 CH07-L02.md도 \"2×2인데 RESULT=5처럼 계산이 틀린 값도 손입력으로는 들어간다\"로 똑같은 조합을 예시로 쓴다. 게다가 이 위젯에는 초기화·행 삭제 수단이 없어(#ce-reset 부재 확인) seed 행을 치우고 재시도할 방법도 없다. 참고로 seed와 겹치지 않는 2×3=7로 하면 의도대로 경고와 함께 저장되고 행에 bad-calc 클래스가 붙는 것까지 확인했다 — 기능 자체는 정상이고 예시 조합만 막혀 있다.",
+      "suggestion": "seed에서 (2,2) 행을 빼 (2,1) 한 줄만 남기거나, 위젯 lead·note와 본문 CH07-L02.md의 예시를 seed와 겹치지 않는 조합(예: 2×3인데 7)으로 통일한다. 겸사겸사 '↻ 처음으로' 버튼을 붙이면 실습 재시도가 가능해진다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH07-L01-S01.html",
+      "quote": "활성화해야 오른쪽 <b>DB 물리 테이블</b>이 생깁니다.",
+      "category": "위젯 결함 — 성공 피드백 역전(정상 구성일 때 완료 메시지 누락)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "필드·키·타입을 전부 올바르게 둔 정상 구성으로 활성화하면 \"활성화 완료\" 성공 메시지가 뜨지 않고 메시지줄이 최초 안내문으로 되돌아간다. 반대로 Built-In 경고가 남은 구성으로 활성화할 때만 성공 메시지가 뜬다 — 제대로 했을 때만 칭찬이 사라지는 역전이다.",
+      "evidence": "실조작 — '↻ 처음으로' 직후 곧바로 '🔥 활성화'를 누르면 배지는 \"활성 (Active)\", DB 패널은 열려 \"✔ DB 테이블 생성됨 / TABLE ZGUGUDAN …\"이 나오는데, 정작 메시지줄은 <div class=\"ln idle\">필드·키·타입을 정한 뒤 <b>검사</b> 또는 <b>활성화</b>를 눌러 보세요.</div> 즉 초기 문구였다. 같은 페이지에서 DAN만 Built-In으로 바꾼 뒤 활성화하면 \"✔ 활성화 완료 — DB에 물리 테이블이 생성됐습니다.\" + \"⚠ Built-In 타입(DAN)은 …\"이 정상 출력된다. 원인은 공통 엔진 embeds/_engine/se11-table-builder.js의 showMsg(list, headOk)가 list가 비면 headOk를 무시하고 idle 문구로 early-return하는 것이며, onActivate는 경고만 걸러 넘기므로 경고가 0이면 항상 이 경로를 탄다. 키 연속성 오류·Data Element 경고 등 나머지 검증 경로는 안내문(note)대로 모두 정확히 재현됐다.",
+      "suggestion": "showMsg에서 headOk가 참이면 list가 비어 있어도 성공 줄을 먼저 출력하도록 early-return 조건을 고친다(공통 엔진 수정이므로 se11-table-builder를 쓰는 다른 챕터 위젯도 함께 확인)."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH07-L03-S01.html",
+      "quote": "APPEND gs_line TO gt_gugu.   \" 81행 쌓기",
+      "category": "불일치 — 위젯 코드의 행 수가 본문 서술과 어긋남",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "위젯은 CH06 구구단 내부 테이블 gt_gugu를 \"81행\"으로 적었는데, 같은 챕터 본문은 두 곳에서 같은 대상을 72행이라고 한다.",
+      "evidence": "렌더 확인 — CH07-L03-S01 왼쪽 패널 pre에 \"APPEND gs_line TO gt_gugu.   \\\" 81행 쌓기\"가 그대로 표시되고, 페이지 전체 텍스트에 '72행'은 없다. 반면 본문 CH07-L01.md 14행 \"…에서 구구단 72행을 [[Internal Table]] gt_gugu에 담았지만\", CH07-L02.md 35행 \"걸 **프로그램으로 72행**을 순식간에 만들었다\"로 두 번 72행이라 못박는다. 변수명(gt_gugu)과 가리키는 캡스톤이 같아 학습자는 '내가 9행을 빠뜨렸나' 하고 되짚게 된다. 2단～9단 × 1～9 = 72로 본문 쪽 수치가 서술과 맞는다(81은 1단～9단일 때의 수).",
+      "suggestion": "위젯 주석을 \"72행 쌓기\"로 본문에 맞춘다. 행 수를 굳이 밝힐 필요가 없다면 \"구구단 전체를 쌓기\"처럼 수치를 빼 중립화해도 된다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\CH07-L03.md",
+      "quote": "DATA gs_line TYPE zst_line.            \" 작업영역(한 건)\nDATA gt_line TYPE TABLE OF zst_line.   \" 내부 테이블(여러 건)",
+      "category": "체험 공백 — 본문 코드에 대응하는 조작이 없음",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "이 레슨의 유일한 ABAP 코드(전역 DDIC Structure zst_line을 작업영역으로도 내부 테이블로도 쓰는 선언)를 직접 만져 볼 수단이 없다. 바로 아래 붙은 CH07-L03-S01은 조작 요소가 0개인 정적 그림이고, 위쪽 CH07-L03-S02는 클릭은 되지만 zst_line이 아예 등장하지 않는다.",
+      "evidence": "실측 — CH07-L03-S01은 button 0 · input/select/textarea 0 · details 0 · a 0 · [tabindex] 0이고 로드되는 스크립트도 _autoheight.js 하나뿐이라 클릭할 것이 존재하지 않는다(CSS-only 2단 비교 그림). CH07-L03-S02는 행 이름 4개 클릭 → 설명 표시·행 강조까지 정상 동작하지만, '선언 예' 열은 TYPE ts_line / TYPE TABLE OF ts_line / TYPE ZTT_LINE / SE11 ZGUGUDAN으로 본문 코드가 쓰는 전역 zst_line과 이름이 다르고, 클릭해도 선언문이 바뀌지 않는다. 빌드 페이지 docs/abap/pages/CH07-L03.html에는 두 iframe(S02·S01)이 모두 실려 있어 '임베드 누락'은 아니지만, \"같은 DDIC 모양을 TYPE으로도 TABLE OF로도 쓴다\"는 이 레슨의 핵심 동작을 바꿔 보며 확인할 조작은 챕터 어디에도 없다. 반면 L01·L02는 같은 원칙에서 실제 조작형 위젯을 제공한다.",
+      "suggestion": "S01을 토글형으로 승격해 같은 zst_line을 작업영역 / 내부 테이블 / Transparent Table로 전환할 때 사는 곳·수명·남는지 여부가 바뀌는 것을 눌러 보게 하거나, S02의 '선언 예'를 본문과 같은 zst_line 기준으로 맞추고 행을 고르면 선언문이 바뀌는 미니 조작을 붙인다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH07-L03-S02.html",
+      "quote": "앞의 셋(Structure·Internal Table·Table Type)은 <b>메모리 세계의 도구</b>이고",
+      "category": "위젯 결함 — 안내문(note)이 자기 표와 어긋나 오해 유발",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "같은 위젯의 표는 Table Type의 '사는 곳'을 \"SE11 정의\"로 적어 놓고, 바로 아래 note는 Table Type을 Structure·Internal Table과 한 덩어리로 묶어 \"메모리 세계의 도구\"라고 한다. 입문자는 Table Type도 메모리에 사는 데이터 그릇으로 오해할 수 있다.",
+      "evidence": "렌더 확인 — 표 3행이 \"Table Type (설계도) | — (타입만) | SE11 정의 | — | TYPE ZTT_LINE\"으로 나오는데 같은 화면 note는 셋을 메모리로 묶는다. 본문 CH07-L03.md는 이 둘을 분명히 갈라 \"Structure·Internal Table은 메모리라 프로그램이 끝나면 사라지고, Transparent Table만 디스크에 남는다\"고만 하고, Table Type은 \"데이터를 담는 그릇이 아니라 … 설계도일 뿐이다(그 자체는 저장소가 아니다)\"로 따로 서술한다. 즉 위젯 note만 본문보다 거칠게 뭉뚱그렸다.",
+      "suggestion": "note를 \"Structure·Internal Table은 메모리에 사는 그릇, Table Type은 그 모양만 정의한 설계도, Transparent Table만 디스크에 영속\"처럼 셋을 뭉치지 말고 본문과 같은 3분 구분으로 고쳐 쓴다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "네 위젯 모두 빌드 페이지에 iframe으로 실제로 실려 있고 콘솔 오류 0건이며, 조작 대부분이 본문과 충실히 맞물린다 — L01의 키 연속성 오류·Data Element 권장 경고, L02의 키 중복 거부·틀린 값 허용(빨간 행)·클라이언트 분리, L03-S02의 4행 비교 클릭이 모두 안내문대로 동작하는 것을 직접 눌러 확인했다. 다만 실습자로서 손으로 따라가면 세 군데가 걸린다: ① L02 위젯이 스스로 시키는 대표 실험(2×2인데 5)이 seed 중복 탓에 '거부'라는 정반대 결과를 내고(초기화 수단도 없어 회피 불가), ② L01 위젯은 제대로 만들었을 때 오히려 '활성화 완료' 성공 메시지가 사라지며, ③ L03-S01의 '81행'이 본문 두 곳의 72행과 어긋난다. 셋 다 seed 한 줄·엔진 early-return 한 곳·주석 한 줄 수준의 국소 수정이라 재집필은 불필요하다. 덧붙여 L03의 유일한 ABAP 코드(zst_line)는 조작 가능한 체험이 없어(S01은 클릭 요소 0) 보강 여지가 있고, L03-S02 note의 'Table Type = 메모리 세계' 뭉뚱그림도 함께 다듬으면 좋다."
+  }
+}

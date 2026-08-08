@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<!-- CH06-L04-S04 — 엔진: step-debugger (embeds/_engine/step-debugger.{js,css}) + _autoheight.js
+     config=레슨 전용(APPEND LINES OF — 두 명단 합치기: 끝에 붙음·원본 보존(복사)·두 번 실행하면 중복).
+     게이팅: CH06-L04 범위(APPEND LINES OF·DESCRIBE TABLE) — modern 문법 없음. -->
+<html lang="ko" data-eng="step-debugger">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>두 명단 합치기 · CH06-L04-S04</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/step-debugger.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">두 명단을 한 줄로 합치기 <small>(스텝 디버거)</small></p>
+  <p class="lead">지점 명단 <code>gt_a</code>를 전체 명단 <code>gt_b</code>에 이어 붙입니다. <b>어디에</b> 붙는지, 그리고 붙인 뒤 <b>원본 <code>gt_a</code>는 어떻게 되는지</b>를 오른쪽 두 표에서 확인하세요.</p>
+
+  <div class="dbg" data-stepper>
+    <div class="dbg__bar">
+      <button class="btn btn--primary" data-start>▶ 시작</button>
+      <button class="btn btn--step" data-next disabled>다음 ⏭</button>
+      <div class="progress"><i data-progress></i></div>
+      <span class="muted" data-counter>0 / 4</span>
+    </div>
+    <div class="dbg__main">
+      <div class="dbg__editorwrap"><div class="dbg__edhd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span></div><div class="dbg__editor" data-code></div></div>
+      <div class="dbg__watch">
+        <div class="watch__head">변수 모니터 — 두 명단</div>
+        <div class="watch__list" data-vars></div>
+      </div>
+    </div>
+    <div class="dbg__console">
+      <div class="console__head">
+        <span>콘솔</span>
+        <span class="leg"><span class="a">▶ 실행할 차례</span> · <span class="d">✓ 방금 실행</span></span>
+        <span class="sp"></span>
+        <span class="cmode"><button class="cmode__b on" data-cmode="cur">현재 행</button><button class="cmode__b" data-cmode="all">전체 출력</button></span>
+      </div>
+      <pre class="console__body" data-console>대기 중 — ▶ 시작을 누르세요.</pre>
+    </div>
+    <script type="application/json" class="stepper-config">
+    {
+      "code":[
+        "\" gt_a = 지점 명단(2명) · gt_b = 전체 명단(본사 1명이 이미 있음)",
+        "DATA gv_cnt TYPE i.",
+        "",
+        "APPEND LINES OF gt_a TO gt_b.",
+        "",
+        "DESCRIBE TABLE gt_b LINES gv_cnt.   \" 합쳐진 전체 명단은?",
+        "DESCRIBE TABLE gt_a LINES gv_cnt.   \" 원본 지점 명단은?",
+        "",
+        "APPEND LINES OF gt_a TO gt_b.       \" 실수로 한 번 더 실행하면?"
+      ],
+      "vars":[
+        {"label":"gt_a","sub":"지점 명단 · 붙이는 쪽","key":"gt_a","itab":{"cols":["name","age"],"num":[false,true]},"init":[["정훈영",30],["유재석",40]]},
+        {"label":"gt_b","sub":"전체 명단 · 붙여 넣을 곳","key":"gt_b","itab":{"cols":["name","age"],"num":[false,true]},"init":[["손흥민",28]]},
+        {"label":"gv_cnt","sub":"DESCRIBE가 세어 준 행 수","key":"gv_cnt","init":"0"}
+      ],
+      "steps":[
+        {"line":4,"vars":{"gt_b":[["손흥민",28],["정훈영",30],["유재석",40]]},"console":"APPEND LINES OF — gt_a의 2행이 한 문장으로 통째로 옮겨졌습니다. 이미 있던 손흥민을 밀어내지 않고 그 뒤에, gt_a에 있던 순서 그대로 붙습니다"},
+        {"line":6,"vars":{"gv_cnt":"3"},"console":"전체 명단은 1 + 2 = 3행. LOOP로 한 행씩 옮겼어도 같은 결과지만, 문장 하나로 끝났습니다"},
+        {"line":7,"vars":{"gv_cnt":"2"},"console":"gt_a는 여전히 2행 — 옮긴 게 아니라 복사입니다. 원본은 손대지 않으니 다른 곳에 계속 써도 됩니다"},
+        {"line":9,"vars":{"gt_b":[["손흥민",28],["정훈영",30],["유재석",40],["정훈영",30],["유재석",40]]},"console":"⚠ 한 번 더 실행했더니 같은 두 사람이 또 붙어 5행이 됐습니다. 이 문장은 중복을 걸러 주지 않습니다 — 합치기 전에 이미 붙였는지 확인하세요"}
+      ]
+    }
+    </script>
+  </div>
+  <div class="note">💡 두 테이블의 <b>행 모양(Line Type)이 같아야</b> 이어 붙일 수 있습니다. 그리고 붙는 자리는 언제나 <b>받는 쪽의 끝</b>입니다 — 앞에 끼워 넣거나 섞어 주지 않습니다.</div>
+</div>
+<script src="../_engine/step-debugger.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <!-- CH06-L03-S01 — 엔진: step-debugger (embeds/_engine/step-debugger.{js,css}) + _autoheight.js
-     config=레슨 전용(단일 행 제어: INSERT·READ INDEX/WITH KEY·MODIFY TRANSPORTING·DELETE, sy-subrc/sy-tabix).
+     config=레슨 전용(단일 행 제어: INSERT INDEX/INTO TABLE·READ INDEX/WITH KEY/TRANSPORTING NO FIELDS·
+     MODIFY TRANSPORTING·DELETE, sy-subrc/sy-tabix — READ 실패 시 sy-tabix는 0).
      게이팅: CH06-L03 범위 — modern 문법 없음. -->
 <html lang="ko" data-eng="step-debugger">
 <head>
@@ -13,14 +14,14 @@
 <body>
 <div class="wrap">
   <p class="hd">한 행을 콕 집어 — 넣고 · 찾고 · 고치고 · 지우기 <small>(스텝 디버거)</small></p>
-  <p class="lead">명단 3명이 쌓인 테이블에서 시작합니다. 문장이 실행될 때마다 오른쪽에서 <b>대상 행</b>이 강조되고 <code>sy-subrc</code>·<code>sy-tabix</code>가 바뀝니다. 특히 READ <b>실패</b> 후에 Work Area에 무엇이 남는지 눈여겨보세요.</p>
+  <p class="lead">명단 3명이 쌓인 STANDARD 테이블에서 시작합니다. 문장이 실행될 때마다 오른쪽에서 <b>대상 행</b>이 강조되고 <code>sy-subrc</code>·<code>sy-tabix</code>가 바뀝니다. <code>INDEX</code>와 <code>INTO TABLE</code>이 어디에 넣는지, <code>TRANSPORTING NO FIELDS</code>가 Work Area를 건드리는지, 그리고 READ <b>실패</b> 뒤에 무엇이 남는지를 눈여겨보세요.</p>
 
   <div class="dbg" data-stepper>
     <div class="dbg__bar">
       <button class="btn btn--primary" data-start>▶ 시작</button>
       <button class="btn btn--step" data-next disabled>다음 ⏭</button>
       <div class="progress"><i data-progress></i></div>
-      <span class="muted" data-counter>0 / 10</span>
+      <span class="muted" data-counter>0 / 13</span>
     </div>
     <div class="dbg__main">
       <div class="dbg__editorwrap"><div class="dbg__edhd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span></div><div class="dbg__editor" data-code></div></div>
@@ -41,11 +42,17 @@
     <script type="application/json" class="stepper-config">
     {
       "code":[
-        "\" 시작: gt_person = 정훈영/30 · 유재석/40 · 홍길동/25",
+        "\" 시작: gt_person(STANDARD) = 정훈영/30 · 유재석/40 · 홍길동/25",
         "gs_person-name = '강호동'. gs_person-age = 35.",
         "INSERT gs_person INTO gt_person INDEX 1.",
         "",
+        "gs_person-name = '심청'. gs_person-age = 17.",
+        "INSERT gs_person INTO TABLE gt_person.",
+        "",
         "READ TABLE gt_person INTO gs_person INDEX 2.",
+        "",
+        "READ TABLE gt_person TRANSPORTING NO FIELDS",
+        "     WITH KEY name = '유재석'.",
         "",
         "READ TABLE gt_person INTO gs_person",
         "     WITH KEY name = '홍길동'.",
@@ -64,26 +71,29 @@
       "vars":[
         {"label":"gs_person-name","sub":"Work Area · name","key":"gs_person-name","init":"( 공백 )"},
         {"label":"gs_person-age","sub":"Work Area · age","key":"gs_person-age","init":"0"},
-        {"label":"gt_person","sub":"Internal Table · 명단","key":"gt_person","itab":{"cols":["name","age"],"num":[false,true]},"init":[["정훈영",30],["유재석",40],["홍길동",25]]},
-        {"label":"sy-subrc","sub":"성공 0 / 실패 4","key":"sy-subrc","init":"-"},
-        {"label":"sy-tabix","sub":"다룬 행 번호","key":"sy-tabix","init":"-"}
+        {"label":"gt_person","sub":"Internal Table · 명단(STANDARD)","key":"gt_person","itab":{"cols":["name","age"],"num":[false,true]},"init":[["정훈영",30],["유재석",40],["홍길동",25]]},
+        {"label":"sy-subrc","sub":"0이면 성공 (실패는 4, 때로 8)","key":"sy-subrc","init":"-"},
+        {"label":"sy-tabix","sub":"찾은 행 번호 · 실패하면 0","key":"sy-tabix","init":"-"}
       ],
       "steps":[
         {"line":2,"vars":{"gs_person-name":"강호동","gs_person-age":"35"},"console":"Work Area에 새 사람 준비"},
-        {"line":3,"vars":{"gt_person":[["강호동",35],["정훈영",30],["유재석",40],["홍길동",25]]},"focus":{"gt_person":1},"console":"INSERT ... INDEX 1 — 1번 위치에 끼워 넣기. 기존 행들이 한 칸씩 밀렸습니다 (APPEND와 달리 위치 지정)"},
-        {"line":5,"vars":{"gs_person-name":"정훈영","gs_person-age":"30","sy-subrc":"0","sy-tabix":"2"},"focus":{"gt_person":2},"console":"번호로 직접 읽기 — 2번 행이 Work Area로 복사됨. sy-subrc = 0, sy-tabix = 2"},
-        {"line":7,"vars":{"gs_person-name":"홍길동","gs_person-age":"25","sy-tabix":"4"},"focus":{"gt_person":4},"console":"값으로 찾기(WITH KEY) — 4번 행에서 발견. sy-tabix = 4"},
-        {"line":9,"vars":{},"console":"sy-subrc = 0 확인 — 성공했으니 안심하고 수정 단계로"},
-        {"line":10,"vars":{"gs_person-age":"26"},"console":"복사본(Work Area)의 age만 26으로 — 아직 테이블은 그대로"},
-        {"line":11,"vars":{"gt_person":[["강호동",35],["정훈영",30],["유재석",40],["홍길동",26]]},"focus":{"gt_person":4},"console":"MODIFY — READ가 남긴 sy-tabix(4)번 행의 age만 갱신. TRANSPORTING 덕에 다른 필드는 보존"},
-        {"line":15,"vars":{"sy-subrc":"4"},"console":"못 찾음 — sy-subrc = 4. Work Area는 바뀌지 않아 홍길동이 그대로 남아 있습니다"},
-        {"line":17,"vars":{},"console":"[출력] 홍길동 ← ⚠ 위험! 방금 READ는 실패였는데 이전 값이 출력됨. READ 뒤엔 반드시 sy-subrc 확인!"},
-        {"line":19,"vars":{"gt_person":[["강호동",35],["정훈영",30],["유재석",40]],"sy-subrc":"0"},"console":"DELETE WHERE age < 30 — 조건에 맞는 행 모두 삭제(홍길동/26). 1행이라도 지웠으니 sy-subrc = 0"}
+        {"line":3,"vars":{"gt_person":[["강호동",35],["정훈영",30],["유재석",40],["홍길동",25]]},"focus":{"gt_person":1},"console":"INSERT ... INDEX 1 — 1번 위치에 끼워 넣기. 기존 행들이 한 칸씩 밀렸습니다 (APPEND와 달리 자리를 내가 지정)"},
+        {"line":5,"vars":{"gs_person-name":"심청","gs_person-age":"17"},"console":"Work Area에 또 한 사람 준비 — 이번엔 자리를 지정하지 않고 넣어 봅니다"},
+        {"line":6,"vars":{"gt_person":[["강호동",35],["정훈영",30],["유재석",40],["홍길동",25],["심청",17]]},"focus":{"gt_person":5},"console":"INSERT ... INTO TABLE — 자리를 테이블 종류에 맡깁니다. 이 테이블은 STANDARD라 결과가 맨 끝(5번 행), 즉 APPEND와 같습니다. SORTED였다면 키 순서 자리, HASHED였다면 해시가 정한 자리로 갑니다"},
+        {"line":8,"vars":{"gs_person-name":"정훈영","gs_person-age":"30","sy-subrc":"0","sy-tabix":"2"},"focus":{"gt_person":2},"console":"번호로 직접 읽기 — 2번 행이 Work Area로 복사됨. sy-subrc = 0, sy-tabix = 2"},
+        {"line":10,"vars":{"sy-subrc":"0","sy-tabix":"3"},"focus":{"gt_person":3},"console":"TRANSPORTING NO FIELDS — 있는지만 확인. 3번 행에서 찾아 sy-subrc = 0 · sy-tabix = 3이 되지만, Work Area는 여전히 정훈영 그대로입니다(한 필드도 옮기지 않음)"},
+        {"line":13,"vars":{"gs_person-name":"홍길동","gs_person-age":"25","sy-tabix":"4"},"focus":{"gt_person":4},"console":"값으로 찾기(WITH KEY) — 이번엔 INTO가 있으니 4번 행이 Work Area로 복사됩니다. sy-tabix = 4"},
+        {"line":15,"vars":{},"console":"sy-subrc = 0 확인 — 성공 판정은 언제나 0인지로 합니다"},
+        {"line":16,"vars":{"gs_person-age":"26"},"console":"복사본(Work Area)의 age만 26으로 — 아직 테이블은 그대로"},
+        {"line":17,"vars":{"gt_person":[["강호동",35],["정훈영",30],["유재석",40],["홍길동",26],["심청",17]]},"focus":{"gt_person":4},"console":"MODIFY — READ가 남긴 sy-tabix(4)번 행의 age만 갱신. TRANSPORTING age 덕에 다른 필드는 보존"},
+        {"line":21,"vars":{"sy-subrc":"4","sy-tabix":"0"},"console":"못 찾음 — sy-subrc = 4. 찾은 행이 없으니 sy-tabix도 유효한 번호가 아니라 0입니다. 반면 Work Area는 바뀌지 않아 홍길동이 그대로 남아 있습니다"},
+        {"line":23,"vars":{},"console":"[출력] 홍길동 ← ⚠ 위험! 방금 READ는 실패였는데 이전 값이 출력됨. READ 뒤엔 반드시 sy-subrc = 0인지 확인!"},
+        {"line":25,"vars":{"gt_person":[["강호동",35],["정훈영",30],["유재석",40]],"sy-subrc":"0"},"console":"DELETE WHERE age < 30 — 조건에 맞는 행 모두 삭제(홍길동/26·심청/17). 1행이라도 지웠으니 sy-subrc = 0"}
       ]
     }
     </script>
   </div>
-  <div class="note">💡 실패한 READ 뒤의 Work Area는 "빈 값"이 아니라 <b>직전 값 그대로</b>입니다. <code>sy-subrc</code> 확인 없이 쓰면 엉뚱한 사람이 출력되는 버그가 됩니다.</div>
+  <div class="note">💡 실패한 READ 뒤의 Work Area는 "빈 값"이 아니라 <b>직전 값 그대로</b>이고, <code>sy-tabix</code>는 <b>0</b>입니다. <code>sy-subrc = 0</code> 확인 없이 쓰면 엉뚱한 사람이 출력되는 버그가 됩니다.</div>
 </div>
 <script src="../_engine/step-debugger.js" defer></script>
 <script src="../_engine/_autoheight.js" defer></script>

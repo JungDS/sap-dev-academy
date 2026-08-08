@@ -1,0 +1,94 @@
+{
+  "agent": "AG02",
+  "model": "opus",
+  "target": "CH06",
+  "persona_ack": "나는 '준호'다. 배운 건 그 자리에서 직접 해봐야 직성이 풀리는 실습형 학습자. CH06 여섯 레슨의 본문 코드·설명과 체험 위젯 11종을 실제 브라우저에서 열어 끝까지 눌러 보며 대조 감사했다. 읽기 전용으로만 접근했고 대상 파일을 수정하지 않았다.",
+  "method": "전역 Playwright 1.62.1(C:/Users/gosts/AppData/Roaming/npm/node_modules/playwright) + 헤드리스 Chromium 1회 기동 → 위젯마다 새 컨텍스트/탭 생성·검증·닫기. (1) 11개 위젯을 http://localhost:8143/embeds/abap/<ID>.html?v=b2 로 로드(networkidle), console(error/warning)·pageerror·requestfailed 훅으로 오류 수집 — 전부 HTTP 200, 오류 0건. (2) step-debugger 5종(L01-S01·L03-S01·L03-S02·L04-S01·L04-S02)은 [data-start] 클릭 후 [data-next]를 disabled 될 때까지 실제 클릭해 전 스텝 주파, 스텝마다 .code li.done(강조된 줄)·변수 모니터(.var__val)·itab 미니테이블(.itw 행/플래시 클래스)·콘솔 텍스트를 DOM에서 측정하고 config의 steps[].line ↔ code[] 매핑을 대조. '전체 출력' 모드도 토글 확인. (3) code-anatomy 2종(L02-S01·L05-S02)은 모든 .mk 핫스팟을 클릭해 #anno 렌더를 확인하고 마킹 키 ↔ anno-cfg 키 고아/미사용 대조. (4) decision-tree(L02-S02)는 5개 경로(0 / 1-0 / 1-1-0 / 1-1-1 / 2)를 전부 클릭 주파해 추천 결과 확인. (5) judge-quiz(L05-S01)는 5문항을 클릭 응답(1번은 일부러 오답)해 정/오 판정·점수바·최종 결과 로직 검증. (6) CSS-only 스냅샷 2종(L04-S03·L06-S01)은 렌더된 표 전체와 상호작용 요소 수(button/input/클릭 훅/로드 스크립트)를 측정. (7) 하네스가 알려 준 빌드 페이지 http://localhost:8143/docs/abap/pages/CH06-L0n.html?v=b2 6개를 로드해 ::embed가 iframe으로 실제 렌더되는지, iframe src가 fetch(cache:'no-store')로 200인지, 코드블록과 임베드의 배치 순서를 확인(체험 공백 판정 근거). 한계: 실 ABAP 런타임은 없으므로 시스템 필드(sy-subrc·sy-tabix)의 '실제' 값은 문서화된 ABAP 동작 지식으로 판단했고, 브라우저 측정치는 위젯이 표시한 값이다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L06.md",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH06-L01-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH06-L02-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH06-L02-S02.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH06-L03-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH06-L03-S02.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH06-L04-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH06-L04-S02.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH06-L04-S03.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH06-L05-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH06-L05-S02.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH06-L06-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\step-debugger.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\code-anatomy.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\decision-tree.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\judge-quiz.js",
+    "(렌더 확인용·하네스가 제공한 URL) http://localhost:8143/docs/abap/pages/CH06-L01.html ~ CH06-L06.html (빌드 결과 6개, 브라우저 로드만)"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "embeds/abap/CH06-L06-S01.html",
+      "quote": "<span class=\"scg__cnt\">81행</span>③ 2~9단 전체<span class=\"scg__op\">바깥 DO 8 TIMES 완료</span>",
+      "category": "불일치",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "챕터 캡스톤의 체험 위젯이 구구단 내부 테이블의 행 수를 '81행'으로 표시한다. 본문 프로그램의 실제 결과는 72행이고, 위젯 자기 라벨('2~9단 전체', '바깥 DO 8 TIMES 완료')과도 모순된다. 직접 짜 본 학습자가 자기 코드가 틀린 줄 알고 의심하게 되는 종류의 오류다.",
+      "evidence": "본문 CH06-L06.md의 프로그램은 바깥 DO 8 TIMES(2~9단) × 안쪽 DO 9 TIMES = 72행이고, 주석도 '\" gv_cnt = 72'다. 빌드된 레슨 페이지 텍스트를 브라우저에서 실측하니 '72'가 7회(direction '구구단 72줄'·'72줄을 통째로'·표의 '72줄을 담는 표'·'쌓인 72줄 출력'·'gv_cnt = 72'·'구구단 72행이 전부'·'72개가 되는 모습') 등장하고 '81'은 0회다. 반면 위젯 렌더 DOM에는 81이 세 곳 — 리드문 '행이 1개 → 9개 → 81개로 늘어나', ③ 라벨 '81행'과 그 마지막 행 idx 81, ④ 라벨 '81행'과 마지막 행 idx 81. 81은 1~9단(9×9)일 때의 값이라 위젯이 스스로 붙인 '2~9단 전체'·'DO 8 TIMES 완료'와 직접 충돌한다. 데이터 자체(첫 행 dan=2, ④ 최상단 9×9=81, 최하단 2×1=2)는 2~9단이 맞아 행 수 라벨만 틀렸다.",
+      "suggestion": "위젯의 행 수 표기를 72로 교정한다 — 리드문 '1개 → 9개 → 72개', ③·④ 라벨 '72행', ③의 마지막 행 idx 81→72, ④의 마지막 행 idx 81→72. result 값 81(9×9)은 옳으므로 손대지 않는다."
+    },
+    {
+      "seq": 2,
+      "file": "embeds/abap/CH06-L06-S01.html",
+      "quote": "<!-- CH06-L06-S01 — 엔진: state-change-grid (CSS-only) + _autoheight. 콘텐츠=레슨 전용(구구단 gt_gugu, #C06-1).",
+      "category": "헛체험",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "챕터의 결론인 캡스톤 레슨의 유일한 체험이 클릭할 것이 하나도 없는 정적 스냅샷이라, 바로 위 본문이 안내하는 '행이 쌓이는 과정을 디버거로 관찰'을 실제로 해 볼 수 없다. 같은 챕터 1과의 체험보다 오히려 약하고 내용도 겹친다.",
+      "evidence": "브라우저 실측 — CH06-L06-S01의 button 0개, input/select/textarea 0개, 클릭 훅([data-start]·[data-next]·.mk·.opt·.ch·[data-cmode]) 0개, 로드되는 스크립트는 높이 보정용 ../_engine/_autoheight.js 하나뿐이다(엔진 JS 없음). 본문은 직전 문단에서 'BREAK-POINT를 걸고 gt_gugu를 펼치면, 행이 하나씩 쌓여 … 모습이 보인다'며 스텝 관찰을 지시하는데 위젯은 4장짜리 고정 스냅샷이라 '보는' 행위가 성립하지 않는다. 대조군으로 같은 챕터 CH06-L01-S01은 동일 주제(APPEND로 테이블이 자람)를 button 4개짜리 스텝 디버거로 제공하며 11스텝을 실제로 밟아 확인했다. 즉 캡스톤이 1과의 하위호환이다.",
+      "suggestion": "step-debugger 엔진으로 교체해 중첩 DO의 회차별 APPEND(1행 → 9행 → 72행)와 SORT 전후를 직접 밟게 한다. 전면 교체가 부담이면 최소한 단(dan) 선택이나 정렬 키 토글 같은 조작을 하나라도 넣어 '해 보는' 요소를 만든다."
+    },
+    {
+      "seq": 3,
+      "file": "embeds/abap/CH06-L03-S01.html",
+      "quote": "{\"line\":15,\"vars\":{\"sy-subrc\":\"4\"},\"console\":\"못 찾음 — sy-subrc = 4. Work Area는 바뀌지 않아 홍길동이 그대로 남아 있습니다\"}",
+      "category": "위젯 결함",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "READ 실패 스텝이 sy-subrc만 4로 바꾸고 sy-tabix는 직전 성공값 4를 그대로 남겨 둔다. 실제 ABAP은 READ TABLE이 행을 못 찾으면 sy-tabix를 0으로 초기화하므로(BINARY SEARCH의 삽입 위치만 예외), 이 위젯은 '실패해도 행 번호는 유효하다'는 잘못된 인상을 준다.",
+      "evidence": "10스텝을 전부 클릭해 변수 모니터를 DOM에서 측정한 결과, 8번째 스텝(line 15, name = '없는사람' READ) 직후 표시는 sy-subrc=4 · sy-tabix=4이고, sy-tabix 셀에는 변경 플래시(changed 클래스)조차 붙지 않는다. 이후 WRITE·DELETE 스텝까지 sy-tabix=4가 그대로 유지된다(직전 성공 READ가 남긴 4번 행 번호). 위젯은 sy-tabix를 '다룬 행 번호'라는 설명과 함께 상시 워치로 띄우고 있고, 레슨 본문은 'sy-tabix를 오래 보관' 금지를 흔한 실수로 경고하는 데다 바로 앞 스텝에서 MODIFY … INDEX sy-tabix를 가르친 직후라, 실패 후에도 4가 남아 있는 화면은 그 경고와 정면으로 어긋난다. 위젯 하단 안내가 '실패한 READ 뒤의 Work Area는 직전 값 그대로'라고만 짚어 sy-tabix에는 같은 규칙이 적용되지 않는다는 사실이 전혀 드러나지 않는다.",
+      "suggestion": "해당 스텝의 vars에 \"sy-tabix\":\"0\"을 추가하고 콘솔 문구에 'Work Area는 직전 값이 남지만 sy-tabix는 0으로 초기화 — 실패 뒤엔 행 번호도 못 믿는다'는 대비를 넣는다."
+    },
+    {
+      "seq": 4,
+      "file": "embeds/abap/CH06-L04-S02.html",
+      "quote": "{\"line\":13,\"vars\":{\"gs_sales-region\":\"부산\",\"gs_sales-amount\":\"20\"},\"focus\":{\"gt_sales2\":1},\"console\":\"1행 부산/20 — region 그룹이 시작됨 → AT NEW 블록 실행",
+      "category": "위젯 결함",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "컨트롤레벨을 가르치는 위젯인데 정작 LOOP AT·AT NEW region.·AT END OF region. 줄이 전체 실행 동안 한 번도 강조되지 않는다. 콘솔은 'AT NEW 블록 실행'이라고 말하는데 코드 포인터는 그 안쪽 WRITE 줄에 가 있어, 어느 문장이 그룹 경계를 만드는지 눈으로 짚을 수 없다.",
+      "evidence": "18스텝을 전부 밟으며 매 스텝 .code li.active/.done의 data-line을 수집한 결과 강조된 줄은 2·3·4·5·6·7·10·13·15·17·18·20뿐이고, 11(LOOP AT gt_sales2 INTO gs_sales.) · 12(AT NEW region.) · 14(ENDAT.) · 16(AT END OF region.) · 19(ENDAT.)는 단 한 번도 강조되지 않았다. 실제로 하이라이트가 10번 줄(SORT)에서 13번 줄(AT NEW 안쪽 WRITE)로 건너뛴다. 같은 레슨의 CH06-L04-S01은 LOOP 헤더(2번 줄)를 반복마다 강조해 탈락 행까지 보여 주므로 두 위젯의 서술 밀도가 어긋나기도 한다.",
+      "suggestion": "그룹 시작 스텝을 line 11(LOOP 진입) → line 12(AT NEW) → line 13(WRITE) 세 스텝으로 쪼개고, 소계 스텝도 line 16(AT END OF) → line 17(SUM) → line 18(WRITE)로 분리한다."
+    },
+    {
+      "seq": 5,
+      "file": "embeds/abap/CH06-L01-S01.html",
+      "quote": "{\"line\":23,\"vars\":{},\"console\":\"FREE gt_person — 초기 할당분까지 메모리 전부 반환. 대용량 테이블을 다 쓰고 더 안 쓸 때 사용\"}",
+      "category": "헛체험",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "마지막 FREE 스텝은 변수 모니터에 아무 변화도 만들지 않는다(vars가 빈 객체). 그래서 레슨이 구분하려는 CLEAR와 FREE의 차이가 체험에서는 관찰 대상 없이 콘솔 문장으로만 남는다 — 눌러도 화면이 그대로라 '해 보나 마나'인 스텝이다.",
+      "evidence": "11스텝을 전부 클릭해 측정한 결과 10번째 스텝(CLEAR gt_person)에서 itab 워치가 이미 '비어 있음 · 0행'이 되고, 11번째 스텝(FREE) 이후 표시가 그와 완전히 동일하다(gs_person-name=홍길동 · age=99 · gv_cnt=2 · gt_person 비어 있음). 본문은 'CLEAR는 초기 할당 메모리를 남겨 둠 / FREE는 초기 할당분까지 전부 반환'으로 둘을 나누고 '곧 다시 채울 테이블은 CLEAR'라는 선택 기준까지 제시하는데, 정작 그 차이를 보여 줄 표시가 위젯에 없다.",
+      "suggestion": "'할당 메모리' 같은 의사(pseudo) 워치 항목을 하나 추가해 CLEAR 뒤에는 값이 남고 FREE 뒤에 0이 되는 대비를 보여 준다. 여의치 않으면 두 스텝의 itab 캡션에 '행 0 · 메모리 유지' / '행 0 · 메모리 반환'처럼 상태 문구를 달아 구분한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "체험 밀도와 본문 정합성은 전반적으로 양호하다. 위젯 11개가 모두 HTTP 200으로 로드되고 console 오류·pageerror·요청 실패 0건, 스텝 디버거 5종은 설정된 스텝 수(11/10/3/14/18)만큼 끝까지 실행되며 카운터·진행바도 정확히 맞는다. 변수명·데이터·시나리오가 본문 코드와 일치하고(gs_person/gt_person·정훈영/홍길동, APPEND가 복사임을 age 99로 증명, COLLECT 서울 130·부산 50, 컨트롤레벨 소계 50/130, 정렬 없는 BINARY SEARCH 실패의 실제 재현, 한글 SORT 순서까지 정확), code-anatomy 2종은 .mk 마킹과 anno-cfg 키가 1:1로 고아·미사용 0, decision-tree는 5개 경로 모두 정상 추천, judge-quiz는 5문항 채점·해설·재도전이 정상 동작한다. 빌드된 6개 레슨 페이지에서 ::embed가 전부 iframe으로 렌더되고 src가 200이라 '코드는 있는데 체험이 없는 페이지'(체험 공백)는 없다. 가장 큰 결함은 캡스톤 CH06-L06-S01이 행 수를 81행으로 적어 본문의 72행 및 자기 라벨('2~9단 전체'·'DO 8 TIMES 완료')과 모순되는 점이고, 이어 그 캡스톤 체험이 클릭 요소 0의 정적 스냅샷이라 챕터 결론의 체험 강도가 1과보다 약하다는 점이다. 나머지 셋은 스텝 설정을 다듬는 수준(실패 READ 뒤 sy-tabix 미초기화, 컨트롤레벨 문장 미강조, FREE 스텝 무변화). 숫자 교정과 스텝 분할만으로 대부분 해결되므로 경미 수정으로 본다 — 다만 캡스톤 체험을 스텝 디버거로 올리는 건은 성격상 보강 작업이라 별도로 판단할 필요가 있다."
+  }
+}
