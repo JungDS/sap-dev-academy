@@ -112,8 +112,28 @@
 <p>🖱️ <strong>① factory( )</strong> 를 누르면 &quot;객체 생성됨&quot;이라는 안내만 뜨고 <strong>표는 아직 안 보인다.</strong>
 <strong>② display( )</strong> 까지 눌러야 비로소 그리드가 화면에 나타난다. 이 차이가 이 레슨의 핵심이다.</p>
 </blockquote>
-<p>즉 앞의 코드 끝에 이 한 줄이 더 있어야 표가 뜬다.</p>
-<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1</pre><pre class="abap-editor__code"><code>go_alv-&gt;display( ).</code></pre></div></div>
+<p>즉 앞의 코드에 <code>display( )</code> 한 줄이 더 있어야 표가 뜬다. 넣는 자리가 중요하다. <strong><code>TRY</code>
+블록 안, <code>factory</code> 바로 다음 줄</strong>이다. <code>factory</code>가 실패하면 ALV 객체가 만들어지지 않은
+채로 남는데, 그 상태에서 <code>display( )</code>까지 부르면 표가 뜨기는커녕 프로그램이 런타임
+오류로 멈춘다. <code>TRY</code> 안에 두면 실패한 순간 <code>CATCH</code>로 빠져나가므로 <code>display( )</code>에는 아예
+가지 않는다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9</pre><pre class="abap-editor__code"><code><span class="tok-kw">TRY</span>.
+    cl_salv_table=&gt;factory(
+      <span class="tok-kw">IMPORTING</span> r_salv_table = go_alv
+      <span class="tok-kw">CHANGING</span>  t_table      = gt_flight ).
+
+    go_alv-&gt;display( ).      <span class="tok-com">" factory 다음 줄, TRY 안</span>
+  <span class="tok-kw">CATCH</span> cx_salv_msg.
+    <span class="tok-kw">MESSAGE</span> <span class="tok-str">'ALV 객체를 만들지 못했습니다.'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'I'</span>.
+<span class="tok-kw">ENDTRY</span>.</code></pre></div></div>
 </section><section class="lblock"><h2>컬럼 제목은 자동</h2>
 <p>방금 그리드의 컬럼 제목이 <code>CARRID</code>가 아니라 <strong>&quot;항공사&quot;</strong>, <code>CONNID</code>가 아니라
 <strong>&quot;노선&quot;</strong> 처럼 사람 말로 떴다. 표의 각 컬럼이 <button class="term" type="button" data-term="Data Element">Data Element</button>를 타입으로 쓰고 있으면

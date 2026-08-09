@@ -1,7 +1,8 @@
 // ===== local-class-stepper 엔진 JS — Local Class 정적 메서드 (CH10-L04) =====
 // DEFINITION(계약)·IMPLEMENTATION(본문)·=> 정적 호출을 색으로 구분하고, 호출 결과와 실험(PUBLIC/RETURNING 제거)을 보여 준다.
 // 실험은 메시지만 띄우지 않는다 — 코드·공개 계약·호출 형식을 실제로 다시 그린다(제거된 줄=취소선, 문제 줄=빨간 띠).
-// 코드는 본문 CH10-L04 예제와 일치: RETURNING VALUE(rv_result) TYPE p LENGTH 8 DECIMALS 2 · gv_out = lcl_calc=>add_tax( gv_amount ).
+// 코드는 본문 CH10-L04 예제와 일치: PUBLIC SECTION 안 TYPES ty_amount TYPE p LENGTH 8 DECIMALS 2
+//   → RETURNING VALUE(rv_result) TYPE ty_amount (메서드 선언 줄엔 LENGTH·DECIMALS를 못 붙임) · gv_out = lcl_calc=>add_tax( gv_amount ).
 // (이 레슨 고유 — 코드 내장)
 (function(){
   var $=function(id){return document.getElementById(id);};
@@ -22,12 +23,16 @@
     } else {
       def.push({t:'  '+KW('PUBLIC SECTION')+'.'});
     }
+    // 메서드 선언 줄에는 LENGTH·DECIMALS를 못 붙인다 → 이름 붙인 완전 타입(TYPES)을 먼저 만들고 RETURNING은 그 이름만 쓴다.
+    def.push({t:'    '+COM('" 돌려줄 값의 크기를 이름 붙인 타입으로 먼저 정해 둔다')});
+    def.push({t:'    '+KW('TYPES')+' ty_amount '+KW('TYPE')+' p '+KW('LENGTH')+' '+NUM('8')+' '+KW('DECIMALS')+' '+NUM('2')+'.'});
+    def.push({t:''});
     def.push({t:'    '+KW('CLASS-METHODS')+' add_tax'});
     def.push({t:'      '+KW('IMPORTING')+' iv_amount        '+KW('TYPE')+' p'+(noReturn?'.':'')});
     if(noReturn){
-      def.push({t:'      '+KW('RETURNING')+' '+KW('VALUE')+'(rv_result) '+KW('TYPE')+' p '+KW('LENGTH')+' '+NUM('8')+' '+KW('DECIMALS')+' '+NUM('2')+'.', cls:'gone', tag:' " ← 제거'});
+      def.push({t:'      '+KW('RETURNING')+' '+KW('VALUE')+'(rv_result) '+KW('TYPE')+' ty_amount.', cls:'gone', tag:' " ← 제거'});
     } else {
-      def.push({t:'      '+KW('RETURNING')+' '+KW('VALUE')+'(rv_result) '+KW('TYPE')+' p '+KW('LENGTH')+' '+NUM('8')+' '+KW('DECIMALS')+' '+NUM('2')+'.'});
+      def.push({t:'      '+KW('RETURNING')+' '+KW('VALUE')+'(rv_result) '+KW('TYPE')+' ty_amount.'});
     }
     def.push({t:KW('ENDCLASS')+'.'});
 

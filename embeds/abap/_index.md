@@ -79,9 +79,9 @@
 | CH09-L05-S01 | CH09-L05 | collective-search-help | `ZSH_CONCERT_COLL` 3탭(ID/아티스트/장소)→같은 CONCERT_ID 반환 · **탭별 검색 실동작**(입력값 탭마다 보존) · 매핑 끊기 | ✅ |
 | CH09-L05-S02 | CH09-L05 | hierarchy-tree | (구성 §2 text→위젯) Collective→Elementary 트리·노드 클릭=F4 탭 역할 | ✅ |
 | CH09-L06-S01 | CH09-L06 | f4-attach-scope | Search Help 부착 범위 **3지점**(Data Element 넓게 / 테이블·Structure 필드 하나 / MATCHCODE 좁게) 색 비교 — 식별자 = 본문 `pa_conc`·`zde_concert_id`·`zsh_concert_coll` | ✅ |
-| CH09-L07-S01 | CH09-L07 | input-help-priority | F4 입력도움 우선순위 **6단** 사다리(코드F4→화면칸 SH→**필드 부착 SH**→Check/Text→고정값→타입기본) | ✅ |
-| CH09-L07-S03 | CH09-L07 | (static-svg) | F4 우선순위 사다리 SVG — F4 누름→①~⑥ 검사·있으면 채택/없으면 ▼. **본문 ::embed 미연결**(시각물 중복 축소로 L07에서 라인 제거 · S01이 같은 사다리 담당). 되살릴 때 대비해 6단 정합만 유지 | 🔁 |
-| CH09-L07-S02 | CH09-L07 | f4-priority-lab | (S01 병행) 후보 **6단** 토글+F4→최상위 하나만 표시·억제 사유 (고정값 팝업 = 예매 상태 정본 `N`/`C`) | ✅ |
+| CH09-L07-S01 | CH09-L07 | input-help-priority | F4 입력도움 우선순위 **7단** 사다리(코드F4→화면칸 SH→**필드 부착 SH**→Check/Text→**DE 부착 SH**→고정값→타입기본) | ✅ |
+| CH09-L07-S03 | CH09-L07 | (static-svg) | F4 우선순위 사다리 SVG — F4 누름→①~⑥ 검사·있으면 채택/없으면 ▼. **본문 ::embed 미연결**(시각물 중복 축소로 L07에서 라인 제거 · S01이 같은 사다리 담당). 되살릴 때 대비해 7단 정합만 유지 | 🔁 |
+| CH09-L07-S02 | CH09-L07 | f4-priority-lab | (S01 병행) 후보 **7단** 토글+F4→최상위 하나만 표시·억제 사유 (고정값 팝업 = 예매 상태 정본 `N`/`C`) | ✅ |
 | CH09-L08-S01 | CH09-L08 | validation-router | 검증 책임 분류 퀴즈(존재·형식=DDIC / 잔여석·권한·종료=프로그램) + **sy-subrc 미니 체험**(본문 SELECT SINGLE 코드 실행 → 0/4 분기 · 결과 없으면 `gv_dummy` 잔존) | ✅ |
 | CH09-L09-S01 | CH09-L09 | concert-model-checklist | DDIC 모델 제작 **11단계**판(+ZCONCERT_T·FK 3개 분리)+관계 미리보기 **화살표 3**+테스트 6 — **선행 단계 실제 의존**(빠진 단계 이름 표시·부분 성공 △). 시드 공연3·회차3·예매6 | ✅ |
 | CH10-L01-S01 | CH10-L01 | perform-call-map | PERFORM→FORM 점프·복귀·전역 누적 vs 로컬, 정의 누락 오류 (본문 z_form_scope 문장 일치·START-OF-SELECTION 포함·FORM 실행줄 전수 스텝) | ✅ |
@@ -97,7 +97,7 @@
 | CH11-L03-S01 | CH11-L03 | salv-function-switch | set_all(기능) ≠ display(표시) 시나리오 4종(끄고표시·set_all·display빼기·**display 뒤 set_all**)·gt_flight·function≠FM | ✅ |
 | CH11-L04-S01 | CH11-L04 | salv-pipeline-stepper | SELECT→DESCRIBE→factory→set_all→display 3칸 파이프라인(SFLIGHT/gt_flight/go_alv/gv_count)·SELECT 건너뛰면 빈 표 | ✅ |
 | CH11-L05-S01 | CH11-L05 | module-choice-cards | (재사용) SALV 1차 범위 분류 6문항 — 본문 심화표를 베끼지 않는 상황 카드(정답 now 2장) | ✅ |
-| CH11-L06-S01 | CH11-L06 | salv-grid-simulator | 예매목록 SALV(gt_book·WHERE C001·set_all·Σ좌석수=17) + 0행이면 표 대신 안내(본문 IF gv_count = 0 가드) | ✅ |
+| CH11-L06-S01 | CH11-L06 | salv-grid-simulator | 예매목록 SALV(ZBOOKING 시드 정본 6건 · 프리셋 3종: WHERE C001 4행 Σ8 · 전체 6행 Σ14 · C003 0행 가드) + 0행이면 표 대신 안내(본문 IF gv_count = 0 가드) | ✅ |
 | CH12-L01-S01 | CH12-L01 | range-row-builder | 조건 카드(사람 말)→Range Table 4칸 행(SIGN/OPTION/LOW/HIGH)·I/E·EQ/BT/CP·행별 사람말 해석·OR/제외 규칙 · **대상 열(공연ID/상태/고객명)+필드별 해석 분리**(필드 섞인 OR 오개념 방지 · R15상 so_ 식별자는 미노출 — L02 도입) | ✅ |
 | CH12-L02-S01 | CH12-L02 | selopt-screen-mapper | 선택화면 From/To+다중선택→so_conc Range Table→LOOP AT 출력(From=EQ·From~To=BT·제외 E·8자) · 코드 헤더=본문 정합(`gs_conc`·한정 컴포넌트) | ✅ |
 | CH12-L03-S01 | CH12-L03 | select-options-filter-sim | (재사용) classic WHERE..IN 평가 + #soSys(sy-subrc/sy-dbcnt)·시나리오(전체=6·C999=0건subrc4·AND) · **데이터=CH09-L09 시드 정본 6행** | ✅ |
@@ -488,7 +488,7 @@
 | compare-matrix | 4 | 공통(_engine)·자체 postHeight ✅ | CH07-L03-S02 · CH20-L01-S01 · CH36-L04-S01 · CH37-L02-S01 | cm-cfg JSON(cols/rows/detail) 행 클릭 상세 + (확장) cfg.cases 상황 버튼→추천 행 강조 |
 | pushdown-flow | 1 | 공통(_engine)·자체 postHeight ✅ | CH36-L01-S01 | 끌어오기/내려보내기 전송량 파이프 + (확장) #pf-cfg 상황 카드→수단 추천 |
 | domain-builder | 1 | 공통(_engine) ✅ | CH03-L01-S01 | SE11 폼(단일사용·데이터 inline) · 예제별 target 강제(검사/활성화는 목표 일치 시에만) |
-| input-help-priority | 1 | 공통(CSS-only)+_autoheight ✅ | CH09-L07-S01 | F4 사다리(콘텐츠=마크업·빈 .js 제거) · **6단**(본문 서열과 1:1) |
+| input-help-priority | 1 | 공통(CSS-only)+_autoheight ✅ | CH09-L07-S01 | F4 사다리(콘텐츠=마크업·빈 .js 제거) · **7단**(본문 서열과 1:1) |
 | write-output | 1 | 공통 ✅ | CH01-L04-S01 | WRITE 출력 파서 · config 주입 · **버그수정(따옴표無→오류)** |
 | write-format | 1 | 공통 ✅ | CH01-L05-S01 | WRITE 서식 토글 · config 주입 |
 | event-lifecycle-buildup | 1 | 공통(_engine·자체 mermaid+CDN/_vendor)·자체 postHeight ✅ | CH15-L01-S01 | bespoke 단일사용(STAGES inline) · #C15-1 stage1 inline DATA→classic 수정 |

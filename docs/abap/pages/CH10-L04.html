@@ -65,11 +65,17 @@
 9
 10
 11
-12</pre><pre class="abap-editor__code"><code><span class="tok-kw">CLASS</span> lcl_calc <span class="tok-kw">DEFINITION</span>.
+12
+13
+14
+15</pre><pre class="abap-editor__code"><code><span class="tok-kw">CLASS</span> lcl_calc <span class="tok-kw">DEFINITION</span>.
   <span class="tok-kw">PUBLIC</span> <span class="tok-kw">SECTION</span>.
+    <span class="tok-com">" 돌려줄 값의 크기를 이름 붙인 타입으로 먼저 정해 둔다</span>
+    <span class="tok-kw">TYPES</span> ty_amount <span class="tok-kw">TYPE</span> p <span class="tok-kw">LENGTH</span> <span class="tok-num">8</span> <span class="tok-kw">DECIMALS</span> <span class="tok-num">2</span>.
+
     <span class="tok-kw">CLASS-METHODS</span> add_tax
       <span class="tok-kw">IMPORTING</span> iv_amount        <span class="tok-kw">TYPE</span> p
-      <span class="tok-kw">RETURNING</span> <span class="tok-kw">VALUE</span>(rv_result) <span class="tok-kw">TYPE</span> p <span class="tok-kw">LENGTH</span> <span class="tok-num">8</span> <span class="tok-kw">DECIMALS</span> <span class="tok-num">2</span>.
+      <span class="tok-kw">RETURNING</span> <span class="tok-kw">VALUE</span>(rv_result) <span class="tok-kw">TYPE</span> ty_amount.
 <span class="tok-kw">ENDCLASS</span>.
 
 <span class="tok-kw">CLASS</span> lcl_calc <span class="tok-kw">IMPLEMENTATION</span>.
@@ -87,10 +93,11 @@
 <li><code>rv_</code>는 return value(돌려주는 값)를 뜻하는 접두어다.</li>
 </ul>
 <blockquote>
-<p><code>RETURNING</code>의 타입은 <code>TYPE p</code>처럼 뭉뚱그리면 안 되고 <strong>길이·소수 자릿수까지</strong>
-적어야 한다(<code>TYPE p LENGTH 8 DECIMALS 2</code>). 받는 쪽(<code>IMPORTING</code>)은 넘겨주는 변수를
-따라가면 되지만, 돌려주는 값은 메서드가 직접 만들어 내보내므로 크기가 정해져 있어야
-하기 때문이다.</p>
+<p><code>RETURNING</code>의 타입은 <code>TYPE p</code>처럼 뭉뚱그리면 안 되고 <strong>크기가 완전히 정해진 타입</strong>이어야
+한다. 그런데 메서드를 선언하는 줄 안에서는 <code>LENGTH</code>·<code>DECIMALS</code>를 직접 붙일 수 없다.
+그래서 위처럼 <button class="term" type="button" data-term="TYPES">TYPES</button>로 길이·소수 자릿수를 정한 타입에 이름을 붙여 두고(<code>ty_amount</code>),
+<code>RETURNING</code>에는 그 <strong>이름</strong>만 적는다. 받는 쪽(<code>IMPORTING</code>)은 넘겨주는 변수를 따라가면
+되지만, 돌려주는 값은 메서드가 직접 만들어 내보내므로 크기가 정해져 있어야 하기 때문이다.</p>
 </blockquote>
 <blockquote>
 <p>이름이 비슷한 <a href="CH10-L02.html">USING / CHANGING 파라미터</a>의 <code>STATICS</code>와는 다른
