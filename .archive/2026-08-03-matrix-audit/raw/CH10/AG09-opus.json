@@ -1,0 +1,82 @@
+{
+  "agent": "AG09",
+  "model": "opus",
+  "target": "CH10",
+  "persona_ack": "AG09 — ABAP 정적 검사기 역할. 산문·front-matter·표는 판정 대상에서 제외하고 CH10 7개 레슨에 들어 있는 ```abap 코드 블록 10개만 줄 단위로 검사했다(활성화 차단급 문법·타입, 네이밍 규약, classic 경계, 주석·출력 문자열 오류). 실행·컴파일 환경이 없어 문법 판단은 정적 추론이며, 확신 정도는 confidence로 구분해 적었다. 스타일 선호(빈 줄·정렬)는 결함으로 세지 않았다.",
+  "method": "Read 도구로 대상 8개 파일을 전문 정독 → ```abap 블록 10개(L01 2·L02 1·L03 1·L04 2·L05 2·L06 0·L07 2)를 줄 단위로 수기 검사(문장 마침표, 변수 선언 유무, 형식/실제 파라미터 타이핑 정합, 스코프별 접두어, 인라인 DATA()·VALUE·NEW·+=·|…| 및 New Open SQL(@·콤마) 흔적, 주석·출력 문자열 대조) → Grep 정규식으로 인용문 8개가 대상 파일에 원문 그대로 존재하는지 앵커 검증. 웹·외부 네트워크·타 감사자 산출물·과거 감사물은 사용하지 않았다.",
+  "errors": [
+    "DDIC 오브젝트(zbooking·zconcert)의 실제 필드·키 구성은 대상 파일 밖(CH09 등)이라 확인하지 못했다 — CH10-L07의 ls_book-seats·zconcert-capacity·status 필드 존재 여부와 SELECT SINGLE의 키 완전성은 미검증으로 남겼고, 이를 근거로 한 발견은 만들지 않았다.",
+    "boolc·abap_bool·START-OF-SELECTION 등이 CH01~09에서 이미 도입됐는지는 대상 파일 밖이라 확인 불가 — seq 5는 'CH10 대상 파일 안에서 설명 없이 등장'까지만 주장하고 confidence를 추정으로 낮췄다."
+  ],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L07.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH10/CH10-L04.md",
+      "quote": "RETURNING VALUE(rv_result) TYPE p.",
+      "category": "문법/타이핑",
+      "severity": "높음",
+      "confidence": "추정",
+      "claim": "RETURNING 파라미터는 완전 타입 지정이 필수인데 `TYPE p`는 자릿수·소수점이 빠진 제네릭 타이핑이라, 이 클래스 예제는 문법 검사(활성화) 단계에서 막힐 가능성이 높다.",
+      "evidence": "파라미터 타이핑에서의 `p`는 DATA 선언과 달리 LENGTH 8·DECIMALS 0 기본값이 적용되지 않는 제네릭 타입이다(제네릭 ABAP 타입 목록에 p가 포함). RETURNING은 항상 값 전달이면서 완전 타입 지정을 요구하므로 제네릭 타이핑을 허용하지 않는다. 같은 블록의 `IMPORTING iv_amount TYPE p`는 참조 전달이라 제네릭이 허용되어 문제가 없고, 결함은 RETURNING 한 줄에 국한된다. 이 블록은 CH10-L04의 대표 예제이고 바로 아래 호출 예제(51행)가 이 시그니처에 의존한다. 실행 환경이 없어 컴파일로 확정하지는 못했다.",
+      "suggestion": "`RETURNING VALUE(rv_result) TYPE p LENGTH 8 DECIMALS 2.`로 완전 타입 지정하거나, 프로그램 상단에 `TYPES ty_amount TYPE p LENGTH 8 DECIMALS 2.`(로컬 TYPES 접두어 규약 ty_)를 두고 IMPORTING·RETURNING을 `TYPE ty_amount`로 통일한다. 후자는 seq 2까지 한 번에 정리된다."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH10/CH10-L02.md",
+      "quote": "PERFORM add_tax USING 1000 CHANGING lv_out.",
+      "category": "타입 불일치",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "정수 리터럴 1000(타입 i)을 제네릭 `TYPE p`로 타이핑된 형식 파라미터에 참조 전달로 넘겨, 실제/형식 파라미터 타입 검사에 걸릴 수 있다.",
+      "evidence": "정의부가 `USING iv_amount TYPE p`(제네릭 p 타이핑)라 실제 파라미터도 타입 p여야 하는데, i 범위 안의 숫자 리터럴은 타입 i다. 참조 전달에서는 암묵 형변환이 일어나지 않으므로 정적 검사 대상이다. 같은 구조가 CH10-L04:51 `lv_out = lcl_calc=>add_tax( 1000 ).`에도 있다(메서드 IMPORTING의 기본 전달 방식도 참조 전달이고 타이핑도 `TYPE p`). 반면 같은 줄의 CHANGING 실제 파라미터 lv_out은 타입 p라 정합하고, `cv_result = iv_amount * '1.1'`의 문자 리터럴 산술은 classic ABAP의 정상 관용구라 결함이 아니다. 환경이 없어 확정하지 못했다.",
+      "suggestion": "형식 파라미터를 `TYPE p LENGTH 8 DECIMALS 2`(또는 seq 1의 ty_amount)로 완전 지정하거나, `CONSTANTS gc_amount TYPE p LENGTH 8 DECIMALS 2 VALUE '1000'.`처럼 p 타입 데이터 오브젝트를 만들어 `USING gc_amount`로 넘긴다. CH10-L04:51의 호출도 같이 손본다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH10/CH10-L02.md",
+      "quote": "DATA lv_out TYPE p LENGTH 8 DECIMALS 2.",
+      "category": "네이밍 규약",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "메인 프로그램 본문(FORM/METHOD 바깥)의 선언은 스코프상 전역이라 `gv_` 접두어여야 하는데 `lv_`를 썼다. 같은 오류가 4개 레슨 5곳에 반복된다.",
+      "evidence": "규약은 FORM/METHOD 안에서 선언한 것만 lv_/ls_/lt_이고 그 밖(메인 프로그램)은 gv_/gs_/gt_다. ABAP에서 DATA는 START-OF-SELECTION 아래에 적어도 위치와 무관하게 프로그램 전역 변수를 만든다. 해당 위치는 CH10-L02:28 `DATA lv_out`, CH10-L04:49 `DATA lv_out`, CH10-L05:27 `DATA lv_text`, CH10-L05:36 `DATA lv_r`, 그리고 CH10-L03:24의 호출자 변수 `lv_out`이다. 대조적으로 CH10-L07의 FORM 내부 lt_book·ls_book·lv_sum·lv_cap·lv_left는 규약대로 옳아서, 한 챕터 안에서 기준이 엇갈린다. CH10은 로컬 스코프를 처음 가르치는 장이라 g/l 대비가 무너지면 오해가 가장 크게 남는 지점이다.",
+      "suggestion": "다섯 곳을 gv_out·gv_out·gv_text·gv_r·gv_out으로 고치고, 이를 참조하는 뒷줄(L02:29·30, L04:51·52, L05:29·30·37)도 함께 정정한다. L07의 FORM 내부 lv_/ls_/lt_는 옳으므로 그대로 둔다."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH10/CH10-L03.md",
+      "quote": "ev_result = lv_out",
+      "category": "미선언 변수",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "수신 변수 lv_out이 코드 블록 어디에도 선언돼 있지 않아, 학습자가 그대로 옮겨 적으면 미지의 필드로 활성화가 막힌다.",
+      "evidence": "CH10-L03의 코드 블록(19~32행)에는 DATA 선언이 한 줄도 없고, 이 블록에는 `[선행 사용]`이나 의사코드라는 표기도 붙어 있지 않다(같은 챕터에서 L01의 START-OF-SELECTION 블록·L05의 정적 호출 블록은 필요한 표기를 붙였다). 반면 L02:28·L04:49·L05:27·36 블록은 모두 사용 전에 DATA를 붙여 두어 챕터 내 기준이 일관되지 않다. 가상 함수 모듈 'Z_ADD_TAX'와 sy-subrc 처리 구조 자체는 classic EXCEPTIONS 예시로 정상이라 결함으로 세지 않았다.",
+      "suggestion": "블록 첫 줄에 `DATA gv_out TYPE p LENGTH 8 DECIMALS 2.`를 추가하고 수신부를 `ev_result = gv_out`으로 맞춘다(seq 3의 접두어 규약도 동시에 충족). 선언을 일부러 생략한 축약 예시라면 블록에 의사코드/축약 표기를 명시한다."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH10/CH10-L07.md",
+      "quote": "cv_ok = boolc( iv_want <= lv_left ).",
+      "category": "미도입 구문",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "내장 함수 `boolc( )`와 타입 `abap_bool`이 아무 풀이나 표기 없이 챕터 실습 코드에 등장한다.",
+      "evidence": "CH10-L07은 front-matter의 introduces가 빈 배열이고 본문 어디에도 두 구문의 설명이 없는데, 학습자가 직접 타이핑하는 실습 코드(57행 `CHANGING cv_ok TYPE abap_bool.`, 61행 boolc)에서 처음 쓰인다. boolc는 반환형이 string이라 char1인 abap_bool로 암묵 변환되어 동작하는 구조여서, 값이 왜 'X'/공백이 되는지도 설명 없이는 읽히지 않는다. 다만 프로젝트가 명시적으로 금지한 modern 문법 목록(인라인 DATA()·VALUE·NEW·+=·|…|)과 New Open SQL(@·콤마)에는 해당하지 않아 경계 위반으로 단정하지는 않았고, 코드 자체도 문법상 유효하다. CH01~09에서 이미 도입됐을 가능성은 대상 파일 밖이라 확인하지 못했다.",
+      "suggestion": "이 시점에서 확실히 안전한 classic 형태로 바꾸는 쪽을 권한다 — `CHANGING cv_ok TYPE c`로 두고 `IF iv_want <= lv_left. cv_ok = 'X'. ELSE. CLEAR cv_ok. ENDIF.`. 유지한다면 boolc·abap_bool에 한 줄 풀이나 `[선행 사용]` 표기를 붙인다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH10 코드 블록 10개는 전반적으로 상태가 좋다. 문장 마침표 누락 0건, 존재하지 않는 구문·애드온 0건, 블록 짝(FORM/ENDFORM·CLASS/ENDCLASS·METHOD/ENDMETHOD·LOOP/ENDLOOP·IF/ENDIF) 불일치 0건이고, classic 경계도 지켜졌다 — 인라인 DATA()·VALUE·NEW·+=·문자열 템플릿이 한 곳도 없고 L07의 두 SELECT 모두 @·콤마 없는 classic Open SQL이다. 주석과 코드의 어긋남도 없었다(status <> 'C' ↔ '취소 제외' 등 모두 일치). 실습 레슨 L07의 FORM 내부 지역변수 접두어(lt_/ls_/lv_)와 파라미터 정합(get_remaining ↔ can_book 호출)은 특히 정확하다. 발견 5건은 모두 국소적 수정으로 끝난다. 축은 둘인데, 하나는 `TYPE p`를 자릿수 없이 파라미터에 쓴 데서 파생한 타이핑 문제(L04 RETURNING의 제네릭 타이핑 = 활성화 차단 우려, L02·L04의 정수 리터럴→TYPE p 전달)로 타입 하나를 제대로 정의하면 함께 풀린다. 다른 하나는 스코프 접두어로, 메인 프로그램 본문 선언에 lv_를 쓴 곳이 4개 레슨 5곳인데 정작 L07은 규약대로 쓰고 있어 한 챕터 안에서 g/l 대비가 엇갈린다 — 로컬 스코프를 처음 가르치는 장이라 이 대비가 흔들리면 손해가 크므로 우선 정리를 권한다. 나머지는 L03 블록의 미선언 수신 변수와 L07의 미도입 구문(boolc·abap_bool)이다. 구조·설명·예제 배치를 다시 짤 이유는 없고, 위 다섯 지점만 손보면 된다."
+  }
+}

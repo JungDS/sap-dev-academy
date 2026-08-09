@@ -40,8 +40,12 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>검증은 누가 하나</h2>
-<p>DDIC의 <button class="term" type="button" data-term="Foreign Key">Foreign Key</button>·<button class="term" type="button" data-term="고정값">고정값</button>·<button class="term" type="button" data-term="Search Help">Search Help</button>는 <strong>선언적 검증</strong>을 해준다.
-그런데 &quot;취소된 공연은 못 고른다&quot;, &quot;좌석 수가 잔여보다 크면 거부&quot; 같은 <strong>업무
+<p>DDIC의 <button class="term" type="button" data-term="Foreign Key">Foreign Key</button>·<button class="term" type="button" data-term="고정값">고정값</button>은 <strong>선언적 검증</strong>을 해준다. 설정만 해 두면 시스템이
+알아서 잘못된 값을 막아 준다는 뜻이다.</p>
+<p><button class="term" type="button" data-term="Search Help">Search Help</button>는 여기서 성격이 다르니 갈라 두자. Search Help는 값을 <strong>검사하지
+않는다.</strong> 고를 <strong>후보를 보여 줄 뿐</strong>이다. 목록에서 고르지 않고 손으로 아무 값이나 쳐
+넣으면 그대로 통과한다. &quot;고르기 편하게 해주는 것&quot;과 &quot;틀린 값을 막는 것&quot;은 다른 일이다.</p>
+<p>그런데 &quot;취소된 공연은 못 고른다&quot;, &quot;좌석 수가 잔여석보다 크면 거부&quot; 같은 <strong>업무
 규칙</strong>은? 어디까지 DDIC가 하고 어디부터 코드가 해야 하는지 가른다.</p>
 </section><section class="lblock"><h2>두 계층</h2>
 <table>
@@ -55,7 +59,7 @@
 <tbody><tr>
 <td><strong>존재/형식</strong></td>
 <td>DDIC(선언적)</td>
-<td>공연 코드가 실제 존재? <button class="term" type="button" data-term="고정값">고정값</button> 범위?</td>
+<td>공연 ID가 실제 존재? <button class="term" type="button" data-term="고정값">고정값</button> 범위?</td>
 </tr>
 <tr>
 <td><strong>업무 규칙</strong></td>
@@ -63,9 +67,14 @@
 <td>잔여석 초과? 상태 전이 허용? 권한?</td>
 </tr>
 </tbody></table>
+<p>표의 <strong>상태 전이</strong>는 &quot;지금 상태에서 저 상태로 넘어가도 되나&quot;를 따지는 일이다. 예매
+상태가 신규(<code>N</code>)에서 취소(<code>C</code>)로 바뀌는 건 정상이지만, <strong>이미 취소한 예매를 또
+취소</strong>하거나 공연이 끝난 뒤에 취소하는 건 막아야 한다. 이런 판단은 DDIC가 대신해 줄
+수 없다. &quot;지금 값이 뭐였는지&quot;를 읽어 봐야 알 수 있어서다.</p>
 </section><section class="lblock"><h2>DDIC 검증의 한계</h2>
 <ul>
-<li>DDIC 검증(<button class="term" type="button" data-term="Foreign Key">Foreign Key</button> 등)은 <strong>화면/유지보수</strong> 레벨에서 동작한다.</li>
+<li>DDIC 검증(<button class="term" type="button" data-term="Foreign Key">Foreign Key</button> 등)은 <strong>화면·유지보수 레벨</strong>(SE11·SE16처럼 SAP이 기본
+제공하는 데이터 관리 화면)에서 동작한다.</li>
 <li>프로그램이 <code>INSERT</code>/<code>MODIFY</code>로 <strong>직접 DB에 쓰면</strong> 그 검증은 <strong>자동 적용되지
 않는다.</strong> 직접 쓰기 전엔 프로그램이 책임지고 확인해야 한다.</li>
 </ul>
@@ -74,12 +83,24 @@
 3
 4
 5
-6</pre><pre class="abap-editor__code"><code><span class="tok-com">" 직접 쓰기 전, 존재 여부를 코드로 확인(예)</span>
+6
+7
+8
+9</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> gv_dummy   <span class="tok-kw">TYPE</span> zconcert-concert_id.
+<span class="tok-kw">DATA</span> gs_booking <span class="tok-kw">TYPE</span> zbooking.
+
+<span class="tok-com">" 직접 쓰기 전, 존재 여부를 코드로 확인(예)</span>
 <span class="tok-kw">SELECT</span> <span class="tok-kw">SINGLE</span> concert_id <span class="tok-kw">FROM</span> zconcert
   <span class="tok-kw">INTO</span> gv_dummy <span class="tok-kw">WHERE</span> concert_id = gs_booking-concert_id.
 <span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.
-  <span class="tok-com">" 잘못된 공연 코드 — 업무 처리(메시지/중단)</span>
+  <span class="tok-com">" 잘못된 공연 ID — 업무 처리(메시지/중단)</span>
 <span class="tok-kw">ENDIF</span>.</code></pre></div></div>
+<blockquote class="cw">
+<p>⚠️ <strong>이 패턴에도 빈틈은 있다.</strong> 두 사람이 거의 동시에 예매하면 둘 다 &quot;자리 있음&quot;을
+확인한 뒤 둘 다 저장해, 정원을 넘겨 버릴 수 있다. 확인과 저장 사이를 <strong>잠금</strong>으로
+막는 방법은 <a href="CH26-L01.html">Chapter 26 · Lock Object와 동시성 제어</a>에서 배우니,
+지금은 &quot;혼자 쓸 땐 이걸로 충분하다&quot;까지만 알아 두자.</p>
+</blockquote>
 </section><section class="lblock"><h2>원칙</h2>
 <ul>
 <li><strong>할 수 있으면 DDIC로</strong>(선언적·재사용·일관). 존재·형식·코드 목록은 DDIC.</li>

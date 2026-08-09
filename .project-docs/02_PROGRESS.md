@@ -1,14 +1,14 @@
 # 02. PROGRESS — 현재 초점 · 다음 할 일
 
-> 📅 **최종수정: 2026-08-09 04:58 KST**
+> 📅 **최종수정: 2026-08-10 03:08 KST**
 > 🎯 **현재 상태와 다음 할 일만 담는다.** 완료/과거 항목·세션 서사는 **즉시 제거** — 정본은 git 이력 + `.archive/` 원장 + 라이브 인덱스([04 R16](04_CONVENTIONS.md)). 코드·git·감사로 파생 가능한 현황은 **복창하지 말고 포인터**(아래 📍).
 > 📖 **읽을 때:** 작업 시작 전(현황 파악) · 종료 시 갱신 — **갱신은 같은 커밋에 포함**([01](01_AI_SYNC.md)).
 
 ## 🎯 현재 초점
-**매트릭스 캠페인 배치 2 완주(2026-08-09, 브랜치 `audit/matrix-batch2`) — CH05～CH08 발견→수합→판정→보강→본선 점검 전 사이클 완료, PR 대기.** 수거 112/112·결측 0. 판정 = 4챕터 전부 **보강 권장**(채택 발견: CH05 104/118 · CH06 121/135 · CH07 98/104 · CH08 174/180, conflict 4 전건 코퍼스 확정·에스컬레이션 0) → 보강 자동(본문 4+위젯 4 작업자, 신설 위젯 3종+체험 엔진 1) → 본선 점검(빌드·게이팅 STRUCT/PREREQ/R6=0·기각 바이트 보존·통합 실측) 통과. 배치 1 축 라우팅 4건(LIKE 원장·ts_person·CH06→07 약속·CH08 게이팅) 전부 이번 배치에서 소화. 정본 체인 = [.archive/2026-08-03-matrix-audit/](../.archive/2026-08-03-matrix-audit/)(raw·merged·verdict·fixes) · 모델 비교 = `.archive/_generated/MODEL_SCORECARD.md`(재생성물) · 신규 기각 사전·운영 관례 = [15 §1](15_AUDIT_MATRIX.md) 배치 2 행.
+**배치 3 R2 재감사 + 확정 결함 일괄 보강 완주(2026-08-10, 브랜치 `audit/matrix-batch3`) — 사용자 결정(§3 전체 11건 교정 + R11 `gr_`/`lr_` 등재) 이행 완료, PR #49 병합 대기.** R2 실증 = 발견 볼륨 R1 대비 62%·CH12 높음 0(보강 효과 확인), 신규·잔존 11건은 본문 A/B·위젯 W1/W2 작업자로 일괄 교정(빌드·게이팅 STRUCT/PREREQ/R6=0·위젯 실측 콘솔 0). 정본 = [.archive/2026-08-03-matrix-audit-r2/](../.archive/2026-08-03-matrix-audit-r2/)(raw·merged·verdict/R2-SUMMARY.md — §6 이행 부기 포함) · 원장 = [15 §1](15_AUDIT_MATRIX.md) 2026-08-10 행(기각 사전 ⑮·⑯·관례 ⑬～⑮). 별건 칩 1(위젯 선재 결함 3건 소정리).
 
 ## ▶️ 다음 할 일 (우선순위)
-1. **매트릭스 캠페인 — 배치 3+ (CH09～39)** — 동일 사이클(발견 28벌 → AG10 수합 → 본선 판정 → 보강 자동 → 본선 점검 → 커밋)로 계속, 챕터별 지시 불요·쟁점만 에스컬레이션([15 §1](15_AUDIT_MATRIX.md) 원장 "전량 go" 행). 각 챕터에서 **축 라우팅 백로그**([CURRICULUM verdict](../.archive/2026-08-03-matrix-audit/verdict/CURRICULUM.md)) 합류 — 다음 구간 해당분: CH09 시드 공연 3개(A4)·CH12 'N' 라벨(D)·CH13 잔여석 grain(A3). ⚠️ agy 페이싱: 챕터당 7회. 별건 대기 = CH37-L04-S01 문구(4장→5장)·`.gemini/rules` 처리(gitignore 전환 여부)·작업 칩 4건(표 파이프 2파일·굵게 닫힘 54페이지·sample domain-builder 가드·CH09～11 위젯 404 링크 패턴).
+1. **매트릭스 캠페인 — 배치 4+ (CH13～39)** — 동일 사이클(발견 28벌 → AG10 수합 → 본선 판정 → 보강 자동 → 본선 점검 → 커밋)로 계속, 챕터별 지시 불요·쟁점만 에스컬레이션([15 §1](15_AUDIT_MATRIX.md) 원장 "전량 go" 행). 각 챕터에서 **축 라우팅 백로그**([CURRICULUM verdict](../.archive/2026-08-03-matrix-audit/verdict/CURRICULUM.md)) 합류 — 다음 구간 해당분: CH13 잔여석 grain(A3)·**CH13 위젯 C002 아티스트 정본 불일치**(`CH13-L02-S01.html:45`·`CH13-L08-S01.html:47` '신유빈'→ABAP Trio, R2 이월)·CH14-L03 ZCONCERT_T 전제(D)·CH15-L09 SSCRFIELDS 예고(D)·CH16 상태 R 발명(D). 상시 점검: CH10+ 전역 위치 l 접두어 패턴([15 §1] 배치 3 관례 ⑫). ⚠️ agy 페이싱: 챕터당 7회. 별건 대기 = CH37-L04-S01 문구(4장→5장)·`.gemini/rules` 처리(gitignore 전환 여부)·작업 칩 3건(표 파이프 2파일·굵게 닫힘 54페이지 중 CH10·CH12분은 선처리됨·sample domain-builder 가드).
 2. **UI5/Fiori 커리큘럼 착수 여부 결정 대기**(README 로드맵의 다음 도메인 — Gateway 관통예제 계획 포함. 매트릭스 캠페인 종료 후 재상정). 착수 시 축4 잔여 갭 14(09 §G)·CH39 3축 재평가를 설계 입력으로.
    ℹ️ **W1 잔여 백로그(수정 범위 밖 확정)**: 축6 D절 품질미달(빈약 desc 10여 키)·dead 키 8·[추정] Database View·CH15-L08↔L09 순서 역전(L08 [선행 사용] 처리로 최소 봉합)·도구 v2(동음이의 4쌍 제외·정확 일치 매칭).
    ℹ️ **CH37 노트(2026-08-02)**: 스팟 시뮬레이션(은서 통독+기술 감수)이 잡은 것 — 생성 FM **표준 파라미터** 정체 문단 신설(L01 "내가 선언" 모델과 충돌 해소), 무인 호출 = **3종 세트**(control_parameters+output_options `tddest`+`user_settings = space`, 감수 "실행 막는 급"), `gui_download` filetype에 `'TEXT'` 값 없음→`'ASC'`, `strlen(xstring)`은 컴파일 불가(고장 카드를 "크기 생략"으로 교체), OTF "장치 중립"→"프린터 언어 중립+폰트는 장치 종속", NAST 조건 탐색 VIP 예시 논리 역전 교정, "설정=무이송"→조건 레코드(무이송)/Customizing(이송) 분리, ENTRY는 NAST를 공용 영역으로 수령, Smart Forms 다줄 재료 = Import+DDIC Table Type(구형 Tables 탭은 호환용), CH38-L05 Released는 릴리스 권한 전제. 잔여 지적 = 환경 의존(tcode front-matter 미선언은 CH16+ 공통 — 축6에서 다룸).

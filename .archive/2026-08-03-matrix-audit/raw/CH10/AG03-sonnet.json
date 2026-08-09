@@ -1,0 +1,79 @@
+{
+  "agent": "AG03",
+  "model": "sonnet",
+  "target": "CH10",
+  "persona_ack": "Java/C# 계열 백엔드 3～5년차 개발자로서 프로그래밍 기본기(변수·조건문·루프·SQL·OOP)는 이미 안다는 전제로 CH10(모듈화 기초) 8개 파일을 경력자 시선으로 통독함.",
+  "method": "Read 도구로 대상 CH10 파일 8개(_chapter.md, CH10-L01～L07.md)를 전문 통독. 웹 검색·빌드·브라우저 등 외부 도구는 사용하지 않았고, 과잉/오개념유발/지름길부재/용어충돌 4개 관점을 각 절에 적용해 근거 문장을 원문에서 직접 발췌 및 grep으로 재검증.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L07.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L01.md",
+      "quote": "전역 변수는 누적되고 지역 변수는 매번 새로 생기는 차이도 함께 확인할 수 있다.",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "Java/C#에서 메서드는 매개변수로 넘기지 않으면 바깥 값에 접근도 변경도 못 하는 게 상식이다. 그런데 ABAP FORM은 매개변수 없이도 프로그램 전역에 선언된 DATA를 그대로 읽고 쓸 수 있다 — \"함수 스코프는 캡슐화돼 있다\"는 경력자의 기본 전제가 FORM에는 적용되지 않는다. 이 문장은 \"전역은 누적/지역은 매번 새로 생김\"이라는 현상만 언급할 뿐, 그 원인인 \"FORM은 매개변수 없이도 전역 DATA에 자유롭게 접근 가능하다\"는 스코프 규칙 자체를 명시하지 않는다.",
+      "evidence": "L07의 \"흔한 실수와 점검\"에 \"전역변수 의존 → 입력은 USING, 결과는 CHANGING으로\"라는 항목이 있어 이게 실제로 학습자가 자주 저지르는 실수임을 사이트 스스로도 인지하고 있다. 그런데 그 실수가 왜 '가능'한지(=FORM이 함수처럼 스코프가 막혀 있지 않다는 언어 규칙) 설명이 CH10 어느 레슨 본문에도 명시적으로 나오지 않는다. Java/C# 경력자는 오히려 '매개변수 없인 안 될 것'이라 방심하다 이 실수를 밟기 쉽다.",
+      "suggestion": "L01 본문에 \"Java/C# 메서드와 달리 FORM은 매개변수를 선언하지 않아도 프로그램 전역 DATA를 그대로 읽고 쓸 수 있다(스코프 장벽 없음)\"는 한 줄을 명시적으로 추가."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L03.md",
+      "quote": "**EXCEPTIONS** — 오류를 `sy-subrc`로 받는다.",
+      "category": "용어 충돌",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "\"EXCEPTIONS\"라는 이름은 Java/C#의 예외(throw/catch로 자동 전파되는 객체)를 연상시키지만, 여기서는 숫자 코드(invalid=1, OTHERS=2)를 sy-subrc에 매핑해 두고 호출 직후 수동으로 IF sy-subrc <> 0을 체크해야만 오류를 알 수 있는 방식이다. 자동 전파·스택 언와인딩이 전혀 없는데 이름만 '예외'라 경력자가 자바식 try/catch를 기대하기 쉽다.",
+      "evidence": "코드 예시에서 CALL FUNCTION 뒤 IF sy-subrc <> 0 체크를 별도로 붙여야 하고, 바로 아래 \"흔한 실수와 점검\"에서도 \"EXCEPTIONS 무시 → sy-subrc 확인 누락은 단골 버그\"라고 명시한다 — 이름과 실제 동작의 괴리가 실제 버그의 원인임을 사이트도 알고 있는데, '이건 자바 예외와 다르다'는 명시적 대비 문장은 없다.",
+      "suggestion": "EXCEPTIONS 설명 옆에 \"Java try/catch처럼 자동 전파되지 않는다 — 호출 직후 sy-subrc를 직접 확인해야 한다\"는 한 줄 대비를 추가."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L04.md",
+      "quote": "그 설계도로 찍어낸 실체가 **객체(Object)**다(쿠키틀과 쿠키).",
+      "category": "과잉",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "Class/Object를 \"설계도-쿠키틀과 쿠키\" 비유로 다시 설명하는 절은 OOP를 이미 다뤄 본 경력자에게는 불필요한 재설명이다. 다만 이 사이트의 1독자는 비전공 입문자이므로 이 비유 자체가 '누구에게도 불필요한 장황함'은 아니라고 판단해 severity는 낮음으로 분류한다.",
+      "evidence": "바로 앞뒤 문단이 이미 PUBLIC/PRIVATE SECTION, DEFINITION/IMPLEMENTATION, 정적 메서드 `=>` 호출처럼 ABAP 고유 문법을 다루고 있어, 그 사이에 끼는 일반 OOP 개론(Class=설계도) 문장이 경력자 입장에선 읽는 흐름을 살짝 늦춘다.",
+      "suggestion": "비유 문장 앞에 \"OOP에 이미 익숙하면 이 문단은 건너뛰어도 된다\" 배지를 붙이거나 `<details>` 접기로 감싸 경력자가 스킵할 수 있게 한다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L05.md",
+      "quote": "객체를 만들지 않아도 되는 **정적 메서드**는 \"클래스`=>`메서드\"로 부른다.",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L04에서 이미 \"정적 메서드는 객체를 만들 필요 없이 클래스이름`=>`메서드로 부른다\"를 배웠는데, L05가 문구만 바꿔 같은 호출 메커니즘을 처음부터 다시 설명한다. Local Class와 Global Class의 실질적 차이는 '클래스가 어디 있는지(로컬 vs SE24 전역 레지스트리)' 뿐인데, 그 차이를 짚고 새로 배울 부분(SE24 검색, 이름 지정 파라미터)으로 바로 넘어가라는 안내가 없다.",
+      "evidence": "L04 \"정적 메서드는 객체를 만들 필요 없이 \"클래스이름=>메서드\"로 부른다\"와 L05 \"객체를 만들지 않아도 되는 정적 메서드는 \"클래스=>메서드\"로 부른다\"가 사실상 동일 문장이다.",
+      "suggestion": "L05 도입부에 \"호출 문법은 L04와 동일 — 새로 배울 건 전역 클래스를 SE24에서 찾는 법과 이름 지정 파라미터뿐\"이라는 한 줄 스킵 안내를 추가."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\_chapter.md",
+      "quote": "같은 코드가 여기저기 반복된다 — 묶어서 재사용하고 싶다.",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "CH10이 다루는 '함수 정의·호출·매개변수·클래스·정적 메서드'는 Java/C#을 포함한 사실상 모든 백엔드 언어에 대응 개념이 있어, 경력자에게는 문법 매핑만 필요하고 개념 자체는 새로 배울 게 없다. 그런데 챕터 7개 레슨 전체를 통틀어 '프로그래밍 경험자라면 개념 설명은 건너뛰고 ABAP 고유 문법(USING/CHANGING 세 가지 전달 방식, EXCEPTIONS=sy-subrc 수동 체크 등)만 보라'는 안내가 한 번도 없다.",
+      "evidence": "_chapter.md·L01～L07을 모두 읽어도 경력자 대상 스킵 안내 문구가 전혀 없다. 반면 챕터 안에는 경력자도 새로 배워야 하는 ABAP 고유 내용(세 가지 파라미터 전달 방식, EXCEPTIONS의 sy-subrc 체크)이 섞여 있어, 무엇을 건너뛰고 무엇을 집중해서 봐야 하는지 구분이 안 된다.",
+      "suggestion": "챕터 도입부에 \"OOP/구조적 프로그래밍 경험자라면: 함수·클래스 개념은 익숙할 것. ABAP 고유 문법(파라미터 전달 3방식, EXCEPTIONS 수동 체크)만 눈여겨보라\"는 콜아웃을 한 번 추가."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "Java/C# 백엔드 경력자 관점에서 CH10은 이미 상당히 압축적이라 전반적으로 술술 읽힌다 — 레슨마다 새 개념만 정의하고 나머지는 링크로 미루는 구조라 장황한 과잉 설명은 드물다. 다만 (1) FORM이 매개변수 없이도 전역 DATA에 접근한다는 스코프 규칙이 Java/C# 메서드 스코프와 다른데 명시적으로 대비되지 않는 점(L01), (2) EXCEPTIONS가 이름과 달리 try/catch가 아니라 sy-subrc 수동 체크라는 점도 대비 설명이 빠진 점(L03)이 경력자를 오도할 수 있는 실질적인 지점이다. L04～L05는 정적 메서드 호출 문법을 사실상 중복 설명하면서도 스킵 안내가 없고, 챕터 전체에 경력자용 완속 경로 안내도 없다. 모두 낮음～중간 수준이라 재집필이나 보강까지는 필요 없고, 한두 줄의 대비 설명·스킵 안내만 보강하면 충분해 경미 수정으로 판정한다."
+  }
+}

@@ -69,17 +69,32 @@
 </tbody></table>
 <p><code>ZBOOKING</code>은 &quot;어느 공연(<code>CONCERT_ID</code>)의 어느 회차(<code>PERF_NO</code>)를 누가(<code>CUSTOMER</code>)
 몇 석(<code>SEATS</code>)&quot; 예매했는지를 담는다. 표준 SFLIGHT의 &quot;항공사→노선→운항편→예약&quot;과
-똑같은 master-detail 구조를 <strong>내 손으로</strong> 만드는 셈이다.</p>
+똑같은 <a href="CH08-L01.html">master-detail 구조</a>를 <strong>내 손으로</strong> 만드는 셈이다. master(위)가
+큰 단위이고 detail(아래)이 거기 딸린 세부 항목이라는 뜻이었다. 공연 하나에 회차가 여럿
+매달리고, 회차 하나에 예매가 여럿 매달린다.</p>
 </section><section class="lblock"><h2>아무 값이나 들어온다</h2>
-<p><code>ZBOOKING-CONCERT_ID</code>에 <strong>존재하지도 않는 공연 번호</strong>가 그냥 저장되면 안 된다.
+<p><code>ZBOOKING-CONCERT_ID</code>에 <strong>존재하지도 않는 공연 ID</strong>가 그냥 저장되면 안 된다.
 값은 저장돼 있어도 그 예매가 <strong>어느 공연의 것인지 설명할 수 없는</strong> 고아 데이터(orphan
-data)가 되기 때문이다. 입력을 <strong>실제 있는 공연으로만</strong> 제한하고 싶다. DDIC가 선언적으로 해주는 첫 장치가
-<button class="term" type="button" data-term="Foreign Key">Foreign Key</button>(외래 키)와 <button class="term" type="button" data-term="Check Table">Check Table</button>이다.</p>
+data)가 되기 때문이다. 입력을 <strong>실제 있는 공연으로만</strong> 제한하고 싶다. 이때 쓰는 첫
+장치가 <button class="term" type="button" data-term="Foreign Key">Foreign Key</button>(외래 키)와 <button class="term" type="button" data-term="Check Table">Check Table</button>이다.</p>
+<p>둘 다 <strong>선언적</strong>이다. 막는 코드를 직접 짜는 게 아니라, SE11 화면에서 &quot;이 칸은 저
+테이블에 있는 값만 받는다&quot;고 <strong>설정해 두기만 하면</strong> 시스템이 알아서 지켜 준다는 뜻이다.
+이 말은 이번 챕터 내내 나오니 여기서 붙잡아 두자.</p>
 </section><section class="lblock"><h2>Foreign Key = 다른 테이블을 참조</h2>
 <p>어떤 필드의 값이 <strong>다른 테이블에 실제로 존재하는 값</strong>이어야 한다고 DDIC에 선언한다.
-그 &quot;다른 테이블&quot;이 <button class="term" type="button" data-term="Check Table">Check Table</button>이다.</p>
+그 &quot;다른 테이블&quot;이 <button class="term" type="button" data-term="Check Table">Check Table</button>이다. 다른 데이터베이스를 써 본 적이 있다면
+<strong>참조 테이블·부모(parent) 테이블</strong>이라 부르던 바로 그 자리다. 이름만 SAP식일 뿐
+역할은 같다.</p>
 <p>예: <code>ZBOOKING-CONCERT_ID</code>가 공연 마스터 <code>ZCONCERT</code>에 있는 공연만 받도록. (표준
 데이터에서는 <code>SFLIGHT-CARRID</code>가 항공사 마스터 <code>SCARR</code>를 참조하는 것과 같은 원리다.)</p>
+<blockquote class="cw">
+<p>⚠️ <strong>이름은 닮았지만 DB의 외래 키 제약과는 다르다.</strong> 다른 데이터베이스에서
+FOREIGN KEY 제약을 걸면 데이터베이스 엔진이 직접 막아 준다. DDIC의 <button class="term" type="button" data-term="Foreign Key">Foreign Key</button>는
+<strong>실제 DB에 제약을 만들지 않는다.</strong> 입력 화면에서 검사해 줄 뿐이라, 프로그램이 코드로
+직접 쓰면 잘못된 값도 그대로 들어간다. <strong>지우는 쪽도 마찬가지다.</strong> <code>ZCONCERT</code>에서
+공연을 지워도 그 공연의 예매가 자동으로 지워지거나 막히지 않는다. 여기까지가
+이 장치의 한계이고, 나머지는 프로그램 몫이다(<a href="CH09-L08.html">DDIC 검증과 프로그램 검증의 역할 분리</a>).</p>
+</blockquote>
 </section><section class="lblock"><h2>SE11에서 설정</h2>
 <p><code>SE11</code> → <code>ZBOOKING</code> → <code>CONCERT_ID</code> 필드 선택 → <strong>Foreign Keys</strong> 버튼.</p>
 <ul>
@@ -89,18 +104,25 @@ data)가 되기 때문이다. 입력을 <strong>실제 있는 공연으로만</s
 </ul>
 <p>그러면 <strong>두 가지</strong>가 공짜로 생긴다:</p>
 <ul>
-<li><strong>입력검증</strong> — <code>ZCONCERT</code>에 없는 공연 번호는 입력 화면/유지보수에서 거부.</li>
+<li><strong>입력검증</strong> — <code>ZCONCERT</code>에 없는 공연 ID는 입력 화면/유지보수에서 거부.</li>
 <li><strong><button class="term" type="button" data-term="F4">F4</button> 도움말</strong> — 그 필드에서 F4 시 공연 목록.</li>
 </ul>
 </section><section class="lblock"><h2>(참고) Cardinality — 관계의 개수</h2>
-<p><button class="term" type="button" data-term="Foreign Key">Foreign Key</button>를 만들 때 <strong>Cardinality</strong>(카디널리티)를 정할 수 있다 — &quot;마스터 1건에 상세가 몇 건 붙나&quot;를 <code>1:1</code>·<code>1:n</code> 등으로 나타낸다(예: 공연 1건 ↔ 예매 여러 건 = <code>1:n</code>). 입문 단계에선 &quot;관계의 개수를 표시하는 항목&quot; 정도만 알아 두면 된다.</p>
+<p><button class="term" type="button" data-term="Foreign Key">Foreign Key</button>를 만들 때 <strong><button class="term" type="button" data-term="Cardinality">Cardinality</button></strong>(카디널리티)를 정할 수 있다. &quot;마스터 1건에
+상세가 몇 건 붙나&quot;를 <code>1:1</code>·<code>1:CN</code> 같은 기호로 적어 두는 항목이다.</p>
+<p>우리 공연↔예매 관계는 <code>1:CN</code>이 맞다. 앞의 <code>1</code>은 &quot;예매 한 건이 가리키는 공연은 정확히
+하나&quot;라는 뜻이고, 뒤의 <code>CN</code>은 &quot;공연 하나에 딸린 예매는 0건이어도, 여러 건이어도 좋다&quot;는
+뜻이다. <strong>아직 아무도 예매하지 않은 새 공연도 정상</strong>이니 최소 1건을 요구하는 <code>1:n</code>이
+아니라 <code>1:CN</code>을 고른다. 입문 단계에선 &quot;관계의 개수를 표시하는 항목&quot; 정도만 알아 두면 된다.</p>
 </section><section class="lblock"><h2>직접 해 보기</h2>
 <p>존재하는 값(<code>C001</code>)과 없는 값(<code>C999</code>)을 넣어 보며 <button class="term" type="button" data-term="Check Table">Check Table</button> 통과/거부를 비교해 보자. F4로 고르면 늘 유효한 값만 들어온다.</p>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">관계 게이트 실험실 — Check Table 통과/거부·F4 선택</span><a class="embed__open" href="../../../embeds/abap/CH09-L01-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH09-L01-S01.html" loading="lazy" title="관계 게이트 실험실 — Check Table 통과/거부·F4 선택"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>검증이 안 먹어요</strong> → <button class="term" type="button" data-term="Foreign Key">Foreign Key</button>는 화면/유지보수 레벨 검증이다. <code>INSERT</code> 같은
-직접 DB 쓰기는 자동 검증되지 않는다(프로그램이 책임 = <a href="CH09-L08.html">DDIC 검증과 프로그램 검증의 역할 분리</a>).</li>
+<li><strong>검증이 안 먹어요</strong> → <button class="term" type="button" data-term="Foreign Key">Foreign Key</button>는 <strong>화면·유지보수 레벨</strong> 검증이다. 여기서
+&quot;유지보수&quot;는 고장 수리가 아니라 table maintenance를 옮긴 말로, SE11·SE16처럼 SAP이
+기본 제공하는 <strong>데이터 관리 화면</strong>을 가리킨다. 그 화면들을 거칠 때만 검사가 돈다.
+<code>INSERT</code> 같은 직접 DB 쓰기는 자동 검증되지 않는다(프로그램이 책임 = <a href="CH09-L08.html">DDIC 검증과 프로그램 검증의 역할 분리</a>).</li>
 <li><strong>키 대응 누락</strong> → 매핑이 정확해야 검증이 동작.</li>
 </ul>
 <hr>

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <!-- CH10-L07-S01 — 엔진: step-debugger (embeds/_engine/step-debugger.{js,css}) + _autoheight.js
-     config=레슨 전용(잔여석 모듈화 FORM get_remaining, #C10-1). 게이팅: classic(SELECT INTO TABLE·LOOP INTO·SELECT SINGLE INTO) · inline DATA() 없음. -->
+     config=레슨 전용(잔여석 모듈화 FORM get_remaining, #C10-1). 게이팅: classic(SELECT INTO TABLE·LOOP INTO·SELECT SINGLE INTO) · inline DATA() 없음.
+     코드는 본문 CH10-L07 정본과 문장 일치 — SELECT SINGLE 뒤 IF sy-subrc <> 0 / cv_left = -1 / RETURN 블록 포함(공연 없음 = -1, 매진 0과 구분). -->
 <html lang="ko" data-eng="step-debugger">
 <head>
 <meta charset="utf-8" />
@@ -12,14 +13,14 @@
 <body>
 <div class="wrap">
   <p class="hd">잔여석 합산 — 예매를 더해 정원에서 빼기 <small>(스텝 디버거)</small></p>
-  <p class="lead"><b>다음 ⏭</b>을 누를 때마다 한 줄씩 실행됩니다. <code>LOOP</code>가 예매 좌석을 <code>lv_sum</code>에 누적하고, 마지막에 <b>정원 − 합계 = 잔여석</b>(<code>cv_left</code>)이 나오는 과정을 보세요.</p>
+  <p class="lead"><b>다음 ⏭</b>을 누를 때마다 한 줄씩 실행됩니다. <code>LOOP</code>가 예매 좌석을 <code>lv_sum</code>에 누적하고, 마지막에 <b>정원 − 합계 = 잔여석</b>(<code>cv_left</code>)이 나오는 과정을 보세요. 중간의 <code>IF sy-subrc &lt;&gt; 0</code>은 <b>공연 자체가 없을 때</b> <code>-1</code>을 돌려주고 빠져나가는 안전장치입니다.</p>
 
   <div class="dbg" data-stepper>
     <div class="dbg__bar">
       <button class="btn btn--primary" data-start>▶ 시작</button>
       <button class="btn btn--step" data-next disabled>다음 ⏭</button>
       <div class="progress"><i data-progress></i></div>
-      <span class="muted" data-counter>0 / 6</span>
+      <span class="muted" data-counter>0 / 7</span>
     </div>
     <div class="dbg__main">
       <div class="dbg__editorwrap"><div class="dbg__edhd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span></div><div class="dbg__editor" data-code></div></div>
@@ -52,7 +53,7 @@
         "",
         "  SELECT * FROM zbooking INTO TABLE lt_book",
         "    WHERE concert_id = iv_concert AND perf_no = iv_perf",
-        "      AND status <> 'C'.",
+        "      AND status <> 'C'.      \" 취소 제외",
         "",
         "  LOOP AT lt_book INTO ls_book.",
         "    lv_sum = lv_sum + ls_book-seats.",
@@ -60,6 +61,10 @@
         "",
         "  SELECT SINGLE capacity FROM zconcert INTO lv_cap",
         "    WHERE concert_id = iv_concert.",
+        "  IF sy-subrc <> 0.       \" 그런 공연이 아예 없다",
+        "    cv_left = -1.      \" 매진(0)과 구분되는 '없음'",
+        "    RETURN.",
+        "  ENDIF.",
         "",
         "  cv_left = lv_cap - lv_sum.",
         "ENDFORM."
@@ -68,6 +73,7 @@
         {"label":"ls_book-seats","sub":"현재 예매 좌석","key":"ls_book-seats","init":"-"},
         {"label":"lv_sum","sub":"예매 합계","key":"lv_sum","init":"0"},
         {"label":"lv_cap","sub":"정원 capacity","key":"lv_cap","init":"0"},
+        {"label":"sy-subrc","sub":"직전 SQL 성공 여부","key":"sy-subrc","init":"-"},
         {"label":"cv_left","sub":"잔여석(결과)","key":"cv_left","init":"0"}
       ],
       "steps":[
@@ -75,8 +81,9 @@
         {"line":16,"vars":{"ls_book-seats":"2","lv_sum":"2"},"console":"1번째 예매 +2석 → lv_sum = 0 + 2 = 2"},
         {"line":16,"vars":{"ls_book-seats":"3","lv_sum":"5"},"console":"2번째 예매 +3석 → lv_sum = 2 + 3 = 5"},
         {"line":16,"vars":{"ls_book-seats":"1","lv_sum":"6"},"console":"3번째 예매 +1석 → lv_sum = 5 + 1 = 6"},
-        {"line":19,"vars":{"lv_cap":"10"},"console":"SELECT SINGLE → 정원 capacity = 10"},
-        {"line":22,"vars":{"cv_left":"4"},"console":"잔여석 cv_left = 정원 10 − 예매 6 = 4"}
+        {"line":19,"vars":{"lv_cap":"10","sy-subrc":"0"},"console":"SELECT SINGLE → 정원 capacity = 10. 찾았으니 sy-subrc = 0"},
+        {"line":21,"vars":{},"console":"안전장치 — sy-subrc가 0이라 조건이 거짓. cv_left = -1도 RETURN도 건너뛰고 계속 진행. (공연이 없었다면 여기서 -1을 넣고 끝났다)"},
+        {"line":26,"vars":{"cv_left":"4"},"console":"잔여석 cv_left = 정원 10 − 예매 6 = 4"}
       ]
     }
     </script>

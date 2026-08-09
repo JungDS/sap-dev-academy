@@ -1,43 +1,89 @@
 // ===== local-class-stepper 엔진 JS — Local Class 정적 메서드 (CH10-L04) =====
 // DEFINITION(계약)·IMPLEMENTATION(본문)·=> 정적 호출을 색으로 구분하고, 호출 결과와 실험(PUBLIC/RETURNING 제거)을 보여 준다.
+// 실험은 메시지만 띄우지 않는다 — 코드·공개 계약·호출 형식을 실제로 다시 그린다(제거된 줄=취소선, 문제 줄=빨간 띠).
+// 코드는 본문 CH10-L04 예제와 일치: PUBLIC SECTION 안 TYPES ty_amount TYPE p LENGTH 8 DECIMALS 2
+//   → RETURNING VALUE(rv_result) TYPE ty_amount (메서드 선언 줄엔 LENGTH·DECIMALS를 못 붙임) · gv_out = lcl_calc=>add_tax( gv_amount ).
 // (이 레슨 고유 — 코드 내장)
 (function(){
   var $=function(id){return document.getElementById(id);};
-  var SECTIONS={
-    def:['<span class="tok-kw">CLASS</span> lcl_calc <span class="tok-kw">DEFINITION</span>.',
-         '  <span class="tok-kw">PUBLIC SECTION</span>.',
-         '    <span class="tok-kw">CLASS-METHODS</span> add_tax',
-         '      <span class="tok-kw">IMPORTING</span> iv_amount        <span class="tok-kw">TYPE</span> p',
-         '      <span class="tok-kw">RETURNING</span> <span class="tok-kw">VALUE</span>(rv_result) <span class="tok-kw">TYPE</span> p.',
-         '<span class="tok-kw">ENDCLASS</span>.'],
-    impl:['<span class="tok-kw">CLASS</span> lcl_calc <span class="tok-kw">IMPLEMENTATION</span>.',
-          '  <span class="tok-kw">METHOD</span> add_tax.',
-          "    rv_result = iv_amount * <span class=\"tok-str\">'1.1'</span>.",
-          '  <span class="tok-kw">ENDMETHOD</span>.',
-          '<span class="tok-kw">ENDCLASS</span>.'],
-    call:['lv_result = lcl_calc=>add_tax( <span class="tok-num">1000</span> ).']
-  };
   var hot=null, noPublic=false, noReturn=false;
 
+  var KW=function(s){return '<span class="tok-kw">'+s+'</span>';};
+  var STR=function(s){return '<span class="tok-str">'+s+'</span>';};
+  var NUM=function(s){return '<span class="tok-num">'+s+'</span>';};
+  var COM=function(s){return '<span class="tok-com">'+s+'</span>';};
+  var TAG=function(s){return '<span class="tag">'+s+'</span>';};
+
+  // 상태(noPublic/noReturn)에 따라 매번 새로 만든다 — 실험이 코드에 반영되게.
+  function sections(){
+    var def=[{t:KW('CLASS')+' lcl_calc '+KW('DEFINITION')+'.'}];
+    if(noPublic){
+      def.push({t:'  '+KW('PUBLIC SECTION')+'.', cls:'gone', tag:' " ← 제거'});
+      def.push({t:'  '+KW('PRIVATE SECTION')+'.', cls:'bad', tag:' " 그러면 여기 남는다'});
+    } else {
+      def.push({t:'  '+KW('PUBLIC SECTION')+'.'});
+    }
+    // 메서드 선언 줄에는 LENGTH·DECIMALS를 못 붙인다 → 이름 붙인 완전 타입(TYPES)을 먼저 만들고 RETURNING은 그 이름만 쓴다.
+    def.push({t:'    '+COM('" 돌려줄 값의 크기를 이름 붙인 타입으로 먼저 정해 둔다')});
+    def.push({t:'    '+KW('TYPES')+' ty_amount '+KW('TYPE')+' p '+KW('LENGTH')+' '+NUM('8')+' '+KW('DECIMALS')+' '+NUM('2')+'.'});
+    def.push({t:''});
+    def.push({t:'    '+KW('CLASS-METHODS')+' add_tax'});
+    def.push({t:'      '+KW('IMPORTING')+' iv_amount        '+KW('TYPE')+' p'+(noReturn?'.':'')});
+    if(noReturn){
+      def.push({t:'      '+KW('RETURNING')+' '+KW('VALUE')+'(rv_result) '+KW('TYPE')+' ty_amount.', cls:'gone', tag:' " ← 제거'});
+    } else {
+      def.push({t:'      '+KW('RETURNING')+' '+KW('VALUE')+'(rv_result) '+KW('TYPE')+' ty_amount.'});
+    }
+    def.push({t:KW('ENDCLASS')+'.'});
+
+    var impl=[
+      {t:KW('CLASS')+' lcl_calc '+KW('IMPLEMENTATION')+'.'},
+      {t:'  '+KW('METHOD')+' add_tax.'},
+      {t:"    rv_result = iv_amount * "+STR("'1.1'")+'.', cls:noReturn?'bad':'', tag:noReturn?' " rv_result가 없다':''},
+      {t:'  '+KW('ENDMETHOD')+'.'},
+      {t:KW('ENDCLASS')+'.'}
+    ];
+
+    var callBad = noPublic || noReturn;
+    var call=[
+      {t:KW('START-OF-SELECTION')+'.'},
+      {t:'  '+KW('DATA')+': gv_amount '+KW('TYPE')+' p '+KW('LENGTH')+' '+NUM('8')+' '+KW('DECIMALS')+' '+NUM('2')+','},
+      {t:'        gv_out    '+KW('TYPE')+' p '+KW('LENGTH')+' '+NUM('8')+' '+KW('DECIMALS')+' '+NUM('2')+'.'},
+      {t:''},
+      {t:'  gv_amount = '+NUM('1000')+'.'},
+      {t:'  gv_out = lcl_calc=>add_tax( gv_amount ).'+(callBad?'':'   '+COM('" 객체 생성 불필요')),
+       cls:callBad?'bad':'', tag:noPublic?' " ✕ PRIVATE이라 못 부른다':(noReturn?' " ✕ 돌려줄 값이 없다':'')},
+      {t:'  '+KW('WRITE')+' gv_out.'}
+    ];
+    return {def:def, impl:impl, call:call};
+  }
+
   function render(){
+    var S=sections();
     function block(key,label){
       return '<div class="sec '+key+(hot===key?' hot':'')+'"><div class="sec__lbl">'+label+'</div>'
-        + SECTIONS[key].map(function(l){return '<div class="cline">'+l+'</div>';}).join('')+'</div>';
+        + S[key].map(function(l){
+            return '<div class="cline'+(l.cls?' '+l.cls:'')+'">'+l.t+(l.tag?TAG(l.tag):'')+'</div>';
+          }).join('')+'</div>';
     }
     $('code').innerHTML = block('def','① DEFINITION — 공개 계약')
       + block('impl','② IMPLEMENTATION — 실제 본문')
       + block('call','③ 정적 호출 (=>)');
-    $('contract').innerHTML = '<div class="kv"><span>공개 메서드</span><b>add_tax</b></div>'
-      +'<div class="kv"><span>IMPORTING</span><b>iv_amount = 1000</b></div>'
-      +'<div class="kv"><span>RETURNING</span><b>rv_result</b></div>';
-    $('callfmt').textContent='lcl_calc=>add_tax( 1000 )';
+
+    $('contract').innerHTML = '<div class="kv"><span>공개 메서드</span><b>'+(noPublic?'(없음 — PRIVATE)':'add_tax')+'</b></div>'
+      +'<div class="kv"><span>IMPORTING</span><b>iv_amount = gv_amount</b></div>'
+      +'<div class="kv"><span>RETURNING</span><b>'+(noReturn?'(없음)':'rv_result')+'</b></div>';
+
+    $('callfmt').textContent = noPublic ? 'lcl_calc=>add_tax( gv_amount )  ✕ 호출 불가'
+      : (noReturn ? 'lcl_calc=>add_tax( gv_amount )  ✕ 대입 불가'
+                  : 'gv_out = lcl_calc=>add_tax( gv_amount )');
     postHeight();
   }
 
   function run(){
-    if(noPublic){ $('msg').className='msg err'; $('msg').innerHTML='컴파일 오류 — add_tax가 PUBLIC이 아니어서 <b>외부에서 호출할 수 없습니다</b>.'; postHeight(); return; }
-    if(noReturn){ $('msg').className='msg err'; $('msg').innerHTML='RETURNING이 없어 <b>반환값을 받을 수 없습니다</b> — <code>lv_result =</code> 가 성립하지 않습니다.'; postHeight(); return; }
-    $('msg').className='msg ok'; $('msg').innerHTML='정적 호출 성공 — <code>lcl_calc=>add_tax( 1000 )</code> → <b>rv_result = 1100</b> (객체 생성 없이 호출).';
+    if(noPublic){ $('msg').className='msg err'; $('msg').innerHTML='컴파일 오류 — <code>add_tax</code>가 <b>PUBLIC SECTION에 없어</b> 클래스 밖에서 호출할 수 없습니다(③의 빨간 줄).'; postHeight(); return; }
+    if(noReturn){ $('msg').className='msg err'; $('msg').innerHTML='컴파일 오류 — <code>RETURNING</code>이 없어 <b>돌려줄 값 자체가 없습니다</b>. <code>gv_out =</code> 대입도, 본문의 <code>rv_result</code>도 성립하지 않습니다.'; postHeight(); return; }
+    $('msg').className='msg ok'; $('msg').innerHTML='정적 호출 성공 — <code>gv_out = lcl_calc=>add_tax( gv_amount )</code> → <b>gv_out = 1100.00</b> (객체 생성 없이 호출).';
     postHeight();
   }
 
@@ -46,8 +92,8 @@
     var a=b.dataset.a;
     if(a==='def'||a==='impl'||a==='call'){ hot=(hot===a?null:a); $('msg').className='msg'; $('msg').textContent=''; render(); }
     else if(a==='run'){ run(); }
-    else if(a==='nopub'){ noPublic=!noPublic; noReturn=false; b.classList.toggle('on',noPublic); refreshExp(); run(); }
-    else if(a==='noret'){ noReturn=!noReturn; noPublic=false; b.classList.toggle('on',noReturn); refreshExp(); run(); }
+    else if(a==='nopub'){ noPublic=!noPublic; noReturn=false; refreshExp(); render(); run(); }
+    else if(a==='noret'){ noReturn=!noReturn; noPublic=false; refreshExp(); render(); run(); }
   });
   function refreshExp(){ $('toolbar').querySelectorAll('.btn.exp').forEach(function(b){ b.classList.toggle('on',(b.dataset.a==='nopub'&&noPublic)||(b.dataset.a==='noret'&&noReturn)); }); }
 

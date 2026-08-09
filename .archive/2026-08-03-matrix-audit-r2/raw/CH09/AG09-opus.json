@@ -1,0 +1,37 @@
+{
+  "agent": "AG09",
+  "model": "opus",
+  "target": "CH09",
+  "persona_ack": "나는 CH09 감사 매트릭스의 발견자 AG09이며, ABAP 정적 검사기를 시늉하는 코드 전용 감사자다. 산문 서술·교수법·구성·시각화는 판단 대상에서 제외하고 ```abap 코드 블록(및 코드로 제시된 ABAP 문장)만 줄 단위로 본다. 검사 축은 넷이다 — ① 활성화 차단급(미선언 변수·마침표 누락·타입 불일치·없는 구문/애드온·시그니처 오류) ② 네이밍 규약(CH01～09는 선언이 사실상 전역이라 gv_/gs_/gt_, 로컬은 CH10+의 FORM/METHOD 안에서만 lv_/ls_/lt_, it_는 Header Line 전용, PARAMETERS=pa_ 8자 이내, SELECT-OPTIONS=so_, TYPES=ty_/ts_/tt_, ok_code·save_ok는 관례명 유지) ③ 경계 규약(CH01～17 코드에 modern 문법 금지, CH01～18 코드에 New Open SQL 금지, &&·classic 산술은 CH04부터 허용) ④ 주석·출력 문자열의 명백한 오류. 빈 줄·정렬 같은 스타일 선호는 결함으로 세지 않았고, 발견 수가 아니라 정확도가 평가 기준임을 알기에 억지 발견을 만들지 않았다.",
+  "method": "Read 도구로 대상 10개 파일(_chapter.md + CH09-L01～L09) 전문을 통독했다. 이어 Grep으로 (가) 코드 펜스 시작 줄(정규식 ^```)과 (나) 주요 ABAP 키워드(DATA·TYPES·SELECT·PARAMETERS·SELECT-OPTIONS·WRITE·LOOP·APPEND·MOVE·CALL·PERFORM·FORM·IF·ENDIF·CLEAR·CONCATENATE)를 챕터 폴더 전수 검색해 코드 블록 누락이 없음을 확인했다. 결과: 챕터 전체의 ```abap 펜스 블록은 CH09-L06.md 61～64행과 CH09-L08.md 43～53행 단 둘(코드 11행)이고, 그 밖에 백틱 인라인으로 제시된 ABAP 문장 3개(CH09-L06.md 21행·49행, CH09-L09.md 118행)를 보조로 확인했다. SAP 시스템·ABAP 컴파일러가 없어 활성화 가부는 컴파일 확신이 아닌 정적 판단이며, 웹 검색·외부 네트워크·타 감사자 산출물·과거 감사 문서는 일절 참조하지 않았다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L09.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L06.md",
+      "quote": "`PARAMETERS pa_conc TYPE zconcert-concert_id VALUE CHECK.`",
+      "category": "코드 예시 타입 참조 오류(동작 불성립)",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "VALUE CHECK 예시가 가리키는 필드가 잘못됐다. `zconcert-concert_id`는 마스터 테이블 자신의 키 필드라 Foreign Key/Check Table이 걸려 있지 않다. 그래서 바로 뒤 본문이 약속하는 'Check Table 조회까지 받는' 동작이 이 문장으로는 성립하지 않는다. 관계가 실제로 걸린 쪽은 `zbooking-concert_id`다.",
+      "evidence": "같은 챕터 CH09-L09.md의 '3) Foreign Key — 관계는 셋이다'가 이 앱의 Foreign Key를 셋으로 못박는다 — ZPERF-CONCERT_ID→ZCONCERT, ZBOOKING-CONCERT_ID→ZCONCERT, ZBOOKING(CONCERT_ID+PERF_NO)→ZPERF. ZCONCERT-CONCERT_ID 자신에는 어떤 Foreign Key도 없다(있을 수도 없다 — 그 필드가 Check Table의 주인이다). 게다가 CH09-L06.md 본문 스스로 '관계가 필드에 붙어 있으니, 그 관계를 쓰려면 필드를 가리켜야 한다'고 적어, 관계가 걸린 필드를 지목해야 함을 인정한다. 대체 검사 경로도 없다 — CH09-L09.md는 고정값을 ZDE_BOOK_STATUS(N·C)에만 지정하고 ZDE_CONCERT_ID의 Domain에는 고정값도 Value Table도 두라고 지시하지 않는다. 즉 이 타입에는 Check Table도 고정값도 없어 VALUE CHECK가 검사할 근거 자체가 없다. 다만 SAP 시스템이 없어 컴파일 레벨 반응(무시/경고/문법오류 중 무엇인지)까지는 확인하지 못했으므로 confidence=추정으로 둔다. 참고로 CH09-L06.md 61～64행의 펜스 블록(MATCHCODE OBJECT 예시)과 CH09-L08.md 43～53행 블록은 이 문제와 무관하게 정상이다.",
+      "suggestion": "예시 타입을 관계가 실제로 걸린 필드로 교체한다 — `PARAMETERS pa_conc TYPE zbooking-concert_id VALUE CHECK.` (ZBOOKING-CONCERT_ID의 Check Table = ZCONCERT라 존재 검사가 실제로 돈다). 그리고 뒤 문장의 조건을 '테이블 필드로 줘야 한다'에서 '아무 테이블 필드가 아니라 Foreign Key가 걸린 필드를 가리켜야 한다'로 한 걸음 좁혀 주면 같은 오해가 재발하지 않는다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "코드 전용 관점에서 CH09는 사실상 DDIC 설정 챕터라 ABAP 코드가 극히 적다 — ```abap 펜스 블록 2개, 코드 11행이 전부다. 두 블록 모두 정적 문법상 문제가 없다. CH09-L06.md의 `PARAMETERS pa_conc TYPE zde_concert_id MATCHCODE OBJECT zsh_concert_coll.`는 애드온 순서·마침표가 맞고, 지시하는 `zsh_concert_coll`은 CH09-L09.md 4)에서 실제로 만드는 Collective Search Help라 이름도 일치한다. CH09-L08.md 블록도 SELECT SINGLE 절 순서(SELECT SINGLE … FROM … INTO … WHERE …)가 classic 형태로 맞고, ENDSELECT가 필요 없는 단건 조회이며 IF/ENDIF 짝과 문장 마침표가 모두 온전하고, `gv_dummy`의 타입(zconcert-concert_id)과 INTO 대상 컬럼(concert_id)이 정확히 일치한다. 네이밍 규약도 준수다 — CH09는 전역 스코프이므로 스칼라 `gv_dummy`·구조체 `gs_booking`이 규칙에 맞고, `pa_conc`는 pa_ 접두어에 7자로 8자 제한 안이다. Header Line 없는 것에 it_를 쓴 사례나 잘못된 lv_/ls_ 사용은 없다. 경계 규약도 깨끗하다 — 인라인 DATA()·VALUE·NEW·+=·문자열 템플릿 같은 modern 문법이 한 줄도 없고, Open SQL에 @ 이스케이프나 콤마 구분이 없어 CH01～18 classic 규율을 지킨다. 주석 두 줄과 본문 사이의 변수명 어긋남도 없다. 유일한 결함은 CH09-L06.md의 VALUE CHECK 인라인 예시가 Foreign Key가 걸리지 않은 마스터 자신의 키 필드를 지목해, 같은 챕터 CH09-L09.md가 정의한 관계 구조 및 바로 뒤 본문의 설명과 어긋난다는 점이다. 식별자 하나(zconcert→zbooking)만 바꾸면 해소되고 나머지 코드는 손댈 곳이 없으므로 코드 축 판정은 경미 수정이다."
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "agent": "AG06",
+  "model": "sonnet",
+  "target": "CH11",
+  "persona_ack": "20년차 SAP ABAP 아키텍트(ECC～S/4HANA 개발·운영·성능·이관 경험) 페르소나로 CH11(SALV 1차) 레슨 6개(L01～L06) + _chapter.md를 문법·시스템 동작·실무 관행·안전성 관점에서 감사함.",
+  "method": "대상 7개 파일을 Read 도구로 전문 통독. 웹 검색·시스템 접속·빌드 실행 없이(읽기전용 제약) 보유한 ABAP/SALV 지식만으로 코드 스니펫 문법·API 시그니처·예외 처리·SQL 패턴을 교차 검증.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L02.md",
+      "quote": "`cx_salv_msg` 예외를 안 잡으면 런타임 덤프 위험. 항상 감싼다.",
+      "category": "사실 오류(설명 부정확)",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "CX_SALV_MSG를 못 잡았을 때의 위험을 '런타임 덤프'라고만 설명하는데, 실제로는 그 전 단계인 구문 검사(활성화)에서부터 막히는 경우가 일반적이다.",
+      "evidence": "cl_salv_table=>factory( )는 RAISING cx_salv_msg로 선언돼 있고, SALV 계열 예외는 흔히 정적 체크(checked) 예외로 다뤄진다. 이 경우 TRY...CATCH나 RAISING 전파 없이 호출하면 프로그램이 아예 활성화(구문 검사)되지 않는 것이 일반적 동작이다 — '런타임에 덤프가 날 수도 있다'보다 더 강한 차단이다. 릴리스·클래스 계층 세부에 따라 달라질 여지가 있고 웹 검색 없이는 단언하기 어려워 confidence=추정으로 둔다.",
+      "suggestion": "'캐치하지 않으면 런타임 덤프 위험' 대신 '캐치(또는 RAISING 전파)하지 않으면 구문 검사부터 통과하지 못한다(체크드 예외)'는 취지로 다듬으면 더 정확하다. 학습자에게 주는 행동 지침(항상 TRY/CATCH로 감싼다) 자체는 그대로 유지해도 된다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L06.md",
+      "quote": "  CATCH cx_salv_msg.\nENDTRY.",
+      "category": "안티패턴",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "캡스톤 실습 코드의 CATCH cx_salv_msg 블록이 완전히 비어 있어, 예외를 잡기만 하고 아무 처리도 안 하는 안티패턴을 교정 없이 그대로 보여준다.",
+      "evidence": "바로 두 레슨 앞선 CH11-L04의 동일 패턴은 CATCH cx_salv_msg. 안에 MESSAGE 'ALV 생성 실패' TYPE 'I'.를 넣어 최소한의 처리를 보여주는데, 이 캡스톤에서는 그 처리가 사라지고 CATCH 다음 줄이 바로 ENDTRY다. '흔한 실수와 점검' 항목도 'TRY/CATCH 없이 factory'만 지적할 뿐, 이 빈 캐치 자체는 짚지 않는다. 예외를 잡고도 아무 신호를 안 주면 실패 시 사용자는 원인을 알 길이 없어(화면이 그냥 비어 보임) 디버깅이 오히려 어려워진다 — 잘 알려진 예외 처리 안티패턴이다.",
+      "suggestion": "CATCH cx_salv_msg. 안에 L04와 동일하게 최소한 MESSAGE(또는 로그) 처리를 넣어, '예외를 침묵시키지 않는다'는 원칙을 캡스톤에서도 일관되게 보여줄 것을 권장."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L06.md",
+      "quote": "SELECT * FROM zbooking INTO TABLE lt_book.",
+      "category": "위험한 생략",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "예매 목록(zbooking)을 WHERE 절 없이 통째로 SELECT해 SALV로 뿌리는 코드를 캡스톤 정답으로 제시하면서, 실무라면 짚었을 범위 제한이나 권한 검사(AUTHORITY-CHECK) 언급이 전혀 없다.",
+      "evidence": "예매 데이터는 성격상 예매자·연락처 등 개인정보를 포함할 가능성이 있는 비즈니스 데이터다. 실무에서 이런 테이블을 리포트로 노출할 때는 최소한 조회 범위를 좁히는 WHERE(예: 로그인 사용자·특정 공연 기준)나 AUTHORITY-CHECK 같은 권한 검사를 함께 고려하는 게 정상적인 습관인데, 이 레슨은 '전체 테이블 무제한 조회'를 그대로 캡스톤 정답 코드로 제시하고 '흔한 실수와 점검'에서도 이 부분을 짚지 않는다. (같은 WHERE 없는 SELECT * 패턴이 CH11-L04에서도 SFLIGHT로 나오지만, 그쪽은 범용·소규모 데모 테이블이라 상대적으로 위험도가 낮다.)",
+      "suggestion": "'흔한 실수와 점검'에 '실무에서는 WHERE로 범위를 좁히고 권한 검사도 고려한다'는 한 줄을 추가하거나, SELECT에 최소한의 WHERE 조건(예: 로그인 사용자 기준) 예시를 곁들이는 것을 권장."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH11(SALV 1차)의 ABAP 코드·개념 서술은 전반적으로 정확하다. factory와 display의 분리, get_functions( )->set_all( )의 표준 기능 토글, DDIC Data Element 기반 자동 컬럼 라벨, SALV(읽기전용)와 Grid ALV(편집 가능)의 구분 등 핵심 사실관계에 오류가 없고 코드 스니펫도 실제 SAP 표준 관용구와 일치한다. 다만 세 가지를 짚는다 — (1) L02/L06의 'CX_SALV_MSG 못 잡으면 런타임 덤프'라는 설명은 실제로는 구문 검사(활성화) 단계 차단에 더 가까울 수 있어 다소 부정확(추정), (2) L06 캡스톤의 CATCH cx_salv_msg 블록이 완전히 비어 있어 두 레슨 앞선 L04의 정상 처리 패턴과 대비되는 예외 무시 안티패턴을 교정 없이 보여줌, (3) 같은 L06에서 zbooking을 WHERE 없이 통째로 SELECT하는 캡스톤 코드에 실무라면 짚었을 범위 제한·권한 검사 언급이 빠짐. 모두 국지적 수정으로 해결 가능해 '경미 수정'으로 판단한다."
+  }
+}

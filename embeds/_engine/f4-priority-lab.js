@@ -1,6 +1,7 @@
 // ===== f4-priority-lab 엔진 JS — Input Help 우선순위 토글 실험 (CH09-L07, S02) =====
 // 도움말 후보를 켜고 F4를 누르면 "위가 있으면 아래는 안 본다" 규칙으로 가장 높은 하나만 뜬다.
-// 데이터=window.FPL_CFG = { levels:[{key,name,desc,popupTitle,popupRows:[]}] } (위에서부터 우선순위 높음)
+// 데이터=window.FPL_CFG = { levels:[{key,name,desc,popupTitle,popupRows:[]}], initialOn:[key..] }
+//   levels는 위에서부터 우선순위 높음 · initialOn = 처음부터 켜 둘 후보(생략 시 2·3번째)
 (function(){
   var cfg = window.FPL_CFG || {};
   var LEVELS = cfg.levels || [];
@@ -64,9 +65,10 @@
   window.addEventListener('load', postHeight);
   window.addEventListener('resize', postHeight);
 
-  // 초기: Search Help + DDIC 둘 다 켜서 우선순위 효과 보이게
-  if(LEVELS[1]) active[LEVELS[1].key]=true;
-  if(LEVELS[2]) active[LEVELS[2].key]=true;
+  // 초기: 상·하위를 하나씩 켜서 "위가 있으면 아래는 안 본다"가 첫 F4에서 바로 보이게(cfg.initialOn 우선)
+  (cfg.initialOn && cfg.initialOn.length ? cfg.initialOn
+    : [LEVELS[1] && LEVELS[1].key, LEVELS[2] && LEVELS[2].key]
+  ).forEach(function(k){ if(k) active[k]=true; });
   renderLadder(null);
   $('statusmsg').className='statusmsg none'; $('statusmsg').textContent='F4를 눌러 어떤 도움말이 뜨는지 확인하세요.';
 })();

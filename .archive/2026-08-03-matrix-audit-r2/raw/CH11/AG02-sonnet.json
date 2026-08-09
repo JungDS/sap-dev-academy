@@ -1,0 +1,64 @@
+{
+  "agent": "AG02",
+  "model": "sonnet",
+  "target": "CH11",
+  "persona_ack": "나는 준호다 — 배운 건 그 자리에서 직접 눌러봐야 직성이 풀리는 실습형 학습자. 설명만 읽고 넘어가지 않고, CH11 6개 레슨의 본문 코드를 전부 읽은 뒤 6개 체험 위젯을 실제 브라우저에서 하나하나 클릭·조작하며 본문과 대조했다.",
+  "method": "Read 도구로 CH11 본문 6개(.md)+_chapter.md, 임베드 6개(.html), 임베드가 참조하는 공통 엔진 5종(write-vs-salv, salv-grid-simulator, salv-function-switch, salv-pipeline-stepper, module-choice-cards의 .js와 관련 .css)을 전부 정독. 이후 Claude_Browser 도구로 (1) 6개 레슨 페이지(docs/abap/pages/CH11-L0x.html, ?v=r2)를 열어 임베드 iframe이 실제로 렌더되는지(가로/세로 픽셀 실측·콘솔 오류 0건)를 확인하고, (2) 6개 위젯을 http://localhost:8144/embeds/abap/<위젯ID>.html?v=r2로 직접 열어 javascript_tool로 모든 버튼·프리셋·시나리오를 실제로 클릭해 DOM과 기대값을 대조했다 — L01(정렬 내림차순·Σ합계 수치), L02(factory/display 2단계·빈 테이블 프리셋·Σ합계·행 클릭 readout), L03(4가지 시나리오: nofunc/setall/nodisp/late), L04(정상 5단계 플로우·SELECT 건너뛰기 플로우·비정상 순서 플로우), L05(정답/오답 카드 6장 전부의 판정·점수·리셋), L06(두 프리셋·gt_book 데이터 뷰·Σ합계). 검증 중 L02·L03에서 렌더 텍스트가 소스와 다르게 보이는 현상(go_alv 대신 lo_alv, SFLIGHT 데이터 대신 급여/persid 데이터)을 발견했으나, 과제 지시대로 fetch(엔진JS 절대경로,{cache:'reload'}) 후 페이지 재로드, performance.getEntriesByType('resource')로 재확인한 결과 두 건 모두 브라우저 캐시 잔재로 판명되어(재fetch한 원문에 lo_alv·persid 문자열 전무, go_alv·carrid만 존재) 최종 발견에서 제외했다. 이 과정을 거쳐 실제 결함 2건(L06 데이터 불일치, L04 상태 소급 변경)을 재현·확정했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L06.md",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH11-L01-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH11-L02-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH11-L03-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH11-L04-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH11-L05-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH11-L06-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\write-vs-salv.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\write-vs-salv.css",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\salv-grid-simulator.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\salv-function-switch.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\salv-pipeline-stepper.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\module-choice-cards.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\_base.css",
+    "http://localhost:8144/docs/abap/pages/CH11-L01.html",
+    "http://localhost:8144/docs/abap/pages/CH11-L02.html",
+    "http://localhost:8144/docs/abap/pages/CH11-L03.html",
+    "http://localhost:8144/docs/abap/pages/CH11-L04.html",
+    "http://localhost:8144/docs/abap/pages/CH11-L05.html",
+    "http://localhost:8144/docs/abap/pages/CH11-L06.html"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH11-L06-S01.html",
+      "quote": "{booking_id:'0004',concert_id:'C002',perf_no:1,customer:'유재석',seats:1,status:'C'},",
+      "category": "불일치",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "'공연 C001 (6행)' 프리셋(SALV_CFG.data)에 concert_id가 'C002'인 예매 2건(0004 유재석, 0005 김연아)이 섞여 있어, 같은 레슨 본문의 `SELECT * FROM zbooking INTO TABLE gt_book WHERE concert_id = 'C001'.` 코드 및 프리셋 라벨 자체와 어긋난다.",
+      "evidence": "브라우저에서 factory→display를 실행해 렌더된 그리드와 '▾ gt_book 데이터 보기' 토글 모두 '공연' 컬럼에 C001·C002가 섞여 나오는 것을 확인했다(JS로 SALV_CFG.data.map(r=>r.concert_id) 실행 결과 [C001,C001,C001,C002,C002,C001]). WHERE concert_id='C001'이 실제로 반영됐다면 4행(0001·0002·0003·0006)만 남아야 하는데 6행이 그대로 노출된다. 게다가 Σ 합계 버튼을 누르면 좌석수 합계가 17로 뜨는데, C001 행만의 올바른 합은 14(2+4+3+5)다 — C002 예매(0004의 1석+0005의 2석) 3석이 잘못 섞여 들어간 값이다. 위젯 HTML 자체의 주석도 '⚠️ 본문 정본과 1:1 — … WHERE concert_id='C001''이라 명시해, 저자 의도와도 어긋나는 authoring 누락으로 보인다.",
+      "suggestion": "SALV_CFG.data에서 concert_id='C002'인 두 행(0004, 0005)을 '공연 C001 (6행)' 프리셋에서 빼고 실제 C001 예매만 남기거나(4행이 되면 프리셋 라벨의 '6행'도 함께 수정), 완전히 새로운 C001 전용 6행 데이터로 교체해 본문 WHERE 절·프리셋 라벨과 실제로 일치시킨다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\salv-pipeline-stepper.js",
+      "quote": "function itRows(){ return st.sel ? dbRows() : []; }",
+      "category": "위젯 결함",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "CH11-L04-S01 파이프라인 스테퍼에서 SELECT→행 수 확인→factory→set_all→display를 순서대로 눌러 6행이 정상 표시된 뒤 '빈 결과 시나리오' 버튼을 누르면, 이미 채워졌던 Internal Table 배지(gv_count)와 이미 그려진 SALV 화면이 소급해서 0행으로 바뀐다. SELECT가 그 순간의 데이터를 메모리로 복사해 스냅샷을 만든다는, 이 레슨과 이 위젯 자체가 가르치는 핵심 개념과 반대로 동작한다.",
+      "evidence": "브라우저에서 SELECT→행수확인→factory→set_all→display를 순서대로 눌러 'gv_count = 6' 배지와 6행 그리드+툴바가 뜬 상태를 만든 뒤 '빈 결과 시나리오' 버튼을 눌렀다. 재SELECT를 누르지 않았는데도 즉시 IT 칸 배지가 'gv_count = 0'으로, SALV 칸이 '빈 표(정상 — 조회 결과가 0행)'로 바뀌었다. 원인은 itRows()가 `st.sel ? dbRows() : []`로 매 렌더마다 현재 DB 토글(st.empty) 상태에서 실시간 파생되기 때문 — SELECT 클릭 시점의 스냅샷을 별도로 저장해 두지 않는다. (참고로 이 경로는 '리셋 후 빈 시나리오부터 순서대로' 누르는 의도된 사용법에서는 발생하지 않으며, reset 버튼은 st.empty까지 정상적으로 초기화된다 — 문제는 SELECT 이후 empty를 '뒤늦게' 토글하는 탐색적 클릭 순서에서만 나타난다.)",
+      "suggestion": "SELECT(action='sel') 클릭 시점의 dbRows() 결과를 별도 스냅샷 변수(예: itSnapshot)에 저장해 itRows()가 그 스냅샷을 반환하도록 바꾸고, '빈 결과 시나리오' 토글은 다음 SELECT부터만 적용되게 한다. 최소한의 대안으로는, 이미 SELECT를 마친 뒤 empty를 토글하면 '이미 조회된 데이터는 유지된다 — 바뀐 DB를 보려면 SELECT를 다시 눌러야 한다'는 안내 문구를 추가한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH11(SALV 1차) 6개 레슨은 모두 R2(코드=체험)를 충족한다 — 코드가 없는 L01·L05도 WRITE-vs-SALV 비교, 범위 분류 카드로 보강돼 있다. 5종 엔진(6개 위젯)을 브라우저에서 실제로 조작해 검증한 결과 대부분 본문과 정확히 맞물렸다 — 변수명(go_alv/gt_flight/gt_book), 메시지 문구, factory/display 2단계 구분, get_functions()->set_all() 순서 오류의 3가지 시나리오, 0행 가드 동작까지 전부 일치했고 콘솔 오류도 0건이었다. 다만 두 가지 국지적 결함을 실측으로 확정했다. ① CH11-L06-S01의 '공연 C001 (6행)' 프리셋에 concert_id='C002' 행 2건이 섞여 있어 본문 WHERE 절·프리셋 라벨과 어긋나고 Σ 합계도 17(정답 14)로 잘못 표시된다. ② CH11-L04-S01(파이프라인 스테퍼)은 SELECT로 이미 데이터를 채운 뒤 '빈 결과 시나리오'를 누르면 이미 표시된 gv_count·SALV 화면이 소급 리셋돼, 이 레슨이 가르치는 'SELECT는 그 순간의 스냅샷을 메모리에 담는다'는 개념과 반대로 동작한다. 두 건 모두 위젯 소스(데이터 배열·상태 관리 로직) 수정만으로 해결되는 국지적 버그이고 본문 콘텐츠의 구조·난이도·게이팅(R6/R15)에는 문제가 없어 '경미 수정'으로 판단한다. (검증 중 L02·L03에서 go_alv 대신 lo_alv, SFLIGHT 대신 급여 데이터가 보이는 현상을 만났지만 fetch({cache:'reload'}) 재확인으로 순수 브라우저 캐시 잔재임을 확인해 발견에서 제외했다 — 실제 결함이 아니다.)"
+  }
+}

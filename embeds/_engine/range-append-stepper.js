@@ -1,6 +1,12 @@
-/* range-append-stepper 엔진 — ABAP 코드를 한 줄씩 실행하며 ls_stat(work area)→APPEND→lr_stat(Range Table)→SELECT 결과를 보여 준다.
-   골격 계약: [data-code] · #rasLs · #rasLr · #rasResult · [data-next] · [data-reset] · #rasFb · [data-progress].
-   config: window.RAS_CFG = { code:[lines], steps:[{hl,ls,lr,result,fb}], data:[rows], resultCols:[{key,label,num}], field }.
+/* range-append-stepper 엔진 — ABAP 코드를 한 줄씩 실행하며 work area→APPEND→Range Table→SELECT 결과를 보여 준다.
+   골격 계약: [data-code] · #rasLs · #rasLr · #rasResult · [data-next] · [data-reset] · #rasFb · [data-progress]
+             · (선택) [data-skipclear] = 'CLEAR 생략' 체크박스.
+   config: window.RAS_CFG = { code:[lines], steps:[{hl,ls,lr,result,fb, ls2?,lr2?,fb2?}], data:[rows],
+                              resultCols:[{key,label,num}], field, itab?, range?, skipLine? }.
+     ls2/lr2/fb2 = [data-skipclear]가 켜졌을 때(=CLEAR를 건너뛴 흐름)의 work area·Range Table·설명.
+                   주지 않으면 기본값(ls/lr/fb)을 그대로 쓴다 → 토글이 없는 위젯은 동작 변화 없음.
+     skipLine    = 토글이 켜졌을 때 취소선 처리할 코드 줄 인덱스(0-based, 보통 CLEAR 줄).
+     itab/range  = 결과 캡션에 쓰는 Internal Table·Range Table 이름(기본 gt_book/gr_stat).
    높이: _autoheight.js가 처리. */
 (function () {
   var CFG = window.RAS_CFG || { code: [], steps: [], data: [], resultCols: [], field: '' };
@@ -13,7 +19,9 @@
   var resetBtn = document.querySelector('[data-reset]');
   var fbEl = document.getElementById('rasFb');
   var progEl = document.querySelector('[data-progress]');
+  var skipEl = document.querySelector('[data-skipclear]');
   var cur = -1;   // 실행한 마지막 step 인덱스(-1=시작 전)
+  function skipOn() { return !!(skipEl && skipEl.checked); }
 
   function esc(s) { return String(s).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); }
   function hl(line) {
@@ -77,27 +85,34 @@
       return '<tr>' + cols.map(function (c) { return '<td class="' + (c.num ? 'num' : '') + '">' + esc(d[c.key]) + '</td>'; }).join('') + '</tr>';
     }).join('');
     resultEl.querySelector('table').innerHTML = thead + body;
-    resultEl.querySelector('.ras-cap').textContent = 'lt_book = ' + passed.length + '행 (status IN lr_stat)';
+    resultEl.querySelector('.ras-cap').textContent =
+      (CFG.itab || 'gt_book') + ' = ' + passed.length + '행 (' + CFG.field + ' IN ' + (CFG.range || 'gr_stat') + ')';
   }
 
   function render() {
     var st = cur >= 0 ? CFG.steps[cur] : null;
+    var skip = skipOn();
+    // CLEAR를 건너뛴 흐름이면 ls2/lr2/fb2를 쓴다(없으면 기본값 그대로).
+    var ls = st ? ((skip && st.ls2) ? st.ls2 : st.ls) : {};
+    var lr = st ? ((skip && st.lr2) ? st.lr2 : st.lr) : [];
     lines.forEach(function (li, i) {
       li.classList.toggle('on', st && i === st.hl);
       li.classList.toggle('done', st && i < st.hl);
+      li.classList.toggle('skipped', skip && CFG.skipLine === i);
     });
-    renderLs(st ? st.ls : {});
-    renderLr(st ? st.lr : []);
+    renderLs(ls);
+    renderLr(lr);
     var showResult = st && st.result;
     resultEl.classList.toggle('hide', !showResult);
-    if (showResult) renderResult(st.lr);
-    fbEl.textContent = st ? st.fb : '▶ 다음 단계를 눌러 한 줄씩 실행하세요.';
+    if (showResult) renderResult(lr);
+    fbEl.textContent = st ? ((skip && st.fb2) ? st.fb2 : st.fb) : '▶ 다음 단계를 눌러 한 줄씩 실행하세요.';
     progEl.textContent = (cur + 1) + ' / ' + CFG.steps.length;
     nextBtn.disabled = cur >= CFG.steps.length - 1;
   }
 
   if (nextBtn) nextBtn.addEventListener('click', function () { if (cur < CFG.steps.length - 1) { cur++; render(); } });
   if (resetBtn) resetBtn.addEventListener('click', function () { cur = -1; render(); });
+  if (skipEl) skipEl.addEventListener('change', render);   // 현재 단계 그대로 두 흐름을 갈아 끼운다
 
   render();
 })();

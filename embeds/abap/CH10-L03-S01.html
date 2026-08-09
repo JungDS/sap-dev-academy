@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <!-- CH10-L03-S01 — 엔진: call-function-box (embeds/_engine/call-function-box.{js,css}) · 자체 postHeight.
-     체험: 호출자 기준 EXPORTING/IMPORTING/CHANGING/EXCEPTIONS 방향, 정상/음수 sy-subrc, EXCEPTIONS 제거 실험.
+     체험: 호출자 기준 EXPORTING/IMPORTING/EXCEPTIONS 방향, 정상/음수 sy-subrc, "EXCEPTIONS 안 적기" 실험(=덤프).
+     본문 CH10-L03 예제와 이름 일치: FM Z_ADD_TAX · 예외 invalid=1/OTHERS=2 · 수신 변수 gv_out(본문에 없는 CHANGING 행 없음).
      게이팅: classic CALL FUNCTION + classic EXCEPTIONS(RFC/BAPI 심화는 CH33+). 로직 내장. -->
 <html lang="ko" data-eng="call-function-box">
 <head>
@@ -18,29 +19,28 @@
   <div class="toolbar">
     <button class="btn" id="btnNormal" type="button">정상 금액 (1000)</button>
     <button class="btn" id="btnNeg" type="button">음수 금액 (-1)</button>
-    <label class="btn" style="display:flex;gap:6px;align-items:center;cursor:pointer"><input type="checkbox" id="excChk"> EXCEPTIONS 제거</label>
+    <label class="btn" style="display:flex;gap:6px;align-items:center;cursor:pointer"><input type="checkbox" id="excChk"> EXCEPTIONS 안 적기</label>
     <div class="persp" id="persp"><button class="on" data-p="caller">호출자 기준</button><button data-p="fm">함수 내부 기준</button></div>
   </div>
 
   <div class="flow">
     <div class="caller">
-      <div class="caller__hd">호출자 (zch10_l03)</div>
+      <div class="caller__hd">호출자 (z_call_tax)</div>
       <div class="caller__b">
         <div class="var" id="vAmount"></div>
         <div class="var" id="vResult"></div>
-        <div class="var" id="vLog"></div>
         <div class="subrc" id="subrc"></div>
       </div>
     </div>
     <div class="fm">
-      <div class="fm__hd">CALL FUNCTION 'Z_CH10_ADD_TAX'</div>
+      <div class="fm__hd">CALL FUNCTION 'Z_ADD_TAX'</div>
       <div class="fm__b"><div id="iface"></div><div class="perspwarn" id="perspWarn"></div></div>
     </div>
   </div>
 
   <div class="msg" id="msg"></div>
 
-  <div class="note"><b>주의 2가지</b> — ① <code>EXPORTING/IMPORTING</code>은 호출자 기준으로 읽기(위 토글로 틀린 읽기 확인). ② <code>CALL FUNCTION</code> 뒤 <code>sy-subrc</code> 분기 잊지 않기. <code>TABLES</code>·일부 obsolete typing은 기존 FM에서 보일 뿐 신규 권장 아님.</div>
+  <div class="note"><b>주의 3가지</b> — ① <code>EXPORTING/IMPORTING</code>은 호출자 기준으로 읽기(위 토글로 틀린 읽기 확인). ② 예외를 <code>EXCEPTIONS</code>에 <b>한 줄도 적지 않으면</b> <code>sy-subrc</code>로 오지 않고 <b>런타임 오류(덤프)</b>로 멈춤. ③ 적어 놨어도 <code>CALL FUNCTION</code> 바로 뒤에서 <code>sy-subrc</code>를 확인해야 소용이 있음. <code>TABLES</code>·일부 obsolete typing은 기존 FM에서 보일 뿐 신규 권장 아님.</div>
 </div>
 
 <script src="../_engine/call-function-box.js" defer></script>

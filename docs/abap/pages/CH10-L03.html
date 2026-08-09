@@ -42,6 +42,9 @@
 <section class="lblock"><h2>프로그램을 넘어 재사용</h2>
 <p><button class="term" type="button" data-term="Subroutine">Subroutine</button>은 한 프로그램 안에 갇힌다. 여러 프로그램이 <strong>공유</strong>하는 재사용
 블록이 <button class="term" type="button" data-term="Function Module">Function Module</button>(함수 모듈)이다. <code>SE37</code>에서 만들고 관리한다.</p>
+<p>이 레슨에서는 이미 만들어져 있는 함수를 <strong>부르는 쪽</strong>만 익힌다. 내가 직접 만드는 쪽,
+즉 <code>SE37</code>에서 새 함수를 등록하는 일은 여기서 다루지 않는다. 만드는 법은 그게 필요해지는
+뒤 챕터에서 다루니 지금은 몰라도 되고, <strong>있는 걸 찾아 부르는 것</strong>부터 할 수 있으면 된다.</p>
 </section><section class="lblock"><h2>CALL FUNCTION — 호출 구조</h2>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
@@ -54,30 +57,54 @@
 9
 10
 11
-12</pre><pre class="abap-editor__code"><code><span class="tok-kw">CALL</span> <span class="tok-kw">FUNCTION</span> <span class="tok-str">'Z_ADD_TAX'</span>
+12
+13
+14</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> gv_out <span class="tok-kw">TYPE</span> p <span class="tok-kw">LENGTH</span> <span class="tok-num">8</span> <span class="tok-kw">DECIMALS</span> <span class="tok-num">2</span>.
+
+<span class="tok-kw">CALL</span> <span class="tok-kw">FUNCTION</span> <span class="tok-str">'Z_ADD_TAX'</span>
   <span class="tok-kw">EXPORTING</span>
     iv_amount = <span class="tok-num">1000</span>          <span class="tok-com">" 넘겨줄 값</span>
   <span class="tok-kw">IMPORTING</span>
-    ev_result = lv_out        <span class="tok-com">" 돌려받을 값</span>
+    ev_result = gv_out        <span class="tok-com">" 돌려받을 값</span>
   <span class="tok-kw">EXCEPTIONS</span>
     invalid   = <span class="tok-num">1</span>
     <span class="tok-kw">OTHERS</span>    = <span class="tok-num">2</span>.
 
 <span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.
-  <span class="tok-com">" 예외 처리</span>
+  <span class="tok-kw">WRITE</span>: / <span class="tok-str">'함수 호출 실패 — sy-subrc ='</span>, sy-subrc.
 <span class="tok-kw">ENDIF</span>.</code></pre></div></div>
 <ul>
 <li><strong>EXPORTING</strong> — 함수에 <strong>넘기는</strong> 값(호출자 입장).</li>
 <li><strong>IMPORTING</strong> — 함수에서 <strong>돌려받는</strong> 값.</li>
 <li><strong>CHANGING</strong> — 넘겼다가 <strong>수정되어 돌아오는</strong> 값(입출력).</li>
-<li><strong>TABLES</strong> — 내부 테이블 전달(레거시 방식).</li>
-<li><strong>EXCEPTIONS</strong> — 오류를 <code>sy-subrc</code>로 받는다.</li>
+<li><strong>TABLES</strong> — <button class="term" type="button" data-term="Internal Table">Internal Table</button> 전달(레거시 방식).</li>
+<li><strong>EXCEPTIONS</strong> — 오류를 <code>sy-subrc</code>로 받는다(바로 아래에서 자세히).</li>
 </ul>
 <blockquote>
-<p>방향이 헷갈린다: <strong>호출자 기준</strong>이다. 내가 함수로 EXPORT(내보냄) → 함수가 받음.</p>
+<p>방향이 헷갈린다: 호출문의 EXPORTING/IMPORTING은 <strong>호출자 기준</strong>이다. 내가 함수로
+EXPORT(내보냄) → 함수가 받음. 반대로 <code>SE37</code>에서 <strong>함수 자신을 정의하는 화면</strong>은
+함수 기준이라 이름이 뒤집혀 보인다. 내가 EXPORTING으로 넘긴 값이 정의 화면에서는
+Import 탭에 들어 있다. 한쪽이 내보내면 다른 쪽이 받는 것이니 뒤집히는 게 정상이다.</p>
 </blockquote>
+</section><section class="lblock"><h2>오류를 번호로 받기 — EXCEPTIONS</h2>
+<p><code>EXCEPTIONS</code> 절은 함수가 알려 오는 오류 이름에 <strong>번호를 붙이는</strong> 곳이다.
+<code>invalid = 1</code>은 &quot;invalid 오류가 나면 <code>sy-subrc</code>를 1로 채워 달라&quot;는 뜻이고,
+<code>OTHERS = 2</code>는 &quot;여기 적지 않은 나머지 오류는 전부 2로&quot;라는 뜻이다. 번호는 우리가
+정한다.</p>
+<ul>
+<li><strong>안 적으면 프로그램이 죽는다</strong> — 함수가 일으킨 오류를 <code>EXCEPTIONS</code>에 하나도 적지
+않으면 <code>sy-subrc</code>로 오지 않고 그 자리에서 런타임 오류(덤프)로 멈춘다.</li>
+<li><strong>적어 놓고 안 보면 소용없다</strong> — 이 방식은 오류를 <strong>번호로 돌려주기만</strong> 한다.
+저절로 위로 전달되지 않으니 호출 <strong>바로 다음 줄</strong>에서 <code>sy-subrc</code>를 확인해야 한다.</li>
+<li><code>OTHERS</code>를 마지막에 하나 두면 예상 못 한 오류까지 걸러진다.</li>
+</ul>
 </section><section class="lblock"><h2>어디서 찾나</h2>
-<p>표준 함수도 많다. <code>SE37</code>에서 검색하거나, BAPI(<a href="CH33-L01.html">Chapter 33 · BAPI</a>)처럼 표준 인터페이스로 제공된다.</p>
+<p>직접 만들지 않아도 되는 표준 함수가 이미 많다. <code>SE37</code> 첫 화면에서 이름이나 설명으로
+검색하면 되고, 찾은 함수를 열면 어떤 값을 주고받는지(Import·Export·Exceptions 탭)
+바로 볼 수 있다. 그중 업무 처리의 표준 창구로 SAP이 제공하는 것을
+<button class="term" type="button" data-term="BAPI">BAPI</button>(Business Application Programming Interface)라 부르고, 다른 시스템이 원격으로
+부를 수 있게 만든 것을 <button class="term" type="button" data-term="RFC">RFC</button>(Remote Function Call, 원격 함수 호출)라 한다. 둘 다
+<a href="CH33-L01.html">Chapter 33 · 인터페이스 실무</a>에서 본격적으로 다룬다.</p>
 </section><section class="lblock"><h2>직접 해 보기</h2>
 <p>정상/음수 금액을 호출해 <code>sy-subrc</code>가 어떻게 바뀌는지, <code>EXPORTING</code>·<code>IMPORTING</code>을 호출자 기준으로 읽는다는 게 무슨 뜻인지 확인해 보자.</p>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">CALL FUNCTION 상자 — 방향·sy-subrc·EXCEPTIONS</span><a class="embed__open" href="../../../embeds/abap/CH10-L03-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH10-L03-S01.html" loading="lazy" title="CALL FUNCTION 상자 — 방향·sy-subrc·EXCEPTIONS"></iframe></figure>
@@ -87,7 +114,7 @@
 <li><strong>EXCEPTIONS 무시</strong> → <code>sy-subrc</code> 확인 누락은 단골 버그.</li>
 </ul>
 <hr>
-<p>함수 모듈은 절차적 재사용의 표준이었다. 그런데 현대 ABAP의 중심은 <strong>클래스</strong>다 —
+<p><button class="term" type="button" data-term="Function Module">Function Module</button>은 절차적 재사용의 표준이었다. 그런데 현대 ABAP의 중심은 <strong>클래스</strong>다 —
 가볍게 맛보자 → Local Class(다음 레슨).</p>
 </section>
       </article>

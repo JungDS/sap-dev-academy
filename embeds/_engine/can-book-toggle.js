@@ -1,5 +1,7 @@
 // ===== can-book-toggle 엔진 JS — 예매 가능 판정(can_book) (CH10-L07, S02) =====
-// 잔여석 = 정원 − 비취소 예매 합계, can_book = 요청 ≤ 잔여. 취소 포함 토글 시 잘못된 계산을 보여 준다.
+// 잔여석 = 정원 − 비취소 예매 합계. 판정은 본문 can_book의 IF/ELSE 3항 조건 그대로:
+//   IF iv_want > 0 AND lv_left >= 0 AND iv_want <= lv_left. → abap_true / ELSE → abap_false
+// (boolc 아님 — 본문이 IF/ELSE + abap_true/abap_false로 확정.) 취소 포함 토글 시 잘못된 계산도 보여 준다.
 // 데이터=window.CBT_CFG = { capacity, bookings:[{name,seats,status}] }  (status 'C'=취소)
 (function(){
   var cfg = window.CBT_CFG || {};
@@ -26,10 +28,16 @@
       '<div class="calcline"><span>예매 합계 '+(includeCancelled?'(취소 포함!)':'(취소 제외)')+'</span><b>'+s+'</b></div>'
      +'<div class="calcline"><span>정원 − 합계</span><b>'+CAP+' − '+s+'</b></div>'
      +'<div class="calcline big"><span>잔여석 cv_left</span><b>'+left+'</b></div>';
-    var ok = want<=left;
+    // 본문 can_book의 3항 조건 — 양수 요청 · 공연 존재(-1 아님) · 잔여석 안에 들어옴
+    var t1 = want>0, t2 = left>=0, t3 = want<=left;
+    var ok = t1 && t2 && t3;
+    function term(txt, pass){ return '<span class="t '+(pass?'y':'n')+'">('+txt+') '+(pass?'✓':'✕')+'</span>'; }
     $('verdict').className='verdict '+(ok?'ok':'no');
     $('verdict').innerHTML=(ok?'✓ 예매 가능':'✕ 예매 불가')
-      +'<div class="sub">can_book = boolc( '+want+' &lt;= '+left+' ) = '+(ok?'abap_true':'abap_false')+'</div>';
+      +'<div class="sub">PERFORM get_remaining … CHANGING lv_left. → <b>lv_left = '+left+'</b></div>'
+      +'<div class="cond">IF iv_want &gt; 0 AND lv_left &gt;= 0 AND iv_want &lt;= lv_left.<br>'
+        + term(want+' &gt; 0', t1) + ' AND ' + term(left+' &gt;= 0', t2) + ' AND ' + term(want+' &lt;= '+left, t3) + '</div>'
+      +'<div class="res">'+(ok?'→ cv_ok = abap_true':'→ ELSE → cv_ok = abap_false')+'</div>';
     $('warn').className='warnbox'+(includeCancelled?' show':'');
     $('warn').innerHTML='⚠ 취소 건을 합산하면 잔여석이 <b>실제보다 작게</b> 계산됩니다. <code>status &lt;&gt; \'C\'</code> 조건은 단순 조건이 아니라 <b>업무 규칙</b>입니다.';
     postHeight();

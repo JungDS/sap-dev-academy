@@ -1,0 +1,59 @@
+{
+  "agent": "AG06",
+  "model": "sonnet",
+  "target": "CH09",
+  "persona_ack": "20년차 SAP ABAP 아키텍트(ECC→S/4HANA 개발·운영·성능·이관 경험)로서 CH09(DDIC 관계·Foreign Key·Check Table·Text Table·Search Help·입력도움 우선순위·DDIC-프로그램 검증 역할분리) 10개 파일을 후배 교재 기술 감수하듯 검토했다.",
+  "method": "대상 10개 .md 파일을 Read 도구로 전문 읽고, 서술된 ABAP 코드·DDIC 절차(SE11 조작)·용어를 SAP ECC~S/4HANA 실무 지식과 대조하는 정적 검토만 수행했다. 코드 실행·SE11 재현·브라우저 검증·웹 검색은 하지 않았다(금지 규정 준수).",
+  "errors": [],
+  "files_read": [
+    "content/abap/CH09/_chapter.md",
+    "content/abap/CH09/CH09-L01.md",
+    "content/abap/CH09/CH09-L02.md",
+    "content/abap/CH09/CH09-L03.md",
+    "content/abap/CH09/CH09-L04.md",
+    "content/abap/CH09/CH09-L05.md",
+    "content/abap/CH09/CH09-L06.md",
+    "content/abap/CH09/CH09-L07.md",
+    "content/abap/CH09/CH09-L08.md",
+    "content/abap/CH09/CH09-L09.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH09/CH09-L02.md",
+      "quote": "사번·고객번호처럼 **숫자로만 된 ID**를,",
+      "category": "사실 오류",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "ALPHA 변환 루틴의 예시로 든 '사번'(사원번호)은 실제로는 ALPHA 변환 대상이 아닐 가능성이 높다.",
+      "evidence": "SAP 표준 사원번호(PERNR) 필드는 도메인 PERSNO 기반의 NUMC 타입으로 기억한다. NUMC는 애초에 항상 0으로 채워진 자릿수로 저장·표시되므로, '내부는 0000000042로 채우고 화면은 42로 뗀다'는 ALPHA 특유의 내부/표시 변환 자체가 필요 없다(적용 대상이 아니다). ALPHA 변환의 대표 사례는 거래처(KUNNR)·공급업체(LIFNR)처럼 숫자만 들어가는 CHAR 필드다. 릴리스·커스터마이징에 따라 예외가 있을 수 있어 확실 대신 추정으로 표기한다.",
+      "suggestion": "예시를 '사번' 대신 거래처번호(KUNNR)·공급업체번호(LIFNR)처럼 실제로 ALPHA 변환 루틴이 붙는 CHAR 필드로 교체 검토."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH09/CH09-L07.md",
+      "quote": "> 붙인 경우엔 Check Table보다 아래에 온다. 헷갈리면 `MATCHCODE OBJECT`로 콕 집는 게 안전하다.",
+      "category": "사실 오류",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "Data Element에 붙인 Search Help가 Check Table(Foreign Key)보다 우선순위가 낮다는 설명이, 필자가 기억하는 실제 SAP 입력도움 결정 순서와 반대일 가능성이 있다.",
+      "evidence": "필자가 실무·문서에서 접한 입력도움 결정 순서는 대체로 '코드 직접 구현 → 화면 필드에 직접 지정한 Search Help(MATCHCODE OBJECT) → 테이블/구조 필드에 붙은 Search Help → Data Element에 붙은 Search Help → Foreign Key(Check Table) → Domain 고정값 → 내장 타입 기본 도움'으로, Data Element 단의 Search Help가 Check Table보다 한 단계 위(즉 더 우선)라고 기억한다. 본문은 우선순위 사다리(1~6번) 목록에서 'Data Element에 붙은 Search Help'를 별도 단계로 명시하지 않고, 콜아웃에서만 'Check Table보다 아래'라고 적어 두었다 — 이 레슨의 핵심 주장이라 오차가 있으면 학습자의 F4 결정 모델 전체가 뒤집힌다. 웹 검색이 금지돼 있어 100% 단언은 못 하므로 확실이 아닌 추정으로 남긴다.",
+      "suggestion": "SAP 공식 문서(ABAP Keyword Documentation의 Search Help — F4 Help 결정 순서)를 대조해 Data Element 부착 Search Help의 정확한 순위(Check Table 위/아래)를 재확인한 뒤 본문·콜아웃을 일치시킬 것."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH09/CH09-L09.md",
+      "quote": "**`MANDT`는 우리가 손으로 넣지 않는다.** SE11에서 Delivery Class를 정하면 첫 키 필드로",
+      "category": "사실 오류",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "MANDT 필드가 'Delivery Class를 정하면' 자동으로 첫 키 필드로 붙는다는 설명은 실제 SE11 동작과 다를 수 있다.",
+      "evidence": "Delivery Class(배포 클래스, A/C/L/G/S/W/E 등)는 이관·업그레이드 시 데이터 취급 방식을 정하는 별개 속성으로 기억한다. 테이블의 클라이언트 종속 여부(MANDT를 첫 키 필드로 둘지)는 개발자가 필드 탭에서 CLNT 타입 필드(보통 Data Element MANDT)를 직접 추가해야 성립하는 것으로 기억하며, Delivery Class 설정 자체가 MANDT 필드를 자동 삽입하는 트리거라고는 보지 않는다. 다만 SE11 버전이나 기존 테이블을 Copy From 하는 흐름에서는 자동으로 딸려 올 수도 있어, 확실 대신 추정으로 남긴다.",
+      "suggestion": "'SE11에서 Delivery Class를 정하면 자동으로 붙는다'는 서술을 'CLNT 타입 필드(MANDT)를 첫 키로 직접 추가하면(클라이언트 종속 테이블로 만들면)'처럼 실제 트리거에 맞게 교정 검토."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH09은 Foreign Key·Check Table·Value Table·Text Table·Elementary/Collective Search Help·PARAMETERS 연결·입력도움 우선순위·DDIC-프로그램 검증 역할분리까지 구조가 탄탄하고 흐름도 매끄럽다. classic-only 스코프 위반이나 위험한 생략(동시성 레이스 컨디션은 이미 명시적으로 짚고 잠금은 후속 챕터로 정직하게 미룸, 검증 계층 분리도 명확)은 발견하지 못했다. 다만 세 지점에서 실제 SAP 동작과 어긋날 수 있는 서술을 발견했다 — ① ALPHA 변환 루틴 예시로 든 '사번'(NUMC라 대상이 아닐 가능성), ② Data Element 부착 Search Help와 Check Table의 F4 우선순위 순서(반대일 가능성, 이 레슨의 핵심 주장이라 영향이 큼), ③ MANDT가 'Delivery Class 설정'만으로 자동 부착된다는 서술(실제 트리거는 CLNT 필드 직접 추가로 기억). 모두 웹 검증 없이 기억에 의존한 추정이라 확실로 단언하지 않았으며, 저자 측 재확인을 권한다."
+  }
+}

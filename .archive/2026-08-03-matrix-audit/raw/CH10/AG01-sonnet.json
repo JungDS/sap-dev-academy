@@ -1,0 +1,90 @@
+{
+  "agent": "AG01",
+  "model": "sonnet",
+  "target": "CH10",
+  "persona_ack": "은서 — 개발·전공 경험이 없는 24세 문과 출신 입문자. 노션·인스타에 익숙하고 모르는 단어가 나오면 그 자리에서 멈추는 성격으로, CH10 레슨을 L01부터 순서대로 처음 읽는 사람 입장에서 통독함.",
+  "method": "대상 8개 파일(_chapter.md, CH10-L01~L07.md)을 Read 도구로 순서대로 정독. 코드 실행·빌드·웹검색 등 외부 도구는 쓰지 않고 본문 텍스트만으로 판단했으며, 각 finding의 quote는 Grep으로 원문 존재 여부를 재확인했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH10-L01.md",
+      "quote": "전역 변수는 누적되고 지역 변수는 매번 새로 생기는 차이도 함께 확인할 수 있다.",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "'전역 변수'와 '지역 변수'가 다르다는 말은 나오는데, 정작 무엇이 전역이고 무엇이 지역인지, 왜 FORM 안에서는 달라지는지는 본문 어디에도 설명이 없다. 이 구분 자체가 여기서 처음 나오는 것 같은데 글로는 설명이 안 되어 있다.",
+      "evidence": "L01 본문에서 '전역 변수'/'지역 변수'라는 말이 등장하는 곳은 '직접 해 보기' 섹션의 이 한 문장뿐이다. 무엇이 변수를 지역/전역으로 만드는지(스코프 규칙)에 대한 정의·예시 문장이 본문에 없이 바로 임베드로 안내되고, 코드 예제(FORM print_hello)에도 변수가 하나도 없어 글만으로는 확인할 길이 없다. 임베드가 이를 충분히 보완하는지는 확인할 수 없었다.",
+      "suggestion": "임베드로 넘어가기 전에 '지역 변수는 FORM 안에서 생겼다가 ENDFORM에서 사라진다' 같은 한두 문장짜리 개념 정의를 본문에 먼저 두면 좋겠다."
+    },
+    {
+      "seq": 2,
+      "file": "CH10-L02.md",
+      "quote": "`STATICS` — 서브루틴 안에서 선언하되 **호출이 끝나도 값이 유지**되어 다음 호출에",
+      "category": "과부하",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "USING·CHANGING·세 가지 전달 방식까지 이해하고 나니 곧바로 RETURN과 STATICS가 각각 한 줄 설명으로 지나간다. 특히 STATICS는 지금까지 봤던 변수 동작과 다른 개념인데 코드 예시가 하나도 없어서 실제로 어떻게 쓰는 건지 그림이 안 그려진다.",
+      "evidence": "L02는 이미 USING/CHANGING과 Call by Reference·Value·Value-Result 3방식을 한 레슨에서 다뤘고, 그 직후 '빠져나오기 · 값 유지' 절에서 RETURN·STATICS를 각각 한 문장으로만 설명한다. 두 키워드 모두 본문에 코드 블록 예시가 없어(임베드로만 안내) 한 레슨에 새 개념이 몰려 마지막 두 개는 스쳐 지나가는 느낌이다.",
+      "suggestion": "RETURN·STATICS도 짧게나마 각각 미니 코드 예시(STATICS 선언문 한 줄, 호출을 두 번 반복하는 흐름 등)를 본문에 붙이면 좋겠다."
+    },
+    {
+      "seq": 3,
+      "file": "CH10-L04.md",
+      "quote": "RETURNING VALUE(rv_result) TYPE p.",
+      "category": "단절",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "바로 전 레슨(L02)에서 'value(iv_x)'는 '값 보호가 필요할 때 선택적으로 쓰는 것'이라고 배웠는데, 여기서는 RETURNING 뒤에 항상 VALUE(...)가 붙어 있다. 이것도 선택인지 RETURNING은 원래 무조건 이렇게 쓰는 건지 설명이 없어 헷갈린다.",
+      "evidence": "L02는 'USING value(iv_x)'를 '값 보호가 필요하면' 쓰는 선택적 문법으로 소개했다. L04의 'RETURNING VALUE(rv_result)'는 형태가 비슷한데, 이게 RETURNING의 필수 문법이라는 언급이나 L02의 value()와 같은 것인지/다른 것인지에 대한 설명이 L04 어디에도 없다.",
+      "suggestion": "'RETURNING은 항상 VALUE(...)로 감싼다(L02의 선택적 value()와 달리 필수 문법)'처럼 한 줄만 짚어줘도 연결이 될 것 같다."
+    },
+    {
+      "seq": 4,
+      "file": "CH10-L05.md",
+      "quote": "ALV에서 이런 표준 클래스를 정적 팩토리 메서드로 불러 쓰게 된다.",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'정적'은 이 레슨에서 막 배웠지만 '팩토리 메서드'는 처음 보는 말인데 아무 설명 없이 지나간다. 다음 챕터 얘기라 당장 몰라도 될 것 같긴 한데, 낯선 단어라 일단 멈칫하게 된다.",
+      "evidence": "'팩토리 메서드'라는 용어에 용어 표시([[ ]] 클릭 풀이)도 없고, '나중에 배운다'는 안내 문구도 없이 미래 챕터(ALV) 얘기에 슬쩍 끼워져 있다.",
+      "suggestion": "'정적 팩토리 메서드(자세한 건 ALV에서)'처럼 괄호로 짧게 '지금은 몰라도 됨'을 표시해주면 안심이 될 것 같다."
+    },
+    {
+      "seq": 5,
+      "file": "CH10-L06.md",
+      "quote": "절차적 재사용, RFC(원격), 표준 BAPI",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "BAPI가 뭔지 이 챕터에서 결국 한 번도 제대로 안 알려준다. L03에서 처음 봤을 때도 '나중에 배운다'는 링크만 있었고, 여기서도 그냥 '표준 BAPI'라고만 나온다.",
+      "evidence": "BAPI는 CH10-L03에서 Chapter 33 링크와 함께 처음 언급된 후, L06 이 표에서 아무 설명 없이 재등장한다. 같은 자리의 RFC는 두 번 다 '(원격)'이라는 짧은 풀이가 붙어 있는데 BAPI는 한 번도 풀이가 붙지 않는다.",
+      "suggestion": "BAPI도 RFC처럼 처음 나올 때 괄호로 한두 단어 풀이(예: '업무용 표준 인터페이스')를 붙이거나 용어 표시를 해주면 좋겠다."
+    },
+    {
+      "seq": 6,
+      "file": "CH10-L07.md",
+      "quote": "cv_ok = boolc( iv_want <= lv_left ).",
+      "category": "단절",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "'boolc'라는 함수가 갑자기 나온다. 옆 주석은 '원하는 좌석 <= 잔여석'이라 비교식의 의미는 알겠는데, boolc가 그 비교 결과를 가지고 뭘 하는 건지는 이 챕터 어디에도 안 나온 것 같다.",
+      "evidence": "이 챕터(L01~L06)를 다시 훑어봐도 'boolc'라는 이름은 L07 이전에 한 번도 나오지 않는다. cv_ok의 타입이 abap_bool이라는 것과 연결지어 짐작은 해보지만, boolc( ) 자체가 무엇을 반환하는 함수인지 본문 설명이나 주석이 없어 확신이 안 선다.",
+      "suggestion": "처음 쓰는 자리에 '// boolc: 조건이 참이면 abap_true, 거짓이면 abap_false로 바꿔줌' 같은 주석 한 줄만 있어도 막히지 않을 것 같다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "보강 권장",
+    "summary": "FORM/PERFORM → USING/CHANGING → Function Module → Local/Global Class → 선택 기준 → 실습으로 이어지는 큰 흐름 자체는 순서가 자연스럽고 따라가기 어렵지 않았다. Class와 Object를 '쿠키틀과 쿠키'에 비유한 부분(CH10-L04)이 가장 확 와닿았다. 다만 로컬/전역 변수 차이(L01)나 STATICS(L02)처럼 이 챕터에서 새로 나온 핵심 개념 일부가 본문에서는 한두 문장으로만 스치고 지나가 임베드에 기대는 느낌이 있었고, RETURNING VALUE(L04)·boolc(L07)처럼 코드에 설명 없는 표현이 등장해 잠깐씩 멈칫한 지점이 있었다. 치명적으로 학습을 포기할 만한 지점은 없었지만, 위 지점들은 한두 문장씩만 보강해도 훨씬 편하게 읽힐 것 같다."
+  }
+}

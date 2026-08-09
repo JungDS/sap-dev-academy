@@ -22,18 +22,37 @@
 
   <div class="cards" id="cards"></div>
 
+  <div class="probe">
+    <div class="probe__t">보너스 · 직접 쓰기 전 확인은 <code>sy-subrc</code>로 갈린다</div>
+    <p class="probe__lead">위 레슨의 코드를 그대로 돌려 봅니다. <code>ZCONCERT</code>에 들어 있는 값은 <code>C001</code>·<code>C002</code>·<code>C003</code>입니다. 버튼을 눌러 <code>WHERE</code>에 넣을 공연 ID를 골라 보세요.</p>
+    <div class="probe__btns" id="probeBtns">
+      <button class="pbtn" type="button" data-v="C001">gs_booking-concert_id = 'C001'</button>
+      <button class="pbtn" type="button" data-v="C999">gs_booking-concert_id = 'C999'</button>
+      <button class="pbtn reset" type="button" data-v="__reset">처음 상태로</button>
+    </div>
+    <div class="codebox">
+      <div class="codebox__hd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span></div>
+      <pre class="code" id="probeCode"></pre>
+    </div>
+    <div class="probe__vars" id="probeVars"></div>
+    <div class="probe__out idle" id="probeOut">버튼을 눌러 실행해 보세요.</div>
+  </div>
+
   <div class="note"><b>원칙</b> — DDIC는 값의 <b>존재·형식</b>(Foreign Key·fixed values)에 강하고, <b>잔여석·상태 전이·권한</b>처럼 상황에 따라 달라지는 판단은 프로그램이 책임집니다. 둘 중 하나만 믿으면 재사용을 버리거나(코드 전용) 업무 흐름을 못 막습니다(DDIC 전용).</div>
 </div>
 
 <script>
+/* 상태 코드 N·C = 관통예제 예매 상태 정본(N=신규·C=취소, CH09-L09 시드).
+   probe = 레슨 코드(SELECT SINGLE → sy-subrc 분기)를 그대로 돌려 보는 미니 체험. */
 window.VR_CFG = {
   cards:[
     {q:'공연 ID가 마스터에 존재하는가?', ans:'DDIC', why:'Foreign Key + Check Table이 존재 검증을 담당합니다.'},
-    {q:"상태 코드가 'O' 또는 'C' 중 하나인가?", ans:'DDIC', why:'Domain fixed values로 허용값을 제한할 수 있습니다.'},
+    {q:"예매 상태가 'N'(신규) 또는 'C'(취소) 중 하나인가?", ans:'DDIC', why:'Domain fixed values로 허용값을 제한할 수 있습니다.'},
     {q:'신청 좌석이 잔여석보다 많지 않은가?', ans:'PROG', why:'재고는 상황에 따라 달라지는 업무 규칙 — 프로그램이 읽어 판단합니다.'},
     {q:'이 예매자가 취소 권한이 있는가?', ans:'PROG', why:'권한 판단은 DDIC 관계로 표현하기 어렵습니다 — 프로그램 책임.'},
     {q:'이미 종료된 공연인가?', ans:'PROG', why:'시점에 따른 상태 판단 — 프로그램이 날짜·상태를 확인합니다.'}
-  ]
+  ],
+  probe:{ exists:['C001','C002','C003'] }
 };
 </script>
 <script src="../_engine/validation-router.js" defer></script>

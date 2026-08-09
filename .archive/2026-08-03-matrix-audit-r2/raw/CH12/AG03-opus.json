@@ -1,0 +1,123 @@
+{
+  "agent": "AG03",
+  "model": "opus",
+  "target": "CH12",
+  "persona_ack": "타 언어(Java/C#) 백엔드 3～5년차 개발자로서 ABAP을 빠르게 훑는 관점으로 CH12(_chapter + L01～L07)를 통독했다. 변수·조건문·루프·SQL·OOP는 이미 아는 상태를 전제하고 ① 과잉 설명 ② 입문자용 단순화가 개발 상식과 어긋나 오히려 헷갈리는 지점 ③ 경력자용 건너뛰기 안내 부재 ④ 일반 개발 용어와 ABAP 용법 차이 미고지를 중심으로 기록했다. 이 사이트의 1독자가 비전공 입문자임을 감안해 '입문자에겐 필요한 친절'은 낮음/제안으로만 분류했다.",
+  "method": "Read 도구로 대상 8개 파일 전문을 1회씩 통독(쓰기·수정·삭제 없음). 웹 검색·외부 네트워크 미사용, 타 감사자 산출물 및 과거 감사 폴더 미열람. ABAP 사실 판단은 모델 내부 지식에 의존했고 원문 대조가 불가능한 항목은 confidence=추정으로 표시했다. quote는 각 파일의 단일 라인 원문을 그대로 복사했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L07.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L05.md",
+      "quote": "`=`·`<>`·`BETWEEN`·`NOT BETWEEN`·`>`·`>=`·`<`·`<=`와 그대로 1:1 대응한다. 이름만 두 글자로",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "SQL 경험자를 겨냥한 접기 박스가 OPTION 값과 SQL 연산자의 '그대로 1:1 대응'을 단언하는데, 1:1인 것은 행 하나의 의미뿐이고 여러 행의 결합 규칙은 SQL과 다르다. 이 문장을 믿은 경력자가 `I NE` 같은 부정 행을 여러 줄 쌓으면 SQL의 `<> AND <>`와 정반대 결과가 나온다.",
+      "evidence": "같은 챕터 CH12-L04의 평가 규칙 1번이 '포함(I) 행 중 하나라도 맞으면 후보가 된다(OR처럼 후보를 넓힌다)'로 I 행을 OR 결합한다고 명시한다. 따라서 `I NE C001` + `I NE C002` 두 행은 C001도(둘째 행이 참) C002도(첫째 행이 참) 통과해 사실상 전부 통과가 된다. SQL의 `x <> 'C001' AND x <> 'C002'`는 둘 다 배제이므로 결과가 정반대다. 게다가 결합 규칙은 L04, 1:1 주장은 L05에 있어, 경력자가 접기 박스만 펴 보는 동선에서는 이 함정을 만나지 못한다.",
+      "suggestion": "접기 박스 끝에 한 문장 추가: '단, 대응은 행 하나 기준이다. 여러 행은 OR로 묶이므로 NE·LT 같은 부정/비교 행을 여러 줄 쌓으면 SQL의 AND 체인과 결과가 달라진다. A도 B도 아님은 `E EQ A` + `E EQ B`로 쓴다.'"
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L03.md",
+      "quote": "SQL을 다뤄 본 사람은 여기서 한 번 걸린다. SQL의 `IN (…)`은 목록이 비면 **아무것도 안",
+      "category": "오개념 유발",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'빈 range는 true'를 SQL과 대비시키는 설명에서 비교 대상 진술이 부정확하다. 대부분의 DB에서 빈 IN 목록은 '아무것도 안 걸리는' 동작이 아니라 아예 문법 오류라, 경력자는 '그런 SQL은 애초에 못 쓰는데?'에서 한 번 더 걸린다.",
+      "evidence": "Oracle·SQL Server·PostgreSQL·SAP HANA 모두 `x IN ()` 형태를 파싱 단계에서 거절한다. '빈 목록 = 아무것도 매칭 안 함'은 ORM/동적 SQL(JPA·MyBatis 등)이 빈 컬렉션을 `1=0` 같은 식으로 치환해 줄 때 관찰되는 결과지 SQL 자체의 의미론이 아니다. 대비의 결론(Range Table의 빈 IN은 전부 통과)은 맞지만, 근거로 든 SQL 쪽 사실이 어긋나 경력자에게는 설명 전체의 신뢰가 흔들린다.",
+      "suggestion": "'SQL에선 빈 목록을 아예 못 쓰고(문법 오류), ORM이 대신 「아무것도 매칭 안 함」으로 바꿔 준다. 반면 Range Table의 빈 IN은 조건 자체가 사라져 전부 통과다' 정도로 한 단계만 더 정확히. 문장 수는 그대로 유지 가능."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L05.md",
+      "quote": "`CP`는 **Conforms to Pattern**(패턴에 부합)의 약자다.",
+      "category": "용어 충돌",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "`CP`의 약자 풀이를 'Conforms to Pattern'으로 단정했는데, 표준 문서 표기와 다를 가능성이 높다. 경력자는 약칭 확장을 근거로 문서를 검색하는 습관이 있어, 여기서 검색어가 어긋나면 헛도는 비용이 생긴다.",
+      "evidence": "ABAP 문자열 비교 연산자 계열(CO/CN/CA/NA/CS/NS/CP/NP)에서 `CP`는 키워드 문서상 'Covers Pattern'으로, 선택화면·다중선택 UI 도움말에서는 'Contains Pattern'으로 표시되는 것으로 안다. 본문도 뒤쪽 표기를 인정하면서 정본으로는 제3의 표기를 제시하는데 그 출처를 확인하기 어렵다. 오프라인 감사라 공식 원문 대조를 못 했으므로 추정으로 보고한다.",
+      "suggestion": "'Covers Pattern(선택화면 도움말에는 Contains Pattern으로도 표시)'처럼 확인 가능한 표기로 바꾸고 확장을 하나로 단정하지 않기. 의미 설명('포함 검색이 아니라 패턴 전체에 부합')은 좋은 내용이므로 그대로 유지."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L06.md",
+      "quote": "| `CLEAR gs_stat.` | 이전 행 값이 남지 않게 비운다. |",
+      "category": "오개념 유발",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "예제의 `CLEAR gs_stat.`는 바로 위 `DATA:`로 방금 선언한 Work Area에 걸려 있어 실제로는 아무 일도 하지 않는데, 해설 표는 '이전 행 값이 남지 않게 비운다'고 설명한다. 경력자 눈에는 이유 없는 관습 코드로 읽히고, '왜 필요한지'가 코드 어디에도 드러나지 않는다.",
+      "evidence": "ABAP은 `DATA`로 만든 데이터 오브젝트를 타입별 초기값으로 생성하므로 선언 직후의 CLEAR는 상태를 바꾸지 않는다. 이 예제는 행을 단 한 번만 APPEND해서 '재사용' 상황 자체가 코드에 없는데, 같은 레슨의 '흔한 실수'는 'Work Area를 재사용할 때 안 비우면 앞 행 값이 남는다'며 재사용을 전제로 설명한다. 코드와 설명의 전제가 어긋난다.",
+      "suggestion": "행을 두 개 쌓는 예(예: `I EQ N` 다음 `E EQ C`)로 늘려 두 번째 APPEND 앞에서 CLEAR가 실제로 일하게 만들거나, 표 설명을 '지금은 방금 선언해 이미 비어 있지만, 같은 Work Area를 다시 쓸 때를 대비한 습관'으로 정직하게 적기."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L02.md",
+      "quote": "| `WRITE: / gs_conc-sign, …` | 꺼낸 행의 네 칸을 출력한다. 맨 앞 `/`는 **줄 바꿈**이고, `-`는 Work Area에서 칸 하나를 꺼내는 표시다. |",
+      "category": "과잉",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "코드 해설 표 7행 중 3행(`LOOP AT`·`WRITE`·`ENDLOOP`)이 이미 앞 챕터에서 배운 문법을 다시 풀어써서, 이번 레슨의 진짜 새 내용인 `SELECT-OPTIONS`·`FOR`가 상대적으로 묻힌다.",
+      "evidence": "`WRITE` 행은 '맨 앞 /는 줄 바꿈', '-는 Work Area에서 칸 하나를 꺼내는 표시'까지 재설명하고, `ENDLOOP.` 행은 'LOOP AT의 끝'이라는 동어반복에 가깝다. 같은 표의 다른 행은 이미 Work Area를 'Chapter 05 · Local Structure에서 배운 그 그릇'으로, Header Line은 'Chapter 06 · Internal Table 기초'로 링크해 기존 학습을 전제하고 있어 표 안에서 전제 수준이 일관되지 않다.",
+      "suggestion": "표를 `TABLES`·`SELECT-OPTIONS`·`FOR`·`LIKE LINE OF` 중심 4행으로 줄이고, 출력 3줄은 '결과를 눈으로 보려고 붙인 출력부(문법은 Chapter 06)' 한 줄로 묶기. 입문자용 안전판이 필요하면 출력부 설명만 details로 접어도 본문 흐름이 빨라진다."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L02.md",
+      "quote": "실제로 `FOR` 뒤에는 우리가 선언한 변수도 올 수 있다. 이렇게 쓰면 `TABLES` 없이도 같은",
+      "category": "오개념 유발",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "`FOR` 뒤에 변수를 쓰면 'TABLES 없이도 같은 입력칸이 만들어진다'고 했는데, 바로 앞 문단이 장점으로 내세운 F4 입력 도움말이 항상 똑같이 따라오지는 않는다. TABLES를 '옛 관례'로 낮춰 놓은 뒤라 경력자는 자연히 변수형을 고르게 되고, 나중에 F4가 안 뜨는 이유를 못 찾는다.",
+      "evidence": "`FOR zbooking-concert_id`는 DDIC 테이블 필드를 직접 참조해 그 필드에 붙은 Search Help나 체크테이블 외래키 기반 F4까지 물려받지만, `DATA gv_conc TYPE zbooking-concert_id.`는 Data Element 수준까지만 물려받는다. Search Help가 Data Element가 아니라 테이블 필드에 붙어 있는 경우 변수형에서는 입력 도움말이 빠질 수 있다. 본문은 앞 문단에서 'F4 입력 도움말도 그대로 따라온다'를 FOR의 장점으로 강조했기에 대비가 더 크게 어긋난다. 실물 시스템 대조가 불가능해 추정으로 보고한다.",
+      "suggestion": "'같은 입력칸'을 '타입·길이는 동일하다. 다만 F4는 Data Element에 붙은 것만 따라오므로, 테이블 필드에 직접 붙인 Search Help는 안 올 수 있다'로 한정하기. 한 문장이면 충분하고 입문자에게도 부담이 없다."
+    },
+    {
+      "seq": 7,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L04.md",
+      "quote": "1. **포함(I) 행 중 하나라도** 맞으면 후보가 된다(OR처럼 후보를 넓힌다).",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "포함/제외 평가를 3단계 절차로만 서술하고, 경력자가 한 줄로 잡을 수 있는 불리언 등가식을 끝내 제시하지 않는다. 또 '후보가 된다 → 최종 결과에서 빠진다'는 절차형 표현은 DB 필터가 아니라 조회 후 후처리처럼 읽힐 여지가 있다.",
+      "evidence": "규칙 1～3은 전부 후보 집합을 만들고 빼는 순서로만 기술된다. 실제로는 `(I행1 OR I행2 …) AND NOT (E행1 OR E행2 …)` 한 식이며 I 행이 없으면 앞 괄호를 참으로 치는 것이 규칙 3의 정체다. 같은 챕터 CH12-L03은 '조건 자체가 DB로 넘어가지 않기 때문이다'라며 조건이 DB로 전달됨을 전제로 설명하고 있어, 이 등가식 한 줄이면 L03·L04의 설명이 하나로 붙는다.",
+      "suggestion": "규칙 3 아래에 각주 한 줄: '프로그래밍 경험자용 요약 — 결국 (I행 OR …) AND NOT (E행 OR …)이고, I 행이 없으면 앞 괄호는 참으로 친다. 이 식이 그대로 WHERE … IN에 실려 DB로 간다.' 입문자용 3단계 서술은 그대로 두고 각주만 추가."
+    },
+    {
+      "seq": 8,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\_chapter.md",
+      "quote": "단일 값(PARAMETERS)만으론 부족 — 범위·다중 조건으로 조회하고 싶다.",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "CH12는 레슨 7개 분량인데, 챕터 입구 어디에도 '프로그래밍/SQL 경험이 있으면 이 경로로'라는 안내가 없다. 경력자에게 CH12의 새로운 알맹이는 사실상 Range Table 4칸·WHERE … IN·I/E 결합 규칙·CP 와일드카드 넷뿐이라 앞부분에서 이탈하기 쉽다.",
+      "evidence": "_chapter.md의 intro·keywords에도, L01～L07의 도입부에도 건너뛰기·빠른 경로 문구가 없다. 반면 CH12-L05는 'SQL을 다뤄 봤다면' 접기 박스로 경력자 대응 패턴을 이미 갖고 있고, CH12-L07은 '[선행 사용]'으로 '이번에 읽을 곳은 네 줄'이라며 읽기 범위를 좁혀 준다. 즉 같은 장치를 챕터 입구에 두는 데 구조적 장벽이 없는데 입구에만 없다.",
+      "suggestion": "CH12-L01 도입부에 1～2문장 삽입: '프로그래밍 경험이 있다면 — Range Table은 (SIGN, OPTION, LOW, HIGH) 네 칸짜리 조건 행의 리스트다. 이 한 줄이 바로 이해된다면 L01·L02의 표만 훑고 WHERE … IN과 EQ/BT/CP부터 읽어도 된다.' 입문자 흐름은 건드리지 않고 경력자만 빠져나가게 하는 방식."
+    },
+    {
+      "seq": 9,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L01.md",
+      "quote": "이번엔 반대로, 행만 보고 무슨 조건인지 읽어 보자.",
+      "category": "과잉",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "동일한 'SIGN/OPTION/LOW/HIGH 4칸 매핑'을 한 레슨에서 네 번 반복한다(컬럼 정의표 → 사람말→행 변환표 → 행→해석 역방향표 → 임베드 행 빌더). 경력자에게는 첫 표 하나로 끝나는 내용이라 체감 밀도가 급격히 떨어진다.",
+      "evidence": "역방향표 4행(`I EQ N` / `I BT 20 30` / `E EQ C` / `I CP C*`)은 바로 위 변환표의 예시와 사실상 같은 조합을 방향만 바꿔 재제시한다. 그리고 그 직후 임베드(조건 카드 → Range Table 행 빌더)가 같은 변환을 인터랙션으로 한 번 더 시킨다. 다만 인코딩→디코딩 전환은 입문자에게 학습 가치가 있으므로 삭제가 아니라 배치 문제로 본다.",
+      "suggestion": "역방향표를 details로 접거나(제목: '반대로 읽어 보기') 임베드 위젯의 한 모드로 흡수해, 본문은 정의표 + 변환표 2개로 유지. 통독 경로가 짧아지고 입문자는 접기를 펴서 그대로 연습할 수 있다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "경력자 관점에서 CH12는 이 사이트에서 보기 드물게 '다리'가 잘 놓인 챕터다. FOR가 반복문이 아니라는 점, selection table = Range Table 동의어, 빈 range가 SQL IN과 정반대라는 점, CP 와일드카드와 SQL LIKE·정규식 + 의 차이 등 타 언어 경험자가 걸릴 지점을 본문이 먼저 짚어 준다. L05의 'SQL을 다뤄 봤다면' 접기 박스와 L07의 [선행 사용] 범위 지정도 경력자 배려로 잘 작동한다. 그래서 재집필이나 대규모 압축이 필요한 곳은 없다고 본다. 다만 그 배려 장치들이 정확도에서 한 번씩 미끄러진다 — 가장 큰 건 L05의 'SQL 연산자와 그대로 1:1 대응' 단언으로, 행 단위 의미는 맞지만 여러 행이 OR로 묶인다는 L04 규칙과 겹치면 I NE 행 여러 줄이 SQL의 <> AND <> 와 정반대 결과를 내는 함정을 덮어 버린다(중간). 나머지는 빈 IN 목록에 대한 SQL 쪽 진술 부정확, CP 약자 확장 표기, 선언 직후 no-op인 CLEAR를 필수 단계처럼 보여 주는 예제, FOR 변수형의 F4 상속 한정 누락 같은 한두 줄짜리 정정이다. 과잉은 L02 코드 해설 표의 기배운 문법 재설명과 L01의 4칸 매핑 4회 반복 정도인데, 둘 다 입문자에게는 유효한 친절이라 삭제가 아니라 details 접기·행 통합 수준의 조정을 권한다. 지름길 안내는 챕터 입구(L01)와 L04 평가 규칙 옆에 각 한 줄만 추가하면 경력자 통독 시간이 눈에 띄게 줄어든다."
+  }
+}

@@ -40,20 +40,47 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>수고가 화면으로 연결되는 지점</h2>
-<p>지금까지 만든 <button class="term" type="button" data-term="Foreign Key">Foreign Key</button>·<button class="term" type="button" data-term="고정값">고정값</button>·<button class="term" type="button" data-term="Search Help">Search Help</button>가 실제 입력 화면
-(<button class="term" type="button" data-term="PARAMETERS">PARAMETERS</button>)에서 <strong>자동으로</strong> F4·검증으로 나타나는 원리를 정리한다.
-<a href="CH03-L03.html">Chapter 03 · PARAMETERS</a>의 &quot;보상&quot;을 더 깊이 보는 셈.</p>
+<p>앞 레슨들에서 만든 <button class="term" type="button" data-term="Foreign Key">Foreign Key</button>·<button class="term" type="button" data-term="Search Help">Search Help</button>, 그리고
+<a href="CH03-L01.html">Chapter 03 · Domain</a>에서 정해 둔 <button class="term" type="button" data-term="고정값">고정값</button>이 실제 입력 화면
+(<button class="term" type="button" data-term="PARAMETERS">PARAMETERS</button>)에서 <strong>자동으로</strong> 나타나는 원리를 정리한다.
+<a href="CH03-L03.html">Chapter 03 · PARAMETERS</a>의 &quot;보상&quot;을 더 깊이 보는 셈이다.</p>
 </section><section class="lblock"><h2>자동 연결 — Data Element 경유</h2>
-<p><code>PARAMETERS pa_conc TYPE zde_concert_id.</code> 처럼 <button class="term" type="button" data-term="Data Element">Data Element</button>로 타입을 주면:</p>
+<p><code>PARAMETERS pa_conc TYPE zde_concert_id.</code> 처럼 <button class="term" type="button" data-term="Data Element">Data Element</button>로 타입을 주면 그 DE에
+딸린 것들이 화면으로 따라온다. 다만 <strong>무엇이 따라오고 무엇이 안 따라오는지</strong>를 정확히
+갈라 둬야 나중에 &quot;왜 안 되지&quot;로 헤매지 않는다.</p>
+<p><strong>따라오는 것 — F4 목록</strong></p>
 <ul>
-<li>Data Element/Domain에 붙은 <strong><button class="term" type="button" data-term="Search Help">Search Help</button></strong>, <strong><button class="term" type="button" data-term="고정값">고정값</button></strong>, 필드의
-**<button class="term" type="button" data-term="Foreign Key">Foreign Key</button>**가 그 <button class="term" type="button" data-term="PARAMETERS">PARAMETERS</button>의 F4·검증으로 <strong>그대로 따라온다.</strong></li>
-<li>별도 코드 없이 화면이 똑똑해진다.</li>
+<li>Data Element에 붙여 둔 <strong><button class="term" type="button" data-term="Search Help">Search Help</button></strong>.</li>
+<li>Domain에 정해 둔 <strong><button class="term" type="button" data-term="고정값">고정값</button></strong>.</li>
+</ul>
+<p>이 둘은 타입만 줘도 F4로 뜬다. 별도 코드가 필요 없다. 화면이 공짜로 똑똑해지는 대목이다.</p>
+<p><strong>따라오지 않는 것 — <button class="term" type="button" data-term="Foreign Key">Foreign Key</button>와 값 검증</strong></p>
+<ul>
+<li>Foreign Key는 <strong>테이블 필드에 거는 속성</strong>이다. Data Element가 아니라
+<code>ZBOOKING-CONCERT_ID</code>라는 <strong>필드 한 칸</strong>에 붙어 있다. 그래서 같은 Data Element로
+타입을 줬다고 해서 그 관계까지 따라오지는 않는다.</li>
+<li><strong>값 검증도 자동으로 돌지 않는다.</strong> F4 목록이 뜨는 것과 &quot;입력된 값이 진짜 있는
+값인지 확인하는 것&quot;은 별개의 일이다. 사용자가 목록에서 고르지 않고 손으로 아무
+값이나 쳐 넣으면 그대로 통과한다.</li>
 </ul>
 <blockquote class="cw">
-<p>⚠️ 다만 선택화면의 PARAMETERS로 물려오는 입력 도움은 일반 화면보다 <strong>제한적</strong>이다. 필드
-사이 의존관계는 반영되지 않고, <strong>값 검증은 자동으로 돌지 않는다</strong>(존재 검사가 필요하면
-<code>VALUE CHECK</code>를 붙인다). F4 목록이 따라오는 것과 값 검증은 별개다.</p>
+<p>⚠️ 선택화면의 <button class="term" type="button" data-term="PARAMETERS">PARAMETERS</button>가 받아 오는 입력 도움은 일반 화면보다 <strong>제한적</strong>이다.
+예를 들어 &quot;공연을 고르면 그 공연의 회차만 보여 주기&quot;처럼 <strong>한 칸의 입력이 다른 칸의
+목록을 좁히는</strong> 동작은 여기선 되지 않는다. 칸마다 따로 놀 뿐이다.</p>
+</blockquote>
+<h3>존재 검사까지 받고 싶다면 — VALUE CHECK</h3>
+<p>선택화면에서도 &quot;있는 값인지&quot;를 확인받고 싶으면 <code>VALUE CHECK</code>를 덧붙인다.</p>
+<p><code>PARAMETERS pa_conc TYPE zbooking-concert_id VALUE CHECK.</code></p>
+<p>붙이는 데 조건이 있다. 먼저 타입을 <strong>DDIC에서 가져와야</strong> 한다. 프로그램 안에서 직접
+만든 타입엔 붙일 수 없다. 그리고 <strong>Check Table 조회까지 받으려면 타입을 위처럼
+Foreign Key가 걸린 테이블 필드로</strong> 줘야 한다. 위에서 굳이 <code>ZBOOKING-CONCERT_ID</code>를 가리킨
+이유가 이것이다. 관계가 걸려 있는 칸이 바로 그 필드다. <code>zde_concert_id</code> 같은 Data
+Element로 주면 Domain 고정값 범위까지만 검사하고 Check Table은 보지 않는다. 관계가
+필드에 붙어 있으니, 그 관계를 쓰려면 그 필드를 가리켜야 한다는 이야기다.</p>
+<blockquote>
+<p>💡 <strong><code>OBLIGATORY</code>와 짝지어 두면 안전하다.</strong> 이 검사는 입력칸이 <strong>비어 있어도</strong> 그대로
+돈다. 빈칸을 놔두면 &quot;없는 값&quot;으로 걸려 엉뚱한 오류 메시지를 보게 되니, 실무에서는
+<code>VALUE CHECK</code>에 <code>OBLIGATORY</code>(필수 입력)를 함께 붙여 빈칸부터 막는다.</p>
 </blockquote>
 </section><section class="lblock"><h2>명시적으로 붙이기 — MATCHCODE OBJECT</h2>
 <p>특정 검색 도움말을 직접 지정하고 싶으면:</p>
@@ -63,6 +90,11 @@
 <ul>
 <li><code>MATCHCODE OBJECT</code>로 이 입력칸에 쓸 <button class="term" type="button" data-term="Search Help">Search Help</button>를 명시한다.</li>
 </ul>
+<blockquote>
+<p>💡 <strong>왜 갑자기 Matchcode인가?</strong> Matchcode는 Search Help의 <strong>옛 이름</strong>이다. 예전
+버전에서 쓰던 이름이 문법 키워드에 그대로 남았을 뿐, 다른 객체가 아니다. 검색하다
+&quot;매치코드&quot;라는 말이 나오면 Search Help를 가리킨다고 보면 된다.</p>
+</blockquote>
 </section><section class="lblock"><h2>F4가 오는 세 경로</h2>
 <ol>
 <li><strong><button class="term" type="button" data-term="고정값">고정값</button></strong>(Domain) — 짧은 코드 목록.</li>
@@ -83,12 +115,8 @@
 <td>그 DE를 쓰는 <strong>모든 필드</strong>에 한꺼번에(가장 광범위)</td>
 </tr>
 <tr>
-<td><strong>테이블/Structure의 필드</strong></td>
-<td>그 필드 하나에</td>
-</tr>
-<tr>
-<td><strong>Structure Component</strong></td>
-<td>그 Structure를 쓰는 화면 필드에</td>
+<td><strong>테이블·Structure의 필드 하나</strong></td>
+<td>그 필드를 가져다 쓰는 화면 칸에만. 테이블 필드든 Structure 필드든 &quot;필드 한 칸에 붙인다&quot;는 점에서 같다</td>
 </tr>
 <tr>
 <td><strong>프로그램·화면 필드</strong>(<code>MATCHCODE OBJECT</code>)</td>
@@ -98,13 +126,22 @@
 <blockquote>
 <p>💡 &quot;널리 공유&quot; → Data Element에, &quot;이 칸만&quot; → <code>MATCHCODE OBJECT</code>로. 넓게 붙일수록 재사용이 크고, 좁게 붙일수록 통제가 정확하다.</p>
 </blockquote>
+<p>두 목록이 헷갈릴 수 있으니 관계를 짚어 두자. <strong>세 경로</strong>는 F4에 뜰 값이 <em>어디서
+오는가</em>(재료)를 나눈 것이고, <strong>부착 지점</strong>은 그 도움말을 <em>어느 범위에 걸어 두는가</em>(적용
+범위)를 나눈 것이다. 기준이 다른 두 분류라 순서끼리 대응하지 않는다. 외워서 맞출 것이
+아니라 &quot;재료 / 범위&quot;로만 갈라 두면 된다.</p>
 </section><section class="lblock"><h2>직접 해 보기</h2>
 <p>부착 지점을 바꿔 가며 어떤 입력칸이 그 F4를 받는지 초록색으로 확인해 보자 — 넓게(<button class="term" type="button" data-term="Data Element">Data Element</button>) vs 좁게(MATCHCODE OBJECT).</p>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">F4 부착 범위 보드 — Data Element·필드·구조·MATCHCODE</span><a class="embed__open" href="../../../embeds/abap/CH09-L06-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH09-L06-S01.html" loading="lazy" title="F4 부착 범위 보드 — Data Element·필드·구조·MATCHCODE"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>F4가 안 떠요</strong> → 표준 타입으로 직접 줬다. <button class="term" type="button" data-term="Data Element">Data Element</button> 경유 또는 MATCHCODE로.</li>
-<li><strong>여러 도움말 충돌</strong> → 우선순위를 이해하고 하나로 명확히(MATCHCODE 권장).</li>
+<li><strong>업무 코드 목록이 F4로 안 떠요</strong> → 타입을 <strong>Built-In Type</strong>(<code>CHAR 4</code>처럼 SAP이 미리
+정해 둔 기본 타입)으로 직접 줬을 때 흔하다. 기본 타입엔 붙여 둔 도움말이 없으니
+가져올 목록도 없다. <button class="term" type="button" data-term="Data Element">Data Element</button> 경유 또는 <code>MATCHCODE OBJECT</code>로 바꾼다. 단
+<strong>날짜·시간 타입은 예외</strong>다. 아무것도 안 걸어도 달력·시계가 뜬다.</li>
+<li><strong>여러 도움말이 한 칸에 걸렸다</strong> → 이럴 때 무엇이 뜨는지에는 정해진 순서가 있다.
+다음 레슨에서 그 순서를 다루니, 지금은 <strong><code>MATCHCODE OBJECT</code>로 하나만 콕 집어 두면
+안전하다</strong>는 것만 기억하자.</li>
 </ul>
 <hr>
 <p>도움말 붙이는 법까지 봤다. 그런데 한 칸에 여럿이 걸리면 <strong>무엇이</strong> 뜰까? F4 호출

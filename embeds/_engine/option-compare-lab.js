@@ -1,5 +1,6 @@
 /* option-compare-lab 엔진 — 단일 Range 조건의 SIGN·OPTION·LOW·HIGH를 바꿔 후보 통과를 실시간 비교.
-   골격 계약: [data-sign="I"]/[data-sign="E"] · #oclOpt · #oclLow · .ocl-high(>#oclHigh) · .ocl-chips · #oclRead · #oclBody.
+   골격 계약: [data-sign="I"]/[data-sign="E"] · #oclOpt · #oclLow · .ocl-high(>#oclHigh) · .ocl-chips · #oclRead · #oclBody
+             · (선택) #oclMatchTh = 판정 열 제목. 있으면 현재 OPTION에 맞춰 갱신(패턴은 CP 전용어라 고정 금지).
    config: window.OCL_CFG = { candidates:[..], init:{sign,opt,low,high}, presets:[{label,cond:{sign,opt,low,high}}] }.
    높이: _autoheight.js가 처리. */
 (function () {
@@ -13,6 +14,7 @@
   var readEl = document.getElementById('oclRead');
   var bodyEl = document.getElementById('oclBody');
   var chipsEl = document.querySelector('.ocl-chips');
+  var matchThEl = document.getElementById('oclMatchTh');
   var signBtns = Array.prototype.slice.call(document.querySelectorAll('[data-sign]'));
 
   function esc(s) { return String(s).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); }
@@ -59,6 +61,8 @@
     if (lowEl) lowEl.value = cond.low;
     if (highEl) highEl.value = cond.high || '';
     if (highWrap) highWrap.classList.toggle('hide', !isHighOpt());
+    // 판정 열 제목은 OPTION을 따라간다 — '패턴'은 CP/NP 전용어라 EQ·BT에 붙으면 오개념.
+    if (matchThEl) matchThEl.textContent = cond.opt + ' 조건에 맞나?';
     readEl.innerHTML = readSentence();
     bodyEl.innerHTML = CFG.candidates.map(function (v) {
       var m = matchOpt(v);

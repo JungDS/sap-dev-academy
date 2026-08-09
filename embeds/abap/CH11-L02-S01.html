@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <!-- CH11-L02-S01 — 엔진: salv-grid-simulator (embeds/_engine/salv-grid-simulator.{js,css}) · 자체 postHeight.
-     ✅ copy(내용 정확) — config=window.SALV_CFG(SFLIGHT 표준 연습 테이블). 게이팅: OO ALV(SALV)·classic. REF TO·TRY/CATCH는 advanceUse(L2 선행). -->
+     ✅ copy(내용 정확) — config=window.SALV_CFG(SFLIGHT 표준 연습 테이블). 게이팅: OO ALV(SALV)·classic. REF TO·TRY/CATCH는 advanceUse(L2 선행).
+     ⚠️ 본문 계약(L02 §표준 기능은 한 줄 더) — L02는 "표는 뜨지만 표준 기능은 아직 안 켜진 상태"를 가르친다.
+        이 위젯의 툴바는 그 기능이 *켜진 뒤의 모습*을 미리 보여 주는 프리뷰이며, .alv__prev 캡션이 그 사실을 명시한다(임의 삭제 금지). -->
 <html lang="ko" data-eng="salv-grid-simulator">
 <head>
 <meta charset="utf-8" />
@@ -12,7 +14,7 @@
 <body>
 <div class="wrap">
   <p class="hd">SALV factory → display 시뮬레이터 <small>(CL_SALV_TABLE)</small></p>
-  <p class="lead">내부 테이블 <code>LT_PERSON</code>을 ALV 표로 띄웁니다. <b>① factory( )</b> 로 ALV 객체를 만들고, <b>② display( )</b> 로 화면에 표시합니다. 두 단계가 <b>어떻게 다른지</b> 직접 눌러 확인해 보세요.</p>
+  <p class="lead">내부 테이블 <code>GT_FLIGHT</code>(SFLIGHT 연습 데이터)를 ALV 표로 띄웁니다. <b>① factory( )</b> 로 ALV 객체를 만들고, <b>② display( )</b> 로 화면에 표시합니다. 두 단계가 <b>어떻게 다른지</b> 직접 눌러 확인해 보세요.</p>
 
   <div class="presets" id="presets">
     <span class="presets__lbl">예제:</span>
@@ -36,7 +38,8 @@
   <div class="stat info" id="stat">먼저 <b>① factory( )</b> 를 눌러 ALV 객체를 만드세요.</div>
 
   <div class="alv hidden" id="alv">
-    <div class="alv__tt">📊 ALV · LT_PERSON</div>
+    <div class="alv__tt">📊 ALV · GT_FLIGHT</div>
+    <div class="alv__prev">🔮 이 툴바는 <b>다음 레슨에서 한 줄로 켠 뒤</b>의 모습입니다 — 지금 코드(<code>factory</code>+<code>display</code>)만으로는 아직 비어 있습니다.</div>
     <div class="alv__bar">
       <button type="button" data-bar="sort" title="첫 컬럼 정렬">🔃 정렬</button>
       <button type="button" data-bar="filter" title="표준 기능 (시뮬 생략)">🔍 필터</button>
@@ -49,12 +52,12 @@
     <div class="readout" id="readout">행을 클릭하면 현재 행(<b>sy-tabix</b>)이 표시됩니다.</div>
   </div>
 
-  <div class="note"><b>두 단계의 차이</b> — <code>factory( )</code>는 ALV <b>객체만</b> 메모리에 만든다(화면엔 안 뜸). <code>display( )</code>를 호출해야 비로소 그리드가 화면에 나타난다. 컬럼 제목은 <b>Data Element 라벨</b>에서 자동(CH03의 라벨이 여기서 보상받는다). 정렬·합계·엑셀 같은 표준 기능은 <b>공짜로</b> 따라온다.</div>
+  <div class="note"><b>두 단계의 차이</b> — <code>factory( )</code>는 ALV <b>객체만</b> 메모리에 만든다(화면엔 안 뜸). <code>display( )</code>를 호출해야 비로소 그리드가 화면에 나타난다. 컬럼 제목은 <b>Data Element 라벨</b>에서 자동으로 붙는다(<a href="../../docs/abap/pages/CH03-L01.html" target="_top">Chapter 03 · Data Element</a>에서 채워 둔 라벨이 여기서 보상받는다). 정렬·합계·엑셀 같은 표준 기능은 SALV가 <b>갖고는 있지만 아직 켜 두지는 않은</b> 상태다 — 켜는 한 줄은 <a href="../../docs/abap/pages/CH11-L03.html" target="_top">Chapter 11 · 표준 Function 켜기와 display 실행</a>에서 배운다.</div>
 </div>
 
 <script>
 window.SALV_CFG = {
-  itab:'gt_flight', sumKey:'seatsocc',
+  itab:'gt_flight', alvVar:'go_alv', sumKey:'seatsocc',
   cols:[
     {key:'carrid',   label:'항공사', num:false},
     {key:'connid',   label:'노선', num:true},
@@ -74,12 +77,15 @@ window.SALV_CFG = {
     {t:'DATA gt_flight TYPE TABLE OF sflight.', g:'factory'},
     {t:'DATA go_alv    TYPE REF TO cl_salv_table.', g:'factory'},
     {t:'', g:''},
+    {t:'" 연습이니 20건만 읽는다', g:'factory'},
+    {t:'SELECT * FROM sflight INTO TABLE gt_flight UP TO 20 ROWS.', g:'factory'},
+    {t:'', g:''},
     {t:'TRY.', g:'factory'},
     {t:'    cl_salv_table=>factory(', g:'factory'},
     {t:'      IMPORTING r_salv_table = go_alv       " 만들어진 ALV 객체', g:'factory'},
     {t:'      CHANGING  t_table      = gt_flight ). " 표시할 내부 테이블', g:'factory'},
     {t:'  CATCH cx_salv_msg.', g:'factory'},
-    {t:'    " 생성 실패 처리', g:'factory'},
+    {t:"    MESSAGE 'ALV 객체를 만들지 못했습니다.' TYPE 'I'.", g:'factory'},
     {t:'ENDTRY.', g:'factory'},
     {t:'', g:''},
     {t:'go_alv->display( ).            " 화면에 그리드 표시', g:'display'}

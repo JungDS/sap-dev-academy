@@ -54,7 +54,7 @@
     renderOut();
   }
 
-  // LOOP AT so_conc INTO ls. WRITE: / sign option low high.
+  // LOOP AT so_conc INTO gs_conc. WRITE: / gs_conc-sign, gs_conc-option, gs_conc-low, gs_conc-high.
   function renderOut() {
     var rows = allRows();
     if (!rows.length) { outEl.textContent = '* ' + CFG.name + ' 가 비어 있음 → LOOP 0회 (조건 없음 = 전체 통과)'; return; }

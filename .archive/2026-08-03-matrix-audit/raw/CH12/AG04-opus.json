@@ -1,0 +1,211 @@
+{
+  "agent": "AG04",
+  "model": "opus",
+  "target": "CH12",
+  "persona_ack": "20년차 한국어 교열·기술 용어 감수자로서 CH12의 _chapter.md와 L01~L07 전문을 통독하고, ①문장(번역투·비문·중의문·긴 호흡·어색한 반복) ②전문 용어 첫 등장 풀이의 유무와 실효성 ③용어 일관성(같은 개념의 이름 흔들림·ABAP 고유 용어의 어색한 직역) ④입문서 톤에서 매뉴얼·논문 톤으로 이탈하는 구간만 감사했다. 기술적 사실 검증과 구조 설계는 내 판단 범위 밖으로 두었고, 스타일 취향이 아니라 입문자 가독성을 실제로 해치는 지점만 기록했다. 이모지·친근한 말투 자체는 결함으로 보지 않았다.",
+  "method": "Read 도구로 대상 8개 파일 전문 통독(부분 읽기 없음). 용어 일관성은 챕터 전체를 교차 대조해 같은 개념의 표기 흔들림(work area/작업 영역, Dictionary/DDIC, selection table/range table, 선택화면/Selection Screen, 호스트 변수 표시/호스트 표시)을 수집하는 방식으로 확인. 모든 quote는 원문 한 줄 안의 연속 문자열만 사용해 줄바꿈이 섞이지 않게 했다. 웹 검색·외부 네트워크·타 감사자 산출물 열람 없음.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L07.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH12/CH12-L01.md",
+      "quote": "**\"조건 문장을 표로 적는 방법\"** 으로 이해하는 것이다.",
+      "category": "표기/조판 — 조사 앞 공백",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "볼드 닫힘 표시 뒤에 공백을 두고 조사 '으로'를 붙여, 렌더링 결과가 '…방법\" 으로 이해하는'처럼 조사가 앞말에서 떨어져 보인다. 한글 맞춤법상 조사는 앞말에 붙여 쓴다.",
+      "evidence": "같은 파일 99~100행의 '**\"그중 하나라도 맞으면 후보(OR)\"** 가 된다'도 동일한 형태다. 인용부호로 끝나는 볼드 뒤에 조사를 바로 붙이면 마크다운이 볼드를 닫지 못해 넣은 회피용 공백으로 보이지만, 독자에게는 그냥 띄어쓰기 오류로 읽힌다.",
+      "suggestion": "볼드 범위를 조사까지 포함하거나(**\"조건 문장을 표로 적는 방법\"으로**) 인용부호를 볼드 밖으로 빼서(\"**조건 문장을 표로 적는 방법**\"으로) 공백 없이 붙인다."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH12/CH12-L01.md",
+      "quote": "이 Range Table을 **화면에서 자동으로** 만들어 주는 게 다음 레슨의 SELECT-OPTIONS다 → 다음 레슨.",
+      "category": "문장 — 같은 표현의 어색한 반복",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "한 문장 안에서 '다음 레슨'이 두 번 나와 꼬리표가 겹친다. 문장으로 이미 다음 레슨을 지목해 놓고 화살표 뒤에 같은 말을 또 붙였다.",
+      "evidence": "L02~L06의 같은 자리 마무리 문장은 모두 '…줄여 보자 → 다음 레슨.'처럼 본문에서 '다음 레슨'을 말하지 않고 화살표 뒤에서만 쓴다. L01만 중복되어 있다.",
+      "suggestion": "'이 Range Table을 **화면에서 자동으로** 만들어 주는 게 SELECT-OPTIONS다 → 다음 레슨.'처럼 앞쪽 '다음 레슨의'를 덜어 낸다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH12/CH12-L02.md",
+      "quote": "`TABLES zbooking`은 `zbooking`과 **같은 모양의 작업 영역**을",
+      "category": "용어 — 같은 개념의 표기 흔들림",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "같은 레슨에서 동일 개념을 세 줄 간격으로 'work area'와 '작업 영역'으로 다르게 부른다. 입문자는 둘이 같은 것인지 판단할 근거가 없다.",
+      "evidence": "바로 위 49행 표에는 '`so_conc`의 **한 행**을 담을 work area를 만든다.'로 영어 원문이 쓰였고, 52행 콜아웃에서만 '작업 영역'으로 번역했다. L06 44·58행도 'work area'를 쓴다(예: 'work area를 재사용할 때 안 비우면').",
+      "suggestion": "챕터 전체에서 'work area'로 통일하고, 첫 등장 자리에만 'work area(값을 한 줄 담아 두는 임시 변수)'처럼 한 줄 풀이를 붙인다."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH12/CH12-L02.md",
+      "quote": "| `TABLES zbooking.` | `zbooking-concert_id`처럼 Dictionary 필드를 **참조**할 수 있게 한다. |",
+      "category": "용어 — 첫 등장 풀이 없음 · 표기 흔들림",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'Dictionary'가 이 챕터에서 처음 등장하는데 한 줄 풀이도, 배운 곳으로의 연결도 없다. 게다가 같은 개념을 L07에서는 'DDIC'로 부른다.",
+      "evidence": "CH12에서 'Dictionary'는 이 줄에만, 'DDIC'는 L07 63행('…에서 배운 DDIC 개념으로 돌아가 확인한다')에만 나온다. 두 이름을 잇는 문장이 챕터 어디에도 없어, 입문자는 같은 것인지 다른 것인지 알 수 없다.",
+      "suggestion": "한쪽 표기로 통일하고 첫 등장에 'DDIC(Data Dictionary — 테이블·필드 정의를 모아 둔 SAP의 사전)'처럼 풀 스펠링과 한 줄 풀이를 넣거나, CH03 링크를 건다."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH12/CH12-L02.md",
+      "quote": "실행하면 선택화면에 `so_conc`·`so_stat`이 나타난다.",
+      "category": "용어 — ABAP 고유 용어의 직역 고정",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "front-matter가 이 레슨에서 정식 도입한다고 선언한 'Selection Screen'이 본문에는 한 번도 영어 원문으로 등장하지 않고 '선택화면'이라는 직역만 반복된다. 학습자가 실제 SAP 화면·문서에서 만나는 이름을 익히지 못한다.",
+      "evidence": "L02 front-matter는 introduces에 \"Selection Screen\"을 넣었지만, 본문은 54·65·80행 모두 '선택화면'이다. L03 77행, L04 33행, L05 46행도 동일하게 '선택화면'만 쓴다. 반면 Range Table·SELECT-OPTIONS·work area 등 다른 ABAP 용어는 영어 원문을 유지하고 있어 이 항목만 규칙에서 이탈해 있다.",
+      "suggestion": "첫 등장 한 번을 'Selection Screen(선택화면 — 실행하면 먼저 뜨는 조건 입력 화면)'으로 도입한 뒤 이후는 짧게 '선택화면'으로 받는다."
+    },
+    {
+      "seq": 6,
+      "file": "content/abap/CH12/CH12-L02.md",
+      "quote": "조건은 **table 전체**로 다룬다.",
+      "category": "문장 — 중의적 표현",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "한국어 문장 한가운데에 일반명사 'table'만 영어로 놓여 지시 대상이 흐려진다. 같은 챕터가 DB 테이블(zbooking)과 Range Table을 동시에 다루고 있어, 어느 table인지 오해할 수 있다.",
+      "evidence": "바로 앞 문장은 '`so_conc-low` 첫 행만 보는 습관이 들면 다중 선택 행을 놓친다'로 Range Table의 행을 말하고 있는데, 결론 문장만 대상을 'table'로 뭉뚱그린다. 챕터의 다른 곳은 모두 'Range Table'로 명시한다.",
+      "suggestion": "'조건은 **Range Table 전체**(모든 행)로 다룬다.'처럼 대상을 명시한다."
+    },
+    {
+      "seq": 7,
+      "file": "content/abap/CH12/CH12-L02.md",
+      "quote": "- `FOR <필드>`가 입력칸의 타입과 도움 속성 기준을 정한다.",
+      "category": "용어 — 미설명 용어가 정리에만 등장",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'도움 속성'이라는 표현이 본문에서 한 번도 설명되지 않은 채 '정리'에서 처음이자 마지막으로 나온다. 입문자는 '도움'이 무엇의 도움인지(입력 도움말·F4 검색 도움) 알 수 없다.",
+      "evidence": "L02 본문(23~72행) 어디에도 '도움'·'입력 도움말'·'검색 도움' 설명이 없다. 정리는 본문에서 배운 것을 요약하는 자리인데, 여기서만 새 용어가 튀어나온다.",
+      "suggestion": "'…입력칸의 타입과 입력 도움말(값 목록) 기준을 정한다'로 풀어 쓰고, 본문 '화면에서는 어떻게 보이나'에 한 문장으로 무엇이 도움말로 뜨는지 미리 보여 준다."
+    },
+    {
+      "seq": 8,
+      "file": "content/abap/CH12/CH12-L03.md",
+      "quote": "> 호스트 변수 표시(`@`)와 콤마 필드 목록 같은 현대식 Open SQL은",
+      "category": "용어 — 첫 등장 풀이 없음 · 표기 흔들림",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'호스트 변수'가 풀이 없이 등장하고, 같은 레슨 뒤쪽에서는 '호스트 표시'로 이름이 줄어든다. 아직 배우지 않은 개념을 두 가지 이름으로 흘려보내는 셈이다.",
+      "evidence": "78행은 '`@` 호스트 표시·콤마 필드 목록은 쓰지 않는다'로 '변수'가 빠진 다른 이름을 쓴다. L07 85행은 다시 'modern `@`'로만 부른다. 세 자리 모두 풀이는 없다.",
+      "suggestion": "지금 배울 내용이 아니므로 이름을 하나로 고정하고 최소화한다. 예: '`@`로 시작하는 현대식 표기(Modern Open SQL)는 …에서 배운다'로 통일하고, 용어를 늘리지 않는다."
+    },
+    {
+      "seq": 9,
+      "file": "content/abap/CH12/CH12-L03.md",
+      "quote": "> 않은 것처럼 동작한다(공식 문서: *initial ranges table → 조건이 DB에 전달되지 않아 결과는 항상 참*).",
+      "category": "톤 — 매뉴얼 인용체 이탈",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "친근한 설명 흐름 중간에 공식 문서 인용 형식이 끼어들고, 그 안에 번역되지 않은 'initial ranges table'과 '결과는 항상 참' 같은 문서체 표현이 그대로 들어가 톤이 매뉴얼로 튄다.",
+      "evidence": "같은 콜아웃의 앞 문장은 '조건을 걸지 않은 것처럼 동작한다'로 이미 쉬운 말로 설명을 끝냈다. 괄호 안 인용은 같은 내용을 어려운 말로 한 번 더 반복하는 셈이고, 'initial ranges table'은 챕터 어디에서도 풀이되지 않는다.",
+      "suggestion": "괄호를 덜어 내고 '비어 있는 Range Table은 조건 자체가 DB로 넘어가지 않는다'처럼 본문 톤으로 흡수한다. 근거 표시가 필요하면 각주나 링크로 뺀다."
+    },
+    {
+      "seq": 10,
+      "file": "content/abap/CH12/CH12-L03.md",
+      "quote": "- [[SELECT-OPTIONS]]가 만든 selection table도 같은 구조라 그대로 `IN`에 쓴다.",
+      "category": "용어 — 미정의 용어 · 같은 개념의 다른 이름",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'selection table'이 정의 없이 처음 등장한다. 챕터 내내 같은 것을 'Range Table'로 불러 왔기 때문에, 입문자는 새로운 종류의 표가 하나 더 나온 것으로 읽게 된다.",
+      "evidence": "'selection table'은 L03 84행, L06 74행, L07 90행에 나오는데 모두 '정리' 섹션이고 본문 도입이 없다. 특히 L06 74행은 '`SELECT-OPTIONS`는 화면+selection table, `TYPE RANGE OF`는 코드 안 range table만.'처럼 두 이름을 나란히 대비시켜, 서로 다른 것이라는 인상을 강화한다.",
+      "suggestion": "L02 본문에 'SELECT-OPTIONS가 만든 Range Table은 SAP 문서에서 selection table이라고도 부른다'는 한 문장을 넣어 동의어임을 못 박거나, 아예 'Range Table'로 통일한다."
+    },
+    {
+      "seq": 11,
+      "file": "content/abap/CH12/CH12-L03.md",
+      "quote": "필드 목록은 쓰지 않는다(modern Open SQL은 다음 구간에서).",
+      "category": "문장 — 지시 대상 모호",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'다음 구간'이 다음 섹션인지, 다음 레슨인지, 한참 뒤 챕터인지 알 수 없다. 실제로는 CH19라 '다음'이라는 말이 오해를 부른다.",
+      "evidence": "같은 레슨 22~23행은 이미 '[Chapter 19 · Modern Open SQL](CH19-L01.html)에서 배운다'로 정확히 링크했는데, 흔한 실수 항목에서만 모호한 표현으로 되돌아갔다.",
+      "suggestion": "앞과 동일하게 '[Chapter 19 · Modern Open SQL](CH19-L01.html)에서'로 링크를 건다."
+    },
+    {
+      "seq": 12,
+      "file": "content/abap/CH12/CH12-L04.md",
+      "quote": "다중 선택 팝업은 화면 의미를 Range Table 행으로 바꿔 준다. 탭 이름보다 **행의 의미**를",
+      "category": "문장 — 설명되지 않은 화면 요소 참조",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'탭 이름'이 무엇을 가리키는지 앞뒤 어디에도 설명이 없다. 팝업에 탭이 있다는 사실 자체를 알려 준 적이 없어, 입문자는 있지도 않은 화면을 떠올리며 멈춘다.",
+      "evidence": "CH12 전체에서 '탭'은 이 한 곳에만 나온다. 팝업 설명은 18~19행의 '화살표(다중 선택) 버튼을 누르면 이 요구를 처리하는 팝업이 열린다'가 전부이고, 그 팝업의 구성은 서술되지 않는다.",
+      "suggestion": "'팝업은 포함 값·포함 범위·제외 값·제외 범위 탭으로 나뉘는데, 탭 이름을 외우기보다 행의 의미를 먼저 잡으면 된다'처럼 대상을 먼저 보여 준 뒤 비교한다."
+    },
+    {
+      "seq": 13,
+      "file": "content/abap/CH12/CH12-L05.md",
+      "quote": "- **문자 코드에 `BT`를 숫자처럼 생각한다** → 문자 필드의 `BT`는 **문자 정렬 순서**를 따른다.",
+      "category": "문장 — 비문(성분 호응 오류)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'문자 코드에 `BT`를 숫자처럼 생각한다'는 조사 호응이 깨진 비문이다. '무엇에 무엇을 어떻게 생각한다'가 성립하지 않아, 흔한 실수 라벨인데도 무엇이 실수인지 한 번에 읽히지 않는다.",
+      "evidence": "같은 섹션의 다른 라벨은 '**`CP`를 일반 포함 검색처럼 쓴다**', '**SQL `LIKE`의 `%`·`_`를 섞는다**'처럼 목적어-서술어가 맞는다. 이 항목만 구조가 어긋난다.",
+      "suggestion": "'**문자 코드의 `BT`를 숫자 범위처럼 생각한다**' 또는 '**문자 코드에 `BT`를 쓰면서 숫자 범위처럼 기대한다**'로 고친다."
+    },
+    {
+      "seq": 14,
+      "file": "content/abap/CH12/CH12-L05.md",
+      "quote": "`CP`는 **Conforms to Pattern**(패턴에 부합)의 약자다. 선택화면 도움말에는 \"Contains Pattern\"으로",
+      "category": "용어 — 약어 확장형의 근거 흔들림",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "`CP`의 확장형을 'Conforms to Pattern'으로 단정했는데, ABAP 문서에서 통용되는 표기는 'Covers Pattern'(비교 연산자 CP) 또는 'Contains Pattern'(선택 옵션)이다. 확장형을 단정한 뒤 곧바로 다른 표기를 '표시되기도 해'라고 낮춰 부르는 구성이라, 입문자에게 어느 쪽이 정본인지 혼란을 준다.",
+      "evidence": "본문 스스로 같은 문장에서 두 확장형을 제시하면서 근거를 밝히지 않는다. 나는 오프라인 문서를 조회하지 않았으므로 확장형 판정은 추정으로 남긴다.",
+      "suggestion": "확장형 단정을 피하고 기능 중심으로 서술한다. 예: '`CP`는 값이 **패턴에 맞는지**를 보는 옵션이다(문서에 따라 Covers/Contains Pattern으로 풀어 쓴다).' 확장형을 유지하려면 keyword 문서 표기를 확인해 하나로 맞춘다."
+    },
+    {
+      "seq": 15,
+      "file": "content/abap/CH12/CH12-L06.md",
+      "quote": "**레거시**(헤더라인식) 방식이다. 공식 문서상 *obsolete*라",
+      "category": "용어 — 풀이 안에 더 어려운 말",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "한 문장에 '레거시'·'헤더라인식'·'obsolete' 세 개의 미풀이 용어가 겹친다. 특히 괄호 '(헤더라인식)'은 앞말을 풀어 주는 자리인데 원래 말보다 더 어렵고, 'obsolete'는 번역도 풀이도 없이 영어 그대로다.",
+      "evidence": "CH12 어디에도 Header Line 설명이 없고, '헤더라인식'이라는 한글 조어는 이 한 곳에만 나온다(다른 ABAP 용어는 Range Table·work area처럼 영어 원문 표기를 유지한다). 바로 뒤 문장 '공식 문서상 *obsolete*라'도 문서 인용체라 콜아웃 톤이 순간 매뉴얼로 바뀐다.",
+      "suggestion": "'옛 방식(더 이상 권장되지 않음)이다. 지금은 `TYPE RANGE OF`를 쓴다' 정도로 줄이고, Header Line을 언급해야 한다면 'Header Line(표에 딸린 임시 한 줄)'처럼 영어 원문 + 쉬운 한 줄 풀이로 쓴다."
+    },
+    {
+      "seq": 16,
+      "file": "content/abap/CH12/CH12-L07.md",
+      "quote": "예약 건만 보고 싶다면, 전체 6건을 띄워 눈으로 찾는 방식은 곧 한계가 온다.",
+      "category": "문장 — 비문(주어-서술어 호응 오류)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'…보고 싶다면'이라는 조건절이 '…방식은 곧 한계가 온다'라는 주절과 이어지지 않고, '방식은 한계가 온다'도 주어와 서술어가 어긋난다(한계가 오는 주체는 방식이 아니다).",
+      "evidence": "앞 문장 '실제 업무에서는 \"특정 공연·특정 상태\"만 필요할 때가 더 많다'는 호응이 정상이라, 이 문장만 구조가 틀어져 읽는 흐름이 걸린다.",
+      "suggestion": "'예약 건만 보고 싶은데 전체 6건을 띄워 눈으로 찾는다면, 이 방식은 곧 한계에 부딪힌다.'처럼 조건절과 주절의 주어를 맞춘다."
+    },
+    {
+      "seq": 17,
+      "file": "content/abap/CH12/CH12-L07.md",
+      "quote": "> 고정값)는 [Chapter 3 · Domain](CH03-L01.html)에서 배운 DDIC 개념으로 돌아가 확인한다.",
+      "category": "문장 — 중복 표현 · 어색한 서술",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'고정값의 관리(Domain·고정값)'처럼 괄호 안에 바로 앞 단어를 그대로 되풀이했고, '개념으로 돌아가 확인한다'는 주체가 흐릿한 문서체라 독자에게 무엇을 하라는 건지 전달되지 않는다.",
+      "evidence": "앞줄(62행)이 '이런 고정값의 관리(Domain·'로 끝나고 이 줄이 '고정값)는'으로 이어져, 한 구절 안에 '고정값'이 두 번 들어간다. 같은 챕터의 다른 링크 문장은 '…에서 정리한다'·'…에서 다룬다'처럼 간결한데 이 문장만 늘어진다.",
+      "suggestion": "'이런 고정값은 Domain으로 관리한다 — 자세한 내용은 [Chapter 3 · Domain](CH03-L01.html)에서 확인하자.'처럼 중복을 덜고 행동을 분명히 한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "문장 품질은 전반적으로 좋다. 불편 제시 → 개념 → 표 → 흔한 실수 → 정리로 이어지는 리듬이 7개 레슨에서 일정하고, 조건을 사람 말과 표로 왕복시키는 서술(L01)이나 포함/제외를 판정 순서로 풀어 준 서술(L04)은 입문자에게 실제로 잘 읽힌다. 번역투나 장황한 만연체는 거의 없고 이모지·구어체 톤도 일관적이다. 다만 교열 관점에서 손볼 곳이 남아 있다. 첫째, 용어 표기가 여러 축에서 흔들린다 — work area/작업 영역(L02), Dictionary/DDIC(L02·L07), Range Table/selection table/range table(L03·L06·L07), 호스트 변수 표시/호스트 표시(L03). 특히 'selection table'은 정의 없이 정리 섹션에만 세 번 등장하고 L06에서는 range table과 대비까지 되어 별개 개념으로 오해되기 쉽다(치명적이진 않으나 반드시 정리 필요). 둘째, 미설명 용어가 요약·부연 자리에서 튀어나온다 — L02 정리의 '도움 속성', L04의 '탭 이름', L06의 '헤더라인식·obsolete'가 그렇고, 특히 L06은 풀이 괄호가 원래 용어보다 어렵다. 셋째, ABAP 고유 용어 중 Selection Screen만 본문 내내 '선택화면' 직역으로 고정되어 다른 용어(Range Table·work area)의 영어 원문 유지 방침과 어긋난다. 넷째, 비문·호응 오류가 두 건(L05 흔한 실수 라벨, L07 도입부) 있고, L03의 공식 문서 인용 괄호와 L06의 'obsolete' 서술에서 톤이 잠깐 매뉴얼로 튄다. 모두 국소 수정으로 해결되는 범위이고 구조·설명 순서를 다시 짤 필요는 없다고 본다."
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "agent": "AG02",
+  "model": "sonnet",
+  "target": "CH12",
+  "persona_ack": "나는 준호다. 배운 건 그 자리에서 직접 눌러보고 값을 바꿔봐야 직성이 풀리는 실습형 학습자로서, CH12(SELECT-OPTIONS·Range Table) 7개 레슨의 본문 코드·설명과 딸린 체험 위젯 7개를 하나하나 직접 조작하며 대조했다.",
+  "method": "Claude_Browser MCP로 로컬 서버(http://localhost:8144)의 embeds/abap/CH12-L01~L07-S01.html 7개를 ?v=b3 캐시무효화 쿼리로 개별 로드 → 각 위젯 로드 시 콘솔 로그(0건 확인)와 네트워크 요청(엔진 JS/CSS/폰트 전부 200, 404 없음)을 점검 → 카드·프리셋·다중선택 칩·스텝 버튼을 JS로 click()/dispatchEvent() 디스패치해 실제 렌더 결과(행 표·sy-subrc·sy-dbcnt·통과행수·판정 사유)를 레슨 본문의 표·예상값과 하나씩 정량 대조(L01 카드4종, L02 From/To+다중3종+빈값, L03·L07 프리셋 5종 전수, L04 프리셋 누적3종, L05 프리셋 5종, L06 스텝 7단계 전수). CH12-L03-S01·CH12-L07-S01에서는 '+ 범위 행 추가'로 커스텀 조건(OPTION=CP, LOW='C+01')을 직접 만들어 편집 가능한 자유입력 경로까지 조작. 의심 로직은 embeds/_engine/*.js 소스를 정독하고, 브라우저 콘솔에서 동일 정규식 생성 공식을 직접 실행해 대조 검증(예: cpMatch 이스케이프 문자 클래스 차이로 select-options-filter-sim.js·include-exclude-judge.js가 option-compare-lab.js와 다르게 동작함을 실측 재현).",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L07.md",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH12-L01-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH12-L02-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH12-L03-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH12-L04-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH12-L05-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH12-L06-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH12-L07-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\option-compare-lab.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\select-options-filter-sim.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\include-exclude-judge.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\selopt-screen-mapper.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\range-row-builder.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\range-append-stepper.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\include-exclude-judge.css"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH12-L03-S01.html",
+      "quote": "<script src=\"../_engine/select-options-filter-sim.js\" defer></script>",
+      "category": "위젯 결함",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "이 위젯이 참조하는 select-options-filter-sim.js의 cpMatch가 OPTION=CP일 때 '+'(정확히 한 글자, CH12-L05에서 가르치는 의미)를 정상적으로 처리하지 못한다. LOW에 '+'가 든 패턴(예: C+01)을 입력하면 '+'가 먼저 정규식 이스케이프되어 '\\+'가 된 뒤, 그 안의 '+' 문자가 다시 '.'로 치환돼 결국 '\\.'(리터럴 마침표 요구)로 잘못 변환된다. 그 결과 실제 데이터에는 '.' 문자가 없으므로 어떤 값도 매치하지 못한다.",
+      "evidence": "브라우저에서 직접 재현: '+ 범위 행 추가'로 so_conc에 행을 만들고 OPTION을 CP로, LOW를 'C+01'로 바꾸면 zbooking 6건 중 concert_id=C001(4건 포함)조차 하나도 안 걸려 0/6이 나온다. 동일 조건을 CH12-L05-S01(option-compare-lab.js, 프리셋 'I CP C+01')에서 실행하면 C001만 정확히 통과한다 — 두 엔진의 cpMatch 이스케이프 문자 클래스가 다르기 때문이다. 브라우저 콘솔에서 두 공식을 나란히 실행해 확인: 이 엔진(select-options-filter-sim.js) 공식은 이스케이프 클래스에 '+'를 포함해 'C+01' → 최종 정규식 '^C\\.01$'(테스트 결과 false), option-compare-lab.js 공식은 '+'를 이스케이프 클래스에서 제외해 최종 정규식 '^C.01$'(테스트 결과 true, 'C001'과 매치). 같은 사이트 안에 정답 구현과 오답 구현이 공존함을 실측 확인했다.",
+      "suggestion": "select-options-filter-sim.js의 cpMatch 이스케이프 정규식 `[.+^${}()|[\\]\\\\]`에서 '+'를 제거해 option-compare-lab.js와 동일한 `[.^${}()|[\\]\\\\]` 형태로 통일한다. 동일 버그가 include-exclude-judge.js에도 있으나(단 CH12-L04-S01 위젯은 프리셋 전용 UI라 CP를 직접 입력할 방법이 없어 실사용 경로에서는 드러나지 않음) 한 번에 함께 고치는 편이 안전하다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH12-L07-S01.html",
+      "quote": "<script src=\"../_engine/select-options-filter-sim.js\" defer></script>",
+      "category": "위젯 결함",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "CH12-L03-S01과 동일한 select-options-filter-sim 엔진을 재사용하는 이 실습 마무리 위젯도 같은 결함을 그대로 갖는다. OPTION=CP + LOW에 '+' 패턴을 넣으면 '정확히 한 글자' 매칭이 리터럴 마침표 요구로 잘못 바뀌어 사실상 항상 매치가 0건이 된다.",
+      "evidence": "브라우저에서 동일하게 재현: so_conc에 '+ 범위 행 추가'로 행을 만들고 OPTION=CP, LOW='C+01'로 두면 concert_id=C001인 예매(4건)조차 하나도 걸리지 않아 0/6이 나온다(ABAP CP 의미상 C001은 매치해야 함). 근본 원인과 정규식 비교(엔진 공식 '^C\\.01$' vs 올바른 '^C.01$')는 seq=1(CH12-L03-S01, 동일 select-options-filter-sim.js)과 완전히 같다.",
+      "suggestion": "seq=1과 동일 — embeds/_engine/select-options-filter-sim.js 한 파일만 고치면 이 페이지도 함께 해결된다(두 위젯이 같은 엔진을 공유하므로 별도 수정 불필요)."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L07.md",
+      "quote": "3. **`예약만 (status=N)`** → N 상태만 남는지 확인.",
+      "category": "불일치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'직접 해 볼 과제' 1~4번이 위젯 프리셋 버튼 라벨을 그대로 인용하는 형태(`전체 (빈 범위)`·`공연 C001만`·`예약만 (status=N)`·`취소 제외 (E)`)인데, 실제 위젯(CH12-L07-S01)의 프리셋 버튼은 5개이고 과제 2번과 3번 사이에 과제 목록에 없는 '공연 C001~C002 (BT)' 버튼이 끼어 있어 번호와 버튼 순서가 어긋난다.",
+      "evidence": "브라우저에서 버튼을 순서대로 읽으면: [0]전체 (빈 범위)·[1]공연 C001만 (EQ)·[2]공연 C001~C002 (BT)·[3]예약만 (status=N)·[4]취소 제외 (E). 과제 1·2·3·4가 인용한 라벨은 모두 위젯에 실존하지만(각각 인덱스 0,1,3,4), 인덱스 2 자리의 프리셋은 과제 목록 어디에도 언급되지 않는다. 기능적 오류는 아니며(각 버튼 클릭 결과는 모두 정상 — [2]는 6/6건 통과) 학습자가 번호를 따라가다 목록에 없는 버튼을 만나는 경미한 불일치다.",
+      "suggestion": "과제 목록에 '공연 C001~C002 (BT)' 시나리오를 5번(도전 앞)으로 추가해 번호를 위젯 5버튼과 나란히 맞추거나, 위젯 프리셋 순서를 과제 순서(전체→C001만→N만→C제외)에 맞춰 재배열한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH12(SELECT-OPTIONS·Range Table) 7개 레슨은 코드가 나오는 L02·L03·L06·L07은 물론 코드가 없는 L01·L04·L05까지 전부 전용 체험 위젯을 갖췄다. 위젯의 변수명(so_conc/so_stat, lr_stat/ls_stat), 데이터(zbooking 6건: C001 4건·N 5건 등), 시나리오(빈 범위→6건, C001만→4건, C999→0건 등)가 본문 표·예시와 브라우저 실측으로 전부 정확히 일치했고(체험 공백·헛체험 0건), L04의 '녹색=포함/빨강=제외' 색상 claim도 CSS로 실제 구현돼 있음을 확인했다. 다만 CH12-L03-S01·CH12-L07-S01이 공유하는 select-options-filter-sim.js의 CP 패턴 판정 로직이 '+'(정확히 한 글자) 와일드카드를 리터럴 마침표로 잘못 변환해, OPTION=CP로 '+'가 든 패턴을 직접 입력하면 항상 매치가 0건이 되는 결함을 실측으로 확인했다(같은 사이트의 CH12-L05-S01·option-compare-lab.js는 동일 케이스를 정확히 구현 — 대조 확인, 이 결함이 있는 상태로 방치할 이유가 없음이 드러남). 그 외 CH12-L07 '직접 해 볼 과제' 번호 목록과 위젯 프리셋 버튼 순서가 하나 어긋나는 경미한 불일치가 있다. 두 사안 모두 국소적이고 안내 텍스트나 엔진 파일 한 곳 수정으로 해결 가능해 '경미 수정'으로 판단한다."
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "agent": "AG03",
+  "model": "sonnet",
+  "target": "CH11",
+  "persona_ack": "타 언어(Java/C# 계열) 백엔드 3～5년차 개발자로서 ABAP을 빠르게 훑어 익히려 CH11(SALV 1차)을 통독하는 역할로 감사를 수행했다. 프로그래밍 기본기(변수·조건문·루프·SQL·OOP)는 이미 안다는 전제로, 과잉 설명·오개념 유발·지름길 부재·용어 충돌 네 축만 기록했다. 1독자는 비전공 입문자라는 채택 기준에 따라, 입문자에게도 불필요한 장황함만 높음 이상으로 잡고 나머지는 낮음/suggestion으로 눌렀다.",
+  "method": "대상 .md 원문 7개(_chapter.md, CH11-L01～L06)를 Read 도구로 전부 읽고, 인용문은 원문에서 그대로 발췌했다. 빌드 산출물(docs/)이나 브라우저 미리보기는 열지 않았고, 웹 검색·외부 네트워크도 사용하지 않았다(순수 통독 감사, 도구 미사용 종).",
+  "errors": [],
+  "files_read": [
+    "C:/SAP/sap-dev-academy/content/abap/CH11/_chapter.md",
+    "C:/SAP/sap-dev-academy/content/abap/CH11/CH11-L01.md",
+    "C:/SAP/sap-dev-academy/content/abap/CH11/CH11-L02.md",
+    "C:/SAP/sap-dev-academy/content/abap/CH11/CH11-L03.md",
+    "C:/SAP/sap-dev-academy/content/abap/CH11/CH11-L04.md",
+    "C:/SAP/sap-dev-academy/content/abap/CH11/CH11-L05.md",
+    "C:/SAP/sap-dev-academy/content/abap/CH11/CH11-L06.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH11-L02.md",
+      "quote": "여기서 입문자가 가장 많이 헷갈리는 게 있다. **`factory( )`를 부르면 표가 바로 뜰까?**",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "factory와 display가 별개 단계라는 설명이 전용 소제목·인터랙티브 시뮬레이터·강조 콜아웃(🖱️)까지 동원해 꽤 두껍게 다뤄지는데, 이는 생성(구성)과 별도의 표시/렌더 호출을 분리하는 아주 흔한 OOP 패턴(예: Java Swing의 JFrame() 생성 후 setVisible(true), 빌더 패턴의 build() 후 render())이라 경력자에게는 한 문장이면 충분하다.",
+      "evidence": "L01의 '왜 SALV부터인가'까지는 표·비교 중심으로 간결한데, 이 절만 소제목+임베드+강조 콜아웃 3중 구성으로 늘어난다. 레슨 스스로 이 대목을 '이 레슨의 핵심'이라 부를 만큼 비중을 크게 둔다.",
+      "suggestion": "'생성자/빌더 패턴에 익숙하면 이 절은 건너뛰어도 됨' 한 줄만 추가하고, 시뮬레이터는 details로 접어 처음 보는 사람만 펼치게 해도 좋다."
+    },
+    {
+      "seq": 2,
+      "file": "CH11-L02.md",
+      "quote": "> 🔎 **[선행 사용]** 아래의 `TYPE REF TO`(참조 변수)와 `TRY ... CATCH`(예외 처리)는",
+      "category": "과잉",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "TRY...CATCH 예외 처리 자체는 Java/C# 경력자에게 이미 완전히 익숙한 문법이라 '지금은 분석·암기 불필요' 같은 안심 문구가 불필요하게 느껴진다. 실제로 새로운 건 ABAP 예외가 cx_salv_msg처럼 클래스 기반이라는 점과 TRY...ENDTRY 구문 정도뿐이다.",
+      "evidence": "콜아웃이 TYPE REF TO와 TRY...CATCH 둘 다를 '나중에 배울 개념'으로 한데 묶어 예고하지만, 경력자 관점에서 TRY/CATCH 자체는 선행지식이 필요 없는 보편 개념이고 REF TO만 실제로 새롭다.",
+      "suggestion": "콜아웃을 REF TO(참조 변수)에 집중시키고, TRY/CATCH는 '다른 언어처럼 예외를 던지고 잡는다 — 여기선 cx_salv_msg라는 클래스 기반 예외라는 점만 다르다' 정도로 경력자용 한 줄을 병기."
+    },
+    {
+      "seq": 3,
+      "file": "CH11-L02.md",
+      "quote": "TYPE REF TO cl_salv_table",
+      "category": "용어 충돌",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "REF TO라는 표기가 C# 개발자에게는 매개변수 전달 방식을 바꾸는 ref 키워드를 먼저 연상시킬 수 있다. 실제로는 '객체 참조를 담는 변수 선언'(Java의 참조 타입 변수, C#의 참조 타입 선언과 같은 개념)이라 매개변수 전달과는 무관하다.",
+      "evidence": "본문 콜아웃은 REF TO를 '참조 변수'로만 짧게 풀이하고, C#의 ref 매개변수 키워드와는 다른 개념이라는 대조는 어디에도 없다.",
+      "suggestion": "REF TO를 처음 쓰는 지점에 'C#의 ref 매개변수 키워드와는 다른 개념 — 그냥 객체를 가리키는 변수 선언'처럼 한 줄 대조를 붙이면 오독을 막을 수 있다."
+    },
+    {
+      "seq": 4,
+      "file": "CH11-L06.md",
+      "quote": "DATA: lt_book TYPE TABLE OF zbooking,",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "CH11-L02·L04는 FORM/METHOD로 감싸지 않은 동일한 형태의 코드에서 gt_flight/go_alv처럼 g_ 접두어를 쓰는데, CH11-L06은 똑같이 래퍼 없는 스니펫에서 lt_book/lo_alv로 l_ 접두어를 쓴다. 접두어를 스코프 신호로 읽는 습관이 있는 경력자는 이 스니펫이 실제로 어떤 FORM/METHOD 안에 있다고 오해하거나, 반대로 이전 레슨과의 불일치를 오탈자로 의심하게 된다.",
+      "evidence": "L02: 'DATA gt_flight TYPE TABLE OF sflight.' / 'DATA go_alv TYPE REF TO cl_salv_table.'(래퍼 없이 g_ 접두어). L04: REPORT+START-OF-SELECTION 안에서도 여전히 gt_flight/go_alv(이벤트 블록은 로컬 스코프가 아니므로 일관). L06만 래퍼가 전혀 없는 같은 형태 스니펫에서 lt_book/lo_alv로 바뀐다.",
+      "suggestion": "L06 코드 앞에 '이 코드는 예매 처리 FORM/METHOD 안에 있다고 가정한다' 같은 한 줄을 붙이거나, 다른 레슨과 통일해 gt_book/go_alv로 표기."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "경력 개발자 관점에서 CH11은 전반적으로 군더더기가 적다 — L01의 WRITE/SALV/Grid ALV 비교표, L05의 '지금 vs 나중' 심화 로드맵표는 오히려 속성 학습자에게 유용한 지름길 역할을 한다. 다만 L02의 factory/display 분리 설명이 OOP 경력자에겐 이미 익숙한 패턴치고 과하게 강조되고 건너뛰기 안내가 없으며, REF TO를 C#의 ref 키워드와 혼동할 여지가 있고, L06 코드 스니펫만 이전 레슨과 다른 스코프 접두어(l_ vs g_)를 써서 일관성이 깨진다. 모두 한두 줄 보강이나 표기 수정으로 해결 가능한 경미한 사안이라 재집필까지는 불필요하다."
+  }
+}

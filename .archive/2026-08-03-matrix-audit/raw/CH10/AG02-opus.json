@@ -1,0 +1,161 @@
+{
+  "agent": "AG02",
+  "model": "opus",
+  "target": "CH10",
+  "persona_ack": "나는 '준호' — 배운 건 그 자리에서 직접 해봐야 직성이 풀리는 실습형 학습자다. CH10 7개 레슨의 본문 코드·설명과 체험 위젯 8개를 브라우저에서 실제로 눌러 가며 대조 감사했다. 체험 공백·불일치·헛체험·위젯 결함 네 가지 관점으로만 판단했고, 확인하지 못한 것은 추정으로 남겼다.",
+  "method": "전역 Playwright 1.62.1 + Chromium 헤드리스로 http://localhost:8143 의 위젯 8개를 ?v=b3 로 실제 로드해 상호작용을 실행했다(버튼·체크박스·세그먼트 클릭 후 렌더 DOM 텍스트/className/disabled/하이라이트 줄 data-line 수집, console·pageerror 수집). L01은 시작→다음 11스텝 전체와 'FORM 정의 누락' 토글, L02는 4개 전달모드+RETURN·STATICS 데모, L03은 정상/음수·EXCEPTIONS 제거·관점 토글, L04는 3섹션+실행+PUBLIC/RETURNING 제거 전후 코드 텍스트 비교, L05는 계약 열기·정상/누락/static 확인, L06은 6카드 오답·정답·리셋·전체정답 채점, L07-S01은 6스텝 전 구간과 콘솔 전체출력, L07-S02는 3석/5석·취소 포함 토글을 실제로 조작했다. 빌드된 레슨 7쪽(http://localhost:8143/docs/abap/pages/CH10-L0n.html)도 열어 iframe src·렌더 높이·콘솔 오류를 측정했다. 병행해 content MD 8개·위젯 HTML 8개·엔진 JS 8개를 정독하고 TYPE-POOLS·CH20/CH21 교차 grep으로 확인했다. 서버·프로세스는 기동/종료하지 않았다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L07.md",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH10-L01-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH10-L02-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH10-L03-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH10-L04-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH10-L05-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH10-L06-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH10-L07-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH10-L07-S02.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\perform-call-map.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\param-passing-board.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\call-function-box.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\local-class-stepper.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\global-class-blackbox.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\module-choice-cards.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\can-book-toggle.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\step-debugger.js"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "embeds/abap/CH10-L01-S01.html",
+      "quote": "<div class=\"block\"><div class=\"block__hd\">메인 (실행 시작)</div><div id=\"mainBlk\"></div></div>",
+      "category": "불일치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "본문은 'FORM 정의가 들어오면 START-OF-SELECTION 표지판이 필요해진다'고 [선행 사용]으로 따로 설명하는데, 같은 레슨의 위젯 메인 블록에는 START-OF-SELECTION이 한 줄도 없다. 본문 코드와 체험 화면이 서로 다른 프로그램을 보여 준다.",
+      "evidence": "브라우저 실측 — 위젯 메인 블록에 렌더된 줄은 'DATA gv_total_calls TYPE i.' / (빈 줄) / 'PERFORM count_call.  \" 1번째' / 'PERFORM count_call.  \" 2번째' / 'WRITE: / gv_total_calls.' 5줄이 전부이고, 아래 FORM 블록에는 'FORM count_call.'～'ENDFORM.'이 있다. 즉 FORM이 있는 프로그램인데 표지판이 없다. 본문 CH10-L01.md는 같은 상황을 두고 'FORM 정의가 프로그램에 들어오면 실행문과 정의를 나누기 위해 이 표지판이 필요해진다'고 적고 바로 다음 코드블록에 'START-OF-SELECTION.'을 넣었다. 학습자가 본문→체험으로 넘어오면 '필요하다더니 왜 없지?'가 된다.",
+      "suggestion": "위젯 MAIN 배열 맨 앞(DATA 선언 뒤)에 'START-OF-SELECTION.' 줄을 추가하고 스텝 line 인덱스를 한 칸 밀거나, 메인 블록 헤더를 '메인 (START-OF-SELECTION)'으로 바꿔 본문 설명과 화면을 일치시킨다."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH10/CH10-L02.md",
+      "quote": "START-OF-SELECTION.\n  DATA lv_out TYPE p LENGTH 8 DECIMALS 2.\n  PERFORM add_tax USING 1000 CHANGING lv_out.",
+      "category": "불일치",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L01 위젯이 '메인 프로그램 변수 = gv_ · FORM 안 변수 = lv_'를 체험의 핵심 장치로 가르쳐 놓았는데, 바로 다음 레슨부터 메인 프로그램에서 선언한 변수에 lv_를 붙인다. 방금 손으로 익힌 스코프 신호가 무력화된다.",
+      "evidence": "L01 위젯 실측 — 사이드 패널이 '전역 변수 (gv_)' 칸에 gv_total_calls, '지역 변수 (lv_, FORM 안)' 칸에 lv_local_calls를 나눠 표시하고, 스텝 노트도 '지역 lv_local_calls 또 0으로 새로 생성'으로 접두어를 근거 삼는다. 그런데 CH10-L02.md는 START-OF-SELECTION 아래(=프로그램 전역)에 lv_out을, CH10-L04.md는 'DATA lv_out TYPE p LENGTH 8 DECIMALS 2.'를, CH10-L05.md는 'DATA lv_text TYPE string.'·'DATA lv_r TYPE i.'를 전역 위치에 선언한다. 위젯도 같은 오류를 반복한다 — CH10-L02-S01 호출자 값이 'lv_amount (전) 1000'(실측), CH10-L05-S01 결과 패널이 '결과 lv_left'다. ABAP에서 이 선언들은 FORM/METHOD 밖이므로 전역이고, 프로젝트 접두어 규약(g=global·l=local, 로컬 스코프에서 선언한 것만 lv_)에도 어긋난다. FORM 안에서 선언한 CH10-L07.md의 lt_book·lv_sum·lv_cap은 정확히 l 접두어를 쓰고 있어, 오직 메인 프로그램 선언만 어긋난 상태다.",
+      "suggestion": "메인 프로그램에서 선언하는 변수는 gv_로 통일한다(L02 lv_out→gv_out, L04 lv_out→gv_out, L05 lv_text→gv_text·lv_r→gv_r). 위젯도 함께 — param-passing-board의 호출자 라벨 lv_amount→gv_amount, global-class-blackbox의 결과 라벨 lv_left→gv_left, local-class-stepper의 lv_result→gv_out."
+    },
+    {
+      "seq": 3,
+      "file": "embeds/abap/CH10-L02-S01.html",
+      "quote": "<div class=\"dout\" id=\"retOut\">divide_safe 를 호출해 보세요.</div>",
+      "category": "위젯 결함",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "RETURN 데모가 FORM을 'divide_safe( 10, 0 )'이라는 함수형 표기로 호출한다. ABAP 서브루틴에는 없는 호출 형태이고, 하필 이 레슨의 주제가 바로 그 호출 문법(PERFORM ... USING ... CHANGING ...)이다.",
+      "evidence": "브라우저 실측 — '0으로 나누기' 클릭 시 출력 'divide_safe( 10, 0 ) / IF iv_right = 0 → cv_result = 0, RETURN / cv_result = iv_left / iv_right.  (실행 안 됨) / 결과 cv_result = 0', '2로 나누기' 클릭 시 'divide_safe( 10, 2 ) ...'. 같은 상자 안에 진짜 ABAP 문(cv_result = iv_left / iv_right.)과 존재하지 않는 호출 표기가 섞여 나와 학습자가 구분할 수 없다. FORM은 'PERFORM divide_safe USING 10 2 CHANGING lv_result.' 형태로만 부를 수 있고, 괄호+콤마 인자 나열은 메서드 호출 문법이라 CH10 시점(classic 구간)에는 노출 대상도 아니다.",
+      "suggestion": "출력 첫 줄을 PERFORM 문으로 바꾼다 — 'PERFORM divide_safe USING 10 0 CHANGING gv_result.' / 'PERFORM divide_safe USING 10 2 CHANGING gv_result.'. 버튼 옆 플레이스홀더 문구도 'PERFORM divide_safe 를 호출해 보세요.'로 맞춘다."
+    },
+    {
+      "seq": 4,
+      "file": "embeds/abap/CH10-L03-S01.html",
+      "quote": "<label class=\"btn\" style=\"display:flex;gap:6px;align-items:center;cursor:pointer\"><input type=\"checkbox\" id=\"excChk\"> EXCEPTIONS 제거</label>",
+      "category": "위젯 결함",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'EXCEPTIONS 제거' 실험이 보여 주는 결과가 실제 classic 예외 동작과 다르다. 위젯은 예외가 발생해도 sy-subrc = 0으로 조용히 흐름이 이어진다고 가르치는데, EXCEPTIONS를 아예 매핑하지 않으면 미처리 예외가 되어 런타임 오류로 프로그램이 멈춘다.",
+      "evidence": "브라우저 실측 — '음수 금액 (-1)' + 'EXCEPTIONS 제거' 상태에서 화면이 'sy-subrc = 0'을 표시하고 메시지는 '⚠ EXCEPTIONS를 매핑하지 않아 예외를 sy-subrc로 분기하지 못합니다 — 잘못된 결과로 흐름이 계속될 수 있습니다'를 낸다. 위젯 자신의 모델상 음수면 invalid_amount 예외가 raise되는데(매핑 시 sy-subrc = 1로 실측됨), classic FM 예외는 호출자가 EXCEPTIONS로 받지 않으면 처리되지 않은 예외가 되어 런타임 오류(RAISE_EXCEPTION 덤프)가 난다. 또 EXCEPTIONS 절이 없으면 sy-subrc가 이 호출로 설정되지도 않으므로 '0'을 단정해 보여 주는 것도 근거가 없다. 본문 CH10-L03.md의 경고는 'EXCEPTIONS 무시 → sy-subrc 확인 누락'인데, 위젯은 'EXCEPTIONS 절 제거'와 'sy-subrc 확인 누락'이라는 서로 다른 두 실수를 하나로 뭉개고 있다.",
+      "suggestion": "① 'EXCEPTIONS 제거' 시 결과를 '런타임 오류 — 처리되지 않은 예외로 프로그램 중단'으로 바꾸고 sy-subrc 칸은 '(설정 안 됨)'으로 표시하거나, ② 실험 이름을 'sy-subrc 확인 생략'으로 바꿔 매핑은 둔 채 IF sy-subrc 분기만 빠뜨렸을 때 잘못된 결과가 흘러가는 장면으로 재정의한다(본문 '흔한 실수'와 일치)."
+    },
+    {
+      "seq": 5,
+      "file": "embeds/abap/CH10-L03-S01.html",
+      "quote": "<div class=\"fm__hd\">CALL FUNCTION 'Z_CH10_ADD_TAX'</div>",
+      "category": "불일치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "위젯의 함수 모듈 이름·예외 이름이 본문 코드와 다르고, 본문 예제에 없는 CHANGING 파라미터가 위젯에만 있다. 본문을 보고 내려온 학습자가 같은 예제를 만지고 있다고 느끼지 못한다.",
+      "evidence": "본문 CH10-L03.md는 CALL FUNCTION 'Z_ADD_TAX' · EXCEPTIONS invalid = 1 · OTHERS = 2이고 파라미터는 EXPORTING iv_amount / IMPORTING ev_result 둘뿐이다. 위젯은 실측상 헤더가 'CALL FUNCTION Z_CH10_ADD_TAX', 인터페이스가 'EXCEPTIONS invalid_amount=1 · OTHERS=2'이며 'CHANGING cv_log — 넘겨서 바뀐 뒤 돌아오는 값' 행이 추가로 렌더된다(실행 시 cv_log ↔ OK/ERR로 변함). 방향·sy-subrc 학습 목표 자체는 잘 작동하나(정상 1000→1100·subrc 0, 음수 -1→subrc 1·ev_result 미변경 실측), 이름이 어긋나 본문↔체험 대조가 끊긴다.",
+      "suggestion": "위젯 FM명을 본문과 같은 'Z_ADD_TAX'로, 예외명을 'invalid'로 맞춘다. CHANGING cv_log를 유지하려면 본문 예제 코드에도 CHANGING cv_log 한 줄을 넣어 양쪽을 같은 계약으로 만든다."
+    },
+    {
+      "seq": 6,
+      "file": "embeds/abap/CH10-L04-S01.html",
+      "quote": "<button class=\"btn exp\" data-a=\"nopub\" type=\"button\">PUBLIC 제거</button>",
+      "category": "헛체험",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'PUBLIC 제거'·'RETURNING 제거' 실험을 눌러도 코드 표시와 공개 계약 패널이 전혀 바뀌지 않는다. 오류 메시지만 뜨고 무엇이 제거됐는지는 화면 어디에도 없어, 본문이 약속한 '빼면 어떤 오류가 나는지' 실험이 성립하지 않는다.",
+      "evidence": "브라우저 실측 — 'PUBLIC 제거' 클릭 후 #code 텍스트를 클릭 전과 문자열 비교했더니 완전히 동일했다(codeChanged=false). 화면에는 여전히 'PUBLIC SECTION.'과 'RETURNING VALUE(rv_result) TYPE p.'가 그대로 있는데 메시지만 '컴파일 오류 — add_tax가 PUBLIC이 아니어서 외부에서 호출할 수 없습니다'가 뜬다. 'RETURNING 제거'도 동일하게 codeChanged=false이고, 공개 계약 카드는 두 경우 모두 '공개 메서드 add_tax / IMPORTING iv_amount = 1000 / RETURNING rv_result'를 유지하며 호출 형식도 'lcl_calc=>add_tax( 1000 )' 그대로다. 엔진(local-class-stepper.js)에서 nopub/noret 분기가 render()를 호출하지 않고 SECTIONS 배열도 불변이라 구조적으로 코드가 바뀔 수 없다. 본문 CH10-L04.md 직접 해 보기는 'PUBLIC·RETURNING을 빼면 어떤 오류가 나는지 실험해 보자'라고 약속한다.",
+      "suggestion": "토글 시 render()를 호출하고, noPublic이면 'PUBLIC SECTION.'을 'PRIVATE SECTION.'으로(또는 취소선 처리), noReturn이면 RETURNING 줄을 지운 채 다시 그린다. 계약 카드에서도 해당 행을 함께 제거해 '무엇이 빠졌는지'가 눈에 보이게 한다."
+    },
+    {
+      "seq": 7,
+      "file": "content/abap/CH10/CH10-L04.md",
+      "quote": "lv_out = lcl_calc=>add_tax( 1000 ).   \" 객체 생성 불필요",
+      "category": "불일치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "본문의 호출 결과 변수는 lv_out인데 위젯 코드 ③ 정적 호출은 lv_result로 되어 있고, 위젯에는 그 변수의 DATA 선언이 없다. 같은 한 줄을 본문과 체험이 다르게 적는다.",
+      "evidence": "본문은 'DATA lv_out TYPE p LENGTH 8 DECIMALS 2.' 선언 뒤 'lv_out = lcl_calc=>add_tax( 1000 ).'이다. 위젯 실측 코드 블록 ③은 'lv_result = lcl_calc=>add_tax( 1000 ).' 한 줄뿐이고 선언줄이 없으며, 'RETURNING 제거' 오류 메시지도 'lv_result = 가 성립하지 않습니다'로 위젯 쪽 이름을 쓴다. 입문자는 결과를 담을 변수를 어디서 만들어야 하는지 위젯만 봐서는 알 수 없다.",
+      "suggestion": "위젯 ③ 블록을 본문과 같은 이름·2줄로 맞춘다(seq 2의 접두어 정리와 함께 gv_out 권장): 'DATA gv_out TYPE p LENGTH 8 DECIMALS 2.' + 'gv_out = lcl_calc=>add_tax( 1000 ).'"
+    },
+    {
+      "seq": 8,
+      "file": "embeds/abap/CH10-L05-S01.html",
+      "quote": "<button class=\"btn\" id=\"btnStatic\" type=\"button\">static 여부 확인</button>",
+      "category": "위젯 결함",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'static 여부 확인' 버튼이 인스턴스 메서드를 배울 곳으로 CH20을 가리킨다. 같은 위젯 하단 노트와 본문은 모두 CH21이라고 하므로, 한 페이지 안에서 서로 다른 챕터를 안내한다.",
+      "evidence": "브라우저 실측 — 버튼 클릭 시 메시지 'GET_REMAINING은 CLASS-METHODS(static) → 객체 생성 없이 =>로 호출합니다. 인스턴스 메서드라면 ->가 필요(→ CH20).'이 출력된다(엔진 global-class-blackbox.js). 반면 같은 위젯 HTML 하단 노트는 '직접 설계는 CH21'로 CH21-L01.html을 링크하고, CH10-L05.md 본문은 3곳 모두 'Chapter 21 · OO 기초'(CH21-L01.html)로 안내한다. CH10 콘텐츠 전체 grep에서 CH20 참조는 이 엔진 문자열 하나뿐이다. 덧붙여 이 안내는 본문 규칙과 달리 내부 챕터 ID를 링크 없이 그대로 노출한다.",
+      "suggestion": "메시지의 '→ CH20'을 CH21로 고치고, 하단 노트처럼 <a href=\"CH21-L01.html\">CH21</a> 링크 형태로 바꾼다."
+    },
+    {
+      "seq": 9,
+      "file": "content/abap/CH10/CH10-L05.md",
+      "quote": "zcl_util=>calc( EXPORTING iv_a = 1 iv_b = 2 IMPORTING ev_r = lv_r ).",
+      "category": "체험 공백",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "본문의 두 코드(zcl_util=>format_amount 반환형 호출, 파라미터가 여럿일 때의 EXPORTING/IMPORTING 명명 호출)가 위젯에 하나도 등장하지 않는다. 위젯은 다른 클래스를 쓰는 데다 정작 호출문을 코드로 한 줄도 보여 주지 않아, 이 레슨의 핵심 문법을 손으로 확인할 수단이 없다.",
+      "evidence": "본문 코드는 zcl_util=>format_amount( 1000 )과 위 인용의 명명 파라미터 호출 둘이다. 위젯은 실측상 클래스가 ZCL_BOOKING_CALC, 메서드가 GET_REMAINING이며 계약 패널('IMPORTING iv_concert TYPE … / iv_perf TYPE …', 'RETURNING rv_left TYPE i')·호출자 값 카드('iv_concert C001', 'iv_perf 001')·결과 숫자 4·메시지만 바뀔 뿐, 실제 ABAP 호출문 텍스트는 화면 어디에도 렌더되지 않는다(4개 버튼 전부 클릭해 확인). 즉 IMPORTING이 둘인 계약을 보여 주면서도 그 계약을 EXPORTING/IMPORTING 키워드로 어떻게 적는지는 체험할 수 없다.",
+      "suggestion": "위젯에 호출문 코드 한 줄을 상태에 따라 렌더한다(정상: 'gv_left = zcl_booking_calc=>get_remaining( iv_concert = 'C001' iv_perf = '001' ).', 누락: iv_perf 인자가 빠진 줄을 오류 표시). 본문 예제도 위젯과 같은 클래스로 통일하면 본문↔체험이 한 시나리오로 이어진다."
+    },
+    {
+      "seq": 10,
+      "file": "embeds/abap/CH10-L06-S01.html",
+      "quote": "{q:'옛 코드에서 TYPE-POOLS 문을 발견했다.', ans:'old', why:'Type Pool은 기존 코드 인지용 — 신규 생성은 지양됩니다.'}",
+      "category": "불일치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "6번 카드가 CH10 어디에서도 배운 적 없는 TYPE-POOLS를 정답 대상으로 출제한다. 본문은 Subroutine·Function Module·Class 세 도구만 다루는데 위젯에는 네 번째 선택지 '옛 코드 인지(신규 X)'가 있어, 본문만 읽은 학습자는 근거 없이 찍어야 한다.",
+      "evidence": "CH10 콘텐츠 MD 8개 grep 결과 'TYPE-POOLS'는 0건이며, CH10-L06.md의 '한눈에' 표와 '원칙' 절도 세 도구만 비교한다. 위젯은 실측상 선택지 4개(Subroutine (FORM)/Function Module/Class / Method/옛 코드 인지(신규 X))로 6문항을 내고 정답 판정·채점은 정상 작동한다(오답 시 '✕ 정답: Subroutine (FORM) — …', 전부 맞히면 '정답 6 / 6', 답한 카드 버튼 disabled 실측). 판정 로직 자체는 옳고 문제는 출제 범위다. 같은 세트의 5번 카드도 'CH11에서 SALV 표준 표시 기능을 호출한다'로 내부 챕터 ID를 링크 없이 그대로 노출한다.",
+      "suggestion": "6번 카드를 본문에 있는 판단 장면으로 교체하거나(예: '외부 시스템이 우리 잔여석을 조회하게 해 달라' → fm), TYPE-POOLS를 남기려면 본문 '왜 이런 서열이 됐나' 절에 한 줄 설명을 추가한다. 5번 카드 문구는 'ALV 목록 출력에서 SALV 표준 표시 기능을 호출한다'처럼 챕터 ID 없이 쓴다."
+    },
+    {
+      "seq": 11,
+      "file": "embeds/abap/CH10-L07-S01.html",
+      "quote": "{\"line\":19,\"vars\":{\"lv_cap\":\"10\"},\"console\":\"SELECT SINGLE → 정원 capacity = 10\"}",
+      "category": "불일치",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "디버거가 따라가는 get_remaining 코드에서 본문에 있는 sy-subrc 안전 종료 블록(IF sy-subrc <> 0. cv_left = 0. RETURN. ENDIF.)이 통째로 빠져 있다. 바로 위 본문 코드와 다른 버전을 한 줄씩 실행하는 셈이다.",
+      "evidence": "브라우저 실측 — 렌더된 코드 23줄 중 19～20줄이 SELECT SINGLE, 21줄이 빈 줄, 22줄이 'cv_left = lv_cap - lv_sum.'로 곧장 이어지고 IF/RETURN/ENDIF는 존재하지 않는다. 스텝도 line 11→16(3회)→19→22 여섯 개뿐이라 sy-subrc 분기를 지나가지 않는다(6/6 완주·cv_left=4까지 정상 동작). 본문 CH10-L07.md는 SELECT SINGLE 직후 'IF sy-subrc <> 0.  \" 공연이 없으면 안전하게 종료 / cv_left = 0. RETURN. / ENDIF.'를 명시하고, L02에서 배운 RETURN과 L03의 'sy-subrc 확인 누락은 단골 버그' 경고가 여기서 결실을 맺는 구조다. 정작 그 장면만 체험에서 빠졌다.",
+      "suggestion": "config code 배열에 IF/RETURN/ENDIF 3줄을 본문과 같은 위치에 넣고(이후 line 번호 재조정), '공연이 없을 때' 스텝 하나를 추가하거나 최소한 SELECT SINGLE 스텝의 console에 'sy-subrc = 0 — 공연이 있으므로 안전 종료를 건너뜀'을 덧붙여 분기를 인지시킨다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "체험 공백은 없다. 코드가 나오는 7개 레슨 전부에 위젯이 붙어 있고(L07은 2개), 빌드된 7쪽 모두 iframe이 정상 높이(468～897px)로 렌더되며 8개 위젯 전부 HTTP 200·콘솔 오류 0으로 상호작용이 끝까지 동작했다. L01 스코프 스텝(gv_ 누적 vs lv_ 매번 재생성)·L03 호출자 기준 방향 토글·L06 채점(6/6)·L07 두 위젯의 데이터 정합(정원 10, 비취소 2+3+1=6, 잔여석 4, 취소 포함 시 0)까지 실측으로 맞았다. 문제는 정확도와 본문↔위젯 정합이다. 우선순위 둘 — ① L03 'EXCEPTIONS 제거' 실험이 미처리 classic 예외를 'sy-subrc = 0으로 조용히 계속'으로 잘못 가르친다(실제로는 런타임 오류), ② L04 'PUBLIC/RETURNING 제거' 실험이 코드·계약 표시를 전혀 바꾸지 않아 본문이 약속한 실험이 성립하지 않는다. 그 밖에 L07 디버거가 본문의 sy-subrc 안전 종료 블록을 생략했고, L02 RETURN 데모가 FORM을 함수형 표기로 호출하며, L05 안내가 CH21 대신 CH20을 가리킨다. 또 L01 위젯이 세운 gv_/lv_ 스코프 신호를 L02·L04·L05의 메인 프로그램 선언이 lv_로 되받아 무너뜨린다. 모두 문자열·config·토글 재렌더 수준의 국소 수정으로 해결 가능하며 구조나 커버리지를 다시 짤 필요는 없다."
+  }
+}

@@ -1,0 +1,103 @@
+{
+  "agent": "AG06",
+  "model": "opus",
+  "target": "CH11",
+  "persona_ack": "20년차 SAP ABAP 아키텍트로서 CH11(SALV 1차) 레슨 6편과 _chapter.md를 읽기 전용으로 감사했다. 기술 사실(문법·시스템 동작·T-code·테이블)·예시 적절성·위험한 생략·안티패턴 네 축으로만 판단했고, 문체·편집 취향은 지적하지 않았다. 다른 감사자의 산출물이나 과거 감사 결과물은 열지 않았다.",
+  "method": "Read 도구로 대상 7개 파일 전문을 각 1회 읽고 코드 블록을 한 줄씩 대조했다(cl_salv_table=>factory의 파라미터명·예외명·호출 형태, SELECT 구문, DESCRIBE/RETURN/MESSAGE 사용, 메서드 체이닝, set_all과 display의 순서). 웹 검색·외부 네트워크·빌드·브라우저 미사용이며, 미리보기 서버(http://localhost:8143)는 이 종의 판정에 필요하지 않아 쓰지 않았다. ABAP·SALV 사실 판단은 전적으로 자체 지식이고, 릴리스·설정 의존 항목은 confidence=추정으로 낮췄다.",
+  "errors": [
+    "프롬프트의 접근 제한에 따라 대상 7개 파일 밖은 열지 않았다. 따라서 본문이 링크로 참조하는 CH03·CH06·CH08·CH09·CH10·CH15·CH17·CH19·CH22 레슨의 실제 내용과의 일치 여부, embeds/abap/CH11-*.html 위젯의 동작·서술 일치 여부는 검증하지 못했다(검증 못 한 것을 발견으로 만들지 않았다).",
+    "L06의 zbooking 테이블 구조와 concert_id 필드는 CH09 데이터 모델 정의 파일을 열 수 없어 필드명·타입 정합성을 확인하지 못했다."
+  ],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L06.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L02.md",
+      "quote": "**그 테이블 자체를 보게** 하는 자리라 `CHANGING`을 쓴다. ALV는 이 테이블을 그대로 읽어",
+      "category": "사실 오류",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'값을 복사해 주는 게 아니라 그 테이블 자체를 보게 하는 자리라 CHANGING을 쓴다'는 설명은 인과가 틀렸다. ABAP은 형식 파라미터에 VALUE( )를 붙이지 않는 한 IMPORTING도 참조 전달이 기본이므로, '복사하지 않는다'는 성질은 CHANGING의 근거가 될 수 없다. t_table이 CHANGING인 진짜 이유는 넘겨받은 쪽이 그 내부 테이블을 바꿀 수 있어야 하기 때문이다.",
+      "evidence": "ABAP 파라미터 전달 규칙 — IMPORTING·EXPORTING·CHANGING 모두 VALUE(...) 선언이 없으면 참조 전달이 기본이고, 값 전달은 VALUE(...)를 명시했을 때뿐이다. 세 방향의 차이는 복사 여부가 아니라 읽기/쓰기 권한이다(IMPORTING = 바꿀 수 없는 참조, CHANGING = 읽고 쓸 수 있는 참조). 게다가 SALV는 정렬·집계를 적용할 때 넘겨받은 내부 테이블을 직접 다시 정렬할 수 있어, 이 파라미터는 읽기 전용일 수 없다. 바로 다음 문장의 'ALV는 이 테이블을 그대로 읽어'는 SALV가 원본을 절대 건드리지 않는다는 반대 인상을 심어, 나중에 Grid ALV에서 표 내용이 바뀌는 동작을 만났을 때 오히려 걸림돌이 된다.",
+      "suggestion": "근거를 바꿔 쓴다. '값을 복사해 주는 게 아니라 ~ 라서 CHANGING' → '**SALV가 이 테이블을 읽기만 하는 게 아니라 필요하면 바꿀 수도 있어서** CHANGING을 쓴다'. 보충 한 줄을 붙이면 오해가 사라진다: 'ABAP은 원래 파라미터를 복사하지 않고 그 자리를 가리켜 넘긴다. CHANGING은 거기에 *바꿔도 된다*는 권한이 더해진 것이다.' 마지막 문장도 '그대로 읽어 표를 그린다' 대신 '이 테이블을 직접 들여다보며 표를 그린다. 그래서 정렬을 걸면 이 테이블의 순서도 함께 바뀐다'로 고치면 사실과 맞고 뒤 챕터와도 이어진다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L04.md",
+      "quote": "수백만 건인 경우가 흔해서, 그대로 실행하면 화면이 한참 멎는다. 실제로는",
+      "category": "위험한 생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "조건 없는 SELECT *의 결과를 '화면이 한참 멎는다'는 지연 문제로만 서술했다. 실제 운영 규모 테이블에서는 느려지다 끝나는 게 아니라 프로그램이 덤프로 죽는다. 경고의 방향은 옳지만 결과의 크기를 과소 서술해, 학습자가 '기다리면 되는 일'로 받아들일 여지가 있다.",
+      "evidence": "내부 테이블이 확장 메모리 한도를 넘기면 런타임 오류 TSV_TNEW_PAGE_ALLOC_FAILED로 종료되고, 다이얼로그에서 실행 시간 제한(rdisp/max_wprun_time, 기본 600초)을 넘기면 TIME_OUT으로 종료된다. 둘 다 결과물이 아예 없이 끝나며, 그 사이 다이얼로그 워크프로세스 하나를 통째로 점유해 같은 시스템의 다른 사용자에게도 영향을 준다. 신입이 운영계에서 가장 흔히 저지르는 사고 유형이라 한 줄로라도 못을 박아 둘 가치가 있다.",
+      "suggestion": "경고 문장을 '그대로 실행하면 화면이 한참 멎는다' → '그대로 실행하면 대개 **프로그램이 죽는다**. 메모리가 모자라거나 정해진 실행 시간(보통 10분)을 넘기면 SAP이 프로그램을 강제로 끊고 오류 화면(덤프)을 띄운다. 게다가 그동안 서버 자리 하나를 붙잡고 있어서 다른 사람 작업까지 느려진다'로 강화한다. 뒤따르는 WHERE·UP TO 처방은 그대로 두면 된다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L02.md",
+      "quote": "`factory`는 예외 `cx_salv_msg`를 던질 수 있어 `TRY ... CATCH`로 감싼다.",
+      "category": "위험한 생략",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "cx_salv_msg를 반드시 잡으라고 챕터 안에서 세 번(L02·L04·L06) 지시하면서, factory가 실제로 **어떤 경우에** 실패하는지는 한 번도 말하지 않는다. 결과적으로 TRY/CATCH가 뜻을 모른 채 따라 쓰는 의례로 남고, 학습자는 자기 코드에서 이 예외가 터졌을 때 어디를 봐야 할지 모른다.",
+      "evidence": "L02의 [선행 사용] 콜아웃은 '객체 생성이 실패할 때를 대비해 감싼다'까지만 말하고, 흔한 실수 콜아웃은 '안 잡으면 구문 검사 경고 + 실행 시 덤프'라는 결과만 말한다(이 두 서술 자체는 정확하다 — cx_salv_msg는 static check 계열이라 미처리 시 활성화는 되되 구문 검사 경고가 뜨고, 실제로 발생하면 덤프다). 빠진 건 원인이다. 현장에서 이 예외가 실제로 터지는 대표 상황은 SALV가 표로 그릴 수 없는 행 구조를 넘겼을 때다(행 안에 또 다른 내부 테이블이 들어 있는 깊은 구조 등). 정확한 발생 조건 목록은 릴리스에 따라 다를 수 있어 추정으로 표기한다.",
+      "suggestion": "L02의 '흔한 실수와 점검'에 원인 한 줄을 추가한다: '그럼 언제 실패할까? **표로 그릴 수 없는 모양의 테이블**을 넘겼을 때다 — 예를 들어 한 칸 안에 또 다른 표가 들어 있는 구조. 우리처럼 평평한 DB 테이블을 넘기면 거의 실패하지 않는다. 그래도 감싸는 이유는, 잡지 않으면 그 드문 한 번이 덤프로 끝나기 때문이다.' 원인·빈도·이유가 한 문장씩 붙으면 TRY/CATCH가 의례가 아니라 판단이 된다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L04.md",
+      "quote": "DESCRIBE TABLE gt_flight LINES gv_count.",
+      "category": "예시 적절성",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "빈 결과 판정에 카운터 변수 + DESCRIBE TABLE ... LINES를 쓰는 건 이 자리에서 불필요하게 장황하고, 실무 리포트의 표준 관용구가 아니다. SELECT ... INTO TABLE 직후에는 sy-subrc가 이미 답이고, 아니면 IF gt_flight IS INITIAL. 한 줄이면 끝난다. L06도 같은 패턴을 그대로 복제해 굳혔다.",
+      "evidence": "SELECT ... INTO TABLE은 한 건이라도 읽으면 sy-subrc = 0, 한 건도 못 읽으면 sy-subrc = 4를 설정한다(추가 문장 0줄). 내부 테이블의 공백 판정은 IS INITIAL이 표준 관용구다. 지금 코드는 행 수를 메시지에 쓰지도 않으면서 DATA gv_count TYPE i 선언 한 줄과 DESCRIBE 한 줄을 더 쓰고 있다. DESCRIBE 자체가 틀린 문법은 아니고 CH06 복습을 노린 의도도 읽히지만, 본문 코드에 그대로 실려 '이렇게 하는 것'처럼 읽히는 위치라 관용구 쪽이 맞다.",
+      "suggestion": "본문 코드는 IF gt_flight IS INITIAL.(또는 SELECT 바로 다음이라면 IF sy-subrc <> 0.)로 바꾸고, 'CH06에서 배운 DESCRIBE TABLE ... LINES로 행 수를 세어 비교해도 똑같다. 다만 행 수 자체가 필요할 때만 쓰는 게 보통이다'를 각주로 남긴다. 행 수를 안내 메시지에 넣어 보여 주는 과제를 덧붙이면 DESCRIBE도 제 쓸모를 갖는다. L06 코드도 같은 방식으로 맞춘다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L04.md",
+      "quote": "MESSAGE 'ALV 생성 실패' TYPE 'I'.",
+      "category": "안티패턴",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "사용자에게 보이는 문구를 소스에 그대로 박은 MESSAGE '…' TYPE 'I'를 챕터 안에서 네 번(L02 1곳·L04 2곳·L06 2곳) 교정 언급 없이 시연한다. 실무 표준은 메시지 클래스(SE91)에 등록한 메시지를 쓰거나 최소한 텍스트 심볼을 쓰는 것이며, 리터럴 하드코딩은 신입이 그대로 굳히기 쉬운 습관이다.",
+      "evidence": "리터럴 메시지는 번역 대상이 아니어서 로그온 언어와 무관하게 항상 같은 언어로 뜨고, 문구 한 글자를 고치려면 프로그램을 수정·활성화·이관해야 한다. SAP 표준 개발 관례는 MESSAGE e001(zmsg) 형태의 메시지 클래스 참조 또는 text-001 같은 텍스트 심볼이다. 챕터가 '실무에서는 그냥 넘어가지 않는다'(L06 권한 대목)처럼 실무 규율을 짚는 톤을 이미 갖고 있으므로, 이 대목만 아무 표시 없이 지나가는 건 일관성도 어긋난다.",
+      "suggestion": "코드는 지금 형태를 유지해도 된다(입문 단계에서 리터럴이 읽기 쉬운 건 맞다). 대신 '지금 형태는 임시'라는 표시만 한 줄 넣는다: '실무에서는 이런 문구를 소스에 직접 쓰지 않고 **메시지 클래스**에 번호를 붙여 등록해 쓴다. 번역이 되고, 문구만 따로 고칠 수 있어서다. 지금은 읽기 쉬우라고 그대로 적었다.' 해당 정식 도입 레슨이 있으면 링크를 건다."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L01.md",
+      "quote": "| Grid ALV (CL_GUI_ALV_GRID) | 강력·편집 가능, 코드 많음 ([Grid ALV](CH17-L01.html)) |",
+      "category": "예시 적절성",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "ALV 방식 비교표가 'WRITE 리스트 / SALV / Grid ALV(CL_GUI_ALV_GRID)' 셋으로만 되어 있어, 현장 ECC 코드에서 가장 자주 마주치는 Function Module형 ALV(REUSE_ALV_GRID_DISPLAY·REUSE_ALV_LIST_DISPLAY)가 지도에서 통째로 빠졌다. L05의 '뒤로 미루는 심화' 표에도 없어, 나중에 배운다는 안내조차 없다.",
+      "evidence": "신규 개발에 SALV·Grid ALV를 권하는 방향 자체는 옳다(SAP도 신규 개발에는 ALV Object Model을 권한다). 문제는 학습자가 실무에서 처음 열어 볼 기존 리포트가 십중팔구 REUSE_ALV_GRID_DISPLAY + field catalog 구조라는 점이다. 존재조차 배운 적이 없으면 '내가 배운 ALV와 전혀 다르게 생긴 코드'를 만나 자기 학습을 의심하게 된다. 다만 이 과정이 신규 개발 문법만 다루겠다고 선을 그은 커리큘럼 결정일 수 있어 추정으로 둔다.",
+      "suggestion": "표를 늘릴 필요는 없고 각주 한 줄이면 충분하다: '예전에 만든 리포트에서는 `REUSE_ALV_GRID_DISPLAY`라는 함수를 부르는 방식도 아주 많이 만난다. 지금 배울 필요는 없고, 그런 모양도 같은 ALV라는 것만 알아 두자.' L01 도입부가 부담이면 [SALV 1차 정리](CH11-L05.md)의 '뒤로 미루는 심화' 표 아래가 더 자연스럽다."
+    },
+    {
+      "seq": 7,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L02.md",
+      "quote": "**SFLIGHT가 비어 있을 수도 있다.** 연습용 시스템 대부분에 들어 있지만, 데모 데이터가",
+      "category": "위험한 생략",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "SFLIGHT가 비어 있을 수 있다고 경고하고 SE16으로 확인까지 시키지만, 비어 있을 때 **어떻게 채우는지 또는 무엇으로 대체하는지**는 알려 주지 않는다. 이 챕터는 L02·L04가 모두 SFLIGHT에 의존하므로, 여기서 막힌 학습자는 챕터 절반을 실습 없이 읽기만 하게 된다.",
+      "evidence": "항공편 데모 데이터는 표준 생성 리포트(SAPBC_DATA_GENERATOR)를 실행해 채우는 것이 통상적인 경로다. 다만 릴리스·권한·데모 모델 설치 여부에 따라 실행 가능 여부가 갈리고, 최근 S/4HANA 계열에는 RAP용 /DMO/ 항공 모델이 따로 있어 경로가 다를 수 있어 추정으로 표기한다. 확실한 건 현재 본문이 '문제를 진단하는 법'만 주고 '빠져나오는 법'을 주지 않는다는 점이다.",
+      "suggestion": "경고 콜아웃 끝에 탈출구 한 줄을 붙인다: '비어 있다면 두 가지 길이 있다. ① 강사·시스템 관리자에게 항공 데모 데이터 생성을 요청한다(표준 리포트 `SAPBC_DATA_GENERATOR`로 채운다). ② 그게 어렵다면 SFLIGHT 대신 [Chapter 09]에서 만든 내 테이블로 연습해도 배우는 건 똑같다 — factory에 넘기는 테이블만 바뀔 뿐이다.' 특히 ②는 권한 없는 개인 연습 환경에서 바로 통한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH11(SALV 1차)은 기술적으로 견고한 편이고, 이 수준 교재가 흔히 틀리는 지점들을 오히려 잘 피해 갔다. cl_salv_table=>factory( )의 파라미터명(r_salv_table·t_table)·예외명(cx_salv_msg)·정적 메서드 호출 형태가 정확하고, factory와 display가 별개라는 핵심, get_functions( )->set_all( )이 display보다 **앞**에 와야 한다는 순서, set_all만으로는 레이아웃 저장이 안 된다는 단서, 'SALV는 읽기 전용이라 셀 편집 불가', '컨테이너는 SALV로도 되지만 화면 만들기가 함께 필요해 뒤로 미뤘다 — 도구의 한계가 아니라 순서의 문제'라는 정직한 서술까지 모두 사실과 맞다. cx_salv_msg 미처리 시 '구문 검사 경고 → 실행 시 덤프'라는 2단 서술도 static check 예외의 실제 동작 그대로다. 위험 축에서도 조건 없는 SELECT 경고, 빈 결과 처리, 권한 검증 포인터(L06→CH15), '버튼 숨기기는 보안이 아니다'(L03) 같은 규율이 이미 들어가 있어 이 단계 교재로는 드물게 성실하다. 실질 결함은 한 건이다 — L02가 CHANGING을 '복사가 아니라 참조라서'로 설명한 부분인데, ABAP은 IMPORTING도 참조 전달이 기본이라 인과가 성립하지 않고, CHANGING의 진짜 이유(SALV가 그 테이블을 바꿀 수 있어야 함)를 놓쳐 '읽기만 한다'는 반대 인상까지 남긴다. 나머지 6건은 모두 한두 줄 덧붙이면 끝나는 보완이다: 대량 SELECT의 결과는 지연이 아니라 덤프·타임아웃이라는 점, cx_salv_msg가 실제로 언제 터지는지, 빈 결과 판정의 표준 관용구(sy-subrc / IS INITIAL), MESSAGE 문구 리터럴 하드코딩, FM형 ALV(REUSE_ALV_GRID_DISPLAY)의 존재, SFLIGHT가 비었을 때의 탈출 경로. 구조를 다시 짤 문제는 없어 재집필·보강 권장까지 갈 사안이 아니고, 지목한 한 문단 수정 + 각주 몇 줄이면 충분하다."
+  }
+}

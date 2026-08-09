@@ -1,0 +1,67 @@
+{
+  "agent": "AG05",
+  "model": "sonnet",
+  "target": "CH11",
+  "persona_ack": "20년차 학습 교재·코스 설계 전문가로서 CH11(SALV 1차)을 챕터 구성·섹션 흐름·복습/예습 장치·불편-해결 서사·인지부하 5개 축으로 감사했다. 형식(5단계 흐름) 강제는 배제하고, 학습 효과를 실제로 해치는 구조 문제와 R15 게이팅 규율 준수 여부에 집중했다.",
+  "method": "대상 7개 MD 소스(챕터 파일 1 + 레슨 6)를 전문 정독. 각 레슨의 front-matter(introduces/prereq/prevRel/advanceUse/foreshadow)를 본문 서술·상호참조 링크·코드 노출 시점과 대조해 게이팅 정합성을 점검했다. 임베드(::embed::)는 제목·설명 텍스트로 학습목표 정합성만 확인했고 실제 인터랙션 렌더링 검증은 이 감사(순수 텍스트 기반 교수설계 리뷰)의 범위 밖이라 수행하지 않았다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L02.md",
+      "quote": "배울 `get_functions( )->set_all( )`이다.",
+      "category": "예습 장치 — L1 선행노출(코드 포함)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L03에서 정식(L3) 도입되는 `get_functions( )->set_all( )` 메서드 체이닝 구문이, L02의 '표준 기능은 한 줄 더' 절에서 예고 문장 중 실제 호출 구문 그대로 노출된다. 이름·존재만 언급하는 L1 수준을 넘어 코드를 보여준 셈이다.",
+      "evidence": "같은 L02 안에서 `TYPE REF TO`·`TRY...CATCH`는 front-matter advanceUse에 등록되고 본문에 '🔎 [선행 사용]' 박스로 명시 표시되며, L04의 `START-OF-SELECTION`도 동일하게 advanceUse 등록 + [선행 사용] 박스 처리된다. 반면 이 get_functions/set_all 예고는 advanceUse에 없고 [선행 사용] 표시도 없이 백틱 코드 형태로만 등장한다 — 챕터 내 다른 선행 사용 처리와 비교해 일관성이 없다. 05_PITFALLS.md의 P11('후속 개념 선노출')이 지목하는 패턴과 정확히 일치한다.",
+      "suggestion": "구체적 체이닝 구문 대신 '표준 기능을 켜는 한 줄'처럼 이름·용도만 언급하고 실제 호출 구문 노출은 L03으로 미룬다. 의도적으로 미리 보여주려는 것이라면 advanceUse에 추가하고 [선행 사용] 표시를 붙인다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L02.md",
+      "quote": "advanceUse: [\"REF TO\", \"TRY/CATCH cx_salv_msg\", \"oo-method-call(factory)\"]",
+      "category": "front-matter 정합성 — advanceUse",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "advanceUse에 'oo-method-call(factory)'가 선행사용 항목으로 선언돼 있지만, 본문에는 이에 대응하는 [선행 사용] 표시가 없다. 오히려 본문은 이 정적 메서드 호출 문법을 '[Chapter 10 · 정적 메서드](CH10-L04.html)의 => 호출이다'라며 이미 배운 지식의 재사용(recall)으로 소개한다.",
+      "evidence": "prereq에도 CH10이 포함돼 있어(CH11-L01, CH10, CH06), factory 호출 자체의 OO 메서드 호출 문법은 CH10에서 이미 L3로 다뤄졌을 가능성이 본문상 시사된다. 그렇다면 이 항목은 '아직 안 배운 것을 미리 쓰는' advanceUse가 아니라 이미 배운 것의 재적용이라 라벨이 실제 게이팅 상태와 어긋난다.",
+      "suggestion": "CH10에서 이미 정식 도입된 문법이라면 advanceUse에서 제거하고, 실제로 아직 안 배운 요소를 의도한 것이라면 본문에 [선행 사용] 표시를 명시적으로 추가해 라벨과 본문을 맞춘다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L05.md",
+      "quote": "| 더블클릭·툴바 버튼에 반응하기 | [ALV 이벤트](CH30-L01.html) |",
+      "category": "front-matter 정합성 — foreshadow",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "front-matter foreshadow는 'Grid ALV(CH17)'와 'SALV 심화(CH22)' 두 목적지만 선언하지만, 본문의 '뒤로 미루는 심화' 표는 CH22(2행)·CH30(ALV 이벤트)·CH31(Editable Grid ALV)·CH17까지 총 4개 목적지를 예고한다. CH30·CH31이 foreshadow 선언에서 빠졌다.",
+      "evidence": "같은 표의 '셀 편집' 행은 [Editable Grid ALV](CH31-L01.html)를 가리키는데 이 역시 foreshadow에 없다. CH11-L01.md도 비교표에서 'Grid ALV(CL_GUI_ALV_GRID)... ([Grid ALV](CH17-L01.html))'를 본문에서 예고하면서 foreshadow 필드 자체를 선언하지 않는다 — 같은 패턴이 챕터 내 2개 레슨에서 반복된다.",
+      "suggestion": "foreshadow 필드를 본문에 실제 등장하는 예고 목적지(CH30, CH31 포함)와 맞추고, L01에도 foreshadow 필드 추가를 검토한다. 이 필드는 R15 정적 게이팅 점검의 근거로 쓰이므로 완결성이 도구 신뢰도에 직결된다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L01.md",
+      "quote": "[Chapter 10 · 클래스 호출](CH10-L05.html)의 지식이 여기서 쓰인다.",
+      "category": "front-matter 정합성 — prereq",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "본문 '흔한 오해와 점검'에서 'CL_SALV_TABLE은 클래스 → CH10 지식이 여기서 쓰인다'고 명시하지만, front-matter prereq는 CH06·CH08만 선언하고 CH10은 빠져 있다.",
+      "evidence": "L01은 코드가 전혀 없는 순수 개념 레슨이라 '이것은 클래스다'라는 사실만 아는 수준에서는 CH10 완주가 실제로 필수가 아닐 수 있어(반면 코드를 직접 쓰는 L02는 prereq에 CH10을 정확히 포함) 의도적 구분일 가능성도 있다. 다만 R10상 prereq는 '리빌딩 시 필수'인 게이팅 검증 근거 필드라 본문의 명시적 상호참조와 어긋나는 점은 확인할 가치가 있다.",
+      "suggestion": "L01이 CH10 없이도 완결되는 개념 레슨이라는 설계 의도가 맞다면 현행 유지 가능. 다만 게이팅 점검 스크립트가 본문 상호참조까지 훑는다면 오탐 방지를 위해 prereq에 CH10 추가를 검토."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH11은 개념(L01)→factory(L02)→표준기능(L03)→통합(L04)→정리·경계(L05)→캡스톤(L06)의 계단식 구성이 뚜렷하고, 각 레슨의 왜→무엇→어떻게→실수→정리 흐름도 자연스러운 변형 안에서 잘 유지된다. prevRel(딥닝/패럴럴/넥스트스텝)을 실제 서술과 정직하게 맞춰 억지 불편 서사를 피했고(L03→L04, L04→L05, L05→L06 모두 정직한 프레이밍), CH03/CH06/CH08/CH10을 향한 복습 링크와 레슨 말미 1～2문장 예고 전환도 대체로 적절하다. L06의 '30초만 생각해보기' 능동회상 장치, 예제당 변수 2～3개로 제한된 인지부하 관리도 강점이다. 다만 L02의 예습 문장이 L03에서 정식 도입될 메서드 체이닝 구문을 코드 그대로 노출한 점(R15 L1 '코드 없음' 위반 소지, 챕터 내 다른 선행사용 처리와도 불일치)과, L01·L02·L05의 front-matter(prereq/advanceUse/foreshadow)가 본문의 실제 상호참조 일부를 놓치고 있는 점은 게이팅 신뢰도를 위해 손볼 가치가 있다. 구조적 재설계가 필요한 수준은 아니다."
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "agent": "AG09",
+  "model": "sonnet",
+  "target": "CH11",
+  "persona_ack": "AG09 확인 — ABAP 정적 검사기를 시늉하는 코드 전용 감사자로서, 산문은 무시하고 CH11 대상 파일의 ```abap 코드 블록만 줄 단위로 검사한다. 점검 4종: ① 활성화 차단급(미선언 변수·마침표 누락·타입 불일치·존재하지 않는 구문/시그니처), ② 네이밍 규약(gv_/gs_/gt_ 전역 vs CH10+ FORM/METHOD 안 lv_/ls_/lt_ 로컬, it_는 Header Line 전용, pa_/so_/ty_/ts_/tt_, ok_code 예외), ③ classic/modern 경계(CH01~17 modern 문법 금지, CH01~18 New Open SQL 금지, &&·classic 산술은 CH04부터 허용), ④ 주석·출력 문자열과 코드 불일치. 빈 줄·정렬 등 스타일 선호는 결함으로 잡지 않고, [선행 사용] 의사코드 블록은 문법 잣대를 완화한다.",
+  "method": "대상 7개 파일(CH11-L01~L06.md, _chapter.md)을 Read/Grep 도구로 직접 읽고, 그 안의 ```abap 펜스 코드 블록 5개(L02×1, L03×2, L04×1, L06×1 — L01·L05·_chapter.md는 코드 블록 없음)를 줄 단위로 수동 정적 검토했다. 인용구는 Grep으로 원문과 대조해 들여쓰기까지 정확히 확인했다. cl_salv_table=>factory의 IMPORTING r_salv_table/CHANGING t_table/RAISING cx_salv_msg 시그니처, get_functions( )->set_all( )/display( ) 메서드명은 보유 지식 기준으로 판단했고(컴파일러·ADT·웹검색 미사용), 확신이 서지 않는 부분은 없어 전 항목 confidence=\"확실\"로 기록했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH11-L03.md",
+      "quote": "lo_alv->get_functions( )->set_all( abap_true ).",
+      "category": "네이밍 규약",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L03의 코드 블록 두 곳(get_functions/set_all 호출, display 호출)이 로컬 접두어 lo_alv를 쓰는데, L03 안에는 그 변수를 선언하는 DATA문이 전혀 없다. 직전 레슨 L02는 같은 SALV 객체를 `DATA go_alv TYPE REF TO cl_salv_table.`로 전역 접두어 go_로 선언했고, 두 레슨 뒤 L04의 통합 리포트도 동일 객체를 go_alv로 끝까지 일관되게 쓴다. L03에는 FORM/METHOD 진입도 없어 이 챕터가 스스로 규정하는 '로컬 접두어는 CH10+ FORM/METHOD 안에서만' 규칙의 근거도 없이, go_alv여야 할 자리가 lo_alv로 바뀐 것으로 읽힌다.",
+      "evidence": "CH11-L02.md 31행 `DATA go_alv    TYPE REF TO cl_salv_table.` / CH11-L04.md 21~22행 `DATA: gt_flight TYPE TABLE OF sflight, go_alv    TYPE REF TO cl_salv_table.`(REPORT+START-OF-SELECTION 최상위, FORM/METHOD 없음) 및 그 안의 `go_alv->get_functions( )->set_all( abap_true ).`(35행)·`go_alv->display( ).`(36행)과 대조. L03 21행·30행은 이 흐름 사이에 끼여 있으면서 go_alv 대신 lo_alv를 쓰고, 그 선언문은 L03 어디에도 없다.",
+      "suggestion": "L03의 두 코드 블록에서 lo_alv를 go_alv로 통일해 L02/L04와 같은 객체로 이어지게 한다. 굳이 로컬 변수로 의도한 것이라면 FORM/METHOD 블록과 `DATA lo_alv TYPE REF TO cl_salv_table.` 선언을 먼저 명시적으로 보여줘야 한다."
+    },
+    {
+      "seq": 2,
+      "file": "CH11-L06.md",
+      "quote": "DATA: lt_book TYPE TABLE OF zbooking,",
+      "category": "네이밍 규약",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L06 실습 코드는 FORM/METHOD도 START-OF-SELECTION도 없이 SELECT 바로 다음에 TRY가 오는 최상위 코드인데도 lt_book/lo_alv처럼 로컬 접두어(lt_/lo_)를 쓴다. 바로 두 레슨 앞 L04는 구조가 사실상 같은 패턴(SELECT → factory → get_functions/set_all → display)을 REPORT 최상위에서 gt_flight/go_alv(전역 접두어)로 일관되게 보여줬는데, L06만 접두어가 로컬로 바뀌어 이 챕터가 직접 가르친 전역/로컬 접두어 규칙(로컬은 CH10+ FORM/METHOD 안에서만)과 모순된다.",
+      "evidence": "CH11-L04.md 21~22행 `DATA: gt_flight TYPE TABLE OF sflight, go_alv    TYPE REF TO cl_salv_table.`(FORM/METHOD 없음, START-OF-SELECTION만 있음)과 CH11-L06.md 18~19행 `DATA: lt_book TYPE TABLE OF zbooking, lo_alv  TYPE REF TO cl_salv_table.`(FORM/METHOD·START-OF-SELECTION 둘 다 없이 21행 SELECT 다음 23행 TRY가 바로 이어짐)를 대조. 이후 25행 `IMPORTING r_salv_table = lo_alv`, 27행 `lo_alv->get_functions( )->set_all( abap_true ).`, 28행 `lo_alv->display( ).` 모두 동일하게 lo_ 접두어를 유지해 우연한 오타가 아니라 이 코드 블록 전체의 일관된 선택임을 보여준다.",
+      "suggestion": "FORM/METHOD로 감싸 실제 로컬 스코프를 보여주거나(그 경우 lt_/lo_ 유지가 타당), 그럴 게 아니면 L04와 통일해 gt_book/go_alv 같은 전역 접두어로 바꾼다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "코드 블록 자체의 문법·시그니처·경계 규약 준수는 정확하다 — cl_salv_table=>factory의 IMPORTING r_salv_table/CHANGING t_table 시그니처, TRY/CATCH cx_salv_msg, get_functions( )->set_all( )/display( ) 메서드 체이닝, classic SELECT * FROM ... INTO TABLE 모두 활성화를 막을 결함이 없고 modern 문법(inline DATA()·VALUE·NEW·+=·문자열 템플릿)이나 New Open SQL(@·콤마)도 전혀 섞이지 않아 CH01~17/18 경계를 지킨다. 다만 챕터를 관통하는 SALV 객체·내부테이블 변수의 전역/로컬 접두어가 L02·L04(go_alv/gt_flight, 전역·타당)와 L03·L06(lo_alv/lt_book, 로컬 — 그런데 FORM/METHOD 근거 없음)에서 갈려, 이 커리큘럼이 명시적으로 가르치는 네이밍 규약과 스스로 어긋난다. 실행·활성화에는 지장 없는 국소적 일관성 결함이라 경미 수정을 권한다."
+  }
+}

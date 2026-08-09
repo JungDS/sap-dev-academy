@@ -1,0 +1,95 @@
+{
+  "agent": "AG02",
+  "model": "sonnet",
+  "target": "CH10",
+  "persona_ack": "나는 준호다. 배운 건 그 자리에서 직접 해봐야 직성이 풀리는 실습형 학습자로서, CH10의 레슨 7개와 체험 위젯 8개를 하나하나 실제로 눌러보며 본문 코드·설명과 대조했다.",
+  "method": "① content/abap/CH10의 _chapter.md·L01~L07.md 7개와 embeds/abap의 위젯 HTML 8개(L01~L06 각 1개, L07 2개)를 Read로 전문 정독. ② 브라우저 패널(mcp Claude_Browser)로 8개 위젯 전부를 http://localhost:8144/embeds/abap/<위젯ID>.html?v=b3 로 실제 로드해 get_page_text로 렌더 DOM 텍스트를 추출하고, read_console_messages로 콘솔 오류를 확인(전 위젯 0건)했다. ③ 버튼·체크박스·토글을 ref 기반 클릭으로 실제 조작해 상태 전이를 단계별로 검증: L01(시작→다음 단계 반복 클릭으로 gv_/lv_ 값 추적, FORM 정의 누락 체크박스), L02(4가지 전달모드 버튼+RETURN 2종+STATICS 2회 호출), L03(정상/음수 금액+EXCEPTIONS 제거+관점 토글), L04(호출 실행+PUBLIC 제거+RETURNING 제거), L05(정상 호출+필수 parameter 누락+static 여부 확인), L06(카드 6개 중 정답/오답 각각 클릭해 채점 로직 확인), L07-S01(디버거 6스텝 전체 실행), L07-S02(3석/5석+취소 포함 토글). 스크린샷으로 시각 레이아웃도 일부 확인. ④ L05 위젯에서 발견된 이상 신호(CH20 언급)는 embeds/_engine/global-class-blackbox.js를 Grep으로 직접 대조해 소스 라인을 확정했고, 나머지 7개 엔진 JS(perform-call-map·param-passing-board·call-function-box·local-class-stepper·module-choice-cards·step-debugger·can-book-toggle)도 CH\\d\\d 패턴으로 grep해 유사한 챕터참조 오류가 더 있는지 교차검증(추가 발견 없음).",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L07.md",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH10-L01-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH10-L02-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH10-L03-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH10-L04-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH10-L05-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH10-L06-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH10-L07-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH10-L07-S02.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\perform-call-map.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\param-passing-board.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\call-function-box.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\local-class-stepper.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\global-class-blackbox.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\module-choice-cards.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\step-debugger.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\can-book-toggle.js"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH10-L03-S01.html",
+      "quote": "CALL FUNCTION 'Z_CH10_ADD_TAX'",
+      "category": "불일치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "위젯이 표시하는 Function Module 이름과 EXCEPTIONS 이름이 본문 코드의 이름과 다르다.",
+      "evidence": "CH10-L03.md 본문 코드는 `CALL FUNCTION 'Z_ADD_TAX' ... EXCEPTIONS invalid = 1 OTHERS = 2.`를 예시로 쓰는데, 위젯(CH10-L03-S01.html)은 헤더·caller 박스에 `Z_CH10_ADD_TAX`(호출자 zch10_l03)를 쓰고 EXCEPTIONS 이름도 `invalid_amount`로 다르다. 브라우저에서 정상 금액(1000)·음수 금액(-1)·EXCEPTIONS 제거 버튼을 모두 클릭해 확인한 결과 sy-subrc 분기 로직 자체(0/1/거짓양성 0)는 정확하고 이름만 다르다.",
+      "suggestion": "위젯의 FM·예외 이름을 본문과 동일하게(Z_ADD_TAX / invalid)로 맞추거나, 본문 코드를 위젯 이름으로 통일한다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\global-class-blackbox.js",
+      "quote": "인스턴스 메서드라면 <code>-&gt;</code>가 필요(→ CH20).",
+      "category": "위젯 결함",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "CH10-L05-S01 위젯의 'static 여부 확인' 버튼 안내문이 인스턴스 메서드 정식 도입 챕터를 CH20으로 잘못 가리킨다(정답은 CH21).",
+      "evidence": "브라우저로 CH10-L05-S01.html의 'static 여부 확인' 버튼을 클릭하면 '...인스턴스 메서드라면 ->가 필요(→ CH20).' 메시지가 뜬다. 그런데 같은 위젯 파일의 정적 하단 note는 '직접 설계는 CH21.'이라 적혀 있고, CH10-L04.md·CH10-L05.md 본문도 모두 일관되게 [Chapter 21 · OO 기초](CH21-L01.html)를 인스턴스 메서드/객체 생성의 정식 도입처로 지목한다. 소스를 Grep으로 대조해 embeds/_engine/global-class-blackbox.js 30행에 'CH20'이 하드코딩돼 있음을 확인했다 — 같은 위젯 안에서도 자기모순이며, 다른 CH10 엔진 7개는 이런 챕터번호 오류가 없음을 grep으로 교차검증했다.",
+      "suggestion": "global-class-blackbox.js 30행의 'CH20'을 'CH21'로 수정해 같은 위젯의 다른 안내문·본문 레슨과 통일한다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH10-L06-S01.html",
+      "quote": "옛 코드에서 TYPE-POOLS 문을 발견했다.",
+      "category": "불일치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "위젯의 6번째 카드가 CH10 본문 어디에도 등장하지 않는 'TYPE-POOLS'라는 용어를 사전 설명 없이 선택 문제로 제시한다.",
+      "evidence": "CH10-L06.md 본문(비교표·서열 설명·원칙·직접 해 보기 전문)을 읽었지만 TYPE-POOLS·Type Pool 언급이 전혀 없다(다른 CH10 레슨 6개에도 없음). 그런데 위젯(window.MCC_CFG)의 카드 6은 '옛 코드에서 TYPE-POOLS 문을 발견했다'를 4지선다로 묻고, 정답 선택 후에야 'Type Pool은 기존 코드 인지용 — 신규 생성은 지양됩니다'라는 한 줄 설명이 나온다. 완전 입문자 대상 사이트(README·R3)인데 본문에 한 번도 안 나온 용어를 실습에서 먼저 접하게 되는 구조다. 브라우저로 정답·오답을 각각 클릭해 채점 로직 자체는 정확히 동작함을 확인했다.",
+      "suggestion": "본문에 TYPE-POOLS 한 줄 풀이를 추가하거나, 카드 문구를 본문에서 이미 다룬 Subroutine/Function Module/Class 3종 소재만으로 재구성한다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L07.md",
+      "quote": "같은 로직을 [Local Class로 모듈화](CH10-L04.html)의 **static method**(`zcl_booking=>get_remaining`)로 바꿔 본다.",
+      "category": "불일치",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'Local Class'로 안내하면서 실제 식별자는 Global Class 접두어(zcl_)를 써서, 이 챕터가 직접 가르친 Local(lcl_)/Global(zcl_) 접두어 구분과 충돌한다.",
+      "evidence": "CH10-L04.md 본문의 Local Class 예시는 시종일관 `lcl_calc`(소문자 lcl_)이고, CH10-L05.md와 그 위젯은 'zcl_'을 Global Class 전용 접두어로 명시적으로 가르친다('SE24의 ZCL_...', 위젯의 ZCL_BOOKING_CALC). 그런데 CH10-L07.md의 도전 과제 3번은 링크가 [Local Class로 모듈화](CH10-L04.html)를 가리키면서 식별자는 `zcl_booking`을 써서 두 개념이 뒤섞였고, CH10-L05 위젯의 실제 이름(ZCL_BOOKING_CALC)과도 완전히 일치하지 않는다(_CALC 접미어 차이).",
+      "suggestion": "Local Class 전환 연습이 의도라면 `lcl_booking=>get_remaining`으로 접두어를 고치고, L05의 전역 클래스 재사용이 의도라면 문구를 'Global Class'로 바꾸고 이름도 `ZCL_BOOKING_CALC=>GET_REMAINING`으로 맞춘다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L07.md",
+      "quote": "정원보다 많은 좌석을 요청해 `can_book`이 거짓을 돌려주는지 확인.",
+      "category": "불일치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "본문은 '정원보다 많은' 좌석 요청을 과제로 제시하지만, 바로 위 위젯(CH10-L07-S02)에서는 요청 좌석이 3석·5석 두 값뿐이라 정원(10석)을 넘는 요청 자체가 불가능하다.",
+      "evidence": "CH10-L07-S02.html(window.CBT_CFG: capacity:10)을 브라우저로 열어 요청 좌석 버튼을 확인 — '3석'·'5석' 두 개뿐이라 최대 5석까지만 선택 가능하고 정원 10석을 넘길 수 없다. 실제 시연되는 실패 조건은 '요청(5) > 잔여석(4)'이지 '요청 > 정원(10)'이 아니다. can_book이 거짓을 돌려준다는 학습 목표 자체는 5석 선택으로 달성되지만, 문구가 가리키는 구체적 시나리오(정원 초과)는 이 위젯에서 실행할 수 없다.",
+      "suggestion": "본문 문구를 '잔여석보다 많은 좌석을 요청해'로 고쳐 위젯에서 실제 검증 가능한 조건과 맞춘다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH10 7개 레슨 모두 본문 코드-체험 위젯 대응 관계는 전반적으로 견고했다. 8개 위젯을 전부 브라우저에서 실제 로드·조작해 확인한 결과 콘솔 오류는 0건이었고, 핵심 개념(PERFORM/FORM 스코프, USING/CHANGING/VALUE 전달방식, CALL FUNCTION 호출자 기준·sy-subrc, Local Class 정적 호출, Global Class 블랙박스 호출, 모듈화 선택 기준, 잔여석 계산·can_book 판정)의 시뮬레이션 로직은 모두 본문 설명과 수치까지 정확히 일치했다(L07의 L05 위젯-L07 위젯 간 '잔여석=4' 교차 일치가 특히 인상적). 다만 5건의 경미~중간 수준 불일치를 발견했다: ① L03 위젯의 FM/예외 이름이 본문과 다름, ② L05 위젯의 안내 문구가 CH21 대신 CH20을 잘못 가리킴(위젯 결함, 같은 파일 내 자기모순), ③ L06의 TYPE-POOLS 카드가 본문에 전혀 없는 용어를 사전설명 없이 제시, ④ L07 본문의 도전 과제가 Local/Global 클래스 명명 접두어를 혼용, ⑤ L07 본문의 '정원보다 많은' 문구가 위젯에서 실제로는 검증 불가능. 전부 이름·문구 수준의 수정으로 해결 가능하며 구조적 재작성은 불필요하다."
+  }
+}

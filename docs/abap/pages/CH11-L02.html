@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FACTORY 메서드로 Internal Table 출력 · SALV 1차 (간단 ALV) · SAP Developer Academy</title>
+<title>factory 메서드로 Internal Table 출력 · SALV 1차 (간단 ALV) · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -34,7 +34,7 @@
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 11 › Lesson 2</nav>
       <section class="lhead">
         <p class="lhead__eyebrow">SALV 1차 (간단 ALV)</p>
-        <h1>FACTORY 메서드로 Internal Table 출력</h1>
+        <h1>factory 메서드로 Internal Table 출력</h1>
         <p class="lhead__direction">factory 한 번으로 내부 테이블을 SALV 객체로 만들고, display로 띄우는 두 단계를 직접 체험한다.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 11</span><span class="tag tag--ls">Lesson 2</span><span class="tag tag--lv">초급</span></div>
       </section>
@@ -47,15 +47,24 @@
       <article class="prose">
 <section class="lblock"><h2>SALV 객체 만들기 — factory</h2>
 <p>앞 레슨에서 <button class="term" type="button" data-term="SALV">SALV</button>가 &quot;표로 보여 주는 가장 단순한 길&quot;임을 봤다. 이제 실제로 띄워
-보자. 문법 연습은 어느 시스템에나 있는 표준 연습 테이블 <strong>SFLIGHT</strong>(<a href="CH08-L01.html">Chapter 8 ·
-읽기 연습</a>의 그 운항편)로 하고, 우리 예매 데이터 적용은
-<a href="CH11-L06.html">이 챕터의 캡스톤</a>에서 한다.
-SALV는 정적 메서드 <code>factory( )</code>로 <button class="term" type="button" data-term="Internal Table">Internal Table</button>(<button class="term" type="button" data-term="메모리">메모리</button>에 잠깐 두는 표)을 받아 <button class="term" type="button" data-term="ALV">ALV</button> 객체를 만든다.
-(<a href="CH10-L04.html">Chapter 10 · 정적 메서드</a>의 <code>=&gt;</code> 호출이다.)</p>
+보자. 문법 연습은 SAP 표준 연습 테이블 <strong>SFLIGHT</strong>(<a href="CH08-L01.html">Chapter 8 · 읽기 연습</a>의
+그 운항편)로 한다. 우리 예매 데이터에 적용하는 건 이 챕터의 마지막 실습
+(<a href="CH11-L06.html">예매 목록 SALV</a>)에서 한다. 배운 걸 한데 모아 완성하는 이런 마무리
+실습을 <strong>캡스톤</strong>이라 부른다.</p>
+<p>SALV는 정적 메서드 <code>factory( )</code>로 <button class="term" type="button" data-term="Internal Table">Internal Table</button>(<button class="term" type="button" data-term="메모리">메모리</button>에 잠깐 두는 표)을 받아
+<button class="term" type="button" data-term="ALV">ALV</button> 객체를 만든다(<a href="CH10-L04.html">Chapter 10 · 정적 메서드</a>의 <code>=&gt;</code> 호출이다).</p>
+<blockquote class="cw">
+<p>⚠️ <strong>SFLIGHT가 비어 있을 수도 있다.</strong> 연습용 시스템 대부분에 들어 있지만, 데모 데이터가
+적재되지 않은 시스템도 있다. 표는 떴는데 행이 하나도 없다면 내 코드가 아니라 데이터
+쪽 문제일 수 있으니, <code>SE16</code>으로 <code>SFLIGHT</code>에 행이 있는지 먼저 확인하자
+(<a href="CH08-L01.html">Chapter 8 · 항공 데모 테이블</a>).</p>
+</blockquote>
 <blockquote>
-<p>🔎 <strong>[선행 사용]</strong> 아래의 <code>TYPE REF TO</code>(참조 변수)와 <code>TRY ... CATCH</code>(예외 처리)는
-본격적으로는 <a href="CH21-L01.html">Chapter 21 · 객체지향</a>에서 배운다. 지금은 &quot;SALV 객체를 담을 변수를 만들고, 생성
-실패에 대비해 감싼다&quot; 정도로만 받아들이면 된다(분석·암기 불필요).</p>
+<p>🔎 <strong>[선행 사용]</strong> 아래의 <code>TYPE REF TO</code>와 <code>TRY ... CATCH</code>는 본격적으로는
+<a href="CH21-L01.html">Chapter 21 · 객체지향</a>에서 배운다. 지금은 이 정도만 알면 된다(분석·암기 불필요).
+<code>TYPE REF TO cl_salv_table</code>은 <strong>그 클래스의 객체를 가리키는 변수</strong>를 만드는 선언이다
+(값을 넘기는 방식을 정하는 말이 아니다). <code>TRY ... CATCH</code>는 다른 언어의 try-catch와 같은
+예외 처리로, 여기서는 객체 생성이 실패할 때를 대비해 감싼다.</p>
 </blockquote>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
@@ -66,45 +75,91 @@ SALV는 정적 메서드 <code>factory( )</code>로 <button class="term" type="b
 7
 8
 9
-10</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> gt_flight <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> sflight.
+10
+11
+12
+13</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> gt_flight <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> sflight.
 <span class="tok-kw">DATA</span> go_alv    <span class="tok-kw">TYPE</span> <span class="tok-kw">REF</span> <span class="tok-kw">TO</span> cl_salv_table.
+
+<span class="tok-com">" 연습이니 20건만 읽는다</span>
+<span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> sflight <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> gt_flight <span class="tok-kw">UP</span> <span class="tok-kw">TO</span> <span class="tok-num">20</span> <span class="tok-kw">ROWS</span>.
 
 <span class="tok-kw">TRY</span>.
     cl_salv_table=&gt;factory(
       <span class="tok-kw">IMPORTING</span> r_salv_table = go_alv       <span class="tok-com">" 만들어진 ALV 객체</span>
       <span class="tok-kw">CHANGING</span>  t_table      = gt_flight ). <span class="tok-com">" 표시할 내부 테이블</span>
   <span class="tok-kw">CATCH</span> cx_salv_msg.
-    <span class="tok-com">" 생성 실패 처리</span>
+    <span class="tok-kw">MESSAGE</span> <span class="tok-str">'ALV 객체를 만들지 못했습니다.'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'I'</span>.
 <span class="tok-kw">ENDTRY</span>.</code></pre></div></div>
 <ul>
-<li><code>IMPORTING r_salv_table</code> — 결과 ALV 객체를 받는다.</li>
-<li><code>CHANGING t_table</code> — 표시할 Internal Table(참조로 연결).</li>
+<li><code>IMPORTING r_salv_table</code> — 만들어진 ALV 객체를 <strong>내가 받아 온다</strong>. 부르는 쪽에서 쓰는
+<code>IMPORTING</code>은 &quot;내가 받는다&quot;는 뜻이라, 메서드를 정의할 때의 <code>IMPORTING</code>(메서드가 받는
+입력)과 방향이 반대로 보인다. <a href="CH10-L04.html">Chapter 10 · Local Class로 모듈화</a>에서
+짚은 그 반전이다.</li>
+<li><code>CHANGING t_table</code> — 표시할 Internal Table을 넘긴다. 값을 복사해 주는 게 아니라
+<strong>그 테이블 자체를 보게</strong> 하는 자리라 <code>CHANGING</code>을 쓴다. ALV는 이 테이블을 그대로 읽어
+표를 그린다.</li>
 <li><code>factory</code>는 예외 <code>cx_salv_msg</code>를 던질 수 있어 <code>TRY ... CATCH</code>로 감싼다.</li>
 </ul>
+<p>여기까지가 <strong>객체를 만드는</strong> 부분이다. 화면에 그리는 일은 아직 남았고, 그 이야기가 바로
+다음 절이다.</p>
 </section><section class="lblock"><h2>factory와 display는 다른 일 — 직접</h2>
 <p>여기서 입문자가 가장 많이 헷갈리는 게 있다. <strong><code>factory( )</code>를 부르면 표가 바로 뜰까?</strong>
 아니다. <code>factory</code>는 <button class="term" type="button" data-term="ALV">ALV</button> <strong>객체만</strong> 만들고, 화면에 그리는 건 <code>display( )</code>가 따로 한다.
-아래에서 <strong>① factory → ② display</strong> 를 순서대로 눌러, 두 단계의 차이를 눈으로 확인하라.</p>
+아래에서 <strong>① factory → ② display</strong> 를 순서대로 눌러, 두 단계의 차이를 눈으로 확인해 보자.</p>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title"><button class="term" type="button" data-term="SALV">SALV</button> factory → display 시뮬레이터</span><a class="embed__open" href="../../../embeds/abap/CH11-L02-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH11-L02-S01.html" loading="lazy" title="SALV factory → display 시뮬레이터"></iframe></figure>
 <blockquote>
 <p>🖱️ <strong>① factory( )</strong> 를 누르면 &quot;객체 생성됨&quot;이라는 안내만 뜨고 <strong>표는 아직 안 보인다.</strong>
 <strong>② display( )</strong> 까지 눌러야 비로소 그리드가 화면에 나타난다. 이 차이가 이 레슨의 핵심이다.</p>
 </blockquote>
+<p>즉 앞의 코드에 <code>display( )</code> 한 줄이 더 있어야 표가 뜬다. 넣는 자리가 중요하다. <strong><code>TRY</code>
+블록 안, <code>factory</code> 바로 다음 줄</strong>이다. <code>factory</code>가 실패하면 ALV 객체가 만들어지지 않은
+채로 남는데, 그 상태에서 <code>display( )</code>까지 부르면 표가 뜨기는커녕 프로그램이 런타임
+오류로 멈춘다. <code>TRY</code> 안에 두면 실패한 순간 <code>CATCH</code>로 빠져나가므로 <code>display( )</code>에는 아예
+가지 않는다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9</pre><pre class="abap-editor__code"><code><span class="tok-kw">TRY</span>.
+    cl_salv_table=&gt;factory(
+      <span class="tok-kw">IMPORTING</span> r_salv_table = go_alv
+      <span class="tok-kw">CHANGING</span>  t_table      = gt_flight ).
+
+    go_alv-&gt;display( ).      <span class="tok-com">" factory 다음 줄, TRY 안</span>
+  <span class="tok-kw">CATCH</span> cx_salv_msg.
+    <span class="tok-kw">MESSAGE</span> <span class="tok-str">'ALV 객체를 만들지 못했습니다.'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'I'</span>.
+<span class="tok-kw">ENDTRY</span>.</code></pre></div></div>
 </section><section class="lblock"><h2>컬럼 제목은 자동</h2>
 <p>방금 그리드의 컬럼 제목이 <code>CARRID</code>가 아니라 <strong>&quot;항공사&quot;</strong>, <code>CONNID</code>가 아니라
-<strong>&quot;노선&quot;</strong> 처럼 사람 말로 떴다. 테이블 행이 <button class="term" type="button" data-term="Data Element">Data Element</button>로 타입팅돼 있으면
+<strong>&quot;노선&quot;</strong> 처럼 사람 말로 떴다. 표의 각 컬럼이 <button class="term" type="button" data-term="Data Element">Data Element</button>를 타입으로 쓰고 있으면
 <strong>컬럼 제목(라벨)이 자동</strong>으로 붙기 때문이다.</p>
 <blockquote>
 <p>🎁 <a href="CH03-L01.html">Chapter 03 · Data Element</a>에서 라벨을 채워 둔 수고가 <strong>여기서 보상</strong>받는다. 라벨을 비워 뒀다면
 컬럼 제목이 기술명이나 빈칸으로 떠 볼품없어진다.</p>
 </blockquote>
-</section><section class="lblock"><h2>표준 기능은 공짜</h2>
-<p><code>factory</code> + <code>display</code> 몇 줄이면, 그리드 위 툴바의 <strong>정렬·필터·합계·엑셀 내보내기</strong> 같은
-표준 기능이 <strong>코드 추가 없이</strong> 따라온다. (시뮬레이터에서 헤더 클릭 정렬·<code>Σ 합계</code>를 눌러 보라.)
-이게 <code>WRITE</code> 리스트를 손으로 꾸미는 것과 결정적으로 다른 점이다.</p>
+</section><section class="lblock"><h2>표준 기능은 한 줄 더</h2>
+<p><code>factory</code> + <code>display</code>로 <strong>표는 떴다.</strong> 그런데 그리드 위 툴바의 <strong>정렬·필터·합계·엑셀
+내보내기</strong> 같은 표준 기능은 아직 켜지지 않은 상태다. <button class="term" type="button" data-term="SALV">SALV</button>가 그 기능들을 이미 <strong>갖고
+있지만</strong>, 켜 달라는 <strong>한 줄</strong>은 따로 필요하다. 그 한 줄이 <a href="CH11-L03.html">다음 레슨</a>에서
+배울 <code>get_functions( )-&gt;set_all( )</code>이다.</p>
+<p><code>WRITE</code> 리스트였다면 정렬 하나를 붙이는 데도 정렬 로직을 손으로 짜야 한다. 만들지 않고
+<strong>한 줄로 켜서 쓴다</strong>는 것, 그게 결정적으로 다른 점이다.</p>
+<blockquote>
+<p>🖱️ 위 시뮬레이터는 그 기능들이 <strong>켜진 뒤의 모습</strong>을 미리 보여 준다. 헤더를 클릭해 정렬해
+보고 <code>Σ 합계</code>도 눌러 보자. 다만 실제 SAP GUI의 <button class="term" type="button" data-term="ALV">ALV</button>에서는 컬럼을 고른 뒤 툴바의 정렬
+버튼을 누른다. 시뮬레이터는 웹 표처럼 헤더 클릭으로 정렬하게 해 둔 것이니, 실기 화면에서
+&quot;헤더를 눌러도 정렬이 안 된다&quot;고 당황하지 말자.</p>
+</blockquote>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <blockquote class="cw">
-<p>⚠️ <strong>TRY/CATCH 없이 factory</strong> — <code>cx_salv_msg</code> 예외를 안 잡으면 런타임 덤프 위험. 항상 감싼다.</p>
+<p>⚠️ <strong>TRY/CATCH 없이 factory</strong> — <code>cx_salv_msg</code>는 <strong>반드시 처리해야 하는 예외</strong>라, 안 잡으면
+두 번 걸린다. 먼저 프로그램을 저장·활성화할 때 <strong>구문 검사가 경고</strong>를 띄우고, 그대로
+실행하다 실제로 예외가 나면 <strong>덤프</strong>로 끝난다. 항상 감싼다.</p>
 </blockquote>
 <blockquote class="cw">
 <p>⚠️ <strong>factory만 부르고 끝</strong> — 객체만 만들고 <code>display( )</code>를 안 불러 &quot;왜 표가 안 뜨지?&quot; 하는 단골 실수.</p>
@@ -116,11 +171,13 @@ SALV는 정적 메서드 <code>factory( )</code>로 <button class="term" type="b
 <ul>
 <li><button class="term" type="button" data-term="SALV">SALV</button>는 <code>cl_salv_table=&gt;factory( )</code>로 <button class="term" type="button" data-term="Internal Table">Internal Table</button>을 받아 <button class="term" type="button" data-term="ALV">ALV</button> 객체를 만든다.</li>
 <li><strong>factory(객체 생성)와 display(화면 표시)는 별개</strong> — 둘 다 호출해야 표가 뜬다.</li>
-<li>컬럼 제목은 <button class="term" type="button" data-term="Data Element">Data Element</button> 라벨에서 <strong>자동</strong>, 정렬·합계 등 표준 기능은 <strong>공짜</strong>.</li>
+<li>컬럼 제목은 <button class="term" type="button" data-term="Data Element">Data Element</button> 라벨에서 <strong>자동</strong>으로 붙는다. 정렬·합계 같은 표준 기능은
+다음 레슨에서 <strong>한 줄로 켠다</strong>.</li>
 <li><code>factory</code>는 <code>TRY ... CATCH cx_salv_msg</code>로 감싼다.</li>
 </ul>
 <hr>
-<p>객체는 만들었고 표도 떴다. 그런데 <code>display( )</code>와 툴바·제목 설정을 더 다듬고 싶다 → 다음 레슨.</p>
+<p>표는 떴다. 그런데 정렬·필터 버튼이 있어야 쓸 만한데 툴바가 텅 비어 있다 → 다음 레슨에서
+한 줄로 켠다.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

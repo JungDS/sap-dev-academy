@@ -1,0 +1,79 @@
+{
+  "agent": "AG05",
+  "model": "sonnet",
+  "target": "CH10",
+  "persona_ack": "20년차 학습 교재·코스 설계 전문가로서 CH10(모듈화 기초)을 챕터 구성·섹션 흐름·복습/예습 장치·불편-해결 서사·인지 부하 5축으로 감사함. 인지부하 관리와 불편을 먼저 체감하고 해결책으로 개념을 배우는 동기 설계 원칙을 판단 기준으로 삼았다.",
+  "method": "대상 8개 .md 파일(_chapter.md, CH10-L01~L07.md)을 Read 도구로 전문 통독하고 front-matter(introduces/prereq/prevRel)와 본문 텍스트를 상호 대조. 프롬프트에 {{SERVE_URL}}이 등장하지 않아 브라우저·서빙 검증은 수행하지 않았고, 렌더링이 아닌 마크다운 소스 텍스트 자체를 감사 대상으로 삼았다(웹 검색·외부 네트워크 미사용, 다른 감사자 산출물·과거 감사 자료 미열람).",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L07.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L02.md",
+      "quote": "## 빠져나오기 · 값 유지 — RETURN · STATICS",
+      "category": "인지 부하/섹션 흐름",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "RETURN과 STATICS 두 신규 키워드가 각각 한 줄짜리 정의 불릿으로만 제시되고, USING·CHANGING·3가지 전달 방식에 붙은 것과 같은 코드 예시가 없어 레슨 안에서 설명 깊이가 고르지 않다.",
+      "evidence": "빠져나오기·값 유지 — RETURN·STATICS 섹션은 RETURN·STATICS 각각 불릿 한 줄 정의만 있고 별도 코드블록이 없다. 반면 바로 위 USING(입력)·CHANGING(입출력) 절과 세 가지 전달 방식 표는 코드와 표로 충분히 뒷받침된다. STATICS는 호출이 끝나도 값이 유지되어 누적되는, 일반 지역변수 생명주기와 다른 개념이라 텍스트만으로는 압축되어 보일 수 있다(직접 해 보기 embed가 보완할 가능성은 있어 confidence는 추정으로 둔다).",
+      "suggestion": "STATICS의 상태 누적을 보여주는 2~3줄짜리 미니 코드 예시(예: 호출될 때마다 값이 쌓이는 카운터)를 RETURN 예시와 함께 짧게 덧붙여 텍스트만으로도 개념이 잡히게 보강."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L04.md",
+      "quote": "introduces: [\"ATTRIBUTE\", \"METHOD\", \"PUBLIC/PRIVATE\", \"Class↔Object\", \"Static 메서드(=>)\"]",
+      "category": "챕터 구성/메타데이터 정합성",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "front-matter의 introduces 목록에 ATTRIBUTE가 들어있지만, 레슨 본문 텍스트 어디에서도 클래스 속성(attribute, PUBLIC/PRIVATE SECTION 안의 DATA 선언)을 정의하거나 예시로 보여주지 않는다.",
+      "evidence": "본문은 DEFINITION/IMPLEMENTATION 구조, PUBLIC SECTION 안의 CLASS-METHODS add_tax 선언, 정적 호출(=>), 설계도와 객체 개념 설명, 직접 해 보기(DEFINITION·IMPLEMENTATION·정적 호출만 언급), 흔한 실수(3건) 순으로 이어지는데 이 중 어디에도 attribute·속성이라는 단어나 DATA 선언 예시가 없다. front-matter는 빌드에는 반영되지 않는 메타 전용 필드지만 R10 컨벤션상 게이팅 검증 근거로 쓰이므로 introduces 목록의 정확성이 중요하다. 다만 임베드(CH10-L04-S01)의 실제 인터랙션 내용까지는 확인 범위 밖이라 완전히 단정하지는 않는다.",
+      "suggestion": "introduces에서 ATTRIBUTE를 제거하거나, 본문에 PUBLIC/PRIVATE SECTION 안에 DATA로 선언하는 클래스 속성 예시를 1~2줄 코드로 추가해 목록과 본문을 일치시킨다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L05.md",
+      "quote": "zcl_util=>calc( EXPORTING iv_a = 1 iv_b = 2 IMPORTING ev_r = lv_r ).",
+      "category": "복습 장치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L05의 다중 파라미터 호출 예시가 CH10-L03(CALL FUNCTION)에서 이미 배운 EXPORTING·IMPORTING 키워드를 메서드 호출이라는 새 맥락에 그대로 재사용하지만, 이전에 배운 것과 같은 표기라는 리마인드 문장이 없다.",
+      "evidence": "파라미터가 여러 개면 이름을 붙여 넘긴다는 문장 바로 다음에 zcl_util=>calc( EXPORTING iv_a = 1 iv_b = 2 IMPORTING ev_r = lv_r ). 코드가 나오는데, EXPORTING·IMPORTING은 CH10-L03의 introduces(EXPORTING/IMPORTING/CHANGING)에서 CALL FUNCTION 문맥으로 처음 도입된 용어다. L05의 prereq도 CH10-L03을 명시하고 있어 재사용을 의도한 것으로 보이지만, 본문에 CALL FUNCTION에서 본 것과 같은 표기라는 식의 명시적 연결 문장이 없어 복습 효과가 약하다.",
+      "suggestion": "코드 앞이나 뒤에 EXPORTING·IMPORTING은 CH10-L03 CALL FUNCTION에서 본 것과 같은 방향 표기라는 한 문장 리마인드를 추가."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L07.md",
+      "quote": "prereq: [\"CH10-L01\", \"CH08\", \"CH06\"]",
+      "category": "챕터 구성/선수지식",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L07의 첫 실습 코드(get_remaining/can_book)가 CH10-L02에서 도입한 USING·CHANGING·RETURN을 재설명 없이 그대로 사용하는데, front-matter의 prereq 배열에는 CH10-L02가 빠져 있다.",
+      "evidence": "prereq 배열이 CH10-L01, CH08, CH06 세 값만 담고 있어 CH10-L02가 빠져 있다. 그러나 get_remaining FORM은 USING·CHANGING 파라미터로 선언되고, 공연이 없을 때 cv_left를 0으로 두고 RETURN으로 바로 빠져나간다. USING·CHANGING·RETURN은 CH10-L01이 아니라 CH10-L02에서 처음 도입된 개념(L02 introduces 참고)이며 L07 본문은 이를 재정의하지 않고 바로 쓴다. 선형 읽기 순서상 학습자는 이미 L02를 거쳐왔을 것이므로 실제 체감 혼란은 낮지만, prereq는 R10상 게이팅 검증 근거로 쓰이는 필드라 실제 코드 의존성과 어긋난다.",
+      "suggestion": "prereq 배열에 CH10-L02를 추가한다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L07.md",
+      "quote": "prevRel: next-step",
+      "category": "챕터 구성/메타데이터 정합성",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L07의 prevRel 값이 next-step인데, 04_CONVENTIONS.md R10이 정의하는 prevRel 허용값은 pain-solution·parallel·deepening 세 가지뿐이라 문서화된 값 범위를 벗어난다.",
+      "evidence": "front-matter에 prevRel: next-step로 적혀 있다. 프로젝트 컨벤션 R10은 prevRel(이전 레슨과의 관계)을 pain-solution·parallel·deepening 세 값으로만 정의한다. L06에서 L07로의 전환 자체(모듈화 도구를 콘서트앱 실습에 적용)는 자연스러운 서사이지만, 그 관계를 나타내는 태그 값이 컨벤션 문서의 허용 목록에는 없는 값이다.",
+      "suggestion": "prevRel 값을 기존 세 값 중 가장 가까운 것으로 맞추거나(예: deepening), 실습 전환처럼 반복되는 패턴이라면 R10 쪽에 next-step을 정식 네 번째 값으로 추가하는 문서 갱신을 검토한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH10은 FORM/PERFORM(L01)→파라미터(L02)→Function Module(L03)→Local Class(L04)→Global Class(L05)→선택 기준(L06)→콘서트앱 실습(L07) 순으로 가장 오래된 도구에서 현대 표준으로 이어지는 시대순 흐름을 취하며, 각 레슨이 이전 도구의 실제 범위 한계(프로그램 내부에만 산다 등)를 이유로 다음 도구를 자연스럽게 연결한다. 선행 사용·L1 예고가 필요한 지점(START-OF-SELECTION, Global Class 블랙박스 호출, ALV·BAPI·CH21 예고)마다 적절히 짧게 태깅되어 있고, L07은 CH06(LOOP)·CH08(SELECT)·CH09(콘서트 테이블)·CH10-L02(USING/CHANGING)·CH10-L04(Local Class)로 이어지는 링크형 복습 장치를 잘 쓴다. 억지 불편 서사는 발견되지 않았다: L04·L06처럼 병렬 관계인 곳은 실제로 또 다른 도구·선택 기준으로 정직하게 서술되어 있다. 다만 다섯 가지 경미한 항목을 발견했다. (1) L02의 RETURN·STATICS가 다른 절보다 설명이 얇고 코드 예시가 없음, (2) L04 front-matter가 도입한다고 적은 ATTRIBUTE가 본문에 실제로 등장하지 않음, (3) L05가 L03의 EXPORTING·IMPORTING을 재사용하면서 복습 리마인드 문장이 없음, (4) L07의 prereq 배열에 실제로 쓰이는 CH10-L02가 빠짐, (5) L07의 prevRel 값 next-step이 R10 문서의 허용값(pain-solution/parallel/deepening)에 없음. (2)와 (4)는 front-matter가 게이팅 검증 근거로 쓰인다는 점에서 중간 심각도로, 나머지는 학습자 체감이 크지 않은 낮음 심각도로 평가했다. 모두 구조적 재작업보다는 경미한 손질로 해결 가능한 수준이다."
+  }
+}

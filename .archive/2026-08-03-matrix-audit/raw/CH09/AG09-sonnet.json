@@ -1,0 +1,37 @@
+{
+  "agent": "AG09",
+  "model": "sonnet",
+  "target": "CH09",
+  "persona_ack": "AG09 페르소나 확인 — ABAP 정적 검사기를 시늉하는 코드 전용 감사자로서, 산문 설명은 채점 대상에서 제외하고 ```abap 코드 펜스만 줄 단위로 검사했다.",
+  "method": "대상 10개 .md 파일(CH09-L01~L09, _chapter.md) 전문을 Read로 열람 → ```abap 코드 펜스만 추출(총 3곳: L06·L07·L08) → 라인 단위 수기 정적 검토(선언 여부·마침표·구문 존재성·시그니처, gv_/gs_/gt_·pa_·so_·ty_/ts_/tt_ 네이밍, CH01~17 classic/CH01~18 New Open SQL 경계, 주석-코드 일치) 수행. 컴파일러·ABAP 실행 환경 없이 지식 기반 정적 판단이며 별도 자동화 도구는 사용하지 않음.",
+  "errors": [],
+  "files_read": [
+    "C:/SAP/sap-dev-academy/content/abap/CH09/CH09-L01.md",
+    "C:/SAP/sap-dev-academy/content/abap/CH09/CH09-L02.md",
+    "C:/SAP/sap-dev-academy/content/abap/CH09/CH09-L03.md",
+    "C:/SAP/sap-dev-academy/content/abap/CH09/CH09-L04.md",
+    "C:/SAP/sap-dev-academy/content/abap/CH09/CH09-L05.md",
+    "C:/SAP/sap-dev-academy/content/abap/CH09/CH09-L06.md",
+    "C:/SAP/sap-dev-academy/content/abap/CH09/CH09-L07.md",
+    "C:/SAP/sap-dev-academy/content/abap/CH09/CH09-L08.md",
+    "C:/SAP/sap-dev-academy/content/abap/CH09/CH09-L09.md",
+    "C:/SAP/sap-dev-academy/content/abap/CH09/_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:/SAP/sap-dev-academy/content/abap/CH09/CH09-L08.md",
+      "quote": "SELECT SINGLE concert_id FROM zconcert\n  INTO gv_dummy WHERE concert_id = gs_booking-concert_id.",
+      "category": "활성화 차단급(미선언 변수)",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "gv_dummy·gs_booking이 이 스니펫 안에 DATA 선언 없이 쓰인다.",
+      "evidence": "CH09-L08.md의 이 코드 블록만 놓고 보면 gv_dummy·gs_booking 둘 다 DATA 선언이 없다 — 이 3줄만 독립 프로그램으로 활성화하면 미선언 변수로 막힌다. 다만 이름 접두어(gv_/gs_, CH09는 아직 전역 스코프 구간)와 필드 참조(gs_booking-concert_id는 L01이 정의한 ZBOOKING의 CONCERT_ID와 일치)가 이 챕터의 관통예제(콘서트 예매 앱) 문맥과 정확히 들어맞아, 앞선 단계(CH07/CH08 등 이번 감사 범위 밖)에서 이미 선언된 변수를 이어받는 예시적 발췌일 가능성이 높다. CH09 대상 파일 안에서는 두 변수의 선언이 끝내 나타나지 않는다.",
+      "suggestion": "이 스니펫이 완결된 코드가 아니라 발췌임을 명확히 하려면, 코드 앞에 '(gs_booking·gv_dummy는 이전 단계에서 선언됐다고 가정)' 같은 주석 한 줄을 덧붙이거나, 짧은 DATA 선언 한 줄을 포함해 자기완결적으로 만드는 걸 권장."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH09 9개 레슨 중 실제 ```abap 코드 펜스는 CH09-L06·L07·L08 세 곳뿐이다(L06/L07은 사실상 같은 PARAMETERS+MATCHCODE OBJECT 스니펫, L08은 SELECT SINGLE 존재검증 스니펫). 나머지 6개 레슨(L01~L05, L09)은 SE11 설정·표·임베드 위주라 코드 펜스 자체가 없다. 세 블록 모두 classic 전용 문법(New Syntax·New Open SQL 미사용)과 이 챕터의 전역 스코프 네이밍(gv_/gs_, PARAMETERS=pa_ 8자 이내)을 정확히 지키고, 마침표 누락·존재하지 않는 구문/애드온·시그니처 오류·주석-코드 불일치 같은 활성화 차단급 결함은 없다. 유일한 관찰은 L08의 SELECT SINGLE 스니펫이 gv_dummy·gs_booking을 이 코드 블록 범위 안에서 선언 없이 쓴다는 점인데, 관통예제 문맥상 의도된 발췌로 보여 낮음/추정으로만 기록한다."
+  }
+}

@@ -22,32 +22,38 @@
     var m=MODES[cur];
     var innerVal=Math.round(ORIG*1.1);   // FORM 내부에서 *1.1
     var afterVal=m.changes?innerVal:ORIG;
-    $('vCaller').innerHTML='<span class="lbl">lv_amount (전)</span>'+ORIG;
+    $('vCaller').innerHTML='<span class="lbl">gv_amount (전)</span>'+ORIG;
     $('iface').innerHTML='<div style="font-family:var(--mono);font-size:.78rem;color:var(--brand);text-align:center;font-weight:700">'+m.code+'</div>'
       +'<div style="font-size:.7rem;color:var(--ink-soft);text-align:center;margin-top:5px">FORM 안: × 1.1</div>';
     $('vInner').innerHTML='<span class="lbl">FORM 내부</span>'+innerVal;
     var box=$('vAfter');
     box.className='vbox '+(m.changes?'changed':'safe');
-    box.innerHTML='<span class="lbl">lv_amount (복귀 후)</span>'+afterVal;
+    box.innerHTML='<span class="lbl">gv_amount (복귀 후)</span>'+afterVal;
     $('expl').className='expl '+(m.changes?'warn':'safe');
     $('expl').innerHTML=m.expl;
     postHeight();
   }
   $('modes').addEventListener('click',function(e){ var b=e.target.closest('.mbtn'); if(b){ cur=b.dataset.m; render(); } });
 
-  // RETURN 데모
+  // RETURN 데모 — 본문 FORM divide_safe(USING iv_a iv_b / CHANGING cv_r)를 PERFORM 문법 그대로 호출
   $('retDiv').addEventListener('click',function(){
-    $('retOut').innerHTML='divide_safe( 10, 0 )\n<span class="hot">IF iv_right = 0 → cv_result = 0, RETURN</span>\n<span class="skip">cv_result = iv_left / iv_right.  (실행 안 됨)</span>\n결과 cv_result = 0';
+    $('retOut').innerHTML='PERFORM divide_safe USING 10 0 CHANGING gv_r.\n'
+      +'<span class="hot">  IF iv_b = 0. → 참이라 RETURN — 여기서 끝</span>\n'
+      +'<span class="skip">  cv_r = iv_a / iv_b.   (실행 안 됨)</span>\n'
+      +'결과 gv_r = 0  (cv_r을 건드리지 않아 처음 값 그대로)';
     postHeight();
   });
   $('retOk').addEventListener('click',function(){
-    $('retOut').innerHTML='divide_safe( 10, 2 )\nIF iv_right = 0 → 거짓, RETURN 안 함\n<span class="hot">cv_result = 10 / 2 = 5</span>\n결과 cv_result = 5';
+    $('retOut').innerHTML='PERFORM divide_safe USING 10 2 CHANGING gv_r.\n'
+      +'  IF iv_b = 0. → 거짓이라 RETURN 안 함\n'
+      +'<span class="hot">  cv_r = 10 / 2 = 5</span>\n'
+      +'결과 gv_r = 5';
     postHeight();
   });
-  // STATICS 데모
+  // STATICS 데모 — 본문 FORM count_visit / STATICS lv_count TYPE i
   var sv=0;
-  $('stCall').addEventListener('click',function(){ sv++; $('stOut').innerHTML='count_subroutine 호출 → <span class="hot">sv_count = '+sv+'</span>\n(STATICS는 호출이 끝나도 값 유지)'; postHeight(); });
-  $('stReset').addEventListener('click',function(){ sv=0; $('stOut').textContent='STATICS sv_count = 0 (초기)'; postHeight(); });
+  $('stCall').addEventListener('click',function(){ sv++; $('stOut').innerHTML='PERFORM count_visit.  → <span class="hot">lv_count = '+sv+'</span>\n(STATICS라 호출이 끝나도 값이 남는다 — DATA였다면 매번 1)'; postHeight(); });
+  $('stReset').addEventListener('click',function(){ sv=0; $('stOut').textContent='STATICS lv_count = 0 (초기)'; postHeight(); });
 
   function postHeight(){ try{ var el=document.querySelector('.wrap');
     var h=Math.ceil(el?el.getBoundingClientRect().bottom:document.body.scrollHeight)+8;
