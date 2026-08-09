@@ -1,0 +1,122 @@
+{
+  "agent": "AG03",
+  "model": "opus",
+  "target": "CH11",
+  "persona_ack": "타 언어(Java/C#) 백엔드 3～5년차 개발자로서 ABAP을 빠르게 훑는 관점으로 CH11 전체를 통독했다. 과잉·오개념 유발·지름길 부재·용어 충돌 네 축으로 기록했고, 이 사이트의 1독자가 비전공 입문자라는 점을 감안해 '입문자에겐 필요하나 경력자에겐 아는 내용'은 낮음 또는 suggestion으로 낮춰 분류했다.",
+  "method": "Read 도구로 대상 7개 파일 전문 통독(발췌 아님) → front-matter(introduces/prereq/advanceUse/prevRel)와 본문·코드 스니펫 상호대조 → 레슨 간 개념 중복·변수 명명 일관성 수동 대조. 웹 검색·외부 네트워크·타 감사 산출물·저장소 밖 경로 접근 없음. ABAP 사실 판단은 모델 내장 지식(CL_SALV_TABLE=>FACTORY 시그니처, 호출부 파라미터 방향 규칙, abap_true 정의)에 근거하며 대상 파일 밖(앞 챕터·glossary·embeds 구현)은 확인하지 않았다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L06.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH11/CH11-L02.md",
+      "quote": "- `IMPORTING r_salv_table` — 결과 ALV 객체를 받는다.",
+      "category": "오개념 유발 / 용어 충돌",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "호출부의 IMPORTING이 '입력'이 아니라 '메서드로부터 돌려받는 출력'이라는 방향 반전을 짚어 주지 않는다. Java/C#의 파라미터 방향 감각(in/out/ref)으로 읽으면 IMPORTING r_salv_table = go_alv가 '객체를 넘겨준다'로 정확히 반대로 읽힌다.",
+      "evidence": "L02는 효과만 서술하고(결과 ALV 객체를 받는다), 이 키워드가 메서드 정의부 관점과 정반대라는 사실은 어디에도 없다. 실제로 CL_SALV_TABLE=>FACTORY 시그니처에서 r_salv_table은 메서드의 EXPORTING 파라미터이고, 호출부에서만 IMPORTING으로 수신한다. 같은 문단이 CHANGING t_table도 나란히 놓아 '입력은 CHANGING, 출력은 IMPORTING'이라는 반직관 조합이 한 화면에 있는데 해설이 없다. 게다가 L02가 링크한 Chapter 21(객체지향)에서 메서드를 직접 정의할 때 IMPORTING=입력을 다시 만나 정면 충돌한다.",
+      "suggestion": "코드 아래 한 줄 콜아웃이면 해소된다 — '호출부의 IMPORTING = 내가 받는 값(메서드 정의부에선 EXPORTING로 선언된 것). 방향이 정의부와 반대다.' 두 문장이면 입문자·경력자 모두에게 충분하고 분량 부담도 없다."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH11/CH11-L03.md",
+      "quote": "introduces: [\"get_functions\", \"set_all\", \"display\"]",
+      "category": "과잉 / 중복",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L03이 L02에서 이미 정식 도입한 display를 introduces에 다시 선언하고 본문도 같은 교훈을 반복해, 실질 신규는 get_functions( )->set_all( ) 한 줄뿐인 레슨이 하나 더 생겼다.",
+      "evidence": "L02 front-matter는 factory와 display를 함께 introduces로 선언하고, 본문에 '## factory와 display는 다른 일' 절 + 🖱️ 콜아웃 + 흔한 실수 + 정리 불릿으로 네 번 강조한다. L03은 display를 다시 도입 선언하고 '이게 없으면 아무것도 안 보인다'를 반복하며, L04의 스텝퍼 임베드가 같은 순서를 세 번째로 재연한다. 결과적으로 시뮬레이터 3개(CH11-L02-S01·L03-S01·L04-S01)가 사실상 같은 한 가지 사실(단계를 다 밟아야 표가 뜬다)을 반복 실증한다.",
+      "suggestion": "display 정식 도입은 L02 한 곳으로 고정하고, L03에서 고유 가치가 있는 부분('다 켜는 게 항상 답은 아니다' = 기능 선별 판단)만 남겨 L02 뒤쪽 절 또는 L04 도입부로 흡수. 임베드도 셋 중 하나(L04 파이프라인 스텝퍼)로 통합하면 입문자 기준으로도 손실이 거의 없다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH11/CH11-L06.md",
+      "quote": "DATA: lt_book TYPE TABLE OF zbooking,",
+      "category": "오개념 유발 / 명명 일관성",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "같은 리포트 최상위 스코프인데 L04는 gt_/go_, L06과 L03은 lt_/lo_를 써서 g(전역)·l(지역) 접두어 규칙을 예제 스스로 어긴다.",
+      "evidence": "L04는 REPORT 최상위에 gt_flight·go_alv로 선언하고, L06은 FORM/METHOD 래핑 없이 같은 최상위 위치에서 lt_book·lo_alv로 선언한다. L03의 한 줄 예제도 lo_alv->...다. 두 코드의 구조는 동일한데 접두어만 뒤집혀 있어, '접두어가 스코프를 표시한다'는 규칙을 학습 중인 독자에겐 규칙 자체가 무너진다. 타 언어 개발자에게 이 헝가리안식 스코프 접두어는 ABAP 고유 학습 항목이라(모국어 습관으로 보정이 안 됨) 불일치 비용이 특히 크다.",
+      "suggestion": "L03·L06 예제를 최상위 선언 기준으로 go_alv·gt_book으로 통일하거나, 반대로 L06 코드를 FORM/METHOD 안으로 감싸 lo_/lt_가 맞는 맥락을 만든다. 어느 쪽이든 챕터 내 한 가지로 통일이 핵심."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH11/CH11-L03.md",
+      "quote": "title: \"기본 Function 표시와 Display 실행\"",
+      "category": "용어 충돌",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'Function'을 일반 개발어의 함수가 아니라 SAP 특유의 '툴바 기능(function code)' 뜻으로 쓰면서 그 차이를 명시하지 않는다.",
+      "evidence": "레슨 제목과 절 제목이 '기본 Function 표시', '표준 Function 켜기'인데 실제 설명은 '표준 툴바(정렬·필터·합계·엑셀 등)'다. get_functions( )를 처음 본 타 언어 개발자는 '함수/기능 API를 켠다'로 읽고, SAP에서 Function이 화면 버튼(sy-ucomm으로 들어오는 function code) 계열 용어라는 연결을 놓친다. 일반 용어와 ABAP 용법이 갈리는 지점인데 짚어 주는 문장이 없다.",
+      "suggestion": "제목을 '표준 툴바 기능(Function) 켜기'로 바꾸거나 첫 문장에 한 줄 — '여기서 Function은 함수가 아니라 툴바 버튼을 뜻하는 SAP 용어(function code)다.'"
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH11/CH11-L06.md",
+      "quote": "- **TRY/CATCH 없이 factory** → cx_salv_msg 덤프 위험([factory 메서드](CH11-L02.html)).",
+      "category": "오개념 유발",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "캡스톤 예제의 CATCH 블록 본문이 완전히 비어 있어(무음 실패), 같은 파일이 바로 아래에서 강조하는 예외 처리 경고를 코드가 스스로 무력화한다.",
+      "evidence": "L06 코드에서 CATCH cx_salv_msg. 다음 줄이 곧바로 ENDTRY.다 — 주석도 메시지도 없다. 반면 L02는 '생성 실패 처리' 주석을, L04는 MESSAGE 'ALV 생성 실패' TYPE 'I'.를 넣었다. 학습자가 캡스톤 코드를 그대로 복사하면 실패 시 표도 메시지도 없이 조용히 끝나 원인 추적 단서가 사라진다. 예외를 삼키는 빈 catch는 타 언어에서도 대표적 안티패턴이라 경력자 눈에 바로 걸린다.",
+      "suggestion": "L04와 동일하게 CATCH 안에 MESSAGE 한 줄을 넣어 '잡았으면 반드시 알린다'를 챕터 내에서 일관되게 유지."
+    },
+    {
+      "seq": 6,
+      "file": "content/abap/CH11/_chapter.md",
+      "quote": "intro: \"WRITE 리스트는 투박하다 — 표 형태로 깔끔하게 보고 싶다.\"",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "이미 OOP·그리드 UI를 아는 독자를 위한 '빠른 경로 / 여기는 건너뛰어도 됨' 안내가 챕터 어디에도 없다.",
+      "evidence": "_chapter.md와 6개 레슨 전체에 경험자용 우회 안내가 한 줄도 없다. 실제로 CH11이 도입하는 API는 factory·get_functions/set_all·display 셋뿐이라 경력자는 L02 코드 블록과 L04 완성본만 보면 충분한데, L01(WRITE vs SALV 비교표·'왜 SALV부터인가')과 L05(범위 경계 안내)를 순서대로 통과해야 한다.",
+      "suggestion": "챕터 도입에 3줄 박스 — '이 챕터의 전부 = cl_salv_table=>factory( ) → get_functions( )->set_all( ) → display( ). 코드부터 보고 싶으면 [미니 리포트] 레슨으로 바로 가도 된다.' 입문자 동선은 그대로 두고 경력자만 우회시키는 저비용 장치."
+    },
+    {
+      "seq": 7,
+      "file": "content/abap/CH11/CH11-L05.md",
+      "quote": "direction: 지금 다루는 SALV의 범위와, 뒤로 미루는 심화의 경계.",
+      "category": "과잉",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "L05는 새 문법·코드가 0인 메타 전용 레슨(범위 경계 안내)이라 경력자에겐 통째로 스킵 대상이고, 입문자 기준으로도 표 하나 + 짧은 문단으로 압축 가능해 보인다.",
+      "evidence": "본문 구성이 '지금 범위' 3줄 불릿 + '뒤로 미루는 심화' 표 + '왜 나눴나' 문단 + 분류 임베드 + 흔한 오해 2줄이며 코드는 한 줄도 없다. 같은 정보의 상당 부분이 이미 L01의 '범위' 불릿(편집은 CH31, 컨테이너형은 CH17, 표시 심화는 CH22)과 비교표에 들어 있어 중복도가 높다.",
+      "suggestion": "'뒤로 미루는 심화' 표를 L01 말미나 L06 뒤 마무리 콜아웃으로 옮겨 한 화면으로 압축하고, 분류 임베드는 남길 가치가 있다면 그 위치에 붙인다. 레슨을 유지한다면 최소한 '이미 ALV 계열을 아는 독자는 표만 보고 넘어가라' 한 줄을 추가."
+    },
+    {
+      "seq": 8,
+      "file": "content/abap/CH11/CH11-L03.md",
+      "quote": "- `get_functions( )`가 기능 객체를 주고, `set_all( abap_true )`로 표준 버튼을 모두 켠다.",
+      "category": "용어 충돌",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "abap_true가 CH11 안에서는 아무 설명 없이 등장한다 — 타 언어 개발자는 진짜 boolean 리터럴로 오인하기 쉽다(실제로는 abap_bool = CHAR1의 'X' 상수).",
+      "evidence": "L03·L04·L06 코드에 set_all( abap_true )가 나오지만 설명은 '표준 버튼을 모두 켠다'뿐이고, ABAP에 boolean 기본형이 없다는 사실이나 abap_true의 실제 값이 문자 X라는 점은 챕터 어디에도 없다. true/false 비교에 익숙한 독자는 나중에 IF 조건이나 필드 비교에서 문자열 'X'를 만나 혼란을 겪는다. 다만 앞 챕터(대상 파일 밖)에서 이미 도입됐을 가능성이 있어 추정으로 표기한다.",
+      "suggestion": "이 챕터가 최초 등장이라면 괄호 한 줄 — 'abap_true = 참을 뜻하는 표준 상수(실제 값은 문자 X)'. 앞 챕터에서 이미 도입했다면 해당 레슨 링크 한 줄로 충분."
+    },
+    {
+      "seq": 9,
+      "file": "content/abap/CH11/CH11-L04.md",
+      "quote": "SELECT * FROM sflight INTO TABLE gt_flight.",
+      "category": "오개념 유발",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "완성 예제가 WHERE도 컬럼 제한도 없는 전건 SELECT *를 아무 단서 없이 제시해, 경력 개발자 눈에는 실무 금기 패턴이 정답 코드로 각인되는 모양새다.",
+      "evidence": "L04의 SELECT * FROM sflight INTO TABLE gt_flight.와 L06의 SELECT * FROM zbooking INTO TABLE lt_book. 모두 무조건 전건 조회다. 그런데 두 레슨의 '흔한 실수' 항목은 빈 결과 확인과 classic/modern 혼동만 다루고 조회 범위 이야기는 없다. 다음 챕터가 SELECT-OPTIONS라 곧 보완되지만 CH11 코드만 복사해 쓰는 독자에겐 무제한 조회가 기본값으로 남는다. CH08(대상 파일 밖)에서 이미 경고했을 수 있어 추정으로 표기한다.",
+      "suggestion": "코드 아래 한 줄 — '연습용이라 전건 조회다. 실무에선 WHERE로 범위를 좁힌다(다음 챕터의 SELECT-OPTIONS 레슨).' 이미 앞 챕터에서 다뤘다면 링크 한 줄이면 충분."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "경력 개발자 시선에서 CH11은 짧고 정확하며 과잉 설명이 거의 없다 — factory → functions → display 세 단계만 다루고 색·이벤트·편집은 명시적으로 뒤로 미루는 범위 관리가 특히 좋다. 실질 개선 지점은 셋이다. ① 호출부 IMPORTING의 방향 반전(타 언어의 in/out 감각과 정반대)을 안 짚어 경력자가 코드를 거꾸로 읽는다. ② L03이 L02의 display 도입을 중복해 같은 교훈이 세 레슨·세 시뮬레이터로 반복된다. ③ 동일한 최상위 스코프인데 gt_/go_와 lt_/lo_가 뒤섞여 접두어 규칙 자체를 흔든다. 나머지(Function 용어 충돌, 캡스톤의 빈 CATCH, abap_true 무설명, 전건 SELECT *, 경험자용 빠른 경로 부재)는 한두 줄 추가·통일로 해소되는 낮은 등급이다. 구조 재집필이 필요한 상태는 아니고 국소 수정으로 충분하다. 프롬프트 제약상 대상 7개 파일 밖(앞 챕터 본문·glossary·embeds 구현)은 열지 않았으므로, 선행 도입 여부가 걸린 항목은 confidence=추정으로 표기했다."
+  }
+}

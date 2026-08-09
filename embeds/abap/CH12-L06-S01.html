@@ -11,14 +11,16 @@
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">코드로 Range 행 추가 스텝퍼 <small>(ls_stat → APPEND → lr_stat → SELECT)</small></p>
-  <p class="lead">한 줄씩 실행하며 <code>ls_stat</code>(work area)이 채워지고, <code>APPEND</code> 순간 <code>lr_stat</code>(Range Table)에 행이 생기는 걸 보세요. <b>APPEND 전엔 lr_stat이 비어 있습니다.</b></p>
+  <p class="hd">코드로 Range 행 추가 스텝퍼 <small>(gs_stat → APPEND → gr_stat → SELECT)</small></p>
+  <p class="lead">한 줄씩 실행하며 <code>gs_stat</code>(work area)이 채워지고, <code>APPEND</code> 순간 <code>gr_stat</code>(Range Table)에 행이 생기는 걸 보세요. <b>APPEND 전엔 gr_stat이 비어 있습니다.</b></p>
 
   <div class="ras-ctrl">
     <button class="ras-btn" type="button" data-next>▶ 다음 단계</button>
     <button class="ras-reset" type="button" data-reset>↺ 리셋</button>
     <span class="ras-prog" data-progress></span>
+    <label class="ras-skip"><input type="checkbox" data-skipclear /> <b>CLEAR 생략</b>해 보기</label>
   </div>
+  <p class="ras-hint">이 <code>gs_stat</code>은 프로그램 앞부분에서 <b>이미 한 번</b> 쓰였다고 하자(<code>I</code> <code>BT</code> <code>C</code>~<code>N</code>). 체크를 켜면 <code>CLEAR</code>를 건너뛰어, 그 값이 어디까지 따라오는지 볼 수 있습니다.</p>
   <p class="ras-fb" id="rasFb"></p>
 
   <div class="ras-code">
@@ -28,11 +30,11 @@
 
   <div class="ras-state">
     <div class="ras-col">
-      <p class="ras-h">ls_stat <small>(work area · 한 행)</small></p>
+      <p class="ras-h">gs_stat <small>(work area · 한 행)</small></p>
       <div class="ras-wa" id="rasLs"></div>
     </div>
     <div class="ras-col">
-      <p class="ras-h">lr_stat <small>(Range Table)</small></p>
+      <p class="ras-h">gr_stat <small>(Range Table)</small></p>
       <table class="ras-tbl"><thead><tr><th>SIGN</th><th>OPTION</th><th>LOW</th><th>HIGH</th></tr></thead><tbody id="rasLr"></tbody></table>
     </div>
   </div>
@@ -42,48 +44,77 @@
     <div style="overflow-x:auto"><table class="dt"></table></div>
   </div>
 
-  <div class="note"><b>work area ≠ Range Table.</b> <code>ls_stat</code>에 값을 채워도 그건 한 행 준비일 뿐, <code>APPEND</code>해야 <code>lr_stat</code>에 행이 생깁니다. <code>CLEAR</code>를 빼먹으면 앞 행의 <code>HIGH</code> 같은 값이 남아 의도와 달라질 수 있습니다.</div>
+  <div class="note"><b>work area ≠ Range Table.</b> <code>gs_stat</code>에 값을 채워도 그건 한 행 준비일 뿐, <code>APPEND</code>해야 <code>gr_stat</code>에 행이 생깁니다. <b>CLEAR 생략</b>을 켜 보면 앞서 쓴 <code>HIGH</code>가 지워지지 않고 그대로 <code>APPEND</code>되는 걸 볼 수 있습니다 — <code>EQ</code>는 <code>HIGH</code>를 보지 않아 결과는 같지만, 행만 보면 "EQ인데 HIGH가 왜 있지?"가 됩니다.</div>
 </div>
 
 <script>
 window.RAS_CFG = {
   field: 'status',
+  itab: 'gt_book',
+  range: 'gr_stat',
+  skipLine: 4,                 // 'CLEAR gs_stat.' — CLEAR 생략 토글이 켜지면 취소선
   resultCols: [
     { key: 'booking_id', label: '예매번호', num: true },
     { key: 'concert_id', label: '공연' },
     { key: 'customer', label: '고객' },
     { key: 'status', label: '상태' }
   ],
+  // 기준 데이터 = CH09-L09 시드 정본 6건(본문 L03 '기준이 되는 예매 6건' 표와 행 단위로 동일).
   data: [
     { booking_id:'0001', concert_id: 'C001', customer: '정훈영', status: 'N' },
     { booking_id:'0002', concert_id: 'C001', customer: '손흥민', status: 'N' },
     { booking_id:'0003', concert_id: 'C001', customer: '아이유', status: 'N' },
-    { booking_id:'0004', concert_id: 'C002', customer: '유재석', status: 'C' },
-    { booking_id:'0005', concert_id: 'C002', customer: '김연아', status: 'N' },
-    { booking_id:'0006', concert_id: 'C001', customer: '차은우', status: 'N' }
+    { booking_id:'0004', concert_id: 'C001', customer: '유재석', status: 'N' },
+    { booking_id:'0005', concert_id: 'C002', customer: '강호동', status: 'N' },
+    { booking_id:'0006', concert_id: 'C002', customer: '차은우', status: 'C' }
   ],
   code: [
-    'DATA: lr_stat TYPE RANGE OF zbooking-status,',
-    '      ls_stat LIKE LINE OF lr_stat,',
-    '      lt_book TYPE TABLE OF zbooking.',
+    'DATA: gr_stat TYPE RANGE OF zbooking-status,',
+    '      gs_stat LIKE LINE OF gr_stat,',
+    '      gt_book TYPE TABLE OF zbooking.',
     '',
-    'CLEAR ls_stat.',
-    "ls_stat-sign   = 'I'.",
-    "ls_stat-option = 'EQ'.",
-    "ls_stat-low    = 'N'.",
-    'APPEND ls_stat TO lr_stat.',
+    'CLEAR gs_stat.',
+    "gs_stat-sign   = 'I'.",
+    "gs_stat-option = 'EQ'.",
+    "gs_stat-low    = 'N'.",
+    'APPEND gs_stat TO gr_stat.',
     '',
-    'SELECT * FROM zbooking INTO TABLE lt_book',
-    '  WHERE status IN lr_stat.'
+    'SELECT * FROM zbooking INTO TABLE gt_book',
+    '  WHERE status IN gr_stat.'
   ],
+  // ls2/lr2/fb2 = 'CLEAR 생략' 토글을 켰을 때의 흐름.
+  // 잔재 = 앞부분에서 이 work area를 I·BT·C~N 조건에 썼다는 설정 → CLEAR를 건너뛰면 HIGH='N'이 끝까지 따라온다.
   steps: [
-    { hl: 2, ls: {}, lr: [], result: false, fb: '선언 — lr_stat은 빈 Range Table, ls_stat은 빈 work area입니다.' },
-    { hl: 4, ls: { sign: '', option: '', low: '', high: '' }, lr: [], result: false, fb: 'CLEAR ls_stat — 새 조건 행을 만들기 전에 이전 값을 지웁니다.' },
-    { hl: 5, ls: { sign: 'I' }, lr: [], result: false, fb: "ls_stat-sign = 'I' — 포함(Include) 조건으로 설정." },
-    { hl: 6, ls: { sign: 'I', option: 'EQ' }, lr: [], result: false, fb: "ls_stat-option = 'EQ' — 정확히 같은 값 비교." },
-    { hl: 7, ls: { sign: 'I', option: 'EQ', low: 'N' }, lr: [], result: false, fb: "ls_stat-low = 'N' — 상태 N을 조건값으로. (아직 lr_stat은 비어 있음!)" },
-    { hl: 8, ls: { sign: 'I', option: 'EQ', low: 'N' }, lr: [{ sign: 'I', option: 'EQ', low: 'N', high: '' }], result: false, fb: 'APPEND — 완성한 행이 lr_stat에 추가됐습니다. 이제 WHERE IN에서 평가할 조건이 생겼습니다.' },
-    { hl: 11, ls: { sign: 'I', option: 'EQ', low: 'N' }, lr: [{ sign: 'I', option: 'EQ', low: 'N', high: '' }], result: true, fb: 'SELECT WHERE status IN lr_stat — 화면 없이 만든 Range Table로도 상태 N 예매만 걸러집니다.' }
+    { hl: 2, ls: {}, lr: [], result: false,
+      fb: '선언 — gr_stat은 빈 Range Table, gs_stat은 빈 work area입니다.',
+      ls2: { sign: 'I', option: 'BT', low: 'C', high: 'N' },
+      fb2: '선언 — 이 gs_stat은 앞부분에서 이미 I·BT·C~N으로 쓰였다고 하자. 네 칸에 그 값이 남아 있습니다.' },
+    { hl: 4, ls: { sign: '', option: '', low: '', high: '' }, lr: [], result: false,
+      fb: 'CLEAR gs_stat — 새 조건 행을 만들기 전에 이전 값을 지웁니다. (네 칸이 한꺼번에 비워집니다)',
+      ls2: { sign: 'I', option: 'BT', low: 'C', high: 'N' },
+      fb2: 'CLEAR를 건너뛰었다 — 앞서 쓴 I·BT·C~N이 지워지지 않고 그대로 남아 있습니다.' },
+    { hl: 5, ls: { sign: 'I' }, lr: [], result: false,
+      fb: "gs_stat-sign = 'I' — 포함(Include) 조건으로 설정.",
+      ls2: { sign: 'I', option: 'BT', low: 'C', high: 'N' },
+      fb2: "gs_stat-sign = 'I' — 덮어쓴 칸만 바뀝니다. OPTION·LOW·HIGH는 옛 값 그대로." },
+    { hl: 6, ls: { sign: 'I', option: 'EQ' }, lr: [], result: false,
+      fb: "gs_stat-option = 'EQ' — 정확히 같은 값 비교.",
+      ls2: { sign: 'I', option: 'EQ', low: 'C', high: 'N' },
+      fb2: "gs_stat-option = 'EQ' — OPTION은 EQ가 됐지만 HIGH에는 아직 'N'이 남아 있습니다." },
+    { hl: 7, ls: { sign: 'I', option: 'EQ', low: 'N' }, lr: [], result: false,
+      fb: "gs_stat-low = 'N' — 상태 N을 조건값으로. (아직 gr_stat은 비어 있음!)",
+      ls2: { sign: 'I', option: 'EQ', low: 'N', high: 'N' },
+      fb2: "gs_stat-low = 'N' — 코드가 건드리지 않은 HIGH만 'N'인 채로 남았습니다. 이 상태로 APPEND되면?" },
+    { hl: 8, ls: { sign: 'I', option: 'EQ', low: 'N' }, lr: [{ sign: 'I', option: 'EQ', low: 'N', high: '' }], result: false,
+      fb: 'APPEND — 완성한 행이 gr_stat에 추가됐습니다. 이제 WHERE IN에서 평가할 조건이 생겼습니다.',
+      ls2: { sign: 'I', option: 'EQ', low: 'N', high: 'N' },
+      lr2: [{ sign: 'I', option: 'EQ', low: 'N', high: 'N' }],
+      fb2: 'APPEND — 지우지 않은 HIGH가 행에 그대로 실렸습니다. EQ 행인데 HIGH 칸이 차 있습니다.' },
+    { hl: 11, ls: { sign: 'I', option: 'EQ', low: 'N' }, lr: [{ sign: 'I', option: 'EQ', low: 'N', high: '' }], result: true,
+      fb: 'SELECT WHERE status IN gr_stat — 화면 없이 만든 Range Table로도 상태 N 예매만 걸러집니다.',
+      ls2: { sign: 'I', option: 'EQ', low: 'N', high: 'N' },
+      lr2: [{ sign: 'I', option: 'EQ', low: 'N', high: 'N' }],
+      fb2: '결과는 5건으로 같습니다 — EQ는 HIGH를 보지 않으니까요. 문제는 읽는 사람입니다. 다음 행도 BT인데 HIGH를 새로 안 넣었다면, 남아 있던 옛 HIGH가 그대로 조건이 됩니다.' }
   ]
 };
 </script>

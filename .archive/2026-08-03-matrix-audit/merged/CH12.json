@@ -1,0 +1,878 @@
+{
+  "chapter": "CH12",
+  "inputs_present": 28,
+  "inputs_missing": [],
+  "clusters": [
+    {
+      "cluster_id": "CH12-C001",
+      "file": "content/abap/CH12/CH12-L04.md",
+      "quote": "1. **포함(I) 행 중 하나라도** 맞으면 후보가 된다(OR처럼 후보를 넓힌다).",
+      "category": "생략·오개념 유발",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "L04의 포함/제외 2단계 평가 규칙에 포함(I) 행이 하나도 없는 경우의 출발 후보 정의가 빠져, 규칙대로 읽으면 제외 전용 조건이 0건으로 해석되는데 흔한 실수·L07 과제는 결과를 말하지 않아 학습자가 판정을 도출할 수 없다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG01", "model": "opus", "seq": 7},
+        {"agent": "AG01", "model": "gpt-5.6-sol", "seq": 1},
+        {"agent": "AG03", "model": "opus", "seq": 1},
+        {"agent": "AG03", "model": "gpt-5.6-sol", "seq": 1}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C002",
+      "file": "content/abap/CH12/CH12-L05.md",
+      "quote": "`CP`는 **Conforms to Pattern**(패턴에 부합)의 약자다.",
+      "category": "사실 오류(약어 확장형)",
+      "severity": "높음",
+      "confidence": "추정",
+      "claim": "L05가 CP의 약자를 'Conforms to Pattern'으로 단정하지만 SAP 문서 통용 표기는 Covers Pattern(비교 연산자)·Contains Pattern(선택 옵션)이라 확장형 서술의 근거가 흔들린다.",
+      "conflict": true,
+      "conflict_note": "정본 확장형에 대한 지지자 간 이견 — AG06-opus는 'Covers Pattern'이 표준이라 단정(확실), AG04-sonnet은 'Contains Pattern'이 통용 정식 명칭으로 추정, AG03-opus·AG04-opus는 문서 표기가 Covers/Contains로 갈린다며 단정 회피를 권고. 'Conforms to Pattern'이 근거 없는 표기라는 데는 전원 일치.",
+      "supporters": [
+        {"agent": "AG03", "model": "opus", "seq": 4},
+        {"agent": "AG04", "model": "opus", "seq": 14},
+        {"agent": "AG04", "model": "sonnet", "seq": 2},
+        {"agent": "AG06", "model": "opus", "seq": 1}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C003",
+      "file": "content/abap/CH12/CH12-L03.md",
+      "quote": "WHERE concert_id IN so_conc",
+      "category": "미선언 변수(블록 자기완결성)",
+      "severity": "높음",
+      "confidence": "추정",
+      "claim": "L03 메인 코드 블록이 so_conc·so_stat을 선언 없이 사용해 블록 단독으로는 활성화되지 않으며, 자기완결형인 L06·L07 블록과 챕터 내 기준이 엇갈린다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG09", "model": "opus", "seq": 3},
+        {"agent": "AG09", "model": "gpt-5.6-sol", "seq": 2}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C004",
+      "file": "content/abap/CH12/CH12-L06.md",
+      "quote": "DATA: lr_stat TYPE RANGE OF zbooking-status,",
+      "category": "사실 오류 주장(문법)",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "L06의 `TYPE RANGE OF zbooking-status`가 DDIC 테이블 필드를 타입 자리에 써서 구문 오류라는 주장으로, `LIKE RANGE OF` 또는 Data Element 참조로 바꿔야 한다고 요구한다.",
+      "conflict": true,
+      "conflict_note": "AG06-gemini 단독 주장이며 클러스터 밖 타 감사자들과 정면 충돌 — AG09-opus(C005 지지 발견 seq4의 근거)는 '`TYPE RANGE OF <DDIC 필드>`도 유효'라고 명시했고, AG09-sonnet·AG09-gemini의 정적 전수 검사와 AG06-opus 총평도 해당 문법을 문제없음으로 판정. 본선에서 사실 판정 필요.",
+      "supporters": [
+        {"agent": "AG06", "model": "gemini-3.6-flash-high", "seq": 1}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C005",
+      "file": "content/abap/CH12/CH12-L02.md",
+      "quote": "DATA ls_conc LIKE LINE OF so_conc.",
+      "category": "네이밍 규약(스코프 접두어)",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "L02·L03·L06·L07의 코드 블록 전부가 FORM/METHOD 밖 최상위(전역) 선언인데 로컬 접두어 ls_/lt_/lr_/lo_를 써서 커리큘럼의 g/l 스코프 규약(R11)과 어긋난다 — gs_conc·gt_book·gr_stat/gs_stat·gt_book/go_alv로 일괄 치환 요구.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG06", "model": "opus", "seq": 2},
+        {"agent": "AG06", "model": "sonnet", "seq": 1},
+        {"agent": "AG09", "model": "opus", "seq": 1},
+        {"agent": "AG09", "model": "opus", "seq": 2},
+        {"agent": "AG09", "model": "opus", "seq": 4},
+        {"agent": "AG09", "model": "opus", "seq": 5},
+        {"agent": "AG09", "model": "sonnet", "seq": 1},
+        {"agent": "AG09", "model": "sonnet", "seq": 2},
+        {"agent": "AG09", "model": "sonnet", "seq": 3},
+        {"agent": "AG09", "model": "sonnet", "seq": 4},
+        {"agent": "AG09", "model": "gpt-5.6-sol", "seq": 1},
+        {"agent": "AG09", "model": "gpt-5.6-sol", "seq": 3},
+        {"agent": "AG09", "model": "gpt-5.6-sol", "seq": 4},
+        {"agent": "AG09", "model": "gpt-5.6-sol", "seq": 5}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C006",
+      "file": "embeds/_engine/select-options-filter-sim.js",
+      "quote": "<script src=\"../_engine/select-options-filter-sim.js\" defer></script>",
+      "category": "위젯 결함(엔진 로직)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L03·L07이 공유하는 select-options-filter-sim.js(그리고 include-exclude-judge.js)의 cpMatch가 이스케이프 문자군에 '+'를 포함해 CP의 '+'(정확히 한 글자) 와일드카드가 리터럴 마침표로 변환되어 항상 0건 매치가 된다 — option-compare-lab.js·range-append-stepper.js는 정상이라 한 사이트 안에 정답·오답 구현이 공존.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG02", "model": "opus", "seq": 1},
+        {"agent": "AG02", "model": "sonnet", "seq": 1},
+        {"agent": "AG02", "model": "sonnet", "seq": 2},
+        {"agent": "AG02", "model": "gemini-3.6-flash-high", "seq": 1},
+        {"agent": "AG02", "model": "gemini-3.6-flash-high", "seq": 2}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C007",
+      "file": "content/abap/CH12/CH12-L05.md",
+      "quote": "이 챕터에서는 특히 **`EQ`·`BT`·`CP`** 를 확실히 잡는다.",
+      "category": "과부하(OPTION 10종)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L05가 OPTION 10종을 표로 먼저 쏟은 뒤에야 EQ·BT·CP 한정 선언을 해 입문자가 10개 전부를 암기 대상으로 받아들이기 쉽다 — 축소 선언 전진 배치, 나머지 7종의 접기/참고 분리, '지금 안 외워도 된다' 명시가 요구된다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG01", "model": "sonnet", "seq": 2},
+        {"agent": "AG01", "model": "gpt-5.6-sol", "seq": 2},
+        {"agent": "AG05", "model": "opus", "seq": 4},
+        {"agent": "AG05", "model": "gpt-5.6-sol", "seq": 2}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C008",
+      "file": "content/abap/CH12/CH12-L02.md",
+      "quote": "`so_conc`의 **한 행**을 담을 work area를 만든다.",
+      "category": "용어 풀이·일관성(work area)",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "L02(및 L06)에서 work area가 풀이 없이 등장하고 같은 개념이 'work area'와 '작업 영역'으로 흔들려, 입문자가 같은 것인지 확인할 수 없다 — 첫 등장 한 줄 풀이와 챕터 내 표기 통일이 요구된다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG01", "model": "opus", "seq": 2},
+        {"agent": "AG04", "model": "opus", "seq": 3},
+        {"agent": "AG04", "model": "sonnet", "seq": 1},
+        {"agent": "AG04", "model": "gpt-5.6-sol", "seq": 3}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C009",
+      "file": "content/abap/CH12/CH12-L03.md",
+      "quote": "[[SELECT-OPTIONS]]가 만든 selection table도 같은 구조라 그대로 `IN`에 쓴다.",
+      "category": "용어 일관성(selection table)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "챕터 내내 Range Table로 부르던 개념이 L03·L06·L07의 정리·제목에서 'selection table'로 설명 없이 등장해 별개 개념으로 오해될 수 있다 — 동의어 관계 명시 또는 표기 통일이 요구된다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG04", "model": "opus", "seq": 10},
+        {"agent": "AG04", "model": "sonnet", "seq": 7},
+        {"agent": "AG04", "model": "gpt-5.6-sol", "seq": 4}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C010",
+      "file": "content/abap/CH12/CH12-L06.md",
+      "quote": "**레거시**(헤더라인식) 방식이다. 공식 문서상 *obsolete*라",
+      "category": "용어 풀이(레거시 표현 3중)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L06 RANGES 콜아웃 한 문장에 레거시·헤더라인식·obsolete 세 개의 미풀이 용어가 겹치고 풀이 괄호(헤더라인식)가 원어보다 어렵다 — 쉬운 말 한 갈래로 정리하거나 짧은 풀이 병기가 요구된다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG01", "model": "opus", "seq": 8},
+        {"agent": "AG04", "model": "opus", "seq": 15},
+        {"agent": "AG04", "model": "sonnet", "seq": 4}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C011",
+      "file": "content/abap/CH12/CH12-L03.md",
+      "quote": "📌 **빈 range는 true.** `so_conc`가 비어 있으면",
+      "category": "용어 충돌(SQL IN 대조 부재)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'빈 range는 true'가 표준 SQL IN(빈 목록=0건/false)과 정반대라는 명시적 대조가 챕터 어디에도 없어, SQL을 아는 학습자가 오해의 뿌리를 짚지 못하고 규칙을 암기만 하게 된다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG03", "model": "opus", "seq": 2},
+        {"agent": "AG03", "model": "sonnet", "seq": 3},
+        {"agent": "AG03", "model": "gemini-3.6-flash-high", "seq": 2}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C012",
+      "file": "content/abap/CH12/_chapter.md",
+      "quote": "단일 값(PARAMETERS)만으론 부족 — 범위·다중 조건으로 조회하고 싶다.",
+      "category": "챕터 구성(동기 판매)",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "_chapter.md 본문이 front-matter intro 한 문장의 복제뿐이라 챕터 층에서 학습 동기와 7개 레슨의 여정 지도를 팔지 못한다 — 구체 시나리오·도착점을 담은 3～5문장 확장이 요구된다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG05", "model": "opus", "seq": 1},
+        {"agent": "AG05", "model": "sonnet", "seq": 1},
+        {"agent": "AG05", "model": "gpt-5.6-sol", "seq": 1}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C013",
+      "file": "content/abap/CH12/CH12-L02.md",
+      "quote": "| `TABLES zbooking.` | `zbooking-concert_id`처럼 Dictionary 필드를 **참조**할 수 있게 한다. |",
+      "category": "안티패턴(TABLES 단서 부재)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "TABLES를 SELECT-OPTIONS의 기본 전제처럼 단서 없이 제시해, 전역 구조체를 만든다는 부작용·구식(ABAP Objects에서 사용 불가)이라는 사실·FOR의 대안(선언한 DATA 변수 참조)이 모두 빠져 학습자가 'TABLES=필수 짝'으로 굳힐 위험이 있다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG03", "model": "opus", "seq": 7},
+        {"agent": "AG06", "model": "opus", "seq": 3},
+        {"agent": "AG06", "model": "gpt-5.6-sol", "seq": 1}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C014",
+      "file": "content/abap/CH12/CH12-L02.md",
+      "quote": "- `FOR <필드>`가 입력칸의 타입과 도움 속성 기준을 정한다.",
+      "category": "생략(정리에만 새 용어)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L02 정리에 본문에서 설명한 적 없는 'FOR가 타입·도움 속성 기준을 정한다'가 처음 등장하고 '도움 속성'이 무엇인지 끝까지 나오지 않는다 — 본문에서 FOR의 역할을 먼저 설명하고 풀어 쓴 표현으로 바꿔야 한다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG01", "model": "opus", "seq": 4},
+        {"agent": "AG04", "model": "opus", "seq": 7}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C015",
+      "file": "content/abap/CH12/CH12-L03.md",
+      "quote": "않은 것처럼 동작한다(공식 문서: *initial ranges table → 조건이 DB에 전달되지 않아 결과는 항상 참*).",
+      "category": "톤·용어(문서 인용체)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L03 콜아웃의 공식 문서 인용 괄호가 미풀이 영어 용어(initial ranges table)와 화살표 축약 표기로 친근한 본문 톤을 매뉴얼체로 이탈시킨다 — 본문 톤으로 흡수하거나 짧은 풀이 병기가 요구된다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG04", "model": "opus", "seq": 9},
+        {"agent": "AG04", "model": "sonnet", "seq": 5}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C016",
+      "file": "content/abap/CH12/CH12-L05.md",
+      "quote": "`*`는 **여러 글자**, `+`는 **정확히 한 글자**에 대응한다.",
+      "category": "용어 충돌(정규식 +)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L05가 SQL LIKE와의 기호 차이만 짚고 정규식 '+'(직전 요소 1회 이상 반복)와의 충돌은 언급하지 않아, 정규식에 익숙한 학습자가 C+01을 정반대로(길이 제한 없는 반복으로) 해석할 수 있다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG03", "model": "opus", "seq": 5},
+        {"agent": "AG03", "model": "sonnet", "seq": 4}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C017",
+      "file": "content/abap/CH12/CH12-L01.md",
+      "quote": "먼저 **사람 말 → 행** 방향으로 적어 본다.",
+      "category": "과잉(동일 예시 반복)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L01이 같은 조건→행 매핑을 4세트(4칸 정의 표·단일 예 3표·정방향 표·역방향 표)로 반복해 새 정보 없이 분량만 늘어난다 — 표 통합 또는 스킵 안내/접기가 요구된다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG03", "model": "opus", "seq": 3},
+        {"agent": "AG03", "model": "sonnet", "seq": 1}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C018",
+      "file": "embeds/abap/CH12-L02-S01.html",
+      "quote": "LOOP AT so_conc INTO ls. WRITE: / sign option low high.",
+      "category": "불일치(위젯-본문 코드)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L02 위젯 코드 헤더가 본문의 ls_conc 대신 미선언 이름 'ls'와 비한정 컴포넌트명(sign option low high)을 써서, 본문 코드와 나란히 따라 치는 입문자에게 서로 다른 코드로 읽히고 그대로 옮기면 유효하지 않다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG02", "model": "opus", "seq": 6},
+        {"agent": "AG02", "model": "gpt-5.6-sol", "seq": 2}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C019",
+      "file": "content/abap/CH12/CH12-L06.md",
+      "quote": "조건이 화면에서 오지는 않는다. **배치 프로그램, 내부 호출, 기본 조건 보정, 권한에",
+      "category": "위험한 생략(권한 통제)",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "'권한에 따른 자동 제한'을 Range 직접 조작의 용도로 들면서(L07 완성 예제도 동일) range 필터는 권한 통제 수단이 아니며 정본은 AUTHORITY-CHECK라는 단서가 없어, 학습자가 '권한은 range로 좁히면 된다'는 오개념을 세울 수 있다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG06", "model": "opus", "seq": 5},
+        {"agent": "AG06", "model": "gpt-5.6-sol", "seq": 2}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C020",
+      "file": "content/abap/CH12/CH12-L02.md",
+      "quote": "- **SELECT-OPTIONS를 단일 값으로 본다** → `so_conc-low` 첫 행만 보는 습관이 들면",
+      "category": "단절·사실 정밀도(so_conc-low)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "흔한 실수에 본문에서 가르친 적 없는 `so_conc-low` 표기가 설명 없이 등장해 입문자가 오타인지 새 문법인지 판단할 수 없고, 기술적으로도 이는 '첫 행'이 아니라 header line 접근이라 서술이 부정확하다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG01", "model": "opus", "seq": 3},
+        {"agent": "AG06", "model": "opus", "seq": 4}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C021",
+      "file": "content/abap/CH12/CH12-L04.md",
+      "quote": "다중 선택 팝업은 화면 의미를 Range Table 행으로 바꿔 준다. 탭 이름보다 **행의 의미**를",
+      "category": "생략(화면 미제시)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L04가 다중 선택 팝업의 구성(탭 개수·이름·네 영역·녹색/빨강 아이콘)을 한 번도 보여 주지 않은 채 '탭 이름'·아이콘을 아는 것처럼 언급해, SAP 화면을 본 적 없는 입문자가 비교 대상 없이 멈춘다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG01", "model": "opus", "seq": 6},
+        {"agent": "AG04", "model": "opus", "seq": 12}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C022",
+      "file": "content/abap/CH12/CH12-L07.md",
+      "quote": "advanceUse: [\"REF TO\", \"TRY/CATCH cx_salv_msg\", \"START-OF-SELECTION\", \"TABLES 선언문\"]",
+      "category": "선행 사용 안내 부재",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "L07이 advanceUse로 선언한 REF TO·TRY/CATCH 등 SALV 구문에 L02와 같은 [선행 사용] 콜아웃이 없고 '핵심은 이 두 줄' 완화 안내도 코드 블록 뒤에 배치되어, 학습자가 낯선 구문을 먼저 통째로 마주친다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG01", "model": "sonnet", "seq": 3},
+        {"agent": "AG05", "model": "sonnet", "seq": 2}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C023",
+      "file": "content/abap/CH12/CH12-L06.md",
+      "quote": "이제 배운 걸 모아 **공연·상태 조건으로 예매 목록을 필터링**하는 실습으로 마무리하자",
+      "category": "학습 회수(캡스톤 커버리지)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L06 마무리는 '화면·코드 양쪽을 모아' 실습을 약속하지만 L07은 화면(SELECT-OPTIONS) 경로만 다뤄 L05(BT·CP 등 OPTION 다양성)와 L06(TYPE RANGE OF·APPEND)이 챕터 실습에서 한 번도 회수되지 않는다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG05", "model": "opus", "seq": 3}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C024",
+      "file": "content/abap/CH12/CH12-L07.md",
+      "quote": "## 직접 해 볼 과제",
+      "category": "실습 설계(산출 연습 부족)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L07이 완성 코드를 먼저 제시하고 과제 대부분을 결과 확인으로 구성해, SELECT-OPTIONS 선언과 WHERE IN을 학습자가 스스로 작성해 보는 생성(TODO/빈칸) 연습이 없다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG05", "model": "gpt-5.6-sol", "seq": 3}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C025",
+      "file": "content/abap/CH12/CH12-L01.md",
+      "quote": "**여러 행을 \"모두 만족(AND)\"으로 오해한다** → 포함(I) 행이 여러 개면 보통",
+      "category": "개념 도입 순서(결론 선노출)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L01의 흔한 실수가 L04의 핵심 결론(포함=OR 확장·제외=빼기)을, 예시 표가 L05의 CP 패턴을 미리 확정해 두 레슨의 도입 불편과 '아하' 지점을 깎는다 — L01에서는 질문만 남기고 결론은 정식 도입 레슨에 두라는 요구.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG05", "model": "opus", "seq": 2}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C026",
+      "file": "content/abap/CH12/CH12-L06.md",
+      "quote": "**배치 프로그램, 내부 호출, 기본 조건 보정, 권한에 따른 자동 제한**처럼 화면 없이 조건을",
+      "category": "단절(미설명 실무 용어 나열)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L06 도입 첫 문장에 배치 프로그램·내부 호출·기본 조건 보정·권한 자동 제한 네 개의 미설명 실무 상황이 연달아 나와 입문자가 도입부에서 멈춘다 — 쉬운 사례 하나로 풀고 나머지는 괄호 참고로 축소하라는 요구.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG01", "model": "gpt-5.6-sol", "seq": 3}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C027",
+      "file": "content/abap/CH12/CH12-L03.md",
+      "quote": "예매 6건을 기준으로 시나리오별 결과를 예측해 보자.",
+      "category": "생략(기준 데이터 미제시)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L03이 '예매 6건 기준 시나리오 예측'을 시키면서 6건의 원본 목록(예매번호·공연ID·상태)을 레슨 어디에도 보여 주지 않아, 학습자가 예측 대신 표의 답을 외울 수밖에 없다(L07 과제도 같은 6건 전제).",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG01", "model": "opus", "seq": 5}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C028",
+      "file": "embeds/abap/CH12-L01-S01.html",
+      "quote": "왼쪽 <b>조건 카드</b>를 누르면 오른쪽 <b>Range Table</b>에 네 칸짜리 행이 쌓입니다.",
+      "category": "위젯 결함(개념 오도)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L01 위젯이 서로 다른 필드(공연ID·상태·고객명)의 조건 행을 하나의 Range Table에 함께 쌓게 해, 필드별로 별도 Range Table이라는 실제 구조와 다른 모델을 체험시킨다 — 필드 분리 표시 또는 안내 문구 요구.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG02", "model": "gpt-5.6-sol", "seq": 1}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C029",
+      "file": "content/abap/CH12/CH12-L05.md",
+      "quote": "| `NB` | 사이 밖 | 사용 | 사용 | `I NB C001 C003` |",
+      "category": "용어 풀이(NB)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L05 OPTION 표의 NB 풀이 '사이 밖'이 자연스러운 한국어가 아니어서 BT(사이)와의 대칭 관계가 즉시 읽히지 않는다 — '범위 밖(not between)' 등으로 교체 요구.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG04", "model": "gpt-5.6-sol", "seq": 2}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C030",
+      "file": "content/abap/CH12/CH12-L05.md",
+      "quote": "`C001`~`C999`가 숫자 범위처럼 보여도, 코드 체계에 따라 예상과 다르게 걸릴 수 있다.",
+      "category": "표기(반각 물결)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L05 본문의 코드스팬 밖 일반 텍스트에 반각 물결(~)이 노출되어 저장소 표기 규칙(전각 ～ 사용, 취소선 오작동 방지)과 어긋난다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG04", "model": "sonnet", "seq": 3}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C031",
+      "file": "content/abap/CH12/CH12-L02.md",
+      "quote": "실행하면 선택화면에 `so_conc`·`so_stat`이 나타난다.",
+      "category": "용어(영어 원문 미도입)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "front-matter가 L02에서 정식 도입한다고 선언한 Selection Screen이 본문에 영어 원문으로 한 번도 등장하지 않고 '선택화면' 직역만 반복되어, 다른 ABAP 용어의 영어 원문 유지 방침과 어긋나고 실제 SAP 화면·문서의 이름을 익히지 못한다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG04", "model": "opus", "seq": 5}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C032",
+      "file": "content/abap/CH12/CH12-L03.md",
+      "quote": "SELECT * FROM zbooking INTO TABLE lt_book",
+      "category": "예시 적절성(SELECT *)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "SELECT *가 L03·L06·L07 세 곳에서 단서 없이 반복되어 '표준 조회 방식'처럼 각인될 위험이 있다 — '실무 원칙은 필요한 필드만, 이 챕터는 WHERE IN에 집중하려 * 사용'이라는 한 줄 caveat 요구.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG06", "model": "sonnet", "seq": 2}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C033",
+      "file": "content/abap/CH12/_chapter.md",
+      "quote": "단일 값(PARAMETERS)만으론 부족 — 범위·다중 조건으로 조회하고 싶다.",
+      "category": "지름길 부재(경력자 경로)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "챕터 어디에도 경험자용 요약·건너뛰기 경로가 없어, 경력자가 ABAP 고유 신규 정보(빈 range=true·I/E 평가 순서·와일드카드·TYPE RANGE OF)에 도달하려면 입문 속도의 본문을 전부 통과해야 한다 — 챕터 첫머리 3줄 요약+빠른 경로 안내 요구.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG03", "model": "opus", "seq": 6},
+        {"agent": "AG03", "model": "gpt-5.6-sol", "seq": 2},
+        {"agent": "AG03", "model": "gemini-3.6-flash-high", "seq": 1}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C034",
+      "file": "content/abap/CH12/CH12-L04.md",
+      "quote": "단일 From/To 입력만으로는 부족할 때가 있다.",
+      "category": "복습 장치(회상 링크 부재)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L04만 7개 레슨 중 유일하게 도입부에 직전 레슨을 되짚는 회상 링크 문장이 없어 챕터의 일관된 복습 고리가 한 곳에서 끊긴다(직전 L03 마무리가 던진 질문을 받아 주는 한 줄 요구).",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG05", "model": "opus", "seq": 6},
+        {"agent": "AG05", "model": "sonnet", "seq": 3}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C035",
+      "file": "content/abap/CH12/CH12-L01.md",
+      "quote": "| 고객명이 '정'으로 시작 | I | CP | `정*` |  |",
+      "category": "선행 노출(와일드카드 미정의)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L01 변환 드릴 표가 CP와 `정*`·`C*`의 와일드카드 `*`를 정의 없이 사용한다(뜻은 L05에서야 등장) — CP 행 제거 또는 '`*`=여러 글자' 괄호 각주 요구.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG01", "model": "sonnet", "seq": 1},
+        {"agent": "AG05", "model": "opus", "seq": 5}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C036",
+      "file": "embeds/abap/CH12-L05-S01.html",
+      "quote": "<thead><tr><th>공연ID</th><th>패턴에 맞나?</th><th>최종(SIGN 반영)</th></tr></thead>",
+      "category": "위젯 결함(고정 라벨)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L05 위젯의 판정 열 제목이 OPTION을 EQ·BT로 바꿔도 '패턴에 맞나?'로 고정되어 패턴이 CP 전용 개념이라는 본문 교육과 충돌한다 — OPTION 중립 문구 또는 동적 갱신 요구.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG02", "model": "opus", "seq": 7},
+        {"agent": "AG02", "model": "gpt-5.6-sol", "seq": 3}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C037",
+      "file": "content/abap/CH12/CH12-L01.md",
+      "quote": "**\"조건 문장을 표로 적는 방법\"** 으로 이해하는 것이다.",
+      "category": "표기(조사 앞 공백)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "볼드+인용부 뒤에 조사를 띄어 쓴 곳(L01 2건)이 렌더링에서 띄어쓰기 오류로 읽힌다 — 볼드 범위 조정 또는 인용부 위치 변경으로 공백 제거 요구.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG04", "model": "opus", "seq": 1},
+        {"agent": "AG04", "model": "gpt-5.6-sol", "seq": 1}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C038",
+      "file": "content/abap/CH12/CH12-L07.md",
+      "quote": "전체 6건을 띄워 눈으로 찾는 방식은 곧 한계가 온다.",
+      "category": "문장(주술 호응 비문)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L07 도입부 '방식은 곧 한계가 온다'가 주어-서술어 호응이 깨진 비문이다 — '한계에 부딪힌다' 등으로 교정 요구.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG04", "model": "opus", "seq": 16},
+        {"agent": "AG04", "model": "gpt-5.6-sol", "seq": 5}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C039",
+      "file": "content/abap/CH12/CH12-L02.md",
+      "quote": "줄별로 읽으면 이렇다.",
+      "category": "생략(줄별 표 미완)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L02 줄별 해설 표가 코드의 마지막 두 줄(WRITE 출력·ENDLOOP)을 빼먹어, 첫 코드를 보는 입문자가 `WRITE: /`의 `/`와 `ls_conc-sign`의 `-` 의미를 확인할 수 없다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG01", "model": "opus", "seq": 1}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C040",
+      "file": "embeds/abap/CH12-L05-S01.html",
+      "quote": "candidates: ['C001', 'C002', 'A001', 'C010'],",
+      "category": "불일치(위젯 후보 데이터)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "본문이 `+` 판별 예시로 든 CA01(문자도 매칭)·C0010(길이 초과 탈락)이 위젯 후보 목록에 없고 후보 추가 UI도 없어, 본문의 두 핵심 주장을 체험으로 확인할 수 없다 — 후보에 CA01·C0010 추가 요구.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG02", "model": "opus", "seq": 2}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C041",
+      "file": "embeds/abap/CH12-L07-S01.html",
+      "quote": "{label:'공연 C001~C002 (BT)', ranges:{so_conc:[{sign:'I',opt:'BT',low:'C001',high:'C002'}]}},",
+      "category": "헛체험(무의미 프리셋)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L07 위젯의 'BT' 프리셋이 데이터 구성상(공연이 C001·C002뿐) '전체(빈 범위)'와 완전히 같은 6/6 결과를 내 눌러도 BT에 대해 배우는 것이 없다 — C003 데이터 추가 또는 범위 변경 요구.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG02", "model": "opus", "seq": 3}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C042",
+      "file": "content/abap/CH12/CH12-L07.md",
+      "quote": "3. **`예약만 (status=N)`** → N 상태만 남는지 확인.",
+      "category": "불일치(과제-프리셋 순서)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L07 과제 1～4가 위젯 프리셋 라벨을 그대로 인용하지만 위젯 버튼은 5개이고 과제에 없는 'BT' 프리셋이 중간에 끼어 번호와 버튼 순서가 어긋난다 — 과제 추가 또는 프리셋 재배열 요구.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG02", "model": "sonnet", "seq": 3}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C043",
+      "file": "embeds/abap/CH12-L06-S01.html",
+      "quote": "<code>CLEAR</code>를 빼먹으면 앞 행의 <code>HIGH</code> 같은 값이 남아 의도와 달라질 수 있습니다.",
+      "category": "헛체험(재현 불가 경고)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L06 위젯·본문이 'CLEAR를 빼먹으면 앞 행의 HIGH가 남는다'를 경고하지만 스텝퍼는 1행 APPEND뿐이라 그 상황을 만들어 볼 수단이 없고 CLEAR 단계는 아무 변화 없는 줄로 보인다 — 2행 시나리오 또는 'CLEAR 생략' 토글 요구.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG02", "model": "opus", "seq": 4}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C044",
+      "file": "embeds/abap/CH12-L04-S01.html",
+      "quote": "{ label: 'C002 제외 (E/EQ)', rows: [{ sign: 'E', opt: 'EQ', low: 'C002', high: '' }] },",
+      "category": "위젯 결함(판정 문구)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L04 위젯이 제외(E) 조건만 있을 때 탈락 이유를 '포함되지만 제외 조건에 걸려 탈락합니다'로 출력해 존재하지 않는 포함 조건을 말한다(통과/탈락 판정 자체는 정확) — judge() 이유 분기 순서 수정 요구.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG02", "model": "opus", "seq": 5}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C045",
+      "file": "content/abap/CH12/CH12-L01.md",
+      "quote": "이 Range Table을 **화면에서 자동으로** 만들어 주는 게 다음 레슨의 SELECT-OPTIONS다 → 다음 레슨.",
+      "category": "문장(중복 표현)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L01 마무리 한 문장에 '다음 레슨'이 본문과 화살표 꼬리표에 두 번 나와 겹친다(L02～L06의 같은 자리 형식과도 불일치) — 앞쪽 '다음 레슨의' 삭제 요구.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG04", "model": "opus", "seq": 2}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C046",
+      "file": "content/abap/CH12/CH12-L02.md",
+      "quote": "| `TABLES zbooking.` | `zbooking-concert_id`처럼 Dictionary 필드를 **참조**할 수 있게 한다. |",
+      "category": "용어(무풀이·표기 흔들림)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'Dictionary'가 챕터 첫 등장인데 풀이·연결 링크가 없고 L07에서는 같은 개념을 'DDIC'로 불러 두 이름을 잇는 문장이 챕터 어디에도 없다 — 표기 통일 + 풀 스펠링 한 줄 풀이 요구.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG04", "model": "opus", "seq": 4}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C047",
+      "file": "content/abap/CH12/CH12-L02.md",
+      "quote": "조건은 **table 전체**로 다룬다.",
+      "category": "문장(중의성)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'table 전체'의 table이 DB 테이블(zbooking)인지 Range Table인지 모호하다(챕터가 둘을 동시에 다루는 문맥) — 'Range Table 전체(모든 행)'로 명시 요구.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG04", "model": "opus", "seq": 6}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C048",
+      "file": "content/abap/CH12/CH12-L03.md",
+      "quote": "> 호스트 변수 표시(`@`)와 콤마 필드 목록 같은 현대식 Open SQL은",
+      "category": "용어(이름 흔들림)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'@'를 같은 레슨 안에서 '호스트 변수 표시'와 '호스트 표시' 두 이름으로 부르며(L07은 'modern @') 어느 쪽도 풀이가 없다 — 아직 배울 내용이 아니므로 이름 하나로 고정·최소화 요구.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG04", "model": "opus", "seq": 8}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C049",
+      "file": "content/abap/CH12/CH12-L03.md",
+      "quote": "필드 목록은 쓰지 않는다(modern Open SQL은 다음 구간에서).",
+      "category": "문장(지시 대상 모호)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'다음 구간'이 다음 섹션·레슨·챕터 중 무엇인지 알 수 없다(실제로는 CH19이며 같은 레슨 앞부분은 이미 정확히 링크) — 동일한 챕터 링크로 교체 요구.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG04", "model": "opus", "seq": 11}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C050",
+      "file": "content/abap/CH12/CH12-L05.md",
+      "quote": "- **문자 코드에 `BT`를 숫자처럼 생각한다** → 문자 필드의 `BT`는 **문자 정렬 순서**를 따른다.",
+      "category": "문장(성분 호응 비문)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "흔한 실수 라벨 '문자 코드에 BT를 숫자처럼 생각한다'가 조사 호응이 깨진 비문이라 무엇이 실수인지 한 번에 읽히지 않는다 — '문자 코드의 BT를 숫자 범위처럼 생각한다' 등으로 교정 요구.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG04", "model": "opus", "seq": 13}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C051",
+      "file": "content/abap/CH12/CH12-L07.md",
+      "quote": "> 고정값)는 [Chapter 3 · Domain](CH03-L01.html)에서 배운 DDIC 개념으로 돌아가 확인한다.",
+      "category": "문장(중복·문서체)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L07 콜아웃에서 '고정값'이 괄호 안팎에 중복되고 '개념으로 돌아가 확인한다'는 주체 흐릿한 문서체라 행동 지시가 전달되지 않는다 — 중복 제거·행동 명시 요구.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG04", "model": "opus", "seq": 17}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C052",
+      "file": "content/abap/CH12/CH12-L01.md",
+      "quote": "직접 카드를 눌러 조건이 네 칸짜리 행으로 바뀌는 걸 확인해 보자.",
+      "category": "문장(반복 문형)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "임베드 유도 문장이 7개 레슨 모두 '～확인/실험해 보자'라는 거의 동일한 문형이라 챕터를 이어 읽으면 단조롭다 — 질문형·다른 동사 변주 요구.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG04", "model": "sonnet", "seq": 6}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C053",
+      "file": "content/abap/CH12/CH12-L02.md",
+      "quote": "SELECT-OPTIONS: so_conc FOR zbooking-concert_id,",
+      "category": "용어 충돌(FOR 키워드)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L02 첫 코드의 FOR가 범용 언어의 반복문 예약어와 같아 훑어 읽는 학습자가 순간 루프로 오독할 수 있는데 '반복문이 아니라 대상 필드 지정'이라는 한 줄이 없다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG03", "model": "sonnet", "seq": 2}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C054",
+      "file": "content/abap/CH12/CH12-L05.md",
+      "quote": "자주 쓰는 OPTION은 이렇다.",
+      "category": "지름길 부재(SQL 매핑)",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "OPTION 표의 EQ/NE/BT/NB/GT/GE/LT/LE가 SQL 비교연산자와 1:1 대응이고 CP/NP만 새 개념이라는 경력자용 매핑 안내가 없어, 경험자가 표 전체를 처음부터 읽게 된다(L07은 같은 패턴 안내를 이미 쓰고 있어 챕터 내 비일관).",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG03", "model": "sonnet", "seq": 5}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C055",
+      "file": "content/abap/CH12/CH12-L06.md",
+      "quote": "CLEAR ls_stat.",
+      "category": "과잉(modern 대안 미언급)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L06의 CLEAR→개별 필드 대입→APPEND 절차식 코드가 경력자에게 장황하게 느껴질 수 있으니 modern ABAP VALUE 생성자 표현식 대안을 함께 짚자는 제안(단, R6 classic-first 경계상 CH18 전 modern 노출 금지와 상충 소지 — 본선 판단 필요).",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG03", "model": "gemini-3.6-flash-high", "seq": 3}
+      ]
+    },
+    {
+      "cluster_id": "CH12-C056",
+      "file": "content/abap/CH12/CH12-L01.md",
+      "quote": "앞서 배운 [[PARAMETERS]]는 **값 하나**를 받는 데 좋다.",
+      "category": "복습 장치(되짚기 링크 부재)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "챕터 동기의 대비 축인 PARAMETERS만 용어 마킹으로 처리되어 배운 레슨으로 되짚어 갈 링크가 없다(챕터 내 다른 교차 참조는 전부 레슨 링크) — 레슨 링크 전환과 prereq 선언 정합 요구.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG05", "model": "opus", "seq": 7}
+      ]
+    }
+  ],
+  "dropped": [],
+  "grade_opinions": {
+    "AG01-opus": "경미 수정",
+    "AG01-sonnet": "경미 수정",
+    "AG01-gpt-5.6-sol": "보강 권장",
+    "AG01-gemini-3.6-flash-high": "유지",
+    "AG02-opus": "경미 수정",
+    "AG02-sonnet": "경미 수정",
+    "AG02-gpt-5.6-sol": "보강 권장",
+    "AG02-gemini-3.6-flash-high": "경미 수정",
+    "AG03-opus": "경미 수정",
+    "AG03-sonnet": "경미 수정",
+    "AG03-gpt-5.6-sol": "경미 수정",
+    "AG03-gemini-3.6-flash-high": "경미 수정",
+    "AG04-opus": "경미 수정",
+    "AG04-sonnet": "경미 수정",
+    "AG04-gpt-5.6-sol": "경미 수정",
+    "AG04-gemini-3.6-flash-high": "유지",
+    "AG05-opus": "경미 수정",
+    "AG05-sonnet": "경미 수정",
+    "AG05-gpt-5.6-sol": "경미 수정",
+    "AG05-gemini-3.6-flash-high": "유지",
+    "AG06-opus": "경미 수정",
+    "AG06-sonnet": "경미 수정",
+    "AG06-gpt-5.6-sol": "보강 권장",
+    "AG06-gemini-3.6-flash-high": "경미 수정",
+    "AG09-opus": "경미 수정",
+    "AG09-sonnet": "경미 수정",
+    "AG09-gpt-5.6-sol": "보강 권장",
+    "AG09-gemini-3.6-flash-high": "유지"
+  }
+}

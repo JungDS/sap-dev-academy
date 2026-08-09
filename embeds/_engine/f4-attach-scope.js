@@ -1,5 +1,5 @@
 // ===== f4-attach-scope 엔진 JS — Search Help 부착 지점별 영향 범위 (CH09-L06) =====
-// Data Element / 테이블 필드 / Structure / MATCHCODE OBJECT 부착 시 어떤 입력칸이 영향받는지(초록) 비교.
+// Data Element / 테이블·Structure의 필드 하나 / MATCHCODE OBJECT 부착 시 어떤 입력칸이 영향받는지(초록) 비교.
 // 데이터=window.FAS_CFG = { fields:[{id,name,basis}], points:[{key,label,code,scope,fields:[id..]}] }
 (function(){
   var cfg = window.FAS_CFG || {};

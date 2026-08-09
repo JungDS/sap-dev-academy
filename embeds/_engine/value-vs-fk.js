@@ -29,14 +29,41 @@
   $('swVT').addEventListener('click',function(){ vt=!vt; render(); });
   $('swFK').addEventListener('click',function(){ fk=!fk; render(); });
 
-  /* ALPHA 변환 */
+  /* ALPHA 변환 — ALPHA=IN은 값이 '처음부터 끝까지 숫자'일 때만 앞자리를 0으로 채운다.
+     글자가 섞이면 아무 일도 하지 않고 값을 그대로 둔다(공연 ID C001이 대상 밖인 이유). */
+  var LEN=10;
   function alpha(){
-    var raw=$('alphaIn').value.trim().replace(/[^0-9]/g,'');
-    var internal = raw==='' ? '' : raw.padStart(10,'0');
-    $('alphaInternal').textContent = internal||'—';
-    $('alphaDisplay').textContent = raw===''?'—':String(Number(raw));
+    var raw=$('alphaIn').value.trim();
+    var msg=$('alphaMsg');
+    if(raw===''){
+      $('alphaInternal').textContent='—'; $('alphaDisplay').textContent='—';
+      msg.className='alpha__msg'; msg.textContent='값을 넣거나 아래 예시를 눌러 보세요.';
+      return;
+    }
+    if(raw.length>LEN){
+      $('alphaInternal').textContent='—'; $('alphaDisplay').textContent='—';
+      msg.className='alpha__msg no';
+      msg.innerHTML='<code>CHAR '+LEN+'</code> 칸보다 길어 이 필드에는 담기지 않습니다. '+LEN+'자리 이하로 넣어 보세요.';
+      return;
+    }
+    if(/^[0-9]+$/.test(raw)){
+      var internal = raw.padStart(LEN,'0');
+      $('alphaInternal').textContent=internal;
+      $('alphaDisplay').textContent=internal.replace(/^0+(?=.)/,'');
+      msg.className='alpha__msg yes';
+      msg.innerHTML='숫자로만 된 값이라 ALPHA가 앞자리를 0으로 채웁니다(<code>CHAR '+LEN+'</code> 기준). 화면에는 다시 0을 떼고 보여 줍니다.';
+    } else {
+      $('alphaInternal').textContent=raw;
+      $('alphaDisplay').textContent=raw;
+      msg.className='alpha__msg no';
+      msg.innerHTML='글자가 섞여 있어 <b>ALPHA가 아무것도 하지 않습니다</b> — 값이 그대로 저장됩니다. 우리 공연 ID <code>C001</code>이 ALPHA 대상이 아닌 이유입니다.';
+    }
   }
   $('alphaIn').addEventListener('input', function(){ alpha(); postHeight(); });
+  $('alphaChips').addEventListener('click', function(e){
+    var b=e.target.closest('.achip'); if(!b) return;
+    $('alphaIn').value=b.dataset.v; alpha(); postHeight();
+  });
 
   function postHeight(){ try{ var el=document.querySelector('.wrap');
     var h=Math.ceil(el?el.getBoundingClientRect().bottom:document.body.scrollHeight)+8;

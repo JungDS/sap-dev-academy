@@ -1,0 +1,134 @@
+{
+  "agent": "AG05",
+  "model": "opus",
+  "target": "CH10",
+  "persona_ack": "20년차 학습 교재·코스 설계 전문가로서 CH10(모듈화 기초) 7개 레슨과 _chapter.md를 교수설계 관점 5축(챕터 구성·섹션 흐름·복습/예습 장치·불편→해결 서사·인지 부하)으로 읽기 전용 감사했다. 형식 5단계 강제는 하지 않았고, 학습 효과를 실제로 해치는 구조 문제만 높음 이상으로 판정했다.",
+  "method": "Read 도구로 대상 8개 파일 전문(front-matter 포함) 통독. 빌드·브라우저·웹검색 미사용. 레슨 간 개념 흐름은 (1) front-matter의 introduces/prereq/prevRel과 본문 실제 도입 내용 대조, (2) 각 레슨 도입부 불편·마무리 예고 문장 추적, (3) 후속 챕터 예고(CH21 등) 출현 위치·횟수 수기 집계, (4) 예제 코드의 변수 선언 위치·개수 확인 방식으로 교차 검증했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L07.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L07.md",
+      "quote": "3. (도전) 같은 로직을 [Local Class로 모듈화](CH10-L04.html)의 **static method**(`zcl_booking=>get_remaining`)로 바꿔 본다.",
+      "category": "불편→해결 서사 / 원칙-실습 충돌",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "챕터의 결론인 L06이 \"신규 로직은 클래스, FORM은 새로 만들지 말 것\"이라는 판단 기준을 세운 직후, 챕터의 최종 산출물인 L07 실습이 신규 로직(get_remaining·can_book)을 전부 새 FORM으로 작성한다. 클래스 버전은 선택 과제(도전)로 밀려 있고, 왜 여기서만 FORM을 쓰는지 근거 문장이 한 줄도 없다.",
+      "evidence": "L06 원칙: \"**서브루틴(FORM)** 은 **새로 만들지 말 것**. 읽고 유지보수하는 용도로만 안다.\" · L06 표: \"Subroutine(FORM) | 프로그램 내부 | ▲ 레거시 | 기존 코드 유지보수\" · L06 실전 장면 ①도 \"잔여석 계산을 새로 만든다 — 신규 로직이니 **클래스 메서드**\"라고 못 박는데, 바로 다음 L07이 그 잔여석 계산을 FORM으로 만든다. L01도 이미 \"새 코드에 FORM 남발 → 레거시\"라고 경고했다. 챕터가 마지막에 가르친 판단 기준을 챕터 자신의 대표 실습이 반례로 덮으면, 학습자는 기준을 기억이 아니라 예외로 저장한다(전이 실패).",
+      "suggestion": "① 실습 본문을 정적 메서드(zcl_booking=>get_remaining)로 승격하고 FORM 버전은 \"레거시 코드 읽기\" 대조로 접어 두거나, ② FORM을 유지한다면 실습 도입에 \"이번엔 L02의 USING/CHANGING 손에 익히는 게 목적이라 FORM으로 연습한다 — 실무 신규 개발이면 L06 기준대로 클래스\"라는 근거 한 문단을 명시한다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L01.md",
+      "quote": "introduces: [\"Subroutine\", \"FORM\", \"PERFORM\", \"로컬변수 vs 전역변수\"]",
+      "category": "빠진 징검다리 / 학습목표-본문 불일치",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "L01이 정식 도입 대상으로 선언한 \"로컬변수 vs 전역변수\"가 본문에 없다. 유일한 언급은 체험 안내 한 절(\"전역 변수는 누적되고 지역 변수는 매번 새로 생기는 차이도 함께 확인할 수 있다\")뿐이고, FORM 안에서 DATA로 로컬 변수를 선언하는 방법·수명·이름 접두어 전환은 챕터 어디에서도 설명되지 않는다.",
+      "evidence": "L01 본문 코드는 WRITE 한 줄짜리 FORM뿐이라 로컬 선언 예가 0개다. L02는 STATICS를 설명하며 \"(일반 지역변수 `DATA`는 호출마다 사라진다)\"를 이미 아는 사실처럼 괄호로 소비한다. 실제 로컬 선언은 L07 실습의 FORM 내부 \"DATA: lt_book TYPE TABLE OF zbooking, ls_book …, lv_sum TYPE i, lv_cap …\"에서 사전 설명 없이 처음 등장한다. 변수 격리는 모듈화를 배우는 핵심 이득인데 개념 설명이 체험 위젯에 외주된 상태다.",
+      "suggestion": "L01에 \"FORM 안에서 선언한 변수는 호출마다 새로 생기고 끝나면 사라진다\"를 짧은 코드(FORM 내부 DATA 카운터 vs 바깥 변수 비교)와 함께 정식 도입하고, 이 시점부터 이름 접두어가 g/l로 갈리는 이유도 한 문단 붙인다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L04.md",
+      "quote": "> 쓴다. 클래스가 본격적으로 주인공이 되는 건 [Chapter 21 · OO 기초](CH21-L01.html)다.",
+      "category": "예습 장치 과잉(예고 반복)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "\"본격 OO는 Chapter 21에서\" 계열 예고가 L02·L04·L05에 걸쳐 8회 반복된다(L04만 4회). 예고는 도입이나 마무리에 1～2문장이면 충분한데, 본문 중간에서 \"지금은 아니다\"를 계속 반복해 학습자에게 유예감을 준다.",
+      "evidence": "출현 위치 — L02 1회(\"메서드 본격 설계는 [Chapter 21 · OO 기초]에서 배운다\"), L04 4회(도입 \"본격 OO(객체지향) 설계는 한참 뒤\", 바로 다음 콜아웃 \"클래스가 본격적으로 주인공이 되는 건\", \"객체 생성과 참조 변수는 본격 OO인 …에서 다룬다\", 흔한 실수의 \"인스턴스는 `->`(객체로, Chapter 21)\"), L05 3회. L04는 두 문단 연속으로 같은 메시지를 반복하고, \"객체 생성·참조 변수는 CH21\" 문장은 L04·L05에 사실상 중복된다.",
+      "suggestion": "레슨당 1회(도입 또는 마무리)로 통합한다. L04는 도입 콜아웃 하나만 남기고, 본문 중간·흔한 실수 목록의 CH21 언급은 설명 문장 없이 링크만 두거나 삭제한다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L02.md",
+      "quote": "## 빠져나오기 · 값 유지 — RETURN · STATICS",
+      "category": "주제 응집성 / 인지 부하",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "파라미터 전달을 다루는 레슨 끝에 성격이 다른 키워드 2개(RETURN·STATICS)가 불릿 한 줄씩으로 얹혀 있다. 둘 다 front-matter에 정식 도입으로 선언됐는데 본문에는 필요성(왜)도, 코드 예제도, 주의점도 없다.",
+      "evidence": "L02 introduces에 \"RETURN\",\"STATICS\"가 포함되지만 본문 처리는 불릿 2줄이 전부이고 코드 0개다. L02는 이미 USING·CHANGING·전달 3방식·value()·iv_/cv_ 관례까지 신규 항목이 많은 고부하 레슨인데 그 끝에 무관한 2개가 추가된다. RETURN은 L07 코드(\"cv_left = 0. RETURN.\")에서 실제로 쓰이는데 설명은 한 줄뿐이고, STATICS는 챕터 어디에서도 다시 나오지 않아 회수(재사용)되지 않는다.",
+      "suggestion": "RETURN은 \"조건이 아니면 더 볼 것도 없다\"는 상황부터 보여 주는 짧은 코드와 함께 본문 흐름 안에 배치하고, STATICS는 실제 사용 장면(호출 횟수 누적 카운터 등)이 생기는 자리로 옮기거나 예고 수준으로 낮춘다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L01.md",
+      "quote": "## 정의 — FORM ~ ENDFORM",
+      "category": "섹션 흐름 / 설명 압축",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "챕터 첫 도구의 \"무엇인가\" 단계가 제목 + 3줄 코드블록만으로 끝나고 산문 설명이 한 줄도 없다. FORM과 ENDFORM이 한 쌍이라는 것, print_hello가 학습자가 붙이는 이름이라는 것, 정의만 두면 실행되지 않는다는 것이 전부 추론에 맡겨진다.",
+      "evidence": "해당 섹션은 헤딩 → 코드 → 다음 헤딩으로 바로 넘어간다. 바로 뒤의 \"호출 — PERFORM\"에는 불릿 설명이 붙어 있어 대비가 뚜렷하고, 완전 입문자 대상 원칙(압축 설명 금지·용어 첫 등장 풀이)과도 어긋난다. L01은 챕터 진입점인데 본문 분량도 다른 레슨의 절반 수준이다.",
+      "suggestion": "코드 아래에 불릿 2～3개(이름은 내가 정한다 · ENDFORM까지가 한 덩어리 · 정의만으로는 실행되지 않는다)를 붙이고, \"정의만 두고 실행하면 아무 일도 안 일어난다\"를 먼저 보여 PERFORM의 필요성으로 잇는다."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L02.md",
+      "quote": "DATA lv_out TYPE p LENGTH 8 DECIMALS 2.",
+      "category": "인지 부하 / 예제 일관성",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "이 챕터가 처음 가르치는 로컬↔전역 구분을 예제 네이밍이 스스로 뒤집는다. START-OF-SELECTION 아래에 선언한 DATA는 프로그램 전역인데 로컬 접두어 lv_를 달고 있고(L04·L05도 동일), 정작 진짜 로컬인 L07의 FORM 내부 선언도 lv_라서 접두어만으로는 둘을 구분할 수 없다.",
+      "evidence": "전역 선언에 lv_를 쓴 곳 — L02 \"START-OF-SELECTION.\" 아래 DATA lv_out, L04 \"DATA lv_out TYPE p LENGTH 8 DECIMALS 2.\", L05 \"DATA lv_text TYPE string.\"·\"DATA lv_r TYPE i.\" 반면 L07의 FORM 내부 lt_book·lv_sum·lv_cap은 올바른 로컬 사용이다. ABAP 리포트에서 DATA는 이벤트 블록 아래에 써도 프로그램 전역이므로 lv_는 사실과도 어긋나고, 프로젝트 규칙(R11: CH01～09 전역은 gv_, 로컬 스코프 선언만 lv_)과도 충돌해 앞 챕터와의 연속성이 끊긴다. 스코프를 배우는 바로 그 챕터에서 표기가 반례가 되는 점이 문제다.",
+      "suggestion": "전역 선언은 gv_로 되돌리고, L01의 로컬/전역 도입 보강(seq 2)과 같은 자리에서 \"이 챕터부터 g와 l이 갈린다\"를 명시한다."
+    },
+    {
+      "seq": 7,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L01.md",
+      "quote": "> **먼저 알아둘 것:** `FORM`/`PERFORM`은 **레거시(구식)**다. 새 코드는 메서드",
+      "category": "불편→해결 서사 / 동기 설계",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "도입부 불편이 서술 2문장(\"출력·계산 로직을 여기저기서 똑같이 쓰고 있다\")으로만 제시돼 체감이 없고, 그 직후 첫 도구를 배우기도 전에 \"이건 레거시\"라는 김빼기 경고가 온다. 배우기 전에 평가가 먼저 오면 챕터 진입점의 동기가 약해진다.",
+      "evidence": "반복되는 코드를 실제로 보여 주는 예시가 없어 불편이 선언에 그친다(체험 위젯도 PERFORM 흐름 추적이지 중복 코드의 고통은 아니다). 레거시 경고는 같은 레슨의 흔한 실수 목록에서 한 번, L06에서 표·원칙으로 다시 다뤄지므로 도입부에 둘 필연성은 낮다. 다만 \"읽을 줄은 알아야\"라는 정직한 프레이밍의 장점도 있어 판단은 추정으로 둔다.",
+      "suggestion": "도입에 같은 계산이 3곳에 복붙된 짧은 코드를 먼저 보여 불편을 체감시키고 → PERFORM으로 한 곳에 묶는 해소로 잇는다. 레거시 경고는 레슨 마무리나 L06로 옮긴다."
+    },
+    {
+      "seq": 8,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\_chapter.md",
+      "quote": "intro: \"같은 코드가 여기저기 반복된다 — 묶어서 재사용하고 싶다.\"",
+      "category": "챕터 intro / 학습 지도 부재",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "챕터 intro가 불편 한 문장에 그치고 본문도 그 문장을 그대로 반복할 뿐이라, 이 챕터에서 묶는 도구를 셋(FORM·Function Module·Class) 배우고 마지막에 선택 기준과 콘서트앱 실습으로 수렴한다는 지도가 없다. 7개 레슨을 관통하는 목적지가 제시되지 않는다.",
+      "evidence": "_chapter.md는 front-matter를 빼면 intro와 완전히 동일한 한 문장이 본문의 전부다. 반면 챕터 실제 범위는 절차형 2종 + OO 2종 + 선택 기준 + 관통예제 실습으로 넓고, 학습자는 L06에 가서야 셋의 관계를 처음 본다. 다른 챕터도 같은 1줄 형식일 수 있으나 대상 파일 범위 밖이라 비교하지 못해 추정으로 둔다.",
+      "suggestion": "intro 문장은 유지하되 본문에 3～4문장(무엇을 배우는지 · 왜 도구가 셋이나 되는지 · 끝에서 콘서트앱의 무엇을 만들지)을 덧붙여 챕터 지도를 준다."
+    },
+    {
+      "seq": 9,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L05.md",
+      "quote": "- **`=>` vs `->`** → 정적은 `=>`(클래스로 직접), 인스턴스는 `->`(객체로, [Chapter 21](CH21-L01.html)).",
+      "category": "레슨 분할(파편 레슨) / 중복",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "L05의 고유 학습량이 얇다. 호출 문법 `=>`는 L04에서 이미 배웠고 L05가 새로 더하는 것은 \"전역(SE24의 ZCL_)이라 여러 프로그램이 공유한다\"와 명명 파라미터 호출 정도인데, 흔한 실수 2개는 L04와 문장까지 같다.",
+      "evidence": "인용 불릿은 L04의 흔한 실수 목록과 완전히 동일한 문장이고, 다른 하나(L05 \"정적인데 객체부터\" vs L04 \"정적인데 객체 만들기\")도 사실상 같다. front-matter의 introduces도 항목 1개(\"Global Class 호출(static 우선)\")뿐이다. 다만 L01→L03(프로그램 내부→전역)의 대비를 L04→L05로 반복하는 구조적 대칭이 있어 통합이 최선이라고 단정하지는 않는다.",
+      "suggestion": "L04에 \"전역 클래스 불러 쓰기\" 절로 흡수하거나, L05를 유지한다면 표준 CL_ 클래스 찾기·SE24에서 메서드 계약 읽기처럼 L04에 없는 실전 스킬을 본문 중심으로 키운다."
+    },
+    {
+      "seq": 10,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L04.md",
+      "quote": "introduces: [\"ATTRIBUTE\", \"METHOD\", \"PUBLIC/PRIVATE\", \"Class↔Object\", \"Static 메서드(=>)\"]",
+      "category": "학습목표-본문 불일치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "정식 도입으로 선언한 ATTRIBUTE(클래스 속성)가 본문에 한 번도 나오지 않고, PUBLIC/PRIVATE도 \"감출 것은 `PRIVATE SECTION`에 둔다\" 한 절뿐 코드 예가 없다.",
+      "evidence": "L04 코드 예제에는 PUBLIC SECTION만 등장하고 PRIVATE SECTION도, 속성(데이터 멤버) 선언도 없다. 같은 패턴이 L03에도 있어 introduces의 \"SE37\"이 본문에서는 \"`SE37`에서 만들고 관리한다\"·\"`SE37`에서 검색하거나\" 두 절로만 처리되고 만드는 절차는 없다. 선언된 학습목표가 본문 범위와 어긋나면 후속 레슨의 prereq 판단 근거도 함께 흔들린다.",
+      "suggestion": "본문에서 다루지 않는 항목(ATTRIBUTE·SE37)은 introduces에서 빼고, 남길 경우 PRIVATE SECTION에 속성 하나를 둔 최소 코드 예를 추가해 \"공개/비공개\"를 눈으로 보게 한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "보강 권장",
+    "summary": "레슨 배열(FORM → 파라미터 → Function Module → Local Class → Global Class → 선택 기준 → 실습)은 학습 단위로 타당하고, 레슨 간 연결 문장·이전 개념 상기(L03·L04·L05 도입부)와 마무리 예고는 대체로 1～2문장으로 잘 절제돼 있다. L06의 \"왜 이런 서열이 됐나\"는 규칙이 아니라 근거를 주는 모범 절이다. 다만 두 가지가 학습 효과를 실제로 해친다. ① 챕터 결론인 L06 원칙(신규 FORM 금지)을 바로 다음 L07 실습이 새 FORM 두 개로 정면 위반하면서 이유를 설명하지 않아, 마지막에 배운 판단 기준이 즉시 반례로 덮인다. ② 모듈화의 핵심 이득인 로컬/전역 스코프가 L01에 정식 도입으로 선언만 되고 본문 도입 없이 체험 위젯에 외주된 채, L07 실습에서 처음 실제로 쓰인다(징검다리 결손). 그 밖에 Chapter 21 예고 8회 반복(L04만 4회), L02 말미의 RETURN·STATICS 파편 부착(코드 예제 0), L01 \"정의\" 섹션의 산문 부재, 전역 변수에 로컬 접두어 lv_ 사용이 인지 부하와 개념 혼동을 키운다. 구성 골격은 손댈 필요가 없으므로 재집필이 아니라 L01 보강·L07 근거 보강·예고 정리 수준의 보강이 적절하다."
+  }
+}

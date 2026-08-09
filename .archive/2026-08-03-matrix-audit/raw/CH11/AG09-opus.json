@@ -1,0 +1,56 @@
+{
+  "agent": "AG09",
+  "model": "opus",
+  "target": "CH11",
+  "persona_ack": "나는 발견자 AG09 — ABAP 정적 검사기를 시늉하는 코드 전용 감사자다. 산문·서사·시각화·프론트매터는 판단 대상에서 빼고 ```abap 코드 블록만 줄 단위로 검사했다. 읽기 전용으로 지정된 7개 대상 파일만 열었고, 다른 감사자의 산출물·과거 감사 기록·웹 검색은 일절 참조하지 않았다. 실행 가능한 SAP 시스템이 없으므로 컴파일 확신이 아니라 정적 판단이며, 억지 발견 대신 확인된 것만 기록했다.",
+  "method": "Read 도구로 대상 7개 파일 전문 통독 → Grep(^```)으로 코드 펜스를 전수 확인해 abap 블록 5개(CH11-L02 1개, CH11-L03 2개, CH11-L04 1개, CH11-L06 1개)를 확정하고 CH11-L01·CH11-L05·_chapter.md에는 코드 블록이 없음을 확인. 이어 Grep으로 modern 문법 토큰(인라인 DATA()·VALUE·NEW·+=·-=·파이프 문자열)과 New Open SQL(@·INTO TABLE @) 및 접두어(g로 시작·l로 시작·it_)를 전수 스캔해 경계 규약 위반 여부와 접두어 일관성을 대조. 브라우저·서버(http://localhost:8143)는 코드 정적 검사에 불필요해 사용하지 않음. 시그니처(cl_salv_table=>factory의 IMPORTING r_salv_table / CHANGING t_table, get_functions()->set_all())는 지식 기반 정적 판단.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH11/CH11-L06.md",
+      "quote": "DATA: lt_book TYPE TABLE OF zbooking,",
+      "category": "네이밍 규약",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "캡스톤 실습 코드의 선언이 리포트 최상위(전역 스코프)인데도 로컬 접두어 lt_/lo_를 쓴다. 이 커리큘럼 규칙상 FORM/METHOD 안에서 선언한 것만 l로 시작하고, 최상위 선언은 gt_/go_여야 한다. 같은 챕터 CH11-L04의 동일 구조 코드는 gt_flight/go_alv를 쓰고 있어 챕터 안에서 접두어가 엇갈린다.",
+      "evidence": "CH11-L06 코드 블록(17～31행) 전체에 FORM·METHOD·PERFORM이 없고 SELECT와 TRY가 곧바로 최상위에 놓인다(21행 SELECT * FROM zbooking INTO TABLE lt_book.). 19행도 같은 문제 — `      lo_alv  TYPE REF TO cl_salv_table.`. 반면 구조가 사실상 동일한 CH11-L04는 21～22행에서 `DATA: gt_flight TYPE TABLE OF sflight,` / `      go_alv    TYPE REF TO cl_salv_table.`로 전역 접두어를 쓴다. 산문 44행의 `DESCRIBE TABLE lt_book LINES lv_count`도 같은 엇갈림(CH11-L04 53행은 gv_count).",
+      "suggestion": "CH11-L06 코드 블록의 lt_book → gt_book, lo_alv → go_alv로 바꾸고, 44행 산문의 lt_book/lv_count도 gt_book/gv_count로 맞춘다. (반대로 이 챕터 코드를 FORM 안으로 넣을 계획이면 CH11-L04까지 함께 로컬로 통일해야 하나, CH11은 모듈화 이전 예제이므로 전역 통일이 맞다.)"
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH11/CH11-L03.md",
+      "quote": "lo_alv->get_functions( )->set_all( abap_true ).",
+      "category": "네이밍 규약",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "CH11-L03의 두 코드 블록이 모두 lo_alv를 쓰는데, 바로 앞 레슨(CH11-L02)에서 만든 그 객체는 go_alv로 선언됐다. 로컬 스코프(FORM/METHOD)가 전혀 없는 코드라 접두어는 go_여야 하며, 지금 상태로는 L02 → L03 → L04를 순서대로 읽는 입문자에게 서로 다른 변수처럼 보인다.",
+      "evidence": "CH11-L02 31행 `DATA go_alv    TYPE REF TO cl_salv_table.`로 선언한 객체를, CH11-L03은 21행 `lo_alv->get_functions( )->set_all( abap_true ).`와 30행 `lo_alv->display( ).`에서 이름만 바꿔 이어 쓴다. CH11-L03 어디에도 FORM/METHOD/CLASS 정의가 없고, 다음 레슨 CH11-L04는 35～36행에서 같은 두 줄을 go_alv->…로 다시 쓴다(즉 L03만 홀로 다른 이름).",
+      "suggestion": "CH11-L03의 두 코드 블록에서 lo_alv → go_alv로 바꿔 L02·L04와 같은 변수임을 시각적으로 잇는다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH11/CH11-L06.md",
+      "quote": "CATCH cx_salv_msg.",
+      "category": "예외 처리",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "CH11-L06의 CATCH 블록이 문장도 주석도 없이 비어 있어(29행 CATCH 다음 줄이 바로 30행 ENDTRY) 예외를 조용히 삼킨다. 문법 오류는 아니지만, 실패 시 화면에 표도 안 뜨고 메시지도 없어 학습자가 원인을 알 수 없고, 같은 레슨이 43행에서 TRY/CATCH의 필요성을 강조하는 것과 어긋나는 빈 CATCH 패턴을 정답처럼 복사하게 만든다.",
+      "evidence": "CH11-L06 29～30행이 `  CATCH cx_salv_msg.` / `ENDTRY.`로 붙어 있어 핸들러 본문이 0줄이다. 같은 챕터의 완성형 예제 CH11-L04는 37～38행에서 `    CATCH cx_salv_msg.` 다음에 `      MESSAGE 'ALV 생성 실패' TYPE 'I'.`로 처리를 보여 주고, CH11-L02도 최소한 `    \" 생성 실패 처리` 주석을 남긴다 — L06만 아무것도 없다.",
+      "suggestion": "CH11-L04와 동일하게 `MESSAGE 'ALV 생성 실패' TYPE 'I'.` 한 줄을 넣거나, 최소한 CH11-L02처럼 처리 자리를 알리는 주석을 남긴다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "abap 코드 블록 5개(CH11-L02 1개, CH11-L03 2개, CH11-L04 1개, CH11-L06 1개)를 줄 단위로 검사했다. 활성화 차단급 결함은 없다 — cl_salv_table=>factory 호출의 IMPORTING r_salv_table / CHANGING t_table 조합과 인자 순서, get_functions( )->set_all( abap_true ) 체이닝, TRY/CATCH cx_salv_msg/ENDTRY 짝, 문장 마침표, REPORT·START-OF-SELECTION 구조, TYPE TABLE OF sflight ↔ SELECT * INTO TABLE의 타입 정합까지 모두 정상으로 판단된다. 경계 규약(CH01～17)도 깨끗하다 — 인라인 DATA()·VALUE·NEW·+=·파이프 문자열 같은 New Syntax가 없고, SELECT 두 건 모두 @ 없는 classic Open SQL이며 콤마 필드 나열도 없다. 코드 주석과 출력 문자열도 본문과 어긋나지 않는다. 실제 결함은 접두어 일관성 2건(CH11-L03·CH11-L06이 전역 선언에 로컬 접두어 lo_/lt_ 사용 — 같은 챕터 CH11-L02·CH11-L04는 go_/gt_)과 빈 CATCH 1건으로, 모두 치환 수준의 국소 수정이면 해소된다. 그래서 재집필·보강이 아니라 경미 수정으로 본다. 다만 접두어 엇갈림은 L02→L03→L04를 이어 읽는 입문자에게 같은 객체가 다른 변수로 보이는 문제라 방치하면 체감 난도를 올린다. 참고로 CH11-L01·CH11-L05·_chapter.md에는 코드 블록이 없어 이 종의 판정 대상이 아니었고, 의사코드로 표기된 축약 블록도 없었다."
+  }
+}

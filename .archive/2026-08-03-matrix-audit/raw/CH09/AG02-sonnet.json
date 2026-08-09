@@ -1,0 +1,81 @@
+{
+  "agent": "AG02",
+  "model": "sonnet",
+  "target": "CH09",
+  "persona_ack": "나는 준호다. 배운 개념은 그 자리에서 직접 눌러보고 값을 바꿔봐야 직성이 풀리는 실습형 학습자로서, CH09의 레슨 9개와 그에 딸린 임베드 위젯 12개를 하나하나 직접 조작하며 본문 코드·설명과 대조했다.",
+  "method": "(1) 소스 정독 — content/abap/CH09/*.md 9개 + _chapter.md, embeds/abap/CH09-*.html 12개 전부를 읽고 본문 코드·표·변수명과 위젯의 window.*_CFG(또는 내장 데이터)를 1:1 대조. (2) 실브라우저 렌더 — http://localhost:8144 로컬 서버에 떠 있는 Chromium 브라우저 탭으로 12개 위젯 전부를 ?v=b3 캐시버스팅 쿼리로 단독 로드해 렌더 DOM(get_page_text/read_page)과 콘솔(read_console_messages, 전부 무오류 확인)을 점검. (3) 실조작 — 버튼은 좌표 클릭(computer left_click)과 JS dispatch(el.click()/dispatchEvent) 둘 다로 상태 전이를 검증(예: L01 C001/C999/F4팝업 행선택, L02 두 스위치 4-state 매트릭스 전부 + ALPHA 입력값 변경, L03 KO/EN 전환 + SPRAS 누락 시뮬, L04 Selection Method 전환 + EXP on/off + 빈 테이블, L05-S01 탭 전환 + 매핑 끊기, L05-S02 트리 노드 클릭, L06-S01 4개 부착지점 전환, L07-S02 5단계 토글 + F4실행, L08-S01 정답/오답 카드 + 리셋, L09-S01 전부 채우기/초기화 + 4개 테스트 버튼). (4) 페이지 컨텍스트 검증 — docs/abap/pages/CH09-L01~L09.html 9개 빌드본을 전부 로드해 iframe src·순서가 MD의 ::embed 선언과 일치하는지, 콘솔 오류가 없는지 확인하고, iframe.contentDocument로 실제 삽입된 위젯 텍스트까지 재확인. (5) L09-S01은 인라인 CFG가 없어 fetch(...,{cache:'reload'})로 embeds/_engine/concert-model-checklist.js를 직접 열람해 하드코딩된 문구를 확인.",
+  "errors": [],
+  "files_read": [
+    "content/abap/CH09/_chapter.md",
+    "content/abap/CH09/CH09-L01.md",
+    "content/abap/CH09/CH09-L02.md",
+    "content/abap/CH09/CH09-L03.md",
+    "content/abap/CH09/CH09-L04.md",
+    "content/abap/CH09/CH09-L05.md",
+    "content/abap/CH09/CH09-L06.md",
+    "content/abap/CH09/CH09-L07.md",
+    "content/abap/CH09/CH09-L08.md",
+    "content/abap/CH09/CH09-L09.md",
+    "embeds/abap/CH09-L01-S01.html",
+    "embeds/abap/CH09-L02-S01.html",
+    "embeds/abap/CH09-L03-S01.html",
+    "embeds/abap/CH09-L04-S01.html",
+    "embeds/abap/CH09-L05-S01.html",
+    "embeds/abap/CH09-L05-S02.html",
+    "embeds/abap/CH09-L06-S01.html",
+    "embeds/abap/CH09-L07-S01.html",
+    "embeds/abap/CH09-L07-S02.html",
+    "embeds/abap/CH09-L07-S03.html",
+    "embeds/abap/CH09-L08-S01.html",
+    "embeds/abap/CH09-L09-S01.html",
+    "embeds/_engine/concert-model-checklist.js",
+    "docs/abap/pages/CH09-L01.html",
+    "docs/abap/pages/CH09-L02.html",
+    "docs/abap/pages/CH09-L03.html",
+    "docs/abap/pages/CH09-L04.html",
+    "docs/abap/pages/CH09-L05.html",
+    "docs/abap/pages/CH09-L06.html",
+    "docs/abap/pages/CH09-L07.html",
+    "docs/abap/pages/CH09-L08.html",
+    "docs/abap/pages/CH09-L09.html"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "embeds/abap/CH09-L05-S01.html",
+      "quote": "ZSH_CONCERT_ALL (Collective)",
+      "category": "불일치",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "위젯이 화면 상단에 표시하는 Collective Search Help 이름이 'ZSH_CONCERT_ALL'인데, 같은 레슨(CH09-L05.md) 본문과 같은 레슨에 나란히 삽입된 자매 위젯(CH09-L05-S02.html)은 모두 'ZSH_CONCERT_COLL'로 부른다.",
+      "evidence": "CH09-L05.md 본문: \"`SE11` → Search Help → `ZSH_CONCERT_COLL` → Create (Collective).\" CH09-L05-S02.html의 HT_CFG.root.name도 'ZSH_CONCERT_COLL'이고 실제 렌더 결과도 'ZSH_CONCERT_COLL'로 확인됨. 반면 CH09-L05-S01.html 상단 라벨은 'ZSH_CONCERT_ALL'이며, 브라우저에서 단독 렌더링·docs/abap/pages/CH09-L05.html에 삽입된 iframe(2번째 embed) 양쪽 모두 'ZSH_CONCERT_ALL' 텍스트가 그대로 노출됨을 확인했다. 이후 CH09-L06.md·CH09-L07.md 본문 코드도 전부 'zsh_concert_coll'을 쓰고, CH09-L06-S01.html도 'zsh_concert_all'로 같은 오표기를 반복한다(별도 발견 seq=2) — 챕터 전체에서 이 두 위젯만 다른 이름. 위젯 자체 상호작용 로직(탭 전환·매핑 끊기)은 정상 동작해 개념 이해를 막지는 않지만, L09 실습에서 학습자가 직접 만들 객체명이 'ZSH_CONCERT_COLL'이므로 이름 자체를 혼동할 위험이 있다.",
+      "suggestion": "CH09-L05-S01.html의 'ZSH_CONCERT_ALL' 라벨을 'ZSH_CONCERT_COLL'로 통일."
+    },
+    {
+      "seq": 2,
+      "file": "embeds/abap/CH09-L06-S01.html",
+      "quote": "{id:'p_con',   name:'pa_con',              basis:'PARAMETERS · DE zcon_de_concert_id'},",
+      "category": "불일치",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "위젯의 MATCHCODE OBJECT 예시 코드가 바로 위 본문의 실제 코드 블록과 변수명·Data Element명·Search Help명이 셋 다 다르다.",
+      "evidence": "CH09-L06.md 본문 코드(및 CH09-L07.md 동일 코드): \"PARAMETERS pa_conc TYPE zde_concert_id\\n  MATCHCODE OBJECT zsh_concert_coll.\" 반면 위젯 CH09-L06-S01.html의 FAS_CFG는 필드명 'pa_con'(본문: pa_conc), Data Element 'zcon_de_concert_id'(본문: zde_concert_id), Search Help 'zsh_concert_all'(본문: zsh_concert_coll)을 쓴다. 브라우저에서 'MATCHCODE OBJECT' 버튼을 눌러 실제 렌더링해도 'PARAMETERS pa_con TYPE zcon_de_concert_id MATCHCODE OBJECT zsh_concert_all.'로 동일하게 표시됨을 확인했다. 이 위젯은 CH09-L06.md 본문의 코드 블록 바로 아래(같은 페이지, 같은 스크롤 흐름)에 삽입돼 있어 학습자가 나란히 비교하기 쉬운 위치라, 같은 예제인지 다른 예제인지 혼동을 줄 수 있다. 다만 위젯 자체의 부착범위 비교 로직(4개 지점 전환 시 영향받는 필드 하이라이트)은 정상 동작해 핵심 개념 학습은 지장이 없다.",
+      "suggestion": "위젯 코드 예시를 본문과 동일한 pa_conc / zde_concert_id / zsh_concert_coll로 통일."
+    },
+    {
+      "seq": 3,
+      "file": "embeds/_engine/concert-model-checklist.js",
+      "quote": "sub:'공연 2·회차 3·예매 3(정훈영 포함)'",
+      "category": "불일치",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "CH09-L09-S01 위젯(제작 체크리스트)의 '테스트 데이터' 단계 설명은 '예매 3건'인데, 같은 레슨 본문의 실습 과제 지시는 '예매 6건'이다.",
+      "evidence": "CH09-L09.md '직접 해 볼 과제' 1번: \"세 테이블을 만들고 Create Entries(Chapter 07)로 공연 2개·회차 3개·예매 6건을 넣는다(1번 예매자=정훈영, STATUS는 N=신규·C=취소 중에서).\" CH09-L09-S01.html은 자체 CFG 없이 embeds/_engine/concert-model-checklist.js(주석상 CH09-L09 전용 엔진)의 STEPS 배열로만 렌더링되는데, 그 '테스트 데이터' 항목 문구가 '공연 2·회차 3·예매 3(정훈영 포함)'으로 하드코딩돼 있다. 위젯 단독 렌더링과 docs/abap/pages/CH09-L09.html(빌드된 실제 레슨 페이지)에 삽입된 iframe 양쪽에서 '예매 3'이 그대로 표시됨을 확인했다 — 바로 위 본문 텍스트에는 '예매 6건'이 노출된 같은 페이지다. 공연 수(2)·회차 수(3)는 본문과 일치하지만 예매 건수만 6→3으로 줄어 있다. 이 위젯은 정확히 그 실습 과제의 완료 여부를 스스로 점검하는 체크리스트이므로, 학습자가 위젯 문구를 기준으로 삼으면 지시된 수량보다 적게 데이터를 만들고도 '완료'로 착각할 수 있다.",
+      "suggestion": "엔진의 '테스트 데이터' 단계 문구를 '예매 6(정훈영 포함)'으로 본문과 맞춘다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH09(FK/Check Table·Value Table·Text Table·Search Help·우선순위·검증 역할분리·실습)는 코드가 나오는 3개 레슨(L06~L08) 전부 위젯이 붙어 있고, 코드가 없는 나머지 6개 레슨도 DDIC 개념 특성상 전부 시뮬레이션형 위젯을 갖춰 '체험 공백'은 없었다. 12개 위젯을 전부 실제 브라우저에서 단독 렌더링 + 9개 빌드 레슨 페이지에 삽입된 상태로 재확인했고, 버튼·토글·F4팝업·퀴즈 채점·단계 진행 등 상호작용을 직접 조작해 논리 결과가 각 위젯 설정과 100% 일치함을 확인했다(콘솔 오류 0건, '헛체험'·'위젯 결함(정답판정 오류)' 없음). 다만 이 챕터를 관통하는 콘서트 예매 앱 고유명사에서 두 군데 이름 표류를 발견했다 — Collective Search Help 이름이 CH09-L05-S01과 CH09-L06-S01에서 'ZSH_CONCERT_ALL'로 표기돼 본문·자매 위젯(L05-S02)의 'ZSH_CONCERT_COLL'과 어긋나고, CH09-L06-S01의 MATCHCODE OBJECT 예시 코드는 pa_con/zcon_de_concert_id로 본문의 pa_conc/zde_concert_id와도 다르다. 또한 CH09-L09-S01 체크리스트 위젯(전용 엔진 concert-model-checklist.js)은 실습 데이터 요구량을 '예매 3건'으로 표시해 본문이 지시하는 '예매 6건'과 불일치한다. 세 건 모두 위젯의 상호작용 로직 자체는 정확해 개념 이해를 근본적으로 막지는 않지만, 관통예제 객체명·실습 수량이라는 구체적 사실이 어긋나 있어 경미 수정을 권장한다."
+  }
+}

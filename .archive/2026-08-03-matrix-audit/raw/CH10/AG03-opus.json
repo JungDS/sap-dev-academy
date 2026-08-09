@@ -1,0 +1,112 @@
+{
+  "agent": "AG03",
+  "model": "opus",
+  "target": "CH10",
+  "persona_ack": "타 언어(Java/C#) 백엔드 3~5년차 개발자 시선으로 CH10 전체를 통독했다. 변수·조건문·루프·SQL·OOP 기본기는 이미 안다는 전제에서, 과잉 설명 / 오개념 유발 / 지름길 안내 부재 / 일반 개발 용어와 ABAP 용법의 충돌 네 축으로만 기록했다. 이 사이트의 1독자가 비전공 입문자임을 감안해, 입문자에게는 필요하지만 경력자에게만 군더더기인 항목은 낮음 또는 suggestion으로 낮춰 분류했다.",
+  "method": "Read 도구로 대상 8개 파일(_chapter.md, L01~L07) 전문을 통독했다. 외부 네트워크·웹 검색·브라우저(서브 URL) 미사용, 다른 감사자 산출물이나 과거 감사 문서도 열지 않았다. 인용문은 대상 파일 원문을 그대로 복사했고, ABAP 문법·용어 판단은 내 지식에 근거한다. 대상 파일 밖(선행 챕터 CH06/CH08 등)은 열 수 없어, '앞 챕터에서 이미 설명됐을 가능성'이 있는 항목은 CH10 내부 범위로 한정해 서술하거나 제외했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L07.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH10/CH10-L07.md",
+      "quote": "PERFORM get_remaining USING iv_concert iv_perf CHANGING lv_left.",
+      "category": "오개념 유발 — 지침과 실습의 정면 충돌",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "직전 레슨(L06)이 'FORM은 새로 만들지 말 것'이라고 못박아 놓고, 바로 다음 레슨인 챕터 실습(L07)은 핵심 로직을 새 FORM 두 개(get_remaining·can_book)로 새로 작성하게 시킨다. L07 본문 어디에도 '왜 지금은 FORM으로 쓰는지'에 대한 해명이 없다.",
+      "evidence": "L06은 '**서브루틴(FORM)** 은 **새로 만들지 말 것**. 읽고 유지보수하는 용도로만 안다.'라고 쓰고, '흔한 실수'에도 '**신규에 FORM 사용** → 지양. 메서드로.'를 넣었다. L01도 '새 코드에 FORM 남발 → 레거시다'로 같은 지침을 반복한다. 그런데 L07은 FORM get_remaining / FORM can_book을 새로 정의하고 PERFORM으로 호출하는 것을 본문 표준 해답으로 제시하며, static method 전환은 '3. (도전)' 선택 과제로만 남겨 뒀다. 경력자 시선에서는 '방금 쓰지 말라던 걸 왜 캡스톤에서 쓰지'로 읽히고, 입문자 시선에서는 '결국 뭘 써야 하나'로 지침 자체가 무력화된다. 학습 경로상 CH10 시점에는 클래스를 맛보기만 했으니 FORM으로 실습하는 선택 자체는 합리적이다 — 문제는 그 이유가 한 줄도 없다는 점이다.",
+      "suggestion": "L07 도입부에 한 줄 해명을 넣는다. 예: '앞 레슨에서 신규는 메서드를 권장했지만, 여기서는 USING/CHANGING의 값 흐름을 눈으로 보는 게 목적이라 FORM으로 먼저 만든다. 같은 로직의 메서드 버전은 도전 과제에서 바꿔 본다.' 또는 본문을 static method로 쓰고 FORM 버전을 접기(details)로 내리는 방식도 가능하다."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH10/CH10-L03.md",
+      "quote": "- **EXCEPTIONS** — 오류를 `sy-subrc`로 받는다.",
+      "category": "용어 충돌 — EXCEPTIONS가 try/catch가 아님",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "classic Function Module의 EXCEPTIONS는 예외 객체를 던지는 구조가 아니라 '이름 → 숫자'를 매핑해 sy-subrc로 돌려받는 반환코드 방식인데, 그 점을 명시하지 않았다. 'EXCEPTION'이라는 단어를 아는 독자는 예외가 던져지고 호출 스택을 타고 올라간다고 오해하게 된다.",
+      "evidence": "본문은 'EXCEPTIONS invalid = 1 / OTHERS = 2'와 'IF sy-subrc <> 0.'만 보여 주고, 'EXCEPTIONS — 오류를 sy-subrc로 받는다'로 끝낸다. 여기서 '= 1', '= 2'가 왜 숫자인지(예외 이름에 sy-subrc 값을 배정하는 것), 그리고 이 값을 확인하지 않으면 프로그램이 그냥 다음 줄로 흘러간다는 사실(= 던져지지 않는다)이 설명되지 않는다. front-matter의 introduces에는 'classic EXCEPTIONS'로 classic임을 구분해 놨는데, 본문에는 그 구분이 드러나지 않는다. 실제로 ABAP에도 클래스 기반 예외(TRY/CATCH, CX_ 계열)가 따로 있어 두 체계가 공존하므로, 여기서 선을 긋지 않으면 뒤에서 다시 꼬인다. 입문자에게도 '왜 IF sy-subrc를 꼭 써야 하나'의 이유가 빠진 셈이라 단순 경력자 이슈만은 아니다.",
+      "suggestion": "인용 항목에 한 문장을 덧붙인다: 'EXCEPTIONS는 예외를 던지는 게 아니라 예외 이름에 번호를 붙여 sy-subrc로 돌려받는 옛 방식이다. 확인하지 않으면 오류가 조용히 지나간다.' 클래스 기반 예외(TRY/CATCH)는 L1 예고 한 줄(존재와 배울 시점만)로 충분하다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH10/CH10-L03.md",
+      "quote": "> 방향이 헷갈린다: **호출자 기준**이다. 내가 함수로 EXPORT(내보냄) → 함수가 받음.",
+      "category": "오개념 유발 · 용어 충돌 — 정의 화면에서는 방향이 뒤집힌다",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'호출자 기준'이라는 설명은 호출문에 대해서만 맞다. 정작 SE37에서 함수를 정의할 때는 함수 자신 기준이라 호출자가 EXPORTING으로 넘긴 값이 Import 탭에 나타난다. 방향 혼동을 해결해 주겠다고 선언해 놓고 정확히 절반만 다뤄, 독자가 SE37을 열면 곧바로 무너지는 설명이 된다.",
+      "evidence": "같은 레슨이 'SE37에서 만들고 관리한다', 'SE37에서 검색하거나'로 정의 화면을 두 번 언급하므로 독자는 실제로 그 화면을 보게 된다. 더 나쁜 건 같은 챕터 안에 반례가 이미 있다는 점이다 — L04는 정의부를 'CLASS-METHODS add_tax IMPORTING iv_amount ...'로 쓰고, L05는 호출부를 'zcl_util=>calc( EXPORTING iv_a = 1 iv_b = 2 IMPORTING ev_r = lv_r ).'로 쓴다. 즉 같은 입력 파라미터가 정의부에서는 IMPORTING, 호출부에서는 EXPORTING으로 이름이 뒤집혀 나오는데 두 레슨 어디에도 이 뒤집힘을 짚는 문장이 없다. 경력자는 IN/OUT 키워드가 선언과 호출에서 반대로 쓰이는 언어를 거의 겪지 않아 여기서 확실히 걸린다.",
+      "suggestion": "인용 콜아웃을 양쪽 기준으로 확장한다: '호출문은 호출자 기준(EXPORTING = 내가 넘김), 정의 화면·메서드 선언은 함수/메서드 자신 기준(IMPORTING = 내가 받음)이다. 같은 파라미터가 정의에서는 IMPORTING, 호출에서는 EXPORTING으로 보이는 이유다.' 짧은 화살표 도식(호출자 →[EXPORTING] 함수[IMPORTING])이면 한 번에 정리된다."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH10/CH10-L04.md",
+      "quote": "- `IMPORTING`(입력)·`RETURNING`(반환 한 개)으로 파라미터를 선언한다.",
+      "category": "오개념 유발 — 값이 어떻게 반환되는지 미설명",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "RETURNING 파라미터에 값을 '대입하는 것'이 곧 반환이고 return 문이 따로 필요 없다는 핵심을 설명하지 않는다. 예제 본문은 rv_result에 대입만 하고 끝나는데, 반환문 언어(Java/C#)에 익숙한 독자는 반환 코드가 빠졌다고 읽는다.",
+      "evidence": "L04의 METHOD 본문은 'rv_result = iv_amount * 1.1'을 대입하고 바로 ENDMETHOD로 끝나며, 그 값이 어떻게 호출부의 lv_out으로 흘러가는지에 대한 문장이 없다. 혼동을 키우는 요소가 둘 더 있다. ① 바로 앞 레슨 L02가 'RETURN — 서브루틴(또는 메서드)을 **즉시 빠져나간다**'로 RETURN을 소개해 놨는데, ABAP의 RETURN은 값을 실어 나르지 않는다 — 이름이 비슷해 독자는 RETURNING과 RETURN을 자연스럽게 한 쌍으로 묶어 'return rv_result;'를 기대한다. ② 'RETURNING VALUE(rv_result)'의 VALUE()는 다른 언어에 대응물이 없는 표기라 더 낯설다. 이 연결고리는 입문자에게도 빈 칸이다(대입이 곧 반환이라는 건 자명하지 않다).",
+      "suggestion": "메서드 예제 아래 한 줄: '반환은 대입으로 한다 — rv_result에 값을 넣으면 그게 그대로 호출한 쪽으로 돌아간다(따로 RETURN을 쓸 필요 없다. L02의 RETURN은 값을 돌려주는 게 아니라 빠져나가기만 한다).' L02의 RETURN 항목에도 '값을 실어 보내지는 않는다'를 덧붙이면 짝이 맞는다."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH10/CH10-L07.md",
+      "quote": "cv_ok = boolc( iv_want <= lv_left ).",
+      "category": "용어 충돌 — ABAP에는 진짜 boolean이 없음",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "챕터 캡스톤에서 abap_bool 타입과 boolc() 함수가 아무 설명 없이 처음 등장한다. ABAP에는 참/거짓 원시 타입이 없고 길이 1 문자에 'X'/공백을 넣는 관례라는 사실이 CH10 어디에도 없어, boolean이 당연한 언어에서 온 독자는 abap_bool을 진짜 불리언으로, boolc를 캐스팅 정도로 오해한다.",
+      "evidence": "8개 대상 파일 전체에서 abap_bool과 boolc는 L07의 이 두 줄('CHANGING cv_ok TYPE abap_bool.'과 인용한 대입문)에만 나오고, 어떤 설명·용어 마킹·링크도 붙어 있지 않다. L07의 front-matter는 introduces: [] 로 '이번 레슨은 새로 도입하는 개념이 없음'을 선언하고 있어, 이 둘이 앞에서 배운 것으로 취급되고 있다는 점도 드러난다. 게다가 판정 결과를 IF에서 쓰려면 'IF cv_ok = abap_true.'처럼 비교해야 하는데(다른 언어처럼 IF cv_ok 만으로는 안 됨) 그 사용법도 없다 — '직접 해 볼 과제 2'가 바로 이 값을 확인하라고 시키므로 실습에서 막힐 자리다. (선행 챕터는 감사 범위 밖이라 CH10 이전 도입 여부는 확인하지 못했다. 다만 그 경우에도 introduces:[] 선언과 무설명 사용은 그대로 남는다.)",
+      "suggestion": "boolc 대입 줄 옆에 한 줄 주석 또는 아래 한 문장: 'ABAP에는 참/거짓 전용 타입이 없다. abap_bool은 길이 1 문자이고 참은 X(abap_true), 거짓은 공백(abap_false)이다. boolc(...)는 비교 결과를 그 X/공백으로 바꿔 준다.' 과제 2를 위해 'IF cv_ok = abap_true.' 형태의 사용 예 한 줄을 함께 보여 주면 완결된다."
+    },
+    {
+      "seq": 6,
+      "file": "content/abap/CH10/CH10-L02.md",
+      "quote": "- `STATICS` — 서브루틴 안에서 선언하되 **호출이 끝나도 값이 유지**되어 다음 호출에",
+      "category": "용어 충돌 — 같은 챕터 안에서 'static'이 두 가지 뜻",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L02의 STATICS(호출 간 값이 유지되는 지역 변수, C의 static 지역변수에 해당)와 L04~L05의 '정적(static) 메서드'(CLASS-METHODS, 클래스 소속 = Java/C#의 static)는 이름만 같고 뜻이 전혀 다른데, 같은 챕터 안에 나란히 놓이면서도 구분 문장이 없다.",
+      "evidence": "L02는 STATICS를 '호출이 끝나도 값이 유지'로 소개하고, 두 레슨 뒤 L04는 'CLASS-METHODS — **정적 메서드**(객체 없이 클래스로 직접 부르는 메서드)'를, L05는 '정적 메서드를 =>로 호출'을 다룬다. Java/C# 배경 독자에게 static은 '클래스 소속' 한 가지 뜻뿐이라, L02의 STATICS를 '전역/클래스 레벨 공유 변수'로 잘못 읽을 수 있다(실제로는 그 서브루틴에서만 보이는 지역 변수인데 값만 남는 것이다). 다만 사전 지식이 없는 입문자는 두 단어를 각각 배운 대로 받아들이므로 실질 피해가 작아 낮음으로 둔다.",
+      "suggestion": "L02의 STATICS 항목에 '이름은 static이지만 클래스의 정적 메서드(L04)와는 다른 개념이다 — 밖에서 보이지는 않고, 값만 남는 지역 변수다' 한 줄. 또는 L04에서 정적 메서드를 도입할 때 'L02의 STATICS와 이름만 같고 뜻이 다르다'로 되짚어도 된다."
+    },
+    {
+      "seq": 7,
+      "file": "content/abap/CH10/CH10-L05.md",
+      "quote": "- **`=>` vs `->`** → 정적은 `=>`(클래스로 직접), 인스턴스는 `->`(객체로, [Chapter 21](CH21-L01.html)).",
+      "category": "과잉 — 같은 문장의 반복",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'정적은 =>, 인스턴스는 ->, 객체 생성은 Chapter 21에서'라는 동일 메시지가 L04~L05에 걸쳐 여섯 번 반복된다. 인용한 문장은 L04와 L05의 '흔한 실수' 절에 글자 하나까지 똑같이 두 번 복사돼 있다.",
+      "evidence": "출현 지점: L04 '정적 메서드 호출 — =>' 절 도입, L04 '설계도와 객체' 절, L04 흔한 실수 항목, L05 본문 '정적 메서드를 =>로 호출', L05 '인스턴스가 필요한 경우' 절, L05 흔한 실수 항목. 이 중 L04·L05의 흔한 실수 항목은 문장이 완전히 동일하다. OOP 경험자에게는 첫 한 번으로 끝나는 내용이라 뒤 다섯 번이 그대로 체감 지연이 된다. 다만 => 와 -> 의 구분은 ABAP 고유 표기이고 입문자에게는 반복 학습이 실제로 유효한 지점이라 '입문자에게도 불필요한 장황함'까지는 아니라고 판단해 낮음으로 둔다.",
+      "suggestion": "레슨당 한 번으로 줄인다. L04에서 정식으로 한 번 설명하고, L05는 '흔한 실수'의 중복 항목 하나만 남기거나 L04로 링크한다. 'Chapter 21에서 배운다'는 예고도 레슨당 한 번이면 충분하다."
+    },
+    {
+      "seq": 8,
+      "file": "content/abap/CH10/_chapter.md",
+      "quote": "같은 코드가 여기저기 반복된다 — 묶어서 재사용하고 싶다.",
+      "category": "지름길 부재 — 경험자용 읽기 경로 안내 없음",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "챕터 도입이 한 문장뿐이라, '모듈화가 왜 필요한가'는 이미 아는 독자에게 이 챕터의 실제 알맹이가 어디인지 알려 주는 신호가 없다. 이 챕터에서 다른 언어 경험자에게 새로운 정보는 사실상 'ABAP에는 도구가 셋이고 언제 무엇을 쓰나'(L06)와 각 문법 표기뿐인데, 그 결론이 여섯 번째 레슨에 놓여 있다.",
+      "evidence": "_chapter.md의 본문은 인용한 한 문장이 전부이고(front-matter intro와 동일), 어느 레슨이 개념 소개이고 어느 레슨이 ABAP 고유 문법인지 구분해 주는 안내가 없다. 챕터 전체에도 '이미 아는 개념이면 이 절은 건너뛰어도 좋다' 류의 표지가 한 곳도 없다 — 특히 L04의 '설계도와 객체 (개념만)'(클래스=쿠키틀, 객체=쿠키 비유)은 OOP 경험자에게 통째로 건너뛸 수 있는 절이다. 반대로 도구 셋을 비교하는 L06의 표는 경험자가 가장 먼저 봐야 할 내용이다. 사이트의 1독자가 입문자이므로 순서 자체를 바꿀 일은 아니고, 표지 한 줄이면 해결되는 사안이라 낮음으로 둔다.",
+      "suggestion": "① _chapter.md intro에 한 줄 덧붙이기: '다른 언어에서 함수·메서드를 써 봤다면 도구 셋을 비교하는 [선택 기준] 레슨을 먼저 봐도 좋다.' ② L04의 '설계도와 객체 (개념만)' 절 머리에 '객체지향을 이미 안다면 이 절은 건너뛰어도 된다' 한 줄. 접기(details)로 감싸는 방식도 같은 효과다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "경력 개발자 시선에서 CH10은 예상보다 군더더기가 적다. 과잉 설명은 사실상 한 건(=> vs -> 반복)뿐이고, FORM/Function Module/Class의 서열을 '시대의 결론'으로 정리한 L06과 로직은 클래스에·원격 창구는 FM에라는 역할 분담 예시는 경력자에게도 바로 쓸모 있는 ABAP 고유 정보다. 문제는 장황함이 아니라 '한 줄이면 끝날 짚어주기'가 빠진 자리들이다. 가장 큰 건 지침 충돌 하나 — L06이 'FORM은 새로 만들지 말 것'이라고 못박은 직후 캡스톤 L07이 새 FORM 두 개를 작성하게 시키면서 이유를 대지 않는다(이건 경력자만의 문제가 아니라 지침 자체를 무력화한다). 나머지 중간 3건은 모두 다른 언어 상식과 ABAP 용법이 어긋나는 지점을 안 짚은 경우다: classic EXCEPTIONS가 예외 던지기가 아니라 sy-subrc 반환코드라는 점, EXPORTING/IMPORTING이 호출부와 정의부에서 뒤집힌다는 점(L04 정의는 IMPORTING인데 L05 호출은 EXPORTING이라 챕터 안에 반례가 그대로 노출돼 있다), RETURNING 파라미터에 대입하는 것이 곧 반환이라 return 문이 없다는 점. 여기에 캡스톤의 abap_bool/boolc 무설명 등장이 더해진다. 모두 문장 한두 개 삽입으로 해결되고 구조 개편이나 재집필이 필요한 곳은 없어 '경미 수정'으로 본다 — 다만 L07의 지침 충돌은 우선 처리 권장이고, 입문자 관점 감사자는 abap_bool/boolc 무설명과 RETURNING 미설명을 더 무겁게 볼 여지가 있다."
+  }
+}

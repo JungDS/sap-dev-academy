@@ -1,0 +1,189 @@
+{
+  "agent": "AG01",
+  "model": "opus",
+  "target": "CH10",
+  "persona_ack": "나는 '은서' — 개발·전공 경험이 전혀 없는 24세 문과 출신 입문자다. 노션·인스타는 익숙하지만 코드는 처음이고, 모르는 단어가 나오면 그 자리에서 멈춘다. CH10을 L01부터 순서대로 '처음 읽는 사람'으로 통독했고, 내 바깥 지식으로 빈틈을 메우지 않았다. 용어 풀이가 그 자리나 같은 챕터 앞 레슨에 없으면 막힌 것으로 기록했다.",
+  "method": "Read 도구로 대상 8개 파일(_chapter.md, CH10-L01～L07)의 MD 원문을 순서대로 통독. 웹 검색·외부 네트워크 미사용, 다른 감사자 산출물·과거 감사 문서(.archive/·.project-docs/) 미열람, 대상 폴더 내용 나열 없이 파일만 직접 열람. 한계: ::embed:: 위젯 실물(embeds/**)은 대상 파일 목록 밖이라 열지 않았고, 본문 텍스트가 스스로 설명하는지만 기준으로 판단했다(임베드가 일부를 보완할 가능성은 evidence에 명시).",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L07.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH10/CH10-L01.md",
+      "quote": "> (클래스)를 권장한다([Local Class로 모듈화](CH10-L04.html)~). 하지만 기존 코드에 워낙 많아 **읽을 줄은 알아야** 한다.",
+      "category": "멈춤",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "챕터를 여는 첫 콜아웃의 링크 뒤에 정체불명의 물결표(~)가 붙어 있어, 첫 문장부터 '이게 오타인가 무슨 기호인가' 하고 멈추게 된다.",
+      "evidence": "링크 `[Local Class로 모듈화](CH10-L04.html)` 바로 다음에 `~`가 하나 남아 있다. 마크다운에서 물결표 하나는 취소선도 아니라 화면에 그대로 '~'로 찍힌다. 다른 레슨의 같은 형태 링크(L03의 BAPI 링크, L06 마지막 줄 등)에는 이런 기호가 없어서, 나로서는 '뒷부분이 잘렸나?'로 읽힌다. 이 레슨에서 제일 처음 만나는 안내 문구라 첫인상에서 걸린다.",
+      "suggestion": "링크 뒤 `~` 삭제. (범위 표기 잔재로 보이므로 다른 레슨에도 같은 패턴이 있는지 함께 확인.)"
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH10/CH10-L01.md",
+      "quote": "`PERFORM`에서 `FORM`으로 들어갔다 돌아오는 흐름을 한 단계씩 따라가 보자. 전역 변수는 누적되고 지역 변수는 매번 새로 생기는 차이도 함께 확인할 수 있다.",
+      "category": "생략",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "체험 안내문이 '전역 변수 / 지역 변수'의 차이를 확인하라고 시키는데, 정작 본문 어디에도 전역 변수·지역 변수가 무엇인지 설명이 없다. 두 단어 모두 여기서 처음 등장한다.",
+      "evidence": "L01 본문의 코드는 `FORM print_hello`(WRITE 한 줄)와 `PERFORM print_hello` 둘뿐이라 변수가 단 하나도 나오지 않는다. 그런데 체험 안내는 '전역 변수는 누적되고 지역 변수는 매번 새로 생기는 차이'를 보라고 한다. 나는 '변수가 어디 있었지?', '누적된다는 게 뭘 누적한다는 거지?'에서 멈췄다. 앞 레슨이 없는 챕터 첫 레슨이라 되짚을 곳도 없다. 게다가 이 개념은 L02에서도 설명 없이 '(일반 지역변수 `DATA`는 호출마다 사라진다)'로 다시 전제되고, 실제 지역 선언이 눈에 보이는 건 한참 뒤 L07(FORM 안 `DATA lv_left`)이다. 임베드가 그림으로 보여줄 수는 있겠지만, 본문이 용어를 한 번도 정의하지 않아 나는 임베드를 열기 전에 이미 막힌다.",
+      "suggestion": "FORM 안에 `DATA`를 선언한 최소 예제를 본문에 추가하고, '서브루틴 안에서 선언한 변수 = 그 호출 동안만 사는 지역 변수 / 바깥에 선언한 것 = 프로그램 내내 사는 전역 변수'를 한 문단으로 정식 도입한 뒤 체험으로 넘긴다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH10/CH10-L01.md",
+      "quote": "- 보통 프로그램 하단에 `FORM`들을 모아 둔다.",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "코드가 'FORM 정의' 블록과 'START-OF-SELECTION + PERFORM' 블록 두 개로 따로 제시되는데, 이 둘이 한 프로그램인지 두 프로그램인지, 합치면 어떤 순서가 되는지 보여주는 완성본이 없다. 게다가 예제 순서(FORM이 위)와 설명('FORM은 하단에')이 서로 반대라 더 헷갈린다.",
+      "evidence": "본문은 `FORM print_hello. … ENDFORM.`을 먼저 보여주고, 그 다음 `START-OF-SELECTION. PERFORM print_hello.`를 별도 코드블록으로 보여준다. 그런데 정리 불릿은 'FORM들을 프로그램 하단에 모아 둔다'고 말한다. 나는 SE38에 무엇을 어떤 순서로 붙여넣어야 화면에 'Hello from subroutine'이 찍히는지 알 수 없었다. 앞 챕터에서 본 프로그램은 위에서 아래로 한 덩어리였는데, 여기서 처음으로 '정의'와 '실행'이 갈라지면서 그 갈라짐의 결과물(합쳐진 전체 프로그램)이 한 번도 제시되지 않는다.",
+      "suggestion": "`START-OF-SELECTION.`+`PERFORM`이 위, `FORM ~ ENDFORM`이 아래인 **한 개의 완성 프로그램**을 통째로 한 번 보여주고, 그 뒤에 부분을 쪼개 설명한다."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH10/CH10-L02.md",
+      "quote": "cv_result = iv_amount * '1.1'.",
+      "category": "멈춤",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "숫자 1.1이 왜 작은따옴표에 싸여 있는지 설명이 없다. 지금까지 따옴표는 글자(문자열)에 쓰는 것으로 알고 있어서, 곱셈에 글자가 들어간 것처럼 보여 그 자리에서 멈춘다.",
+      "evidence": "바로 앞 L01의 코드에서 따옴표는 `WRITE: / 'Hello from subroutine'.`처럼 **글자**를 감쌀 때 쓰였다. 그런데 여기서는 계산식 안에서 `'1.1'`로 쓰이고, 같은 표기가 L04의 `rv_result = iv_amount * '1.1'.`에도 반복된다. CH10 안에는 '소수점 있는 숫자는 따옴표로 적는다' 같은 안내가 한 줄도 없다. 이 규칙이 앞 챕터(CH04 계산)에서 다뤄졌을 가능성은 있어서 confidence는 추정으로 둔다. 다만 나 같은 입문자는 소수 계산 예제를 그대로 따라 칠 때 따옴표를 빼고 쓰기 쉬운데, 그 결과가 어떻게 되는지에 대한 경고도 없다.",
+      "suggestion": "코드 주석이나 한 줄 각주로 '소수점 숫자 리터럴은 `'1.1'`처럼 따옴표로 적는다(TYPE p 계산 관례)'를 덧붙이거나, 앞 챕터의 해당 레슨으로 링크를 건다."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH10/CH10-L02.md",
+      "quote": "| Call by Value and Result | `CHANGING value(cv_x)` | 복사해 처리 후 **정상 종료 시** 되돌려씀 |",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "이 레슨의 핵심인 '참조(원본을 가리킴) vs 값 복사'가 표 한 줄의 괄호 문구로만 처리되고, '가리킨다'가 무슨 뜻인지, '정상 종료'의 반대가 뭔지는 끝내 설명되지 않는다.",
+      "evidence": "표는 'Call by Reference … 원본을 가리킴(빠름, 바뀔 수 있음)', 'Call by Value and Result … 복사해 처리 후 **정상 종료 시** 되돌려씀'이라고만 한다. 나는 (1) 변수를 '가리킨다'는 게 복사와 어떻게 다른지, (2) '정상 종료'가 아닌 종료가 언제 생기는지(오류·예외는 CH10 어디에서도 나온 적이 없다)를 알 수 없었다. 앞 문단의 '엄밀히 `USING`도 참조로 넘어가 바뀔 수 있다'도 같은 전제를 이미 알고 있다고 가정한다. 임베드가 '원본이 보호되는지/바뀌는지'를 보여준다고는 하나, 본문 텍스트만으로는 표의 3행이 전부 같은 말처럼 보인다.",
+      "suggestion": "표 앞에 '값을 복사해 건네기 vs 원본이 있는 자리를 알려주기'를 그림/비유 한 문단으로 먼저 세우고, '정상 종료 시'는 지금 안 배운 개념이므로 '오류로 중단되지 않고 끝까지 실행되면'처럼 일상어로 바꾼다."
+    },
+    {
+      "seq": 6,
+      "file": "content/abap/CH10/CH10-L02.md",
+      "quote": "- `STATICS` — 서브루틴 안에서 선언하되 **호출이 끝나도 값이 유지**되어 다음 호출에",
+      "category": "과부하",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "파라미터를 배우는 레슨 끝에 RETURN·STATICS·OPTIONAL·DEFAULT가 코드 예제 하나 없이 불릿으로 몰려 나온다. 특히 STATICS는 문법(어떻게 선언하는지)도, 왜 필요한지도 없이 이름만 던져진다.",
+      "evidence": "이 레슨에서 내가 새로 만난 것만 세어도 USING, CHANGING, `value( )`, 접두어 iv_/cv_, 세 가지 전달 방식, RETURN, STATICS, 그리고 콜아웃의 OPTIONAL·DEFAULT까지 여덟 가지다. 그중 RETURN·STATICS는 '## 빠져나오기 · 값 유지' 절에서 각각 한 줄 불릿이 전부이고 코드가 없어서, `STATICS lv_count TYPE i.`처럼 쓰는 건지조차 모른다. 게다가 OPTIONAL/DEFAULT 콜아웃은 '메서드/함수에는'이라고 시작하는데 메서드는 두 레슨 뒤(L04)에나 나온다 — 아직 모르는 것을 기준으로 설명하니 읽어도 남는 게 없다. 제목이 'USING / CHANGING 파라미터'인데 마지막 절만 주제가 다른 것도 흐름을 끊는다.",
+      "suggestion": "RETURN·STATICS는 최소 코드 한 줄씩(선언+호출 2회 결과)을 붙이거나, 분량이 크면 별도 레슨/후속 절로 빼고 이 레슨은 파라미터에 집중한다. OPTIONAL·DEFAULT 언급은 메서드를 배운 뒤(L04 이후)로 옮긴다."
+    },
+    {
+      "seq": 7,
+      "file": "content/abap/CH10/CH10-L02.md",
+      "quote": "DATA lv_out TYPE p LENGTH 8 DECIMALS 2.",
+      "category": "멈춤",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "바로 아래에서 '접두어 관례'를 가르치면서, 정작 예제의 `lv_` 접두어는 설명하지 않는다. 더구나 `lv_out`은 FORM 바깥(START-OF-SELECTION 아래)에 선언됐는데도 '지역'을 뜻하는 lv_를 달고 있어, L01이 예고한 전역/지역 구분과 정면으로 어긋난다.",
+      "evidence": "같은 레슨이 '접두어 관례: `iv_`(input), `cv_`(changing).'이라고 명시하면서 `lv_`는 언급하지 않는다. 앞 챕터들에서 프로그램 단위 변수는 `gv_`로 배웠는데 여기서 갑자기 `lv_`가 나오니 '규칙이 바뀐 건가?' 싶었다. 같은 패턴이 L04의 `DATA lv_out TYPE p LENGTH 8 DECIMALS 2.`, L05의 `DATA lv_text TYPE string.`·`DATA lv_r TYPE i.`에도 반복되는데, 정작 L07에서는 FORM **안**의 선언에 `DATA lv_left TYPE i.`로 같은 접두어를 쓴다. 결국 같은 `lv_`가 안/밖 양쪽에 쓰여, 이 챕터가 가르치려는 '스코프' 구분을 코드가 스스로 무너뜨린다.",
+      "suggestion": "FORM/METHOD 바깥 선언은 `gv_`로 통일(L02·L04·L05), FORM 안 선언만 `lv_`로 두고, 접두어 불릿에 'l=local, g=global' 한 줄을 추가한다."
+    },
+    {
+      "seq": 8,
+      "file": "content/abap/CH10/CH10-L03.md",
+      "quote": "- **EXCEPTIONS** — 오류를 `sy-subrc`로 받는다.",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "예제의 `invalid = 1` / `OTHERS = 2`가 무슨 뜻인지, 저 1·2라는 숫자가 어디서 온 것이고 `sy-subrc`와 어떻게 연결되는지가 통째로 빠져 있다.",
+      "evidence": "코드에는 `EXCEPTIONS invalid = 1 OTHERS = 2.` 다음에 `IF sy-subrc <> 0.`이 나오는데, 설명은 '오류를 `sy-subrc`로 받는다' 한 줄뿐이다. 나는 (1) `invalid`라는 이름을 내가 지어도 되는 건지 정해진 건지, (2) 1과 2를 내가 고르는 건지, (3) 그 숫자가 sy-subrc에 그대로 들어가는 건지를 알 수 없었다. `OTHERS`도 처음 보는 단어인데 풀이가 없다. 오류 처리는 '단골 버그'라고 강조까지 해 놓고 정작 읽는 법을 안 알려주니, 나중에 남의 코드를 봐도 이 부분은 계속 건너뛰게 될 것 같다.",
+      "suggestion": "'내가 붙인 번호가 그대로 sy-subrc에 들어온다 / OTHERS는 나머지 전부'를 두 문장으로 명시하고, 주석으로 `\" invalid가 나면 sy-subrc = 1`처럼 대응을 눈에 보이게 적는다."
+    },
+    {
+      "seq": 9,
+      "file": "content/abap/CH10/CH10-L03.md",
+      "quote": "블록이 [[Function Module]](함수 모듈)이다. `SE37`에서 만들고 관리한다.",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'SE37에서 만든다'고만 하고 만드는 절차는 없어서, 이 레슨은 내가 직접 따라 해 볼 수 없는 유일한 레슨이 된다. 예제의 `Z_ADD_TAX`도 내게 없는 함수이고, 받는 변수 `lv_out`은 선언조차 나오지 않는다.",
+      "evidence": "L01·L02는 코드를 그대로 SE38에 쳐 보면 결과가 나왔다. 그런데 여기 예제 `CALL FUNCTION 'Z_ADD_TAX' … ev_result = lv_out`은 (1) Z_ADD_TAX가 시스템에 있어야 하고, (2) `lv_out`을 어디서 선언하는지 코드에 없다. SE37 화면이 어떻게 생겼는지·무엇을 입력하는지도 이 레슨에 없다. 임베드로 시뮬레이션은 해 보겠지만, '내 시스템에서 하려면 뭘 해야 하나'가 비어 있어 앞 레슨들과 체감이 다르다.",
+      "suggestion": "예제에 `DATA gv_out TYPE p LENGTH 8 DECIMALS 2.`를 포함해 실행 가능한 형태로 만들고, 'FM을 직접 만드는 방법은 지금 범위 밖 — 여기서는 남이 만든 것을 부르는 법만 배운다'를 명시하거나 SE37 화면 캡처/스텝을 최소한으로 덧붙인다."
+    },
+    {
+      "seq": 10,
+      "file": "content/abap/CH10/CH10-L04.md",
+      "quote": "lv_out = lcl_calc=>add_tax( 1000 ).   \" 객체 생성 불필요",
+      "category": "단절",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "클래스 정의 코드와 호출 코드가 프로그램의 어디에 놓이는지 안내가 없고, L01·L02에서 '정의가 들어오면 필요해진다'던 `START-OF-SELECTION.`이 여기서는 아무 설명 없이 사라진다.",
+      "evidence": "L01은 `START-OF-SELECTION.`을 [선행 사용] 콜아웃까지 달아 '정의와 실행문을 나누는 표지판'이라고 알려줬고 L02 예제에도 있었다. 그런데 L04의 호출 예제는 `DATA lv_out …` / `lv_out = lcl_calc=>add_tax( 1000 ).` / `WRITE lv_out.`만 있고 그 표지판이 없다. 나는 '클래스는 표지판이 필요 없나? 아니면 생략된 건가?', 'CLASS 블록은 프로그램 위인가 아래인가?'에서 멈췄다. L01은 그래도 'FORM은 보통 하단'이라는 힌트라도 있었는데 여기엔 그것도 없다. 또 호출식이 `= 클래스=>메서드( 값 )` 형태라, `PERFORM … USING … CHANGING …`만 보던 눈에는 문법이 갑자기 바뀐 느낌인데 그 차이(값을 돌려받아 대입한다)에 대한 한 줄이 없다.",
+      "suggestion": "L01처럼 CLASS DEFINITION/IMPLEMENTATION + `START-OF-SELECTION.` + 호출까지 이어진 완성 프로그램을 한 번 제시하고, 'RETURNING이 있으면 결과를 `=`로 바로 받는다'를 한 줄 덧붙인다."
+    },
+    {
+      "seq": 11,
+      "file": "content/abap/CH10/CH10-L04.md",
+      "quote": "RETURNING VALUE(rv_result) TYPE p.",
+      "category": "멈춤",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "`VALUE( )`와 새 접두어 `rv_`가 설명 없이 나온다. L02에서 `value( )`는 '원본 보호가 필요할 때 선택하는 것'으로 배웠는데, 여기서는 왜 무조건 붙는지 알 수 없다.",
+      "evidence": "L02는 'Call by Value | `USING value(iv_x)` | 값 복사 — 원본 보호(입력 전용)'라고 가르쳤다. 그래서 나는 `VALUE( )`를 '선택 사항'으로 이해했는데, L04에서는 `RETURNING VALUE(rv_result)`로 항상 붙어 있고 이유가 없다. '빼면 어떻게 되지?'가 남는다. 접두어도 L02가 iv_·cv_만 알려줬기 때문에 `rv_`는 처음 보는 것이고, r이 무엇의 약자인지 나오지 않는다.",
+      "suggestion": "'RETURNING은 문법상 항상 VALUE( )로 쓴다(값을 복사해 돌려준다)' 한 줄과, 접두어 `rv_`(returning) 표기를 불릿에 추가."
+    },
+    {
+      "seq": 12,
+      "file": "content/abap/CH10/CH10-L05.md",
+      "quote": "zcl_util=>calc( EXPORTING iv_a = 1 iv_b = 2 IMPORTING ev_r = lv_r ).",
+      "category": "단절",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "메서드를 부를 때 EXPORTING이 '넣는 값', IMPORTING이 '받는 값'으로 뒤집혀 나오는데, 바로 앞 레슨(L04)에서는 메서드 선언의 IMPORTING이 '입력'이라고 배웠다. 같은 단어가 정반대 뜻으로 쓰이는 이유가 한 줄도 없다.",
+      "evidence": "L04는 '`IMPORTING`(입력)·`RETURNING`(반환 한 개)으로 파라미터를 선언한다'고 가르쳤다. 그런데 L05의 이 호출문은 값을 넣는 자리에 `EXPORTING iv_a = 1`, 값을 받는 자리에 `IMPORTING ev_r = lv_r`을 쓴다. 나는 'IMPORTING이 입력이라며? 여기선 받는 쪽인데?'에서 완전히 막혔다. L03에 '방향이 헷갈린다: **호출자 기준**이다'라는 좋은 설명이 있었지만 그건 CALL FUNCTION 이야기였고, L05에는 그 연결 문장이 없다. 더구나 `ev_r`이 가리키는 '메서드의 EXPORTING 파라미터'는 CH10 어디에서도 선언하는 법을 배운 적이 없다(L04는 IMPORTING과 RETURNING만 보여줬다). 결국 이 두 줄짜리 예제 안에 내가 확인할 수 없는 것이 두 개 겹친다.",
+      "suggestion": "이 코드 바로 위에 'L03에서처럼 여기서도 **호출자 기준**이다 — 내가 EXPORTING(내보냄), 내가 IMPORTING(받아옴)'을 명시하고, 메서드 선언 쪽 파라미터(IMPORTING/EXPORTING/RETURNING)와 호출 쪽 키워드의 대응을 작은 표나 화살표 그림으로 한 번 맞춰 준다."
+    },
+    {
+      "seq": 13,
+      "file": "content/abap/CH10/CH10-L06.md",
+      "quote": "| Function Module | 전역 재사용 | ○ | 절차적 재사용, RFC(원격), 표준 BAPI |",
+      "category": "멈춤",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'무엇을 쓸지 고르는 기준'이 RFC와 BAPI라는 두 약어에 걸려 있는데, 둘 다 무슨 말의 줄임인지·정확히 무엇인지 이 챕터에 설명이 없다. 그래서 표를 보고도 내가 판단을 내릴 수 없다.",
+      "evidence": "RFC는 '(원격)'이라는 괄호만, BAPI는 L03의 'BAPI([Chapter 33 · BAPI](CH33-L01.html))처럼 표준 인터페이스로 제공된다'와 이 표의 '표준 BAPI'가 전부다. 두 단어 모두 클릭하면 뜻이 나오는 용어 버튼도 아니어서 그 자리에서 확인할 방법이 없다. 그런데 '원칙' 절은 '**함수 모듈**은 여전히 유효: 원격 호출(RFC), 다수의 표준 인터페이스가 FM', '흔한 실수'는 'RFC가 필요하면 함수 모듈을 쓴다'로 계속 이 기준을 반복한다. 아래 실전 장면 ②('외부 시스템이 우리 잔여석을 조회하게 해 달라')가 그나마 감을 주지만, 그건 예시 하나지 정의가 아니다. 판단 기준을 모르는 단어로 세우면 나는 표를 외울 수밖에 없다.",
+      "suggestion": "RFC(Remote Function Call — 다른 시스템에서 우리 함수를 부르는 것), BAPI(Business Application Programming Interface — SAP이 공식 제공하는 표준 함수)처럼 원어와 한 줄 풀이를 최초 등장 지점에 붙이고 용어 버튼으로 마킹한다."
+    },
+    {
+      "seq": 14,
+      "file": "content/abap/CH10/CH10-L07.md",
+      "quote": "cv_ok = boolc( iv_want <= lv_left ).    \" 원하는 좌석 <= 잔여석",
+      "category": "단절",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "챕터의 마지막 실습 코드에 `boolc( )`와 `TYPE abap_bool`이 아무 설명 없이 등장한다. 둘 다 CH10에서 처음 보는 것이고, 이 레슨은 '배운 것을 적용'하는 자리인데 정작 판정의 핵심 한 줄을 내가 읽을 수 없다.",
+      "evidence": "`FORM can_book … CHANGING cv_ok TYPE abap_bool.`과 `cv_ok = boolc( iv_want <= lv_left ).` 두 곳이다. `abap_bool`은 앞에서 배운 `TYPE i`·`TYPE p`·`TYPE string`과 달리 어디서 온 타입인지 모르겠고, `boolc(`는 괄호를 쓰는 걸 보면 무언가를 부르는 것 같은데 우리가 만든 FORM도 함수 모듈도 클래스도 아니다. 결과가 참/거짓이면 그 값이 화면에 어떻게 보이는지('X'인지 true인지)도 안 나온다. '직접 해 볼 과제 2번'이 '`can_book`이 거짓을 돌려주는지 확인'인데, 거짓이 무엇으로 보이는지 모르니 확인할 방법이 없다. 이 레슨의 front-matter는 새로 도입하는 개념이 없다고 되어 있는데 실제 코드에는 새 문법이 둘 들어와 있다.",
+      "suggestion": "`abap_bool`(참/거짓 전용 타입, 참 = `abap_true` = 'X')과 `boolc( )`(비교 결과를 참/거짓 값으로 만들어 주는 내장 함수)를 [선행 사용] 콜아웃으로 명시하거나, 이 단계 문법만으로 쓸 수 있게 `IF iv_want <= lv_left. cv_ok = 'X'. ELSE. cv_ok = ' '. ENDIF.` 형태로 바꾼다."
+    },
+    {
+      "seq": 15,
+      "file": "content/abap/CH10/CH10-L07.md",
+      "quote": "잔여석이 나왔으면, 요청 좌석과 비교하는 `can_book` 판정도 만져 보자. 취소 건을 합산하면 왜 틀리는지도 확인할 수 있다.",
+      "category": "멈춤",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "마지막 레슨만 체험 배치가 어긋난다. 첫 번째 체험은 안내 문장 없이 '예매 가능 판정' 절 아래에 툭 놓여 있는데 내용은 앞 절(잔여석 합산) 이야기이고, 안내 문장은 오히려 체험이 끝난 뒤에 나온다.",
+      "evidence": "L01～L06은 모두 '## 직접 해 보기' 제목 + 한두 문장 안내 + 임베드 순서로 일정했다. 그런데 L07은 '## 예매 가능 판정' 절의 코드 바로 뒤에 `::embed CH10-L07-S01 | 디버거로 잔여석 합산 과정을 따라가기::`가 제목도 안내도 없이 붙고, 그 다음에야 위 인용문이 나오고 두 번째 임베드가 이어진다. 순서를 따라 읽던 나는 '이건 뭘 하라는 거지? 위 코드(can_book) 이야기인가?' 하고 한 번 되돌아가야 했다. 리듬이 익숙해진 마지막 레슨에서 형식이 달라지니 더 걸린다.",
+      "suggestion": "L07에도 '## 직접 해 보기' 제목을 두고, S01은 `get_remaining` 코드 바로 아래(잔여석 절)로 옮겨 안내 문장 → 임베드 순서를 다른 레슨과 맞춘다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "보강 권장",
+    "summary": "챕터의 뼈대는 나 같은 입문자에게 꽤 친절하다 — L01→L02(값 주고받기)→L03(프로그램 밖으로)→L04/L05(클래스)→L06(선택 기준)→L07(콘서트앱 적용)로 '왜 다음이 필요한가'가 매 레슨 끝에서 이어지고, 레슨마다 체험이 하나씩 붙어 있다. 특히 잘 읽힌 장치는 L04의 '클래스는 설계도, 객체는 그 설계도로 찍어낸 실체(쿠키틀과 쿠키)' 비유와 L03의 '방향이 헷갈린다: 호출자 기준이다' 한 줄, 그리고 L01·L05의 [선행 사용] 표지(지금 몰라도 된다고 먼저 말해 주니 안심하고 넘어갔다)와 L06의 실전 장면 ①②였다. 다만 세 곳에서 실제로 멈췄다: (1) L01이 '전역 변수/지역 변수'를 정의 없이 체험 과제로만 던지는데 정작 본문 코드엔 변수가 없다, (2) L05에서 IMPORTING이 L04와 정반대 뜻으로 쓰이고 배운 적 없는 ev_ 파라미터까지 나와 예제를 읽을 수 없다, (3) 마지막 실습 L07의 판정 핵심 줄이 설명 없는 `boolc( )`·`abap_bool`이라 '거짓을 확인하라'는 과제를 수행할 수 없다. 그 밖에도 코드 조각이 한 프로그램으로 합쳐진 완성본이 한 번도 안 나오고(L01·L04), 접두어 lv_가 FORM 안팎에 뒤섞여 이 챕터가 가르치려는 스코프 구분을 스스로 흐린다. 구조를 갈아엎을 정도는 아니고, 위 지점에 정의 문단·완성 예제·[선행 사용] 표기를 채워 넣는 보강이면 충분해 보인다."
+  }
+}

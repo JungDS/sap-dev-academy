@@ -13,8 +13,10 @@
     return String(s).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; });
   }
   function cmp(a, b) { a = String(a); b = String(b); return a < b ? -1 : (a > b ? 1 : 0); }
+  // CP 패턴 → 정규식. `*`=여러 글자 · `+`=한 글자라서 이스케이프 대상에서 빼야 한다
+  // (넣으면 `\+`가 됐다가 다음 replace에서 `\.`=리터럴 마침표로 변해 항상 0건 매치).
   function cpMatch(val, pat) {
-    var rx = '^' + String(pat).replace(/[.+^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*').replace(/\+/g, '.') + '$';
+    var rx = '^' + String(pat).replace(/[.^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*').replace(/\+/g, '.') + '$';
     return new RegExp(rx, 'i').test(String(val));
   }
   function matchOpt(val, r) {
@@ -62,11 +64,16 @@
     var passInc = inc.length === 0 ? true : inc.some(function (r) { return matchOpt(v, r); });
     var excHit = exc.some(function (r) { return matchOpt(v, r); });
     var pass = passInc && !excHit;
+    // 이유 문구 분기 — 포함(I) 행이 0개인 경우를 제외(E) 판정보다 **먼저** 태운다.
+    // (안 그러면 존재하지도 않는 포함 조건을 근거로 "포함되지만 …"이라 말하게 된다.)
+    // 문구는 L04 평가 규칙 3항과 같은 결: I가 없으면 전체가 출발 후보이고 E만 뺀다.
     var reason;
     if (!passInc) reason = esc(v) + ': 포함 조건에 들어오지 않았습니다.';
-    else if (excHit) reason = esc(v) + ': 포함되지만 제외 조건에 걸려 탈락합니다.';
     else if (inc.length === 0 && exc.length === 0) reason = esc(v) + ': 조건이 없어 전체 통과합니다.';
-    else if (inc.length === 0) reason = esc(v) + ': (포함 조건 없음) 제외에 걸리지 않아 통과합니다.';
+    else if (inc.length === 0) reason = esc(v) + (excHit
+      ? ': (포함 조건 없음) 전체가 후보인데 제외 조건에 걸려 탈락합니다.'
+      : ': (포함 조건 없음) 전체가 후보이고 제외에 걸리지 않아 통과합니다.');
+    else if (excHit) reason = esc(v) + ': 포함되지만 제외 조건에 걸려 탈락합니다.';
     else reason = esc(v) + ': 포함 범위에 있고 제외에는 없어 통과합니다.';
     return { passInc: passInc, excHit: excHit, pass: pass, reason: reason };
   }

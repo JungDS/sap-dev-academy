@@ -1,0 +1,149 @@
+{
+  "agent": "AG06",
+  "model": "opus",
+  "target": "CH09",
+  "persona_ack": "20년차 SAP ABAP 아키텍트로서 CH09(DDIC 관계와 입력도움말) 10개 파일의 기술 사실·예시 적절성·위험한 생략·안티패턴만 감사했다. 읽기 전용으로 대상 파일만 열었고, 웹 검색 없이 내 지식으로만 판단했다. 릴리스·설정에 따라 달라질 수 있는 항목은 confidence=추정으로 정직하게 표기했다.",
+  "method": "Read 도구로 대상 10개 파일 전문 통독(빌드·브라우저·검색 도구 미사용). 각 finding의 quote는 해당 파일의 실제 한 줄에서 그대로 복사.",
+  "errors": [
+    "대상 범위가 CH09로 한정돼 본문이 참조하는 다른 챕터(CH03·CH07·CH15·CH16·CH25)는 열지 않았다. 따라서 '누락' 계열 판정은 그 챕터에서 다뤄졌을 가능성을 배제하지 못하며, CH09 본문만으로 학습자가 오해·실패할 수 있는지를 기준으로 삼았다."
+  ],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L09.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L01.md",
+      "quote": "`1:1`·`1:n` 등으로 나타낸다(예: 공연 1건 ↔ 예매 여러 건 = `1:n`)",
+      "category": "사실 오류(DDIC 카디널리티 표기)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "예시로 든 `1:n`은 DDIC 카디널리티 의미상 '공연 1건에는 예매가 최소 1건 반드시 있다'는 선언이다. 예매가 아직 0건인 신규 공연이 정상인 이 모델에는 맞지 않으며, 올바른 값은 `1:CN`이다.",
+      "evidence": "SE11 Foreign Key 대화상자의 카디널리티는 앞자리(Check Table 쪽) 1 또는 C, 뒷자리(Foreign Key 테이블 쪽) 1·C·N·CN 중에서 고른다. 뒷자리 N은 '종속 레코드가 최소 1건 존재', CN은 '0건 이상'을 뜻한다. 마스터-디테일에서 디테일이 0건일 수 있으면 CN이 표준 선택이다.",
+      "suggestion": "예시 값을 `1:CN`으로 바꾸고 한 줄만 덧붙인다 — 'N은 최소 1건 필수, CN은 0건도 허용'. 입문 단계용 축약 설명('관계의 개수를 표시하는 항목')은 그대로 둬도 된다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L01.md",
+      "quote": "**입력검증** — `ZCONCERT`에 없는 공연 번호는 입력 화면/유지보수에서 거부.",
+      "category": "위험한 생략(참조 무결성의 범위)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "챕터가 '고아 데이터를 막으려고 Foreign Key를 건다'는 동기로 열리는데, DDIC Foreign Key는 데이터베이스 제약을 만들지 않는다. 마스터 ZCONCERT 행을 지우면 이미 저장된 ZBOOKING 행이 그대로 고아가 되고, 삭제를 막아 주거나 연쇄 삭제해 주지도 않는다. 이 한계가 챕터 어디에도 없다.",
+      "evidence": "ABAP Dictionary의 Foreign Key는 화면·테이블 유지보수의 입력 검사, F4, 조인·도움말용 의미 정보를 만들 뿐 활성화해도 DB에 FK constraint가 생성되지 않는다. 그래서 CH09-L08이 지적한 대로 프로그램의 직접 쓰기도 통과하고, 같은 이유로 마스터 삭제도 아무 저항 없이 통과한다. L08은 '직접 쓰기' 방향만 다루고 '삭제' 방향은 다루지 않는다.",
+      "suggestion": "L01 '흔한 실수와 점검'에 한 줄 추가 — 'Foreign Key는 DB 제약이 아니라 입력 검사다. 마스터를 지우면 남은 예매는 고아가 되므로 삭제 규칙은 프로그램이 책임진다.' 삭제 로직 구현 자체는 이후 챕터 예고로 넘겨도 충분하다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L02.md",
+      "quote": "공연번호·사번처럼 숫자로 된 ID를, **내부 저장은 앞자리 0을 채우고**(`0000000042`)",
+      "category": "예시 적절성(변환 루틴 적용 대상)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "ALPHA는 값이 전부 숫자일 때만 우측 정렬 후 앞자리 0을 채운다. 이 챕터의 공연번호는 `C001`처럼 문자가 섞인 ID라 ALPHA를 붙여도 아무 변환이 일어나지 않는다. 대표 예로 '공연번호'를 든 것이 챕터 자신의 데이터 모델과 어긋난다.",
+      "evidence": "ALPHA 입력 변환은 입력이 숫자로만 이뤄진 경우에만 오른쪽 정렬 + 선행 0 패딩을 수행하고, 문자가 섞이면 원문을 좌측 정렬로 그대로 둔다. 본문 모델의 CONCERT_ID 값은 L01·L09에서 모두 `C001`·`C999`다.",
+      "suggestion": "예를 사번·문서번호처럼 순수 숫자 ID로 바꾸거나, '단 `C001`처럼 문자가 섞인 ID에는 ALPHA가 적용되지 않는다'를 한 줄 덧붙여 우리 모델과의 차이를 명시한다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L03.md",
+      "quote": "마스터와는 [[Foreign Key]]([Foreign Key와 Check Table](CH09-L01.html))로 잇고, SE11에서 그 관계를 **Text Table로 지정**한다.",
+      "category": "사실 오류(Text Table 관계 성립 조건)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "Text Table 관계는 마스터 쪽에서 '지정'하는 것이 아니라, 텍스트 테이블 쪽 키 필드에 마스터를 Check Table로 하는 Foreign Key를 걸고 FK 필드 유형을 '텍스트 테이블의 키 필드'로, 카디널리티를 1:CN으로 줘야 성립한다. 본문 서술만 보면 방향·유형·카디널리티를 알 수 없어 그대로 따라 해도 관계가 인식되지 않는다.",
+      "evidence": "DDIC가 어떤 테이블을 Text Table로 인식하는 조건은 (1) 텍스트 테이블의 키 = 체크 테이블의 키 + LANG 타입 언어 필드, (2) 텍스트 테이블에서 체크 테이블로 향하는 Foreign Key 존재, (3) 그 FK의 필드 유형이 '텍스트 테이블의 키 필드', (4) 카디널리티 1:CN 이 모두 충족될 때다.",
+      "suggestion": "절차를 세 줄로 명시 — 'ZCONCERT_T의 CONCERT_ID에 Check Table ZCONCERT로 FK를 건다 / FK 필드 유형 = 텍스트 테이블의 키 필드 / 카디널리티 = 1:CN'. 입문자가 그대로 따라 할 수 있는 형태가 된다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L05.md",
+      "quote": "**가장 자주 쓰는 탭이 처음에 열리도록** 배치하고 탭 수는 서너 개를 넘기지",
+      "category": "예시 적절성(실무 관례 서술)",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "'탭 수는 서너 개를 넘기지 않는 게 관례'는 SAP 표준의 실제 모습과 어긋난다. 표준 Collective Search Help(대표적으로 자재 검색 MAT1 계열)는 Elementary를 그보다 훨씬 많이 포함하며, 이는 잘못 만든 게 아니라 업무상 검색 축이 실제로 많기 때문이다. 관례처럼 단정하면 표준을 본 학습자가 혼란을 겪는다.",
+      "evidence": "표준 자재 검색 도움말은 자재내역·플랜트·자재그룹·이전자재번호 등 여러 축의 Elementary를 묶어 두고 있고 개수가 서너 개를 크게 넘는다(정확한 개수는 릴리스·업종 솔루션에 따라 달라 추정으로 표기). 다만 '자주 쓰는 축을 앞 탭에 두라'는 앞부분 조언 자체는 타당하다.",
+      "suggestion": "개수 상한 대신 원칙으로 고쳐 쓴다 — '검색 축이 실제로 다르면 여러 개도 정상이다. 다만 자주 쓰는 축을 앞 탭에 두고, 같은 축을 중복해 만들지 말자.' 표준과 충돌하지 않으면서 의도한 교훈은 그대로 남는다."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L06.md",
+      "quote": "Data Element/Domain에 붙은 **[[Search Help]]**, **[[고정값]]**, 필드의",
+      "category": "사실 오류(입력 도움 상속 경로)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "`TYPE zde_concert_id`처럼 Data Element로 타입을 줬을 때 '필드의 Foreign Key까지 그대로 따라온다'는 서술은 틀렸다. Check Table(Foreign Key)은 테이블 필드에 정의된 속성이라 Data Element에는 존재하지 않는다. 따라서 ZBOOKING-CONCERT_ID에 건 Foreign Key는 이 PARAMETERS로 따라오지 않으며, 학습자는 '분명 FK를 걸었는데 F4·검증이 안 붙는' 상황을 만나게 된다.",
+      "evidence": "Foreign Key는 L01의 절차 그대로 SE11에서 특정 테이블/구조의 '필드'에 정의된다. Data Element에 붙일 수 있는 것은 Search Help이고, 고정값은 Domain 속성이다. Check Table 기반 F4·검증까지 물려받으려면 파라미터가 테이블 필드를 참조해야 한다(`PARAMETERS pa_conc TYPE zbooking-concert_id.`).",
+      "suggestion": "문장을 두 갈래로 분리한다 — 'Data Element 경유로 따라오는 것 = Search Help·고정값' / 'Check Table 기반 F4·검증까지 원하면 테이블 필드 참조(`TYPE zbooking-concert_id`)'. 예제 코드도 두 형태를 나란히 보여 주면 차이가 한눈에 들어온다."
+    },
+    {
+      "seq": 7,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L06.md",
+      "quote": "`VALUE CHECK`를 붙인다). F4 목록이 따라오는 것과 값 검증은 별개다.",
+      "category": "사실 오류(VALUE CHECK 사용 조건)",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "'존재 검사가 필요하면 VALUE CHECK를 붙인다'가 바로 앞 `TYPE zde_concert_id` 선언과 이어 읽히는데, VALUE CHECK는 파라미터가 Check Table(또는 고정값)을 가진 DDIC 테이블·뷰 필드를 참조할 때만 성립한다. Data Element 참조로는 검사 근거가 없어 존재 검사가 붙지 않는다.",
+      "evidence": "선택화면의 VALUE CHECK는 참조된 DDIC 필드의 Foreign Key나 도메인 고정값을 근거로 입력을 검사한다. Data Element에는 Check Table이 없으므로 근거가 성립하지 않는다. 근거가 없을 때 문법 오류인지 무시인지는 릴리스에 따라 달라 기억이 확실하지 않아 추정으로 표기한다.",
+      "suggestion": "예제를 `PARAMETERS pa_conc TYPE zbooking-concert_id VALUE CHECK.` 형태(테이블 필드 참조 + VALUE CHECK)로 제시하고, 'Data Element 참조로는 존재 검사가 붙지 않는다'를 한 줄 명시한다. seq 6과 같은 문단이라 함께 고치면 된다."
+    },
+    {
+      "seq": 8,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L07.md",
+      "quote": "**화면 칸에 직접 붙인 [[Search Help]]** — 그 입력칸에 `MATCHCODE OBJECT`로 콕 지정한 검색 화면",
+      "category": "사실 오류(우선순위 사다리 결손)",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "우선순위 사다리에 '테이블/구조 필드에 붙인 Search Help' 단계가 빠져 있다. 정작 L09 실습은 ZSH_CONCERT를 ZBOOKING-CONCERT_ID 필드에 붙이는데 그 필드에는 Check Table도 걸려 있어, 이 사다리만으로는 무엇이 뜰지 판단할 수 없다. 학습자는 자기가 만든 Search Help가 Check Table에 밀린다고 잘못 추론하기 쉽다.",
+      "evidence": "알려진 입력 도움 계층은 (화면 이벤트로 만든 F4) → (테이블·구조 필드에 붙인 Search Help) → (Check Table) → (Data Element에 붙인 Search Help) → (Domain 고정값) → (타입 기본 도움) 순이다. 본문은 2번을 MATCHCODE OBJECT로만 설명하고, 팁에서 Data Element 부착만 'Check Table보다 아래'로 배치해 필드 부착 자리를 비워 뒀다. 세부 순서는 오프라인 확인이 불가해 추정으로 표기한다.",
+      "suggestion": "2번과 3번 사이에 '테이블/구조 필드에 직접 붙인 Search Help' 칸을 넣고, L09 사례(같은 필드에 FK와 Search Help가 공존하면 Search Help가 뜬다)를 한 줄 예로 연결한다. L06의 부착 지점 표와도 칸 수가 맞아떨어진다."
+    },
+    {
+      "seq": 9,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L08.md",
+      "quote": "SELECT SINGLE concert_id FROM zconcert",
+      "category": "위험한 생략(동시성·잠금·LUW)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'읽어서 확인하고(SELECT) 그다음 쓴다'를 업무 규칙 검증의 표준형으로 보여 주는데, 같은 자원을 두 사용자가 동시에 처리하면 두 세션 모두 검사를 통과한 뒤 각자 쓰는 구멍이 남는다. 이 레슨이 든 업무 규칙 예가 하필 '좌석 수가 잔여보다 크면 거부'라, 잠금·COMMIT 언급이 전혀 없으면 초과 예매를 만드는 패턴을 정상으로 배우게 된다.",
+      "evidence": "ABAP LUW에서 검사와 쓰기 사이는 원자적이지 않다. 읽은 값을 근거로 쓰는 로직은 ENQUEUE 잠금으로 구간을 보호하고 COMMIT WORK/ROLLBACK WORK로 LUW를 닫아야 안전하다. 이 규율은 릴리스와 무관하며, 예매·재고처럼 잔여 수량을 다루는 업무에서 가장 흔한 사고 원인이다.",
+      "suggestion": "구현은 뒤 챕터로 미루더라도 1～2문장 예고면 충분하다 — '이 검사는 혼자 쓸 때 이야기다. 여러 명이 동시에 예매하면 둘 다 검사를 통과할 수 있어 잠금이 필요하다. 잠금과 COMMIT은 [Chapter 25 · 데이터 변경]에서 배운다.'"
+    },
+    {
+      "seq": 10,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L09.md",
+      "quote": "`ZBOOKING-CONCERT_ID` 필드 → Foreign Keys → Check Table `ZCONCERT`.",
+      "category": "위험한 생략(모델 관계 결손)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "실습이 만드는 관계는 ZBOOKING-CONCERT_ID → ZCONCERT 하나뿐이다. ZPERF-CONCERT_ID → ZCONCERT도, ZBOOKING의 (CONCERT_ID, PERF_NO) → ZPERF도 없어서 존재하지 않는 회차 번호를 넣은 예매가 그대로 저장된다. 챕터가 도입부에서 경고한 고아 데이터가 실습 결과물에 그대로 남는 셈이다.",
+      "evidence": "L09의 2) 단계는 CONCERT_ID 한 필드만 Check Table ZCONCERT로 연결한다. ZBOOKING-PERF_NO에는 어떤 Check Table도 없으므로 화면·유지보수 검증도 F4도 붙지 않는다. 회차 검증은 두 필드를 함께 매핑하는 복합 키 Foreign Key(Check Table ZPERF)로만 표현할 수 있다.",
+      "suggestion": "2) 단계에 두 줄 추가 — 'ZPERF-CONCERT_ID → Check Table ZCONCERT', 'ZBOOKING의 CONCERT_ID+PERF_NO → Check Table ZPERF(키 두 개를 함께 매핑)'. 복합 키 매핑은 L01에서 배운 '키 필드 대응'의 자연스러운 확장이라 난이도도 어울린다."
+    },
+    {
+      "seq": 11,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L09.md",
+      "quote": "필드 타입은 **Data Element**로(라벨·F4 상속, [Chapter 03 · Data Element](CH03-L02.html)).",
+      "category": "위험한 생략(Foreign Key 성립 요건)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "Foreign Key는 참조 필드와 Check Table의 대응 키 필드가 같은 Domain을 공유할 것을 요구하는데, 실습 안내는 '필드 타입은 Data Element로'까지만 말한다. 입문자가 테이블마다 CONCERT_ID용 Data Element/Domain을 새로 만들면 2) 단계의 Foreign Key 정의·활성화에서 막힌다.",
+      "evidence": "DDIC는 외래 키 필드와 체크 테이블의 대응 키 필드가 동일 Domain일 때 필드 대응을 제안하고 정합성 검사를 통과시킨다. 도메인이 다르면 SE11이 오류 또는 경고를 낸다(메시지 등급은 릴리스에 따라 다르지만 요건 자체는 동일하다).",
+      "suggestion": "1) 단계에 한 줄 — 'ZCONCERT·ZPERF·ZBOOKING의 CONCERT_ID는 같은 Data Element(예: ZDE_CONCERT_ID)를 쓴다. Foreign Key는 양쪽이 같은 Domain일 때 성립한다.'"
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH09의 기술 골격은 대체로 정확하다. Value Table(제안)과 Foreign Key(실제 관계)의 구분, Text Table의 키 구성(마스터 키 + 언어), Elementary/Collective 검색 도움말의 구성요소(Selection Method·IMP/EXP·LPos/SPos), '선택화면의 입력 도움은 일반 화면보다 제한적이고 값 검증은 자동으로 돌지 않는다'는 경고, 'DDIC 검증은 화면·유지보수 레벨이라 직접 DB 쓰기를 우회한다'는 지적까지 입문 교재 수준에서 드물게 잘 짚었다. 안티패턴 시연은 발견되지 않았다. 실질 수정 대상은 네 곳이다. (1) L06의 '자동 연결' 문단이 Data Element와 테이블 필드를 뭉뚱그려 Foreign Key까지 상속된다고 서술한 점, (2) 같은 문단의 VALUE CHECK 전제(테이블 필드 참조 필요), (3) L07 우선순위 사다리에서 '필드에 붙인 Search Help' 단계 누락 — 정작 L09 실습이 그 방식이라 결과를 예측할 수 없다, (4) L09가 ZPERF·PERF_NO 관계를 만들지 않아 챕터가 경고한 고아 데이터가 실습 결과물에 남는 점. 나머지는 카디널리티 예시(1:n → 1:CN), ALPHA 예시와 C001 모델의 불일치, Text Table 성립 조건(방향·FK 필드 유형·1:CN), Foreign Key가 DB 제약이 아니라는 한 줄, 잔여석 판정의 동시성·잠금 예고 한 줄 같은 문장 단위 보정이다. 구조나 서술 방식을 다시 쓸 이유는 없고, 위 네 문단 교체와 실습 2) 단계 두 줄 추가로 기술 정확도가 맞춰진다."
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "agent": "AG09",
+  "model": "opus",
+  "target": "CH09",
+  "persona_ack": "나는 AG09 — ABAP 정적 검사기를 시늉하는 코드 전용 감사자다. 산문·교수법·시각화는 판정 대상에서 제외하고 ```abap 펜스 블록만 줄 단위로 검사했다(활성화 차단급 문법·네이밍 규약·classic 경계 규약·주석/출력 문자열 정합). 읽기 전용 원칙을 지켰고(대상 파일 수정·생성·삭제 없음), 블라인드 원칙에 따라 다른 감사자 산출물·과거 감사 아티팩트·저장소 밖 경로를 열지 않았으며 웹 검색도 하지 않았다. 실행 환경(SAP 시스템)이 없으므로 '컴파일 확신'이 아닌 정적 판단이며 불확실한 항목은 confidence=\"추정\"으로 낮췄다.",
+  "method": "Read 도구로 대상 10개 파일(_chapter.md 포함) 전문 통독 → Grep으로 코드펜스 인벤토리(정규식 ^``` )를 뽑아 챕터 전체의 ```abap 블록이 CH09-L06:34-37 · CH09-L07:40-43 · CH09-L08:31-38 세 개(순수 코드 6줄)뿐임을 확인 → Grep으로 접두어·모던문법 토큰 일괄 스캔(lv_|ls_|lt_|it_|gv_|gs_|gt_|pa_|so_|ty_|ts_|tt_|DATA\\(|VALUE #|NEW |\\+=)하여 선언·사용 지점을 대조. 빌드·브라우저·네트워크 미사용.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L09.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L08.md",
+      "quote": "SELECT SINGLE concert_id FROM zconcert\n  INTO gv_dummy WHERE concert_id = gs_booking-concert_id.",
+      "category": "의사코드",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "챕터의 유일한 실행형 코드 블록이 선언되지 않은 두 데이터 오브젝트(gv_dummy 스칼라, gs_booking 구조체)를 사용한다. 블록 첫 줄 주석에 \"(예)\"가 달린 축약 예시라 문법 잣대는 완화해 category=\"의사코드\"로만 기록하지만, 그대로 옮겨 적으면 미선언 오브젝트로 활성화되지 않는다.",
+      "evidence": "Grep으로 CH09 전 파일에서 접두어 토큰을 훑은 결과 gv_/gs_ 계열의 등장은 CH09-L08.md:34 한 줄이 전부이고, 챕터 전체(```abap 블록 3개·코드 6줄)에 DATA/TYPES 선언문이 단 한 줄도 없다. 즉 gv_dummy·gs_booking은 본문 어디에서도 선언·타입 부여가 되지 않는다. 다만 SELECT SINGLE 자체는 문법상 정상이다 — classic Open SQL 순서(SELECT SINGLE 컬럼 FROM 테이블 INTO 대상 WHERE 조건)를 지켰고, @·콤마 등 New Open SQL 요소가 없어 CH01～18 경계 규약에 부합하며, WHERE가 ZCONCERT의 전체 키(CONCERT_ID, CH09-L09 키 표 기준)를 지정해 SELECT SINGLE 키 미완성 경고도 나지 않는다. 접두어도 CH01～09 전역 규약(gv_/gs_)에 맞다.",
+      "suggestion": "블록 앞에 최소 선언 2줄을 넣어 자족적으로 만든다(예: DATA gv_dummy TYPE zconcert-concert_id. / DATA gs_booking TYPE zbooking.). 선언을 넣지 않을 거라면 주석을 \"(예 — gv_dummy·gs_booking은 앞서 선언했다고 가정)\"처럼 바꿔 미선언이 의도된 축약임을 독자에게 밝힌다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L06.md",
+      "quote": "PARAMETERS pa_conc TYPE zde_concert_id\n  MATCHCODE OBJECT zsh_concert_coll.",
+      "category": "참조 무결성",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "MATCHCODE OBJECT의 피연산자 zsh_concert_coll은 활성화 시점에 리포지토리에 실재해야 하는 Search Help인데, 이 챕터의 실습 레슨(CH09-L09)이 만들게 하는 오브젝트 목록에는 Elementary ZSH_CONCERT만 있고 Collective ZSH_CONCERT_COLL은 없다. 실습만 따라 한 학습자가 이 줄을 그대로 치면 \"검색 도움말이 존재하지 않음\" 류의 활성화 오류를 만날 수 있다.",
+      "evidence": "동일한 코드 줄이 CH09-L07.md:41-42에도 반복된다(뒤에 주석 \" 이 칸엔 이 Search Help로 못 박기\"만 추가). 이름 자체는 일관된다 — CH09-L05가 ZSH_CONCERT_COLL을 Collective로 만드는 절차를 서술하므로 오타나 미정의 이름은 아니다. 반면 CH09-L04는 ZSH_CONCERT에 대해 \"이 도움말은 이 챕터의 실습에서 실제로 만든다\"고 못 박은 데 비해 Collective에는 그런 연결이 없고, CH09-L09의 3) 공연 Search Help 절과 직접 해 볼 과제 3개 모두 Elementary만 다룬다. 코드 자체의 문법은 정상 — PARAMETERS의 TYPE 뒤에 MATCHCODE OBJECT를 붙이는 순서는 유효하고, 마침표도 있으며, pa_conc는 PARAMETERS 접두어 pa_·7자로 8자 이내 규약을 지킨다. 실행 환경이 없어 오브젝트 실재 여부를 확인할 수 없으므로 추정으로 낮춘다.",
+      "suggestion": "CH09-L09 실습에 Collective(ZSH_CONCERT_COLL) 생성 단계를 한 줄 추가하거나, 반대로 CH09-L06·L07의 예시 피연산자를 실습에서 실제로 만드는 zsh_concert로 바꿔 코드와 실습 산출물을 일치시킨다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "코드 전용 시각에서 CH09는 사실상 무결하다. 챕터 전체의 ```abap 블록은 3개(CH09-L06·L07의 PARAMETERS 2줄짜리 동일 예시, CH09-L08의 SELECT SINGLE 존재검사)로 순수 코드 6줄뿐이며, 활성화 차단급 결함(마침표 누락·존재하지 않는 구문/애드온·시그니처 오류)은 발견되지 않았다. 경계 규약도 깨끗하다 — 인라인 DATA()·VALUE·NEW·+=·|…| 같은 New Syntax가 0건, New Open SQL(@·콤마)도 0건으로 CH01～17 classic 구간 규율을 지켰다. 네이밍도 규약대로다: PARAMETERS pa_conc(pa_ 접두어·7자), 전역 스코프 구간(CH01～09)에 맞는 gv_/gs_ 사용, lv_/ls_/lt_ 오용이나 Header Line 전용 it_의 오용 없음. 주석·출력 문자열도 코드 내용과 어긋나지 않는다. 남는 것은 낮음 등급 두 건뿐 — (1) 유일한 실행형 스니펫이 미선언 변수 두 개에 기대는 축약 예시라는 점(주석의 \"(예)\" 표기 때문에 의사코드로만 기록), (2) MATCHCODE OBJECT가 가리키는 Collective Search Help가 실습 레슨의 제작 목록에 빠져 있어 코드와 실습 산출물이 어긋날 수 있다는 점. 둘 다 두세 줄 손질로 끝나는 수준이라 재집필·대규모 보강은 불필요하고 '경미 수정'이 적정하다. 참고로 이 챕터가 코드가 거의 없는 것은 DDIC 선언 중심(Foreign Key·Text Table·Search Help)이라는 주제 특성상 자연스러운 구성으로 보이며, 코드 분량 자체를 결함으로 잡지 않았다(체험·커버리지 판단은 코드 감사자의 소관 밖)."
+  }
+}

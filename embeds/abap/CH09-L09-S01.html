@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <!-- CH09-L09-S01 — 엔진: concert-model-checklist (embeds/_engine/concert-model-checklist.{js,css}) · 자체 postHeight.
-     체험: DDIC 모델 제작 단계를 진행하고, 관계 미리보기·테스트 결과가 선행 단계 완료에 따라 달라짐.
-     관통 예제(ZCONCERT/ZPERF/ZBOOKING) 토대. 이름풀 정훈영 사용. -->
+     체험: DDIC 모델 제작 단계(11)를 진행하고, 관계 미리보기·테스트 결과가 선행 단계 완료에 실제로 의존.
+     관통 예제(ZCONCERT/ZPERF/ZBOOKING/ZCONCERT_T) 토대 · 관계 셋 · 시드 공연3·회차3·예매6. 이름풀 정훈영 사용.
+     데이터=window.CMC_CFG(아래) — 본문 값이 바뀌면 여기만 고친다. -->
 <html lang="ko" data-eng="concert-model-checklist">
 <head>
 <meta charset="utf-8" />
@@ -13,7 +14,7 @@
 <body>
 <div class="wrap">
   <p class="hd">콘서트 모델 제작 체크리스트 <small>(DDIC 실습)</small></p>
-  <p class="lead">단계 카드를 눌러 상태를 진행하세요(미작성 → 작성 → 활성화 → 검증완료). 아래 <b>테스트 버튼</b>의 결과는 선행 단계가 완료돼야 바뀝니다 — 예: Foreign Key를 활성화해야 없는 공연 ID가 거부됩니다.</p>
+  <p class="lead">단계 카드를 눌러 상태를 진행하세요(미작성 → 작성 → 활성화 → 검증완료). 아래 <b>테스트 버튼</b>은 <b>필요한 단계가 실제로 활성화됐을 때만</b> 성공합니다 — 안 되면 어느 단계가 빠졌는지 알려 줍니다.</p>
 
   <div class="actions">
     <button class="act fill" id="fillAll" type="button">전부 검증완료로</button>
@@ -27,20 +28,24 @@
 
     <div class="side">
       <div class="preview">
-        <div class="preview__t">관계 미리보기</div>
+        <div class="preview__t">관계 미리보기 <small>(화살표마다 관계 하나)</small></div>
         <div class="tbox" id="boxConcert"><b>ZCONCERT</b> 공연 마스터</div>
-        <div class="rel" id="relPerf">▲ CONCERT_ID</div>
+        <div class="rel rel--text" id="relText">↳ <b>ZCONCERT_T</b> 이름표 — 텍스트 테이블의 키 필드로 연결</div>
+        <div class="rel" id="relFk1">▲ ① <b>ZPERF</b>-CONCERT_ID → <b>ZCONCERT</b></div>
         <div class="tbox" id="boxPerf"><b>ZPERF</b> 공연 회차</div>
-        <div class="rel" id="relFk">▲ Foreign Key (CONCERT_ID)</div>
+        <div class="rel" id="relFk3">▲ ③ <b>ZBOOKING</b>-CONCERT_ID + PERF_NO → <b>ZPERF</b></div>
         <div class="tbox" id="boxBooking"><b>ZBOOKING</b> 예매</div>
+        <div class="rel rel--skip" id="relFk2">⤴ ② <b>ZBOOKING</b>-CONCERT_ID → <b>ZCONCERT</b> <small>(ZPERF를 건너뛰어 마스터로)</small></div>
       </div>
 
       <div class="tests">
-        <div class="tests__t">테스트</div>
+        <div class="tests__t">테스트 <small>(과제 ② 확인하기와 같은 항목)</small></div>
         <div class="tbtns" id="tbtns">
           <button class="tbtn" data-t="okId" type="button">정상 공연 ID(C001) 입력</button>
           <button class="tbtn" data-t="badId" type="button">없는 공연 ID(C999) 입력</button>
-          <button class="tbtn" data-t="f4" type="button">F4 누르기</button>
+          <button class="tbtn" data-t="badPerf" type="button">없는 회차(C003 + 001) 입력</button>
+          <button class="tbtn" data-t="f4" type="button">CONCERT_ID 칸에서 F4</button>
+          <button class="tbtn" data-t="coll" type="button">Collective 탭 확인</button>
           <button class="tbtn" data-t="jhy" type="button">정훈영 예매 확인</button>
         </div>
         <div class="tout" id="tout"></div>
@@ -48,9 +53,64 @@
     </div>
   </div>
 
-  <div class="note"><b>관통 예제</b> — 여기서 만든 <code>ZCONCERT·ZPERF·ZBOOKING</code>은 <a href="CH10-L01.html">CH10 모듈화</a>, <a href="CH11-L01.html">CH11 ALV</a>로 이어집니다. <b>활성화</b>를 빼먹으면 만든 것처럼 보여도 화면에서 동작하지 않습니다 — 늘 활성화 상태를 확인하세요.</div>
+  <div class="note"><b>관통 예제</b> — 여기서 만든 <code>ZCONCERT·ZPERF·ZBOOKING</code>은 <a href="../../docs/abap/pages/CH10-L01.html" target="_top">Chapter 10 · 모듈화 기초</a>, <a href="../../docs/abap/pages/CH11-L01.html" target="_top">Chapter 11 · SALV 1차 (간단 ALV)</a>로 이어집니다. <b>활성화</b>를 빼먹으면 만든 것처럼 보여도 화면에서 동작하지 않습니다 — 늘 활성화 상태를 확인하세요.</div>
 </div>
 
+<script>
+/* 단계·테스트 = 레슨 본문(1) 세 테이블 → 2) Text Table → 3) Foreign Key 셋 → 4) Search Help → 과제 ①②)과 1:1.
+   시드 수량은 본문 ① 데이터 넣기 표가 정본 — 공연 3 · 회차 3 · 예매 6(STATUS N=신규·C=취소). */
+window.CMC_CFG = {
+  steps:[
+    {key:'domain',   n:'Domain',          sub:'공연 ID·회차 번호·좌석 수·예매 상태(고정값 N·C)'},
+    {key:'de',       n:'Data Element',    sub:'ZDE_CONCERT_ID 등 — 라벨·F4 의미 정보'},
+    {key:'zconcert', n:'ZCONCERT',        sub:'공연 마스터 (CONCERT_ID·ARTIST·VENUE·CAPACITY)'},
+    {key:'zperf',    n:'ZPERF',           sub:'회차 (CONCERT_ID·PERF_NO·PERF_DATE)'},
+    {key:'zbooking', n:'ZBOOKING',        sub:'예매 (BOOKING_ID·CONCERT_ID·PERF_NO·CUSTOMER·SEATS·STATUS)'},
+    {key:'ztext',    n:'ZCONCERT_T',      sub:'Text Table (CONCERT_ID·SPRAS·NAME) — 공연명은 여기'},
+    {key:'fk1',      n:'Foreign Key ①',   sub:'ZPERF-CONCERT_ID → ZCONCERT'},
+    {key:'fk2',      n:'Foreign Key ②',   sub:'ZBOOKING-CONCERT_ID → ZCONCERT'},
+    {key:'fk3',      n:'Foreign Key ③',   sub:'ZBOOKING(CONCERT_ID + PERF_NO) → ZPERF · 대응 2줄'},
+    {key:'sh',       n:'Search Help',     sub:'ZSH_CONCERT·ZSH_CONCERT_ART → ZSH_CONCERT_COLL'},
+    {key:'data',     n:'테스트 데이터',    sub:'공연 3 · 회차 3 · 예매 6(정훈영 포함)'}
+  ],
+  boxes:[
+    {el:'boxConcert', needs:['zconcert']},
+    {el:'boxPerf',    needs:['zperf']},
+    {el:'boxBooking', needs:['zbooking']}
+  ],
+  rels:[
+    {el:'relText', needs:['ztext']},
+    {el:'relFk1',  needs:['fk1']},
+    {el:'relFk2',  needs:['fk2']},
+    {el:'relFk3',  needs:['fk3']}
+  ],
+  tests:[
+    {t:'okId', core:['zconcert','zbooking'], extra:['fk2'],
+      ok:'✓ <code>C001</code> 통과 — 관계가 켜진 상태에서 통과했으니 마스터에 <b>실제로 있는 값</b>입니다.',
+      partial:'△ 값은 들어갑니다. 하지만 관계를 선언하지 않아 <b>아무 값이나 들어가는 상태</b>라, 통과했다는 사실이 아무것도 증명하지 않습니다.',
+      none:'입력할 테이블이 없습니다'},
+    {t:'badId', core:['zconcert','zbooking'], extra:['fk2'],
+      ok:'✓ <code>C999</code> 거부 — Foreign Key ②가 막아 줍니다. 고아 예매가 생기지 않습니다.',
+      partial:'✕ 아직 안 막힙니다 — 관계가 없어 <code>C999</code>가 그대로 저장됩니다.',
+      none:'입력할 테이블이 없습니다'},
+    {t:'badPerf', core:['zperf','zbooking'], extra:['fk3'],
+      ok:'✓ <code>C003</code> + <code>001</code> 거부 — 공연은 있지만 <b>그 회차가 없습니다</b>. 대응 두 줄짜리 복합 Foreign Key ③이 잡아냅니다.',
+      partial:'✕ 없는 회차가 그대로 새어 듭니다 — 복합 관계를 걸어야 "존재하는 공연 + 없는 회차" 조합이 막힙니다.',
+      none:'회차·예매 테이블이 없습니다'},
+    {t:'f4', core:['zconcert','zbooking','fk2'], extra:['ztext'],
+      ok:'✓ F4 → 공연 목록에 <b>코드 옆 이름까지</b> 뜹니다(Text Table 연결 성공). 고르면 <code>CONCERT_ID</code>가 돌아옵니다.',
+      partial:'△ 목록은 뜨는데 <b>코드만</b> 보입니다 — 이름을 함께 보이려면 Text Table을 연결해야 합니다.',
+      none:'F4를 누를 칸도, 띄울 목록도 없습니다'},
+    {t:'coll', core:['zbooking','sh'], extra:[],
+      ok:'✓ 탭 <b>두 개</b>(공연 ID·아티스트)가 뜨고, 어느 탭에서 골라도 같은 <code>CONCERT_ID</code>가 돌아옵니다.',
+      none:'붙일 Search Help가 없습니다'},
+    {t:'jhy', core:['zbooking','data'], extra:['fk3'],
+      ok:'✓ 예매 테이블에 <b>정훈영</b> 행이 보입니다 — 공연 3 · 회차 3 · 예매 6이 모두 들어갔습니다.',
+      partial:'△ 행은 보입니다. 다만 복합 관계가 없어 회차가 맞는지까지는 검사되지 않았습니다.',
+      none:'예매 테이블·데이터가 없습니다'}
+  ]
+};
+</script>
 <script src="../_engine/concert-model-checklist.js" defer></script>
 </body>
 </html>

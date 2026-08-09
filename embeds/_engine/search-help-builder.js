@@ -1,6 +1,8 @@
 // ===== search-help-builder 엔진 JS — Elementary Search Help 조립 (CH09-L04) =====
 // Selection Method + parameter 역할(검색조건/목록표시/반환EXP)을 조립해 F4 팝업을 미리본다.
 // EXP 누락·빈 Selection Method 같은 실패도 체험. 데이터=window.SHB_CFG.
+// 역할은 셋 다 실제로 동작한다: 검색조건=입력값으로 목록을 거름(hits) · 목록표시=표시 컬럼(하나도 없으면
+// 폴백 없이 "표시할 컬럼 없음") · EXP=행 선택 시 반환값. 타이핑 시엔 renderRows만 돌려 포커스를 지킨다.
 (function(){
   var cfg = window.SHB_CFG || {};
   var SOURCES = cfg.sources || {};   // {ZCONCERT:{cols:[..], rows:[..]}, ...}
@@ -10,8 +12,9 @@
 
   var sel = cfg.defaultSource || 'ZCONCERT';
   var roles = {};   // col -> {search,list,exp}
+  var filters = {}; // col -> 검색조건 입력값(실제로 목록을 거른다)
   function initRoles(){
-    roles={};
+    roles={}; filters={};
     var cols=(SOURCES[sel]&&SOURCES[sel].cols)||[];
     cols.forEach(function(c){ roles[c]={search:false, list:true, exp:false}; });
     if(roles[cols[0]]){ roles[cols[0]].exp=true; }
@@ -33,6 +36,50 @@
         +'</div></div>';
     }).join('');
   }
+  /* 현재 역할 배치를 한 번에 계산 */
+  function shape(){
+    var src=SOURCES[sel]||{cols:[],rows:[]}, cols=src.cols||[];
+    return {
+      src:src, cols:cols,
+      searchCols:cols.filter(function(c){return roles[c]&&roles[c].search;}),
+      listCols:cols.filter(function(c){return roles[c]&&roles[c].list;}),
+      expCol:cols.filter(function(c){return roles[c]&&roles[c].exp;})[0]
+    };
+  }
+  /* 검색조건 = 실제 필터. 값이 든 조건은 전부 만족해야 목록에 남는다(부분 일치·대소문자 무시). */
+  function hits(){
+    var s=shape();
+    return s.src.rows.map(function(row,i){ return {row:row, i:i}; }).filter(function(o){
+      return s.searchCols.every(function(c){
+        var f=(filters[c]||'').trim().toLowerCase();
+        if(!f) return true;
+        return String(o.row[c]==null?'':o.row[c]).toLowerCase().indexOf(f)>=0;
+      });
+    });
+  }
+  /* 목록 부분만 다시 그린다 — 검색칸을 지우지 않아야 입력 포커스가 유지된다. */
+  function renderRows(){
+    var s=shape(), tb=$('f4rows'), cnt=$('f4cnt');
+    if(!tb) return;
+    if(!s.listCols.length){
+      tb.innerHTML='<tr class="none"><td>목록표시로 지정된 필드가 하나도 없습니다 — 모든 필드가 <b>LPos 0</b>인 셈이라 보여 줄 컬럼이 없습니다.</td></tr>';
+      if(cnt) cnt.textContent='';
+      return;
+    }
+    var list=hits();
+    if(!list.length){
+      tb.innerHTML='<tr class="none"><td colspan="'+s.listCols.length+'">검색조건에 맞는 행이 없습니다.</td></tr>';
+    } else {
+      tb.innerHTML=list.map(function(o){
+        return '<tr data-i="'+o.i+'">'+s.listCols.map(function(c){
+          return '<td class="'+(c===s.cols[0]?'id':'')+'">'+esc(o.row[c])+'</td>';
+        }).join('')+'</tr>';
+      }).join('');
+    }
+    if(cnt) cnt.textContent = s.searchCols.length
+      ? list.length+'건 / 전체 '+s.src.rows.length+'건'
+      : '전체 '+s.src.rows.length+'건';
+  }
   function renderF4(){
     var src=SOURCES[sel];
     if(!src || !src.cols.length){
@@ -40,36 +87,37 @@
       $('retbox').className='retbox no'; $('retbox').textContent='Selection Method가 비어 결과 목록을 만들 수 없습니다.';
       return;
     }
-    var cols=src.cols;
-    var searchCols=cols.filter(function(c){return roles[c].search;});
-    var listCols=cols.filter(function(c){return roles[c].list;});
-    if(!listCols.length) listCols=cols.slice();
-    var expCol=cols.filter(function(c){return roles[c].exp;})[0];
-    var searchHtml = searchCols.length
-      ? searchCols.map(function(c){return '<div class="sf">'+esc(c)+' <input type="text" placeholder="검색"></div>';}).join('')
-      : '<span class="none">검색 조건 필드가 없습니다(목록만 표시).</span>';
-    var head='<thead><tr>'+listCols.map(function(c){return '<th>'+esc(c)+'</th>';}).join('')+'</tr></thead>';
-    var body=src.rows.map(function(row,i){
-      return '<tr data-i="'+i+'">'+listCols.map(function(c){return '<td class="'+(c===cols[0]?'id':'')+'">'+esc(row[c])+'</td>';}).join('')+'</tr>';
-    }).join('');
+    var s=shape();
+    var searchHtml = s.searchCols.length
+      ? s.searchCols.map(function(c){return '<div class="sf">'+esc(c)+' <input type="text" placeholder="검색" data-col="'+esc(c)+'" value="'+esc(filters[c]||'')+'"></div>';}).join('')
+        + '<span class="cnt" id="f4cnt"></span>'
+      : '<span class="none">검색조건 필드가 없어 목록을 좁힐 수 없습니다(전체만 표시).</span><span class="cnt" id="f4cnt"></span>';
+    var head = s.listCols.length
+      ? '<thead><tr>'+s.listCols.map(function(c){return '<th>'+esc(c)+'</th>';}).join('')+'</tr></thead>'
+      : '<thead><tr><th>(표시할 컬럼 없음)</th></tr></thead>';
     $('f4').innerHTML='<div class="f4__hd">🔍 F4 — '+sel+' 검색</div>'
       +'<div class="f4__search">'+searchHtml+'</div>'
-      +'<table class="dt">'+head+'<tbody>'+body+'</tbody></table>';
-    $('f4').querySelectorAll('tbody tr').forEach(function(tr){
-      tr.addEventListener('click',function(){
-        var row=src.rows[+tr.dataset.i];
-        if(!expCol){ $('retbox').className='retbox no'; $('retbox').innerHTML='행을 선택했지만 <b>EXP(반환)로 지정된 필드가 없어</b> 입력칸으로 돌아갈 값이 없습니다.'; postHeight(); return; }
-        $('retbox').className='retbox ok'; $('retbox').innerHTML='선택 → 입력칸에 <code>'+esc(expCol)+' = '+esc(row[expCol])+'</code> 반환됨.'; postHeight();
-      });
+      +'<table class="dt">'+head+'<tbody id="f4rows"></tbody></table>';
+    $('f4').querySelectorAll('.f4__search input').forEach(function(inp){
+      inp.addEventListener('input',function(){ filters[inp.dataset.col]=inp.value; renderRows(); postHeight(); });
     });
+    renderRows();
     // 초기 안내
-    if(!expCol){ $('retbox').className='retbox no'; $('retbox').innerHTML='⚠ <b>EXP(반환) 필드가 없습니다.</b> 행을 선택해도 입력칸으로 값이 돌아오지 않습니다.'; }
-    else { $('retbox').className='retbox idle'; $('retbox').innerHTML='목록에서 행을 클릭하면 <code>'+esc(expCol)+'</code> 값이 입력칸으로 반환됩니다.'; }
+    if(!s.listCols.length){ $('retbox').className='retbox no'; $('retbox').innerHTML='⚠ <b>목록표시 필드가 없습니다.</b> 고를 행 자체가 화면에 나오지 않습니다.'; }
+    else if(!s.expCol){ $('retbox').className='retbox no'; $('retbox').innerHTML='⚠ <b>EXP(반환) 필드가 없습니다.</b> 행을 선택해도 입력칸으로 값이 돌아오지 않습니다.'; }
+    else { $('retbox').className='retbox idle'; $('retbox').innerHTML='목록에서 행을 클릭하면 <code>'+esc(s.expCol)+'</code> 값이 입력칸으로 반환됩니다.'; }
   }
   function render(){ renderSM(); renderParams(); renderF4(); postHeight(); }
 
   $('smbtns').addEventListener('click',function(e){
     var b=e.target.closest('.smbtn'); if(!b) return; sel=b.dataset.s; initRoles(); render();
+  });
+  /* 행 선택은 위임으로 한 번만 등록(renderF4가 innerHTML을 갈아 끼워도 유지 · 중복 등록 방지) */
+  $('f4').addEventListener('click',function(e){
+    var tr=e.target.closest('tbody tr'); if(!tr||tr.classList.contains('none')) return;
+    var s=shape(), row=s.src.rows[+tr.dataset.i]; if(!row) return;
+    if(!s.expCol){ $('retbox').className='retbox no'; $('retbox').innerHTML='행을 선택했지만 <b>EXP(반환)로 지정된 필드가 없어</b> 입력칸으로 돌아갈 값이 없습니다.'; postHeight(); return; }
+    $('retbox').className='retbox ok'; $('retbox').innerHTML='선택 → 입력칸에 <code>'+esc(s.expCol)+' = '+esc(row[s.expCol])+'</code> 반환됨.'; postHeight();
   });
   $('params').addEventListener('click',function(e){
     var b=e.target.closest('.rchip'); if(!b) return;

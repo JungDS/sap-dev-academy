@@ -1,12 +1,14 @@
 // ===== select-options-filter-sim 엔진 JS — SELECT-OPTIONS Range Table 필터 시뮬 (config 주도) =====
 // 위젯의 window.SO_CFG로 주입:
-//   SO_CFG = { table, cols[{key,label,num}], data[{}], selopts[{name,field,label,num}], presets[{label, ranges:{name:[{sign,opt,low,high}]}}] }
+//   SO_CFG = { table, itab, cols[{key,label,num}], data[{}], selopts[{name,field,label,num}], presets[{label, ranges:{name:[{sign,opt,low,high}]}}] }
+//   itab = 결과를 담는 Internal Table 이름(코드 프리뷰·행 수 표시에 사용, 기본 gt_book — CH12 본문의 전역 g 접두어 기준)
 // SELECT-OPTIONS = Range Table(SIGN I/E · OPTION EQ/NE/GT/LT/GE/LE/BT/CP · LOW/HIGH). classic `field IN so_xxx`.
 (function(){
   var cfg = window.SO_CFG || {};
   var COLS = cfg.cols || [];
   var DATA = cfg.data || [];
   var TBL  = cfg.table || 'ztab';
+  var ITAB = cfg.itab  || 'gt_book';
   var SOPTS = cfg.selopts || [];
   var PRESETS = cfg.presets || [];
   var OPTS = ['EQ','NE','GT','LT','GE','LE','BT','CP'];
@@ -18,8 +20,10 @@
 
   function num(v){ return Number(v); }
   function cmp(a,b,isNum){ if(isNum){ a=num(a); b=num(b); } else { a=String(a); b=String(b); } return a<b?-1:(a>b?1:0); }
+  // CP 패턴 → 정규식. `*`=여러 글자 · `+`=한 글자라서 이스케이프 대상에서 빼야 한다
+  // (넣으면 `\+`가 됐다가 다음 replace에서 `\.`=리터럴 마침표로 변해 항상 0건 매치).
   function cpMatch(val, pat){
-    var rx = '^'+String(pat).replace(/[.+^${}()|[\]\\]/g,'\\$&').replace(/\*/g,'.*').replace(/\+/g,'.')+'$';
+    var rx = '^'+String(pat).replace(/[.^${}()|[\]\\]/g,'\\$&').replace(/\*/g,'.*').replace(/\+/g,'.')+'$';
     return new RegExp(rx,'i').test(String(val));
   }
   function matchOpt(val, r, isNum){
@@ -74,7 +78,7 @@
   /* ── 코드 생성 ── */
   function renderCode(){
     var where = SOPTS.map(function(s,i){ return (i===0?'  WHERE ':'    AND ')+s.field+' IN '+s.name; });
-    var lines = [ 'SELECT * FROM '+TBL+' INTO TABLE lt_book' ].concat(where);
+    var lines = [ 'SELECT * FROM '+TBL+' INTO TABLE '+ITAB ].concat(where);
     lines[lines.length-1]+='.';
     var KW=new Set(['SELECT','FROM','INTO','TABLE','WHERE','AND','IN']);
     var html = lines.map(function(ln){
@@ -92,7 +96,7 @@
       return '<tr class="'+(ok?'pass':'drop')+'">'+COLS.map(function(c){return '<td class="'+(c.num?'num':'')+'">'+r[c.key]+'</td>';}).join('')+'</tr>';
     }).join('')+'</tbody>';
     $('soGrid').innerHTML=thead+body;
-    $('soCnt').textContent = passed.length+' / '+DATA.length+' 행 통과 (lt_book = '+passed.length+'행)';
+    $('soCnt').textContent = passed.length+' / '+DATA.length+' 행 통과 ('+ITAB+' = '+passed.length+'행)';
     var sysEl=$('soSys');                                  // (옵션) 레슨 HTML이 #soSys를 두면 시스템 필드 표시
     if(sysEl){ var subrc = passed.length>0 ? 0 : 4;        // SELECT INTO TABLE: 1행↑ → 0, 0행 → 4
       sysEl.innerHTML='<code>sy-subrc</code> = <b>'+subrc+'</b> &nbsp;·&nbsp; <code>sy-dbcnt</code> = <b>'+passed.length+'</b>'; }

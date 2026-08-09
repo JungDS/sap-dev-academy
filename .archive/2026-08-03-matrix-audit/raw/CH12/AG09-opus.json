@@ -1,0 +1,79 @@
+{
+  "agent": "AG09",
+  "model": "opus",
+  "target": "CH12",
+  "persona_ack": "나는 ABAP 정적 검사기를 시늉하는 코드 전용 감사자 AG09다. 산문·표·콜아웃은 무시하고 ```abap 코드 블록만 줄 단위로 읽어, (1) 활성화 차단급 문법·시그니처 오류, (2) 커리큘럼 네이밍 규약(g/l 스코프 접두어·so_·pa_·ty_/ts_/tt_·it_), (3) classic 경계 규약(CH01～17 modern 문법 금지·CH01～18 New Open SQL 금지), (4) 주석·출력 문자열의 명백한 오류만 판정했다. 빈 줄·정렬 같은 스타일 선호는 결함으로 세지 않았고, 없는 결함을 만들지 않았다.",
+  "method": "Read 도구로 대상 8개 파일 전문을 읽고, ```abap 펜스 블록만 추출해 줄 단위로 정적 판정. 대상 코드 블록 = CH12-L02(1개)·CH12-L03(1개)·CH12-L06(1개)·CH12-L07(3개, 이 중 2개는 본문 전체 예제의 재인용 발췌). CH12-L01·L04·L05·_chapter.md에는 abap 코드 블록이 없음. 인용문(quote)은 PowerShell 한 줄 명령으로 각 파일 전문을 읽어 CRLF 정규화 후 String.Contains로 5건 모두 바이트 단위 일치를 확인(전부 True). ABAP 실행 환경·SE38·구문 검사기는 없으므로 컴파일 확신이 아닌 정적 판단이며, 웹 검색·외부 네트워크·타 감사자 산출물 열람은 하지 않음.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L07.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH12/CH12-L02.md",
+      "quote": "DATA ls_conc LIKE LINE OF so_conc.",
+      "category": "네이밍",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "전역(프로그램 최상위) 선언인데 로컬 스코프 접두어 `ls_`를 썼다. 규약대로면 `gs_conc`여야 한다.",
+      "evidence": "이 블록에는 FORM/ENDFORM·METHOD/ENDMETHOD가 전혀 없고, 같은 블록 안에서 `DATA` 아래에 `START-OF-SELECTION.`이 컬럼 1에 놓여 있다. 즉 이 `DATA`는 이벤트 블록 밖 프로그램 최상위 선언 = 전역 스코프다. 커리큘럼 규약은 접두어의 첫 글자를 챕터 번호가 아니라 스코프로 정한다(g=global·l=local, 로컬은 FORM/METHOD 안에서 선언한 것만). 따라서 CH12라도 최상위 선언은 `g` 계열이어야 하며, Range Table 한 행을 담는 work area이므로 구조체 접두어 `gs_`가 맞다. CH01～09에서 `gs_`를 배운 학습자에게 같은 전역 선언이 `ls_`로 보이면 g/l 구분 자체가 무너진다.",
+      "suggestion": "`DATA gs_conc LIKE LINE OF so_conc.` 로 바꾸고, 아래 표 설명행과 `LOOP AT so_conc INTO ls_conc.`·`WRITE: / ls_conc-sign, ls_conc-option, ls_conc-low, ls_conc-high.`의 변수명도 함께 `gs_conc`로 일괄 치환한다(본문 표의 `DATA ls_conc LIKE LINE OF so_conc.` 행 포함)."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH12/CH12-L03.md",
+      "quote": "DATA lt_book TYPE TABLE OF zbooking.",
+      "category": "네이밍",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "전역(프로그램 최상위) 선언인데 로컬 스코프 접두어 `lt_`를 썼다. 규약대로면 `gt_book`이어야 한다.",
+      "evidence": "블록 안에 FORM/METHOD가 없어 이 `DATA`는 프로그램 최상위 = 전역 선언이다. 규약상 로컬 접두어(`lv_`/`ls_`/`lt_`)는 FORM/METHOD 안에서 선언한 것에만 쓰고, 전역 선언은 `gv_`/`gs_`/`gt_`다. 내부 테이블이므로 `gt_book`이 맞다. 같은 오용이 L02·L06·L07에도 반복되어 챕터 전체가 일관되게 규약에서 벗어나 있다(seq 1·4·5 참조).",
+      "suggestion": "`DATA gt_book TYPE TABLE OF zbooking.` 로 바꾸고 같은 블록의 `INTO TABLE lt_book`도 `INTO TABLE gt_book`으로 맞춘다. CH12 네 개 코드 블록을 한 번에 정리하는 편이 낫다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH12/CH12-L03.md",
+      "quote": "SELECT * FROM zbooking INTO TABLE lt_book\n  WHERE concert_id IN so_conc\n    AND status     IN so_stat.",
+      "category": "미선언 변수",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "이 레슨의 메인 예제 블록이 `so_conc`·`so_stat`을 쓰지만 블록 안 어디에도 이들을 만드는 `SELECT-OPTIONS`(및 `TABLES zbooking`) 선언이 없어, 블록 단독으로는 활성화되지 않는다.",
+      "evidence": "L03 코드 블록의 선언은 `DATA lt_book TYPE TABLE OF zbooking.` 한 줄뿐이다. `so_conc`·`so_stat`은 앞 레슨(L02)에서 `SELECT-OPTIONS: so_conc FOR zbooking-concert_id, so_stat FOR zbooking-status.`로 만들어졌고 L03 산문이 그 맥락을 설명하지만, 코드 블록 자체에는 없다. 같은 챕터의 L06 블록은 `lr_stat`·`ls_stat`·`lt_book`을 모두 자기 블록에서 선언해 단독 실행이 가능하고, L07 블록도 `TABLES`+`SELECT-OPTIONS`부터 온전히 갖췄다 — L03만 자기완결성이 깨져 챕터 내 기준이 엇갈린다. 빌드가 ```abap 블록을 복사 버튼 달린 code-copy-block으로 바꾸므로, 학습자가 이 블록을 그대로 SE38에 붙여 넣으면 `so_conc` 미선언으로 구문 오류가 난다. 다만 교재의 연속 발췌 관행으로 볼 여지가 있어 confidence는 추정, severity는 낮음으로 둔다.",
+      "suggestion": "블록 맨 위에 앞 레슨에서 이미 배운 두 줄(`TABLES zbooking.` 과 `SELECT-OPTIONS: so_conc FOR zbooking-concert_id, so_stat FOR zbooking-status.`)을 되살려 자기완결형으로 만들거나, 그대로 두려면 블록 직전 산문에 '앞 레슨의 선언이 이어진다'는 한 줄을 명시한다."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH12/CH12-L06.md",
+      "quote": "DATA: lr_stat TYPE RANGE OF zbooking-status,\n      ls_stat LIKE LINE OF lr_stat,\n      lt_book TYPE TABLE OF zbooking.",
+      "category": "네이밍",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "세 변수 모두 전역(최상위) 선언인데 로컬 접두어 `lr_`/`ls_`/`lt_`를 썼다. 스코프 글자가 `g`여야 한다(`gr_stat`/`gs_stat`/`gt_book`).",
+      "evidence": "블록에 FORM/METHOD가 없어 이 `DATA:` 체인은 프로그램 최상위 = 전역 선언이다. 규약은 스코프로 접두어 첫 글자를 정한다(g=global·l=local, 로컬은 FORM/METHOD 안 선언 전용). 참고로 문법 자체는 정상이다 — 체인 안에서 `ls_stat LIKE LINE OF lr_stat`이 바로 앞 원소를 참조하는 것은 ABAP에서 허용되며, `TYPE RANGE OF <DDIC 필드>`도 유효하다. 지적 대상은 접두어의 스코프 글자뿐이다. 다만 Range Table 접두어 `r_`와 객체참조 `o_`는 규약이 명시하지 않은 관례라, 바꿀 부분은 `l→g` 한 글자다.",
+      "suggestion": "`DATA: gr_stat TYPE RANGE OF zbooking-status, gs_stat LIKE LINE OF gr_stat, gt_book TYPE TABLE OF zbooking.` 로 바꾸고, 이어지는 `CLEAR ls_stat.`·`ls_stat-sign/option/low`·`APPEND ls_stat TO lr_stat.`·`WHERE status IN lr_stat.`과 아래 줄별 의미 표, 그리고 embed 캡션 `(ls_stat → APPEND → lr_stat → SELECT)`까지 같은 이름으로 맞춘다."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH12/CH12-L07.md",
+      "quote": "DATA: lt_book TYPE TABLE OF zbooking,\n      lo_alv  TYPE REF TO cl_salv_table.",
+      "category": "네이밍",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "챕터 마무리 실습 프로그램의 전역 선언 두 개가 로컬 접두어 `lt_`/`lo_`를 쓴다. `gt_book`/`go_alv`가 맞다.",
+      "evidence": "같은 블록에서 이 `DATA:` 바로 아래 `START-OF-SELECTION.`이 컬럼 1에 있어, 두 선언이 이벤트 블록 밖 프로그램 최상위(전역)임이 코드로 확정된다. FORM/METHOD는 블록 전체에 없다. 규약상 전역은 `g` 계열이다. 실습 레슨은 학습자가 통째로 따라 치는 코드라 규약 이탈의 전파력이 가장 크다. 나머지 문법은 정적 판단상 문제없다 — `cl_salv_table=>factory( IMPORTING r_salv_table = ... CHANGING t_table = ... )`는 factory의 EXPORTING/CHANGING 파라미터를 호출부 관점에서 올바르게 받았고, `get_functions( )->set_all( abap_true )`·`CATCH cx_salv_msg`·`MESSAGE '…' TYPE 'I'.`도 유효하다.",
+      "suggestion": "`DATA: gt_book TYPE TABLE OF zbooking, go_alv TYPE REF TO cl_salv_table.` 로 바꾸고 이어지는 `INTO TABLE lt_book`·`t_table = lt_book`·`r_salv_table = lo_alv`·`lo_alv->get_functions( )->set_all( abap_true ).`·`lo_alv->display( ).`을 새 이름으로 일괄 치환한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH12의 abap 코드 블록은 L02·L03·L06·L07 네 레슨에 있고(L01·L04·L05·_chapter.md에는 코드 없음), 활성화를 막을 문법 오류는 정적 판단상 하나도 발견하지 못했다. 문장 마침표 누락 0, 존재하지 않는 구문·애드온 0, 시그니처 오류 0 — 특히 L07의 `cl_salv_table=>factory( IMPORTING r_salv_table = … CHANGING t_table = … )`는 EXPORTING/CHANGING을 호출부 관점에서 정확히 받았고, `get_functions( )->set_all( abap_true )`·`TRY … CATCH cx_salv_msg … ENDTRY`·`MESSAGE '…' TYPE 'I'.`도 유효하다. L06의 `TYPE RANGE OF zbooking-status`와 같은 `DATA:` 체인 안 `LIKE LINE OF lr_stat` 참조도 정상 문법이다. 경계 규약도 깨끗하다 — 인라인 `DATA()`·`VALUE`·`NEW`·`+=`·`|…|`이 한 곳도 없고, 모든 SELECT가 `@` 없는 classic 호스트 표기에 콤마 없는 필드 목록이라 CH01～17/CH01～18 금지선을 지켰다. 출력·메시지 문자열도 코드 흐름과 어긋나지 않는다(L02의 `WRITE`는 SIGN/OPTION/LOW/HIGH 네 컴포넌트를 실제 Range 행 구조 그대로 찍고, L07의 실패 메시지는 CATCH 대상과 일치). SELECT-OPTIONS 이름도 `so_conc`·`so_stat`으로 `so_`+5자·8자 이내 규약 안이다. 실제 결함은 사실상 한 종류의 반복이다 — 코드 블록 안에 FORM/METHOD가 전혀 없어 모든 선언이 프로그램 최상위(전역)인데 네 블록 모두 로컬 접두어 `l`을 썼다(`ls_conc`·`lt_book`·`lr_stat`/`ls_stat`/`lt_book`·`lt_book`/`lo_alv`). 규약은 접두어 첫 글자를 챕터가 아니라 스코프로 정하므로 전부 `g` 계열이어야 하고, CH01～09에서 `gv_`/`gs_`/`gt_`를 배운 학습자에게 g/l 구분이 무너져 보이는 게 실질 피해다. 여기에 L03 메인 예제가 `so_conc`·`so_stat`을 선언 없이 쓰는 자기완결성 문제(낮음·추정)가 더해진다 — 같은 챕터 L06·L07 블록은 자기완결형이라 기준이 엇갈린다. 모두 이름 치환과 두 줄 추가로 끝나는 기계적 수정이고 설명·구조·경계는 손댈 곳이 없어 '경미 수정'으로 판단한다."
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "agent": "AG06",
+  "model": "opus",
+  "target": "CH12",
+  "persona_ack": "20년차 SAP ABAP 아키텍트로서 CH12(SELECT-OPTIONS와 Range Table) 7개 레슨과 _chapter.md의 기술 사실·예시 적절성·위험한 생략·안티패턴만 감사했다. 읽기 전용으로 대상 파일만 열었고, 웹 검색 없이 내 지식으로 판단했으며 릴리스·설정에 따라 달라질 수 있는 항목은 confidence=추정으로 구분했다. 발견을 억지로 늘리지 않고 정확도를 우선했다.",
+  "method": "Read 도구로 대상 8개 파일 전문을 순서대로 통독(수정·생성 없음, 다른 감사자 산출물·과거 아카이브 미열람, 외부 네트워크 미사용). ABAP 문법·런타임 동작·selection table 평가 규칙 지식으로 코드 스니펫과 서술을 대조했고, 각 finding의 quote는 원문 한 줄을 그대로 복사해 앵커로 삼았다.",
+  "errors": [
+    "접근이 CH12 대상 파일로 제한돼 선행 챕터(CH08 Open SQL·CH11 SALV 등)에서 이미 교정했을 가능성이 있는 항목(예: SELECT * 사용 규율)은 교차 확인할 수 없었다. 해당 항목은 오탐 위험을 피해 발견에서 제외했다."
+  ],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L07.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L05.md",
+      "quote": "`CP`는 **Conforms to Pattern**(패턴에 부합)의 약자다.",
+      "category": "사실 오류(용어·약어 정의)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "CP의 약자 풀이가 틀렸다. ABAP 비교 연산자 CP의 표준 확장은 'Covers Pattern'이며, 'Conforms to Pattern'이라는 표기는 SAP 문서에 없다.",
+      "evidence": "ABAP 키워드 문서의 문자열 비교 연산자군은 CO(Contains Only)·CN(Contains Not only)·CA(Contains Any)·NA(contains Not Any)·CS(Contains String)·NS(contains No String)·CP(Covers Pattern)·NP(No Pattern)로 정의된다. selection table의 OPTION 값 설명에서는 'contains pattern' 표현이 쓰이기도 하나, 어느 쪽도 'Conforms to Pattern'은 아니다. 반면 같은 문단이 설명하는 동작 자체(부분 문자열 포함이 아니라 값 전체가 패턴에 부합해야 함)는 정확하다.",
+      "suggestion": "약자 풀이를 'Covers Pattern(패턴을 덮는다 = 값 전체가 패턴에 부합)'으로 고치고, '선택화면·선택옵션 설명에서는 Contains Pattern으로도 표기된다'를 부연으로 남긴다. glossary의 CP 항목 풀 스펠링도 함께 맞춘다. 동작 설명 문장은 그대로 두면 된다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L07.md",
+      "quote": "DATA: lt_book TYPE TABLE OF zbooking,",
+      "category": "안티패턴(스코프 접두어 오도)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "리포트 프로그램 최상위에 선언한 DATA는 이벤트 블록 위치와 무관하게 전부 전역인데, 예제들이 로컬 변수를 뜻하는 l 접두어(lt_/ls_/lo_/lr_)를 붙여 스코프를 반대로 가르친다.",
+      "evidence": "ABAP 리포트에서 DATA는 START-OF-SELECTION 뒤에 적어도 프로그램 전역 데이터가 되며, 로컬은 FORM/METHOD 안에서 선언한 것만이다. CH12의 코드는 모두 서브루틴·메서드 밖 최상위 선언인데도 L02 `DATA ls_conc LIKE LINE OF so_conc.`, L03·L07 `lt_book`, L07 `lo_alv`, L06 `lr_stat`/`ls_stat`/`lt_book`처럼 l 접두어를 쓴다. 같은 챕터 L02가 `so_` 접두어의 의미를 명시적으로 가르치는 만큼 접두어가 학습 신호로 쓰이는 문맥이라 혼선이 더 크고, 프로젝트 명명 규칙(전역 g·로컬 l)과도 어긋난다.",
+      "suggestion": "최상위 선언을 gt_book·gs_conc·go_alv·gr_stat·gs_stat로 바꾼다(모듈화 도입 뒤 FORM/METHOD 내부 예제에서만 l 접두어 사용). Range Table 전역 선언은 gr_ 또는 gt_ 중 하나로 챕터 안에서 통일한다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L02.md",
+      "quote": "| `TABLES zbooking.` | `zbooking-concert_id`처럼 Dictionary 필드를 **참조**할 수 있게 한다. |",
+      "category": "안티패턴(구식 선언을 단서 없이 표준으로 시연)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "TABLES를 SELECT-OPTIONS의 유일한 전제처럼 제시하면서, 이 선언이 구식이고 ABAP Objects(클래스·메서드) 안에서는 아예 쓸 수 없다는 단서가 없다. L07 실습 코드도 같은 형태를 굳힌다.",
+      "evidence": "TABLES는 전역 테이블 작업영역을 만드는 선언으로 ABAP Objects 문맥에서는 구문 오류가 되며, SELECT-OPTIONS ... FOR 의 참조 대상은 TABLES 작업영역이 아니어도 된다. `DATA gv_conc TYPE zbooking-concert_id.` 뒤에 `SELECT-OPTIONS so_conc FOR gv_conc.`로 동일하게 선택화면 필드를 만들 수 있다. 학습자가 TABLES를 '선택화면의 필수 짝'으로 외우면 이후 클래스 기반 코드로 넘어갈 때 그대로 막힌다.",
+      "suggestion": "[선행 사용] 콜아웃에 한 줄만 덧붙인다 — 'TABLES는 예전 리포트 방식이라 클래스·메서드 안에서는 쓸 수 없고, 같은 일을 DATA 참조 변수로도 할 수 있다(정식 비교는 CH15).' 코드 자체는 classic 흐름 유지를 위해 그대로 둬도 무방하다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L02.md",
+      "quote": "- **SELECT-OPTIONS를 단일 값으로 본다** → `so_conc-low` 첫 행만 보는 습관이 들면",
+      "category": "사실 오류(정밀도)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "`so_conc-low`는 '첫 행'이 아니라 selection table의 header line 접근이다. 둘을 같은 것으로 서술하면 '비었는지' 판정에서 잘못된 습관이 굳는다.",
+      "evidence": "SELECT-OPTIONS는 header line을 가진 internal table을 만들며, `so_conc`는 header line을, `so_conc[]`는 본문 테이블을 가리킨다. 그래서 classic 리포트의 정석 점검은 `IF so_conc[] IS INITIAL.`이고, header line만 보는 `IF so_conc IS INITIAL.`은 행이 있어도 참이 될 수 있다. 지적 자체의 취지(테이블 전체로 다뤄라)는 옳지만 근거 문장이 부정확하다. 참고로 본문 예제가 `LOOP AT so_conc INTO ls_conc`로 명시 work area를 쓰는 것은 좋은 습관이다.",
+      "suggestion": "'`so_conc-low` 한 칸만 보는 습관' 정도로 표현을 고치고, 흔한 실수 항목에 '비었는지 확인은 `so_conc[] IS INITIAL`로' 한 줄을 추가한다(header line 개념 자체는 이 레슨에서 풀지 않아도 된다)."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L06.md",
+      "quote": "조건이 화면에서 오지는 않는다. **배치 프로그램, 내부 호출, 기본 조건 보정, 권한에",
+      "category": "위험한 생략(권한 검사)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'권한에 따른 자동 제한'을 Range Table 직접 조작의 대표 용도로 들면서, range 필터는 조회 편의일 뿐 권한 통제 수단이 아니라는 단서가 없다.",
+      "evidence": "SAP에서 권한 통제의 정본은 AUTHORITY-CHECK(또는 CDS 권한 오브젝트)이며, WHERE ... IN 에 꽂는 range는 사용자가 선택화면·변형·백그라운드 잡 변수로 바꿀 수 있는 값이라 그 자체로는 아무것도 막지 못한다. 학습자가 '권한은 range로 좁히면 된다'는 모델을 먼저 세우면 이후 실무에서 권한 누락 리포트를 만들기 쉽다. L03도 '위험하다(성능·권한)'라고만 언급하고 근거를 남기지 않는다.",
+      "suggestion": "해당 문장 뒤에 한 줄 각주 — '권한에 따라 범위를 좁히는 건 조회 편의일 뿐이고, 실제 권한 확인은 AUTHORITY-CHECK로 따로 한다(정식 학습은 이후 챕터)' 정도로 L1 예고 수준만 남긴다. 예제 코드 변경은 필요 없다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "기술적 뼈대는 견고하다. Range Table 4컬럼(SIGN CHAR1·OPTION CHAR2·LOW·HIGH) 구조, '빈 range는 true → 전체 조회', 포함(I) OR 후보 확장 뒤 제외(E) 차감이라는 selection table 평가 순서, EQ/NE/BT/NB/GT/GE/LT/LE/CP/NP 표와 LOW·HIGH 사용 여부, CP 와일드카드 *·+ 와 SQL LIKE %·_ 의 구분, sy-subrc=4·sy-dbcnt=0 서술, TYPE RANGE OF 권장과 RANGES의 obsolete 판정, cl_salv_table=>factory( IMPORTING r_salv_table CHANGING t_table )와 cx_salv_msg 처리까지 모두 실제 동작과 일치했고, @ 없는 classic Open SQL 규율도 챕터 전체에서 흔들리지 않았다. 동작을 깨는 오류나 치명적 누락은 없었다. 수정이 필요한 것은 CP 약자 풀이가 'Covers Pattern'이 아닌 창작 표기라는 점(중간), 리포트 최상위 전역 선언에 로컬 접두어 l 을 붙여 스코프를 반대로 가르치는 점(중간), 그리고 TABLES의 구식·ABAP Objects 금지 단서, so_conc-low 를 '첫 행'이라 부른 부정확, 권한 자동 제한을 권한 통제처럼 읽히게 둔 각주 누락(각 낮음)이다. 모두 문장·접두어 수준의 국소 수정으로 해결되므로 재집필이나 대규모 보강은 불필요하다."
+  }
+}

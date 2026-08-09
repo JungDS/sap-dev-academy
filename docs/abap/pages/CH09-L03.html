@@ -40,9 +40,10 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>코드만으론 못 읽는다</h2>
-<p>마스터 테이블은 보통 <strong>코드</strong>(예: 공연번호 <code>C001</code>)만 키로 든다. 그런데 화면·목록엔
+<p>마스터 테이블은 보통 <strong>코드</strong>(예: 공연 ID <code>C001</code>)만 키로 사용한다. 그런데 화면·목록엔
 사람이 읽을 <strong>이름</strong>(공연명)이 필요하다. 게다가 이름은 <strong>언어마다</strong> 다르다(한국어
-&quot;콘서트&quot;, 영어 &quot;Concert&quot;). 이 이름을 <strong>별도 테이블</strong>에 두는 게 <button class="term" type="button" data-term="Text Table">Text Table</button>(텍스트 테이블)다.</p>
+&quot;콘서트&quot;, 영어 &quot;Concert&quot;). 이 이름을 <strong>별도 테이블</strong>에 두는 것이
+<button class="term" type="button" data-term="Text Table">Text Table</button>(텍스트 테이블)이다.</p>
 </section><section class="lblock"><h2>Text Table의 모양</h2>
 <p>핵심은 키 구성이다 — <strong>마스터 키 + 언어(<code>SPRAS</code>)</strong>.</p>
 <table>
@@ -61,28 +62,45 @@
 <tr>
 <td><code>ZCONCERT_T</code>(Text)</td>
 <td><code>CONCERT_ID</code> + <code>SPRAS</code></td>
-<td>공연명(언어별)</td>
+<td><code>NAME</code>(공연명, 언어별)</td>
 </tr>
 </tbody></table>
 <ul>
 <li>같은 <code>C001</code>이라도 언어(<code>SPRAS</code>)가 다르면 <strong>다른 줄</strong> → 언어별 이름을 따로 보관.</li>
-<li>마스터와는 <button class="term" type="button" data-term="Foreign Key">Foreign Key</button>(<a href="CH09-L01.html">Foreign Key와 Check Table</a>)로 잇고, SE11에서 그 관계를 <strong><button class="term" type="button" data-term="Text Table">Text Table</button>로 지정</strong>한다.</li>
 </ul>
+</section><section class="lblock"><h2>SE11에서 Text Table로 인정받으려면</h2>
+<p>&quot;이름 담은 테이블을 하나 더 만들었다&quot;고 저절로 <button class="term" type="button" data-term="Text Table">Text Table</button>이 되지는 않는다. 시스템이
+그렇게 <strong>인정해 주는 조건</strong>이 정해져 있다. 헷갈리기 쉬운 건 <strong>방향</strong>이다.</p>
+<ol>
+<li><strong>키를 이렇게 짠다</strong> — Text Table의 기본키 = <strong>마스터의 기본키 그대로 + 언어 필드
+하나</strong>. 언어 필드는 타입이 <code>LANG</code>이어야 한다(우리의 <code>SPRAS</code>).</li>
+<li><strong><button class="term" type="button" data-term="Foreign Key">Foreign Key</button>는 Text Table 쪽에서 건다</strong> — <code>ZCONCERT</code>가 아니라 <strong><code>ZCONCERT_T</code>의
+<code>CONCERT_ID</code></strong> 에 Foreign Key(<a href="CH09-L01.html">Foreign Key와 Check Table</a>)를 걸고,
+<button class="term" type="button" data-term="Check Table">Check Table</button>로 마스터 <code>ZCONCERT</code>를 지정한다. 이름표가 마스터를 가리키는 것이지
+그 반대가 아니다.</li>
+<li><strong>그 Foreign Key의 &quot;필드 유형&quot;을 바꾼다</strong> — 유형 목록에서
+<strong>&quot;텍스트 테이블의 키 필드&quot;</strong>(Key fields of a text table)를 고른다. <strong>이 선택이
+결정적이다.</strong> 이걸 골라야 시스템이 &quot;이 테이블은 저 마스터의 Text Table이구나&quot;라고
+알아본다. <button class="term" type="button" data-term="Cardinality">Cardinality</button>는 짝이 맞게 <code>1:CN</code>으로 둔다(공연 하나에 언어별 이름 여러 줄).</li>
+<li><strong>마스터 하나에 Text Table은 하나뿐</strong> — 둘 이상 지정하면 활성화할 때 경고가 뜬다.</li>
+</ol>
 </section><section class="lblock"><h2>무엇이 좋아지나</h2>
 <ul>
 <li>화면·<button class="term" type="button" data-term="F4">F4</button>·<button class="term" type="button" data-term="Search Help">Search Help</button>가 코드 옆에 <strong>이름을 자동으로</strong> 보여 준다(코드만 보면 무슨 공연인지 모르니까).</li>
 <li>사용자의 <strong>로그인 언어</strong>에 맞는 이름이 자동으로 뜬다.</li>
 </ul>
 <blockquote>
-<p>💡 표준 예: 많은 마스터가 코드(마스터 테이블)와 <strong>언어별 텍스트</strong>(텍스트 테이블)를 나눠 둔다. &quot;코드는 마스터, 이름은 <button class="term" type="button" data-term="Text Table">Text Table</button>&quot;로 기억하자.</p>
+<p>💡 표준 예: 많은 마스터가 코드(마스터 테이블)와 <strong>언어별 텍스트</strong>(<button class="term" type="button" data-term="Text Table">Text Table</button>)를 나눠 둔다. &quot;코드는 마스터, 이름은 Text Table&quot;로 기억하자.</p>
 </blockquote>
 </section><section class="lblock"><h2>직접 해 보기</h2>
 <p>로그인 언어를 KO/EN으로 바꿔 F4 목록의 이름이 어떻게 달라지는지, SPRAS를 빼면 왜 다국어가 깨지는지 확인해 보자.</p>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">언어별 이름표 뷰어 — 로그인 언어 전환·SPRAS 누락</span><a class="embed__open" href="../../../embeds/abap/CH09-L03-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH09-L03-S01.html" loading="lazy" title="언어별 이름표 뷰어 — 로그인 언어 전환·SPRAS 누락"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>언어 키(SPRAS) 누락</strong> → 텍스트 테이블의 키엔 반드시 언어가 들어간다. 빠지면 다국어가 안 된다.</li>
-<li><strong>마스터에 이름 직접</strong> → 다국어가 필요하면 텍스트는 <button class="term" type="button" data-term="Text Table">Text Table</button>로 분리한다.</li>
+<li><strong>언어 키(SPRAS) 누락</strong> → <button class="term" type="button" data-term="Text Table">Text Table</button>의 키엔 반드시 언어가 들어간다. 빠지면 다국어가 안 된다.</li>
+<li><strong><button class="term" type="button" data-term="Foreign Key">Foreign Key</button> 방향 반대</strong> → 마스터에서 Text Table로 걸면 인정되지 않는다. <strong>Text Table 쪽에서</strong> 마스터를 향해 건다.</li>
+<li><strong>필드 유형 방치</strong> → 관계만 걸고 유형을 &quot;텍스트 테이블의 키 필드&quot;로 바꾸지 않으면 그냥 평범한 Foreign Key로 남아 이름이 자동으로 따라오지 않는다.</li>
+<li><strong>마스터에 이름 직접</strong> → 다국어가 필요하면 텍스트는 Text Table로 분리한다.</li>
 </ul>
 <hr>
 <p>코드 옆 이름표까지 붙였다. 이제 사용자가 <strong>목록에서 골라</strong> 입력하게 하는 <button class="term" type="button" data-term="Search Help">Search Help</button>로 →

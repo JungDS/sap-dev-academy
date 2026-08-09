@@ -72,39 +72,39 @@
 | CH08-L05-S01 | CH08-L05 | where-filter-lab | WHERE 칩 조합(비교 6종 `= <> < > <= >=`·BETWEEN·LIKE·IN·IS NULL)·AND/OR·**NOT( ) 뒤집기**·행별 통과/제외 사유 | ✅ |
 | CH08-L06-S01 | CH08-L06 | key-condition-lens | 키 조건 좁히기 vs 일반필드 훑기 vs 보조인덱스 개념(속도 ms 단정 안 함) · **선두 접두 규칙 판정**(선두 키 없으면 전체 훑기) | ✅ |
 | CH08-L07-S01 | CH08-L07 | empty-result-message | sy-subrc 분기(dan 2·3 있음/5 없음)·WRITE vs MESSAGE S(상태바)·I(팝업) | ✅ |
-| CH09-L01-S01 | CH09-L01 | relation-gate | Foreign Key/Check Table 통과·거부(C001/C999/F4)·연결선 끊김 | ✅ |
-| CH09-L02-S01 | CH09-L02 | value-vs-fk | Value Table(제안) vs Foreign Key(검증) 토글 4-state + ALPHA 변환 | ✅ |
-| CH09-L03-S01 | CH09-L03 | text-table-viewer | Text Table 언어(KO/EN) 전환→F4 이름 변경·SPRAS 누락 경고 | ✅ |
-| CH09-L04-S01 | CH09-L04 | search-help-builder | Elementary Search Help 역할 조립(검색/목록/EXP)·F4 미리보기·EXP 누락 | ✅ |
-| CH09-L05-S01 | CH09-L05 | collective-search-help | 3탭(ID/아티스트/장소)→같은 CONCERT_ID 반환·매핑 끊기 | ✅ |
+| CH09-L01-S01 | CH09-L01 | relation-gate | Foreign Key/Check Table 통과·거부(C001/C999/F4)·연결선 끊김 (시드 정본 3행 = L09 ① 표) | ✅ |
+| CH09-L02-S01 | CH09-L02 | value-vs-fk | Value Table(제안) vs Foreign Key(검증) 토글 4-state + **ALPHA 정직화**(순수 숫자만 0 채움 · `C001`처럼 글자 섞이면 미적용·예시 칩) | ✅ |
+| CH09-L03-S01 | CH09-L03 | text-table-viewer | Text Table 언어(KO/EN) 전환→F4 이름 변경·SPRAS 누락 경고 (시드 정본 3공연) | ✅ |
+| CH09-L04-S01 | CH09-L04 | search-help-builder | Elementary Search Help 역할 조립·F4 미리보기 — **세 역할 모두 실동작**(검색조건=실제 필터+건수 · 목록표시 전부 끄면 폴백 없이 빈 목록 · EXP 누락) | ✅ |
+| CH09-L05-S01 | CH09-L05 | collective-search-help | `ZSH_CONCERT_COLL` 3탭(ID/아티스트/장소)→같은 CONCERT_ID 반환 · **탭별 검색 실동작**(입력값 탭마다 보존) · 매핑 끊기 | ✅ |
 | CH09-L05-S02 | CH09-L05 | hierarchy-tree | (구성 §2 text→위젯) Collective→Elementary 트리·노드 클릭=F4 탭 역할 | ✅ |
-| CH09-L06-S01 | CH09-L06 | f4-attach-scope | Search Help 부착 범위(Data Element 넓게↔MATCHCODE 좁게) 색 비교 | ✅ |
-| CH09-L07-S01 | CH09-L07 | input-help-priority | F4 입력도움 우선순위 4단계 사다리(코드F4→Search Help→Check/고정값→타입기본) | ✅ |
-| CH09-L07-S03 | CH09-L07 | (static-svg) | (구성 §2 text→다이어그램) F4 우선순위 사다리 SVG — F4 누름→①~④ 검사·있으면 채택/없으면 ▼ | ✅ |
-| CH09-L07-S02 | CH09-L07 | f4-priority-lab | (S01 병행 추가) 후보 토글+F4→최상위 하나만 표시·억제 사유 | ✅ |
-| CH09-L08-S01 | CH09-L08 | validation-router | 검증 책임 분류 퀴즈(존재·형식=DDIC / 잔여석·권한·종료=프로그램) | ✅ |
-| CH09-L09-S01 | CH09-L09 | concert-model-checklist | DDIC 모델 제작 단계판+관계 미리보기+테스트(FK 활성화→C999 거부) | ✅ |
-| CH10-L01-S01 | CH10-L01 | perform-call-map | PERFORM→FORM 점프·복귀·전역 누적 vs 지역, 정의 누락 오류 | ✅ |
-| CH10-L02-S01 | CH10-L02 | param-passing-board | USING/CHANGING·VALUE 원본 보호/변경 + RETURN·STATICS 데모 | ✅ |
-| CH10-L03-S01 | CH10-L03 | call-function-box | CALL FUNCTION 호출자 기준 방향·정상/음수 sy-subrc·EXCEPTIONS 제거 | ✅ |
-| CH10-L04-S01 | CH10-L04 | local-class-stepper | Local Class DEFINITION/IMPLEMENTATION/=> 호출·PUBLIC/RETURNING 제거 | ✅ |
-| CH10-L05-S01 | CH10-L05 | global-class-blackbox | 전역 클래스 정적 메서드 블랙박스 호출(계약만)·필수 param 누락 | ✅ |
-| CH10-L06-S01 | CH10-L06 | module-choice-cards | 모듈화 도구 선택 퀴즈(Subroutine/FM/Class/옛코드) | ✅ |
-| CH10-L07-S01 | CH10-L07 | step-debugger | 잔여석 모듈화 FORM(lv_sum 누적·정원−합계=cv_left) | ✅ |
-| CH10-L07-S02 | CH10-L07 | can-book-toggle | (S01 병행 추가) can_book 판정(요청 3/5)·취소 포함 실수 재현 | ✅ |
-| CH11-L01-S01 | CH11-L01 | write-vs-salv | WRITE 텍스트 vs SALV 표 — 정렬·합계 가능 여부 비교(예매 6행) | ✅ |
-| CH11-L02-S01 | CH11-L02 | salv-grid-simulator | SALV factory→display 2단계(person·정렬·Σ급여·sy-tabix) | ✅ |
-| CH11-L03-S01 | CH11-L03 | salv-function-switch | set_all(기능) ≠ display(표시) 시나리오·합계·function≠FM | ✅ |
-| CH11-L04-S01 | CH11-L04 | salv-pipeline-stepper | SELECT→DESCRIBE→factory→set_all→display 3칸 파이프라인·건너뛰기 피드백 | ✅ |
-| CH11-L05-S01 | CH11-L05 | module-choice-cards | (재사용) SALV 1차 범위 분류(지금 CH11 / CH17·21·27·28) | ✅ |
-| CH11-L06-S01 | CH11-L06 | salv-grid-simulator | 예매목록 SALV(lt_book·set_all·Σ좌석수=17·STATUS N/C) | ✅ |
-| CH12-L01-S01 | CH12-L01 | range-row-builder | 조건 카드(사람 말)→Range Table 4칸 행(SIGN/OPTION/LOW/HIGH)·I/E·EQ/BT/CP·행별 사람말 해석·OR/제외 규칙 | ✅ |
-| CH12-L02-S01 | CH12-L02 | selopt-screen-mapper | 선택화면 From/To+다중선택→so_conc Range Table→LOOP AT 출력(From=EQ·From~To=BT·제외 E·8자) | ✅ |
-| CH12-L03-S01 | CH12-L03 | select-options-filter-sim | (재사용) classic WHERE..IN 평가 + #soSys(sy-subrc/sy-dbcnt)·시나리오(전체=6·C999=0건subrc4·AND) | ✅ |
-| CH12-L04-S01 | CH12-L04 | include-exclude-judge | 포함(I)/제외(E) 조건 쌓기→공연별 통과/탈락 판정·이유(포함 OR·제외 빼기·녹색/빨강=SIGN) | ✅ |
-| CH12-L05-S01 | CH12-L05 | option-compare-lab | 단일 조건 SIGN·OPTION(EQ/BT/CP)·LOW/HIGH 토글→후보 통과 비교·CP wildcard(*,+)·E 반전 | ✅ |
-| CH12-L06-S01 | CH12-L06 | range-append-stepper | 코드 한 줄씩(CLEAR→sign→option→low→APPEND→SELECT)·ls_stat↔lr_stat·APPEND 전 빈 table·결과 5행 | ✅ |
-| CH12-L07-S01 | CH12-L07 | select-options-filter-sim | SELECT-OPTIONS Range Table(so_conc·so_stat·I/E·EQ/BT/CP→zbooking 필터) | ✅ |
+| CH09-L06-S01 | CH09-L06 | f4-attach-scope | Search Help 부착 범위 **3지점**(Data Element 넓게 / 테이블·Structure 필드 하나 / MATCHCODE 좁게) 색 비교 — 식별자 = 본문 `pa_conc`·`zde_concert_id`·`zsh_concert_coll` | ✅ |
+| CH09-L07-S01 | CH09-L07 | input-help-priority | F4 입력도움 우선순위 **6단** 사다리(코드F4→화면칸 SH→**필드 부착 SH**→Check/Text→고정값→타입기본) | ✅ |
+| CH09-L07-S03 | CH09-L07 | (static-svg) | F4 우선순위 사다리 SVG — F4 누름→①~⑥ 검사·있으면 채택/없으면 ▼. **본문 ::embed 미연결**(시각물 중복 축소로 L07에서 라인 제거 · S01이 같은 사다리 담당). 되살릴 때 대비해 6단 정합만 유지 | 🔁 |
+| CH09-L07-S02 | CH09-L07 | f4-priority-lab | (S01 병행) 후보 **6단** 토글+F4→최상위 하나만 표시·억제 사유 (고정값 팝업 = 예매 상태 정본 `N`/`C`) | ✅ |
+| CH09-L08-S01 | CH09-L08 | validation-router | 검증 책임 분류 퀴즈(존재·형식=DDIC / 잔여석·권한·종료=프로그램) + **sy-subrc 미니 체험**(본문 SELECT SINGLE 코드 실행 → 0/4 분기 · 결과 없으면 `gv_dummy` 잔존) | ✅ |
+| CH09-L09-S01 | CH09-L09 | concert-model-checklist | DDIC 모델 제작 **11단계**판(+ZCONCERT_T·FK 3개 분리)+관계 미리보기 **화살표 3**+테스트 6 — **선행 단계 실제 의존**(빠진 단계 이름 표시·부분 성공 △). 시드 공연3·회차3·예매6 | ✅ |
+| CH10-L01-S01 | CH10-L01 | perform-call-map | PERFORM→FORM 점프·복귀·전역 누적 vs 로컬, 정의 누락 오류 (본문 z_form_scope 문장 일치·START-OF-SELECTION 포함·FORM 실행줄 전수 스텝) | ✅ |
+| CH10-L02-S01 | CH10-L02 | param-passing-board | USING/CHANGING·VALUE 원본 보호/변경 + RETURN·STATICS 데모 (PERFORM 문법 호출·본문 divide_safe/count_visit 이름 일치) | ✅ |
+| CH10-L03-S01 | CH10-L03 | call-function-box | CALL FUNCTION 'Z_ADD_TAX' 호출자 기준 방향·정상/음수 sy-subrc·EXCEPTIONS 안 적기=런타임 오류(덤프) | ✅ |
+| CH10-L04-S01 | CH10-L04 | local-class-stepper | Local Class DEFINITION/IMPLEMENTATION/=> 호출·PUBLIC/RETURNING 제거 실험이 코드·계약·호출형식을 실제 재렌더 | ✅ |
+| CH10-L05-S01 | CH10-L05 | global-class-blackbox | 전역 클래스 정적 메서드 블랙박스 호출(계약만)·필수 param 누락 + 호출문 ABAP 코드 라이브 렌더(#callCode) | ✅ |
+| CH10-L06-S01 | CH10-L06 | module-choice-cards | 모듈화 도구 선택 퀴즈 6문항(Subroutine/Function Module/Class — 카드·선택지 전부 본문 근거) | ✅ |
+| CH10-L07-S01 | CH10-L07 | step-debugger | 잔여석 모듈화 FORM(lv_sum 누적·정원−합계=cv_left) + IF sy-subrc<>0 → cv_left=-1·RETURN 안전장치 스텝(7스텝·sy-subrc 워치) | ✅ |
+| CH10-L07-S02 | CH10-L07 | can-book-toggle | (S01 병행 추가) can_book 판정 IF/ELSE 3항→abap_true/false(요청 0/3/5)·취소 포함 실수 재현 | ✅ |
+| CH11-L01-S01 | CH11-L01 | write-vs-salv | WRITE 텍스트 vs SALV 표 — 정렬·합계 가능 여부 비교(예매 6행)·경계 안내는 L05 한 곳을 가리킴 | ✅ |
+| CH11-L02-S01 | CH11-L02 | salv-grid-simulator | SALV factory→display 2단계(gt_flight/SFLIGHT·go_alv·Σ예약좌석=1233·sy-tabix) + 툴바=set_all 뒤 모습 프리뷰 캡션 | ✅ |
+| CH11-L03-S01 | CH11-L03 | salv-function-switch | set_all(기능) ≠ display(표시) 시나리오 4종(끄고표시·set_all·display빼기·**display 뒤 set_all**)·gt_flight·function≠FM | ✅ |
+| CH11-L04-S01 | CH11-L04 | salv-pipeline-stepper | SELECT→DESCRIBE→factory→set_all→display 3칸 파이프라인(SFLIGHT/gt_flight/go_alv/gv_count)·SELECT 건너뛰면 빈 표 | ✅ |
+| CH11-L05-S01 | CH11-L05 | module-choice-cards | (재사용) SALV 1차 범위 분류 6문항 — 본문 심화표를 베끼지 않는 상황 카드(정답 now 2장) | ✅ |
+| CH11-L06-S01 | CH11-L06 | salv-grid-simulator | 예매목록 SALV(gt_book·WHERE C001·set_all·Σ좌석수=17) + 0행이면 표 대신 안내(본문 IF gv_count = 0 가드) | ✅ |
+| CH12-L01-S01 | CH12-L01 | range-row-builder | 조건 카드(사람 말)→Range Table 4칸 행(SIGN/OPTION/LOW/HIGH)·I/E·EQ/BT/CP·행별 사람말 해석·OR/제외 규칙 · **대상 열(공연ID/상태/고객명)+필드별 해석 분리**(필드 섞인 OR 오개념 방지 · R15상 so_ 식별자는 미노출 — L02 도입) | ✅ |
+| CH12-L02-S01 | CH12-L02 | selopt-screen-mapper | 선택화면 From/To+다중선택→so_conc Range Table→LOOP AT 출력(From=EQ·From~To=BT·제외 E·8자) · 코드 헤더=본문 정합(`gs_conc`·한정 컴포넌트) | ✅ |
+| CH12-L03-S01 | CH12-L03 | select-options-filter-sim | (재사용) classic WHERE..IN 평가 + #soSys(sy-subrc/sy-dbcnt)·시나리오(전체=6·C999=0건subrc4·AND) · **데이터=CH09-L09 시드 정본 6행** | ✅ |
+| CH12-L04-S01 | CH12-L04 | include-exclude-judge | 포함(I)/제외(E) 조건 쌓기→공연별 통과/탈락 판정·이유(포함 OR·제외 빼기·녹색/빨강=SIGN) · 이유 문구는 L04 평가 규칙 3항(I 0개=전체 후보) 반영 | ✅ |
+| CH12-L05-S01 | CH12-L05 | option-compare-lab | 단일 조건 SIGN·OPTION(EQ/BT/CP)·LOW/HIGH 토글→후보 통과 비교·CP wildcard(*,+)·E 반전 · 후보에 `CA01`(+에 문자)·`C0010`(길이 초과) 포함·판정 열 제목 OPTION 연동 | ✅ |
+| CH12-L06-S01 | CH12-L06 | range-append-stepper | 코드 한 줄씩(CLEAR→sign→option→low→APPEND→SELECT)·gs_stat↔gr_stat·APPEND 전 빈 table·결과 5행 · **`CLEAR 생략` 토글**(잔재 HIGH가 행에 실리는 흐름) | ✅ |
+| CH12-L07-S01 | CH12-L07 | select-options-filter-sim | SELECT-OPTIONS Range Table(so_conc·so_stat·I/E·EQ/BT/CP→zbooking 필터) · **데이터=CH09-L09 시드 정본**·BT 프리셋 `C002~C003`(2건) | ✅ |
 | CH13-L01-S01 | CH13-L01 | join-match-board | INNER JOIN 짝 맞추기(운항편3·항공사2·ON carrid·항공사 숨김 실험→짝 없는 행 제외·sy-subrc/dbcnt) | ✅ |
 | CH13-L02-S01 | CH13-L02 | outer-join-switch | INNER↔LEFT OUTER 토글(공연3·예매·C003 보존/제외)+WHERE 오른쪽필터 함정(LEFT라도 빠짐) | ✅ |
 | CH13-L03-S01 | CH13-L03 | group-by-lab | 그룹 키(concert/status/복합)·모드(GROUP BY/DISTINCT) 토글→원본 색묶음→COUNT/SUM/MAX 접기 | ✅ |
@@ -446,12 +446,12 @@
 | projection-contract-checker (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH24-L03-S01 | 데이터 내장(FIELDS·created_by 감사) · 토글3(contract/projRoot/allowExt)+필드 칩(shown/hidden·key 잠금)→ZI 카드+ZC DDL(provider contract·define root view)+payload chips·verdict !projRoot=bad/!contract=warn/ok(숨김 필드 안내)·교훈3 base 중립rgba·tog base=var(--surface) · 다크 |
 | cds-builder-stepper (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH23-L07-S01 | (capstone) CBS_CFG(concerts) 주도 · 6 step 버튼(ziPerf/ziConcert/zcConcert/mdext/preview/consume)→st 의존 검사(ziConcert needs ziPerf·zcConcert needs ziConcert·mdext needs zcConcert·preview needs zi&zc·consume needs zc)→어기면 msg bad/ok·산출물 4 art(ZI_Perf/ZI_Concert/ZC_Concert/DDLX) active opacity·preview ZI/ZC 표 행수 eq 배지·consume SELECT FROM ZC·리셋·도전과제 ul·msg base 중립rgba ok/bad(교훈3)·step done=#eafaf3 · 다크 |
 | select-query-simulator | 1 | 공통(_engine)·자체 postHeight ✅ | CH08-L02-S01 | config 주입(SQL_CFG) · #N1 주석 CH19 정정 · **R6: 상태줄 lines( ) 제거(sy-subrc·sy-dbcnt만)** · **`datasets[]` 다중 테이블 전환**(단일 config도 그대로 동작) · **INTO 짝은 필드 목록을 따름**(`*`→INTO TABLE) · **자격 미달 조건(빈 값·숫자컬럼 비숫자)은 문장·판정 양쪽에서 제외** · **LIKE는 문자 컬럼 전용** · (CH12-L07은 SELECT-OPTIONS 전용 신규엔진로 분리) |
-| select-options-filter-sim | 2 | 공통(_engine)·자체 postHeight ✅ | CH12-L03-S01·CH12-L07-S01 | SO_CFG 주도 · Range Table(SIGN I/E·OPTION EQ/NE/GT/LT/GE/LE/BT/CP) 평가 · **opt-in `#soSys`**(있으면 sy-subrc/sy-dbcnt 표시, L03만) |
-| range-row-builder (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH12-L01-S01 | RRB_CFG.cards 주도 · 조건 카드→SIGN/OPTION/LOW/HIGH 행 빌더·행/종합 사람말 해석 · 다크 자동(토큰+gen-embed-dark) |
+| select-options-filter-sim | 2 | 공통(_engine)·자체 postHeight ✅ | CH12-L03-S01·CH12-L07-S01 | SO_CFG 주도 · Range Table(SIGN I/E·OPTION EQ/NE/GT/LT/GE/LE/BT/CP) 평가 · **opt-in `#soSys`**(있으면 sy-subrc/sy-dbcnt 표시, L03만) · **`itab` 키**(결과 Internal Table 이름, 기본 `gt_book`) · **cpMatch `+` 이스케이프 금지**(`+`=아무 글자 하나 — 이스케이프하면 리터럴 마침표化) |
+| range-row-builder (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH12-L01-S01 | RRB_CFG.cards 주도 · 조건 카드→SIGN/OPTION/LOW/HIGH 행 빌더·행/종합 사람말 해석 · **카드 `so`/`fld` 주면 대상 열 + 필드별 해석 그룹 + 다중필드 AND 경고**(미지정이면 기존 동작) · 다크 자동(토큰+gen-embed-dark) |
 | selopt-screen-mapper (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH12-L02-S01 | SSM_CFG 주도 · 선택화면 From/To+다중선택→Range Table→LOOP 출력 · 다크 자동(토큰+gen-embed-dark) |
-| include-exclude-judge (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH12-L04-S01 | IEJ_CFG 주도 · 포함/제외 조건→후보별 통과/탈락 판정+이유(matchOpt EQ/BT/CP…) · 다크 자동 |
-| option-compare-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH12-L05-S01 | OCL_CFG 주도 · 단일 조건 SIGN/OPTION/LOW/HIGH 편집→후보 매칭·CP wildcard·HIGH BT시만 표시 · 다크 자동 |
-| range-append-stepper (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH12-L06-S01 | RAS_CFG 주도 · 코드 한 줄씩 실행→ls_stat/lr_stat/SELECT 결과·ABAP 하이라이트·result는 lr로 data 필터 · 다크 자동 |
+| include-exclude-judge (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH12-L04-S01 | IEJ_CFG 주도 · 포함/제외 조건→후보별 통과/탈락 판정+이유(matchOpt EQ/BT/CP…) · **이유 분기는 `inc.length===0`을 `excHit`보다 먼저**(없는 포함 조건을 근거로 말하지 않게) · **cpMatch `+` 이스케이프 금지** · 다크 자동 |
+| option-compare-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH12-L05-S01 | OCL_CFG 주도 · 단일 조건 SIGN/OPTION/LOW/HIGH 편집→후보 매칭·CP wildcard·HIGH BT시만 표시 · **opt-in `#oclMatchTh`**(있으면 판정 열 제목을 현재 OPTION으로 갱신) · cpMatch 정답 구현(4엔진 정합 기준) · 다크 자동 |
+| range-append-stepper (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH12-L06-S01 | RAS_CFG 주도 · 코드 한 줄씩 실행→gs_stat/gr_stat/SELECT 결과·ABAP 하이라이트·result는 lr로 data 필터 · **opt-in `[data-skipclear]`**(step의 `ls2`/`lr2`/`fb2` 대체 흐름 + `skipLine` 취소선) · `itab`/`range` 캡션 이름 · 다크 자동 |
 | join-match-board (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH13-L01-S01 | JMB_CFG 주도 · 운항편·항공사 카드 ON 매칭→INNER 결과·마스터 숨김 실험·sy-subrc/dbcnt · 다크 자동 |
 | outer-join-switch (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH13-L02-S01 | OJS_CFG 주도 · INNER↔LEFT 토글+WHERE 오른쪽필터 함정·SQL 미리보기·보존 점검 · 다크 자동 |
 | group-by-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH13-L03-S01 | GBL_CFG 주도 · 그룹키/모드 토글→원본 색묶음·COUNT/SUM/MAX·DISTINCT 비교 · 다크 자동(seg base=surface) |
@@ -478,7 +478,7 @@
 | option-switchboard (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH15-L10-S01 | OSB_CFG 주도 · SELECT-OPTIONS 옵션 4종 토글→화면 미리보기·내부 selection table 첫 행(disp 대소문자)·복수선택 표시·NO INTERVALS&!NO-EXTENSION caveat · 다크 |
 | selscreen-call-variant (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH15-L11-S01 | SCV_CFG 주도 · 표준화면(1000)→고급조건→보조화면(1100) modal CALL·Execute/Cancel→sy-subrc 0/4·Variant 칩 불러오기(유효/무효) · 다크 |
 | report-run-simulator (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH15-L12-S01 | RRS_CFG 주도 · CH15 캡스톤·시나리오 칩+so_stat 세그→▶실행→4 event 타임라인(pass/fail/lock)·검증 막힘 메시지·결과 ALV테이블/0건 S메시지 · 다크 |
-| salv-grid-simulator | 2 | 공통(_engine)·자체 postHeight ✅ | CH11-L02-S01·CH11-L06-S01 (완료) | config 주입(SALV_CFG: itab·cols·data·sumKey·code) · ALV제목/토글 엔진설정 |
+| salv-grid-simulator | 2 | 공통(_engine)·자체 postHeight ✅ | CH11-L02-S01·CH11-L06-S01 (완료) | config 주입(SALV_CFG: itab·**alvVar**·cols·data·sumKey·code·**emptyGuard**) · ALV제목/토글 엔진설정 · 리셋=행순서·합계·readout까지 완전 복원 |
 | relationship-map | 1 | 공통 | _(미작성)_ | CSS-only |
 | state-change-grid | 1 | 공통(CSS-only)+_autoheight ✅ | CH06-L04-S03 | 스냅샷=마크업(DELETE ADJACENT DUPLICATES 함정) · cell-new/cell-del 강조 · .note 추가(다크 자동). *CH06-L06-S01은 감사 C042(헛체험)로 step-debugger 전환 — 이 엔진 소비 2→1* |
 | mermaid | 15 | 공통(+_vendor)+_autoheight ✅ | CH04-L04-S02/S03·L05-S02/S03/S04 · CH26-L05 · CH31-L06-S02 · CH33-L05-S01 · CH34-L02-S01 · CH36-L03 · CH37-L03 · CH38-L04-S01 · CH39-L01-S01 · CH39-L07-S01 | 그래프=위젯 `.mermaid` 주입·CDN+로컬fallback·이벤트본 은퇴 |
@@ -488,7 +488,7 @@
 | compare-matrix | 4 | 공통(_engine)·자체 postHeight ✅ | CH07-L03-S02 · CH20-L01-S01 · CH36-L04-S01 · CH37-L02-S01 | cm-cfg JSON(cols/rows/detail) 행 클릭 상세 + (확장) cfg.cases 상황 버튼→추천 행 강조 |
 | pushdown-flow | 1 | 공통(_engine)·자체 postHeight ✅ | CH36-L01-S01 | 끌어오기/내려보내기 전송량 파이프 + (확장) #pf-cfg 상황 카드→수단 추천 |
 | domain-builder | 1 | 공통(_engine) ✅ | CH03-L01-S01 | SE11 폼(단일사용·데이터 inline) · 예제별 target 강제(검사/활성화는 목표 일치 시에만) |
-| input-help-priority | 1 | 공통(CSS-only)+_autoheight ✅ | CH09-L07-S01 | F4 사다리(콘텐츠=마크업·빈 .js 제거) |
+| input-help-priority | 1 | 공통(CSS-only)+_autoheight ✅ | CH09-L07-S01 | F4 사다리(콘텐츠=마크업·빈 .js 제거) · **6단**(본문 서열과 1:1) |
 | write-output | 1 | 공통 ✅ | CH01-L04-S01 | WRITE 출력 파서 · config 주입 · **버그수정(따옴표無→오류)** |
 | write-format | 1 | 공통 ✅ | CH01-L05-S01 | WRITE 서식 토글 · config 주입 |
 | event-lifecycle-buildup | 1 | 공통(_engine·자체 mermaid+CDN/_vendor)·자체 postHeight ✅ | CH15-L01-S01 | bespoke 단일사용(STAGES inline) · #C15-1 stage1 inline DATA→classic 수정 |

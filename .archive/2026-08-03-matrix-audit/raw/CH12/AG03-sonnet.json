@@ -1,0 +1,79 @@
+{
+  "agent": "AG03",
+  "model": "sonnet",
+  "target": "CH12",
+  "persona_ack": "역할 확인 — 타 언어(Java/C# 계열) 백엔드 3～5년차 개발자, ABAP 속성 습득을 목적으로 통독하는 경력자 관점에서 CH12(SELECT-OPTIONS와 Range Table) 8개 파일을 감사했다. 변수·조건문·루프·SQL·OOP는 이미 안다는 전제를 유지했다.",
+  "method": "대상 8개 파일(_chapter.md, CH12-L01~L07.md)을 Read 도구로 전문 통독. 웹검색·코드실행 없이 ABAP 공식 문법 지식(Range Table SIGN/OPTION/LOW/HIGH 구조, CP 와일드카드 규칙, RANGES obsolete 여부, WHERE...IN의 빈 range 동작)을 사전지식으로 교차검증했다. 다른 감사자 산출물이나 과거 감사 자료는 열람하지 않았다(블라인드 준수).",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH12-L01.md",
+      "quote": "반대로 **행 → 사람 말** 방향도 읽어 본다.",
+      "category": "과잉",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "SIGN/OPTION/LOW/HIGH 구조를 '사람말→행' 표와 '행→사람말' 표로 두 번 반복 예시한다. 경력자는 최초 4칸 정의 표만으로 양방향 매핑을 이미 파악하므로, 이후 표들은 새 정보 없이 같은 매핑을 재확인만 시킨다.",
+      "evidence": "L01은 4칸 정의 표(SIGN/OPTION/LOW/HIGH, line 33~38) 이후 단일 예시 3행(47~63), '사람 말→행' 표 4행(69~74), '행→사람 말' 표 4행(78~83)까지 사실상 같은 매핑을 4세트로 반복한다. 입문자에게는 패턴 체화에 유효하지만 경력자에게는 첫 표 이후 정보 이득이 거의 없다.",
+      "suggestion": "표 구성은 유지하되 '패턴이 바로 이해되면 다음 섹션(흔한 실수)으로 건너뛰어도 된다' 같은 스킵 안내를 표 사이에 한 줄 추가하거나, 방향별 표 중 하나는 접기(details)로 선택 노출."
+    },
+    {
+      "seq": 2,
+      "file": "CH12-L02.md",
+      "quote": "SELECT-OPTIONS: so_conc FOR zbooking-concert_id,",
+      "category": "용어 충돌",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "이 레슨 첫 코드 예제의 FOR 키워드는, 사실상 모든 범용 언어(Java/C#/Python/JS 등)에서 반복문 예약어로 쓰이는 단어와 동일해 빠르게 훑어 읽는 경력자에게 '이거 루프인가' 하는 순간적 오독을 유발할 수 있다. 실제로는 '이 필드를 대상으로'라는 바인딩 의미다.",
+      "evidence": "본문 어디에도 FOR가 반복문이 아니라는 점을 명시적으로 짚지 않는다. 코드 바로 아래 표(line 44~50)는 SELECT-OPTIONS 전체 의미만 설명할 뿐 FOR 자체의 키워드 충돌은 다루지 않는다. 다만 같은 줄에 루프 바디·ENDFOR가 없어 혼동은 즉시 해소되는 수준이다.",
+      "suggestion": "코드 블록 옆이나 표에 '여기 FOR는 반복문이 아니라 대상 필드 지정' 한 줄만 추가하면 첫인상 혼동을 없앨 수 있다."
+    },
+    {
+      "seq": 3,
+      "file": "CH12-L03.md",
+      "quote": "`so_conc`가 비어 있으면 `concert_id IN so_conc`는 조건을 걸지",
+      "category": "용어 충돌",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "표준 SQL 배경의 경력자는 'IN (빈 리스트)'를 구문 오류이거나 결과 없음(false)으로 직관한다. ABAP의 '빈 range는 true(전체 통과)'는 그 직관과 정반대인데, 이 대조가 명시적으로 짚어지지 않는다.",
+      "evidence": "해당 콜아웃은 ABAP 자체 동작만 설명한다(공식 문서 인용 포함). '표준 SQL의 IN(...)과 반대 방향'이라는 명시적 대조 문장은 없다. 다만 이 위험(전체 테이블 조회) 자체는 같은 콜아웃·흔한 실수 섹션·L07에서까지 반복 경고되어 실질적 피해는 이미 잘 방어되어 있다.",
+      "suggestion": "콜아웃 끝에 '표준 SQL의 IN (…)과 달리 결과가 반대(전체 허용)다' 한 문장만 추가하면 SQL 경력자의 안전한 전이가 더 빨라진다."
+    },
+    {
+      "seq": 4,
+      "file": "CH12-L05.md",
+      "quote": "`*`는 **여러 글자**, `+`는 **정확히 한 글자**에 대응한다.",
+      "category": "용어 충돌",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "CP 패턴의 `+`는 '정확히 한 글자'를 뜻하는데, 이는 정규식(regex)의 `+`(직전 토큰 1회 이상 반복)와 기호는 같고 의미는 정반대다. 정규식에 익숙한 경력자일수록 `C+01` 같은 패턴을 'C가 1개 이상, 그 뒤 01'로 잘못 해석할 위험이 있다.",
+      "evidence": "본문은 SQL LIKE의 %·_와의 차이만 명시하고('SQL LIKE의 %·_와는 기호가 다르다'), 정규식과의 충돌은 언급하지 않는다. 정규식은 SQL LIKE보다 백엔드 개발자에게 더 보편적인 지식이라 충돌 위험이 더 크다. 이 오독은 첫인상 수준을 넘어 실제 패턴 매칭 결과를 잘못 예측하게 만들 수 있어 다른 용어 충돌 항목보다 영향이 크다.",
+      "suggestion": "'정규식을 안다면 주의 — 여기 +는 정규식의 1회 이상 반복이 아니라 정확히 한 글자다' 한 줄을 SQL LIKE 대조 문장 옆에 추가."
+    },
+    {
+      "seq": 5,
+      "file": "CH12-L05.md",
+      "quote": "자주 쓰는 OPTION은 이렇다.",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "OPTION 표의 EQ/NE/BT/NB/GT/GE/LT/LE는 SQL 비교연산자(=, !=, BETWEEN, >, >=, <, <=)와 사실상 1:1 대응이라, SQL을 아는 경력자는 이 여덟 항목을 표로 새로 익힐 필요 없이 한 줄 매핑만으로 통과할 수 있다. 새로 볼 건 CP·NP(패턴 매칭) 둘뿐인데 이를 알려주는 안내가 없어 표 전체를 처음부터 읽게 된다.",
+      "evidence": "같은 챕터의 L07은 '핵심은 SALV가 아니라 위에서 이 두 줄이다'처럼 경력자가 어디에 집중할지 짚어주는 안내를 이미 쓰고 있다(CH11에서 익힌 SALV 부분은 건너뛰게 유도). 반면 L01·L05 같은 표 중심 레슨에는 같은 패턴의 안내가 없어 챕터 내에서 일관되지 않다.",
+      "suggestion": "표 위에 'EQ/NE/BT/NB/GT/GE/LT/LE는 SQL 비교연산자와 동일하다 — CP/NP만 새로 익히면 된다' 한 줄을 추가."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "3～5년차 Java/C# 백엔드 개발자가 ABAP 속성 습득 목적으로 CH12(SELECT-OPTIONS·Range Table)를 통독한 관점 요약. SIGN/OPTION/LOW/HIGH 구조, SELECT-OPTIONS 화면-Range Table 연동, WHERE...IN 필터 반영은 전부 ABAP 고유 개념이라 경력자에게도 새 학습이 필요한 부분이 대부분이며, 설명 깊이 자체가 과도하지는 않다(과잉 판정은 L01의 반복 예시 표 1건에 그침). 아쉬운 지점은 두 갈래다. 첫째, 일반 개발 어휘·표기가 ABAP에서 다른 의미로 재사용되는 지점(FOR 키워드가 반복문이 아님, CP 패턴의 +가 정규식과 반대 의미, 빈 range가 표준 SQL IN(...)의 직관과 반대)에 명시적 대조 문장이 없어 첫인상 오독 여지가 있다 — 특히 CP의 +와 정규식 + 충돌은 실제 패턴 해석을 틀리게 만들 수 있어 상대적으로 영향이 크다(중간). 둘째, L01·L05처럼 표로 반복 설명하는 구간에 경력자가 건너뛸 수 있다는 안내가 없다(반대로 L07은 '핵심은 이 두 줄'이라며 같은 패턴을 이미 잘 쓰고 있어 챕터 내 일관성 문제이기도 하다). 다만 모든 지적은 낮음~중간 수준이고, 챕터의 사실관계·구조·1차 독자(입문자) 대상 설명은 정확하고 적절해 재작성이나 보강 없이 다듬는 선에서 충분하다."
+  }
+}

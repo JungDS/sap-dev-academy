@@ -1,0 +1,68 @@
+{
+  "agent": "AG06",
+  "model": "sonnet",
+  "target": "CH10",
+  "persona_ack": "20년차 SAP ABAP 아키텍트(ECC~S/4HANA 개발·운영·성능·이관 경험) 페르소나로 CH10(모듈화 기초) 레슨 7개 + 챕터 개요를 문법 정확성·예시 적절성·위험한 생략·안티패턴 관점에서 검수했다.",
+  "method": "대상 8개 파일을 Read/Grep으로 직접 정독하고, ABAP 언어 사양(메서드 파라미터 완전 타이핑 규칙, FORM/PERFORM 파라미터 전달 방식, classic Open SQL 문법 등)에 대한 지식으로 모든 코드 블록을 수동 검증했다. 웹 검색·컴파일러 실행·타 감사자 산출물 열람은 지시에 따라 하지 않았다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH10-L04.md",
+      "quote": "RETURNING VALUE(rv_result) TYPE p.",
+      "category": "사실 오류 — ABAP 문법(메서드 파라미터 타이핑)",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "Local Class 정적 메서드 예제의 IMPORTING/RETURNING 파라미터가 DECIMALS 없는 제네릭 TYPE p로 선언돼 있다. 이대로는 SE24/ADT에서 활성화(구문 검사)가 실패하는 코드다.",
+      "evidence": "ABAP에서 클래스 메서드(CLASS-METHODS/METHODS)의 IMPORTING·EXPORTING·CHANGING·RETURNING 파라미터는 '완전 타이핑(complete typing)'이 강제된다. TYPE p를 쓰려면 DECIMALS를 반드시 명시해야 하며(LENGTH는 생략 시 8이 기본값), 이 규칙에는 예외가 없다. 반면 FORM/PERFORM의 USING·CHANGING 파라미터는 제네릭 타이핑이 허용돼 DECIMALS 없는 TYPE p도 정상 동작한다 — 실제로 바로 앞 CH10-L02의 FORM add_tax 예제는 `USING iv_amount TYPE p`로 문제없이 동작한다. 이 챕터는 같은 '세금 10% 계산' 예제를 FORM에서 METHOD로 그대로 옮기면서 이 타이핑 규칙 차이를 놓친 것으로 보인다. 예제 코드를 그대로 SE24/ADT에 입력해 활성화를 시도하면 'P 형은 DECIMALS 지정이 필요하다'류의 구문 오류가 발생한다.",
+      "suggestion": "IMPORTING iv_amount TYPE p DECIMALS 2 / RETURNING VALUE(rv_result) TYPE p DECIMALS 2 처럼 DECIMALS를 명시하거나, 실무 관례대로 DDIC 데이터 엘리먼트(금액류 필드 참조)로 완전 타이핑한다."
+    },
+    {
+      "seq": 2,
+      "file": "CH10-L07.md",
+      "quote": "cv_ok = boolc( iv_want <= lv_left ).",
+      "category": "위험한 생략 — 동시성/잠금",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "잔여석 조회(get_remaining)와 예매 가능 판정(can_book)이 잠금(lock) 없이 '조회 후 판단'만 한다. 이 판정을 근거로 실제 예매를 만드는 흐름이라면 동시 요청 시 오버부킹(초과 판매)이 발생할 수 있는데, 이에 대한 언급이 전혀 없다.",
+      "evidence": "get_remaining은 SELECT로 현재 예매 합계를 읽어 잔여석을 계산하고, can_book은 그 값을 기준으로 참/거짓만 돌려준다. 두 사용자가 거의 동시에 같은 회차를 조회하면 둘 다 '잔여 1석'을 보고 둘 다 can_book=true를 받을 수 있다 — 이후 실제 예매 INSERT가 이 판정을 그대로 신뢰해 진행되면 정원을 초과해 예매가 확정되는 전형적인 check-then-act 경합조건(TOCTOU)이다. 실무 SAP 개발에서 이런 재고/좌석 판정은 ENQUEUE(잠금 오브젝트)나 DB 트랜잭션 격리로 보호하는 것이 표준이며, 예매·재고 도메인에서 가장 흔히 사고로 이어지는 패턴 중 하나다. 이 레슨은 콘서트 예매앱의 핵심 판정 로직을 도입하는 자리이므로, 최소한 한 줄이라도 짚고 넘어갔어야 한다.",
+      "suggestion": "get_remaining/can_book 코드 블록 뒤 '흔한 실수와 점검'이나 별도 콜아웃에 '실무에서는 동시 예매 충돌을 막기 위해 잠금(ENQUEUE) 또는 DB 트랜잭션 격리가 필요하다 — 이 실습은 로직 학습에 집중하려 단순화했다'는 취지의 한두 문장(L1 예고 수준)을 추가한다."
+    },
+    {
+      "seq": 3,
+      "file": "CH10-L07.md",
+      "quote": "같은 로직을 [Local Class로 모듈화](CH10-L04.html)의 **static method**(`zcl_booking=>get_remaining`)로 바꿔 본다.",
+      "category": "사실 오류 — 명명 규칙 불일치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'도전' 과제가 Local Class(CH10-L04)로 바꿔보라면서, 정작 예시 코드는 Global Class 명명 규칙(zcl_)을 쓰고 있다. 이 챕터 자신이 CH10-L04(Local, lcl_ 접두어 — 예: lcl_calc)와 CH10-L05(Global, zcl_ 접두어 — 'SE24의 ZCL_...')를 명확히 구분해 놓고, 정작 이 예시만 어긋난다.",
+      "evidence": "CH10-L04는 로컬 클래스 예제로 lcl_calc를 쓰고, CH10-L05는 'SE24의 ZCL_...'을 전역 클래스 명명 관례로 명시적으로 정의한다. CH10-L07의 도전 과제는 'Local Class로 모듈화(CH10-L04)'를 링크하면서 코드 힌트는 zcl_booking으로 적어, 로컬 클래스 연습인데 전역 클래스 이름을 예시로 준 모순이 생긴다. 입문자가 그대로 따라 하면 로컬/전역 클래스 접두어 관례를 뒤섞어 배울 수 있다.",
+      "suggestion": "zcl_booking=>get_remaining을 lcl_booking=>get_remaining(이 챕터가 정한 lcl_ 접두어)으로 고친다."
+    },
+    {
+      "seq": 4,
+      "file": "CH10-L07.md",
+      "quote": "SELECT * FROM zbooking INTO TABLE lt_book",
+      "category": "안티패턴 — SELECT *",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "get_remaining이 LOOP로 좌석수(seats)만 합산하는데도 SELECT *로 전체 컬럼을 가져온다 — Clean ABAP이 명시적으로 지양하라고 권고하는 습관이 교정 없이 시연된다.",
+      "evidence": "이 FORM이 실제로 쓰는 값은 ls_book-seats 하나뿐이고, WHERE 절에 쓰인 concert_id/perf_no/status는 이미 조건으로 확정돼 있어 결과 컬럼으로 다시 필요하지 않다. SELECT *는 불필요한 컬럼·메모리를 끌어오고 테이블에 필드가 추가될수록 더 느려진다 — Clean ABAP 가이드라인이 대표적으로 지적하는 습관이다. 집계 SQL을 뒤로 미룬 것(LOOP로 합산)은 커리큘럼 순서상 합리적인 단순화라고 밝혀 놓았지만, SELECT *는 그 단순화와 무관하게 굳이 나쁜 습관을 그대로 보여줄 이유가 없다.",
+      "suggestion": "SELECT seats FROM zbooking INTO TABLE lt_book WHERE ... 처럼 필요한 필드만 명시하거나(lt_book 타입도 그에 맞게 조정), 최소한 '흔한 실수와 점검'에 SELECT * 지양 팁을 한 줄 추가한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH10(모듈화 기초) 7개 레슨은 FORM/PERFORM→Function Module→Local/Global Class로 이어지는 구성이 논리적이고, New Syntax·New Open SQL 미노출과 [선행 사용] 표기 등 커리큘럼 게이팅도 대체로 잘 지킨다. 다만 CH10-L04의 로컬 클래스 예제가 메서드 파라미터에 DECIMALS 없는 제네릭 TYPE p를 써서 실제로는 활성화되지 않는 코드이고(높음, 확실), CH10-L07 콘서트앱 실습은 잔여석 조회·예매 판정에 동시성(잠금) 보호 언급이 전혀 없으며(중간, 확실), 같은 레슨의 도전 과제 예시가 Local/Global 클래스 명명 접두어 관례를 스스로 어기고(낮음, 확실) SELECT *가 교정 없이 쓰였다(낮음, 확실). 핵심 결함(TYPE p 타이핑 오류)만 고치면 나머지는 한두 문장·한 줄 수정으로 충분해 전면 보강까지는 필요하지 않다."
+  }
+}

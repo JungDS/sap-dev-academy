@@ -1,0 +1,79 @@
+{
+  "agent": "AG09",
+  "model": "sonnet",
+  "target": "CH10",
+  "persona_ack": "AG09 — ABAP 정적 검사기 역할을 맡아 산문은 배제하고 CH10 7개 레슨의 ```abap 코드 블록만 줄 단위로 검사했다. 활성화 차단급 오류·네이밍 규약(gv_/lv_/it_/pa_/so_/ty_/ts_/tt_)·CH01～17 classic 경계(New Syntax·New Open SQL 금지)·주석-코드 정합성 4축으로 판정했다.",
+  "method": "Read 도구로 대상 8개 파일 전문을 읽어 ```abap 펜스 블록 10개를 전량 추출, 줄 단위 수동 정적 분석(선언 여부·PERFORM/CALL 시그니처 일치·타입·네이밍 접두어·CH경계 규약·주석-코드 일치 대조)을 수행했다. 컴파일러·린터 등 실행형 도구는 미사용(환경 없음) — ABAP 언어 지식에 기반한 정적 판단이며 불확실한 항목은 confidence=추정으로 표시.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH10-L02.md",
+      "quote": "DATA lv_out TYPE p LENGTH 8 DECIMALS 2.",
+      "category": "네이밍 규약",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "START-OF-SELECTION 이벤트 블록 안에서 선언된 lv_out은 FORM/METHOD 내부가 아니라 프로그램 메인 흐름에 선언된 것이라 스코프상 전역인데, 로컬 접두어 lv_로 표기되어 있다.",
+      "evidence": "ABAP에서 이벤트 블록(START-OF-SELECTION 등)은 FORM/METHOD/FUNCTION과 달리 별도의 데이터 스코프를 만들지 않는다 — 그 안에서 DATA로 선언한 변수도 프로그램 전체 FORM에서 접근 가능한 전역 변수다. 이 커리큘럼 규약상 '로컬 스코프(FORM/METHOD 안)에서 선언한 것만 lv_/ls_/lt_, 그 밖은 gv_/gs_/gt_'인데 이 변수는 FORM/METHOD 밖에 있다. 더구나 CH10-L01이 '전역 변수는 누적되고 지역 변수는 매번 새로 생기는 차이'를 직접 해 보기 학습 목표로 명시하는 챕터라, gv_/lv_ 오표기가 바로 그 핵심 개념을 흐릴 수 있다.",
+      "suggestion": "lv_out → gv_out으로 수정."
+    },
+    {
+      "seq": 2,
+      "file": "CH10-L03.md",
+      "quote": "ev_result = lv_out",
+      "category": "활성화 차단급",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "CALL FUNCTION의 IMPORTING 실제 파라미터로 쓰인 lv_out이 이 코드 블록(및 파일 전체)에 DATA로 선언되어 있지 않다 — 그대로 옮기면 활성화 단계에서 미선언 변수 오류가 난다.",
+      "evidence": "같은 챕터의 다른 예제(L02·L04·L05)는 모두 사용 전에 DATA 선언을 먼저 보여주는 일관된 패턴인데, 이 CALL FUNCTION 예제만 선언 없이 lv_out을 바로 쓴다. 'CALL FUNCTION 호출 구조'를 보여주는 게 목적인 스니펫이라 의도적 축약일 가능성이 높아 낮음으로 평가하지만, 다른 예제와 비교하면 완결성이 떨어진다.",
+      "suggestion": "CALL FUNCTION 앞에 선언을 추가한다(예: DATA gv_out TYPE p. — FORM/METHOD 밖이므로 전역 스코프 규약상 gv_ 접두어가 맞다)."
+    },
+    {
+      "seq": 3,
+      "file": "CH10-L04.md",
+      "quote": "DATA lv_out TYPE p LENGTH 8 DECIMALS 2.",
+      "category": "네이밍 규약",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "CLASS...ENDCLASS 블록 밖, 정적 메서드 호출(lcl_calc=>add_tax) 앞의 프로그램 메인 흐름에서 선언된 lv_out은 스코프상 전역인데 로컬 접두어 lv_를 쓰고 있다.",
+      "evidence": "METHOD 안이 아니라 호출부(메인 흐름)에 선언되어 있으므로 이 챕터 규약상 gv_/gs_/gt_ 대상이다. seq 1(CH10-L02)과 동일한 유형의 반복 오표기.",
+      "suggestion": "lv_out → gv_out으로 수정."
+    },
+    {
+      "seq": 4,
+      "file": "CH10-L05.md",
+      "quote": "DATA lv_text TYPE string.",
+      "category": "네이밍 규약",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "전역 클래스 정적 메서드 호출(zcl_util=>format_amount) 앞, METHOD/FORM 밖에 선언된 lv_text는 스코프상 전역인데 로컬 접두어를 쓰고 있다.",
+      "evidence": "이 파일의 두 예제 모두 METHOD/FORM 정의 없이 최상위 흐름에서 바로 DATA를 선언한다 — 이 챕터 규약상 gv_ 접두어가 맞다. seq 1·3과 동일 유형.",
+      "suggestion": "lv_text → gv_text로 수정."
+    },
+    {
+      "seq": 5,
+      "file": "CH10-L05.md",
+      "quote": "DATA lv_r TYPE i.",
+      "category": "네이밍 규약",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "정적 메서드 호출(zcl_util=>calc) 앞, METHOD/FORM 밖에 선언된 lv_r도 전역 스코프인데 로컬 접두어를 쓰고 있다.",
+      "evidence": "같은 파일 안에서 lv_text(seq 4)와 함께 반복되는 gv_/lv_ 혼동 — 한 레슨 안에 동일 패턴이 두 번 나온다.",
+      "suggestion": "lv_r → gv_r로 수정."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH10 7개 레슨의 ```abap 코드 블록 10개(L06은 코드 블록 없음)를 전수 정적 검사했다. 활성화를 막을 수 있는 명백한 결함은 CALL FUNCTION 예제(L03)의 미선언 변수 1건뿐이고 심각도는 낮다(구조 시연용 축약으로 보임). 더 눈에 띄는 것은 이 챕터의 핵심 규약인 gv_/lv_ 스코프 구분이 START-OF-SELECTION·정적 메서드 호출부(FORM/METHOD 밖) 예제 4곳(L02 1건·L04 1건·L05 2건)에서 로컬 접두어 lv_로 잘못 표기된 점이다 — 정작 FORM 안에서 선언한 진짜 지역변수(L07의 lt_book·ls_book·lv_sum·lv_cap, L07 두 번째 블록의 lv_left)는 규약대로 정확해 대조된다. CH01～17 classic 경계(New Syntax 금지·New Open SQL 금지)는 전 블록에서 위반 없이 지켜졌고 boolc()·VALUE(...)·함수형 메서드 호출 등은 모두 classic 시대 문법으로 올바르다. EXPORTING/IMPORTING/CHANGING 방향, PERFORM/CALL FUNCTION 시그니처(인자 개수·타입), 주석과 코드의 의미(취소 제외·넘겨줄 값/돌려받을 값 등)도 전부 일관됐다. 전반적으로 코드 구조는 탄탄하나, 이 챕터가 가르치는 개념(전역/지역 변수 스코프)과 정확히 맞물리는 네이밍 오표기가 반복되므로 경미 수정을 권한다."
+  }
+}

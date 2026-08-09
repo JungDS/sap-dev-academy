@@ -1,15 +1,22 @@
 // ===== salv-grid-simulator 엔진 JS — cl_salv_table factory→display 시뮬 (config 주도) =====
 // 컬럼·데이터·테이블명·합계컬럼·코드는 위젯의 window.SALV_CFG로 주입(레슨별 재사용).
-//   SALV_CFG = { itab, sumKey, cols[{key,label,num}], data[{}], code[{t,g}] }   g ∈ 'factory'|'display'|''
+//   SALV_CFG = { itab, alvVar, sumKey, cols[{key,label,num}], data[{}], code[{t,g}], emptyGuard }
+//     g ∈ 'factory'|'display'|''
+//     alvVar     — 상태 메시지에 쓸 ALV 객체 변수명(기본 'go_alv'). 레슨 본문 코드와 일치시킨다.
+//     emptyGuard — {msg} 지정 시 0행에서 빈 그리드 대신 "행 수 점검이 걸러 냈다"고 안내(본문에
+//                  DESCRIBE TABLE·IF 0행 가드가 있는 레슨용). 미지정이면 종전대로 빈 그리드.
 (function(){
   var cfg = window.SALV_CFG || {};
   var COLS = cfg.cols || [];
   var FULL = cfg.data || [];
   var ITAB = cfg.itab || 'lt_tab';
+  var ALVVAR = cfg.alvVar || 'go_alv';
   var SUMKEY = cfg.sumKey || null;
   var CODE = cfg.code || [];
+  var GUARD = cfg.emptyGuard || null;
   var $=function(id){return document.getElementById(id);};
-  var rows=FULL.slice(), step=0, sumOn=false, sortCol=-1, sortAsc=true;
+  var rows=FULL.slice(), step=0, sumOn=false, sortCol=-1, sortAsc=true, curEx=0;
+  var READOUT0 = $('readout') ? $('readout').innerHTML : '';
 
   /* ── 테이블명 반영(ALV 제목·데이터 토글) ── */
   var ITABU = ITAB.toUpperCase();
@@ -19,12 +26,15 @@
   })();
 
   /* ── 코드 하이라이트 ── */
-  var KW=new Set(('DATA REF TO TRY CATCH ENDTRY IMPORTING CHANGING SELECT FROM INTO TABLE').split(' '));
+  var KW=new Set(('DATA REF TO TRY CATCH ENDTRY IMPORTING CHANGING SELECT FROM INTO TABLE '+
+                  'TYPE OF WHERE UP ROWS DESCRIBE LINES IF ELSE ENDIF MESSAGE').split(' '));
   var CLS=new Set(['cl_salv_table','cx_salv_msg']);
   function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
   function hl(line){
     if(/^\s*"/.test(line)) return '<span class="tok-com">'+esc(line)+'</span>';
-    var out='', re=/('[^']*'?)|("[^\n]*$)|([A-Za-z_][A-Za-z0-9_]*)|([^A-Za-z0-9_']+)/g, m;
+    // ⚠️ 마지막 대안에서 숫자를 빼면(=[^A-Za-z0-9_']) 어느 대안에도 안 걸린 숫자가 통째로 사라진다
+    //    (예: 'UP TO 20 ROWS' → 'UP TO  ROWS', 'IF gv_count = 0.' → 'IF gv_count = .'). 식별자는 앞의 대안이 먼저 먹으므로 안전.
+    var out='', re=/('[^']*'?)|("[^\n]*$)|([A-Za-z_][A-Za-z0-9_]*)|([^A-Za-z_']+)/g, m;
     while((m=re.exec(line))!==null){
       if(m[1]) out+='<span class="tok-str">'+esc(m[1])+'</span>';
       else if(m[2]) out+='<span class="tok-com">'+esc(m[2])+'</span>';
@@ -75,21 +85,28 @@
     step=1; renderCode('factory');
     $('bFactory').classList.remove('ready'); $('bFactory').classList.add('done');
     $('bDisplay').disabled=false; $('bDisplay').classList.add('ready');
-    setStat('ok','✓ <b>factory( )</b> 성공 — ALV 객체 <code>lo_alv</code>가 메모리에 생성됐습니다. <b>하지만 아직 화면엔 안 보입니다.</b> 이제 ② display( )!');
+    setStat('ok','✓ <b>factory( )</b> 성공 — ALV 객체 <code>'+ALVVAR+'</code>가 메모리에 생성됐습니다. <b>하지만 아직 화면엔 안 보입니다.</b> 이제 ② display( )!');
     $('alv').classList.add('hidden'); postHeight();
   }
   function doDisplay(){
     if(step<1){ setStat('bad','⛔ 먼저 ① factory( )로 객체를 만드세요.'); return; }
     step=2; renderCode('display');
     $('bDisplay').classList.remove('ready'); $('bDisplay').classList.add('done');
+    if(GUARD && rows.length===0){          // 본문에 0행 가드가 있는 레슨 — 빈 표 대신 안내로 끝난다
+      $('alv').classList.add('hidden');
+      setStat('info','🛈 행이 <b>0</b>건입니다. 본문 코드는 <code>DESCRIBE TABLE</code>로 센 뒤 <code>IF gv_count = 0</code>에서 걸러 <b>“'+GUARD.msg+'”</b> 안내만 띄우고 <b>표는 열지 않습니다.</b>');
+      postHeight(); return;
+    }
     renderGrid(); $('alv').classList.remove('hidden');
     setStat('ok','✓ <b>display( )</b> — ALV 그리드가 화면에 떴습니다. 헤더를 클릭해 <b>정렬</b>, <b>Σ 합계</b>로 합을 켜 보세요.');
     postHeight();
   }
   function reset(){
     step=0; sumOn=false; sortCol=-1; sortAsc=true; renderCode(null);
+    rows = (curEx===1) ? [] : FULL.slice();                    // 정렬로 흐트러진 행 순서까지 원상 복구
     $('bFactory').className='sbtn ready'; $('bDisplay').className='sbtn'; $('bDisplay').disabled=true;
     $('alv').classList.add('hidden');
+    if($('readout')) $('readout').innerHTML=READOUT0;          // 클릭해 둔 sy-tabix 안내도 처음 문구로
     setStat('info','먼저 <b>① factory( )</b> 를 눌러 ALV 객체를 만드세요.');
     if(ltData && !ltData.hasAttribute('hidden')) renderLt();   // 예제 전환 시 열려있는 데이터 보기 갱신
     postHeight();
@@ -130,7 +147,7 @@
   /* ── 예제(정상/빈) ── */
   $('presets').addEventListener('click',function(e){
     var c=e.target.closest('.chip'); if(!c) return;
-    rows = (+c.dataset.ex===1) ? [] : FULL.slice();
+    curEx = +c.dataset.ex;                                     // reset( )이 이 예제 기준으로 rows를 다시 만든다
     $('presets').querySelectorAll('.chip').forEach(function(x){x.classList.toggle('on',x===c);});
     reset();
   });

@@ -9,11 +9,11 @@
 | STRUCT (필수키·id) | 0 |
 | PREREQ (실존·전방참조) | 0 |
 | DUP-INTRO (중복 도입 선언) | 6 |
-| EARLY-USE — **REVIEW(요판정)** | 133 |
-| EARLY-USE — LOW(같은 챕터 인접) | 111 |
-| EARLY-USE — DECLARED(예고/선행 선언) | 56 |
+| EARLY-USE — **REVIEW(요판정)** | 140 |
+| EARLY-USE — LOW(같은 챕터 인접) | 113 |
+| EARLY-USE — DECLARED(예고/선행 선언) | 59 |
 | R6 경계 (classic 구간 modern 토큰) | 0 |
-| 검사 규모 | 레슨 270 · 추적 키워드 413 |
+| 검사 규모 | 레슨 270 · 추적 키워드 412 |
 
 ## STRUCT
 - 없음
@@ -66,20 +66,27 @@
 - CH08-L05:80 — `LEFT OUTER JOIN` (도입 = CH13-L02)
 - CH08-L07:69 — `Foreign Key` (도입 = CH09-L01)
 - CH08-L07:69 — `Check Table` (도입 = CH09-L01)
-- CH09-L01:46 — `Cardinality` (도입 = CH23-L03)
-- CH09-L07:13 — `Report Event` (도입 = CH15-L01)
-- CH09-L07:13 — `AT SELECTION-SCREEN` (도입 = CH15-L04)
+- CH09-L01:61 — `Cardinality` (도입 = CH23-L03)
+- CH09-L02:43 — `CALL FUNCTION` (도입 = CH10-L03)
+- CH09-L03:34 — `Cardinality` (도입 = CH23-L03)
+- CH09-L07:12 — `Report Event` (도입 = CH15-L01)
+- CH09-L08:47 — `Lock Object` (도입 = CH26-L01)
+- CH09-L09:87 — `Cardinality` (도입 = CH23-L03)
 - CH09-L09:5 — `RAP` (도입 = CH24-L01)
-- CH10-L01:23 — `Report Event` (도입 = CH15-L01)
-- CH10-L05:31 — `CL_SALV_TABLE` (도입 = CH11-L01)
-- CH10-L05:31 — `ALV` (도입 = CH11-L01)
+- CH10-L01:31 — `Report Event` (도입 = CH15-L01)
+- CH10-L04:57 — `START-OF-SELECTION` (도입 = CH15-L05)
+- CH10-L05:44 — `SALV` (도입 = CH11-L01)
+- CH10-L05:44 — `CL_SALV_TABLE` (도입 = CH11-L01)
+- CH10-L05:44 — `ALV` (도입 = CH11-L01)
 - CH10-L05:5 — `Global Class` (도입 = CH21-L01)
-- CH10-L07:74 — `ALV` (도입 = CH11-L01)
-- CH10-L07:9 — `JOIN` (도입 = CH13-L01)
-- CH11-L06:37 — `SELECT-OPTIONS` (도입 = CH12-L02)
-- CH12-L01:90 — `Multiple Selection` (도입 = CH12-L04)
-- CH12-L01:90 — `Exclude` (도입 = CH12-L04)
-- CH12-L07:86 — `JOIN` (도입 = CH13-L01)
+- CH10-L07:117 — `ALV` (도입 = CH11-L01)
+- CH10-L07:15 — `JOIN` (도입 = CH13-L01)
+- CH10-L07:86 — `Lock Object` (도입 = CH26-L01)
+- CH11-L03:55 — `Global Class` (도입 = CH21-L01)
+- CH11-L06:66 — `SELECT-OPTIONS` (도입 = CH12-L02)
+- CH12-L01:79 — `Multiple Selection` (도입 = CH12-L04)
+- CH12-L01:79 — `Exclude` (도입 = CH12-L04)
+- CH12-L07:108 — `JOIN` (도입 = CH13-L01)
 - CH14-L02:45 — `CDS View Entity` (도입 = CH23-L01)
 - CH14-L05:50 — `Dynpro` (도입 = CH16-L01)
 - CH14-L08:22 — `Association` (도입 = CH23-L03)
@@ -177,13 +184,15 @@
 - CH06-L04:186 — `Deep Structure` (도입 = CH06-L05)
 - CH08-L01:75 — `INTO TABLE` (도입 = CH08-L02)
 - CH08-L06:83 — `MESSAGE` (도입 = CH08-L07)
-- CH09-L02:54 — `Text Table` (도입 = CH09-L03)
-- CH09-L03:22 — `Search Help` (도입 = CH09-L04)
-- CH09-L04:42 — `Collective Search Help` (도입 = CH09-L05)
-- CH10-L01:47 — `USING` (도입 = CH10-L02)
-- CH10-L01:47 — `CHANGING` (도입 = CH10-L02)
-- CH10-L02:64 — `Function Module` (도입 = CH10-L03)
-- CH11-L01:40 — `factory` (도입 = CH11-L02)
+- CH09-L02:60 — `Text Table` (도입 = CH09-L03)
+- CH09-L03:39 — `Search Help` (도입 = CH09-L04)
+- CH09-L04:62 — `Collective Search Help` (도입 = CH09-L05)
+- CH10-L01:117 — `USING` (도입 = CH10-L02)
+- CH10-L01:117 — `CHANGING` (도입 = CH10-L02)
+- CH10-L02:96 — `Function Module` (도입 = CH10-L03)
+- CH11-L01:42 — `factory` (도입 = CH11-L02)
+- CH11-L02:83 — `get_functions` (도입 = CH11-L03)
+- CH11-L02:83 — `set_all` (도입 = CH11-L03)
 - CH13-L01:73 — `LEFT OUTER JOIN` (도입 = CH13-L02)
 - CH13-L02:61 — `GROUP BY` (도입 = CH13-L03)
 - CH13-L03:52 — `HAVING` (도입 = CH13-L04)
@@ -306,15 +315,18 @@
 - CH08-L03:86 — `ORDER BY` (도입 = CH13-L05) [foreshadow 선언]
 - CH08-L05:80 — `JOIN` (도입 = CH13-L01) [foreshadow 선언]
 - CH08-L05:61 — `NULL` (도입 = CH13-L02) [foreshadow 선언]
-- CH09-L07:13 — `PROCESS ON VALUE-REQUEST` (도입 = CH16-L05) [foreshadow 선언]
-- CH10-L01:20 — `START-OF-SELECTION` (도입 = CH15-L05) [advanceUse 선언]
-- CH10-L02:16 — `START-OF-SELECTION` (도입 = CH15-L05) [advanceUse 선언]
-- CH11-L04:13 — `START-OF-SELECTION` (도입 = CH15-L05) [advanceUse 선언]
-- CH12-L01:102 — `SELECT-OPTIONS` (도입 = CH12-L02) [foreshadow 선언]
-- CH12-L02:24 — `START-OF-SELECTION` (도입 = CH15-L05) [advanceUse 선언]
-- CH12-L02:17 — `TABLES` (도입 = CH16-L04) [advanceUse 선언]
-- CH12-L07:21 — `START-OF-SELECTION` (도입 = CH15-L05) [advanceUse 선언]
-- CH12-L07:13 — `TABLES` (도입 = CH16-L04) [advanceUse 선언]
+- CH09-L07:12 — `AT SELECTION-SCREEN` (도입 = CH15-L04) [foreshadow 선언]
+- CH09-L07:12 — `PROCESS ON VALUE-REQUEST` (도입 = CH16-L05) [foreshadow 선언]
+- CH10-L01:26 — `START-OF-SELECTION` (도입 = CH15-L05) [advanceUse 선언]
+- CH10-L02:10 — `START-OF-SELECTION` (도입 = CH15-L05) [advanceUse 선언]
+- CH11-L04:11 — `START-OF-SELECTION` (도입 = CH15-L05) [advanceUse 선언]
+- CH12-L01:91 — `SELECT-OPTIONS` (도입 = CH12-L02) [foreshadow 선언]
+- CH12-L02:25 — `START-OF-SELECTION` (도입 = CH15-L05) [advanceUse 선언]
+- CH12-L02:18 — `TABLES` (도입 = CH16-L04) [advanceUse 선언]
+- CH12-L03:25 — `START-OF-SELECTION` (도입 = CH15-L05) [advanceUse 선언]
+- CH12-L03:18 — `TABLES` (도입 = CH16-L04) [advanceUse 선언]
+- CH12-L07:13 — `START-OF-SELECTION` (도입 = CH15-L05) [advanceUse 선언]
+- CH12-L07:12 — `TABLES` (도입 = CH16-L04) [advanceUse 선언]
 - CH14-L08:14 — `CDS View Entity` (도입 = CH23-L01) [foreshadow 선언]
 - CH15-L08:14 — `Radiobutton` (도입 = CH16-L03) [advanceUse 선언]
 - CH15-L09:61 — `TABLES` (도입 = CH16-L04) [advanceUse 선언]

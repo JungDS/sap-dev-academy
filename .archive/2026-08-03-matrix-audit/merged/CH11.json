@@ -1,0 +1,918 @@
+{
+  "chapter": "CH11",
+  "inputs_present": 28,
+  "inputs_missing": [],
+  "clusters": [
+    {
+      "cluster_id": "CH11-C001",
+      "file": "content/abap/CH11/CH11-L02.md",
+      "quote": "표준 기능이 **코드 추가 없이** 따라온다.",
+      "category": "사실 오류(레슨 간 모순)",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "L02는 factory+display만으로 표준 툴바 기능이 '코드 추가 없이' 따라온다고 하는데 L03은 set_all을 불러야 생기고 안 부르면 비어 보인다고 가르쳐, 본문과 두 위젯(L02-S01·L03-S01)이 같은 상태를 정반대로 서술하는 레슨 간 모순이다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG01", "model": "gpt-5.6-sol", "seq": 1},
+        {"agent": "AG02", "model": "opus", "seq": 3},
+        {"agent": "AG05", "model": "sonnet", "seq": 1},
+        {"agent": "AG06", "model": "opus", "seq": 1}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C002",
+      "file": "content/abap/CH11/CH11-L03.md",
+      "quote": "lo_alv->get_functions( )->set_all( abap_true ).",
+      "category": "단절·네이밍 규약(미선언 변수)",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "L03의 코드 두 블록이 선언 없이 L02의 go_alv 대신 lo_alv를 써서 같은 객체인지 알 수 없고 블록 단독으로는 활성화되지 않으며, L02→L03→L04를 잇는 변수명 연속성이 끊긴다(일부 지지자는 abap_true 무설명도 함께 지적).",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG01", "model": "opus", "seq": 4},
+        {"agent": "AG01", "model": "sonnet", "seq": 1},
+        {"agent": "AG01", "model": "gpt-5.6-sol", "seq": 3},
+        {"agent": "AG04", "model": "opus", "seq": 9},
+        {"agent": "AG05", "model": "sonnet", "seq": 3},
+        {"agent": "AG09", "model": "opus", "seq": 2},
+        {"agent": "AG09", "model": "sonnet", "seq": 1},
+        {"agent": "AG09", "model": "gpt-5.6-sol", "seq": 1},
+        {"agent": "AG09", "model": "gpt-5.6-sol", "seq": 2}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C003",
+      "file": "embeds/abap/CH11-L04-S01.html",
+      "quote": "<div class=\"col__hd\">DB Table · ZTPERSON</div>",
+      "category": "불일치(위젯-본문 데이터셋)",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "L04 파이프라인 위젯이 본문 코드(sflight/gt_flight/go_alv/gv_count)와 식별자가 하나도 겹치지 않는 ZTPERSON/LT_PERSON/lo_alv/lv_count 데이터셋을 써서 방금 읽은 코드를 확인한다는 체험의 대조가 끊긴다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG02", "model": "opus", "seq": 6},
+        {"agent": "AG02", "model": "sonnet", "seq": 3},
+        {"agent": "AG02", "model": "gpt-5.6-sol", "seq": 2},
+        {"agent": "AG02", "model": "gemini-3.6-flash-high", "seq": 2}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C004",
+      "file": "content/abap/CH11/CH11-L06.md",
+      "quote": "SELECT * FROM zbooking INTO TABLE lt_book.",
+      "category": "위험한 생략(권한·전량 조회)",
+      "severity": "높음",
+      "confidence": "추정",
+      "claim": "캡스톤이 예매 업무 테이블 zbooking을 WHERE·권한 검사(AUTHORITY-CHECK)·건수 제한 없이 전량 조회하는 코드를 정답으로 제시해 성능·개인정보 노출 위험을 교정 없이 시연한다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG06", "model": "sonnet", "seq": 3},
+        {"agent": "AG06", "model": "gpt-5.6-sol", "seq": 5}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C005",
+      "file": "content/abap/CH11/CH11-L06.md",
+      "quote": "1. 예매 목록을 SALV로 띄운다.",
+      "category": "실습 설계(전이 부족)",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "캡스톤이 완성 코드를 과제보다 먼저 전부 보여줘 학습자가 SELECT→factory→set_all→display 순서를 스스로 회상·구성하는 전이 연습이 되지 못하고 실행·관찰만 남는다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG05", "model": "gpt-5.6-sol", "seq": 3}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C006",
+      "file": "content/abap/CH11/CH11-L06.md",
+      "quote": "DATA: lt_book TYPE TABLE OF zbooking,",
+      "category": "네이밍 규약(스코프 접두어)",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "L06(및 L03) 코드가 FORM/METHOD 없는 리포트 최상위 선언인데도 로컬 접두어 lt_/lo_(산문의 lv_count 포함)를 써서 L02·L04의 gt_/go_와 갈리고 커리큘럼의 g(전역)/l(로컬) 접두어 규칙을 예제 스스로 어긴다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG01", "model": "opus", "seq": 8},
+        {"agent": "AG01", "model": "sonnet", "seq": 3},
+        {"agent": "AG03", "model": "opus", "seq": 3},
+        {"agent": "AG03", "model": "sonnet", "seq": 4},
+        {"agent": "AG05", "model": "opus", "seq": 9},
+        {"agent": "AG06", "model": "opus", "seq": 8},
+        {"agent": "AG09", "model": "opus", "seq": 1},
+        {"agent": "AG09", "model": "sonnet", "seq": 2},
+        {"agent": "AG09", "model": "gpt-5.6-sol", "seq": 3},
+        {"agent": "AG09", "model": "gemini-3.6-flash-high", "seq": 1}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C007",
+      "file": "content/abap/CH11/CH11-L06.md",
+      "quote": "CATCH cx_salv_msg.",
+      "category": "안티패턴(예외 삼키기)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L06 캡스톤의 CATCH cx_salv_msg 블록이 본문 0줄로 완전히 비어 있어 예외를 조용히 삼키는 안티패턴을 정답 코드로 노출하며, MESSAGE 처리를 보여준 L04·주석을 남긴 L02와도 챕터 안에서 어긋난다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG03", "model": "opus", "seq": 5},
+        {"agent": "AG03", "model": "gpt-5.6-sol", "seq": 3},
+        {"agent": "AG06", "model": "opus", "seq": 3},
+        {"agent": "AG06", "model": "sonnet", "seq": 2},
+        {"agent": "AG06", "model": "gpt-5.6-sol", "seq": 6},
+        {"agent": "AG09", "model": "opus", "seq": 3}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C008",
+      "file": "content/abap/CH11/CH11-L03.md",
+      "quote": "introduces: [\"get_functions\", \"set_all\", \"display\"]",
+      "category": "챕터 구성(개념 중복 도입·파편 레슨)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "display가 L02와 L03의 introduces에 중복 등재되고 같은 교훈·흔한 실수·시뮬레이터가 반복돼, L03이 실질 신규는 get_functions( )->set_all( ) 한 줄뿐인 파편 레슨이 됐다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG03", "model": "opus", "seq": 2},
+        {"agent": "AG03", "model": "gpt-5.6-sol", "seq": 1},
+        {"agent": "AG05", "model": "opus", "seq": 4},
+        {"agent": "AG05", "model": "sonnet", "seq": 2},
+        {"agent": "AG05", "model": "gpt-5.6-sol", "seq": 1}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C009",
+      "file": "embeds/abap/CH11-L02-S01.html",
+      "quote": "내부 테이블 <code>LT_PERSON</code>을 ALV 표로 띄웁니다.",
+      "category": "불일치(위젯 리드 문구)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L02 위젯의 정적 리드 문구가 잔재 이름 LT_PERSON을 소개해 같은 화면의 코드·데이터·제목(GT_FLIGHT/SFLIGHT) 및 레슨 본문과 충돌한다(엔진이 .lead는 cfg로 치환하지 않음).",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG02", "model": "opus", "seq": 1},
+        {"agent": "AG02", "model": "sonnet", "seq": 1},
+        {"agent": "AG02", "model": "gpt-5.6-sol", "seq": 1},
+        {"agent": "AG02", "model": "gemini-3.6-flash-high", "seq": 1}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C010",
+      "file": "content/abap/CH11/CH11-L03.md",
+      "quote": "title: \"기본 Function 표시와 Display 실행\"",
+      "category": "용어 일관성·용어 충돌",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L03 제목의 '기본 Function'과 소제목 '표준 Function'이 본문의 '표준 기능'과 표기가 흔들리고, SAP 특유의 툴바 기능(function code)이 일반 개발어의 '함수'와 다르다는 구분도 짚지 않는다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG03", "model": "opus", "seq": 4},
+        {"agent": "AG04", "model": "opus", "seq": 6},
+        {"agent": "AG04", "model": "sonnet", "seq": 9},
+        {"agent": "AG04", "model": "gpt-5.6-sol", "seq": 3}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C011",
+      "file": "content/abap/CH11/CH11-L01.md",
+      "quote": "내부 테이블 하나만 있으면 **몇 줄로** 그럴듯한 리포트가 나온다.",
+      "category": "용어 일관성",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "같은 개념이 L01·L05에서는 마킹 없는 한글 '내부 테이블', L02·L04에서는 '[[Internal Table]]' 영문 마킹으로 갈려 챕터 안에서 표기·용어 마킹이 일관되지 않는다.",
+      "conflict": true,
+      "conflict_note": "AG04-opus·AG04-sonnet은 [[Internal Table]] 영문 마킹으로 통일(첫 등장에 괄호 풀이)을 제안하고, AG04-gpt-5.6-sol은 첫 등장 병기 후 '내부 테이블' 한국어로 통일을 제안 — 통일 방향이 상반된다.",
+      "supporters": [
+        {"agent": "AG04", "model": "opus", "seq": 1},
+        {"agent": "AG04", "model": "sonnet", "seq": 3},
+        {"agent": "AG04", "model": "gpt-5.6-sol", "seq": 2}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C012",
+      "file": "content/abap/CH11/CH11-L02.md",
+      "quote": "테이블 행이 [[Data Element]]로 타입팅돼 있으면",
+      "category": "문장·조어",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'타입팅돼'는 표준어도 확립된 용어도 아닌 어색한 조어로, 컬럼 제목 자동 부여 원리를 설명하는 핵심 조건절에서 입문자의 이해를 끊는다('행이 타입팅'이라는 표현 자체도 부정확).",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG04", "model": "opus", "seq": 3},
+        {"agent": "AG04", "model": "sonnet", "seq": 5},
+        {"agent": "AG04", "model": "gpt-5.6-sol", "seq": 1}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C013",
+      "file": "content/abap/CH11/CH11-L04.md",
+      "quote": "SELECT * FROM sflight INTO TABLE gt_flight.",
+      "category": "위험한 생략(성능 함정)",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "L04(및 L06)가 WHERE·건수 제한 없는 SELECT * 전건 조회를 첫 리포트의 표준형처럼 제시하면서 대량 조회 위험 경고와 조회 결과 점검(sy-subrc 등) 규율을 언급하지 않는다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG03", "model": "opus", "seq": 9},
+        {"agent": "AG06", "model": "opus", "seq": 2},
+        {"agent": "AG06", "model": "gpt-5.6-sol", "seq": 4}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C014",
+      "file": "content/abap/CH11/CH11-L05.md",
+      "quote": "title: \"SALV 기초 정리 및 이후 심화과정 소개\"",
+      "category": "챕터 구성(레슨 순서·중복)",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "정리·심화 예고 성격의 L05가 캡스톤 L06보다 앞에 놓여 L04→L06 실습 상승 흐름을 끊고, 내용도 상당 부분 L01 범위 안내의 재진술이라 새 학습량 대비 레슨 하나를 통째로 쓴다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG03", "model": "opus", "seq": 7},
+        {"agent": "AG05", "model": "opus", "seq": 8},
+        {"agent": "AG05", "model": "gpt-5.6-sol", "seq": 2}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C015",
+      "file": "embeds/_engine/salv-grid-simulator.js",
+      "quote": "ALV 객체 <code>lo_alv</code>가 메모리에 생성됐습니다",
+      "category": "불일치(위젯 상태 메시지)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "공용 엔진 doFactory( )가 성공 메시지에 lo_alv를 하드코딩해, 본문·코드 패널이 go_alv인 L02 위젯에서는 방금 읽은 코드에 없는 변수명이 안내된다(L06에서만 우연히 일치).",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG02", "model": "opus", "seq": 2},
+        {"agent": "AG02", "model": "sonnet", "seq": 2}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C016",
+      "file": "embeds/abap/CH11-L01-S01.html",
+      "quote": "셀 편집은 <a href=\"CH31-L01.html\">CH31</a>에서 배웁니다.",
+      "category": "위젯 결함(깨진 링크)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L01·L03 위젯 안내문의 상대 링크(CH31-L01.html, CH10-L03.html)가 임베드 폴더 기준으로 해석돼 클릭하면 iframe 속 위젯이 404 페이지로 대체된다(뒤로 갈 수단 없음).",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG02", "model": "opus", "seq": 8},
+        {"agent": "AG02", "model": "opus", "seq": 9}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C017",
+      "file": "content/abap/CH11/CH11-L02.md",
+      "quote": "- `IMPORTING r_salv_table` — 결과 ALV 객체를 받는다.",
+      "category": "오개념 유발·과부하",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "호출부 IMPORTING이 '내가 받는 값'(정의부와 방향 반대)이라는 반전을 짚지 않아 파라미터 방향을 거꾸로 읽기 쉽고, 첫 코드 한 블록에 미학습 문법(REF TO·TRY/CATCH·IMPORTING/CHANGING)이 몰려 과부하다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG01", "model": "opus", "seq": 3},
+        {"agent": "AG03", "model": "opus", "seq": 1}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C018",
+      "file": "content/abap/CH11/CH11-L04.md",
+      "quote": "START-OF-SELECTION.",
+      "category": "단절(선행 사용 안내 누락)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L04 완성 코드에 START-OF-SELECTION이 front-matter advanceUse 선언과 달리 본문 [선행 사용] 안내나 한 줄 설명 없이 등장해, 앞 레슨에 없던 이 줄의 정체·필요성을 알 수 없다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG01", "model": "opus", "seq": 5},
+        {"agent": "AG05", "model": "sonnet", "seq": 4}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C019",
+      "file": "content/abap/CH11/CH11-L04.md",
+      "quote": "`DESCRIBE TABLE gt_flight LINES gv_count`로 행 수를 세어",
+      "category": "생략(불완전 코드 조각)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "빈 결과 점검 팁이 gv_count(L06은 lv_count) 선언과 IF 블록·안내 메시지의 형태·삽입 위치를 생략한 불완전 조각이라 위 완성 코드에 그대로 적용할 수 없다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG01", "model": "opus", "seq": 6},
+        {"agent": "AG01", "model": "gpt-5.6-sol", "seq": 4}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C020",
+      "file": "content/abap/CH11/CH11-L02.md",
+      "quote": "`cx_salv_msg` 예외를 안 잡으면 런타임 덤프 위험. 항상 감싼다.",
+      "category": "사실 오류(설명 부정확)",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "cx_salv_msg 미처리의 결과를 '런타임 덤프 위험'으로만 설명하는데, checked exception이라 실제로는 구문 검사(활성화) 단계에서 먼저 막히는 것이 일반적이어서 서술이 부정확하다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG06", "model": "sonnet", "seq": 1},
+        {"agent": "AG06", "model": "gpt-5.6-sol", "seq": 2}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C021",
+      "file": "content/abap/CH11/CH11-L02.md",
+      "quote": "문법 연습은 어느 시스템에나 있는 표준 연습 테이블 **SFLIGHT**",
+      "category": "예시 적절성(실습 전제·사실 과장)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "SFLIGHT를 '어느 시스템에나 있는' 테이블로 단정하지만 존재·데모 데이터 적재가 보장되지 않아, 빈 그리드가 떠도 학습자가 자기 코드를 의심하게 된다(컬럼 라벨의 언어 의존성도 부수 지적).",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG06", "model": "opus", "seq": 6},
+        {"agent": "AG06", "model": "gpt-5.6-sol", "seq": 1}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C022",
+      "file": "content/abap/CH11/CH11-L05.md",
+      "quote": "나선형 학습이라 심화는 명확히 뒤로 미룬다.",
+      "category": "용어 첫 등장(무풀이)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "교수설계 용어 '나선형 (학습)'이 풀이 없이 범위 축소의 근거로 쓰이고, 48행에서는 '→ 나선형.'이라는 서술어 없는 조각 문장으로 남아 학습자에게 또 하나의 모르는 말이 된다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG01", "model": "opus", "seq": 7},
+        {"agent": "AG04", "model": "opus", "seq": 11}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C023",
+      "file": "content/abap/CH11/CH11-L02.md",
+      "quote": "[이 챕터의 캡스톤](CH11-L06.html)에서 한다.",
+      "category": "용어 첫 등장(무풀이)",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "'캡스톤'이 풀이 없이 링크 텍스트로만 쓰여 개발·전공 경험 없는 독자가 단어 뜻도, 클릭하면 어디로 가는지도 알기 어렵다(해당 문장의 긴 호흡도 부수 지적).",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG04", "model": "opus", "seq": 2},
+        {"agent": "AG04", "model": "sonnet", "seq": 4}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C024",
+      "file": "content/abap/CH11/CH11-L03.md",
+      "quote": "이름들은 필요할 때 ADT에서 찾으면 된다).",
+      "category": "용어 첫 등장(무풀이)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "도구 약어 'ADT'가 풀 스펠링·설명 없이 등장하고 이 시점 학습자의 실습 도구(SAPGUI/SE38)와도 달라 실행 불가능한 안내가 된다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG04", "model": "opus", "seq": 8},
+        {"agent": "AG04", "model": "gpt-5.6-sol", "seq": 4}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C025",
+      "file": "content/abap/CH11/CH11-L02.md",
+      "quote": "그런데 `display( )`와 툴바·제목 설정을 더 다듬고 싶다 → 다음 레슨.",
+      "category": "예고-내용 불일치",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L02 말미 예고가 '제목 설정'을 약속하지만 L03은 물론 CH11 어디에서도 다루지 않고 오히려 챕터가 CH22로 명시적으로 미루는 항목이라, 예고가 지키지 못할 약속이 된다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG05", "model": "opus", "seq": 3},
+        {"agent": "AG05", "model": "gpt-5.6-sol", "seq": 5}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C026",
+      "file": "content/abap/CH11/_chapter.md",
+      "quote": "intro: \"WRITE 리스트는 투박하다 — 표 형태로 깔끔하게 보고 싶다.\"",
+      "category": "동기 설계(챕터 도입)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "_chapter의 intro가 불편 한 문장뿐이고 본문과 완전히 동일해, 이 챕터를 마친 뒤의 보상·도달점(정렬·필터·엑셀 되는 표, 예매 목록 리포트)을 제시하지 못하는 약한 진입 문구다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG05", "model": "opus", "seq": 1},
+        {"agent": "AG05", "model": "gpt-5.6-sol", "seq": 4}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C027",
+      "file": "embeds/abap/CH11-L04-S01.html",
+      "quote": "단계를 건너뛰면 무엇이 빠졌는지 알려 줍니다.",
+      "category": "위젯 결함(흐름 로직)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L04 위젯이 SELECT를 건너뛰고 factory→display만 눌러도 SALV 칸에 6행을 그려 스스로 내세운 DB→메모리→화면 인과와 레슨의 '빈 표면 SELECT부터 의심' 습관을 화면에서 반박하며, 이때 경고 문구의 warn 스타일도 벗겨진다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG02", "model": "opus", "seq": 5}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C028",
+      "file": "content/abap/CH11/CH11-L04.md",
+      "quote": "- **classic/modern 혼동** → 이 시점 SELECT는 **classic**",
+      "category": "용어 첫 등장(무풀이)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'classic'·'modern'·'@'가 풀이 없이 쓰여, SELECT 표기를 한 가지만 배운 독자에게 존재하지 않는 혼동을 경고하는 셈이고 링크도 아직 안 배운 CH19를 가리킨다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG04", "model": "opus", "seq": 10}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C029",
+      "file": "content/abap/CH11/CH11-L02.md",
+      "quote": "DATA gt_flight TYPE TABLE OF sflight.",
+      "category": "생략(예제 불완전)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L02의 '실제로 띄워 보자' 코드가 빈 내부 테이블 선언과 factory 호출에서 끝나 SELECT와 display가 없으므로, 그대로 따라 하면 운항편 표를 확인할 수 없다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG01", "model": "gpt-5.6-sol", "seq": 2}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C030",
+      "file": "content/abap/CH11/CH11-L04.md",
+      "quote": "prereq: [\"CH11-L02\", \"CH08\"]",
+      "category": "학습 경로 선언(front-matter)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L04·L06 코드가 L03에서 도입한 get_functions( )->set_all( )를 쓰는데 두 레슨 모두 prereq에 CH11-L03이 없고, 챕터 전체가 딛고 선 CH10도 어느 레슨의 prereq에도 선언되지 않아 선언과 실제 의존이 어긋난다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG05", "model": "opus", "seq": 6}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C031",
+      "file": "content/abap/CH11/CH11-L03.md",
+      "quote": "lo_alv->get_functions( )->set_all( abap_true ).",
+      "category": "단절(문법 무설명)",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "get_functions( )의 결과에 변수 저장 없이 ->를 이어 부르는 메서드 체이닝 형태가 처음 등장하는데, 각 호출의 효과만 설명하고 이어 붙이는 문법 자체는 짚어주지 않는다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG01", "model": "sonnet", "seq": 2}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C032",
+      "file": "content/abap/CH11/CH11-L02.md",
+      "quote": "두 단계의 차이를 눈으로 확인하라.",
+      "category": "톤(명령형 이탈)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "챕터 전체 체험 안내가 청유형('～해 보자')인데 L02에서만 '확인하라'·'눌러 보라' 명령형이 두 번 나와 친근한 입문서 톤이 매뉴얼 톤으로 튄다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG04", "model": "opus", "seq": 4},
+        {"agent": "AG04", "model": "sonnet", "seq": 6},
+        {"agent": "AG04", "model": "sonnet", "seq": 7}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C033",
+      "file": "content/abap/CH11/CH11-L05.md",
+      "quote": "- **SALV로 다 하려 함** → 편집·복잡 이벤트는 Grid ALV. 도구를 구분.",
+      "category": "문장(전보문·비문)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L05 '흔한 오해' 항목이 '도구를 구분.'·'복잡 이벤트' 같은 서술어 잘린 전보문·관형어 빠진 비문이라, 문장을 완결하는 다른 레슨의 같은 성격 항목과 대비돼 한 번에 읽히지 않는다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG04", "model": "opus", "seq": 12},
+        {"agent": "AG04", "model": "gpt-5.6-sol", "seq": 6}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C034",
+      "file": "content/abap/CH11/CH11-L03.md",
+      "quote": "`set_all( abap_true )`로 표준 버튼을 모두 켠다.",
+      "category": "용어 무풀이",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "abap_true가 챕터 어디에서도 풀이 없이 인자로 등장해(L03·L04·L06) 의미를 모른 채 베끼게 된다 — 앞 챕터 선행 도입 여부는 감사 범위 밖이라 미확인.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG03", "model": "opus", "seq": 8},
+        {"agent": "AG05", "model": "opus", "seq": 5}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C035",
+      "file": "content/abap/CH11/CH11-L03.md",
+      "quote": "기능 객체에는 `set_all` 말고 개별 스위치(정렬만, 필터만)도 있다는 것,",
+      "category": "문장(긴 호흡)",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "명사절 두 개('～것'과 '～감각')가 쉼표·'그리고'로 묶이고 괄호 부연이 두 번 겹친 한 문장이라 호흡이 길고 앞뒤 성분 호응이 어색하다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG04", "model": "opus", "seq": 7},
+        {"agent": "AG04", "model": "sonnet", "seq": 10}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C036",
+      "file": "content/abap/CH11/CH11-L04.md",
+      "quote": "`DESCRIBE TABLE gt_flight LINES gv_count`로 행 수를 세어 `IF gv_count = 0`이면",
+      "category": "과잉(구식 구문 권장)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L04·L06의 빈 테이블 점검 안내가 별도 카운트 변수가 필요한 구식 DESCRIBE TABLE 방식이라, IS INITIAL·lines( ) 같은 더 표준적·간결한 표현 대비 보일러플레이트를 유발한다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG03", "model": "gemini-3.6-flash-high", "seq": 2},
+        {"agent": "AG03", "model": "gemini-3.6-flash-high", "seq": 3}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C037",
+      "file": "content/abap/CH11/CH11-L03.md",
+      "quote": "- 이 한 줄로 정렬·필터·합계·레이아웃·엑셀 내보내기가 툴바에 생긴다.",
+      "category": "사실 오류(불완전 서술)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "set_all 한 줄로 '레이아웃'까지 쓸 수 있다는 서술은 레이아웃 저장·불러오기가 별도 키 설정(get_layout( )->set_key( ) 등)을 요구한다는 점에서 불완전하며, 뒤따르는 저장 언급이 오해를 강화한다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG06", "model": "opus", "seq": 4},
+        {"agent": "AG06", "model": "gpt-5.6-sol", "seq": 3}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C038",
+      "file": "content/abap/CH11/CH11-L02.md",
+      "quote": "여기서 입문자가 가장 많이 헷갈리는 게 있다. **`factory( )`를 부르면 표가 바로 뜰까?**",
+      "category": "지름길 부재(경력자 스킵)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "factory/display 분리는 경력자에게 익숙한 생성/렌더 분리 패턴인데 소제목+시뮬레이터+콜아웃 3중으로 두껍게 다루면서 건너뛰기 안내나 패턴 요약 팁이 없어 속독 경로가 막힌다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG03", "model": "sonnet", "seq": 1},
+        {"agent": "AG03", "model": "gemini-3.6-flash-high", "seq": 4}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C039",
+      "file": "content/abap/CH11/CH11-L02.md",
+      "quote": "> 🔎 **[선행 사용]** 아래의 `TYPE REF TO`(참조 변수)와 `TRY ... CATCH`(예외 처리)는",
+      "category": "지름길 부재(경력자 매핑 팁)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "[선행 사용] 콜아웃이 REF TO와 TRY/CATCH를 한데 묶어 '분석·암기 불필요'로만 눌러 두어, Java/C# 경력자용 1:1 매핑 팁(참조 변수 선언·일반 try-catch)이 없고 실제로 새로운 것(REF TO)에 초점도 맞지 않는다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG03", "model": "sonnet", "seq": 2},
+        {"agent": "AG03", "model": "gemini-3.6-flash-high", "seq": 1}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C040",
+      "file": "embeds/abap/CH11-L02-S01.html",
+      "quote": "<button class=\"reset\" id=\"bReset\" type=\"button\">↺ 초기화</button>",
+      "category": "위젯 결함(리셋 미복원)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "그리드를 정렬한 뒤 초기화해도 행 순서는 정렬 상태로 남고 헤더 화살표만 미정렬로 돌아가는 reset 미복원 결함으로, 같은 엔진을 쓰는 L06 위젯도 동일하다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG02", "model": "opus", "seq": 4}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C041",
+      "file": "embeds/abap/CH11-L04-S01.html",
+      "quote": "<button class=\"btn empty\" data-a=\"empty\" type=\"button\">빈 결과 시나리오</button>",
+      "category": "위젯 결함(버튼 상태 고착)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'빈 결과 시나리오' 버튼의 done 표시가 리셋 후에도 남아 내부 상태(정상 데이터 복귀)와 버튼 시각 상태가 어긋나고, 이후 어느 시나리오가 켜졌는지 버튼으로 구분할 수 없다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG02", "model": "opus", "seq": 7}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C042",
+      "file": "embeds/abap/CH11-L05-S01.html",
+      "quote": "{q:\"STATUS 컬럼 제목을 '상태'로 직접 바꾸고 싶다.\", ans:'c21', why:'표시 제어 심화 — CH11에선 Data Element 라벨 확인까지만.'}",
+      "category": "헛체험(본문 표 복사)",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "분류 카드 6장 중 5장이 바로 위 본문의 '뒤로 미루는 심화' 표를 순서까지 그대로 옮긴 것이라, 표를 눈으로 훑어 베끼면 풀려 새로 생각할 거리가 거의 없다(동작 자체는 정상).",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG02", "model": "opus", "seq": 11}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C043",
+      "file": "content/abap/CH11/CH11-L05.md",
+      "quote": "| 화면에 박는 컨테이너형 Grid ALV | [Grid ALV](CH17-L01.html) |",
+      "category": "사실 오류(도구 경계 단정)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'컨테이너형 표시 = Grid ALV'라는 이분법은 CL_SALV_TABLE도 factory의 r_container로 컨테이너 표시가 가능하므로, 커리큘럼 선택이 아니라 도구 능력 한계처럼 읽히면 부정확하다(L01도 같은 경계 반복).",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG06", "model": "opus", "seq": 5}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C044",
+      "file": "content/abap/CH11/CH11-L02.md",
+      "quote": "(시뮬레이터에서 헤더 클릭 정렬·`Σ 합계`를 눌러 보라.)",
+      "category": "예시 적절성(실환경 조작 차이)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "시뮬레이터의 '헤더 클릭 = 정렬' 조작이 실제 SAP GUI ALV(열 선택 후 툴바 정렬 버튼)와 달라, 실기 화면으로 전이되면 '정렬이 안 된다'는 오인을 낳을 수 있는데 구분 안내가 없다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG06", "model": "opus", "seq": 7}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C045",
+      "file": "content/abap/CH11/CH11-L01.md",
+      "quote": "그게 [[ALV]](ABAP List Viewer)이고",
+      "category": "표기(명칭 현행화)",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "ALV 풀이를 'ABAP List Viewer'로만 제시하는데 현행 SAP 공식 표기는 'SAP List Viewer'라 병기가 없으면 학습자의 공식 자료 검색어가 어긋날 수 있다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG06", "model": "opus", "seq": 9}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C046",
+      "file": "content/abap/CH11/CH11-L01.md",
+      "quote": "그 **가장 단순한 길**이 [[SALV]]다.",
+      "category": "용어 무풀이(약어 원어)",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "같은 문장에서 ALV는 원어를 풀어 주면서 정작 챕터 주인공인 SALV는 무엇의 줄임말인지 챕터 어디에도 없어 매번 조금씩 걸린다(팝업 존재 가능성으로 추정).",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG01", "model": "opus", "seq": 1}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C047",
+      "file": "content/abap/CH11/CH11-L01.md",
+      "quote": "셀 편집은 [Editable Grid ALV](CH31-L01.html), 컨테이너형",
+      "category": "용어 무풀이",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'컨테이너형'이 지금 배울 것과 나중 것을 가르는 판단 기준 단어인데 L01·L05 어디에도 풀이 없이 등장한다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG01", "model": "opus", "seq": 2}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C048",
+      "file": "content/abap/CH11/CH11-L02.md",
+      "quote": "- `CHANGING t_table` — 표시할 [[Internal Table]](참조로 연결).",
+      "category": "용어 풀이 부실",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "CHANGING 파라미터의 괄호 풀이가 방금 '지금은 몰라도 된다'며 CH21로 미룬 '참조'라는 말로만 돼 있어 독자가 새로 얻는 정보가 없는 풀이다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG04", "model": "opus", "seq": 5}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C049",
+      "file": "content/abap/CH11/CH11-L01.md",
+      "quote": "**CL_SALV_TABLE는 클래스**",
+      "category": "문장(조사 오류)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'CL_SALV_TABLE는'은 받침으로 끝나는 말 뒤에 '는'을 붙인 조사 오류로 'CL_SALV_TABLE은'이 맞다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG04", "model": "sonnet", "seq": 2}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C050",
+      "file": "content/abap/CH11/CH11-L01.md",
+      "quote": "[[SALV]]는 `CL_SALV_TABLE` 클래스로 표를 그리는 현대적·간결한 ALV다.",
+      "category": "용어 일관성(예약어 충돌)",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "SALV를 '현대적'이라고 수식해, 커리큘럼이 classic 대비 기술 범주 이름으로 쓰는 modern(CH18～19)과 의미가 부딪혀 SALV를 modern 문법 계열로 오인할 여지가 있다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG04", "model": "sonnet", "seq": 1}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C051",
+      "file": "content/abap/CH11/CH11-L02.md",
+      "quote": "FACTORY 메서드로 Internal Table 출력",
+      "category": "표기 일관성(대소문자)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L02 제목만 'FACTORY' 전체 대문자라 본문·코드의 소문자 factory( ) 및 L03 제목의 첫 글자 대문자 표기와 같은 메서드명 표기가 위치마다 갈린다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG04", "model": "sonnet", "seq": 8}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C052",
+      "file": "content/abap/CH11/CH11-L05.md",
+      "quote": "| 셀 색·Hotspot·줄 색 | [SALV 표시 심화](CH22-L01.html) |",
+      "category": "용어 무풀이",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'Hotspot'이 설명 없이 표에 등장해 웹 링크인지 강조 표시인지 클릭 가능한 셀인지 입문자가 판단할 수 없다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG04", "model": "gpt-5.6-sol", "seq": 5}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C053",
+      "file": "content/abap/CH11/CH11-L01.md",
+      "quote": "- **SALV로 셀 편집** → 안 된다(읽기전용). 편집은 [Editable Grid ALV](CH31-L01.html).",
+      "category": "예고 반복(인지 부하)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L01 한 레슨 안에서 '읽기전용·편집은 CH31·컨테이너는 CH17·심화는 CH22' 예고가 세 번 반복돼 SALV가 무엇을 해 주는지 체감하기도 전에 미래 개념이 첫 레슨의 주의 예산을 잠식하고, 같은 경계 안내를 L05가 다시 한다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG05", "model": "opus", "seq": 2}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C054",
+      "file": "content/abap/CH11/CH11-L04.md",
+      "quote": "그런데 정렬 고정·색·셀 제어 같은 **심화**는 어디까지가 지금",
+      "category": "억지 불편(서사-메타 모순)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L04→L05 예고가 불편 체인 어투를 쓰지만 '범위 경계가 어디인가'는 학습자에게 자연 발생하는 불편이 아니고, 정작 L05의 prevRel은 parallel로 선언돼 있어 서술과 메타데이터가 모순된다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG05", "model": "opus", "seq": 7}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C055",
+      "file": "content/abap/CH11/_chapter.md",
+      "quote": "intro: \"WRITE 리스트는 투박하다 — 표 형태로 깔끔하게 보고 싶다.\"",
+      "category": "지름길 부재(챕터 수준)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "이 챕터가 도입하는 API는 factory·get_functions/set_all·display 셋뿐인데, 이미 OOP·그리드 UI를 아는 독자를 위한 '빠른 경로/건너뛰어도 됨' 안내가 챕터 어디에도 없다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG03", "model": "opus", "seq": 6}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C056",
+      "file": "content/abap/CH11/CH11-L02.md",
+      "quote": "TYPE REF TO cl_salv_table",
+      "category": "용어 충돌(타 언어)",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "'REF TO' 표기가 C# 개발자에게 매개변수 전달 방식의 ref 키워드를 먼저 연상시킬 수 있는데, 실제로는 객체 참조 변수 선언이라는 대조가 어디에도 없다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG03", "model": "sonnet", "seq": 3}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C057",
+      "file": "content/abap/CH11/CH11-L03.md",
+      "quote": "저장(레이아웃 변경 저장)이나 엑셀 내보내기를 아무에게나 열면 곤란한 화면도 있기",
+      "category": "오개념 유발(보안 혼동)",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "툴바 기능 선별 이유를 '아무에게나 열면 곤란'으로만 설명해 UI 버튼 비활성화가 데이터 접근·반출 권한 통제를 대신하는 것처럼 오독될 수 있다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG03", "model": "gpt-5.6-sol", "seq": 2}
+      ]
+    },
+    {
+      "cluster_id": "CH11-C058",
+      "file": "embeds/abap/CH11-L03-S01.html",
+      "quote": "<div class=\"salv__hd\">SALV 화면 (LT_PERSON)</div>",
+      "category": "불일치(제3의 데이터셋)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "챕터가 선언한 데이터 계획은 SFLIGHT(문법 연습)와 예매 데이터(캡스톤) 둘뿐인데 L03·L04 위젯만 출처 설명 없는 인물·급여 테이블(LT_PERSON)을 써서 제3의 데이터셋이 등장한다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {"agent": "AG02", "model": "opus", "seq": 10}
+      ]
+    }
+  ],
+  "dropped": [],
+  "grade_opinions": {
+    "AG01-opus": "경미 수정",
+    "AG01-sonnet": "경미 수정",
+    "AG01-gpt-5.6-sol": "보강 권장",
+    "AG01-gemini-3.6-flash-high": "유지",
+    "AG02-opus": "보강 권장",
+    "AG02-sonnet": "경미 수정",
+    "AG02-gpt-5.6-sol": "경미 수정",
+    "AG02-gemini-3.6-flash-high": "경미 수정",
+    "AG03-opus": "경미 수정",
+    "AG03-sonnet": "경미 수정",
+    "AG03-gpt-5.6-sol": "경미 수정",
+    "AG03-gemini-3.6-flash-high": "경미 수정",
+    "AG04-opus": "경미 수정",
+    "AG04-sonnet": "경미 수정",
+    "AG04-gpt-5.6-sol": "경미 수정",
+    "AG04-gemini-3.6-flash-high": "유지",
+    "AG05-opus": "경미 수정",
+    "AG05-sonnet": "경미 수정",
+    "AG05-gpt-5.6-sol": "보강 권장",
+    "AG05-gemini-3.6-flash-high": "유지",
+    "AG06-opus": "경미 수정",
+    "AG06-sonnet": "경미 수정",
+    "AG06-gpt-5.6-sol": "보강 권장",
+    "AG06-gemini-3.6-flash-high": "유지",
+    "AG09-opus": "경미 수정",
+    "AG09-sonnet": "경미 수정",
+    "AG09-gpt-5.6-sol": "보강 권장",
+    "AG09-gemini-3.6-flash-high": "경미 수정"
+  }
+}

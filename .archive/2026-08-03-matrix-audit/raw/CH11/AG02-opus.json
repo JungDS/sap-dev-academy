@@ -1,0 +1,161 @@
+{
+  "agent": "AG02",
+  "model": "opus",
+  "target": "CH11",
+  "persona_ack": "나는 발견자 AG02 '준호' — 배운 건 그 자리에서 눌러 봐야 직성이 풀리는 실습형 학습자다. CH11 여섯 레슨의 본문 코드·설명과 체험 위젯 6개를 실제 브라우저에서 조작하며 대조 감사했다. 체험 공백·불일치·헛체험·위젯 결함 네 갈래로만 판단했고, 확인하지 못한 것은 추정으로 남겼다.",
+  "method": "전역 Playwright 1.62.1(절대경로 require)로 헤드리스 Chromium을 1회 기동해 위젯 6개를 각각 새 탭에서 http://localhost:8143/embeds/abap/<위젯ID>.html?v=b3 로 로드했다. 탭마다 console(error/warning)·pageerror·requestfailed를 수집(6개 전부 0건, HTTP 200)했고, 소스 정독만으로는 알 수 없는 항목은 실제 클릭(page.click)으로 상태를 전이시킨 뒤 렌더된 DOM을 측정했다. 구체적으로 ①L01: WRITE/SALV 모드 전환·좌석수 정렬·합계 토글·tfoot 값 판독, note 링크를 실제 클릭해 이동 결과 URL과 본문 확인 ②L02·L06: factory→display 2단계 클릭 후 #stat 문구·#alv hidden 클래스·그리드 헤더/행/tfoot 합계·sy-tabix readout 판독, 빈 테이블 preset과 초기화 후 행 순서 재측정 ③L03: 세 시나리오 버튼(nofunc/setall/nodisp)별 코드 패널 innerHTML·getComputedStyle(취소선·opacity)·툴바·tfoot 측정 ④L04: SELECT를 건너뛴 경로(factory→display)와 정상 경로, 가드 경로(desc/set 선행 클릭), 빈 결과 시나리오, 리셋 후 버튼 className·backgroundColor까지 측정 ⑤L05: 카드 6장에 오답 1건·정답 5건을 클릭해 채점·정답 공개·리셋 동작 확인. 추가로 빌드 산출물 docs/abap/pages/CH11-L01~L06.html 6쪽을 로드해 iframe src·개수와 본문 코드 렌더를 확인했고, 위젯이 건 상대 링크와 참조 챕터 경로 10개의 HTTP 상태를 실측했다. 엔진 소스(write-vs-salv.js, salv-grid-simulator.js, salv-function-switch.js, salv-pipeline-stepper.js, module-choice-cards.js)는 측정값의 원인 확인용으로 정독했다. 저장소에는 쓰지 않았고 서버·프로세스를 기동·종료하지 않았다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L06.md",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH11-L01-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH11-L02-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH11-L03-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH11-L04-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH11-L05-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH11-L06-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\write-vs-salv.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\salv-grid-simulator.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\salv-function-switch.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\salv-pipeline-stepper.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\module-choice-cards.js",
+    "http://localhost:8143/docs/abap/pages/CH11-L01.html (렌더 확인)",
+    "http://localhost:8143/docs/abap/pages/CH11-L02.html (렌더 확인)",
+    "http://localhost:8143/docs/abap/pages/CH11-L03.html (렌더 확인)",
+    "http://localhost:8143/docs/abap/pages/CH11-L04.html (렌더 확인)",
+    "http://localhost:8143/docs/abap/pages/CH11-L05.html (렌더 확인)",
+    "http://localhost:8143/docs/abap/pages/CH11-L06.html (렌더 확인)"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH11-L02-S01.html",
+      "quote": "<p class=\"lead\">내부 테이블 <code>LT_PERSON</code>을 ALV 표로 띄웁니다.",
+      "category": "불일치",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "위젯 첫 문장이 다루는 내부 테이블을 LT_PERSON이라고 소개하는데, 같은 화면의 코드·데이터·ALV 제목은 전부 GT_FLIGHT(SFLIGHT)다. 레슨 본문 코드와도 어긋나는 잔재 이름이다.",
+      "evidence": "브라우저 렌더 DOM 측정: .lead = '내부 테이블 LT_PERSON을 ALV 표로 띄웁니다…' 인데, 같은 페이지의 .alv__tt = '📊 ALV · GT_FLIGHT', #ltToggle = '▾ gt_flight 데이터 보기', 코드 패널 = 'DATA gt_flight TYPE TABLE OF sflight.' 로 측정됐다. 제목·토글은 엔진이 SALV_CFG.itab(='gt_flight')로 덮어쓰지만 .lead는 정적 HTML이라 교정되지 않는다. 레슨 본문(CH11-L02.md)도 gt_flight/SFLIGHT이며, 빌드된 CH11-L02.html의 코드 블록 역시 'DATA gt_flight TYPE TABLE OF sflight.'로 렌더된다. 즉 학습자는 한 화면에서 LT_PERSON과 GT_FLIGHT를 동시에 본다.",
+      "suggestion": "lead의 LT_PERSON을 GT_FLIGHT로 바꾼다. 다른 레슨에서 재사용할 것을 감안하면 lead의 테이블명도 SALV_CFG.itab로 채우도록 엔진에서 처리하는 편이 재발을 막는다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH11-L02-S01.html",
+      "quote": "{t:'      IMPORTING r_salv_table = go_alv       \" 만들어진 ALV 객체', g:'factory'},",
+      "category": "불일치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "① factory( ) 를 누르면 성공 메시지가 생성된 객체를 lo_alv라고 안내한다. 그러나 이 레슨의 본문 코드와 위젯 코드 패널의 변수명은 go_alv라, 방금 읽은 코드에 없는 변수명이 결과 안내에 등장한다.",
+      "evidence": "실제 클릭 후 #stat 측정값: '✓ factory( ) 성공 — ALV 객체 lo_alv가 메모리에 생성됐습니다. 하지만 아직 화면엔 안 보입니다. 이제 ② display( )!'. 같은 화면의 코드 패널은 'IMPORTING r_salv_table = go_alv'로 렌더된다. 원인은 공용 엔진 embeds/_engine/salv-grid-simulator.js의 doFactory()가 문자열 lo_alv를 하드코딩한 것(같은 엔진을 쓰는 CH11-L06은 본문이 lo_alv라 우연히 일치해 이 레슨에서만 어긋난다).",
+      "suggestion": "엔진의 성공 메시지를 SALV_CFG.itab처럼 cfg에서 객체 변수명을 받아 출력하도록 바꾼다(예: cfg.oref). 최소 조치로는 메시지에서 변수명을 빼고 'ALV 객체가 메모리에 생성됐습니다'로 둔다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH11-L02-S01.html",
+      "quote": "정렬·합계·엑셀 같은 표준 기능은 <b>공짜로</b> 따라온다.",
+      "category": "불일치",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L02 위젯은 set_all 호출이 전혀 없는 코드로 factory→display만 해도 정렬·필터·Σ합계·엑셀·인쇄가 다 있는 툴바를 보여 준다. 그런데 바로 다음 레슨 L03 위젯은 '똑같이 set_all을 안 부른 상태'를 '표준 기능이 제한적입니다 (set_all 미호출)'로 모델링한다. 두 체험이 같은 프로그램 상태를 정반대로 가르친다.",
+      "evidence": "L02 위젯: 코드 패널 12줄 어디에도 get_functions/set_all이 없는데(측정된 코드 전문에 set_all 없음), display 클릭 후 .alv__bar에 '🔃 정렬 / 🔍 필터 / Σ 합계 / ⬇ 엑셀 / 🖨 인쇄'가 모두 렌더되고 Σ 합계를 누르면 tfoot '합계 (6행) 1,233'이 나온다. L03 위젯에서 '기능 끄고 표시'를 누르면 같은 상태(set_all 미호출)의 툴바가 '표준 기능이 제한적입니다 (set_all 미호출)'로 바뀐다. 본문도 같은 충돌을 안고 있다 — CH11-L02.md는 '표준 기능이 코드 추가 없이 따라온다', CH11-L03.md는 'set_all 안 함 → 표는 떠도 툴바 기능이 비어 보인다'.",
+      "suggestion": "둘 중 하나로 통일한다. 실물에 가깝게 가려면 L02 위젯 툴바를 기본 최소 버튼만 보이게 하고 '전체 기능은 다음 레슨의 set_all에서'로 잇거나, 반대로 L02 본문의 '공짜' 서술을 '기본 표시는 공짜, 전체 툴바는 set_all 한 줄'로 좁힌다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH11-L02-S01.html",
+      "quote": "<button class=\"reset\" id=\"bReset\" type=\"button\">↺ 초기화</button>",
+      "category": "위젯 결함",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "그리드를 정렬한 뒤 ↺ 초기화를 눌러도 행 순서는 정렬된 상태로 남는데, 헤더 화살표만 미정렬(↕)로 되돌아간다. 초기화 후 다시 표를 띄우면 '정렬 안 했다고 표시된 표가 정렬돼 있는' 상태가 된다.",
+      "evidence": "측정: display 직후 예약좌석 열 순서 371,120,275,64,305,98 → '예약 좌석' 헤더 클릭 후 64,98,120,275,305,371 → ↺ 초기화 후 factory·display 재실행 시에도 64,98,120,275,305,371 그대로이고, 헤더는 다섯 개 모두 '↕'(미정렬 표시)로 측정됐다. 원인은 엔진 reset()이 sortCol만 -1로 되돌리고 rows 배열을 원본 순서로 복원하지 않기 때문. 같은 엔진을 쓰는 CH11-L06-S01도 동일하다.",
+      "suggestion": "엔진 reset()에서 rows = FULL.slice()로 원본 순서를 함께 복원한다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH11-L04-S01.html",
+      "quote": "순서대로 눌러 데이터가 <b>DB → 메모리 표 → 화면</b>으로 흘러가는 걸 보세요. 단계를 건너뛰면 무엇이 빠졌는지 알려 줍니다.",
+      "category": "위젯 결함",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "SELECT를 건너뛰고 factory→display만 눌러도 SALV 칸에 6행이 전부 표시된다. 같은 순간 Internal Table 칸은 '(SELECT 전 — 비어 있음)'이라, 위젯이 스스로 내세운 'DB→메모리 표→화면' 인과를 화면에서 반박한다. 하필 이 레슨이 경고하는 '빈 표가 뜨면 SELECT부터 의심하라'와 정확히 반대되는 장면이다.",
+      "evidence": "새로 로드한 뒤 SELECT를 누르지 않고 'factory 실행'→'display 실행'만 클릭한 결과 측정: #itBody = '(SELECT 전 — 비어 있음)', 그러나 #salvBody의 tbody 행 = 6행('1001|정훈영|서울' … '1006|차은우|서울'). 원인은 엔진 salv-pipeline-stepper.js의 rows()가 st.empty만 보고 st.sel(SELECT 수행 여부)을 보지 않는 것. 부수 결함으로 이때 뜨는 경고 문구는 fb()가 곧바로 한 번 더 호출되며 warn 클래스가 벗겨져(측정: className='fb', desc/set 가드 경로는 정상적으로 'fb warn') 경고 스타일 없이 표시된다.",
+      "suggestion": "rows()가 !st.sel이면 빈 배열을 돌려주도록 해 SELECT 전 display는 빈 표가 되게 한다(레슨의 진단 습관과 일치). factory 스킵 경로의 두 번째 fb() 호출을 없애 경고 스타일이 유지되게 한다."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH11-L04-S01.html",
+      "quote": "<div class=\"col db\"><div class=\"col__hd\">DB Table · ZTPERSON</div><div class=\"col__b\" id=\"dbBody\"></div></div>",
+      "category": "불일치",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "레슨 본문 코드는 sflight를 gt_flight로 읽어 go_alv로 띄우는데, 위젯은 ZTPERSON→LT_PERSON→lo_alv에 lv_count까지 이름이 전부 다르다. 본문 코드를 그대로 손에 쥔 채 위젯을 누르는 학습자는 같은 식별자를 하나도 만나지 못한다.",
+      "evidence": "렌더 DOM 측정: 세 칸 제목이 'DB Table · ZTPERSON' / 'Internal Table · LT_PERSON' / 'SALV 화면'이고, 행 수 확인 시 배지 'lv_count = 6', factory 시 배지 'lo_alv 생성됨', 컬럼은 persid·이름·도시로 나온다. 반면 CH11-L04.md 본문 코드는 'SELECT * FROM sflight INTO TABLE gt_flight.' 와 'r_salv_table = go_alv' 이고, 같은 레슨의 점검 문구도 'DESCRIBE TABLE gt_flight LINES gv_count'다. 덧붙여 프로그램 최상위 선언이므로 접두어도 본문(g_) 쪽이 규칙에 맞다.",
+      "suggestion": "위젯 데이터를 SFLIGHT(gt_flight/go_alv/gv_count, 컬럼 carrid·connid·fldate)로 바꿔 본문과 식별자를 맞춘다. L02-S01처럼 cfg 주입형으로 빼면 재사용도 쉬워진다."
+    },
+    {
+      "seq": 7,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH11-L04-S01.html",
+      "quote": "<button class=\"btn empty\" data-a=\"empty\" type=\"button\">빈 결과 시나리오</button>",
+      "category": "위젯 결함",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'빈 결과 시나리오' 버튼은 한 번 켜지면 시각 상태가 켜짐으로 고착된다. 리셋이 내부 상태만 정상 데이터로 되돌리고 버튼 표시는 그대로 둬서, 켜짐으로 보이는 버튼 아래에 6행짜리 정상 데이터가 깔린다.",
+      "evidence": "측정: '빈 결과 시나리오' 클릭 → className='btn empty done', DB 칸 '0행'. '리셋' 클릭 → className 여전히 'btn empty done'(배경색 rgb(234,250,243), 다른 버튼은 rgb(255,255,255))인데 DB 칸은 6행으로 복귀. 이 상태에서 버튼을 다시 누르면 내부 상태만 빈 결과로 바뀌고 className은 계속 'done'이라, 이후로는 어느 시나리오가 켜졌는지 버튼으로 구분할 수 없다.",
+      "suggestion": "reset 분기에서 empty 버튼의 done 클래스도 함께 제거한다(상태 초기화와 버튼 표시를 한 곳에서 렌더)."
+    },
+    {
+      "seq": 8,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH11-L01-S01.html",
+      "quote": "CH11 SALV 1차는 <b>읽기 전용</b> — 셀 편집은 <a href=\"CH31-L01.html\">CH31</a>에서 배웁니다.",
+      "category": "위젯 결함",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "위젯 안내문의 CH31 링크가 깨져 있다. 상대 경로가 임베드 폴더 기준으로 풀려서, 클릭하면 iframe이 404 오류 페이지로 바뀌며 체험 위젯이 사라진다(프레임 안이라 뒤로 갈 수단도 없다).",
+      "evidence": "실제 클릭 측정: href='CH31-L01.html'가 http://localhost:8143/embeds/abap/CH31-L01.html 로 해석돼 이동했고, 이동 후 프레임 본문은 'Error response Error code: 404 Message: File not found.'였다. 해당 경로 HTTP 404 실측, 진짜 레슨 경로 /docs/abap/pages/CH31-L01.html 는 200. 위젯은 iframe으로 삽입되므로(빌드된 CH11-L01.html의 iframe src='../../../embeds/abap/CH11-L01-S01.html' 확인) target 없는 이 링크는 위젯 자리에서 열린다.",
+      "suggestion": "href를 '../../docs/abap/pages/CH31-L01.html'처럼 실제 경로로 고치고 target=\"_parent\"를 준다. 임베드 안에서 레슨 이동을 시키지 않을 방침이라면 링크를 걷어내고 텍스트만 남긴다."
+    },
+    {
+      "seq": 9,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH11-L03-S01.html",
+      "quote": "여기서 \"function\"은 <b>ALV 툴바 기능</b>이지 <a href=\"CH10-L03.html\">CH10의 Function Module</a>이 아닙니다.",
+      "category": "위젯 결함",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L01-S01과 같은 형태의 깨진 링크다. 'CH10의 Function Module'을 누르면 404가 위젯 자리에 뜬다. 하필 이 링크는 학습자가 헷갈릴 때 확인하러 누를 안내문 링크라 실패 확률이 높다.",
+      "evidence": "href='CH10-L03.html'가 임베드 폴더 기준 http://localhost:8143/embeds/abap/CH10-L03.html 로 해석됨(브라우저 resolved URL 측정). 해당 경로 HTTP 404 실측, 실제 레슨 /docs/abap/pages/CH10-L03.html 는 200. 동일 패턴을 클릭까지 재현한 건 L01-S01(seq 8)이고 이 파일은 경로 해석·상태 코드로 확인했다.",
+      "suggestion": "seq 8과 같은 방식으로 실제 경로 + target=\"_parent\"로 고친다. 임베드 폴더 전체를 대상으로 상대 링크를 한 번 훑어 같은 잔재가 더 있는지 확인하는 편이 좋다."
+    },
+    {
+      "seq": 10,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH11-L03-S01.html",
+      "quote": "<div class=\"salv__hd\">SALV 화면 (LT_PERSON)</div>",
+      "category": "불일치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "챕터가 스스로 선언한 데이터 계획은 'SFLIGHT로 문법 연습, 예매 데이터로 캡스톤' 둘뿐인데, L03·L04 위젯만 인물·급여 테이블(LT_PERSON)이라는 제3의 데이터셋을 쓴다. 어디서 온 표인지 본문 어디에도 설명이 없다.",
+      "evidence": "위젯 렌더 측정: 표 제목 'SALV 화면 (LT_PERSON)', 컬럼 persid·이름·도시·급여, 6행(정훈영 5000 … 차은우 6000), Σ 합계 47000. CH11-L02.md는 '문법 연습은 … 표준 연습 테이블 SFLIGHT로 하고, 우리 예매 데이터 적용은 이 챕터의 캡스톤에서 한다'고 범위를 못 박았고, L01·L06 위젯은 예매 데이터, L02 위젯은 SFLIGHT다. 급여 컬럼은 CH11 어느 레슨에도 등장하지 않는다.",
+      "suggestion": "L03·L04 위젯 데이터를 SFLIGHT(문법 연습) 또는 예매 데이터 중 하나로 통일한다. 합계 시연이 필요해 숫자 컬럼이 있어야 한다면 SFLIGHT의 seatsocc가 그대로 쓰인다."
+    },
+    {
+      "seq": 11,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH11-L05-S01.html",
+      "quote": "{q:\"STATUS 컬럼 제목을 '상태'로 직접 바꾸고 싶다.\", ans:'c21', why:'표시 제어 심화 — CH11에선 Data Element 라벨 확인까지만.'},",
+      "category": "헛체험",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "분류 카드 6장 중 5장이 바로 몇 줄 위 본문의 '뒤로 미루는 심화' 표를 순서까지 그대로 옮긴 것이라, 표를 눈으로 훑으며 베끼면 풀린다. 동작은 정상이지만 새로 생각할 거리가 거의 없다.",
+      "evidence": "위젯 6장을 모두 클릭해 채점·정답 공개·리셋이 정상임을 확인했다(오답 1건 시 '✕ 정답: CH11 지금 가능 —' 안내, 최종 '정답 5 / 6'). 다만 CH11-L05.md의 표 행(컬럼 제목/너비 세밀 제어→CH22, 셀 색→CH22, 더블클릭·툴바 이벤트→CH30, 셀 편집→CH31, 컨테이너형 Grid ALV→CH17)과 카드 2~6번이 같은 순서로 1:1 대응한다. 표 바로 아래에 배치돼 스크롤 없이 대조된다. 학습 가치 판단이라 확신은 추정으로 둔다.",
+      "suggestion": "표에 없는 판단형 카드로 절반쯤 바꾼다(예: '합계를 엑셀로 내려받고 싶다', '조회 결과가 0건일 때 안내 메시지를 띄우고 싶다' 같은 지금 범위 안 항목, 또는 표만 봐서는 안 갈리는 경계 사례). 최소 조치로는 위젯을 표보다 앞에 두어 먼저 판단하게 한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "보강 권장",
+    "summary": "체험 공백은 없다 — 여섯 레슨 모두 임베드가 하나씩 붙어 있고(빌드된 CH11-L01~L06.html에서 iframe 1개씩 실측), 코드가 나오는 L02·L03·L04·L06은 그 코드를 그대로 눌러 보는 위젯을 갖췄다. 위젯 6개 전부 HTTP 200에 콘솔 오류·경고·pageerror 0건이고, factory→display 2단계 분리, set_all 세 시나리오, 파이프라인 5단계, 분류 채점 같은 핵심 상호작용은 실제 클릭으로 모두 정상 동작했다. 합계 값도 실측이 맞았다(예매 Σ17, SFLIGHT 1,233, 급여 47000). 문제는 '대조'다. L02 위젯은 첫 문장에서 테이블을 LT_PERSON이라 부르면서 화면 나머지는 GT_FLIGHT를 보여 주고, factory 성공 메시지는 본문에 없는 lo_alv를 호명한다. L04 위젯은 본문 코드(sflight/gt_flight/go_alv)와 식별자가 하나도 겹치지 않는 ZTPERSON/LT_PERSON으로 돌아가고, SELECT를 건너뛰어도 SALV에 6행을 그려 이 레슨이 가르치려는 인과('빈 표면 SELECT부터 의심')를 화면에서 반박한다. L02와 L03 위젯은 set_all을 안 부른 같은 상태를 각각 '툴바 완비'와 '기능 제한'으로 상반되게 모델링한다. 여기에 L01·L03 안내문의 상대 링크 두 개가 임베드 폴더 기준으로 풀려 클릭하면 위젯이 404 페이지로 대체된다(클릭까지 재현 확인). 개별 결함은 국소적이지만 네 레슨에 걸쳐 있고, 특히 L04는 데이터셋 교체와 흐름 로직 수정이 함께 필요해 단순 오타 정정 수준을 넘는다. 그래서 유지·경미 수정이 아니라 보강 권장으로 본다. L06은 코드·변수명·데이터가 본문과 정확히 일치하는 이 챕터의 모범 사례라, 나머지 위젯을 L06 기준으로 맞추면 정리가 빠르다."
+  }
+}

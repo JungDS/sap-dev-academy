@@ -1,19 +1,24 @@
 // ===== concert-model-checklist 엔진 JS — 콘서트 모델(DDIC) 제작 체크리스트 (CH09-L09) =====
-// 제작 단계를 클릭으로 진행(미작성→작성→활성화→검증완료)하고, 관계 미리보기와 테스트 결과가
-// 선행 단계 완료에 따라 달라진다. 데이터=window.CMC_CFG.
+// 제작 단계를 클릭으로 진행(미작성→작성→활성화→검증완료)하고, 관계 미리보기·테스트 결과가
+// 선행 단계 완료에 **실제로** 의존한다. 데이터=window.CMC_CFG.
+//   CMC_CFG = {
+//     steps: [{key, n, sub}],                       // 왼쪽 단계 카드(본문 제작 순서와 1:1)
+//     boxes: [{el, needs:[stepKey..]}],             // 미리보기 테이블 상자 — needs가 '작성'(>=1) 이상이면 점등
+//     rels:  [{el, needs:[stepKey..]}],             // 관계 화살표 — needs가 '활성화'(>=2) 이상이면 점등(관계당 단계 하나)
+//     tests: [{t, core:[..], extra:[..], ok, partial, none}]
+//   }
+// 판정 규칙(C010): core 중 하나라도 활성화 안 됐으면 실패 + **빠진 단계 이름을 그대로** 알려 준다.
+//   core는 됐는데 extra가 빠지면 중간 결과(△) — "되긴 되는데 반쪽"을 구분해 보여 준다.
+//   즉 테이블이 전부 미작성인 상태에서 성공하는 테스트는 하나도 없다.
 (function(){
+  var cfg = window.CMC_CFG || {};
   var STATS=['미작성','작성','활성화','검증완료'];
-  var STEPS = [
-    {key:'domain', n:'Domain', sub:'공연ID·회차·상태·좌석 의미'},
-    {key:'de',     n:'Data Element', sub:'라벨·F4 의미 정보'},
-    {key:'zconcert', n:'ZCONCERT', sub:'공연 마스터 (CONCERT_ID·ARTIST·VENUE·CAPACITY)'},
-    {key:'zperf',  n:'ZPERF', sub:'공연 회차 (CONCERT_ID·PERF_NO)'},
-    {key:'zbooking', n:'ZBOOKING', sub:'예매 (BOOKING_ID·CONCERT_ID·SEATS·STATUS)'},
-    {key:'fk',     n:'Foreign Key', sub:'ZBOOKING-CONCERT_ID → ZCONCERT'},
-    {key:'sh',     n:'Search Help', sub:'ZSH_CONCERT (ID·아티스트·장소 / EXP=ID)'},
-    {key:'data',   n:'테스트 데이터', sub:'공연 2·회차 3·예매 3(정훈영 포함)'}
-  ];
+  var STEPS = cfg.steps || [];
+  var BOXES = cfg.boxes || [];
+  var RELS  = cfg.rels  || [];
+  var TESTS = cfg.tests || [];
   var $=function(id){return document.getElementById(id);};
+  function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
   var st={}; STEPS.forEach(function(s){ st[s.key]=0; });
 
   function renderSteps(){
@@ -25,15 +30,22 @@
   }
   function renderProg(){
     var total=STEPS.length*3, sum=STEPS.reduce(function(a,s){return a+st[s.key];},0);
-    $('prog').style.width=Math.round(sum/total*100)+'%';
+    $('prog').style.width=(total? Math.round(sum/total*100):0)+'%';
   }
-  function on(k){ return st[k]>=2; }   // 활성화 이상이면 동작
+  function on(k){ return st[k]>=2; }                       // 활성화 이상이면 동작
+  function drawn(k){ return st[k]>=1; }                    // 작성만 해도 그림엔 나온다
+  function stepName(k){ var s=STEPS.filter(function(x){return x.key===k;})[0]; return s?s.n:k; }
+  function missing(keys, fn){ return (keys||[]).filter(function(k){ return !fn(k); }); }
+
   function renderPreview(){
-    $('boxConcert').classList.toggle('on', st.zconcert>=1);
-    $('boxPerf').classList.toggle('on', st.zperf>=1);
-    $('boxBooking').classList.toggle('on', st.zbooking>=1);
-    $('relFk').classList.toggle('on', on('fk'));
-    $('relPerf').classList.toggle('on', on('fk'));
+    BOXES.forEach(function(b){
+      var el=$(b.el); if(!el) return;
+      el.classList.toggle('on', missing(b.needs, drawn).length===0);
+    });
+    RELS.forEach(function(r){
+      var el=$(r.el); if(!el) return;
+      el.classList.toggle('on', missing(r.needs, on).length===0);
+    });
   }
   function render(){ renderSteps(); renderProg(); renderPreview(); postHeight(); }
 
@@ -44,21 +56,23 @@
   $('fillAll').addEventListener('click',function(){ STEPS.forEach(function(s){ st[s.key]=3; }); render(); });
   $('clearAll').addEventListener('click',function(){ STEPS.forEach(function(s){ st[s.key]=0; }); $('tout').className='tout'; $('tout').textContent=''; render(); });
 
+  function names(keys){ return keys.map(function(k){ return '<b>'+esc(stepName(k))+'</b>'; }).join(' · '); }
   function test(kind){
     var o=$('tout');
-    if(kind==='okId'){
-      if(on('zconcert')){ o.className='tout ok'; o.innerHTML='✓ <code>C001</code> 통과 — 공연 마스터에 존재.'; }
-      else { o.className='tout no'; o.textContent='ZCONCERT가 아직 활성화되지 않아 조회할 수 없습니다.'; }
-    } else if(kind==='badId'){
-      if(on('fk')){ o.className='tout ok'; o.innerHTML='✓ <code>C999</code> 거부 — Foreign Key가 막아 줍니다.'; }
-      else { o.className='tout no'; o.textContent='Foreign Key 미활성화 — 관계가 선언되지 않아 C999가 막히지 않습니다.'; }
-    } else if(kind==='f4'){
-      if(on('sh')){ o.className='tout ok'; o.innerHTML='✓ F4 → 공연 ID·아티스트·장소 목록 표시, 선택 시 CONCERT_ID 반환.'; }
-      else if(on('fk')){ o.className='tout ok'; o.textContent='△ Search Help는 없지만 Foreign Key 기반 Check Table 목록이 뜹니다(설명 컬럼 부족).'; }
-      else { o.className='tout no'; o.textContent='도움말이 없어 기본 목록만 — Search Help를 만들어 보세요.'; }
-    } else if(kind==='jhy'){
-      if(on('zbooking') && on('data')){ o.className='tout ok'; o.innerHTML='✓ 예매 테이블에서 <b>정훈영</b> 행 강조 — 모델 완성.'; }
-      else { o.className='tout no'; o.textContent='ZBOOKING과 테스트 데이터가 활성화/입력돼야 확인할 수 있습니다.'; }
+    var t=TESTS.filter(function(x){return x.t===kind;})[0];
+    if(!t){ o.className='tout'; o.textContent=''; postHeight(); return; }
+    var lackCore=missing(t.core, on);
+    if(lackCore.length){
+      o.className='tout no';
+      o.innerHTML=(t.none||'아직 확인할 수 없습니다')+' — '+names(lackCore)+' 단계가 활성화되지 않았습니다.';
+    } else {
+      var lackExtra=missing(t.extra, on);
+      if(lackExtra.length){
+        o.className='tout mid';
+        o.innerHTML=t.partial+' <span class="lack">빠진 단계: '+names(lackExtra)+'</span>';
+      } else {
+        o.className='tout ok'; o.innerHTML=t.ok;
+      }
     }
     postHeight();
   }
