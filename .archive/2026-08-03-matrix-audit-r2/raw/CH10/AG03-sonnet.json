@@ -1,0 +1,57 @@
+{
+  "agent": "AG03",
+  "model": "sonnet",
+  "target": "CH10",
+  "persona_ack": "타 언어(Java/C# 계열) 백엔드 3～5년차 개발자 시점을 채택 — 프로그래밍 기본기(변수·조건문·루프·SQL·OOP)는 이미 안다는 전제로 CH10(모듈화 기초) 7개 레슨과 챕터 인트로를 통독하며 과잉설명·오개념 유발·지름길 부재·용어 충돌 네 축을 점검했다.",
+  "method": "대상 8개 파일 전문을 직접 통독하는 정적 리딩만 수행 — 브라우저·빌드 등 실행 도구는 사용하지 않음.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH10-L03.md",
+      "quote": "**EXPORTING** — 함수에 **넘기는** 값(호출자 입장).",
+      "category": "용어 충돌",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "EXPORTING/IMPORTING이라는 이름이 일반 프로그래밍의 '모듈 import/export'(공개 API 노출)와는 전혀 다른 뜻(단순 파라미터 방향: 넘기는 값/받는 값)으로 재사용된다. 경력 개발자는 처음 스캔할 때 '내보내기 = 외부에 공개'로 오독할 소지가 있다.",
+      "evidence": "바로 아래 블록인용은 EXPORTING/IMPORTING의 '호출자 기준 vs 정의 기준' 방향 헷갈림은 짚어 주지만, 그보다 앞서 걸리는 지점 — 일반 개발 용어의 import/export(모듈 시스템의 공개·노출 개념)와는 아예 다른 의미로 재활용됐다는 점 — 은 어디서도 명시적으로 대비해 주지 않는다. 코드 예제(EXPORTING iv_amount = 1000)를 보면 곧 뜻이 파악되긴 하나, 스캔하듯 읽는 경력자에게는 한 박자 걸리는 지점이다.",
+      "suggestion": "'여기 EXPORTING/IMPORTING은 JS의 export/import 같은 모듈 공개 개념이 아니라, 그냥 파라미터 방향(입력/출력) 이름이다' 같은 한 줄 대비를 추가."
+    },
+    {
+      "seq": 2,
+      "file": "CH10-L03.md",
+      "quote": "`EXCEPTIONS` 절은 함수가 알려 오는 오류 이름에 **번호를 붙이는** 곳이다.",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "'EXCEPTIONS'라는 이름이 Java/C#의 예외(try/catch, 자동 전파)를 연상시키지만, 실제로는 번호로만 돌아오는 반환코드(sy-subrc) 방식이라 자동 전파·스택 언와인딩이 없다. 이 차이를 명시적으로 짚어주지 않으면 경력자는 '예외처럼 알아서 위로 던져지겠지'라고 오해하기 쉽다.",
+      "evidence": "본문은 '저절로 위로 전달되지 않으니 호출 바로 다음 줄에서 sy-subrc를 확인해야 한다'는 동작 자체는 정확히 설명하지만, 'Java/C#의 try/catch 예외와는 다른 개념'이라는 명시적 대비 문장은 없다. front-matter가 이를 'classic EXCEPTIONS'로 명명해 저자 쪽도 최신 클래스 기반 예외와 구분해 인지하고 있음이 드러나는데, 정작 본문에는 그 대비가 없다.",
+      "suggestion": "'이름은 EXCEPTIONS지만 Java/C#의 try/catch와 달리 자동 전파가 없는 번호 코드다'라는 한 줄을 EXCEPTIONS 절 도입부에 추가."
+    },
+    {
+      "seq": 3,
+      "file": "CH10-L01.md",
+      "quote": "콘서트 안내 문구를 출력하는 세 줄짜리 코드가 프로그램 안 **세 군데**에 똑같이",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "CH10 전체(FORM/PERFORM=프로시저, USING/CHANGING=파라미터 전달, Function Module=공유 함수, Class/정적 메서드=OOP)의 핵심 개념은 Java/C# 경력자에게 이미 1:1 대응되는 익숙한 개념이다. 그런데 7개 레슨 어디에도 '이미 함수/클래스 개념을 아는 독자는 여기부터'류의 지름길 안내가 없어, 경력자도 입문자와 같은 pain→definition→example 전체 경로를 다 읽어야 한다.",
+      "evidence": "CH10-L01~L07 원문을 통독한 결과, [선행 사용]/💡 콜아웃은 있으나(예: L01의 START-OF-SELECTION 선행 사용, L04의 '왜 맛보기인가') 이들은 모두 '입문자를 위한 학습 순서 안내'이지 '경력자는 건너뛰어도 됨'류의 스킵 안내가 아니다. L01(FORM/PERFORM)·L02(USING/CHANGING)·L03(CALL FUNCTION)·L04(Local Class) 네 레슨 모두 동일 패턴이 반복된다.",
+      "suggestion": "각 레슨 도입부(또는 챕터 인트로)에 접이식(details) '이미 다른 언어의 함수/클래스를 아는 경우' 요약 박스를 두어, ABAP 고유 문법·이름 규칙만 빠르게 훑고 지나가게 한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH10(모듈화 기초) 7개 레슨을 Java/C# 백엔드 경력자 시점에서 통독했다. FORM/PERFORM·USING/CHANGING·Function Module·Local/Global Class 등 핵심 개념이 이미 아는 프로시저·파라미터 전달·정적 메서드와 1:1 대응돼 학습 부담이 크지 않았고, USING의 참조전달 함정·STATICS의 숨은 상태·SELECT *의 성능 주의·동시 예매 경합 같은 경력자가 곧장 짚을 법한 위험을 본문이 먼저 캡처해 두는 점이 인상적이었다. 다만 EXPORTING/IMPORTING·EXCEPTIONS처럼 일반 개발 용어가 ABAP에서 다른 뜻으로 재사용되는 지점(특히 EXCEPTIONS가 Java/C#의 try/catch와 달리 자동 전파 없는 번호 반환코드라는 점)은 명시적 대비 문장이 없어 경력자가 순간적으로 오독할 여지가 있다. 또한 7개 레슨 전체에 '이미 아는 개념이면 건너뛰기'류의 지름길 안내가 전혀 없어 경력자도 입문자와 동일한 전체 경로를 읽어야 한다. 셋 다 사실 오류나 구조적 결함이 아니라 보완하면 좋은 수준이라 경미 수정으로 평가한다."
+  }
+}

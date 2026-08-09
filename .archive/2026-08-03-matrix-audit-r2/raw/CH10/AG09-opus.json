@@ -1,0 +1,37 @@
+{
+  "agent": "AG09",
+  "model": "opus",
+  "target": "CH10",
+  "persona_ack": "나는 AG09 — ABAP 정적 검사기를 시늉하는 코드 전용 감사자다. 산문·표·콜아웃은 판정 대상에서 제외하고 ```abap 코드 블록만 줄 단위로 읽어 (1)활성화 차단급 문법·시그니처 오류 (2)네이밍 규약(g/l 스코프 접두어·it_·pa_·so_·ty_/ts_/tt_) (3)경계 규약(CH01~17 modern 문법 금지·CH01~18 New Open SQL 금지) (4)주석·출력 문자열과 코드의 불일치만 본다. 스타일 선호(빈 줄·정렬·대소문자)는 결함으로 세지 않았고, 억지 발견 대신 확인된 것만 적었다. 블라인드 감사로 다른 감사자 산출물·과거 감사물은 열지 않았다.",
+  "method": "Read 도구로 대상 8개 파일 전문 통독 후, 각 ```abap 블록을 줄 단위로 정적 판독(선언-사용 대응, 문장 마침표, FORM/METHOD 시그니처와 호출부 파라미터 개수·순서·타입, 변수 접두어 스코프, modern 문법·New Open SQL 토큰 스캔, 주석 텍스트와 코드 일치). 추가로 대상 폴더(content/abap/CH10)에 한정한 Grep으로 LENGTH·DECIMALS·METHODS·CLASS-METHODS·STATICS·TYPES 선언을 전수 확인해 타이핑 위치별 적법성을 대조했다. 실행/활성화 환경은 없으므로 컴파일 확인이 아니라 ABAP 언어 규칙에 근거한 정적 판단이다.",
+  "errors": [
+    "DDIC 사실 확인 한계: CH10-L07이 참조하는 zbooking(concert_id·perf_no·seats·status)·zconcert(concert_id·capacity)의 실제 필드 정의는 CH09 등 대상 외 파일에 있어 접근 제약상 대조하지 못했다. 해당 필드명·타입 정합성은 이번 판정에서 제외했다(코드 자체의 문법은 검사함)."
+  ],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L07.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH10/CH10-L04.md",
+      "quote": "RETURNING VALUE(rv_result) TYPE p LENGTH 8 DECIMALS 2.",
+      "category": "문법 오류(활성화 차단)",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "메서드 시그니처(CLASS-METHODS)의 파라미터 타이핑에 LENGTH·DECIMALS 추가어를 쓸 수 없다. 이 CLASS-METHODS 선언은 구문 오류로 클래스 활성화가 막히므로, 레슨의 중심 예제를 그대로 따라 친 입문자는 첫 줄부터 막힌다.",
+      "evidence": "ABAP에서 LENGTH·DECIMALS는 DATA·TYPES·CONSTANTS·STATICS 같은 '선언'에만 붙는 추가어이고, 형식 파라미터·필드심볼의 '타이핑(TYPE ...)' 자리에는 허용되지 않는다. 타이핑 자리의 내장 타입은 추가어 없이 쓸 수 있는 것(i·f·d·t·string·xstring 등)이거나, 길이를 안 적어 generic이 되는 c·n·p·x뿐이다. 따라서 TYPE p LENGTH 8 DECIMALS 2는 METHODS/CLASS-METHODS 선언에서 파싱 자체가 실패한다. 동시에 레슨의 지적대로 RETURNING은 generic 타이핑이 금지되므로 LENGTH·DECIMALS를 단순히 지워 TYPE p로 두는 것도 해결책이 아니다 — 즉 이 두 줄은 '완전 타입이 필요한데 완전 타입을 적을 문법이 없는' 상태다. 같은 파일의 DATA: gv_amount TYPE p LENGTH 8 DECIMALS 2(68행)는 선언이라 정상이며, 문제는 시그니처 안에 쓴 35행 한 곳뿐이다(대상 폴더 Grep 전수 확인).",
+      "suggestion": "명명된 타입을 먼저 만들고 시그니처는 그 타입을 참조하게 바꾼다. 예: 클래스 DEFINITION의 PUBLIC SECTION 안에 TYPES ty_amount TYPE p LENGTH 8 DECIMALS 2. 를 두고, IMPORTING iv_amount TYPE ty_amount / RETURNING VALUE(rv_result) TYPE ty_amount 로 선언한다(프로젝트 로컬 TYPES 접두어 규칙 ty_와도 일치). 이어지는 산문 '`RETURNING`의 타입은 ... 길이·소수 자릿수까지 적어야 한다(`TYPE p LENGTH 8 DECIMALS 2`)'도 같은 취지로 고쳐야 한다 — '길이·소수 자릿수가 정해진 타입을 미리 만들어 그 이름으로 지정한다'로. 이 수정은 '왜 RETURNING만 완전 타입이 필요한가'라는 레슨의 교육 포인트를 그대로 살린다. TYPES 도입이 이 시점에 부담이면 예제 자료형을 TYPE i(세금 계산 대신 정수 반환)로 낮추는 대안도 가능하다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH10의 ```abap 블록은 전반적으로 정적 품질이 높다. FORM/PERFORM 시그니처와 호출부의 파라미터 개수·순서·타입이 모두 맞고(L02 add_tax·divide_safe, L07 get_remaining↔can_book의 USING 2 + CHANGING 1 대응), 미선언 변수 사용·문장 마침표 누락은 없었다. 네이밍 규약도 정확하다 — CH10부터 스코프가 생긴다는 규칙대로 프로그램 본문·START-OF-SELECTION 안 선언은 gv_(L01 gv_total_calls, L02 gv_amount/gv_out, L03 gv_out, L05 gv_text/gv_r), FORM 안 선언만 lv_/ls_/lt_(L01 lv_local_calls, L02 STATICS lv_count, L07 lt_book·ls_book·lv_sum·lv_cap·lv_left)로 갈렸고, 헤더라인 없는 내부 테이블에 it_를 오용한 곳도 없다. 경계 규약도 깨끗하다: 인라인 DATA()·VALUE 생성자·NEW·+=·|…| 가 한 곳도 없고, L07의 두 SELECT는 @ 없는 classic Open SQL이며 콤마 나열도 없다. L04의 RETURNING VALUE(...)와 L02의 USING value(...)는 modern VALUE 연산자가 아니라 classic 값전달 표기라 위반이 아니다. 주석·출력 문자열도 코드와 어긋나지 않았다(L07의 '취소 제외' ↔ status <> 'C', '매진(0)과 구분되는 없음 표시' ↔ cv_left = -1). 결함은 단 하나 — L04의 CLASS-METHODS 시그니처가 타이핑 자리에 쓸 수 없는 LENGTH·DECIMALS를 달아 활성화가 막힌다(한 곳, 35행). 범위가 좁고 수정 방향이 명확해 챕터 재집필은 불필요하며, 해당 코드 블록과 짝을 이루는 산문 한 문단만 함께 손보면 된다."
+  }
+}

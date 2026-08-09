@@ -1,0 +1,99 @@
+{
+  "agent": "AG02",
+  "model": "opus",
+  "target": "CH11",
+  "persona_ack": "나는 '준호' — 배운 건 그 자리에서 직접 눌러 봐야 직성이 풀리는 실습형 학습자다. CH11 여섯 레슨의 본문 코드·설명과 임베드 위젯 6종(및 위젯이 쓰는 공통 엔진)을 로컬 서버에서 실제로 조작해 1:1로 대조 감사했다. 체험 공백·본문↔위젯 불일치·헛체험·위젯 결함만 본다.",
+  "method": "① 대상 13개 파일(레슨 MD 6 + _chapter.md + 위젯 HTML 6) 전문 정독 + 위젯이 참조하는 공통 엔진 JS 5종(write-vs-salv / salv-grid-simulator / salv-function-switch / salv-pipeline-stepper / module-choice-cards) 정독. ② 하네스가 띄워 둔 http://localhost:8143 에 브라우저 탭을 붙여 위젯 6개를 각각 열고, javascript_tool로 실제 컨트롤을 click()해 시나리오를 끝까지 조작한 뒤 렌더 DOM을 측정 — 그리드 행 값·정렬 결과·tfoot 합계(L01 Σ17 / L02·L03 Σ1233 / L06 Σ17)·stat/fb 안내문·버튼 disabled 상태·코드 하이라이트 라인 수·거터 1:1을 모두 실측. ③ 순서 위반 조작(display 먼저, display 뒤 set_all, SELECT 건너뛰기, DESCRIBE 먼저)과 프리셋 전환·리셋·재클릭까지 눌러 가드/피드백 유무를 확인. ④ 빌드 산출 레슨 페이지 6장을 HTTP fetch·파싱해 임베드 iframe 존재(6/6)·src 실존·iframe 높이 동기화(L06 961px vs 콘텐츠 957px, 잘림 없음)·콘솔 에러 0 확인. ⑤ 위젯/엔진 자산 17개 HTTP 200 및 서버 제공본이 디스크 최신본과 동일한지 내용 지문으로 대조(캐시 오판 방지, cache:'reload'). ⑥ 보고 전 finding 5건의 quote를 Grep으로 원문 존재 재검증. 스크린샷은 사용 불가(errors 참조)라 시각 확인 대신 DOM 측정으로 대체했다.",
+  "errors": [
+    "computer{action:'screenshot'}가 '브라우저 패널이 표시되지 않아 프레임을 합성하지 않는다'며 5초 타임아웃 — 좌표 기반 실클릭·시각(레이아웃/색) 확인은 하지 못했다. 대신 element.click()으로 동일한 이벤트 핸들러를 실행하고 렌더 DOM·getComputedStyle을 측정해 대체했다(그래서 '보기 흉함' 류의 시각 결함은 이 보고의 범위 밖).",
+    "read_page 접근성 트리가 '(empty page)'로 반환돼 ref 기반 조작을 쓰지 못했다 — 모든 조작은 DOM 셀렉터 경유."
+  ],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L06.md",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH11-L01-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH11-L02-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH11-L03-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH11-L04-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH11-L05-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH11-L06-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\write-vs-salv.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\salv-grid-simulator.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\salv-function-switch.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\salv-pipeline-stepper.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\module-choice-cards.js",
+    "http://localhost:8143/embeds/abap/CH11-L01-S01.html (브라우저 실행·조작)",
+    "http://localhost:8143/embeds/abap/CH11-L02-S01.html (브라우저 실행·조작)",
+    "http://localhost:8143/embeds/abap/CH11-L03-S01.html (브라우저 실행·조작)",
+    "http://localhost:8143/embeds/abap/CH11-L04-S01.html (브라우저 실행·조작)",
+    "http://localhost:8143/embeds/abap/CH11-L05-S01.html (브라우저 실행·조작)",
+    "http://localhost:8143/embeds/abap/CH11-L06-S01.html (브라우저 실행·조작)",
+    "http://localhost:8143/docs/abap/pages/CH11-L01..L06.html (빌드 산출 6장 — 임베드 iframe·높이·콘솔 확인)"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH11-L06-S01.html",
+      "quote": "{booking_id:'0004',concert_id:'C002',perf_no:1,customer:'유재석',seats:1,status:'C'},",
+      "category": "불일치",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "챕터 캡스톤 위젯이 화면에 띄우는 SELECT 코드는 WHERE concert_id = 'C001'인데, 그 결과라며 보여 주는 gt_book 6행에 공연 C002 행이 2건(0004 유재석·0005 김연아) 섞여 있다. 방금 배운 WHERE가 아무 일도 하지 않은 결과를 정답처럼 보여 주는 셈이다.",
+      "evidence": "브라우저 실조작(factory→display) 후 렌더 DOM 측정 결과 그리드 '공연' 컬럼 값이 ['C001','C001','C001','C002','C002','C001']이었고, 'gt_book 데이터 보기' 토글의 내부 테이블 덤프도 동일하게 C002 2건을 포함했다. 같은 위젯의 코드 패널은 \"SELECT * FROM zbooking INTO TABLE gt_book\" / \"  WHERE concert_id = 'C001'.\"를 그대로 출력하고, 프리셋 칩은 '공연 C001 (6행)', 리드 문구는 \"예매 내부 테이블 GT_BOOK(zbooking · 공연 C001)\"이라고 단언한다. Σ 합계도 6행 전체를 더한 17로 떠서(C001만이면 4행·14), 필터가 안 걸렸음이 수치로도 드러난다. 본문 CH11-L06.md는 이 WHERE에 통째로 콜아웃 하나를 써서 \"WHERE를 빼면 안 되나?… 그래서 위 코드는 공연 하나로 범위를 좁혔다\"고 강조하고, 과제 3은 \"WHERE의 공연 번호를 바꿔 다른 공연의 예매만 띄워 본다\"를 시키므로, 확인하러 온 학습자일수록 정면으로 어긋난 화면을 본다.",
+      "suggestion": "① 최소 수정 = data에서 C002 두 행(0004·0005)을 빼고 C001 4행만 남긴다(합계 Σ 14로 맞음). ② 더 나은 안 = 프리셋을 '공연 C001'/'공연 C002'/'예매 없는 공연'으로 나누고 프리셋마다 코드의 WHERE 리터럴과 표시 행을 함께 바꿔, 본문 과제 3의 '공연 번호를 바꿔 본다'를 위젯에서 그대로 체험하게 한다(현재 salv-grid-simulator 엔진은 code·data가 cfg 주도라 프리셋별 세트 주입으로 확장 가능)."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH11-L04-S01.html",
+      "quote": "<button class=\"btn\" data-a=\"set\" type=\"button\">set_all 실행</button>",
+      "category": "위젯 결함",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "파이프라인 스텝퍼가 'display 실행' 뒤에 'set_all 실행'을 눌러도 툴바를 정상적으로 켜 주고 \"사용자 조작 기능을 켰습니다(set_all).\"라는 성공 피드백을 준다. 바로 앞 레슨 CH11-L03이 \"set_all을 display 뒤에 → 화면이 이미 그려진 뒤라 버튼이 생기지 않는다\"고 못 박은 규칙을, 다음 레슨 위젯이 눌러서 반증해 버린다.",
+      "evidence": "브라우저에서 리셋 → SELECT → factory → display → set_all 순으로 실제 클릭한 뒤 DOM 측정: display 직후에는 SALV 칸의 툴바 버튼 수가 0이고 경고 피드백(fb.warn)이 떴지만, 이어서 set_all을 누르자 툴바 버튼이 4개(정렬·필터·Σ·엑셀) 생기고 fb 클래스가 warn 없이 'fb'로 돌아가며 성공 문구가 출력됐다. 엔진 salv-pipeline-stepper.js의 set 분기는 st.fac만 확인하고 st.disp를 보지 않는다. 같은 챕터의 CH11-L03-S01은 'late(display 뒤에 set_all)' 시나리오에서 툴바를 비워 두고 \"이미 그려진 화면에 버튼이 붙지 못했습니다\"라고 정확히 가르치고 있어, 두 위젯이 서로 반대되는 결과를 보여 준다. 또한 이 위젯 자신이 리드에서 \"단계를 건너뛰면 무엇이 빠졌는지 알려 줍니다\"라고 약속하는데 이 순서 위반만 무경고로 통과한다.",
+      "suggestion": "set 분기에 순서 검사를 추가한다 — st.disp가 이미 true면 st.set을 켜지 말고 CH11-L03-S01의 'late' 시나리오와 같은 경고를 fb(…, true)로 띄운다(예: '이미 display로 그려진 화면에는 버튼이 붙지 않습니다 — 기능 켜는 줄은 display보다 먼저'). 툴바를 켜 주더라도 최소한 warn 피드백은 필수."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH11-L04-S01.html",
+      "quote": "<button class=\"btn empty\" data-a=\"empty\" type=\"button\">빈 결과 시나리오</button>",
+      "category": "체험 공백",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "본문 CH11-L04의 §조회 결과가 비었을 때가 처방한 0행 가드(DESCRIBE TABLE → IF gv_count = 0 → MESSAGE 후 RETURN, 표를 띄우지 않고 끝냄)를 위젯에서 확인할 수 없다. '행 수 확인' 단계는 gv_count 배지만 띄울 뿐 이후 흐름에 아무 영향이 없고, 0행에서 display를 눌러도 그대로 빈 표가 열리며 \"빈 표(정상 — 조회 결과가 0행)\"이라고만 안내한다. 본문의 두 번째 코드 블록(가드 코드)에 대응하는 체험이 사실상 없다.",
+      "evidence": "브라우저 실조작: '빈 결과 시나리오' → SELECT → 행 수 확인(gv_count = 0 배지 확인) → factory → set_all → display 순으로 눌렀더니 SALV 칸에 '빈 표(정상 — 조회 결과가 0행)' 표가 열리고 피드백은 경고 없이 \"사용자가 보는 화면은 마지막 display( ) 호출에서 열립니다.\"였다. '행 수 확인'을 아예 건너뛰고 display해도 결과가 동일해, 방금 배운 가드의 유무가 화면상 차이를 만들지 않는다. 본문은 \"행 수를 세어 0이면 안내 메시지를 띄우고 끝내자\"·\"RETURN. \\\" 표를 띄우지 않고 여기서 끝낸다\"로 분명히 처방한다. 같은 챕터의 CH11-L06-S01은 SALV_CFG.emptyGuard로 0행에서 표 대신 안내 메시지로 끝내는 동작을 이미 구현해 두어(실측 확인: alv가 hidden 유지 + 'IF gv_count = 0에서 걸러 … 표는 열지 않습니다' 안내), 같은 챕터 안에서 기준이 엇갈린다.",
+      "suggestion": "스텝퍼의 0행 시나리오를 두 갈래로 대비시킨다 — (a) '행 수 확인'을 거친 뒤 display를 누르면 표를 열지 말고 \"MESSAGE '조회된 운항편이 없습니다.' → RETURN으로 끝\"을 보여 주고, (b) 행 수 확인을 건너뛴 채 display하면 지금처럼 빈 표를 띄운 뒤 '가드가 없어서 빈 표가 떴다'고 warn을 준다. 그래야 DESCRIBE 단계가 장식이 아니라 분기 지점이 된다(CH11-L06-S01의 emptyGuard와 같은 처방)."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH11-L02-S01.html",
+      "quote": "<div class=\"readout\" id=\"readout\">행을 클릭하면 현재 행(<b>sy-tabix</b>)이 표시됩니다.</div>",
+      "category": "위젯 결함",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "위젯이 ALV 행 클릭을 sy-tabix와 연결해 안내하지만, 실제 SALV에서 사용자가 행을 클릭한다고 sy-tabix가 채워지지는 않는다(행 클릭을 알아내려면 ALV 이벤트가 필요하고 그건 CH30의 범위다). 본문 CH11-L02·L06 어디에도 없는 개념을 위젯만 끌어와 잘못된 연결을 심는다.",
+      "evidence": "브라우저에서 그리드 행을 클릭하자 '현재 행 sy-tabix = 3 · 항공사=AA · 노선=17 · 예약 좌석=120'이 출력됐다. 더욱이 직전에 '예약 좌석' 헤더로 정렬을 걸어 둔 상태였는데, 위젯은 정렬 시 내부 배열 자체를 재정렬하므로 표시 순번을 그대로 sy-tabix로 부른다 — 실제 ALV는 정렬해도 gt_flight의 행 순서를 바꾸지 않으므로 표시 순번과 내부 테이블 인덱스가 어긋난다. 같은 엔진(salv-grid-simulator)을 쓰는 CH11-L06-S01도 동일 문구·동일 동작을 갖는다. sy-tabix는 CH06 LOOP 문맥의 시스템 필드이지 ALV 커서가 아니다.",
+      "suggestion": "readout 문구에서 sy-tabix를 빼고 '표시 순서 N번째 행' 또는 '이 행의 값'처럼 시뮬 안에서만 참인 표현으로 바꾼다. 행 클릭에 반응하는 이야기(더블클릭·이벤트)는 본문이 이미 CH30으로 미뤄 뒀으므로, 굳이 살리려면 '이 반응은 ALV 이벤트가 필요하며 뒤에서 배운다'는 단서를 붙인다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH11-L06-S01.html",
+      "quote": "<button class=\"chip\" type=\"button\" data-ex=\"1\">예매 없는 공연 (0행)</button>",
+      "category": "불일치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'예매 없는 공연 (0행)' 프리셋으로 바꿔도 코드 패널의 조회 조건은 여전히 WHERE concert_id = 'C001'로 고정돼 있다. 바로 앞 프리셋에서 C001이 6행을 돌려준 걸 본 학습자에게 '같은 조건인데 이번엔 0행'이라는 모순된 화면이 된다.",
+      "evidence": "브라우저에서 프리셋 '예매 없는 공연 (0행)' 선택 후 factory→display를 눌러 DOM을 측정한 결과, 코드 패널에는 \"  WHERE concert_id = 'C001'.\" 줄이 그대로 남아 있는데 stat은 '행이 0건입니다 … 표는 열지 않습니다'를 출력했다. 위젯 config의 code 배열이 프리셋과 무관하게 고정 문자열이기 때문이다. 본문 과제 3(\"예매가 없는 번호를 넣으면 안내 메시지가 뜨는지도 확인\")은 '번호를 바꾼다'가 전제인데 화면상 번호는 바뀌지 않는다.",
+      "suggestion": "0행 프리셋일 때 코드의 WHERE 리터럴만 예매가 없는 값(예: 'C999')으로 바꿔 렌더한다 — 프리셋별 code 세트를 두거나 리터럴 한 곳만 치환하면 된다. seq 1의 프리셋 분리안과 함께 처리하면 한 번에 정리된다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "체험 커버리지 자체는 튼튼하다 — 6개 레슨 전부에 임베드가 1개씩 붙어 있고(빌드 산출 페이지에서 iframe 실존·높이 동기화·콘솔 에러 0 확인), 코드가 나오는 L02·L03·L04·L06 모두 그 페이지에서 눌러 볼 수 있어 '체험 공백'은 페이지 단위로는 없다. 실조작 결과 L01(WRITE↔SALV 비교, Σ 17 정확)·L02(factory→display 분리, 컬럼 라벨·정렬·합계·빈 테이블 예제 모두 본문과 일치)·L03(4개 시나리오 전부 본문의 실수 목록과 1:1, display 빼기 시 코드에 취소선까지)·L05(6문항 채점·정답 키가 본문 심화 표와 정확히 대응, 6/6 확인)은 결함을 찾지 못했다. 문제는 두 곳에 몰려 있다. ① 챕터 캡스톤인 L06 위젯이 WHERE concert_id = 'C001' 코드를 띄워 놓고 결과에 C002 행 2건을 섞어 보여 준다 — 본문이 콜아웃 하나를 통째로 써서 강조한 WHERE의 효과를 화면이 부정하는, 이 챕터에서 가장 시급한 수정 대상이다(부수적으로 0행 프리셋도 WHERE 리터럴이 그대로다). ② L04 파이프라인 스텝퍼가 display 뒤 set_all을 무경고로 성공 처리해 앞 레슨 L03의 순서 규칙을 반증하고, 본문이 처방한 0행 가드(DESCRIBE→IF→RETURN)는 눌러도 결과가 달라지지 않아 '행 수 확인' 단계가 장식으로 남는다. 다섯 건 모두 위젯 config·엔진 분기 몇 줄 수준의 국소 수정이고 본문 텍스트는 손댈 곳이 없어 등급은 '경미 수정'으로 본다 — 다만 seq 1은 사실관계를 틀리게 가르치므로 이 건을 고치기 전에는 '유지'로 볼 수 없다."
+  }
+}

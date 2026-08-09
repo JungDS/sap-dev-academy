@@ -1,0 +1,95 @@
+{
+  "agent": "AG02",
+  "model": "opus",
+  "target": "CH10",
+  "persona_ack": "나는 준호 — 배운 건 그 자리에서 직접 눌러 봐야 직성이 풀리는 실습형 학습자다. CH10 일곱 레슨의 본문 코드·설명과 체험 위젯 8종을 로컬 서버에서 실제로 조작해 한 줄씩 대조했다. '클릭은 되는데 배우는 게 없는' 자리와 '본문은 말하는데 위젯은 못 보여 주는' 자리를 주로 팠다.",
+  "method": "① 대상 16개 파일(레슨 MD 7 + _chapter.md + 위젯 HTML 8)과 각 위젯이 참조하는 엔진 JS 8종(perform-call-map · param-passing-board · call-function-box · local-class-stepper · global-class-blackbox · module-choice-cards · step-debugger · can-book-toggle) 정독. ② http://localhost:8143/embeds/abap/<위젯ID>.html 로 위젯 8종을 브라우저에 띄우고 javascript_tool로 버튼·체크박스를 실제 클릭/이벤트 디스패치하며 렌더 DOM 텍스트와 computed style을 단계별 측정 — L01 스텝 15단계 전수 + 정의누락 토글 왕복, L02 전달방식 4모드 각각의 결과값·배경색·테두리색 + RETURN 2종·STATICS 3회 누적·초기화, L03 정상/음수 × EXCEPTIONS 유무 × 관점(호출자/함수내부) 조합, L04 실험 2종(PUBLIC 제거·RETURNING 제거) 토글 왕복 + 코드 재렌더 확인, L05 버튼 4종 + 위젯 전체 텍스트 문자열 검색, L06 카드 6장 전수 채점(오답 선택 후 정답·해설 확인, 잠김·리셋 포함), L07-S01 7스텝 전수 + 27줄 코드·변수 모니터 추적, L07-S02 요청좌석 3종 × 취소포함 2종 = 6조합. ③ 레슨 7페이지(/docs/abap/pages/CH10-L0n.html?v=r2)를 fetch·DOM 파싱해 iframe 임베드 실재·코드블록 수·`::embed` 잔재 여부 대조하고, L01은 실제 렌더로 iframe 높이(638px) 확인. ④ 위젯 8종을 iframe으로 일괄 로드해 JS 오류(0건)·postMessage 자동높이(8/8 수신)·가로 오버플로(scrollWidth=clientWidth, 0건) 측정.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L07.md",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH10-L01-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH10-L02-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH10-L03-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH10-L04-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH10-L05-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH10-L06-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH10-L07-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH10-L07-S02.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\perform-call-map.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\param-passing-board.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\call-function-box.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\local-class-stepper.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\global-class-blackbox.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\module-choice-cards.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\step-debugger.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\can-book-toggle.js"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH10-L01-S01.html",
+      "quote": "<label class=\"missing\"><input type=\"checkbox\" id=\"missChk\"> FORM 정의 누락 실험</label>",
+      "category": "위젯 결함(안내문 오류) — 실패 시점을 잘못 가르침",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'FORM 정의 누락 실험'을 켜면 위젯이 \"런타임 오류: 정의되지 않은 subroutine \\\"count_call\\\"을 호출했습니다.\"라고 알린다. 그러나 같은 프로그램 안에서 이름을 직접 적은(정적) PERFORM이 부를 FORM이 없으면 ABAP은 프로그램이 돌기도 전에 구문검사(활성화) 단계에서 막는다. 런타임 덤프가 아니라 '아예 실행되지 않는' 오류라 실패 시점을 반대로 배우게 된다.",
+      "evidence": "브라우저 실조작: 체크박스 change 이벤트 발생 후 #noteStep의 렌더 텍스트가 '런타임 오류: 정의되지 않은 subroutine \"count_call\"을 호출했습니다. (FORM 정의가 없음)'(class='note-step err')로 측정됨. 문자열 출처 = embeds/_engine/perform-call-map.js의 showErr(). ABAP에서 런타임에 못 찾아 덤프가 나는 건 외부·동적 호출(PERFORM ... IN PROGRAM, PERFORM (name))이고, 이 위젯이 그리는 건 같은 프로그램 내부의 정적 PERFORM이다. 챕터 내부 어긋남으로도 확인됨 — CH10-L04-S01 위젯은 동급 실험(PUBLIC 제거·RETURNING 제거)을 브라우저 측정에서 모두 '컴파일 오류 — …'로 표기한다. 즉 같은 챕터에서 같은 성격의 실패가 한쪽은 컴파일, 한쪽은 런타임으로 소개된다.",
+      "suggestion": "문구를 '구문 오류(활성화 불가) — 정의되지 않은 subroutine \"count_call\"을 호출했습니다. 프로그램이 실행조차 되지 않습니다.' 류로 바꿔 L04 위젯의 '컴파일 오류' 표기와 층을 맞춘다. 본문 CH10-L01 '흔한 실수'의 '정의 없이 호출 → 오류'도 '실행 전에 막힌다'로 한 마디만 붙이면 짝이 맞는다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH10-L02-S01.html",
+      "quote": "<button class=\"mbtn\" data-m=\"cval\" type=\"button\">CHANGING VALUE</button>",
+      "category": "헛체험 — 본문이 강조한 차이가 위젯에서 관측 불가",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "네 개 전달방식 버튼 중 'CHANGING VALUE'와 'CHANGING (ref)'가 화면상 완전히 같은 결과를 낸다(둘 다 gv_amount 복귀 후 1100, 같은 색). 본문은 세 번째 방식의 핵심을 '정상 종료 시에만 되돌려 쓴다 / 도중에 오류로 멈추면 복사본은 버려지고 원본은 그대로'라고 한 문단 들여 설명하는데, 정작 그 '도중에 멈추는' 경우를 눌러 볼 수단이 위젯에 없다. 눌러도 배우는 게 없는 버튼이 된다.",
+      "evidence": "computed style까지 측정한 결과 cref/cval 두 모드의 결과 박스가 텍스트('gv_amount (복귀 후) 1100')·배경(rgba(214,51,108,0.06))·글자색·테두리색(rgb(214,51,108))까지 동일 — 스크립트 비교값 identical_cref_cval=true. 엔진(param-passing-board.js)에서도 cval의 changes:true라 cref와 같은 분기를 탄다. 위젯의 RETURN 데모는 divide_safe(CHANGING cv_r, ref)를 쓰고 RETURN 자체가 정상 종료라 이 차이를 대신 보여 주지 못한다. 대조군으로 'USING VALUE'는 1000/초록으로 정상 분리되어, 값 전달의 차이를 그릴 능력 자체는 있는 위젯이다.",
+      "suggestion": "cval 모드에 '중간에 오류로 멈춤' 토글(또는 '정상 종료 / 비정상 종료' 2단 버튼)을 하나 붙여, 비정상 종료 시 복귀 후 값이 1000으로 남는 화면을 보여 준다. 그래야 표 3행이 본문 문단과 짝이 맞는다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH10\\CH10-L05.md",
+      "quote": "zcl_util=>calc( EXPORTING iv_a = 1 iv_b = 2\n                IMPORTING ev_r = gv_r ).",
+      "category": "체험 공백 — 본문 코드 한 덩어리에 대응하는 체험 없음",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "본문 L05의 두 번째 코드(파라미터가 여러 개일 때 EXPORTING/IMPORTING을 이름 붙여 넘기는 형태)와 그 뒤 한 문단(호출자 기준 방향, ev_ 접두어 설명)에 대응하는 체험이 이 페이지에 없다. 페이지의 유일한 위젯은 RETURNING 대입형 호출(gv_left = zcl_booking_calc=>get_remaining( iv_concert = … iv_perf = … ))만 그린다.",
+      "evidence": "위젯을 띄운 뒤 document.body.innerText 전수 검색: 'EXPORTING' 포함 여부 false, /\\bev_/ 매치 false('IMPORTING'·'RETURNING'·'=>'는 true). 버튼 4종(SE24 계약 보기·정상 호출·필수 parameter 누락·static 여부 확인)을 모두 눌러도 #callCode에 렌더되는 호출문은 EXPORTING/IMPORTING 키워드 형태로 바뀌지 않는다. 참고로 '필수 파라미터 누락'(본문 흔한 실수 1번)은 위젯이 잘 덮고 있어, 빠진 건 두 번째 코드의 문법 형태와 ev_ 접두어뿐이다.",
+      "suggestion": "위젯에 '파라미터 2개 이상 — EXPORTING/IMPORTING으로 부르기' 버튼을 하나 더 두어 같은 클래스의 다른 메서드를 그 형태로 호출해 보이거나(ev_ 접두어가 결과 자리에 드러나게), 본문 두 번째 코드를 위젯이 쓰는 계약과 같은 시나리오로 맞춰 준다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH10-L03-S01.html",
+      "quote": "<div class=\"persp\" id=\"persp\"><button class=\"on\" data-p=\"caller\">호출자 기준</button><button data-p=\"fm\">함수 내부 기준</button></div>",
+      "category": "불일치 — 위젯 라벨이 본문 설명과 반대 신호",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'함수 내부 기준' 관점을 켜면 위젯이 각 줄에 '(잘못된 읽기)'를 붙이고 '가장 흔한 실수'라고 경고한다. 그런데 바로 위 본문은 같은 함수 기준 관점을 SE37 정의 화면의 정상적인 시점으로 설명하며 '뒤집히는 게 정상이다'라고 못박는다. 방금 '정상'이라고 읽은 관점을 위젯이 '잘못'이라 단정해, 실습형 학습자가 'SE37 화면을 그렇게 보면 틀린 건가'로 헷갈린다.",
+      "evidence": "관점 토글 후 렌더 DOM 측정: EXPORTING 행이 '← EXPORTING iv_amount — (잘못된 읽기) FM이 받는 값', IMPORTING 행이 '→ IMPORTING ev_result = gv_out — (잘못된 읽기) FM이 내보내는 값'으로 바뀌고 #perspWarn이 show 상태('⚠ 가장 흔한 실수 — EXPORTING/IMPORTING을 함수 내부 기준으로 읽는 것'). 한편 본문 CH10-L03에는 '한쪽이 내보내면 다른 쪽이 받는 것이니 뒤집히는 게 정상이다.'가 있고, 위젯이 '잘못된 읽기'로 표시한 'FM이 받는 값'이라는 서술 자체는 사실로도 참이다(호출자가 EXPORTING하면 FM은 받는다). 틀린 건 관점이 아니라 '호출문을 읽을 때 프레임을 바꿔 끼우는 것'인데 라벨이 그 구분을 하지 않는다.",
+      "suggestion": "라벨을 '(잘못된 읽기)' 대신 'SE37 정의 화면 기준 — 호출문을 이 기준으로 읽으면 방향이 뒤집혀 보인다'로 바꾸고, 경고문도 '함수 기준 자체가 틀린 게 아니라, 호출문은 호출자 기준으로 읽어야 한다'로 한 겹 풀어 쓴다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH10-L07-S01.html",
+      "quote": "{\"line\":11,\"vars\":{},\"console\":\"zbooking에서 조건 맞는 예매 3건 조회 (status <> 'C' 취소 제외)\"}",
+      "category": "위젯 결함(cfg 누락) — 변수 모니터 값이 실제 실행과 어긋남",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "첫 스텝(11번 줄 SELECT … INTO TABLE)의 vars가 비어 있어, 예매 3건을 성공적으로 읽은 직후에도 변수 모니터의 sy-subrc가 초기값 '-'로 남는다. 그 줄의 라벨이 '직전 SQL 성공 여부'라 학습자가 보는 값과 방금 실행한 문장이 어긋난다. sy-subrc는 19번 줄(SELECT SINGLE)에서야 0으로 채워진다.",
+      "evidence": "7스텝 전수 추적 측정값 — 1/7(11번 줄 실행 완료) 시점 변수 모니터: 'ls_book-seats=- | lv_sum=0 | lv_cap=0 | sy-subrc=- | cv_left=0'. 5/7(19번 줄 실행)에서 처음 'sy-subrc=0'. 본문은 SELECT SINGLE 직후 IF sy-subrc <> 0으로 '직전 문장의 결과'를 확인하도록 가르치므로, 앞선 SELECT가 sy-subrc를 남기지 않는 것처럼 보이는 화면은 그 규칙과 어긋난다.",
+      "suggestion": "첫 스텝의 vars에 {\"sy-subrc\":\"0\"}을 넣고 console에 '3건 찾았으니 sy-subrc = 0' 한 마디를 덧붙인다(0건일 때 4가 된다는 감각까지 덤으로 잡힌다)."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "실습형 학습자 시선에서 CH10의 체험 층은 전반적으로 튼튼하다. 7개 레슨 전부에 임베드가 실제로 렌더되고(iframe 8개, `::embed` 잔재 0), 8개 위젯 모두 JS 오류 0·자동높이 postMessage 정상·가로 오버플로 0으로 측정됐다. 본문 정합도도 높다 — L01 스텝퍼는 본문 z_form_scope와 문장 단위로 같고 전역 1→2 누적·로컬 매번 1을 15스텝 전수에서 정확히 재현했고, L04 스텝퍼는 본문 코드를 그대로 쓰면서 실험이 메시지가 아니라 코드·계약·호출형식을 실제로 다시 그린다. L07은 S01(합계 6 → 잔여 4)과 S02(정원 10, 비취소 2+3+1, 취소 4석)가 같은 데이터로 맞물리고, L05 위젯이 돌려주는 4까지 콘서트 관통예제 값이 일관된다. L06 카드 6장은 오답 선택까지 전수로 채점·해설을 확인했고 모두 본문 근거대로 정확했다. 발견 5건은 모두 국소적이다 — ① L01의 미정의 FORM 실험이 구문검사 단계 실패를 '런타임 오류'로 소개해 같은 챕터 L04의 '컴파일 오류' 표기와 어긋남(중간), ② L02의 CHANGING VALUE가 CHANGING(ref)와 픽셀 단위로 동일해 본문이 한 문단 들여 설명한 '정상 종료 시에만 반영' 차이를 체험할 수 없음(중간), ③ L05 본문 두 번째 코드(EXPORTING/IMPORTING·ev_)에 대응하는 체험 부재(낮음), ④ L03의 '함수 내부 기준 = 잘못된 읽기' 라벨이 본문의 '뒤집히는 게 정상' 설명과 반대 신호(낮음), ⑤ L07-S01 첫 SELECT 뒤 sy-subrc가 '-'로 남는 cfg 누락(낮음). ②만 위젯에 상태 하나를 더하는 작업이고 나머지는 문구·cfg 한 줄 수준이라, 재집필이나 광범위 보강이 아니라 경미 수정으로 충분하다."
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "agent": "AG09",
+  "model": "opus",
+  "target": "CH11",
+  "persona_ack": "AG09 = ABAP 정적 검사기를 시늉하는 코드 전용 감사자. 산문 서술은 판정 근거에서 제외하고 ```abap 코드 블록만 줄 단위로 검사했다 — (1) 활성화 차단급 문법(미선언 변수·마침표 누락·타입 불일치·존재하지 않는 구문·시그니처 오류), (2) 네이밍 접두어 규약(gv_/gs_/gt_ vs lv_/ls_/lt_, it_·pa_·so_·ty_/ts_/tt_), (3) classic/modern 경계(CH01~17 modern 문법 금지·CH01~18 New Open SQL 금지), (4) 주석·출력 문자열과 코드의 어긋남. 대상 7개 파일은 읽기 전용으로만 열었고 수정·생성·삭제 없음. SAP 실행 환경이 없으므로 컴파일 확신이 아니라 정적 판단이다.",
+  "method": "Read 도구로 대상 7개 파일 전문 통독 → Grep(^```abap)으로 코드 펜스 위치·개수 확정(총 7블록: CH11-L02 2개(L38,L79) · CH11-L03 2개(L25,L47) · CH11-L04 2개(L27,L66) · CH11-L06 1개(L22); CH11-L01·CH11-L05·_chapter.md는 abap 코드 블록 0개) → 각 블록을 줄 단위로 문장 종결(마침표)·선언/사용 대응·메서드 시그니처·접두어·경계 문법 순으로 대조 → 인용문은 Grep으로 원문 일치를 재확인(앵커 3건 모두 verbatim 확인). 웹 검색·외부 네트워크 미사용, 다른 감사자 산출물·과거 감사 아카이브 미열람.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L03.md",
+      "quote": "DATA go_alv TYPE REF TO cl_salv_table.  \" 앞 레슨에서 factory로 채워 둔 그 객체",
+      "category": "주석·코드 불일치 / 스니펫 정합성",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "선언문과 그 줄의 주석이 서로 모순된다. `DATA go_alv TYPE REF TO cl_salv_table.`는 **새로 선언**하는 문장이라 실행 시점에 그 참조는 항상 초기(null)인데, 붙어 있는 주석은 '앞 레슨에서 factory로 채워 둔 그 객체'라고 말한다. 블록을 그대로 복사해 실행하면 바로 다음 줄 `go_alv->get_functions( )`에서 초기 참조 역참조로 런타임 덤프(CX_SY_REF_IS_INITIAL)가 난다.",
+      "evidence": "블록 전체가 두 문장뿐이다 — 26행 `DATA go_alv TYPE REF TO cl_salv_table.`(선언) → 28행 `go_alv->get_functions( )->set_all( abap_true ).`(즉시 역참조). 그 사이에 factory 호출이 없어 참조는 초기 상태다. 반대로 학습자가 주석을 믿고 CH11-L02의 프로그램 뒤에 이 블록을 이어 붙이면 L02가 이미 `DATA go_alv    TYPE REF TO cl_salv_table.`로 선언해 둔 터라 중복 선언 구문 오류(활성화 차단)가 난다. 즉 '단독 복사'와 '이어 붙이기' 두 경로 모두에서 그대로는 성립하지 않는 코드다. 문법 자체는 두 줄 다 유효하고(체이닝 호출·set_all 단일 IMPORTING 인자 전달 모두 정상), CH11-L04에 올바른 통합 프로그램이 나오므로 실질 피해는 제한적이다.",
+      "suggestion": "선언 줄을 코드에서 빼고 주석만 남기거나(예: `\" 앞 레슨 프로그램에 이어서 — go_alv 는 이미 선언·factory 완료`), 선언을 유지하려면 사이에 factory 호출을 생략 표기로 끼워 '이 블록만으로는 실행되지 않는 발췌'임을 코드 모양으로 드러낸다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L04.md",
+      "quote": "- **인터넷 예제의 `@`** → 검색하다 보면 `INTO TABLE @gt_flight`처럼 `@`가 붙은 SELECT를",
+      "category": "경계 규약(New Open SQL) — 코드 블록 밖 인용",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "New Open SQL의 이스케이프 표기 `@`가 CH11 본문에 실제 코드 형태(`INTO TABLE @gt_flight`)로 노출된다. 커리큘럼 경계 규약상 New Open SQL은 CH18까지 노출금지(L0)이고, 예고(L1)로 다루더라도 '코드 없음'이 조건이므로 이 노출은 경계를 넘어선다.",
+      "evidence": "위치는 ```abap 코드 블록이 아니라 '흔한 실수와 점검' 절의 산문 인라인 코드다(내 검사 범위는 코드 블록이므로 범위 밖임을 밝혀 둔다). CH11의 실제 ```abap 블록 7개는 모두 classic 표기를 지켜 `@`·콤마 구분 컬럼 목록이 한 건도 없고, 이어지는 문장도 '지금은 위 코드처럼 `@` 없이 쓴다'로 방어적으로 마무리한다 — 즉 의도된 예방 접종성 언급이다. 다만 CH11-L04 front-matter에는 이 노출을 정당화할 foreshadow 선언이 없다. 규약을 문자 그대로 읽으면 위반, 의도(검색으로 만날 표기를 미리 차단)를 인정하면 허용 가능한 회색지대라 confidence=추정으로 둔다.",
+      "suggestion": "표기를 유지한다면 CH11-L04 front-matter에 `foreshadow: [\"New Open SQL(@)\"]`를 선언해 예외를 명시하고, 코드 형태 대신 '골뱅이 기호가 붙은 SELECT'처럼 서술로 낮추는 안도 검토."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L06.md",
+      "quote": "DATA: gt_book  TYPE TABLE OF zbooking,",
+      "category": "실행 가능성 / 앞 레슨과의 형태 불일치",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "캡스톤 실습 코드가 `REPORT` 문과 `START-OF-SELECTION.` 없이 조각 형태인데, 과제는 '위 코드를 실행해 예매 목록을 SALV로 띄운다'로 완성 프로그램처럼 지시한다. 직전 CH11-L04가 `REPORT zsalv_flight.` + `START-OF-SELECTION.`를 갖춘 완전한 프로그램 형태를 가르친 직후라, 두 형태의 차이가 설명 없이 벌어진다.",
+      "evidence": "CH11-L06의 유일한 코드 블록은 22행 펜스 바로 뒤 `DATA:` 선언으로 시작해 `ENDIF.`로 끝난다 — REPORT·START-OF-SELECTION 어느 것도 없다. 반면 CH11-L04 블록은 `REPORT zsalv_flight.`로 시작하고 START-OF-SELECTION을 [선행 사용]으로 명시 도입했다. 실무상 SE38이 새 프로그램 생성 시 REPORT 줄을 자동으로 넣어 주고 START-OF-SELECTION은 생략해도 묵시 이벤트로 동작하므로 **실행 자체는 된다** — 그래서 문법 결함이 아니라 형태 불일치로 보고하며 confidence=추정이다. 입문자가 'L04에서는 필요하다더니 왜 여기선 없나'로 혼란할 여지가 남는다.",
+      "suggestion": "CH11-L06 코드 블록도 `REPORT z…` + `START-OF-SELECTION.` 형태로 맞추거나, 블록 앞에 '선언·본 처리 부분만 발췌 — REPORT 줄은 SE38이 만들어 준다' 한 줄을 덧붙인다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH11의 ```abap 코드 블록 7개(L02 2 · L03 2 · L04 2 · L06 1, L01·L05·_chapter는 코드 없음)를 줄 단위로 검사한 결과 **활성화 차단급 결함은 없다.** 모든 문장이 마침표로 종결되고 TRY/ENDTRY·IF/ENDIF 짝이 맞으며, 선언되지 않은 변수 사용이 없다. 핵심 API 사용도 정확하다 — `cl_salv_table=>factory`의 실제 시그니처(EXPORTING r_salv_table · CHANGING t_table TYPE STANDARD TABLE · RAISING cx_salv_msg)와 호출부의 `IMPORTING r_salv_table` / `CHANGING t_table` 방향이 일치하고, `TYPE TABLE OF sflight`·`TYPE TABLE OF zbooking`은 STANDARD TABLE이라 타입이 맞는다. `get_functions( )->set_all( abap_true )` 체이닝, 단일 IMPORTING 인자의 무키워드 전달, `DESCRIBE TABLE … LINES gv_count`(gv_count TYPE i), 이벤트 블록 내 `RETURN.`, 다중행 메서드 호출 중간의 `\"` 줄끝 주석 모두 유효하다. 경계 규약도 코드 블록 안에서는 깨끗하다 — 인라인 DATA()·VALUE·NEW·+=·문자열 템플릿(|…|)이 0건, SELECT는 전부 classic이며 `@`·콤마 컬럼 목록이 0건이다(CH11-L02의 `INTO TABLE gt_flight UP TO 20 ROWS`는 비엄격 classic 모드에서 허용되는 위치라 결함으로 보지 않았다). 네이밍도 규약대로다 — CH11 코드는 FORM/METHOD 밖 전역 스코프라 gt_/gv_ 접두어가 옳고, it_ 오용·pa_/so_ 대상 선언이 없다. 다만 규약 문서가 열거하지 않은 **객체 참조 접두어**를 코드가 `go_alv`로 쓰는데, g=global 논리에 부합하고 ABAP 관례와도 맞아 결함으로 잡지 않았다(규약 측 공백으로 보고만 해 둔다). 발견 3건은 모두 낮음이며 성격이 다르다 — ①번은 코드/주석 모순으로 실질 수정 대상, ②·③번은 회색지대라 추정으로 표시했다. 검사 한계: 감사 범위가 CH11 파일로 한정돼 `zbooking`·`concert_id`의 DDIC 실재 여부와 CH09 모델 정의와의 일치는 검증하지 못했다(추정 근거조차 없어 발견으로 만들지 않았다). 또 범위 밖 관찰로, CH11-L06 front-matter의 `prevRel: next-step`은 규약이 열거한 세 값(pain-solution/parallel/deepening) 밖이지만 ABAP 코드가 아니어서 발견으로 올리지 않았다. 종합하면 코드 품질은 견고하고, ①번 두 줄 정리 수준의 경미 수정이면 충분하다."
+  }
+}

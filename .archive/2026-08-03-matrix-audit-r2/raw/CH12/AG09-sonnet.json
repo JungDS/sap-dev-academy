@@ -1,0 +1,35 @@
+{
+  "agent": "AG09",
+  "model": "sonnet",
+  "target": "CH12",
+  "persona_ack": "AG09 — ABAP 정적 검사기를 시늉하는 코드 전용 감사자. 산문·비유·표는 판단에서 제외하고 ```abap 코드 펜스 블록만 줄 단위로 스캔해 (1)활성화 차단급 오류 (2)네이밍 규약(R11) (3)CH01～17/CH01～18 경계 규약(R6) (4)주석·출력 문자열 오류만 판정했다. [선행 사용] 표기가 붙은 구간은 문법 잣대를 완화해 처리했다.",
+  "method": "8개 대상 파일을 전문 열람 후 ```abap 펜스 블록만 추출(총 7개: CH12-L02×2, CH12-L03×1, CH12-L06×1, CH12-L07×3). 각 블록을 줄 단위로 (a)문장 종료(period)·선언-사용 일치 (b)네이밍 접두어(gv_/gs_/gt_/lv_/ls_/lt_/it_/so_/pa_/ty_/ts_/tt_/ok_code) (c)modern 문법(인라인 DATA()·VALUE·NEW·+=·|…|)·New Open SQL(@·콤마) 존재 여부 (d)cl_salv_table=>factory의 IMPORTING/EXPORTING/CHANGING 방향 대조 순으로 검토. 컴파일러·외부 도구는 미사용(환경 없음, confidence로 신뢰도 표기).",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH12-L06.md",
+      "quote": "DATA: gr_stat TYPE RANGE OF zbooking-status,",
+      "category": "네이밍 규약",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "Range Table 변수를 이 커리큘럼 규약(전역 스칼라/구조/테이블 = gv_/gs_/gt_ 세 종류뿐)에 없는 gr_ 접두어로 선언했다. 같은 챕터 CH12-L01은 Range Table을 '특수한 Internal Table'로 정의하므로, 전역 Internal Table 접두어인 gt_가 적용돼야 한다.",
+      "evidence": "코드는 FORM/METHOD 밖(리포트 전역)에서 gr_stat을 선언하며, 이후 `gs_stat LIKE LINE OF gr_stat`·`APPEND gs_stat TO gr_stat`·`WHERE status IN gr_stat`에서 같은 이름을 반복 사용한다. 같은 블록의 gs_stat(구조체)·gt_book(Internal Table)은 규약을 정확히 따르는데 gr_stat만 gt_ 대신 미정의 접두어를 쓴다. 이 레슨의 introduces가 'TYPE RANGE OF/RANGES'라 학습자가 그대로 베낄 대표 예제라는 점에서 지나치기 어렵다.",
+      "suggestion": "gr_stat → gt_stat으로 통일(선언·LIKE LINE OF·APPEND·WHERE IN 4곳 모두). Range Table에 별도 접두어를 두기로 정책을 바꾼다면 04_CONVENTIONS.md R11에 그 예외를 먼저 명문화."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH12 7개 레슨의 ```abap 코드 펜스 블록 7개(L02×2·L03×1·L06×1·L07×3)를 전수 검토했다. 활성화 차단급 오류(미선언 변수·마침표 누락·타입 불일치·존재하지 않는 구문)는 없었고, cl_salv_table=>factory의 IMPORTING r_salv_table/CHANGING t_table 방향도 실제 시그니처와 일치한다. CH01～17 modern 문법(인라인 DATA()·VALUE·NEW·+=·|…|)과 CH01～18 New Open SQL(@·콤마)도 전 블록에서 발견되지 않아 경계 규약(R6)은 준수됐다. 유일한 흠은 네이밍 규약 위반 1건 — CH12-L06의 gr_stat이 프로젝트가 정의한 전역 접두어(gv_/gs_/gt_)에 없는 gr_을 쓴다(경미 수정으로 gt_stat 통일 권장). CH12-L07의 TYPE REF TO·TRY/CATCH cx_salv_msg·TABLES·START-OF-SELECTION 구간은 본문이 명시적으로 [선행 사용]·분석 제외를 선언해 이번 코드 심사에서는 완화 적용했다(별도 결함 없음). L01·L04·L05·_chapter.md는 abap 코드 펜스가 없어 이 감사 범위(코드 전용) 밖이다."
+  }
+}

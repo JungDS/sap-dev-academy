@@ -1,0 +1,89 @@
+{
+  "agent": "AG03",
+  "model": "opus",
+  "target": "CH11",
+  "persona_ack": "타 언어(Java/C#) 백엔드 3～5년차 개발자로서 ABAP을 빠르게 훑으려는 독자 시점으로 CH11 전 레슨(L01～L06 + _chapter)을 통독했다. 기록 축은 과잉·오개념 유발·지름길 부재·용어 충돌 4가지로만 한정했고, 이 사이트의 1독자가 비전공 입문자라는 점을 반영해 '입문자에겐 필요하나 경력자에겐 이미 아는 내용'은 높음으로 올리지 않고 낮음 또는 suggestion으로 낮춰 잡았다. 억지 발견을 만들지 않았고, 이미 잘 처리된 지점(Function 용어 정리, IMPORTING 방향 반전, TYPE REF TO 오해 차단, 시뮬레이터와 실기 화면 차이, 버튼 숨김은 보안이 아님)은 발견으로 세지 않았다.",
+  "method": "Read 도구로 대상 7개 파일 전문을 라인 단위로 통독했다. 웹검색·외부 네트워크는 사용하지 않았고, 미리보기(http://localhost:8143)도 열지 않았다 — AG03은 통독 판단 종이라 브라우저 검증이 불필요했다. ABAP 사실 판단(cl_salv_table=>factory의 파라미터 형태, 메서드 파라미터 기본 전달 방식, static check 예외의 구문검사 경고, display의 화면 호출 성격)은 도구 없이 자체 지식으로 했고, 인용문은 원문 라인을 그대로 복사했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH11\\CH11-L06.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH11/CH11-L02.md",
+      "quote": "- **factory(객체 생성)와 display(화면 표시)는 별개** — 둘 다 호출해야 표가 뜬다.",
+      "category": "과잉",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "\"factory는 객체만 만들고 display가 화면을 그린다\"는 단일 사실이 L02 한 레슨 안에서만 5번 되풀이된다. '객체 생성'과 '렌더링'이 별개 단계라는 건 어떤 GUI·리포트 라이브러리를 써 본 경력자에게는 설명이 아니라 지연이고, 입문자 기준으로도 5회는 과하다.",
+      "evidence": "L02 본문에서 같은 말이 ① 절 도입(\"factory( )를 부르면 표가 바로 뜰까? 아니다\") ② 시뮬레이터 뒤 콜아웃(\"② display( )까지 눌러야 ... 이 차이가 이 레슨의 핵심이다\") ③ \"즉 앞의 코드 끝에 이 한 줄이 더 있어야 표가 뜬다\" ④ 흔한 실수 \"factory만 부르고 끝\" ⑤ 정리 불릿 순으로 5회 등장한다. front-matter의 direction·goals까지 더하면 7회다. 이어 L03의 흔한 실수 \"display 누락\"과 L03 임베드 제목 \"set_all ≠ display\"에서 또 반복된다.",
+      "suggestion": "시뮬레이터 콜아웃(②)과 정리 불릿(⑤)만 남기고 ①·③·④는 한 문장으로 합치거나 삭제. 특히 ④ \"factory만 부르고 끝\"은 ②에서 이미 눈으로 확인시킨 내용이라 중복이다. 이 절을 줄여 확보한 분량을 factory 파라미터(IMPORTING/CHANGING) 설명 쪽으로 돌리면 경력자·입문자 모두에게 밀도가 오른다."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH11/CH11-L02.md",
+      "quote": "- `IMPORTING r_salv_table` — 만들어진 ALV 객체를 **내가 받아 온다**. 부르는 쪽에서 쓰는",
+      "category": "용어 충돌",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "Java/C#에서 factory(정적 팩토리 메서드)는 만든 객체를 '반환값'으로 준다는 게 상식인데, cl_salv_table=>factory( )는 RETURNING이 없고 EXPORTING 파라미터로 객체를 내보낸다. 즉 go_alv = cl_salv_table=>factory( ... ) 형태가 문법상 불가능하다는 대비가 어디에도 없다.",
+      "evidence": "L02는 \"정적 메서드 factory( )로 Internal Table을 받아 ALV 객체를 만든다\"고 소개한 뒤 IMPORTING의 방향 반전만 설명한다. 반전 설명 자체는 정확하지만, '왜 반환값으로 안 받고 파라미터로 받나'라는 경력자의 첫 질문에는 답하지 않는다. ABAP 메서드는 출력 파라미터를 여러 개 가질 수 있어 반환값 하나로 고정되지 않는다는 점이 이 차이의 뿌리다.",
+      "suggestion": "IMPORTING 불릿 뒤에 한 문장만 추가: \"다른 언어의 팩토리는 보통 만든 객체를 반환값으로 돌려주지만, ABAP 메서드는 출력 구멍을 여러 개 둘 수 있어 factory( )도 반환값 대신 파라미터로 객체를 넘겨준다 — 그래서 go_alv = cl_salv_table=>factory( ... )처럼은 쓸 수 없다.\" 입문자에게도 손해가 없고 경력자의 첫 오타 시도를 막는다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH11/CH11-L03.md",
+      "quote": "- `display( )`는 앞 레슨에서 이미 만난 그 메서드다. 실제로 ALV 화면을 그린다.",
+      "category": "오개념 유발",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "display( )가 전체화면 ALV를 띄우고 사용자가 그 화면을 빠져나올 때까지 제어를 돌려주지 않는(blocking) 호출이라는 점이 챕터 어디에도 없다. \"그린다\"로만 서술돼 있어, 창을 띄우고 코드가 계속 흐르는 GUI 모델에 익숙한 경력자는 display( ) 뒷줄이 곧바로 실행된다고 오해하기 쉽다.",
+      "evidence": "L03은 set_all이 display보다 먼저 와야 하는 이유를 \"이미 다 그려진 화면에 나중에 버튼을 얹을 수는 없기 때문\"으로만 설명한다. 실제 이유는 display( )가 화면 호출이라 그 지점에서 프로그램이 멈추고, 그 뒤 문장은 사용자가 목록을 나간 다음에야 실행되기 때문이다. L02·L04·L06 어디에도 이 제어 흐름 언급이 없다.",
+      "suggestion": "L03 display 절에 한 줄 추가: \"display( )를 만나면 프로그램은 그 자리에서 멈추고 화면을 사용자에게 넘긴다. 사용자가 목록에서 빠져나와야 그 다음 줄이 실행된다.\" 이러면 순서 규칙(set_all이 먼저)의 이유도 비유가 아니라 사실로 서게 되고, 입문자에게도 \"왜 뒷줄이 안 도나\" 질문을 미리 막아 준다."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH11/CH11-L02.md",
+      "quote": "- `CHANGING t_table` — 표시할 [[Internal Table]]을 넘긴다. 값을 복사해 주는 게 아니라",
+      "category": "오개념 유발",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "CHANGING을 쓰는 이유를 '값 복사 대 참조'로 설명해서, ABAP 메서드 파라미터는 (RETURNING을 빼면) 기본이 참조 전달이라는 사실과 어긋난다. 값/참조 구분에 민감한 경력자는 \"그럼 IMPORTING으로 넘기면 테이블이 복사되나?\"라는 잘못된 대비를 머리에 넣게 된다.",
+      "evidence": "ABAP 클래스 메서드의 IMPORTING·EXPORTING·CHANGING은 VALUE( )를 명시하지 않는 한 모두 참조 전달이다. 여기서 CHANGING이 필요한 진짜 이유는 복사 여부가 아니라 ① 메서드 안에서 IMPORTING 파라미터는 읽기 전용이라 못 건드리고 ② SALV가 그 테이블을 실제로 손대야 하기 때문이다(정렬을 누르면 밑에 깔린 Internal Table의 행 순서가 바뀐다). 뒤 문장 \"ALV는 이 테이블을 그대로 읽어 표를 그린다\"도 읽기만 하는 것처럼 들려 같은 방향으로 기운다.",
+      "suggestion": "\"값을 복사해 주는 게 아니라\"를 \"ALV가 이 테이블을 읽기만 하는 게 아니라 직접 손대기도 하기 때문\"으로 바꾸고, 근거를 정렬 동작으로 든다: \"툴바에서 정렬을 누르면 화면만 바뀌는 게 아니라 넘겨준 Internal Table의 행 순서 자체가 바뀐다.\" 값/참조라는 어려운 축을 꺼내지 않고도 CHANGING의 이유가 서고, 경력자에게는 오히려 더 정확해진다."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH11/CH11-L05.md",
+      "quote": "- `factory`로 [[Internal Table]] 표시",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'SALV 1차 정리' 레슨인데 범위를 말글로만 나열하고, 경력자가 찾는 최소 코드 요약(4줄 치트시트)이 없다. 챕터 전체에도 \"OOP·그리드 UI 경험이 있으면 이 절은 건너뛰어도 된다\" 류의 안내가 한 군데도 없어, 실질 코드가 4줄인 주제를 레슨 6개로 순서대로 다 밟아야 한다.",
+      "evidence": "CH11이 가르치는 ABAP 고유 코드는 사실상 factory( IMPORTING r_salv_table = ... CHANGING t_table = ... ) / get_functions( )->set_all( abap_true ) / display( ) / CATCH cx_salv_msg 네 조각이다. L05의 '지금(1차) 범위'는 이 셋을 개념어로만 적어 두어, 코드를 확인하려면 L02～L04를 되짚어야 한다. 챕터 어디에도 스킵 안내나 요약 카드가 없다.",
+      "suggestion": "L05 '지금(1차) 범위' 절에 code-copy-block으로 최소 코드 카드(SELECT → factory → set_all → display, TRY/CATCH 포함)를 한 번 싣고, 챕터 첫 레슨 L01 도입에 한 줄을 둔다: \"다른 언어로 표 화면을 만들어 본 적이 있다면 L02와 L03의 코드만 봐도 충분하다. L01·L05는 훑고 지나가도 된다.\" 입문자에게는 아무 손해가 없고(순서대로 읽으면 그만) 경력자에게는 챕터 통과 시간이 크게 준다."
+    },
+    {
+      "seq": 6,
+      "file": "content/abap/CH11/CH11-L06.md",
+      "quote": "- **TRY/CATCH 없이 factory** → `cx_salv_msg`는 반드시 처리해야 하는 예외다. 안 잡으면 구문",
+      "category": "과잉",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'흔한 실수와 점검' 목록이 레슨마다 앞 레슨 항목을 거의 그대로 다시 싣는다. 캡스톤인 L06에서도 3개 중 2개가 이미 나온 경고라, 통독하는 독자에게는 새 정보 없이 같은 문단을 세 번째로 읽는 셈이 된다.",
+      "evidence": "TRY/CATCH 없이 factory 경고 = L02 '흔한 실수' + L06 '흔한 실수' 2회. 빈 테이블/빈 결과 경고 = L02 + L04(절 하나 통째 + 흔한 실수) + L06 3회. display 누락 = L02 'factory만 부르고 끝' + L03 'display 누락' 2회. L06에서 새로 나오는 항목은 'CATCH를 비워 두기' 하나뿐이다.",
+      "suggestion": "L06의 반복 두 줄은 링크로 접는다 — \"factory의 TRY/CATCH와 빈 결과 점검은 [factory 메서드](CH11-L02.html)·[미니 리포트](CH11-L04.html)와 같다\" 한 줄로 대체하고, 캡스톤 고유 항목('CATCH를 비워 두기', WHERE 없는 조회)만 남긴다. 반복 학습 효과는 각 레슨의 코드가 이미 담당하고 있으므로 목록까지 복제할 필요는 없다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "경력자 시선에서 CH11은 예상보다 잘 만들어져 있다. 경력자가 걸려 넘어질 지점 상당수를 이미 선제적으로 짚어 뒀다 — L03의 \"Function은 값을 돌려주는 그 '함수'가 아니다\"(ALV 툴바 버튼이라는 용어 재정의), L02의 호출부 IMPORTING 방향 반전 설명, TYPE REF TO를 '값 전달 방식'으로 오해하지 말라는 괄호 주석, 시뮬레이터 헤더 클릭 정렬과 실기 SAP GUI 조작의 차이 고지, L03의 \"버튼을 감추는 건 보안이 아니다\"(권한은 CH15) 구분, L04·L06의 SELECT * 전량 조회 경고까지 — 이 정도면 용어 충돌 축은 대체로 방어돼 있다. 기술적 사실도 확인 범위에서 어긋난 곳을 찾지 못했다(static check 예외가 구문검사 '경고' + 실행 시 덤프라는 서술, Data Element 라벨이 컬럼 제목으로 자동 반영된다는 서술, set_all이 display보다 앞서야 한다는 순서 규칙 모두 맞다). 남은 문제는 밀도와 방향 안내 쪽이다. ① 최대 결함은 L02에서 'factory ≠ display'라는 한 사실을 다섯 번 되풀이하는 것으로, 객체 생성과 렌더링이 별개라는 건 경력자에게는 설명거리가 아니고 입문자 기준으로도 시뮬레이터로 한 번 체험시킨 뒤 다시 네 번 말할 이유가 없다(중간). ② display( )가 블로킹 호출이라는 제어 흐름이 챕터 전체에 없고, CHANGING의 이유를 '값 복사가 아니라'로 설명해 ABAP 메서드 파라미터가 기본 참조 전달이라는 사실과 어긋나는 두 곳은 경력자에게 미세한 오개념을 남긴다(각 낮음, 대안 문구는 입문자에게도 더 쉬움). ③ 팩토리가 반환값이 아니라 EXPORTING으로 객체를 내보낸다는 대비 한 줄이 없어 경력자는 반드시 한 번 헛손질한다(낮음). ④ 실질 코드가 4줄인 주제를 레슨 6개로 밟게 하면서 스킵 안내나 최소 코드 요약 카드가 없고, '흔한 실수' 목록이 레슨 간에 최대 3회까지 복제된다(각 낮음). 발견 6건 중 5건이 낮음, 1건이 중간이며 재집필이 필요한 구조 결함이나 사실 오류는 없다. 반복 문단 정리와 한 줄짜리 보강(display 블로킹, factory 반환 형태, CHANGING 이유 재서술, 경력자 스킵 안내 + 최소 코드 카드)만 반영하면 충분해 '경미 수정'으로 판단한다."
+  }
+}

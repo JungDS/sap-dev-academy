@@ -1,0 +1,95 @@
+{
+  "agent": "AG06",
+  "model": "opus",
+  "target": "CH09",
+  "persona_ack": "20년차 SAP ABAP 아키텍트(ECC~S/4HANA 개발·운영·이관 경험) 시선으로 CH09 'DDIC 관계와 입력도움말(F4)' 10개 파일을 읽기 전용 기술 검수했다. 사실 오류·예시 적절성·위험한 생략·안티패턴 네 갈래로 보되, 웹 검색 없이 내 지식만으로 판단하고 릴리스·설정 의존이거나 기억이 불확실한 항목은 confidence='추정'으로 낮춰 표기했다.",
+  "method": "Read 도구로 대상 10개 파일 전문을 정독(도구 사용은 대상 파일 읽기와 출력 폴더 생성에 한정, 웹·외부 네트워크 미사용). 대조한 지식 축: (1) 입력도움(F4) 결정 우선순위 계층, (2) PARAMETERS ... VALUE CHECK / MATCHCODE OBJECT 문법 제약, (3) Foreign Key·Check Table·Value Table·Text Table의 DDIC 성립 조건과 Cardinality 표기, (4) SE11 Transparent Table 생성 절차(클라이언트 필드·Delivery Class), (5) Elementary/Collective Search Help의 파라미터·Selection Method 동작. 챕터 내부 정합성(L07 우선순위 ↔ L09 실습 검증 단계) 교차 대조 포함.",
+  "errors": [
+    "접근 범위가 CH09 대상 파일로 한정돼 선행 챕터(CH03·CH07 등) 본문과 embeds/abap/*.html 위젯은 열지 않았다. 따라서 '이미 앞 챕터에서 다뤘는지'에 판단이 좌우되는 항목(예: SE11 Delivery and Maintenance 탭의 Data Browser/Table View Maintenance = Display/Maintenance Allowed 설정 누락, 테크니컬 세팅)은 오탐 위험이 있어 발견에서 제외했다.",
+    "체험 임베드(::embed::)가 실제로 본문 서술과 같은 동작을 하는지는 HTML을 열 수 없어 미검증이다. 아래 발견은 모두 MD 본문 서술만을 근거로 한다."
+  ],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L09.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L07.md",
+      "quote": "붙인 경우엔 Check Table보다 아래에 온다. 헷갈리면 `MATCHCODE OBJECT`로 콕 집는 게 안전하다.",
+      "category": "사실 오류",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "입력 도움(F4) 우선순위가 뒤집혀 있다. Data Element에 붙인 Search Help는 Check Table보다 '위'이지 아래가 아니다. 게다가 본문 사다리 1~6단에는 'Data Element에 붙인 Search Help' 단 자체가 통째로 빠져 있어, 3단(테이블·Structure 필드) 다음이 곧바로 4단(Check Table)으로 이어진다.",
+      "evidence": "SAP이 문서화한 화면 필드 입력도움 결정 순서는 ① 화면 흐름로직에서 프로그래밍한 F4(PROCESS ON VALUE-REQUEST / AT SELECTION-SCREEN ON VALUE-REQUEST) ② 화면 필드에 직접 지정한 Search Help(MATCHCODE OBJECT 포함) ③ 테이블·Structure 필드에 붙인 Search Help ④ Data Element에 붙인 Search Help ⑤ Check Table(Foreign Key, Text Table 동반) ⑥ Domain 고정값 ⑦ 타입 기본(날짜=달력·시간=시계)이다. 즉 DE 부착 Search Help가 Check Table을 이긴다. 표준으로 확인 가능한 사례: 데이터 요소 MATNR에는 검색도움말 MAT1이 붙어 있고, Check Table이 MARA인 자재번호 필드에서도 F4를 누르면 MARA 코드 목록이 아니라 MAT1이 뜬다. 실무에서 '생성된 Check Table 도움말이 마음에 안 들면 DE에 Search Help를 붙여 덮는다'가 통용되는 이유가 이 순서다. 또한 이 오류는 CH09-L06의 '**Data Element** | 그 DE를 쓰는 **모든 필드**에 한꺼번에(가장 광범위)' 서술과도 어긋나, 학습자에게 '넓게 붙이면 무력하다'는 잘못된 결론을 준다.",
+      "suggestion": "사다리에 'Data Element에 붙인 Search Help' 단을 신설해 3단과 Check Table 사이에 넣고(=현행 4·5·6단을 한 칸씩 아래로), 팁 박스는 '같은 Search Help라도 화면 칸에 직접 붙이면 2단, 테이블·Structure 필드면 3단, Data Element면 4단 — 어느 쪽이든 Check Table보다는 위'로 고쳐 쓴다. '선언만으로 얻는 것 중 테이블 필드 부착이 가장 세다'는 문장은 유지 가능(DE보다 위이므로)."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L09.md",
+      "quote": "3. `CONCERT_ID` 칸에서 **F4**를 눌러 공연 목록이 뜨는지 확인. 목록에 **코드 옆 공연명**이",
+      "category": "사실 오류(실습 검증 단계가 지시대로는 성립하지 않음)",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "§4의 지시대로 `ZBOOKING-CONCERT_ID`에 `ZSH_CONCERT`(Selection Method = `ZCONCERT`)를 붙이면, F4 목록에 공연명이 뜨지 않는다. 그런데 ②-3은 '공연명이 함께 나오면 `ZCONCERT_T` 연결 성공'이라고 판정하게 해, 정상적으로 만든 학습자가 자기 Text Table을 실패로 오진하게 만든다.",
+      "evidence": "① 우선순위상 필드에 붙인 Search Help(3단)가 Check Table·Text Table 도움말(4~5단)을 이긴다 — 같은 챕터 CH09-L07이 그렇게 가르친다. 그러므로 SE16/SE11 Create Entries 화면에서 뜨는 것은 Check Table 생성 도움말이 아니라 `ZSH_CONCERT`다. ② `ZSH_CONCERT`의 Selection Method는 `ZCONCERT`이고 본문이 올린 파라미터는 `CONCERT_ID`·`ARTIST`·`VENUE` 셋뿐이다. ③ `ZCONCERT`에는 공연명 칸이 아예 없다 — §2가 직접 '`ZCONCERT`에는 공연명 칸이 없다. 일부러 없다.'라고 밝힌다. Elementary Search Help는 Selection Method에 Text Table이 있으면 텍스트 테이블 이름을 인식하기는 하지만, 텍스트 필드를 파라미터로 올리고 LPos를 주기 전까지 목록 컬럼으로 저절로 따라 나오지 않는다. 결국 코드 옆 이름이 붙는 경로(Check Table+Text Table 도움말)를 §4의 부착이 가려 버린 셈이다.",
+      "suggestion": "둘 중 하나로 정리한다. (A) `ZSH_CONCERT` 파라미터에 텍스트 필드(`ZCONCERT_T-NAME`)를 추가하고 LPos를 부여하는 단계를 §4에 명시 — 이러면 Search Help 경로로도 이름이 뜬다. (B) ②-3의 확인 대상을 'Search Help를 아직 붙이지 않은 칸' 또는 `ZPERF-CONCERT_ID`처럼 Check Table 도움말이 그대로 뜨는 칸으로 바꿔, Text Table 검증과 Search Help 검증을 서로 다른 칸에서 하게 한다. 어느 쪽이든 '왜 이 칸에서는 이 도움말이 뜨는가'를 L07 우선순위와 한 줄로 연결해 주면 좋다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L06.md",
+      "quote": "`PARAMETERS pa_conc TYPE zconcert-concert_id VALUE CHECK.`",
+      "category": "예시 부적절",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "VALUE CHECK 예제가 참조하는 필드를 관계의 반대쪽으로 잡았다. `ZCONCERT-CONCERT_ID`는 마스터(Check Table) 자신의 키 필드라 Foreign Key가 걸려 있지 않으므로, 바로 아래 문장이 약속한 'Check Table 조회'가 이 예제에서는 일어나지 않는다.",
+      "evidence": "이 챕터가 실제로 건 Foreign Key는 CH09-L09 §3의 셋뿐이다 — `ZPERF-CONCERT_ID`→`ZCONCERT`, `ZBOOKING-CONCERT_ID`→`ZCONCERT`, `ZBOOKING`(`CONCERT_ID`+`PERF_NO`)→`ZPERF`. `ZCONCERT-CONCERT_ID`는 참조하는 쪽이 아니라 참조받는 쪽이라 자기 Check Table이 없다. VALUE CHECK는 참조한 테이블·뷰 필드에 정의된 Foreign Key(없으면 Domain 고정값)를 근거로 검사하므로, 검사 근거가 없는 필드에 붙이면 문법 점검에서 걸리거나 아무 검사도 하지 않는다. 표준 교재의 동형 예시도 마스터 `SCARR-CARRID`가 아니라 종속 테이블 필드를 쓴다: `PARAMETERS pa_car TYPE sflight-carrid VALUE CHECK.` (덧붙여 CH09-L02가 '값 테이블만으로는 검증이 강제되지 않는다'고 이미 가르쳤으므로, Domain의 Value Table로 우회 성립할 것이라 기대해서도 안 된다.)",
+      "suggestion": "예제를 종속 필드로 바꾼다 — `PARAMETERS pa_conc TYPE zbooking-concert_id VALUE CHECK.` 그리고 '관계는 마스터가 아니라 참조하는 쪽 필드에 걸려 있으니, 검사를 받으려면 참조하는 쪽 필드를 가리켜야 한다'는 한 문장을 덧붙이면 바로 아래 설명과 예제가 일치한다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L09.md",
+      "quote": "- **`MANDT`는 우리가 손으로 넣지 않는다.** SE11에서 Delivery Class를 정하면 첫 키 필드로",
+      "category": "사실 오류",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "Delivery Class를 정한다고 `MANDT`가 자동으로 첫 키 필드에 생기지 않는다. 테이블의 클라이언트 종속 여부는 개발자가 첫 키 필드를 CLNT 타입(관례상 데이터 요소 `MANDT`)으로 직접 정의해야 결정된다.",
+      "evidence": "SE11에서 Transparent Table을 만들 때 Delivery Class(A/C/L/G/E/S/W)는 Delivery and Maintenance 탭의 속성으로, 전송·클라이언트 복사·표준 데이터 배포 규칙을 정할 뿐 필드 목록을 건드리지 않는다. 필드 목록 첫 줄에 클라이언트 필드를 직접 넣지 않으면 그 테이블은 클라이언트 독립(client-independent) 테이블이 되고, 이후 Foreign Key 자동 클라이언트 매핑·Text Table 키 조건·SE16 데이터 분리가 모두 어긋난다. 본문 세 표가 `MANDT` 행의 Data Element를 '(자동)'으로 적어 둔 탓에 학습자가 이 줄을 건너뛰기 쉽고, 그러면 §3의 Foreign Key 단계에서 원인 모를 오류를 만난다.",
+      "suggestion": "'첫 필드로 `MANDT`(Data Element `MANDT`, 타입 CLNT 3)를 **키로 직접 추가한다**. 이 한 줄이 있어야 클라이언트 종속 테이블이 된다. Delivery Class는 Delivery and Maintenance 탭에서 `A`(응용 테이블)로 둔다'처럼 두 가지를 분리해 서술한다. 표의 '(자동)' 표기도 'Data Element `MANDT`'로 바꾼다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L09.md",
+      "quote": "4. `ZSH_CONCERT_COLL`을 붙인 칸에서 F4를 눌러 **탭이 두 개** 뜨는지, 어느 탭에서 골라도",
+      "category": "위험한 생략(실습 지시 불완전)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "②-4는 '`ZSH_CONCERT_COLL`을 붙인 칸'을 전제하는데, 실습 어디에도 이 Collective Search Help를 어디에 붙이라는 지시가 없다. 더구나 §4는 같은 `ZBOOKING-CONCERT_ID` 칸에 `ZSH_CONCERT`를 붙이라고 이미 지시했고, 한 칸에서 실제로 뜨는 도움말은 하나뿐이다.",
+      "evidence": "§4는 `ZSH_CONCERT`에 대해서만 '`ZBOOKING-CONCERT_ID`에 붙인다'고 명시하고, `ZSH_CONCERT_COLL`에 대해서는 '앞 레슨들의 `MATCHCODE OBJECT zsh_concert_coll.` 예제가 가리키는 게 바로 이 객체다'라고만 한다. 그런데 그 `MATCHCODE OBJECT` 예제는 CH09-L06의 설명용 코드일 뿐 이 실습에서 작성하는 프로그램이 아니다. 결국 학습자에게는 탭 두 개를 확인할 화면이 존재하지 않는다. 또 CH09-L07의 우선순위대로라면 한 필드에 Elementary와 Collective를 동시에 살릴 수 없으므로, 부착 대상을 하나로 못 박지 않으면 ②-3(이름 표시)과 ②-4(탭 두 개)가 같은 칸을 두고 서로 배타적인 결과를 요구하게 된다.",
+      "suggestion": "부착 대상을 하나로 정리한다. 예: '`ZBOOKING-CONCERT_ID`에는 `ZSH_CONCERT_COLL`(Collective)을 붙인다 — Elementary 하나만 붙이면 탭이 뜨지 않는다'로 §4를 고치고, ②-3의 이름 확인은 다른 칸(또는 Search Help를 붙이지 않은 `ZPERF-CONCERT_ID`)에서 하게 나눈다. 또는 확인용 리포트 한 본(`PARAMETERS pa_conc TYPE zde_concert_id MATCHCODE OBJECT zsh_concert_coll.`)을 실습 단계로 명시해 그 선택화면에서 탭을 확인시킨다."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH09\\CH09-L06.md",
+      "quote": "테이블 필드로** 줘야 한다. `zde_concert_id` 같은 Data Element로 주면 Domain 고정값",
+      "category": "사실 오류(문법 제약)",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "'Data Element로 타입을 주면 VALUE CHECK가 Domain 고정값 범위까지만 검사한다'는 서술은 부정확할 가능성이 높다. 내 기억으로 VALUE CHECK는 DB 테이블·뷰의 컴포넌트를 참조하는 타입(`TYPE dbtab-comp` / `LIKE dbtab-comp`)에만 지정할 수 있고, Data Element 타입에 붙이면 '부분 검사'가 아니라 문법 오류가 난다.",
+      "evidence": "ABAP 키워드 문서의 PARAMETERS ... VALUE CHECK 항목은 이 부가어를 테이블·뷰 컴포넌트 참조 타입으로 한정하고, 해당 컴포넌트에 Check Table(Foreign Key) 또는 고정값이 존재할 것을 요구하는 것으로 기억한다. 본문 앞부분의 '타입을 DDIC에서 가져와야 한다'는 조건도 Data Element를 포함하는 것처럼 읽혀 같은 오해를 키운다. 다만 릴리스별 문법 점검 강도(오류 vs 확장점검 경고)까지는 웹 검색 없이 단언할 수 없어 '추정'으로 둔다.",
+      "suggestion": "실제 시스템에서 `PARAMETERS pa TYPE zde_concert_id VALUE CHECK.`를 한 번 문법 점검해 본 뒤, 'VALUE CHECK는 테이블·뷰 필드를 참조하는 타입에만 붙는다 — Data Element 타입엔 아예 붙지 않는다'로 정정하는 편이 안전하다. 확인 전이라면 단정 문장을 빼고 '왜 테이블 필드로 줘야 하는가'(관계가 필드에 붙어 있어서)만 남긴다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "보강 권장",
+    "summary": "기술 검수 관점에서 CH09의 개념 골격은 상당히 견실하다. 'DDIC Foreign Key는 실제 DB 제약을 만들지 않는다', '삭제 쪽도 막아 주지 않는다', 'INSERT 같은 직접 DB 쓰기는 검증을 우회한다', '선택화면 PARAMETERS의 입력도움은 일반 화면보다 제한적이라 다른 칸 값으로 목록을 좁히지 못한다', 'Search Help는 검사하지 않고 후보만 보여 준다' 같은, 후배 교재에서 흔히 빠지는 대목이 이미 정확히 들어가 있고, 동시 예매 경합에 대한 잠금 예고(CH26)까지 걸어 둔 점은 이 수준 교재로서 드물게 좋다. Cardinality `1:CN`의 앞뒤 해석과 `1:n`과의 차이, Value Table↔Foreign Key 구분, ALPHA가 순수 숫자에만 적용된다는 설명, Text Table의 키 구성·Foreign Key 방향·'텍스트 테이블의 키 필드' 유형 지정도 사실관계가 맞다. 문제는 네 지점이다. (1) CH09-L07의 F4 우선순위 사다리에서 'Data Element에 붙인 Search Help' 단이 통째로 빠지고 팁 박스가 그것을 Check Table 아래로 뒤집어 놓았다 — 이 레슨의 핵심 주장이 틀린 셈이라 가장 무겁다. (2) CH09-L09 실습의 확인 단계 두 개(공연명 표시·Collective 탭)가 §4의 부착 지시와 충돌해, 제대로 만든 학습자가 실패로 오진하거나 확인할 화면 자체가 없다. (3) VALUE CHECK 예제가 관계의 반대쪽인 마스터 자신의 키 필드(`zconcert-concert_id`)를 참조한다. (4) `MANDT`가 Delivery Class 설정으로 자동 생성된다는 서술은 사실과 다르며, 그대로 따르면 클라이언트 독립 테이블이 만들어져 이후 단계가 어긋난다. 모두 국소 수정으로 잡히지만 (1)(2)는 학습자가 스스로 알아채기 어려운 종류라 재집필까지는 아니어도 보강이 필요하다고 본다."
+  }
+}

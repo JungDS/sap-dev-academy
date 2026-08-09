@@ -1,0 +1,36 @@
+{
+  "agent": "AG02",
+  "model": "sonnet",
+  "target": "CH12",
+  "persona_ack": "준호 — 배운 코드는 그 자리에서 직접 눌러 봐야 직성이 풀리는 실습형 학습자. CH12(SELECT-OPTIONS·Range Table) 레슨 7개를 각 위젯과 나란히 놓고, 본문이 말한 숫자·시나리오가 위젯을 실제로 눌렀을 때도 똑같이 나오는지 하나하나 클릭해서 확인했다.",
+  "method": "Claude_Browser 실브라우저로 embeds/abap/CH12-L01～L07-S01.html 7개 위젯을 각각 단독 기동해 실제 클릭·입력 인터랙션을 수행했다. L01: 조건카드 4종 전체를 실제 DOM 클릭 이벤트로 눌러 SIGN/OPTION/LOW/HIGH·대상(so) 컬럼 렌더링을 확인. L02: From/To 입력값을 change/input 이벤트로 변경하고 다중선택 팝업 칩 3종을 추가한 뒤 삭제까지 실행해 Range Table 행과 LOOP 출력 텍스트를 본문 코드와 대조. L03·L07(같은 select-options-filter-sim 엔진): 프리셋 버튼 5종씩 전부 실행해 통과건수·sy-subrc·sy-dbcnt를 L03 예상표·L07 과제 설명과 수치로 대조(전부 일치, C001=4건·N=5건·C999=0건·C002~C003 BT=2건 등). L04: 포함/제외 조건을 두 시나리오(BT+EQ 조합, 제외단독=평가규칙 3번)로 누적 클릭해 판정·사유문구를 본문 서술과 대조. L05: 프리셋 5종 전체 실행, 특히 CP 와일드카드 'C+01' 케이스를 본문이 명시한 C001·CA01(맞음)·C0010(안 맞음) 예시와 1:1 대조. L06: 'CLEAR 생략' 토글 off/on 양쪽에서 7단계를 전부 스텝 실행해 work area/Range Table 상태전이와 최종 SELECT 결과(5건, 두 흐름 동일)를 검증. 이 과정에서 L01 최초 실행 시 '대상' 컬럼이 비어 보이는 이상을 발견했으나, 프롬프트가 안내한 캐시 프로토콜대로 embeds/_engine/range-row-builder.js를 fetch(cache:'reload')로 강제 리프레시하고 페이지를 재기동해 재검증한 결과 정상 렌더링을 확인했다 — 스테일 캐시로 인한 오탐이었음을 확인하고 최종 결과에서 제외했다(이후 CH12가 쓰는 엔진 JS 6종을 선제적으로 캐시 리프레시한 뒤 나머지 위젯을 검증). 공유 엔진 6개 파일(range-row-builder·selopt-screen-mapper·select-options-filter-sim·include-exclude-judge·option-compare-lab·range-append-stepper .js) 전문을 정독해 CP 패턴→정규식 변환, inRange(포함 OR·제외 AND-NOT) 로직 등을 소스 레벨로도 교차검증했다. 실제 빌드 레슨 페이지(docs/abap/pages/CH12-L01.html)에서 iframe 임베드 로딩과 콘솔 에러 유무도 점검했다(정상, iframe 정상 로드·CH12 관련 404/에러 없음). computer 도구의 화면 스크린샷은 'Browser pane 미표시'로 실패해 대신 read_page/javascript_tool의 DOM·텍스트 추출로 대체 검증했다(결과 정확도에는 영향 없음).",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH12-L01-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH12-L02-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH12-L03-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH12-L04-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH12-L05-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH12-L06-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH12-L07-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\range-row-builder.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\selopt-screen-mapper.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\select-options-filter-sim.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\include-exclude-judge.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\option-compare-lab.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\range-append-stepper.js"
+  ],
+  "findings": [],
+  "overall": {
+    "grade_opinion": "유지",
+    "summary": "CH12(SELECT-OPTIONS·Range Table) 7개 레슨과 그에 딸린 7개 체험 위젯을 전수 실브라우저 인터랙션으로 대조 감사했다. 본문 코드·표의 수치(L03·L07의 필터 시나리오 5종씩, L04의 포함/제외 판정 사유, L05의 CP 와일드카드 C+01 예시, L06의 CLEAR 생략 버그 시연)가 위젯의 실제 실행 결과와 전부 정확히 일치했다. 특히 L06의 'CLEAR 생략' 토글은 본문이 경고한 실수(EQ 행에 이전 BT의 HIGH 값이 잔류)를 정확한 수치로 재현하는 우수한 체험이었고, L03·L07은 본문 예상표의 모든 행(6/4/5/4/0건, C002~C003 BT=2건 등)과 sy-subrc·sy-dbcnt까지 소수점 오차 없이 일치했다. 체험공백·불일치·헛체험·위젯결함 4개 판정축 어디에서도 근거 있는 결함을 찾지 못했다. 최초 L01 점검에서 '대상' 컬럼이 비어 보인 현상은 캐시된 구버전 엔진 JS 때문이었고, 안내된 캐시 리프레시 절차로 재검증한 결과 실제로는 정상 동작임을 확인해 오탐으로 배제했다. 결함이 없다는 결론 자체가 이번 감사의 결과이며, 이는 발견 개수가 아니라 정확도를 우선하라는 지침에 따른 정직한 보고다."
+  }
+}

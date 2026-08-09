@@ -1,0 +1,79 @@
+{
+  "agent": "AG06",
+  "model": "sonnet",
+  "target": "CH12",
+  "persona_ack": "20년차 SAP ABAP 아키텍트(ECC~S/4HANA 개발·운영·성능·이관 경험, 후배 교재 기술 검수 다수 수행) 페르소나로 CH12 전체(레슨 7개 + _chapter.md)를 감사함.",
+  "method": "대상 8개 파일을 전문 정독. 코드 블록의 ABAP 문법(TABLES/SELECT-OPTIONS/TYPE RANGE OF/APPEND/WHERE...IN/CL_SALV_TABLE)과 서술된 시스템 동작을 보유한 ABAP 언어 지식으로 교차 검증. L03의 6건 샘플 데이터에 대한 예상 결과 표는 직접 재계산해 산술이 정확함을 확인. 웹 검색·외부 도구·다른 감사자 산출물·과거 감사 아카이브는 사용하지 않음.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH12-L03.md",
+      "quote": "SQL의 `IN (…)`은 목록이 비면",
+      "category": "사실 오류",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "빈 range table의 IN이 '전부 통과'라는 핵심 대비는 정확하지만, 대비 대상으로 든 'SQL의 IN(…)은 목록이 비면 아무것도 안 걸린다'는 서술은 부정확하다.",
+      "evidence": "표준 SQL에서 IN () 처럼 목록이 완전히 빈 IN절은 대부분의 RDBMS(오라클·MSSQL·HANA 등)에서 파싱 자체가 안 되는 문법 오류다. '아무것도 안 걸리는' 결과가 나오는 경우는 보통 ORM/애플리케이션 계층이 빈 목록을 1=0 같은 조건으로 치환해 주기 때문이지 SQL IN 자체의 의미는 아니다. 이 챕터의 핵심 설명(Range Table의 IN은 비면 true) 자체는 정확하다.",
+      "suggestion": "'SQL의 순수 IN()은 보통 빈 목록 자체가 문법 오류로 거부되고, 아무것도 안 걸리는 것처럼 보이는 건 ORM/애플리케이션 계층이 1=0으로 바꿔주는 경우가 많다'처럼 한 구절만 보완. 핵심 대비(Range Table의 IN은 반대로 전부 통과)는 그대로 유지해도 됨."
+    },
+    {
+      "seq": 2,
+      "file": "CH12-L03.md",
+      "quote": "TABLES zbooking.",
+      "category": "예시 적절성",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "TABLES zbooking.는 L02에서 '오래된 관례'라는 caveat가 명시적으로 붙었지만, 이후 L03·L07 코드 예제에서 별다른 재언급 없이 그대로 반복 사용돼 훑어 읽는 학습자에게는 사실상 '표준 시작 패턴'처럼 각인될 위험이 있다.",
+      "evidence": "TABLES 문은 실무(특히 클래스 기반 설계)에서는 사실상 쓰이지 않는 옛 구문이며 L02 본문도 이를 인정한다. 그런데 L02가 제시한 더 나은 대안(DATA 변수 + SELECT-OPTIONS ... FOR)은 그 레슨에서 한 번만 등장하고 이후 L03·L07에서는 다시 쓰이지 않는다.",
+      "suggestion": "L03·L07의 TABLES zbooking. 코드 옆에 'L02에서 본 것처럼 오래된 관례'라는 한 줄 각주를 반복하거나, L03부터는 DATA 기반 FOR 참조로 예제를 통일하는 것을 고려."
+    },
+    {
+      "seq": 3,
+      "file": "CH12-L06.md",
+      "quote": "APPEND gs_stat TO gr_stat.",
+      "category": "위험한 생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "Range Table을 코드로 직접 키우는 방법(TYPE RANGE OF + APPEND)을 가르치면서도, range table이 지나치게 커질 때(대량 APPEND, 다른 테이블 값을 퍼올려 채우는 경우 등) WHERE ... IN 조회 성능이 나빠지거나 SQL 문 크기 제한에 걸릴 수 있다는 주의가 챕터 어디에도 없다.",
+      "evidence": "선택 테이블(range table)의 행 수가 매우 많아지면 Open SQL의 IN이 내부적으로 긴 OR 체인으로 변환돼 옵티마이저가 인덱스를 제대로 못 쓰거나, 극단적으로는 문 길이 제한에 걸려 런타임 오류로 이어질 수 있다는 것은 ECC부터 S/4HANA까지 공통인 잘 알려진 함정이다. 이 챕터는 정확히 그런 위험을 만들 수 있는 '코드로 range 채우기' 패턴(L06)을 가르치므로 최소한 한 줄 경고가 있었으면 한다.",
+      "suggestion": "L06 '흔한 실수와 점검'에 '루프에서 APPEND를 대량으로 반복하면 range table이 커져 WHERE ... IN이 느려지거나(때로는 SQL 문 길이 제한에 걸려) 문제가 될 수 있다. 큰 목록은 나누어 처리하거나 다른 조회 전략을 고려한다' 정도의 항목 추가."
+    },
+    {
+      "seq": 4,
+      "file": "CH12-L04.md",
+      "quote": "단일값 선택 | 넣고 싶은 값을 한 줄에 하나씩 | `[[SIGN]] = I`, `OPTION = EQ`",
+      "category": "설명 누락",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "다중 선택 팝업을 '탭 네 개 = 행 네 종류(단일값 선택/범위 선택/단일값 제외/범위 제외)'로 정리하는데, 문자형 필드에서 단일값 탭에 *·+가 든 값을 입력하면 시스템이 자동으로 OPTION을 CP로 바꿔 인식하는 동작은 언급이 없다. L05가 CP를 설명할 때도 '화면에서 실제로 어떻게 CP 행을 만드는지'는 연결되지 않는다.",
+      "evidence": "실제 SAP 화면(Selection Screen/다중 선택 팝업)에서 문자형 입력 필드에 와일드카드가 포함된 값을 넣으면 시스템이 OPTION=CP로 자동 인식하는 동작은 오래전부터 알려진 ABAP 관행이다. 다만 정확한 조건(필드 타입·화면 옵션 설정 여부 등)은 기억이 완전히 확실하지 않아 추정으로 표시한다.",
+      "suggestion": "L04 표에 각주로 '문자형 필드는 단일값 탭에 *·+가 든 값을 입력해도 시스템이 자동으로 OPTION=CP로 인식한다'는 점을 덧붙이면 L05의 CP 설명과 실제 화면 조작이 자연스럽게 연결됨."
+    },
+    {
+      "seq": 5,
+      "file": "CH12-L07.md",
+      "quote": "MESSAGE '예매 목록 ALV 생성 실패' TYPE 'I'.",
+      "category": "안티패턴",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "SALV 생성 실패를 알리는 MESSAGE 문에 TYPE 'I'(정보)를 쓰는데, 실제로는 처리가 실패한 상황이라 'E'(오류)나 최소 'S'/'W'가 상황을 더 정확히 전달한다. 코드에 교정 코멘트가 없다.",
+      "evidence": "해당 블록은 front-matter에 advanceUse로 명시돼 '분석 대상이 아니다'라고 안내되지만, 학습자가 그대로 복사해 자신의 리포트에 쓸 가능성이 있는 완결된 예제다. 다만 리포트 문맥에 따라 메시지 타입 선택에 어느 정도 재량이 있어 확정적 오류로 보기는 어려워 추정으로 표시한다.",
+      "suggestion": "예시 자체는 '선행 사용'으로 분석 대상이 아니라 명시돼 있으나, MESSAGE TYPE은 'E'나 'S'가 실패 상황에 더 맞는 선택이라는 점을 짧은 각주로 덧붙이면 이 코드를 그대로 복사하는 학습자에게 도움이 됨."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH12(SELECT-OPTIONS·Range Table) 7개 레슨은 SIGN/OPTION/LOW/HIGH 구조, 빈 range=true, 포함/제외 평가 규칙(제외만 있을 때 전체에서 빼기), EQ/BT/CP 옵션(OPTION 10종 중 3종 우선), TYPE RANGE OF/RANGES 옛 구문 구분 등 핵심 ABAP 사실관계가 대체로 정확했다. L03의 6건 샘플 데이터에 대한 예상 건수도 전부 재계산해 맞음을 확인했다. sy-subrc/sy-dbcnt 설명, TABLES 문의 한계(전역·클래스 내 사용 불가), range 필터링과 권한 검사의 구분(L06) 같은 실무 위험 포인트도 잘 짚었고, R15 게이팅(선행 사용 명시)도 일관되게 지켜졌다. 다만 (1) SQL 빈 IN() 대비 서술의 사소한 부정확, (2) TABLES 옛 관례가 caveat 이후에도 재언급 없이 반복 사용, (3) range table을 코드로 키울 때의 성능/SQL 문 길이 위험에 대한 언급 부재, (4) 다중 선택 팝업 설명과 CP 자동 인식 사이의 연결 누락, (5) 실패 상황에 MESSAGE TYPE 'I' 사용 같은 사소한 지점이 있어 경미한 보완을 권한다. 구조적 재작성이 필요한 수준은 아니다."
+  }
+}

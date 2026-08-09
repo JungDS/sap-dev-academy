@@ -1,0 +1,46 @@
+{
+  "agent": "AG09",
+  "model": "opus",
+  "target": "CH12",
+  "persona_ack": "ABAP 정적 검사기를 시늉하는 코드 전용 감사자로서 CH12의 abap 코드 블록만 줄 단위로 봤다. 산문·표·콜아웃·임베드 지시는 판정 대상에서 제외했고, (1) 활성화 차단급 결함(미선언 변수·마침표 누락·타입 불일치·없는 구문·시그니처 오류), (2) 네이밍 규약(g/l 스코프 접두어·so_ 8자·ty_/ts_/tt_·it_는 Header Line 전용), (3) 경계 규약(CH01~17 modern 문법 금지·CH01~18 New Open SQL 금지), (4) 코드 안 주석·출력 문자열 오류 네 가지만 판정했다. ABAP 실행 환경이 없으므로 컴파일 확인이 아니라 정적 판단이며, 불확실한 건은 confidence를 추정으로 낮췄다.",
+  "method": "Read 도구로 대상 8개 파일 전문을 읽고, Grep 패턴 ^``` 로 펜스 블록 목록을 뽑아 읽은 내용과 대조해 누락을 차단했다. 확인된 abap 블록은 총 7개 — CH12-L02(28~41행, 76~80행), CH12-L03(28~40행), CH12-L06(32~45행), CH12-L07(29~52행, 56~59행, 63~66행). CH12-L01·L04·L05·_chapter.md에는 코드 블록이 0개다. 각 블록을 문장 단위로 분해해 마침표·체인 콜론 종결·선언 순서와 가시성·타입 참조(TABLES/TYPE dbtab-field/TYPE RANGE OF/LIKE LINE OF/TYPE TABLE OF)·이벤트 블록·LOOP~ENDLOOP·TRY~ENDTRY 짝·표준 클래스 시그니처·접두어·classic 경계를 대조했다. ABAP 시스템 접속이나 브라우저 검증은 사용하지 않았다(정적 판단). 저장소 밖 경로는 열지 않았고, 다른 감사자 산출물·과거 감사 결과도 조회하지 않았다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L06.md",
+      "quote": "DATA: gr_stat TYPE RANGE OF zbooking-status,",
+      "category": "네이밍 규약",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "Range Table 변수 gr_stat의 접두어가 이 커리큘럼이 명문화한 전역 접두어 풀(gv_ 스칼라 · gs_ Structure · gt_ Internal Table)에 없다. CH12-L07의 go_alv(TYPE REF TO cl_salv_table)도 같은 성격의 열외다 — 규칙과 코드가 서로 어긋나 있다.",
+      "evidence": "규칙이 열거하는 전역 접두어는 gv_/gs_/gt_ 셋뿐인데, CH12-L01은 Range Table을 '조건을 행으로 쌓는 특수한 Internal Table'이라고 커리큘럼 스스로 정의한다. 그 정의를 규칙에 그대로 대입하면 gr_stat은 gt_ 대상이 된다. 같은 DATA 체인의 gs_stat(행 Work Area)·gt_book(내부 테이블)은 규칙과 정확히 일치해서, 이 블록 안에서 gr_ 하나만 열외라는 점이 대비로 드러난다. 다만 gr_(range)·go_(object)는 SAP 실무에서 매우 널리 쓰이는 관례이고, 접두어 체계가 '스코프문자 + 타입문자'라는 점에서 규칙의 의도적 확장으로 볼 여지도 크다. 코드만으로는 규칙 누락인지 묵시적 확장인지 단정할 수 없어 확실이 아닌 추정으로 둔다. 문법·동작에는 아무 영향이 없다.",
+      "suggestion": "코드를 고치기보다 규칙 문서를 맞추는 쪽을 권한다 — 접두어 풀에 gr_(Range Table)·go_(객체 참조)를 명시해 'g/l 스코프문자 + 타입문자' 체계로 확정하면 CH11(SALV)의 go_ 사용까지 한 번에 정합해진다. 규칙을 문자 그대로 유지할 거라면 gr_stat을 gt_stat으로 바꿔야 하지만, 그러면 Range Table과 데이터 테이블이 이름만으로 구분되지 않는 손해가 생긴다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH12\\CH12-L07.md",
+      "quote": "WHERE concert_id IN so_conc",
+      "category": "의사코드",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "CH12-L07의 세 번째 abap 블록(63~66행)은 WHERE 절 두 줄만 담고 있어 그 자체로는 완결된 ABAP 문장이 아니다. 의도된 발췌로 판단되므로 문법 결함이 아니라 표기 관찰로만 기록한다.",
+      "evidence": "해당 블록의 내용은 'WHERE concert_id IN so_conc'와 '  AND status     IN so_stat.' 두 줄뿐이고 앞의 SELECT 문장이 없다. 직전 본문이 '그리고 조건이다. 두 줄 사이는 AND라 둘 다 만족하는 예매만 남는다'라고 명시하듯 29~52행 전체 코드에서 떼어 온 발췌이므로, 지침대로 문법 잣대를 완화해 category=의사코드로만 남긴다. 남는 실제 영향은 하나다 — 이 저장소는 abap 펜스를 줄번호와 복사 버튼이 붙은 코드 블록으로 자동 변환하므로, 학습자가 이 블록의 복사 버튼을 누르면 단독으로는 실행되지 않는 조각을 얻는다. 바로 위 두 번째 발췌(56~59행 SELECT-OPTIONS 두 줄)는 그 자체로 완결된 문장이라 같은 상황이 아니다.",
+      "suggestion": "그대로 두어도 학습 흐름에는 문제가 없다. 굳이 다듬는다면 SELECT 첫 줄을 함께 실어 문장을 완결시키거나, 블록이 위 코드의 발췌임을 캡션에서 한 번 더 못 박는 정도면 충분하다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "유지",
+    "summary": "CH12의 abap 블록 7개(L02 2 · L03 1 · L06 1 · L07 3)를 줄 단위로 훑었고 활성화 차단급 결함은 발견하지 못했다. 문장 마침표와 체인 콜론 종결, 선언 순서와 가시성, START-OF-SELECTION 이벤트 블록, LOOP~ENDLOOP·TRY~ENDTRY 짝이 모두 맞다. 타입 참조도 정합하다 — TABLES zbooking 뒤의 zbooking-concert_id 참조, DATA gv_conc TYPE zbooking-concert_id + SELECT-OPTIONS ... FOR gv_conc(TABLES 없는 대안), DATA gs_conc LIKE LINE OF so_conc(selection table 행 타입), TYPE RANGE OF zbooking-status와 같은 체인 안의 LIKE LINE OF gr_stat, TYPE TABLE OF zbooking에 SELECT * INTO TABLE까지 모두 유효한 classic 문법이다. 표준 클래스 사용도 실제 시그니처와 일치한다 — cl_salv_table=>factory의 IMPORTING r_salv_table / CHANGING t_table 조합, get_functions( )->set_all( abap_true ), CATCH cx_salv_msg, MESSAGE 리터럴 TYPE 'I' 모두 맞다. 경계 규약도 깨끗하다 — 인라인 DATA()·VALUE·NEW·+=·문자열템플릿이 한 곳도 없고, 세 개의 SELECT는 전부 @ 없이 콤마 없는 classic Open SQL이며 WHERE ... IN에 range를 그대로 넘긴다. 네이밍은 so_conc·so_stat이 7자로 8자 한도 안이고 gs_/gt_도 규칙대로이며, CH12에는 FORM/METHOD가 없어 전역 g 접두어가 옳다. 코드 블록 안에 주석이 하나도 없어 주석 오류 항목은 대상이 없었고, 유일한 출력 문자열인 ALV 생성 실패 메시지도 문맥과 어긋나지 않는다. 남은 두 건은 모두 낮음이고 콘텐츠 수정 없이도 성립하는 수준이라 판정은 유지다 — 접두어 풀에 없는 gr_/go_는 규칙 문서 정비 건이고, L07의 WHERE 발췌는 의도된 표기다. 다만 나는 코드 블록만 보는 종이므로 산문·표의 사실관계와 서술 품질은 이 판정의 범위 밖임을 밝혀 둔다."
+  }
+}
