@@ -1,0 +1,33 @@
+{
+  "agent": "AG06",
+  "model": "sonnet",
+  "target": "CH05",
+  "persona_ack": "ECC～S/4HANA 실무 20년차 ABAP 아키텍트 관점에서 CH05(Structure: Local·DDIC) 레슨 5편과 챕터 메타파일을 문법 정확성·DDIC 동작·실무 관행 기준으로 감사했다.",
+  "method": "대상 6개 파일 전문을 정독하며 모든 ABAP 코드 블록의 문법(BEGIN OF/END OF 짝, 선언 체인 구두점, 하이픈 접근)과 서술된 시스템 동작(SE11 절차, DDIC 계층 Domain→Data Element→Structure, MOVE-CORRESPONDING·CLEAR·LIKE 의미론)을 기억 기반 ABAP/DDIC 지식과 대조했다. 레슨 간 교차 일관성(같은 변수·타입 서술이 다른 레슨과 모순되지 않는지)도 확인했다. 웹 검색·실 시스템 접근 없음(금지 규정 준수) — 기억이 불확실한 항목은 confidence를 '추정'으로 표기했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH05-L02.md",
+      "quote": "`ZS_PERSON`(3번째가 `_`)은 거부되고 `ZST_PERSON`(4번째부터)은",
+      "category": "사실 오류",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "'DDIC Structure·테이블 이름은 2·3번째 자리에 밑줄(_)이 올 수 없고 끝자리도 밑줄 불가'라는 명명 규칙 서술의 근거가 의심스럽다. ZS_PERSON은 거부되고 ZST_PERSON은 허용된다는 구체적 사례까지 단정하는데, 이런 자리수 기반 제한을 SAP 표준 DDIC 개체명 규칙에서 기억하지 못한다.",
+      "evidence": "실무에서 2번째 자리가 밑줄인 Z_로 시작하는 테이블·Structure(예: Z_ 접두 + 서술적 이름 패턴)를 다수 봐 왔다. 내가 아는 DDIC 개체명 규칙은 'Y/Z 네임스페이스로 시작 · 영문자/숫자/밑줄만 허용 · Structure는 최대 30자, Transparent Table은 대체로 16자 제한' 정도이고, '2·3번째 자리 밑줄 금지·끝자리 밑줄 금지'라는 조항은 떠오르지 않는다. 다른 규칙(예: 특정 오브젝트 타입의 예약된 내부 네이밍 패턴)과 혼동됐을 가능성이 있다. 웹 검색이 금지돼 있어 확정할 수 없으므로 confidence는 '추정'으로 표기한다.",
+      "suggestion": "실제 SE11에서 Z_PERSON, ZS_PERSON 같은 이름으로 Structure 생성을 시도해 시스템이 실제로 거부하는지 직접 확인 후 서술을 검증할 것을 권장한다. 확인 전까지는 확실한 규칙(Y/Z로 시작·허용 문자·길이 제한)만 남기고, 자리수 제한 서술은 보류하거나 '특정 환경/사내 규칙에서 그런 사례를 봤다' 수준으로 완화하는 것을 제안한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "Structure 문법(BEGIN OF·END OF 선언, 하이픈 접근)·DDIC 계층(Domain→Data Element→Structure)·MOVE-CORRESPONDING·CLEAR·LIKE 동작·중첩·.INCLUDE·.APPEND 절차 서술이 모두 정확하다. 잔존값 함정, 길이 불일치 시 조용한 잘림, 이름만 같고 타입이 다르면 런타임 오류 가능성, CURR+통화키 실무 안내, 표준 오브젝트 직접 수정 금지 등 이 학습 단계에서 짚어야 할 실무 주의사항도 이미 잘 반영돼 있어 위험한 생략이나 안티패턴은 발견하지 못했다. 다만 CH05-L02 '흔한 실수와 점검'의 DDIC 이름 밑줄 위치 제한(2·3번째 자리 금지, 끝자리 금지) 서술은 근거가 불확실해 검증 후 정정 또는 완화가 필요하다. 그 외 파일에서는 사실 오류를 찾지 못했다."
+  }
+}

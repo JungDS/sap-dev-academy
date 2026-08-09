@@ -1,0 +1,71 @@
+{
+  "agent": "AG02",
+  "model": "sonnet",
+  "target": "CH08",
+  "persona_ack": "나는 준호다. 배운 코드는 그 자리에서 직접 눌러보고 값을 바꿔가며 \"본문이랑 진짜 똑같이 도나?\"를 확인해야 직성이 풀리는 실습형 학습자다. CH08의 SFLIGHT·SPFLI·ZGUGUDAN 예제를 레슨마다 브라우저로 직접 실행해, 본문 코드·설명과 체험 위젯이 실제로 같은 문장·같은 값을 다루는지 하나씩 대조했다.",
+  "method": "7개 임베드 위젯(CH08-L01~L07-S01.html)을 http://localhost:8144/embeds/abap/에서 각각 직접 열어 조작했다 — L01: client 100/200/300 전환 + SELECT 실행 버튼 클릭 후 결과표 확인, L02: ZGUGUDAN/ZTPERSON 데이터셋 전환과 프리셋(전체조회·컬럼선택) 클릭, L03: SELECT SINGLE/INTO TABLE/ENDSELECT/UP TO 3 ROWS 4개 폼 버튼 전환, L04: Work Area/변수 묶음/CORRESPONDING(TABLE↔WA 토글)/APPENDING(↔INTO TABLE 토글) 4개 탭 전부 클릭, L05: 'fltime IS NULL' 조건 칩 활성화로 결과 확인, L06: 키 체크박스(carrid만→전체키)로 후보 좁혀짐 비교, L07: dan=5 + MESSAGE I 조합 실행해 팝업까지 확인. 매 조작 직후 get_page_text/read_page로 렌더된 코드박스·결과표·sy-subrc를 읽어 본문 .md 코드 블록과 문자 단위로 대조했고, 위젯 로드마다 read_console_messages(onlyErrors)로 콘솔 오류를 확인했다(전 위젯 0건). 위젯 소스(.html)와 그것이 참조하는 embeds/_engine/*.js 엔진 스크립트 7종도 전문 정독해 조건 판정·NULL 3치 논리·INTO 매핑 로직을 코드 레벨로 검증했다. 레슨 페이지(CH08-L01.html?v=r2b2)도 1건 열어 임베드 iframe이 정상 로드되는지 확인했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L07.md",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH08-L01-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH08-L02-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH08-L03-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH08-L04-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH08-L05-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH08-L06-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH08-L07-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\client-scope-filter.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\select-query-simulator.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\select-form-lab.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\into-target-board.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\where-filter-lab.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\key-condition-lens.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\empty-result-message.js"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH08-L01-S01.html",
+      "quote": "같은 <code>SELECT … WHERE carrid = 'KE'</code>를 실행해 보세요.",
+      "category": "불일치",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "위젯이 본문과 \"같은 SELECT\"를 실행한다고 안내하지만, 실제로는 본문 코드에 없는 WHERE carrid='KE' 조건을 몰래 추가해서 실행한다.",
+      "evidence": "본문(CH08-L01.md)의 코드 예제는 'DATA gt_flight TYPE TABLE OF sflight.' 다음에 'SELECT * FROM sflight INTO TABLE gt_flight.' 뿐이며 WHERE절이 전혀 없다. 바로 아래 본문 문장도 \"아래에서 현재 로그인 client를 바꿔 가며 같은 SELECT를 실행해 보자. 같은 코드인데 결과가 달라지는 장면\"이라며 '동일 코드'를 명시한다. 그런데 위젯 안내문은 \"같은 SELECT … WHERE carrid = 'KE'를 실행해 보세요\"라 말하고, 브라우저에서 렌더된 코드박스도 'WHERE carrid = \\'KE\\'.'를 고정 포함한다(client-scope-filter.js renderCode()). 실제로 client 100에서 실행 버튼을 눌러 확인하니 그 client의 3행(KE 0701·KE 0702·LH 0400) 중 LH행이 빠지고 KE 2행만 결과로 나왔다 — WHERE 없이 SELECT *라면 3행 전부 나와야 한다. 즉 '같은 코드'라는 서술이 실제 동작과 다르다.",
+      "suggestion": "본문 코드 블록에 WHERE carrid = 'KE'를 추가해 위젯과 실제로 동일한 문장으로 맞추거나, 위젯의 안내문·코드박스에서 carrid 필터를 제거해 본문의 무조건 SELECT *와 일치시킨다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH08-L03-S01.html",
+      "quote": "<button type=\"button\" class=\"fbtn\" data-f=\"uptoN\">UP TO 3 ROWS</button>",
+      "category": "불일치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "본문은 'UP TO 10 ROWS'를 예시 숫자로 쓰는데 위젯은 'UP TO 3 ROWS'로 다른 숫자를 체험시킨다.",
+      "evidence": "CH08-L03.md 91행은 'SELECT * FROM sflight INTO TABLE gt_flight UP TO 10 ROWS.'이다. 위젯 버튼 라벨과 SFL_CFG.cap은 3이며, 브라우저로 'UP TO 3 ROWS'를 클릭해 확인한 결과도 코드박스에 'UP TO 3 ROWS', 결과 카드에 '3 / 8행'으로 표시됐다. 전체 KE 데이터가 8행뿐이라 10으로 하면 사실상 전부(8행) 반환돼 '잘림' 효과를 체감하기 어렵기 때문으로 보이는 의도된 설계지만, 학습자가 본문 숫자와 위젯 숫자를 1:1로 대조하면 서로 다르다.",
+      "suggestion": "본문 예제 숫자를 3으로 낮춰 데이터 8행과 자연스럽게 대비시키거나, 위젯에 \"본문은 10을 예로 들었지만 잘림 효과를 보여주려 3으로 시연합니다\" 같은 안내 한 줄을 추가한다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L04.md",
+      "quote": "DATA: gv_occ TYPE sflight-seatsocc,",
+      "category": "불일치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "본문 INTO (v1,v2) 예제는 seatsocc·seatsmax 2개 필드(변수 gv_occ, gv_max)를 받는데, 위젯 '변수 묶음' 탭은 carrid·connid·seatsmax 3개 필드(변수 gv_carrid, gv_connid, gv_max)로 완전히 다른 필드·변수명 조합을 체험시킨다.",
+      "evidence": "본문 37~43행은 'DATA: gv_occ TYPE sflight-seatsocc, gv_max TYPE sflight-seatsmax.' 다음에 'SELECT SINGLE seatsocc seatsmax FROM sflight INTO (gv_occ, gv_max) ...'다. 브라우저로 위젯의 '변수 묶음 (v1,v2,…)' 탭을 열어 확인한 실제 렌더 코드는 'SELECT SINGLE carrid connid seatsmax FROM sflight INTO (gv_carrid, gv_connid, gv_max) ...'였다. seatsocc·gv_occ는 위젯에 전혀 등장하지 않는다. 다만 순서 어긋남 토글 자체(정상↔순서 어긋남)는 값이 엉뚱한 변수로 들어가는 장면을 정확히 보여줘 '위치로 짝짓는다'는 핵심 개념 전달에는 문제가 없었다.",
+      "suggestion": "위젯 필드 구성을 본문과 동일하게 seatsocc·seatsmax(gv_occ, gv_max)로 맞추거나, 지금처럼 다른 조합을 쓰려면 \"본문 예제와 다른 필드로 순서 어긋남 효과를 더 뚜렷하게 보여줍니다\" 같은 안내를 덧붙인다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH08 7개 레슨 전부에 본문 코드 1건 이상 ↔ 체험 위젯 1개가 정확히 대응해 존재하며, 7개 위젯을 모두 브라우저에서 직접 조작(client 전환·실행, 데이터셋/프리셋 전환, SELECT 4형태 전환, INTO 4탭 전부와 내부 토글, WHERE 조건 칩과 AND/OR/NOT, 키 체크박스 조합, dan·피드백 조합+팝업)해 콘솔 오류 없이 정상 동작함을 확인했다. 체험 공백(코드는 있는데 위젯 없음)과 헛체험(클릭은 되나 배우는 게 없음)은 발견되지 않았고, 위젯 자체 로직 결함(조건 판정·NULL 3치 논리·INTO 매핑 등)도 없었다. 다만 본문이 위젯과 '같은 코드'라고 명시하거나 암시하는 지점에서 실제로는 세부 조건·숫자·필드가 달랐던 불일치를 3건 발견했다: L01은 본문에 없는 WHERE carrid='KE'를 위젯이 추가해 실행하고(중간, '같은 SELECT' 서술과 직접 모순), L03은 본문 'UP TO 10'과 위젯 'UP TO 3'이 다르며(낮음), L04는 본문 seatsocc·seatsmax 예제와 위젯 carrid·connid·seatsmax 예제가 필드·변수명 모두 다르다(낮음). 셋 다 각 레슨의 핵심 개념(client 자동 종속·행 수 제한·위치 기반 INTO) 전달 자체는 해치지 않는 수준이라 재집필이 아닌 경미 수정으로 판단한다."
+  }
+}
