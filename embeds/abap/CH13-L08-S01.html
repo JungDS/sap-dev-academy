@@ -11,8 +11,8 @@
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">공연별 예매현황 — JOIN + GROUP BY <small>(zconcert ⨝ zbooking)</small></p>
-  <p class="lead">두 표를 <code>concert_id</code>로 잇고(<code>JOIN</code>), 공연별로 묶어(<code>GROUP BY</code>) 좌석을 더합니다(<code>SUM</code>). <b>LEFT OUTER</b>면 예매 없는 공연도 0으로 남습니다. 취소(<code>status = 'C'</code>)는 <code>ON</code> 조건으로 합계에서 빠집니다.</p>
+  <p class="hd">예매현황 뼈대 — JOIN + GROUP BY <small>(zconcert ⨝ zbooking · 두 테이블로 단순화)</small></p>
+  <p class="lead">두 표를 <code>concert_id</code>로 잇고(<code>JOIN</code>), 묶어서(<code>GROUP BY</code>) 좌석을 더하는(<code>SUM</code>) <b>흐름</b>을 봅니다. <b>LEFT OUTER</b>면 예매 없는 공연도 0으로 남고, 취소(<code>status = 'C'</code>)는 <code>ON</code> 조건으로 합계에서 빠집니다. 위 리포트 코드는 여기에 <b>회차</b>(<code>zperf</code>)를 한 겹 더 얹어 <b>회차 단위</b>로 묶은 것입니다.</p>
 
   <div class="jav-sec">① 원본 두 테이블</div>
   <div class="jav-src">
@@ -32,7 +32,7 @@
     <pre id="javCode"></pre>
   </div>
 
-  <div class="jav-sec">③ GROUP BY 집계 결과 — lt_stat (ts_stat)</div>
+  <div class="jav-sec">③ GROUP BY 집계 결과 — gt_stat (ts_stat)</div>
   <div class="jav-res" id="javRes"></div>
 
   <div class="note"><b>왜 LEFT인가</b> — <code>INNER</code>면 예매 없는 공연(C003)이 통째로 빠진다. "예매 0"도 보여 줘야 하므로 <code>LEFT OUTER JOIN</code>. 취소 건은 <code>ON … AND b~status &lt;&gt; 'C'</code>로 합계에서 제외. <code>SUM( )</code>·<code>GROUP BY</code>는 classic OK — <code>@</code>·콤마는 CH19.</div>
@@ -44,8 +44,8 @@ window.JOIN_CFG = {
     cols:[{key:'concert_id',label:'공연ID'},{key:'artist',label:'아티스트'},{key:'capacity',label:'정원',num:true}],
     data:[
       {concert_id:'C001',artist:'안유진',capacity:100},
-      {concert_id:'C002',artist:'신유빈',capacity:50},
-      {concert_id:'C003',artist:'전지현',capacity:80}
+      {concert_id:'C002',artist:'ABAP Trio',capacity:50},
+      {concert_id:'C003',artist:'UI5 Night',capacity:80}
     ]},
   right:{ name:'zbooking', alias:'b',
     cols:[{key:'booking_id',label:'예매',num:true},{key:'concert_id',label:'공연ID'},{key:'customer',label:'고객'},{key:'seats',label:'좌석',num:true},{key:'status',label:'상태'}],

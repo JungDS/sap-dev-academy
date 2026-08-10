@@ -1,0 +1,132 @@
+{
+  "agent": "AG02",
+  "model": "sonnet",
+  "target": "CH14",
+  "persona_ack": "나는 준호다 — 배운 건 그 자리에서 직접 눌러보고 확인해야 직성이 풀리는 실습형 학습자다. CH14 레슨 9개와 임베드 위젯 9개를 본문 코드·설명과 하나하나 대조하며, 브라우저에서 버튼을 누르고 체크박스를 토글하고 F4를 열어 직접 확인했다.",
+  "method": "대상 파일 19개(레슨 MD 9·챕터 MD 1·임베드 HTML 9)와 참조가 허용된 엔진 JS 9개(db-view-vs-join·field-curtain·f4-help-flow·fk-maintenance-gate·sm30-gate-checklist·view-cluster-tree·se16n-tracker·timeline-boundary·concert-register-console) 전부를 정독했다. 이어 Claude Code 내장 브라우저 pane(Chromium)으로 http://localhost:8144 에서 위젯 9개 전부를 개별 URL(embeds/abap/CH14-Lxx-S01.html?v=b4)로 열어 버튼 클릭·체크박스 토글·F4 팝업 열기 등 실제 인터랙션을 수행하고 get_page_text·read_page·screenshot으로 렌더링 결과를 소스와 대조했다. 커스텀 체크박스가 좌표 클릭에 반응하지 않는 구간(innerHTML 전체 재렌더 패턴)은 javascript_tool로 매번 새로 querySelector해 정확한 대상 input에 change 이벤트를 디스패치하는 방식으로 재현했다(순수 검증 목적). 레슨 전체 페이지도 5개 표본(L02·L03·L06·L08·L09, docs/abap/pages/CH14-Lxx.html?v=b4)을 열어 콘솔 에러를 확인했다(전부 0건 — 캐시 강제새로고침 불필요). 발견 8건 모두 위젯의 실제 렌더링 또는 엔진 JS 소스 문자열을 직접 대조해 확인했다(전부 confidence=확실). 엔진 파일이 공유 재사용되는지도 grep으로 확인해(field-curtain·timeline-boundary 등은 CH14 해당 레슨 전용) config 불일치가 '이 레슨만의' 결함임을 검증했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L09.md",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH14-L01-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH14-L02-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH14-L03-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH14-L04-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH14-L05-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH14-L06-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH14-L07-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH14-L08-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH14-L09-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\db-view-vs-join.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\field-curtain.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\f4-help-flow.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\fk-maintenance-gate.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\sm30-gate-checklist.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\view-cluster-tree.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\se16n-tracker.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\timeline-boundary.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\concert-register-console.js"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L02.md",
+      "quote": "`changed_at`까지)이 붙어 열두 필드다.",
+      "category": "불일치",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "본문은 zbooking이 업무 필드 6개+감사 필드 6개=열두 필드라고 명시하지만, 실제 위젯(CH14-L02-S01.html의 FC_CFG.fields)에는 필드가 10개(업무 6+기술 4)뿐이다.",
+      "evidence": "본문(CH14-L02.md 27~29행): '업무 필드 여섯(booking_id, concert_id, perf_no, customer, seats, status)에 감사 필드 여섯(created_by부터 changed_at까지)이 붙어 열두 필드다.' 위젯 config(FC_CFG.fields)는 booking_id/concert_id/perf_no/customer/seats/status(업무 6)+created_by/created_on/changed_by/changed_at(기술 4)=10개뿐이다. 브라우저에서 위젯을 열어 확인한 결과도 하단에 '노출 10 / 10개'로 표시되어 본문의 '열두 필드' 서술과 어긋남을 직접 재확인했다.",
+      "suggestion": "본문의 '열두 필드'를 '열 필드'로 고치거나, 위젯 FC_CFG.fields에 감사 필드 2개를 추가해 12개로 맞춘다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\field-curtain.js",
+      "quote": "⚠️ 업무 화면에서 행을 식별할 <b>key 필드(concert_id)</b>는 남겨야 합니다.",
+      "category": "위젯 결함",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "key 필드를 빼면 뜨는 경고 메시지가 이 레슨의 실제 key 필드(booking_id)가 아니라 하드코딩된 문자열 'concert_id'를 가리킨다.",
+      "evidence": "field-curtain.js 45행이 필드명을 config에서 읽지 않고 'concert_id'를 그대로 하드코딩했다. CFG.fields에서 isKey:true인 필드는 booking_id뿐이다. 브라우저에서 booking_id 체크박스만 해제하고(concert_id는 그대로 노출 중) 확인하니, 경고문이 그대로 '...key 필드(concert_id)는 남겨야 합니다'로 뜨는 것을 재현했다 — concert_id는 여전히 켜져 있는데도 뜨는 모순된 경고다. 이 레슨의 핵심 교훈('key 필드를 빼지 말 것')을 시연하는 바로 그 순간에 틀린 필드명을 보여주는 것이라 영향이 크다.",
+      "suggestion": "하드코딩된 'concert_id' 문자열을 CFG.fields.find(f=>f.isKey).key로 대체해 실제 key 필드명을 동적으로 표시한다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\f4-help-flow.js",
+      "quote": "Help View <b>ZHV_PERF</b>가 코드·공연명·장르·설명을 보여 줍니다. 한 행을 고르세요.",
+      "category": "불일치",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "F4 버튼을 누르면 뜨는 안내 문구가 Help View 이름을 'ZHV_PERF'로, 표시 컬럼을 '코드·공연명·장르·설명'으로 소개한다. 그러나 이 레슨(CH14-L03) 본문은 Help View 이름을 'ZHV_CONCERT'로 3차례 명시하고, 위젯 팝업의 실제 컬럼은 concert_id·name·artist·venue로 '장르' 필드는 어디에도 없다.",
+      "evidence": "본문(CH14-L03.md): 'Selection Method : ZHV_CONCERT (Help View)', '(`ZHV_CONCERT` = `zconcert`에 공연명 Text table `zconcert_t`를 붙인 Help View...)'. 위젯 자체 팝업 헤더('입력 도움말 — ZSH_CONCERT')와 테이블 헤더(concert_id/name(공연명)/artist/venue)는 본문과 일치하는데, F4 클릭 시 상태 메시지만 'ZHV_PERF'(ZV_PERF와 혼동한 것으로 추정)와 실재하지 않는 '장르'를 언급한다. 브라우저에서 F4를 눌러 렌더링된 문구가 소스와 동일함을 확인했고, 팝업 테이블에는 '장르' 컬럼이 없으며 artist·venue는 오히려 문구에서 빠져 있음도 확인했다.",
+      "suggestion": "f4-help-flow.js 35행 상태 메시지를 'Help View ZHV_CONCERT가 코드·공연명·아티스트·공연장을 보여 줍니다'처럼 실제 위젯 이름·컬럼과 일치시킨다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\view-cluster-tree.js",
+      "quote": "← 왼쪽에서 공연장을 먼저 선택하세요.",
+      "category": "불일치",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "이 레슨(CH14-L06)은 '공연(헤더) → 회차(상세)' 2단 계층을 다루는데, 위젯 우측 유지보수 패널의 헤더·빈 상태 문구·추가 버튼은 전부 본문에 없는 '공연장'(venue)·'좌석등급'(seat grade)이라는 다른 개념으로 표시된다.",
+      "evidence": "본문(CH14-L06.md): '공연(헤더) ← 상위에서 한 건 선택 (zconcert)', '회차(상세) ← 그 공연의 회차들 (zperf)'. 위젯 좌측 트리 헤더는 '공연 ZCONCERT (상위)'로 본문과 일치한다. 그러나 view-cluster-tree.js의 renderPanel()이 만드는 우측 패널은 선택 전 '좌석등급 (상위 미선택)'/'← 왼쪽에서 공연장을 먼저 선택하세요'(26~27행), 선택 후 '좌석등급 — C001 안유진 아래'(31행), 추가 버튼은 '+ 좌석등급 추가'(37행)로 나온다. 반면 같은 위젯의 클릭 성공 메시지는 '✅ C001 아래에 회차 003를 추가했습니다'로 '회차'라는 올바른 용어를 쓴다. 브라우저에서 C001을 선택하고 '+ 좌석등급 추가'를 눌러, 패널 헤더·버튼은 '좌석등급'인데 결과 표는 perf_no/perf_date(회차 번호·날짜) 컬럼이고 성공 메시지는 '회차 003를 추가했습니다'로 나오는 자기모순을 직접 재현·확인했다.",
+      "suggestion": "view-cluster-tree.js renderPanel() 안의 '좌석등급'/'공연장' 문자열(26·27·31·36·37·48행)을 전부 '회차'/'공연'으로 통일한다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH14-L08-S01.html",
+      "quote": "ch: 'Chapter 22', title: 'CDS View Entity'",
+      "category": "불일치",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "위젯은 'CDS View Entity'를 배우는 시점을 'Chapter 22'로 표시하지만, 이 레슨(CH14-L08) 본문은 표·인용문·정리 세 군데에서 일관되게 'Chapter 23'을 명시하며 CH23-L01.html로 링크한다.",
+      "evidence": "본문(CH14-L08.md) 표: '학습 시점 | 지금(이 챕터) | 나중([Chapter 23](CH23-L01.html))'. 인용문: '📌 본격 CDS는 [Chapter 23 · CDS View Entity 기초](CH23-L01.html)에서 정식으로 들어간다.' 흔한 오해 절: '[Chapter 23](CH23-L01.html)에서 정식으로 다룬다.' 위젯 config(TB_CFG.stages)는 CDS View Entity·RAP 모두 'Chapter 22'/'Chapter 22+'로 표기했다. 브라우저에서 '나중에 배울 일'로 전환 후 CDS View Entity 카드를 클릭하면 '🔒 CDS View Entity은 Chapter 22에서 배웁니다'라는 팝업이 뜨는 것을 직접 확인했다 — 본문의 세 차례 'Chapter 23' 서술과 정면 충돌한다.",
+      "suggestion": "TB_CFG.stages의 'Chapter 22'/'Chapter 22+'를 'Chapter 23'/'Chapter 23+'로 고쳐 본문 및 CH14-L02의 CH23 예고 링크와 통일한다."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L09.md",
+      "quote": "**실패 경로** — 존재하지 않는 `concert_id`는 F4/foreign key가 막는지 확인하고, 공연",
+      "category": "위젯 결함",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'직접 해 볼 과제'는 '존재하지 않는 concert_id는 F4/foreign key가 막는지 확인'하라고 지시하지만, 위젯의 F4 팝업은 CFG.master에 있는 유효한 코드(C001·C002)만 목록으로 제공할 뿐 자유 입력이나 존재하지 않는 코드를 시도할 방법이 아예 없다.",
+      "evidence": "concert-register-console.js의 renderPop()은 Object.keys(CFG.master)만 순회해 옵션을 만들고(C001·C002뿐), concert_id 표시란(#crcSel)은 F4 선택으로만 채워지는 <span>이라 직접 타이핑이 불가능하다. 인터랙션은 F4·SM30 저장·마스터 삭제 토글 3개뿐이다. 브라우저에서 F4 팝업을 열어 실제로 C001·C002 두 행만 표시됨을 확인했다 — '실패 경로' 두 항목 중 '마스터 누락 시 View에서 행이 사라짐'은 삭제 토글로 재현 가능하지만, 'F4/FK가 존재하지 않는 코드를 막는다'는 이 위젯에서 시도할 수단 자체가 없다. (이 개념 자체는 CH14-L04 위젯에서 C999로 정상 시연되어 챕터 전체로는 공백이 아니지만, 이 레슨이 명시한 과제를 이 위젯 하나로는 완수할 수 없다.)",
+      "suggestion": "F4 팝업에 '(직접 입력)' 옵션이나 C999처럼 존재하지 않는 코드를 시도해 볼 수 있는 버튼을 추가해, 본문이 지시한 '실패 경로' 전체를 이 위젯으로 확인할 수 있게 한다."
+    },
+    {
+      "seq": 7,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L01.md",
+      "quote": "`concert_id` 하나다. 회차 목록에 아티스트·공연장이 함께 나온다.)",
+      "category": "불일치",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "본문은 ZV_PERF 결과에 '아티스트·공연장'이 함께 나온다고 서술하지만, 바로 위 ABAP 코드 샘플과 위젯의 View Fields 둘 다 concert_id·perf_no·perf_date·artist 4개 필드뿐이며 '공연장(venue)'은 어디에도 없다.",
+      "evidence": "본문 코드(27~37행)의 WRITE 문은 gs_perf-concert_id, perf_no, perf_date, artist 4개만 출력한다. 위젯(DVJ_CFG.baseFields)도 concert_id/perf_no/perf_date/artist 4개뿐이다. 브라우저에서 위젯을 열어 'VIEW FIELDS'가 정확히 이 4개임을 확인했다 — '공연장'에 해당하는 필드나 컬럼은 코드·위젯 어디에도 없다.",
+      "suggestion": "본문의 '아티스트·공연장이 함께 나온다'를 '아티스트가 함께 나온다'로 고치거나, ZV_PERF에 venue 필드를 실제로 추가해 코드·위젯에 반영한다(발견 8과 함께 처리 권장)."
+    },
+    {
+      "seq": 8,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L09.md",
+      "quote": "SELECT concert_id perf_no perf_date artist venue",
+      "category": "불일치",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "본문의 SELECT 문은 zv_perf에서 venue 필드를 조회하지만, 같은 레슨 위젯이 실제로 그리는 ZV_PERF 결과 테이블에는 venue 컬럼이 전혀 없다(concert_id·perf_no·artist·perf_date 4개뿐).",
+      "evidence": "concert-register-console.js의 renderView()가 만드는 헤더는 '<th>concert_id</th><th>perf_no</th><th>artist</th><th>perf_date</th>'로 venue가 없다. 브라우저에서 F4로 C001을 골라 SM30 저장까지 실행해 실제 렌더링된 View 결과를 확인한 결과도 'concert_id / perf_no / artist / perf_date' 4컬럼뿐이었다. CH14-L01에서 정의된 ZV_PERF(발견 7)도 동일하게 4필드뿐이라, 이 SELECT 문을 실제 시스템에 그대로 입력하면 존재하지 않는 필드(venue) 참조로 오류가 날 소지가 있다.",
+      "suggestion": "SELECT 목록에서 venue를 빼거나(artist까지만), ZV_PERF 정의(CH14-L01)와 이 위젯 모두에 venue 필드를 실제로 추가해 코드와 일치시킨다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "보강 권장",
+    "summary": "코드 JOIN vs Database View 비교(L01 위젯 자체 로직)·Foreign Key 게이트(L04)·SM30 게이트 체크리스트(L05)·SE16N 추적기(L07) 등은 본문과 정확히 맞물려 잘 작동한다. 그러나 9개 레슨 중 6개(L01·L02·L03·L06·L08·L09)에서 본문-위젯 불일치 또는 위젯 자체 결함 총 8건을 발견했다. 특히 L02는 key 필드 경고가 엉뚱한 필드명(concert_id)을 가리키고, L03은 F4 안내문이 존재하지 않는 Help View 이름(ZHV_PERF)과 실재하지 않는 '장르' 컬럼을 언급하며, L06은 우측 유지보수 패널 전체가 이 레슨에 없는 '좌석등급/공연장'으로 오표기됐고, L08은 CDS View Entity 도입 챕터를 본문(23장)과 다르게(22장) 보여주며, L01·L09 사이에는 ZV_PERF에 venue 필드가 있는지 없는지를 두고 본문·코드·위젯이 서로 엇갈린다(L01 본문은 있다고 서술, L01·L09 코드/위젯은 실제로 없음). 모든 위젯이 콘솔 에러 없이 정상 렌더링되고 임베드 자체의 존재나 전반적 학습 흐름은 훼손되지 않아 재집필까지는 필요 없다. 다만 높음 등급 4건(L02·L03·L06·L08)은 학습자가 잘못된 사실(엉뚱한 key 필드명·존재하지 않는 Help View명·틀린 챕터 번호·실재하지 않는 개념 라벨)을 그대로 습득할 위험이 있어 우선 보강이 필요하다."
+  }
+}

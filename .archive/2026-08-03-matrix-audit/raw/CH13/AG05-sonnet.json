@@ -1,0 +1,47 @@
+{
+  "agent": "AG05",
+  "model": "sonnet",
+  "target": "CH13",
+  "persona_ack": "20년차 학습 교재·코스 설계 전문가로서 CH13(Open SQL 2차: JOIN·집계) 8개 레슨 + _chapter.md를 챕터 구성, 섹션 흐름, 복습/예습 장치, 불편→해결 서사, 인지 부하 5개 관점에서 감사함.",
+  "method": "Read로 9개 대상 파일(레슨 L01~L08 + _chapter.md) 전문을 정독. Grep으로 인용문 원문과 front-matter 필드(introduces/prereq/advanceUse), [[ ]] 용어 마킹 사용 패턴을 챕터 내부에서 교차 대조해 결함을 확정. 글로서리 JSON·타 챕터·과거 감사물·웹 검색은 열람하지 않음(대상 파일 범위 준수).",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH13-L02.md",
+      "quote": "그런 행을 떨군다. **LEFT OUTER JOIN**은 왼쪽(기준) 테이블 행을 **전부** 남긴다.",
+      "category": "복습 장치 — 용어 글로서리 마킹 누락",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "이 레슨이 새로 도입하는 대표 개념 LEFT OUTER JOIN이 본문 전체에서 단 한 번도 [[ ]] 용어 마킹(hover/click 글로서리 팝업)을 받지 못해, 이후 레슨에서 재사용될 때 복습 장치가 빠진다.",
+      "evidence": "front-matter introduces에 'LEFT OUTER JOIN'이 명시돼 있고, 본문 첫 정의 문장에서도 굵게(**)만 쓰고 [[ ]]는 쓰지 않는다. 같은 챕터에서 나란히 도입되는 [[INNER JOIN]](CH13-L01 line48)·[[Aggregate]](CH13-L03 line15)·[[FOR ALL ENTRIES]](CH13-L06 line15)는 도입 시점에 모두 [[ ]] 마킹되고, INNER JOIN은 재언급 지점(CH13-L02 line14)에서도, FOR ALL ENTRIES는 재언급 지점(CH13-L07 line14)에서도 마킹이 유지된다. 반면 LEFT OUTER JOIN은 도입 레슨(L02)은 물론 L08 실습에서 재언급될 때(`LEFT OUTER JOIN`, 코드폰트)도 끝내 마킹되지 않는다. 같은 front-matter가 함께 introduces로 선언한 'NULL(OUTER JOIN 미매칭 결과)'도 본문에 평문 'NULL'로만 등장해 동일하게 미마킹이다.",
+      "suggestion": "본문에서 LEFT OUTER JOIN이 처음 정의되는 문장과 이후 재언급 지점에 [[LEFT OUTER JOIN]] 대괄호 마킹을 추가해 INNER JOIN·FOR ALL ENTRIES와 동일한 용어 버튼이 뜨도록 맞춘다. NULL도 '## NULL 처리 주의' 절 첫 등장 시 마킹을 검토한다."
+    },
+    {
+      "seq": 2,
+      "file": "CH13-L08.md",
+      "quote": "TRY.\n    cl_salv_table=>factory(\n      IMPORTING r_salv_table = lo_alv CHANGING t_table = lt_stat ).\n    lo_alv->display( ).\n  CATCH cx_salv_msg.\nENDTRY.",
+      "category": "인지 부하 — 선행 개념(R15 L2) 노출 처리 누락",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "front-matter가 advanceUse(L2 선행 사용)로 명시한 REF TO·TRY/CATCH cx_salv_msg가 본문 코드에 그대로 등장하지만, 텍스트 어디에도 '[선행 사용]' 표시나 '분석/암기 불필요' 같은 안내가 없어 챕터를 마무리하는 실습 순간에 미설명 OOP·예외처리 문법이 그대로 노출된다.",
+      "evidence": "L08 front-matter: advanceUse: [\"REF TO\", \"TRY/CATCH cx_salv_msg\"]. 그러나 본문에는 'lo_alv TYPE REF TO cl_salv_table' 선언과 인용한 TRY...cl_salv_table=>factory(...)...CATCH cx_salv_msg...ENDTRY 블록이 아무 설명 없이 제시된다. 레슨 말미 '흔한 실수와 점검' 3개 항목(LEFT JOIN 이유·classic 집계·합계 매핑)도 전부 JOIN/GROUP BY 관련이고 이 ALV·예외처리 블록은 언급조차 없다. R15 L2 규정은 '[선행 사용]' 표시 + '분석/암기 불필요' + 정식 레슨 안내 3요소를 요구하는데 본문에서 셋 다 확인되지 않는다. 다만 이 ALV 팩토리 패턴이 prereq로 명시된 CH11-L06에서 이미 같은 방식으로 다뤄지고 그때 안내가 있었을 가능성이 있어(그 경우 반복 표시 생략이 site 관례일 수 있음) CH13 파일만으로는 완전히 확정하기 어렵다 — 감사 범위가 CH13 대상 파일로 제한돼 CH11-L06을 대조 확인하지 못했다.",
+      "suggestion": "TRY/CATCH·REF TO 블록 위나 옆에 '(ALV 표시 정형 코드 — REF TO·예외처리는 다음에 배움, 지금은 그대로 따라 쓰면 됨)' 같은 1줄 안내를 추가하거나, 최소한 '흔한 실수와 점검'에 'TRY/CATCH·REF TO는 아직 몰라도 됨(정식 학습은 이후 OO 챕터에서)' 항목을 추가한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH13의 8개 레슨은 INNER JOIN→LEFT OUTER JOIN→GROUP BY→HAVING→ORDER BY→FOR ALL ENTRIES→선택 기준→실습 순으로, SQL 절 순서(WHERE→GROUP BY→HAVING→ORDER BY)와 개념 난이도를 함께 존중하는 탄탄한 징검다리 구조다. 레슨마다 '왜 필요한가→무엇인가→어떻게 쓰나→흔한 실수와 점검→다음 예고' 흐름이 일관되고, WHERE vs HAVING·ORDER BY vs ABAP SORT·INNER vs LEFT 같은 대조표와 체험형 embed가 복습·비교 장치로 잘 작동한다. 도입부 불편도 대체로 정직하다 — GROUP BY·ORDER BY·FAE처럼 형제/심화 관계인 레슨은 억지 불편 대신 '다음 도구' 톤을 취해 각 front-matter의 prevRel 선언과 실제 본문 서술이 잘 맞는다. L01의 복합키 ON 조건 예시(b~/pf~ 별칭)가 L02의 실제 예시와 별칭까지 일치하는 등 세부 설계도 촘촘하다. 다만 두 가지 국소적 결함을 발견했다. (1) L02가 이 레슨의 대표 신규 개념인 LEFT OUTER JOIN·NULL을 한 번도 [[ ]] 글로서리 마킹하지 않아, 같은 챕터의 INNER JOIN·FOR ALL ENTRIES와 달리 hover/click 복습 장치가 빠진다. (2) L08 실습 코드가 front-matter에서 advanceUse로 선언한 REF TO·TRY/CATCH cx_salv_msg를 본문에서 전혀 설명하거나 '[선행 사용]' 표시 없이 제시해, 챕터를 마무리하는 실습 순간에 미설명 OOP 문법이 갑자기 끼어든다(단 선행 레슨 CH11-L06에서 이미 다뤄졌을 가능성이 있어 확실도는 추정에 그침). 두 결함 모두 해당 지점에 한두 문장·마킹을 보완하면 해결되는 국소적 사안으로, 챕터 전체의 재작성은 불필요하다."
+  }
+}

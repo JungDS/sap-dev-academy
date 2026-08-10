@@ -101,9 +101,9 @@
       code:[ L('REPORT zdemo_events.'), L(''),
         L('" 이벤트 키워드가 없으면 모든 문장은',true),
         L('" 자동으로 START-OF-SELECTION 에 묶인다.',true),
-        L('DATA lv_msg TYPE string.',true),
-        L("lv_msg = 'Hello ABAP'.",true),
-        L('WRITE: / lv_msg.',true) ],
+        L('DATA gv_msg TYPE string.',true),
+        L("gv_msg = 'Hello ABAP'.",true),
+        L('WRITE: / gv_msg.',true) ],
       note:'이벤트 블록을 <b>꼭 써야 하는 게 아니다.</b> 한 줄짜리 프로그램은 이렇게 키워드 없이 끝난다.' },
 
     { label:'화면 초기화 추가 (INITIALIZATION)',

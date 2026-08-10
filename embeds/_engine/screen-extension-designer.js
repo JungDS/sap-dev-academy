@@ -46,8 +46,10 @@
     return '<p class="sed-h">화면 안에 다른 화면 끼우기</p>' +
       '<div class="sed-screen"><span class="stt">main 화면 ' + '0100' + '</span>' +
       '<div style="font-family:var(--mono);font-size:.78rem;color:var(--ink-soft)">입력칸 · 버튼…</div>' +
-      '<div class="sed-sub"><div class="subt">Subscreen Area: ' + esc(CFG.subArea) + ' → CALL SUBSCREEN ' + esc(CFG.subDynp) + '</div>' +
+      '<div class="sed-sub"><div class="subt">Subscreen Area: ' + esc(CFG.subArea) +
+      ' → <code>CALL SUBSCREEN ' + esc(CFG.subArea) + " INCLUDING sy-repid '" + esc(CFG.subDynp) + "'.</code></div>" +
       '<div style="font-family:var(--mono);font-size:.76rem;color:#9a5b08">공통 머리말 화면 ' + esc(CFG.subDynp) + ' (버튼 있음)</div></div>' +
+      '<div class="sed-note-inline"><code>CALL SUBSCREEN</code> 뒤에 오는 것은 <b>화면 번호가 아니라 subscreen area 이름</b>입니다. 끼워 넣을 화면 번호는 <code>INCLUDING</code> 뒤에 옵니다(PAI에서는 <code>CALL SUBSCREEN ' + esc(CFG.subArea) + '.</code>만).</div>' +
       '<div class="sed-okflow"><span class="sed-chip">subscreen 버튼 (OK field 없음)</span><span class="sed-link">▶</span><span class="sed-chip main">main OK_CODE</span></div>' +
       '</div>' +
       '<div class="sed-status">📌 <b>Subscreen은 자체 OK field가 없습니다</b>(공식문서). 사용자 명령의 function code는 <b>main 화면의 <code>OK_CODE</code></b>로 모여, main의 PAI에서 처리합니다.</div>';

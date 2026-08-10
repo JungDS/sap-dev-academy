@@ -1,0 +1,103 @@
+{
+  "agent": "AG03",
+  "model": "opus",
+  "target": "CH14",
+  "persona_ack": "타 언어(Java/C#) 백엔드 3～5년차로서 ABAP을 빠르게 훑는 독자 관점으로 CH14 전 9레슨과 _chapter.md를 통독했다. 과잉·오개념 유발·지름길 부재·용어 충돌 네 축으로 기록하되, 이 사이트의 1독자가 비전공 입문자라는 채택 기준을 그대로 적용해 '입문자에게도 불필요한 장황함'만 높음 이상 후보로 두고 '입문자에겐 필요하나 나만 이미 아는 내용'은 낮음 또는 suggestion으로 내렸다. 그 결과 높음 이상은 없다.",
+  "method": "Read 도구로 대상 10개 파일 전문 통독. Grep으로 ① 인용 앵커가 실제 한 줄 안에 존재하는지 확인, ② 부재 주장을 검증 — 'selection condition'은 CH14 전체에서 CH14-L02.md:24 한 곳뿐, '성능'은 0회, INSERT/UPDATE/MODIFY는 0회. quote는 줄바꿈 문제를 피하려 전부 한 줄 안에서 잘라 원문 그대로 복사했다. 웹검색·타 감사 산출물 열람 없음. 체험 임베드(embeds/abap/CH14-*.html)는 대상 파일 목록 밖이라 열지 않았으므로, 위젯 내부에서 보완됐을 가능성은 판단에서 제외했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L09.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L04.md",
+      "quote": "- **Foreign Key를 문서용 선으로** → input check·input help·view 생성에서 실제로 평가된다.",
+      "category": "용어 충돌 / 오개념 유발",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "Java·C#·SQL 경력자에게 Foreign Key는 'DB가 강제하는 참조무결성 제약'이다. 그런데 DDIC의 Foreign Key는 DB에 제약으로 생성되지 않고 화면 input check·F4·view 생성에서만 평가되는 메타데이터다. 본문은 평가되는 자리를 나열하면서 예외로는 읽기(SELECT)만 짚고, 정작 경력자가 확실히 오해하는 쓰기(INSERT/UPDATE/MODIFY가 전혀 차단되지 않는다)는 챕터 어디에서도 말하지 않는다. 경력자는 'FK를 걸었으니 고아 행은 원천 봉쇄'라고 읽고 넘어간다.",
+      "evidence": "CH14 전체에서 INSERT·UPDATE·MODIFY 문자열은 0회다(grep 확인). Foreign Key의 한계 언급은 CH14-L04.md:45의 '단, ABAP SQL의 `SELECT`는 Foreign Key를 자동으로 평가하지 않는다'와 :59의 '(단 `SELECT` 조건이 자동으로 안전해지는 건 아니다.)' 둘뿐이라 전부 읽기 쪽이다. 반면 CH14-L09.md:54～55의 실패 경로는 '공연 마스터가 누락되면 inner join View에서 행이 사라지는지 관찰한다'로 고아 행이 실제로 생길 수 있음을 전제하는데, 그 고아 행이 왜 생기는지(코드 쓰기를 FK가 막지 않으므로)는 끝내 연결되지 않는다.",
+      "suggestion": "CH14-L04.md의 Foreign Key 절에 한 줄만 추가하면 닫힌다. 'DDIC Foreign Key는 DB 제약이 아니라서 ABAP 코드의 INSERT/UPDATE는 막지 않는다 — 화면·F4·표준 유지보수 경로에서만 검사된다.' 이러면 L09의 고아 행 실습과 인과가 이어지고, 입문자에게도 '왜 View에서 행이 사라지지'의 답이 된다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L04.md",
+      "quote": "조회 관점이고, Maintenance View는 **유지보수 관점**이다. (outer join 성격은",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "'Maintenance View를 left outer join 조회 대안으로 외우지 말라'는 경고 자체는 타당하다. 그런데 괄호가 outer join 성격을 Help View 전용인 것처럼 못 박아 버린다. 표준 DDIC 설명에서는 help view와 maintenance view가 함께 outer join 성격으로 소개되므로, 조인이 몸에 밴 경력자는 오해 하나를 지우는 대가로 'Maintenance View는 inner join이구나'라는 반대 오해를 새로 얻는다.",
+      "evidence": "CH14-L04.md:37～39 콜아웃이 '(outer join 성격은 [Chapter 14 · Help View](CH14-L03.html)에 해당.)'으로 닫힌다. 바로 위 비교표(:29～35)는 Maintenance View의 '연결 근거'를 Foreign Key dependency로만 적고 조인 성격 칸을 비워 두므로, 독자가 그 빈칸을 채울 근거는 이 괄호뿐이다. 다만 판본별 서술 차이가 있을 수 있어 확신 단계는 추정으로 둔다.",
+      "suggestion": "괄호를 조인 귀속이 아니라 용도 안내로 바꾼다. 예: 'Maintenance View도 내부적으로는 outer join 성격이지만, 애초에 ABAP SQL로 읽는 대상이 아니라 조회 대안이 될 수 없다.' 또는 '조회에서 outer join이 필요하면 코드의 LEFT OUTER JOIN을 쓴다.' 어느 쪽이든 '어느 뷰가 outer join인가' 문제를 '읽을 수 있나 없나' 문제로 되돌려 놓는 게 안전하다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L02.md",
+      "quote": "Projection View의 역할이 아니다. 이 레슨에서는 **열을 줄이는** 도구로만 본다.",
+      "category": "오개념 유발 / 설명 누락",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'이 레슨에서는 …로만 본다'는 헤지가, 원천적으로 불가능한 것(Projection View의 행 조건)을 '이번 레슨 범위 밖'인 것처럼 들리게 한다. 더 큰 문제는 챕터 전체에서 classic Database View가 고정 행 조건(selection condition)을 가질 수 있다는 사실이 한 번도 안 나온다는 점이다. 결과적으로 SQL 경력자는 'DDIC 뷰에는 WHERE의 자리가 아예 없다'는 잘못된 지도를 들고 챕터를 나간다.",
+      "evidence": "CH14-L02.md:24는 한계를 '조인도 계산도 하지 않고, 행을 거르는 selection condition도 두지 않는다'로 정확히 단정해 놓고, :47～48에서 같은 내용을 '이 레슨에서는 …로만 본다'로 도로 약화한다. 'selection condition'은 CH14 통틀어 이 :24 한 곳뿐이며(grep), CH14-L01.md의 Database View 설명은 조인과 컬럼 선택만 다룬다. 결합은 Database View·코드 JOIN으로, 계산 컬럼은 CDS로 각각 출구를 주는데(:53～55) 행 조건만 출구가 없다.",
+      "suggestion": "① CH14-L02.md의 헤지를 :24와 같은 단정으로 되돌린다('Projection View에는 행 조건을 둘 수 없다'). ② CH14-L01.md의 제한 콜아웃에 한 줄 추가: 'Database View는 고정 행 조건(selection condition)을 가질 수 있지만, 매번 달라지는 조건은 SELECT의 WHERE가 담당한다.' 경력자의 첫 질문인 WHERE의 자리가 정해지고, 입문자에게는 '뷰 = 열만 고르는 것'이라는 반쪽 정의를 막아 준다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L01.md",
+      "quote": "| 적합 | 안정적인 공통 조회 관점 | 조건·결합이 매번 다른 조회 |",
+      "category": "지름길 부재 / 설명 누락",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'View냐 코드 JOIN이냐'에서 타 언어 경력자가 가장 먼저 대는 판단축은 성능인데, 비교표에도 본문에도 성능 언급이 전혀 없다. 답이 없으면 경력자는 보통 '뷰는 미리 만들어져 있으니 빠르다' 또는 '뷰를 한 겹 더 타니 느리다' 중 하나를 임의로 가정하고, 그 가정으로 설계 결정을 내린다.",
+      "evidence": "'성능'은 CH14 전체에서 0회다(grep 확인). CH14-L01.md:52～58 비교표의 축은 정의 위치·재사용·결합·변경 영향·적합 다섯이다. :46의 '데이터를 새로 저장하지 않는다'가 materialized view 오해는 일부 막지만 그것은 저장 여부 설명이지 실행 비용 설명이 아니다.",
+      "suggestion": "비교표에 '| 성능 | 사실상 동등(둘 다 DB에서 inner join 수행) | 동등 |' 한 행을 넣거나, 표 아래 한 문장으로 '선택 기준은 속도가 아니라 재사용과 유지보수 책임의 위치'라고 못 박는다. 입문자에게도 '뷰 = 빠른 것'이라는 흔한 오해를 예방하는 값이 있어 장황해지지 않는다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L01.md",
+      "quote": "여러 테이블이면 **inner join**으로 결합한다. 활성화하면 DB 쪽에도 SQL View가 만들어져",
+      "category": "용어 충돌",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'Database View'라는 이름과 'DB 쪽에도 SQL View가 만들어진다'는 설명이 겹치면서, 경력자는 이 객체를 자기가 아는 CREATE VIEW … AS SELECT 전반(계산 컬럼·집계·outer join·UNION·서브쿼리 가능)으로 읽는다. 실제 classic Database View는 그보다 훨씬 좁다. 이름이 같고 범위가 다른 전형적 충돌인데 최초 도입 지점에 경고가 없다.",
+      "evidence": "CH14-L01.md:23～25에서 정의 직후 'ABAP SQL의 FROM 자리에서 테이블처럼 읽을 수 있다'로 매핑을 오히려 강화한다. 제시되는 제한은 :46～48의 둘(저장 안 함, inner join)뿐이다. 계산·가공 컬럼 불가는 두 레슨 뒤 CH14-L02.md:53～55의 곁가지 항목과 CH14-L08.md 표에서야 나오고, 집계·UNION·서브쿼리 불가는 챕터 끝까지 언급되지 않는다.",
+      "suggestion": "CH14-L01.md의 '중요한 제한 둘' 콜아웃을 셋으로 늘려 한 줄만 덧붙인다: 'SQL의 VIEW보다 좁다 — 계산 컬럼·집계·UNION은 안 된다(가공은 CDS의 영역).' 입문자에게는 부담이 없고(그냥 제한 목록 하나), 경력자에게는 잘못된 매핑을 첫 페이지에서 차단한다."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L08.md",
+      "quote": "Database·Projection·Help·Maintenance View를 배우고 나면 자연스레 나오는 질문이다 —",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'클래식은 낡은 것 아닌가'는 경력자가 L01 첫 문단에서 이미 품는 질문인데, 그 답인 L08은 아홉 중 여덟 번째다. 그때까지 경력자는 '레거시를 왜 배우나'라는 의심을 안고 일곱 레슨을 읽는다. 챕터 어디에도 건너뛰기·먼저 읽기 같은 경로 안내가 없다(과제 3의 대표 지점).",
+      "evidence": "CH14-L08.md:15는 이 질문을 '배우고 나면 자연스레 나오는 질문'으로 규정해 뒤 배치를 정당화한다. 입문자 기준으로는 타당한 순서지만, CH14-L01.md 도입부와 _chapter.md intro 어디에도 L08로 미리 보내는 포인터가 없다.",
+      "suggestion": "순서를 바꾸지 말고 포인터만 하나 넣는다. _chapter.md intro나 CH14-L01.md 도입부에 '이미 다른 언어·SQL 경험이 있다면 [Chapter 14 · Classic View와 CDS 비교](CH14-L08.html)를 먼저 읽고 와도 좋다' 한 줄이면, 입문자 흐름은 그대로 두고 경력자에게만 지름길이 생긴다."
+    },
+    {
+      "seq": 7,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L07.md",
+      "quote": "그게 **SE16N**(Data Browser)이다.",
+      "category": "용어 충돌 / 실습 환경",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "SE16N을 곧바로 'Data Browser'와 동격으로 소개하는데, SE11 계열의 표준 Data Browser는 SE16이고 SE16N은 별도의 범용 테이블 표시 트랜잭션이다. 시스템 구성·릴리스에 따라 SE16N이 없는 학습 시스템이 있는데, 그 경우 독자에게 대체 경로가 전혀 안내되지 않아 레슨 전체가 막힌다.",
+      "evidence": "CH14-L07.md:16이 'SE16N(Data Browser)'로 동격 표기하고 :20의 실행 절차도 SE16N만 전제한다. CH14-L04.md:34 비교표의 '사용 화면' 칸도 'SELECT·Data Browser'로 적혀 두 이름이 같은 것처럼 읽힌다. 챕터 어디에도 SE16이나 SE11 → Utilities → Table Contents 대안이 없다. 다만 SE16N 가용성은 시스템 구성에 따라 달라 추정으로 둔다.",
+      "suggestion": "CH14-L07.md에 괄호 한 줄이면 충분하다. '시스템에 SE16N이 없으면 SE16, 또는 SE11 → Utilities → Table Contents로 같은 일을 한다.' 이름 관계도 함께 정리된다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "경력자 눈으로도 CH14는 군더더기가 거의 없다. 과제 1(과잉)에서는 보고할 것이 없었다 — 레슨 분량이 50～75줄로 짧고, 각 레슨 도입부의 동기 문단이 서로 다른 이유(반복 JOIN·불필요한 필드 노출·코드 암기·개발자 대리 입력)를 들어 상투적 반복이 아니며, 내용 대부분이 SE54·SM30·TMG·View Cluster 같은 SAP 고유 도구라 '아는 걸 또 읽는' 구간 자체가 적다. 축을 억지로 채우지 않고 비웠다. 실제 약점은 과제 2(오개념)와 4(용어 충돌)에 몰려 있고, 공통 원인은 하나다 — 타 언어에서 온 독자가 같은 단어에 다른 범위를 대입하는 지점에서 한 줄 경고가 빠져 있다. 가장 중요한 것은 Foreign Key(seq 1)로, DDIC FK가 DB 제약이 아니어서 코드의 INSERT/UPDATE를 막지 않는다는 핵심이 챕터 전체에 단 한 번도 없고(INSERT/UPDATE/MODIFY 0회), 정작 L09 실습은 그 결과인 고아 행을 관찰시킨다. 다음으로 Database View의 범위(seq 5)와 행 조건의 자리(seq 3)가 비어 SQL 경험자가 잘못된 지도를 들고 나가며, Maintenance View의 outer join 귀속(seq 2)은 오해 하나를 지우려다 반대 오해를 심을 소지가 있다. 과제 3(지름길)은 성능 축 부재(seq 4)와 L08 배치(seq 6)로 나타나는데 둘 다 포인터·표 한 행 수준이다. 등급을 경미 수정으로 두는 이유: 치명·높음 0건이고, 중간 3건을 포함해 7건 전부가 한두 줄 삽입 또는 문구 교정으로 닫히며 구조·순서 변경이 필요한 곳이 없다. 사실관계 오류로 확정한 것도 없다(seq 2·7만 추정)."
+  }
+}

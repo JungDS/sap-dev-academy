@@ -40,45 +40,82 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>DB에서 정렬해 받기</h2>
-<p>이미 읽은 <button class="term" type="button" data-term="Internal Table">Internal Table</button>을 ABAP <code>SORT</code>로 정렬할 수도 있지만, DB에서 <strong>바로 정렬해
-받을</strong> 수도 있다. 이것이 <code>ORDER BY</code>다.</p>
+<p>이미 읽은 <button class="term" type="button" data-term="Internal Table">Internal Table</button>(<button class="term" type="button" data-term="메모리">메모리</button>에 잠깐 두는 표)을 ABAP <code>SORT</code>로 정렬할 수도 있지만,
+DB에서 <strong>바로 정렬해 받을</strong> 수도 있다. 이것이 <code>ORDER BY</code>다.</p>
 </section><section class="lblock"><h2>ORDER BY (classic)</h2>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
-4</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> carrid connid fldate
+4
+5
+6
+7
+8
+9
+10
+11
+12</pre><pre class="abap-editor__code"><code><span class="tok-kw">TYPES</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ts_flight,
+         carrid <span class="tok-kw">TYPE</span> sflight-carrid,
+         connid <span class="tok-kw">TYPE</span> sflight-connid,
+         fldate <span class="tok-kw">TYPE</span> sflight-fldate,
+       <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ts_flight.
+
+<span class="tok-kw">DATA</span> gt_flight <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ts_flight.
+
+<span class="tok-kw">SELECT</span> carrid connid fldate
   <span class="tok-kw">FROM</span> sflight
   <span class="tok-kw">INTO</span> <span class="tok-kw">CORRESPONDING</span> <span class="tok-kw">FIELDS</span> <span class="tok-kw">OF</span> <span class="tok-kw">TABLE</span> gt_flight
   <span class="tok-kw">ORDER</span> <span class="tok-kw">BY</span> fldate <span class="tok-kw">DESCENDING</span> carrid <span class="tok-kw">ASCENDING</span>.</code></pre></div></div>
 <ul>
-<li><code>ORDER BY 필드 [ASCENDING|DESCENDING]</code>, 여러 필드 나열 가능.</li>
-<li><code>ORDER BY PRIMARY KEY</code> — 기본 키 순(단, JOIN 결과엔 못 쓴다 → 컬럼 명시).</li>
+<li><code>ORDER BY 필드 [ASCENDING|DESCENDING]</code> 형태로 쓰고, 기준 필드를 여러 개 나열할 수 있다.</li>
+<li>방향은 <strong>전체 철자로</strong> 적는다. 다른 SQL에서 쓰는 <code>ASC</code>·<code>DESC</code> 축약은 ABAP에서 통하지
+않는다. 그리고 classic이라 기준 필드 사이에 콤마를 넣지 않는다(위처럼 공백으로 나열).</li>
+<li>방향을 안 적으면 오름차순이다.</li>
+<li><code>ORDER BY PRIMARY KEY</code> — 기본 키 순으로 받는 편한 형태다. 단 JOIN한 결과에는 쓸 수
+없다. 여러 테이블이 합쳐진 결과에는 &quot;그 테이블의 기본 키&quot;라는 게 없기 때문이다.
+JOIN 결과를 정렬할 땐 필드를 직접 적자.</li>
 </ul>
 </section><section class="lblock"><h2>정렬을 안 하면? — 순서 보장 없음</h2>
 <p><code>ORDER BY</code>가 <strong>없으면 결과 순서는 보장되지 않는다.</strong> 오늘 우연히 이름순처럼 보여도
 내일은 다를 수 있다. &quot;상위 매출&quot;, &quot;최근 공연일&quot;처럼 순서가 의미를 가지면 반드시 명시한다.</p>
 </section><section class="lblock"><h2>여러 기준 — 앞이 우선</h2>
-<p><code>ORDER BY fldate DESCENDING carrid ASCENDING</code>은 <strong>운항일 내림차순</strong>으로 먼저
-정렬하고, <strong>운항일이 같으면</strong> 항공사 오름차순으로 정한다. 앞에 적은 기준일수록
-우선순위가 높다.
+<p><code>ORDER BY fldate DESCENDING carrid ASCENDING</code>은 먼저 <strong>운항일 내림차순</strong>으로 줄을 세운다.
+그리고 <strong>운항일이 같은 행들끼리만</strong> 다시 항공사 오름차순으로 줄을 세운다. 앞에 적은
+기준일수록 우선순위가 높고, 뒤 기준은 앞 기준이 같을 때만 개입한다.
 <code>ORDER BY</code>는 행을 버리지 않고 <strong>순서만</strong> 바꾼다(<code>sy-dbcnt</code>는 그대로).</p>
 <p>정렬 기준을 바꿔 가며 결과가 어떻게 달라지는지, 동률일 때 두 번째 기준이 어떻게
 끼어드는지 직접 보자.</p>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">정렬 우선순위 조작기 (ORDER BY)</span><a class="embed__open" href="../../../embeds/abap/CH13-L05-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH13-L05-S01.html" loading="lazy" title="정렬 우선순위 조작기 (ORDER BY)"></iframe></figure>
 </section><section class="lblock"><h2>ORDER BY vs ABAP SORT</h2>
+<p>정렬은 DB에게 시킬 수도 있고, 다 읽어 온 다음 ABAP에서 할 수도 있다. 판단 기준은 이렇다.</p>
 <ul>
-<li><strong>소량·이미 읽은 데이터</strong> → ABAP <code>SORT</code>로도 충분.</li>
-<li><strong>DB가 정렬에 유리(<button class="term" type="button" data-term="인덱스">인덱스</button>)</strong> 하거나 정렬해 바로 쓰면 → <code>ORDER BY</code>.</li>
-<li>무분별한 ORDER BY는 DB 부하가 될 수 있으니 상황에 맞게.</li>
+<li><strong>이미 읽어 온 소량 데이터</strong>라면 ABAP <code>SORT</code>로도 충분하다. 다시 DB에 다녀올 이유가 없다.</li>
+<li><strong>DB가 정렬에 유리한 상황</strong>이면 <code>ORDER BY</code>가 낫다. 정렬 기준에 맞는 <button class="term" type="button" data-term="인덱스">인덱스</button>가 있으면
+DB는 거의 공짜로 순서를 맞춰 준다(<a href="CH08-L06.html">Chapter 08 · 키 필드 vs 일반 필드</a>에서
+본 그 찾아보기 구조다). 정렬된 결과를 곧바로 화면이나 리포트에 넘길 때도 마찬가지다.</li>
+<li>반대로 인덱스가 없는 필드로 대량 정렬을 시키면 DB가 그 일을 통째로 떠안는다. 이럴
+땐 정렬이 정말 필요한지, 꼭 DB에서 해야 하는지 한 번 더 따져 보자.</li>
 </ul>
+</section><section class="lblock"><h2>정렬 전에 양부터 줄이자</h2>
+<p>정렬이 무거워지는 가장 큰 원인은 정렬 알고리즘이 아니라 <strong>줄 세울 행이 너무 많은 것</strong>이다.
+그러니 순서를 고민하기 전에 읽는 양부터 줄인다. 수단은 이미 배웠다.</p>
+<ul>
+<li><code>WHERE</code>로 조건을 좁힌다. 필요한 기간·항공사만 읽으면 정렬 대상도 그만큼 줄어든다.</li>
+<li><code>UP TO n ROWS</code>로 개수를 자른다(<a href="CH08-L03.html">Chapter 08 · SELECT 형태</a>). &quot;상위 10건&quot;처럼
+앞쪽 일부만 필요할 때 특히 잘 맞는다. <code>ORDER BY</code>와 함께 쓰면 &quot;정렬해서 앞 10건&quot;이 된다.</li>
+</ul>
+<p>위 예제는 설명을 위해 <code>sflight</code>를 통째로 읽어 정렬했지만, 실제 프로그램에서 조건 없이
+전체를 읽는 형태는 그대로 따라 하지 말자.</p>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>대량 ORDER BY 부하</strong> → <button class="term" type="button" data-term="인덱스">인덱스</button> 없는 정렬은 비싸다. 필요한 만큼만.</li>
-<li><strong>콤마/@</strong> → classic이라 공백 구분, <code>@</code> 없이.</li>
+<li><strong><button class="term" type="button" data-term="인덱스">인덱스</button> 없는 대량 정렬</strong> → 조회는 됐는데 유난히 느리다면 정렬 대상이 너무 많은지부터
+본다. <code>WHERE</code>·<code>UP TO n ROWS</code>로 범위를 줄이는 것이 먼저다.</li>
+<li><strong><code>ASC</code>·<code>DESC</code> 축약</strong> → ABAP에서는 통하지 않는다. <code>ASCENDING</code>·<code>DESCENDING</code>을 다 적는다.</li>
+<li><strong>JOIN 결과에 <code>ORDER BY PRIMARY KEY</code></strong> → 쓸 수 없다. 정렬할 필드를 직접 나열하자.</li>
 </ul>
 <hr>
-<p>여기까지 DB가 해주는 합치기·<button class="term" type="button" data-term="Aggregate">집계</button>·정렬을 봤다. 그런데 <strong>이미 <button class="term" type="button" data-term="메모리">메모리</button>에 있는 내부
-테이블</strong>을 기준으로 DB를 조회하려면? → FOR ALL ENTRIES(다음 레슨).</p>
+<p>여기까지 DB가 해주는 합치기·<button class="term" type="button" data-term="Aggregate">집계</button>·정렬을 봤다. 그런데 <strong>이미 <button class="term" type="button" data-term="메모리">메모리</button>에 있는 Internal
+Table</strong>을 기준으로 DB를 조회하려면? → FOR ALL ENTRIES(다음 레슨).</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

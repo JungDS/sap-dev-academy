@@ -41,36 +41,13 @@
       <article class="prose">
 <section class="lblock"><h2>매칭 없어도 남기고 싶다</h2>
 <p>운항편이 아직 등록 안 된 노선(<code>SPFLI</code>)도 목록에 <strong>남기고</strong> 싶다. <button class="term" type="button" data-term="INNER JOIN">INNER JOIN</button>은
-그런 행을 떨군다. <strong>LEFT OUTER JOIN</strong>은 왼쪽(기준) 테이블 행을 <strong>전부</strong> 남긴다.</p>
+그런 행을 떨군다. <button class="term" type="button" data-term="LEFT OUTER JOIN">LEFT OUTER JOIN</button>은 왼쪽(기준) 테이블 행을 <strong>전부</strong> 남긴다.</p>
+<blockquote>
+<p>이름이 길다 보니 현장에서는 LEFT JOIN이나 그냥 LEFT라고 줄여 부르기도 한다. 다만
+코드에 적을 때는 <code>LEFT OUTER JOIN</code>이 정식 표기이고, 이 과정도 본문·코드 모두
+정식 이름으로 통일해 쓴다.</p>
+</blockquote>
 </section><section class="lblock"><h2>LEFT OUTER JOIN (classic)</h2>
-<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
-2
-3
-4
-5
-6</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> sp~carrid sp~connid f~fldate
-  <span class="tok-kw">FROM</span> spfli <span class="tok-kw">AS</span> sp
-  <span class="tok-kw">LEFT</span> <span class="tok-kw">OUTER</span> <span class="tok-kw">JOIN</span> sflight <span class="tok-kw">AS</span> f
-    <span class="tok-kw">ON</span>  f~carrid = sp~carrid
-    <span class="tok-kw">AND</span> f~connid = sp~connid       <span class="tok-com">" 키가 둘이라 AND — 앞 레슨 규칙 그대로</span>
-  <span class="tok-kw">INTO</span> <span class="tok-kw">CORRESPONDING</span> <span class="tok-kw">FIELDS</span> <span class="tok-kw">OF</span> <span class="tok-kw">TABLE</span> gt_out.</code></pre></div></div>
-<ul>
-<li>왼쪽(<code>spfli</code> — 노선)은 모두 결과에 남는다.</li>
-<li>매칭되는 오른쪽(운항편)이 없으면 그 컬럼(<code>fldate</code>)은 DB의 <strong>NULL</strong> → ABAP에선
-<strong>초기값</strong>(빈 문자/0)으로 들어온다.</li>
-</ul>
-</section><section class="lblock"><h2>INNER vs LEFT — 직접 켜고 보기</h2>
-<p>같은 데이터에 INNER와 LEFT OUTER를 번갈아 적용하면 차이가 분명해진다. 예매가 없는
-공연 C003이 INNER에선 사라지고, LEFT에선 남는다(오른쪽 값은 초기값). 그리고 아래에서
-<strong>오른쪽 필드를 <code>WHERE</code>에 걸면 LEFT라도 C003이 다시 빠질 수 있다</strong>는 함정도 확인하자.</p>
-<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">LEFT 보존 스위치 (INNER↔LEFT · WHERE 함정)</span><a class="embed__open" href="../../../embeds/abap/CH13-L02-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH13-L02-S01.html" loading="lazy" title="LEFT 보존 스위치 (INNER↔LEFT · WHERE 함정)"></iframe></figure>
-</section><section class="lblock"><h2>NULL 처리 주의</h2>
-<ul>
-<li>DB의 NULL과 ABAP 초기값은 개념이 다르다. LEFT JOIN 결과의 빈 오른쪽 컬럼은
-보통 초기값으로 보이니, &quot;값 없음&quot;을 구분하려면 기준 키로 판단한다.</li>
-</ul>
-</section><section class="lblock"><h2>한 SELECT에 INNER와 LEFT OUTER 섞기</h2>
-<p><button class="term" type="button" data-term="JOIN">조인</button>은 한 문장에 <strong>여러 개</strong> 이어 붙일 수 있고, 종류를 <strong>섞어</strong> 쓸 수도 있다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -78,23 +55,168 @@
 5
 6
 7
-8</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> b~booking_id c~artist pf~perf_date
-  <span class="tok-kw">FROM</span> zbooking <span class="tok-kw">AS</span> b
-  <span class="tok-kw">INNER</span> <span class="tok-kw">JOIN</span> zconcert <span class="tok-kw">AS</span> c              <span class="tok-com">" 공연은 반드시 있어야 → INNER</span>
-    <span class="tok-kw">ON</span> c~concert_id = b~concert_id
-  <span class="tok-kw">LEFT</span> <span class="tok-kw">OUTER</span> <span class="tok-kw">JOIN</span> zperf <span class="tok-kw">AS</span> pf           <span class="tok-com">" 회차는 없을 수도 → LEFT OUTER</span>
-    <span class="tok-kw">ON</span>  pf~concert_id = b~concert_id
-    <span class="tok-kw">AND</span> pf~perf_no    = b~perf_no
-  <span class="tok-kw">INTO</span> <span class="tok-kw">CORRESPONDING</span> <span class="tok-kw">FIELDS</span> <span class="tok-kw">OF</span> <span class="tok-kw">TABLE</span> lt_out.</code></pre></div></div>
+8
+9
+10
+11
+12
+13
+14
+15</pre><pre class="abap-editor__code"><code><span class="tok-kw">TYPES</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ts_out,
+         carrid <span class="tok-kw">TYPE</span> spfli-carrid,
+         connid <span class="tok-kw">TYPE</span> spfli-connid,
+         fldate <span class="tok-kw">TYPE</span> sflight-fldate,
+       <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ts_out.
+
+<span class="tok-kw">DATA</span>: gt_out <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ts_out,
+      gs_out <span class="tok-kw">TYPE</span> ts_out.
+
+<span class="tok-kw">SELECT</span> sp~carrid sp~connid f~fldate
+  <span class="tok-kw">FROM</span> spfli <span class="tok-kw">AS</span> sp
+  <span class="tok-kw">LEFT</span> <span class="tok-kw">OUTER</span> <span class="tok-kw">JOIN</span> sflight <span class="tok-kw">AS</span> f
+    <span class="tok-kw">ON</span>  f~carrid = sp~carrid
+    <span class="tok-kw">AND</span> f~connid = sp~connid       <span class="tok-com">" 키가 둘이라 AND — 앞 레슨 규칙 그대로</span>
+  <span class="tok-kw">INTO</span> <span class="tok-kw">CORRESPONDING</span> <span class="tok-kw">FIELDS</span> <span class="tok-kw">OF</span> <span class="tok-kw">TABLE</span> gt_out.</code></pre></div></div>
 <ul>
-<li>&quot;반드시 있어야 하는&quot; 쪽은 INNER, &quot;없어도 남길&quot; 쪽은 LEFT OUTER로 고른다.</li>
-<li>위에서 아래로 차례로 합쳐지니, 순서와 종류를 의도대로 선택한다.</li>
+<li>왼쪽 테이블인 <code>spfli</code>(노선)는 짝이 있든 없든 모두 결과에 남는다.</li>
+<li>매칭되는 오른쪽(운항편)이 없으면 그 자리의 값이 <button class="term" type="button" data-term="NULL">NULL</button>이 된다. 이게 뭔지 바로 아래에서 보자.</li>
 </ul>
+</section><section class="lblock"><h2>NULL — &quot;값이 없다&quot;는 값</h2>
+<p><code>NULL</code>은 DB가 <strong>값 자체가 없다</strong>는 것을 표시하려고 쓰는 특별한 상태다. 숫자 <code>0</code>이나 공백
+문자와는 다르다. &quot;좌석을 0석 예매했다&quot;와 &quot;예매 기록이 아예 없다&quot;가 다른 말인 것과 같다.
+<button class="term" type="button" data-term="LEFT OUTER JOIN">LEFT OUTER JOIN</button>에서 오른쪽 짝을 못 찾으면, DB는 그 자리를 억지로 0이나 공백으로 채우지
+않고 <button class="term" type="button" data-term="NULL">NULL</button>로 둔다.</p>
+<p>문제는 그다음이다. <strong>ABAP에는 NULL이라는 것이 없다.</strong> 그래서 조회 결과가 ABAP 그릇으로
+넘어오는 순간, NULL은 그 필드 타입의 <strong>초기값</strong>으로 바뀌어 들어온다.</p>
+<table>
+<thead>
+<tr>
+<th>DB 쪽</th>
+<th>ABAP으로 넘어오면</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>숫자 필드의 NULL</td>
+<td><code>0</code></td>
+</tr>
+<tr>
+<td>문자 필드의 NULL</td>
+<td>공백</td>
+</tr>
+<tr>
+<td>날짜 필드의 NULL</td>
+<td><code>00000000</code></td>
+</tr>
+</tbody></table>
+<p>여기서 헷갈림이 생긴다. 결과 테이블만 들여다봐서는 <strong>&quot;짝이 없어서 비었다&quot;</strong> 와
+<strong>&quot;원래 값이 0이라 0이다&quot;</strong> 를 구분할 수 없다. 둘 다 그냥 <code>0</code>으로 보이기 때문이다.</p>
+<h3>그럼 어떻게 구분하나</h3>
+<p>방법은 간단하다. 오른쪽 테이블의 <strong>키 필드</strong>를 결과에 함께 담아 두고, 그 키가
+비었는지를 본다. 키는 값이 있는 행이라면 절대 비어 있지 않으니, 키가 초기값이면
+&quot;짝을 못 찾은 행&quot;이라고 확신할 수 있다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7</pre><pre class="abap-editor__code"><code><span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> gt_out <span class="tok-kw">INTO</span> gs_out.
+  <span class="tok-kw">IF</span> gs_out-fldate <span class="tok-kw">IS</span> <span class="tok-kw">INITIAL</span>.       <span class="tok-com">" 오른쪽 키가 비었다 = 짝이 없던 행</span>
+    <span class="tok-kw">WRITE</span>: / gs_out-carrid, gs_out-connid, <span class="tok-str">'운항 계획 없음'</span>.
+  <span class="tok-kw">ELSE</span>.
+    <span class="tok-kw">WRITE</span>: / gs_out-carrid, gs_out-connid, gs_out-fldate.
+  <span class="tok-kw">ENDIF</span>.
+<span class="tok-kw">ENDLOOP</span>.</code></pre></div></div>
+<p><code>fldate</code>는 <code>sflight</code>의 키 필드 중 하나라서 이 판단이 성립한다. 반대로 좌석 수처럼
+<strong>원래 0일 수 있는 일반 필드</strong>로 판단하면 멀쩡한 행까지 &quot;짝 없음&quot;으로 잘못 세게 된다.
+판단 기준으로 삼을 필드는 오른쪽 테이블의 키에서 고르자.</p>
+</section><section class="lblock"><h2>INNER vs LEFT OUTER — 직접 켜고 보기</h2>
+<p>아래 체험은 <a href="CH09-L09.html">Chapter 09 · 콘서트 모델 만들기</a>에서 넣어 둔 공연 세 건을
+쓴다. 그중 <code>C003</code>은 <strong>예매가 한 건도 없는 공연</strong>이다(그때 일부러 그렇게 넣어 뒀다).</p>
+<p>같은 데이터에 <button class="term" type="button" data-term="INNER JOIN">INNER JOIN</button>과 <button class="term" type="button" data-term="LEFT OUTER JOIN">LEFT OUTER JOIN</button>을 번갈아 적용하면 차이가 분명해진다.
+<code>C003</code>이 INNER에선 사라지고 LEFT OUTER에선 남는다(오른쪽 값은 초기값). 그리고
+<strong>오른쪽 필드를 <code>WHERE</code>에 걸면 LEFT OUTER라도 <code>C003</code>이 다시 빠질 수 있다</strong>는 함정도
+확인하자.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">LEFT 보존 스위치 (INNER↔LEFT · WHERE 함정)</span><a class="embed__open" href="../../../embeds/abap/CH13-L02-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH13-L02-S01.html" loading="lazy" title="LEFT 보존 스위치 (INNER↔LEFT · WHERE 함정)"></iframe></figure>
+</section><section class="lblock"><h2>오른쪽 조건은 ON에 둘까 WHERE에 둘까</h2>
+<p>방금 본 함정은 외워서 피할 것이 아니라 <strong>일이 벌어지는 순서</strong>로 이해하면 된다.
+DB는 두 단계로 일한다. 먼저 <code>ON</code>으로 짝을 지어 결과를 만들고, 그다음 <code>WHERE</code>로 이미
+만들어진 결과에서 행을 걸러 낸다.</p>
+<ul>
+<li><strong><code>ON</code>에 두면</strong> 조건은 <em>짝지을 후보를 고르는 데</em> 쓰인다. 조건에 안 맞는 오른쪽 행은
+짝에서 빠질 뿐이고, 왼쪽 행은 짝이 없는 상태로 그대로 남는다.</li>
+<li><strong><code>WHERE</code>에 두면</strong> 조건은 <em>다 만들어진 결과를 검사하는 데</em> 쓰인다. 짝이 없어 오른쪽이
+비어 있는(<button class="term" type="button" data-term="NULL">NULL</button>) 행도 검사를 받는데, 견줄 값 자체가 없으니 조건을 통과하지 못하고 사라진다.</li>
+</ul>
+<p>그래서 &quot;왼쪽을 다 남기겠다&quot;는 목적이라면 <strong>오른쪽 테이블에 거는 조건은 <code>ON</code>에</strong> 둔다.
+반대로 짝지은 뒤 결과 전체를 좁히려는 조건이라면 <code>WHERE</code>가 맞는 자리다.</p>
+</section><section class="lblock"><h2>한 문장에 JOIN을 여러 개</h2>
+<p>JOIN은 한 문장에 <strong>여러 개</strong> 이어 붙일 수 있고, 종류를 <strong>섞어</strong> 쓸 수도 있다. 왼쪽부터
+차례로 합쳐 나간다고 생각하면 된다. 앞의 결과에 다음 테이블을 붙이고, 또 그 결과에
+다음 테이블을 붙인다.</p>
+<p>붙일 때마다 물어볼 것은 하나다. <strong>&quot;이쪽은 반드시 있는가, 없을 수도 있는가?&quot;</strong>
+콘서트 모델의 관계를 떠올려 보자. 예매는 반드시 어떤 회차에 속하고, 회차는 반드시 어떤
+공연에 속한다(<a href="CH09-L09.html">Chapter 09 · 콘서트 모델 만들기</a>에서 Foreign Key로 그렇게
+묶어 뒀다). 반대 방향은 보장이 없다. 공연에 회차가 아직 없을 수도, 회차에 예매가 하나도
+없을 수도 있다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18</pre><pre class="abap-editor__code"><code><span class="tok-kw">TYPES</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ts_perf,
+         concert_id <span class="tok-kw">TYPE</span> zperf-concert_id,
+         perf_no    <span class="tok-kw">TYPE</span> zperf-perf_no,
+         perf_date  <span class="tok-kw">TYPE</span> zperf-perf_date,
+         artist     <span class="tok-kw">TYPE</span> zconcert-artist,
+         booking_id <span class="tok-kw">TYPE</span> zbooking-booking_id,
+       <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ts_perf.
+
+<span class="tok-kw">DATA</span> gt_perf <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ts_perf.
+
+<span class="tok-kw">SELECT</span> pf~concert_id pf~perf_no pf~perf_date c~artist b~booking_id
+  <span class="tok-kw">FROM</span> zperf <span class="tok-kw">AS</span> pf
+  <span class="tok-kw">INNER</span> <span class="tok-kw">JOIN</span> zconcert <span class="tok-kw">AS</span> c        <span class="tok-com">" 공연 마스터는 반드시 있다</span>
+    <span class="tok-kw">ON</span> c~concert_id = pf~concert_id
+  <span class="tok-kw">LEFT</span> <span class="tok-kw">OUTER</span> <span class="tok-kw">JOIN</span> zbooking <span class="tok-kw">AS</span> b   <span class="tok-com">" 예매는 없을 수도 있다</span>
+    <span class="tok-kw">ON</span>  b~concert_id = pf~concert_id
+    <span class="tok-kw">AND</span> b~perf_no    = pf~perf_no
+  <span class="tok-kw">INTO</span> <span class="tok-kw">CORRESPONDING</span> <span class="tok-kw">FIELDS</span> <span class="tok-kw">OF</span> <span class="tok-kw">TABLE</span> gt_perf.</code></pre></div></div>
+<ul>
+<li><strong>자식에서 부모로 올라갈 때는 INNER.</strong> 회차에 적힌 공연 ID는 Foreign Key가 지켜 주니
+공연 마스터가 없을 수 없다.</li>
+<li><strong>부모에서 자식으로 내려갈 때는 LEFT OUTER.</strong> 아직 예매가 없는 회차도 목록에 남겨야
+&quot;예매 0건&quot;이 보인다.</li>
+<li>이 문장은 <strong>회차를 기준으로</strong> 시작하므로, 회차가 아직 없는 공연(<code>C003</code>)은 애초에
+등장하지 않는다. 공연을 하나도 빠뜨리지 않으려면 위 체험처럼 <code>zconcert</code>에서 시작해
+<code>zperf</code>를 <button class="term" type="button" data-term="LEFT OUTER JOIN">LEFT OUTER JOIN</button>으로 붙이면 된다. <strong>어느 테이블을 <code>FROM</code>에 두느냐가 곧
+&quot;무엇을 다 보여 줄 것인가&quot;</strong> 다.</li>
+</ul>
+<blockquote>
+<p>세 테이블을 한 번에 붙이니 눈에 확 안 들어와도 괜찮다. 두 테이블 JOIN을 두 번 한
+것일 뿐이고, 실무에서도 이 정도가 흔한 크기다. 지금은 <code>ON</code> 짝이 각각 어느 두 테이블
+사이의 조건인지만 짚어 읽어도 충분하다.</p>
+</blockquote>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>LEFT인데 WHERE로 오른쪽 필터</strong> → 매칭 없는 행이 걸러질 수 있다. 오른쪽 조건은
-<code>ON</code>에 두는 게 안전.</li>
-<li><strong>방향 혼동</strong> → 기준(다 남길 쪽)을 왼쪽(FROM)에 둔다.</li>
+<li><strong>LEFT OUTER인데 오른쪽 조건을 <code>WHERE</code>에</strong> → 짝이 없어 남겨 둔 행이 그 검사에서
+걸러진다. 왼쪽을 다 남기는 게 목적이면 오른쪽 조건은 <code>ON</code>으로 옮기자.</li>
+<li><strong>기준 테이블을 반대로 두기</strong> → 다 남기고 싶은 쪽이 <code>FROM</code> 자리(왼쪽)에 와야 한다.
+&quot;노선을 다 보고 싶다&quot;면 <code>FROM spfli</code>, &quot;공연을 다 보고 싶다&quot;면 <code>FROM zconcert</code>다.</li>
+<li><strong>초기값을 &quot;값이 없다&quot;로 단정</strong> → 결과의 <code>0</code>이나 공백이 <button class="term" type="button" data-term="NULL">NULL</button>에서 온 것인지, 원래
+들어 있던 값인지는 오른쪽 <strong>키 필드</strong>로 확인한다.</li>
 </ul>
 <hr>
 <p>행을 합쳤다. 이제 <strong>묶어서 세고 합산</strong>하고 싶다 → GROUP BY·<button class="term" type="button" data-term="Aggregate">집계</button>(다음 레슨).</p>

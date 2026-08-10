@@ -1,6 +1,7 @@
 /* outer-join-switch 엔진 — INNER↔LEFT OUTER 토글로 기준 행 보존 차이를 보고, WHERE 오른쪽필터 함정을 확인.
    골격 계약: [data-mode="INNER"]/[data-mode="LEFT"] · [data-where] · #ojsBody · #ojsCheck · #ojsSql.
-   config: window.OJS_CFG = { concerts:[{concert_id,artist}], bookings:[{booking_id,concert_id,seats,status}], whereField, whereVal }.
+   config: window.OJS_CFG = { concerts:[{concert_id,artist}], bookings:[{booking_id,concert_id,seats,status}], whereField, whereVal,
+            intoTarget(선택: INTO 대상 itab명, 기본 gt_out) }.
    높이: _autoheight.js. */
 (function () {
   var CFG = window.OJS_CFG || { concerts: [], bookings: [], whereField: 'status', whereVal: 'N' };
@@ -29,12 +30,14 @@
 
   function renderSql() {
     var lj = mode === 'LEFT' ? '<span class="lj">LEFT OUTER JOIN</span>' : '<span class="kw">INNER JOIN</span>';
+    // classic은 필드를 고르는 SELECT에 INTO가 필수 — 조인 블록 뒤·WHERE 앞(본문 CH13-L02와 같은 순서)
+    var into = '\n  <span class="kw">INTO CORRESPONDING FIELDS OF TABLE</span> ' + (CFG.intoTarget || 'gt_out');
     var where = whereOn ? '\n  <span class="wh">WHERE</span> b~' + CFG.whereField + " = '" + CFG.whereVal + "'" : '';
     sqlEl.innerHTML =
       '<span class="kw">SELECT</span> c~concert_id c~artist b~booking_id b~seats\n' +
       '  <span class="kw">FROM</span> zconcert <span class="kw">AS</span> c\n' +
       '  ' + lj + ' zbooking <span class="kw">AS</span> b\n' +
-      '    <span class="kw">ON</span> c~concert_id = b~concert_id' + where + '.';
+      '    <span class="kw">ON</span> c~concert_id = b~concert_id' + into + where + '.';
   }
 
   function renderTable(rows) {

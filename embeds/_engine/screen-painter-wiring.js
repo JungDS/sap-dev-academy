@@ -61,9 +61,10 @@
       return;
     }
     consoleEl.className = 'err';
-    if (b === 'module') consoleEl.innerHTML = '🚫 활성화 오류 — 호출 대상 없음<small>Flow Logic이 <code>MODULE status_0100.</code>을 부르는데 ABAP에 <code>MODULE status_0100 OUTPUT.</code> 정의가 없습니다. 같은 이름으로 정의해야 연결됩니다.</small>';
-    else if (b === 'name') consoleEl.innerHTML = '🚫 data transport 안 됨 — 이름 불일치<small>화면 요소 <code>GV_SEAT</code>와 변수 <code>gv_seats</code> 이름이 달라 값이 자동 운반되지 않습니다. 같은 이름으로 맞추세요.</small>';
-    else if (b === 'okfield') consoleEl.innerHTML = '🚫 function code 못 읽음 — OK field 미지정<small>Element List에서 OK field(<code>OK_CODE</code>)를 지정해야 버튼의 function code를 안정적으로 읽습니다.</small>';
+    // 고장 유형을 구분해 붙인다 — 활성화 단계에서 막히는 것과, 활성화는 되지만 실행 중 안 통하는 것
+    if (b === 'module') consoleEl.innerHTML = '<span class="spw-kind stop">활성화 단계</span>🚫 활성화 오류 — 호출 대상 없음<small>Flow Logic이 <code>MODULE status_0100.</code>을 부르는데 ABAP에 <code>MODULE status_0100 OUTPUT.</code> 정의가 없습니다. 같은 이름으로 정의해야 연결됩니다.</small>';
+    else if (b === 'name') consoleEl.innerHTML = '<span class="spw-kind run">실행 중</span>🚫 data transport 안 됨 — 이름 불일치<small>활성화는 통과하지만, 화면 요소 <code>GV_SEAT</code>와 변수 <code>gv_seats</code> 이름이 달라 값이 자동 운반되지 않습니다. 같은 이름으로 맞추세요.</small>';
+    else if (b === 'okfield') consoleEl.innerHTML = '<span class="spw-kind run">실행 중</span>🚫 function code 못 읽음 — OK field 미지정<small>활성화는 통과하지만, Element List에서 OK field(<code>OK_CODE</code>)를 지정해야 버튼의 function code를 안정적으로 읽습니다.</small>';
   }
 
   function render() { renderScen(); renderGrid(); renderConsole(); }

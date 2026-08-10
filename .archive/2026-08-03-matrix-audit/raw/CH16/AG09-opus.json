@@ -1,0 +1,93 @@
+{
+  "agent": "AG09",
+  "model": "opus",
+  "target": "CH16",
+  "persona_ack": "나는 발견자 AG09 — ABAP 정적 검사기를 시늉하는 코드 전용 감사자다. 산문 설명·교수법·시각화는 평가 대상에서 제외하고, CH16의 각 레슨에 있는 abap 코드 블록만 줄 단위로 읽어 (1) 활성화 차단급 결함, (2) 이 커리큘럼의 네이밍 규약, (3) classic/modern 경계 규약, (4) 주석·출력 문자열이 본문과 어긋나는 명백한 오류를 본다. 실행 환경이 없으므로 컴파일 확신이 아니라 정적 판단이며, 불확실한 건 confidence=추정으로 남겼다. 블라인드 감사 원칙에 따라 다른 감사자 산출물·과거 감사 기록은 열지 않았고, 대상 파일 밖 챕터(CH07 ZCONCERT 정의, CH10-L07 can_book 등)도 열지 않아 그 부분은 단정하지 않았다.",
+  "method": "Read 도구로 대상 11개 파일 전문 정독(_chapter.md + CH16-L01~L10) 후 abap 코드 블록만 줄 단위 재검토. 교차 확인은 Grep(content/abap/CH16 범위 한정) 2회 — (1) gv_locked|gv_conc|DATA lv_|abap_bool, (2) zconcert-|ZCONCERT-|TABLES — 로 선언 유무와 화면 필드명 표기를 대조. 빌드·브라우저·서버(SERVE_URL) 미사용(코드 정적 감사라 불필요), 웹 검색 없음, 파일 수정 없음.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L10.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH16/CH16-L10.md",
+      "quote": "DATA lv_ok TYPE abap_bool.",
+      "category": "네이밍 규약",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "dialog module(MODULE ... ENDMODULE) 안에서 선언한 DATA는 로컬이 아니라 프로그램 전역이므로 lv_ 접두어가 규약 위반이다. gv_ok(또는 모듈 밖 전역 선언)로 가야 한다.",
+      "evidence": "ABAP에서 자체 로컬 데이터 영역을 갖는 처리 블록은 FORM·FUNCTION·METHOD뿐이고, dialog module과 이벤트 블록에는 로컬 데이터 영역이 없다 — MODULE 안의 DATA는 프로그램 전역 선언으로 처리된다(그래서 서로 다른 두 모듈에서 같은 이름을 DATA로 선언하면 중복 선언 오류가 난다). 이 커리큘럼 규약도 로컬 스코프(FORM/METHOD 안)에서 선언한 것만 lv_/ls_/lt_를 쓰고 나머지 전역 선언은 gv_/gs_/gt_다. 같은 코드 블록의 ok_code·save_ok·gv_* 는 모두 전역으로 선언돼 있는데 lv_ok만 모듈 안에 lv_로 들어가 있어, CH10에서 FORM 로컬 변수로 lv_를 배운 입문자는 'MODULE 안 = 로컬 스코프'라고 잘못 일반화하게 된다.",
+      "suggestion": "선언을 MODULE 밖 전역 DATA 블록으로 옮기고 이름을 gv_ok로 바꾼다(예: 상단 DATA 체인에 gv_ok TYPE abap_bool 추가, 본문 PERFORM/IF도 gv_ok로). 여력이 있으면 '모듈 안 DATA도 전역이다'라는 한 줄 주의를 덧붙이면 CH10 로컬 스코프와의 대비가 분명해진다."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH16/CH16-L10.md",
+      "quote": "- `TABLES zconcert` → 화면의 `ZCONCERT-TITLE`에 공연명이 라벨·F4까지 함께 온다.",
+      "category": "일관성(화면 필드명 ↔ 프로그램 변수)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L10 실습의 화면 필드 이름 체계가 세 곳에서 서로 어긋난다 — 요구사항은 GV_CONC(프로그램 변수 기반), 코드 주석·본문은 TABLES zconcert(DDIC 기반 ZCONCERT-*), 재사용한다는 value_perf 모듈은 화면 필드 ZCONCERT-CONCERT_ID를 읽는다. 이대로 만들면 F4 후보 좁히기가 동작하지 않는다.",
+      "evidence": "① 요구사항(L10)은 화면에 GV_CONC·GV_PERF·GV_SEATS·GV_CUST·GV_STAT·OK_CODE를 둔다고 하고, 코드도 gv_conc TYPE zconcert-concert_id로 선언한 뒤 SET TITLEBAR ... WITH gv_conc로 쓴다 → 공연ID를 나르는 화면 요소는 GV_CONC다. ② 그런데 세 번째 코드 블록의 주석은 TABLES zconcert가 공연ID·공연명을 DDIC에서 가져온다고 하고, 위 인용문은 화면에 ZCONCERT-TITLE이 있다고 전제한다(요구사항 필드 목록엔 없다). ③ L05의 value_perf 모듈은 gs_dynp-fieldname = 'ZCONCERT-CONCERT_ID'로 화면 값을 읽는데, L10 화면에 그 이름의 요소가 없으면 DYNP_VALUES_READ가 값을 못 가져와 회차 후보가 비게 된다. 또 L04 자신의 규칙대로라면 DDIC 라벨·F4는 화면 요소 이름이 ZCONCERT-CONCERT_ID일 때만 따라오므로, GV_CONC로 두는 한 TABLES 선언은 그 이점을 주지 못한다.",
+      "suggestion": "공연ID 필드를 한쪽으로 통일한다. (a) DDIC 이점을 살리려면 화면 요소와 요구사항·코드를 ZCONCERT-CONCERT_ID로 바꾸고 gv_conc 선언을 빼거나, (b) GV_CONC를 유지한다면 L05에서 재사용하는 DYNP_VALUES_READ의 fieldname을 'GV_CONC'로 맞추고, TABLES zconcert는 공연명 표시용(그 필드가 실제로 화면에 있을 때)으로 범위를 좁혀 서술한다. ZCONCERT-TITLE을 계속 쓸 거라면 요구사항 화면 필드 목록에도 넣는다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH16/CH16-L05.md",
+      "quote": "CALL FUNCTION 'F4IF_INT_TABLE_VALUE_REQUEST'",
+      "category": "구조(활성화 차단 가능)",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "이 코드 블록의 실행문(IF ... ENDIF, CALL FUNCTION)이 MODULE ... ENDMODULE 밖 최상위에 놓여 있다. Module Pool(type M)에는 암묵 실행 블록이 없어 처리 블록 밖 실행문은 활성화되지 않는다.",
+      "evidence": "바로 앞 블록은 MODULE value_perf INPUT. ... ENDMODULE.으로 감싸 두었고, 이 블록은 그 모듈이 읽은 gs_dynp-fieldvalue를 이어 쓰므로 같은 모듈 안의 후속 코드가 분명하다. 그런데 TYPES/DATA 선언 뒤에 IF gs_dynp-fieldvalue = 'C001' ... ENDIF와 CALL FUNCTION이 감싸는 처리 블록 없이 최상위에 있다. 리포트(type 1)와 달리 Module Pool은 START-OF-SELECTION 같은 암묵 블록이 없어, 그대로 붙여 넣으면 처리 블록 밖 실행문으로 문법 오류가 난다. 발췌라서 편집상 생략일 가능성이 있어 확실이 아닌 추정으로 둔다(선언부 TYPES/DATA 자체는 최상위에 있어도 정상).",
+      "suggestion": "TYPES/DATA는 그대로 두고 실행문만 MODULE value_perf INPUT. ... ENDMODULE.로 감싸거나(앞 블록과 하나로 합치기), 최소한 '앞 모듈 안에서 이어진다'는 주석 한 줄을 블록 첫 줄에 넣어 위치를 명시한다."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH16/CH16-L03.md",
+      "quote": "- `key`는 변수에 들어가는 **실제 값**(`R`), `text`는 화면에 보이는 **글자**(`예약`)다. 둘은 다르다.",
+      "category": "주석·본문 불일치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "바로 위 코드 블록의 값과 설명의 예시 값이 다르다. 코드는 key='N'(신규)·'C'(취소)인데 설명은 key='R'·text='예약'을 든다.",
+      "evidence": "같은 레슨의 VRM 코드 블록은 gs_value-key = 'N'. gs_value-text = '신규'. 와 gs_value-key = 'C'. gs_value-text = '취소'. 두 쌍만 APPEND한다. 설명 문장이 코드 바로 아래에 붙어 있어 입문자는 코드에서 'R'과 '예약'을 찾다가 못 찾는다. 앞 문단의 예시(상태 = 예약/대기/취소)와 코드(신규/취소)도 서로 다르다. 참고로 L10의 검증 시나리오 표는 드롭다운 신규 → gv_stat = 'N'으로 코드와 일치하므로, 어긋난 쪽은 L03 산문이다.",
+      "suggestion": "설명의 예시를 코드와 맞춘다 — key는 실제 값('N'), text는 화면 글자('신규'). 앞 문단의 상태 예시도 신규/취소(또는 코드에 대기 행 추가)로 통일한다."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH16/CH16-L06.md",
+      "quote": "IF gs_screen-name = 'GV_SEATS' AND gv_locked = 'X'.",
+      "category": "미선언 변수",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "gv_locked가 CH16 어디에도 선언돼 있지 않은데 조건문에서 사용된다. 같은 블록의 gs_screen은 바로 위에서 DATA로 선언해 두어 대비가 더 두드러진다.",
+      "evidence": "CH16 폴더 전체 grep 결과 gv_locked는 CH16-L06(위 인용 줄)과 CH16-L08(IF gv_locked = 'X'.) 두 곳에서 사용될 뿐 DATA 선언이 한 번도 없다. 두 블록 모두 다른 변수는 DATA로 선언해 보여 주므로(L06은 DATA gs_screen TYPE screen., L08은 DATA gt_excl / DATA gv_fcode), 입문자가 블록을 그대로 옮기면 GV_LOCKED 미정의로 활성화 오류를 만난다. 같은 종류로 L08의 SET TITLEBAR ... WITH gv_conc도 그 파일 안엔 선언이 없다(L03·L10에는 있음).",
+      "suggestion": "두 블록의 선언부에 DATA gv_locked TYPE c LENGTH 1.(잠금 여부 플래그) 한 줄을 추가하거나, 선언 생략을 알리는 주석(예: 잠금 플래그는 전역 선언부에 있다고 가정)을 달아 준다."
+    },
+    {
+      "seq": 6,
+      "file": "content/abap/CH16/CH16-L05.md",
+      "quote": "APPEND gs_dynp TO gt_dynp.",
+      "category": "코드 위생",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "전역 Internal Table gt_dynp에 CLEAR/REFRESH 없이 APPEND한다. F4를 누를 때마다 호출되는 모듈이라 행이 계속 누적된다.",
+      "evidence": "gt_dynp는 MODULE 밖에서 DATA: gt_dynp TYPE STANDARD TABLE OF dynpread로 선언된 전역 테이블이고, value_perf 모듈은 F4 요청마다 실행된다. 앞에 CLEAR가 없으므로 두 번째 F4부터 같은 fieldname 행이 쌓인다. READ TABLE ... INDEX 1로 읽어서 결과 자체는 대개 맞아 치명적이진 않지만, 같은 챕터의 VRM 예제(L03·L10)는 APPEND 전에 CLEAR gt_values.를 먼저 하므로 패턴이 서로 어긋난다. 실제 DYNP_VALUES_READ가 중복 행을 어떻게 처리하는지는 실행 확인이 불가해 추정으로 둔다.",
+      "suggestion": "gs_dynp-fieldname 대입 앞에 CLEAR gt_dynp.(또는 REFRESH gt_dynp.)를 한 줄 넣어 다른 예제와 패턴을 통일한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH16의 abap 코드 블록은 전반적으로 건강하다. Flow Logic(PROCESS BEFORE OUTPUT/AFTER INPUT, FIELD ... MODULE, CALL SUBSCREEN ... INCLUDING)과 ABAP 쪽 MODULE OUTPUT/INPUT 정의의 짝, LOOP AT SCREEN INTO gs_screen + MODIFY SCREEN FROM gs_screen의 명시 work area 형식, SET PF-STATUS ... EXCLUDING / SET TITLEBAR ... WITH, ok_code → save_ok 복사 후 CLEAR 패턴, VRM_SET_VALUES·DYNP_VALUES_READ·F4IF_INT_TABLE_VALUE_REQUEST의 파라미터 이름과 CREATE OBJECT cl_gui_custom_container의 container_name까지 문장 마침표·시그니처 오류가 보이지 않았다. 경계 규약도 깨끗하다 — 인라인 DATA()·VALUE·NEW·+=·문자열 템플릿이 한 곳도 없고 Open SQL 자체가 등장하지 않아 CH16 classic 구간을 지킨다. 네이밍도 gv_/gs_/gt_ 전역 접두어, 로컬 TYPES의 ts_, ok_code/save_ok 관례명 유지가 일관된다. 발견 6건은 모두 국소 수정으로 닫힌다: (중간) L10에서 dialog module 안에 DATA lv_ok를 선언해 모듈 내부를 로컬 스코프처럼 보이게 한 점 — 실제로는 프로그램 전역이라 gv_ok가 맞고, CH10에서 FORM 로컬을 막 배운 입문자에게 잘못된 일반화를 심는다. (중간) L10 실습의 공연ID 필드가 요구사항(GV_CONC)·TABLES zconcert 서술(ZCONCERT-*)·재사용 모듈 value_perf의 읽기 대상('ZCONCERT-CONCERT_ID') 셋으로 갈려 그대로 만들면 F4 후보 좁히기가 비게 된다. (중간·추정) L05 세 번째 블록의 실행문이 MODULE 밖 최상위에 있어 Module Pool에서는 그대로 활성화되지 않는다. 나머지 3건은 낮음 — L03 설명의 예시 값('R'/'예약')이 코드('N'/'신규')와 어긋남, gv_locked가 L06·L08에서 쓰이지만 챕터 어디에도 선언 없음, L05의 전역 gt_dynp에 CLEAR 없이 APPEND. 구조 개편이나 재집필이 필요한 사안은 없어 경미 수정으로 본다. 다만 CH07의 ZCONCERT 필드 정의와 CH10-L07의 can_book 시그니처는 대상 파일 밖이라 열지 않았으므로, PERFORM can_book USING gv_conc gv_perf gv_seats CHANGING lv_ok의 인자 일치와 ZCONCERT-TITLE 존재 여부는 검증하지 못했다."
+  }
+}

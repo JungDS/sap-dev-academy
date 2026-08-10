@@ -1,0 +1,93 @@
+{
+  "agent": "AG03",
+  "model": "sonnet",
+  "target": "CH16",
+  "persona_ack": "타 언어(Java/C#) 백엔드 3～5년차 개발자 페르소나로 CH16 10개 레슨 + _chapter.md를 전문 통독했다. 변수·조건문·루프·SQL·OOP 기본기는 이미 안다는 전제로, ① 과잉 ② 오개념 유발 ③ 지름길 부재 ④ 용어 충돌 네 축을 점검했다. 1독자가 비전공 입문자라는 점을 고려해 '입문자에게도 불필요한 장황함'만 높음 이상으로 매기고, 나머지는 낮음 또는 suggestion 수준으로 눌러 잡았다.",
+  "method": "대상 파일 11개(CH16-L01～L10.md, _chapter.md)를 Read 도구로 원문 전체 통독. 코드 실행·브라우저 검증·웹 검색 없이, ABAP/Dynpro 도메인 지식과 일반 백엔드·GUI 프레임워크(Java/C#) 지식만으로 텍스트를 대조·판단했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L10.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH16-L03.md",
+      "quote": "| Text Field | 고정 라벨·안내 | 보통 변수 운반 없음 |",
+      "category": "용어 충돌",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'Text Field'라는 이름이 다른 환경(Java Swing JTextField, iOS UITextField, 웹에서 흔히 쓰는 '텍스트필드'라는 통칭 등)에서는 거의 예외 없이 '사용자가 입력하는 편집 가능한 칸'을 뜻하는 것과 정반대로, 여기서는 '고정 라벨(읽기 전용)'을 가리킨다는 대조가 표에 없다.",
+      "evidence": "표는 'Text Field | 고정 라벨·안내 | 보통 변수 운반 없음'이라고만 적혀 있어, 처음 훑어보는 경력자는 익숙한 프레임워크의 통념(Text Field=입력칸)을 그대로 대입해 오독할 위험이 있다. 다행히 같은 레슨 뒤쪽 '흔한 실수와 점검'에서 'Text Field로 값 받기 → Text Field는 라벨이다. 값은 Input/Output Field로 받는다'라고 사후 정정하지만, 표를 처음 만나는 시점에는 대조 문구가 없어 그 사이에 오해가 생길 수 있다.",
+      "suggestion": "표의 Text Field 행에 '(다른 프레임워크의 TextField/입력칸과 달리 읽기 전용 라벨이다)' 같은 괄호 설명을 처음부터 붙이면 사후 정정 없이 바로 예방된다."
+    },
+    {
+      "seq": 2,
+      "file": "CH16-L05.md",
+      "quote": "그 값을 읽어 오는 화면 전용 함수가 `DYNP_VALUES_READ`다.",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "직전 레슨(CH16-L04)에서 배운 'PAI 시작에 화면 → work area'라는 동기화 규칙을 그대로 적용하면 화면의 다른 칸 값은 이미 ABAP 변수에 들어와 있어야 하는데, 왜 굳이 DYNP_VALUES_READ라는 별도 함수로 다시 읽어야 하는지 이유가 설명되지 않는다.",
+      "evidence": "CH16-L04는 '운반 방향' 표에서 'PAI 시작 | 화면 → work area | 사용자가 고친 값이 zconcert-concert_id로 들어온다'고 명시했다. 그런데 CH16-L05는 F4(POV) 처리 시점에 '지금 화면에 입력된 다른 값(공연ID)을 읽어야' 한다며 DYNP_VALUES_READ를 쓰는데, 이 POV 시점이 PAI의 정식 화면→변수 전송보다 먼저 일어나므로 변수가 아직 최신값이 아닐 수 있다는 연결 설명이 없다. 두 레슨을 논리적으로 이어 읽는 경력자일수록 'CH16-L04에서 배운 대로면 그냥 zconcert-concert_id를 읽으면 되는 것 아닌가'라는 의문이 남는다.",
+      "suggestion": "'F4 요청(POV)은 PAI의 화면→변수 전송이 일어나기 전에 발생하므로, 그 사이 다른 칸의 값은 DYNP_VALUES_READ로 화면 버퍼에서 직접 읽어야 한다'는 한 줄을 추가해 CH16-L04의 동기화 규칙과 명시적으로 연결하면 좋겠다."
+    },
+    {
+      "seq": 3,
+      "file": "CH16-L09.md",
+      "quote": "블랙박스로만 받아들이면 된다.",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "`DATA go_cont TYPE REF TO cl_gui_custom_container.`와 `CREATE OBJECT go_cont EXPORTING container_name = 'CONT100'.`는 OOP 경험자에게는 '참조 변수 선언 + 이름 있는 파라미터로 생성자 호출'로 이미 익숙한 패턴인데, '블랙박스로만 받아들이면 된다'는 안내는 이미 아는 사람에게는 불필요한 유보처럼 읽힐 수 있다.",
+      "evidence": "Java/C# 경력자는 `REF TO`를 참조 타입, `CREATE OBJECT ... EXPORTING`을 named parameter를 받는 생성자 호출로 즉시 매핑할 수 있다. 그런데 본문은 이를 아직 배우지 않은 개념처럼 감싸, 이미 이해한 독자에게도 '몰라도 된다'는 신호를 주어 오히려 '내가 뭔가 놓쳤나' 하는 불필요한 의심을 유발할 수 있다.",
+      "suggestion": "[선행 사용] 박스에 'OOP를 이미 안다면 이건 그냥 참조 변수 선언과 생성자 호출이다'라는 한 줄을 추가하면, 입문자에게는 여전히 안심 문구가 되고 경력자에게는 건너뛰어도 된다는 신호가 된다."
+    },
+    {
+      "seq": 4,
+      "file": "CH16-L02.md",
+      "quote": "실제 처리 코드는 프로그램 쪽 `MODULE ... ENDMODULE`에 쓴다.",
+      "category": "용어 충돌",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "ABAP의 `MODULE`은 Java/C# 개발자가 흔히 쓰는 '모듈'(패키지·네임스페이스·어셈블리 같은 코드 묶음 단위) 개념과 달리, PBO/PAI가 이름으로 호출하는 콜백성 프로시저를 가리키는데 이 명칭 차이가 명시적으로 짚어지지 않는다.",
+      "evidence": "바로 뒤 코드 예제(`MODULE status_0100 OUTPUT. ... ENDMODULE.`)를 보면 동작은 금방 유추되어 실질적 피해는 작지만, 'MODULE'이라는 단어만 먼저 접했을 때 일반 프로그래밍의 '모듈(패키지)' 개념을 떠올릴 가능성이 있다.",
+      "suggestion": "첫 등장 시 '여기서 MODULE은 패키지가 아니라 PBO/PAI가 이름으로 호출하는 프로시저다' 같은 한 줄 대조를 넣으면 좋겠다."
+    },
+    {
+      "seq": 5,
+      "file": "CH16-L03.md",
+      "quote": "| Frame | 요소 묶음 표시 | 표시 전용 |",
+      "category": "용어 충돌",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "Java 개발자에게 'Frame'은 최상위 창(윈도우)을 뜻하는 `JFrame`으로 먼저 연상되는데, 여기서는 화면 안 요소들을 묶어 보여주는 그룹박스일 뿐이라는 구분이 없다.",
+      "evidence": "표는 'Frame | 요소 묶음 표시 | 표시 전용'이라고만 적혀 있고, 이 챕터의 다른 레슨(코드·실습)에서 Frame이 다시 다뤄지지 않아 오해가 정정될 기회도 따로 없다. 다만 표의 한 행에 그치는 짧은 언급이라 실질적 파급은 작다.",
+      "suggestion": "'(다른 언어의 최상위 창 Frame이 아니라 그룹박스에 가깝다)' 같은 짧은 괄호 설명을 붙이면 좋겠다."
+    },
+    {
+      "seq": 6,
+      "file": "CH16-L03.md",
+      "quote": "| Input/Output Field | 값 입력·표시 | 같은 이름의 전역 변수 |",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "체크박스·라디오버튼·드롭다운·버튼 같은 요소 자체는 어떤 GUI 프레임워크 경험자에게도 설명이 필요 없는데, CH16 10개 레슨 어디에도 '요소 자체가 익숙하면 ABAP 연결 규칙만 확인하고 건너뛰어도 된다'는 식의 안내가 없다.",
+      "evidence": "CH16-L03의 요소 표는 이미 모양 설명 대신 'ABAP 연결' 열로 핵심을 압축해 두었지만, 경력자가 표만 보고 안심하고 넘어가도 된다는 명시적 신호는 없어 본문 설명을 처음부터 끝까지 읽어야 하는지 스스로 판단해야 한다. CH16-L05의 '입력 도움 우선순위' 표처럼 우선순위·건너뛰기를 명시한 곳도 있어(좋은 사례), 이 레슨에는 그런 장치가 상대적으로 아쉽다.",
+      "suggestion": "레슨 도입부나 표 앞에 'GUI 요소 자체가 익숙하면 ABAP 연결 열만 확인하고 다음 절(행동 3분류)로 건너뛰어도 된다'는 한 줄을 추가하면 좋겠다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "경력 개발자 관점에서 CH16 10개 레슨을 통독한 결과, Dynpro/Module Pool은 일반 백엔드 개발자에게도 생소한 SAP 고유 패러다임이라 '이미 아는 개념을 지나치게 풀어 쓴' 과잉 설명 사례는 찾지 못했다(과잉 0건 — 억지로 만들지 않음). 대신 ① Text Field·Frame처럼 다른 프레임워크와 이름은 같지만 뜻이 반대이거나 다른 용어에 대조 설명이 빠진 곳, ② CH16-L04의 PAI 동기화 규칙과 CH16-L05의 DYNP_VALUES_READ 사이에 '왜 변수를 직접 안 읽고 별도 함수가 필요한지' 연결 설명이 빠진 곳, ③ 이미 OOP·GUI를 아는 독자를 위한 '건너뛰어도 됨' 신호가 부족한 곳을 발견했다. 모두 한두 문장이나 괄호 하나로 해결 가능한 경미한 수준이며, 입문자용 본문 흐름이나 기술적 정확성 자체는 훼손하지 않는다."
+  }
+}

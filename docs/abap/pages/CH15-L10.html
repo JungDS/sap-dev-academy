@@ -42,7 +42,7 @@
 <section class="lblock"><h2>옵션을 한자리에 모아 보기</h2>
 <p><code>OBLIGATORY</code>·<code>DEFAULT</code>·<code>AS CHECKBOX</code> 같은 옵션을 그동안
 <a href="CH03-L02.html">Chapter 3 · Data Element — 의미·라벨 입히기</a>,
-<a href="CH12-L01.html">Chapter 12 · SELECT-OPTIONS와 Range Table</a>,
+<a href="CH12-L01.html">Chapter 12 · Range Table 구조</a>,
 <a href="CH15-L09.html">Selection Screen UI 구성</a> 곳곳에서 만났다. 이 레슨은
 <button class="term" type="button" data-term="PARAMETERS">PARAMETERS</button>와 <button class="term" type="button" data-term="SELECT-OPTIONS">SELECT-OPTIONS</button>에 붙이는 옵션을 한눈에 정리한다. 필요할 때
 찾아보는 <strong>카탈로그</strong>다.</p>
@@ -82,17 +82,17 @@
 <tr>
 <td><code>LOWER CASE</code></td>
 <td>소문자 보존(기본은 대문자 변환)</td>
-<td><strong>character-like 필드에만</strong> 의미 있음</td>
+<td><strong>문자형(character-like) 필드에만</strong> 의미 있음</td>
 </tr>
 <tr>
 <td><code>AS CHECKBOX</code> / <code>RADIOBUTTON GROUP g</code></td>
 <td>체크박스 / 라디오</td>
-<td>길이 1 character 성격</td>
+<td>속은 길이 1짜리 문자형 필드다(<code>&#39;X&#39;</code>/공백)</td>
 </tr>
 <tr>
 <td><button class="term" type="button" data-term="MEMORY ID">MEMORY ID</button> <code>&lt;pid&gt;</code></td>
 <td>Parameter ID와 연결 — 마지막 값 기억</td>
-<td>이전 사용자 값이 들어올 수 있음</td>
+<td><strong>그 사용자가 직전에 넣었던 값</strong>이 자동으로 채워질 수 있음</td>
 </tr>
 <tr>
 <td><code>VALUE CHECK</code></td>
@@ -106,8 +106,15 @@
 </tr>
 </tbody></table>
 <blockquote class="cw">
-<p>⚠️ <code>LOWER CASE</code>는 <strong>문자형 필드 전용</strong>이다(공식문서: character-like 필드의 대문자 변환을
-막음). <code>TYPE p</code>(숫자) 같은 필드에 붙이는 옵션이 아니다.</p>
+<p>⚠️ <code>LOWER CASE</code>는 <strong>문자형(character-like) 필드 전용</strong>이다(공식문서: 문자형 필드의 대문자
+변환을 막는 옵션). <code>TYPE p</code>(숫자) 같은 필드에 붙이는 옵션이 아니다.</p>
+</blockquote>
+<blockquote>
+<p>💡 <code>MEMORY ID</code>가 값을 기억해 두는 곳은 <strong>그 사용자의 로그인 세션에 딸린 개인 보관함</strong>이다
+(SAP에서는 SPA/GPA Parameter라고 부른다). 그래서 사람마다 내용이 다르고, 칸 하나당 값
+하나만 남는다. 반면 <a href="CH15-L11.html">여러 선택화면 — 화면번호·CALL·Variant</a>에서 볼 Variant는
+<strong>화면 전체의 값 묶음</strong>을 이름 붙여 저장하고, 로그아웃해도 남으며 다른 사람도 골라 쓸 수 있다.
+&quot;이 칸 하나만 기억&quot; = <code>MEMORY ID</code>, &quot;조건 세트를 통째로 보관&quot; = Variant.</p>
 </blockquote>
 </section><section class="lblock"><h2>SELECT-OPTIONS 옵션</h2>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
@@ -148,13 +155,13 @@
 </tr>
 <tr>
 <td><code>NO-EXTENSION</code></td>
-<td><strong>다중 선택(여러 줄) 버튼 숨김</strong> — 복수 조건 막음</td>
-<td></td>
+<td><strong>다중 선택(여러 줄) 창을 여는 버튼을 숨김</strong></td>
+<td>화면에서 못 열게 할 뿐, 조건이 한 줄이라고 보장하지는 않음</td>
 </tr>
 <tr>
 <td><code>NO INTERVALS</code></td>
 <td><strong>To 칸 숨김</strong>(단일값만)</td>
-<td>단독 사용 시 다중선택 dialog에선 interval이 여전히 가능할 수 있음</td>
+<td>단독 사용 시 다중 선택 창에서는 범위 입력이 여전히 가능할 수 있음</td>
 </tr>
 <tr>
 <td><code>MEMORY ID</code> / <code>MODIF ID</code></td>
@@ -163,13 +170,21 @@
 </tr>
 <tr>
 <td>(SIGN·OPTION)</td>
-<td>부호·비교연산자 — <a href="CH12-L01.html">Chapter 12 · SELECT-OPTIONS와 Range Table</a></td>
+<td>부호·비교연산자 — <a href="CH12-L01.html">Chapter 12 · Range Table 구조</a></td>
 <td></td>
 </tr>
 </tbody></table>
 <blockquote class="cw">
-<p>⚠️ <code>NO-EXTENSION</code>(복수 선택 막기)과 <code>NO INTERVALS</code>(To 칸 숨기기)는 <strong>다른 옵션</strong>이다.
-헷갈리지 말 것 — high 필드를 숨기는 것과 복수 조건을 막는 것은 별개다.</p>
+<p>⚠️ <code>NO-EXTENSION</code>과 <code>NO INTERVALS</code>는 이름이 비슷해 헷갈리기 쉽지만 <strong>다른 옵션</strong>이다.
+<code>HIGH</code> 칸을 감추는 것과 조건 줄을 더 못 늘리게 하는 것은 별개의 이야기다.
+그리고 둘 다 <strong>화면에서 제한하는 장치</strong>라서, &quot;조건은 반드시 한 줄&quot;처럼 업무 규칙으로
+못 박아야 한다면 검증 코드로 따로 확인하는 편이 안전하다.</p>
+</blockquote>
+<blockquote>
+<p>💡 위 예제에는 <code>DEFAULT sy-datum TO sy-datum</code>과 <code>NO INTERVALS</code>가 함께 있다. <code>TO</code> 뒤의 값은
+<code>HIGH</code> 칸의 기본값인데, <code>NO INTERVALS</code>가 바로 그 칸을 화면에서 감춘다. 값은 들어가 있지만
+사용자 눈에는 안 보이는 상태라 헷갈리기 쉽다. 둘을 같이 쓸 땐 <strong>&quot;숨긴 칸에도 값이 들어
+있다&quot;</strong> 는 걸 기억하자.</p>
 </blockquote>
 </section><section class="lblock"><h2>MODIF ID — 한 그룹을 한꺼번에 제어</h2>
 <p>같은 <code>MODIF ID</code>를 준 항목들을, 화면이 뜨기 직전 <strong>묶어서</strong> 보이기/숨기기·잠그기 할 수 있다.</p>

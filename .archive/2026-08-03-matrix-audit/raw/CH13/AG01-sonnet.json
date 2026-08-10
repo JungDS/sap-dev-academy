@@ -1,0 +1,91 @@
+{
+  "agent": "AG01",
+  "model": "sonnet",
+  "target": "CH13",
+  "persona_ack": "나는 은서다. 개발·전공 경험이 전혀 없는 24세 문과 출신 입문자로 이 사이트에서 처음 ABAP을 공부한다. CH13을 _chapter → L01 → L02 → … → L08 순서로, 처음 읽는 사람 입장에서 통독하며 막히는 지점을 그 자리에서 기록했다. 아는 척하지 않고, 그 자리(또는 같은 챕터의 앞 레슨)에 설명이 없으면 모르는 것으로 남겼다.",
+  "method": "Read 도구로 대상 파일 9개(_chapter.md, CH13-L01~L08.md)를 원문 그대로, 레슨 순서대로 통독. 브라우저로 ::embed:: 위젯을 직접 실행해 보는 도구 기반 검증은 하지 않았다 — 은서 페르소나는 텍스트를 읽는 경험에 한정되며, 임베드는 본문에 적힌 설명 문장만으로 판단했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH13-L02.md",
+      "quote": "DB의 NULL과 ABAP 초기값은 개념이 다르다.",
+      "category": "생략",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "L02는 front-matter에서 'NULL'을 이 레슨의 정식 도입 개념으로 선언했지만, 본문은 NULL이 ABAP 초기값으로 바뀐다는 결과만 말하고 NULL 자체가 무엇인지(값이 아예 없는 것 vs 빈 문자열·0)는 끝까지 정의하지 않는다.",
+      "evidence": "앞뒤 문장을 다 읽어도 'DB의 NULL'과 'ABAP 초기값'이 왜 서로 다른 개념인지에 대한 설명이 없다. '개념이 다르다'고 선언만 하고 바로 실무 팁(기준 키로 판단)으로 넘어간다. 은서 입장에서는 NULL이 정확히 뭔지 이해하지 못한 채 '아무튼 다르다니까 키로 확인하자'만 외우게 된다. introduces: [\"LEFT OUTER JOIN\",\"NULL(OUTER JOIN 미매칭 결과)\"]로 볼 때 NULL은 이 레슨의 주제 개념인데 정의·구조 설명 없이 두 문장으로 끝난다.",
+      "suggestion": "NULL을 '값이 아예 존재하지 않음(빈 문자열·0과도 다름)'처럼 한 문장으로 먼저 정의하고, 그것이 ABAP에서 왜 초기값으로 보이는지 이유를 한 단계 더 설명하면 좋겠다."
+    },
+    {
+      "seq": 2,
+      "file": "CH13-L08.md",
+      "quote": "TRY.\n    cl_salv_table=>factory(\n      IMPORTING r_salv_table = lo_alv CHANGING t_table = lt_stat ).\n    lo_alv->display( ).\n  CATCH cx_salv_msg.\nENDTRY.",
+      "category": "단절",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "실습 코드에 REF TO, 클래스 정적 메소드 호출(=>), 인스턴스 메소드 호출(->), TRY/CATCH 예외처리가 아무 설명 없이 등장한다. CH13은 지금까지 전부 SQL(SELECT·JOIN·GROUP BY 등) 문법만 다뤘다.",
+      "evidence": "front-matter에 advanceUse: [\"REF TO\", \"TRY/CATCH cx_salv_msg\"]로 이 코드가 선행 사용임을 스스로 표시해 두었지만, 본문 어디에도 '[선행 사용]' 표기나 '지금은 몰라도 된다'는 안내 문장이 보이지 않는다. 은서는 TYPE REF TO, cl_salv_table=>factory( ), lo_alv->display( ), CATCH cx_salv_msg처럼 처음 보는 기호(=>, ->)와 구문(TRY/CATCH)을 그대로 마주치고, 이게 오늘 배운 SELECT문과 무슨 관계인지 알 수 없다. '흔한 실수와 점검' 목록에도 이 코드에 대한 언급이 없다.",
+      "suggestion": "코드 블록 위나 옆에 '이 부분(ALV 출력)은 나중에 배울 코드다. 지금은 그대로 따라 써도 된다'처럼 [선행 사용] 안내를 붙이거나, 결과 확인용으로 더 단순한 출력 방식을 쓰고 ALV·TRY/CATCH는 각주로 미루면 좋겠다."
+    },
+    {
+      "seq": 3,
+      "file": "CH13-L08.md",
+      "quote": "SELECT 필드 순서와 `ts_stat` Component 순서를 맞춘다.",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L01·L02·L06은 모두 `INTO CORRESPONDING FIELDS OF TABLE`(이름으로 매칭)을 썼는데, L08은 `INTO TABLE lt_stat`(CORRESPONDING 없이 순서로 매칭)으로 바뀌었다. 이 차이를 짚거나 앞 레슨과 대조하는 문장이 없다.",
+      "evidence": "'흔한 실수' 항목에 '합계 매핑 → SELECT 필드 순서와 ts_stat Component 순서를 맞춘다'라고만 적혀 있어, 순서를 맞춰야 한다는 결과는 알려주지만 왜 이번엔(CORRESPONDING FIELDS OF가 빠져서) 순서가 중요해졌는지는 안 알려준다. 이 챕터에서 줄곧 '이름이 같으면 자동으로 담긴다'고 배운 은서는 이번에도 이름만 맞으면 된다고 오해하기 쉽다.",
+      "suggestion": "'이번엔 CORRESPONDING FIELDS OF를 안 썼기 때문에 이름이 아니라 SELECT에 적은 순서대로 채워진다'처럼 앞 레슨과 다른 점을 한 문장으로 짚어 주면 좋겠다."
+    },
+    {
+      "seq": 4,
+      "file": "CH13-L01.md",
+      "quote": "결과는 숫자 셋으로 확인 — sy-subrc · sy-dbcnt",
+      "category": "멈춘 곳",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "소제목은 '숫자 셋'이라고 했는데 실제 목록은 sy-subrc, sy-dbcnt 두 개뿐이고, 세 번째 항목('출력 행 수')은 새로운 시스템 필드가 아니라 sy-dbcnt를 다시 설명하는 문장처럼 읽힌다.",
+      "evidence": "세 번째 불릿 '출력 행 수 — INNER JOIN이라 양쪽에 짝이 있는 행만 남은 결과다'는 바로 위 sy-dbcnt(실제로 담긴 행 수)와 같은 것을 가리키는 것 같은데 별도 항목처럼 나열돼 있어, '셋'이 정확히 뭘 세라는 건지 잠깐 헷갈렸다.",
+      "suggestion": "소제목을 '숫자 둘 + 그 이유'처럼 바꾸거나, 세 번째 항목이 sy-dbcnt의 '왜'를 설명하는 것임을 한 문장으로 명확히 이어주면 좋겠다."
+    },
+    {
+      "seq": 5,
+      "file": "CH13-L01.md",
+      "quote": "  ON  b~concert_id = pf~concert_id\n  AND b~perf_no    = pf~perf_no      \" 키가 둘이면 AND로 둘 다",
+      "category": "단절",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "이 예시 코드는 FROM/JOIN 절 없이 ON 조건만 잘라서 보여주는데, 별칭 b·pf가 어떤 테이블을 가리키는지 이 레슨(L01) 안에서는 밝혀지지 않는다.",
+      "evidence": "b, pf가 각각 zbooking, zperf라는 매핑은 바로 다음 레슨(L02)의 '한 SELECT에 INNER와 LEFT OUTER 섞기' 예제에 가서야 나온다. L01만 읽는 시점에는 이 스니펫의 별칭이 뭘 뜻하는지 추측만 할 수 있다.",
+      "suggestion": "이 조각 예시에도 짧게 'b=예매, pf=공연 회차라고 하면'처럼 한 줄 설명을 붙이거나, 이미 앞에서 쓴 f·s(SFLIGHT·SCARR) 별칭으로 통일해서 예시를 만들면 헷갈리지 않을 것 같다."
+    },
+    {
+      "seq": 6,
+      "file": "CH13-L04.md",
+      "quote": "**순서** → `WHERE → GROUP BY → HAVING → ORDER BY`를 지킨다.",
+      "category": "단절",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "이 레슨(L04)까지는 ORDER BY를 배운 적이 없는데, '흔한 실수' 체크리스트에 ORDER BY가 이미 알아야 할 규칙처럼 등장한다.",
+      "evidence": "바로 다음 문단(레슨 끝 전환 문구)에서 'ORDER BY(다음 레슨)'이라고 예고하는 걸 보면 이 시점엔 아직 안 배운 게 맞는데, 체크리스트 항목에는 그런 안내 없이 그냥 지켜야 할 순서로만 나열돼 있어 살짝 '어, 이건 뭐지' 하고 멈칫했다.",
+      "suggestion": "체크리스트의 ORDER BY 뒤에 '(다음 레슨)'처럼 짧게 표시해 주면 처음 보는 용어라도 안심하고 넘어갈 수 있을 것 같다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "보강 권장",
+    "summary": "JOIN을 '두 표를 공통 칸으로 나란히 붙이기'로 보여준 L01의 그림 설명, WHERE·HAVING을 '두 번 거른다'로 단계별로 짚어준 L04, '1만 건이면 1만 번 왕복'처럼 숫자로 와닿게 설명한 L07은 특히 잘 읽혔다. 다만 NULL(L02)은 '초기값이 된다'는 결과만 알려주고 NULL 자체가 뭔지는 끝까지 안 알려줬고, 마지막 실습(L08)은 SQL 부분은 잘 따라갔지만 그 아래 TRY/CATCH·REF TO 화면 출력 코드는 설명 없이 나와 그냥 베껴 쓰는 수준으로만 넘어갔다. JOIN·GROUP BY·HAVING·ORDER BY·FOR ALL ENTRIES로 이어지는 큰 줄기 자체는 순서도 자연스럽고 따라가기 좋았다."
+  }
+}

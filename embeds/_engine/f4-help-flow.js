@@ -1,7 +1,8 @@
 /* f4-help-flow 엔진 — 입력 필드에 F4 → Help View 결과 팝업 → 행 선택 시 key가 화면으로 복귀.
    토글: 설명 누락(보조 테이블 outer → primary 유지·설명 빈칸), Export OFF(선택해도 복귀 안 함).
    골격 계약: #f4Input · [data-f4] · .f4-pop · #f4PopBody · [data-miss] · [data-exp] · #f4Status.
-   config: window.F4_CFG = { field, cols:[{key,label}], rows:[{concert_id,name,artist,venue}], missId }. 높이: _autoheight.js. */
+   config: window.F4_CFG = { field, cols:[{key,label}], rows:[{concert_id,name,artist,venue}], missId,
+            helpView(Help View 이름)·helpCols(팝업이 보여 주는 컬럼 안내) }. 높이: _autoheight.js. */
 (function () {
   var CFG = window.F4_CFG || { rows: [], cols: [] };
   var val = '', miss = false, exp = false;
@@ -32,7 +33,9 @@
 
   document.querySelector('[data-f4]').addEventListener('click', function () {
     renderPop(); popEl.classList.add('open');
-    setStatus('', '🔍 Help View <b>ZHV_PERF</b>가 코드·공연명·장르·설명을 보여 줍니다. 한 행을 고르세요.');
+    // 객체명·컬럼은 cfg에서 — 하드코딩하면 팝업에 없는 컬럼을 안내하게 된다
+    setStatus('', '🔍 Help View <b>' + esc(CFG.helpView || 'ZHV_CONCERT') + '</b>가 ' +
+      esc(CFG.helpCols || '코드·공연명·아티스트·공연장') + '을 보여 줍니다. 한 행을 고르세요.');
   });
   popEl.addEventListener('click', function (e) {
     if (e.target.closest('.x')) { popEl.classList.remove('open'); return; }

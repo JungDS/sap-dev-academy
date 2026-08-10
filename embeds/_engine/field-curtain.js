@@ -31,18 +31,28 @@
   }
   function renderStruct() {
     var fs = selected();
-    var lines = fs.map(function (f, i) { return '         ' + f.key + (i < fs.length - 1 ? ',' : ''); });
+    var nm = CFG.structName || 'ts_basic';
+    var tbl = CFG.table || '';
+    // 컴포넌트마다 타입을 붙인다 — 타입 없이 적으면 그대로 옮겨 쓸 수 없는 코드가 된다
     structEl.querySelector('pre').innerHTML =
-      '<span class="kw">TYPES</span>: <span class="kw">BEGIN OF</span> ' + (CFG.structName || 'ty_basic') + ',\n' +
-      (fs.length ? fs.map(function (f) { return '         ' + esc(f.key); }).join(',\n') + ',\n' : '') +
-      '       <span class="kw">END OF</span> ' + (CFG.structName || 'ty_basic') + '.';
+      '<span class="kw">TYPES</span>: <span class="kw">BEGIN OF</span> ' + esc(nm) + ',\n' +
+      (fs.length ? fs.map(function (f) {
+        return '         ' + esc(f.key) + ' <span class="kw">TYPE</span> ' + esc(tbl) + '-' + esc(f.key);
+      }).join(',\n') + ',\n' : '') +
+      '       <span class="kw">END OF</span> ' + esc(nm) + '.';
   }
   function renderFb() {
     var fs = selected();
-    var keyMissing = CFG.fields.some(function (f) { return f.isKey && !sel[f.key]; });
+    // 경고에 쓰는 key 이름은 cfg에서 뽑는다(하드코딩하면 다른 테이블을 쓰는 레슨에서 엉뚱한 필드를 지목한다)
+    var keyMissing = CFG.fields.filter(function (f) { return f.isKey && !sel[f.key]; });
     var techShown = CFG.fields.filter(function (f) { return f.tech && sel[f.key]; }).length;
     if (!fs.length) { fbEl.className = 'fc-fb warn'; fbEl.innerHTML = '필드를 하나 이상 노출해야 합니다.'; return; }
-    if (keyMissing) { fbEl.className = 'fc-fb warn'; fbEl.innerHTML = '⚠️ 업무 화면에서 행을 식별할 <b>key 필드(concert_id)</b>는 남겨야 합니다.'; return; }
+    if (keyMissing.length) {
+      fbEl.className = 'fc-fb warn';
+      fbEl.innerHTML = '⚠️ 업무 화면에서 행을 식별할 <b>key 필드(' +
+        keyMissing.map(function (f) { return esc(f.key); }).join(', ') + ')</b>는 남겨야 합니다.';
+      return;
+    }
     fbEl.className = 'fc-fb';
     fbEl.innerHTML = '노출 ' + fs.length + ' / ' + CFG.fields.length + '개. ' +
       (techShown ? '기술 필드(' + techShown + '개)가 아직 노출 중 — Projection View는 안 봐도 되는 컬럼을 줄이는 데 유용합니다.' : '✅ 기술 필드를 모두 가렸습니다 — 업무에 필요한 컬럼만 깔끔하게 노출됩니다.');

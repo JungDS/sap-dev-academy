@@ -1,0 +1,103 @@
+{
+  "agent": "AG03",
+  "model": "sonnet",
+  "target": "CH14",
+  "persona_ack": "역할 확인 — 나는 Java/C# 백엔드 3～5년차 개발자다. 변수·조건문·루프·SQL·OOP는 이미 알고, ABAP을 빠르게 훑어 실무 감각을 잡으려고 이 사이트(CH14, Classic DDIC View·유지보수 객체)를 읽는다는 전제로 감사를 수행했다.",
+  "method": "대상 파일 10개(_chapter.md, CH14-L01～L09.md)를 Read 도구로 전체 통독. 코드 실행·임베드 체험·웹 검색 등 외부 도구는 사용하지 않았고, ABAP DDIC(Database/Projection/Help/Maintenance View·TMG·View Cluster·SE16N) 관련 기술 판단은 사전 지식에 근거했다. 다른 발견자 산출물·과거 감사 자료는 열람하지 않음(블라인드 준수).",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L09.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L01.md",
+      "quote": "[[Database View]]는 이 반복 조회 구조를 **DDIC에 이름 붙여 등록**하는 방법이다.",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "Database View는 사실상 일반 SQL의 'CREATE VIEW ... AS SELECT ... JOIN ...'과 개념이 동일한데(제약은 inner join 한정), '이미 SQL VIEW를 써봤다면 이 개념 자체는 새롭지 않다'는 안내가 없어 경력자가 처음부터 새 개념으로 오인하고 전체를 정독하게 된다.",
+      "evidence": "레슨 전체가 '왜 필요한가'부터 시작해 Database View를 처음 보는 개념처럼 도입한다. 하지만 SQL VIEW를 다뤄본 백엔드 개발자에게 낯선 부분은 'DDIC(SE11)라는 SAP 고유 등록소에 정의한다'는 것과 '다중 테이블은 inner join으로 고정된다'는 제약 두 가지뿐이다. 이 두 가지만 짚어주고 나머지는 건너뛰라는 안내가 있었다면 훨씬 빠르게 넘어갈 수 있었다.",
+      "suggestion": "레슨 서두나 콜아웃에 '일반 SQL의 VIEW를 써봤다면: 개념은 같다. 다른 점은 ① SE11/DDIC에 등록해 ABAP 전용 메타데이터로 관리되고 ② 다중 테이블 결합은 inner join만 가능하다는 것, 이 두 가지만 확인하고 다음 절로 가도 된다' 같은 지름길 박스를 추가하면 좋겠다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L01.md",
+      "quote": "이해하기는 좋지만, **같은 결합을 여러 프로그램이 반복**하면 문제가 생긴다. 공연 조회·",
+      "category": "과잉",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "같은 JOIN 로직을 여러 프로그램이 중복하면 유지보수가 어려워진다는 설명(DRY 원칙)은 경력 개발자에게는 이미 체화된 상식이라, 사례까지 곁들여 풀어 설명하는 문단이 다소 늘어지게 느껴진다.",
+      "evidence": "'중복 로직은 한 곳만 고쳐서는 안 되고 나머지도 다 고쳐야 한다'는 DRY(Don't Repeat Yourself) 원칙은 언어를 막론하고 3～5년차 백엔드 개발자라면 제목만 보고도 이해한다. 이 문단은 왜 문제인지를 공연 조회·예매 확인·정산 리포트 세 가지 예시까지 들어 설명하는데, 입문자에게는 필요한 구체화지만 경력자에게는 결론('그래서 View로 등록해 재사용한다')으로 바로 가고 싶은 대목이다.",
+      "suggestion": "문단 전체를 없애기보다, 첫 문장 뒤에 결론을 굵게 앞세우고 사례 문단은 접이식(details)으로 두면 두 독자층을 다 만족시킬 수 있다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L02.md",
+      "quote": "공식문서상 별도의 database SQL view도 만들어지지 않는다.",
+      "category": "오개념 유발",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "Projection View는 DB 레벨에 별도 SQL view가 안 만들어진다면서 바로 다음에 'SELECT * FROM zpv_booking_basic' 예제를 보여줘, '물리적으로 없는 객체를 어떻게 SELECT하나'라는 의문이 안 풀린 채 남는다.",
+      "evidence": "일반 RDBMS 경험(Postgres·SQL Server 등)에서는 SELECT FROM <이름>이 되려면 그 이름의 테이블이나 뷰가 카탈로그에 실재해야 한다는 게 당연한 전제다. 이 레슨은 'DB에 SQL view가 안 만들어진다'고 먼저 말해놓고, 그 직후 코드 블록에서 똑같이 SELECT * FROM zpv_booking_basic을 테이블처럼 조회한다. Open SQL이 실행 시점에 이 구문을 base table 접근으로 번역해준다는 메커니즘 설명이 없어서, 경력자는 'SELECT가 실제로 뭘 대상으로 실행되는 거지'라는 찜찜함을 안고 넘어가게 된다.",
+      "suggestion": "괄호로 한 줄만 추가해도 충분하다. 예: '(DB에 물리적 view는 없지만, Open SQL이 실행 시점에 이 SELECT를 base table 조회로 바꿔 처리한다)'."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L03.md",
+      "quote": "**F4 전용** — ABAP SQL로 직접 읽는 대상이 **아니다**(프로그램 조회는 Database/Projection View).",
+      "category": "용어 충돌",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "같은 챕터 안에서 'View'라는 이름이 SQL로 조회 가능한 것(Database/Projection View)과 조회 불가능한 것(Help/Maintenance View)에 동시에 쓰여, 일반 SQL 경험자의 '뷰=항상 SELECT 가능한 가상 테이블'이라는 전제와 정면으로 어긋난다.",
+      "evidence": "Postgres·MySQL·SQL Server 등 어떤 RDBMS에서도 VIEW는 정의상 SELECT 대상이다. 그런데 이 인용문처럼 Help View는 'ABAP SQL로 직접 읽는 대상이 아니다'라고 명시되고, L04의 Maintenance View도 'ABAP SQL로 읽는 대상이 아니며'라고 못박는다. 반면 같은 챕터의 Database·Projection View는 SELECT로 바로 읽힌다. 각 레슨이 개별적으로는 명확히 밝히지만, 4종을 넘나들며 훑는 경력자 입장에선 '왜 이름이 다 View인데 절반은 SELECT가 안 되지'를 한 번에 정리해 주는 대목이 챕터 어디에도 없다.",
+      "suggestion": "챕터 도입부나 L03/L04에 '주의: DDIC의 View 4종 중 SQL로 조회 가능한 건 Database/Projection View뿐, Help/Maintenance View는 이름은 View지만 SQL 조회 대상이 아니다' 같은 한 줄 대조표를 두면 좋겠다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L03.md",
+      "quote": "사용자는 코드나 설명 일부로 검색하고, 고른 값이 입력 필드로 돌아온다.",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "F4 입력도움말이 하는 일(검색어로 후보를 찾고 고른 값이 폼 필드로 돌아옴)은 웹 개발의 오토컴플리트/타입어헤드 셀렉트박스(select2, 콤보박스 등)와 UX 패턴이 동일한데, 그 대응 관계를 짚어주지 않아 완전히 새 개념처럼 설명이 진행된다.",
+      "evidence": "이 패턴은 프론트엔드에서 '검색어 입력 → 후보 목록 조회 → 선택 시 hidden id 필드 채움'으로 흔히 구현하는 것과 개념 골격이 정확히 같다. 경력 개발자라면 'F4 = 서버가 값 목록을 갖고 있는 오토컴플리트'라는 한 문장으로 즉시 이해할 텐데, 레슨은 이 대응 없이 SAP 고유 흐름(Import/Export Parameter 등)부터 차근차근 쌓아 올려 이미 아는 개념을 새로 배우는 것처럼 느끼게 한다.",
+      "suggestion": "'웹의 오토컴플리트 검색창과 같은 패턴이다 — 다른 점은 후보 목록의 소스가 DDIC View라는 것' 같은 한 줄 비유를 도입부에 추가하면 경력자가 세부 파라미터 설명으로 빠르게 건너뛸 수 있다."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L04.md",
+      "quote": "Foreign Key는 **input check·input help·view 생성**에서 평가된다. 단, ABAP SQL의 `SELECT`는 Foreign Key를 **자동으로 평가하지 않는다**(DDIC 화면·표준 도구에서 강한 의미).",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "Foreign Key 위반이 ABAP SQL 쓰기 동작에서 언제 걸러지는지를 말하는 문장이 'SELECT'만 콕 집어 언급해, 마치 INSERT·UPDATE 같은 쓰기 문장은 자동으로 걸러지는 것처럼 잘못 읽힐 수 있다.",
+      "evidence": "실제로는 SELECT뿐 아니라 ABAP SQL의 INSERT·UPDATE·MODIFY도 Foreign Key를 자동으로 강제하지 않는다 — DDIC Foreign Key는 화면 input check·F4·뷰 생성 같은 DDIC-aware 경로에서만 평가되고, DB 엔진 제약조건이 아니다. 그런데 굳이 'SELECT'를 콕 집어 '자동으로 평가하지 않는다'고 쓴 건 어색하다. SELECT는 애당초 FK를 평가할 이유가 없는 읽기 연산이라, 이 문장은 마치 '다른 문장(INSERT 등)은 평가한다'는 대조 함의를 준다. Postgres·MySQL·SQL Server의 FK 제약(쓰기 시점에 엔진이 강제)에 익숙한 개발자는 이 문장을 읽고 '읽기만 안 걸러지는구나, 쓰기는 걸러지겠지'라고 오해해 실제 코드에서 유효성 검사를 생략할 위험이 있다.",
+      "suggestion": "'SELECT'를 'ABAP SQL 문장 전체(SELECT·INSERT·UPDATE·MODIFY)'로 바꾸거나, '프로그램에서 INSERT/UPDATE로 직접 써도 FK가 자동으로 막아주지 않는다'처럼 쓰기 동작을 명시하면 오해가 사라진다."
+    },
+    {
+      "seq": 7,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L05.md",
+      "quote": "Generator가 만들어 주는 표준 유지보수 화면(Maintenance Dialog)은 **공짜로 얻는 게 많다.**",
+      "category": "용어 충돌",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "바로 앞 레슨(L04)에서 배운 'Maintenance View'(DDIC 정의 객체)와 이 레슨의 'Maintenance Dialog'(TMG가 생성하는 실제 화면)는 이름이 비슷해 헷갈리기 쉬운데, 둘이 다른 층위의 개념이라는 대조가 명시적으로 없다.",
+      "evidence": "'Maintenance View'는 데이터 정의(스키마 계층), 'Maintenance Dialog'는 그로부터 생성된 런타임 UI(화면 계층)로 서로 다른 층위다. 하지만 두 용어가 'Maintenance ○○' 형태로 이름이 거의 같고 연속된 레슨(L04→L05)에 등장해, 빠르게 훑는 독자는 'Maintenance View를 다른 말로 Maintenance Dialog라고 부르나'처럼 같은 개념의 다른 이름으로 오인하기 쉽다.",
+      "suggestion": "L05 도입부에 '지난 레슨의 Maintenance View(정의)와 이 Dialog(생성된 화면)는 다른 것 — View는 무엇을 유지보수할지의 설계도, Dialog는 그 설계도로 지어진 실제 화면'처럼 한 줄 대조를 넣으면 좋겠다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH14는 SQL VIEW에 익숙한 경력 개발자가 봐도 기술적으로 정확하고 범위가 잘 잡힌 챕터다. Database/Projection/Help/Maintenance View 4종의 목적 차이, 다중 테이블 View의 inner join 고정, Foreign Key가 DB 엔진 제약이 아니라 DDIC 화면단 체크라는 점 등 핵심 사실은 틀린 곳이 없었다. 다만 (1) Foreign Key가 'SELECT'에서만 자동 평가 안 된다는 문장은 INSERT·UPDATE도 마찬가지라는 점을 명시하지 않아 오해 소지가 있고, (2) 'View'라는 이름이 SQL 조회 가능한 것과 불가능한 것에 동시에 쓰이는데 그 충돌을 한 번에 정리해 주는 대목이 없으며, (3) 이미 SQL VIEW·오토컴플리트 UX를 아는 경력자를 위한 '이 부분은 건너뛰어도 된다'는 지름길 안내가 챕터 전체에 없다. 이 사이트의 1차 독자가 비전공 입문자라는 점을 감안하면 현재의 상세한 설명 자체는 대부분 정당하며, 순수하게 '입문자에게도 불필요한 장황함'으로 볼 대목은 크지 않았다."
+  }
+}

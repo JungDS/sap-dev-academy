@@ -14,6 +14,13 @@
 
   function esc(s) { return String(s).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); }
   function curKeys() { return CFG.groupOptions[keyIdx].keys; }
+  // "그룹 키가 아니라 그대로는 못 고르는 컬럼" 예시를 이 위젯 cfg에서 뽑는다(하드코딩 금지 — 화면에 없는 컬럼을 예로 들면 헛짚는다)
+  function flatExample() {
+    var ks = curKeys();
+    var rest = CFG.cols.filter(function (c) { return ks.indexOf(c.key) < 0; });
+    var pick = rest.filter(function (c) { return c.key !== CFG.sumField; })[0] || rest[0];
+    return pick ? esc(pick.label || pick.key) + ' <b>' + esc(pick.key) + '</b>' : '';
+  }
   function keyOf(r) { return curKeys().map(function (k) { return r[k]; }).join(' · '); }
 
   // 그룹 순서(첫 등장순)와 인덱스
@@ -67,7 +74,9 @@
       return '<tr>' + keyCells + '<td class="num">' + g.cnt + '</td><td class="num">' + g.sum + '</td><td class="num">' + g.max + '</td></tr>';
     }).join('');
     resHost.innerHTML = '<table class="gbl-tbl gbl-res"><thead>' + head + '</thead><tbody>' + body + '</tbody></table>';
-    noteEl.innerHTML = '원본 <b>' + CFG.rows.length + '행</b> → <b>GROUP BY ' + curKeys().join(' ') + '</b> → <b>' + aggs.length + '행</b>으로 접힘. 그룹 키가 아닌 평컬럼(예: 고객)은 한 그룹에 여러 값이라 그대로 못 고릅니다.';
+    var ex = flatExample();
+    noteEl.innerHTML = '원본 <b>' + CFG.rows.length + '행</b> → <b>GROUP BY ' + curKeys().join(' ') + '</b> → <b>' + aggs.length + '행</b>으로 접힘. 그룹 키가 아닌 나머지 컬럼' +
+      (ex ? '(예: ' + ex + ')' : '') + '은 한 그룹에 값이 여러 개라 그대로는 고를 수 없습니다.';
   }
 
   function renderSeg(host, items, activeI, attr) {

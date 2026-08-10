@@ -1,0 +1,117 @@
+{
+  "agent": "AG09",
+  "model": "opus",
+  "target": "CH15",
+  "persona_ack": "나는 발견자 AG09 — ABAP 정적 검사기를 시늉하는 코드 전용 감사자다. 산문·표·front-matter는 판정 대상에서 제외하고 ```abap 코드 블록만 줄 단위로 봤다. 읽기 전용 감사를 지켜 파일을 수정·생성·삭제하지 않았고, 다른 감사자의 산출물이나 과거 감사 결과물(merged/·verdict/·기타 raw/)은 열지 않았다. 웹 검색·외부 네트워크도 쓰지 않았고, 불확실한 항목은 confidence=\"추정\"으로 낮췄다.",
+  "method": "Read 도구로 대상 13개 파일(_chapter.md + L01~L12) 전문을 직독했다. 각 파일에서 ```abap 펜스 블록만 추출해 줄 단위로 정적 검토: (1) 선언·문장 마침표·시그니처 등 활성화 차단급 문법, (2) 접두어 규약(gv_/gs_/gt_ vs lv_/ls_/lt_, pa_ 8자·so_ 8자, it_/ty_/ts_/tt_), (3) classic 경계(인라인 DATA()·VALUE·NEW·+=·|…| 및 New Open SQL @·콤마 유무), (4) 주석·출력 문자열과 코드의 정합성. 총 23개 abap 블록을 봤고, L12 말미의 ```text 블록은 abap이 아니라 제외했다. 실행·빌드·브라우저·SAP 시스템은 사용하지 않았으므로 컴파일 확신이 아닌 정적 판단이다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L10.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L11.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L12.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L03.md",
+      "quote": "pa_secret TYPE c LENGTH 10.",
+      "category": "활성화 차단급 문법",
+      "severity": "치명",
+      "confidence": "확실",
+      "claim": "PARAMETERS 이름 `pa_secret`이 9자라 ABAP의 선택화면 파라미터 이름 최대 8자 제한을 넘는다. 이 코드는 그대로 붙여 넣으면 활성화(문법 검사)에서 막힌다.",
+      "evidence": "선택화면의 PARAMETERS·SELECT-OPTIONS 이름은 dynpro 필드명으로 생성되기 때문에 최대 8자다(p·a·_·s·e·c·r·e·t = 9자 → 초과). 같은 블록의 `pa_mode`(7자)는 문제없고, 챕터 내 다른 모든 파라미터(pa_conc·pa_date·pa_carr·pa_note·pa_basic 등)는 8자 이하라 이 한 건만 어긋난다. 커리큘럼 규약(PARAMETERS = pa_, 8자 이내)에도 동시에 위배된다. 게다가 같은 블록의 `gs_screen-name = 'PA_SECRET'` 비교문과 본문 설명도 이 9자 이름을 그대로 쓰고 있어, 이름을 고치면 함께 고쳐야 한다.",
+      "suggestion": "`pa_secr`(7자) 등 8자 이하로 개명하고, 같은 코드 블록의 `IF gs_screen-name = 'PA_SECRET'` 비교 리터럴과 본문·주의 문단의 `PA_SECRET` 표기(대문자 비교 설명, 흔한 실수 항목)까지 같은 이름으로 일괄 정정한다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L04.md",
+      "quote": "MESSAGE e002(zmsg) WITH ls_concert-concert_id ls_concert-capacity.",
+      "category": "네이밍 규약",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "로컬 스코프(FORM/METHOD) 안이 아닌데 로컬 접두어 `ls_`를 쓴 구조체를 참조한다. 규약대로면 `gs_concert`여야 한다.",
+      "evidence": "이 챕터의 코드는 전부 프로그램 최상위 선언 + event 블록 구성이고, CH15 어느 레슨에도 FORM/METHOD가 등장하지 않는다(event 블록은 로컬 스코프가 아니다). 실제로 같은 챕터의 다른 예제는 모두 전역 접두어를 쓴다 — L05 `gs_booking`, L03·L10 `gs_screen`, L08 `gs_carr`. 이 스니펫만 `ls_`다. 다만 이 블록은 선언부 없이 MESSAGE 두 줄만 보여 주는 축약 예시라 스코프를 코드만으로 100% 확정할 수 없어 confidence를 낮춘다.",
+      "suggestion": "`ls_concert-concert_id`·`ls_concert-capacity`를 `gs_concert-concert_id`·`gs_concert-capacity`로 바꿔 챕터 전체의 g/l 접두어 사용과 통일한다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L06.md",
+      "quote": "DATA lo_alv     TYPE REF TO cl_salv_table.",
+      "category": "네이밍 규약",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "프로그램 최상위(첫 event 블록보다 위)에서 선언한 전역 객체 참조인데 로컬을 뜻하는 `l` 접두어를 쓴다. 접두어 규약의 g=global·l=local 의미에 어긋나며, 바로 아래 본문 콜아웃과 정면으로 충돌한다.",
+      "evidence": "선언 위치가 `START-OF-SELECTION.` 앞이라 명백한 전역이고, 바로 위 줄의 `DATA gt_booking ...`은 같은 자리에서 `gt_`를 쓴다. 게다가 코드 블록 직후 본문 콜아웃이 \"프로그램 맨 위에서 선언한 gt_booking은 이 리포트 전체에서 쓰는 전역(global) 내부 테이블이라 gt_로 시작한다\"고 g 접두어 근거를 명시하는데, 정작 같은 블록의 바로 다음 줄이 `lo_`다. 학습자가 규칙을 배우는 그 자리에서 반례를 함께 보게 된다.",
+      "suggestion": "`go_alv`(전역 객체 참조)로 바꾼다. 이후 `lo_alv->display( )`·`IMPORTING r_salv_table = lo_alv` 참조도 함께 변경. 객체 참조 접두어(go_/lo_)가 규약에 아직 명시돼 있지 않다면 이 기회에 R11 접두어 풀에 등재하는 것도 검토."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L08.md",
+      "quote": "IF pa_sum IS INITIAL AND pa_det IS INITIAL.",
+      "category": "도달 불가 로직",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "선택화면의 RADIOBUTTON GROUP은 항상 정확히 하나가 'X'로 선택돼 있으므로, 두 라디오가 동시에 INITIAL인 조건은 성립할 수 없다. 즉 이 검증 예제의 MESSAGE는 절대 실행되지 않는다.",
+      "evidence": "ABAP 선택화면에서 같은 GROUP의 라디오버튼은 배타 선택이고, DEFAULT 'X'가 없어도 런타임이 그룹의 첫 버튼을 선택 상태로 만든다. 실제로 이 라디오들을 선언하는 다음 레슨(CH15-L09)은 `PARAMETERS: pa_sum RADIOBUTTON GROUP g1 DEFAULT 'X', pa_det RADIOBUTTON GROUP g1.`로 pa_sum에 기본 선택까지 준다. 따라서 '요약/상세 중 하나를 선택하세요'는 사용자가 볼 수 없는 메시지다. 같은 레슨의 설명 불릿은 `ON RADIOBUTTON GROUP`을 \"라디오 선택과 다른 입력의 정합성을 검증\"이라고 옳게 적어 두었는데, 코드 예제만 '아무것도 선택 안 됨'이라는 불가능한 상황을 검사한다 — 설명과 예제가 어긋난다.",
+      "suggestion": "불릿 설명대로 '라디오 선택 ↔ 다른 입력'의 정합성을 검사하는 예제로 교체한다. 예: 상세(pa_det) 선택 시에만 필요한 입력이 비어 있는지 확인(`IF pa_det = 'X' AND so_stat IS INITIAL.` 류). 그대로 두려면 라디오 그룹은 항상 하나가 선택된다는 사실을 본문에 명시해야 한다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L08.md",
+      "quote": "CALL FUNCTION 'F4IF_INT_TABLE_VALUE_REQUEST'",
+      "category": "함수모듈 시그니처",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "여러 컬럼을 가진 구조체 내부테이블(`gt_carr`: carrid·carrname)을 `value_tab`으로 넘기면서 `value_org = 'S'`를 지정하지 않았다. 이 파라미터의 기본값은 'C'(cell)라, 구조체 테이블을 넘기면 F4 팝업 목록이 의도대로 표시되지 않는다.",
+      "evidence": "F4IF_INT_TABLE_VALUE_REQUEST의 EXPORTING 파라미터 VALUE_ORG는 기본값 'C'로, VALUE_TAB을 값(cell) 단위로 조직된 단일 컬럼 테이블로 해석한다. 예제처럼 `BEGIN OF gs_carr, carrid, carrname, END OF`로 만든 2컬럼 테이블을 넘기는 경우에는 `value_org = 'S'`(structure)를 함께 넘기는 것이 표준 사용법이다. 문법 오류는 아니라서 활성화는 통과하고, 학습자가 실제로 F4를 눌렀을 때만 어긋난 목록을 만나게 된다. 실 시스템에서 실행해 확인할 수 없어 confidence는 추정으로 둔다.",
+      "suggestion": "EXPORTING 절에 `value_org = 'S'`를 추가한다. 컬럼을 하나만 보여 줄 생각이면 `value_tab`을 carrid 단일 컬럼 테이블로 바꿔 기본값 'C'와 맞추는 방법도 있다."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L09.md",
+      "quote": "SELECTION-SCREEN PUSHBUTTON /1(20) but_ref USER-COMMAND ref.",
+      "category": "네이밍 규약",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "PUSHBUTTON 이름 `but_ref`는 커리큘럼이 정의한 어떤 접두어 풀(gv_/gs_/gt_·lv_/ls_/lt_·pa_·so_·ty_/ts_/tt_)에도 속하지 않는다.",
+      "evidence": "PUSHBUTTON 이름은 화면 요소에 묶여 암묵 생성되는 전역 문자 필드이므로, 화면 요소에 묶인 전역 DATA도 `gv_`를 쓴다는 규약(관례명 예외는 ok_code/save_ok만 명시)의 사정권으로 읽을 여지가 크다. 다만 규약이 선택화면 PUSHBUTTON을 명시적으로 열거하지 않았고 SAP 표준 관례도 강하지 않아, 규칙 대상인지 자체가 판단이 필요한 회색지대라 추정으로 둔다. 참고로 이름 길이 제한(8자) 자체는 `but_ref`(7자)로 충족한다.",
+      "suggestion": "규약 대상으로 본다면 `gv_ref`(6자) 등으로 개명하고 `INITIALIZATION`의 `but_ref = '조건 새로고침'.` 대입도 함께 수정한다. 규약 대상이 아니라고 결론 내리면, PUSHBUTTON·FUNCTION KEY 같은 화면 요소 이름은 접두어 규칙 밖이라는 예외를 R11에 한 줄로 명시해 재발 판정을 없애는 편이 낫다."
+    },
+    {
+      "seq": 7,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L10.md",
+      "quote": "DEFAULT sy-datum TO sy-datum",
+      "category": "주석·코드 정합성",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "같은 SELECT-OPTIONS 문에서 `DEFAULT ... TO ...`로 To(high) 기본값을 넣고, 세 줄 뒤 `NO INTERVALS`로 그 To 칸을 숨긴다. 주석은 \"시작/끝 기본값\"이라고 안내하지만 사용자는 끝 값을 화면에서 볼 수 없다.",
+      "evidence": "`NO INTERVALS`는 기본 선택화면에서 HIGH 필드를 표시하지 않는 옵션이므로, `TO sy-datum`으로 채운 high 값은 화면에 드러나지 않는다. 옵션 카탈로그 성격의 레슨이라 여러 옵션을 한 문장에 몰아 보여 준 의도는 이해되지만, 이 조합은 서로를 무력화하는 쌍이라 입문자가 '왜 끝 날짜가 안 보이지'로 오해하기 쉽다. 본문의 ⚠️ 콜아웃도 NO-EXTENSION과 NO INTERVALS의 차이만 다루고 이 상호작용은 언급하지 않는다. 문법 오류는 아니므로 severity는 낮음.",
+      "suggestion": "예제를 둘로 쪼개 `DEFAULT low TO high`(구간 기본값)와 `NO INTERVALS`(단일값 화면)를 각각 보여 주거나, 한 블록을 유지하려면 \"NO INTERVALS를 켜면 위에서 준 TO 기본값은 화면에 보이지 않는다\"는 한 줄 주석을 붙인다."
+    },
+    {
+      "seq": 8,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L12.md",
+      "quote": "lo_alv     TYPE REF TO cl_salv_table,",
+      "category": "네이밍 규약",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "챕터 종합 실습 코드의 전역 DATA: 체인 안에서 이 한 줄만 로컬 접두어 `l`을 쓴다(seq 3과 같은 결함의 재발).",
+      "evidence": "선언 체인이 `gv_chk`·`gv_status`·`gt_booking`·`lo_alv`·`gs_screen`으로, 전부 프로그램 최상위 전역인데 네 개는 g, 하나만 l이다. 위치상 첫 event 블록(`INITIALIZATION.`)보다 위이므로 로컬 스코프가 성립할 여지가 없다. 챕터를 마무리하는 통합 예제라 학습자가 가장 오래 들여다보고 그대로 베껴 쓰는 코드이며, CH15-L06과 짝을 이뤄 같은 오류가 두 번 노출된다.",
+      "suggestion": "`go_alv`로 바꾸고 아래 `IMPORTING r_salv_table = lo_alv`·`lo_alv->display( ).` 두 참조도 함께 수정한다. CH15-L06과 한 번에 통일하고, 필요하면 CH11의 SALV 예제 접두어와도 대조해 챕터 간 표기를 맞춘다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH15의 ```abap 블록 23개(L01은 코드 없음)를 줄 단위로 봤다. 전반적으로 코드 품질이 좋다. classic 경계는 완전히 지켜졌다 — 인라인 DATA()·VALUE·NEW·+=·문자열 템플릿이 한 건도 없고, Open SQL은 L05·L06·L07·L08·L12 전부 classic 표기(컬럼 공백 구분, @ 없음, 콤마 없음)로 CH15 구간 규율에 부합한다. event 문법(INITIALIZATION·AT SELECTION-SCREEN [ON/ON BLOCK/ON RADIOBUTTON GROUP/ON HELP-REQUEST/ON VALUE-REQUEST/OUTPUT]·START/END-OF-SELECTION), SELECTION-SCREEN BEGIN OF BLOCK·LINE·SCREEN 1100 AS WINDOW TITLE, CALL SELECTION-SCREEN ... STARTING AT, LOOP AT SCREEN INTO + MODIFY SCREEN FROM(명시 work area), TABLES sscrfields·FUNCTION KEY 1↔FC01↔functxt_01, AUTHORITY-CHECK OBJECT ... ID ... FIELD 구문은 모두 정확했다. MODIF ID adv(3자)·MEMORY ID znt(3자)·화면 필드명 대문자 비교('PA_SECRET'·'PA_NOTE'·'ADV')·USER-COMMAND ref↔CASE 'REF' 대문자 정합성처럼 틀리기 쉬운 지점도 맞게 짚었다. 정정이 필요한 것은 8건이고 그중 활성화를 실제로 막는 것은 1건뿐이다 — CH15-L03의 `pa_secret`이 9자로 PARAMETERS 이름 8자 제한을 넘긴다(치명, 개명 + 같은 블록의 'PA_SECRET' 리터럴·본문 표기 동반 수정). 나머지는 전역 선언에 로컬 접두어를 쓴 `lo_alv` 2건(L06·L12, 특히 L06은 g 접두어를 설명하는 콜아웃 바로 옆이라 자기모순), 축약 스니펫의 `ls_concert` 1건, 라디오 그룹 특성상 절대 참이 될 수 없는 검증 예제 1건(L08), F4 함수모듈에 `value_org = 'S'` 누락 1건(L08, 추정), PUSHBUTTON 이름 `but_ref`의 접두어 회색지대 1건(추정), `DEFAULT ... TO ...`와 `NO INTERVALS`가 서로를 무력화하는 카탈로그 예제 1건(추정)이다. 모두 국소 편집으로 해결되고 구조·서술을 다시 쓸 필요가 없어 '경미 수정'으로 본다. 다만 접두어 결함 3～4건이 반복되는 점은 챕터 단위로 한 번에 통일할 것을 권한다. 실 SAP 시스템에서 활성화해 검증한 것이 아니라 정적 판단이며, 산문·표·front-matter는 내 역할 범위 밖이라 판정하지 않았다."
+  }
+}

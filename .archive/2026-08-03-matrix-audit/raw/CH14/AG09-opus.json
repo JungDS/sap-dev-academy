@@ -1,0 +1,37 @@
+{
+  "agent": "AG09",
+  "model": "opus",
+  "target": "CH14",
+  "persona_ack": "나는 발견자 AG09 — ABAP 정적 검사기를 시늉하는 코드 전용 감사자다. 산문 서술·교육적 설명은 판정 대상에서 제외하고 ```abap 코드 블록만 줄 단위로 검사했다(① 활성화 차단급 문법·타입·시그니처 ② 커리큘럼 네이밍 접두어 ③ classic/modern 경계 ④ 코드 내 주석·출력 문자열과 본문의 어긋남). 빈 줄·정렬 같은 스타일 선호는 결함으로 세지 않았고, 시스템이 없으므로 컴파일 확신 대신 정적 판단으로 confidence를 정직하게 매겼다. 억지 발견 없이 확인된 것만 기록한다.",
+  "method": "Read 도구로 대상 10개 파일 전문을 읽고, Grep(^``` 패턴)으로 CH14 전체 코드펜스를 전수 열거해 블록 누락이 없음을 확인했다. 시스템·빌드·네트워크는 사용하지 않았고 정적 판단만 수행. 결과: abap 블록 3개(CH14-L01 27~38행, CH14-L02 33~38행, CH14-L09 34~40행)와 text 블록 3개(CH14-L03 30~36행 Search Help 정의, CH14-L05 26~28행 SM30 경로, CH14-L06 22~25행 계층도). text 블록은 ABAP 코드가 아니라 문법 잣대를 적용하지 않았다. abap 3개 블록은 선언·문장 구두점·타입 정합·Open SQL 방언·접두어를 한 줄씩 대조했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L02.md",
+      "quote": "DATA gt_basic TYPE STANDARD TABLE OF zpv_booking_basic.",
+      "category": "활성화 차단급",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "코드가 참조하는 Projection View 이름 ZPV_BOOKING_BASIC이 17자로, 클래식 DDIC View 이름 상한(16자)을 1자 초과한다. SE11에서 이 이름으로는 View를 만들 수 없으므로, 학습자가 따라 하면 DATA의 TYPE 참조와 SELECT의 FROM이 모두 '존재할 수 없는 객체'를 가리키게 된다(문장 자체의 문법은 정상).",
+      "evidence": "글자 수를 세면 Z,P,V,_,B,O,O,K,I,N,G,_,B,A,S,I,C = 17자다. 클래식 DDIC View 이름은 DD25L-VIEWNAME(데이터엘리먼트/도메인 VIEWNAME = CHAR16)에 저장되어 16자가 상한이며, 같은 이유로 클래식 CDS의 @AbapCatalog.sqlViewName도 16자로 묶인다. 테이블 이름(TABNAME = CHAR30)과 달리 View만 짧다는 점이 이 챕터에서 걸린다. 같은 파일에서 본문 서술(30행 'Projection View `ZPV_BOOKING_BASIC`')과 코드블록 두 줄(DATA·SELECT)이 모두 이 이름을 쓰므로 세 곳이 함께 영향받는다. 다만 실제 시스템에서 활성화를 시도해 확인한 것은 아니므로 confidence는 추정으로 둔다.",
+      "suggestion": "16자 이내로 리네임한다(예: ZPV_BOOK_BASIC = 14자). 코드블록의 DATA·SELECT 두 줄과 본문 서술의 이름을 같은 값으로 함께 바꿔야 한다. 여력이 있으면 '흔한 실수와 점검'에 'View 이름은 16자, 테이블은 30자' 한 줄을 추가하면 학습자가 SE11에서 같은 벽을 만나지 않는다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "코드 전용 관점에서 CH14는 상태가 좋다. abap 블록은 3개뿐이고(L01 SELECT * + LOOP/WRITE, L02 Projection View 조회, L09 필드목록 SELECT), 세 블록 모두 문장 마침표·DATA 체인 구두점(쉼표→마지막 마침표)·LOOP/ENDLOOP 짝·타입 정합이 맞다. 네이밍도 정확하다 — 선언이 전부 FORM/METHOD 밖 프로그램 전역 스코프라 gt_/gs_가 규약대로이고(로컬이 아니므로 lt_/ls_가 아닌 게 맞다), it_·pa_·so_·ty_/ts_/tt_ 대상 선언은 아예 등장하지 않아 위반 여지가 없다. 경계 규약도 깨끗하다: 인라인 DATA()·VALUE·NEW·+=·문자열 템플릿이 하나도 없고, Open SQL은 전부 classic이다(호스트변수 @ 없음, L09 필드목록 'concert_id perf_no perf_date artist venue'가 콤마 없이 공백 구분). L09의 INTO CORRESPONDING FIELDS OF TABLE도 필드목록이 대상 행타입(zv_perf)의 부분집합이라 INTO TABLE 대신 쓴 것이 오히려 올바른 선택이다. 본문이 'ABAP SQL로 읽는 대상이 아니다'라고 못 박은 Help View·Maintenance View를 SELECT로 읽는 코드도 없어 자기모순이 없다. 유일한 결함은 L02가 쓰는 Projection View 이름이 DDIC View 16자 제한을 1자 넘긴 것으로, 이름만 바꾸면 끝나는 국소 수정이다. 나머지 펜스 3개(L03 Search Help 정의, L05 SM30 네비게이션, L06 계층도)는 text로 올바르게 표시된 비-ABAP 블록이라 문법 잣대를 적용하지 않았다."
+  }
+}

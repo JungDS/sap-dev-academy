@@ -1,0 +1,113 @@
+{
+  "agent": "AG06",
+  "model": "opus",
+  "target": "CH13",
+  "persona_ack": "20년차 SAP ABAP 아키텍트(ECC~S/4HANA 개발·운영·성능·이관 경험, 후배 교재 기술검수 담당) 관점에서 CH13의 기술 사실·예시 적절성·위험한 생략·안티패턴을 읽기 전용으로 감사했다. 이 챕터가 스스로 선언한 전제(전 구간 classic Open SQL, @·콤마 금지)를 기준으로 문법·동작을 판정했다.",
+  "method": "Read 도구로 대상 9개 파일(_chapter.md + L01~L08) 전문 통독. 파일 수정·생성·실행·웹검색 없음. 실 SAP 시스템 문법검사(SE38/ATC)는 사용할 수 없어 ABAP·Open SQL 문법 지식에 근거한 정적 검토로 판정했고, 릴리스·설정에 좌우되는 항목은 confidence=추정으로 낮췄다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L08.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L01.md",
+      "quote": "`INTO CORRESPONDING FIELDS OF TABLE`은 **이름이 같은 필드끼리** 자동으로 담아 준다.",
+      "category": "위험한 생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "챕터 전 레슨(L01·L02·L03·L04·L05·L06)이 결과 수신을 사실상 INTO CORRESPONDING FIELDS OF TABLE 하나로만 가르치면서, 이 구문의 대표적 사고 패턴인 '이름이 안 맞으면 문법 오류 없이 조용히 초기값으로 남는다'를 한 번도 경고하지 않는다.",
+      "evidence": "CORRESPONDING FIELDS 방식은 컬럼명이 대상 구조에 없거나 철자가 다르면 컴파일 시점에 아무 오류도 내지 않고 그 필드를 초기값(0/공백)으로 둔 채 통과한다. 학습자는 '0으로 나오네' 하고 데이터 문제로 오해하기 쉽고, 실무에서는 금액·수량 컬럼이 조용히 0으로 채워지는 형태의 사고로 이어진다. 또 JOIN·집계에서는 별칭(AS)이 곧 매핑 키라서 별칭을 바꾸는 순간 같은 방식으로 값이 사라진다. 성능 면에서도 필드 단위 매핑 비용이 붙어 대량 조회에서는 INTO TABLE(구조 일치)이 권장된다.",
+      "suggestion": "L01의 CORRESPONDING FIELDS 설명 바로 아래에 '이름이 안 맞으면 오류 없이 비어 있다 — 결과가 0/공백이면 데이터가 아니라 매핑을 먼저 의심하라' 한 줄과, 대안으로 SELECT 필드 순서에 맞춘 TYPES 구조 + INTO TABLE(정확 매핑·빠름)을 함께 제시. L08이 이미 INTO TABLE을 쓰므로 두 방식의 차이를 여기서 미리 짚으면 일관된다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L01.md",
+      "quote": "**ON 조건 누락** → 카테시안 곱(행 폭증). 반드시 키로 ON.",
+      "category": "사실 오류",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "ABAP Open SQL에서는 INNER/LEFT OUTER JOIN에 ON 절이 문법상 필수라, ON을 '누락'하면 카테시안 곱이 아니라 문법 오류가 난다. 표준 SQL(콤마 FROM 목록)의 동작을 ABAP에 그대로 옮겨 서술한 오류다.",
+      "evidence": "ABAP의 조인 표현식 문법은 `FROM tab1 [INNER|LEFT OUTER] JOIN tab2 ON join_cond` 형태로 ON이 구문의 일부다. ON 없이 쓰면 컴파일되지 않으며, 의도적 곱집합이 필요할 때를 위해 별도 키워드(CROSS JOIN)가 뒤늦게 추가된 것도 ON 생략으로는 곱집합을 만들 수 없기 때문이다. 실제 행 폭증은 ON을 '빼서'가 아니라 ON이 부실할 때(키 일부만·비키 컬럼·항상 참인 조건) 발생하며, 이는 바로 위 '조인 조건엔 전체 키가 등장해야' 절이 이미 정확히 설명하고 있다.",
+      "suggestion": "'ON 조건 누락 → 카테시안 곱'을 'ON 조건 부실(키 일부만·비키 컬럼) → 짝이 여러 개로 늘어 행 폭증. 참고로 ABAP은 ON 자체를 빼면 문법 오류라 아예 실행되지 않는다'로 교정. 위 절의 '키 일부만 ON에 두면 뻥튀기' 문장과 중복되지 않게 한 항목으로 합쳐도 좋다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L02.md",
+      "quote": "**LEFT인데 WHERE로 오른쪽 필터** → 매칭 없는 행이 걸러질 수 있다. 오른쪽 조건은",
+      "category": "위험한 생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'오른쪽 조건은 ON에 두는 게 안전'은 일반 SQL 조언으로는 맞지만, 이 챕터가 강제한 classic Open SQL에서는 OUTER JOIN의 ON 조건에 AND로 연결된 등호(=) 비교만 허용된다는 결정적 제약이 빠져 있다. 그 결과 학습자가 이 조언을 그대로 따르면 컴파일되지 않는 코드를 쓰게 되며, 실제로 같은 챕터 L08 실습 코드가 그 함정에 빠져 있다.",
+      "evidence": "classic(비-strict) Open SQL의 OUTER JOIN ON 조건 제약은 ① 논리 연산자는 AND만, ② 비교 연산자는 = 만, ③ 각 비교에 오른쪽 테이블 컬럼이 포함될 것 — 세 가지다(ON 안의 부등호·범위·OR는 문법 오류. 이 제약 완화는 7.40 SP05 이후 strict 모드, 즉 @·콤마를 쓰는 modern 문법에서만 적용된다). 따라서 classic 구간에서 '오른쪽 조건은 ON으로'가 통하는 것은 등호로 표현 가능한 조건뿐이다.",
+      "suggestion": "해당 항목에 한 줄 추가: 'classic에서는 OUTER JOIN의 ON에 AND로 이은 등호(=) 비교만 넣을 수 있다. 부등호·범위 조건은 ON에 못 넣으므로 (a) 등호 형태로 바꾸거나(예: 제외 대신 확정 상태만 = 로 지정) (b) 읽은 뒤 ABAP에서 거른다. modern 문법에서 완화된다는 사실은 [Chapter 19] 링크로.'"
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L03.md",
+      "quote": "집계 함수: `COUNT( * )`, `SUM( )`, `MAX( )`, `MIN( )`, `AVG( )`.",
+      "category": "위험한 생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "SUM의 오버플로는 경고하면서 AVG의 결과 타입 함정은 빠졌다. AVG의 결과는 부동소수(FLTP)라 정수·짧은 P 필드로 받으면 소수부가 잘리거나 예상과 다른 값이 담긴다.",
+      "evidence": "Open SQL 집계에서 MAX·MIN은 컬럼 타입을 따르고 SUM은 정수/패킹 계열을 유지하지만, AVG는 기본적으로 부동소수 결과를 돌려준다(그래서 후대 문법에 AVG( col AS DEC(p,s) )로 결과 타입을 지정하는 확장이 생겼다). 이 레슨은 INTO CORRESPONDING FIELDS로 별칭 필드에 담으라고만 하므로, 학습자가 평균 필드를 TYPE i 나 짧은 P로 잡으면 '평균이 정수로 나오는' 현상을 만나고 원인을 못 찾는다. 또 SUM·AVG는 NULL 행을 건너뛰는 반면 COUNT( * )는 행 수를 세므로 LEFT OUTER JOIN 결과에 집계를 걸 때 둘의 값이 달라진다는 점도 짚을 만하다.",
+      "suggestion": "'흔한 실수와 점검'에 한 줄 추가: 'AVG는 결과가 부동소수 — 받는 필드를 TYPE f 또는 소수 자리를 가진 P로. 정수 필드로 받으면 소수부가 사라진다.' 여력이 되면 'COUNT( * )는 행을 세고, SUM/AVG는 값이 없는 행을 건너뛴다'도 함께."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L05.md",
+      "quote": "**대량 ORDER BY 부하** → 인덱스 없는 정렬은 비싸다. 필요한 만큼만.",
+      "category": "위험한 생략",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "'필요한 만큼만'이라고 경고하면서 정작 양을 제한하는 수단을 하나도 보여주지 않고, 예제 자체는 WHERE 없이 테이블 전체를 정렬해 내부 테이블로 통째로 담는 형태다(L03의 SELECT DISTINCT 예제도 동일). 학습자에게 '전체를 다 읽어 메모리에 올린다'는 습관이 그대로 각인된다.",
+      "evidence": "L05 예제는 SELECT ... FROM sflight INTO CORRESPONDING FIELDS OF TABLE gt_flight ORDER BY ... 형태로 WHERE·건수 제한이 전혀 없다. 운영 규모 테이블에서 이 패턴은 전체 스캔 + 정렬 + 대량 메모리 적재로 이어지고, 앱 서버 메모리 부족(TSV_TNEW_PAGE_ALLOC_FAILED 계열) 또는 배치 시간 폭증의 전형적 원인이다. 방어 수단은 WHERE로 범위를 좁히기, UP TO n ROWS로 상한 두기, 대량이면 패키지 단위 처리로 나눠 읽기다. 다만 UP TO n ROWS가 앞 챕터(CH08)에서 이미 다뤄졌는지는 이번 감사 대상 밖이라 확인하지 못했으므로 '이 챕터 안에서 재환기가 없다'는 범위로만 판단한다.",
+      "suggestion": "L05 점검 항목을 '필요한 만큼만' 대신 구체 수단으로: 'WHERE로 기간·대상을 먼저 좁히고, 미리보기 성격이면 UP TO n ROWS로 상한을 둔다. 전체를 정렬해 통째로 담는 조회는 실무에서 가장 흔한 성능 사고다.' 예제에도 WHERE 한 줄(예: 특정 기간·항공사)을 넣어 무제한 조회가 기본형처럼 보이지 않게 할 것."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L06.md",
+      "quote": "**중복 제거 간과** → 결과 건수가 기대와 다를 수 있다.",
+      "category": "위험한 생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "FAE의 자동 중복 제거를 '건수가 다를 수 있다' 수준으로만 다루고, 그로부터 나오는 실무 필수 규칙 두 가지 — ① SELECT 리스트에 대상 테이블의 키 필드를 반드시 포함할 것, ② 기준(드라이버) 테이블을 조회 전에 중복 제거할 것 — 을 명시하지 않았다. ①은 데이터가 조용히 사라지는 사고로 직결된다.",
+      "evidence": "FAE 결과는 SELECT 리스트 기준으로 완전히 같은 행이 자동 제거된다. 따라서 키 필드를 빼고 일부 컬럼만 조회하면(예: 항공사와 좌석수만) 서로 다른 DB 행이 한 행으로 합쳐져 문법 오류도 경고도 없이 유실되고, 그 결과로 합계·건수가 실제보다 작게 나온다. 이 레슨의 예제는 마침 SFLIGHT 키(carrid connid fldate)를 모두 담고 있어 정상 동작하지만, 규칙이 글로 적혀 있지 않아 학습자가 필드를 줄이는 순간 함정에 빠진다. 또 드라이버 테이블은 조회 조건 단위로 쪼개져 DB에 여러 번 나가므로, 중복 행을 그대로 두면 같은 조회를 반복하게 된다(L07 표의 'DB(여러 번)'가 바로 이 이야기다).",
+      "suggestion": "'반드시 지킬 규칙'에 두 줄 추가: '조회 대상 테이블의 키 필드는 SELECT 리스트에 꼭 포함한다 — 빠지면 서로 다른 행이 중복으로 뭉개져 조용히 사라진다', '기준 테이블은 필요한 필드만 남기고 SORT + DELETE ADJACENT DUPLICATES COMPARING <키>로 중복을 없앤 뒤 넘긴다(같은 조회를 여러 번 반복하지 않게).'"
+    },
+    {
+      "seq": 7,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L08.md",
+      "quote": "ON c~concert_id = b~concert_id AND b~status <> 'C'",
+      "category": "사실 오류",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "챕터를 마무리하는 실습 코드가 classic Open SQL에서 문법 오류다. LEFT OUTER JOIN의 ON 조건에는 AND로 연결된 등호(=) 비교만 허용되므로 `b~status <> 'C'`를 ON에 넣을 수 없다. 본문 도입부(질문 2)도 같은 잘못된 지침을 명시적으로 안내한다.",
+      "evidence": "classic(비-strict) Open SQL의 OUTER JOIN ON 제약은 AND만·등호만·각 비교에 오른쪽 테이블 컬럼 포함이다. 부등호(<>)는 이 제약을 정면으로 위반하므로 문법 검사에서 거부된다(제약 완화는 @·콤마를 쓰는 strict 모드 = 7.40 SP05 이후 modern 문법에서만이고, 이 챕터는 스스로 '전부 classic'이라고 못박았다). 즉 학습자가 그대로 옮겨 적으면 컴파일 자체가 되지 않는데, 이 코드는 챕터 전체를 종합하는 캡스톤 실습이라 체감 타격이 가장 큰 자리다. 참고로 등호 형태(예: b~status = '확정코드')는 오른쪽 테이블 컬럼 + 등호라 classic에서도 정상이며, LEFT OUTER의 보존 효과(예매 없는 공연 = 0)도 그대로 유지된다.",
+      "suggestion": "ON 조건을 등호로 바꾼다 — 예: `ON c~concert_id = b~concert_id AND b~status = 'A'`(확정 상태만 집계). 상태 코드를 등호 하나로 못 좁히면 ON에는 키 등호만 두고 취소분 제외는 조회 후 ABAP에서 처리하거나 별도 SELECT로 분리한다. 본문 질문 2의 안내 문구('JOIN 조건에 b~status <> C')도 함께 고치고, '왜 부등호를 ON에 못 쓰는가 = classic 제약'을 한 줄로 설명해 L02의 조언과 앞뒤를 맞출 것."
+    },
+    {
+      "seq": 8,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L08.md",
+      "quote": "CATCH cx_salv_msg.",
+      "category": "안티패턴",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "예외를 잡아 아무것도 하지 않는 빈 CATCH 블록을 교정 없이 시연한다. 첫 예외 처리 경험에서 '잡아서 삼키기'를 표준으로 배우게 된다.",
+      "evidence": "cl_salv_table=>factory가 실패하면 이 코드는 아무 메시지도 없이 조용히 끝나고, 사용자는 '실행했는데 아무 화면도 안 뜬다'만 겪는다. 실무에서 원인 추적이 가장 어려운 유형이 바로 이 조용한 실패이며, 코드 리뷰에서 통상 지적 대상이다. 이 수준의 학습자에게도 '잡았으면 무엇이든 알린다'는 원칙은 한 줄로 전달 가능하다.",
+      "suggestion": "CATCH 블록 안에 최소한의 처리를 넣는다 — 예: `CATCH cx_salv_msg INTO DATA(...)` 대신 classic 구간이므로 `CATCH cx_salv_msg.` 아래에 MESSAGE 출력이나 WRITE 한 줄로 실패를 알리고 RETURN. 최소한 '여기서는 지면상 생략 — 실무에선 반드시 메시지를 남긴다'는 주석이라도 남길 것."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "보강 권장",
+    "summary": "CH13은 classic Open SQL의 JOIN·집계·정렬·FAE를 다루는 구성과 설명 정확도가 전반적으로 좋다. INNER/LEFT의 의미, ON에 전체 키가 들어가야 한다는 원칙, WHERE와 HAVING의 시점 차이, ORDER BY 없으면 순서 보장 없음, FAE 빈 테이블이 WHERE를 통째로 무시해 전체 조회가 된다는 점, LOOP 안 SELECT 회피까지 핵심 함정을 정확히 짚었고 문장 대부분이 문법적으로도 성립한다. 다만 챕터의 캡스톤인 L08 실습 코드가 classic 제약(OUTER JOIN의 ON에는 AND로 이은 등호만 허용)을 어겨 그대로는 컴파일되지 않는 것이 가장 큰 결함이고, L02의 '오른쪽 조건은 ON으로' 조언에 같은 제약이 빠져 있어 오류가 구조적으로 유도된다 — 이 둘은 한 번에 함께 고쳐야 한다. 그 밖에 CORRESPONDING FIELDS의 조용한 미매핑, FAE에서 키 필드 누락 시 행 유실, AVG의 부동소수 결과, WHERE·건수 제한 없는 전체 조회 습관, 빈 CATCH는 모두 한두 줄 보강으로 해결되는 성격이다. 전면 재집필이 필요한 수준은 아니며, L08 코드 수정 + 다섯 개 보강 문장이면 실무 기준에서도 신뢰할 만한 챕터가 된다."
+  }
+}

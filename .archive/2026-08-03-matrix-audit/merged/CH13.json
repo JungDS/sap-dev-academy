@@ -1,0 +1,1578 @@
+{
+  "chapter": "CH13",
+  "inputs_present": 28,
+  "inputs_missing": [],
+  "clusters": [
+    {
+      "cluster_id": "CH13-C001",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L08.md",
+      "quote": "    ON c~concert_id = b~concert_id AND b~status <> 'C'",
+      "category": "사실 오류(classic 구문 위반)",
+      "severity": "치명",
+      "confidence": "추정",
+      "claim": "classic Open SQL의 LEFT OUTER JOIN ON 조건에는 AND로 연결된 등호(=) 비교만 허용되므로, 챕터 캡스톤 실습의 `b~status <> 'C'`(부등호+리터럴 비교)는 구문 오류로 활성화되지 않는다. 단순히 WHERE로 옮기면 L02가 경고한 'LEFT 보존 깨짐' 함정에 빠지므로 예제 재설계가 필요하며, 본문 도입부 질문 2도 같은 잘못된 지침을 안내한다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG03",
+          "model": "gemini-3.6-flash-high",
+          "seq": 1
+        },
+        {
+          "agent": "AG06",
+          "model": "opus",
+          "seq": 7
+        },
+        {
+          "agent": "AG06",
+          "model": "gemini-3.6-flash-high",
+          "seq": 1
+        },
+        {
+          "agent": "AG09",
+          "model": "opus",
+          "seq": 1
+        },
+        {
+          "agent": "AG09",
+          "model": "gemini-3.6-flash-high",
+          "seq": 1
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C002",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L01.md",
+      "quote": "  INTO CORRESPONDING FIELDS OF TABLE gt_out\n  WHERE f~seatsocc > 0.",
+      "category": "미선언 변수(활성화 차단·실습 가능성)",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "L01～L06의 모든 SELECT 예제가 결과 내부 테이블(gt_out·gt_sum·gt_carr·gt_flight 등)을 TYPES/DATA 선언 없이 사용한다. 챕터에서 선언이 나오는 곳은 마지막 L08 하나뿐이라 예제를 그대로 옮겨 적으면 활성화되지 않고, 특히 L03은 'cnt·total 별칭 필드를 둔 결과 구조'를 요구만 하고 만드는 법을 한 번도 보여주지 않아 JOIN·집계 결과처럼 원본 테이블에 없는 구조를 학습자가 스스로 만들 근거가 없다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG01",
+          "model": "opus",
+          "seq": 3
+        },
+        {
+          "agent": "AG05",
+          "model": "opus",
+          "seq": 2
+        },
+        {
+          "agent": "AG09",
+          "model": "opus",
+          "seq": 2
+        },
+        {
+          "agent": "AG09",
+          "model": "gpt-5.6-sol",
+          "seq": 1
+        },
+        {
+          "agent": "AG09",
+          "model": "gpt-5.6-sol",
+          "seq": 2
+        },
+        {
+          "agent": "AG09",
+          "model": "gpt-5.6-sol",
+          "seq": 3
+        },
+        {
+          "agent": "AG09",
+          "model": "gpt-5.6-sol",
+          "seq": 4
+        },
+        {
+          "agent": "AG09",
+          "model": "gpt-5.6-sol",
+          "seq": 5
+        },
+        {
+          "agent": "AG09",
+          "model": "gpt-5.6-sol",
+          "seq": 6
+        },
+        {
+          "agent": "AG09",
+          "model": "gpt-5.6-sol",
+          "seq": 7
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C003",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L08.md",
+      "quote": "TRY.\n    cl_salv_table=>factory(\n      IMPORTING r_salv_table = lo_alv CHANGING t_table = lt_stat ).\n    lo_alv->display( ).\n  CATCH cx_salv_msg.\nENDTRY.",
+      "category": "과부하(선행 사용 표기 누락)",
+      "severity": "높음",
+      "confidence": "추정",
+      "claim": "front-matter가 advanceUse로 선언한 REF TO·TRY/CATCH cx_salv_msg(및 =>·-> 호출)가 마지막 실습 코드에 그대로 등장하지만, 본문에는 '[선행 사용]' 표기도 '지금은 몰라도 된다'는 안내도 전혀 없다(챕터 전체 0회). SQL만 다뤄 온 챕터의 마무리 실습에서 미설명 OOP·예외 문법이 여덟 줄 안에 한꺼번에 쏟아져 학습자가 따라 칠 수 있는지 판단하지 못하고 멈춘다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG01",
+          "model": "opus",
+          "seq": 12
+        },
+        {
+          "agent": "AG01",
+          "model": "sonnet",
+          "seq": 2
+        },
+        {
+          "agent": "AG01",
+          "model": "gpt-5.6-sol",
+          "seq": 5
+        },
+        {
+          "agent": "AG05",
+          "model": "opus",
+          "seq": 9
+        },
+        {
+          "agent": "AG05",
+          "model": "sonnet",
+          "seq": 2
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C004",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L02.md",
+      "quote": "DB의 NULL과 ABAP 초기값은 개념이 다르다.",
+      "category": "생략(주제 개념 미정의)",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "L02가 front-matter introduces로 선언한 NULL을 본문이 끝내 정의하지 않는다. '개념이 다르다'고 선언만 하고 NULL이 무엇인지(값 자체의 부재, 빈 문자열·0과 다름)·어떻게 다른지 설명 없이 두 문장으로 끝나, 레슨 제목이 내건 'NULL 처리'가 예제·체험·판별 코드 없는 빈 절이 됐다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG01",
+          "model": "opus",
+          "seq": 6
+        },
+        {
+          "agent": "AG01",
+          "model": "sonnet",
+          "seq": 1
+        },
+        {
+          "agent": "AG04",
+          "model": "opus",
+          "seq": 5
+        },
+        {
+          "agent": "AG05",
+          "model": "opus",
+          "seq": 3
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C005",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L08.md",
+      "quote": "GROUP BY c~concert_id c~artist c~capacity.",
+      "category": "챕터 구성(징검다리 부재)",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "'JOIN과 집계를 한 문장에서 결합하는 법'이 챕터 어디에서도 단계적으로 다뤄지지 않은 채 마지막 실습에서 처음 결합형으로 등장한다. L03·L04의 집계는 전부 단일 테이블(sflight)이고 L01·L02의 JOIN에는 집계가 없는데, L08은 LEFT OUTER JOIN+비키 ON 조건+조인 별칭 컬럼 3개 GROUP BY+SUM+전용 TYPES+ALV를 동시에 요구해 마지막 레슨에 부하가 몰린다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG05",
+          "model": "opus",
+          "seq": 1
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C006",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L02.md",
+      "quote": "  LEFT OUTER JOIN zperf AS pf           \" 회차는 없을 수도 → LEFT OUTER",
+      "category": "예시 적절성(도메인 모델)",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "예매(zbooking)를 기준(FROM)으로 두고 회차(zperf)를 LEFT OUTER JOIN하며 '회차는 없을 수도'라고 주석한 것은 도메인 관계에 부합하지 않는다. 예매는 회차에 종속된 하위 데이터라 정상 모델에서 회차 없는 예매가 존재할 수 없고, 미예매 회차·공연 보존이 목적이라면 기준 테이블이 zconcert/zperf 쪽이어야 한다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG06",
+          "model": "gemini-3.6-flash-high",
+          "seq": 2
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C007",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\_chapter.md",
+      "quote": "여러 테이블을 한 번에, 집계까지 해서 보고 싶다. (classic 유지)",
+      "category": "지름길 부재(경력자 스킵 경로)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L01～L05의 JOIN·GROUP BY·HAVING·ORDER BY는 표준 SQL과 사실상 같은 내용인데, 'SQL을 이미 안다면 ABAP 델타(~ 별칭 구분자·공백 구분·INTO 계열·NULL→초기값·FAE)만 보라'는 건너뛰기 안내가 챕터 어디에도 없다. 경력자는 JOIN 명단 비유·WHERE/HAVING 기초 설명까지 전부 훑거나 반대로 이탈해 정작 ABAP 고유 함정(L06 FAE)을 놓친다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG03",
+          "model": "opus",
+          "seq": 5
+        },
+        {
+          "agent": "AG03",
+          "model": "sonnet",
+          "seq": 1
+        },
+        {
+          "agent": "AG03",
+          "model": "sonnet",
+          "seq": 2
+        },
+        {
+          "agent": "AG03",
+          "model": "gpt-5.6-sol",
+          "seq": 1
+        },
+        {
+          "agent": "AG03",
+          "model": "gemini-3.6-flash-high",
+          "seq": 3
+        },
+        {
+          "agent": "AG03",
+          "model": "gemini-3.6-flash-high",
+          "seq": 4
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C008",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L02.md",
+      "quote": "  INTO CORRESPONDING FIELDS OF TABLE lt_out.",
+      "category": "네이밍 규약(스코프 접두어)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "같은 레슨 안에서 같은 역할의 결과 테이블이 첫 예제 gt_out에서 둘째 예제 lt_out으로 근거 없이 바뀐다. 두 블록 모두 FORM/METHOD 등 로컬 스코프 표시가 없는 최상위 조각이라 lt_는 R11 규약 위반이자 한 레슨 안의 자기모순으로, 접두어=스코프 신호를 배운 직후의 학습자를 '내가 못 본 조건이 있나' 하고 되묻게 만든다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG01",
+          "model": "opus",
+          "seq": 7
+        },
+        {
+          "agent": "AG05",
+          "model": "opus",
+          "seq": 11
+        },
+        {
+          "agent": "AG09",
+          "model": "opus",
+          "seq": 3
+        },
+        {
+          "agent": "AG09",
+          "model": "sonnet",
+          "seq": 1
+        },
+        {
+          "agent": "AG09",
+          "model": "gemini-3.6-flash-high",
+          "seq": 2
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C009",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L08.md",
+      "quote": "DATA: lt_stat TYPE TABLE OF ts_stat,\n      lo_alv  TYPE REF TO cl_salv_table.",
+      "category": "네이밍 규약(스코프 접두어)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "실습 코드가 FORM/METHOD 없는 프로그램 최상위(리포트 본문) 형태인데 로컬 접두어 lt_·lo_를 쓴다. 전역 선언이므로 gt_stat·go_alv가 규약에 맞으며, 같은 챕터 L01·L03～L06이 전부 gt_라 챕터 내 일관성도 깨진다(같은 블록의 ts_stat은 규약을 정확히 지켜 스코프 문자만 어긋난 형태).",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG03",
+          "model": "opus",
+          "seq": 8
+        },
+        {
+          "agent": "AG09",
+          "model": "opus",
+          "seq": 4
+        },
+        {
+          "agent": "AG09",
+          "model": "gpt-5.6-sol",
+          "seq": 8
+        },
+        {
+          "agent": "AG09",
+          "model": "gemini-3.6-flash-high",
+          "seq": 3
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C010",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L08.md",
+      "quote": "CATCH cx_salv_msg.",
+      "category": "안티패턴(빈 CATCH)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "챕터 마무리 실습 정답 코드가 예외를 잡아 아무 처리도 하지 않는 '빈 CATCH 블록'을 설명·주석 없이 시범 보인다. 학습자의 사실상 첫 예외 처리 경험에서 '잡아서 삼키기'가 표준으로 각인되며, 화면 생성이 실패해도 원인 표시 없이 조용히 끝나 실무에서 원인 추적이 가장 어려운 조용한 실패 유형을 그대로 가르친다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG03",
+          "model": "opus",
+          "seq": 1
+        },
+        {
+          "agent": "AG06",
+          "model": "opus",
+          "seq": 8
+        },
+        {
+          "agent": "AG06",
+          "model": "sonnet",
+          "seq": 3
+        },
+        {
+          "agent": "AG06",
+          "model": "gpt-5.6-sol",
+          "seq": 4
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C011",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L01.md",
+      "quote": "- **ON 조건 누락** → 카테시안 곱(행 폭증). 반드시 키로 ON.",
+      "category": "용어 첫 등장 풀이 누락",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "입문자에게 가장 낯선 '카테시안 곱'이 챕터에서 이 한 줄뿐인데 풀이도 glossary 마킹도 없이 지나간다. 괄호의 '(행 폭증)'은 결과 증상만 알려줄 뿐 무엇인지(왼쪽 모든 행×오른쪽 모든 행을 다 짝지어 곱셈으로 불어남)는 설명하지 않고, 앞 절의 '뻥튀기' 비유와도 연결되지 않아 겁만 남고 이해는 남지 않는다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG01",
+          "model": "opus",
+          "seq": 5
+        },
+        {
+          "agent": "AG04",
+          "model": "opus",
+          "seq": 1
+        },
+        {
+          "agent": "AG04",
+          "model": "sonnet",
+          "seq": 3
+        },
+        {
+          "agent": "AG04",
+          "model": "gpt-5.6-sol",
+          "seq": 1
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C012",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L06.md",
+      "quote": "- **중복 제거 간과** → 결과 건수가 기대와 다를 수 있다.",
+      "category": "위험한 생략(FAE 실무 규칙)",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "FAE의 중복 관련 실무 필수 규칙이 통째로 빠졌다. ① SELECT 리스트에 대상 테이블 키 필드를 포함하지 않으면 서로 다른 행이 오류·경고 없이 한 행으로 뭉개져 조용히 유실되고 ② 드라이버(기준) 테이블은 SORT+DELETE ADJACENT DUPLICATES로 사전 중복 제거해야 같은 조회의 반복·DB 부하를 막는데, 본문은 '건수가 다를 수 있다'는 경고만 있고 대응책이 없다(집계·정렬 조합 제약 안내도 부재).",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG03",
+          "model": "opus",
+          "seq": 9
+        },
+        {
+          "agent": "AG05",
+          "model": "opus",
+          "seq": 5
+        },
+        {
+          "agent": "AG06",
+          "model": "opus",
+          "seq": 6
+        },
+        {
+          "agent": "AG06",
+          "model": "gemini-3.6-flash-high",
+          "seq": 4
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C013",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L02.md",
+      "quote": "보통 초기값으로 보이니, \"값 없음\"을 구분하려면 기준 키로 판단한다.",
+      "category": "오개념 유발(판별 방법 불명확)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'기준 키로 판단한다'의 실행 방법이 없다. 어느 테이블의 어떤 키를 SELECT에 포함해 무엇과 비교하는지 예제가 없고, 왼쪽(기준) 테이블 키는 미매칭 행에도 항상 존재해 판별 기준이 될 수 없으므로 '오른쪽 테이블의 키/NOT NULL 컬럼을 결과에 포함해 그 초기값 여부로 판단'임을 명시하지 않으면 미매칭 판별법을 잘못 이해하게 된다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG01",
+          "model": "gpt-5.6-sol",
+          "seq": 1
+        },
+        {
+          "agent": "AG03",
+          "model": "gpt-5.6-sol",
+          "seq": 3
+        },
+        {
+          "agent": "AG06",
+          "model": "gpt-5.6-sol",
+          "seq": 2
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C014",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L01.md",
+      "quote": "`ON`에는 보통 **한쪽 테이블의 키 전체**가 들어가야 한다.",
+      "category": "오개념 유발(전체 키 일반화)",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "JOIN 조건을 '한쪽 테이블의 전체 키'로 못박고 행 증가를 '의도치 않은 중복(뻥튀기)'으로만 규정해, 1:N 관계의 정상적 행 증가까지 오류로 오해하게 만든다. 같은 챕터 L08 실습(공연 1:예매 N)과 L02 예제가 정확히 그 1:N 조인이고 이 장의 SPFLI-SFLIGHT 예시 자체가 부분 키 조인이라, 올바름은 물리적 키 구성이 아니라 의도한 관계·카디널리티로 판단해야 함을 밝히지 않으면 규칙과 예제가 서로 모순된다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG03",
+          "model": "opus",
+          "seq": 6
+        },
+        {
+          "agent": "AG03",
+          "model": "gpt-5.6-sol",
+          "seq": 2
+        },
+        {
+          "agent": "AG06",
+          "model": "gpt-5.6-sol",
+          "seq": 1
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C015",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L01.md",
+      "quote": "  ON  b~concert_id = pf~concert_id",
+      "category": "단절(미정의 별칭 조각 코드)",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "'전체 키' 절의 코드가 FROM/JOIN 없이 ON 두 줄만 떼어낸 조각인데 발췌 표기가 없고, 별칭 b·pf가 L01 어디에서도 정의되지 않는다(대응 테이블 zbooking·zperf는 다음 레슨 L02에서 처음 등장). 예제 도메인이 항공편에서 공연으로 말없이 바뀌는 전환도 안내가 없어 앞 절과 이어지는 내용인지조차 헷갈리며, 빌드가 복사 가능한 코드 블록으로 렌더링해 실행 코드로 오인할 수 있다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG01",
+          "model": "opus",
+          "seq": 4
+        },
+        {
+          "agent": "AG01",
+          "model": "sonnet",
+          "seq": 5
+        },
+        {
+          "agent": "AG09",
+          "model": "opus",
+          "seq": 5
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C016",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L03.md",
+      "quote": "INTO TABLE gt_carr.",
+      "category": "단절(수신 구문 혼용 기준 부재)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "INTO CORRESPONDING FIELDS OF TABLE(이름 매칭)과 INTO TABLE(순서 매칭)이 L03 한 레슨 안에서도, L08 실습에서도 구분 설명 없이 섞인다. 차이·선택 기준이 챕터 어디에도 없어 '이름이 같으면 자동으로 담긴다'고 배운 학습자는 L08의 순서 매칭을 오해하기 쉽고, 자기 코드를 쓸 때 어느 쪽을 골라야 할지 끝까지 정하지 못한다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG01",
+          "model": "opus",
+          "seq": 8
+        },
+        {
+          "agent": "AG01",
+          "model": "sonnet",
+          "seq": 3
+        },
+        {
+          "agent": "AG03",
+          "model": "opus",
+          "seq": 2
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C017",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L01.md",
+      "quote": "`INTO CORRESPONDING FIELDS OF TABLE`은 **이름이 같은 필드끼리** 자동으로 담아 준다.",
+      "category": "위험한 생략(조용한 미매핑)",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "CORRESPONDING FIELDS의 긍정 동작만 설명하고, 이름이 안 맞으면(오탈자·별칭 변경) 오류·경고 없이 그 필드만 조용히 초기값으로 남는 대표 사고 패턴을 챕터 어디에서도 경고하지 않는다. ORM의 '매핑 실패=예외'에 익숙한 경력자든 입문자든 'SELECT는 성공(sy-subrc=0)인데 특정 컬럼만 빈다'는 실무 단골 장애의 원인을 못 찾게 된다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG03",
+          "model": "sonnet",
+          "seq": 3
+        },
+        {
+          "agent": "AG06",
+          "model": "opus",
+          "seq": 1
+        },
+        {
+          "agent": "AG06",
+          "model": "sonnet",
+          "seq": 2
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C018",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L01.md",
+      "quote": "## 결과는 숫자 셋으로 확인 — sy-subrc · sy-dbcnt",
+      "category": "문장(제목-본문 불일치)",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "제목은 '숫자 셋'인데 실제 확인 대상 시스템 필드는 sy-subrc·sy-dbcnt 둘뿐이고, 셋째 불릿 '출력 행 수'는 새 수치가 아니라 sy-dbcnt 값이 왜 그런지(INNER 필터링)를 설명하는 문장이다. 숫자를 세어 가며 읽는 입문자가 '세 번째 숫자가 뭐지'에서 멈춘다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG01",
+          "model": "sonnet",
+          "seq": 4
+        },
+        {
+          "agent": "AG04",
+          "model": "opus",
+          "seq": 3
+        },
+        {
+          "agent": "AG04",
+          "model": "sonnet",
+          "seq": 1
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C019",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L01.md",
+      "quote": "## 조인 조건엔 '전체 키'가 등장해야",
+      "category": "용어 일관성(영어 vs 음차)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "챕터 전체가 JOIN·INNER JOIN·LEFT OUTER JOIN을 영어 원문으로 쓰는데, L01 섹션 제목과 L02 본문 한 문장('조인은 한 문장에…')만 한글 음차 '조인'으로 갈린다. 섹션 제목은 목차·스텝퍼에도 노출돼 더 눈에 띄며, 처음 배우는 자리에서 표기가 흔들려 두 표기를 다른 것으로 오해할 수 있다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG04",
+          "model": "opus",
+          "seq": 2
+        },
+        {
+          "agent": "AG04",
+          "model": "sonnet",
+          "seq": 2
+        },
+        {
+          "agent": "AG04",
+          "model": "sonnet",
+          "seq": 4
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C020",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L03.md",
+      "quote": "- **그룹 키가 아닌 컬럼**은 집계 함수로 감싸야 한다(GROUP BY에 없는 평컬럼 금지).",
+      "category": "조어·미풀이 용어",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "'평컬럼'은 표준 용어가 아닌 즉석 조어인데 풀이 없이 쓰이고 L03·L04에서 반복된다. 바로 앞에 이미 쓴 쉬운 표현('그룹 키가 아닌 컬럼')을 두고 괄호에서 낯선 말로 바꿔 문장이 스스로를 어렵게 만들며, 같은 대상을 가리키는지 입문자가 즉시 판단하기 어렵다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG04",
+          "model": "opus",
+          "seq": 7
+        },
+        {
+          "agent": "AG04",
+          "model": "sonnet",
+          "seq": 5
+        },
+        {
+          "agent": "AG04",
+          "model": "gpt-5.6-sol",
+          "seq": 2
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C021",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\_chapter.md",
+      "quote": "intro: \"여러 테이블을 한 번에, 집계까지 해서 보고 싶다. (classic 유지)\"",
+      "category": "챕터 구성(동기 설계·내부 용어 노출)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "챕터 intro가 한 문장짜리 바람 진술뿐이라 '왜 배우는가'(완성 결과=공연별 예매현황 리포트, 기존 방식의 불편, 8레슨 줄기)를 팔지 못하고, 학습자에게 해독 불가능한 내부 규약 표기 '(classic 유지)'가 노출 문구에 그대로 들어가 있다. 이후 레슨마다 '@·콤마 금지' 경고가 반복되는데 정작 그 '@'가 무엇인지는 끝까지 알려주지 않아, 본 적 없는 기호에 대한 금지가 잡음이 된다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG01",
+          "model": "opus",
+          "seq": 1
+        },
+        {
+          "agent": "AG05",
+          "model": "opus",
+          "seq": 8
+        },
+        {
+          "agent": "AG05",
+          "model": "gpt-5.6-sol",
+          "seq": 1
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C022",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L02.md",
+      "quote": "- **LEFT인데 WHERE로 오른쪽 필터** → 매칭 없는 행이 걸러질 수 있다. 오른쪽 조건은\n  `ON`에 두는 게 안전.",
+      "category": "위험한 생략(classic ON 제약 미고지)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'오른쪽 조건은 ON에 두는 게 안전'이라는 조언에 classic Open SQL의 OUTER JOIN ON 제약(AND 연결·등호(=) 비교만 허용, 부등호·범위 불가)이 빠져 있다. 학습자가 조언을 그대로 따르면 컴파일되지 않는 코드를 쓰게 되며, 실제로 같은 챕터 L08 실습(`b~status <> 'C'`)이 이 조언을 따르다 그 함정에 빠져 있어 오류가 구조적으로 유도된다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG06",
+          "model": "opus",
+          "seq": 3
+        },
+        {
+          "agent": "AG06",
+          "model": "gemini-3.6-flash-high",
+          "seq": 3
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C023",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L03.md",
+      "quote": "- **합계 오버플로** → SUM 결과 타입(P 길이)을 충분히.",
+      "category": "멈춘 곳(미풀이 용어·실행 불가 경고)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'P 길이'가 풀이 없이 나오고(챕터에서 타입 P 언급은 이 한 줄뿐) '타입을 충분히 크게'를 실제로 해 볼 방법(cnt·total을 가진 결과 구조 선언 예시, 타입 선택 기준)이 없다. 오버플로가 무섭다는 것만 알고 학습자가 취할 행동이 하나도 없는 경고가 됐다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG01",
+          "model": "opus",
+          "seq": 9
+        },
+        {
+          "agent": "AG01",
+          "model": "gpt-5.6-sol",
+          "seq": 3
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C024",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L08.md",
+      "quote": "booked     TYPE i,",
+      "category": "단절(지침-실습 모순)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L03이 '합계 오버플로 → SUM 결과 타입(P 길이)을 충분히'라고 경고해 놓고 정작 챕터 마무리 실습의 SUM 결과(booked)는 TYPE i다. 좌석 수라 실제로는 충분할 수 있지만 그 판단 근거가 본문에 한 줄도 없어, 학습자에겐 규칙 위반 또는 앞 내용에 대한 자기 이해 오류로만 보이고 실습이 앞 지침을 흔든다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG01",
+          "model": "opus",
+          "seq": 13
+        },
+        {
+          "agent": "AG03",
+          "model": "opus",
+          "seq": 7
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C025",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L05.md",
+      "quote": "- **DB가 정렬에 유리(인덱스)** 하거나 정렬해 바로 쓰면 → `ORDER BY`.",
+      "category": "멈춘 곳(미풀이 용어)",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "ORDER BY vs ABAP SORT 선택 기준의 핵심 근거인 '인덱스'(및 'DB 부하'·'무분별')가 이 챕터에서 풀이 없이 쓰인다(두 번 등장, 둘 다 설명 없음). 인덱스가 뭔지 모르는 입문자는 'DB가 유리한 경우'가 언제인지 판단할 수 없어 이 절의 선택 기준 자체를 쓰지 못한 채 넘어간다(앞 챕터 기학습 여부는 CH13 파일만으로 확인 불가).",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG01",
+          "model": "opus",
+          "seq": 10
+        },
+        {
+          "agent": "AG01",
+          "model": "gpt-5.6-sol",
+          "seq": 4
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C026",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L07.md",
+      "quote": "| **FAE** | DB(여러 번) | 이미 메모리에 있는 목록 기준으로 조회 |",
+      "category": "사실 오류(단정 과잉)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "FAE가 항상 DB를 여러 번 호출하는 것처럼 단정한다. 실제 SQL 변환·분할 실행 여부는 드라이버 테이블 크기·DB 인터페이스·시스템 설정에 따라 달라 하나의 SQL로 처리될 수도 있으므로, 'DB(1회 이상, 조건·환경에 따라 분할 가능)' 수준으로 한정해야 정확하다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG03",
+          "model": "gpt-5.6-sol",
+          "seq": 4
+        },
+        {
+          "agent": "AG06",
+          "model": "gpt-5.6-sol",
+          "seq": 3
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C027",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L08.md",
+      "quote": "3. (도전) `HAVING`으로 \"예매가 정원의 80%를 넘은 공연\"만 추린다.",
+      "category": "생략(배운·지원 범위 밖 과제)",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "도전 과제가 배운 범위 밖이다. 챕터에서 배운 HAVING은 집계값 vs 고정 숫자 비교(HAVING COUNT( * ) >= 5) 하나뿐인데 '정원의 80%'는 조건절 안 산술 비교(SUM vs capacity×0.8)를 요구하며, 이런 인라인 산술식은 classic Open SQL에서 지원되지 않았을 가능성이 높아 힌트 없이 시도하면 문법 오류만 만나고 끝난다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG01",
+          "model": "opus",
+          "seq": 14
+        },
+        {
+          "agent": "AG06",
+          "model": "sonnet",
+          "seq": 4
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C028",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L07.md",
+      "quote": "| **FAE** | DB(여러 번) | 이미 메모리에 있는 목록 기준으로 조회 |",
+      "category": "단절(신규 사실의 표 첫 등장)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "FAE가 DB를 '여러 번' 부른다는 사실이 L07 비교표에서 처음 튀어나온다. 직전 L06은 처음부터 끝까지 SELECT 한 문장 예제였고 '여러 번 나눠 조회' 언급이 전혀 없어 학습자가 L06으로 되돌아가 다시 읽게 되며, 왜·몇 번인지도 없어 JOIN(한 번) vs FAE(여러 번)를 비교해 고르라는 이 레슨의 기준이 서지 않는다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG01",
+          "model": "opus",
+          "seq": 11
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C029",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L02.md",
+      "quote": "## INNER vs LEFT — 직접 켜고 보기",
+      "category": "용어 일관성(명칭 흔들림)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "한 개념이 네 가지 이름으로 불린다 — LEFT OUTER JOIN(제목)/LEFT OUTER(마무리)/LEFT(본문·이 소제목)/LEFT JOIN(NULL 절·L08 점검). 이번 레슨이 그 용어를 처음 배우는 자리인데 배우는 중에 이름이 계속 바뀌고, 축약 선언('이하 LEFT')도 없어 같은 것인지 확신할 근거가 본문에 없다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG04",
+          "model": "opus",
+          "seq": 4
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C030",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L03.md",
+      "quote": "그룹 키가 아닌 컬럼",
+      "category": "용어 일관성(필드/컬럼 혼용)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "SELECT 목록의 한 항목을 '필드'(L01·L05·L06·L08)와 '컬럼'(L02·L03·L04)으로 챕터 내내 규칙 없이 오간다. SQL 절이냐 ABAP 문법이냐로 나뉘는 것도 아니고 같은 뜻이라는 언급도 없어, 같은 개념에 두 이름이 흔들린다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG04",
+          "model": "sonnet",
+          "seq": 6
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C031",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L05.md",
+      "quote": "이미 읽은 [[Internal Table]]을 ABAP `SORT`로 정렬할 수도 있지만",
+      "category": "용어 일관성(영어 원문 vs 직역)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "같은 개념을 한 파일 안에서 'Internal Table'(용어 마킹)과 '내부 테이블'(직역·무마킹)로 섞어 쓴다. L05 마무리·L06·L07도 직역 쪽이며 직역형에는 glossary 연결이 끊겨, 마킹된 쪽만 팝업이 뜨므로 독자가 둘을 다른 것으로 여기기 쉽다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG04",
+          "model": "opus",
+          "seq": 8
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C032",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L02.md",
+      "quote": "조인은 한 문장에 **여러 개** 이어 붙일 수 있고, 종류를 **섞어** 쓸 수도 있다.",
+      "category": "학습경계 선언 누락(인지 부하)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "3테이블·ON 3조건(2키 AND 포함)·INNER+LEFT 혼합의 '다중 조인 체이닝'은 L01의 2테이블 1조인과 별개의 신규 개념인데 front-matter introduces에 선언되지 않았고, 전용 연습·체험 없이 예제 1개와 '위에서 아래로 차례로 합쳐진다'는 새 실행 모델 설명으로 끝난다. 직전 레슨 대비 개념 수가 한 레슨 안에서 크게 뛴다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG05",
+          "model": "opus",
+          "seq": 4
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C033",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L07.md",
+      "quote": "| **ABAP 루프** | 앱 서버 | 단순·소량, 또는 JOIN/FAE가 부적절할 때 |",
+      "category": "복습 장치(비교 근거 부재)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "세 선택지를 비교하는 레슨인데 셋째 선택지(ABAP 루프로 직접 맞추기)만 이 챕터에 코드가 한 줄도 없고 배운 레슨 링크도 없다. 안티패턴으로 지목된 'LOOP 안 SELECT'와 권장형 '미리 읽고 READ TABLE로 결합'이 본문에서 구분되지 않아 '앱 서버에서 합치기=나쁜 것'으로 오해할 여지가 있으며, 구체적 이미지 없는 항목을 포함한 의사결정을 요구한다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG05",
+          "model": "opus",
+          "seq": 6
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C034",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L01.md",
+      "quote": "번거롭다. DB에서 **키로 합쳐** 한 번에 읽고 싶다. 이것이 [[JOIN]]이다.",
+      "category": "불편→해결 서사(불편 체감 부족)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "챕터 관문인 JOIN 도입에서 '불편'이 '번거롭다' 한 마디 선언으로 끝나고, JOIN이 대체하는 이전 방식(두 번 SELECT+직접 맞추기)을 한 번도 보여주지 않는다. L03도 같은 방식이라 CH13 전체에서 학습자가 불편을 실제로 경험하는 지점이 없어 '불편 선체감→해결' 구성이 형식만 남았고, before 코드의 부재는 L07 3자 비교를 근거 없는 비교로 만든다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG05",
+          "model": "opus",
+          "seq": 7
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C035",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L02.md",
+      "quote": "그런 행을 떨군다. **LEFT OUTER JOIN**은 왼쪽(기준) 테이블 행을 **전부** 남긴다.",
+      "category": "복습 장치(용어 마킹 누락)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "이 레슨이 introduces로 선언한 대표 개념 LEFT OUTER JOIN(과 NULL)이 본문 어디에서도 [[ ]] 용어 마킹을 받지 못한다. 같은 챕터의 INNER JOIN·Aggregate·FOR ALL ENTRIES는 도입·재언급 지점 모두 마킹돼 hover/click 팝업이 뜨는데 이 개념만 glossary 복습 장치가 빠져, L08 재언급까지 끝내 마킹이 없다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG05",
+          "model": "sonnet",
+          "seq": 1
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C036",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L05.md",
+      "quote": "- **대량 ORDER BY 부하** → 인덱스 없는 정렬은 비싸다. 필요한 만큼만.",
+      "category": "위험한 생략(무제한 조회 습관)",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "'필요한 만큼만'이라 경고하면서 양을 제한하는 수단(WHERE로 범위 좁히기·UP TO n ROWS 상한)을 하나도 보여주지 않고, 예제 자체가 WHERE·건수 제한 없이 테이블 전체를 정렬해 내부 테이블로 통째로 담는 형태다(L03 DISTINCT 예제도 동일). 운영 규모에서 전체 스캔+정렬+대량 적재로 이어지는 전형적 성능 사고 패턴이 기본형처럼 각인된다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG06",
+          "model": "opus",
+          "seq": 5
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C037",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L08.md",
+      "quote": "- **합계 매핑** → SELECT 필드 순서와 `ts_stat` Component 순서를 맞춘다.",
+      "category": "용어 첫 등장·일관성(Component)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'Component'가 이 챕터 첫 등장인데 풀이가 없고, 주변에서 쓰는 '필드'·'컬럼'·'결과 구조'와 명칭이 통일되지 않은 채 영어 대문자 단어만 갑자기 나와 ts_stat 구성 요소와의 대응 관계 이해를 방해한다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG04",
+          "model": "gpt-5.6-sol",
+          "seq": 4
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C038",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L02.md",
+      "quote": "- **LEFT인데 WHERE로 오른쪽 필터** → 매칭 없는 행이 걸러질 수 있다. 오른쪽 조건은\n  `ON`에 두는 게 안전.",
+      "category": "생략(동작 원리 중간 단계)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "오른쪽 조건을 WHERE에 두면 왜 미매칭 행이 걸러지고(WHERE는 JOIN 이후 초기값 행까지 검사) ON에 두면 왜 보존되는지(ON은 매칭 대상만 제한) 중간 단계 설명이 없다. '걸러질 수 있다'와 '안전'만 있어 두 위치를 결과 의미가 아니라 암기로 고르게 되고, 항상 교환 가능한 것처럼 외우기 쉽다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG01",
+          "model": "gpt-5.6-sol",
+          "seq": 2
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C039",
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH13-L02-S01.html",
+      "quote": "<div class=\"ojs-sql__hd\"><span class=\"cb-dots\"><i></i><i></i><i></i></span><span class=\"cb-lang\">ABAP</span><span style=\"margin-left:auto\">classic</span></div>",
+      "category": "위젯 결함(문법 미성립 코드 표시)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L02 위젯의 'ABAP/classic' 코드 패널이 INTO 절 없이 마침표로 끝나는 SELECT 문을 완성문처럼 보여준다. classic에서 필드를 선택하는 SELECT는 INTO 절이 필수라 그대로 옮겨 적으면 컴파일되지 않으며, 같은 챕터 다른 위젯(L04·L06·L08)은 모두 INTO를 표시해 L02만 예외다(생성 위치: outer-join-switch.js의 renderSql()).",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG02",
+          "model": "opus",
+          "seq": 1
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C040",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L01.md",
+      "quote": "- **ON 조건 누락** → 카테시안 곱(행 폭증). 반드시 키로 ON.",
+      "category": "사실 오류(ON 필수 문법)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "ABAP Open SQL의 JOIN에서 ON은 문법상 필수 요소라 '누락'하면 카테시안 곱이 아니라 구문 오류가 나 활성화 자체가 안 된다. 실제 행 폭증은 ON 부실(키 일부만·비키 컬럼) 때 발생하며 그것은 바로 위 절이 이미 정확히 설명하고 있어, 표준 SQL(콤마 FROM 목록) 동작을 그대로 옮긴 이 서술은 학습자가 실제로 만날 오류 유형(구문 오류 vs 런타임 행 폭증)을 혼동시킨다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG06",
+          "model": "opus",
+          "seq": 2
+        },
+        {
+          "agent": "AG06",
+          "model": "sonnet",
+          "seq": 1
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C041",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L05.md",
+      "quote": "- **DB가 정렬에 유리(인덱스)** 하거나 정렬해 바로 쓰면 → `ORDER BY`.",
+      "category": "비문(어절 붕괴)",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "굵게 표시가 '유리(인덱스)'에서 끊겨 서술어 '유리하다' 사이에 괄호가 끼며 '유리 하거나'로 어절이 갈라지고, 뒤 절 '정렬해 바로 쓰면'은 주어가 없어 누가 무엇을 정렬하는지 모호하다. 위아래 항목은 어절이 정상이라 이 줄의 붕괴가 도드라진다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG04",
+          "model": "opus",
+          "seq": 9
+        },
+        {
+          "agent": "AG04",
+          "model": "sonnet",
+          "seq": 8
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C042",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L07.md",
+      "quote": "- **LOOP 안에서 SELECT(중첩 조회)** 는 피한다 — 성능의 대표 안티패턴.",
+      "category": "미풀이 용어·조판(조사 띄어쓰기)",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "'안티패턴'이 챕터 유일 등장인데 풀이도 마킹도 없고('패턴' 개념을 전제로 하는 용어), 굵게 표시 뒤 조사 '는'이 한 칸 떨어져 '중첩 조회) 는 피한다'로 출력된다. 바로 아래 '1만 건이면 1만 번 왕복'이라는 좋은 직관 설명과도 연결돼 있지 않다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG04",
+          "model": "opus",
+          "seq": 11
+        },
+        {
+          "agent": "AG04",
+          "model": "sonnet",
+          "seq": 9
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C043",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L05.md",
+      "quote": "- **콤마/@** → classic이라 공백 구분, `@` 없이.",
+      "category": "과잉(공통 규약 반복)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "동일한 classic 리마인더(콤마·@ 금지)가 L01 콜아웃과 L01·L03·L05(·L08)의 '흔한 실수'에 거의 같은 문장으로 반복되고 CH19 예고 링크도 3회 등장한다. 레슨마다 2～3개뿐인 체크리스트 자리의 절반을 챕터 공통 규약이 차지해 레슨 고유 함정(L05 대량 정렬 부하 등)이 밀려나고, '예고는 도입·마무리만, 중간 반복 금지' 원칙과도 어긋난다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG03",
+          "model": "opus",
+          "seq": 10
+        },
+        {
+          "agent": "AG05",
+          "model": "opus",
+          "seq": 10
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C044",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L07.md",
+      "quote": "- **LOOP + SELECT** → 행마다 DB 왕복. 1만 건이면 **1만 번 왕복**이다. 성능 문제는 보통 문법보다 이 **왕복 횟수**에서 시작한다. JOIN/FAE로 바꾼다.",
+      "category": "지름길 부재(통용 용어 매핑)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'LOOP 안 SELECT' 안티패턴이 ORM 진영에서 보편적으로 'N+1 문제'라 부르는 현상과 동일한데 그 통용 명칭을 병기하지 않아, Hibernate/JPA·EF 등을 써 본 경력자가 이미 아는 지식과 즉시 연결하지 못하고 설명을 처음부터 다시 읽게 된다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG03",
+          "model": "sonnet",
+          "seq": 4
+        },
+        {
+          "agent": "AG03",
+          "model": "gemini-3.6-flash-high",
+          "seq": 2
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C045",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L05.md",
+      "quote": "- `ORDER BY 필드 [ASCENDING|DESCENDING]`, 여러 필드 나열 가능.",
+      "category": "용어 충돌(SQL 습관과의 차이 미고지)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "일반 SQL의 ASC/DESC 축약형이 ABAP Open SQL에서 통하지 않고 전체 철자(ASCENDING/DESCENDING)만 쓴다는 점, 정렬 필드 사이에도 콤마를 찍지 않는다는 점을 짚지 않았다. SQL 경험자는 반사적으로 `ORDER BY fldate DESC`를 치고 레슨 주제와 무관한 문법 오류에서 시간을 버린다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG03",
+          "model": "opus",
+          "seq": 3
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C046",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L04.md",
+      "quote": "- **집계 조건을 WHERE에** → `WHERE COUNT(*)…`는 오류. 집계 조건은 `HAVING`.",
+      "category": "용어 충돌(괄호 공백 규칙 미고지·표기 혼용)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "ABAP의 괄호 안 공백 규칙(`COUNT( * )`)을 챕터 어디에도 명시하지 않은 채, 같은 레슨 안에서 코드블록은 `COUNT( * )`·흔한 실수 불릿은 `COUNT(*)`로 표기가 섞인다. 다른 언어 출신은 `COUNT(*)`를 그대로 쓰다 무관한 문법 오류를 만나고, 표기가 흔들려 어느 쪽이 맞는지 판단할 근거도 없다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG03",
+          "model": "opus",
+          "seq": 4
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C047",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L08.md",
+      "quote": "prevRel: next-step",
+      "category": "메타데이터 정합성(prevRel 값 체계)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "레슨 관계 선언 prevRel 값 체계가 흔들린다. L08은 정의된 세 값(pain-solution/parallel/deepening) 밖의 next-step을 쓰고, L03·L05·L06은 실제 관계가 '다음 주제'인데 deepening으로 뭉뚱그렸으며, L02는 L01 말미의 pain-solution 서술과 달리 parallel로 선언돼 서사 관계의 기계 점검 근거가 무력해진다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG05",
+          "model": "opus",
+          "seq": 12
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C048",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L03.md",
+      "quote": "집계 함수: `COUNT( * )`, `SUM( )`, `MAX( )`, `MIN( )`, `AVG( )`.",
+      "category": "위험한 생략(AVG 결과 타입)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "SUM의 오버플로는 경고하면서 AVG의 결과 타입 함정은 빠졌다. AVG의 결과는 부동소수라 정수·짧은 P 필드로 받으면 소수부가 잘리는데 그 주의가 없고, COUNT( * )는 행을 세고 SUM/AVG는 값 없는 행을 건너뛴다는 차이(OUTER JOIN 집계 시 값이 갈라지는 지점)도 짚지 않는다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG06",
+          "model": "opus",
+          "seq": 4
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C049",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L01.md",
+      "quote": "`carrid`가 같은 행끼리 옆으로 이어 붙인다. 그래서 운항편 줄 옆에 항공사명이 따라온다.",
+      "category": "생략(그림-코드 불일치)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "직관 그림의 'JOIN 결과' 칸(connid·carrname 두 칸)이 바로 아래 코드가 뽑는 세 필드(f~carrid f~connid s~carrname)와 달라 그림과 코드를 대조할 수 없고('carrid는 왜 빠졌지'에서 멈춤), 그림의 두 행(AA·LH) 모두 양쪽에 짝이 있어 다음 절 제목인 '양쪽 다 있는 행만'(INNER의 핵심)이 그림에서 전혀 드러나지 않는다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG01",
+          "model": "opus",
+          "seq": 2
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C050",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L02.md",
+      "quote": "공연 C003이 INNER에선 사라지고, LEFT에선 남는다(오른쪽 값은 초기값).",
+      "category": "문장(지시 대상 불명)",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "'C003'을 이미 아는 것처럼 지칭하지만 그 앞까지 본문·코드에 등장한 적이 없다(공연/예매 코드는 한참 뒤 절에서 처음 나오고, CH13 MD 소스 전체에서 'C003'은 이 한 줄이 유일). 아래 체험 위젯의 데이터를 앞당겨 가리키는 것으로 보이나 독자에겐 놓친 대목처럼 읽힌다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG04",
+          "model": "opus",
+          "seq": 6
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C051",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L04.md",
+      "quote": "**순서** → `WHERE → GROUP BY → HAVING → ORDER BY`를 지킨다.",
+      "category": "단절(미학습 개념 선노출)",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "L04까지는 ORDER BY를 배운 적이 없는데 '흔한 실수' 체크리스트에 ORDER BY가 안내 표기 없이 지켜야 할 규칙으로 나열된다. 바로 다음 문단의 'ORDER BY(다음 레슨)' 예고보다 먼저 등장해 '이건 뭐지' 하고 멈칫하게 한다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG01",
+          "model": "sonnet",
+          "seq": 6
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C052",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L05.md",
+      "quote": "**운항일이 같으면** 항공사 오름차순으로 정한다.",
+      "category": "문장(서술어 호응)",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "앞 절 서술어 '정렬하고'에서 뒤 절이 '정한다'로 바뀌며 목적어(순서)가 사라져 문장이 붕 뜬다. 2차 기준이 무엇을 하는지가 이 레슨의 핵심인데 문장이 흐려져 설명이 약해진다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG04",
+          "model": "opus",
+          "seq": 10
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C053",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L07.md",
+      "quote": "이제 classic Open SQL로 합치고·집계하고·정렬·선택하는 **큰 줄기**를 다 봤다.",
+      "category": "문장(병렬 구조 붕괴)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'합치고·집계하고'(동사 연결형)와 '정렬·선택'(명사)이 한 나열 안에서 형태가 어긋나 읽는 호흡이 걸리고, 마지막 '선택하는'이 앞의 어디까지를 받는지 순간 헷갈린다. 챕터 전체를 마무리하는 문장이라 더 눈에 띈다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG04",
+          "model": "opus",
+          "seq": 12
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C054",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L07.md",
+      "quote": "- **무조건 JOIN** → 너무 많은 테이블 JOIN도 무겁다. 균형.",
+      "category": "톤 이탈·과도한 압축",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "각 레슨 끝 '흔한 실수와 점검' 구간이 서술어를 뗀 전보체로 급전환하는데 그 극단이 명사 한 단어 '균형.'이다. 판단 기준이 하나도 없어 조언이 아니라 표어가 되고, 본문의 친근한 말투와 결이 끊긴다(L01 '반드시 키로 ON.'·L03 'P 길이를 충분히.'·L06 '1순위 점검.' 등 동일 패턴 반복).",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG04",
+          "model": "opus",
+          "seq": 13
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C055",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L03.md",
+      "quote": "그룹키 아닌 평컬럼 SELECT",
+      "category": "표기(띄어쓰기 흔들림)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "같은 레슨(L03) 안에서조차 '그룹 키'(도입부, 띄어쓰기)와 '그룹키'(흔한 실수 항목, 붙여쓰기)가 갈리고, '평컬럼'도 정의 없이 두 번째로 다시 쓰인다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG04",
+          "model": "sonnet",
+          "seq": 7
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C056",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L08.md",
+      "quote": "예매 좌석합계",
+      "category": "표기(띄어쓰기 흔들림)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L03의 '좌석 합계'(띄어쓰기)가 L08에서는 '좌석합계'(붙여쓰기)로 바뀌어 같은 개념의 띄어쓰기가 챕터 안에서 갈린다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG04",
+          "model": "sonnet",
+          "seq": 10
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C057",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L04.md",
+      "quote": "아래 파이프라인을 한 단계씩 진행하며 **WHERE는 행 하나**를, **HAVING은 그룹 하나**를",
+      "category": "중의문",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'행 하나'와 '그룹 하나'가 각 조건이 단 하나만 제거한다는 뜻으로도 읽힌다. 설명하려는 차이는 제거 개수가 아니라 필터의 적용 단위(개별 행 vs 집계된 그룹)이므로 '하나'보다 '개별'이 정확하다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG04",
+          "model": "gpt-5.6-sol",
+          "seq": 3
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C058",
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH13-L04-S01.html",
+      "quote": "  sumField: 'seatsocc', sumLabel: 'SUM(seatsocc)',",
+      "category": "위젯-코드 불일치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "위젯의 GROUP BY·HAVING 단계 결과 표에 'SUM(seatsocc)' 컬럼이 나오는데 같은 화면의 SELECT 문에는 SUM이 없다(COUNT( * ) AS cnt만, 본문 예제도 동일). 코드와 결과를 한 줄씩 대조하는 학습자가 '이 합계는 어느 절에서 나왔나'에서 막힌다(합계 수치 자체는 정확: AA 303·LH 385·SQ 60).",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG02",
+          "model": "opus",
+          "seq": 2
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C059",
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH13-L03-S01.html",
+      "quote": "  cols: [\n    { key: 'booking_id', label: '예매', num: true },\n    { key: 'concert_id', label: '공연' },\n    { key: 'seats', label: '좌석', num: true },\n    { key: 'status', label: '상태' }\n  ],",
+      "category": "위젯 안내문-데이터 불일치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "GROUP BY 모드 안내문이 '그룹 키가 아닌 평컬럼(예: 고객)'을 예로 드는데 이 위젯의 원본 표에는 '고객' 컬럼이 없다(표 헤더는 예매·공연·좌석·상태 4개뿐). 공용 엔진 group-by-lab.js의 renderResult()에 다른 레슨 데이터를 전제로 하드코딩된 문구가 이 레슨 cfg와 어긋나, 화면에서 찾을 수 없는 컬럼을 예로 들어 학습자가 헛짚는다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG02",
+          "model": "opus",
+          "seq": 3
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C060",
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L01.md",
+      "quote": "- 키 일부만 `ON`에 두면 짝이 여러 개로 늘어 **행이 뻥튀기**된다(의도치 않은 중복).",
+      "category": "체험 공백(부분)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'키 일부만 ON→행 뻥튀기'를 2키 AND 코드 예제와 함께 가르치지만 이 페이지 위젯은 단일 키(carrid) 전용·오른쪽 1:1 데이터라 구조적으로 행 증가를 볼 수 없고, 조작 수단도 숨김 칩뿐이라 결과가 줄기만 한다. CH13 위젯 8개 중 다중 키 ON을 다루는 것이 없어 이 챕터에서 가장 반직관적인 대목이 텍스트로만 남는다(레슨별 임베드 존재 자체는 8/8이라 R2 위반은 아님).",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG02",
+          "model": "opus",
+          "seq": 4
+        }
+      ]
+    },
+    {
+      "cluster_id": "CH13-C061",
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH13-L05-S01.html",
+      "quote": "주황색 = 첫 기준 값이 같은 <b>동률</b> 구간 (여기서 2차 기준이 끼어듭니다)",
+      "category": "위젯 결함(동률 구간 표시)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "정렬 위젯의 동률(tie) 주황 강조가, 첫 기준 값이 서로 다른 두 동률-쌍이 정렬 후 인접하면 경계 없이 하나의 이어진 주황 구간으로 렌더된다(fldate ▼에서 03-12쌍+03-11쌍 4행이 연속 tie로 표시, carrid ▲에서도 재현). 원인은 sort-priority-lab.js의 tie 판정이 인접 행 국소 비교라 그룹 경계를 표시하지 않기 때문으로, 안내문('첫 기준 값이 같은 구간')과 실제 표시가 어긋난다.",
+      "conflict": false,
+      "conflict_note": "",
+      "supporters": [
+        {
+          "agent": "AG02",
+          "model": "sonnet",
+          "seq": 1
+        }
+      ]
+    }
+  ],
+  "dropped": [],
+  "grade_opinions": {
+    "opus": [
+      {
+        "agent": "AG01",
+        "grade": "보강 권장"
+      },
+      {
+        "agent": "AG02",
+        "grade": "경미 수정"
+      },
+      {
+        "agent": "AG03",
+        "grade": "경미 수정"
+      },
+      {
+        "agent": "AG04",
+        "grade": "경미 수정"
+      },
+      {
+        "agent": "AG05",
+        "grade": "보강 권장"
+      },
+      {
+        "agent": "AG06",
+        "grade": "보강 권장"
+      },
+      {
+        "agent": "AG09",
+        "grade": "경미 수정"
+      }
+    ],
+    "sonnet": [
+      {
+        "agent": "AG01",
+        "grade": "보강 권장"
+      },
+      {
+        "agent": "AG02",
+        "grade": "경미 수정"
+      },
+      {
+        "agent": "AG03",
+        "grade": "경미 수정"
+      },
+      {
+        "agent": "AG04",
+        "grade": "경미 수정"
+      },
+      {
+        "agent": "AG05",
+        "grade": "경미 수정"
+      },
+      {
+        "agent": "AG06",
+        "grade": "경미 수정"
+      },
+      {
+        "agent": "AG09",
+        "grade": "경미 수정"
+      }
+    ],
+    "gpt-5.6-sol": [
+      {
+        "agent": "AG01",
+        "grade": "보강 권장"
+      },
+      {
+        "agent": "AG02",
+        "grade": "유지"
+      },
+      {
+        "agent": "AG03",
+        "grade": "보강 권장"
+      },
+      {
+        "agent": "AG04",
+        "grade": "경미 수정"
+      },
+      {
+        "agent": "AG05",
+        "grade": "경미 수정"
+      },
+      {
+        "agent": "AG06",
+        "grade": "보강 권장"
+      },
+      {
+        "agent": "AG09",
+        "grade": "보강 권장"
+      }
+    ],
+    "gemini-3.6-flash-high": [
+      {
+        "agent": "AG01",
+        "grade": "유지"
+      },
+      {
+        "agent": "AG02",
+        "grade": "유지"
+      },
+      {
+        "agent": "AG03",
+        "grade": "경미 수정"
+      },
+      {
+        "agent": "AG04",
+        "grade": "유지"
+      },
+      {
+        "agent": "AG05",
+        "grade": "유지"
+      },
+      {
+        "agent": "AG06",
+        "grade": "보강 권장"
+      },
+      {
+        "agent": "AG09",
+        "grade": "경미 수정"
+      }
+    ]
+  }
+}

@@ -48,7 +48,9 @@
       '<div class="drow"><div class="dk">① DB hit</div><div class="dv">' + hit + ' · sy-subrc = ' + e.subrc1 + '</div></div>' +
       '<div class="drow"><div class="dk">② AUTHORITY-CHECK</div><div class="dv">' + authLine + '</div></div>' +
       '<div class="drow"><div class="dk">② sy-subrc</div><div class="dv">' + subrc2 +
-        (subrc2 === 12 ? ' (권한 객체 자체 없음)' : (subrc2 === 0 && e.pass1 ? ' (통과)' : '')) + '</div></div>';
+        (subrc2 === 12 ? ' (그 권한 객체에 대한 권한이 하나도 없음)'
+          : (subrc2 === 4 ? ' (권한은 있으나 지금 검사한 값이 허용 범위 밖)'
+            : (subrc2 === 0 && e.pass1 ? ' (통과)' : ''))) + '</div></div>';
   }
   function renderMsg() {
     var c = cur(), e = evalCase(c);

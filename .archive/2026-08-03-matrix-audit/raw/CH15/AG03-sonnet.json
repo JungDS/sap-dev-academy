@@ -1,0 +1,84 @@
+{
+  "agent": "AG03",
+  "model": "sonnet",
+  "target": "CH15",
+  "persona_ack": "Java/C# 계열 백엔드 3～5년차 개발자로서 ABAP을 빠르게 훑어 익힌다는 역할을 인지했다. 변수·조건문·루프·SQL·OOP 같은 프로그래밍 기본기는 이미 안다는 전제 아래, 과잉/오개념 유발/지름길 부재/용어 충돌 네 기준으로 CH15 12개 레슨과 챕터 개요를 통독했다. 이 사이트의 1독자는 비전공 입문자라는 채택 기준에 맞춰 심각도는 보수적으로 매겼다.",
+  "method": "Read 도구로 대상 파일 13개(챕터 개요 1 + 레슨 12)를 전문 통독하고, 경력자 관점에서 각 레슨의 설명 밀도·비유·용어 선택을 원문과 대조해 인용문(quote)을 직접 발췌했다. 웹 검색·외부 도구는 쓰지 않았다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L10.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L11.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L12.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH15-L01.md",
+      "quote": "**비유 — 식당의 하루**: 오픈 준비(재료 세팅) → 주문 접수(검증) → 조리(본 처리) → 마감.",
+      "category": "과잉",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "이벤트 기반 실행 순서(위→아래가 아니라 정해진 순서로 각 구획이 호출됨)라는 개념은 서블릿 생명주기·미들웨어 파이프라인 등에 익숙한 백엔드 경력자에게는 이미 아는 개념인데, 식당 비유까지 더해 같은 개념을 설명하는 레이어가 하나 더 쌓인다.",
+      "evidence": "비유 바로 위 문단에서 이미 '한 줄씩 위에서 아래로 도는 게 아니라, 시스템이 정해진 이벤트 순서대로 각 구획을 호출한다'는 문장으로 개념을 설명했고, 비유 직후에는 5단계 임베드 위젯과 이벤트 표가 또 이어진다. 경력자 입장에서는 문장 → 비유 → 표로 같은 개념을 세 번 확인하는 셈이다.",
+      "suggestion": "비유는 입문자를 위해 유지하되, 비유 옆에 '이벤트 기반 생명주기(서블릿·미들웨어 등)에 익숙하면 비유는 건너뛰고 아래 표로' 같은 한 줄 지름길 안내를 붙이면 입문자·경력자 모두를 만족시킬 수 있다."
+    },
+    {
+      "seq": 2,
+      "file": "CH15-L01.md",
+      "quote": "한 줄씩 위에서 아래로 도는 게 아니라, 시스템이 정해진 **[[Report Event]]** 순서대로",
+      "category": "용어 충돌",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'Event'라는 이름이 Java/C#의 event·리스너·delegate(구독·다중 핸들러 등록, 임의 시점 발생)와 같은 단어를 쓰지만, Report Event는 실제로 프로그램마다 정해진 이름의 처리 블록이 고정된 순서로 한 번씩만 호출되는 생명주기 훅에 가깝다는 차이를 어디서도 짚어주지 않는다.",
+      "evidence": "CH15-L01과 이후 레슨에서 'Event'라는 용어를 계속 쓰지만, OOP의 구독형 이벤트(핸들러를 여러 개 등록·구독 해제·비동기 발생 가능)와 어떻게 다른지 명시적으로 대조하는 문장이 없다. 경력자는 '이 이벤트에 핸들러를 더 등록할 수 있나', '구독 해제가 필요한가' 같은 잘못된 기대를 가질 수 있다.",
+      "suggestion": "'여기서 Event는 구독형 콜백이 아니라, 프로그램마다 고정된 이름으로 한 번씩 호출되는 처리 시점(생명주기 훅)이다'라는 한 줄 구분을 이벤트 표 위나 아래에 추가하면 좋겠다."
+    },
+    {
+      "seq": 3,
+      "file": "CH15-L06.md",
+      "quote": "MESSAGE 'ALV 표시 중 오류가 발생했습니다' TYPE 'E'.",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "TRY...CATCH cx_salv_msg로 클래스 기반 예외(진짜 catch 가능한 예외)를 잡은 바로 그 안에서 다시 절차형 MESSAGE TYPE 'E'를 쓰는데, 이 둘이 서로 다른 별개의 에러 처리 체계(MESSAGE는 catch 불가능한 절차형 신호, TRY/CATCH는 클래스 기반 예외)라는 점을 챕터 어디서도 대조해 주지 않는다.",
+      "evidence": "CH15-L04에서 절차형 MESSAGE TYPE E(selection-screen 이벤트에서 화면으로 복귀)를 먼저 배우고, CH15-L06·L12에서는 TRY...CATCH cx_salv_msg(OOP 예외) 안에서 다시 MESSAGE TYPE E를 쓴다. 경력자는 'MESSAGE도 TRY/CATCH로 잡을 수 있는가', '왜 예외를 잡아서 다시 문자열 메시지로 바꾸는가'라는 의문이 남을 수 있고, 이는 실제로 MESSAGE를 TRY/CATCH로 잡으려 시도하는 오류로 이어질 수 있는 실질적 오개념이다.",
+      "suggestion": "CH15-L06에 'MESSAGE는 캐치할 수 없는 절차형 신호이고 TRY/CATCH는 클래스 기반 예외를 잡는 별개 체계다. 예외를 잡은 뒤 사용자에게 보여줄 땐 흔히 MESSAGE로 변환해 표시한다'는 한 줄 정리를 추가하면 좋겠다."
+    },
+    {
+      "seq": 4,
+      "file": "CH15-L07.md",
+      "quote": "**없는 코드** — DB에 그런 공연 자체가 없다. → *존재(data) 문제*",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "존재 검증과 권한 검증을 나누는 이 구분은 웹 개발자에게 익숙한 HTTP 404(Not Found) vs 403(Forbidden) 구분과 정확히 대응되는데, 그 비유가 없어 경력자가 처음부터 개념을 다시 쌓아 올려야 한다.",
+      "evidence": "레슨 도입부('없는 코드'/'못 보는 코드' 구분) 어디에도 404/403처럼 경력자에게 이미 익숙한 대응 개념을 언급하지 않는다. 경력자는 이 대응 관계를 스스로 눈치채야 한다.",
+      "suggestion": "도입부에 '이건 웹 개발의 404(없음) vs 403(권한없음) 구분과 같다'는 한 줄 비유를 추가하면 경력자는 즉시 핵심을 이해하고 나머지를 빠르게 훑을 수 있다."
+    },
+    {
+      "seq": 5,
+      "file": "CH15-L09.md",
+      "quote": "이 레슨은 \"화면을 꾸미는 문법 목록\"이 아니라 **입력 조건을 업무 단위로 정리하는",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "이 레슨은 '화면 꾸미기 문법 목록이 아니라 입력 조건 정리법'이라는 목적은 짚어주지만, BLOCK·COMMENT·POSITION·PUSHBUTTON·TABBED BLOCK 전체가 사실 HTML 폼이나 XAML/WinForms 디자이너 코드 같은 '선언형 UI 배치 문법 한 가족'이라는 형태(shape) 비유는 없다.",
+      "evidence": "레슨 전체에서 BLOCK/COMMENT/ULINE/SKIP/POSITION/PUSHBUTTON/FUNCTION KEY/TABBED BLOCK이 각각 별도 소제목으로 나열되는데, 이들을 하나의 문법 가족으로 묶어 주는 비유 문장은 없다. 경력자는 그 비유 한 줄만으로 각 문장을 개별 암기 대신 '레이아웃 DSL의 각 태그'로 빠르게 묶어 이해할 수 있었을 것이다.",
+      "suggestion": "도입부에 'SELECTION-SCREEN 계열 문장은 HTML 폼이나 XAML처럼 화면을 선언형으로 기술하는 한 문법 가족이다'라는 한 줄을 추가하면 좋겠다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "Java/C# 백엔드 경력자 시선으로 CH15(Report Event·Selection Screen 심화) 챕터 개요와 레슨 12개를 통독했다. 다루는 개념(Report Event 흐름, INITIALIZATION/AT SELECTION-SCREEN 계열, MESSAGE 타입, AUTHORITY-CHECK, SELECTION-SCREEN UI 문법)은 경력자에게도 실제로 낯선 SAP 고유 지식이라 '이미 아는 것을 과하게 푸는' 과잉 설명은 거의 없었고, L10(옵션 총정리)처럼 카탈로그형으로 훑어 읽기 좋은 레슨도 있었다. 발견 5건은 전부 낮음~중간 심각도이며 재집필이 필요한 결함은 없다. 핵심 2건은 (1) 'Report Event'라는 이름이 OOP의 구독형 event/리스너 패턴과 다른, 프로그램당 고정된 생명주기 훅이라는 차이를 짚지 않는 용어 충돌(CH15-L01), (2) MESSAGE TYPE E(캐치 불가한 절차형 신호)와 TRY/CATCH cx_salv_msg(클래스 기반 예외)가 같은 챕터에 나란히 등장하는데도 관계를 대조해 주지 않는 오개념 유발 소지(CH15-L06)다. 나머지 3건은 식당 비유 옆 지름길 안내, 웹 개발자에게 익숙한 404/403 비유(존재 vs 권한 검증), 선언형 UI DSL 비유(SELECTION-SCREEN 계열)처럼 '경력자용 빠른 연결고리'가 있으면 좋았을 지점을 suggestion 수준으로 제안한다. 이 사이트의 1독자가 비전공 입문자라는 점을 고려해 심각도는 보수적으로 매겼다."
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "agent": "AG06",
+  "model": "sonnet",
+  "target": "CH13",
+  "persona_ack": "20년차 SAP ABAP 아키텍트(ECC~S/4HANA 개발·운영·성능·이관 경험) 페르소나로 CH13(classic Open SQL: JOIN·GROUP BY·HAVING·ORDER BY·FOR ALL ENTRIES) 기술 감사를 수행함.",
+  "method": "대상 9개 파일(_chapter.md, CH13-L01~L08.md) 전량 정독. classic Open SQL 문법 규칙(ON 필수 여부, CORRESPONDING FIELDS 매칭, sy-subrc/sy-dbcnt 의미, LEFT OUTER JOIN의 NULL→초기값 변환, FOR ALL ENTRIES 빈 테이블·중복제거 특성, SALV factory 예외 시그니처, HAVING/WHERE 표현식 범위 등)을 ABAP 언어 사양 지식과 대조 검증. 웹 검색·코드 실행 없이 지식 기반으로만 판단.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L08.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH13-L01.md",
+      "quote": "**ON 조건 누락** → 카테시안 곱(행 폭증). 반드시 키로 ON.",
+      "category": "사실 오류",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'ON 조건 누락'이 카테시안 곱(행 폭증)으로 이어진다고 '흔한 실수'처럼 서술했지만, ABAP Open SQL의 classic JOIN 구문에서 ON 조건은 문법상 필수 요소라 실제로는 생략할 수 없다 — 생략하면 활성화(구문 검사) 단계에서 즉시 오류가 나 실행 자체가 안 된다.",
+      "evidence": "ABAP Open SQL의 [INNER|LEFT OUTER|RIGHT OUTER] JOIN 문법은 'dtab1 JOIN dtab2 ON cond' 형태로 ON이 필수이며, 이를 빠뜨리면 'ON이 필요합니다' 류의 구문 오류가 발생해 프로그램이 활성화조차 되지 않는다. 반면 행이 실제로 폭증하는 진짜 원인(부분 키만 ON에 거는 경우)은 바로 앞 문단 '조인 조건엔 전체 키가 등장해야'에서 이미 정확히 짚었다. 두 항목을 '흔한 실수' 리스트에서 사실상 같은 결과(카테시안 곱)로 뭉뚱그리면, 학습자가 실제로 마주칠 오류(구문 오류 vs 런타임 행 폭증)를 혼동할 수 있다.",
+      "suggestion": "이 불릿은 삭제하거나 위 '부분 키 ON' 항목과 통합한다. 굳이 별도로 남기려면 'ON 자체를 생략하면 문법 오류로 아예 활성화되지 않는다(반면 콤마로 여러 테이블만 나열하는 네이티브 SQL이나 CROSS JOIN에선 진짜 카테시안 곱이 난다)'처럼 정확히 구분해 서술."
+    },
+    {
+      "seq": 2,
+      "file": "CH13-L01.md",
+      "quote": "`INTO CORRESPONDING FIELDS OF TABLE`은 **이름이 같은 필드끼리** 자동으로 담아 준다.",
+      "category": "위험한 생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "INTO CORRESPONDING FIELDS OF TABLE이 '이름이 같은 필드끼리 자동으로 담아준다'는 긍정적 동작만 설명하고, 대상 구조체에 그 이름의 컴포넌트가 없거나 오탈자가 있을 때 아무 오류·경고 없이 그 필드만 조용히 초기값으로 남는다는 위험을 어디서도 언급하지 않는다. 이 패턴은 L01·L02·L03에서 반복 사용된다.",
+      "evidence": "CORRESPONDING FIELDS OF는 SELECT 결과 컬럼명(별칭 포함)과 대상 구조체 컴포넌트명을 런타임에 이름 기준으로 매칭한다. 이름이 일치하지 않는 컴포넌트가 있어도 sy-subrc나 별도 오류 없이 그냥 채워지지 않고 넘어간다. 실무에서 구조체 필드명 변경·오탈자로 인해 'SELECT는 분명 성공(sy-subrc=0)했는데 특정 컬럼만 계속 비어 있다'는 사고가 반복적으로 발생하는 대표적인 원인이며, 이 챕터가 sy-subrc·sy-dbcnt로 '왜 이 행 수인가'는 짚으면서 '왜 이 컬럼이 비는가'는 짚지 않는 비대칭이 있다.",
+      "suggestion": "sy-subrc·sy-dbcnt 점검 문단 근처(혹은 '흔한 실수와 점검')에 '대상 구조체 필드명이 SELECT 결과(별칭)와 정확히 일치해야 하며, 안 맞으면 에러 없이 그 필드만 조용히 비게 된다'는 한 줄 경고를 추가."
+    },
+    {
+      "seq": 3,
+      "file": "CH13-L08.md",
+      "quote": "CATCH cx_salv_msg.",
+      "category": "안티패턴",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "SALV 생성 실패 예외(cx_salv_msg)를 CATCH하고도 로그·MESSAGE·폴백 등 아무 처리 없이 그냥 넘어간다. 이 예제가 학습자에게 사실상 첫 TRY/CATCH 경험(front-matter의 advanceUse)인데, '예외는 잡기만 하면 끝'이라는 나쁜 습관이 설명 없이 각인될 위험이 있다.",
+      "evidence": "cl_salv_table=>factory가 cx_salv_msg를 던지는 경우가 실무에서 드문 것(주로 컨테이너·파라미터 조합 오류)은 사실이고, 그래서 실제 SAP 코드에도 이 특정 예외에 한해 빈 CATCH가 흔히 보이긴 한다. 다만 이 레슨처럼 그 이유에 대한 주석·설명이 전혀 없이 '빈 CATCH 블록'만 보여주면, 학습자가 나중에 훨씬 흔히 발생하는 다른 예외(락 실패, 권한 오류 등)에도 같은 패턴을 무비판적으로 재사용할 소지가 있다. 빈 CATCH 블록은 실제 코드 리뷰에서도 단골 지적 사항이다.",
+      "suggestion": "CATCH cx_salv_msg INTO DATA(lx_msg). MESSAGE lx_msg->get_text( ) TYPE 'I'. 처럼 최소한의 사용자 피드백을 추가하거나, 최소한 '이 예외는 파라미터 오류로 실무에서 거의 발생하지 않아 비워둔다'는 주석을 코드에 남긴다."
+    },
+    {
+      "seq": 4,
+      "file": "CH13-L08.md",
+      "quote": "(도전) `HAVING`으로 \"예매가 정원의 80%를 넘은 공연\"만 추린다.",
+      "category": "사실 오류",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "'도전' 과제가 HAVING만으로 '예매가 정원의 80%를 넘은 공연'(예: SUM(b~seats) > c~capacity * 0.8처럼 그룹 컬럼에 대한 산술 비교)을 걸러내라고 요구하는데, 조건절 안에서의 이런 인라인 산술식은 classic Open SQL의 WHERE/HAVING 문법에서 지원되지 않았을 가능성이 높다 — 지원된다면 그것은 7.40대에 도입된 Open SQL Expression에 해당해, 이 챕터가 반복해서 못박은 'classic 전용' 범위(modern @·콤마는 Chapter 19) 밖일 수 있다.",
+      "evidence": "classic Open SQL의 WHERE/HAVING은 전통적으로 '필드 vs 리터럴/호스트 변수/다른 필드'의 단순 비교 위주였고, '필드 * 0.8' 같은 조건절 내 산술 연산은 여러 DB 이식성 제약 때문에 후대(7.40 SP05 전후 Open SQL Expression/CASE)에 확장된 영역으로 기억한다. 다만 정확한 릴리스 컷오프·리터럴 곱셈 허용 여부는 기억이 확실치 않아 release 의존적인 부분이 있으므로 confidence는 '추정'으로 표기한다.",
+      "suggestion": "'도전' 문항에 'HAVING 단독 산술 비교가 안 될 수 있다 — SELECT/GROUP BY로 capacity·booked를 그대로 받은 뒤 ABAP LOOP에서 booked > capacity * '0.8'로 비교하는 classic 방식도 고려'처럼 대안 힌트를 덧붙이거나, 처음부터 'SELECT 후 ABAP LOOP 비교'를 정답 경로로 제시해 classic 범위를 벗어나지 않게 한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH13(JOIN·GROUP BY·HAVING·ORDER BY·FOR ALL ENTRIES) classic Open SQL 문법은 전반적으로 정확하고 예제도 실무 관행에 부합한다. 특히 FAE 빈 테이블 함정(WHERE 무시·전체 조회), FAE 결과 중복 자동 제거, LEFT OUTER JOIN에서 오른쪽 조건을 WHERE에 두면 안 되는 함정, LOOP 안 SELECT 안티패턴 등 실무에서 실제 사고로 이어지는 핵심 요소들을 정확하고 시의적절하게 짚었다 — 이 부분은 오히려 이 수준 교재로선 모범적이다. 발견한 4건은 모두 완결성·정확성을 다듬는 수준의 경미한 사안: (1) L01의 'ON 조건 누락→카테시안 곱' 서술은 ABAP Open SQL에서 ON이 문법상 필수라 실제로는 일어날 수 없는 상황을 흔한 실수처럼 소개(낮음), (2) L01~L03에서 반복 쓰이는 INTO CORRESPONDING FIELDS OF TABLE의 필드명 불일치 시 무경고 누락 위험이 어디서도 언급되지 않음(중간), (3) L08의 빈 CATCH cx_salv_msg 블록이 설명 없이 예외 흡수 패턴을 시연(낮음), (4) L08 '도전' 과제가 요구하는 HAVING 산술 비교(정원의 80%)가 이 챕터 스스로 못박은 classic 범위에서 실제로 작성 가능한지 불확실(release 의존이라 추정, 낮음). 치명·높음 등급 결함은 발견하지 못했다."
+  }
+}

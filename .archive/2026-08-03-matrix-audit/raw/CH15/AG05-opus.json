@@ -1,0 +1,163 @@
+{
+  "agent": "AG05",
+  "model": "opus",
+  "target": "CH15",
+  "persona_ack": "20년차 학습 교재·코스 설계 전문가로서 CH15를 교수설계 관점(챕터 구성·레슨 분할/순서, 섹션 흐름, 복습·예습 장치, 불편→해결 서사, 인지부하)에서만 감사했다. ABAP 문법 정확성·표기 규칙 준수는 내 판정 축이 아니므로 다루지 않았고, '왜→무엇→어떻게→실수→정리' 5단계의 자연스러운 변형은 결함으로 세지 않았다. 학습 효과를 실제로 해치는 구조 문제만 올렸으며, 없는 곳은 억지로 만들지 않았다.",
+  "method": "Read 도구로 대상 13개 파일(_chapter.md + L01~L12) 전문을 통독한 뒤, Grep(읽기 전용)으로 ① 전 레슨 '^## ' 섹션 헤딩 목록을 뽑아 흐름 단계 결손을 교차확인, ② front-matter의 introduces/advanceUse/prereq/prevRel/intro를 대조해 신규 개념 밀도와 선행 사용 선언을 확인, ③ TEXT-\\d 등 미설명 재사용 토큰의 등장 지점을 전수 확인, ④ 보고에 인용한 모든 quote가 원문에 한 줄 그대로 존재하는지 앵커 검증했다. 웹 검색·외부 네트워크는 사용하지 않았고, 다른 감사자 산출물이나 과거 감사 결과물은 열지 않았다.",
+  "errors": [
+    "접근 범위가 CH15 13개 파일로 한정되어 타 챕터(_chapter.md 서술 관행, TEXT 심볼·SALV의 선행 학습 여부)와 비교 검증을 할 수 없었다 — 이 제약이 걸린 seq 1·7의 confidence를 '추정'으로 낮췄다."
+  ],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L10.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L11.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L12.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH15/_chapter.md",
+      "quote": "intro: \"실행 흐름의 적절한 시점에 코드를 끼우고, 선택화면을 다듬고 싶다.\"",
+      "category": "챕터 구성 — 챕터 intro의 동기 설계",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "12개 레슨짜리 중급 챕터의 도입이 한 문장뿐이고, 본문도 그 문장을 그대로 한 번 더 반복할 뿐이라 '이 챕터를 왜 배우는가'를 팔지 못한다.",
+      "evidence": "_chapter.md는 front-matter intro 1문장 + 본문 1문장(동일 문장)으로 끝난다. 레슨들은 하나같이 구체적 불편으로 문을 여는데(L02 '빈 화면에서 시작하고 싶진 않다', L06 '모든 리포트는 END-OF-SELECTION에 써야 하는 거구나?', L07 '없는 코드와 못 보는 코드는 다르다'), 정작 이 12개를 묶는 상위 서사·여정 지도는 챕터 입구에 없다. 학습자는 L01에 들어가서야 비로소 동기를 만난다. 또 '코드를 끼우고'·'다듬고'는 이 챕터가 실제로 해결하는 문제(잘못된 입력이 그대로 조회로 새어 들어가는 것, 조건이 뒤엉킨 화면)에 비해 약한 표현이다.",
+      "suggestion": "intro는 유지하되 _chapter.md 본문을 3～5문장으로 늘려 ① 지금까지처럼 START-OF-SELECTION에 코드를 몰아 두면 무엇이 깨지는지(검증했는데 이미 조회가 끝나 있는 상황) ② 이 챕터를 마치면 만들 수 있는 것(L12 예매현황 리포트) ③ 12개 레슨의 두 묶음(이벤트 흐름 L01～L08 · 선택화면 구성 L09～L11 → 종합 L12) 지도를 담을 것."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH15/CH15-L04.md",
+      "quote": "입력까지 검증했다. 이제 메인 로직, 조회를 실행하자 → START-OF-SELECTION(다음 레슨).",
+      "category": "섹션 흐름 — 정리(마무리) 단계 결손",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L04에만 '## 정리'가 없다. 12개 레슨 중 유일하게 마무리 없이 '흔한 실수와 점검'에서 곧장 다음 레슨 예고로 넘어간다.",
+      "evidence": "전 레슨의 '^## ' 헤딩을 전수 확인한 결과 L01·L02·L03·L05·L06·L07·L08·L09·L10·L11·L12 열한 개는 모두 '## 정리'로 닫는데 L04만 '## 흔한 실수와 점검'(113행) 다음에 구분선과 예고 문장(121행)이 바로 온다. 하필 L04는 이 챕터에서 신규 개념이 가장 많은 레슨(seq 3 참조)이라, 압축·정착이 가장 필요한 자리에서 회수 장치가 빠진 셈이다. 형식 준수 차원이 아니라, 검증 2종의 차이·MESSAGE 6타입·메시지 클래스를 한꺼번에 읽은 학습자가 '결국 뭘 기억하면 되는가'를 회수할 지점이 없다는 문제다.",
+      "suggestion": "'## 정리' 3줄을 추가할 것 — ① 검증의 자리는 AT SELECTION-SCREEN(PAI) ② 필드 하나면 ON <필드>(그 칸만 열림), 필드 조합이면 전체 검증(모두 열림) ③ 막으려면 TYPE 'E', 메시지는 SE91 클래스+&1~&4로 재사용. 표 두 개(전체 vs 필드, MESSAGE 타입)의 결론만 한 줄씩 회수하면 충분하다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH15/CH15-L04.md",
+      "quote": "introduces: [\"AT SELECTION-SCREEN\",\"MESSAGE 타입(I/S/W/E/A/X)\",\"메시지 클래스(SE91)\",\"메시지 변수(&1~&4)\",\"PAI\"]",
+      "category": "인지 부하 — 한 레슨 신규 개념 과다",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "L04 한 레슨에 '검증 이벤트 계열'과 '메시지 시스템 전체'라는 서로 다른 두 주제가 겹쳐 실려 신규 항목이 과다하다. MESSAGE 체계는 독립 레슨으로 뗄 만한 분량이다.",
+      "evidence": "L04가 한 번에 도입하는 것: AT SELECTION-SCREEN(전체) · AT SELECTION-SCREEN ON <필드>와 오류 시 화면 잠금 동작 차이(비교표 1개) · PAI 개념 · MESSAGE 타입 6종(표 1개) · SE91 메시지 클래스 · &1~&4 자리표시자와 WITH · DDIC 선언 검증과의 역할 분리. 여기에 '고급 — 맛보기' details가 ON BLOCK·ON RADIOBUTTON GROUP·ON HELP-REQUEST·ON VALUE-REQUEST 네 용어를 추가로 얹는다. 챕터의 다른 레슨은 introduces가 1～3개인데(L02:1, L05:1, L06:2, L07:2, L08:3) L04만 5개이고 본문 '##' 섹션도 8개다. 게다가 마무리(정리)까지 없다(seq 2). 대조적으로 L06은 '쓰지 말 것'을 알려 주는 legacy 이벤트 하나에 레슨 하나를 온전히 쓰고 있어, 레슨 간 밀도 편차가 크다.",
+      "suggestion": "'## MESSAGE 제대로 알기'(70행)부터 &1~&4까지를 별도 레슨(예: L04b 'MESSAGE — 타입·메시지 클래스')으로 분리하고, L04 본문에는 검증에 필요한 최소치(E는 막고 화면 복귀, I는 못 막는다)만 남길 것. 분리가 부담이면 최소한 SE91·&1~&4를 details로 접어 '지금은 E만 알면 된다'를 본류로 세울 것."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH15/CH15-L08.md",
+      "quote": "advanceUse: [\"PARAMETERS RADIOBUTTON GROUP(선언만 — 정식은 다음 레슨)\"]",
+      "category": "챕터 구성 — 레슨 순서 역전(선행 사용 유발)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L08(블록·라디오그룹 '검증')이 L09(블록·라디오버튼 '선언')보다 앞에 놓여, 학습자가 아직 만들 줄 모르는 화면 구조물을 검증하는 순서가 됐다. 두 레슨을 맞바꾸면 선행 사용 자체가 사라진다.",
+      "evidence": "L08 본문은 스스로 부채를 인정한다 — 'SELECTION-SCREEN BEGIN OF BLOCK …과 …RADIOBUTTON GROUP … 문법은 다음 레슨 [Selection Screen UI 구성](CH15-L09.html)에서 자세히 본다 — 아래 예제의 pa_sum/pa_det도 그 선언으로 만든 라디오다 [선행 사용]'(24～27행). 즉 ON BLOCK b_date·ON RADIOBUTTON GROUP g1 예제를 읽는 시점에 b_date라는 블록도, g1이라는 그룹도 학습자는 만들어 본 적이 없다. 그런데 L09의 prereq는 [\"CH12\",\"CH15-L02\",\"CH15-L04\"]로 L08을 전혀 요구하지 않고, L09 본문 어디에도 L08 의존이 없다. 역방향 의존만 존재하는 = 순서를 바꿔도 잃을 게 없는 역전이다. L04(67행)가 L08을 예고하며 붙인 라벨이 하필 'Selection Screen 블록·라인'(=실제로는 L09 내용)인 것도 두 레슨의 경계가 흐릿함을 방증한다(seq 10).",
+      "suggestion": "L09(UI 구성)를 L08(고급 검증·F1/F4) 앞으로 옮길 것 — order만 맞바꾸고 두 레슨의 도입/마무리 연결 문장, L11의 prereq 순서, L04·L07의 예고 링크를 함께 손보면 된다. 순서를 유지한다면 L08 첫 코드 직전에 BLOCK·RADIOBUTTON GROUP 선언 3～4줄을 [선행 사용] 표시와 함께 실제로 보여 줘, 검증 대상의 실물을 눈으로 본 뒤 검증에 들어가게 할 것."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH15/CH15-L09.md",
+      "quote": "introduces: [\"SELECTION-SCREEN BLOCK\", \"COMMENT\", \"PUSHBUTTON\", \"PARAMETERS AS CHECKBOX\", \"RADIOBUTTON GROUP\", \"TABBED BLOCK\", \"FUNCTION KEY(SSCRFIELDS)\"]",
+      "category": "인지 부하 — 한 레슨 신규 문법 요소 과다",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "L09가 선택화면 UI 문법을 사실상 한 레슨에 몰아 담아 신규 항목이 챕터 최대치(introduces 7종, 실제 등장 문법은 그 두 배)다. 레슨 스스로 경계한 '장식 과다'를 레슨 구성이 답습하고 있다.",
+      "evidence": "본문에 새로 나오는 것: BEGIN/END OF BLOCK·WITH FRAME TITLE·COMMENT(+FOR FIELD)·ULINE·SKIP·BEGIN/END OF LINE·POSITION·POS_LOW/POS_HIGH·AS CHECKBOX·RADIOBUTTON GROUP(+DEFAULT 'X')·PUSHBUTTON(+USER-COMMAND)·FUNCTION KEY 1～5(FC01～FC05·FUNCTXT_0n)·TABLES sscrfields·SSCRFIELDS-UCOMM·TABBED BLOCK·Subscreen. 서로 성격이 다른 세 덩어리(레이아웃 / 입력 위젯 / 버튼·이벤트 코드)가 한 호흡에 들어가고, 버튼 절은 CASE sscrfields-ucomm 처리 코드까지 포함해 사실상 이벤트 레슨 하나가 덧붙은 셈이다. 정작 레슨 자신은 '장식 과다 → 업무 단위 grouping이 먼저, 꾸미기는 그 다음. 한꺼번에 다 쓰면 화면만 복잡해진다'(116행)라고 경고한다.",
+      "suggestion": "L09를 둘로 나눌 것 — ①'선택화면 레이아웃'(BLOCK·FRAME·COMMENT·ULINE·SKIP·LINE·POSITION) ②'선택화면 위젯과 버튼'(CHECKBOX·RADIOBUTTON·PUSHBUTTON·FUNCTION KEY·SSCRFIELDS-UCOMM). 분리가 어렵다면 버튼 절만 L11(CALL SELECTION-SCREEN — 이미 버튼으로 보조 화면을 여는 시나리오를 쓰고 있다)로 옮기는 것만으로도 밀도가 크게 내려간다."
+    },
+    {
+      "seq": 6,
+      "file": "content/abap/CH15/CH15-L09.md",
+      "quote": "- 각 탭의 내용은 **Subscreen**(선택화면의 일부 영역)으로 채운다. 탭마다 다른 입력 묶음을 끼워 넣는 구조다.",
+      "category": "챕터 구성 — 도입하다 만 파편 주제",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "TABBED BLOCK·Subscreen이 이름과 주의사항만 소개되고 코드 예제도 체험도 없이 '심화로 둔다'로 닫힌다. 학습자에게는 부담만 남고 회수되는 게 없다.",
+      "evidence": "'## 탭으로 나누기 — TABBED BLOCK'(95행) 절은 이 챕터에서 유일하게 ABAP 코드 블록이 하나도 없는 문법 절이다. 세 개의 불릿 중 둘이 경고이고('subscreen 연결이 필수다 — 연결을 빠뜨리면 빈 탭이 되어 …잘못 연결하면 runtime 문제가 날 수 있다'), 마지막은 '(복잡한 tab framework는 실습 심화로 둔다.)'로 물러선다. 체험 임베드 안내문(106～107행)도 버튼과 COMMENT 연결만 다루고 탭은 언급하지 않는다. 결국 학습자는 Subscreen이라는 새 용어와 '잘못하면 덤프' 경고만 받고 확인할 방법이 없다 — 이 챕터가 다른 곳에서 지키는 '코드가 나오면 그 자리에서 체험'과도 어긋난다.",
+      "suggestion": "둘 중 하나로 정할 것 — ① TABBED BLOCK을 L1 예고로 강등해 '조건 영역이 많으면 탭으로도 나눌 수 있다(Dynpro 장에서 다룸)' 1～2문장으로 줄이거나, ② 최소 동작 예제(BEGIN OF TABBED BLOCK + 탭 2개 + Subscreen 연결)를 코드로 보여 주고 체험에 탭 전환을 포함시킬 것. 지금처럼 경고만 남기는 중간 상태가 가장 나쁘다."
+    },
+    {
+      "seq": 7,
+      "file": "content/abap/CH15/CH15-L09.md",
+      "quote": "SELECTION-SCREEN BEGIN OF BLOCK b_main WITH FRAME TITLE TEXT-001.",
+      "category": "복습 장치 — 재사용 개념 상기 누락",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "TEXT-001·TEXT-002·TEXT-003·TEXT-010이 코드에 네 번 등장하는데, 텍스트 심볼이 무엇이고 어디서 만드는지에 대한 상기 한 줄도 링크도 챕터 전체에 없다.",
+      "evidence": "CH15 전체에서 'TEXT-'는 L09 25·27·43행과 L11 24행에 나오지만, '텍스트 심볼'·'Text Element'라는 말은 한 번도 등장하지 않고 glossary 마킹([[...]])도 붙어 있지 않다. 화면 제목과 라벨이 모두 이 토큰으로 되어 있어 학습자가 예제를 그대로 옮겨 적으면 SE38에서 빈 제목을 보게 되는데, 그때 무엇을 채워야 하는지 알 길이 없다. 이 챕터는 재사용 개념마다 상기 장치를 꼼꼼히 붙이는 편이라(L02의 Range Table 네 칸 → CH12 링크, L06의 SALV → CH11 링크, L07의 e003(zmsg) → L04 링크) 유독 여기만 비어 있는 것이 눈에 띈다. 이전 챕터에서 텍스트 심볼을 배웠는지는 이번 감사 범위(CH15 13개 파일) 밖이라 확인하지 못했다 — 배웠다면 링크 한 줄, 안 배웠다면 징검다리 결손이다.",
+      "suggestion": "첫 등장(L09 25행) 아래 불릿에 'TEXT-001은 텍스트 심볼(SE38 → 이동 → 텍스트 요소)에 등록한 문구를 가져오는 자리다. 비워 두면 제목이 안 보인다' 한 줄과, 정식 도입 레슨이 있으면 그 링크를 붙일 것."
+    },
+    {
+      "seq": 8,
+      "file": "content/abap/CH15/CH15-L06.md",
+      "quote": "> 💡 변수 접두어: 프로그램 맨 위에서 선언한 `gt_booking`은 이 리포트 전체에서 쓰는",
+      "category": "복습 장치 — 상기 문구가 인접 코드와 모순",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'프로그램 맨 위 선언 = 전역 = g 접두어'를 가르치는 상기 팁 바로 위에서, 똑같이 맨 위에 선언된 lo_alv가 l(로컬) 접두어를 쓰고 있다. 규칙을 알려 주는 자리에서 반례가 함께 보인다.",
+      "evidence": "L06 코드(47～49행)는 'DATA gt_booking TYPE STANDARD TABLE OF zbooking.' 다음 줄에 'DATA lo_alv     TYPE REF TO cl_salv_table.'를 두고, 그 아래 팁이 gt_booking만 짚어 '맨 위에서 선언 → 전역이라 gt_'라고 설명한다. 학습자가 팁의 논리를 그대로 적용하면 lo_alv도 맨 위 선언이므로 g로 시작해야 한다는 결론에 이르는데 화면에는 l이 보인다. L12에서는 더 선명하게 드러난다 — 하나의 DATA 체인 안에서 gv_chk·gv_status·gt_booking·gs_screen과 lo_alv가 나란히 놓인다(37～41행). 접두어를 막 배우는 입문자에게 이 불일치는 '객체는 예외인가?'라는 답 없는 질문을 남긴다.",
+      "suggestion": "둘 중 하나 — ① lo_alv를 go_alv로 바꿔 스코프 규칙을 일관되게 지키거나(L06·L12 동시 수정), ② 팁에 '객체 참조는 o를 붙여 go_/lo_로 쓰며 여기서는 표시용 임시 참조라 …' 식으로 예외를 명시할 것. 지금처럼 규칙만 말하고 반례를 방치하면 상기 장치가 오히려 혼란원이 된다."
+    },
+    {
+      "seq": 9,
+      "file": "content/abap/CH15/CH15-L05.md",
+      "quote": "- 결과 유무는 `sy-subrc`·`sy-dbcnt`로 확인한다.",
+      "category": "섹션 흐름 — 정리에서 신규 용어 첫 등장",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L05의 '정리'가 본문에서 한 번도 다루지 않은 sy-dbcnt를 처음 꺼낸다. 회수하는 자리에서 새것을 던지는 구조다.",
+      "evidence": "L05에서 sy-dbcnt는 73행(정리)에 단 한 번 나온다. 본문·예제·흔한 실수 어디에도 없고 keywords에도 없으며 설명이나 glossary 마킹도 없다(본문이 실제로 쓰는 것은 SELECT 후의 sy-subrc뿐이다). 정리는 배운 것을 압축하는 자리인데, 여기서 처음 보는 시스템 필드가 sy-subrc와 대등하게 병기되면 학습자는 '내가 놓쳤나' 하고 본문을 되짚게 된다 — 마무리가 주는 안정감이 깨진다.",
+      "suggestion": "정리에서 sy-dbcnt를 빼고 '결과 유무는 sy-subrc로 확인한다'로 줄이거나, 본문 예제 아래에 '몇 건 담겼는지는 sy-dbcnt로도 볼 수 있다' 한 줄을 먼저 두어 정리가 회수만 하게 할 것."
+    },
+    {
+      "seq": 10,
+      "file": "content/abap/CH15/CH15-L04.md",
+      "quote": "검증(`ON`·`ON BLOCK`)과 도움말(F1·F4 = `HELP/VALUE-REQUEST`)은 목적이 다르다. 본격 활용은 [Chapter 15 · Selection Screen 블록·라인](CH15-L08.html)에서 다룬다.",
+      "category": "예습 장치 — 예고 링크 라벨 불일치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L08을 예고하는 링크의 라벨이 'Selection Screen 블록·라인'인데, L08의 실제 제목은 'Selection Screen 고급 — 블록·그룹 검증과 커스텀 F1·F4'다. 라벨이 가리키는 '라인'은 오히려 L09의 내용이라 학습자가 엉뚱한 기대를 갖는다.",
+      "evidence": "L04 67행의 링크 대상은 CH15-L08.html로 맞지만 라벨이 낡았다. L08에는 'LINE'(BEGIN OF LINE·POSITION) 이야기가 전혀 없고, 그것은 L09 38～50행의 주제다. 반대로 이 예고가 실제로 안내하려는 ON BLOCK·ON RADIOBUTTON GROUP·F1·F4는 라벨에 하나도 드러나지 않는다. 같은 챕터의 다른 예고들은 대상 레슨 제목을 정확히 쓴다(L07 마지막의 'Selection Screen 고급 — 블록·그룹 검증과 커스텀 F1·F4', L08 마지막의 'Selection Screen UI 구성'). 예고는 '무엇을 언제 배우는지'를 약속하는 장치라 라벨이 어긋나면 약속이 깨진다.",
+      "suggestion": "라벨을 대상 레슨의 실제 제목으로 교체할 것 — '[Chapter 15 · Selection Screen 고급 — 블록·그룹 검증과 커스텀 F1·F4](CH15-L08.html)'. seq 4의 순서 조정을 함께 반영한다면 이 링크도 같이 손볼 것."
+    },
+    {
+      "seq": 11,
+      "file": "content/abap/CH15/CH15-L04.md",
+      "quote": "사용자가 실행(또는 Enter)을 누른 순간(PAI), 입력값을 **검증**하고 잘못됐으면",
+      "category": "불편→해결 서사 — 도입부 불편 부재",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "L04만 도입부에 겪게 하는 불편 없이 곧바로 해법(무엇을 하는 이벤트인지)을 서술한다. 챕터의 다른 레슨들이 지키는 pain→solution 서사에서 혼자 벗어나 있다.",
+      "evidence": "L04 도입(12～15행)은 '잘못된 입력은 막는다' 제목 아래 두 문장으로 곧장 기능 설명에 들어간다. 반면 L02는 '빈 화면에서 시작하고 싶진 않다 …사용자는 입력을 잃는다', L03은 '같은 report를 두 개 만들기보다', L05는 'INITIALIZATION에 쓰면 조건을 입력하기 전에 조회하고 …둘 다 좋은 자리가 아니다', L06은 학습자의 오해를 인용으로 재현하고, L07은 '없는 코드'와 '못 보는 코드'를 대비시켜 사고 위험까지 그린다. 검증은 '안 하면 어떻게 되는지'가 가장 극적인 주제(잘못된 조건으로 몇 분짜리 조회가 돌아가거나, 오류 후 멀쩡한 입력까지 다 날아가는 경험)인데 그 장면이 비어 있어, 신규 개념이 가장 많은 레슨이 동기는 가장 약한 상태로 시작한다.",
+      "suggestion": "도입에 2～3문장짜리 장면을 넣을 것 — 예: 종료일을 시작일보다 앞서 넣고 실행 → 화면이 넘어가 한참 조회가 돌고 → 결과 0건, 사용자는 무엇이 틀렸는지 모른다. 이어서 '이걸 화면을 넘기기 전에 잡는 자리가 AT SELECTION-SCREEN'으로 연결하면 뒤의 비교표까지 자연스럽게 팔린다."
+    },
+    {
+      "seq": 12,
+      "file": "content/abap/CH15/CH15-L12.md",
+      "quote": "- 고급 조건 필드(`pa_note`)는 모드가 `A`일 때만 활성화한다.",
+      "category": "종합 실습 — 요구사항의 목적 미완결",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "종합 실습의 pa_note와 pa_mode가 '숨김/보임'을 시연하기 위해서만 존재하고, 그 값이 조회·표시 어디에도 쓰이지 않아 '이 칸은 왜 있나'가 끝까지 해소되지 않는다.",
+      "evidence": "통합 코드(31～93행)에서 pa_note는 AT SELECTION-SCREEN OUTPUT의 숨김 대상으로만 등장하고 SELECT의 WHERE에도, 출력에도 관여하지 않는다. pa_mode 역시 pa_note를 가리는 스위치 역할뿐이다. 검증 시나리오 표의 마지막 줄도 '고급 모드 | pa_mode=A | pa_note 입력 가능'에서 멈춰 입력한 값의 쓰임을 말하지 않고, '흔한 실수'의 '필드를 숨기면 값도 사라진다고 착각 → pa_note를 숨겨도 내부 변수 값은 그대로다'는 설명은 그 값이 실제로 쓰이는 자리가 있을 때 훨씬 설득력이 있다. 다른 요구사항 네 개가 모두 결과로 이어지는 것과 대비돼, 이 항목만 문법 시연용으로 남는다.",
+      "suggestion": "pa_note에 작은 실제 역할을 줄 것 — 예: 값이 있으면 SALV 제목이나 결과 헤더에 메모로 붙이기, 또는 status 추가 필터로 쓰기. 역할을 주기 어렵다면 요구사항에 '(pa_note는 이번 실습에서 화면 제어만 시연한다)'를 명시해 학습자의 '왜?'를 닫아 줄 것."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "교수설계 관점에서 CH15는 전반적으로 잘 짜인 챕터다. L01이 이벤트 전체 지도를 먼저 깔고 L02～L06이 그 지도를 시간 순서대로 하나씩 채우며, 각 레슨이 '왜 필요한가 → 무엇인가 → 어떻게 쓰나 → 실수·주의 → 정리'를 자연스럽게 지킨다. 특히 L06(END-OF-SELECTION을 권장이 아니라 '읽을 줄 알아야 하는 legacy'로 정직하게 자리매김), L07(없는 코드 vs 못 보는 코드), L05(다른 이벤트에 두면 왜 나쁜지로 여는 도입)의 불편→해결 서사는 억지 없이 진짜 불편에서 출발한다. 이전 개념 재사용 지점마다 링크와 💡 상기가 촘촘하고(L02→CH12 Range Table, L06→CH11 SALV, L07→L04 메시지 클래스, L10→CH03·CH12·L09), 레슨 끝 예고는 모두 1～2문장으로 절제돼 과잉 선행 설명이 없다. 12개 레슨 전부에 체험 임베드가 붙어 있고 L12가 이벤트별 책임 분리를 한 리포트로 회수하는 마무리도 좋다. 발견한 12건은 높음 이상이 없고 모두 국소 수정으로 해결되는 것들이다. 우선순위는 ① L04 — 이 챕터에서 신규 개념이 가장 많은데(introduces 5종 + MESSAGE 6타입 + SE91 + &1~&4) 유일하게 '정리'가 없다. 정리 3줄 추가가 가장 비용 대비 효과가 크고, 여유가 있으면 MESSAGE 체계를 별도 레슨으로 뗄 것. ② L08↔L09 순서 — 블록·라디오그룹을 '선언'하는 L09가 그것을 '검증'하는 L08 뒤에 있어 [선행 사용] 각주로 메우고 있는데, L09는 L08에 전혀 의존하지 않으므로 맞바꾸면 부채가 그대로 사라진다. ③ L09 밀도 — 레이아웃·위젯·버튼 이벤트가 한 레슨에 겹쳐 있고 TABBED BLOCK은 코드도 체험도 없이 경고만 남긴다. ④ 챕터 intro가 한 문장뿐이라 12개 레슨을 묶는 동기와 여정 지도가 입구에 없다. ⑤ 접두어 상기 팁(L06)이 바로 옆 lo_alv와 모순되는 점, 정리에서 처음 나오는 sy-dbcnt(L05), L08을 가리키는 낡은 링크 라벨(L04)은 각각 한 줄 수정으로 끝난다. 구조를 다시 짜야 할 문제는 없고, 위 다섯 갈래를 손보면 완성도가 확실히 올라간다."
+  }
+}

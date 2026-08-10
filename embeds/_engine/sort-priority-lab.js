@@ -49,14 +49,21 @@
   function renderBody() {
     var rows = sorted();
     var pf = primaryField();
+    // 동률 그룹 = 첫 기준 값이 같은 연속 구간. 값이 다른 두 동률 그룹이 정렬 후 맞붙으면
+    // 인접 행 비교만으로는 한 덩어리로 보이므로, 그룹 번호를 매겨 경계(tie-start)를 표시한다.
+    var gid = [], g = -1;
+    rows.forEach(function (r, i) {
+      if (i === 0 || !pf || r.p[pf] !== rows[i - 1].p[pf]) g++;
+      gid.push(g);
+    });
+    var size = {};
+    gid.forEach(function (k) { size[k] = (size[k] || 0) + 1; });
     bodyEl.innerHTML = rows.map(function (r, ri) {
-      // 동률(첫 기준 값이 위/아래와 같음) 표시
-      var tie = false;
-      if (pf) {
-        var prev = ri > 0 ? rows[ri - 1].p[pf] : null, next = ri < rows.length - 1 ? rows[ri + 1].p[pf] : null;
-        tie = (r.p[pf] === prev) || (r.p[pf] === next);
-      }
-      return '<tr class="' + (tie ? 'tie' : '') + '">' + CFG.cols.map(function (c) {
+      var tie = !!pf && size[gid[ri]] > 1;
+      // 바로 위도 동률 행인데 그룹이 다르면 = 서로 다른 동률 구간이 맞붙은 자리 → 경계선
+      var edge = tie && ri > 0 && gid[ri] !== gid[ri - 1] && size[gid[ri - 1]] > 1;
+      var cls = (tie ? 'tie' : '') + (edge ? ' tie-start' : '');
+      return '<tr class="' + cls.trim() + '">' + CFG.cols.map(function (c) {
         return '<td class="' + (c.num ? 'num' : '') + '">' + esc(r.p[c.key]) + '</td>';
       }).join('') + '</tr>';
     }).join('');
