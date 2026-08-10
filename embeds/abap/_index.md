@@ -53,7 +53,7 @@
 | CH06-L02-S01 | CH06-L02 | code-anatomy | 테이블 타입 선언 한 줄 해부(tt_person/kind=STANDARD/line=TABLE OF/key=WITH NON-UNIQUE KEY/use) — 3속성 클릭 | ✅ |
 | CH06-L02-S02 | CH06-L02 | decision-tree | Table Kind 선택 트리(자주 하는 일→STANDARD/SORTED/HASHED·유일키·정렬유지 분기) | ✅ |
 | CH06-L03-S01 | CH06-L03 | step-debugger(itab워치) | 한 행 제어 실험실 13스텝(INSERT INDEX·**INSERT INTO TABLE**=STANDARD면 맨 끝·READ INDEX/WITH KEY·**TRANSPORTING NO FIELDS**=WA 미복사 존재확인·MODIFY TRANSPORTING·DELETE, focus 강조·sy-subrc/sy-tabix·READ 실패 시 **sy-tabix=0** + WA 잔존 함정) | ✅ |
-| CH06-L03-S02 | CH06-L03 | step-debugger(itab워치) | BINARY SEARCH 함정 재현(정렬 없이→sy-subrc=4, SORT 후→발견) | ✅ |
+| CH06-L03-S02 | CH06-L03 | step-debugger(itab워치) | BINARY SEARCH 함정 재현 2부(1부: 정렬 없이→sy-subrc=4, SORT 후→발견 · 2부: 실패 두 갈래 — 중간 미발견=4/끝 초과=8, 워치 라벨 "성공 0 / 실패 4·8") | ✅ |
 | CH06-L04-S01 | CH06-L04 | step-debugger(itab워치) | 3막 19스텝 — 1막 WHERE로 걸러 돌 때 반복 회차 vs sy-tabix 괴리 · 2막 **FROM 2 TO 5**(번호 구간, `LOOP AT … INTO … FROM 2 TO 5` 어순) · 3막 ASSIGNING <fs> 원본 직접 수정(전 행 age+1). focus 강조 | ✅ |
 | CH06-L04-S02 | CH06-L04 | step-debugger(itab워치) | COLLECT 키 합산(서울 100+30=130·행 불증) → 컨트롤레벨 소계 28스텝. **LOOP AT·AT NEW·ENDAT·AT END OF·ENDLOOP 줄을 모두 스텝으로 짚고**, AT 진입 시 Work Area 마스킹(그룹 키 오른쪽 amount→0)·ENDAT 복원·SUM 충전까지 관찰(근거 ABAPAT_ITAB/ABAPSUM) | ✅ |
 | CH06-L04-S03 | CH06-L04 | state-change-grid | DELETE ADJACENT DUPLICATES 함정 스냅샷(정렬 없이 0삭제→SORT→인접 첫행만 남김·COMPARING name) | ✅ |
@@ -61,7 +61,7 @@
 | CH06-L05-S01 | CH06-L05 | judge-quiz | Flat vs Deep 판정 5문(전 숫자=Flat·string 하나=Deep·itab 포함=Deep·중첩≠deep·고정길이 회원카드) | ✅ |
 | CH06-L05-S02 | CH06-L05 | code-anatomy | ts_order 해부 — order_id/customer=Flat, items TYPE tt_item 한 줄이 전체를 Deep으로(원본 코드블록 체험·R2) | ✅ |
 | CH06-L06-S01 | CH06-L06 | step-debugger(itab워치·max) | 구구단 캡스톤 13스텝 — 중첩 DO로 gt_gugu가 1→2→3→4행 **하나씩** 쌓이고 9→18→**72행**(2~9단 × 9)으로 완성, DESCRIBE gv_cnt=72, SORT result DESC. `itab.max=6`으로 가운데 접힘(⋮ n행 생략). *구 state-change-grid 정적 스냅샷(81행 오기)에서 전환* | ✅ |
-| CH07-L01-S01 | CH07-L01 | se11-table-builder(신규) | SE11 Transparent Table 생성 시뮬(ZGUGUDAN 필드·키 토글·타입 Data Element↔Built-In·검사→활성화→DB 물리테이블 생성·키 연속성/DE 검증) | ✅ |
+| CH07-L01-S01 | CH07-L01 | se11-table-builder(신규) | SE11 Transparent Table 생성 시뮬(ZGUGUDAN 필드·키 토글·타입 Data Element↔Built-In·**Technical Settings 게이트(Data Class APPL0·Size 0 — 미지정 시 활성화 거부)**·검사→활성화→DB 물리테이블 생성·키 연속성/DE 검증) | ✅ |
 | CH07-L02-S01 | CH07-L02 | se11-create-entries(신규) | Create Entries 손입력 훈련기(DAN·MUL·RESULT 저장·키 중복 거부·RESULT≠DAN*MUL 경고+빨간행·MANDT 클라이언트 분리 100/200·2·3단 자동채움). **seed 비움 = 빈 테이블에서 시작**(본문 "빈 테이블"·"2×1부터"와 정합, 키 중복은 학습자가 직접 만들어 겪음) + **↻ 처음으로** | ✅ |
 | CH07-L03-S01 | CH07-L03 | before-after **+ type-borrow-lab(조각)** | 메모리(휘발) vs 디스크(영속) 두 운명 — 중립 톤(tone-warm/cool)·MANDT(Key)/Data Element 표기로 L01 정합 교정·ts_line·`" 72행 쌓기`(2~9단×9). 아래 `.tb` 패널 = 본문 코드 대응 실험(모양 출처 ts_line↔zgugudan → 필드 3↔4·개수 TYPE↔TYPE TABLE OF → 한 건↔여러 건, 판정은 "어느 쪽이든 메모리") | ✅ |
 | CH07-L03-S02 | CH07-L03 | compare-matrix | 같은 모양 네 쓰임 비교(Structure·Internal Table·Table Type·Transparent Table × 담는단위·사는곳·수명·선언예, 행 클릭 상세). Table Type 선언예=**ZTT_PERSON**(실제 생성 객체)·note는 Table Type을 메모리 3인방에서 분리(설계도·비거주) | ✅ |
@@ -493,7 +493,7 @@
 | write-format | 1 | 공통 ✅ | CH01-L05-S01 | WRITE 서식 토글 · config 주입 |
 | event-lifecycle-buildup | 1 | 공통(_engine·자체 mermaid+CDN/_vendor)·자체 postHeight ✅ | CH15-L01-S01 | bespoke 단일사용(STAGES inline) · #C15-1 stage1 inline DATA→classic 수정 |
 | se38-first-program | 3 | 공통(_engine) ✅ | CH01-L02-S01 | 개발루프 상태머신(bespoke·단일사용·데이터 inline) |
-| se11-table-builder (신규) | 1 | 공통(_engine·STB_CFG)+_autoheight ✅ | CH07-L01-S01 | SE11 Transparent Table 생성 시뮬 · config 주도(fields/key/de/builtin) · 검사→활성화 라이프사이클·배지(신규/검사/활성)·설계도↔물리테이블 split·키 연속성/DE 검증 · 다크 · **showMsg(list, headOk): 경고 0건이어도 활성화 완료 문구 유지**(잘했을 때만 완료 문구가 사라지던 역전 수정, 5경로 회귀 확인) |
+| se11-table-builder (신규) | 1 | 공통(_engine·STB_CFG)+_autoheight ✅ | CH07-L01-S01 | SE11 Transparent Table 생성 시뮬 · config 주도(fields/key/de/builtin · **선택 cfg.tech = Technical Settings 게이트, 부재 시 구동작 유지**) · 검사→활성화 라이프사이클·배지(신규/검사/활성)·설계도↔물리테이블 split·키 연속성/DE 검증 · 다크 · **showMsg(list, headOk): 경고 0건이어도 활성화 완료 문구 유지**(잘했을 때만 완료 문구가 사라지던 역전 수정, 5경로 회귀 확인) |
 | se11-create-entries (신규) | 1 | 공통(_engine·CE_CFG)+_autoheight ✅ | CH07-L02-S01 | Create Entries 손입력 훈련기 · config 주도(key/clients/seed) · 키 중복 거부·값 미검증 경고·클라이언트 분리 · 다크 · **seed는 선택**(비우면 빈 테이블 시작) · `#ce-reset` 있으면 **처음으로**(seed 복원) 연결, `.btn--reset`은 토큰 전용이라 _dark.css 무변동 |
 | type-borrow-lab (신규·조각) | 1 | 조각(_engine·TBLAB_CFG)+주 엔진 CSS 동반 ✅ | CH07-L03-S01 | 선언 2축 실험 — 모양 출처(로컬 타입↔DB 테이블 → 필드 수 변화·딸려 온 필드는 `.extra`)×담는 개수(TYPE↔TYPE TABLE OF → 한 건↔여러 건) → DATA 선언 한 줄 생성 + 메모리 모양 그림 + 고정 판정. **리셋·.wrap/.hd/.lead/.note 미보유**(주 엔진 몫, data-eng는 주 엔진 유지) · **토큰 전용(하드코딩 hex 0) → _dark.css 오버라이드 불필요**(const-lock-lab 방식) · 여러 건 라벨은 `1행·2행`(표 표현식 `gt[ ]` 회피, R6) |
 | se93-tcode-create | 3 | 공통(_engine) ✅ | CH01-L07-S01 | SE93 생성+명령창 실행(bespoke·단일사용) |

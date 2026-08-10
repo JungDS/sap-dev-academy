@@ -101,8 +101,8 @@
       tBody.innerHTML=waCard(ALL[ALL.length-1])
         +'<div class="looplog"><div class="looplog__t">⟳ 한 Work Area를 '+ALL.length+'번 덮어쓰며 반복</div>'+log+'</div>';
       cnt.textContent=ALL.length+'회';
-      metrics('Work Area(반복)', ALL.length, 'DB 여러 번 왕복 · '+ALL.length+'회 반복', ALL.length?0:4);
-      explain('<b>SELECT … ENDSELECT</b> — 한 행씩 <code>gs_flight</code>에 담아 반복한다. <b>같은 Work Area를 계속 덮어쓴다.</b> DB를 여러 번 왕복해 느리므로 <b>지양</b> — 읽을 줄만 알면 된다.');
+      metrics('Work Area(반복)', ALL.length, '묶음 단위 fetch · '+ALL.length+'회 반복', ALL.length?0:4);
+      explain('<b>SELECT … ENDSELECT</b> — 한 행씩 <code>gs_flight</code>에 담아 반복한다. <b>같은 Work Area를 계속 덮어쓴다.</b> 행마다 DB를 한 번씩 왕복하는 건 아니고 여러 행을 한 묶음씩 미리 받아 두지만, 루프가 끝날 때까지 <b>읽던 자리를 붙들고</b> 한 행씩 처리해서 <code>INTO TABLE</code>보다 느릴 수 있다 → <b>지양</b>.');
     } else {
       tHd.textContent='결과 대상 · Internal Table (UP TO '+CAP+')';
       tBody.innerHTML=tbl(ALL, CAP);

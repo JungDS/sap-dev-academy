@@ -47,7 +47,38 @@
 <p>Component의 타입에 <strong>다른 Structure</strong>를 주면, Structure 안에 Structure가 들어간다(중첩 Structure).</p>
 <p>아래 예제의 <code>zst_order_head</code>는 <a href="CH05-L02.html">앞 레슨</a>에서 <code>ZST_PERSON</code>을 만든 것과 똑같은
 방법으로 SE11에 만들어 둔 <strong>주문 머리</strong> Structure다. Component는 <code>customer</code>(고객)와
-<code>order_date</code>(주문일) 둘뿐이다.</p>
+<code>order_date</code>(주문일) 둘뿐이니, 예제를 직접 따라 하려면 아래 표대로 먼저 만들어 두자.</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Typing</th>
+<th>예</th>
+<th>데이터 타입</th>
+<th>길이</th>
+<th>설명</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>CUSTOMER</td>
+<td>Data Element</td>
+<td><code>ZDE_NAME</code></td>
+<td>CHAR</td>
+<td>20</td>
+<td>고객 이름</td>
+</tr>
+<tr>
+<td>ORDER_DATE</td>
+<td>Data Element</td>
+<td><code>ZDE_ORDER_DATE</code></td>
+<td>DATS</td>
+<td>8</td>
+<td>주문일</td>
+</tr>
+</tbody></table>
+<p><code>ZDE_NAME</code>은 앞 레슨에서 쓴 것을 그대로 재사용한다. 날짜용 <code>ZDE_ORDER_DATE</code>는
+<a href="CH03-L02.html">Chapter 3 · Data Element — 의미·라벨 입히기</a>에서 한 그대로, DATS 8자리
+Domain을 하나 만들고 그것을 참조해 만들면 된다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -72,7 +103,78 @@ gs_order-head-customer = <span class="tok-str">'정훈영'</span>.     <span cla
 <strong>펼쳐져서(내 필드처럼)</strong> 들어온다. 중첩과 달리 이건 <strong>DDIC 편집 화면에서 하는 조작</strong>이다.</p>
 <p>이번엔 여러 Structure가 함께 쓰는 <strong>생성 이력</strong>을 담아 보자. <code>ZST_AUDIT</code>은
 <code>created_by</code>(만든 사람)·<code>created_on</code>(만든 날짜) 두 필드만 가진 DDIC Structure이고, 담을
-쪽은 주문 Structure <code>ZST_ORDER</code>(자기 필드는 <code>order_id</code>·<code>customer</code>·<code>amount</code>)다.</p>
+쪽은 주문 Structure <code>ZST_ORDER</code>(자기 필드는 <code>order_id</code>·<code>customer</code>·<code>amount</code>)다. 둘 다 앞과
+같은 방법으로 SE11에 먼저 만들어 둔다.</p>
+<p><strong><code>ZST_AUDIT</code></strong> — 담기는 쪽(생성 이력)</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Typing</th>
+<th>예</th>
+<th>데이터 타입</th>
+<th>길이</th>
+<th>설명</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>CREATED_BY</td>
+<td>Data Element</td>
+<td><code>ZDE_NAME</code></td>
+<td>CHAR</td>
+<td>20</td>
+<td>만든 사람</td>
+</tr>
+<tr>
+<td>CREATED_ON</td>
+<td>Data Element</td>
+<td><code>ZDE_CREATED_ON</code></td>
+<td>DATS</td>
+<td>8</td>
+<td>만든 날짜</td>
+</tr>
+</tbody></table>
+<p><strong><code>ZST_ORDER</code></strong> — 담을 쪽(주문)</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Typing</th>
+<th>예</th>
+<th>데이터 타입</th>
+<th>길이</th>
+<th>설명</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ORDER_ID</td>
+<td>Data Element</td>
+<td><code>ZDE_ORDER_ID</code></td>
+<td>CHAR</td>
+<td>10</td>
+<td>주문 번호</td>
+</tr>
+<tr>
+<td>CUSTOMER</td>
+<td>Data Element</td>
+<td><code>ZDE_NAME</code></td>
+<td>CHAR</td>
+<td>20</td>
+<td>고객 이름</td>
+</tr>
+<tr>
+<td>AMOUNT</td>
+<td>Data Element</td>
+<td><code>ZDE_AMOUNT</code></td>
+<td>DEC</td>
+<td>8 (소수 2)</td>
+<td>금액</td>
+</tr>
+</tbody></table>
+<p><code>ZDE_NAME</code>·<code>ZDE_AMOUNT</code>는 앞 레슨에서 쓴 것을 그대로 재사용한다. 새로 만들 것은
+<code>ZDE_ORDER_ID</code>와 <code>ZDE_CREATED_ON</code> 둘뿐이다. 이 중 <code>ZDE_CREATED_ON</code>은 위 <code>ZDE_ORDER_DATE</code>와
+<strong>같은 날짜 Domain을 참조</strong>하고 라벨만 &quot;만든 날짜&quot;로 다르게 주면 된다. <a href="CH03-L02.html">Chapter 3 · Data
+Element — 의미·라벨 입히기</a>에서 본 &quot;한 Domain, 여러 Data Element&quot;가 이것이다.</p>
 <ol>
 <li>담을 쪽 <code>ZST_ORDER</code>를 SE11에서 열고 <strong>Components</strong> 탭으로 간다.</li>
 <li>빈 줄의 <strong>Component</strong> 칸에 <code>.INCLUDE</code>라고 그대로 적는다(메뉴 <strong>Edit → Include → Insert</strong>도 같은 일을 한다).</li>
@@ -114,7 +216,9 @@ gs_order-created_by = <span class="tok-str">'유재석'</span>.   <span class="t
 </tbody></table>
 </section><section class="lblock"><h2>③ <code>.APPEND</code> — 표준에 안전하게 더하기</h2>
 <p><strong><code>.APPEND</code></strong>(Append Structure)는 SAP <strong>표준</strong> Structure·테이블을 <strong>직접 고치지 않고</strong>, 내 필드를
-<strong>별도 Structure로 덧붙인다.</strong> 표준 원본을 안 건드려 시스템 업그레이드에 안전하다(확장 주제, 자세히는 한참 뒤 챕터에서).</p>
+<strong>별도 Structure로 덧붙인다.</strong> 표준 원본을 안 건드리니 <strong>표준을 직접 고치는 것보다 훨씬 안전하다</strong>
+(확장 주제, 자세히는 한참 뒤 챕터에서). 다만 무조건 안전한 것은 아니다. 나중에 SAP이 그 표준
+오브젝트 자체를 바꾸면 덧붙인 필드가 영향을 받을 수 있어, 업그레이드 뒤에는 확인이 필요하다.</p>
 <p>SE11에서는 이렇게 한다.</p>
 <ol>
 <li>확장할 <strong>표준</strong> Structure나 테이블을 SE11에서 연다.</li>
