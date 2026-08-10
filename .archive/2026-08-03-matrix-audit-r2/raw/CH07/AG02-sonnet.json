@@ -1,0 +1,60 @@
+{
+  "agent": "AG02",
+  "model": "sonnet",
+  "target": "CH07",
+  "persona_ack": "나는 '준호'다. 배운 건 그 자리에서 직접 해봐야 직성이 풀리는 실습형 학습자로서, CH07의 코드/설명과 체험 위젯 4개를 하나하나 직접 눌러 보고 값을 넣어 보며 본문과 대조했다.",
+  "method": "Claude Browser 페인으로 4개 임베드(embeds/abap/CH07-L01-S01.html, CH07-L02-S01.html, CH07-L03-S01.html, CH07-L03-S02.html)와 렌더링된 3개 레슨 페이지(docs/abap/pages/CH07-L0{1,2,3}.html?v=r2b2)를 직접 로드해 콘솔 오류 0건·iframe 정상 로드(자동 높이 691/461/438+889px)를 확인. computer 툴의 좌표 클릭이 배경(미표시) 페인에서 상태를 바꾸지 못해(screenshot 액션이 'Browser pane is not displayed'로 실패) javascript_tool로 실제 DOM 엘리먼트에 .click()을 호출(합성이지만 change/click 이벤트가 실제로 발생·전파됨)한 뒤 DOM 상태를 읽어 검증했다. 구체 시나리오: ①SE11 Table Builder — 노트가 예고한 두 실험(MUL 키 끄고 RESULT 키 켠 뒤 활성화 → '키는 맨 앞에 연속으로' 오류 재현, DAN을 Built-In으로 바꿔 검사 → Data Element 권장 경고 재현) 및 기본값 활성화(전 필드 성공)·재수정 시 무효화(활성 배지 원복)까지 실측. ②Create Entries — 저장→중복 저장 거부, 2×2=5 오답 저장(빨간 행 bad-calc 클래스 부여 확인), 클라이언트 100/200 전환 시 행 분리, 2·3단 자동채움(18행) 모두 실측. ③type-borrow-lab — 모양출처(local/ddic)×개수(one/many) 4개 조합을 전부 클릭해 DATA 선언문·필드 수·caution 노출을 실측(ddic+one/ddic+many가 본문 코드 두 줄과 글자 단위로 일치 확인). ④compare-matrix — 4개 행 이름을 모두 클릭해 상세 텍스트 노출을 실측. 추가로 embeds/_engine/se11-table-builder.js·se11-create-entries.js(+.css)·type-borrow-lab.js·compare-matrix.js 소스를 정독해 JSON cfg 필드의 실제 사용 여부를 대조.",
+  "errors": [
+    "computer 툴 좌표 클릭이 배경 브라우저 페인(미표시 상태)에서 반응하지 않아 순수 좌표기반 클릭+스크린샷 대조 검증은 수행하지 못했다. 동일 위젯에 javascript_tool로 실제 DOM .click() 이벤트를 호출하는 방식으로 대체해 상호작용 결과(메시지·배지·행 데이터)를 검증했다 — 상태를 직접 대입한 것이 아니라 실제 change/click 이벤트가 발생·전파된 결과를 읽었다는 점에서 신뢰도는 높지만, 최상위 티어(좌표 클릭+시각적 스크린샷 대조)는 아니었음을 명시해 둔다."
+  ],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\CH07-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\CH07-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\CH07-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH07-L01-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH07-L02-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH07-L03-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH07-L03-S02.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\se11-table-builder.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\se11-create-entries.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\se11-create-entries.css",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\type-borrow-lab.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\compare-matrix.js",
+    "http://localhost:8144/embeds/abap/CH07-L01-S01.html (실조작)",
+    "http://localhost:8144/embeds/abap/CH07-L02-S01.html (실조작)",
+    "http://localhost:8144/embeds/abap/CH07-L03-S01.html (실조작)",
+    "http://localhost:8144/embeds/abap/CH07-L03-S02.html (실조작)",
+    "http://localhost:8144/docs/abap/pages/CH07-L01.html?v=r2b2 (렌더 확인)",
+    "http://localhost:8144/docs/abap/pages/CH07-L02.html?v=r2b2 (렌더 확인)",
+    "http://localhost:8144/docs/abap/pages/CH07-L03.html?v=r2b2 (렌더 확인)"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH07-L01-S01.html",
+      "quote": "\"note\": \"클라이언트(자동)\"",
+      "category": "불일치",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "위젯 config의 MANDT 필드 note가 \"클라이언트(자동)\"라고 표시돼, 본문이 바로 앞 절에서 명시적으로 갈라 둔 \"필드 자체는 수동 지정 / 자동인 건 행 필터링\"이라는 구분과 결이 어긋나 보일 수 있다.",
+      "evidence": "CH07-L01.md의 \"## MANDT — 클라이언트 분리\" 절(위젯보다 앞에 배치)은 \"무엇이 자동인지 갈라 두자. 필드 MANDT 자체는 내가 직접 첫 키로 넣는다. 자동인 쪽은 그다음이다. 프로그램이 이 테이블을 읽고 쓸 때 지금 로그온한 클라이언트의 행만 골라 주는 일은 시스템이 알아서 한다\"라고 '필드 생성=수동 vs 행 필터링=자동'을 강조해서 구분한다. 그런데 바로 다음 절에 나오는 임베드 위젯에서는 (fixed:true라 학습자가 건드릴 수 없는) MANDT 행에 \"자동\"이라는 단어가 그대로 노출돼, 방금 배운 구분이 흐려질 수 있다. 브라우저에서 실측한 결과 위젯의 실제 동작(MANDT는 항상 고정 Key·CLNT)은 본문과 정확히 일치하므로 기능 결함은 아니고, 라벨 문구 하나가 만드는 해석의 틈이다.",
+      "suggestion": "note 문구를 \"클라이언트(항상 첫 키)\"처럼 '필드 자체는 고정 지정됨'이라는 뉘앙스로 바꾸거나, \"자동\"이라는 단어는 행 필터링 동작에만 쓰도록 조정."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH07-L02-S01.html",
+      "quote": "\"key\": [\"DAN\", \"MUL\"],",
+      "category": "위젯 결함",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "cfg.key가 [\"DAN\",\"MUL\"] 두 필드만 선언해 본문·위젯 안내문이 말하는 실제 키(MANDT+DAN+MUL) 세 필드보다 하나 적다. 게다가 이 값은 엔진 JS 어디에서도 읽히지 않는 죽은 설정이라, 실제 동작에는 영향이 없지만 소스만 보는 사람에게는 잘못된 키 정의로 오도할 수 있다.",
+      "evidence": "embeds/_engine/se11-create-entries.js의 save() 함수는 실제로 `rows.some(function(x){ return x.client === cur && x.dan === d && x.mul === m; })`로 client(=MANDT 대응)까지 포함한 세 조건으로 중복을 판정하고, 위젯 화면의 안내문도 \"키는 MANDT + DAN + MUL입니다\"라고 정확히 적어 CH07-L02.md 본문(\"MANDT + DAN + MUL이 키라면 DAN과 MUL이 같은 조합은 하나뿐이다\")과도 일치한다. 그런데 JSON cfg 안 \"key\" 필드는 [\"DAN\",\"MUL\"]만 적혀 있고, se11-create-entries.js 전체(104줄)를 정독해도 cfg.key를 참조하는 코드가 없다 — 실제 화면·동작은 정확하지만 설정값 자체는 사용되지도 않고 값도 실제 키 정의보다 하나 부족하다.",
+      "suggestion": "cfg.key를 [\"MANDT\",\"DAN\",\"MUL\"]로 맞추거나, 실제로 쓰이지 않는 문서용 설정이라면 주석으로 '미사용'임을 밝히거나 필드 자체를 제거."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH07의 레슨 3개와 임베드 위젯 4개를 본문 코드・설명과 대조하고, 4개 위젯 전부를 브라우저에서 실제 조작(체크박스 토글・검사・활성화・저장・클라이언트 전환・조합 선택・행 클릭)해 검증했다. 코드나 SE11 조작이 나오는 자리마다 대응하는 체험 위젯이 이어져 체험 공백은 없었고, DAN/MUL/RESULT・ZGUGUDAN・ts_line/gs_line/gt_line/ZTT_PERSON 등 변수명・필드 수・선언문이 본문과 위젯 사이에서 전부 정확히 일치했다(특히 CH07-L03-S01의 DATA 선언문은 본문 코드 두 줄과 글자 단위로 동일). 위젯 안내문이 예고한 동작(키 연속성 오류・Data Element 경고・기본 활성화 성공・재수정 시 무효화・키 중복 거부・오답 허용(빨간 행)・클라이언트 분리・2・3단 자동채움・행별 상세 클릭)도 실제 조작으로 전부 재현되어 헛체험이나 실제 결함은 발견되지 않았다. 발견한 2건은 모두 낮음 등급의 다듬기 사안이다 — 위젯의 실제 동작·화면 문구는 정확해 학습 경험 자체에 지장은 없다: ①CH07-L01-S01의 MANDT note 문구 \"자동\"이 본문이 직전 절에서 강조한 '필드는 수동, 행 필터링만 자동' 구분과 결이 어긋날 소지(추정), ②CH07-L02-S01의 cfg.key가 실제 키보다 한 필드(MANDT) 적고 엔진 JS 어디서도 참조되지 않는 죽은 설정(확실)."
+  }
+}

@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <!-- CH06-L03-S02 — 엔진: step-debugger (embeds/_engine/step-debugger.{js,css}) + _autoheight.js
-     config=레슨 전용(BINARY SEARCH 함정: 정렬 없이 → 실패, SORT 후 → 성공).
-     게이팅: CH06-L03 범위(SORT·READ BINARY SEARCH). -->
+     config=레슨 전용 · 스테퍼 2개(엔진이 [data-stepper] 전부 초기화):
+       1부 = BINARY SEARCH 함정(정렬 없이 → 실패 4, SORT 후 → 성공 0)
+       2부 = 실패 코드 두 갈래(중간에서 못 찾음 = 4 · 테이블 끝을 넘어감 = 8)
+     게이팅: CH06-L03 범위(SORT·READ BINARY SEARCH·sy-subrc). -->
 <html lang="ko" data-eng="step-debugger">
 <head>
 <meta charset="utf-8" />
@@ -9,6 +11,11 @@
 <title>BINARY SEARCH 함정 · CH06-L03-S02</title>
 <link rel="stylesheet" href="../_engine/_base.css" />
 <link rel="stylesheet" href="../_engine/step-debugger.css" />
+<style>
+  /* 2부(실패 두 갈래) 구분 여백 — 이 위젯만 스테퍼를 2개 쌓는다(엔진 CSS엔 .dbg 연속 배치 규칙 없음).
+     색은 var() 토큰만 → 다크 자동 적응(하드코딩 hex 금지, AUTHORING §4). */
+  .part2{margin-top:24px;padding-top:16px;border-top:1px dashed var(--line);}
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -54,7 +61,7 @@
         {"label":"gs_person-name","sub":"Work Area · name","key":"gs_person-name","init":"( 공백 )"},
         {"label":"gs_person-age","sub":"Work Area · age","key":"gs_person-age","init":"0"},
         {"label":"gt_person","sub":"Internal Table · 명단","key":"gt_person","itab":{"cols":["name","age"],"num":[false,true]},"init":[["정훈영",30],["홍길동",25],["유재석",40]]},
-        {"label":"sy-subrc","sub":"성공 0 / 실패 4","key":"sy-subrc","init":"-"}
+        {"label":"sy-subrc","sub":"성공 0 / 실패 4·8","key":"sy-subrc","init":"-"}
       ],
       "steps":[
         {"line":2,"vars":{"sy-subrc":"4"},"console":"sy-subrc = 4 — 유재석이 3번 행에 있는데도 '없음'! 이진 탐색은 '정렬돼 있다'고 믿고 절반씩 버리는데, 정렬이 안 돼 있어 유재석이 있는 절반을 버렸습니다"},
@@ -65,6 +72,58 @@
     </script>
   </div>
   <div class="note">💡 정렬 없는 <code>BINARY SEARCH</code>는 오류 메시지도 없이 <b>조용히 잘못된 "없음"</b>을 돌려줍니다. 찾기가 자주 틀린다면 정렬부터 의심하세요.</div>
+
+  <div class="part2">
+  <p class="hd">실패도 두 갈래 — 4냐 8이냐 <small>(이번엔 정렬이 끝난 명단)</small></p>
+  <p class="lead">이번 명단은 <b>이름순으로 이미 정렬</b>돼 있습니다. 그런데 <b>없는 이름</b>을 찾으면? 같은 "없음"인데 <code>sy-subrc</code>가 <b>4</b>일 때와 <b>8</b>일 때로 갈립니다. 두 번 실행해 보세요.</p>
+
+  <div class="dbg" data-stepper>
+    <div class="dbg__bar">
+      <button class="btn btn--primary" data-start>▶ 시작</button>
+      <button class="btn btn--step" data-next disabled>다음 ⏭</button>
+      <div class="progress"><i data-progress></i></div>
+      <span class="muted" data-counter>0 / 2</span>
+    </div>
+    <div class="dbg__main">
+      <div class="dbg__editorwrap"><div class="dbg__edhd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span></div><div class="dbg__editor" data-code></div></div>
+      <div class="dbg__watch">
+        <div class="watch__head">변수 모니터</div>
+        <div class="watch__list" data-vars></div>
+      </div>
+    </div>
+    <div class="dbg__console">
+      <div class="console__head">
+        <span>콘솔</span>
+        <span class="leg"><span class="a">▶ 실행할 차례</span> · <span class="d">✓ 방금 실행</span></span>
+        <span class="sp"></span>
+        <span class="cmode"><button class="cmode__b on" data-cmode="cur">현재 행</button><button class="cmode__b" data-cmode="all">전체 출력</button></span>
+      </div>
+      <pre class="console__body" data-console>대기 중 — ▶ 시작을 누르세요.</pre>
+    </div>
+    <script type="application/json" class="stepper-config">
+    {
+      "code":[
+        "\" gt_member = 강호동/52 · 유재석/50 · 정훈영/30 (이름순 정렬 끝)",
+        "READ TABLE gt_member INTO gs_member",
+        "     WITH KEY name = '심청' BINARY SEARCH.",
+        "",
+        "READ TABLE gt_member INTO gs_member",
+        "     WITH KEY name = '홍길동' BINARY SEARCH."
+      ],
+      "vars":[
+        {"label":"gs_member-name","sub":"Work Area · name","key":"gs_member-name","init":"( 공백 )"},
+        {"label":"gt_member","sub":"Internal Table · 정렬된 명단","key":"gt_member","itab":{"cols":["name","age"],"num":[false,true]},"init":[["강호동",52],["유재석",50],["정훈영",30]]},
+        {"label":"sy-subrc","sub":"성공 0 / 실패 4·8","key":"sy-subrc","init":"-"}
+      ],
+      "steps":[
+        {"line":2,"vars":{"sy-subrc":"4"},"console":"sy-subrc = 4 — 심청은 없습니다. 이름순으로 보면 심청이 들어갈 자리는 강호동 다음·유재석 앞, 즉 테이블 안쪽입니다. 거기까지 좁혀 갔는데 그 자리에 없어서 실패했습니다"},
+        {"line":5,"vars":{"sy-subrc":"8"},"console":"sy-subrc = 8 — 홍길동도 없습니다. 그런데 홍길동은 마지막 행(정훈영)보다 뒤에 올 이름이라 찾다가 테이블 끝을 넘어갔습니다. 같은 '없음'인데 이번엔 4가 아니라 8입니다"}
+      ]
+    }
+    </script>
+  </div>
+  <div class="note">💡 실패 코드가 <b>4일 수도 8일 수도</b> 있습니다. 그래서 <code>IF sy-subrc = 4</code>로 비교하면 8인 경우를 놓쳐 조용히 어긋납니다. 성공 판정은 언제나 <code>IF sy-subrc = 0</code>으로 하세요. (실패했으니 <code>gs_member</code>는 계속 <b>비어 있는 그대로</b>입니다.)</div>
+  </div>
 </div>
 <script src="../_engine/step-debugger.js" defer></script>
 <script src="../_engine/_autoheight.js" defer></script>

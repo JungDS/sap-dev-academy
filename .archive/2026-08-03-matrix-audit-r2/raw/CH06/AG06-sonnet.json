@@ -1,0 +1,56 @@
+{
+  "agent": "AG06",
+  "model": "sonnet",
+  "target": "CH06",
+  "persona_ack": "ECC부터 S/4HANA까지 ABAP 개발·운영·성능·이관을 두루 겪은 20년차 아키텍트로서, CH06(Internal Table) 6개 레슨과 챕터 개요를 후배 교재 기술 검수하듯 정독했다.",
+  "method": "대상 파일 7개(_chapter.md, CH06-L01~L06.md) 전체를 통독. 코드 실행·웹 검색 없이(금지 규정 준수) ABAP 언어 사양·표준 런타임 동작(READ TABLE/LOOP/COLLECT/SORT/MODIFY의 sy-subrc·sy-tabix 값, Table Kind별 제약, SE11 Table Type 생성 절차 등)을 지식 기반으로 문장 단위 대조 검증.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH06-L03.md",
+      "quote": "INSERT gs_person INTO gt_person INDEX 1.  \" 맨 앞에",
+      "category": "위험한 생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "INDEX 1(맨 앞) 삽입을 APPEND와 나란히 '그냥 다른 옵션'처럼 제시했지만, 앞쪽 삽입은 뒤에 있는 모든 행을 한 칸씩 밀어야 하는 O(n) 연산이라는 성능 차이가 전혀 언급되지 않는다.",
+      "evidence": "Index Table(STANDARD·SORTED)의 내부 저장은 순차 배열에 가까워 맨 끝 추가(APPEND)는 상수 시간에 가깝지만, 맨 앞이나 중간 삽입(INSERT ... INDEX n)은 그 뒤 모든 행을 이동시켜야 한다. 루프 안에서 반복적으로 앞쪽 삽입을 하면 행 수가 늘수록 급격히 느려지는 실무 성능 함정으로 이어진다. 이 챕터는 COLLECT의 해시 관리 무효화(L04), BINARY SEARCH의 정렬 전제(L03) 등 다른 성능 함정은 꼼꼼히 짚었는데 이 지점만 비어 있다.",
+      "suggestion": "예제 옆에 '앞·중간 삽입은 뒤 행을 모두 밀어야 해서 반복 사용 시(특히 루프 안에서 매번 앞에 꽂을 때) 행이 많을수록 느려진다' 한 줄만 덧붙이면 충분하다."
+    },
+    {
+      "seq": 2,
+      "file": "CH06-L03.md",
+      "quote": "잠시 뒤에 배울 `BINARY SEARCH`로 찾다가 테이블 끝까지 간 경우에는 8이 들어오기도 한다.",
+      "category": "사실 오류",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "READ TABLE(BINARY SEARCH 포함)의 sy-subrc는 0(찾음)/4(못 찾음) 두 값만 공식 문서화돼 있는 것으로 기억한다. '테이블 끝까지 가면 8'이라는 구체적 규칙은 표준 ABAP 키워드 문서에서 본 기억이 없다.",
+      "evidence": "READ TABLE의 통상적인 리턴 코드는 0/4뿐이라고 알고 있다. 정렬 안 된 테이블에 BINARY SEARCH를 쓰면 결과가 '예측 불가(찾아도 엉뚱한 행일 수 있고, 못 찾을 수도 있음)'하다고 문서화돼 있는 것으로 기억하지만, 그 실패가 결정적으로 8이라는 코드로 나온다는 근거는 떠오르지 않는다. 웹 검색이 금지돼 있어 확정할 수 없어 '추정'으로 표기하지만, 만약 틀렸다면 학습자가 sy-subrc를 오검사하게 만드는 직접적 오류다.",
+      "suggestion": "F1 키워드 도움말(READ TABLE)의 sy-subrc 표를 직접 대조해 8이 실제 문서화된 값인지 확인한다. 근거를 못 찾으면 '보통 4, 정렬이 깨졌으면 결과 자체가 불확실(0인데 엉뚱한 행일 수도)'는 식으로 더 안전한 서술로 바꾼다."
+    },
+    {
+      "seq": 3,
+      "file": "CH06-L04.md",
+      "quote": "**LOOP 도는 중에 그 테이블에 행 추가·삭제** → 순회가 행을 건너뛰거나 꼬일 수 있다.",
+      "category": "위험한 생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "이 레슨은 LOOP·COLLECT·정렬 관련 함정을 성실히 짚지만, 정작 실무에서 가장 흔한 성능 사고인 '중첩 LOOP로 두 테이블을 대조'하는 패턴에는 경고가 없다.",
+      "evidence": "테이블 A를 LOOP 돌면서 그 안에서 테이블 B를 다시 LOOP(또는 조건 없는 순차 READ)로 대조하는 코드는 O(행수A x 행수B)로 커져, 실무에서 데이터가 늘어난 뒤 타임아웃·성능 이슈로 이어지는 가장 전형적인 ABAP 성능 사고 패턴이다. 이 챕터는 SORT+BINARY SEARCH, SORTED/HASHED 테이블처럼 해결 도구는 다 가르쳤지만 '왜/언제 필요한지'를 이 안티패턴과 직접 엮어 짚어 주지 않아, 배운 도구를 정작 실전에서 안 쓸 위험이 있다.",
+      "suggestion": "흔한 실수와 점검 목록에 '두 테이블을 대조할 때 안쪽에 또 LOOP(중첩 루프)를 쓰면 행이 많을수록 급격히 느려진다 → 안쪽을 SORT+BINARY SEARCH나 SORTED/HASHED 테이블 조회로 바꾸자' 한 항목만 추가해도 충분하다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH06 6개 레슨은 Internal Table의 3속성(Line Type·Primary Key·Table Kind)부터 단일/다중 행 제어, COLLECT의 해시 관리 무효화, AT...ENDAT 블록 안 필드 블랭킹, sy-tabix가 WHERE/FROM-TO에서도 실제 행 번호를 유지한다는 점, READ 실패 시 Work Area가 그대로 남는다는 점, SORTED/HASHED의 UNIQUE 제약 등 시니어 레벨의 정확한 디테일을 폭넓게 정확히 다룬다. 전반적으로 기술 정확도가 높다. 다만 BINARY SEARCH 실패 시 sy-subrc=8이 나온다는 서술(L03)은 공식 문서 기억과 맞지 않아 검증·수정이 필요하고(확신도 '추정'), 중첩 LOOP로 두 테이블을 대조하는 실무 최다빈도 성능 함정(L04)과 앞쪽 INSERT의 O(n) 이동 비용(L03)은 이 챕터가 다른 성능 이슈는 꼼꼼히 짚는 것에 비해 상대적으로 비어 있다. 세 곳 모두 한두 문장 보정으로 해결 가능한 수준이라 재집필이 아닌 경미 수정을 제안한다."
+  }
+}

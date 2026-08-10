@@ -1,0 +1,102 @@
+{
+  "agent": "AG02",
+  "model": "opus",
+  "target": "CH06",
+  "persona_ack": "나는 발견자 AG02 '준호'다 — 배운 건 그 자리에서 직접 해 봐야 직성이 풀리는 실습형 학습자. CH06 여섯 레슨의 본문 코드·설명과 체험 위젯 12개를 1:1로 대조해 ①체험 공백 ②본문↔위젯 불일치 ③헛체험 ④위젯 결함(cfg·안내문·정답 판정)만 발견·보고했다. 모든 대상 파일은 읽기만 했고 수정·생성·삭제하지 않았다. 다른 감사자의 산출물이나 과거 감사 자료는 열지 않았다.",
+  "method": "브라우저 실조작 + 렌더 DOM 측정 + 스크립트 정적검증의 3중 검증. ① 위젯 12개를 각각 http://localhost:8143/embeds/abap/<ID>.html 로 직접 열어 실조작: step-debugger 7종(L01-S01·L03-S01·L03-S02·L04-S01·L04-S02·L04-S04·L06-S01)은 '시작'→'다음'을 마지막 스텝까지 클릭 주파하며 매 스텝의 변수 모니터 값·itab 행 내용·행 클래스(new/chg/focus)·강조된 코드 줄 번호를 DOM에서 수집해 config와 대조했고, judge-quiz(L05-S01)는 5문항을 전부 'Flat'으로 눌러 정/오 판정과 점수·통과선을 확인, decision-tree(L02-S02)는 종단 5경로를 전수 주파해 추천 결과를 검증, code-anatomy 2종(L02-S01·L05-S02)은 모든 .mk 핫스폿을 클릭해 cfg 키 매칭·원시 id 폴백·고아 cfg 키 여부를 확인, state-change-grid(L04-S03)는 렌더된 4상태의 행 내용과 .cell-del CSS 규칙을 측정했다. ② node 스크립트로 각 위젯의 JSON cfg를 파싱해 step.line의 범위 초과·빈줄/주석줄 지시, 화면 counter 표기와 실제 steps 수 일치, focus 인덱스의 테이블 행수 초과, 미선언 var 키를 기계 검증했고, L06 구구단은 2~9단 72행을 독립 생성해 완전 일치를 확인하고 SORT DESCENDING 결과가 동일 집합의 순열이며 내림차순임을 검증했으며, L04-S02는 그룹 합계(부산 50·서울 130)를 독립 계산해 SUM 표시와 대조했다. ③ 빌드 산출 레슨 6페이지를 fetch(cache:'reload')해 iframe 12개 실장·::embed 잔여 지시자 0을 확인했다. ④ 보고한 인용문 6건은 원본 파일 대조로 앵커 검증(전부 일치, 240자 이내). 콘솔 오류 0건. ABAP 의미 검증(정렬 없는 BINARY SEARCH가 sy-subrc=4가 되는 이유, 한글 코드포인트 기준 SORT 순서, AT 블록 마스킹, 실패한 READ의 sy-tabix=0)은 내 지식으로 손계산해 위젯 값과 대조했다.",
+  "errors": [
+    "브라우저 pane이 표시 상태가 아니어서 screenshot·zoom이 5초 타임아웃으로 실패했다(2회 시도). 시각 확인이 필요했던 유일한 항목인 CH06-L04-S03의 안내문 '빨간 취소선 = 지워진 행'이 실제로 페인트되는지는 픽셀로 확인하지 못했다. 대신 CSS 규칙을 측정해 '.cell-del { background: rgb(255,227,236); text-decoration: line-through; color: rgb(176,42,85); }'가 tr에 정상 선언된 것을 확인했고(td의 computed textDecorationLine=none은 text-decoration이 상속이 아니라 전파되는 속성이라 정상 판독), 규칙이 올바르게 작성돼 있으므로 결함으로 보고하지 않았다.",
+    "공용 임시(스크래치) 폴더에 둔 내 작업 스크립트 파일이 동시 실행 중인 다른 세션에 의해 덮어써져 다른 이름으로 1회 재작성했다. 감사 대상 파일·저장소에는 아무 영향이 없다(저장소 쓰기 없음). 덮어써진 내용에 다른 감사자 산출물의 경로가 들어 있었으나 해당 파일을 열지 않았고 판단에 반영하지 않았다 — 블라인드 감사 유지.",
+    "한 차례 PowerShell로 스크립트를 재인코딩하다가 한글이 깨져 앵커 검증이 거짓 실패로 나왔다. UTF-8로 다시 써서 재실행해 6건 전부 일치를 확인했다(보고된 인용문은 최종 검증 통과분)."
+  ],
+  "files_read": [
+    "content/abap/CH06/_chapter.md",
+    "content/abap/CH06/CH06-L01.md",
+    "content/abap/CH06/CH06-L02.md",
+    "content/abap/CH06/CH06-L03.md",
+    "content/abap/CH06/CH06-L04.md",
+    "content/abap/CH06/CH06-L05.md",
+    "content/abap/CH06/CH06-L06.md",
+    "embeds/abap/CH06-L01-S01.html",
+    "embeds/abap/CH06-L02-S01.html",
+    "embeds/abap/CH06-L02-S02.html",
+    "embeds/abap/CH06-L03-S01.html",
+    "embeds/abap/CH06-L03-S02.html",
+    "embeds/abap/CH06-L04-S01.html",
+    "embeds/abap/CH06-L04-S02.html",
+    "embeds/abap/CH06-L04-S03.html",
+    "embeds/abap/CH06-L04-S04.html",
+    "embeds/abap/CH06-L05-S01.html",
+    "embeds/abap/CH06-L05-S02.html",
+    "embeds/abap/CH06-L06-S01.html",
+    "embeds/_engine/AUTHORING.md",
+    "embeds/_engine/step-debugger.js",
+    "embeds/_engine/judge-quiz.js",
+    "embeds/_engine/code-anatomy.js",
+    "embeds/_engine/decision-tree.js (postMessage 높이 처리부만 grep으로 확인)",
+    "embeds/_engine/_autoheight.js (grep으로 확인)",
+    "embeds/_engine/state-change-grid.css (.cell-del 규칙을 브라우저 CSSOM으로 확인)",
+    "docs/abap/pages/CH06-L01.html ~ CH06-L06.html (빌드 산출물, HTTP fetch로 iframe 실장 확인)"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "embeds/abap/CH06-L04-S01.html",
+      "quote": "{\"line\":12,\"vars\":{\"iter\":\"-\",\"sy-tabix\":\"1\",\"gs_person-name\":\"( 공백 )\"},\"focus\":{\"gt_person\":1},\"console\":\"3막 — ASSIGNING. <fs_person>이 1번 행 자체를 가리킵니다(복사 없음, Work Area 미사용)\"}",
+      "category": "불일치(위젯 표시 ↔ 실제 ABAP 동작)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "3막(LOOP ... ASSIGNING) 진입 스텝에서 Work Area 표시가 직전 값 '강호동'에서 '( 공백 )'으로 초기화된다. 실제 ABAP에서 ASSIGNING 루프는 gs_person을 전혀 건드리지 않으므로 2막의 마지막 값이 그대로 남아 있어야 한다. 이 레슨의 핵심 대비가 바로 'INTO는 복사, ASSIGNING은 직접'인데, 변수 모니터만 보면 'ASSIGNING이 Work Area를 비운다'는 잘못된 인상을 준다.",
+      "evidence": "브라우저 실조작으로 19스텝을 주파해 매 스텝 DOM을 수집한 결과, 14스텝(2막 ENDLOOP)에서 gs_person-name='강호동'이던 값이 15스텝(line 12)에서 '( 공백 )'으로 바뀌고 이후 3막 내내 공백으로 남는다. 같은 위젯이 테이블 값은 1·2막에서 이어받아(30/17/40/19/35) 3막에서 +1 하므로 세 막은 끊긴 예제가 아니라 연속된 한 프로그램이며, 따라서 Work Area만 초기화되는 것은 위젯 내부적으로도 모순이다. 해당 변수 행의 라벨은 'Work Area(복사본)'이고 콘솔은 'Work Area 미사용'이라고만 안내한다.",
+      "suggestion": "3막 진입 스텝의 vars 델타에서 \"gs_person-name\":\"( 공백 )\"을 제거해 '강호동'이 그대로 유지되게 하고, 콘솔 문구를 '2막에서 마지막으로 복사된 값이 그대로 남아 있다 — ASSIGNING은 Work Area를 쓰지 않기 때문'으로 바꾼다. 값이 남아 있는 편이 INTO↔ASSIGNING 대비를 오히려 더 선명하게 보여 준다."
+    },
+    {
+      "seq": 2,
+      "file": "embeds/abap/CH06-L04-S01.html",
+      "quote": "{\"line\":7,\"vars\":{\"iter\":\"4\",\"sy-tabix\":\"5\",\"gs_person-name\":\"강호동\"},\"focus\":{\"gt_person\":5},\"console\":\"4번 이몽룡도 같은 방식으로 돌고, 마지막은 TO 5가 가리키는 5번 강호동. 회차 4 · sy-tabix 5\"}",
+      "category": "위젯 결함(스텝 누락 · 막 간 비대칭)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "2막(FROM 2 TO 5)에서 반복 회차가 2에서 곧바로 4로 건너뛴다. 이 위젯의 제목이자 주제인 '반복 회차 vs sy-tabix' 짝 가운데 (회차 3, sy-tabix 4)=이몽룡 조합이 한 번도 화면에 표시되지 않고 콘솔 문장으로만 뭉뚱그려진다.",
+      "evidence": "실조작 수집 결과 12스텝에서 iter=2·sy-tabix=3(유재석)이던 것이 13스텝에서 iter=4·sy-tabix=5(강호동)로 넘어가, 회차 3이 카운터에 한 번도 나타나지 않는다. 또 '전체 출력' 모드로 누적 로그를 확인하니 1막은 통과한 3개 행 모두 [출력] 줄을 남기는데(1 정훈영·3 유재석·5 강호동) 2막은 4회 반복 중 [출력]이 '2 심청' 1건뿐이라 두 막의 리포트 밀도가 비대칭이다.",
+      "suggestion": "4번 행(이몽룡)을 별도 스텝으로 분리해 회차 3 · sy-tabix 4를 실제로 표시하고, 2막의 각 반복에도 1막처럼 line 8의 WRITE 출력([출력] 3 유재석 / 4 이몽룡 / 5 강호동)을 남긴다. 스텝 2개만 늘리면 주제인 '회차≠행번호'가 구간 자르기에서도 끝까지 관찰된다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH06/CH06-L06.md",
+      "quote": "LOOP AT gt_gugu INTO gs_line.\n  WRITE: / gs_line-dan, 'x', gs_line-mul, '=', gs_line-result.\nENDLOOP.",
+      "category": "체험 공백(절 단위)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "캡스톤의 '정렬해서 출력 — SORT + LOOP' 절에 있는 LOOP + WRITE 코드가 체험에서 재현되지 않는다. 유일한 위젯 CH06-L06-S01은 SORT까지만 실행하고 끝나서, 정렬된 구구단이 실제로 어떻게 찍히는지를 학습자가 한 번도 보지 못한 채 챕터가 끝난다.",
+      "evidence": "위젯 config의 code 배열 마지막 줄이 \"SORT gt_gugu BY result DESCENDING.\"이고 배열 전체에 LOOP·WRITE가 한 줄도 없다(스크립트로 확인). 13개 스텝 중 프로그램 출력 마커 [출력]을 내는 스텝이 0건으로, 같은 챕터의 CH06-L03-S01(1건)·CH06-L04-S01(4건)·CH06-L04-S02(8건)와 대비된다. 그런데도 위젯에는 '현재 행 / 전체 출력' 콘솔 토글이 그대로 붙어 있어, 전체 출력으로 바꿔도 프로그램 출력은 하나도 쌓이지 않는다. 정렬 결과 자체는 변수 모니터의 itab(1행 9x9=81 … 72행 2x1=2)으로만 확인된다.",
+      "suggestion": "위젯 code 배열 끝에 LOOP/WRITE 3줄을 추가하고 스텝 2~3개를 붙여 상위 몇 줄('9 x 9 = 81', '8 x 9 = 72' …)이 콘솔에 찍히게 한다. 그러면 '모아 두었기에 원하는 기준으로 재배열해 출력할 수 있다'는 캡스톤의 결론이 화면으로 닫힌다."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH06/CH06-L04.md",
+      "quote": "::embed CH06-L04-S04 | 두 명단 합치기 — APPEND LINES OF를 직접 확인::\n\n::embed CH06-L04-S03 | 중복 제거는 정렬부터 — 스냅샷::",
+      "category": "체험 배치(코드↔체험 인접성)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'중복 · 개수 · 합치기' 절에서 두 체험이 본문 코드와 반대 순서로 놓였다. 본문은 중복 제거 코드 → 합치기 코드 순인데 임베드는 합치기(S04) → 중복 제거(S03) 순이라, DELETE ADJACENT DUPLICATES 위젯이 자기 코드에서 한 소절 떨어진 절 맨 끝에 온다.",
+      "evidence": "MD의 임베드 등장 순서가 S01 → S02 → S04 → S03이고, 빌드된 페이지의 iframe 순서도 동일함을 fetch로 확인했다(CH06-L04-S01, CH06-L04-S02, CH06-L04-S04, CH06-L04-S03). 그 결과 DELETE ADJACENT DUPLICATES 코드블록과 그 체험 사이에 '두 테이블 합치기' 소절 전체(설명 + APPEND LINES OF 코드 + S04 위젯)가 통째로 끼어들어, 코드를 읽고 바로 해 보려는 흐름이 끊긴다. 참고로 같은 챕터 CH06-L05도 S02 → S01 순으로 본문 순서를 따르고 있어(각각 해당 절 바로 뒤) 배치 원칙 자체는 지켜지는 편이다.",
+      "suggestion": "두 ::embed 줄의 순서를 맞바꿔 S03을 DELETE ADJACENT DUPLICATES 코드 직후로, S04를 APPEND LINES OF 코드 직후로 옮긴다(각 소절 끝에 하나씩). 파일 수정 없이 MD 두 줄 위치만 바꾸면 된다."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH06/CH06-L02.md",
+      "quote": "DATA gt_person TYPE ztt_person.   \" 전역 Table Type",
+      "category": "체험 공백(절 단위)",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "'로컬 vs 전역(DDIC) Table Type' 절은 SE11 화면 조작 절차(Data type → Table type → Line Type → 활성화)와 코드 한 줄로만 이뤄져 있고, 대응하는 체험이나 화면 시각화가 없다. 같은 페이지의 로컬 선언 쪽은 해부 위젯으로 충분히 만져 볼 수 있어 두 절의 밀도 차가 크다.",
+      "evidence": "이 페이지의 임베드는 CH06-L02-S01(선언 해부)·CH06-L02-S02(종류 선택 트리) 둘뿐이고, 실조작으로 확인한 결과 S01이 다루는 코드는 로컬 TYPES 선언(TYPES tt_person TYPE STANDARD TABLE OF ts_person WITH NON-UNIQUE KEY name.)이며 5개 핫스폿 어디에도 전역/DDIC Table Type은 포함돼 있지 않다. SE11 경로와 ZTT_PERSON은 텍스트로만 안내된다.",
+      "suggestion": "페이지 단위로는 이미 체험이 둘 있어 필수 보강은 아니다(그래서 확신도를 '추정'으로 둔다). 다만 SE11 Table Type 생성 화면을 흉내 낸 짧은 시뮬레이션이나 화면 스냅샷을 붙이면 전역 타입 절이 로컬 절과 같은 밀도가 되고, CH05의 DDIC Structure 절과도 결이 맞는다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "실습형 학습자 관점에서 CH06은 상태가 좋다. 위젯 12개를 전부 브라우저에서 직접 조작한 결과 모두 정상 동작했고 콘솔 오류는 0건이었으며, 본문 코드와 위젯의 변수명·데이터·시나리오가 어긋나는 곳은 사실상 없었다. 특히 검증이 까다로운 대목들이 정확했다 — 정렬 없는 BINARY SEARCH가 sy-subrc=4로 실패하는 과정이 실제 이진 탐색 경로와 일치하고(유재석<홍길동→왼쪽, 유재석<정훈영→왼쪽, 소진), SORT 결과의 한글 순서(유재석<정훈영<홍길동)가 코드포인트 기준과 맞으며, 실패한 READ 뒤 Work Area에 직전 값이 남고 sy-tabix가 0이 되는 함정, AT 블록 진입 시 그룹 키 오른쪽 숫자 필드가 0으로 가려졌다가 SUM으로 채워지고 ENDAT에서 복원되는 순서, COLLECT의 키 누적(서울 100+30=130)이 모두 정확했다. L06 캡스톤은 구구단 72행이 2~9단 전 항목과 완전히 일치하고 SORT DESCENDING 결과도 같은 집합의 올바른 내림차순 순열이었다. 판정형 위젯도 건전해서, Flat/Deep 퀴즈 5문항을 전부 오답으로 눌러 확인했으나 정답 판정·해설·점수 모두 정확했고 Table Kind 선택 트리는 종단 5경로가 전부 본문 표와 일치하는 추천을 냈다. 빌드 산출 6개 레슨 페이지에 임베드 12개가 모두 실장돼 있어 '코드는 있는데 체험이 없는 페이지'는 하나도 없었다. 발견한 5건은 전부 낮음 수준의 다듬기다. 실질적으로 손볼 값은 두 가지 — CH06-L04-S01의 3막에서 Work Area를 공백으로 초기화한 것(실제 ASSIGNING은 Work Area를 건드리지 않으므로 오해를 부른다)과, CH06-L06 캡스톤이 SORT까지만 재현하고 LOOP/WRITE 출력을 끝내 보여 주지 않는 점이다. 나머지 셋(2막 회차 한 칸 건너뜀, L04 임베드 순서 뒤바뀜, L02 SE11 절의 체험 부재)은 순서 조정이나 스텝 추가 수준이다. 재집필이나 구조 보강이 필요한 사안은 없다."
+  }
+}

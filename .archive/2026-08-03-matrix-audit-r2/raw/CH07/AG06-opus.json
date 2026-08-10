@@ -1,0 +1,64 @@
+{
+  "agent": "AG06",
+  "model": "opus",
+  "target": "CH07",
+  "persona_ack": "나는 20년차 SAP ABAP 아키텍트 관점의 발견자 AG06으로서 CH07(_chapter, L01～L03)을 읽기 전용으로 감사했다. 축은 기술 사실·예시 적절성·위험한 생략·안티패턴 넷이며, 파일은 하나도 수정하지 않았다. 블라인드 원칙에 따라 다른 감사자의 보고나 과거 감사 산출물은 열지 않았고, 웹 검색 없이 내 지식만으로 판단했다. 릴리스·설정에 의존하거나 기억이 불확실한 항목은 confidence=\"추정\"으로 정직하게 표기했고, 억지 발견 대신 근거가 서는 것만 올렸다.",
+  "method": "Read 도구로 대상 4개 파일(C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\_chapter.md, CH07-L01.md, CH07-L02.md, CH07-L03.md) 전문을 통독하고, SE11(테이블 빌더)·SE13(Technical Settings)·SE16(Data Browser)·DDIC 활성화 동작에 대한 지식과 대조했다. 셸 명령·웹 검색·외부 자료·타 감사자 산출물은 일절 사용하지 않았다. 모든 quote는 원문 한 줄에서 그대로 복사했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\CH07-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\CH07-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\CH07-L03.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\CH07-L01.md",
+      "quote": "| Technical Settings | Data Class·Size Category를 지정한 뒤 활성화 |",
+      "category": "위험한 생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "Technical Settings를 'Data Class·Size Category 둘'로 못 박아 서술했는데, 같은 화면에 있는 Buffering(버퍼링)과 데이터 변경 로그 항목이 통째로 빠졌다. 학습자가 화면에서 실제로 마주치는 블록인데 판단 근거가 없다.",
+      "evidence": "활성화 전에 여는 Technical Settings 화면(SE13)은 논리적 저장 파라미터(Data Class·Size Category) 외에 버퍼링 블록(버퍼링 불가 / 허용하나 꺼짐 / 켜짐 + 단일레코드·제네릭·완전 버퍼링)과 데이터 변경 로그 설정을 함께 갖는다. 본문은 '이 둘은 지정해야 활성화된다'까지 단정해 두어, 화면에 보이는 버퍼링 블록을 건드려야 하는지 알 길이 없다. 버퍼링은 잘못 켜면 값을 바꾼 직후에도 옛 값이 읽히는(stale read) 현상으로 직결돼, 입문 단계라도 '기본값 그대로 둔다'는 한 줄은 안전장치가 된다. 화면 구성 자체는 릴리스와 무관하게 동일하므로 확실로 판정한다.",
+      "suggestion": "'Technical Settings — 저장 방식 지정' 절 끝에 한 줄 추가: '이 화면에는 버퍼링 설정도 함께 있는데 지금은 기본값(버퍼링 안 함) 그대로 둔다. 버퍼링을 켜면 값을 바꿔도 잠시 옛 값이 보일 수 있어, 성능을 다룰 때 따로 배운다.' 앞 표의 해당 행도 'Data Class·Size Category 지정(버퍼링은 기본값 유지) 뒤 활성화'로 다듬는다. 미래 개념 선노출이 되지 않도록 이름 언급 + 기본값 안내 수준(1줄)으로 제한한다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\CH07-L01.md",
+      "quote": "- **Data Class**(데이터 클래스) — 테이블의 성격(예: 마스터 데이터·트랜잭션 데이터). DB가 비슷한 성격끼리 같은 저장 영역에 모은다.",
+      "category": "사실 오류(릴리스·DB 의존 단정)",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "Data Class의 효과를 '비슷한 성격끼리 같은 저장 영역에 모은다'로 단정했다. 이는 테이블스페이스가 있던 전통 DB 시절의 동작이고, HANA 기반 시스템에서는 사실상 형식적으로만 남은 항목이다.",
+      "evidence": "Data Class(APPL0 마스터·APPL1 트랜잭션·APPL2 조직/커스터마이징 등)가 실제 저장 영역(테이블스페이스) 배정으로 이어진 것은 Oracle·DB2·MaxDB 같은 클래식 DB 환경이다. HANA에는 테이블스페이스 개념이 없어 값은 여전히 입력받되 저장 위치 배정 효과는 사실상 없고, 저장 축은 Row/Column Store 쪽으로 옮겨갔다. 커리큘럼이 어느 릴리스/DB를 실습 대상으로 삼는지 문서에 명시돼 있지 않아, 단정형 문장이면 S/4HANA 실습자에게는 사실과 어긋난 인상을 준다. 다만 시스템 구성 의존이고 웹 확인이 금지돼 있어 추정으로 둔다.",
+      "suggestion": "'DB가 비슷한 성격끼리 같은 저장 영역에 모은다' → '예전 DB에서는 비슷한 성격끼리 같은 저장 영역에 모으는 데 쓰였다. 요즘 시스템에서는 실제 효과가 크지 않지만 값은 여전히 골라 줘야 한다' 정도로 완화한다. Size Category의 '힌트' 서술은 이미 적절하므로 그대로 둔다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\CH07-L01.md",
+      "quote": "| Data Browser/Table View Maint. | `Display/Maintenance Allowed`로 둔다. 다음 레슨에서 손으로 값을 넣으려면 이 설정이 필요하다 |",
+      "category": "예시 적절성",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "세 값 중 가장 열린 `Display/Maintenance Allowed`를 '학습용이라 이렇게 둔다'는 단서 없이 표준 설정처럼 제시했다. 학습자가 이후 만드는 업무 테이블에도 그대로 복제하기 쉽다.",
+      "evidence": "이 플래그는 데이터 브라우저에서 직접 편집이 가능한지를 테이블 정의에 영구히 박는 값이다. 실무 Z 테이블은 업무 데이터를 담을 경우 대개 'Display/Maintenance Allowed with Restrictions'(조회는 되되 직접 편집은 막고 생성된 유지보수 화면으로만) 또는 'Display/Maintenance Not Allowed'로 두어 운영에서의 직접 편집을 원천 차단한다. L02가 '운영 시스템에서 Create Entries 금지, 감사 대상'이라고 행위 차원 경고를 하는 점은 좋으나, 설정값 자체가 왜 학습 전용 선택인지는 두 레슨 어디에도 없다. 사이트 정책·테이블 성격에 따라 갈리는 판단이라 추정으로 둔다.",
+      "suggestion": "표 셀 뒤나 바로 아래에 한 줄 덧붙인다: '실습이라 가장 열린 값을 고르는 것이다. 실무 업무 테이블은 보통 직접 편집을 막는 값(Display/Maintenance Allowed with Restrictions)을 쓴다.' L02의 운영 금지 경고와 짝을 이루게 두면 학습자가 설정과 행위를 함께 기억한다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\CH07-L02.md",
+      "quote": "- **DB가 값까지 맞춰 줄 거란 착각** → 키는 **중복만** 막는다.",
+      "category": "위험한 생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "손입력으로 틀린 값이 들어갈 수 있다고 스스로 인정하면서도 정정 경로를 주지 않는다. 특히 키 필드(DAN·MUL)는 값을 고칠 수 없고 그 행을 지우고 다시 넣어야 한다는 사실이 빠졌다.",
+      "evidence": "레슨은 '2×2인데 RESULT=5도 들어간다'까지 짚어 두고 끝난다. 실제로는 이미 저장된 행을 변경할 때 키 필드는 입력 불가로 잠기고 비키 필드(RESULT)만 고칠 수 있다. 키 값 자체를 바꾸는 것은 DB 관점에서 다른 행이 되므로 삭제 후 재입력 외에는 방법이 없다. 또 Create Entries의 저장은 즉시 DB에 확정돼 되돌리기(Undo)가 없다. 실습에서 DAN·MUL 오타는 흔하게 나는데 회복 방법이 없으면 학습자가 그 자리에서 막히고, '키는 고칠 수 없다'는 감각은 이후 키 설계·Foreign Key 이해에도 그대로 이어진다. 키 값 불변성은 릴리스와 무관해 확실로 판정한다.",
+      "suggestion": "'흔한 실수와 점검'에 한 줄 추가: '**잘못 넣었다면** → RESULT처럼 키가 아닌 필드는 값을 고칠 수 있지만, DAN·MUL 같은 키 필드는 고칠 수 없다. 그 행을 지우고 다시 넣는다. 저장하는 순간 바로 DB에 확정돼 되돌리기는 없다.' 화면 메뉴 경로까지 적기보다 '지우고 다시 넣는다' 수준으로 두면 릴리스 차이에 걸리지 않는다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "기술 사실 축에서 CH07은 견고하다. Transparent Table과 물리 테이블의 1:1 대응, Pooled/Cluster 대비 설명, 키 필드는 맨 앞에 연속으로 두어야 활성화된다는 DDIC 제약, '첫 키 필드 타입이 CLNT면 클라이언트 종속'이라는 판정 기준, MANDT 필드는 내가 직접 넣되 클라이언트 필터링은 시스템이 한다는 자동/수동 구분, 활성화 시점에 실제 DB 테이블이 생성된다는 서술, Data Element 참조와 Built-In 직접 지정의 라벨·F4 차이, Enhancement Category 경고와 Extras 메뉴 경로, 활성 후 타입·길이 변경의 변환·손실 위험, SE11 Utilities → Table Contents(Create Entries/Display) 경로, 키 중복 거부, 운영 시스템 직접 입력 금지 경고, DB 테이블명을 타입으로 쓰면 MANDT까지 네 필드가 딸려온다는 지적까지 전부 실제 동작과 일치했다. classic 문법(DATA … TYPE TABLE OF …)도 이 구간에 맞고, 사실 오류로 볼 만한 곳이나 교정 없이 시연된 안티패턴은 찾지 못했다. 발견 4건은 모두 낮음이며 성격이 같다 — 화면·실무에서 학습자가 곧바로 마주치는데 본문이 침묵한 지점(Technical Settings의 버퍼링, Data Class 설명의 DB 세대 의존, 가장 열린 유지보수 플래그를 학습용 단서 없이 제시, 손입력 오류 정정 경로)이다. 네 건 모두 한두 줄 삽입으로 해소되고 구조·예제 자체는 손댈 필요가 없으므로 '경미 수정'으로 본다."
+  }
+}

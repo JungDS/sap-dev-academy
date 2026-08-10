@@ -1,0 +1,57 @@
+{
+  "agent": "AG06",
+  "model": "sonnet",
+  "target": "CH08",
+  "persona_ack": "20년차 SAP ABAP 아키텍트(ECC~S/4HANA 개발·운영·성능·이관 경험)로서 CH08 'Open SQL 기본 조회' 레슨 7편(L01~L07)과 챕터 개요(_chapter.md)를 기술 검수했다.",
+  "method": "대상 파일 8개(_chapter.md, CH08-L01~L07.md)를 전문 통독. 웹 검색·빌드·런타임 실행 없이 Open SQL classic/modern 구문 경계, DDIC(MANDT·NUMC·DATS·NULL 처리), sy-subrc/sy-dbcnt 동작, 키 기반 인덱싱·버퍼링, MESSAGE 문법에 대한 ABAP 실무 지식과 문장 단위로 대조 검증했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH08-L05.md",
+      "quote": "carrid IN ('KE', 'LH', 'AA')",
+      "category": "사실 오류 — classic/modern Open SQL 구문 경계",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "WHERE절에서 IN 뒤에 값을 콤마로 나열하는 이 형태(`IN ('KE', 'LH', 'AA')`)는 classic Open SQL 문법이 아니라 New Open SQL(약 7.40 SP08 이후) 확장으로 기억한다. classic Open SQL의 IN은 본래 SELECT-OPTIONS/RANGES로 만든 selection table(SIGN·OPTION·LOW·HIGH 구조)만 받았고, 값을 직접 괄호에 나열하는 리스트 형태는 그보다 나중에 추가된 편의 문법이다.",
+      "evidence": "이 챕터는 front-matter·CH08-L02 콜아웃에서 'classic 구문'만 다루고 New Open SQL은 Chapter 19로 명시적으로 미룬다고 선언한다. 그런데 CH08-L05의 같은 SELECT문은 host 변수를 @ 없이 쓰는 classic 표기(BETWEEN·LIKE)와, 값을 직접 나열하는 IN(모던 확장으로 추정)을 한 문장 안에 섞고 있다 — CH08-L02가 강조한 '한 문장 안에 두 방식을 섞지 않는다'는 원칙과도 자기모순이다. 릴리스 의존적 사실이라 확실 대신 추정으로 표기한다.",
+      "suggestion": "IN 예제를 classic 방식(SELECT-OPTIONS/RANGES 기반 selection table, 혹은 도입 전이면 `carrid = 'KE' OR carrid = 'LH' OR carrid = 'AA'`)으로 바꾸거나, 정말 이 표기를 쓰려면 CH08-L02의 host 변수 @ 표기처럼 [선행 사용]으로 명시하고 정식 도입은 Chapter 19로 남겨 둔다."
+    },
+    {
+      "seq": 2,
+      "file": "CH08-L07.md",
+      "quote": "MESSAGE '해당 단의 데이터가 없습니다.' TYPE 'S'.",
+      "category": "예시 적절성 — 실무 표준과의 괴리",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "MESSAGE에 리터럴 텍스트를 직접 쓰는 이 형태는 문법적으로 유효하지만, 실무에서는 메시지를 message class(SE91 등록, T100 저장)에 번호로 등록해 `MESSAGE e001(zclass) WITH ...` 형태로 부르는 쪽이 표준이다. 번역·재사용·중앙관리(장문 도움말 포함)가 필요해서다.",
+      "evidence": "본문이 이 형태를 '맛보기'로 명시하고 메시지 타입 전체·메시지 클래스는 Chapter 15로 미루긴 하지만, '실무에서는 보통 메시지 클래스에 등록해 관리한다'는 한 줄 안내가 없어 이 인라인 리터럴 형태 자체를 표준 실무 패턴으로 오인할 여지가 있다.",
+      "suggestion": "Chapter 15로 넘기는 콜아웃에 '실무에서는 이 텍스트를 메시지 클래스에 번호로 등록해 부른다' 정도의 한 줄만 추가."
+    },
+    {
+      "seq": 3,
+      "file": "CH08-L06.md",
+      "quote": "다만 찾아보기를 늘리면 대가가 따른다.",
+      "category": "위험한 생략 — 테이블 버퍼링",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "SELECT 성능과 인덱스(Primary Key 선두 규칙, Secondary Index, HANA 컬럼 스토어)를 상당히 자세히 다루면서도 SAP 테이블 버퍼링(Table Buffering)은 챕터 전체에서 한 번도 언급되지 않는다. 버퍼링은 인덱스와 별개로 SELECT 결과에 영향을 준다.",
+      "evidence": "버퍼링된 테이블은 DB가 아니라 애플리케이션 서버 버퍼에서 값을 읽어 올 수 있어, 다른 세션이 방금 바꾼 값이 버퍼 동기화 전까지 반영되지 않는 현상이 생길 수 있다. '분명히 값을 고쳤는데 SELECT 결과가 그대로'라는 실무 혼란의 대표 원인 중 하나인데, 인덱스·성능을 이만큼 다루는 레슨에서 완전히 빠져 있다. 다만 CH08 예제 테이블(SFLIGHT 등)이 실제로 버퍼링 대상인지는 확인하지 못해 추정으로 표기한다.",
+      "suggestion": "L06 끝에 '테이블에는 버퍼링이라는 또 다른 성능 장치가 있고, 방금 바뀐 값이 늦게 보일 수 있다'는 한 줄 예고만 추가하고 정식 설명은 CH35(성능 분석)로 미룬다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH08 7개 레슨은 SCARR/SPFLI/SFLIGHT 필드·키 구성, MANDT client 자동 필터, sy-subrc/sy-dbcnt 동작, INTO 형태별 함정(CORRESPONDING 잔존값·APPENDING vs INTO 덮어쓰기), 키 선두 규칙 기반 인덱스 원리 등 기술 서술이 전반적으로 정확하고, N+1 문제·SELECT * 남용·SINGLE 실패 후 잔존값 같은 실무 함정까지 선제적으로 짚어 완성도가 높다. 다만 CH08-L05의 `carrid IN ('KE','LH','AA')`는 classic이 아니라 New Open SQL 확장으로 추정되어 이 챕터의 classic 전용 선언과 어긋나고, CH08-L07의 MESSAGE 인라인 텍스트는 실무 표준(message class)과의 괴리를 한 줄도 언급하지 않으며, L06은 성능·인덱스를 다루면서도 테이블 버퍼링은 전혀 짚지 않는다. 세 지점 모두 국지적 보완으로 해결 가능한 수준이라 경미 수정을 권한다."
+  }
+}

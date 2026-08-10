@@ -1,0 +1,44 @@
+{
+  "agent": "AG04",
+  "model": "sonnet",
+  "target": "CH05",
+  "persona_ack": "20년차 한국어 교열·기술 용어 감수자로서 CH05(_chapter.md, L01~L05)의 문장(번역투·비문·중의문·장문·반복), 용어 첫 등장 풀이의 이해도, 레슨 간 용어 일관성, 톤 일관성을 감사했다.",
+  "method": "대상 파일 6개(_chapter.md, CH05-L01~L05)를 전문 정독. 도구 실행·웹검색 없이 텍스트만으로 판단했고, 인용구는 해당 파일 재확인으로 원문 일치를 검증했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH05-L03.md",
+      "quote": "방법으로 SE11에 만들어 둔 **주문 머리** Structure다.",
+      "category": "용어 - 어색한 직역",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "'Header'(헤더)에 해당하는 개념을 순우리말 '머리'로 직역해, 실무 SAP 한국어 화면·문서에서 통용되는 표준 표현(헤더)과 어긋난다.",
+      "evidence": "실무에서 '주문 헤더', '전표 헤더'처럼 '헤더'가 표준 표현이고 '머리'는 SAP/ERP 맥락에서 쓰이지 않는다. 같은 문장의 DDIC 예제 이름도 zst_order_head로 영어 'head'를 그대로 쓰는데, 정작 본문 설명만 '머리'로 직역해 코드상의 이름과 설명의 어감이 어긋난다. 입문자가 나중에 실제 SAP 문서·화면에서 '헤더'라는 표현을 만났을 때 이 레슨에서 배운 '머리'와 바로 연결 짓기 어려울 수 있다.",
+      "suggestion": "'주문 머리' 대신 '주문 헤더'로 쓰거나, 처음 등장할 때 \"헤더(Header, 이 예제에선 zst_order_head)\"처럼 실무 표준 용어를 병기한다."
+    },
+    {
+      "seq": 2,
+      "file": "CH05-L03.md",
+      "quote": "| 접근 | `gs_order-head-customer`(두 단계) | `gs_order-created_by`(한 단계, 펼쳐짐) |",
+      "category": "용어 일관성 - 예제 변수명 재사용",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "① 중첩 예제와 ② .INCLUDE 예제가 서로 타입이 다른 별개의 Structure인데도 변수명 gs_order를 그대로 재사용해서, 비교 문장과 표에서 두 접근 경로가 마치 같은 gs_order 하나에 함께 있는 것처럼 나란히 제시된다.",
+      "evidence": "①에서는 `DATA: BEGIN OF gs_order, order_id ..., head TYPE zst_order_head, qty ..., END OF gs_order.`로 Local Structure를 선언해 `gs_order-head-customer`로 접근한다. ②에서는 전혀 다른 타입인 `DATA gs_order TYPE zst_order.`(자기 필드 order_id·customer·amount, .INCLUDE로 created_by·created_on 추가)를 선언해 `gs_order-created_by`로 접근한다. 즉 두 gs_order는 모양이 다른 별개의 예제 변수인데, 비교 문장(\"중첩은 head를 거쳐 gs_order-head-customer로 들어가지만, .INCLUDE로 담은 필드는 펼쳐져 gs_order-created_by로 바로 접근한다\")과 뒤이은 표가 이를 나란히 배치해 'ZST_ORDER 하나에 head와 created_by가 같이 있는 건가?'로 오해할 여지를 만든다. 이 레슨의 핵심 목표가 정확히 세 방식의 접근 경로를 비교하는 것이라 이 혼동은 학습 목표에 직접 영향을 준다.",
+      "suggestion": "두 예제의 변수명을 다르게 짓거나(예: gs_order_nested / gs_order_flat), 비교 문장·표 앞에 \"이 둘은 서로 다른 ZST_ORDER 예제다\"라는 한 문장을 명시적으로 추가해 같은 변수가 아님을 밝힌다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH05(_chapter.md, L01~L05) 전체적으로 입문서 톤이 처음부터 끝까지 흔들리지 않고, Structure·Component·Work Area 같은 핵심 용어는 첫 등장 시 알기 쉬운 한글 풀이가 바로 붙어 있다. global(gs_ 접두어의 global)과 DDIC Structure의 Global, 'ABAP Dictionary·DDIC·SE11'처럼 헷갈리기 쉬운 동음이의 개념도 매번 명시적으로 구분해 정리했고, 다른 언어 경험자를 위한 콜아웃도 조건부로 잘 격리돼 있어 본문 톤을 해치지 않는다. 각 레슨 말미 '흔한 실수와 점검'도 앞선 서술 톤에서 크게 벗어나지 않는 간결한 체크리스트 형식이라 논문·매뉴얼 톤으로의 급격한 이탈은 발견하지 못했다. 문장 단위의 번역투·비문·중의문도 뚜렷한 사례를 찾지 못했다. 다만 두 가지는 손볼 만하다. (1) L03의 '주문 머리'는 'Header'를 실무 표준 표현인 '헤더' 대신 순우리말로 직역해 실무 용어와 괴리된다(낮음). (2) L03에서 중첩과 .INCLUDE 두 예제가 서로 다른 Structure 타입인데도 같은 변수명 gs_order를 재사용해, 비교 문장·표가 두 필드를 같은 구조체인 것처럼 나란히 보여준다(중간) — 이 레슨의 핵심 목표(세 방식 비교)와 직결되는 지점이라 경미 수정을 권한다."
+  }
+}

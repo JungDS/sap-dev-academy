@@ -1,0 +1,123 @@
+{
+  "agent": "AG03",
+  "model": "opus",
+  "target": "CH08",
+  "persona_ack": "Java/C# 계열 백엔드 3～5년차 개발자로서 ABAP을 빠르게 훑어 익히려는 시선으로 CH08 전체를 통독했다. 프로그래밍 기본기(변수·조건문·루프·SQL·OOP)는 이미 안다는 전제에서 과잉·오개념 유발·지름길 부재·용어 충돌 네 가지를 기록했다. 이 사이트의 1독자가 비전공 입문자임을 감안해, '입문자에겐 필요하나 나에게만 아는 내용'은 높음으로 올리지 않고 낮음 또는 suggestion으로 낮췄다.",
+  "method": "Read 도구로 대상 8개 파일(_chapter.md, L01~L07) 전문을 통독. 빌드·브라우저·웹검색 미사용. ::embed 위젯 HTML은 대상 파일 목록 밖이라 열지 않았으므로 체험 위젯 내부 동작에 대한 판단은 하지 않았고, 모든 판단은 MD 본문·front-matter와 내 ABAP/Open SQL 지식에만 근거한다. 확신이 덜한 문법·릴리스 의존 항목은 confidence=추정으로 표시했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L07.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH08/CH08-L02.md",
+      "quote": "`sy-subrc`는 예외처럼 튀어나오는 게 아니라 **문장이 끝날 때마다 덮어써지는 시스템",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "sy-subrc가 '문장이 끝날 때마다' 덮어써진다는 설명은 사실과 다르다. ABAP에서 sy-subrc를 설정하는 것은 그렇게 하도록 정의된 문장들(SELECT·READ TABLE·CALL FUNCTION 등)뿐이고, WRITE·대입·산술 같은 문장은 sy-subrc를 건드리지 않는다.",
+      "evidence": "이어지는 문장이 '사이에 다른 문장이 하나라도 끼면 이미 그 문장의 결과로 바뀌어 있다'로 못 박는데, 이 서술을 곧이곧대로 받아들이면 바로 아래 예제(SELECT 다음에 IF·WRITE가 이어지는 코드)나 L07의 IF sy-subrc <> 0 … ELSE … LOOP 구조가 왜 안전한지 설명되지 않는다. 실무 조언(SELECT 직후에 확인하라)은 옳지만 근거로 제시한 메커니즘이 과잉 단순화라, 시스템 필드 개념을 처음 보는 경력자는 '그럼 IF 한 줄만 지나도 값이 날아가나'로 잘못 배운다.",
+      "suggestion": "'모든 문장'이 아니라 '많은 문장이 sy-subrc를 덮어쓴다 — 어떤 문장이 그러는지 일일이 외우는 대신 SELECT 바로 다음 줄에서 확인하는 습관으로 해결한다'로 완화. 조언(즉시 확인)은 그대로 두고 단정적 메커니즘 서술만 손보면 된다."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH08/CH08-L05.md",
+      "quote": "않으므로 SQL Injection 걱정은 없다.",
+      "category": "오개념 유발",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'SQL Injection 걱정은 없다'가 조건 없이 단정돼 있다. 정적으로 적은 Open SQL의 host 변수에 한해 맞는 말이고, ABAP에도 동적 조건(WHERE (문자열))·동적 테이블명·ADBC/EXEC SQL처럼 인젝션이 실제로 성립하는 경로가 있다.",
+      "evidence": "이 콜아웃은 '다른 언어를 해 봤다면'으로 시작해 경력자를 직접 겨냥하는데, 경력자일수록 이 문장을 'ABAP은 구조적으로 인젝션이 불가능한 언어'로 일반화하기 쉽다. 그 일반화를 안고 나중에 동적 WHERE에 사용자 입력을 문자열로 이어 붙이면 그대로 취약점이 된다. 챕터 안에서 동적 SQL을 가르치지 않는 것과는 별개로, 단정의 범위 표시가 빠져 있다는 점이 문제다.",
+      "suggestion": "'이렇게 문장에 직접 적은 변수라면'처럼 범위를 한정하는 수식어 한 개만 추가. 동적 SQL 자체는 노출하지 말고 '문장을 문자열로 조립하는 방식은 이야기가 다른데, 이 과정에서는 쓰지 않는다' 정도의 반 문장이면 충분하다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH08/CH08-L01.md",
+      "quote": "- **WHERE에 MANDT 직접** → Open SQL에선 불필요(오히려 피한다). 시스템이 챙긴다.",
+      "category": "오개념 유발",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "MANDT를 WHERE에 적는 것을 '불필요·피한다'는 스타일 권고로 서술했지만, classic Open SQL에서 client 종속 테이블의 client 컬럼을 CLIENT SPECIFIED 없이 WHERE에 적으면 문법 검사에서 막히는 것으로 안다. 권고가 아니라 금지에 가깝다.",
+      "evidence": "'불필요'라는 표현은 다른 언어 경력자에게 '적어도 되지만 중복'으로 읽힌다. 실제로 적어 보고 문법 오류를 만나면 레슨 설명과 시스템 반응이 어긋나 혼란이 생긴다. 덧붙여 경력자가 이 절을 읽으며 즉시 떠올리는 질문 — '그럼 다른 client 데이터를 봐야 할 때는 어떻게 하나' — 에 대한 출구(CLIENT SPECIFIED가 있고 그건 특수 상황용이라는 한 줄)가 챕터 어디에도 없다. 릴리스별 문법 검사 강도까지는 단정하지 못해 추정으로 둔다.",
+      "suggestion": "'불필요' → '적으면 안 된다(시스템이 챙기는 자리라 문법 검사에서 걸린다)'로 강도를 맞추고, 각주 한 줄로 '자동 client 필터를 끄는 전용 표현이 따로 있으나 특수 상황용이라 이 과정에서는 쓰지 않는다'만 남겨 두면 경력자의 미해결 질문이 사라진다."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH08/CH08-L04.md",
+      "quote": "**짝이 없는 필드는 지워지지 않고 남는다.** `INTO CORRESPONDING FIELDS OF gs_`처럼 Work",
+      "category": "오개념 유발",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "'짝이 없는 필드는 지워지지 않고 남는다'가 굵은 글씨 헤드라인으로 먼저 나오고 Work Area 한정은 '특히 조심한다'로 뒤에 붙어, INTO CORRESPONDING FIELDS OF TABLE에도 같은 잔값 위험이 있는 것처럼 읽힌다. 내가 아는 한 TABLE 형태는 행이 새로 만들어져 짝 없는 필드가 초기값이 되고, 잔값이 남는 것은 Work Area 형태 고유의 함정이다.",
+      "evidence": "이 경고 바로 위 예제가 INTO CORRESPONDING FIELDS OF TABLE gt_flight다. 독자는 방금 본 코드에 경고를 겹쳐 읽게 되고, '특히'라는 부사는 '다른 형태도 정도만 덜할 뿐 같은 문제가 있다'는 뜻으로 해석된다. 실제로는 두 형태의 동작이 갈리는 지점이라 '정도 차이'가 아니라 '유무 차이'다.",
+      "suggestion": "'특히 조심한다' 대신 대비로 서술 — 'TABLE 형태는 행이 새로 만들어져 짝 없는 필드가 초기값이 되지만, Work Area 하나에 담는 형태는 직전 값이 그대로 남는다'. 이러면 CLEAR 습관 권고의 이유도 더 또렷해진다."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH08/CH08-L04.md",
+      "quote": "맞추거나, 조회할 때 별칭을 붙여 이름을 맞춘다(별칭 `AS`는",
+      "category": "오개념 유발",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "CORRESPONDING 이름 불일치의 해법으로 컬럼 별칭 AS를 제시하고 CH13에서 다룬다고 안내하는데, 내가 아는 한 SELECT 목록의 컬럼 별칭(col AS alias)은 콤마를 쓰는 요즘 표기에서 들어온 문법이고 이 챕터가 쓰는 classic 표기에서는 쓸 수 없다(classic의 AS는 FROM 뒤 테이블 별칭 용도).",
+      "evidence": "L02가 '이 챕터는 classic'이고 CH19에서 요즘 표기를 따로 배운다고 못 박아 두었으므로, 독자는 CH13(=요즘 표기 도입 전)에서 컬럼 별칭을 배울 것으로 기대하게 된다. 만약 컬럼 별칭이 요즘 표기 전용이라면 이 안내는 배울 수 없는 문법을 가리키는 링크가 된다. 릴리스·문법 모드에 따른 허용 범위를 단정할 수 없어 추정으로 둔다 — 채택 전 문법 검사로 확인이 필요한 항목이다.",
+      "suggestion": "실기로 확인 후 둘 중 하나 — (a) classic에서 불가하면 별칭 언급을 빼고 '받는 쪽 필드 이름을 DB 컬럼 이름과 같게 선언한다'만 남기기, (b) 가능하면 어느 표기에서 쓰는 별칭인지 반 문장으로 명시. 어느 쪽이든 CH13 링크의 대상 절이 실제로 별칭을 다루는지 함께 점검."
+    },
+    {
+      "seq": 6,
+      "file": "content/abap/CH08/CH08-L05.md",
+      "quote": "행을 고르는 비교 기호는 다른 언어와 같다.",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L01에는 'SQL을 이미 해 봤다면' 접기 블록이 있어 경력자 지름길이 잘 마련돼 있는데, 정작 표준 SQL과 거의 동일한 L05의 연산자·BETWEEN·LIKE·IN 절과 L06의 인덱스·선두 키 절에는 '아는 사람은 건너뛰어도 된다'는 표시가 없다.",
+      "evidence": "L05의 비교 연산자 표(=/<>/</>/<=/>=와 EQ·NE 약어), BETWEEN·IN·LIKE의 % 와 _ 설명, L06의 색인 비유와 선두 키 규칙은 다른 언어에서 SQL을 써 본 사람에게 새 정보가 사실상 0이다. 반대로 같은 레슨 안의 host 변수 표기, IS NULL이 늘 0건인 이유, 보조 인덱스에 대한 HANA 단서는 ABAP 고유라 반드시 읽어야 하는데, 둘이 표시 없이 섞여 있어 어디를 건너뛰어도 되는지 판단하려면 결국 다 읽어야 한다.",
+      "suggestion": "L01의 접기 블록 패턴을 그대로 재사용해 각 레슨 서두에 한 줄 — 예: L05 '연산자·BETWEEN·LIKE·IN은 표준 SQL과 같다. 다른 건 host 변수 표기와 IS NULL 두 가지', L06 '인덱스 개념이 익숙하면 선두 키 표와 HANA 단서만 보면 된다'. 본문은 손대지 않고 안내만 얹는 방식이라 입문자 경험은 그대로다."
+    },
+    {
+      "seq": 7,
+      "file": "content/abap/CH08/CH08-L03.md",
+      "quote": "- **sy-subrc 미확인** → SINGLE도 없음(4)일 수 있다.",
+      "category": "과잉",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'SELECT 다음 줄에서 sy-subrc를 확인하라'가 챕터 안에서 다섯 군데 이상 반복된다(L02 경고 콜아웃·L02 흔한 실수·L03 흔한 실수·L05 팁 콜아웃·L07 본문과 흔한 실수). 통독하는 경력자에겐 같은 문장을 계속 다시 읽는 체감이 든다.",
+      "evidence": "L07이 이미 '조회 실패와 분기'를 통째로 한 레슨으로 다루고 있어, 앞 레슨들의 반복은 결론을 미리 여러 번 말해 버리는 셈이 된다. 다만 입문자에게 반복 노출 자체는 학습상 이득이 있어 삭제 대상은 아니라고 본다 — 압축 여지가 있다는 정도의 지적이다.",
+      "suggestion": "정본은 L02의 경고 콜아웃 한 곳으로 두고, L03·L05의 재언급은 반 줄로 줄이거나 L02 링크로 대체. L07은 '분기 설계'(언제 분기하고 언제 안 하나)라는 이 레슨만의 내용에 집중하면 중복이 자연스럽게 빠진다."
+    },
+    {
+      "seq": 8,
+      "file": "content/abap/CH08/CH08-L06.md",
+      "quote": "색인(index)은 책 뒤에 붙은 찾아보기와 같다.",
+      "category": "용어 충돌",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "이 레슨은 제목부터 'Index 기초'라 하면서 index를 DB 색인 한 가지 뜻으로만 쓴다. ABAP에서 index는 Internal Table의 행 번호(READ TABLE … INDEX n, sy-tabix)를 가리키는 말로도 아주 흔하게 쓰이는데, 두 뜻이 다르다는 점을 짚지 않는다.",
+      "evidence": "직전 챕터들에서 Internal Table을 다룬 독자는 index를 '메모리 테이블의 몇 번째 행'으로 먼저 익힌 상태다. 같은 단어가 예고 없이 'DB가 관리하는 검색 보조 자료구조'로 바뀌면, 특히 두 개념을 이미 구분해 아는 경력자가 '이 두 index가 관련이 있나'를 잠깐 되짚게 된다. 표준 SQL 쪽 index만 알던 사람에게도 방향만 반대일 뿐 같은 걸림돌이다.",
+      "suggestion": "'키로 찾으면 빠르다' 절 도입부에 한 줄 — '여기서 말하는 index는 DB가 관리하는 찾아보기다. Internal Table에서 쓰던 몇 번째 행이라는 뜻의 index와는 이름만 같고 다른 것이다.' 한 문장으로 충돌이 해소된다."
+    },
+    {
+      "seq": 9,
+      "file": "content/abap/CH08/CH08-L01.md",
+      "quote": "DB에서 읽는 언어가 [[Open SQL]]이다.",
+      "category": "용어 충돌",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "챕터 전체가 이 문법을 Open SQL로만 부르는데, 최근 SAP 공식 문서는 같은 것을 ABAP SQL로 개명해 부른다. 사이트 밖에서 자료를 찾아보는 독자에게 이름이 갈린다는 사실이 어디에도 없다.",
+      "evidence": "이 사이트를 발판 삼아 공식 문서·최신 자료로 넘어가는 것은 경력자의 전형적인 학습 경로다. Open SQL로 검색하면 구 릴리스 문서 쪽으로 쏠려, 같은 주제의 최신 문서를 못 찾거나 두 이름을 다른 기술로 오해할 수 있다. 챕터가 classic 표기를 다루므로 Open SQL 표기 자체는 자연스럽지만, 이름이 바뀐 사실을 알려 주는 비용은 한 줄이다.",
+      "suggestion": "L01의 Open SQL 소개 문단에 각주 한 줄 — '최근 SAP 문서는 같은 것을 ABAP SQL이라는 이름으로 부른다. 자료를 찾을 때 두 이름이 같은 것을 가리킨다는 점만 알아 두자.' 용어 자체를 바꿀 필요는 없다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "경력자 시선으로도 완성도가 높은 챕터다. L01의 'SQL을 이미 해 봤다면' 접기 블록으로 기존 SQL 지식과의 차이(client·INTO·콤마 없는 필드 목록·sy-subrc·NULL 부재)를 먼저 정렬해 주는 설계가 특히 좋고, SELECT…ENDSELECT를 '행마다 왕복'이라는 흔한 오해 없이 커서·묶음 fetch로 정확히 설명한 점, N+1이라는 익숙한 이름을 그대로 써 준 점, host 변수와 문자열 조립 SQL의 차이를 짚은 점, UP TO n ROWS가 '처음 n건'이 아님을 명시한 점, 인덱스 절에서 저장 순서와 색인 순서를 구분하고 HANA와 S/4HANA를 다른 층으로 갈라 준 점은 입문서에서 자주 틀리는 대목을 정확히 통과했다. 과잉은 심각하지 않다 — 유일하게 눈에 띄는 것이 sy-subrc 즉시 확인 권고가 다섯 군데 이상 반복되는 것이고, 이마저 입문자에겐 이득이라 압축 제안 수준이다. 지적 사항은 대부분 문장 하나 분량의 정밀도·범위 한정 문제다. 우선순위는 (1) sy-subrc가 '모든 문장'마다 덮어써진다는 단정 완화, (2) 'SQL Injection 걱정 없다'에 정적 문장 한정 수식어 추가, (3) CORRESPONDING 잔값 경고를 TABLE 형태와 Work Area 형태의 대비로 재서술, (4) WHERE의 MANDT를 '불필요'가 아니라 '적을 수 없다'로 강도 맞추기 순이다. 확인이 필요한 항목으로 컬럼 별칭 AS가 classic 표기에서 실제로 쓰이는지(CH13 링크의 유효성)를 남긴다. 지름길 안내는 L01에만 있고 L05·L06처럼 표준 SQL과 겹치는 절에는 없어, 본문을 건드리지 않고 서두 한 줄만 얹으면 경력자 통독 속도가 크게 개선된다. 재집필이 필요한 구조적 결함은 발견되지 않았다."
+  }
+}

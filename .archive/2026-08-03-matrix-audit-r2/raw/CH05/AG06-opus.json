@@ -1,0 +1,55 @@
+{
+  "agent": "AG06",
+  "model": "opus",
+  "target": "CH05",
+  "persona_ack": "20년차 SAP ABAP 아키텍트(ECC～S/4HANA 개발·운영·성능·이관 경험) 시선으로 CH05(_chapter + L01～L05)를 읽기 전용 기술 검수했다. 사실 오류·예시 적절성·위험한 생략·안티패턴 네 갈래로 훑었고, 웹 검색 없이 내 지식만으로 판단했다. 릴리스·설정에 따라 달라질 수 있거나 관례 판단에 해당하는 항목은 confidence='추정'으로 정직하게 낮췄다.",
+  "method": "Read 도구로 대상 6개 파일(_chapter.md, CH05-L01～L05.md) 전문을 통독하고, 각 ABAP 코드 블록의 구문·동작(선언 체인 구두점, TYPE/LIKE 의미, p LENGTH vs DDIC 자릿수, MOVE-CORRESPONDING 이동 규칙, DO/sy-index 값, 2단 구구단 계산 결과)과 SE11 조작 경로(라디오·팝업·Components 탭·.INCLUDE·Goto→Append Structure·Ctrl+F3)를 내 실무 지식과 대조했다. 파일 수정·생성 없음, 웹 검색·외부 네트워크 미사용, 다른 감사자 산출물 및 과거 감사 자료 미열람.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L05.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L03.md",
+      "quote": "1. 확장할 **표준** Structure나 테이블을 SE11에서 연다.",
+      "category": "위험한 생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "SAP 표준 오브젝트에 Append Structure를 직접 만들어 보라는 4단계 실습 절차를 주면서, 표준 확장에 반드시 따라붙는 전제(대상이 확장 가능한 오브젝트인지, 활성화하면 실제 DB 테이블이 조정된다는 점, 표준 확장물은 고객 패키지·이송요청으로 관리해야 한다는 점)에 대한 주의가 한 줄도 없다.",
+      "evidence": "① SE11의 구조·테이블에는 확장 범주(Enhancement Category)가 있어 '확장 불가'로 지정된 표준 오브젝트에는 Append가 거부되거나 경고가 뜨고, 풀/클러스터 테이블처럼 애초에 Append가 불가능한 대상도 있다. ② 표준 투명 테이블에 Append를 활성화하면 사전 정의만 바뀌는 게 아니라 실제 DB 테이블이 조정된다 — 공용 개발 시스템의 큰 표준 테이블에서는 가볍게 누를 버튼이 아니다. ③ 바로 앞 레슨(CH05-L02)이 저장 시 Local Object($TMP)를 누르라고 안내해 둔 터라, 학습자는 표준 확장물도 같은 방식으로 처리하기 쉽다. 표준 확장물은 성격상 고객 패키지·이송 대상이다. ④ 본문은 '자세히는 한참 뒤 챕터에서'라고 미뤘지만, 미룬 것은 설명이지 조작 절차가 아니다 — 절차는 지금 그대로 따라 할 수 있게 적혀 있다.",
+      "suggestion": "4단계 절차 바로 앞이나 뒤에 경고 콜아웃 하나를 추가한다: '실습은 학습용 시스템에서만 / 표준 오브젝트가 확장 가능한지(확장 범주) 먼저 확인 / 활성화하면 실제 테이블이 조정되므로 팀 합의와 이송 규율을 따른다.' 깊은 설명(확장 전략·확장 범주)은 예고대로 뒤 챕터에 남겨도 된다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L02.md",
+      "quote": "> `year`(4자리)·`month`(2자리)·`day`(2자리)로 8자리를 채운 Structure에 오늘 날짜",
+      "category": "안티패턴",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "문자 계열 Structure를 통째로 한 문자 변수처럼 대입하는 '트릭'을 소개하면서, 이것이 Component 이름이 아니라 앞에서부터의 자리(오프셋)에 의존해 조용히 깨지는 방식이라는 경고가 빠져 있다.",
+      "evidence": "이 대입은 Structure를 한 덩어리 문자 필드로 보고 자리 수대로 잘라 담는다. 따라서 나중에 누가 Component를 중간에 하나 끼워 넣거나 길이를 1자리만 바꿔도, 구문 오류 없이 각 칸에 전혀 다른 값이 들어간다(연도 칸에 '2610' 같은 값이 조용히 들어가는 유형의 사고). 또 Component에 i·p처럼 문자 계열이 아닌 타입이나 string이 하나라도 섞이면 이 대입 자체가 더 이상 허용되지 않아, 나중에 필드를 하나 추가하는 순간 코드가 깨진다. 더구나 같은 챕터의 CH05-L04는 '흔한 실수와 점검'에서 사실상 같은 동작을 '이름과 상관없이 앞에서부터 자리로 밀려 들어가 엉뚱한 값이 조용히 섞인다'는 함정으로 경고하고 있어, 두 레슨의 서술 방향이 엇갈린다.",
+      "suggestion": "트릭 소개 끝에 한 문장을 덧붙인다: '실무에서는 자리(위치)에 기대는 방식이라 필드가 바뀌면 조용히 깨진다. 레거시 코드에서 마주쳤을 때 읽어 내는 용도로만 알아 두고, 새로 짤 때는 각 Component에 값을 따로 넣는다.' 그러면 다음 레슨의 경고와도 방향이 맞는다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L02.md",
+      "quote": "| AGE | Data Element | `ZDE_AGE` | NUMC | 3 | 나이 |",
+      "category": "예시 적절성",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "나이(AGE)를 NUMC 3으로 모델링한 예시는 실무 DDIC 관례와 어긋난다. NUMC는 사번·문서번호·항번처럼 '계산하지 않고 자릿수를 고정해 식별하는 코드'에 쓰는 타입이고, 나이처럼 크기를 비교·계산하는 값에는 정수 계열(INT1/INT2/INT4)이나 DEC를 쓴다.",
+      "evidence": "같은 레슨이 '계산이 목적이면 정수(i)가, 자릿수를 맞춰 보여 주는 게 목적이면 NUMC가 어울린다'는 기준을 스스로 제시해 놓고, 정작 표준 예시 표에서는 계산 대상에 훨씬 가까운 나이를 NUMC로 잡아 기준과 예시가 엇갈린다. NUMC는 내부적으로 문자라 산술마다 숫자 변환이 끼고, 정해진 자릿수를 넘는 값이 들어오면 값이 잘리는 등 다루기가 번거롭다. 같은 표의 AMOUNT에는 '실무는 CURR + 통화 키'라는 참고 단서를 달아 두었으므로, AGE에만 그런 단서가 없는 것은 형평도 맞지 않는다. (실무 관례에 대한 판단이라 confidence는 '추정'으로 둔다 — NUMC로 잡은 사례가 아주 없지는 않다.)",
+      "suggestion": "AGE의 Data Element를 정수 계열(예: INT1 도메인 기반)이나 DEC 3으로 바꾸고, NUMC는 '앞의 0을 살려야 하는 식별자'(사번·문서번호) 예시로 옮긴다. 표를 그대로 두려면 AMOUNT처럼 '나이를 NUMC로 잡은 건 NUMC를 보여 주려는 예시일 뿐, 실무에서 계산에 쓰는 값은 정수형으로 잡는다'는 참고 한 줄을 붙인다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "기술 사실 면에서 CH05는 견고하다. BEGIN OF～END OF의 선언 체인 구두점, Component 하이픈 접근과 점(.)을 찍으면 문장이 끊겨 오류가 난다는 설명, TYPES 재사용, LIKE는 모양만 가져오고 값은 넘어오지 않는다는 핵심, 선언문은 실행 순서와 무관하게 처리돼 디버거가 멈추지 않는다는 서술, 통째 대입은 값 복사(별명 아님), MOVE-CORRESPONDING이 이름이 같은 Component만 옮기고 대상 전용 필드의 잔존값이 함정이 된다는 점, 길이 절삭·문자→숫자 변환 예외 경고, SE11 생성 순서(Data type 라디오→이름→Create→팝업)와 .INCLUDE 입력 위치·Goto→Append Structure 경로·Ctrl+F3 활성화, Domain은 변수 타입으로 직접 줄 수 없다는 규칙, DDIC 길이(자릿수) vs p LENGTH(바이트) 대비, DO/sy-index와 2단 계산 결과(9회차 18)까지 실제 시스템 동작과 일치했다. 명백한 사실 오류는 찾지 못했고, 전역 DDIC 수정의 파급(Where-Used List)과 MOVE-CORRESPONDING 잔존값이라는 실무 사고 포인트도 이미 짚혀 있어 이 수준 교재로는 준수하다. 보완할 곳은 셋이다. 가장 큰 것은 표준 오브젝트에 Append Structure를 만들어 보라는 실습 절차에 안전 주의가 전혀 없는 점이고, 나머지는 위치 의존 대입 트릭을 경고 없이 소개한 점과 계산 대상인 나이를 NUMC로 잡은 예시다. 셋 다 콜아웃·문장 몇 줄로 해결되는 범위라 재집필이나 대규모 보강은 필요하지 않다."
+  }
+}

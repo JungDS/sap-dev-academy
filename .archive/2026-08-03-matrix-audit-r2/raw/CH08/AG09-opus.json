@@ -1,0 +1,35 @@
+{
+  "agent": "AG09",
+  "model": "opus",
+  "target": "CH08",
+  "persona_ack": "나는 발견자 AG09 — ABAP 정적 검사기를 시늉하는 코드 전용 감사자다. 산문·서사·시각화는 판정 대상에서 제외하고 ```abap 코드 블록만 줄 단위로 본다. 점검 축은 (1) 활성화 차단급 문법 결함 (2) 네이밍 규약(CH01~09 전역 gv_/gs_/gt_) (3) 경계 규약(CH01~17 classic·CH01~18 New Open SQL 금지) (4) 주석·출력 문자열의 명백한 오류다. 읽기 전용·블라인드(타 감사자 보고 및 과거 감사 산출물 미열람)·웹 미사용을 준수했고, 억지 발견 대신 정확도를 우선했다.",
+  "method": "Read 도구로 대상 8개 파일 전문을 줄 번호와 함께 통독하고, ```abap 펜스 블록 17개(_chapter.md 0 / L01 1 / L02 2 / L03 4 / L04 4 / L05 3 / L06 1 / L07 2)를 하나씩 문장 단위로 분해해 정적 점검했다. 점검 항목: 문장 종결 마침표, 다중행 문장 중간의 라인엔드 주석 허용 여부, 블록 간 선언-사용 연결(같은 레슨 안에서 앞 블록의 DATA 선언이 뒤 블록을 덮는지), classic SELECT 절 순서(SELECT-FROM-INTO-WHERE), INTO 변수 목록의 개수·순서 대응, WHERE 리터럴과 컬럼 타입(DATS/NUMC는 따옴표·INT는 무따옴표) 일치, 표준 데모 테이블 컬럼 실재 여부, 접두어 규약, modern 문법·New Open SQL 혼입 여부, 주석 문구와 코드의 일치. SAP 시스템·구문 검사기 실행 환경이 없으므로 컴파일 확인이 아닌 정적 판단이다. ZGUGUDAN의 실제 DDIC 정의(CH07 소관)는 대상 범위 밖이라 열지 않았고, 필드명(dan/mul/result)과 타입 전제는 CH08 내부 정합성으로만 판단했다. 웹 검색·외부 네트워크·타 감사 산출물 열람은 하지 않았다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L07.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L04.md",
+      "quote": "SELECT * FROM sflight APPENDING TABLE gt_flight WHERE carrid = 'LH'.",
+      "category": "예제 규율 일관성",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L04의 SELECT 예제 4개가 모두 sy-subrc 확인 없이 끝나는데, 생략했다는 표시가 어디에도 없다. L02가 콜아웃으로 못 박은 규율(sy-subrc는 문장이 끝날 때마다 덮어써지므로 SELECT 바로 다음 줄에서 확인한다)이 이 레슨에서만 조용히 사라진다.",
+      "evidence": "같은 챕터의 형제 레슨은 생략을 반드시 밝힌다. L05는 본문 콜아웃으로 아래 예제들은 조건 자체에 집중하려고 IF sy-subrc = 0. 확인을 생략했다고 명시하고, L06은 코드 블록 안에 결과 확인(sy-subrc)은 지면상 생략이라는 라인엔드 주석을 단다. 반면 L04는 복습용 SELECT SINGLE, INTO (gv_occ, gv_max), INTO CORRESPONDING FIELDS OF TABLE, APPENDING TABLE 네 블록 어디에도 확인 코드나 생략 문구가 없고, 흔한 실수 절도 sy-dbcnt 오해만 다룰 뿐 이 점을 보완하지 않는다. 문법 오류는 아니며 활성화에도 지장이 없다. 예제를 그대로 따라 치는 입문자에게 규율이 레슨마다 흔들려 보이는 것이 문제다.",
+      "suggestion": "L04 첫 코드 블록 앞이나 뒤에 L05와 같은 한 줄 콜아웃(이 레슨은 담는 그릇에 집중하려고 sy-subrc 확인을 생략했다, 실제로는 SELECT 바로 다음 줄에 붙인다)을 넣거나, L06처럼 각 블록 마지막 줄에 생략 주석을 단다. 코드 자체를 늘릴 필요는 없다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH08의 ```abap 블록 17개를 줄 단위로 점검한 결과 활성화 차단급 결함은 0건이다. 미선언 변수 사용 없음(뒤 블록이 쓰는 gs_flight·gt_flight·gt_gugu는 모두 같은 레슨 앞 블록의 DATA 선언으로 덮이며, 챕터를 넘어가는 의존은 없다), 문장 마침표 누락 없음, IF/ELSE/ENDIF·LOOP/ENDLOOP·SELECT/ENDSELECT 짝 정상, 다중행 문장 중간의 라인엔드 주석도 문법상 허용 범위다. 절 순서는 전부 classic 정석(SELECT-FROM-INTO-WHERE)이고 INTO TABLE gt_flight UP TO 10 ROWS처럼 INTO 뒤에 놓인 UP TO도 정상이다. 네이밍은 17개 블록 전부 gv_/gs_/gt_로 CH01~09 전역 규약을 지켰고 lv_/ls_/lt_ 오용, 헤더라인 아닌 테이블에 it_ 붙이기, PARAMETERS/SELECT-OPTIONS 접두어 위반은 0건이다. 경계 규약도 안전하다 — 인라인 DATA()·VALUE 생성자·NEW·+=·문자열 템플릿이 없고, 호스트 변수는 @ 없이 classic 표기(WHERE carrid = gv_carr), SELECT 필드 목록은 콤마 없이 공백 구분(dan mul result / seatsocc seatsmax / carrid connid fldate)이다. 괄호 안 콤마(INTO (gv_occ, gv_max)와 IN ('KE', 'LH', 'AA'))는 classic에서도 원래 쓰는 문법이라 위반이 아니며, DATA gv_carr TYPE sflight-carrid VALUE 'KE'의 VALUE도 modern 생성자가 아닌 classic 초기값 지정이라 위반이 아니다(L02가 이 두 오해를 미리 예방하는 문구까지 갖췄다). 타입 측면에서 DATS·NUMC 리터럴은 따옴표로, 정수 컬럼(dan)은 무따옴표로 일관되게 적혀 있고 seatsocc/seatsmax/planetype/fltime 등 참조 컬럼은 표준 데모 테이블에 실재한다. 주석·출력 문자열도 코드와 어긋나지 않는다(18건 주석은 2·3단 18행과 일치, S = 상태바 알림 표기 정확, WRITE의 gs_line-dan/mul/result는 조회 테이블 필드와 일치). 유일한 지적은 L04가 sy-subrc 확인을 생략하면서 L05·L06과 달리 생략 사실을 밝히지 않은 점 1건(낮음)이며, 한 줄 주석/콜아웃으로 끝나는 수준이라 코드 축에서는 재작업이 필요 없다."
+  }
+}

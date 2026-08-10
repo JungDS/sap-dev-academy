@@ -1,0 +1,90 @@
+{
+  "agent": "AG01",
+  "model": "opus",
+  "target": "CH05",
+  "persona_ack": "나는 '은서'다. 개발·전공 경험이 전혀 없는 24세 문과 출신 입문자로, 이 사이트로 ABAP을 처음 공부한다. CH05를 _chapter → L01 → L02 → L03 → L04 → L05 순서로 처음 읽는 사람으로서 통독했고, 내가 가진 다른 지식으로 빈틈을 메우지 않았다. 그 자리(또는 같은 챕터 앞 레슨)에 풀이가 없어서 실제로 멈춘 지점만 기록했고, 없는 흠을 만들지 않았다.",
+  "method": "Read 도구로 대상 6개 파일(_chapter.md·CH05-L01～L05.md) 전문을 순서대로 2회 통독. 모든 quote는 원문을 그대로 복사해 공백·따옴표·백틱 표기까지 대조 확인. 브라우저 미리보기·웹 검색·빌드 실행은 하지 않았고, 대상 파일 외 저장소 문서(다른 챕터 MD·embeds 위젯 내용)는 열지 않았다.",
+  "errors": [
+    "접근 범위가 대상 6개 파일로 한정돼 선행 챕터(CH02 타입·CH03 Data Element)와 ::embed 위젯의 실제 내용을 확인하지 못했다. 선행 챕터에서 이미 다뤘을 가능성이 남는 항목(seq 1·2·3)은 confidence를 '추정'으로 낮춰 기록했다."
+  ],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L05.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L01.md",
+      "quote": "gs_person-name   = '정훈영'.\ngs_person-age    = 30.\ngs_person-amount = '1500.50'.",
+      "category": "멈춘 곳",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "같은 코드 블록에서 나이는 따옴표 없이 30인데 금액만 '1500.50'처럼 따옴표에 싸여 있다. 왜 숫자를 따옴표로 감싸는지 이 챕터 어디에도 설명이 없어서 여기서 멈췄다.",
+      "evidence": "은서는 따옴표를 '글자에 붙이는 표시'로 알고 읽는다. 그런데 amount는 바로 위 선언에서 분명 숫자 계열(TYPE p LENGTH 8 DECIMALS 2)로 잡아 놓고, 값을 넣을 때만 글자처럼 따옴표를 씌운다. 본문·주석·콜아웃 어디에도 이유가 없다. 게다가 같은 레슨 뒤쪽 초기값 설명에서는 'p는 0.00'이라고 따옴표 없이 적어서 표기가 또 갈리고, CH05-L04의 gs_src-amount = '1500.50'. 에서도 같은 표기가 설명 없이 반복된다. 그래서 '금액은 글자인가, 숫자인가'가 끝까지 정리되지 않는다.",
+      "suggestion": "첫 등장 자리(gs_person-amount 대입 줄의 주석이나 바로 아래 한 줄)에 '소수점이 있는 값은 따옴표로 감싼 형태로 적는 것이 ABAP의 표기 방식'이라는 한 줄 상기를 넣는다. 앞 챕터에서 이미 다뤘다면 '앞에서 본 그 표기'라고 링크만 걸어도 충분하다. 초기값 설명의 0.00 표기도 같은 기준으로 맞춘다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L01.md",
+      "quote": "Structure의 **모양**을 [[TYPES]]로 선언하면 **여러 변수가 같은 모양을 공유**한다. 모양은\n한 번만 선언하고, 변수는 `TYPE ts_person`으로 여러 개 만든다. 한 명이 아니라 여러\n명을 같은 틀로 찍어내는 셈이다.",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "TYPES가 '모양(설계도)만 만들고 값을 담는 그릇은 만들지 않는다'는 핵심 구분을 문장으로 못 박은 자리가 없어서, ts_person에도 값을 넣을 수 있는 건지 의문이 남는다.",
+      "evidence": "'틀로 찍어낸다'는 비유는 있지만 DATA와 TYPES가 무엇이 다른지(하나는 변수를 만들고 하나는 안 만든다)를 직접 말해 주지 않는다. 레슨 중간의 '잠깐 정리'는 DATA로 만드는 법만 다루고, 끝의 '흔한 실수와 점검' 네 항목에도 ts_person에 값을 넣으려는 실수는 없다. 은서 눈에는 ts_person도 gs_p1도 '이름이 붙은 무언가'로 똑같이 보여서, 어느 쪽에 값을 넣는지 한 번 더 멈춰 생각해야 했다.",
+      "suggestion": "TYPES 코드 블록 바로 아래에 'ts_person은 설계도라서 값을 담을 수 없다 — 값은 TYPE ts_person으로 만든 변수(gs_p1)에 넣는다' 한 문장을 추가하고, '흔한 실수와 점검'에도 같은 항목을 한 줄 넣는다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L02.md",
+      "quote": "| NAME | Data Element | `ZDE_NAME` | CHAR | 20 | 이름 |\n| AGE | Data Element | `ZDE_AGE` | NUMC | 3 | 나이 |\n| AMOUNT | Data Element | `ZDE_AMOUNT` | DEC | 8 (소수 2) | 금액 |",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "SE11 실습 표가 ZDE_NAME·ZDE_AGE·ZDE_AMOUNT를 적으라고 하는데, 이 Data Element들을 언제 어디서 만드는지(또는 앞 챕터에서 만든 것 중 무엇인지)를 알려 주지 않아 화면 앞에서 진도가 멈춘다.",
+      "evidence": "본문은 '각 Component의 타입은 보통 Data Element로 지정한다'고만 한 뒤 곧바로 표에 세 개의 이름을 준다. 순서대로 따라 하는 은서는 화면에 이 이름을 그대로 적을 텐데, 없는 이름이면 저장·활성화에서 막힌다. '미리 만들어 두라'는 안내도, '앞 챕터에서 만든 것을 쓰라'는 안내도 없다. 대안인 Built-in Type 지정은 레슨 맨 끝 '흔한 실수와 점검'에 가서야 나와서, 막히는 지점보다 한참 뒤다. 앞 챕터에서 세 개가 모두 만들어졌는지는 이 감사 범위에서 확인할 수 없어 confidence는 추정으로 둔다.",
+      "suggestion": "표 바로 위나 아래에 'Data Element 세 개는 Chapter 3 · Data Element 레슨의 방식으로 먼저 만들어 둔다(지금은 Built-in Type CHAR/NUMC/DEC로 바로 지정하고 넘어가도 된다)'는 한 줄 안내를 넣는다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L03.md",
+      "quote": "1. 확장할 **표준** Structure나 테이블을 SE11에서 연다.\n2. 메뉴 **Goto(이동) → Append Structure…** 를 고른다.",
+      "category": "단절",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": ".APPEND의 4단계 실습이 '표준 Structure나 테이블을 연다'로 시작하는데, 열어야 할 표준 오브젝트 이름이 하나도 제시되지 않고 '테이블'은 아직 배운 적이 없어서 1번 단계에서 아무것도 할 수 없다.",
+      "evidence": "같은 레슨의 ①과 ②는 zst_order_head·ZST_AUDIT·ZST_ORDER처럼 '무엇을 미리 만들어 두었는지'를 먼저 알려 주고 절차를 시작하는데, ③만 대상이 비어 있다. 은서는 'SAP 표준 Structure'가 구체적으로 어떤 이름들인지 이 사이트에서 본 적이 없고, 테이블은 앞 레슨에서 '테이블을 만드는 챕터에서 다룬다'고 예고만 된 상태다. 그래서 화면에 무엇을 입력해야 하는지 정할 수 없어 절차가 그 자리에서 끊긴다.",
+      "suggestion": "③을 '지금 직접 해 보는 절차'가 아니라 '나중에 표준을 만나면 이렇게 한다'는 읽기용임을 앞에 한 줄로 밝히거나, 예시 표준 오브젝트 이름 하나를 명시해 4단계를 닫는다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L03.md",
+      "quote": "활성화하면 표준 필드 목록 **맨 아래에 `.APPEND` 줄**이 붙는다. 표준 원본의 필드 목록은\n그대로 두고, 프로그램에서는 표준 필드와 똑같이 한 단계로 읽는다(`gs_mat-zzgrade`).",
+      "category": "단절",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "gs_mat이라는 변수가 아무 설명 없이 여기서 처음 나온다. 바로 앞 절차에서 등장한 이름은 ZAPP_MY_EXT와 ZZGRADE뿐이라 gs_mat이 어디서 온 것인지 알 수 없다.",
+      "evidence": "이 레슨의 다른 예제는 모두 DATA 선언을 보여 준 다음 변수를 쓰는데, 이 한 줄만 선언 없이 튀어나온다. mat이 무엇의 줄임인지도 나오지 않아서, 방금 읽은 .APPEND 설명과 이 변수가 어떻게 연결되는지 잡히지 않는다. 결과적으로 '표준 필드처럼 한 단계로 읽는다'는 가장 중요한 결론이 예시로 뒷받침되지 못한 채 지나간다.",
+      "suggestion": "gs_mat을 4단계에서 확장한 대상과 같은 이름으로 맞추고, DATA gs_mat TYPE <확장한 표준 오브젝트>. 한 줄을 함께 보여 준다."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH05\\CH05-L03.md",
+      "quote": "| 접근 | `gs_order-head-customer`(두 단계) | `gs_order-created_by`(한 단계, 펼쳐짐) |",
+      "category": "단절",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "①과 ②가 서로 다른 모양의 Structure에 똑같이 gs_order라는 이름을 붙여 놓고, 비교 표에서는 두 접근 경로를 나란히 놓아 마치 한 변수의 이야기처럼 읽힌다.",
+      "evidence": "①의 gs_order는 order_id·head·qty를 가진 Local 선언(BEGIN OF)이고, ②의 gs_order는 DATA gs_order TYPE zst_order.로 만든, 자기 필드가 order_id·customer·amount인 다른 변수다. 표 안에는 선언이 함께 있지 않아서, 은서는 head도 있고 created_by도 있는 하나의 gs_order를 떠올렸다가 위로 되돌아가 다시 읽어야 했다. 더 나쁜 건 ②의 gs_order에 customer가 자기 필드로 또 있다는 점이다. 표만 보면 '중첩의 head-customer가 .INCLUDE를 쓰면 customer로 펼쳐지는 것'이라는 엉뚱한 결론에 도달하기 쉽다(실제로 .INCLUDE로 들어온 건 created_by·created_on이다).",
+      "suggestion": "②의 변수 이름을 gs_order2처럼 다르게 하거나(반대로 ①을 gs_order_nest 등으로), 비교 표의 각 칸에 '①의 gs_order' / '②의 gs_order'처럼 어느 예제의 변수인지 한 마디를 붙인다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "'변수 세 개 → 번호 붙은 변수 → 하나로 묶기'라는 불편-해결 흐름이 챕터 끝까지 흔들리지 않아서 은서 기준으로 대체로 잘 따라갔다. 특히 L01 한가운데의 '잠깐 정리 — 여기까지가 Structure의 기본'이 숨 돌릴 지점을 만들어 줬고, 'gv_name2 같은 번호 붙은 변수가 보이면 그건 묶어야 한다는 신호'라는 한 줄과 L02의 SE11 클릭 순서 콜아웃('Structure라는 줄부터 찾지 말자')이 특히 잘 읽혔다. L04의 MOVE-CORRESPONDING은 옮겨지는 필드·무시되는 필드·남는 필드를 한 예제에 다 넣어 준 덕에 한 번에 이해됐고, L05 캡스톤은 앞 네 레슨을 실제로 다시 쓰게 해서 마무리가 깔끔했다. 막힌 곳은 큰 흐름이 아니라 국소적이었다: 숫자 금액에만 따옴표를 씌우는 이유(L01), SE11 실습에 필요한 Data Element를 어디서 얻는지(L02), 그리고 L03 ③ .APPEND 절 전체(열 대상이 특정되지 않고 gs_mat이 갑자기 등장)다. L03은 ①·②가 친절한 만큼 ③에서 낙차가 크고, gs_order 이름 재사용이 비교 표에서 오해를 만든다. 모두 문장 한두 줄 추가와 이름 정리로 메울 수 있는 수준이라 재집필은 필요 없다고 본다."
+  }
+}

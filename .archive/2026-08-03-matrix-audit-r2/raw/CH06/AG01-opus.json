@@ -1,0 +1,133 @@
+{
+  "agent": "AG01",
+  "model": "opus",
+  "target": "CH06",
+  "persona_ack": "나는 '은서'다. 개발·전공 경험이 전혀 없는 24세 문과 출신으로, 이 사이트로 ABAP을 처음 공부한다. CH06을 _chapter.md → L01 → L06 순서대로 처음 읽는 사람으로서 통독했고, 내 바깥 지식으로 빈틈을 메우지 않았다. 그 자리(또는 이 챕터의 앞 레슨)에 풀이가 없어 내가 실제로 멈춘 곳·건너뛴 곳·갑자기 튀어나온 곳·한꺼번에 몰린 곳만 기록했다.",
+  "method": "Read 도구로 대상 7개 파일을 레슨 순서대로 전문 통독. 이어서 Grep(대상 CH06 폴더 한정)으로 ① 인용문이 원문에 그대로 있는지, ② 'INTO'·'LOOP'·'CLEAR'·'고정 길이'가 이 챕터 안에서 처음 등장하는 줄이 어디인지를 확인해 '아직 안 배운 것인가'를 기계적으로 검증했다. 웹·외부 자료·다른 감사 산출물은 열지 않았다. 프롬프트가 허용한 대상이 CH06 파일로 한정돼 CH03·CH05 본문은 열지 않았으므로, 앞 챕터 소관이 분명한 용어(Structure·TYPES·DATA·sy-index·sy-subrc·SE11·DO 루프 등)는 '앞에서 배웠을 것'으로 보고 발견에서 제외했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L06.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L01.md",
+      "quote": "- **Header Line 옛 방식 흉내** → 오래된 코드를 읽을 때만 알아보면 된다. 지금은 `INTO gs_`로",
+      "category": "단절",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "레슨 마지막 '흔한 실수' 항목에서 `INTO gs_`라는 문법이 갑자기 나오는데, 이 레슨에서 `INTO`를 한 번도 본 적이 없어서 무슨 말인지 알 수 없다.",
+      "evidence": "L01에서 배운 문장은 `APPEND gs_person TO gt_person.`뿐이고 전부 `TO`를 쓴다. `INTO`가 이 챕터에서 처음 등장하는 자리가 바로 이 줄인데(그다음 등장은 L03), '이렇게 하는 게 명확하고 안전하다'며 권장 방식으로 제시된다. 정작 그 방식이 어떤 문장인지는 두 레슨 뒤(L03의 READ TABLE ... INTO)에야 나온다. 초보인 나로서는 '내가 뭘 놓쳤나' 싶어 위로 다시 올라가 훑게 되고, 찾아도 없다.",
+      "suggestion": "이 자리에서는 아직 안 배운 `INTO` 표기를 빼고 '테이블과 Work Area를 `gt_`/`gs_`로 따로 두는 방식'처럼 이미 배운 말로 쓰거나, 굳이 남긴다면 '(`INTO`는 뒤 레슨에서 배운다)' 한 마디를 붙인다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L01.md",
+      "quote": "다음 행을 채우기 전에 값 비우기(아래 '비우기'에서 자세히)",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "코드 주석이 '아래 비우기 절에서 자세히'라고 안내해서 그 절로 내려갔는데, 그 절은 Work Area(`gs_`)가 아니라 테이블(`gt_`)을 비우는 이야기만 한다. 안내받은 답이 그 자리에 없다.",
+      "evidence": "'## 비우기 — CLEAR / FREE' 절의 코드는 `CLEAR gt_person.`·`FREE gt_person.`이고, 이어지는 설명도 전부 '초기 메모리'와 테이블 재사용 이야기다. 정작 왜 `CLEAR gs_person`을 해야 하는지(앞 행 값이 남아 섞인다)는 훨씬 아래 '흔한 실수와 점검'의 첫 항목에 있다. 안내를 믿고 내려간 나는 같은 `CLEAR`인데 뒤에 붙는 이름이 `gs_`에서 `gt_`로 바뀐 것을 보고 '같은 문장인가 다른 문장인가'로 한 번 더 멈췄다.",
+      "suggestion": "주석의 포인터를 '흔한 실수'로 바꾸거나, 비우기 절 안에 '`CLEAR`는 Work Area(`gs_`)에도 같은 방식으로 쓴다 — 앞 행 값이 남지 않게' 한 줄을 넣어 두 대상을 한자리에서 대비시킨다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L03.md",
+      "quote": "`INTO`(위치 기반)와 `INTO TABLE`(종류가 정한 자리)은 **다른 문장**이다. HASHED는 번호가 없어",
+      "category": "멈춘 곳",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "`INTO`는 '위치 기반'이라고 못 박아 외웠는데, 불과 몇 줄 뒤 `READ TABLE gt_person INTO gs_person`에서 `INTO`가 전혀 다른 뜻(결과를 이 그릇에 담아라)으로 쓰인다. 두 뜻을 이어 주는 설명이 없어 여기서 오래 멈췄다.",
+      "evidence": "같은 레슨 37번째 줄에서 `INTO`=위치 기반이라 규정하고, '흔한 실수'에서도 '**INTO vs INTO TABLE 혼동** → 위치 기반인지 키 기반인지 구분'이라며 그 규정을 굳힌다. 그런데 44·95·109번째 줄의 READ 예제는 `INTO gs_person`이고, 여기서 `gs_person`은 위치가 아니라 값을 받는 그릇이다. 나는 '그럼 gs_person이 위치라는 뜻인가?'에서 막혔다. 이 레슨은 `TRANSPORTING`에 대해서는 '같은 낱말이 잠시 뒤 고치기에서는 이 필드만 옮겨라로 쓰인다'고 친절히 다리를 놓아 주는데, 정작 더 헷갈리는 `INTO`에는 그 다리가 없다.",
+      "suggestion": "`TRANSPORTING`에 붙인 것과 같은 한 줄 다리를 `INTO`에도 붙인다. 예: '`INSERT`의 `INTO`는 넣을 대상(테이블)을 가리키고, 곧 볼 `READ ... INTO gs_`의 `INTO`는 꺼낸 값을 담을 그릇을 가리킨다 — 둘 다 「어디로」를 뜻하지만 가리키는 대상이 다르다.' 아울러 '위치 기반'이라는 요약 표현은 `INDEX`쪽으로 옮기는 편이 오해가 적다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L03.md",
+      "quote": "`LOOP`가 행을 꺼내 오는 순서**다. 화면에 찍히는 차례를 정리하고 싶을 때 쓴다.",
+      "category": "단절",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "`SORT`가 HASHED에서도 의미가 있는 이유를 `LOOP`로 설명하는데, `LOOP`가 무엇인지는 이 챕터에서 아직 한 번도 안 나왔다. 모르는 것으로 모르는 것을 설명하니 이 문단 전체가 통과되지 않는다.",
+      "evidence": "`LOOP`가 CH06 본문에 처음 등장하는 자리가 바로 이 줄이고, 정식 도입은 다음 레슨 L04('## LOOP — 순회와 sy-tabix')다. 풀이도 없고 다음 레슨으로 가는 링크도 없어서, 나는 '앞 챕터의 DO 반복이랑 같은 건가?' 하고 추측만 하다 넘어갔다. 결국 이 문단이 답하려던 질문('HASHED는 순서가 없는데 왜 정렬하나')이 나에게는 그대로 남았다.",
+      "suggestion": "'(다음 레슨에서 배울 `LOOP` — 테이블 행을 하나씩 꺼내는 문장)' 같은 한 줄 풀이를 괄호로 달거나, [다중 행 제어](CH06-L04.html) 링크를 걸어 준다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L04.md",
+      "quote": "## 집계 — COLLECT · 컨트롤레벨",
+      "category": "과부하",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "이 한 절에서 새 개념과 예외 규칙이 한꺼번에 쏟아져 소화가 안 된다. 앞 절(LOOP·ASSIGNING)까지는 따라왔는데 여기서 처음으로 '되돌아가 다시 읽어도 남는 게 없는' 상태가 됐다.",
+      "evidence": "한 절 안에서 처리해야 할 것: 새 타입 `ts_sales` 선언 → `COLLECT`의 동작 → 키가 무엇인지(앞 레슨 standard key 되짚기) → 지켜야 할 조건 6개(비키 필드는 전부 숫자·Work Area 타입 일치·키가 비면 첫 행에 몰림·APPEND와 섞지 말 것·성능) → 컨트롤레벨 4문장(AT FIRST/LAST·AT NEW/AT END OF·SUM) → '왼쪽·오른쪽'이 선언 순서라는 규칙 → 주의 3가지 → 마지막에 'AT 블록 안에서는 값이 `*`와 초기값으로 가려진다'는 반직관적 규칙. 새 문장 6개에 예외 규칙이 열 개 넘게 붙는데 중간에 쉬어 가는 자리나 요약이 없다. L03에는 있던 '여기까지 한눈에' 같은 정리표도 이 레슨엔 없다.",
+      "suggestion": "COLLECT와 컨트롤레벨을 각각의 `##` 절로 끊고, 각 절 끝에 L03의 '여기까지 한눈에' 같은 3～4행짜리 정리표를 둔다. COLLECT의 조건 6개 중 성능·빈 키 같은 예외는 접기(details)로 내려 첫 독해에서는 '같은 키면 합산, 없으면 새 행' 하나만 남게 한다."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L04.md",
+      "quote": "문장이 테이블을 건드리는 순간 내부적으로 처음부터 훑는 방식이 되어, 행이 많을수록 느려진다.",
+      "category": "멈춘 곳",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "여러 번 읽어도 뜻을 모르겠다. '다른 문장이 테이블을 건드린다'가 무엇을 말하는지, 왜 그러면 '처음부터 훑는 방식'으로 바뀌는지 근거가 하나도 없어서 그냥 외울 수도 이해할 수도 없다.",
+      "evidence": "앞뒤 어디에도 COLLECT가 내부적으로 무언가를 기억해 두고 쓴다는 이야기가 없다. 그래서 '건드린다'가 읽기인지 쓰기인지, `WRITE`도 해당하는지, `LOOP`을 한 번 돌면 그다음 `COLLECT`가 느려진다는 말인지 판단할 근거가 없다. 앞에서 STANDARD를 '기본. 대부분의 처리'라고 배웠는데(L02) 여기서는 STANDARD에 쓰면 느려진다고 하니, 그럼 실습 코드의 `gt_sales`(STANDARD)는 잘못된 건가 하는 불안까지 남았다.",
+      "suggestion": "초보 독해에서는 이 성능 문단을 접기로 내리고, 본문에는 '지금 규모에서는 STANDARD로 충분하다' 정도만 남긴다. 남긴다면 '`COLLECT`는 같은 키를 빨리 찾으려고 내부 색인을 만들어 두는데, 그 테이블을 다른 문장이 고치면 색인이 무효가 돼 처음부터 훑는다'처럼 왜 그런지를 한 문장으로 풀어 준다."
+    },
+    {
+      "seq": 7,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L04.md",
+      "quote": "손질된다. 그룹 키 필드는 그대로지만, 그 **오른쪽의 고정 길이 문자 필드는 전부 `*`로,",
+      "category": "단절",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'고정 길이 문자 필드'가 무엇인지 모른 채 이 규칙을 읽었다. 내 예제의 어느 필드가 거기 해당하는지 판정할 수 없어 규칙이 손에 잡히지 않는다.",
+      "evidence": "'고정 길이'라는 말이 이 챕터에서 정의되는 곳은 다음 레슨 L05('**Flat Structure** — 모든 Component가 **고정 길이** 타입(`c LENGTH n`·`n`·`d`·`t`·`i`·`p` 등)이다')인데, 정작 그 말을 쓰는 자리는 한 레슨 앞인 여기다. 예제 `ts_sales`의 `region TYPE c LENGTH 10`이 고정 길이인지, 앞서 계속 쓰던 `name TYPE string`도 그런지 이 시점에는 판단할 수 없다.",
+      "suggestion": "이 자리에서 '고정 길이 문자 필드(예: `c LENGTH 10`처럼 길이를 못 박은 필드)'라고 괄호 풀이를 달아 준다. 또는 마스킹 설명을 예제에 즉물적으로 붙여 '`region`은 `****`로, `amount`는 0으로 보인다'라고 쓴다."
+    },
+    {
+      "seq": 8,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L04.md",
+      "quote": "두 테이블을 하나로 합칠 일도 잦다. 서울 지점 명단과 부산 지점 명단을 받아 전체 명단을",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'서울 지점 + 부산 지점 → 전체 명단'이라는 이야기를 듣고 코드를 봤는데 테이블이 `gt_a`·`gt_b` 둘뿐이고, 그나마 `gt_b`가 전체 명단이라 부산 명단이 어디로 갔는지 알 수 없다. 이야기와 코드가 어긋나 예제를 못 따라갔다.",
+      "evidence": "예제 선언은 `gt_a`(주석 '지점 명단')와 `gt_b`(주석 '전체 명단') 둘이고 문장은 `APPEND LINES OF gt_a TO gt_b.` 하나다. 말한 대로라면 지점 테이블이 둘(서울·부산)이고 `APPEND LINES OF`도 두 번 나와야 하는데 한 번뿐이다. 이름도 `gt_a`/`gt_b`라 어느 쪽이 서울이고 어느 쪽이 전체인지 주석을 봐야만 알 수 있어서, 이 챕터의 다른 예제들(`gt_person`·`gt_sales`·`gt_gugu`)만큼 읽히지 않는다.",
+      "suggestion": "이야기에 맞춰 `gt_seoul`·`gt_busan`·`gt_all` 세 테이블로 바꾸고 `APPEND LINES OF`를 두 번 쓰면 '이어 붙이면 뒤에 쌓인다 / 원본은 남는다'가 코드만 봐도 보인다. 최소한 두 테이블만 쓸 거라면 서사도 '지점 명단을 전체 명단에 이어 붙인다'로 맞춘다."
+    },
+    {
+      "seq": 9,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L04.md",
+      "quote": "DELETE ADJACENT DUPLICATES FROM gt_person COMPARING name.",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "`COMPARING`이 무슨 역할인지 본문 어디에도 없다. 이 챕터가 다른 영어 낱말(`TRANSPORTING`·`ADJACENT`)은 꼬박꼬박 풀어 준 것과 달라서, 나만 모르는 건가 싶어 멈췄다.",
+      "evidence": "이 문장이 나오는 절은 '남은 셋은 자주 쓰는 짧은 문장들이라 가볍게 보고 넘어가면 된다'로 시작해 설명 없이 코드와 주석('인접 중복 제거')만 준다. '흔한 실수'에서도 '인접'만 해설하고 `COMPARING`은 끝내 나오지 않는다. `COMPARING name`을 빼면 어떻게 되는지(전체 필드 비교)도 없어서, 이 문장을 내 코드에 옮겨 쓸 자신이 안 생겼다.",
+      "suggestion": "코드 아래 한 줄만 붙이면 된다. 예: '`COMPARING name` = 무엇이 같아야 중복으로 볼지 지정한다. 생략하면 모든 필드가 같은 행만 중복으로 본다.'"
+    },
+    {
+      "seq": 10,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L06.md",
+      "quote": "**APPEND 위치** → `mul`·`result`가 채워진 **뒤에** 실행돼야 한다.",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L01에서 'APPEND 전에 CLEAR가 습관'이라고 강조해서 그대로 외웠는데, 정작 모든 걸 모아 보여 주는 캡스톤 코드에는 `CLEAR`가 한 번도 없다. 규칙을 어긴 건지 안 해도 되는 상황인지 알 수 없어 내가 배운 게 흔들린다.",
+      "evidence": "L01의 흔한 실수 첫 항목은 '**APPEND 전에 CLEAR 안 함** → 이전 Work Area 값이 남아 섞일 수 있다 … 새 행을 채우기 전에 `CLEAR gs_person` 습관.'이다. 그런데 L06 전체에 `CLEAR`라는 낱말이 한 번도 나오지 않는다(`DO` 안에서 `dan`·`mul`·`result` 세 필드를 매번 다 채우니 실제로는 필요 없는 상황인데, 그 이유가 어디에도 안 적혀 있다). 캡스톤의 '흔한 실수와 점검'도 APPEND 위치·sy-index 혼동·정렬만 다루고 CLEAR는 언급하지 않는다. 나처럼 앞 규칙을 곧이곧대로 지키는 사람은 '내가 쓴 코드에도 CLEAR를 넣어야 하나'에서 계속 걸린다.",
+      "suggestion": "캡스톤 코드 아래나 '흔한 실수와 점검'에 한 줄을 넣는다. 예: '여기서는 매 반복마다 세 필드를 모두 채우므로 `CLEAR gs_line`이 없어도 안전하다. 일부 필드만 채우는 경우에는 L01에서 배운 대로 `CLEAR`가 필요하다.'"
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "잘 읽힌 장치부터 말하면, 이진 탐색을 '정렬된 전화번호부를 반씩 갈라 좁혀 간다'로 푼 비유와 정렬 없이 BINARY SEARCH를 써서 있는 행도 못 찾는 실패를 직접 보게 한 체험, L03 끝의 '여기까지 한눈에' 표, 그리고 L05의 '사실 우리는 이미 Deep을 쓰고 있었다'는 반전이 특히 좋았다. 전체적으로 L01·L02·L05·L06은 막힘 없이 읽혔고 한 건→여러 건, 선언→넣기→찾기→고치기로 이어지는 흐름도 자연스러웠다. 다만 L03에서 두 번(`INTO`의 뜻이 몇 줄 만에 바뀌는 자리, 아직 안 배운 `LOOP`으로 설명하는 자리) 멈췄고, L04의 집계 절은 새 문장 6개에 예외 규칙이 열 개 넘게 붙는데 쉬어 가는 자리가 없어 이 챕터에서 유일하게 소화가 안 된 구간이었다. 나머지는 한 줄 풀이나 포인터를 바로잡는 수준의 국소 수정으로 해소되는 것들이라 재집필까지는 필요 없어 보인다."
+  }
+}

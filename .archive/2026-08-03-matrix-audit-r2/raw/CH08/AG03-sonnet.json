@@ -1,0 +1,68 @@
+{
+  "agent": "AG03",
+  "model": "sonnet",
+  "target": "CH08",
+  "persona_ack": "Java/C# 계열 백엔드 3～5년차 개발자 페르소나로 CH08을 읽었다. 변수·조건문·루프·SQL·OOP 등 프로그래밍 기본기는 이미 안다는 전제 아래, ABAP과 Open SQL을 빠르게 훑어 실무에 적용하려는 관점에서 과잉설명·오개념 유발·지름길 부재·용어 충돌 네 가지를 점검했다.",
+  "method": "Read 도구로 CH08의 대상 파일 8개(_chapter.md + CH08-L01～L07.md) 전문을 직접 열람해 통독했다. 코드 실행·빌드·브라우저 검증·웹 검색은 사용하지 않았으며, 모든 finding.quote는 열람한 원문에서 그대로 발췌해 위치를 대조했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L01.md",
+      "quote": "MANDT는 client 번호를 담는 컬럼이다. **client**란 한 시스템 안을 회사·조직 단위로 나눈",
+      "category": "과잉",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L01 앞부분 접이식 상자('SQL을 이미 해 봤다면')에서 이미 설명한 client 정의를, 몇 문단 뒤 본문에서 거의 같은 문장으로 다시 설명한다.",
+      "evidence": "접이식 상자(24～43행)의 'client — 한 시스템 안을 회사·조직 단위로 나눈 독립 데이터 공간이다'와 본문 73～75행의 'client란 한 시스템 안을 회사·조직 단위로 나눈 독립된 데이터 공간이다'가 어휘·구조까지 거의 동일하다. 상자를 펼쳐 본 경력자 독자에게는 같은 정의를 두 번 읽는 셈이라 흐름이 늘어진다.",
+      "suggestion": "본문 쪽 정의는 한두 마디로 줄이고 '위 상자에서 이미 봤다면 이 문단은 건너뛰어도 좋다'처럼 앞 설명을 가리키는 참조로 대체하면 중복이 줄어든다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L02.md",
+      "quote": "이렇게 **읽을 컬럼을 골라내는 것**을 projection(투영)이라 한다. 사진에서 필요한 부분만",
+      "category": "과잉",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "SQL의 컬럼 선택(relational algebra의 projection)은 SQL을 다뤄본 개발자에게 익숙한 동작인데, projection이라는 용어를 소개하며 사진 자르기 비유까지 곁들여 다시 설명한다.",
+      "evidence": "L01 접이식 상자가 이미 '무엇을 고르고(SELECT)… 정하는 뼈대… 알던 그대로다'라고 선언했음에도, L02는 같은 컬럼 선택 동작에 projection이라는 새 이름과 비유를 붙여 재설명한다. SQL 경력자에게는 동작 자체가 아니라 ABAP 쪽 용어(projection)만 새로울 뿐이다.",
+      "suggestion": "비유 문장은 접기(details)나 초급자 전용 곁가지로 옮기고, 본문은 'ABAP에서는 이 컬럼 선택을 projection이라 부른다' 정도 한 줄로 압축해도 충분하다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L06.md",
+      "quote": "DB는 테이블마다 **Primary Key**(그 행 하나를 유일하게 가리키는 키 필드 묶음)로 색인을",
+      "category": "지름길 부재",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "Primary Key 색인과 복합 키 leftmost-prefix 규칙(16～57행)은 RDBMS 경험이 있는 개발자라면 이미 알 확률이 높은 일반 DB 지식인데, 이 구간에는 건너뛰어도 된다는 안내가 없다.",
+      "evidence": "L01은 'SQL을 이미 해 봤다면' 접이식 상자로 경력자용 지름길을 제공하고 L05·L06 다른 자리에는 🧑‍💻 콜아웃(SQL Injection 오해 방지, HANA 아키텍처)이 있는데, 정작 경력자가 가장 잘 아는 구간인 색인·leftmost-prefix 규칙(책 찾아보기 비유～표)에는 그런 지름길 안내가 없다.",
+      "suggestion": "이 절 도입부에 '색인·복합 키 규칙을 이미 안다면 표만 훑고 Secondary Index 절로 건너뛰어도 됨' 같은 한 줄 안내를 붙이면 좋다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L06.md",
+      "quote": "색인(index)은 책 뒤에 붙은 찾아보기와 같다.",
+      "category": "용어 충돌",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "'index'는 대부분의 프로그래밍 언어에서 배열·리스트의 위치(0번째 원소 등)를 가리키는 말로 가장 먼저 떠오르는데, 이 레슨은 DB 조회 가속 구조라는 다른 뜻으로 바로 쓰면서 그 차이를 명시적으로 짚지 않는다.",
+      "evidence": "바로 이어지는 책 찾아보기 비유 덕분에 문맥상 DB 인덱스라는 것은 곧 파악되지만, '배열 위치를 뜻하는 index와는 다른 개념'이라는 명시적 언급은 없다. 경력 개발자는 array[index]·list.IndexOf()처럼 위치값으로서의 index에 훨씬 익숙해서 순간적으로 헷갈릴 여지가 있다.",
+      "suggestion": "첫 등장 문장에 '(배열 위치를 가리키는 index와는 다른, DB 조회용 찾아보기 구조)'처럼 짧은 구분을 괄호로 덧붙이면 혼동을 막을 수 있다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH08은 경력 개발자 관점에서도 전반적으로 잘 설계돼 있다. L01의 'SQL을 이미 해 봤다면' 접이식 상자와 곳곳의 🧑‍💻 콜아웃(host 변수가 SQL Injection이 아님, CORRESPONDING이 struct를 안 비움, PK가 물리 정렬을 뜻하지 않음, HANA는 보조 인덱스가 덜 필요함 등)이 과잉설명·오개념 유발을 상당히 선제적으로 막아, 오개념 유발(카테고리 2)에 해당하는 소견은 없었다. 발견 4건은 모두 낮음～중간 — client 정의가 접이식 상자와 본문에서 거의 그대로 반복되는 점(L01), 이미 아는 SQL projection 개념을 사진 비유로 다시 설명한 점(L02), Primary Key/leftmost-prefix 색인 절 전체에 경력자용 건너뛰기 안내가 없는 점(L06), 'index' 용어가 배열 위치 index와 다른 뜻임을 명시적으로 짚지 않은 점(L06)이다. 구조를 바꿀 문제는 아니고 문장 다듬기 수준의 경미 수정으로 충분하다."
+  }
+}

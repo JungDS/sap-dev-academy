@@ -85,10 +85,14 @@
   <span class="tok-kw">INTO</span> <span class="tok-kw">CORRESPONDING</span> <span class="tok-kw">FIELDS</span> <span class="tok-kw">OF</span> <span class="tok-kw">TABLE</span> gt_flight
   <span class="tok-kw">WHERE</span> carrid = <span class="tok-str">'KE'</span>.</code></pre></div></div>
 <blockquote class="cw">
-<p>⚠️ <strong>짝이 없는 필드는 지워지지 않고 남는다.</strong> <code>INTO CORRESPONDING FIELDS OF gs_</code>처럼 Work
-Area 하나에 담는 형태에서 특히 조심한다. 이름이 맞은 필드만 새 값으로 바뀌고, 짝이 없는
-나머지 필드에는 <strong>직전에 들어 있던 값이 그대로 남는다.</strong> 옛 값과 새 값이 한 그릇에 섞여
-조용한 버그가 된다. 새로 담기 전에 <code>CLEAR gs_flight.</code>로 비우는 습관이 안전하다.</p>
+<p>⚠️ <strong>Work Area 하나로 받을 때는 짝이 없는 필드가 지워지지 않고 남는다.</strong>
+<code>INTO CORRESPONDING FIELDS OF gs_</code>처럼 한 행짜리 그릇에 담는 형태가 그렇다. 이름이 맞은
+필드만 새 값으로 바뀌고, 짝이 없는 나머지 필드에는 <strong>직전에 들어 있던 값이 그대로 남는다.</strong>
+옛 값과 새 값이 한 그릇에 섞여 조용한 버그가 된다. 새로 담기 전에 <code>CLEAR gs_flight.</code>로
+비우는 습관이 안전하다.</p>
+<p>반대로 위 예제처럼 <code>OF TABLE gt_</code>로 받으면 행이 새로 만들어지므로, 짝이 없는 필드에는
+남는 값 없이 초기값(숫자는 <code>0</code>·문자는 공백)이 들어간다. 잔존을 조심할 곳은 Work Area
+쪽이다.</p>
 </blockquote>
 <blockquote>
 <p>💡 편한 만큼 대가도 있다. CORRESPONDING은 실행 중에 양쪽 필드 <strong>이름을 하나씩 대조</strong>하므로
