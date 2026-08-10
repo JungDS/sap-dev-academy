@@ -41,7 +41,7 @@
       <article class="prose">
 <section class="lblock"><h2>화면 하나로는 부족할 때</h2>
 <p>지금까지 <code>PARAMETERS</code>·<code>SELECT-OPTIONS</code>는 <strong>하나의 기본 선택화면</strong>에 쌓였다. 그 기본
-화면의 번호가 <strong>1000</strong>이다(executable report가 자동으로 갖는 표준 화면). 그런데 모든
+화면의 번호가 <strong>1000</strong>이다(실행형 프로그램이 자동으로 갖는 표준 화면). 그런데 모든
 조건을 1000 하나에 몰아넣으면 화면이 커지고 복잡해진다. <strong>고급 조건·추가 필터</strong>는 별도
 선택화면으로 분리해 <strong>필요할 때만</strong> 열고 싶을 때가 있다.</p>
 </section><section class="lblock"><h2>선택화면에 번호 붙이기</h2>
@@ -58,7 +58,7 @@
 <span class="tok-kw">SELECTION-SCREEN</span> <span class="tok-kw">END</span> <span class="tok-kw">OF</span> <span class="tok-kw">SCREEN</span> <span class="tok-num">1100</span>.</code></pre></div></div>
 <ul>
 <li>기본 화면(1000) 외에 <strong>번호를 가진</strong> 선택화면을 따로 선언한다.</li>
-<li><code>AS WINDOW</code> — 대화상자(작은 창)로 띄울 화면. (팝업이면 붙이는 게 좋다.)</li>
+<li><code>AS WINDOW</code> — 전체 화면 대신 <strong>팝업(작은 창)</strong> 으로 띄울 화면이라는 표시다.</li>
 </ul>
 </section><section class="lblock"><h2>불러오기 — CALL SELECTION-SCREEN</h2>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
@@ -66,7 +66,7 @@
 3
 4
 5
-6</pre><pre class="abap-editor__code"><code><span class="tok-kw">CALL</span> <span class="tok-kw">SELECTION-SCREEN</span> <span class="tok-num">1100</span> <span class="tok-kw">STARTING</span> <span class="tok-kw">AT</span> <span class="tok-num">10</span> <span class="tok-num">5</span>.   <span class="tok-com">" (열,행)에 modal 팝업</span>
+6</pre><pre class="abap-editor__code"><code><span class="tok-kw">CALL</span> <span class="tok-kw">SELECTION-SCREEN</span> <span class="tok-num">1100</span> <span class="tok-kw">STARTING</span> <span class="tok-kw">AT</span> <span class="tok-num">10</span> <span class="tok-num">5</span>.   <span class="tok-com">" (열,행) 위치에 팝업으로</span>
 <span class="tok-kw">IF</span> sy-subrc = <span class="tok-num">0</span>.
   <span class="tok-com">" 사용자가 Execute로 나옴 — pa_max·pa_log 적용</span>
 <span class="tok-kw">ELSE</span>.
@@ -74,7 +74,8 @@
 <span class="tok-kw">ENDIF</span>.</code></pre></div></div>
 <ul>
 <li><button class="term" type="button" data-term="CALL SELECTION-SCREEN">CALL SELECTION-SCREEN</button> <code>&lt;번호&gt;</code> — 그 화면을 띄운다.</li>
-<li><code>STARTING AT 열 행</code> — modal 대화상자로 그 위치에 띄운다(없으면 전체 화면).</li>
+<li><code>STARTING AT 열 행</code> — 그 위치에 <strong>팝업</strong>으로 띄운다(없으면 전체 화면). 이 팝업은
+<strong>modal</strong>(모달)이다 — 창을 닫기 전에는 뒤에 있는 화면을 건드릴 수 없다는 뜻이다.</li>
 <li><code>sy-subrc</code>로 사용자가 <strong>Execute(0)</strong> 했는지 <strong>취소(4)</strong> 했는지 판단한다(공식 기준).</li>
 </ul>
 <blockquote>
@@ -88,8 +89,9 @@
 <ul>
 <li>선택화면에서 <strong>저장</strong>(Save as Variant)하면 그 조건 묶음이 이름으로 보관된다.</li>
 <li>다음 실행 때 Variant를 고르면 값이 <strong>자동으로</strong> 채워진다.</li>
-<li><a href="CH38-L05.html">Chapter 38 · Background Job 운영</a>에서 특히 중요 — 잡은 화면 입력이
-없으니, 미리 만든 Variant로 조건을 준다.</li>
+<li><a href="CH38-L05.html">Chapter 38 · Background Job 운영 — 무인 실행</a>에서 특히 중요하다.
+Job(사람 없이 도는 무인 실행)에는 값을 넣어 줄 사람도 화면도 없으니, 미리 만들어 둔
+Variant로 조건을 건네준다.</li>
 </ul>
 <blockquote class="cw">
 <p>⚠️ Variant는 <strong>입력값 세트를 저장</strong>하는 기능일 뿐, <strong>검증·권한 확인을 대신하지 않는다.</strong></p>

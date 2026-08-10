@@ -1,0 +1,148 @@
+{
+  "agent": "AG04",
+  "model": "opus",
+  "target": "CH16",
+  "persona_ack": "20년차 한국어 교열·기술 용어 감수자로서 CH16의 10개 레슨과 _chapter.md를 통독하고, (1) 문장(번역투·비문·중의문·긴 호흡·어색한 반복), (2) 전문 용어 첫 등장 시 풀이의 유무와 실효성, (3) 레슨 간 용어·표기 일관성 및 ABAP 고유 용어의 어색한 직역, (4) 입문서 톤에서 매뉴얼·논문 톤으로의 이탈만 감사했다. 이모지·볼드 사용 빈도 같은 스타일 취향은 결함으로 잡지 않았고, 입문자의 이해를 실제로 막는 지점만 보고한다.",
+  "method": "Read 도구로 대상 11개 파일(front-matter·본문·코드 블록·표 포함) 전문을 통독했다. 용어 표기 일관성은 레슨을 가로질러 같은 개념의 표기(sequence/시퀀스, lifecycle/생명주기, function code/FctCode/버튼 코드, branch/분기)를 수동 대조해 확인했다. 웹 검색·외부 네트워크·타 감사자 산출물은 사용하지 않았다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L10.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L03.md",
+      "quote": "- `key`는 변수에 들어가는 **실제 값**(`R`), `text`는 화면에 보이는 **글자**(`예약`)다. 둘은 다르다.",
+      "category": "설명-예제 불일치(용어 예시)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "key/text를 설명하면서 든 예시 값 `R`·`예약`이 바로 위 코드 예제에 존재하지 않아, 입문자가 코드에서 근거를 찾다가 길을 잃는다.",
+      "evidence": "같은 레슨의 VRM 코드는 `gs_value-key = 'N'. gs_value-text = '신규'.`와 `gs_value-key = 'C'. gs_value-text = '취소'.` 두 쌍만 만든다. 그런데 바로 아래 설명 문장은 코드에 없는 `R`과 `예약`을 예로 든다. 게다가 앞 문단은 후보를 \"상태 = 예약/대기/취소\"라고 소개해 코드의 신규/취소와도 어긋난다. 즉 한 레슨 안에서 상태 값 세트가 세 번 다르게 제시된다.",
+      "suggestion": "설명 문장의 예시를 코드와 같은 값으로 통일한다. 예: \"`key`는 변수에 들어가는 실제 값(`N`), `text`는 화면에 보이는 글자(`신규`)다.\" 앞 문단의 \"상태 = 예약/대기/취소\"도 코드와 같은 세트(신규/취소 등)로 맞춘다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L03.md",
+      "quote": "| Push Button | 누르면 PAI 발생 | FctCode → `OK_CODE` |",
+      "category": "용어 일관성(같은 개념 다른 이름) · 약어 무풀이",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "\"어떤 버튼을 눌렀는지 알려 주는 코드\"라는 하나의 개념이 챕터 안에서 function code · FctCode · 버튼 코드 · OK_CODE 네 가지 이름으로 불리는데, 이들의 관계를 설명해 주는 문장이 없고 `FctCode`라는 축약형은 풀이 없이 처음 등장한다.",
+      "evidence": "L02는 \"사용자 버튼의 function code를 받는 **OK field**\"라고 쓰고, L03 표는 아무 예고 없이 `FctCode`를 쓴 뒤 본문에서 \"버튼에 FctCode를 안 줬다\"로 이어간다. L08은 다시 \"Menu Painter의 버튼 코드와 `CASE save_ok` 값이 **같아야** 한다\"로 또 다른 이름을 쓴다. `FctCode`가 Screen Painter 화면에 찍히는 항목 이름의 축약(function code)이라는 사실이 어디에도 없어, 입문자는 서로 다른 네 가지를 각각 배워야 하는 것으로 오해한다.",
+      "suggestion": "첫 등장(L03 표 또는 그 직전 문장)에서 한 번만 관계를 못박는다. 예: \"버튼에 붙이는 function code(Screen Painter 화면에는 `FctCode`로 표시된다)가 눌린 순간 `OK_CODE`로 전달된다.\" 이후에는 본문 표기를 function code 하나로 통일하고, L08의 \"버튼 코드\"도 function code로 바꾼다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L05.md",
+      "quote": "`AT SELECTION-SCREEN ON VALUE-REQUEST FOR ...`로 만들어 봤다. 뿌리는 **같은 POV**다.",
+      "category": "용어 첫 등장 풀이 없음(약어)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "약어 `POV`가 풀이 없이 처음 등장한다. 입문자는 이 글자를 일상어 POV(point of view, 시점)로 읽을 가능성이 크고, 그 자리에서 뜻을 회복할 단서가 문장 안에 없다.",
+      "evidence": "레슨 본문 어디에도 \"POV = PROCESS ON VALUE-REQUEST의 줄임말\"이라는 문장이 없는데, 이 문장 이후 \"1번(Search Help)이 되면 4번(직접 POV)은 만들지 않는다\", \"**POV를 일반 PAI처럼 쓴다** → POV 모듈은…\"처럼 흔한 실수 항목에서 반복 사용된다. 같은 레슨이 `PROCESS ON VALUE-REQUEST`는 정식 표기로 여러 번 쓰고 있어, 독자 입장에서는 두 표기가 같은 것인지 확신할 근거가 없다.",
+      "suggestion": "첫 등장 자리에서 축약을 밝힌다. 예: \"뿌리는 같은 `PROCESS ON VALUE-REQUEST`(줄여서 POV)다.\" 또는 축약을 쓰지 않고 전 구간을 `PROCESS ON VALUE-REQUEST`로 통일한다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L05.md",
+      "quote": "`OUTPUT`과 짝이 되는 `INPUT`이다).",
+      "category": "중의문 · 앞 레슨 설명과 충돌",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "괄호 부연이 앞 레슨에서 세운 규칙과 충돌해, F4 모듈이 PAI에서 불린다는 오해를 만든다.",
+      "evidence": "L02는 \"`OUTPUT`/`INPUT` 추가어가 이 모듈이 **PBO에서** 불릴지 **PAI에서** 불릴지를 정한다\"고 못박았다. 그 규칙대로 읽으면 `MODULE value_perf INPUT.`은 PAI에서 불리는 모듈이 되지만, 실제로 이 모듈은 `PROCESS ON VALUE-REQUEST`에서 불린다. \"PBO의 `OUTPUT`과 짝이 되는 `INPUT`\"이라는 부연은 이 예외를 해소하기는커녕 앞 규칙을 다시 불러와 혼선을 키운다.",
+      "suggestion": "예외임을 밝히는 한 문장으로 바꾼다. 예: \"모듈은 ABAP 쪽에 `MODULE value_perf INPUT.`으로 정의한다. 여기서 `INPUT`은 'PAI에서 불린다'는 뜻이 아니라, 사용자 입력을 받는 계열의 모듈이라는 표시다. 실제 호출은 `PROCESS ON VALUE-REQUEST`가 한다.\""
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L02.md",
+      "quote": "- **next screen `0`을 빈 값으로 오해** → `0`은 화면 sequence **종료**를 뜻한다.",
+      "category": "용어 일관성(영문/한글 혼용) · 미풀이",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "\"화면 sequence\"라는 핵심 개념이 풀이 없이 쓰이고, 같은 개념이 레슨마다 영문 sequence와 한글 시퀀스로 갈려 표기된다.",
+      "evidence": "L01 표는 \"Dynpro sequence\", L02는 \"화면 sequence 종료\", L07 표는 \"현재 화면 시퀀스 종료(호출자로 복귀)\", L10 표는 \"`LEAVE TO SCREEN 0`(시퀀스 종료)\"로 쓴다. 표기가 갈릴 뿐 아니라, 화면들이 번호로 이어져 흐르는 이 연쇄가 무엇인지 어느 레슨에서도 한 줄 풀이를 주지 않는다. `LEAVE TO SCREEN 0`의 의미(무엇이 끝나는가)가 이 개념에 걸려 있어 그냥 넘기기 어렵다.",
+      "suggestion": "표기를 한쪽(예: \"화면 시퀀스\")으로 통일하고, 최초 등장인 L01 또는 L02에서 한 줄 풀이를 붙인다. 예: \"화면 시퀀스(화면들이 next screen 번호로 줄줄이 이어지는 흐름)\". 이후 `0`은 \"이어질 다음 화면이 없다 = 흐름 종료\"로 연결한다."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L09.md",
+      "quote": "- ⚠️ Container를 **PBO마다 새로** 만들면 lifecycle 문제가 생긴다 → `IF go_cont IS INITIAL`로",
+      "category": "용어 풀이 부실 · 표기 혼용",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "\"lifecycle 문제가 생긴다\"는 무엇이 왜 문제인지 아무것도 알려 주지 않는 데다, 영어 단어를 풀이 없이 쓴다. 같은 개념을 L10은 한글 \"생명주기\"로 쓴다.",
+      "evidence": "이 문장이 주는 정보는 \"문제가 생긴다\"뿐이라, 입문자는 `IF go_cont IS INITIAL`을 이유가 아니라 주문으로 외우게 된다. 실제 이유(PBO는 화면이 뜰 때마다 실행되므로 매번 새 컨테이너 객체가 만들어져 이전 객체가 정리되지 않고 쌓인다)는 본문 어디에도 없다. 표기도 갈려서 L10 정리는 \"직접 만든 화면의 **생명주기를 한 번에** 묶었다\"로 한글을 쓴다.",
+      "suggestion": "결과를 눈에 보이게 서술한다. 예: \"PBO는 화면이 뜰 때마다 실행된다. 그때마다 container를 새로 만들면 이전 것이 정리되지 않은 채 쌓여 메모리를 낭비하고 화면이 깨질 수 있다 → `IF go_cont IS INITIAL`로 한 번만 생성한다.\" 표기는 \"생명주기(lifecycle)\" 한 형태로 통일한다."
+    },
+    {
+      "seq": 7,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L08.md",
+      "quote": "(공식문서: `EXCLUDING`된 기능은 화면에서 선택할 수 없게 된다.)",
+      "category": "톤 이탈 · 동어반복",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "친근한 입문서 톤에서 레퍼런스 인용 톤으로 튀는 삽입구이고, 바로 앞 문장과 같은 내용을 되풀이해 새 정보가 없다.",
+      "evidence": "앞 문장이 이미 \"특정 상황에서 일부 버튼만 비활성화하려면 `EXCLUDING`에 **제외할 function code 목록**을 넘긴다\"고 말한 뒤, 곧바로 같은 뜻을 \"공식문서:\"라는 딱딱한 라벨을 붙여 반복한다. 게다가 '공식문서'가 무엇을 가리키는지 밝히지 않아 독자가 확인할 수도 없다. 같은 패턴이 L09 \"**Subscreen은 자체 OK field를 가질 수 없다**(공식문서)\", L06 \"공식문서가 피하는 표기다\"에도 반복된다.",
+      "suggestion": "인용 삽입구를 지우고 본문 서술에 녹인다. 사실의 출처를 밝혀야 하는 대목이면 '공식문서' 대신 구체적 이름(SAP Help의 ABAP 키워드 문서 등)을 쓰되, 입문자용 본문에서는 근거 표기보다 결과 서술을 앞세운다."
+    },
+    {
+      "seq": 8,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L08.md",
+      "quote": "다르면 버튼은 눌렸지만 처리할 branch가 없다.",
+      "category": "용어 일관성(영문/한글 혼용)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "같은 개념을 앞 레슨은 한글 '분기'로 쓰는데 여기서만 영어 branch로 쓴다. 굳이 영어로 둘 이유가 없는 일반 용어다.",
+      "evidence": "L07은 절 제목부터 \"안전한 분기 — save_ok 패턴\", 정리에서 \"`CASE`로 분기하는 게 기본 패턴이다\"로 일관되게 '분기'를 쓴다. branch는 ABAP 고유 용어(Internal Table·Data Element처럼 영어 원문을 유지해야 하는 부류)가 아니어서, 여기서만 영어로 바뀌면 입문자는 새 개념인지 잠시 멈추게 된다. 같은 성격의 혼용이 L06에도 있다: 본문은 \"기본값으로 다시 계산된다\", 흔한 실수는 \"속성은 PBO마다 reset된다\".",
+      "suggestion": "\"다르면 버튼은 눌렸지만 처리할 분기가 없다\"로 바꾼다. L06의 'reset'도 \"기본값으로 되돌아간다\"처럼 앞 서술과 같은 말로 맞춘다."
+    },
+    {
+      "seq": 9,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L02.md",
+      "quote": "| **Attributes** | next screen·modal 여부·화면 타입 | Screen Attributes |",
+      "category": "용어 첫 등장 풀이 없음",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'modal'이 풀이 없이 처음이자 유일하게 등장해, 이 표의 한 칸만 뜻이 비어 있다.",
+      "evidence": "CH16 어디에도 modal의 설명이 없다. 표의 다른 칸(Layout·Element List·Flow Logic)은 모두 우리말 서술로 무엇을 담는지 알려 주는데, 이 칸만 영어 형용사를 그대로 던진다. L02가 팝업 화면 `0300`을 언급한 터라 개념을 이을 자리는 이미 있다.",
+      "suggestion": "괄호로 한 줄 풀이를 붙인다. 예: \"modal 여부(뒤 화면을 못 건드리게 막는 팝업으로 띄울지)\"."
+    },
+    {
+      "seq": 10,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L03.md",
+      "quote": "[[F4]] Search Help가 \"검색 팝업\"이라면, **Dropdown(Listbox)** 은 화면에서 바로 펼쳐지는",
+      "category": "한국어 표기(조사 띄어쓰기)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "강조 표시를 닫은 뒤 조사 앞에 공백이 남아, 렌더링된 화면에 \"Dropdown(Listbox) 은\"처럼 조사가 떨어져 보인다. 챕터 전반에 반복되는 패턴이다.",
+      "evidence": "같은 형태가 L01 \"**뒤로** 를 누르면\", L06 \"**`MODIFY SCREEN FROM gs_screen`** 을 해야\", L08 \"**CASE에 없는 버튼(`HELP`)** 을 누르면\", L09 \"**\\\"무엇을 얹을 자리\\\"** 를 만드는\"·\"**\\\"화면 영역과 프로그램 연결\\\"** 까지만\"에서 반복된다. 조사는 앞말에 붙여 쓰는 것이 원칙이라, 입문자용 본문에서 눈에 걸린다.",
+      "suggestion": "조사를 강조 범위 안에 넣어 공백을 없앤다(`**Dropdown(Listbox)은**`), 또는 강조 끝을 글자로 맞춘다(`**Dropdown**(Listbox)은`). 마크다운 특성상 강조가 기호·백틱으로 끝나면 공백 없이는 강조가 닫히지 않으므로, 공백만 지우지 말고 이 두 방식 중 하나로 고쳐야 한다."
+    },
+    {
+      "seq": 11,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L01.md",
+      "quote": "SAP이 정해 준 틀이다. 조회 조건을 빠르게 받기엔 좋지만, \"공연을 고르고, 좌석 수를 넣고,",
+      "category": "긴 호흡(주술 거리)",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "챕터의 첫 문단에서 인용절 네 개가 통째로 목적어 앞에 끼어들어, 주어와 서술어 사이가 지나치게 멀다. 입문자가 가장 집중력을 요구받는 도입부라 부담이 크다.",
+      "evidence": "문장이 \"조회 조건을 빠르게 받기엔 좋지만, \\\"공연을 고르고 / 좌석 수를 넣고 / 예매 버튼을 누르면 검증이 돌고 / 뒤로를 누르면 닫히는\\\" 내가 직접 설계한 업무 화면을 만들기엔 한계가 있다\"로 이어져, 무엇이 한계인지 확인하려면 네 개의 절을 모두 통과해야 한다. 같은 레슨 뒷부분(\"화면이 보이고 → 사용자가 반응하고 → 다시 화면이 준비되는 순환\")은 짧게 끊어 읽기 쉬운 것과 대비된다.",
+      "suggestion": "장면 묘사를 별도 문장으로 떼어낸다. 예: \"조회 조건을 빠르게 받기엔 좋다. 하지만 이런 화면은 못 만든다 — 공연을 고르고, 좌석 수를 넣고, 예매 버튼을 누르면 검증이 돌고, 뒤로를 누르면 닫히는 화면. 내가 직접 설계한 업무 화면에는 선택화면만으로 한계가 있다.\""
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "문장 품질은 전반적으로 좋다. 흐름(불편 → 개념 → 실수 → 정리)이 일정하고, PBO/PAI·TABLES·OK_CODE 같은 핵심 용어는 첫 등장에서 대체로 한 줄 풀이를 주며, 번역투나 비문은 사실상 없다. 톤도 매뉴얼로 크게 기울지 않는다. 다만 손볼 지점이 세 갈래로 모인다. 첫째, 설명과 예제가 어긋난 곳이 있다 — L03의 Dropdown key/text 설명이 코드에 없는 값(`R`/`예약`)을 예로 들고, 상태 후보 세트가 한 레슨 안에서 세 번 다르게 제시된다. 둘째, 같은 개념의 이름·표기가 레슨마다 갈린다 — function code/FctCode/버튼 코드, sequence/시퀀스, lifecycle/생명주기, branch/분기가 대표적이고, `POV`는 풀이 없이 등장해 일상어와 헷갈린다. 셋째, 설명이 결과만 말하고 이유를 비운 자리가 있다(L09 \"lifecycle 문제가 생긴다\"). L05의 \"PBO의 `OUTPUT`과 짝이 되는 `INPUT`\"은 L02가 세운 규칙과 정면으로 부딪혀 오해를 부르므로 문장 교체가 필요하다. 모두 문장·용어 수준의 국소 수정으로 해결되고 구조나 서술 방식을 다시 짤 필요는 없다."
+  }
+}

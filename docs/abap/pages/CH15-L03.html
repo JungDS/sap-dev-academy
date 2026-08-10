@@ -55,28 +55,69 @@ report를 두 개 만들기보다, 화면이 그려지기 <strong>직전(PBO)</s
 9
 10
 11
-12</pre><pre class="abap-editor__code"><code><span class="tok-kw">PARAMETERS</span>: pa_mode   <span class="tok-kw">TYPE</span> c <span class="tok-kw">LENGTH</span> <span class="tok-num">1</span>,
-            pa_secret <span class="tok-kw">TYPE</span> c <span class="tok-kw">LENGTH</span> <span class="tok-num">10</span>.
+12</pre><pre class="abap-editor__code"><code><span class="tok-kw">PARAMETERS</span>: pa_mode <span class="tok-kw">TYPE</span> c <span class="tok-kw">LENGTH</span> <span class="tok-num">1</span>,
+            pa_adv  <span class="tok-kw">TYPE</span> c <span class="tok-kw">LENGTH</span> <span class="tok-num">10</span>.
 
 <span class="tok-kw">DATA</span> gs_screen <span class="tok-kw">TYPE</span> <span class="tok-kw">screen</span>.
 
 <span class="tok-kw">AT</span> <span class="tok-kw">SELECTION-SCREEN</span> <span class="tok-kw">OUTPUT</span>.
   <span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> <span class="tok-kw">SCREEN</span> <span class="tok-kw">INTO</span> gs_screen.
-    <span class="tok-kw">IF</span> gs_screen-name = <span class="tok-str">'PA_SECRET'</span> <span class="tok-kw">AND</span> pa_mode &lt;&gt; <span class="tok-str">'A'</span>.
+    <span class="tok-kw">IF</span> gs_screen-name = <span class="tok-str">'PA_ADV'</span> <span class="tok-kw">AND</span> pa_mode &lt;&gt; <span class="tok-str">'A'</span>.
       gs_screen-active = <span class="tok-str">'0'</span>.            <span class="tok-com">" 화면에서 비활성(숨김)</span>
       <span class="tok-kw">MODIFY</span> <span class="tok-kw">SCREEN</span> <span class="tok-kw">FROM</span> gs_screen.      <span class="tok-com">" work area를 화면에 반영</span>
     <span class="tok-kw">ENDIF</span>.
   <span class="tok-kw">ENDLOOP</span>.</code></pre></div></div>
 <ul>
+<li><code>SCREEN</code>은 내가 만든 표가 아니다. <strong>지금 화면에 있는 요소들의 목록을 시스템이 미리 채워
+건네주는 특수 테이블</strong>이다. 우리는 그 줄을 하나씩 꺼내 속성만 손본다.</li>
 <li>화면 요소를 <code>LOOP AT SCREEN INTO gs_screen</code>으로 돌며 <code>active</code>·<code>input</code>·<code>invisible</code>
-같은 속성을 바꾼다.</li>
+같은 속성을 바꾼다. 셋은 역할이 다르다.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>속성</th>
+<th><code>&#39;1&#39;</code>일 때</th>
+<th><code>&#39;0&#39;</code>일 때</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>active</code></td>
+<td>화면에 나오고 쓸 수 있다</td>
+<td>화면에서 <strong>사라진다</strong>(표시도 입력도 안 됨)</td>
+</tr>
+<tr>
+<td><code>input</code></td>
+<td><strong>입력 가능</strong></td>
+<td><strong>읽기 전용</strong> — 보이지만 못 고친다</td>
+</tr>
+<tr>
+<td><code>invisible</code></td>
+<td>입력한 글자가 <strong>가려진다</strong>(비밀번호 칸처럼)</td>
+<td>글자가 그대로 보인다</td>
+</tr>
+</tbody></table>
+<ul>
 <li><code>gs_screen</code>(work area)을 고친 뒤 <strong>반드시</strong> <code>MODIFY SCREEN FROM gs_screen</code>으로 화면에 반영한다.</li>
-<li>이 <button class="term" type="button" data-term="이벤트">이벤트</button>는 화면을 그릴 때마다(매 PBO) 실행된다.</li>
+<li>이 <button class="term" type="button" data-term="이벤트">이벤트</button>는 화면을 그릴 때마다(매 PBO) 실행된다. 그래서 <code>pa_mode</code>를 바꾼 효과는
+<strong>화면이 서버에 한 번 다녀와 다시 그려질 때</strong> 나타난다. 값만 고치고 Enter를 누르지
+않으면 화면은 그대로다.</li>
 </ul>
 <blockquote>
-<p>📌 <strong>명시 work area를 쓴다.</strong> 짧은 <code>LOOP AT SCREEN.</code>/<code>MODIFY SCREEN.</code>(내장 <code>screen</code>)
-형태는 공식문서상 피하는 표기다(기존 코드에서 만날 수는 있다). 또 <code>screen-name</code>은
-<strong>대문자 필드명</strong>(<code>PA_SECRET</code>)으로 비교한다.</p>
+<p>📌 <strong>work area를 명시적으로 쓴다.</strong> 공식 문서는 work area를 생략한 짧은 형태
+(<code>LOOP AT SCREEN.</code>/<code>MODIFY SCREEN.</code> — 내장 <code>screen</code>을 쓰는 방식)를 권장하지 않는다.
+기존 코드에서는 만날 수 있으니 읽을 줄만 알아 두자. 또 <code>screen-name</code>은
+<strong>대문자 필드명</strong>(<code>PA_ADV</code>)으로 비교한다.</p>
+</blockquote>
+<blockquote class="cw">
+<p>⚠️ <strong>예외 하나.</strong> 검증에서 <code>E</code> 메시지로 막혀 선택화면으로 되돌아왔을 때는
+이 <code>AT SELECTION-SCREEN OUTPUT</code>이 <strong>다시 돌지 않는다</strong>(공식 문서 기준).
+오류로 되돌아온 화면은 마지막으로 그려진 모습 그대로다.</p>
+</blockquote>
+<blockquote class="cw">
+<p>⚠️ <strong>숨겼다고 잠긴 게 아니다.</strong> 화면에서 필드를 감추는 건 화면을 정돈하는 일이지
+접근을 막는 보안 장치가 아니다. &quot;이 사용자에게 보여 주면 안 되는 값&quot;이라면 화면 제어가
+아니라 <a href="CH15-L07.html">Selection Screen 권한/존재 여부 검증 기초</a>의 <code>AUTHORITY-CHECK</code>로 막아야 한다.</p>
 </blockquote>
 <p>아래에서 모드를 바꾸고 화면을 그려, work area 수정이 <code>MODIFY SCREEN</code> 후에야 화면에
 반영되는 걸 확인하자.</p>
@@ -85,7 +126,7 @@ report를 두 개 만들기보다, 화면이 그려지기 <strong>직전(PBO)</s
 <ul>
 <li><strong><code>MODIFY SCREEN</code> 누락</strong> → work area만 바꾸고 안 반영하면 화면은 그대로다.</li>
 <li><strong>loop 밖에서 MODIFY SCREEN</strong> → <code>LOOP AT SCREEN</code> <strong>안</strong>에서만 의미가 있다.</li>
-<li><strong><code>screen-name</code> 소문자 비교</strong> → 화면 필드명은 대문자다(<code>PA_SECRET</code>).</li>
+<li><strong><code>screen-name</code> 소문자 비교</strong> → 화면 필드명은 대문자다(<code>PA_ADV</code>).</li>
 <li><strong>OUTPUT에서 기본값 재대입</strong> → 매 화면마다 사용자 입력을 덮어쓴다. 기본값은
 <button class="term" type="button" data-term="INITIALIZATION">INITIALIZATION</button>(이전 레슨), 여기선 <strong>화면 속성만</strong>.</li>
 </ul>

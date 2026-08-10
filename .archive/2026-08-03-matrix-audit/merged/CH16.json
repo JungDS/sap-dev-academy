@@ -1,0 +1,1689 @@
+{
+ "chapter": "CH16",
+ "inputs_present": 28,
+ "inputs_missing": [],
+ "clusters": [
+  {
+   "cluster_id": "CH16-C001",
+   "file": "content/abap/CH16/CH16-L06.md",
+   "quote": "IF gs_screen-name = 'GV_SEATS' AND gv_locked = 'X'.",
+   "category": "미선언 변수",
+   "severity": "높음",
+   "confidence": "확실",
+   "claim": "LOOP AT SCREEN 예제(L06)와 EXCLUDING 예제(L08)의 조건식에 쓰이는 gv_locked가 CH16 10개 레슨 어디에서도 DATA로 선언되지 않는다. 두 블록 모두 다른 변수는 선언해 보여 주므로 그대로 옮기면 'GV_LOCKED' 미선언으로 활성화 오류가 나고, L04에서 '잠금은 뒤 챕터'라 배운 입문자에게는 미학습 개념 선노출 혼란도 겹친다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG01",
+     "model": "opus",
+     "seq": 8
+    },
+    {
+     "agent": "AG09",
+     "model": "opus",
+     "seq": 5
+    },
+    {
+     "agent": "AG09",
+     "model": "sonnet",
+     "seq": 1
+    },
+    {
+     "agent": "AG09",
+     "model": "sonnet",
+     "seq": 2
+    },
+    {
+     "agent": "AG09",
+     "model": "gpt-5.6-sol",
+     "seq": 3
+    },
+    {
+     "agent": "AG09",
+     "model": "gpt-5.6-sol",
+     "seq": 5
+    },
+    {
+     "agent": "AG09",
+     "model": "gemini-3.6-flash-high",
+     "seq": 1
+    },
+    {
+     "agent": "AG09",
+     "model": "gemini-3.6-flash-high",
+     "seq": 2
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C002",
+   "file": "content/abap/CH16/CH16-L05.md",
+   "quote": "IF gs_dynp-fieldvalue = 'C001'.",
+   "category": "코드 배치(활성화 차단 가능)",
+   "severity": "높음",
+   "confidence": "추정",
+   "claim": "F4 후보를 만드는 실행문(IF ... ENDIF, F4IF_INT_TABLE_VALUE_REQUEST 호출)이 어떤 MODULE·FORM에도 포함되지 않은 채 TYPES/DATA 선언 뒤 최상위에 떠 있다. 직전 블록이 이미 ENDMODULE.로 닫혔는데 그 모듈이 채운 gs_dynp-fieldvalue를 그대로 쓰므로 같은 모듈의 연속이 분명하나, Module Pool에는 암묵 실행 블록이 없어 그대로 옮기면 활성화되지 않고, 입문자는 코드를 어디에 넣을지 판단할 수 없어 실습을 시작하지 못한다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG01",
+     "model": "opus",
+     "seq": 4
+    },
+    {
+     "agent": "AG03",
+     "model": "opus",
+     "seq": 7
+    },
+    {
+     "agent": "AG05",
+     "model": "opus",
+     "seq": 5
+    },
+    {
+     "agent": "AG09",
+     "model": "opus",
+     "seq": 3
+    },
+    {
+     "agent": "AG09",
+     "model": "sonnet",
+     "seq": 3
+    },
+    {
+     "agent": "AG09",
+     "model": "gpt-5.6-sol",
+     "seq": 2
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C003",
+   "file": "content/abap/CH16/CH16-L10.md",
+   "quote": "- 화면에 `GV_CONC`(F4)·`GV_PERF`·`GV_SEATS`·`GV_CUST`·`GV_STAT`·`OK_CODE`를 둔다.",
+   "category": "통합 실습 정합성(필드명 불일치)",
+   "severity": "높음",
+   "confidence": "확실",
+   "claim": "종합 실습의 공연ID 화면 필드가 세 곳에서 갈린다 — 요구사항·DATA 선언은 GV_CONC, TABLES zconcert 서술은 ZCONCERT-*(ZCONCERT-TITLE), 재사용하라는 L05 value_perf 모듈은 DYNP_VALUES_READ로 화면의 'ZCONCERT-CONCERT_ID'를 읽는다. 그대로 조립하면 DYNP_VALUES_READ가 값을 못 읽어 회차 F4 후보가 항상 비고, 앞서 배운 이름 일치 운반 원리가 통합되지 않는다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG01",
+     "model": "gpt-5.6-sol",
+     "seq": 2
+    },
+    {
+     "agent": "AG03",
+     "model": "gpt-5.6-sol",
+     "seq": 6
+    },
+    {
+     "agent": "AG05",
+     "model": "gpt-5.6-sol",
+     "seq": 3
+    },
+    {
+     "agent": "AG06",
+     "model": "opus",
+     "seq": 2
+    },
+    {
+     "agent": "AG09",
+     "model": "opus",
+     "seq": 2
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C004",
+   "file": "content/abap/CH16/CH16-L10.md",
+   "quote": "DATA lv_ok TYPE abap_bool.",
+   "category": "네이밍·스코프 오개념",
+   "severity": "높음",
+   "confidence": "확실",
+   "claim": "dialog module(MODULE ... ENDMODULE)은 FORM/METHOD와 달리 자체 로컬 데이터 영역이 없어 안에서 선언한 DATA도 프로그램 전역인데, MODULE user_command_0100 INPUT 안에서 lv_ 접두어로 선언해 'MODULE 안=로컬 스코프'라는 오개념을 심는다. 챕터의 다른 모든 선언은 g 접두어로 일관되고 프로젝트 규약(R11: lv_는 METHOD/FORM 전용)과도 어긋나므로 gv_ok로 바꿔 전역 선언부로 올려야 한다.",
+   "conflict": true,
+   "conflict_note": "4개 보고(AG03·AG05·AG06·AG09 opus)는 'MODULE 안 DATA는 실제로 전역이므로 lv_ 접두어 자체가 기술적 오류·규약 위반'으로 판정하고 gv_ 개명·전역 이동을 제안한다. 반면 AG01-sonnet(seq6)은 MODULE 안 선언이 로컬이라는 전제에서 '챕터 내내 gv_만 쓰다 갑자기 lv_ok가 설명 없이 등장하니 `MODULE 안이라 로컬 스코프`라는 주석을 붙이라'고 제안 — 결함 판정은 같으나 원인 진단과 수정 방향이 상반된다(그 주석은 다수설 기준으로는 오개념을 명문화하는 셈).",
+   "supporters": [
+    {
+     "agent": "AG01",
+     "model": "sonnet",
+     "seq": 6
+    },
+    {
+     "agent": "AG03",
+     "model": "opus",
+     "seq": 1
+    },
+    {
+     "agent": "AG05",
+     "model": "opus",
+     "seq": 9
+    },
+    {
+     "agent": "AG06",
+     "model": "opus",
+     "seq": 4
+    },
+    {
+     "agent": "AG09",
+     "model": "opus",
+     "seq": 1
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C005",
+   "file": "content/abap/CH16/CH16-L09.md",
+   "quote": "`CONTROLS tab_main TYPE TABSTRIP.`으로 선언하고, `tab_main-activetab`에 활성 탭의",
+   "category": "인지 부하·과밀 구성",
+   "severity": "높음",
+   "confidence": "확실",
+   "claim": "한 레슨에 신규 요소 5종(Custom Control·Custom Container·Tabstrip·Subscreen Area·Status Icon)과 OO 선행 사용(TYPE REF TO·CREATE OBJECT)이 몰렸는데 Tabstrip·Status Icon은 불릿 한두 줄뿐이다. 처음 보는 CONTROLS 선언문이 설명·[선행 사용] 표시 없이 문장 속에 등장하고, 탭 클릭→activetab 변경→subscreen 전환을 잇는 예제가 없는데 점검 항목은 4요소 정합을 요구한다. 산출물이 캡스톤 L10에서 쓰이지 않아 고립된다(AG05-gpt는 L10을 L08 뒤로 옮기고 L09를 종합 실습 이후 확장 레슨으로 재배치까지 제안).",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG01",
+     "model": "opus",
+     "seq": 7
+    },
+    {
+     "agent": "AG01",
+     "model": "sonnet",
+     "seq": 4
+    },
+    {
+     "agent": "AG01",
+     "model": "gpt-5.6-sol",
+     "seq": 4
+    },
+    {
+     "agent": "AG05",
+     "model": "opus",
+     "seq": 7
+    },
+    {
+     "agent": "AG05",
+     "model": "gpt-5.6-sol",
+     "seq": 2
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C006",
+   "file": "embeds/abap/CH16-L10-S01.html",
+   "quote": "| 상태 선택 | 드롭다운 `신규` | `gv_stat = 'N'` |",
+   "category": "본문-위젯 데이터 불일치(검증 시나리오 실행 불가)",
+   "severity": "높음",
+   "confidence": "확실",
+   "claim": "L10 검증 시나리오 표가 시키는 '드롭다운 신규 선택 → gv_stat = N'을 위젯에서 실행할 수 없다 — DFS_CFG.statuses가 예약(R)·대기(W)뿐이라 본문 통합 코드(fill_status_list: 신규 N·취소 C)가 만드는 목록과 다르고, 무엇을 골라도 gv_stat 값이 화면 어디에도 표시되지 않아 기대 결과를 확인할 방법이 없다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG02",
+     "model": "opus",
+     "seq": 1
+    },
+    {
+     "agent": "AG02",
+     "model": "sonnet",
+     "seq": 2
+    },
+    {
+     "agent": "AG02",
+     "model": "gpt-5.6-sol",
+     "seq": 3
+    },
+    {
+     "agent": "AG02",
+     "model": "gemini-3.6-flash-high",
+     "seq": 2
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C007",
+   "file": "content/abap/CH16/CH16-L07.md",
+   "quote": "- **CANCEL** — 입력 취소하고 뒤로(`LEAVE TO SCREEN 0`).",
+   "category": "위험한 생략",
+   "severity": "높음",
+   "confidence": "확실",
+   "claim": "BACK/EXIT/CANCEL을 일반 PAI 모듈(user_command_0100)의 CASE에서만 처리하도록 가르치고, function type 'E'(Exit command)와 MODULE ... AT EXIT-COMMAND가 챕터 전체(L10 통합 실습 포함)에 한 번도 없다. 필수입력·DDIC 자동 필드검사가 걸린 화면에서는 검사가 PAI 모듈보다 먼저 걸려 종료 분기에 도달하지 못하므로, DDIC 필드를 얹으라는 L10 실습에서 사용자가 화면에 갇히는 상황을 실제로 만난다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG03",
+     "model": "opus",
+     "seq": 2
+    },
+    {
+     "agent": "AG03",
+     "model": "gpt-5.6-sol",
+     "seq": 5
+    },
+    {
+     "agent": "AG06",
+     "model": "opus",
+     "seq": 1
+    },
+    {
+     "agent": "AG06",
+     "model": "gpt-5.6-sol",
+     "seq": 1
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C008",
+   "file": "content/abap/CH16/CH16-L08.md",
+   "quote": "SET TITLEBAR  'TB100' WITH gv_conc.     \" 아래 참고",
+   "category": "미선언 변수",
+   "severity": "높음",
+   "confidence": "확실",
+   "claim": "L08 TITLEBAR 예제 코드 블록의 선언은 gt_excl·gv_fcode뿐인데 SET TITLEBAR가 gv_conc를 사용한다 — 블록 단위로는 미선언 식별자다(gv_conc 선언은 L03·L10에만 있음).",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG09",
+     "model": "gpt-5.6-sol",
+     "seq": 6
+    },
+    {
+     "agent": "AG09",
+     "model": "gemini-3.6-flash-high",
+     "seq": 3
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C009",
+   "file": "content/abap/CH16/CH16-L07.md",
+   "quote": "PERFORM check_booking.   \" 예매 검증·저장",
+   "category": "활성화 차단급(호출 대상 부재)",
+   "severity": "높음",
+   "confidence": "확실",
+   "claim": "PERFORM check_booking에 대응하는 FORM check_booking ... ENDFORM 정의가 CH16 대상 코드 블록 어디에도 제시되지 않는다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG09",
+     "model": "gpt-5.6-sol",
+     "seq": 4
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C010",
+   "file": "content/abap/CH16/CH16-L05.md",
+   "quote": "FIELD zconcert-concert_id MODULE help_conc.",
+   "category": "활성화 차단급(호출 대상 부재)",
+   "severity": "높음",
+   "confidence": "확실",
+   "claim": "Flow Logic이 호출하는 help_conc 모듈의 ABAP 정의(MODULE help_conc INPUT ... ENDMODULE)가 대상 코드 어디에도 없다 — 이 상태로 화면을 활성화하면 호출 대상 모듈을 찾을 수 없다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG09",
+     "model": "gpt-5.6-sol",
+     "seq": 1
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C011",
+   "file": "content/abap/CH16/CH16-L10.md",
+   "quote": "- Module Pool을 만들고 T-code로 화면 `0100`을 실행한다([Module Pool 프로그램 구조](CH16-L01.html)).",
+   "category": "생략(실습 생성 절차)",
+   "severity": "높음",
+   "confidence": "확실",
+   "claim": "종합 실습이 요구하는 Module Pool·화면 0100·T-code 생성 절차를 챕터에서 실제로 따라 할 수 없다 — 앞 레슨들은 SE80·SE51·SE93의 역할만 설명할 뿐, 새 프로그램·화면을 어디서 만들고 시작 화면을 지정하며 어떤 순서로 저장·활성화·T-code 연결하는지 번호 매긴 절차가 없다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG01",
+     "model": "gpt-5.6-sol",
+     "seq": 1
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C012",
+   "file": "content/abap/CH16/CH16-L03.md",
+   "quote": "- `key`는 변수에 들어가는 **실제 값**(`R`), `text`는 화면에 보이는 **글자**(`예약`)다. 둘은 다르다.",
+   "category": "예시-설명-위젯 불일치",
+   "severity": "중간",
+   "confidence": "확실",
+   "claim": "드롭다운(VRM) 상태값 세트가 한 레슨 안에서 세 갈래로 어긋난다 — 도입부는 '예약/대기/취소', 코드는 key 'N'(신규)·'C'(취소), 해설 불릿은 코드에 없는 'R'/'예약'을 예로 들고, 체험 위젯(CH16-L03-S01)은 또 다른 예약(R)/대기(W)/취소(C) 3건을 보여 준다. key/text 구분이라는 핵심을 코드에서 눈으로 따라갈 수 없고, 방금 읽은 코드가 만들 수 없는 목록을 위젯에서 조작하게 된다(L10 검증표는 코드 쪽 N/신규와 일치 — 어긋난 곳은 L03 산문·위젯).",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG01",
+     "model": "opus",
+     "seq": 1
+    },
+    {
+     "agent": "AG01",
+     "model": "gemini-3.6-flash-high",
+     "seq": 1
+    },
+    {
+     "agent": "AG02",
+     "model": "opus",
+     "seq": 2
+    },
+    {
+     "agent": "AG02",
+     "model": "sonnet",
+     "seq": 1
+    },
+    {
+     "agent": "AG02",
+     "model": "gpt-5.6-sol",
+     "seq": 2
+    },
+    {
+     "agent": "AG02",
+     "model": "gemini-3.6-flash-high",
+     "seq": 1
+    },
+    {
+     "agent": "AG03",
+     "model": "opus",
+     "seq": 4
+    },
+    {
+     "agent": "AG04",
+     "model": "opus",
+     "seq": 1
+    },
+    {
+     "agent": "AG04",
+     "model": "sonnet",
+     "seq": 1
+    },
+    {
+     "agent": "AG04",
+     "model": "gemini-3.6-flash-high",
+     "seq": 1
+    },
+    {
+     "agent": "AG05",
+     "model": "opus",
+     "seq": 3
+    },
+    {
+     "agent": "AG06",
+     "model": "opus",
+     "seq": 8
+    },
+    {
+     "agent": "AG09",
+     "model": "opus",
+     "seq": 4
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C013",
+   "file": "content/abap/CH16/CH16-L05.md",
+   "quote": "APPEND gs_dynp TO gt_dynp.",
+   "category": "안티패턴(초기화 누락)",
+   "severity": "중간",
+   "confidence": "추정",
+   "claim": "F4를 누를 때마다 실행되는 value_perf 모듈이 전역 Internal Table gt_dynp·gt_perf에 CLEAR/REFRESH 없이 APPEND만 한다 — Module Pool 전역 데이터는 화면 순환 사이에 초기화되지 않으므로 두 번째 F4부터 요청·후보 행이 누적돼 중복 후보가 표시된다. 같은 챕터 L03 VRM 예제는 CLEAR gt_values.를 정확히 넣어 패턴이 어긋난다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG03",
+     "model": "gpt-5.6-sol",
+     "seq": 4
+    },
+    {
+     "agent": "AG06",
+     "model": "opus",
+     "seq": 3
+    },
+    {
+     "agent": "AG06",
+     "model": "gpt-5.6-sol",
+     "seq": 3
+    },
+    {
+     "agent": "AG09",
+     "model": "opus",
+     "seq": 6
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C014",
+   "file": "content/abap/CH16/CH16-L05.md",
+   "quote": "`AT SELECTION-SCREEN ON VALUE-REQUEST FOR ...`로 만들어 봤다. 뿌리는 **같은 POV**다.",
+   "category": "용어 첫 등장(약어 무풀이)",
+   "severity": "중간",
+   "confidence": "확실",
+   "claim": "약어 POV가 'PROCESS ON VALUE-REQUEST의 줄임말'이라는 풀이 없이 처음 등장하고 이후 흔한 실수 항목에서 반복 사용된다 — 입문자에게는 일상어 POV(point of view)로 먼저 읽힐 위험이 있고, 정식 표기와 같은 것인지 확신할 근거가 문장 안에 없다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG04",
+     "model": "opus",
+     "seq": 3
+    },
+    {
+     "agent": "AG04",
+     "model": "sonnet",
+     "seq": 2
+    },
+    {
+     "agent": "AG04",
+     "model": "gpt-5.6-sol",
+     "seq": 2
+    },
+    {
+     "agent": "AG04",
+     "model": "gemini-3.6-flash-high",
+     "seq": 2
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C015",
+   "file": "content/abap/CH16/CH16-L05.md",
+   "quote": "TABLES    dynpfields = gt_dynp.",
+   "category": "생략·과부하(파라미터 무설명)",
+   "severity": "중간",
+   "confidence": "추정",
+   "claim": "DYNP_VALUES_READ·F4IF_INT_TABLE_VALUE_REQUEST 호출부에 dyname·dynumb·sy-repid·sy-dynnr·retfield·value_org='S' 등 다수 파라미터·시스템 필드가 뜻 설명 없이 한꺼번에 등장해 해독이 어렵다. 특히 함수 호출의 TABLES 파라미터 구역이 직전 레슨에서 배운 TABLES 선언문과 같은 단어·다른 뜻이라는 언급이 없고, value_org='S'는 주석 없는 매직 리터럴이다 — 레슨 스스로 '통째로 외울 필요 없다'고 인정할 만큼 밀도가 높다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG01",
+     "model": "opus",
+     "seq": 3
+    },
+    {
+     "agent": "AG01",
+     "model": "sonnet",
+     "seq": 2
+    },
+    {
+     "agent": "AG01",
+     "model": "gpt-5.6-sol",
+     "seq": 3
+    },
+    {
+     "agent": "AG05",
+     "model": "sonnet",
+     "seq": 3
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C016",
+   "file": "content/abap/CH16/CH16-L02.md",
+   "quote": "- **next screen `0`을 빈 값으로 오해** → `0`은 화면 sequence **종료**를 뜻한다.",
+   "category": "용어 미정의·표기 혼용",
+   "severity": "중간",
+   "confidence": "확실",
+   "claim": "'화면 sequence'와 'next screen'이 챕터 안에서 한 번도 정의되지 않은 채 종료 문장 설명의 핵심 근거로 반복 사용되고(0이 무엇의 종료인지, '호출자로 복귀'의 호출자가 누구인지 알 수 없음), 표기도 Dynpro sequence(L01)/화면 sequence(L02)/화면 시퀀스(L07·L10)로 갈린다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG01",
+     "model": "opus",
+     "seq": 5
+    },
+    {
+     "agent": "AG04",
+     "model": "opus",
+     "seq": 5
+    },
+    {
+     "agent": "AG04",
+     "model": "gpt-5.6-sol",
+     "seq": 1
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C017",
+   "file": "content/abap/CH16/CH16-L09.md",
+   "quote": "CALL SUBSCREEN sub_area INCLUDING sy-repid '0110'.",
+   "category": "생략(구성 요소 무설명)",
+   "severity": "중간",
+   "confidence": "추정",
+   "claim": "Subscreen을 설명하는 유일한 코드 줄인데 sub_area(Screen Painter의 Subscreen Area 이름·별도 선언 불필요)·INCLUDING·sy-repid·'0110'(끼워 넣을 화면 번호) 네 조각이 모두 설명되지 않는다 — 바로 위 Custom Control 예제는 CONT100을 주석으로 밝혀 대비되고, PBO에만 INCLUDING이 붙는 이유도 없다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG01",
+     "model": "opus",
+     "seq": 6
+    },
+    {
+     "agent": "AG01",
+     "model": "sonnet",
+     "seq": 3
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C018",
+   "file": "content/abap/CH16/CH16-L01.md",
+   "quote": "화면 프로그램의 뼈대를 잡았다.",
+   "category": "섹션 흐름(정리 누락)",
+   "severity": "중간",
+   "confidence": "확실",
+   "claim": "L02～L10은 모두 '## 정리' 섹션을 갖추는데 신규 개념이 가장 많은 챕터 첫 레슨 L01만 없이 '흔한 실수와 점검'에서 곧바로 다음 레슨 예고로 넘어간다 — 핵심(Module Pool=T-code 실행, PBO/PAI 두 박자 순환)의 고정 단계가 빠졌다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG05",
+     "model": "opus",
+     "seq": 2
+    },
+    {
+     "agent": "AG05",
+     "model": "sonnet",
+     "seq": 1
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C019",
+   "file": "content/abap/CH16/_chapter.md",
+   "quote": "intro: \"표준 화면 말고 내가 설계한 입력 화면이 필요하다.\"",
+   "category": "챕터 도입·동기 설계",
+   "severity": "중간",
+   "confidence": "추정",
+   "claim": "10개 레슨짜리 챕터의 intro가 한 문장뿐이고 본문도 그 문장을 반복할 뿐이라, legacy로 스스로 규정한 Dynpro를 지금 배워야 하는 이유·도달점이 챕터 입구에 없다(정당화는 L01 콜아웃에 가서야 나옴) — 목차 단계에서 보는 입문자가 학습 동기를 얻지 못한다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG05",
+     "model": "opus",
+     "seq": 1
+    },
+    {
+     "agent": "AG05",
+     "model": "gpt-5.6-sol",
+     "seq": 1
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C020",
+   "file": "content/abap/CH16/CH16-L10.md",
+   "quote": "> 💡 위 예제는 **한 코드 블록에 Flow Logic과 ABAP module을 함께** 보여 준 것이다. 실제로는",
+   "category": "섹션 흐름·의사코드 표기",
+   "severity": "중간",
+   "confidence": "확실",
+   "claim": "Flow Logic과 ABAP source를 한 블록에 합쳤다는 경고가 긴 통합 코드 블록 두 개를 모두 지난 뒤에야 나와, L02가 세운 '호출과 정의는 다른 위치' 핵심 구분을 캡스톤에서 시각적으로 흐린다 — 실제 프로그램 소스에 Flow Logic을 쓰면 구문 오류이므로, 경고를 블록 앞으로 옮기고 영역 구분 주석 또는 블록 분리가 필요하다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG05",
+     "model": "opus",
+     "seq": 8
+    },
+    {
+     "agent": "AG09",
+     "model": "gemini-3.6-flash-high",
+     "seq": 4
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C021",
+   "file": "content/abap/CH16/CH16-L03.md",
+   "quote": "| Push Button | 누르면 PAI 발생 | FctCode → `OK_CODE` |",
+   "category": "용어 일관성·약어 무풀이",
+   "severity": "중간",
+   "confidence": "확실",
+   "claim": "'어떤 버튼을 눌렀는지 알려 주는 코드'라는 하나의 개념이 function code(L02)·FctCode(L03 표, 풀이 없이 첫 등장)·버튼 코드(L08)·OK_CODE 네 이름으로 불리는데 이들의 관계를 설명하는 문장이 없다 — 입문자는 서로 다른 네 가지를 각각 배워야 하는 것으로 오해한다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG04",
+     "model": "opus",
+     "seq": 2
+    },
+    {
+     "agent": "AG04",
+     "model": "sonnet",
+     "seq": 3
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C022",
+   "file": "content/abap/CH16/CH16-L09.md",
+   "quote": "- ⚠️ Container를 **PBO마다 새로** 만들면 lifecycle 문제가 생긴다 → `IF go_cont IS INITIAL`로",
+   "category": "용어 풀이 부실·이유 공백",
+   "severity": "중간",
+   "confidence": "확실",
+   "claim": "'lifecycle 문제가 생긴다'가 무엇이 왜 문제인지(PBO는 화면마다 실행되어 컨테이너 객체가 중복 생성·미정리) 아무것도 알려 주지 않는 영어 추상어라, 입문자는 IF go_cont IS INITIAL을 이유가 아니라 주문으로 외우게 된다 — L10은 같은 개념을 한글 '생명주기'로 써 표기도 갈린다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG04",
+     "model": "opus",
+     "seq": 6
+    },
+    {
+     "agent": "AG04",
+     "model": "gpt-5.6-sol",
+     "seq": 6
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C023",
+   "file": "content/abap/CH16/CH16-L04.md",
+   "quote": "PROGRAM sapmzconcert.",
+   "category": "생략(문법 무설명)",
+   "severity": "중간",
+   "confidence": "확실",
+   "claim": "Module Pool 소스 첫 줄 PROGRAM과 sapm 이름 관례가 아무 설명 없이 등장한다 — 지금까지 쓴 REPORT와 무엇이 다른지, 오타인지 새 문법인지 판단할 수 없다(L01 비교표도 시작 문장 차이는 다루지 않고, L10 통합 코드에 같은 줄이 다시 나옴).",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG01",
+     "model": "opus",
+     "seq": 2
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C024",
+   "file": "content/abap/CH16/CH16-L10.md",
+   "quote": "- 화면에 `GV_CONC`(F4)·`GV_PERF`·`GV_SEATS`·`GV_CUST`·`GV_STAT`·`OK_CODE`를 둔다.",
+   "category": "체험 범위 누락",
+   "severity": "중간",
+   "confidence": "확실",
+   "claim": "요구사항의 고객 필드 GV_CUST가 종합 위젯(CH16-L10-S01)의 폼에 없다 — 렌더된 폼 필드는 GV_CONC·GV_PERF·GV_SEATS·GV_STAT뿐이라 고객값 입력·운반을 체험할 수 없다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG02",
+     "model": "gpt-5.6-sol",
+     "seq": 4
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C025",
+   "file": "embeds/abap/CH16-L10-S01.html",
+   "quote": "<b>SAVE 뒤 Enter</b>는 재실행되지 않습니다",
+   "category": "위젯 결함(상태 미확인 고정 메시지)",
+   "severity": "중간",
+   "confidence": "확실",
+   "claim": "Enter 버튼 안내가 실제로 SAVE를 누른 적이 있었는지와 무관하게 항상 '직전 CLEAR ok_code 덕분에 이전 SAVE가 재실행되지 않습니다'를 띄운다 — 새로고침 직후 Enter만 눌러도 동일 문구가 떠, 없었던 이전 SAVE를 있었던 것처럼 안내한다(엔진 dynpro-form-simulator.js의 pai('ENTER')가 직전 상태 확인 없이 고정 문자열 반환).",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG02",
+     "model": "sonnet",
+     "seq": 3
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C026",
+   "file": "content/abap/CH16/CH16-L04.md",
+   "quote": "`gv_`로 직접 선언한 필드는 이 이점을 받지 못한다.",
+   "category": "오개념 유발(과잉 단정)",
+   "severity": "중간",
+   "confidence": "확실",
+   "claim": "'직접 선언한 gv_ 필드는 라벨·F4를 못 받는다'는 단정이 과하다 — 실제로는 Element List에서 프로그램 필드에도 Data Element/Search Help를 지정하면 동일하게 작동하며, L03('Data Element를 쓰면 F4·검증이 화면에서도 작동')·L05(우선순위 표 2번 '화면 필드에 Search Help 직접 연결')의 서술과 정면으로 어긋난다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG03",
+     "model": "opus",
+     "seq": 3
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C027",
+   "file": "content/abap/CH16/CH16-L03.md",
+   "quote": "| Text Field | 고정 라벨·안내 | 보통 변수 운반 없음 |",
+   "category": "용어 충돌",
+   "severity": "중간",
+   "confidence": "확실",
+   "claim": "다른 환경(JTextField·UITextField 등)에서 Text Field는 거의 예외 없이 '입력 가능한 칸'인데 여기서는 정반대로 읽기 전용 라벨을 가리킨다는 대조가 표에 없다 — 사후 정정은 흔한 실수 절에만 있어 표를 처음 읽는 시점에 오독 위험이 있다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG03",
+     "model": "sonnet",
+     "seq": 1
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C028",
+   "file": "content/abap/CH16/CH16-L05.md",
+   "quote": "그 값을 읽어 오는 화면 전용 함수가 `DYNP_VALUES_READ`다.",
+   "category": "오개념 유발(연결 설명 부재)",
+   "severity": "중간",
+   "confidence": "추정",
+   "claim": "직전 레슨의 'PAI 시작에 화면→work area' 동기화 규칙대로면 변수를 그냥 읽으면 될 텐데 왜 별도 함수가 필요한지 이유가 없다 — POV 시점이 PAI의 정식 화면→변수 전송보다 먼저라 변수가 최신값이 아닐 수 있다는 연결 설명이 빠져, 논리적으로 이어 읽는 학습자일수록 의문이 남는다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG03",
+     "model": "sonnet",
+     "seq": 2
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C029",
+   "file": "content/abap/CH16/CH16-L01.md",
+   "quote": "| 시작 | `REPORT`·F8 | **T-code로만** 시작 화면 호출 |",
+   "category": "오개념 유발(과잉 단정)",
+   "severity": "중간",
+   "confidence": "확실",
+   "claim": "Module Pool 화면의 진입을 T-code 하나로 한정한다 — 다른 ABAP 처리에서 CALL SCREEN으로 Dynpro를 호출할 수도 있어, 배포 진입점과 기술적 화면 호출 수단을 구분하지 않은 단정이다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG03",
+     "model": "gpt-5.6-sol",
+     "seq": 1
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C030",
+   "file": "content/abap/CH16/CH16-L04.md",
+   "quote": "- **아무 데나 `TABLES` 남용 금지** → `TABLES`는 **classic 화면 프로그램 전용**의 레거시\n  방식이다.",
+   "category": "오개념 유발(범위 오한정)",
+   "severity": "중간",
+   "confidence": "확실",
+   "claim": "TABLES 문장의 적용 범위를 'classic 화면 프로그램 전용'으로 한정한 서술이 잘못이다 — 같은 레슨 앞부분이 CH12의 SELECT-OPTIONS용 TABLES zbooking을 설명하듯 화면 전용 문장이 아니며, 핵심은 여러 프로그램 유형에서 보이는 obsolete 전역 interface work area라는 점이다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG03",
+     "model": "gpt-5.6-sol",
+     "seq": 3
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C031",
+   "file": "content/abap/CH16/CH16-L04.md",
+   "quote": "그 필드가 프로그램과 값을 주고받으려면 **같은 이름의 `TABLES` work area**가 있어야 한다.",
+   "category": "사실 오류",
+   "severity": "중간",
+   "confidence": "확실",
+   "claim": "Dynpro 필드와 값을 주고받기 위해 TABLES 선언이 반드시 필요하다는 설명은 틀렸다 — 자동 운반의 핵심 조건은 화면 필드와 이름이 일치하는 전역 데이터 객체이며, 전역 DATA zconcert TYPE zconcert로도 연결된다. TABLES는 유일한 수단이 아니라 오래된 interface work area 선언이다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG06",
+     "model": "gpt-5.6-sol",
+     "seq": 2
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C032",
+   "file": "content/abap/CH16/CH16-L03.md",
+   "quote": "목록은 **VRM**(Value Request Manager) 함수 `VRM_SET_VALUES`로 코드에서 채운다.",
+   "category": "위험한 생략(필수 속성 누락)",
+   "severity": "중간",
+   "confidence": "확실",
+   "claim": "Dropdown은 별도 요소가 아니라 Input/Output Field의 Dropdown 속성을 'Listbox'로 지정해야 생기는데 이 필수 단계가 빠졌다 — 속성이 비면 VRM_SET_VALUES가 오류 없이 통과해도 화면에는 평범한 입력칸만 남아, 초보자가 원인을 못 찾는 전형적 지점이다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG06",
+     "model": "opus",
+     "seq": 5
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C033",
+   "file": "content/abap/CH16/CH16-L08.md",
+   "quote": "- **PF-STATUS 미설정** → 표준 버튼만 떠 내 기능키가 없다. PBO에서 늦지 않게 `SET PF-STATUS`.",
+   "category": "위험한 생략(결과 축소)",
+   "severity": "중간",
+   "confidence": "확실",
+   "claim": "GUI Status 미설정의 결과를 '내 기능키가 없다' 수준으로 축소했다 — 실제로는 활성 status가 없어 표준 툴바의 뒤로/종료/취소도 function code를 보내지 못해 화면에서 빠져나올 수 없게 되고(명령창 /n으로 탈출), 한 번 설정한 status가 다음 SET PF-STATUS까지 유지된다는 점도 함께 짚어야 증상을 해석할 수 있다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG06",
+     "model": "opus",
+     "seq": 6
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C034",
+   "file": "content/abap/CH16/CH16-L08.md",
+   "quote": "제목 텍스트에 `&1`~`&9` 자리표시자를 두고 `WITH`로 값을 채운다.",
+   "category": "사실 오류",
+   "severity": "중간",
+   "confidence": "확실",
+   "claim": "SET TITLEBAR ... WITH가 지원하는 자리표시자는 최대 4개(&1～&4, g1～g4)인데 본문은 &1～&9까지 쓸 수 있다고 서술한다 — MESSAGE의 &1～&4와 같은 classic ABAP 짧은 텍스트 전반의 고정 한도다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG06",
+     "model": "sonnet",
+     "seq": 1
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C035",
+   "file": "content/abap/CH16/CH16-L05.md",
+   "quote": "`OUTPUT`과 짝이 되는 `INPUT`이다).",
+   "category": "중의문·앞 레슨 충돌",
+   "severity": "중간",
+   "confidence": "확실",
+   "claim": "L02가 세운 'OUTPUT/INPUT 추가어가 PBO/PAI 어디서 불릴지를 정한다'는 규칙대로면 MODULE value_perf INPUT은 PAI 모듈로 읽히는데, 실제 호출자는 PROCESS ON VALUE-REQUEST다 — 'PBO의 OUTPUT과 짝'이라는 부연이 예외를 해소하기는커녕 앞 규칙을 다시 불러와 오해를 키운다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG04",
+     "model": "opus",
+     "seq": 4
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C036",
+   "file": "content/abap/CH16/CH16-L08.md",
+   "quote": "위쪽에는 **메뉴바·표준 툴바·application toolbar·\nfunction key**가 있고, 사용자는 그 버튼으로 저장하거나 뒤로 가거나 도움말을 연다.",
+   "category": "용어 첫 등장(무풀이)",
+   "severity": "중간",
+   "confidence": "확실",
+   "claim": "application toolbar와 function key가 영문 원어로만 나열되고 각각 무엇인지·표준 툴바와의 차이가 풀이되지 않아 GUI Status 구성 요소를 처음 접하는 학습자에게 불친절하다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG04",
+     "model": "gpt-5.6-sol",
+     "seq": 3
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C037",
+   "file": "content/abap/CH16/CH16-L09.md",
+   "quote": "## 화면에 무엇을 얹을 자리",
+   "category": "문장(비문성 제목)",
+   "severity": "중간",
+   "confidence": "확실",
+   "claim": "관형절 '무엇을 얹을'이 의존 명사 없이 '자리'를 꾸며 제목이 비문처럼 읽힌다 — '화면 안에 컨트롤을 얹을 자리' 등으로 고치면 자연스럽다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG04",
+     "model": "gpt-5.6-sol",
+     "seq": 5
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C038",
+   "file": "content/abap/CH16/CH16-L10.md",
+   "quote": "- `TABLES zconcert` → 화면의 `ZCONCERT-TITLE`에 공연명이 라벨·F4까지 함께 온다.",
+   "category": "예시 적절성(오도 서술)",
+   "severity": "중간",
+   "confidence": "확실",
+   "claim": "TABLES zconcert만으로 공연명 값까지 화면에 들어오는 것처럼 서술하지만 이 선언은 DB를 읽지 않는다 — 코드에 zconcert-title을 SELECT·대입하는 처리가 없고 입력 공연ID도 별도 변수 GV_CONC라 work area 키와 동기화되지 않으며, TITLE 필드의 F4 자동 제공 여부도 DDIC 정의에 달렸다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG06",
+     "model": "gpt-5.6-sol",
+     "seq": 4
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C039",
+   "file": "content/abap/CH16/CH16-L01.md",
+   "quote": "| 대표 실수 | 이벤트 위치 혼동 | T-code/시작 화면/OK_CODE 누락 |",
+   "category": "단절(미정의 용어 선노출)",
+   "severity": "낮음",
+   "confidence": "확실",
+   "claim": "챕터 첫 레슨의 비교표에 아직 정의되지 않은 용어가 먼저 등장한다 — PBO/PAI는 표 시점엔 미정의(바로 다음 섹션에서 설명)이고, OK_CODE는 이 레슨 안에 풀이가 없어 두 레슨 뒤(L03·L07)에야 나온다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG01",
+     "model": "opus",
+     "seq": 10
+    },
+    {
+     "agent": "AG01",
+     "model": "sonnet",
+     "seq": 1
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C040",
+   "file": "content/abap/CH16/CH16-L04.md",
+   "quote": "> 🔎 CH12에서 `SELECT-OPTIONS ... FOR zbooking-concert_id`를 쓰려고 `TABLES zbooking`을",
+   "category": "복습 장치·참조 형식(R5 위반)",
+   "severity": "낮음",
+   "confidence": "확실",
+   "claim": "선행 사용을 회수하는 챕터 핵심 복습 지점이 링크 없이 내부 챕터 ID 'CH12'만 노출한다 — 챕터의 다른 참조는 모두 '[제목](CHnn-Lnn.html)' 링크인데 여기만 맨몸이라 기억나지 않는 학습자가 되돌아갈 경로가 없다(R5의 내부ID 비노출 링크 규칙에도 어긋남).",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG01",
+     "model": "opus",
+     "seq": 9
+    },
+    {
+     "agent": "AG05",
+     "model": "opus",
+     "seq": 4
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C041",
+   "file": "content/abap/CH16/CH16-L03.md",
+   "quote": "- **Text Field로 값 받기** → Text Field는 라벨이다. 값은 Input/Output Field로 받는다.",
+   "category": "과잉·지름길 부재",
+   "severity": "낮음",
+   "confidence": "추정",
+   "claim": "요소 표·행동 3분류는 폼 UI 경험자에게 자명한데 '이 절은 건너뛰어도 됨' 신호가 챕터 전체에 0곳이다 — ABAP 고유 핵심(이름 일치 자동 운반·Push Button만 function code·VRM)이 자명한 설명과 같은 무게로 섞여 훑어 읽는 독자가 핵심을 놓치기 쉽다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG03",
+     "model": "opus",
+     "seq": 6
+    },
+    {
+     "agent": "AG03",
+     "model": "sonnet",
+     "seq": 6
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C042",
+   "file": "content/abap/CH16/CH16-L02.md",
+   "quote": "실제 처리 코드는 프로그램 쪽 `MODULE ... ENDMODULE`에 쓴다.",
+   "category": "용어 충돌",
+   "severity": "낮음",
+   "confidence": "추정",
+   "claim": "일반 프로그래밍의 모듈(패키지·네임스페이스·어셈블리)과 달리 Dynpro의 MODULE은 PBO/PAI가 이름으로 호출하는 콜백성 프로시저(dialog module)라는 명칭 차이가 짚어지지 않는다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG03",
+     "model": "sonnet",
+     "seq": 4
+    },
+    {
+     "agent": "AG03",
+     "model": "gemini-3.6-flash-high",
+     "seq": 2
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C043",
+   "file": "content/abap/CH16/CH16-L09.md",
+   "quote": "블랙박스로만 받아들이면 된다.",
+   "category": "지름길 부재",
+   "severity": "낮음",
+   "confidence": "추정",
+   "claim": "TYPE REF TO·CREATE OBJECT는 OOP 경험자에게 참조 변수 선언+생성자 호출로 즉시 매핑되는 패턴인데 '블랙박스로만 받아들이라'는 입문자용 유보만 있다 — '[선행 사용] 박스에 OOP를 안다면 참조 선언과 생성자 호출'이라는 한 줄을 더하면 두 독자층을 모두 만족시킨다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG03",
+     "model": "sonnet",
+     "seq": 3
+    },
+    {
+     "agent": "AG03",
+     "model": "gemini-3.6-flash-high",
+     "seq": 3
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C044",
+   "file": "content/abap/CH16/CH16-L08.md",
+   "quote": "다르면 버튼은 눌렸지만 처리할 branch가 없다.",
+   "category": "표기 혼용(영문/한글)",
+   "severity": "낮음",
+   "confidence": "확실",
+   "claim": "L07이 절 제목부터 일관되게 쓰는 '분기'를 이 문장만 영어 branch로 표기한다 — ABAP 고유 용어가 아니어서 영어로 둘 이유가 없고, L06의 'reset된다'도 같은 성격의 혼용이다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG04",
+     "model": "opus",
+     "seq": 8
+    },
+    {
+     "agent": "AG04",
+     "model": "gpt-5.6-sol",
+     "seq": 4
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C045",
+   "file": "content/abap/CH16/CH16-L03.md",
+   "quote": "[[F4]] Search Help가 \"검색 팝업\"이라면, **Dropdown(Listbox)** 은 화면에서 바로 펼쳐지는",
+   "category": "한국어 표기(조사 띄어쓰기)",
+   "severity": "낮음",
+   "confidence": "확실",
+   "claim": "강조 마크업을 닫은 뒤 조사 앞에 공백이 남아 렌더링 화면에 'Dropdown(Listbox) 은'·'뒤로 를'처럼 조사가 떨어져 보인다 — L01·L06·L08·L09에도 반복되는 패턴이며, 마크다운 특성상 공백만 지우면 강조가 안 닫히므로 조사를 강조 범위 안에 넣거나 강조 끝을 글자로 맞춰야 한다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG04",
+     "model": "opus",
+     "seq": 10
+    },
+    {
+     "agent": "AG04",
+     "model": "sonnet",
+     "seq": 5
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C046",
+   "file": "content/abap/CH16/CH16-L10.md",
+   "quote": "PERFORM can_book USING gv_conc gv_perf gv_seats CHANGING lv_ok.",
+   "category": "예제 설계(미사용 변수 미설명)",
+   "severity": "낮음",
+   "confidence": "추정",
+   "claim": "요구사항에 명시된 GV_CUST·GV_STAT이 통합 코드에서 선언·화면 배치만 되고 검증·분기 로직에는 쓰이지 않는데(can_book은 conc·perf·seats만 받음) 그 이유를 알리는 안내가 없다 — 저장 단계(이후 챕터)용이라는 한 줄이 없어 주의 깊은 학습자가 의아해한다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG05",
+     "model": "sonnet",
+     "seq": 4
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C047",
+   "file": "embeds/abap/CH16-L04-S01.html",
+   "quote": "<code>TABLES</code>를 끄면 무슨 일이 나는지 보세요.",
+   "category": "위젯 결함(상태 초기화 누락)",
+   "severity": "낮음",
+   "confidence": "확실",
+   "claim": "위젯이 권하는 핵심 실험(TABLES 끄기)을 하면 프로그램 패널이 work area '없음'이라면서도 zconcert-concert_id에 C001 값을 계속 들고 있다 — '받을 그릇 자체가 없다'는 레슨 요점과 화면이 모순된다(엔진 dict-transport-tunnel.js의 자기대입 무동작 문장 st.prog.conc = st.prog.conc가 원인).",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG02",
+     "model": "opus",
+     "seq": 3
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C048",
+   "file": "embeds/abap/CH16-L09-S01.html",
+   "quote": "subArea: 'SUB_MAIN', subDynp: '0110',",
+   "category": "위젯 결함(문법 표기 오류)",
+   "severity": "낮음",
+   "confidence": "확실",
+   "claim": "Subscreen 패널이 'CALL SUBSCREEN 0110'이라는 잘못된 형태를 보여 준다 — CALL SUBSCREEN 뒤에 오는 것은 화면 번호가 아니라 subscreen area 이름이며(화면 번호는 INCLUDING 뒤), 본문 예제와 영역 이름(sub_area↔SUB_MAIN)도 다르다. 입문자가 'CALL SUBSCREEN <화면번호>'로 외울 위험이 있다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG02",
+     "model": "opus",
+     "seq": 4
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C049",
+   "file": "embeds/abap/CH16-L03-S01.html",
+   "quote": "입력칸·체크박스·드롭다운은 모두 <b>같은 이름의 전역 변수</b>와 묶입니다",
+   "category": "체험 공백(부분)",
+   "severity": "낮음",
+   "confidence": "확실",
+   "claim": "레슨이 핵심이라 밝힌 세 행동 그룹(값 운반/function code 발생/표시 전용) 중 체험 위젯에는 앞의 둘만 있다 — Radiobutton과 표시 전용인 Text Field·Frame이 화면 요소로 등장하지 않아 세 번째 그룹을 직접 대조해 볼 수 없다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG02",
+     "model": "opus",
+     "seq": 5
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C050",
+   "file": "embeds/abap/CH16-L08-S01.html",
+   "quote": "label: '저장'",
+   "category": "불일치(라벨 비일관)",
+   "severity": "낮음",
+   "confidence": "확실",
+   "claim": "같은 SAVE function code의 한글 라벨이 위젯마다 다르다 — L03·L07 위젯은 '예매', L08·L10 위젯은 '저장'이며, L10 본문이 '저장까지 기대 → INSERT·COMMIT은 이후'라고 경고하면서 정작 그 레슨 위젯 버튼이 '저장'을 달고 있어 경고와 부딪힌다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG02",
+     "model": "sonnet",
+     "seq": 4
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C051",
+   "file": "embeds/abap/CH16-L02-S01.html",
+   "quote": "시나리오를 골라 연결을 하나씩 깨뜨려, 어떤 활성화 오류가 나는지 확인하세요.",
+   "category": "위젯 안내문 오류(범주 불일치)",
+   "severity": "낮음",
+   "confidence": "확실",
+   "claim": "위젯 안내문은 모든 고장 시나리오를 '활성화 오류'라 하지만, 요소-변수 이름 불일치와 OK field 누락은 위젯 자체도 각각 'data transport 안 됨'·'function code 못 읽음'이라는 실행 중 문제로 판정한다 — 안내문의 범주가 실제 결과와 맞지 않는다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG02",
+     "model": "gpt-5.6-sol",
+     "seq": 1
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C052",
+   "file": "embeds/abap/CH16-L10-S01.html",
+   "quote": "| 좌석 부족 | 좌석 과다 · `SAVE` | `MESSAGE E` · 화면 유지 |",
+   "category": "위젯 판정 오류",
+   "severity": "낮음",
+   "confidence": "확실",
+   "claim": "GV_SEATS=0으로 SAVE하면 '좌석이 부족합니다 (요청 0 > 잔여 5)'라는 수학적으로 거짓인 비교 문구가 출력된다 — 엔진이 양수가 아닌 값도 실패시키면서 모든 실패에 '요청 > 잔여' 문구를 공통 적용하기 때문이며, 0 이하는 '좌석 수는 1 이상' 별도 판정이 필요하다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG02",
+     "model": "gpt-5.6-sol",
+     "seq": 5
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C053",
+   "file": "content/abap/CH16/CH16-L10.md",
+   "quote": "IF lv_ok = abap_true.",
+   "category": "용어 충돌(표기 전환 무설명)",
+   "severity": "낮음",
+   "confidence": "확실",
+   "claim": "챕터 내내 참/거짓을 문자 'X'로 다루다가(L03 '체크박스는 X/공백 character', L06·L08 'X' 비교) 마지막 레슨에서만 abap_bool/abap_true가 예고 없이 등장한다 — abap_true의 실체가 문자 'X'라는 한 줄이 없어 'ABAP에 boolean 타입이 따로 있다'는 잘못된 결론으로 이어지기 쉽다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG03",
+     "model": "opus",
+     "seq": 5
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C054",
+   "file": "content/abap/CH16/CH16-L01.md",
+   "quote": "- **PBO**(Process Before Output) — 화면을 **그리기 직전**(초기값·상태 준비).",
+   "category": "지름길 부재",
+   "severity": "낮음",
+   "confidence": "확실",
+   "claim": "GUI 이벤트 라이프사이클 경험자(Swing/WPF/React)를 위한 1줄 매핑 팁(PBO=pre-render/init hook, PAI=event handler 루프)이 없어 경험자가 기존 감각을 재활용할 접점이 제공되지 않는다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG03",
+     "model": "gemini-3.6-flash-high",
+     "seq": 1
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C055",
+   "file": "content/abap/CH16/CH16-L03.md",
+   "quote": "| Frame | 요소 묶음 표시 | 표시 전용 |",
+   "category": "용어 충돌",
+   "severity": "낮음",
+   "confidence": "추정",
+   "claim": "Java 개발자에게 Frame은 최상위 창(JFrame)으로 먼저 연상되는데 여기서는 화면 안 요소를 묶는 그룹박스라는 구분이 없고, 챕터의 다른 곳에서 다시 다뤄지지 않아 정정 기회도 없다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG03",
+     "model": "sonnet",
+     "seq": 5
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C056",
+   "file": "content/abap/CH16/CH16-L03.md",
+   "quote": "**Dropdown(Listbox)** 은 화면에서 바로 펼쳐지는\n**고정 목록**이다.",
+   "category": "용어 충돌(정의 혼동)",
+   "severity": "낮음",
+   "confidence": "확실",
+   "claim": "Dropdown을 '고정 목록'이라 정의하지만 바로 다음 예제는 PBO에서 VRM_SET_VALUES로 목록을 동적으로 채운다 — 일반 개발자가 이해하는 compile-time 고정 목록과 달라 혼동 소지가 있다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG03",
+     "model": "gpt-5.6-sol",
+     "seq": 2
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C057",
+   "file": "content/abap/CH16/CH16-L05.md",
+   "quote": "CALL FUNCTION 'DYNP_VALUES_READ'",
+   "category": "안티패턴(예외 미처리)",
+   "severity": "낮음",
+   "confidence": "확실",
+   "claim": "화면 표준 함수 두 개(DYNP_VALUES_READ·F4IF_INT_TABLE_VALUE_REQUEST)를 EXCEPTIONS 절도 sy-subrc 확인도 없이 호출하고, 이어지는 READ TABLE ... INDEX 1도 결과 검사 없이 값을 신뢰한다 — CH10에서 CALL FUNCTION을 배운 뒤라 EXCEPTIONS 한 줄의 인지부하는 크지 않다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG06",
+     "model": "opus",
+     "seq": 7
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C058",
+   "file": "content/abap/CH16/CH16-L03.md",
+   "quote": "DATA gt_values TYPE vrm_values.",
+   "category": "사실 오류(릴리스 의존)",
+   "severity": "낮음",
+   "confidence": "추정",
+   "claim": "vrm_values는 타입 그룹(Type Pool) VRM 소속이라 구 릴리스 실습 시스템에서는 프로그램 상단에 TYPE-POOLS vrm.이 없으면 활성화가 실패하는데, 레슨과 L10 통합 코드 어디에도 이 선언이 없다 — 부작용 없는 방어라 넣는 편이 안전하다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG06",
+     "model": "opus",
+     "seq": 9
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C059",
+   "file": "content/abap/CH16/CH16-L01.md",
+   "quote": "direction: 화면 중심 프로그램의 뼈대 — Module Pool과 PBO/PAI 두 박자.",
+   "category": "위험한 생략(물리 구조 미언급)",
+   "severity": "낮음",
+   "confidence": "확실",
+   "claim": "Module Pool의 실제 물리 구조인 include 분할(TOP/O01/I01/F01)이 챕터에 0건이다 — SE80에서 forward navigation으로 모듈을 만들면 곧바로 include 이름 팝업을 만나므로, 학습자가 레슨과 실제 화면의 괴리에서 멈춘다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG06",
+     "model": "opus",
+     "seq": 10
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C060",
+   "file": "content/abap/CH16/CH16-L08.md",
+   "quote": "(공식문서: `EXCLUDING`된 기능은 화면에서 선택할 수 없게 된다.)",
+   "category": "톤 이탈·동어반복",
+   "severity": "낮음",
+   "confidence": "확실",
+   "claim": "'공식문서:'라는 딱딱한 라벨의 삽입구가 친근한 입문서 톤에서 레퍼런스 인용 톤으로 튀고, 바로 앞 문장과 같은 내용의 반복이라 새 정보도 없다 — 출처도 특정되지 않아 확인 불가하며 같은 패턴이 L06·L09에도 반복된다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG04",
+     "model": "opus",
+     "seq": 7
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C061",
+   "file": "content/abap/CH16/CH16-L02.md",
+   "quote": "| **Attributes** | next screen·modal 여부·화면 타입 | Screen Attributes |",
+   "category": "용어 첫 등장(무풀이)",
+   "severity": "낮음",
+   "confidence": "확실",
+   "claim": "'modal'이 풀이 없이 처음이자 유일하게 등장해 표의 이 칸만 뜻이 비어 있다 — '뒤 화면을 못 건드리게 막는 팝업으로 띄울지' 정도의 괄호 풀이가 필요하다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG04",
+     "model": "opus",
+     "seq": 9
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C062",
+   "file": "content/abap/CH16/CH16-L01.md",
+   "quote": "SAP이 정해 준 틀이다. 조회 조건을 빠르게 받기엔 좋지만, \"공연을 고르고, 좌석 수를 넣고,",
+   "category": "긴 호흡(주술 거리)",
+   "severity": "낮음",
+   "confidence": "추정",
+   "claim": "챕터 첫 문단에서 인용절 네 개가 목적어 앞에 통째로 끼어들어 주어와 서술어 사이가 지나치게 멀다 — 입문자가 가장 집중을 요구받는 도입부라 부담이 크며, 장면 묘사를 별도 문장으로 떼면 해소된다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG04",
+     "model": "opus",
+     "seq": 11
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C063",
+   "file": "content/abap/CH16/CH16-L08.md",
+   "quote": "표준 버튼만 떠 내 기능키가 없다.",
+   "category": "비문",
+   "severity": "낮음",
+   "confidence": "확실",
+   "claim": "연결어미가 빠진 듯한 '떠'와 지시가 모호한 '내 기능키'로 한 번에 뜻이 들어오지 않는다 — '표준 버튼만 뜨고, 내가 만든 기능키는 나타나지 않는다'처럼 조사·어미를 채워야 한다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG04",
+     "model": "sonnet",
+     "seq": 4
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C064",
+   "file": "content/abap/CH16/CH16-L09.md",
+   "quote": "`Subscreen Area`는 화면 안에 다른 dynpro를 끼워 넣는 영역이다.",
+   "category": "용어 일관성(표기·마킹)",
+   "severity": "낮음",
+   "confidence": "추정",
+   "claim": "다른 레슨(L01·L02)은 같은 개념을 항상 [[Dynpro]] 대문자·글로서리 마킹으로 쓰는데 이 문장만 소문자 dynpro에 마킹도 없다 — 같은 개념인지 헷갈릴 수 있다(SAP 관례상 합성 표현의 소문자일 가능성도 있어 추정).",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG04",
+     "model": "sonnet",
+     "seq": 6
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C065",
+   "file": "content/abap/CH16/CH16-L06.md",
+   "quote": "PBO를 한 단계씩 진행하며 `sy-pfkey`·`sy-title`이 설정되고,",
+   "category": "전방 참조",
+   "severity": "낮음",
+   "confidence": "추정",
+   "claim": "sy-pfkey·sy-title이 L06에서 아무 설명 없이 먼저 나오고 정작 뜻은 두 레슨 뒤 L08에서야 나온다 — 임베드 실습 소개 문장이라 실습 화면에서 풀릴 여지는 있으나 본문만으로는 알 수 없다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG04",
+     "model": "sonnet",
+     "seq": 7
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C066",
+   "file": "content/abap/CH16/CH16-L06.md",
+   "quote": "`PROCESS BEFORE OUTPUT` 블록에서 부른 `MODULE ... OUTPUT` 모듈들이 PBO에서 실행된다.",
+   "category": "복습 장치(역참조 부재)",
+   "severity": "낮음",
+   "confidence": "확실",
+   "claim": "L02에서 문법·핵심 구분 콜아웃까지 정식 설명한 MODULE OUTPUT/PROCESS BEFORE OUTPUT을 L06이 역참조 링크 없이 재설명해, deepening(심화)이 아니라 재도입처럼 읽힌다 — 같은 챕터의 L04·L06→L08 패턴은 복습 연결을 올바르게 쓰고 있어 이 조합만 예외다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG05",
+     "model": "sonnet",
+     "seq": 2
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C067",
+   "file": "content/abap/CH16/CH16-L05.md",
+   "quote": "prereq: [\"CH16-L04\", \"CH09-L04\", \"CH16-L02\"]\nprevRel: parallel",
+   "category": "front-matter 선언 오류",
+   "severity": "낮음",
+   "confidence": "확실",
+   "claim": "본문 서사는 명백한 pain-solution(L04 마무리의 '외우지 못하면 → F4로 해소')인데 front-matter는 parallel로 선언했다 — 챕터에서 parallel이 5회(L02·L03·L05·L08·L09) 기본값처럼 남용되고 L10은 규칙 어휘(pain-solution/parallel/deepening)에 없는 next-step을 써, 게이팅 점검이 레슨 관계 선언을 근거로 삼을 수 없다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG05",
+     "model": "opus",
+     "seq": 6
+    }
+   ]
+  },
+  {
+   "cluster_id": "CH16-C068",
+   "file": "content/abap/CH16/CH16-L06.md",
+   "quote": "(내장 `screen`) 형식은 공식문서가 피하는",
+   "category": "생략(용어 무설명)",
+   "severity": "낮음",
+   "confidence": "추정",
+   "claim": "'내장 screen'이라는 새 용어가 괄호 안에 짧게 언급만 되고 그것이 무엇인지(ABAP이 기본 제공하는 screen이라는 이름의 구조체) 챕터 어디에도 설명이 없다 — '쓰지 말라'는 결론만으로 실습 지장은 없어 영향은 작다.",
+   "conflict": false,
+   "conflict_note": "",
+   "supporters": [
+    {
+     "agent": "AG01",
+     "model": "sonnet",
+     "seq": 5
+    }
+   ]
+  }
+ ],
+ "dropped": [],
+ "grade_opinions": {
+  "opus": [
+   {
+    "agent": "AG01",
+    "opinion": "경미 수정"
+   },
+   {
+    "agent": "AG02",
+    "opinion": "경미 수정"
+   },
+   {
+    "agent": "AG03",
+    "opinion": "경미 수정"
+   },
+   {
+    "agent": "AG04",
+    "opinion": "경미 수정"
+   },
+   {
+    "agent": "AG05",
+    "opinion": "경미 수정"
+   },
+   {
+    "agent": "AG06",
+    "opinion": "보강 권장"
+   },
+   {
+    "agent": "AG09",
+    "opinion": "경미 수정"
+   }
+  ],
+  "sonnet": [
+   {
+    "agent": "AG01",
+    "opinion": "경미 수정"
+   },
+   {
+    "agent": "AG02",
+    "opinion": "경미 수정"
+   },
+   {
+    "agent": "AG03",
+    "opinion": "경미 수정"
+   },
+   {
+    "agent": "AG04",
+    "opinion": "경미 수정"
+   },
+   {
+    "agent": "AG05",
+    "opinion": "경미 수정"
+   },
+   {
+    "agent": "AG06",
+    "opinion": "경미 수정"
+   },
+   {
+    "agent": "AG09",
+    "opinion": "경미 수정"
+   }
+  ],
+  "gpt-5.6-sol": [
+   {
+    "agent": "AG01",
+    "opinion": "보강 권장"
+   },
+   {
+    "agent": "AG02",
+    "opinion": "보강 권장"
+   },
+   {
+    "agent": "AG03",
+    "opinion": "보강 권장"
+   },
+   {
+    "agent": "AG04",
+    "opinion": "보강 권장"
+   },
+   {
+    "agent": "AG05",
+    "opinion": "보강 권장"
+   },
+   {
+    "agent": "AG06",
+    "opinion": "보강 권장"
+   },
+   {
+    "agent": "AG09",
+    "opinion": "보강 권장"
+   }
+  ],
+  "gemini-3.6-flash-high": [
+   {
+    "agent": "AG01",
+    "opinion": "유지"
+   },
+   {
+    "agent": "AG02",
+    "opinion": "경미 수정"
+   },
+   {
+    "agent": "AG03",
+    "opinion": "유지"
+   },
+   {
+    "agent": "AG04",
+    "opinion": "경미 수정"
+   },
+   {
+    "agent": "AG05",
+    "opinion": "유지"
+   },
+   {
+    "agent": "AG06",
+    "opinion": "유지"
+   },
+   {
+    "agent": "AG09",
+    "opinion": "경미 수정"
+   }
+  ]
+ }
+}

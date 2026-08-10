@@ -112,37 +112,37 @@
 | CH13-L05-S01 | CH13-L05 | sort-priority-lab | ORDER BY 정렬 기준 토글(없음·fldate▼·fldate▼carrid▲·carrid▲)→재정렬·동률 2차기준·순서보장없음 경고 | ✅ |
 | CH13-L06-S01 | CH13-L06 | fae-safety-sim | FOR ALL ENTRIES 기준목록×안전장치 토글→실행: 제한조회/빈목록보호/⚠️전체조회 위험·중복제거 | ✅ |
 | CH13-L07-S01 | CH13-L07 | module-choice-cards | (재사용) 조회 전략 의사결정 카드 5문항→JOIN/FAE/ABAP/GROUP BY/LEFT OUTER 분류·이유 | ✅ |
-| CH13-L08-S01 | CH13-L08 | join-aggregate-visualizer | LEFT OUTER JOIN+GROUP BY SUM(공연별 booked·LEFT/INNER 토글·취소 제외) | ✅ |
+| CH13-L08-S01 | CH13-L08 | join-aggregate-visualizer | LEFT OUTER JOIN+GROUP BY SUM(본문 회차 grain의 두 테이블 뼈대·공연별 booked·LEFT/INNER 토글·취소 제외) | ✅ |
 | CH14-L01-S01 | CH14-L01 | db-view-vs-join | 코드 JOIN vs Database View 비교(정상/마스터누락→inner-join 탈락/필드축소→구조계약) | ✅ |
 | CH14-L02-S01 | CH14-L02 | field-curtain | Projection View 필드 선택(체크박스)→결과 컬럼 변화·기술필드 일괄숨김·key 경고·ABAP 구조 | ✅ |
 | CH14-L03-S01 | CH14-L03 | f4-help-flow | Help View F4 흐름(F4→팝업→key 복귀)·설명누락 outer 보존·Export OFF 복귀안함 | ✅ |
 | CH14-L04-S01 | CH14-L04 | fk-maintenance-gate | Foreign Key 토글→유지보수 input check(FK ON: 없는코드 거부 / OFF: orphan 통과) | ✅ |
 | CH14-L05-S01 | CH14-L05 | sm30-gate-checklist | SM30 열리기까지 조건 게이트(활성화·유지보수허용·TMG·권한)→모두 충족 시 grid·파이프라인 | ✅ |
-| CH14-L06-S01 | CH14-L06 | view-cluster-tree | View Cluster 계층 유지보수(공연장→좌석등급)·상위 선택이 하위 자동조건·하위 추가 | ✅ |
+| CH14-L06-S01 | CH14-L06 | view-cluster-tree | View Cluster 계층 유지보수(공연→회차)·상위 선택이 하위 자동조건·하위 추가(미선택 시 오류 안내) | ✅ |
 | CH14-L07-S01 | CH14-L07 | se16n-tracker | SM30 저장→SE16N 확인(원본 vs View·H03 inner-join 차이·H30 오타 0건 단정금지) | ✅ |
 | CH14-L08-S01 | CH14-L08 | timeline-boundary | Classic↔CDS 경계 타임라인(지금=DDIC View/나중=CDS·RAP)·필터·나중 카드 챕터 안내 | ✅ |
-| CH14-L09-S01 | CH14-L09 | concert-register-console | (캡스톤) F4→SM30 저장→원본 ZCONCERT/View ZV_CONCERT 비교·기준 삭제 inner-join 누락 | ✅ |
+| CH14-L09-S01 | CH14-L09 | concert-register-console | (캡스톤) F4→SM30 저장→원본 ZPERF/View ZV_PERF(5필드) 비교·마스터 삭제 시 inner-join 행 제거 | ✅ |
 | CH15-L01-S01 | CH15-L01 | event-lifecycle-buildup | 이벤트 5단계 빌드업(mermaid 흐름도+코드·hover 연결·stage1 classic) | ✅ |
-| CH15-L02-S01 | CH15-L02 | init-default-injector | INITIALIZATION(1회·사용자 값 유지) vs OUTPUT(매번 덮어쓰기) 기본값 시연 | ✅ |
-| CH15-L03-S01 | CH15-L03 | screen-modify-panel | AT SELECTION-SCREEN OUTPUT·LOOP AT SCREEN·MODIFY SCREEN(변수 변경≠화면 반영·p_mode→P_SECRET 숨김) | ✅ |
-| CH15-L04-S01 | CH15-L04 | validation-gate-console | AT SELECTION-SCREEN 검증→MESSAGE(E001/002 &1&2·004)·sy-msg*·START-OF-SELECTION 잠금 | ✅ |
+| CH15-L02-S01 | CH15-L02 | init-default-injector | INITIALIZATION(1회·사용자 값 유지) vs OUTPUT(매번 덮어쓰기) 기본값 시연(so_conc C001→C002·header line→APPEND 조건표) | ✅ |
+| CH15-L03-S01 | CH15-L03 | screen-modify-panel | AT SELECTION-SCREEN OUTPUT·LOOP AT SCREEN·MODIFY SCREEN(변수 변경≠화면 반영·pa_mode→PA_ADV 숨김·MODIFY 실행/생략 토글로 work area↔화면 반영 분리) | ✅ |
+| CH15-L04-S01 | CH15-L04 | validation-gate-console | AT SELECTION-SCREEN 검증→MESSAGE(zmsg 001/002 &1&2·003)·sy-msg*·START-OF-SELECTION 잠금·전체 vs ON 필드 잠금 차이 | ✅ |
 | CH15-L05-S01 | CH15-L05 | select-start-gate | 검증 통과→START-OF-SELECTION SELECT(조건별 결과·sy-subrc·0건 S메시지)·검증 실패 잠금 | ✅ |
 | CH15-L06-S01 | CH15-L06 | legacy-event-reader | 리포트 3종(LDB연결/일반SELECT/END분리)으로 END-OF-SELECTION 호출·출력 위치 비교 독해·비-LDB 필수 오해 경고 | ✅ |
 | CH15-L07-S01 | CH15-L07 | dual-gate-auth-check | 공연코드 3종을 존재검증(SELECT SINGLE)→권한검증(AUTHORITY-CHECK) 이중관문에 통과·없는코드(amber)vs권한없음(red) 분리·sy-subrc | ✅ |
-| CH15-L08-S01 | CH15-L08 | selscreen-reaction-lab | 선택화면 4대 고급 이벤트(ON BLOCK/RADIO/F1/F4) 직접 호출·dynpro(PAI/POH/POV)·ABAP이벤트·F4목록→P_CARR 운반(다른필드 자동운반X) | ✅ |
+| CH15-L08-S01 | CH15-L08 | selscreen-reaction-lab | 선택화면 4대 고급 이벤트(ON BLOCK/RADIO/F1/F4) 직접 호출·dynpro(PAI/POH/POV)·ABAP이벤트·RADIO는 상세×31일 초과 실패 경로 재현·F4목록→PA_CARR 운반(다른필드 자동운반X) | ✅ |
 | CH15-L09-S01 | CH15-L09 | selscreen-layout-builder | 선택화면 미리보기에서 PUSHBUTTON/FUNCTION KEY→SSCRFIELDS-UCOMM(REF/FC01)·sy-ucomm 처리누락 경고·COMMENT FOR FIELD 연결약함 경고 | ✅ |
-| CH15-L10-S01 | CH15-L10 | option-switchboard | SELECT-OPTIONS 한 필드에 옵션(OBLIGATORY/LOWER CASE/NO-EXTENSION/NO INTERVALS) 토글→화면모양·내부행(SIGN/OPTION/LOW/HIGH)·복수선택·NO INTERVALS caveat | ✅ |
-| CH15-L11-S01 | CH15-L11 | selscreen-call-variant | 보조화면(1100) CALL SELECTION-SCREEN modal·Execute=sy-subrc0(적용)/Cancel=4(미적용)·Variant 불러오기(유효 복원/무효 무시) | ✅ |
-| CH15-L12-S01 | CH15-L12 | report-run-simulator | CH15 캡스톤·6시나리오×4이벤트(INIT→OUTPUT→검증→START) 흐름·통과/막힘·so_stat R/C 필터·결과테이블/S메시지/ALV | ✅ |
+| CH15-L10-S01 | CH15-L10 | option-switchboard | SELECT-OPTIONS 한 필드에 옵션(OBLIGATORY/LOWER CASE/NO-EXTENSION/NO INTERVALS) 토글→화면모양·selection table 행(SIGN/OPTION/LOW/HIGH)·다중 선택 창(줄 추가·NO INTERVALS여도 High 살아 있음) | ✅ |
+| CH15-L11-S01 | CH15-L11 | selscreen-call-variant | 보조화면(1100) CALL SELECTION-SCREEN modal·Execute=sy-subrc0(적용)/Cancel=4(미적용)·Variant 저장(현재 값·고급조건)→불러오기 복원(무효 무시) | ✅ |
+| CH15-L12-S01 | CH15-L12 | report-run-simulator | CH15 캡스톤·6시나리오×4이벤트(INIT→OUTPUT→검증→START) 흐름·통과/막힘·so_stat N/C 필터(기본 N)·결과테이블(seats)/S메시지/ALV | ✅ |
 | CH16-L01-S01 | CH16-L01 | process-flow-pbo-pai | Module Pool 두 박자 순환(PBO→화면→입력→PAI→loop·다음박자 진행) | ✅ |
-| CH16-L02-S01 | CH16-L02 | screen-painter-wiring | Dynpro 4조각(Layout/Element List/Flow Logic/ABAP Source) 연결지도·시나리오로 깨기(MODULE 누락/이름불일치/OK field 누락)→활성화 오류 | ✅ |
+| CH16-L02-S01 | CH16-L02 | screen-painter-wiring | Dynpro 4조각(Layout/Element List/Flow Logic/ABAP Source) 연결지도·시나리오로 깨기(MODULE 누락=활성화 오류 / 이름불일치·OK field 누락=실행 중 문제)·고장 유형 배지 | ✅ |
 | CH16-L06-S01 | CH16-L06 | pbo-prep-stepper | PBO 6단계 진행(PF-STATUS·TITLEBAR·LOOP AT SCREEN·MODIFY SCREEN·표시)·잠금 토글→GV_SEATS input=0 대기 vs MODIFY SCREEN 반영 체감 | ✅ |
 | CH16-L07-S01 | CH16-L07 | okcode-branch-lab | PAI ok_code→save_ok→CLEAR→CASE 분기 추적·버튼(SAVE/BACK/EXIT/CANCEL/Enter)·CLEAR 생략 시 SAVE→Enter 재실행(reexec) 데모·EXIT=LEAVE PROGRAM | ✅ |
 | CH16-L08-S01 | CH16-L08 | toolbar-fcode-map | GUI status 툴바 버튼→OK_CODE→PAI CASE 매핑·잠금→SAVE EXCLUDING·미처리 버튼(HELP) 경고·TITLEBAR WITH 치환 | ✅ |
-| CH16-L09-S01 | CH16-L09 | screen-extension-designer | 화면 확장요소 4탭(Custom Control 이름매칭·Subscreen OK field 없음→main·Tabstrip activetab/subscreen·Status Icon) | ✅ |
-| CH16-L10-S01 | CH16-L10 | dynpro-form-simulator | CH16 캡스톤·화면0100 PBO준비→좌석입력→SAVE(can_book 검증 S/E·화면유지)·BACK=LEAVE TO SCREEN0·EXIT=LEAVE PROGRAM·Enter 재실행방지 | ✅ |
-| CH16-L03-S01 | CH16-L03 | dynpro-screen-elements | 예매 화면 요소↔변수(Input·Check·Radio·Dropdown VRM·Button→OK_CODE) | ✅ |
-| CH16-L04-S01 | CH16-L04 | dict-transport-tunnel | TABLES work area↔화면 운반 터널(TABLES on/off·PBO 프로그램→화면·PAI 화면→프로그램·이름 불일치 시 ZCONCERT-CONCERT_ID 미운반 vs GV_SEATS 운반) | ✅ |
+| CH16-L09-S01 | CH16-L09 | screen-extension-designer | 화면 확장요소 4탭(Custom Control 이름매칭·Subscreen `CALL SUBSCREEN sub_area INCLUDING sy-repid '0110'`·OK field 없음→main·Tabstrip activetab/subscreen·Status Icon) | ✅ |
+| CH16-L10-S01 | CH16-L10 | dynpro-form-simulator | CH16 캡스톤·화면0100 PBO준비(상태 N/C)→좌석·고객명(GV_CUST)·상태 입력→전역변수 실시간 표시(gv_stat)→SAVE(can_book 검증 S/E·좌석 1 이상 별도 판정·화면유지)·BACK=LEAVE TO SCREEN0·EXIT=LEAVE PROGRAM·Enter 재실행방지(직전 SAVE 여부로 분기) | ✅ |
+| CH16-L03-S01 | CH16-L03 | dynpro-screen-elements | 예매 화면 요소↔변수(Input·Check·Radio·Dropdown VRM 상태 N/C·Button→OK_CODE)+표시전용(Text Field·Frame=연결 변수 없음) | ✅ |
+| CH16-L04-S01 | CH16-L04 | dict-transport-tunnel | TABLES work area↔화면 운반 터널(TABLES on/off→끄면 work area 소멸·보관값도 제거·PBO 프로그램→화면·PAI 화면→프로그램·ZCONCERT-CONCERT_ID 미운반 vs GV_SEATS 운반) | ✅ |
 | CH16-L05-S01 | CH16-L05 | input-help-priority-pov | 입력도움 우선순위 결정기(DDIC/화면값필터/직접)+POV 실험실(공연ID→회차 F4·DYNP_VALUES_READ 후보 좁힘→F4IF_INT_TABLE_VALUE_REQUEST) | ✅ |
 | CH17-L01-S01 | CH17-L01 | container-bind-stepper | CL_GUI_CUSTOM_CONTAINER 바인딩 3단계(Screen Painter 확인→PBO→CREATE OBJECT)·이름 매칭→go_cont initial→bound/오타 fail | ✅ |
 | CH17-L02-S01 | CH17-L02 | alv-readiness-panel | CL_GUI_ALV_GRID 생성 2단계+준비 체크리스트(go_cont/go_grid ready·데이터/fcat/display 비어있음→표 안보이는게 정상)·i_parent 비움 fail | ✅ |
@@ -463,21 +463,21 @@
 | f4-help-flow (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH14-L03-S01 | F4_CFG 주도 · F4→Help View 팝업→key 복귀·설명누락(outer 보존)·Export OFF 토글 · 다크(toggle base=surface) |
 | fk-maintenance-gate (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH14-L04-S01 | FKM_CFG 주도 · FK 토글→유지보수 input check·orphan 시연·SM30 grid mock · 다크(toggle base=surface) |
 | sm30-gate-checklist (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH14-L05-S01 | SGC_CFG 주도 · 게이트(테이블/유지보수/TMG/권한) 체크→SM30 실행·파이프라인·결과 grid · 다크 |
-| view-cluster-tree (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH14-L06-S01 | VCT_CFG 주도 · 상위(공연장) 선택→하위(좌석등급) 자동 좁힘·하위 추가(부모 맥락)·트리 카운트 · 다크 |
+| view-cluster-tree (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH14-L06-S01 | VCT_CFG 주도(parentNoun·childNoun) · 상위(공연) 선택→하위(회차) 자동 좁힘·하위 추가(부모 맥락)·트리 카운트 · 다크 |
 | se16n-tracker (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH14-L07-S01 | SE16_CFG 주도 · SM30 저장→SE16N(table/조건 토글)·원본 vs View inner-join 차이·0건 단정금지 · 다크 |
 | timeline-boundary (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH14-L08-S01 | TB_CFG 주도 · 지금/나중 경계 타임라인 카드·필터·나중 클릭→챕터 안내(R15 경계 시각화) · 다크 |
 | concert-register-console (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH14-L09-S01 | CRC_CFG 주도 · CH14 캡스톤 F4+SM30 저장+원본/View 비교+기준삭제 inner-join · 다크(btn base=surface) |
-| init-default-injector (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH15-L02-S01 | IDI_CFG 주도 · INITIALIZATION(1회 보존) vs OUTPUT(매번 덮어쓰기) 기본값 차이·모드 토글 · 다크 |
-| screen-modify-panel (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH15-L03-S01 | SMP_CFG 주도 · OUTPUT의 LOOP AT SCREEN/MODIFY SCREEN·변수 변경≠화면 반영(stale)·active 토글 · 다크 |
-| validation-gate-console (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH15-L04-S01 | VGC_CFG 주도 · 시나리오 검증→MESSAGE E(class·&1&2)·sy-msg* 표·START 잠금/통과 · 다크(chip base=surface) |
+| init-default-injector (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH15-L02-S01 | IDI_CFG 주도(defaultConc/userConc) · INITIALIZATION(1회 보존) vs OUTPUT(매번 덮어쓰기)·모드별 ① 안내 분기·header line→APPEND 조건표 · 다크 |
+| screen-modify-panel (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH15-L03-S01 | SMP_CFG 주도(advField=PA_ADV) · OUTPUT의 LOOP AT SCREEN/MODIFY SCREEN·변수 변경≠화면 반영(stale)·MODIFY 실행/생략 토글(work area active vs 화면 반영 2열) · 다크 |
+| validation-gate-console (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH15-L04-S01 | VGC_CFG 주도(msgClass·시나리오 on 필드) · 시나리오 검증→MESSAGE E(zmsg·&1&2)·sy-msg* 표·START 잠금/통과·오류 시 필드 잠금(전체=전부 열림 / ON=그 필드만) · 다크(chip base=surface) |
 | select-start-gate (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH15-L05-S01 | SSG_CFG 주도 · 검증 게이트→START-OF-SELECTION SELECT·조건별 결과·sy-subrc·이벤트 타임라인 · 다크 |
 | legacy-event-reader (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH15-L06-S01 | LER_CFG 주도 · 리포트 3종 시나리오 세그·이벤트 타임라인·조회/표시 위치맵·공식 obsolete 배지·비-LDB 필수 오해 경고 · 다크 |
 | dual-gate-auth-check (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH15-L07-S01 | DGA_CFG 주도 · 케이스 세그→존재(SELECT SINGLE)→권한(AUTHORITY-CHECK) 2관문 파이프·검증 상세(DB hit·subrc)·존재/권한 실패 색·문구 분리 · 다크 |
-| selscreen-reaction-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH15-L08-S01 | SRL_CFG 주도 · 4탭(ON BLOCK 날짜검증·RADIO·F1·F4) 인터랙션→이벤트 콘솔(dynpro PAI/POH/POV·ABAP event·F4목록 클릭→필드 운반 안내) · 다크 |
+| selscreen-reaction-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH15-L08-S01 | SRL_CFG 주도 · 4탭(ON BLOCK 날짜검증·RADIO 상세×31일 정합성 검증(실패/통과 양방향)·F1·F4) 인터랙션→이벤트 콘솔(dynpro PAI/POH/POV·ABAP event·F4목록 클릭→필드 운반 안내) · 다크 |
 | selscreen-layout-builder (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH15-L09-S01 | SLB_CFG 주도 · 가짜 선택화면 미리보기(프레임·체크박스·라디오·본문버튼·툴바)→버튼 클릭 SSCRFIELDS-UCOMM·sy-ucomm/COMMENT 판단 토글 경고 · 다크 |
-| option-switchboard (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH15-L10-S01 | OSB_CFG 주도 · SELECT-OPTIONS 옵션 4종 토글→화면 미리보기·내부 selection table 첫 행(disp 대소문자)·복수선택 표시·NO INTERVALS&!NO-EXTENSION caveat · 다크 |
-| selscreen-call-variant (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH15-L11-S01 | SCV_CFG 주도 · 표준화면(1000)→고급조건→보조화면(1100) modal CALL·Execute/Cancel→sy-subrc 0/4·Variant 칩 불러오기(유효/무효) · 다크 |
-| report-run-simulator (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH15-L12-S01 | RRS_CFG 주도 · CH15 캡스톤·시나리오 칩+so_stat 세그→▶실행→4 event 타임라인(pass/fail/lock)·검증 막힘 메시지·결과 ALV테이블/0건 S메시지 · 다크 |
+| option-switchboard (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH15-L10-S01 | OSB_CFG 주도 · SELECT-OPTIONS 옵션 4종 토글→화면 미리보기·selection table 행(disp 대소문자)·다중 선택 창 실동작(줄 추가/삭제·NO INTERVALS여도 High 살아 있음·NO-EXTENSION이면 버튼·창 사라짐) · 다크 |
+| selscreen-call-variant (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH15-L11-S01 | SCV_CFG 주도 · 표준화면(1000)→고급조건→보조화면(1100) modal CALL·Execute/Cancel→sy-subrc 0/4·Variant 저장(이름 입력→현재 pa_conc+적용 고급조건)·칩 불러오기 복원(유효/무효) · 다크 |
+| report-run-simulator (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH15-L12-S01 | RRS_CFG 주도(statuses=시드 정본 N/C·기본 N) · CH15 캡스톤·시나리오 칩+so_stat 세그→▶실행→4 event 타임라인(pass/fail/lock)·검증 막힘 메시지·결과 ALV테이블(seats)/0건 S메시지 · 다크 |
 | salv-grid-simulator | 2 | 공통(_engine)·자체 postHeight ✅ | CH11-L02-S01·CH11-L06-S01 (완료) | config 주입(SALV_CFG: itab·**alvVar**·cols·data·sumKey·code·**emptyGuard**) · ALV제목/토글 엔진설정 · 리셋=행순서·합계·readout까지 완전 복원 |
 | relationship-map | 1 | 공통 | _(미작성)_ | CSS-only |
 | state-change-grid | 1 | 공통(CSS-only)+_autoheight ✅ | CH06-L04-S03 | 스냅샷=마크업(DELETE ADJACENT DUPLICATES 함정) · cell-new/cell-del 강조 · .note 추가(다크 자동). *CH06-L06-S01은 감사 C042(헛체험)로 step-debugger 전환 — 이 엔진 소비 2→1* |
@@ -491,7 +491,7 @@
 | input-help-priority | 1 | 공통(CSS-only)+_autoheight ✅ | CH09-L07-S01 | F4 사다리(콘텐츠=마크업·빈 .js 제거) · **7단**(본문 서열과 1:1) |
 | write-output | 1 | 공통 ✅ | CH01-L04-S01 | WRITE 출력 파서 · config 주입 · **버그수정(따옴표無→오류)** |
 | write-format | 1 | 공통 ✅ | CH01-L05-S01 | WRITE 서식 토글 · config 주입 |
-| event-lifecycle-buildup | 1 | 공통(_engine·자체 mermaid+CDN/_vendor)·자체 postHeight ✅ | CH15-L01-S01 | bespoke 단일사용(STAGES inline) · #C15-1 stage1 inline DATA→classic 수정 |
+| event-lifecycle-buildup | 1 | 공통(_engine·자체 mermaid+CDN/_vendor)·자체 postHeight ✅ | CH15-L01-S01 | bespoke 단일사용(STAGES inline) · #C15-1 stage1 inline DATA→classic 수정 · 예제 변수 gv_ 접두어(CH15=전역 스코프) |
 | se38-first-program | 3 | 공통(_engine) ✅ | CH01-L02-S01 | 개발루프 상태머신(bespoke·단일사용·데이터 inline) |
 | se11-table-builder (신규) | 1 | 공통(_engine·STB_CFG)+_autoheight ✅ | CH07-L01-S01 | SE11 Transparent Table 생성 시뮬 · config 주도(fields/key/de/builtin · **선택 cfg.tech = Technical Settings 게이트, 부재 시 구동작 유지**) · 검사→활성화 라이프사이클·배지(신규/검사/활성)·설계도↔물리테이블 split·키 연속성/DE 검증 · 다크 · **showMsg(list, headOk): 경고 0건이어도 활성화 완료 문구 유지**(잘했을 때만 완료 문구가 사라지던 역전 수정, 5경로 회귀 확인) |
 | se11-create-entries (신규) | 1 | 공통(_engine·CE_CFG)+_autoheight ✅ | CH07-L02-S01 | Create Entries 손입력 훈련기 · config 주도(key/clients/seed) · 키 중복 거부·값 미검증 경고·클라이언트 분리 · 다크 · **seed는 선택**(비우면 빈 테이블 시작) · `#ce-reset` 있으면 **처음으로**(seed 복원) 연결, `.btn--reset`은 토큰 전용이라 _dark.css 무변동 |
@@ -509,14 +509,14 @@
 | alv-refresh-sync (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH17-L08-S01 | ARS_CFG 주도 · 내부/화면 2테이블·change(내부만 stale)·scroll·plain refresh(맨위)/stable refresh(위치유지)·3체크(데이터변경/화면갱신/위치보존) · 다크 |
 | alv-row-color-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH17-L09-S01 | ARC_CFG 주도 · seatsocc 편집→상태 badge·색코드 쓰기/info_fname 토글(good/bad)/표시→매진 행 색칠·3체크(색코드/필드명/표시) · 다크 |
 | process-flow-pbo-pai (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH16-L01-S01 | PBO/PAI 두 박자 순환(클릭 진행) |
-| dynpro-screen-elements (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH16-L03-S01 | 화면 요소↔변수 + FctCode→OK_CODE 시연 |
-| screen-painter-wiring (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH16-L02-S01 | SPW_CFG 주도 · 4패널(Layout/Element List/Flow Logic/ABAP Source) 연결 지도·시나리오로 깨기→활성화 오류(MODULE 누락·이름불일치·OK field) · 다크 |
+| dynpro-screen-elements (신규) | 1 | 공통(_engine)·자체 postHeight ✅ | CH16-L03-S01 | 화면 요소↔변수(상태 N/C·라디오 gv_grade) + FctCode→OK_CODE + 표시전용(Text Field·Frame=변수 없음) 3그룹 대조 |
+| screen-painter-wiring (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH16-L02-S01 | SPW_CFG 주도 · 4패널(Layout/Element List/Flow Logic/ABAP Source) 연결 지도·시나리오로 깨기→고장 유형 구분(MODULE 누락=활성화 단계 / 이름불일치·OK field=실행 중) · 다크 |
 | pbo-prep-stepper (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH16-L06-S01 | PPS_CFG 주도 · PBO 단계 스텝퍼(steps config)·잠금 토글·sy-dynnr/pfkey/title·LOOP AT SCREEN input=0 대기 vs MODIFY SCREEN 반영·미리보기 · 다크 |
 | okcode-branch-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH16-L07-S01 | OBL_CFG 주도 · PAI 버튼→ok_code/save_ok/CLEAR/CASE 추적·CLEAR 생략 시 okReg 유지→Enter 재실행(reexec red)·EXIT=LEAVE PROGRAM · 다크 |
 | toolbar-fcode-map (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH16-L08-S01 | TFM_CFG 주도 · GUI status 툴바·잠금→EXCLUDING(SAVE disabled)·버튼→OK_CODE→CASE(handled/unhandled 경고)·TITLEBAR WITH·sy-pfkey/title · 다크 |
-| screen-extension-designer (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH16-L09-S01 | SED_CFG 주도 · 4탭(Custom Control container_name 매칭·Subscreen OK field 없음→main flow·Tabstrip activetab↔subscreen·Status Icon 상태) · 다크 |
-| dynpro-form-simulator (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH16-L10-S01 | DFS_CFG 주도 · CH16 캡스톤·화면0100 미리보기(좌석 입력)·툴바→PAI(OK_CODE/save_ok/CLEAR/CASE)·can_book 검증 S/E·LEAVE TO SCREEN0/PROGRAM·Enter 재실행방지 · 다크 |
-| dict-transport-tunnel (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH16-L04-S01 | TABLES work area 운반 터널·TABLES 토글·PBO/PAI 방향·이름 일치 운반 vs 미운반(ZCONCERT-CONCERT_ID) · 다크 |
+| screen-extension-designer (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH16-L09-S01 | SED_CFG 주도(subArea=sub_area) · 4탭(Custom Control container_name 매칭·Subscreen `CALL SUBSCREEN <area> INCLUDING sy-repid '<번호>'`·OK field 없음→main flow·Tabstrip activetab↔subscreen·Status Icon 상태) · 다크 |
+| dynpro-form-simulator (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH16-L10-S01 | DFS_CFG 주도(statuses=시드 정본 N/C·cust) · CH16 캡스톤·화면0100 미리보기(좌석·고객명·상태 입력)·전역 변수 실시간 패널(gv_stat 반영)·툴바→PAI(OK_CODE/save_ok/CLEAR/CASE)·can_book 검증 S/E(좌석 1 이상 별도)·LEAVE TO SCREEN0/PROGRAM·Enter는 직전 SAVE 유무로 분기 · 다크 |
+| dict-transport-tunnel (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH16-L04-S01 | TABLES work area 운반 터널·TABLES 토글(끄면 work area·보관값 함께 소멸)·PBO/PAI 방향·이름 일치 운반 vs 미운반(ZCONCERT-CONCERT_ID) · 다크 |
 | input-help-priority-pov (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH16-L05-S01 | 입력도움 우선순위(3티어)+POV 후보 좁히기(공연ID→DYNP_VALUES_READ→F4IF_INT_TABLE_VALUE_REQUEST) · 다크 |
 | class-diagram | 0 (시각 레이어) | 공통 CSS-only ✅ | CH21-L01·L07·L10이 **스타일시트로 재사용** | UML 박스·인스턴스·상속 시각 + **공용 실행 패널**(.cd-run/.cd-run__btns/.cd-state/.cd-log — 색 100% var(--token)) · data-eng는 각 레슨 엔진 |
 | class-object-builder (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH21-L01-S01 | COB_CFG 주도 · NEW/메서드 호출/CLEAR/리셋 → objects[]·boundIdx 상태머신 → 객체 카드(누가 가리키는지)+참조 initial↔bound+피드백 · **initial 참조 호출 실패**(L01 흔한 실수 #1)를 체험으로 · 토큰 전용 · 다크 |

@@ -9,11 +9,11 @@
 | STRUCT (필수키·id) | 0 |
 | PREREQ (실존·전방참조) | 0 |
 | DUP-INTRO (중복 도입 선언) | 6 |
-| EARLY-USE — **REVIEW(요판정)** | 140 |
-| EARLY-USE — LOW(같은 챕터 인접) | 113 |
-| EARLY-USE — DECLARED(예고/선행 선언) | 59 |
+| EARLY-USE — **REVIEW(요판정)** | 146 |
+| EARLY-USE — LOW(같은 챕터 인접) | 114 |
+| EARLY-USE — DECLARED(예고/선행 선언) | 61 |
 | R6 경계 (classic 구간 modern 토큰) | 0 |
-| 검사 규모 | 레슨 270 · 추적 키워드 412 |
+| 검사 규모 | 레슨 270 · 추적 키워드 413 |
 
 ## STRUCT
 - 없음
@@ -87,36 +87,42 @@
 - CH12-L01:79 — `Multiple Selection` (도입 = CH12-L04)
 - CH12-L01:79 — `Exclude` (도입 = CH12-L04)
 - CH12-L07:108 — `JOIN` (도입 = CH13-L01)
-- CH14-L02:45 — `CDS View Entity` (도입 = CH23-L01)
-- CH14-L05:50 — `Dynpro` (도입 = CH16-L01)
-- CH14-L08:22 — `Association` (도입 = CH23-L03)
-- CH14-L08:44 — `Annotation` (도입 = CH23-L04)
-- CH14-L08:23 — `RAP` (도입 = CH24-L01)
-- CH14-L09:63 — `Report Event` (도입 = CH15-L01)
-- CH15-L01:26 — `AT SELECTION-SCREEN` (도입 = CH15-L04)
-- CH15-L01:27 — `PAI` (도입 = CH15-L04)
+- CH13-L08:52 — `Global Class` (도입 = CH21-L01)
+- CH14-L01:48 — `TABLES` (도입 = CH16-L04)
+- CH14-L02:67 — `CDS View Entity` (도입 = CH23-L01)
+- CH14-L03:45 — `TABLES` (도입 = CH16-L04)
+- CH14-L04:60 — `SE16N` (도입 = CH14-L07)
+- CH14-L04:70 — `TABLES` (도입 = CH16-L04)
+- CH14-L05:79 — `Dynpro` (도입 = CH16-L01)
+- CH14-L05:45 — `Screen Number` (도입 = CH16-L02)
+- CH14-L08:45 — `RAP` (도입 = CH24-L01)
+- CH14-L09:100 — `Report Event` (도입 = CH15-L01)
+- CH15-L01:30 — `AT SELECTION-SCREEN` (도입 = CH15-L04)
+- CH15-L01:31 — `PAI` (도입 = CH15-L04)
 - CH15-L01:4 — `START-OF-SELECTION` (도입 = CH15-L05)
-- CH15-L01:29 — `END-OF-SELECTION` (도입 = CH15-L06)
-- CH15-L01:38 — `PROCESS BEFORE OUTPUT` (도입 = CH16-L06)
-- CH15-L01:39 — `PROCESS AFTER INPUT` (도입 = CH16-L07)
-- CH15-L02:42 — `START-OF-SELECTION` (도입 = CH15-L05)
-- CH15-L04:52 — `ON BLOCK` (도입 = CH15-L08)
-- CH15-L04:53 — `ON RADIOBUTTON GROUP` (도입 = CH15-L08)
-- CH15-L04:53 — `Radiobutton` (도입 = CH16-L03)
-- CH15-L09:61 — `Dynpro` (도입 = CH16-L01)
-- CH15-L09:110 — `Checkbox` (도입 = CH16-L03)
-- CH15-L09:46 — `Radiobutton` (도입 = CH16-L03)
+- CH15-L01:33 — `END-OF-SELECTION` (도입 = CH15-L06)
+- CH15-L01:42 — `PROCESS BEFORE OUTPUT` (도입 = CH16-L06)
+- CH15-L01:43 — `PROCESS AFTER INPUT` (도입 = CH16-L07)
+- CH15-L02:45 — `START-OF-SELECTION` (도입 = CH15-L05)
+- CH15-L03:52 — `AUTHORITY-CHECK` (도입 = CH15-L07)
+- CH15-L04:64 — `ON BLOCK` (도입 = CH15-L08)
+- CH15-L04:65 — `ON RADIOBUTTON GROUP` (도입 = CH15-L08)
+- CH15-L04:65 — `Radiobutton` (도입 = CH16-L03)
+- CH15-L09:96 — `Module Pool` (도입 = CH16-L01)
+- CH15-L09:131 — `Checkbox` (도입 = CH16-L03)
+- CH15-L09:59 — `Radiobutton` (도입 = CH16-L03)
 - CH15-L10:28 — `Radiobutton` (도입 = CH16-L03)
-- CH15-L12:137 — `Module Pool` (도입 = CH16-L01)
-- CH16-L01:33 — `PROCESS BEFORE OUTPUT` (도입 = CH16-L06)
-- CH16-L01:34 — `PROCESS AFTER INPUT` (도입 = CH16-L07)
-- CH16-L01:24 — `OK_CODE` (도입 = CH16-L07)
-- CH16-L02:31 — `PROCESS BEFORE OUTPUT` (도입 = CH16-L06)
-- CH16-L02:33 — `PROCESS AFTER INPUT` (도입 = CH16-L07)
-- CH16-L02:24 — `OK_CODE` (도입 = CH16-L07)
+- CH15-L12:153 — `Module Pool` (도입 = CH16-L01)
+- CH16-L01:48 — `PROCESS BEFORE OUTPUT` (도입 = CH16-L06)
+- CH16-L01:49 — `PROCESS AFTER INPUT` (도입 = CH16-L07)
+- CH16-L01:20 — `OK_CODE` (도입 = CH16-L07)
+- CH16-L02:35 — `PROCESS BEFORE OUTPUT` (도입 = CH16-L06)
+- CH16-L02:37 — `PROCESS AFTER INPUT` (도입 = CH16-L07)
+- CH16-L02:28 — `OK_CODE` (도입 = CH16-L07)
 - CH16-L02:5 — `Layout` (도입 = CH17-L05)
 - CH16-L03:14 — `OK_CODE` (도입 = CH16-L07)
 - CH16-L09:32 — `Global Class` (도입 = CH21-L01)
+- CH16-L10:31 — `Layout` (도입 = CH17-L05)
 - CH16-L10:7 — `COMMIT WORK` (도입 = CH25-L02)
 - CH17-L01:27 — `Field Catalog` (도입 = CH17-L04)
 - CH17-L01:28 — `Layout` (도입 = CH17-L05)
@@ -193,32 +199,33 @@
 - CH11-L01:42 — `factory` (도입 = CH11-L02)
 - CH11-L02:95 — `get_functions` (도입 = CH11-L03)
 - CH11-L02:95 — `set_all` (도입 = CH11-L03)
-- CH13-L01:73 — `LEFT OUTER JOIN` (도입 = CH13-L02)
-- CH13-L02:61 — `GROUP BY` (도입 = CH13-L03)
-- CH13-L03:52 — `HAVING` (도입 = CH13-L04)
-- CH13-L04:41 — `ORDER BY` (도입 = CH13-L05)
-- CH13-L05:50 — `FOR ALL ENTRIES` (도입 = CH13-L06)
-- CH14-L01:72 — `Projection View` (도입 = CH14-L02)
-- CH14-L02:55 — `Help View` (도입 = CH14-L03)
-- CH14-L03:62 — `Maintenance View` (도입 = CH14-L04)
-- CH14-L04:15 — `SM30` (도입 = CH14-L05)
-- CH14-L05:62 — `View Cluster` (도입 = CH14-L06)
-- CH15-L01:25 — `INITIALIZATION` (도입 = CH15-L02)
-- CH15-L01:26 — `AT SELECTION-SCREEN OUTPUT` (도입 = CH15-L03)
-- CH15-L01:26 — `PBO` (도입 = CH15-L03)
-- CH15-L02:35 — `AT SELECTION-SCREEN OUTPUT` (도입 = CH15-L03)
-- CH15-L02:35 — `AT SELECTION-SCREEN` (도입 = CH15-L04)
+- CH13-L01:148 — `LEFT OUTER JOIN` (도입 = CH13-L02)
+- CH13-L02:156 — `GROUP BY` (도입 = CH13-L03)
+- CH13-L03:127 — `HAVING` (도입 = CH13-L04)
+- CH13-L04:52 — `ORDER BY` (도입 = CH13-L05)
+- CH13-L05:82 — `FOR ALL ENTRIES` (도입 = CH13-L06)
+- CH14-L01:127 — `Projection View` (도입 = CH14-L02)
+- CH14-L02:78 — `Help View` (도입 = CH14-L03)
+- CH14-L03:25 — `Maintenance View` (도입 = CH14-L04)
+- CH14-L04:23 — `SM30` (도입 = CH14-L05)
+- CH14-L04:28 — `View Cluster` (도입 = CH14-L06)
+- CH14-L05:105 — `View Cluster` (도입 = CH14-L06)
+- CH15-L01:29 — `INITIALIZATION` (도입 = CH15-L02)
+- CH15-L01:30 — `AT SELECTION-SCREEN OUTPUT` (도입 = CH15-L03)
+- CH15-L01:30 — `PBO` (도입 = CH15-L03)
+- CH15-L02:38 — `AT SELECTION-SCREEN OUTPUT` (도입 = CH15-L03)
+- CH15-L02:38 — `AT SELECTION-SCREEN` (도입 = CH15-L04)
 - CH15-L03:6 — `AT SELECTION-SCREEN` (도입 = CH15-L04)
-- CH15-L03:51 — `START-OF-SELECTION` (도입 = CH15-L05)
-- CH15-L04:94 — `START-OF-SELECTION` (도입 = CH15-L05)
-- CH15-L05:50 — `END-OF-SELECTION` (도입 = CH15-L06)
-- CH16-L01:52 — `Screen Number` (도입 = CH16-L02)
-- CH16-L01:11 — `Screen Painter` (도입 = CH16-L02)
-- CH16-L01:46 — `Flow Logic` (도입 = CH16-L02)
-- CH16-L03:91 — `TABLES` (도입 = CH16-L04)
-- CH16-L06:72 — `OK_CODE` (도입 = CH16-L07)
-- CH16-L08:77 — `Custom Control` (도입 = CH16-L09)
-- CH16-L08:77 — `Tabstrip` (도입 = CH16-L09)
+- CH15-L03:71 — `START-OF-SELECTION` (도입 = CH15-L05)
+- CH15-L04:127 — `START-OF-SELECTION` (도입 = CH15-L05)
+- CH15-L05:55 — `END-OF-SELECTION` (도입 = CH15-L06)
+- CH16-L01:80 — `Screen Number` (도입 = CH16-L02)
+- CH16-L01:13 — `Screen Painter` (도입 = CH16-L02)
+- CH16-L01:66 — `Flow Logic` (도입 = CH16-L02)
+- CH16-L03:106 — `TABLES` (도입 = CH16-L04)
+- CH16-L06:85 — `OK_CODE` (도입 = CH16-L07)
+- CH16-L08:92 — `Custom Control` (도입 = CH16-L09)
+- CH16-L08:92 — `Tabstrip` (도입 = CH16-L09)
 - CH17-L02:23 — `Field Catalog` (도입 = CH17-L04)
 - CH17-L03:15 — `Field Catalog` (도입 = CH17-L04)
 - CH17-L04:84 — `Layout` (도입 = CH17-L05)
@@ -327,11 +334,13 @@
 - CH12-L03:18 — `TABLES` (도입 = CH16-L04) [advanceUse 선언]
 - CH12-L07:13 — `START-OF-SELECTION` (도입 = CH15-L05) [advanceUse 선언]
 - CH12-L07:12 — `TABLES` (도입 = CH16-L04) [advanceUse 선언]
-- CH14-L08:14 — `CDS View Entity` (도입 = CH23-L01) [foreshadow 선언]
-- CH15-L08:14 — `Radiobutton` (도입 = CH16-L03) [advanceUse 선언]
-- CH15-L09:61 — `TABLES` (도입 = CH16-L04) [advanceUse 선언]
-- CH16-L06:12 — `SET PF-STATUS` (도입 = CH16-L08) [advanceUse 선언]
-- CH16-L06:13 — `SET TITLEBAR` (도입 = CH16-L08) [advanceUse 선언]
+- CH14-L08:30 — `CDS View Entity` (도입 = CH23-L01) [foreshadow 선언]
+- CH15-L08:29 — `RADIOBUTTON GROUP` (도입 = CH15-L09) [advanceUse 선언]
+- CH15-L08:16 — `Radiobutton` (도입 = CH16-L03) [advanceUse 선언]
+- CH15-L09:75 — `TABLES` (도입 = CH16-L04) [advanceUse 선언]
+- CH16-L06:14 — `SET PF-STATUS` (도입 = CH16-L08) [advanceUse 선언]
+- CH16-L06:15 — `SET TITLEBAR` (도입 = CH16-L08) [advanceUse 선언]
+- CH16-L07:86 — `GUI Status` (도입 = CH16-L08) [foreshadow 선언]
 - CH23-L01:107 — `DCL` (도입 = CH23-L06) [foreshadow 선언]
 - CH24-L01:35 — `Validation` (도입 = CH24-L07) [foreshadow 선언]
 - CH24-L01:35 — `Determination` (도입 = CH24-L07) [foreshadow 선언]

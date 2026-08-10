@@ -1,0 +1,80 @@
+{
+  "agent": "AG09",
+  "model": "opus",
+  "target": "CH13",
+  "persona_ack": "나는 AG09 — ABAP 정적 검사기를 시늉하는 코드 전용 감사자다. 산문·서술은 판정 대상에서 제외하고 ```abap 펜스 블록만 줄 단위로 봤다(① 활성화 차단급 문법 ② 네이밍 규약 gv_/gs_/gt_ vs lv_/ls_/lt_·pa_·so_·ty_/ts_/tt_ ③ classic 경계(CH01~17 modern 문법 금지·CH01~18 New Open SQL 금지) ④ 주석·출력 문자열의 명백한 오류). 읽기 전용·블라인드 원칙을 지켜 대상 9개 파일만 열었고, 다른 감사자 보고나 과거 감사 산출물은 열지 않았다. 실행 환경이 없으므로 컴파일 확신이 아니라 정적 판단이며 confidence로 정직하게 구분했다.",
+  "method": "Read 도구로 대상 9개 파일 전문을 읽고 ```abap 펜스 블록(총 10개: L01 2개·L02 2개·L03 2개·L04 1개·L05 1개·L06 1개·L08 1개, _chapter.md·L07은 코드 블록 없음)만 추출해 줄 단위로 점검. 점검 항목 = 절 순서(SELECT-FROM-JOIN/ON-INTO-WHERE-GROUP BY-HAVING-ORDER BY, FOR ALL ENTRIES 위치), 마침표 유무, 대상 변수 선언 유무, 별칭 정의 유무, SELECT 리스트↔대상 구조 컴포넌트 대응, 집계/DISTINCT 제약, classic 위반 토큰(@·콤마 구분·인라인 DATA()·VALUE·NEW·+=·|…|) 전수 스캔, 접두어 규약 대조, 주석 문자열과 코드 대조. 셸·웹·외부 네트워크 미사용.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L08.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L08.md",
+      "quote": "  LEFT OUTER JOIN zbooking AS b\n    ON c~concert_id = b~concert_id AND b~status <> 'C'",
+      "category": "구문 오류(classic OUTER JOIN ON 제약)",
+      "severity": "높음",
+      "confidence": "추정",
+      "claim": "챕터 마무리 실습의 핵심 SELECT가 LEFT OUTER JOIN의 ON 조건에 `b~status <> 'C'`(부등호 + 리터럴 비교)를 넣었다. classic Open SQL의 OUTER JOIN ON 조건은 전통적으로 `=`(EQ) 비교만, 그리고 AND로만 연결하도록 제한돼 있어 구문검사에서 막힐 수 있다(활성화 차단급).",
+      "evidence": "① ABAP OUTER JOIN 제약 — LEFT/RIGHT OUTER JOIN의 ON 조건은 논리연산자 AND만, 비교연산자는 = 만 허용하고 각 비교가 오른쪽 테이블 컬럼을 포함해야 한다는 것이 classic 시절의 널리 알려진 규칙이다(INNER JOIN에는 이 제약이 없다). 여기 `b~status <> 'C'`는 (a) `=`가 아닌 `<>`이고 (b) 테이블 간 조인 조건이 아니라 오른쪽 테이블 컬럼과 리터럴의 비교라 두 조건 모두에 걸린다. ② 이 챕터는 _chapter.md의 `intro`부터 L01 콜아웃(\"이 챕터는 전부 classic이다\")까지 classic 전용을 명시하므로 modern/신 구문의 완화된 규칙에 기댈 수 없다. ③ 단순히 WHERE로 옮기는 것은 해법이 아니다 — CH13-L02가 직접 경고한 함정(\"LEFT인데 WHERE로 오른쪽 필터 → 매칭 없는 행이 걸러질 수 있다\")에 정확히 걸려 예매 없는 공연이 사라지고, 이 실습의 존재 이유인 LEFT 보존이 깨진다. ④ 실행 환경이 없어 릴리스별 구문검사 동작을 확인하지 못했으므로 confidence=추정으로 둔다(신 구문·최신 릴리스에서는 완화된 것으로 알려져 있어 판정이 릴리스에 의존한다).",
+      "suggestion": "classic 안에서 안전한 형태로 재설계할 것. (a) 취소 제외 조건을 ON에서 빼고 `ON c~concert_id = b~concert_id`만 남긴 뒤 취소분을 ABAP 단계에서 제외하거나, (b) 예매를 `WHERE status <> 'C'`로 먼저 내부 테이블에 담고 공연 기준으로 합치는 2단계(FAE 또는 LOOP 집계)로 바꾸거나, (c) 실습 데이터에서 취소 상태 자체를 빼고 조건을 없앤다. 어느 쪽이든 \"예매 없는 공연도 남는다\"는 LEFT 취지가 유지되는지 재확인이 필요하다. 그대로 두려면 최소한 대상 릴리스에서 구문검사가 통과하는지 실기 확인 후, ON에 비조인 조건을 넣는 것이 classic에서 제약이 있다는 주석을 덧붙일 것."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L01.md",
+      "quote": "  INTO CORRESPONDING FIELDS OF TABLE gt_out\n  WHERE f~seatsocc > 0.",
+      "category": "미선언 변수(대상 내부 테이블·구조 미제시)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L01~L06의 실행 코드 블록 전부가 SELECT 대상 내부 테이블(`gt_out`·`gt_sum`·`gt_carr`·`gt_flight`)을 선언 없이 사용한다. 8개 레슨 중 TYPES/DATA를 보여 주는 곳은 L08 하나뿐이라, 앞 6개 레슨의 코드는 그대로 붙여넣으면 \"gt_out is not defined\"류로 활성화되지 않는다.",
+      "evidence": "① 전수 확인 — L01 gt_out, L02 gt_out·lt_out, L03 gt_sum·gt_carr, L04 gt_sum, L05 gt_flight, L06 gt_carr·gt_flight가 등장하지만 CH13 어느 파일에도 이들의 DATA/TYPES 선언이 없다(L06만 `\" 전제: gt_carr …에 carrid들이 있음` 주석으로 존재를 말할 뿐 구조는 안 보여 준다). ② 단순한 조각 관례 문제로 넘기기 어려운 이유 — `INTO CORRESPONDING FIELDS OF TABLE`은 대상 구조의 **컴포넌트 이름**이 SELECT 컬럼/별칭과 일치해야만 값이 담긴다. 특히 L03은 본문에서 \"결과 구조에 `cnt`, `total` 같은 별칭 필드를 둔다\"고 요구해 놓고 그 구조를 끝내 보여 주지 않아, 입문자는 `cnt`·`total`을 가진 구조를 스스로 만들 근거가 없다(이름이 하나라도 어긋나면 조용히 초기값이 담겨 디버깅이 어려운 유형이다). ③ L08은 같은 챕터에서 `TYPES: BEGIN OF ts_stat … DATA: lt_stat TYPE TABLE OF ts_stat`으로 선언을 제시하므로, 앞 레슨들의 생략은 의도된 표기 규약이라기보다 누락에 가깝다.",
+      "suggestion": "최소 한 곳(L01 최초 JOIN 예제)에서 대상 구조를 완결형으로 보여 줄 것 — 예: `TYPES: BEGIN OF ts_out, carrid …, connid …, carrname …, END OF ts_out.` + `DATA gt_out TYPE TABLE OF ts_out.`. 집계를 처음 다루는 L03에는 별칭 `cnt`·`total`과 이름이 일치하는 구조를 반드시 함께 제시(합계 오버플로 경고와 짝을 이루도록 타입도 명시). 이후 레슨은 \"L01에서 만든 구조를 그대로 쓴다\"는 한 줄로 재사용을 밝히면 중복 없이 해결된다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L02.md",
+      "quote": "  INTO CORRESPONDING FIELDS OF TABLE lt_out.",
+      "category": "네이밍 규약(스코프 접두어)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "같은 레슨의 첫 코드 블록은 `gt_out`인데 두 번째(INNER+LEFT 혼합) 블록만 `lt_out`으로 바뀐다. 두 블록 모두 FORM/METHOD 같은 로컬 스코프 표시가 전혀 없는 프로그램 최상위 조각이므로 `lt_`는 규약 위반이자 한 레슨 안의 자기모순이다.",
+      "evidence": "① CH13-L02 19~25행 블록은 `INTO CORRESPONDING FIELDS OF TABLE gt_out.`, 49~57행 블록은 `INTO CORRESPONDING FIELDS OF TABLE lt_out.` — 같은 파일에서 같은 역할의 대상 테이블 접두어가 갈린다. ② 접두어 규약상 `lv_/ls_/lt_`는 FORM/METHOD 내부(로컬 스코프)에서 선언한 것에만 쓰고, 그 밖의 선언은 사실상 전역이라 `gt_`다. 두 블록 어디에도 FORM/ENDFORM·METHOD/ENDMETHOD가 없어 로컬 근거가 없다. ③ 챕터 전체 대조 — L01·L03·L04·L05·L06은 모두 `gt_*`를 쓰므로 `lt_out`이 유일한 이탈이다(L08의 `lt_stat`/`lo_alv`는 별건으로 seq 4에 기록). 입문자는 접두어 g/l이 스코프를 뜻한다고 배운 직후라 근거 없는 혼용이 그 학습을 무너뜨린다.",
+      "suggestion": "`lt_out` → `gt_out`으로 통일. (혼합 JOIN 예제를 굳이 로컬 스코프로 보이고 싶다면 FORM/ENDFORM 프레임을 함께 보여 줘야 `lt_`가 정당해지지만, CH13의 다른 예제와 결이 어긋나므로 `gt_out` 통일을 권한다.)"
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L08.md",
+      "quote": "DATA: lt_stat TYPE TABLE OF ts_stat,\n      lo_alv  TYPE REF TO cl_salv_table.",
+      "category": "네이밍 규약(스코프 접두어)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "실습 코드가 프로그램 최상위(TYPES → DATA → 실행문 순의 리포트 본문 형태)인데도 로컬 접두어 `lt_`·`lo_`를 쓴다. 최상위 선언은 사실상 전역이므로 `gt_stat`·`go_alv`가 맞다.",
+      "evidence": "① 코드 블록 어디에도 FORM/ENDFORM, METHOD/ENDMETHOD, 심지어 호출부조차 없다 — `TYPES:` → `DATA:` → `SELECT` → `TRY.`가 곧장 이어지는 전형적인 SE38 리포트 본문 구조라, 로컬 스코프로 읽을 근거가 없다. ② 접두어 규약상 `lv_/ls_/lt_`는 FORM/METHOD 안에서 선언한 것 전용이다. ③ 반면 같은 블록의 `TYPES: BEGIN OF ts_stat`은 구조 타입 접두어 `ts_`로 규약을 정확히 지켜, 접두어 체계를 알고 쓰면서 스코프 문자만 어긋난 실수로 보인다. ④ 같은 챕터 L01·L03·L04·L05·L06이 모두 `gt_*`를 쓰므로 챕터 내부 일관성도 깨진다.",
+      "suggestion": "`lt_stat` → `gt_stat`, `lo_alv` → `go_alv`로 바꾸고 본문·과제 서술(2번 과제의 LOOP 설명 등)에서 같은 이름을 쓰는 곳이 있으면 함께 맞출 것. 만약 이 실습을 의도적으로 서브루틴 안에서 돌릴 계획이라면 FORM/ENDFORM 프레임을 코드에 실제로 넣어 `lt_`/`lo_`가 성립하게 만들 것(둘 중 하나로 확정 필요)."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L01.md",
+      "quote": "  ON  b~concert_id = pf~concert_id",
+      "category": "의사코드",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'조인 조건엔 전체 키가 등장해야' 절의 코드 블록은 ON 절만 떼어낸 축약 예시인데 의사코드/조각이라는 표기가 없고, 별칭 `b`·`pf`가 이 레슨 어디에서도 정의되지 않는다(대응 테이블 `zbooking`·`zperf`가 L01에 한 번도 등장하지 않는다).",
+      "evidence": "① 블록 전체가 `ON …` / `AND …` 두 줄뿐으로 SELECT·FROM·마침표가 없다 — 완결 문장이 아니다. ② 별칭 `b`/`pf`는 다음 레슨(CH13-L02)의 혼합 JOIN 예제에서야 `FROM zbooking AS b … LEFT OUTER JOIN zperf AS pf`로 정의된다. L01만 읽는 시점에서는 정의되지 않은 별칭이다(바로 앞 L01의 정식 예제는 별칭이 `f`/`s`라 연결 고리도 없다). ③ 빌드가 fenced 코드를 줄번호 달린 복사 가능한 코드 블록으로 렌더링하므로, 입문자는 이 두 줄을 실행 가능한 코드로 오인해 복사할 수 있다. ④ 지침에 따라 축약 예시는 문법 잣대를 완화해 category=\"의사코드\"로만 기록한다(문법 결함으로 승격하지 않음).",
+      "suggestion": "조각임을 드러낼 것 — 블록 앞에 \"(ON 절만 발췌)\" 같은 캡션을 달거나, `SELECT … FROM zbooking AS b INNER JOIN zperf AS pf` 헤더를 한 줄 얹어 별칭이 어디서 나온 이름인지 보이게 한다. 혹은 이미 쓴 `f`/`s` 별칭의 SFLIGHT/SCARR 맥락으로 예시를 바꿔 레슨 안에서 자립하게 만들어도 된다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "코드 품질은 전반적으로 양호하다. classic 경계는 완벽하다 — 10개 코드 블록 전수 스캔에서 `@`·콤마 구분·인라인 DATA()·VALUE·NEW·+=·문자열 템플릿이 단 한 건도 없었고, 절 순서(SELECT→FROM→JOIN/ON→INTO→WHERE→GROUP BY→HAVING, ORDER BY 필드+ASCENDING/DESCENDING, FOR ALL ENTRIES를 WHERE 앞에 배치)도 classic 표준을 정확히 지켰다. `COUNT( * )`의 괄호 공백, 집계 별칭을 INTO CORRESPONDING FIELDS와 짝짓는 방식, HAVING에서 별칭이 아닌 집계식을 다시 쓴 점, FAE의 `IS NOT INITIAL` 가드, L08의 `cl_salv_table=>factory( IMPORTING r_salv_table = … CHANGING t_table = … )` 시그니처와 `CATCH cx_salv_msg` 매칭까지 모두 옳다. 주석·문자열과 코드가 어긋난 곳도 없었다. 결함 5건은 대부분 국소 수정으로 끝난다: 스코프 접두어 이탈 2건(L02 `lt_out`, L08 `lt_stat`/`lo_alv` — 챕터의 나머지는 전부 `gt_`라 명백한 일탈), L01~L06 대상 내부 테이블 선언 부재 1건(특히 L03이 `cnt`·`total` 구조를 요구만 하고 안 보여 준다), L01의 표기 없는 ON 절 조각 1건. 유일하게 판단이 필요한 것은 L08의 `ON … AND b~status <> 'C'`로, classic OUTER JOIN의 ON 조건 제약(= 비교·AND만)에 걸릴 가능성이 높고 WHERE로 옮기면 L02가 경고한 LEFT 보존 함정에 그대로 빠지므로 단순 치환이 아니라 예제 재설계가 필요할 수 있다 — 실행 환경이 없어 릴리스별 구문검사 확인을 못 했으므로 confidence=추정으로 남긴다. 억지 발견을 피하기 위해 SUM 결과 타입 적합성(zbooking-seats 타입 미확인), L03 `gt_carr`와 L06 `gt_carr-carrid`의 라인 타입 정합성(둘 다 각자 성립 가능) 등 확인 불가 항목은 결함으로 올리지 않았다."
+  }
+}

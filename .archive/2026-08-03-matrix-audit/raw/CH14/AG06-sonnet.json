@@ -1,0 +1,48 @@
+{
+  "agent": "AG06",
+  "model": "sonnet",
+  "target": "CH14",
+  "persona_ack": "20년차 SAP ABAP 아키텍트(ECC~S/4HANA 개발·운영·성능·이관 경험)로서 CH14 'Classic DDIC View·유지보수 객체' 9개 레슨(L01~L09)과 _chapter.md를 감사함. Database View·Projection View·Help View·Maintenance View·TMG/SM30·View Cluster·SE16N·CDS 예고까지 DDIC 개념·T-code·화면 흐름의 기술적 정확성을 실무 기준으로 대조함.",
+  "method": "대상 10개 .md 파일 전문을 파일시스템 Read로 직접 열람해 원문을 그대로 대조·인용. ABAP Dictionary(Database/Projection/Help/Maintenance View, Foreign Key, TMG, View Cluster) 실무 지식과 코드·서술을 비교 검증. 모든 finding.quote는 PowerShell로 대상 파일 원문에 대해 정확 일치(exact substring)를 재확인한 뒤 확정(1차 초안에서 인용 오류 1건을 자체 발견해 해당 finding을 폐기함). 지침에 따라 웹 검색·브라우저 실행·임베드 위젯 구동은 사용하지 않음(정적 텍스트 기반 감사).",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L01.md",
+      "quote": "SELECT * FROM zv_perf",
+      "category": "안티패턴 — SELECT * 미교정",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "View를 읽는 첫 예제가 SELECT *로 전체 컬럼을 가져오는데, 이는 실무 성능·유지보수 관례(필요 필드만 나열)에 어긋나고 같은 레슨·챕터 자체가 강조하는 '필요한 필드만 노출/사용' 원칙과도 모순된다.",
+      "evidence": "L01 코드(`SELECT * FROM zv_perf INTO TABLE gt_perf.`)와 L02 코드(`SELECT * FROM zpv_booking_basic INTO TABLE gt_basic.`) 모두 SELECT *를 아무 caveat 없이 쓴다. 그런데 L01의 '흔한 실수와 점검'은 바로 'View Field 과다 노출 → 실제 읽는 필드만 노출한다'고 못박고, L02 전체가 '불필요한 필드를 걷어내는' Projection View를 가르친다. 정작 그 View들을 읽는 ABAP 코드는 전체 컬럼을 다시 긁어온다. 반면 챕터 마지막 실습 L09는 `SELECT concert_id perf_no perf_date artist venue FROM zv_perf ...`처럼 필드를 나열해 실무 표준을 따른다 — 즉 저자가 원칙 자체는 알고 있으나 도입부 예제에 반영하지 않았다.",
+      "suggestion": "L01·L02 코드 예제를 L09처럼 필요한 필드만 나열하는 형태로 바꾸거나, 최소한 '실무에서는 SELECT * 대신 필요한 필드만 나열한다(성능·스키마 변경 내성)'는 한 줄 caveat를 코드 옆에 추가한다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L02.md",
+      "quote": "Projection View `ZPV_BOOKING_BASIC`은 업무 여섯 필드만 노출할 수 있다.",
+      "category": "사실 오류 — DDIC 오브젝트 명명 길이 제한",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "예제로 쓰인 뷰 이름 `ZPV_BOOKING_BASIC`은 17자로, 클래식 ABAP Dictionary 테이블/뷰 오브젝트명의 16자 제한을 넘어 실제 SE11에서 그대로 만들 수 없는 이름이다.",
+      "evidence": "Z-P-V-_-B-O-O-K-I-N-G-_-B-A-S-I-C를 세면 17자다. 클래식 DDIC의 테이블·뷰 이름 필드는 커스터머(Z/Y) 네임스페이스도 예외 없이 16자로 고정돼 있다(오래전부터 버전 무관하게 유지). 같은 챕터의 다른 오브젝트명 — zconcert(8자)·zperf(5자)·zbooking(8자)·ZV_PERF(7자)·ZHV_CONCERT(11자)·ZSH_CONCERT(11자) — 은 모두 여유 있게 16자 이내라, 이 이름만 넘긴 건 의도한 설계가 아니라 실수로 보인다.",
+      "suggestion": "16자 이하로 줄인다. 예: `ZPV_BOOK_BASIC`(14자) 또는 `ZPV_BOOKING`(11자). 본문과 코드블록의 소문자 `zpv_booking_basic`도 함께 바꾼다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH14 9개 레슨의 핵심 DDIC 개념 설명은 대체로 정확하다 — Database View(inner join·비저장·재사용)와 Projection View(단일 테이블·필드 축소·DB뷰 미생성)의 구분, Help View(F4 전용·primary table 보존)와 Maintenance View(ABAP SQL 비대상·Foreign Key 기반·extended table maintenance)의 목적 차이, TMG/SM30·SE54/SM34 View Cluster·SE16N의 T-code·화면 흐름, Foreign Key가 SELECT에서 자동 평가되지 않는다는 점, SE16N 운영 데이터 직접 편집 위험 경고, CDS로의 예고(L08) 모두 실무 지식과 부합한다. 다만 두 가지를 짚었다: (1) L01·L02의 SELECT * 예제가 같은 챕터가 가르치는 '필요한 필드만 노출' 원칙과 모순되는 채 교정 없이 제시됨(L09는 필드를 나열해 대조된다), (2) L02의 뷰 이름 ZPV_BOOKING_BASIC이 클래식 DDIC 16자 제한을 넘는 17자로, 실제로 그 이름으로는 생성할 수 없음. 둘 다 치명적이지 않고 국소적으로 고치면 되는 수준이라 재집필·보강보다 경미 수정이 적절하다. (참고: L05의 TMG 미생성 오류 서술은 최초 검토에서 오류로 의심했으나, 원문을 다시 대조한 결과 '유지보수 불가'로 이미 정확히 서술되어 있어 해당 의심은 기각했다.)"
+  }
+}

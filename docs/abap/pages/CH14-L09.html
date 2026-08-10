@@ -41,20 +41,66 @@
       <article class="prose">
 <section class="lblock"><h2>🎫 등록과 확인을 하나로</h2>
 <p>도구를 따로따로 알면 실무 감각이 안 생긴다. Database View는 조회에, Projection View는
-필드 노출 축소에, Help View는 F4에, Maintenance View·TMG는 유지보수 화면에 쓴다. 이
-실습은 이 도구들을 <strong>&quot;공연 등록과 확인&quot;</strong> 이라는 하나의 흐름으로 묶는다.</p>
+필드 노출 축소에, Help View는 F4에, Maintenance View와 TMG는 유지보수 화면에 쓴다. 이
+실습은 이 도구들을 <strong>&quot;공연 등록과 확인&quot;이라는</strong> 하나의 흐름으로 묶는다.</p>
 <p>핵심 전환은 이것이다. 개발자가 직접 데이터를 만지던 방식에서 벗어나, <strong>업무 담당자가
 표준 화면(SM30)에서 공연을 등록</strong>하고, <strong>개발자는 View·조회 프로그램으로 결과를 확인</strong>한다.</p>
+</section><section class="lblock"><h2>준비물 — 앞 레슨에서 만든 것들</h2>
+<p>이 실습은 새 객체를 만들지 않는다. 앞 레슨에서 하나씩 만들어 둔 것을 <strong>이어 붙이는</strong>
+자리다. 빠진 게 있으면 해당 레슨의 &quot;직접 만들어 보기&quot;로 돌아가 먼저 채우자.</p>
+<table>
+<thead>
+<tr>
+<th>만들어 둔 것</th>
+<th>무엇</th>
+<th>어디서</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>ZCONCERT</code>·<code>ZPERF</code></td>
+<td>공연·회차 테이블과 그 사이 Foreign Key</td>
+<td><a href="CH09-L09.html">Chapter 9 · 콘서트 모델 실습</a></td>
+</tr>
+<tr>
+<td><code>ZV_PERF</code></td>
+<td>회차에 공연 정보를 붙인 Database View(5필드)</td>
+<td><a href="CH14-L01.html">Chapter 14 · Database View</a></td>
+</tr>
+<tr>
+<td><code>ZPV_BOOKING</code></td>
+<td>예매에서 업무 필드만 남긴 Projection View</td>
+<td><a href="CH14-L02.html">Chapter 14 · Projection View</a></td>
+</tr>
+<tr>
+<td><code>ZHV_CONCERT</code> + <code>ZSH_CONCERT</code></td>
+<td>F4 목록을 만드는 Help View와 Search Help</td>
+<td><a href="CH14-L03.html">Chapter 14 · Help View</a></td>
+</tr>
+<tr>
+<td><code>ZMV_CONCERT</code></td>
+<td>공연과 회차를 함께 손보는 Maintenance View</td>
+<td><a href="CH14-L04.html">Chapter 14 · Maintenance View</a></td>
+</tr>
+<tr>
+<td>유지보수 화면</td>
+<td>위 대상에 TMG로 찍어 낸 SM30 화면</td>
+<td><a href="CH14-L05.html">Chapter 14 · TMG/SM30</a></td>
+</tr>
+</tbody></table>
 </section><section class="lblock"><h2>도구 조립 — 무엇을 어디에</h2>
 <ol>
-<li><strong>등록</strong>: <code>ZCONCERT</code>(공연 마스터)에 TMG로 유지보수 화면을 만들고
-(<a href="CH14-L05.html">Chapter 14 · TMG/SM30</a>) <code>SM30</code>으로 다건 등록한다. 회차는
-Maintenance View(<a href="CH14-L04.html">이 챕터 L04</a>)로 공연과 함께 관리한다.</li>
+<li><strong>등록</strong>: <code>ZCONCERT</code>(공연 마스터)에 TMG로 만든 유지보수 화면을
+(<a href="CH14-L05.html">Chapter 14 · TMG/SM30</a>) <code>SM30</code>으로 열어 공연을 여러 건 등록한다.
+회차는 Maintenance View <code>ZMV_CONCERT</code>(<a href="CH14-L04.html">Chapter 14 · Maintenance View</a>)로
+공연과 함께 관리한다.</li>
 <li><strong>입력 도움</strong>: 회차 등록의 <code>concert_id</code> 입력에는 F4(<a href="CH09-L04.html">Chapter 9 ·
 입력도움말</a> + <a href="CH14-L03.html">이 챕터의 Help View</a>)를 연결해
 코드 직접 입력 실수를 줄인다.</li>
 <li><strong>조회</strong>: <code>ZV_PERF</code> Database View로(<a href="CH14-L01.html">Chapter 14 · Database View</a>)
 회차와 아티스트·공연장을 함께 조회한다.</li>
+<li><strong>필드 줄이기</strong>: 예매 목록을 업무 담당자에게 보여 줄 자리에서는 <code>ZPV_BOOKING</code>
+(<a href="CH14-L02.html">Chapter 14 · Projection View</a>)을 읽어 감사 필드를 빼고 업무 여섯
+필드만 내보낸다. 같은 데이터라도 <strong>보는 사람에 따라 노출을 줄이는 것</strong>이 이 View의 일이다.</li>
 </ol>
 <p>확인 리포트는 챕터 경계에 맞게 <strong>단순 조회만</strong> 한다(데이터 생성·유지보수는 SM30이 담당).</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
@@ -66,21 +112,41 @@ Maintenance View(<a href="CH14-L04.html">이 챕터 L04</a>)로 공연과 함께
 <span class="tok-kw">SELECT</span> concert_id perf_no perf_date artist venue
   <span class="tok-kw">FROM</span> zv_perf
   <span class="tok-kw">INTO</span> <span class="tok-kw">CORRESPONDING</span> <span class="tok-kw">FIELDS</span> <span class="tok-kw">OF</span> <span class="tok-kw">TABLE</span> gt_perf.</code></pre></div></div>
+<blockquote>
+<p>💡 <a href="CH14-L01.html">첫 레슨</a>에서는 <code>SELECT *</code>로 통째로 읽었는데 여기서는 필드를 하나씩
+적었다. 실제 리포트에서는 <strong>읽을 필드를 밝혀 적는 쪽이 기본</strong>이라 그렇다. 필드를 나열해
+읽을 때는 담는 그릇의 필드 순서에 의존하지 않도록 <strong>이름끼리 맞춰 담는</strong>
+<code>INTO CORRESPONDING FIELDS OF TABLE</code>을 쓴다(<a href="CH13-L01.html">Chapter 13 · JOIN</a>에서 쓰던 그 형태다).
+위 다섯 필드가 <code>ZV_PERF</code>의 전부이니 결과는 <code>SELECT *</code>와 같다.</p>
+</blockquote>
 </section><section class="lblock"><h2>공연 등록 콘솔</h2>
 <p>F4로 공연을 고르고 회차를 저장한 뒤, 원본 테이블(<code>ZPERF</code>)과 View(<code>ZV_PERF</code>)에서 각각
 어떻게 보이는지 확인하자. 공연 마스터(<code>ZCONCERT</code>)를 지우면 View에서 그 회차 행이
 어떻게 사라지는지도 보자.</p>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">공연 등록 콘솔 — F4 → SM30 저장 → View 확인</span><a class="embed__open" href="../../../embeds/abap/CH14-L09-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH14-L09-S01.html" loading="lazy" title="공연 등록 콘솔 — F4 → SM30 저장 → View 확인"></iframe></figure>
+<blockquote class="cw">
+<p>⚠️ <strong>마스터를 지우면 자식은 고아가 된다.</strong> 위 관찰은 실습 데이터라서 해 보는 것이다.
+공연 마스터를 지워도 그 공연의 회차 행은 <code>ZPERF</code>에 <strong>그대로 남는다.</strong> Foreign Key는
+화면 밖에서 일어나는 삭제까지 막아 주지 않기 때문이다
+(<a href="CH14-L04.html">Chapter 14 · Maintenance View와 Foreign Key</a>). 남은 회차는 부모 없는
+고아 행이 되어 inner join View에서는 안 보이지만 원본 테이블에는 남아 계속 쌓인다.
+되돌리려면 지운 공연을 <strong>같은 코드로 다시 등록</strong>하면 View에 행이 되살아난다. 지우기 전에
+SE16N으로 딸린 회차가 있는지 먼저 확인하는 습관을 들이자.</p>
+</blockquote>
 </section><section class="lblock"><h2>직접 해 볼 과제</h2>
 <p><strong>성공 경로</strong> — F4로 <code>C001</code>을 골라 새 회차를 등록하고, SE16N(원본 <code>ZPERF</code>)과
-<code>ZV_PERF</code>(View)에서 아티스트가 함께 보이는지 확인한다.
-<strong>실패 경로</strong> — 존재하지 않는 <code>concert_id</code>는 F4/foreign key가 막는지 확인하고, 공연
-마스터가 누락되면 inner join View에서 행이 사라지는지 관찰한다.</p>
+<code>ZV_PERF</code>(View)에서 아티스트가 함께 보이는지 확인한다.</p>
+<p><strong>실패 경로</strong> — 목록에 없는 <code>concert_id</code>를 직접 입력해 본다. 여기서 둘의 역할을 나눠
+보자. <strong>F4</strong>는 값을 고르도록 돕는 도움말일 뿐 잘못된 입력을 막는 장치가 아니다. 틀린 값을
+걸러 내는 건 <strong>Foreign Key의 input check</strong>다
+(<a href="CH14-L04.html">Chapter 14 · Maintenance View와 Foreign Key</a>). 저장할 때 어떤 메시지가
+나오는지 확인하고, 이어서 공연 마스터가 없으면 inner join View에서 행이 사라지는지 관찰한다.</p>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>TMG 미생성</strong> → SM30이 &quot;테이블 없음&quot; 오류. Table Maintenance Generator
-(<a href="CH14-L05.html">Chapter 14 · TMG/SM30</a>)를 먼저 만든다.</li>
-<li><strong>뷰 <button class="term" type="button" data-term="JOIN">조인</button> 조건</strong> → <code>concert_id</code>로 정확히 이어야 중복·누락이 없다.</li>
+<li><strong>TMG 미생성</strong> → SM30이 &quot;유지보수가 정의되어 있지 않다&quot;는 취지의 메시지를 낸다(테이블이
+없다는 뜻이 아니다). Table Maintenance Generator(<a href="CH14-L05.html">Chapter 14 · TMG/SM30</a>)를
+먼저 만든다.</li>
+<li><strong>View <button class="term" type="button" data-term="JOIN">조인</button> 조건</strong> → <code>concert_id</code>로 정확히 이어야 중복·누락이 없다.</li>
 <li><strong>원본 ≠ View</strong> → SE16N(원본)과 View 결과는 같은 질문이 아니다. View는 inner join이라
 기준이 없으면 행이 빠진다.</li>
 </ul>

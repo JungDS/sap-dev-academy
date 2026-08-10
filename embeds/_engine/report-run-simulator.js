@@ -2,10 +2,12 @@
    ① INITIALIZATION(기본값) ② AT SELECTION-SCREEN OUTPUT(화면 제어·pa_note 활성여부) ③ AT SELECTION-SCREEN ON pa_conc(입력/존재/권한 검증)
    ④ START-OF-SELECTION(검증 통과 시 zbooking 조회·SALV 표시·0건이면 S 메시지). 막힌 단계와 메시지, 결과 테이블을 보여 준다.
    골격 계약: .rrs-scen · .rrs-stat · #rrsScreen · [data-run] · .rrs-timeline · #rrsResult.
-   config: window.RRS_CFG = { concerts, bookings, scenarios }. 높이: _autoheight.js. */
+   config: window.RRS_CFG = { concerts, bookings, scenarios, statuses:[{key,text}] }.
+   상태값은 시드 정본(N=신규·C=취소)을 따르고 기본값 = statuses[0](본문 기본 시나리오 so_stat=N). 높이: _autoheight.js. */
 (function () {
-  var CFG = window.RRS_CFG || { concerts: {}, bookings: [], scenarios: [] };
-  var idx = 0, stat = 'R', ran = false;
+  var CFG = window.RRS_CFG || { concerts: {}, bookings: [], scenarios: [], statuses: [] };
+  var STATUSES = (CFG.statuses && CFG.statuses.length) ? CFG.statuses : [{ key: 'N', text: '신규' }, { key: 'C', text: '취소' }];
+  var idx = 0, stat = STATUSES[0].key, ran = false;
 
   var scenEl = document.querySelector('.rrs-scen');
   var statEl = document.querySelector('.rrs-stat');
@@ -34,8 +36,8 @@
     }).join('');
   }
   function renderStat() {
-    statEl.innerHTML = ['R', 'C'].map(function (v) {
-      return '<button type="button" data-v="' + v + '" aria-pressed="' + (v === stat ? 'true' : 'false') + '">' + v + (v === 'R' ? ' 예약' : ' 취소') + '</button>';
+    statEl.innerHTML = STATUSES.map(function (s) {
+      return '<button type="button" data-v="' + esc(s.key) + '" aria-pressed="' + (s.key === stat ? 'true' : 'false') + '">' + esc(s.key) + ' ' + esc(s.text) + '</button>';
     }).join('');
   }
   function renderScreen() {
@@ -76,8 +78,8 @@
     if (r.gate !== 'pass') { resultEl.innerHTML = '<div class="rrs-msg lock">검증에서 막혀 조회가 실행되지 않았습니다 (화면 복귀).</div>'; return; }
     if (!r.rows.length) { resultEl.innerHTML = '<div class="rrs-msg s">📭 sy-subrc=4 · MESSAGE S "조회된 예매가 없습니다" — 흐름은 안 막고 안내</div>'; return; }
     resultEl.innerHTML = '<div class="rrs-alv">ALV 표시 (cl_salv_table) — ' + r.rows.length + '건</div>' +
-      '<table class="rrs-tbl"><thead><tr><th>booking_id</th><th>customer</th><th>status</th><th>amount</th></tr></thead><tbody>' +
-      r.rows.map(function (b) { return '<tr><td>' + esc(b.id) + '</td><td>' + esc(b.cust) + '</td><td>' + esc(b.status) + '</td><td>' + esc(b.amount) + '</td></tr>'; }).join('') +
+      '<table class="rrs-tbl"><thead><tr><th>booking_id</th><th>customer</th><th>status</th><th>seats</th></tr></thead><tbody>' +
+      r.rows.map(function (b) { return '<tr><td>' + esc(b.id) + '</td><td>' + esc(b.cust) + '</td><td>' + esc(b.status) + '</td><td>' + esc(b.seats) + '</td></tr>'; }).join('') +
       '</tbody></table>';
   }
   function render() { renderScen(); renderStat(); renderScreen(); renderTimeline(); renderResult(); }

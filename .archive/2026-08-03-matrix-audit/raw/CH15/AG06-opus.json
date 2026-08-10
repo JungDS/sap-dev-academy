@@ -1,0 +1,130 @@
+{
+  "agent": "AG06",
+  "model": "opus",
+  "target": "CH15",
+  "persona_ack": "20년차 SAP ABAP 아키텍트(ECC~S/4HANA 개발·운영·성능·이관 경험, 후배 교재 기술검수 담당)로서 CH15 'Report Event·Selection Screen 심화' 12개 레슨과 _chapter.md를 읽기 전용으로 감사했다. 사실 오류·예시 적절성·위험한 생략·안티패턴 네 축으로만 판정했고, 파일은 일절 수정하지 않았다.",
+  "method": "Read 도구로 대상 MD 13개 전문을 정독하며 코드 블록·표·콜아웃을 한 줄씩 대조(이벤트 순서, AT SELECTION-SCREEN ON 동작, LOOP AT SCREEN/MODIFY SCREEN, MESSAGE 타입, AUTHORITY-CHECK 반환코드, F4IF_INT_TABLE_VALUE_REQUEST 파라미터, SELECT-OPTIONS 옵션, CALL SELECTION-SCREEN sy-subrc). 웹 검색·외부 네트워크 미사용, 실 시스템 접속 없이 내부 ABAP 지식만으로 판정. 다른 감사자 산출물·과거 감사 자료(.archive raw/merged/verdict 등)는 열지 않았다.",
+  "errors": [
+    "실 시스템(SE38 문법검사·SE91/SU21 조회·F4 함수 실행)으로 교차검증할 수 없는 환경이라, 문법 허용 여부와 공식문서 분류에 관한 판정 2건(seq 5, seq 7)은 confidence=추정으로 표기했다."
+  ],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L10.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L11.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L12.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L07.md",
+      "quote": "| `12` | 그 권한 객체에 대한 권한이 **아예 없음** |",
+      "category": "사실 오류",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "AUTHORITY-CHECK의 sy-subrc = 12를 '그 권한 객체에 대한 권한이 아예 없음'으로 설명했는데, 12는 권한 유무가 아니라 '지정한 권한 객체가 존재하지 않음'이다. 게다가 이 표에 '공식문서 기준'이라는 단서가 붙어 있어 오류가 권위를 얻는다.",
+      "evidence": "AUTHORITY-CHECK 반환코드는 0=지정한 모든 값에 권한 있음, 4=권한 없음, 8=지정한 필드 수가 맞지 않음, 12=지정한 권한 객체가 존재하지 않음, 24=객체의 필드명과 문장의 ID가 불일치. 즉 12는 사용자 쪽 권한 문제가 아니라 개발자 쪽 오류 신호(객체명 오타·SU21 미생성·타 시스템 미이관)다. 표대로 배우면 실제로는 코드의 객체명이 틀린 상황을 '이 사용자는 롤이 없다'로 오진해 보안팀에 엉뚱한 권한 요청을 하게 된다. 실무 장애 분석에서 4와 12를 가르는 것이 첫 분기점이라 교재 단계에서 뒤집히면 오래 간다. 바로 위 4의 설명('권한은 있으나 그 값에 대한 권한이 부족')도 엄밀히는 '지정한 값에 대한 권한이 없음'이라 표현을 함께 다듬는 편이 좋다.",
+      "suggestion": "표를 0=통과 / 4=지정한 값에 대한 권한 없음 / 12=권한 객체 자체가 없음(객체명 오타·미생성 → 개발자가 고칠 문제) 로 바로잡고, 필요하면 24=객체 필드명과 ID 불일치 한 줄을 더한다. '핵심은 0이면 통과, 그 외에는 막는다'는 결론 문장은 그대로 유효하니 유지."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L07.md",
+      "quote": "AUTHORITY-CHECK OBJECT 'Z_CONCERT'\n    ID 'CONCERT' FIELD pa_conc",
+      "category": "위험한 생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "AUTHORITY-CHECK를 정식 도입(L3)하면서 '권한 객체에 정의된 모든 권한 필드를 문장에 나열해야 하고, 검사하지 않을 필드는 ID '<필드>' DUMMY로 명시해야 한다'는 필수 규칙을 한 번도 언급하지 않는다.",
+      "evidence": "권한 객체의 필드를 하나라도 빠뜨리면 검사는 정상 통과할 수 없고 sy-subrc가 0이 아닌 값(24 계열)으로 떨어진다. 결과는 두 방향 모두 사고다. (1) 정당한 권한을 가진 사용자가 영문 모르고 차단되고, (2) 반대로 개발자가 'IF sy-subrc = 4'처럼 특정 코드만 보고 분기하면 검사 실패를 통과로 오판해 권한 검증이 사실상 무력화된다. 실무 코드리뷰에서 AUTHORITY-CHECK 관련 지적 1순위가 바로 이 누락·DUMMY 미사용이다. 예제의 Z_CONCERT는 마침 필드가 2개뿐인 가상 객체라 우연히 완전해 보이지만, 학습자가 ACTVT 외에 BUKRS·WERKS 같은 필드를 가진 실제 객체(예: 표준 객체)로 옮겨 붙이는 순간 바로 이 함정에 빠진다.",
+      "suggestion": "권한 검증 절 코드 아래에 규칙 한 줄과 예시를 추가한다. '권한 객체에 정의된 필드는 전부 적는다 — 검사하지 않을 필드는 ID ''ACTVT'' DUMMY 처럼 DUMMY로 명시'. '실수와 주의'에도 '필드를 빠뜨리면 sy-subrc가 0이 될 수 없어 검사 자체가 실패한다(권한 없음과 구분되지 않는다)'를 한 줄 넣고, 기존의 'sy-subrc = 0만 통과' 원칙과 연결하면 자연스럽다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L08.md",
+      "quote": "CALL FUNCTION 'F4IF_INT_TABLE_VALUE_REQUEST'",
+      "category": "사실 오류",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "carrid·carrname 두 컬럼짜리 구조 테이블(gt_carr)을 value_tab으로 넘기면서 VALUE_ORG = 'S'를 지정하지 않았다. 이 호출은 설명대로(두 컬럼 목록 팝업) 동작하지 않는다.",
+      "evidence": "F4IF_INT_TABLE_VALUE_REQUEST의 VALUE_ORG 기본값은 'C'(셀 단위 구성)이고, 이때 함수는 value_tab을 '값 셀을 한 줄에 하나씩 늘어놓은 목록'으로 해석하며 컬럼 구성을 FIELD_TAB에서 받기를 기대한다. 예제처럼 구조 테이블을 그대로 넘기려면 EXPORTING에 VALUE_ORG = 'S'(구조 단위)를 반드시 지정해야 각 행이 한 레코드로 매핑되어 CARRID/CARRNAME 두 컬럼 팝업이 뜬다. 지정 없이 실행하면 목록이 어긋나 표시되거나 호출이 실패한다. 이 레슨은 코드 F4를 '직접 만드는 법'으로 정식 도입하는 자리이므로, 학습자가 그대로 복사하면 첫 실행부터 기대와 다른 화면을 본다.",
+      "suggestion": "EXPORTING 목록에 value_org = 'S'를 추가하고 주석으로 '구조(레코드) 단위 목록이라는 뜻 — 안 주면 셀 단위로 해석된다'를 붙인다. 여력이 되면 return_tab을 TABLES에 함께 두고 '선택 결과를 코드에서 직접 받고 싶을 때는 return_tab'을 한 줄로 덧붙이면 dynprofield 설명과 대비되어 이해가 선명해진다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L03.md",
+      "quote": "IF gs_screen-name = 'PA_SECRET' AND pa_mode <> 'A'.",
+      "category": "안티패턴",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "화면 필드 숨김(active = '0')을 '운영 담당자에게만 보여 준다'는 접근 통제처럼 서술하고, 그 게이트를 사용자가 화면에서 직접 타이핑하는 pa_mode로 삼았다. 보안을 은폐로 대체하는 패턴을 교정 없이 시연한다.",
+      "evidence": "선택화면 필드를 숨기는 것은 표시 제어일 뿐 접근 통제가 아니다. 이 예제의 gate인 pa_mode는 아무 사용자나 'A'만 입력하면 되는 값이고, Variant 저장·SUBMIT·백그라운드 잡처럼 화면을 거치지 않는 실행 경로에서는 숨김 로직 자체가 의미를 잃는다. 게다가 숨긴 필드의 값은 프로그램 변수에 그대로 살아 있어 이후 로직에 영향을 준다(L12가 '필드를 숨겨도 내부 값은 그대로'라고 정확히 짚고 있어, 같은 챕터 안에서 근거가 이미 제시돼 있다). 하필 필드 이름이 pa_secret이라 '비밀 값을 권한으로 가린다'는 오독을 강화한다. 진짜 통제 수단인 AUTHORITY-CHECK는 네 레슨 뒤(L07)에야 나오는데, 그때도 화면 제어와의 경계를 되짚지 않는다.",
+      "suggestion": "L03에 경고 한 줄 추가: '화면 숨김은 보기 편의지 권한 통제가 아니다 — 실제 통제는 AUTHORITY-CHECK(CH15-L07 링크)'. 예제도 gate를 pa_mode 대신 INITIALIZATION에서 AUTHORITY-CHECK 결과를 담아 둔 전역 플래그(gv_is_admin 등)로 바꾸면 실무 표준에 맞고 L07과도 이어진다. 필드명은 pa_secret 대신 pa_adv(고급 조건) 같은 중립적 이름을 권한다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L10.md",
+      "quote": "PARAMETERS pa_note TYPE c LENGTH 20 LOWER CASE MEMORY ID znt.",
+      "category": "사실 오류",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "PARAMETERS에 DATA용 LENGTH 추가지정을 붙인 'TYPE c LENGTH n' 표기가 문법검사를 통과하지 못할 가능성이 크다. PARAMETERS의 길이 지정은 이름 뒤 괄호 형태(pa_note(20) TYPE c)가 표준이다.",
+      "evidence": "내 기억으로 PARAMETERS의 문법 다이어그램은 'PARAMETERS para[(len)] {TYPE type|LIKE dobj} [DECIMALS dec] ...' 형태로, 길이를 괄호로만 받고 DATA의 LENGTH 추가지정은 지원하지 않는다. 다만 릴리스에 따라 허용됐을 여지가 있고 실 시스템 syntax check로 확인할 수 없어 확실 판정은 피한다. 문제는 이 표기가 CH15-L03(pa_mode·pa_secret), L10(pa_note·pa_adv1·pa_adv2), L12(pa_mode·pa_note)에 반복 등장한다는 점이다. 만약 문법 오류라면 완전 입문자가 SE38에 붙여 넣는 순간 첫 줄부터 막히고, 이 챕터의 실습 코드 다수가 함께 무너진다.",
+      "suggestion": "실 시스템에서 한 번 syntax check로 확정한 뒤, 오류라면 'PARAMETERS pa_note(20) TYPE c ...' 괄호 표기나 DDIC 타입 참조(TYPE zconcert-note 등)로 챕터 전체를 통일한다. 정상이라도 표기를 한 가지로 통일하는 편이 입문자에게 낫다."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L12.md",
+      "quote": "SELECT * FROM zbooking INTO TABLE gt_booking",
+      "category": "안티패턴",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "본 처리의 '표준 자리'로 제시하는 조회 예제가 전 컬럼 SELECT * + 건수 무제한 INTO TABLE인데, 성능 규율에 대한 언급이 한 줄도 없다(L05·L06·L12 공통).",
+      "evidence": "필요한 컬럼만 읽는 것은 릴리스·DB 무관한 기본 성능 규율이다(네트워크 전송량, 버퍼, 인덱스 커버링). 실제로 L05는 조회 후 booking_id·customer·status 세 컬럼만 WRITE하고 L12는 SALV로 넘길 뿐이라 SELECT *를 쓸 이유가 없다. 또 예매 테이블을 concert_id 하나로만 걸러 전건을 INTO TABLE로 메모리에 올리는 패턴은 인기 공연 한 건이 수십만 행인 운영 환경에서 그대로 메모리 문제로 이어진다. 챕터가 '무거운 로직을 여기 둔다'고 명시하면서도 건수 제한이나 컬럼 제한을 '흔한 실수'에서 다루지 않아, 학습자에게는 이 형태가 정답으로 각인된다.",
+      "suggestion": "예제를 classic 필드 나열(SELECT booking_id customer status ... INTO TABLE gt_booking)로 바꾸고, '흔한 실수와 점검'에 '필요한 컬럼만 · 대량이면 건수 제한' 한 줄을 추가한다. 마침 L11에 pa_max(최대 건수) 파라미터가 선언만 되고 쓰이지 않으니, UP TO pa_max ROWS로 연결하면 레슨 간 예제도 살아난다."
+    },
+    {
+      "seq": 7,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L06.md",
+      "quote": "공식 문서는 이 이벤트를 **Obsolete(낡아서 권장하지 않는) 문법**으로 분류한다.",
+      "category": "사실 오류",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "END-OF-SELECTION을 '공식 문서가 Obsolete 문법으로 분류한다'고 단정한 것은 과장으로 보인다. 레슨의 실질 조언(신규 리포트에 필수 아님)은 옳지만 근거 표현이 사실보다 세다.",
+      "evidence": "내 기억으로 ABAP 키워드 문서는 END-OF-SELECTION을 '논리적 데이터베이스(LDB)와 연결된 실행형 프로그램에서 의미를 갖는 이벤트이며, LDB를 쓰지 않는 프로그램에서는 구현할 필요가 없다'고 설명할 뿐, obsolete 언어요소 목록에 등재하지는 않는다. obsolete로 분류된 쪽은 LDB 자체와 GET 계열 이벤트에 가깝다. 웹 확인이 금지돼 있어 확실 판정은 하지 않되, 레슨이 이 문장을 근거로 임베드에 '공식 문서 경고 배지'까지 붙이므로 표현이 그대로 굳어지면 나중에 정정 비용이 커진다. CH15-L01 표의 '레거시' 표기도 같은 근거를 공유한다.",
+      "suggestion": "'공식 문서는 obsolete로 분류한다' → '공식 문서는 이 이벤트를 LDB와 묶어 설명하고, LDB를 쓰지 않는 프로그램에서는 구현할 필요가 없다고 못 박는다'로 바꾼다. 임베드의 '공식 문서 경고 배지' 문구도 'LDB 없는 리포트에서는 불필요' 취지로 조정하면 사실 관계가 안전해진다."
+    },
+    {
+      "seq": 8,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L06.md",
+      "quote": "DATA lo_alv     TYPE REF TO cl_salv_table.",
+      "category": "예시 적절성",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "프로그램 최상단(전역 스코프) 선언인데 로컬 접두어 lo_를 썼다. 바로 아래 콜아웃이 '전역이라 gt_로 시작한다'고 설명하는 것과 같은 코드 블록 안에서 어긋난다(L12도 동일).",
+      "evidence": "L06·L12 모두 REPORT 최상단 DATA로 lo_alv를 선언한다 — 서브루틴/메서드 밖이므로 사실상 전역 변수다. 같은 DATA 묶음의 gt_booking에 대해서는 '전역(global) 내부 테이블이라 gt_로 시작한다'고 굵게 짚어 두고 lo_alv만 로컬 접두어를 쓰니, '접두어가 스코프를 뜻한다'는 이 챕터의 설명을 학습자가 바로 옆 줄에서 반증당한다. 접두어 규율은 이후 모듈화 장에서 로컬 스코프를 배울 때 판단 근거가 되므로, 여기서 예외가 생기면 규칙 자체가 흐려진다.",
+      "suggestion": "go_alv로 바꾸거나(전역 object reference), SALV 표시 부분을 FORM/메서드로 감싸 실제 로컬 변수로 만들어 lo_를 정당화한다. L06과 L12를 함께 고쳐야 하고, L12의 advanceUse(REF TO) 설명과도 표기를 맞춘다."
+    },
+    {
+      "seq": 9,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L04.md",
+      "quote": "| `E` | Error | **막고** 입력 화면으로 복귀 |",
+      "category": "위험한 생략",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "MESSAGE 타입 표가 대화형(선택화면) 동작만 설명하고, 같은 챕터가 안내하는 Variant·백그라운드 잡 실행에서의 동작 차이를 짚지 않는다.",
+      "evidence": "백그라운드 잡이나 SUBMIT 실행에는 되돌아갈 화면이 없어, AT SELECTION-SCREEN에서 보낸 TYPE 'E'는 '입력 화면 복귀'가 아니라 잡 종료와 잡 로그 기록으로 귀결된다. 이 챕터는 L11에서 Variant를 Chapter 38 백그라운드 잡과 명시적으로 연결해 두었고, L07·L12는 존재·권한 검증 실패를 전부 E로 처리한다. 즉 학습자가 이 리포트를 그대로 잡으로 돌리면 '이유가 화면에 안 보이는 채로 취소된 잡'을 만나게 된다. 릴리스별 세부 표현과 타입별(W·I) 처리 차이는 기억이 완전하지 않아 추정으로 둔다.",
+      "suggestion": "L04 메시지 타입 표 아래 한 줄: '화면이 없는 실행(백그라운드 잡·SUBMIT)에서는 E가 화면 복귀가 아니라 처리 중단·잡 로그로 나타난다 — 잡으로 돌릴 리포트는 sy-batch로 분기하거나 로그성 메시지를 함께 설계한다.' L11의 Variant 절에서 이 문장으로 상호 링크하면 챕터 안에서 완결된다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "기술 감사 관점에서 CH15는 전반적으로 정확도가 높은 챕터다. 이벤트 발생 순서(LOAD-OF-PROGRAM→INITIALIZATION→PBO→PAI→START-OF-SELECTION), 필드 지정 AT SELECTION-SCREEN ON의 '그 필드만 재입력·나머지 읽기 전용' 동작, LOOP AT SCREEN INTO/MODIFY SCREEN FROM 명시 work area 권장, 선택화면 버튼은 SY-UCOMM이 아니라 SSCRFIELDS-UCOMM, NO-EXTENSION과 NO INTERVALS의 구분, CALL SELECTION-SCREEN의 sy-subrc 0/4, F4 함수가 다른 화면 필드 값을 읽어 오지 않아 DYNP_VALUES_READ가 필요하다는 단서까지 실무 감각이 살아 있는 서술이 많다. 정정이 필요한 곳은 국소적이다. 확실 판정 4건 중 무게가 큰 것은 AUTHORITY-CHECK 반환코드 12의 의미를 '권한 없음'으로 적은 표(실장애 오진으로 이어짐, 게다가 '공식문서 기준'이라 명시)와, 구조 테이블을 넘기면서 VALUE_ORG='S'를 빠뜨려 실제로 동작하지 않는 F4IF_INT_TABLE_VALUE_REQUEST 호출이다. 여기에 권한 객체의 모든 필드를 FIELD/DUMMY로 지정해야 한다는 필수 규칙 누락, 화면 숨김을 권한 통제처럼 서술한 L03의 프레이밍(게이트가 사용자 입력 필드 pa_mode)이 짧은 보강을 요한다. 나머지는 SELECT * 무제한 조회의 무비판 시연, END-OF-SELECTION의 'obsolete 분류' 과장, 전역인데 lo_ 접두어를 쓴 lo_alv, 백그라운드 실행에서의 E 메시지 동작 미언급 등 표현·한 줄 추가 수준이다. 구조나 커리큘럼 순서를 흔들 결함은 없으므로 재집필이 아니라 표 한 줄·파라미터 한 개·경고 콜아웃 두어 개를 고치는 경미 수정으로 충분하다. 다만 PARAMETERS의 'TYPE c LENGTH n' 표기(추정)는 사실이면 챕터 코드 다수가 문법 오류가 되므로, 실 시스템 syntax check로 가장 먼저 확정하기를 권한다."
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "agent": "AG06",
+  "model": "sonnet",
+  "target": "CH16",
+  "persona_ack": "20년차 SAP ABAP 아키텍트로서 CH16(Screen Programming/Dynpro 기초) 레슨 10개와 _chapter.md를 정독했다. classic Dynpro/PBO-PAI/Screen Painter 실무 경험 기준으로 문법·함수모듈 시그니처·표준 패턴의 사실성을 감사했다.",
+  "method": "대상 파일 11개(CH16-L01~L10, _chapter.md) 전문을 Read로 직접 정독. Flow Logic 문법(PROCESS BEFORE OUTPUT/AFTER INPUT/ON VALUE-REQUEST/ON HELP-REQUEST), MODULE OUTPUT/INPUT, LOOP AT SCREEN/MODIFY SCREEN, SET PF-STATUS/TITLEBAR, LEAVE TO SCREEN/LEAVE PROGRAM/SET SCREEN, TABLES work area, 함수모듈 시그니처(VRM_SET_VALUES, DYNP_VALUES_READ, F4IF_INT_TABLE_VALUE_REQUEST), CL_GUI_CUSTOM_CONTAINER 생성자 등을 기억 기반으로 실제 ABAP 표준 문법과 대조. 웹 검색·시스템 접근 없이 지식만으로 판단, 불확실한 항목은 추정으로 표기.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L10.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH16-L08.md",
+      "quote": "제목 텍스트에 `&1`~`&9` 자리표시자를 두고 `WITH`로 값을 채운다.",
+      "category": "사실 오류",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "SET TITLEBAR ... WITH 절이 지원하는 자리표시자는 최대 4개(&1~&4)인데, 본문은 &1~&9까지 쓸 수 있다고 서술한다.",
+      "evidence": "ABAP 표준 구문은 SET TITLEBAR title_code [OF PROGRAM prog] [WITH g1 g2 g3 g4]. 로, WITH 뒤에 넘길 수 있는 변수는 g1~g4 최대 4개뿐이다. SE41 Menu Painter의 title 텍스트 유지 화면도 &1~&4까지만 자리표시자로 지원한다. 이는 MESSAGE 문의 &1~&4(SY-MSGV1~4) 4개 변수 체계와 같은, classic ABAP 짧은 텍스트 전반에 걸친 고정 한도다. 릴리스와 무관하게 오래 유지된 구문 제약이라 확실로 표기한다.",
+      "suggestion": "'&1~&9'를 '&1~&4'로 정정하고, WITH 뒤에는 g1 g2 g3 g4 형태로 최대 4개 값만 전달 가능하다고 명시한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH16은 Module Pool/Dynpro의 PBO-PAI 두 박자, Screen Painter 네 조각, 화면 요소·TABLES 운반, F1/F4 직접 구현, LOOP AT SCREEN, PF-STATUS/TITLEBAR, Custom Control/Subscreen/Tabstrip까지 classic 화면 프로그래밍 실무 패턴을 정확한 문법과 표준 함수모듈 시그니처로 정확하게 소개하고, save_ok 패턴·컨테이너 1회 생성·PBO 무거운 조회 경고 등 실무에서 실제로 통용되는 관례를 그대로 반영했다. DB 저장·COMMIT·잠금은 CH25로 명시적으로 위임해 위험한 생략이 아니라 의도된 범위 설정이다. 발견된 사실 오류는 L08의 SET TITLEBAR WITH 자리표시자 개수(&1~&9 → &1~&4 정정 필요) 1건뿐이며, 그 외 예시 적절성·안티패턴·위험한 생략 관점에서는 지적할 사항을 찾지 못했다."
+  }
+}

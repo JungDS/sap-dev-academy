@@ -1,0 +1,147 @@
+{
+  "agent": "AG06",
+  "model": "opus",
+  "target": "CH14",
+  "persona_ack": "20년차 SAP ABAP 아키텍트(ECC~S/4HANA 개발·운영·성능·이관 경험, 후배 교재 기술검수 담당)로서 CH14 'Classic DDIC View·유지보수 객체' 9개 레슨과 _chapter.md를 읽기 전용으로 감사했다. 축은 ① 사실 오류 ② 예시 적절성 ③ 위험한 생략 ④ 안티패턴 네 가지이며, 웹 검색이 금지돼 기억에만 의존했으므로 릴리스·설정 의존 항목은 confidence=추정으로 정직하게 낮췄다. 파일 수정·생성·삭제는 하지 않았고 다른 감사자 산출물·과거 감사물도 열지 않았다.",
+  "method": "Read 도구로 대상 10개 파일을 front-matter 포함 전문 통독(부분 읽기·grep 요약 없음). 외부 네트워크·다른 감사 산출물·저장소 밖 경로 접근 없음. 각 기술 서술을 ABAP Dictionary 지식(뷰 유형별 join 성격, DDIC 이름 길이 제한, Foreign Key 평가 시점, projection/help/maintenance view의 DB 생성 여부)·표준 유지보수 도구 동작(SE11 TMG·SE54·SM30·SM34)·SE16/SE16N 동작과 대조했고, ABAP 코드 블록은 classic Open SQL 문법과 성능 관점에서 검토했다. 추가로 챕터 내부 서술 간 모순(L05 vs L09 오류 메시지, L07 조회 규율 vs 코드 예제)을 교차 확인했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L09.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L04.md",
+      "quote": "> 조회 관점이고, Maintenance View는 **유지보수 관점**이다. (outer join 성격은",
+      "category": "사실 오류",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "Maintenance View의 outer join 성격을 부정하고 outer join을 Help View 전용인 것처럼 귀속시켰다. 클래식 DDIC에서 outer join 성격을 갖는 뷰는 Help View와 Maintenance View 둘 다이고, inner join인 쪽이 Database View다.",
+      "evidence": "ABAP Dictionary의 표준 정리는 'Database View = inner join / Help View·Maintenance View = outer join'이다. 이 콜아웃은 'Maintenance View를 조회 대안으로 외우지 말라'는 옳은 메시지를 주면서 그 근거로 틀린 귀속을 덧붙여, 학습자가 뷰 유형별 join 성격을 정확히 반대로 외우게 만든다. 실제로 Maintenance View가 조회 대안이 될 수 없는 이유는 join 종류가 아니라 ABAP SQL data source가 아니라는 점이며, 이는 같은 레슨 앞부분에 이미 바르게 서술돼 있다.",
+      "suggestion": "괄호를 '(Maintenance View도 보조 테이블은 outer join 성격으로 붙지만, 애초에 ABAP SQL로 읽을 수 없어 조회 대안이 되지 못한다)'로 교체. 구분 기준을 join 종류가 아니라 '읽기 가능 여부(ABAP SQL data source인가)'로 못 박는다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L02.md",
+      "quote": "DATA gt_basic TYPE STANDARD TABLE OF zpv_booking_basic.",
+      "category": "사실 오류",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "예제 Projection View 이름 ZPV_BOOKING_BASIC은 17자로, 클래식 DDIC 뷰 이름의 16자 상한을 넘어 SE11에서 그대로는 만들 수 없다. 학습자가 실제 시스템에서 따라 하면 이름 입력 단계에서 막힌다.",
+      "evidence": "ABAP Dictionary의 테이블·뷰 이름은 최대 16자다(DDIC 기반 CDS의 sqlViewName이 16자로 묶였던 것도 같은 제약에서 온다). ZPV_BOOKING_BASIC을 세면 Z·P·V·_ 4자 + BOOKING 7자 + _ 1자 + BASIC 5자 = 17자다. 같은 챕터의 다른 예제 이름(ZV_PERF·ZHV_CONCERT·ZSH_CONCERT·ZCONCERT_T)은 모두 16자 이내라, 이 하나만 재현이 막히는 비대칭이 생긴다.",
+      "suggestion": "ZPV_BOOK_BASIC(14자)처럼 16자 이내로 교체하고, 본문에 'DDIC 테이블·뷰 이름은 16자까지'라는 제약 한 줄을 덧붙이면 이후 챕터의 Z객체 작명 사고까지 예방된다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L01.md",
+      "quote": "SELECT * FROM zv_perf",
+      "category": "안티패턴",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "챕터 첫 ABAP 예제가 조건 없이 조인 View 전건을 SELECT *로 내부 테이블에 적재하는데, 성능 주의가 한 줄도 없다. 교정 없이 시연되는 전형적 안티패턴이다.",
+      "evidence": "실제로 쓰는 필드는 뒤이은 WRITE의 4개(concert_id·perf_no·perf_date·artist)뿐인데 SELECT *로 전 컬럼을, WHERE 없이 전 행을 읽는다. Database View는 결국 basis table 조인이라 데이터가 커지면 그대로 DB·메모리 부하가 된다. 특히 같은 챕터 L07은 SE16N에 대해 '항상 Key나 조건을 넣어 좁혀 조회하는 습관을 들인다'고 가르치므로, 도구에는 요구한 규율을 코드 예제만 지키지 않는 모순이 생긴다. L09 실습 코드도 동일하게 WHERE 없이 전건을 읽는다.",
+      "suggestion": "예제에 WHERE(예: 특정 concert_id나 공연 기간)를 넣고 SELECT * 대신 실제 쓰는 필드만 나열한 뒤, '뷰도 결국 DB 조인이라 조건 없이 읽으면 위험하다'는 주의 한 줄을 붙인다. L09는 필요한 5개 필드에 맞는 TYPES 구조를 잡아 INTO TABLE로 받으면 INTO CORRESPONDING FIELDS의 필드 매핑 비용과 미사용 컬럼 메모리도 함께 줄어든다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L04.md",
+      "quote": "**input check·input help·view 생성**에서 평가된다. 단, ABAP SQL의 `SELECT`는 Foreign",
+      "category": "위험한 생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "Foreign Key가 자동 평가되지 않는 범위를 SELECT 한정으로만 적어, 정작 위험한 쪽(INSERT/UPDATE/DELETE와 SE16N 편집이 FK를 전혀 검사하지 않아 고아 행이 남는다)을 짚지 않았다.",
+      "evidence": "DDIC Foreign Key는 데이터베이스 제약으로 생성되지 않고 화면 입력 검사·입력 도움말·뷰 생성 시에만 평가된다. 따라서 프로그램의 INSERT/UPDATE/DELETE, SE16N 직접 편집, 상위 마스터 삭제는 아무것도 막지 않으며 cascade delete도 없다. L09 실습이 바로 '공연 마스터를 지우면 회차 행이 View에서 사라진다'를 관찰시키는데, 그때 원본 ZPERF에는 참조 대상 없는 고아 회차가 그대로 남는다는 사실이 설명되지 않아 'FK가 데이터를 지켜 준다'는 반대 인상을 남긴다.",
+      "suggestion": "L04에 'FK는 DB 제약이 아니다. 화면 입력에서만 막아 주고 프로그램의 INSERT/UPDATE/DELETE·SE16N 편집은 그대로 통과하므로, 마스터를 지우면 자식 행이 고아로 남는다'는 한 단락을 추가하고, L09 실패 경로 관찰 단계에 '원본 ZPERF에는 행이 남아 있는지 확인'을 넣어 View에서 사라진 것과 데이터가 지워진 것을 구분시킨다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L05.md",
+      "quote": "- Authorization Group(권한 그룹), 화면 번호, Maintenance Type(1단계/2단계) 지정.",
+      "category": "위험한 생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "Table Maintenance Generator에서 지정하는 항목을 열거하면서 필수 입력인 Function Group이 빠졌다. 이 칸 없이는 생성 자체가 진행되지 않는다.",
+      "evidence": "TMG 화면은 Authorization Group·Function Group·Maintenance Type·화면 번호를 요구하며, 생성된 유지보수 dialog(화면과 모듈)는 지정한 function group 안에 만들어진다. 초보자가 가장 헷갈리는 칸이자 이후 재생성·이송·유지보수 dialog 추적의 기준 이름인데 목록에 없어, 열거를 그대로 따라 하면 생성 단계에서 멈춘다. 화면 번호도 One Step은 overview 화면 1개, Two Step은 overview+single 화면 2개가 필요하다는 대응이 빠져 있다.",
+      "suggestion": "목록 첫 항목에 'Function Group(생성물이 들어갈 함수그룹, 보통 Z로 시작)'을 넣고, 화면 번호를 'One Step=1개 / Two Step=2개'로 Maintenance Type과 연결해 적는다."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L09.md",
+      "quote": "- **TMG 미생성** → SM30이 \"테이블 없음\" 오류. Table Maintenance Generator",
+      "category": "사실 오류",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "TMG를 만들지 않은 테이블을 SM30에서 열면 '테이블 없음'이 아니라 '유지보수가 허용/정의되지 않았다'는 취지의 메시지가 난다. 같은 챕터 L05의 서술('유지보수 불가' 오류)과도 어긋난다.",
+      "evidence": "SM30은 유지보수 dialog를 찾지 못하면 해당 테이블/뷰를 유지보수할 수 없다는 메시지를 낸다. '테이블 없음'은 이름 자체가 존재하지 않을 때의 메시지라, 학습자가 오류를 만났을 때 원인을 '테이블이 안 만들어졌나'로 잘못 추적하고 정작 TMG 생성이라는 진짜 원인에서 멀어진다. L05의 '- **Generator 없이 SM30** → \"유지보수 불가\" 오류'와 같은 상황을 다르게 적어 챕터 내부 일관성도 깨진다.",
+      "suggestion": "L05 표현에 맞춰 '유지보수 화면이 없다(유지보수 불가)' 오류로 통일한다."
+    },
+    {
+      "seq": 7,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L07.md",
+      "quote": "\"아무 테이블이나 빠르게 내용만 보고 싶다\"면? 그게 **SE16N**(Data Browser)이다.",
+      "category": "사실 오류",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "SE16N을 'Data Browser'로 소개했지만 Data Browser는 SE16(및 SE11 Utilities의 Table Contents)의 이름이고, SE16N의 정식 명칭은 General Table Display다.",
+      "evidence": "SE16 = Data Browser, SE16N = General Table Display(원래 FI 계열에서 출발한 확장 조회 도구)다. 레슨 제목·keywords·본문이 모두 '데이터 브라우저 = SE16N'으로 굳어져 있어, 학습자가 실제 시스템에서 SE16을 만났을 때 다른 도구로 오인하거나 SE16N 권한이 없는 시스템에서 대안을 찾지 못한다.",
+      "suggestion": "'SE16N(General Table Display)'로 정정하고 'SE11의 Data Browser = SE16'을 한 줄 병기해 두 T-code의 관계를 잡아 준다."
+    },
+    {
+      "seq": 8,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L07.md",
+      "quote": "> (검증·이력 우회). 보통 조회 위주로 쓰고, 편집은 권한·상황을 가린다.",
+      "category": "위험한 생략",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "SE16N의 데이터 편집이 권한만 있으면 되는 평범한 기능처럼 읽힌다. 기본 화면은 조회용이고 편집은 특수 모드로만 열린다는 점, 그리고 그 변경이 별도 로그에 남는다는 점이 빠졌다.",
+      "evidence": "SE16N에서 값을 바꾸려면 명령창의 &SAP_EDIT 같은 특수 모드(릴리스에 따라 별도 트랜잭션·권한 조합)로 편집을 활성화해야 하고, 그렇게 바뀐 값은 SE16N_CD_KEY·SE16N_CD_DATA 변경문서에 기록된다. 릴리스와 SAP Note에 따라 이 기능이 제한·차단되기도 해 confidence는 추정으로 둔다. 현재 문장은 '검증·이력 우회'라고 적었지만 실제로는 검증(업무 로직)만 우회되고 이력은 남는 쪽에 가까워, 경고의 초점도 살짝 어긋나 있다.",
+      "suggestion": "'SE16N 기본 화면은 조회용이며, 편집은 특수 모드와 별도 권한이 필요하고 운영에서는 원칙적으로 금지한다. 업무 검증(프로그램 로직)을 건너뛰는 게 진짜 위험이고, 변경 자체는 별도 로그에 남는다'로 다시 쓴다."
+    },
+    {
+      "seq": 9,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L05.md",
+      "quote": "- **권한 그룹 미지정** → 운영에서 권한 통제가 안 된다.",
+      "category": "사실 오류",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "권한 그룹 미지정을 '권한 통제가 안 된다'로 적었지만, 실제로는 그 테이블이 &NC&(미분류) 그룹으로 묶여 권한 검사는 계속 일어난다. 위험의 본질은 통제 소멸이 아니라 '미분류 권한을 가진 사용자 전체에게 함께 열린다'는 것이다.",
+      "evidence": "표준 테이블 유지보수 권한은 authorization group 기준의 S_TABU_DIS(및 테이블명 기준 S_TABU_NAM)로 검사한다. 권한 그룹을 지정하지 않은 테이블은 &NC&로 분류되므로 검사 자체는 유지되고, 대신 통제 단위가 뭉뚱그려져 다른 미분류 테이블과 같은 권한으로 동시에 열린다. 현재 문장을 그대로 두면 '권한 그룹이 없으면 아무나 다 된다'는 또 다른 오해가 생긴다.",
+      "suggestion": "'미지정 시 &NC&(미분류)로 묶여, 그 그룹 권한을 가진 사용자 모두에게 함께 열린다. 업무 단위로 권한 그룹을 나눠야 통제가 의미를 갖는다'로 고쳐 쓴다."
+    },
+    {
+      "seq": 10,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L01.md",
+      "quote": "`concert_id` 하나다. 회차 목록에 아티스트·공연장이 함께 나온다.)",
+      "category": "사실 오류",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "'조인 조건은 concert_id 하나'라는 서술은 두 테이블이 client-dependent일 때 실제 View 정의와 다르다. 클라이언트 필드 조인 조건이 함께 들어간다.",
+      "evidence": "client-dependent 테이블(첫 key가 MANDT)로 클래식 Database View를 만들면 SE11이 클라이언트 필드 조인 조건을 자동으로 제안·포함하며, 이것이 빠진 뷰는 클라이언트를 가로지르는 잘못된 결과를 낸다. 학습자가 SE11에서 실제로 뷰를 열면 조인 조건이 두 줄이라 본문과 화면이 어긋난다. 다만 대상 파일만으로는 zconcert·zperf의 client 종속 여부를 확인할 수 없어 추정으로 둔다.",
+      "suggestion": "'업무 조인 조건은 concert_id 하나(클라이언트 필드 조인은 SE11이 자동으로 붙인다)'처럼 괄호 한 줄만 덧붙이면 본문과 실제 화면이 일치한다."
+    },
+    {
+      "seq": 11,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L03.md",
+      "quote": "(`ZHV_CONCERT` = `zconcert`에 공연명 Text table `zconcert_t`를 붙인 Help View —",
+      "category": "예시 적절성",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "Text table을 붙이려고 Help View를 만드는 예시는 Search Help의 표준 동작(selection method 테이블의 text table 자동 인식)과 겹쳐, Help View를 만들 동기로는 약하다.",
+      "evidence": "elementary search help에서 selection method로 지정한 테이블에 text table이 정의돼 있으면 시스템이 그 관계를 인식해 설명 필드를 hit list에 쓸 수 있다. 이 레슨의 ZHV_CONCERT는 zconcert와 그 text table zconcert_t 조합이고 나머지 표시 필드(ARTIST·VENUE)는 zconcert 자체에 있으므로, 'Help View로 업그레이드해 설명 컬럼을 풍부하게'라는 서술상의 이득이 사실상 표준 기능과 중복된다. 릴리스·설정에 따른 화면 차이가 있어 추정으로 둔다.",
+      "suggestion": "Help View 예시를 text table이 아닌 별도 Foreign Key 마스터(예: 공연장 코드 → 공연장 마스터의 이름·주소)를 붙여 보조 정보를 늘리는 구성으로 바꾸고, text table은 '이미 자동으로 붙는다'고 한 줄 정리하면 두 메커니즘의 경계가 선명해진다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "기술적 뼈대는 견고하다. 뷰 유형별 핵심 성질(Database View는 DB에 SQL view가 생기고 ABAP SQL로 읽힌다 / Projection View는 단일 테이블·selection condition 없음·DB에 생성되지 않음 / Help View는 F4 전용 / Maintenance View는 ABAP SQL data source가 아니고 SE54·SM30 흐름), SE54와 SM34의 역할 분담, Foreign Key가 SELECT에서 자동 평가되지 않는다는 점, classic과 CDS의 경계 서술까지 대부분 정확하다. 치명·높음 결함은 없다. 다만 ① L04 콜아웃이 outer join을 Help View 전용으로 잘못 귀속해(Maintenance View도 outer join 성격) 옳은 메시지를 틀린 근거로 가르치고 ② L02 예제 뷰 이름 ZPV_BOOKING_BASIC이 17자로 DDIC 16자 상한을 넘어 실습이 막히며 ③ L05가 TMG 필수 입력인 Function Group을 빠뜨렸고 ④ L09의 SM30 오류 메시지 서술이 실제와 다르고 L05와도 모순된다. 위험한 생략으로는 Foreign Key가 DB 제약이 아니라 INSERT/UPDATE/DELETE와 SE16N 편집을 그대로 통과시켜 고아 행을 남긴다는 점(L09 실습이 바로 그 상황을 다루면서도 설명하지 않음), 그리고 챕터의 두 ABAP 코드 예제가 모두 WHERE 없이 SELECT * 전건을 적재하면서 성능 주의가 없다는 점이 눈에 띈다. L07은 SE16N을 Data Browser로 잘못 명명하고 편집 모드의 특수성을 흐렸으며, L05의 권한 그룹 서술은 &NC& 동작을 반영하지 못했다. 모든 결함이 문장 교체 또는 한 단락 보강으로 닫히고 챕터 구성·학습 순서를 건드릴 필요가 없어 '경미 수정'으로 판단한다. 다만 4번(FK 무결성)과 3번(조회 성능 규율)은 단순 교정이 아니라 짧은 내용 추가가 필요하다."
+  }
+}

@@ -1,0 +1,104 @@
+{
+  "agent": "AG03",
+  "model": "opus",
+  "target": "CH16",
+  "persona_ack": "나는 Java/C# 계열 백엔드 3～5년차 개발자다. 변수·조건문·루프·SQL·OOP는 이미 알고, ABAP을 빠르게 훑어 익히려고 CH16(Screen Programming / Dynpro 기초) 10개 레슨과 _chapter.md를 통독했다. 경력자 시선으로 ① 과잉 설명 ② 오개념 유발 단순화 ③ 경력자용 지름길(건너뛰기) 안내 부재 ④ 일반 개발 용어와 ABAP 용법의 충돌 미설명을 기록했다. 다만 이 사이트의 1독자가 비전공 입문자임을 감안해, '입문자에겐 필요하나 나에겐 아는 내용'은 낮음/제안으로만 분류했다.",
+  "method": "Read 도구로 대상 11개 파일(_chapter.md + CH16-L01～L10) 전문 통독 — 본문·표·코드 블록·콜아웃·front-matter 포함. 레슨 간 상호 참조와 용어·예제 값·관용구 사용의 일관성을 교차 대조(L03↔L04 F4/라벨 설명, L03↔L10 드롭다운 key 값, L06/L08/L10 'X'↔abap_true). 웹 검색·외부 자료·타 감사자 산출물 접근 없음. ABAP 문법·런타임 동작 판단은 내 지식 기준이며, 판단이 갈릴 수 있는 항목은 claim에 근거를 명시했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L10.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH16/CH16-L10.md",
+      "quote": "DATA lv_ok TYPE abap_bool.",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "dialog module(`MODULE ... ENDMODULE`) 안에서 `lv_` 접두어로 변수를 선언해, 다른 언어의 메서드 지역변수처럼 이 변수가 모듈 스코프에 갇힌다는 인상을 준다. 실제 ABAP에서 dialog module은 procedure(FORM/METHOD/FUNCTION)가 아니라 processing block이라 그 안의 `DATA`는 프로그램 전역이다.",
+      "evidence": "CH16-L10의 `MODULE user_command_0100 INPUT.` 첫 줄이 `DATA lv_ok TYPE abap_bool.`이다. Java/C#에서 온 독자는 메서드 지역변수와 동일하게 읽어 '모듈이 끝나면 사라진다'고 이해하지만, ABAP은 event block·dialog module 내부 선언을 전역 데이터로 취급한다(값이 다음 PAI·다른 모듈까지 남는다). 이 챕터의 CH16-L06·L08·L09는 모듈 안에서 쓰는 변수를 전부 모듈 밖에 `gv_`/`gs_`/`go_`로 선언해 두었으므로, L10만 규칙이 다르다. 프로젝트 네이밍 규칙(R11)도 `lv_`는 로컬 스코프(METHOD/FORM 내부) 전용으로 못박고 있다.",
+      "suggestion": "`DATA gv_ok TYPE abap_bool.`로 바꾸고 선언 위치를 모듈 밖 전역 DATA 블록으로 올린다. 여기에 한 줄만 덧붙이면 경력자에게 특히 값진 정보가 된다 — \"Dynpro의 MODULE은 함수가 아니라 처리 블록이라 안에서 선언해도 전역이다. 지역 변수가 필요하면 FORM/METHOD로 감싼다.\""
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH16/CH16-L07.md",
+      "quote": "- **CANCEL** — 입력 취소하고 뒤로(`LEAVE TO SCREEN 0`).",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "BACK/EXIT/CANCEL을 일반 PAI 모듈(`user_command_0100`)의 `CASE`에서 처리하라고만 가르치는데, 실제 classic Dynpro에서 필수입력(required entry) 칸이 하나라도 비어 있으면 자동 입력검사가 PAI 모듈보다 먼저 걸려 이 분기에 도달조차 못 한다. '취소는 언제나 동작한다'는 개발 상식과 어긋나는데, 그 이유(function type 'E' + `AT EXIT-COMMAND`)가 CH16 어디에도 없다.",
+      "evidence": "CH16-L07은 `WHEN 'BACK'`·`WHEN 'EXIT'`·`WHEN 'CANCEL'`을 모두 `MODULE user_command_0100 INPUT.` 안의 `CASE save_ok`에 두고, 'BACK·EXIT·CANCEL — 관례' 절도 종료 문장만 짝지어 설명한다. CH16-L10 실습 코드도 동일하게 `WHEN 'BACK' OR 'CANCEL'.`을 일반 PAI 모듈에 둔다. 11개 파일 어디에도 `AT EXIT-COMMAND`나 Menu Painter의 function type 'E' 언급이 없다. 반면 CH16-L04는 DDIC 필드를 화면에 얹으라고 권하는데, DDIC 기반 필드는 필수입력으로 설정되기 쉬워 이 함정을 실제로 만나기 쉽다.",
+      "suggestion": "CH16-L07 '화면을 떠나는 문장들' 아래에 각주 한 줄이면 충분하다 — \"EXIT·CANCEL 버튼은 Menu Painter에서 function type을 'E'로 주고 `MODULE exit_0100 INPUT AT EXIT-COMMAND.`로 받는다. 그래야 필수입력 검사에 막히지 않고 빠져나올 수 있다(상세는 심화).\" 코드까지 늘릴 필요 없이 존재만 알려도 오개념이 사라진다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH16/CH16-L04.md",
+      "quote": "`gv_`로 직접 선언한 필드는 이 이점을 받지 못한다.",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "\"직접 선언한 `gv_` 필드는 라벨·F4를 못 받는다\"는 단정이 너무 세다. 실제로는 Screen Painter의 Element List에서 프로그램 필드에도 Data Element/Search Help를 지정하면 라벨·F1·F4가 동일하게 작동한다. 게다가 이 단정은 바로 앞뒤 레슨의 서술과 정면으로 어긋난다.",
+      "evidence": "CH16-L03은 \"입력칸에 [[Data Element]]를 쓰면 [Elementary Search Help](CH09-L04.html)의 F4·검증이 화면에서도 작동한다\"고 쓰고, CH16-L05의 입력 도움 우선순위 표 2번은 \"화면 필드에 Search Help 직접 연결 — 그 칸에만 별도 Search Help가 필요할 때\"라는 경로를 명시한다. 두 서술 모두 프로그램 필드도 DDIC 도움을 받을 수 있다는 뜻인데, CH16-L04만 못 받는다고 단정한다. 경력자는 '그럼 L05 표의 2번은 뭘 연결하는 거지'에서 멈춘다.",
+      "suggestion": "\"DDIC 필드를 복사하면 라벨·타입·F4가 **기본으로 딸려 오고**, 직접 선언한 필드는 Element List에서 Data Element나 Search Help를 **따로 지정해야** 같은 효과를 낸다(그 경로는 다음 레슨 우선순위 표 2번)\"로 완화한다. `TABLES`의 장점(손이 덜 감)은 그대로 살면서 사실도 맞는다."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH16/CH16-L03.md",
+      "quote": "- `key`는 변수에 들어가는 **실제 값**(`R`), `text`는 화면에 보이는 **글자**(`예약`)다. 둘은 다르다.",
+      "category": "일관성 / 오개념 유발",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "한 절 안에서 드롭다운 예시 값이 세 번 바뀐다. 본문은 '예약/대기/취소', 코드는 key `'N'`(신규)/`'C'`(취소), 해설 불릿은 key `R`/text `예약`이다. key↔text 구분이라는 핵심 포인트를 설명하는 문장이 정작 코드에 없는 값을 든다.",
+      "evidence": "같은 레슨에서 도입 문장은 \"값이 몇 개로 정해져 있을 때(상태 = 예약/대기/취소)\", 코드는 `gs_value-key = 'N'. gs_value-text = '신규'.`와 `gs_value-key = 'C'. gs_value-text = '취소'.`, 해설은 `R`/`예약`이다. CH16-L10의 통합 코드와 검증 시나리오는 `'N'`=신규로 일관되므로, 어긋난 쪽은 CH16-L03의 이 불릿이다. 코드와 해설을 한 줄씩 대조하며 읽는 독자가 'R은 어디서 나온 값인가'로 되돌아가게 된다.",
+      "suggestion": "불릿을 코드 값으로 맞춘다 — \"`key`는 변수에 들어가는 실제 값(`'N'`), `text`는 화면에 보이는 글자(`신규`)다.\" 도입 문장의 '예약/대기/취소'도 '신규/취소'(또는 코드에 3번째 항목 추가)로 통일한다."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH16/CH16-L10.md",
+      "quote": "IF lv_ok = abap_true.",
+      "category": "용어 충돌",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "챕터 내내 참/거짓을 문자 `'X'`로 다루다가 마지막 레슨에서만 `abap_bool`/`abap_true`가 예고 없이 등장한다. 둘이 같은 것(`abap_true`의 실체가 문자 `'X'`)이라는 한 줄이 없어, 'ABAP엔 boolean 타입이 따로 있나'라는 잘못된 결론으로 이어지기 쉽다.",
+      "evidence": "CH16-L03은 흔한 실수로 \"체크박스를 Boolean처럼 → 화면 운반 값은 `'X'`/공백인 character다\"라고 못박고, CH16-L06은 `IF gs_screen-name = 'GV_SEATS' AND gv_locked = 'X'.`, CH16-L08은 `IF gv_locked = 'X'.`로 문자 비교를 쓴다. 그런데 CH16-L10만 `DATA lv_ok TYPE abap_bool.` + `IF lv_ok = abap_true.`다. Java/C#에서 온 독자에겐 이 지점이 '진짜 boolean이 있다'는 오해가 굳는 자리이자, ABAP의 대표적 용어 충돌(진짜 boolean 타입이 없고 char(1) 관례로 대신함)을 짚어 줄 최적의 자리인데 그냥 지나간다.",
+      "suggestion": "CH16-L10 첫 등장 지점에 한 줄 — \"`abap_bool`은 길이 1 문자 타입이고 `abap_true`의 값은 문자 `'X'`다. 즉 앞에서 쓴 `'X'`와 같은 것이며, 이름만 읽기 좋게 붙인 상수다.\" 경력자에겐 '아 ABAP엔 boolean이 없구나'가 한 번에 정리되고, 입문자에겐 두 표기가 이어진다."
+    },
+    {
+      "seq": 6,
+      "file": "content/abap/CH16/CH16-L03.md",
+      "quote": "- **Text Field로 값 받기** → Text Field는 라벨이다. 값은 Input/Output Field로 받는다.",
+      "category": "과잉 / 지름길 부재",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "CH16-L03 전반부(요소 목록 표 + '값을 운반/función code 발생/표시만' 구분 + 이 흔한 실수)는 폼 UI를 만들어 본 사람에게는 전부 자명하다. 입문자에게는 필요한 내용이므로 삭제 대상은 아니지만, 챕터 11개 파일 어디에도 \"이미 GUI 폼을 다뤄 봤다면 이 절은 건너뛰고 X부터\" 같은 안내가 한 곳도 없다.",
+      "evidence": "CH16-L03의 요소 표는 Input Field=값 입력, Text Field=고정 라벨, Push Button=누르면 이벤트, Frame=요소 묶음처럼 어떤 UI 프레임워크에서도 동일한 상식을 나열하고, 흔한 실수 항목까지 '라벨로는 값을 못 받는다'를 재확인한다. 반면 같은 레슨에서 ABAP 고유로 정말 중요한 부분은 '이름이 같은 전역 변수와 자동 연결', 'Push Button만 OK_CODE를 보낸다', 'Dropdown은 VRM_SET_VALUES로 채운다' 세 가지인데, 자명한 설명과 같은 무게로 섞여 있어 훑어 읽는 독자가 핵심을 놓치기 쉽다.",
+      "suggestion": "내용은 그대로 두고 신호만 추가한다. ① 레슨 첫머리에 \"폼 UI 경험이 있다면 요소 표는 눈으로 훑고 '요소는 세 가지 행동으로 나뉜다'부터 읽어도 된다\" 한 줄. ② ABAP 고유 3가지(이름 일치 자동 운반 · Push Button만 function code · VRM)를 별도 콜아웃으로 묶으면 두 독자층이 같은 페이지에서 각자 필요한 것만 가져간다. 챕터 전체로는 L01의 '리포트 vs Module Pool' 표, L03 요소 표가 이런 표식이 가장 필요한 두 곳이다."
+    },
+    {
+      "seq": 7,
+      "file": "content/abap/CH16/CH16-L05.md",
+      "quote": "CALL FUNCTION 'F4IF_INT_TABLE_VALUE_REQUEST'",
+      "category": "오개념 유발",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "이 `IF ... ENDIF.` + `CALL FUNCTION` 코드 블록이 어떤 처리 블록 안인지 표시 없이 떠 있다. 바로 앞 블록이 `ENDMODULE.`로 끝났기 때문에, 읽는 순서대로면 '모듈 밖 최상위'로 보이는데 Module Pool에서는 실행문이 처리 블록 밖에 존재할 수 없다.",
+      "evidence": "CH16-L05의 앞 코드 블록은 `MODULE value_perf INPUT.` … `ENDMODULE.`로 닫히고, 이어지는 블록은 `TYPES: BEGIN OF ts_perf …` / `DATA: gt_perf …` / `IF gs_dynp-fieldvalue = 'C001'.` / `CALL FUNCTION 'F4IF_INT_TABLE_VALUE_REQUEST'`로 시작해 감싸는 MODULE 없이 끝난다. 그런데 이 블록은 앞 모듈에서 선언한 `gs_dynp`를 그대로 쓰므로 같은 모듈의 연속이 분명하다. 실제로 그대로 옮겨 적으면 활성화되지 않는데, 경력자는 '어디에 넣으라는 거지'에서 한 번 멈추고 입문자는 그대로 최상위에 붙여 넣는다. CH16-L10은 같은 상황에서 \"실제로는 Flow Logic은 Screen Painter에, MODULE ... ENDMODULE은 program source에 따로 있다\"는 안내를 달아 두어 대비된다.",
+      "suggestion": "블록 첫 줄에 `\" (같은 value_perf 모듈에서 이어서)` 주석을 넣거나, `MODULE value_perf INPUT.` … `ENDMODULE.`로 감싸 한 덩어리로 보여 준다. TYPES/DATA는 모듈 밖 전역 선언임을 주석으로 구분해 주면 더 정확하다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "경력자 시선에서 CH16은 의외로 군더더기가 적다. Dynpro·PBO/PAI·Screen Painter 네 조각·OK_CODE는 다른 언어 경험으로 대체되지 않는 SAP 고유 지식이라 '이미 아는 걸 늘어놓는' 과잉은 사실상 L03 요소 표 정도뿐이고, 오히려 'TABLES를 조회 문장으로 오해', '체크박스를 Boolean처럼', 'PBO/PAI를 AT SELECTION-SCREEN과 동일시', 'active=0 대신 input=0'처럼 경력자가 실제로 빠지는 함정을 각 레슨의 흔한 실수 절이 선제적으로 짚어 준다. 이 부분은 매우 좋다. 문제는 큰 구조가 아니라 국소적인 정확성·일관성 네 곳이다. ① dialog module 안 `DATA lv_ok`가 다른 언어의 지역변수처럼 읽히지만 ABAP에서는 전역이라는 점(L10), ② BACK/EXIT/CANCEL을 일반 PAI 모듈에서만 처리하게 가르쳐 필수입력 검사에 막히는 실제 동작(`AT EXIT-COMMAND`)이 통째로 빠진 점(L07·L10), ③ '직접 선언한 gv_ 필드는 라벨·F4를 못 받는다'는 과한 단정이 L03·L05의 서술과 어긋나는 점(L04), ④ 드롭다운 key 예시 값 불일치와 `'X'`↔`abap_true` 혼용(L03·L10)이다. 모두 한두 줄 각주나 값 통일로 끝나는 수정이고 구조 손질은 필요 없다. 추가로, 경력자용 '이 절은 건너뛰어도 됨' 표식이 챕터 전체에 0곳인데 L01 비교표와 L03 요소 표 두 곳에만 넣어도 훑어 읽는 독자의 체감이 크게 달라진다. 입문자 기준으로는 불필요하게 장황한 대목이 없으므로 재집필·대폭 보강은 불필요하다고 본다."
+  }
+}

@@ -4,8 +4,9 @@
 (function(){
   var root=document.querySelector('[data-dynpro]'); if(!root) return;
   var $=function(s){return root.querySelector(s);};
-  // 상태(= 화면 필드에 연결된 전역 변수)
-  var st={ gv_conc:'', gv_seats:'', gv_vip:'', gv_stat:'R', ok_code:'' };
+  // 상태(= 화면 필드에 연결된 전역 변수). 상태값은 시드 정본 N(신규)/C(취소).
+  // Text Field·Frame은 표시 전용이라 여기에 대응 변수가 없다(그 사실 자체가 학습 포인트).
+  var st={ gv_conc:'', gv_seats:'', gv_vip:'', gv_stat:'N', gv_grade:'S', ok_code:'' };
 
   function vrow(k,label,val){
     var empty = (val===''||val==null);
@@ -19,7 +20,9 @@
       vrow('gv_seats','gv_seats', st.gv_seats)+
       vrow('gv_vip',"gv_vip (CHAR1)", st.gv_vip)+
       vrow('gv_stat','gv_stat', st.gv_stat)+
-      vrow('ok_code','ok_code (sy-ucomm)', st.ok_code);
+      vrow('gv_grade','gv_grade', st.gv_grade)+
+      vrow('ok_code','ok_code (sy-ucomm)', st.ok_code)+
+      '<div class="dse-noVar">Text Field · Frame — <b>표시 전용</b>이라 연결된 변수가 없습니다</div>';
     var msg=$('[data-okmsg]');
     msg.innerHTML = st.ok_code
       ? '✓ <b>OK_CODE = \''+st.ok_code+'\'</b> 가 PAI로 전달됨 → 입력값으로 처리(검증·저장).'

@@ -45,10 +45,78 @@
 예매 확인·정산 리포트가 모두 <code>zconcert</code>와 <code>zperf</code>를 같은 조건으로 붙인다면, 필드명이
 바뀌거나 <button class="term" type="button" data-term="JOIN">조인</button> 조건을 보강할 때 <strong>프로그램마다</strong> 고쳐야 한다.</p>
 <p><button class="term" type="button" data-term="Database View">Database View</button>는 이 반복 조회 구조를 <strong>DDIC에 이름 붙여 등록</strong>하는 방법이다.</p>
+<blockquote>
+<p>🗺️ <strong>이 챕터의 지도 — 두 갈래.</strong> 앞의 네 레슨은 DDIC에 등록하는 <strong>View 네 종류</strong>를
+하나씩 본다. 세 개는 <strong>보여 주는 쪽</strong>(조회용 Database·필드를 줄이는 Projection·입력도움말용
+Help)이고, 하나는 <strong>고치는 쪽</strong>(유지보수용 Maintenance)이다. 그다음 레슨들은 그 유지보수
+관점에 <strong>실제 화면과 도구</strong>를 붙인다(입력 화면 자동 생성 → 여러 테이블 묶어 관리 → 빠른 조회
+브라우저). 마지막에 현대 도구와의 경계를 긋고, 공연 등록 실습으로 전부 이어 붙인다.</p>
+</blockquote>
 </section><section class="lblock"><h2>Database View — JOIN을 DDIC에 등록</h2>
-<p><button class="term" type="button" data-term="Database View">Database View</button>는 하나 이상의 basis table에서 필요한 컬럼을 골라 만드는 DDIC 객체다.
-여러 테이블이면 <strong>inner join</strong>으로 결합한다. 활성화하면 DB 쪽에도 SQL View가 만들어져
-ABAP SQL의 <code>FROM</code> 자리에서 <strong>테이블처럼</strong> 읽을 수 있다.</p>
+<p><button class="term" type="button" data-term="Database View">Database View</button>는 하나 이상의 <strong>basis table</strong>(기반 테이블, View가 값을 실제로 읽어 오는
+원본 테이블)에서 필요한 컬럼을 골라 만드는 DDIC 객체다. 여러 테이블이면 <strong>inner join</strong>으로
+결합한다. 활성화하면 DB 쪽에도 SQL View가 만들어져 <button class="term" type="button" data-term="Open SQL">Open SQL</button>의 <code>FROM</code> 자리에서
+<strong>테이블처럼</strong> 읽을 수 있다.</p>
+<blockquote>
+<p>📎 <strong>Open SQL과 ABAP SQL은 같은 것이다.</strong> <a href="CH08-L01.html">Chapter 8 · DB에서 읽어 오기</a>에서
+배운 그 SQL인데, 최신 릴리스의 SAP 문서·화면은 같은 대상을 ABAP SQL이라고 부른다. 이름만
+바뀌었을 뿐이라 둘 중 무엇을 보든 당황하지 않아도 된다.</p>
+</blockquote>
+<h3>이 챕터가 쓸 View — <code>ZV_PERF</code></h3>
+<p>챕터 내내 쓸 View 하나를 먼저 정해 두자. 회차 <code>zperf</code>에 공연 마스터 <code>zconcert</code>를 붙인
+<code>ZV_PERF</code>다. <button class="term" type="button" data-term="JOIN">조인</button> 조건은 <code>concert_id</code>이고, View Field는 <strong>다섯</strong>이다.</p>
+<table>
+<thead>
+<tr>
+<th>View Field</th>
+<th>어느 basis table에서</th>
+<th>뜻</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>CONCERT_ID</code></td>
+<td><code>ZPERF</code></td>
+<td>공연 코드</td>
+</tr>
+<tr>
+<td><code>PERF_NO</code></td>
+<td><code>ZPERF</code></td>
+<td>회차 번호</td>
+</tr>
+<tr>
+<td><code>PERF_DATE</code></td>
+<td><code>ZPERF</code></td>
+<td>공연 날짜</td>
+</tr>
+<tr>
+<td><code>ARTIST</code></td>
+<td><code>ZCONCERT</code></td>
+<td>아티스트</td>
+</tr>
+<tr>
+<td><code>VENUE</code></td>
+<td><code>ZCONCERT</code></td>
+<td>공연장</td>
+</tr>
+</tbody></table>
+<p>회차만 있던 목록에 아티스트와 공연장이 함께 붙어 나온다. 이 다섯이 이 챕터가 계속
+전제하는 <code>ZV_PERF</code>의 구성이다. <a href="CH14-L09.html">실습 레슨</a>의 조회 코드도 이 구성을 그대로 읽는다.</p>
+<h3>직접 만들어 보기 (SE11)</h3>
+<ol>
+<li><code>SE11</code> → <strong>View</strong> 칸에 <code>ZV_PERF</code>를 넣고 Create → 종류는 <strong>Database view</strong>.
+(View 이름은 테이블과 마찬가지로 <strong>16자까지</strong>다. 길게 지으면 저장 자체가 안 된다.)</li>
+<li><strong>Tables</strong> 칸에 <code>ZPERF</code>, <code>ZCONCERT</code> 순으로 적는다. 먼저 적은 쪽이 기준 테이블이다.</li>
+<li><strong>Relationships</strong> 버튼을 누른다. 두 테이블 사이에 이미 걸어 둔 <button class="term" type="button" data-term="Foreign Key">Foreign Key</button>
+(<a href="CH09-L09.html">Chapter 9 · 실습에서 건 그 관계</a>)를 찾아 조인 조건을 자동으로 채워 준다.</li>
+<li><strong>View Flds</strong> 탭에서 Table Fields 버튼으로 위 표의 다섯 필드를 고른다.</li>
+<li>저장하고 패키지를 지정한 뒤 <strong>활성화</strong>한다. 활성화해야 DB에 SQL View가 생겨 <code>SELECT</code>가 통한다.</li>
+</ol>
+<blockquote>
+<p>💡 조인 조건 줄을 보면 우리가 지정한 <code>CONCERT_ID</code> 말고 <strong><code>MANDT</code>도 함께</strong> 들어가 있다.
+두 테이블 다 client별로 데이터가 갈리는 테이블이라 SE11이 클라이언트 대응 줄을 자동으로
+넣어 준다(<a href="CH08-L01.html">Chapter 8 · client 자동 종속</a>). 우리가 신경 쓸 조건은 <code>CONCERT_ID</code> 하나다.</p>
+</blockquote>
+<p>만든 View는 프로그램에서 테이블처럼 읽는다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -58,7 +126,8 @@ ABAP SQL의 <code>FROM</code> 자리에서 <strong>테이블처럼</strong> 읽�
 7
 8
 9
-10</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>: gt_perf <span class="tok-kw">TYPE</span> <span class="tok-kw">STANDARD</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> zv_perf,
+10
+11</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>: gt_perf <span class="tok-kw">TYPE</span> <span class="tok-kw">STANDARD</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> zv_perf,
       gs_perf <span class="tok-kw">TYPE</span> zv_perf.
 
 <span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> zv_perf
@@ -66,16 +135,26 @@ ABAP SQL의 <code>FROM</code> 자리에서 <strong>테이블처럼</strong> 읽�
 
 <span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> gt_perf <span class="tok-kw">INTO</span> gs_perf.
   <span class="tok-kw">WRITE</span>: / gs_perf-concert_id, gs_perf-perf_no,
-           gs_perf-perf_date,  gs_perf-artist.
+           gs_perf-perf_date,  gs_perf-artist,
+           gs_perf-venue.
 <span class="tok-kw">ENDLOOP</span>.</code></pre></div></div>
-<p>(<code>ZV_PERF</code> = 회차 <code>zperf</code>에 공연 마스터 <code>zconcert</code>를 붙인 View — <button class="term" type="button" data-term="JOIN">조인</button> 조건은
-<code>concert_id</code> 하나다. 회차 목록에 아티스트·공연장이 함께 나온다.)</p>
 <p>프로그램은 JOIN 조건을 <strong>모르는 채로도</strong> 결합된 결과를 읽는다. 조인 정의가 View 안에
 들어 있기 때문이다.</p>
+<blockquote>
+<p>⚡ 이 예제는 배우는 자리라 View를 통째로 읽었다. 실제 리포트에서는 <strong>조건과 필드를 좁혀
+읽는 게 기본</strong>이다. 조건 없는 <code>SELECT *</code>는 행이 수십만인 테이블에서 그대로 응답 시간이 된다.</p>
+</blockquote>
 <blockquote>
 <p>📌 중요한 제한 둘. ① Database View는 <strong>데이터를 새로 저장하지 않는다</strong>(결과는 basis
 table에서 읽힌다). ② 여러 테이블 View는 <strong>inner join</strong>이라, 공연 코드는 있는데 공연
 마스터가 없으면 그 행은 <strong>결과에서 사라진다</strong>.</p>
+</blockquote>
+<blockquote class="cw">
+<p>⚠️ 이름이 주는 오해 하나. 다른 데이터베이스에서 <code>CREATE VIEW</code>로 하던 일을 여기서 다 할 수는
+없다. classic Database View가 하는 일은 <strong>basis table을 inner join으로 붙이고 필드를 고르는
+것</strong>까지다. 계산 컬럼·합계·outer join·여러 조회 결과 합치기는 대상이 아니다.
+(<strong>Selection Conditions</strong> 탭에서 &quot;상태가 <code>N</code>인 행만&quot; 같은 <strong>고정 조건</strong>은 걸 수 있다. 다만
+프로그램마다 달라지는 조건은 View가 아니라 <code>SELECT</code>의 <code>WHERE</code>에 거는 게 맞다.)</p>
 </blockquote>
 </section><section class="lblock"><h2>View vs 코드 JOIN — 책임 위치가 다르다</h2>
 <table>
@@ -107,13 +186,21 @@ table에서 읽힌다). ② 여러 테이블 View는 <strong>inner join</strong>
 <td>해당 프로그램 중심</td>
 </tr>
 <tr>
+<td>실행 속도</td>
+<td>결국 DB가 같은 JOIN을 수행</td>
+<td>결국 DB가 같은 JOIN을 수행</td>
+</tr>
+<tr>
 <td>적합</td>
 <td>안정적인 공통 조회 관점</td>
 <td>조건·결합이 매번 다른 조회</td>
 </tr>
 </tbody></table>
+<p>표의 다섯째 줄이 중요하다. <strong>둘 중 무엇이 더 빠른가는 선택 기준이 아니다.</strong> 어느 쪽이든
+DB가 같은 <button class="term" type="button" data-term="JOIN">조인</button>을 수행하기 때문이다. 갈리는 지점은 &quot;이 결합을 여러 프로그램이 공유하는가,
+아니면 이 프로그램에서만 쓰는가&quot;다.</p>
 <p>아래에서 같은 결과가 &quot;코드 JOIN&quot;과 &quot;Database View&quot; 두 정의에서 나오는 걸 확인하고,
-마스터가 빠졌을 때 inner join이 행을 어떻게 떨어뜨리는지 직접 보자.</p>
+마스터가 빠졌을 때 inner join에서 행이 어떻게 빠지는지 직접 보자.</p>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">코드 JOIN vs Database View 비교 보드</span><a class="embed__open" href="../../../embeds/abap/CH14-L01-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH14-L01-S01.html" loading="lazy" title="코드 JOIN vs Database View 비교 보드"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>

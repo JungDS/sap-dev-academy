@@ -40,11 +40,11 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>검증이 끝나면, 이제 본 처리</h2>
-<p>입력 검증이 끝나면 실제 업무 처리를 시작한다. 이 조회 로직을 <button class="term" type="button" data-term="INITIALIZATION">INITIALIZATION</button>에 쓰면
-사용자가 조건을 입력하기 <strong>전에</strong> 조회하고, <button class="term" type="button" data-term="AT SELECTION-SCREEN OUTPUT">AT SELECTION-SCREEN OUTPUT</button>에 쓰면 화면을
-그릴 때마다 조회한다. 둘 다 좋은 자리가 아니다.</p>
-<p><button class="term" type="button" data-term="START-OF-SELECTION">START-OF-SELECTION</button>은 selection screen 처리(입력·검증)가 끝난 뒤 <strong>본 처리로 들어가는
-표준 자리</strong>다. 지금까지 코드를 여기 몰아 둔 이유다.</p>
+<p>입력 검증이 끝나면 실제 업무 처리를 시작한다. 이 조회 로직을 앞선 <button class="term" type="button" data-term="이벤트">이벤트</button>에 두면
+사용자가 조건을 넣기 <strong>전에</strong> 조회하거나(<button class="term" type="button" data-term="INITIALIZATION">INITIALIZATION</button>), 화면을 그릴 때마다 다시
+조회하게 된다(<button class="term" type="button" data-term="AT SELECTION-SCREEN OUTPUT">AT SELECTION-SCREEN OUTPUT</button>). 둘 다 좋은 자리가 아니다.</p>
+<p><button class="term" type="button" data-term="START-OF-SELECTION">START-OF-SELECTION</button>은 선택화면 처리(입력·검증)가 끝난 뒤 <strong>본 처리로 들어가는 표준
+자리</strong>다. 지금까지 코드를 여기 몰아 둔 이유다.</p>
 </section><section class="lblock"><h2>START-OF-SELECTION</h2>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
@@ -89,16 +89,21 @@
   <span class="tok-kw">ENDLOOP</span>.</code></pre></div></div>
 <ul>
 <li>선택화면 입력(<button class="term" type="button" data-term="PARAMETERS">PARAMETERS</button>·<button class="term" type="button" data-term="SELECT-OPTIONS">SELECT-OPTIONS</button>)이 이 시점엔 모두 채워져 있다.</li>
-<li>조회·계산·<button class="term" type="button" data-term="Aggregate">집계</button> 같은 <strong>무거운 로직</strong>을 여기 둔다. (<a href="CH12-L01.html">Chapter 12 · Range Table</a>)의
-<code>SELECT-OPTIONS</code>, (<a href="CH13-L01.html">Chapter 13 · JOIN</a>)의 classic <code>SELECT</code>, <code>sy-subrc</code> 감각이 여기서 합쳐진다.</li>
-<li>event 키워드 없이 executable statement만 있으면 그 문장들은 <strong>암묵적으로</strong> <code>START-OF-SELECTION</code>에 묶인다.</li>
+<li>조회·계산·<button class="term" type="button" data-term="Aggregate">집계</button> 같은 <strong>무거운 로직</strong>을 여기 둔다.
+<a href="CH12-L01.html">Chapter 12 · Range Table 구조</a>에서 배운 <code>SELECT-OPTIONS</code>,
+<a href="CH13-L01.html">Chapter 13 · INNER JOIN 기본 개념과 구현</a>에서 배운 classic <code>SELECT</code>,
+그리고 <code>sy-subrc</code>를 읽는 감각이 여기서 하나로 합쳐진다.</li>
+<li><button class="term" type="button" data-term="이벤트">이벤트</button> 키워드를 하나도 쓰지 않고 실행되는 문장(선언이 아니라 실제로 무언가를 하는
+문장)만 적어 두면, 그 문장들은 <strong>암묵적으로</strong> <code>START-OF-SELECTION</code>에 묶인다.</li>
+<li>⚠️ 예제는 읽기 편하라고 <code>SELECT *</code>로 전 컬럼을 가져왔다. 실무 원칙은 <strong>쓸 컬럼만 나열</strong>하는
+것이다(안 쓰는 컬럼까지 나르면 그만큼 느려진다). 이 챕터의 다른 예제도 같은 이유로 <code>SELECT *</code>를 쓴다.</li>
 </ul>
 <p>아래에서 검증을 통과해야만 <code>START-OF-SELECTION</code>이 열리고, 조건에 따라 결과·<code>sy-subrc</code>가
 어떻게 달라지는지 보자.</p>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">조회 시작 게이트 (검증 통과 → SELECT)</span><a class="embed__open" href="../../../embeds/abap/CH15-L05-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH15-L05-S01.html" loading="lazy" title="조회 시작 게이트 (검증 통과 → SELECT)"></iframe></figure>
 </section><section class="lblock"><h2>출력은?</h2>
 <ul>
-<li>간단하면 여기서 <code>WRITE</code>나 <a href="CH11-L01.html">Chapter 11 · SALV</a>로 바로 출력한다.</li>
+<li>간단하면 여기서 <code>WRITE</code>나 <a href="CH11-L01.html">Chapter 11 · SALV의 목적과 CL_SALV_TABLE 개요</a>로 바로 출력한다.</li>
 <li>&quot;조회 후 마무리&quot;를 명시적으로 나누려면 <code>END-OF-SELECTION</code>(다음 레슨, 단 레거시).</li>
 </ul>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
@@ -112,7 +117,7 @@
 <ul>
 <li><button class="term" type="button" data-term="START-OF-SELECTION">START-OF-SELECTION</button>은 <strong>본 처리의 시작점</strong>이다(검증 통과 후 조회·가공).</li>
 <li>이 위치를 정확히 잡으면 기본값·화면 제어·검증·조회의 책임이 섞이지 않는다.</li>
-<li>결과 유무는 <code>sy-subrc</code>·<code>sy-dbcnt</code>로 확인한다.</li>
+<li>결과가 있었는지는 <code>sy-subrc</code>로 확인한다.</li>
 </ul>
 <hr>
 <p>본 처리는 됐다. 마지막으로, 기존 코드에서 만나는 마무리 <button class="term" type="button" data-term="이벤트">이벤트</button>의 경계를 잡자 → 다음 레슨(END-OF-SELECTION).</p>

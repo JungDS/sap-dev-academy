@@ -57,7 +57,38 @@
 <li>공연 정보는 DDIC <code>ZCONCERT</code>에서 오므로 <code>TABLES zconcert</code>로 잇고, 공연에 따라 달라지는
 회차 F4는 직접 만든다(<a href="CH16-L04.html">Dictionary 운반</a>·<a href="CH16-L05.html">F1·F4 직접 만들기</a>).</li>
 </ul>
+</section><section class="lblock"><h2>만들기 절차 — SE80에서 순서대로</h2>
+<p>코드를 쓰기 전에 <strong>그릇부터</strong> 만든다. <code>SE80</code>에서 아래 순서대로 진행하면 된다.</p>
+<ol>
+<li><strong>Module Pool 만들기</strong> — <code>SE80</code> → Repository Browser에서 Program을 고르고 이름
+<code>SAPMZCONCERT</code>를 입력해 새로 만든다. Type은 <strong>Module Pool</strong>(M)로 고르며, 첫 줄은
+<code>PROGRAM sapmzconcert.</code>가 된다. 저장하고 <strong>활성화</strong>한다.</li>
+<li><strong>화면 0100 만들기</strong> — 같은 프로그램 아래에서 Screen을 새로 만들고 번호 <code>0100</code>을 준다.
+Attributes에서 화면 타입은 Normal, next screen은 <code>0100</code>(자기 자신, 그래야 처리 뒤 같은
+화면이 다시 뜬다)으로 둔다.</li>
+<li><strong>Layout 그리기</strong> — Screen Painter Layout에서 입력칸 <code>GV_CONC</code>·<code>GV_PERF</code>·<code>GV_SEATS</code>·
+<code>GV_CUST</code>, 드롭다운 <code>GV_STAT</code>, 버튼을 배치한다. Element List에서 <strong>OK field 이름을
+<code>OK_CODE</code>로</strong> 지정하고, <code>GV_STAT</code>의 Dropdown 속성은 <code>Listbox</code>로 둔다.</li>
+<li><strong>Flow Logic 채우기</strong> — <code>PROCESS BEFORE OUTPUT</code> / <code>PROCESS AFTER INPUT</code> 블록에 부를
+모듈 이름을 적는다(아래 통합 코드의 Flow Logic 부분).</li>
+<li><strong>모듈·FORM 작성</strong> — 모듈 이름을 더블클릭하면 SE80이 &quot;어느 include에 만들까요?&quot; 하고
+묻는다. 선언은 <code>...TOP</code>, PBO 모듈은 <code>...O01</code>, PAI 모듈은 <code>...I01</code>, <code>FORM</code>은 <code>...F01</code>
+include에 만들면 <a href="CH16-L01.html">Module Pool 프로그램 구조</a>에서 본 표준 구조가 된다.</li>
+<li><strong>GUI Status·Titlebar 만들기</strong> — <code>SE41</code>(또는 SE80 안에서) <code>ST100</code>·<code>TB100</code>을 만들고
+버튼 FctCode를 <code>SAVE</code>·<code>BACK</code>·<code>EXIT</code>·<code>CANCEL</code>로 준다. 나가기 버튼 셋은 function type을
+<code>E</code>로 지정한다(<a href="CH16-L07.html">PAI 처리 흐름 — OK_CODE와 화면 떠나기</a>).</li>
+<li><strong>T-code 연결</strong> — <code>SE93</code>에서 T-code(예: <code>ZCONCERT01</code>)를 만들어 프로그램
+<code>SAPMZCONCERT</code> + 화면 <code>0100</code>을 지정한다. 이제 T-code로 실행된다.</li>
+<li><strong>활성화</strong> — 프로그램·화면·GUI Status를 모두 활성화한다. 하나라도 비활성이면 실행할 때
+오류가 난다.</li>
+</ol>
 </section><section class="lblock"><h2>통합 코드 — 화면 준비(PBO)</h2>
+<blockquote>
+<p>💡 아래 두 블록은 <strong>한 코드 블록에 Flow Logic과 ABAP module을 함께</strong> 보여 준다. 실제로는
+Flow Logic은 Screen Painter에, <code>MODULE ... ENDMODULE</code>은 program source(include)에 <strong>따로</strong>
+있다. 프로그램 소스에 Flow Logic을 그대로 쓰면 구문 오류다. 블록 안의 구분선을 보고
+&quot;여기부터는 다른 곳&quot;이라고 읽자.</p>
+</blockquote>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -88,25 +119,33 @@
 28
 29
 30
-31</pre><pre class="abap-editor__code"><code><span class="tok-kw">PROGRAM</span> sapmzconcert.
+31
+32
+33
+34
+35</pre><pre class="abap-editor__code"><code><span class="tok-com">" ===== ABAP source (…TOP include) =====</span>
+<span class="tok-kw">PROGRAM</span> sapmzconcert.
 
 <span class="tok-kw">DATA</span>: gv_conc  <span class="tok-kw">TYPE</span> zconcert-concert_id,
       gv_perf  <span class="tok-kw">TYPE</span> n <span class="tok-kw">LENGTH</span> <span class="tok-num">3</span>,
       gv_seats <span class="tok-kw">TYPE</span> i,
       gv_cust  <span class="tok-kw">TYPE</span> c <span class="tok-kw">LENGTH</span> <span class="tok-num">30</span>,
       gv_stat  <span class="tok-kw">TYPE</span> c <span class="tok-kw">LENGTH</span> <span class="tok-num">1</span>,
+      gv_ok    <span class="tok-kw">TYPE</span> abap_bool,      <span class="tok-com">" 예매 가능 판정 결과</span>
       ok_code <span class="tok-kw">TYPE</span> sy-ucomm,
       save_ok <span class="tok-kw">TYPE</span> sy-ucomm.
 
 <span class="tok-kw">DATA</span>: gt_values <span class="tok-kw">TYPE</span> vrm_values,
       gs_value  <span class="tok-kw">LIKE</span> <span class="tok-kw">LINE</span> <span class="tok-kw">OF</span> gt_values.
 
-<span class="tok-kw">PROCESS</span> <span class="tok-kw">BEFORE</span> <span class="tok-kw">OUTPUT</span>.            <span class="tok-com">" Flow Logic</span>
+<span class="tok-com">" ===== Flow Logic (Screen Painter · 화면 0100) =====</span>
+<span class="tok-kw">PROCESS</span> <span class="tok-kw">BEFORE</span> <span class="tok-kw">OUTPUT</span>.
   <span class="tok-kw">MODULE</span> status_0100.
   <span class="tok-kw">MODULE</span> fill_status_list.
 <span class="tok-kw">PROCESS</span> <span class="tok-kw">AFTER</span> <span class="tok-kw">INPUT</span>.
   <span class="tok-kw">MODULE</span> user_command_0100.
 
+<span class="tok-com">" ===== ABAP source (…O01 include) =====</span>
 <span class="tok-kw">MODULE</span> status_0100 <span class="tok-kw">OUTPUT</span>.
   <span class="tok-kw">SET</span> <span class="tok-kw">PF-STATUS</span> <span class="tok-str">'ST100'</span>.
   <span class="tok-kw">SET</span> <span class="tok-kw">TITLEBAR</span>  <span class="tok-str">'TB100'</span> <span class="tok-kw">WITH</span> gv_conc.   <span class="tok-com">" 제목 "공연 &amp;1" → gv_conc</span>
@@ -138,17 +177,15 @@
 16
 17
 18
-19
-20</pre><pre class="abap-editor__code"><code><span class="tok-kw">MODULE</span> user_command_0100 <span class="tok-kw">INPUT</span>.
-  <span class="tok-kw">DATA</span> lv_ok <span class="tok-kw">TYPE</span> abap_bool.
-
+19</pre><pre class="abap-editor__code"><code><span class="tok-com">" ===== ABAP source (…I01 include) =====</span>
+<span class="tok-kw">MODULE</span> user_command_0100 <span class="tok-kw">INPUT</span>.
   save_ok = ok_code.                   <span class="tok-com">" 보조 변수로 복사</span>
   <span class="tok-kw">CLEAR</span> ok_code.                       <span class="tok-com">" 즉시 비움(반복 실행 방지)</span>
 
   <span class="tok-kw">CASE</span> save_ok.
     <span class="tok-kw">WHEN</span> <span class="tok-str">'SAVE'</span>.
-      <span class="tok-kw">PERFORM</span> can_book <span class="tok-kw">USING</span> gv_conc gv_perf gv_seats <span class="tok-kw">CHANGING</span> lv_ok.
-      <span class="tok-kw">IF</span> lv_ok = abap_true.
+      <span class="tok-kw">PERFORM</span> can_book <span class="tok-kw">USING</span> gv_conc gv_perf gv_seats <span class="tok-kw">CHANGING</span> gv_ok.
+      <span class="tok-kw">IF</span> gv_ok = abap_true.
         <span class="tok-kw">MESSAGE</span> <span class="tok-str">'예매 가능 — 저장은 이후 단계에서'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'S'</span>.
       <span class="tok-kw">ELSE</span>.
         <span class="tok-kw">MESSAGE</span> <span class="tok-str">'좌석이 부족합니다'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'E'</span>.   <span class="tok-com">" 화면 유지(정상 검증)</span>
@@ -159,23 +196,47 @@
       <span class="tok-kw">LEAVE</span> <span class="tok-kw">PROGRAM</span>.                   <span class="tok-com">" 프로그램 종료</span>
   <span class="tok-kw">ENDCASE</span>.
 <span class="tok-kw">ENDMODULE</span>.</code></pre></div></div>
-<blockquote>
-<p>💡 위 예제는 <strong>한 코드 블록에 Flow Logic과 ABAP module을 함께</strong> 보여 준 것이다. 실제로는
-Flow Logic은 Screen Painter에, <code>MODULE ... ENDMODULE</code>은 program source에 따로 있다.</p>
-</blockquote>
+<ul>
+<li>⚠️ <strong>판정 결과를 왜 <code>gv_ok</code>라고 지었을까.</strong> <code>MODULE ... ENDMODULE</code>은 <code>FORM</code>이나 <code>METHOD</code>와
+달리 <strong>자기만의 지역 데이터 영역이 없다.</strong> 모듈 안에서 <code>DATA</code>로 선언해도 그 변수는
+<strong>프로그램 전역</strong>이 된다. 그래서 이름도 지역을 뜻하는 <code>lv_</code>가 아니라 전역을 뜻하는 <code>gv_</code>로
+붙이고, 선언도 위쪽 전역 선언부에 모아 둔다.</li>
+<li><code>abap_bool</code>·<code>abap_true</code>는 <a href="CH10-L07.html">실습 — 잔여석 계산·예매 판정 모듈화</a>에서 쓴 그
+이름이다. <code>abap_true</code>의 실제 값은 이 챕터에서 계속 봐 온 문자 <code>&#39;X&#39;</code>다. ABAP에 참/거짓
+전용 타입이 따로 있는 게 아니라, 문자 한 칸에 <code>&#39;X&#39;</code>나 공백을 담는 그 방식에 <strong>읽기 좋은
+이름을 붙여 둔 것</strong>이다.</li>
+<li><code>can_book</code>은 <a href="CH10-L07.html">실습 — 잔여석 계산·예매 판정 모듈화</a>에서 만든 <code>FORM</code>이다.
+이 화면 프로그램에서 부르려면 같은 <code>FORM</code>을 이 Module Pool의 <code>...F01</code> include에 옮겨 둬야
+한다. 부르기만 하고 정의가 없으면 활성화가 막힌다.</li>
+</ul>
 </section><section class="lblock"><h2>화면 필드 연결·입력 도움 반영</h2>
-<p>공연 정보는 DDIC <code>ZCONCERT</code>에서 오므로 <button class="term" type="button" data-term="TABLES">TABLES</button>로 잇고, 공연에 따라 달라지는 회차 F4는
+<p>공연ID를 받는 입력칸은 우리가 만든 화면 필드 <code>GV_CONC</code>다. 여기에 DDIC <code>ZCONCERT</code>의 필드
+(아티스트·공연장)까지 함께 얹고 싶으면 <button class="term" type="button" data-term="TABLES">TABLES</button>로 잇고, 공연에 따라 달라지는 회차 F4는
 <button class="term" type="button" data-term="PROCESS ON VALUE-REQUEST">PROCESS ON VALUE-REQUEST</button>로 직접 만든다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
-4</pre><pre class="abap-editor__code"><code><span class="tok-kw">TABLES</span> zconcert.                 <span class="tok-com">" 공연ID·공연명을 DDIC에서 (L04)</span>
+4
+5
+6</pre><pre class="abap-editor__code"><code><span class="tok-com">" ===== ABAP source (…TOP include) =====</span>
+<span class="tok-kw">TABLES</span> zconcert.                 <span class="tok-com">" DDIC 필드를 얹기 위한 work area (L04)</span>
 
-<span class="tok-kw">PROCESS</span> <span class="tok-kw">ON</span> <span class="tok-kw">VALUE-REQUEST</span>.        <span class="tok-com">" Flow Logic — 회차 F4 (L05)</span>
+<span class="tok-com">" ===== Flow Logic (화면 0100) =====</span>
+<span class="tok-kw">PROCESS</span> <span class="tok-kw">ON</span> <span class="tok-kw">VALUE-REQUEST</span>.        <span class="tok-com">" 회차 F4 (L05)</span>
   <span class="tok-kw">FIELD</span> gv_perf <span class="tok-kw">MODULE</span> value_perf.</code></pre></div></div>
 <ul>
-<li><code>TABLES zconcert</code> → 화면의 <code>ZCONCERT-TITLE</code>에 공연명이 라벨·F4까지 함께 온다.</li>
-<li><code>value_perf</code> 모듈은 <code>DYNP_VALUES_READ</code>로 공연ID를 읽어 <strong>그 공연의 회차만</strong> 후보로 띄운다.</li>
+<li><strong>이름이 곧 연결이다.</strong> 공연ID 입력칸의 화면 요소 이름이 <code>GV_CONC</code>이므로, <code>value_perf</code>
+모듈도 <code>DYNP_VALUES_READ</code>로 <code>&#39;GV_CONC&#39;</code>를 읽어야 값이 잡힌다.
+<a href="CH16-L05.html">화면에서 F1·F4 직접 만들기</a>에서 만든 모듈이 바로 그 이름으로 읽으니 그대로
+가져다 쓰면 된다. 이름이 어긋나면 회차 후보가 <strong>항상 비어</strong> 버린다.</li>
+<li>⚠️ <strong><code>TABLES zconcert.</code>는 DB를 읽지 않는다.</strong> 선언은 값을 담을 그릇을 만들 뿐이다. 화면의
+<code>ZCONCERT-ARTIST</code>에 실제 아티스트 이름을 띄우려면 PBO에서 <code>SELECT</code>로 <code>zconcert</code>를 읽어
+work area를 채워야 한다(이 실습은 거기까지 하지 않는다). 라벨과 F4는 DDIC 정의에 있는
+만큼 따라온다.</li>
+<li>사용자가 입력하는 <code>gv_conc</code>와 work area의 <code>zconcert-concert_id</code>는 <strong>이름이 다르므로 저절로
+같아지지 않는다.</strong> 맞춰야 한다면 코드에서 직접 옮긴다(<code>zconcert-concert_id = gv_conc.</code>).</li>
+<li><code>GV_CUST</code>(고객명)·<code>GV_STAT</code>(상태)은 화면에서 값을 받지만 이번 검증(<code>can_book</code>)에는 쓰이지
+않는다. <strong>저장할 때 필요한 값</strong>이라, 저장을 다루는 이후 챕터에서 쓰인다.</li>
 <li>원리는 <a href="CH16-L04.html">Dictionary 화면 필드와 TABLES 운반</a>·<a href="CH16-L05.html">화면에서 F1·F4 직접 만들기</a>.</li>
 </ul>
 </section><section class="lblock"><h2>직접 실행해 보기 — 예매 입력 Dynpro 통합 시뮬레이터</h2>
@@ -209,7 +270,7 @@ Flow Logic은 Screen Painter에, <code>MODULE ... ENDMODULE</code>은 program so
 <tr>
 <td>BACK</td>
 <td><code>BACK</code></td>
-<td><code>LEAVE TO SCREEN 0</code>(시퀀스 종료)</td>
+<td><code>LEAVE TO SCREEN 0</code>(화면 sequence 종료)</td>
 </tr>
 <tr>
 <td>EXIT</td>
@@ -228,6 +289,8 @@ Flow Logic은 Screen Painter에, <code>MODULE ... ENDMODULE</code>은 program so
 <li><strong><code>MESSAGE E</code> 후 화면 유지를 실패로 오해</strong> → 정상 검증 흐름이다(잘못 입력을 막고 다시 받음).</li>
 <li><strong>저장까지 기대</strong> → 화면·검증까지가 이 챕터. <code>INSERT</code>·<code>COMMIT WORK</code>은 이후.</li>
 <li><strong>EXIT를 <code>LEAVE TO SCREEN 0</code>으로</strong> → EXIT는 <code>LEAVE PROGRAM</code>. 화면 종료와 프로그램 종료를 구분.</li>
+<li><strong>모듈 안에서 <code>DATA lv_...</code></strong> → 모듈에는 지역 데이터 영역이 없다. 전역이므로 <code>gv_</code>로 짓고
+선언부에 모은다.</li>
 </ul>
 </section><section class="lblock"><h2>정리</h2>
 <p>직접 만든 화면의 <strong>생명주기를 한 번에</strong> 묶었다 — PBO가 준비하고, 사용자가 입력하고,
@@ -242,7 +305,7 @@ PAI       = 사용자 행동 뒤 처리(OK_CODE 복사→CLEAR→CASE)
 화면 종료 = LEAVE TO SCREEN 0 / 프로그램 종료 = LEAVE PROGRAM
 화면 표   = Table Control이 아니라 Grid ALV로 이어진다</code></pre></div></div>
 <hr>
-<p>내가 설계한 입력 화면을 완성했다. 이제 화면 안에 <strong>표(좌석·예매 목록)</strong> 를 박는 법으로
+<p>내가 설계한 입력 화면을 완성했다. 이제 화면 안에 <strong>표</strong>(좌석·예매 목록)를 박는 법으로
 넘어가자 → <a href="CH17-L01.html">Grid ALV 기초</a>.</p>
 </section>
       </article>

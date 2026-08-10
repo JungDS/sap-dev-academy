@@ -1,0 +1,69 @@
+{
+  "agent": "AG03",
+  "model": "sonnet",
+  "target": "CH13",
+  "persona_ack": "AG03 — 타 언어(Java/C# 계열) 백엔드 3～5년차 개발자 페르소나. 변수·조건문·루프·SQL·OOP 등 프로그래밍 기본기는 이미 안다는 전제로, ABAP을 빠르게 훑어 익히려는 관점에서 CH13(_chapter.md, CH13-L01～L08) 전체를 통독하며 과잉·오개념 유발·지름길 부재·용어 충돌을 점검했다.",
+  "method": "대상 9개 파일(_chapter.md, CH13-L01～L08.md)을 파일시스템에서 직접 읽고 전문을 통독. 브라우저·코드 실행·외부 검색 등 도구 기반 검증은 사용하지 않았고(과제 성격상 불필요), 경력 개발자 페르소나로 문장 단위 재독하며 판단.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L08.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L01.md",
+      "quote": "JOIN은 **두 명단을 공통 칸(키)으로 짝지어 한 줄로 붙이는 것**이다.",
+      "category": "과잉",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "JOIN 개념을 처음 설명하는 '직관적으로' 절 전체(은유+ASCII 다이어그램)가 이미 SQL을 아는 경력 개발자에겐 새 정보 없이 읽기 속도만 늦춘다.",
+      "evidence": "3～5년차 백엔드 개발자는 '두 표를 공통 키로 짝지어 붙인다'는 JOIN의 정의를 몰라서 이 사이트에 온 게 아니다. 바로 뒤에 나오는 ABAP classic 문법(별칭 AS, 필드 구분자 ~, INTO CORRESPONDING FIELDS)이 실제로 새로 배울 내용인데, 그 앞에 SQL 입문 수준 개념 설명이 그대로 붙어 있어 원하는 정보(문법 차이)까지 가는 거리가 멀다.",
+      "suggestion": "'SQL을 이미 안다면 이 다이어그램은 건너뛰고 아래 classic 문법 표기(~, AS, INTO CORRESPONDING FIELDS)만 보라'는 한 줄 안내를 절 시작이나 끝에 붙이면 좋겠다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L01.md",
+      "quote": "이 챕터는 전부 **classic**이다. 필드는 공백 구분, `~`로 별칭·필드를 잇고,",
+      "category": "지름길 부재",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "CH13은 JOIN·GROUP BY·HAVING·ORDER BY라는, 어느 배경에서든 이미 아는 표준 SQL 개념을 챕터 전체의 뼈대로 삼으면서도 '이미 SQL을 안다면 개념 설명은 건너뛰고 ABAP 문법 차이만 보라'는 안내가 챕터 어디에도 없다.",
+      "evidence": "classic 전용임을 알리는 이 콜아웃(L01 도입부)이 챕터에서 사실상 유일하게 '메타 안내'를 하는 자리인데, 적용 범위(classic vs modern)만 알려줄 뿐 독자 배경(SQL 초심자 vs 경력자)에 따른 읽기 경로는 안내하지 않는다. 같은 패턴 — 표준 SQL 개념을 처음부터 설명 — 이 L03의 GROUP BY 정의, L04의 WHERE/HAVING 대조표, L05의 ORDER BY 정의에도 반복된다.",
+      "suggestion": "이 콜아웃 옆이나 챕터 도입부에 'SQL을 이미 안다면 ~ 구분자·classic 제약(콤마/@ 금지)·INTO CORRESPONDING FIELDS·sy-subrc/sy-dbcnt·FOR ALL ENTRIES 규칙만 보면 충분하다' 같은 한 줄을 추가하면 경력자가 챕터 전체를 훨씬 빠르게 훑을 수 있다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L01.md",
+      "quote": "`INTO CORRESPONDING FIELDS OF TABLE`은 **이름이 같은 필드끼리** 자동으로 담아 준다.",
+      "category": "오개념 유발",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "'이름이 같은 필드끼리 자동으로 담아 준다'는 서술이 안전한 편의 기능처럼만 읽혀서, 필드명이 안 맞으면 오류 없이 조용히 누락된다는 위험을 놓치기 쉽다.",
+      "evidence": "Java/C#의 ORM·DTO 매핑에 익숙한 개발자는 '이름으로 자동 매핑'이라고 하면 흔히 미스매치 시 예외를 던지거나 최소 경고를 주는 것으로 기대하기 쉽다. 그러나 ABAP의 INTO CORRESPONDING FIELDS OF TABLE은 이름이 안 맞는 필드를 그냥 빈 채로 둔 채 조용히 넘어간다(런타임 오류 없음). CH13 안에서는 이 위험이 언급되지 않는다.",
+      "suggestion": "'필드명 오타·불일치는 오류 없이 조용히 누락된다'는 주의 한 줄을 '흔한 실수와 점검' 목록에 추가하면 좋겠다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L07.md",
+      "quote": "행마다 DB 왕복. 1만 건이면 **1만 번 왕복**이다. 성능 문제는 보통 문법보다 이 **왕복 횟수**에서 시작한다.",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'LOOP 안 SELECT' 안티패턴 설명이 ORM 진영에서 흔히 부르는 'N+1 문제'와 동일한 현상인데, 그 이름이 언급되지 않아 경력자가 이미 아는 지식과 즉시 연결하지 못한다.",
+      "evidence": "Hibernate/JPA·Entity Framework 등을 써 본 개발자라면 'N+1 문제'라는 이름만으로 원인과 해법을 이미 안다. 본문은 이 현상을 처음부터 새로 설명만 하고(행마다 DB 왕복 → 1만 건이면 1만 번 왕복) 그 익숙한 이름을 붙여 주지 않는다.",
+      "suggestion": "'ORM에서 흔히 N+1 문제라 부르는 것과 같다' 한 문장만 추가해도 경력자는 설명을 다 읽지 않고 바로 다음(JOIN/FAE 선택 기준)으로 넘어갈 수 있다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH13은 classic Open SQL(JOIN·GROUP BY·HAVING·ORDER BY·FOR ALL ENTRIES)을 순서 있게 다루며, ABAP 고유 함정(NULL→초기값 변환, FAE 빈 테이블 시 WHERE 무시, sy-subrc/sy-dbcnt, ORDER BY PRIMARY KEY가 JOIN 결과엔 불가) 은 정확하고 충분히 짚어 경력 개발자에게도 실제로 새로 배울 내용을 잘 전달한다. 다만 이미 SQL을 아는 독자를 위한 '건너뛰기' 안내가 챕터 전체에 없어 표준 SQL 개념 설명 구간(JOIN·GROUP BY·HAVING 정의)에서 체감 속도가 느려지고, INTO CORRESPONDING FIELDS의 자동 매핑을 편의 기능처럼만 서술해 안전성을 오인할 여지, LOOP+SELECT 안티패턴과 'N+1 문제'라는 익숙한 이름의 연결 고리 부재 같은 사소한 보강 지점이 있다. 구조적 결함이나 오류는 없어 경미 수정을 권장한다."
+  }
+}

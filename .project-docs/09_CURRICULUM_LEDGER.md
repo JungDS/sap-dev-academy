@@ -1,6 +1,6 @@
 # 09. CURRICULUM LEDGER — 커리큘럼 개념 원장 (개요 SSOT)
 
-> 📅 최종수정: 2026-08-02 06:25 KST
+> 📅 최종수정: 2026-08-10 20:58 KST
 > 🎯 **3트랙(최종 39번호) 챕터 맵 + 교차 설계 합의(경계·관통예제·도구 아크)의 단일 출처.**
 > 🧭 **per-lesson `introduces`/`prereq`/`prevRel`/`foreshadow`/`advanceUse` = 각 레슨 `.md` front-matter가 라이브 SSOT**([04 R10](04_CONVENTIONS.md)) — 이 문서는 레슨별 데이터를 중복하지 않고 *그 위의 개요·경계·관통설계*만 담는다(§F). 게이팅([04 R15](04_CONVENTIONS.md)) 점검 = front-matter ↔ 본문 ↔ R15.
 > ✅ 현행: **최종 39번호(2026-07-14 리넘버)** · 본문 **39챕터 전량 작성 완료**. 전면 리빌드는 *선택* — 절차 = [10_REBUILD_EXECUTION](10_REBUILD_EXECUTION.md).
@@ -105,7 +105,7 @@
 - **SFLIGHT 항공**(표준 데이터·*읽기*): CH08 SELECT(SCARR/SFLIGHT) → CH09 FK·검색도움말(SCARR↔SPFLI↔SFLIGHT) → CH11 SALV → CH12 SELECT-OPTIONS → CH13 JOIN·집계(탑승률) → CH19 modern → CH20 Advanced SQL(CTE·window) → CH23 CDS(`ZI_Flight`).
 - **콘서트 예매**(자체앱·*빌드*·전체 생명주기): 모델 `ZCONCERT`(공연)·`ZPERF`(회차)·`ZBOOKING`(예매, 예매자=이름 풀 **정훈영**). CH09 DDIC(FK·F4) → CH10 모듈화(잔여석·예매판정) → CH11 SALV → CH14 View/SM30 → CH15 선택화면·검증 → CH16 Dynpro → CH17 Grid ALV → CH18/19 modern → CH20 Advanced SQL → CH21 OO(`ZCL_BOOKING_MANAGER`·`ZCX_FULLY_BOOKED`) → CH22 색·이벤트 → CH23 CDS → CH24 RAP(action·validation).
 - 매 전이는 pain→solution. 스키마·필드 상세 = `check/RUNNING-EXAMPLES.md`.
-- ✅ **W3-B 실현 확정(2026-08-02)**: CH11(SALV 문법 연습)·CH13(JOIN·집계 — SPFLI LEFT JOIN 포함) 본편을 SFLIGHT thread로 복원(미정의 ztperson/ztdept 소재 퇴출), CH09-L04～L08 Search Help 소재 = 콘서트(ZSH_CONCERT 계열), CH14 = 정본 모델(ZV_PERF·ZPV_BOOKING_BASIC·ZHV_CONCERT·FK zperf→zconcert). **CH12는 원장 지정(SFLIGHT)과 달리 콘서트로 실현돼 있음 — 콘서트가 서사상 우수해 의도적 유지.** CH18-L02/L10 리팩터 소재 = 콘서트(구구단 회귀 제거).
+- ✅ **W3-B 실현 확정(2026-08-02)**: CH11(SALV 문법 연습)·CH13(JOIN·집계 — SPFLI LEFT JOIN 포함) 본편을 SFLIGHT thread로 복원(미정의 ztperson/ztdept 소재 퇴출), CH09-L04～L08 Search Help 소재 = 콘서트(ZSH_CONCERT 계열), CH14 = 정본 모델(ZV_PERF·ZPV_BOOKING·ZHV_CONCERT·FK zperf→zconcert — ZPV_BOOKING_BASIC은 View 이름 16자 규칙 초과로 배치 4에서 개명). **CH12는 원장 지정(SFLIGHT)과 달리 콘서트로 실현돼 있음 — 콘서트가 서사상 우수해 의도적 유지.** CH18-L02/L10 리팩터 소재 = 콘서트(구구단 회귀 제거).
 
 ## D. 데이터 입력 도구 아크 · DML 경계
 - 입력 도구 = **SE11 Create Entries(한 건씩, CH07)** → **TMG/SM30(다건, CH14)** → **SE16N(브라우저, CH14)**. 쉬운 도구를 먼저 보이면 유지보수 객체 가치가 소멸 → SE16N은 유지보수 뒤.

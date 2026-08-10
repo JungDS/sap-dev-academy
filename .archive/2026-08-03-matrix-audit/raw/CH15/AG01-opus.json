@@ -1,0 +1,139 @@
+{
+  "agent": "AG01",
+  "model": "opus",
+  "target": "CH15",
+  "persona_ack": "나는 개발·전공 경험이 전혀 없는 24세 문과 출신 입문자 '은서'다. CH15의 _chapter.md와 L01부터 L12까지를 순서대로, 처음 읽는 사람으로서 통독했다. 내 사전지식으로 빈칸을 메우지 않고, 그 자리(또는 같은 챕터 앞 레슨)에 풀이가 없는 용어에서 멈춘 것을 그대로 기록했다.",
+  "method": "Read 도구로 대상 13개 파일 전문을 L01→L12 순서대로 1회 통독하고, 막힌 지점마다 앞 레슨으로 되돌아가 그 용어의 풀이가 챕터 안에 있는지 재확인했다(용어 재검색은 이미 읽은 본문 대조로만). 웹 검색·외부 네트워크·다른 감사 산출물 접근은 하지 않았다. 한계: ::embed:: 로 걸린 체험 위젯 파일은 대상 목록 밖이라 열지 않았으므로, 위젯이 본문의 미설명 용어를 보완할 가능성은 평가에서 제외했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L10.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L11.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L12.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH15-L02.md",
+      "quote": "`[[SELECT-OPTIONS]]`는 **header line**을 가진 selection table을 만들어",
+      "category": "단절",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "header line이 무엇인지 설명이 없어서, so_conc에 값을 넣고 다시 so_conc를 APPEND 하는 코드가 이해되지 않는다.",
+      "evidence": "코드에서 so_conc-sign / so_conc-option / so_conc-low에 값을 넣은 뒤 APPEND so_conc. 를 한다. 은서 눈에는 '같은 이름한테 값을 넣고 그 이름을 자기한테 또 넣는' 것으로 보인다. header line이 '표 위에 붙어 있는 한 줄짜리 임시 칸'이라는 풀이가 이 자리에도, CH15 앞 레슨(L01)에도 없다. 본문이 거는 링크(Chapter 12 · Range Table)도 네 칸(SIGN/OPTION/LOW/HIGH) 구조를 가리킬 뿐 header line 자체를 설명한다고 적혀 있지 않아서, 어디로 가서 찾아야 할지도 모르겠다. 같은 패턴이 L12 통합 코드(so_stat-sign ... APPEND so_stat.)에서 다시 나온다.",
+      "suggestion": "APPEND so_conc. 줄 근처에 header line 한 줄 풀이를 넣는다. 예: 'header line(테이블 위에 딸려 있는 임시 입력 칸 한 줄) — 여기에 조건을 적고 APPEND로 표 아래에 한 줄로 밀어 넣는다.' 이미 CH12에서 다뤘다면 그 용어를 콕 집어 링크한다."
+    },
+    {
+      "seq": 2,
+      "file": "CH15-L03.md",
+      "quote": "DATA gs_screen TYPE screen.",
+      "category": "단절",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "TYPE screen의 screen과 LOOP AT SCREEN의 SCREEN이 선언 없이 갑자기 등장하는데, 어디서 온 것인지 설명이 없다.",
+      "evidence": "지금까지 배운 대로라면 표는 DATA로 선언해야 LOOP AT 할 수 있다. 그런데 여기서는 선언한 적 없는 SCREEN을 LOOP AT SCREEN으로 돌린다. 본문 설명은 '화면 요소를 LOOP AT SCREEN INTO gs_screen으로 돌며'가 전부라, screen이 시스템이 알아서 채워 주는 구조/테이블이라는 말이 없다. TYPE screen도 마찬가지로 이 타입이 어디에 정의돼 있는지가 없어서, 내 프로그램에 뭘 더 만들어야 하는지 판단이 안 된다.",
+      "suggestion": "코드 위나 아래에 한 줄 추가: 'SCREEN은 내가 만드는 표가 아니라, 지금 그려질 화면의 모든 필드를 시스템이 담아 두는 표다. TYPE screen도 시스템이 제공하는 구조라 따로 정의할 필요가 없다.'"
+    },
+    {
+      "seq": 3,
+      "file": "CH15-L04.md",
+      "quote": "본격 활용은 [Chapter 15 · Selection Screen 블록·라인](CH15-L08.html)에서 다룬다.",
+      "category": "단절",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "링크 이름(Selection Screen 블록·라인)과 실제 도착 레슨(CH15-L08)의 제목이 달라서, 클릭했을 때 다른 레슨에 온 줄 알았다.",
+      "evidence": "CH15-L08의 title은 'Selection Screen 고급 — 블록·그룹 검증과 커스텀 F1·F4'다. 반면 '블록·라인'에서 말하는 라인(BEGIN OF LINE·POSITION) 내용은 L08이 아니라 L09(Selection Screen UI 구성)에 있다. 접기 안에서 F4·F1 얘기를 하다가 '블록·라인'으로 보내니, 내가 지금 찾아가야 할 곳이 검증 레슨인지 화면 꾸미기 레슨인지 헷갈린다.",
+      "suggestion": "링크 라벨을 도착 레슨의 실제 제목으로 맞춘다. 예: [Chapter 15 · Selection Screen 고급 — 블록·그룹 검증과 커스텀 F1·F4](CH15-L08.html)."
+    },
+    {
+      "seq": 4,
+      "file": "CH15-L05.md",
+      "quote": "결과 유무는 `sy-subrc`·`sy-dbcnt`로 확인한다.",
+      "category": "단절",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "정리에 sy-dbcnt가 처음이자 마지막으로 나오는데, 본문과 코드 어디에도 나온 적이 없어 무엇인지 모르겠다.",
+      "evidence": "이 레슨 본문·코드는 sy-subrc만 쓴다(IF sy-subrc <> 0). 정리는 '배운 것을 다시 확인하는 칸'이라고 생각하고 읽는데, 거기서 처음 보는 이름이 나오니 '내가 뭘 놓쳤나' 하고 위로 다시 올라가 찾게 된다. CH15 앞 레슨(L01～L04)에도 sy-dbcnt는 없다.",
+      "suggestion": "정리에 남긴다면 본문에서 한 번은 쓰고 한 줄 풀이를 붙인다. 예: 'sy-dbcnt(방금 SELECT가 실제로 가져온 건수)'. 아니면 정리에서 빼고 sy-subrc만 남긴다."
+    },
+    {
+      "seq": 5,
+      "file": "CH15-L06.md",
+      "quote": "변수 접두어: 프로그램 맨 위에서 선언한 `gt_booking`은 이 리포트 전체에서 쓰는",
+      "category": "멈춘 곳",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'맨 위에서 선언했으니 전역이라 gt_'라고 짚어 준 바로 그 코드에서, 똑같이 맨 위에서 선언한 lo_alv만 l로 시작해 규칙이 어긋나 보인다.",
+      "evidence": "같은 코드 블록의 연속된 두 줄이 DATA gt_booking ...과 DATA lo_alv TYPE REF TO cl_salv_table.다. 둘 다 프로그램 맨 위 선언인데 하나는 g, 하나는 l이다. 아래 말풍선이 'g = 맨 위 선언 = 전역'이라고 콕 집어 설명해 주는 바람에 오히려 lo_alv가 눈에 걸려서, l과 g를 나누는 기준이 위치가 아니라 다른 무엇인가 싶어 한참 멈췄다. 같은 어긋남이 CH15-L12.md의 DATA 묶음(gv_chk, gv_status, gt_booking, lo_alv, gs_screen)에서 더 눈에 띄게 반복된다.",
+      "suggestion": "맨 위 선언이면 참조 변수도 전역 접두어로 통일하거나(go_alv), 통일이 어렵다면 말풍선에 '객체 참조는 관례상 o를 쓴다'는 한 줄을 함께 적어 예외임을 밝힌다. L06과 L12를 같이 맞춰야 한다."
+    },
+    {
+      "seq": 6,
+      "file": "CH15-L08.md",
+      "quote": "`retfield`/`dynprofield` — 고른 값을 **어느 화면 필드**에 돌려줄지.",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "F4 함수 호출에서 넘기는 값 중 dynpprog = sy-repid, dynpnr = sy-dynnr 두 줄만 설명이 빠져 있어, 그 자리에 무엇을 적어야 하는지 알 수 없다.",
+      "evidence": "코드에는 retfield, dynpprog, dynpnr, dynprofield, value_tab 다섯 개를 넘기는데, 아래 설명 목록은 value_tab과 retfield/dynprofield 세 개만 풀어 준다. 남은 dynpprog와 dynpnr, 그리고 거기 들어가는 sy-repid·sy-dynnr는 CH15 어디에도 풀이가 없다. 은서 입장에서는 sy-datum(오늘 날짜)처럼 sy-로 시작하니 시스템이 주는 값이겠거니 짐작만 할 뿐, 왜 이 함수에 프로그램 이름과 화면 번호를 알려 줘야 하는지가 안 잡힌다.",
+      "suggestion": "설명 목록에 한 줄 추가: 'dynpprog/dynpnr — 값을 돌려줄 화면의 위치. sy-repid(지금 프로그램 이름)·sy-dynnr(지금 화면 번호)를 그대로 넘기면 된다.'"
+    },
+    {
+      "seq": 7,
+      "file": "CH15-L09.md",
+      "quote": "SELECTION-SCREEN BEGIN OF BLOCK b_main WITH FRAME TITLE TEXT-001.",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "TEXT-001·TEXT-002·TEXT-003이 어디서 오는 값인지 설명이 전혀 없어, 이 코드를 따라 쳐도 제목 자리에 무엇이 나올지 모른다.",
+      "evidence": "블록 제목·설명 줄에 계속 TEXT-0nn이 등장하는데, 본문 설명은 'BEGIN/END OF BLOCK ... WITH FRAME TITLE — 테두리+제목으로 한 묶음'뿐이라 제목 글자를 어디에 적는지가 없다. 변수라면 선언이 없고, 글자라면 따옴표가 없어서 둘 다 아니다. CH15의 앞 레슨(L01～L08) 어디에도 풀이가 없고, CH15-L11.md의 TEXT-010에서 같은 막힘이 반복된다.",
+      "suggestion": "첫 등장 자리에 한 줄 풀이를 붙인다. 예: 'TEXT-001은 프로그램 안에 코드가 아니라 별도로 등록해 두는 화면 문구다(텍스트 심볼). 번호로 불러 쓰면 나중에 다국어로 바꾸기 쉽다.' 등록 위치(SE38 텍스트 요소)도 한 줄이면 충분하다."
+    },
+    {
+      "seq": 8,
+      "file": "CH15-L09.md",
+      "quote": "SELECTION-SCREEN COMMENT /1(50) TEXT-002 FOR FIELD pa_conc.",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "/1(50), 1(10), /1(20) 같은 표기의 뜻이 한 번도 설명되지 않아, 숫자를 어떻게 정해야 하는지 알 수 없다.",
+      "evidence": "본문은 POSITION n만 'n번째 칸에 둔다'로 풀어 주고, 정작 더 먼저 나오는 /1(50)은 그냥 지나간다. 슬래시가 무엇인지, 앞 숫자와 괄호 안 숫자가 각각 무엇인지 알 수 없어서 코드를 내 화면에 맞게 고칠 수가 없다. 같은 표기가 PUSHBUTTON /1(20) but_ref에서 또 나오고, POS_LOW·POS_HIGH는 이름만 한 번 언급되고 예시가 없어 더 얹힌다.",
+      "suggestion": "첫 등장 줄 밑에 한 줄: '/1(50) — 슬래시는 새 줄에서 시작, 1은 시작 칸, (50)은 글자 폭이다.' POS_LOW·POS_HIGH도 한 줄 예시를 붙이거나 다음 기회로 미룬다고 밝힌다."
+    },
+    {
+      "seq": 9,
+      "file": "CH15-L09.md",
+      "quote": "선택화면 버튼은 **`SY-UCOMM`이 아니라 `SSCRFIELDS-UCOMM`** 으로 처리한다(공식 규칙).",
+      "category": "단절",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "SY-UCOMM을 배운 적이 없는데 'SY-UCOMM이 아니다'라고 대조해서 경고해, 내가 모르는 것을 조심하라는 말처럼 읽힌다.",
+      "evidence": "코드 주석에도 'CASE sscrfields-ucomm. ← sy-ucomm 아님!'이라고 강조돼 있는데, CH15 안에서 sy-ucomm이 무엇인지 설명된 적이 없다(L01～L08에 없음). 그래서 이 경고가 '흔한 실수'가 아니라 '처음 보는 이름' 하나가 더 늘어나는 것으로 느껴진다. 다만 CH15 밖의 앞 챕터에서 이미 다뤘을 수도 있어 추정으로 남긴다.",
+      "suggestion": "앞에서 이미 배운 것이면 그 레슨을 링크하고, 아직 안 배운 것이면 괄호로 한 줄만 풀이한다. 예: 'SY-UCOMM(일반 화면에서 눌린 버튼 코드가 담기는 시스템 필드)과 헷갈리기 쉽다.'"
+    },
+    {
+      "seq": 10,
+      "file": "CH15-L09.md",
+      "quote": "각 탭의 내용은 **Subscreen**(선택화면의 일부 영역)으로 채운다. 탭마다 다른 입력 묶음을 끼워 넣는 구조다.",
+      "category": "과부하",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "한 레슨에서 블록·COMMENT·ULINE·SKIP·LINE·POSITION·체크박스·라디오·PUSHBUTTON·FUNCTION KEY·SSCRFIELDS까지 소화한 끝에 TABBED BLOCK과 Subscreen이 코드 없이 세 줄로 더 얹혀, 마지막 절에서 완전히 넘쳤다.",
+      "evidence": "이 레슨은 앞선 레슨들(대개 문법 1～2개)과 달리 새 문법이 열 개 이상 연달아 나온다. 마지막 TABBED BLOCK 절은 예제 코드가 없고, Subscreen이라는 새 용어가 괄호 풀이 한 줄로만 지나간 뒤 'subscreen 연결이 필수'라는 경고까지 붙는다. 필수라는데 연결하는 방법이 나오지 않아서, 여기까지 읽고 나면 '이 절은 뭘 배운 건가'만 남는다.",
+      "suggestion": "TABBED BLOCK 절은 심화로 미룬다고 앞부분에 명시하거나(예고 수준으로 축소), 남길 거라면 최소 코드 한 조각으로 subscreen 연결까지 보여 준다. 레슨이 너무 길면 '블록·배치'와 '버튼·탭'을 두 레슨으로 나누는 것도 방법이다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH15는 이벤트를 시점 순서대로 한 레슨씩 쌓고 매 레슨 끝에서 다음 불편으로 넘겨 줘서, 처음 읽는 사람도 '지금 어디를 배우는지'를 놓치지 않았다. 특히 L01의 식당의 하루 비유(오픈 준비→주문 접수→조리→마감)와 L07의 '없는 코드 vs 못 보는 코드' 대비, L04의 전체 검증 vs 필드 검증 비교표는 한 번에 이해됐고, L06이 END-OF-SELECTION을 권하지 않고 '옛 코드 읽기용'으로 정직하게 자리매김한 점도 좋았다. 막힌 곳은 대부분 설명 자체가 아니라 용어 한 줄이 빠진 자리였다 — header line(L02), 선언 없이 나오는 SCREEN(L03), TEXT-0nn과 /1(50) 표기(L09), sy-repid·sy-dynnr(L08), 정리에만 나온 sy-dbcnt(L05). 여기에 lo_alv 접두어가 바로 옆 설명과 어긋나는 점(L06·L12)과 L09의 마지막 TABBED BLOCK 절 과부하가 더해진다. 구조를 다시 짤 필요는 없고, 한 줄 풀이 추가와 접두어 통일, 링크 라벨 정정 정도의 경미 수정이면 충분하다."
+  }
+}

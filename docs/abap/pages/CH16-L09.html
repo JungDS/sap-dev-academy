@@ -39,10 +39,10 @@
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 16</span><span class="tag tag--ls">Lesson 9</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>화면에 무엇을 얹을 자리</h2>
+<section class="lblock"><h2>화면 안에 컨트롤을 얹을 자리</h2>
 <p>입력칸만으로 끝나는 업무는 많지 않다. 예매 화면에는 좌석표나 예매 목록을 ALV로
 보여 주고 싶고(<a href="CH17-L01.html">Grid ALV 기초</a>), 한 화면을 공연 정보·예매자 정보·상태로
-나누고 싶을 수도 있다. 이 레슨은 화면 안에 <strong>&quot;무엇을 얹을 자리&quot;</strong> 를 만드는 요소들을 다룬다.
+나누고 싶을 수도 있다. 이 레슨은 화면 안에 <strong>무엇을 얹을 자리</strong>를 만드는 요소들을 다룬다.
 완성 ALV는 여기서 구현하지 않는다. <strong>자리와 구조</strong>만 잡는다.</p>
 <table>
 <thead>
@@ -98,16 +98,19 @@
 <blockquote>
 <p>🔎 <strong>[선행 사용]</strong> <code>TYPE REF TO</code>·<code>CREATE OBJECT</code>는 <a href="CH21-L01.html">Global Class 생성과 객체</a>에서
 정식으로 배운다. 여기선 &quot;Custom Control 이름 <code>CONT100</code>에 container 객체를 연결한다&quot;는
-블랙박스로만 받아들이면 된다.</p>
+블랙박스로만 받아들이면 된다. (객체지향 언어를 다뤄 본 적 있다면 <strong>참조 변수 선언 +
+생성자 호출</strong>로 읽으면 그대로 맞다.)</p>
 </blockquote>
 <ul>
-<li>⚠️ Container를 <strong>PBO마다 새로</strong> 만들면 lifecycle 문제가 생긴다 → <code>IF go_cont IS INITIAL</code>로
-<strong>한 번만</strong> 생성한다.</li>
+<li>⚠️ Container를 <strong>PBO마다 새로</strong> 만들면 안 된다. PBO는 화면이 뜰 때마다 다시 도는 자리라,
+그때마다 container 객체가 <strong>하나씩 새로 생기고 앞서 만든 객체는 정리되지 않는다.</strong>
+이렇게 객체가 언제 생기고 언제 없어지는지가 어긋나는 문제를 <strong>생명주기 문제</strong>라고 한다.
+그래서 <code>IF go_cont IS INITIAL</code>로 <strong>한 번만</strong> 생성한다.</li>
 <li>Custom Control은 <strong>내용물이 아니라 빈 사각 영역</strong>이다. container와 실제 control을
 만들어야 내용이 보인다(ALV는 <a href="CH17-L01.html">Grid ALV 기초</a>에서 이 <code>go_cont</code>에 얹는다).</li>
 </ul>
 </section><section class="lblock"><h2>Subscreen — 화면 안에 다른 화면</h2>
-<p><code>Subscreen Area</code>는 화면 안에 다른 dynpro를 끼워 넣는 영역이다. Flow Logic에서
+<p><code>Subscreen Area</code>는 화면 안에 다른 <button class="term" type="button" data-term="Dynpro">Dynpro</button>를 끼워 넣는 영역이다. Flow Logic에서
 <code>CALL SUBSCREEN</code>으로 포함한다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
@@ -120,20 +123,122 @@
 <span class="tok-kw">PROCESS</span> <span class="tok-kw">AFTER</span> <span class="tok-kw">INPUT</span>.
   <span class="tok-kw">CALL</span> SUBSCREEN sub_area.
   <span class="tok-kw">MODULE</span> user_command_0100.</code></pre></div></div>
+<p>한 줄이 짧아 보이지만 조각이 네 개다.</p>
+<table>
+<thead>
+<tr>
+<th>조각</th>
+<th>뜻</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>sub_area</code></td>
+<td>Screen Painter에서 만든 <strong>Subscreen Area 이름</strong>(ABAP에 따로 선언하지 않는다)</td>
+</tr>
+<tr>
+<td><code>INCLUDING</code></td>
+<td>&quot;이 영역에 <strong>아래 화면을 끼워 넣어라</strong>&quot;를 잇는 말</td>
+</tr>
+<tr>
+<td><code>sy-repid</code></td>
+<td>끼워 넣을 화면이 들어 있는 <strong>프로그램 이름</strong>(보통 나 자신)</td>
+</tr>
+<tr>
+<td><code>&#39;0110&#39;</code></td>
+<td>끼워 넣을 <strong>화면 번호</strong></td>
+</tr>
+</tbody></table>
 <ul>
-<li>⚠️ <strong>Subscreen은 자체 OK field를 가질 수 없다</strong>(공식문서). 사용자 명령의 function
-code는 <strong>main 화면의 <code>OK_CODE</code>로 모인다</strong> — 처리 책임은 main의 PAI 흐름에 있다.</li>
+<li>PBO에는 <code>INCLUDING</code>이 붙고 PAI에는 안 붙는다. <strong>무엇을 끼울지 정하는 일은 화면을 그리기
+직전 한 번</strong>이면 되고, PAI에서는 &quot;아까 끼운 그 영역의 입력도 함께 처리하라&quot;는 뜻이라
+영역 이름만 있으면 되기 때문이다. 대신 <strong>PBO에 부르면 PAI에도 짝을 맞춰</strong> 불러야 subscreen
+안의 입력이 처리된다.</li>
+<li>⚠️ <strong>Subscreen은 자체 OK field를 가질 수 없다.</strong> 사용자 명령의 function code는 <strong>main
+화면의 <code>OK_CODE</code>로 모인다.</strong> 처리 책임은 main의 PAI 흐름에 있다.</li>
 </ul>
-</section><section class="lblock"><h2>Tabstrip · Status Icon</h2>
+</section><section class="lblock"><h2>Tabstrip — 한 화면을 탭으로 나누기</h2>
+<p>탭 하나는 <strong>탭 버튼</strong>과 <strong>그 탭에 보여 줄 subscreen</strong>이 짝이다. 사용자가 탭을 누르면 그 탭의
+function code가 PAI로 오고, 우리가 <strong>지금 활성 탭</strong>을 기록해 두면 PBO에서 그 탭에 맞는
+subscreen을 끼운다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19</pre><pre class="abap-editor__code"><code>CONTROLS tab_main <span class="tok-kw">TYPE</span> TABSTRIP.     <span class="tok-com">" 화면의 Tabstrip과 이어지는 제어 구조</span>
+
+<span class="tok-kw">DATA</span>: ok_code   <span class="tok-kw">TYPE</span> sy-ucomm,
+      gv_subscr <span class="tok-kw">TYPE</span> sy-dynnr.       <span class="tok-com">" 지금 끼울 subscreen 화면 번호</span>
+
+<span class="tok-kw">MODULE</span> tab_command_0100 <span class="tok-kw">INPUT</span>.       <span class="tok-com">" PAI — 탭을 눌렀다</span>
+  <span class="tok-kw">CASE</span> ok_code.
+    <span class="tok-kw">WHEN</span> <span class="tok-str">'TAB1'</span> <span class="tok-kw">OR</span> <span class="tok-str">'TAB2'</span>.
+      tab_main-activetab = ok_code.  <span class="tok-com">" 눌린 탭을 활성 탭으로 기록</span>
+  <span class="tok-kw">ENDCASE</span>.
+<span class="tok-kw">ENDMODULE</span>.
+
+<span class="tok-kw">MODULE</span> set_tab_0100 <span class="tok-kw">OUTPUT</span>.          <span class="tok-com">" PBO — 활성 탭에 맞는 화면 고르기</span>
+  <span class="tok-kw">IF</span> tab_main-activetab = <span class="tok-str">'TAB2'</span>.
+    gv_subscr = <span class="tok-str">'0120'</span>.              <span class="tok-com">" 예매자 정보 화면</span>
+  <span class="tok-kw">ELSE</span>.
+    gv_subscr = <span class="tok-str">'0110'</span>.              <span class="tok-com">" 공연 정보 화면</span>
+  <span class="tok-kw">ENDIF</span>.
+<span class="tok-kw">ENDMODULE</span>.</code></pre></div></div>
+<p>Flow Logic에서는 화면 번호를 고정 대신 그 변수로 준다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3</pre><pre class="abap-editor__code"><code><span class="tok-kw">PROCESS</span> <span class="tok-kw">BEFORE</span> <span class="tok-kw">OUTPUT</span>.
+  <span class="tok-kw">MODULE</span> set_tab_0100.
+  <span class="tok-kw">CALL</span> SUBSCREEN sub_area INCLUDING sy-repid gv_subscr.</code></pre></div></div>
+<blockquote>
+<p>🔎 <strong>[선행 사용]</strong> <code>CONTROLS tab_main TYPE TABSTRIP.</code>은 화면에 그린 Tabstrip과 프로그램을
+잇는 <strong>화면 전용 선언문</strong>이다. 지금은 &quot;활성 탭 이름을 담는 특별한 변수를 하나 만든다&quot;
+정도로 받아들이면 된다. 문법을 분석하거나 외울 필요는 없다.</p>
+</blockquote>
+</section><section class="lblock"><h2>Status Icon — 상태를 아이콘으로</h2>
+<p>&quot;매진인가 예매 가능인가&quot;를 글자로 쓰는 대신 신호등처럼 보여 주는 요소다. Screen Painter에서
+요소 타입을 <strong>Status Icon</strong>으로 두고, 프로그램에서는 같은 이름의 문자 필드에 <strong>아이콘 이름</strong>을
+넣어 준다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>: gv_icon <span class="tok-kw">TYPE</span> c <span class="tok-kw">LENGTH</span> <span class="tok-num">4</span>,       <span class="tok-com">" 화면의 Status Icon 필드와 같은 이름</span>
+      gv_left <span class="tok-kw">TYPE</span> i.                <span class="tok-com">" 남은 좌석 수</span>
+
+<span class="tok-kw">MODULE</span> set_icon_0100 <span class="tok-kw">OUTPUT</span>.         <span class="tok-com">" PBO에서 채운다</span>
+  <span class="tok-kw">IF</span> gv_left = <span class="tok-num">0</span>.
+    gv_icon = icon_red_light.        <span class="tok-com">" 🔴 매진</span>
+  <span class="tok-kw">ELSE</span>.
+    gv_icon = icon_green_light.      <span class="tok-com">" 🟢 예매 가능</span>
+  <span class="tok-kw">ENDIF</span>.
+<span class="tok-kw">ENDMODULE</span>.</code></pre></div></div>
 <ul>
-<li><strong>Tabstrip</strong> — 탭마다 <strong>title(function code)</strong> 과 <strong>subscreen area</strong>가 짝이다. ABAP에서
-<code>CONTROLS tab_main TYPE TABSTRIP.</code>으로 선언하고, <code>tab_main-activetab</code>에 활성 탭의
-function code를 보관한다.</li>
-<li><strong>Status Icon</strong> — 상태를 아이콘·텍스트·툴팁으로 보여 준다(예: 매진 🔴 / 가능 🟢 / 오류 ⚠).</li>
+<li><code>icon_red_light</code> 같은 아이콘 이름은 SAP이 미리 만들어 둔 상수다(타입 그룹 <code>ICON</code>).
+실제 값은 <code>&#39;@0A@&#39;</code> 같은 짧은 문자라, 화면에서는 그 값이 아이콘 그림으로 보인다.</li>
+<li>값을 넣는 자리는 <strong>PBO</strong>다. 상태가 바뀌면 다음 PBO에서 다시 채워야 아이콘도 바뀐다.</li>
 </ul>
 <blockquote>
-<p>🔶 <strong>Table Control은 다루지 않는다.</strong> 공식문서엔 있지만, 표 형태 데이터 표시는 이 과정에서
-<a href="CH17-L01.html">Grid ALV 기초</a>로 대체한다.</p>
+<p>🔶 <strong>Table Control은 다루지 않는다.</strong> classic 화면에는 표를 보여 주는 Table Control도
+있지만, 표 형태 데이터 표시는 이 과정에서 <a href="CH17-L01.html">Grid ALV 기초</a>로 대체한다.</p>
 </blockquote>
 </section><section class="lblock"><h2>직접 설계해 보기 — 화면 분할과 컨테이너 설계판</h2>
 <p>요소를 골라 Screen Painter 영역 이름과 ABAP 연결을 맞춰 보자. <code>container_name</code>이
@@ -144,12 +249,17 @@ function code를 보관한다.</li>
 <li><strong>Container 이름 불일치</strong> → 화면 Custom Control 이름과 <code>container_name</code>이 같아야 붙는다.</li>
 <li><strong>컨테이너를 PBO마다 생성</strong> → <code>IF go_cont IS INITIAL</code>로 한 번만.</li>
 <li><strong>Subscreen에 OK field 기대</strong> → 없다. 명령은 main 화면 <code>OK_CODE</code>로 처리.</li>
-<li><strong>Tabstrip을 탭만 그리고 끝</strong> → 탭 title function code·<code>activetab</code>·subscreen area·<code>CALL SUBSCREEN</code>이 모두 맞아야 동작한다.</li>
+<li><strong>Tabstrip을 탭만 그리고 끝</strong> → 탭 버튼의 function code·<code>activetab</code>·subscreen area·<code>CALL SUBSCREEN</code>이 모두 맞아야 동작한다.</li>
+<li><strong>PBO에만 <code>CALL SUBSCREEN</code></strong> → PAI에도 짝을 맞춰 불러야 subscreen 안의 입력이 처리된다.</li>
+<li><strong>Status Icon에 직접 글자 입력</strong> → 넣을 값은 <code>icon_...</code> 상수(아이콘 이름)다.</li>
 </ul>
 </section><section class="lblock"><h2>정리</h2>
 <ul>
-<li><strong>Custom Control</strong>은 ALV를 담을 <strong>자리</strong>, <strong>Subscreen·Tabstrip</strong>은 화면을 <strong>나누는 구조</strong>다.</li>
-<li>OO 문법과 Grid 구현은 뒤로 미루고, 지금은 <strong>&quot;화면 영역과 프로그램 연결&quot;</strong> 까지만 정확히 잡는다.</li>
+<li><strong>Custom Control</strong>은 ALV를 담을 <strong>자리</strong>, <strong>Subscreen·Tabstrip</strong>은 화면을 <strong>나누는 구조</strong>,
+<strong>Status Icon</strong>은 상태를 한눈에 보여 주는 <strong>표시 요소</strong>다.</li>
+<li>Tabstrip은 &quot;탭 클릭 → <code>activetab</code> 기록(PAI) → 그 탭의 subscreen 끼우기(PBO)&quot;라는 <strong>한 바퀴</strong>로
+움직인다.</li>
+<li>OO 문법과 Grid 구현은 뒤로 미루고, 지금은 <strong>화면 영역과 프로그램 연결</strong>까지만 정확히 잡는다.</li>
 </ul>
 <hr>
 <p>화면에 컨트롤을 박을 자리를 마련했다. 배운 걸 <strong>콘서트앱</strong>에 적용해 예매 입력 화면을

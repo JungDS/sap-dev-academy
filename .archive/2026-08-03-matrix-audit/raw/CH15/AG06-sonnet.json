@@ -1,0 +1,84 @@
+{
+  "agent": "AG06",
+  "model": "sonnet",
+  "target": "CH15",
+  "persona_ack": "20년차 SAP ABAP 아키텍트로서 CH15(Report Event·Selection Screen 심화) 챕터 개요 + 레슨 12개(L01~L12)를 실무 코드리뷰 관점에서 감사했다. ECC~S/4HANA 개발·운영 경험을 기준으로 문법·이벤트 동작·표준 함수모듈 파라미터·sy-subrc 의미의 정확성과, 실무에서 안 쓰는 패턴이 표준처럼 제시되지 않았는지, 사고로 이어질 수 있는 위험한 생략이 없는지를 봤다.",
+  "method": "웹 검색·외부 도구 없이 대상 파일 13개 전문을 정독하고, ABAP 문법·이벤트 발생 시점·MESSAGE 타입 동작·AUTHORITY-CHECK sy-subrc 의미·CALL SELECTION-SCREEN sy-subrc 의미·F4IF_INT_TABLE_VALUE_REQUEST 표준 파라미터명 등을 기억에 근거해 대조 검증했다. 문서 공식 분류(예: Obsolete 태그) 같이 기억이 불확실한 항목은 confidence=추정으로 정직하게 표기했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L10.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L11.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L12.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH15-L06.md",
+      "quote": "공식 문서는 이 이벤트를 **Obsolete(낡아서 권장하지 않는) 문법으로 분류한다.**",
+      "category": "사실 오류",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "END-OF-SELECTION이 ABAP 공식 키워드 문서에서 'Obsolete'로 명시 분류된다는 단정은 과장됐을 가능성이 있다.",
+      "evidence": "ABAP 키워드 문서의 'Obsolete' 태그는 보통 특정 구형 단축 구문(예: 옛 MOVE/COMPUTE 표기, 일부 구형 OPEN CURSOR·SELECT 표기 등)에 명시적으로 붙는 공식 분류다. END-OF-SELECTION과 Logical Database는 BC400류 정규 교재에서도 'ALV/OO 대비 신규 개발엔 권장되지 않는 legacy 기술'로는 다루지만, END-OF-SELECTION 자체에 그런 공식 Obsolete 태그가 붙어 있다는 근거는 필자 기억으로는 약하다. Logical Database는 지금도(특히 HR PNP/PNPCE) 정식 지원되는 기술이라 '폐기 예정'과는 결이 다르다. 웹 검색이 금지돼 확신할 수 없어 confidence=추정으로 표기하며, 확실 판정의 오류가 더 크게 감점된다는 지침에 따라 과신하지 않는다.",
+      "suggestion": "게시 전 실제 ABAP 키워드 문서(F1)로 'Obsolete' 태그 여부를 재확인하고, 확인 전까지는 '신규 개발에는 권장되지 않는 legacy/LDB 이벤트다' 정도로 검증 가능한 수준까지만 서술을 낮추는 것을 권장."
+    },
+    {
+      "seq": 2,
+      "file": "CH15-L03.md",
+      "quote": "IF gs_screen-name = 'PA_SECRET' AND pa_mode <> 'A'.",
+      "category": "위험한 생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "필드명을 하필 'SECRET'으로 짓고 SCREEN-ACTIVE로 숨기는 예제인데, '화면에서 숨기는 것'과 '실제 접근을 막는 것'은 다르다는 안전 경고가 빠져 있다.",
+      "evidence": "LOOP AT SCREEN + SCREEN-ACTIVE는 PBO 단계의 UI 렌더링 제어일 뿐이다. 값 자체는 여전히 메모리에 존재하고, 화면 렌더링을 거치지 않는 경로(저장된 variant, batch input, RFC 제출, 디버거 변경-후-계속 등)로는 여전히 채워지거나 넘어올 수 있다. 필드명을 'pa_secret'으로 지어놓고 이 구분을 짚지 않으면, 입문자가 '화면에서 숨기면 그 값은 보안이 확보된다'고 오해하기 쉽다. 이 오해(UI 숨김을 접근 통제로 착각)는 실무에서 실제로 반복되는 사고 패턴이다.",
+      "suggestion": "pa_secret 예제 옆에 '이건 화면 표시만 제어할 뿐, 값 자체를 막는 보안 장치가 아니다 — 진짜 접근 제한은 별도 검증이 필요하다'는 한 줄 경고를 추가하거나, 필드명을 보안을 연상시키지 않는 중립적 이름(예: pa_adv2)으로 바꿔 오인 소지를 없앤다."
+    },
+    {
+      "seq": 3,
+      "file": "CH15-L05.md",
+      "quote": "SELECT * FROM zbooking",
+      "category": "안티패턴",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "SELECT *로 전체 컬럼을 가져오지만 바로 아래 WRITE에서는 booking_id·customer·status 3개 필드만 쓴다 — 필요한 필드만 선택하는 실무 표준과 어긋나는 코드가 '표준 조회'처럼 제시된다.",
+      "evidence": "실무 코드리뷰·성능 가이드(Clean ABAP 포함)에서 SELECT *는 불필요한 컬럼 전송·메모리 낭비, 테이블에 필드가 추가될 때의 불필요한 영향 때문에 지양된다. 이 리포트는 실제 쓰는 필드가 3개뿐이라 필드를 좁힌 SELECT가 훨씬 실무적인 기본형이다.",
+      "suggestion": "SELECT * 대신 SELECT booking_id customer status FROM zbooking INTO TABLE gt_booking처럼 실제 사용 필드만 선택하는 형태로 바꾸거나, 최소한 'SELECT *는 예제 편의상 쓴 것이고 실무에선 필요한 필드만 선택한다'는 각주를 추가."
+    },
+    {
+      "seq": 4,
+      "file": "CH15-L12.md",
+      "quote": "IF pa_conc IS INITIAL.",
+      "category": "예시 적절성",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "종합 실습에서 pa_conc 공백 검증을 AT SELECTION-SCREEN ON 안의 수동 IF IS INITIAL 분기로 구현했는데, 두 레슨 전(CH15-L10)에서 가르친 '이벤트 코드로 억지 구현하기 전에 옵션(OBLIGATORY)으로 먼저 해결한다'는 원칙을 정작 종합 실습이 스스로 따르지 않는다.",
+      "evidence": "PARAMETERS pa_conc ... OBLIGATORY.만 붙이면 시스템이 공백 제출 자체를 막아 별도 IF pa_conc IS INITIAL 코드가 필요 없다. L10에서 이 원칙을 명시적으로 가르쳐 놓고, 정작 배운 내용을 총정리하는 종합 실습에서 다른 패턴을 쓰면 학습자에게 'OBLIGATORY와 수동 검증을 언제 나눠 쓰는지' 기준이 흐려진다.",
+      "suggestion": "PARAMETERS pa_conc ... OBLIGATORY로 선언해 공백 체크는 프레임워크에 맡기고 AT SELECTION-SCREEN ON pa_conc에는 존재·권한 검증만 남기거나, 커스텀 메시지가 꼭 필요해 수동 검증을 택했다면 그 이유를 한 줄로 밝힌다."
+    },
+    {
+      "seq": 5,
+      "file": "CH15-L07.md",
+      "quote": "AUTHORITY-CHECK OBJECT 'Z_CONCERT'",
+      "category": "위험한 생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "AUTHORITY-CHECK 실패를 다루는 레슨인데, 실무에서 권한 문제를 진단하는 표준 도구 SU53(마지막 권한 검사 실패 내역) 언급이 전혀 없다.",
+      "evidence": "실무에서 sy-subrc <> 0으로 권한 실패를 감지한 뒤 '왜 막혔는지' 확인하는 첫걸음은 거의 항상 SU53이다. 이 레슨이 AUTHORITY-CHECK를 정식 도입하는 유일한 자리인데 실제 원인 추적 방법이 빠지면, 학습자가 실무에서 첫 권한 오류를 마주쳤을 때 다음 행동을 모른다.",
+      "suggestion": "'실무 팁' 콜아웃으로 'AUTHORITY-CHECK가 막히면 사용자에게 SU53을 실행해 마지막 권한 검사 실패 내역을 보게 하거나, 개발자는 ST01 트레이스로 원인을 추적한다' 한두 문장을 추가."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH15 12개 레슨은 Report Event 순서와 Selection Screen 제어를 실무 감각에 맞게 정확히 설명한다. AT SELECTION-SCREEN(전체) vs ON <필드>의 화면 잠금 차이, SSCRFIELDS-UCOMM과 SY-UCOMM의 구분, F4IF_INT_TABLE_VALUE_REQUEST가 다른 화면 필드값까지 자동으로 읽어오지 않는다는 한계(DYNP_VALUES_READ 안내), CALL SELECTION-SCREEN의 sy-subrc(0=실행/4=취소) 의미, NO-EXTENSION과 NO INTERVALS의 차이 등 세부 사실은 대체로 정확하고 실무 깊이가 느껴진다. 코드 예제도 전부 문법적으로 유효하며 classic 구간 규율(CH01~17)도 잘 지켰다. 다만 (1) END-OF-SELECTION을 '공식 문서가 Obsolete로 분류'한다고 단정한 부분은 근거가 약해 검증이 필요하고, (2) pa_secret 필드를 SCREEN-ACTIVE로 숨기는 예제에 '화면 숨김은 접근 통제가 아니다'라는 안전 경고가 빠졌으며, (3) SELECT * 예시와 (4) 종합 실습의 수동 IS INITIAL 검증이 L10 자신이 가르친 'OBLIGATORY 우선' 원칙과 어긋나고, (5) AUTHORITY-CHECK 레슨에 SU53 같은 실무 진단 도구 언급이 없는 점은 가볍게 보강할 만하다. 컴파일이 안 되거나 개념적으로 완전히 틀린 치명적 오류는 발견되지 않았다."
+  }
+}

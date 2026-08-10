@@ -45,10 +45,11 @@
       '  FROM '+L.name+' AS '+L.alias,
       '  '+join+' '+R.name+' AS '+R.alias,
       '    ON '+onTxt,
-      '  INTO TABLE lt_stat',
+      // 결과 itab은 전역 위치라 g 접두어(R11) · 필드를 나열해 읽으므로 이름끼리 맞추는 CORRESPONDING
+      '  INTO CORRESPONDING FIELDS OF TABLE '+(cfg.intoTarget||'gt_stat'),
       '  GROUP BY '+grpFields+'.'
     ];
-    var KW=new Set(['SELECT','SUM','AS','FROM','LEFT','OUTER','INNER','JOIN','ON','AND','INTO','TABLE','GROUP','BY']);
+    var KW=new Set(['SELECT','SUM','AS','FROM','LEFT','OUTER','INNER','JOIN','ON','AND','INTO','CORRESPONDING','FIELDS','OF','TABLE','GROUP','BY']);
     $('javCode').innerHTML = lines.map(function(ln){
       return ln.replace(/[A-Za-z_][A-Za-z0-9_~]*/g,function(w){
         var bare=w.replace(/~.*/,''); // alias~field → 키워드 아님

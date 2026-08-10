@@ -67,7 +67,21 @@
 3
 4
 5
-6</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> carrid <span class="tok-kw">COUNT</span>( * ) <span class="tok-kw">AS</span> cnt
+6
+7
+8
+9
+10
+11
+12
+13</pre><pre class="abap-editor__code"><code><span class="tok-kw">TYPES</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ts_sum,
+         carrid <span class="tok-kw">TYPE</span> sflight-carrid,
+         cnt    <span class="tok-kw">TYPE</span> i,
+       <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ts_sum.
+
+<span class="tok-kw">DATA</span> gt_sum <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ts_sum.
+
+<span class="tok-kw">SELECT</span> carrid <span class="tok-kw">COUNT</span>( * ) <span class="tok-kw">AS</span> cnt
   <span class="tok-kw">FROM</span> sflight
   <span class="tok-kw">INTO</span> <span class="tok-kw">CORRESPONDING</span> <span class="tok-kw">FIELDS</span> <span class="tok-kw">OF</span> <span class="tok-kw">TABLE</span> gt_sum
   <span class="tok-kw">WHERE</span> seatsocc &gt; <span class="tok-num">0</span>       <span class="tok-com">" 먼저 개별 행 필터(예약 있는 운항편만)</span>
@@ -80,14 +94,25 @@
 <li><code>HAVING COUNT( * ) &gt;= 5</code> — 남은 운항편을 항공사별로 센 뒤, 5편 미만 항공사는 제외(<strong>그룹</strong>).</li>
 </ol>
 <p><button class="term" type="button" data-term="Aggregate">집계</button> 조건(<code>COUNT</code>·<code>SUM</code>)은 그룹이 생긴 <strong>뒤</strong>에야 의미가 있으므로 <code>WHERE</code>가 아니라
-<code>HAVING</code>에 둔다. <code>WHERE COUNT( * ) &gt;= 5</code>는 잘못된 방향이다(아직 COUNT가 없다).</p>
-<p>아래 파이프라인을 한 단계씩 진행하며 <strong>WHERE는 행 하나</strong>를, <strong>HAVING은 그룹 하나</strong>를
-어떻게 떨어뜨리는지 보자.</p>
+<code>HAVING</code>에 둔다. <code>WHERE COUNT( * ) &gt;= 5</code>는 잘못된 방향이다. 그 시점엔 아직 그룹이 없으니
+셀 것도 없다.</p>
+<p>두 조건은 <strong>거르는 대상의 크기</strong>가 다르다. <code>WHERE</code>는 행을 하나씩 보며 통과 여부를 정하고,
+<code>HAVING</code>은 이미 묶인 그룹을 하나씩 보며 정한다. 몇 개를 떨어뜨리느냐가 아니라 <strong>무엇을
+단위로 판단하느냐</strong>의 차이다. 아래 파이프라인을 한 단계씩 진행하며, 같은 데이터가 행
+단위와 그룹 단위에서 각각 어떻게 걸러지는지 보자.</p>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">WHERE·HAVING 2단 필터 파이프라인</span><a class="embed__open" href="../../../embeds/abap/CH13-L04-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH13-L04-S01.html" loading="lazy" title="WHERE·HAVING 2단 필터 파이프라인"></iframe></figure>
+</section><section class="lblock"><h2>절의 순서는 정해져 있다</h2>
+<p>classic Open SQL은 절을 적는 순서가 고정돼 있다.</p>
+<p><code>SELECT</code> → <code>FROM</code> → <code>INTO</code> → <code>WHERE</code> → <code>GROUP BY</code> → <code>HAVING</code> → <code>ORDER BY</code></p>
+<p>순서를 바꿔 적으면 구문 오류가 난다. 맨 끝의 <code>ORDER BY</code>(정렬)는 아직 안 배웠으니
+지금은 <strong>자리만</strong> 기억해 두자. 바로 다음 레슨에서 다룬다.</p>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong><button class="term" type="button" data-term="Aggregate">집계</button> 조건을 WHERE에</strong> → <code>WHERE COUNT(*)…</code>는 오류. 집계 조건은 <code>HAVING</code>.</li>
-<li><strong>순서</strong> → <code>WHERE → GROUP BY → HAVING → ORDER BY</code>를 지킨다.</li>
+<li><strong><button class="term" type="button" data-term="Aggregate">집계</button> 조건을 <code>WHERE</code>에</strong> → <code>WHERE COUNT( * ) …</code>는 오류다. 세는 일은 그룹이 만들어진
+다음에 벌어지니, 집계로 거르는 조건은 <code>HAVING</code>에 적는다.</li>
+<li><strong><code>HAVING</code>만 쓰고 <code>WHERE</code>를 안 쓰기</strong> → 문법은 맞지만 필요 없는 행까지 다 묶었다가
+버리는 셈이다. 미리 걸러 낼 수 있는 조건은 <code>WHERE</code>에 두는 편이 DB 일감을 줄인다.</li>
+<li><strong>절 순서를 섞기</strong> → 위 순서를 그대로 지킨다. 특히 <code>GROUP BY</code>와 <code>HAVING</code>이 뒤집히기 쉽다.</li>
 </ul>
 <hr>
 <p>요약·필터까지 됐다. 결과 <strong>정렬</strong>도 DB에서 해보자 → ORDER BY(다음 레슨).</p>

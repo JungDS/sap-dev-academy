@@ -43,10 +43,18 @@
 <p>이 챕터의 마지막은 <button class="term" type="button" data-term="이벤트">이벤트</button>를 따로 외우는 게 아니라 <strong>한 리포트 흐름으로 묶는</strong> 실습이다.
 사용자는 공연 코드를 보고(기본값) → 잘못된 입력을 고치고(검증) → 권한을 통과한 뒤
 → 예매 목록을 조회한다. 이걸 한 번에 만들면 <code>INITIALIZATION</code>·<code>AT SELECTION-SCREEN OUTPUT</code>·<code>AT SELECTION-SCREEN</code>·<code>START-OF-SELECTION</code>이 <strong>각각 왜 필요한지</strong> 연결된다.</p>
+<blockquote>
+<p>📌 <strong>이 실습이 회수하는 범위.</strong> 이벤트 네 자리(기본값·화면 제어·검증·본 처리)와
+존재·권한 검증, 그리고 화면 제어 그룹(<code>MODIF ID</code>)까지를 한 흐름으로 엮는다.
+블록·버튼 같은 화면 구성과 보조 선택화면·Variant는 <strong>여기서 다시 다루지 않는다</strong> —
+각 레슨의 체험에서 이미 손으로 만져 봤으니, 이번엔 <strong>&quot;이벤트가 제자리에 있는가&quot;</strong> 한 가지에만
+집중하자.</p>
+</blockquote>
 <h3>요구사항</h3>
 <ul>
 <li>최초 실행 시 기본 공연 코드 <code>C001</code>을 제안한다.</li>
-<li>고급 조건 필드(<code>pa_note</code>)는 모드가 <code>A</code>일 때만 활성화한다.</li>
+<li>고급 조건 필드(<code>pa_note</code>)는 모드가 <code>A</code>일 때만 화면에 나오게 한다
+(<code>MODIF ID</code>로 묶어 한꺼번에 제어).</li>
 <li>공연 코드가 <strong>비어 있거나 존재하지 않으면</strong> 실행을 막는다.</li>
 <li>현재 사용자에게 <strong>조회 권한이 없으면</strong> 실행을 막는다.</li>
 <li>검증을 통과하면 <code>zbooking</code>을 조회한다. 결과가 없으면 상태 메시지를, 있으면 SALV로 표시한다.</li>
@@ -118,12 +126,12 @@
 
 <span class="tok-kw">PARAMETERS</span>: pa_conc <span class="tok-kw">TYPE</span> zconcert-concert_id,
             pa_mode <span class="tok-kw">TYPE</span> c <span class="tok-kw">LENGTH</span> <span class="tok-num">1</span>,
-            pa_note <span class="tok-kw">TYPE</span> c <span class="tok-kw">LENGTH</span> <span class="tok-num">20</span>.
+            pa_note <span class="tok-kw">TYPE</span> c <span class="tok-kw">LENGTH</span> <span class="tok-num">20</span> <span class="tok-kw">MODIF</span> <span class="tok-kw">ID</span> adv.   <span class="tok-com">" 고급 묶음으로 표시</span>
 
 <span class="tok-kw">DATA</span>: gv_chk     <span class="tok-kw">TYPE</span> zconcert-concert_id,
       gv_status  <span class="tok-kw">TYPE</span> zbooking-status,
       gt_booking <span class="tok-kw">TYPE</span> <span class="tok-kw">STANDARD</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> zbooking,
-      lo_alv     <span class="tok-kw">TYPE</span> <span class="tok-kw">REF</span> <span class="tok-kw">TO</span> cl_salv_table,
+      go_alv     <span class="tok-kw">TYPE</span> <span class="tok-kw">REF</span> <span class="tok-kw">TO</span> cl_salv_table,
       gs_screen  <span class="tok-kw">TYPE</span> <span class="tok-kw">screen</span>.
 
 <span class="tok-kw">SELECT-OPTIONS</span> so_stat <span class="tok-kw">FOR</span> gv_status.
@@ -131,11 +139,11 @@
 <span class="tok-kw">INITIALIZATION</span>.                              <span class="tok-com">" ① 첫 기본값</span>
   pa_conc = <span class="tok-str">'C001'</span>.
   so_stat-sign = <span class="tok-str">'I'</span>. so_stat-option = <span class="tok-str">'EQ'</span>. so_stat-low = <span class="tok-str">'N'</span>.
-  <span class="tok-kw">APPEND</span> so_stat.
+  <span class="tok-kw">APPEND</span> so_stat.                            <span class="tok-com">" header line(임시 한 줄)을 조건표에 추가</span>
 
 <span class="tok-kw">AT</span> <span class="tok-kw">SELECTION-SCREEN</span> <span class="tok-kw">OUTPUT</span>.                   <span class="tok-com">" ② 화면 직전 제어</span>
   <span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> <span class="tok-kw">SCREEN</span> <span class="tok-kw">INTO</span> gs_screen.
-    <span class="tok-kw">IF</span> gs_screen-name = <span class="tok-str">'PA_NOTE'</span> <span class="tok-kw">AND</span> pa_mode &lt;&gt; <span class="tok-str">'A'</span>.
+    <span class="tok-kw">IF</span> gs_screen-group1 = <span class="tok-str">'ADV'</span> <span class="tok-kw">AND</span> pa_mode &lt;&gt; <span class="tok-str">'A'</span>.   <span class="tok-com">" adv 묶음을 한꺼번에</span>
       gs_screen-active = <span class="tok-str">'0'</span>.                 <span class="tok-com">" 고급 모드 아닐 때 숨김</span>
       <span class="tok-kw">MODIFY</span> <span class="tok-kw">SCREEN</span> <span class="tok-kw">FROM</span> gs_screen.
     <span class="tok-kw">ENDIF</span>.
@@ -171,9 +179,9 @@
 
   <span class="tok-kw">TRY</span>.
       cl_salv_table=&gt;factory(
-        <span class="tok-kw">IMPORTING</span> r_salv_table = lo_alv
+        <span class="tok-kw">IMPORTING</span> r_salv_table = go_alv
         <span class="tok-kw">CHANGING</span>  t_table      = gt_booking ).
-      lo_alv-&gt;display( ).
+      go_alv-&gt;display( ).
     <span class="tok-kw">CATCH</span> cx_salv_msg.
       <span class="tok-kw">MESSAGE</span> <span class="tok-str">'ALV 표시 중 오류가 발생했습니다'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'E'</span>.
   <span class="tok-kw">ENDTRY</span>.</code></pre></div></div>
@@ -182,6 +190,16 @@
 입력/존재/권한 검증=<code>AT SELECTION-SCREEN ON pa_conc</code>, 조회·표시=<code>START-OF-SELECTION</code>.
 SALV 표시는 <a href="CH15-L06.html">END-OF-SELECTION의 위치와 경계</a>에서 본 대로 <strong>legacy/LDB용
 이벤트가 아니라</strong> <code>START-OF-SELECTION</code> 안에 둔다(신규 단순 리포트엔 <code>END-OF-SELECTION</code> 불필요).</p>
+</blockquote>
+<blockquote>
+<p>🔎 <strong>검사 세 개가 한 블록에 이어 붙어 있는데 왜 안 엉킬까?</strong> <code>MESSAGE ... TYPE &#39;E&#39;</code>가 나가면
+<strong>그 자리에서 이벤트 블록이 끝나기</strong> 때문이다. 뒤따르는 존재 검증·권한 검증은 아예 실행되지
+않는다. 그래서 검사마다 <code>RETURN</code>을 붙이지 않아도 첫 번째 문제에서 정확히 멈춘다.</p>
+</blockquote>
+<blockquote>
+<p>💡 <code>pa_conc</code>에 <code>OBLIGATORY</code>를 붙이면 빈 값은 시스템이 알아서 막아 준다. 여기서 굳이 코드로
+검사하는 이유는 <strong>&quot;비어 있음·없는 코드·권한 없음&quot; 세 가지를 한 자리에서 같은 방식으로</strong>
+보여 주기 위해서다. 실제 리포트라면 단순 필수 입력은 <code>OBLIGATORY</code>에 맡기는 편이 낫다.</p>
 </blockquote>
 </section><section class="lblock"><h2>직접 실행해 보기 — 예매 리포트 실행 시뮬레이터</h2>
 <p>시나리오를 골라 ▶ 실행하면, <button class="term" type="button" data-term="이벤트">이벤트</button>가 차례로 흐르며 <strong>어디서 통과하고 어디서 막히는지</strong>,
@@ -224,11 +242,11 @@ SALV 표시는 <a href="CH15-L06.html">END-OF-SELECTION의 위치와 경계</a>�
 </tr>
 <tr>
 <td>고급 모드</td>
-<td><code>pa_mode=A</code></td>
-<td><code>pa_note</code> 입력 가능</td>
+<td><code>pa_mode=A</code> 입력 후 Enter</td>
+<td>화면이 다시 그려지며 <code>pa_note</code>가 나타남</td>
 </tr>
 </tbody></table>
-</section><section class="lblock"><h2>흔한 실수와 주의</h2>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
 <li><strong>검증을 <code>START-OF-SELECTION</code>으로 미룸</strong> → 입력·존재·권한 검증은 조회 <strong>전</strong>
 <code>AT SELECTION-SCREEN</code>에서 한다. 권한 검증을 조회 뒤로 미루지 않는다.</li>
@@ -236,7 +254,8 @@ SALV 표시는 <a href="CH15-L06.html">END-OF-SELECTION의 위치와 경계</a>�
 숨김과 값 삭제는 다른 문제다.</li>
 <li><strong><code>END-OF-SELECTION</code>을 통합 실습에 넣기</strong> → 신규 단순 리포트는 <code>START-OF-SELECTION</code>
 하나로 충분하다.</li>
-<li><strong>메시지 문구만 같게</strong> → &quot;없는 코드&quot;와 &quot;권한 없음&quot;은 원인이 다른 문제다. 다른 문구로 막는다.</li>
+<li><strong>원인이 다른 오류에 같은 문구 사용</strong> → &quot;없는 코드&quot;와 &quot;권한 없음&quot;은 원인이 다른 문제다.
+서로 다른 문구로 막는다.</li>
 </ul>
 </section><section class="lblock"><h2>정리</h2>
 <p>이 실습의 완성 기준은 &quot;코드가 돈다&quot;가 아니라 <strong>책임이 <button class="term" type="button" data-term="이벤트">이벤트</button>별로 분리</strong>되어 있느냐다.

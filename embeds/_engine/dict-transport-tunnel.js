@@ -23,7 +23,8 @@
       '</div>' +
       '<div class="dtt-wa' + (off ? ' dtt-off' : '') + '">' +
         '<div class="dtt-wal">work area <b>zconcert</b>' + (off ? ' <span class="dtt-x">없음</span>' : '') + '</div>' +
-        '<div class="dtt-f"><span class="k">zconcert-concert_id</span><span class="v">' + val(st.prog.conc) + '</span></div>' +
+        '<div class="dtt-f"><span class="k">zconcert-concert_id</span><span class="v">' +
+          (off ? '<i class="dtt-empty">( 담을 곳이 없음 )</i>' : val(st.prog.conc)) + '</span></div>' +
       '</div>' +
       '<div class="dtt-code">DATA gv_seats TYPE i.</div>' +
       '<div class="dtt-wa">' +
@@ -53,12 +54,14 @@
 
   function pbo() {
     // 프로그램이 값을 채우고 → 화면으로 (PBO 끝)
-    st.prog.conc = 'C001'; st.prog.seats = '2';
+    st.prog.seats = '2';
     st.screen.seats = '2';                         // gv_seats 는 항상 운반
     if (st.tables) {
+      st.prog.conc = 'C001';
       st.screen.conc = 'C001';
       say('ok', '▶ <b>PBO</b>: 프로그램 → 화면. <code>zconcert-concert_id</code>와 <code>gv_seats</code> 값이 같은 이름의 화면 필드로 전달됐습니다.');
     } else {
+      st.prog.conc = '';                           // work area가 없으니 담아 둘 자리도 없다
       st.screen.conc = '';
       say('err', '⚠ <b>PBO</b>: <code>gv_seats</code>는 전달됐지만 <code>ZCONCERT-CONCERT_ID</code>는 <b>운반 안 됨</b> — <code>TABLES zconcert</code> work area가 없어 짝이 없습니다.');
     }
@@ -73,6 +76,7 @@
       st.prog.conc = st.screen.conc;
       say('ok', '▶ <b>PAI</b>: 화면 → 프로그램. 사용자가 고친 값이 <code>zconcert-concert_id</code>·<code>gv_seats</code>로 들어왔습니다.');
     } else {
+      st.prog.conc = '';                           // 받을 그릇이 없으니 값은 버려진다
       say('err', '⚠ <b>PAI</b>: <code>gv_seats</code>만 들어오고 <code>ZCONCERT-CONCERT_ID</code>는 <b>버려집니다</b> — work area가 없으니 받을 그릇이 없습니다.');
     }
     renderAll();
@@ -97,7 +101,8 @@
   });
   chk.addEventListener('change', function () {
     st.tables = chk.checked;
-    if (!st.tables) { st.prog.conc = st.prog.conc; }
+    // 선언을 끄면 work area 자체가 사라진다 → 들고 있던 값도 함께 사라져야 한다
+    if (!st.tables) { st.prog.conc = ''; }
     say('', st.tables
       ? '<code>TABLES zconcert</code> 선언됨 — 화면의 <code>ZCONCERT-CONCERT_ID</code>가 work area와 이름으로 연결됩니다.'
       : '<code>TABLES zconcert</code>를 껐습니다 — 화면 필드 <code>ZCONCERT-CONCERT_ID</code>를 받을 work area가 사라집니다. PBO/PAI를 눌러 보세요.');

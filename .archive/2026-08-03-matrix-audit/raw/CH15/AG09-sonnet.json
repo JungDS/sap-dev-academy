@@ -1,0 +1,51 @@
+{
+  "agent": "AG09",
+  "model": "sonnet",
+  "target": "CH15",
+  "persona_ack": "AG09으로서 ABAP 정적 검사기 페르소나를 채택했다. CH15 대상 13개 파일에서 ```abap 코드 펜스만 골라 줄 단위로 검토했다 — 활성화 차단 이슈(미선언 변수, 마침표 누락, 타입 불일치, 존재하지 않는 구문/애드온, 시그니처 오류), 네이밍 규약(gv_/gs_/gt_ 전역 · lv_/ls_/lt_ 로컬 · it_ Header Line 전용 · pa_/so_ 길이 제한 · ty_/ts_/tt_), CH01～17/18 classic 경계(modern 문법·New Open SQL 금지), 주석·출력 문자열과 코드의 불일치를 대상으로 했다. 산문·표·embed 설명·```text 블록은 판단 대상에서 제외했고, [선행 사용] 표기가 붙은 축약 예시(L08의 BLOCK/RADIOBUTTON GROUP·SSCRFIELDS 예제)는 문법 잣대를 완화해 결함으로 세지 않았다.",
+  "method": "13개 파일을 Read 도구로 전문 읽은 뒤, 각 ```abap 블록을 줄 단위로 수동 정적 검토했다 — 선언부와 사용부 대조, PARAMETERS/SELECT-OPTIONS 이름의 8자 제한 검산, 스코프별 접두어(gv_/gs_/gt_ vs lv_/ls_/lt_) 대조, CH17/18 경계 문법(DATA()·VALUE·NEW·+=·|…|·New Open SQL @/콤마) 스캔, MESSAGE의 &1~&4 자리표시자와 WITH 인자 개수 대조, SELECT/AUTHORITY-CHECK/CALL FUNCTION 등 실제 ABAP 키워드·파라미터명과의 대조(지식 기반). 코드 실행·컴파일러·브라우저 등 외부 도구는 사용하지 않았다(환경 없음 — 정적 판단).",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L10.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L11.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L12.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH15-L03.md",
+      "quote": "pa_secret TYPE c LENGTH 10",
+      "category": "활성화 차단급",
+      "severity": "치명",
+      "confidence": "확실",
+      "claim": "PARAMETERS 필드명 pa_secret이 9자로, ABAP에서 PARAMETERS/SELECT-OPTIONS 이름에 걸리는 8자 제한을 넘어 활성화가 불가능하다.",
+      "evidence": "선언부는 `PARAMETERS: pa_mode TYPE c LENGTH 1, pa_secret TYPE c LENGTH 10.`이다. pa_secret는 p-a-_-s-e-c-r-e-t로 9자다. PARAMETERS/SELECT-OPTIONS 이름은 dynpro 화면 필드와 직결돼 8자를 넘으면 구문 오류로 활성화가 막히는 ABAP의 실제 제약이며, 본문이 스스로 따르는 R11 규칙도 'pa_+최대 5자(8자 이내)'로 못박고 있어 이 예제가 자기 규칙을 어긴 셈이다.",
+      "suggestion": "pa_secret를 8자 이내로 축약(예: pa_scrt)하고, 뒤이은 `gs_screen-name = 'PA_SECRET'` 비교 리터럴도 같은 이름으로 맞춘다."
+    },
+    {
+      "seq": 2,
+      "file": "CH15-L04.md",
+      "quote": "MESSAGE e002(zmsg) WITH ls_concert-concert_id ls_concert-capacity.",
+      "category": "네이밍 규약",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "ls_concert가 로컬 스코프 접두어(ls_)를 쓰는데, 이 코드 조각 자체에는 FORM/METHOD 등 로컬 스코프를 여는 구문이 없어(독립된 한 줄 예시) 이 챕터의 다른 모든 예제가 지키는 '스코프가 안 보이면 gv_/gs_/gt_' 원칙과 어긋나 보인다.",
+      "evidence": "해당 블록은 `MESSAGE e002(zmsg) WITH ls_concert-concert_id ls_concert-capacity.` 단 한 줄이고, ls_concert 선언이나 이를 감싸는 FORM/METHOD가 코드에 없다. CH15 전체 12개 레슨의 ABAP 코드에서 l 접두어가 등장하는 유일한 사례이며, 나머지는 전부 gv_/gs_/gt_로 일관된다(예: L05의 gs_booking, L07의 gv_concert_id — 둘 다 '전역이라 g로 시작'이라는 인라인 설명까지 붙어 있음).",
+      "suggestion": "실제로 LOOP/FORM 등 로컬 스코프 안에서 쓰는 예시라면 그 컨텍스트(예: LOOP AT gt_concert INTO ls_concert.)를 코드에 보여 주고, 아니라면 gs_concert로 통일한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH15의 ABAP 코드 블록은 대부분 실제 문법·네이밍·CH17/18 classic 경계를 정확히 지킨다. LOOP AT SCREEN/MODIFY SCREEN, AT SELECTION-SCREEN 계열 이벤트(ON/ON BLOCK/ON RADIOBUTTON GROUP/ON HELP-REQUEST/ON VALUE-REQUEST), AUTHORITY-CHECK, SELECT-OPTIONS 옵션(OBLIGATORY/NO-EXTENSION/NO INTERVALS), CALL SELECTION-SCREEN, F4IF_INT_TABLE_VALUE_REQUEST 호출까지 실제 ABAP 구문·파라미터명과 일치했고, modern 문법(DATA()·VALUE·NEW·+=·|…|)이나 New Open SQL(@·콤마)의 조기 혼입도 없었다. MESSAGE의 &1~&4 자리표시자와 WITH 인자 개수도 전부 맞았다. 다만 CH15-L03의 pa_secret가 PARAMETERS 8자 제한을 넘어 활성화가 막히는 결함이 하나 확인됐고, CH15-L04의 ls_concert 예시가 이 챕터 전반이 지키는 스코프별 접두어 관례와 어긋나 보이는 사소한 네이밍 불일치가 하나 있다. 둘 다 국소적인 한 줄 단위 결함이라 전체 재작성 없이 해당 줄만 고치면 된다."
+  }
+}

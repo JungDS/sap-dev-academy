@@ -1,0 +1,105 @@
+{
+  "agent": "AG05",
+  "model": "opus",
+  "target": "CH14",
+  "persona_ack": "20년차 학습 교재·코스 설계 전문가로서 CH14를 교수설계 관점(챕터 구성·섹션 흐름·복습/예습 장치·불편→해결 서사·인지 부하)에서만 감사했다. 문법·사실 정확성 판정은 다른 발견자 몫으로 남겼고, 5단계 흐름을 기계적으로 강제하지 않았다 — 자연스러운 변형은 결함으로 세지 않고, 학습 효과를 실제로 해치는 구조 문제만 올렸다.",
+  "method": "Read 도구로 대상 10개 MD 파일(_chapter.md·CH14-L01～L09) 전문을 읽고, 레슨별 섹션 골격(도입 불편→정의→사용→실수·주의→정리)·front-matter(introduces·prereq·prevRel·foreshadow)·상호 참조 링크 대상·신규 용어의 최초 등장 위치를 대조표로 비교했다. 빌드·브라우저·웹검색은 사용하지 않았고, embed HTML과 타 챕터 파일은 대상 목록 밖이라 열지 않았다.",
+  "errors": [
+    "embed 위젯(embeds/abap/CH14-*.html)과 참조 대상 타 챕터(CH07·CH09·CH13·CH23) 파일은 대상 파일 목록 밖이라 열지 않았다 — 본문 산문만으로 판단했으며, 그 한계를 seq 2·7의 confidence와 evidence에 반영했다."
+  ],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L09.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\_chapter.md",
+      "quote": "테이블을 더 보기 좋게 보여주고, 마스터데이터를 유지보수하고 싶다.",
+      "category": "챕터 구성 — intro 동기부여 부족",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "챕터 intro가 한 문장뿐이고 본문이 그 문장을 그대로 복제해, 9개 레슨·두 갈래 주제(조회용 View / 유지보수 객체)를 왜 배우는지 팔지 못한다.",
+      "evidence": "front-matter의 intro(6행)와 본문(11행)이 완전히 동일한 문장이라, 챕터 층에는 사실상 한 줄만 존재한다. 반면 실제 범위는 Database·Projection·Help View(조회) + Maintenance View·TMG/SM30·View Cluster·SE16N(유지보수·점검) + CDS 경계(L08) + 통합 실습(L09)으로 두 갈래다. intro에는 ① 두 갈래를 잇는 논리(왜 조회 View를 먼저 배우고 유지보수로 가는지) ② 챕터를 마치면 무엇을 할 수 있게 되는지(L09의 '업무 담당자가 등록하고 개발자가 View로 확인'이라는 전환)가 모두 없다. 레슨 도입부는 불편을 잘 세우는데(L01 '같은 JOIN을 또 짜기 싫다', L03 '사용자는 코드를 외우지 않는다') 유독 챕터 층에서만 동기 장치가 비어 있어, 로드맵에서 이 챕터를 만나는 학습자에게는 9레슨 분량을 감당할 이유가 제시되지 않는다.",
+      "suggestion": "intro를 3～4문장으로 확장한다. ① 지금의 불편(개발자가 SE11 Create Entries로 데이터를 대신 넣고, 프로그램마다 같은 JOIN을 반복한다) ② 이 챕터가 만드는 전환(조회는 DDIC에 이름 붙여 재사용, 입력은 업무 담당자가 표준 화면에서) ③ 도달점(공연 등록·확인 흐름을 끝까지 조립 — L09와 연결). 본문은 intro를 복제하지 말고 '조회 View 3종 → 유지보수 3종 → 경계·실습'이라는 챕터 지도를 한 단락으로 제시한다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L01.md",
+      "quote": "[[Database View]]는 하나 이상의 basis table에서 필요한 컬럼을 골라 만드는 DDIC 객체다.",
+      "category": "빠진 징검다리 — View 생성 절차 부재",
+      "severity": "높음",
+      "confidence": "추정",
+      "claim": "L01～L04가 다루는 View 4종(ZV_PERF·ZPV_BOOKING_BASIC·ZHV_CONCERT·회차 Maintenance View)의 '만드는 절차'가 본문 어디에도 없어 '무엇인가 → 어떻게 쓰나' 사이 징검다리가 비어 있고, L09 실습은 학습자가 만든 적 없는 산출물을 전제한다.",
+      "evidence": "L01은 View를 정의한 직후 곧장 SELECT 예제로 넘어가고, basis table 지정·join condition 입력·View Field 선택·활성화 같은 SE11 조작 단계는 나오지 않는다. L02의 ZPV_BOOKING_BASIC, L03의 ZHV_CONCERT, L04의 회차 Maintenance View도 모두 '이미 있는 것'으로 등장한다. 대조적으로 같은 챕터의 유지보수 객체에는 절차가 주어진다 — L05는 'SE11 → 테이블/뷰 → Utilities → Table Maintenance Generator', L06은 'SE54로 정의하고 SM34로 실행'. 즉 챕터 내부에 절차 제공의 비대칭이 있다. 그 결과 L09 실습 3번이 'ZV_PERF Database View로 회차와 아티스트·공연장을 함께 조회한다'고 지시할 때 학습자는 그 View를 만든 경험이 없다. 다만 각 레슨의 embed(예: '필드 커튼 — Projection View 필드 선택')가 생성 조작을 대신 담당할 가능성이 있는데 embed는 감사 범위 밖이라 확인하지 못해 confidence를 추정으로 둔다.",
+      "suggestion": "L01～L03에 '만들기' 소단락(SE11 화면 순서 3～5스텝 + 활성화 확인)을 넣는다. 생성 체험을 embed가 담당하는 설계라면, 본문에 '아래 체험에서 basis table 지정 → 조인 조건 → View Field 선택 순으로 직접 만들어 본다'는 안내 문장을 넣어 절차 단계가 존재함을 산문에서도 드러낸다. 아울러 L09 도입에 '앞 레슨에서 만든 ZV_PERF'처럼 산출물 계보를 한 줄로 이어 실습의 전제를 회수한다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L05.md",
+      "quote": "이제 한 테이블에 표준 화면을 붙였다. 그런데 **연관된 여러 테이블**을 함께 유지보수하려면? → 다음 레슨(View Cluster).",
+      "category": "섹션 흐름 — 도입 불편·마무리 정리 결손",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L05는 도입 불편과 마무리 정리가 모두 없어 흐름의 양끝이 잘려 있고(정의로 시작 → 흔한 실수 → 곧바로 다음 예고), 같은 '정리' 결손이 L06·L07에도 이어져 챕터 중반 3개 레슨이 연속으로 요약 없이 끝난다.",
+      "evidence": "L05는 '## 입력 화면을 자동 생성' 첫 문장부터 TMG의 정의로 시작해 '왜 필요한가'가 없는데, front-matter는 prevRel: pain-solution으로 선언돼 있어 선언과 본문이 어긋난다(불편은 L04 끝의 예고 한 줄에 위임됐다). 끝에서도 인용한 문장처럼 '흔한 실수와 점검' 바로 뒤에 예고가 오고 '## 정리'가 없다. L06·L07도 동일하게 정리가 없다. 반면 L01·L02·L03·L04·L08·L09는 모두 '## 정리'를 갖고 있어 챕터 내부가 불균질하며, 하필 결손 구간(TMG/SM30·View Cluster·SE16N)이 T코드·절차·게이트가 가장 밀집한 곳이라 요약 없이 넘어가면 도구 간 역할 구분이 흐려진다. 부수적으로 L05의 prereq는 CH07만 선언하는데 본문 첫 문장이 L04의 [[Maintenance View]]를 전제한다(L06·L07은 CH14-L05를 prereq로 제대로 선언한다).",
+      "suggestion": "① L05 도입에 2～3문장 불편을 복원한다(예: 테이블은 만들었는데 담당자에게 줄 입력 화면이 없고, 화면을 직접 그리자니 아직 배운 적이 없다). ② L05·L06·L07에 3줄짜리 '정리'를 추가한다 — L05: TMG는 화면 생성기·SM30은 운영·'생성 성공 ≠ 유지보수 가능' / L06: 계층은 Foreign Key를 따른다·단일 테이블엔 과하다 / L07: SE16N은 개발자 점검용이지 사용자 입력 화면이 아니다. ③ L05 prereq에 CH14-L04를 추가한다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L05.md",
+      "quote": "- Authorization Group(권한 그룹), 화면 번호, Maintenance Type(1단계/2단계) 지정.",
+      "category": "섹션 순서 역전 — 결정 시점과 설명 시점 불일치",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "생성 절차에서 'Maintenance Type(1단계/2단계)을 지정하라'고 먼저 지시한 뒤, 그것이 무엇인지는 두 섹션 뒤 'One Step vs Two Step'에서야 설명한다 — 선택을 요구하는 지점과 판단 근거를 주는 지점이 뒤집혔다.",
+      "evidence": "21행에서 지정을 지시 → 24～39행(운영 SM30, 'SM30 문이 열리기까지', 게이트 체크리스트 embed) → 41～48행에서 비로소 One Step/Two Step의 정의와 선택 기준이 나온다. 입문자는 '지금 뭘 골라야 하나'를 안은 채 두 섹션을 지나며, 그 사이에 체험(embed)까지 끼어 있어 미해결 결정을 품고 실습하게 된다. 같은 불릿의 Authorization Group·화면 번호도 이름만 던져지고 풀이가 없어, 절차 섹션 자체가 '따라 할 수 있는 단계'가 아니라 '나중에 설명될 용어 목록'으로 기능한다.",
+      "suggestion": "'One Step vs Two Step' 소단락을 '생성(SE11 → Utilities)' 바로 다음, embed 앞으로 올린다. 21행 불릿에는 최소한 괄호 한 줄 풀이를 붙인다(예: Authorization Group = 이 화면을 누가 열 수 있는지 묶는 권한 이름표). 순서를 못 바꾸면 '자세한 선택 기준은 아래 One Step vs Two Step에서'라는 연결 문구를 넣어 미해결 상태를 명시적으로 관리한다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L05.md",
+      "quote": "- **Delivery Class·Recording Routine 무시** → 시스템 간 이동이 필요한 customizing",
+      "category": "인지 부하 — 미정의 개념이 점검 항목으로 첫 등장",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "Delivery Class·Recording Routine이 챕터 어디에서도 설명되지 않은 채 '흔한 실수와 점검' 불릿에서 처음 등장해, 입문자가 점검할 수 없는 점검 항목이 된다.",
+      "evidence": "L05의 front-matter introduces는 TMG·SM30 둘뿐이고, 두 용어는 본문 어느 곳에서도 정의되지 않는다. 불릿은 '무시하지 말라'고 요구하지만 그것이 어디에 있는 설정인지(테이블 정의의 Delivery Class 속성, TMG 생성 화면의 Recording Routine 선택), 무엇을 보고 판단하는지를 알려 주지 않아 행동으로 옮길 수 없다. '흔한 실수' 칸은 배운 것을 되짚는 자리인데 새 개념을 들이는 자리로 쓰였고, 이미 개념 밀도가 가장 높은 레슨(TMG·SM30·게이트 4종·One/Two Step·Authorization Group·이송요청)에 두 개가 더 얹혀 부하를 키운다.",
+      "suggestion": "두 용어를 각각 한 줄 풀이와 함께 '생성' 섹션 본문으로 올리거나(예: Recording Routine = 저장한 데이터를 이송요청에 담을지 정하는 옵션), 이 챕터 범위를 넘는다고 판단되면 불릿을 삭제하고 이미 본문에 있는 [[이송요청]] 문장으로 대체한다. 점검 목록에는 그 레슨에서 실제로 가르친 항목만 남긴다."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L08.md",
+      "quote": "| 연계 | 약함 | OData/Fiori/RAP 친화 |",
+      "category": "예습 장치 과다 — 미정의 약어 다발 노출",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'경계만 잡는다'고 선언한 예고 레슨이 정작 CDS·DDL·ADT·OData·Fiori·RAP·association·annotation 등 풀이 없는 약어를 여덟 개 가까이 노출해, 부하를 줄이려는 레슨 목적과 반대로 작동한다.",
+      "evidence": "본문은 '문법을 쓰지 않고 방향만 잡는다'고 명시하지만, 비교표 세 행에서 ADT·DDL·OData·Fiori·RAP·association이 한꺼번에 나오고, 마지막 오해 불릿에서 annotation·association·RAP가 다시 반복된다. 어느 것에도 한 줄 풀이가 없다. 개발 경험이 없는 학습자에게 이 나열은 '지금 몰라도 된다'는 안심이 아니라 정체를 모르는 미지의 목록으로 남아, 정확히 이 레슨이 막으려던 불안을 만든다. 비교 대상으로 L02의 예고 방식(계산·가공 컬럼은 CDS의 영역이라는 한 줄 + 링크)은 분량과 정보량이 적정하다.",
+      "suggestion": "비교표를 '정의 방식(SE11 화면 vs 소스 코드)·가공 능력·학습 시점' 세 행으로 줄이고 고유명사는 CDS 하나만 남긴다. 나머지가 꼭 필요하면 '이름만 스쳐 두자 — 나중에 화면·서비스와 연결할 때 쓰는 도구들'처럼 한 줄로 묶어 개별 약어의 인지 슬롯을 차지하지 않게 한다."
+    },
+    {
+      "seq": 7,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L04.md",
+      "quote": "아래에서 `zperf-concert_id → zconcert-concert_id` Foreign Key([Chapter 9](CH09-L02.html)에서",
+      "category": "복습 장치 — 참조 링크 대상 불일치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "같은 선행 개념을 가리키는 CH09 복습 링크의 대상 레슨이 챕터 안에서 서로 엇갈린다 — Foreign Key는 L04 한 레슨 안에서 CH09-L01과 CH09-L02 두 곳을, 입력도움말(F4)은 L03이 CH09-L01, L09가 CH09-L04를 가리킨다.",
+      "evidence": "L04 44행은 'Chapter 9 · DDIC 관계'를 CH09-L01로 링크하고, 48행은 같은 zperf→zconcert Foreign Key를 CH09-L02로 링크한다. L06의 31·50행은 다시 CH09-L01이다. F4도 마찬가지로 L03 18행은 CH09-L01, L09 26행은 CH09-L04다. 한 챕터가 같은 개념을 두 주소로 보내므로 최소 한쪽은 그 내용이 없는 레슨을 가리키며, 복습하러 눌러 간 학습자가 찾던 설명을 못 만나면 복습 장치 자체의 신뢰가 깎인다. 어느 쪽이 정답인지는 CH09 파일이 감사 범위 밖이라 확인하지 못했고, 여기서 확실한 것은 챕터 내부의 불일치 자체다.",
+      "suggestion": "Foreign Key 설명이 실제로 있는 CH09 레슨 하나로 통일하고, F4 참조도 L03·L09가 같은 레슨을 가리키게 맞춘다. 챕터 단위로 '이 개념 → 이 레슨' 대응표를 한 번 만들어 두면 이후 레슨에서도 같은 실수가 반복되지 않는다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "보강 권장",
+    "summary": "교수설계 골격은 대체로 건강하다. 레슨 9개가 '조회 View 3종 → 유지보수 3종 → 도구(SE16N) → 경계(CDS) → 통합 실습'으로 배열돼 순서 역전이 없고, 도입부 불편이 억지스럽지 않으며(L01 반복 JOIN, L03 코드 암기, L06 화면 오가기, L08 '이거 낡은 거 아닌가요?'는 학습자가 실제로 던지는 질문이다), 모든 레슨이 1～2문장 예고로 끝나 예습 장치가 과하지 않다. 복습 장치도 강점이다 — CH13 JOIN, CH07 Create Entries, CH09 Search Help·Text Table·Foreign Key를 필요한 지점마다 상기시키고 '나선 재방문'임을 명시한다. L07의 '왜 마지막에 배우나' 섹션과 L04의 '조회 대안으로 외우지 말자' 경고는 흔한 오개념을 선제 차단하는 좋은 설계다. 결손은 세 갈래다. ① 가장 무거운 것은 View 4종의 생성 절차가 본문에 없다는 점으로, 유지보수 객체(L05 SE11→Utilities, L06 SE54→SM34)에는 절차를 주면서 정작 챕터 제목의 주인공인 View에는 주지 않아 L09 실습이 만든 적 없는 산출물을 전제한다. ② L05가 챕터의 약한 고리다 — 도입 불편과 정리가 모두 없고(정리 결손은 L06·L07까지 3연속), Maintenance Type을 설명 전에 고르게 하며, Delivery Class·Recording Routine을 점검 불릿에서 처음 꺼낸다. ③ L08은 '방향만 예고한다'는 선언과 달리 미정의 약어를 여덟 개 가까이 흘린다. 모두 국소 보강으로 회수 가능한 결함이고 서사·순서 자체는 다시 짤 필요가 없어 재집필이 아니라 보강 권장으로 판단한다."
+  }
+}
