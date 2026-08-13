@@ -1,0 +1,91 @@
+{
+  "agent": "AG05",
+  "model": "opus",
+  "target": "CH13",
+  "persona_ack": "20년차 학습 교재·코스 설계 전문가로서 CH13(Open SQL 2차: JOIN·집계)을 교수설계 관점에서 감사했다. 챕터 구성·레슨 분할, 섹션 흐름(왜→무엇→어떻게→실수→정리), 복습·예습 장치, 불편→해결 서사의 진정성, 인지 부하 다섯 축으로 읽었고, 형식 미준수 자체가 아니라 학습 효과를 실제로 해치는 구조 문제만 결함으로 올렸다. 문법·사실 정확성 판정은 다른 종의 몫이라 삼갔다.",
+  "method": "Read 도구로 대상 9개 파일(_chapter.md + L01～L08) 전문을 순서대로 통독했다. 웹 검색·외부 네트워크·빌드 실행은 하지 않았고, 브라우저(SERVE_URL)도 쓰지 않았다 — 이 종의 감사 대상은 렌더 결과가 아니라 문서 구조이기 때문이다. ::embed:: 로 참조된 위젯 HTML은 허용 범위 밖이라 열지 않았으므로 체험의 실제 동작 품질은 판단에서 제외하고, 본문이 체험을 어떤 학습 지점에 배치했는지만 평가했다. 인용은 모두 원문에서 그대로 복사했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L08.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L08.md",
+      "quote": "[Chapter 09 · 콘서트 모델 만들기](CH09-L09.html)에서 넣은 데이터로 돌리면 이렇게 나온다.",
+      "category": "실습 대조 — 제시된 결과와 코드 산출물 불일치",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "\"코드를 돌리면 이렇게 나온다\"며 제시한 결과 대조표에 코드가 만들어 내지 않는 '잔여석' 열이 들어 있다. 잔여석은 바로 아래 과제 2에서 학습자가 직접 추가하는 항목이라, 코드를 그대로 실행한 학습자의 화면과 대조표가 어긋난다. 캡스톤 실습에서 '내가 뭘 빠뜨렸나' 하는 불필요한 자기 의심을 만드는 자리다.",
+      "evidence": "결과 구조 ts_stat의 칸은 concert_id·artist·capacity·perf_no·perf_date·booked 여섯 개뿐이고 SELECT에도 정원−합계 계산이 없다. 그런데 표에는 잔여석 97·95·46·80이 채워져 있고, 표 아래 해설 두 줄(C002 취소분, C003 LEFT OUTER 잔존)도 잔여석은 언급하지 않는다. 반면 과제 2는 \"결과 구조에 잔여석(capacity − booked) 칸을 더하고, LOOP를 돌며 채워 넣는다\"고 지시한다. 같은 표의 회차 칸 \"(없음)\"도 실제 출력값(초기값)이 아니라 사람이 붙인 주석 표기다.",
+      "suggestion": "표를 '지금 코드의 출력'과 '과제 2까지 마친 최종 모습'으로 나누거나, 잔여석 열 머리에 (과제 2에서 추가) 라벨을 단다. \"(없음)\" 칸도 실제 화면에서는 초기값으로 보인다는 한 줄을 덧대면 L02에서 배운 NULL→초기값 규칙과도 자연스럽게 이어진다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L03.md",
+      "quote": "앞 레슨에서 본 LEFT OUTER JOIN처럼 오른쪽이 비는 결과를 집계할",
+      "category": "복습 장치 — 예고한 함정이 회수되지 않음",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "COUNT( * )와 SUM·AVG·MAX·MIN이 '값이 없는 칸'에서 갈린다는 경고를 \"LEFT OUTER JOIN처럼 오른쪽이 비는 결과를 집계할 때 그대로 드러난다\"고 예고해 놓고, 정작 그 장면을 챕터 어디에서도 보여 주지 않는다. 예고만 있고 회수가 없어 입문자에게는 기억에 남지 않는 추상적 주의 문구로 끝난다.",
+      "evidence": "L03은 이 콜아웃 직후 DISTINCT 절로 넘어가고, 이어지는 JOIN+GROUP BY 예제는 INNER JOIN이라 빈 오른쪽이 생기지 않는다. LEFT OUTER JOIN과 집계가 실제로 만나는 유일한 지점은 L08 캡스톤인데, 거기서는 SUM만 쓰고 L03의 경고를 되짚지 않는다. L08 결과표의 C003 행(회차 없음·합계 0)이 바로 그 사례이지만 'COUNT였다면 0이 아니라 1이 나온다'는 대조가 없다. 게다가 L08 과제 4가 HAVING SUM( b~seats )를 다루므로 학습자가 COUNT로 바꿔 시도할 개연성이 높은 자리다.",
+      "suggestion": "L08 '결과 맞춰 보기'의 C003 해설에 한 줄만 붙이면 회수된다 — \"여기서 SUM 대신 COUNT( * )를 쓰면 예매가 한 건도 없는데도 1이 나온다(LEFT OUTER가 만들어 준 빈 오른쪽도 한 행으로 세기 때문)\". L03 콜아웃에서 그 장면을 볼 레슨을 링크로 가리켜 두면 예고→회수 고리가 닫힌다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L02.md",
+      "quote": "introduces: [\"LEFT OUTER JOIN\",\"NULL(OUTER JOIN 미매칭 결과)\",\"다중 JOIN 체이닝\"]",
+      "category": "인지 부하 · 레슨 크기 균형",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "L02 한 레슨에 실질 신규 개념이 여섯 덩어리(LEFT OUTER JOIN / NULL의 의미 / NULL→ABAP 초기값 매핑 / 오른쪽 키 필드로 미매칭 판별하는 기법 / ON↔WHERE 평가 순서 / 다중 JOIN 체이닝과 부모=INNER·자식=LEFT 방향 규칙)로 몰려 있어 챕터에서 인지 부하가 가장 높다. 같은 챕터의 L04는 HAVING 하나, L05는 ORDER BY 하나여서 레슨 크기가 고르지 않다.",
+      "evidence": "front-matter는 세 개를 선언하지만 본문 섹션은 여섯 개이고, 뒤쪽 두 섹션('오른쪽 조건은 ON에 둘까 WHERE에 둘까', '한 문장에 JOIN을 여러 개')은 각각 독립적으로 배울 만한 무게다. 특히 마지막 예제는 zperf·zconcert·zbooking 세 테이블에 필드 다섯 개, JOIN 종류 두 가지가 한 문장에 들어간다. 저자도 \"세 테이블을 한 번에 붙이니 눈에 확 안 들어와도 괜찮다\"고 인정하며 완화 콜아웃을 달았다. 반대로 레슨 끝의 마무리 한 줄은 사실상 다음 레슨 예고여서, 밀도 높은 레슨일수록 '정리' 단계가 비어 있다.",
+      "suggestion": "다중 JOIN 체이닝 섹션을 L02에서 떼어 집계(L03·L04) 뒤 또는 L07 앞의 짧은 레슨으로 옮기면 L02는 'LEFT OUTER + NULL 다루기'로 한 덩어리가 된다. 분할이 부담이면 최소한 L02 끝에 핵심 3줄 정리(왼쪽은 다 남는다 / 빈 오른쪽은 키로 판별 / 오른쪽 조건은 ON에)를 넣어 회수 장치를 만든다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\_chapter.md",
+      "quote": "intro: \"여러 테이블을 한 번에, 집계까지 해서 보고 싶다.\"",
+      "category": "챕터 구성 — intro의 동기 설계 범위",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "챕터 intro가 여덟 레슨 중 L01～L04(JOIN·집계)만 대변하고, L05(ORDER BY 정렬)·L06(FOR ALL ENTRIES와 전체 조회 사고 예방)·L07(JOIN/FAE/ABAP 선택 기준)은 약속 밖에 있다. 챕터 본문도 front-matter intro 문장을 그대로 한 줄 반복할 뿐이어서 '왜 이 챕터인가'를 더 팔지 않는다.",
+      "evidence": "_chapter.md의 본문은 intro와 글자까지 같은 한 문장뿐이다. 반면 L06은 빈 드라이버 테이블이 전체 조회로 이어지는 운영 사고를, L07은 LOOP 안 SELECT(N+1) 같은 성능 판단을 다룬다 — 학습자에게는 오히려 이쪽이 강한 동기 소재인데 챕터 입구에서 예고되지 않는다.",
+      "suggestion": "intro를 한 문장 늘려 후반부를 포함시킨다(예: \"…집계까지 해서 보고 싶다. 그리고 그 결과를 정렬해 받고, 상황마다 어떤 조회 도구가 맞는지도 고를 줄 알아야 한다.\"). 본문은 intro 복붙 대신 CH08 이후의 불편(테이블마다 따로 읽고 루프에서 손으로 짝짓던 상태)을 2～3문장으로 상기시키면 동기 설계가 살아난다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L03.md",
+      "quote": "prereq: [\"CH08\"]",
+      "category": "선수지식 선언 — 본문 실제 전제와 불일치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L03의 prereq가 CH08만 선언하고 prevRel도 parallel이지만, 본문 마지막 섹션 'JOIN한 결과를 그대로 묶기'는 L01의 INNER JOIN·별칭·`~` 표기를 전제하고, 집계 함수 주의 콜아웃은 L02의 LEFT OUTER JOIN을 전제한다. 선언대로 CH08만 마친 학습자는 이 레슨의 마지막 3분의 1을 읽을 수 없다.",
+      "evidence": "본문에 \"JOIN 쪽 문법은 [INNER JOIN 레슨](CH13-L01.html)과 똑같다. 달라진 건 뒤에 `GROUP BY`가 붙었다는 것뿐이다\"라는 문장이 있고, 해당 예제 코드는 `FROM sflight AS f INNER JOIN scarr AS s`로 시작한다. 실제 챕터 배치도 L01·L02 다음이라 학습 순서상 문제는 없고, 선언만 어긋난 상태다.",
+      "suggestion": "prereq에 CH13-L01(콜아웃이 참조하는 CH13-L02까지)을 추가한다. GROUP BY 자체를 CH08 선에서 독립적으로 읽히게 하려면 JOIN+GROUP BY 융합 섹션을 별도 위치로 옮기는 선택지도 있으나, 현 배치가 자연스러워 선언 보정만으로 충분해 보인다."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L04.md",
+      "quote": "`SELECT` → `FROM` → `INTO` → `WHERE` → `GROUP BY` → `HAVING` → `ORDER BY`",
+      "category": "복습 장치 — 뒤 레슨과의 되짚기 누락",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L04가 \"순서를 바꿔 적으면 구문 오류가 난다\"며 절 순서를 완결된 목록으로 못 박는데, 두 레슨 뒤 L06은 INTO와 WHERE 사이에 FOR ALL ENTRIES가 들어간 코드를 아무 언급 없이 내놓는다. 목록을 통째로 외운 입문자에게는 규칙이 깨진 것처럼 보인다.",
+      "evidence": "L04는 아직 안 배운 ORDER BY에 대해서는 \"지금은 자리만 기억해 두자. 바로 다음 레슨에서 다룬다\"고 친절히 처리해 두었다. 반면 L06 기본형 코드는 `INTO CORRESPONDING FIELDS OF TABLE gt_flight` 다음 줄에 `FOR ALL ENTRIES IN gt_carr`, 그다음 `WHERE carrid = gt_carr-carrid`가 오는데, L06 어디에도 L04 목록으로의 되짚기가 없다.",
+      "suggestion": "L06 기본형 코드 아래에 한 줄 — \"FOR ALL ENTRIES는 INTO와 WHERE 사이에 들어간다([HAVING 레슨](CH13-L04.html)에서 본 절 순서에 한 칸이 더 붙는 셈)\" — 을 넣는다. 또는 L04 목록에 FOR ALL ENTRIES 자리를 흐리게 표시하고 배울 레슨을 가리킨다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "교수설계 측면에서 완성도가 높은 챕터다. ① 레슨 분할·순서(INNER→LEFT OUTER→GROUP BY→HAVING→ORDER BY→FAE→선택 기준→캡스톤)가 학습 단위로 타당하고 역전이 없다. ② 도입 불편이 대체로 진짜다 — 특히 L01은 SELECT 두 번+루프 수동 짝짓기 코드를 먼저 겪게 해 JOIN의 필요를 몸으로 느끼게 하고, L02는 INNER가 행을 떨구는 한계에서 자연스럽게 출발한다. ③ 억지 불편이 없다는 점이 더 인상적이다. L03·L05·L06은 prevRel을 parallel로 정직하게 선언하고 '도구가 하나 더 있다'는 톤으로 열어, 형제 개념을 무리하게 pain-solution으로 포장하지 않았다. ④ 복습 링크(CH08-L01/L03/L04/L06, CH09-L09, CH06-L03/L04, CH04-L01, CH11-L06)가 촘촘하고, L07이 앞선 세 도구를 판단 기준으로 수렴시킨 뒤 L08 캡스톤으로 닫는 구성이 좋다. ⑤ 예고는 전 레슨 모두 마지막 한 줄로 절제돼 있고, L04의 ORDER BY 언급도 '자리만 기억' 수준으로 적정하다. ⑥ L08이 '네 질문에 답하면 도구가 정해진다'로 시작하고 SALV 부분을 [선행 사용]으로 격리한 것도 인지 부하 관리로 적절하다.\n\n보완할 곳은 셋이다. 첫째, L08 결과 대조표에 코드가 만들지 않는 잔여석 열이 섞여 실습 대조가 어긋난다(seq 1). 둘째, L03이 예고한 'COUNT( * ) vs SUM의 빈 값 처리 차이'가 그 장면이 실제로 나타나는 L08에서 회수되지 않는다(seq 2) — 한 줄 추가로 챕터에서 가장 값싸게 얻을 수 있는 학습 이득이다. 셋째, L02가 여섯 덩어리 개념을 안고 있어 L04·L05와 크기가 고르지 않다(seq 3). 나머지 셋(챕터 intro가 후반 세 레슨을 포괄하지 않음, L03 prereq 미선언, L04 절 순서 목록과 L06 FAE의 되짚기 누락)은 문장·메타 수준의 경미 보정이다. 재집필이나 대규모 보강이 필요한 구조 결함은 발견되지 않았다."
+  }
+}

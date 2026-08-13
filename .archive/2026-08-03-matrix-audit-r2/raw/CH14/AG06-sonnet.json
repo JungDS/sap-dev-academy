@@ -1,0 +1,48 @@
+{
+  "agent": "AG06",
+  "model": "sonnet",
+  "target": "CH14",
+  "persona_ack": "ECC부터 S/4HANA까지 개발·운영·성능·이관을 두루 겪은 20년차 SAP ABAP 아키텍트로서, CH14(Classic DDIC View·유지보수 객체) 9개 레슨과 챕터 개요를 후배 교재 기술 검수하듯 감사했다.",
+  "method": "대상 .md 10개 파일 전문을 순서대로 통독하고, SE11 View 4종(Database·Projection·Help·Maintenance)의 실제 동작(inner/outer join 성격, DB 객체 생성 여부, Open SQL 가독성)·TMG/SM30/SM31/SM34/SE16N T-code 동작·Foreign Key의 실제 평가 시점·&NC&·&SAP_EDIT 등 세부 사실을 보유 지식과 대조 검토했다. 웹 검색·빌드·브라우저 등 외부 도구는 쓰지 않았다(금지 규정 준수).",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L09.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L05.md",
+      "quote": "SM30은 \"마법 주소\"가 아니다. **테이블 활성화 → 유지보수 허용(Display/Maintenance) →",
+      "category": "위험한 생략",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "SM30이 안 열리는 이유를 '테이블 활성화 → 유지보수 허용 → TMG 생성 → 권한' 넷으로 정리하며 '어느 하나라도 빠지면 화면이 안 열리거나 저장이 막힌다'고 단정하는데, 실무에서 이 네 조건이 전부 충족돼도 막히는 흔한 다섯째 원인인 레코드/테이블 잠금(enqueue lock) 충돌이 빠졌다.",
+      "evidence": "다른 사용자가 같은 View·테이블을 SM30(또는 그 기반 화면)으로 이미 열어 편집 중이면 잠금 충돌 메시지와 함께 화면이 막힌다. 이는 활성화·유지보수 허용·TMG 생성·권한이 전부 정상이어도 발생하며, 신입 개발자가 SM30을 실습할 때 실제로 가장 자주 마주치는 '왜 안 열리지' 상황 중 하나다. CH14의 이 9개 레슨 안에는 잠금 개념이 따로 없는데, 목록이 '모두 맞아야 열린다'는 확정적 어투를 쓴 만큼 학습자가 이 네 가지만 확인하면 원인을 다 짚었다고 오인할 여지가 있다.",
+      "suggestion": "체크리스트에 다섯째 항목으로 '잠금(다른 사용자가 같은 데이터를 편집 중이면 잠긴다)'을 한 줄 추가하거나, 흔한 실수 목록에 '잠김 메시지가 뜨면 SM12로 누가 잠갔는지부터 확인하고 함부로 잠금을 풀지 않는다'는 짧은 안내를 덧붙이면 좋다. (다른 챕터에서 이미 다룬다면 이 지적은 무시해도 된다 — CH14 범위 안에서만 확인했다.)"
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L08.md",
+      "quote": "- **네 가지가 모두 CDS로 대체된다?** → 아니다. CDS와 자리가 겹치는 쪽은 **조회용**",
+      "category": "사실 오류",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "'Help View·Maintenance View는 CDS와 목적 자체가 달라 대체되지 않는다'는 서술이, 지금 이 챕터가 다루는 클래식 DDIC 범위에서는 무난하지만 최신 S/4HANA 실무 흐름과는 다소 어긋난다.",
+      "evidence": "CDS 기반 Value Help(값 도움말 어노테이션)는 Help View의 F4 보조 역할을, RAP(Behavior Definition을 얹은 CDS)가 만들어 내는 Fiori Elements 화면은 Maintenance View+TMG의 표준 유지보수 역할을 실무에서 점점 넘겨받고 있다. '목적 자체가 다르다'는 단정은 두 도구가 CDS/RAP 세계에서도 끝까지 고유 영역으로 남는다는 인상을 줄 수 있어, CH23 이후 CDS를 깊이 배울 때 이 문장과 미묘하게 부딪힐 수 있다.",
+      "suggestion": "'목적 자체가 다르다'를 '지금 배우는 클래식·CDS 입문 단계에서는 대응 관계가 더 멀다' 정도로 톤을 낮추거나, CDS 심화(CH23) 예고 문장에 '값 도움말·유지보수 화면도 결국 CDS/RAP 쪽 대응이 있다'는 반 줄만 덧붙이면 나중에 재조정할 필요가 없다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "Database/Projection/Help/Maintenance View 4종의 정의 위치·조인 성격(inner vs primary-table-보존 outer)·Open SQL 가독 여부·SE11/SE54/SM30/SM31/SM34/SE16N T-code 동작·Foreign Key의 실제 평가 시점(input check·input help·view 생성)·&NC& 기본 권한 그룹·&SAP_EDIT 특수 편집 모드 등 핵심 기술 서술이 전반적으로 정확하고, 각 View의 '흔한 실수' 절도 실무 함정을 잘 짚었다. 코드 예제(classic Open SQL, 콤마 없는 필드 나열)도 챕터 경계(R6 classic-first)에 맞고 문법 오류가 없다. 치명·높음 수준 오류는 발견되지 않았고, 지적한 두 건은 모두 보강하면 좋을 수준의 경미한 사항이다: (1) SM30 게이트 체크리스트가 '모두 맞아야 열린다'고 단정하면서 실무에서 흔한 잠금(enqueue) 충돌 원인이 빠져 있고, (2) CDS 비교 레슨에서 'Help·Maintenance View는 CDS와 목적이 아예 다르다'는 단정이 S/4HANA의 CDS 기반 값 도움말·RAP 유지보수 화면 흐름과는 다소 어긋난다. 둘 다 낮음~중간 심각도의 보강 제안이며 챕터 전체 신뢰도는 높다."
+  }
+}

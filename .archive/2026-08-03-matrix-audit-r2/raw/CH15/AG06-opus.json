@@ -1,0 +1,106 @@
+{
+  "agent": "AG06",
+  "model": "opus",
+  "target": "CH15",
+  "persona_ack": "20년차 SAP ABAP 아키텍트(ECC~S/4HANA 개발·운영·성능·이관 경험, 후배 교재 기술검수 담당) 시선으로 CH15(Report Event·Selection Screen 심화) 13개 파일을 사실 오류·예시 적절성·위험한 생략·안티패턴 네 축으로 읽기 전용 감사했다. 수정·생성은 하지 않았고 발견만 보고한다.",
+  "method": "Read 도구로 대상 13개 파일 전문 통독 후, 각 코드 블록의 문법·이벤트 시맨틱과 콜아웃/표의 서술을 대조 검증. 웹 검색·외부 네트워크 미사용(내부 지식만). 인용문은 원문 단일 행에서 그대로 복사해 앵커 검증이 가능하도록 함. 다른 감사자 산출물·과거 감사 기록은 열지 않음.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L10.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L11.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L12.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L07.md",
+      "quote": "(최소 1개, 최대 10개), 빠뜨린 필드는 그냥 통과로 처리된다.",
+      "category": "사실 오류(보안)",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "AUTHORITY-CHECK에서 권한 객체의 필드를 아예 적지 않으면 '그냥 통과'라는 서술은 정확하지 않다. 표준은 객체의 모든 권한 필드를 FIELD 또는 DUMMY로 빠짐없이 명시하는 것이고, 빠뜨리면 검사가 통과되는 게 아니라 반려돼 sy-subrc가 0이 아닌 값이 된다.",
+      "evidence": "AUTHORITY-CHECK의 반환코드 체계에서 '지정한 필드 개수가 맞지 않음'과 '필드명이 객체 정의와 불일치'는 별도의 실패 코드(8·24 계열)로 정의돼 있다. SAP 자신의 표준 코드도 검사에서 제외할 필드에 반드시 ID ... DUMMY를 붙여 전 필드를 나열한다(예: S_DEVELOP의 DEVCLASS·P_GROUP). 서술대로 '빠뜨리면 통과'로 이해하면, 학습자가 필드를 생략한 채 sy-subrc=0을 '권한 있음'으로 읽는 잘못된 안전감을 갖게 된다 — 보안 주제 레슨에서 방향이 반대인 오해다. 다만 릴리스별 반환코드 세부 매핑까지 단언하지 않기 위해 confidence는 추정으로 둔다.",
+      "suggestion": "문장을 '검사에서 뺄 필드는 DUMMY로 반드시 명시해야 한다 — 아예 빠뜨리면 통과가 아니라 검사 자체가 실패(sy-subrc ≠ 0)한다'로 뒤집어 서술하고, DUMMY를 '친절한 주석'이 아니라 '필수 표기'로 격상. 예: ID 'ACTVT' FIELD '03' ID 'ORGVAL' DUMMY 처럼 전 필드 나열 예시를 보여 준다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L12.md",
+      "quote": "AUTHORITY-CHECK OBJECT 'Z_CONCERT'",
+      "category": "위험한 생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "챕터 종합 실습(학습자가 그대로 베끼는 정본 코드)에서 권한 검사가 AT SELECTION-SCREEN ON pa_conc 한 곳에만 있고, 실제 DB 조회가 일어나는 START-OF-SELECTION 첫머리에는 재검사가 없다. 바로 앞 L07이 명시적으로 권고한 이중 검사가 정작 통합 예제에서 빠졌다.",
+      "evidence": "CH15-L07 마지막 콜아웃은 '실제 조회가 시작되는 START-OF-SELECTION 첫머리에서 권한 검사를 한 번 더 해 두면 안전하다'고 못 박는데, L12의 START-OF-SELECTION 블록에는 SELECT · IF · TRY만 있고 AUTHORITY-CHECK가 없다. SAP 보안 프로그래밍 원칙도 '권한 검사는 보호 대상 데이터 접근 지점에 최대한 가깝게'다. 선택화면 이벤트에만 의존하면 화면을 거치지 않는 호출 경로(다른 프로그램의 대리 실행·무인 실행 등, L07이 스스로 든 사유)에서 방어선이 얇아진다. 게다가 L12의 '흔한 실수' 항목은 '권한 검증을 조회 뒤로 미루지 않는다'고 적어 코드와 서술이 어긋난다.",
+      "suggestion": "START-OF-SELECTION 첫 줄에 동일한 AUTHORITY-CHECK를 한 번 더 넣고(주석: '화면을 거치지 않는 실행 경로 대비'), 정리 블록의 이벤트 매핑에도 'START-OF-SELECTION = 권한 재확인 + 본 처리'를 반영. 그래야 L07의 권고와 L12의 코드가 일치한다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L07.md",
+      "quote": "| `4` | 권한이 등록돼 있긴 하지만 **지금 검사한 값**이 허용 범위 밖(필드를 잘못 적었거나 너무 많이 적은 경우도 포함) |",
+      "category": "사실 오류",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "sy-subrc=4의 설명에 '필드를 잘못 적었거나 너무 많이 적은 경우'를 포함시킨 것은 부정확하다. 그 두 경우는 4가 아니라 별도의 반환코드(필드 개수 오류 = 8, 필드명/값 불일치 = 24)다. 게다가 이 표에는 '공식문서 기준'이라는 권위 표기가 붙어 있어 오해가 굳어지기 쉽다.",
+      "evidence": "AUTHORITY-CHECK 반환코드는 전통적으로 0(권한 있음)·4(권한 없음)·8(지정 필드 수 오류)·12(해당 권한 객체에 대한 권한 없음/객체 없음)·16(프로파일 없음)·24(필드명·값이 객체 정의와 불일치)로 나뉜다. 4는 '값이 허용 범위 밖'에 해당하고, 코딩 실수 계열(8·24)과는 원인도 대응도 다르다 — 실무에서 8/24는 '권한 부여'가 아니라 '코드 수정'으로 풀어야 하는데 4로 뭉뚱그리면 진단이 어긋난다. 릴리스별 문서 문구 차이가 있을 수 있어 추정으로 표기한다.",
+      "suggestion": "표의 4행 괄호 문구를 삭제하고 행을 하나 추가: `8`/`24` = 코드 실수(필드 개수·필드명이 객체 정의와 불일치) — '권한을 더 받아서'가 아니라 '코드를 고쳐서' 푸는 오류. 핵심 규칙(0이면 통과, 그 외 차단)은 그대로 유지."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L07.md",
+      "quote": "일부러 검사에서 빼는 필드가 있다면 `ID 'ACTVT' DUMMY`",
+      "category": "예시 적절성",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "'검사에서 빼는 필드' 예시로 하필 ACTVT를 고른 것이 부적절하다. ACTVT(활동: 01 생성·02 변경·03 조회)는 읽기와 쓰기를 가르는 가장 핵심적인 권한 차원이라, 실무에서 DUMMY로 빼면 안 되는 대표 필드다.",
+      "evidence": "같은 레슨의 바로 위 예제가 ID 'ACTVT' FIELD '03'으로 '조회 활동'을 검사해 놓고, 몇 줄 뒤 같은 필드를 '빼는 필드'의 본보기로 제시한다. 학습자가 이 형태를 복사하면 조회 권한만 있는 사용자가 변경 경로의 검사까지 통과하는 전형적 권한 결함이 만들어진다. ACTVT를 DUMMY로 두는 것은 SAP 보안 검토에서 흔히 지적되는 패턴이다. 다만 '예시 선택이 나쁘다'는 판단 요소가 있어 추정으로 둔다.",
+      "suggestion": "DUMMY 예시를 조직/분류 계열의 부수 필드(예: ID 'ORGVAL' DUMMY)로 바꾸고, 'ACTVT는 읽기/쓰기를 가르는 필드라 DUMMY로 빼지 않는다'는 한 줄 경고를 덧붙인다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L02.md",
+      "quote": "pa_date = sy-datum.",
+      "category": "예시 적절성",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "INITIALIZATION의 대표 예제 두 줄(오늘 날짜 대입, so_conc 조건 1건 APPEND)이 모두 선언 옵션 DEFAULT로 끝나는 사례라, 실무에서 event 코드를 쓰지 않는 경우를 event 코드의 표준 예시로 보여 준다.",
+      "evidence": "PARAMETERS pa_date TYPE d DEFAULT sy-datum. 과 SELECT-OPTIONS so_conc FOR gv_conc DEFAULT 'C001'. 로 동일한 결과가 선언 한 줄에 담긴다(DEFAULT는 리터럴뿐 아니라 sy-datum 같은 시스템 필드도 받는다). 실제로 같은 챕터의 CH15-L10이 DEFAULT 옵션을 소개하면서 'event 코드로 억지 구현하기 전에 옵션으로 해결되는지 먼저 본다'고 원칙을 세우는데, L02의 대표 예제가 그 원칙과 반대 방향이다. INITIALIZATION이 꼭 필요한 경우는 계산·조회가 필요한 동적 기본값(예: 지난달 1일, 사용자별 기본 조직)이다.",
+      "suggestion": "예제를 동적 기본값으로 교체(예: pa_from = sy-datum - 30 또는 sy-datum의 월 초일 계산, 사용자 파라미터를 읽어 기본 공연 결정)하고, '단순 고정 기본값은 DEFAULT 옵션이 더 낫다 — INITIALIZATION은 계산이 필요할 때'라는 한 줄 경계를 L02에 미리 넣는다."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L05.md",
+      "quote": "SELECT * FROM zbooking",
+      "category": "위험한 생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "SELECT ... INTO TABLE로 결과 전량을 Internal Table에 담는 패턴을 L05·L06·L12에서 반복하면서 결과 건수 상한에 대한 경고가 한 줄도 없다. 컬럼 수(SELECT *) 이야기는 있으나 행 수 이야기가 빠졌다.",
+      "evidence": "공연 1건의 예매가 수십만 건이면 INTO TABLE은 그 전량을 워크프로세스 메모리에 적재하고, 이어지는 SALV display까지 같은 데이터를 안고 간다 — 실무에서 메모리 부족 덤프로 직결되는 전형적 경로다(버전 무관). 게다가 CH15-L11은 pa_max TYPE i DEFAULT 100을 '고급: 최대 건수'로 선언해 놓고 정작 어떤 SELECT에도 연결하지 않아, 건수 상한이라는 개념이 화면 요소로만 남고 코드로 회수되지 않는다.",
+      "suggestion": "L05의 SELECT * 주의 콜아웃에 '행 수' 문장을 한 줄 추가: '조건이 넓으면 결과가 수십만 건이 될 수 있다 — 실무에서는 UP TO n ROWS 같은 상한이나 필수 조건으로 범위를 좁힌다.' 가능하면 L11의 pa_max를 L12 통합 코드의 SELECT ... UP TO pa_max ROWS로 회수해 개념을 닫는다."
+    },
+    {
+      "seq": 7,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L06.md",
+      "quote": "**LDB 자체가 더는 쓰지 않는 구조**라서",
+      "category": "사실 오류(과일반화)",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "'Logical Database 자체가 더는 쓰지 않는 구조'는 과일반화다. 신규 일반 리포트에서 LDB를 쓰지 않는다는 결론은 맞지만, HR/HCM 리포팅은 지금도 PNP·PNPCE LDB와 GET pernr 기반이 표준이고 그 구조에서 END-OF-SELECTION은 살아 있는 필수 이벤트다.",
+      "evidence": "HCM ABAP 리포트는 논리 데이터베이스 PNP(PNPCE)를 지정하고 GET pernr 이벤트로 인사마스터를 읽은 뒤 END-OF-SELECTION에서 결과를 출력하는 형태가 현재도 표준 골격이다(선택화면·기간 처리·권한이 LDB에 묶여 있어 대체가 쉽지 않다). 따라서 'LDB = 사멸'이 아니라 'LDB = 특정 영역(주로 HR)에 국한'이 정확하다. 독자 시스템에 HCM이 없을 수도 있어 추정으로 표기하며, 레슨의 결론(신규 일반 리포트에 END-OF-SELECTION 불필요)은 유효하다.",
+      "suggestion": "해당 문장을 'LDB는 신규 개발에서 거의 쓰지 않는 구조(예외적으로 HR 인사 리포팅 등 일부 영역에서는 여전히 표준)'로 한정하고, 정리 항목의 obsolete 서술에도 '일반 리포트 기준'이라는 범위를 명시한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "기술적으로 상당히 견실한 챕터다. 이벤트 실행 순서와 각 이벤트의 책임 분리, E 메시지가 이벤트 블록을 끊는 동작, 오류 복귀 시 AT SELECTION-SCREEN OUTPUT이 다시 돌지 않는 점, LOOP AT SCREEN INTO/MODIFY SCREEN FROM의 work area 명시형, 선택화면 버튼은 sy-ucomm이 아니라 SSCRFIELDS-UCOMM으로 받는다는 점, CALL SELECTION-SCREEN의 sy-subrc 0/4와 CALL SCREEN 불가, NO-EXTENSION과 NO INTERVALS의 차이 및 '화면 제한일 뿐 업무 규칙 보장이 아님'까지 — 입문 교재에서 자주 틀리는 지점을 대부분 정확히 짚었다. F4IF_INT_TABLE_VALUE_REQUEST 호출 파라미터(retfield·dynpprog·dynpnr·dynprofield·value_org='S')와 다른 필드 값은 DYNP_VALUES_READ가 따로 필요하다는 주의도 실무와 일치한다. 결함은 좁은 범위에 몰려 있다. ① 보안 레슨(L07)의 AUTHORITY-CHECK 서술 두 곳 — '빠뜨린 필드는 통과'(방향이 반대인 오해)와 sy-subrc 4에 코드 실수 계열(8·24)을 섞은 표 — 이 둘은 '공식문서 기준' 표기와 함께 제시돼 정정이 필요하다. ② 종합 실습(L12)이 L07 스스로의 권고인 START-OF-SELECTION 권한 재검사를 빠뜨려, 학습자가 베끼는 정본 코드와 서술이 어긋난다. ③ 나머지는 예시 선택(ACTVT를 DUMMY 본보기로 사용, DEFAULT로 끝날 일을 INITIALIZATION 대표 예제로 사용)과 결과 건수 상한·LDB 과일반화 같은 한 줄 보강 사안이다. 재집필이 필요한 구조적 오류는 없고, 콜아웃 2개 정정 + 통합 코드에 검사 3줄 추가 + 주의 문장 3개 보강이면 정리된다."
+  }
+}

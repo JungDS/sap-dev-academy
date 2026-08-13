@@ -1,0 +1,48 @@
+{
+  "agent": "AG09",
+  "model": "opus",
+  "target": "CH14",
+  "persona_ack": "AG09 — ABAP 정적 검사기를 시늉하는 코드 전용 감사자. 산문·교수법·구성은 판단 대상에서 제외하고 ```abap 코드 블록만 줄 단위로 검사했다. 검사 축은 넷이다. ① 활성화 차단급(미선언 변수·마침표 누락·타입 불일치·존재하지 않는 구문/애드온·시그니처), ② 네이밍 규약(CH01～09 전역 gv_/gs_/gt_ · 로컬 스코프만 lv_/ls_/lt_ · it_는 Header Line 전용 · pa_/so_ · ty_/ts_/tt_ · ok_code 예외), ③ 경계 규약(CH14는 classic 구간이라 인라인 DATA()·VALUE·NEW·+=·|…| 금지, New Open SQL의 @·콤마 금지), ④ 주석·출력 문자열이 코드와 어긋나는 명백한 오류. 실행 환경이 없으므로 컴파일 확신이 아닌 정적 판단이며, 스타일 선호(빈 줄·정렬)는 결함으로 세지 않았고 억지 발견도 만들지 않았다.",
+  "method": "Read 도구로 대상 10개 파일(_chapter 포함)을 전문 정독했다. 이어 Grep으로 코드펜스 인벤토리를 확정 — ```abap 3개(CH14-L01 L70～82, CH14-L02 L41～46, CH14-L09 L52～58)와 ```text 3개(CH14-L03 L39～45 Search Help 표기, CH14-L05 L64～66 SM30 흐름, CH14-L06 L22～25 계층도)이며 text 3개는 ABAP 문장이 아니라 표기용 블록이라 문법 잣대를 적용하지 않았다. 경계·네이밍 위반은 정규식 일괄 스캔으로 교차 확인했다(패턴: DATA\\(|VALUE #|VALUE \\w|NEW |\\+=|-=|SELECT.*@|it_\\w+|lv_|ls_|lt_ → CH14 전체 매치 0건). 실행·활성화 환경은 없어 문법 판정은 정적 판단이다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L09.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH14/CH14-L09.md",
+      "quote": "INTO CORRESPONDING FIELDS OF TABLE gt_perf.",
+      "category": "코드 완결성",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "실습 레슨의 '확인 리포트' 코드 블록이 SELECT로 내부 테이블만 채우고 끝나며 출력문(WRITE/LOOP)이 하나도 없다. 그대로 SE38에서 실행하면 화면에 아무것도 나오지 않아, 조회가 성공했는지 실패했는지를 학습자가 구분할 수 없다.",
+      "evidence": "블록 전체가 세 문장이다 — DATA gt_perf TYPE STANDARD TABLE OF zv_perf. / SELECT concert_id perf_no perf_date artist venue / FROM zv_perf / INTO CORRESPONDING FIELDS OF TABLE gt_perf. 문법 자체는 classic Open SQL로 정상이고 활성화도 통과하지만, gt_perf를 소비하는 문장이 없어 실행 결과가 빈 화면이다. 같은 챕터 CH14-L01의 대응 블록은 LOOP AT gt_perf INTO gs_perf ... WRITE ... ENDLOOP로 출력까지 보여 주고 있어, 출력 패턴은 이미 배운 상태라 게이팅 문제도 아니다. 레슨 본문이 이 블록을 '확인 리포트'라고 부르고 실습 과제도 'ZV_PERF(View)에서 아티스트가 함께 보이는지 확인한다'고 요구하므로, 출력이 없으면 과제 지시와 코드가 어긋난다.",
+      "suggestion": "SELECT 뒤에 CH14-L01과 같은 형태의 출력을 덧붙인다. 예: gs_perf TYPE zv_perf를 함께 선언하고 LOOP AT gt_perf INTO gs_perf. WRITE: / gs_perf-concert_id, gs_perf-perf_no, gs_perf-perf_date, gs_perf-artist, gs_perf-venue. ENDLOOP. (classic 범위 안이며 새 문법이 필요 없다.) 출력을 일부러 생략한 것이라면 '출력은 L01과 동일하므로 생략'이라는 한 줄을 코드 주석이나 캡션으로 명시한다."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH14/CH14-L09.md",
+      "quote": "위 다섯 필드가 `ZV_PERF`의 전부이니 결과는 `SELECT *`와 같다.",
+      "category": "주석·서술 불일치",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "코드 바로 아래 캡션이 '다섯 필드가 ZV_PERF의 전부'이므로 필드 나열 SELECT와 SELECT *의 결과가 같다고 단정한다. 그러나 client 종속 테이블 위에 만든 classic Database View는 SE11이 client 필드(MANDT)를 view field로 자동 포함하므로, 두 SELECT의 결과 구조가 정확히 같지는 않다.",
+      "evidence": "같은 챕터 CH14-L01은 조인 조건에 대해 '우리가 지정한 CONCERT_ID 말고 MANDT도 함께 들어가 있다 ... SE11이 클라이언트 대응 줄을 자동으로 넣어 준다'고 이미 밝히고 있다. 같은 자동 처리가 view field 목록에도 적용되어, ZPERF·ZCONCERT가 client 종속이면 ZV_PERF의 첫 view field로 MANDT가 붙는다. 그 경우 DATA gt_perf TYPE STANDARD TABLE OF zv_perf의 행 구조에도 mandt가 존재하므로, SELECT *는 mandt를 채워 오지만 다섯 필드만 나열한 INTO CORRESPONDING FIELDS OF TABLE은 mandt를 초기값으로 남긴다. 업무 데이터만 보면 동일하다는 취지는 맞으나 '전부' '같다'는 단정은 과하다. 실행 환경이 없어 이 프로젝트의 ZPERF·ZCONCERT delivery class와 client 종속 여부를 확인하지 못했으므로 confidence는 추정으로 둔다.",
+      "suggestion": "'다섯 필드가 전부' 대신 '업무 필드는 이 다섯이 전부라 읽어 오는 데이터는 SELECT *와 같다' 정도로 범위를 좁힌다. MANDT까지 짚어 주려면 L01의 client 자동 처리 콜아웃을 한 줄 링크로 잇는다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH14는 DDIC View·유지보수 도구 챕터라 ABAP 코드 자체가 매우 적다. 대상 10개 파일에 ```abap 블록은 셋(L01·L02·L09)뿐이고 나머지 셋은 Search Help 설정·SM30 흐름·계층도를 적은 ```text 표기 블록이라 문법 대상이 아니다. 정적 검사 결과 활성화 차단급 결함은 0건이다. 세 블록 모두 문장 마침표가 온전하고, DATA 체인(쉼표+마지막 마침표)·TYPE STANDARD TABLE OF <view>·LOOP AT ... INTO ... ENDLOOP·WRITE 체인이 모두 올바르며, 미선언 변수 사용이나 존재하지 않는 애드온도 없다. WRITE가 참조하는 다섯 필드(concert_id·perf_no·perf_date·artist·venue)는 L01이 정의한 ZV_PERF의 View Field 표와 정확히 일치해 오타성 불일치가 없고, L02의 gt_basic도 ZPV_BOOKING 구조와 어긋나지 않는다. 네이밍 규약도 전부 준수다 — CH14의 세 블록은 모두 FORM/METHOD 밖 최상위 선언이라 사실상 전역이고 gt_perf·gs_perf·gt_basic처럼 gt_/gs_를 쓰고 있어 lv_/ls_/lt_ 오용이 없으며, Header Line이 아닌 테이블에 it_를 붙인 곳도 없다. PARAMETERS·SELECT-OPTIONS·TYPES 선언은 이 챕터에 등장하지 않아 pa_/so_/ty_/ts_/tt_ 규약은 해당 사항이 없다. 경계 규약도 깨끗하다 — CH14는 classic 구간인데 인라인 DATA()·VALUE·NEW·+=·문자열 템플릿이 한 건도 없고, Open SQL 두 문장은 @ 이스케이프와 콤마 없는 완전한 classic 형태다(SELECT concert_id perf_no perf_date artist venue처럼 공백 구분 필드 목록). 정규식 일괄 스캔에서도 위반 매치가 0건으로 나와 교차 확인됐다. 남은 지적은 둘 다 낮음이고 실습 레슨(L09) 한 곳에 몰려 있다 — 확인 리포트 코드에 출력문이 없어 실행해도 빈 화면이라는 점, 그리고 'ZV_PERF는 다섯 필드가 전부라 SELECT *와 결과가 같다'는 캡션이 client 필드 자동 포함을 감안하면 과한 단정이라는 점이다. 둘 다 코드 몇 줄과 문장 한 줄 손질이면 끝나는 수준이라 재작성이나 구조 보강은 불필요하다고 본다."
+  }
+}

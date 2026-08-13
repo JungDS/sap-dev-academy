@@ -1,0 +1,113 @@
+{
+  "agent": "AG06",
+  "model": "opus",
+  "target": "CH13",
+  "persona_ack": "20년차 SAP ABAP 아키텍트(ECC~S/4HANA 개발·운영·성능·이관 경험) 시선으로 CH13 'Open SQL 2차: JOIN·집계'의 레슨 8개와 _chapter.md를 읽기 전용으로 기술 검수했다. 사실 오류·예시 적절성·위험한 생략·안티패턴 네 축으로만 판단했고, 문체나 커리큘럼 게이팅은 내 몫이 아니라 보고 대상에서 뺐다.",
+  "method": "Read 도구로 대상 9개 파일 전문 통독 후, grep(대상 파일 한정)으로 인용 원문 8건의 자구를 재확인해 앵커 정확도를 맞췄다. 웹 검색·외부 네트워크·다른 감사 산출물 접근은 하지 않았고, 실제 SAP 시스템에서 구문 검사를 돌려 본 것이 아니라 classic Open SQL 문법·DDIC 동작에 대한 내 지식과 대조한 판정이다. 릴리스 의존적이거나 기억이 흐린 항목은 confidence=추정으로 내렸다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L08.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L08.md",
+      "quote": "3. **취소(`C`)** 예매를 합계에서 빼야 하나? → 예 → JOIN 조건에 `b~status <> 'C'`",
+      "category": "사실 오류 — classic LEFT OUTER JOIN의 ON 조건 제약 위반(구문 오류)",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "classic 표기의 LEFT OUTER JOIN은 ON 조건에 등가 비교(=)만, 그리고 AND 결합만 허용한다. 이 레슨 실습 SELECT의 `AND b~status <> 'C'`는 그 제약을 어겨 구문 검사에서 막히므로, 챕터를 마무리하는 최종 예제가 학습자 시스템에서 그대로는 실행되지 않는다.",
+      "evidence": "같은 파일 SELECT 문의 두 번째 조인이 `LEFT OUTER JOIN zbooking AS b` … `ON b~concert_id = pf~concert_id AND b~perf_no = pf~perf_no AND b~status <> 'C'`로 끝난다. classic(비-strict) Open SQL의 outer join ON 조건 제약은 ① 논리 연산자는 AND만 ② 비교 연산자는 =(EQ)만 ③ 각 비교에 오른쪽 테이블 컬럼이 하나 이상 포함, 이렇게 셋이다. `<>`는 ②를 정면으로 위반한다(INNER JOIN이었다면 허용되는 비교라 더 헷갈리는 자리다). modern/strict 표기에서는 이 제약이 완화됐지만 이 챕터는 classic 전용을 명시하고 있어 완화를 근거로 삼을 수 없다. 본문 결과 표의 'C002는 예매가 4 + 2인데 합계가 4다' 설명도 이 조인이 성립한다는 전제 위에 서 있다.",
+      "suggestion": "취소 제외를 등가 비교로 바꾼다. 유효 상태 값이 하나라면 `AND b~status = '<정상값>'`(예: 예약 상태 코드)으로 적는 것이 가장 간단하고, 이 방식은 classic 제약을 만족하면서 '취소는 짝짓기 단계에서 제외'라는 설명도 그대로 살린다. 정상 상태 값이 여러 개라 등가로 못 묶으면 ON에서 상태 조건을 빼고 조회한 뒤 결과에서 처리하는 형태로 바꾸고, 4번 질문의 답과 '흔한 실수' 항목의 문구도 함께 고쳐야 한다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L02.md",
+      "quote": "그래서 \"왼쪽을 다 남기겠다\"는 목적이라면 **오른쪽 테이블에 거는 조건은 `ON`에** 둔다.",
+      "category": "위험한 생략 — classic 제약 미고지(규칙을 일반화해 가르침)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "ON↔WHERE의 의미 차이 설명 자체는 정확하지만, classic Open SQL에서는 LEFT OUTER JOIN의 ON에 등가 비교만 쓸 수 있다는 제약이 빠져 있다. 학습자가 이 규칙을 `>`·`<>`·`LIKE` 같은 조건에 적용하면 곧바로 구문 오류를 만난다.",
+      "evidence": "이 규칙은 같은 챕터 마무리 실습(CH13-L08)에서 `AND b~status <> 'C'`로 그대로 적용돼 실제로 컴파일 불가 코드가 됐다(seq 1). 즉 이론 규칙과 classic 문법 사이의 틈이 이미 챕터 안에서 사고로 실현돼 있다. 이 레슨의 '흔한 실수와 점검'에도 '오른쪽 조건은 ON으로 옮기자'가 조건 없이 한 번 더 반복된다.",
+      "suggestion": "규칙 문장 뒤에 제약 한 줄을 붙인다. 예: '단 classic 표기에서는 LEFT OUTER JOIN의 ON에 등가(=) 비교만, AND로만 이어 쓸 수 있다. 크기 비교나 <> 같은 조건은 ON으로 옮길 수 없으니, 그런 조건은 읽어 온 뒤 ABAP에서 거르거나 조건 자체를 등가로 바꿔 표현한다.'"
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L02.md",
+      "quote": "- **자식에서 부모로 올라갈 때는 INNER.** 회차에 적힌 공연 ID는 Foreign Key가 지켜 주니",
+      "category": "사실 오류 — DDIC Foreign Key의 동작을 DB 참조 무결성으로 서술",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "DDIC Foreign Key는 데이터베이스 레벨의 참조 무결성 제약이 아니다. 화면(Dynpro) 입력 검사·검색 도움(F4)·테이블 유지보수 화면의 검사에 쓰일 뿐, Open SQL INSERT/UPDATE·배치 적재·인터페이스로 들어오는 데이터는 검사하지 않는다. 따라서 '부모 마스터가 없을 수 없다'는 보장은 성립하지 않는다.",
+      "evidence": "실제 시스템에서 마스터가 나중에 삭제되거나 마이그레이션·인터페이스로 자식 레코드만 적재되어 고아 행이 남는 일은 흔하고, 그때 INNER JOIN은 그 행을 조용히 떨군다. 이 챕터가 CH13-L01에서 '짝이 없는 줄은 결과에서 통째로 빠진다'고 정확히 가르쳐 놓고, 정작 INNER를 고르는 근거로는 검사되지 않는 보장을 든 셈이다. 건수 불일치 조사에서 가장 먼저 의심해야 할 원인을 학습자가 제거해 버리게 된다.",
+      "suggestion": "INNER 선택의 근거를 '업무상 부모가 반드시 있어야 하는 관계이고, 우리 앱은 화면을 통해서만 예매를 만든다'로 바꾼다. 그리고 주의 한 줄을 덧붙인다: 'DDIC Foreign Key는 화면 입력 검사·검색 도움에 쓰이는 선언이라 DB가 강제하지 않는다. 건수가 기대와 다르면 부모 없는 자식 행(고아)을 의심하고 LEFT OUTER JOIN으로 확인해 보자.'"
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L07.md",
+      "quote": "READ TABLE gt_carr INTO gs_carr",
+      "category": "위험한 생략 / 안티패턴 — READ TABLE 실패 시 작업영역 잔존값",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "`READ TABLE ... INTO wa`가 짝을 못 찾으면 sy-subrc = 4가 되고 **작업영역은 초기화되지 않은 채 직전 값이 그대로 남는다.** ✅ 권장형으로 제시된 코드가 sy-subrc를 검사하지 않아, 매칭 실패 행에 앞 루프의 항공사 이름이 붙는 조용한 데이터 오염이 생길 수 있다.",
+      "evidence": "예제는 `LOOP AT gt_flight ... READ TABLE gt_carr INTO gs_carr WITH KEY carrid = gs_flight-carrid. ENDLOOP.`로 끝나고 sy-subrc 검사도 CLEAR도 없다. 같은 형태가 CH13-L01 도입부 코드에도 있으며 거기엔 '여기서야 gs_carr-carrname을 꺼내 쓸 수 있다'는 주석까지 달려 있어, 학습자가 값을 바로 쓰는 코드로 복제하기 쉽다. 오류도 덤프도 없이 틀린 값이 리포트에 실리는 유형이라 운영에서 발견이 늦다.",
+      "suggestion": "권장형 코드에 `IF sy-subrc = 0. …사용… ELSE. CLEAR gs_carr. ENDIF.`(또는 READ 앞 `CLEAR gs_carr.`)를 넣고, '찾지 못하면 작업영역에 이전 행 값이 남는다'는 한 문장을 붙인다. CH13-L01 도입부 코드의 주석에도 같은 단서를 달아 두면 좋다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L07.md",
+      "quote": "위쪽은 운항편이 1만 건이면 DB에 1만 번 다녀온다. 아래쪽은 딱 두 번 읽고 나머지는 전부",
+      "category": "위험한 생략 — 성능(표준 테이블 선형 탐색)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "표준 테이블(`TYPE TABLE OF`)에 대한 `READ TABLE ... WITH KEY`는 선형 탐색이다. 예제의 SCARR처럼 수십 행이면 무시해도 되지만, '1만 건 루프'라는 규모를 근거로 이 형태를 권장형으로 제시하면서 탐색 비용을 한 번도 언급하지 않아 병목이 DB 왕복에서 앱 서버 CPU로 옮겨 가는 사례를 못 보게 된다.",
+      "evidence": "본문은 '나머지는 전부 메모리에서 끝난다'로 마무리한다. 조회 테이블이 수천~수만 행이 되면 1만 × N의 선형 비교가 되어, N+1을 없애고도 여전히 느린 프로그램이 된다. 실무 튜닝에서 자주 만나는 두 번째 단계 문제다.",
+      "suggestion": "'조회 대상이 작으면 이대로 충분하고, 커지면 `SORT` 후 `READ TABLE ... BINARY SEARCH`(또는 SORTED/HASHED 테이블)로 탐색까지 줄인다' 정도의 한 줄을 덧붙인다. 도입 시점이 이 챕터에 이르다면 최소한 '조회 테이블이 크면 찾는 비용도 따져야 한다'는 신호만이라도 남기는 것이 좋다."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L07.md",
+      "quote": "- **가능하면 JOIN** — DB가 합치게 둔다(데이터 이동 최소).",
+      "category": "위험한 생략 — 선택 기준에서 테이블 버퍼 우회가 빠짐",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "JOIN(그리고 집계·DISTINCT)이 들어간 SELECT는 SAP 테이블 버퍼를 사용하지 않고 항상 DB로 내려간다. 이 레슨의 주제가 '무엇을 쓸지 고르는 기준'인데, 기준의 한 축인 버퍼 우회가 빠져 있어 '가능하면 JOIN'이 무조건 규칙으로 읽힌다.",
+      "evidence": "예제에 쓰인 SCARR처럼 작고 잘 바뀌지 않는 코드↔이름 마스터는 버퍼링 설정이 걸려 있는 것이 보통이고, 이런 테이블은 JOIN으로 붙이는 순간 버퍼 히트를 잃고 매번 DB에 간다. 역설적으로 이 레슨의 ✅ 권장형(마스터를 따로 읽어 메모리에서 맞추기)이 그 상황에서는 DB 부하가 더 낮은 선택이 되는데, 본문은 그 이유를 설명하지 않고 '데이터 이동 최소'로만 정당화한다.",
+      "suggestion": "원칙 목록에 한 줄 추가: '단 JOIN에는 SAP 테이블 버퍼가 쓰이지 않는다. 자주 바뀌지 않는 작은 마스터(코드↔이름)는 따로 읽어 메모리에서 맞추는 편이 나을 때가 있다.' 표의 JOIN 행 '보통 1순위'에도 이 예외를 괄호로 달아 두면 기준이 완성된다."
+    },
+    {
+      "seq": 7,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L03.md",
+      "quote": "> 📝 **괄호 안 공백은 표기 습관이다.** 이 과정은 `COUNT( * )`처럼 괄호 안쪽을 띄우는",
+      "category": "사실 오류 — 표기 규칙을 과일반화",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "붙여 쓴 형태가 통하는 것은 `COUNT(*)`라는 특수 토큰뿐이고, `SUM`·`MAX`·`MIN`·`AVG`는 괄호 안쪽 공백이 필요하다(`SUM(seatsocc)`는 구문 오류). '괄호 안 공백은 표기 습관'이라는 설명을 그대로 받아들이면 다른 집계 함수도 붙여 쓰다 막힌다.",
+      "evidence": "ABAP은 함수형 괄호의 피연산자를 공백으로 분리하도록 요구하고, 관례적으로 `COUNT(*)`만 하나의 토큰으로 인정된다는 것이 내 기억이다. 바로 앞 목록이 `COUNT( * )`, `SUM( )`, `MAX( )`, `MIN( )`, `AVG( )`를 한 줄에 나열한 직후에 이 콜아웃이 붙어 있어 다섯 함수 전체에 적용되는 설명으로 읽힌다. 릴리스별·구문 모드별 세부는 확인할 수단이 없어 추정으로 둔다.",
+      "suggestion": "문장을 좁힌다. 예: '붙여 쓴 `COUNT(*)`는 예전부터 쓰이는 특수 표기다. 다만 `SUM( )`·`AVG( )` 같은 다른 집계 함수는 괄호 안쪽 공백이 필요하니, 이 과정 표기를 그대로 따르면 헷갈릴 일이 없다.'"
+    },
+    {
+      "seq": 8,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L05.md",
+      "quote": "- `ORDER BY PRIMARY KEY` — 기본 키 순으로 받는 편한 형태다. 단 JOIN한 결과에는 쓸 수",
+      "category": "위험한 생략 — 문법 제약을 일부만 제시",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "JOIN 금지 외에도 제약이 있다. 단일 테이블/뷰 조회여야 하고, 기본 키 컬럼이 결과에 포함되어야 한다(classic에서는 사실상 `SELECT *` 형태). 바로 위 예제처럼 필드를 골라 읽는 문장에 그대로 바꿔 넣으면 기대와 달리 막힐 수 있다.",
+      "evidence": "이 레슨의 예제는 `SELECT carrid connid fldate ... ORDER BY fldate DESCENDING carrid ASCENDING` 형태라, 학습자가 '편한 형태'라는 안내를 보고 같은 문장의 ORDER BY만 PRIMARY KEY로 교체해 보는 흐름이 자연스럽다. 그때 만나는 오류의 원인이 본문에 없다. 제약 문구의 정확한 표현은 확인할 수단이 없어 추정으로 둔다.",
+      "suggestion": "'단일 테이블을 `SELECT *`로 읽을 때 쓸 수 있고, JOIN 결과나 필드를 골라 읽는 문장에는 쓸 수 없다' 정도로 조건을 한 줄 더 적는다. 범위를 늘리기 부담스러우면 이 항목을 아예 빼고 필드 나열 방식만 가르쳐도 학습 손실은 없다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "보강 권장",
+    "summary": "classic Open SQL 규율(콤마·@ 배제, 절 순서 고정, INTO CORRESPONDING FIELDS의 이름 매칭 함정)은 전반적으로 정확하고, 실무에서 실제로 사고가 나는 지점을 잘 골랐다. 특히 FAE의 빈 드라이버 테이블 → 전체 조회, 결과 자동 중복 제거로 행이 조용히 사라지는 함정, LEFT OUTER JOIN에서 오른쪽 조건을 WHERE에 두면 보존 행이 날아가는 문제, GROUP BY의 그룹 키 규칙과 SUM 오버플로, ORDER BY 없을 때 순서 무보장, N+1 왕복은 이 수준 교재에서 보기 드물게 정확하다. 결함은 셋에 몰려 있다. ① 챕터를 마무리하는 실습(L08)의 SELECT가 classic LEFT OUTER JOIN의 ON 제약(등가 비교만·AND만)을 어겨 그대로는 구문 오류다. 그 뿌리인 L02의 '오른쪽 조건은 ON에' 규칙에도 제약 고지가 없어 같은 실수가 재생산된다. ② DDIC Foreign Key를 DB 참조 무결성처럼 설명해 INNER JOIN 선택의 근거로 삼았는데, 실제로는 화면 입력 검사용 선언이라 고아 행이 생기고 INNER가 그 행을 조용히 떨군다. ③ ✅ 권장형으로 제시한 READ TABLE 루프가 sy-subrc를 검사하지 않아 매칭 실패 시 직전 값이 그대로 실린다. ①은 코드 수정, ②③은 서술 보강이 필요하고, 나머지(선형 탐색·테이블 버퍼 우회·괄호 공백 표기·ORDER BY PRIMARY KEY 제약)는 한 줄씩 덧붙이면 되는 낮은 강도의 보완이다. 재집필이 필요한 수준은 아니다."
+  }
+}

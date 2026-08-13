@@ -1,0 +1,84 @@
+{
+  "agent": "AG06",
+  "model": "sonnet",
+  "target": "CH15",
+  "persona_ack": "ECC부터 S/4HANA까지 실무 경험을 가진 20년차 SAP ABAP 아키텍트로서, Report Event·Selection Screen 심화(CH15) 레슨 12개와 챕터 개요 1개를 코드·서술 수준까지 정독하며 사실 오류·예시 적절성·위험한 생략·안티패턴 관점으로 감사했다.",
+  "method": "웹 검색·외부 도구 없이 대상 파일 13개 전문을 순서대로 정독. 코드 예제는 ABAP 공식 이벤트 흐름(PBO/PAI)·AUTHORITY-CHECK 반환코드·SCREEN 구조 필드·SPA/GPA Parameter 등에 대한 기억 기반 지식과 대조해 교차검증. 챕터 내부 레슨 간 상호 참조(L04↔L06/L12, L07↔L12)도 일관성 확인에 활용.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L10.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L11.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L12.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH15-L03.md",
+      "quote": "이 `AT SELECTION-SCREEN OUTPUT`이 **다시 돌지 않는다**(공식 문서 기준).",
+      "category": "사실 오류",
+      "severity": "높음",
+      "confidence": "추정",
+      "claim": "AT SELECTION-SCREEN에서 E 메시지로 막혀 선택화면으로 되돌아올 때 AT SELECTION-SCREEN OUTPUT이 다시 실행되지 않는다는 서술은, 내 기억으로는 실제 동작과 반대일 가능성이 높다.",
+      "evidence": "선택화면은 시스템이 자동 생성하는 dynpro이고, dynpro는 PBO(Process Before Output)를 거치지 않고는 화면을 다시 그릴 수 없는 것이 dynpro 처리 모델의 기본 원리다. AT SELECTION-SCREEN에서 E 메시지로 막혀 같은 화면이 재표시될 때도 이 재표시는 PBO를 통과해야 하므로, AT SELECTION-SCREEN OUTPUT은 오류 복귀 때도 다시 실행되는 것이 표준 동작이라고 기억한다. 이 예외가 실재한다면, 사용자가 오류로 되돌아온 화면에서 pa_mode 같은 값을 바꿔도 화면 속성이 그 변경을 반영하지 못해 재현하기 어려운 UI 불일치로 이어질 수 있다. 다만 웹 검색이 금지된 상태에서 기억만으로 판단한 것이라 '추정'으로 표기한다 — 확정하기 전 공식 문서(SAP Help Portal의 AT SELECTION-SCREEN OUTPUT 항목) 재확인을 권한다.",
+      "suggestion": "이 '예외' 문구를 공식 문서 원문 인용/링크로 뒷받침하거나, 재확인 결과 반대라면 'AT SELECTION-SCREEN OUTPUT은 오류로 화면에 복귀할 때도 매번 다시 실행된다'로 정정한다."
+    },
+    {
+      "seq": 2,
+      "file": "CH15-L06.md",
+      "quote": "MESSAGE 'ALV 표시 중 오류가 발생했습니다' TYPE 'E'.",
+      "category": "위험한 생략",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "END-OF-SELECTION(및 이를 재사용한 L12의 START-OF-SELECTION) 안에서 쓰인 MESSAGE TYPE 'E'가, L04에서 배운 'E = 막고 입력 화면으로 복귀'와 같은 의미로 오인될 위험이 있다.",
+      "evidence": "L04의 표는 E를 '막고 입력 화면으로 복귀'로 설명하지만, 이는 AT SELECTION-SCREEN(선택화면 처리) 컨텍스트에 한정된 동작이다. 선택화면 단계를 이미 지난 START-OF-SELECTION/END-OF-SELECTION 안에서 나온 E 메시지는(백그라운드가 아닌 온라인 실행이라도) 내 기억으로는 '화면으로 복귀'가 아니라 A(Abort)와 동일하게 그 자리에서 프로그램 처리를 종료한다. 예제 코드 자체는 결과적으로 의도대로 동작하지만(오류 표시 후 종료), L04에서 배운 'E=복귀'라는 인상을 학습자가 그대로 다른 상황에 적용하면 '사용자가 고쳐서 다시 시도할 수 있다'는 잘못된 기대를 가질 수 있다. 이 챕터가 이미 '화면 없는 실행(백그라운드)'에서의 E 예외는 L04에서 각주로 다루면서, '화면은 있지만 이미 선택화면을 지난 시점'이라는 이 케이스는 다루지 않는다.",
+      "suggestion": "L06 또는 L12에 '선택화면 단계를 벗어난 곳(START-OF-SELECTION/END-OF-SELECTION)에서의 E는 화면 복귀가 아니라 처리 중단(A와 동일)'이라는 한 줄 각주를 추가한다."
+    },
+    {
+      "seq": 3,
+      "file": "CH15-L07.md",
+      "quote": "필드를 잘못 적었거나 너무 많이 적은 경우도 포함",
+      "category": "사실 오류",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "AUTHORITY-CHECK의 sy-subrc=4 설명에 '필드를 너무 많이 적은 경우'를 포함시킨 것은 부정확할 수 있다.",
+      "evidence": "이 레슨 자체가 ID/FIELD 쌍은 최대 10개까지만 문법적으로 허용된다고 명시하는데, 이를 초과하는 경우는 런타임 sy-subrc=4가 아니라 컴파일 단계에서 걸리는 구문 오류에 가깝다고 기억한다. sy-subrc=4는 '지정한 필드 값이 부여된 권한 범위와 맞지 않음'에 한정되는 것이 더 정확하다고 본다. 다만 AUTHORITY-CHECK의 세부 sy-subrc 코드 전체(8/16/24 등)에 대한 기억은 확실하지 않아 '추정'으로 표기한다.",
+      "suggestion": "괄호 안 '필드를 잘못 적었거나 너무 많이 적은 경우도 포함' 문구를 제거하거나, 공식 문서의 정확한 sy-subrc 코드 목록으로 교체 후 검증한다."
+    },
+    {
+      "seq": 4,
+      "file": "CH15-L10.md",
+      "quote": "**그 사용자의 로그인 세션에 딸린 개인 보관함**",
+      "category": "사실 오류",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "MEMORY ID(SPA/GPA Parameter) 저장소를 '로그인 세션에 딸린' 것으로, 뒤이어 'Variant는 로그아웃해도 남는다'와 대비시켜 마치 로그아웃하면 사라지는 것처럼 읽히게 서술한 부분은 실제와 반대일 가능성이 크다.",
+      "evidence": "SPA/GPA Parameter(SET/GET Parameter)는 세션이 아니라 사용자 마스터에 종속되어, 로그오프 후 재로그온해도 마지막 값이 유지되는 것으로 기억한다(다음 로그인 때도 값이 자동으로 채워지는 것이 이 기능이 존재하는 이유다). 즉 '그 사용자에게 영속적으로 귀속된 저장소'에 가깝지, '로그인 세션 한정'으로 읽히는 서술은 오해를 부를 수 있다. 이대로 이해하면 '로그아웃하면 사라지니 민감하지 않다'처럼 실제와 반대로 판단하거나, 반대로 영속되는 값을 세션 한정으로 오인해 개인정보성 값을 부주의하게 MEMORY ID에 담는 등 방향이 다른 두 가지 오판으로 이어질 수 있다.",
+      "suggestion": "'로그인 세션에 딸린'이라는 표현을 '그 사용자에게 영속적으로 귀속된(로그아웃 후에도 유지되는) 개인 보관함'으로 정정하고, Variant와의 차이는 '단일 필드 vs 필드 묶음', '개인 전용 vs 다른 사람도 공유' 축으로만 대비한다."
+    },
+    {
+      "seq": 5,
+      "file": "CH15-L12.md",
+      "quote": "AUTHORITY-CHECK OBJECT 'Z_CONCERT'",
+      "category": "위험한 생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "종합 실습(L12)의 통합 코드가, L07에서 명시적으로 가르친 'START-OF-SELECTION 첫머리 권한 재검사(defense in depth)' 원칙을 실제로는 적용하지 않는다.",
+      "evidence": "L07은 '다른 프로그램이 이 리포트를 대신 실행하거나 화면을 지나지 않는 경로'에 대비해 START-OF-SELECTION 첫머리에서 AUTHORITY-CHECK를 한 번 더 하라고 명시적으로 권고했다. 그런데 이 챕터를 마무리하는 통합 코드(L12)는 AUTHORITY-CHECK를 AT SELECTION-SCREEN ON pa_conc 한 곳에서만 수행하고 START-OF-SELECTION에는 재검사가 없다. L12는 스스로 '존재·권한 검증'을 통합 대상으로 명시하고 있어(범위 밖으로 선언한 것은 블록·버튼 화면구성과 보조 선택화면·Variant뿐), 배운 방어 원칙이 정작 이 챕터의 완성 예제에는 반영되지 않은 셈이다. 학습자가 이 통합 코드를 '표준형'으로 내면화하면 '한 번만 확인하면 충분하다'는 인상을 가질 위험이 있다.",
+      "suggestion": "START-OF-SELECTION 맨 앞에 AUTHORITY-CHECK OBJECT 'Z_CONCERT' 블록을 방어적 재검사 주석과 함께 다시 배치하거나(L07 권고 반영), 최소한 정리 섹션에 '실무라면 여기서도 한 번 더 검사한다'는 콜아웃을 추가한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH15는 이벤트 순서·화면 제어·검증·권한처럼 실무에서 실제 사고로 이어지는 지점을 존재검증/권한검증 분리, INITIALIZATION/OUTPUT/ON 역할 구분 등 정확한 개념으로 잘 짚었고, SELECT * 사용이나 교육용 권한 객체명 같은 잠재적 오해 지점을 저자가 스스로 캐치해 캐벗을 다는 등 실무 감각이 돋보이는 챕터다. 다만 (1) AT SELECTION-SCREEN OUTPUT의 오류 복귀 시 재실행 여부 서술이 표준 dynpro PBO 동작과 반대로 읽혀 재확인이 필요하고, (2) MEMORY ID의 로그아웃 후 지속 여부 서술이 반대일 가능성이 있으며, (3) 선택화면 단계를 벗어난 곳에서의 MESSAGE E 동작 변화가 설명되지 않고, (4) 종합 실습이 스스로 가르친 방어적 권한 재검사 원칙을 실제로는 적용하지 않는 등, 확인·보완하면 좋을 지점이 몇 군데 있다. 전체 구조와 난이도 배분, 체험 위젯 연결은 이 수준 학습자에게 적절하다."
+  }
+}

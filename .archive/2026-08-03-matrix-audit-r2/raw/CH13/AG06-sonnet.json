@@ -1,0 +1,47 @@
+{
+  "agent": "AG06",
+  "model": "sonnet",
+  "target": "CH13",
+  "persona_ack": "20년차 SAP ABAP 아키텍트(ECC～S/4HANA 개발·운영·성능·이관 경험) 페르소나로 CH13(Open SQL 2차: JOIN·집계) 레슨 8개와 챕터 메타를 사실 오류·예시 적절성·위험한 생략·안티패턴 네 축으로 감사했다.",
+  "method": "Read 도구로 대상 파일 9개(챕터 메타 1 + 레슨 8)의 전문을 직접 읽고, classic Open SQL(INNER/LEFT OUTER JOIN, GROUP BY, HAVING, ORDER BY, FOR ALL ENTRIES) 문법·시스템 동작에 대한 지식으로 원문 서술을 하나씩 대조 검증했다. 웹 검색·외부 네트워크·다른 감사자 산출물은 사용하지 않았다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L08.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L01.md",
+      "quote": "> 헷갈릴 일이 적어 이 챕터도 주로 이 형태를 쓴다.",
+      "category": "위험한 생략",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "이 챕터는 JOIN 결과 수신 방식으로 INTO CORRESPONDING FIELDS OF TABLE(이름 매칭)을 기본형으로 삼고 그 이유(이름 매칭이 헷갈림이 적음)까지 설명하지만, CORRESPONDING FIELDS OF가 필드명을 대조해 매핑하느라 위치 매칭인 INTO TABLE보다 비용이 더 든다는 성능 트레이드오프는 8개 레슨 전체에서 한 번도 언급하지 않는다. 이 챕터는 FAE 왕복 횟수(L06), 루프 안 SELECT/N+1(L07), 정렬 인덱스(L05) 등 성능에 유난히 신경 쓰는 챕터라 이 누락이 두드러진다.",
+      "evidence": "필드명 매칭 방식(CORRESPONDING FIELDS OF/MOVE-CORRESPONDING)이 위치 매칭(INTO TABLE)보다 필드 대조·매핑 비용이 더 든다는 것은 ABAP 성능 가이드에서 흔히 언급되는 특성이다. 다만 정확한 오버헤드 폭이나 릴리스별 최적화 여부까지 실측 검증한 것은 아니라서 confidence는 추정으로 둔다. 소량 데모 데이터(SFLIGHT/콘서트 샘플)에서는 체감되지 않지만, 같은 패턴을 실무 대용량 리포트에 그대로 옮기면 누적 비용이 된다.",
+      "suggestion": "L01의 '받는 방법은 둘이다' 콜아웃(또는 L03/L08 JOIN+집계 예제 인근)에 한 줄만 추가: '이름 매칭은 편리하지만 필드마다 이름을 대조하는 비용이 있어, 대량 데이터를 반복 조회하는 실무 리포트에서는 필드 순서를 맞춘 위치 매칭(INTO TABLE)이 더 유리할 수 있다. 지금 배우는 소량 예제에서는 문제없다.'"
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L04.md",
+      "quote": "`SELECT` → `FROM` → `INTO` → `WHERE` → `GROUP BY` → `HAVING` → `ORDER BY`",
+      "category": "사실 오류",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "\"classic Open SQL은 절을 적는 순서가 고정돼 있다\"면서 SELECT→FROM→INTO→WHERE→GROUP BY→HAVING→ORDER BY 순서를 제시하고 \"순서를 바꿔 적으면 구문 오류가 난다\"고 단정한다. 그러나 실제로는 WHERE→GROUP BY→HAVING→ORDER BY의 상대 순서만 엄격히 고정이고, INTO(및 APPENDING) 절의 위치는 이보다 유연해서 FROM 직후뿐 아니라 WHERE·GROUP BY·HAVING·ORDER BY 뒤(문장 맨 끝)에 두어도 정상적으로 활성화된다.",
+      "evidence": "실무 ABAP 코드에서 `SELECT ... FROM ... WHERE ... INTO TABLE ...`처럼 INTO를 WHERE 뒤에 두는 형태도 흔히 쓰이고 정상 컴파일된다 — 특히 최신 스타일(inline DATA 선언, 이 챕터 범위 밖)에서는 INTO를 맨 끝에 두는 쪽이 오히려 더 일반적이다. 이 교재가 INTO를 FROM 바로 뒤에 두는 것은 유효한 관례이지만, \"그 위치가 아니면 구문 오류\"라는 단정은 과도한 일반화로 보인다. 다만 classic 문법의 모든 파서 규칙을 전수 검증한 것은 아니라 confidence는 추정으로 둔다.",
+      "suggestion": "\"절 순서가 고정돼 있다\"는 서술을 WHERE→GROUP BY→HAVING→ORDER BY(이 넷의 상대 순서)로 한정하고, INTO는 \"이 교재는 FROM 바로 뒤에 두는 관례를 따른다(다른 위치도 가능하지만 헷갈리지 않게 통일)\" 정도로 톤을 낮추면 더 정확하다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH13(JOIN·GROUP BY·HAVING·ORDER BY·FOR ALL ENTRIES)은 기술적으로 탄탄하다. NULL이 ABAP 초기값으로 바뀌는 원리와 그 판별법(오른쪽 키 필드로 확인), LEFT OUTER JOIN에서 오른쪽 조건을 ON에 두느냐 WHERE에 두느냐의 차이, FOR ALL ENTRIES가 빈 드라이버 테이블일 때 WHERE를 통째로 무시하고 전체 조회하는 위험, 루프 안 SELECT(N+1) 안티패턴의 명확한 교정 등 실무에서 실제 사고로 이어지는 함정들을 정확하고 신중하게(추정/확실 구분 없이 과단언하지 않고) 다뤘다. ON 필수 요구·카테시안 곱·ORDER BY PRIMARY KEY의 JOIN 제약·ASC/DESC 축약 불가 등 세부 문법 서술도 확인한 범위에서 오류를 찾지 못했다. 발견한 두 건은 모두 경미하다. (1) L01이 JOIN 결과 수신 기본형으로 INTO CORRESPONDING FIELDS OF TABLE을 권하면서, 이 챕터 특유의 성능 강조 기조와 달리 그 방식의 필드명 매칭 오버헤드는 언급하지 않는다. (2) L04가 SELECT 절 순서를 INTO까지 포함해 \"고정·위반 시 구문 오류\"라고 단정하지만, 실제로는 WHERE→GROUP BY→HAVING→ORDER BY만 엄격한 순서이고 INTO 위치는 더 유연하다. 둘 다 학습자를 사고로 이끌 정도는 아니며 문구 보강 수준의 경미 수정으로 충분하다."
+  }
+}
