@@ -89,11 +89,12 @@ View다. Open SQL로 읽는 대상이 아니고, 표준 유지보수 흐름에�
 화면을 열어 데이터를 손보는 자리다(<a href="CH14-L05.html">다음 레슨</a>). <strong>SM31</strong>은 같은 표준
 유지보수 화면으로 가는 예전 입구인데, 요즘은 대개 SM30을 쓴다.</p>
 <blockquote class="cw">
-<p>⚠️ Maintenance View를 &quot;left outer join 조회 대안&quot;으로 외우지 말자(흔한 오해). 결합
-성격만 보면 Maintenance View도 <a href="CH14-L03.html">Chapter 14 · Help View</a>처럼 <strong>주 테이블을
-보존하는 outer join</strong> 쪽이 맞다(inner join인 쪽은 Database View다). 하지만 그 성격을
-조회에 써먹을 방법이 없다. Open SQL이 읽을 수 있는 대상이 아니기 때문이다. <strong>성격은
-outer, 용도는 유지보수</strong> 로 따로 기억하자.</p>
+<p>⚠️ Maintenance View를 &quot;join 조회의 대안&quot;으로 외우지 말자(흔한 오해). 결합만 보면
+Maintenance View는 Database View와 같은 <strong>inner join</strong>이다. 그래서 짝이 안 맞는 행,
+예를 들어 회차가 하나도 없는 공연은 유지보수 화면 목록에 안 올라온다. 주 테이블 행을
+남겨 두는 outer join은 <a href="CH14-L03.html">Chapter 14 · Help View</a>의 성질이지 이쪽이 아니다.
+그리고 결합이 무엇이든 조회에 써먹을 방법이 없다. Open SQL이 읽을 수 있는 대상이
+아니기 때문이다. <strong>결합은 inner, 용도는 유지보수</strong>로 기억하자.</p>
 </blockquote>
 <blockquote>
 <p>🧷 이름이 닮은 둘을 미리 갈라 두자. <strong>Maintenance View</strong>는 지금 만드는 <strong>DDIC 객체</strong>(무엇을
@@ -127,7 +128,11 @@ outer, 용도는 유지보수</strong> 로 따로 기억하자.</p>
 <li><strong>Tables</strong> 칸 첫 줄에 primary table로 <code>ZCONCERT</code>를 적는다.</li>
 <li><strong>Relationships</strong> 버튼으로 <code>ZPERF</code>를 붙인다. <code>zperf-concert_id → zconcert-concert_id</code>
 Foreign Key(<a href="CH09-L09.html">Chapter 9 · 실습에서 건 그 관계</a>)가 조인 조건이 된다.</li>
-<li><strong>View Flds</strong> 탭에서 화면에 둘 필드를 고른다(공연의 <code>ARTIST</code>·<code>VENUE</code>, 회차의 <code>PERF_NO</code>·<code>PERF_DATE</code>).</li>
+<li><strong>View Flds</strong> 탭에서 필드를 고른다. 먼저 <strong>key</strong>다. primary table <code>ZCONCERT</code>의 key는
+<strong>전부</strong> 넣어야 하고(<code>CONCERT_ID</code>. 맨 앞의 <code>MANDT</code>는 SE11이 알아서 챙긴다), 조인 조건에
+쓰이지 않은 <code>ZPERF</code>의 key(<code>PERF_NO</code>)도 반드시 넣는다. key가 있어야 화면이 <strong>어느 공연의
+몇 회차인지</strong> 행을 식별하고, 새로 입력한 행도 제자리에 저장된다. 그다음 화면에 보일
+<code>ARTIST</code>·<code>VENUE</code>·<code>PERF_DATE</code>를 더한다.</li>
 <li><strong>Maint.Status</strong> 탭에서 유지보수 허용을 <strong>읽기·쓰기 가능</strong>으로 둔다. 이게 막혀 있으면
 화면을 만들어도 저장이 안 된다.</li>
 <li>저장 → 활성화. 여기까지가 <strong>설계도</strong>다. 실제 입력 화면은 <a href="CH14-L05.html">다음 레슨</a>에서 붙인다.</li>

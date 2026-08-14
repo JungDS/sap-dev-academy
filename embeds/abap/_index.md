@@ -112,14 +112,14 @@
 | CH13-L05-S01 | CH13-L05 | sort-priority-lab | ORDER BY 정렬 기준 토글(없음·fldate▼·fldate▼carrid▲·carrid▲)→재정렬·동률 2차기준·순서보장없음 경고 | ✅ |
 | CH13-L06-S01 | CH13-L06 | fae-safety-sim | FOR ALL ENTRIES 기준목록×안전장치 토글→실행: 제한조회/빈목록보호/⚠️전체조회 위험·중복제거 | ✅ |
 | CH13-L07-S01 | CH13-L07 | module-choice-cards | (재사용) 조회 전략 의사결정 카드 5문항→JOIN/FAE/ABAP/GROUP BY/LEFT OUTER 분류·이유 | ✅ |
-| CH13-L08-S01 | CH13-L08 | join-aggregate-visualizer | LEFT OUTER JOIN+GROUP BY SUM(본문 회차 grain의 두 테이블 뼈대·공연별 booked·LEFT/INNER 토글·취소 제외) | ✅ |
+| CH13-L08-S01 | CH13-L08 | join-aggregate-visualizer | LEFT OUTER JOIN+GROUP BY SUM(본문 회차 grain의 두 테이블 뼈대·공연별 booked·LEFT/INNER 토글·취소 제외) — 예매 6건 = CH09-L09 시드 정본(C001=8·C002=4 취소 차은우 제외·C003=0) | ✅ |
 | CH14-L01-S01 | CH14-L01 | db-view-vs-join | 코드 JOIN vs Database View 비교(정상/마스터누락→inner-join 탈락/필드축소→구조계약) | ✅ |
 | CH14-L02-S01 | CH14-L02 | field-curtain | Projection View 필드 선택(체크박스)→결과 컬럼 변화·기술필드 일괄숨김·key 경고·ABAP 구조 | ✅ |
 | CH14-L03-S01 | CH14-L03 | f4-help-flow | Help View F4 흐름(F4→팝업→key 복귀)·설명누락 outer 보존·Export OFF 복귀안함 | ✅ |
 | CH14-L04-S01 | CH14-L04 | fk-maintenance-gate | Foreign Key 토글→유지보수 input check(FK ON: 없는코드 거부 / OFF: orphan 통과) | ✅ |
 | CH14-L05-S01 | CH14-L05 | sm30-gate-checklist | SM30 열리기까지 조건 게이트(활성화·유지보수허용·TMG·권한)→모두 충족 시 grid·파이프라인 | ✅ |
 | CH14-L06-S01 | CH14-L06 | view-cluster-tree | View Cluster 계층 유지보수(공연→회차)·상위 선택이 하위 자동조건·하위 추가(미선택 시 오류 안내) | ✅ |
-| CH14-L07-S01 | CH14-L07 | se16n-tracker | SM30 저장→SE16N 확인(원본 vs View·H03 inner-join 차이·H30 오타 0건 단정금지) | ✅ |
+| CH14-L07-S01 | CH14-L07 | se16n-tracker | SM30 저장(C002 002회차 — FK input check 통과)→SE16N 확인(원본 vs View inner-join 차이 = 화면 밖 경로 고아 행 C999·오타 0건 단정금지) — L04 FK 서사와 정합 | ✅ |
 | CH14-L08-S01 | CH14-L08 | timeline-boundary | Classic↔CDS 경계 타임라인(지금=DDIC View/나중=CDS·RAP)·필터·나중 카드 챕터 안내 | ✅ |
 | CH14-L09-S01 | CH14-L09 | concert-register-console | (캡스톤) F4→SM30 저장→원본 ZPERF/View ZV_PERF(5필드) 비교·마스터 삭제 시 inner-join 행 제거 | ✅ |
 | CH15-L01-S01 | CH15-L01 | event-lifecycle-buildup | 이벤트 5단계 빌드업(mermaid 흐름도+코드·hover 연결·stage1 classic) | ✅ |
@@ -128,12 +128,12 @@
 | CH15-L04-S01 | CH15-L04 | validation-gate-console | AT SELECTION-SCREEN 검증→MESSAGE(zmsg 001/002 &1&2·003)·sy-msg*·START-OF-SELECTION 잠금·전체 vs ON 필드 잠금 차이 | ✅ |
 | CH15-L05-S01 | CH15-L05 | select-start-gate | 검증 통과→START-OF-SELECTION SELECT(조건별 결과·sy-subrc·0건 S메시지)·검증 실패 잠금 | ✅ |
 | CH15-L06-S01 | CH15-L06 | legacy-event-reader | 리포트 3종(LDB연결/일반SELECT/END분리)으로 END-OF-SELECTION 호출·출력 위치 비교 독해·비-LDB 필수 오해 경고 | ✅ |
-| CH15-L07-S01 | CH15-L07 | dual-gate-auth-check | 공연코드 3종을 존재검증(SELECT SINGLE)→권한검증(AUTHORITY-CHECK) 이중관문에 통과·없는코드(amber)vs권한없음(red) 분리·sy-subrc | ✅ |
+| CH15-L07-S01 | CH15-L07 | dual-gate-auth-check | 공연코드 3종을 존재검증(SELECT SINGLE)→권한검증(AUTHORITY-CHECK) 이중관문에 통과·없는코드(amber)vs권한없음(red) 분리·sy-subrc — 공연 표시명 = 시드 정본(안유진 단독 콘서트·ABAP Trio 라이브) | ✅ |
 | CH15-L08-S01 | CH15-L08 | selscreen-reaction-lab | 선택화면 4대 고급 이벤트(ON BLOCK/RADIO/F1/F4) 직접 호출·dynpro(PAI/POH/POV)·ABAP이벤트·RADIO는 상세×31일 초과 실패 경로 재현·F4목록→PA_CARR 운반(다른필드 자동운반X) | ✅ |
 | CH15-L09-S01 | CH15-L09 | selscreen-layout-builder | 선택화면 미리보기에서 PUSHBUTTON/FUNCTION KEY→SSCRFIELDS-UCOMM(REF/FC01)·sy-ucomm 처리누락 경고·COMMENT FOR FIELD 연결약함 경고 | ✅ |
 | CH15-L10-S01 | CH15-L10 | option-switchboard | SELECT-OPTIONS 한 필드에 옵션(OBLIGATORY/LOWER CASE/NO-EXTENSION/NO INTERVALS) 토글→화면모양·selection table 행(SIGN/OPTION/LOW/HIGH)·다중 선택 창(줄 추가·NO INTERVALS여도 High 살아 있음) | ✅ |
 | CH15-L11-S01 | CH15-L11 | selscreen-call-variant | 보조화면(1100) CALL SELECTION-SCREEN modal·Execute=sy-subrc0(적용)/Cancel=4(미적용)·Variant 저장(현재 값·고급조건)→불러오기 복원(무효 무시) | ✅ |
-| CH15-L12-S01 | CH15-L12 | report-run-simulator | CH15 캡스톤·6시나리오×4이벤트(INIT→OUTPUT→검증→START) 흐름·통과/막힘·so_stat N/C 필터(기본 N)·결과테이블(seats)/S메시지/ALV | ✅ |
+| CH15-L12-S01 | CH15-L12 | report-run-simulator | CH15 캡스톤·6시나리오×4이벤트(INIT→OUTPUT→검증→START) 흐름·통과/막힘·so_stat N/C 필터(기본 N)·결과테이블(seats)/S메시지/ALV — 예매 6건 = CH09-L09 시드 정본 | ✅ |
 | CH16-L01-S01 | CH16-L01 | process-flow-pbo-pai | Module Pool 두 박자 순환(PBO→화면→입력→PAI→loop·다음박자 진행) | ✅ |
 | CH16-L02-S01 | CH16-L02 | screen-painter-wiring | Dynpro 4조각(Layout/Element List/Flow Logic/ABAP Source) 연결지도·시나리오로 깨기(MODULE 누락=활성화 오류 / 이름불일치·OK field 누락=실행 중 문제)·고장 유형 배지 | ✅ |
 | CH16-L06-S01 | CH16-L06 | pbo-prep-stepper | PBO 6단계 진행(PF-STATUS·TITLEBAR·LOOP AT SCREEN·MODIFY SCREEN·표시)·잠금 토글→GV_SEATS input=0 대기 vs MODIFY SCREEN 반영 체감 | ✅ |
@@ -464,7 +464,7 @@
 | fk-maintenance-gate (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH14-L04-S01 | FKM_CFG 주도 · FK 토글→유지보수 input check·orphan 시연·SM30 grid mock · 다크(toggle base=surface) |
 | sm30-gate-checklist (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH14-L05-S01 | SGC_CFG 주도 · 게이트(테이블/유지보수/TMG/권한) 체크→SM30 실행·파이프라인·결과 grid · 다크 |
 | view-cluster-tree (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH14-L06-S01 | VCT_CFG 주도(parentNoun·childNoun) · 상위(공연) 선택→하위(회차) 자동 좁힘·하위 추가(부모 맥락)·트리 카운트 · 다크 |
-| se16n-tracker (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH14-L07-S01 | SE16_CFG 주도 · SM30 저장→SE16N(table/조건 토글)·원본 vs View inner-join 차이·0건 단정금지 · 다크 |
+| se16n-tracker (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH14-L07-S01 | SE16_CFG 완전 주도(tables/rows/newRows/conds/status 전부 config — 엔진 하드코딩 0) · SM30 저장→SE16N(table/조건 토글)·원본 vs View inner-join 차이·0건 단정금지 · 다크 |
 | timeline-boundary (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH14-L08-S01 | TB_CFG 주도 · 지금/나중 경계 타임라인 카드·필터·나중 클릭→챕터 안내(R15 경계 시각화) · 다크 |
 | concert-register-console (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH14-L09-S01 | CRC_CFG 주도 · CH14 캡스톤 F4+SM30 저장+원본/View 비교+기준삭제 inner-join · 다크(btn base=surface) |
 | init-default-injector (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH15-L02-S01 | IDI_CFG 주도(defaultConc/userConc) · INITIALIZATION(1회 보존) vs OUTPUT(매번 덮어쓰기)·모드별 ① 안내 분기·header line→APPEND 조건표 · 다크 |

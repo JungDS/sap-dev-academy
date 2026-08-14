@@ -1,10 +1,14 @@
-/* se16n-tracker 엔진 — SM30으로 새 회차(C999)를 저장한 뒤 SE16N으로 확인. 조건(전체/Key/오타)과
-   대상(원본 테이블 vs Database View)에 따라 결과가 어떻게 달라지는지 보여 준다.
+/* se16n-tracker 엔진 — SM30 저장 → SE16N 확인. 저장 버튼이 대상별 newRows를 추가하고,
+   대상(원본 테이블 vs Database View)·조건 세그에 따라 조회 결과와 상태 메시지가 달라진다.
    골격 계약: [data-save] · .se16-tbl-seg · .se16-cond-seg · #se16Head · #se16Body · #se16Status · .se16-saved.
-   config: window.SE16_CFG = { zperf:[..], zvperf:[..], newRow:{}, cols:{ZPERF:[],ZV_PERF:[]} }. 높이: _autoheight.js. */
+   config: window.SE16_CFG = {
+     cols:{T:[{key,label}]}, tables:[{v,l}], rows:{T:[..]}, newRows:{T:{..}|없음},
+     saveLabel(버튼), savedLabel(저장 후 표기), condField, conds:[{v,l,match|null}],
+     status:[{table:'*'|T, cond:'*'|v, saved:'*'|bool, cls, html}] — 첫 일치 승, html의 {n}=건수 치환 }.
+   레슨 데이터·문구는 전부 config에(엔진 하드코딩 없음). 높이: _autoheight.js. */
 (function () {
   var CFG = window.SE16_CFG || {};
-  var saved = false, table = 'ZPERF', cond = 'all';
+  var saved = false, table = CFG.tables[0].v, cond = CFG.conds[0].v;
   var saveBtn = document.querySelector('[data-save]');
   var savedEl = document.querySelector('.se16-saved');
   var tblSeg = document.querySelector('.se16-tbl-seg');
@@ -16,50 +20,52 @@
   function esc(s) { return String(s).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); }
 
   function sourceRows() {
-    if (table === 'ZPERF') {
-      var rows = CFG.zperf.slice();
-      if (saved) rows = rows.concat([CFG.newRow]);
-      return rows;
-    }
-    return CFG.zvperf.slice();      // View는 C999 마스터가 없어 변동 없음
+    var rows = (CFG.rows[table] || []).slice();
+    if (saved && CFG.newRows && CFG.newRows[table]) rows.push(CFG.newRows[table]);
+    return rows;
+  }
+  function condObj() {
+    for (var i = 0; i < CFG.conds.length; i++) if (CFG.conds[i].v === cond) return CFG.conds[i];
+    return null;
   }
   function filtered() {
-    var rows = sourceRows();
-    if (cond === 'C999') rows = rows.filter(function (r) { return r.concert_id === 'C999'; });
-    else if (cond === 'C99') rows = rows.filter(function (r) { return r.concert_id === 'C99'; });
+    var rows = sourceRows(), co = condObj();
+    if (co && co.match != null) rows = rows.filter(function (r) { return r[CFG.condField] === co.match; });
     return rows;
   }
   function cols() { return CFG.cols[table]; }
+  function isNewRow(r) { return !!(saved && CFG.newRows && r === CFG.newRows[table]); }
+  function statusFor(n) {
+    var list = CFG.status || [];
+    for (var i = 0; i < list.length; i++) {
+      var s = list[i];
+      if ((s.table === '*' || s.table === table) && (s.cond === '*' || s.cond === cond) && (s.saved === '*' || s.saved === saved)) {
+        return { cls: s.cls || '', html: String(s.html).replace(/\{n\}/g, n) };
+      }
+    }
+    return { cls: '', html: n + '건.' };
+  }
 
-  function renderSeg(host, items, active, attr) {
+  function renderSeg(host, items, active) {
     host.innerHTML = items.map(function (it) {
       return '<button type="button" data-v="' + it.v + '" aria-pressed="' + (it.v === active ? 'true' : 'false') + '">' + esc(it.l) + '</button>';
     }).join('');
   }
   function render() {
     saveBtn.disabled = saved;
-    savedEl.textContent = saved ? '✓ ZPERF에 C999 001회차 저장됨' : '';
-    renderSeg(tblSeg, [{ v: 'ZPERF', l: 'ZPERF (원본)' }, { v: 'ZV_PERF', l: 'ZV_PERF (View)' }], table);
-    renderSeg(condSeg, [{ v: 'all', l: '전체' }, { v: 'C999', l: 'concert_id=C999' }, { v: 'C99', l: 'concert_id=C99 (오타)' }], cond);
+    savedEl.textContent = saved ? (CFG.savedLabel || '') : '';
+    renderSeg(tblSeg, CFG.tables, table);
+    renderSeg(condSeg, CFG.conds, cond);
     var cs = cols(), rows = filtered();
     headEl.innerHTML = cs.map(function (c) { return '<th>' + esc(c.label) + '</th>'; }).join('');
     bodyEl.innerHTML = rows.length
       ? rows.map(function (r) {
-        var isNew = saved && r.concert_id === 'C999' && table === 'ZPERF';
-        return '<tr class="' + (isNew ? 'new' : '') + '">' + cs.map(function (c) { return '<td>' + esc(r[c.key]) + '</td>'; }).join('') + '</tr>';
+        return '<tr class="' + (isNewRow(r) ? 'new' : '') + '">' + cs.map(function (c) { return '<td>' + esc(r[c.key]) + '</td>'; }).join('') + '</tr>';
       }).join('')
       : '<tr><td colspan="' + cs.length + '" class="se16-empty">0건</td></tr>';
-    renderStatus(rows.length);
-  }
-  function renderStatus(n) {
-    if (cond === 'C99') { statusEl.className = 'se16-status warn'; statusEl.innerHTML = '0건 — 조건 <b>C99</b>는 오타입니다. 0건을 보고 바로 "저장 실패"라 단정하지 마세요(오타·클라이언트·권한도 원인일 수 있음).'; return; }
-    if (table === 'ZV_PERF' && cond === 'C999') { statusEl.className = 'se16-status warn'; statusEl.innerHTML = '⚠️ View에는 <b>C999</b> 회차가 안 보입니다 — zconcert에 C999 마스터가 없어 <b>inner join</b>에서 빠졌기 때문. 원본 테이블 확인 ≠ View 확인.'; return; }
-    if (table === 'ZPERF' && cond === 'C999') {
-      if (saved) { statusEl.className = 'se16-status ok'; statusEl.innerHTML = '✅ 원본 <b>ZPERF</b>에서 C999 회차 저장을 확인했습니다. SM30 저장은 반드시 SE16N으로 재확인하세요.'; }
-      else { statusEl.className = 'se16-status'; statusEl.innerHTML = '먼저 위에서 <b>SM30에서 저장</b>을 눌러 보세요. 저장 전이라 0건입니다.'; }
-      return;
-    }
-    statusEl.className = 'se16-status'; statusEl.innerHTML = n + '건. 실무에서는 전체 조회보다 key·날짜 조건으로 좁히는 습관이 좋습니다.';
+    var st = statusFor(rows.length);
+    statusEl.className = 'se16-status' + (st.cls ? ' ' + st.cls : '');
+    statusEl.innerHTML = st.html;
   }
 
   saveBtn.addEventListener('click', function () { saved = true; render(); });

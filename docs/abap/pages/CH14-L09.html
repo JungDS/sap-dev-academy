@@ -63,7 +63,7 @@
 </tr>
 <tr>
 <td><code>ZV_PERF</code></td>
-<td>회차에 공연 정보를 붙인 Database View(5필드)</td>
+<td>회차에 공연 정보를 붙인 Database View(업무 5필드)</td>
 <td><a href="CH14-L01.html">Chapter 14 · Database View</a></td>
 </tr>
 <tr>
@@ -117,7 +117,8 @@
 적었다. 실제 리포트에서는 <strong>읽을 필드를 밝혀 적는 쪽이 기본</strong>이라 그렇다. 필드를 나열해
 읽을 때는 담는 그릇의 필드 순서에 의존하지 않도록 <strong>이름끼리 맞춰 담는</strong>
 <code>INTO CORRESPONDING FIELDS OF TABLE</code>을 쓴다(<a href="CH13-L01.html">Chapter 13 · JOIN</a>에서 쓰던 그 형태다).
-위 다섯 필드가 <code>ZV_PERF</code>의 전부이니 결과는 <code>SELECT *</code>와 같다.</p>
+위 다섯이 <code>ZV_PERF</code>의 업무 필드 전부라 결과 내용은 <code>SELECT *</code>와 사실상 같다
+(<code>SELECT *</code>는 첫 필드인 client 구분 <code>MANDT</code>까지 함께 담는다는 차이만 있다).</p>
 </blockquote>
 </section><section class="lblock"><h2>공연 등록 콘솔</h2>
 <p>F4로 공연을 고르고 회차를 저장한 뒤, 원본 테이블(<code>ZPERF</code>)과 View(<code>ZV_PERF</code>)에서 각각
@@ -139,8 +140,11 @@ SE16N으로 딸린 회차가 있는지 먼저 확인하는 습관을 들이자.<
 <p><strong>실패 경로</strong> — 목록에 없는 <code>concert_id</code>를 직접 입력해 본다. 여기서 둘의 역할을 나눠
 보자. <strong>F4</strong>는 값을 고르도록 돕는 도움말일 뿐 잘못된 입력을 막는 장치가 아니다. 틀린 값을
 걸러 내는 건 <strong>Foreign Key의 input check</strong>다
-(<a href="CH14-L04.html">Chapter 14 · Maintenance View와 Foreign Key</a>). 저장할 때 어떤 메시지가
-나오는지 확인하고, 이어서 공연 마스터가 없으면 inner join View에서 행이 사라지는지 관찰한다.</p>
+(<a href="CH14-L04.html">Chapter 14 · Maintenance View와 Foreign Key</a>). 저장하려 할 때 어떤
+메시지로 <strong>막히는지</strong>, 그리고 막힌 값이 원본 <code>ZPERF</code>에도 View에도 <strong>아예 생기지 않았는지</strong>
+확인한다. 공연 마스터가 없는 회차 행이 View에서 사라지는 장면은 화면 입력으로는 만들 수
+없다(input check가 먼저 막는다). 그 관찰은 위 콘솔에서 마스터를 지워 고아 행을 만들었을
+때 이미 했다.</p>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
 <li><strong>TMG 미생성</strong> → SM30이 &quot;유지보수가 정의되어 있지 않다&quot;는 취지의 메시지를 낸다(테이블이

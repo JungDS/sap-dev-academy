@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <!-- CH14-L07-S01 — 엔진: se16n-tracker · _autoheight. 콘텐츠=레슨 전용(SM30 저장→SE16N 확인, CH14 L07).
-     config=window.SE16_CFG. 게이팅: classic SE16N(Data Browser)·원본 vs View 개념만 · CDS/modern/운영편집 없음. -->
+     config=window.SE16_CFG. 게이팅: classic SE16N(Data Browser)·원본 vs View·FK input check(CH14-L04)·고아 행 개념만 · CDS/modern/운영편집 없음.
+     시나리오: SM30 저장은 FK input check를 통과하는 정상 건(C002 002회차) · 원본↔View 차이는 화면 밖 경로로 생긴 고아 행(C999)으로 체험(L04와 정합). -->
 <html lang="ko" data-eng="se16n-tracker">
 <head>
 <meta charset="utf-8" />
@@ -12,10 +13,10 @@
 <body>
 <div class="wrap">
   <p class="hd">저장 후 추적기 <small>(SM30 저장 → SE16N 확인)</small></p>
-  <p class="lead"><code>SM30</code>으로 새 회차를 저장한 뒤 <code>SE16N</code>으로 확인합니다. 대상(원본 테이블 / View)과 조건을 바꿔, 저장 결과와 <b>원본 vs View 차이</b>를 직접 보세요.</p>
+  <p class="lead"><code>SM30</code>으로 새 회차(<code>C002</code> 002회차)를 저장한 뒤 <code>SE16N</code>으로 확인합니다. 공연 마스터에 있는 <code>C002</code>라 <b>Foreign Key input check를 통과</b>해 저장됩니다. 그리고 원본 <code>ZPERF</code>에는 <b>화면 밖 경로로 생긴 고아 행</b>(<code>C999</code>)이 하나 섞여 있습니다. 대상(원본 테이블 / View)과 조건을 바꿔, 저장 결과와 <b>원본 vs View 차이</b>를 직접 보세요.</p>
 
   <div class="se16-save">
-    <button class="se16-savebtn" type="button" data-save>▶ SM30에서 C999 001회차 저장</button>
+    <button class="se16-savebtn" type="button" data-save>▶ SM30에서 C002 002회차 저장</button>
     <span class="se16-saved"></span>
   </div>
 
@@ -29,7 +30,7 @@
 
   <div class="se16-status" id="se16Status"></div>
 
-  <div class="note"><b>SE16N은 확인용.</b> 빠른 조회·점검 도구일 뿐, 정식 입력 화면은 SM30·전용 프로그램입니다. 0건이라고 바로 "저장 실패"로 단정하지 말고 조건·클라이언트·권한을 보세요. 원본 테이블과 View는 같은 질문이 아닙니다(View는 결합 조건에 따라 행이 달라짐).</div>
+  <div class="note"><b>SE16N은 확인용.</b> 빠른 조회·점검 도구일 뿐, 정식 입력 화면은 SM30·전용 프로그램입니다. 0건이라고 바로 "저장 실패"로 단정하지 말고 조건·클라이언트·권한을 보세요. 원본 테이블과 View는 같은 질문이 아닙니다(View는 결합 조건에 따라 행이 달라짐). 참고: <code>C999</code>처럼 마스터에 없는 코드는 SM30에서는 <b>FK input check가 막습니다</b> — 위 고아 행은 검사를 안 거치는 화면 밖 경로로 생긴 것입니다.</div>
 </div>
 
 <script>
@@ -38,16 +39,42 @@ window.SE16_CFG = {
     ZPERF: [{ key: 'concert_id', label: 'concert_id' }, { key: 'perf_no', label: 'perf_no' }, { key: 'perf_date', label: 'perf_date' }],
     ZV_PERF: [{ key: 'concert_id', label: 'concert_id' }, { key: 'perf_no', label: 'perf_no' }, { key: 'artist', label: 'artist' }]
   },
-  zperf: [
-    { concert_id: 'C001', perf_no: '001', perf_date: '2026-07-01' },
-    { concert_id: 'C001', perf_no: '002', perf_date: '2026-07-02' },
-    { concert_id: 'C002', perf_no: '001', perf_date: '2026-07-03' }
+  tables: [{ v: 'ZPERF', l: 'ZPERF (원본)' }, { v: 'ZV_PERF', l: 'ZV_PERF (View)' }],
+  rows: {
+    ZPERF: [
+      { concert_id: 'C001', perf_no: '001', perf_date: '2026-11-14' },
+      { concert_id: 'C001', perf_no: '002', perf_date: '2026-11-15' },
+      { concert_id: 'C002', perf_no: '001', perf_date: '2026-12-05' },
+      { concert_id: 'C999', perf_no: '001', perf_date: '2026-12-24' }
+    ],
+    ZV_PERF: [
+      { concert_id: 'C001', perf_no: '001', artist: '안유진' },
+      { concert_id: 'C001', perf_no: '002', artist: '안유진' },
+      { concert_id: 'C002', perf_no: '001', artist: 'ABAP Trio' }
+    ]
+  },
+  newRows: {
+    ZPERF: { concert_id: 'C002', perf_no: '002', perf_date: '2026-12-06' },
+    ZV_PERF: { concert_id: 'C002', perf_no: '002', artist: 'ABAP Trio' }
+  },
+  savedLabel: '✓ ZPERF에 C002 002회차 저장됨 (FK input check 통과)',
+  condField: 'concert_id',
+  conds: [
+    { v: 'all', l: '전체', match: null },
+    { v: 'C002', l: 'concert_id=C002', match: 'C002' },
+    { v: 'C999', l: 'concert_id=C999 (고아)', match: 'C999' },
+    { v: 'C02', l: 'concert_id=C02 (오타)', match: 'C02' }
   ],
-  newRow: { concert_id: 'C999', perf_no: '001', perf_date: '2026-07-09' },
-  zvperf: [
-    { concert_id: 'C001', perf_no: '001', artist: '안유진' },
-    { concert_id: 'C001', perf_no: '002', artist: '안유진' },
-    { concert_id: 'C002', perf_no: '001', artist: 'ABAP Trio' }
+  status: [
+    { table: '*', cond: 'C02', saved: '*', cls: 'warn', html: '0건 — 조건 <b>C02</b>는 오타입니다. 0건을 보고 바로 "저장 실패"라 단정하지 마세요(오타·클라이언트·권한도 원인일 수 있음).' },
+    { table: 'ZPERF', cond: 'C002', saved: false, cls: '', html: '{n}건 — 아직 001회차뿐입니다. 위에서 <b>SM30 저장</b>을 눌러 002회차를 추가해 보세요.' },
+    { table: 'ZPERF', cond: 'C002', saved: true, cls: 'ok', html: '✅ 원본 <b>ZPERF</b>에서 새 002회차를 확인했습니다({n}건). SM30 저장은 SE16N으로 재확인하는 습관을 들이세요.' },
+    { table: 'ZV_PERF', cond: 'C002', saved: false, cls: '', html: '{n}건 — View에도 아직 001회차뿐입니다.' },
+    { table: 'ZV_PERF', cond: 'C002', saved: true, cls: 'ok', html: '✅ View에도 새 002회차가 바로 보입니다({n}건). Database View는 복사본이 아니라 <b>결합 결과</b>라, 원본에 실리고 마스터가 있으면 함께 나타납니다.' },
+    { table: 'ZPERF', cond: 'C999', saved: '*', cls: 'warn', html: '⚠️ 원본에는 <b>C999</b> 회차가 {n}건 있습니다 — 화면 밖 경로로 생긴 <b>고아 행</b>입니다. SM30이었다면 FK input check가 막았을 값입니다.' },
+    { table: 'ZV_PERF', cond: 'C999', saved: '*', cls: 'warn', html: '⚠️ View에는 <b>C999</b> 회차가 안 보입니다 — zconcert에 C999 마스터가 없어 <b>inner join</b>에서 빠졌기 때문. 원본 테이블 확인 ≠ View 확인.' },
+    { table: 'ZPERF', cond: 'all', saved: '*', cls: '', html: '{n}건. 이 중 C999는 화면 밖 경로로 생긴 고아 행입니다. 실무에서는 전체 조회보다 key·날짜 조건으로 좁히는 습관이 좋습니다.' },
+    { table: 'ZV_PERF', cond: 'all', saved: '*', cls: '', html: '{n}건 — 원본보다 한 건 적습니다. 마스터 없는 C999 고아 행이 inner join에서 빠졌기 때문입니다.' }
   ]
 };
 </script>

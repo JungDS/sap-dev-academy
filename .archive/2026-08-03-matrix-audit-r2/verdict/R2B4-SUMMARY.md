@@ -70,8 +70,22 @@ R1 핵심 채택(결과 itab 선언·NULL 정의·pa_adv 개명·gv_locked·상�
 | CH15 | 보강 권장 | **경미 수정(필수 1)** | 권한 재검사 회수 + 정밀화(명목 치명은 전부 재발 오판) |
 | CH16 | 보강 권장 | **경미 수정(필수 1)** | 캡스톤 AT EXIT-COMMAND 반영 |
 
-## 5. 사용자 결정 대기
+## 5. 사용자 결정 (확정)
 
-1. **수정 착수 범위** — §3 전체(1～10) 일괄 교정 vs 필수(1～8)만 vs 보류.
-   (착수 시 conflict 2건은 코퍼스 확정해 포함 — 애매하면 사용자 경유.)
+1. **수정 착수 범위** — 사용자 확정(2026-08-15): **§3 전체(1～10) 일괄 교정.**
 2. 규칙 개정급 쟁점 없음. (배치 4에서 이월된 `go_`/`lo_` R11 등재 확인 요청은 여전히 대기.)
+
+## 6. 이행 부기 (2026-08-15 — §5 확정 후 일괄 이행 완료)
+
+**작업자 4(본문 A/B/C·위젯 W) 전량 완료.** 최종 빌드 통과(패리티 0·270페이지)·게이팅 관문 0(STRUCT/PREREQ/R6)·무단 수정 0(diff 실사 = 지정 범위 일치)·기각 앵커 바이트 보존 실측(⑱ `b~status <> 'C'`·C009 L04:81).
+
+- **conflict 3건 전부 코퍼스 확정**(에스컬레이션 0):
+  - C014-C001 **채택** — abenddic_database_views.htm "client dependency … determined by a column with the built-in dictionary type CLNT. This column must be the first column of the view."(Projection View도 동일 — abenddic_projection_views.htm). L01 "다섯" 단정 정정 + L09 전파분 정합.
+  - CH14-C009 **기각(무수정)** — abenddic_maintenance_views.htm: secondary가 FK 테이블이라도 FK 필드가 그 테이블의 키면 허용 → ZCONCERT+ZPERF 합법.
+  - CH13-C015 **채택** — abensql_agg_func.htm Variant 13·14 "The two spellings have the same meaning" + abenabap_words.htm 예약어 등재: **`COUNT(*)`만 붙여쓰기 별도 허용**, 그 외 집계 괄호 공백은 문법 요구. "습관" 콜아웃을 이 사실로 재작성(AG03-gemini의 "COUNT(*)도 오류" 측은 기각).
+- **본문 A(CH13)**: C003·C004(FK 비강제·키 초기값 전제 명시)·C005(집계 NULL 순서)·C006(READ TABLE 순차 탐색 비용 — SORT+BINARY SEARCH·SORTED/HASHED 전부 CH06 기도입 실측, R15 무위반)·C007(SUM NULL→0 회수)·C015. 6/6.
+- **본문 B(CH14)**: C001～C008 적용(C003은 코퍼스 명문 "All key fields of the primary table must be included…" 인용). **연장 채택 2**(관례 ⑯ 재적용): ① **Maintenance View = inner join 교정**(L04 콜아웃 "outer가 맞다" 폐기 + L08 표 — abenddic_maintenance_views.htm "A maintenance view implements an inner join." / outer 보존은 Help View 성질) ② L01 챕터 지도 3:1 → L08 확정 축(2:2, "프로그램이 읽는가") 정합.
+- **본문 C**: CH15-C004 — L12 START-OF-SELECTION에 AUTHORITY-CHECK 재검사 정식 반영(+왜 S+RETURN인지 콜아웃 — abenabap_messages_types.htm "E/W는 대화 처리 전용" 근거). CH16-C001 — L10 Flow Logic `MODULE exit_0100 AT EXIT-COMMAND.` + 모듈 신설·user_command 나가기 분기 제거(dynpmodule.htm Addition 1 근거)·검증 시나리오/흔한 실수 정합.
+- **위젯 W**: CH13-L08-S01 예매 데이터를 본문·CH09-L09 시드로 교체(실측 C001=8·C002=4·C003=0, INNER 토글 정상). CH14-L07-S01 'C999 저장 성공' 시나리오 폐기 → FK 통과 정상 저장 + 화면 밖 고아 행 관찰 2축 재구성(+se16n-tracker 엔진 cfg 완전 주도화 — 단일 사용 엔진 grep 확인, 회귀 0). CH15-L07-S01·CH15-L12-S01 시드 정본화(승인 백로그 소화 — 본문 충돌 없음 확인). 전 위젯 브라우저 실측 콘솔 0.
+- **본선 지시 오기 적발(관례 ⑰ 재발)**: 발사 문구의 시드 "0002 손흥민 4석"·"본문 C001=14"가 저장소 정본(CH09-L09 표 = 1석)과 불일치 — 작업자 W가 계약(본문=정본)대로 1석 채택. 옳음.
+- **잔여 백로그(미수정)**: ① CH15-L12 CATCH 블록 E 메시지(list processing 맥락 — 신설 콜아웃과 긴장) ② CH15-L12 so_stat 'C' 필터가 시드 정본상 0건 경로가 됨(취소 체험을 목록으로 원하면 시드 차원 결정 필요).
