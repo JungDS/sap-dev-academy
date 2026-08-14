@@ -1,0 +1,93 @@
+{
+  "agent": "AG01",
+  "model": "sonnet",
+  "target": "CH16",
+  "persona_ack": "은서(24세, 비전공 입문자, 노션·인스타에 익숙, 모르는 단어가 나오면 그 자리에서 멈추는 성격) 페르소나로 CH16 대상 파일 11개(_chapter.md + CH16-L01~L10)를 처음 읽는 사람으로서 L01부터 순서대로 통독하며, 스스로 채우지 않고 막힌 지점·생략·단절·과부하를 기록했다.",
+  "method": "외부 도구·빌드 없이 대상 11개 파일을 순서대로 정독. 각 지점에서 그 자리 또는 같은 챕터 앞 레슨에 설명 근거가 있는지 대조해, 근거 없이 등장하는 용어·코드·전제만 기록(다른 챕터 지식으로 임의로 빈틈을 메우지 않음).",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L10.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH16-L06.md",
+      "quote": "`LOOP AT SCREEN`으로 하나씩 돌며 고친다.",
+      "category": "단절",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "LOOP AT SCREEN의 SCREEN이 무엇인지(선언 없이 시스템이 자동으로 채워 두는 특별한 표) 이 시점엔 설명이 없어, 지금까지 배운 'LOOP AT gt_xxx'(직접 DATA로 선언한 테이블만 순회)와 뭐가 다른지 바로 이해되지 않았다.",
+      "evidence": "이 문장 바로 뒤 코드에서 DATA로 gs_screen만 선언하고 SCREEN 자체는 선언 없이 곧장 LOOP AT SCREEN INTO gs_screen.으로 쓴다. SCREEN이 시스템이 화면마다 자동으로 만들어 두는 구조라는 설명은 몇 문단 뒤 📌 콜아웃(짧은 표기법을 다루는 대목)에만 곁다리로 나와, 코드를 처음 읽는 순간에는 SCREEN이 어디서 온 표인지 근거가 없었다.",
+      "suggestion": "LOOP AT SCREEN 코드 블록 바로 앞이나 직후에 'SCREEN은 우리가 선언하지 않아도 시스템이 화면마다 자동으로 채워 주는 특별한 표'라는 한 줄을 먼저 넣는다."
+    },
+    {
+      "seq": 2,
+      "file": "CH16-L07.md",
+      "quote": "걸려 있으면, 사용자가 칸을 비운 채 **뒤로** 버튼을 눌러도 \"값을 입력하세요\" 오류만 뜬다.",
+      "category": "생략",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "AT EXIT-COMMAND가 필요한 이유로 든 '필수입력 칸'과 'DDIC 필드의 자동 검사가 PAI 모듈보다 먼저 돈다'는 전제가 CH16 어디에서도 미리 설명되지 않아, 왜 이런 일이 생기는지 근거를 찾을 수 없었다.",
+      "evidence": "L01~L06을 다시 봐도 화면 요소를 '필수입력'으로 지정하는 방법이나(L02 Element List는 이름·타입·길이·OK field만 언급), DDIC 필드에 값 검사가 PAI보다 먼저 자동으로 걸린다는 설명(L04는 라벨·F4만 언급)이 없다. 그런데 이 문장은 그 동작을 이미 아는 사실처럼 전제하고 넘어간다.",
+      "suggestion": "'필수입력'을 켜는 위치(Element List)와 'DDIC 필드 자동 검사가 PAI 전에 실행된다'는 Dynpro 런타임 동작을 한두 문장으로 먼저 짚어준 뒤 AT EXIT-COMMAND 필요성으로 넘어간다."
+    },
+    {
+      "seq": 3,
+      "file": "CH16-L09.md",
+      "quote": "tab_main-activetab = ok_code.",
+      "category": "멈춘 곳",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "바로 앞 레슨(L07)에서 'PAI 처음에 OK_CODE를 save_ok로 복사한 뒤 바로 CLEAR하고 save_ok로 분기하는 것'을 공식 권장 패턴이라고 배웠는데, Tabstrip의 tab_command_0100 모듈은 save_ok도 CLEAR도 없이 ok_code를 그대로 CASE에 쓴다. 방금 외운 안전 규칙을 잘못 이해한 건지 헷갈려 다시 앞으로 돌아가 확인했다.",
+      "evidence": "L07 '안전한 분기 — save_ok 패턴' 절은 이 패턴을 '공식 권장 패턴'이라 명시했다. 그런데 L09의 MODULE tab_command_0100 INPUT.은 CASE ok_code.로 곧장 분기하고 CLEAR ok_code나 save_ok 복사가 전혀 없다. 왜 이 예제만 다른 방식을 쓰는지 본문 어디에도 언급이 없다.",
+      "suggestion": "Tabstrip 예제도 save_ok 패턴을 따르게 하거나, 따르지 않아도 되는 이유(예: 탭 전환은 반복 실행돼도 무해함)를 한 줄로 밝혀 둔다."
+    },
+    {
+      "seq": 4,
+      "file": "CH16-L09.md",
+      "quote": "`icon_red_light` 같은 아이콘 이름은 SAP이 미리 만들어 둔 상수다(타입 그룹 `ICON`).",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'타입 그룹'이라는 말이 이 챕터에서 여기와 L03(VRM 관련 콜아웃) 두 번 나오는데, 두 곳 다 이미 아는 용어처럼 괄호로만 스쳐 지나가 '타입 그룹'이 정확히 뭘 묶는 것인지 끝까지 알 수 없었다.",
+      "evidence": "L03 🧯 콜아웃도 'vrm_values는 VRM 타입 그룹에 들어 있는 타입'이라고만 하고, 여기서도 '타입 그룹 ICON'이라고만 한다. 둘 다 [[용어]] 표시나 한 줄 풀이 없이 괄호 안에서 끝난다.",
+      "suggestion": "타입 그룹(관련 타입·상수를 묶어 둔 DDIC 오브젝트)이라는 정의를 처음 등장하는 자리(L03)에 한 줄 풀이로 추가하거나 glossary 용어로 등록한다."
+    },
+    {
+      "seq": 5,
+      "file": "CH16-L09.md",
+      "quote": "이 레슨은 화면 안에 **무엇을 얹을 자리**를 만드는 요소들을 다룬다.",
+      "category": "과부하",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "이 레슨 하나에 Custom Control/Container, Subscreen, Tabstrip, Status Icon 네 가지 서로 다른 구조가 각자의 코드 블록과 함께 연달아 나와서, 앞 구조를 소화하기 전에 다음 구조 설명이 시작되는 느낌이었다.",
+      "evidence": "도입부 표에서 5개 요소(Custom Control·Container·Tabstrip·Subscreen Area·Status Icon)를 한 번에 나열한 뒤 각각 별도 코드 블록으로 이어진다. 다른 레슨은 보통 핵심 개념 1~2개에 집중했는데(L06=PBO/LOOP AT SCREEN, L07=PAI/OK_CODE), 이 레슨만 서로 다른 네 화면 구성 요소를 한 호흡에 다룬다. [선행 사용] 태그로 각각을 블랙박스 처리해 주긴 하지만, 개수 자체가 많아 끝까지 읽고 나니 어느 게 어느 코드였는지 헷갈렸다.",
+      "suggestion": "Custom Control/Container와 Subscreen/Tabstrip을 별도 레슨으로 나누거나, 레슨 중간에 '여기까지 1부' 같은 정리 지점을 넣어 호흡을 끊어준다."
+    },
+    {
+      "seq": 6,
+      "file": "CH16-L10.md",
+      "quote": "**Module Pool 만들기** — `SE80` → Repository Browser에서 Program을 고르고 이름",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "SE80에서 Module Pool을 만드는 8단계 절차가 전부 글로만 설명되고 화면 캡처나 체험이 없어서, Screen Painter를 본 적 없는 완전 입문자는 각 단계가 실제로 어떤 화면인지 상상하기 어려울 수 있다.",
+      "evidence": "L10 '만들기 절차' 1~8단계는 'Repository Browser에서 Program을 고르고...' 식 텍스트 지시만 있다. 이 레슨의 임베드(S01)는 PBO/PAI 동작을 보여주는 시뮬레이터일 뿐 SE80/Screen Painter 화면 자체를 보여주지 않아, 절차 단계와 짝지어 볼 그림이 없다.",
+      "suggestion": "8단계 절차에 SE80/Screen Painter 화면 캡처나 간단한 다이어그램을 곁들이면 실제 작업 이미지가 잡힌다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "PBO/PAI 두 박자를 챕터 내내 반복 강조하고 [선행 사용]/L1 예고 태그로 미래 개념(TYPE REF TO, CONTROLS TABSTRIP 등)을 정직하게 유보해, 완전 입문자도 큰 흐름은 놓치지 않고 끝까지 따라갈 수 있는 구조였다. 특히 L05에서 '화면값은 PAI에서 들어온다고 배웠는데 왜 DYNP_VALUES_READ 함수까지 필요할까?'처럼 막 떠오르는 의문을 그 자리에서 먼저 짚고 풀어주는 콜아웃이 인상적이었다. 다만 L06 LOOP AT SCREEN의 SCREEN 출처, L07 AT EXIT-COMMAND 도입부가 전제하는 '필수입력/DDIC 자동검사', L09 Tabstrip 예제가 L07의 save_ok 공식 패턴을 안 따르는 점, '타입 그룹' 미정의, L09의 개념 밀도, L10 SE80 절차의 시각자료 부재에서 몇 차례 멈췄다. 모두 국지적 보강으로 해결 가능해 보이며 챕터를 다시 쓸 필요까지는 없어 보인다."
+  }
+}

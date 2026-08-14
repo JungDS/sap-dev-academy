@@ -1,0 +1,60 @@
+{
+  "agent": "AG03",
+  "model": "sonnet",
+  "target": "CH16",
+  "persona_ack": "타 언어(Java/C# 계열) 백엔드 3～5년차 개발자 — 변수·조건문·루프·SQL·OOP 기본기는 이미 알고, ABAP을 빠르게 훑어 익히려고 이 사이트를 읽는다는 페르소나를 인지했다. 1차 독자는 비전공 입문자라는 전제 아래, '입문자에게도 불필요한 장황함'만 높음 이상으로 채점하고 '입문자에겐 필요하나 경력자만 아는 내용'은 낮음/suggestion으로 낮춰 평가했다.",
+  "method": "대상 11개 파일(_chapter.md, CH16-L01~L10.md) 전체를 Read 도구로 통독. 과제 4축(과잉·오개념 유발·지름길 부재·용어 충돌)을 레슨마다 교차 점검하고, 본문에 이미 있는 경력자 배려 문구(스킵 안내·용어 대조 등)와 겹치지 않는 지점만 finding으로 추렸다. 웹 검색·빌드·정적 분석 도구는 쓰지 않았다(제약 준수, 지식만으로 판단).",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L10.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH16-L09.md",
+      "quote": "화면에 Custom Control 영역(`CONT100`)을 두고, 거기에 [[Custom Container]] 객체를 연결한다.",
+      "category": "용어 충돌",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "'Container'는 Java/.NET 생태계에서 DI 컨테이너(Spring/.NET DI)나 Docker 컨테이너를 먼저 떠올리게 하는 과적재된 단어인데, Custom Container가 그것과 무관한 '화면 영역-컨트롤 연결 래퍼 객체'라는 점을 이 레슨은 짚어 주지 않는다.",
+      "evidence": "같은 챕터의 L02는 'MODULE은 모듈이 아니다'(패키지·라이브러리와 다르다)를, L03은 'Text Field'·'Frame'이 다른 개발 환경과 다르다는 점을 각각 인라인 대조 문구로 명시했다. 반면 CH16-L09의 Custom Container는 그런 대조 없이 바로 코드로 들어간다. 경력자가 통독 중 순간 DI/Docker 컨테이너를 연상할 수 있다(코드를 보면 곧 풀리는 짧은 혼동).",
+      "suggestion": "L02/L03과 같은 방식으로 'Custom Container는 DI 컨테이너나 Docker 컨테이너와 무관한, 화면 영역에 control 객체를 붙이는 SAP GUI 전용 래퍼'라는 한 줄 대조를 첫 등장 시 추가."
+    },
+    {
+      "seq": 2,
+      "file": "CH16-L05.md",
+      "quote": "## 그래도 직접 만들어야 한다면",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "이 절부터 F1 절 직전까지 약 150줄에 걸쳐 DYNP_VALUES_READ·F4IF_INT_TABLE_VALUE_REQUEST 같은 낯선 함수 호출을 파라미터 단위로 상세히 설명하는데, 이 구간에 들어가기 전에는 '지금 급하면 통째로 건너뛰어도 된다'는 안내가 없다. 같은 취지의 안내는 코드가 끝난 뒤에야 나온다('지금 이 코드를 통째로 외울 필요는 없다…').",
+      "evidence": "바로 위 표에서 이미 이 방법을 '최후수단'으로 규정했으므로, 통독하는 경력자 상당수가 '지금 당장은 필요 없다'고 판단해 건너뛸 만한 구간이다. 그런데 건너뛰어도 된다는 명시적 신호는 코드 블록이 다 끝난 뒤에야 등장해, 통독 중에는 이미 전체를 다 읽고 나서야 그 사실을 알게 된다.",
+      "suggestion": "'## 그래도 직접 만들어야 한다면' 절 시작 부분에 'DDIC Search Help로 충분하다면 이 절은 건너뛰고 정리로 가도 된다'는 한 줄을 미리 배치."
+    },
+    {
+      "seq": 3,
+      "file": "CH16-L04.md",
+      "quote": "## 이름이 같으면 자동으로 나른다",
+      "category": "오개념 유발",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "화면 요소 ↔ 프로그램 변수/work area의 값 운반 조건을 L02·L04 모두 시종 '이름 일치'로만 설명하고, 타입·길이 호환이 왜/어떻게 관여하는지는 언급하지 않는다. 컴파일 타임 타입 체크나 스키마 검증에 익숙한 경력자는 '이름만 같으면 끝'이라는 단순화를 문자 그대로 받아들이기 쉽고, 실제로는 화면 필드와 프로그램 변수의 타입·길이가 어긋나면 활성화 경고나 값 잘림이 날 수 있다는 점을 놓칠 수 있다.",
+      "evidence": "L02 '흔한 실수' 표와 L04 '흔한 실수' 목록 모두 '요소 이름 ≠ 변수 이름'만 실수 사례로 들고, CH16 10개 레슨 전체에서 타입·길이 불일치 사례는 등장하지 않는다.",
+      "suggestion": "이름 일치 설명 옆에 '타입·길이도 호환돼야 값이 온전히 전달된다(다르면 활성화 경고 또는 값 잘림)'는 한 줄을 흔한 실수 목록에 추가."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "경력자(Java/C# 백엔드 3～5년차) 관점에서 CH16 전체(_chapter + L01～L10)를 통독했다. 이 챕터는 이미 이런 독자를 상당히 배려하고 있다 — L01의 Swing/WPF 대응 스킵 허용 문구, L02의 'MODULE은 모듈이 아니다', L03의 Text Field/Frame 용어 대조, L04의 TABLES 재정의·이름불일치 주의, L09의 CREATE OBJECT 블랙박스 + OOP 대응 안내 등, 과제 1~4에 해당하는 배려가 곳곳에 선제적으로 들어가 있다. 그 결과 '입문자에게도 불필요한 장황함'(과잉) 사례는 찾지 못했다 — 설명 분량이 전부 ABAP/Dynpro 고유 개념에 쓰이고 있어 압축 여지가 뚜렷하지 않았다. 다만 낮은 심도의 보강 지점 세 가지를 발견했다: (1) L09 Custom Container가 DI/Docker 컨테이너와 용어 충돌 가능성이 있는데 L02/L03과 달리 대조 문구가 없음, (2) L05의 최후수단 F4 직접구현 코드(~150줄)가 시작 전이 아니라 끝난 뒤에야 '건너뛰어도 된다'는 안내를 주어 통독 중 지름길을 놓치기 쉬움, (3) L02/L04의 화면-변수 이름 일치 바인딩 설명이 타입·길이 호환 책임은 언급하지 않아 타입 안전 바인딩에 익숙한 경력자에게 '이름만 맞으면 안전하다'는 오해 여지가 있음. 셋 다 심도는 낮고, 베이스 콘텐츠의 구조적 재작업이 아니라 한두 문장 보강으로 해결 가능한 수준이다."
+  }
+}

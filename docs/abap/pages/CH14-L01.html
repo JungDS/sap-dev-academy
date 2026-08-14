@@ -47,8 +47,8 @@
 <p><button class="term" type="button" data-term="Database View">Database View</button>는 이 반복 조회 구조를 <strong>DDIC에 이름 붙여 등록</strong>하는 방법이다.</p>
 <blockquote>
 <p>🗺️ <strong>이 챕터의 지도 — 두 갈래.</strong> 앞의 네 레슨은 DDIC에 등록하는 <strong>View 네 종류</strong>를
-하나씩 본다. 세 개는 <strong>보여 주는 쪽</strong>(조회용 Database·필드를 줄이는 Projection·입력도움말용
-Help)이고, 하나는 <strong>고치는 쪽</strong>(유지보수용 Maintenance)이다. 그다음 레슨들은 그 유지보수
+하나씩 본다. 둘은 <strong>프로그램이 읽는 쪽</strong>(조회용 Database·필드를 줄이는 Projection)이고,
+둘은 <strong>화면 도구가 쓰는 쪽</strong>(입력도움말용 Help·유지보수용 Maintenance)이다. 그다음 레슨들은 그 유지보수
 관점에 <strong>실제 화면과 도구</strong>를 붙인다(입력 화면 자동 생성 → 여러 테이블 묶어 관리 → 빠른 조회
 브라우저). 마지막에 현대 도구와의 경계를 긋고, 공연 등록 실습으로 전부 이어 붙인다.</p>
 </blockquote>
@@ -64,7 +64,7 @@ Help)이고, 하나는 <strong>고치는 쪽</strong>(유지보수용 Maintenanc
 </blockquote>
 <h3>이 챕터가 쓸 View — <code>ZV_PERF</code></h3>
 <p>챕터 내내 쓸 View 하나를 먼저 정해 두자. 회차 <code>zperf</code>에 공연 마스터 <code>zconcert</code>를 붙인
-<code>ZV_PERF</code>다. <button class="term" type="button" data-term="JOIN">조인</button> 조건은 <code>concert_id</code>이고, View Field는 <strong>다섯</strong>이다.</p>
+<code>ZV_PERF</code>다. <button class="term" type="button" data-term="JOIN">조인</button> 조건은 <code>concert_id</code>이고, 우리가 고르는 업무 필드는 <strong>다섯</strong>이다.</p>
 <table>
 <thead>
 <tr>
@@ -99,8 +99,12 @@ Help)이고, 하나는 <strong>고치는 쪽</strong>(유지보수용 Maintenanc
 <td>공연장</td>
 </tr>
 </tbody></table>
-<p>회차만 있던 목록에 아티스트와 공연장이 함께 붙어 나온다. 이 다섯이 이 챕터가 계속
-전제하는 <code>ZV_PERF</code>의 구성이다. <a href="CH14-L09.html">실습 레슨</a>의 조회 코드도 이 구성을 그대로 읽는다.</p>
+<p>회차만 있던 목록에 아티스트와 공연장이 함께 붙어 나온다. 실제 SE11 화면에서는 여기에
+client 구분 필드 <code>MANDT</code>가 <strong>첫 View Field로 하나 더</strong> 들어가 모두 <strong>여섯</strong>이 보인다.
+테이블과 마찬가지로 View도 <code>CLNT</code> 타입 필드가 맨 앞에 있어야 클라이언트별로 데이터가
+갈리기 때문이다(<a href="CH08-L01.html">Chapter 8 · client 자동 종속</a>). 업무 필드 다섯에 <code>MANDT</code>를
+더한 이 구성이 이 챕터가 계속 전제하는 <code>ZV_PERF</code>다. <a href="CH14-L09.html">실습 레슨</a>의 조회
+코드도 이 구성을 그대로 읽는다.</p>
 <h3>직접 만들어 보기 (SE11)</h3>
 <ol>
 <li><code>SE11</code> → <strong>View</strong> 칸에 <code>ZV_PERF</code>를 넣고 Create → 종류는 <strong>Database view</strong>.
@@ -108,7 +112,8 @@ Help)이고, 하나는 <strong>고치는 쪽</strong>(유지보수용 Maintenanc
 <li><strong>Tables</strong> 칸에 <code>ZPERF</code>, <code>ZCONCERT</code> 순으로 적는다. 먼저 적은 쪽이 기준 테이블이다.</li>
 <li><strong>Relationships</strong> 버튼을 누른다. 두 테이블 사이에 이미 걸어 둔 <button class="term" type="button" data-term="Foreign Key">Foreign Key</button>
 (<a href="CH09-L09.html">Chapter 9 · 실습에서 건 그 관계</a>)를 찾아 조인 조건을 자동으로 채워 준다.</li>
-<li><strong>View Flds</strong> 탭에서 Table Fields 버튼으로 위 표의 다섯 필드를 고른다.</li>
+<li><strong>View Flds</strong> 탭에서 Table Fields 버튼으로 위 표의 다섯 필드를 고른다. 첫 필드
+<code>MANDT</code>는 SE11이 알아서 챙겨 준다(목록에 없다면 직접 첫 줄에 넣는다).</li>
 <li>저장하고 패키지를 지정한 뒤 <strong>활성화</strong>한다. 활성화해야 DB에 SQL View가 생겨 <code>SELECT</code>가 통한다.</li>
 </ol>
 <blockquote>

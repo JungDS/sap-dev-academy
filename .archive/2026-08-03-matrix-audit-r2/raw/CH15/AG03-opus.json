@@ -1,0 +1,128 @@
+{
+  "agent": "AG03",
+  "model": "opus",
+  "target": "CH15",
+  "persona_ack": "타 언어(Java/C#) 백엔드 3～5년차 개발자 시선으로 CH15(Report Event·Selection Screen 심화) 12개 레슨 + _chapter.md를 통독했다. 변수·조건·루프·SQL·OOP는 이미 아는 상태에서 (1) 과잉 설명, (2) 입문자용 단순화가 개발 상식과 어긋나 오히려 헷갈리는 지점, (3) 건너뛰기 안내가 아쉬운 지점, (4) 일반 개발 용어와 ABAP 용법이 갈리는데 그 차이를 안 짚은 지점을 찾았다. 이 사이트의 1독자가 비전공 입문자라는 점을 감안해, 입문자에게 필요한 친절은 감점하지 않고 낮음/제안으로만 남겼다.",
+  "method": "Read 도구로 대상 13개 파일 전문 통독(front-matter·본문·코드블록·표·콜아웃·details 포함). 레슨 간 상호 참조와 중복 서술을 수동 대조(L01 이벤트 표 ↔ L02～L06 개별 레슨, L04 검증 ↔ L07/L12 통합 예제, L09 버튼 처리 ↔ L04 AT SELECTION-SCREEN 실행 시점, L10 MEMORY ID ↔ L11 Variant ↔ L02 INITIALIZATION). 웹 검색·외부 네트워크·빌드 실행 없음. ABAP 런타임 동작은 내 지식으로만 판단했고 불확실한 건 confidence=추정으로 남겼다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L10.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L11.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L12.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L04.md",
+      "quote": "필드를 지정하지 않은 `AT SELECTION-SCREEN`은 **모든 입력이 들어온 뒤 마지막에 한 번**",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "`AT SELECTION-SCREEN`이 '프로그램 실행당 1회' 도는 것처럼 읽힌다. 실제로는 PAI가 도는 매 왕복마다(=사용자가 Enter를 치거나 버튼을 누를 때마다) 실행된다는 사실이 챕터 어디에도 없다.",
+      "evidence": "바로 앞 레슨 L03은 OUTPUT 쪽에 대해 '이 이벤트는 화면을 그릴 때마다(매 PBO) 실행된다'고 반복성을 명시하는데, PAI 쪽인 L04에는 대응하는 문장이 없고 표에도 '모든 입력 후 **마지막 1회**'라고만 적혀 있다. 그런데 L09는 버튼 처리 코드를 `AT SELECTION-SCREEN.`의 `CASE sscrfields-ucomm.`에 넣고, L07·L12는 같은 이벤트(ON pa_conc)에 `SELECT SINGLE` + `AUTHORITY-CHECK`를 넣는다. 이 셋을 합치면 '조건 새로고침' 버튼만 눌러도 DB 존재검증과 권한검사가 매번 돈다. 경력자는 '실행 시 1회 검증'을 전제로 코드를 짜므로 실제 동작(왕복마다 실행)과 어긋나고, 버튼을 눌렀을 뿐인데 검증 에러로 막히는 현상을 설명할 수 없다.",
+      "suggestion": "L04에 L03과 대칭되는 한 줄을 넣는다 — '이 이벤트는 실행뿐 아니라 Enter·버튼 클릭 등 화면이 서버에 다녀오는 매 왕복마다 실행된다.' 그리고 L07/L12처럼 DB 조회가 들어간 검증에는 '실행일 때만 검사하려면 `IF sscrfields-ucomm = ''ONLI''`로 감싼다' 정도의 실무 가드를 한 줄 덧붙이면 경력자·입문자 모두에게 도움이 된다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L07.md",
+      "quote": "| `4` | 권한이 등록돼 있긴 하지만 **지금 검사한 값**이 허용 범위 밖(필드를 잘못 적었거나 너무 많이 적은 경우도 포함) |",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "`AUTHORITY-CHECK`의 sy-subrc 표에서 '필드를 잘못 적었거나 너무 많이 적은 경우'를 4에 포함시켰는데, 이는 코딩 오류에 해당하는 별도 반환코드(필드 개수 오류·필드명 불일치)를 4로 뭉갠 서술이다. 표 바로 위에 '공식문서 기준'이라고 적혀 있어 오해가 더 굳는다.",
+      "evidence": "AUTHORITY-CHECK는 값 권한 없음(4)과 코딩 오류(지정 필드 개수 이상, 권한 객체의 필드명과 불일치)를 서로 다른 sy-subrc로 구분해 돌려준다. 경력자는 '권한이 없다'와 '내 코드가 틀렸다'를 갈라내려고 이 표를 보는데, 표대로면 4 하나로 두 원인이 섞여 디버깅 경로가 막힌다. 실제로 코딩 오류 상황에서는 4가 아닌 다른 값이 나오므로, 표를 믿고 '4니까 권한 문제겠지'라고 접근하면 원인을 영영 못 찾는다. 같은 레슨이 뒤에서 `SU53`·`ST01` 같은 정확한 진단 도구를 안내하고 있어 더 아깝다.",
+      "suggestion": "4 행은 '지금 검사한 값에 대한 권한 없음'으로만 남기고, 괄호의 코딩 오류 부분은 빼거나 별도 행/각주로 분리한다. 세부 코드까지 외우게 할 필요는 없으니 '0=통과, 4=권한 없음, 그 외 값=권한 객체·필드 지정이 잘못된 코딩 오류 신호' 정도의 3분류가 입문자에게도 경력자에게도 정확하다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L12.md",
+      "quote": "> 입력/존재/권한 검증=`AT SELECTION-SCREEN ON pa_conc`, 조회·표시=`START-OF-SELECTION`.",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L07이 '중요한 검사는 START-OF-SELECTION 첫머리에서 한 번 더'라고 안전 지침을 세워 놓고, 챕터의 정본 통합 예제인 L12는 권한 검사를 선택화면 이벤트에만 두고 재검사를 넣지 않는다. 게다가 L12의 '흔한 실수'는 '권한 검증을 조회 뒤로 미루지 않는다'고만 적어, 재검사 지침이 오히려 금지 사항처럼 읽힌다.",
+      "evidence": "L07 말미의 🛡️ 콜아웃은 '다른 프로그램이 이 리포트를 대신 실행하거나 밤중에 무인으로 도는 경로에서는 그 화면을 지나지 않을 수 있다'며 START-OF-SELECTION 첫머리 재검사를 권한다. 그런데 L12 통합 코드의 START-OF-SELECTION에는 `SELECT`와 SALV 표시만 있고 AUTHORITY-CHECK가 없다. 챕터 마지막 정리 코드블록도 'START-OF-SELECTION = 검증 후 본 처리(조회·표시)'로만 못 박는다. 학습자가 실무에서 복사해 갈 코드는 L07의 조각이 아니라 L12의 완성본이므로, 선택화면을 우회하는 실행 경로에서 권한 검사가 통째로 빠지는 형태가 정본으로 남는다. 보안 관련 지침이 같은 챕터 안에서 서로 어긋나는 건 경력자 눈에 가장 먼저 걸린다.",
+      "suggestion": "L12 통합 코드의 START-OF-SELECTION 첫머리에 AUTHORITY-CHECK 재검사(주석: '화면을 안 거치는 실행 대비')를 한 블록 추가하고, 흔한 실수 항목을 '권한 검증을 조회 뒤로만 미루지 않는다(선택화면에서 막고, 조회 직전에 한 번 더)'로 고쳐 L07과 표현을 맞춘다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L01.md",
+      "quote": "- 각 **이벤트 키워드 아래**에 그 시점 코드를 둔다.",
+      "category": "용어 충돌",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "ABAP의 '이벤트 블록'이 어디서 끝나는지, 그 안이 별도 스코프인지가 챕터 전체에 한 번도 안 나온다. '아래에 둔다'가 유일한 설명이라 경계가 모호하다.",
+      "evidence": "Java/C#의 event는 핸들러 등록 + 중괄호 스코프를 뜻한다. 반면 ABAP 이벤트 블록은 (1) `ENDIF`/`ENDLOOP` 같은 닫는 키워드가 없고 다음 이벤트 키워드가 나오는 순간 끝나며, (2) 블록 안에서 선언해도 변수는 프로그램 전역이다. L01은 '키워드가 곧 약속'으로 등록 문제만 풀어 주고 종료·스코프는 다루지 않는다. 실제로 L12 통합 코드는 네 개 이벤트 블록이 닫는 키워드 없이 연달아 붙어 있는데, 경력자는 '어디까지가 ③번 블록인가', '블록 안에서 DATA를 선언하면 지역변수인가'를 스스로 판단할 근거가 없다. L12가 모든 DATA를 맨 위에 몰아 선언한 이유(=전역이라서, R11의 `g` 접두어)도 이 규칙을 모르면 임의의 스타일로 보인다.",
+      "suggestion": "L01의 '각 이벤트 키워드 아래에 그 시점 코드를 둔다' 바로 밑에 두 줄 추가 — '블록을 닫는 키워드는 없다. 다음 이벤트 키워드가 나오면 그 앞에서 끝난다' + '블록 안에서 선언한 변수도 프로그램 전체에서 쓰이는 전역이다(그래서 이름이 `gv_`로 시작한다)'. 두 줄이면 입문자에게도 '어디까지가 이 이벤트인가'라는 실제 질문이 해소된다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L02.md",
+      "quote": "`INITIALIZATION`은 **1회**라 사용자가 화면에서 바꾼 값을 유지한다. 반면 매 화면마다 도는",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "INITIALIZATION의 무조건 대입과, 같은 칸을 자동으로 채우는 다른 장치(Variant·MEMORY ID) 사이의 우선순위 규칙이 챕터 어디에도 없다. 세 가지가 모두 '기본값을 채워 준다'고만 배우고 끝난다.",
+      "evidence": "L02는 `pa_date = sy-datum.`처럼 조건 없는 대입을 표준 패턴으로 가르친다. 그런데 L10은 MEMORY ID를 '그 사용자가 직전에 넣었던 값이 자동으로 채워질 수 있음'으로, L11은 Variant를 '다음 실행 때 Variant를 고르면 값이 자동으로 채워진다'로 소개한다. 셋이 같은 입력칸을 놓고 경합하는데 누가 이기는지는 어디에도 없고, L10 표의 'MEMORY ID보다 우선될 수 있음'이라는 hedge 한 줄이 전부다. 배치 잡을 Variant로 돌리는 얘기(L11 → CH38 링크)까지 나오는 챕터라, '왜 내가 저장한 Variant 값이 무시되지?'는 경력자가 실무 첫 주에 반드시 겪는 질문이다.",
+      "suggestion": "L02에 콜아웃 한 개를 추가한다 — 'INITIALIZATION의 대입은 Variant·MEMORY ID로 이미 채워진 값과 부딪힐 수 있다. 이미 값이 있으면 건드리지 않으려면 `IF pa_date IS INITIAL. pa_date = sy-datum. ENDIF.`처럼 감싼다.' 우선순위를 단정하기 어렵다면 '무조건 대입은 남의 값을 덮어쓸 수 있다'는 위험만 알려도 충분하다. L11 Variant 절에서 이 콜아웃으로 되돌아오는 링크를 걸면 더 좋다."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L04.md",
+      "quote": "| `E` | Error | **막고** 입력 화면으로 복귀 — 검증의 기본 |",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "MESSAGE 타입의 동작을 '어디서 부르든 같다'는 식으로 가르치는데, 정작 챕터의 예제들은 선택화면이 아닌 START-OF-SELECTION 안에서도 TYPE 'E'를 쓴다. 같은 문장이 실행 위치에 따라 흐름을 어떻게 바꾸는지가 빠져 있다.",
+      "evidence": "L04는 'E → 막고 입력 화면으로 복귀', 'E 한 줄이 처리를 끊고 화면을 다시 띄운다, 그래서 RETURN을 안 붙인다'로 정리하고, 컨텍스트 차이는 details 안 백그라운드 실행 한 문단만 언급한다. 그런데 L06과 L12는 START-OF-SELECTION 안 `CATCH cx_salv_msg` 뒤에서 `MESSAGE 'ALV 표시 중 오류가 발생했습니다' TYPE 'E'`를 쓴다. 여기서 '입력 화면으로 복귀해 재입력'이 성립하는지, 아니면 본 처리만 끊기는지는 본문만으로 알 수 없다. 같은 L12 코드가 바로 위에서는 `MESSAGE ... TYPE 'S'.` 뒤에 `RETURN.`을 명시적으로 붙이고 있어, 'E는 RETURN이 필요 없다'는 규칙이 어느 범위까지인지 더 흐려진다. 경력자에게 이건 예외 처리 설계(재시도 가능한가·트랜잭션은 어떻게 되나)에 직결되는 질문이다.",
+      "suggestion": "L04의 타입 표에 '동작은 이 문장이 어느 이벤트에서 실행되는지에 따라 달라진다 — 선택화면 검증에서는 그 화면으로 되돌아가고, 본 처리 중이면 진행 중인 처리가 끊긴다'는 단서 한 줄을 넣고, L06·L12의 CATCH 블록에 그 차이를 가리키는 각주를 단다."
+    },
+    {
+      "seq": 7,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L06.md",
+      "quote": "결론부터 말하면 **그렇지 않다.** `END-OF-SELECTION`은 신규 리포트가 꼭 갖춰야 할",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L06은 레슨 전체가 '신규 개발에는 안 쓰는 레거시 이벤트를 읽기 위한' 내용인데, 건너뛰기·읽는 목적 안내가 레슨 머리에 없다.",
+      "evidence": "_chapter.md는 '중간에 나오는 옵션 정리 레슨은 통째로 외우는 곳이 아니라 필요할 때 찾아보는 카탈로그이니 부담 없이 넘겨도 된다'며 L10에 대해서만 부담을 덜어 준다. 같은 배려가 더 필요한 곳은 오히려 L06이다. L04(여섯 타입 details), L08(선행 사용 콜아웃), L09(TABBED BLOCK '지금 외울 필요는 없다')는 모두 '지금 안 해도 된다' 신호를 잘 주는데, 레슨 하나가 통째로 obsolete 주제인 L06만 그 신호가 없다. 신규 개발만 할 독자는 '읽기용'이라는 걸 본문 중간(정체 절)까지 가서야 알게 된다.",
+      "suggestion": "L06 도입부 첫 콜아웃으로 '이 레슨은 새로 쓸 코드가 아니라 남의 코드를 읽기 위한 레슨이다. 신규 개발만 할 계획이면 마지막 정리 세 줄만 보고 넘어가도 된다'를 넣고, _chapter.md의 안내 문장에도 L06을 같이 언급한다."
+    },
+    {
+      "seq": 8,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L01.md",
+      "quote": "## 왜 자리가 중요한가",
+      "category": "과잉",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'자리를 틀리면 늦는다'는 같은 메시지가 L01 안에서만 연속 세 절에 걸쳐 반복되고, 챕터 전체로는 일곱 번 넘게 재진술된다.",
+      "evidence": "L01은 도입부('서로 다른 시점에 실행돼야')→표→'왜 자리가 중요한가'('자리를 틀리면 검증했는데 이미 조회가 끝나 있다')→'흔한 실수'('검증을 START-OF-SELECTION에 두면? 이미 메인 로직이 시작된 뒤다')→'정리'가 연달아 같은 말을 한다. 세 절이 한 화면 안에서 새 정보 없이 겹친다. 여기에 _chapter.md('검증했는데 이미 늦었다'), L02·L03·L04·L05·L12의 '흔한 실수'가 각각 같은 매핑을 다시 적고, L12 정리의 코드블록이 매핑을 통째로 한 번 더 나열한다. 다만 입문자 대상의 의도적 반복이라는 점은 인정한다 — 그래서 낮음으로 둔다.",
+      "suggestion": "L01의 '왜 자리가 중요한가' 절은 표 아래 한 줄(또는 '흔한 실수' 첫 항목)로 흡수해 절 자체를 없앤다. L02～L05의 '흔한 실수'에서 이벤트 매핑 재진술은 각 레슨 고유의 실수 하나만 남기고 L01 표로 링크하면, 통독 시 체감 분량이 눈에 띄게 준다."
+    },
+    {
+      "seq": 9,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L02.md",
+      "quote": "- `[[SELECT-OPTIONS]]`로 만든 표에는 **header line**(그 표와 똑같은 모양의 임시 한 줄. 표",
+      "category": "용어 충돌",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "header line(같은 이름이 표이면서 동시에 한 줄)은 다른 언어에 대응물이 없는 ABAP 고유 개념인데, '이 방식은 SELECT-OPTIONS 같은 예외에만 남아 있고 일반 Internal Table에서는 낡은 방식'이라는 경계가 없다.",
+      "evidence": "L02는 header line을 '그 표와 똑같은 모양의 임시 한 줄'로 잘 풀어 주고 `APPEND so_conc.` 축약형을 그대로 쓴다(L12도 동일). 설명 자체는 정확하지만, 경력자는 여기서 '아, ABAP 내부 테이블은 이렇게 쓰는구나'로 일반화하기 쉽다. 실제로 header line을 가진 테이블은 클래스·메서드 안에서는 쓸 수 없어, 이후 OO 코드를 쓸 때 이 패턴을 그대로 옮기면 막힌다. 프로젝트 명명 규약이 header line 있는 테이블에만 `it_` 접두어를 따로 두는 것도 이 구분이 실재함을 보여 준다. 입문자에게 당장 해가 되지는 않아 낮음으로 둔다.",
+      "suggestion": "header line 설명 끝에 한 줄 — '이 한 몸 방식은 `SELECT-OPTIONS`·`TABLES`처럼 오래된 선언에 남아 있는 형태다. 우리가 직접 만드는 Internal Table은 표와 work area를 따로 두는 방식(`INTO gs_...`)을 쓴다'를 덧붙이면 일반화 오해가 차단된다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "경력자 시선으로도 완성도가 높은 챕터다. 이벤트별 책임 분리라는 축이 12개 레슨 내내 흔들리지 않고, L03의 '숨김≠보안', L05의 `SELECT *` 자진 고지, L07의 존재/권한 분리와 정보 노출 경고(404 vs 403), L09의 `SY-UCOMM` 대신 `SSCRFIELDS-UCOMM` 권고, L10의 `NO-EXTENSION`↔`NO INTERVALS` 구분처럼 실무자가 실제로 데는 지점을 선제적으로 짚어 준 곳이 많다. 지름길 안내(L04 details·L08 [선행 사용]·L09 TABBED BLOCK·L10 카탈로그 선언)도 대체로 잘 배치돼 있다. 치명·높음급 결함은 없었다. 다만 실행 흐름의 정밀도에서 네 군데가 걸린다 — ① `AT SELECTION-SCREEN`이 Enter·버튼마다 도는 왕복 이벤트라는 사실이 빠져 L09 버튼 처리와 L07/L12 DB 검증이 합쳐질 때의 실제 동작을 설명하지 못하고, ② L07 AUTHORITY-CHECK의 sy-subrc 표가 코딩 오류를 4에 뭉개 놓았으며, ③ L07이 권한한 'START-OF-SELECTION 재검사'가 정본 통합 예제 L12에서 사라져 보안 지침이 챕터 안에서 어긋나고, ④ INITIALIZATION 무조건 대입과 Variant·MEMORY ID의 경합 규칙이 없다. 용어 충돌 쪽에서는 이벤트 블록의 종료·스코프 규칙(닫는 키워드 없음, 블록 안 선언도 전역)이 통째로 비어 있어 Java/C# 독자에게 'event'라는 단어가 오해를 부른다. 과잉은 심하지 않고(L01 내 삼중 재진술과 챕터 전반의 이벤트 매핑 반복 정도), 입문자 대상 반복이라는 성격을 감안해 낮음으로 두었다. 전체적으로 구조 재작업이 필요한 상태는 아니고, 콜아웃 몇 줄 추가와 L07 표 한 행 정정, L12 코드에 권한 재검사 한 블록 추가 수준의 경미 수정으로 충분하다."
+  }
+}

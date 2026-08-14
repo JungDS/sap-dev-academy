@@ -1,0 +1,58 @@
+{
+  "agent": "AG01",
+  "model": "sonnet",
+  "target": "CH13",
+  "persona_ack": "은서 — 24세, 문과 출신, 개발·전공 경험 없음, 노션·인스타에 익숙, 모르는 단어가 나오면 그 자리에서 멈추는 성격 — 시점으로 CH13(Open SQL 2차: JOIN·집계) 8개 레슨을 처음 읽는 사람으로서 L01부터 순서대로 통독함.",
+  "method": "대상 파일 9개(챕터 메타 1 + 레슨 8)를 CH13-L01부터 순서대로 전문 정독. 코드 블록·콜아웃·표를 포함한 전체 텍스트를 읽으며 처음 배우는 입장에서 멈칫한 지점을 그 자리에서 기록. 외부 도구·웹검색·다른 챕터 파일 열람 없음.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH13-L01.md",
+      "quote": "만든 공연·회차·예매 테이블이다. 회차 `zperf`는 키가 `concert_id`와 `perf_no` **둘**이라",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "zperf(회차) 테이블의 키가 두 개라는 사실을 곧바로 던지는데, 이 챕터 안에서는 zperf가 어떤 칼럼으로 이뤄져 있는지 다시 보여주지 않아 CH09 기억이 흐릿하면 바로 안 와닿는다.",
+      "evidence": "[Chapter 09 · 콘서트 모델 만들기] 링크는 있지만, 본문은 '공연·회차·예매 테이블이다'라는 한 구절만 주고 바로 '키가 concert_id와 perf_no 둘'이라고 단정한다. zperf에 어떤 필드가 있는지 이 챕터 안에서 표나 코드로 다시 보여주지 않아서, CH09를 가물가물하게 기억하는 입장에서는 '왜 두 개지?'라는 물음이 바로 안 풀리고 링크를 눌러 확인하고 와야 했다.",
+      "suggestion": "zperf의 컬럼(concert_id, perf_no, perf_date 등) 한 줄 요약이나 미니 표를 이 자리에 짧게 다시 보여주면 링크를 안 눌러도 바로 이해된다."
+    },
+    {
+      "seq": 2,
+      "file": "CH13-L02.md",
+      "quote": "JOIN은 한 문장에 **여러 개** 이어 붙일 수 있고, 종류를 **섞어** 쓸 수도 있다.",
+      "category": "과부하",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "한 레슨 안에서 LEFT OUTER JOIN, NULL(ABAP 초기값 매핑·구분법), 3테이블 JOIN 체이닝까지 새 개념 세 덩어리가 연달아 나와 한 번에 소화하기 벅찼다.",
+      "evidence": "LEFT OUTER JOIN 소개(12～42행) → NULL 개념과 판별법(44～81행) → 3테이블 JOIN 체이닝(109～150행)까지 쉬지 않고 이어진다. 각 설명 자체는 친절하지만 NULL을 막 이해했다 싶을 때 바로 새 다중 JOIN 문법이 나와서 앞 내용을 완전히 소화할 틈이 부족했다. 레슨 스스로도 '세 테이블을 한 번에 붙이니 눈에 확 안 들어와도 괜찮다'(151행)라고 인정하는 걸 보면 밀도가 높다는 걸 저자도 아는 듯하다.",
+      "suggestion": "다중 JOIN 체이닝 절을 레슨 끝에 짧은 예고로만 남기고 별도 절(또는 다음 레슨 도입부)로 옮기거나, NULL 절과 체이닝 절 사이에 한 번 더 숨 고르는 미니 정리를 넣으면 좋겠다."
+    },
+    {
+      "seq": 3,
+      "file": "CH13-L08.md",
+      "quote": "cl_salv_table=>factory(",
+      "category": "과부하",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "TRY·REF TO·=> 같은 낯선 문법이 담긴 코드 전체를 먼저 보여주고, '지금은 몰라도 된다'는 안내는 코드가 다 끝난 뒤에야 나와서 코드를 읽는 동안 순간적으로 멈칫하게 된다.",
+      "evidence": "DATA 선언의 `TYPE REF TO cl_salv_table`(35행)부터 TRY/CATCH cx_salv_msg 블록(50～57행)까지, 이번에 배우는 SELECT문과 한 코드 블록에 섞여 있다. '[선행 사용] … 지금은 그대로 가져다 쓰고, 분석하거나 외우지 말자'라는 안내는 코드 블록이 끝난 뒤(60행 이하)에야 나온다. 모르는 단어가 나오면 그 자리에서 멈추는 성격이라 REF TO·=>·TRY를 보는 순간 '이것도 알아야 하나' 하고 멈췄다가, 아래 안내문을 보고서야 안심했다.",
+      "suggestion": "코드 블록 바로 위(또는 TRY 줄 앞 주석)에 '여기부터는 몰라도 된다'는 표시를 코드보다 먼저 배치하거나, TRY부터 ENDTRY까지를 시각적으로 흐리게 처리하거나 접어서 이번 학습 범위가 아님을 미리 알려주면 좋겠다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "전체적으로 짜임새가 탄탄한 챕터다. 특히 L01 '두 명단을 공통 칸(키)으로 짝지어 한 줄로 붙이는 것'이라는 표 형태 비유가 코드보다 먼저 나와 JOIN을 그림으로 이해시켜 준 점이 가장 잘 읽혔다. L02도 WHERE 함정을 체험(embed)으로 먼저 겪은 뒤 ON/WHERE 2단계 설명을 만나는 순서라 납득이 쉬웠다. 다만 L02는 LEFT OUTER JOIN·NULL·3테이블 체이닝 세 덩어리가 한 레슨에 몰려 숨 고를 틈이 부족했고, L08은 TRY·REF TO 같은 낯선 문법이 담긴 코드가 '몰라도 된다'는 안내보다 먼저 나와 순간적으로 멈칫하게 된다. L01의 zperf 키 설명도 챕터 안에서 구조를 다시 보여주지 않아 살짝 걸렸다. 셋 다 재독(또는 다음 문단까지 읽기)으로 풀리는 수준이라 치명적인 막힘은 없었다."
+  }
+}

@@ -1,0 +1,137 @@
+{
+  "agent": "AG03",
+  "model": "opus",
+  "target": "CH16",
+  "persona_ack": "타 언어(Java/C#) 백엔드 3～5년차 개발자로서 CH16(Dynpro 기초) 11개 파일을 통독했다. 프로그래밍 기본기는 전제하고, 과잉·오개념 유발·지름길 부재·용어 충돌 네 축으로만 기록했다. 1독자가 비전공 입문자라는 점을 고려해 '입문자에겐 필요하나 나에게만 아는 내용'은 낮음 또는 suggestion으로 낮춰 잡았다.",
+  "method": "Read 도구로 대상 11개 파일 전문 통독(_chapter.md + L01～L10). 인용 앵커와 부재 주장 검증은 Grep으로 확인 — (1) 'CHAIN|ON REQUEST|ON INPUT|ENDCHAIN' → CH16 전체 0건, (2) 'T-code|건너뛰|TYPE-POOLS' → L01 내 T-code 6회(38·42·44·46·73·82행)·건너뛰기 안내 1회(L01 67행)·TYPE-POOLS 안내 1회(L03 96행, VRM만) 확인. 웹·외부 네트워크 미사용, 대상 파일 외 접근 없음.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L10.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH16/CH16-L01.md",
+      "quote": "> 🧩 다른 화면 개발(Swing·WPF·React 등)을 해 본 적 있다면 이렇게 겹쳐 볼 수 있다. PBO는",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "경력자를 겨냥한 유일한 비유인데, 정작 Dynpro와 Swing/React의 결정적 차이(서버 왕복 구조)를 안 짚어 잘못된 모델을 심는다. Swing·WPF·React는 클라이언트에서 위젯마다 리스너가 붙어 도는 이벤트 루프지만, Dynpro는 사용자의 행동 하나가 화면 전체를 애플리케이션 서버로 보내고 서버가 화면을 다시 그리는 왕복이다. 비유를 믿은 경력자는 '버튼마다 핸들러를 달면 되겠군'으로 읽고 시작한다.",
+      "evidence": "챕터 11개 파일 어디에도 PBO/PAI가 서버에서 도는 왕복이라는 서술이 없다. 반대로 L03은 요소를 '값 운반 / function code 발생 / 표시'로 나눠 위젯 단위 이벤트 모델처럼 읽히게 만든다. 그런데 뒤에 나오는 핵심 규칙들 — L06의 '화면 속성은 PBO가 돌 때마다 기본값으로 다시 계산된다', L07의 OK_CODE가 안 지워지면 다음 Enter에 재실행된다 — 은 모두 왕복 모델을 알아야 이유가 납득되는 항목이다. 즉 왕복 한 줄이 빠져서 뒤 레슨의 '왜'가 통째로 암기 대상이 된다.",
+      "suggestion": "그 콜아웃에 한 문장만 추가: '단 위젯마다 리스너를 다는 구조가 아니라, 사용자의 행동 하나가 화면 전체를 서버로 보내고 서버가 다시 그려 돌려주는 왕복이다(웹 form 제출에 가깝다).' 입문자에게도 부담이 없고, L06 속성 초기화·L07 CLEAR의 이유를 한 번에 설명해 준다."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH16/CH16-L01.md",
+      "quote": "- **T-code 없이 실행** → Module Pool은 리포트처럼 F8로 못 연다. 사용자가 여는 길은",
+      "category": "과잉",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'Module Pool은 F8이 아니라 T-code로 실행한다'는 단일 사실이 L01 한 레슨(약 90줄) 안에서 6번 반복된다. 입문자 기준으로도 3회를 넘어가면 새 정보가 없는 반복이라 읽는 속도만 떨어진다.",
+      "evidence": "L01 38행(비교표 '시작' 행) · 42행(비교표 '대표 실수' 행) · 44행(불릿: 반드시 있어야 한다) · 46～48행(불릿: 'T-code로만'의 의미 해명) · 73～74행(흔한 실수 첫 항목) · 82～83행(정리 첫 항목). 이 중 46～48행은 44행이 이미 말한 것을 완충하는 재진술이고, 73·82행은 그 둘의 요약이다. 같은 사실이 L10 23행·52～53행에서 실습으로 또 나온다.",
+      "suggestion": "불릿 하나(정식 진입점 + CALL SCREEN 예외)와 정리 한 줄만 남긴다. 비교표의 '대표 실수' 행과 '흔한 실수' 첫 항목 중 하나는 삭제해도 손실이 없다 — 3～4줄 절약."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH16/CH16-L07.md",
+      "quote": "입력 검사가 PAI 모듈보다 **먼저** 돌기 때문에, 우리가 만든 `CASE save_ok`까지 오지도",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "검증을 `CASE save_ok` 분기(그리고 `PERFORM check_booking`) 한 곳에서만 가르쳐, classic Dynpro의 표준 필드 단위 검증 관용구인 flow logic의 `FIELD ... MODULE ...` / `CHAIN ... ENDCHAIN`이 챕터 전체에 한 번도 등장하지 않는다. 다른 언어의 '컨트롤러 한 곳에서 검증' 모델이 그대로 굳어져, 실무 화면의 CHAIN 블록을 만나면 배운 모델이 통째로 어긋난다.",
+      "evidence": "Grep 결과 CH16 11개 파일에서 CHAIN/ENDCHAIN/ON INPUT 0건. `FIELD`는 L05의 POV 결선(`FIELD gv_perf MODULE value_perf.`)으로만 나와 'FIELD = F4 전용 키워드'로 읽힌다. 그런데 이 인용 문장 자체가 '자동 입력 검사와 PAI 모듈의 실행 순서'라는 바로 그 주제를 이미 열어 놓았다 — 순서 문제는 꺼내고, 그 순서를 다루는 flow logic 쪽 장치만 빠진 상태다.",
+      "suggestion": "L07 끝(또는 AT EXIT-COMMAND 절 뒤)에 코드 없는 1～2문장 예고: '칸 단위 검증은 flow logic에서 `FIELD`/`CHAIN`으로 묶어 오류 시 그 칸만 다시 입력받게 하는 방식이 따로 있다. 이 과정에서는 다루지 않는다.' 겸사겸사 L05의 `FIELD`가 F4 전용이 아니라는 점도 한 줄로 짚어 준다."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH16/CH16-L03.md",
+      "quote": "- 🟧 **function code를 발생** — Push Button. **값이 아니라** 어떤 버튼을 눌렀는지를",
+      "category": "오개념 유발",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "요소를 '값 운반 / function code 발생(Push Button) / 표시'로 절대화했는데, Screen Painter에서는 Checkbox·Radiobutton에도 function code를 줄 수 있고 그 경우 선택 즉시 PAI가 돈다. onChange 이벤트를 기대하는 경력자에게 '체크박스는 값만 나른다, 즉시 반응은 불가능하다'가 규칙으로 각인된다.",
+      "evidence": "L03의 3분류와 표(24행 'Push Button | 누르면 PAI 발생')가 Push Button을 유일한 function code 발생원으로 못 박는다. 정작 L08은 메뉴바·표준 툴바·application toolbar·function key도 같은 OK_CODE로 들어온다고 말하면서 L03의 분류를 정정하지 않는다. 입문자에게 해가 되는 단순화는 아니라 낮음으로 잡는다.",
+      "suggestion": "3분류 아래 각주 한 줄: '기본값 기준이다. Checkbox·Radiobutton에도 FctCode를 주면 선택 즉시 PAI가 돈다(즉시 반응이 필요할 때만 쓴다).' 표의 Push Button 행에는 '가장 흔한 발생원' 정도로 완화."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH16/CH16-L05.md",
+      "quote": "> 지금 이 코드를 통째로 외울 필요는 없다. 기억할 건 큰 그림 하나다. **직접 F4는 최후수단이고,",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'외울 필요 없다'는 면제 안내가 40여 줄짜리 `DYNP_VALUES_READ`+`F4IF_INT_TABLE_VALUE_REQUEST` 코드와 파라미터 표를 **다 지난 뒤**에 나온다. 이 안내가 절 머리에 있었다면 훑는 독자(그리고 시간 없는 입문자)가 그 절 전체를 안심하고 건너뛰었다가 필요할 때 돌아올 수 있다.",
+      "evidence": "L05 구성 순서: 43행 '그래도 직접 만들어야 한다면' → 107～147행 대형 코드 → 149～170행 파라미터 표·주석 → 172행 embed → 174행에서야 면제 안내. 챕터에는 이미 같은 성격의 장치가 있다(L01 67행 '처음 듣는 이야기라면 이 줄은 건너뛰어도 된다') — 사이트 자체 관용구를 그대로 쓰면 되는데 정작 가장 무거운 절에 없다.",
+      "suggestion": "면제 문장을 '그래도 직접 만들어야 한다면' 절 첫 줄로 올리고 '이 절은 필요해질 때 돌아와 읽어도 된다'를 덧붙인다. L09의 Tabstrip 코드 절도 같은 표시가 어울린다."
+    },
+    {
+      "seq": 6,
+      "file": "content/abap/CH16/CH16-L09.md",
+      "quote": "그때마다 container 객체가 **하나씩 새로 생기고 앞서 만든 객체는 정리되지 않는다.**",
+      "category": "오개념 유발",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "관리형 언어(Java/C#) 배경 독자는 '참조를 덮어썼는데 앞 객체가 정리되지 않는다'를 'ABAP에는 가비지 컬렉션이 없다'로 읽는다. 실제로 ABAP은 참조가 끊긴 객체를 자동 회수하며, 여기서 남는 것은 SAP GUI 컨트롤 프레임워크 쪽에 등록된 실제 화면 컨트롤이다. 원인을 잘못 잡으면 이후 OO 챕터까지 오해가 따라간다.",
+      "evidence": "L09 48～50행이 '생명주기 문제'라는 이름만 붙이고 무엇이 왜 남는지는 말하지 않는다. 바로 위 43～46행 선행 사용 콜아웃은 오히려 '객체지향 언어를 다뤄 본 적 있다면 참조 변수 선언 + 생성자 호출로 읽으면 그대로 맞다'며 OO 배경 독자를 명시적으로 초대해 놓은 상태다.",
+      "suggestion": "괄호 한 줄 추가: '(ABAP도 참조가 끊긴 객체는 자동 회수된다. 여기서 남는 건 화면에 이미 붙어 버린 GUI 컨트롤 쪽이다.)' 경력자에겐 이 한 줄이 `IS INITIAL` 가드의 진짜 이유다."
+    },
+    {
+      "seq": 7,
+      "file": "content/abap/CH16/CH16-L10.md",
+      "quote": "- ⚠️ **판정 결과를 왜 `gv_ok`라고 지었을까.** `MODULE ... ENDMODULE`은 `FORM`이나 `METHOD`와",
+      "category": "용어 충돌",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "챕터가 변수 이름 규칙에 유난히 꼼꼼한데(여기서는 왜 `lv_`가 아니라 `gv_`인지를 한 문단으로 설명) 정작 모든 예제에 빠짐없이 등장하는 `ok_code`·`save_ok`만 접두어 없이 쓰면서 이유를 한 번도 말하지 않는다. 규칙을 세워 놓고 예외를 침묵하면 독자는 규칙 자체를 의심하거나, 자기 코드에서 `gv_ok_code`로 바꿔 화면 OK field 이름과 어긋나게 만든다.",
+      "evidence": "접두어 없는 선언: L03 52행 `ok_code TYPE sy-ucomm.`, L07 24～25행, L09 94행, L10 74～75행. 반면 접두어 설명은 L10 126～129행에만 있고 대상은 `gv_ok`다. 화면 OK field 이름과 묶여 있어 관례명을 유지해야 한다는 사정이 본문에는 안 나온다.",
+      "suggestion": "최초 등장(L03 예제 또는 L07 save_ok 패턴) 아래 한 줄: '`ok_code`·`save_ok`는 화면 OK field에 묶인 프레임워크 관례명이라 예외적으로 접두어를 붙이지 않는다(`sy-ucomm`과 같은 부류).'"
+    },
+    {
+      "seq": 8,
+      "file": "content/abap/CH16/CH16-L04.md",
+      "quote": "| PBO 끝 | work area → 화면 | `zconcert-concert_id` 값이 화면에 뜬다 |",
+      "category": "과잉",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "운반 시점·방향 표가 바로 앞 레슨에서 한 문장으로 끝낸 내용의 재진술이다. 달라진 것은 그릇 이름이 '변수'에서 'work area'로 바뀐 것뿐인데 표를 새로 세워 4줄을 쓴다.",
+      "evidence": "L03 56행 '**PBO 끝에 변수 → 화면**, **PAI 시작에 화면 → 변수**' ↔ L04 68～71행 표(두 행). L04는 표 바로 앞 66행에서 이미 '운반 방향은 앞서 배운 PBO/PAI 두 박자 그대로다'라고 말해 놓아 표가 그 문장의 중복 증명이 된다.",
+      "suggestion": "표를 지우고 한 문장으로 압축 — '운반 시점은 앞 레슨과 같고, 그릇만 변수에서 work area로 바뀐다([화면 요소](CH16-L03.html)).' 4줄 → 1줄."
+    },
+    {
+      "seq": 9,
+      "file": "content/abap/CH16/CH16-L09.md",
+      "quote": "- `icon_red_light` 같은 아이콘 이름은 SAP이 미리 만들어 둔 상수다(타입 그룹 `ICON`).",
+      "category": "일관성",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "같은 상황을 한쪽만 대비해 준다. L03은 타입 그룹 VRM 때문에 오래된 시스템에서 활성화가 막힐 수 있다며 `TYPE-POOLS vrm.` 탈출구를 알려 줬는데, ICON 타입 그룹을 쓰는 여기에는 같은 안내가 없다. 사이트가 스스로 상정한 '오래된 실습 시스템'에서 그대로 따라 치면 같은 증상을 만나고, 이번엔 힌트가 없다.",
+      "evidence": "L03 94～96행에 VRM 안내가 있고, Grep 결과 CH16 전체에서 TYPE-POOLS 언급은 그 한 곳뿐이다. L09 144행은 '타입 그룹 ICON'이라는 사실만 알려 준다.",
+      "suggestion": "L09에 같은 형식의 각주 한 줄(구버전에서 `TYPE-POOLS icon.`)을 붙이거나, 반대로 두 곳을 묶어 '타입 그룹은 구버전에서 TYPE-POOLS가 필요할 수 있다'를 한 번만 말하고 서로 링크한다."
+    },
+    {
+      "seq": 10,
+      "file": "content/abap/CH16/CH16-L10.md",
+      "quote": "> 💡 아래 두 블록은 **한 코드 블록에 Flow Logic과 ABAP module을 함께** 보여 준다. 실제로는",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "경고를 두 번(이 콜아웃 + 흔한 실수)이나 달아야 했다는 것 자체가 블록을 쪼개는 편이 낫다는 신호다. 이 사이트의 코드 블록은 복사 버튼이 붙는 양식이라, 실습 레슨에서 통째로 복사하면 구문 오류 나는 텍스트가 한 덩어리로 붙는다. 복사 유혹이 가장 큰 자리에 복사하면 안 되는 블록을 놓았다.",
+      "evidence": "L10 59～62행 경고, 64～100행 한 블록 안에 `PROGRAM sapmzconcert.`·`DATA`와 `PROCESS BEFORE OUTPUT.`이 주석 구분선으로만 나뉜 채 공존. 187행 흔한 실수에서 같은 주의를 반복. 같은 챕터 L05·L07은 Flow Logic과 ABAP을 이미 별도 블록으로 나눠 보여 주고 있어 챕터 내에서도 방식이 엇갈린다.",
+      "suggestion": "'Flow Logic(화면 0100 · Screen Painter)'과 'ABAP source(TOP/O01 include)' 두 블록으로 쪼개고 소제목에 저장 위치를 적는다. 설명 손실 없이 복사 사고와 경고 두 줄이 동시에 사라진다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "경력자 시선에서 이 챕터는 예상보다 잘 방비돼 있다. 용어 충돌은 오히려 모범적으로 처리된 편이다 — Dynpro의 `MODULE`이 다른 언어의 모듈이 아니라는 점(L02), Text Field가 입력칸이 아니고 Frame이 JFrame이 아니라는 점(L03), 함수 파라미터 `TABLES` 구역과 `TABLES` 선언문이 이름만 같다는 점(L05), POV 모듈의 `INPUT`이 PAI를 뜻하지 않는 예외(L05), OO 문법을 선행 사용으로 열되 경력자에겐 '참조 변수 + 생성자'로 읽으라고 안내한 점(L09), `abap_true`가 결국 문자 'X'라는 점(L10)까지 짚어 뒀다. 실무 감각(L04의 TABLES 비권장, L08의 PF-STATUS 누락 시 화면 탈출 불가와 `/n`, L07의 AT EXIT-COMMAND)도 살아 있다. 그래서 재집필이나 대규모 보강은 필요 없다고 본다. 다만 세 가지가 아쉽다. ①경력자용 유일한 비유(Swing/WPF/React)에 서버 왕복이라는 결정적 차이가 빠져, PBO 속성 초기화·OK_CODE CLEAR의 '왜'가 암기거리로 남는다. ②필드 단위 검증 관용구(FIELD/CHAIN)가 챕터 전체에 0회라 '검증은 PAI 모듈 한 곳에서'라는 잘못된 모델이 굳는다. ③L01의 T-code 반복(한 레슨 6회)은 입문자 기준으로도 잉여다. 과잉은 전반적으로 심하지 않았고(L04 운반 표 정도), 지름길 안내는 존재하지만 가장 무거운 절(L05 직접 F4)에서는 코드를 다 읽은 뒤에야 나온다. 발견 10건 모두 한두 줄 추가·삭제로 끝나는 수준이라 등급은 경미 수정으로 본다."
+  }
+}

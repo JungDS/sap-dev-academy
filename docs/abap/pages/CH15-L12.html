@@ -57,6 +57,7 @@
 (<code>MODIF ID</code>로 묶어 한꺼번에 제어).</li>
 <li>공연 코드가 <strong>비어 있거나 존재하지 않으면</strong> 실행을 막는다.</li>
 <li>현재 사용자에게 <strong>조회 권한이 없으면</strong> 실행을 막는다.</li>
+<li>실제 조회가 시작되는 첫머리에서 권한을 <strong>한 번 더</strong> 확인한다(재검사).</li>
 <li>검증을 통과하면 <code>zbooking</code>을 조회한다. 결과가 없으면 상태 메시지를, 있으면 SALV로 표시한다.</li>
 </ul>
 </section><section class="lblock"><h2>통합 코드</h2>
@@ -122,7 +123,15 @@
 60
 61
 62
-63</pre><pre class="abap-editor__code"><code><span class="tok-kw">REPORT</span> zch15_concert_booking.
+63
+64
+65
+66
+67
+68
+69
+70
+71</pre><pre class="abap-editor__code"><code><span class="tok-kw">REPORT</span> zch15_concert_booking.
 
 <span class="tok-kw">PARAMETERS</span>: pa_conc <span class="tok-kw">TYPE</span> zconcert-concert_id,
             pa_mode <span class="tok-kw">TYPE</span> c <span class="tok-kw">LENGTH</span> <span class="tok-num">1</span>,
@@ -167,7 +176,15 @@
     <span class="tok-kw">MESSAGE</span> <span class="tok-str">'이 공연을 볼 권한이 없습니다'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'E'</span>.
   <span class="tok-kw">ENDIF</span>.
 
-<span class="tok-kw">START-OF-SELECTION</span>.                           <span class="tok-com">" ④ 검증 후 본 처리(조회+표시)</span>
+<span class="tok-kw">START-OF-SELECTION</span>.                           <span class="tok-com">" ④ 권한 재검사 + 본 처리(조회+표시)</span>
+  <span class="tok-kw">AUTHORITY-CHECK</span> <span class="tok-kw">OBJECT</span> <span class="tok-str">'Z_CONCERT'</span>           <span class="tok-com">" 화면을 안 거치는 경로 대비 재검사</span>
+    <span class="tok-kw">ID</span> <span class="tok-str">'CONCERT'</span> <span class="tok-kw">FIELD</span> pa_conc
+    <span class="tok-kw">ID</span> <span class="tok-str">'ACTVT'</span>   <span class="tok-kw">FIELD</span> <span class="tok-str">'03'</span>.
+  <span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.
+    <span class="tok-kw">MESSAGE</span> <span class="tok-str">'이 공연을 볼 권한이 없습니다'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'S'</span>.
+    RETURN.
+  <span class="tok-kw">ENDIF</span>.
+
   <span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> zbooking <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> gt_booking
     <span class="tok-kw">WHERE</span> concert_id = pa_conc
       <span class="tok-kw">AND</span> status <span class="tok-kw">IN</span> so_stat.
@@ -187,9 +204,23 @@
   <span class="tok-kw">ENDTRY</span>.</code></pre></div></div>
 <blockquote>
 <p>💡 <strong>책임이 <button class="term" type="button" data-term="이벤트">이벤트</button>별로 나뉜다.</strong> 기본값=<code>INITIALIZATION</code>, 화면 제어=<code>OUTPUT</code>,
-입력/존재/권한 검증=<code>AT SELECTION-SCREEN ON pa_conc</code>, 조회·표시=<code>START-OF-SELECTION</code>.
+입력/존재/권한 검증=<code>AT SELECTION-SCREEN ON pa_conc</code>, 권한 재검사와 조회·표시=<code>START-OF-SELECTION</code>.
 SALV 표시는 <a href="CH15-L06.html">END-OF-SELECTION의 위치와 경계</a>에서 본 대로 <strong>legacy/LDB용
 이벤트가 아니라</strong> <code>START-OF-SELECTION</code> 안에 둔다(신규 단순 리포트엔 <code>END-OF-SELECTION</code> 불필요).</p>
+</blockquote>
+<blockquote>
+<p>🛡️ <strong>권한 검사가 왜 두 번 나올까?</strong> <code>AT SELECTION-SCREEN</code>의 검증은 사용자가 <strong>그 화면을
+거쳐 들어올 때만</strong> 도는 관문이다. 다른 프로그램이 이 리포트를 대신 실행하거나 밤중에
+무인으로 도는 경로에서는 그 화면을 지나지 않을 수 있다. 그래서
+<a href="CH15-L07.html">Selection Screen 권한/존재 여부 검증 기초</a>의 지침대로, 실제 조회가 시작되는
+<code>START-OF-SELECTION</code> <strong>첫머리에서 권한만 한 번 더</strong> 확인한다. 존재 검증까지 반복할 필요는
+없다. 없는 코드는 조회해 봤자 0건이라 새는 데이터가 없지만, 권한은 뚫리면 보안 사고다.</p>
+</blockquote>
+<blockquote>
+<p>💡 <strong>재검사는 왜 <code>TYPE &#39;E&#39;</code>가 아니라 <code>TYPE &#39;S&#39;</code> + <code>RETURN</code>일까?</strong> 오류 대화로 입력을 다시
+받는 <code>E</code> 메시지는 선택화면(대화) 단계의 도구다. 본 처리(<code>START-OF-SELECTION</code>)는 이미 화면을
+떠난 뒤라 되돌려 보낼 입력 칸이 없다. 그래서 0건 안내와 같은 방식으로, 상태 메시지를 남기고
+<code>RETURN</code>으로 우리가 직접 처리를 끝낸다.</p>
 </blockquote>
 <blockquote>
 <p>🔎 <strong>검사 세 개가 한 블록에 이어 붙어 있는데 왜 안 엉킬까?</strong> <code>MESSAGE ... TYPE &#39;E&#39;</code>가 나가면
@@ -248,8 +279,9 @@ SALV 표시는 <a href="CH15-L06.html">END-OF-SELECTION의 위치와 경계</a>�
 </tbody></table>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>검증을 <code>START-OF-SELECTION</code>으로 미룸</strong> → 입력·존재·권한 검증은 조회 <strong>전</strong>
-<code>AT SELECTION-SCREEN</code>에서 한다. 권한 검증을 조회 뒤로 미루지 않는다.</li>
+<li><strong>검증을 <code>START-OF-SELECTION</code>으로 미룸</strong> → 입력·존재·권한 검증의 제자리는 조회 <strong>전</strong>
+<code>AT SELECTION-SCREEN</code>이다. <code>START-OF-SELECTION</code> 첫머리의 권한 <strong>재검사</strong>는 이 검증을
+대신하는 게 아니라, 화면을 안 거치는 실행 경로까지 막는 <strong>추가 안전장치</strong>다.</li>
 <li><strong>필드를 숨기면 값도 사라진다고 착각</strong> → <code>pa_note</code>를 숨겨도 내부 변수 값은 그대로다.
 숨김과 값 삭제는 다른 문제다.</li>
 <li><strong><code>END-OF-SELECTION</code>을 통합 실습에 넣기</strong> → 신규 단순 리포트는 <code>START-OF-SELECTION</code>
@@ -268,7 +300,7 @@ SALV 표시는 <a href="CH15-L06.html">END-OF-SELECTION의 위치와 경계</a>�
 5</pre><pre class="abap-editor__code"><code>INITIALIZATION        = 첫 기본값
 AT SELECTION-SCREEN OUTPUT = 화면 직전 제어
 AT SELECTION-SCREEN   = 입력·존재·권한 검증
-START-OF-SELECTION    = 검증 후 본 처리(조회·표시)
+START-OF-SELECTION    = 권한 재검사 + 본 처리(조회·표시)
 END-OF-SELECTION      = legacy/LDB 기존 코드 독해 포인트</code></pre></div></div>
 <hr>
 <p>이벤트·검증을 갖춘 리포트를 완성했다. 지금까지는 <strong>표준 선택화면</strong>이 만들어 준 입력

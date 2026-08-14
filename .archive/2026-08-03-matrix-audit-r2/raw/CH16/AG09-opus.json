@@ -1,0 +1,63 @@
+{
+  "agent": "AG09",
+  "model": "opus",
+  "target": "CH16",
+  "persona_ack": "AG09 — ABAP 정적 검사기를 시늉하는 코드 전용 감사자. 산문은 판단 근거로만 참고하고 ```abap 코드 블록 27개(L02 2·L03 2·L04 3·L05 4·L06 2·L07 4·L08 2·L09 5·L10 3, L01·_chapter.md는 코드 0)를 줄 단위로 검사했다. 실행 환경(SAP 시스템)이 없으므로 '컴파일 확신'이 아니라 정적 판단이며, 확신이 낮은 항목은 confidence=추정으로 표시했다. 스타일 선호(빈 줄·정렬)는 결함으로 잡지 않았고, 억지 발견은 넣지 않았다.",
+  "method": "① Read 도구로 대상 11개 파일 전문 통독. ② Grep으로 ```abap 블록 수 카운트(27개)해 누락 없이 전수 확인. ③ Grep 정규식으로 modern 문법·New Open SQL 토큰 일괄 스캔(DATA(·FINAL(·VALUE #(·NEW ·+=·-=·*=·@소문자·|{·CORRESPONDING #·REDUCE·SWITCH·COND #) → 매치 0건. ④ 각 블록 수기 검사: 문장 마침표·선언/사용 대조(미선언 변수)·타입 정합·표준 함수 파라미터명(VRM_SET_VALUES=ID/VALUES, DYNP_VALUES_READ=DYNAME/DYNUMB/DYNPFIELDS, F4IF_INT_TABLE_VALUE_REQUEST=RETFIELD/DYNPPROG/DYNPNR/DYNPROFIELD/VALUE_ORG/VALUE_TAB, CL_GUI_CUSTOM_CONTAINER 생성자=CONTAINER_NAME)·Flow Logic 호출과 MODULE 정의 이름 대조·네이밍 규약(gv_/gs_/gt_·ok_code/save_ok 예외·ts_perf)·CH01~17 classic 경계. ⑤ 인용문은 Grep 앵커 정규식(^…$)으로 후행 공백까지 확인해 원문 일치 검증. 웹·외부 네트워크 미사용, 대상 파일 외 접근 없음.",
+  "errors": [
+    "CH16-L10의 `PERFORM can_book USING gv_conc gv_perf gv_seats CHANGING gv_ok.` 시그니처 대조는 수행하지 못했다 — 원 정의가 CH10-L07(대상 파일 밖)에 있고, 이 감사는 접근 범위가 CH16 대상 파일로 제한되어 있어 USING/CHANGING 개수·타입 일치를 확인할 수 없었다. 확인 못 한 것을 발견으로 만들지 않았다.",
+    "동일 사유로 abap_bool/abap_true·FORM can_book이 실제로 CH10-L07에서 도입되었는지도 미확인(본문 서술만 근거)."
+  ],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L10.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L10.md",
+      "quote": "PROCESS BEFORE OUTPUT.\n  MODULE status_0100.\n  MODULE fill_status_list.\nPROCESS AFTER INPUT.\n  MODULE user_command_0100.",
+      "category": "코드 누락(AT EXIT-COMMAND) · 절차와 코드 불일치",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "통합 실습의 Flow Logic PAI에 `AT EXIT-COMMAND` 모듈 호출이 없는데, 같은 레슨의 만들기 절차 6은 BACK·EXIT·CANCEL 버튼의 function type을 `E`로 지정하라고 지시한다. 절차대로 만들면 나가기 버튼은 function type만 `E`이고 그 전용 통로가 없는 상태가 되며, L07이 챕터의 핵심 해법으로 가르친 구조가 최종 산출물에서 통째로 빠진다.",
+      "evidence": "L07은 '값을 안 채우면 나갈 수도 없다 — AT EXIT-COMMAND' 절에서 ① 나가기 버튼 function type `E` 지정, ② PAI 맨 앞 `MODULE exit_0100 AT EXIT-COMMAND.` 배치를 한 쌍으로 요구하고, 그 모듈이 '입력 검사보다 먼저' 도는 것이 요점이라고 못 박았다. L10 절차 6은 ①만 그대로 지시하면서 통합 Flow Logic PAI에는 `MODULE user_command_0100.` 한 줄뿐이고, BACK/CANCEL/EXIT 분기는 그 일반 PAI 모듈 안에만 있다. 즉 필수입력 칸이나 DDIC 자동 검사가 걸린 칸이 하나라도 있으면 L07이 경고한 '뒤로를 눌러도 값을 입력하라는 오류만 뜨는' 상황이 실습 결과물에서 그대로 재현된다. 검증 시나리오 표의 'BACK → LEAVE TO SCREEN 0' 기대도 그 조건에서는 성립하지 않는다.",
+      "suggestion": "L10 통합 Flow Logic의 `PROCESS AFTER INPUT.` 첫 줄에 `MODULE exit_0100 AT EXIT-COMMAND.`를 추가하고, `user_command_0100`의 `WHEN 'BACK' OR 'CANCEL'`·`WHEN 'EXIT'` 분기를 L07의 `exit_0100` 모듈로 옮긴다(만들기 절차 5의 include 안내에도 `exit_0100`을 …I01에 만든다고 한 줄 추가). 실습을 단순하게 유지하려면 반대로 절차 6에서 function type `E` 지시를 빼고 '나가기 전용 처리는 L07 참고'로 정리해 코드와 절차를 일치시킨다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L09.md",
+      "quote": "  CASE ok_code.\n    WHEN 'TAB1' OR 'TAB2'.\n      tab_main-activetab = ok_code.",
+      "category": "패턴 불일치(OK_CODE 처리) · 호출 순서 미명시",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "두 레슨 앞(L07)에서 '공식 권장 패턴'으로 못 박은 `save_ok` 복사 + 즉시 `CLEAR` 없이, 탭 모듈이 `ok_code`를 직접 `CASE`로 분기하고 비우지도 않는다. 예외라는 설명도 없어 학습자 입장에서는 방금 배운 규칙이 근거 없이 뒤집힌 코드로 읽힌다.",
+      "evidence": "L07 '안전한 분기 — save_ok 패턴'과 흔한 실수 목록('OK_CODE를 안 비움 → 이전 명령이 남아 Enter에 재실행된다')에 정면으로 어긋난다. 더 실질적인 문제는 호출 순서다 — L09는 `tab_command_0100`이 PAI의 어느 자리에 오는지 Flow Logic으로 보여 주지 않는데, L07·L10대로 만든 `user_command_0100`(첫 두 줄이 `save_ok = ok_code.` `CLEAR ok_code.`)이 앞에 놓이면 탭 모듈이 볼 `ok_code`는 이미 비어 있어 `tab_main-activetab` 기록이 조용히 실패하고 탭이 안 바뀐다. SE80 생성 코드의 관례이긴 하나, 이 커리큘럼이 자체 규칙으로 세운 패턴과 충돌하므로 그대로 두려면 예외임을 밝혀야 한다.",
+      "suggestion": "① `save_ok = ok_code.` 복사 후 `CASE save_ok.`로 맞추거나, ② 관례를 유지한다면 '탭 처리는 표준 생성 코드 관례라 예외' 한 줄 + PAI 안에서 `tab_command_0100`이 `user_command_0100`보다 **앞**에 와야 한다는 Flow Logic 순서를 함께 보여 준다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L09.md",
+      "quote": "gv_icon = icon_red_light.",
+      "category": "타입 그룹 의존 안내 누락(챕터 내 비대칭)",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "`icon_red_light`는 타입 그룹 ICON에 든 상수인데, 같은 챕터 L03이 `vrm_values`에 대해 달아 준 '구버전이면 `TYPE-POOLS vrm.` 한 줄' 안내가 여기엔 없다. 의존 구조가 완전히 같은데 안내만 비대칭이다.",
+      "evidence": "L03은 '🧯 `vrm_values`는 VRM 타입 그룹에 들어 있는 타입이다. 요즘 릴리스는 알아서 인식하지만, 오래된 실습 시스템에서 … `TYPE-POOLS vrm.` 한 줄을 넣어 주면 된다'로 정확히 이 사정을 다뤘다. L09는 본문에서 '타입 그룹 `ICON`'이라고 밝히기만 하고 선언 안내가 없어, 구버전 실습 시스템에서 `icon_red_light`를 못 찾는 활성화 오류가 났을 때 학습자가 스스로 연결 짓기 어렵다. 현행 릴리스에서는 타입 그룹이 암묵 로드되어 실제 오류가 나지 않으므로 confidence=추정으로 둔다.",
+      "suggestion": "L03과 같은 톤·같은 위치(코드 블록 아래 콜아웃)에 '오래된 시스템이면 프로그램 맨 위에 `TYPE-POOLS icon.`' 한 줄을 추가해 두 곳의 안내 수준을 맞춘다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "코드 품질 자체는 이번 챕터에서 상당히 견고하다. ```abap 블록 27개를 줄 단위로 훑어 문법 오류·미선언 변수 사용·문장 마침표 누락·타입 불일치는 한 건도 나오지 않았다. 네이밍도 규약대로다 — Module Pool 선언은 전부 전역이라 gv_/gs_/gt_를 썼고(L10은 '모듈에는 지역 데이터 영역이 없다'는 이유까지 본문에서 밝힘), ok_code/save_ok 관례명 예외와 구조체 타입 ts_perf도 규칙과 일치한다. 경계 규약도 깨끗하다: 인라인 DATA()·VALUE·NEW·+=·|…| 및 New Open SQL(@·콤마) 토큰 스캔 결과 0건이고, 객체 생성도 classic `CREATE OBJECT`를 유지했다. 표준 함수 4종(VRM_SET_VALUES·DYNP_VALUES_READ·F4IF_INT_TABLE_VALUE_REQUEST·CL_GUI_CUSTOM_CONTAINER 생성자)의 파라미터명, Flow Logic 호출 이름과 `MODULE … OUTPUT/INPUT` 정의 이름의 짝, POV/POH 모듈을 INPUT으로 정의하는 예외, `LOOP AT SCREEN INTO`/`MODIFY SCREEN FROM` work area 형식도 모두 정확하다. 발견 3건은 모두 '코드가 틀렸다'가 아니라 '가르친 패턴과 실제 코드가 어긋난다' 쪽이며, 그중 실질적인 것은 실습(L10)에서 절차는 function type E를 지시하면서 Flow Logic에는 AT EXIT-COMMAND 모듈이 없는 1건이다. 해당 줄을 채우고 L09에 예외 설명·타입 그룹 안내 한 줄씩 보태면 충분하다 — 구조 손질이나 재집필은 필요 없다."
+  }
+}

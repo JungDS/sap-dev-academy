@@ -76,9 +76,11 @@
 <li>집계 결과에는 원래 이름이 없으니 <code>AS cnt</code>처럼 <strong>별칭</strong>을 붙여 이름을 지어 준다.</li>
 </ul>
 <blockquote>
-<p>📝 <strong>괄호 안 공백은 표기 습관이다.</strong> 이 과정은 <code>COUNT( * )</code>처럼 괄호 안쪽을 띄우는
-표기로 본문·코드를 통일한다. 실무 코드에서 붙여 쓴 형태를 보더라도 다른 문법이라고
-오해하지 말자.</p>
+<p>📝 <strong>괄호 안 공백은 습관이 아니라 문법이다.</strong> ABAP은 낱말 사이를 공백으로 끊어 읽기
+때문에, <code>SUM( seatsocc )</code>에서 괄호 안 공백을 빼고 붙여 쓰면 구문 오류가 난다. 딱
+하나 <code>COUNT(*)</code>만은 붙여 쓴 형태가 같은 뜻의 표기로 따로 허용된다. 실무 코드에서
+<code>COUNT(*)</code>를 보더라도 놀라지 말자. 이 과정은 헷갈리지 않게 <code>COUNT( * )</code>처럼 전부
+띄우는 표기로 본문·코드를 통일한다.</p>
 </blockquote>
 </section><section class="lblock"><h2>결과 받기 — 그릇을 먼저 만든다</h2>
 <p><button class="term" type="button" data-term="Aggregate">집계</button> 결과는 어느 테이블의 모양과도 같지 않다. <code>carrid</code>는 <code>sflight</code>에서 왔지만 <code>cnt</code>와
@@ -95,10 +97,13 @@
 <code>TYPE p LENGTH 9 DECIMALS 2</code>처럼 소수 자리를 둔 타입으로 잡자.</p>
 </blockquote>
 <blockquote class="cw">
-<p>⚠️ <strong>값이 없는 행을 세는 방식이 함수마다 다르다.</strong> <code>COUNT( * )</code>는 <strong>행 수</strong>를 세므로
-값이 비어 있어도 한 행으로 친다. 반면 <code>SUM</code>·<code>AVG</code>·<code>MAX</code>·<code>MIN</code>은 <strong>값이 없는 칸은
-아예 빼고</strong> 계산한다. 앞 레슨에서 본 LEFT OUTER JOIN처럼 오른쪽이 비는 결과를 집계할
-때 이 차이가 그대로 드러난다.</p>
+<p>⚠️ <strong>값이 없는 행을 세는 방식이 함수마다 다르다.</strong> 여기서 &quot;값이 없다&quot;는
+<a href="CH13-L02.html">앞 레슨</a>에서 본 NULL, 즉 <strong>DB 안에서의</strong> 이야기다. <code>COUNT( * )</code>는
+<strong>행 수</strong>를 세므로 값이 NULL이어도 한 행으로 친다. 반면 <code>SUM</code>·<code>AVG</code>·<code>MAX</code>·<code>MIN</code>은
+<strong>NULL인 칸은 아예 빼고</strong> 계산한다. 순서도 같이 붙잡아 두자. 집계는 <strong>DB 안에서
+NULL인 채로</strong> 먼저 끝나고, 그 결과가 ABAP 그릇으로 넘어오는 순간에야 NULL이
+초기값으로 바뀐다. LEFT OUTER JOIN처럼 오른쪽이 비는 결과를 집계할 때 이 차이가
+그대로 드러난다.</p>
 </blockquote>
 </section><section class="lblock"><h2>중복 없이 — <code>SELECT DISTINCT</code></h2>
 <p><button class="term" type="button" data-term="Aggregate">집계</button>까지 필요 없고 <strong>중복 행만 제거</strong>하고 싶을 땐 <code>DISTINCT</code>를 쓴다.</p>

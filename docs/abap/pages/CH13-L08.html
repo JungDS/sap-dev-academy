@@ -182,6 +182,13 @@
 <li><code>C003</code>은 회차 자체가 없어 회차 칸이 비어 있고 합계는 <code>0</code>이다. LEFT OUTER JOIN이라
 목록에 남았다.</li>
 </ul>
+<p><code>C003</code>의 <code>0</code>이 나오는 과정을 한 번만 따라가 보자. DB 안에서 <code>C003</code> 줄의 <code>b~seats</code>는
+전부 NULL이고, <code>SUM</code>은 NULL인 칸을 빼고 더하니 더할 값이 하나도 없어 <strong>결과 자체가
+NULL</strong>이 된다. 그 NULL이 ABAP의 <code>TYPE i</code> 칸으로 넘어오는 순간 초기값 <code>0</code>으로 바뀐
+것이다(<a href="CH13-L02.html">LEFT OUTER JOIN 레슨</a>의 NULL 규칙 그대로다). 같은 자리를
+<code>COUNT( * )</code>로 세었다면 어땠을까? 행 수를 세는 함수라 <code>C003</code> 줄도 한 행으로 세어
+<code>1</code>이 나왔을 것이다. <a href="CH13-L03.html">GROUP BY 레슨</a>에서 예고한 &quot;값이 없는 행을 세는
+방식이 함수마다 다르다&quot;가 바로 이 장면이다.</p>
 <p>아래 체험은 이 리포트의 <strong>뼈대</strong>를 두 테이블(공연·예매)로 단순화해 보여 준다. JOIN으로
 붙이고 GROUP BY로 묶어 SUM을 내는 흐름은 그대로이니, 위 코드는 여기에 회차를 한 겹 더
 얹은 것이라고 보면 된다.</p>

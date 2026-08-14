@@ -1,0 +1,60 @@
+{
+  "agent": "AG05",
+  "model": "sonnet",
+  "target": "CH16",
+  "persona_ack": "20년차 학습 교재·코스 설계 전문가로서 CH16(Dynpro 기초) 레슨 10개 + 챕터 파일을 챕터구성·섹션흐름·복습/예습장치·불편-해결서사·인지부하 5축으로 감사함.",
+  "method": "대상 11개 파일(챕터 1 + 레슨 10개) 전체 정독. 각 레슨의 prereq/foreshadow/advanceUse 선언과 본문 상호참조·다음 레슨 예고문·코드 블록 밀도를 서로 대조해 챕터 전체의 흐름·통합·부하를 검증. 빌드 실행·grep·웹검색 없음 — 정독과 대조가 유일한 검증 수단.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L10.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH16-L10.md",
+      "quote": "앞 레슨을 따로 보면 Dynpro가 조각처럼 느껴진다.",
+      "category": "챕터 구성·복습 장치(캡스톤 통합)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "캡스톤 L10이 '앞 레슨을 하나의 흐름으로 묶는다'고 선언하지만, 실제 요구사항·통합 코드·검증 시나리오 어디에도 L09(Custom Control·Custom Container·Tabstrip·Subscreen Area·Status Icon)의 개념이 등장하지 않는다.",
+      "evidence": "L10의 요구사항·통합 코드는 GV_CONC(F4)·GV_PERF·GV_SEATS·GV_CUST·GV_STAT·OK_CODE, TABLES zconcert, PROCESS ON VALUE-REQUEST만 다루며 이는 전부 L01·L04·L05·L06·L07·L08에서 온다. L09가 도입한 5개 요소 중 Custom Control/Container는 L09 본문이 'ALV는 [Grid ALV 기초]에서 이 go_cont에 얹는다'며 CH17 재사용을 스스로 명시하지만, Subscreen Area·Tabstrip·Status Icon 3개는 이 11개 파일 안 어디에도 재사용·적용 지점이 없다. 즉 L09에서 새로 배운 5개 개념 중 3개는 챕터 안에서 단 한 번도 손으로 적용해 볼 기회 없이 끝난다.",
+      "suggestion": "L10 요구사항에 Status Icon(잔여석 0이면 매진 표시) 정도를 최소 1개 추가해 L09 개념을 한 번은 직접 적용해 보게 하거나, L09 또는 L10 도입부에 'Subscreen·Tabstrip은 이번 실습 범위 밖이며 이후 프로젝트/심화 과제에서 이어진다'처럼 재사용 시점을 명시해 캡스톤의 '하나의 흐름으로 묶는다'는 문구와 실제 범위를 맞춘다."
+    },
+    {
+      "seq": 2,
+      "file": "CH16-L09.md",
+      "quote": "이 레슨은 화면 안에 **무엇을 얹을 자리**를 만드는 요소들을 다룬다.",
+      "category": "인지 부하",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "한 레슨에서 Custom Control·Custom Container·Tabstrip·Subscreen Area·Status Icon 5개의 이질적 요소를 각각 독립된 코드 블록으로 다루고, 그중 Container·Tabstrip은 아직 정식으로 안 배운 OO 문법([선행 사용] REF TO/CREATE OBJECT/CONTROLS)까지 겹쳐 이 챕터의 다른 레슨보다 신규 개념 밀도가 높다.",
+      "evidence": "L03도 6~7개 요소를 다루지만 '값 운반/function code 발생/화면 이해'라는 3범주로 압축해 인지부하를 낮추는 반면, L09는 5요소를 그런 상위 범주 압축 없이 각각 별도 코드로 풀어낸다(container 생성+생명주기 주의, 4조각 CALL SUBSCREEN 문법, tabstrip 2-모듈 왕복 구조, icon 상수 매핑). Finding 1과 겹치듯 뒤따르는 실습(L10)에서도 전혀 재사용되지 않아 정리·적용으로 부하를 상쇄할 기회가 없다. 다만 저자가 'OO 문법과 Grid 구현은 뒤로 미루고 지금은 화면 영역과 프로그램 연결까지만 정확히 잡는다'고 레슨 안에서 스스로 범위를 좁혀 두어 실제 부담은 상당히 완화되어 있다.",
+      "suggestion": "레슨을 자리 요소(Custom Control/Subscreen)와 네비게이션 요소(Tabstrip/Status Icon) 둘로 나누거나, L03처럼 5요소를 먼저 상위 범주(예: '내용을 담는 자리' vs '화면을 나누는 구조' vs '상태를 보여주는 표시')로 묶어 제시한 뒤 세부로 들어가는 구성을 고려."
+    },
+    {
+      "seq": 3,
+      "file": "_chapter.md",
+      "quote": "표준 화면 말고 내가 설계한 입력 화면이 필요하다.",
+      "category": "챕터 구성(인트로)",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "챕터 intro가 front-matter의 한 문장을 본문에 그대로 반복할 뿐, 이 챕터를 마치면 무엇을 만들게 되는지·중급 난이도로 올라서는 이 시점에 왜 배워야 하는지에 대한 추가적인 설득이 없다.",
+      "evidence": "_chapter.md 본문 전체가 front-matter intro와 동일한 '표준 화면 말고 내가 설계한 입력 화면이 필요하다.' 한 줄로 끝난다. 다만 L01 도입부('정형 화면을 넘어서')가 같은 불편을 예매 화면·검증·버튼이라는 구체적 시나리오로 곧바로 풀어 주므로, 실질적인 설득은 L01이 대신 수행하고 있어 학습 흐름상 치명적이지는 않다. 이 챕터의 셸 렌더링(로드맵 등)이 intro 외에 별도 요약을 붙이는지는 이 파일만으로는 확인할 수 없어 confidence를 추정으로 둔다.",
+      "suggestion": "챕터 intro에 '이 챕터를 마치면 SE80으로 직접 그린 화면을 T-code로 실행하게 된다'처럼 결과 예고를 한 문장만 더해 front-matter와 본문의 완전 중복을 피하고 선매력을 보강."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH16(Dynpro 기초) 10개 레슨은 전반적으로 교수설계 완성도가 높다. L04(DDIC 중복 선언 불편→TABLES)·L05(공연ID 암기 불가→F4)·L07(AT EXIT-COMMAND로 못 나가는 함정) 모두 억지가 아닌 실제 개발자가 겪는 불편에서 출발하는 서사이고, L03의 3행동 분류·L05의 입력도움 우선순위 표·L07의 화면종료 4문장 비교표처럼 여러 요소를 상위 범주로 묶어 인지부하를 관리하는 장치가 레슨마다 반복적으로 잘 쓰인다. 레슨 종료부 예고는 전 레슨에서 1문장 수준으로 절제되어 있고, L04·L05·L07은 이전 챕터 개념(CH12 TABLES 선행 사용, CH15 선택화면 F4, CH10 PERFORM/CALL FUNCTION)을 명시적으로 되짚어 준다. 캡스톤 L10도 요구사항·SE80 제작 순서·통합 코드·검증 시나리오 표까지 갖춰 대부분의 앞선 레슨을 실제로 하나의 흐름으로 잘 엮는다. 다만 세 가지는 다듬을 여지가 있다. (1) 캡스톤이 '앞 레슨을 하나의 흐름으로 묶는다'고 선언하면서도 L09(Custom Control·Tabstrip·Subscreen·Status Icon)는 요구사항·코드 어디에도 다시 등장하지 않아 그중 3개 개념이 챕터 안에서 한 번도 손으로 적용되지 못한다. (2) 그 L09 자체도 이질적 요소 5개를 압축 없이 개별 코드로 나열해 이 챕터에서 신규 개념 밀도가 가장 높다(저자가 스스로 범위를 좁혀 상당 부분 완화하긴 함). (3) 챕터 intro가 front-matter 한 문장을 본문에 그대로 반복할 뿐 별도 설득이 없다(다만 L01이 사실상 이를 대신한다). 세 지점 모두 학습을 가로막는 수준은 아니라 경미 수정으로 충분해 보인다."
+  }
+}

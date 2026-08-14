@@ -1,0 +1,92 @@
+{
+  "agent": "AG06",
+  "model": "opus",
+  "target": "CH14",
+  "persona_ack": "20년차 SAP ABAP 아키텍트(ECC~S/4HANA 개발·운영·성능·이관 경험) 시선으로 CH14 'Classic DDIC View·유지보수 객체' 9개 레슨과 _chapter.md를 읽기 전용 기술 검수했다. 사실 오류·예시 적절성·위험한 생략·안티패턴 네 축으로만 보고, 문체·난이도 등 다른 축은 판단하지 않았다.",
+  "method": "Read 도구로 대상 10개 MD 원문을 전량 통독(셸 실행·웹 검색·외부 네트워크 미사용, 다른 감사자 산출물·과거 감사 아티팩트 미열람). SAP 시스템 접속이 없어 SE11/SE54 화면 동작은 실측 불가 — 시스템 확인이 필요한 항목은 confidence='추정'으로 낮춰 표기했다. 모든 quote는 원문 라인에서 그대로 복사했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L09.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L04.md",
+      "quote": "4. **View Flds** 탭에서 화면에 둘 필드를 고른다(공연의 `ARTIST`·`VENUE`, 회차의 `PERF_NO`·`PERF_DATE`).",
+      "category": "사실 오류(절차 불완전) — Maintenance View 필드 선택",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "Maintenance View의 View Field로 고르라는 네 필드에 기반 테이블의 key 필드 `CONCERT_ID`가 빠져 있다. 이 목록 그대로면 유지보수 화면에서 어떤 공연·어떤 회차인지 식별할 수도, 새 행을 입력할 수도 없다.",
+      "evidence": "Maintenance View는 화면 입력값을 기반 테이블 행으로 되돌려 분배하는 구조라 기반 테이블의 key가 View 안에 있어야 성립한다(실제 SE11도 primary table의 key를 자동으로 가져오며, 표준 유지보수 View는 예외 없이 전체 key를 포함한다). 여기서 ZCONCERT의 key는 CONCERT_ID, ZPERF의 key는 CONCERT_ID+PERF_NO인데 본문 지시에는 CONCERT_ID가 없다. 바로 앞 3단계에서 조인 근거로 zperf-concert_id → zconcert-concert_id를 쓴다고 해 놓고, 정작 그 필드를 화면에 두지 않는 모순이기도 하다. 후속 L09 실습이 'F4로 C001을 골라 새 회차를 등록'하는 흐름이라 CONCERT_ID 입력칸이 없으면 실습 자체가 성립하지 않는다.",
+      "suggestion": "4단계를 'key 필드(`CONCERT_ID`, `PERF_NO`)는 자동으로 들어오고, 여기에 표시·입력할 업무 필드(`ARTIST`·`VENUE`·`PERF_DATE`)를 더한다'로 고치고, 'key 필드는 화면에서 빼면 안 된다'는 한 줄을 흔한 실수 목록에 추가."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L03.md",
+      "quote": "4. **View Flds** 탭에서 `CONCERT_ID`·`ARTIST`·`VENUE`(`ZCONCERT`)와 `NAME`(`ZCONCERT_T`)을 고른다.",
+      "category": "위험한 생략 — Text Table 조인 시 언어 조건",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "Text Table `ZCONCERT_T`를 붙인 Help View인데 언어 필드(`SPRAS`) 처리가 한 번도 언급되지 않는다. 텍스트가 둘 이상 언어로 들어 있는 시스템에서는 F4 목록에 같은 공연 코드가 언어 수만큼 중복으로 뜬다.",
+      "evidence": "Text Table의 key는 (client, 언어, 업무 key)이고 Foreign Key로 자동 생성되는 조인 조건에는 언어 필드가 들어가지 않는다. 따라서 조인 결과 행 수가 언어 수만큼 늘어난다. 표준 SAP Search Help는 이 문제를 selection method의 언어 필드를 파라미터로 노출하고 기본값 SY-LANGU를 주는 방식으로 막는다(DDIC View의 Selection Conditions는 리터럴 비교라 SY-LANGU를 못 쓴다). 단일 언어 교육 시스템에서는 증상이 안 보일 수 있고 릴리스별 Search Help 런타임의 자동 처리 여부까지는 시스템 없이 확정할 수 없어 추정으로 둔다.",
+      "suggestion": "View Flds에 언어 필드를 포함시키고 Search Help 파라미터로 노출해 기본값 SY-LANGU를 주는 표준 방식을 한 단계로 넣거나, 최소한 '텍스트 테이블을 View로 직접 붙이면 언어 조건을 따로 챙겨야 한다'는 주의 콜아웃을 추가."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L06.md",
+      "quote": "`SE54`로 **정의**하고(Edit View Cluster), 실제 계층 유지보수는 **SM34**(View Cluster Maintenance)로 실행한다. 관련 View와 테이블을 **헤더 → 상세 → 상세의 상세** 계층으로 엮는다.",
+      "category": "위험한 생략 — View Cluster 전제 조건",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "View Cluster에 묶을 View·테이블 각각에 유지보수 다이얼로그(TMG)가 먼저 생성돼 있어야 한다는 필수 전제가 빠져 있다. 이 전제를 모른 채 SE54로 들어가면 오브젝트 등록·활성화 단계에서 막힌다.",
+      "evidence": "View Cluster는 자기 화면을 새로 찍어 내는 도구가 아니라 각 오브젝트의 기존 유지보수 다이얼로그(생성된 function group의 화면)를 계층 순서로 불러 주는 껍데기다. 그래서 TMG가 없는 오브젝트는 View Cluster 구성 요소가 될 수 없다. 바로 앞 L05에서 TMG 생성을 배웠으므로 '앞 레슨에서 만든 유지보수 화면이 있어야 이 레슨이 성립한다'는 한 줄이면 연결되는데, 현재 본문에는 그 연결이 없다.",
+      "suggestion": "'SE54 정의 전에 묶을 대상(공연·회차 각각)에 TMG가 이미 생성돼 있어야 한다'는 전제 문장을 정의 절차 앞에 추가."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L09.md",
+      "quote": "`INTO CORRESPONDING FIELDS OF TABLE`을 쓴다([Chapter 13 · JOIN](CH13-L01.html)에서 쓰던 그 형태다).",
+      "category": "안티패턴/예시 적절성 — 불필요한 CORRESPONDING FIELDS",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "대상 내부 테이블이 `zv_perf` 자체 타입이고 필드 목록도 View 필드와 이름·순서가 그대로 일치하는데 `INTO CORRESPONDING FIELDS OF TABLE`을 '기본'처럼 서술한다. 이 자리의 정석은 `INTO TABLE`이다.",
+      "evidence": "CORRESPONDING FIELDS는 필드명 기준 매핑을 런타임에 수행해 구조가 일치하는 경우 순수 오버헤드이고, 이름이 어긋난 필드는 오류 없이 초기값으로 남아 버그가 조용히 숨는 특성이 있다. 실무 코드 리뷰에서는 '대상 타입이 소스와 같으면 INTO TABLE, 다르면 필드 목록에 맞춘 구조를 따로 선언'을 권한다. 본문 스스로 '위 다섯 필드가 ZV_PERF의 전부'라고 밝히고 있어 매핑이 필요 없는 상황임이 드러난다.",
+      "suggestion": "예제를 `INTO TABLE gt_perf`로 바꾸고, CORRESPONDING FIELDS는 '담는 그릇의 구조가 읽는 필드 목록과 다를 때 쓰는 형태'로 별도 한 줄 소개."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L09.md",
+      "quote": "화면 밖에서 일어나는 삭제까지 막아 주지 않기 때문이다",
+      "category": "사실 오류(정밀도) — Foreign Key의 작동 범위",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "Foreign Key는 화면 안에서 일어나는 부모 행 삭제도 막지 않는다. '화면 밖에서 일어나는 삭제까지'라는 표현은 SM30 같은 표준 화면에서는 부모 삭제가 걸러진다는 반대 오해를 만든다.",
+      "evidence": "같은 챕터 L04가 정확히 적어 둔 대로 DDIC Foreign Key가 평가되는 자리는 input check·input help·View 생성 셋뿐이고, 셋 모두 '입력된 값이 check table에 있는가'를 볼 뿐 check table(부모) 행의 삭제는 검사하지 않는다. 실제로 SM30으로 ZCONCERT 행을 지워도 ZPERF의 자식 행은 그대로 남아 고아가 된다. 즉 고아가 생긴다는 결론은 맞지만 그 이유를 '화면 밖'으로 돌린 부분이 틀렸고, L04 서술과도 어긋난다.",
+      "suggestion": "'Foreign Key는 입력값을 검사하는 장치일 뿐, 표준 화면이든 아니든 부모 행 삭제 자체를 막지 않기 때문이다'로 문장을 교체."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L01.md",
+      "quote": "조인 조건은 `concert_id`이고, View Field는 **다섯**이다.",
+      "category": "사실 오류(추정) — client 종속 View의 client 필드",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "두 basis table이 client 종속이라 이 Database View도 client 종속이 되고, client 필드(`MANDT`)가 View Field 목록 첫 자리에 따라 들어간다. 그러면 SE11 화면에서 실제로 보이는 View Field는 다섯이 아니라 여섯이라 학습자가 '내가 잘못 만들었나' 하고 멈추게 된다.",
+      "evidence": "표준 client 종속 DDIC View들의 필드 목록은 예외 없이 client 필드로 시작하고, Open SQL의 자동 client 처리도 View 구조에 client 필드가 있어야 성립한다. 같은 레슨의 콜아웃이 '조인 조건에 MANDT가 자동으로 들어간다'까지는 정확히 짚었는데 필드 쪽은 다루지 않았다. L09의 '위 다섯 필드가 ZV_PERF의 전부이니 결과는 SELECT *와 같다'는 서술도 같은 전제를 쓴다. SE11이 자동으로 넣어 주는지 개발자가 직접 넣는지는 시스템 확인이 불가해 추정으로 표기한다.",
+      "suggestion": "'업무 필드는 다섯이고, client 필드는 client 종속 테이블이라 자동으로 함께 들어간다'는 반 줄 보완(같은 전제를 쓰는 L09 문장도 함께 조정)."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "기술적으로 상당히 견실한 챕터다. View 네 종류의 성격 구분(Database=inner join·DB에 SQL View 생성 / Projection=DDIC 전용·런타임이 basis table 읽기로 치환 / Help·Maintenance=Open SQL 대상 아님·주 테이블 보존 outer), Database View의 한계(계산·outer·union 불가, Selection Conditions는 고정 조건만), Foreign Key가 DB 제약이 아니라 DDIC 설계 정보라는 점과 고아 행 발생, 권한 그룹 미지정 시 &NC& 귀속, S_TABU_DIS/S_TABU_NAM, SE16N의 &SAP_EDIT와 SE16N_CD_* 변경 기록, Delivery Class와 Recording Routine의 짝, View 이름 16자 제한 — 이 수준 교재에서 자주 틀리는 지점들이 대부분 정확하다. 성능 경고(조건 없는 SELECT *)와 '생성 성공 ≠ 유지보수 가능' 같은 실무 감각도 들어가 있다. 다만 실습 재현성을 깨는 구멍이 셋 있다. ① L04의 Maintenance View 필드 선택에서 key 필드 CONCERT_ID가 빠져 그대로 따라 하면 식별·입력이 안 된다. ② L03의 Help View가 Text Table을 붙이면서 언어 조건을 다루지 않아 다국어 시스템에서 F4 목록이 중복된다. ③ L06의 View Cluster가 '각 오브젝트에 TMG가 먼저 있어야 한다'는 전제를 빠뜨렸다. 나머지 셋(불필요한 INTO CORRESPONDING FIELDS, Foreign Key 삭제 서술의 정밀도, client 필드 개수)은 문장 단위 손질이다. 구조 재작성이 필요한 수준은 아니고, 지목된 여섯 곳을 줄 단위로 고치면 충분하다."
+  }
+}

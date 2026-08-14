@@ -54,6 +54,9 @@
 <li>PBO에서 PF-STATUS·TITLEBAR를 켜고 상태 드롭다운을 채운다.</li>
 <li>PAI에서 <code>OK_CODE</code>를 <code>save_ok</code>로 옮기고 <code>CLEAR</code>한 뒤, <code>SAVE</code>면
 <a href="CH10-L07.html">잔여석 계산·예매 판정</a>의 <code>can_book</code>으로 검증한다.</li>
+<li>나가기 셋(<code>BACK</code>·<code>EXIT</code>·<code>CANCEL</code>)은 function type <code>E</code> + <code>AT EXIT-COMMAND</code> 모듈로
+처리한다. 칸을 비운 채 눌러도 화면을 떠날 수 있어야 한다
+(<a href="CH16-L07.html">PAI 처리 흐름 — OK_CODE와 화면 떠나기</a>).</li>
 <li>공연 정보는 DDIC <code>ZCONCERT</code>에서 오므로 <code>TABLES zconcert</code>로 잇고, 공연에 따라 달라지는
 회차 F4는 직접 만든다(<a href="CH16-L04.html">Dictionary 운반</a>·<a href="CH16-L05.html">F1·F4 직접 만들기</a>).</li>
 </ul>
@@ -123,7 +126,8 @@ Flow Logic은 Screen Painter에, <code>MODULE ... ENDMODULE</code>은 program so
 32
 33
 34
-35</pre><pre class="abap-editor__code"><code><span class="tok-com">" ===== ABAP source (…TOP include) =====</span>
+35
+36</pre><pre class="abap-editor__code"><code><span class="tok-com">" ===== ABAP source (…TOP include) =====</span>
 <span class="tok-kw">PROGRAM</span> sapmzconcert.
 
 <span class="tok-kw">DATA</span>: gv_conc  <span class="tok-kw">TYPE</span> zconcert-concert_id,
@@ -143,6 +147,7 @@ Flow Logic은 Screen Painter에, <code>MODULE ... ENDMODULE</code>은 program so
   <span class="tok-kw">MODULE</span> status_0100.
   <span class="tok-kw">MODULE</span> fill_status_list.
 <span class="tok-kw">PROCESS</span> <span class="tok-kw">AFTER</span> <span class="tok-kw">INPUT</span>.
+  <span class="tok-kw">MODULE</span> exit_0100 <span class="tok-kw">AT</span> EXIT-COMMAND.   <span class="tok-com">" 나가기(type E) 우선 처리 — 입력 검사보다 먼저</span>
   <span class="tok-kw">MODULE</span> user_command_0100.
 
 <span class="tok-com">" ===== ABAP source (…O01 include) =====</span>
@@ -177,8 +182,28 @@ Flow Logic은 Screen Painter에, <code>MODULE ... ENDMODULE</code>은 program so
 16
 17
 18
-19</pre><pre class="abap-editor__code"><code><span class="tok-com">" ===== ABAP source (…I01 include) =====</span>
-<span class="tok-kw">MODULE</span> user_command_0100 <span class="tok-kw">INPUT</span>.
+19
+20
+21
+22
+23
+24
+25
+26
+27</pre><pre class="abap-editor__code"><code><span class="tok-com">" ===== ABAP source (…I01 include) =====</span>
+<span class="tok-kw">MODULE</span> exit_0100 <span class="tok-kw">INPUT</span>.                <span class="tok-com">" 나가기 전용 — 입력 검사보다 먼저 실행</span>
+  save_ok = ok_code.                   <span class="tok-com">" 보조 변수로 복사</span>
+  <span class="tok-kw">CLEAR</span> ok_code.                       <span class="tok-com">" 즉시 비움(반복 실행 방지)</span>
+
+  <span class="tok-kw">CASE</span> save_ok.
+    <span class="tok-kw">WHEN</span> <span class="tok-str">'BACK'</span> <span class="tok-kw">OR</span> <span class="tok-str">'CANCEL'</span>.
+      <span class="tok-kw">LEAVE</span> <span class="tok-kw">TO</span> <span class="tok-kw">SCREEN</span> <span class="tok-num">0</span>.               <span class="tok-com">" 화면 종료</span>
+    <span class="tok-kw">WHEN</span> <span class="tok-str">'EXIT'</span>.
+      <span class="tok-kw">LEAVE</span> <span class="tok-kw">PROGRAM</span>.                   <span class="tok-com">" 프로그램 종료</span>
+  <span class="tok-kw">ENDCASE</span>.
+<span class="tok-kw">ENDMODULE</span>.
+
+<span class="tok-kw">MODULE</span> user_command_0100 <span class="tok-kw">INPUT</span>.        <span class="tok-com">" 나가기는 위 exit_0100 담당</span>
   save_ok = ok_code.                   <span class="tok-com">" 보조 변수로 복사</span>
   <span class="tok-kw">CLEAR</span> ok_code.                       <span class="tok-com">" 즉시 비움(반복 실행 방지)</span>
 
@@ -190,13 +215,14 @@ Flow Logic은 Screen Painter에, <code>MODULE ... ENDMODULE</code>은 program so
       <span class="tok-kw">ELSE</span>.
         <span class="tok-kw">MESSAGE</span> <span class="tok-str">'좌석이 부족합니다'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'E'</span>.   <span class="tok-com">" 화면 유지(정상 검증)</span>
       <span class="tok-kw">ENDIF</span>.
-    <span class="tok-kw">WHEN</span> <span class="tok-str">'BACK'</span> <span class="tok-kw">OR</span> <span class="tok-str">'CANCEL'</span>.
-      <span class="tok-kw">LEAVE</span> <span class="tok-kw">TO</span> <span class="tok-kw">SCREEN</span> <span class="tok-num">0</span>.               <span class="tok-com">" 화면 종료</span>
-    <span class="tok-kw">WHEN</span> <span class="tok-str">'EXIT'</span>.
-      <span class="tok-kw">LEAVE</span> <span class="tok-kw">PROGRAM</span>.                   <span class="tok-com">" 프로그램 종료</span>
   <span class="tok-kw">ENDCASE</span>.
 <span class="tok-kw">ENDMODULE</span>.</code></pre></div></div>
 <ul>
+<li><strong>나가기 셋은 <code>exit_0100</code>이 받는다.</strong> 절차 6에서 <code>BACK</code>·<code>EXIT</code>·<code>CANCEL</code>의 function type을
+<code>E</code>로 지정했으므로, 이 버튼들은 입력 검사보다 <strong>먼저</strong> <code>AT EXIT-COMMAND</code> 모듈로 온다.
+필수 칸을 비운 채 눌러도 화면을 떠날 수 있고, <code>user_command_0100</code>에는 아예 도착하지
+않으므로 거기엔 나가기 분기를 두지 않는다
+(<a href="CH16-L07.html">PAI 처리 흐름 — OK_CODE와 화면 떠나기</a>에서 만든 패턴 그대로).</li>
 <li>⚠️ <strong>판정 결과를 왜 <code>gv_ok</code>라고 지었을까.</strong> <code>MODULE ... ENDMODULE</code>은 <code>FORM</code>이나 <code>METHOD</code>와
 달리 <strong>자기만의 지역 데이터 영역이 없다.</strong> 모듈 안에서 <code>DATA</code>로 선언해도 그 변수는
 <strong>프로그램 전역</strong>이 된다. 그래서 이름도 지역을 뜻하는 <code>lv_</code>가 아니라 전역을 뜻하는 <code>gv_</code>로
@@ -270,12 +296,17 @@ work area를 채워야 한다(이 실습은 거기까지 하지 않는다). 라�
 <tr>
 <td>BACK</td>
 <td><code>BACK</code></td>
-<td><code>LEAVE TO SCREEN 0</code>(화면 sequence 종료)</td>
+<td><code>exit_0100</code>에서 <code>LEAVE TO SCREEN 0</code>(화면 sequence 종료)</td>
 </tr>
 <tr>
 <td>EXIT</td>
 <td><code>EXIT</code></td>
-<td><code>LEAVE PROGRAM</code>(프로그램 종료)</td>
+<td><code>exit_0100</code>에서 <code>LEAVE PROGRAM</code>(프로그램 종료)</td>
+</tr>
+<tr>
+<td>빈 칸 탈출</td>
+<td>칸을 비운 채 <code>BACK</code></td>
+<td>입력 검사에 막히지 않고 화면 종료(<code>AT EXIT-COMMAND</code>)</td>
 </tr>
 <tr>
 <td>반복 방지</td>
@@ -289,6 +320,8 @@ work area를 채워야 한다(이 실습은 거기까지 하지 않는다). 라�
 <li><strong><code>MESSAGE E</code> 후 화면 유지를 실패로 오해</strong> → 정상 검증 흐름이다(잘못 입력을 막고 다시 받음).</li>
 <li><strong>저장까지 기대</strong> → 화면·검증까지가 이 챕터. <code>INSERT</code>·<code>COMMIT WORK</code>은 이후.</li>
 <li><strong>EXIT를 <code>LEAVE TO SCREEN 0</code>으로</strong> → EXIT는 <code>LEAVE PROGRAM</code>. 화면 종료와 프로그램 종료를 구분.</li>
+<li><strong>function type <code>E</code>만 지정하고 <code>AT EXIT-COMMAND</code> 모듈은 빼먹음</strong> → 받아 줄 모듈이 없으면
+일반 PAI로 처리되어 입력 검사에 도로 막힌다. type <code>E</code> 지정과 <code>exit_0100</code> 모듈은 한 세트다.</li>
 <li><strong>모듈 안에서 <code>DATA lv_...</code></strong> → 모듈에는 지역 데이터 영역이 없다. 전역이므로 <code>gv_</code>로 짓고
 선언부에 모은다.</li>
 </ul>
@@ -299,9 +332,11 @@ PAI가 <code>OK_CODE</code>를 읽어 검증·종료한다.</p>
 2
 3
 4
-5</pre><pre class="abap-editor__code"><code>Dynpro    = 직접 설계한 화면
+5
+6</pre><pre class="abap-editor__code"><code>Dynpro    = 직접 설계한 화면
 PBO       = 보여 주기 전 준비(상태·제목·목록·속성)
 PAI       = 사용자 행동 뒤 처리(OK_CODE 복사→CLEAR→CASE)
+나가기    = function type E 버튼 → AT EXIT-COMMAND 모듈이 입력 검사보다 먼저 받는다
 화면 종료 = LEAVE TO SCREEN 0 / 프로그램 종료 = LEAVE PROGRAM
 화면 표   = Table Control이 아니라 Grid ALV로 이어진다</code></pre></div></div>
 <hr>

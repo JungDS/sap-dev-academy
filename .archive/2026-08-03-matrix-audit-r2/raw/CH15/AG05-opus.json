@@ -1,0 +1,95 @@
+{
+  "agent": "AG05",
+  "model": "opus",
+  "target": "CH15",
+  "persona_ack": "20년차 학습 교재·코스 설계 전문가로서 CH15(Report Event·Selection Screen 심화)를 교수설계 관점에서만 감사했다. 판단 축은 ①챕터 구성(레슨 분할·순서·intro의 설득력) ②섹션 흐름(왜 필요한가→무엇인가→어떻게 쓰나→실수·주의→정리) ③복습·예습 장치 ④불편→해결 서사의 진정성 ⑤인지 부하이며, 문법 정확성·사실검증은 다루지 않았다. 5단계 흐름이 자연스럽게 변형된 곳은 결함으로 세지 않았다.",
+  "method": "Read 도구로 대상 13개 파일(_chapter.md + CH15-L01~L12)을 front-matter 포함 전문 통독하고, Grep으로 인용 앵커 6건의 원문 존재를 재확인했다. 레슨 간 상호참조 링크·[선행 사용] 선언(front-matter advanceUse vs 본문)·다음 레슨 예고 형식·예제 도메인·introduces 개수를 파일 간 대조했다. 빌드·브라우저·웹 검색은 사용하지 않았고, 다른 감사자 산출물이나 과거 감사 기록은 열지 않았다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L10.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L11.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L12.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L12.md",
+      "quote": "블록·버튼 같은 화면 구성과 보조 선택화면·Variant는 **여기서 다시 다루지 않는다**",
+      "category": "챕터 구성 · 캡스톤 회수 범위",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "챕터 마무리 실습(L12)이 챕터 후반부 — L08(블록·그룹 검증, F1·F4)·L09(선택화면 UI 구성)·L11(보조 선택화면·Variant) — 를 통합 대상에서 명시적으로 제외한다. 그 결과 12개 레슨 중 앞쪽 이벤트 계열 4개(L02·L03·L05·L07)와 MODIF ID만 회수되고, 후반 레슨들은 서로 결합해 쓰는 전이 연습 없이 끝난다. 챕터 intro가 내건 '배운 것을 하나로 묶는다'는 약속과도 어긋난다.",
+      "evidence": "_chapter.md는 '예매현황 리포트 하나로 묶는다.'라고 예고한다. 그러나 L12의 회수 범위 콜아웃은 대상을 '이벤트 네 자리 + 존재·권한 검증 + MODIF ID'로 한정하고 화면 구성·보조 선택화면·Variant를 제외한다고 못 박는다. 실제 통합 코드에도 SELECTION-SCREEN BLOCK·PUSHBUTTON·CALL SELECTION-SCREEN·Variant가 한 줄도 없고, '검증 시나리오' 표 6행 역시 이벤트·검증만 다룬다. 각 레슨에 개별 체험(embed)은 있으나 후반 4개 레슨을 한 흐름으로 엮어 보는 지점은 챕터 어디에도 없다.",
+      "suggestion": "L12 요구사항에 후반부 회수 항목을 1～2개만 추가한다(예: 조회 조건을 블록 두 개로 묶기, '고급조건' PUSHBUTTON을 눌러 보조 화면 1100을 호출하고 sy-subrc로 적용/취소 분기). 실습 분량이 부담되면 L11 뒤에 후반부 전용 미니 실습을 짧게 두는 대안도 있다. 둘 다 어렵다면 챕터 intro의 문구를 '이벤트 흐름을 하나로 묶는다'로 정직하게 좁혀 약속과 산출을 일치시킨다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L02.md",
+      "quote": "PARAMETERS pa_date TYPE d.",
+      "category": "인지 부하 · 개념 도입 순서(선언형 옵션 vs 이벤트 코드)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "기본값을 주제로 삼은 L02가 선언형 대안인 `DEFAULT` 옵션을 한 줄도 언급하지 않아, 학습자가 '기본값 = INITIALIZATION 코드'로 과잉일반화하기 쉽다. 정작 8개 레슨 뒤 L10이 '옵션으로 먼저 해결하라'는 반대 원칙을 제시해, 앞서 배운 습관을 뒤늦게 원칙 한 줄로만 교정한다.",
+      "evidence": "L02 예제는 `PARAMETERS pa_date TYPE d.`로 선언한 뒤 INITIALIZATION에서 `pa_date = sy-datum.`을 대입하고, SELECT-OPTIONS 기본 조건도 header line + APPEND로 채운다. 두 경우 모두 선언 옵션(`PARAMETERS ... DEFAULT sy-datum`, `SELECT-OPTIONS ... DEFAULT`)만으로 해결되는 대표 사례다. L02의 '흔한 실수와 점검' 4개 항목에도 이 대비가 없어, 학습자가 '왜 코드로 하나'를 물을 지점이 비어 있다. 반면 L10은 '입력 필수·기본값·대소문자·복수 선택·화면 제어를 event 코드로 억지 구현하기 전에, 옵션으로 해결되는지 먼저 본다'고 명시한다.",
+      "suggestion": "L02에 1～2문장 경계 문장을 넣는다: '값이 고정이면 PARAMETERS ... DEFAULT로 선언만으로 끝난다. INITIALIZATION은 계산이 필요하거나 조건 행을 여러 줄 만들어야 할 때의 자리다.' 옵션 목록 자체는 L10에 그대로 두고 포인터만 걸면 중복 없이 순서 문제만 해소된다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L09.md",
+      "quote": "선택화면에는 두 종류의 버튼을 둘 수 있다.",
+      "category": "섹션 흐름 · 불편→해결 순서(쓸모보다 도구가 먼저)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L09의 버튼 절(PUSHBUTTON·FUNCTION KEY·SSCRFIELDS-UCOMM)이 '버튼이 왜 필요한가'라는 불편 없이 도구부터 제시되고, 버튼의 실제 쓸모(보조 선택화면 호출)는 두 레슨 뒤 L11에서야 등장한다. 이 챕터가 다른 곳에서 잘 지키는 불편→해결 순서가 이 절에서만 뒤집혀 있다.",
+      "evidence": "L09 버튼 예제의 동작은 `MESSAGE '조건을 다시 계산했습니다' TYPE 'S'`·`TYPE 'I'` 안내가 전부라, 버튼을 만들고도 그것으로 무엇을 하는지가 남지 않는다. 반면 L11은 '본문 PUSHBUTTON·툴바 FUNCTION KEY가 눌렸을 때 sscrfields-ucomm을 보고 CALL SELECTION-SCREEN 1100을 호출하면 옵션 팝업이 뜬다'로 목적을 뒤늦게 제시한다. 더구나 버튼 때문에 L09는 `TABLES sscrfields` 선행 사용과 SY-UCOMM vs SSCRFIELDS-UCOMM 주의까지 떠안아, 이미 front-matter introduces가 7개로 챕터 최다인 레슨의 밀도를 더 올린다.",
+      "suggestion": "버튼 절을 L11 앞부분(보조 화면을 여는 트리거)으로 옮기면 L09는 '묶고 나누기 + 입력 방식 고르기'로 응집이 살고, 버튼은 '팝업을 열어야 한다'는 불편과 곧바로 붙는다. 이동이 부담이면 최소한 L09 버튼 도입부에 '이 버튼으로 무엇을 여는지는 뒤에서 다룬다'는 목적 1문장을 붙여 도구만 남는 상태를 피한다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L08.md",
+      "quote": "\" ── 화면 선언부 [선행 사용] — 정식 설명은 다음 레슨 ──",
+      "category": "챕터 구성 · 레슨 순서(선언 문법과 그 대상 검증의 역전)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L08(블록·라디오그룹 검증)이 그 대상을 화면에 선언하는 문법 레슨(L09)보다 먼저 배치돼, 학습자가 아직 배우지 않은 `SELECTION-SCREEN BEGIN OF BLOCK`과 `RADIOBUTTON GROUP` 선언을 [선행 사용]으로 안고 읽어야 한다. 게다가 front-matter advanceUse에는 라디오 그룹만 선언돼 있고 블록 선언은 빠져 있어, 본문이 실제로 당겨 쓴 범위와 선언된 범위가 어긋난다.",
+      "evidence": "L08 예제 상단에 '화면 선언부 [선행 사용] — 정식 설명은 다음 레슨' 주석과 함께 `BEGIN OF BLOCK b_date WITH FRAME`·`PARAMETERS: pa_sum RADIOBUTTON GROUP g1 DEFAULT 'X'` 두 문법이 나온다. 그런데 front-matter advanceUse는 'PARAMETERS RADIOBUTTON GROUP(선언만 — 정식은 다음 레슨)' 하나뿐이다. 완화 콜아웃('지금은 뜯어보거나 외울 필요 없다')이 잘 쓰여 있어 피해가 크지는 않지만, L07 → L09 → L08 순서였다면 선행 사용 자체가 필요 없다는 점에서 회피 가능한 부담이다.",
+      "suggestion": "① L09를 L08 앞으로 옮겨 '화면을 그린다 → 그 단위로 반응한다' 순서로 정렬한다(L07-L08을 '검증 심화 묶음'으로 읽히게 하던 서사는 L08 도입부 한 문장으로 복구 가능). 또는 ② 현 순서를 유지하되 advanceUse에 'SELECTION-SCREEN BEGIN/END OF BLOCK(선언만)'을 함께 선언해 게이팅 근거를 본문과 일치시킨다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L03.md",
+      "quote": "화면 모양은 제어했다. 이제 사용자가 실행을 누른 순간 **입력을 검증**하자 → 다음 레슨(AT SELECTION-SCREEN).",
+      "category": "예습 장치 · 학습 동선 일관성",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "다음 레슨 예고가 L01～L05에서는 링크 없는 괄호 표기인데 L06～L12에서는 제목 링크로 되어 있어, 챕터 전반부 다섯 레슨에서는 학습자가 예고를 읽고도 다음 레슨으로 바로 이동할 수단이 없다.",
+      "evidence": "L01 '→ ... INITIALIZATION (다음 레슨)', L02 '→ 다음 레슨(AT SELECTION-SCREEN OUTPUT)', L03·L04·L05 모두 같은 무링크 형식이다. 반면 L06은 '→ [Selection Screen 권한/존재 여부 검증 기초](CH15-L07.html)', L07～L11도 챕터 내 다음 레슨 링크, L12는 다음 챕터 링크로 이어진다. 예고 분량 자체는 전 레슨 1문장 수준으로 적절해, 문제는 형식 불일치와 이동 수단 부재에 한정된다.",
+      "suggestion": "L01～L05의 예고도 '→ [레슨 제목](CH15-Lnn.html)' 형식으로 통일한다. 문장 길이는 지금 그대로 두면 된다."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L08.md",
+      "quote": "PARAMETERS pa_carr TYPE scarr-carrid.",
+      "category": "인지 부하 · 예제 도메인 일관성",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "챕터의 모든 예제가 콘서트 도메인(zconcert·zbooking)인데 L08의 F4 절만 항공사 데모 데이터(scarr·carrid·carrname)로 바뀌어, 이벤트 학습과 무관한 새 데이터 모델을 잠깐 얹어 읽어야 한다. 같은 레슨 안에서 도메인이 갈리는 점이 특히 부담이다.",
+      "evidence": "L08의 F1 예제는 '공연 코드는 ZCONCERT에 등록된 CONCERT_ID입니다'로 콘서트 도메인인데, 바로 다음 F4 절은 `PARAMETERS pa_carr TYPE scarr-carrid.`·`gs_carr`(carrid·carrname)·`SELECT carrid carrname FROM scarr`로 바뀌고 체험 임베드 안내도 'pa_carr에서 F4를'로 이어진다. F4 목록에 필요한 '코드 + 이름' 쌍은 zconcert(공연 코드·공연명)로도 그대로 만들 수 있어, 도메인 전환의 학습상 이득이 보이지 않는다.",
+      "suggestion": "F4 예제를 공연 코드·공연명 기반으로 바꿔 관통예제를 유지한다. 표준 데모 테이블을 굳이 노출하고 싶다면 '실무·교재에서는 SAP 표준 예제 테이블 scarr로도 많이 연습한다' 정도의 한 줄 각주로 남긴다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH15는 12개 레슨 전체가 '왜 필요한가→무엇인가→어떻게 쓰나→실수·주의→정리' 흐름을 안정적으로 지키고, 도입부 불편도 대체로 진짜 불편이다(L04의 날짜 역전→빈 결과 오해, L07의 '없는 코드 vs 못 보는 코드', L06의 legacy 오해 교정이 특히 좋다). 옵션 레슨(L10)을 '찾아보는 카탈로그'라고 정직하게 선언해 억지 불편을 붙이지 않은 점, L02→CH12·L05→CH12/CH13·L06→CH11처럼 이전 개념을 재사용할 때마다 상기 링크를 다는 복습 장치, L04의 MESSAGE 6종·L09의 TABBED BLOCK을 '지금 외울 필요 없다'로 접어 둔 부하 관리도 설계 수준이 높다. 결함은 문장이 아니라 구조 쪽에 몰려 있다. ①마무리 실습이 챕터 후반(화면 구성·보조화면·Variant)을 회수하지 않아 12레슨 중 절반가량이 통합 연습 없이 끝나고, 이는 chapter intro의 약속과도 어긋난다. ②기본값 레슨이 선언형 DEFAULT 대안을 언급하지 않아 8레슨 뒤 L10의 '옵션 우선' 원칙과 충돌한다. ③버튼(L09)이 그 쓸모(L11)보다 먼저 나오고, 블록 검증(L08)이 블록 선언(L09)보다 먼저 나오는 두 지점에서 순서가 뒤집혀 있다. 나머지 둘(전반부 예고 링크 누락, F4 예제의 도메인 이탈)은 마감 수준의 문제다. 모두 문장 추가·절 이동·링크 통일 같은 국소 수정으로 해결되며 재집필이나 대규모 보강은 필요 없다."
+  }
+}

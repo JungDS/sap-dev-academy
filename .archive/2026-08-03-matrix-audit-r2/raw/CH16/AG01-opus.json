@@ -1,0 +1,126 @@
+{
+  "agent": "AG01",
+  "model": "opus",
+  "target": "CH16",
+  "persona_ack": "나는 '은서'다. 개발·전공 경험이 전혀 없는 24세 문과 출신 입문자로, 이 사이트로 ABAP을 처음 공부한다. CH16을 _chapter와 L01부터 L10까지 순서대로, 처음 읽는 사람의 눈으로 통독했다. 내 바깥 지식으로 빈틈을 메우지 않고, 풀이가 그 자리(또는 이 챕터의 앞 레슨)에 없어서 멈춘 곳·생략·단절·과부하만 기록했다.",
+  "method": "Read 도구로 대상 MD 11개를 L01→L10 순서대로 전문 통독(front-matter·코드 블록·콜아웃 포함). 각 finding의 quote는 PowerShell Select-String -SimpleMatch로 원문에 그대로 존재하는지 1건씩 대조 확인했다. 용어의 최초 등장·부재 판정('function type', 'AT EXIT-COMMAND', '화면 sequence', '타입 그룹', 'TYPE screen', 'dynpprog')도 같은 방식으로 챕터 11개 파일 전체 분포를 확인해 근거로 삼았다. 웹 검색·외부 자료·브라우저·빌드 산출물은 사용하지 않았고, 다른 감사자 산출물이나 과거 감사 기록도 열지 않았다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L10.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L01.md",
+      "quote": "| 중심 흐름 | 이벤트(`START-OF-SELECTION`…) | 화면 sequence · **PBO/PAI** |",
+      "category": "단절",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L01 비교표에 '화면 sequence'가 풀이 없이 나온다. 바로 위 🪧 콜아웃은 PBO/PAI와 OK_CODE만 '나중에 풀이한다'고 양해를 구해서, 오히려 '그럼 화면 sequence는 지금 알아야 하는 말인가?' 하고 멈추게 된다.",
+      "evidence": "'화면 sequence'는 이 챕터에서 L01:39에 처음 나오는데 풀이가 없고, 정의는 다음 레슨 L02:34('화면들이 이렇게 줄줄이 이어지는 흐름을 화면 sequence(화면 줄서기)라고 부른다')에 가서야 나온다. 같은 표의 '탭·컨트롤'도 L09까지 안 나오는 말이라 함께 걸린다. 미리 알려 주는 콜아웃이 두 단어만 짚었기 때문에, 짚지 않은 단어는 '이미 아는 말'처럼 읽힌다.",
+      "suggestion": "L01의 🪧 콜아웃 목록에 '화면 sequence(·탭/컨트롤)'를 함께 넣고 어느 레슨에서 풀이하는지 링크하거나, 표 안에서 '화면 sequence' 대신 '화면이 줄줄이 이어지는 흐름'처럼 일상어로 바꾼다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L05.md",
+      "quote": "그리고 **한 모듈 안에서** 값을 읽고, 후보를 만들고, F4 창을 띄운다. Module Pool에는",
+      "category": "과부하",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "이 문장 뒤에 이어지는 `MODULE value_perf INPUT.` 한 덩어리(약 40줄)에 처음 보는 함수 2개·처음 보는 타입·낯선 파라미터 8개·`sy-subrc` 가드 2개가 한꺼번에 들어 있어, 한 번 읽어서는 '어디까지가 값 읽기이고 어디부터가 창 띄우기인지'가 나뉘지 않는다. 이 챕터에서 가장 무거운 지점이다.",
+      "evidence": "같은 레슨에서 이미 POV/POH 두 개, 입력 도움 우선순위 4단계 표, `INPUT`이 PAI를 뜻하지 않는다는 예외까지 새로 배운 직후다. 그 상태에서 `DYNP_VALUES_READ`·`F4IF_INT_TABLE_VALUE_REQUEST`·`dynpread`·`gt_dynp`/`gs_dynp`/`gt_perf`/`gs_perf` 네 개의 새 변수가 동시에 등장한다. 부담을 덜어 주는 안내('지금 이 코드를 통째로 외울 필요는 없다')는 코드가 끝난 뒤 L05:174에 있어서, 정작 읽는 동안에는 도움이 되지 않는다.",
+      "suggestion": "모듈 코드를 ①화면값 읽기 ②후보 만들기 ③F4 창 띄우기 세 조각으로 나눠 각 조각 뒤에 한 줄 요약을 붙이고, '통째로 외울 필요 없다'는 안내를 코드 **앞**으로 옮긴다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L05.md",
+      "quote": "dynpprog    = sy-repid",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "바로 아래 '낯선 파라미터 읽는 법' 표가 `dyname`·`dynumb`는 풀이하면서 두 번째 함수의 `dynpprog`·`dynpnr`·`value_tab`은 빼먹었다. 거의 같아 보이는 이름 네 개 중 둘만 설명된 상태라, 같은 `sy-repid`를 왜 어떤 데선 `dyname`, 어떤 데선 `dynpprog`라고 부르는지 알 수 없다.",
+      "evidence": "L05:151～158 표의 행은 `dyname`·`dynumb`·`dynpfields`·`retfield`·`dynprofield`·`value_org` 여섯 개뿐이고, 코드 L05:140～144의 `dynpprog`·`dynpnr`·`value_tab`은 표에 없다. 'dynpprog'는 챕터 전체에서 이 한 줄에만 나온다. 표 제목이 '낯선 파라미터 읽는 법'이라 표에 없는 이름은 '내가 놓친 건가?' 싶어 더 멈추게 된다.",
+      "suggestion": "표에 `dynpprog`·`dynpnr`·`value_tab` 행을 추가하고, '함수마다 파라미터 이름만 다를 뿐 넘기는 값은 같다(프로그램 이름·화면 번호)'는 한 줄을 붙인다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L06.md",
+      "quote": "DATA: gs_screen TYPE screen,",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "`TYPE screen`의 `screen`이 어디서 온 이름인지 그 자리에 설명이 없다. 내가 만든 적 없는 타입이 갑자기 `TYPE` 자리에 오고, 이어지는 코드의 `gs_screen-name`·`gs_screen-input`도 어떤 필드가 있는지 모른 채 읽게 된다.",
+      "evidence": "`TYPE screen`은 챕터에서 L06:40 한 곳뿐인데 그 자리엔 풀이가 없다. 'ABAP이 미리 만들어 둔 `screen`이라는 이름의 구조체'라는 말은 네 문단 뒤 📌 콜아웃(L06:64～67)에서 '짧은 표기를 권하지 않는 이유'를 설명하다가 지나가듯 나오고, 그마저도 짧은 표기 쪽 이야기라 위의 `TYPE screen`과 같은 것인지 확신이 서지 않는다.",
+      "suggestion": "코드 바로 앞이나 뒤에 '`screen`은 SAP이 미리 만들어 둔 화면 요소 속성 구조체(요소 이름 `name`, 입력 가능 여부 `input` 등)'라는 한 줄 풀이와 자주 쓰는 component 2～3개를 넣는다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L07.md",
+      "quote": "MESSAGE '좌석 수는 1 이상이어야 합니다' TYPE 'E'.",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "검증에서 오류 메시지를 띄운 **뒤 화면과 처리가 어떻게 되는지**가 없다. 메시지만 뜨고 저장이 그냥 이어지는지, 화면이 닫히는지, 다시 입력을 받는지 알 수 없어서 '검증'이라는 말이 무슨 뜻인지 붙잡히지 않는다.",
+      "evidence": "L07은 이 코드가 처음이자 마지막 설명이고, 뒤 문장은 `FORM` 정의가 있어야 한다는 이야기로 넘어간다. 결과는 세 레슨 뒤 L10에서 코드 주석 '화면 유지(정상 검증)'(L10:116)과 검증 시나리오 표(L10:179), 흔한 실수(L10:188)에 **단언으로만** 나온다. Dynpro의 PAI에서 `TYPE 'E'`가 무슨 일을 하는지는 챕터 어디에도 설명이 없어서, L10의 '화면 유지'를 읽고도 왜 그런지 되짚을 곳이 없다.",
+      "suggestion": "L07의 `check_booking` 예제 아래에 'PAI에서 `TYPE 'E'` 메시지가 나오면 그 뒤 처리가 중단되고 화면이 다시 떠서 입력을 다시 받는다'는 한 줄을 넣고, L10은 그 설명을 참조만 하게 한다."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L08.md",
+      "quote": "`SE41`(Menu Painter)에서 만들고, 어떤 버튼을 둘지·각 버튼의 FctCode를 정한다.",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L07이 '나가기 버튼의 function type을 지정하는 곳은 L08에서 배울 GUI Status'라고 예고했는데, 정작 L08에는 function type이라는 말이 한 번도 나오지 않는다. 예고를 믿고 온 독자는 `E`를 **어디에 입력하는지** 끝내 배우지 못한다.",
+      "evidence": "'function type'은 챕터 안에서 L07(6곳)과 L10:50에만 나오고 L08에는 0회다. L07:97은 '버튼과 그 속성을 만드는 곳은 [PF-STATUS와 TITLEBAR](CH16-L08.html)에서 배울 GUI Status다'라고 명시하고, L07 front-matter의 foreshadow에도 'GUI Status에서 function type 지정'이 적혀 있다. 그런데 L08의 GUI Status 절은 '어떤 버튼을 둘지·각 버튼의 FctCode를 정한다'까지만 말하고 끝난다.",
+      "suggestion": "L08의 GUI Status 절에 'SE41에서는 FctCode 말고 function type도 정한다 — 나가기 버튼 셋은 `E`(Exit command)로 두고, 짝이 되는 `AT EXIT-COMMAND` 모듈은 L07에서 봤다'는 짧은 항목(가능하면 표의 한 행)을 추가한다."
+    },
+    {
+      "seq": 7,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L09.md",
+      "quote": "CASE ok_code.",
+      "category": "단절",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "두 레슨 전(L07)에서 'OK_CODE는 읽자마자 `save_ok`로 복사하고 바로 `CLEAR`하는 게 공식 권장 패턴'이라고 배웠는데, L09의 PAI 모듈은 `ok_code`로 곧장 분기하고 `CLEAR`도 하지 않는다. 왜 여기서는 규칙이 달라지는지 한 마디도 없어서 둘 중 무엇이 맞는지 판단할 수가 없다.",
+      "evidence": "L07:21～47은 'PAI 처음에 OK_CODE를 보조 변수 save_ok로 복사한 뒤 바로 CLEAR', '읽자마자 비우는 게 핵심', 흔한 실수 첫 줄도 'OK_CODE를 안 비움 → 이전 명령이 남아 Enter에 재실행된다'로 못 박는다. 반면 L09:97～102의 `MODULE tab_command_0100 INPUT.`은 `CASE ok_code.`로 직접 분기하고 `save_ok`도 `CLEAR`도 없다. L09 본문에는 이 차이에 대한 언급이 전혀 없다.",
+      "suggestion": "L09 예제도 `save_ok` 패턴으로 통일하거나, 유지한다면 '탭 전환은 화면 안에서만 쓰는 값이라 여기선 줄여 썼다 — 실제 명령 처리에는 L07 패턴을 쓴다'는 단서 한 줄을 붙인다."
+    },
+    {
+      "seq": 8,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L09.md",
+      "quote": "- `icon_red_light` 같은 아이콘 이름은 SAP이 미리 만들어 둔 상수다(타입 그룹 `ICON`).",
+      "category": "멈춘 곳",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'타입 그룹'이 풀이 없이 두 번째로 나온다. 괄호 안이라 지나가도 될 것 같지만, 처음 보는 말이라 '내가 앞에서 놓친 개념인가' 하고 멈추게 된다.",
+      "evidence": "이 챕터에서 '타입 그룹'은 L03:94('`vrm_values`는 **VRM 타입 그룹**에 들어 있는 타입이다')와 L09:144 두 곳에 나오는데, 두 곳 다 풀이가 없다. L03은 대신 `TYPE-POOLS vrm.`이라는 또 다른 처음 보는 문장을 해결책으로 준다. 타입 그룹이 무엇인지, `TYPE-POOLS`가 무슨 문장인지는 챕터 어디에도 없다.",
+      "suggestion": "최초 등장인 L03의 🧯 콜아웃에 '타입 그룹 = SAP이 미리 만들어 둔 타입·상수 묶음' 정도의 한 줄 풀이를 넣고, L09은 그 표현을 그대로 재사용한다."
+    },
+    {
+      "seq": 9,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L10.md",
+      "quote": "버튼 FctCode를 `SAVE`·`BACK`·`EXIT`·`CANCEL`로 준다. 나가기 버튼 셋은 function type을",
+      "category": "생략",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "종합 실습 절차 6번은 나가기 버튼 셋의 function type을 `E`로 지정하라고 시키는데, 같은 레슨의 통합 Flow Logic에는 `AT EXIT-COMMAND` 모듈이 없고 BACK·EXIT·CANCEL을 일반 PAI 모듈의 `CASE`에서 처리한다. L07은 이 둘을 반드시 짝으로 쓰라고 가르쳤기 때문에, 절차대로 만들면 짝의 반쪽만 생긴다. 여러 번 다시 읽어도 내가 만들 화면이 L07대로 나가지는지 알 수 없다.",
+      "evidence": "L07:94～104는 '나가기 버튼은 다른 길로 처리한다'며 ①버튼 function type을 `E`로 ②flow logic PAI 맨 앞에 `AT EXIT-COMMAND` 모듈, 두 가지를 함께 하라고 하고 `MODULE exit_0100 AT EXIT-COMMAND.`를 보여 준다. 그런데 'AT EXIT-COMMAND'는 챕터 전체에서 L07에만 나오고 L10에는 0회다. L10의 통합 Flow Logic(L10:84～85)은 `PROCESS AFTER INPUT.` 아래 `MODULE user_command_0100.` 하나뿐이고, 그 모듈의 CASE(L10:118～121)가 BACK·CANCEL·EXIT를 처리한다. L10 어디에도 이 실습에서는 exit 모듈을 왜 생략했는지에 대한 설명이 없다.",
+      "suggestion": "L10 Flow Logic에 `MODULE exit_0100 AT EXIT-COMMAND.` 한 줄과 해당 모듈을 넣어 L07 패턴을 완성하거나, 반대로 절차 6번에서 function type `E` 지정을 빼고 '이 실습 화면에는 필수입력 칸이 없어 exit 모듈 없이 진행한다 — 필수입력이 생기면 L07의 짝을 쓴다'고 명시한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "입문자 눈으로 CH16은 전반적으로 잘 읽힌다. 특히 PBO/PAI를 '두 박자'로 부르며 순환으로 설명한 L01, 그리고 `CALL SUBSCREEN sub_area INCLUDING sy-repid '0110'.` 한 줄을 네 조각 표로 쪼개 준 L09의 설명은 처음 보는 문장인데도 그 자리에서 이해됐다(L01의 🪧 '아직 안 배운 말이 먼저 나온다' 예고, L02의 '`MODULE`은 다른 언어의 모듈이 아니다', L05의 '왜 함수까지 필요할까' 자문자답도 같은 계열의 좋은 장치였다). 걸린 지점은 대부분 국소적이다. ① 가장 큰 문제는 나가기 처리(function type `E` + `AT EXIT-COMMAND`)가 L07→L08→L10을 지나며 반쪽씩 끊긴 것으로, L07이 예고한 내용이 L08에 없고 종합 실습 L10은 절차만 시키고 코드에는 짝이 빠져 있다. ② L05의 직접 F4 구간이 한 모듈에 새 함수 2개와 낯선 파라미터를 몰아 넣어 이 챕터에서 가장 무겁고, 파라미터 표도 `dynpprog`·`dynpnr`을 빠뜨렸다. ③ `MESSAGE TYPE 'E'` 뒤에 화면이 어떻게 되는지, `TYPE screen`·'타입 그룹'이 어디서 온 말인지처럼 한 줄만 채우면 풀리는 생략이 몇 군데 있다. ④ L09이 L07의 `save_ok`+`CLEAR` 원칙과 다른 코드를 설명 없이 보여 주는 것도 혼란스럽다. 구조를 다시 짤 필요는 없고 문장·코드 몇 곳을 채우면 되는 수준이라 '경미 수정'으로 본다."
+  }
+}

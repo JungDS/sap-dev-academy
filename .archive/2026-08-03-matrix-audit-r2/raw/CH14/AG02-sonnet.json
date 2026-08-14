@@ -1,0 +1,77 @@
+{
+  "agent": "AG02",
+  "model": "sonnet",
+  "target": "CH14",
+  "persona_ack": "나는 준호다. 배운 건 그 자리에서 직접 해봐야 직성이 풀리는 실습형 학습자로서, CH14의 레슨 9개(_chapter.md 포함 10개 MD)와 그 페이지들의 체험 위젯 9개를 하나씩 열어 버튼·토글·F4 팝업·체크박스를 실제로 조작하며 본문 코드·설명과 대조했다.",
+  "method": "Claude Browser 도구로 http://localhost:8144 위 9개 위젯(embeds/abap/CH14-L0{1..9}-S01.html)을 전부 실제 로드. javascript_tool로 DOM에 실제 click/change 이벤트를 dispatch(버튼 클릭, 체크박스 토글, F4 팝업 행 선택 등)하고 결과 DOM(innerText·className·checked 등)을 재측정하는 방식으로 전 위젯의 모든 상태 분기를 실측. 병행해서 각 위젯이 참조하는 embeds/_engine/*.js 9개 파일을 정독해 config↔로직↔렌더 결과를 대조. 검증 중 2건(L01, L06)에서 렌더 결과가 이상해 보였으나(예: artist 칸에 [object Object]/좌석등급이라는 낯선 문구), fetch(engineJsUrl,{cache:'reload'}) 후 재검증한 결과 실제 소스에는 문제가 없고 브라우저 캐시가 구버전 엔진 JS를 물고 있던 것으로 판명되어 오탐으로 제외했다(performance.getEntriesByType('resource')로 리소스 재로딩도 확인). 화면 합성이 불안정할 수 있다는 안내에 따라 스크린샷 대신 DOM 텍스트/속성 실측만으로 판정했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L09.md",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH14-L01-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH14-L02-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH14-L03-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH14-L04-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH14-L05-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH14-L06-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH14-L07-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH14-L08-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH14-L09-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\db-view-vs-join.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\field-curtain.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\f4-help-flow.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\fk-maintenance-gate.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\sm30-gate-checklist.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\view-cluster-tree.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\se16n-tracker.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\timeline-boundary.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\concert-register-console.js"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L09.md",
+      "quote": "목록에 없는 `concert_id`를 직접 입력해 본다.",
+      "category": "불일치(위젯 시나리오 결손)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L09 본문의 '직접 해 볼 과제 → 실패 경로'는 목록에 없는 concert_id를 '직접 입력'해 저장 시 나오는 메시지(Foreign Key input check 거부)를 확인하라고 지시하지만, 정작 위젯(공연 등록 콘솔)에는 concert_id를 직접 타이핑할 수단이 전혀 없다. concert_id는 오직 F4 팝업 선택으로만 채워지고, 그 팝업 목록도 항상 유효한 값(C001·C002)만 제공해 애초에 '없는 코드'를 시도할 방법이 없다. 그래서 실습형 학습자가 본문 지시를 그대로 따라 하면 이 위젯 안에서는 실패 경로를 아예 재현할 수 없다.",
+      "evidence": "CH14-L09-S01.html에서 concert_id 표시부는 <span id=\"crcSel\">이며 편집 가능한 input/textarea/contenteditable이 아니다. 브라우저에서 document.querySelectorAll('input, textarea, [contenteditable]')로 전수 조사한 결과 개수 0. F4 팝업(#crcPopBody)을 열어 실측한 옵션도 ['C001','C002'] 뿐으로 C999 등 무효 코드가 목록에 없다. 위젯이 제공하는 유일한 '문제 상황' 시연은 [data-del] 토글로 이미 저장된 행의 마스터를 사후 삭제하는 것뿐인데, 이는 레슨 끝의 별도 경고 박스('마스터를 지우면 자식은 고아가 된다')에 해당하는 시나리오이지, '직접 해 볼 과제'가 요구하는 '저장 시점의 input check 거부'와는 다른 시나리오다(참고로 그 input check 거부 시연 자체는 CH14-L04-S01 위젯에서는 정상적으로 잘 구현되어 있음을 확인했다).",
+      "suggestion": "F4 팝업에 '직접 입력' 옵션이나 별도 텍스트 필드를 추가해 C999 같은 무효 코드를 시도할 수 있게 하고, 저장 시 CH14-L04-S01처럼 'input check 거부' 메시지를 보여주도록 보강."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\concert-register-console.js",
+      "quote": "seq++; concerts.push({ concert_id: sel, perf_no: ('00' + seq).slice(-3), perf_date: CFG.seedDate });",
+      "category": "불일치(데이터 모델링 — perf_no 채번 규칙)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L09 위젯은 콘서트 구분 없이 하나의 전역 seq로 perf_no를 채번한다. 그래서 C001을 먼저 저장(perf_no=001)한 뒤 C002를 저장하면 C002 입장에선 첫 회차인데도 perf_no=002가 붙는다. 이는 같은 챕터의 다른 세 위젯(L01·L06·L07)이 공통으로 보여주는 '공연마다 001부터 다시 시작'하는 perf_no 패턴과 어긋난다.",
+      "evidence": "브라우저에서 F4→C001 선택→SM30 저장, 이어서 F4→C002 선택→SM30 저장을 순서대로 실행해 실측: C001 행은 perf_no=001, C002 행은 perf_no=002로 나왔다(C002만 저장했다면 001이었을 값). 반면 CH14-L01-S01의 DVJ_CFG.perfRows는 C001에 001·002, C002에 001을, CH14-L06-S01의 VCT_CFG.concerts[].perfs는 C001에 [001,002], C002에 [001]을, CH14-L07-S01의 SE16_CFG.zperf도 동일 패턴을 쓴다 — 세 곳 모두 공연별 재시작 규칙이다.",
+      "suggestion": "전역 seq 대신 선택된 concert_id에 이미 등록된 회차 수 + 1로 perf_no를 계산하도록 고쳐 다른 CH14 위젯들과 채번 규칙을 통일."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\timeline-boundary.js",
+      "quote": "'🔒 <b>' + esc(s.title) + '</b>은 <b>' + esc(s.ch) + '</b>에서 배웁니다. 지금 끌어오면 핵심을 놓칩니다",
+      "category": "위젯 결함(안내문 조사 오류)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L08 위젯에서 '나중' 카드를 클릭했을 때 뜨는 안내문이 받침 유무를 따지지 않고 무조건 '은'을 붙인다. 받침 없는 제목(CDS View Entity, RAP·OData·Fiori)에는 '는'이 맞는데 '은'이 붙어 한국어 조사가 어색하다.",
+      "evidence": "브라우저에서 'CDS View Entity' 카드를 클릭하면 '🔒 CDS View Entity은 Chapter 23에서 배웁니다...'로, 'RAP · OData · Fiori' 카드를 클릭하면 '🔒 RAP · OData · Fiori은 Chapter 24+에서 배웁니다...'로 각각 표시됨을 실측(둘 다 받침 없는 발음으로 끝나 '는'이 자연스러움). 같은 챕터의 embeds/_engine/view-cluster-tree.js는 정확히 이 문제(명사 받침에 따른 조사 선택)를 처리하는 jo(w, withB, noB) 헬퍼를 이미 구현해 두고 있어, 같은 프로젝트 안에서도 처리 수준이 위젯마다 다르다.",
+      "suggestion": "view-cluster-tree.js의 jo() 같은 받침 기반 조사 선택 로직을 timeline-boundary.js에도 적용하거나, 조사가 필요 없는 문장으로 바꾼다(예: '~는 Chapter 23에서 다룹니다' 대신 'Chapter 23에서 배우는 개념입니다')."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH14의 9개 체험 위젯은 전반적으로 탄탄하다. 9개 전부 실제 클릭·토글·F4 선택으로 모든 상태 분기를 실측했는데, inner join의 행 누락(L01·L09), Projection View의 열 축소·key 경고(L02), Help View의 primary 보존과 Export 흐름(L03), Foreign Key input check(L04), SM30 게이트 체크리스트(L05), View Cluster의 상위→하위 조건 전파(L06), SM30 저장 후 SE16N 대조(L07), classic/CDS 학습 경계(L08, CDS 문법 노출 없이 R15/R6 게이팅 준수)까지 각 레슨의 핵심 주장과 정확히 맞물려 작동했다. 체험이 아예 빠진 곳(체험 공백)이나 목표와 동떨어진 헛체험은 없었다. 검증 중 두 차례(L01, L06) 위젯이 깨진 것처럼 보였지만 둘 다 브라우저의 오래된 엔진 JS 캐시 때문이었고 강제 새로고침 후 정상 동작을 확인해 오탐으로 제외했다 — 실제 소스 결함이 아니다. 진짜 결함은 3건으로, 모두 챕터 마지막 두 레슨에 몰려 있다: (1) 캡스톤 L09의 '직접 해 볼 과제 — 실패 경로'가 요구하는 '무효 concert_id 직접 입력 → input check 거부'를 위젯에서 시도할 수단 자체가 없음(중간), (2) L09 위젯의 perf_no가 공연 구분 없는 전역 카운터라 같은 챕터의 다른 위젯들이 보여주는 '공연별 001 재시작' 패턴과 어긋남(낮음), (3) L08 위젯의 안내문이 받침 없는 제목 뒤에도 '은'을 붙여 문법이 어색함(낮음, 같은 챕터의 다른 엔진엔 이미 올바른 처리 로직이 있음). 세 건 모두 개념 오교육으로 이어지지는 않는 경미한 결함이라 '경미 수정'으로 평가한다."
+  }
+}
