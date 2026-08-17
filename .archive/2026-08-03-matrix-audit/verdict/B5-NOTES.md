@@ -41,12 +41,12 @@
 
 수식 컬럼+인라인 선언 별칭 필수(ABAPSELECT_INTO_TARGET:124) · CORRESPONDING EXCEPT = target 컴포넌트(ABENCORRESPONDING_CONSTR_MAPPING) · FILTER 원본은 sorted/hashed key 필수(ABENCONSTRUCTOR_EXPR_FILTER_BASIC) · String Template 중괄호 안 공백 필수(ABENSTRING_TEMPLATES_EXPRESSIONS) · PBO MODULE의 MESSAGE E = A 동작(ABENABAP_MESSAGE_DIALOG) · FINAL = 7.57 신규(ABENNEWS-757) · 정수 연산 나눗셈 중간결과 상업 반올림(ABENARITH_TYPE) · UNION/INTERSECT/EXCEPT DISTINCT 기본값·INTERSECT/EXCEPT에 ALL 없음(ABAPUNION) · FROM @itab는 엔진 처리/DB 임시 테이블 이원(ABAPSELECT_ITAB — 내부 테이블 별칭 AS 필수 포함).
 
-## 6. 사용자 결정 대기
+## 6. 사용자 결정 4건 — 확정·이행 (2026-08-18 "전체 추천안대로 진행")
 
-1. **R11 인라인 예제 접두어 해석 확정** — CH20·CH17은 전역 위치 g 통일, CH18·CH19는 본문·위젯이 l 유지(AG09 종내 상반: '최상위=전역 g' vs 'CH10 이후 로컬 스코프 독해'). 챕터 간 기준 통일 필요(횡단 일괄 작업).
-2. **R10 `prevRel` 값 등재** — `next-step` 24회·`next` 5회 실사용 vs 등재 3값. 등재 또는 정리.
-3. **CH18 핵심 용어 glossary 등재**(C051) — Inline Declaration·VALUE·CORRESPONDING·Table Expression·String Template 5+키 신규 등재 여부.
-4. FOR 표현식 내부 변수(i·line·sum) 접두어 규정 여부(C055 — R11 미규정).
+1. **R11 예제 조각 접두어** — 추천 (b) 확정: CH10 이후 챕터의 껍데기 없는 예제 조각은 로컬 문맥 전제 `l` 허용, 전역 명시 코드는 `g`, 기존 g 통일 챕터도 합법(챕터 내 일관성만) → **R11 명문화 완료**. 횡단 재작업 없음.
+2. **R10 `prevRel`** — `next-step` 정식 등재 + 비정식 `next` 5곳(CH01-L03·L06, CH02-L02·L03, CH03-L03)을 `next-step`으로 정리 → **완료**.
+3. **CH18 glossary** — Inline Declaration·VALUE·CORRESPONDING·Table Expression·String Template 5키 등재 + CH18 본문 마킹 → **이행**(작업자, 패리티 검증 포함).
+4. **표현식 내부 변수** — 맨 이름 허용(FOR·REDUCE INIT·LET — SAP 공식·Clean ABAP 관례) → **R11 명문화 완료**.
 
 ## 7. 잔여 백로그(미수정)
 
