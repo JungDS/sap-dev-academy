@@ -1,6 +1,7 @@
 /* type-conversion-lab 엔진 — CH18-L06 전용.
    값 하나를 CONV i / CONV string / EXACT i 로 변환해 결과·위험을 보여 준다.
-   CONV=반올림·비숫자 실패 / EXACT=손실 시 예외. 게이팅: modern 변환 표현식 시연만.
+   CONV=반올림·비숫자 실패 / EXACT=손실 시 예외(잡는 법은 Chapter 21 · Exception Class 링크로 안내). 게이팅: modern 변환 표현식 시연만.
+   결과 객체: msg=텍스트(esc 처리) · after=엔진 내 신뢰 HTML(레슨 링크, esc 없이 삽입).
    골격 계약(HTML): [data-tcl] · #tclVal · [data-op] · #tclOut. 높이: _autoheight.js. */
 (function () {
   var root = document.querySelector('[data-tcl]'); if (!root) return;
@@ -19,7 +20,7 @@
   function exactI(v){
     var t = v.trim();
     if (!/^[+-]?\d+(\.0+)?$/.test(t)) {
-      if (/^[+-]?\d+(\.\d+)?$/.test(t)) return { ok:false, exc:true, msg:'손실이 발생해 예외가 납니다(소수 → 정수). 예외 처리는 CH20.' };
+      if (/^[+-]?\d+(\.\d+)?$/.test(t)) return { ok:false, exc:true, msg:'손실이 발생해 예외가 납니다(소수 → 정수).', after:'예외를 붙잡는 법은 <a href="../../docs/abap/pages/CH21-L06.html" target="_top">Chapter 21 · Exception Class</a>에서 배웁니다.' };
       return { ok:false, exc:true, msg:'숫자가 아니라 변환할 수 없습니다.' };
     }
     return { ok:true, val:String(parseInt(t,10)), note:'손실 없이 딱 맞아 통과.' };
@@ -33,7 +34,7 @@
     else { code = "EXACT i( '"+esc(v)+"' )"; r = exactI(v); }
 
     if (r.ok){ cls='ok'; body = '<b>결과:</b> <code class="tcl-res">'+esc(r.val)+'</code>' + (r.note?'<span class="tcl-note">'+esc(r.note)+'</span>':''); }
-    else { cls = r.exc?'exc':'bad'; body = '<b>'+(r.exc?'예외':'변환 불가')+':</b> '+esc(r.msg); }
+    else { cls = r.exc?'exc':'bad'; body = '<b>'+(r.exc?'예외':'변환 불가')+':</b> '+esc(r.msg)+(r.after?' '+r.after:''); }
     out.className = 'tcl-out '+cls;
     out.innerHTML = '<div class="tcl-code">'+code+'</div>'+body;
   }

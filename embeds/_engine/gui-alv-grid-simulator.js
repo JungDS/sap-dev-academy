@@ -1,6 +1,9 @@
 // ===== gui-alv-grid-simulator 엔진 JS — CL_GUI_ALV_GRID 단계 빌드업 + 그리드 (config 주도) =====
-// window.ALVG_CFG = { itab, cols[{key,label,num}], data[{}], sumKey,
-//   steps[{n,nm,sub,code:[lines], showGrid?}] }  — '다음 단계'로 코드 누적·강조, 마지막 단계에서 그리드 렌더.
+// window.ALVG_CFG = { itab, cols[{key,label,num}], data[{}], sumKey, dataSets?{key:[{}]},
+//   steps[{n,nm,sub,code:[lines], showGrid?, data?, state?}] }  — '다음 단계'로 코드 누적·강조.
+// showGrid:true인 단계 완료 후부터 그리드 표시(이후 단계에서도 유지 — refresh 분기 시연용).
+// step.data='key'면 그 단계 완료 시 그리드 행을 dataSets[key]로 교체(화면 갱신 시점 체험).
+// step.state(신뢰 HTML)는 #alvgState가 HTML에 있을 때만 상태줄로 표시(없으면 무시 — L07 하위호환).
 (function(){
   var cfg = window.ALVG_CFG || {};
   var COLS = cfg.cols || [];
@@ -10,7 +13,7 @@
   var $=function(id){return document.getElementById(id);};
   var cur=0, sumOn=false, sortCol=-1, sortAsc=true, rows=DATA.slice();
 
-  var KW=new Set(('DATA REF TO CREATE OBJECT EXPORTING CHANGING CALL FUNCTION SELECT FROM INTO TABLE WHERE MODULE OUTPUT ENDMODULE FORM ENDFORM PERFORM IF ELSE ENDIF IS INITIAL TYPE').split(' '));
+  var KW=new Set(('DATA REF TO CREATE OBJECT EXPORTING CHANGING CALL FUNCTION SELECT FROM INTO TABLE WHERE MODULE OUTPUT INPUT ENDMODULE FORM ENDFORM PERFORM IF ELSEIF ELSE ENDIF IS INITIAL TYPE CASE WHEN ENDCASE CLEAR LEAVE SCREEN STANDARD OF').split(' '));
   var CLS=new Set(['cl_gui_custom_container','cl_gui_alv_grid','lvc_t_fcat','lvc_s_layo']);
   function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
   function hl(line){
@@ -51,7 +54,8 @@
     $('alvgGut').innerHTML=gut; $('alvgSrc').innerHTML=src;
   }
   function renderGrid(){
-    var show = cur>=STEPS.length && STEPS.length>0 && STEPS[STEPS.length-1].showGrid;
+    // showGrid:true 단계를 완료한 뒤부터 계속 표시(뒤 단계 = PAI/refresh 분기 시연)
+    var show = STEPS.slice(0,cur).some(function(s){ return s.showGrid; });
     var cont=$('alvgCont');
     if(!show){ cont.classList.add('hidden'); cont.querySelector('[data-grid]').innerHTML=''; return; }
     cont.classList.remove('hidden');
@@ -67,11 +71,24 @@
       foot='<tfoot><tr>'+COLS.map(function(c,i){ if(i===0)return '<td class="lbl">합계 ('+rows.length+'행)</td>'; if(c.key===SUMKEY)return '<td class="num">'+tot+'</td>'; return '<td></td>';}).join('')+'</tr></tfoot>'; }
     cont.querySelector('[data-grid]').innerHTML=thead+body+foot;
   }
-  function render(){ renderSteps(); renderCode(); renderGrid();
+  function renderState(){
+    var el=$('alvgState'); if(!el) return;
+    var st = cur>0 ? STEPS[cur-1] : null;
+    if(st && st.state){ el.classList.remove('hidden'); el.innerHTML=st.state; }  // state = cfg 작성 신뢰 HTML
+    else { el.classList.add('hidden'); el.innerHTML=''; }
+  }
+  function render(){ renderSteps(); renderCode(); renderGrid(); renderState();
     $('alvgNext').disabled = cur>=STEPS.length;
     postHeight();
   }
-  $('alvgNext').addEventListener('click',function(){ if(cur<STEPS.length){ cur++; render(); } });
+  $('alvgNext').addEventListener('click',function(){
+    if(cur<STEPS.length){
+      cur++;
+      var st=STEPS[cur-1];
+      if(st && st.data && cfg.dataSets && cfg.dataSets[st.data]){ rows=cfg.dataSets[st.data].slice(); sortCol=-1; }
+      render();
+    }
+  });
   $('alvgReset').addEventListener('click',function(){ cur=0; sumOn=false; sortCol=-1; rows=DATA.slice(); render(); });
 
   // 그리드 상호작용

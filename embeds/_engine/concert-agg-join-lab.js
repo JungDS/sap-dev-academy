@@ -72,19 +72,22 @@
   }
 
   function renderCode() {
-    var onCls = cond === 'on' ? 'hot' : '';
-    var whCls = cond === 'where' ? 'hot' : '';
     var sumExpr = coal ? '<span class="fn">COALESCE</span>( <span class="fn">SUM</span>( b~seats ), 0 )' : '<span class="fn">SUM</span>( b~seats )';
-    var onLine = '    <span class="fn">AND</span> ' + (cond === 'on' ? '<span class="hot">b~status &lt;&gt; \'C\'</span>' : 'b~status &lt;&gt; \'C\'');
-    var whLine = cond === 'where' ? '\n  <span class="fn">WHERE</span> <span class="hot">b~status &lt;&gt; \'C\'</span>' : '';
+    // 취소 제외 조건은 ON 또는 WHERE 중 한 곳에만 나타난다(두 곳 동시 표시 금지).
+    var onLine = cond === 'on' ? '    <span class="fn">AND</span> <span class="hot">b~status &lt;&gt; \'C\'</span>\n' : '';
+    var whLine = cond === 'where'
+      ? '  <span class="fn">WHERE</span> <span class="hot">b~status &lt;&gt; \'C\'</span>\n' +
+        '    <span class="fn">AND</span> c~concert_id <span class="fn">IN</span> <span class="esc">@so_conc</span>\n'
+      : '  <span class="fn">WHERE</span> c~concert_id <span class="fn">IN</span> <span class="esc">@so_conc</span>\n';
     codeEl.innerHTML =
       '<span class="fn">SELECT</span> c~concert_id, c~artist, c~capacity,\n' +
-      '       ' + sumExpr + ' <span class="as">AS booked</span>\n' +
+      '       ' + sumExpr + ' <span class="as">AS booked</span>,\n' +
+      '       <span class="fn">CASE WHEN</span> ' + sumExpr + ' &gt;= c~capacity\n' +
+      '            <span class="fn">THEN</span> \'FULL\' <span class="fn">ELSE</span> \'OPEN\' <span class="fn">END</span> <span class="as">AS seat_status</span>\n' +
       '  <span class="fn">FROM</span> zconcert <span class="fn">AS</span> c\n' +
       '  <span class="fn">LEFT OUTER JOIN</span> zbooking <span class="fn">AS</span> b\n' +
       '    <span class="fn">ON</span>  b~concert_id = c~concert_id\n' +
-      onLine + whLine + '\n' +
-      '  <span class="fn">WHERE</span> c~concert_id <span class="fn">IN</span> <span class="esc">@so_conc</span>\n' +
+      onLine + whLine +
       '  <span class="fn">GROUP BY</span> c~concert_id, c~artist, c~capacity\n' +
       '  <span class="fn">INTO TABLE</span> <span class="esc">@DATA(lt_stat)</span>.';
   }

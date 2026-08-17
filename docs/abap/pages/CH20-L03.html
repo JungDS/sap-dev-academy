@@ -62,7 +62,7 @@
                    <span class="tok-kw">FROM</span> zbooking <span class="tok-kw">AS</span> b
                    <span class="tok-kw">WHERE</span> b~concert_id = c~concert_id
                      <span class="tok-kw">AND</span> b~status    &lt;&gt; <span class="tok-str">'C'</span> )
-  <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> @<span class="tok-kw">DATA</span>(lt_has_booking).</code></pre></div></div>
+  <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> @<span class="tok-kw">DATA</span>(gt_has_booking).</code></pre></div></div>
 <p>안쪽 <code>SELECT</code>가 바깥 <code>SELECT</code>의 <code>c~concert_id</code>를 참조한다. 이렇게 <strong>바깥 행을 기준으로 안쪽 질문을 다시 던지는</strong> subquery를 correlated subquery(상관 서브쿼리)라고 한다.</p>
 <p>읽는 법은 이렇다.</p>
 <ol>
@@ -70,20 +70,23 @@
 <li>그 공연 ID를 가진 예약 <code>b</code>가 있는지 안쪽 <code>SELECT</code>가 확인한다.</li>
 <li>취소 아닌 예약이 하나라도 있으면 바깥 공연 행이 결과에 남는다.</li>
 </ol>
-<p><code>EXISTS</code>는 존재만 판정하므로 안쪽 <code>SELECT</code>의 컬럼이 무엇이든 중요하지 않다(공식 문서도 컬럼 하나만 쓰길 권한다).</p>
+<p><code>EXISTS</code>는 존재만 판정한다. 그래서 안쪽 <code>SELECT</code>에서 어떤 컬럼을 고르는지는 결과에 영향을 주지 않는다. ABAP 공식 keyword 문서도 긴 컬럼 목록 대신 값 하나만 쓰라고 권한다.</p>
 <p><code>IN</code> subquery는 &quot;목록에 포함되는가&quot;를 묻는다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
 4
 5
-6</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> c~concert_id, c~artist
+6
+7</pre><pre class="abap-editor__code"><code><span class="tok-kw">SELECT</span> c~concert_id, c~artist
   <span class="tok-kw">FROM</span> zconcert <span class="tok-kw">AS</span> c
   <span class="tok-kw">WHERE</span> c~concert_id <span class="tok-kw">IN</span> ( <span class="tok-kw">SELECT</span> concert_id
                             <span class="tok-kw">FROM</span> zbooking
-                            <span class="tok-kw">WHERE</span> seats &gt;= <span class="tok-num">3</span> )
-  <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> @<span class="tok-kw">DATA</span>(lt_big_booking).</code></pre></div></div>
-<p>3석 이상 예약이 있는 공연 ID 목록에 드는 공연만 남는다.</p>
+                            <span class="tok-kw">WHERE</span> seats &gt;= <span class="tok-num">3</span>
+                              <span class="tok-kw">AND</span> status &lt;&gt; <span class="tok-str">'C'</span> )
+  <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> @<span class="tok-kw">DATA</span>(gt_big_booking).</code></pre></div></div>
+<p>취소 아닌 3석 이상 예약이 있는 공연 ID 목록에 포함되는 공연만 남는다.</p>
+<p>둘 중 무엇을 쓸까? <strong>존재 여부</strong> 자체를 물을 땐 <code>EXISTS</code>, &quot;이 목록에 있는 값인가&quot;처럼 <strong>값 목록과 비교</strong>할 땐 <code>IN</code>이 질문을 그대로 옮긴 모양이 된다. 그리고 <code>EXISTS</code> 앞에 <code>NOT</code>을 붙이면 반대로 &quot;하나도 <strong>없으면</strong> 참&quot;이 된다. &quot;예약 없는 공연&quot; 같은 질문도 <code>NOT EXISTS</code>로 풀 수 있다 — <a href="CH20-L04.html">다음 레슨</a>에서 배울 <code>EXCEPT</code>와 같은 질문에 대한 또 하나의 답이다.</p>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">EXISTS vs JOIN Comparator (행 중복 · 존재 판정)</span><a class="embed__open" href="../../../embeds/abap/CH20-L03-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH20-L03-S01.html" loading="lazy" title="EXISTS vs JOIN Comparator (행 중복 · 존재 판정)"></iframe></figure>
 </section><section class="lblock"><h2>어떻게 확인 — 존재 판정 표 ✅</h2>
 <p><code>EXISTS</code>는 결과 컬럼보다 <strong>조건</strong>이 중요하다. 표로 검증한다.</p>

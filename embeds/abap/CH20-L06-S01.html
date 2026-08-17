@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <!-- CH20-L06-S01 — 엔진: decision-tree · _engine/_base.css. 고급 SQL 도구 선택 가이드.
+     2단 트리: n0 멈춤 신호(재사용 정책/설명 불가 → ABAP·CDS 분리) → n1 도구 선택(JOIN/EXISTS/CTE/Set/Window).
      게이팅: CH20 Advanced SQL(JOIN/EXISTS/CTE/Set/Window 선택 기준) — 코드 없이 판단. -->
 <html lang="ko" data-eng="decision-tree">
 <head>
@@ -16,8 +17,11 @@
   <div class="note">🛑 <b>멈춤 신호</b>: 읽는 사람이 한 화면에서 설명하지 못하거나, 계산 규칙이 업무 정책이라 여러 곳에서 재사용된다면 SQL에 다 넣지 말고 ABAP 코드나 후속 CDS로 분리하세요.</div>
   <script type="application/json" id="dt-cfg">
   {
-    "start": "n1",
+    "start": "n0",
     "nodes": {
+      "n0": { "q": "먼저 <b>멈춤 신호</b> 점검 — 이 계산 규칙, 읽는 사람이 <b>한 화면에서 설명</b>할 수 있고, <b>한 조회에서만</b> 쓰이나요?", "opts": [
+        { "label": "예 — 조회 하나로 설명 가능한 규칙이다", "ic": "✅", "to": "n1" },
+        { "label": "아니오 — 설명이 길어지거나 여러 곳에서 재사용된다", "ic": "🛑", "result": "stop" } ] },
       "n1": { "q": "이 조회에서 <b>가장 하고 싶은 일</b>은?", "opts": [
         { "label": "여러 표의 컬럼을 한 행에 옆으로 붙인다", "ic": "🔗", "result": "join" },
         { "label": "관련 행이 있는지 없는지만 본다", "ic": "❓", "result": "exists" },
@@ -26,9 +30,10 @@
         { "label": "상세 행을 두고 그룹 합계·순번을 붙인다", "ic": "🪟", "result": "window" } ] }
     },
     "results": {
+      "stop": { "rank": "멈춤 기준", "title": "SQL에 다 넣지 않기 — ABAP 코드 / 후속 CDS로 분리", "desc": "SQL로 <b>할 수 있어도</b> 멈출 자리입니다. 여러 곳에서 재사용되는 업무 정책은 ABAP 코드(또는 이후 배울 CDS)에 한 곳으로 모아야 규칙이 바뀔 때 한 곳만 고칩니다. 한 화면에서 설명 못 하는 SQL은 유지보수 부채가 돼요.", "last": true },
       "join": { "rank": "컬럼 결합", "title": "JOIN", "desc": "두 표의 컬럼을 옆으로 붙일 때. 단, 매칭에 따라 바깥 행이 <b>중복</b>될 수 있으니 결과 행 수를 꼭 확인합니다." },
       "exists": { "rank": "존재 판정", "title": "EXISTS / IN", "desc": "관련 행의 상세가 필요 없고 '있나 없나'·'목록에 드나'만 볼 때. 바깥 행을 <b>중복시키지 않습니다.</b>" },
-      "cte": { "rank": "단계화", "title": "CTE (WITH)", "desc": "한 문장 안에서 중간 결과에 이름을 붙여 재사용. 읽기 쉬운 <b>1~2개</b>까지가 적당합니다." },
+      "cte": { "rank": "단계화", "title": "CTE (WITH)", "desc": "한 문장 안에서 중간 결과에 이름을 붙여 재사용. 이름과 역할이 설명되는 단계까지만 — 설명 안 되는 CTE는 숨겨진 절차가 됩니다." },
       "set": { "rank": "집합", "title": "UNION / INTERSECT / EXCEPT", "desc": "두 SELECT 결과를 합·교·차. <code>EXCEPT</code>는 <b>방향</b>이 있으니 좌우를 주의하고, 컬럼 개수·타입을 먼저 맞춥니다." },
       "window": { "rank": "행 유지 계산", "title": "Window (OVER)", "desc": "<code>GROUP BY</code>로는 상세 행이 사라집니다. 상세를 두고 그룹 합계·순번·순위를 붙일 때. 단순 합계표면 <code>GROUP BY</code>가 더 낫습니다.", "last": true }
     }

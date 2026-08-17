@@ -57,7 +57,10 @@
 <p>예매 확인 문구처럼 값이 여러 개 섞일수록 차이가 크다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>(lv_eq) = |{ ls_book-concert_id } { ls_book-perf_no }회차 { ls_book-seats }석|.   <span class="tok-com">" "C001 001회차 2석"</span></code></pre></div></div>
 <blockquote class="cw">
-<p>⚠️ <code>{ }</code> <strong>안쪽 공백은 문법 요소</strong>다. <code>|{ lv_name }|</code>처럼 중괄호 안쪽에 공백을 두는 형태를 기본으로 삼는다.</p>
+<p>⚠️ <code>{ }</code> <strong>안쪽 공백은 문법 요소</strong>다. <code>{</code> 뒤와 <code>}</code> 앞에는 공백이 <strong>한 칸 이상 반드시</strong>
+있어야 한다 — <code>|{lv_name}|</code>처럼 붙이면 구문 오류다. 반대로 중괄호 <strong>바깥</strong>의 공백은
+문장의 일부라서 <strong>출력에 그대로 들어간다</strong>. <code>|{ lv_name } 님|</code>은 이름 뒤에 공백 하나가
+찍힌 채 출력된다.</p>
 </blockquote>
 </section><section class="lblock"><h2>서식까지 한 번에 — DATE = USER · NUMBER = USER</h2>
 <p>날짜·숫자를 그냥 <code>{ sy-datum }</code>·<code>{ lv_total }</code>로 넣으면 사용자가 기대하는 구분자·형식과
@@ -65,6 +68,10 @@
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>(lv_line) =
   |오늘은 { sy-datum DATE = USER }, 합계 { lv_total NUMBER = USER }원입니다.|.</code></pre></div></div>
+<p><code>DATE = USER</code>·<code>NUMBER = USER</code>는 <strong>로그인한 사용자의 개인 설정</strong>(SU3의 날짜 형식·천 단위
+구분자)대로 문자열을 만든다. 예를 들어 <code>20260627</code>이 <code>2026.06.27</code>로, <code>120000</code>이
+<code>120,000</code>으로 바뀐다. 사용자마다 설정이 다르면 <strong>같은 코드라도 출력 모양이 다를 수 있다</strong> —
+&quot;사람에게 보여 줄 값&quot;에만 쓰는 이유다.</p>
 </section><section class="lblock"><h2>함수형 문자열 함수</h2>
 <p><a href="CH04-L02.html">문자열 다루기</a>의 명령형 처리를, modern에서는 <strong>값을 돌려주는 함수</strong>로
 표현식 흐름에 쓴다.</p>
@@ -73,6 +80,12 @@
 3</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>(lv_up)  = to_upper( lv_name ).
 <span class="tok-kw">DATA</span>(lv_sub) = <span class="tok-kw">substring</span>( val = lv_text off = <span class="tok-num">0</span> len = <span class="tok-num">3</span> ).   <span class="tok-com">" 앞 3글자</span>
 <span class="tok-kw">DATA</span>(lv_len) = strlen( lv_text ).</code></pre></div></div>
+<ul>
+<li><code>substring</code>의 <code>off</code>는 <strong>0부터 세는 시작 위치</strong>다 — <code>off = 0</code>이 첫 글자다(&quot;1번째 글자니까
+1&quot;이 아니다). <code>len</code>은 거기서부터 셀 글자 수.</li>
+<li><code>strlen</code>은 글자 수를 세는데, 고정 길이 <code>c</code> 타입에서는 <strong>뒤쪽 공백을 빼고</strong> 센다.
+<code>string</code> 타입은 뒤쪽 공백도 그대로 센다 — 타입에 따라 결과가 다를 수 있다.</li>
+</ul>
 </section><section class="lblock"><h2>직접 조립해 보기 — Message Composer</h2>
 <p><code>CONCATENATE</code>와 String Template을 나란히 비교하고, <strong>사용자 형식</strong>을 켜면 날짜·숫자가 어떻게
 바뀌는지 보자. <code>substring</code>의 <code>off</code>·<code>len</code>을 바꿔 보고, <strong>문자열 길이보다 긴 범위</strong>를 요청하면
@@ -81,7 +94,7 @@
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
 <li><strong><code>{ }</code> 누락</strong> → 변수는 <code>{ }</code>로 감싸야 값이 들어간다. 안쪽 공백도 지킨다.</li>
-<li><strong>숫자·날짜 raw 임베딩</strong> → 사람이 기대하는 표시와 다를 수 있다. <code>NUMBER = USER</code>·<code>DATE = USER</code> 검토.</li>
+<li><strong>숫자·날짜를 서식 없이 그대로 넣기</strong> → 사람이 기대하는 표시와 다를 수 있다. <code>NUMBER = USER</code>·<code>DATE = USER</code> 검토.</li>
 <li><strong><code>substring</code> 범위 초과</strong> → 문자열 길이보다 긴 <code>off</code>/<code>len</code>은 오류가 난다. 입력 길이를 확인한다.</li>
 <li><strong>template 안 복잡한 계산</strong> → 다시 읽기 어렵다. 복잡한 값은 먼저 <code>DATA( )</code>로 계산해 이름을 붙이고 template엔 그 이름만.</li>
 </ul>

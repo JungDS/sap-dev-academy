@@ -1,0 +1,96 @@
+{
+  "agent": "AG02",
+  "model": "sonnet",
+  "target": "CH20",
+  "persona_ack": "나는 '준호'다. 배운 건 그 자리에서 직접 해봐야 직성이 풀리는 실습형 학습자로서, CH20의 7개 레슨 본문 코드와 각 레슨의 체험 위젯(embeds/abap/CH20-L0x-S01.html)을 하나씩 대조하며 클릭·토글까지 직접 눌러 확인했다.",
+  "method": "① content/abap/CH20의 _chapter.md·L01~L07.md 7개 전문 정독 및 각 embeds/abap/CH20-L0x-S01.html 7개 소스(cfg JSON 포함) 정독 대조. ② 각 위젯이 참조하는 embeds/_engine/{compare-matrix,cte-step-viewer,exists-vs-join,sql-set-board,window-partition-sim,decision-tree,concert-adv-sql-lab}.js 7개를 열람해 cfg 필드명과 렌더 코드가 실제로 일치하는지 정적 대조. ③ 하네스가 기동한 로컬 서버(http://localhost:8144)에 실제 브라우저 탭을 열어 CH20-L02-S01·CH20-L03-S01·CH20-L07-S01을 로드하고, javascript_tool로 모드 버튼·토글 버튼에 실제 MouseEvent('click') 디스패치 후 DOM(getElementById(...).innerHTML / get_page_text)을 읽어 렌더 결과를 실측 검증(정적 추정이 아니라 실제 렌더 텍스트 확인).",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L07.md",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH20-L01-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH20-L02-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH20-L03-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH20-L04-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH20-L05-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH20-L06-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH20-L07-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\compare-matrix.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\cte-step-viewer.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\exists-vs-join.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\sql-set-board.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\window-partition-sim.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\decision-tree.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\concert-adv-sql-lab.js",
+    "http://localhost:8144/embeds/abap/CH20-L02-S01.html (렌더 실측)",
+    "http://localhost:8144/embeds/abap/CH20-L03-S01.html (렌더 실측)",
+    "http://localhost:8144/embeds/abap/CH20-L07-S01.html (렌더 실측)"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH20-L03-S01.html",
+      "quote": "{ id: 'C002', artist: 'ABAP Trio' }",
+      "category": "위젯 결함",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "EXISTS vs JOIN 위젯(CH20-L03-S01)의 zconcert 원본 표·JOIN 결과 표·EXISTS 결과 표·피드백 문구에서 공연 이름이 전부 문자 그대로 \"undefined\"로 렌더된다.",
+      "evidence": "config(window.EVJ_CFG)의 concerts 배열은 이름 필드를 artist로 정의하는데(예: { id: 'C002', artist: 'ABAP Trio' }), 엔진 embeds/_engine/exists-vs-join.js는 renderSrc()·joinRows()·titleOf()·dupOwner() 전부 c.title을 참조한다. 실제로 로컬 서버(http://localhost:8144/embeds/abap/CH20-L03-S01.html)를 열어 확인한 결과 zconcert 표의 title 열이 C001·C002·C003 세 행 모두 \"undefined\"로 표시되고, JOIN 모드 결과 표의 title 열도 \"undefined\", 피드백 문장도 \"undefined이(가) 예약 건수만큼 2행으로 늘었습니다\"처럼 깨져 나온다. 반면 정적 안내문(.note)은 하드코딩으로 \"ABAP Trio\"를 올바르게 언급해, 원래 의도는 artist 값이 화면에 보이는 것이었음을 보여준다.",
+      "suggestion": "exists-vs-join.js에서 c.title 참조를 전부 c.artist로 바꾸거나, CH20-L03-S01.html의 cfg 필드명을 artist→title로 통일한다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH20-L07-S01.html",
+      "quote": "{ \"key\": \"artist\", \"label\": \"artist\" }",
+      "category": "위젯 결함",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "Concert Advanced SQL Lab 위젯(CH20-L07-S01)의 'EXISTS 예약 공연'·'EXCEPT 미예약 공연' 모드에서 결과 표의 artist 열과 '빠진 행' 안내가 전부 \"undefined\"로 렌더된다.",
+      "evidence": "cfg의 concerts 배열은 이름 필드가 artist인데(\"artist\": \"안유진\" 등), 엔진 concert-adv-sql-lab.js의 compute('exists'/'except', …)는 { id: c.id, title: c.title }로 title 필드를 만들고, cfg의 cols는 { key: 'artist', label: 'artist' }로 row['artist']를 읽는다 — 두 지점 모두 실제 값이 없는 필드를 참조하는 이중 불일치다. 로컬 서버에서 실제로 클릭 이벤트를 디스패치해 확인한 결과: EXISTS 모드 결과 표(기본 상태, 토글 없이도)에서 C001·C002·C004 세 행의 artist 열이 모두 \"undefined\"였고, EXCEPT 모드에서 '조건 제거 실험' 토글을 켜면 결과 행도 \"undefined\", 하단 '빠진 행: C002(undefined)' 안내도 이름이 undefined로 나왔다.",
+      "suggestion": "concert-adv-sql-lab.js의 compute()가 반환하는 필드를 title 대신 artist로 맞추고, nameOf()도 cfg.concerts[i].artist를 읽도록 수정한다(또는 cfg 필드명을 title로 통일)."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\cte-step-viewer.js",
+      "quote": "<b>B003</b>은 <b>취소",
+      "category": "위젯 결함",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "CTE 단계 뷰어(CH20-L02-S01) 1단계('① 원본') 피드백 문구가 취소된 예약을 \"B003\"이라고 지칭하는데, 실제 config·화면 표에는 그런 ID가 없다 — 취소 예약의 실제 booking_id는 \"0003\"이다.",
+      "evidence": "CH20-L02-S01.html의 cte-step-viewer-cfg에는 booking_id \"0001\"~\"0004\"만 있고 status='C'인 행은 { \"booking_id\":\"0003\", \"concert_id\": \"C001\", \"seats\": 1, \"status\": \"C\" }이다. 그런데 cte-step-viewer.js의 bodyStep1() 피드백은 '<b>B003</b>은 <b>취소(status = \\'C\\')</b>예요'라고 적어, 화면 표에 없는 ID를 지목한다. 로컬 서버에서 위젯을 로드해 실제 렌더 텍스트로도 \"B003은 취소(status = 'C')예요(빨간 줄)\"가 그대로 노출됨을 확인했다. 준호처럼 표를 보며 ID를 대조하는 학습자는 \"B003\"을 찾다가 혼란을 겪는다.",
+      "suggestion": "cte-step-viewer.js의 bodyStep1() 피드백 문구에서 \"B003\"을 실제 booking_id \"0003\"으로 고친다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH20-L07-S01.html",
+      "quote": "취소된 B003이 결과에 포함돼 C002 파티션(합계 1)이 생깁니다.",
+      "category": "위젯 결함",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "Concert Advanced SQL Lab(CH20-L07-S01) 'Window 상세' 모드의 실패 안내 문구도 취소 예약을 \"B003\"이라 지칭하지만, 실제 데이터의 취소 예약 ID는 \"0003\"이다.",
+      "evidence": "cfg의 bookings에서 취소 예약은 { \"id\": \"0003\", \"concert\": \"C002\", \"seats\": 1, \"status\": \"C\" }이고 화면 결과 표의 예약ID 열도 \"0003\"으로 나온다. 그런데 Window 모드의 failMsg는 \"취소된 B003이 결과에 포함돼 C002 파티션(합계 1)이 생깁니다\"라고 적혀 있다. 로컬 서버에서 Window 모드를 선택하고 '조건 제거 실험' 토글을 실제로 클릭해 확인한 결과, 피드백 영역에 이 문구가 그대로 노출돼 표의 실제 ID(0003)와 안내 문구의 ID(B003)가 어긋난다(CH20-L02-S01의 동일 유형 결함과 같은 패턴).",
+      "suggestion": "failMsg 텍스트의 \"B003\"을 실제 예약 ID \"0003\"으로 수정한다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH20-L05-S01.html",
+      "quote": "WHERE status = 'N'",
+      "category": "불일치",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "Window vs GROUP BY 시뮬레이터(CH20-L05-S01)의 SQL 예시들은 취소 예약을 걸러낼 때 이 챕터가 일관되게 가르치는 status <> 'C' 대신 status = 'N'을 쓴다 — 챕터 전체 관례와 다른 조건식이다.",
+      "evidence": "CH20-L02-L04·L07 본문과 위젯은 예외 없이 \"WHERE status <> 'C'\"(취소가 아닌 예약)로 업무 조건을 표현하며, CH20-L07.md의 흔한 실수 절도 \"취소 조건 누락 → 합계·존재·차집합 모두 status <> 'C'가 빠지면...\"이라고 이 표현으로만 못박는다. 그런데 CH20-L05-S01.html의 WPS_CFG.modes 중 group·partition 모드 sql은 \"WHERE status = 'N'\"으로 되어 있다. 지금 데이터는 상태값이 N/C 둘뿐이라 결과값 자체는 같지만, 챕터가 일관되게 가르치는 관용구(부정조건으로 취소를 배제)와 다른 방식이라 같은 챕터 안에서 두 가지 스타일이 섞여 보인다.",
+      "suggestion": "WPS_CFG의 group·partition 모드 sql 문자열도 다른 레슨과 통일해 \"WHERE status <> 'C'\"로 맞춘다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "보강 권장",
+    "summary": "CH20 7개 레슨의 본문 코드와 체험 위젯은 데이터(zconcert/zbooking)와 시나리오가 대체로 정확히 대응하고, 4묶음 고급 SQL(CTE·EXISTS·Set operation·Window) 각각에 전용 인터랙티브 위젯이 붙어 있어 체험 공백은 없었다. 다만 실제 클릭·렌더로 확인한 결과 CH20-L03-S01과 CH20-L07-S01에서 config 필드명(artist)과 엔진 코드(title 참조)가 어긋나 공연 이름이 화면에 문자 그대로 \"undefined\"로 노출되는 확실한 결함을 발견했다(각 높음). 또 CH20-L02-S01·CH20-L07-S01의 피드백/실패 문구가 실제 없는 booking_id \"B003\"을 지목하는 동일 패턴의 오탈자성 결함이 두 레슨에 반복돼(각 중간) 학습자가 화면 표와 문구를 대조할 때 혼란을 준다. CH20-L05-S01은 챕터 전체가 쓰는 status <> 'C' 관용구 대신 status = 'N'을 써서 스타일이 어긋난다(낮음, 추정). 레슨 본문 자체의 서술·수치는 위젯 결함들과 무관하게 정확했다."
+  }
+}

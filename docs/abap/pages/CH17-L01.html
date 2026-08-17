@@ -45,7 +45,7 @@
 만든 <strong>내 화면 안의 한 영역</strong>에 표를 박고, 버튼·입력칸과 함께 두고 싶다. 그러려면 더
 세밀한 <strong>Grid ALV</strong>(<button class="term" type="button" data-term="CL_GUI_ALV_GRID">CL_GUI_ALV_GRID</button>)와, 그것이 살 <strong>컨테이너</strong>가 필요하다.</p>
 <blockquote>
-<p>🔎 <strong>[선행 사용]</strong> 이 챕터는 객체(<code>TYPE REF TO</code>·<code>CREATE OBJECT</code>)와 메서드 호출을 많이 쓴다.
+<p>🔎 <strong>[선행 사용]</strong> 이 챕터는 객체(클래스라는 설계도로 찍어낸 <strong>실체 하나</strong> — <code>TYPE REF TO</code>·<code>CREATE OBJECT</code>)와 메서드 호출을 많이 쓴다.
 두 낱말만 감으로 잡아 두자. <strong><code>TYPE REF TO</code></strong> 는 객체를 직접 담는 상자가 아니라 <strong>만들어진
 객체를 가리키는 리모컨</strong> 같은 참조 변수를 만드는 것이고, <strong><code>CREATE OBJECT</code></strong> 는 <strong>표준
 클래스(설계도)로 객체를 하나 찍어내</strong> 그 리모컨에 물리는 것이다. 지금은 &quot;표준 클래스로
@@ -129,7 +129,7 @@
 <tr>
 <td><code>go_cont</code></td>
 <td>ABAP 전역 변수</td>
-<td><code>CONT100</code> 영역을 붙잡는 <strong>object reference</strong></td>
+<td><code>CONT100</code> 영역을 붙잡는 <strong>참조 변수(object reference)</strong></td>
 </tr>
 <tr>
 <td><code>CL_GUI_CUSTOM_CONTAINER</code></td>
@@ -138,8 +138,10 @@
 </tr>
 </tbody></table>
 <blockquote>
-<p>💡 여기서 <strong>컨테이너</strong>는 데이터를 담는 내부 테이블이 아니라, <strong>화면 컨트롤을 담는
-프레젠테이션 영역</strong>이다. 이름이 비슷해 헷갈리기 쉬우니 주의.</p>
+<p>💡 여기서 <strong>컨테이너</strong>는 데이터를 담는 내부 테이블이 아니라, <strong>버튼·표 같은 화면
+컨트롤이 들어가 앉는 화면 위의 자리(영역)</strong> 다. 이름이 비슷해 헷갈리기 쉬우니 주의.
+표에 나온 <strong>Control Framework</strong>는 이런 화면 컨트롤(컨테이너·그리드 등)의 생성과 표시를
+관리하는 SAP GUI 쪽 표준 틀이다.</p>
 </blockquote>
 </section><section class="lblock"><h2>Custom Container 만들기</h2>
 <p><a href="CH16-L09.html">Custom Control과 Container · Tabstrip · Subscreen</a>에서 화면에 둔
@@ -158,13 +160,15 @@ Custom Control 영역(<code>CONT100</code>)에 <button class="term" type="button
 </ul>
 </section><section class="lblock"><h2>직접 연결해 보기 — 컨테이너 바인딩 스텝퍼</h2>
 <p>이름을 맞추거나 틀리게 두고, <strong>Screen Painter 확인 → PBO 실행 → CREATE OBJECT</strong>를 한
-단계씩 진행해 보자. <code>go_cont</code>가 <code>initial</code>에서 <code>bound</code>로 바뀌는지, 이름이 틀리면 왜 못
+단계씩 진행해 보자. <code>go_cont</code>가 <code>initial</code>(아직 아무 객체도 안 물린 빈 상태)에서
+<code>bound</code>(화면 영역의 객체가 물려 연결된 상태)로 바뀌는지, 이름이 틀리면 왜 못
 붙는지 확인한다.</p>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">컨테이너 바인딩 스텝퍼</span><a class="embed__open" href="../../../embeds/abap/CH17-L01-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH17-L01-S01.html" loading="lazy" title="컨테이너 바인딩 스텝퍼" style="height:560px"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>이름 불일치</strong> → 화면에서 <code>CC_ALV</code>로 만들고 코드에 <code>CONT100</code>을 넘기면 연결되지 않는다.
-화면 Custom Control 이름과 <code>container_name</code>이 같아야 한다.</li>
+<li><strong>이름 불일치</strong> → 화면에서 <code>CC_ALV</code>로 만들고 코드에 <code>CONT100</code>을 넘기면 컨테이너 생성이
+실패한다. 이 실패는 조용히 넘어가지 않고, 처리되지 않은 예외로 프로그램이 중단(덤프)될
+수 있다. 화면 Custom Control 이름과 <code>container_name</code>부터 맞춘다.</li>
 <li><strong>PBO마다 생성</strong> → 컨테이너·그리드는 화면 컨트롤이라, 매 PBO마다 새로 만들면 중복 생성·
 깜박임·Control Framework 오류가 난다. <code>IF go_cont IS INITIAL</code>로 <strong>한 번만</strong>.</li>
 </ul>

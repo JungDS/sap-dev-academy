@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <!-- CH19-L04-S01 — 엔진: sql-expression-lab · _autoheight. 콘텐츠=레슨 전용(SQL Expression CASE/CAST/COALESCE, CH19 L04).
-     config=window.SEL_CFG. 게이팅: CH19=New Open SQL 정식(SQL식·AS alias·outer join). 복잡 업무로직/CDS는 이후. -->
+     config=window.SEL_CFG. 게이팅: CH19=New Open SQL 정식(SQL식·AS alias·outer join). 복잡 업무로직/CDS는 이후.
+     CAST 목표 길이 = INT4 → CHAR(11)(짧은 조합은 구문 오류) — 본문 L04 확정 서술과 동기. 결과표 컬럼 = SELECT list와 1:1. -->
 <html lang="ko" data-eng="sql-expression-lab">
 <head>
 <meta charset="utf-8" />
@@ -50,8 +51,8 @@ window.SEL_CFG = {
         "SELECT carrid, connid, seatsocc, seatsmax\n" +
         "  FROM sflight WHERE carrid = @lv_carr\n" +
         "  INTO TABLE @DATA(lt_flight).\n\n" +
-        "LOOP AT lt_flight INTO DATA(ls).\n" +
-        "  IF ls-seatsocc >= ls-seatsmax.\n" +
+        "LOOP AT lt_flight INTO DATA(ls_flight).\n" +
+        "  IF ls_flight-seatsocc >= ls_flight-seatsmax.\n" +
         "    lv_status = 'FULL'.\n" +
         "  ELSE.\n" +
         "    lv_status = 'OPEN'.\n" +
@@ -69,8 +70,8 @@ window.SEL_CFG = {
         { carrid: 'LH', connid: '0402', seatsmax: 90,  out: "'90'" }
       ],
       sqlExpr:
-        "SELECT carrid, connid,\n" +
-        "       CAST( seatsmax AS CHAR( 5 ) ) AS seatsmax_text\n" +
+        "SELECT carrid, connid, seatsmax,\n" +
+        "       CAST( seatsmax AS CHAR( 11 ) ) AS seatsmax_text\n" +
         "  FROM sflight\n" +
         "  WHERE carrid = @lv_carr\n" +
         "  INTO TABLE @DATA(lt_text).",
@@ -78,10 +79,10 @@ window.SEL_CFG = {
         "SELECT carrid, connid, seatsmax\n" +
         "  FROM sflight WHERE carrid = @lv_carr\n" +
         "  INTO TABLE @DATA(lt_flight).\n\n" +
-        "LOOP AT lt_flight INTO DATA(ls).\n" +
-        "  lv_text = |{ ls-seatsmax }|.   \" 숫자 → 문자\n" +
+        "LOOP AT lt_flight INTO DATA(ls_flight).\n" +
+        "  lv_text = |{ ls_flight-seatsmax }|.   \" 숫자 → 문자\n" +
         "ENDLOOP.",
-      note: "<b>CAST 길이를 의식</b> — <code>CHAR( 5 )</code>가 너무 짧으면 큰 숫자가 잘릴 수 있습니다. 값이 표현 가능한 길이를 줍니다."
+      note: "<b>CAST 길이는 값 전체가 들어가게</b> — <code>seatsmax</code> 같은 정수(<code>INT4</code>) 컬럼은 부호까지 담는 <code>CHAR( 11 )</code>. 이보다 짧게 주는 조합은 <b>구문 검사에서 허용되지 않습니다</b>(구문 오류)."
     },
     {
       v: 'coal', label: 'COALESCE null', col: 'city_to_text',
@@ -92,18 +93,18 @@ window.SEL_CFG = {
         { carrid: 'ZZ', carrname: 'Zeta Air',  cityto: null,        out: 'NO ROUTE', repl: true }
       ],
       sqlExpr:
-        "SELECT c~carrid, c~carrname,\n" +
+        "SELECT c~carrid, c~carrname, p~cityto,\n" +
         "       COALESCE( p~cityto, 'NO ROUTE' ) AS city_to_text\n" +
         "  FROM scarr AS c\n" +
         "  LEFT OUTER JOIN spfli AS p ON p~carrid = c~carrid\n" +
         "  INTO TABLE @DATA(lt_route).",
       abapLoop:
         "\" outer join 결과를 ABAP으로 가져온 뒤:\n" +
-        "LOOP AT lt_route INTO DATA(ls).\n" +
-        "  IF ls-cityto IS INITIAL.   \" ⚠️ null과 initial은 다른 개념\n" +
-        "    ls-city_to_text = 'NO ROUTE'.\n" +
+        "LOOP AT lt_route INTO DATA(ls_route).\n" +
+        "  IF ls_route-cityto IS INITIAL.   \" ⚠️ null과 initial은 다른 개념\n" +
+        "    ls_route-city_to_text = 'NO ROUTE'.\n" +
         "  ELSE.\n" +
-        "    ls-city_to_text = ls-cityto.\n" +
+        "    ls_route-city_to_text = ls_route-cityto.\n" +
         "  ENDIF.\n" +
         "ENDLOOP.",
       note: "<b>COALESCE는 DB의 null 대체</b> — ABAP의 빈 값(initial)과 <b>다른 개념</b>입니다. left outer join에서 매칭되는 행이 없으면 오른쪽 컬럼이 null이 됩니다."

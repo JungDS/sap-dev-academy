@@ -64,6 +64,8 @@
   function renderResult() {
     var n = curN(), found = n > 0;
     var subrc = found ? 0 : 4;
+    // 중간 단계(1·2)는 실제로는 컴파일되지 않는 표기 실험 → 결과 카드를 흐림 처리
+    resEl.classList.toggle('ghost', stage === 1 || stage === 2);
     resEl.innerHTML =
       '<div class="sms-card ' + (found ? 'ok' : 'empty') + '"><div class="k">결과 행 수</div><div class="v">' + n + '</div></div>' +
       '<div class="sms-card ' + (found ? 'ok' : 'empty') + '"><div class="k">sy-subrc</div><div class="v">' + subrc + '</div></div>' +
@@ -78,10 +80,12 @@
       msg = '<b>classic</b> — 공백으로 필드를 나누고 ABAP 변수도 그냥 이름으로 씁니다. 작은 코드엔 괜찮지만, 커지면 <code>' + CFG.varName + '</code>가 DB 컬럼인지 ABAP 변수인지 한눈에 안 보입니다.';
     } else if (stage === 1) {
       cls = 'warn';
-      msg = '<b>콤마</b>만 적용 — 필드 목록은 modern인데, ABAP 변수 경계(<code>@</code>)는 아직 없습니다. 다음 단계에서 <code>@</code>를 붙이세요.';
+      msg = '<b>콤마</b>만 적용 — 필드 목록은 modern인데, ABAP 변수 경계(<code>@</code>)는 아직 없습니다. 다음 단계에서 <code>@</code>를 붙이세요.' +
+        '<br>🚧 <b>학습용 중간 표기</b> — 콤마 목록은 <b>strict 문법 검사</b>를 켜서 <code>@</code> 없는 ABAP 변수를 허용하지 않아요. 이 상태 그대로 SE38에 치면 <b>구문 오류</b>가 납니다(결과 카드는 완성형 기준 참고값).';
     } else if (stage === 2) {
       cls = 'warn';
-      msg = '<b>@</b> 적용 — 이제 <code>@' + CFG.varName + '</code>·<code>@' + CFG.target + '</code>로 "이건 ABAP 값"이 분명합니다. 마지막으로 <code>INTO</code>를 문장 <b>맨 뒤</b>로 옮기면 strict mode 완성입니다.';
+      msg = '<b>@</b> 적용 — 이제 <code>@' + CFG.varName + '</code>·<code>@' + CFG.target + '</code>로 "이건 ABAP 값"이 분명합니다. 마지막으로 <code>INTO</code>를 문장 <b>맨 뒤</b>로 옮기면 strict mode 완성입니다.' +
+        '<br>🚧 <b>학습용 중간 표기</b> — strict 검사에서는 <code>INTO</code>가 문장 <b>맨 뒤</b>에 와야 해요. 이 상태 그대로는 <b>구문 오류</b>가 납니다(결과 카드는 완성형 기준 참고값).';
     } else {
       cls = 'good';
       msg = '✅ <b>Modern ABAP SQL 완성</b> — 콤마 · <code>@</code> escape · 마지막 <code>INTO</code>. 표기만 바뀌었고 <b>결과는 그대로</b>입니다.';

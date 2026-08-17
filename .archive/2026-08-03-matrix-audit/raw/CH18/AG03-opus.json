@@ -1,0 +1,171 @@
+{
+  "agent": "AG03",
+  "model": "opus",
+  "target": "CH18",
+  "persona_ack": "나는 Java/C# 계열 백엔드 3～5년차 개발자로서 ABAP을 빠르게 훑는 독자 시점에서 CH18(Modern ABAP Syntax) 11개 레슨과 _chapter.md를 통독했다. 프로그래밍 기본기(변수·조건문·루프·SQL·OOP)는 이미 아는 상태를 전제로 ① 과잉 설명 ② 단순화가 개발 상식과 충돌해 오히려 헷갈리는 곳 ③ 경험자용 지름길 안내 부재 ④ 일반 개발 용어와 ABAP 용법의 차이를 안 짚은 곳을 기록했다. 다만 이 사이트의 1독자가 비전공 입문자임을 감안해, '입문자에게도 장황한 것'만 중간 이상으로 두고 '입문자에겐 필요하나 경력자에겐 아는 내용'은 낮음/제안으로 낮췄다.",
+  "method": "Read 도구로 대상 12개 파일(CH18-L01～L11, _chapter.md) 전문을 통독했다. 웹 검색·외부 네트워크·다른 감사 산출물 열람은 하지 않았고, 제공된 SERVE_URL(http://localhost:8143)도 사용하지 않았다(빌드 산출물이 아니라 MD 소스 감사이므로 불필요). ABAP 문법·릴리스 판정은 내 지식에 의존했고 확신이 낮은 항목은 confidence=추정으로 표기했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L10.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L11.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH18/CH18-L04.md",
+      "quote": "DATA(ls_first) = lt_booking[ 1 ].",
+      "category": "용어 충돌",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "Table Expression을 '배열처럼 대괄호로' 꺼낸다고 소개하면서, ABAP 인덱스가 1부터 시작한다는 사실을 어디에서도 명시하지 않는다. Java·C#·JS를 쓰던 독자는 `tab[ 1 ]`을 '두 번째 행'으로 읽어 즉시 off-by-one을 만든다.",
+      "evidence": "L04 본문은 '한 행을 배열처럼 대괄호로 꺼낸다. 이것이 Table expression이다'라고 비유해 놓고 `lt_booking[ 1 ]`에 '인덱스로'라는 주석만 붙인다. CH18 어느 레슨에도 '1-based'라는 언급이 없고, L10의 `DATA(lv_third) = lt_all[ 3 ]-seats.`도 3회차=3번 인덱스를 당연시한다. 대괄호 첨자는 거의 모든 주류 언어에서 0-based라 비유가 그대로 오해로 이어진다.",
+      "suggestion": "`DATA(ls_first) = lt_booking[ 1 ].` 줄 주석을 '인덱스로 — ABAP 내부 테이블의 첫 행은 0이 아니라 1이다'로 바꾸고, '배열처럼' 비유 문장 바로 뒤에 한 줄 콜아웃(💡 다른 언어의 배열과 달리 ABAP 인덱스는 1부터)을 추가. 입문자에게도 손해가 없는 사실 보강이다."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH18/CH18-L08.md",
+      "quote": "DATA(lt_open) = FILTER tt_booking( lt_booking WHERE status = 'N' ).",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "ABAP `FILTER`는 임의 조건을 걸 수 있는 범용 필터가 아니라, WHERE에 쓰는 컬럼이 소스 테이블의 sorted/hashed key(주키 또는 보조키) 구성요소여야만 쓸 수 있다는 강한 제약이 있다. 레슨은 이 규칙을 'Key 관계가 중요해서'·'Key가 분명한 테이블에서 시작한다'로 얼버무려, 독자가 STANDARD TABLE에 그대로 따라 쓰다 문법 오류를 만나게 만든다.",
+      "evidence": "L08은 `TYPES tt_booking TYPE SORTED TABLE OF ts_booking WITH NON-UNIQUE KEY status.`를 선언한 뒤 곧바로 `FILTER tt_booking( lt_booking WHERE status = 'N' )`를 쓰는데, 정작 제약이 걸리는 대상인 **소스** `lt_booking`의 타입은 본문 어디에도 선언돼 있지 않다(L02가 만든 표준 테이블 `tt_book`/`lt_book`과도 다르고, `ts_booking` 타입 정의도 챕터에 없다). Java의 `stream().filter(...)`/LINQ `Where`는 조건에 아무 제약이 없어 경력자일수록 '왜 안 되지'로 빠진다.",
+      "suggestion": "① 규칙을 한 문장으로 명시: 'WHERE에 쓰는 필드는 소스 테이블의 정렬/해시 키(또는 보조키)여야 한다 — 아니면 문법 오류. 표준 테이블은 `USING KEY`나 보조키가 필요하다.' ② 예제에서 `DATA lt_booking TYPE tt_booking.`처럼 소스 타입을 눈에 보이게 선언해 소스=정렬 테이블임을 드러낼 것. ③ `ts_booking` 타입 정의를 추가하거나 L02의 `ts_book`으로 이름을 통일."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH18/CH18-L08.md",
+      "quote": "DATA(lt_not_open) = FILTER tt_booking( lt_booking EXCEPT WHERE status = 'N' ).",
+      "category": "용어 충돌",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "같은 챕터 안에서 키워드 `EXCEPT`가 완전히 다른 두 의미로 쓰이는데 그 차이를 짚지 않는다. L03의 `EXCEPT`는 '대상 **필드**를 결과에서 뺀다'이고, L08의 `EXCEPT WHERE`는 '조건에 맞지 않는 **행**을 가져온다(조건 부정)'이다. 필드 제외 → 행 부정으로 의미가 옮겨가는데 연결 설명이 없다.",
+      "evidence": "L03은 'EXCEPT audit_user — **대상 필드** `audit_user`를 결과에서 채우지 않는다'와 '**`EXCEPT`를 원본 기준으로 생각** → `EXCEPT`는 **대상 필드** 기준이다'로 필드 축을 강하게 각인시킨다. 5개 레슨 뒤 L08은 같은 키워드를 행 조건 부정으로 쓰면서 '`EXCEPT`를 붙이면 조건에 **맞지 않는** 행을 가져온다' 한 줄만 둔다. 두 레슨 어디에도 '같은 단어지만 다른 문맥'이라는 연결 문장이 없다.",
+      "suggestion": "L08의 EXCEPT 문단에 한 줄 추가: '📌 [CORRESPONDING](CH18-L03.html)의 `EXCEPT`는 *대상 필드* 제외였지만, `FILTER`의 `EXCEPT WHERE`는 *조건의 부정*이다 — 같은 단어, 다른 문맥.' 입문자에게도 혼동 방지 효과가 크다."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH18/CH18-L10.md",
+      "quote": "lv_share /= 3.",
+      "category": "용어 충돌",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "정수 나눗셈 예제를 아무 단서 없이 제시하는데, ABAP의 `i` 타입 나눗셈은 Java/C#처럼 **버림**이 아니라 **반올림**한다. `lv_share`가 `i`이고 값이 5면 Java는 1, ABAP은 2가 된다. 경력자일수록 자기 언어 상식을 그대로 적용해 조용한 계산 오차를 만든다.",
+      "evidence": "L10의 복합 대입 예제는 `lv_share /= 3.  \" lv_share = lv_share / 3`처럼 '같다'는 등가 설명만 붙이고 결과 타입·반올림을 언급하지 않는다. 같은 레슨의 검증 표(행 수·합계 비교)도 덧셈만 다뤄 나눗셈 결과 차이는 드러나지 않는다. 금액·좌석 배분 같은 업무 값에서 1의 차이는 바로 결함이 된다.",
+      "suggestion": "`/=` 예제 아래에 경고 한 줄: '⚠️ 정수(`i`) 나눗셈은 소수점을 버리지 않고 **반올림**한다(5 / 3 → 2). 버림이 필요하면 `DIV`, 소수가 필요하면 `p`/`decfloat` 타입으로 받는다.' 입문자에게도 필요한 사실이다."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH18/CH18-L06.md",
+      "quote": "- **타입을 속이는 문법으로 오해** → `CONV`는 실제 변환 규칙을 따른다. `'12A'`를 정수로",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "`CONV i( '12A' )`가 실패했을 때 무슨 일이 나는지를 '안전하게 변환되지 않는다'로 흐리게 적어, 독자가 '0이 들어가거나 12만 잘려 들어가겠지' 같은 관대한 실패(silent fallback)를 상상하게 만든다. 실제로는 런타임 예외(변환 불가)로 프로그램이 멈춘다.",
+      "evidence": "본문은 EXACT에 대해서는 '값이 잘리거나 반올림돼 의미가 달라질 수 있으면 변환을 막는다(예외가 난다)'라고 예외를 명시하는데, 바로 그 대비로 놓인 CONV의 실패는 '안전하게 변환되지 않는다'로만 서술된다. 결과적으로 독자는 CONV=관대, EXACT=엄격이라는 잘못된 이분법을 얻는다. Java의 `Integer.parseInt`도 던지므로 경력자는 오히려 '그럼 ABAP은 안 던진다는 건가'로 헷갈린다.",
+      "suggestion": "해당 항목을 '`'12A'`처럼 숫자가 아닌 문자가 섞이면 조용히 0이 되는 게 아니라 **런타임 예외로 프로그램이 멈춘다**'로 고치고, CONV/EXACT의 차이를 '실패 여부'가 아니라 '무엇을 실패로 볼지(변환 불가 vs 값 손실)'로 다시 정리."
+    },
+    {
+      "seq": 6,
+      "file": "content/abap/CH18/CH18-L01.md",
+      "quote": "값을 한 번만 정하고 **이후 변경을 막고** 싶으면 `FINAL()`로 선언한다(읽기 전용 의도).",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "`FINAL()`을 `DATA()`와 같은 층위의 기본 도구로 나란히 소개하면서 릴리스 요건을 전혀 밝히지 않는다. `DATA()`는 7.40부터라 사실상 어디서나 쓰지만 `FINAL()`은 훨씬 뒤(ABAP 7.57 세대)에 들어온 문법이라, 이 커리큘럼이 전제하는 SAPGUI/SE38 온프레미스 시스템에서는 문법 오류가 날 수 있다.",
+      "evidence": "L01은 'DATA() — 값이 만들어지는 자리에서 선언'과 'FINAL() — 다시 안 바뀌는 값'을 동급 섹션으로 배치하고, 판정기 임베드에서도 함께 다룬다. 챕터 전체(_chapter.md 포함)에 릴리스·시스템 버전 언급이 한 줄도 없다. 학습자가 실제 시스템에서 `FINAL(lv_max) = 100.`을 쳤을 때 문법 오류가 나면 '내가 틀렸나'로 귀결되어 학습 동기를 크게 깎는다.",
+      "suggestion": "FINAL 섹션 상단에 한 줄: '📌 `FINAL()`은 비교적 최신 릴리스(7.57 세대)부터다. 회사 시스템에서 문법 오류가 나면 문법을 틀린 게 아니라 릴리스가 낮은 것이니 `DATA()`로 진행해도 된다.' 확실치 않으면 최소한 '시스템에 따라 지원되지 않을 수 있다'는 안전 문구라도."
+    },
+    {
+      "seq": 7,
+      "file": "content/abap/CH18/CH18-L10.md",
+      "quote": "::embed CH18-L10-S01 | 같은 로직의 classic ↔ modern 코드를 짝지어 비교::",
+      "category": "형식/스펙 위반",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L10·L11의 embed 지시문이 챕터 내 다른 9개와 달리 **높이 인자를 빠뜨렸고**, 게다가 두 레슨의 제목 문자열이 '같은 로직의 classic ↔ modern 코드를 짝지어 비교'로 완전히 동일하다. 표기 형식은 `::embed ID | 제목 | 높이::`인데 두 곳만 `| 제목::`으로 끝난다.",
+      "evidence": "같은 챕터의 나머지 임베드는 모두 3인자다 — 예: `::embed CH18-L09-S01 | LET 표현식 독해기 | 600::`, `::embed CH18-L08-S01 | 집계·필터 실험실 (REDUCE·FILTER) | 600::`. 반면 L10은 `::embed CH18-L10-S01 | 같은 로직의 classic ↔ modern 코드를 짝지어 비교::`, L11은 `::embed CH18-L11-S01 | classic ↔ modern 코드를 짝지어 비교::`로 높이가 없다. 또한 제목이 사실상 같아 목차·인덱스에서 두 위젯을 구분할 수 없다.",
+      "suggestion": "두 지시문에 높이 인자를 채우고(예: 620·660) 제목을 서로 구분되게 바꾼다 — L10은 '작은 예제 classic ↔ modern 비교기', L11은 '콘서트앱 classic ↔ modern 리팩터 비교기'. (빌드가 2인자를 어떻게 처리하는지는 대상 파일 밖이라 확인하지 않았음.)"
+    },
+    {
+      "seq": 8,
+      "file": "content/abap/CH18/CH18-L07.md",
+      "quote": "- **`ELSE` 생략** → 조건에 안 맞으면 결과가 **초기값**이 된다(빈 문자·0). 필요하면 `ELSE`를 둔다.",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "'ELSE 생략 → 초기값'을 `COND`와 `SWITCH`에 공통으로 적용되는 규칙처럼 한 줄로 묶었는데, `SWITCH`는 매칭되는 `WHEN`이 없고 `ELSE`도 없으면 초기값을 돌려주는 대신 예외(CX_SY_CASE_NOT_FOUND 계열)가 발생하는 것으로 기억한다. 사실이라면 '조용히 초기값'을 믿고 ELSE를 생략한 코드가 운영에서 덤프를 낸다.",
+      "evidence": "'흔한 실수와 점검' 항목이 COND·SWITCH 두 섹션 뒤에 공통으로 놓여 있어 독자는 두 표현식 모두 동일하게 동작한다고 읽는다. 실제 L11의 예제는 `SWITCH string( ls_book-status ... ELSE '알 수 없음' )`처럼 ELSE를 쓰고 있어 이 경계가 검증된 적이 없다. 나는 ABAP 문서 원문을 확인할 수 없는 조건(웹 검색 금지)이라 확신은 못 하며, 이 항목은 반드시 실제 시스템·키워드 문서로 재확인이 필요하다.",
+      "suggestion": "실기 확인 후 문구를 분리: 'COND는 ELSE가 없고 참인 조건도 없으면 초기값. SWITCH는 매칭 실패 시 예외가 날 수 있으니 ELSE를 기본으로 둔다.' 확인 전이라도 'SWITCH에는 ELSE를 습관적으로 둔다' 정도의 안전 권고는 무해하다."
+    },
+    {
+      "seq": 9,
+      "file": "content/abap/CH18/CH18-L08.md",
+      "quote": "DATA(lv_total_seats) = REDUCE i(\n  INIT sum = 0\n  FOR ls_book IN lt_booking\n  NEXT sum = sum + ls_book-seats ).",
+      "category": "용어 충돌",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "`REDUCE`·`FILTER`·`FOR`가 이름만 보면 Java Stream / LINQ와 같아 보이지만, ABAP의 이것들은 **체이닝되지 않는 단일 constructor 표현식**이다. `filter(...).map(...).reduce(...)`처럼 이어 붙일 수 없고(중첩만 가능), 지연 평가도 아니며 `map`에 해당하는 별도 연산자도 없다(`VALUE ... FOR`가 그 역할). 이 차이를 안 짚어 경력자가 파이프라인을 기대하고 헤맨다.",
+      "evidence": "L08은 REDUCE/FILTER를 '단순한 반복 패턴을 줄이는 도구'로만 설명하고, L02의 `VALUE tt_book( FOR line IN lt_book_2 ... )`(사실상 map)와의 관계도 명시하지 않는다. 챕터 전체에 Stream/LINQ 대비 언급이 없다. 다만 이 사이트의 1독자인 비전공 입문자는 Stream 배경이 없어 손해가 없으므로 낮음으로 둔다.",
+      "suggestion": "필수 수정은 아니고, L08 말미에 접기(details) 한 칸으로 '다른 언어를 해 본 독자에게' 박스를 두는 정도를 제안: 'REDUCE≈reduce, FILTER≈filter, VALUE…FOR≈map. 단 ABAP은 체이닝이 아니라 중첩이고 지연 평가가 없다.' 입문자에겐 접혀 있어 방해가 안 된다."
+    },
+    {
+      "seq": 10,
+      "file": "content/abap/CH18/CH18-L05.md",
+      "quote": "> ⚠️ `{ }` **안쪽 공백은 문법 요소**다. `|{ lv_name }|`처럼 중괄호 안쪽에 공백을 두는 형태를 기본으로 삼는다.",
+      "category": "오개념 유발",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "중괄호 안쪽 공백을 '문법 요소'라고 단정하는데, 내가 아는 한 `|{lv_name}|`처럼 공백 없이 써도 문법 오류가 아니고 결과 문자열에도 공백이 들어가지 않는다. 즉 이것은 문법 강제가 아니라 표기 관례(Clean ABAP·Pretty Printer)다. '문법'이라고 배운 독자는 남의 코드에서 공백 없는 형태를 보면 '오류 코드'로 오판한다.",
+      "evidence": "'흔한 실수와 점검'의 '**`{ }` 누락** → 변수는 `{ }`로 감싸야 값이 들어간다. 안쪽 공백도 지킨다.'가 같은 오해를 한 번 더 강화한다. 진짜 문법 요소인 항목(예: 리터럴 중괄호를 쓰려면 이스케이프가 필요하다는 점)은 오히려 언급되지 않는다.",
+      "suggestion": "'문법 요소다'를 '표기 관례다 — 공백 없이 써도 동작하지만, 공백을 둔 형태가 표준 서식이라 그걸 기본으로 삼는다'로 완화. 점검 항목의 '안쪽 공백도 지킨다'도 같은 톤으로."
+    },
+    {
+      "seq": 11,
+      "file": "content/abap/CH18/CH18-L05.md",
+      "quote": "DATA(lv_len) = strlen( lv_text ).",
+      "category": "용어 충돌",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "`strlen`을 다른 언어의 `length()`와 같은 것으로 제시하지만, ABAP `strlen`은 고정 길이 문자 타입(`c`)에 대해 **뒤쪽 공백을 제외한 길이**를 돌려준다. `string` 타입일 때만 우리가 기대하는 전체 길이가 된다. 이 차이가 `substring`의 범위 계산과 곧바로 얽힌다.",
+      "evidence": "본문은 `to_upper`·`substring`·`strlen`을 '값을 돌려주는 함수'로만 묶어 소개하고 타입별 동작 차이를 언급하지 않는다. 바로 아래 점검 항목은 '`substring` 범위 초과 → 오류가 난다. 입력 길이를 확인한다'라며 '입력 길이 확인'을 권하는데, 그 길이를 재는 `strlen`이 타입에 따라 다른 값을 준다는 사실이 빠져 조언이 반쪽이 된다.",
+      "suggestion": "`strlen` 줄 주석에 '(`c` 타입이면 뒤 공백은 빼고 센다)'를 붙이거나, 예제 변수를 `TYPE string`으로 못 박고 한 줄 각주로 차이를 남긴다."
+    },
+    {
+      "seq": 12,
+      "file": "content/abap/CH18/CH18-L10.md",
+      "quote": "> 🎯 **리팩터링**(Refactoring, 동작은 그대로 두고 코드 모양만 다듬기)의 목표는 **줄 수를 줄이는 게 아니다.**",
+      "category": "과잉",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L10과 L11이 사실상 같은 과제를 두 번 반복한다 — 같은 예매 도메인, 같은 before/after(인라인 DATA·VALUE·`+=`·`line_exists`), 같은 '결과가 같은지 확인' 표, 같은 제목의 비교 임베드. 리팩터링 일반론(정의·목표·5단계 검증 절차)까지 더해져 경력자에겐 한 레슨 분량이 통째로 잉여로 읽힌다.",
+      "evidence": "L10 §'왜 바꾸나'와 §'결과가 같은지 꼭 확인'(5단계 + 3행 확인표), L11 §'결과가 같은지 확인'(3행 확인표)이 같은 메시지를 반복한다. 다뤄지는 문법 조각도 겹친다(L10: VALUE·`+=`·`lt_book[ 1 ]` / L11: VALUE·`+=`·`lt_book[ ... ]`+`line_exists`). L10이 새로 도입하는 것은 사실상 `+=` 계열 하나뿐이다. 다만 입문자에게는 '작은 예제 → 관통 예제' 반복이 학습상 이득이 있어 낮음으로 둔다.",
+      "suggestion": "삭제까지는 불필요. L10을 '`+=` 도입 + 판단 기준' 중심으로 슬림화하고 검증 절차 5단계·확인표는 L11 한 곳으로 모으면 중복이 사라진다. 최소한 L10 도입부에 '이미 리팩터링 경험이 있으면 §`+=`부터 읽어도 된다'는 안내 한 줄."
+    },
+    {
+      "seq": 13,
+      "file": "content/abap/CH18/_chapter.md",
+      "quote": "장황한 고전 구문이 번거롭다 — 현대 ABAP으로 간결하게.",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "CH18 전체(11개 레슨)에 '이 절은 이미 아는 사람은 건너뛰어도 된다' 류의 안내나, 11개 문법을 한눈에 보는 대응표가 없다. 챕터 소개도 한 문장뿐이라, 특정 문법 하나만 확인하러 온 독자가 어느 레슨에 무엇이 있는지 알려면 11개를 다 열어야 한다.",
+      "evidence": "_chapter.md는 front-matter를 빼면 본문이 위 한 줄이 전부다. 각 레슨은 '흔한 실수와 점검'·'정리'로 잘 닫히지만, 챕터 층위의 지도(예: 인라인 선언·VALUE·CORRESPONDING·Table Expression·String Template·CONV/EXACT·COND/SWITCH·REDUCE/FILTER·LET을 한 표로)는 어디에도 없다. L10 도입부가 배운 문법을 나열하지만 그건 챕터를 다 읽은 뒤에야 만난다.",
+      "suggestion": "_chapter.md에 '무엇을 어디서 배우나' 3～4행 표(문법 → 레슨 링크 → 한 줄 용도)를 추가. 입문자에겐 예습·복습 지도가 되고 경력자에겐 지름길이 되어 양쪽에 이득이다. 레슨 본문에 '건너뛰기' 문구를 넣는 것보다 부작용이 적다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH18은 모던 ABAP 표현식을 '짧게 쓰기'가 아니라 '의도를 드러내기'로 일관되게 프레이밍하고, 레슨마다 한계(LOOP가 나은 경우·표현식 남용 경고)를 정직하게 붙여 둔 점이 좋다. 경력자 기준으로 장황한 곳은 거의 없고, 오히려 밀도가 높은 편이라 '과잉'으로 걸 만한 항목은 L10↔L11 중복 하나뿐이었다. 실질적 위험은 과잉이 아니라 **누락된 경계 조건**에 몰려 있다 — Table Expression 첨자가 1부터라는 사실, `FILTER`가 요구하는 key 제약, 정수 나눗셈의 반올림, CONV 실패 시 런타임 예외라는 점이 모두 빠져 있고 이들은 입문자에게도 똑같이 필요한 사실이다. 여기에 `EXCEPT`가 챕터 안에서 두 의미로 쓰이는 것과 `FINAL()`의 릴리스 요건 미표기가 더해진다. 이 사이트의 1독자인 비전공 입문자 관점에서 보면 나머지(Stream 대비 설명, 챕터 지도, strlen 타입 차이)는 있으면 좋은 수준이라 낮음으로 두었다. 전반적으로 재집필이 필요한 구조적 문제는 없고, 문장 몇 개 추가·수정으로 해결되는 경미 수정 등급이다. 단 seq 8(SWITCH의 ELSE 생략 동작)은 웹 검색 금지 조건에서 내 기억에 의존한 추정이므로 실기·키워드 문서 확인 전에는 채택하지 말 것을 권한다."
+  }
+}

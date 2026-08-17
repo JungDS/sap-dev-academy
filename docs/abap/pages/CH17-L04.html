@@ -40,9 +40,9 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>컬럼을 내 맘대로 — 표의 &quot;컬럼 설명서&quot;</h2>
-<p>데이터만 있으면 ALV가 표를 그릴 수는 있다. 하지만 실무 화면은 기술 필드명 <code>SEATS</code>를
-그대로 두기보다 <strong>&quot;좌석수&quot;</strong> 라는 제목이 좋고, 어떤 컬럼은 좁게·어떤 컬럼은 넓게·어떤
-컬럼은 숨기거나 강조해야 한다. 이 역할이 <button class="term" type="button" data-term="Field Catalog">Field Catalog</button> — <strong>표의 컬럼 설명서</strong>다.</p>
+<p>데이터만 있으면 ALV가 표를 그릴 수는 있다. 하지만 실무 화면은 다르다. 기술 필드명
+<code>SEATS</code>보다 <strong>&quot;좌석수&quot;</strong> 라는 제목이 읽기 좋다. 컬럼마다 알맞은 너비도 다르다. 숨길
+컬럼과 강조할 컬럼도 있다. 이 역할이 <button class="term" type="button" data-term="Field Catalog">Field Catalog</button> — <strong>표의 컬럼 설명서</strong>다.</p>
 <ul>
 <li>타입 <code>LVC_T_FCAT</code>은 컬럼 설정들의 <strong>내부 테이블</strong>, 각 행 <code>LVC_S_FCAT</code>은 <strong>한 컬럼의 설정</strong>이다.</li>
 <li>주요 칸: <code>fieldname</code>(어떤 데이터 필드와 연결), <code>coltext</code>(컬럼 제목), <code>outputlen</code>(출력 너비).</li>
@@ -96,7 +96,8 @@
 12
 13
 14
-15</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> gt_fcat <span class="tok-kw">TYPE</span> lvc_t_fcat.
+15
+16</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> gt_fcat <span class="tok-kw">TYPE</span> lvc_t_fcat.
 
 <span class="tok-kw">CALL</span> <span class="tok-kw">FUNCTION</span> <span class="tok-str">'LVC_FIELDCATALOG_MERGE'</span>
   <span class="tok-kw">EXPORTING</span>
@@ -109,8 +110,15 @@
     <span class="tok-kw">OTHERS</span>                 = <span class="tok-num">3</span>.
 
 <span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.
-  <span class="tok-kw">MESSAGE</span> <span class="tok-str">'Field Catalog를 생성하지 못했습니다.'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'E'</span>.
+  <span class="tok-kw">MESSAGE</span> <span class="tok-str">'Field Catalog를 생성하지 못했습니다.'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'S'</span>.
+  RETURN.                              <span class="tok-com">" 카탈로그 없이 다음 단계로 가지 않는다</span>
 <span class="tok-kw">ENDIF</span>.</code></pre></div></div>
+<blockquote class="cw">
+<p>⚠️ 실패 안내를 <code>&#39;E&#39;</code>(오류)가 아니라 <code>&#39;S&#39;</code>(상태) + <code>RETURN</code>으로 한 데는 이유가 있다.
+이 코드는 결국 <strong>화면을 그리는 길목(PBO)</strong> 에서 불리는데, 그 경로의 <code>&#39;E&#39;</code> 메시지는
+프로그램을 통째로 끝내 버린다. 자세한 사정은
+<a href="CH17-L07.html">SET_TABLE_FOR_FIRST_DISPLAY</a>에서 다시 본다.</p>
+</blockquote>
 </section><section class="lblock"><h2>손으로 다듬기</h2>
 <p>자동 생성 후, 필요한 컬럼만 코드로 다듬는다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
@@ -121,13 +129,13 @@
 6
 7
 8
-9</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> ls_fcat <span class="tok-kw">TYPE</span> lvc_s_fcat.
+9</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> gs_fcat <span class="tok-kw">TYPE</span> lvc_s_fcat.
 
-<span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> gt_fcat <span class="tok-kw">INTO</span> ls_fcat.
-  <span class="tok-kw">IF</span> ls_fcat-fieldname = <span class="tok-str">'SEATS'</span>.
-    ls_fcat-coltext   = <span class="tok-str">'좌석수'</span>.            <span class="tok-com">" 컬럼 제목</span>
-    ls_fcat-outputlen = <span class="tok-num">8</span>.                  <span class="tok-com">" 출력 너비</span>
-    <span class="tok-kw">MODIFY</span> gt_fcat <span class="tok-kw">FROM</span> ls_fcat <span class="tok-kw">INDEX</span> sy-tabix.   <span class="tok-com">" 현재 행에 반영</span>
+<span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> gt_fcat <span class="tok-kw">INTO</span> gs_fcat.
+  <span class="tok-kw">IF</span> gs_fcat-fieldname = <span class="tok-str">'SEATS'</span>.
+    gs_fcat-coltext   = <span class="tok-str">'좌석수'</span>.            <span class="tok-com">" 컬럼 제목</span>
+    gs_fcat-outputlen = <span class="tok-num">8</span>.                  <span class="tok-com">" 출력 너비</span>
+    <span class="tok-kw">MODIFY</span> gt_fcat <span class="tok-kw">FROM</span> gs_fcat <span class="tok-kw">INDEX</span> sy-tabix.   <span class="tok-com">" 현재 행에 반영</span>
   <span class="tok-kw">ENDIF</span>.
 <span class="tok-kw">ENDLOOP</span>.</code></pre></div></div>
 </section><section class="lblock"><h2>직접 편집해 보기 — 컬럼 설명서 편집기</h2>

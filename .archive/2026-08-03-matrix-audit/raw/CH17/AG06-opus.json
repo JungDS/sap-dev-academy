@@ -1,0 +1,159 @@
+{
+  "agent": "AG06",
+  "model": "opus",
+  "target": "CH17",
+  "persona_ack": "20년차 SAP ABAP 아키텍트(ECC~S/4HANA 개발·운영·성능·이관 경험) 시선으로 CH17 'Grid ALV 기초' 10개 레슨과 _chapter.md를 기술 검수했다. 사실 오류·예시 적절성·위험한 생략·안티패턴 네 축으로만 판단했고, 교육적 톤이나 문장 스타일은 감사 대상에서 제외했다.",
+  "method": "Read 도구로 대상 11개 파일 전문을 정독했다(front-matter·본문·표·ABAP 코드 블록·임베드 지시문 전수 확인). 웹 검색·외부 참조·다른 감사 산출물 열람 없이, Control Framework(CL_GUI_CUSTOM_CONTAINER / CL_GUI_ALV_GRID) 및 LVC_* 구조체·Dynpro PBO/PAI 동작에 대한 자체 지식만으로 판단했다. 릴리스·설정에 따라 갈릴 수 있는 항목은 confidence=추정으로 낮췄다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L10.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH17/CH17-L10.md",
+      "quote": "MESSAGE 'ALV Grid를 처음 표시하지 못했습니다.' TYPE 'E'.",
+      "category": "안티패턴",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "PBO에서 호출되는 코드 안에 TYPE 'E' 메시지를 두고 있다. FORM display_grid와 FORM build_fieldcat는 MODULE status_0100 OUTPUT(=PBO)에서 PERFORM으로 불리는데, 그 안에서 오류 메시지를 발생시킨다. Dialog 프로그램의 PBO에서 E(그리고 W) 메시지는 쓰면 안 되는 패턴이다.",
+      "evidence": "E 메시지는 '사용자가 값을 고쳐 다시 제출한다'는 전제로 동작한다. 그런데 PBO는 화면을 그리기 직전 단계라 되돌아가 입력을 고칠 지점이 없다. 그래서 PBO의 E/W 메시지는 런타임 오류나 같은 화면이 반복 호출되는 이상 흐름으로 이어진다. 실무 코드 리뷰에서 바로 반려되는 대표 패턴이며, 학습자가 이 골격을 그대로 옮기면 첫 실행에서 막힌다. 같은 형태가 CH17-L04(Field Catalog 실패)·CH17-L07(display 실패) 스니펫에도 있는데, 두 스니펫 모두 실제 배치 위치는 PBO다.",
+      "suggestion": "PBO에서는 MESSAGE ... TYPE 'S' DISPLAY LIKE 'E'로 상태 메시지 처리하거나, 조회·검증을 PAI(또는 화면 진입 전)에서 끝내고 실패 시 LEAVE TO SCREEN 0으로 화면을 벗어나게 한다. 최소한 '이 코드는 PBO에서 도는 자리라 E 메시지를 쓰지 않는다'는 콜아웃을 L07·L10에 붙여 준다."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH17/CH17-L10.md",
+      "quote": "PERFORM refresh_alv.",
+      "category": "안티패턴",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "두 번째 PBO부터 조건 없이 refresh_table_display를 호출하는 골격을 '정답'으로 제시한다. 데이터가 바뀌지 않았는데도 화면 왕복마다 그리드를 다시 그리게 된다.",
+      "evidence": "PBO는 엔터·탭 이동·필드 검증 등 화면이 다시 그려지는 모든 상황에서 실행된다. refresh_table_display는 백엔드 내부 테이블을 컨트롤로 다시 전송하므로, 행 수가 많으면 불필요한 프런트엔드 왕복과 체감 지연이 그대로 쌓인다. 완성 체크리스트의 '두 번째 PBO부터 display가 아니라 refresh가 호출되는가' 항목까지 이 패턴을 굳혀 놓아, 학습자가 이를 표준 골격으로 옮겨 쓰게 된다.",
+      "suggestion": "변경 플래그(예: gv_refresh)를 두고, 데이터를 실제로 바꾼 PAI에서만 세운다. PBO에서는 IF gv_refresh = abap_true일 때만 PERFORM refresh_alv를 호출하고 직후 CLEAR gv_refresh. '갱신은 데이터가 바뀌었을 때만'이라는 원칙을 L08의 데이터 변경≠화면 갱신 설명과 이어 준다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH17/CH17-L01.md",
+      "quote": "CREATE OBJECT go_cont",
+      "category": "위험한 생략",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "챕터 전체가 컨트롤 '생성'만 다루고, 생성자 예외 처리와 화면 이탈 시 정리(free)를 한 번도 언급하지 않는다.",
+      "evidence": "CL_GUI_CUSTOM_CONTAINER 생성자는 cntl_error·cntl_system_error·create_error·lifetime_error·lifetime_dynpro_dynpro_link 예외를, CL_GUI_ALV_GRID 생성자는 error_cntl_create·error_cntl_init·error_cntl_link·error_dp_create 예외를 갖는다. EXCEPTIONS 절 없이 CREATE OBJECT를 하면 컨트롤 생성 실패를 프로그램이 인지할 방법이 없고, 그 뒤 set_table_for_first_display에서 엉뚱한 지점에서 터진다. 또 화면을 벗어날 때 grid·container를 free하고 참조를 CLEAR하지 않으면 같은 내부 세션에서 재진입할 때 컨트롤이 남아 오작동하거나 메모리를 점유할 수 있다. 다만 lifetime 파라미터 설정과 릴리스에 따라 자동 정리되는 경우도 있어 추정으로 둔다.",
+      "suggestion": "L01에 CREATE OBJECT ... EXCEPTIONS OTHERS = 1 + sy-subrc 확인을 한 번 보여 주고, L10 종합 실습의 종료 처리(PAI의 BACK/EXIT)에서 go_grid->free( ) · go_cont->free( ) · CLEAR: go_grid, go_cont 를 한 블록으로 추가한다."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH17/CH17-L09.md",
+      "quote": "색이 화면에 뜨려면 **네 가지**가 맞아야 한다. 하나라도 빠지면 색이 보이지 않는다.",
+      "category": "위험한 생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "행 색상 조건을 네 가지로 정리했지만, '색 코드 컬럼을 Field Catalog에서 숨긴다'는 필수 단계가 빠져 있다. 그대로 실행하면 화면에 C610 같은 코드 문자열이 든 컬럼이 사용자에게 그대로 노출된다.",
+      "evidence": "ALV는 field catalog에 들어 있는 컬럼을 모두 출력한다. rowcolor는 출력 테이블의 정식 데이터 필드이므로, 카탈로그를 자동 생성하든 손으로 채우든 별도 처리를 하지 않으면 하나의 컬럼으로 표시된다. 실무 ALV에서 색·스타일 제어용 필드는 예외 없이 기술 필드로 숨긴다.",
+      "suggestion": "조건 5로 '색 코드 컬럼은 fieldcat에서 tech = abap_true(또는 최소 no_out = abap_true)로 숨긴다'를 추가하고, LOOP AT gt_fcat ... IF ls_fcat-fieldname = 'ROWCOLOR'. ls_fcat-tech = abap_true. 예시 3줄을 붙인다."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH17/CH17-L10.md",
+      "quote": "1. **매진 회차 행 색상** — [행 색상 기초](CH17-L09.html)의 `info_fname`에 색 컬럼을 더한다.",
+      "category": "예시 적절성",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "이 과제는 L10이 제시한 골격 위에서 그대로 수행할 수 없다. 학습자가 시도하면 색 컬럼을 넣을 자리도, 카탈로그에 나타나게 할 방법도 없어 막힌다.",
+      "evidence": "골격의 출력 테이블은 gt_booking TYPE STANDARD TABLE OF zbooking, 즉 DDIC 투명 테이블 구조 그대로라 rowcolor 필드를 추가할 수 없다. build_fieldcat도 i_structure_name = 'ZBOOKING'으로 merge하므로 DDIC에 없는 색 컬럼은 카탈로그에 생기지 않는다. 반면 L09 예제는 로컬 TYPES ts_perf_alv에 rowcolor를 넣어 전제가 다르다. 즉 과제 1은 '한 줄 더하기'가 아니라 출력 타입 자체를 바꾸는 작업이다.",
+      "suggestion": "과제 문구를 '출력 전용 구조체를 만든다'로 바꾸고 힌트를 준다: TYPES: BEGIN OF ts_booking_alv. INCLUDE TYPE zbooking. TYPES: rowcolor TYPE c LENGTH 4, END OF ts_booking_alv. → gt_booking을 이 타입의 테이블로 바꾸고, merge 후 rowcolor 항목을 APPEND(tech 처리)한 다음 gs_layout-info_fname = 'ROWCOLOR'."
+    },
+    {
+      "seq": 6,
+      "file": "content/abap/CH17/CH17-L02.md",
+      "quote": "| 화면 배치 | 단독 목록 화면 | **Dynpro 안 특정 영역**에 배치 |",
+      "category": "사실 오류",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "SALV를 '단독 목록 화면 전용'이고 후속 확장이 '제한적'이라고 단정했다. SALV(CL_SALV_TABLE)도 컨테이너를 받아 Dynpro의 Custom Control 영역에 표시할 수 있고, 이벤트와 색상도 지원한다.",
+      "evidence": "cl_salv_table=>factory는 r_container·container_name 파라미터를 받아 화면 안 컨테이너에 ALV를 붙일 수 있다(이 경우 display 대신 컨테이너 모드로 동작). 또 get_event( )로 double_click·link_click 등을 처리하고, 컬럼/셀 색상 설정도 제공한다. SALV의 실제 한계는 편집 가능(입력) 그리드와 툴바·이벤트의 세밀한 제어이지, 화면 배치나 이벤트 자체가 불가능한 것이 아니다. 이 표대로 외운 학습자는 뒤에 SALV 컨테이너 예제를 만나면 혼란을 겪는다.",
+      "suggestion": "'화면 배치' 행은 SALV도 컨테이너 배치가 가능하되 코드가 더 짧다는 뉘앙스로 고치고, '후속 확장' 차이는 편집 가능 Grid·툴바/이벤트 세밀 제어·셀 단위 제어로 한정해 서술한다."
+    },
+    {
+      "seq": 7,
+      "file": "content/abap/CH17/CH17-L04.md",
+      "quote": "i_structure_name = 'ZBOOKING'",
+      "category": "위험한 생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "merge를 'DDIC Structure 이름을 넣으면 된다'로만 설명하고, 출력 테이블이 프로그램 로컬 타입이거나 DDIC에 없는 추가 필드를 가질 때의 제약을 전혀 알리지 않는다.",
+      "evidence": "LVC_FIELDCATALOG_MERGE는 i_structure_name이 가리키는 DDIC 구조의 필드만 카탈로그로 만든다. 프로그램 로컬 타입 기반 내부 테이블이면 i_internal_tabname(프로그램 전역/TOP include에 선언된 내부 테이블 이름)을 함께 넘겨야 하고, 그래도 DDIC에 없는 필드는 결국 LVC_S_FCAT을 손으로 APPEND해야 한다. 바로 다음다음 레슨(L09)이 로컬 구조체 + rowcolor 조합이라 학습자가 즉시 부딪히는 지점이다.",
+      "suggestion": "'흔한 실수와 점검'에 한 줄 추가: 출력 테이블이 DDIC 구조 그대로가 아니면 merge만으로 부족하다 — 추가 필드는 APPEND로 직접 넣는다. 필요하면 APPEND 예시 4줄."
+    },
+    {
+      "seq": 8,
+      "file": "content/abap/CH17/CH17-L06.md",
+      "quote": "- display 호출에서 `is_variant`와 `i_save`를 함께 넘긴다(`i_save = 'A'` = 저장 허용 — 교육용).",
+      "category": "사실 오류",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "i_save = 'A'를 단순히 '저장 허용'이라고만 설명했다. 'A'는 사용자별 Variant와 전역(표준) Variant 저장을 모두 허용하는 값이며, 예제 기본값으로 삼기에는 가장 넓은 설정이다.",
+      "evidence": "i_save 값은 space(저장 불가) / 'U'(사용자별만) / 'X'(전역·표준만) / 'A'(둘 다)로 나뉜다. 같은 레슨의 '흔한 실수'가 전역 Variant를 아무나 바꾸면 위험하다고 경고하면서, 정작 예제 코드가 전역 저장까지 열어 두는 'A'를 쓰고 있어 경고와 예제가 어긋난다. 또 i_save를 넘기면서 is_variant-report가 비어 있으면 Variant 기능이 정상 동작하지 않는데, 본문은 이를 '기준이 약해져 꼬인다'로만 완곡하게 적었다.",
+      "suggestion": "값 4가지를 한 줄 표로 제시하고 예제 기본값을 'U'로 바꾼 뒤, 'A'는 전역 Variant까지 열어 주는 설정이라 프로젝트 규칙에 따른다고 명시한다."
+    },
+    {
+      "seq": 9,
+      "file": "content/abap/CH17/CH17-L05.md",
+      "quote": "gs_layout-sel_mode   = 'A'.",
+      "category": "사실 오류",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "sel_mode = 'A'를 '행 선택 모드'로만 설명했다. 'A'는 행뿐 아니라 컬럼 선택까지 허용하는 모드라 설명이 부정확하다.",
+      "evidence": "LVC_S_LAYO-SEL_MODE는 대략 A(행·열 선택 가능) / B(단일 행 선택) / C(다중 행, 선택 버튼 없음) / D(다중 행 + 선택 버튼·전체 선택)로 갈린다. 표는 '한 행만/여러 행 선택 기준'이라고만 적어, 학습자가 'A'를 다중 행 선택의 표준값으로 오해하기 쉽다. 값별 세부 동작은 릴리스 문서 의존이라 추정으로 둔다.",
+      "suggestion": "값별 한 줄 표(B=단일 행, D=다중 행+선택 버튼, A=행·열 모두)를 넣고, 다중 행 선택이 목적이면 예제를 'D'로 바꾼다."
+    },
+    {
+      "seq": 10,
+      "file": "content/abap/CH17/CH17-L10.md",
+      "quote": "WHERE concert_id = gv_conc.",
+      "category": "사실 오류",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'전체 골격'이라며 제시한 DATA 선언 블록에 gv_conc가 없다. 화면 입력 필드이자 SELECT 조건으로 쓰이는 변수인데 어디에도 선언되지 않아, 코드를 그대로 옮기면 구문 오류가 난다.",
+      "evidence": "L10의 DATA 블록은 go_cont·go_grid·gt_booking·gt_fcat·gs_layout·gs_variant 여섯 개만 선언하는데, FORM select_booking과 화면 스케치(공연번호 gv_conc)는 gv_conc를 전제한다. 같은 문제가 L09에도 있다 — TYPES ts_perf_alv만 정의하고 정작 LOOP에서 쓰는 gt_perf·ls_perf 선언이 없어, 학습자가 두 변수의 타입을 스스로 추측해야 한다.",
+      "suggestion": "L10 DATA 블록에 gv_conc TYPE zbooking-concert_id를 추가하고(화면 필드명과 동일해야 Dynpro와 묶인다는 주석 한 줄), L09에도 DATA: gt_perf TYPE STANDARD TABLE OF ts_perf_alv, ls_perf TYPE ts_perf_alv. 를 넣는다."
+    },
+    {
+      "seq": 11,
+      "file": "content/abap/CH17/CH17-L07.md",
+      "quote": "::embed CH17-L07-S01 | 데이터를 그리드로 띄워 정렬·합계를 눌러 보기::",
+      "category": "표기 규격",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "임베드 지시문에 세 번째 인자(높이)가 빠졌다. 같은 챕터의 다른 임베드와 형식이 다르다.",
+      "evidence": "CH17의 나머지 임베드는 모두 세 인자 형식이다(L01 560, L02 560, L03 580, L04 600, L05 580, L06 580, L08 620, L09 620). 높이가 없는 것은 L07-S01과 L10-S01 두 곳뿐이고, 두 곳 다 제목 문구도 다른 레슨의 '무엇을 해 보는 위젯인가' 명명 패턴에서 벗어나 있다.",
+      "suggestion": "다른 레슨과 같이 높이 인자를 붙인다(예: ::embed CH17-L07-S01 | 4단계 조립과 첫 표시 (set_table_for_first_display) | 620::). CH17-L10-S01도 동일하게 수정."
+    },
+    {
+      "seq": 12,
+      "file": "content/abap/CH17/CH17-L03.md",
+      "quote": "SELECT * FROM zbooking INTO TABLE gt_booking",
+      "category": "위험한 생략",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "업무 데이터(예매 내역)를 조회해 화면에 그대로 뿌리는 예제인데, 권한 검사에 대한 언급이 한 줄도 없다.",
+      "evidence": "실무 조회 프로그램은 SELECT 앞에서 AUTHORITY-CHECK로 조회 권한(예: 공연/조직 단위)을 확인하는 것이 기본 규율이다. 이 레슨은 sy-subrc·sy-dbcnt·SELECT * 남용까지 짚으면서 권한만 빠뜨려, 학습자에게 '조회는 그냥 하면 되는 것'이라는 인상을 준다. 다만 커리큘럼 다른 챕터에서 권한을 별도로 다룰 수 있어 추정으로 둔다.",
+      "suggestion": "코드 블록 아래에 콜아웃 한 줄: 실무에서는 조회 전에 AUTHORITY-CHECK로 권한을 확인하고, 없으면 조회 대신 메시지로 안내한다(문법은 해당 챕터에서)."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "보강 권장",
+    "summary": "Grid ALV 조립 순서(컨테이너→그리드→데이터→fieldcat→layout→variant→display→refresh→색)를 조각별로 끊어 가르치는 설계 자체는 견고하고, 클래스명·파라미터명·예외명(LVC_FIELDCATALOG_MERGE의 inconsistent_interface/program_error, set_table_for_first_display의 invalid_parameter_combination/too_many_lines, refresh_table_display의 finished, LVC_S_STBL의 row/col, 색 코드 C610의 4자리 형식 등) 같은 기술 디테일은 대체로 정확하다. 다만 종합 실습(L10)이 두 가지 실무 금기를 정답 골격처럼 굳혀 놓았다 — PBO에서 도는 FORM 안의 TYPE 'E' 메시지, 그리고 조건 없는 매 PBO refresh. 여기에 행 색상 컬럼을 fieldcat에서 숨기라는 필수 단계 누락, 현 골격으로는 수행 불가능한 과제 1, SALV를 단독 목록 전용으로 단정한 비교표가 더해진다. 코드 무결성 측면에서는 gv_conc·gt_perf·ls_perf가 선언 없이 쓰인다. 챕터를 다시 쓸 필요는 없고, 위 항목을 레슨별로 국소 보강하면 실무 신뢰도가 크게 올라간다."
+  }
+}

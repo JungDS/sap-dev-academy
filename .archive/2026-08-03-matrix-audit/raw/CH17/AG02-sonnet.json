@@ -1,0 +1,57 @@
+{
+  "agent": "AG02",
+  "model": "sonnet",
+  "target": "CH17",
+  "persona_ack": "나는 준호다. 배운 건 그 자리에서 직접 해봐야 직성이 풀리는 실습형 학습자다. CH17의 각 레슨에서 본문 코드·설명과 체험 위젯을 대조해, 체험 공백·불일치·헛체험·위젯 결함을 찾는다.",
+  "method": "10개 임베드 위젯 전부를 로컬 서버(http://localhost:8144)에서 브라우저로 직접 로드하고 콘솔 오류를 확인했다. 브라우저 패널의 클릭 좌표 이벤트가 실제로 등록되지 않는 현상(CH17-L01-S01에서 좌표 클릭 3회가 상태에 반영되지 않음을 확인)을 발견해, 이후 전 위젯을 javascript_tool로 실제 DOM 요소에 dispatchEvent('click')·dispatchEvent('input')을 직접 쏘아 상태 변화를 렌더된 DOM 텍스트(innerText)로 측정했다. 각 위젯의 성공/실패 분기(이름 불일치, i_parent 비움, sy-subrc 0/4, cwidth_opt on/off, Variant 저장/복원, refresh vs stable, info_fname 정오)를 실제로 트리거해 메시지·체크리스트·표 렌더 결과가 레슨 본문의 서술과 일치하는지 확인했다. 본문 .md 코드 블록과 임베드 HTML의 config·정적 코드 문자열은 정독으로 대조했다. 엔진 JS 소스(embeds/_engine/*.js)도 입력으로 열람해 로직을 검증했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L10.md",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH17-L01-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH17-L02-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH17-L03-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH17-L04-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH17-L05-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH17-L06-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH17-L07-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH17-L08-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH17-L09-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH17-L10-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\container-bind-stepper.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\alv-readiness-panel.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\alv-data-query.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\fieldcat-editor.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\alv-layout-toggles.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\alv-variant-store.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\alv-refresh-sync.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\alv-row-color-lab.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\gui-alv-grid-simulator.js"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH17-L10-S01.html",
+      "quote": "SELECT * FROM zbooking INTO TABLE gt_booking\",\n      \"  WHERE concert_id = gv_concert.",
+      "category": "불일치",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "본문 CH17-L10.md의 FORM select_booking은 'WHERE concert_id = gv_conc.'로 조회한다. gv_conc는 CH17-L01(화면 도식 '공연번호 gv_conc: C001')·CH17-L03(SELECT 예제)·CH17-L10 본문 전체에서 일관되게 쓰이는 변수명이다. 그런데 종합 실습 위젯(CH17-L10-S01)의 1단계 코드 패널에는 같은 SELECT 문이 'WHERE concert_id = gv_concert.'로 표시된다 — 본문에 없는 gv_concert라는 변수명이 등장한다.",
+      "evidence": "브라우저에서 위젯을 로드해 '다음 단계'를 1회 클릭(javascript_tool로 dispatchEvent)한 뒤 #alvgSrc의 렌더된 DOM 텍스트를 읽어 확인: \"...WHERE concert_id = gv_concert.\" — 소스 CH17-L10-S01.html 54~62행의 code 배열과 일치. 반면 CH17-L10.md 65~66행 FORM select_booking은 'WHERE concert_id = gv_conc.'.",
+      "suggestion": "CH17-L10-S01.html의 steps[0].code에서 'gv_concert'를 본문과 동일한 'gv_conc'로 수정한다(다른 레슨·화면 도식과의 변수명 일관성 확보)."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH17 10개 레슨의 본문 코드·설명과 대응 임베드 위젯을 전수 대조하고, 모든 위젯을 브라우저에서 실제 클릭·입력 이벤트로 조작해 DOM 상태로 검증했다. 컨테이너 바인딩 성공/실패, i_parent 비움에 따른 그리드 실패, SELECT 시나리오별 sy-subrc/sy-dbcnt/행수, Field Catalog 대소문자 매칭, Layout cwidth_opt on/off, Variant 저장/복원과 report 공백 처리, 일반 refresh vs stable refresh의 위치 보존, 행 색상 info_fname 정오 판정까지 전부 본문 서술과 정확히 일치하게 동작했으며 콘솔 오류도 없었다. 체험 공백(코드만 있고 위젯 없음)이나 헛체험(클릭은 되지만 배우는 게 없는 위젯)은 발견되지 않았다. 유일한 결함은 종합 실습 위젯(CH17-L10-S01)의 1단계 코드 패널이 본문에서 쓰지 않는 'gv_concert'라는 변수명을 표시하는 것으로, 본문·다른 레슨과의 변수명(gv_conc) 불일치다. 기능은 정상 동작하므로 학습에 치명적이지는 않지만, 코드를 그대로 베껴 쓰는 실습형 학습자에게는 혼란을 줄 수 있어 경미 수정을 권한다."
+  }
+}

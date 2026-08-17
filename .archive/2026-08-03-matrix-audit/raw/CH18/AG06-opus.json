@@ -1,0 +1,105 @@
+{
+  "agent": "AG06",
+  "model": "opus",
+  "target": "CH18",
+  "persona_ack": "20년차 SAP ABAP 아키텍트로서 CH18(Modern ABAP Syntax) 11개 레슨과 _chapter.md를 기술 사실·예시 적절성·위험한 생략·안티패턴 관점에서 감사했다. 웹 검색 없이 보유 지식만으로 판단했고, 릴리스 의존 항목은 confidence=추정으로 낮췄다.",
+  "method": "Read 도구로 대상 12개 파일 전문 통독 후, grep으로 인용 앵커 문자열의 실재·행번호를 재확인(읽기 전용). 외부 네트워크·타 감사 산출물 미열람.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L10.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L11.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH18/CH18-L03.md",
+      "quote": "- `EXCEPT audit_user` — **대상 필드** `audit_user`를 결과에서 채우지 않는다(초기값으로 둠).",
+      "category": "사실 오류",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "CORRESPONDING의 EXCEPT 목록은 '대상(target) 필드'가 아니라 '원본(source) 컴포넌트'를 지정한다. 예제의 audit_user는 본문이 명시했듯 원본에 아예 없는 필드라, EXCEPT 대상으로 쓰는 순간 무의미하거나 구문 오류가 된다.",
+      "evidence": "CORRESPONDING의 mapping_rules는 `MAPPING t1 = s1 ... EXCEPT s1 s2 ...` 형태로, EXCEPT 뒤에 오는 이름은 원본 구조의 컴포넌트다(EXCEPT * = MAPPING에 없는 원본 컴포넌트 전부 제외). 더 근본적으로 CORRESPONDING은 '같은 이름 컴포넌트'만 자동 대입하므로, 원본에 존재하지 않는 audit_user는 애초에 채워질 일이 없다 — 그것을 EXCEPT로 '제외'한다는 설명 자체가 성립하지 않는다. EXCEPT의 올바른 용도는 '이름이 같아서 자동 복사될 원본 필드를 일부러 빼는 것'이다. 같은 오해가 같은 파일 52행(`lt_booking MAPPING display_status = status EXCEPT audit_user ).`)과 68행 흔한 실수 항목('EXCEPT는 대상 필드 기준이다')에도 반복돼, 학습자가 규칙을 거꾸로 익히게 된다.",
+      "suggestion": "예제를 원본에 실제로 존재하는 필드로 바꾼다. 예: 원본 ls_booking에 status와 함께 created_by가 있고 대상에도 created_by가 있을 때 `CORRESPONDING ts_booking_ui( ls_booking MAPPING display_status = status EXCEPT created_by )`처럼 '이름이 같아 자동 복사될 원본 필드를 제외'하는 사례로. audit_user(원본에 없는 대상 필드)는 EXCEPT가 아니라 '자동으로 초기값으로 남는다 → 필요하면 결과에 별도 대입(예: ls_ui-audit_user = sy-uname)'으로 설명하고, 46행·52행·68행 세 곳을 함께 고친다."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH18/CH18-L08.md",
+      "quote": "DATA(lt_open) = FILTER tt_booking( lt_booking WHERE status = 'N' ).",
+      "category": "위험한 생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "FILTER의 하드 제약(원본 테이블에 조건 컬럼을 덮는 sorted/hashed key가 있어야 하고, STANDARD TABLE이면 secondary key + USING KEY가 필수)을 명시하지 않아, 학습자가 앞 챕터에서 쓰던 표준 테이블에 그대로 적용하면 구문 오류를 만난다.",
+      "evidence": "본문은 tt_booking을 SORTED TABLE ... WITH NON-UNIQUE KEY status로 새로 선언해 놓고, 정작 필터 대상 lt_booking의 선언은 보여 주지 않는다. CH06 이후 학습자가 갖고 있는 lt_booking은 표준 테이블이므로 `FILTER tt_booking( lt_booking WHERE status = 'N' )`는 컴파일되지 않는다. 흔한 실수 항목의 'FILTER에서 Key 무시 → 테이블 타입과 Key를 의식해야 한다'는 서술은 정도의 문제처럼 읽히지만, 실제로는 '키가 없으면 아예 못 쓴다'는 필수 조건이다. 조건 컬럼은 사용 키의 왼쪽부터 연속된 부분이어야 한다는 제약도 있다.",
+      "suggestion": "예제에 원본 선언(`DATA lt_booking TYPE tt_booking.`)을 함께 보여 주고, '조건 컬럼이 sorted/hashed key에 포함돼야 한다 — 표준 테이블이면 `WITH NON-UNIQUE SORTED KEY sk COMPONENTS status`를 붙이고 `FILTER tt( lt_booking USING KEY sk WHERE status = 'N' )`처럼 쓴다'는 필수 조건 문장을 본문에 명시한다. 키를 붙이기 어려우면 이 단계에서는 LOOP ... WHERE가 정직한 대안임도 한 줄 덧붙인다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH18/CH18-L06.md",
+      "quote": "DATA(lv_line) = |예매자: { CONV string( lv_name ) }|.",
+      "category": "예시 적절성",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "String Template의 `{ }` 임베딩은 피연산자를 자동으로 문자열로 변환하므로 이 자리의 `CONV string( )`은 완전히 불필요하다. '메서드나 함수가 특정 타입을 요구할 때 좋다'는 설명의 예시로 부적절하고, 같은 레슨이 뒤에서 경고하는 '이미 같은 타입인데 CONV'와 정면으로 충돌한다.",
+      "evidence": "58행 흔한 실수에 '이미 같은 타입인데 `CONV` → 불필요하면 문법 검사 경고가 날 수 있다'가 있는데, 34～38행은 그 불필요한 사용을 모범 예시로 시연한다. 실무 코드 리뷰에서 `|{ CONV string( x ) }|`는 전형적인 잉여 표현으로 지적되는 패턴이라, 입문자가 '템플릿에 넣을 땐 CONV로 감싸야 한다'는 잘못된 습관을 들일 수 있다.",
+      "suggestion": "CONV가 실제로 필요한 자리로 예시를 교체한다. 예: 인자 타입이 고정된 호출(`lo_obj->set_count( CONV i( lv_count_text ) ).`)이나, 계산 타입을 의도적으로 올려야 하는 경우(`DATA(lv_avg) = CONV decfloat34( lv_sum ) / lv_cnt.`). 문자열 예시를 남기려면 반대로 '템플릿 안에서는 CONV가 필요 없다 — 자동 변환된다'를 함정 항목으로 옮긴다."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH18/CH18-L04.md",
+      "quote": "DATA(ls) = lt_booking[ booking_id = lv_id ].",
+      "category": "안티패턴",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "`line_exists( tab[ ... ] )`로 확인한 뒤 같은 조건으로 `tab[ ... ]`를 다시 읽는 패턴은 테이블을 두 번 탐색한다. 표준 관용구인 `VALUE #( tab[ ... ] OPTIONAL )`(또는 READ TABLE ... ASSIGNING/REFERENCE INTO)를 소개하지 않아, 탐색 2회 패턴이 유일한 방어선처럼 굳어진다.",
+      "evidence": "36～38행에서 동일한 키 조건이 두 번 평가된다. 표준 테이블에서는 각 접근이 선형 탐색이므로, 이 패턴이 LOOP 안에 들어가면 비용이 두 배가 되고 대량 데이터에서 O(n^2)로 악화된다. ABAP 7.40부터 `DATA(ls) = VALUE #( lt_booking[ booking_id = lv_id ] OPTIONAL ).`(없으면 초기값) / `... DEFAULT ls_fallback )`이 정확히 이 목적의 표준 구문이며, 예외도 나지 않고 탐색도 1회다. 같은 2회 탐색 패턴이 CH18-L11 ③·125행 '보호 없는 조회' 항목에서도 완성 코드의 기본 방어선으로 반복 제시된다.",
+      "suggestion": "line_exists( )를 '존재 여부만 알고 값은 필요 없을 때'로 자리매김하고, '값이 필요하면 탐색 1회로 끝내는 `VALUE #( tab[ ... ] OPTIONAL )`'을 나란히 제시한다(초기값 판정은 IS INITIAL). CH21의 TRY/CATCH 없이도 안전한 구문이므로 학습 경계도 넘지 않는다. CH18-L11도 같은 방향으로 맞춘다."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH18/CH18-L01.md",
+      "quote": "FINAL(lv_max) = 100.",
+      "category": "사실 오류",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "`FINAL( )` 인라인 선언은 매우 최근 릴리스(ABAP 7.58 계열, S/4HANA 2023 / ABAP Cloud 이후)에서만 쓸 수 있는 구문인데, 가용 릴리스 언급 없이 `DATA( )`와 동급의 기본 도구처럼 소개된다. 학습자가 흔히 접하는 7.40～7.5x 연습 시스템에서는 문법 오류가 난다.",
+      "evidence": "인라인 DATA( )·VALUE·COND 등 이 챕터의 다른 문법은 7.40에서 도입돼 사실상 어디서나 동작하지만, FINAL( )은 그보다 훨씬 뒤에 추가된 키워드로 기억한다(구 릴리스에는 존재하지 않음). 같은 레슨 안에서 릴리스 요구가 다른 문법을 구분 없이 배치하면, 실습 시스템에서 실패한 학습자가 원인을 코드 오타로 오해하게 된다. 정확한 도입 릴리스는 웹 검색 없이 단언할 수 없어 추정으로 표기한다.",
+      "suggestion": "FINAL( ) 절 앞에 '이 구문은 최신 릴리스에서만 지원된다 — 시스템에서 문법 오류가 나면 지금은 DATA( )로 진행하고, 값 고정 의도는 주석/CONSTANTS로 표현한다'는 안내 콜아웃을 넣는다. 가능하면 실습 시스템의 릴리스 확인 방법(시스템 → 상태)도 한 줄로."
+    },
+    {
+      "seq": 6,
+      "file": "content/abap/CH18/CH18-L06.md",
+      "quote": "- **타입을 속이는 문법으로 오해** → `CONV`는 실제 변환 규칙을 따른다. `'12A'`를 정수로",
+      "category": "위험한 생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "숫자가 아닌 문자를 CONV로 정수 변환하면 '안전하게 변환되지 않는' 정도가 아니라 런타임 예외(CX_SY_CONVERSION_NO_NUMBER)가 발생해 잡지 않으면 short dump로 프로그램이 죽는다. 이 결과를 명시하지 않아 CONV가 EXACT보다 무해한 도구처럼 읽힌다.",
+      "evidence": "같은 레슨은 EXACT에 대해서만 '예외가 난다'고 명시하고(41～52행), CONV 쪽은 '안전하게 변환되지 않는다'로 흐린다. 실제로는 문자→숫자 변환 실패는 릴리스 무관하게 CX_SY_CONVERSION_NO_NUMBER를 던지며, 사용자 입력이나 외부 파일 값을 CONV로 감싸는 코드는 운영에서 덤프의 단골 원인이다. 입문자가 '변환은 대충 되겠지'로 넘어가면 정확히 이 사고를 낸다.",
+      "suggestion": "'CONV도 변환에 실패하면 예외가 나고, 잡지 않으면 프로그램이 중단된다(문자→숫자 실패 시 CX_SY_CONVERSION_NO_NUMBER)'를 명시하고, 사용자 입력처럼 값이 보장되지 않는 데이터는 변환 전에 형식을 검사하거나 CH21에서 배울 TRY/CATCH가 필요하다는 한 줄 예고를 붙인다."
+    },
+    {
+      "seq": 7,
+      "file": "content/abap/CH18/CH18-L05.md",
+      "quote": "> ⚠️ `{ }` **안쪽 공백은 문법 요소**다. `|{ lv_name }|`처럼 중괄호 안쪽에 공백을 두는 형태를 기본으로 삼는다.",
+      "category": "사실 오류",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "여는 `{` 바로 뒤·닫는 `}` 바로 앞의 공백은 결과 문자열에 포함되지 않고 무시되는 선택적 표기이지, 반드시 있어야 하는 '문법 요소'가 아니다. 정작 학습자가 자주 틀리는 것은 `}`와 `{` **바깥**의 공백이 그대로 출력에 들어간다는 점인데 이 설명이 빠져 있다.",
+      "evidence": "String Template에서 중괄호 안쪽 경계 공백은 제거돼 결과에 영향을 주지 않으므로 `|{ lv_name }|`과 `|{lv_name}|`의 출력은 같다. 반면 32행 예제 `|{ ls_book-concert_id } { ls_book-perf_no }회차 ...|`의 `}`와 `{` 사이 공백은 실제 출력 'C001 001회차'의 공백으로 남는다. 즉 규칙의 초점이 반대로 잡혀 있다. 표기 강제 여부는 릴리스별 문법 검사 관용도까지 단언하기 어려워 추정으로 둔다.",
+      "suggestion": "'안쪽 공백은 출력에 포함되지 않으니 가독성을 위해 두는 관례'로 완화하고, 대신 '중괄호 **바깥**의 공백·문자는 그대로 출력된다'를 굵게 강조한다. 32행 예제에 '`}`와 `{` 사이의 공백이 결과의 한 칸이 된다'는 주석을 달면 오해가 사라진다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "보강 권장",
+    "summary": "CH18 전반의 modern 구문 서술은 기술적으로 견실하다. 인라인 DATA( )의 declaration position 개념, VALUE의 BASE 누락 함정, Table Expression이 sy-subrc를 세우지 않고 CX_SY_ITAB_LINE_NOT_FOUND를 던진다는 핵심 차이, line_index의 0/-1 반환, COND의 ELSE 생략 시 초기값, REDUCE의 INIT/FOR/NEXT 역할 구분, LET의 표현식 지역성, += 좌변에 인라인 선언 불가 등 입문자가 실제로 다치는 지점을 정확히 짚었고, '짧게 쓰기 대회가 아니다'라는 절제 메시지도 아키텍트 관점에서 옳다. 다만 CORRESPONDING의 EXCEPT를 '대상 필드 기준'으로 설명한 부분은 규칙을 거꾸로 가르치는 명백한 사실 오류이며(원본에 없는 audit_user를 EXCEPT하는 예제 자체가 성립하지 않음, 한 파일에 3곳), FILTER의 sorted/hashed key 필수 조건 누락은 학습자가 직전 챕터의 표준 테이블로 실습하는 순간 구문 오류로 막히는 실전 결함이다. 그 외 String Template 안에서의 잉여 CONV 시연, line_exists 후 재읽기(탐색 2회)를 유일한 방어선으로 제시하고 VALUE #( ... OPTIONAL )을 누락한 점, CONV 실패가 덤프로 이어진다는 경고 부재, FINAL( )의 릴리스 의존성 미표기가 보강 대상이다. 재집필이 필요한 수준은 아니고, 지목된 7곳을 국소 수정하면 기술 정확도는 충분하다."
+  }
+}

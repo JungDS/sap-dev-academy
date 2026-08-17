@@ -1,0 +1,148 @@
+{
+  "agent": "AG03",
+  "model": "opus",
+  "target": "CH17",
+  "persona_ack": "타 언어(Java/C#) 백엔드 3～5년차 개발자로서 ABAP을 빠르게 훑는 시선으로 CH17(Grid ALV 기초) 10개 레슨과 _chapter.md를 통독했다. 변수·조건문·루프·SQL·OOP 기본기는 이미 안다는 전제에서 과잉 설명·오개념 유발·지름길 부재·용어 충돌을 기록했고, 이 사이트의 1독자가 비전공 입문자임을 감안해 '입문자에겐 필요한 친절'은 낮음/제안으로만 분류했다.",
+  "method": "Read 도구로 대상 11개 파일(_chapter.md + CH17-L01～L10.md) 전문을 front-matter·코드 블록 포함해 통독. 웹 검색·외부 네트워크·타 감사 산출물 열람 없음. 모든 quote는 대상 파일 원문에서 그대로 복사한 연속 문자열이며, 판단 근거는 파일 내부 정보와 자체 ABAP 지식뿐이다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L10.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH17/CH17-L07.md",
+      "quote": "`CHANGING`(`it_outtab`·`it_fieldcatalog`) = **무엇을 어떤 컬럼으로** 그릴지(데이터·정의).",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "`EXPORTING`=어떻게 보일지 / `CHANGING`=무엇을 그릴지라는 암기법이, 파라미터 방향(in/out/inout)의 실제 의미와 어긋나 경력자에게 잘못된 모델을 심는다.",
+      "evidence": "다른 언어 경력자는 파라미터 방향을 '값이 어느 쪽으로 흐르는가'로 읽는다. 그런데 이 레슨은 방향을 '설정 vs 데이터'라는 역할 구분으로만 설명해, `it_outtab`이 왜 하필 CHANGING인지 답하지 않는다. 실제 이유는 ALV Grid가 넘겨받은 내부 테이블을 참조로 붙잡고 계속 들여다보며(편집·정렬 시 되돌려줌), Field Catalog도 호출 중 보완·수정하기 때문이다. 이 사실을 모르면 '방향은 그냥 SAP 취향'이라 여겨 출력 테이블을 FORM 로컬 변수로 선언하는 실무 사고(스코프를 벗어난 테이블 참조)가 나온다. 실제로 CH17-L10의 골격이 `gt_booking`을 전역 DATA로 선언한 이유도 본문에서 설명되지 않는다.",
+      "suggestion": "콜아웃에 한 줄 추가: \"CHANGING인 이유 = ALV가 이 테이블·카탈로그를 계속 참조로 붙잡고, 필요하면 값을 되돌려 채우기 때문. 그래서 출력용 내부 테이블은 화면이 살아 있는 동안 사라지지 않는 곳(전역 DATA)에 두어야 한다.\" 암기법은 유지하되 근거를 붙이면 입문자에게도 손해가 없다."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH17/CH17-L10.md",
+      "quote": "PBO에서 **처음 한 번만** ALV를 만들고, 이후엔 refresh만 한다.",
+      "category": "예제 불완전 / 오개념 유발",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "종합 실습 골격에 '조회' 동작(PAI에서 재SELECT) 경로가 없어, 화면 목업의 [조회] 버튼을 눌러도 데이터가 바뀌지 않는 프로그램이 된다.",
+      "evidence": "같은 레슨의 화면 목업에는 공연번호 입력칸과 [조회] 버튼이 있고, 본문은 \"사용자가 공연 번호를 입력하고\" 목록을 본다고 말한다. 그러나 제시된 코드는 `MODULE status_0100 OUTPUT`(PBO)에서 최초 1회만 `PERFORM select_booking`을 하고, 이후에는 `refresh_alv`만 호출한다. PAI 모듈이나 재조회 FORM 호출이 어디에도 없으므로 공연번호를 바꿔도 `gt_booking`이 갱신되지 않고, refresh는 동일한 데이터를 다시 그릴 뿐이다. CH17-L08이 가르친 '데이터 변경 → refresh' 흐름에서 정작 '데이터 변경' 주체가 이 종합 실습에 없다. 덤으로 DB SELECT가 PBO(출력 모듈) 안에 있는 구조도 경력자 눈에는 책임 배치가 어긋나 보인다.",
+      "suggestion": "골격에 PAI 한 조각을 추가한다 — `MODULE user_command_0100 INPUT`에서 `ok_code`가 조회면 `PERFORM select_booking` 후 `PERFORM refresh_alv`. 그러면 '최초 조립은 PBO, 데이터 변경은 PAI, 갱신은 refresh'라는 이 챕터의 원칙이 코드로 닫힌다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH17/CH17-L10.md",
+      "quote": "gt_booking TYPE STANDARD TABLE OF zbooking,",
+      "category": "예제 불완전",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'전체 골격'로 제시된 DATA 선언 블록에 `gv_conc`가 빠져 있어, 그대로 옮겨 적으면 문법 오류가 난다.",
+      "evidence": "이 DATA 블록은 `go_cont`·`go_grid`·`gt_booking`·`gt_fcat`·`gs_layout`·`gs_variant` 6개만 선언한다. 그런데 같은 레슨의 `FORM select_booking`은 `WHERE concert_id = gv_conc.`로 `gv_conc`를 쓰고, 화면 목업에도 `공연번호 gv_conc`가 등장한다. 조각 레슨(CH17-L03)에서도 `gv_conc`는 선언 없이 등장한다. 조각 레슨의 스니펫은 생략이 자연스럽지만, L10은 '하나의 실행 프로그램으로 모으는' 종합 실습이라 독자가 그대로 옮겨 적는 것을 전제한다.",
+      "suggestion": "DATA 블록에 `gv_conc TYPE zbooking-concert_id,`(화면 0100 입력 필드와 같은 이름)를 추가하고, 이 변수가 Screen Painter 입력 필드와 이름으로 묶인다는 한 줄 주석을 단다."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH17/CH17-L09.md",
+      "quote": "색이 화면에 뜨려면 **네 가지**가 맞아야 한다. 하나라도 빠지면 색이 보이지 않는다.",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "색 코드 컬럼(`ROWCOLOR`)이 출력 구조에 들어가는 순간 ALV에 '정체불명의 컬럼'으로 함께 표시된다는 사실을 짚지 않아, 따라 하면 화면에 C610 같은 값이 노출된다.",
+      "evidence": "레슨은 색이 보이기 위한 4가지 조건만 나열하고, 색 코드 필드를 화면에서 숨기는 처리는 언급하지 않는다. `rowcolor`는 출력용 구조 `ts_perf_alv`의 정규 필드이므로 Field Catalog에도 한 컬럼으로 들어가고, 별도 처리가 없으면 사용자에게 'ROWCOLOR / C610'이 그대로 보인다. 앞 레슨(CH17-L04)이 이미 `no_out`(처음엔 숨김)을 표로 소개해 뒀는데도 정작 이 상황에서 연결되지 않았다. '흔한 실수와 점검'의 세 항목도 색이 안 보이는 경우만 다루고, 색 컬럼이 보이는 경우는 다루지 않는다.",
+      "suggestion": "4가지 조건 아래에 다섯 번째 점검을 추가 — \"색 코드 컬럼 자체는 사용자에게 보일 필요가 없다. Field Catalog에서 해당 행의 `no_out = abap_true`(또는 `tech = abap_true`)로 숨긴다.\" CH17-L04의 `no_out`으로 링크하면 조각이 이어진다."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH17/CH17-L06.md",
+      "quote": "direction: 사용자가 표시 방식(컬럼 순서·필터)을 저장·재사용하는 Display Variant.",
+      "category": "용어 충돌",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "SAP에는 이름이 같은 다른 Variant(선택화면 Variant)가 있는데 그 구분을 짚지 않아, 'Variant'라는 낱말이 무엇을 저장하는지 혼동될 수 있다.",
+      "evidence": "본문은 \"Variant는 데이터 저장이 아니다\"라며 예매 데이터와의 혼동만 막는다. 정작 실무에서 더 자주 부딪히는 혼동은 **선택화면 Variant**(SE38/SUBMIT에서 입력값 묶음을 저장하는 것)와 **Display Variant/ALV Layout**(컬럼 순서·필터 저장)의 동음이의다. 둘은 저장 대상도 관리 화면도 다르며, 사용자 UI에서는 Display Variant가 흔히 'Layout'이라 불려 이 챕터의 `LVC_S_LAYO` Layout과도 이름이 겹친다. 세 이름을 한 번도 나란히 놓지 않아, 화면에서 [Layout 저장] 버튼을 만난 독자가 CH17-L05의 Layout을 떠올리게 된다. (이전 챕터에서 선택화면 Variant를 다뤘는지는 이번 감사 범위 밖이라 추정으로 둔다.)",
+      "suggestion": "CH17-L01이 세 이름을 표로 갈라 준 방식 그대로, 이 레슨에도 작은 표를 하나 둔다 — 선택화면 Variant(입력값) / Display Variant=`DISVARIANT`(컬럼 순서·필터, 화면 버튼 이름은 보통 'Layout') / `LVC_S_LAYO` Layout(프로그램이 정하는 표 보기 설정)."
+    },
+    {
+      "seq": 6,
+      "file": "content/abap/CH17/CH17-L05.md",
+      "quote": "gs_layout-cwidth_opt = abap_true.",
+      "category": "용어 충돌",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "`abap_true`가 다른 언어의 `true`와 달리 CHAR 1자리 'X'라는 점을 짚지 않아, 경력자가 ABAP에 boolean 원시 타입이 있다고 오해할 수 있다.",
+      "evidence": "레슨은 `zebra`·`cwidth_opt`에 `abap_true`를 대입하지만, 그 정체(타입 `ABAP_BOOL` = CHAR 1, 값 'X'와 공백)는 어디서도 언급되지 않는다. Java/C# 배경 독자는 boolean 필드로 읽고, 나중에 디버거에서 값 'X'를 보거나 `IF gs_layout-zebra = 1`처럼 쓰다 막힌다. 같은 챕터에서 `ls_stable-row = abap_true`(CH17-L08), `do_sum = abap_true`(CH17-L10)로 반복 사용되므로 한 번은 정체를 밝힐 값어치가 있다. (앞 챕터에서 이미 도입했을 가능성이 있어 추정으로 둔다 — 이미 배웠다면 링크 한 줄로 충분하다.)",
+      "suggestion": "코드 아래 한 줄 각주: \"`abap_true`는 진짜 boolean이 아니라 문자 한 칸('X')이다. ABAP에는 boolean 원시 타입이 없어 '켬=X, 끔=공백' 관례를 쓴다.\" 이미 도입한 레슨이 있다면 그 레슨으로 링크만."
+    },
+    {
+      "seq": 7,
+      "file": "content/abap/CH17/CH17-L01.md",
+      "quote": "지금 레슨은 맨 위 **방을 잡는** 단계다. 각 조각이 왜 필요한지는 그 레슨에서 불편과 함께 만난다.",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "9조각 로드맵을 이미 훌륭하게 제시해 놓고도, 경험자를 위한 읽기 경로 안내(예: 완성 코드를 먼저 보고 필요한 조각으로 되돌아오기)가 없다.",
+      "evidence": "CH17은 조각당 한 레슨씩 10개로 잘게 나뉜다. 이미 GUI 컨트롤·테이블 위젯 경험이 있는 독자에게는 CH17-L10의 전체 골격 코드가 사실상 요약본이며, 그것부터 읽고 막히는 조각만 되짚는 편이 훨씬 빠르다. 그런데 전체 그림 표 어디에도 그런 경로 안내가 없어, 경력자는 10개 레슨을 순서대로 훑고 나서야 골격을 만난다. 로드맵 표가 이미 존재하므로 안내를 붙일 자리가 마련돼 있는데도 비어 있는 셈이다.",
+      "suggestion": "전체 그림 표 아래에 한 줄 콜아웃 — \"다른 언어에서 표 컨트롤을 다뤄 본 적이 있다면, [종합 실습](CH17-L10.html)의 전체 골격 코드를 먼저 훑고 낯선 조각(Field Catalog·Variant·Stable Refresh)만 해당 레슨으로 돌아와 읽어도 좋다.\" 입문자 동선은 그대로 두므로 손해가 없다."
+    },
+    {
+      "seq": 8,
+      "file": "content/abap/CH17/CH17-L05.md",
+      "quote": "| 필드 | 의미 | 초보자 설명 |",
+      "category": "과잉",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'의미'와 '초보자 설명' 두 컬럼이 사실상 같은 내용을 두 번 말해 표가 늘어진다.",
+      "evidence": "예컨대 `zebra` 행은 '행 배경을 번갈아' / '긴 목록에서 줄을 놓치지 않게', `cwidth_opt` 행은 '컬럼 너비 자동 조정' / '데이터 길이에 맞춰 너비'로, 두 칸이 정의와 정의의 되풀이에 가깝다. 표 바로 위 코드 블록에 이미 같은 주석(\"줄무늬\", \"컬럼 너비 자동 최적화\")이 붙어 있어 같은 정보가 세 번 나온다. 이 챕터의 다른 표(CH17-L04 Field Catalog 속성표)는 2열로 간결한데 이 표만 3열이라 형식도 어긋난다.",
+      "suggestion": "두 컬럼을 '의미(왜 쓰나)' 한 칸으로 합친다 — 예: `zebra` | 행 배경을 번갈아 칠해, 긴 목록에서 줄을 놓치지 않게. 표를 2열로 줄이면 CH17-L04와 형식도 맞는다."
+    },
+    {
+      "seq": 9,
+      "file": "content/abap/CH17/CH17-L05.md",
+      "quote": "| `sel_mode` | 행 선택 방식 | 한 행만/여러 행 선택 기준 |",
+      "category": "오개념 유발",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "코드는 `sel_mode = 'A'`를 쓰는데 'A'가 어떤 선택 방식인지 본문 어디에도 없어, 독자가 의미를 모른 채 매직 문자를 복사하게 된다.",
+      "evidence": "코드 블록의 주석은 \"행 선택 모드\", 표 설명은 \"한 행만/여러 행 선택 기준\"으로 값 자체를 설명하지 않는다. `zebra`·`cwidth_apt`류는 켜고 끄는 플래그라 값이 자명하지만 `sel_mode`는 A/B/C/D 등 코드 값에 따라 동작이 갈리는 필드다. 같은 챕터가 CH17-L09에서는 색 코드 `'C610'`의 형식(`C`+색번호+강조+반전)까지 친절히 풀어 줬기 때문에, 여기만 값 설명이 비어 형평도 맞지 않는다.",
+      "suggestion": "표의 `sel_mode` 행이나 코드 주석에 '이 예제의 A = 여러 행/셀을 자유롭게 선택하는 모드' 정도만 덧붙이고, 나머지 값은 '필요할 때 찾아 쓰는 것'으로 남긴다(값 전수 나열은 불필요)."
+    },
+    {
+      "seq": 10,
+      "file": "content/abap/CH17/CH17-L07.md",
+      "quote": "::embed CH17-L07-S01 | 데이터를 그리드로 띄워 정렬·합계를 눌러 보기::",
+      "category": "규약 이탈 / 본문 불일치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "이 챕터의 embed 지시자 중 L07·L10 두 곳만 높이 인자가 빠져 있고, 제목도 바로 위 본문 설명과 어긋난다.",
+      "evidence": "CH17의 다른 embed는 모두 `::embed CH17-L0n-S01 | 제목 | 560::`처럼 높이를 갖는데(L01 560·L02 560·L03 580·L04 600·L05 580·L06 580·L08 620·L09 620), L07과 L10만 `| 높이::`가 없다. 게다가 L07 본문은 바로 위에서 \"컨테이너 → 그리드 → field catalog → `set_table_for_first_display` 4단계를 차례로 밟아\"라고 예고하는데 embed 제목은 \"정렬·합계를 눌러 보기\"라 다른 위젯을 가리키는 듯 읽히고, L10의 embed 제목(\"데이터→그리드 변환과 정렬·합계를 직접 눌러 보기\")과도 거의 같은 문구다. 제목이 위젯 이름이 아니라 지시문 어투인 점도 나머지 8개와 다르다.",
+      "suggestion": "두 지시자를 다른 레슨과 같은 3필드 형식으로 맞추고(예: `::embed CH17-L07-S01 | 4단계로 첫 표시하기 (set_table_for_first_display) | 620::`), L10 embed 제목은 종합 실습 내용으로 다시 쓴다."
+    },
+    {
+      "seq": 11,
+      "file": "content/abap/CH17/CH17-L10.md",
+      "quote": "prevRel: next-step",
+      "category": "규약 이탈",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "front-matter `prevRel` 값이 이 챕터의 다른 레슨에서 쓰인 값 집합(pain-solution/parallel/deepening)을 벗어난다.",
+      "evidence": "같은 챕터 L01은 `prevRel: pain-solution`, L02·L03·L06은 `parallel`, L04·L05·L07·L08·L09는 `deepening`으로 세 값만 쓰는데 L10만 `next-step`이다. 게이팅 정적 점검이 이 값을 열거형으로 검사한다면 미정의 값이 되고, 검사하지 않더라도 메타 일관성이 깨진다. (전체 커리큘럼에 `next-step`을 쓰는 다른 레슨이 있는지는 이번 감사 범위인 CH17 밖이라 확인할 수 없어 추정으로 둔다.)",
+      "suggestion": "종합 실습의 성격상 `deepening`(앞 레슨들의 심화·조립)으로 바꾸거나, `next-step`을 정식 값으로 쓸 것이라면 규약 문서의 허용 값 목록에 추가해 정의를 맞춘다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "경력자 시선으로도 CH17은 완성도가 높은 편이다. 9조각 로드맵(L01)·SALV와의 비교표(L02)·display vs refresh 3분 표(L08)·색이 보이기 위한 4조건(L09)처럼 '조립 순서'를 일관되게 붙들어, 부품이 많은 Grid ALV를 순서 감각으로 익히게 만든다. 조각당 한 레슨 구성은 입문자에겐 적절하고, 과잉이라 할 만한 곳은 CH17-L05의 3열 표(의미/초보자 설명 중복) 정도로 국소적이다. 실질적으로 손볼 곳은 셋이다. ① CH17-L07의 EXPORTING/CHANGING 암기법이 파라미터 방향의 실제 의미(ALV가 테이블을 참조로 붙잡는다)를 가려, 출력 테이블 수명 관련 오개념을 남긴다. ② CH17-L10 종합 실습에 [조회] 동작(PAI 재SELECT)이 없어 화면 목업과 코드가 어긋나고, 이 챕터가 가르친 '데이터 변경 → refresh' 고리가 코드로 닫히지 않는다(덤으로 gv_conc 미선언). ③ CH17-L09가 색 코드 컬럼을 숨기는 처리를 빠뜨려, 따라 하면 화면에 'C610'이 그대로 노출된다. 그 외 Display Variant와 선택화면 Variant/Layout의 동음이의, abap_true의 정체, sel_mode='A'의 의미처럼 한 줄 각주로 해결되는 용어 충돌이 몇 곳 있고, 경험자를 위한 지름길 안내(L10 골격 먼저 읽기)를 로드맵 표 아래 한 줄로 붙일 여지가 있다. 구조를 다시 짤 필요는 없고 국소 보강으로 충분하다."
+  }
+}

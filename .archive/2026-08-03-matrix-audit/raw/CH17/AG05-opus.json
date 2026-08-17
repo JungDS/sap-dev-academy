@@ -1,0 +1,126 @@
+{
+  "agent": "AG05",
+  "model": "opus",
+  "target": "CH17",
+  "persona_ack": "20년차 학습 교재·코스 설계 전문가로서 CH17(Grid ALV 기초) 10개 레슨 + _chapter.md를 교수설계 관점(챕터 구성·레슨 분할/순서, 섹션 흐름, 복습·예습 장치, 불편→해결 서사, 인지부하)에서 감사했다. 형식 강제 없이 학습 효과를 실제로 해치는 구조 문제만 보고한다.",
+  "method": "Read 도구로 대상 11개 MD 파일 전문을 통독. front-matter(order·prereq·introduces·prevRel)와 본문 섹션 구조·코드 블록·::embed 선언·레슨 간 링크를 교차 대조해 순서·선수지식·인지부하를 판정. 빌드·브라우저·외부 검색 미사용(embeds/ 실제 위젯 내용은 대상 밖이라 미열람 — 관련 판단은 confidence=추정).",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L10.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH17/CH17-L06.md",
+      "quote": "go_grid->set_table_for_first_display(\n  EXPORTING is_variant = gs_variant",
+      "category": "레슨 순서 · 클라이맥스 선노출",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "Variant(L06)가 첫 표시(L07)보다 앞에 놓여 있고, 그 결과 L07의 주인공 호출인 `set_table_for_first_display` 전체 코드(is_layout·is_variant·i_save·it_outtab·it_fieldcatalog 5개 파라미터)를 L06이 먼저 다 보여준다. L07의 \"드디어 화면에\"라는 성취 순간이 한 레슨 앞에서 소비된다.",
+      "evidence": "L06 본문 두 번째 코드 블록이 L07의 코드 블록과 사실상 동일한 호출을 그대로 담고 있다(L07 라인 20～29). 또한 학습자는 L06 시점까지 표를 한 번도 화면에서 본 적이 없는데 \"내 보기 방식을 저장·복원한다\"를 배운다 — 저장할 대상이 아직 눈앞에 없으니 Variant의 필요성 체감이 약하다. 반면 L01의 로드맵 표는 Variant를 6번, display를 7번으로 못 박아 이 순서를 챕터 전체에 고정하고 있다.",
+      "suggestion": "① Variant 레슨을 display(현 L07) 뒤로 옮겨 \"표를 봤다 → 사람마다 보고 싶은 컬럼 순서가 다르다\"는 자연스러운 불편 체인을 만들거나, ② 순서를 유지한다면 L06에서는 `gs_variant-report = sy-repid`와 \"display에 is_variant·i_save를 함께 넘긴다\"는 서술까지만 두고 전체 호출 코드는 L07에서 처음 보이게 한다."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH17/_chapter.md",
+      "quote": "intro: \"ALV를 화면에 박아 풍부하게 제어하고 싶다.\"",
+      "category": "챕터 동기 설계(intro)",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "챕터 intro가 한 문장뿐이고 본문도 같은 문장을 그대로 반복해, 이 챕터를 왜 배우는지를 설득하지 못한다. 정작 챕터의 동기(이미 배운 SALV로는 화면 안 특정 영역에 표를 못 박는다)는 L01 도입부에만 있어, 로드맵·챕터 카드 단계에서는 학습자가 동기를 얻지 못한다.",
+      "evidence": "_chapter.md는 front-matter의 intro와 본문(라인 11)이 완전히 동일한 문장이다. 반대로 L01은 \"[Chapter 11 · SALV 1차 (간단 ALV)]의 SALV는 전체 화면을 차지하는 간단한 표였다 … 내 화면 안의 한 영역에 표를 박고, 버튼·입력칸과 함께 두고 싶다\"로 불편을 제대로 판다. 즉 좋은 재료가 이미 있는데 챕터 레벨로 올라오지 않았다. (다른 챕터의 intro 분량 관례는 블라인드 감사라 확인하지 못해 추정으로 둔다.)",
+      "suggestion": "본문에 2～3문장을 덧붙여 CH11 SALV의 한계 → CH16에서 만든 화면 영역 → 그 안에 표를 박는 Grid ALV로 이어지는 동기를 챕터 카드 단계에서 읽히게 한다(intro 한 줄은 요약으로 유지)."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH17/CH17-L09.md",
+      "quote": "booked     TYPE i,                  \" 예약 좌석 합계(ZBOOKING에서 집계)",
+      "category": "인지부하 · 빠진 징검다리",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L01～L08이 일관되게 `gt_booking`(ZBOOKING) 하나로 진행하다가, L09에서 예고 없이 새 데이터 세트(ZPERF·ZCONCERT를 섞은 `ts_perf_alv`, 6개 필드, `gt_perf`/`ls_perf`)로 갈아탄다. 게다가 매진 판정의 핵심인 `booked`(집계)와 `capacity`(다른 테이블)를 어떻게 만들어 넣는지는 주석 한 줄로만 처리돼, 정작 실행 가능한 형태가 아니다.",
+      "evidence": "L09 코드에서 `capacity TYPE zconcert-capacity`와 `booked TYPE i`가 각각 \"정원은 공연 마스터(ZCONCERT)에\", \"예약 좌석 합계(ZBOOKING에서 집계)\"라는 주석만 달고 등장하며, 두 테이블 조인·집계는 이 챕터 어디에도 없다. 학습 목표(행 색상 = 색 코드 컬럼 + info_fname)와 무관한 데이터 준비 부담이 새로 얹혀 인지부하가 커지고, `ls_perf-booked >= ls_perf-capacity` 판정을 학습자가 스스로 재현할 수 없다.",
+      "suggestion": "행 색상 예제도 챕터 관통 데이터(`gt_booking`)를 재사용해 이미 있는 필드(예 STATUS)로 색 조건을 잡거나, 굳이 회차 단위가 필요하면 `booked`·`capacity`를 채우는 최소 준비 코드를 한 블록 넣어 그대로 실행 가능하게 한다."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH17/CH17-L10.md",
+      "quote": "1. **매진 회차 행 색상** — [행 색상 기초](CH17-L09.html)의 `info_fname`에 색 컬럼을 더한다.",
+      "category": "실습 과제 수행 가능성",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "종합 실습의 1번 과제가 본문 골격 그대로는 수행할 수 없다. L10 골격의 출력 테이블은 `gt_booking TYPE STANDARD TABLE OF zbooking`이라 행 구조가 DDIC 테이블 필드로 고정돼 있고, 여기에 색 코드 컬럼을 \"더하는\" 방법(별도 TYPES 구조 정의 후 교체)은 L10은 물론 챕터 어디서도 안내되지 않는다.",
+      "evidence": "L10 라인 39의 선언은 `gt_booking TYPE STANDARD TABLE OF zbooking`이고, L09는 색 컬럼을 쓰려고 아예 별도 구조 `ts_perf_alv`를 새로 정의했다(라인 20～27). 즉 두 레슨의 데이터 구조가 다른데 과제는 \"L09의 info_fname에 색 컬럼을 더한다\"로만 적혀 있어, 학습자는 gt_booking을 어떻게 바꿔야 하는지 알 수 없는 지점에서 막힌다. 종합 실습의 과제가 막히면 챕터 마무리의 성취감이 그대로 깎인다.",
+      "suggestion": "과제 1에 한 줄을 더해 \"`gt_booking`의 행 타입을 ZBOOKING 필드 + `rowcolor`를 가진 별도 구조로 바꿔야 한다\"는 출발점을 명시하고, 그 구조 선언 한 조각을 힌트로 제시한다(또는 seq 3과 함께 L09의 데이터 구조를 gt_booking 계열로 통일)."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH17/CH17-L10.md",
+      "quote": "::embed CH17-L10-S01 | 데이터→그리드 변환과 정렬·합계를 직접 눌러 보기::",
+      "category": "체험 설계 · 종합 실습 검증력",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "종합 실습 레슨의 체험이 L07의 체험과 사실상 같은 성격(\"데이터를 그리드로 띄워 정렬·합계를 눌러 보기\")으로 선언돼, 이 레슨의 학습 목표인 **조립 순서·생성 가드(IS INITIAL)·display↔refresh 분기**를 확인해 주지 못한다. 또 이 두 embed 선언만 다른 레슨과 달리 높이 인자가 빠져 있다.",
+      "evidence": "L07의 선언은 `::embed CH17-L07-S01 | 데이터를 그리드로 띄워 정렬·합계를 눌러 보기::`로 제목이 거의 동일하고, 두 줄 모두 `| 560::`·`| 620::` 같은 높이 인자가 없다(L01·L02 560, L03·L05·L06 580, L04 600, L08·L09 620). 종합 실습 본문은 완성 체크리스트에서 \"두 번째 PBO부터 display가 아니라 refresh가 호출되는가\"를 묻는데, 체험은 그 분기를 다루지 않는 것으로 보인다. (embeds/ 실제 위젯은 감사 대상 밖이라 제목 기준 추정.)",
+      "suggestion": "L10 체험은 \"PBO 1회차 = build, 2회차 이후 = refresh\" 분기나 FORM 조립 순서 맞추기처럼 통합을 확인하는 성격으로 바꾸고, 두 embed 선언에 높이 인자를 채운다."
+    },
+    {
+      "seq": 6,
+      "file": "content/abap/CH17/CH17-L09.md",
+      "quote": "prereq: [\"CH17-L05\"]",
+      "category": "선수지식 선언 누락",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L09의 prereq가 L05(Layout)만 선언하는데, 본문은 L07(set_table_for_first_display)·L08(refresh_table_display)을 색 표시의 필수 4조건 중 하나로 요구한다. 게이팅 검증의 근거가 실제 의존과 어긋난다.",
+      "evidence": "L09 라인 44의 4번 조건이 \"`set_table_for_first_display`(또는 `refresh_table_display`)로 화면에 반영했다\"이고, 두 호출은 각각 L07·L08에서 도입된다. 같은 문제가 L10에도 있다 — prereq는 CH17-L07·L09만 적혀 있으나 본문 골격은 `MODULE status_0100 OUTPUT`(CH16 Module Pool)과 `PERFORM`/`FORM`(모듈화)에 의존한다(본문 산문에는 CH16 링크가 있으나 front-matter에는 없다).",
+      "suggestion": "L09 prereq에 CH17-L07(가능하면 L08도), L10 prereq에 CH16과 모듈화(FORM) 챕터를 추가한다."
+    },
+    {
+      "seq": 7,
+      "file": "content/abap/CH17/CH17-L10.md",
+      "quote": "prevRel: next-step",
+      "category": "메타데이터 정합성",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L10의 `prevRel` 값 `next-step`이 규약에 정의된 값 집합(pain-solution / parallel / deepening) 밖이다. 레슨 관계 선언이 기계·검수 기준에서 인식되지 않는다.",
+      "evidence": "같은 챕터의 다른 레슨은 모두 정의된 값을 쓴다 — L01 pain-solution, L02·L03·L06 parallel, L04·L05·L07·L08·L09 deepening. L10만 다른 어휘를 쓴다. 내용상 L10은 조각을 모으는 통합 실습이라 관계 자체는 \"다음 단계\"가 맞지만, 표기가 규약 어휘와 맞지 않는다.",
+      "suggestion": "정의된 값 중 의미가 가장 가까운 것으로 바꾸거나(예 deepening), \"종합/통합\" 관계가 실제로 필요하다면 규약에 값을 정식 추가한 뒤 사용한다."
+    },
+    {
+      "seq": 8,
+      "file": "content/abap/CH17/CH17-L03.md",
+      "quote": "WHERE concert_id = gv_conc.",
+      "category": "빠진 징검다리",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "`gv_conc`가 선언·유래 설명 없이 처음 등장한다. 입문자는 이 변수가 어디서 값을 받는지(화면 입력 필드) 모른 채 코드를 읽게 된다.",
+      "evidence": "L03의 코드 블록에서 `gv_conc`는 주석 \"이 공연의 예매만\"만 달고 쓰이며, 이 변수가 화면 0100의 입력 필드라는 사실은 7개 레슨 뒤 L10의 화면 스케치(\"공연번호 gv_conc: C001\")에서야 드러난다. 체험 안내문도 \"공연 번호를 바꿔 조회하고\"라고만 해 변수의 출처를 메우지 않는다.",
+      "suggestion": "L03 코드 아래 한 줄로 \"`gv_conc`는 화면에서 사용자가 입력한 공연 번호를 담는 전역 변수(화면 연결은 종합 실습에서)\" 정도의 한 문장 각주를 단다."
+    },
+    {
+      "seq": 9,
+      "file": "content/abap/CH17/CH17-L02.md",
+      "quote": "direction: 컨테이너 위에 ALV 그리드 컨트롤 객체를 얹는다.",
+      "category": "레슨 분할 균형",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "L02의 신규 학습량이 `CREATE OBJECT go_grid EXPORTING i_parent = go_cont.` 한 줄 수준이라 독립 레슨으로는 얇은 편이다. 챕터 안에서 L02 같은 저밀도 레슨과 L09 같은 고밀도 레슨의 편차가 커, 레슨 하나의 무게가 학습 단위로 고르지 않다.",
+      "evidence": "L02가 담는 신규 문법은 파라미터 하나(`i_parent`)뿐이고, 나머지는 SALV 비교표와 \"왜 표가 안 보이지\" 설명이다. 반면 L09는 새 구조체 타입 정의 + LOOP/MODIFY 갱신 + 색 코드 체계 + 4조건 체크리스트를 한 레슨에 담는다. 다만 L01이 \"레슨마다 조각 하나씩\"이라는 분할 원칙을 미리 선언해 학습자 기대를 관리하고 있어, 명백한 파편 레슨으로 단정하긴 어렵다(그래서 추정·낮음).",
+      "suggestion": "현 구조를 유지해도 무방하나, 재편한다면 L01+L02를 \"컨테이너와 그리드 만들기\" 한 레슨으로 합치고 남는 분량을 L09(행 색상 데이터 준비) 쪽으로 옮기는 편이 무게 배분이 고르다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "교수설계 관점에서 완성도가 높은 챕터다. L01의 \"9조각 로드맵\" 표가 선행조직자(advance organizer) 역할을 제대로 하고, 각 레슨이 왜 필요한가→무엇인가→어떻게 쓰나→흔한 실수→정리 흐름을 일관되게 지키며, 레슨 끝 예고는 1～2문장으로 절제돼 있다. 불편 서사도 대체로 진짜 불편이다(L04 기술 필드명 SEATS vs 좌석수, L05 읽기 쉬운 표, L06 담당자별 컬럼 순서, L08 데이터 변경≠화면 갱신은 특히 좋다). L10의 자가점검·완성 체크리스트는 복습 장치로 잘 작동한다. 구조적 결함은 두 갈래다 — ① Variant(L06)가 첫 표시(L07)보다 앞서 배치돼 클라이맥스 호출 코드가 한 레슨 먼저 소비되고 Variant의 필요성 체감이 약해진다, ② 행 색상(L09)이 챕터 관통 데이터(gt_booking)를 버리고 준비 과정 없는 새 데이터 세트로 갈아타면서 인지부하가 튀고, 그 여파로 L10의 1번 과제가 본문 골격만으로는 수행 불가능해진다. 나머지는 챕터 intro 동기 보강, L10 체험의 통합 검증력, prereq·prevRel 메타데이터, gv_conc 출처 한 줄 등 경미한 손질이다. 재집필은 불필요하고 위 두 갈래만 손보면 충분하다."
+  }
+}

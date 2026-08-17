@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- CH17-L10-S01 — 엔진: gui-alv-grid-simulator · 자체 postHeight. 콘텐츠=레슨 전용(종합 실습 예매목록 Grid ALV, #C17-1).
-     게이팅: CL_GUI_ALV_GRID·classic. 전체 골격(container→grid→fieldcat MERGE+layout→set_table). -->
+     게이팅: CL_GUI_ALV_GRID·classic. 전체 골격(PBO 분기→FORM 조립→display→PAI [조회]→깃발→다음 PBO refresh 분기). -->
 <html lang="ko" data-eng="gui-alv-grid-simulator">
 <head>
 <meta charset="utf-8" />
@@ -12,13 +12,14 @@
 <body>
 <div class="wrap">
   <p class="hd">예매 목록 Grid ALV — 조각을 하나로 <small>(종합 실습)</small></p>
-  <p class="lead">CH17의 조각(컨테이너·그리드·Field Catalog·Layout·display)을 <b>하나의 골격</b>으로 모읍니다. <b>다음 단계</b>로 코드가 쌓이고, 마지막에 화면 0100의 <code>CONT100</code>에 그리드가 뜹니다.</p>
+  <p class="lead">CH17의 조각을 <b>책임별 FORM 골격</b>으로 모읍니다. <b>▶ 다음 단계</b>로 조립해 5단계에서 그리드가 뜨고, 이어 <b>[조회] PAI → 다음 PBO</b>까지 진행하면 <b>데이터 변경 ≠ 화면 갱신</b>과 refresh 분기(깃발 <code>gv_refresh</code>)를 눈으로 확인할 수 있습니다.</p>
 
   <div class="alvg-ctrl">
     <button class="alvg-btn" id="alvgNext" type="button">▶ 다음 단계</button>
     <button class="alvg-reset" id="alvgReset" type="button">↺ 처음부터</button>
   </div>
   <div class="alvg-steps" id="alvgSteps"></div>
+  <div class="alvg-state hidden" id="alvgState"></div>
 
   <div class="alvg-code">
     <div class="alvg-code__hd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span><span class="tag">classic</span></div>
@@ -31,7 +32,7 @@
     <div style="overflow-x:auto"><table class="dt" data-grid></table></div>
   </div>
 
-  <div class="note"><b>처음 한 번만</b> — PBO 모듈에서 <code>go_grid IS INITIAL</code>이면 <code>build_alv</code>(컨테이너·그리드 생성)를, 아니면 <code>refresh_table_display( )</code>만 부른다. 컨테이너·그리드는 <b>중복 생성 금지</b>. 이 긴 classic 골격을 더 짧게 → CH18(Modern).</div>
+  <div class="note"><b>처음 한 번만, 갱신은 깃발로.</b> PBO에서 <code>go_grid IS INITIAL</code>이면 <code>build_alv</code>(조립), 재조회 깃발 <code>gv_refresh</code>가 섰을 때만 <code>refresh_alv</code>. 컨테이너·그리드는 <b>중복 생성 금지</b>이고, 엔터만 친 PBO에선 아무것도 다시 그리지 않습니다. 이 긴 classic 골격을 더 짧게 쓰는 길은 <a href="../../docs/abap/pages/CH18-L01.html" target="_top">Chapter 18 · Inline Declaration</a>부터.</div>
 </div>
 
 <script>
@@ -48,36 +49,107 @@ window.ALVG_CFG = {
     {booking_id:'0001',concert_id:'C001',customer:'정훈영',seats:2,status:'N'},
     {booking_id:'0002',concert_id:'C001',customer:'손흥민',seats:4,status:'N'},
     {booking_id:'0003',concert_id:'C001',customer:'아이유',seats:3,status:'N'},
-    {booking_id:'0006',concert_id:'C001',customer:'차은우',seats:5,status:'N'}
+    {booking_id:'0004',concert_id:'C001',customer:'차은우',seats:5,status:'N'}
   ],
+  dataSets:{
+    C001:[
+      {booking_id:'0001',concert_id:'C001',customer:'정훈영',seats:2,status:'N'},
+      {booking_id:'0002',concert_id:'C001',customer:'손흥민',seats:4,status:'N'},
+      {booking_id:'0003',concert_id:'C001',customer:'아이유',seats:3,status:'N'},
+      {booking_id:'0004',concert_id:'C001',customer:'차은우',seats:5,status:'N'}
+    ],
+    C002:[
+      {booking_id:'0005',concert_id:'C002',customer:'김연아',seats:2,status:'N'},
+      {booking_id:'0006',concert_id:'C002',customer:'안유진',seats:1,status:'N'}
+    ]
+  },
   steps:[
-    {n:1, nm:'데이터 선언·조회', sub:'SELECT INTO gt_booking', code:[
+    {n:1, nm:'선언 + PBO 분기', sub:'IS INITIAL→build / 깃발→refresh', code:[
       "DATA: go_cont    TYPE REF TO cl_gui_custom_container,",
       "      go_grid    TYPE REF TO cl_gui_alv_grid,",
-      "      gt_booking TYPE TABLE OF zbooking,",
+      "      gt_booking TYPE STANDARD TABLE OF zbooking,",
       "      gt_fcat    TYPE lvc_t_fcat,",
-      "      gs_layout  TYPE lvc_s_layo.",
+      "      gs_layout  TYPE lvc_s_layo,",
+      "      gs_variant TYPE disvariant,",
+      "      gv_conc    TYPE zbooking-concert_id,",
+      "      gv_refresh TYPE abap_bool,",
+      "      ok_code    TYPE sy-ucomm,",
+      "      save_ok    TYPE sy-ucomm.",
       "",
-      "SELECT * FROM zbooking INTO TABLE gt_booking",
-      "  WHERE concert_id = gv_concert." ]},
-    {n:2, nm:'Custom Container', sub:"CONT100", code:[
-      "CREATE OBJECT go_cont",
-      "  EXPORTING container_name = 'CONT100'." ]},
-    {n:3, nm:'ALV Grid 객체', sub:'i_parent=go_cont', code:[
-      "CREATE OBJECT go_grid",
-      "  EXPORTING i_parent = go_cont." ]},
-    {n:4, nm:'Field Catalog + Layout', sub:'MERGE·zebra', code:[
-      "CALL FUNCTION 'LVC_FIELDCATALOG_MERGE'",
-      "  EXPORTING i_structure_name = 'ZBOOKING'",
-      "  CHANGING  ct_fieldcat      = gt_fcat.",
+      "MODULE status_0100 OUTPUT.",
+      "  IF go_grid IS INITIAL.",
+      "    PERFORM build_alv.        \" 처음 한 번 — 조립",
+      "  ELSEIF gv_refresh = abap_true.",
+      "    PERFORM refresh_alv.      \" 재조회 직후에만 — 갱신",
+      "    CLEAR gv_refresh.",
+      "  ENDIF.",
+      "ENDMODULE." ]},
+    {n:2, nm:'build_alv', sub:'책임을 FORM으로', code:[
+      "FORM build_alv.",
+      "  PERFORM select_booking.   \" 1. 데이터",
+      "  PERFORM create_grid.      \" 2. 컨테이너+그리드",
+      "  PERFORM build_fieldcat.   \" 3. 컬럼 설명서",
+      "  PERFORM build_layout.     \" 4. 모양 + variant",
+      "  PERFORM display_grid.     \" 5. 처음 띄우기",
+      "ENDFORM." ]},
+    {n:3, nm:'데이터 + 그리드 생성', sub:'WHERE gv_conc · CONT100', code:[
+      "FORM select_booking.",
+      "  SELECT * FROM zbooking INTO TABLE gt_booking",
+      "    WHERE concert_id = gv_conc.  \" 화면 입력값",
+      "ENDFORM.",
       "",
-      "gs_layout-zebra      = abap_true.",
-      "gs_layout-grid_title = '예매 목록'." ]},
-    {n:5, nm:'set_table_for_first_display', sub:'그리드 출력', showGrid:true, code:[
-      "go_grid->set_table_for_first_display(",
-      "  EXPORTING is_layout       = gs_layout",
-      "  CHANGING  it_outtab       = gt_booking",
-      "            it_fieldcatalog = gt_fcat )." ]}
+      "FORM create_grid.",
+      "  CREATE OBJECT go_cont",
+      "    EXPORTING container_name = 'CONT100'.",
+      "  CREATE OBJECT go_grid",
+      "    EXPORTING i_parent = go_cont.",
+      "ENDFORM." ]},
+    {n:4, nm:'fieldcat + layout', sub:'MERGE · zebra · variant', code:[
+      "FORM build_fieldcat.",
+      "  CALL FUNCTION 'LVC_FIELDCATALOG_MERGE'",
+      "    EXPORTING i_structure_name = 'ZBOOKING'",
+      "    CHANGING  ct_fieldcat      = gt_fcat.",
+      "ENDFORM.",
+      "",
+      "FORM build_layout.",
+      "  gs_layout-zebra      = abap_true.",
+      "  gs_layout-grid_title = '예매 목록'.",
+      "  gs_variant-report    = sy-repid.",
+      "ENDFORM." ]},
+    {n:5, nm:'display_grid', sub:'처음 한 번 — 그리드 표시', showGrid:true, data:'C001',
+      state:'화면 0100 — <code>gv_conc = C001</code>의 예매 4건이 떴습니다. 이제 공연번호를 <code>C002</code>로 바꾸고 [조회]를 눌러 봅시다.', code:[
+      "FORM display_grid.",
+      "  go_grid->set_table_for_first_display(",
+      "    EXPORTING is_layout       = gs_layout",
+      "              is_variant      = gs_variant",
+      "              i_save          = 'A'",
+      "    CHANGING  it_outtab       = gt_booking",
+      "              it_fieldcatalog = gt_fcat ).",
+      "ENDFORM." ]},
+    {n:6, nm:'[조회] PAI', sub:"'SEL' → 데이터만 + 깃발",
+      state:'PAI — <code>gt_booking</code>엔 <b>C002 예매 2건(김연아·안유진)</b>이 새로 담겼지만, <b>화면은 아직 C001 그대로</b>입니다. 데이터 변경 ≠ 화면 갱신!', code:[
+      "MODULE user_command_0100 INPUT.",
+      "  save_ok = ok_code.",
+      "  CLEAR ok_code.",
+      "  CASE save_ok.",
+      "    WHEN 'SEL'.               \" [조회] gv_conc = 'C002'",
+      "      PERFORM select_booking. \" 데이터만 다시 담고",
+      "      gv_refresh = abap_true. \" 다음 PBO에 깃발",
+      "    WHEN 'BACK'.",
+      "      LEAVE TO SCREEN 0.",
+      "  ENDCASE.",
+      "ENDMODULE." ]},
+    {n:7, nm:'다음 PBO — refresh 분기', sub:'IS INITIAL 아님 → refresh_alv', data:'C002',
+      state:'두 번째 PBO — <code>go_grid</code>가 이미 있어 build가 아니라 <b>refresh_table_display</b>가 불렸고, 화면이 C002로 갱신됐습니다. 깃발은 <code>CLEAR</code>.', code:[
+      "\" 다음 PBO: go_grid IS INITIAL 아님",
+      "\" → gv_refresh = 'X' → PERFORM refresh_alv.",
+      "FORM refresh_alv.",
+      "  DATA ls_stable TYPE lvc_s_stbl.",
+      "  ls_stable-row = abap_true.",
+      "  ls_stable-col = abap_true.",
+      "  go_grid->refresh_table_display(",
+      "    EXPORTING is_stable = ls_stable ).",
+      "ENDFORM." ]}
   ]
 };
 </script>

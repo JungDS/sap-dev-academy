@@ -1,0 +1,74 @@
+{
+  "agent": "AG04",
+  "model": "sonnet",
+  "target": "CH18",
+  "persona_ack": "20년차 한국어 교열·기술 용어 감수자로서 CH18(Modern ABAP Syntax) 챕터 소개(_chapter.md)와 레슨 11개(CH18-L01～L11)를 문장·용어 첫 등장·용어 일관성·톤 네 기준으로 감사했다.",
+  "method": "대상 파일 11개 + _chapter.md 전문 정독. 보조로 grep을 이용해 챕터 전체에서 [[ ]] 용어 마킹 분포, 특정 용어(constructor expression, hashed key, 내부 표 등) 등장 위치를 교차 확인했다.",
+  "errors": [
+    "감사 도중 대상 파일 목록에 없는 C:\\SAP\\sap-dev-academy\\reference\\glossary.json을 확인 목적으로 열람했다(제약 위반). 해당 파일 내용은 최종 findings의 직접 근거로 쓰지 않았고, [[ ]] 마킹 유무 판단은 CH18 대상 파일 자체의 grep 결과만으로 냈다."
+  ],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L10.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L11.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH18-L02.md",
+      "quote": "`VALUE` constructor expression은 절차를 나열하는 대신 **결과가 어떤 값인지**를 표현한다.",
+      "category": "용어 첫 등장",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "이 챕터 전체를 관통하는 상위 개념어 \"constructor expression\"이 본문에 처음 등장하는 자리인데, 한 줄 풀이가 없다.",
+      "evidence": "CH18은 VALUE·CORRESPONDING·CONV·EXACT·COND·SWITCH·REDUCE·FILTER·LET을 모두 \"값을 만드는 표현식\" 계열(constructor expression)로 다루지만, 그 상위 범주어 자체는 이 문장 이후 챕터 어디에서도 본문에서 정의되지 않는다(front-matter keywords에만 반복 등장). \"constructor\"·\"expression\" 모두 영어 원문 그대로라 처음 보는 입문자는 무슨 뜻인지 짐작하기 어렵다.",
+      "suggestion": "첫 등장 시 \"constructor expression(값 하나를 그 자리에서 만들어 내는 식)\"처럼 괄호 풀이를 붙이거나 [[ ]]로 마킹해 glossary 팝업을 연결한다."
+    },
+    {
+      "seq": 2,
+      "file": "CH18-L01.md",
+      "quote": "## DATA() — 값이 만들어지는 자리에서 선언",
+      "category": "용어 일관성",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "CH18-L01～L05, L10～L11에서 새로 도입하는 핵심 용어는 하나도 [[ ]]로 마킹돼 있지 않아 glossary 팝업(hover=임시·click=고정)이 연결되지 않는다. 반면 CH18-L06～L09에서 도입하는 용어는 전부 [[ ]]로 마킹돼 있어, 같은 챕터 안에서 레슨별로 용어 지원 방식이 크게 갈린다.",
+      "evidence": "grep 결과 CH18-L01·L02·L03·L04·L05·L10·L11.md에는 `[[`가 전혀 없다(DATA()·FINAL()·VALUE·BASE·FOR·CORRESPONDING·MAPPING·EXCEPT·Table Expression·line_exists·line_index·String Template·CONCATENATE·+= 등 모두 마킹 없음). 반면 L06은 `[[CONV]]`·`[[EXACT]]`, L07은 `[[IF]]`·`[[CASE]]`·`[[COND]]`·`[[SWITCH]]`, L08은 `[[Internal Table]]`·`[[LOOP]]`·`[[REDUCE]]`·`[[FILTER]]`·`[[Sorted Table]]`, L09는 `[[LET]]`을 마킹한다.",
+      "suggestion": "챕터 전체에서 마킹 기준을 통일한다 — L01～L05의 핵심 도입 용어(특히 VALUE·CORRESPONDING·Table Expression·String Template)에도 [[ ]] 마킹을 적용하거나, 후반부 마킹 밀도를 앞부분 수준으로 낮춰 기준을 맞춘다."
+    },
+    {
+      "seq": 3,
+      "file": "CH18-L04.md",
+      "quote": "못 찾으면 `0`(hashed key 등 순서를 말할 수 없으면 `-1`).",
+      "category": "용어 첫 등장",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "\"hashed key\"라는 용어가 괄호 안에서 스치듯 언급되지만 한 줄 풀이가 없다.",
+      "evidence": "이 레슨의 prereq는 CH18-L01·CH06뿐이다. blind 감사 규율상 CH06 등 선행 챕터 원문은 직접 확인하지 못했으나, 이미 배운 개념이 아니라면 어떤 내부 테이블 종류를 가리키는지 이 문장만으로는 전혀 단서가 없다.",
+      "suggestion": "\"hashed key(해시 방식이라 저장 순서가 없는 키)\"처럼 짧은 풀이를 덧붙이거나, 이미 배운 레슨이면 해당 링크를 붙인다."
+    },
+    {
+      "seq": 4,
+      "file": "CH18-L01.md",
+      "quote": "`ls_book`을 80줄 아래서 쓰면 읽는 사람은 \"이 변수 값이 어디서 들어오지?\"를 계속 추적해야",
+      "category": "문장",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "바로 앞 \"그런데 코드가 길어지면\"과 이 문장의 \"80줄 아래서 쓰면\"이 사실상 같은 상황(코드가 길어짐)을 두 번 조건절로 겹쳐 놓아 호흡이 길고 약간 늘어진다.",
+      "evidence": "\"그런데 코드가 길어지면, 맨 위에 선언한 ls_book을 80줄 아래서 쓰면 읽는 사람은 ~를 계속 추적해야 한다\"는 한 문장 안에 조건절이 이중으로 걸려 있다.",
+      "suggestion": "\"코드가 길어지면 문제가 생긴다. 맨 위에 선언한 ls_book을 80줄 아래서 쓰면, 읽는 사람은 '이 값이 어디서 왔지?'를 계속 추적해야 한다.\"처럼 두 문장으로 끊으면 더 잘 읽힌다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH18 11개 레슨은 문장 톤이 전반적으로 친근하고 일관되며, ABAP 고유 용어(Structure·Internal Table·VALUE·CORRESPONDING 등)를 영어 원문으로 유지하는 원칙도 잘 지켰다. classic↔modern 대비 구조와 흔한 실수 섹션이 반복 패턴으로 안정적이라 가독성도 좋다. 다만 챕터를 관통하는 상위 개념어 \"constructor expression\"이 본문 첫 등장에서 풀이 없이 지나가고, [[ ]] 용어 마킹(글로서리 팝업)이 L01～L05·L10～L11에는 전혀 없다가 L06～L09에만 몰려 있어 레슨 간 용어 지원 일관성이 떨어진다. \"hashed key\" 같은 괄호 속 부수 용어도 무풀이로 스쳐 지나간다. 문장 자체의 번역투·비문은 거의 발견되지 않았다. 재집필 없이 몇 곳의 용어 마킹·풀이 보강으로 충분하다."
+  }
+}

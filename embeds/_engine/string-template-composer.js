@@ -1,9 +1,10 @@
 /* string-template-composer 엔진 — CONCATENATE와 String Template을 나란히 비교하고, DATE/NUMBER 서식·substring 범위를 시연한다.
    mode(concat/template) · fmt(raw/user) 토글로 코드와 결과 문자열이 바뀌고, substring(val,off,len)은 범위를 벗어나면 오류를 보여 준다.
    골격 계약: .stc-mode · .stc-fmt · #stcCode · #stcResult · #stcSub · #stcSubOut.
-   config: window.STC_CFG = { name, total, dan, mul, result, date }. 높이: _autoheight.js. */
+   config: window.STC_CFG = { name, total, date, book:{concert_id,perf_no,seats} }(예매 확인 줄 = ls_book). 높이: _autoheight.js. */
 (function () {
-  var CFG = window.STC_CFG || { name: '정훈영', total: 120000, dan: 2, mul: 3, result: 6, date: '20260627' };
+  var CFG = window.STC_CFG || { name: '정훈영', total: 120000, date: '20260627', book: { concert_id: 'C001', perf_no: '001', seats: 2 } };
+  var B = CFG.book || { concert_id: 'C001', perf_no: '001', seats: 2 };
   var mode = 'template', fmt = 'raw';
   var subVal = 'CONCERT', subOff = 0, subLen = 3;
 
@@ -36,7 +37,7 @@
       var nopt = fmt === 'user' ? ' NUMBER = USER' : '';
       codeEl.textContent =
         "DATA(lv_msg) = |{ lv_name }님 환영합니다|.\n" +
-        "DATA(lv_eq)  = |{ ls-dan } x { ls-mul } = { ls-result }|.\n" +
+        "DATA(lv_eq)  = |{ ls_book-concert_id } { ls_book-perf_no }회차 { ls_book-seats }석|.\n" +
         "DATA(lv_ln)  = |오늘은 { sy-datum" + dopt + " }, 합계 { lv_total" + nopt + " }원입니다.|.";
     }
   }
@@ -44,7 +45,7 @@
     var fmtCls = fmt === 'user' ? ' fmt' : '';
     resEl.innerHTML =
       '<span class="ln">' + esc(CFG.name) + '님 환영합니다</span>' +
-      '<span class="ln">' + CFG.dan + ' x ' + CFG.mul + ' = ' + CFG.result + '</span>' +
+      '<span class="ln">' + esc(B.concert_id) + ' ' + esc(B.perf_no) + '회차 ' + esc(B.seats) + '석</span>' +
       '<span class="ln">오늘은 <span class="' + (fmtCls ? 'fmt' : '') + '">' + esc(fmtDate()) + '</span>, 합계 <span class="' + (fmtCls ? 'fmt' : '') + '">' + esc(fmtNum()) + '</span>원입니다.</span>';
   }
   function renderSub() {

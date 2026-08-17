@@ -1,0 +1,35 @@
+{
+  "agent": "AG09",
+  "model": "sonnet",
+  "target": "CH20",
+  "persona_ack": "ABAP 정적 검사기를 시늉하는 코드 전용 감사자로서, 산문은 무시하고 ```abap 코드 블록만 줄 단위로 판독했다(활성화 차단급 오류·네이밍 규약·CH01~18 경계 규약·주석/출력문자열 오류 4항목).",
+  "method": "도구 미사용 — 8개 대상 파일의 ```abap 코드 블록을 육안으로 정적 판독(문법·네이밍·경계·필드 참조 일관성). 컴파일러·ADT 없음, 정적 판단이라 confidence는 '추정'을 기본으로 하고 파일 내부 대조로 확정 가능한 것만 '확실'로 표기.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH20-L07.md",
+      "quote": "SELECT c~concert_id, c~artist, c~capacity,",
+      "category": "활성화 차단급(필드 참조 불일치)",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "코드가 참조하는 `c~artist` 컬럼이 같은 파일에서 제시한 `zconcert` 실습 데이터 표의 컬럼 목록(`concert_id | title | capacity`)에 없다. 표대로라면 `zconcert`에는 `artist`가 아니라 `title` 컬럼만 있어, 이 SELECT는 활성화 시 \"필드 ARTIST를 알 수 없음\" 류 오류가 날 수 있다.",
+      "evidence": "CH20-L07.md 24~32행의 `zconcert` 표 헤더는 `concert_id | title | capacity` 세 컬럼뿐인데, 과제 1(45~58행)과 과제 2(75~83행) 코드가 모두 `c~artist`를 SELECT한다. 같은 표의 예시 값(`안유진` 등)이 실제로는 아티스트명이라 표 헤더가 `title`이 아니라 `artist`의 오기일 가능성이 높지만, 파일만으로는 어느 쪽이 오타인지 단정할 수 없어 confidence는 '추정'.",
+      "suggestion": "zconcert 실습 데이터 표의 헤더를 `artist`로 통일하거나(코드가 맞다면), 코드의 `c~artist`를 `c~title`로 바꿔(표가 맞다면) 표와 코드의 컬럼명을 일치시킨다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH20의 CTE·EXISTS·IN·EXCEPT·Window 코드 블록은 WITH 절 구문, correlated subquery, 집합 연산 좌우 컬럼 정합, OVER(PARTITION BY … ORDER BY …) 사용, 별칭·GROUP BY 순서 등에서 실제 ABAP Open SQL 문법과 어긋나는 부분이 없었고 lt_ 접두어 네이밍도 일관됐다(CH20은 CH18/19 경계를 넘긴 구간이라 modern 문법·New Open SQL 사용 자체는 규약 위반이 아님). 유일하게 발견한 결함은 CH20-L07.md 실습 데이터 표의 `zconcert` 컬럼 헤더(`title`)와 과제 코드의 `c~artist` 참조가 서로 어긋나는 점으로, 실제 DDIC 필드명이 무엇인지는 이 파일만으로 확정할 수 없어 추정 등급으로 보고한다."
+  }
+}

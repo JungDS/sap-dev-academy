@@ -44,8 +44,9 @@
 분명하지만 <strong>값의 모양이 안 읽힌다</strong>. &quot;C001 공연 1회차 2석 예매를 만들고 싶다&quot;는 의도보다
 &quot;변수 만들기·필드 채우기·append&quot;라는 작업이 더 커 보인다. 행이 늘면 <code>CLEAR</code> 누락 같은
 실수도 는다.</p>
-<p><code>VALUE</code> constructor expression은 절차를 나열하는 대신 <strong>결과가 어떤 값인지</strong>를 표현한다.
-예제로 쓸 예매 한 건은 공연 코드(<code>concert_id</code>)·회차(<code>perf_no</code>)·좌석 수(<code>seats</code>) 세 필드다.</p>
+<p><code>VALUE</code> constructor expression(값을 조립해 만드는 식 — 이 챕터에서 계속 만날 <code>VALUE</code>·
+<code>CORRESPONDING</code>·<code>CONV</code> 같은 &quot;값 생성 식&quot; 가족의 이름이다)은 절차를 나열하는 대신
+<strong>결과가 어떤 값인지</strong>를 표현한다. 예제로 쓸 예매 한 건은 공연 코드(<code>concert_id</code>)·회차(<code>perf_no</code>)·좌석 수(<code>seats</code>) 세 필드로 이뤄진다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -57,25 +58,29 @@
          seats      <span class="tok-kw">TYPE</span> i,
        <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ts_book.
 <span class="tok-kw">TYPES</span> tt_book <span class="tok-kw">TYPE</span> <span class="tok-kw">STANDARD</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ts_book <span class="tok-kw">WITH</span> EMPTY <span class="tok-kw">KEY</span>.</code></pre></div></div>
+<blockquote>
+<p>💡 <code>WITH EMPTY KEY</code>는 이 연습용 테이블에 <strong>key를 두지 않겠다</strong>는 선언이다. key가 없으니
+중복 행을 넣어도 오류가 없다. 아래에서 나올 &quot;중복 key 오류&quot; 이야기는 <strong>unique key를 가진
+테이블</strong>을 쓸 때의 규칙이니 구분해 두자.</p>
+</blockquote>
 </section><section class="lblock"><h2>Structure 채우기</h2>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
 4
-5
-6
-7
-8
-9</pre><pre class="abap-editor__code"><code><span class="tok-com">" classic</span>
+5</pre><pre class="abap-editor__code"><code><span class="tok-com">" classic</span>
 <span class="tok-kw">DATA</span> ls_book <span class="tok-kw">TYPE</span> ts_book.
 ls_book-concert_id = <span class="tok-str">'C001'</span>.
 ls_book-perf_no    = <span class="tok-str">'001'</span>.
-ls_book-seats      = <span class="tok-num">2</span>.
-
-<span class="tok-com">" modern — "이 값은 C001 공연 001회차 2석 예매다"로 한 덩어리로 읽힘</span>
+ls_book-seats      = <span class="tok-num">2</span>.</code></pre></div></div>
+<p>modern으로 같은 값을 만들면 이렇다(위 classic과 <strong>별개 프로그램</strong> — 이어 붙이면
+<code>ls_book</code> 중복 선언 오류다).</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3</pre><pre class="abap-editor__code"><code><span class="tok-com">" modern — "이 값은 C001 공연 001회차 2석 예매다"로 한 덩어리로 읽힘</span>
 <span class="tok-kw">DATA</span>(ls_book) = <span class="tok-kw">VALUE</span> ts_book(
   concert_id = <span class="tok-str">'C001'</span> perf_no = <span class="tok-str">'001'</span> seats = <span class="tok-num">2</span> ).</code></pre></div></div>
-</section><section class="lblock"><h2>내부 테이블 채우기 — 각 <code>( )</code>가 한 행</h2>
+</section><section class="lblock"><h2>Internal Table 채우기 — 각 <code>( )</code>가 한 행</h2>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -84,7 +89,8 @@ ls_book-seats      = <span class="tok-num">2</span>.
   ( concert_id = <span class="tok-str">'C001'</span> perf_no = <span class="tok-str">'002'</span> seats = <span class="tok-num">3</span> )
   ( concert_id = <span class="tok-str">'C002'</span> perf_no = <span class="tok-str">'001'</span> seats = <span class="tok-num">4</span> ) ).</code></pre></div></div>
 </section><section class="lblock"><h2>기존에 더하기 — BASE</h2>
-<p>기존 테이블을 <strong>유지하면서</strong> 행을 더하려면 <code>BASE</code>를 쓴다. <code>#</code>는 좌변 <code>lt_book</code>이 타입을 알려 줘 가능하다.</p>
+<p>기존 테이블을 <strong>유지하면서</strong> 행을 더하려면 <code>BASE</code>를 쓴다. 타입 자리에 <code>#</code>만 쓴 건, 좌변
+<code>lt_book</code>의 타입을 ABAP이 이미 알고 있어서 <strong>거기서 타입을 추론</strong>할 수 있기 때문이다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2</pre><pre class="abap-editor__code"><code>lt_book = <span class="tok-kw">VALUE</span> #( <span class="tok-kw">BASE</span> lt_book
   ( concert_id = <span class="tok-str">'C003'</span> perf_no = <span class="tok-str">'001'</span> seats = <span class="tok-num">1</span> ) ).</code></pre></div></div>
@@ -108,7 +114,8 @@ ls_book-seats      = <span class="tok-num">2</span>.
   ( concert_id = line-concert_id perf_no = line-perf_no
     seats = line-seats * <span class="tok-num">2</span> ) ).</code></pre></div></div>
 <ul>
-<li><code>FOR i = 1 WHILE i &lt;= 9</code>·<code>FOR line IN lt_book_2</code> — 그 <strong>반복 한 번</strong>에 만들 <strong>새 행 하나</strong>를 뒤의 <code>( )</code>로.</li>
+<li><code>FOR i = 1 WHILE i &lt;= 9</code>·<code>FOR line IN lt_book_2</code> — 반복 조건을 정하고, 그 <strong>반복 한 번</strong>마다 만들 <strong>새 행 하나</strong>를 뒤의 <code>( )</code>에 적는다.</li>
+<li><code>i</code>는 따로 선언하지 않아도 <strong>시작값 <code>1</code>에서 정수 타입으로 자동 선언</strong>되고, 한 바퀴마다 1씩 는다.</li>
 <li>원본은 그대로 두고 <strong>새 테이블</strong>을 만든다. <code>i</code>·<code>line</code>은 그 표현식 <strong>안에서만</strong> 산다.</li>
 <li><code>perf_no</code>는 <code>n</code>(숫자 문자) 타입이라 <code>i</code>의 1·2·3이 <code>&#39;001&#39;</code>·<code>&#39;002&#39;</code>·<code>&#39;003&#39;</code>으로 채워진다.</li>
 </ul>

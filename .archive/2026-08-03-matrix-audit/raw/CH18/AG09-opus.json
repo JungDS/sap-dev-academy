@@ -1,0 +1,138 @@
+{
+  "agent": "AG09",
+  "model": "opus",
+  "target": "CH18",
+  "persona_ack": "나는 AG09 — ABAP 정적 검사기를 시늉하는 코드 전용 감사자다. 산문·서사·교육적 톤은 판정에서 제외하고 ```abap 코드 블록(및 기계가 파싱하는 지시자·front-matter 키)만 줄 단위로 읽어 활성화 차단급 결함·네이밍 규약·classic/modern 경계 규약·주석과 코드의 불일치를 본다. 실행 환경이 없으므로 컴파일 확신이 아니라 정적 판단이며, 불확실한 항목은 confidence=\"추정\"으로 남겼다.",
+  "method": "Read 도구로 대상 12개 파일(_chapter.md + L01~L11) 전문을 통독하고, 각 파일의 ```abap 펜스 블록을 줄 단위로 추출해 (1) 선언·중복선언·미선언 사용, (2) 문장 종결 마침표, (3) 구문 시그니처(CORRESPONDING/FILTER/REDUCE/COND/SWITCH/VALUE/FOR/LET/table expression/문자열 함수), (4) R11 네이밍 접두어, (5) R6 경계(New Syntax·New Open SQL) 대조, (6) 주석·출력 문자열과 코드 값 일치를 점검했다. 부수적으로 기계가 파싱하는 `::embed` 지시자 필드 수와 front-matter 열거값도 대조했다. 빌드·SAP 시스템 실행은 하지 않음(정적 판독만).",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L10.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L11.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH18/CH18-L03.md",
+      "quote": "EXCEPT  audit_user ).",
+      "category": "구문 시그니처",
+      "severity": "높음",
+      "confidence": "추정",
+      "claim": "`CORRESPONDING`의 `EXCEPT`는 **원본(source) 구성요소**를 지정하는 자리인데, 예제는 원본에 없고 대상에만 있는 필드(`audit_user`)를 지정했다. 정적 타입이 확정된 이 코드에서는 구문 오류가 날 가능성이 높고, 최소한 아무 효과가 없는 코드다.",
+      "evidence": "같은 파일의 TYPES 블록에서 `audit_user     TYPE syuname,           \" 원본에 없음`으로 audit_user가 대상(ts_booking_ui) 전용 필드임을 스스로 밝힌다. ABAP의 CORRESPONDING mapping_rules에서 MAPPING은 `대상 = 원본`이지만 EXCEPT 뒤에 오는 이름 목록은 원본 구성요소이며, 원본에 없는 이름을 적으면 검사에 걸린다. 방향 판정이 설령 반대(대상 기준)라 해도, 원본에 존재하지 않는 필드는 애초에 복사 대상이 아니므로 EXCEPT를 붙일 이유가 없어 예제가 아무것도 보여 주지 못한다. 이어지는 테이블 예제 `lt_booking MAPPING display_status = status EXCEPT audit_user ).`와 본문 규칙 서술도 동일 전제로 서 있어 함께 흔들린다.",
+      "suggestion": "EXCEPT 예시를 '원본에는 있지만 대상으로 옮기고 싶지 않은 필드'(예: 원본의 `created_by`·`status`)로 바꾸고, `audit_user`는 'EXCEPT 없이도 채워지지 않는 대상 전용 필드'로 따로 설명한다. 방향 서술도 EXCEPT=원본 기준으로 정정. (환경 검증 불가하므로 실제 시스템 문법 검사로 한 번 확인 권장.)"
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH18/CH18-L01.md",
+      "quote": "FINAL(lv_max) = 100.",
+      "category": "릴리스 요건",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "`FINAL( )` 인라인 선언은 다른 CH18 문법보다 훨씬 늦게(ABAP 7.58대) 들어온 구문이라, 이 커리큘럼이 전제하는 SAPGUI/SE38 계열 학습 시스템에서는 문법 오류가 날 수 있다. 그런데 본문에는 릴리스 조건 안내가 전혀 없다.",
+      "evidence": "CH18의 나머지 구문(`DATA( )`·`VALUE`·`CORRESPONDING`·table expression·`COND`/`SWITCH`/`REDUCE`/`FILTER`/`LET`)은 모두 7.40 계열에서 쓸 수 있고, CH18-L10의 `+=`도 7.54 계열이다. `FINAL( )`만 요구 릴리스가 한 단계 더 높은데, 레슨은 `FINAL(lv_max) = 100.`을 조건 없이 실습 가능한 문법처럼 제시한다. CH01이 SAPGUI/SE38에서 시작하는 온프레미스 학습 흐름이라 학습자 시스템이 이 릴리스에 못 미칠 확률이 낮지 않다.",
+      "suggestion": "`FINAL( )` 절에 '최신 릴리스부터 쓸 수 있다 — 시스템에서 문법 오류가 나면 `DATA( )`로 대체하고 개념만 이해하라'는 한 줄 조건을 붙인다. (`+=`도 같은 방식으로 한 줄 안내 검토.)"
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH18/CH18-L01.md",
+      "quote": "READ TABLE lt_booking INTO DATA(ls_book) WITH KEY booking_id = '0001'.",
+      "category": "중복 선언",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "하나의 ```abap 블록 안에서 `ls_book`이 `DATA ls_book TYPE zbooking.`로 선언된 뒤 같은 블록에서 다시 `DATA(ls_book)`로 인라인 선언된다. 블록을 통째로 복사해 붙이면 중복 선언으로 활성화가 막힌다.",
+      "evidence": "같은 블록 앞부분에 `DATA ls_book TYPE zbooking.`와 classic READ TABLE이 있고, 뒤에 modern 버전이 이어진다. `\" classic` / `\" modern` 주석으로 대안임을 표시했지만 ABAP 관점에서는 동일 처리 블록의 두 번째 선언이다. 게다가 이 레슨의 '흔한 실수'가 바로 **이미 선언한 이름을 또 `DATA()`** 를 금지 사례로 들고 있어 예제와 규칙이 어긋나 보인다.",
+      "suggestion": "classic과 modern을 별도 코드 블록으로 분리하거나(같은 레슨의 다른 절·CH18-L10처럼), modern 쪽 변수명을 다르게(`ls_book_m` 등) 두어 한 블록을 그대로 복사해도 문법 검사가 통과하게 한다."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH18/CH18-L02.md",
+      "quote": "DATA ls_book TYPE ts_book.",
+      "category": "중복 선언",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "같은 코드 블록 안에서 `ls_book`이 classic `DATA` 선언 후 modern `DATA(ls_book) = VALUE ts_book( … )`로 다시 선언된다 — 블록 전체를 복사하면 중복 선언 오류다.",
+      "evidence": "블록 상단이 `\" classic` 아래 `DATA ls_book TYPE ts_book.` + 필드 대입 3줄이고, 같은 펜스 안 하단 `\" modern` 아래가 `DATA(ls_book) = VALUE ts_book(`이다. CH18-L01·CH18-L11 ①에서도 반복되는 동일 패턴이다.",
+      "suggestion": "classic/modern을 두 개의 코드 블록으로 나누거나 modern 예제의 변수명을 달리한다(챕터 전체에 같은 처리를 일관 적용)."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH18/CH18-L11.md",
+      "quote": "DATA: ls_book TYPE zbooking, lv_sum TYPE i.",
+      "category": "중복 선언",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "실습 레슨 ①의 한 블록 안에서 `ls_book`을 `DATA:`로 선언한 뒤 modern 쪽에서 `LOOP AT lt_book INTO DATA(ls_book).`로 다시 인라인 선언한다. 실습 코드를 그대로 옮겨 적는 학습자에게 중복 선언 오류가 난다.",
+      "evidence": "같은 펜스 안에 `\" classic` 3줄 루프와 `\" modern` 3줄 루프가 연달아 있고, 누적 변수는 `lv_sum`→`lv_total`로 이름을 바꿔 충돌을 피했지만 작업영역 `ls_book`은 이름이 그대로다. 실습 레슨은 다른 레슨보다 '그대로 입력해 보는' 사용 빈도가 높아 영향이 크다.",
+      "suggestion": "누적 변수처럼 작업영역도 modern 쪽 이름을 분리하거나(예: `DATA(ls_row)`), classic/modern을 별도 블록으로 나눈다."
+    },
+    {
+      "seq": 6,
+      "file": "content/abap/CH18/CH18-L04.md",
+      "quote": "DATA(ls) = lt_booking[ booking_id = lv_id ].",
+      "category": "네이밍 규약",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "인라인 선언 변수명이 접두어만 있고 의미어가 없는 `ls`다. 커리큘럼 네이밍 규약(`ls_` + 업무 이름)에 어긋나고, CH18-L11이 이를 명시적으로 나쁜 예로 든다.",
+      "evidence": "CH18-L11 '흔한 실수'에 **이름을 너무 짧게** → `DATA(ls)`보다 `DATA(ls_book)`이라고 적혀 있는데, 정작 CH18-L04 본문 예제가 `DATA(ls) = lt_booking[ … ]`를 쓰고 다음 줄에서 `WRITE: / ls-customer.`로 사용한다(같은 챕터 안 자기모순). 같은 레슨의 다른 예제는 `DATA(ls_book)`·`DATA(ls_first)`로 규약을 지킨다.",
+      "suggestion": "`DATA(ls_book)`(또는 `ls_hit`)으로 바꾸고 뒤따르는 `WRITE: / ls-customer.`도 함께 수정."
+    },
+    {
+      "seq": 7,
+      "file": "content/abap/CH18/CH18-L10.md",
+      "quote": "::embed CH18-L10-S01 | 같은 로직의 classic ↔ modern 코드를 짝지어 비교::",
+      "category": "빌드 지시자 시그니처",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "`::embed` 지시자의 세 번째 필드(높이)가 빠졌다. 규정 형식은 `::embed ID | 제목 | 높이::`인데 여기는 2필드뿐이라 임베드가 비정상 높이로 렌더되거나 파싱에 실패할 수 있다.",
+      "evidence": "같은 챕터의 나머지 9개 임베드는 모두 3필드다(`| 600::`·`| 660::`·`| 620::`·`| 560::`·`| 580::`). 높이 필드가 없는 것은 CH18-L10과 CH18-L11 두 곳뿐이며, 두 곳 다 제목 문구가 '같은 로직의 classic ↔ modern 코드를 짝지어 비교' 계열로 임베드 제목이 아니라 설명문처럼 적혀 있다(작성 중 미완 흔적으로 보인다).",
+      "suggestion": "`::embed CH18-L10-S01 | classic ↔ modern 짝비교기 | 620::`처럼 짧은 제목 + 높이 3필드로 맞춘다. 빌드 후 해당 페이지에서 iframe이 실제로 잡히는지 확인."
+    },
+    {
+      "seq": 8,
+      "file": "content/abap/CH18/CH18-L11.md",
+      "quote": "::embed CH18-L11-S01 | classic ↔ modern 코드를 짝지어 비교::",
+      "category": "빌드 지시자 시그니처",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "seq 7과 동일 — `::embed`의 높이 필드 누락(2필드)으로 임베드 렌더가 깨질 수 있다.",
+      "evidence": "CH18-L01~L09의 임베드는 예외 없이 `| <제목> | <높이>::` 3필드다. 이 줄만 높이가 없다.",
+      "suggestion": "높이 값을 추가하고 제목을 임베드 이름 형태로 다듬는다."
+    },
+    {
+      "seq": 9,
+      "file": "content/abap/CH18/CH18-L08.md",
+      "quote": "DATA(lt_open) = FILTER tt_booking( lt_booking WHERE status = 'N' ).",
+      "category": "타입 요건 불명시",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "`FILTER`의 key 요건은 **결과 타입이 아니라 원본 테이블**(`lt_booking`)에 걸리는데, 코드 블록은 결과 타입 `tt_booking`만 SORTED로 선언하고 `lt_booking`의 타입은 어디에도 선언하지 않는다. 학습자가 '결과 타입을 sorted로 만들면 된다'로 오해하기 쉽고, 그대로 따라 쓰면 원본이 STANDARD 테이블일 때 문법 오류가 난다.",
+      "evidence": "블록은 `TYPES tt_booking TYPE SORTED TABLE OF ts_booking WITH NON-UNIQUE KEY status.` 다음 바로 FILTER 식을 쓴다. `lt_booking`은 이 챕터의 다른 레슨(CH18-L01·L03·L04)에서 `READ TABLE`·인덱스 접근 `lt_booking[ 1 ]`으로 등장하는 이름이라 STANDARD 테이블로 읽힐 소지도 있다. 또 행 타입 `ts_booking`은 CH18 어디에서도 정의되지 않는다(CH18-L02는 `ts_book`, CH18-L03은 `ts_booking_ui`).",
+      "suggestion": "`DATA lt_booking TYPE tt_booking.` 한 줄을 블록에 넣어 원본이 sorted key 테이블임을 눈에 보이게 하고, 'key 요건은 원본 테이블에 걸린다(아니면 USING KEY)'를 한 줄 덧붙인다. `ts_booking` 정의도 블록에 포함하거나 이름을 기존 정의(`ts_book` 계열)와 맞춘다."
+    },
+    {
+      "seq": 10,
+      "file": "content/abap/CH18/CH18-L11.md",
+      "quote": "prevRel: next-step",
+      "category": "front-matter 열거값",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "`prevRel` 값이 규약 열거값(`pain-solution`/`parallel`/`deepening`) 밖의 `next-step`이다. 정적 점검·게이팅 도구가 값을 인식하지 못한다.",
+      "evidence": "같은 챕터의 다른 레슨은 `prevRel: pain-solution`(L01)·`prevRel: parallel`(L02~L08)·`prevRel: deepening`(L09·L10)으로 열거값 안에 있고, CH18-L11만 `next-step`이다.",
+      "suggestion": "CH18-L10(모던 리팩터링 판단) → CH18-L11(관통예제 적용) 관계이므로 `deepening`으로 바꾸거나, `next-step`을 정식 값으로 규약에 추가할지 별도 결정."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH18 코드 블록은 전반적으로 건강하다. 문장 마침표 누락·시그니처 오류가 사실상 없고, `VALUE`/`FOR`/`REDUCE`/`FILTER`/`COND`/`SWITCH`/`LET`/table expression의 요소 순서와 인자 이름이 모두 규정 형태이며, 주석·표에 적힌 기대값(9행 생성, `perf_no` '001', 합계 2·7 등)도 코드와 일치한다. 경계 규약도 지켜져 CH18 코드에 New Open SQL(`@`·콤마)이 단 한 곳도 없고 SQL은 CH19로 명시 유예한다. 타입 접두어(`ts_`/`tt_`)와 `lv_`/`ls_`/`lt_` 사용도 일관적이다. 손볼 지점은 국소적이다: ① CH18-L03의 `EXCEPT audit_user`는 원본에 없는 필드를 EXCEPT에 넣어 구문 오류 위험 + 규칙 방향 설명까지 함께 흔들리는 가장 무거운 건이고(실기 문법 검사로 확인 권장), ② CH18-L10·L11의 `::embed` 높이 필드 누락은 빌드 산출물에 바로 드러날 형식 결함, ③ classic/modern을 한 블록에 붙여 `ls_book`이 두 번 선언되는 패턴(L01·L02·L11)은 복사·실습 시 활성화가 막히는 실무적 걸림돌, ④ CH18-L04의 `DATA(ls)`는 CH18-L11이 스스로 금지한 네이밍이다. 그 밖에 `FINAL( )`의 릴리스 요건 무고지와 CH18-L08 FILTER의 원본 key 요건 불명시가 남는다. 모두 국소 수정으로 해결되므로 재집필은 불필요하다."
+  }
+}

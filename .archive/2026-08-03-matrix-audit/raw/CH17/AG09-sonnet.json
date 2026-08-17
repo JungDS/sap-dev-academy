@@ -1,0 +1,49 @@
+{
+  "agent": "AG09",
+  "model": "sonnet",
+  "target": "CH17",
+  "persona_ack": "ABAP 정적 검사기 역할로, 산문은 무시하고 각 ```abap 코드 블록만 줄 단위로 판독했다. 활성화 차단급 오류, 네이밍 접두어 규약, classic/modern 경계, 주석-코드 불일치 네 축으로만 판단했다.",
+  "method": "코드 블록별 라인 단위 정적 판독 — (1) DATA/TYPES 선언과 이후 사용 식별자의 선언-사용 체인 추적, (2) gv_/gs_/gt_·lv_/ls_/lt_·it_·ty_/ts_/tt_ 접두어를 선언 위치(전역 top-level vs FORM/METHOD 내부)와 대조, (3) 표준 클래스(CL_GUI_CUSTOM_CONTAINER·CL_GUI_ALV_GRID)·함수(LVC_FIELDCATALOG_MERGE) 시그니처·EXCEPTIONS 이름을 기억 지식과 대조, (4) 각 코드의 인라인 주석이 바로 옆 문장의 필드/값과 일치하는지 대조. New Syntax(DATA()/VALUE/NEW/+=/|...|)·New Open SQL(@·콤마) 리터럴 스캔.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L10.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH17-L09.md",
+      "quote": "LOOP AT gt_perf INTO ls_perf.",
+      "category": "선언 누락(코드 완결성)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "같은 레슨에서 방금 정의한 TYPES ts_perf_alv 구조체를 바탕으로 이 블록이 gt_perf(내부 테이블)·ls_perf(워크에어리어)를 사용하지만, 이 파일 안 어디에도 gt_perf/ls_perf에 대응하는 TYPES(테이블 타입)나 DATA 선언이 없다.",
+      "evidence": "직전 코드 블록은 TYPES: BEGIN OF ts_perf_alv ... END OF ts_perf_alv.만 정의한다(테이블 타입 tt_perf_alv 또는 DATA gt_perf/ls_perf 선언 없음). 이후 블록이 곧바로 LOOP AT gt_perf INTO ls_perf.로 미선언 식별자를 참조한다. CH17의 다른 코드(gt_booking·gv_conc 등)는 앞 레슨에서 이어지는 연속 서사라 문맥상 기존 선언을 전제할 수 있지만, ts_perf_alv/gt_perf/ls_perf는 이 레슨(L09)에서 새로 등장하는 예제 데이터라 선행 선언을 찾을 근거가 이 챕터 안에 없다.",
+      "suggestion": "TYPES 블록 뒤에 `TYPES tt_perf_alv TYPE STANDARD TABLE OF ts_perf_alv.`와 `DATA: gt_perf TYPE tt_perf_alv, ls_perf TYPE ts_perf_alv.` 같은 선언을 추가해 선언-사용 체인을 완결한다."
+    },
+    {
+      "seq": 2,
+      "file": "CH17-L10.md",
+      "quote": "WHERE concert_id = gv_conc.",
+      "category": "선언 누락(코드 완결성)",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "이 레슨은 '전체 골격'이라며 프로그램에 필요한 DATA를 top-level DATA: 블록(go_cont·go_grid·gt_booking·gt_fcat·gs_layout·gs_variant)으로 모아 제시하지만, FORM select_booking에서 쓰는 gv_conc는 그 목록에 없고 이 파일 안 어디에도 선언되지 않는다.",
+      "evidence": "화면 목업에 '공연번호 gv_conc: C001'로 등장하고 FORM select_booking의 WHERE concert_id = gv_conc.에서 사용되지만, '전체 골격' DATA: 블록에는 빠져 있다. Module Pool 화면필드 전역(CH16 패턴)으로 다른 레슨(예: 화면 정의)에 이미 선언돼 있을 가능성이 높아 확정 결함은 아니나, 이 레슨만 보면 선언 없이 쓰인다.",
+      "suggestion": "'전체 골격' DATA: 블록에 gv_conc(화면필드 전역, R11 Module Pool 예외에 따라 gv_ 접두어)를 함께 나열하거나, 주석으로 '화면 0100의 gv_conc 필드(이전 레슨에서 정의)'임을 명시해 완결성을 보강한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH17 코드 블록은 표준 클래스(CL_GUI_CUSTOM_CONTAINER·CL_GUI_ALV_GRID)·함수(LVC_FIELDCATALOG_MERGE) 시그니처와 EXCEPTIONS 이름이 정확하고, 네이밍 접두어(gv_/gs_/gt_ 전역, ls_/ls_fcat 등 로컬, ts_ 로컬 TYPES)도 실제 선언 위치와 일관되게 맞았다. classic/modern 경계(R6)·New Open SQL 위반도 없었다. 다만 L09의 gt_perf/ls_perf가 같은 레슨 안에서 선언 없이 쓰이는 점(확실), L10 '전체 골격'이 gv_conc 선언을 누락한 점(추정)을 발견해 경미한 보강을 권한다."
+  }
+}

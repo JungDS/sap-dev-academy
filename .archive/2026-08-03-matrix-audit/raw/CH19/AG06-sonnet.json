@@ -1,0 +1,47 @@
+{
+  "agent": "AG06",
+  "model": "sonnet",
+  "target": "CH19",
+  "persona_ack": "20년차 SAP ABAP 아키텍트로서 ECC~S/4HANA 경험을 바탕으로 CH19(Modern ABAP SQL) 레슨 8개와 챕터 메타를 기술 정확성·예시 적절성·위험한 생략·안티패턴 관점에서 검수했다.",
+  "method": "대상 .md 8개 파일과 _chapter.md를 전문 읽기 후, ABAP Open SQL 공식 문법(호스트 변수/식·strict 모드·inline 선언·SQL 내장함수·SELECT FROM @itab)에 대한 지식으로 코드 예제와 서술을 대조. 웹 검색 없이 기억에 의존했으며 불확실한 항목은 confidence=추정으로 표기.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH19-L01.md",
+      "quote": "공식 문서 기준으로 **공백으로 필드를 나열하는 옛 방식은 obsolete**(낡은 것) 쪽으로 밀려 있고",
+      "category": "사실 오류(추정)",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "ABAP 공식 키워드 문서가 Open SQL의 공백 구분 SELECT 필드 목록을 'obsolete(폐기 예정)'으로 공식 분류했다고 서술한다.",
+      "evidence": "ABAP 키워드 문서의 'Obsolete Language Elements'는 특정 구문(예: 옛 JOIN 없는 콤마-FROM 묵시적 조인, 일부 옛 단축형 등)을 명시적으로 나열하는 별도 카테고리다. 공백 구분 SELECT 필드 목록 자체가 이 공식 obsolete 목록에 포함된다는 기억은 없다 — 그보다는 '구식/비권장 스타일'에 가깝다고 기억한다(버전·릴리스에 따라 표현이 다를 수 있어 100% 단언은 못 함). 이 챕터 이전 CH01~18 전체가 이 공백 구분 SELECT를 표준으로 가르쳐 왔기 때문에, 만약 이 서술이 부정확하면 학습자가 '지금까지 배운 문법이 공식적으로 폐기 대상이었다'고 오해할 위험이 있어 파급력이 크다.",
+      "suggestion": "'obsolete'라는 공식 용어 대신 '구식 표기로 취급되어 modern 스타일로 권장되지 않는다' 정도로 완화하거나, 실제 ABAP 키워드 문서의 Obsolete Language Elements 섹션에서 해당 구문이 명시되어 있는지 F1 문서로 재확인 후 표기."
+    },
+    {
+      "seq": 2,
+      "file": "CH19-L05.md",
+      "quote": "`DATS_ADD_DAYS( fldate, 7 )` — ABAP SQL에선 **인자 두 개**(`date`, `days`)로 쓴다.",
+      "category": "사실 오류(추정)",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "SQL 내장 함수 DATS_ADD_DAYS가 항상 인자 두 개(date, days)만으로 호출된다고 단정한다.",
+      "evidence": "기억상 ABAP SQL의 DATS_ADD_DAYS/DATS_ADD_MONTHS 계열 함수는 월말 처리 등을 위한 세 번째 인자 special_handling을 시그니처에 포함하는 경우가 있어, 시스템/릴리스에 따라 두 인자 호출이 신택스 오류가 날 수 있다(선택적 인자인지 필수인지는 릴리스별로 다를 수 있어 확실히 단언은 못 함). 다만 같은 레슨의 '함수 릴리스 차이' 흔한 실수 항목이 'DATS_* 함수는 시스템 릴리스에 따라 없을 수도 있다'는 존재 여부만 언급하고, 인자 개수 불일치 가능성은 짚지 않는다.",
+      "suggestion": "예제 코드에 '시스템에 따라 DATS_ADD_DAYS( d, days, special_handling ) 처럼 세 번째 인자가 필요할 수 있다 — 신택스 체크·F1로 정확한 시그니처를 확인하라'는 한 줄을 덧붙이면 안전하다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH19 8개 레슨은 classic→modern Open SQL 전환(호스트 변수/식, @DATA 인라인 타깃, SQL CASE/CAST/COALESCE, 문자열·날짜 함수, SELECT FROM @itab)을 기술적으로 정확하고 일관되게 다룬다. strict 모드에서 INTO를 문장 맨 뒤에 두는 규칙, empty key 표준 테이블 생성, 동일 SELECT list 안 별칭 재사용 금지, SQL SUBSTRING의 1-기반 위치(ABAP off와의 +1 관계), COALESCE와 ABAP initial의 구분, LEFT OUTER JOIN에서 취소 조건을 ON/WHERE 중 어디에 두느냐에 따른 결과 차이(CH19-L08 실습) 등 핵심 함정을 정확히 짚었고, 검증(sy-subrc/sy-dbcnt) 습관도 챕터 전체에서 일관되게 강조된다. 다만 (1) 공백 구분 SELECT 필드 목록을 공식 'obsolete'로 단정한 서술과 (2) DATS_ADD_DAYS를 항상 2-인자로 단정한 서술은 릴리스·문서 세부사항에 대한 확신이 부족해 추정 등급으로 플래그했다 — 둘 다 웹 검색 없이 기억만으로는 확정할 수 없는 항목이라 표현을 완화하거나 F1/syntax check 확인 문구를 덧붙이는 경미한 보강을 권한다. 위험한 생략(COMMIT/잠금/권한검사)이나 안티패턴은 발견되지 않았다 — DML/lock/권한은 CH19-L08이 명시적으로 실습 범위 밖으로 밝혀 두었고, 나머지 레슨도 SELECT 전용 스코프를 벗어나지 않는다."
+  }
+}

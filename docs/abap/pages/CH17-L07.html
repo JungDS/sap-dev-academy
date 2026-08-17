@@ -57,7 +57,8 @@
 11
 12
 13
-14</pre><pre class="abap-editor__code"><code>go_grid-&gt;set_table_for_first_display(
+14
+15</pre><pre class="abap-editor__code"><code>go_grid-&gt;set_table_for_first_display(
   <span class="tok-kw">EXPORTING</span> is_layout       = gs_layout
             is_variant      = gs_variant
             i_save          = <span class="tok-str">'A'</span>
@@ -69,26 +70,35 @@
              <span class="tok-kw">OTHERS</span>                        = <span class="tok-num">4</span> ).
 
 <span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.
-  <span class="tok-kw">MESSAGE</span> <span class="tok-str">'ALV Grid를 처음 표시하지 못했습니다.'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'E'</span>.
+  <span class="tok-kw">MESSAGE</span> <span class="tok-str">'ALV Grid를 처음 표시하지 못했습니다.'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'S'</span>.
+  RETURN.                              <span class="tok-com">" 안내만 남기고 이 처리를 중단</span>
 <span class="tok-kw">ENDIF</span>.</code></pre></div></div>
+<blockquote class="cw">
+<p>⚠️ <strong>실패 안내는 <code>&#39;E&#39;</code>가 아니라 <code>&#39;S&#39;</code> + <code>RETURN</code>으로.</strong> 이 호출은 화면을 그리는
+<strong>PBO 경로</strong>에서 실행된다. 그런데 PBO에서 <code>TYPE &#39;E&#39;</code> 메시지는 보통의 오류 안내처럼
+동작하지 않고 <strong>종료 메시지처럼 프로그램을 통째로 끝내 버린다.</strong> 그래서 PBO 쪽
+코드에서는 상태 메시지(<code>&#39;S&#39;</code>)로 알리고 <code>RETURN</code>으로 빠져나오는 게 안전하다.</p>
+</blockquote>
 <blockquote>
 <p>💡 <strong><code>EXPORTING</code> vs <code>CHANGING</code>을 역할로 나눠 보자.</strong></p>
 <ul>
-<li><code>EXPORTING</code>(<code>is_layout</code>·<code>is_variant</code>·<code>i_save</code>) = <strong>어떻게 보일지</strong>(설정).</li>
-<li><code>CHANGING</code>(<code>it_outtab</code>·<code>it_fieldcatalog</code>) = <strong>무엇을 어떤 컬럼으로</strong> 그릴지(데이터·정의).</li>
+<li><code>EXPORTING</code>(<code>is_layout</code>·<code>is_variant</code>·<code>i_save</code>) = <strong>어떻게 보일지</strong>(설정). 호출하는 쪽이 <strong>넘겨주는 입력값</strong>이다.</li>
+<li><code>CHANGING</code>(<code>it_outtab</code>·<code>it_fieldcatalog</code>) = <strong>무엇을 어떤 컬럼으로</strong> 그릴지(데이터·정의). 그리드가 이 테이블들을 <strong>참조로 붙잡아 계속 쓰고, 필요하면 바꿀 수도 있어서</strong> <code>CHANGING</code>으로 받는다.
+이 구분은 <strong>이 메서드를 읽기 위한 암기법</strong>이지 모든 메서드의 일반 규칙이 아니다.
+<button class="term" type="button" data-term="파라미터">파라미터</button> 종류의 정식 의미는 <a href="CH21-L01.html">Global Class 생성과 객체</a>에서 배운다.</li>
 </ul>
 </blockquote>
 <ul>
 <li><code>it_outtab</code> — 보여줄 <button class="term" type="button" data-term="Internal Table">Internal Table</button>. <code>it_fieldcatalog</code> — 컬럼 정의(<a href="CH17-L04.html">Field Catalog 기초</a>).</li>
 <li><code>is_layout</code>·<code>is_variant</code> — 모양·저장(<a href="CH17-L05.html">Layout 기본 설정</a>·<a href="CH17-L06.html">Variant 기본 설정</a>).</li>
 </ul>
-<p>아래에서 컨테이너 → 그리드 → field catalog → <code>set_table_for_first_display</code> 4단계를 차례로
+<p>아래에서 컨테이너 → 그리드 → Field Catalog → <code>set_table_for_first_display</code> 4단계를 차례로
 밟아, 마지막에 표가 화면에 그려지는 걸 확인하자.</p>
-<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">데이터를 그리드로 띄워 정렬·합계를 눌러 보기</span><a class="embed__open" href="../../../embeds/abap/CH17-L07-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH17-L07-S01.html" loading="lazy" title="데이터를 그리드로 띄워 정렬·합계를 눌러 보기"></iframe></figure>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">그리드 첫 표시 4단계 (set_table_for_first_display)</span><a class="embed__open" href="../../../embeds/abap/CH17-L07-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH17-L07-S01.html" loading="lazy" title="그리드 첫 표시 4단계 (set_table_for_first_display)" style="height:600px"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
 <li><strong><code>EXPORTING</code>/<code>CHANGING</code> 섞기</strong> → 데이터·fieldcat은 <strong><code>CHANGING</code></strong>, 설정은 <code>EXPORTING</code>이다.</li>
-<li><strong>준비 없이 호출</strong> → <code>it_outtab</code>·<code>it_fieldcatalog</code>를 채우고 호출한다. 빈 fieldcat이면 표가 비어 보인다.</li>
+<li><strong>준비 없이 호출</strong> → <code>it_outtab</code>·<code>it_fieldcatalog</code>를 채우고 호출한다. 빈 Field Catalog면 표가 비어 보인다.</li>
 <li><strong>PBO마다 반복 호출</strong> → 이건 <strong>처음 한 번</strong>의 호출이다. 이미 표시된 뒤 데이터만 바뀌면
 다음 레슨의 refresh를 쓴다.</li>
 </ul>

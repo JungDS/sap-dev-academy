@@ -1,0 +1,112 @@
+{
+  "agent": "AG01",
+  "model": "opus",
+  "target": "CH20",
+  "persona_ack": "나는 '은서'다. 개발·전공 경험이 전혀 없는 24세 문과 출신 입문자로, 이 사이트로 ABAP을 처음 공부한다. 모르는 단어가 나오면 그 자리에서 멈추는 성격이라, CH20-L01부터 L07까지 순서대로 처음 읽는 사람으로서 통독하며 멈춘 곳·생략·단절·과부하만 기록했다. 내가 따로 아는 SQL 지식으로 빈틈을 메꾸지 않았고, 그 자리(또는 같은 챕터 앞 레슨)에 풀이가 없으면 막힌 것으로 적었다.",
+  "method": "Read 도구로 대상 8개 파일(_chapter.md, CH20-L01~L07.md) 전문을 순서대로 통독. 도구 사용은 대상 파일 읽기에 한정. 브라우저 미리보기(http://localhost:8143)는 사용하지 않음 — 본 감사는 MD 원문 통독 과제이고 렌더링 결과가 아닌 문장·표·코드의 이해 가능성을 판정했다. 웹 검색·외부 네트워크·타 감사 산출물 열람 없음.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L07.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH20/CH20-L02.md",
+      "quote": "> ⚠️ **단순화 주의** — 여기서는 CTE 연습을 위해 **회차를 접고 공연 단위로 합산**했다.",
+      "category": "멈춘 곳",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "CTE를 처음 배우는 문단 한가운데서 '회차'라는 새 단위와 '정본 잔여석 계산은 회차별'이라는 정정이 갑자기 나와, 방금 읽은 예제가 맞는 건지 틀린 건지 판단이 안 된다.",
+      "evidence": "이 챕터(CH20-L01~L02) 어디에도 '회차'가 무엇인지, 공연과 회차가 어떻게 다른지에 대한 풀이가 없다. '정원은 공연 단위, 소진은 회차별'이라는 문장은 두 단위의 차이를 이미 아는 사람에게만 읽힌다. 나는 방금 배운 `+booked` 예제가 '연습용 가짜'라는 말로 읽혀서, 이 코드를 외워야 하는지 잊어야 하는지 몰라 한참 멈췄다. 게다가 이 정정을 확인하려면 CH10-L07로 되돌아가야 해서 CTE 학습 흐름이 끊긴다.",
+      "suggestion": "'회차(한 공연이 여러 날/시간에 나뉘어 열리는 각 회)' 같은 인라인 한 줄 풀이를 붙이고, 콜아웃 톤을 '이 예제는 틀렸다'가 아니라 '지금은 CTE 문법에 집중하려고 공연 단위로 단순화했다. 실제 잔여석 규칙은 나중에 다시 본다'로 바꿔 학습자가 지금 무엇을 붙잡아야 하는지 명확히 한다."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH20/CH20-L03.md",
+      "quote": "WHERE c~concert_id IN ( SELECT concert_id",
+      "category": "멈춘 곳",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "바로 앞 EXISTS 예제와 챕터 전체가 '취소 예약은 빼야 한다'고 강조하는데, IN subquery 예제만 `status <> 'C'` 조건이 없어서 일부러 뺀 건지 실수인지 알 수 없다.",
+      "evidence": "같은 레슨의 EXISTS 예제는 `AND b~status <> 'C'`를 쓰고, 아래 '어떻게 확인' 표도 `status <> 'C'` 존재 여부로 판정한다. 그런데 IN 예제는 `WHERE seats >= 3`만 있고 취소 조건이 없으며, 설명 문장도 '3석 이상 예약이 있는 공연 ID 목록에 드는 공연만 남는다'로 취소 얘기를 하지 않는다. CH20-L07의 '흔한 실수'는 '취소 조건 누락'을 대표 실수로 못 박아서, 나는 이 예제가 그 실수를 저지른 건지 헷갈려 두 번 다시 읽었다.",
+      "suggestion": "IN 예제에도 `AND status <> 'C'`를 넣어 챕터 전체 조건을 일치시키거나, 넣지 않을 거라면 '여기선 IN 문법에만 집중하려고 취소 조건을 생략했다'는 한 줄을 붙인다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH20/CH20-L04.md",
+      "quote": "| 예약 있는 공연 B | C001, C003, C004 |",
+      "category": "멈춘 곳",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'전체 공연 A'가 C001~C003인데 '예약 있는 공연 B'에 A에 없는 C004가 들어 있어서, '전체'라는 말과 모순돼 표를 이해하는 데 걸렸다.",
+      "evidence": "바로 위 표에서 A를 '전체 공연 A | C001, C002, C003'이라고 정의했다. 전체 공연 목록에 C004가 없는데 C004에 예약이 있다는 건, 존재하지 않는 공연에 예약이 걸렸다는 뜻이 되어 업무적으로 말이 안 된다. UNION 결과에 C004가 나오는 걸 보여주려고 일부러 넣은 것 같긴 한데, 그 의도가 어디에도 적혀 있지 않아 '내가 앞 표를 잘못 읽었나' 하고 되돌아가 확인했다.",
+      "suggestion": "A를 '전체 공연'이 아니라 '올해 공연 A' 같은 부분집합 이름으로 바꾸거나, C004를 A에도 추가하고 대신 B에서 빠지는 원소로 대비를 만든다. 그대로 둘 거면 'B에만 있는 C004는 과거 공연이라 A 목록엔 없다' 같은 한 줄을 붙인다."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH20/CH20-L04.md",
+      "quote": "| `A UNION DISTINCT B` | C001, C002, C003, C004 |",
+      "category": "단절",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "`UNION DISTINCT`라는 표기가 검증 표에서 처음 나오는데, 바로 위 문법 표에는 `UNION`·`UNION ALL`만 있어서 이게 세 번째 문법인지 `UNION`의 다른 이름인지 알 수 없다.",
+      "evidence": "'무엇 — 합 · 교 · 차' 표는 `UNION`(중복 제거하고 합침(기본이 DISTINCT))·`UNION ALL`·`INTERSECT DISTINCT`·`EXCEPT DISTINCT` 네 개만 소개한다. 그런데 '어떻게 확인' 표에는 배운 적 없는 `A UNION DISTINCT B`가 나온다. '기본이 DISTINCT'라는 괄호를 보고 유추할 수는 있지만, 유추가 필요하다는 것 자체가 멈춤이었고 '`DISTINCT`를 써도 되고 안 써도 되나?'라는 질문에 답이 없다.",
+      "suggestion": "문법 표의 `UNION` 항목을 '`UNION` (= `UNION DISTINCT`)'로 적어 두 표기가 같은 것임을 먼저 밝힌다."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH20/CH20-L05.md",
+      "quote": "| booking_id | concert_id | seats |",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "예제 코드는 `WHERE status <> 'C'`로 걸러내는데 바로 아래 입력 표에는 `status` 컬럼 자체가 없어서, 표만 보고는 코드가 무엇을 걸러냈는지 손으로 따라갈 수 없다.",
+      "evidence": "'무엇 — OVER · PARTITION BY' 코드에 `WHERE status <> 'C'`가 있고, 이어지는 입력(`zbooking`) 표는 booking_id·concert_id·seats 세 컬럼뿐이다. 이 레슨은 '`GROUP BY`와의 차이는 표로 확인해야 한다'며 표 대조를 학습 방법으로 시키는데, 정작 그 표에 조건 컬럼이 없다. CH20-L02는 같은 상황에서 입력 표에 status 컬럼을 넣어 취소 1건이 빠지는 걸 눈으로 보게 해 줬는데, L05에선 그 확인 경로가 끊긴다.",
+      "suggestion": "입력 표에 `status` 컬럼을 추가하고(예: 취소 행 1건 포함) 그 행이 window 결과에서 빠지는 것까지 결과 표로 보여준다. 또는 예제 코드에서 `WHERE`를 빼서 표와 코드를 일치시킨다."
+    },
+    {
+      "seq": 6,
+      "file": "content/abap/CH20/CH20-L05.md",
+      "quote": "`RANK`는 같은 값이 있으면 다음 순위를 **건너뛴다**(1, 1, 3). `DENSE_RANK`는 **촘촘히 이어 간다**(1, 1, 2).",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "RANK와 DENSE_RANK의 차이를 (1, 1, 3) / (1, 1, 2)라는 괄호 숫자만으로 설명해서, 어떤 입력 데이터에서 왜 그 숫자가 나오는지 재구성할 수 없다.",
+      "evidence": "이 레슨은 앞선 SUM·ROW_NUMBER는 입력 표 → GROUP BY 결과 표 → Window 결과 표 세 단계로 친절히 보여줬는데, 순위 함수만 결과 표가 하나도 없다. 예제 코드는 `PARTITION BY concert_id ORDER BY seats DESCENDING`인데, 앞서 나온 입력 데이터(C001의 seats 2·3, C002의 seats 4)에는 같은 값이 없어서 '같은 값이 있으면'이라는 조건 자체를 대입해 볼 수가 없다. 결국 '건너뛴다/이어 간다'는 문장을 통째로 외우는 수밖에 없었다.",
+      "suggestion": "동점 좌석(예: C001에 seats 3이 두 건)이 들어간 입력 표를 두고, seat_rank·dense_rank 두 컬럼이 붙은 결과 표를 나란히 보여준다. 다른 절과 같은 '입력 표 → 결과 표' 형식을 유지하면 된다."
+    },
+    {
+      "seq": 7,
+      "file": "content/abap/CH20/CH20-L05.md",
+      "quote": "## 순위 함수 — RANK · DENSE_RANK 🏅",
+      "category": "과부하",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "한 레슨에서 `OVER`·`PARTITION BY`·`SUM OVER`·`ROW_NUMBER`·`RANK`·`DENSE_RANK`가 연달아 나와, 앞의 window 개념이 손에 익기 전에 순위 함수 세 개가 더 얹힌다.",
+      "evidence": "'무엇' 절에서 OVER와 PARTITION BY라는 새 개념 두 개 + ROW_NUMBER를 배우고, 표 대조로 GROUP BY와의 차이를 막 이해한 직후 곧바로 '순위 함수' 절에서 RANK·DENSE_RANK가 추가된다. 게다가 그 절에는 결과 표가 없어(seq 6) 새 함수를 확인할 수단도 없다. 반면 다른 레슨(L02·L03·L04)은 개념 1~2개로 끝나서 이 레슨만 유독 무거웠다. 체험 임베드도 순위가 아니라 'GROUP BY vs PARTITION · 순번' 쪽에 걸려 있다.",
+      "suggestion": "순위 함수 절을 별도 레슨으로 분리하거나, 최소한 임베드/결과 표를 붙여 확인 수단을 주고 '지금은 RANK와 DENSE_RANK의 차이 하나만 기억하면 된다'로 학습 부담을 명시적으로 좁혀 준다."
+    },
+    {
+      "seq": 8,
+      "file": "content/abap/CH20/CH20-L07.md",
+      "quote": "SELECT c~concert_id, c~artist, c~capacity,",
+      "category": "멈춘 곳",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "실습 데이터로 준 `zconcert` 표에는 `artist` 컬럼이 없고 `title`이 있는데, 과제 1·2 코드는 `c~artist`를 조회한다. 실습을 따라 하려다 여기서 완전히 막혔다.",
+      "evidence": "'실습 데이터' 절의 `zconcert` 표 헤더는 `| concert_id | title | capacity |`이고 값은 안유진·ABAP Trio·UI5 Night·Closed Show다. 그런데 과제 1은 `SELECT c~concert_id, c~artist, c~capacity`, 과제 2는 `SELECT c~concert_id, c~artist`로 `artist`를 읽는다. 게다가 두 과제의 '예상 결과' 표에는 artist도 title도 아예 없어서(과제 1은 concert_id·booked·remaining) 어느 쪽이 맞는지 대조할 수도 없다. 실제로 이 코드를 그대로 치면 없는 컬럼을 읽는 셈이라, 나 같은 입문자는 '내가 표를 잘못 봤나'를 몇 번 확인하다 실습을 포기하게 된다. 같은 `c~artist`는 CH20-L02 예제에도 나오는데, 거기선 zconcert 표가 제시되지 않아 이 챕터에서 컬럼 이름이 확정되는 곳은 L07의 이 표뿐이다.",
+      "suggestion": "코드의 `c~artist`를 `c~title`로 바꾸거나 실습 데이터 표의 컬럼명을 `artist`로 통일한다(CH20-L02 예제도 함께 맞춘다). 더불어 예상 결과 표에도 공연 이름 컬럼을 넣어 학습자가 코드와 결과를 1:1로 대조할 수 있게 한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "전체 흐름은 입문자가 따라가기 좋았다. 특히 L05의 '입력 표 → GROUP BY 결과(행이 접힘) → Window 결과(상세 행 유지)' 3단 표 대조는 GROUP BY와 window의 차이를 한눈에 이해시켜 준 최고의 장치였고, L01의 '네 묶음 도구' 표(도구 → 한 줄 정의 → 대표 질문)와 각 레슨 끝의 '다음 불편' 연결도 지도처럼 읽혀 길을 잃지 않았다. 다만 실습 레슨 L07에서 제시된 zconcert 표(title)와 코드(c~artist)가 어긋나 실습을 그대로 따라 할 수 없는 점이 가장 큰 걸림돌이고(seq 8), L05는 입력 표에 status 컬럼이 없고 RANK/DENSE_RANK만 결과 표 없이 괄호 숫자로 처리돼 다른 절의 친절한 표 대조 방식이 끊긴다(seq 5·6). 그 밖에는 표기 불일치·예시 데이터의 사소한 모순 수준이라, 재집필이 아니라 표와 코드의 정합성을 맞추는 경미 수정으로 충분해 보인다."
+  }
+}

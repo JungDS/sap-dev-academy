@@ -1,0 +1,698 @@
+{
+  "target": "CH17",
+  "inputs": 28,
+  "missing": [],
+  "clusters": [
+    {
+      "cluster_id": "CH17-C001",
+      "file": "content/abap/CH17/CH17-L10.md",
+      "claim": "종합 실습의 '전체 골격' DATA 선언 블록(go_cont·go_grid·gt_booking·gt_fcat·gs_layout·gs_variant 6개)에 gv_conc가 빠져 있는데, FORM select_booking의 WHERE 절과 화면 도식('공연번호 gv_conc: C001')은 이 변수를 사용한다. 골격을 그대로 옮겨 적으면 미선언 변수로 활성화가 차단되고, 화면 입력 필드와 어떻게 묶이는지도 설명이 없다.",
+      "severity": "높음",
+      "confidence": "확실",
+      "supporters": ["AG01-opus", "AG03-opus", "AG06-opus", "AG09-opus", "AG09-sonnet", "AG09-gpt-5.6-sol", "AG09-gemini-3.6-flash-high"],
+      "conflict": false,
+      "quotes": ["WHERE concert_id = gv_conc.", "DATA: go_cont    TYPE REF TO cl_gui_custom_container,\n      go_grid    TYPE REF TO cl_gui_alv_grid,\n      gt_booking TYPE STANDARD TABLE OF zbooking,"]
+    },
+    {
+      "cluster_id": "CH17-C002",
+      "file": "content/abap/CH17/CH17-L10.md",
+      "claim": "종합 실습 골격은 select_booking을 build_alv 안에서 최초 1회만 호출하고, 이후 PBO는 refresh_alv(refresh_table_display)만 실행한다. 재조회 PAI 경로가 없어 화면 목업의 공연번호 입력·[조회] 버튼을 눌러도 새 조건의 데이터가 반영되지 않으며, L08이 가르친 '데이터 변경 → 화면 갱신' 고리가 코드로 닫히지 않는다.",
+      "severity": "높음",
+      "confidence": "확실",
+      "supporters": ["AG01-gpt-5.6-sol", "AG03-opus", "AG03-gpt-5.6-sol", "AG05-gpt-5.6-sol", "AG06-gpt-5.6-sol", "AG06-gemini-3.6-flash-high"],
+      "conflict": false,
+      "quotes": ["MODULE status_0100 OUTPUT.\n  IF go_grid IS INITIAL.\n    PERFORM build_alv.        \" 처음 한 번 — 조립\n  ELSE.\n    PERFORM refresh_alv.      \" 이후 — 갱신만\n  ENDIF.\nENDMODULE."]
+    },
+    {
+      "cluster_id": "CH17-C003",
+      "file": "content/abap/CH17/CH17-L09.md",
+      "claim": "TYPES ts_perf_alv로 행 타입만 정의한 뒤, 그 타입으로 만든 gt_perf(내부 테이블)와 ls_perf(작업영역)의 DATA 선언 없이 곧바로 LOOP·MODIFY에 사용한다. 제시 코드만으로는 활성화가 차단되고, 타입 정의와 변수 선언의 연결 흐름도 끊긴다.",
+      "severity": "높음",
+      "confidence": "확실",
+      "supporters": ["AG01-opus", "AG01-gemini-3.6-flash-high", "AG09-opus", "AG09-sonnet", "AG09-gpt-5.6-sol", "AG09-gemini-3.6-flash-high"],
+      "conflict": false,
+      "quotes": ["LOOP AT gt_perf INTO ls_perf.", "       END OF ts_perf_alv.\n\nLOOP AT gt_perf INTO ls_perf."]
+    },
+    {
+      "cluster_id": "CH17-C004",
+      "file": "content/abap/CH17/CH17-L09.md",
+      "claim": "L01～L08이 일관되게 gt_booking(ZBOOKING)으로 진행하다가 L09에서 예고 없이 ZPERF·ZCONCERT를 섞은 새 집계 데이터 모델(ts_perf_alv/gt_perf)로 전환한다. booked·capacity를 어떻게 채우는지(조인·집계)가 주석 한 줄로만 처리돼 예제를 재현할 수 없고, 색상 학습과 무관한 데이터 준비 부담이 인지부하를 키운다.",
+      "severity": "높음",
+      "confidence": "확실",
+      "supporters": ["AG01-sonnet", "AG01-gpt-5.6-sol", "AG05-opus", "AG05-sonnet", "AG05-gpt-5.6-sol"],
+      "conflict": false,
+      "quotes": ["capacity   TYPE zconcert-capacity,  \" 정원은 공연 마스터(ZCONCERT)에\n         booked     TYPE i,                  \" 예약 좌석 합계(ZBOOKING에서 집계)"]
+    },
+    {
+      "cluster_id": "CH17-C005",
+      "file": "content/abap/CH17/CH17-L06.md",
+      "claim": "Variant 레슨(L06)에서 다음 레슨(L07)의 주제인 set_table_for_first_display 전체 호출(EXPORTING·CHANGING 5개 파라미터)이 설명·[선행 사용] 표시 없이 완성형으로 먼저 노출된다. `->` 메서드 호출도 챕터 내 첫 등장이라 게이팅이 흔들리고, L07 '드디어 화면에'라는 클라이맥스가 한 레슨 앞에서 소비된다.",
+      "severity": "높음",
+      "confidence": "확실",
+      "supporters": ["AG01-opus", "AG01-sonnet", "AG05-opus", "AG05-sonnet", "AG05-gpt-5.6-sol"],
+      "conflict": false,
+      "quotes": ["go_grid->set_table_for_first_display(\n  EXPORTING is_variant = gs_variant\n            i_save     = 'A'\n            is_layout  = gs_layout"]
+    },
+    {
+      "cluster_id": "CH17-C006",
+      "file": "content/abap/CH17/CH17-L03.md",
+      "claim": "'행 타입(ZBOOKING)이 Data Element로 타입팅돼 있으면'이라는 서술이 DDIC 타입 체계를 잘못 전달한다. ZBOOKING은 테이블/구조이고 Data Element는 개별 필드의 의미·기술 속성을 정의하는 객체인데 둘을 같은 층위로 섞었으며, '타입팅돼'라는 번역투 조어도 입문자 가독성을 해친다.",
+      "severity": "높음",
+      "confidence": "확실",
+      "supporters": ["AG01-gpt-5.6-sol", "AG03-gpt-5.6-sol", "AG04-gpt-5.6-sol", "AG04-gemini-3.6-flash-high", "AG06-gpt-5.6-sol"],
+      "conflict": false,
+      "quotes": ["- 행 타입(`ZBOOKING`)이 [[Data Element]]로 타입팅돼 있으면 다음 레슨의 Field Catalog가\n  컬럼 제목·타입을 **자동으로** 끌어 쓴다."]
+    },
+    {
+      "cluster_id": "CH17-C007",
+      "file": "content/abap/CH17/CH17-L03.md",
+      "claim": "SELECT 예제의 WHERE 조건 변수 gv_conc가 선언도 출처 설명도 없이 처음 등장한다. 이 값이 화면 입력 필드라는 사실은 7개 레슨 뒤 L10의 화면 도식에서야 짐작할 수 있고, 챕터 전체 코드 블록 어디에도 선언이 없어 블록을 그대로 붙여 넣으면 활성화되지 않는다.",
+      "severity": "높음",
+      "confidence": "확실",
+      "supporters": ["AG01-opus", "AG05-opus", "AG09-opus", "AG09-gpt-5.6-sol"],
+      "conflict": false,
+      "quotes": ["WHERE concert_id = gv_conc.       \" 이 공연의 예매만"]
+    },
+    {
+      "cluster_id": "CH17-C008",
+      "file": "content/abap/CH17/CH17-L07.md",
+      "claim": "[상반 판정] AG06-sonnet은 L07·L08·L10의 go_grid->method( ... EXCEPTIONS ... ) 형태가 ABAP 문법상 허용되지 않아(EXCEPTIONS는 CALL METHOD 문에서만 유효) 그대로 입력하면 구문 검사를 통과하지 못하는 활성화 차단급 오류라고 주장한다(3개 레슨 반복). 반면 AG09-opus는 같은 코드 블록들을 정적 검사하고 '표준 API 시그니처와 예외 지정이 모두 실제 명세와 맞고 구조 오류가 발견되지 않았다'고 총평해 판정이 정면으로 갈린다.",
+      "severity": "높음",
+      "confidence": "추정",
+      "supporters": ["AG06-sonnet", "AG06-sonnet", "AG06-sonnet"],
+      "conflict": true,
+      "quotes": ["  EXCEPTIONS invalid_parameter_combination = 1\n             program_error                 = 2\n             too_many_lines                = 3\n             OTHERS                        = 4 ).", "  EXCEPTIONS finished = 1\n             OTHERS   = 2 )."]
+    },
+    {
+      "cluster_id": "CH17-C009",
+      "file": "embeds/abap/CH17-L04-S01.html",
+      "claim": "L04 위젯에서 outputlen(너비) 입력이 미리보기에 전혀 반영되지 않는다. 안내문·본문·완료 메시지는 모두 '너비가 바뀐다'고 말하지만, 엔진(fieldcat-editor.js)이 outlen 값을 저장만 하고 renderPreview에서 참조하지 않아 실측(8→80→1 변경)에서도 th 폭이 동일했다. Field Catalog 실습의 두 축 중 하나가 죽어 있다.",
+      "severity": "높음",
+      "confidence": "확실",
+      "supporters": ["AG02-opus", "AG02-gpt-5.6-sol"],
+      "conflict": false,
+      "quotes": ["컬럼 <b>제목(coltext)</b>·<b>너비(outputlen)</b>를 바꾸면 왼쪽 <code>gt_booking</code> 미리보기 헤더가 즉시 바뀝니다."]
+    },
+    {
+      "cluster_id": "CH17-C010",
+      "file": "embeds/abap/CH17-L09-S01.html",
+      "claim": "L09 위젯은 '③ 표시'를 한 번 누른 뒤에는 점유 값을 바꾸는 즉시 색 코드 재계산과 재색칠이 자동으로 일어난다. 본문이 가르치는 '색 코드 작성 후 display/refresh' 절차와 L08의 '데이터 변경≠화면 갱신' 원칙을 위젯이 스스로 무효화해 정반대 인상을 준다.",
+      "severity": "높음",
+      "confidence": "확실",
+      "supporters": ["AG02-opus", "AG02-gpt-5.6-sol"],
+      "conflict": false,
+      "quotes": ["<button type=\"button\" data-act=\"display\">③ 표시</button>"]
+    },
+    {
+      "cluster_id": "CH17-C011",
+      "file": "content/abap/CH17/CH17-L10.md",
+      "claim": "PBO에서 호출되는 FORM(display_grid·build_fieldcat) 안에 MESSAGE ... TYPE 'E'를 두는 것은 Dialog 프로그램의 대표 금기 패턴이다. PBO의 E 메시지는 런타임 오류나 화면 반복 호출로 이어지며, 같은 형태가 L04·L07 스니펫에도 반복돼 학습자가 골격을 그대로 옮기면 첫 실행에서 막힌다.",
+      "severity": "높음",
+      "confidence": "확실",
+      "supporters": ["AG06-opus"],
+      "conflict": false,
+      "quotes": ["MESSAGE 'ALV Grid를 처음 표시하지 못했습니다.' TYPE 'E'."]
+    },
+    {
+      "cluster_id": "CH17-C012",
+      "file": "content/abap/CH17/CH17-L07.md",
+      "claim": "CH17에서 L07·L10 두 곳만 ::embed 지시자의 세 번째 인자(높이)가 빠져 '제목 | 높이::' 규격을 이탈한다(나머지 8개는 560～620 지정). 제목도 명사형 위젯명이 아니라 지시문 어투라 다른 레슨과 형식이 어긋나며, 하필 챕터의 완성 순간(L07)과 종합 실습(L10)이라 렌더 높이가 어긋나면 영향이 크다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG01-opus", "AG02-opus", "AG03-opus", "AG06-opus", "AG09-opus", "AG09-opus"],
+      "conflict": false,
+      "quotes": ["::embed CH17-L07-S01 | 데이터를 그리드로 띄워 정렬·합계를 눌러 보기::", "::embed CH17-L10-S01 | 데이터→그리드 변환과 정렬·합계를 직접 눌러 보기::"]
+    },
+    {
+      "cluster_id": "CH17-C013",
+      "file": "content/abap/CH17/CH17-L05.md",
+      "claim": "gs_layout-sel_mode = 'A'에서 'A'가 어떤 선택 방식인지 본문·표 어디에도 없어 학습자가 매직 문자를 이해 없이 복사하게 된다. 아키텍트 판정으로는 'A'가 행뿐 아니라 컬럼(셀) 선택까지 허용하는 값이라 '한 행만/여러 행 선택 기준'이라는 표 설명 자체도 부정확할 수 있다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG01-opus", "AG01-sonnet", "AG03-opus", "AG06-opus", "AG06-sonnet"],
+      "conflict": false,
+      "quotes": ["gs_layout-sel_mode   = 'A'.          \" 행 선택 모드", "| `sel_mode` | 행 선택 방식 | 한 행만/여러 행 선택 기준 |"]
+    },
+    {
+      "cluster_id": "CH17-C014",
+      "file": "content/abap/CH17/CH17-L07.md",
+      "claim": "EXPORTING=어떻게 보일지 / CHANGING=무엇을 그릴지라는 역할 암기법이 파라미터 방향(입력 vs 입출력)의 실제 문법 의미를 가린다. 경력자는 자기 지식과 충돌하고(일반 export=출력과 방향 반대), ALV가 테이블·카탈로그를 참조로 붙잡고 수정할 수 있어 CHANGING인 실제 이유가 설명되지 않아 다른 메서드에 일반화하면 오개념이 된다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG03-opus", "AG03-sonnet", "AG03-sonnet", "AG03-gpt-5.6-sol", "AG03-gemini-3.6-flash-high"],
+      "conflict": false,
+      "quotes": ["`CHANGING`(`it_outtab`·`it_fieldcatalog`) = **무엇을 어떤 컬럼으로** 그릴지(데이터·정의)."]
+    },
+    {
+      "cluster_id": "CH17-C015",
+      "file": "embeds/abap/CH17-L10-S01.html",
+      "claim": "종합 실습 위젯의 1단계 SELECT 코드가 본문에 없는 변수명 gv_concert를 쓴다. 본문 L03·L10과 화면 도식은 일관되게 gv_conc이므로, 코드를 그대로 베끼는 학습자가 본문 골격과 위젯 코드를 결합하면 선언되지 않은 변수를 참조하게 된다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG02-opus", "AG02-sonnet", "AG02-gpt-5.6-sol", "AG02-gemini-3.6-flash-high"],
+      "conflict": false,
+      "quotes": ["WHERE concert_id = gv_concert."]
+    },
+    {
+      "cluster_id": "CH17-C016",
+      "file": "content/abap/CH17/CH17-L09.md",
+      "claim": "색이 보이는 조건을 '네 가지'로 정리했지만, 색 코드 컬럼(ROWCOLOR)을 Field Catalog에서 no_out/tech로 숨기는 필수 단계가 빠져 있다. 그대로 실행하면 'C610' 값이 든 정체불명의 컬럼이 사용자 화면에 그대로 노출되며, 프로그램 로컬 타입의 Field Catalog를 어떻게 만드는지도 안내가 없다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG01-opus", "AG03-opus", "AG06-opus", "AG09-opus"],
+      "conflict": false,
+      "quotes": ["색이 화면에 뜨려면 **네 가지**가 맞아야 한다. 하나라도 빠지면 색이 보이지 않는다.", "rowcolor   TYPE c LENGTH 4,         \" ← 색 코드 컬럼"]
+    },
+    {
+      "cluster_id": "CH17-C017",
+      "file": "content/abap/CH17/CH17-L10.md",
+      "claim": "종합 실습 과제 1(매진 회차 행 색상)은 제시된 골격 그대로는 수행할 수 없다. gt_booking이 DDIC 테이블 구조(zbooking) 그대로라 색 컬럼을 더할 수 없고 merge도 DDIC 기준이라 색 컬럼이 카탈로그에 생기지 않는데, 출력 구조를 교체하는 방법은 챕터 어디에도 안내되지 않아 '조각을 하나로 모은다'는 약속과 달리 색 통합이 학습자 몫으로 남는다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG01-gpt-5.6-sol", "AG05-opus", "AG05-gpt-5.6-sol", "AG06-opus"],
+      "conflict": false,
+      "quotes": ["1. **매진 회차 행 색상** — [행 색상 기초](CH17-L09.html)의 `info_fname`에 색 컬럼을 더한다.", "gt_booking TYPE STANDARD TABLE OF zbooking,"]
+    },
+    {
+      "cluster_id": "CH17-C018",
+      "file": "content/abap/CH17/CH17-L01.md",
+      "claim": "'Control Framework'가 이름 구분 표와 '흔한 실수'에 두 번 등장하는데 챕터 어디에도 한 줄 풀이가 없다. 입문자는 컨테이너·그리드를 PBO마다 새로 만들면 왜 오류가 나는지 이유를 모른 채 암기하게 된다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG01-opus", "AG01-sonnet", "AG04-opus"],
+      "conflict": false,
+      "quotes": ["| `CL_GUI_CUSTOM_CONTAINER` | SAP 표준 클래스 | 화면 영역과 Control Framework를 잇는 **클래스** |"]
+    },
+    {
+      "cluster_id": "CH17-C019",
+      "file": "content/abap/CH17/CH17-L06.md",
+      "claim": "i_save = 'A'를 '저장 허용(교육용)'이라고만 설명하고 값 종류(공백/U/X/A)를 알려주지 않아, '흔한 실수'가 요구하는 저장 범위(사용자/전역) 판단을 할 수가 없다. 'A'는 전역 Variant 저장까지 여는 가장 넓은 값이라 같은 레슨의 전역 Variant 경고와 예제가 어긋나고, 직전 레슨 sel_mode의 'A'와 글자만 같아 혼동을 더한다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG01-opus", "AG01-gpt-5.6-sol", "AG06-opus"],
+      "conflict": false,
+      "quotes": ["- display 호출에서 `is_variant`와 `i_save`를 함께 넘긴다(`i_save = 'A'` = 저장 허용 — 교육용)."]
+    },
+    {
+      "cluster_id": "CH17-C020",
+      "file": "embeds/abap/CH17-L10-S01.html",
+      "claim": "종합 실습(L10) 위젯이 L07 위젯과 같은 엔진·같은 단계 누적 구조의 재탕이라, 이 레슨에서만 새로 배우는 것(FORM 책임 분리, go_grid IS INITIAL 가드, 두 번째 PBO부터 refresh, Variant 전달)을 하나도 체험할 수 없다. 완성 체크리스트의 'refresh 분기' 확인 조작도 없어 헛체험에 가깝다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG02-opus", "AG02-gpt-5.6-sol", "AG05-opus"],
+      "conflict": false,
+      "quotes": ["<p class=\"lead\">CH17의 조각(컨테이너·그리드·Field Catalog·Layout·display)을 <b>하나의 골격</b>으로 모읍니다."]
+    },
+    {
+      "cluster_id": "CH17-C021",
+      "file": "content/abap/CH17/CH17-L10.md",
+      "claim": "FORM(Subroutine)을 '함수'라고 부른다. 같은 레슨에 CALL FUNCTION(Function Module)이 나란히 나오기 때문에 입문자는 FORM과 Function을 같은 것으로 오해하기 쉽고, 타 언어 경력자에게도 잘못된 추상화 단위 매핑을 심는다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG03-gpt-5.6-sol", "AG04-opus", "AG04-gpt-5.6-sol"],
+      "conflict": false,
+      "quotes": ["**FORM으로 나누면 조립 순서가\n함수 이름에 드러난다.**"]
+    },
+    {
+      "cluster_id": "CH17-C022",
+      "file": "content/abap/CH17/_chapter.md",
+      "claim": "챕터 intro와 본문이 'ALV를 화면에 박아 풍부하게 제어하고 싶다' 한 문장으로 동일해 챕터 카드 단계에서 동기를 설득하지 못한다. SALV의 한계와 화면 영역 배치라는 실제 불편, 완성 후 보상은 L01에만 있어 챕터 레벨로 올라오지 않았다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG05-opus", "AG05-sonnet", "AG05-gpt-5.6-sol"],
+      "conflict": false,
+      "quotes": ["ALV를 화면에 박아 풍부하게 제어하고 싶다."]
+    },
+    {
+      "cluster_id": "CH17-C023",
+      "file": "content/abap/CH17/CH17-L01.md",
+      "claim": "CL_GUI_CUSTOM_CONTAINER·CL_GUI_ALV_GRID의 CREATE OBJECT에 EXCEPTIONS 처리가 챕터 전체에 한 번도 없고, 화면 이탈 시 free/CLEAR 정리도 다루지 않는다. 이름 불일치 시 '연결되지 않는다'는 서술과 달리 실제로는 처리되지 않은 예외로 덤프가 날 수 있어 서술과 동작이 어긋난다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG06-opus", "AG06-sonnet"],
+      "conflict": false,
+      "quotes": ["CREATE OBJECT go_cont\n  EXPORTING container_name = 'CONT100'."]
+    },
+    {
+      "cluster_id": "CH17-C024",
+      "file": "content/abap/CH17/CH17-L02.md",
+      "claim": "SALV 비교표가 SALV를 '단독 목록 화면' 전용으로 단정하지만, CL_SALV_TABLE도 컨테이너를 지정해 Dynpro 영역에 임베드할 수 있고 이벤트·색상도 지원한다. Grid ALV의 실제 차이는 배치 가능 여부가 아니라 편집·이벤트·세밀 제어 수준이라 이 표대로 외우면 오개념이 된다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG03-gpt-5.6-sol", "AG06-opus"],
+      "conflict": false,
+      "quotes": ["| 화면 배치 | 단독 목록 화면 | **Dynpro 안 특정 영역**에 배치 |"]
+    },
+    {
+      "cluster_id": "CH17-C025",
+      "file": "content/abap/CH17/CH17-L06.md",
+      "claim": "'Variant'라는 이름의 동음이의(선택화면 Variant, VB/COM의 가변형 타입, 사용자 UI에서 'Layout'으로 불리는 Display Variant)를 한 번도 갈라 주지 않는다. 본문은 '데이터 저장이 아니다'라는 혼동만 막아, 다른 Variant 개념을 아는 학습자가 오인할 여지가 남는다.",
+      "severity": "중간",
+      "confidence": "추정",
+      "supporters": ["AG03-opus", "AG03-sonnet"],
+      "conflict": false,
+      "quotes": ["direction: 사용자가 표시 방식(컬럼 순서·필터)을 저장·재사용하는 Display Variant.", "DATA gs_variant TYPE disvariant."]
+    },
+    {
+      "cluster_id": "CH17-C026",
+      "file": "content/abap/CH17/CH17-L09.md",
+      "claim": "색 코드 형식 풀이에서 구성 요소인 '색번호·강조·반전'의 각 자리 값과 뜻(C610의 6·1·0이 각각 무엇인지)을 설명하지 않아, 입문자가 코드를 읽거나 다른 색을 만들 수 없다. 풀이가 또 다른 수수께끼가 된 형태다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG04-opus", "AG04-gpt-5.6-sol"],
+      "conflict": false,
+      "quotes": ["색 코드는 임의 RGB가 아니라 `C` + 색번호 + 강조 + 반전 형식(`C610`)이다."]
+    },
+    {
+      "cluster_id": "CH17-C027",
+      "file": "content/abap/CH17/CH17-L06.md",
+      "claim": "'저장 범위를 함부로' 라벨은 서술어가 잘려 문장이 완결되지 않고, '모든 사용자의 화면이 바뀐 것처럼 느낀다'는 실제로 바뀌는 사실을 지각 동사로 흐려 무엇이 위험한지 모호하다. 경고문인데 사실 진술이 서지 않는다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG04-opus", "AG04-sonnet"],
+      "conflict": false,
+      "quotes": ["**저장 범위를 함부로** → 운영에서 **전역 Variant**를 아무나 바꾸게 하면 모든 사용자의\n  화면이 바뀐 것처럼 느낀다."]
+    },
+    {
+      "cluster_id": "CH17-C028",
+      "file": "content/abap/CH17/CH17-L09.md",
+      "claim": "booked 필드가 'ZBOOKING에서 집계'된 값이라는 설명이 주석 한 줄뿐이고 실제 집계(합산) 코드나 방법이 전혀 없다. 매진 판정(booked >= capacity)이 이 레슨의 핵심 조건인데 값의 출처를 몰라 완전히 이해했다고 확신할 수 없다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG01-sonnet"],
+      "conflict": false,
+      "quotes": ["예약 좌석 합계(ZBOOKING에서 집계)"]
+    },
+    {
+      "cluster_id": "CH17-C029",
+      "file": "content/abap/CH17/CH17-L10.md",
+      "claim": "두 번째 PBO부터 조건 없이 refresh_table_display를 호출하는 골격을 정답으로 제시한다. PBO는 엔터·탭 이동 등 모든 화면 왕복마다 실행되므로 데이터가 안 바뀌어도 매번 그리드를 다시 그려 불필요한 프런트엔드 왕복이 쌓이는 안티패턴이며, 완성 체크리스트가 이를 굳혀 놓았다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG06-opus"],
+      "conflict": false,
+      "quotes": ["PERFORM refresh_alv."]
+    },
+    {
+      "cluster_id": "CH17-C030",
+      "file": "content/abap/CH17/CH17-L09.md",
+      "claim": "체크리스트 4번이 refresh_table_display만으로 화면 반영이 된다고 읽히지만, refresh는 변경된 gs_layout을 받지 않는다. 색 코드 값만 바뀐 경우와 Layout(info_fname) 자체를 사후 변경한 경우(set_frontend_layout 필요)를 구분하지 않아 오해 소지가 있다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG06-gpt-5.6-sol"],
+      "conflict": false,
+      "quotes": ["4. `set_table_for_first_display`(또는 `refresh_table_display`)로 **화면에 반영**했다."]
+    },
+    {
+      "cluster_id": "CH17-C031",
+      "file": "content/abap/CH17/CH17-L10.md",
+      "claim": "'merge 실패 무시' 항목이 라벨=실수 / 설명=사실 구조를 깨고 설명 자리에 금지·규범문을 넣어 '실패했는데 확인 안 하고 넘어가지 않는다'는 이중 부정처럼 읽힌다. 무엇이 잘못이고 무엇이 옳은 행동인지 한 번에 잡히지 않는다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG04-opus"],
+      "conflict": false,
+      "quotes": ["**merge 실패 무시** → `LVC_FIELDCATALOG_MERGE`가 실패했는데 `gt_fcat`을 확인 안 하고 display로 넘어가지 않는다."]
+    },
+    {
+      "cluster_id": "CH17-C032",
+      "file": "content/abap/CH17/CH17-L04.md",
+      "claim": "'실무 화면은 … 제목이 좋고 … 숨기거나 강조해야 한다'는 문장이 주술이 호응하지 않고 한 문장에 네 가지 주장이 들어가 입문자에게 호흡이 너무 길다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG04-opus"],
+      "conflict": false,
+      "quotes": ["하지만 실무 화면은 기술 필드명 `SEATS`를\n그대로 두기보다 **\"좌석수\"** 라는 제목이 좋고, 어떤 컬럼은 좁게·어떤 컬럼은 넓게·어떤\n컬럼은 숨기거나 강조해야 한다."]
+    },
+    {
+      "cluster_id": "CH17-C033",
+      "file": "content/abap/CH17/CH17-L01.md",
+      "claim": "컨테이너 혼동을 풀어 주려는 콜아웃의 핵심어 '프레젠테이션 영역'이 원래 용어보다 더 낯설고, 챕터 어디에도 풀이가 없다. 풀이 문장 안에 더 어려운 말이 들어간 형태다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG04-opus"],
+      "conflict": false,
+      "quotes": ["여기서 **컨테이너**는 데이터를 담는 내부 테이블이 아니라, **화면 컨트롤을 담는\n> 프레젠테이션 영역**이다."]
+    },
+    {
+      "cluster_id": "CH17-C034",
+      "file": "content/abap/CH17/CH17-L01.md",
+      "claim": "체험 안내문이 관찰 목표를 영어 상태어 initial·bound로만 제시하는데, 특히 bound는 챕터 어디에도 풀이가 없어 무엇이 어떻게 바뀌는지 감이 잡히지 않는다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG04-opus"],
+      "conflict": false,
+      "quotes": ["`go_cont`가 `initial`에서 `bound`로 바뀌는지, 이름이 틀리면 왜 못"]
+    },
+    {
+      "cluster_id": "CH17-C035",
+      "file": "content/abap/CH17/CH17-L01.md",
+      "claim": "같은 개념을 한 레슨 안에서 '참조 변수' → 'object reference' → (L02) 'reference' 세 가지로 부른다. 입문자는 이들이 같은 것인지 판단할 근거가 없다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG04-opus"],
+      "conflict": false,
+      "quotes": ["| `go_cont` | ABAP 전역 변수 | `CONT100` 영역을 붙잡는 **object reference** |"]
+    },
+    {
+      "cluster_id": "CH17-C036",
+      "file": "content/abap/CH17/CH17-L08.md",
+      "claim": "'행·컬럼 위치를 가능한 유지하며 다시 그린다'에서 '가능한'은 '가능한 한'이 빠진 비문이다. 입문서에서 이런 오류는 교열 신뢰도를 떨어뜨린다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG04-sonnet"],
+      "conflict": false,
+      "quotes": ["행·컬럼 위치를 가능한 유지하며 다시 그린다."]
+    },
+    {
+      "cluster_id": "CH17-C037",
+      "file": "content/abap/CH17/CH17-L05.md",
+      "claim": "옵션 표의 zebra 행 '의미' 칸이 '행 배경을 번갈아'로 끝나 서술어가 누락된 불완전한 표현이다. 표의 다른 항목들은 명사구로 완결돼 이 항목만 형식이 깨진다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG04-gemini-3.6-flash-high"],
+      "conflict": false,
+      "quotes": ["| `zebra` | 행 배경을 번갈아 | 긴 목록에서 줄을 놓치지 않게 |"]
+    },
+    {
+      "cluster_id": "CH17-C038",
+      "file": "content/abap/CH17/_chapter.md",
+      "claim": "10개 레슨 챕터인데 경력자용 빠른 경로(예: L10 전체 골격을 먼저 보고 낯선 조각만 역참조) 안내가 없고, L01의 OOP 기초 콜아웃 등에도 '이미 알면 건너뛰어도 됨' 표시가 없다. 로드맵 표가 이미 있어 안내를 붙일 자리가 마련돼 있는데 비어 있다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG03-opus", "AG03-sonnet", "AG03-gpt-5.6-sol", "AG03-gemini-3.6-flash-high"],
+      "conflict": false,
+      "quotes": ["지금 레슨은 맨 위 **방을 잡는** 단계다. 각 조각이 왜 필요한지는 그 레슨에서 불편과 함께 만난다.", "ALV를 화면에 박아 풍부하게 제어하고 싶다."]
+    },
+    {
+      "cluster_id": "CH17-C039",
+      "file": "content/abap/CH17/CH17-L10.md",
+      "claim": "front-matter의 prevRel 값 'next-step'이 챕터 내 다른 레슨이 쓰는 값 집합(pain-solution/parallel/deepening) 밖이다. 게이팅 정적 점검이 열거형으로 검사한다면 미정의 값이 되고, 아니어도 메타 일관성이 깨진다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG03-opus", "AG05-opus"],
+      "conflict": false,
+      "quotes": ["prevRel: next-step"]
+    },
+    {
+      "cluster_id": "CH17-C040",
+      "file": "content/abap/CH17/CH17-L05.md",
+      "claim": "'의미'와 '초보자 설명' 두 컬럼이 사실상 같은 내용을 반복하고, 표 위 코드 주석까지 합치면 같은 정보가 세 번 나온다. 표 앞의 일반 UX 근거 서술도 표 내용과 겹쳐 장황하다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG03-opus", "AG03-sonnet"],
+      "conflict": false,
+      "quotes": ["| 필드 | 의미 | 초보자 설명 |"]
+    },
+    {
+      "cluster_id": "CH17-C041",
+      "file": "content/abap/CH17/CH17-L07.md",
+      "claim": "정식 용어 'Field Catalog'가 본문 산문에서 'field catalog'(소문자)·'fieldcat'으로, 'Layout'도 'layout'과 뒤섞여 표기된다. 고유 용어인지 일반 명사인지 헷갈리게 만든다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG04-opus", "AG04-sonnet"],
+      "conflict": false,
+      "quotes": ["아래에서 컨테이너 → 그리드 → field catalog → `set_table_for_first_display` 4단계를 차례로"]
+    },
+    {
+      "cluster_id": "CH17-C042",
+      "file": "content/abap/CH17/CH17-L08.md",
+      "claim": "같은 개념을 'internal table'(소문자 영문)·'내부 테이블'(직역)·'[[Internal Table]]'(마킹) 세 가지로 표기한다. 한국어 문장 속 소문자 'internal table'은 코드 식별자처럼 읽혀 오해를 부르고, R3의 영어 원문 표기 원칙과도 어긋난다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG04-opus", "AG04-sonnet"],
+      "conflict": false,
+      "quotes": ["한 번 띄운 ALV 표는 자동으로 계속 최신이 되지 않는다. 초보자는 internal table이 바뀌면"]
+    },
+    {
+      "cluster_id": "CH17-C043",
+      "file": "content/abap/CH17/CH17-L06.md",
+      "claim": "'어느 프로그램의 Variant인지 기준이 약해져'라는 표현이 무엇을 식별하지 못해 어떤 문제가 생기는지 특정하지 않아 모호하다. '식별 기준이 불분명해져' 같은 구체적 서술이 필요하다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG04-gpt-5.6-sol", "AG04-gemini-3.6-flash-high"],
+      "conflict": false,
+      "quotes": ["- **`report` 미설정** → 어느 프로그램의 Variant인지 기준이 약해져 저장/조회가 꼬인다. `sy-repid`를 넣는다."]
+    },
+    {
+      "cluster_id": "CH17-C044",
+      "file": "content/abap/CH17/CH17-L04.md",
+      "claim": "[상반 판정] AG09의 gpt·gemini는 FORM/METHOD가 없는 코드 범위에서 로컬 접두어 ls_fcat을 선언해 커리큘럼 네이밍 규약(R11: 로컬 스코프에서만 l*)을 위반한다고 본다. 반면 AG09-opus는 같은 블록을 'L10의 FORM 문맥을 전제로 한 발췌라 스코프와 일관된다'고 총평해 판정이 갈린다.",
+      "severity": "낮음",
+      "confidence": "추정",
+      "supporters": ["AG09-gpt-5.6-sol", "AG09-gemini-3.6-flash-high"],
+      "conflict": true,
+      "quotes": ["DATA ls_fcat TYPE lvc_s_fcat."]
+    },
+    {
+      "cluster_id": "CH17-C045",
+      "file": "content/abap/CH17/CH17-L08.md",
+      "claim": "[상반 판정] AG09의 gpt·gemini는 FORM/METHOD가 없는 코드 범위에서 로컬 접두어 ls_stable을 선언해 네이밍 규약을 위반한다고 본다. 반면 AG09-opus는 발췌 블록이 FORM 문맥을 전제하면 일관된다고 총평해 판정이 갈린다(C044와 동일 유형).",
+      "severity": "낮음",
+      "confidence": "추정",
+      "supporters": ["AG09-gpt-5.6-sol", "AG09-gemini-3.6-flash-high"],
+      "conflict": true,
+      "quotes": ["DATA ls_stable TYPE lvc_s_stbl."]
+    },
+    {
+      "cluster_id": "CH17-C046",
+      "file": "embeds/abap/CH17-L01-S01.html",
+      "claim": "위젯 핵심 요약 안내문에서 '다르다'가 '다리다'로 오기돼 있다. L01('이름이 다리다')과 L04('fieldname이 다리다') 두 위젯에서 렌더 DOM에도 그대로 표시된다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG02-gpt-5.6-sol", "AG02-gpt-5.6-sol"],
+      "conflict": false,
+      "quotes": ["<div class=\"note\"><b>이름이 다리다.</b>", "<div class=\"note\"><b>fieldname이 다리다.</b>"]
+    },
+    {
+      "cluster_id": "CH17-C047",
+      "file": "content/abap/CH17/CH17-L09.md",
+      "claim": "본문은 색이 보이는 조건을 '네 가지'로 못 박고 정리·자가점검에서 반복하는데, 위젯은 '3 조건'으로 표시한다(데이터 쪽 2개가 하나로 합쳐짐). 본문을 외운 학습자가 위젯에서 하나가 사라진 것처럼 느낀다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG02-opus"],
+      "conflict": false,
+      "quotes": ["색이 화면에 뜨려면 **네 가지**가 맞아야 한다. 하나라도 빠지면 색이 보이지 않는다."]
+    },
+    {
+      "cluster_id": "CH17-C048",
+      "file": "embeds/abap/CH17-L09-S01.html",
+      "claim": "위젯 표의 첫 컬럼 헤더가 '회차'인데 실제 표시 값은 공연 ID(concert_id)다. 본문 TYPES가 concert_id와 perf_no를 분명히 나눴는데 위젯엔 perf_no가 없어, 같은 C001이 두 줄로 보이며 '회차가 왜 같지'라는 오해를 만든다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG02-opus"],
+      "conflict": false,
+      "quotes": ["{ concert_id: 'C001', perf_date: '2026-07-01', capacity: 100, booked: 100 },"]
+    },
+    {
+      "cluster_id": "CH17-C049",
+      "file": "embeds/abap/CH17-L07-S01.html",
+      "claim": "챕터 관통 예매 데이터가 위젯마다 어긋난다. 예매번호 0006이 L03에서는 안유진(C002, 1석)인데 L07·L10에서는 차은우(C001, 5석)이고, L03·L05·L08에서 차은우는 0004다. L07 그리드에는 C002 행이 섞여 'WHERE concert_id' 시나리오와도 어긋난다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG02-opus"],
+      "conflict": false,
+      "quotes": ["{booking_id:'0006',concert_id:'C001',customer:'차은우',seats:5,status:'N'}"]
+    },
+    {
+      "cluster_id": "CH17-C050",
+      "file": "content/abap/CH17/CH17-L06.md",
+      "claim": "본문은 사용자가 컬럼을 옮겨 '직접 저장·복원'하는 것처럼 서술하지만, 위젯에서 할 수 있는 것은 미리 만들어 둔 Variant 카드를 '열기'로 복원하는 것뿐이다. 저장(내 순서를 만들어 이름 붙이기) 조작이 없어 본문과 체험이 어긋난다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG02-opus"],
+      "conflict": false,
+      "quotes": ["사용자 A는 `예매자·좌석수`를 앞에, 사용자 B는 `상태·예매번호`를 앞에 두고 저장한다."]
+    },
+    {
+      "cluster_id": "CH17-C051",
+      "file": "content/abap/CH17/CH17-L04.md",
+      "claim": "본문 동기는 'merge 직후 기술 필드명 SEATS를 좌석수로 다듬는다'인데, 위젯은 처음부터 네 컬럼 제목이 모두 한글로 채워진 상태로 시작해 다듬기 전후의 대비가 없다. '왜 편집하지?'라는 동기가 약해진다.",
+      "severity": "낮음",
+      "confidence": "추정",
+      "supporters": ["AG02-opus"],
+      "conflict": false,
+      "quotes": ["자동 생성 후, 필요한 컬럼만 코드로 다듬는다."]
+    },
+    {
+      "cluster_id": "CH17-C052",
+      "file": "content/abap/CH17/CH17-L04.md",
+      "claim": "merge를 'DDIC Structure 이름을 넣으면 된다'로만 설명하고, 출력 테이블이 로컬 타입이거나 DDIC에 없는 추가 필드를 가질 때의 제약(i_internal_tabname, 수동 APPEND 필요)을 알리지 않는다. 바로 뒤 L09가 로컬 구조체+rowcolor 조합이라 학습자가 즉시 부딪히는 지점이다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG06-opus"],
+      "conflict": false,
+      "quotes": ["i_structure_name = 'ZBOOKING'"]
+    },
+    {
+      "cluster_id": "CH17-C053",
+      "file": "content/abap/CH17/CH17-L03.md",
+      "claim": "업무 데이터를 조회해 화면에 뿌리는 예제인데 권한 검사(AUTHORITY-CHECK)에 대한 언급이 한 줄도 없다. sy-subrc·SELECT * 남용까지 짚으면서 권한만 빠져 '조회는 그냥 하면 되는 것'이라는 인상을 준다.",
+      "severity": "낮음",
+      "confidence": "추정",
+      "supporters": ["AG06-opus"],
+      "conflict": false,
+      "quotes": ["SELECT * FROM zbooking INTO TABLE gt_booking"]
+    },
+    {
+      "cluster_id": "CH17-C054",
+      "file": "content/abap/CH17/CH17-L09.md",
+      "claim": "L09의 prereq가 L05만 선언하는데 본문 4조건은 L07(set_table_for_first_display)·L08(refresh_table_display)을 요구하고, L10의 prereq에도 본문 골격이 의존하는 CH16(Module Pool)·모듈화(FORM)가 없다. 게이팅 검증 근거가 실제 의존과 어긋난다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG05-opus"],
+      "conflict": false,
+      "quotes": ["prereq: [\"CH17-L05\"]"]
+    },
+    {
+      "cluster_id": "CH17-C055",
+      "file": "content/abap/CH17/CH17-L03.md",
+      "claim": "'빈 조회 결과가 정상일 수 있다'는 개념은 경력 개발자에게 상식인데 개념 설명과 ABAP 고유 필드명(sy-subrc·sy-dbcnt) 설명이 한 섹션에 섞여 있고, 익숙하면 필드명만 보고 넘어가라는 지름길 안내가 없다.",
+      "severity": "낮음",
+      "confidence": "추정",
+      "supporters": ["AG03-sonnet"],
+      "conflict": false,
+      "quotes": ["빈 그리드가 **기술 오류인지 정상적인 \"결과 없음\"인지** 구분하려면, 조회 직후 셋을 본다."]
+    },
+    {
+      "cluster_id": "CH17-C056",
+      "file": "content/abap/CH17/CH17-L08.md",
+      "claim": "메모리 데이터와 UI 뷰의 새로고침 분리는 GUI 경력자에게 당연한 원리인데 초보자 오해 교정 서술이 길게 배치돼 있고, 경력자용 '모델-뷰 분리' 지름길 요약이 없다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG03-gemini-3.6-flash-high"],
+      "conflict": false,
+      "quotes": ["한 번 띄운 ALV 표는 자동으로 계속 최신이 되지 않는다. 초보자는 internal table이 바뀌면 화면도 바로 바뀐다고 생각하기 쉽지만, **화면 컨트롤은 이미 그려진 상태**다."]
+    },
+    {
+      "cluster_id": "CH17-C057",
+      "file": "content/abap/CH17/CH17-L01.md",
+      "claim": "CONT100·go_cont·CL_GUI_CUSTOM_CONTAINER 3단 구조가 일반 GUI 프레임워크(Control ID·참조 변수·컨테이너 클래스)와 동일한데, 경력자가 기존 지식으로 즉시 매핑할 수 있는 일반 용어 대조 힌트가 없다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG03-gemini-3.6-flash-high"],
+      "conflict": false,
+      "quotes": ["| `CONT100` | Screen Painter | 화면에 그려 둔 **Custom Control 영역**의 이름 |"]
+    },
+    {
+      "cluster_id": "CH17-C058",
+      "file": "content/abap/CH17/CH17-L05.md",
+      "claim": "일반 UI 프레임워크에서 'Layout'은 컴포넌트 배치 방식을 뜻하는데 여기 Layout(LVC_S_LAYO)은 그리드 하나의 표시 옵션 묶음이라 의미가 다르다. 그 차이를 짚어 주는 문장이 없어 경력자가 이름만 보고 오인할 수 있다.",
+      "severity": "낮음",
+      "confidence": "추정",
+      "supporters": ["AG03-sonnet"],
+      "conflict": false,
+      "quotes": ["Field Catalog가 **컬럼별** 설명서라면, [[Layout]](타입 `LVC_S_LAYO`)은 **표 전체**의"]
+    },
+    {
+      "cluster_id": "CH17-C059",
+      "file": "content/abap/CH17/CH17-L05.md",
+      "claim": "abap_true가 boolean 원시 타입이 아니라 CHAR 1('X')이라는 정체를 챕터 어디에서도 밝히지 않는다. 챕터 내내 반복 사용되므로 경력자가 boolean으로 오해한 채 넘어갈 수 있다(앞 챕터 도입 여부는 미확인).",
+      "severity": "낮음",
+      "confidence": "추정",
+      "supporters": ["AG03-opus"],
+      "conflict": false,
+      "quotes": ["gs_layout-cwidth_opt = abap_true."]
+    },
+    {
+      "cluster_id": "CH17-C060",
+      "file": "content/abap/CH17/CH17-L01.md",
+      "claim": "[선행 사용] 콜아웃이 '클래스'에는 괄호 풀이(설계도)를 붙이면서, 세 번이나 반복되는 '객체' 자체는 한 줄 풀이 없이 그대로 쓴다. 입문자는 객체가 정확히 뭔지 모른 채 리모컨 비유만으로 넘어가야 한다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG01-sonnet"],
+      "conflict": false,
+      "quotes": ["이 챕터는 객체(`TYPE REF TO`·`CREATE OBJECT`)와 메서드 호출을 많이 쓴다."]
+    },
+    {
+      "cluster_id": "CH17-C061",
+      "file": "content/abap/CH17/CH17-L09.md",
+      "claim": "'주의를 올바른 곳으로 보내는 표시 기능'은 영어 direct attention을 옮긴 번역투다. 한국어에서 주의는 '보내는' 대상이 아니라 '끄는·모으는' 대상이라 어색하게 읽힌다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG04-opus"],
+      "conflict": false,
+      "quotes": ["색은 데이터를 바꾸는 게 아니라 **주의를 올바른\n곳으로 보내는 표시 기능**이다."]
+    },
+    {
+      "cluster_id": "CH17-C062",
+      "file": "content/abap/CH17/CH17-L06.md",
+      "claim": "i_save 설명 괄호 안에 등호와 줄표가 겹쳐 정보가 지나치게 압축됐고, '교육용'이 무엇을 한정하는지(이 값이 교육용인지, 실무에선 다른 값인지) 읽는 사람이 알 수 없다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG04-opus"],
+      "conflict": false,
+      "quotes": ["display 호출에서 `is_variant`와 `i_save`를 함께 넘긴다(`i_save = 'A'` = 저장 허용 — 교육용)."]
+    },
+    {
+      "cluster_id": "CH17-C063",
+      "file": "content/abap/CH17/CH17-L08.md",
+      "claim": "'사용자는 안 바뀐 것처럼 느낀다'가 화면이 실제로 갱신되지 않은 사실을 감정 동사로 표현해 어색하고, L06의 같은 패턴('~것처럼 느낀다')과 반복돼 문제 원인(코드 미호출)이 흐려진다.",
+      "severity": "낮음",
+      "confidence": "추정",
+      "supporters": ["AG04-sonnet"],
+      "conflict": false,
+      "quotes": ["안 바뀐 것처럼 느낀다."]
+    },
+    {
+      "cluster_id": "CH17-C064",
+      "file": "content/abap/CH17/CH17-L03.md",
+      "claim": "'host marker'가 풀이 없이 등장하며, 통용 명칭(host variable 표시)과도 어긋나 학습자가 나중에 자료를 찾을 때 매칭되지 않을 수 있다. 'classic 구간'도 커리큘럼 내부 용어라 이 문장만으로는 뜻이 잡히지 않는다.",
+      "severity": "낮음",
+      "confidence": "추정",
+      "supporters": ["AG04-opus"],
+      "conflict": false,
+      "quotes": ["여기는 classic 구간이라 `SELECT ... INTO TABLE ... WHERE ...` 형태를 쓴다(`@` host\n  marker·콤마 필드 목록은 [New Open SQL / Modern ABAP SQL](CH19-L01.html)에서)."]
+    },
+    {
+      "cluster_id": "CH17-C065",
+      "file": "content/abap/CH17/CH17-L02.md",
+      "claim": "L02의 신규 학습량이 i_parent 파라미터 하나 수준이라 독립 레슨으로는 얇고, 고밀도 레슨(L09)과의 편차가 커 레슨 무게가 고르지 않다. 다만 L01이 '레슨마다 조각 하나' 원칙을 선언해 기대를 관리하고 있어 명백한 파편 레슨으로 단정하긴 어렵다.",
+      "severity": "낮음",
+      "confidence": "추정",
+      "supporters": ["AG05-opus"],
+      "conflict": false,
+      "quotes": ["direction: 컨테이너 위에 ALV 그리드 컨트롤 객체를 얹는다."]
+    },
+    {
+      "cluster_id": "CH17-C066",
+      "file": "content/abap/CH17/CH17-L07.md",
+      "claim": "명시적 Field Catalog가 항상 필수인 것처럼 안내해, DDIC 구조명(i_structure_name)으로 카탈로그를 자동 생성하는 빠른 경로를 빠뜨렸다. 커스터마이징이 필요할 때만 it_fieldcatalog를 만드는 경로가 경력자에게 유용하다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG03-gpt-5.6-sol"],
+      "conflict": false,
+      "quotes": ["- **준비 없이 호출** → `it_outtab`·`it_fieldcatalog`를 채우고 호출한다. 빈 fieldcat이면 표가 비어 보인다."]
+    }
+  ],
+  "grade_opinions": {
+    "AG01-opus": "경미 수정",
+    "AG01-sonnet": "보강 권장",
+    "AG01-gpt-5.6-sol": "보강 권장",
+    "AG01-gemini-3.6-flash-high": "경미 수정",
+    "AG02-opus": "보강 권장",
+    "AG02-sonnet": "경미 수정",
+    "AG02-gpt-5.6-sol": "보강 권장",
+    "AG02-gemini-3.6-flash-high": "경미 수정",
+    "AG03-opus": "경미 수정",
+    "AG03-sonnet": "경미 수정",
+    "AG03-gpt-5.6-sol": "보강 권장",
+    "AG03-gemini-3.6-flash-high": "경미 수정",
+    "AG04-opus": "경미 수정",
+    "AG04-sonnet": "경미 수정",
+    "AG04-gpt-5.6-sol": "보강 권장",
+    "AG04-gemini-3.6-flash-high": "경미 수정",
+    "AG05-opus": "경미 수정",
+    "AG05-sonnet": "보강 권장",
+    "AG05-gpt-5.6-sol": "보강 권장",
+    "AG05-gemini-3.6-flash-high": "유지",
+    "AG06-opus": "보강 권장",
+    "AG06-sonnet": "보강 권장",
+    "AG06-gpt-5.6-sol": "보강 권장",
+    "AG06-gemini-3.6-flash-high": "경미 수정",
+    "AG09-opus": "경미 수정",
+    "AG09-sonnet": "경미 수정",
+    "AG09-gpt-5.6-sol": "보강 권장",
+    "AG09-gemini-3.6-flash-high": "경미 수정"
+  },
+  "dropped": []
+}

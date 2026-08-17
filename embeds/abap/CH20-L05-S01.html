@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- CH20-L05-S01 · 엔진: window-partition-sim · GROUP BY(행 접힘) vs Window PARTITION BY(행 유지) + ROW_NUMBER/RANK/DENSE_RANK 시뮬 · config=window.WPS_CFG · 게이팅: CH20 Advanced SQL(Window/aggregate)만 · CDS/RAP/DML/OO 미노출. -->
+<!-- CH20-L05-S01 · 엔진: window-partition-sim · GROUP BY(행 접힘) vs Window PARTITION BY(행 유지) + ROW_NUMBER/RANK/DENSE_RANK 시뮬 · config=window.WPS_CFG · 데이터=본문 L05 입력 표와 동일(5행 — 취소 0005는 excluded로 취소선 표시, 집계는 남은 4행) · 게이팅: CH20 Advanced SQL(Window/aggregate)만 · CDS/RAP/DML/OO 미노출. -->
 <html lang="ko" data-eng="window-partition-sim">
 <head>
 <meta charset="utf-8" />
@@ -11,7 +11,7 @@
 <body>
 <div class="wrap">
   <p class="hd">Window vs GROUP BY 시뮬레이터 <small>(PARTITION BY / RANK)</small></p>
-  <p class="lead">같은 <code>zbooking</code> 예약 4건(status <code>N</code>)을 두고, 버튼으로 집계 방식을 바꿔 보세요. GROUP BY는 행을 <b>접고</b>, Window(<code>PARTITION BY</code>)는 행을 <b>남긴 채</b> 옆에 계산값을 붙입니다.</p>
+  <p class="lead">본문과 같은 <code>zbooking</code> 예약 5건에서 <code>WHERE status &lt;&gt; 'C'</code>가 취소 <code>0005</code>를 먼저 걸러냅니다(도식의 취소선 행). 남은 <b>4건</b>을 두고 버튼으로 집계 방식을 바꿔 보세요. GROUP BY는 행을 <b>접고</b>, Window(<code>PARTITION BY</code>)는 행을 <b>남긴 채</b> 옆에 계산값을 붙입니다.</p>
 
   <div class="wps">
     <div class="wps-btns" id="wpsBtns"></div>
@@ -27,47 +27,50 @@
 <script>
 window.WPS_CFG = {
   table: 'zbooking',
-  // 예약 상세 4건 (status = 'N'). part = concert_id.
+  // 본문 L05 입력 표와 동일한 5행. 취소 0005는 WHERE status <> 'C'로 걸러져 excluded로 표시.
   rows: [
     { id: '0001', part: 'C001', seats: 2 },
     { id: '0002', part: 'C001', seats: 3 },
     { id: '0003', part: 'C001', seats: 3 },
     { id: '0004', part: 'C002', seats: 4 }
   ],
+  excluded: [
+    { id: '0005', part: 'C002', seats: 1, status: 'C' }
+  ],
   modes: [
     {
       key: 'group',
       btn: 'GROUP BY 보기',
       tone: 'brand',
-      sql: "SELECT concert_id,\n       SUM( seats ) AS booked_total\n  FROM zbooking\n  WHERE status = 'N'\n  GROUP BY concert_id\n  INTO TABLE @DATA(lt_sum).",
+      sql: "SELECT concert_id,\n       SUM( seats ) AS booked_total\n  FROM zbooking\n  WHERE status <> 'C'\n  GROUP BY concert_id\n  INTO TABLE @DATA(gt_sum).",
       desc: "GROUP BY는 같은 <code>concert_id</code> 행을 <b>하나로 접습니다</b>. 상세 4행이 concert별 2행으로 줄고, 개별 booking_id·seats는 사라져요. 합계만 필요할 때 쓰죠."
     },
     {
       key: 'partition',
       btn: 'PARTITION BY 적용',
       tone: 'good',
-      sql: "SELECT booking_id, concert_id, seats,\n       SUM( seats ) OVER( PARTITION BY concert_id )\n         AS booked_total\n  FROM zbooking\n  WHERE status = 'N'\n  INTO TABLE @DATA(lt_win).",
+      sql: "SELECT booking_id, concert_id, seats,\n       SUM( seats ) OVER( PARTITION BY concert_id )\n         AS booked_total\n  FROM zbooking\n  WHERE status <> 'C'\n  INTO TABLE @DATA(gt_win).",
       desc: "Window의 <code>PARTITION BY</code>는 행을 <b>접지 않습니다</b>. 상세 4행을 그대로 두고, 각 행 옆에 그 concert의 합계 <code>booked_total</code>을 나란히 붙여요. '상세도 보고 합계도 보고'가 됩니다."
     },
     {
       key: 'rownum',
       btn: 'ROW_NUMBER',
       tone: 'brand',
-      sql: "SELECT booking_id, concert_id, seats,\n       ROW_NUMBER( ) OVER( PARTITION BY concert_id\n                           ORDER BY booking_id )\n         AS row_num\n  FROM zbooking\n  WHERE status = 'N'\n  INTO TABLE @DATA(lt_rn).",
+      sql: "SELECT booking_id, concert_id, seats,\n       ROW_NUMBER( ) OVER( PARTITION BY concert_id\n                           ORDER BY booking_id )\n         AS row_num\n  FROM zbooking\n  WHERE status <> 'C'\n  INTO TABLE @DATA(gt_rn).",
       desc: "<code>ROW_NUMBER</code>는 각 partition(concert) 안에서 <code>ORDER BY</code> 순서대로 1·2·3… 번호를 매깁니다. C001은 booking_id 순으로 1·2·3, C002는 혼자라 1이에요."
     },
     {
       key: 'rank',
       btn: 'RANK vs DENSE_RANK',
       tone: 'amber',
-      sql: "SELECT booking_id, concert_id, seats,\n       RANK( )       OVER( PARTITION BY concert_id\n                           ORDER BY seats DESCENDING ) AS rank,\n       DENSE_RANK( ) OVER( PARTITION BY concert_id\n                           ORDER BY seats DESCENDING ) AS dense_rank\n  FROM zbooking\n  WHERE status = 'N'\n  INTO TABLE @DATA(lt_rank).",
+      sql: "SELECT booking_id, concert_id, seats,\n       RANK( )       OVER( PARTITION BY concert_id\n                           ORDER BY seats DESCENDING ) AS seat_rank,\n       DENSE_RANK( ) OVER( PARTITION BY concert_id\n                           ORDER BY seats DESCENDING ) AS seat_rank_dense\n  FROM zbooking\n  WHERE status <> 'C'\n  INTO TABLE @DATA(gt_ranked).",
       desc: "둘 다 seats 내림차순 순위입니다. C001의 3·3은 공동 <b>1위</b>. 그다음 2는 — <b>RANK</b>는 앞의 동점 2건을 세어 <b>3위</b>로 건너뛰고(주황 = gap), <b>DENSE_RANK</b>는 빈칸 없이 <b>2위</b>로 잇습니다."
     },
     {
       key: 'noPartition',
       btn: 'PARTITION 제거',
       tone: 'amber',
-      sql: "SELECT booking_id, concert_id, seats,\n       SUM( seats ) OVER( )  AS total_all\n  FROM zbooking\n  WHERE status = 'N'\n  INTO TABLE @DATA(lt_all).",
+      sql: "SELECT booking_id, concert_id, seats,\n       SUM( seats ) OVER( )  AS total_all\n  FROM zbooking\n  WHERE status <> 'C'\n  INTO TABLE @DATA(gt_all).",
       desc: "<code>PARTITION BY</code>를 빼면 partition이 하나뿐 — <b>전체 예약이 하나의 계산 묶음</b>이 되었습니다. 그래서 모든 행의 <code>total_all</code>이 전체 합계 <b>12</b>로 똑같아져요."
     }
   ]

@@ -1,0 +1,83 @@
+{
+  "agent": "AG06",
+  "model": "sonnet",
+  "target": "CH18",
+  "persona_ack": "20년차 SAP ABAP 아키텍트로서 ECC~S/4HANA 경험을 바탕으로 CH18(Modern ABAP Syntax) 11개 레슨과 챕터 메타를 기술 사실·예시 적절성·위험한 생략·안티패턴 관점에서 감사했다.",
+  "method": "대상 .md 11개 파일 전문을 직접 읽고, ABAP 언어 사양(inline declaration/VALUE/CORRESPONDING/Table Expression/String Template/CONV·EXACT/COND·SWITCH/REDUCE·FILTER/LET) 지식으로 코드 스니펫과 서술을 대조 검증. 웹 검색 없이 기억 기반 판단.",
+  "errors": [],
+  "files_read": [
+    "content/abap/CH18/_chapter.md",
+    "content/abap/CH18/CH18-L01.md",
+    "content/abap/CH18/CH18-L02.md",
+    "content/abap/CH18/CH18-L03.md",
+    "content/abap/CH18/CH18-L04.md",
+    "content/abap/CH18/CH18-L05.md",
+    "content/abap/CH18/CH18-L06.md",
+    "content/abap/CH18/CH18-L07.md",
+    "content/abap/CH18/CH18-L08.md",
+    "content/abap/CH18/CH18-L09.md",
+    "content/abap/CH18/CH18-L10.md",
+    "content/abap/CH18/CH18-L11.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH18/CH18-L04.md",
+      "quote": "찾은 **위치**. 못 찾으면 `0`(hashed key 등 순서를 말할 수 없으면 `-1`).",
+      "category": "사실 오류",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "line_index( )가 hashed 테이블처럼 순서 개념이 없는 경우 -1을 반환한다고 서술했다.",
+      "evidence": "내 기억으로 ABAP 표준 동작은 '행을 못 찾은 경우'와 'hashed table이라 인덱스 개념 자체가 없는 경우' 모두 동일하게 0을 반환한다. -1을 반환하는 경로는 없는 것으로 안다. 다만 릴리스별 세부 차이 가능성이 있어 확실은 아니다.",
+      "suggestion": "line_index( )의 반환값을 '못 찾음' 0, 'hashed 등 인덱스 개념 없음'도 0으로 통일해 서술하거나, 공식 키워드 문서 문구를 그대로 인용해 확인 후 수정."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH18/CH18-L05.md",
+      "quote": "`{ }` **안쪽 공백은 문법 요소**다. `|{ lv_name }|`처럼 중괄호 안쪽에 공백을 두는 형태를 기본으로 삼는다.",
+      "category": "사실 오류",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'{ } 안쪽 공백이 문법 요소'라고 서술했지만, 실제로는 컴파일러가 강제하는 문법 요소가 아니라 가독성 관례(Clean ABAP·Pretty Printer 스타일)다. `|{lv_name}|`처럼 공백 없이 써도 정상 컴파일된다.",
+      "evidence": "String template `| … { expr } … |`에서 중괄호 안쪽 공백 유무는 파서에 영향을 주지 않는다. 바로 다음 문장에서 '기본으로 삼는다'고 완화하는 것도 이게 강제 문법이 아니라 관례임을 스스로 드러낸다.",
+      "suggestion": "'문법 요소'라는 표현을 '스타일 관례(가독성 관례)'로 바꾸고, 강제 규칙이 아니라 권장 표기임을 명확히 한다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH18/CH18-L06.md",
+      "quote": "DATA(lv_price) = EXACT i( '120000' ).   \" 손실 없이 딱 맞아야 통과",
+      "category": "예시 적절성",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "EXACT의 취지('손실이 나면 막는다')를 설명한 직후 예시가 애초에 손실이 발생할 수 없는 값('120000'은 정수로 정확히 변환됨)이라, 이 예제만으로는 EXACT와 CONV의 차이가 전혀 드러나지 않는다.",
+      "evidence": "EXACT i( '120000' )는 CONV i( '120000' )와 결과·동작이 동일하다. EXACT의 존재 의의(손실 시 예외)를 보여주려면 소수점이 잘리는 값(예: EXACT i( '12.7' ))처럼 실제로 손실이 발생해 예외가 나는 사례가 필요하다.",
+      "suggestion": "EXACT i( '12.7' ) 또는 EXACT p LENGTH 3 DECIMALS 0( lv_amount_with_decimals )처럼 실제로 손실이 발생해 CX_SY_CONVERSION_* 예외가 나는 예시로 교체하거나 병기."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH18/CH18-L08.md",
+      "quote": "**Key**와 조건 관계가 중요해서, 여기서는 Key가 분명한 [[Sorted Table]]로 익힌다.",
+      "category": "위험한 생략",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "FILTER의 WHERE 조건 필드가 매칭돼야 하는 대상은 '결과 타입(tt_booking)의 key'가 아니라 '원본 테이블(lt_booking)의 key(또는 secondary key)'다. 레슨은 tt_booking(=FILTER 결과 타입)에 sorted key를 선언하는 것만 보여줘, 정작 검사 대상인 lt_booking의 key 요건은 짚지 않는다.",
+      "evidence": "ABAP FILTER constructor 규칙상 WHERE 절에 쓰는 필드는 원본 itab의 (secondary) table key와 일치해야 한다는 게 내 기억이다. 이 레슨의 lt_booking이 어떤 key로 선언됐는지는 본문에 나오지 않아, 학습자가 '결과 타입에 key를 주면 된다'로 오해할 위험이 있다.",
+      "suggestion": "'FILTER의 key 요건은 원본 lt_booking 쪽에 있다'는 점을 명시하고, lt_booking이 status를 key로 갖도록 선언된 스니펫을 함께 보여준다."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH18/CH18-L04.md",
+      "quote": "IF line_exists( lt_booking[ booking_id = lv_id ] ).",
+      "category": "위험한 생략",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "line_exists(...) 이후 같은 키로 tab[...]를 다시 읽는 패턴은 (hashed 테이블이 아닌 한) 동일 키 검색을 두 번 수행한다. 이 챕터·CH18-L11 실습에서 이 패턴이 '기본 방어선'으로 반복 제시되는데, 대량 데이터·비-hashed 테이블에서는 탐색 비용이 두 배라는 점을 짚지 않는다.",
+      "evidence": "TRY/CATCH가 CH21로 미뤄진 커리큘럼 설계는 합리적이나(레슨이 명시적으로 그렇게 밝힘), 성능에 민감한 실무에서는 이 이중 탐색을 알고 쓰는 것과 모르고 쓰는 것은 다르다. 다만 표 자체가 작고(예제 3~4행) 이 챕터의 학습 목적상 치명적이지는 않다.",
+      "suggestion": "'대량 데이터·비-hashed 테이블에서는 line_exists+tab[]가 검색을 두 번 하니, 성능이 중요하면 TRY/CATCH(CH21)나 sy-tabix를 남겨 두는 대안도 있다' 정도의 한 줄 각주만 추가해도 충분."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH18의 modern 문법 설명(DATA()/FINAL()/VALUE/CORRESPONDING/Table Expression/String Template/CONV·EXACT/COND·SWITCH/REDUCE·FILTER/LET)은 전반적으로 정확하고 예제도 실무 패턴에 크게 벗어나지 않는다. 다만 (1) line_index()의 hashed 테이블 반환값 서술이 틀렸을 가능성, (2) string template 중괄호 공백을 '문법 요소'로 과잉 서술한 점, (3) EXACT 예시가 손실 시나리오를 보여주지 못하는 점, (4) FILTER의 key 요건이 결과 타입이 아니라 원본 테이블에 있다는 점을 짚지 않은 점, (5) line_exists+tab[] 이중 탐색의 성능 여지를 언급하지 않은 점은 정밀도를 높이면 좋다. 구조·의도('짧게'가 아니라 '또렷하게')는 교육적으로 탄탄하다."
+  }
+}

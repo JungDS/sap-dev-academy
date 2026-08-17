@@ -1,0 +1,129 @@
+{
+  "agent": "AG02",
+  "model": "opus",
+  "target": "CH19",
+  "persona_ack": "나는 '준호' — 배운 건 그 자리에서 직접 해봐야 직성이 풀리는 실습형 학습자다. CH19의 여덟 레슨 본문 코드와 여덟 개 체험 위젯을 하나씩 실제로 눌러 보며 (1) 체험 공백 (2) 본문↔위젯 불일치 (3) 헛체험 (4) 위젯 결함을 대조 감사했다.",
+  "method": "① 하네스가 띄운 로컬 서버(http://localhost:8143)에 전역 Playwright 1.62.1 + Chromium을 헤드리스로 붙여 8개 위젯(embeds/abap/CH19-L01-S01 ~ L08-S01, ?v=b5)을 실제 로드. ② 각 위젯의 모든 세그먼트 버튼을 실제 click 이벤트로 전 조합 순회(L01 4단계x3항공사, L02 4operand x @on/off, L03 4list x 3target, L04 3mode x db/abap, L05 7함수 + pos/len/days 입력 실조작, L06 3op x sql/abap, L07 6카드 정답/오답/리셋, L08 ON/WHERE x COALESCE on/off)하고 렌더된 DOM(#smsCode/#heiVerdict/#itvShape/#selTable/#sfwResult/#icsResult/#score/#cajlCode/#cajlResult 등)의 innerText를 매 조합마다 측정. ③ console error·pageerror 수집(8개 위젯 모두 0건). ④ 위젯 HTML의 cfg(JSON)와 embeds/_engine/*.js 엔진 소스를 정독해 렌더 결과와 대조. ⑤ 본문 MD 9개 파일 전문 정독 후 코드 블록↔위젯 코드/데이터 1:1 대조.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L08.md",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH19-L01-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH19-L02-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH19-L03-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH19-L04-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH19-L05-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH19-L06-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH19-L07-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH19-L08-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\sql-modernize-stepper.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\host-escape-inspector.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\inline-target-viewer.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\sql-expression-lab.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\sql-function-workbench.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\itab-sql-console.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\module-choice-cards.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\concert-agg-join-lab.js"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\concert-agg-join-lab.js",
+      "quote": "var whLine = cond === 'where' ?",
+      "category": "위젯 결함",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "CH19-L08 체험에서 '취소 제외 → WHERE'를 고르면, 취소 조건이 ON에 남은 채 WHERE가 추가로 붙어 한 SELECT 안에 WHERE 절이 두 번 나오는 문법상 불가능한 코드가 표시된다. 레슨 ③의 핵심 대조(ON이냐 WHERE냐)가 코드 화면에서는 성립하지 않는다.",
+      "evidence": "Playwright 실클릭으로 측정한 #cajlCode innerText(cond=where, coal=y): \"... LEFT OUTER JOIN zbooking AS b / ON  b~concert_id = c~concert_id / AND b~status <> 'C' / WHERE b~status <> 'C' / WHERE c~concert_id IN @so_conc / GROUP BY ...\". 엔진 renderCode()에서 onLine(= \"AND b~status <> 'C'\")은 cond와 무관하게 항상 출력되고, cond==='where'일 때 whLine이 추가로 삽입되기 때문(하이라이트만 옮겨 갈 뿐 ON 조건이 제거되지 않음). 결과표는 C003가 사라지는 것으로 올바르게 계산되지만, 학습자가 눈으로 읽는 코드는 ON+WHERE 중복이라 '어디에 뒀는지'를 배울 수 없고 그대로 옮겨 적으면 syntax error다.",
+      "suggestion": "cond==='where'일 때는 onLine을 'ON b~concert_id = c~concert_id'만 남기도록(AND 라인 제거) 분기하고, 취소 조건은 기존 WHERE 절(c~concert_id IN @so_conc) 안에 AND로 합쳐 한 개의 WHERE만 렌더하도록 수정."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\concert-agg-join-lab.js",
+      "quote": "<th>booked</th><th>cap</th><th>seat_status</th>",
+      "category": "불일치",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "CH19-L08 체험의 결과표는 seat_status 컬럼을 항상 보여 주는데, 같은 위젯이 표시하는 SELECT 코드에는 본문 ②의 CASE … END AS seat_status가 빠져 있다. 코드에 없는 컬럼이 결과에 나온다.",
+      "evidence": "본문 CH19-L08.md ②의 코드는 'CASE WHEN COALESCE( SUM( b~seats ), 0 ) >= c~capacity THEN 'FULL' ELSE 'OPEN' END AS seat_status'를 포함한다. 반면 실측한 #cajlCode(네 조합 모두)의 SELECT list는 'c~concert_id, c~artist, c~capacity, COALESCE( SUM( b~seats ), 0 ) AS booked'에서 끝나는데, #cajlResult 헤더는 concert_id/artist/booked/cap/seat_status로 seat_status가 계산돼 표시된다(C002=FULL, C003=OPEN 실측). 코드↔결과 대조로 배우는 위젯인데 결과 컬럼의 출처가 코드에 없다.",
+      "suggestion": "renderCode()의 SELECT list에 CASE … AS seat_status 줄을 추가(COALESCE 토글 상태에 맞춰 식도 함께 바뀌게)하거나, 결과표에서 seat_status 컬럼을 빼고 booked만 비교하게 정리."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\sql-modernize-stepper.js",
+      "quote": "msg = '<b>콤마</b>만 적용 — 필드 목록은 modern인데, ABAP 변수 경계(<code>@</code>)는 아직 없습니다. 다음 단계에서 <code>@</code>를 붙이세요.';",
+      "category": "위젯 결함",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "CH19-L01 stepper의 중간 단계('콤마', '@ escape')는 실제 ABAP에서는 컴파일되지 않는 조합인데, 위젯은 이를 '아직 덜 바꾼 정상 코드'로 안내하고 매 단계 동일한 실행 결과(행 수·sy-subrc·sy-dbcnt) 카드를 그대로 보여 준다.",
+      "evidence": "실측한 stage1 코드 = \"SELECT carrid, connid, seatsmax / FROM sflight / INTO TABLE lt_flight / WHERE carrid = lv_carr.\" — SELECT list에 콤마를 쓰는 순간 strict 모드가 켜지고 strict 모드에서는 ABAP 데이터 객체에 @ escape가 필수라, 콤마+@없음 조합은 문법 오류다. stage2 역시 콤마·@는 있으나 INTO가 WHERE 앞에 있는 형태로, 본문 CH19-L01.md도 'INTO를 중간에 둠 → … strict 모드에선 강제되는 경우가 있다'고 적고 있다. 그런데 위젯의 #smsResult는 stage 0~3 어느 단계에서나 LH=5행·sy-subrc 0을 똑같이 표시해, 실습형 학습자가 중간 단계 코드를 그대로 SE38에 옮겨 적으면 '되는 코드'로 오해한다.",
+      "suggestion": "stage1·stage2 안내에 '이 조합은 학습용 중간 단계이며 실제로는 syntax error(콤마 = strict 모드 → @ 필수, INTO는 마지막)'라는 한 줄을 추가하고, 중간 단계에서는 결과 카드에 '표기 실험 중 — 실제 실행은 완성 단계에서' 같은 표시를 주거나 결과 카드를 흐리게 처리."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH19-L04-S01.html",
+      "quote": "base: ['carrid', 'carrname', 'cityto'],",
+      "category": "불일치",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "CH19-L04 SQL Expression Lab의 '결과' 표가 SELECT list에 없는 컬럼(COALESCE 모드의 cityto, CAST 모드의 seatsmax)을 결과 컬럼처럼 함께 보여 준다.",
+      "evidence": "실측: coal 모드의 #selCode = 'SELECT c~carrid, c~carrname, COALESCE( p~cityto, 'NO ROUTE' ) AS city_to_text …'인데 #selTable 헤더는 'carrid carrname cityto city_to_text'로 cityto가 결과 컬럼처럼 표시된다(AA/ZZ 행은 NULL). cast 모드도 코드는 'SELECT carrid, connid, CAST( seatsmax AS CHAR( 5 ) ) AS seatsmax_text'인데 표 헤더는 'carrid connid seatsmax seatsmax_text'다. 표 위 캡션이 '결과 (계산 컬럼 강조)'라서, 코드를 그대로 실행하면 그 컬럼이 나올 것으로 오해한다(입력값 표시라는 안내도 없음).",
+      "suggestion": "원본 값 컬럼은 '입력(원본 컬럼)'과 '결과'로 표 구역을 나누거나 헤더에 회색 '원본' 배지를 달아 구분. 또는 각 모드의 sqlExpr SELECT list에 해당 원본 컬럼(p~cityto, seatsmax)을 포함시켜 코드와 표를 일치시킨다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH19-L07-S01.html",
+      "quote": "{ q: '사용자가 입력한 pa_carrid와 같은 행만 읽는다.', ans: 'host', why: 'ABAP 값임을 SQL 안에서 표시 — WHERE carrid = @pa_carrid.' },",
+      "category": "위젯 결함",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "CH19-L07 Decision Cards 1번 카드가 실제로는 선언할 수 없는 PARAMETERS 이름 pa_carrid(9자)를 정답 해설에서 예시로 쓴다.",
+      "evidence": "선택화면 필드(PARAMETERS/SELECT-OPTIONS)의 이름은 최대 8자다. 'pa_carrid'는 9자라 PARAMETERS pa_carrid TYPE …로 선언하면 문법 오류가 난다(같은 이유로 04_CONVENTIONS R11도 so_ 이름을 8자 이내로 못박는다). 실측 결과 카드·해설 모두 pa_carrid를 그대로 노출하며, 실습형 학습자가 그대로 따라 선언하면 바로 막힌다.",
+      "suggestion": "pa_carrid → pa_carr(8자 이내)로 카드 문항과 why 해설을 함께 교체."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\sql-function-workbench.js",
+      "quote": "{ who: 'ABAP (0-기반)', code: 'substring( val = connid off = ' + (subPos - 1) + ' len = ' + subLen + ' )' }",
+      "category": "위젯 결함",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "CH19-L05 SUBSTRING 비교 줄이 pos 입력을 검증 없이 그대로 -1 해서, 불가능한 ABAP 코드(off = -1)나 범위를 넘는 len을 정상 예시처럼 보여 준다.",
+      "evidence": "실조작 측정: pos=0·len=2를 넣으면 결과는 '🚫 범위 밖 — SQL pos는 1부터 4까지'로 올바르게 막히는데, 바로 아래 비교 줄은 여전히 \"ABAP (0-기반) substring( val = connid off = -1 len = 2 )\"를 표시한다. pos=1·len=9도 결과는 범위 밖 경고인데 비교 줄은 'off = 0 len = 9'를 그대로 보여 준다. ABAP substring의 off는 음수가 될 수 없고 len도 문자열 길이를 넘을 수 없어(범위 초과 시 예외), 잘못된 코드를 대응 예시로 학습하게 된다.",
+      "suggestion": "결과가 ok:false일 때는 compare 영역을 숨기거나 'SQL pos가 유효해야 대응하는 ABAP off를 보여 줄 수 있습니다' 문구로 대체."
+    },
+    {
+      "seq": 7,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH19-L05-S01.html",
+      "quote": "window.SFW_CFG = { carrid: 'LH', connid: '0400', cityfrom: 'Frankfurt', fldate: '20260626', sysdate: '20260627' };",
+      "category": "위젯 결함",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "CH19-L05의 DATS_DAYS_BETWEEN 시연이 sysdate(20260627)가 fldate(20260626)보다 하루 뒤인 값으로 고정돼 결과가 '-1일'로만 나오고, 음수가 나오는 이유·인자 순서 설명이 없다. 조작할 입력도 없어 이 함수만 '눌러도 배울 게 없는' 상태다.",
+      "evidence": "실측 #sfwResult = \"gap (sy-datum=20260627 → fldate=20260626) -1일\", input='none'이라 값 변경 UI 없음. 본문 CH19-L05.md는 'DATS_DAYS_BETWEEN( @sy-datum, fldate ) — 두 날짜의 차이를 정수(일)로'라고만 하고 음수 사례를 다루지 않으며, 별칭도 본문은 AS days_gap인데 위젯 코드는 AS gap으로 다르다. 실습형 학습자가 '-1일'을 보고 인자 순서(앞이 시작일)나 과거/미래 부호 규칙을 스스로 알아낼 단서가 없다.",
+      "suggestion": "sysdate를 fldate보다 며칠 앞선 값(예: 20260620)으로 바꿔 양수 gap이 기본으로 보이게 하고, days 같은 입력(기준일 조절)을 추가하거나 note에 '앞 인자가 뒤 인자보다 늦으면 음수'를 한 줄 덧붙인다. 별칭도 본문과 같이 days_gap으로 통일."
+    },
+    {
+      "seq": 8,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L03.md",
+      "quote": "단건은 표가 아니라 **Structure**(구조체)로 받는다: `INTO @DATA( )`.",
+      "category": "체험 공백",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "CH19-L03 본문의 SELECT SINGLE … INTO @DATA(ls_carr) 코드는 페이지의 체험에서 눌러 볼 수 없다. 위젯은 표(INTO TABLE) 경우만 조작 가능하고 단건은 하단 고정 문구로만 언급된다.",
+      "evidence": "본문에는 'SELECT SINGLE carrid, carrname FROM scarr … INTO @DATA(ls_carr).' 코드 블록이 있는데, 실측한 위젯의 조작 축은 SELECT 목록(star/two/calc/calcAs)과 target 형태(@DATA( )/DATA( )/@lt_기존) 둘뿐이고 어느 조합에서도 #itvShape는 항상 '결과 lt_flight 한 행의 컴포넌트 … Standard Table · Empty Key'만 보여 준다. 단건 구조체는 위젯 하단의 정적 note 텍스트로만 존재한다(클릭 불가).",
+      "suggestion": "target 세그먼트에 'INTO @DATA(ls_carr) (SELECT SINGLE)' 항목을 하나 추가해, 고른 컬럼으로 만들어지는 것이 '표'가 아니라 '한 행(구조체)'임을 shape 영역에서 직접 보여 준다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH19는 여덟 레슨 모두 체험 위젯이 붙어 있고(체험 공백은 레슨 단위로 0건), L02 host escape 판정·L03 target 형태 판정·L06 @itab 3연산(WHERE/ORDER BY/GROUP BY, LH=120+80=200 검증)·L07 6문항 채점/리셋은 실클릭으로 전부 정상 동작했으며 콘솔 오류도 8개 위젯 전부 0건이다. 본문 데이터와 위젯 데이터도 대체로 일치한다(L08 콘서트 3건·예매 4건·기대값 C001=5/C002=50 FULL/C003=0까지 동일). 다만 챕터의 간판 실습인 L08 위젯에서 'WHERE에 두기'를 고르면 취소 조건이 ON에 남은 채 WHERE가 하나 더 붙어 WHERE 절이 두 번 나오는 불가능한 코드가 뜨는 결함이 있어(레슨 ③의 핵심 대조가 코드상 성립하지 않음) 이것이 최우선 수정 대상이다. 그 밖에 L08 결과표의 seat_status가 코드에 없고, L04 결과표가 SELECT list 밖 컬럼을 결과처럼 보여 주며, L01 stepper의 중간 단계가 실제로는 컴파일되지 않는 조합인데 실행 결과 카드를 그대로 노출하고, L07 카드가 8자 제한을 넘는 pa_carrid를 예시로 쓴다. 모두 위젯 쪽 국소 수정으로 해결 가능하며 레슨 본문 재집필은 필요 없다."
+  }
+}
