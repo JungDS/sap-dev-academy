@@ -19,7 +19,7 @@
   }
   function curMode() { return cfg.modes[state.mode]; }
   function nameOf(id) {
-    for (var i = 0; i < cfg.concerts.length; i++) if (cfg.concerts[i].id === id) return cfg.concerts[i].title;
+    for (var i = 0; i < cfg.concerts.length; i++) if (cfg.concerts[i].id === id) return cfg.concerts[i].artist;
     return id;
   }
 
@@ -34,19 +34,19 @@
       return cfg.concerts.map(function (c) {
         var booked = 0;
         bks.forEach(function (b) { if (b.concert === c.id) booked += b.seats; });
-        return { id: c.id, capacity: c.capacity, booked: booked, remaining: c.capacity - booked };
+        return { id: c.id, artist: c.artist, capacity: c.capacity, booked: booked, remaining: c.capacity - booked };
       });
     }
     if (key === 'exists') {
       return cfg.concerts.filter(function (c) {
         return bks.some(function (b) { return b.concert === c.id; });
-      }).map(function (c) { return { id: c.id, title: c.title }; });
+      }).map(function (c) { return { id: c.id, artist: c.artist }; });
     }
     if (key === 'except') {
       var bookedIds = {};
       bks.forEach(function (b) { bookedIds[b.concert] = 1; });
       return cfg.concerts.filter(function (c) { return !bookedIds[c.id]; })
-        .map(function (c) { return { id: c.id, title: c.title }; });
+        .map(function (c) { return { id: c.id, artist: c.artist }; });
     }
     if (key === 'window') {
       var totals = {}, rn = {};

@@ -1,0 +1,179 @@
+{
+  "agent": "AG02",
+  "model": "opus",
+  "target": "CH20",
+  "persona_ack": "나는 '준호'다. 배운 건 그 자리에서 직접 해봐야 직성이 풀리는 실습형 학습자로서, CH20 일곱 레슨의 본문 코드·설명과 체험 위젯(embeds/abap/CH20-L0n-S01.html + 공통 엔진)을 브라우저에서 실제로 눌러 보며 대조했다. 체험 공백·본문과의 불일치·헛체험·위젯 결함 네 축으로만 판단했고, 없으면 만들지 않았다.",
+  "method": "① 대상 MD 7개 + _chapter.md + 위젯 HTML 7개 정독 → ② 위젯이 물고 있는 공통 엔진 5개(cte-step-viewer.js · exists-vs-join.js · sql-set-board.js · window-partition-sim.js · concert-adv-sql-lab.js) 정독으로 cfg 키 계약 대조 → ③ 하네스가 띄운 http://localhost:8143 에서 7개 위젯을 모두 실제 로드(?v=b5)하고 javascript_tool로 실제 click 이벤트를 dispatch(모드 버튼·단계 버튼·토글·좌우 바꾸기·선택지)한 뒤 렌더된 DOM의 innerText를 그대로 수거해 값·행 수·피드백 문구를 확인. L01(compare-matrix)·L06(decision-tree)은 클릭 후 detail/card 텍스트 확인, L02는 4단계 전부 + '취소 예약 포함' 토글, L03은 JOIN/EXISTS 모드 + 취소조건 제거, L04는 4연산 + 좌우 바꾸기, L05는 5모드 전부, L07은 4모드 × 조건제거 실험까지 실조작. 아래 '결과표에 undefined가 출력된다'류 발견은 전부 실제 렌더 텍스트로 확인한 것이다.",
+  "errors": [],
+  "files_read": [
+    "content/abap/CH20/_chapter.md",
+    "content/abap/CH20/CH20-L01.md",
+    "content/abap/CH20/CH20-L02.md",
+    "content/abap/CH20/CH20-L03.md",
+    "content/abap/CH20/CH20-L04.md",
+    "content/abap/CH20/CH20-L05.md",
+    "content/abap/CH20/CH20-L06.md",
+    "content/abap/CH20/CH20-L07.md",
+    "embeds/abap/CH20-L01-S01.html",
+    "embeds/abap/CH20-L02-S01.html",
+    "embeds/abap/CH20-L03-S01.html",
+    "embeds/abap/CH20-L04-S01.html",
+    "embeds/abap/CH20-L05-S01.html",
+    "embeds/abap/CH20-L06-S01.html",
+    "embeds/abap/CH20-L07-S01.html",
+    "embeds/_engine/cte-step-viewer.js",
+    "embeds/_engine/exists-vs-join.js",
+    "embeds/_engine/sql-set-board.js",
+    "embeds/_engine/window-partition-sim.js",
+    "embeds/_engine/concert-adv-sql-lab.js"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "embeds/abap/CH20-L02-S01.html",
+      "quote": "{ \"concert_id\": \"C001\", \"artist\": \"안유진\", \"capacity\": 100 }",
+      "category": "위젯 결함",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "cfg의 zconcert 행이 artist 키를 쓰는데 엔진은 title 키를 읽어, 3단계 '제목' 열과 4단계 '공연' 열이 모든 행에서 문자열 'undefined'로 렌더된다. 특히 4단계(최종 잔여석 표)에서는 공연을 식별할 열이 그 하나뿐이라 결과가 어느 공연 것인지 알 수 없다.",
+      "evidence": "cte-step-viewer.js 헤더 계약이 'zconcert:[{concert_id,title,capacity}]'이고 joinRowsData()가 title: c.title을, bodyStep3/4의 컬럼이 key:'title'을 참조한다. localhost:8143에서 실제 렌더한 DOM: 3단계 '공연/제목/정원/BOOKED' = 'C001 undefined 100 5', 4단계 '공연/정원/COALESCE(BOOKED,0)/잔여석' = 'undefined 100 5 95', 'undefined 50 4 46', 'undefined 80 0 80'.",
+      "suggestion": "cfg의 키를 artist → title로 바꾸거나(다른 CH20 위젯과 함께 일괄), 엔진이 (c.title || c.artist)를 읽도록 한다. 본문 CH20-L02 코드가 c~artist를 SELECT하므로 열 라벨도 artist로 맞추는 편이 본문과 일치한다."
+    },
+    {
+      "seq": 2,
+      "file": "embeds/_engine/cte-step-viewer.js",
+      "quote": "그래서 <b>C003의 잔여석 = 50 - 0 = 50</b>.",
+      "category": "위젯 결함",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "4단계 안내문에 정원 50이 하드코딩돼 있어, cfg상 C003의 정원이 80인 CH20-L02-S01에서는 같은 문장 안에서 'C003의 잔여석 = 50 - 0 = 50'과 'C003 = 80'이 동시에 나온다. 학습자가 COALESCE 효과를 검산하려는 바로 그 지점에서 숫자가 어긋난다.",
+      "evidence": "bodyStep4()의 피드백 문자열은 앞부분이 고정 텍스트('50 - 0 = 50')이고 뒷부분만 rows[i].seats_left로 계산된다. 위젯 cfg의 C003 capacity = 80. 실제 렌더 텍스트: '그래서 C003의 잔여석 = 50 - 0 = 50. … 최종 잔여석은 C001 = 95, C002 = 46, C003 = 80.'",
+      "suggestion": "고정 숫자를 rows[2].capacity·seats_left로 치환하거나, 예시 공연을 '예약 없는 공연'으로 일반화해 숫자를 문장에서 빼고 표만 보게 한다."
+    },
+    {
+      "seq": 3,
+      "file": "embeds/abap/CH20-L03-S01.html",
+      "quote": "{ id: 'C001', artist: '안유진' }",
+      "category": "위젯 결함",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "EVJ_CFG의 concerts가 artist 키를 쓰는데 엔진은 title을 읽어, 원본 zconcert 표·JOIN 결과·EXISTS 결과의 title 열이 전부 'undefined'로 나오고 피드백 문장까지 'undefined이(가) 예약 건수만큼 2행으로 늘었습니다'로 깨진다.",
+      "evidence": "exists-vs-join.js의 계약이 'concerts:[{id,title}]'이며 renderSrc()·joinRows()·existsRows()·titleOf()가 c.title을 참조. 실제 렌더 DOM: 'zconcert (공연) concert_id title / C001 undefined / C002 undefined / C003 undefined', JOIN 결과 'C001 undefined 0001', 피드백 'zbooking의 예약 한 건마다 … undefined이(가) 예약 건수만큼 2행으로 늘었습니다.'",
+      "suggestion": "cfg 키를 title로 통일하거나 엔진을 (c.title || c.artist)로 방어. 본문이 c~artist를 쓰므로 표 헤더도 artist로 맞추면 본문·위젯이 함께 정합해진다."
+    },
+    {
+      "seq": 4,
+      "file": "embeds/abap/CH20-L07-S01.html",
+      "quote": "{ \"key\": \"artist\", \"label\": \"artist\" }",
+      "category": "위젯 결함",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "캡스톤 랩의 EXISTS·EXCEPT 모드 결과표 artist 열이 전부 'undefined'로 나온다. 엔진 compute()가 title: c.title로 행을 만드는데 cfg concerts는 artist 키만 갖고 있고, 컬럼 정의도 key:'artist'라 어느 쪽으로도 값이 이어지지 않는다. '빠진 행: C002(undefined)' 안내도 같은 이유로 깨진다.",
+      "evidence": "concert-adv-sql-lab.js의 exists/except 분기가 map(function(c){return {id:c.id, title:c.title};}), nameOf()도 c.title 반환. 실제 렌더: EXISTS 모드 '공연ID ARTIST / C001 undefined / C004 undefined', EXCEPT 모드 'C002 undefined / C003 undefined', 조건 제거 실험 시 '빠진 행: C002(undefined)'.",
+      "suggestion": "엔진의 두 map과 nameOf()를 artist 키로 맞추거나 cfg 키를 title로 바꾼다. CH20-L02/L03 위젯과 동일 원인이므로 챕터 단위로 한 번에 정한다."
+    },
+    {
+      "seq": 5,
+      "file": "embeds/abap/CH20-L07-S01.html",
+      "quote": "\"failMsg\": \"취소된 0003(1석)이 C002 합계에 섞여 예약 1석·잔여 79석으로 잘못 계산됩니다.\"",
+      "category": "위젯 결함",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "CTE 모드에서 '조건 제거 실험'을 켰을 때 나오는 실패 안내의 잔여석 수치가 틀렸다. C002는 정원 50이므로 취소 1석이 섞이면 잔여 49인데 안내문은 79라고 말한다(79는 정원 80인 C003의 값). 바로 옆 결과표는 49를 보여 줘서, 검산하라고 만든 실험에서 안내문과 표가 서로 다른 답을 준다.",
+      "evidence": "cfg concerts의 C002 capacity = 50, bookings 0003(C002, 1석, status C). 실제 조작 결과 표: 'C002 50 1 49', 같은 화면 피드백: '행 수(4)는 그대로지만 값이 취소 예약으로 오염됐어요. 취소된 0003(1석)이 C002 합계에 섞여 예약 1석·잔여 79석으로 잘못 계산됩니다.'",
+      "suggestion": "failMsg의 '잔여 79석'을 '잔여 49석'으로 고친다(또는 숫자를 빼고 '표의 C002 값이 어떻게 바뀌었는지 확인하세요'로 바꿔 하드코딩을 제거)."
+    },
+    {
+      "seq": 6,
+      "file": "content/abap/CH20/CH20-L07.md",
+      "quote": "| concert_id | title | capacity |",
+      "category": "불일치",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "실습 데이터 표의 zconcert 컬럼명은 title인데, 바로 아래 과제 1·2의 코드는 c~artist를 SELECT하고 위젯 cfg도 artist를 쓴다. 실습 데이터에 없는 컬럼을 코드가 읽는 셈이라, 표를 보고 직접 따라 쓰려는 학습자에게는 존재하지 않는 필드다.",
+      "evidence": "CH20-L07.md 실습 데이터 헤더 '| concert_id | title | capacity |' vs 과제 1 'SELECT c~concert_id, c~artist, c~capacity', 과제 2 'SELECT c~concert_id, c~artist'. CH20-L02.md의 CTE 예제도 c~artist를 쓴다. 위젯 cfg concerts는 { id, artist, capacity }.",
+      "suggestion": "실습 데이터 표의 헤더를 artist로 바꿔 코드·위젯과 통일한다(공연명 값은 그대로 유지 가능)."
+    },
+    {
+      "seq": 7,
+      "file": "content/abap/CH20/CH20-L03.md",
+      "quote": "  WHERE c~concert_id IN ( SELECT concert_id",
+      "category": "체험 공백",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "이 레슨은 front-matter에서 'IN subquery'를 정식 도입 개념으로 선언하고 seats >= 3 조건의 코드까지 보여 주지만, 페이지의 유일한 위젯(EXISTS vs JOIN 비교기)은 IN subquery를 전혀 다루지 않는다. 위젯 데이터에 seats 컬럼 자체가 없어 '3석 이상 예약이 있는 공연' 실험을 해 볼 방법이 없다.",
+      "evidence": "CH20-L03.md introduces: [\"Subquery\", \"EXISTS\", \"IN subquery\"] 이고 IN subquery 코드 블록이 있다. 반면 CH20-L03-S01의 EVJ_CFG.bookings는 { b, c, status }뿐이며(좌석 수 없음), 엔진 모드도 'join'·'exists' 둘뿐이라 실제 조작에서 IN 관련 화면이 나오지 않음을 확인했다.",
+      "suggestion": "cfg에 seats를 넣고 'IN( … seats >= 3 )' 모드를 한 개 추가하거나, IN 예제를 EXISTS와 결과가 갈리는 사례로 위젯에 편입한다."
+    },
+    {
+      "seq": 8,
+      "file": "embeds/abap/CH20-L05-S01.html",
+      "quote": "{ id: '0003', part: 'C001', seats: 3 },",
+      "category": "불일치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "위젯 데이터가 본문 표와 어긋난다. 본문은 예약 3건(0001 C001 2, 0002 C001 3, 0003 C002 4)에 C001 합계 5라고 못 박는데, 위젯은 같은 예약번호 0003을 C001·3석으로 두고 4건을 써서 C001 합계가 8이 된다. 본문 표로 예상값을 세운 학습자가 위젯을 열면 같은 booking_id가 다른 공연·다른 합계로 나온다.",
+      "evidence": "CH20-L05.md 입력표와 'Window 결과' 표(booked_total 5·5·4). 위젯 실제 렌더: GROUP BY 모드 'C001 8 / C002 4', PARTITION 모드 '0001 C001 2 8 / 0002 C001 3 8 / 0003 C001 3 8 / 0004 C002 4 4'. RANK 시연에 동점이 필요해 3석을 추가한 의도는 보이나 예약번호가 겹쳐 충돌한다.",
+      "suggestion": "위젯의 추가 행을 0004(C001·3석)로 미루고 C002를 0005로 밀거나, 본문 표에 '위젯에서는 동점 순위를 보려고 예약 1건을 더 넣었다'는 한 줄을 붙여 번호 충돌을 없앤다."
+    },
+    {
+      "seq": 9,
+      "file": "embeds/abap/CH20-L04-S01.html",
+      "quote": "{ id: 'C001', name: '정훈영 피아노 리사이틀' },",
+      "category": "불일치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "같은 챕터·같은 공연 ID인데 이 위젯만 공연명이 다르다. C001/C002/C003이 여기서는 '정훈영 피아노 리사이틀·재즈 나이트·신년 오케스트라'이고, L02·L03·L07 위젯과 L07 본문 실습 데이터에서는 '안유진·ABAP Trio·UI5 Night'다. 챕터를 순서대로 도는 학습자에게 같은 데이터셋으로 읽히지 않는다.",
+      "evidence": "CH20-L04-S01의 SQL_SET_BOARD_CFG.left.rows vs CH20-L02-S01/CH20-L03-S01/CH20-L07-S01의 concerts, 그리고 CH20-L07.md 실습 데이터 표(C001 안유진, C002 ABAP Trio, C003 UI5 Night). 위젯 실렌더에서 좌측 A 집합이 '정훈영 피아노 리사이틀/재즈 나이트/신년 오케스트라'로 나옴을 확인.",
+      "suggestion": "챕터 관통 데이터로 공연명을 통일한다(C001 안유진 · C002 ABAP Trio · C003 UI5 Night · C004는 마스터에 없는 유령 ID로 유지)."
+    },
+    {
+      "seq": 10,
+      "file": "embeds/abap/CH20-L04-S01.html",
+      "quote": "code: 'zbooking', title: '예약 있는 공연 (B)',",
+      "category": "불일치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "위젯의 B 집합 SQL이 'SELECT DISTINCT concert_id FROM zbooking'으로 취소 조건이 빠져 있다. 본문 예제는 같은 집합을 'WHERE status <> ''C'''로 정의하고, 챕터 전체가 '취소 예약을 빼는 업무 조건'을 핵심 검증 포인트로 반복한다. 이 위젯만 그 조건이 없어 '예약 있는 공연'의 정의가 레슨 안에서 두 가지가 된다.",
+      "evidence": "CH20-L04.md 코드: 'SELECT concert_id FROM zbooking WHERE status <> ''C''' (EXCEPT 우변). CH20-L04-S01 cfg right.select에는 WHERE 절이 없고, 실렌더 SQL도 'SELECT concert_id FROM zconcert / EXCEPT / SELECT DISTINCT concert_id FROM zbooking.'으로 나옴.",
+      "suggestion": "right.select에 \"WHERE status <> 'C'\" 한 줄을 추가해 본문 예제와 동일한 집합 정의로 맞춘다."
+    },
+    {
+      "seq": 11,
+      "file": "embeds/abap/CH20-L07-S01.html",
+      "quote": "\"failMsg\": \"취소된 B003이 결과에 포함돼 C002 파티션(합계 1)이 생깁니다.\"",
+      "category": "위젯 결함",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "안내문이 예약을 'B003'이라 부르는데 cfg와 결과표의 예약번호는 '0003'이다. 같은 챕터의 CTE 뷰어(CH20-L02-S01) 1단계 안내문도 동일하게 'B003'을 쓴다. 실험 결과를 표에서 찾아 대조하려는 학습자가 표에 없는 이름을 찾게 된다.",
+      "evidence": "cfg bookings: { \"id\": \"0003\", \"concert\": \"C002\", \"seats\": 1, \"status\": \"C\" }. 조건 제거 실험 시 실제 표 행은 '0003 C002 1 1 1'인데 피드백은 '취소된 B003이 결과에 포함돼…'로 출력됨(실조작 확인).",
+      "suggestion": "안내문의 'B003'을 '0003'으로 통일한다(cte-step-viewer.js bodyStep1의 'B003'도 동일)."
+    },
+    {
+      "seq": 12,
+      "file": "embeds/abap/CH20-L07-S01.html",
+      "quote": "{ \"t\": \"  LEFT JOIN +booked AS b ON c~concert_id = b~concert_id\" },",
+      "category": "불일치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "위젯이 보여 주는 SQL이 본문 코드와 표기가 다르다. 본문은 'LEFT OUTER JOIN'과 결과 테이블 lt_capacity/lt_has_booking/lt_without_booking/lt_window를 쓰는데, 위젯은 'LEFT JOIN'과 gt_free/gt_booked/gt_unbooked/gt_detail을 쓴다. 본문을 그대로 따라 친 학습자가 위젯 화면에서 같은 문장을 확인하지 못한다.",
+      "evidence": "CH20-L07.md 과제 1 'LEFT OUTER JOIN +booked AS b ON b~concert_id = c~concert_id … INTO TABLE @DATA(lt_capacity).' vs 위젯 cfg의 해당 SQL 줄과 'INTO TABLE @DATA(gt_free).'. 나머지 세 모드도 gt_ 접두어. 접두어 규칙상 지역 변수는 lt_이므로 본문 쪽이 기준이다.",
+      "suggestion": "위젯 SQL의 조인 표기를 LEFT OUTER JOIN으로, 결과 테이블명을 본문과 같은 lt_* 로 맞춘다(CH20-L03-S01의 @gt_result도 동일 점검)."
+    },
+    {
+      "seq": 13,
+      "file": "embeds/abap/CH20-L06-S01.html",
+      "quote": "{ \"label\": \"상세 행을 두고 그룹 합계·순번을 붙인다\", \"ic\": \"🪟\", \"result\": \"window\" }",
+      "category": "헛체험",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "이 '선택 가이드'는 노드가 하나뿐이라 5지선다 1회 클릭으로 끝나고, 각 선택지·결과가 본문 '상황별 선택' 표의 행을 그대로 되풀이한다. 게다가 레슨 제목의 절반인 '멈춤 기준'은 선택지로 도달할 수 없다 — 본문 표의 마지막 행(계산 규칙이 업무 정책이면 ABAP 코드/CDS)이 옵션에 없고, 정적 note 한 줄로만 남아 판단 연습이 되지 않는다.",
+      "evidence": "dt-cfg의 nodes에 n1 하나뿐이고 5개 opts가 곧바로 results로 간다(실조작: 클릭 1회 → 'Window (OVER)' 카드 + '↺ 처음부터'). 본문 CH20-L06.md 표의 6행 중 'ABAP 코드 / 후속 CDS' 행만 위젯에 대응 결과가 없다.",
+      "suggestion": "'이 계산 규칙이 여러 곳에서 재사용되나?'·'한 화면에서 남에게 설명 가능한가?' 같은 2단계 질문을 붙이고, 'SQL에 넣지 말고 ABAP/CDS로 분리' 결과 카드를 추가해 멈춤 판단까지 체험되게 한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "보강 권장",
+    "summary": "체험 배치 자체는 성실하다 — 일곱 레슨 전부 위젯이 하나씩 있고, 코드가 나오는 L02·L03·L04·L05·L07은 모두 그 코드를 직접 돌려 보는 시뮬레이터를 갖췄다. 조작해 보면 계산 로직(CTE 합계, EXISTS 중복 없음, 집합 4연산과 좌우 바꾸기, RANK/DENSE_RANK 동점 처리, 캡스톤 4모드)은 실제로 정확하게 맞아떨어지고, 특히 '취소 조건 제거 실험'은 이 챕터가 강조하는 업무 조건 누락을 몸으로 겪게 하는 좋은 장치다. 문제는 표시층이다. 위젯 cfg가 공연명을 artist 키로 주는데 엔진 셋(cte-step-viewer·exists-vs-join·concert-adv-sql-lab)이 title을 읽어, L02·L03·L07 세 위젯의 결과표와 피드백 문장에 'undefined'가 그대로 노출된다(L02 4단계는 공연을 식별할 유일한 열이 통째로 undefined). 여기에 하드코딩된 수치 오류 둘 — CTE 뷰어의 'C003의 잔여석 = 50 - 0 = 50'(실제 80)과 캡스톤의 '잔여 79석'(실제 49) — 이 겹쳐, 학습자가 표로 검산하는 순간 안내문과 표가 서로 다른 답을 준다. 나머지는 정합성 문제다: L07 실습 데이터 표의 컬럼명(title)이 코드의 c~artist와 다르고, L04 위젯만 공연명이 다른 세트이며 B 집합에서 취소 조건이 빠졌고, L05 위젯은 본문과 같은 예약번호에 다른 데이터를 담았다. L03은 IN subquery를 정식 도입해 놓고 체험 수단이 없으며, L06 결정 트리는 1단계짜리라 본문 표의 재탕에 가깝고 '멈춤 기준'에는 도달할 수 없다. undefined 5곳과 수치 2곳만 고치면 체감 품질이 크게 올라가는, 구조는 좋고 마감이 남은 상태다."
+  }
+}

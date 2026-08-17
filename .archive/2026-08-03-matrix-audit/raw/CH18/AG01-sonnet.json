@@ -1,0 +1,50 @@
+{
+  "agent": "AG01",
+  "model": "sonnet",
+  "target": "CH18",
+  "persona_ack": "저는 은서, 24세 문과 출신이고 개발·전공 경험이 전혀 없다. 이 사이트로 ABAP을 처음 배운다. 노션·인스타에 익숙하고, 모르는 단어가 나오면 그 자리에서 멈춘다. 아는 척하지 않고, 그 자리(또는 같은 챕터 앞부분)에 풀이가 없으면 막힌 걸로 기록한다.",
+  "method": "CH18의 11개 레슨과 _chapter.md를 순서대로(L01→L11) 처음 읽는 사람 시점으로 통독. 외부 도구·코드 실행·웹검색 없이 텍스트만으로 판단했고, 각 레슨의 앞 내용과 같은 챕터 이전 레슨만 '이미 아는 것'으로 취급했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L10.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L11.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L02.md",
+      "quote": "FOR i = 1 WHILE i <= 9",
+      "category": "생략(선언 설명 누락)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "FOR i = 1 WHILE i <= 9에서 i가 어떻게 선언되고 무슨 타입인지 이 레슨 어디에도 설명이 없다. 바로 앞 L01에서 '문맥이 타입을 제공한다'는 inline 선언 원리를 배웠는데, FOR의 카운터 변수 i도 같은 원리로 자동 선언되는 건지 이 레슨은 말해 주지 않는다.",
+      "evidence": "코드를 읽으면서 'i는 어디서 만들어진 거지? DATA(i)라고 쓰지도 않았는데 그냥 쓰네. perf_no에 들어가는 걸 보니 숫자인가 보다...' 하고 짐작만 하고 넘어가야 했다. 바로 뒤 설명 목록에도 'i·line은 그 표현식 안에서만 산다'는 수명 얘기만 있고, i가 애초에 어떻게 정수로 정해지는지는 안 나온다.",
+      "suggestion": "FOR의 카운터 변수(i)도 그 반복 안에서 암묵적으로 선언·타입 결정된다는 한 줄(예: 'i는 이 FOR 안에서만 사는 정수형 카운터로 자동 선언된다')을 추가하면 좋겠다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L04.md",
+      "quote": "**예외**가 난다. 이 차이를 모르면 modern 문법이 오히려 더 위험하다.",
+      "category": "생략(용어 미정의)",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "CH18 안에서 '예외'라는 말이 이 지점(L04)에서 처음 쓰이는데, 그게 정확히 무슨 상황을 가리키는지(프로그램이 멈추는지, 에러 화면이 뜨는지) 한 줄 풀이가 없다. sy-subrc처럼 '실패하면 값만 세팅되고 계속 진행'하던 감각으로 읽다가, 갑자기 '예외가 난다'는 표현이 나와서 위험도를 가늠하기 어려웠다.",
+      "evidence": "'예외 처리는 CH21에서 정식으로 다룬다'는 안내는 있지만, '예외' 자체가 뭘 뜻하는지는 이 챕터 어디에도 없다. line_exists()로 피하면 된다고 하니 코드는 따라 칠 수 있지만, 왜 위험한지 실감이 안 나서 '무서운 거니까 꼭 line_exists를 붙여야겠다'로만 외우고 넘어갔다. 같은 표현이 L06(EXACT)·L09(THROW 언급)에도 반복되지만 끝까지 정의는 안 나온다. 다만 이전 챕터에서 이미 배운 용어일 수도 있어 확신은 못 하겠다.",
+      "suggestion": "L04에서 '예외'가 처음 쓰일 때 '예외(프로그램이 그 자리에서 멈추고 오류가 나는 상황)' 정도의 짧은 인라인 풀이를 한 번만 붙이면 충분할 것 같다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "classic 코드를 먼저 보여주고 '왜 번거로운지'부터 짚은 다음 modern 문법을 얹는 흐름이라 각 레슨을 따라가기 좋았고, 특히 L10의 '판단 세 가지'와 L11의 '결과가 같은지 확인' 표는 내가 실제로 이해했는지 스스로 점검할 수 있게 해줘서 잘 읽혔다. 다만 FOR 카운터 변수(i)가 어떻게 선언되는지 설명이 빠진 점과, '예외'라는 말이 정의 없이 반복 등장하는 점에서 살짝 멈칫했다."
+  }
+}

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- CH18-L11-S01 — 엔진: diff-mapper + _autoheight. 콘텐츠=레슨 전용(콘서트앱 모던 리팩터, #C18).
-     게이팅: CH18=New ABAP Syntax(인라인 DATA·+=·VALUE·Table Expression). SELECT 모던(@·콤마)은 CH19이라 SQL 밖만. -->
+     게이팅: CH18=New ABAP Syntax(인라인 DATA·+=·VALUE·Table Expression+line_exists 보호). SELECT 모던(@·콤마)은 CH19이라 SQL 밖만. -->
 <html lang="ko" data-eng="diff-mapper">
 <head>
 <meta charset="utf-8" />
@@ -12,7 +12,7 @@
 <body>
 <div class="wrap">
   <p class="hd">콘서트앱 — classic ↔ modern 리팩터 <small>(인라인 DATA · += · VALUE · Table Expr)</small></p>
-  <p class="lead">CH10-L07 잔여석 합산 등 콘서트앱 코드를 모던으로 다듬습니다. 줄에 마우스를 올려 대응을 확인하세요. (<code>SELECT</code> 자체의 모던화는 <code>@</code>가 필요한 <b>CH19</b> — 여기선 SQL 밖 ABAP 코드만.)</p>
+  <p class="lead">콘서트앱의 잔여석 합산·예매 행 만들기·한 줄 조회 코드를 모던으로 다듬습니다. 줄에 마우스를 올려 대응을 확인하세요. (<code>SELECT</code> 자체의 모던화는 <code>@</code>가 필요한 <a href="../../docs/abap/pages/CH19-L01.html" target="_top">Chapter 19 · Classic Open SQL과 Modern ABAP SQL 비교</a> — 여기선 SQL 밖 ABAP 코드만.)</p>
 
   <div class="diff-mapper">
     <div class="diff-mapper__bar">🔁 classic ↔ modern — 줄 위에 마우스를 올려 보세요</div>
@@ -25,20 +25,32 @@ LOOP AT lt_book INTO ls_book.
 ENDLOOP.</span>
 <span class="diff-line" data-link="2" data-title="필드별 채우기" data-desc="구조체를 CLEAR 후 필드를 한 줄씩 대입합니다.">CLEAR ls_new.
 ls_new-concert_id = 'C001'.
+ls_new-perf_no    = '001'.
 ls_new-customer   = '정훈영'.
-ls_new-seats      = 2.</span>
-<span class="diff-line" data-link="3" data-title="READ TABLE" data-desc="한 줄을 키로 찾을 때 READ TABLE ... WITH KEY.">READ TABLE lt_book INTO ls_book
-  WITH KEY booking_id = lv_id.</span></pre>
+ls_new-seats      = 2.
+ls_new-status     = 'N'.</span>
+<span class="diff-line" data-link="3" data-title="READ TABLE + sy-subrc" data-desc="READ TABLE ... WITH KEY로 찾고, sy-subrc로 성공했는지 확인한 뒤에만 씁니다.">READ TABLE lt_book INTO ls_book
+  WITH KEY booking_id = lv_id.
+IF sy-subrc = 0.
+  " 찾았을 때만 사용
+ENDIF.</span></pre>
       </div>
       <div class="diff-pane modern">
         <h4>modern</h4>
-<pre><span class="diff-line" data-link="1" data-title="인라인 DATA + +=" data-desc="LOOP에서 DATA(ls_book)로 바로 선언하고, += 로 누적합니다.">LOOP AT lt_book INTO DATA(ls_book).
+<pre><span class="diff-line" data-link="1" data-title="인라인 DATA + +=" data-desc="합계는 필요한 자리에서 DATA(lv_total) = 0으로 시작하고, LOOP에서 DATA(ls_book)로 바로 선언하며, += 로 누적합니다.">DATA(lv_total) = 0.
+LOOP AT lt_book INTO DATA(ls_book).
   lv_total += ls_book-seats.
 ENDLOOP.</span>
-<span class="diff-line" data-link="2" data-title="VALUE 생성자" data-desc="VALUE zbooking( ... )로 구조체를 한 식에 채웁니다.">DATA(ls_new) = VALUE zbooking(
-  concert_id = 'C001' customer = '정훈영'
-  seats = 2 status = 'N' ).</span>
-<span class="diff-line" data-link="3" data-title="Table Expression" data-desc="lt[ 키 = 값 ]으로 바로 집습니다. 없으면 예외 → line_exists( )로 보호.">DATA(ls_hit) = lt_book[ booking_id = lv_id ].</span></pre>
+<span class="diff-line" data-link="2" data-title="VALUE 생성자" data-desc="같은 다섯 필드를 VALUE zbooking( ... ) 한 식에 채웁니다 — 결과는 왼쪽과 동일합니다.">DATA(ls_new) = VALUE zbooking(
+  concert_id = 'C001'
+  perf_no    = '001'
+  customer   = '정훈영'
+  seats      = 2
+  status     = 'N' ).</span>
+<span class="diff-line" data-link="3" data-title="line_exists + Table Expression" data-desc="lt[ 키 = 값 ]은 없는 키면 예외 — line_exists( )로 먼저 확인하고 읽습니다(왼쪽 sy-subrc 검사에 대응).">IF line_exists( lt_book[ booking_id = lv_id ] ).
+  DATA(ls_hit) = lt_book[ booking_id = lv_id ].
+  " 찾았을 때만 사용
+ENDIF.</span></pre>
       </div>
     </div>
     <div class="diff-explain"><span class="ph">줄 위에 마우스를 올리면 바뀐 이유가 여기 표시됩니다.</span></div>

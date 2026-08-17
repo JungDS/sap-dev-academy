@@ -2,8 +2,8 @@
    ① 원본 zbooking → ② +booked CTE(공연별 예약 합계, 취소 status='C' 제외) → ③ zconcert LEFT OUTER JOIN +booked → ④ 잔여석 = capacity - coalesce(booked,0).
    토글: '취소 예약 포함'(합계가 틀어지며 경고) · '예약 없는 공연 강조'(C003). 배지: cteRows·joinRows·cancelIncluded.
    골격 계약(HTML 제공): #cteBadges · #cteToggles · #cteSteps · #cteNav · #cteBody.
-   config = <script id="cte-step-viewer-cfg"> { zbooking:[{booking_id,concert_id,seats,status}], zconcert:[{concert_id,title,capacity}] }.
-   엔진에 레슨 데이터 하드코딩 없음(전부 cfg에서 계산). 높이: 자체 post(). 게이팅: CH20 Advanced SQL(CTE/JOIN/COALESCE)만. */
+   config = <script id="cte-step-viewer-cfg"> { zbooking:[{booking_id,concert_id,seats,status}], zconcert:[{concert_id,artist,capacity}] }.
+   엔진에 레슨 데이터 하드코딩 없음(건수·합계·ID·정원 전부 cfg에서 계산). 높이: 자체 post(). 게이팅: CH20 Advanced SQL(CTE/JOIN/COALESCE)만. */
 (function () {
   var cfg;
   try { cfg = JSON.parse(document.getElementById('cte-step-viewer-cfg').textContent); }
@@ -31,9 +31,24 @@
     return String(s).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; });
   }
 
-  // 취소가 하나라도 있는 공연 집합
+  // 취소가 하나라도 있는 공연 집합 + 취소 예약 목록(안내문 cfg 주도용)
   var cancelSet = {};
   zbk.forEach(function (b) { if (b.status === 'C') cancelSet[b.concert_id] = true; });
+  var cancelBk = zbk.filter(function (b) { return b.status === 'C'; });
+  var cancelSeats = cancelBk.reduce(function (a, b) { return a + b.seats; }, 0);
+
+  // 공연별 좌석 나열("2 + 3")과 합계 — 안내문을 cfg 데이터로 만든다
+  function breakdown(cid, withCancel) {
+    var seats = zbk.filter(function (b) { return b.concert_id === cid && (withCancel || b.status !== 'C'); })
+      .map(function (b) { return b.seats; });
+    return { expr: seats.join(' + '), sum: seats.reduce(function (a, x) { return a + x; }, 0), n: seats.length };
+  }
+  // 예약이 하나도 없는(=+booked에 안 나오는) 공연 id들
+  function emptyConcertIds() {
+    var m = bookedMap();
+    return zct.map(function (c) { return c.concert_id; })
+      .filter(function (id) { return !Object.prototype.hasOwnProperty.call(m, id); });
+  }
 
   // 공연별 예약 합계(취소 제외/포함은 cancelIncluded에 따라)
   function bookedMap() {
@@ -52,7 +67,7 @@
     var m = bookedMap();
     return zct.map(function (c) {
       var has = Object.prototype.hasOwnProperty.call(m, c.concert_id);
-      return { concert_id: c.concert_id, title: c.title, capacity: c.capacity, booked: has ? m[c.concert_id] : null };
+      return { concert_id: c.concert_id, artist: c.artist, capacity: c.capacity, booked: has ? m[c.concert_id] : null };
     });
   }
 
@@ -86,7 +101,7 @@
 
   function warnHtml() {
     if (!cancelIncluded || step < 2) return '';
-    return '<div class="cte-warn">⚠️ <b>업무 조건이 합계 단계에서 빠졌습니다.</b> 취소된 예약(1석)이 <code>+booked</code> 합계에 들어갔어요. <code>WHERE status &lt;&gt; \'C\'</code>는 반드시 CTE 정의 안에서 걸러야 합니다.</div>';
+    return '<div class="cte-warn">⚠️ <b>업무 조건이 합계 단계에서 빠졌습니다.</b> 취소된 예약(' + cancelSeats + '석)이 <code>+booked</code> 합계에 들어갔어요. <code>WHERE status &lt;&gt; \'C\'</code>는 반드시 CTE 정의 안에서 걸러야 합니다.</div>';
   }
 
   // ---- 단계별 본문 ----
@@ -101,10 +116,12 @@
       { t: 'SELECT booking_id, concert_id,' },
       { t: '       seats, status' },
       { t: '  FROM zbooking' },
-      { t: '  INTO TABLE @DATA(lt_book).' }
+      { t: '  INTO TABLE @DATA(gt_book).' }
     ]);
     var tbl = tableHtml(cols, zbk, function (r) { return r.status === 'C' ? 'cancel' : ''; });
-    var fb = '<div class="cte-fb">출발점은 예약 원본 <b>4건</b>입니다. <b>B003</b>은 <b>취소(status = \'C\')</b>예요(빨간 줄). 이 취소 좌석을 합계에서 빼는 게 이번 CTE의 핵심입니다.</div>';
+    var cIds = cancelBk.map(function (b) { return '<b>' + esc(b.booking_id) + '</b>'; }).join('·');
+    var fb = '<div class="cte-fb">출발점은 예약 원본 <b>' + zbk.length + '건</b>입니다. ' +
+      (cancelBk.length ? cIds + '은 <b>취소(status = \'C\')</b>예요(빨간 줄). 이 취소 좌석을 합계에서 빼는 게 이번 CTE의 핵심입니다.' : '취소 예약은 없습니다.') + '</div>';
     return sql + '<p class="cte-cap">중간 결과 · zbooking</p>' + tbl + fb;
   }
 
@@ -112,13 +129,13 @@
     var rows = cteRowsData();
     var cols = [
       { key: 'concert_id', label: '공연' },
-      { key: 'booked', label: 'booked (합계)', cellClass: function () { return 'num-good'; } }
+      { key: 'booked', label: 'booked_seats (합계)', cellClass: function () { return 'num-good'; } }
     ];
     var sql = sqlHtml([
       { t: 'WITH' },
       { t: '  +booked AS (' },
       { t: '    SELECT concert_id,' },
-      { t: '           SUM( seats ) AS booked' },
+      { t: '           SUM( seats ) AS booked_seats' },
       { t: '      FROM zbooking' },
       { t: "      WHERE status <> 'C'", cls: cancelIncluded ? 'strike' : 'hi' },
       { t: '      GROUP BY concert_id )' }
@@ -126,9 +143,19 @@
     var tbl = tableHtml(cols, rows, function (r) { return (cancelIncluded && cancelSet[r.concert_id]) ? 'warn' : ''; });
     var fb;
     if (cancelIncluded) {
-      fb = '<div class="cte-fb">취소 필터가 빠지자 <b>C001 = 2 + 3 + 1 = 6석</b>이 됐어요. 취소한 1석까지 더해진 <b>잘못된 합계</b>입니다(주황 줄). 합계 단계에서 조건을 놓치면 이후 모든 계산이 틀어집니다.</div>';
+      var wrongId = Object.keys(cancelSet)[0];
+      var wb = breakdown(wrongId, true);
+      fb = '<div class="cte-fb">취소 필터가 빠지자 <b>' + esc(wrongId) + ' = ' + wb.expr + ' = ' + wb.sum + '석</b>이 됐어요. 취소한 ' + cancelSeats + '석까지 더해진 <b>잘못된 합계</b>입니다(주황 줄). 합계 단계에서 조건을 놓치면 이후 모든 계산이 틀어집니다.</div>';
     } else {
-      fb = '<div class="cte-fb good"><code>+booked</code>는 <b>이름 붙인 중간 표</b>예요. 취소를 뺀 좌석 합계: <b>C001 = 2 + 3 = 5</b>, <b>C002 = 4</b>. 예약이 하나도 없는 <b>C003은 이 표에 아예 없습니다</b>(합계 낼 예약이 없으니까). 이 빈자리는 ③에서 다룹니다.</div>';
+      var sums = rows.map(function (r) {
+        var bd = breakdown(r.concert_id, false);
+        return '<b>' + esc(r.concert_id) + ' = ' + (bd.n > 1 ? bd.expr + ' = ' : '') + r.booked + '</b>';
+      }).join(', ');
+      var empties = emptyConcertIds();
+      var emptyTxt = empties.length
+        ? ' 예약이 하나도 없는 <b>' + empties.map(esc).join('·') + '은 이 표에 아예 없습니다</b>(합계 낼 예약이 없으니까). 이 빈자리는 ③에서 다룹니다.'
+        : '';
+      fb = '<div class="cte-fb good"><code>+booked</code>는 <b>이름 붙인 중간 표</b>예요. 취소를 뺀 좌석 합계: ' + sums + '.' + emptyTxt + '</div>';
     }
     return sql + '<p class="cte-cap">중간 결과 · +booked (CTE)</p>' + tbl + fb;
   }
@@ -137,45 +164,52 @@
     var rows = joinRowsData();
     var cols = [
       { key: 'concert_id', label: '공연' },
-      { key: 'title', label: '제목', cls: 'txt' },
+      { key: 'artist', label: 'artist', cls: 'txt' },
       { key: 'capacity', label: '정원' },
-      { key: 'booked', label: 'booked', render: function (r) { return r.booked === null ? '∅ NULL' : esc(r.booked); }, cellClass: function (r) { return r.booked === null ? 'nullv' : ''; } }
+      { key: 'booked', label: 'booked_seats', render: function (r) { return r.booked === null ? '∅ NULL' : esc(r.booked); }, cellClass: function (r) { return r.booked === null ? 'nullv' : ''; } }
     ];
     var sql = sqlHtml([
-      { t: 'SELECT c~concert_id, c~title,' },
-      { t: '       c~capacity, b~booked' },
+      { t: 'SELECT c~concert_id, c~artist,' },
+      { t: '       c~capacity, b~booked_seats' },
       { t: '  FROM zconcert AS c' },
       { t: '  LEFT OUTER JOIN +booked AS b' },
-      { t: '    ON c~concert_id = b~concert_id' }
+      { t: '    ON b~concert_id = c~concert_id' }
     ]);
     var tbl = tableHtml(cols, rows, function (r) { return (showEmpty && r.booked === null) ? 'empty' : ''; });
-    var fb = '<div class="cte-fb"><b>LEFT OUTER JOIN</b>이라 왼쪽 <code>zconcert</code>의 공연 <b>3개가 모두 남습니다</b>. 예약이 없는 <b>C003</b>은 짝이 없어 <code>booked</code>가 <b>NULL(빈 값)</b>이에요. 만약 <code>INNER JOIN</code>이었다면 C003은 결과에서 사라졌을 겁니다.</div>';
-    if (showEmpty) fb += '<div class="cte-fb good" style="margin-top:6px">강조된 <b>C003</b>이 바로 "예약 없이도 살아남은" 행입니다.</div>';
+    var empties = emptyConcertIds();
+    var emptyIds = empties.map(esc).join('·');
+    var fb = '<div class="cte-fb"><b>LEFT OUTER JOIN</b>이라 왼쪽 <code>zconcert</code>의 공연 <b>' + zct.length + '개가 모두 남습니다</b>.' +
+      (empties.length ? ' 예약이 없는 <b>' + emptyIds + '</b>은 짝이 없어 <code>booked_seats</code>가 <b>NULL(빈 값)</b>이에요. 만약 <code>INNER JOIN</code>이었다면 ' + emptyIds + '은 결과에서 사라졌을 겁니다.' : '') + '</div>';
+    if (showEmpty && empties.length) fb += '<div class="cte-fb good" style="margin-top:6px">강조된 <b>' + emptyIds + '</b>이 바로 "예약 없이도 살아남은" 행입니다.</div>';
     return sql + '<p class="cte-cap">중간 결과 · LEFT OUTER JOIN</p>' + tbl + fb;
   }
 
   function bodyStep4() {
     var rows = joinRowsData().map(function (r) {
       var bk = r.booked === null ? 0 : r.booked;
-      return { concert_id: r.concert_id, title: r.title, capacity: r.capacity, booked: bk, wasNull: r.booked === null, seats_left: r.capacity - bk };
+      return { concert_id: r.concert_id, artist: r.artist, capacity: r.capacity, booked: bk, wasNull: r.booked === null, seats_left: r.capacity - bk };
     });
     var cols = [
-      { key: 'title', label: '공연', cls: 'txt' },
+      { key: 'artist', label: '공연', cls: 'txt' },
       { key: 'capacity', label: '정원' },
-      { key: 'booked', label: 'coalesce(booked,0)', cellClass: function (r) { return r.wasNull ? 'nullv' : ''; } },
-      { key: 'seats_left', label: '잔여석', cellClass: function () { return 'num-good'; } }
+      { key: 'booked', label: 'booked (null→0)', cellClass: function (r) { return r.wasNull ? 'nullv' : ''; } },
+      { key: 'seats_left', label: 'remaining (잔여석)', cellClass: function () { return 'num-good'; } }
     ];
     var sql = sqlHtml([
-      { t: 'SELECT c~title, c~capacity,' },
-      { t: '       coalesce( b~booked, 0 ) AS booked,', cls: 'hi' },
-      { t: '       c~capacity -' },
-      { t: '         coalesce( b~booked, 0 ) AS seats_left' },
+      { t: 'SELECT c~concert_id, c~artist, c~capacity,' },
+      { t: '       COALESCE( b~booked_seats, 0 )              AS booked,', cls: 'hi' },
+      { t: '       c~capacity - COALESCE( b~booked_seats, 0 ) AS remaining' },
       { t: '  FROM zconcert AS c' },
       { t: '  LEFT OUTER JOIN +booked AS b' },
-      { t: '    ON c~concert_id = b~concert_id' }
+      { t: '    ON b~concert_id = c~concert_id' },
+      { t: '  INTO TABLE @DATA(gt_capacity).' }
     ]);
     var tbl = tableHtml(cols, rows, function (r) { return (showEmpty && r.wasNull) ? 'empty' : ''; });
-    var fb = '<div class="cte-fb good"><code>coalesce( b~booked, 0 )</code>가 <b>NULL을 0으로</b> 바꿔 줍니다. 그래서 <b>C003의 잔여석 = 50 - 0 = 50</b>. NULL을 그대로 빼면 결과도 NULL이 돼서 좌석 수가 통째로 사라져요. 최종 잔여석은 <b>C001 = ' + rows[0].seats_left + '</b>, <b>C002 = ' + rows[1].seats_left + '</b>, <b>C003 = ' + rows[2].seats_left + '</b>.</div>';
+    var nullRow = null;
+    rows.forEach(function (r) { if (!nullRow && r.wasNull) nullRow = r; });
+    var nullTxt = nullRow ? '그래서 <b>' + esc(nullRow.concert_id) + '의 잔여석 = ' + nullRow.capacity + ' - 0 = ' + nullRow.seats_left + '</b>. ' : '';
+    var finals = rows.map(function (r) { return '<b>' + esc(r.concert_id) + ' = ' + r.seats_left + '</b>'; }).join(', ');
+    var fb = '<div class="cte-fb good"><code>COALESCE( b~booked_seats, 0 )</code>가 <b>NULL을 0으로</b> 바꿔 줍니다. ' + nullTxt + 'NULL을 그대로 빼면 결과도 NULL이 돼서 좌석 수가 통째로 사라져요. 최종 잔여석은 ' + finals + '.</div>';
     return sql + '<p class="cte-cap">최종 결과 · 잔여석</p>' + tbl + fb;
   }
 

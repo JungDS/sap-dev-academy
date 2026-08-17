@@ -1,0 +1,47 @@
+{
+  "agent": "AG09",
+  "model": "sonnet",
+  "target": "CH19",
+  "persona_ack": "ABAP 정적 검사기 역할로 산문은 무시하고 각 파일의 ```abap 코드 펜스만 줄 단위로 정적 검토했다(선언·네이밍·classic/modern 경계 규약 위주).",
+  "method": "대상 9개 md의 ```abap 코드 블록을 전수 육안 정적 대조(미선언/재선언 충돌, gv_/lv_/ts_/tt_/so_ 등 명명 접두어, CH18/19 modern 문법·New Open SQL 경계 규약, 문장 종결 마침표) — 별도 컴파일러·린터 도구는 미사용.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L03.md",
+      "quote": "DATA lt_flight TYPE TABLE OF sflight.\nSELECT * FROM sflight\n  WHERE carrid = 'KE'\n  INTO TABLE lt_flight.\n\n\" modern: 결과 타입을 SELECT가 알아서 만들어 준다\nSELECT * FROM sflight\n  WHERE carrid = 'KE'\n  INTO TABLE @DATA(lt_flight).",
+      "category": "컴파일 오류(변수 재선언)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "같은 ```abap 블록 안에서 `DATA lt_flight TYPE TABLE OF sflight.`로 이미 선언한 lt_flight를, 바로 아래 modern SELECT의 `@DATA(lt_flight)`가 같은 이름으로 다시 인라인 선언한다. 이 블록을 위에서 아래로 그대로 이어 실행하면 '이미 선언된 이름 재선언' 구문 오류가 난다.",
+      "evidence": "바로 아래 '흔한 실수와 점검' 절이 '이미 선언된 이름에 @DATA( )'를 명시적 실수로 꼽는데(83행 부근: '@DATA( )는 새 이름일 때만'), 정작 그 위 예제 코드가 lt_flight라는 동일 이름으로 그 실수를 그대로 재현한다.",
+      "suggestion": "modern 쪽 변수명을 다른 이름(예: lt_flight2)으로 바꾸거나, classic/modern 두 SELECT를 별도 코드 펜스로 분리해 '이어서 실행하는 코드가 아니라 대비되는 두 예시'임을 명확히 한다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L08.md",
+      "quote": "DATA lt_book TYPE TABLE OF zbooking.\nSELECT * FROM zbooking\n  INTO TABLE lt_book\n  WHERE concert_id IN so_conc.\n\n\" modern\nSELECT * FROM zbooking\n  WHERE concert_id IN @so_conc\n  INTO TABLE @DATA(lt_book).",
+      "category": "컴파일 오류(변수 재선언)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "CH19-L03과 동일한 패턴: 한 코드 블록 안에서 `DATA lt_book TYPE TABLE OF zbooking.`로 선언한 lt_book을 바로 아래 modern SELECT의 `@DATA(lt_book)`이 같은 이름으로 다시 인라인 선언한다. 이어서 실행하면 재선언 구문 오류.",
+      "evidence": "CH19-L03의 '흔한 실수' 규칙(이미 선언된 이름에 @DATA() 금지)이 이 실습 레슨(CH19-L08) 코드에도 그대로 반복된다 — 챕터를 마무리하는 실습 예제라 학습자가 그대로 따라 칠 가능성이 더 크다.",
+      "suggestion": "modern 블록의 결과 변수명을 classic과 다르게 하거나(예: lt_book_v2), 두 SELECT를 별도 코드 펜스로 나눠 대비 예시임을 분명히 한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH19 8개 레슨 전체의 ```abap 블록을 정적 검토한 결과, 활성화 차단급 결함은 대부분 없었다. @ host variable·host expression·@DATA( ) inline target·SQL CASE/CAST/COALESCE·문자열/날짜 함수·SELECT FROM @itab 예제 모두 modern Open SQL 문법(콤마·@·strict)과 CH19 R6 경계 규약을 정확히 지켰고, 로컬 변수(lv_/lt_/ls_)·TYPES 접두어(ty_/ts_/tt_)·PARAMETERS·SELECT-OPTIONS(so_) 네이밍도 규약과 일치했다. 다만 CH19-L03·CH19-L08 두 곳에서 같은 코드 펜스 안에 classic DATA 선언과 modern @DATA( ) 인라인 선언이 동일 변수명으로 이어져, 문자 그대로 실행하면 '재선언' 컴파일 오류가 나는 패턴이 반복 발견됐다(특히 L03은 바로 아래 '흔한 실수' 설명과 자기모순). 둘 다 변수명 분리나 코드 펜스 분리로 쉽게 고칠 수 있는 경미한 문제다."
+  }
+}

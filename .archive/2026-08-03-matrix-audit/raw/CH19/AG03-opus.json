@@ -1,0 +1,113 @@
+{
+  "agent": "AG03",
+  "model": "opus",
+  "target": "CH19",
+  "persona_ack": "나는 Java/C# 계열 백엔드 3～5년차 개발자다. 변수·조건문·루프·SQL·OOP는 이미 알고, ABAP을 빠르게 훑어 익히려고 CH19(Modern ABAP SQL) 8개 레슨과 _chapter.md를 통독했다. 경력자 시선에서 ① 과잉 설명 ② 개발 상식과 어긋나 오히려 헷갈리는 단순화 ③ 건너뛰기 안내 부재 ④ 일반 개발 용어와 ABAP 용법의 차이를 안 짚은 곳을 기록했다. 이 사이트의 1독자는 비전공 입문자라는 점을 감안해, 입문자에게도 불필요한 장황함만 상위 severity로 두고 '입문자에겐 필요하나 나에겐 아는 내용'은 낮음/suggestion으로 내렸다.",
+  "method": "Read 도구로 대상 9개 MD 원문을 전량 통독(읽기 전용, 파일 수정 없음). 웹 검색·외부 네트워크 미사용, 다른 감사자 산출물·과거 감사 문서 미열람. ABAP SQL 문법·릴리스 판단은 모델 내부 지식에 의존했고 확신이 낮은 항목은 confidence=추정으로 표기.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L08.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH19/CH19-L05.md",
+      "quote": "- `DATS_ADD_DAYS( fldate, 7 )` — ABAP SQL에선 **인자 두 개**(`date`, `days`)로 쓴다. `fldate`가 `20260626`이면 `20260703`.",
+      "category": "오개념 유발",
+      "severity": "높음",
+      "confidence": "추정",
+      "claim": "ABAP SQL의 `DATS_ADD_DAYS`는 세 번째 인자 `on_error`가 필요한 것으로 알고 있는데, 본문은 \"인자 두 개\"라고 못 박아 그대로 따라 치면 구문 오류를 만난다.",
+      "evidence": "내 기억의 ABAP SQL 날짜 함수 시그니처는 `DATS_ADD_DAYS( dats, days, on_error )` / `DATS_ADD_MONTHS( dats, months, on_error )`이며(`DATS_DAYS_BETWEEN`·`DATS_IS_VALID`는 on_error 없음), 잘못된 날짜를 만났을 때의 동작을 호출부가 지정하게 되어 있다. 본문은 굵은 글씨로 \"인자 두 개\"를 강조해 독자가 의심 없이 복사한다. 같은 레슨 아래쪽에서 \"`DATS` 값은 `YYYYMMDD` 유효 날짜여야 한다. 잘못된 날짜는 함수마다 초기화·오류가 날 수 있다\"라고 적은 것도, 실은 이 `on_error` 인자가 결정하는 동작이라 서술이 서로 어긋난다. (오프라인 감사라 릴리스별 시그니처를 확인하지 못해 추정으로 표기한다.)",
+      "suggestion": "시스템 syntax check로 실제 시그니처를 확인한 뒤, 세 인자라면 예제를 `DATS_ADD_DAYS( fldate, 7, on_error )` 형태로 고치고 \"인자 두 개\" 문장을 삭제. 세 번째 인자는 \"잘못된 날짜일 때 어떻게 할지 고르는 자리\" 한 줄 풀이로 붙이면 입문자 부담도 크지 않다."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH19/CH19-L06.md",
+      "quote": "- `FROM @lt_flight` — 메모리의 내부 테이블을 소스로(**DB 왕복 없음**).",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "\"DB 왕복 없음\"을 굵은 글씨로 단정해 놓고, 같은 레슨 뒤쪽 콜아웃에서 \"임시로 DB에 데이터를 넘겨야 하는 경우\"가 있다고 스스로 뒤집는다. 성능을 근거로 도구를 고르는 독자에겐 앞의 단정만 기억에 남아 오판을 만든다.",
+      "evidence": "같은 파일 상단 불릿은 \"DB 왕복 없음\"(direction 문구도 \"DB 왕복 없이\")인데, 아래 🔧 콜아웃은 \"internal table을 source로 쓰는 SELECT는, **ABAP SQL engine**이 처리하는 경우와 임시로 DB에 데이터를 넘겨야 하는 경우로 나뉜다\"라고 적는다. 두 진술이 정면으로 충돌한다. 타 언어 개발자는 이 문법을 LINQ-to-Objects 같은 순수 인메모리 연산으로 오해하기 쉬운데(그래서 대량 데이터에 안심하고 쓴다), 실제로는 엔진이 처리 못 하는 형태면 데이터가 DB로 전송되므로 그 차이가 성능 판단의 핵심이다.",
+      "suggestion": "상단 불릿을 \"보통 DB 왕복 없이 ABAP SQL engine이 메모리에서 처리(단, 형태에 따라 예외 — 아래 콜아웃)\"로 완화하고, 콜아웃을 그 자리로 끌어올리거나 링크로 즉시 연결."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH19/CH19-L02.md",
+      "quote": "\" classic — lv_carr 가 ABAP 변수라는 건 이름으로만 짐작\nSELECT * FROM sflight\n  WHERE carrid = lv_carr\n  INTO TABLE lt_flight.",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L01이 classic→modern의 \"달라진 점 셋\" 중 하나로 \"`INTO`를 문장 맨 뒤에 둔다\"를 들었는데, 정작 L02·L03의 classic 예제가 이미 `INTO`를 맨 뒤에 두고 있어 제시된 차이가 예제에서 무너진다.",
+      "evidence": "CH19-L01은 \"**`INTO`를 문장 맨 뒤**에 둔다 → `SELECT list → FROM → WHERE → INTO` 순으로 읽힌다\"를 modern의 3대 차이로 못 박는다. 그런데 CH19-L02의 classic 대조 코드와 CH19-L03의 \"classic: 먼저 DATA로 선언한 뒤 SELECT\" 코드(`SELECT * FROM sflight / WHERE carrid = 'KE' / INTO TABLE lt_flight.`) 모두 `WHERE` 뒤에 `INTO`가 온다. 전형적인 classic 관용 순서는 `SELECT ... FROM ... INTO TABLE ... WHERE ...`라 대조 자체가 성립하지 않는다. 문법을 diff로 파악하는 경력자는 \"그럼 뭐가 다르다는 거지?\"에서 멈춘다.",
+      "suggestion": "L02·L03의 classic 코드를 `SELECT * FROM sflight INTO TABLE lt_flight WHERE carrid = 'KE'.` 형태(INTO가 WHERE 앞)로 통일하거나, L01의 3번 차이를 \"strict 모드에선 INTO가 마지막 clause로 고정된다\"로 바꿔 서술."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH19/CH19-L04.md",
+      "quote": "숫자 `seatsmax`를 문자형 결과 컬럼으로 만든다. 단, **길이를 의식**해야 한다. `CHAR( 5 )`가 너무 짧으면 큰 값이 잘릴 수 있다.",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "CAST 대상 길이가 모자랄 때를 \"잘릴 수 있다\"(무음 절단)로만 설명한다. 내가 아는 ABAP SQL은 이 경우 절단 대신 오류(구문 검사 또는 런타임 예외)로 끝나는 쪽이라, \"값이 조용히 잘린 데이터\"를 상상하게 만드는 서술은 방향이 반대일 수 있다.",
+      "evidence": "타 언어 개발자에게 \"truncate\"는 데이터가 조용히 손실된다는 뜻이라 방어 코드의 종류가 달라진다(결과 검증 vs 예외 처리). 같은 챕터 L02는 host expression에 대해 \"결과는 SQL 자리가 요구하는 타입으로 **lossless**(값 손실 없이) 변환될 수 있어야 한다\"라며 무손실 원칙을 강조하는데, CAST만 손실을 허용하는 것처럼 읽혀 챕터 내 일관성도 깨진다. (릴리스별 CAST 동작을 오프라인에서 확인할 수 없어 추정.)",
+      "suggestion": "실제 동작을 syntax check/디버거로 확인해 \"길이가 모자라면 값이 잘리는 게 아니라 오류가 난다 → 애초에 넉넉한 길이를 준다\" 식으로 결과를 정확히 명시. lossless 원칙(L02)과 한 줄로 연결해 주면 경력자도 규칙 하나로 묶어 기억한다."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH19/CH19-L02.md",
+      "quote": "ABAP 프로그램에서 선언한 데이터 객체(변수·상수·필드)를 SQL 문장의 자리(operand)에 넣은 것이 **host variable**이다. `@`는 그것을 SQL 안에서 host variable로 알아보게 하는 escape 문자다.",
+      "category": "용어 충돌",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "타 언어 개발자에게 SQL 문맥의 \"escape\"는 곧 SQL injection 방어용 이스케이프를 뜻한다. 여기서의 escape는 \"파서에게 이 토큰은 DB 이름이 아니라 ABAP 값\"이라는 표기 전환일 뿐인데 그 차이를 안 짚어, `@`를 문자열 치환(concatenation)으로 오해할 여지를 남긴다.",
+      "evidence": "본문은 `@`를 \"escape 문자\"로만 규정하고, 값이 어떻게 DB로 전달되는지(문장에 문자열로 붙는 게 아니라 값으로 바인딩된다는 점)를 언급하지 않는다. JDBC/ADO.NET 경험자는 `PreparedStatement`의 `?` 바인딩과 문자열 조립을 구분하는 훈련이 되어 있어 여기서 반드시 \"어느 쪽이냐\"를 묻는다. 한 줄이면 해소되는데 챕터 전체(L01·L02·L06·L08)에 그 문장이 없다.",
+      "suggestion": "L02에 한 줄 추가: \"다른 언어의 bind parameter(`?`, `:param`)와 같은 자리라고 보면 된다 — 값이 문장에 문자열로 붙는 게 아니라 값으로 전달된다.\" 입문자에겐 괄호 부연, 경력자에겐 지름길이 된다."
+    },
+    {
+      "seq": 6,
+      "file": "content/abap/CH19/CH19-L02.md",
+      "quote": "1. **정상 변수** `lv_carr = 'LH'` → 결과 조회, `sy-subrc = 0`.\n2. **결과 없음** `lv_carr = 'ZZ'` → 빈 테이블, `sy-subrc = 4`, `sy-dbcnt = 0`.",
+      "category": "과잉",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "바로 앞 레슨(L01)의 확인 절차와 사실상 같은 내용을 같은 예시값('LH'/'ZZ')·같은 지표(sy-subrc 0/4, sy-dbcnt)로 통째로 반복한다. 연속한 두 레슨의 반복이라 입문자에게도 새 정보가 없다.",
+      "evidence": "CH19-L01 \"결과는 그대로 — 확인 습관도 그대로 ✅\" 절이 이미 ①행 수 ②`sy-subrc`가 0인가 4인가 ③`sy-dbcnt` 세 지점을 들고, \"`lv_carr = 'LH'`이고 데이터가 있으면 `sy-subrc = 0`… 없는 코드(`'ZZ'`)라면 … `sy-subrc = 4`, `sy-dbcnt = 0`\"까지 같은 예시로 서술한 뒤 \"이 관찰 지점은 **이 챕터 내내 그대로** 유지된다\"라고 못 박는다. L02가 그 선언을 무시하고 같은 표를 다시 편다. 덧붙여 \"컬럼에 `@`를 붙이지 마라 / `@`를 빠뜨리지 마라\"는 흔한 실수도 L01·L02·L06·L08 네 레슨에 중복 등장한다.",
+      "suggestion": "L02의 1·2번을 한 문장으로 줄이고(\"확인 지점은 L01과 동일\") 이 레슨 고유의 3번(타입·값 부적합 → host operand 타입 규칙)만 남긴다. 반복되는 `@` 실수 목록도 L01에 정본을 두고 이후 레슨은 링크로 대체."
+    },
+    {
+      "seq": 7,
+      "file": "content/abap/CH19/CH19-L07.md",
+      "quote": "이 챕터의 핵심은 문법 암기가 아니라 **선택 기준**이다.",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "SQL을 이미 아는 독자에게 가장 값진 자산(L07의 \"언제 무엇을 쓸까\" 표)이 챕터 7번째 레슨에 묻혀 있고, 앞쪽 어디에도 \"SQL 경험자는 L01 비교 블록과 이 표만 봐도 된다\"는 안내가 없다.",
+      "evidence": "CH19는 L01 비교 → L02 `@` → L03 `@DATA` → L04 SQL 식 → L05 함수 → L06 `@itab` → L07 정리 순으로, 앞 6개 레슨의 실질 내용 상당수(CASE·CAST·COALESCE·CONCAT·SUBSTRING·GROUP BY)는 표준 SQL을 아는 독자에겐 이미 아는 개념이고 정작 새로운 건 `@`·콤마·`@DATA`·strict·`FROM @itab` 다섯 가지뿐이다. 챕터 전체에 건너뛰기 안내가 한 곳도 없어 경력자는 6개 레슨을 다 읽고서야 요약표를 만난다.",
+      "suggestion": "L01 도입부(★ 콜아웃 옆)에 접기(`details`) 한 개로 \"이미 SQL을 아는 분께: 새로 익힐 건 `@`·콤마·`@DATA`·strict·`FROM @itab` 다섯 개다. 한눈 비교 블록과 [정리 표](CH19-L07.html)부터 봐도 된다\"를 넣으면 입문자 동선은 그대로 두고 경력자만 지름길을 얻는다."
+    },
+    {
+      "seq": 8,
+      "file": "content/abap/CH19/CH19-L03.md",
+      "quote": "- **`@FINAL( )`** → 결과를 이후 바꾸지 않을 때만 제한적으로. 입문 실습은 보통 `@DATA( )`로 시작한다.",
+      "category": "오개념 유발",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "`@FINAL( )`이 아무 설명·릴리스 단서 없이 \"흔한 실수\" 목록에 던져진다. 내가 아는 한 `FINAL( )` 인라인 선언은 상당히 최신 릴리스에서 추가된 문법이라, 교육용 구형 시스템에서 따라 치면 구문 오류가 난다.",
+      "evidence": "이 레슨을 포함해 CH19 어디에도 `FINAL( )`의 정의·도입 설명이 없고(`introduces`에도 없다), 바로 위 세 불릿과 달리 \"무엇을 하는 것인지\"조차 알려주지 않은 채 사용 지침만 준다. Java의 `final`/C#의 `readonly`를 아는 독자는 의미는 추측하지만 \"내 시스템에서 되는가\"는 알 수 없다. 같은 챕터 L05가 `DATS_*` 함수에 대해서는 \"시스템 릴리스에 따라 **없을 수도** 있다\"고 친절히 경고하는 것과 대비된다. (정확한 도입 릴리스를 오프라인에서 확인할 수 없어 추정.)",
+      "suggestion": "이 불릿을 삭제하거나, L05의 \"함수 릴리스 차이\" 경고와 같은 톤으로 \"`@FINAL( )`도 있으나 최신 릴리스 전용이라 시스템에 따라 없을 수 있다 — 지금은 `@DATA( )`만 쓰자\" 한 줄 예고(L1)로 낮춘다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "경력자 시선에서 CH19는 예상보다 잘 짜여 있다. classic↔modern 대조로 시작해 `@`·`@DATA`·SQL 식·함수·`@itab`을 지나 L07의 선택 기준 표로 닫는 구성은 문법 나열식 교재보다 낫고, null↔initial 구분(L04), SQL `SUBSTRING` 1-기반 vs ABAP `off` 0-기반(L05), SELECT list alias 재사용 불가(L08), outer join 조건을 ON에 둘지 WHERE에 둘지(L08) 같은 대목은 오히려 경력자가 실무에서 데는 지점을 정확히 짚는다. 억지로 흠을 잡을 곳이 많지 않았다. 다만 코드를 그대로 복사하는 독자 기준으로 위험한 두 곳이 있다: `DATS_ADD_DAYS`를 \"인자 두 개\"로 못 박은 서술(seq 1)과 CAST 길이 부족을 무음 절단으로 설명한 부분(seq 4)은 시스템에서 실제 확인이 필요하다. 오개념 쪽으로는 `SELECT FROM @itab`의 \"DB 왕복 없음\" 단정이 같은 레슨 콜아웃과 충돌하고(seq 2), classic 예제가 이미 INTO를 맨 뒤에 둬 L01이 제시한 3대 차이 중 하나가 예제에서 무너진다(seq 3). 과잉은 심하지 않으나 L01↔L02의 sy-subrc/sy-dbcnt 확인 절차 중복과 `@` 실수 목록의 4회 반복은 줄일 수 있다(seq 6). 마지막으로 챕터 전체에 경험자용 지름길 안내가 전무해(seq 7), L01에 접기 한 개만 추가해도 입문자 동선을 해치지 않고 해결된다. 전반적으로 재집필이 필요한 수준은 아니고, 사실 확인 2건 + 문장 수정 몇 곳의 경미 수정으로 충분하다."
+  }
+}

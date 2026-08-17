@@ -36,7 +36,7 @@
     { "id": "C001", "artist": "안유진", "capacity": 100 },
     { "id": "C002", "artist": "ABAP Trio", "capacity": 50 },
     { "id": "C003", "artist": "UI5 Night", "capacity": 80 },
-    { "id": "C004", "artist": "Closed Show", "capacity": 60 }
+    { "id": "C004", "artist": "김연아", "capacity": 60 }
   ],
   "bookings": [
     { "id": "0001", "concert": "C001", "seats": 2, "status": "N" },
@@ -51,25 +51,26 @@
       "desc": "CTE(WITH) + LEFT JOIN — 공연별 잔여석",
       "cols": [
         { "key": "id", "label": "공연ID" },
+        { "key": "artist", "label": "artist" },
         { "key": "capacity", "label": "정원" },
         { "key": "booked", "label": "예약" },
         { "key": "remaining", "label": "잔여" }
       ],
       "sql": [
         { "t": "WITH +booked AS (" },
-        { "t": "  SELECT concert_id, SUM( seats ) AS booked" },
+        { "t": "  SELECT concert_id, SUM( seats ) AS booked_seats" },
         { "t": "    FROM zbooking" },
         { "t": "   WHERE status <> 'C'", "cond": true },
         { "t": "   GROUP BY concert_id )" },
-        { "t": "SELECT c~concert_id, c~capacity," },
-        { "t": "       COALESCE( b~booked, 0 ) AS booked," },
-        { "t": "       c~capacity - COALESCE( b~booked, 0 ) AS remaining" },
+        { "t": "SELECT c~concert_id, c~artist, c~capacity," },
+        { "t": "       COALESCE( b~booked_seats, 0 )              AS booked," },
+        { "t": "       c~capacity - COALESCE( b~booked_seats, 0 ) AS remaining" },
         { "t": "  FROM zconcert AS c" },
-        { "t": "  LEFT JOIN +booked AS b ON c~concert_id = b~concert_id" },
-        { "t": "  INTO TABLE @DATA(gt_free)." }
+        { "t": "  LEFT OUTER JOIN +booked AS b ON b~concert_id = c~concert_id" },
+        { "t": "  INTO TABLE @DATA(gt_capacity)." }
       ],
-      "explain": "CTE(WITH)로 예약 합계를 먼저 모으고 LEFT JOIN해 공연 4개의 잔여석을 정확히 계산했어요. 취소(C)는 WHERE에서 제외됩니다.",
-      "failMsg": "취소된 0003(1석)이 C002 합계에 섞여 예약 1석·잔여 79석으로 잘못 계산됩니다."
+      "explain": "CTE(WITH)로 예약 합계를 먼저 모으고 LEFT OUTER JOIN해 공연 4개의 잔여석을 정확히 계산했어요. 취소(C)는 WHERE에서 제외됩니다.",
+      "failMsg": "취소된 0003(1석)이 C002 합계에 섞여 C002가 예약 1석·잔여 49석으로 잘못 계산됩니다."
     },
     {
       "key": "exists",
@@ -85,7 +86,7 @@
         { "t": " WHERE EXISTS ( SELECT concert_id FROM zbooking AS b" },
         { "t": "                 WHERE b~concert_id = c~concert_id" },
         { "t": "                   AND b~status <> 'C' )", "cond": true },
-        { "t": "  INTO TABLE @DATA(gt_booked)." }
+        { "t": "  INTO TABLE @DATA(gt_has_booking)." }
       ],
       "explain": "EXISTS는 '예약이 하나라도 있나'만 확인해요. 취소만 있는 C002는 제외돼 실제 예약된 C001·C004만 남았습니다.",
       "failMsg": "취소 예약만 있는 C002가 '예약된 공연'으로 잘못 포함됩니다."
@@ -103,7 +104,7 @@
         { "t": "EXCEPT DISTINCT" },
         { "t": "SELECT concert_id FROM zbooking" },
         { "t": " WHERE status <> 'C'", "cond": true },
-        { "t": "  INTO TABLE @DATA(gt_unbooked)." }
+        { "t": "  INTO TABLE @DATA(gt_without_booking)." }
       ],
       "explain": "전체 공연에서 예약된 공연을 EXCEPT(차집합)로 빼 미예약 공연 C002·C003만 남겼어요.",
       "failMsg": "C002가 예약된 것으로 취급돼 미예약 목록에서 빠집니다."
@@ -116,20 +117,20 @@
         { "key": "id", "label": "예약ID" },
         { "key": "concert", "label": "공연ID" },
         { "key": "seats", "label": "좌석" },
-        { "key": "total", "label": "파티션 합계" },
-        { "key": "rn", "label": "순번" }
+        { "key": "total", "label": "booked_total" },
+        { "key": "rn", "label": "row_in_concert" }
       ],
       "sql": [
         { "t": "SELECT booking_id, concert_id, seats," },
-        { "t": "       SUM( seats )  OVER ( PARTITION BY concert_id ) AS total," },
-        { "t": "       ROW_NUMBER( ) OVER ( PARTITION BY concert_id" },
-        { "t": "                            ORDER BY booking_id ) AS rn" },
+        { "t": "       SUM( seats )  OVER( PARTITION BY concert_id ) AS booked_total," },
+        { "t": "       ROW_NUMBER( ) OVER( PARTITION BY concert_id" },
+        { "t": "                           ORDER BY booking_id ) AS row_in_concert" },
         { "t": "  FROM zbooking" },
         { "t": " WHERE status <> 'C'", "cond": true },
-        { "t": "  INTO TABLE @DATA(gt_detail)." }
+        { "t": "  INTO TABLE @DATA(gt_window)." }
       ],
-      "explain": "Window 함수로 각 예약 옆에 공연별 합계(total)와 순번(rn)을 같이 보여 줘요. 원본 예약 행은 그대로 유지됩니다.",
-      "failMsg": "취소된 B003이 결과에 포함돼 C002 파티션(합계 1)이 생깁니다."
+      "explain": "Window 함수로 각 예약 옆에 공연별 합계(booked_total)와 순번(row_in_concert)을 같이 보여 줘요. 원본 예약 행은 그대로 유지됩니다.",
+      "failMsg": "취소된 0003이 결과에 포함돼 C002 파티션(합계 1)이 생깁니다."
     }
   ]
 }

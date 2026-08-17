@@ -1,0 +1,45 @@
+{
+  "agent": "AG02",
+  "model": "sonnet",
+  "target": "CH19",
+  "persona_ack": "나는 준호다. 배운 건 그 자리에서 직접 해봐야 직성이 풀리는 실습형 학습자로서, CH19의 각 레슨 본문 코드와 체험 위젯을 하나하나 클릭해 보며 대조 감사했다.",
+  "method": "브라우저 패널로 {{SERVE_URL}}/embeds/abap/CH19-L0X-S01.html?v=b5s 8개를 전부 열람. 각 위젯은 javascript_tool로 실제 세그먼트 버튼에 click 이벤트를 dispatch한 뒤 결과 DOM(#code/#result 등)을 innerText로 읽어 코드·데이터가 본문 코드/서술과 일치하는지 대조했다(스크린샷은 사용하지 않음). read_console_messages로 8개 전부 콘솔 오류 0건 확인. 위젯이 참조하는 embeds/_engine/*.js(sql-modernize-stepper, host-escape-inspector, inline-target-viewer, sql-expression-lab, sql-function-workbench, itab-sql-console, module-choice-cards, concert-agg-join-lab)도 정독해 렌더 로직의 근본 원인을 확인했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L08.md",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH19-L01-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH19-L02-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH19-L03-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH19-L04-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH19-L05-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH19-L06-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH19-L07-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH19-L08-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\concert-agg-join-lab.js"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "embeds/abap/CH19-L08-S01.html",
+      "quote": "취소 제외 조건 위치",
+      "category": "위젯 결함",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "'취소 제외 조건 위치' 세그먼트를 WHERE로 전환하면 위젯이 보여주는 SELECT 코드에 WHERE 절이 중복 출력되고, ON 절의 'AND b~status <> \\'C\\''가 그대로 남는다. 레슨 본문(③ 섹션)이 가르치려는 'ON에 두면 남고, WHERE에 두면 사라진다'는 핵심 대비를 코드 표시 자체가 왜곡한다.",
+      "evidence": "실제 클릭 이벤트를 dispatch해 확인. 기본값(ON) 클릭 후 #cajlCode.innerText = \"SELECT c~concert_id, c~artist, c~capacity,\\n       COALESCE( SUM( b~seats ), 0 ) AS booked\\n  FROM zconcert AS c\\n  LEFT OUTER JOIN zbooking AS b\\n    ON  b~concert_id = c~concert_id\\n    AND b~status <> 'C'\\n  WHERE c~concert_id IN @so_conc\\n  GROUP BY c~concert_id, c~artist, c~capacity\\n  INTO TABLE @DATA(lt_stat).\" (정상 — 본문 ②의 코드와 일치). 이어서 'WHERE' 세그먼트 클릭 후 같은 요소가 \"...ON  b~concert_id = c~concert_id\\n    AND b~status <> 'C'\\n  WHERE b~status <> 'C'\\n  WHERE c~concert_id IN @so_conc...\" 로 바뀐다 — WHERE 절이 두 번(ABAP SQL 문법상 불가) 나오고 ON의 AND 조건도 지워지지 않는다. 원인은 embeds/_engine/concert-agg-join-lab.js의 renderCode()에서 'onLine'(= '    AND b~status <> \\'C\\'')이 cond 값과 무관하게 항상 출력되고, cond==='where'일 때는 그 뒤에 'whLine'(WHERE 절)만 추가로 붙기 때문(코드상 onLine + whLine 그대로 concat). 참고로 집계 결과 테이블(#cajlResult) 자체는 cond=where에서 C003이 올바르게 사라져(로직은 정상) 코드 표시 버그만 결과와 분리되어 존재한다.",
+      "suggestion": "concert-agg-join-lab.js의 renderCode()에서 cond==='where'일 때는 ON 절에 'AND b~status <> \\'C\\''를 넣지 않고(onLine을 생략) WHERE 절만 추가하도록 분기해야 한다. 즉 onLine은 cond==='on'일 때만 렌더링하고, whLine은 cond==='where'일 때만 렌더링하는 상호배타 구조로 고친다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH19 8개 레슨은 본문 SELECT 코드와 체험 위젯(CH19-L01~L08-S01)의 컬럼명·변수명·시나리오·수치가 대부분 정확히 대응한다(예: L01의 LH/AA/ZZ 항공사 코드별 sy-subrc/sy-dbcnt, L05의 SUBSTRING(connid,1,2)='04', L06의 GROUP BY 합산 LH=200/AA=50, L08의 콘서트 집계표가 본문 검증 표와 일치). 8개 위젯 모두 콘솔 오류 없이 렌더링되고 코드=체험 원칙(R2)도 전 레슨에서 지켜진다. 다만 CH19-L08-S01(Concert Modern SQL Lab)에서 '취소 제외 조건 위치'를 WHERE로 전환할 때 SELECT 코드 표시에 WHERE 절이 중복되고 ON의 AND 조건이 지워지지 않는 위젯 결함 1건을 실제 클릭 검증으로 확인했다. 이 레슨 ③ 섹션의 핵심 대비(ON vs WHERE)를 코드 예시가 왜곡하므로 수정이 필요하다."
+  }
+}

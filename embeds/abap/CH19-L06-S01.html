@@ -54,9 +54,9 @@ window.ICS_CFG = {
         "  WHERE f~carrid = @lv_carr        \" lv_carr = 'LH'\n" +
         "  INTO TABLE @DATA(lt_out).",
       loop:
-        "LOOP AT lt_flight INTO DATA(ls)\n" +
+        "LOOP AT lt_flight INTO DATA(ls_flight)\n" +
         "     WHERE carrid = lv_carr.\n" +
-        "  APPEND ls TO lt_out.\n" +
+        "  APPEND ls_flight TO lt_out.\n" +
         "ENDLOOP.",
       note: "<b>internal table도 host variable</b> — <code>FROM lt_flight</code>가 아니라 <code>FROM @lt_flight</code>. alias <code>AS f</code>로 <code>f~carrid</code>처럼 읽으면 출처가 분명합니다."
     },
@@ -90,9 +90,9 @@ window.ICS_CFG = {
         "  GROUP BY f~carrid\n" +
         "  INTO TABLE @DATA(lt_sum).",
       loop:
-        "LOOP AT lt_flight INTO DATA(ls).\n" +
-        "  ls_sum-carrid    = ls-carrid.\n" +
-        "  ls_sum-total_occ = ls-seatsocc.\n" +
+        "LOOP AT lt_flight INTO DATA(ls_flight).\n" +
+        "  ls_sum-carrid    = ls_flight-carrid.\n" +
+        "  ls_sum-total_occ = ls_flight-seatsocc.\n" +
         "  COLLECT ls_sum INTO lt_sum.\n" +
         "ENDLOOP.",
       note: "<code>carrid</code>별로 묶어 좌석을 합산(LH=120+80=200). 집계·join이 섞이면 <b>ABAP SQL engine</b>이 경고를 낼 수 있는데, pragma로 숨기기 전에 <b>왜 나는지</b>부터 이해하세요."

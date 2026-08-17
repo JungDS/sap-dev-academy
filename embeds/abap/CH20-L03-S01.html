@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- CH20-L03-S01 · 엔진: exists-vs-join · 같은 데이터에 INNER JOIN(행 붙이기=중복) vs EXISTS(있나 확인=중복없음)를 적용해 '행 중복' 차이를 관찰 · '취소 조건 제거' 토글 · config=window.EVJ_CFG · 게이팅: CH20 Advanced SQL(EXISTS/JOIN/서브쿼리)만, CDS/RAP/DML/OO 미노출. -->
+<!-- CH20-L03-S01 · 엔진: exists-vs-join · 같은 데이터에 INNER JOIN(행 붙이기=중복) vs EXISTS(있나 확인) vs IN(seats>=3 목록 포함)을 적용해 '행 중복·존재/포함 판정' 차이를 관찰 · '취소 조건 제거' 토글 · config=window.EVJ_CFG(정본 스키마 artist·seats) · 게이팅: CH20 Advanced SQL(EXISTS/IN/JOIN/서브쿼리)만, CDS/RAP/DML/OO 미노출. -->
 <html lang="ko" data-eng="exists-vs-join">
 <head>
 <meta charset="utf-8" />
@@ -11,7 +11,7 @@
 <body>
 <div class="wrap">
   <p class="hd">EXISTS vs JOIN <small>(같은 데이터, 다른 결과)</small></p>
-  <p class="lead">"예약이 있는 공연을 찾아라"는 같은 목표를 <b>INNER JOIN</b>과 <b>EXISTS</b> 두 방식으로 조회해 봅니다. 두 방식이 <b>돌려주는 행 수</b>가 왜 달라지는지 눈으로 확인해 보세요.</p>
+  <p class="lead">"예약이 있는 공연을 찾아라"는 같은 목표를 <b>INNER JOIN</b>과 <b>EXISTS</b>로 조회해 두 방식의 <b>행 수</b>가 왜 달라지는지 확인하고, 본문의 <b>IN</b> subquery("3석 이상 예약이 있는 공연 ID <b>목록에 드는가</b>")도 같은 데이터로 눌러 보세요.</p>
 
   <p class="evj-h">원본 데이터</p>
   <div class="evj-src"></div>
@@ -28,7 +28,7 @@
   <div class="evj-result"></div>
   <div class="evj-fb"></div>
 
-  <div class="note"><b>JOIN은 "옆에 붙이고", EXISTS는 "있는지 본다".</b> JOIN은 <code>zbooking</code>의 예약 행을 공연 옆에 하나씩 이어 붙이므로 예약이 여러 건이면 같은 공연이 그 수만큼 <b>중복</b>됩니다. 반면 EXISTS는 "예약이 하나라도 있나?"만 판단해 공연을 <b>한 번씩만</b> 돌려줍니다. "존재 여부"만 알고 싶을 땐 EXISTS가 중복 걱정이 없어요.</div>
+  <div class="note"><b>JOIN은 "옆에 붙이고", EXISTS는 "있는지", IN은 "목록에 드는지" 본다.</b> JOIN은 <code>zbooking</code>의 예약 행을 공연 옆에 하나씩 이어 붙이므로 예약이 여러 건이면 같은 공연이 그 수만큼 <b>중복</b>됩니다. 반면 EXISTS는 존재 여부만, IN은 "안쪽 SELECT가 만든 값 목록에 포함되는가"만 판단해 공연을 <b>한 번씩만</b> 돌려줘요. 존재를 물으면 EXISTS, 값 목록과 비교하면 IN이 질문을 그대로 옮긴 모양입니다.</div>
 </div>
 
 <script>
@@ -39,11 +39,12 @@ window.EVJ_CFG = {
     { id: 'C003', artist: 'UI5 Night' }
   ],
   bookings: [
-    { b: '0001', c: 'C001', status: 'N' },
-    { b: '0002', c: 'C001', status: 'N' },
-    { b: '0003', c: 'C001', status: 'C' },
-    { b: '0004', c: 'C002', status: 'C' }
-  ]
+    { b: '0001', c: 'C001', seats: 2, status: 'N' },
+    { b: '0002', c: 'C001', seats: 3, status: 'N' },
+    { b: '0003', c: 'C001', seats: 1, status: 'C' },
+    { b: '0004', c: 'C002', seats: 4, status: 'C' }
+  ],
+  inMinSeats: 3
 };
 </script>
 <script src="../_engine/exists-vs-join.js" defer></script>

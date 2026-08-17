@@ -1,0 +1,113 @@
+{
+  "agent": "AG06",
+  "model": "opus",
+  "target": "CH19",
+  "persona_ack": "나는 20년차 SAP ABAP 아키텍트로서 CH19(New Open SQL / Modern ABAP SQL) 8개 레슨 + _chapter.md의 기술 사실·예시 적절성·위험한 생략·안티패턴만 감사했다. 웹 검색 없이 내 지식만으로 판단했고, 릴리스·설정 의존이거나 기억이 불확실한 항목은 전부 confidence=\"추정\"으로 낮췄다.",
+  "method": "Read 도구로 대상 9개 파일 원문 통독(전체 라인). Grep로 CH19 폴더 한정 'UP TO|PACKAGE SIZE|ORDER BY|FOR ALL ENTRIES' 검색해 결과 건수 제한 구문의 부재를 확인. 외부 네트워크·타 감사 산출물 열람 없음.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L08.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH19/CH19-L05.md",
+      "quote": "- `DATS_ADD_DAYS( fldate, 7 )` — ABAP SQL에선 **인자 두 개**(`date`, `days`)로 쓴다. `fldate`가 `20260626`이면 `20260703`.",
+      "category": "사실 오류",
+      "severity": "높음",
+      "confidence": "추정",
+      "claim": "ABAP SQL의 날짜 함수 `DATS_ADD_DAYS`는 인자가 두 개가 아니라 `on_error`를 포함한 세 개로 알고 있다. 본문은 '인자 두 개'라고 굵게 단언하고 예제 코드도 2인자로 써서, 학습자가 syntax error를 만나게 될 가능성이 크다.",
+      "evidence": "ABAP SQL(및 CDS)의 DATS_* 계열 계산 함수는 `DATS_ADD_DAYS( dats, days, on_error )` / `DATS_ADD_MONTHS( dats, months, on_error )` 형태로, 잘못된 날짜 입력 시 동작을 지정하는 세 번째 인자(FAIL / NULL / INITIAL)를 요구한다. 반면 같은 예제의 `DATS_DAYS_BETWEEN( dats1, dats2 )`는 실제로 2인자라, 본문이 두 함수의 시그니처를 같은 것으로 뭉뚱그린 정황이 보인다. 다만 릴리스별 차이 가능성을 배제할 수 없어 '추정'으로 둔다.",
+      "suggestion": "예제를 `DATS_ADD_DAYS( fldate, 7, 'FAIL' ) AS due` (또는 잘못된 날짜를 초기화하려면 `'INITIAL'`)로 고치고, 본문 설명을 '세 번째 인자 on_error = 잘못된 날짜일 때 어떻게 할지(FAIL/NULL/INITIAL)'로 바꾼다. 같은 레슨의 `DATS_DAYS_BETWEEN`은 2인자임을 대비해 보여 주면 학습 효과가 크다. 집필 전 대상 릴리스에서 syntax check로 시그니처 확인 권장."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH19/CH19-L03.md",
+      "quote": "\" 🚫 계산 컬럼에 이름이 없다 — 행 구조가 모호\nSELECT carrid,\n       seatsmax - seatsocc\n  FROM sflight\n  INTO TABLE @DATA(lt_bad).",
+      "category": "사실 오류",
+      "severity": "높음",
+      "confidence": "추정",
+      "claim": "별칭 없는 계산 컬럼을 '행 구조가 모호'한 스타일 문제처럼 서술했지만, 실제로는 컴파일되지 않는 문법 오류에 가깝다. 나쁜 예 코드가 '돌긴 도는데 읽기 나쁜 코드'로 오해된다.",
+      "evidence": "modern ABAP SQL의 strict 모드에서는 SELECT list에 SQL expression(산술식 등)을 쓸 때 `AS` 별칭이 요구되며, 특히 `INTO TABLE @DATA( )` 인라인 target은 결과 컬럼 이름으로 구조체 컴포넌트 이름을 만들기 때문에 이름 없는 식에서는 컴포넌트를 만들 수 없다. L04의 '흔한 실수'도 같은 사안을 '이름을 줘야 받기 쉽다'라는 편의 문제로 완화 서술한다.",
+      "suggestion": "🚫 예제 캡션을 '행 구조가 모호'가 아니라 '문법 오류 — 계산 컬럼엔 AS 별칭이 필수'로 바꾸고, 본문에 '식(expression)에는 반드시 AS 이름'이라는 규칙 문장을 둔다. L04 '흔한 실수'의 '받기 쉽다'도 '필수'로 통일. 학습자가 실제로 오류 메시지를 한 번 보게 하는 편이 기억에 남는다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH19/CH19-L06.md",
+      "quote": "- `FROM @lt_flight` — 메모리의 내부 테이블을 소스로(**DB 왕복 없음**).",
+      "category": "사실 오류",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "`SELECT ... FROM @itab`이 항상 DB 왕복 없이 처리된다고 단언했는데, 실제로는 내부 테이블이 임시 데이터로 DB에 전송되어 DB에서 실행되는 경우가 있다. 같은 레슨 뒤쪽 콜아웃과도 모순된다.",
+      "evidence": "같은 파일 아래쪽에 '내부 테이블을 source로 쓰는 SELECT는 ABAP SQL engine이 처리하는 경우와 임시로 DB에 데이터를 넘겨야 하는 경우로 나뉜다'는 반대 취지의 콜아웃이 있다. 즉 굵게 단언한 'DB 왕복 없음'은 최선의 경우일 뿐이며, 집계·JOIN·복잡한 식이 섞이면 내부 테이블 전송 비용이 발생한다(대용량이면 그 자체가 성능 함정). 릴리스·기능 범위에 따라 처리 주체가 달라져 '추정'으로 둔다.",
+      "suggestion": "불릿을 'DB 테이블을 다시 읽지 않는다(단, 처리 주체는 ABAP SQL engine일 수도, 내부 테이블을 DB로 넘겨 실행할 수도 있다)'로 완화하고, 뒤 콜아웃과 순서를 붙여 한 곳에서 설명한다. '왕복 없음'이라는 단정 대신 '왕복이 없을 수도, 데이터 전송이 생길 수도 있다 → 대량 데이터에 쓰지 말라'가 정확하다."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH19/CH19-L02.md",
+      "quote": "SELECT *\n  FROM sflight\n  WHERE carrid = @lv_carr\n    AND fldate >= @lv_date\n  INTO TABLE @DATA(lt_flight).",
+      "category": "안티패턴",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L01에서 '무심한 SELECT *' 금지를 명시해 놓고, L02·L03의 주력 예제는 계속 `SELECT *`로 전체 컬럼을 읽어 온다. 교정 없이 안티패턴을 반복 시연하는 셈이라 학습자는 `SELECT *`를 표준 형태로 학습한다.",
+      "evidence": "CH19-L01 '흔한 실수'에 '**무심한 `SELECT *`** → 필요한 컬럼만 읽는 원칙은 모던에서도 그대로다'가 있는데, 바로 다음 레슨 L02의 host variable 대표 예제 2개가 모두 `SELECT *`이고 L03의 인라인 target 도입 예제도 `SELECT * FROM sflight`다. sflight는 컬럼이 많고 실무 테이블은 더 크므로, 필요 컬럼만 읽는 습관은 성능(네트워크·버퍼) 관점에서 입문 단계부터 굳혀야 한다.",
+      "suggestion": "host variable·인라인 target 설명에 필요한 컬럼만 남긴다(예: `SELECT carrid, connid, fldate, seatsmax ... INTO TABLE @DATA(lt_flight)`). `SELECT *`는 'FROM 테이블 구조 전체가 정말 필요할 때만'이라는 단서와 함께 한 번만 보여 주고, 이후 예제는 전부 명시 컬럼 리스트로 통일한다."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH19/CH19-L02.md",
+      "quote": "DATA(lv_carr) = 'LH'.\nDATA(lv_date) = sy-datum.",
+      "category": "안티패턴",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "host variable의 타입 정합성을 강조하는 레슨인데, 정작 예제의 host 변수를 문자 리터럴로 인라인 선언해 DB 컬럼과 다른 타입(`c` 길이 2)으로 만든다. `carrid`는 CHAR(3)이므로 예제 자체가 '타입을 맞추지 않은 host 변수'의 시연이다.",
+      "evidence": "타입 미지정 문자 리터럴 `'LH'`로부터 추론되는 인라인 변수 타입은 `c` 길이 2로, sflight-carrid(S_CARR_ID, CHAR 3)와 길이가 다르다. 같은 레슨의 '세 가지로 확인하기' 3번이 '`lv_carr`의 길이·값이 컬럼 타입과 안 맞으면 문법 경고·오류·런타임 데이터 오류'라고 경고하는데, 예제 코드가 바로 그 상태다. 실무 표준은 host 변수를 DDIC 타입으로 선언해 길이·타입 불일치와 잘림을 원천 차단하는 것이다.",
+      "suggestion": "예제를 `DATA lv_carr TYPE sflight-carrid.` / `lv_carr = 'LH'.` (또는 `DATA lv_carr TYPE s_carr_id VALUE 'LH'.`)로 바꾸고, '비교 대상 컬럼의 타입으로 선언한다'는 한 줄 규칙을 덧붙인다. 인라인 `DATA( ) = 리터럴`은 타입이 리터럴 길이로 정해진다는 점을 짧게 짚어 주면 CH18 인라인 선언 학습과도 연결된다."
+    },
+    {
+      "seq": 6,
+      "file": "content/abap/CH19/CH19-L04.md",
+      "quote": "SELECT c~carrid, c~carrname,\n       COALESCE( p~cityto, 'NO ROUTE' ) AS city_to_text\n  FROM scarr AS c\n  LEFT OUTER JOIN spfli AS p ON p~carrid = c~carrid\n  INTO TABLE @DATA(lt_route).",
+      "category": "위험한 생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "WHERE 없이 JOIN 결과 전체를 내부 테이블로 끌어오는 예제인데, 챕터 전체에 결과 건수를 제한하는 장치(`UP TO n ROWS`·`PACKAGE SIZE`)나 '무제한 INTO TABLE = 메모리 위험'이라는 경고가 한 번도 나오지 않는다.",
+      "evidence": "CH19 폴더 전체 검색에서 'UP TO'·'PACKAGE SIZE'는 0건이고, 'ORDER BY'는 L06의 internal table 예제에만 등장한다. 즉 DB를 대상으로 하는 모든 예제가 조건 없는/느슨한 조회를 `INTO TABLE @DATA( )`로 통째로 받는 형태다. 운영 테이블에서 이 습관은 곧바로 메모리 부족(TSV_TNEW_PAGE_ALLOC_FAILED 계열) 덤프와 장시간 실행으로 이어지는 대표 사고 패턴이며, 인라인 target은 결과 크기가 코드에 드러나지 않아 위험이 더 잘 숨는다.",
+      "suggestion": "이 예제에 `WHERE c~carrid IN @so_carr` 같은 제한을 넣고, 챕터 어딘가(L03 인라인 target 또는 L07 정리)에 '조회는 항상 조건으로 좁힌다 · 상한이 필요하면 `UP TO n ROWS` · 대량은 `PACKAGE SIZE`로 나눠 처리 · 결과 순서가 중요하면 `ORDER BY` 명시'를 한 블록으로 추가한다. 정렬 없는 결과의 순서는 보장되지 않는다는 점도 함께."
+    },
+    {
+      "seq": 7,
+      "file": "content/abap/CH19/CH19-L03.md",
+      "quote": "- **`@FINAL( )`** → 결과를 이후 바꾸지 않을 때만 제한적으로. 입문 실습은 보통 `@DATA( )`로 시작한다.",
+      "category": "사실 오류",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "`@FINAL( )`을 릴리스 단서 없이 선택지로 제시했는데, 이는 상당히 최신 릴리스에서만 쓸 수 있는 문법이다. 챕터의 다른 문법보다 요구 릴리스가 높아, 학습자 시스템에서 문법 오류가 날 수 있다.",
+      "evidence": "인라인 `FINAL( )` 선언은 `DATA( )`·host variable·`SELECT FROM @itab`보다 한참 뒤 릴리스(7.5x 후반대 이후 ABAP)에서 도입된 기능으로 기억한다. 같은 챕터 L05에는 'DATS_* 같은 SQL 함수는 시스템 릴리스에 따라 없을 수도 있다'는 릴리스 주의가 있는데, 여기에는 같은 단서가 없어 형평이 맞지 않는다. 정확한 도입 릴리스는 확인이 필요하므로 '추정'.",
+      "suggestion": "불릿에 '(사용 가능한 릴리스가 `@DATA( )`보다 높다 — 내 시스템에서 syntax check로 확인)' 한 마디를 덧붙이거나, 입문 단계에서는 아예 언급하지 않고 CH21 이후로 미룬다. 언급한다면 '읽기 전용 보장'이라는 의미까지 한 줄로 설명해야 학습자가 왜 쓰는지 이해한다."
+    },
+    {
+      "seq": 8,
+      "file": "content/abap/CH19/CH19-L06.md",
+      "quote": "- **alias 생략** → `AS f` … `f~carrid`로 출처를 분명히(DB 테이블과 섞일 때 특히).",
+      "category": "사실 오류",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "내부 테이블을 데이터 소스로 쓸 때의 `AS` 별칭을 '가독성을 위한 권장'처럼 서술했지만, `SELECT FROM @itab`에서 별칭 지정은 문법상 요구되는 것으로 기억한다. '생략해도 되지만 권장'으로 읽히면 오해를 남긴다.",
+      "evidence": "`SELECT ... FROM @itab AS alias` 형태가 표준 표기이며, 내부 테이블 소스는 이름이 host variable이라 컬럼 참조(`f~carrid`)를 위해 별칭이 필요한 구조다. 다만 릴리스별로 별칭 없이 허용되는 경우가 있는지 단정할 수 없어 '추정'으로 둔다.",
+      "suggestion": "'alias 생략'을 '내부 테이블 소스에는 `AS f` 별칭을 붙이고 컬럼은 `f~` 로 참조한다(권장이 아니라 표기의 기본형)'으로 바꾸고, 실제 대상 릴리스에서 별칭 없이 syntax check가 통과하는지 확인해 문구를 확정한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "보강 권장",
+    "summary": "CH19의 큰 그림(콤마·@·INTO 위치·strict 모드, host variable/expression 경계, 인라인 target, SQL 식·함수, @itab 소스, 선택 기준 정리, 콘서트앱 실습)은 기술적으로 견고하다. 특히 L05의 SQL SUBSTRING 1-기반 vs ABAP off 0-기반 대비, L04의 DB null ≠ ABAP initial 구분, L08의 outer join에서 취소 조건을 ON vs WHERE에 두는 차이와 SELECT list alias 재사용 불가 규칙은 실무 신입이 자주 틀리는 지점을 정확히 짚었고, 검증표(C001=5/C002=FULL/C003=0)도 계산이 맞다. 다만 ① L05 `DATS_ADD_DAYS`를 '인자 두 개'로 단언한 부분(on_error 누락 의심)과 ② L03에서 계산 컬럼의 AS 별칭 누락을 '행 구조가 모호'라는 스타일 문제로 완화한 부분은 학습자가 곧바로 syntax error를 만날 수 있어 우선 수정 대상이다. ③ L06의 'DB 왕복 없음' 단언은 같은 레슨 콜아웃과 모순되므로 완화가 필요하다. 성능·안전 측면에서는 L01이 경고한 `SELECT *`를 이후 레슨이 계속 시연하고, 챕터 전체에 결과 건수 제한(UP TO n ROWS·PACKAGE SIZE)과 무제한 INTO TABLE의 메모리 위험, 정렬 미보장 언급이 전무하다 — 읽기 전용 챕터라 COMMIT·lock 생략은 정당하지만 '조회량 통제'는 이 수준에서도 반드시 짚어야 한다. 재집필까지는 불필요하고, 위 8건을 문장·예제 단위로 손보면 기술 검수 기준을 통과할 수준이다."
+  }
+}

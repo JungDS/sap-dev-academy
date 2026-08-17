@@ -3,7 +3,7 @@
    DATS_ADD_DAYS는 더할 일수를 바꾼다. 골격 계약: .sfw-fn(세그) · #sfwCode · #sfwInputs · #sfwResult · #sfwCompare · #sfwNote.
    config: window.SFW_CFG = { carrid, connid, cityfrom, fldate, sysdate }. 높이: _autoheight.js. */
 (function () {
-  var CFG = window.SFW_CFG || { carrid: 'LH', connid: '0400', cityfrom: 'Frankfurt', fldate: '20260626', sysdate: '20260627' };
+  var CFG = window.SFW_CFG || { carrid: 'LH', connid: '0400', cityfrom: 'Frankfurt', fldate: '20260626', sysdate: '20260619' };
   var fn = 'concat';
   var subPos = 1, subLen = 2, addDays = 7;
 
@@ -73,9 +73,9 @@
     },
     between: {
       label: 'DATS_DAYS_BETWEEN', input: 'none',
-      code: function () { return "SELECT fldate,\n       DATS_DAYS_BETWEEN( @sy-datum, fldate ) AS gap\n  FROM sflight ..."; },
-      result: function () { return { ok: true, lbl: 'gap (sy-datum=' + CFG.sysdate + ' → fldate=' + CFG.fldate + ')', val: String(diffD(CFG.sysdate, CFG.fldate)) + '일' }; },
-      note: '두 날짜의 차이를 정수(일)로 돌려줍니다. <code>@sy-datum</code>은 ABAP 시스템 날짜를 host variable로 넘긴 것입니다.'
+      code: function () { return "SELECT fldate,\n       DATS_DAYS_BETWEEN( @sy-datum, fldate ) AS days_gap\n  FROM sflight ..."; },
+      result: function () { return { ok: true, lbl: 'days_gap (sy-datum=' + CFG.sysdate + ' → fldate=' + CFG.fldate + ')', val: String(diffD(CFG.sysdate, CFG.fldate)) + '일' }; },
+      note: '두 날짜의 차이를 정수(일)로 돌려줍니다. <code>@sy-datum</code>은 ABAP 시스템 날짜를 host variable로 넘긴 것입니다. 부호 규칙: <b>뒤 인자(<code>fldate</code>) − 앞 인자(<code>sy-datum</code>)</b> — 앞 날짜가 더 나중이면 <b>음수</b>가 됩니다.'
     }
   };
 
@@ -99,18 +99,27 @@
     } else { inEl.innerHTML = ''; }
   }
 
-  function render() {
-    renderSeg();
-    var def = DEFS[fn];
+  // 코드·결과·비교 공통 렌더. 결과가 유효하지 않으면(범위 밖) 비교 줄에
+  // 불가능한 ABAP 코드를 예시처럼 보여 주지 않고 안내 문구로 대체한다.
+  function renderOutput(def) {
     codeEl.innerHTML = fnTag(def.code());
-    renderInputs(def);
     var r = def.result();
     resEl.className = r.ok ? '' : 'bad';
     resEl.innerHTML = '<span class="lbl">' + h(r.lbl) + '</span><span class="val">' + (r.hl ? '<span class="hl">' + h(r.val) + '</span>' : h(r.val)) + '</span>';
-    cmpEl.innerHTML = def.compare ? def.compare().map(function (c) {
-      var cls = c.who.indexOf('SQL') >= 0 ? 'sql' : 'abap';
-      return '<div class="sfw-cmp-row ' + cls + '"><div class="who">' + h(c.who) + '</div><div class="code">' + h(c.code) + '</div></div>';
-    }).join('') : '';
+    if (!def.compare) { cmpEl.innerHTML = ''; return; }
+    cmpEl.innerHTML = r.ok
+      ? def.compare().map(function (c) {
+          var cls = c.who.indexOf('SQL') >= 0 ? 'sql' : 'abap';
+          return '<div class="sfw-cmp-row ' + cls + '"><div class="who">' + h(c.who) + '</div><div class="code">' + h(c.code) + '</div></div>';
+        }).join('')
+      : '<div class="sfw-cmp-row muted"><div class="who">비교</div><div class="code">pos·len이 유효 범위일 때 SQL(1-기반) ↔ ABAP(0-기반) 표기를 비교합니다</div></div>';
+  }
+
+  function render() {
+    renderSeg();
+    var def = DEFS[fn];
+    renderInputs(def);
+    renderOutput(def);
     noteEl.innerHTML = def.note;
   }
 
@@ -120,15 +129,7 @@
     var v = +e.target.value; if (isNaN(v)) v = 0;
     if (k === 'pos') subPos = v; else if (k === 'len') subLen = v; else if (k === 'days') addDays = v;
     // 입력 중엔 세그/입력 재생성 없이 결과만 갱신
-    var def = DEFS[fn];
-    codeEl.innerHTML = fnTag(def.code());
-    var r = def.result();
-    resEl.className = r.ok ? '' : 'bad';
-    resEl.innerHTML = '<span class="lbl">' + h(r.lbl) + '</span><span class="val">' + (r.hl ? '<span class="hl">' + h(r.val) + '</span>' : h(r.val)) + '</span>';
-    cmpEl.innerHTML = def.compare ? def.compare().map(function (c) {
-      var cls = c.who.indexOf('SQL') >= 0 ? 'sql' : 'abap';
-      return '<div class="sfw-cmp-row ' + cls + '"><div class="who">' + h(c.who) + '</div><div class="code">' + h(c.code) + '</div></div>';
-    }).join('') : '';
+    renderOutput(DEFS[fn]);
   });
 
   render();

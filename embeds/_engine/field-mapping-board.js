@@ -1,5 +1,5 @@
 /* field-mapping-board 엔진 — CORRESPONDING의 매핑 규칙을 원본/대상 필드로 시연한다.
-   같은 이름은 자동, 이름이 다른 필드는 MAPPING(대상=원본), 대상-only 필드는 EXCEPT 또는 초기값, 원본-only 필드는 버려진다.
+   같은 이름은 자동, 이름이 다른 필드는 MAPPING(대상=원본), EXCEPT로 지정한 대상 필드는 원본에 같은 이름이 있어도 채우지 않는다(초기값), 원본-only 필드는 버려진다.
    토글로 MAPPING/EXCEPT를 켜고 끄면 매핑 표와 생성된 CORRESPONDING 코드가 바뀐다.
    골격 계약: .fmb-toggles · #fmbSource · #fmbMap · #fmbCode.
    config: window.FMB_CFG = { targetType, source:[{name,val}], target:[{name}], mapName, mapFrom, exceptName, dropped }. 높이: _autoheight.js. */
@@ -28,17 +28,14 @@
     }).join('');
   }
   function rowFor(tname) {
+    // EXCEPT — 지정한 대상 필드는 원본에 같은 이름이 있어도 결과에서 채우지 않음(자동 복사보다 먼저 판정)
+    if (excepted && tname === CFG.exceptName) return { src: 'EXCEPT ' + CFG.exceptName, bd: 'except', txt: '채우지 않음(초기값)', badge: 'EXCEPT' };
     // 같은 이름 자동
     if (srcHas(tname)) return { src: '원본 ' + tname, bd: 'auto', txt: "'" + srcVal(tname) + "' 복사", badge: '자동(같은 이름)' };
     // MAPPING 대상
     if (tname === CFG.mapName) {
       if (mapped) return { src: 'MAPPING ' + CFG.mapName + ' = ' + CFG.mapFrom, bd: 'map', txt: "원본 " + CFG.mapFrom + " '" + srcVal(CFG.mapFrom) + "'", badge: 'MAPPING' };
       return { src: '(이름 달라 자동 못 찾음)', bd: 'warn', txt: '(빈 값)', badge: '⚠ 미연결' };
-    }
-    // 대상-only (EXCEPT 또는 초기값)
-    if (tname === CFG.exceptName) {
-      if (excepted) return { src: 'EXCEPT ' + CFG.exceptName, bd: 'except', txt: '채우지 않음', badge: 'EXCEPT' };
-      return { src: '(원본에 없음)', bd: 'muted', txt: '(초기값)', badge: '초기값' };
     }
     return { src: '—', bd: 'muted', txt: '(초기값)', badge: '초기값' };
   }

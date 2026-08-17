@@ -1,0 +1,80 @@
+{
+  "agent": "AG05",
+  "model": "sonnet",
+  "target": "CH19",
+  "persona_ack": "20년차 학습 교재·코스 설계 전문가로서 인지부하 관리와 동기 설계(불편→해결) 관점에서 CH19 챕터 구성·섹션 흐름·복습/예습 장치·불편-해결 서사·인지부하를 감사했다.",
+  "method": "대상 파일 9개(_chapter.md + L01~L08) 전체 통독. 각 레슨의 흐름(왜→무엇→어떻게→실수→정리), front-matter의 introduces/prereq/prevRel, 레슨 간 회고·예고 문구, 코드 예제의 신규 개념 수를 교차 점검. 별도 도구·검색 없이 텍스트 근거를 직접 인용.",
+  "errors": [],
+  "files_read": [
+    "content/abap/CH19/_chapter.md",
+    "content/abap/CH19/CH19-L01.md",
+    "content/abap/CH19/CH19-L02.md",
+    "content/abap/CH19/CH19-L03.md",
+    "content/abap/CH19/CH19-L04.md",
+    "content/abap/CH19/CH19-L05.md",
+    "content/abap/CH19/CH19-L06.md",
+    "content/abap/CH19/CH19-L07.md",
+    "content/abap/CH19/CH19-L08.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH19/CH19-L01.md",
+      "quote": "**`SELECT`(Open SQL)** 만은 일부러 classic으로 뒀다(공백 구분·`@` 없음). 이유가 있다.",
+      "category": "불편-해결 서사",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L01은 front-matter상 prevRel: pain-solution인데, 실제 도입부는 \"우리가 지금까지 일부러 classic으로 남겨 뒀다\"는 설계자 시점 서술이라 학습자가 겪는 구체적 불편이 아니다. 진짜 불편(이름 규칙에만 기대던 DB컬럼/ABAP값 구분 모호함)은 오히려 다음 레슨 L02 도입부(\"classic에서는 이게 이름 규칙(lv_)에만 기댔다. 문법으로는 드러나지 않았다\")에서 처음 제시된다.",
+      "evidence": "L01: \"[지난 챕터]에서 ABAP 코드는 모던으로 바꿨지만, SELECT만은 일부러 classic으로 뒀다... 이유가 있다.\" — 이는 \"의도된 보류\"를 알리는 서술이지 체감 불편 사례가 아니다. 반면 L02: \"classic에서는 이게 이름 규칙(lv_)에만 기댔다. 문법으로는 드러나지 않았다.\"가 실제 페인 포인트에 가깝다.",
+      "suggestion": "L01 도입부에 컬럼명과 변수명이 헷갈려 실수하기 쉬운 구체적 예(예: WHERE carrid = carrid류의 자기참조 오타, 혹은 strict 모드가 없어 놓치는 문법 오류)를 하나 보여준 뒤 @ 표시의 필요성으로 이어가면 pain-solution 라벨과 본문이 일치한다."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH19/CH19-L03.md",
+      "quote": "> 📦 이렇게 만들어지는 표는 **Standard Table · Empty Key**다. 키로 자주 찾아 읽어야 하는 결과라면, 인라인 대신 **타입을 직접 선언**하고 알맞은 key를 주는 편이 낫다.",
+      "category": "학습 순서(선행 사용 미표기)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L03에서 \"Empty Key\"라는 용어가 아무 설명 없이 등장한다. 이 표 종류(WITH EMPTY KEY 구문)를 실제로 코드로 보여주며 설명하는 곳은 세 레슨 뒤인 L06(\"TYPES tt_flight TYPE STANDARD TABLE OF ts_flight WITH EMPTY KEY.\")이다. L03 시점에는 이 개념이 R15 규정상 [선행 사용] 표기도 없이 이름만 던져진다.",
+      "evidence": "L03 흔한 실수 섹션 앞부분에 \"Empty Key\"가 굵게 강조되어 핵심 정보처럼 제시되지만 정의·구조 설명이 없다. L06에서야 코드로 \"WITH EMPTY KEY\"가 등장한다.",
+      "suggestion": "L03에서는 \"Empty Key\"라는 용어 대신 \"이 표는 미리 정한 key가 없어 라인 단위로 빠르게 찾기 어렵다\" 정도로 용어 없이 풀어 쓰거나, 처음 쓰는 용어이므로 [선행 사용] 표기와 함께 1문장 예고로 다듬는다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH19/CH19-L07.md",
+      "quote": "다만 CTE·서브쿼리·집합·window 같은 **더 복잡한 조회**는 아직 미뤄 뒀다. 바로 다음 [고급 SQL](CH20-L01.html)에서 회수한다.",
+      "category": "예습 장치(L1 예고 과다)",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "챕터 마무리의 다음 단계 안내에서 CTE·서브쿼리·집합·window·CDS View·OO ABAP 등 새 용어가 한 문단 안에 다수(6개 안팎) 나열된다. R15의 L1 예고 기준(\"1~2문장·새 용어 1개\")을 문자 그대로 적용하면 초과이나, 챕터 종결부 로드맵 성격이라 실습·평가와 무관하고 각 용어에 링크만 걸려 있어 혼란 위험은 낮다.",
+      "evidence": "같은 단락에 이어 \"그 뒤엔 이 ABAP SQL을 재사용 가능한 뷰로 끌어올리는 CDS View, 그리고... OO ABAP로 이어진다\"까지 포함하면 한 섹션에서 미래 개념 이름이 6개 가까이 노출된다.",
+      "suggestion": "다음 챕터(CH20) 예고만 본문에 남기고, CDS View·OO ABAP 같은 더 먼 미래 개념은 \"이후 더 배운다\" 정도로 용어 노출 없이 압축하거나 별도의 접힌(details) 로드맵으로 분리한다."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH19/_chapter.md",
+      "quote": "고전 Open SQL이 투박하다 — @·인라인으로 현대화. ★ 여기부터 modern SQL.",
+      "category": "챕터 구성(동기부여)",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "챕터 intro가 \"무엇이 바뀌는가\"라는 기술적 사실만 한 줄로 전달하고, 왜 이 변화가 학습자에게 가치 있는지(실무 채택률, 가독성/버그 감소, 이후 CDS·RAP 학습과의 연결 등)를 팔지 않는다. 8개 레슨짜리 챕터의 진입 동기로는 다소 얇다.",
+      "evidence": "intro 필드와 본문 도입 문장이 동일한 한 문장(\"고전 Open SQL이 투박하다 — @·인라인으로 현대화. ★ 여기부터 modern SQL.\")뿐이고 구체적 이득·사례가 없다.",
+      "suggestion": "intro에 modern SQL을 배우면 얻는 구체적 이득(컴파일 단계 오류 검출, DB/ABAP 값 구분으로 인한 버그 감소, 이후 CDS View로 이어지는 실무 감각 등) 한두 가지를 덧붙여 동기를 강화한다."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH19/CH19-L05.md",
+      "quote": "`CONCAT`·`SUBSTRING` 외에 `UPPER`/`LOWER`(대/소문자)·`LENGTH`(길이) 등이 있다.",
+      "category": "인지 부하",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "코드 예제에서 이미 CONCAT·SUBSTRING·UPPER 세 함수를 보여준 직후, 같은 단락에서 LOWER·LENGTH를 예제 없이 이름만 추가로 던진다. 날짜 함수(DATS_ADD_DAYS·DATS_DAYS_BETWEEN)까지 합치면 한 레슨에서 이름이 언급되는 SQL 함수가 7개에 이르러, 짧은 분량 대비 함수명 밀도가 높다.",
+      "evidence": "코드블록에는 CONCAT/SUBSTRING/UPPER 세 개만 실행 예시가 있고, \"UPPER/LOWER(대/소문자)·LENGTH(길이) 등이 있다\"는 문장은 예제 없이 존재만 알린다.",
+      "suggestion": "LOWER·LENGTH는 본문에서 삭제하거나 \"흔한 실수\" 아래 각주 수준으로만 남기고, 핵심은 코드로 실제 보여준 CONCAT·SUBSTRING·UPPER·날짜 함수 2종에 집중해 레슨당 새 함수 수를 줄인다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH19는 8개 레슨이 콤마/@ → host variable/expression → inline target → SQL expression → 문자열/날짜 함수 → @itab → 정리 → 실습 순으로 논리적으로 쌓이고, 레슨마다 왜→무엇→어떻게→실수→정리 흐름과 이전 챕터 회고(CH18 인라인 선언, ABAP substring 0-based vs SQL 1-based 비교 등)가 탄탄하게 배치된 완성도 높은 챕터다. 다만 (1) L01의 pain-solution 라벨과 달리 실제 불편 제시가 약하고 진짜 페인은 L02에서 드러나는 점, (2) L03에서 \"Empty Key\" 용어가 설명·선행사용 표기 없이 먼저 등장해 L06에야 정의되는 순서 문제, (3) L07 마무리부의 미래 용어 다수 나열, (4) 챕터 intro의 얇은 동기부여, (5) L05의 함수명 밀도가 경미한 개선점으로 확인된다. 모두 학습을 근본적으로 막는 수준은 아니라 경미 수정을 권한다."
+  }
+}

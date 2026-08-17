@@ -1,0 +1,60 @@
+{
+  "agent": "AG05",
+  "model": "sonnet",
+  "target": "CH17",
+  "persona_ack": "20년차 학습 교재·코스 설계 전문가로서 CH17(Grid ALV 기초) 10개 레슨 + _chapter.md를 교수설계 관점(챕터구성/섹션흐름/복습·예습장치/불편-해결서사/인지부하)에서 감사했다.",
+  "method": "대상 11개 파일(_chapter.md, CH17-L01~L10.md) 전체 정독. 웹검색·외부 도구 미사용, Read로 파일 열람만 수행. 각 레슨의 front-matter(introduces/prereq/prevRel)와 본문 코드 노출 순서를 상호 대조해 학습 순서 역전·데이터 모델 일관성을 점검했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L10.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L06.md",
+      "quote": "go_grid->set_table_for_first_display(\n  EXPORTING is_variant = gs_variant\n            i_save     = 'A'\n            is_layout  = gs_layout\n  CHANGING  it_outtab       = gt_booking\n            it_fieldcatalog = gt_fcat ).",
+      "category": "학습순서(R15 게이팅)·섹션흐름 역전",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "L06(Variant)에서 L07이 정식 도입할 set_table_for_first_display의 전체 호출부(EXPORTING·CHANGING 전 매개변수)가 그대로 노출되어, 이 챕터의 '클라이맥스' 호출이 정식 레슨보다 먼저 완전한 형태로 등장한다.",
+      "evidence": "L06 front-matter에는 introduces가 'Display Variant'·'DISVARIANT'뿐이고 advanceUse/[선행 사용] 표시가 없다. 그런데 본문에 is_variant·i_save뿐 아니라 is_layout·it_outtab·it_fieldcatalog까지 포함한 완전한 set_table_for_first_display 호출이 등장한다. 정작 EXPORTING(어떻게 보일지)과 CHANGING(무엇을 그릴지)을 나눠 설명하고 sy-subrc·EXCEPTIONS까지 다루는 대목은 L07에만 있다. 즉 독자는 아직 개념적으로 풀이되지 않은 API를 L06에서 완전한 형태로 먼저 만나고, L07에서 같은 코드를 EXCEPTIONS만 추가해 재등장시켜 '처음 보는 코드'처럼 다시 설명한다.",
+      "suggestion": "L06에서는 gs_variant-report = sy-repid 채우기까지만 보여주고 전체 display 호출은 생략하거나, 부득이 보여줄 경우 '[선행 사용]' 표시와 함께 'EXPORTING/CHANGING 구분은 다음 레슨에서 다룬다'는 안내를 덧붙인다. 또는 L06 front-matter에 advanceUse: [\"set_table_for_first_display(선행 노출)\"]를 명시해 게이팅 규칙과 일치시킨다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L09.md",
+      "quote": "capacity   TYPE zconcert-capacity,  \" 정원은 공연 마스터(ZCONCERT)에\n         booked     TYPE i,                  \" 예약 좌석 합계(ZBOOKING에서 집계)",
+      "category": "인지부하·예제 데이터 일관성",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "L01~L08·L10이 모두 zbooking 하나의 내부 테이블/필드로 예시를 이어가는 반면 L09만 갑자기 ZPERF·ZCONCERT 기반의 새 집계 구조(ts_perf_alv)로 전환하며, 'booked' 필드의 집계 로직이 주석 한 줄로만 처리돼 있어 예제 하나에 새 개념(두 테이블·집계값)이 몰린다.",
+      "evidence": "L09 코드는 TYPES ts_perf_alv에 concert_id/perf_no/perf_date/capacity/booked/rowcolor 6개 필드를 새로 정의하고 zperf-concert_id·zperf-perf_no·zconcert-capacity 등 이 챕터 다른 레슨에는 전혀 등장하지 않는 DDIC 테이블을 끌어온다. booked는 'TYPE i, \" 예약 좌석 합계(ZBOOKING에서 집계)'라는 주석만 있을 뿐 집계 코드나 이전 레슨(zbooking 단건 조회)과의 연결 설명이 없어, 독자가 이 값이 어디서 왔는지 스스로 메워야 한다.",
+      "suggestion": "가능하면 L09도 zbooking 기반 예시(예: STATUS 필드로 매진 판정)로 통일하거나, 새 테이블이 꼭 필요하다면 도입부에 '이번엔 예매 건별이 아니라 회차별 집계라 zperf/zconcert가 필요하다'는 한두 문장을 추가해 데이터 모델 전환의 이유를 명시한다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\_chapter.md",
+      "quote": "ALV를 화면에 박아 풍부하게 제어하고 싶다.",
+      "category": "챕터 구성·동기 설계(intro)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "_chapter.md의 intro와 본문이 동일한 한 문장뿐이라 이 챕터를 배우는 이유를 챕터 레벨에서 실질적으로 설득하지 못하고, 그 역할이 L01로 전부 위임돼 있다.",
+      "evidence": "front-matter intro와 본문(11번째 줄)이 'ALV를 화면에 박아 풍부하게 제어하고 싶다.' 한 문장으로 동일하다. CH11의 SALV(전체 화면 목록) 대비 왜 화면 안 특정 영역에 표를 박는 Grid ALV가 더 필요한지, 어떤 상황에서 SALV로는 부족한지 같은 비교·근거는 챕터 요약에는 없고 L01 본문에서야 등장한다(CH11 SALV 언급·CH16 Custom Control 연계).",
+      "suggestion": "_chapter.md의 intro/본문에 'SALV는 전체 화면을 차지하는 목록이라 화면 속 한 영역에는 못 붙는다' 같은 한두 문장을 보태, 로드맵 카드 단계에서도 동기가 드러나게 한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "보강 권장",
+    "summary": "CH17은 '방(컨테이너)→표(그리드)→자료→컬럼설명서→보기설정→저장→처음표시→갱신→강조'로 이어지는 조각별 분해가 명확하고, 각 레슨의 왜→무엇→어떻게→실수→정리 흐름과 이전 레슨 상기(recall) 링크가 대체로 충실하며, prevRel(parallel/deepening 등)을 억지로 pain-solution에 몰아넣지 않은 점도 설계상 정직하다. 다만 L06에서 L07이 정식 도입할 set_table_for_first_display 전체 호출이 선행 표시 없이 먼저 노출돼 이 챕터의 클라이맥스 학습 순서가 흔들리는 점(높음), L09가 다른 모든 레슨이 쓰는 zbooking 모델을 벗어나 새 집계 데이터(zperf/zconcert)를 설명 없이 들여와 인지 부하를 키우는 점(중간), _chapter.md의 동기 서사가 한 문장뿐이라 챕터 레벨에서 '왜 SALV로 부족한가'를 팔지 못하는 점(중간)을 보강하면 좋겠다."
+  }
+}

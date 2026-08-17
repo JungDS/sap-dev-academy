@@ -1,0 +1,76 @@
+{
+  "agent": "AG02",
+  "model": "sonnet",
+  "target": "CH18",
+  "persona_ack": "나는 '준호'다. 배운 건 그 자리에서 직접 해봐야 직성이 풀리는 실습형 학습자로서, CH18의 11개 레슨 본문과 각 체험 위젯을 직접 클릭·토글하며 대조 감사했다.",
+  "method": "1) 소스 정독: 대상 파일 23개(레슨 md 11 + _chapter.md + 위젯 html 11) 전문 통독. 2) 로컬 서버({{SERVE_URL}} 실제 주소 http://localhost:8144) 실브라우저 조작: 11개 위젯 전부를 새 탭으로 열어 렌더 확인, 이 중 CH18-L01(카드 선택+FINAL 재대입), L02(key 모드 토글+중복 key 시도), L03(MAPPING/EXCEPT 토글), L04(0001/0002/0999 검색), L06(CONV/EXACT 값 변환), L08(REDUCE/FILTER 버튼), L09(COND/REDUCE 탭), L10·L11(diff-mapper hover)은 실제 버튼 클릭 또는 (클릭 좌표 재사용 문제 발생 구간은) javascript_tool로 실제 DOM 엘리먼트에 .click()/dispatchEvent(MouseEvent)를 걸어 상태 변화를 재현하고 get_page_text·직접 DOM 질의로 결과 텍스트를 검증했다. 3) 콘솔 에러 유무 확인(read_console_messages, onlyErrors). 4) 위젯 산출 텍스트가 의심스러운 3건은 대응하는 embeds/_engine/*.js 엔진 소스(환경 정보상 열람 허용)까지 열어 근본 원인을 코드 레벨에서 확인했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L10.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L11.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH18-L01-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH18-L02-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH18-L03-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH18-L04-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH18-L05-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH18-L06-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH18-L07-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH18-L08-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH18-L09-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH18-L10-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH18-L11-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\string-template-composer.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\type-conversion-lab.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\field-mapping-board.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\inline-decl-judge.js"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\string-template-composer.js",
+      "quote": "DATA(lv_eq)  = |{ ls-dan } x { ls-mul } = { ls-result }|.",
+      "category": "불일치",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "CH18-L05(String Template) 위젯 'Message Composer'의 String Template 모드 둘째 줄이 본문 예제와 전혀 다른 시나리오(구구단)를 보여준다. 본문은 `|{ ls_book-concert_id } { ls_book-perf_no }회차 { ls_book-seats }석|` → \"C001 001회차 2석\"이라는 콘서트 예매 도메인 예제를 String Template의 핵심 예시로 든다. 그런데 위젯을 실제로 열어(로컬서버 http://localhost:8144/embeds/abap/CH18-L05-S01.html) String Template 모드를 보면 코드/결과가 `{ ls-dan } x { ls-mul } = { ls-result }` → \"2 x 3 = 6\"으로, 본문에 등장하지 않는 변수명(ls-dan/ls-mul/ls-result)과 구구단 시나리오가 나온다.",
+      "evidence": "브라우저로 위젯을 직접 열람: get_page_text 결과 코드 블록에 `DATA(lv_eq)  = |{ ls-dan } x { ls-mul } = { ls-result }|.`, 출력 문자열에 `2 x 3 = 6`이 그대로 렌더링됨(CFG.dan=2, mul=3, result=6, embeds/abap/CH18-L05-S01.html의 window.STC_CFG 설정값). 첫째 줄(환영 인사)·셋째 줄(날짜/합계)은 본문 예제와 일치하지만, 둘째 줄만 본문의 예매 예제(concert_id/perf_no/seats)와 무관한 구구단으로 대체돼 있다 — '이 페이지에서 방금 배운 코드를 그대로 눌러보고 싶다'는 체험 목적에서 어긋난다.",
+      "suggestion": "STC_CFG의 dan/mul/result 필드와 string-template-composer.js의 둘째 줄 템플릿을 본문 예제(`ls_book-concert_id`/`perf_no`/`seats` → \"C001 001회차 2석\")에 맞는 값·변수명으로 교체하거나, 최소한 CFG에 concert_id/perf_no/seats 필드를 추가해 본문과 1:1 대응시킨다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\type-conversion-lab.js",
+      "quote": "손실이 발생해 예외가 납니다(소수 → 정수). 예외 처리는 CH20.",
+      "category": "위젯 결함",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "CH18-L06(CONV·EXACT) 위젯 '타입 변환 실험실'에서 EXACT i( ) 버튼을 눌러 손실 변환을 시도하면 \"예외 처리는 CH20.\"이라는 안내가 뜬다. 그러나 CH18-L06.md 본문은 같은 주제(EXACT 실패 시 예외)를 명시적으로 CH21로 안내한다 — \"[Exception Class — TRY/CATCH/CX 계층](CH21-L06.html)에서 배운다\"(58~59행), \"실패 시 예외 → CH21\"(67행). CH18-L04·L09도 동일하게 CH21-L06을 지목한다. 위젯만 CH20이라는 다른(존재 근거 없는) 챕터 번호를 말해, 같은 레슨 안에서 본문과 체험이 서로 다른 사실을 가르친다.",
+      "evidence": "로컬서버에서 CH18-L06-S01.html을 열어 값 '12.7' 입력 후 'EXACT i( )' 버튼을 실제로 클릭 → 렌더된 안내문이 \"예외: 손실이 발생해 예외가 납니다(소수 → 정수). 예외 처리는 CH20.\"으로 표시됨을 DOM에서 직접 확인. 원문은 embeds/_engine/type-conversion-lab.js 22행 `msg:'손실이 발생해 예외가 납니다(소수 → 정수). 예외 처리는 CH20.'`에 하드코딩. CH18-L06.md 본문 어디에도 CH20 언급이 없고 예외처리 관련 챕터는 전부 CH21로만 링크된다(grep 확인: CH18-L04.md:47, CH18-L06.md:51·67, CH18-L09.md:69 전부 CH21).",
+      "suggestion": "type-conversion-lab.js 22행의 'CH20' → 'CH21'로 정정한다(가능하면 링크 대상 레슨명 'Exception Class — TRY/CATCH/CX 계층'도 함께 언급해 본문 표기와 맞춘다)."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\field-mapping-board.js",
+      "quote": "if (srcHas(tname)) return { src: '원본 ' + tname, bd: 'auto', txt: \"'\" + srcVal(tname) + \"' 복사\", badge: '자동(같은 이름)' };",
+      "category": "위젯 결함",
+      "severity": "치명",
+      "confidence": "확실",
+      "claim": "CH18-L03(CORRESPONDING) 위젯 'Field Mapping Board'에서 EXCEPT 토글을 켜도 audit_user 필드가 실제로는 제외되지 않고 계속 '자동(같은 이름)'으로 'ADMIN' 복사된 것처럼 표시된다. 본문은 \"EXCEPT audit_user — 대상 필드 audit_user를 결과에서 채우지 않는다(초기값으로 둠)\"이라고 명시하는데, 위젯은 정확히 그 반대(여전히 채워짐)를 보여준다. 원인은 rowFor(tname) 함수가 '같은 이름 자동 매칭' 검사(srcHas(tname))를 EXCEPT 검사보다 먼저 수행하기 때문 — audit_user는 원본(source 배열)에도 같은 이름으로 존재해서 EXCEPT 여부와 무관하게 항상 첫 번째 분기(자동 복사)로 빠진다. 다만 코드 하단에 텍스트로 표시되는 생성된 CORRESPONDING 코드 자체는 `EXCEPT audit_user`를 정확히 출력해, 위젯 안에서 '코드 표시'와 '결과 시뮬레이션'이 서로 모순되는 상태가 된다.",
+      "evidence": "로컬서버에서 CH18-L03-S01.html을 열어 MAPPING·EXCEPT 토글을 모두 실제로 클릭(javascript_tool로 버튼 .click() 실행) → aria-pressed가 둘 다 'true'로 바뀐 상태에서 get_page_text 결과, 생성 코드 영역은 'MAPPING display_status = status' + 'EXCEPT  audit_user'를 포함하지만, 대상 필드 표에는 여전히 'audit_user ← 'ADMIN' 복사 자동(같은 이름)'로 표시됨(EXCEPT 뱃지가 아님). embeds/_engine/field-mapping-board.js의 rowFor()를 읽어 원인 확인: 32행 `if (srcHas(tname)) return {...auto...}`가 39~41행의 EXCEPT 분기보다 먼저 실행되어, source 배열에 audit_user 항목이 있는 한(CH18-L03-S01.html의 window.FMB_CFG.source에 `{ name: 'audit_user', val: 'ADMIN' }` 존재) EXCEPT는 결과 표에 절대 반영되지 않는다. 이 레슨의 핵심 개념(EXCEPT)을 직접 왜곡해서 보여주는 치명적 결함.",
+      "suggestion": "field-mapping-board.js의 rowFor()에서 EXCEPT 검사를 '같은 이름 자동' 검사보다 먼저(또는 srcHas 분기 안에서 exceptName && excepted 케이스를 우선 처리) 수행하도록 순서를 바꾼다. 예: `if (excepted && tname === CFG.exceptName) return {... EXCEPT ...}`를 srcHas 체크 앞에 둔다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "보강 권장",
+    "summary": "CH18의 11개 레슨은 본문-위젯 체험 매칭 원칙(R2)을 대체로 잘 지킨다 — L01(inline-decl-judge)의 FINAL() 재대입 차단, L02(value-builder)의 BASE/중복key, L04(read-vs-tabexpr)의 0999 예외, L07(cond-switch)의 잔여석/상태 분기, L08(reduce-filter-lab)의 좌석 합계·필터, L09(let-reader)의 LET/INIT 계산, L10·L11(diff-mapper)의 classic↔modern 대조는 모두 직접 클릭·토글로 재현했을 때 본문 코드·수치와 정확히 일치했다. 다만 세 위젯에서 구체적 결함을 발견했다: ① L05 String Template 위젯의 둘째 예시 줄이 본문 예매 도메인과 무관한 구구단 예시로 바뀌어 있어 체험-본문 매칭이 깨짐(중간), ② L06 CONV·EXACT 위젯이 예외 처리를 CH21이 아닌 존재하지 않는 근거의 'CH20'으로 잘못 안내(본문·다른 CH18 레슨과 직접 모순, 높음), ③ L03 CORRESPONDING 위젯은 EXCEPT 토글을 켜도 실제 시뮬레이션 결과에는 반영되지 않아 이 레슨의 핵심 개념을 반대로 보여주는 로직 버그(치명, 코드 레벨 원인까지 특정). 셋 다 재현 가능한 확실 등급 발견이며, 특히 ③은 최우선 수정이 필요하다."
+  }
+}

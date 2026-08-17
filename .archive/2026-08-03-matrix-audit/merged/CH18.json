@@ -1,0 +1,1061 @@
+{
+  "target": "CH18",
+  "inputs": 28,
+  "missing": [],
+  "clusters": [
+    {
+      "cluster_id": "CH18-C001",
+      "file": "embeds/_engine/field-mapping-board.js",
+      "claim": "CH18-L03-S01 위젯에서 EXCEPT audit_user 토글을 켜도 결과 매핑표(#fmbMap)의 audit_user 행이 계속 \"'ADMIN' 복사 · 자동(같은 이름)\"으로 남는다. 생성 코드에는 EXCEPT audit_user가 반영되지만 시뮬레이션 결과는 바뀌지 않아, 레슨의 핵심 개념(EXCEPT는 결과에서 채우지 않음)을 정반대로 체험시킨다. 원인은 rowFor()에서 srcHas(tname) 자동 복사 분기가 EXCEPT 분기보다 먼저 반환되어 EXCEPT 분기가 도달 불가능하기 때문이다(4개 모델 브라우저 실조작·엔진 소스로 동일 재현).",
+      "severity": "치명",
+      "confidence": "확실",
+      "supporters": ["AG02-opus#1", "AG02-sonnet#3", "AG02-gpt-5.6-sol#2", "AG02-gemini-3.6-flash-high#1"],
+      "conflict": false,
+      "quotes": [
+        "if (srcHas(tname)) return { src: '원본 ' + tname, bd: 'auto', txt: \"'\" + srcVal(tname) + \"' 복사\", badge: '자동(같은 이름)' };",
+        "원본에도 있지만 그대로 복사하면 안 되는 audit_user는 EXCEPT로."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C002",
+      "file": "content/abap/CH18/CH18-L10.md",
+      "claim": "AG06-gemini는 ABAP에 복합 대입 연산자(+=, -=, *=, /=)가 아예 존재하지 않아 L10의 도입 설명과 L11의 실습 코드(lv_total += ls_book-seats.)가 구문 오류라고 주장한다(치명·확실로 보고). 그러나 이는 상반 주장이 있다 — AG09-opus는 \"CH18-L10의 `+=`도 7.54 계열\"이라고 릴리스까지 특정하며 유효 문법으로 전제하고, AG09-sonnet 총평도 \"+=의 문법과 예시가 실제 ABAP 규칙과 일치\"라고 판정한다. 복합 대입은 ABAP 7.54+에서 지원되는 것으로 알려져 있어 gemini 주장은 오탐 가능성이 높으나, 수합 단계에서는 양측을 병기하고 최종 평가에서 사실 확인이 필요하다.",
+      "severity": "치명",
+      "confidence": "추정",
+      "supporters": ["AG06-gemini-3.6-flash-high#1", "AG06-gemini-3.6-flash-high#2"],
+      "conflict": true,
+      "quotes": [
+        "이것을 **복합 대입**(compound assignment, 계산하면서 동시에 대입)이라고 한다.",
+        "lv_total += ls_book-seats.          \" 누적은 +="
+      ]
+    },
+    {
+      "cluster_id": "CH18-C003",
+      "file": "content/abap/CH18/CH18-L08.md",
+      "claim": "L08 FILTER 설명이 핵심 제약을 '테이블 타입과 Key를 의식해야 한다' 수준으로 얼버무린다. 실제 FILTER는 WHERE 조건 필드가 원본 테이블의 sorted/hashed key(또는 secondary key + USING KEY) 구성요소여야만 쓸 수 있는 강한 제약이 있는데, 정작 제약이 걸리는 원본 lt_booking의 타입 선언이 본문에 없고 결과 타입(tt_booking)만 SORTED로 선언해 '결과 타입에 key를 주면 된다'는 오해를 유발한다. Java Stream filter/LINQ Where와 이름이 같아 임의 조건 필터로 일반화하기 쉬워, 학습자가 STANDARD TABLE에 그대로 따라 쓰면 구문 오류를 만난다(7개 종·10벌이 지목한 최다 합의 결함).",
+      "severity": "높음",
+      "confidence": "확실",
+      "supporters": ["AG03-opus#2", "AG03-gpt-5.6-sol#1", "AG03-gemini-3.6-flash-high#2", "AG06-opus#2", "AG06-sonnet#4", "AG06-gpt-5.6-sol#2", "AG09-opus#9", "AG04-opus#12", "AG01-gpt-5.6-sol#5", "AG05-gpt-5.6-sol#4"],
+      "conflict": false,
+      "quotes": [
+        "DATA(lt_open) = FILTER tt_booking( lt_booking WHERE status = 'N' ).",
+        "- **`FILTER`에서 Key 무시** → `FILTER`는 테이블 타입과 Key를 의식해야 한다."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C004",
+      "file": "content/abap/CH18/CH18-L01.md",
+      "claim": "L01·L02·L11에서 classic과 modern 예제를 같은 ```abap 코드 블록에 이어 붙여, 같은 변수(ls_book)가 classic DATA 선언 후 modern DATA()/INTO DATA()로 다시 선언된다. 블록을 그대로 복사해 활성화하면 중복 선언 구문 오류가 나고, 이 레슨 '흔한 실수'가 금지한 바로 그 패턴을 예제가 시연하는 자기모순이다. AG09 3개 모델이 동일 3개소(L01 Structure 조회·L02 Structure 채우기·L11 ① 좌석 합계)를 독립 지목했다.",
+      "severity": "높음",
+      "confidence": "확실",
+      "supporters": ["AG09-opus#3", "AG09-opus#4", "AG09-opus#5", "AG09-sonnet#1", "AG09-sonnet#2", "AG09-sonnet#3", "AG09-gpt-5.6-sol#1", "AG09-gpt-5.6-sol#2", "AG09-gpt-5.6-sol#9"],
+      "conflict": false,
+      "quotes": [
+        "READ TABLE lt_booking INTO DATA(ls_book) WITH KEY booking_id = '0001'.",
+        "LOOP AT lt_book INTO DATA(ls_book).   \" 선언이 INTO 위치로"
+      ]
+    },
+    {
+      "cluster_id": "CH18-C005",
+      "file": "content/abap/CH18/CH18-L10.md",
+      "claim": "L10·L11의 ::embed 지시자만 챕터 내 다른 9개와 달리 높이 인자가 빠진 2필드 형식이고, 제목 자리에도 명사형 제목이 아닌 설명문('같은 로직의 classic ↔ modern 코드를 짝지어 비교')이 들어가 두 레슨의 임베드가 사실상 같은 이름이다. 규정 형식(::embed ID | 제목 | 높이::) 위반으로 렌더 높이 누락·파싱 이상 위험이 있으며, 하필 챕터 마무리·실습 두 레슨이라 체험 확인 자리가 깨질 수 있다(6개 종·7벌 합의).",
+      "severity": "높음",
+      "confidence": "확실",
+      "supporters": ["AG01-opus#12", "AG02-opus#12", "AG03-opus#7", "AG04-opus#18", "AG05-opus#9", "AG09-opus#7", "AG09-opus#8"],
+      "conflict": false,
+      "quotes": [
+        "::embed CH18-L10-S01 | 같은 로직의 classic ↔ modern 코드를 짝지어 비교::",
+        "::embed CH18-L11-S01 | classic ↔ modern 코드를 짝지어 비교::"
+      ]
+    },
+    {
+      "cluster_id": "CH18-C006",
+      "file": "content/abap/CH18/CH18-L03.md",
+      "claim": "L03의 EXCEPT 서술이 사실과 어긋난다. CORRESPONDING의 EXCEPT 목록은 원본(source) 컴포넌트를 지정하는데 본문은 '대상 필드 기준'이라고 못 박고, 예제의 audit_user는 본문 스스로 '원본에 없음'이라 밝힌 대상 전용 필드라 EXCEPT 대상으로 쓰는 순간 무의미하거나 구문 오류가 되어 예제 자체가 성립하지 않는다. 게다가 같은 개념을 시연하는 위젯 cfg는 반대로 audit_user를 원본에 값(ADMIN)까지 넣어 두어 본문과 체험의 데이터 모델이 정반대다(46행 정의·52행 테이블 예제·68행 흔한 실수 3곳 동반 수정 필요).",
+      "severity": "높음",
+      "confidence": "확실",
+      "supporters": ["AG06-opus#1", "AG09-opus#1", "AG02-opus#2", "AG02-gpt-5.6-sol#1"],
+      "conflict": false,
+      "quotes": [
+        "- `EXCEPT audit_user` — **대상 필드** `audit_user`를 결과에서 채우지 않는다(초기값으로 둠).",
+        "audit_user     TYPE syuname,           \" 원본에 없음"
+      ]
+    },
+    {
+      "cluster_id": "CH18-C007",
+      "file": "embeds/_engine/type-conversion-lab.js",
+      "claim": "L06 위젯이 EXACT 실패 시 '예외 처리는 CH20.'이라고 안내하는데, 본문(CH18-L06.md)과 챕터 내 다른 레슨(L04·L09)·위젯 HTML 주석은 모두 예외 처리를 CH21(Exception Class)로 안내한다. 위젯 메시지만 근거 없는 CH20으로 남아 같은 레슨 안에서 본문과 체험이 서로 다른 챕터를 가리키고, 내부 챕터 ID가 링크 없이 학습자에게 그대로 노출된다.",
+      "severity": "높음",
+      "confidence": "확실",
+      "supporters": ["AG02-opus#9", "AG02-sonnet#2", "AG02-gemini-3.6-flash-high#2"],
+      "conflict": false,
+      "quotes": [
+        "return { ok:false, exc:true, msg:'손실이 발생해 예외가 납니다(소수 → 정수). 예외 처리는 CH20.' };"
+      ]
+    },
+    {
+      "cluster_id": "CH18-C008",
+      "file": "content/abap/CH18/CH18-L03.md",
+      "claim": "L03 내부 테이블 변환 예제가 선언된 적 없는 테이블 타입 tt_booking_ui와 출처 불명의 원본 변수 lt_booking을 사용한다. 앞에서는 행 구조 ts_booking_ui만 정의했고, L02가 테이블 타입까지 반드시 보여 주던 패턴과 달라 학습자가 코드를 따라 쳐 볼 수 없다.",
+      "severity": "높음",
+      "confidence": "확실",
+      "supporters": ["AG01-opus#4", "AG01-gpt-5.6-sol#2"],
+      "conflict": false,
+      "quotes": [
+        "DATA(lt_ui) = CORRESPONDING tt_booking_ui(\n  lt_booking MAPPING display_status = status EXCEPT audit_user )."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C009",
+      "file": "content/abap/CH18/CH18-L04.md",
+      "claim": "L04가 '예외가 난다 — 모르면 modern이 더 위험하다'고 강조하면서 정작 '예외'가 무엇인지(프로그램이 멈추는지, 빈 값이 되는지) 한 줄 풀이가 챕터 어디에도 없다. 처리 방법(TRY/CATCH)은 CH21로 미룬다고 안내하지만 '무엇인지'는 끝내 말하지 않아, 입문자가 위험의 크기를 가늠하지 못한 채 L06·L09에서도 같은 용어를 정의 없이 반복해 만난다.",
+      "severity": "높음",
+      "confidence": "확실",
+      "supporters": ["AG01-opus#5", "AG01-sonnet#2"],
+      "conflict": false,
+      "quotes": [
+        "Table expression은 일반 **값 표현식**이라, 없는 행을 직접 읽으면 `CX_SY_ITAB_LINE_NOT_FOUND`",
+        "**예외**가 난다. 이 차이를 모르면 modern 문법이 오히려 더 위험하다."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C010",
+      "file": "content/abap/CH18/CH18-L11.md",
+      "claim": "L11 '직접 해 볼 과제' 첫 항목이 get_remaining의 LOOP를 리팩터링하라고 지시하지만, 그 코드가 이 챕터 어디에도 실려 있지 않다. 이전 챕터 레슨을 링크로 거슬러 올라가 코드를 찾아와야만 과제를 시작할 수 있어, 실습 레슨의 흐름이 첫 줄부터 끊긴다.",
+      "severity": "높음",
+      "confidence": "확실",
+      "supporters": ["AG01-opus#14", "AG01-gpt-5.6-sol#6"],
+      "conflict": false,
+      "quotes": [
+        "1. `get_remaining`의 `LOOP`를 인라인 `DATA`·`+=`로 바꾼다."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C011",
+      "file": "content/abap/CH18/CH18-L06.md",
+      "claim": "EXACT의 예제가 손실이 발생할 수 없는 값('120000')뿐이라 CONV i( '12' )와 겉보기 동작이 같고, EXACT의 존재 의의(손실 시 예외로 차단)가 예제에서 전혀 드러나지 않는다. 소수점 절단 같은 실패 사례를 CONV와 EXACT에 같은 입력으로 넣어 비교하는 예가 필요하다.",
+      "severity": "높음",
+      "confidence": "확실",
+      "supporters": ["AG01-gpt-5.6-sol#4", "AG06-sonnet#3"],
+      "conflict": false,
+      "quotes": [
+        "DATA(lv_price) = EXACT i( '120000' ).   \" 손실 없이 딱 맞아야 통과"
+      ]
+    },
+    {
+      "cluster_id": "CH18-C012",
+      "file": "embeds/abap/CH18-L05-S01.html",
+      "claim": "L05 위젯(Message Composer)의 String Template 둘째 줄이 본문의 콘서트 예매 예제 대신 다른 위젯에서 옮겨 온 구구단(2 x 3 = 6)을 출력한다. cfg의 dan/mul/result와 정체불명 구조체 ls-dan(프로젝트 접두어 규칙에도 안 맞음)이 그대로 남아, 본문 코드(|{ ls_book-concert_id } { ls_book-perf_no }회차 { ls_book-seats }석|)와 위젯이 아예 다른 시나리오다.",
+      "severity": "높음",
+      "confidence": "확실",
+      "supporters": ["AG02-opus#3", "AG02-sonnet#1"],
+      "conflict": false,
+      "quotes": [
+        "window.STC_CFG = { name: '정훈영', total: 120000, dan: 2, mul: 3, result: 6, date: '20260627' };",
+        "DATA(lv_eq)  = |{ ls-dan } x { ls-mul } = { ls-result }|."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C013",
+      "file": "embeds/abap/CH18-L11-S01.html",
+      "claim": "L11 위젯 ③의 modern 패널이 classic READ TABLE의 권장 대응으로 보호 없는 Table Expression 한 줄(DATA(ls_hit) = lt_book[ booking_id = lv_id ].)만 보여 준다. 본문은 같은 코드를 흔한 실수의 반례로 지목하고 line_exists( ) 보호를 '가장 중요한 검증'으로 요구하는데, 위젯에서는 그 반례가 권장안 위치에 놓여 없는 키에서 동작 보존(sy-subrc 세팅 vs 예외)이 깨진다. 보호 안내는 hover 전용 data-desc에만 있어 터치·키보드에서는 볼 수도 없다.",
+      "severity": "높음",
+      "confidence": "확실",
+      "supporters": ["AG02-opus#4", "AG02-gpt-5.6-sol#5"],
+      "conflict": false,
+      "quotes": [
+        "DATA(ls_hit) = lt_book[ booking_id = lv_id ]."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C014",
+      "file": "embeds/abap/CH18-L11-S01.html",
+      "claim": "L11 위젯 ②의 classic↔modern 짝이 서로 다른 결과를 만든다. classic은 concert_id·customer·seats 3필드만 채우는데 modern은 status='N'을 추가로 채우고, 본문 ②에 있는 perf_no는 양쪽 모두 빠져 있다. '표현만 바뀌고 결과는 그대로'라는 레슨의 핵심 메시지를 짝지은 코드가 스스로 깨뜨린다.",
+      "severity": "높음",
+      "confidence": "확실",
+      "supporters": ["AG02-opus#5", "AG02-gpt-5.6-sol#6"],
+      "conflict": false,
+      "quotes": [
+        "DATA(ls_new) = VALUE zbooking(\n  concert_id = 'C001' customer = '정훈영'\n  seats = 2 status = 'N' )."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C015",
+      "file": "content/abap/CH18/CH18-L05.md",
+      "claim": "String Template의 중괄호 안쪽 공백을 '문법 요소'라고 단정하지만, 실제로는 공백 없이 써도 동작하는 표기 관례(Clean ABAP·Pretty Printer)로 보이며, 뒤 문장 '기본으로 삼는다'(권장)·점검 항목 '안쪽 공백도 지킨다'(필수)와 강도가 어긋나 필수/권장 여부를 판단할 수 없다. 정작 학습자가 실제로 틀리는 중괄호 바깥 공백(출력에 그대로 포함됨)은 설명되지 않아 규칙의 초점이 반대로 잡혀 있다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG01-opus#6", "AG03-opus#10", "AG04-opus#9", "AG06-opus#7", "AG06-sonnet#2"],
+      "conflict": false,
+      "quotes": [
+        "> ⚠️ `{ }` **안쪽 공백은 문법 요소**다. `|{ lv_name }|`처럼 중괄호 안쪽에 공백을 두는 형태를 기본으로 삼는다."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C016",
+      "file": "content/abap/CH18/CH18-L06.md",
+      "claim": "CONV의 '12A' 변환 실패 결과를 '안전하게 변환되지 않는다'로만 서술해, 0이 되는지·12만 들어가는지·프로그램이 멈추는지 알 수 없다. 실제로는 런타임 예외(CX_SY_CONVERSION_NO_NUMBER)로 잡지 않으면 프로그램이 중단되는데, EXACT 쪽만 '예외가 난다'고 명시해 CONV=관대·EXACT=엄격이라는 잘못된 이분법을 심는다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG01-opus#8", "AG03-opus#5", "AG04-opus#10", "AG06-opus#6"],
+      "conflict": false,
+      "quotes": [
+        "- **타입을 속이는 문법으로 오해** → `CONV`는 실제 변환 규칙을 따른다. `'12A'`를 정수로\n  바꾸려 하면 안전하게 변환되지 않는다."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C017",
+      "file": "content/abap/CH18/CH18-L01.md",
+      "claim": "FINAL()을 DATA()와 동급의 기본 도구처럼 소개하지만 FINAL()은 훨씬 늦은 릴리스(7.57/7.58 세대)에서 도입된 구문이라, 7.40～7.5x 계열 학습 시스템에서는 문법 오류가 난다. 챕터 전체에 릴리스·버전 언급이 한 줄도 없어(모던 문법 전반의 최소 릴리스 안내 부재 포함), 실습에서 실패한 학습자가 원인을 자기 오타로 오해하게 된다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG03-opus#6", "AG06-opus#5", "AG09-opus#2", "AG06-gpt-5.6-sol#4"],
+      "conflict": false,
+      "quotes": [
+        "FINAL(lv_max) = 100.",
+        "값을 한 번만 정하고 **이후 변경을 막고** 싶으면 `FINAL()`로 선언한다(읽기 전용 의도)."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C018",
+      "file": "content/abap/CH18/CH18-L04.md",
+      "claim": "line_exists()로 확인한 뒤 같은 조건의 Table Expression을 다시 읽는 패턴(동일 키 탐색 2회)이 L04와 L11에서 유일한 기본 방어선으로 반복 제시된다. 표준 테이블에서는 선형 탐색이 두 배가 되고 LOOP 안에서는 O(n²)로 악화되는데, 탐색 1회로 끝나는 표준 관용구 VALUE #( tab[ ... ] OPTIONAL )이나 READ TABLE + sy-subrc 대안이 소개되지 않아 이중 탐색이 습관으로 굳는다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG06-opus#4", "AG06-sonnet#5", "AG06-gpt-5.6-sol#1", "AG03-gpt-5.6-sol#2"],
+      "conflict": false,
+      "quotes": [
+        "IF line_exists( lt_booking[ booking_id = lv_id ] ).\n  DATA(ls) = lt_booking[ booking_id = lv_id ]."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C019",
+      "file": "content/abap/CH18/_chapter.md",
+      "claim": "챕터 intro가 표어 한 문장('간결하게')뿐이고 본문도 그 복사본이라, classic→modern 경계라는 챕터의 무게에 비해 동기 설계가 얇고 11개 레슨의 학습 지도(무엇을 어떤 순서로 배우는지)를 전혀 제시하지 못한다. 게다가 '간결하게' 프레임은 소속 레슨들이 일관되게 가르치는 '짧게가 아니라 또렷하게'와 정면으로 어긋나며, keywords에도 실제 도입 개념(COND/SWITCH·REDUCE/FILTER·LET·CONV 등)의 절반 이상이 빠져 있다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG05-opus#1", "AG05-sonnet#2", "AG05-gpt-5.6-sol#1", "AG03-opus#13"],
+      "conflict": false,
+      "quotes": [
+        "intro: \"장황한 고전 구문이 번거롭다 — 현대 ABAP으로 간결하게.\""
+      ]
+    },
+    {
+      "cluster_id": "CH18-C020",
+      "file": "content/abap/CH18/CH18-L02.md",
+      "claim": "L02 한 레슨에 신규 개념이 과다하다 — VALUE·`#` 타입 추론·테이블 리터럴·BASE에 더해 두 종류의 FOR(WHILE 범위형·IN 순회형)와 key 규칙까지 한꺼번에 나온다. 챕터 내 다른 레슨이 1～2개씩 도입하는 것과 비교해 부하가 두드러지고, 특히 이름이 같은 두 FOR의 동작 차이에서 입문자가 반복해 헤맨다. FOR 분리(별도 절/레슨) 또는 비교표·별도 체험으로 소화 시간을 줄 필요가 있다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG01-opus#3", "AG05-opus#6", "AG05-gpt-5.6-sol#2"],
+      "conflict": false,
+      "quotes": [
+        "introduces: [\"VALUE #( )\", \"테이블 리터럴\", \"BASE\", \"FOR 반복 생성(table comprehension)\"]",
+        "- 기존을 유지하려면 `BASE`, 반복 생성엔 `FOR`. `#`의 타입 추론과 `BASE` 누락이 가장 자주 틀리는 지점이다."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C021",
+      "file": "content/abap/CH18/CH18-L01.md",
+      "claim": "인라인 변수의 유효 범위를 정하는 핵심 경계 '처리 블록/처리 범위'가 정의 없이 두 이름으로 혼용되어, 변수를 어느 줄까지 쓸 수 있는지 판정할 수 없다. 특히 블록 스코프 언어(Java/C#) 경험자는 IF/LOOP 블록 지역 변수로 오해하기 쉬운데, ABAP 인라인 선언은 프로시저 전체 스코프라 서로 다른 IF 분기에서 같은 이름을 선언하면 중복 선언 오류가 난다는 결정적 차이가 설명되지 않는다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG01-gpt-5.6-sol#1", "AG04-opus#6", "AG03-gemini-3.6-flash-high#1"],
+      "conflict": false,
+      "quotes": [
+        "- **이미 선언한 이름을 또 `DATA()`** → 같은 처리 범위에서 중복 선언이다. 값을 다시 넣으려면 기존 변수에 대입한다.",
+        "inline 변수도 **그냥 변수**다. 마법처럼 사라지는 임시값이 아니라, 선언 이후 같은\n> 처리 블록에서 쓸 수 있다."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C022",
+      "file": "content/abap/CH18/CH18-L02.md",
+      "claim": "챕터의 뼈대 용어 'constructor expression'이 첫 등장에서 한 줄 풀이 없이 쓰이고, 이후 레슨들이 'constructor'·'값을 만드는 식'·'표현식'으로 제각각 부르며 끝내 정의가 나오지 않는다. OOP 경력자는 클래스 생성자를 먼저 연상해 혼동할 수 있고, 입문자는 영어 원문만으로 뜻을 짐작할 수 없다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG04-opus#3", "AG04-sonnet#1", "AG03-sonnet#1"],
+      "conflict": false,
+      "quotes": [
+        "`VALUE` constructor expression은 절차를 나열하는 대신 **결과가 어떤 값인지**를 표현한다."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C023",
+      "file": "content/abap/CH18/CH18-L02.md",
+      "claim": "FOR 설명 불릿이 '…새 행 하나를 뒤의 `( )`로.'에서 서술어 없이 끝나는 미완성 문장(비문)이다. FOR의 동작을 처음 배우는 자리인데 무엇을 하라는 것인지 문장만으로 확정되지 않고, 같은 목록의 다른 항목들은 서술어를 갖추고 있어 이 항목만 문형이 끊긴다(3개 모델 독립 지목).",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG04-opus#4", "AG04-gpt-5.6-sol#1", "AG04-gemini-3.6-flash-high#3"],
+      "conflict": false,
+      "quotes": [
+        "- `FOR i = 1 WHILE i <= 9`·`FOR line IN lt_book_2` — 그 **반복 한 번**에 만들 **새 행 하나**를 뒤의 `( )`로."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C024",
+      "file": "content/abap/CH18/CH18-L04.md",
+      "claim": "line_index()의 반환값 서술('못 찾으면 0, hashed key 등 순서를 말할 수 없으면 -1')이 부정확하다는 데 두 모델이 합의했으나 올바른 동작에 대해서는 상반된다 — AG06-sonnet은 '못 찾음도 hashed도 모두 0 반환이고 -1 경로는 없다'고 주장하고, AG06-gemini는 '-1은 행을 찾았으나 hashed key라 인덱스를 정의할 수 없을 때 반환된다(못 찾으면 테이블 종류 무관 0)'고 주장한다. 공식 키워드 문서로 확정 후 서술을 정밀화해야 한다.",
+      "severity": "중간",
+      "confidence": "추정",
+      "supporters": ["AG06-sonnet#1", "AG06-gemini-3.6-flash-high#3"],
+      "conflict": true,
+      "quotes": [
+        "찾은 **위치**. 못 찾으면 `0`(hashed key 등 순서를 말할 수 없으면 `-1`)."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C025",
+      "file": "content/abap/CH18/CH18-L08.md",
+      "claim": "같은 콘서트 예매 소재인데 예제 타입·변수 이름이 레슨마다 달라진다(L02 ts_book/tt_book/lt_book ↔ L03 ts_booking_ui ↔ L08 ts_booking/tt_booking/lt_booking ↔ L03·L11 zbooking). 특히 L08의 ts_booking과 lt_booking은 챕터 어디에서도 선언·필드 구성이 제시되지 않아, FILTER 예제가 어떤 데이터를 거르는지 그림이 그려지지 않고 레슨을 넘어갈 때마다 데이터 모델을 다시 파악하는 불필요한 부하가 생긴다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG01-opus#10", "AG05-opus#5"],
+      "conflict": false,
+      "quotes": [
+        "TYPES tt_booking TYPE SORTED TABLE OF ts_booking\n  WITH NON-UNIQUE KEY status."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C026",
+      "file": "content/abap/CH18/CH18-L08.md",
+      "claim": "같은 챕터 안에서 키워드 EXCEPT가 전혀 다른 두 의미로 쓰이는데 구분 안내가 없다. L03의 EXCEPT는 '필드를 결과에서 뺀다'로 강하게 각인되는데, L08의 EXCEPT WHERE는 '조건에 맞지 않는 행을 가져온다(조건 부정)'로 축이 필드→행으로 바뀐다. 학습자가 앞 레슨을 잘못 외웠나 되돌아가게 되므로 '같은 단어, 다른 문맥' 한 줄이 필요하다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG01-opus#11", "AG03-opus#3"],
+      "conflict": false,
+      "quotes": [
+        "`EXCEPT`를 붙이면 조건에 **맞지 않는** 행을 가져온다."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C027",
+      "file": "content/abap/CH18/CH18-L06.md",
+      "claim": "L01～L05는 체험 임베드 앞에 '## 직접 …해 보기' 섹션 제목과 무엇을 조작해 무엇을 관찰할지 안내 문단이 있는데, L06～L09는 임베드가 안내 없이 본문 사이에 그냥 놓여 있다. 학습자는 위젯 앞에서 지시를 못 받아 그냥 지나치게 되고, 섹션 제목이 없어 우측 스텝퍼에서도 체험 단계가 사라진다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG01-opus#9", "AG05-opus#2"],
+      "conflict": false,
+      "quotes": [
+        "::embed CH18-L06-S01 | 타입 변환 실험실 (CONV·EXACT) | 560::"
+      ]
+    },
+    {
+      "cluster_id": "CH18-C028",
+      "file": "content/abap/CH18/CH18-L10.md",
+      "claim": "L10·L11에 '## 정리' 섹션이 없다. L01～L09는 모두 정리로 학습을 봉합한 뒤 다음 레슨을 예고하는데, 개념을 가장 많이 통합해야 하는 종합·실습 두 레슨만 흔한 실수 목록이 끝나자마자 전환 문구로 끝나, 챕터 전체의 판단 기준을 요약된 형태로 회수하지 못한다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG05-opus#3", "AG05-sonnet#1"],
+      "conflict": false,
+      "quotes": [
+        "- **SQL은 그대로 둔다** → `SELECT` 문장을 모던 SQL로 바꾸는 건 이 레슨 범위 밖이다."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C029",
+      "file": "embeds/_engine/let-reader.js",
+      "claim": "L09 위젯이 예약 수가 정원을 초과해 잔여석이 음수가 되면(예: 정원 100·예약 150 → -50) 화면에 표시된 COND 코드와 다른 가지를 선택된 것으로 표시한다. 코드대로라면 'WHEN lv_remaining < 10'(마감 임박)이어야 하는데 엔진이 remaining <= 0을 '= 0'(매진) 가지로 판정하며, 예약 입력에 상한이 없어 실제 도달 가능한 상태다. 표현식 독해를 가르치는 위젯이 독해 결과를 틀리게 보여 준다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG02-opus#10", "AG02-gpt-5.6-sol#4"],
+      "conflict": false,
+      "quotes": [
+        "if (remaining <= 0){ branch='WHEN lv_remaining = 0'; result='매진'; }"
+      ]
+    },
+    {
+      "cluster_id": "CH18-C030",
+      "file": "embeds/abap/CH18-L05-S01.html",
+      "claim": "L05 위젯의 CONCATENATE 모드에서 코드와 출력이 대응하지 않는다. 코드 패널은 '숫자는 WRITE ... TO로 따로 변환해야' 한다며 생략하는데 출력 패널은 String Template 모드와 완전히 동일한 서식 적용 결과(2026.06.27 · 120,000)를 계속 보여 줘, 두 방식의 차이가 0으로 체감되어 비교 체험이 성립하지 않는다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG02-opus#15", "AG02-gpt-5.6-sol#3"],
+      "conflict": false,
+      "quotes": [
+        "<code>CONCATENATE</code>와 String Template을 비교하고, <b>사용자 형식</b>을 켜면 날짜·숫자가 어떻게 바뀌는지 보세요."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C031",
+      "file": "embeds/abap/CH18-L10-S01.html",
+      "claim": "L10·L11 위젯의 modern 패널에 lv_total 선언이 빠져 있어, 본문이 바로 아래에서 경고하는 '+= 왼쪽 변수는 이미 존재해야 한다'는 규칙을 위젯 코드가 위반한 상태로 보인다. L11 위젯 ①은 classic이 lv_sum, modern이 미선언 lv_total로 좌우 변수명까지 어긋나 짝 비교에서 줄 추적이 불가능하다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG02-opus#11", "AG02-opus#6"],
+      "conflict": false,
+      "quotes": [
+        "lv_total += lt_book[ 1 ]-seats.",
+        "LOOP AT lt_book INTO DATA(ls_book).\n  lv_total += ls_book-seats.\nENDLOOP."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C032",
+      "file": "content/abap/CH18/CH18-L02.md",
+      "claim": "같은 ABAP 개념의 한·영 표기가 레슨마다 혼용된다 — 'Internal Table/내부 테이블/테이블', 'Structure/구조/구조체'가 같은 레슨 안에서도 갈려(L02 제목 '내부 테이블 채우기' vs 정리 'Internal Table'), ABAP 고유 용어는 영어 원문 표기라는 커리큘럼 관례와 어긋나고 입문자가 용어 대응을 반복 추론해야 한다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG04-opus#5", "AG04-gpt-5.6-sol#6"],
+      "conflict": false,
+      "quotes": [
+        "## 내부 테이블 채우기 — 각 `( )`가 한 행",
+        "- `VALUE`는 Structure·Internal Table을 **결과 모양 그대로** 만든다."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C033",
+      "file": "content/abap/CH18/_chapter.md",
+      "claim": "classic/modern 대립 개념의 표기가 '고전/현대'(챕터 intro), 'classic/modern'(대부분 레슨), '모던', '오래된 SQL'(L11)로 흔들려 장 전체의 기준 용어가 일정하지 않다. L11의 '오래된 SQL'은 같은 문장 안의 'classic LOOP'·'modern VALUE'와도 어긋나며 가치평가까지 섞였고, 해당 항목('섞여도 괜찮다')은 실수가 아니라 안심 문구인데 '흔한 실수와 점검' 목록에 들어 있어 성격도 어긋난다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG04-gpt-5.6-sol#5", "AG04-opus#17"],
+      "conflict": false,
+      "quotes": [
+        "장황한 고전 구문이 번거롭다 — 현대 ABAP으로 간결하게.",
+        "- **섞여도 괜찮다** → 한 파일에 오래된 SQL·classic LOOP·modern VALUE가 공존해도 된다."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C034",
+      "file": "embeds/_engine/diff-mapper.js",
+      "claim": "L10·L11이 함께 쓰는 diff-mapper 위젯이 마우스 hover에만 반응한다. click·touchstart·focus를 dispatch해도 설명이 열리지 않고 diff-line에 tabindex도 없어, 터치 기기·키보드 사용자는 두 마무리 레슨의 유일한 체험에서 '무엇이 왜 바뀌었는지'를 끝내 볼 수 없다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG02-opus#7"],
+      "conflict": false,
+      "quotes": [
+        "line.addEventListener(\"mouseenter\",()=>{"
+      ]
+    },
+    {
+      "cluster_id": "CH18-C035",
+      "file": "embeds/_engine/value-builder.js",
+      "claim": "L02 위젯에서 UNIQUE KEY 모드를 선택했는데도 '중복 key 시도' 버튼이 행을 그냥 추가하며 \"EMPTY KEY라 중복 행도 허용됩니다 … unique key였다면 오류였습니다\"라는 정반대 안내를 띄운다(중복이 성립하기 전 상태에서 고정 문구 사용). 'key 규칙은 VALUE에서도 그대로'라는 레슨 목표를 바로 그 버튼이 뒤집는다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG02-opus#8"],
+      "conflict": false,
+      "quotes": [
+        "setMsg('warn', 'EMPTY KEY라 중복 행도 허용됩니다(현재 ' + rows.length + '행). unique key였다면 오류였습니다.');"
+      ]
+    },
+    {
+      "cluster_id": "CH18-C036",
+      "file": "content/abap/CH18/CH18-L04.md",
+      "claim": "Table Expression을 '배열처럼 대괄호로' 꺼낸다고 비유하면서 ABAP 인덱스가 1부터 시작한다는 사실을 챕터 어디에서도 명시하지 않는다. 주류 언어의 배열 첨자는 거의 모두 0-based라 비유가 그대로 off-by-one 오해로 이어진다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG03-opus#1"],
+      "conflict": false,
+      "quotes": [
+        "DATA(ls_first) = lt_booking[ 1 ]."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C037",
+      "file": "content/abap/CH18/CH18-L10.md",
+      "claim": "정수 나눗셈 예제(lv_share /= 3.)에 결과 타입·반올림 단서가 없다. ABAP의 i 타입 나눗셈은 Java/C#처럼 버림이 아니라 반올림이라(5/3 → 2) 타 언어 상식을 적용하면 조용한 계산 오차가 나는데, 이 차이가 언급되지 않는다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG03-opus#4"],
+      "conflict": false,
+      "quotes": [
+        "lv_share /= 3."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C038",
+      "file": "content/abap/CH18/CH18-L07.md",
+      "claim": "'ELSE 생략 → 초기값' 규칙을 COND와 SWITCH 공통인 것처럼 한 줄로 묶었는데, SWITCH는 매칭 WHEN이 없고 ELSE도 없으면 초기값이 아니라 예외(CX_SY_CASE_NOT_FOUND 계열)가 발생할 수 있다는 지적이다. 발견자 스스로 기억 기반 추정임을 밝혔으므로 키워드 문서·실기 확인 후 문구를 COND/SWITCH로 분리해야 한다.",
+      "severity": "중간",
+      "confidence": "추정",
+      "supporters": ["AG03-opus#8"],
+      "conflict": false,
+      "quotes": [
+        "- **`ELSE` 생략** → 조건에 안 맞으면 결과가 **초기값**이 된다(빈 문자·0). 필요하면 `ELSE`를 둔다."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C039",
+      "file": "content/abap/CH18/CH18-L06.md",
+      "claim": "String Template의 { }는 값을 자동으로 문자열 변환하므로 예제의 CONV string( lv_name )은 완전히 잉여다. 같은 레슨 흔한 실수가 '이미 같은 타입인데 CONV → 경고'라고 경고하는 바로 그 패턴을 모범 예시로 시연해, '템플릿에 넣을 땐 CONV로 감싸야 한다'는 잘못된 습관을 만들 수 있다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG06-opus#3"],
+      "conflict": false,
+      "quotes": [
+        "DATA(lv_line) = |예매자: { CONV string( lv_name ) }|."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C040",
+      "file": "content/abap/CH18/CH18-L11.md",
+      "claim": "L11 ④의 SWITCH 예제가 판정 대상을 명시하지 않은 채 앞선 LOOP의 작업 영역 ls_book을 참조한다. 독립 예제로는 선언이 없어 컴파일되지 않고, 연속 코드로 보면 루프 종료 후 마지막 처리 행에 의존해 특정 예매의 상태를 판정한다는 의도가 코드에 없다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG06-gpt-5.6-sol#3"],
+      "conflict": false,
+      "quotes": [
+        "DATA(lv_label) = SWITCH string( ls_book-status\n  WHEN 'N' THEN '예약' WHEN 'C' THEN '취소' ELSE '알 수 없음' )."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C041",
+      "file": "content/abap/CH18/CH18-L06.md",
+      "claim": "두 레슨 전(L02)에 'VALUE 타입( )' constructor로 배운 VALUE가 L06 첫 코드에서 classic 초기값 지정(TYPE string VALUE '12')이라는 전혀 다른 뜻으로 아무 언급 없이 쓰인다. 같은 키워드의 두 용법을 구분하는 한 줄이 없어 학습자가 L02를 잘못 이해했나 반복해 되돌아가게 된다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG01-opus#7"],
+      "conflict": false,
+      "quotes": [
+        "DATA lv_count_text TYPE string VALUE '12'."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C042",
+      "file": "content/abap/CH18/CH18-L02.md",
+      "claim": "예제 타입 선언의 WITH EMPTY KEY가 이 레슨에도 L01에도 풀이 없이 등장하는데, 같은 레슨 흔한 실수·체험 안내는 'unique key 테이블의 중복 행 오류'를 강조해 앞뒤가 안 맞는다. 지금 쓰는 테이블은 EMPTY KEY인데 왜 중복 오류 이야기가 나오는지, 내 예제에서도 그 오류가 나는지 판단할 수 없다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG01-opus#2"],
+      "conflict": false,
+      "quotes": [
+        "TYPES tt_book TYPE STANDARD TABLE OF ts_book WITH EMPTY KEY."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C043",
+      "file": "content/abap/CH18/CH18-L02.md",
+      "claim": "FOR i = 1 WHILE i <= 9에서 카운터 변수 i가 어떻게 선언되고 무슨 타입인지 설명이 없다. 뒤의 설명은 'i·line은 그 표현식 안에서만 산다'는 수명만 다루고, i가 어떻게 정수로 자동 선언·타입 결정되는지는 나오지 않아 짐작으로 넘어가야 한다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG01-sonnet#1"],
+      "conflict": false,
+      "quotes": [
+        "FOR i = 1 WHILE i <= 9"
+      ]
+    },
+    {
+      "cluster_id": "CH18-C044",
+      "file": "content/abap/CH18/CH18-L05.md",
+      "claim": "DATE = USER·NUMBER = USER 형식 옵션이 실제로 무엇을 기준으로 어떤 문자열을 만드는지 설명·결과 예시가 없다. '사용자가 기대하는 형식'이라는 말만으로는 구분자가 어떻게 달라지는지, 사용자마다 결과가 달라질 수 있는지 판단할 수 없다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG01-gpt-5.6-sol#3"],
+      "conflict": false,
+      "quotes": [
+        "|오늘은 { sy-datum DATE = USER }, 합계 { lv_total NUMBER = USER }원입니다.|."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C045",
+      "file": "content/abap/CH18/CH18-L01.md",
+      "claim": "CONSTANTS와 FINAL()의 차이를 설명하는 핵심 문장에서 '컴파일 시점'과 '런타임'이라는 전문 용어가 비전공 입문자용 풀이 없이 등장한다. 두 단계의 구분을 모르는 독자는 이 대비 문장에서 막힌다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG01-gemini-3.6-flash-high#1"],
+      "conflict": false,
+      "quotes": [
+        "> 💡 `FINAL()`은 `CONSTANTS`와 다르다. `CONSTANTS`는 **선언할 때 값이 필수**인 컴파일 시점"
+      ]
+    },
+    {
+      "cluster_id": "CH18-C046",
+      "file": "content/abap/CH18/CH18-L03.md",
+      "claim": "이전 챕터에서 시스템 변수 sy-uname으로 배운 이름이 예제 필드 타입에서는 하이픈 없는 syuname으로 등장하는데 아무 설명이 없다. 입문자는 오타인지 별도 타입인지 판단하지 못해 읽기를 멈춘다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG01-gemini-3.6-flash-high#2"],
+      "conflict": false,
+      "quotes": [
+        "audit_user     TYPE syuname,           \" 원본에 없음"
+      ]
+    },
+    {
+      "cluster_id": "CH18-C047",
+      "file": "content/abap/CH18/CH18-L10.md",
+      "claim": "'과한 표현' 예시의 해결책이 테이블에서 꺼내던 값을 상수 3으로 바꾸는 것이라, 같은 레슨이 세 번 강조한 '실행 결과는 똑같이'라는 리팩터링 대원칙과 어긋나 보인다. 예제 데이터가 우연히 seats = i라 3회차 좌석이 3인 것뿐인데 그 전제가 설명되지 않아, '값을 마음대로 바꿔도 되나'라는 의문만 남긴다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG01-opus#13"],
+      "conflict": false,
+      "quotes": [
+        "3회차 좌석 수만 알면 되니 그 값만 쓴다: `DATA(lv_third) = 3.`"
+      ]
+    },
+    {
+      "cluster_id": "CH18-C048",
+      "file": "content/abap/CH18/CH18-L11.md",
+      "claim": "같은 실습 안에서 ①이 선언한 DATA(lv_total)·인라인 ls_book을 ④의 REDUCE 예제가 다시 DATA()로 선언한다. ①～④가 같은 프로그램을 이어 고치는 흐름으로 읽히는데 ④가 ①의 대안(둘 중 하나만 쓴다)이라는 안내가 없어, L01이 오류라고 못 박은 중복 선언 상황처럼 보여 학습자가 멈춘다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG01-opus#15"],
+      "conflict": false,
+      "quotes": [
+        "DATA(lv_total) = REDUCE i(\n  INIT sum = 0 FOR ls_book IN lt_book NEXT sum = sum + ls_book-seats )."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C049",
+      "file": "content/abap/CH18/CH18-L10.md",
+      "claim": "L10은 스스로 '새 문법을 배우는 자리가 아니다'라고 선언해 놓고 같은 레슨에서 복합 대입(+= 계열)을 정식 도입하며(introduces에도 명시), 도입 절보다 앞의 before/after 예제에서 +=를 먼저 사용해 사용→정의 역순이 발생한다. 판단 레슨의 목적과 신규 학습이 섞여 인지 초점이 흐려진다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG05-opus#4"],
+      "conflict": false,
+      "quotes": [
+        "그래서 이 레슨은 새 문법을 더 배우는 자리가 아니라,"
+      ]
+    },
+    {
+      "cluster_id": "CH18-C050",
+      "file": "content/abap/CH18/CH18-L10.md",
+      "claim": "여러 문법을 결합하는 누적 복습이 L10까지 지연된다. L01～L09는 각자 새 문법 하나를 소개하고 예고만 할 뿐 직전 문법을 새 과제에서 다시 꺼내 쓰는 연습이 제한적이어서, 학습자는 개념들을 분리된 지식으로 보관하다가 L10에서 문법 기억과 선택 기준 적용을 동시에 수행해야 한다. 2～3개 레슨마다 짧은 누적 체크포인트가 필요하다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG05-gpt-5.6-sol#3"],
+      "conflict": false,
+      "quotes": [
+        "여기까지 인라인 `DATA( )`·`VALUE`·`CORRESPONDING`·Table Expression·String Template·\n`CONV`/`EXACT`·`COND`/`SWITCH`·`REDUCE`/`FILTER`·`LET`을 하나씩 배웠다."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C051",
+      "file": "content/abap/CH18/CH18-L01.md",
+      "claim": "[[ ]] 용어 마킹(글로서리 팝업)이 L06～L09에만 있고 L01～L05·L10～L11의 핵심 도입 용어(DATA()·VALUE·CORRESPONDING·Table Expression·String Template 등)에는 전혀 없어, 같은 챕터 안에서 레슨별 용어 지원 방식이 크게 갈린다(grep으로 분포 확인).",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG04-sonnet#2"],
+      "conflict": false,
+      "quotes": [
+        "## DATA() — 값이 만들어지는 자리에서 선언"
+      ]
+    },
+    {
+      "cluster_id": "CH18-C052",
+      "file": "content/abap/CH18/CH18-L02.md",
+      "claim": "`#` 타입 추론의 성립 조건을 설명하는 유일한 본문 문장('`#`는 좌변 lt_book이 타입을 알려 줘 가능하다')이 주술 불일치·과다 압축 비문이라 초심자가 조건을 파악하기 어렵다. 같은 레슨 흔한 실수의 설명('좌변 타입이 분명할 때만')이 오히려 더 명확해 본문이 역전된 상태다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG04-opus#2"],
+      "conflict": false,
+      "quotes": [
+        "기존 테이블을 **유지하면서** 행을 더하려면 `BASE`를 쓴다. `#`는 좌변 `lt_book`이 타입을 알려 줘 가능하다."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C053",
+      "file": "content/abap/CH18/CH18-L08.md",
+      "claim": "점검 항목 '`FILTER ... EXCEPT`를 단순 `NOT`으로 → 항상 같은 사고방식은 아니다'가 무엇이 어떻게 다른지 전혀 알려 주지 않는 빈 문장이다. 바로 위 본문은 부정과 사실상 같다고 설명해 놓고 이 항목은 근거 없이 다를 수 있다고만 해 앞뒤가 어긋나며, 학습자가 취할 행동이 '직접 확인'뿐이라 주의사항 구실을 못 한다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG04-opus#13"],
+      "conflict": false,
+      "quotes": [
+        "- **`FILTER ... EXCEPT`를 단순 `NOT`으로** → 항상 같은 사고방식은 아니다. 결과 행을 직접 확인한다."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C054",
+      "file": "content/abap/CH18/CH18-L11.md",
+      "claim": "'관통 예제'라는 용어가 설명 없이 처음 등장한다. 다음 문장이 콘서트 예매 흐름을 다시 쓴다고 안내하긴 하지만, 하나의 예제를 여러 장에 걸쳐 이어 간다는 뜻 자체는 풀리지 않아 입문자가 의미를 추론해야 한다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG04-gpt-5.6-sol#4"],
+      "conflict": false,
+      "quotes": [
+        "문법은 작은 예제에서 배우지만, 실무 감각은 **관통 예제**에서 굳는다."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C055",
+      "file": "content/abap/CH18/CH18-L02.md",
+      "claim": "표현식 로컬 변수의 이름이 커리큘럼 접두어 규약을 따르지 않는다 — FOR 카운터 i(L02·L10), 행 반복 변수 line(L02), REDUCE 누적 변수 sum(L08·L09·L11)이 lv_/ls_ 없이 쓰인다. 표현식 안에서 선언되는 로컬 스칼라·Structure에도 규약을 적용할지 명시적 결정이 필요하다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG09-gpt-5.6-sol#3", "AG09-gpt-5.6-sol#4", "AG09-gpt-5.6-sol#6", "AG09-gpt-5.6-sol#7", "AG09-gpt-5.6-sol#8", "AG09-gpt-5.6-sol#10"],
+      "conflict": false,
+      "quotes": [
+        "FOR i = 1 WHILE i <= 9",
+        "INIT sum = 0                     \" 누적값(반복마다 바뀜)"
+      ]
+    },
+    {
+      "cluster_id": "CH18-C056",
+      "file": "content/abap/CH18/_chapter.md",
+      "claim": "챕터 전체에 타 언어 경력자를 위한 지름길·대응 안내가 없다. var/object initializer/switch expression/Stream reduce·filter/compound assignment 등 이미 아는 개념의 ABAP 재도입 구성인데, '아는 사람은 어디를 건너뛰어도 되는지' 경로 안내나 타 언어 대응 한 줄(예: COND/SWITCH ≈ switch expression, REDUCE≈reduce·VALUE FOR≈map이되 체이닝 불가)이 어디에도 없어 통독 시간이 길어진다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG03-sonnet#5", "AG03-gpt-5.6-sol#4", "AG03-gemini-3.6-flash-high#3", "AG03-sonnet#3", "AG03-opus#9"],
+      "conflict": false,
+      "quotes": [
+        "장황한 고전 구문이 번거롭다 — 현대 ABAP으로 간결하게."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C057",
+      "file": "content/abap/CH18/CH18-L04.md",
+      "claim": "L04의 대표 예제가 의미어 없는 두 글자 변수 DATA(ls)를 쓰는데, L11 흔한 실수는 바로 이 형태를 금지 사례('DATA(ls)보다 DATA(ls_book)')로 든다. 앞 레슨의 모범 예제가 뒤 레슨이 지적하는 안티패턴을 시연하는 챕터 내 자기모순이다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG05-opus#8", "AG09-opus#6", "AG09-gpt-5.6-sol#5"],
+      "conflict": false,
+      "quotes": [
+        "DATA(ls) = lt_booking[ booking_id = lv_id ]."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C058",
+      "file": "content/abap/CH18/CH18-L10.md",
+      "claim": "복합 대입(+= 계열)은 거의 모든 주류 언어의 기초 문법이라 정의·용어 해설까지 한 문단을 할애하는 것은 경력자에겐 과잉이다. 다만 입문자 1독자 기준으로는 필요한 설명이므로 경력자용 한 줄 축약 안내 정도의 낮은 우선순위 제안이다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG03-sonnet#4", "AG03-gemini-3.6-flash-high#4"],
+      "conflict": false,
+      "quotes": [
+        "이것을 **복합 대입**(compound assignment, 계산하면서 동시에 대입)이라고 한다."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C059",
+      "file": "content/abap/CH18/CH18-L10.md",
+      "claim": "CH18-L04를 가리키는 링크 라벨이 자리마다 다르다 — L03·L04 안내는 'Table Expression', L10·L11은 실제 레슨 제목에 없는 'Table Expression 안전하게 읽기'를 써서, 학습자가 안 읽은 별도 레슨이 있는 줄로 오인해 되돌아가 확인하게 된다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG01-opus#17", "AG04-opus#8"],
+      "conflict": false,
+      "quotes": [
+        "행이 있을지 불확실하면 `line_exists( )`로 먼저 막는다([Table Expression 안전하게 읽기](CH18-L04.html)에서 배운 방어선)"
+      ]
+    },
+    {
+      "cluster_id": "CH18-C060",
+      "file": "content/abap/CH18/CH18-L11.md",
+      "claim": "L11의 prevRel 값이 규약 열거값(pain-solution/parallel/deepening) 밖의 next-step이다. 챕터 내 다른 10개 레슨은 모두 열거값 안에 있어 이 레슨만 이탈이며, 정적 점검·게이팅 도구가 값을 인식하지 못한다. deepening으로 바꾸거나 next-step을 정식 어휘로 승격할지 결정이 필요하다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG05-opus#10", "AG09-opus#10"],
+      "conflict": false,
+      "quotes": [
+        "prevRel: next-step"
+      ]
+    },
+    {
+      "cluster_id": "CH18-C061",
+      "file": "content/abap/CH18/CH18-L11.md",
+      "claim": "②에서 만든 새 예매 행에는 booking_id가 없는데 바로 다음 ③은 booking_id로 행을 찾고 확인 표에도 0001～0003이 있어, 예매번호가 어디서 생기는지 두 절의 데이터 관계가 문장으로 이어지지 않는다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG01-opus#16"],
+      "conflict": false,
+      "quotes": [
+        "DATA(ls_new) = VALUE zbooking(\n  concert_id = 'C001'\n  perf_no    = '001'\n  customer   = '정훈영'\n  seats      = 2\n  status     = 'N' )."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C062",
+      "file": "content/abap/CH18/CH18-L01.md",
+      "claim": "'escape'라는 영어 단어가 풀이 없이 나와, SELECT 안에서 인라인을 쓸 수 없는 이유가 입문자에게 전달되지 않는다. 결론(CH19에서 다룸)은 알 수 있지만 이유는 따라갈 수 없다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG01-opus#1"],
+      "conflict": false,
+      "quotes": [
+        "- **SELECT에 `DATA()`** → SQL 안의 인라인은 별도 escape가 필요한 **New Open SQL**이라"
+      ]
+    },
+    {
+      "cluster_id": "CH18-C063",
+      "file": "content/abap/CH18/CH18-L05.md",
+      "claim": "substring의 off = 0이 첫 번째 글자를 뜻하는 0-based 오프셋이라는 설명이 없다. 입문자는 1번째 글자면 off = 1을 생각하기 쉬워 0의 의미를 오해할 수 있다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG01-gemini-3.6-flash-high#3"],
+      "conflict": false,
+      "quotes": [
+        "DATA(lv_sub) = substring( val = lv_text off = 0 len = 3 ).   \" 앞 3글자"
+      ]
+    },
+    {
+      "cluster_id": "CH18-C064",
+      "file": "content/abap/CH18/CH18-L06.md",
+      "claim": "AG01-gemini는 [[CONV]] 같은 이중 대괄호를 위키식 마크다운 잔재로 보고 백틱·굵은 글씨로 정돈하라고 제안한다. 그러나 상반 전제가 있다 — [[ ]]는 이 사이트의 정식 용어 마킹 문법(빌드가 glossary 팝업 term 버튼으로 변환, R5)이며, AG04-sonnet은 오히려 이 마킹이 L01～L05에 없는 것을 결함으로 본다. 소스 표기를 렌더 결과로 오인한 오탐일 가능성이 높다.",
+      "severity": "낮음",
+      "confidence": "추정",
+      "supporters": ["AG01-gemini-3.6-flash-high#4"],
+      "conflict": true,
+      "quotes": [
+        "[[CONV]]는 값을 **지정한 타입으로 바꾼 결과**를 그 자리에서 만든다."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C065",
+      "file": "content/abap/CH18/CH18-L10.md",
+      "claim": "L10과 L11이 사실상 같은 과제를 반복한다 — 같은 예매 도메인, 같은 before/after 문법 조각, 같은 '결과가 같은지 확인' 표, 같은 제목의 비교 임베드. 경력자에겐 한 레슨 분량이 잉여로 읽히나 입문자에겐 '작은 예제 → 관통 예제' 반복의 학습 이득이 있어 낮음이며, L10 슬림화·검증 절차의 L11 집약 정도가 제안된다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG03-opus#12"],
+      "conflict": false,
+      "quotes": [
+        "> 🎯 **리팩터링**(Refactoring, 동작은 그대로 두고 코드 모양만 다듬기)의 목표는 **줄 수를 줄이는 게 아니다.**"
+      ]
+    },
+    {
+      "cluster_id": "CH18-C066",
+      "file": "content/abap/CH18/CH18-L05.md",
+      "claim": "strlen을 타 언어 length()와 같은 것으로 묶어 소개하지만, ABAP strlen은 고정 길이 c 타입에서 뒤쪽 공백을 제외한 길이를 돌려준다. 이 타입별 차이가 빠져 있어 바로 아래 'substring 범위 초과 → 입력 길이를 확인한다'는 조언이 반쪽이 된다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG03-opus#11"],
+      "conflict": false,
+      "quotes": [
+        "DATA(lv_len) = strlen( lv_text )."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C067",
+      "file": "content/abap/CH18/CH18-L10.md",
+      "claim": "리팩터링을 '코드 모양만 다듬기'로 정의해 일반 개발 용어보다 지나치게 좁힌다. 통상 리팩터링은 동작을 보존하며 내부 구조를 개선하는 활동 전반(메서드 추출·책임 이동 포함)이며, 이 레슨이 하는 것은 그중 구문 현대화에 가깝다는 범위 한정이 필요하다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG03-gpt-5.6-sol#3"],
+      "conflict": false,
+      "quotes": [
+        "> 🎯 **리팩터링**(Refactoring, 동작은 그대로 두고 코드 모양만 다듬기)의 목표는 **줄 수를 줄이는 게 아니다.**"
+      ]
+    },
+    {
+      "cluster_id": "CH18-C068",
+      "file": "content/abap/CH18/CH18-L03.md",
+      "claim": ".NET/LINQ 경력자는 Except()를 시퀀스 간 차집합 연산으로 먼저 떠올리는데, CORRESPONDING의 EXCEPT는 필드 하나를 결과에서 빼는 옵션이라 의미가 다르다는 안내가 없다. 경력자 대상 낮은 우선순위의 disambiguation 제안이다.",
+      "severity": "낮음",
+      "confidence": "추정",
+      "supporters": ["AG03-sonnet#2"],
+      "conflict": false,
+      "quotes": [
+        "`EXCEPT audit_user` — **대상 필드** `audit_user`를 결과에서 채우지 않는다(초기값으로 둠)."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C069",
+      "file": "content/abap/CH18/CH18-L09.md",
+      "claim": "COND/SWITCH의 THROW 예고가 정작 두 표현식을 도입하는 L07이 아니라 두 레슨 뒤 LET 레슨(L09)의 흔한 실수 끝에 놓여 있다. 예고 분량 자체는 적절하나 배치가 개념 소유 레슨과 어긋나 'LET을 배우는데 왜 COND 이야기가 나오지'라는 흐름 단절을 만든다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG05-opus#7"],
+      "conflict": false,
+      "quotes": [
+        "> 🔎 공식 문서엔 `COND`/`SWITCH` 결과 자리에 `THROW`(예외 발생)를 둘 수 있지만, 예외"
+      ]
+    },
+    {
+      "cluster_id": "CH18-C070",
+      "file": "embeds/_engine/inline-decl-judge.js",
+      "claim": "L01 위젯에서 FINAL() 모드로 바꾸면 modern 코드가 카드 문맥과 무관한 다른 변수·다른 예제(FINAL(lv_max) = 100.)로 바뀌고 classic 쪽은 여전히 lv_total 계산이라 좌우 비교가 성립하지 않는다. 재대입 시도 버튼의 판정 대상 변수도 모드에 따라 오가 카드가 무엇을 보여 주는지 흐려진다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG02-opus#13"],
+      "conflict": false,
+      "quotes": [
+        "var modern = (c.final && finalMode) ? 'FINAL(lv_max) = 100.' : c.modern;"
+      ]
+    },
+    {
+      "cluster_id": "CH18-C071",
+      "file": "embeds/_engine/reduce-filter-lab.js",
+      "claim": "같은 예매 인물의 데이터가 위젯마다 다르다 — L08 위젯은 손흥민 4석·아이유 3석 취소(예매번호 5001～5005)인데, L04 위젯·L11 본문 표는 손흥민 1석·아이유 4석 예약(0001～0003)이다. 챕터를 순서대로 따라가는 학습자에게 관통 예제의 연속성이 끊긴다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG02-opus#14"],
+      "conflict": false,
+      "quotes": [
+        "{ id:5002, cust:'손흥민', seats:4, status:'N' },"
+      ]
+    },
+    {
+      "cluster_id": "CH18-C072",
+      "file": "content/abap/CH18/CH18-L11.md",
+      "claim": "L11 ① 본문에서 classic의 lv_sum이 modern에서 lv_total로 이름까지 바뀌었는데, 설명은 '바뀐 건 셋'만 열거하고 이름 변경을 언급하지 않는다. 결과 보존을 강조하는 리팩터링 레슨에서 변수가 하나 더 생겼나 오해할 수 있다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG04-opus#16"],
+      "conflict": false,
+      "quotes": [
+        "바뀐 건 셋. `ls_book` 선언이 루프의 `INTO`로 내려왔고, 합계 변수는 필요한 자리에서 `DATA(lv_total) = 0`으로 시작하고, 누적은 `+=`로 짧아졌다."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C073",
+      "file": "content/abap/CH18/CH18-L02.md",
+      "claim": "'예매 한 건은 … 세 필드다'는 주어(예매 건)와 서술어(필드다)가 호응하지 않는 주술 불일치 문장이다. '세 필드로 이뤄진다'처럼 서술어를 맞추면 해결된다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG04-opus#1"],
+      "conflict": false,
+      "quotes": [
+        "예제로 쓸 예매 한 건은 공연 코드(`concert_id`)·회차(`perf_no`)·좌석 수(`seats`) 세 필드다."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C074",
+      "file": "content/abap/CH18/CH18-L01.md",
+      "claim": "한 개념이 'Inline Declaration'·'Inline declaration'·'inline 변수'·'Inline 선언'·'인라인 선언/인라인 DATA'로 다섯 가지로 표기된다. 영문·국문·혼합이 섞여 검색·복습 때 같은 개념인지 확신하기 어려우므로 첫 등장 병기 후 한 표기로 통일이 필요하다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG04-opus#7"],
+      "conflict": false,
+      "quotes": [
+        "Inline declaration은 **값이 필요한 바로 그 자리에서** 변수를 선언한다."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C075",
+      "file": "content/abap/CH18/CH18-L07.md",
+      "claim": "'첫 번째로 참인 결과를 돌려준다'는 '결과가 참'이라는 뜻으로 읽히는 중의문이다. 실제 의미는 '처음으로 참이 된 WHEN 조건에 딸린 THEN 값'이며, 조건과 결과를 구분해 배우는 첫 자리라 표현 정밀화가 필요하다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG04-opus#11"],
+      "conflict": false,
+      "quotes": [
+        "[[COND]]는 조건을 차례로 검사해 **첫 번째로 참인 결과**를 돌려준다. `IF`에 가깝다."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C076",
+      "file": "content/abap/CH18/CH18-L09.md",
+      "claim": "'공식 문서엔 … THROW를 둘 수 있지만'은 행위 주체와 장소가 한 조사로 묶여 '문서 안에 THROW를 둔다'로 읽히는 비문이다. 미학습 개념(예외)을 다루는 콜아웃이라 문장을 두 개로 나눠 더 또렷하게 써야 한다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG04-opus#14"],
+      "conflict": false,
+      "quotes": [
+        "공식 문서엔 `COND`/`SWITCH` 결과 자리에 `THROW`(예외 발생)를 둘 수 있지만"
+      ]
+    },
+    {
+      "cluster_id": "CH18-C077",
+      "file": "content/abap/CH18/CH18-L10.md",
+      "claim": "챕터 전체가 무인칭·동행형('우리는') 서술인데 이 문장에서만 1인칭 '내가'가 등장해 화자 시점이 흔들린다. '여기서 내린 판단은 세 가지다' 정도로 인칭을 맞추면 된다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG04-opus#15"],
+      "conflict": false,
+      "quotes": [
+        "여기서 내가 내린 **판단은 세 가지**다."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C078",
+      "file": "content/abap/CH18/CH18-L05.md",
+      "claim": "본문에서 '그냥 넣으면'이라고 쉽게 풀던 것을 점검 항목에서 갑자기 'raw 임베딩'이라는 풀이 없는 영문 기술어 조합으로 바꿔 부른다. '서식 없이 그대로 넣기'로 순화하고 문장을 완결하는 교정이 필요하다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG04-gpt-5.6-sol#2"],
+      "conflict": false,
+      "quotes": [
+        "- **숫자·날짜 raw 임베딩** → 사람이 기대하는 표시와 다를 수 있다. `NUMBER = USER`·`DATE = USER` 검토."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C079",
+      "file": "content/abap/CH18/CH18-L09.md",
+      "claim": "'같은 계산을 여러 자리에서 반복'의 '여러 자리'가 좌석·위치를 연상시켜 코드의 여러 곳이라는 뜻이 매끄럽게 전달되지 않는다. '여러 곳에서'로 고치면 된다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG04-gpt-5.6-sol#3"],
+      "conflict": false,
+      "quotes": [
+        "특히 **같은 계산을 여러 자리에서 반복**할 때 그렇다."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C080",
+      "file": "content/abap/CH18/CH18-L01.md",
+      "claim": "'런타임에 한 번 계산된 값을 이후 변경만 막는다'는 목적격 조사 호응이 어색한 문장이다. '값의 이후 변경을 막는다'로 서술어 호응을 맞추는 교정이 필요하다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG04-gemini-3.6-flash-high#1"],
+      "conflict": false,
+      "quotes": [
+        "FINAL()은 **런타임에 한 번 계산된 값**을 이후 변경만 막는다."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C081",
+      "file": "content/abap/CH18/CH18-L02.md",
+      "claim": "front-matter introduces에 '테이블 리터럴'을 핵심 도입 용어로 선언했지만 본문 어디에도 그 용어의 언급·풀이가 없다. 본문에서 용어를 명시하거나 introduces 목록을 실제 사용 용어에 맞게 정돈해야 한다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG04-gemini-3.6-flash-high#2"],
+      "conflict": false,
+      "quotes": [
+        "introduces: [\"VALUE #( )\", \"테이블 리터럴\", \"BASE\", \"FOR 반복 생성(table comprehension)\"]"
+      ]
+    },
+    {
+      "cluster_id": "CH18-C082",
+      "file": "content/abap/CH18/CH18-L03.md",
+      "claim": "'DB 행을 화면 표시용 구조로, 입력 구조를 저장 구조로.'가 종결 서술어 없이 끝나는 미완성 문장이다. '…옮기는 경우가 대표적이다' 같은 서술어를 채워야 한다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG04-gemini-3.6-flash-high#4"],
+      "conflict": false,
+      "quotes": [
+        "DB 행을 화면 표시용 구조로, 입력 구조를 저장 구조로."
+      ]
+    },
+    {
+      "cluster_id": "CH18-C083",
+      "file": "content/abap/CH18/CH18-L01.md",
+      "claim": "'그런데 코드가 길어지면'과 '80줄 아래서 쓰면'이 같은 상황을 이중 조건절로 겹쳐 놓아 문장 호흡이 길고 늘어진다. 두 문장으로 끊으면 더 잘 읽힌다.",
+      "severity": "낮음",
+      "confidence": "추정",
+      "supporters": ["AG04-sonnet#4"],
+      "conflict": false,
+      "quotes": [
+        "`ls_book`을 80줄 아래서 쓰면 읽는 사람은 \"이 변수 값이 어디서 들어오지?\"를 계속 추적해야"
+      ]
+    },
+    {
+      "cluster_id": "CH18-C084",
+      "file": "content/abap/CH18/CH18-L04.md",
+      "claim": "'hashed key'라는 용어가 괄호 안에서 스치듯 언급되지만 한 줄 풀이가 없다. 선행 챕터에서 이미 배운 용어가 아니라면 어떤 내부 테이블 종류인지 이 문장만으로는 단서가 전혀 없다.",
+      "severity": "낮음",
+      "confidence": "추정",
+      "supporters": ["AG04-sonnet#3"],
+      "conflict": false,
+      "quotes": [
+        "못 찾으면 `0`(hashed key 등 순서를 말할 수 없으면 `-1`)."
+      ]
+    }
+  ],
+  "grade_opinions": {
+    "AG01-opus": "보강 권장",
+    "AG01-sonnet": "경미 수정",
+    "AG01-gpt-5.6-sol": "보강 권장",
+    "AG01-gemini-3.6-flash-high": "경미 수정",
+    "AG02-opus": "보강 권장",
+    "AG02-sonnet": "보강 권장",
+    "AG02-gpt-5.6-sol": "보강 권장",
+    "AG02-gemini-3.6-flash-high": "경미 수정",
+    "AG03-opus": "경미 수정",
+    "AG03-sonnet": "경미 수정",
+    "AG03-gpt-5.6-sol": "보강 권장",
+    "AG03-gemini-3.6-flash-high": "경미 수정",
+    "AG04-opus": "경미 수정",
+    "AG04-sonnet": "경미 수정",
+    "AG04-gpt-5.6-sol": "경미 수정",
+    "AG04-gemini-3.6-flash-high": "경미 수정",
+    "AG05-opus": "보강 권장",
+    "AG05-sonnet": "경미 수정",
+    "AG05-gpt-5.6-sol": "보강 권장",
+    "AG05-gemini-3.6-flash-high": "유지",
+    "AG06-opus": "보강 권장",
+    "AG06-sonnet": "경미 수정",
+    "AG06-gpt-5.6-sol": "보강 권장",
+    "AG06-gemini-3.6-flash-high": "보강 권장",
+    "AG09-opus": "경미 수정",
+    "AG09-sonnet": "경미 수정",
+    "AG09-gpt-5.6-sol": "보강 권장",
+    "AG09-gemini-3.6-flash-high": "유지"
+  },
+  "dropped": []
+}

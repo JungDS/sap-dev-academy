@@ -1,4 +1,4 @@
-/* fieldcat-editor 엔진 — lt_fcat의 coltext/outputlen을 편집하면 gt_booking 미리보기 헤더가 즉시 바뀐다.
+/* fieldcat-editor 엔진 — lt_fcat의 coltext/outputlen을 편집하면 gt_booking 미리보기의 헤더 텍스트(coltext)와 컬럼 폭(outputlen, ch 단위 colgroup)이 즉시 바뀐다.
    LOOP의 IF ls_fcat-fieldname = 'SEATS'(대문자)면 SEATS 컬럼 수정이 적용되고, 'seats'(소문자)면 DDIC 필드명과 안 맞아 적용 안 됨.
    골격 계약: .fce-case · #fceEditor · #fcePreview · #fceMsg.
    config: window.FCE_CFG = { cols:[{fieldname,default,len}], rows:[{}], caseField }. 높이: _autoheight.js. */
@@ -20,6 +20,13 @@
     if (!applies(fn)) return fn;            // 소문자 매칭 실패 → 기본(기술 필드명)
     return coltext[fn] || fn;
   }
+  // outputlen → 컬럼 폭(ch). 미적용(매칭 실패)이면 0 = 자동 폭
+  function lenOf(fn) {
+    if (!applies(fn)) return 0;
+    var n = parseInt(outlen[fn], 10);
+    if (!(n > 0)) return 0;
+    return Math.min(n, 80);
+  }
 
   function renderCase() {
     caseEl.innerHTML = [{ v: 1, l: "fieldname = '" + CFG.caseField + "'", bad: 0 }, { v: 0, l: "= '" + CFG.caseField.toLowerCase() + "'", bad: 1 }].map(function (o) {
@@ -27,7 +34,8 @@
     }).join('');
   }
   function renderPreview() {
-    previewEl.innerHTML = '<div class="fce-gtt">gt_booking 미리보기</div><table class="fce-tbl"><thead><tr>' +
+    previewEl.innerHTML = '<div class="fce-gtt">gt_booking 미리보기</div><table class="fce-tbl"><colgroup>' +
+      CFG.cols.map(function (c) { var w = lenOf(c.fieldname); return w ? '<col style="width:' + w + 'ch">' : '<col>'; }).join('') + '</colgroup><thead><tr>' +
       CFG.cols.map(function (c) { return '<th>' + esc(headerOf(c.fieldname)) + '<span class="fn">' + esc(c.fieldname) + '</span></th>'; }).join('') + '</tr></thead><tbody>' +
       CFG.rows.map(function (r) { return '<tr>' + CFG.cols.map(function (c) { return '<td>' + esc(r[c.fieldname]) + '</td>'; }).join('') + '</tr>'; }).join('') +
       '</tbody></table>';
@@ -53,7 +61,7 @@
     var col = e.target.getAttribute && e.target.getAttribute('data-col');
     var len = e.target.getAttribute && e.target.getAttribute('data-len');
     if (col) { coltext[col] = e.target.value; renderPreview(); }
-    else if (len) { outlen[len] = e.target.value; }
+    else if (len) { outlen[len] = e.target.value; renderPreview(); }
   });
 
   render();

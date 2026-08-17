@@ -1,0 +1,68 @@
+{
+  "agent": "AG09",
+  "model": "opus",
+  "target": "CH20",
+  "persona_ack": "AG09 — ABAP 정적 검사기를 시늉하는 코드 전용 감사자. 산문·교수법은 판단에서 제외하고 ```abap 코드 블록만 줄 단위로 점검했다. 스타일 선호(빈 줄·정렬·공백 폭)는 결함으로 세지 않았고, 억지 발견 대신 오탐 회피를 우선했다.",
+  "method": "Read 도구로 대상 8개 파일(_chapter.md + L01~L07) 전문을 통독한 뒤, 코드 블록이 있는 L02(CTE 1개)·L03(EXISTS·IN 2개)·L04(EXCEPT 1개)·L05(Window·순위 2개)·L07(과제 1~4, 4개) 총 10개 블록을 줄 단위로 점검. 점검 항목 = 문장 마침표·괄호 짝·ABAP SQL 절 순서(WITH/CTE, 집합연산 INTO 위치, OVER/PARTITION BY/ORDER BY, EXISTS·IN subquery)·별칭(~) 사용·컬럼 존재 여부·CH20(=CH19 이후)의 경계 규약(modern 문법·New Open SQL 허용 구간)·네이밍 접두어. SAP 시스템·빌드 실행 환경이 없어 컴파일 검증은 불가 — 전부 정적 판단이며 확신도는 confidence에 반영했다. L01·L06·_chapter.md에는 ```abap 블록이 없어 점검 대상 코드가 없었다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L07.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH20/CH20-L07.md",
+      "quote": "SELECT c~concert_id, c~artist, c~capacity,",
+      "category": "존재하지 않는 컬럼 참조 (활성화 차단급)",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "같은 레슨의 실습 데이터에서 `zconcert`의 컬럼은 `concert_id`·`title`·`capacity`로 선언됐는데, 과제 1과 과제 2의 SELECT는 존재하지 않는 `c~artist`를 읽는다. 실제 시스템이라면 구문 점검에서 'Unknown column ARTIST' 로 활성화가 막힌다.",
+      "evidence": "L07 '실습 데이터' 표 헤더는 `| concert_id | title | capacity |`이고 값은 안유진/ABAP Trio/UI5 Night/Closed Show다. 그런데 과제 1은 `SELECT c~concert_id, c~artist, c~capacity,`, 과제 2는 `SELECT c~concert_id, c~artist`로 `artist`를 참조한다. 과제 1의 예상 결과 표(concert_id·booked·remaining)에도 artist 열이 없어, 표와 코드 어느 쪽도 서로를 뒷받침하지 못한다. 표·코드 중 하나만 옳을 수 있는 명백한 불일치다.",
+      "suggestion": "테이블 정의를 하나로 통일한다. `zconcert`에 아티스트 컬럼이 없으면 두 과제의 `c~artist`를 `c~title`로 고치고, 반대로 정본 모델에 `artist`가 있다면 실습 데이터 표 헤더를 `| concert_id | artist | capacity |`로 바꾼다. 같은 컬럼명을 쓰는 CH20-L02·CH20-L03 코드도 함께 맞춘다."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH20/CH20-L02.md",
+      "quote": "c~artist,",
+      "category": "존재하지 않는 컬럼 참조 (활성화 차단급)",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "CTE 예제의 main query가 `zconcert`의 `c~artist`를 읽는데, 같은 챕터의 실습 레슨(CH20-L07)이 제시한 `zconcert` 스키마에는 `artist` 컬럼이 없다(`concert_id`·`title`·`capacity`). 챕터 안에서 컬럼명이 갈린다.",
+      "evidence": "L02 코드 블록은 `SELECT c~concert_id, / c~artist, / c~capacity, ...` 로 세 컬럼을 읽지만, 바로 아래 '읽는 순서' 표는 `SUM( seats )`·`WHERE status <> 'C'`·`GROUP BY`·`LEFT OUTER JOIN`·`COALESCE`만 설명해 `artist`가 실제 존재하는 컬럼인지 확인할 근거가 이 레슨 안에는 없다. 판정 근거는 L07의 스키마 표뿐이라 confidence는 추정으로 둔다.",
+      "suggestion": "L07의 `zconcert` 스키마와 일치시킨다(스키마가 title이면 `c~title`로 교체). 챕터 전체에서 컬럼명을 한 번에 정하고 L03·L07까지 동일하게 반영한다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH20/CH20-L03.md",
+      "quote": "SELECT c~concert_id, c~artist",
+      "category": "존재하지 않는 컬럼 참조 (활성화 차단급)",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "EXISTS 예제와 IN subquery 예제 모두 `zconcert`에서 `c~artist`를 읽는데, CH20-L07이 제시한 `zconcert` 컬럼 목록에는 `artist`가 없다.",
+      "evidence": "L03의 두 코드 블록이 각각 `SELECT c~concert_id, / c~artist`(EXISTS 예제)와 `SELECT c~concert_id, c~artist`(IN 예제)로 같은 컬럼을 참조한다. 반면 L07 실습 데이터의 `zconcert` 헤더는 `| concert_id | title | capacity |`다. 컬럼 존재 판정의 근거가 다른 레슨의 표뿐이므로 추정으로 보고한다.",
+      "suggestion": "seq 1·2와 함께 컬럼명을 일괄 통일한다. EXISTS의 학습 포인트는 존재 판정이므로, 굳이 두 번째 컬럼이 필요 없다면 `SELECT c~concert_id`만 남겨도 예제가 성립한다."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH20/CH20-L05.md",
+      "quote": "SELECT concert_id,",
+      "category": "코드↔결과표 불일치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "Window 예제의 SELECT 컬럼 순서(concert_id → booking_id → seats)와 바로 아래 'Window 결과' 표의 열 순서(booking_id → concert_id → seats)가 어긋난다. 결과 내부 테이블의 컴포넌트 순서를 처음 배우는 입문자에겐 예상표 대조가 흐트러진다.",
+      "evidence": "코드 블록의 SELECT 목록은 `SELECT concert_id, / booking_id, / seats, / SUM( seats ) OVER(...) AS booked_total, / ROW_NUMBER( ) OVER(...) AS row_in_concert`인데, 결과 표 헤더는 `| booking_id | concert_id | seats | booked_total | row_in_concert |`다. 값 자체(5·5·4, 1·2·1)는 정확하다. 동일한 순서 어긋남이 CH20-L07 과제 4에서도 반복된다.",
+      "suggestion": "결과 표의 열 순서를 SELECT 목록 순서(concert_id·booking_id·seats·booked_total·row_in_concert)에 맞추거나, 반대로 SELECT 목록을 `booking_id, concert_id, seats`로 바꿔 둘을 일치시킨다. L07 과제 4도 동일하게 정렬한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH20의 ```abap 블록 10개는 ABAP SQL 문법 관점에서 전반적으로 견고하다. 문장 마침표·괄호 짝·절 순서에 누락이 없고, WITH/CTE(`+booked` 이름·별칭 조인·AS 별칭), 집합 연산(`EXCEPT DISTINCT` 뒤 마지막에 오는 `INTO`), correlated `EXISTS`·`IN` subquery, window 식(`OVER( PARTITION BY ... ORDER BY ... )`, ABAP식 `DESCENDING` 표기, `ROW_NUMBER( )`·`RANK( )`·`DENSE_RANK( )`의 공백 포함 괄호)이 모두 규격에 맞게 쓰였다. 경계 규약도 위반 없음 — CH20은 CH19 이후 구간이라 `@DATA( )`·콤마 목록 등 New Open SQL 사용이 허용 범위이며, 그 밖의 modern 문법(VALUE·NEW·문자열 템플릿)은 등장하지 않는다. 결과 검증도 실제로 맞다(L07 과제 1의 95/50/80/56, 과제 2의 C001·C004, 과제 3의 C002·C003, 과제 4의 합계 5·5·4와 순번 1·2·1 모두 제시 데이터와 일치). 유일하게 실질적인 결함은 `zconcert` 컬럼명이 코드(`artist`)와 실습 데이터 표(`title`)로 갈리는 문제로, 세 레슨(L02·L03·L07)에 걸쳐 같은 뿌리에서 반복된다 — 실제 시스템이라면 활성화가 막히는 급이라 우선 수정 대상이다. 나머지는 결과표 열 순서 정렬 정도의 경미한 정리다. 네이밍은 인라인 선언명이 모두 `lt_`로 일관되며(CH10 이후 로컬 스코프 코드로 읽는 것이 자연스러움), 의사코드·[선행 사용] 표기 블록은 없었다."
+  }
+}

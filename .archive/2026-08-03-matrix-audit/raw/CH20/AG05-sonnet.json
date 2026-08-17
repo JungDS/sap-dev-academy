@@ -1,0 +1,57 @@
+{
+  "agent": "AG05",
+  "model": "sonnet",
+  "target": "CH20",
+  "persona_ack": "20년차 학습 교재·코스 설계 전문가로서 CH20(고급 ABAP SQL) 8개 파일을 교수설계 관점 — 챕터 구성, 섹션 흐름, 복습·예습 장치, 불편→해결 서사, 인지 부하 — 5가지 기준으로 감사했다.",
+  "method": "대상 파일 8개(_chapter.md, CH20-L01~L07.md) 전문을 직접 읽고, 각 레슨의 5단계 흐름(왜-무엇-어떻게-실수-정리) 존재 여부, front-matter(prereq/introduces/prevRel)와 본문 서술의 일치 여부, 레슨 간 교차 참조 텍스트의 논리적 일관성, 실습(L07) 코드·표 데이터가 서로 및 앞선 레슨(L02)과 일치하는지를 대조 검토했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L07.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH20-L07.md",
+      "quote": "SELECT c~concert_id, c~artist, c~capacity,",
+      "category": "예제 데이터 정합성",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "과제 1 CTE 코드가 c~artist 컬럼을 참조하지만, 같은 레슨 상단에서 제시한 zconcert 실습 데이터 표의 컬럼은 concert_id·title·capacity뿐이라 artist 컬럼이 없다.",
+      "evidence": "L07 상단 '실습 데이터'의 zconcert 표는 '| concert_id | title | capacity |'로 정의되는데, 바로 아래 과제 1 코드(L02에서 그대로 가져온 문장)는 'SELECT c~concert_id, c~artist, c~capacity, …'로 artist를 조회한다. 학습자가 '어떻게 확인'(입력 데이터 표를 먼저 본다)을 그대로 실행하면 표에 없는 컬럼이 코드에 등장해 혼란을 준다.",
+      "suggestion": "zconcert 표의 헤더를 title 대신 artist로 통일하거나(L02와 일치), 코드 쪽을 c~title로 바꿔 표와 일치시킨다."
+    },
+    {
+      "seq": 2,
+      "file": "CH20-L03.md",
+      "quote": "**`NOT EXISTS`에서 조건 빠짐** → \"없다\"를 묻는 강력한 도구지만, 조건 하나가 빠지면 엉뚱한 판정이 난다. 조건을 빠짐없이.",
+      "category": "개념 노출 게이팅",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "본문 '무엇' 절은 EXISTS와 IN subquery만 코드로 설명하고 NOT EXISTS는 한 번도 정식 소개되지 않는데, '흔한 실수' 절에서 갑자기 NOT EXISTS의 함정을 지적한다.",
+      "evidence": "front-matter의 introduces는 [\"Subquery\", \"EXISTS\", \"IN subquery\"]뿐이고 본문 코드 예제 두 개도 EXISTS·IN만 다룬다. NOT EXISTS 문법·예시는 어디에도 없이 흔한 실수 목록에만 이름이 등장한다.",
+      "suggestion": "NOT EXISTS를 짧게라도 무엇 절에 언급하거나(EXISTS 앞에 NOT만 붙이면 반대 의미라는 한 줄), 흔한 실수 항목에서 NOT EXISTS 대신 이미 다룬 EXISTS/IN의 실수로 바꾼다."
+    },
+    {
+      "seq": 3,
+      "file": "CH20-L07.md",
+      "quote": "prevRel: next-step",
+      "category": "메타데이터 일관성",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L07의 prevRel 값 'next-step'이 이 챕터의 다른 레슨들(pain-solution/deepening/parallel)이 쓰는 값과 다르고, R10 컨벤션이 명시한 세 값(pain-solution/parallel/deepening) 목록에도 없다.",
+      "evidence": "CH20-L02~L06은 모두 prevRel을 pain-solution·deepening·parallel 중 하나로 선언하는데 L07만 'next-step'을 쓴다. R10 문서는 prevRel 값으로 이 세 가지만 규정한다.",
+      "suggestion": "L07은 앞선 4개 도구를 통합 적용하는 종합 실습이므로 deepening으로 맞추거나, next-step을 새 공식 값으로 쓸 계획이면 R10 컨벤션 문서에 값을 추가한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "챕터 구성(개요→CTE→Subquery→Set operation→Window→선택기준→통합실습)과 각 레슨의 왜-무엇-어떻게-실수-정리 흐름은 일관되고 자연스럽다. CH13·CH19 개념을 짚어주는 복습 링크, 레슨 말미의 1~2문장짜리 예고, 불편 도입부(두 단계를 한 SELECT에 넣기 벅참, 존재 여부만 필요함 등)도 형식적 칸 채우기가 아니라 실제 입문자가 부딪힐 상황을 담고 있다. Window 레슨(L05)에서 OVER·PARTITION BY·ROW_NUMBER·RANK·DENSE_RANK를 한 번에 다루지만 대조 예제로 묶여 있어 과다하다고 보기는 어렵다. 다만 L07 실습의 zconcert 표 컬럼명(title)과 과제 1 코드의 컬럼명(artist)이 어긋나는 데이터 정합성 결함이 있고, L03에서 정식 소개 없이 NOT EXISTS를 흔한 실수로만 언급하는 점, L07 front-matter의 prevRel 값이 컨벤션 목록을 벗어나는 점은 경미하게 손볼 필요가 있다."
+  }
+}

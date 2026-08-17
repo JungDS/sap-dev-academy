@@ -1,0 +1,82 @@
+{
+  "agent": "AG06",
+  "model": "sonnet",
+  "target": "CH17",
+  "persona_ack": "20년차 SAP ABAP 아키텍트로서 ECC~S/4HANA Grid ALV(CL_GUI_ALV_GRID) 실무 경험을 바탕으로 CH17 10개 레슨과 _chapter.md의 사실 오류·예시 적절성·위험한 생략·안티패턴을 감사했다.",
+  "method": "대상 파일 11개(레슨 10개 + _chapter.md)를 정독하고, CL_GUI_CUSTOM_CONTAINER/CL_GUI_ALV_GRID 표준 클래스 시그니처(CONSTRUCTOR·SET_TABLE_FOR_FIRST_DISPLAY·REFRESH_TABLE_DISPLAY의 EXCEPTIONS 선언)와 ABAP 메서드 호출 문법(CALL METHOD의 EXCEPTIONS 추가 절 vs 화살표 연산자 obj->method( ) 괄호 구문의 허용 절 차이), LVC_S_LAYO/LVC_S_FCAT/DISVARIANT 필드 의미를 기억 기반으로 대조했다. 웹 검색은 사용하지 않았고, 확신이 낮은 항목은 confidence=추정으로 표기했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L10.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH17-L01.md",
+      "quote": "CREATE OBJECT go_cont\n  EXPORTING container_name = 'CONT100'.",
+      "category": "위험한 생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "CL_GUI_CUSTOM_CONTAINER의 CREATE OBJECT에 EXCEPTIONS 처리가 전혀 없다.",
+      "evidence": "CL_GUI_CUSTOM_CONTAINER의 CONSTRUCTOR는 CNTL_ERROR·CNTL_SYSTEM_ERROR·CREATE_ERROR·LIFETIME_ERROR 등 non-class-based EXCEPTIONS를 선언한다. container_name이 화면의 Custom Control 이름과 맞지 않거나 Control Framework가 아직 준비되지 않은 상태면 이 예외가 발생하는데, EXCEPTIONS를 캐치하지 않으면 통제된 메시지 없이 런타임 오류(short dump)로 프로그램이 죽는다. 그런데 바로 아래 '흔한 실수' 절은 '이름 불일치 → 연결되지 않는다'라고만 적어 마치 조용히 실패하는 것처럼 서술한다. 실제로는 dump가 날 수 있어 서술과 실제 동작이 어긋난다. 같은 EXCEPTIONS 누락 패턴이 CH17-L02의 CREATE OBJECT go_grid, CH17-L10 FORM create_grid에도 반복된다.",
+      "suggestion": "CREATE OBJECT go_cont EXPORTING container_name = 'CONT100' EXCEPTIONS cntl_error = 1 cntl_system_error = 2 create_error = 3 lifetime_error = 4 lifetime_dynpro_dynpro_link = 5. 뒤에 IF sy-subrc <> 0. MESSAGE ... 로 실패를 통제된 방식으로 안내하도록 보강하거나, 최소한 '흔한 실수' 절에 '이름이 틀리면 조용히 안 붙는 게 아니라 dump가 날 수 있다'는 점을 명시."
+    },
+    {
+      "seq": 2,
+      "file": "CH17-L05.md",
+      "quote": "gs_layout-sel_mode   = 'A'.          \" 행 선택 모드",
+      "category": "사실 오류",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "sel_mode = 'A'를 단순히 '행 선택 모드'/'한 행만·여러 행 선택 기준'으로 설명하는데, 기억으로는 'A'가 행뿐 아니라 셀(컬럼) 선택까지 함께 켜는 값이다.",
+      "evidence": "LVC_S_LAYO-SEL_MODE 도메인에서 'A'는 컬럼+행(셀) 단위 선택을 허용하는 값이고, 순수 행 단일/다중 선택은 다른 코드값이었던 것으로 기억한다. 정확한 문자-의미 매핑을 웹검색 없이 100% 확신할 수 없어 confidence=추정이지만, 표의 '한 행만/여러 행 선택 기준'이라는 일반화된 설명은 'A'의 실제 동작(셀 단위 선택 포함)과 어긋날 가능성이 있다.",
+      "suggestion": "F1 도움말/SE11 도메인 값 목록으로 sel_mode 값별 정확한 동작을 재확인한 뒤, 표 설명을 값과 1:1로 맞추거나 정확한 값 목록을 각주로 추가."
+    },
+    {
+      "seq": 3,
+      "file": "CH17-L07.md",
+      "quote": "  EXCEPTIONS invalid_parameter_combination = 1\n             program_error                 = 2\n             too_many_lines                = 3\n             OTHERS                        = 4 ).",
+      "category": "사실 오류",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "go_grid->set_table_for_first_display( ... EXCEPTIONS ... )처럼 메서드 호출 연산자(->)의 괄호 구문 안에 EXCEPTIONS를 쓰는 것은 실제 ABAP 문법상 허용되지 않는다.",
+      "evidence": "Non-class-based EXCEPTIONS는 CALL METHOD 문에서만 EXCEPTIONS 추가 절로 지정할 수 있다. obj->method( ... ) 연산자 괄호 구문에 허용되는 절은 EXPORTING/IMPORTING/CHANGING/RECEIVING뿐이고 EXCEPTIONS는 없다. 이 코드를 그대로 SE38/ADT에 입력하면 구문 검사에서 오류가 나 활성화되지 않는다. 학습자가 '이렇게 쓴다'고 그대로 따라 치면 실무에서 바로 막히는 예제다.",
+      "suggestion": "CALL METHOD go_grid->set_table_for_first_display EXPORTING is_layout = gs_layout is_variant = gs_variant i_save = 'A' CHANGING it_outtab = gt_booking it_fieldcatalog = gt_fcat EXCEPTIONS invalid_parameter_combination = 1 program_error = 2 too_many_lines = 3 OTHERS = 4. 형태(CALL METHOD 키워드 사용)로 교정하거나, 화살표 축약 구문을 꼭 쓰고 싶다면 EXCEPTIONS 절을 빼고 '이 형태에선 예외를 못 잡는다'는 점을 안내해야 한다."
+    },
+    {
+      "seq": 4,
+      "file": "CH17-L08.md",
+      "quote": "  EXCEPTIONS finished = 1\n             OTHERS   = 2 ).",
+      "category": "사실 오류",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "go_grid->refresh_table_display( ... EXCEPTIONS finished = 1 OTHERS = 2 )도 화살표 연산자 괄호 구문에 EXCEPTIONS를 붙인 동일한 문법 오류다.",
+      "evidence": "REFRESH_TABLE_DISPLAY 메서드가 FINISHED라는 non-class-based exception을 선언하는 것은 맞지만, 이를 EXCEPTIONS 절로 잡으려면 CALL METHOD 문이어야 한다. obj->method( ) 축약 구문에는 EXCEPTIONS 추가가 없어 이 코드도 구문 오류로 활성화되지 않는다. CH17-L07과 동일한 유형의 오류가 이 레슨의 핵심 예제에도 그대로 반복된다.",
+      "suggestion": "CALL METHOD go_grid->refresh_table_display EXPORTING is_stable = ls_stable EXCEPTIONS finished = 1 OTHERS = 2. 로 교정."
+    },
+    {
+      "seq": 5,
+      "file": "CH17-L10.md",
+      "quote": "EXCEPTIONS OTHERS          = 1 ).",
+      "category": "사실 오류",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "종합 실습(FORM display_grid, FORM refresh_alv) 두 곳 모두 go_grid->set_table_for_first_display( ... EXCEPTIONS OTHERS = 1 )과 go_grid->refresh_table_display( ... EXCEPTIONS OTHERS = 1 )처럼 화살표 연산자 괄호 구문에 EXCEPTIONS를 붙이는 동일한 문법 오류를 반복한다.",
+      "evidence": "CH17-L07·L08과 같은 이유(EXCEPTIONS는 CALL METHOD에서만 유효, obj->method( ) 괄호 구문엔 없음)로, 이 챕터의 '완성' 프로그램조차 그대로 입력하면 구문 검사를 통과하지 못한다. 조각 레슨보다 더 아쉬운 지점은, 이 레슨이 '전체 골격'으로 제시되어 학습자가 실제로 복사해 실행해 볼 가능성이 가장 높은 코드라는 점이다.",
+      "suggestion": "FORM display_grid와 FORM refresh_alv의 go_grid-> 호출을 모두 CALL METHOD ... EXCEPTIONS ... 형태로 통일해 실제로 활성화되는 코드로 교정."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "보강 권장",
+    "summary": "챕터의 개념 설계(컨테이너→그리드→데이터→field catalog→layout→variant→display→refresh→색→종합실습 순서, 각 조각의 역할 구분)는 실무 흐름과 정확히 일치하고 입문자 설명도 탄탄하다. 다만 기술적으로 반복되는 결함이 하나 있다: CH17-L07·L08·L10에서 go_grid->set_table_for_first_display( )와 go_grid->refresh_table_display( ) 같은 화살표 연산자 괄호 호출에 EXCEPTIONS 절을 붙였는데, ABAP 문법상 non-class-based EXCEPTIONS는 CALL METHOD 문에서만 지정 가능하고 화살표 괄호 구문엔 그 추가 절 자체가 없다. 즉 이 예제 코드들은 그대로 입력하면 구문 검사를 통과하지 못한다 — 특히 '완성' 프로그램인 L10에서도 반복돼 학습자가 실제로 따라 칠 가능성이 가장 높은 코드에 남아 있다. 그 외 CREATE OBJECT의 EXCEPTIONS 누락(위험한 생략), sel_mode='A' 설명의 정밀도(추정) 정도가 경미하게 남는다."
+  }
+}

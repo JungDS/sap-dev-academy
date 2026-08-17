@@ -1,0 +1,57 @@
+{
+  "agent": "AG06",
+  "model": "sonnet",
+  "target": "CH20",
+  "persona_ack": "20년차 SAP ABAP 아키텍트 페르소나로 CH20(고급 SQL: CTE·Subquery·Set operation·Window) 8개 파일의 기술 사실을 감사했다.",
+  "method": "Read 도구로 대상 8개 파일 전문을 통독하고, ABAP Open SQL 키워드 문서 지식(문법·제약)에 기반해 수동으로 대조했다. 실제 시스템 syntax check·웹 검색은 사용하지 않았다(금지 규정 준수).",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH20-L03.md",
+      "quote": "  WHERE c~concert_id IN ( SELECT concert_id\n                            FROM zbooking\n                            WHERE seats >= 3 )\n  INTO TABLE @DATA(lt_big_booking).",
+      "category": "위험한 생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L03의 두 번째 예제(IN subquery, `WHERE seats >= 3`)에는 취소 예약 제외 조건(`status <> 'C'`)이 빠져 있다. 이 챕터가 반복해서 경고하는 '취소 조건 누락' 함정을 예제 코드 스스로 시연하는 셈이다.",
+      "evidence": "같은 챕터의 L02(`WHERE status <> 'C'`), L03의 EXISTS 예제(`AND b~status <> 'C'`), L07의 '흔한 실수' 항목(\"취소 조건 누락 → 합계·존재·차집합 모두 status <> 'C'가 빠지면 결과가 달라진다\")은 모두 취소 예약 배제를 필수로 다룬다. 그런데 이 IN subquery 예제만 그 조건이 없어, 취소된 5석 예약도 '3석 이상 예약이 있는 공연'으로 잘못 판정된다. 업무적으로 취소 건은 '예약'이 아니므로 이 예제의 결과 해석(\"3석 이상 예약이 있는 공연 ID 목록에 드는 공연만 남는다\")이 정확하지 않다.",
+      "suggestion": "IN subquery에도 `AND status <> 'C'`를 추가하거나, 의도적으로 뺀 것이라면 그 이유(취소 여부와 무관하게 '요청 좌석 수'만 보는 질문임)를 본문에 명시한다."
+    },
+    {
+      "seq": 2,
+      "file": "CH20-L02.md",
+      "quote": "      FROM zbooking\n      WHERE status <> 'C'\n      GROUP BY concert_id )",
+      "category": "안티패턴",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "챕터 전체(L02·L03·L04·L07)의 모든 SQL 예제가 예약 상태를 이름 붙은 상수나 도메인 고정값 없이 문자열 리터럴 `'C'`로 직접 비교한다. 실무에서는 상태 코드 매직 리터럴을 지양하고 고정값/상수를 참조하는 것이 표준 관례인데, 이 교정 없이 표준 패턴처럼 반복 시연된다.",
+      "evidence": "`WHERE status <> 'C'`, `AND b~status <> 'C'` 등이 최소 5곳 이상 반복되지만, '흔한 실수' 섹션 어디에도 매직 리터럴에 대한 언급이 없다. Clean ABAP 관례상 상태 코드는 상수(`co_status_cancelled` 등)나 도메인 고정값으로 참조해 오타·의미 불명확성을 줄이는 것이 권장된다.",
+      "suggestion": "챕터 어딘가(예: L06 선택 기준 또는 L02 흔한 실수)에 \"실무에서는 상태 코드를 상수/도메인 고정값으로 참조한다\"는 한 줄을 덧붙인다. 예제 코드 자체를 바꾸지 않아도 각주 수준으로 충분하다."
+    },
+    {
+      "seq": 3,
+      "file": "CH20-L05.md",
+      "quote": "       SUM( seats ) OVER( PARTITION BY concert_id )                       AS booked_total,",
+      "category": "위험한 생략",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "L05(Window)와 L04(Set operation)를 바로 인접한 레슨으로 배우면서도, 두 기능을 같은 SELECT 문 안에서 함께 쓸 수 없다는 ABAP Open SQL 제약(기억상 존재하나 릴리스별 세부 규칙은 불확실)을 어디서도 언급하지 않는다.",
+      "evidence": "ABAP Open SQL에서 window expression은 UNION/INTERSECT/EXCEPT와 같은 문장에 결합할 수 없는 제약이 있었던 것으로 기억한다(확신 아님 — 웹 검색 금지로 검증 불가). L06 흔한 실수는 'DB 지원 가정'만 경고할 뿐 이 결합 제약은 다루지 않는다. 학습자가 '예약 없는 공연도 포함해서 순위까지'처럼 두 기능을 자연스럽게 합치려 하면 문법 오류에 부딪힐 수 있다.",
+      "suggestion": "실제 시스템에서 window + 집합 연산 결합이 가능한지 syntax check로 먼저 확인한 뒤, 안 된다면 L05 또는 L06 흔한 실수에 한 줄 경고를 추가한다. 가능하다면(제약이 실제로 없다면) 이 finding은 기각해도 된다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH20 7개 레슨의 CTE·EXISTS·Set operation·Window 문법 설명과 예제 SQL은 전반적으로 정확하다(WITH `+`이름, INTERSECT/EXCEPT DISTINCT 전용, ORDER BY/INTO 위치 제약, RANK vs DENSE_RANK 등 핵심 규칙이 옳게 서술됐고, L07 실습의 예상 결과표 산술도 모두 검산 일치). 다만 L03의 IN subquery 예제가 챕터 스스로 강조하는 '취소 조건 누락' 함정을 그대로 시연하는 내적 불일치가 하나 있고, 상태 코드 매직 리터럴이 교정 없이 반복되며, Window×Set operation 결합 제약 언급이 빠져 있을 가능성이 있다(추정)."
+  }
+}

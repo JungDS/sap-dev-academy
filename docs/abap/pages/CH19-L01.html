@@ -40,7 +40,8 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>SELECT만 아직 옛날식이었다 🕰️</h2>
-<p><a href="CH18-L01.html">지난 챕터</a>에서 ABAP 코드는 모던으로 바꿨지만, <strong><code>SELECT</code>(Open SQL)</strong> 만은 일부러 classic으로 뒀다(공백 구분·<code>@</code> 없음). 이유가 있다. SQL의 모던화는 단순한 축약이 아니라, <strong>ABAP 프로그램과 데이터베이스 사이의 경계를 다시 긋는</strong> 일이기 때문이다. 이제 그 경계를 연다. 이것이 <strong>Modern ABAP SQL</strong>이다.</p>
+<p><a href="CH18-L01.html">지난 챕터</a>에서 ABAP 코드는 모던으로 바꿨지만, **<code>SELECT</code>(Open SQL)**만은 일부러 classic으로 뒀다(공백 구분·<code>@</code> 없음). 이유가 있다. SQL의 모던화는 단순한 축약이 아니라, <strong>ABAP 프로그램과 데이터베이스 사이의 경계를 다시 긋는</strong> 일이기 때문이다. 이제 그 경계를 눈에 보이게 긋는다. 이것이 <strong>Modern ABAP SQL</strong>이다.</p>
+<p>이름부터 정리하자. 이 SQL의 <strong>옛 이름이 Open SQL</strong>, 모던 문법을 갖춘 <strong>지금의 공식 이름이 ABAP SQL</strong>이다. 다른 두 가지가 아니라 같은 것의 이름이 바뀐 것이니, 두 이름이 섞여 나와도 헷갈리지 말자.</p>
 <blockquote>
 <p>📌 <strong>★ 여기부터 modern SQL</strong>(<code>@</code>·콤마·SQL 식)을 쓴다. 이전 챕터까지의 <code>SELECT</code>는 전부 classic이었다.</p>
 </blockquote>
@@ -94,7 +95,7 @@
 </tr>
 <tr>
 <td><code>@lt_flight</code></td>
-<td>ABAP 프로그램의 <strong>결과 내부 테이블</strong></td>
+<td>ABAP 프로그램의 <strong>결과 Internal Table</strong></td>
 <td><code>INTO TABLE @lt_flight</code></td>
 </tr>
 <tr>
@@ -103,12 +104,12 @@
 <td><code>SELECT carrid, connid</code></td>
 </tr>
 </tbody></table>
-<p>공식 문서 기준으로 <strong>공백으로 필드를 나열하는 옛 방식은 obsolete</strong>(낡은 것) 쪽으로 밀려 있고, 콤마 리스트와 <code>@</code>는 <strong>strict 모드</strong>(더 엄격한 문법 검사)를 켠다. strict 모드는 애매한 SQL을 <strong>컴파일 단계에서</strong> 더 빨리 잡아 준다.</p>
+<p>공식 문서 기준으로 <strong>공백으로 필드를 나열하는 옛 방식은 obsolete</strong>(낡은 것)로 분류된다. 그리고 콤마 리스트나 <code>@</code>를 쓰면 <strong>strict 모드</strong>(더 엄격한 문법 검사)가 <strong>자동으로 적용된다</strong> — 내가 켜고 끄는 설정이 아니다. strict 모드는 애매한 SQL을 <strong>컴파일 단계에서</strong> 더 빨리 잡아 준다.</p>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">Classic → Modern SQL Converter (콤마·@·INTO 단계 변환)</span><a class="embed__open" href="../../../embeds/abap/CH19-L01-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH19-L01-S01.html" loading="lazy" title="Classic → Modern SQL Converter (콤마·@·INTO 단계 변환)"></iframe></figure>
 </section><section class="lblock"><h2>결과는 그대로 — 확인 습관도 그대로 ✅</h2>
 <p>표기가 모던으로 바뀌어도 <strong>읽어 오는 데이터는 똑같다.</strong> 실행 뒤 보는 곳도 classic 때와 같다.</p>
 <ol>
-<li>결과 내부 테이블에 <strong>몇 행</strong>이 들어왔나.</li>
+<li>결과 Internal Table에 <strong>몇 행</strong>이 들어왔나.</li>
 <li><code>sy-subrc</code>가 <code>0</code>인가 <code>4</code>인가(찾았나 / 못 찾았나).</li>
 <li><code>sy-dbcnt</code>가 실제 전달된 행 수와 같은가.</li>
 </ol>
@@ -118,7 +119,7 @@
 <li><strong>콤마와 공백을 섞음</strong> → <code>SELECT carrid connid, seatsmax</code>처럼 섞으면 오류. 모던으로 갈 거면 <strong>일관되게 콤마</strong>.</li>
 <li><strong>DB 컬럼에 <code>@</code>를 붙임</strong> → <code>@</code>는 <em>ABAP 값/대상</em>에만. <code>carrid</code>는 DB 컬럼이라 그냥 쓴다.</li>
 <li><strong><code>@</code> 빠뜨림</strong> → modern SQL에서 ABAP 변수엔 <code>@</code>가 필수. 없으면 오류.</li>
-<li><strong><code>INTO</code>를 중간에 둠</strong> → 마지막 clause로 두는 습관을 처음부터. strict 모드에선 강제되는 경우가 있다.</li>
+<li><strong><code>INTO</code>를 중간에 둠</strong> → 마지막 clause로 두는 습관을 처음부터. 콤마·<code>@</code>를 쓰는 strict 모드에선 맨 뒤가 강제된다.</li>
 <li><strong>무심한 <code>SELECT *</code></strong> → 필요한 컬럼만 읽는 원칙은 모던에서도 그대로다.</li>
 </ul>
 <hr>

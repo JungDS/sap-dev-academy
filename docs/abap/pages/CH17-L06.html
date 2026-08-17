@@ -51,19 +51,11 @@
 gs_variant-report = sy-repid.    <span class="tok-com">" 현재 프로그램 이름 → 프로그램별 Variant 구분</span></code></pre></div></div>
 <ul>
 <li><code>sy-repid</code>는 <strong>현재 실행 중인 프로그램 이름</strong>이다. Variant를 프로그램별로 구분하려면 필요하다.</li>
-<li>display 호출에서 <code>is_variant</code>와 <code>i_save</code>를 함께 넘긴다(<code>i_save = &#39;A&#39;</code> = 저장 허용 — 교육용).</li>
+<li>이렇게 채운 <code>gs_variant</code>는 <strong>다음 레슨에서 배우는 표시 호출</strong>에 <code>is_variant</code>로 넘긴다.
+그때 <code>i_save</code>도 함께 넘기는데, 이 값이 <strong>저장을 어디까지 허용할지</strong>를 정한다. 이 과정은
+연습이 편하도록 가장 넓은 <code>&#39;A&#39;</code>(사용자별 저장·전역 저장 모두 허용)를 쓴다. 호출 전체
+모습은 <a href="CH17-L07.html">SET_TABLE_FOR_FIRST_DISPLAY</a>에서 본다. 지금 외울 필요 없다.</li>
 </ul>
-<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
-2
-3
-4
-5
-6</pre><pre class="abap-editor__code"><code>go_grid-&gt;set_table_for_first_display(
-  <span class="tok-kw">EXPORTING</span> is_variant = gs_variant
-            i_save     = <span class="tok-str">'A'</span>
-            is_layout  = gs_layout
-  <span class="tok-kw">CHANGING</span>  it_outtab       = gt_booking
-            it_fieldcatalog = gt_fcat ).</code></pre></div></div>
 <blockquote>
 <p>💡 <strong>Variant는 데이터 저장이 아니다.</strong> 예매 데이터가 저장되는 게 아니라, <strong>컬럼 순서·
 필터·정렬 같은 표시 방식</strong>이 저장된다.</p>
@@ -74,10 +66,10 @@ gs_variant-report = sy-repid.    <span class="tok-com">" 현재 프로그램 이
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">사용자별 보기 저장 (<button class="term" type="button" data-term="Display Variant">Display Variant</button>)</span><a class="embed__open" href="../../../embeds/abap/CH17-L06-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH17-L06-S01.html" loading="lazy" title="사용자별 보기 저장 (Display Variant)" style="height:580px"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong><code>report</code> 미설정</strong> → 어느 프로그램의 Variant인지 기준이 약해져 저장/조회가 꼬인다.
-<code>sy-repid</code>를 넣는다.</li>
-<li><strong>저장 범위를 함부로</strong> → 운영에서 <strong>전역 Variant</strong>를 아무나 바꾸게 하면 모든 사용자의
-화면이 바뀐 것처럼 느낀다. <code>i_save</code> 범위(사용자/전역)는 프로젝트 규칙에 맞춘다.</li>
+<li><strong><code>report</code> 미설정</strong> → 어느 프로그램의 Variant인지 <strong>식별할 기준이 없어져</strong> 저장/조회가
+꼬인다. <code>sy-repid</code>를 넣는다.</li>
+<li><strong>저장 범위 과다 허용</strong> → 운영에서 <strong>전역 Variant</strong>를 아무나 바꾸게 하면 <strong>모든 사용자의
+표 모양이 실제로 바뀐다</strong>. <code>i_save</code> 범위(사용자별/전역)는 프로젝트 규칙에 맞춘다.</li>
 </ul>
 </section><section class="lblock"><h2>정리</h2>
 <ul>
@@ -85,7 +77,7 @@ gs_variant-report = sy-repid.    <span class="tok-com">" 현재 프로그램 이
 <li><code>DISVARIANT-report = sy-repid</code>로 프로그램을 식별하고, <code>is_variant</code>·<code>i_save</code>를 display에 넘긴다.</li>
 </ul>
 <hr>
-<p>저장 가능한 표까지 만들었다. 이제 <strong>데이터·field catalog·layout·variant를 한 번에 넘겨</strong>
+<p>저장 가능한 표까지 만들었다. 이제 <strong>데이터·Field Catalog·Layout·Variant를 한 번에 넘겨</strong>
 실제 표를 띄우자 → <a href="CH17-L07.html">SET_TABLE_FOR_FIRST_DISPLAY</a>.</p>
 </section>
       </article>

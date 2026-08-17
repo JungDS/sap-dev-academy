@@ -1,0 +1,215 @@
+{
+  "agent": "AG01",
+  "model": "opus",
+  "target": "CH18",
+  "persona_ack": "나는 '은서'다. 개발·전공 경험이 전혀 없는 24세 문과 출신 입문자로서 CH18을 L01부터 L11까지 순서대로 처음 읽었다. 내 바깥 지식으로 빈칸을 메우지 않고, 풀이가 그 자리(또는 같은 챕터의 앞 레슨)에 없으면 막힌 것으로 기록했다.",
+  "method": "Read 도구로 지정된 대상 12개 파일(_chapter.md + L01~L11) 전문을 순서대로 통독. 웹 검색·외부 네트워크·다른 감사 산출물 열람 없음. 레슨 간 용어·타입·변수 재등장 여부는 읽은 12개 파일 안에서만 대조.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L10.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L11.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH18/CH18-L01.md",
+      "quote": "- **SELECT에 `DATA()`** → SQL 안의 인라인은 별도 escape가 필요한 **New Open SQL**이라",
+      "category": "멈춘 곳",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'escape'라는 영어 단어가 풀이 없이 나와서, 왜 SELECT 안에서는 인라인을 못 쓰는지 이유가 이해되지 않는다.",
+      "evidence": "이 챕터의 앞부분 어디에도 escape가 무엇인지(특별한 표시를 덧붙이는 일) 설명이 없다. 나는 'escape'를 게임에서 도망친다는 뜻으로만 알아서, 'SQL 안에서는 별도 escape가 필요하다'는 문장이 '그래서 뭘 해야 한다는 거지?'로 읽혔다. 결론(다음 챕터에서 다룬다)은 알겠지만 이유는 못 따라갔다.",
+      "suggestion": "'escape(`@` 같은 별도 표시를 붙이는 것)'처럼 인라인 한 줄 풀이를 붙이거나, 이유를 빼고 'SQL 안의 인라인은 규칙이 달라서 CH19에서 따로 다룬다' 수준으로 단순화."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH18/CH18-L02.md",
+      "quote": "TYPES tt_book TYPE STANDARD TABLE OF ts_book WITH EMPTY KEY.",
+      "category": "단절",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "`WITH EMPTY KEY`가 아무 설명 없이 나오는데, 이 레슨 끝에서는 갑자기 'key 규칙'이 중요하다고 해서 앞뒤가 안 맞게 느껴진다.",
+      "evidence": "예제 타입 선언에 `WITH EMPTY KEY`가 붙어 있지만 EMPTY KEY가 무엇인지 이 레슨에도, 이 챕터 앞 레슨(L01)에도 풀이가 없다. 그런데 같은 레슨 '흔한 실수'에서는 'sorted/hashed·unique key 테이블에 `VALUE`로 중복 행을 넣으면 런타임 오류다'라고 하고, 체험 안내도 'unique key 모드에서 중복 행'을 보라고 한다. 지금 내가 쓰는 테이블은 EMPTY KEY인데 왜 중복 오류 이야기를 하는지, 내 예제에서도 그 오류가 나는 건지 판단할 수 없었다.",
+      "suggestion": "`WITH EMPTY KEY`에 '(이 테이블은 키를 따로 정하지 않음)' 같은 한 줄 풀이를 달고, 흔한 실수의 key 항목이 '키를 정한 테이블일 때의 이야기'임을 한 문장으로 구분해 준다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH18/CH18-L02.md",
+      "quote": "- 기존을 유지하려면 `BASE`, 반복 생성엔 `FOR`. `#`의 타입 추론과 `BASE` 누락이 가장 자주 틀리는 지점이다.",
+      "category": "과부하",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L02 한 레슨에서 새 개념이 다섯 개(VALUE, `#` 타입 추론, BASE, FOR ... WHILE, FOR ... IN, 게다가 key 규칙까지) 한꺼번에 나와 소화가 안 됐다.",
+      "evidence": "정리 문장 두 줄에 VALUE·타입 명시·`#`·BASE·FOR가 전부 들어 있다. 앞 레슨 L01은 `DATA()`와 `FINAL()` 두 개만 다뤄서 편했는데, L02는 표기법(`( )`가 한 행), 타입 추론 기호(`#`), 누적 키워드(BASE), 두 종류의 FOR(숫자 WHILE / 테이블 IN)를 연달아 던진다. 특히 `FOR i = 1 WHILE i <= 9`와 `FOR line IN lt_book_2`가 이름은 같은 FOR인데 동작이 달라서, 여기서 두 번 되돌아가 읽어도 어느 쪽이 무엇을 도는 건지 계속 헷갈렸다.",
+      "suggestion": "`FOR`를 별도 절/레슨으로 분리하거나, 최소한 두 종류 FOR를 나란히 놓은 비교 표(무엇을 돌린다 / 몇 행이 나온다)를 추가해 한 번에 들어오는 새 개념 수를 줄인다."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH18/CH18-L03.md",
+      "quote": "DATA(lt_ui) = CORRESPONDING tt_booking_ui(\n  lt_booking MAPPING display_status = status EXCEPT audit_user ).",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "`tt_booking_ui`라는 타입이 선언된 적 없이 갑자기 쓰여서, 이 코드를 따라 쳐 볼 수가 없다.",
+      "evidence": "이 레슨은 바로 위에서 `TYPES: BEGIN OF ts_booking_ui ... END OF ts_booking_ui.`만 선언했다. 테이블 타입 `tt_booking_ui`는 어디에도 만들어지지 않았다. 앞 레슨 L02에서는 `ts_book`을 만든 뒤 `TYPES tt_book TYPE STANDARD TABLE OF ts_book ...`으로 테이블 타입까지 꼭 보여줬기 때문에, 여기서 그 줄이 빠진 걸 보고 '내가 앞 레슨을 놓쳤나' 하고 두 번 되돌아가 확인했다. 원본 `lt_booking`도 어디서 온 변수인지 이 레슨에 없다.",
+      "suggestion": "예제 앞에 `TYPES tt_booking_ui TYPE STANDARD TABLE OF ts_booking_ui WITH EMPTY KEY.` 한 줄을 추가하고, `lt_booking`이 어떤 테이블인지 한 줄로 밝힌다."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH18/CH18-L04.md",
+      "quote": "Table expression은 일반 **값 표현식**이라, 없는 행을 직접 읽으면 `CX_SY_ITAB_LINE_NOT_FOUND`",
+      "category": "멈춘 곳",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "'예외가 난다'가 실제로 무슨 일인지(프로그램이 멈추는지, 그냥 빈 값이 되는지) 끝까지 알 수 없어서, 이 레슨이 강조하는 '위험'의 크기를 가늠하지 못했다.",
+      "evidence": "이 레슨은 '이 차이를 모르면 modern 문법이 오히려 더 위험하다'고 겁을 주는데, 정작 '예외'라는 단어의 한 줄 풀이가 이 자리에도 챕터 앞 레슨(L01~L03)에도 없다. 바로 아래 콜아웃은 '예외 처리(TRY/CATCH)는 CH21에서 정식으로 다룬다'며 처리 방법만 미루고, 예외가 무엇인지는 끝내 말해 주지 않는다. `CX_SY_ITAB_LINE_NOT_FOUND`라는 대문자 덩어리도 무섭기만 하고 읽는 법을 모르겠다. 결국 L11의 '프로그램 중단 없음'이라는 표를 보고 나서야 '아, 예외 = 프로그램이 멈추는 거였구나'를 짐작했는데, 그건 일곱 레슨 뒤다.",
+      "suggestion": "처음 등장하는 이 자리에 '예외(오류가 나서 프로그램이 그 자리에서 멈추는 것)' 같은 한 줄 풀이를 넣는다. 처리 방법은 CH21로 미루더라도 '무엇인지'는 여기서 끝낸다."
+    },
+    {
+      "seq": 6,
+      "file": "content/abap/CH18/CH18-L05.md",
+      "quote": "> ⚠️ `{ }` **안쪽 공백은 문법 요소**다. `|{ lv_name }|`처럼 중괄호 안쪽에 공백을 두는 형태를 기본으로 삼는다.",
+      "category": "멈춘 곳",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "공백을 빼면 오류가 나는 건지, 그냥 스타일 권장인지 판단할 수 없다.",
+      "evidence": "'문법 요소다'는 '안 지키면 안 된다'로 읽히는데, 이어지는 문장은 '기본으로 삼는다'라는 권장 표현이라 강도가 어긋난다. '흔한 실수' 항목도 '안쪽 공백도 지킨다'로만 끝나서, 내가 `|{lv_name}|`이라고 붙여 쓰면 빨간 오류가 뜨는지 그냥 덜 예쁜 건지 알 수 없었다. 입문자는 이런 지점에서 '틀릴까 봐' 손이 멈춘다.",
+      "suggestion": "'붙여 써도 동작하지만 이 과정에서는 읽기 쉽게 공백을 두는 형태로 통일한다'처럼 강제/권장 여부를 명확히 한 문장으로 확정한다(사실 여부는 별도 검증 필요)."
+    },
+    {
+      "seq": 7,
+      "file": "content/abap/CH18/CH18-L06.md",
+      "quote": "DATA lv_count_text TYPE string VALUE '12'.",
+      "category": "멈춘 곳",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "바로 두 레슨 전에 배운 `VALUE`가 여기서는 완전히 다른 뜻으로 쓰이는데 아무 언급이 없어서, 같은 것인 줄 알고 한참 헤맸다.",
+      "evidence": "L02 제목이 통째로 'VALUE Constructor Expression'이었고 `DATA(ls_book) = VALUE ts_book( ... )` 형태를 외웠는데, L06 첫 코드의 `TYPE string VALUE '12'`는 괄호도 없고 대입도 아니다. '왜 여기 VALUE는 모양이 다르지? 내가 L02를 잘못 이해했나?'로 세 번 되돌아갔다. 이 레슨은 이 `VALUE`가 classic의 초기값 지정이라는 설명을 한 줄도 하지 않는다.",
+      "suggestion": "코드 주석이나 바로 뒤 문장에 'classic의 `VALUE '12'`는 초기값을 정하는 옛 표기로, L02의 `VALUE 타입( )` constructor와는 다른 것'이라는 구분 한 줄을 넣는다."
+    },
+    {
+      "seq": 8,
+      "file": "content/abap/CH18/CH18-L06.md",
+      "quote": "- **타입을 속이는 문법으로 오해** → `CONV`는 실제 변환 규칙을 따른다. `'12A'`를 정수로\n  바꾸려 하면 안전하게 변환되지 않는다.",
+      "category": "멈춘 곳",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'안전하게 변환되지 않는다'가 결과적으로 무엇인지(0이 되는지, 오류가 나는지, 12만 들어가는지) 알 수 없다.",
+      "evidence": "입문자에게 필요한 건 '어떻게 되는가'인데 문장이 결과를 말해 주지 않고 평가어('안전하게 ... 않는다')로 끝난다. 같은 레슨의 `EXACT` 설명은 '예외가 난다'라고 결과를 알려 주기 때문에 대비가 더 크게 느껴졌다. 나는 이 문장을 읽고 `'12A'`를 넣으면 어떤 화면이 뜨는지 상상이 안 돼서, '그럼 쓰면 안 되는 건가?'만 남았다.",
+      "suggestion": "결과를 명시한다(예: '변환에 실패해 오류가 난다' 또는 '앞 숫자만 취해지지 않고 오류가 난다' 등 실제 동작을 확인해 한 가지로 확정)."
+    },
+    {
+      "seq": 9,
+      "file": "content/abap/CH18/CH18-L06.md",
+      "quote": "::embed CH18-L06-S01 | 타입 변환 실험실 (CONV·EXACT) | 560::",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L06~L09는 체험이 아무 안내 없이 툭 나와서, 무엇을 해 보라는 건지 모른 채 지나쳤다.",
+      "evidence": "L01~L05는 체험 앞에 '## 직접 판정해 보기', '## 직접 만들어 보기 — VALUE Builder', '## 직접 비교해 보기', '## 직접 조립해 보기' 같은 소제목과 '무엇을 눌러 무엇을 확인하라'는 두세 문장이 반드시 있었다. 그 안내가 있으면 나는 시키는 대로 눌러 보는데, L06·L07·L08·L09는 그게 통째로 없어서 위젯을 그냥 스크롤해 넘겼다. 같은 챕터 안에서 갑자기 안내가 사라지니 '이건 안 해도 되는 건가' 싶었다.",
+      "suggestion": "L06~L09에도 L01~L05와 같은 '직접 ~해 보기' 소제목 + 무엇을 조작해 무엇을 확인할지 2~3문장을 붙여 챕터 안 일관성을 맞춘다."
+    },
+    {
+      "seq": 10,
+      "file": "content/abap/CH18/CH18-L08.md",
+      "quote": "TYPES tt_booking TYPE SORTED TABLE OF ts_booking\n  WITH NON-UNIQUE KEY status.",
+      "category": "단절",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "`ts_booking`도 `lt_booking`도 이 챕터 어디에서 만들어진 적이 없어서, FILTER 예제가 실제로 어떤 데이터를 거르는지 그림이 안 그려진다.",
+      "evidence": "L02에서 만든 건 `ts_book`/`tt_book`이고, L03에서 만든 건 `ts_booking_ui`다. `ts_booking`은 이름이 비슷하지만 다른 것이고 선언이 없다. 게다가 `FILTER tt_booking( lt_booking WHERE status = 'N' )`에서 `lt_booking`이 어떤 타입인지도 안 나오는데, 바로 아래 '흔한 실수'는 '`FILTER`는 테이블 타입과 Key를 의식해야 한다'고 한다. 무엇을 의식해야 하는지 볼 근거가 예제에 없다. 앞 레슨들의 `ts_book`을 그대로 쓰는 줄 알고 위로 올라갔다가 필드 이름(status)이 없어서 더 혼란스러웠다.",
+      "suggestion": "`ts_booking` 구조 선언과 `lt_booking`이 `tt_booking` 타입임을 예제에 함께 보여 주거나, 앞 레슨의 `ts_book`을 재사용해 챕터 내 예제 타입 이름을 통일한다."
+    },
+    {
+      "seq": 11,
+      "file": "content/abap/CH18/CH18-L08.md",
+      "quote": "`EXCEPT`를 붙이면 조건에 **맞지 않는** 행을 가져온다.",
+      "category": "멈춘 곳",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "다섯 레슨 전(L03)에 배운 `EXCEPT`와 똑같은 단어인데 뜻이 전혀 달라서, 내가 L03을 잘못 외운 줄 알았다.",
+      "evidence": "L03에서 `EXCEPT audit_user`는 '대상 **필드**를 결과에서 채우지 않는다'였고, 그 레슨 흔한 실수에서는 '`EXCEPT`는 **대상 필드** 기준이다'라고 못까지 박았다. 그런데 L08의 `EXCEPT WHERE`는 '조건에 맞지 않는 **행**을 가져온다'로, 제외가 아니라 오히려 반대쪽을 가져오는 뜻이다. 같은 단어가 필드 제외 → 행 반전으로 바뀌었는데 '앞의 EXCEPT와는 다른 뜻'이라는 안내가 한 줄도 없다. 나는 L03으로 돌아가 두 번 다시 읽고서야 서로 무관한 사용법이라고 결론지었다.",
+      "suggestion": "'L03의 `EXCEPT`(대상 필드 제외)와 이름만 같고 뜻이 다르다 — 여기서는 조건을 뒤집는다'는 구분 문장을 이 자리에 한 줄 넣는다."
+    },
+    {
+      "seq": 12,
+      "file": "content/abap/CH18/CH18-L10.md",
+      "quote": "::embed CH18-L10-S01 | 같은 로직의 classic ↔ modern 코드를 짝지어 비교::",
+      "category": "생략",
+      "severity": "높음",
+      "confidence": "추정",
+      "claim": "L10·L11의 체험 임베드만 앞 레슨들과 형식이 달라(높이 값이 없음) 화면에 제대로 뜨지 않을 것 같다. 실제로 이 두 레슨은 체험 없이 코드만 읽는 레슨이 된다.",
+      "evidence": "L01~L09의 임베드는 모두 `::embed 아이디 | 제목 | 숫자::`처럼 마지막 칸에 높이 숫자가 있다(예: L09의 `::embed CH18-L09-S01 | LET 표현식 독해기 | 600::`). 그런데 L10과 L11의 임베드만 `::embed CH18-L10-S01 | 같은 로직의 classic ↔ modern 코드를 짝지어 비교::`처럼 칸이 두 개뿐이고, 게다가 두 번째 칸에 들어간 문구도 제목이라기보다 설명문이다(L11도 동일). 하필 이 두 레슨이 챕터 전체를 손으로 다시 써 보는 마무리·실습 레슨이라, 여기서 체험이 안 뜨면 배운 걸 확인할 자리가 사라진다. (읽기 전용 감사라 빌드 결과는 확인하지 못해 추정으로 둔다.)",
+      "suggestion": "L10·L11 임베드를 `::embed CH18-L10-S01 | classic ↔ modern 비교기 | 620::`처럼 제목·높이 3칸 형식으로 맞추고, 렌더 결과를 실제로 확인한다."
+    },
+    {
+      "seq": 13,
+      "file": "content/abap/CH18/CH18-L10.md",
+      "quote": "3회차 좌석 수만 알면 되니 그 값만 쓴다: `DATA(lv_third) = 3.`",
+      "category": "멈춘 곳",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'과한 표현' 예시의 해결책이 데이터를 아예 숫자 3으로 바꿔 버리는 것이라, 리팩터링의 대원칙(결과는 그대로)과 어긋나 보여 크게 막혔다.",
+      "evidence": "같은 레슨 앞에서 리팩터링의 목표를 '③ **실행 결과는 똑같이** 나오는 것'이라고 세 번 강조하고, 아래에는 classic/modern 기대값을 맞춰 보는 표까지 있다. 그런데 여기서는 테이블에서 꺼내던 값을 상수 `3`으로 바꿔 쓰라고 한다. 나는 '데이터가 바뀌면 이 3도 틀려지는 거 아닌가?'가 걸려서 이 문단을 네 번 읽었다. 예시 코드가 우연히 `seats = i`라 3회차 좌석이 3인 것뿐인데, 그 우연이 설명되지 않아 '표현식을 줄이라'는 교훈보다 '값을 마음대로 바꿔도 되나'라는 의문만 남았다.",
+      "suggestion": "예시를 바꾸거나(예: 필요한 한 행만 만드는 코드로 대비), 최소한 '이 예제는 좌석 수를 회차와 같게 만들어서 3회차가 3인 것'이라는 전제를 밝혀 상수 치환이 왜 결과 보존인지 설명한다."
+    },
+    {
+      "seq": 14,
+      "file": "content/abap/CH18/CH18-L11.md",
+      "quote": "1. `get_remaining`의 `LOOP`를 인라인 `DATA`·`+=`로 바꾼다.",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "`get_remaining`의 코드가 이 챕터 안에 한 번도 나오지 않아서, 첫 번째 과제를 시작조차 할 수 없었다.",
+      "evidence": "이 레슨 본문의 예제는 `lt_book`을 도는 좌석 합계 LOOP지, `get_remaining`이라는 이름은 여기서 처음이자 유일하게 등장한다. 도입부가 링크로 가리키는 이전 챕터 레슨을 다시 열어 코드를 찾아와야만 과제를 할 수 있는데, 나는 그 코드가 어떻게 생겼는지 기억나지 않는다. '직접 해 볼 과제'는 그 자리에서 바로 손을 움직일 수 있어야 하는데, 첫 줄부터 다른 페이지로 되돌아가라는 셈이다.",
+      "suggestion": "과제 앞에 `get_remaining`의 classic 원본 코드를 접기(details) 등으로 그대로 실어 주거나, 과제를 이 레슨 본문의 `lt_book` 예제 기준으로 다시 쓴다."
+    },
+    {
+      "seq": 15,
+      "file": "content/abap/CH18/CH18-L11.md",
+      "quote": "DATA(lv_total) = REDUCE i(\n  INIT sum = 0 FOR ls_book IN lt_book NEXT sum = sum + ls_book-seats ).",
+      "category": "단절",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "같은 실습 안 ①에서 이미 `DATA(lv_total)`로 선언한 이름을 ④에서 또 `DATA( )`로 선언해서, L01이 '오류'라고 못 박은 바로 그 상황처럼 보인다.",
+      "evidence": "① 좌석 합계에 `DATA(lv_total) = 0.`이 있고, ④에도 `DATA(lv_total) = REDUCE i( ... )`가 있다. `ls_book`도 ①에서 `LOOP AT lt_book INTO DATA(ls_book)`으로 인라인 선언한 뒤 ④의 `FOR ls_book IN lt_book`과 `SWITCH string( ls_book-status`에 다시 나온다. 그런데 L01의 '흔한 실수' 첫 줄은 '**이미 선언한 이름을 또 `DATA()`** → 같은 처리 범위에서 중복 선언이다'라고 했다. ①~④가 같은 프로그램을 이어서 고치는 흐름으로 읽히기 때문에, 나는 '이 코드를 그대로 치면 오류 나는 거 아닌가?'에서 멈췄다. ④가 ①의 대안(둘 중 하나만 쓴다)이라는 안내가 없다.",
+      "suggestion": "④ 앞에 '①의 LOOP 대신 쓰는 다른 방법이다 — 둘을 한 프로그램에 같이 넣지 않는다'는 한 문장을 넣거나, ④의 변수 이름을 다르게 한다."
+    },
+    {
+      "seq": 16,
+      "file": "content/abap/CH18/CH18-L11.md",
+      "quote": "DATA(ls_new) = VALUE zbooking(\n  concert_id = 'C001'\n  perf_no    = '001'\n  customer   = '정훈영'\n  seats      = 2\n  status     = 'N' ).",
+      "category": "단절",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "②에서 만든 새 예매 행에는 `booking_id`가 없는데, 바로 다음 ③은 `booking_id`로 행을 찾는다. 예매번호가 어디서 생기는지 알 수 없다.",
+      "evidence": "②의 `VALUE zbooking( ... )`이 채우는 필드는 concert_id·perf_no·customer·seats·status 다섯 개다. 그런데 ③은 `lt_book[ booking_id = lv_id ]`로 조회하고, 아래 확인 표의 데이터에도 booking_id 0001/0002/0003이 있다. ②에서 만든 행은 예매번호가 비어 있을 텐데 그럼 ③으로 찾을 수 없는 것 아닌가 싶어 두 절을 오갔다. ②와 ③이 같은 데이터인지 다른 데이터인지 문장으로 이어지지 않는다.",
+      "suggestion": "②에 `booking_id`를 포함하거나, '예매번호는 저장 시점에 부여된다'는 한 줄로 ②와 ③의 데이터 관계를 이어 준다."
+    },
+    {
+      "seq": 17,
+      "file": "content/abap/CH18/CH18-L11.md",
+      "quote": "완성 코드엔 `line_exists( )`가 기본 방어선([Table Expression 안전하게 읽기](CH18-L04.html)).",
+      "category": "멈춘 곳",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "링크 이름이 'Table Expression 안전하게 읽기'인데 눌러서 가면 레슨 제목은 그냥 'Table Expression'이라 다른 페이지인 줄 알았다.",
+      "evidence": "L04의 실제 제목은 'Table Expression'이다. L10에도 같은 문구('[Table Expression 안전하게 읽기](CH18-L04.html)에서 배운 방어선')가 있어 두 번 반복된다. 목차에서 본 이름과 링크 이름이 달라서, 내가 안 읽은 레슨이 하나 더 있는 줄 알고 앞으로 돌아가 확인했다.",
+      "suggestion": "링크 문구를 실제 레슨 제목과 맞춘다(예: '[Table Expression](CH18-L04.html)')."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "보강 권장",
+    "summary": "L01의 '이 챕터부터 모던 문법을 쓴다' 콜아웃과 '선언 위치를 의도 가까이로'라는 관점 잡기, L02의 '각 ( )가 한 행'이라는 시각적 설명, L09의 LET/INIT/FOR/NEXT 역할 비교 표, L11의 '없는 번호 0999가 제일 중요한 테스트'라는 마무리는 비전공자인 나도 한 번에 이해될 만큼 잘 읽혔고, 각 레슨이 classic 코드를 먼저 보여 준 뒤 modern으로 넘어가는 순서도 따라가기 편했다. 다만 챕터 전체를 통독하면서 크게 막힌 축은 세 가지다. 첫째, 예제 타입·변수가 레슨마다 이름이 조금씩 달라지고(ts_book / ts_booking_ui / ts_booking) 선언이 빠진 채 쓰이는 곳이 여럿이라(L03의 tt_booking_ui, L08의 ts_booking·lt_booking) 코드를 따라 쳐 볼 수 없다. 둘째, 이 챕터가 반복해서 겁을 주는 '예외'가 끝내 한 줄도 풀이되지 않아 위험의 크기를 가늠할 수 없고, 같은 단어가 다른 뜻으로 재등장하는 지점(L02의 VALUE와 L06의 VALUE, L03의 EXCEPT와 L08의 EXCEPT)에 구분 안내가 없어 앞 레슨을 잘못 외웠나 계속 되돌아가게 된다. 셋째, 후반부로 갈수록 학습 장치가 헐거워진다 — L06~L09는 체험 앞 안내 문단이 통째로 없고, L10·L11의 임베드는 형식 자체가 앞 레슨들과 달라 마무리·실습 레슨에서 오히려 손으로 확인할 자리가 사라진다. L02의 개념 밀도 분산과 함께 이 세 축을 보강하면 통독 가능한 챕터가 된다."
+  }
+}

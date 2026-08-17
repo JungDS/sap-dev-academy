@@ -1,0 +1,1005 @@
+{
+  "target": "CH20",
+  "inputs": 28,
+  "missing": [],
+  "clusters": [
+    {
+      "cluster_id": "CH20-C001",
+      "file": "content/abap/CH20/CH20-L04.md",
+      "claim": "AG06-gemini 단독 주장: ABAP SQL(Open SQL)은 EXCEPT·INTERSECT 집합 연산을 지원하지 않으므로 L04의 EXCEPT DISTINCT 예제는 구문 오류를 낸다는 것. 그러나 같은 배치의 AG06-opus·AG06-sonnet·AG09-opus는 INTERSECT/EXCEPT DISTINCT 문법 서술이 실제 ABAP SQL 규격과 부합한다고 명시 검증했고, AG03-sonnet도 ABAP SQL이 DISTINCT를 명시하는 표기를 쓴다고 전제한다(즉 지원됨). 상반 주장이므로 최종 판정에서 공식 문서(릴리스 노트)로 확인 필요 — 오탐 가능성 높음.",
+      "severity": "치명",
+      "confidence": "추정",
+      "conflict": true,
+      "conflict_note": "주장측 = AG06-gemini(치명·확실, 미지원 단정). 반박측 = AG06-opus('집합 연산의 컬럼 개수·타입 일치와 * 불가…실제 ABAP SQL과 부합')·AG06-sonnet('INTERSECT/EXCEPT DISTINCT 전용…핵심 규칙이 옳게 서술')·AG09-opus('EXCEPT DISTINCT 뒤 마지막에 오는 INTO…규격에 맞게 쓰임').",
+      "supporters": [
+        { "report": "AG06-gemini-3.6-flash-high", "seq": 1 }
+      ],
+      "quotes": [
+        "SELECT concert_id\n  FROM zconcert\nEXCEPT DISTINCT"
+      ]
+    },
+    {
+      "cluster_id": "CH20-C002",
+      "file": "content/abap/CH20/CH20-L07.md (+CH20-L02.md · CH20-L03.md)",
+      "claim": "L07 실습 데이터 표의 zconcert 컬럼은 concert_id·title·capacity인데, 과제 1·2 코드는 존재하지 않는 c~artist를 조회한다. 같은 c~artist가 L02 CTE 예제와 L03 EXISTS·IN 예제에도 반복돼 챕터 전체에서 표(title)와 코드(artist)의 컬럼명이 갈린다. 그대로 입력하면 syntax check에서 '필드 ARTIST 없음'으로 막히고, 과제 1 예상 결과 표에는 artist/title 열이 아예 없어 표·코드·기대출력 삼각형이 깨진다. 7개 감사종 전부(17개 보고 20건)가 지적한 챕터 최대 결함.",
+      "severity": "높음",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG01-opus", "seq": 8 },
+        { "report": "AG01-gpt-5.6-sol", "seq": 2 },
+        { "report": "AG01-gemini-3.6-flash-high", "seq": 1 },
+        { "report": "AG02-opus", "seq": 6 },
+        { "report": "AG02-gpt-5.6-sol", "seq": 4 },
+        { "report": "AG03-opus", "seq": 1 },
+        { "report": "AG03-gpt-5.6-sol", "seq": 1 },
+        { "report": "AG03-gemini-3.6-flash-high", "seq": 1 },
+        { "report": "AG04-opus", "seq": 1 },
+        { "report": "AG04-gpt-5.6-sol", "seq": 7 },
+        { "report": "AG05-opus", "seq": 1 },
+        { "report": "AG05-sonnet", "seq": 1 },
+        { "report": "AG05-gpt-5.6-sol", "seq": 1 },
+        { "report": "AG06-opus", "seq": 1 },
+        { "report": "AG06-gpt-5.6-sol", "seq": 1 },
+        { "report": "AG06-gemini-3.6-flash-high", "seq": 2 },
+        { "report": "AG09-opus", "seq": 1 },
+        { "report": "AG09-opus", "seq": 2 },
+        { "report": "AG09-opus", "seq": 3 },
+        { "report": "AG09-sonnet", "seq": 1 }
+      ],
+      "quotes": [
+        "SELECT c~concert_id, c~artist, c~capacity,",
+        "| concert_id | title | capacity |"
+      ]
+    },
+    {
+      "cluster_id": "CH20-C003",
+      "file": "embeds/abap/CH20-L02-S01.html · CH20-L03-S01.html · CH20-L07-S01.html (+_engine)",
+      "claim": "위젯 cfg가 공연명을 artist 키로 주는데 엔진 3종(cte-step-viewer·exists-vs-join·concert-adv-sql-lab)은 title 키를 읽어, L02·L03·L07 세 위젯의 결과표와 피드백 문장에 문자 그대로 'undefined'가 렌더된다. L02 4단계는 공연을 식별할 유일한 열이 통째로 undefined이고, L03은 원본 표·JOIN/EXISTS 결과·피드백까지, L07은 EXISTS·EXCEPT 모드 artist 열과 '빠진 행' 안내가 전부 깨진다. AG02 4개 모델이 브라우저 실측(클릭·DOM 수거)으로 교차 확인한 확실 결함.",
+      "severity": "높음",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG02-opus", "seq": 1 },
+        { "report": "AG02-opus", "seq": 3 },
+        { "report": "AG02-opus", "seq": 4 },
+        { "report": "AG02-sonnet", "seq": 1 },
+        { "report": "AG02-sonnet", "seq": 2 },
+        { "report": "AG02-gpt-5.6-sol", "seq": 1 },
+        { "report": "AG02-gpt-5.6-sol", "seq": 3 },
+        { "report": "AG02-gemini-3.6-flash-high", "seq": 1 },
+        { "report": "AG02-gemini-3.6-flash-high", "seq": 3 },
+        { "report": "AG02-gemini-3.6-flash-high", "seq": 5 }
+      ],
+      "quotes": [
+        "{ \"concert_id\": \"C001\", \"artist\": \"안유진\", \"capacity\": 100 }",
+        "{ \"key\": \"artist\", \"label\": \"artist\" }"
+      ]
+    },
+    {
+      "cluster_id": "CH20-C004",
+      "file": "embeds/_engine/cte-step-viewer.js",
+      "claim": "CTE 뷰어 4단계 안내문에 'C003의 잔여석 = 50 - 0 = 50'이라는 정원 50이 하드코딩돼 있는데, CH20-L02-S01 cfg상 C003의 정원은 80이다. 같은 화면의 결과 표는 80을 올바르게 보여줘, COALESCE 효과를 검산하려는 바로 그 지점에서 안내문과 표의 숫자가 어긋난다. 3개 모델이 렌더 실측으로 확인.",
+      "severity": "높음",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG02-opus", "seq": 2 },
+        { "report": "AG02-gpt-5.6-sol", "seq": 2 },
+        { "report": "AG02-gemini-3.6-flash-high", "seq": 2 }
+      ],
+      "quotes": [
+        "그래서 <b>C003의 잔여석 = 50 - 0 = 50</b>."
+      ]
+    },
+    {
+      "cluster_id": "CH20-C005",
+      "file": "embeds/abap/CH20-L07-S01.html",
+      "claim": "캡스톤 랩 CTE 모드의 '조건 제거 실험' failMsg가 C002 잔여석을 79석이라고 잘못 안내한다. C002 정원은 50이므로 취소 1석이 섞이면 잔여 49이고 결과 표도 49를 보여줘, 검산을 시키는 실험에서 안내문과 표가 서로 다른 답을 준다(79는 정원 80인 C003의 값).",
+      "severity": "높음",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG02-opus", "seq": 5 },
+        { "report": "AG02-gpt-5.6-sol", "seq": 5 }
+      ],
+      "quotes": [
+        "\"failMsg\": \"취소된 0003(1석)이 C002 합계에 섞여 예약 1석·잔여 79석으로 잘못 계산됩니다.\""
+      ]
+    },
+    {
+      "cluster_id": "CH20-C006",
+      "file": "content/abap/CH20/CH20-L01.md · CH20-L07.md",
+      "claim": "약어·미래 용어가 풀이 없이 등장한다. L01은 CDS·RAP·association을, L07 콜아웃은 DML을 풀 스펠링·한 줄 풀이 없이 나열해 R12(약어 풀 스펠링 필수)·R3(첫 등장 한 줄 풀이) 위반이다. 특히 DML은 챕터 어디에도 원어(Data Manipulation Language)가 없다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG01-sonnet", "seq": 4 },
+        { "report": "AG04-opus", "seq": 3 },
+        { "report": "AG04-opus", "seq": 9 },
+        { "report": "AG04-gpt-5.6-sol", "seq": 1 },
+        { "report": "AG04-gpt-5.6-sol", "seq": 6 }
+      ],
+      "quotes": [
+        "> 🚧 **이 실습이 하지 않는 것**: 예약 저장·취소(DML)·CDS/RAP.",
+        "- **이 장은 CDS가 아님** → `define view entity`·association은 [다음 단계](CH23-L01.html)의 주제다."
+      ]
+    },
+    {
+      "cluster_id": "CH20-C007",
+      "file": "embeds/_engine/cte-step-viewer.js · embeds/abap/CH20-L07-S01.html",
+      "claim": "위젯 피드백 문구가 취소 예약을 'B003'이라 지칭하는데 cfg와 화면 표의 실제 booking_id는 '0003'이다. cte-step-viewer 1단계 안내문과 L07-S01 Window 모드 failMsg 두 곳에서 같은 패턴이 반복돼, 표에서 ID를 대조하는 학습자가 존재하지 않는 이름을 찾게 된다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG02-opus", "seq": 11 },
+        { "report": "AG02-sonnet", "seq": 3 },
+        { "report": "AG02-sonnet", "seq": 4 }
+      ],
+      "quotes": [
+        "\"failMsg\": \"취소된 B003이 결과에 포함돼 C002 파티션(합계 1)이 생깁니다.\"",
+        "<b>B003</b>은 <b>취소"
+      ]
+    },
+    {
+      "cluster_id": "CH20-C008",
+      "file": "content/abap/CH20/CH20-L03.md",
+      "claim": "IN subquery 예제에만 취소 제외 조건(status <> 'C')이 없다. 같은 레슨의 EXISTS 예제와 챕터 전체(L02·L04·L07)가 취소 조건을 필수로 강조하고 L07 '흔한 실수'가 '취소 조건 누락'을 대표 실수로 못 박는데, 이 예제는 그 실수를 스스로 시연하는 셈이라 의도적 생략인지 실수인지 알 수 없다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG01-opus", "seq": 2 },
+        { "report": "AG06-sonnet", "seq": 1 }
+      ],
+      "quotes": [
+        "WHERE c~concert_id IN ( SELECT concert_id"
+      ]
+    },
+    {
+      "cluster_id": "CH20-C009",
+      "file": "embeds/abap/CH20-L05-S01.html",
+      "claim": "L05 본문 표는 예약 3건(0003은 C002·4석, C001 합계 5)인데 위젯 데이터는 4건(0003이 C001·3석, C001 합계 8)이라, 본문으로 예상값을 세운 학습자가 위젯에서 같은 예약번호가 다른 공연·다른 합계로 나오는 것을 본다. RANK 동점 시연을 위한 행 추가가 예약번호 충돌을 일으킨 것으로 보인다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG02-opus", "seq": 8 },
+        { "report": "AG02-gemini-3.6-flash-high", "seq": 4 }
+      ],
+      "quotes": [
+        "{ id: '0003', part: 'C001', seats: 3 },",
+        "| 0001 | C001 | 2 |"
+      ]
+    },
+    {
+      "cluster_id": "CH20-C010",
+      "file": "content/abap/CH20/CH20-L02.md",
+      "claim": "CTE 학습 도중 '단순화 주의' 콜아웃에서 '회차'·'정본'·'소진'이라는 새 업무 개념이 풀이 없이 한꺼번에 등장한다. 공연과 회차의 차이를 챕터 안에서 설명하지 않아, 방금 배운 예제가 맞는지 틀린지 판단이 안 되고 확인하려면 CH10-L07로 되돌아가야 해 학습 흐름이 끊긴다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG01-opus", "seq": 1 },
+        { "report": "AG01-gpt-5.6-sol", "seq": 1 }
+      ],
+      "quotes": [
+        "> ⚠️ **단순화 주의** — 여기서는 CTE 연습을 위해 **회차를 접고 공연 단위로 합산**했다."
+      ]
+    },
+    {
+      "cluster_id": "CH20-C011",
+      "file": "content/abap/CH20/CH20-L02.md",
+      "claim": "챕터의 첫 코드이자 CTE 첫 예제가 WITH 정의 + LEFT OUTER JOIN + COALESCE 2회 + 계산 컬럼을 한 문장에 담아, 새로 배울 WITH/+이름에 집중하기 어렵다. 단독 CTE 최소 예시(SELECT * FROM +booked 수준)를 먼저 보여준 뒤 완성형으로 확장하라는 지적.",
+      "severity": "중간",
+      "confidence": "추정",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG01-sonnet", "seq": 1 },
+        { "report": "AG05-opus", "seq": 3 }
+      ],
+      "quotes": [
+        "LEFT OUTER JOIN +booked AS b",
+        "c~capacity - COALESCE( b~booked_seats, 0 ) AS remaining"
+      ]
+    },
+    {
+      "cluster_id": "CH20-C012",
+      "file": "content/abap/CH20/CH20-L04.md",
+      "claim": "문법 표는 UNION·UNION ALL만 소개하는데 검증 표는 배운 적 없는 'A UNION DISTINCT B' 표기를 쓴다. 'UNION은 기본이 DISTINCT'라는 서술과 표기가 어긋나 DISTINCT를 생략해도 되는지 항상 명시해야 하는지 레슨만으로 답을 찾을 수 없다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG01-opus", "seq": 4 },
+        { "report": "AG01-sonnet", "seq": 3 }
+      ],
+      "quotes": [
+        "| `A UNION DISTINCT B` | C001, C002, C003, C004 |",
+        "중복 제거하고 합침(기본이 DISTINCT)"
+      ]
+    },
+    {
+      "cluster_id": "CH20-C013",
+      "file": "content/abap/CH20/CH20-L03.md",
+      "claim": "NOT EXISTS가 정식 도입(L3) 없이 keywords와 '흔한 실수' 목록에만 등장한다. '예약 없는 공연'이라는 동일 질문을 챕터는 EXCEPT로만 풀면서 SQL 경험자가 먼저 떠올릴 NOT EXISTS(및 anti-join)와의 대조·선택 기준이 챕터 어디에도 없어, 같은 질문에 두 답이 있는데 권장이 무엇인지 알 수 없다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG03-opus", "seq": 4 },
+        { "report": "AG05-sonnet", "seq": 2 }
+      ],
+      "quotes": [
+        "**`NOT EXISTS`에서 조건 빠짐** → \"없다\"를 묻는 강력한 도구지만, 조건 하나가 빠지면 엉뚱한 판정이 난다."
+      ]
+    },
+    {
+      "cluster_id": "CH20-C014",
+      "file": "content/abap/CH20/CH20-L02.md (챕터 전체)",
+      "claim": "챕터 전 예제가 상태 판정을 status <> 'C'(블랙리스트 + 매직 리터럴)로만 반복 시연하면서 교정 언급이 없다. 실무에서 새 상태 코드(대기·보류 등)가 추가되는 순간 전부 '유효 예약'으로 오집계되는 대표 결함 패턴이며, 상수/도메인 고정값 참조 관례에 대한 한 줄 안내도 없다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG06-opus", "seq": 2 },
+        { "report": "AG06-sonnet", "seq": 2 }
+      ],
+      "quotes": [
+        "- **취소 조건 누락** → 합계·존재·차집합 모두 `status <> 'C'`가 빠지면 결과가 달라진다."
+      ]
+    },
+    {
+      "cluster_id": "CH20-C015",
+      "file": "content/abap/CH20/CH20-L05.md",
+      "claim": "한 레슨에 OVER·PARTITION BY·SUM OVER·ROW_NUMBER·RANK·DENSE_RANK가 연달아 나와, 기본 window 모델이 안정되기 전에 순위 함수의 동률 규칙까지 얹힌다. RANK·DENSE_RANK를 선택 심화나 별도 레슨으로 분리하고 L07에 window 변형 과제를 추가하라는 제안.",
+      "severity": "중간",
+      "confidence": "추정",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG01-opus", "seq": 7 },
+        { "report": "AG05-gpt-5.6-sol", "seq": 3 }
+      ],
+      "quotes": [
+        "## 순위 함수 — RANK · DENSE_RANK 🏅"
+      ]
+    },
+    {
+      "cluster_id": "CH20-C016",
+      "file": "content/abap/CH20/CH20-L02.md",
+      "claim": "CTE 첫 정의의 '임시 표'라는 표현이 실제 임시 DB 테이블 생성·구체화로 오해될 수 있다. 같은 레슨 뒤에서 '실제 DB 테이블을 만드는 게 아니다'라고 스스로 바로잡아 최초 정의와 후속 설명이 충돌한다. '한 SELECT 문 안에서 참조하는 이름 붙은 쿼리 결과'로 정의를 정밀화하라는 지적.",
+      "severity": "중간",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG03-gpt-5.6-sol", "seq": 2 },
+        { "report": "AG04-gpt-5.6-sol", "seq": 2 }
+      ],
+      "quotes": [
+        "[[CTE]](Common Table Expression, 중간 결과에 이름을 붙인 임시 표)는 ABAP SQL에서 `WITH` 문으로 정의하고, 이름은 **`+`로 시작**한다."
+      ]
+    },
+    {
+      "cluster_id": "CH20-C017",
+      "file": "content/abap/CH20/CH20-L02.md",
+      "claim": "'CTE를 너무 많이 → 1~2개까지가 읽기 쉽다'는 근거 없는 절대 규칙처럼 읽혀 정상적인 다단계 쿼리 설계까지 회피하게 만들 수 있다(가독성은 개수보다 의존 깊이·이름·책임이 좌우). 표현 자체도 '1~2개'와 '까지'가 겹쳐 어색하다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG03-gpt-5.6-sol", "seq": 3 },
+        { "report": "AG04-gpt-5.6-sol", "seq": 3 }
+      ],
+      "quotes": [
+        "- **CTE를 너무 많이** → 1~2개까지가 읽기 쉽다. 그 이상이면 오히려 숨겨진 절차가 된다."
+      ]
+    },
+    {
+      "cluster_id": "CH20-C018",
+      "file": "content/abap/CH20/CH20-L07.md (+CH20-L02.md)",
+      "claim": "COALESCE 설명이 '예약 없는 공연의 합계가 null이 되어'라고 서술하지만, ABAP에는 변수 차원의 null이 없고 DB null은 internal table로 옮겨질 때 초기값(0)으로 변환된다. 실제 함정은 산술식에 null이 전파돼 계산 결과 전체가 null→0으로 조용히 틀리는 것인데, 현재 서술은 JDBC 감각의 독자에게 잘못된 모델을 심는다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG03-opus", "seq": 2 }
+      ],
+      "quotes": [
+        "`COALESCE`가 없으면 예약 없는 공연의 합계가 null이 되어 잔여석이 어긋난다."
+      ]
+    },
+    {
+      "cluster_id": "CH20-C019",
+      "file": "content/abap/CH20/CH20-L03.md",
+      "claim": "EXISTS와 IN subquery를 나란히 소개하면서 둘의 선택 기준을 한 줄도 주지 않는다. '흔한 실수'에도 IN 지침이 없고 L06 상황별 선택 표에도 IN이 등장하지 않아, 이 챕터에서 IN은 도입만 되고 판단 기준 없이 방치된다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG03-opus", "seq": 3 }
+      ],
+      "quotes": [
+        "`IN` subquery는 \"목록에 포함되는가\"를 묻는다."
+      ]
+    },
+    {
+      "cluster_id": "CH20-C020",
+      "file": "content/abap/CH20/CH20-L07.md (챕터 전체)",
+      "claim": "고급 SQL 챕터인데 데이터 건수·메모리 규율이 전무하다. 모든 예제가 WHERE 없이(또는 인덱스가 안 듣는 <> 조건만으로) 전체 테이블을 INTO TABLE @DATA()에 적재하며, UP TO n ROWS·선택 조건 필수화·ST05/SAT 측정 같은 안내가 7개 레슨 어디에도 없다. 대량 테이블에서는 메모리 초과 덤프로 직결되는 패턴이다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG06-opus", "seq": 3 }
+      ],
+      "quotes": [
+        "SELECT concert_id FROM zconcert"
+      ]
+    },
+    {
+      "cluster_id": "CH20-C021",
+      "file": "content/abap/CH20/CH20-L05.md",
+      "claim": "'window는 DB·릴리스별 지원 차이'라는 프레이밍이 부정확하다. ABAP SQL은 DB 추상화 계층이라 가용성의 실제 결정 요인은 ABAP 릴리스이며, WITH/CTE·window·INTERSECT/EXCEPT의 최소 릴리스가 챕터 어디에도 고지되지 않아 구형 시스템 학습자가 이유를 모른 채 막힌다.",
+      "severity": "중간",
+      "confidence": "추정",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG06-opus", "seq": 5 }
+      ],
+      "quotes": [
+        "- **DB 지원 가정** → window는 DB·릴리스별 지원 차이가 있을 수 있다. 내 시스템에서 syntax check로 확인한다."
+      ]
+    },
+    {
+      "cluster_id": "CH20-C022",
+      "file": "content/abap/CH20/CH20-L01.md",
+      "claim": "바로 앞 문장에서 '지난 챕터'라 부른 대상을 다음 문장에서 'CH19'라는 내부 ID로 다시 지칭한다. 입문 독자에게 별개 대상으로 읽힐 수 있고, R5(내부 ID 비노출·링크 제목형 참조) 위반이다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG04-opus", "seq": 2 }
+      ],
+      "quotes": [
+        "그런데 CH19는 일부러 **CTE·복잡한 subquery·집합 연산·window**를 미뤘다."
+      ]
+    },
+    {
+      "cluster_id": "CH20-C023",
+      "file": "content/abap/CH20/CH20-L06.md",
+      "claim": "'CTE 남발' 항목의 역접('보이지만')이 성립하지 않아 무엇이 왜 문제인지 읽히지 않는다. 앞뒤 절은 대조가 아니라 '절차적 코드의 겉모습만 얻고 단계별 디버깅 수단은 없다'는 인과·보완 관계인데, 접속이 어긋나 결론이 문장에서 도출되지 않는다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG04-opus", "seq": 8 }
+      ],
+      "quotes": [
+        "- **CTE 남발** → 많아질수록 절차적 코드처럼 보이지만, 디버거로 한 줄씩 중간 표를 보긴 어렵다."
+      ]
+    },
+    {
+      "cluster_id": "CH20-C024",
+      "file": "content/abap/CH20/CH20-L02.md (챕터 전체)",
+      "claim": "관통 예제인데 같은 공연 ID의 데이터 역할이 레슨마다 다르다. C002는 L02에서 정상 예약 4석의 대표였다가 L03·L07에서는 취소 전용 케이스로 바뀌고 C003·C004 등장 여부도 갈려, 대조 학습 때마다 데이터 심상을 다시 외워야 하는 외재적 인지부하가 생긴다. 챕터 표준 데이터셋 1벌로 통일하라는 제안.",
+      "severity": "중간",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG05-opus", "seq": 2 }
+      ],
+      "quotes": [
+        "| C002 | 4 | N |"
+      ]
+    },
+    {
+      "cluster_id": "CH20-C025",
+      "file": "content/abap/CH20/CH20-L03.md",
+      "claim": "front-matter가 'IN subquery'를 정식 도입 개념으로 선언하고 seats >= 3 코드까지 보여주지만, 페이지 유일 위젯(EXISTS vs JOIN)은 IN을 전혀 다루지 않고 데이터에 seats 컬럼조차 없어 체험 수단이 없다. R2(코드 = 체험 필수) 관점의 공백이다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG02-opus", "seq": 7 }
+      ],
+      "quotes": [
+        "  WHERE c~concert_id IN ( SELECT concert_id"
+      ]
+    },
+    {
+      "cluster_id": "CH20-C026",
+      "file": "content/abap/CH20/CH20-L05.md",
+      "claim": "RANK와 DENSE_RANK의 차이를 (1,1,3)/(1,1,2) 괄호 숫자만으로 설명하고 결과 표가 없다. 앞선 SUM·ROW_NUMBER는 입력→GROUP BY→Window 3단 표로 보여줬는데 순위 함수만 표가 없고, 제시된 입력 데이터에는 동점이 없어 '같은 값이 있으면'이라는 조건을 대입해 볼 수도 없다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG01-opus", "seq": 6 }
+      ],
+      "quotes": [
+        "`RANK`는 같은 값이 있으면 다음 순위를 **건너뛴다**(1, 1, 3). `DENSE_RANK`는 **촘촘히 이어 간다**(1, 1, 2)."
+      ]
+    },
+    {
+      "cluster_id": "CH20-C027",
+      "file": "content/abap/CH20/CH20-L05.md",
+      "claim": "예제 코드는 WHERE status <> 'C'로 걸러내는데 바로 아래 입력 표에는 status 컬럼 자체가 없어, 표만 보고는 코드가 무엇을 걸러냈는지 따라갈 수 없다. 같은 상황에서 입력 표에 status를 넣어 준 L02와 달리 확인 경로가 끊긴다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG01-opus", "seq": 5 }
+      ],
+      "quotes": [
+        "| booking_id | concert_id | seats |"
+      ]
+    },
+    {
+      "cluster_id": "CH20-C028",
+      "file": "content/abap/CH20/CH20-L04.md",
+      "claim": "UNION·UNION ALL·INTERSECT DISTINCT는 표와 말로만 설명되고 챕터 어디에도(L04·L06·L07) 실제 ABAP 코드 예시가 없다. 코드로 나오는 집합 연산은 EXCEPT DISTINCT뿐이라, 챕터를 다 읽어도 UNION·INTERSECT를 실제로 어떻게 쓰는지 본 적이 없게 된다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG01-sonnet", "seq": 2 }
+      ],
+      "quotes": [
+        "중복 제거하고 합침(기본이 DISTINCT)"
+      ]
+    },
+    {
+      "cluster_id": "CH20-C029",
+      "file": "content/abap/CH20/CH20-L07.md",
+      "claim": "'직접 해 볼' 세 과제(조건 제거·방향 바꾸기 등)에 정답이나 최소 검산 기준이 없다. 본문이 '눈대중으로 넘기지 말고 계산값을 확인하라'고 강조하면서 정작 변경 후 예상 행·값을 주지 않아, 초보자가 결과 해석이 맞았는지 확인할 수 없다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG01-gpt-5.6-sol", "seq": 3 }
+      ],
+      "quotes": [
+        "1. 과제 1의 CTE에서 `WHERE status <> 'C'`를 빼 보고, 취소 예약이 합계에 섞이는지 확인한다."
+      ]
+    },
+    {
+      "cluster_id": "CH20-C030",
+      "file": "content/abap/CH20/CH20-L07.md",
+      "claim": "통합 실습을 표방하지만 실제 활동은 앞 레슨의 완성 쿼리 4개를 답과 함께 각각 다시 제시하는 방식이다. 도구를 스스로 선택·조합하거나 네 결과의 관계를 설계하는 누적 과제가 없어 '한 화면' 수준의 전이 연습이 되지 않는다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG05-gpt-5.6-sol", "seq": 2 }
+      ],
+      "quotes": [
+        "지금까지는 문법을 따로 봤다. 실무에선 이 문법들이 **한 조회 화면**에 함께 나온다."
+      ]
+    },
+    {
+      "cluster_id": "CH20-C031",
+      "file": "content/abap/CH20/CH20-L04.md",
+      "claim": "Set operation 첫 정의가 '집합처럼 합치는/병합한다'로만 서술돼, 바로 아래 표에 있는 INTERSECT(공통 행 고르기)·EXCEPT(빼기)의 핵심 동작을 포괄하지 못한다. '합치거나, 공통 행을 고르거나, 한쪽에서 다른 쪽을 빼는 연산'으로 정의를 넓히라는 지적.",
+      "severity": "중간",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG04-gpt-5.6-sol", "seq": 4 }
+      ],
+      "quotes": [
+        "[[Set operation]](두 SELECT 결과를 집합처럼 합치는 연산)은 여러 `SELECT` 결과를 하나로 병합한다."
+      ]
+    },
+    {
+      "cluster_id": "CH20-C032",
+      "file": "content/abap/CH20/CH20-L04.md",
+      "claim": "흔한 RDBMS에서는 INTERSECT/EXCEPT를 DISTINCT 없이 쓰는데 ABAP SQL은 DISTINCT를 명시하는 표기를 쓴다는 차이를 짚어주는 대조 설명이 없다. 경력자는 '왜 굳이 DISTINCT인가' 의아해하거나 다른 DB에서도 생략 가능하다고 오해할 수 있다.",
+      "severity": "중간",
+      "confidence": "추정",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG03-sonnet", "seq": 3 }
+      ],
+      "quotes": [
+        "| `INTERSECT DISTINCT` | 양쪽에 모두 있는 행만 | \"전체 공연이면서 예약도 있는\" |"
+      ]
+    },
+    {
+      "cluster_id": "CH20-C033",
+      "file": "content/abap/CH20 (L02~L05·L07 코드 블록)",
+      "claim": "AG09-gpt 주장: FORM/METHOD 경계가 없는 인라인 예제 10곳이 내부 테이블에 lt_ 접두어를 써서 R11(로컬 스코프에서만 lt_) 규약과 충돌한다. 반면 AG09-opus·AG09-sonnet은 같은 코드를 'CH10 이후 로컬 스코프 코드로 읽는 것이 자연스럽다'며 lt_ 일관 사용을 규약 적합으로 평가했다. 규약 해석이 갈리는 소프트 충돌.",
+      "severity": "낮음",
+      "confidence": "추정",
+      "conflict": true,
+      "conflict_note": "위반측 = AG09-gpt-5.6-sol(10건, 낮음·확실). 적합측 = AG09-opus·AG09-sonnet(overall summary에서 lt_ 일관 사용을 자연스럽다고 명시).",
+      "supporters": [
+        { "report": "AG09-gpt-5.6-sol", "seq": 1 },
+        { "report": "AG09-gpt-5.6-sol", "seq": 2 },
+        { "report": "AG09-gpt-5.6-sol", "seq": 3 },
+        { "report": "AG09-gpt-5.6-sol", "seq": 4 },
+        { "report": "AG09-gpt-5.6-sol", "seq": 5 },
+        { "report": "AG09-gpt-5.6-sol", "seq": 6 },
+        { "report": "AG09-gpt-5.6-sol", "seq": 7 },
+        { "report": "AG09-gpt-5.6-sol", "seq": 8 },
+        { "report": "AG09-gpt-5.6-sol", "seq": 9 },
+        { "report": "AG09-gpt-5.6-sol", "seq": 10 }
+      ],
+      "quotes": [
+        "INTO TABLE @DATA(lt_capacity)."
+      ]
+    },
+    {
+      "cluster_id": "CH20-C034",
+      "file": "content/abap/CH20/CH20-L01.md",
+      "claim": "CTE·Subquery·집합 연산·Window는 타 언어 경력자가 이미 아는 표준 SQL 개념인데, '표준 SQL을 안다면 ABAP 고유 차이(+접두어·~·@·DESCENDING 등)만 보면 된다'는 지름길 안내가 챕터 어디에도 없다. AG03 4개 모델이 공통 지적. 1독자(입문자) 기준으로는 손해가 아니라 전원 낮음 처리.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG03-opus", "seq": 6 },
+        { "report": "AG03-sonnet", "seq": 1 },
+        { "report": "AG03-gpt-5.6-sol", "seq": 4 },
+        { "report": "AG03-gemini-3.6-flash-high", "seq": 2 }
+      ],
+      "quotes": [
+        "이 챕터가 다루는 고급 SQL은 네 가지다. 모두 **읽기 전용 `SELECT`**다(저장·변경 없음)."
+      ]
+    },
+    {
+      "cluster_id": "CH20-C035",
+      "file": "content/abap/CH20/CH20-L07.md",
+      "claim": "L07 front-matter의 prevRel 값 'next-step'이 R10이 정의한 허용값(pain-solution/parallel/deepening) 밖이다. 같은 챕터 다른 레슨은 전부 정의된 값을 쓰는데 L07만 미정의 값이라 정적 점검·게이팅 집계에서 조용히 누락될 수 있다. deepening으로 바꾸거나 규약에 값을 먼저 추가하라는 제안.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG03-opus", "seq": 8 },
+        { "report": "AG05-opus", "seq": 5 },
+        { "report": "AG05-sonnet", "seq": 3 }
+      ],
+      "quotes": [
+        "prevRel: next-step"
+      ]
+    },
+    {
+      "cluster_id": "CH20-C036",
+      "file": "content/abap/CH20/CH20-L07.md (+CH20-L05.md)",
+      "claim": "예상 결과표를 특정 행 순서로 확정 제시하지만 예제 SQL에 문장 끝 ORDER BY가 없다. SQL 결과의 행 순서는 정렬 미지정 시 보장되지 않으므로(OVER 안 ORDER BY는 계산 순서만 결정), 학습자가 '순서까지 정답'으로 오해하면 검증 기준이 틀어진다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG06-opus", "seq": 4 },
+        { "report": "AG06-gpt-5.6-sol", "seq": 2 }
+      ],
+      "quotes": [
+        "| 0001 | C001 | 2 | 5 | 1 |"
+      ]
+    },
+    {
+      "cluster_id": "CH20-C037",
+      "file": "content/abap/CH20/CH20-L04.md",
+      "claim": "'전체 공연 A'가 C001~C003인데 '예약 있는 공연 B'에 A에 없는 C004가 들어 있어 '전체'라는 말과 모순된다. UNION 결과에 C004를 보여주려는 의도로 보이나 그 의도가 적혀 있지 않아 학습자가 앞 표를 되짚게 된다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG01-opus", "seq": 3 }
+      ],
+      "quotes": [
+        "| 예약 있는 공연 B | C001, C003, C004 |"
+      ]
+    },
+    {
+      "cluster_id": "CH20-C038",
+      "file": "embeds/abap/CH20-L05-S01.html",
+      "claim": "위젯의 SQL 예시가 챕터 전체 관례(status <> 'C' 부정 조건)와 달리 status = 'N'을 쓴다. 현재 데이터에서 결과는 같지만 챕터가 일관되게 가르치는 관용구와 스타일이 갈려 두 방식이 섞여 보인다.",
+      "severity": "낮음",
+      "confidence": "추정",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG02-sonnet", "seq": 5 }
+      ],
+      "quotes": [
+        "WHERE status = 'N'"
+      ]
+    },
+    {
+      "cluster_id": "CH20-C039",
+      "file": "embeds/abap/CH20-L04-S01.html",
+      "claim": "같은 챕터·같은 공연 ID인데 이 위젯만 공연명이 다른 세트다(C001~C003이 '정훈영 피아노 리사이틀·재즈 나이트·신년 오케스트라' vs 다른 위젯·L07 본문의 '안유진·ABAP Trio·UI5 Night'). 챕터를 순서대로 도는 학습자에게 같은 데이터셋으로 읽히지 않는다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG02-opus", "seq": 9 }
+      ],
+      "quotes": [
+        "{ id: 'C001', name: '정훈영 피아노 리사이틀' },"
+      ]
+    },
+    {
+      "cluster_id": "CH20-C040",
+      "file": "embeds/abap/CH20-L04-S01.html",
+      "claim": "위젯 B 집합 SQL이 'SELECT DISTINCT concert_id FROM zbooking'으로 취소 조건(WHERE status <> 'C')이 빠져 있다. 본문 예제는 같은 집합을 취소 조건 포함으로 정의하므로, '예약 있는 공연'의 정의가 레슨 안에서 두 가지가 된다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG02-opus", "seq": 10 }
+      ],
+      "quotes": [
+        "code: 'zbooking', title: '예약 있는 공연 (B)',"
+      ]
+    },
+    {
+      "cluster_id": "CH20-C041",
+      "file": "embeds/abap/CH20-L07-S01.html",
+      "claim": "위젯이 보여주는 SQL이 본문 코드와 표기가 다르다. 본문은 LEFT OUTER JOIN과 lt_* 결과 테이블명을 쓰는데 위젯은 LEFT JOIN과 gt_*를 써서, 본문을 그대로 따라 친 학습자가 위젯 화면에서 같은 문장을 확인하지 못한다(접두어 규약상 본문 lt_ 쪽이 기준).",
+      "severity": "낮음",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG02-opus", "seq": 12 }
+      ],
+      "quotes": [
+        "{ \"t\": \"  LEFT JOIN +booked AS b ON c~concert_id = b~concert_id\" },"
+      ]
+    },
+    {
+      "cluster_id": "CH20-C042",
+      "file": "embeds/abap/CH20-L06-S01.html",
+      "claim": "선택 가이드 위젯이 노드 하나짜리라 5지선다 1회 클릭으로 끝나고, 선택지·결과가 본문 '상황별 선택' 표의 재탕이다. 레슨 제목 절반인 '멈춤 기준'(ABAP 코드/CDS로 분리) 행은 선택지로 도달할 수 없어 판단 연습이 되지 않는 헛체험이다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG02-opus", "seq": 13 }
+      ],
+      "quotes": [
+        "{ \"label\": \"상세 행을 두고 그룹 합계·순번을 붙인다\", \"ic\": \"🪟\", \"result\": \"window\" }"
+      ]
+    },
+    {
+      "cluster_id": "CH20-C043",
+      "file": "content/abap/CH20/CH20-L05.md (+CH20-L07.md)",
+      "claim": "Window 예제의 SELECT 컬럼 순서(concert_id→booking_id→seats)와 결과 표의 열 순서(booking_id→concert_id→seats)가 어긋난다. 값 자체는 정확하지만 예상표 대조 학습이 흐트러지며, 같은 어긋남이 L07 과제 4에서도 반복된다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG09-opus", "seq": 4 }
+      ],
+      "quotes": [
+        "SELECT concert_id,"
+      ]
+    },
+    {
+      "cluster_id": "CH20-C044",
+      "file": "content/abap/CH20/CH20-L07.md",
+      "claim": "L02는 '공연 단위 합산은 CTE 연습용 단순화, 정본 잔여석은 회차별'이라 경고해 놓고, 캡스톤인 L07은 같은 공연 단위 계산을 경고 없이 '예상 결과 = 정답'으로 제시한다. 학습자가 챕터 최종 산출물을 잔여석 계산의 표준 구현으로 가져갈 소지가 있다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG06-opus", "seq": 6 }
+      ],
+      "quotes": [
+        "| C001 | 5 | 95 |"
+      ]
+    },
+    {
+      "cluster_id": "CH20-C045",
+      "file": "content/abap/CH20/CH20-L01.md",
+      "claim": "읽기 전용 챕터라 COMMIT·잠금 제외는 정당하지만, 'SELECT는 사용자 권한을 자동 검사하지 않는다(AUTHORITY-CHECK는 개발자 책임)'는 사실이 챕터 전체에 한 번도 언급되지 않는다. L06 체크리스트·L07 '하지 않는 것' 목록에도 권한 항목이 없다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG06-opus", "seq": 7 }
+      ],
+      "quotes": [
+        "이 챕터가 다루는 고급 SQL은 네 가지다. 모두 **읽기 전용 `SELECT`**다(저장·변경 없음)."
+      ]
+    },
+    {
+      "cluster_id": "CH20-C046",
+      "file": "content/abap/CH20/CH20-L05.md",
+      "claim": "DENSE_RANK 결과의 별칭을 함수명과 똑같은 dense_rank로 줘서 예약어 충돌 위험이 있고 '무엇의 순위인지'가 드러나지 않는다. 바로 옆 RANK 결과는 seat_rank라는 의미 있는 이름이라 명명 규칙도 서로 어긋난다.",
+      "severity": "낮음",
+      "confidence": "추정",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG06-opus", "seq": 8 }
+      ],
+      "quotes": [
+        "DENSE_RANK( ) OVER( PARTITION BY concert_id ORDER BY seats DESCENDING ) AS dense_rank"
+      ]
+    },
+    {
+      "cluster_id": "CH20-C047",
+      "file": "content/abap/CH20/CH20-L05.md",
+      "claim": "window expression과 집합 연산(UNION 등)을 같은 SELECT 문에서 결합할 수 없다는 ABAP SQL 제약(기억 기반, 릴리스별 세부 불확실)이 인접 레슨 어디에서도 언급되지 않는다. 두 기능을 자연스럽게 합치려는 학습자가 문법 오류에 부딪힐 수 있다. 실제 제약 여부를 syntax check로 확인 후 채택/기각하라는 조건부 발견.",
+      "severity": "낮음",
+      "confidence": "추정",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG06-sonnet", "seq": 3 }
+      ],
+      "quotes": [
+        "       SUM( seats ) OVER( PARTITION BY concert_id )                       AS booked_total,"
+      ]
+    },
+    {
+      "cluster_id": "CH20-C048",
+      "file": "content/abap/CH20/_chapter.md",
+      "claim": "챕터 본문이 front-matter intro 한 문장을 그대로 반복하는 데서 끝나, '왜 배우는가'를 파는 역할을 L01에 전가한다. 로드맵·챕터 카드에서 이 문장만 보는 학습자에게는 '벅찬 질문'의 구체가 없어 동기 유발이 약하다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG05-opus", "seq": 4 }
+      ],
+      "quotes": [
+        "modern SQL 기본으론 벅찬 질문 — 데이터베이스에 '질문을 설계'하고 싶다."
+      ]
+    },
+    {
+      "cluster_id": "CH20-C049",
+      "file": "content/abap/CH20/CH20-L06.md (챕터 전체)",
+      "claim": "'입력표를 먼저 그리고 행 수를 예상하라'는 같은 검증 의식이 7개 레슨 전부에 거의 동일한 형태로 반복된다. 입문자에겐 유효한 반복이지만 경력자에겐 진도가 늦게 느껴지는, 압축 여지가 가장 큰 지점이다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG03-opus", "seq": 7 }
+      ],
+      "quotes": [
+        "| 결과 행 수가 예상과 맞나? | 입력표로 수작업 예상표를 먼저 만든다 |"
+      ]
+    },
+    {
+      "cluster_id": "CH20-C050",
+      "file": "content/abap/CH20/CH20-L06.md",
+      "claim": "'성능은 측정해야 안다'는 경고가 L03과 L06에서 표현만 다를 뿐 같은 내용으로 반복돼, 통독하는 경력자에게 늘어지는 느낌을 준다. L06에서는 짧은 참조로 대체하라는 제안.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG03-sonnet", "seq": 5 }
+      ],
+      "quotes": [
+        "**성능 단정** → subquery·window의 성능은 DB·상황마다 다르다. 측정 없이 단정하지 않는다."
+      ]
+    },
+    {
+      "cluster_id": "CH20-C051",
+      "file": "content/abap/CH20/CH20-L03.md",
+      "claim": "correlated subquery의 동작이 정의 문장 직후 3단계 스토리텔링으로 동일 내용을 재서술해 경력자에겐 중복으로 읽힌다. 입문자에겐 필요한 반복이라 낮음 분류.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG03-sonnet", "seq": 4 }
+      ],
+      "quotes": [
+        "1. 바깥 공연 `c`를 한 행 고른다고 상상한다."
+      ]
+    },
+    {
+      "cluster_id": "CH20-C052",
+      "file": "content/abap/CH20/CH20-L05.md",
+      "claim": "GROUP BY 시 상세 행이 사라진다는 RDBMS 기본 동작을 텍스트와 표로 길게 대조 설명해 경력자 관점에서는 과잉 서술이다. 입문자용 필수 개념이므로 낮음 유지, 요약 표 중심 재구성만 권장.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG03-gemini-3.6-flash-high", "seq": 4 }
+      ],
+      "quotes": [
+        "[`GROUP BY`](CH13-L01.html)는 강력하지만 대가가 있다. **상세 행이 사라진다.**"
+      ]
+    },
+    {
+      "cluster_id": "CH20-C053",
+      "file": "content/abap/CH20/CH20-L05.md",
+      "claim": "ABAP SQL이 표준 SQL의 DESC/ASC 대신 DESCENDING/ASCENDING을, !=가 아니라 <>를 쓴다는 철자 차이 언급이 챕터 어디에도 없다. 코드에는 그렇게 나오는데 고지가 없어 타 언어 독자가 오타로 읽거나 자기 습관대로 썼다가 막힌다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG03-opus", "seq": 5 }
+      ],
+      "quotes": [
+        "ORDER BY seats DESCENDING"
+      ]
+    },
+    {
+      "cluster_id": "CH20-C054",
+      "file": "content/abap/CH20/CH20-L02.md",
+      "claim": "CTE 이름의 + 접두사가 표준 ANSI SQL과 달리 ABAP SQL 고유의 필수 구문 규칙이라는 점을 명명 관례 수준으로만 짧게 기술해, 경력자가 표기 관례인지 언어 필수 규칙인지 헷갈릴 수 있다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG03-gemini-3.6-flash-high", "seq": 3 }
+      ],
+      "quotes": [
+        "이름은 **`+`로 시작**한다."
+      ]
+    },
+    {
+      "cluster_id": "CH20-C055",
+      "file": "content/abap/CH20/CH20-L05.md",
+      "claim": "업계 통칭 'window function'과 ABAP 공식 용어 'Window Expression'이 같은 개념이라는 대응 설명이 레슨 전체에 없다. window function에 익숙한 경력자가 검색·문서 대조 시 혼동할 수 있다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG03-sonnet", "seq": 2 }
+      ],
+      "quotes": [
+        "[[Window|Window Expression]](상세 행을 유지한 채 그룹 계산을 붙이는 SQL 식)은 함수 뒤에 `OVER( … )`를 붙인다."
+      ]
+    },
+    {
+      "cluster_id": "CH20-C056",
+      "file": "content/abap/CH20/CH20-L05.md",
+      "claim": "같은 개념이 'Window Expression'(정식)·'Window'·소문자 'window' 세 표기로 뒤섞여 불린다. 소문자 window는 창(窓) 비유·이모지와 겹쳐 기능 이름인지 비유인지 구분이 어려우니 표기를 고정하라는 지적.",
+      "severity": "낮음",
+      "confidence": "추정",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG04-opus", "seq": 11 }
+      ],
+      "quotes": [
+        "- **`WHERE`에서 window로 필터** → window는 `SELECT` list에서만 쓴다."
+      ]
+    },
+    {
+      "cluster_id": "CH20-C057",
+      "file": "content/abap/CH20/CH20-L02.md",
+      "claim": "레슨 핵심 구조(WITH 절 ↔ 본 질의)를 가르는 용어 'main query'가 풀이 없이 처음 등장하고 이후 재등장 때도 풀이가 없다. 같은 레슨의 CTE는 괄호 풀이를 붙여 처리 수준이 서로 다르다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG04-opus", "seq": 4 }
+      ],
+      "quotes": [
+        "먼저 `+booked`라는 **중간 결과**를 만들고, 그다음 main query에서 `+booked`를 일반 테이블처럼 읽는다."
+      ]
+    },
+    {
+      "cluster_id": "CH20-C058",
+      "file": "content/abap/CH20/CH20-L02.md",
+      "claim": "'## 무엇 — WITH · `+` 이름' 제목이 명사 축약이라 뜻이 전달되지 않는다. 스텝퍼에 그대로 노출되는 문구이므로 '+로 시작하는 이름'처럼 서술을 살리라는 지적.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG04-opus", "seq": 5 }
+      ],
+      "quotes": [
+        "## 무엇 — WITH · `+` 이름 📛"
+      ]
+    },
+    {
+      "cluster_id": "CH20-C059",
+      "file": "content/abap/CH20/CH20-L03.md",
+      "claim": "'컬럼이 무엇이든 중요하지 않다'는 주어-서술어 호응이 어긋난 번역투이고, 괄호 안 '공식 문서'는 어느 문서인지 알 수 없어 입문자에게 근거로 작동하지 않는다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG04-opus", "seq": 10 }
+      ],
+      "quotes": [
+        "`EXISTS`는 존재만 판정하므로 안쪽 `SELECT`의 컬럼이 무엇이든 중요하지 않다(공식 문서도 컬럼 하나만 쓰길 권한다)."
+      ]
+    },
+    {
+      "cluster_id": "CH20-C060",
+      "file": "content/abap/CH20/CH20-L04.md",
+      "claim": "'~으로 더 직접 표현될 때가 있다'는 영어 수동태를 옮긴 번역투로, 부사 '직접'이 피동 서술어를 꾸며 어색하고 주어와의 호응도 헐겁다. 같은 레슨의 다른 능동 문장들과 호흡이 튄다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG04-opus", "seq": 6 }
+      ],
+      "quotes": [
+        "이 요구는 JOIN보다 **집합 연산**으로 더 직접 표현될 때가 있다."
+      ]
+    },
+    {
+      "cluster_id": "CH20-C061",
+      "file": "content/abap/CH20/CH20-L04.md",
+      "claim": "'합·교·차' 축약이 합집합·교집합·차집합을 아는 독자에게만 통하는데, 원말이 본문 한참 뒤에야 나온다. L01 표·L04 direction·절 제목에서 반복 노출되므로 첫 노출에서 한 번 풀어 쓰라는 지적(direction 문장은 서술어도 없이 멈춘다).",
+      "severity": "낮음",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG04-opus", "seq": 7 }
+      ],
+      "quotes": [
+        "direction: JOIN이 컬럼을 옆으로 붙인다면, 집합 연산은 행을 위아래로 합·교·차."
+      ]
+    },
+    {
+      "cluster_id": "CH20-C062",
+      "file": "content/abap/CH20/CH20-L03.md",
+      "claim": "바로 앞 문장에서 '목록에 포함되는가'로 설명한 개념을 다음 문장에서 '목록에 드는'이라는 다의적 문어체로 바꿔 불러, 입문자가 두 표현이 같은 뜻임을 즉시 연결하기 어렵다.",
+      "severity": "낮음",
+      "confidence": "추정",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG04-sonnet", "seq": 1 }
+      ],
+      "quotes": [
+        "3석 이상 예약이 있는 공연 ID 목록에 드는 공연만 남는다."
+      ]
+    },
+    {
+      "cluster_id": "CH20-C063",
+      "file": "content/abap/CH20/CH20-L06.md",
+      "claim": "선택 표의 '중간 결과 재사용·단계 이름이 필요'가 행위('재사용')와 서술절('이름이 필요')을 가운뎃점으로 묶어 병렬 호응이 어긋난다. '중간 결과를 재사용하거나 단계에 이름을 붙여야 한다'로 고치라는 지적.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG04-gpt-5.6-sol", "seq": 5 }
+      ],
+      "quotes": [
+        "| 한 문장에서 중간 결과 재사용·단계 이름이 필요 | CTE | 읽기 쉬운 단계로 나눔 |"
+      ]
+    },
+    {
+      "cluster_id": "CH20-C064",
+      "file": "content/abap/CH20/CH20-L07.md",
+      "claim": "같은 학습 범위를 '고급 SQL'(L01)·'Advanced SQL'(L07 제목)·'Advanced ABAP SQL'(_chapter.md)로 번갈아 불러 서로 다른 과정명처럼 보일 수 있다. 공식 명칭을 하나로 정하고 필요할 때만 영문 병기하라는 지적.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "conflict": false,
+      "supporters": [
+        { "report": "AG04-gpt-5.6-sol", "seq": 8 }
+      ],
+      "quotes": [
+        "title: \"실습 — 콘서트 Advanced SQL\""
+      ]
+    }
+  ],
+  "grade_opinions": {
+    "AG01-opus": "경미 수정",
+    "AG01-sonnet": "경미 수정",
+    "AG01-gpt-5.6-sol": "보강 권장",
+    "AG01-gemini-3.6-flash-high": "경미 수정",
+    "AG02-opus": "보강 권장",
+    "AG02-sonnet": "보강 권장",
+    "AG02-gpt-5.6-sol": "보강 권장",
+    "AG02-gemini-3.6-flash-high": "보강 권장",
+    "AG03-opus": "경미 수정",
+    "AG03-sonnet": "경미 수정",
+    "AG03-gpt-5.6-sol": "보강 권장",
+    "AG03-gemini-3.6-flash-high": "경미 수정",
+    "AG04-opus": "경미 수정",
+    "AG04-sonnet": "경미 수정",
+    "AG04-gpt-5.6-sol": "보강 권장",
+    "AG04-gemini-3.6-flash-high": "유지",
+    "AG05-opus": "경미 수정",
+    "AG05-sonnet": "경미 수정",
+    "AG05-gpt-5.6-sol": "보강 권장",
+    "AG05-gemini-3.6-flash-high": "유지",
+    "AG06-opus": "보강 권장",
+    "AG06-sonnet": "경미 수정",
+    "AG06-gpt-5.6-sol": "경미 수정",
+    "AG06-gemini-3.6-flash-high": "보강 권장",
+    "AG09-opus": "경미 수정",
+    "AG09-sonnet": "경미 수정",
+    "AG09-gpt-5.6-sol": "경미 수정",
+    "AG09-gemini-3.6-flash-high": "유지"
+  },
+  "dropped": []
+}

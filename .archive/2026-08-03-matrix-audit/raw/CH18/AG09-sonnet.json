@@ -1,0 +1,61 @@
+{
+  "agent": "AG09",
+  "model": "sonnet",
+  "target": "CH18",
+  "persona_ack": "ABAP 정적 검사기 페르소나로 CH18 전 레슨(_chapter.md, L01~L11)의 ```abap 코드 블록만 줄 단위로 검토했다. 산문·직역 설명은 판단에서 제외했다.",
+  "method": "각 대상 파일을 직접 읽고 모든 ```abap 코드 펜스를 추출해 (1) 미선언/중복 선언·타입 불일치 등 활성화 차단급 오류, (2) gv_/gs_/gt_ vs lv_/ls_/lt_·it_·pa_/so_·ty_/ts_/tt_ 네이밍 규약, (3) CH17까지 New Syntax 금지·CH18까지 New Open SQL 금지 경계 규약(단 CH18은 New Syntax L3 도입 챕터라 인라인 DATA()/VALUE/CONV 등은 이 챕터부터 허용 범위), (4) 주석·출력 문자열과 코드의 불일치를 수동으로 대조했다. 실행 환경(SAP GUI/컴파일러)은 쓰지 않았다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L10.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L11.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH18/CH18-L01.md",
+      "quote": "READ TABLE lt_booking INTO DATA(ls_book) WITH KEY booking_id = '0001'.",
+      "category": "활성화차단-변수중복선언",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "같은 ```abap 블록 안에서 classic 예시가 `DATA ls_book TYPE zbooking.`로 이미 ls_book을 선언했는데, 바로 아래 modern 예시가 같은 이름을 `INTO DATA(ls_book)`로 다시 선언한다. 한 처리 블록으로 이어 붙여 활성화하면 \"이름이 이미 사용 중\" 구문 오류가 난다.",
+      "evidence": "블록 앞부분: 'DATA ls_book TYPE zbooking.\\nREAD TABLE lt_booking INTO ls_book WITH KEY booking_id = '0001'.' 뒤이어 같은 블록에 'READ TABLE lt_booking INTO DATA(ls_book) WITH KEY booking_id = '0001'.'가 나와 동일 스코프에서 ls_book이 두 번 선언된다.",
+      "suggestion": "classic과 modern 예시를 별도 코드블록으로 분리하거나, modern 쪽 변수명을 다르게 쓰거나(예: ls_book2), classic 쪽의 사전 DATA 선언을 지우고 처음부터 인라인 선언만 보여준다."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH18/CH18-L02.md",
+      "quote": "DATA(ls_book) = VALUE ts_book(",
+      "category": "활성화차단-변수중복선언",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'Structure 채우기' 블록에서 classic 예시가 `DATA ls_book TYPE ts_book.`로 ls_book을 선언한 뒤, 같은 블록의 modern 예시가 `DATA(ls_book) = VALUE ts_book(...)`로 같은 이름을 다시 선언한다. 이어 붙여 활성화하면 중복 선언 오류다.",
+      "evidence": "같은 펜스 안에 'DATA ls_book TYPE ts_book.\\nls_book-concert_id = ...' 다음 'DATA(ls_book) = VALUE ts_book(\\n  concert_id = ... ).'가 이어진다 — 동일 스코프 이름 재사용.",
+      "suggestion": "L01과 동일한 패턴. classic/modern을 별도 블록으로 나누거나 modern 변수명을 바꾼다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH18/CH18-L11.md",
+      "quote": "LOOP AT lt_book INTO DATA(ls_book).",
+      "category": "활성화차단-변수중복선언",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'① 좌석 합계' 블록에서 classic 예시가 `DATA: ls_book TYPE zbooking, lv_sum TYPE i.`로 ls_book을 선언한 뒤, 같은 블록의 modern 예시가 `LOOP AT lt_book INTO DATA(ls_book).`로 같은 이름을 다시 인라인 선언한다. 이어 붙여 활성화하면 중복 선언 오류다. (L01·L02와 동일한 패턴이 이 챕터에 3회 반복된다.)",
+      "evidence": "같은 펜스 안에 'DATA: ls_book TYPE zbooking, lv_sum TYPE i.\\nLOOP AT lt_book INTO ls_book.' 다음 'LOOP AT lt_book INTO DATA(ls_book).'가 나온다.",
+      "suggestion": "classic/modern을 별도 코드블록으로 분리한다. 이 챕터 전반(L01·L02·L11)에 같은 패턴이 반복되므로 한 번에 통일해 고치는 편이 효율적이다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "코드 정확성 자체는 전반적으로 견고하다 — VALUE/CORRESPONDING/Table Expression/String Template/CONV·EXACT/COND·SWITCH/REDUCE·FILTER/LET/+=의 문법과 예시가 실제 ABAP 규칙과 일치하고, CH18의 New Syntax 도입·CH19까지 New Open SQL 금지 경계도 잘 지켜졌다(SELECT 문 자체가 CH18에 등장하지 않음). GV_/LV_ 등 스코프 접두어도 CH10 이후 관례상 로컬 표기를 쓰는 이 저장소의 기존 패턴과 일관된다. 다만 classic/modern을 한 ```abap 블록에 나란히 보여주는 세 곳(L01·L02·L11)에서 같은 변수명(ls_book)을 블록 안에서 두 번 선언해, 그대로 이어 붙여 활성화하면 문법 오류가 난다는 점을 발견했다. 문서 맥락상 비교용 예시임은 명확하지만, '코드가 곧 체험'이라는 이 사이트의 목표(R2)를 감안하면 별도 블록 분리나 변수명 구분으로 고치는 것을 권장한다."
+  }
+}
