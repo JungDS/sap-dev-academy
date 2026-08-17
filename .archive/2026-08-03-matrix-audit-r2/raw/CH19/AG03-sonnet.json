@@ -1,0 +1,80 @@
+{
+  "agent": "AG03",
+  "model": "sonnet",
+  "target": "CH19",
+  "persona_ack": "경력 3～5년차 Java/C# 백엔드 개발자로서 CH19(_chapter.md·L01～L08) 전체를 통독했다. 변수·조건문·루프·SQL·OOP 기본기는 이미 안다는 전제로, 과잉 설명·오개념 유발·지름길 부재·용어 충돌 네 관점에서만 기록했다.",
+  "method": "대상 파일 9개(_chapter.md + CH19-L01～L08.md)를 순서대로 정독. 브라우저·서버 실행·외부 검색 없이 텍스트만으로 판단. 각 레슨의 코드 예제·콜아웃·'흔한 실수' 절을 표준 SQL/JDBC 지식과 대조해 경력자 관점의 과잉·오개념·지름길·용어충돌 여부를 확인.",
+  "errors": [],
+  "files_read": [
+    "CH19/_chapter.md",
+    "CH19/CH19-L01.md",
+    "CH19/CH19-L02.md",
+    "CH19/CH19-L03.md",
+    "CH19/CH19-L04.md",
+    "CH19/CH19-L05.md",
+    "CH19/CH19-L06.md",
+    "CH19/CH19-L07.md",
+    "CH19/CH19-L08.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH19-L01.md",
+      "quote": "**콤마와 공백을 섞음** → `SELECT carrid connid, seatsmax`처럼 섞으면 오류. 모던으로 갈 거면 **일관되게 콤마**.",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "'흔한 실수와 점검' 목록(콤마/공백 혼용·@ 누락·INTO 위치)은 상단 classic↔modern 비교 코드 한 번만 봐도 다른 언어에서 SQL을 다뤄본 경력 개발자가 스스로 유추 가능한 수준인데, 처음 배우는 사람과 같은 밀도로 5개 항목을 다 짚는다. '이미 SQL 다뤄봤다면 훑고 넘어가도 됨' 같은 지름길 안내가 없다.",
+      "evidence": "레슨 상단 비교 코드 블록이 콤마·@·INTO 순서를 이미 명시하고 있어, 그 아래 '흔한 실수' 절은 입문자에게는 필요하지만 경력자에게는 반복 확인에 가깝다.",
+      "suggestion": "'흔한 실수' 절 앞에 '다른 언어에서 파라미터 바인딩·SQL을 다뤄봤다면 이 목록은 빠르게 훑고 다음 절로'라는 한 줄만 추가."
+    },
+    {
+      "seq": 2,
+      "file": "CH19-L02.md",
+      "quote": "`@`는 그것을 SQL 안에서 host variable로 알아보게 하는 **escape 문자**(\"이 이름은 SQL 것이 아니라 ABAP 것\"이라고 알리는 구분 표시)다.",
+      "category": "용어 충돌",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "'escape'라는 단어는 일반 개발자에게 문자열 특수문자 처리·SQL 인젝션 방지용 이스케이핑을 먼저 연상시킨다. 여기서 말하는 escape는 그것과 무관한 '이 이름이 DB 것인지 ABAP 것인지 구분하는 문법 표시'인데, 그 차이가 명시적으로 짚어지지 않는다.",
+      "evidence": "바로 뒤 괄호 설명이 있어 큰 오해로 번지지는 않지만, 'escape'라는 단어 선택 자체가 SQL 인젝션 방지 이스케이핑과의 혼동 여지를 남긴다. 특히 raw SQL 조립을 해본 백엔드 경력자일수록 이 연상이 강하다.",
+      "suggestion": "'이 escape는 문자열 특수문자 처리(SQL 인젝션 방지용 이스케이핑)가 아니라, 이름이 DB 컬럼인지 ABAP 값인지 구분하는 문법 표시일 뿐'이라는 한 줄을 덧붙인다."
+    },
+    {
+      "seq": 3,
+      "file": "CH19-L02.md",
+      "quote": "ABAP 프로그램에서 선언한 데이터 객체(변수·상수·필드)를 SQL 문장의 자리(operand)에 넣은 것이 **host variable**이다.",
+      "category": "용어 충돌",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "host variable은 JDBC PreparedStatement의 `?` 바인드 변수, 다른 언어의 파라미터라이즈드 쿼리와 개념적으로 동일한데(값과 SQL 텍스트의 경계를 표시), 그 대응 관계를 짚어주지 않아 경력 개발자가 '이미 아는 개념'으로 빠르게 연결하지 못하고 새 용어로 처음부터 학습하게 된다.",
+      "evidence": "레슨 전체(도입부 '왜'·정의·예제)가 host variable을 ABAP 고유의 새 개념처럼 처음부터 설명한다. 이 챕터의 핵심 개념이라 지름길 하나로 이해 속도가 크게 달라질 지점이다.",
+      "suggestion": "정의 직후에 'JDBC의 `?` 파라미터, 다른 언어의 바인드 변수와 같은 문제(값과 SQL 텍스트 분리)를 ABAP은 `@`로 표시해서 푼다'는 한 줄 비유를 추가."
+    },
+    {
+      "seq": 4,
+      "file": "CH19-L04.md",
+      "quote": "**SQL expression**은 그 계산을 `SELECT` 안에서(즉 **DB에서**) 하게 한다. 결과 컬럼을 만들어 ABAP으로 넘겨 준다.",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "CASE/CAST/COALESCE는 표준 SQL을 다뤄본 개발자라면 문법이 거의 그대로인데, 세 절 모두 '왜 필요한가'부터 시작해 처음 등장하는 개념처럼 설명한다. 경력자에게 실제로 새로운 정보는 ABAP 고유 규칙(별칭 필수·CAST 길이 규칙·null≠initial)뿐인데 그 구분이 없다.",
+      "evidence": "CASE·CAST·COALESCE 세 절 모두 개념 설명 → 예제 순서로 동일하게 처음 배우는 사람 기준 밀도를 유지. ABAP 고유 규칙은 각 절 끝 한두 문장에 묻혀 있다.",
+      "suggestion": "각 절 도입부에 '표준 SQL의 CASE/CAST/COALESCE와 문법은 같다. ABAP에서 다른 점만 본다'고 명시하고, 별칭 필수·CAST 길이·null 처리 같은 ABAP 고유 규칙을 먼저 배치."
+    },
+    {
+      "seq": 5,
+      "file": "CH19-L05.md",
+      "quote": "`CONCAT`·`SUBSTRING` 외에 `UPPER`/`LOWER`(대/소문자)·`LENGTH`(길이) 등이 있다.",
+      "category": "과잉",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "CONCAT·UPPER·LOWER·LENGTH는 거의 모든 SQL 방언에서 동일한 표준 함수라 경력 개발자에겐 설명이 사실상 불필요하다. 이 레슨의 진짜 가치는 SUBSTRING의 1-기반 인덱스 차이(이미 잘 짚음)와 DATS_* 함수인데, 표준 함수 소개에 절 지면의 상당 부분을 쓴다.",
+      "evidence": "'문자열 함수' 절에서 SUBSTRING 1-기반 경고 콜아웃을 뺀 나머지(CONCAT·UPPER·LOWER·LENGTH 소개)는 일반 SQL 지식과 거의 100% 겹쳐, 경력자에겐 군더더기로 읽힌다.",
+      "suggestion": "표준 함수는 'CONCAT·UPPER·LOWER·LENGTH는 다른 DB와 동일'로 한 줄 압축하고, ABAP 고유 차이(SUBSTRING 1-기반, DATS_* 함수, 릴리스별 지원 여부)에 지면을 더 배분."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH19은 modern ABAP SQL 도입을 잘 설계한 챕터다. SUBSTRING 1-기반 인덱스 차이, host expression↔SQL expression 실행 위치 구분, COALESCE≠initial 등 경력 개발자가 실제로 헷갈릴 지점을 이미 정확히 짚어내고 있어 큰 오개념 소지는 발견되지 않았다. 남은 아쉬움은 경력자 대상 '지름길'과 '이미 아는 개념과의 연결고리' 부재다: host variable을 JDBC 바인드 변수 같은 익숙한 개념과 연결하지 않고 새 용어로만 도입하며(L02), CASE/CAST/COALESCE(L04)·표준 문자열 함수(L05)를 SQL 초학자 기준 밀도로 설명해 ABAP 고유 규칙이 묻힌다. 'escape 문자'라는 표현(L01·L02)도 SQL 인젝션 방지 이스케이핑과 혼동될 여지가 있다. 모두 낮음～중간 수준의 보강 제안이며 구조를 흔들 결함은 아니다."
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "agent": "AG09",
+  "model": "opus",
+  "target": "CH18",
+  "persona_ack": "나는 AG09 — ABAP 정적 검사기를 시늉하는 코드 전용 감사자다. 산문 설명은 판단 근거로만 쓰고, ```abap 코드 블록을 줄 단위로 읽어 (1) 활성화 차단급 결함(미선언·중복 선언·마침표·타입·존재하지 않는 구문), (2) 네이밍 규약(g/l 접두어·ty_/ts_/tt_·pa_/so_), (3) 경계 규약(CH01~17 modern 금지·CH01~18 New Open SQL 금지), (4) 주석·출력 문자열의 명백한 오류만 본다. 스타일 선호는 결함으로 세지 않았다.",
+  "method": "Read 도구로 대상 12개 파일(_chapter.md + L01~L11) 전문을 정독하고, 각 파일의 ```abap 펜스 블록을 줄 단위로 정적 판독했다(선언 유무·이름 중복·문장 마침표·타입 정합·구문 형태·주석과 코드의 값 일치). 실행 가능한 ABAP 시스템이 없어 실제 활성화(구문 검사) 확인은 불가하므로 컴파일 확신이 아닌 정적 판단이며, 불확실한 항목은 confidence=\"추정\"으로 표기했다. 웹 검색·외부 참조 없이 지식만으로 판정했다.",
+  "errors": [],
+  "files_read": [
+    "content/abap/CH18/_chapter.md",
+    "content/abap/CH18/CH18-L01.md",
+    "content/abap/CH18/CH18-L02.md",
+    "content/abap/CH18/CH18-L03.md",
+    "content/abap/CH18/CH18-L04.md",
+    "content/abap/CH18/CH18-L05.md",
+    "content/abap/CH18/CH18-L06.md",
+    "content/abap/CH18/CH18-L07.md",
+    "content/abap/CH18/CH18-L08.md",
+    "content/abap/CH18/CH18-L09.md",
+    "content/abap/CH18/CH18-L10.md",
+    "content/abap/CH18/CH18-L11.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH18/CH18-L04.md",
+      "quote": "\" classic\nREAD TABLE lt_booking INTO ls_book WITH KEY booking_id = '0001'.\n\n\" modern — 키로 콕 집기\nDATA(ls_book) = lt_booking[ booking_id = '0001' ].",
+      "category": "중복 선언 / 코드 블록 구성",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "classic 문장과 modern 인라인 선언이 **한 코드 블록 안**에 이어져 있어, 블록 전체를 그대로 옮겨 적으면 어느 쪽이든 활성화되지 않는다.",
+      "evidence": "앞 줄 `READ TABLE ... INTO ls_book`이 성립하려면 `ls_book`이 이미 선언돼 있어야 하는데, 그 상태에서 아래 `DATA(ls_book) = ...`는 같은 처리 블록의 **중복 선언**이 되어 문법 오류다. 반대로 `ls_book`이 선언돼 있지 않다면 `READ TABLE` 줄이 **미선언 변수 사용**이 된다. 즉 두 해석 모두 오류다. 같은 챕터의 CH18-L01(\"한 프로그램에 둘을 이어 붙이면 `ls_book`이 **중복 선언**되어 문법 오류가 난다\")·CH18-L02·CH18-L11은 동일 상황에서 블록을 나누고 '별개 프로그램'임을 명시하는데, 이 레슨만 같은 블록에 붙여 두고 안내도 없다.",
+      "suggestion": "L01·L02와 같은 방식으로 classic 블록과 modern 블록을 분리하고, 사이에 '위 classic과는 별개 프로그램 — 이어 붙이면 `ls_book` 중복 선언 오류' 안내를 넣는다. 또는 modern 쪽 변수명을 `ls_hit` 등으로 달리한다."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH18/CH18-L05.md",
+      "quote": "\" classic\nCONCATENATE lv_name '님 환영합니다' INTO lv_msg.\n\n\" modern — 최종 문장이 코드에 그대로 보인다\nDATA(lv_msg) = |{ lv_name }님 환영합니다|.",
+      "category": "중복 선언 / 코드 블록 구성",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "`lv_msg`가 한 블록 안에서 classic `CONCATENATE ... INTO lv_msg`(선언 전제)와 modern `DATA(lv_msg)`(인라인 선언)로 동시에 등장해, 블록 그대로는 활성화되지 않는다.",
+      "evidence": "seq 1과 동일 구조다. `CONCATENATE ... INTO lv_msg`는 `lv_msg`가 선언돼 있어야 하고, 그렇다면 뒤의 `DATA(lv_msg) = ...`는 같은 처리 블록의 중복 선언이 되어 문법 오류다. 선언이 없다면 `CONCATENATE` 줄이 미선언 변수 사용이다. 이 챕터가 다른 레슨에서 반복 경고한 함정을 코드 예제 자신이 밟고 있다.",
+      "suggestion": "classic/modern 블록을 분리하고 '별개 프로그램' 주석을 붙이거나, modern 쪽을 `DATA(lv_greeting) = |{ lv_name }님 환영합니다|.`처럼 다른 이름으로 바꾼다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH18/CH18-L08.md",
+      "quote": "DATA lv_total_seats TYPE i.\nLOOP AT lt_booking INTO DATA(ls_book).\n  lv_total_seats = lv_total_seats + ls_book-seats.\nENDLOOP.",
+      "category": "대비 예제 표기 불일치 / 중복 선언",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "\"classic loop\"라고 소개한 대비 코드가 modern 문법인 인라인 선언 `INTO DATA(ls_book)`을 쓰고 있고, 누적 변수 `lv_total_seats`도 바로 위 `REDUCE` 블록의 `DATA(lv_total_seats)`와 이름이 겹친다.",
+      "evidence": "본문은 이 블록을 \"아래 classic loop와 **같은 목적**\"이라고 소개하는데, 정작 코드는 CH18-L01에서 이번 챕터에 처음 도입한 인라인 `DATA()`를 쓴다. classic 대조군이면 `DATA ls_book TYPE ts_booking.` + `LOOP AT lt_booking INTO ls_book.`이어야 대비가 성립한다. 또 앞 블록의 `DATA(lv_total_seats) = REDUCE i( ... )`와 이 블록의 `DATA lv_total_seats TYPE i.`는 한 프로그램에 함께 두면 중복 선언인데, 다른 레슨과 달리 '별개 프로그램' 안내가 없다.",
+      "suggestion": "classic 블록에서 인라인 선언을 걷어내 `DATA ls_book TYPE ts_booking.`을 명시하고, 두 블록이 서로를 대체하는 별개 버전임을 한 줄로 밝힌다."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH18/CH18-L07.md",
+      "quote": "DATA(lv_status_text) = SWITCH string( lv_status\n  WHEN 'N' THEN '예약'",
+      "category": "중복 선언 / 코드 블록 구성",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "한 레슨 안에서 `lv_status_text`가 세 번 선언된다(classic `DATA lv_status_text TYPE string.` · `COND` 인라인 · `SWITCH` 인라인). 세 블록이 별개 프로그램이라는 안내가 없다.",
+      "evidence": "같은 파일의 `DATA lv_status_text TYPE string.`(classic IF 예제), `DATA(lv_status_text) = COND string( ... )`, `DATA(lv_status_text) = SWITCH string( ... )`가 모두 같은 이름을 인라인으로 다시 선언한다. 한 프로그램에 옮겨 적으면 중복 선언 오류다. 동일 패턴이 CH18-L06(`DATA lv_count TYPE i.` ↔ `DATA(lv_count) = CONV i( '12' ).`)에도 있다. CH18-L01·L02·L11이 같은 상황에서 붙여 둔 '별개 프로그램' 안내가 이 두 레슨에는 없다.",
+      "suggestion": "L01·L02와 같은 문구로 '각 블록은 별개 프로그램'임을 한 줄 안내하거나, `COND`/`SWITCH` 예제의 결과 변수명을 `lv_text_cond`/`lv_text_switch`처럼 구분한다."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH18/CH18-L03.md",
+      "quote": "**`EXCEPT`를 원본 기준으로 생각** → `EXCEPT` 목록은 **대상 필드** 기준이다.",
+      "category": "문법 의미 설명 오류(CORRESPONDING EXCEPT)",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "`CORRESPONDING`의 `EXCEPT` 뒤에 오는 이름은 ABAP 문법상 **원본(source) 컴포넌트** 기준인데, 본문은 정반대로 \"대상 필드 기준\"이라고 못 박는다.",
+      "evidence": "ABAP의 매핑 규칙 표기는 `MAPPING t1 = s1 ...`(t=대상, s=원본)에 이어 `EXCEPT s1 s2 ...`로, `EXCEPT` 목록은 원본 구조의 컴포넌트를 지정해 '이름이 같아 자동 대입될 원본 필드'를 대입 대상에서 제외한다. 예제의 `audit_user`는 원본·대상 이름이 같아 결과는 동일하므로 코드 자체는 동작하지만, 규칙 문장이 뒤집혀 있어 이름이 한쪽에만 있는 경우(대상에만 있는 필드를 `EXCEPT`에 적는 경우) 잘못된 기대를 하게 된다. 실행 환경으로 확인하지 못해 confidence=추정.",
+      "suggestion": "\"`EXCEPT` 목록은 **원본 필드** 기준 — 이름이 같아 자동 복사될 원본 컴포넌트를 제외한다\"로 고치고, 뒤 문장(\"원본에도 같은 이름이 있어 자동 복사될 필드를 막을 때 의미가 있다\")과 앞뒤를 맞춘다. 반영 전 SE38/ADT 문법 검사로 실확인 권장."
+    },
+    {
+      "seq": 6,
+      "file": "content/abap/CH18/CH18-L04.md",
+      "quote": "IF line_exists( lt_booking[ booking_id = lv_id ] ).",
+      "category": "미선언 변수(발췌 코드 일관성)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "예제에 쓰이는 보조 변수 `lt_booking`·`lv_id`가 레슨 어디에도 선언돼 있지 않아, 코드를 그대로 SE38에 옮기면 활성화되지 않는다.",
+      "evidence": "CH18-L08은 같은 상황에서 `TYPES ... DATA lt_booking TYPE tt_booking.  \" 예매 데이터가 담겨 있다 하자`로 데이터 선언을 먼저 두고, CH18-L02·L03도 `TYPES`/`DATA`를 명시한다. 반면 이 레슨(및 CH18-L05의 `lv_name`·`lv_text`·`lv_total`, CH18-L07·L09의 `lv_remaining`·`lv_capacity`·`lv_reserved`)은 선언 없이 바로 사용해 레슨 간 기준이 갈린다. 입문자가 코드=체험으로 따라 치는 커리큘럼이라 '왜 나만 오류?'가 나기 쉬운 지점이다.",
+      "suggestion": "L08처럼 레슨 첫 코드 블록에 `DATA lt_booking TYPE ...` / `DATA lv_id TYPE zbooking-booking_id.` 같은 전제 선언을 한 번 두거나, 블록 머리에 '앞서 선언된 변수를 이어 쓴다'는 주석을 붙인다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "코드 자체의 문법 품질은 전반적으로 양호하다. 마침표 누락·존재하지 않는 구문·시그니처 오류는 발견되지 않았고, `VALUE`/`FOR ... WHILE`/`CORRESPONDING ... MAPPING ... EXCEPT`/`REDUCE INIT-FOR-NEXT`/`COND`·`SWITCH`의 `LET ... IN` 위치 같은 modern 구문의 어순도 정확하다. 주석·표의 기대값(9행, `'001'`, C001 001회차 2석, 합계 7, `lt_all[ 3 ]-seats` = 3)도 코드와 일치한다. 경계 규약 위반도 없다 — CH18은 modern 도입 챕터라 인라인 `DATA()`·`VALUE`·`+=`·`|…|` 사용이 정당하고, New Open SQL(`@`·콤마)은 챕터 전체에 한 줄도 없으며 L10·L11이 `SELECT`는 CH19 범위임을 명시해 지킨다. TYPES 접두어(ts_/tt_)도 규약대로다. 남은 결함은 대부분 한 부류 — classic 예제와 modern 예제가 같은 이름을 재선언하는데 안내가 붙은 레슨(L01·L02·L11)과 안 붙은 레슨(L04·L05·L06·L07·L08)이 갈리고, 그중 L04·L05는 아예 **한 블록 안에** 이어 붙여 그대로는 활성화되지 않는다. 여기에 L08의 'classic loop' 예제가 modern 인라인 선언을 쓰는 표기 불일치, L03의 `EXCEPT` 기준 설명이 원본↔대상으로 뒤집힌 것으로 보이는 지점(추정)이 더해진다. 구조를 다시 짤 문제는 아니고 블록 분리·주석 한 줄·문장 하나 교정이면 해소된다."
+  }
+}

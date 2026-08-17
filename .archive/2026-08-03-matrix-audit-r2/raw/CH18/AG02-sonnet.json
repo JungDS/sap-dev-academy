@@ -1,0 +1,93 @@
+{
+  "agent": "AG02",
+  "model": "sonnet",
+  "target": "CH18",
+  "persona_ack": "나는 준호다. 배운 건 그 자리에서 직접 눌러 봐야 직성이 풀린다. CH18 11개 레슨의 본문 코드와 첨부된 체험 위젯(구성 HTML + 엔진 JS)을 하나씩 대조하고, 실제로 버튼을 눌러 DOM 결과를 확인했다.",
+  "method": "① content/abap/CH18의 레슨 11개(.md)·_chapter.md 정독 → 본문 코드·설명 목록화. ② embeds/abap/CH18-L0*-S01.html 11개 전수 정독(설정 JSON·마크업). ③ 각 위젯이 참조하는 embeds/_engine/*.js(inline-decl-judge, value-builder, field-mapping-board, read-vs-tabexpr, string-template-composer, type-conversion-lab, cond-switch-selector, reduce-filter-lab, let-reader, diff-mapper) 정독해 계산/판정 로직을 본문 서술과 대조. ④ Claude_Browser로 {{SERVE_URL}}(http://localhost:8144)에 4개 위젯(CH18-L01/-L02/-L06/-L09-S01)을 열고 javascript_tool로 실제 버튼 click·input 이벤트를 dispatch해 DOM 결과 텍스트를 직접 읽어 코드 정독으로 세운 가설을 검증(스크린샷은 사용하지 않고 DOM 텍스트 실측으로 대체).",
+  "errors": [],
+  "files_read": [
+    "content/abap/CH18/_chapter.md",
+    "content/abap/CH18/CH18-L01.md",
+    "content/abap/CH18/CH18-L02.md",
+    "content/abap/CH18/CH18-L03.md",
+    "content/abap/CH18/CH18-L04.md",
+    "content/abap/CH18/CH18-L05.md",
+    "content/abap/CH18/CH18-L06.md",
+    "content/abap/CH18/CH18-L07.md",
+    "content/abap/CH18/CH18-L08.md",
+    "content/abap/CH18/CH18-L09.md",
+    "content/abap/CH18/CH18-L10.md",
+    "content/abap/CH18/CH18-L11.md",
+    "embeds/abap/CH18-L01-S01.html",
+    "embeds/abap/CH18-L02-S01.html",
+    "embeds/abap/CH18-L03-S01.html",
+    "embeds/abap/CH18-L04-S01.html",
+    "embeds/abap/CH18-L05-S01.html",
+    "embeds/abap/CH18-L06-S01.html",
+    "embeds/abap/CH18-L07-S01.html",
+    "embeds/abap/CH18-L08-S01.html",
+    "embeds/abap/CH18-L09-S01.html",
+    "embeds/abap/CH18-L10-S01.html",
+    "embeds/abap/CH18-L11-S01.html",
+    "embeds/_engine/inline-decl-judge.js",
+    "embeds/_engine/value-builder.js",
+    "embeds/_engine/field-mapping-board.js",
+    "embeds/_engine/read-vs-tabexpr.js",
+    "embeds/_engine/string-template-composer.js",
+    "embeds/_engine/type-conversion-lab.js",
+    "embeds/_engine/cond-switch-selector.js",
+    "embeds/_engine/reduce-filter-lab.js",
+    "embeds/_engine/let-reader.js",
+    "embeds/_engine/diff-mapper.js"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "embeds/_engine/type-conversion-lab.js",
+      "quote": "cls = r.exc?'exc':'bad'; body = '<b>'+(r.exc?'예외':'변환 불가')+':</b> '+esc(r.msg)+(r.after?' '+r.after:'');",
+      "category": "위젯 결함",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "CH18-L06 '타입 변환 실험실'에서 같은 비숫자 입력('12A')을 CONV i( )와 EXACT i( )에 각각 넣으면, 두 경우 모두 내부적으로 변환 불가(exc:true 동일 사유)인데도 CONV는 '변환 불가'로, EXACT는 '예외'로 다르게 라벨링된다. 이는 레슨이 '흔한 실수와 점검'에서 정면으로 바로잡는 오해(\"CONV는 관대, EXACT만 엄격\")를 위젯이 그대로 재현하는 것이다.",
+      "evidence": "실제 클릭으로 확인: CONV i('12A') 결과 DOM = \"CONV i( '12A' )\\n변환 불가: 숫자가 아니라 정수로 변환할 수 없습니다.\" / EXACT i('12A') 결과 DOM = \"EXACT i( '12A' )\\n예외: 숫자가 아니라 변환할 수 없습니다.\" 코드상 convI()가 반환하는 { ok:false, msg:... } 객체에는 exc 플래그가 없어 run()의 cls = r.exc?'exc':'bad' 분기가 항상 CONV 쪽을 'bad'(변환 불가)로 표시하기 때문이다. 반면 레슨 CH18-L06.md '흔한 실수와 점검'은 \"`CONV`도 아예 **불가능한 변환**에는 예외를 낸다. `'12A'`를 정수로 바꾸려 하면 `CX_SY_CONVERSION_NO_NUMBER` 예외가 나고...\"라고 명시적으로 CONV도 예외를 낸다고 정정한다 — 위젯의 두 라벨('변환 불가' vs '예외')이 이 정정을 반대로 뒤집는다.",
+      "suggestion": "type-conversion-lab.js의 convI()에서 숫자 형식이 아닌 입력은 exactI()와 동일하게 exc:true를 반환하도록 통일한다(예: CX_SY_CONVERSION_NO_NUMBER 안내 문구 포함, label='예외'). CONV·EXACT의 실제 차이(손실 있는 변환 허용 여부)만 남기고, '변환 자체가 불가능한 경우'는 둘 다 예외로 동일하게 보여준다."
+    },
+    {
+      "seq": 2,
+      "file": "embeds/_engine/let-reader.js",
+      "quote": "if (remaining <= 0){ branch='WHEN lv_remaining = 0'; result='매진'; }",
+      "category": "위젯 결함",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "CH18-L09 'LET 표현식 독해기'의 COND 탭에서 예약(reserved) 값이 정원(capacity)보다 크면(잔여석이 음수), 위젯이 화면에 표시하는 '선택된 가지'가 실제 COND 평가 순서와 어긋난다. 위젯은 remaining이 0 이하이면 무조건 'WHEN lv_remaining = 0'이 선택됐다고 표시하지만, 실제로는 그 WHEN이 거짓(음수≠0)이라 다음 조건 'WHEN lv_remaining < 10'이 먼저 참이 되어 선택된다 — 정확히 이 레슨이 가르치려는 '조건은 순서대로 검사되고 처음 참인 WHEN이 선택된다'는 핵심을 위젯이 반대로 보여준다.",
+      "evidence": "정원=10, 예약=30으로 입력해 input 이벤트를 발생시키면 lv_remaining = 10 − 30 = −20으로 계산되고, 위젯은 '② IN 이후 선택된 가지 WHEN lv_remaining = 0 → 결과 매진'을 표시한다. 그러나 같은 화면에 그려진 실제 COND 코드는 `WHEN lv_remaining = 0 THEN '매진' WHEN lv_remaining < 10 THEN ...`이며, −20은 0이 아니므로 첫 WHEN은 거짓이고 −20 < 10은 참이므로 실제로는 두 번째 WHEN('마감 임박: -20석')이 선택되어야 한다. 참고로 같은 챕터 CH18-L07의 cond-switch-selector.js는 `if (r === 0){...} else if (r < 10){...}`로 올바르게 순서를 지켜 판정하고 있어, let-reader.js만의 국소적 로직 결함임을 확인했다.",
+      "suggestion": "let-reader.js의 COND 분기 판정을 `if (remaining === 0)` (또는 원본 레슨처럼 실무상 0 이하를 매진으로 다룰 의도라면 그 의도를 반영해 CH18-L07과 동일한 `remaining <= 0`/`remaining < 10` 순서·경계를 두 위젯이 일관되게 쓰도록) 코드 그대로 재현하고, 화면에 표시하는 branch 문자열이 실제 첫 번째 참 조건과 항상 일치하도록 수정한다."
+    },
+    {
+      "seq": 3,
+      "file": "embeds/_engine/value-builder.js",
+      "quote": "if (keyMode === 'unique' && isDup('C001', '001')) { setMsg('bad', '🚫 중복 key (C001, 001) — unique key 테이블에 같은 key 행은 런타임 오류. <b>key 규칙은 VALUE에서도 그대로</b> 적용됩니다.'); return; }",
+      "category": "위젯 결함",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "CH18-L02 'VALUE Builder'의 '중복 key 시도' 버튼은 미리 '테이블 만들기'로 행을 채워 두지 않은 상태(빈 테이블)에서 클릭하면, unique key 모드를 선택했음에도 중복이 감지되지 않고 그냥 성공 메시지가 뜬다. 게다가 그 메시지 문구가 실제 선택된 key 모드(unique)와 반대로 'EMPTY KEY라 중복 행도 허용됩니다'라고 하드코딩되어, 사용자가 unique key 모드를 골랐다는 사실 자체를 부정하는 잘못된 설명을 보여준다. 레슨이 이 위젯에 요구한 목표(\"unique key 모드에서 중복 행을 넣으면 어떤 오류가 나는지도 본다\")가 클릭 순서에 따라 아예 시연되지 않을 수 있다.",
+      "evidence": "실제 조작: reset → 'UNIQUE KEY concert_id perf_no' 클릭(keyMode='unique') → 테이블 만들기 없이 바로 '중복 key 시도' 클릭. 결과 DOM: 테이블에 C001/001 1행만 새로 추가되고 메시지 = \"EMPTY KEY라 중복 행도 허용됩니다(현재 1행). unique key였다면 오류였습니다.\" — keyMode는 분명히 'unique'인데 메시지는 정반대 사실(EMPTY KEY)을 단언한다. 원인은 dup()이 `isDup('C001','001')`로 '이미 존재하는 행'만 검사하는데, 빈 테이블에서는 애초에 중복 대상이 없어 매번 unique 분기를 건너뛰고 warn 분기(하드코딩된 EMPTY KEY 문구)로 빠지기 때문이다. 반대로 '테이블 만들기'를 먼저 눌러 C001/001이 이미 존재하는 상태에서 같은 순서를 밟으면 의도대로 '🚫 중복 key … 런타임 오류' 메시지가 정상적으로 뜬다(실측 확인).",
+      "suggestion": "dup() 핸들러 시작부에서 rows가 비어 있으면(아직 '테이블 만들기'를 안 눌렀으면) 먼저 기본 3행을 만들거나, 혹은 '테이블을 먼저 만들어 주세요' 같은 안내로 유도한다. 또한 warn 분기의 메시지 문구를 keyMode 값을 실제로 참조하도록 고쳐, unique 모드에서는 절대로 'EMPTY KEY라…' 문구가 나오지 않게 한다."
+    },
+    {
+      "seq": 4,
+      "file": "embeds/_engine/inline-decl-judge.js",
+      "quote": "var modern = (c.final && finalMode) ? 'FINAL(lv_max) = 100.' : c.modern;",
+      "category": "불일치",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "CH18-L01 'Inline 선언 위치 판정기'의 '계산 결과 대입' 카드는 classic으로 `DATA lv_total TYPE i. lv_total = ls_book-seats * 10000.`을 보여주고, DATA() 모드에서는 이에 대응하는 `DATA(lv_total) = ls_book-seats * 10000.`을 정확히 보여준다. 그런데 FINAL() 모드로 전환하면 modern 코드가 이 카드와 무관한, 레슨의 다른 절(FINAL 소개부)에서 가져온 하드코딩 문구 `FINAL(lv_max) = 100.`로 통째로 바뀌어 표시된다 — classic 줄의 lv_total·seats*10000과 아무 연결이 없는 lv_max=100이 갑자기 튀어나와, '같은 계산을 DATA()에서 FINAL()로 바꾸면 무엇이 달라지는가'를 보여줘야 할 카드의 목적과 어긋난다.",
+      "evidence": "실제 조작: '계산 결과 대입' 카드 선택 → FINAL() 토글 클릭 → 화면 = \"CLASSIC\\nDATA lv_total TYPE i.\\nlv_total = ls_book-seats * 10000.\\nMODERN (INLINE)\\nFINAL(lv_max) = 100.\". DATA() 토글로 되돌리면 \"MODERN (INLINE)\\nDATA(lv_total) = ls_book-seats * 10000.\"으로 classic과 변수·계산식이 일치한다. 즉 FINAL 모드에서만 modern 코드가 카드 고유 데이터(lv_total, ls_book-seats*10000)를 버리고 CH18-L01.md 본문의 별개 예시 `FINAL(lv_max) = 100.`을 그대로 재사용하도록 하드코딩되어 있다(inline-decl-judge.js: `(c.final && finalMode) ? 'FINAL(lv_max) = 100.' : c.modern`).",
+      "suggestion": "FINAL 모드의 modern 코드를 하드코딩된 별도 문구 대신, 카드 자체의 classic/modern 변수를 재사용해 `FINAL(lv_total) = ls_book-seats * 10000.`처럼 같은 변수·계산식으로 생성한다. lv_max 예시가 꼭 필요하면 별도 카드로 분리한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH18 11개 레슨은 본문 코드가 나오는 모든 자리에 체험 위젯이 1:1로 붙어 있고(체험 공백 없음), 위젯 설정(JSON cfg)의 변수명·데이터도 대부분 본문 예제(정훈영·C001·zbooking 등)와 정확히 맞아떨어진다. 다만 4개 위젯의 계산/판정 로직에서 실제 클릭·입력으로 재현 가능한 결함을 확인했다: (1) CH18-L06 CONV/EXACT 실험실이 동일한 비숫자 입력을 서로 다르게(변환불가 vs 예외) 라벨링해 레슨이 명시적으로 바로잡는 오해를 오히려 재현, (2) CH18-L09 LET 독해기가 잔여석이 음수일 때 실제 COND 평가 순서와 반대되는 분기를 '선택됨'으로 표시(같은 챕터 CH18-L07 위젯은 정상 구현), (3) CH18-L02 VALUE Builder의 '중복 key 시도'가 클릭 순서에 따라 unique key 오류를 시연하지 못하고 오히려 실제 모드와 반대되는 문구를 보여줌, (4) CH18-L01 판정기의 FINAL() 토글이 현재 카드와 무관한 하드코딩 코드로 바뀜. 넷 다 코드 몇 줄 수정으로 고칠 수 있는 국소적 위젯 로직 결함이며 레슨 본문 자체의 재작성은 필요 없어 '경미 수정'으로 평가한다."
+  }
+}

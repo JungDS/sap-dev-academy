@@ -1,0 +1,60 @@
+{
+  "agent": "AG02",
+  "model": "sonnet",
+  "target": "CH17",
+  "persona_ack": "나는 준호다. 배운 건 그 자리에서 직접 해봐야 직성이 풀린다. CH17의 레슨 10개를 본문 코드와 나란히 놓고, 각 위젯을 Playwright로 실제 클릭해 가며 값이 본문과 맞는지, 체험이 빠진 곳은 없는지, 클릭이 헛손질은 아닌지 하나씩 확인했다.",
+  "method": "로컬 서버({{SERVE_URL}} 실제값 http://localhost:8144)를 대상으로 전역 Playwright(Chromium, C:\\Users\\gosts\\AppData\\Roaming\\npm\\node_modules\\playwright)를 절대경로 require한 Node 스크립트를 작성해 CH17-L01~L10 위젯 10개를 각각 새 브라우저 컨텍스트에서 열고 실제 클릭 이벤트를 순서대로 디스패치했다(다음 단계/리셋/시나리오 선택/입력값 변경/토글 등). 각 상호작용 후 DOM 텍스트(#cbsStatus, #arpCheck, #adqResult, #fcePreview, #altPreview, #avsPreview, #alvgSteps/[data-grid], #arsChecks, #arcChecks)를 읽어 본문 .md의 서술·예시값과 대조했다. console error/pageerror 리스너로 런타임 오류 유무도 확인(오류 없음). 보조로 embeds/_engine/*.js 9개 엔진 소스를 정독해 config→렌더링 로직의 논리적 일치를 검증했다. Claude_Browser MCP 패널은 http://localhost:8144가 정책상 차단되어 사용 불가했고, file:// 직접 열람은 외부 스크립트(defer src)가 로드되지 않는 정적 스냅샷이라 상호작용 검증에 쓸 수 없어 errors에 기록하고 Playwright 경로로 전환했다.",
+  "errors": [
+    "Claude_Browser MCP의 navigate가 http://localhost:8144를 정책으로 차단해 그 패널로는 SERVE_URL 상호작용 검증을 하지 못함 — Playwright 스크립트로 대체 수행.",
+    "Claude_Browser MCP로 file:// 경로를 직접 열면 '정적 스냅샷'으로 렌더되어 외부 <script src> 엔진 파일이 로드되지 않아(네트워크 요청 0건 확인) 버튼 클릭이 아무 반응도 못 일으킴 — 이 경로의 검증은 폐기하고 Playwright(HTTP) 경로 결과만 채택."
+  ],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L10.md",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH17-L01-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH17-L02-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH17-L03-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH17-L04-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH17-L05-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH17-L06-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH17-L07-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH17-L08-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH17-L09-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH17-L10-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\container-bind-stepper.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\alv-readiness-panel.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\alv-data-query.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\fieldcat-editor.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\alv-layout-toggles.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\alv-variant-store.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\gui-alv-grid-simulator.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\alv-refresh-sync.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\alv-row-color-lab.js"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\alv-layout-toggles.js",
+      "quote": "selEl.innerHTML = [{ v: 0, l: 'single' }, { v: 1, l: 'multi (A)' }].map(function (o) {",
+      "category": "위젯 결함",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "CH17-L05 'Layout 토글 패널'의 sel_mode 토글이 빈 값(' ')을 'single'(단일 선택)로 표시하는데, 실제 CL_GUI_ALV_GRID의 LVC_S_LAYO-SEL_MODE에서 빈 값은 보통 '선택 불가(표시 전용)'를 뜻하고 단일 행 선택은 별도 값('B')이다. Playwright로 'single'을 클릭하면 하단 안내문이 \"sel_mode=' '\"라고 그대로 노출해, 준호 입장에서 '빈 값 = 단일 선택'이라고 잘못 외울 수 있다.",
+      "evidence": "embeds/_engine/alv-layout-toggles.js의 .alt-sel 토글은 { v:0, l:'single' } / { v:1, l:'multi (A)' } 두 값만 두고, renderMsg()가 선택된 값을 \"sel_mode='\" + (st.selMulti?'A':' ') + \"'\"로 그대로 출력한다(실측: Playwright로 두 옵션을 각각 클릭 후 #altMsg 텍스트에 sel_mode=' ' 노출 확인). 본문 CH17-L05.md는 sel_mode='A'만 설명하고 빈 값의 의미는 다루지 않아, 이 '단일=빈값' 매핑은 위젯이 임의로 추가한 것이다.",
+      "suggestion": "토글 라벨을 'single'에서 '선택 안 함(표시 전용)'으로 정정하거나, 정말 단일 선택을 보여주려면 값을 'B'로 바꾸고 라벨도 그에 맞춘다. 부담되면 sel_mode 토글 자체를 A/미지정 두 값 대신 zebra·cwidth_opt·grid_title 위주로 단순화해도 된다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH17 10개 레슨을 전부 Playwright로 클릭해 가며 검증한 결과, 체험 공백은 없었다(코드가 나오는 레슨마다 예외 없이 embed가 붙어 있음). 위젯 10개(컨테이너 바인딩·그리드 준비상태·데이터 조회·Field Catalog 편집·Layout 토글·Variant 저장·display 4단계·refresh/stable·행 색상·종합 실습)는 config의 변수명·필드명·색코드('C610')·이름 불일치 시나리오('CONT001','ROW_COLOR', 소문자 'seats')가 모두 본문 코드·설명과 정확히 일치했고, 클릭할 때마다 상태(✓/✗/pending)가 논리적으로 맞게 바뀌어 '헛체험'도 발견하지 못했다. 유일한 발견은 CH17-L05 Layout 토글의 sel_mode 'single' 라벨이 실제 ABAP 빈 값(선택 불가)과 다르게 표시된다는 점으로, 본문이 직접 다루지 않는 위젯 자체 부연이라 영향은 작다. 전반적으로 본문-위젯 정합성이 높아 큰 폭 수정은 필요 없고, 이 라벨 하나만 다듬으면 된다."
+  }
+}

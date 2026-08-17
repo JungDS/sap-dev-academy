@@ -1,0 +1,71 @@
+{
+  "agent": "AG03",
+  "model": "sonnet",
+  "target": "CH17",
+  "persona_ack": "Java/C# 백엔드 3~5년차 개발자 페르소나로 CH17 전체(_chapter.md, L01~L10)를 통독함. 프로그래밍 기본기(변수·조건문·루프·SQL·OOP)는 이미 안다는 전제로, 과잉 설명·오개념 유발·지름길 부재·용어 충돌 네 축을 점검했다.",
+  "method": "브라우저·빌드 미사용. Read 도구로 content/abap/CH17/_chapter.md 및 CH17-L01~L10.md 원문을 전량 읽고 대조했다. 다른 감사자 산출물·과거 아카이브는 열람하지 않았다.",
+  "errors": [],
+  "files_read": [
+    "content/abap/CH17/_chapter.md",
+    "content/abap/CH17/CH17-L01.md",
+    "content/abap/CH17/CH17-L02.md",
+    "content/abap/CH17/CH17-L03.md",
+    "content/abap/CH17/CH17-L04.md",
+    "content/abap/CH17/CH17-L05.md",
+    "content/abap/CH17/CH17-L06.md",
+    "content/abap/CH17/CH17-L07.md",
+    "content/abap/CH17/CH17-L08.md",
+    "content/abap/CH17/CH17-L09.md",
+    "content/abap/CH17/CH17-L10.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH17/CH17-L01.md",
+      "quote": "🔎 **[선행 사용]** 이 챕터는 객체(클래스라는 설계도로 찍어낸 **실체 하나** — `TYPE REF TO`·`CREATE OBJECT`)와 메서드 호출을 많이 쓴다.",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "TYPE REF TO·CREATE OBJECT를 참조변수·리모컨 비유로 처음부터 풀어 설명하는 이 콜아웃 박스는 OOP를 이미 아는 경력자에게는 완전히 익숙한 내용(Java/C#의 참조 변수 + new)이라 통째로 건너뛰어도 된다. 그런데 그런 안내가 없어 경력자도 끝까지 읽게 된다.",
+      "evidence": "박스 전체가 '객체가 뭔지 처음 만나는 사람'을 위한 설명(참조 변수=리모컨, CREATE OBJECT=찍어내기)이다. 입문자에게는 필요하지만(R15 선행 사용 규칙상 정당), 이미 OOP를 아는 독자에게는 부가가치가 0이고 이 챕터 전체에서 유일하게 '건너뛰어도 되는' 구간이라는 표시가 없다.",
+      "suggestion": "박스 끝에 한 줄로 'Java/C# 등에서 참조 변수·객체 생성에 익숙하다면 이 박스는 건너뛰어도 된다' 같은 지름길 안내를 추가."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH17/CH17-L07.md",
+      "quote": "EXCEPTIONS invalid_parameter_combination = 1",
+      "category": "용어 충돌",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "go_grid->set_table_for_first_display( ... )처럼 객체 메서드를 호출하면서도 TRY/CATCH·클래스 기반 예외(CX_ROOT 계열)가 아니라 옛 방식의 번호 매핑 EXCEPTIONS 구문을 쓴다. 이 챕터의 모든 메서드/함수 호출이 이 방식이지만, '왜 OOP 메서드인데 예외를 던지지 않고 옛날 방식(sy-subrc 확인)을 쓰는지' 는 어디서도 짚지 않는다.",
+      "evidence": "Java/C#은 객체 메서드가 실패하면 보통 예외를 throw하고 caller가 catch한다는 것이 상식이다. 반면 CL_GUI_ALV_GRID·CL_GUI_CUSTOM_CONTAINER 같은 Control Framework 클래스는 (역사적 이유로) 메서드 인터페이스에 classic EXCEPTIONS + sy-subrc 확인 패턴을 그대로 쓴다. 이 챕터(L01~L10) 어디에도 '이 클래스들은 메서드인데도 예외를 던지지 않고 옛 방식 sy-subrc로 확인해야 한다'는 설명이 없어서, 경력자가 실수로 TRY/CATCH를 기대하거나 sy-subrc 확인을 생략할 위험이 있다.",
+      "suggestion": "L07(또는 L01)에 짧은 콜아웃으로 'ABAP OOP 메서드라고 다 예외를 던지는 건 아니다 — 이 챕터의 GUI Control Framework 클래스들은 EXCEPTIONS 번호 + sy-subrc로 성공을 확인하는 옛 방식을 쓴다'는 한 줄을 추가."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH17/CH17-L05.md",
+      "quote": "gs_layout-zebra      = abap_true.",
+      "category": "과잉",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "zebra·sel_mode·grid_title·cwidth_opt 네 속성의 의미가 (1)도입부 프로즈, (2)코드 인라인 주석, (3)속성 표의 '의미'+'초보자 설명' 두 칸, 이렇게 사실상 세 번 반복 설명된다. 단순한 불리언/문자 플래그 4개치고는 같은 정보를 세 형식으로 되풀이하는 셈이라 경력자뿐 아니라 입문자에게도 읽는 시간만 늘릴 뿐 추가 정보가 거의 없다.",
+      "evidence": "도입 문단에서 '줄무늬가 있으면 읽기 쉽고... 컬럼 너비가 자동으로 맞으면... 제목이 있으면...'으로 이미 4개 속성을 다 설명한 뒤, 코드에 동일한 뜻의 주석(\" 줄무늬\" 등)을 달고, 바로 아래 표에서 다시 '뜻'과 '초보자 설명' 두 칸으로 같은 내용을 반복한다.",
+      "suggestion": "프로즈 도입은 '왜 Layout이 필요한가'로 짧게 유지하고, 속성별 상세 설명은 표 하나로 통일(코드 인라인 주석 또는 표 중 하나만 남기기)."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH17/CH17-L05.md",
+      "quote": "Field Catalog가 **컬럼별** 설명서라면, [[Layout]](타입 `LVC_S_LAYO`)은 **표 전체**의",
+      "category": "용어 충돌",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "일반 개발에서 'Layout'은 보통 요소의 배치·정렬(CSS layout, Android Layout, WinForms Layout 등 위치/구조)을 뜻하지만, 여기 LVC_S_LAYO의 'Layout'은 배치가 아니라 zebra·선택모드·제목 같은 표시 옵션(옵션 묶음)에 더 가깝다. 이 용법 차이가 짚어지지 않아 경력자가 처음엔 '컬럼 위치 지정'을 기대할 수 있다.",
+      "evidence": "LVC_S_LAYO에 담기는 필드(zebra, sel_mode, grid_title, cwidth_opt, info_fname)는 요소의 위치·정렬이 아니라 표시 동작/스타일 설정이다. 반면 일반적으로 'Layout'이라는 이름은 배치·정렬을 연상시킨다.",
+      "suggestion": "L05 도입부에 '여기서 Layout은 컬럼 배치가 아니라 표의 표시 동작(zebra·선택모드 등) 설정을 뜻한다'는 한 줄 구분을 추가."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH17은 SAP GUI Control Framework(Custom Container→Grid→Field Catalog→Layout→Variant→display→refresh→행 색상)라는, 어떤 언어 경력으로도 대체 학습이 불가능한 SAP 고유 API를 다루기 때문에 경력자에게도 대부분의 설명이 그대로 필요하다 — 그래서 findings=[] 후보였을 만큼 '과잉'은 적었다. 다만 (1) L01의 OOP 참조변수 선행사용 박스는 유일하게 경력자가 전부 건너뛸 수 있는 구간인데 그 안내가 없고, (2) 메서드 호출인데도 옛 방식 EXCEPTIONS+sy-subrc 패턴을 쓰는 이유가 어디서도 설명되지 않아(용어 충돌) OOP 예외 처리에 익숙한 경력자가 오작동을 놓칠 수 있으며, (3) L05는 같은 4개 Layout 속성을 프로즈·주석·표로 세 번 반복해 다소 장황하고, (4) 'Layout'이라는 이름이 일반 개발 용례(배치)와 실제 뜻(표시 옵션)이 달라 짚어주면 좋다. 나머지 레슨(L02·L03·L06·L08~L10)은 경력자 관점에서도 오개념·용어 충돌 없이 정확했다."
+  }
+}

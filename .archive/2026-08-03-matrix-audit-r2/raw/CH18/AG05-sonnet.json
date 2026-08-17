@@ -1,0 +1,61 @@
+{
+  "agent": "AG05",
+  "model": "sonnet",
+  "target": "CH18",
+  "persona_ack": "20년차 학습 교재·코스 설계 전문가로서 CH18(Modern ABAP Syntax) 11개 레슨과 _chapter.md를 챕터 구성·섹션 흐름·복습/예습 장치·불편-해결 서사·인지 부하 다섯 축으로 감사함.",
+  "method": "대상 12개 파일(_chapter.md + CH18-L01~L11.md) 전체 통독 후, 레슨별 왜→무엇→어떻게→실수→정리 흐름을 개별 대조하고, 챕터 전체에서 각 구성요소(DATA()·VALUE·CORRESPONDING·Table Expression·String Template·CONV/EXACT·COND/SWITCH·REDUCE/FILTER·LET)가 도입 이후 다른 레슨(특히 L10·L11 종합 실습)에서 실제로 재사용되는지 수동 교차 검증. 자동화 도구 없음.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L10.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L11.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH18-L10.md",
+      "quote": "`CONV`/`EXACT`·`COND`/`SWITCH`·`REDUCE`/`FILTER`·`LET`을 하나씩 배웠다. 이제 이 조각들을",
+      "category": "복습장치/서술-예제 불일치",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L10 도입부는 이 챕터에서 배운 9개 구성요소(DATA()·VALUE·CORRESPONDING·Table Expression·String Template·CONV/EXACT·COND/SWITCH·REDUCE/FILTER·LET)를 '모아' 실제 코드에 적용한다고 예고하지만, 뒤이은 리팩터링 예제와 L11 콘서트앱 실습 모두 CORRESPONDING·CONV·EXACT·COND·LET은 한 번도 다시 쓰지 않는다(실제로 재사용되는 것은 인라인 선언·VALUE·Table Expression·String Template·REDUCE·SWITCH·신규 `+=`뿐).",
+      "evidence": "CH18-L10.md의 'modern (권장)' 예제(약 46~51행)는 VALUE·Table Expression·`+=`만 쓰고, '흔한 실수' 절도 VALUE·`+=`만 다룬다. CH18-L11.md ①~④ 전 구간(약 28~106행)에도 CORRESPONDING·CONV·EXACT·COND·LET 키워드가 전혀 등장하지 않는다(등장하는 표현식은 REDUCE·SWITCH뿐). 두 레슨이 이 챕터의 '복습·종합 적용' 지점인데 절반 가까운 구성요소가 한 번도 재사용되지 않아, 배운 뒤 다시 안 만지고 끝나는 개념이 생긴다.",
+      "suggestion": "L10 도입 문장의 '이 조각들을 모아'를 '이 중 일부를'로 낮추거나, L11의 리팩터 대상 코드 한두 곳에 CORRESPONDING(예: DB행→화면행 매핑)이나 COND(상태 문구 산출)를 추가해 미사용 구성요소를 최소 한 번씩 실사용 맥락에서 복습시킨다."
+    },
+    {
+      "seq": 2,
+      "file": "CH18-L03.md",
+      "quote": "원본(저장용 구조)에는 마지막 처리자 ID(`audit_user`)까지 들어 있고, 표시용 구조에는",
+      "category": "인지부하/예제 설계",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "CORRESPONDING을 처음 소개하는 첫 코드 예제가 같은 이름 자동복사·MAPPING·EXCEPT 세 동작을 동시에, 필드 4~5개짜리 구조체 두 개와 '감사용 내부정보 은닉'이라는 업무 서사까지 얹어 한 번에 제시한다. 이름만 같은 CORRESPONDING #( ) 단독 사용 최소 예시가 먼저 없어, 입문자가 '키워드 자체가 하는 일'과 'MAPPING/EXCEPT가 얹는 일'을 분리해 받아들이기 전에 세 가지를 동시에 소화해야 한다.",
+      "evidence": "CH18-L03.md 약 31~55행: TYPES 선언 두 블록(각 4~5필드)과 MAPPING+EXCEPT가 포함된 CORRESPONDING 문 하나가 이 레슨에서 CORRESPONDING의 유일한 첫 실사용례다. 코드 뒤 약 57~60행에서 세 동작(자동복사·MAPPING·EXCEPT)을 나눠 설명하는 해설 불릿이 있어 완전히 방치된 것은 아니나, 복합 예제가 먼저 나오는 순서라 첫인상의 부담은 남는다.",
+      "suggestion": "본문에 들어가기 전 이름이 모두 같은 두 구조체 사이의 순수 `CORRESPONDING ts_x( ls_y )` 한 줄짜리 최소 예제를 먼저 보여준 뒤, 지금의 MAPPING+EXCEPT 결합 예제로 확장하는 2단계 구성을 검토."
+    },
+    {
+      "seq": 3,
+      "file": "CH18-L07.md",
+      "quote": "> 🔎 공식 문서를 보면 `COND`/`SWITCH`의 결과 자리에 `THROW`(예외 일으키기)를 둘 수도 있다.",
+      "category": "예습 장치",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "CH21의 예외 처리(TRY/CATCH)에 대한 L1 예고가 이 챕터 안에서 CH18-L04·CH18-L06·CH18-L07 세 레슨에 걸쳐 각각 별도 콜아웃으로 반복 등장한다. 각 건 자체는 1~2문장·코드 없음으로 개별 기준은 지키지만, 같은 미래 개념을 같은 챕터 안에서 세 번 예고하는 것은 다소 중복이다.",
+      "evidence": "CH18-L04.md의 'IF line_exists(...)' 아래 콜아웃, CH18-L06.md 'EXACT가 손실을 만나면 예외가 발생한다' 콜아웃, CH18-L07.md 위 인용 콜아웃이 모두 [Exception Class — TRY/CATCH/CX 계층](CH21-L06.html)을 가리킨다.",
+      "suggestion": "필수적이라면 유지해도 되지만, 세 번째 등장부터는 '앞서 본 대로'처럼 짧게 줄이거나 가장 먼저 등장하는 L04의 콜아웃만 정식 예고로 남기고 L06·L07은 축약 표현으로 바꿔 반복 인지 부담을 줄이는 방안을 검토."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH18 11개 레슨은 선언→값 생성→매핑→조회→문자열→변환→조건→집계→LET→리팩터링 판단→콘서트앱 적용 순서로 modern ABAP 구성요소를 점진적으로 쌓는 학습 단위 분할이 타당하고, 각 레슨의 왜→무엇→어떻게→실수→정리 흐름과 이전 챕터 회고(CH04/CH05/CH06 등 명시적 링크)도 잘 지켜진다. 불편-해결 서사도 대체로 진짜 불편에서 출발하며, prevRel이 parallel로 표시된 레슨들은 억지 불편을 만들지 않고 정직하게 '도구 선택'으로 서술한다. 다만 종합 실습 레슨(L10·L11)이 '배운 조각을 모아 쓴다'고 예고하고도 CORRESPONDING·CONV/EXACT·COND·LET을 실제로는 한 번도 재사용하지 않아 이 구성요소들의 복습 기회가 없고, CORRESPONDING의 첫 예제가 MAPPING+EXCEPT를 한꺼번에 얹어 인지 부담이 다소 크며, CH21 예외 처리 예고가 세 레슨에 걸쳐 소폭 중복된다. 셋 다 학습을 막는 수준은 아니라 경미 수정으로 판단한다."
+  }
+}

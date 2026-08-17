@@ -1,0 +1,124 @@
+{
+  "agent": "AG06",
+  "model": "opus",
+  "target": "CH19",
+  "persona_ack": "20년차 SAP ABAP 아키텍트(ECC~S/4HANA 개발·운영·성능·이관)로서 CH19(New Open SQL / Modern ABAP SQL) 8개 레슨과 _chapter.md의 기술 사실·예시 적절성·위험한 생략·안티패턴만 감사했다. 웹 검색 없이 내 지식만 사용했고, 릴리스·설정 의존 판단은 모두 confidence=추정으로 표기했다.",
+  "method": "Read 도구로 대상 9개 파일 전문(front-matter 포함) 정독. 외부 네트워크·과거 감사 산출물 미열람. SAP 데모 테이블(SFLIGHT/SPFLI/SCARR) 타입 지식과 ABAP SQL(7.40~7.5x) 문법 규칙에 대조해 코드 스니펫을 수동 검증. 실제 시스템 syntax check는 수행 불가(도구 없음).",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L08.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH19/CH19-L05.md",
+      "quote": "**인자**(함수 괄호 안에 넣는 값)는 두 개, `date`와 `days`다.",
+      "category": "사실 오류",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "ABAP SQL의 DATS_ADD_DAYS는 date·days 외에 잘못된 날짜를 만났을 때의 동작을 정하는 on_error 인자를 함께 요구한다(예: DATS_ADD_DAYS( fldate, 7, 'FAIL' )). '인자는 두 개'라고 단정하면 예제 코드가 syntax check에서 막힐 수 있다.",
+      "evidence": "ABAP SQL/CDS의 DATS_* 날짜 함수군(DATS_ADD_DAYS·DATS_ADD_MONTHS)은 시그니처에 on_error(FAIL/NULL/INITIAL)를 포함한다. 반면 같은 예제의 DATS_DAYS_BETWEEN은 인자 2개가 맞아, 함수마다 인자 수가 다르다는 점이 오히려 학습 포인트다. 릴리스별 선택/필수 여부까지는 단언 불가라 추정으로 둔다.",
+      "suggestion": "예제를 `DATS_ADD_DAYS( fldate, 7, 'FAIL' )` 형태로 바꾸고, '날짜가 유효하지 않을 때 어떻게 할지(on_error)까지 SQL에 명시해야 한다'는 한 줄 설명을 붙인다. 또는 인자 수 단정을 빼고 'F1 문서에서 시그니처를 확인하라'로 완화한다."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH19/CH19-L05.md",
+      "quote": "CONCAT( carrid, connid )",
+      "category": "사실 오류",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "SPFLI-CONNID는 NUMC(4) 컬럼인데, ABAP SQL 문자열 함수(CONCAT·SUBSTRING)의 인자 타입은 CHAR/SSTRING 계열로 제한되는 것이 원칙이라 NUMC 컬럼을 그대로 넘기면 릴리스에 따라 문법 오류가 날 수 있다.",
+      "evidence": "SFLIGHT/SPFLI의 CONNID는 데이터 요소 S_CONN_ID(NUMC 4), CARRID는 S_CARR_ID(CHAR 3)다. 본문도 `connid = '0400'`이라며 NUMC 값을 전제한다. 반면 같은 예제의 UPPER( cityfrom )은 CHAR 20이라 안전하다. 문자열 함수의 허용 타입 목록은 릴리스별 확장이 있어 확실 판정은 피한다.",
+      "suggestion": "안전한 조합으로 예시를 교체하거나(예: `CONCAT( carrid, CAST( connid AS CHAR( 4 ) ) ) AS route`, `SUBSTRING( cityfrom, 1, 2 )`) '숫자·NUMC 컬럼은 CAST로 문자로 바꾼 뒤 문자열 함수에 넣는다'는 주의를 흔한 실수 목록에 추가한다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH19/CH19-L06.md",
+      "quote": "단순한 조회는 ABAP 서버가 **메모리 안에서** 처리한다(DB 왕복 없음).",
+      "category": "사실 오류",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "SELECT FROM @itab이 도입된 초기 릴리스(7.52 계열)에서는 단순 조회라도 내부 테이블 내용을 임시 테이블로 DB에 전송해 처리하는 것이 기본 동작이었다. '보통 메모리에서 처리'는 비교적 최신 릴리스(로컬 SQL 엔진 실행)에 해당하므로, 학습자 시스템 버전에 따라 사실과 반대가 된다.",
+      "evidence": "본문은 '보통 ABAP 서버 안에서 처리되지만, 항상 그런 것은 아니다'로 서술해 DB 전송을 예외처럼 다룬다. 그러나 구버전 시스템에서는 이 문장 전체가 성능 경고(내부 테이블 DB 전송)와 함께 반대로 나타난다. 정확한 전환 릴리스는 기억이 불확실하다.",
+      "suggestion": "'릴리스에 따라 다르다 — 최신 시스템은 ABAP 안에서, 도입 초기 릴리스는 표 내용을 DB로 보내 처리한다. 내 시스템에서 syntax check 경고와 SQL trace(ST05)로 실제 동작을 확인하라'로 서술을 뒤집지 말고 대등하게 병기한다."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH19/CH19-L07.md",
+      "quote": "[UP TO n ROWS](CH08-L03.html)와 꼭 필요한 `WHERE`는 모던에서도 그대로다.",
+      "category": "위험한 생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "역할(조회량 통제)은 그대로지만 **문장 내 위치가 바뀐다**는 점이 챕터 어디에도 없다. strict 모드에서는 INTO가 마지막이어야 하므로 UP TO n ROWS·ORDER BY는 INTO 앞에 와야 한다. classic 습관대로 `INTO TABLE @lt ... UP TO 10 ROWS`를 쓰면 학습자는 즉시 문법 오류를 만난다.",
+      "evidence": "CH19-L01은 '`INTO`를 문장 맨 뒤에 둔다'·'strict 모드에선 맨 뒤가 강제된다'라고 명시했다. 따라서 classic에서 INTO 뒤에 붙이던 UP TO n ROWS는 modern에서 INTO 앞으로 이동해야 하는데, 이 챕터의 어떤 예제도 UP TO n ROWS를 modern 형태로 보여 주지 않는다. 대량 조회 방어 수단이 곧바로 막히는 지점이라 실무 사고(메모리 폭주)와 직결된다.",
+      "suggestion": "L07(또는 L01)에 modern 절 순서 예제를 1개 넣는다: `SELECT carrid, connid FROM sflight WHERE carrid = @lv_carr ORDER BY connid INTO TABLE @DATA(lt) UP TO 100 ROWS.` 가 아니라 `... WHERE ... ORDER BY ... UP TO 100 ROWS INTO TABLE @DATA(lt).` 형태로 'INTO는 진짜 마지막'임을 재확인시킨다."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH19/CH19-L04.md",
+      "quote": "LEFT OUTER JOIN spfli AS p ON p~carrid = c~carrid",
+      "category": "안티패턴",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "WHERE도 UP TO n ROWS도 없는 outer join 결과를 통째로 인라인 target에 담는 예제다. 조건 없는 join 전량 조회를 '표준 예시'처럼 시연하는 셈이라, 같은 챕터가 가르치는 '꼭 필요한 WHERE' 원칙과 어긋난다.",
+      "evidence": "L01은 '무심한 SELECT *'를, L07은 '조회량 통제를 잊음'을 흔한 실수로 지적한다. 그런데 L04의 COALESCE 예제(scarr LEFT OUTER JOIN spfli)와 L03의 seats_free 예제(FROM sflight)는 WHERE가 아예 없어, 운영 데이터에서 그대로 따라 하면 전건 스캔 + 대량 내부 테이블 적재가 된다. 데모 테이블은 작아 학습자가 위험을 체감하지 못한다.",
+      "suggestion": "COALESCE·계산 컬럼 예제에도 `WHERE c~carrid = @lv_carr` 같은 조건을 넣거나 `UP TO 20 ROWS`를 덧붙인다. 문법 시연용이라 조건을 생략했다면 '실무에서는 조건 없는 조회를 쓰지 않는다'는 한 줄 주석을 코드에 남긴다."
+    },
+    {
+      "seq": 6,
+      "file": "content/abap/CH19/CH19-L08.md",
+      "quote": "CASE WHEN COALESCE( SUM( b~seats ), 0 ) >= c~capacity THEN 'FULL'",
+      "category": "예시 적절성",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "집계 함수(SUM)를 COALESCE·CASE 같은 SQL 식의 피연산자로 중첩하는 문법은 비교적 늦은 릴리스에서 허용된 기능이다. 챕터 유일의 종합 실습이 릴리스 의존 문법에 걸리면 학습자는 원인을 짚지 못한 채 막힌다.",
+      "evidence": "SQL 식 안에서 집계 표현식을 쓰는 것(SUM(...) 을 CASE/COALESCE의 인자로)은 초기 New Open SQL 릴리스에서 제한되었고 이후 확장되었다. 본문은 이 코드가 어느 릴리스 이상에서 동작하는지 언급하지 않고, 오히려 '길어 보여도 규칙을 지킨 코드다'라며 무조건 성립하는 것처럼 서술한다. 정확한 최소 릴리스는 기억이 불확실하다.",
+      "suggestion": "'집계를 식 안에 넣는 문법은 시스템 릴리스에 따라 지원 여부가 갈린다 — 문법 오류가 나면 seat_status 판정은 ABAP LOOP에서 하고 SQL은 SUM까지만 하라'는 대안 경로를 콜아웃으로 덧붙인다."
+    },
+    {
+      "seq": 7,
+      "file": "content/abap/CH19/CH19-L04.md",
+      "quote": "- **과한 SQL 가공** → 복잡한 업무 규칙·메시지·권한 분기는 ABAP/이후 장의 코드로. SQL 식은 단순 가공에.",
+      "category": "위험한 생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'DB에 계산을 시킨다'를 챕터 전반의 미덕으로 가르치면서, 함수·CAST·계산식을 WHERE 조건 쪽에 쓰면 인덱스를 못 타 성능이 급격히 나빠진다는 경계선이 한 번도 나오지 않는다. 학습자가 code pushdown을 '어디에 써도 좋다'로 일반화하기 쉽다.",
+      "evidence": "L04·L05의 모든 예제는 SQL 식을 SELECT list에만 쓰지만, 본문은 그 위치 제한을 '단순 가공에'라는 모호한 표현으로만 언급한다. 컬럼을 함수로 감싼 조건(예: UPPER( cityfrom ) = 'SEOUL', SUBSTRING(...) = '04')은 인덱스 사용을 막는 대표적 성능 함정이며, 이는 DB 종류·릴리스와 무관한 일반 원칙이다.",
+      "suggestion": "L04 또는 L07에 한 줄 규칙을 명시한다: '식·함수는 SELECT list(보여 줄 값 만들기)에. WHERE 조건에서 컬럼을 함수로 감싸면 인덱스를 못 써서 느려진다 — 조건은 컬럼 그대로 비교하고, 가공은 host 값 쪽에서 미리 한다.'"
+    },
+    {
+      "seq": 8,
+      "file": "content/abap/CH19/CH19-L04.md",
+      "quote": "`COALESCE`는 **null이 아닌 첫 번째 값**을 돌려준다.",
+      "category": "사실 오류",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "표준 SQL의 가변 인자 COALESCE 설명을 그대로 옮겼는데, ABAP SQL의 COALESCE는 인자를 정확히 두 개(arg1, arg2) 받는 함수다. '첫 번째 값'이라는 표현은 인자를 셋 이상 나열해도 되는 것처럼 오해를 부른다.",
+      "evidence": "본문의 모든 예제(`COALESCE( p~cityto, 'NO ROUTE' )`, `COALESCE( SUM( b~seats ), 0 )`)는 두 인자만 쓴다. ABAP SQL의 coalesce는 두 피연산자 CASE의 축약 형태로 정의되어 있다. 릴리스별 확장 가능성까지 단언할 수 없어 추정으로 둔다.",
+      "suggestion": "'`COALESCE( a, b )` — a가 null이면 b를, 아니면 a를 돌려준다(ABAP SQL은 인자 두 개)'로 정정하고, 값이 여러 개면 CASE를 쓰라고 안내한다."
+    },
+    {
+      "seq": 9,
+      "file": "content/abap/CH19/CH19-L08.md",
+      "quote": "SELECT * FROM zbooking",
+      "category": "안티패턴",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "챕터가 스스로 '무심한 `SELECT *`'를 흔한 실수로 지목해 놓고, 관통예제 실습의 첫 코드가 필요한 컬럼도 명시하지 않은 `SELECT *`이며 그 결과(lt_book)는 이후 어디에도 쓰이지 않는다.",
+      "evidence": "CH19-L01의 흔한 실수 목록에 '무심한 `SELECT *` → 필요한 컬럼만 읽는 원칙은 모던에서도 그대로다'가 있다. 반면 L08 ①의 classic/modern 대비 코드는 둘 다 `SELECT * FROM zbooking`이고, 검증 항목에서도 lt_book은 행 수 확인에만 등장한다. 콤마 필드 목록을 배우는 챕터의 첫 실습으로는 반례가 된다.",
+      "suggestion": "①을 `SELECT concert_id, seat_no, seats, status FROM zbooking WHERE concert_id IN @so_conc INTO TABLE @DATA(lt_book).`처럼 콤마 필드 목록으로 바꿔, 이 챕터의 핵심 문법(콤마)과 원칙(필요한 컬럼만)을 첫 코드에서 동시에 보여 준다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH19의 기술 골격은 튼튼하다. @ host variable의 escape 의미, strict 모드 자동 적용, INTO 후치, @DATA( )가 만드는 Standard Table/Empty Key, 계산 컬럼의 AS 별칭 필요성, SQL SUBSTRING의 1-기반, CAST INT4→CHAR(11) 길이 규칙, LEFT OUTER JOIN에서 조건을 ON에 둬야 null 행이 보존된다는 설명, 별칭을 같은 SELECT list에서 재사용 못 한다는 규칙까지 모두 정확하다. L08의 샘플 데이터 계산 결과(C001=5/OPEN, C002=50/FULL, C003=0/OPEN)도 맞고, 저장·잠금·설계를 명시적으로 범위 밖으로 선언한 점은 좋은 판단이다. 다만 ① 예제 코드 자체가 시스템에서 안 돌 수 있는 지점이 셋(DATS_ADD_DAYS의 on_error, NUMC 컬럼을 문자열 함수에 직접 투입, 집계를 SQL 식 안에 중첩) 있고, ② SELECT FROM @itab의 실행 위치 서술이 릴리스에 따라 반대일 수 있으며, ③ modern strict 모드에서 UP TO n ROWS·ORDER BY가 INTO 앞으로 이동한다는 절 순서 변화가 빠져 조회량 통제 수단이 곧바로 막힌다. ④ WHERE 없는 join 전량 조회와 SELECT * 시연은 챕터 스스로 세운 원칙과 어긋난다. 전부 국소 수정으로 해결 가능하므로 재집필은 불필요하고, 코드 스니펫 4~5곳 손질과 경고 문장 2개 추가면 충분하다."
+  }
+}

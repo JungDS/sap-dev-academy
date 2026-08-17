@@ -1,0 +1,46 @@
+{
+  "agent": "AG05",
+  "model": "sonnet",
+  "target": "CH20",
+  "persona_ack": "20년차 학습 교재·코스 설계 전문가로서 CH20(고급 ABAP SQL) 8개 파일을 교수설계 관점(챕터 구성·섹션 흐름·복습/예습 장치·불편-해결 서사·인지 부하)에서 감사했다.",
+  "method": "대상 파일 8개를 순서대로 정독하며 각 레슨의 왜/무엇/어떻게/실수/예고 흐름과 front-matter(prereq·introduces·prevRel)를 대조했다. 코드 예제는 입력 표(zconcert/zbooking)를 손으로 재계산해 본문의 예상 결과 표·검산 문구와 수치가 일치하는지 전수 검증했다. 도구 미사용(파일 읽기만).",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH20-L07.md",
+      "quote": "과제 2의 `EXISTS`를 `INNER JOIN`으로 바꿔 보고, 공연 행이 예약 건수만큼 중복되는지 비교한다. (검산: 결과가 세 행이 되고, 예약이 두 건인 C001이 두 번 나오면 확인 성공.)",
+      "category": "실습 검증 설계",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "'직접 해 볼 과제 2'는 EXISTS를 INNER JOIN으로 바꿔보라고만 지시할 뿐 원래 subquery에 있던 `b~status <> 'C'` 조건을 유지하라는 말이 없다. 이 조건을 빼고 그대로 INNER JOIN만 걸면 취소 예약(0003, C002)까지 결과에 섞여 4행(C001×2, C002×1, C004×1)이 나와 본문이 제시한 검산 기준(3행·C001 두 번)과 어긋난다.",
+      "evidence": "L07 실습 데이터의 zbooking에는 취소 예약(0003, C002, status=C)이 포함돼 있고, 과제2 원본 EXISTS 쿼리는 `b~status <> 'C'` 조건으로 이를 걸러 C001·C004만 결과에 남긴다(본문 '예상 결과는 C001, C004다'). 그런데 직접 해 볼 과제 2는 이 조건을 유지하라는 지시 없이 'EXISTS를 INNER JOIN으로 바꿔보라'고만 하므로, 학습자가 조건 없이 단순 JOIN만 걸면 검산 기준(세 행·C001 두 번)과 실제 결과가 달라져 스스로 틀렸다고 오판하기 쉽다.",
+      "suggestion": "지시문에 'WHERE b~status <> ''C'' 조건은 그대로 유지한 채'라는 문구를 추가해 조건 누락으로 검산이 어긋나는 상황을 막는다."
+    },
+    {
+      "seq": 2,
+      "file": "CH20-L03.md",
+      "quote": "## 무엇 — EXISTS · correlated 🔍",
+      "category": "섹션 흐름 / 인지 부하",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "이 한 섹션 안에 EXISTS·correlated subquery·IN subquery·NOT EXISTS 네 가지 관련 개념이 소제목 구분 없이 연이어 설명된다. 반면 CH20-L05는 OVER/PARTITION BY(무엇)와 RANK 계열(순위 함수)을 별도 H2로 나눠 같은 정도의 정보량을 두 단계로 쪼갰다.",
+      "evidence": "L03의 '무엇' 섹션은 EXISTS 예제→correlated subquery 정의→IN subquery 예제→EXISTS vs IN 선택 기준→NOT EXISTS까지 하나의 헤딩 아래 순서대로 이어진다(소제목 전환 없음). 반면 L05는 'OVER · PARTITION BY'(무엇)와 '순위 함수 — RANK · DENSE_RANK'를 별도 H2로 나눠 쉬어가는 지점을 만든다. L03도 같은 방식으로 나누면 한 섹션 안 신규 개념 수가 줄어든다.",
+      "suggestion": "IN subquery·NOT EXISTS 부분을 '## 관련 변형 — IN · NOT EXISTS' 같은 별도 소제목으로 분리해 EXISTS/correlated와 한 호흡 쉬어가게 한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH20은 개요(L01)→도구별 심화(L02～L05)→선택 기준(L06)→통합 실습(L07)으로 이어지는 구성이 안정적이고, 각 레슨이 왜-무엇-어떻게확인-실수 흐름을 대체로 지키며 이전 챕터(CH13 JOIN, CH19 COALESCE·ON/WHERE)를 적절히 리마인드한다. 코드 예제의 입력→출력 수치도 본문 전체에서 전수 검산해 오류가 없었다. L04의 집합연산 도입은 L03에서 이미 'NOT EXISTS의 또 다른 답'으로 예고돼 억지 불편이 아니라 의도된 병렬 학습(prevRel: parallel)으로 잘 설계됐다. 다만 L07의 자율 실습 검산 지시 하나가 조건 유지를 명시하지 않아 학습자가 오판할 여지가 있고(중간), L03은 관련 개념 네 가지가 소제목 구분 없이 이어져 L05 대비 청킹이 약하다(낮음). 두 항목 모두 경미한 문구·구조 보완으로 해소 가능."
+  }
+}

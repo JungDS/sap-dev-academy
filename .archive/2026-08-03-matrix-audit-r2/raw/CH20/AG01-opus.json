@@ -1,0 +1,101 @@
+{
+  "agent": "AG01",
+  "model": "opus",
+  "target": "CH20",
+  "persona_ack": "나는 '은서'다. 개발·전공 경험이 전혀 없는 24세 문과 출신 입문자로, 이 사이트로 ABAP을 처음 공부한다. CH20의 _chapter와 L01～L07을 순서대로, 처음 읽는 사람의 눈으로 통독하며 멈춘 곳·생략·단절·과부하를 기록했다. 내 바깥 지식으로 빈틈을 메우지 않았다.",
+  "method": "Read 도구로 대상 8개 파일(_chapter.md, CH20-L01～L07.md) 원문을 order 순서대로 통독. 각 레슨의 예제 데이터 표와 예상 결과 표를 손으로 대조(합계·행 수·순위 값 검산). 웹 검색·다른 챕터 파일·과거 감사 산출물 열람 없음.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH20\\CH20-L07.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH20/CH20-L02.md",
+      "quote": "이후 공연 마스터와 붙였을 때 **예약 없는 공연이 사라지지 않는지**(`LEFT OUTER JOIN` 덕분)도 확인한다.",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "\"손으로 그려서 확인하라\"고 시키는데 확인에 필요한 공연 마스터(zconcert) 예시 데이터가 이 레슨에 없다.",
+      "evidence": "'어떻게 확인' 절은 zbooking 입력 표와 +booked 예상 표만 준다. 그런데 마지막 문장은 '공연 마스터와 붙였을 때 예약 없는 공연이 사라지지 않는지' 확인하라고 한다. 나는 zconcert에 어떤 공연이 몇 개 있는지(예약이 없는 공연이 애초에 있는지, capacity가 얼마인지)를 모르는 상태라 조인 결과를 그릴 수가 없다. zconcert 표는 CH20-L07에 가서야 처음 나온다. 앞 코드 예제에도 c~capacity만 등장할 뿐 표는 없다.",
+      "suggestion": "'어떻게 확인' 절에 zconcert 예시 3～4행(concert_id·artist·capacity, 그중 예약 없는 공연 1건 포함)을 함께 싣고, 최종 조인 결과 예상 표까지 한 번 보여준다."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH20/CH20-L02.md",
+      "quote": "    FROM zconcert AS c\n    LEFT OUTER JOIN +booked AS b\n      ON b~concert_id = c~concert_id\n    INTO TABLE @DATA(gt_capacity).",
+      "category": "과부하",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "챕터에서 처음 만나는 CTE 예제가 CTE·GROUP BY 합산·LEFT OUTER JOIN·COALESCE·계산 컬럼을 한꺼번에 담고 있어, CTE 자체가 무엇인지 붙잡기 전에 다른 문법에 시선이 흩어진다.",
+      "evidence": "L01에서 CTE는 '중간 결과에 이름을 붙인다' 한 줄로만 소개됐는데, L02의 첫 코드는 곧바로 WITH + SUM/GROUP BY + WHERE + LEFT OUTER JOIN + COALESCE + 뺄셈 별칭이 동시에 나온다. 뒤따르는 해설 표가 각 줄을 설명해 주긴 하지만, 그 표도 6줄짜리라 '지금 새로 배우는 것이 어느 부분인지'가 흐려진다. 이 레슨의 주제인 +booked만 단독으로 실행하면 무엇이 나오는지를 먼저 본 다음 조인을 붙였다면 훨씬 편했을 것이다.",
+      "suggestion": "코드를 2단계로 쪼갠다. ① WITH +booked … 다음에 곧장 +booked만 읽어 INTO TABLE 하는 최소 예제(CTE만 새것) → ② 그 위에 LEFT OUTER JOIN·COALESCE를 얹은 완성형. 또는 완성 코드에서 '이번에 새로 배우는 줄'을 시각적으로 표시한다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH20/CH20-L07.md",
+      "quote": "2. 과제 2의 `EXISTS`를 `INNER JOIN`으로 바꿔 보고, 공연 행이 예약 건수만큼 중복되는지 비교한다. (검산: 결과가 세 행이 되고, 예약이 두 건인 C001이 두 번 나오면 확인 성공.)",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "INNER JOIN으로 바꿔 쓰는 방법이 안 나와 있고, 검산 값 '세 행'은 취소 조건(status <> 'C')을 그대로 남겨야만 맞는데 그 전제가 적혀 있지 않다.",
+      "evidence": "실습 데이터 zbooking은 4행(0001·0002 = C001, 0003 = C002 취소, 0004 = C004)이다. EXISTS를 지우고 단순히 zconcert INNER JOIN zbooking ON concert_id로 바꾸면 취소 예약 0003까지 붙어 네 행이 나온다. 나처럼 조건을 어디로 옮겨야 할지 모르는 사람은 네 행을 보고 '검산이 세 행이라는데 내가 틀렸나'에서 멈춘다. 과제 1·3은 '무엇을 빼라/뒤집어라'가 명확한데 이 과제만 바꿔 쓸 코드 모양이 전혀 주어지지 않는다.",
+      "suggestion": "과제 문구에 'status <> 'C' 조건은 JOIN의 ON 또는 WHERE에 그대로 남긴 채'를 명시하고, 정답 코드(INNER JOIN 버전 4～5줄)를 접기(details)로 제공한다."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH20/CH20-L05.md",
+      "quote": "- **`WHERE`에서 window로 필터** → window는 `SELECT` list에서만 쓴다. `WHERE`·`GROUP BY`에 직접 쓰지 못한다.",
+      "category": "멈춘 곳",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'SELECT list'라는 용어가 풀이 없이 나와 무엇을 가리키는지 확신이 안 선다.",
+      "evidence": "이 챕터는 'main query(본 질의 — WITH 뒤에 오는 마지막 SELECT)'처럼 새 용어에 괄호 풀이를 붙여 주는데, 'SELECT list'만 그대로 나온다. SELECT 뒤에 나열하는 컬럼 자리라는 뜻으로 짐작은 되지만, 바로 뒤에 'WHERE·GROUP BY에 직접 쓰지 못한다'가 붙어 있어 '그럼 SELECT list는 WHERE와 대비되는 어떤 구역 이름인가' 하고 한 번 멈췄다. CH20-L07의 '- **window를 필터로** → window는 `SELECT` list 계산 컬럼이다.'에서도 풀이 없이 반복된다.",
+      "suggestion": "첫 등장 자리에 'SELECT list(SELECT 바로 뒤에 나열하는 결과 컬럼 자리)'처럼 한 줄 풀이를 붙인다."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH20/CH20-L06.md",
+      "quote": "| 후속 장 주제를 앞당기지 않나? | CDS·RAP·동적 SQL이면 해당 장으로 |",
+      "category": "단절",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'동적 SQL'이 이 챕터에서 처음이자 유일하게 여기서만 등장하는데 풀이도 링크도 없어, 체크리스트 항목을 스스로 적용할 수 없다.",
+      "evidence": "CDS와 RAP은 L01·L07에서 각각 'CDS(Core Data Services)', 'RAP(RESTful Application Programming Model)'로 풀어 주고 L06에서도 CDS는 CH23 링크가 걸려 있다. 그런데 '동적 SQL'은 풀이도 없고 링크도 없다. 내가 쓴 SQL이 '동적 SQL인지'를 판단하라는 체크 항목인데, 무엇이 동적 SQL인지 모르니 체크할 방법이 없다.",
+      "suggestion": "'동적 SQL(실행 중에 문자열로 조립하는 SQL)'처럼 괄호 한 줄을 붙이거나, 다루는 레슨 링크를 건다."
+    },
+    {
+      "seq": 6,
+      "file": "content/abap/CH20/CH20-L03.md",
+      "quote": "`EXISTS`는 존재만 판정한다. 그래서 안쪽 `SELECT`에서 어떤 컬럼을 고르는지는 결과에 영향을 주지 않는다. ABAP 공식 keyword 문서도 긴 컬럼 목록 대신 값 하나만 쓰라고 권한다.",
+      "category": "멈춘 곳",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "'값 하나만 쓰라'는 권고가 구체적으로 무엇을 쓰라는 말인지 예가 없어, 실제로 내가 EXISTS를 쓸 때 안쪽 SELECT에 뭘 적어야 할지 정하지 못한다.",
+      "evidence": "바로 위 예제는 안쪽에서 SELECT concert_id를 골랐다. 그런데 문장은 '어떤 컬럼을 고르는지는 영향이 없다' + '값 하나만 쓰라고 권한다'이다. 나로서는 (가) 예제처럼 컬럼 하나면 되는 건지, (나) 컬럼이 아닌 어떤 고정값을 적어야 하는 건지 구분이 안 된다. '권한다'는 말이 나왔으니 권장 모양을 코드로 한 번 보여줬어야 따라 쓸 수 있다.",
+      "suggestion": "권장 형태를 한 줄 코드로 명시한다(예: 안쪽을 SELECT concert_id 같은 단일 컬럼으로 유지한다는 점을 문장으로 확정하고, '컬럼 목록을 길게 늘어놓지 말라'는 뜻임을 분명히)."
+    },
+    {
+      "seq": 7,
+      "file": "content/abap/CH20/CH20-L04.md",
+      "quote": "SELECT concert_id\n  FROM zconcert\nEXCEPT DISTINCT\nSELECT concert_id\n  FROM zbooking\n  WHERE status <> 'C'\nINTO TABLE @DATA(gt_without_booking).",
+      "category": "멈춘 곳",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "SELECT가 두 번 나오는데 마침표는 하나뿐이라, 이것이 한 문장인지 두 문장인지 본문에서 곧바로 확인되지 않는다.",
+      "evidence": "지금까지 본 SELECT는 언제나 'SELECT … INTO … .' 한 덩어리였다. 여기서는 SELECT가 두 개인데 INTO와 마침표가 맨 끝에만 있어, 처음엔 두 번째 SELECT만 INTO로 받는 줄 알고 다시 읽었다. '한 문장이다'라는 설명은 한참 아래 '흔한 실수' 항목의 'INTO도 전체 문장 끝'에서 간접적으로만 나온다. 코드 바로 앞뒤 문장은 컬럼 개수 이야기뿐이다.",
+      "suggestion": "코드 직후에 '두 SELECT와 INTO까지가 마침표 하나로 끝나는 한 문장이다'를 한 줄로 못 박고, 필요하면 문장 범위를 표시한 그림/주석을 붙인다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "전반적으로 아주 잘 따라갈 수 있었다. 특히 '입력 표 → 예상 결과 표 → 검산' 순서로 매번 손으로 확인시키는 방식(L02의 +booked 예상 표, L05의 GROUP BY와 window 결과 대비 표, L07 과제별 예상 결과와 괄호 검산)이 인상적으로 잘 읽혔고, RANK와 DENSE_RANK를 3석 동점 두 건으로 눈에 보이게 갈라 보여 준 표에서 처음으로 순위 함수가 확 이해됐다. 막힌 지점은 개념 자체보다 '확인해 보라'고 시켜 놓고 확인에 필요한 재료(공연 마스터 데이터, 바꿔 쓸 JOIN 코드)가 빠진 자리와, 풀이 없이 지나가는 용어('SELECT list', '동적 SQL') 정도였다. 재료 보충과 용어 한 줄 풀이만 더하면 입문자도 완주 가능한 수준이다."
+  }
+}

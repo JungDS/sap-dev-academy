@@ -1,0 +1,61 @@
+{
+  "agent": "AG01",
+  "model": "sonnet",
+  "target": "CH18",
+  "persona_ack": "나는 은서, 24세 문과 출신 입문자다. 개발·전공 경험이 전혀 없이 이 사이트로 ABAP을 처음 배운다. CH18의 _chapter.md와 L01~L11을 순서대로 처음 읽는 사람으로서 통독하며 걸리는 지점을 하나씩 표시했다.",
+  "method": "브라우저·서버·코드 실행 도구는 쓰지 않았다. 지정된 12개 대상 파일(정적 마크다운 원문)만 첫 레슨부터 순서대로 읽고, 그 시점까지 같은 챕터 안에서 풀이된 내용만으로 이해되는지를 텍스트 근거로 판단했다. 임베드 위젯은 실행해 보지 않고 설명 텍스트만 읽었다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L10.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L11.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L01.md",
+      "quote": "지점부터 같은 **처리 블록**(FORM/METHOD 같은 프로시저 하나, 또는 이벤트 블록) **끝까지**",
+      "category": "단절",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "인라인 변수의 수명 범위를 설명하면서 'METHOD'를 처리 블록의 예로 갑자기 언급하는데, CH18 안 어디에도 METHOD(클래스의 메서드)가 무엇인지 풀이가 없다.",
+      "evidence": "FORM은 이 지점까지 배운 개념(모듈화)일 가능성이 높지만, METHOD는 객체지향 개념으로 보이고 이 챕터(그리고 지금까지 읽은 범위)에서 한 번도 정의되지 않았다. 은서는 '메서드가 뭐지? 이것도 알아야 하나?' 하고 잠깐 멈춘다. 문장의 핵심 주장(선언 지점부터 처리 블록 끝까지 산다)은 FORM/이벤트 블록만으로도 이해되긴 하지만, 낯선 용어가 괄호 안에 아무 설명 없이 끼어들어 있다.",
+      "suggestion": "이 시점에 OOP를 아직 안 배웠다면 'METHOD' 대신 '(예: FORM 같은 프로시저 하나, 또는 이벤트 블록)'처럼 이미 배운 예시만 남기거나, METHOD를 넣고 싶다면 '(나중에 배울 METHOD 등)'처럼 L1 예고 표시를 붙인다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L10.md",
+      "quote": "이 예제 데이터는 `seats = i` 규칙이라 3회차 좌석 수를 **테이블 없이 바로 계산할 수 있다**(`i = 3`일 때 3): `DATA(lv_third) = 3.` 이렇게 줄여도 되는 근거는 **데이터의 규칙을 알고 있어서**지, 실행 결과를 바꿔도 된다는 뜻이 아니다.",
+      "category": "과부하",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'과한 표현' 예시를 설명하는 문장에서 앞선 코드 블록의 `seats = i` 규칙을 다시 떠올려 3회차 값이 왜 3인지 역산해야 하고, 동시에 '하드코딩해도 된다는 뜻은 아니다'라는 반대 방향의 단서까지 한 문장에 붙어 있어 한 번에 소화하기 어렵다.",
+      "evidence": "직전 코드 블록(FOR i = 1 WHILE i <= 9, seats = i)을 다시 찾아가 'i=3일 때 seats=3'이라는 대응 관계를 스스로 재구성해야 '테이블 없이 바로 계산' 문장이 이해된다. 그 직후 곧바로 '그래도 하드코딩이 항상 되는 건 아니다'는 반전 설명이 이어져, 은서는 '그럼 써도 된다는 거야, 안 된다는 거야?'라고 두 번 멈춘다.",
+      "suggestion": "'왜 3인가'를 별도 짧은 문장이나 괄호로 명시적으로 다시 짚어주고(예: '이 데이터는 3회차=3석으로 만들었으므로'), '데이터 규칙을 안다고 항상 하드코딩해도 된다는 뜻은 아니다'는 문장을 별도 줄로 분리해 두 메시지를 순서대로 나눠 전달한다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L05.md",
+      "quote": "`DATE = USER`·`NUMBER = USER`는 **로그인한 사용자의 개인 설정**(SU3의 날짜 형식·천 단위",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'SU3'이 무엇인지(트랜잭션 코드라는 것조차) 설명 없이 괄호 안에 등장한다.",
+      "evidence": "바로 앞뒤 문맥('로그인한 사용자의 개인 설정')으로 대략적인 의미는 짐작되지만, SU3이 T-code라는 것도, 무엇을 하는 화면인지도 CH18 안에서 풀이되지 않는다. 은서는 'SU3이 뭐지, 알파벳+숫자가 코드 이름인가?' 하고 잠깐 걸리지만 문장 전체 의미 파악에는 크게 지장이 없다.",
+      "suggestion": "'(SU3 — 사용자 개인설정 화면 — 의 날짜 형식·천 단위 구분자)'처럼 T-code라는 것과 역할을 짧게 한 번 밝혀 준다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "전체적으로 classic 코드와 modern 코드를 나란히 두고 '왜 바꾸는지'를 먼저 설명한 뒤 문법을 보여주는 흐름이 일관돼서 잘 읽혔다. 특히 CH18-L03에서 CORRESPONDING의 EXCEPT와 CH18-L08의 FILTER EXCEPT가 '글자만 같고 문맥이 다르다'고 콕 짚어준 부분, CH18-L11에서 '없는 번호(0999)' 테스트를 성공 화면만 보고 끝내지 말라고 강조한 부분이 특히 도움이 됐다. 다만 CH18-L01의 METHOD 언급처럼 아직 안 배운 개념이 설명 없이 예시로 끼어드는 지점, CH18-L10의 하드코딩 정당화 설명처럼 앞 코드를 역산해야 하고 반전 메시지까지 겹치는 지점은 재독해야 넘어갈 수 있었다."
+  }
+}
