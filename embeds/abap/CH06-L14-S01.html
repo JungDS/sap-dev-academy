@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<!-- CH06-L14-S01 — 엔진: diff-mapper (embeds/_engine/diff-mapper.{js,css}) + _autoheight. 콘텐츠=레슨 전용
+     (옛 코드 WITH HEADER LINE·OCCURS·TO 없는 APPEND·CLEAR it vs it[] ↔ 지금 표준 gt_/gs_ 분리 대역 비교 — 본문 L14 예제 정합).
+     게이팅: CH06-L14 범위(Header Line·OCCURS·itab[]는 인식용 — 새 코드 금지 명시). -->
+<html lang="ko" data-eng="diff-mapper">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>옛 코드 ↔ 새 코드 대역 · CH06-L14-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/diff-mapper.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">옛 코드 ↔ 새 코드 — 같은 일, 다른 표기 <small>(Header Line 해독)</small></p>
+  <p class="lead">왼쪽은 실무에서 마주칠 <b>20년 된 표기</b>, 오른쪽은 이 챕터에서 배운 <b>지금 표준</b>입니다. 줄 위에 마우스를 올리면(터치는 탭) 서로 대응하는 줄이 함께 빛나고 해독 포인트가 아래 나타납니다. 왼쪽은 <b>읽을 줄만 알면 됩니다</b> — 새 코드에 쓰면 안 됩니다.</p>
+
+  <div class="diff-mapper">
+    <div class="diff-mapper__bar">🕰 옛 코드 해독 — 줄 위에 마우스를 올려 보세요</div>
+    <div class="diff-grid">
+      <div class="diff-pane classic">
+        <h4>옛 코드 (읽기 전용 지식)</h4>
+<pre><span class="diff-line" data-link="1" data-title="옛 선언 ① — WITH HEADER LINE" data-desc="테이블 옆에 <b>같은 이름의 그림자 한 행</b>(Header Line)이 자동으로 붙습니다. it_person이라는 이름이 문맥에 따라 테이블 전체이기도, 한 행이기도 한 것 — 퇴출 이유 1호입니다.">DATA it_person TYPE TABLE OF ts_person
+     WITH HEADER LINE.</span>
+<span class="diff-line" data-link="2" data-title="옛 선언 ② — OCCURS (더 오래됨)" data-desc="행 모양 정의와 테이블 선언을 한 번에 하는 가장 오래된 표기. OCCURS가 \"Internal Table + Header Line\"을 암시합니다(숫자 0은 이제 의미 없음). 결과는 ①과 같습니다.">DATA: BEGIN OF it_person OCCURS 0,
+        name TYPE string,
+        age  TYPE i,
+      END OF it_person.</span>
+<span class="diff-line" data-link="3" data-title="그림자에 값 채우기" data-desc="테이블 이름에 하이픈 접근?! — 사실은 <b>같은 이름의 그림자 한 행</b>(Header Line)에 채우는 중입니다.">it_person-name = '정훈영'.</span>
+<span class="diff-line" data-link="4" data-title="TO가 없는 APPEND" data-desc="\"그림자를 본체에 붙여라\"가 생략된 축약 문장입니다. 무엇을 어디에 붙이는지가 문장에 없는 <b>암묵 동작</b> — 퇴출 이유 2호.">APPEND it_person.</span>
+<span class="diff-line" data-link="5" data-title="READ 결과도 그림자로" data-desc="INTO가 없어도 찾은 행이 <b>그림자(Header Line)</b>로 들어옵니다.">READ TABLE it_person
+     WITH KEY name = '정훈영'.</span>
+<span class="diff-line" data-link="6" data-title="⚠ CLEAR it_person = 그림자'만' 비움" data-desc="본체(행들)는 그대로 남습니다! 옛 코드를 고칠 때 가장 잘 틀리는 지점.">CLEAR it_person.</span>
+<span class="diff-line" data-link="7" data-title="본체는 대괄호 — it_person[]" data-desc="<b>[]가 본체(테이블 그 자체)를 콕 집는 표기</b>입니다. 옛 코드에서 []를 보면 \"아, 본체 쪽 이야기\"로 읽으세요.">CLEAR it_person[].</span></pre>
+      </div>
+      <div class="diff-pane modern">
+        <h4>지금 표준 (이 챕터에서 배운 방식)</h4>
+<pre><span class="diff-line" data-link="1" data-title="분리 선언 — 이름이 곧 역할" data-desc="테이블(gt_)과 Work Area(gs_)를 <b>서로 다른 이름</b>으로 선언 — 어느 줄이 무엇을 다루는지 이름만 봐도 압니다.">DATA: gs_person TYPE ts_person,
+      gt_person TYPE TABLE OF ts_person.</span>
+<span class="diff-line" data-link="2" data-title="행 모양은 TYPES로 따로" data-desc="행 모양(ts_person)을 TYPES로 먼저 정의하고, 그 위에 TABLE OF를 얹습니다 — 모양과 그릇의 분리.">TYPES: BEGIN OF ts_person,
+         name TYPE string,
+         age  TYPE i,
+       END OF ts_person.</span>
+<span class="diff-line" data-link="3" data-title="Work Area에 값 채우기" data-desc="한 행은 언제나 gs_person — 헷갈릴 여지가 없습니다.">gs_person-name = '정훈영'.</span>
+<span class="diff-line" data-link="4" data-title="무엇을 어디에 — 문장에 다 있다" data-desc="gs_person을 gt_person에. 주어와 목적지가 문장에 드러납니다.">APPEND gs_person TO gt_person.</span>
+<span class="diff-line" data-link="5" data-title="INTO로 받을 곳을 명시" data-desc="찾은 행이 어디로 복사되는지(INTO gs_person)가 문장에 있습니다.">READ TABLE gt_person INTO gs_person
+     WITH KEY name = '정훈영'.</span>
+<span class="diff-line" data-link="6" data-title="CLEAR gs_person = 한 행 비우기" data-desc="이름이 다르니 무엇을 비우는지 명확합니다.">CLEAR gs_person.</span>
+<span class="diff-line" data-link="7" data-title="CLEAR gt_person = 테이블 비우기" data-desc="대괄호 곡예 없이, 테이블은 테이블 이름으로.">CLEAR gt_person.</span></pre>
+      </div>
+    </div>
+    <div class="diff-explain"><span class="ph">줄 위에 마우스를 올리면 해독 포인트가 여기 표시됩니다.</span></div>
+  </div>
+  <div class="note">💡 판별 기준은 이름(<code>it_</code>)이 아니라 <b>선언문</b>(<code>WITH HEADER LINE</code>·<code>OCCURS</code>)입니다. 이 표기는 공식적으로 obsolete — 클래스·메서드 안에서는 아예 구문 오류입니다. 여러분은 이미 권장 방식만 배웠습니다.</div>
+</div>
+<script src="../_engine/diff-mapper.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<!-- CH06-L13-S01 — 엔진: step-debugger (embeds/_engine/step-debugger.{js,css}) + _autoheight.js
+     config=레슨 전용(Deep Structure 실전 — 주문 A001/김연아의 행 '안' 테이블(items)에 키보드1·마우스2를
+     APPEND, 완성된 주문을 gt_orders에 쌓고 CLEAR, 중첩 LOOP로 꺼내기. 본문 L13 예제 그대로).
+     게이팅: CH06-L13 범위(Structure Component에 Table Type·APPEND·CLEAR·LOOP 중첩 — 전부 기습득). -->
+<html lang="ko" data-eng="step-debugger">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>주문 안의 상품 목록 · CH06-L13-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/step-debugger.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">주문 안에 상품 목록 — 채우고 꺼내기 <small>(스텝 디버거)</small></p>
+  <p class="lead">주문 한 건(<code>gs_order</code>) 안에 상품 테이블(<code>gs_order-items</code>)이 통째로 들어 있습니다. <b>안쪽 목록부터 채우고</b> 완성된 주문을 바깥 테이블에 쌓는 순서, 그리고 <b>LOOP 안의 LOOP</b>가 각각 무엇을 도는지를 지켜보세요. 새 문법은 하나도 없습니다 — 아는 것의 조합입니다.</p>
+
+  <div class="dbg" data-stepper>
+    <div class="dbg__bar">
+      <button class="btn btn--primary" data-start>▶ 시작</button>
+      <button class="btn btn--step" data-next disabled>다음 ⏭</button>
+      <div class="progress"><i data-progress></i></div>
+      <span class="muted" data-counter>0 / 13</span>
+    </div>
+    <div class="dbg__main">
+      <div class="dbg__editorwrap"><div class="dbg__edhd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span></div><div class="dbg__editor" data-code></div></div>
+      <div class="dbg__watch">
+        <div class="watch__head">변수 모니터 — 주문 한 건과 그 안의 목록</div>
+        <div class="watch__list" data-vars></div>
+      </div>
+    </div>
+    <div class="dbg__console">
+      <div class="console__head">
+        <span>콘솔</span>
+        <span class="leg"><span class="a">▶ 실행할 차례</span> · <span class="d">✓ 방금 실행</span></span>
+        <span class="sp"></span>
+        <span class="cmode"><button class="cmode__b on" data-cmode="cur">현재 행</button><button class="cmode__b" data-cmode="all">전체 출력</button></span>
+      </div>
+      <pre class="console__body" data-console>대기 중 — ▶ 시작을 누르세요.</pre>
+    </div>
+    <script type="application/json" class="stepper-config">
+    {
+      "code":[
+        "\" ts_item·tt_item·ts_order(items TYPE tt_item) 선언 완료",
+        "gs_order-order_id = 'A001'.",
+        "gs_order-customer = '김연아'.",
+        "",
+        "gs_item-item = '키보드'. gs_item-qty = 1.",
+        "APPEND gs_item TO gs_order-items.      \" 행 '안의' 테이블에!",
+        "gs_item-item = '마우스'. gs_item-qty = 2.",
+        "APPEND gs_item TO gs_order-items.",
+        "",
+        "APPEND gs_order TO gt_orders.          \" 완성된 주문 한 건을 쌓기",
+        "CLEAR gs_order.                        \" 다음 주문 준비",
+        "",
+        "LOOP AT gt_orders INTO gs_order.",
+        "  WRITE: / '주문:', gs_order-order_id, gs_order-customer.",
+        "  LOOP AT gs_order-items INTO gs_item. \" 이 행이 품은 목록만",
+        "    WRITE: /4 gs_item-item, gs_item-qty.",
+        "  ENDLOOP.",
+        "ENDLOOP."
+      ],
+      "vars":[
+        {"label":"gs_order-order_id","sub":"주문 한 건 · 주문번호","key":"oid","init":"( 공백 )"},
+        {"label":"gs_order-customer","sub":"주문 한 건 · 주문자","key":"cust","init":"( 공백 )"},
+        {"label":"gs_order-items","sub":"주문 '안의' 상품 테이블 — Deep의 현장","key":"items","itab":{"cols":["item","qty"],"num":[false,true]},"init":[]},
+        {"label":"gs_item","sub":"상품 한 줄 Work Area","key":"gs_item","init":"( 공백 )"},
+        {"label":"gt_orders","sub":"주문들의 테이블(행마다 목록을 품음)","key":"gt_orders","itab":{"cols":["order_id","customer","items"],"num":[false,false,false]},"init":[]}
+      ],
+      "steps":[
+        {"line":2,"vars":{"oid":"A001"},"console":"주문번호부터 — 여기까지는 Chapter 5의 Structure 그대로입니다"},
+        {"line":3,"vars":{"cust":"김연아"},"console":"주문자 김연아 — 문제는 다음, 상품 '목록'입니다"},
+        {"line":5,"vars":{"gs_item":"키보드 · 1"},"console":"상품 한 줄 준비 — 키보드 1개"},
+        {"line":6,"vars":{"items":[["키보드",1]]},"focus":{"items":1},"console":"APPEND ... TO gs_order-items — 바깥 테이블이 아니라 행 '안의' 테이블에 쌓았습니다! gs_order-items도 엄연한 Internal Table이라 배운 문장이 다 통합니다"},
+        {"line":7,"vars":{"gs_item":"마우스 · 2"},"console":"두 번째 상품 — 마우스 2개"},
+        {"line":8,"vars":{"items":[["키보드",1],["마우스",2]]},"focus":{"items":2},"console":"안쪽 목록 완성(2행) — 주문 한 건이 다 채워졌습니다"},
+        {"line":10,"vars":{"gt_orders":[["A001","김연아","🧺 목록 2행"]]},"focus":{"gt_orders":1},"console":"완성된 주문을 바깥 테이블에 APPEND — 안에 품은 상품 목록까지 통째로 복사되어 1번 행이 됩니다"},
+        {"line":11,"vars":{"oid":"( 공백 )","cust":"( 공백 )","items":[]},"console":"CLEAR gs_order — 다음 주문을 받으려고 비웠습니다. 안의 목록(items)까지 함께 비워지는 것에 주목! 쌓아 둔 gt_orders의 행은 물론 그대로입니다"},
+        {"line":13,"vars":{"oid":"A001","cust":"김연아","items":[["키보드",1],["마우스",2]]},"focus":{"gt_orders":1},"console":"읽기 시작 — 바깥 LOOP가 주문 1번 행을 gs_order로 복사합니다(품고 있던 목록까지 돌아왔습니다)"},
+        {"line":14,"vars":{},"console":"[출력] 주문: A001 김연아"},
+        {"line":16,"vars":{"gs_item":"키보드 · 1"},"focus":{"items":1},"console":"안쪽 LOOP 1회차 — 도는 대상이 gt_orders가 아니라 gs_order-items, 즉 '지금 든 주문이 품은 목록'입니다\n[출력]     키보드 1"},
+        {"line":16,"vars":{"gs_item":"마우스 · 2"},"focus":{"items":2},"console":"안쪽 LOOP 2회차\n[출력]     마우스 2"},
+        {"line":18,"vars":{},"console":"안쪽 목록 2행이 끝나면 바깥 LOOP도 다음 주문으로 — 주문이 하나뿐이라 여기서 종료. Chapter 4의 중첩 DO와 같은 겹 구조인데, 안쪽이 '횟수'가 아니라 '이 행이 품은 목록'이라는 점만 다릅니다"}
+      ]
+    }
+    </script>
+  </div>
+  <div class="note">💡 <code>gs_order-items</code>처럼 <b>행 안의 테이블</b>에도 APPEND·READ·LOOP가 전부 됩니다. 다만 "누구의 목록인가"(어느 행의 items인가)를 항상 분명히 하고 다루세요. 워치의 🧺 표기는 행 안에 목록이 통째로 들어 있다는 요약입니다.</div>
+</div>
+<script src="../_engine/step-debugger.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

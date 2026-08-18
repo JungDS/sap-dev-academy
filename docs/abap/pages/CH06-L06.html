@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>구구단 전체 = Internal Table (캡스톤) · Internal Table · SAP Developer Academy</title>
+<title>한 행 제어 ② — 고치기와 지우기 (MODIFY · DELETE) · Internal Table · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -34,48 +34,58 @@
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 6 › Lesson 6</nav>
       <section class="lhead">
         <p class="lhead__eyebrow">Internal Table</p>
-        <h1>구구단 전체 = Internal Table (캡스톤)</h1>
-        <p class="lhead__direction">구구단 72줄을 내부 테이블에 쌓아 정렬·출력한다.</p>
+        <h1>한 행 제어 ② — 고치기와 지우기 (MODIFY · DELETE)</h1>
+        <p class="lhead__direction">같은 두 좌표의 재적용 — 찾은 행을 바꾸고, 지우고, 없을 때도 안전하게.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 6</span><span class="tag tag--ls">Lesson 6</span><span class="tag tag--lv">초급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>구구단 전체를 메모리에 담는다</h2>
-<p><a href="CH05-L05.html">Chapter 5 · 구구단 캡스톤</a>에서 구구단 한 줄을 Structure로 묶었지만
-<strong>한 번에 한 줄</strong>뿐이었다. 이제 같은 모양의 행을 <button class="term" type="button" data-term="Internal Table">Internal Table</button>에 쌓으면 72줄을
-통째로 들고 있을 수 있다. 이 실습은 이번 챕터에서 배운 것들을 한 프로그램에 모으는 자리다.</p>
-<table>
-<thead>
-<tr>
-<th>배운 개념</th>
-<th>구구단에서의 역할</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Line Type</td>
-<td><code>dan</code>·<code>mul</code>·<code>result</code>를 묶은 행 모양(<code>ts_line</code>)</td>
-</tr>
-<tr>
-<td>Work Area</td>
-<td>지금 만들고 있는 한 줄(<code>gs_line</code>)</td>
-</tr>
-<tr>
-<td>Internal Table</td>
-<td>72줄을 담는 표(<code>gt_gugu</code>)</td>
-</tr>
-<tr>
-<td>APPEND</td>
-<td>한 줄씩 쌓기</td>
-</tr>
-<tr>
-<td>SORT</td>
-<td>결과 기준 재배열</td>
-</tr>
-<tr>
-<td>LOOP</td>
-<td>쌓인 72줄 출력</td>
-</tr>
-</tbody></table>
-</section><section class="lblock"><h2>쌓기 — 중첩 DO + APPEND</h2>
+<section class="lblock"><h2>좌표는 그대로, 동사만 바뀐다</h2>
+<p>앞 레슨에서 잡은 두 좌표 — <strong>자리(INDEX)로, 아니면 키(KEY)로</strong> — 는 고치기와 지우기에도
+그대로 반복된다. 새로 외울 원리는 없다. 동사만 <code>MODIFY</code>와 <code>DELETE</code>로 바뀔 뿐이다.</p>
+</section><section class="lblock"><h2>고치기 — MODIFY</h2>
+<p>가장 자주 쓰는 패턴부터. <code>READ</code>가 채워 준 <code>sy-tabix</code>(찾은 행 번호)로 바로 고친다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6</pre><pre class="abap-editor__code"><code><span class="tok-kw">READ</span> <span class="tok-kw">TABLE</span> gt_person <span class="tok-kw">INTO</span> gs_person <span class="tok-kw">WITH</span> <span class="tok-kw">KEY</span> name = <span class="tok-str">'정훈영'</span>.
+<span class="tok-kw">IF</span> sy-subrc = <span class="tok-num">0</span>.
+  gs_person-age = <span class="tok-num">31</span>.
+  <span class="tok-kw">MODIFY</span> gt_person <span class="tok-kw">FROM</span> gs_person <span class="tok-kw">INDEX</span> sy-tabix
+         <span class="tok-kw">TRANSPORTING</span> age.               <span class="tok-com">" age 필드만 갱신(나머지 보존)</span>
+<span class="tok-kw">ENDIF</span>.</code></pre></div></div>
+<p>두 좌표로 정리하면:</p>
+<ul>
+<li><strong>자리로</strong>: <code>MODIFY gt_... FROM gs_... INDEX n.</code> — n번 행을 교체. 위 패턴처럼
+<code>READ</code> 직후 <code>sy-tabix</code>와 짝지어 쓰는 게 정석이다.</li>
+<li><strong>키로</strong>: <code>MODIFY TABLE gt_... FROM gs_....</code> — Work Area의 <strong>키 필드 값으로 행을 찾아서</strong>
+나머지를 교체. 번호가 없는 HASHED에서는 이쪽이 유일한 길이다.</li>
+</ul>
+<blockquote>
+<p><code>MODIFY TABLE</code>은 키로 행을 <strong>식별</strong>하는 문장이지, 키를 <strong>바꾸는</strong> 문장이 아니다.
+키 필드는 찾는 데 쓰이고, 바뀌는 것은 나머지 필드들이다. &quot;정훈영의 나이를 고친다&quot;는 되지만
+&quot;정훈영이라는 이름 자체를 고친다&quot;는 이 문장의 용도가 아니다.</p>
+</blockquote>
+<p><code>TRANSPORTING f1 f2</code>는 &quot;<strong>이 필드만 옮겨라</strong>&quot; — 지정한 필드만 갱신하고 나머지는 보존한다.
+앞 레슨의 <code>TRANSPORTING NO FIELDS</code>(하나도 옮기지 마라)와 같은 낱말의 반대 방향 용법이다.
+빼먹으면 행 <strong>전체</strong>가 Work Area 값으로 교체되니, 일부만 고칠 땐 꼭 붙이자.</p>
+</section><section class="lblock"><h2>지우기 — DELETE</h2>
+<p>지우기도 좌표 둘에, &quot;조건으로 한꺼번에&quot;가 하나 더 붙는다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3</pre><pre class="abap-editor__code"><code><span class="tok-kw">DELETE</span> gt_person <span class="tok-kw">INDEX</span> <span class="tok-num">3</span>.                     <span class="tok-com">" 자리로: 3번 행 삭제</span>
+<span class="tok-kw">DELETE</span> <span class="tok-kw">TABLE</span> gt_person <span class="tok-kw">FROM</span> gs_person.        <span class="tok-com">" 키로: gs의 키 값과 같은 행 삭제</span>
+<span class="tok-kw">DELETE</span> gt_person <span class="tok-kw">WHERE</span> age &lt; <span class="tok-num">20</span>.              <span class="tok-com">" 조건으로: 맞는 행 전부 삭제</span></code></pre></div></div>
+<ul>
+<li><code>WHERE</code>는 조건에 맞는 행을 <strong>모두</strong> 지운다. 하나라도 지웠으면 <code>sy-subrc = 0</code>,
+지운 행이 없으면 0이 아니다(역시 0인지로만 판정).</li>
+<li>자리로 지우면 <strong>뒤 행들의 번호가 하나씩 당겨진다</strong>. 아까 봐 둔 <code>sy-tabix</code>가 삭제 후에도
+유효하리라 믿으면 안 되는 이유다.</li>
+</ul>
+</section><section class="lblock"><h2>행이 없을 때도 안전하게</h2>
+<p>READ가 실패할 수도, 테이블이 통째로 비어 있을 수도 있다. &quot;없음&quot;을 다루는 도구 셋을
+한자리에 묶어 두면 방어 코드가 한결 쉬워진다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -85,93 +95,72 @@
 7
 8
 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20</pre><pre class="abap-editor__code"><code><span class="tok-kw">TYPES</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ts_line,
-         dan    <span class="tok-kw">TYPE</span> i,
-         mul    <span class="tok-kw">TYPE</span> i,
-         result <span class="tok-kw">TYPE</span> i,
-       <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ts_line.
+10</pre><pre class="abap-editor__code"><code><span class="tok-kw">IF</span> gt_person <span class="tok-kw">IS</span> <span class="tok-kw">INITIAL</span>.                      <span class="tok-com">" ① 테이블이 통째로 비었나</span>
+  <span class="tok-kw">WRITE</span>: / <span class="tok-str">'데이터가 없습니다'</span>.
+<span class="tok-kw">ENDIF</span>.
 
-<span class="tok-kw">DATA</span>: gs_line <span class="tok-kw">TYPE</span> ts_line,
-      gt_gugu <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ts_line,
-      gv_cnt  <span class="tok-kw">TYPE</span> i.
+<span class="tok-kw">DESCRIBE</span> <span class="tok-kw">TABLE</span> gt_person <span class="tok-kw">LINES</span> gv_cnt.        <span class="tok-com">" ② 몇 건인지 세기</span>
 
-<span class="tok-kw">DO</span> <span class="tok-num">8</span> <span class="tok-kw">TIMES</span>.
-  gs_line-dan = sy-index + <span class="tok-num">1</span>.            <span class="tok-com">" 2~9단</span>
-  <span class="tok-kw">DO</span> <span class="tok-num">9</span> <span class="tok-kw">TIMES</span>.
-    gs_line-mul    = sy-index.
-    gs_line-result = gs_line-dan * gs_line-mul.
-    <span class="tok-kw">APPEND</span> gs_line <span class="tok-kw">TO</span> gt_gugu.           <span class="tok-com">" 한 줄씩 쌓는다</span>
-  <span class="tok-kw">ENDDO</span>.
-<span class="tok-kw">ENDDO</span>.
-
-<span class="tok-kw">DESCRIBE</span> <span class="tok-kw">TABLE</span> gt_gugu <span class="tok-kw">LINES</span> gv_cnt.     <span class="tok-com">" gv_cnt = 72</span></code></pre></div></div>
-<p>이제 <code>gt_gugu</code>에는 구구단 72행이 <strong>전부</strong> 들어 있다. 출력 후에도 사라지지 않고
-정렬·검색에 쓸 수 있다.</p>
-</section><section class="lblock"><h2>정렬해서 출력 — SORT + LOOP</h2>
-<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
-2
-3
-4
-5</pre><pre class="abap-editor__code"><code><span class="tok-kw">SORT</span> gt_gugu <span class="tok-kw">BY</span> result <span class="tok-kw">DESCENDING</span>.       <span class="tok-com">" 결과 큰 순서로</span>
-
-<span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> gt_gugu <span class="tok-kw">INTO</span> gs_line.
-  <span class="tok-kw">WRITE</span>: / gs_line-dan, <span class="tok-str">'x'</span>, gs_line-mul, <span class="tok-str">'='</span>, gs_line-result.
-<span class="tok-kw">ENDLOOP</span>.</code></pre></div></div>
-<p>한 줄씩 출력만 하던 <a href="CH05-L05.html">지난 챕터의 구구단</a>과 달리, <strong>모아 두었기에</strong>
-&quot;결과가 큰 순서&quot; 같은 원하는 기준으로 마음대로 재배열할 수 있다.</p>
-</section><section class="lblock"><h2>디버거로 행들 보기</h2>
-<p><code>APPEND</code> 다음 줄에 <code>BREAK-POINT</code>를 걸고(<a href="CH04-L06.html">디버깅 입문</a>) <code>gt_gugu</code>를
-펼치면, 안쪽 루프가 한 번 돌 때마다 행이 1개, 2개, 3개 … 72개로 하나씩 늘어나는 모습이 보인다.</p>
-<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">행이 APPEND될 때마다 내부 테이블이 늘어나는 모습 보기</span><a class="embed__open" href="../../../embeds/abap/CH06-L06-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH06-L06-S01.html" loading="lazy" title="행이 APPEND될 때마다 내부 테이블이 늘어나는 모습 보기"></iframe></figure>
-</section><section class="lblock"><h2>더 해 보기 — 미션 둘</h2>
-<p>쌓아 두면 정렬 말고도 할 수 있는 일이 많다. 이번 챕터에서 배운 문장을 이 프로그램에 직접
-붙여 보자.</p>
+<span class="tok-kw">READ</span> <span class="tok-kw">TABLE</span> gt_person <span class="tok-kw">INTO</span> gs_person <span class="tok-kw">WITH</span> <span class="tok-kw">KEY</span> name = <span class="tok-str">'수지'</span>.
+<span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.                             <span class="tok-com">" ③ 특정 행이 없나</span>
+  <span class="tok-kw">WRITE</span>: / <span class="tok-str">'수지는 명단에 없습니다'</span>.
+<span class="tok-kw">ENDIF</span>.</code></pre></div></div>
 <ul>
-<li><strong>미션 1 · 한 줄만 콕 집어 찾기</strong> — <code>gt_gugu</code>에서 &quot;7 x 8&quot; 줄을 찾아 결과만 출력해 보자.
-<code>READ TABLE gt_gugu INTO gs_line WITH KEY dan = 7 mul = 8.</code>으로 찾고, 찾았는지는
-<code>sy-subrc = 0</code>으로 확인한다. 없는 값(<code>mul = 10</code>)으로 실패도 한 번 겪어 보자.</li>
-<li><strong>미션 2 · 단마다 소계 내기</strong> — <code>SORT gt_gugu BY dan.</code>으로 단 순서를 맞춘 다음, <code>LOOP</code> 안에
-<code>AT END OF dan.</code>과 <code>SUM.</code>을 넣어 단별 합계를 찍어 보자. <code>dan</code>이 첫 필드라 그룹 키가
-단순하다. <code>AT</code> 블록 안에서 <code>mul</code>을 같이 찍어 보면 값이 가려진다는 그 규칙도 눈으로 확인된다.</li>
+<li><code>IS INITIAL</code>은 <a href="CH04-L04.html">Chapter 4</a>에서 배운 그 판별이다 — 테이블에도 그대로 통한다
+(행이 0개면 초기 상태).</li>
+<li>①은 전체가 비었는지, ③은 특정 행이 없는지. 묻는 질문이 다르니 둘 다 습관이 돼야 한다.</li>
 </ul>
+</section><section class="lblock"><h2>여기까지 한눈에 — 한 행 제어 전체 지도</h2>
+<p>L05～L06에서 만난 문장들이다. 외우기 전에 &quot;무엇을 하려는가 × 어느 좌표로&quot;의 격자로 보자.</p>
+<table>
+<thead>
+<tr>
+<th>하려는 일</th>
+<th>자리(INDEX)로</th>
+<th>키(KEY)로</th>
+<th>조건으로</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>넣기</td>
+<td><code>INSERT ... INDEX n</code></td>
+<td><code>INSERT ... INTO TABLE</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td>찾기</td>
+<td><code>READ ... INDEX n</code></td>
+<td><code>READ ... WITH KEY</code> / <code>WITH TABLE KEY</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td>고치기</td>
+<td><code>MODIFY ... INDEX n</code></td>
+<td><code>MODIFY TABLE ...</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td>지우기</td>
+<td><code>DELETE ... INDEX n</code></td>
+<td><code>DELETE TABLE ...</code></td>
+<td><code>DELETE ... WHERE</code></td>
+</tr>
+</tbody></table>
+<p>(<code>APPEND</code>는 &quot;끝에&quot;라는 특별한 자리, <code>TRANSPORTING</code>은 찾기·고치기 어디든 붙는 부속이다.)</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">한 행 실험실 ② — MODIFY·DELETE와 번호 당겨짐 관찰</span><a class="embed__open" href="../../../embeds/abap/CH06-L06-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH06-L06-S01.html" loading="lazy" title="한 행 실험실 ② — MODIFY·DELETE와 번호 당겨짐 관찰"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>바깥 <code>sy-index</code>와 안쪽 <code>sy-index</code> 혼동</strong> → 안쪽 루프에 들어가면 <button class="term" type="button" data-term="sy-index">sy-index</button>는
-안쪽 회차다. 그래서 바깥쪽에서 정한 단 값은 안쪽 루프에 들어가기 <strong>전에</strong>
-<code>gs_line-dan</code>에 저장해 둔다.</li>
-<li><strong>APPEND 위치</strong> → <code>mul</code>·<code>result</code>가 채워진 <strong>뒤에</strong> 실행돼야 한다. 안쪽 루프 밖에 두면
-단마다 한 줄만 쌓인다.</li>
-<li><strong>정렬 후 원래 순서 기대</strong> → <code>SORT</code> 후에는 순서가 바뀌고, 그것만으로는 되돌릴 방법이 없다.
-원래 순서가 필요하면 쌓을 때 <strong>순번을 담는 필드</strong>를 하나 더 두고 1, 2, 3 … 을 같이 넣어
-둔다. 나중에 그 필드로 <code>SORT</code>하면 입력 순서로 돌아온다.</li>
+<li><strong>TRANSPORTING 없이 부분 수정 의도</strong> → 행 전체가 교체된다. 안 채운 필드는 Work Area의
+현재 값(대개 초기값)으로 덮인다.</li>
+<li><strong>sy-tabix를 오래 보관</strong> → 그 사이 정렬·삭제가 일어나면 번호의 의미가 바뀐다.
+<code>READ</code> 직후 바로 쓰고 버린다.</li>
+<li><strong>MODIFY TABLE로 키를 바꾸려 함</strong> → 키는 식별용이다. 키 값을 바꿔야 하면
+지우고 다시 넣는 것이 정도다.</li>
+<li><strong>빈 테이블 무방비</strong> → 데이터가 0건인 날은 반드시 온다. <code>IS INITIAL</code> 선확인 습관.</li>
 </ul>
-<details>
-<summary>다른 언어를 해 봤다면 — 이번 챕터 개념 대조표 (더 보기)</summary><p>낯선 이름이 많았지만, 대부분은 이미 쓰던 물건에 다른 이름이 붙은 것이다.</p>
-<ul>
-<li><strong>STANDARD / SORTED / HASHED</strong> — 순서대로 담는 리스트 / 키 순서가 유지되는 맵 /
-해시로 찾는 맵에 각각 대응한다.</li>
-<li><strong><code>COLLECT</code></strong> — 키로 묶어 합계를 내는 그룹 합산이다. SQL을 안다면 <code>GROUP BY</code> 뒤의 합계,
-맵을 쓴다면 &quot;키가 있으면 더하고 없으면 새로 넣기&quot;와 같다.</li>
-<li><strong><code>ASSIGNING &lt;fs&gt;</code></strong> — 복사가 아니라 그 자리를 가리키는 참조다. 다른 언어에서는 이쪽이
-오히려 기본 동작이라, 특별한 기법이 아니라 익숙한 그것이라고 보면 된다.</li>
-<li><strong><code>sy-subrc</code> 확인</strong> — 실패를 예외로 던지지 않고 <strong>반환 코드</strong>로 알리는 방식이다.
-확인하지 않으면 프로그램은 아무 일 없다는 듯 그대로 진행한다. <code>READ</code> 다음 줄의
-<code>IF sy-subrc = 0</code>이 습관이어야 하는 이유이자, 경력자가 가장 자주 걸리는 지점이다.</details></li>
-</ul>
-</section><section class="lblock"><h2>정리 — 그리고 다음 불편</h2>
-<p>구구단 전체를 <button class="term" type="button" data-term="메모리">메모리</button>에서 자유롭게 다뤘다. 그런데 프로그램이 끝나면 <code>gt_gugu</code>는
-<strong>흔적도 없이 사라진다.</strong> 다시 실행하면 또 처음부터 만들어야 한다. 값을 <strong>영구히
-저장</strong>해 두고 싶다 → <a href="CH07-L01.html">Chapter 7 · Transparent Table</a>.</p>
+<hr>
+<p>한 행은 이제 자유자재다. 그런데 STANDARD 테이블에서 키로 찾는 건 여전히 <strong>순차 탐색</strong>이라
+데이터가 크면 느리다. 더 빠르게 찾는 수동 처방 → <a href="CH06-L07.html">빠르게 찾기</a>.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

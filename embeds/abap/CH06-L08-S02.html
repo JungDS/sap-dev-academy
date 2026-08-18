@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<!-- CH06-L08-S02 — 엔진: step-debugger (embeds/_engine/step-debugger.{js,css}) + _autoheight.js
+     config=레슨 전용(ASSIGNING 직접 수정 → ENDLOOP 뒤에도 별명이 마지막 행을 가리켜, 루프 밖
+     무심한 대입 한 줄이 마지막 행을 오염시키는 사고 재현 — 본문 L08 위험 ①·② 정합).
+     구 CH06-L04-S01 3막(ASSIGNING) 소재를 분리·오염 사고 추가.
+     게이팅: CH06-L08 범위(FIELD-SYMBOLS·ASSIGNING — LOOP 직접 수정 용도까지만). -->
+<html lang="ko" data-eng="step-debugger">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ENDLOOP 뒤의 별명 오염 · CH06-L08-S02</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/step-debugger.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">ENDLOOP 뒤의 별명 — 루프 밖 오염 사고 재현 <small>(스텝 디버거)</small></p>
+  <p class="lead"><code>ASSIGNING</code>은 복사본 없이 <b>행 자체에 별명(<code>&lt;fs_person&gt;</code>)을 붙여</b> 그 자리에서 고칩니다. 편리하지만 — 루프가 끝나도 별명이 <b>마지막 행에 그대로 붙어 있다</b>는 게 오늘의 사고 지점입니다. 모니터의 "별명이 가리키는 곳"을 끝까지 따라가 보세요.</p>
+
+  <div class="dbg" data-stepper>
+    <div class="dbg__bar">
+      <button class="btn btn--primary" data-start>▶ 시작</button>
+      <button class="btn btn--step" data-next disabled>다음 ⏭</button>
+      <div class="progress"><i data-progress></i></div>
+      <span class="muted" data-counter>0 / 8</span>
+    </div>
+    <div class="dbg__main">
+      <div class="dbg__editorwrap"><div class="dbg__edhd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span></div><div class="dbg__editor" data-code></div></div>
+      <div class="dbg__watch">
+        <div class="watch__head">변수 모니터 — 별명과 원본 테이블</div>
+        <div class="watch__list" data-vars></div>
+      </div>
+    </div>
+    <div class="dbg__console">
+      <div class="console__head">
+        <span>콘솔</span>
+        <span class="leg"><span class="a">▶ 실행할 차례</span> · <span class="d">✓ 방금 실행</span></span>
+        <span class="sp"></span>
+        <span class="cmode"><button class="cmode__b on" data-cmode="cur">현재 행</button><button class="cmode__b" data-cmode="all">전체 출력</button></span>
+      </div>
+      <pre class="console__body" data-console>대기 중 — ▶ 시작을 누르세요.</pre>
+    </div>
+    <script type="application/json" class="stepper-config">
+    {
+      "code":[
+        "\" gt_person = 정훈영/30 · 홍길동/25 · 유재석/40",
+        "FIELD-SYMBOLS <fs_person> TYPE ts_person.",
+        "",
+        "LOOP AT gt_person ASSIGNING <fs_person>.",
+        "  <fs_person>-age = <fs_person>-age + 1.",
+        "ENDLOOP.",
+        "",
+        "\" ...한참 아래, 다른 일을 하다가 무심코...",
+        "<fs_person>-age = 0.        \" ⚠ 루프 밖 대입"
+      ],
+      "vars":[
+        {"label":"<fs_person>","sub":"별명이 가리키는 곳(복사본 아님)","key":"fsp","init":"아직 아무것도 안 가리킴"},
+        {"label":"gt_person","sub":"Internal Table · 원본","key":"gt_person","itab":{"cols":["name","age"],"num":[false,true]},"init":[["정훈영",30],["홍길동",25],["유재석",40]]}
+      ],
+      "steps":[
+        {"line":2,"vars":{},"console":"별명(Field Symbol) 선언 — 꺾쇠는 문법 필수. 아직 아무 행도 가리키지 않습니다(이 상태로 쓰면 덤프!)"},
+        {"line":4,"vars":{"fsp":"1번 행 (정훈영)"},"focus":{"gt_person":1},"console":"1회차 — Work Area로 복사하는 대신, <fs_person>이 1번 행 자체를 가리킵니다"},
+        {"line":5,"vars":{"gt_person":[["정훈영",31],["홍길동",25],["유재석",40]]},"focus":{"gt_person":1},"console":"대입 한 줄 = 곧 원본 수정 — 테이블의 1번 행이 그 자리에서 30 → 31. MODIFY 같은 '반영 문장'이 따로 없다는 것, 이게 위험 ①입니다"},
+        {"line":5,"vars":{"fsp":"2번 행 (홍길동)","gt_person":[["정훈영",31],["홍길동",26],["유재석",40]]},"focus":{"gt_person":2},"console":"2회차 — 별명이 2번 행으로 옮겨 붙고 25 → 26"},
+        {"line":5,"vars":{"fsp":"3번 행 (유재석)","gt_person":[["정훈영",31],["홍길동",26],["유재석",41]]},"focus":{"gt_person":3},"console":"3회차 — 40 → 41. 세 행 모두 복사 없이 원본이 갱신됐습니다"},
+        {"line":6,"vars":{"fsp":"3번 행 (유재석) — 루프가 끝났는데도!"},"console":"ENDLOOP — 순회는 끝났지만 별명은 해제되지 않습니다. <fs_person>은 여전히 마지막 행(유재석)을 가리키는 중 — 여기가 위험 ②의 무대"},
+        {"line":9,"vars":{"gt_person":[["정훈영",31],["홍길동",26],["유재석",0]]},"focus":{"gt_person":3},"console":"⚠ 오염 사고 — 한참 아래의 무심한 대입 한 줄이 유재석의 나이를 0으로 만들었습니다. 에러도 경고도 없이, 조용히"},
+        {"line":9,"vars":{},"focus":{"gt_person":3},"console":"이 버그의 무서움: 코드만 검색해서는 MODIFY가 없으니 수정 지점이 안 보이고, 루프에서 한참 떨어진 줄이 범인입니다. 그래서 지금 단계의 기본기는 '읽기는 INTO, 고치기는 MODIFY'"}
+      ]
+    }
+    </script>
+  </div>
+  <div class="note">💡 <code>ASSIGNING</code>을 쓸 때는 네 가지 위험(대입=즉시 수정 · ENDLOOP 뒤 잔존 · 추적 어려움 · SORTED/HASHED <b>키 필드</b> 수정 시 강제 종료)을 <b>다 알고</b> 꺼내야 합니다. 루프 밖에서 별명을 다시 쓸 일이 없다면, 아예 손대지 않는 것이 안전합니다.</div>
+</div>
+<script src="../_engine/step-debugger.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

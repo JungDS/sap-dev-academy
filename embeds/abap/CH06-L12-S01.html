@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<!-- CH06-L12-S01 — 엔진: step-debugger (embeds/_engine/step-debugger.{js,css}) + _autoheight.js
+     config=레슨 전용(컨트롤레벨 — SORT 선행·AT NEW/AT END OF 경계·SUM·AT 블록 Work Area 마스킹
+     (그룹 키 오른쪽 amount→0)·ENDAT 복원. 본문 L12 입력(부산50·서울100·서울30)·출력과 정합.
+     근거=ABAPAT_ITAB/ABAPSUM). 구 CH06-L04-S02 2막에서 분할 개조 — COLLECT는 CH06-L11-S01로.
+     게이팅: CH06-L12 범위(SORT·LOOP INTO·AT NEW/END OF·SUM). -->
+<html lang="ko" data-eng="step-debugger">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>소계 디버거 · CH06-L12-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/step-debugger.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">소계 디버거 — AT 경계에서 무슨 일이 <small>(스텝 디버거)</small></p>
+  <p class="lead">상세 기록 3건에서 지역별 소계를 냅니다. <b>강조되는 줄</b>을 따라가세요 — 어느 문장이 그룹 경계에서만 실행되는지, <code>AT</code> 블록에 들어가는 순간 <code>gs_sales-amount</code>가 <b>0으로 가려졌다가</b> <code>SUM</code>으로 채워지는지가 보입니다. 콘솔을 <b>전체 출력</b>으로 두면 본문의 출력 예시가 그대로 완성됩니다.</p>
+
+  <div class="dbg" data-stepper>
+    <div class="dbg__bar">
+      <button class="btn btn--primary" data-start>▶ 시작</button>
+      <button class="btn btn--step" data-next disabled>다음 ⏭</button>
+      <div class="progress"><i data-progress></i></div>
+      <span class="muted" data-counter>0 / 22</span>
+    </div>
+    <div class="dbg__main">
+      <div class="dbg__editorwrap"><div class="dbg__edhd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span></div><div class="dbg__editor" data-code></div></div>
+      <div class="dbg__watch">
+        <div class="watch__head">변수 모니터 — Work Area와 상세 테이블</div>
+        <div class="watch__list" data-vars></div>
+      </div>
+    </div>
+    <div class="dbg__console">
+      <div class="console__head">
+        <span>콘솔</span>
+        <span class="leg"><span class="a">▶ 실행할 차례</span> · <span class="d">✓ 방금 실행</span></span>
+        <span class="sp"></span>
+        <span class="cmode"><button class="cmode__b on" data-cmode="cur">현재 행</button><button class="cmode__b" data-cmode="all">전체 출력</button></span>
+      </div>
+      <pre class="console__body" data-console>대기 중 — ▶ 시작을 누르세요.</pre>
+    </div>
+    <script type="application/json" class="stepper-config">
+    {
+      "code":[
+        "\" gt_sales(상세 기록 3건) = 서울/100 · 부산/50 · 서울/30",
+        "SORT gt_sales BY region.        \" ① 그룹 키로 반드시 먼저 정렬",
+        "LOOP AT gt_sales INTO gs_sales.",
+        "  AT NEW region.                \" ② 그룹이 시작되는 행에서 한 번",
+        "    WRITE: / '지역:', gs_sales-region.",
+        "  ENDAT.",
+        "  WRITE: / gs_sales-amount.     \" ③ 상세 행(매 반복)",
+        "  AT END OF region.             \" ④ 그룹의 마지막 행에서 한 번",
+        "    SUM.",
+        "    WRITE: / '소계:', gs_sales-amount.",
+        "  ENDAT.",
+        "ENDLOOP."
+      ],
+      "vars":[
+        {"label":"gs_sales-region","sub":"Work Area · 지역(그룹 키)","key":"gs_sales-region","init":"( 공백 )"},
+        {"label":"gs_sales-amount","sub":"Work Area · 금액 — AT 블록 안에서 변신!","key":"gs_sales-amount","init":"0"},
+        {"label":"gt_sales","sub":"상세 기록(테이블은 안 바뀜)","key":"gt_sales","itab":{"cols":["region","amount"],"num":[false,true]},"init":[["서울",100],["부산",50],["서울",30]]}
+      ],
+      "steps":[
+        {"line":2,"vars":{"gt_sales":[["부산",50],["서울",100],["서울",30]]},"console":"SORT BY region — 같은 지역끼리 인접해졌습니다(부산 → 서울·서울). 컨트롤레벨의 전제 조건!"},
+        {"line":3,"vars":{"gs_sales-region":"부산","gs_sales-amount":"50"},"focus":{"gt_sales":1},"console":"1회차 — 1번 행(부산/50)이 Work Area로 복사됩니다"},
+        {"line":4,"vars":{"gs_sales-amount":"0"},"focus":{"gt_sales":1},"console":"AT NEW region — region이 처음 보는 값이라 그룹 시작! ⚠ 블록에 들어가는 순간 Work Area가 손질됩니다: 그룹 키(region)는 남고, 그 오른쪽 숫자 amount는 0으로 가려짐 — 여긴 '행 하나'가 아니라 '그룹 전체'를 대표하는 자리니까요"},
+        {"line":5,"vars":{},"focus":{"gt_sales":1},"console":"[출력] 지역: 부산 (블록 안에서는 그룹 키만 믿고 씁니다)"},
+        {"line":6,"vars":{"gs_sales-amount":"50"},"focus":{"gt_sales":1},"console":"ENDAT — 블록을 빠져나오자 1번 행의 원래 값 50으로 복원. 손질은 블록 안에서만 벌어지는 일입니다"},
+        {"line":7,"vars":{},"focus":{"gt_sales":1},"console":"[출력] 50 (상세 행 — 매 반복 실행)"},
+        {"line":8,"vars":{"gs_sales-amount":"0"},"focus":{"gt_sales":1},"console":"AT END OF region — 다음 행이 서울이니 여기가 부산 그룹의 마지막 행! 블록에 들어가며 amount가 또 0으로 가려집니다"},
+        {"line":9,"vars":{"gs_sales-amount":"50"},"focus":{"gt_sales":1},"console":"SUM — 가려져 비어 있던 자리에 부산 그룹의 숫자 합계 50이 채워집니다(한 행짜리 그룹이라 합계도 50). 마스킹과 SUM이 한 쌍인 이유 — 예제가 AT END OF 안에서 SUM을 먼저 부르는 이유이기도"},
+        {"line":10,"vars":{},"focus":{"gt_sales":1},"console":"[출력] 소계: 50"},
+        {"line":11,"vars":{"gs_sales-amount":"50"},"focus":{"gt_sales":1},"console":"ENDAT — 다시 1번 행의 값으로 복원(마침 50). 합계는 블록 안에서만 쓰는 값이었습니다"},
+        {"line":3,"vars":{"gs_sales-region":"서울","gs_sales-amount":"100"},"focus":{"gt_sales":2},"console":"2회차 — 2번 행(서울/100). region 값이 부산에서 서울로 바뀌었습니다"},
+        {"line":4,"vars":{"gs_sales-amount":"0"},"focus":{"gt_sales":2},"console":"AT NEW region — 새 그룹 시작. 여기서도 amount가 0으로 가려집니다"},
+        {"line":5,"vars":{},"focus":{"gt_sales":2},"console":"[출력] 지역: 서울"},
+        {"line":7,"vars":{"gs_sales-amount":"100"},"focus":{"gt_sales":2},"console":"ENDAT을 지나며 100으로 복원 → [출력] 100"},
+        {"line":8,"vars":{},"focus":{"gt_sales":2},"console":"AT END OF region — 다음 행도 서울이라 아직 그룹의 끝이 아닙니다. 블록을 통째로 건너뜁니다(가려짐도 없음)"},
+        {"line":3,"vars":{"gs_sales-amount":"30"},"focus":{"gt_sales":3},"console":"3회차 — 3번 행(서울/30)"},
+        {"line":4,"vars":{},"focus":{"gt_sales":3},"console":"AT NEW region — region이 그대로 서울이라 건너뜁니다(그룹 제목은 그룹당 한 번)"},
+        {"line":7,"vars":{},"focus":{"gt_sales":3},"console":"[출력] 30"},
+        {"line":8,"vars":{"gs_sales-amount":"0"},"focus":{"gt_sales":3},"console":"AT END OF region — 마지막 행이자 서울 그룹의 끝. 블록 진입과 함께 30이 0으로 가려집니다 (본문의 전·중·후 표에서 본 바로 그 순간!)"},
+        {"line":9,"vars":{"gs_sales-amount":"130"},"focus":{"gt_sales":3},"console":"SUM — 서울 그룹 합계 100 + 30 = 130이 채워집니다"},
+        {"line":10,"vars":{},"focus":{"gt_sales":3},"console":"[출력] 소계: 130"},
+        {"line":12,"vars":{"gs_sales-amount":"30"},"console":"ENDAT로 30 복원 후 ENDLOOP — 소계 리포트 완성! 정렬이 안 돼 있었다면 같은 지역 그룹이 여러 번 '시작'돼 소계도 여러 번 나왔을 겁니다"}
+      ]
+    }
+    </script>
+  </div>
+  <div class="note">💡 <code>AT</code> 블록 안의 <code>gs_sales-amount</code>는 <b>행의 값이 아닙니다</b> — 가려졌거나(0), <code>SUM</code>이 채운 그룹 합계입니다. 상세 값이 필요하면 블록 <b>밖</b>(상세 행 자리)에서 쓰세요. 그리고 <code>SUM</code>은 <code>LOOP ... INTO</code>에서만 됩니다(<code>ASSIGNING</code>과는 함께 못 씀).</div>
+</div>
+<script src="../_engine/step-debugger.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

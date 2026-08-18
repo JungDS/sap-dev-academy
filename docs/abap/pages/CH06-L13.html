@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deep Structure — 행 안의 목록 · Internal Table · SAP Developer Academy</title>
+<link rel="stylesheet" href="../../../assets/base.css">
+<link rel="stylesheet" href="../../../assets/lesson.css">
+<link rel="stylesheet" href="../../../assets/shell.css">
+<script>/* 읽기 설정 선적용(플래시 방지) */(function(){try{var L=localStorage,r=document.documentElement;if(L.getItem('sda.dark')==='1')r.classList.add('dark');if(L.getItem('sda.wide')==='1')r.classList.add('wide');var f=parseInt(L.getItem('sda.fontPx'),10);if(f>=13&&f<=20)r.style.fontSize=f+'px';}catch(e){}})();</script>
+</head>
+<body data-domain="abap" data-chapter-id="CH06" data-lesson-id="CH06-L13">
+<header class="appbar">
+  <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
+  <span class="appbar__sp"></span>
+  <span class="meta">Chapter 6 · Internal Table</span>
+  <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
+  <div class="tools">
+    <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
+    <button class="icon-btn" id="fsInc" title="글자 크게">A+</button>
+    <button class="icon-btn" id="fsReset" title="글자 크기 초기화">↺</button>
+    <button class="icon-btn" id="darkBtn" title="다크 모드">🌙</button>
+    <button class="icon-btn" id="widthBtn" title="가독 폭 넓게">↔</button>
+    <button class="icon-btn fs-btn" title="전체화면" aria-label="전체화면"></button>
+  </div>
+</header>
+<div class="read-progress"><i></i></div>
+<div class="scrim"></div>
+<nav class="rail" data-shell="rail"></nav>
+<button class="railFab" id="railFab" aria-label="네비 열기">☰</button>
+<div class="stage">
+  <div class="layout">
+    <main class="main">
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 6 › Lesson 13</nav>
+      <section class="lhead">
+        <p class="lhead__eyebrow">Internal Table</p>
+        <h1>Deep Structure — 행 안의 목록</h1>
+        <p class="lhead__direction">주문 한 건에 상품 여러 개 — 만들어 보고, 이름 붙이고, 판정하는 눈까지.</p>
+        <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 6</span><span class="tag tag--ls">Lesson 13</span><span class="tag tag--lv">초급</span></div>
+      </section>
+      <article class="prose">
+<section class="lblock"><h2>한 행 안에 목록을 넣고 싶다</h2>
+<p>정훈영의 다음 과제는 주문 관리다. 주문 한 건의 모양을 잡아 보는데 —</p>
+<ul>
+<li>주문번호: <code>A001</code></li>
+<li>주문자: 김연아</li>
+<li>주문 상품: 키보드 1개, 마우스 2개, 모니터 1개</li>
+</ul>
+<p>주문번호와 주문자까지는 <a href="CH05-L01.html">Chapter 5</a>의 Structure로 충분하다. 문제는 상품이다.
+<strong>한 건의 주문 안에 여러 줄의 목록</strong>이 딸려 있다. 상품마다 주문 행을 따로 만들자니
+주문번호·주문자가 세 번 반복되고, 필드를 <code>item1</code>·<code>item2</code>·<code>item3</code>으로 늘리자니 상품이
+네 개면 무너진다.</p>
+<p>원하는 것은 분명하다 — <strong>행 안에 테이블을 통째로 넣는 것.</strong> 그게 될까?</p>
+</section><section class="lblock"><h2>일단 만들어 보자 — 아는 도구만으로</h2>
+<p>된다. 그것도 <strong>이미 배운 도구만으로.</strong> Structure의 <button class="term" type="button" data-term="Component">Component</button>에는 타입이 오는데,
+<a href="CH06-L02.html">L02</a>에서 만들어 본 <strong>Table Type도 엄연한 타입</strong>이기 때문이다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16</pre><pre class="abap-editor__code"><code><span class="tok-kw">TYPES</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ts_item,              <span class="tok-com">" 상품 한 줄</span>
+         item <span class="tok-kw">TYPE</span> c <span class="tok-kw">LENGTH</span> <span class="tok-num">20</span>,
+         qty  <span class="tok-kw">TYPE</span> i,
+       <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ts_item.
+
+<span class="tok-kw">TYPES</span> tt_item <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ts_item.  <span class="tok-com">" 상품 여러 줄(Table Type)</span>
+
+<span class="tok-kw">TYPES</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ts_order,             <span class="tok-com">" 주문 한 건</span>
+         order_id <span class="tok-kw">TYPE</span> c <span class="tok-kw">LENGTH</span> <span class="tok-num">10</span>,
+         customer <span class="tok-kw">TYPE</span> c <span class="tok-kw">LENGTH</span> <span class="tok-num">20</span>,
+         items    <span class="tok-kw">TYPE</span> tt_item,       <span class="tok-com">" 행 안에 테이블!</span>
+       <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ts_order.
+
+<span class="tok-kw">DATA</span>: gs_order  <span class="tok-kw">TYPE</span> ts_order,
+      gs_item   <span class="tok-kw">TYPE</span> ts_item,
+      gt_orders <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ts_order.   <span class="tok-com">" 주문들의 테이블(행마다 상품 목록을 품음)</span></code></pre></div></div>
+<p>채우는 것도 배운 그대로다. <strong>안쪽 목록부터</strong> 채우고, 완성된 주문을 바깥 테이블에 쌓는다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10</pre><pre class="abap-editor__code"><code>gs_order-order_id = <span class="tok-str">'A001'</span>.
+gs_order-customer = <span class="tok-str">'김연아'</span>.
+
+gs_item-item = <span class="tok-str">'키보드'</span>. gs_item-qty = <span class="tok-num">1</span>.
+<span class="tok-kw">APPEND</span> gs_item <span class="tok-kw">TO</span> gs_order-items.          <span class="tok-com">" 행 '안의' 테이블에 APPEND</span>
+gs_item-item = <span class="tok-str">'마우스'</span>. gs_item-qty = <span class="tok-num">2</span>.
+<span class="tok-kw">APPEND</span> gs_item <span class="tok-kw">TO</span> gs_order-items.
+
+<span class="tok-kw">APPEND</span> gs_order <span class="tok-kw">TO</span> gt_orders.              <span class="tok-com">" 완성된 주문 한 건을 쌓기</span>
+<span class="tok-kw">CLEAR</span> gs_order.                            <span class="tok-com">" 다음 주문 준비(안의 목록까지 비워진다)</span></code></pre></div></div>
+<p>읽을 때는 <strong>LOOP 안에 LOOP</strong> — 바깥은 주문을, 안쪽은 그 주문의 상품을 돈다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6</pre><pre class="abap-editor__code"><code><span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> gt_orders <span class="tok-kw">INTO</span> gs_order.
+  <span class="tok-kw">WRITE</span>: / <span class="tok-str">'주문:'</span>, gs_order-order_id, gs_order-customer.
+  <span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> gs_order-items <span class="tok-kw">INTO</span> gs_item.     <span class="tok-com">" 이 행이 품은 목록만 돈다</span>
+    <span class="tok-kw">WRITE</span>: /<span class="tok-num">4</span> gs_item-item, gs_item-qty.
+  <span class="tok-kw">ENDLOOP</span>.
+<span class="tok-kw">ENDLOOP</span>.</code></pre></div></div>
+<p><a href="CH04-L05.html">Chapter 4의 중첩 DO</a>와 같은 겹 구조인데, 이번엔 안쪽이 &quot;횟수&quot;가 아니라
+<strong>&quot;이 행이 품은 목록&quot;</strong> 이다. 마법 같은 새 문법은 하나도 없었다 — 아는 것의 조합이다.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">주문 안에 상품 목록 — 채우고 꺼내는 과정 스텝 관찰</span><a class="embed__open" href="../../../embeds/abap/CH06-L13-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH06-L13-S01.html" loading="lazy" title="주문 안에 상품 목록 — 채우고 꺼내는 과정 스텝 관찰"></iframe></figure>
+</section><section class="lblock"><h2>이제 이름을 붙이자 — Flat과 Deep</h2>
+<p>방금 만든 <code>ts_order</code> 같은 구조에는 공식 이름이 있다. 먼저 낱말 하나 —
+여기서 말하는 <button class="term" type="button" data-term="Component">Component</button>는 <a href="CH05-L01.html">Chapter 5</a>에서 &quot;필드&quot;라 부르던 그것이다.</p>
+<ul>
+<li><strong>Flat Structure</strong> — 모든 Component가 <strong>고정 길이</strong> 타입(<code>c LENGTH n</code>·<code>n</code>·<code>d</code>·<code>t</code>·<code>i</code>·<code>p</code> 등).
+담기는 값이 무엇이든 차지하는 자리의 크기가 처음부터 정해져 있다.</li>
+<li><strong><button class="term" type="button" data-term="Deep Structure">Deep Structure</button></strong> — Component 중에 <strong>가변 요소</strong>가 하나라도 있다. 가변 요소는 셋:
+<code>string</code> · <button class="term" type="button" data-term="Internal Table">Internal Table</button> · 참조(reference).</li>
+</ul>
+<p>왜 이 셋일까. <strong>서랍</strong>으로 비유하면 — Flat Structure는 폭이 정해진 서랍이라 모든 칸이
+제자리에 통째로 들어 있다. 그런데 글자 수에 따라 커지는 <code>string</code>, 행이 계속 느는
+Internal Table은 <strong>크기가 변해서 서랍 칸에 직접 못 들어간다.</strong> 그래서 시스템은 그런 값을
+<strong>별채</strong>에 따로 두고, 서랍 칸에는 &quot;어디 별채에 있는지 적은 <strong>쪽지</strong>&quot;만 넣는다. 쪽지가 든
+칸이 하나라도 있으면 그 서랍 전체가 Deep이다. 참조(reference)는 아예 &quot;쪽지가 본업&quot;인
+세 번째 종류인데, 이름만 알아 두자 — 뒤 챕터에서 따로 배운다.</p>
+</section><section class="lblock"><h2>반전 — 우리는 이미 Deep을 쓰고 있었다</h2>
+<p>이 챕터 내내 쓴 <code>ts_person</code>을 다시 보자.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4</pre><pre class="abap-editor__code"><code><span class="tok-kw">TYPES</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ts_person,
+         name <span class="tok-kw">TYPE</span> string,   <span class="tok-com">" string = 가변 요소!</span>
+         age  <span class="tok-kw">TYPE</span> i,
+       <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ts_person.</code></pre></div></div>
+<p><code>name</code>이 <code>string</code>이니 — <strong><code>ts_person</code>은 처음부터 Deep이었다.</strong> 우리는 Deep을 &quot;이제 배우는&quot;
+게 아니라 <a href="CH06-L01.html">L01</a>부터 줄곧 써 온 것이다. 그리고 아무 문제도 없었다.
+Deep은 금지 딱지가 아니라 <strong>분류</strong>다. 다만 몇몇 상황에서 Flat과 다르게 취급되기에
+구분하는 눈이 필요할 뿐이다(잠시 뒤에).</p>
+</section><section class="lblock"><h2>판정하는 눈 — 중첩(Nested)과 헷갈리지 말 것</h2>
+<p>Structure 안에 <strong>Structure</strong>가 든 것은 중첩(nested)이라 부른다. 겹쳐 보여서 Deep 같지만 —
+안까지 전부 고정 길이면 <strong>여전히 Flat</strong>이다. 나란히 보자.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14</pre><pre class="abap-editor__code"><code><span class="tok-kw">TYPES</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ts_addr,              <span class="tok-com">" 주소(전부 고정 길이)</span>
+         city <span class="tok-kw">TYPE</span> c <span class="tok-kw">LENGTH</span> <span class="tok-num">10</span>,
+         zip  <span class="tok-kw">TYPE</span> n <span class="tok-kw">LENGTH</span> <span class="tok-num">5</span>,
+       <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ts_addr.
+
+<span class="tok-kw">TYPES</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ts_emp_a,             <span class="tok-com">" 중첩이지만 Flat</span>
+         name <span class="tok-kw">TYPE</span> c <span class="tok-kw">LENGTH</span> <span class="tok-num">20</span>,
+         addr <span class="tok-kw">TYPE</span> ts_addr,           <span class="tok-com">" Structure 안 Structure — 고정 길이 덩어리</span>
+       <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ts_emp_a.
+
+<span class="tok-kw">TYPES</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ts_emp_b,             <span class="tok-com">" 필드 둘뿐이지만 Deep</span>
+         name <span class="tok-kw">TYPE</span> string,            <span class="tok-com">" 가변 요소</span>
+         age  <span class="tok-kw">TYPE</span> i,
+       <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ts_emp_b.</code></pre></div></div>
+<p>판정 규칙은 하나뿐이다 — <strong>&quot;겹이 몇 개냐&quot;가 아니라 &quot;가변 요소(string·테이블·참조)가
+있느냐&quot;.</strong> 이 규칙 하나로 어떤 선언이든 판정할 수 있다.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">어느 줄이 구조를 Deep으로 만드나 — 클릭 해부</span><a class="embed__open" href="../../../embeds/abap/CH06-L13-S02.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH06-L13-S02.html" loading="lazy" title="어느 줄이 구조를 Deep으로 만드나 — 클릭 해부"></iframe></figure>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">Flat일까 Deep일까 — 판정 퀴즈</span><a class="embed__open" href="../../../embeds/abap/CH06-L13-S03.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH06-L13-S03.html" loading="lazy" title="Flat일까 Deep일까 — 판정 퀴즈"></iframe></figure>
+</section><section class="lblock"><h2>왜 구분하나 — Deep이 다르게 취급되는 자리</h2>
+<ul>
+<li><strong>DB 저장</strong>: DB 테이블의 컬럼은 단일(elementary) 타입 하나여야 한다. <button class="term" type="button" data-term="Internal Table">Internal Table</button>이나
+참조를 컬럼에 통째로 넣을 수는 없다 — <code>gt_orders</code>를 그대로 DB에 저장하지 못하는 이유다
+(주문과 상품을 <strong>두 테이블로 나눠</strong> 저장하는 해법은 <a href="CH07-L01.html">다음 챕터</a>부터
+차근차근 배운다). 단, <code>string</code>은 문자열용 컬럼 타입이 따로 있어 DB에 들어간다 —
+&quot;Deep이면 무조건 DB 불가&quot;가 아니라 <strong>테이블·참조가 불가</strong>인 것이다.</li>
+<li><strong>화면 출력</strong>: 결과를 표로 보여 주는 도구(ALV — 뒤에서 배운다)도 기본적으로 평평한 행을
+전제한다. 행 안의 목록은 펼쳐서 보여 줄 별도 설계가 필요하다.</li>
+<li><strong>통째 복사·비교</strong>: 겉보기엔 한 덩어리 같아도 별채(쪽지가 가리키는 곳)까지 따라가야
+해서, Flat보다 비용이 크고 동작 규칙이 세밀하다. 지금은 &quot;차이가 있다&quot;까지만.</li>
+</ul>
+</section><section class="lblock"><h2>흔한 오해와 점검</h2>
+<ul>
+<li><strong>중첩 = Deep이라는 착각</strong> → 중첩은 &quot;겹&quot;의 문제, Deep은 &quot;가변 요소&quot;의 문제. 별개다.</li>
+<li><strong>&quot;Deep이면 DB에 못 넣는다&quot;는 뭉뚱그림</strong> → 못 넣는 건 테이블·참조 <button class="term" type="button" data-term="Component">Component</button>다.
+<code>string</code>은 들어간다.</li>
+<li><strong>행 안 테이블에 바깥 도구를 그대로</strong> → <code>gs_order-items</code>도 엄연한 <button class="term" type="button" data-term="Internal Table">Internal Table</button>이라
+APPEND·READ·LOOP가 다 된다. 다만 &quot;누구의 목록인가&quot;(어느 행의 items인가)를 항상
+분명히 하고 다뤄야 한다.</li>
+</ul>
+<hr>
+<p>행 안에 목록까지 담아 봤다. 챕터를 닫기 전에 하나 남았다 — 실무에서 반드시 마주칠
+<strong>옛날 방식의 코드</strong>를 읽는 눈이다 → <a href="CH06-L14.html">옛 코드를 만나면</a>.</p>
+</section>
+      </article>
+      <nav class="lesson-nav" data-shell="prevnext"></nav>
+      <footer class="foot">SAP Developer Academy · 배포자 SAP전문강사 정훈영</footer>
+    </main>
+    <aside class="journey" data-shell="journey"></aside>
+  </div>
+</div>
+<div class="term-popup" data-shell="popup" hidden></div>
+<div class="tmodal" data-shell="tmodal" hidden></div>
+<script>window.__SDA__={"domain":"abap","dataBase":"../","siteRoot":"../../../"};</script>
+<script src="../../../assets/shell.js" defer></script>
+</body>
+</html>

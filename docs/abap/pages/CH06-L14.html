@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>옛 코드를 읽는 법 — Header Line과 OCCURS · Internal Table · SAP Developer Academy</title>
+<link rel="stylesheet" href="../../../assets/base.css">
+<link rel="stylesheet" href="../../../assets/lesson.css">
+<link rel="stylesheet" href="../../../assets/shell.css">
+<script>/* 읽기 설정 선적용(플래시 방지) */(function(){try{var L=localStorage,r=document.documentElement;if(L.getItem('sda.dark')==='1')r.classList.add('dark');if(L.getItem('sda.wide')==='1')r.classList.add('wide');var f=parseInt(L.getItem('sda.fontPx'),10);if(f>=13&&f<=20)r.style.fontSize=f+'px';}catch(e){}})();</script>
+</head>
+<body data-domain="abap" data-chapter-id="CH06" data-lesson-id="CH06-L14">
+<header class="appbar">
+  <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
+  <span class="appbar__sp"></span>
+  <span class="meta">Chapter 6 · Internal Table</span>
+  <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
+  <div class="tools">
+    <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
+    <button class="icon-btn" id="fsInc" title="글자 크게">A+</button>
+    <button class="icon-btn" id="fsReset" title="글자 크기 초기화">↺</button>
+    <button class="icon-btn" id="darkBtn" title="다크 모드">🌙</button>
+    <button class="icon-btn" id="widthBtn" title="가독 폭 넓게">↔</button>
+    <button class="icon-btn fs-btn" title="전체화면" aria-label="전체화면"></button>
+  </div>
+</header>
+<div class="read-progress"><i></i></div>
+<div class="scrim"></div>
+<nav class="rail" data-shell="rail"></nav>
+<button class="railFab" id="railFab" aria-label="네비 열기">☰</button>
+<div class="stage">
+  <div class="layout">
+    <main class="main">
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 6 › Lesson 14</nav>
+      <section class="lhead">
+        <p class="lhead__eyebrow">Internal Table</p>
+        <h1>옛 코드를 읽는 법 — Header Line과 OCCURS</h1>
+        <p class="lhead__direction">첫 출근에 만날 20년 된 코드 — 읽을 줄 알되, 쓰지는 않는다.</p>
+        <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 6</span><span class="tag tag--ls">Lesson 14</span><span class="tag tag--lv">초급</span></div>
+      </section>
+      <article class="prose">
+<section class="lblock"><h2>첫 출근, 20년 된 프로그램</h2>
+<p>SAP 시스템은 오래 산다. 실무에 나가면 높은 확률로 <strong>당신보다 나이가 많은 프로그램</strong>을
+유지보수하게 된다. 그 코드들 속에서 반드시 마주치는 것이 오늘의 주제 — 지금은 쓰지 않지만
+<strong>읽을 줄은 알아야 하는</strong> Internal Table의 옛 선언 방식이다.</p>
+<p>미리 말해 두면: 이 레슨엔 외울 것이 없다. 새 코드에 쓸 일도 없다. 목표는 딱 하나 —
+옛 코드를 만났을 때 &quot;아, 그 방식이구나&quot; 하고 <strong>알아보는 눈</strong>이다. 가볍게 보자.</p>
+</section><section class="lblock"><h2>옛 선언 두 가지</h2>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8</pre><pre class="abap-editor__code"><code><span class="tok-com">" 옛 방식 ① — WITH HEADER LINE</span>
+<span class="tok-kw">DATA</span> it_person <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ts_person <span class="tok-kw">WITH</span> HEADER <span class="tok-kw">LINE</span>.
+
+<span class="tok-com">" 옛 방식 ② — 더 오래된 OCCURS 선언 (행 모양 정의와 테이블 선언을 한 번에)</span>
+<span class="tok-kw">DATA</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> it_person OCCURS <span class="tok-num">0</span>,
+        name <span class="tok-kw">TYPE</span> string,
+        age  <span class="tok-kw">TYPE</span> i,
+      <span class="tok-kw">END</span> <span class="tok-kw">OF</span> it_person.</code></pre></div></div>
+<ul>
+<li>①은 우리가 아는 선언에 <code>WITH HEADER LINE</code>이 붙은 형태다.</li>
+<li>②의 <code>OCCURS</code>는 &quot;이건 Internal Table이고 <button class="term" type="button" data-term="Header Line">Header Line</button>도 딸려 있다&quot;를 한 단어로 암시하는
+가장 오래된 표기다(숫자 0은 초기 <button class="term" type="button" data-term="메모리">메모리</button> 힌트였는데 지금은 의미가 없다).</li>
+<li>어느 쪽이든 결과는 같다 — <strong>Header Line이 딸린 테이블</strong>이 만들어진다.</li>
+</ul>
+</section><section class="lblock"><h2>Header Line — 같은 이름의 그림자 한 행</h2>
+<p><button class="term" type="button" data-term="Header Line">Header Line</button>이란 테이블 옆에 <strong>테이블과 똑같은 이름의 Work Area 한 장</strong>이 자동으로
+붙어 있는 것이다. 그림으로 보면:</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2</pre><pre class="abap-editor__code"><code>it_person ──┬── [테이블 본체]  행<span class="tok-num">1</span>, 행<span class="tok-num">2</span>, 행<span class="tok-num">3</span>, ...
+            └── [Header <span class="tok-kw">Line</span>]  같은 이름의 한 행짜리 그림자</code></pre></div></div>
+<p>그래서 옛 코드에서 <code>it_person</code>이라는 이름은 문맥에 따라 <strong>테이블 전체</strong>를 뜻하기도,
+<strong>그림자 한 행</strong>을 뜻하기도 한다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5</pre><pre class="abap-editor__code"><code>it_person-name = <span class="tok-str">'정훈영'</span>.        <span class="tok-com">" Header Line(한 행)에 값 채우기</span>
+<span class="tok-kw">APPEND</span> it_person.                 <span class="tok-com">" Header Line을 테이블 본체에 붙이기 — TO가 없다!</span>
+<span class="tok-kw">READ</span> <span class="tok-kw">TABLE</span> it_person <span class="tok-kw">WITH</span> <span class="tok-kw">KEY</span> name = <span class="tok-str">'정훈영'</span>.   <span class="tok-com">" 결과도 Header Line으로 들어온다</span>
+<span class="tok-kw">CLEAR</span> it_person.                  <span class="tok-com">" ⚠️ Header Line'만' 비워진다(본체는 그대로)</span>
+<span class="tok-kw">CLEAR</span> it_person[].                <span class="tok-com">" 본체를 비우려면 대괄호!</span></code></pre></div></div>
+<p>마지막 두 줄이 핵심 해독 포인트다 — <strong>테이블 본체를 콕 집을 땐 <code>it_person[]</code>처럼
+대괄호를 붙인다.</strong> 옛 코드에서 <code>[]</code>를 보면 &quot;아, 본체 쪽 이야기구나&quot;로 읽으면 된다.
+<code>APPEND it_person.</code>처럼 <code>TO</code>가 없는 축약 문장들도 &quot;그림자를 본체에&quot; 가 생략된 것이다.</p>
+</section><section class="lblock"><h2>왜 퇴출됐나 — 네 가지 이유</h2>
+<p>편해 보이는데 왜 안 쓰게 됐을까. 이유를 알면 지금 방식이 왜 표준인지가 함께 보인다.</p>
+<ol>
+<li><strong>한 이름의 두 얼굴.</strong> <code>MOVE it_person TO ...</code>가 테이블을 옮기는지 한 행을 옮기는지
+코드만 봐서는 모른다. 읽는 사람마다 해석이 갈리는 코드는 그 자체로 사고다.</li>
+<li><strong>암묵 동작.</strong> <code>APPEND it_person.</code>은 무엇을 어디에 붙이는지가 문장에 없다. 우리가
+<a href="CH06-L08.html">L08</a>에서 세운 원칙 — &quot;무슨 일이 일어나는지 코드에 드러나야 한다&quot; — 의
+정반대다.</li>
+<li><strong>공식적으로 obsolete.</strong> 언어 차원에서 퇴출 중인 형태로, 특히 <strong>클래스·메서드 안에서는
+아예 구문 오류</strong>로 금지된다(클래스는 뒤 챕터에서 배운다). 취향 문제가 아니라 미래가
+없는 문법이다.</li>
+<li><strong>현대 도구와의 불화.</strong> 새로 추가되는 문법·도구들은 <button class="term" type="button" data-term="Header Line">Header Line</button> 없는 테이블을 전제한다.
+옛 방식을 붙들면 새 도구를 쓸 때마다 벽을 만난다.</li>
+</ol>
+<p>그래서 현재 표준이 바로 이 챕터 내내 해 온 방식이다 — <strong>테이블(<code>gt_</code>)과 Work Area(<code>gs_</code>)를
+서로 다른 이름으로 분리 선언.</strong> 여러분은 이미 권장 방식만 배웠다.</p>
+</section><section class="lblock"><h2>it_ 접두어 — 이름으로 알아보기</h2>
+<p>이 과정에서는 <button class="term" type="button" data-term="Header Line">Header Line</button>이 딸린 옛 방식 테이블에만 <code>it_</code> 접두어를 쓴다(위 예제들이
+그랬다). 다만 현업에는 평범한 Internal Table에도 <code>it_</code>를 붙이는 팀이 있으니, <strong>이름만 보고
+Header Line이 있다고 단정하지는 말자</strong> — 판별 기준은 어디까지나 선언문(<code>WITH HEADER LINE</code>·
+<code>OCCURS</code>)이다.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">옛 코드 ↔ 새 코드 대역 비교 — 같은 일, 다른 표기</span><a class="embed__open" href="../../../embeds/abap/CH06-L14-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH06-L14-S01.html" loading="lazy" title="옛 코드 ↔ 새 코드 대역 비교 — 같은 일, 다른 표기"></iframe></figure>
+<blockquote>
+<p>🔭 이 &quot;같은 이름의 그림자 행&quot; 구조는 완전히 사라진 게 아니다 — 뒤에서 배울 선택화면
+도구 중에 이 구조를 그대로 물려받은 것이 있어서(<a href="CH12-L06.html">Chapter 12</a>에서 재회한다),
+오늘의 눈이 그때 그대로 쓰인다.</p>
+</blockquote>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>새 코드에 옛 방식 사용</strong> → 금지. 이 레슨은 읽기 전용 지식이다.</li>
+<li><strong><code>CLEAR it_person</code>으로 본체를 비웠다고 착각</strong> → <button class="term" type="button" data-term="Header Line">Header Line</button>만 비워진다. 옛 코드를
+고칠 일이 생기면 <code>[]</code> 유무를 반드시 확인.</li>
+<li><strong><code>it_</code> 이름만 보고 단정</strong> → 판별은 선언문으로.</li>
+</ul>
+<hr>
+<p>이제 정말 마지막이다. 챕터에서 배운 전부를 한 프로그램에 모은다 — CH05에서 미완으로
+남겨 둔 그 숙제, <strong>구구단 72행 전체</strong>다 → <a href="CH06-L15.html">캡스톤</a>.</p>
+</section>
+      </article>
+      <nav class="lesson-nav" data-shell="prevnext"></nav>
+      <footer class="foot">SAP Developer Academy · 배포자 SAP전문강사 정훈영</footer>
+    </main>
+    <aside class="journey" data-shell="journey"></aside>
+  </div>
+</div>
+<div class="term-popup" data-shell="popup" hidden></div>
+<div class="tmodal" data-shell="tmodal" hidden></div>
+<script>window.__SDA__={"domain":"abap","dataBase":"../","siteRoot":"../../../"};</script>
+<script src="../../../assets/shell.js" defer></script>
+</body>
+</html>

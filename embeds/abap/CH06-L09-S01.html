@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<!-- CH06-L09-S01 — 엔진: step-debugger (embeds/_engine/step-debugger.{js,css}) + _autoheight.js
+     config=레슨 전용(APPEND LINES OF — 서울·부산 두 지점 명단을 gt_all로 합치기: 끝에 붙음·
+     원본 보존(복사)·두 지점 모두 신청한 홍길동이 2번 들어감 = 다음 절 중복 제거의 소재).
+     구 CH06-L04-S04에서 rename + 데이터 정합(gt_a/gt_b → 본문 L09의 gt_seoul/gt_busan/gt_all).
+     게이팅: CH06-L09 범위(APPEND LINES OF·DESCRIBE TABLE) — modern 문법 없음. -->
+<html lang="ko" data-eng="step-debugger">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>두 명단 합치기 · CH06-L09-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/step-debugger.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">두 명단을 한 줄로 합치기 <small>(스텝 디버거)</small></p>
+  <p class="lead">서울 명단(<code>gt_seoul</code>)과 부산 명단(<code>gt_busan</code>)을 전체 명단 <code>gt_all</code>에 이어 붙입니다. <b>어디에</b> 붙는지, 붙인 뒤 <b>원본은 어떻게 되는지</b>, 그리고 두 지점에 모두 신청한 <b>홍길동</b>이 어떻게 되는지를 오른쪽 표에서 확인하세요.</p>
+
+  <div class="dbg" data-stepper>
+    <div class="dbg__bar">
+      <button class="btn btn--primary" data-start>▶ 시작</button>
+      <button class="btn btn--step" data-next disabled>다음 ⏭</button>
+      <div class="progress"><i data-progress></i></div>
+      <span class="muted" data-counter>0 / 4</span>
+    </div>
+    <div class="dbg__main">
+      <div class="dbg__editorwrap"><div class="dbg__edhd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span></div><div class="dbg__editor" data-code></div></div>
+      <div class="dbg__watch">
+        <div class="watch__head">변수 모니터 — 세 명단</div>
+        <div class="watch__list" data-vars></div>
+      </div>
+    </div>
+    <div class="dbg__console">
+      <div class="console__head">
+        <span>콘솔</span>
+        <span class="leg"><span class="a">▶ 실행할 차례</span> · <span class="d">✓ 방금 실행</span></span>
+        <span class="sp"></span>
+        <span class="cmode"><button class="cmode__b on" data-cmode="cur">현재 행</button><button class="cmode__b" data-cmode="all">전체 출력</button></span>
+      </div>
+      <pre class="console__body" data-console>대기 중 — ▶ 시작을 누르세요.</pre>
+    </div>
+    <script type="application/json" class="stepper-config">
+    {
+      "code":[
+        "\" gt_seoul = 서울 명단(2명) · gt_busan = 부산 명단(2명)",
+        "\" 홍길동은 두 지점에 모두 신청했다!",
+        "DATA gv_cnt TYPE i.",
+        "",
+        "APPEND LINES OF gt_seoul TO gt_all.   \" 서울 명단 전체를",
+        "APPEND LINES OF gt_busan TO gt_all.   \" 이어서 부산 명단 전체를",
+        "",
+        "DESCRIBE TABLE gt_all   LINES gv_cnt. \" 합친 명단은?",
+        "DESCRIBE TABLE gt_seoul LINES gv_cnt. \" 원본 서울 명단은?"
+      ],
+      "vars":[
+        {"label":"gt_seoul","sub":"서울 지점 명단","key":"gt_seoul","itab":{"cols":["name","age"],"num":[false,true]},"init":[["정훈영",30],["홍길동",25]]},
+        {"label":"gt_busan","sub":"부산 지점 명단","key":"gt_busan","itab":{"cols":["name","age"],"num":[false,true]},"init":[["홍길동",25],["유재석",40]]},
+        {"label":"gt_all","sub":"합칠 전체 명단","key":"gt_all","itab":{"cols":["name","age"],"num":[false,true]},"init":[]},
+        {"label":"gv_cnt","sub":"DESCRIBE가 세어 준 행 수","key":"gv_cnt","init":"0"}
+      ],
+      "steps":[
+        {"line":5,"vars":{"gt_all":[["정훈영",30],["홍길동",25]]},"console":"APPEND LINES OF — 서울 명단 2행이 한 문장으로 통째 복사됐습니다. gt_seoul에 있던 순서 그대로"},
+        {"line":6,"vars":{"gt_all":[["정훈영",30],["홍길동",25],["홍길동",25],["유재석",40]]},"focus":{"gt_all":3},"console":"이어서 부산 명단 — 이미 있던 행을 밀어내지 않고 그 뒤에 붙습니다(통째 대입 gt_all = gt_seoul처럼 교체가 아님!). 그리고 홍길동이 두 번 들어왔습니다 — 이 문장은 중복을 걸러 주지 않습니다"},
+        {"line":8,"vars":{"gv_cnt":"4"},"console":"전체 명단은 2 + 2 = 4행. LOOP로 한 행씩 옮겼어도 같은 결과지만, 문장 하나로 끝났습니다"},
+        {"line":9,"vars":{"gv_cnt":"2"},"console":"gt_seoul은 여전히 2행 — 옮긴 게 아니라 복사입니다. 원본은 손대지 않으니 다른 곳에 계속 써도 됩니다. (두 번 들어간 홍길동은? 다음 절의 중복 제거가 해결합니다)"}
+      ]
+    }
+    </script>
+  </div>
+  <div class="note">💡 두 테이블의 <b>행 모양(Line Type)이 같아야</b> 이어 붙일 수 있습니다. 붙는 자리는 언제나 <b>받는 쪽의 끝</b> — 앞에 끼워 넣거나 섞어 주지 않습니다. 일부만 붙이려면 <code>APPEND LINES OF gt_seoul FROM 2 TO 5 TO gt_all.</code>처럼 범위도 됩니다.</div>
+</div>
+<script src="../_engine/step-debugger.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

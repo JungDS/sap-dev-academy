@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<!-- CH06-L11-S01 — 엔진: step-debugger (embeds/_engine/step-debugger.{js,css}) + _autoheight.js
+     config=레슨 전용(COLLECT — 같은 키(서울)는 100+30=130 합산·행 불증, 새 키(부산)는 새 행.
+     본문 L11 예제 값·순서(서울100→서울30→부산50) 그대로).
+     구 CH06-L04-S02(COLLECT+컨트롤레벨 통합) 1막에서 분할 개조 — 컨트롤레벨은 CH06-L12-S01로.
+     게이팅: CH06-L11 범위(COLLECT·standard key). -->
+<html lang="ko" data-eng="step-debugger">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>COLLECT 합산 · CH06-L11-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/step-debugger.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">COLLECT — 있으면 더하고, 없으면 넣는다 <small>(스텝 디버거)</small></p>
+  <p class="lead">판매 기록 세 건(서울 100 → 서울 30 → 부산 50)을 <code>COLLECT</code>로 넣습니다. 두 번째 서울에서 <b>행이 늘어나는지, 숫자가 커지는지</b>를 오른쪽 표에서 지켜보세요. 이 테이블의 키는 안 적었으니 <b>standard key = region</b>(문자 필드)입니다.</p>
+
+  <div class="dbg" data-stepper>
+    <div class="dbg__bar">
+      <button class="btn btn--primary" data-start>▶ 시작</button>
+      <button class="btn btn--step" data-next disabled>다음 ⏭</button>
+      <div class="progress"><i data-progress></i></div>
+      <span class="muted" data-counter>0 / 6</span>
+    </div>
+    <div class="dbg__main">
+      <div class="dbg__editorwrap"><div class="dbg__edhd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span></div><div class="dbg__editor" data-code></div></div>
+      <div class="dbg__watch">
+        <div class="watch__head">변수 모니터 — Work Area와 집계 테이블</div>
+        <div class="watch__list" data-vars></div>
+      </div>
+    </div>
+    <div class="dbg__console">
+      <div class="console__head">
+        <span>콘솔</span>
+        <span class="leg"><span class="a">▶ 실행할 차례</span> · <span class="d">✓ 방금 실행</span></span>
+        <span class="sp"></span>
+        <span class="cmode"><button class="cmode__b on" data-cmode="cur">현재 행</button><button class="cmode__b" data-cmode="all">전체 출력</button></span>
+      </div>
+      <pre class="console__body" data-console>대기 중 — ▶ 시작을 누르세요.</pre>
+    </div>
+    <script type="application/json" class="stepper-config">
+    {
+      "code":[
+        "\" ts_sales: region(문자 = 키) + amount(숫자 = 합산 대상)",
+        "gs_sales-region = '서울'. gs_sales-amount = 100.",
+        "COLLECT gs_sales INTO gt_sales.   \" 서울이 없었다 → 새 행",
+        "",
+        "gs_sales-region = '서울'. gs_sales-amount = 30.",
+        "COLLECT gs_sales INTO gt_sales.   \" 서울이 있다 → 합산!",
+        "",
+        "gs_sales-region = '부산'. gs_sales-amount = 50.",
+        "COLLECT gs_sales INTO gt_sales.   \" 부산이 없었다 → 새 행"
+      ],
+      "vars":[
+        {"label":"gs_sales-region","sub":"Work Area · 지역(키)","key":"gs_sales-region","init":"( 공백 )"},
+        {"label":"gs_sales-amount","sub":"Work Area · 금액","key":"gs_sales-amount","init":"0"},
+        {"label":"gt_sales","sub":"COLLECT 결과 — 지역별 합계","key":"gt_sales","itab":{"cols":["region","amount"],"num":[false,true]},"init":[]}
+      ],
+      "steps":[
+        {"line":2,"vars":{"gs_sales-region":"서울","gs_sales-amount":"100"},"console":"첫 기록 준비 — 서울 100원"},
+        {"line":3,"vars":{"gt_sales":[["서울",100]]},"focus":{"gt_sales":1},"console":"COLLECT — 키 '서울'인 행이 아직 없으니 새 행으로 들어갑니다 [서울 100] (1행)"},
+        {"line":5,"vars":{"gs_sales-amount":"30"},"console":"두 번째 기록 — 또 서울! 이번엔 이미 있는 키입니다"},
+        {"line":6,"vars":{"gt_sales":[["서울",130]]},"focus":{"gt_sales":1},"console":"COLLECT — 행이 늘지 않고 기존 서울 행에 100 + 30 = 130 누적! 기록을 그대로 쌓고 싶었다면 APPEND를 썼겠지만, 우리가 원한 건 합계였죠"},
+        {"line":8,"vars":{"gs_sales-region":"부산","gs_sales-amount":"50"},"console":"세 번째 기록 — 부산 50원, 처음 보는 키"},
+        {"line":9,"vars":{"gt_sales":[["서울",130],["부산",50]]},"focus":{"gt_sales":2},"console":"COLLECT — 새 키라 새 행 [부산 50] (2행). 세 번 넣었지만 결과는 두 행 — \"있으면 더하고, 없으면 넣는다\"가 COLLECT의 전부입니다"}
+      ]
+    }
+    </script>
+  </div>
+  <div class="note">💡 <code>COLLECT</code>가 성립하려면 <b>키가 아닌 필드는 전부 숫자</b>여야 합니다(합산 대상이니까). 그리고 한 테이블엔 COLLECT만 — <code>APPEND</code>와 섞으면 중복 키 행이 생겨 합계가 갈라집니다.</div>
+</div>
+<script src="../_engine/step-debugger.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>컨트롤레벨 — AT NEW / AT END OF와 SUM · Internal Table · SAP Developer Academy</title>
+<link rel="stylesheet" href="../../../assets/base.css">
+<link rel="stylesheet" href="../../../assets/lesson.css">
+<link rel="stylesheet" href="../../../assets/shell.css">
+<script>/* 읽기 설정 선적용(플래시 방지) */(function(){try{var L=localStorage,r=document.documentElement;if(L.getItem('sda.dark')==='1')r.classList.add('dark');if(L.getItem('sda.wide')==='1')r.classList.add('wide');var f=parseInt(L.getItem('sda.fontPx'),10);if(f>=13&&f<=20)r.style.fontSize=f+'px';}catch(e){}})();</script>
+</head>
+<body data-domain="abap" data-chapter-id="CH06" data-lesson-id="CH06-L12">
+<header class="appbar">
+  <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
+  <span class="appbar__sp"></span>
+  <span class="meta">Chapter 6 · Internal Table</span>
+  <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
+  <div class="tools">
+    <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
+    <button class="icon-btn" id="fsInc" title="글자 크게">A+</button>
+    <button class="icon-btn" id="fsReset" title="글자 크기 초기화">↺</button>
+    <button class="icon-btn" id="darkBtn" title="다크 모드">🌙</button>
+    <button class="icon-btn" id="widthBtn" title="가독 폭 넓게">↔</button>
+    <button class="icon-btn fs-btn" title="전체화면" aria-label="전체화면"></button>
+  </div>
+</header>
+<div class="read-progress"><i></i></div>
+<div class="scrim"></div>
+<nav class="rail" data-shell="rail"></nav>
+<button class="railFab" id="railFab" aria-label="네비 열기">☰</button>
+<div class="stage">
+  <div class="layout">
+    <main class="main">
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 6 › Lesson 12</nav>
+      <section class="lhead">
+        <p class="lhead__eyebrow">Internal Table</p>
+        <h1>컨트롤레벨 — AT NEW / AT END OF와 SUM</h1>
+        <p class="lhead__direction">정렬해 쌓아 둔 테이블을 훑으며 그룹 경계마다 소계를 낸다.</p>
+        <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 6</span><span class="tag tag--ls">Lesson 12</span><span class="tag tag--lv">초급</span></div>
+      </section>
+      <article class="prose">
+<section class="lblock"><h2>이미 쌓인 테이블에서 소계를</h2>
+<p><a href="CH06-L11.html">앞 레슨</a>의 <code>COLLECT</code>는 <strong>넣는 시점에</strong> 즉시 합산했다. 그런데 실무에선
+이미 <strong>다 쌓여 있는</strong> 상세 기록에서 소계를 내야 할 때가 더 많다 — 기록 자체도 남겨야
+하니까. 이 일을 하는 도구가 <strong>컨트롤레벨</strong>(Control Level)이다.</p>
+<blockquote>
+<p>두 도구의 구분을 먼저 못박자. <strong>COLLECT는 넣을 때 합산</strong>(결과 테이블에 상세가 안 남는다),
+<strong>컨트롤레벨은 쌓인 것을 훑으며 소계</strong>(상세는 그대로, 경계마다 계산만 얹는다).
+&quot;기록도 필요하고 소계도 필요하다&quot;면 이쪽이다.</p>
+</blockquote>
+</section><section class="lblock"><h2>먼저 결과부터 보자</h2>
+<p>말보다 실물이다. 이런 <strong>입력</strong>이 쌓여 있을 때(지역으로 정렬된 상태):</p>
+<table>
+<thead>
+<tr>
+<th>region</th>
+<th>amount</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>부산</td>
+<td>50</td>
+</tr>
+<tr>
+<td>서울</td>
+<td>100</td>
+</tr>
+<tr>
+<td>서울</td>
+<td>30</td>
+</tr>
+</tbody></table>
+<p>우리가 만들 <strong>출력</strong>은 이렇다:</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7</pre><pre class="abap-editor__code"><code>지역: 부산
+        <span class="tok-num">50</span>
+소계:   <span class="tok-num">50</span>
+지역: 서울
+       <span class="tok-num">100</span>
+        <span class="tok-num">30</span>
+소계:  <span class="tok-num">130</span></code></pre></div></div>
+<p>그룹이 <strong>시작될 때</strong> 제목 줄을, 그룹이 <strong>끝날 때</strong> 소계 줄을 끼워 넣는 것 — 이게 전부다.</p>
+</section><section class="lblock"><h2>코드</h2>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11</pre><pre class="abap-editor__code"><code><span class="tok-kw">SORT</span> gt_sales <span class="tok-kw">BY</span> region.               <span class="tok-com">" ① 그룹 키로 반드시 먼저 정렬</span>
+<span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> gt_sales <span class="tok-kw">INTO</span> gs_sales.
+  <span class="tok-kw">AT</span> <span class="tok-kw">NEW</span> region.                       <span class="tok-com">" ② region 그룹이 시작되는 행에서 한 번</span>
+    <span class="tok-kw">WRITE</span>: / <span class="tok-str">'지역:'</span>, gs_sales-region.
+  <span class="tok-kw">ENDAT</span>.
+  <span class="tok-kw">WRITE</span>: / gs_sales-amount.            <span class="tok-com">" ③ 상세 행(매 반복)</span>
+  <span class="tok-kw">AT</span> <span class="tok-kw">END</span> <span class="tok-kw">OF</span> region.                    <span class="tok-com">" ④ region 그룹의 마지막 행에서 한 번</span>
+    <span class="tok-kw">SUM</span>.                               <span class="tok-com">"    그룹의 숫자 필드 합계가 gs_sales에 들어온다</span>
+    <span class="tok-kw">WRITE</span>: / <span class="tok-str">'소계:'</span>, gs_sales-amount.
+  <span class="tok-kw">ENDAT</span>.
+<span class="tok-kw">ENDLOOP</span>.</code></pre></div></div>
+<ul>
+<li><code>AT NEW f</code> / <code>AT END OF f</code> — 필드 <code>f</code>의 값이 <strong>바뀌는 경계</strong>에서만 실행되는 블록.</li>
+<li><code>SUM</code> — 그 그룹의 <strong>숫자 필드 합계</strong>를 Work Area에 채워 준다(그룹 키 오른쪽의 숫자
+필드들이 대상 — &quot;오른쪽&quot;은 화면 위치가 아니라 <strong>Structure 선언에 적은 필드 순서</strong>다.
+<code>ts_sales</code>는 <code>region</code> 다음에 <code>amount</code>를 적었으니 <code>amount</code>가 합산 대상).</li>
+<li><code>AT FIRST</code> / <code>AT LAST</code> — 그룹이 아니라 <strong>테이블 전체</strong>의 처음/끝에서 한 번. 여기서
+<code>SUM</code>을 부르면 전체 합계다.</li>
+<li>전제 조건: <strong>그룹 키로 정렬이 먼저다.</strong> 같은 지역이 흩어져 있으면 한 그룹이 여러 번
+열리고 소계도 여러 번 나온다. <a href="CH06-L09.html">중복 제거의 SORT 짝</a>과 같은 원리다.</li>
+</ul>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">소계 디버거 — AT 경계에서 무슨 일이 일어나나 스텝 관찰</span><a class="embed__open" href="../../../embeds/abap/CH06-L12-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH06-L12-S01.html" loading="lazy" title="소계 디버거 — AT 경계에서 무슨 일이 일어나나 스텝 관찰"></iframe></figure>
+</section><section class="lblock"><h2>AT 블록 안에서 생기는 일 — 전·중·후 표</h2>
+<p>위 코드의 ②·④ 블록 안에서 <code>gs_sales</code>를 들여다보면 묘한 일이 벌어져 있다. 서울 그룹
+(100 → 30)의 두 번째 행을 처리하는 순간을 잘라 보면:</p>
+<table>
+<thead>
+<tr>
+<th>시점</th>
+<th>gs_sales-region</th>
+<th>gs_sales-amount</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>AT 블록 <strong>전</strong>(상세 행)</td>
+<td>서울</td>
+<td>30</td>
+</tr>
+<tr>
+<td><code>AT END OF region</code> 블록 <strong>안</strong></td>
+<td>서울</td>
+<td><strong>0</strong> → <code>SUM</code> 후 <strong>130</strong></td>
+</tr>
+<tr>
+<td>블록 <strong>후</strong>(다음 반복)</td>
+<td>(다음 행 값)</td>
+<td>(다음 행 값)</td>
+</tr>
+</tbody></table>
+<p>블록에 들어가는 순간 시스템이 Work Area를 <strong>일부러 손질</strong>한다. 왜일까 — AT 블록은
+&quot;행 하나&quot;가 아니라 <strong>&quot;그룹 전체&quot;를 대표하는 자리</strong>이기 때문이다. 특정 행의 값이 남아
+있으면 그걸 그룹 값인 줄 알고 쓰는 사고가 나니, <strong>그룹의 대표값(키)만 남기고 나머지는
+비워 두는</strong> 것이다. 비워진 숫자 자리는 <code>SUM</code>이 그룹 합계로 채워 준다 — 예제가
+<code>AT END OF</code> 안에서 <code>SUM</code>을 먼저 부르는 이유다.</p>
+<details>
+<summary>📎 손질 규칙 세 줄(지금 안 외워도 된다 — 블록 안 값이 이상할 때 열어 보자)</summary><ol>
+<li><strong>그룹 키 필드</strong>(와 그 왼쪽) — 그대로 남는다.</li>
+<li><strong>키 오른쪽의 고정 길이 문자 필드</strong> — 전부 <code>*</code>로 채워진다(문자를 찍으면 <code>****</code>가
+나오는 이유).</li>
+<li><strong>나머지 필드</strong> — 초기값이 된다(<code>AT NEW</code> 안에서 금액이 0으로 보이는 이유).</li>
+</ol>
+<p>블록을 빠져나오면 원래 행 값으로 돌아온다. 블록 안에서만 벌어지는 일이다.</p>
+</details></section><section class="lblock"><h2>주의 셋</h2>
+<ul>
+<li><strong>그룹 키는 &quot;<code>f</code>와 그 왼쪽 전부&quot;다.</strong> <code>AT NEW region</code>은 정확히 말하면 &quot;region <strong>까지의</strong>
+필드가 바뀌면&quot;이다. 그래서 그룹 키를 Structure의 <strong>첫 필드</strong>에 두면 헷갈릴 일이 없다
+(<code>ts_sales</code>가 그렇게 설계된 이유).</li>
+<li><strong><code>SUM</code>은 <code>LOOP ... INTO</code>에서만.</strong> <a href="CH06-L08.html">L08</a>의 <code>ASSIGNING</code>과는 함께 쓸 수 없다.</li>
+<li><strong>정렬이 먼저.</strong> 다시 한번 — 컨트롤레벨의 모든 이상 동작 1순위 원인은 정렬 누락이다.</li>
+</ul>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>SORT 없이 AT NEW/END OF</strong> → 그룹이 조각나 경계가 여러 번 열린다.</li>
+<li><strong>AT 블록 안에서 상세 값 참조</strong> → 마스킹 때문에 <code>*</code>나 0이 나온다. 상세 값은 블록
+밖(상세 행 자리)에서, 블록 안에서는 그룹 키와 <code>SUM</code> 결과만.</li>
+<li><strong>COLLECT와 헷갈림</strong> → 넣으면서 합산할 거면 COLLECT, 쌓인 걸 훑으며 소계면 컨트롤레벨.
+결과 모양이 다르다(전자는 그룹당 한 행, 후자는 상세+소계 출력).</li>
+</ul>
+<hr>
+<p>집계까지 끝났다 — 이 챕터의 도구는 이제 다 모였다. 다음은 시야를 넓히는 개념 하나:
+행 <strong>안에</strong> 또 목록이 들어가면 어떻게 되나 → <a href="CH06-L13.html">Deep Structure</a>.</p>
+</section>
+      </article>
+      <nav class="lesson-nav" data-shell="prevnext"></nav>
+      <footer class="foot">SAP Developer Academy · 배포자 SAP전문강사 정훈영</footer>
+    </main>
+    <aside class="journey" data-shell="journey"></aside>
+  </div>
+</div>
+<div class="term-popup" data-shell="popup" hidden></div>
+<div class="tmodal" data-shell="tmodal" hidden></div>
+<script>window.__SDA__={"domain":"abap","dataBase":"../","siteRoot":"../../../"};</script>
+<script src="../../../assets/shell.js" defer></script>
+</body>
+</html>

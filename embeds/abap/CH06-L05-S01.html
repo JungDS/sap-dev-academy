@@ -1,36 +1,156 @@
 <!DOCTYPE html>
-<!-- CH06-L05-S01 — 엔진: judge-quiz (embeds/_engine/judge-quiz.{js,css}) · 공통토큰: _engine/_base.css
-     Flat vs Deep 판정 퀴즈. 게이팅: CH06-L05 범위(deep 요소 = string·Internal Table·참조, 중첩≠deep). -->
-<html lang="ko" data-eng="judge-quiz">
+<!-- CH06-L05-S01 — 엔진: step-debugger (embeds/_engine/step-debugger.{js,css}) + _autoheight.js
+     config=레슨 전용 · 스테퍼 2개(엔진이 [data-stepper] 전부 초기화):
+       1부 = 넣기·찾기 두 좌표(INSERT INDEX/INTO TABLE · READ 3형 INDEX/WITH KEY/WITH TABLE KEY ·
+             TRANSPORTING NO FIELDS · sy-subrc/sy-tabix · READ 실패 시 WA 잔존 함정)
+       2부 = HASHED에서 READ 성공해도 sy-tabix=0 관찰(정체 해설은 L07 몫 — 여기선 관찰만)
+     구 CH06-L03-S01(한 행 제어 통합)에서 분할 개조 — MODIFY/DELETE는 CH06-L06-S01로.
+     게이팅: CH06-L05 범위(INSERT·READ·sy 필드·HASHED 선언은 L04에서 습득). -->
+<html lang="ko" data-eng="step-debugger">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Flat vs Deep 판정 퀴즈 · CH06-L05-S01</title>
+<title>한 행 실험실 ① INSERT·READ · CH06-L05-S01</title>
 <link rel="stylesheet" href="../_engine/_base.css" />
-<link rel="stylesheet" href="../_engine/judge-quiz.css" />
+<link rel="stylesheet" href="../_engine/step-debugger.css" />
+<style>
+  /* 2부(HASHED 관찰) 구분 여백 — 스테퍼 2개 쌓는 위젯 전용(엔진 CSS엔 .dbg 연속 배치 규칙 없음).
+     색은 var() 토큰만 → 다크 자동(하드코딩 hex 금지, AUTHORING §4). */
+  .part2{margin-top:24px;padding-top:16px;border-top:1px dashed var(--line);}
+</style>
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">Flat일까 Deep일까 — 판정 퀴즈</p>
-  <p class="lead">기준은 하나입니다. <b>가변 요소(<code>string</code>·Internal Table·참조)가 하나라도 있는가?</b> 각 구조를 보고 판정해 보세요.</p>
+  <p class="hd">넣고 찾기 — 자리(INDEX)로, 키(KEY)로 <small>(스텝 디버거)</small></p>
+  <p class="lead">명단 3명이 쌓인 STANDARD 테이블에서 시작합니다. <code>INSERT</code> 두 형태가 <b>어디에</b> 넣는지, <code>READ</code> 세 형태(<code>INDEX</code>·<code>WITH KEY</code>·<code>WITH TABLE KEY</code>)가 <b>무엇으로</b> 찾는지, 그때마다 <code>sy-subrc</code>·<code>sy-tabix</code>가 어떻게 바뀌는지 보세요. 마지막 READ <b>실패</b> 뒤에 무엇이 남는지가 오늘의 함정입니다.</p>
 
-  <div class="score"><span>점수</span><div class="bar"><i id="sbar"></i></div><span class="v" id="sv">0 / 0</span></div>
-  <div id="list"></div>
-  <div class="result" id="result"></div>
+  <div class="dbg" data-stepper>
+    <div class="dbg__bar">
+      <button class="btn btn--primary" data-start>▶ 시작</button>
+      <button class="btn btn--step" data-next disabled>다음 ⏭</button>
+      <div class="progress"><i data-progress></i></div>
+      <span class="muted" data-counter>0 / 10</span>
+    </div>
+    <div class="dbg__main">
+      <div class="dbg__editorwrap"><div class="dbg__edhd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span></div><div class="dbg__editor" data-code></div></div>
+      <div class="dbg__watch">
+        <div class="watch__head">변수 모니터 — Work Area · 테이블 · sy 필드</div>
+        <div class="watch__list" data-vars></div>
+      </div>
+    </div>
+    <div class="dbg__console">
+      <div class="console__head">
+        <span>콘솔</span>
+        <span class="leg"><span class="a">▶ 실행할 차례</span> · <span class="d">✓ 방금 실행</span></span>
+        <span class="sp"></span>
+        <span class="cmode"><button class="cmode__b on" data-cmode="cur">현재 행</button><button class="cmode__b" data-cmode="all">전체 출력</button></span>
+      </div>
+      <pre class="console__body" data-console>대기 중 — ▶ 시작을 누르세요.</pre>
+    </div>
+    <script type="application/json" class="stepper-config">
+    {
+      "code":[
+        "\" 시작: gt_person(STANDARD) = 정훈영/30 · 유재석/40 · 홍길동/25",
+        "gs_person-name = '강호동'. gs_person-age = 35.",
+        "INSERT gs_person INTO gt_person INDEX 1.",
+        "",
+        "gs_person-name = '심청'. gs_person-age = 17.",
+        "INSERT gs_person INTO TABLE gt_person.",
+        "",
+        "READ TABLE gt_person INTO gs_person INDEX 2.",
+        "",
+        "READ TABLE gt_person INTO gs_person",
+        "     WITH KEY age = 25.",
+        "",
+        "READ TABLE gt_person INTO gs_person",
+        "     WITH TABLE KEY name = '유재석'.",
+        "",
+        "READ TABLE gt_person TRANSPORTING NO FIELDS",
+        "     WITH KEY name = '심청'.",
+        "",
+        "READ TABLE gt_person INTO gs_person",
+        "     WITH KEY name = '없는사람'.",
+        "WRITE: / gs_person-name.   \" 위험!"
+      ],
+      "vars":[
+        {"label":"gs_person-name","sub":"Work Area · name","key":"gs_person-name","init":"( 공백 )"},
+        {"label":"gs_person-age","sub":"Work Area · age","key":"gs_person-age","init":"0"},
+        {"label":"gt_person","sub":"Internal Table · 명단(STANDARD)","key":"gt_person","itab":{"cols":["name","age"],"num":[false,true]},"init":[["정훈영",30],["유재석",40],["홍길동",25]]},
+        {"label":"sy-subrc","sub":"판정은 언제나 0인지로만","key":"sy-subrc","init":"-"},
+        {"label":"sy-tabix","sub":"찾은 행 번호 · 실패하면 0","key":"sy-tabix","init":"-"}
+      ],
+      "steps":[
+        {"line":2,"vars":{"gs_person-name":"강호동","gs_person-age":"35"},"console":"Work Area에 새 사람 준비"},
+        {"line":3,"vars":{"gt_person":[["강호동",35],["정훈영",30],["유재석",40],["홍길동",25]]},"focus":{"gt_person":1},"console":"자리 좌표 — INSERT ... INDEX 1: 1번 위치에 끼워 넣기. 기존 행들이 한 칸씩 밀렸습니다(APPEND와 달리 자리를 내가 지정)"},
+        {"line":5,"vars":{"gs_person-name":"심청","gs_person-age":"17"},"console":"또 한 사람 준비 — 이번엔 자리를 지정하지 않고 넣어 봅니다"},
+        {"line":6,"vars":{"gt_person":[["강호동",35],["정훈영",30],["유재석",40],["홍길동",25],["심청",17]]},"focus":{"gt_person":5},"console":"키 좌표 — INSERT ... INTO TABLE: 자리를 테이블 종류에 맡깁니다. STANDARD라 맨 끝(5번 행) = APPEND와 같은 결과. SORTED였다면 키 순서 자리, HASHED였다면 해시가 관리하는 자리입니다"},
+        {"line":8,"vars":{"gs_person-name":"정훈영","gs_person-age":"30","sy-subrc":"0","sy-tabix":"2"},"focus":{"gt_person":2},"console":"READ ① 자리로 — INDEX 2: 2번 행이 Work Area로 복사됨. sy-subrc = 0 · sy-tabix = 2"},
+        {"line":11,"vars":{"gs_person-name":"홍길동","gs_person-age":"25","sy-tabix":"4"},"focus":{"gt_person":4},"console":"READ ② 즉석 조건(WITH KEY) — 키가 아닌 age로도 찾습니다(합법). 대신 STANDARD에선 앞에서부터 순차 탐색 → 4번 행에서 발견. sy-tabix = 4"},
+        {"line":14,"vars":{"gs_person-name":"유재석","gs_person-age":"40","sy-tabix":"3"},"focus":{"gt_person":3},"console":"READ ③ 선언된 키 전체(WITH TABLE KEY) — 이 테이블의 키(standard key = name)를 빠짐없이 지정해 찾기. SORTED/HASHED라면 자기 방식(이진/해시)으로 가장 빨리 찾는 경로입니다"},
+        {"line":17,"vars":{"sy-tabix":"5"},"focus":{"gt_person":5},"console":"TRANSPORTING NO FIELDS — 있는지만 확인. 5번 행에서 찾아 sy-subrc = 0 · sy-tabix = 5가 되지만, Work Area는 유재석 그대로입니다(한 필드도 옮기지 않아서 빠름)"},
+        {"line":20,"vars":{"sy-subrc":"4","sy-tabix":"0"},"console":"못 찾음 — sy-subrc가 0이 아닌 값(여기선 4)이 됩니다. 찾은 행이 없으니 sy-tabix = 0. 그런데 Work Area는 바뀌지 않아 유재석이 그대로 남아 있습니다"},
+        {"line":21,"vars":{},"console":"[출력] 유재석 ← ⚠ 위험! 방금 READ는 실패였는데 이전 값이 출력됐습니다. READ 다음 줄은 반드시 IF sy-subrc = 0 확인!"}
+      ]
+    }
+    </script>
+  </div>
+  <div class="note">💡 실패한 READ 뒤의 Work Area는 "빈 값"이 아니라 <b>직전 값 그대로</b>입니다. 그리고 실패 값은 문장에 따라 다르므로(4일 수도 8일 수도) 판정은 언제나 <code>IF sy-subrc = 0</code> — <b>0인지로만</b> 합니다.</div>
 
-  <script type="application/json" id="quiz">
-  {
-    "labels": ["🧱 Flat", "🕳 Deep"],
-    "items": [
-      { "q": "구구단 한 줄 — <code>dan TYPE i · mul TYPE i · result TYPE i</code>", "a": 0, "why": "전부 고정 길이 숫자(<code>i</code>) → 가변 요소 없음 = <b>Flat</b>." },
-      { "q": "명단 한 명 — <code>name TYPE string · age TYPE i</code>", "a": 1, "why": "<code>string</code>은 길이 가변 = deep 요소. <b>하나만 있어도 전체가 Deep</b>이 됩니다(우리가 이 챕터에서 쓴 ts_person!)." },
-      { "q": "주문 한 건 — <code>order_id TYPE c LENGTH 10 · items TYPE tt_item</code>(Internal Table)", "a": 1, "why": "행 안에 <b>Internal Table</b>이 통째로 들어감 → 대표적인 Deep." },
-      { "q": "구조 안에 '주소' Structure가 통째로 중첩 — 안의 필드는 전부 <code>c LENGTH n</code>", "a": 0, "why": "중첩(nested)과 Deep은 <b>별개 개념</b>. 안까지 전부 고정 길이면 겹이 있어도 Flat입니다." },
-      { "q": "회원 카드 — <code>name TYPE c LENGTH 20 · birth TYPE d · height TYPE p LENGTH 3 DECIMALS 1</code>", "a": 0, "why": "<code>c LENGTH n</code>·<code>d</code>·<code>p</code> 모두 고정 길이 → <b>Flat</b>. DB 테이블 행으로도 적합한 모양." }
-    ]
-  }
-  </script>
+  <div class="part2">
+  <p class="hd">HASHED에서 찾으면? — 행은 찾았는데 번호가 없다 <small>(sy-tabix = 0 관찰)</small></p>
+  <p class="lead">이번 그릇은 <b>HASHED</b>(번호표 없는 사물함)입니다. 키로 한 번에 찾아지지만, 성공했는데도 <code>sy-tabix</code>에 뜻밖의 값이 들어옵니다. 직접 확인해 보세요.</p>
+
+  <div class="dbg" data-stepper>
+    <div class="dbg__bar">
+      <button class="btn btn--primary" data-start>▶ 시작</button>
+      <button class="btn btn--step" data-next disabled>다음 ⏭</button>
+      <div class="progress"><i data-progress></i></div>
+      <span class="muted" data-counter>0 / 2</span>
+    </div>
+    <div class="dbg__main">
+      <div class="dbg__editorwrap"><div class="dbg__edhd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span></div><div class="dbg__editor" data-code></div></div>
+      <div class="dbg__watch">
+        <div class="watch__head">변수 모니터</div>
+        <div class="watch__list" data-vars></div>
+      </div>
+    </div>
+    <div class="dbg__console">
+      <div class="console__head">
+        <span>콘솔</span>
+        <span class="leg"><span class="a">▶ 실행할 차례</span> · <span class="d">✓ 방금 실행</span></span>
+        <span class="sp"></span>
+        <span class="cmode"><button class="cmode__b on" data-cmode="cur">현재 행</button><button class="cmode__b" data-cmode="all">전체 출력</button></span>
+      </div>
+      <pre class="console__body" data-console>대기 중 — ▶ 시작을 누르세요.</pre>
+    </div>
+    <script type="application/json" class="stepper-config">
+    {
+      "code":[
+        "\" gt_member: HASHED TABLE · UNIQUE KEY name",
+        "\" (수지/27 · 김연아/33 · 아이유/32)",
+        "READ TABLE gt_member INTO gs_member",
+        "     WITH TABLE KEY name = '수지'.",
+        "",
+        "WRITE: / sy-subrc, sy-tabix.   \" 0 과... 0?!"
+      ],
+      "vars":[
+        {"label":"gs_member-name","sub":"Work Area · name","key":"gs_member-name","init":"( 공백 )"},
+        {"label":"gs_member-age","sub":"Work Area · age","key":"gs_member-age","init":"0"},
+        {"label":"gt_member","sub":"HASHED · #칸은 표시용일 뿐 행 번호표가 없는 그릇","key":"gt_member","itab":{"cols":["name","age"],"num":[false,true]},"init":[["수지",27],["김연아",33],["아이유",32]]},
+        {"label":"sy-subrc","sub":"성공 = 0","key":"sy-subrc","init":"-"},
+        {"label":"sy-tabix","sub":"HASHED에서는 찾아도 0","key":"sy-tabix","init":"-"}
+      ],
+      "steps":[
+        {"line":4,"vars":{"gs_member-name":"수지","gs_member-age":"27","sy-subrc":"0","sy-tabix":"0"},"focus":{"gt_member":1},"console":"키로 즉시 발견 — 수지가 Work Area로 복사되고 sy-subrc = 0(성공). 그런데 sy-tabix는... 0입니다!"},
+        {"line":6,"vars":{},"console":"[출력] 0  0 — \"행은 찾았는데(성공 0) 지금 몇 번째인지는 세지 않는다(번호 0)\". 번호표가 없는 그릇이라서인데, 이 묘한 상태의 정체는 빠르게 찾기 레슨에서 실험으로 확인합니다"}
+      ]
+    }
+    </script>
+  </div>
+  <div class="note">💡 <code>sy-tabix</code>에 행 번호가 들어오는 것은 번호가 있는 Index Table(STANDARD·SORTED) 이야기입니다. HASHED는 성공해도 <b>0</b> — 지금은 "그렇더라"까지만 기억해 두세요.</div>
+  </div>
 </div>
-<script src="../_engine/judge-quiz.js" defer></script>
+<script src="../_engine/step-debugger.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
 </body>
 </html>
