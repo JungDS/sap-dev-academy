@@ -35,7 +35,7 @@
       <section class="lhead">
         <p class="lhead__eyebrow">Grid ALV 기초</p>
         <h1>종합 실습 — 예매 목록 Grid ALV 완성</h1>
-        <p class="lhead__direction">컨테이너부터 색까지, 배운 조각을 책임별 FORM으로 나눠 하나의 화면으로 모은다.</p>
+        <p class="lhead__direction">배운 조각을 책임별 FORM으로 나눠 하나의 화면으로 조립하고, 행 색상은 마무리 과제로 완성한다.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 17</span><span class="tag tag--ls">Lesson 10</span><span class="tag tag--lv">중급</span></div>
       </section>
       <article class="prose">
@@ -44,6 +44,8 @@
 실무에선 조각이 아니라 <strong>하나의 화면</strong>이 필요하다. 사용자가 공연 번호를 입력하고,
 <a href="CH16-L01.html">Module Pool 프로그램 구조</a>의 화면 0100 안 <code>CONT100</code> 영역에서 예매 목록을
 보고, 새로고침해도 화면이 안정적으로 유지되어야 한다.</p>
+<p>골격은 <strong>컨테이너부터 refresh까지</strong>를 담는다. <a href="CH17-L09.html">행 색상 기초</a>의 색은
+출력 테이블 구조를 바꿔야 해서, 골격에는 자리만 잡아 두고 <strong>과제 1에서 직접 완성</strong>한다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">TEXT</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -103,7 +105,12 @@ FORM 이름에 드러난다.</strong> PBO에서 <strong>처음 한 번만</stron
 36
 37
 38
-39</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>: go_cont    <span class="tok-kw">TYPE</span> <span class="tok-kw">REF</span> <span class="tok-kw">TO</span> cl_gui_custom_container,
+39
+40
+41
+42
+43
+44</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>: go_cont    <span class="tok-kw">TYPE</span> <span class="tok-kw">REF</span> <span class="tok-kw">TO</span> cl_gui_custom_container,
       go_grid    <span class="tok-kw">TYPE</span> <span class="tok-kw">REF</span> <span class="tok-kw">TO</span> cl_gui_alv_grid,
       gt_booking <span class="tok-kw">TYPE</span> <span class="tok-kw">STANDARD</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> zbooking,
       gt_fcat    <span class="tok-kw">TYPE</span> lvc_t_fcat,
@@ -111,6 +118,7 @@ FORM 이름에 드러난다.</strong> PBO에서 <strong>처음 한 번만</stron
       gs_variant <span class="tok-kw">TYPE</span> disvariant,
       gv_conc    <span class="tok-kw">TYPE</span> zbooking-concert_id,   <span class="tok-com">" 화면 0100의 입력 필드와 같은 이름</span>
       gv_refresh <span class="tok-kw">TYPE</span> abap_bool,             <span class="tok-com">" 재조회 직후인지 표시하는 깃발</span>
+      gv_error   <span class="tok-kw">TYPE</span> abap_bool,             <span class="tok-com">" 조립 실패 깃발 — build_alv 참고</span>
       ok_code    <span class="tok-kw">TYPE</span> sy-ucomm,              <span class="tok-com">" OK field</span>
       save_ok    <span class="tok-kw">TYPE</span> sy-ucomm.
 
@@ -136,9 +144,13 @@ FORM 이름에 드러난다.</strong> PBO에서 <strong>처음 한 번만</stron
 <span class="tok-kw">ENDMODULE</span>.
 
 <span class="tok-kw">FORM</span> build_alv.
+  <span class="tok-kw">CLEAR</span> gv_error.
   <span class="tok-kw">PERFORM</span> select_booking.     <span class="tok-com">" 1. 데이터</span>
   <span class="tok-kw">PERFORM</span> create_grid.        <span class="tok-com">" 2. 컨테이너 + 그리드</span>
   <span class="tok-kw">PERFORM</span> build_fieldcat.     <span class="tok-com">" 3. 컬럼 설명서</span>
+  <span class="tok-kw">IF</span> gv_error = abap_true.    <span class="tok-com">" 컬럼 설명서가 없으면 여기서 조립 중단</span>
+    RETURN.
+  <span class="tok-kw">ENDIF</span>.
   <span class="tok-kw">PERFORM</span> build_layout.       <span class="tok-com">" 4. 표 모양 + variant</span>
   <span class="tok-kw">PERFORM</span> display_grid.       <span class="tok-com">" 5. 처음 띄우기</span>
 <span class="tok-kw">ENDFORM</span>.</code></pre></div></div>
@@ -150,6 +162,10 @@ FORM 이름에 드러난다.</strong> PBO에서 <strong>처음 한 번만</stron
 <a href="CH17-L08.html">Refresh와 Stable Refresh 기초</a>의 &quot;데이터 변경 → 화면 갱신&quot; 고리가 여기서 닫힌다.</li>
 <li>PBO는 엔터만 쳐도 매번 실행되므로, 깃발 없이 무조건 refresh하면 <strong>데이터가 안 바뀌어도
 매번 표를 다시 그리는 낭비</strong>가 생긴다. 그래서 재조회 직후에만 refresh한다.</li>
+<li><strong>실패 깃발(<code>gv_error</code>)</strong>: <a href="CH10-L02.html">USING / CHANGING 파라미터</a>에서 배운 대로
+<code>RETURN</code>은 <strong>지금 실행 중인 FORM 하나만</strong> 끝낸다. <code>build_fieldcat</code> 안에서 <code>RETURN</code>해도
+호출자 <code>build_alv</code>는 다음 PERFORM을 그대로 이어 가므로, 실패를 깃발로 알려 호출자가
+조립을 멈추게 한다. 안 그러면 <strong>빈 Field Catalog인 채로 display까지 가 버린다.</strong></li>
 </ul>
 </section><section class="lblock"><h2>각 단계 FORM</h2>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
@@ -211,7 +227,9 @@ FORM 이름에 드러난다.</strong> PBO에서 <strong>처음 한 번만</stron
 57
 58
 59
-60</pre><pre class="abap-editor__code"><code><span class="tok-kw">FORM</span> select_booking.
+60
+61
+62</pre><pre class="abap-editor__code"><code><span class="tok-kw">FORM</span> select_booking.
   <span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> zbooking <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> gt_booking
     <span class="tok-kw">WHERE</span> concert_id = gv_conc.
   <span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.
@@ -233,6 +251,7 @@ FORM 이름에 드러난다.</strong> PBO에서 <strong>처음 한 번만</stron
   <span class="tok-kw">IF</span> sy-subrc &lt;&gt; <span class="tok-num">0</span>.
     <span class="tok-com">" PBO 경로라 'E' 대신 'S' + RETURN — 이유는 CH17-L07 참고</span>
     <span class="tok-kw">MESSAGE</span> <span class="tok-str">'Field Catalog를 생성하지 못했습니다.'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'S'</span>.
+    gv_error = abap_true.   <span class="tok-com">" RETURN은 이 FORM만 끝낸다 — 호출자에게 깃발로 알림</span>
     RETURN.
   <span class="tok-kw">ENDIF</span>.
   <span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> gt_fcat <span class="tok-kw">INTO</span> ls_fcat.
@@ -247,6 +266,7 @@ FORM 이름에 드러난다.</strong> PBO에서 <strong>처음 한 번만</stron
   gs_layout-zebra      = abap_true.
   gs_layout-grid_title = <span class="tok-str">'예매 목록'</span>.
   gs_layout-cwidth_opt = abap_true.
+  <span class="tok-com">" 색의 자리: 과제 1에서 색 컬럼을 단 뒤 gs_layout-info_fname = 'ROWCOLOR'. 를 여기에</span>
   gs_variant-report    = sy-repid.
 <span class="tok-kw">ENDFORM</span>.
 
@@ -309,6 +329,14 @@ FORM 이름에 드러난다.</strong> PBO에서 <strong>처음 한 번만</stron
 <td>갱신</td>
 <td>재조회 후 PBO에서 display가 아니라 <strong>refresh</strong>가 호출되는가</td>
 </tr>
+<tr>
+<td>실패 중단</td>
+<td>merge 실패 시 <code>gv_error</code> 깃발로 display까지 가지 않고 멈추는가</td>
+</tr>
+<tr>
+<td>색 (과제 1 뒤)</td>
+<td>취소 행에 색이 보이는가 — 색 컬럼과 <code>info_fname</code> 둘 다 확인</td>
+</tr>
 </tbody></table>
 </section><section class="lblock"><h2>스스로 답해 보기</h2>
 <p>조각을 다 배웠다면 아래를 <strong>말로</strong> 답할 수 있어야 한다(막히면 해당 레슨으로).</p>
@@ -325,10 +353,14 @@ FORM 이름에 드러난다.</strong> PBO에서 <strong>처음 한 번만</stron
 </ul>
 </details></section><section class="lblock"><h2>직접 해 볼 과제</h2>
 <ol>
-<li><strong>매진 회차 행 색상</strong> — 지금 골격의 <code>gt_booking</code>은 DDIC 구조(<code>zbooking</code>) 그대로라
-색 컬럼을 더할 자리가 없다. <a href="CH17-L09.html">행 색상 기초</a>처럼 <strong>색 코드 컬럼을 가진
-로컬 행 타입으로 출력 테이블을 바꾸고</strong>, Field Catalog를 손보고, <code>info_fname</code>을 연결한다.
-출력 구조를 갈아 끼우는 만큼 손이 가장 많이 가는 과제다.</li>
+<li><strong>취소 예매 행 색상</strong> — 골격의 <code>build_layout</code>에 잡아 둔 <strong>색의 자리를 완성</strong>한다.
+코드는 새로 짜지 말고 <a href="CH17-L09.html">행 색상 기초</a>의 색 흐름(색 코드 컬럼 → 색 판정
+LOOP → <code>info_fname</code>)을 그대로 재사용하되, 조건은 간단하다: <code>status</code>가 <code>&#39;C&#39;</code>(취소)인
+행에 색을 넣는다. 지금 골격의 <code>gt_booking</code>은 DDIC 구조(<code>zbooking</code>) 그대로라 색 컬럼을
+더할 자리가 없으니, <strong>색 코드 컬럼을 가진 로컬 행 타입으로 출력 테이블을 바꾸고</strong>
+Field Catalog를 손본다(로컬 타입은 merge에 넣을 DDIC 이름이 없다 — 그 레슨의 &quot;흔한
+실수&quot; 참고). 출력 구조를 갈아 끼우는 만큼 손이 가장 많이 가는 과제다. 더 가려면
+그 레슨의 회차별 <button class="term" type="button" data-term="Aggregate">집계</button>를 곁들여 <strong>매진 회차의 예매 행</strong>까지 다른 색으로 구분해 보자.</li>
 <li><strong>좌석수 합계</strong> — Field Catalog의 <code>SEATS</code>에 <code>do_sum = abap_true</code>(<a href="CH22-L03.html">Grid ALV Column 제어 심화</a> 맛보기).</li>
 <li><strong>위치 보존 새로고침</strong> — 데이터 변경 후 <a href="CH17-L08.html">Refresh와 Stable Refresh 기초</a>의 <code>is_stable</code>로 위치를 지킨다.</li>
 </ol>
@@ -340,7 +372,7 @@ FORM 이름에 드러난다.</strong> PBO에서 <strong>처음 한 번만</stron
 <ul>
 <li><strong>&quot;처음 구성&quot;과 &quot;이후 갱신&quot; 섞기</strong> → <code>set_table_for_first_display</code>는 처음 한 번, <code>refresh_table_display</code>는 이후. 이 원칙을 화면 흐름에 고정한다.</li>
 <li><strong>Custom Control 이름 불일치</strong> → 화면과 코드의 <code>container_name</code>이 같아야 한다.</li>
-<li><strong>merge 실패 무시</strong> → <code>LVC_FIELDCATALOG_MERGE</code>가 실패했는데 확인 없이 display로 넘어가는 실수. <code>sy-subrc</code>와 <code>gt_fcat</code> 내용부터 확인한다.</li>
+<li><strong>merge 실패 무시</strong> → <code>LVC_FIELDCATALOG_MERGE</code>가 실패했는데 확인 없이 display로 넘어가는 실수. <code>sy-subrc</code> 검사 후 FORM 안에서 <code>RETURN</code>만 하면 <strong>그 FORM만 끝나고</strong> 호출자는 계속 진행하니, <code>gv_error</code> 같은 깃발로 호출자까지 멈춰야 빈 카탈로그로 표를 그리지 않는다.</li>
 <li><strong>0건을 오류로</strong> → 조회 결과 없음은 정상 업무 상황일 수 있다.</li>
 </ul>
 </section><section class="lblock"><h2>정리</h2>

@@ -13,12 +13,13 @@
   var $=function(id){return document.getElementById(id);};
   var cur=0, sumOn=false, sortCol=-1, sortAsc=true, rows=DATA.slice();
 
-  var KW=new Set(('DATA REF TO CREATE OBJECT EXPORTING CHANGING CALL FUNCTION SELECT FROM INTO TABLE WHERE MODULE OUTPUT INPUT ENDMODULE FORM ENDFORM PERFORM IF ELSEIF ELSE ENDIF IS INITIAL TYPE CASE WHEN ENDCASE CLEAR LEAVE SCREEN STANDARD OF').split(' '));
+  var KW=new Set(('DATA REF TO CREATE OBJECT EXPORTING CHANGING CALL FUNCTION SELECT FROM INTO TABLE WHERE MODULE OUTPUT INPUT ENDMODULE FORM ENDFORM PERFORM IF ELSEIF ELSE ENDIF IS INITIAL TYPE CASE WHEN ENDCASE CLEAR LEAVE SCREEN STANDARD OF RETURN EXCEPTIONS OTHERS').split(' '));
   var CLS=new Set(['cl_gui_custom_container','cl_gui_alv_grid','lvc_t_fcat','lvc_s_layo']);
   function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
   function hl(line){
     if(/^\s*"/.test(line)) return '<span class="tok-com">'+esc(line)+'</span>';
-    var out='', re=/('[^']*'?)|("[^\n]*$)|([A-Za-z_][A-Za-z0-9_]*)|([^A-Za-z0-9_']+)/g, m;
+    // 숫자 대안(\d+) 필수 · 캐치올에서 "를 제외해야 미드라인 주석/숫자가 안 사라진다.
+    var out='', re=/('[^']*'?)|("[^\n]*$)|([A-Za-z_][A-Za-z0-9_]*)|(\d+)|([^A-Za-z0-9_'"]+)/g, m;
     while((m=re.exec(line))!==null){
       if(m[1]) out+='<span class="tok-str">'+esc(m[1])+'</span>';
       else if(m[2]) out+='<span class="tok-com">'+esc(m[2])+'</span>';

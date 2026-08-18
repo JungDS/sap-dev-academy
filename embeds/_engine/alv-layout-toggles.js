@@ -1,5 +1,5 @@
 /* alv-layout-toggles 엔진 — LVC_S_LAYO 옵션을 토글하면 미리보기 표가 즉시 바뀐다.
-   zebra(줄무늬) · cwidth_opt(끄면 긴 고객명 잘림) · grid_title(제목 바) · sel_mode(단일/다중 선택 컬럼).
+   zebra(줄무늬) · cwidth_opt(끄면 colgroup 고정 열폭으로 긴 고객명 잘림, 켜면 내용 맞춤) · grid_title(제목 바) · sel_mode(단일/다중 선택 컬럼).
    바뀌는 건 데이터가 아니라 표 전체 보기 설정임을 강조한다.
    골격 계약: .alt-opts · .alt-sel · #altPreview · #altMsg.
    config: window.ALT_CFG = { cols:[{key,label}], rows:[{}], longKey, title }. 높이: _autoheight.js. */
@@ -29,7 +29,14 @@
     var h = '';
     if (st.gtitle) h += '<div class="alt-title">📋 ' + esc(CFG.title) + '</div>';
     var selHead = '<th class="selcol">' + (st.selMulti ? '☑' : '○') + '</th>';
-    h += '<table class="alt-tbl"><thead><tr>' + selHead +
+    /* cwidth_opt OFF = 고정 열폭(colgroup)이라 긴 값이 잘리고, ON = 내용에 맞춰 열이 넓어진다. */
+    var colg = '';
+    if (!st.cwidth) {
+      colg = '<colgroup><col style="width:34px">' + CFG.cols.map(function (c) {
+        return c.key === CFG.longKey ? '<col style="width:110px">' : '<col>';
+      }).join('') + '</colgroup>';
+    }
+    h += '<table class="alt-tbl ' + (st.cwidth ? 'fit' : 'fixed') + '">' + colg + '<thead><tr>' + selHead +
       CFG.cols.map(function (c) { return '<th>' + esc(c.label) + '</th>'; }).join('') + '</tr></thead><tbody>' +
       CFG.rows.map(function (r, i) {
         var sel = '<td class="selcol">' + (st.selMulti ? '☐' : '◯') + '</td>';

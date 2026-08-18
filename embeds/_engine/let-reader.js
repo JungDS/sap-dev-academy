@@ -15,10 +15,14 @@
   function render(){
     var capacity = n(cap,100), reserved = n(res,0);
     if (tab === 'cond'){
+      /* COND는 WHEN을 위에서부터 순서대로, 조건 그대로(정확 비교) 검사한다 — 음수는 `= 0`에 안 걸리고 `< 10`으로 내려간다. */
       var remaining = capacity - reserved;
-      var branch, result;
-      if (remaining <= 0){ branch='WHEN lv_remaining = 0'; result='매진'; }
-      else if (remaining < 10){ branch='WHEN lv_remaining < 10'; result='마감 임박: '+remaining+'석'; }
+      var branch, result, warn = '';
+      if (remaining === 0){ branch='WHEN lv_remaining = 0'; result='매진'; }
+      else if (remaining < 10){
+        branch='WHEN lv_remaining < 10'; result='마감 임박: '+remaining+'석';
+        if (remaining < 0) warn='⚠ 잔여석이 음수(<b>'+remaining+'</b>)인데 "매진"이 아닙니다 — <code>= 0</code>은 정확히 0만 참이라 다음 조건 <code>&lt; 10</code>이 잡았습니다. COND는 <b>위에서부터 순서대로, 조건을 그대로</b> 검사합니다.';
+      }
       else { branch='ELSE'; result='예매 가능: '+remaining+'석'; }
       view.innerHTML =
         '<pre class="lr-pre">DATA(lv_status) = COND string(\n'+
@@ -29,6 +33,7 @@
         '<div class="lr-steps">'+
         '<div class="lr-step let"><b>① LET 먼저</b> <code><span class="lr-h">lv_remaining</span> = '+capacity+' − '+reserved+' = '+remaining+'</code> <small>(한 번만 계산)</small></div>'+
         '<div class="lr-step in"><b>② IN 이후</b> 선택된 가지 <code>'+esc(branch)+'</code> → 결과 <code class="lr-res">'+esc(result)+'</code></div>'+
+        (warn ? '<div class="lr-step warn">'+warn+'</div>' : '')+
         '</div>';
     } else {
       var seats=[2,4,1], price=10000, sum=0, rows=[];
