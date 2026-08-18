@@ -1,6 +1,9 @@
 // ===== 컴포넌트 JS — ABAP 하이라이터 + 스텝 디버거 엔진 =====
 // vars 항목에 itab:{cols:[..],num:[..]}을 주면 값(2차원 배열)을 행 미니테이블로 렌더 —
-// 추가/변경 행 플래시, steps[i].focus={key:1기준행번호}로 현재 처리 행 강조. (CH06+ Internal Table 워치)
+// 추가(new)/변경(chg) 행 강조 = **초록·스텝 유지형**(완료된 줄이 만든 결과 = 코드 창 done과 같은 초록,
+// 다음 스텝 전까지 배경 유지 — CSS가 담당. 노랑은 왼쪽 '실행할 차례' 전용, 사용자 확정 2026-08-19),
+// steps[i].focus={key:1기준행번호}로 현재 처리 행 강조(파랑 포인터). (CH06+ Internal Table 워치)
+// steps[i].line = 숫자 또는 배열 — 한 문장이 여러 줄이면 [2,3]처럼 전 줄을 적어 함께 강조(콘솔 "2～3번 줄").
 //   · itab.max(선택, 기본 없음): 행이 max보다 많으면 앞/뒤만 보이고 가운데는 "⋮ n행 생략"으로 접는다
 //     (focus 행은 항상 포함). 대량 테이블(CH06-L06 구구단 72행)용 — max 미지정이면 전 행 렌더로 종전과 동일.
 //
@@ -77,21 +80,26 @@
       }
       return h+'</tbody></table>';
     }
+    // steps[i].line = 숫자 또는 배열(여러 줄이 한 문장일 때 그 줄 전부, 예 [2,3]) — 전부 함께 강조
+    const stepLines = s => s==null?[]:(Array.isArray(s.line)?s.line:[s.line]);
+    const lineLabel = s => { const L=stepLines(s); return L.length>1 ? L[0]+"～"+L[L.length-1] : String(L[0]); };
     function curMsg(){
       if(!started) return "대기 중 — ▶ 시작을 누르세요.";
-      const next = cur<steps.length ? steps[cur].line : null;
+      const next = cur<steps.length ? lineLabel(steps[cur]) : null;
       if(cur===0) return "▶ 준비됨 — '다음 ⏭'을 누르면 "+next+"번 줄을 실행합니다.\n(강조된 줄은 '실행할 차례'이며 아직 실행 전입니다.)";
       const done=steps[cur-1];
-      let msg="✓ 방금 "+done.line+"번 줄 실행 → "+(done.console||"");
+      let msg="✓ 방금 "+lineLabel(done)+"번 줄 실행 → "+(done.console||"");
       msg += (next!=null) ? "\n▶ 다음에 실행할 줄: "+next+"번 (아직 실행 전)" : "\n■ 끝까지 실행 완료";
       return msg;
     }
     function paintConsole(){ if(!consoleEl) return; consoleEl.textContent=(mode==="all")?(history.length?history.join("\n"):"(아직 실행한 줄이 없습니다)"):curMsg(); }
     function render(){
       lines.forEach(l=>l.classList.remove("active","done"));
-      const nextLine=(started&&cur<steps.length)?steps[cur].line:null, lastLine=(started&&cur>0)?steps[cur-1].line:null;
-      if(lastLine!=null){ const el=root.querySelector('.code li[data-line="'+lastLine+'"]'); if(el) el.classList.add("done"); }
-      if(nextLine!=null){ const el=root.querySelector('.code li[data-line="'+nextLine+'"]'); if(el){ el.classList.add("active"); el.scrollIntoView({block:"nearest"}); } }
+      const nextLs=(started&&cur<steps.length)?stepLines(steps[cur]):[], doneLs=(started&&cur>0)?stepLines(steps[cur-1]):[];
+      doneLs.forEach(n=>{ const el=root.querySelector('.code li[data-line="'+n+'"]'); if(el) el.classList.add("done"); });
+      let firstActive=null;
+      nextLs.forEach(n=>{ const el=root.querySelector('.code li[data-line="'+n+'"]'); if(el){ el.classList.add("active"); if(!firstActive) firstActive=el; } });
+      if(firstActive) firstActive.scrollIntoView({block:"nearest"});
       const v=accVars(cur), changed=(started&&cur>0)?(steps[cur-1].vars||{}):{};
       const prevV=(started&&cur>0)?accVars(cur-1):null, focus=(started&&cur>0)?(steps[cur-1].focus||{}):{};
       cfg.vars.forEach(d=>{
@@ -102,7 +110,7 @@
       paintConsole();
     }
     startBtn.addEventListener("click",()=>{ started=true; cur=0; history=[]; startBtn.textContent="↻ 다시"; nextBtn.disabled=false; if(progress) progress.style.transition="width .35s"; render(); });
-    nextBtn.addEventListener("click",()=>{ if(!started||cur>=steps.length) return; const s=steps[cur]; history.push((cur+1)+". [line "+s.line+" 실행] "+(s.console||"")); cur++; render(); if(cur>=steps.length) nextBtn.disabled=true; });
+    nextBtn.addEventListener("click",()=>{ if(!started||cur>=steps.length) return; const s=steps[cur]; history.push((cur+1)+". [line "+lineLabel(s)+" 실행] "+(s.console||"")); cur++; render(); if(cur>=steps.length) nextBtn.disabled=true; });
     cmodeBtns.forEach(b=>b.addEventListener("click",()=>{ mode=b.dataset.cmode; cmodeBtns.forEach(x=>x.classList.toggle("on",x===b)); paintConsole(); }));
 
     // ---- Watchpoint 레이어(선택) — [data-wp] 마크업이 있을 때만 배선 ----
@@ -140,10 +148,10 @@
         let hit=null;
         while(cur<steps.length){
           const s=steps[cur], before=accVars(cur);
-          history.push((cur+1)+". [line "+s.line+" 실행] "+(s.console||""));
+          history.push((cur+1)+". [line "+lineLabel(s)+" 실행] "+(s.console||""));
           cur++;
           const keys=Object.keys(s.vars||{}).filter(k=>watched.has(k)&&String(before[k])!==String(s.vars[k]));
-          if(keys.length){ hit={line:s.line,keys:keys,before:before,after:accVars(cur)}; break; }
+          if(keys.length){ hit={line:lineLabel(s),keys:keys,before:before,after:accVars(cur)}; break; }
         }
         render();
         if(cur>=steps.length) nextBtn.disabled=true;
