@@ -13,6 +13,7 @@
 
 ## 2. 엔진 재사용 우선 · config 주도
 - **재사용 먼저**: 같은 종류면 기존 엔진에 `XXX_CFG`만 갈아끼운다(`step-debugger`·`module-choice-cards`·`diff-mapper` 등은 여러 레슨 공용 — 현황 = `_index.md` 표 B).
+- **step-debugger의 `steps[i].line` = 문장 단위**: 한 ABAP 문장이 여러 줄이면 그 줄 **전부**를 배열로(`[2,3]` — active/done 강조·콘솔 "2～3번 줄"이 함께 움직인다). 문장 경계 판별 규칙(사용자 확정 2026-08-19): `.`이 문장 종료이고, **`,`는 그 문장에 `:`(chained)가 먼저 등장했을 때만 하위 문장 경계** — New Open SQL(CH19+)의 필드 나열 `,`는 같은 문장의 연속이므로 절대 경계가 아니다.
 - **로직/데이터 분리**: 엔진 로직은 `_engine/<name>.js`에, *레슨별 데이터는 인스턴스 HTML의 `XXX_CFG`* 에. **엔진에 레슨 데이터 하드코딩 금지.** (주입 보조 도구: `tools/_inject-cfg.mjs`.)
 - 신규 엔진만 `embeds/_engine/<name>.js`(+선택 `<name>.css`) 추가.
 
