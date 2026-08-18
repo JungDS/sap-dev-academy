@@ -1,8 +1,8 @@
 // ===== 컴포넌트 JS — Diff Mapper =====
-// 상호작용 = 사이트 공통 관례(레슨 용어 버튼과 동일): hover = 임시 미리보기 · 클릭/탭 = 고정.
-//   고정 중 다른 줄 hover = 임시로 그 줄을 보여 주고, 벗어나면 고정된 줄로 복귀.
-//   같은 줄 다시 클릭 = 해제, 다른 줄 클릭 = 고정 이동. 모바일(hover 없음)은 탭 고정이 기본 경로.
-//   (hover 전용이던 구 동작은 모바일에서 누르고 있어야 해 화면을 가림 — 사용자 확정 2026-08-19)
+// 상호작용: hover = 임시 미리보기(자유 상태에서만) · 클릭/탭 = 고정.
+//   고정 중에는 hover를 완전히 무시한다(표시 불변) — 해제 경로는 딱 둘:
+//   ① 같은 줄 다시 클릭 = 해제 · ② 다른 줄 클릭 = 그 줄로 고정 이동. (사용자 확정 2026-08-19)
+//   모바일(hover 없음)은 탭 고정이 기본 경로 — hover 전용이던 구 동작은 누르고 있어야 해 화면을 가렸음.
 (function(){
   document.querySelectorAll(".diff-mapper").forEach(mapper=>{
     const lines = [...mapper.querySelectorAll(".diff-line")];
@@ -25,8 +25,8 @@
         pinned = (pinned===id) ? null : id;
         paint(pinned ? line : null);
       });
-      line.addEventListener("mouseenter",()=>paint(line));
-      line.addEventListener("mouseleave",()=>paint(pinned ? lineOf(pinned) : null));
+      line.addEventListener("mouseenter",()=>{ if(pinned===null) paint(line); });
+      line.addEventListener("mouseleave",()=>{ if(pinned===null) paint(null); });
     });
   });
 })();
