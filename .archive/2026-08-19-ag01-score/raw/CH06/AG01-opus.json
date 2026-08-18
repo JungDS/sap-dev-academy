@@ -1,0 +1,144 @@
+{
+  "agent": "AG01",
+  "model": "opus",
+  "target": "CH06",
+  "persona_ack": "나는 '은서'다. 개발·전공 경험이 전혀 없는 24세 문과 출신 입문자로, 이 사이트로 ABAP을 처음 공부한다. 모르는 단어가 나오면 그 자리에서 멈추므로, 풀이가 그 자리나 같은 챕터 앞 레슨에 없으면 막힌 것으로 기록했다. 내 바깥 지식으로 빈틈을 메우지 않았다.",
+  "method": "Read 도구로 대상 7개 파일(_chapter.md, CH06-L01~L06.md) 전문을 순서대로 통독. 웹 검색·다른 감사 산출물·과거 캠페인 폴더 열람 없음. 막힌 지점마다 해당 레슨과 그 앞 레슨 범위 안에서 풀이가 제공되는지 되짚어 확인.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L06.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH06/CH06-L01.md",
+      "quote": "다음 행을 채우기 전에 값 비우기(아래 '비우기'에서 자세히)",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "코드 주석이 '아래 비우기 절에서 자세히'라고 안내하는데, 정작 아래 '비우기 — CLEAR / FREE' 절은 테이블(gt_)을 비우는 이야기만 하고 Work Area(gs_) CLEAR는 다루지 않는다.",
+      "evidence": "안내를 믿고 아래로 내려갔는데 예제가 전부 `CLEAR gt_person.` / `FREE gt_person.`이라 '내가 궁금했던 gs_person의 CLEAR는 어디 갔지?' 하고 되돌아와야 했다. 왜 새 행을 채우기 전에 Work Area를 비워야 하는지는 한참 뒤 '흔한 실수' 항목에서야 한 줄로 나온다. 약속된 자리에 설명이 없으니 내가 뭘 놓쳤나 싶어 위아래를 세 번 오갔다.",
+      "suggestion": "'비우기' 절에 Work Area CLEAR(한 건 그릇 비우기)와 테이블 CLEAR(행 전체 비우기)를 나란히 한 문단으로 두거나, 주석의 안내 문구를 '아래 흔한 실수에서 다시'로 바꾼다."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH06/CH06-L01.md",
+      "quote": "행 전체를 비우는 옛 문장(공식 문서 기준 obsolete)",
+      "category": "멈춘 곳",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'obsolete'라는 영어 낱말이 풀이 없이 두 번(REFRESH 항목·Header Line 항목) 쓰인다.",
+      "evidence": "앞 문장의 '지금은 안 쓰지만 알아본다'로 대충 짐작은 되지만, 괄호 안이 '공식 문서 기준 obsolete'라고 못 박는 대목이라 정확히 어떤 상태인지(에러가 나는 건가, 그냥 권장 안 하는 건가)가 갈린다. 이 챕터에서 다른 ABAP 용어는 전부 괄호로 한 줄 풀이를 붙여 줬는데 이 낱말만 그대로다.",
+      "suggestion": "첫 등장에 'obsolete(더 이상 권장되지 않는·구식으로 지정된)' 식의 한 줄 풀이를 붙인다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH06/CH06-L02.md",
+      "quote": "키를 명시하지 않고 `TYPE TABLE OF`만 쓰면(지금까지 우리가 한 방식) **standard key**가",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L01에서 계속 써 온 `TYPE TABLE OF ts_person`이 세 종류(STANDARD/SORTED/HASHED) 중 무엇인지 명시하는 문장이 어디에도 없다. 게다가 종류 이름 'STANDARD'와 키 이름 'standard key'가 사실상 같은 낱말이라 둘을 같은 것으로 착각하게 된다.",
+      "evidence": "③ Table Kind 절을 다 읽고 나서 '그럼 내가 L01에서 만든 gt_person은 셋 중에 뭐지?'가 끝내 안 풀렸다. 여기서 확인되는 건 '키'가 standard key라는 것뿐이고, 종류에 대해서는 '처음엔 STANDARD로 충분하다'는 권유만 있지 '키를 안 적은 TYPE TABLE OF는 STANDARD다'라는 확인 문장이 없다. 반대로 이름이 비슷해서 'standard key가 잡힌다 = STANDARD 종류가 된다'고 멋대로 이어 붙였는데, 바로 아래에서 SORTED에도 키가 있다고 하니 다시 헷갈렸다. L03의 `INSERT ... INTO TABLE` 표를 읽을 때도 내 테이블이 어느 줄에 해당하는지 몰라 표를 못 썼다.",
+      "suggestion": "③ 절 끝에 '지금까지 쓴 `TYPE TABLE OF`는 종류를 안 적은 것이고, 그러면 STANDARD가 된다'는 한 문장을 넣고, 'standard key(키)'와 'STANDARD(종류)'는 이름만 비슷한 별개라는 주의 한 줄을 덧붙인다."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH06/CH06-L02.md",
+      "quote": "TYPE TABLE OF zde_amount.",
+      "category": "단절",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "예제 세 줄 중 `zde_amount`만 이 챕터 안에 아무 설명·링크가 없이 등장한다.",
+      "evidence": "같은 코드 블록의 다른 두 줄(`i`, `ts_person`)은 바로 앞에서 본 것이고, 바로 아래 문단은 DDIC Structure만 링크로 짚어 준다. `zde_`가 무엇의 줄임인지, 저 이름을 내가 어디서 만들었는지가 이 자리에도 앞 레슨에도 없어서 '내가 못 만든 게 있나' 하고 멈췄다.",
+      "suggestion": "`zde_amount`에도 만든 자리(Data Element를 다룬 챕터) 링크를 붙이거나, 주석에 '전에 만든 Data Element' 정도로 출처를 밝힌다."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH06/CH06-L03.md",
+      "quote": "잠시 뒤에 배울 `BINARY SEARCH`로 찾다가 테이블 끝까지 간 경우에는 8이 들어오기도 한다.",
+      "category": "단절",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'sy-subrc = 4로 비교하면 안 된다'는 중요한 규칙의 근거가, 아직 배우지 않은 개념(BINARY SEARCH)과 뜻이 잡히지 않는 표현('테이블 끝까지 간 경우')에 걸려 있다.",
+      "evidence": "본문 스스로 '잠시 뒤에 배울'이라고 인정하는 개념을 근거로 들어서, 지금 읽는 시점에는 왜 8이 나오는지 검증할 방법이 없다. '테이블 끝까지 갔다'는 말도 찾다가 못 찾았다는 뜻인지(그럼 4여야 하는 것 아닌가), 다른 무언가인지 구분이 안 돼 세 번 다시 읽었다. 뒤의 BINARY SEARCH 절로 내려가도 8에 대한 설명은 다시 나오지 않아 끝내 미해결로 남았다.",
+      "suggestion": "이 자리에서는 '실패 코드가 상황에 따라 4가 아닐 수 있으니 언제나 0인지로 판정한다'까지만 말하고, 8이 나오는 사례는 BINARY SEARCH 절로 내려 그곳에서 구체적으로(찾는 값이 마지막 행보다 큰 경우 등) 풀어 준다."
+    },
+    {
+      "seq": 6,
+      "file": "content/abap/CH06/CH06-L04.md",
+      "quote": "문장이 테이블을 건드리는 순간 내부적으로 처음부터 훑는 방식이 되어, 행이 많을수록 느려진다.",
+      "category": "멈춘 곳",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "COLLECT의 성능 주의사항이 전제 없이 압축돼 있어 무슨 상황을 조심하라는 것인지 알 수 없다.",
+      "evidence": "'다른 문장'이 어떤 문장인지(READ? SORT? APPEND?), '건드린다'가 무엇을 뜻하는지, COLLECT가 원래는 어떤 방식으로 빠르게 찾고 있었는지가 하나도 안 나온다. 앞에서 배운 건 'COLLECT는 키가 같으면 합산한다'뿐이라, 내부적으로 무언가를 기억하고 있다가 잃어버린다는 이야기 자체가 처음 듣는 말이다. 결국 '대량이면 STANDARD 말고 SORTED/HASHED'라는 결론만 외우고 이유는 포기했다.",
+      "suggestion": "'COLLECT는 STANDARD 테이블에서도 처음에는 키 위치를 기억해 두고 빠르게 찾지만, 그 사이 SORT·DELETE 같은 다른 문장이 끼면 그 기억이 무효가 되어 다시 처음부터 훑는다'처럼 어떤 문장이 문제인지와 무엇을 잃는지를 한 문장씩 풀어 쓴다."
+    },
+    {
+      "seq": 7,
+      "file": "content/abap/CH06/CH06-L04.md",
+      "quote": "**그룹 키는 \"`f`와 그 왼쪽의 모든 필드\"다.** 그래서 `f`보다 왼쪽에 있는 필드가 바뀌어도",
+      "category": "과부하",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'집계 — COLLECT · 컨트롤레벨' 한 절에 새 개념이 몰려 있다. 새 타입 선언(ts_sales) → COLLECT와 그 제약 6가지 → AT NEW/AT END OF/AT FIRST/AT LAST → SUM → '선언 순서 기준 왼쪽·오른쪽' → 그룹 키의 확장 규칙 → 블록 안 Work Area 3단 변형까지가 쉬지 않고 이어진다.",
+      "evidence": "앞 절까지는 문장 하나에 설명 한 덩어리라 따라갔는데, 여기서는 예제 하나를 붙잡고 규칙 여섯 개를 동시에 머리에 넣어야 했다. 특히 '그룹 키 = f와 그 왼쪽 전부'는 방금 배운 '키 오른쪽 필드가 합산된다'와 방향이 반대라, 왼쪽/오른쪽이 각각 무엇의 기준인지 뒤엉켜 표를 그려 가며 읽어야 했다. 체험 임베드가 이 규칙들을 다 지난 뒤에야 나와서 중간에 확인할 곳도 없었다.",
+      "suggestion": "COLLECT와 컨트롤레벨을 별도 `##` 절로 분리하고, 컨트롤레벨은 (1) 그룹 경계로 소계 내기 → (2) 그룹 키가 어디까지인가 → (3) 블록 안 Work Area가 달라진다 순으로 끊어 각 단계 뒤에 짧은 확인(체험 또는 예시 출력)을 붙인다."
+    },
+    {
+      "seq": 8,
+      "file": "content/abap/CH06/CH06-L04.md",
+      "quote": "**`AT ... ENDAT` 안에서는 다른 필드 값이 가려진다.** 블록에 들어가는 순간 시스템이",
+      "category": "멈춘 곳",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "가장 낯선 동작(블록 안에서 값이 `*`나 초기값으로 바뀜)의 이유가 '시스템이 Work Area를 손질하기 때문'이라는 동어 반복으로만 제시된다.",
+      "evidence": "'왜 하필 `*`인가'가 궁금해서 읽었는데 답이 '시스템이 손질해서'라 아무것도 늘지 않았다. 이 챕터의 다른 어려운 대목(이진 탐색·해시)은 전화번호부 비유로 이유까지 알려 줘서 잘 넘어갔는데, 여기만 이유 없이 규칙 세 줄을 외우게 된다.",
+      "suggestion": "'그룹 경계에서는 그룹을 대표하는 값만 믿을 수 있고 나머지 행별 값은 의미가 없어 시스템이 일부러 지워 표시한다' 정도로 목적을 밝히거나, 최소한 '이유는 뒤에서, 지금은 규칙만'이라고 정직하게 적는다."
+    },
+    {
+      "seq": 9,
+      "file": "content/abap/CH06/CH06-L04.md",
+      "quote": "서울 지점 명단과 부산 지점 명단을 받아 전체 명단을",
+      "category": "단절",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "설명은 명단 셋(서울·부산·전체)을 예로 들지만 바로 아래 코드에는 테이블이 둘(`gt_a` 지점, `gt_b` 전체)뿐이라 대응이 어긋난다.",
+      "evidence": "'부산 명단은 어느 변수지?' 하고 코드에서 찾다가 없어서 내가 잘못 읽은 줄 알고 다시 봤다. 주석도 `gt_a`는 '지점 명단', `gt_b`는 '전체 명단'이라 서울/부산 어느 쪽인지 알 수 없다.",
+      "suggestion": "예시를 코드와 맞춰 '지점 명단 하나를 전체 명단 뒤에 이어 붙인다'로 줄이거나, 변수를 `gt_seoul`·`gt_busan`·`gt_all`처럼 서술과 1:1로 맞춘다."
+    },
+    {
+      "seq": 10,
+      "file": "content/abap/CH06/CH06-L04.md",
+      "quote": "::embed CH06-L04-S04 | 두 명단 합치기 — APPEND LINES OF를 직접 확인::",
+      "category": "단절",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "'중복 · 개수 · 합치기' 절의 체험 두 개가 본문 순서와 반대로 놓여 있다. 중복 제거 설명이 절 앞부분인데 그 체험(S03)은 합치기 체험(S04) 뒤 맨 끝에 있다.",
+      "evidence": "합치기 체험을 열어 보고 다음으로 넘어가려는데 갑자기 중복 제거 체험이 나와, 절 앞부분으로 다시 올라가 무슨 이야기였는지 확인해야 했다. 다른 레슨들은 설명 바로 아래에 체험이 붙어 있어서 흐름이 끊기지 않았다.",
+      "suggestion": "중복 제거 체험(S03)을 `DELETE ADJACENT DUPLICATES` 코드 바로 아래로 옮겨 설명-체험 순서를 맞춘다."
+    },
+    {
+      "seq": 11,
+      "file": "content/abap/CH06/CH06-L06.md",
+      "quote": "`AT` 블록 안에서 `mul`을 같이 찍어 보면 값이 가려진다는 그 규칙도 눈으로 확인된다.",
+      "category": "단절",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "미션 2가 시키는 순서(`AT END OF dan.` 안에서 `SUM.` 실행 후 `mul` 출력)대로 하면 `mul`은 가려진 값이 아니라 그 단의 합계가 찍힐 것이라, 확인하라는 규칙과 실제로 보게 될 결과가 어긋난다.",
+      "evidence": "앞 레슨에서 '초기값으로 비워진 숫자 필드 자리를 SUM이 그룹 합계로 채워 준다'고 배웠다. `mul`은 그룹 키 `dan`의 오른쪽 숫자 필드이니 SUM의 합산 대상이다. 그런데 미션은 SUM을 넣은 다음 `mul`을 찍어 '가려진다'를 확인하라고 한다. 시키는 대로 해서 0도 `*`도 아닌 숫자가 나오면, 내가 코드를 틀리게 쓴 건지 규칙을 잘못 이해한 건지 판단할 수가 없다.",
+      "suggestion": "`SUM.` 앞에서 `mul`을 한 번 찍어 초기값(가려짐)을 보고, `SUM.` 뒤에 다시 찍어 합계로 채워지는 것을 보게 순서를 지정하거나, '가려짐 확인'은 `AT NEW dan.` 블록에서 하도록 미션을 나눈다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH06은 '한 건→여러 건'이라는 불편에서 출발해 선언·단일 행·다중 행·분류·캡스톤으로 이어지는 흐름이 자연스럽고, 학습을 포기할 만한 치명 지점은 없었다. 특히 잘 읽힌 장치는 L02의 이진 탐색·해시 설명으로, '정렬된 전화번호부를 반씩 갈라 본다'는 비유 덕에 처음 듣는 낱말인데도 한 번에 이해됐다(L03의 '여기까지 한눈에' 표와 L06의 캡스톤 개념 대조표도 흩어진 문장들을 정리해 줘 큰 도움이 됐다). 다만 L02에서 '지금까지 쓴 TYPE TABLE OF가 어느 종류인가'가 끝내 확인되지 않고 'standard key'와 'STANDARD 종류'의 이름 충돌이 방치된 점, L04의 집계 절이 한 절에 규칙을 몰아 과부하가 온 점, L03의 sy-subrc=8 근거가 아직 안 배운 개념에 걸린 점, L06 미션 2의 확인 결과가 배운 규칙과 어긋나 보이는 점은 손봐야 따라갈 수 있다."
+  }
+}

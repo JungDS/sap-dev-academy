@@ -1,0 +1,82 @@
+{
+  "agent": "AG01",
+  "model": "sonnet",
+  "target": "CH16",
+  "persona_ack": "은서(24세, 개발·전공 경험 없음, 노션·인스타에 익숙, 모르는 단어에서 바로 멈추는 성격) 페르소나로 CH16 레슨을 _chapter.md 이후 L01부터 L10까지 순서대로 처음 읽는 사람처럼 통독했다. 실제 지식으로 빈틈을 메꾸지 않고, 그 자리(또는 같은 챕터 앞 레슨)에 풀이가 없으면 막힌 것으로 기록했다.",
+  "method": "본문 통독 및 대조(도구 미사용) — 레슨 간 교차 참조(전방 참조 약속 이행 여부)와 코드 패턴 일관성(L07의 save_ok 패턴이 L09에서도 지켜지는지)을 텍스트 대조로 확인.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L10.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L07.md",
+      "quote": "버튼과 그 속성을 만드는 곳은 [PF-STATUS와 TITLEBAR](CH16-L08.html)에서 배울 GUI Status다.",
+      "category": "생략",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "나가기 버튼의 function type을 'E'로 지정하는 실제 방법(SE41/Menu Painter에서 어느 칸을 어떻게 채우는지)을 CH16-L08에서 배운다고 약속했는데, L08을 다 읽어도 'function type'이라는 말 자체가 한 번도 다시 나오지 않아 어디서 배웠다는 건지 못 찾고 멈췄다.",
+      "evidence": "CH16-L07은 '나가기 버튼은 다른 길로 처리한다'며 1번 항목에서 function type을 E로 지정하라고 하고 '자세히는 CH16-L08에서 배울 GUI Status에서'라고 못박는다. 그런데 CH16-L08 본문(화면 위 메뉴·툴바, PBO에서 켜기, EXCLUDING, TITLEBAR WITH, 흔한 실수와 점검, 정리)을 전부 살펴봐도 'function type'이라는 단어가 전혀 등장하지 않는다. 이 절차가 실제로 다시 나오는 곳은 L10 실습의 절차 6번(\"나가기 버튼 셋은 function type을 E로 지정한다\")인데, 거기서도 SE41 화면 어디에 그 값을 넣는지는 설명 없이 결과만 반복한다. L07의 약속이 이행되지 않은 채 넘어간 셈이라, '그래서 SE41에서 정확히 뭘 클릭해야 하지?'라는 의문이 챕터 끝까지 안 풀린다.",
+      "suggestion": "CH16-L08에 GUI Status 절 안에 '버튼 속성에서 function type을 E로 지정' 하는 화면(Menu Painter의 어느 칸/체크박스인지) 설명을 짧게라도 추가하거나, L07의 약속 문구를 실제로 그 절차가 나오는 L10으로 정정한다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L09.md",
+      "quote": "tab_main-activetab = ok_code.",
+      "category": "단절",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "CH16-L07에서 '공식 권장 패턴'이라며 강조한 'ok_code → save_ok로 복사 후 바로 CLEAR' 규칙을 이 Tabstrip 예제의 PAI 모듈(tab_command_0100)은 지키지 않는다. save_ok도, CLEAR ok_code도 없이 ok_code를 그대로 CASE에 쓰는데 왜 여기서는 그 규칙이 빠지는지 아무 설명이 없어서, 다시 읽어도 '이건 규칙 위반인가 예외인가' 판단이 안 선다.",
+      "evidence": "CH16-L07은 'OK_CODE를 안 비움 → 이전 명령이 남아 Enter에 재실행된다'를 흔한 실수 1번으로 못박고 '읽은 뒤 바로 CLEAR'를 핵심 패턴으로 가르쳤다. 그런데 CH16-L09의 tab_command_0100 모듈은 'CASE ok_code. WHEN TAB1 OR TAB2. tab_main-activetab = ok_code. ENDCASE.'로 save_ok 복사도 CLEAR ok_code도 전혀 하지 않는다. 이 챕터 안 다른 모든 PAI 모듈(L07·L10의 user_command_0100, exit_0100)은 예외 없이 save_ok+CLEAR 패턴을 쓰는데 이 예제만 다르다. 앞서 배운 대로라면 TAB1을 누른 뒤 Enter를 한 번 더 치면 ok_code에 남은 'TAB1'이 재실행될 위험이 있어 보이는데, 그 위험에 대한 언급이나 '탭 전환은 예외'라는 설명이 전혀 없다.",
+      "suggestion": "tab_command_0100 예제에도 save_ok+CLEAR 패턴을 적용하거나, 왜 이 경우엔 생략해도 되는지(혹은 생략하면 안 되는지) 한 줄 코멘트를 추가한다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L05.md",
+      "quote": "그리고 **한 모듈 안에서** 값을 읽고, 후보를 만들고, F4 창을 띄운다.",
+      "category": "과부하",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "value_perf 모듈 코드 하나에 CLEAR 두 개, 화면값 읽기용 CALL FUNCTION(파라미터 4개), sy-subrc 검사와 RETURN, READ TABLE, 조건별 후보 생성, F4 팝업용 CALL FUNCTION(파라미터 5개)까지 한꺼번에 몰려 있어서 처음 읽을 땐 뭐가 뭔지 못 따라갔다. '외울 필요 없다'는 안내가 코드보다 뒤에 나와서, 그걸 보기 전까지는 계속 막혀 있었다.",
+      "evidence": "코드 블록 하나에 새로 등장하는 요소가 최소 8개(CLEAR 대상 2개, DYNP_VALUES_READ의 EXPORTING/TABLES/EXCEPTIONS, sy-subrc+RETURN, READ TABLE INDEX, F4IF_INT_TABLE_VALUE_REQUEST의 파라미터 5개)다. 파라미터 설명 표('낯선 파라미터 읽는 법')와 '지금 이 코드를 통째로 외울 필요는 없다'는 안내가 모두 이 코드 블록보다 뒤에 나와서, 코드를 처음 눈으로 따라갈 때는 안내 없이 밀도 높은 코드부터 마주하게 된다.",
+      "suggestion": "코드 블록 앞에 '아래는 한 번에 다 이해 안 돼도 된다, 흐름만 보라'는 안내를 먼저 배치하거나, 파라미터 표를 코드 앞으로 옮긴다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L06.md",
+      "quote": "IF gs_screen-name = 'GV_SEATS' AND gv_locked = 'X'.",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "gs_screen이 TYPE screen이라는 시스템이 미리 만들어 둔 구조체라는 건 나중에(짧은 형식 설명에서) 알게 되는데, 정작 처음 코드에서 -name·-input 필드를 쓸 때는 '이 구조체엔 어떤 필드들이 있는지' 정식으로 소개된 적이 없어서 '이 필드 이름들을 어떻게 미리 알고 쓰지?' 하고 잠깐 멈췄다. 문맥으로 대충 짐작은 되지만(-name은 요소 이름, -input은 읽기전용 여부) 표로 정리돼 있지 않다.",
+      "evidence": "LOOP AT SCREEN INTO gs_screen 코드가 gs_screen-name과 gs_screen-input을 바로 사용하지만, TYPE screen이 시스템 표준 구조체이고 그 안에 여러 필드가 있다는 사실은 훨씬 뒤 '📌 짧은 LOOP AT SCREEN 형식' 콜아웃에서 곁가지로만 언급된다. name·input 두 필드의 뜻은 각각 흩어진 문장으로 유추 가능하지만, '이 구조체가 무엇이고 필드가 몇 개나 있는지'는 한 번도 표로 안내되지 않는다.",
+      "suggestion": "LOOP AT SCREEN 첫 등장 자리에 'screen은 시스템이 미리 정의한 구조체이고 name·input 같은 필드를 갖고 있다'는 한 줄 인라인 풀이를 추가한다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L03.md",
+      "quote": "`vrm_values`는 **VRM 타입 그룹**에 들어 있는 타입이다.",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'타입 그룹'이라는 말이 여기서 처음 나오는데 무슨 뜻인지 한 줄도 안 풀어 준다. 뒤(L09)에서 '타입 그룹 ICON'이라고 또 나오는데 그때도 마찬가지라 결국 챕터 내내 이 말이 뭔지 모른 채로 지나갔다.",
+      "evidence": "CH16-L03의 🧯 콜아웃은 'vrm_values는 VRM 타입 그룹에 들어 있는 타입'이라고만 하고 '타입 그룹'이 무엇인지(TYPE-POOLS로 미리 정의해 둔 타입·상수 묶음이라는 것)는 설명하지 않는다. CH16-L09의 Status Icon 절에서도 'icon_red_light 같은 아이콘 이름은 SAP이 미리 만들어 둔 상수다(타입 그룹 ICON)'라고 같은 표현을 반복하지만 역시 정의가 없다. 다만 두 곳 다 본문 핵심이 아니라 곁가지(🧯 edge case, 괄호 부연)로 제시돼 있어 넘기고 읽어도 흐름은 이어진다.",
+      "suggestion": "'타입 그룹'이 처음 나오는 L03 자리에 '(TYPE-POOLS로 미리 묶어 둔 타입·상수 모음)' 같은 인라인 한 줄 풀이를 추가한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "보강 권장",
+    "summary": "PBO/PAI를 '두 박자'로 부르고 챕터 끝까지 같은 비유로 되짚어 주는 장치가 특히 잘 읽혔고, L10에서 'MODULE엔 지역 데이터 영역이 없어서 gv_로 짓는다'는 설명은 흩어져 있던 CH16의 전역 변수 규칙을 한 번에 납득시켜 줬다. 다만 L07이 L08에서 다룬다고 약속한 function type 'E' 지정 절차가 정작 L08에 없는 점, L09의 Tabstrip 예제가 L07에서 '핵심 패턴'이라 강조한 save_ok+CLEAR를 설명 없이 건너뛰는 점은 다시 읽어도 풀리지 않는 진짜 막힘이었다. L05의 F4 커스터마이징 코드는 안내 문구 위치만 앞으로 당겨도 체감 난도가 크게 낮아질 것 같다."
+  }
+}

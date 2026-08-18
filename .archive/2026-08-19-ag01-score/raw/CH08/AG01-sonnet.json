@@ -1,0 +1,57 @@
+{
+  "agent": "AG01",
+  "model": "sonnet",
+  "target": "CH08",
+  "persona_ack": "나는 은서, 24세 문과 출신 개발 완전 입문자다. 이 사이트로 ABAP을 처음 배우며, 노션·인스타에는 익숙하지만 낯선 용어가 나오면 그 자리에서 멈춘다. CH08의 레슨 7개와 챕터 소개를 L01부터 순서대로 처음 읽는 사람으로서 통독하며 걸린 지점을 기록했다.",
+  "method": "대상 파일 8개(_chapter.md, CH08-L01~L07.md)를 레슨 순서대로 정독하며 각 문장·코드 블록이 그 시점까지 배운 내용만으로 이해되는지 원문과 대조. 별도 실행 도구는 쓰지 않았다(콘텐츠 직독 방식).",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L07.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L03.md",
+      "quote": "carrid = 'KE' AND connid = '0701' AND fldate = '20260623'.",
+      "category": "단절",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "SELECT SINGLE 예제에서 WHERE 조건 세 개를 AND로 묶어 쓰는데, 바로 위 안내문은 \"= 로 값을 지정해 그 행만 고른다\" 정도로만 읽고 넘어가면 된다고 해서 실제 코드보다 훨씬 쉬운 것처럼 안내한다. AND 같은 조합 연산자는 이 챕터 뒤쪽 CH08-L05(WHERE 상세)에서야 정식으로 나온다.",
+      "evidence": "은서 입장: \"'=' 하나만 알면 된다고 했는데 코드에는 AND가 두 번이나 있네. 뜻은 대충 짐작되지만 이게 지금은 몰라도 되는 문법인지, 이미 알고 있어야 하는 문법인지 헷갈린다.\" 재독해도 이 궁금증은 본문에서 풀리지 않는다(설명이 없으니).",
+      "suggestion": "안내문에 \"AND로 조건을 여러 개 이어 붙일 수 있다는 것도 지금은 그대로 따라 치면 된다(정식 설명은 WHERE 상세 레슨에서)\" 같은 한 문장을 추가하거나, front-matter의 foreshadow/advanceUse에 AND 선행 사용을 명시한다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L05.md",
+      "quote": "SQL Injection 걱정은 없다",
+      "category": "생략",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "host 변수 설명 블록에서 \"SQL Injection 걱정은 없다\"라고 안심시키는데, SQL Injection이 무엇인지에 대한 설명이 이 문단에도, 챕터 어디에도 없다.",
+      "evidence": "이 문단은 \"🧑\u200d💻 다른 언어를 해 봤다면\"으로 시작하지만 L01의 유사 안내(SQL을 이미 해 봤다면)와 달리 <details> 접이식이 아니라 항상 펼쳐진 본문이라 은서도 그대로 읽게 된다. \"걱정 없다\"는 결론만 주어질 뿐, 애초에 무엇을 걱정하지 않아도 되는 건지(SQL Injection이 뭔지) 몰라서 안심이 되지 않고, 몇 번을 다시 읽어도 이 용어의 뜻은 본문에서 알 수 없다.",
+      "suggestion": "SQL Injection을 괄호로 한 줄 풀이(예: \"사용자가 입력한 문자열이 SQL 명령어처럼 실행되어 버리는 보안 취약점\") 추가하거나, 이 문단 전체를 L01처럼 <details> 접이식으로 바꿔 완전 입문자 기본 경로에서는 건너뛸 수 있게 한다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH08\\CH08-L05.md",
+      "quote": "fldate BETWEEN '20260101' AND '20261231'",
+      "category": "과부하",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "\"범위·목록·패턴\" 절에서 BETWEEN·IN·LIKE 세 개의 새 연산자가 한 코드 블록에 동시에 등장한다.",
+      "evidence": "바로 앞 절에서 비교 연산자 표(EQ/NE/LT/GT/LE/GE)를 막 배운 직후라 이미 새 정보가 쌓인 상태인데, 곧이어 BETWEEN(범위)·IN(목록)·LIKE(패턴, % · _ 두 와일드카드까지)가 하나의 예제 안에 몰려 나와 한 번에 소화하기 벅차다. 재독하면 각각은 이해되지만 처음 읽을 때는 어느 것부터 봐야 할지 헷갈렸다.",
+      "suggestion": "BETWEEN·IN·LIKE를 하나의 코드 블록으로 한꺼번에 보여주기보다, 각각을 짧은 개별 예제로 먼저 보여준 뒤 마지막에 세 개를 조합한 예제를 추가하면 부담이 줄어든다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH08은 전체적으로 '구구단을 SELECT 한 문장으로 되찾기'라는 익숙한 소재로 시작해 client 자동 필터·SELECT 4요소·형태별 SELECT·INTO 대상·WHERE 상세·키/인덱스·조회 실패까지 단계적으로 잘 쌓아 올렸고, 특히 CH08-L06의 \"성을 알면 그 자리로 바로 넘어가지만 성 없이 이름만 알면 처음부터 훑어야 한다\"는 전화번호부 비유가 키 선두 규칙을 한 번에 이해시켜 가장 잘 읽혔다. 다만 CH08-L03의 WHERE 예제가 안내문보다 앞서 AND를 쓰는 지점과, CH08-L05에서 SQL Injection이라는 용어가 아무 설명 없이 등장하는 지점, WHERE 상세 레슨 후반부에 새 연산자가 한꺼번에 몰리는 지점은 완전 입문자 기준으로 손볼 여지가 있다."
+  }
+}

@@ -1,0 +1,146 @@
+{
+  "agent": "AG01",
+  "model": "opus",
+  "target": "CH19",
+  "persona_ack": "나는 '은서'다. 개발·전공 경험이 전혀 없는 24세 문과 출신 입문자이고, 이 사이트로 ABAP을 처음 배운다. 노션·인스타는 익숙하지만 코드는 처음이라, 모르는 단어가 나오면 그 자리에서 멈춘다. CH19의 8개 레슨을 L01부터 순서대로 처음 읽는 사람의 눈으로 통독하며, 내 바깥 지식으로 빈칸을 메우지 않고 '그 자리(또는 같은 챕터 앞 레슨)에 설명이 있는가'만으로 판단했다.",
+  "method": "Read 도구로 대상 9개 파일(_chapter.md + CH19-L01~L08.md) 전문을 순서대로 통독. 빌드·브라우저·웹검색은 사용하지 않았고, 다른 챕터 파일이나 과거 감사 산출물은 열지 않았다. quote는 원문에서 그대로 복사했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L08.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH19/CH19-L01.md",
+      "quote": "SELECT carrid connid seatsmax",
+      "category": "단절",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "챕터의 첫 비교 코드에 나오는 `lv_carr`·`lt_flight`가 어디서 온 값인지 이 레슨 안에 선언이 없다.",
+      "evidence": "첫 코드 블록에서 `lv_carr`와 `lt_flight`가 갑자기 등장한다. 나는 이 둘이 무엇인지 몰라 '이게 DB에 있는 이름인가, 내가 만든 이름인가'를 판단할 수 없었다. 하필 이 레슨의 주제가 '어느 이름이 DB 것이고 어느 게 ABAP 것인가'라서, 정체 모를 이름 두 개로 그 구분을 배우는 셈이 되어 첫 문단에서 한 번 멈췄다. (다음 레슨 L02에 가서야 `DATA lv_carr TYPE sflight-carrid VALUE 'LH'.`로 선언을 봤다.)",
+      "suggestion": "비교 코드 위에 한 줄로 '`lv_carr`는 항공사 코드를 담은 ABAP 변수, `lt_flight`는 결과를 받을 Internal Table'이라고 밝히거나, L02처럼 `DATA` 선언 두 줄을 코드 블록 앞에 붙여 준다."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH19/CH19-L02.md",
+      "quote": "ABAP 프로그램에서 선언한 데이터 객체(변수·상수·필드)를 SQL 문장의 자리(operand)에 넣은 것이 **host variable**이다.",
+      "category": "멈춘 곳",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "`operand`라는 용어가 풀이 없이 등장한 뒤 이 레슨의 핵심 문장들에서 반복되어, 그 문장들의 뜻을 잡을 수 없다.",
+      "evidence": "'SQL 문장의 자리(operand)'는 괄호가 오히려 낯선 영어 단어를 덧붙이는 모양이라, '자리'가 무엇을 뜻하는지(WHERE의 오른쪽? SELECT 목록? INTO 뒤?) 알 수 없었다. 이후 '결과를 SQL operand로 넘긴다', 'SQL 자리가 요구하는 타입', '\"ABAP 값이 SQL operand 자리의 타입 규칙을 못 맞췄다\"가 정확한 해석이다'까지 같은 단어가 세 번 더 나오는데, 이 문장들이 이 레슨에서 가장 중요한 설명이라 여기서 막히면 레슨 전체가 흐릿해진다.",
+      "suggestion": "첫 등장에 입문자용 한 줄 풀이를 붙인다. 예: 'operand(연산이 값을 받아 가는 자리 — `WHERE carrid = ___`의 밑줄 같은 곳)'. 그리고 실제 코드에서 어느 위치가 operand인지 화살표/색으로 한 번 짚어 준다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH19/CH19-L02.md",
+      "quote": "재현 방법이 하나로 정해져 있진 않으니, 여기서는 **선언 타입을 컬럼 타입(`sflight-carrid`)에 맞추는 습관**으로 예방하는 것만 기억하자.",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'일부러 다음 세 경우를 실행해 본다'고 시켜 놓고, 3번째 경우는 실행하는 방법을 알려 주지 않는다.",
+      "evidence": "바로 위에서 '일부러 다음 세 경우를 실행해 본다'라고 해서 1·2번은 시키는 대로 해 봤는데, 3번 '타입/값 부적합'에 오니 '재현 방법이 하나로 정해져 있진 않으니'라며 실행을 접는다. 나는 무엇을 어떻게 바꿔 봐야 하는지 몰라 그 자리에 멈췄고, '내가 못 하는 건가, 원래 못 하는 건가'가 헷갈렸다. 게다가 이어지는 문단은 '3번을 \"DB가 이상하다\"로 보지 말자'라며 내가 실행해 보지도 못한 상황의 해석을 설명해서 더 붕 떴다.",
+      "suggestion": "3번을 '실행 과제'에서 빼고 '이런 일이 생기면 이렇게 해석한다'는 읽기용 설명으로 위치를 옮기거나, 재현 가능한 예 하나를 명시한다(예: `DATA lv_carr TYPE c LENGTH 10 VALUE 'LUFTHANSA'.`로 선언해 SELECT를 돌려 보고 무엇이 달라지는지 관찰)."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH19/CH19-L03.md",
+      "quote": "그래서 키로 자주 찾아 읽어야 하는 결과라면, 인라인 대신 **타입을 직접 선언**하고 알맞은 key를 주는 편이 낫다.",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'인라인 대신 타입을 직접 선언하고 key를 주라'는 대안만 말하고, 그 코드가 어떻게 생겼는지는 이 챕터 어디에도 없다.",
+      "evidence": "'그러면 그럴 땐 어떻게 쓰지?'가 바로 떠올랐는데 예시 코드가 없다. L07의 정리 표에도 '결과를 key로 자주 조회한다 → 명시 타입 + key'라고 같은 말이 한 번 더 나올 뿐이라, 이 챕터를 다 읽고도 '명시 타입 + key' 코드를 한 번도 보지 못한 채로 끝난다. 하지 말라는 말은 두 번 듣고, 하는 법은 0번 본 셈이라 실습에서 따라 할 수가 없다.",
+      "suggestion": "3~4줄짜리 대비 코드를 붙인다(`TYPES ... WITH NON-UNIQUE KEY carrid.` + `DATA lt_x TYPE tt_x.` + `INTO TABLE @lt_x.`). 분량이 부담되면 `details` 접기로."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH19/CH19-L04.md",
+      "quote": "`seatsmax` 같은 정수(`INT4`) 컬럼이면 `CHAR( 11 )` — 이보다 짧게 주는 조합은 허용되지 않는다.",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "`CHAR( 11 )`의 11이 어디서 나온 숫자인지 설명이 없어, 다른 컬럼에 CAST를 쓸 때 몇을 넣어야 할지 스스로 정할 수 없다.",
+      "evidence": "'그 타입이 가질 수 있는 모든 값(부호 포함)이 들어갈 만큼'이라는 원칙은 읽었지만, 나는 `INT4`가 최대 몇 자리인지 모른다. 그래서 11이라는 숫자가 외워야 하는 마법 숫자처럼 보였다. 실습에서 `seatsmax`가 아닌 다른 컬럼을 CAST하면 몇을 써야 하는지 계산할 방법이 없어, 결국 '예제를 그대로 베끼는 것' 말고는 할 수 있는 게 없다.",
+      "suggestion": "11의 산수를 한 줄로 보여 준다: '`INT4`는 최대 10자리(2147483647) + 부호 1칸 = 11'. 가능하면 자주 쓰는 타입 2~3개의 최소 길이를 작은 표로."
+    },
+    {
+      "seq": 6,
+      "file": "content/abap/CH19/CH19-L04.md",
+      "quote": "**같은 SELECT list의 별칭을 그 안에서 재사용** → `... AS booked` 만든 걸 같은 목록의 다른 식에서 `booked`로 쓸 수 없다.",
+      "category": "단절",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "이 레슨의 어느 예제에도 없는 `booked`라는 이름으로 주의사항을 설명해서, 무엇을 하지 말라는 건지 그림이 안 그려진다.",
+      "evidence": "이 레슨의 예제 별칭은 `seat_status`·`seatsmax_text`·`city_to_text`인데 주의 항목만 갑자기 `booked`다. 앞을 다시 훑어 `booked`를 찾다가 없어서, 내가 뭘 놓친 줄 알고 두 번 되돌아갔다. (한참 뒤 L08에 가서야 `booked`가 나온다.)",
+      "suggestion": "이 레슨에 실제로 있는 이름으로 바꿔 든다. 예: '`CASE ... END AS seat_status`로 만든 `seat_status`를 같은 SELECT 목록의 다른 식에서 다시 쓸 수 없다.'"
+    },
+    {
+      "seq": 7,
+      "file": "content/abap/CH19/CH19-L05.md",
+      "quote": "`DATS_ADD_DAYS( fldate, 7 )` — **인자**(함수 괄호 안에 넣는 값)는 두 개, `date`와 `days`다. `fldate`가 `20260626`이면 `20260703`.",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "ABAP SQL의 `DATS_ADD_DAYS`는 잘못된 날짜를 만났을 때의 처리 방식을 지정하는 세 번째 인자(`on_error`)가 필요한 것으로 아는데, 본문은 '인자는 두 개'라고 못 박아 예제를 그대로 치면 문법 오류로 막힐 수 있다.",
+      "evidence": "은서 입장에서 이 레슨은 예제를 그대로 따라 치는 것이 유일한 실습 방법이다. 그런데 같은 레슨의 흔한 실수에 '`DATS_*` 같은 SQL 함수는 시스템 릴리스에 따라 없을 수도 있다 ... syntax check·F1 문서로 지원 여부를 확인한다'고만 적혀 있어서, 만약 오류가 나면 나는 그것을 '인자가 모자라다'가 아니라 '내 시스템이 이 함수를 지원 안 한다'로 잘못 결론 내고 실습을 포기하게 된다. (인자 개수는 내 지식에 의한 추정이라 confidence=추정으로 남긴다.)",
+      "suggestion": "실제 시그니처를 공식 문서로 재확인해, 세 번째 인자가 필요하면 예제와 설명을 함께 고치고 그 인자의 뜻을 한 줄로 풀어 준다(예: '잘못된 날짜가 오면 어떻게 할지 정하는 값'). 인자 수를 단정하는 문장은 시그니처 확인 뒤에만 둔다."
+    },
+    {
+      "seq": 8,
+      "file": "content/abap/CH19/CH19-L05.md",
+      "quote": "항공사 코드와 편명을 이어 붙인 노선 코드(아래 예제의 `route`), 대문자 도시명, 기준일처럼 **결과 목록에 보여 줄 간단한 값**들이다.",
+      "category": "단절",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "도입부가 예고한 세 가지 중 '기준일'에 해당하는 예제가 레슨 안에 없다.",
+      "evidence": "'노선 코드(아래 예제의 route)'와 '대문자 도시명'은 바로 아래 코드에서 `route`·`city_up`으로 찾았는데, '기준일'은 아무리 내려가도 대응하는 결과 컬럼이 없다. 날짜 함수 절에 나오는 건 `due`(7일 뒤)와 `days_gap`(차이)이라 '기준일'과 이름도 뜻도 이어지지 않는다. 예고한 세 개 중 하나만 짝이 없어서, 내가 어느 줄을 놓쳤나 싶어 날짜 절을 두 번 다시 읽었다.",
+      "suggestion": "'기준일'을 실제 예제 컬럼 이름으로 바꾼다(예: '마감일(아래 예제의 `due`)·두 날짜의 간격(`days_gap`)')."
+    },
+    {
+      "seq": 9,
+      "file": "content/abap/CH19/CH19-L06.md",
+      "quote": "TYPES tt_flight TYPE STANDARD TABLE OF ts_flight WITH EMPTY KEY.",
+      "category": "과부하",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "레슨 주제(`SELECT FROM @itab`)에 닿기 전에 준비용 코드 한 덩이에서 `TYPES BEGIN OF`·`TYPES ... TABLE OF`·`WITH EMPTY KEY`·`VALUE`·인라인 `DATA( )`가 한꺼번에 쏟아진다.",
+      "evidence": "본문은 '(지금까지 배운 `TYPES`·`VALUE`)'라고 두 개만 안심시켜 놓고, 실제 블록에는 구조체 타입 선언 + 테이블 타입 선언 + `WITH EMPTY KEY` + `VALUE`로 3행 채우기 + `DATA(lt_flight) =` 인라인까지 다섯 가지가 겹쳐 있다. 특히 `WITH EMPTY KEY`는 이 레슨에서 설명되지 않아, L03에서 '키가 비어 있는 표는 키로 못 찾는다'고 배운 게 떠올라 '그럼 왜 여기선 일부러 EMPTY KEY로 만들지?'에서 멈췄다. 아직 오늘의 주제는 시작도 안 했는데 여기서 힘이 빠졌다.",
+      "suggestion": "준비 코드 블록에 줄 주석으로 각 줄의 역할을 달아 주고(`\" 행 모양 정의` / `\" 그 모양의 표 타입` / `\" 여기선 키가 필요 없어서 EMPTY KEY`), `WITH EMPTY KEY`를 쓴 이유를 한 줄로 밝힌다. 또는 준비 블록을 `details`로 접고 본문은 바로 `FROM @lt_flight`에서 시작한다."
+    },
+    {
+      "seq": 10,
+      "file": "content/abap/CH19/CH19-L06.md",
+      "quote": "**컬럼이 하나뿐인(구조 없는) 표** → 그 한 컬럼의 이름이 `table_line`이라는 특수한 이름이 되어, `@DATA( )`로 받으려면 `AS`로 별칭을 줘야 한다.",
+      "category": "단절",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "`table_line`이라는 이름이 아무 예고 없이 나오고, '구조 없는 표'가 어떤 코드인지 이 챕터에 예가 없다.",
+      "evidence": "'컬럼이 하나뿐인(구조 없는) 표'가 어떻게 생긴 코드인지 본 적이 없어서, 이 주의사항이 나에게 해당하는 상황인지 판단할 수 없었다. `table_line`도 여기서 처음 보는 이름인데 '특수한 이름이 되어'라는 설명뿐이라 누가 붙인 이름인지 모르겠다. 마지막 문장이 '이 레슨처럼 구조가 있는 표로 시작하면 신경 쓸 일이 없다'로 닫혀서, 결국 '몰라도 된다는 얘긴가?' 싶어 읽은 시간이 아깝게 느껴졌다.",
+      "suggestion": "한 줄 코드로 실체를 보여 준다(`DATA lt_ids TYPE TABLE OF char3.` → '이 표는 컬럼 이름이 없어서 ABAP이 `table_line`이라는 이름을 대신 붙여 준다'). 아니면 입문 범위 밖으로 보고 항목을 덜어낸다."
+    },
+    {
+      "seq": 11,
+      "file": "content/abap/CH19/CH19-L08.md",
+      "quote": "실행 후 확인할 것: ① `lt_book` 행 수(첫 SELECT **직후**의 `sy-dbcnt` — 다음 SELECT가 실행되면 값이 덮인다)",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "①만 기대값이 없어서, 내 결과가 맞는지 대조할 기준이 없다.",
+      "evidence": "바로 위 표에서 ②`booked`·③`seat_status`는 C001=5/OPEN처럼 정답이 적혀 있어 대조가 됐는데, ① '`lt_book` 행 수'는 몇이 나와야 정상인지 어디에도 없다. 샘플 데이터가 4건이지만 그중 취소 1건이 있어서, 첫 SELECT가 4를 뱉는 게 맞는지 3을 뱉는 게 맞는지 스스로 판단이 안 됐다(첫 SELECT에는 취소 제외 조건이 없다는 걸 알아채야 하는데, 그건 ②③ 설명에서 다루는 얘기라 헷갈렸다).",
+      "suggestion": "①에 기대값을 명시한다: '`lt_book` 행 수 = **4**(이 SELECT에는 취소 제외 조건이 없어 `C` 1건도 포함된다 — 취소 제외는 ②의 집계에서 `ON` 조건으로 처리)'."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH19는 은서 기준으로 끝까지 완주할 수 있는 챕터였다. 특히 L01의 classic↔modern 코드를 위아래로 붙여 보여 준 뒤 '어느 이름이 DB 것이고 어느 게 ABAP 것인가' 표로 이름 하나하나의 정체를 갈라 준 장치가 가장 잘 읽혔고, L08의 '취소 조건을 ON에 두느냐 WHERE에 두느냐'를 결과 표(C003이 남는다/사라진다)로 대조한 부분도 왜 그래야 하는지가 한 번에 들어왔다. L05의 'SQL SUBSTRING은 1부터, ABAP off는 0부터'처럼 헷갈릴 지점을 미리 짚어 준 콜아웃들도 고마웠다. 학습을 포기할 만한 지점(치명)이나 여러 번 재독해도 못 넘은 곳(높음)은 없었다. 다만 ① 용어 `operand`가 풀이 없이 핵심 문장에 반복되고(L02), ② '세 경우를 실행해 보라'고 해 놓고 3번은 실행법이 없으며(L02), ③ `CHAR( 11 )`의 11이 근거 없는 마법 숫자로 남고(L04), ④ 하지 말라는 대안('명시 타입 + key')의 코드를 챕터 내내 한 번도 못 보는(L03·L07) 네 곳이 '따라는 했지만 스스로는 못 하겠다'는 느낌을 남겼다. 그 밖에는 이 레슨에 없는 이름(`booked`)이나 짝 없는 예고('기준일')처럼 되돌아가 헤매게 만드는 잔가시들이라, 문장 몇 줄 보완과 예제 1~2개 추가로 정리되는 수준이다."
+  }
+}
