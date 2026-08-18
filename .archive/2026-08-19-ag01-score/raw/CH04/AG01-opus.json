@@ -1,0 +1,112 @@
+{
+  "agent": "AG01",
+  "model": "opus",
+  "target": "CH04",
+  "persona_ack": "나는 '은서'다. 개발·전공 경험이 전혀 없는 24세 문과 출신 입문자로, 이 사이트로 ABAP을 처음 공부한다. 모르는 단어가 나오면 그 자리에서 멈추는 성격이라, 풀이가 그 자리나 같은 챕터 앞 레슨에 없으면 막힌 것으로 기록했다. 내 바깥 지식으로 빈틈을 메꾸지 않았다.",
+  "method": "Read 도구로 대상 8개 파일을 첫 레슨부터 순서대로 전문 통독(_chapter → L01 → L02 → L03 → L04 → L05 → L06 → L07). 웹 검색·외부 네트워크·다른 감사 산출물 열람 없음. embed 위젯 내부는 대상 파일이 아니라 열지 않았고, 따라서 위젯이 채워 주는 내용은 판단에서 제외했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH04\\CH04-L07.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH04/CH04-L02.md",
+      "quote": "숫자용 내장함수도 있다: `abs( -5 )`(절댓값 5), `sqrt( 9 )`(3), `ipow( base = 2 exp = 8 )`(256).",
+      "category": "단절",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "바로 앞 레슨에서 제곱은 `**`로 배웠는데, 여기서 같은 제곱을 하는 `ipow( )`가 아무 설명 없이 또 나와 '그럼 둘 중 뭘 써야 하나'에서 멈췄다.",
+      "evidence": "CH04-L01 '사칙연산 — `+ - * /` 와 제곱 `**`'에서 `gv_result = 2 ** 10.`으로 제곱을 배웠다. 이 문단은 `ipow`의 결과가 `2 ** 8`과 같다고만 덧붙일 뿐, 왜 같은 일을 하는 도구가 둘인지·언제 어느 쪽을 고르는지가 없다. 바로 위 `CONCATENATE`와 `&&`는 '상황에 맞게 고른다'며 선택 기준을 준 것과 대비돼서 더 걸렸다.",
+      "suggestion": "`&&`/`CONCATENATE` 때처럼 한 줄 기준을 붙인다. 예: '`**`는 식 안에서 짧게, `ipow( )`는 밑·지수를 이름으로 밝혀 읽기 좋게 — 결과는 같다' 정도."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH04/CH04-L02.md",
+      "quote": "- **`CONDENSE`로 안 지워질 때** → 중간 모든 공백 제거는 `CONDENSE gv NO-GAPS`.",
+      "category": "멈춘 곳",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "`gv`라는 변수가 이 레슨 어디에도 없어서, 새로 나온 무언가인지 오타인지 판단이 안 돼 멈췄다.",
+      "evidence": "이 레슨의 예제 변수는 `gv_raw`·`gv_id`·`gv_text`·`gv_date`처럼 전부 `gv_이름` 꼴이다. 여기만 `gv`로 끝나서, 입문자로서는 '`gv`가 변수 이름을 줄여 쓰는 관례인가?'라고 잠시 헤맸다.",
+      "suggestion": "앞 예제에서 실제 쓴 변수명으로 맞춘다: `CONDENSE gv_raw NO-GAPS.`"
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH04/CH04-L03.md",
+      "quote": "ABAP에는 \"참/거짓만 담는 전용 타입\"이 따로 **없다**. 대신 **한 글자짜리 문자**",
+      "category": "과부하",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "이 마지막 섹션 하나에 새 이름이 한꺼번에 쏟아져(`abap_bool`·`abap_true`·`abap_false`·플래그·`xsdbool( )`·`boolc( )`) 소화가 안 됐다. 앞 절들은 개념 하나씩이었는데 여기서만 밀도가 급히 올라간다.",
+      "evidence": "'boolean 타입 대신 `abap_bool`' 섹션 한 곳에서, 참/거짓 관례 → `TYPE c LENGTH 1`의 의도 문제 → `abap_bool` → `CONSTANTS abap_true/abap_false` → `xsdbool( )` → `boolc( )`와의 차이 → 시스템 버전 주의까지 일곱 갈래가 연달아 나온다. 게다가 `boolc( )`는 '새로 쓸 때는 쓰지 않는' 것이라 지금 당장 쓸 일이 없는데도 자리를 차지해, 정작 외워야 할 `abap_true`가 흐려졌다.",
+      "suggestion": "지금 꼭 필요한 것(`abap_bool` + `abap_true`/`abap_false`)만 본문에 남기고, `xsdbool( )`·`boolc( )` 비교와 버전 주의는 `<details>` 접기(예: '옛 코드에서 `boolc( )`를 만났다면')로 내린다."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH04/CH04-L03.md",
+      "quote": "(`boolc( )`는 7.02, `xsdbool( )`은 7.40",
+      "category": "멈춘 곳",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "`7.02`·`7.40`이 무엇의 숫자인지 아무 설명이 없어, 내가 쓰는 실습 시스템이 그보다 위인지 아래인지 확인할 방법조차 몰라 멈췄다.",
+      "evidence": "CH04 어느 레슨에도 SAP/ABAP 버전(릴리스) 개념이 나온 적이 없다. 바로 뒤에 '아주 옛 실습 시스템이면 문법 오류가 날 수 있다'고 겁을 주는데, 정작 내 시스템 번호를 어디서 보는지가 없어서 '그럼 나는 써도 되나?'가 미해결로 남는다.",
+      "suggestion": "'7.40'에 한 줄 풀이를 붙이고(예: 'SAP 시스템 버전. 요즘 시스템은 대부분 7.40 이상이라 그냥 써도 된다') 확인 방법은 뒤 챕터로 미룬다고 명시한다."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH04/CH04-L03.md",
+      "quote": "값도 `'X'`를 직접 쓰기보다 표준 [[CONSTANTS]] `abap_true`(= `'X'`)와",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "`CONSTANTS`가 무엇인지(변수와 어떻게 다른지) 이 챕터 안에서는 풀이된 적이 없어, '표준 CONSTANTS'라는 말에서 한 번 걸렸다.",
+      "evidence": "CH04 L01～L03에서 값을 담는 것은 전부 `DATA`로만 배웠다. 여기서 처음 `CONSTANTS`가 나오는데 인라인 한 줄 풀이가 없다. 앞 챕터(CH02)에서 다뤘을 수도 있어 추정으로 남기지만, 은서로서는 '변하지 않는 값'이라는 뜻을 이 자리에서 유추할 근거가 없었다.",
+      "suggestion": "이 챕터에서 처음이라면 괄호로 한 줄 풀이를 넣는다: '표준 [[CONSTANTS]](한번 정하면 바뀌지 않는 값)'."
+    },
+    {
+      "seq": 6,
+      "file": "content/abap/CH04/CH04-L04.md",
+      "quote": "같은 처리를 묶으려면 `WHEN`에 값을 **`OR`로 나열**한다.",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'`OR`로 나열한다'는 말만 있고 그 문장이 실제로 어떻게 생겼는지 본문에 코드가 없어서, 읽는 것만으로는 `WHEN 'A' OR 'B'.`인지 `WHEN 'A', 'B'.`인지 알 수 없었다.",
+      "evidence": "이 레슨 본문의 코드 블록은 맨 위 `CASE pa_grade.` 예제 하나뿐이고, `OR` 묶기는 문장 한 줄 뒤에 바로 embed로 넘어간다. 바로 앞 절에서 `WHEN OTHERS`까지 코드로 보여 준 흐름이라, 여기만 글로 때워진 게 눈에 띄었다.",
+      "suggestion": "한두 줄짜리 코드 예(`WHEN 'A' OR 'B'.`)를 문장 바로 아래에 붙인다. embed는 그 뒤 확인용으로 둔다."
+    },
+    {
+      "seq": 7,
+      "file": "content/abap/CH04/CH04-L04.md",
+      "quote": "소문자가 그대로 살아 있는 경우(입력칸을 `LOWER CASE`로 선언했거나, 파일·데이터베이스에서",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'입력칸을 `LOWER CASE`로 선언'하는 방법이 어디에도 없어서, 내가 지금 만든 프로그램이 그 경우인지 아닌지 확인할 수가 없었다.",
+      "evidence": "이 레슨에서 배운 입력칸 선언은 `PARAMETERS pa_grade TYPE c LENGTH 1.` 한 가지뿐이다. 여기에 `LOWER CASE`를 어떻게 붙이는지가 안 나오니, '기본은 대문자로 바뀐다'는 안심과 '그럴 땐 터진다'는 경고 사이에서 어느 쪽이 내 경우인지 판단이 안 된다.",
+      "suggestion": "선언 형태를 괄호로 한 번만 보여 주거나(`PARAMETERS pa_grade TYPE c LENGTH 1 LOWER CASE.`), 지금 배운 범위에서는 해당 없다고 못 박는다."
+    },
+    {
+      "seq": 8,
+      "file": "content/abap/CH04/CH04-L07.md",
+      "quote": "시작·끝 단을 입력받아 그 범위만 출력한다. `pa_from`부터 시작해 **필요한 횟수만큼만**",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "3단계는 설명이 전부 말로만 되어 있어(`회차 끝에 단을 1씩 올린다`), 그 문장이 코드 어디에 어떤 모양으로 들어가는지가 안 그려졌다. 2단계만 완성 코드를 펼쳐 볼 수 있어 확인할 방법이 없다.",
+      "evidence": "2단계에는 '2단계를 직접 채웠다면 — 완성된 코드 펼쳐 보기' `<details>`가 있어 내 답과 맞춰 볼 수 있었다. 3단계는 `pa_to - pa_from + 1`·`IF pa_from > pa_to`·`ELSE`·`ENDIF`를 산문으로 이어 붙여 설명하는데, 정작 대조할 코드가 없다. 종합 실습의 마지막 단계라 여기서 막히면 챕터가 미완으로 끝나는 느낌이 든다.",
+      "suggestion": "2단계와 같은 형식으로 3단계에도 완성 코드 `<details>`를 붙인다(최소한 `IF pa_from > pa_to. … ELSE. DO … ENDDO. ENDIF.` 골격)."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH04는 입문자에게 대체로 잘 읽혔다. 특히 좋았던 장치는 L02에서 '`FIND`의 결과가 어딘가 남는다'고 일부러 미뤄 둔 것을 L05에서 `sy-subrc`로 정확히 되찾아 오는 설계로, 미뤄 둔 약속이 지켜지니 안심하고 따라갈 수 있었다. L01의 `IF` 미리보기를 '[선행 사용]'이라 명시해 '지금 몰라도 된다'고 알려 준 점, 매 레슨 도입부가 '계산을 못 한다'·'언제나 똑같이 행동한다'처럼 내 불편에서 출발하는 점, 구구단을 세 단계로 키워 가는 마무리도 흐름이 자연스러웠다. 걸린 곳은 대부분 작은 구멍이다: 설명 없이 나온 숫자(7.02/7.40)와 용어(CONSTANTS), 같은 일을 하는 도구가 둘인데 고르는 기준이 없는 곳(`**`/`ipow`), 말로만 설명하고 코드를 안 보여 준 곳(L04의 `WHEN … OR`, L07 3단계)이다. 가장 부담됐던 곳은 L03 마지막의 `abap_bool` 섹션으로, 지금 안 써도 되는 `boolc( )`까지 한 자리에 몰려 밀도가 급히 올라갔다. 재집필이 필요한 수준은 아니고, 한두 줄 풀이 추가와 3단계 완성 코드 보강 정도의 경미 수정이면 충분해 보인다."
+  }
+}

@@ -1,0 +1,124 @@
+{
+  "agent": "AG01",
+  "model": "opus",
+  "target": "CH13",
+  "persona_ack": "나는 '은서'다. 개발·전공 경험이 전혀 없는 24세 문과 출신 입문자로, CH13의 여덟 레슨을 L01부터 순서대로 처음 읽는 사람으로서 통독했다. 모르는 단어가 나오면 그 자리에서 멈췄고, 내가 따로 아는 지식으로 빈틈을 메우지 않았다. 그 자리(또는 같은 챕터의 앞 레슨)에 풀이가 없으면 막힌 것으로 기록했다.",
+  "method": "Read 도구로 대상 9개 파일(_chapter.md + CH13-L01~L08)을 지정된 순서대로 전문 통독. 웹 검색·외부 네트워크·타 감사 산출물 열람 없음. 인용은 원문에서 그대로 복사.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L08.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L01.md",
+      "quote": "WHERE f~seatsocc > 0.",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "이 챕터에서 처음 만나는 첫 JOIN 예제에 `seatsocc`라는 필드와 `> 0` 조건이 아무 설명 없이 붙어 있어, 이 줄이 왜 있는지 알 수 없다.",
+      "evidence": "JOIN을 처음 배우는 예제인데 JOIN과 무관한 조건 한 줄이 더 붙어 있다. `seatsocc`가 무슨 뜻인지 이 레슨 어디에도 없고, 아래 설명 목록(`AS f`, `f~carrid`, `ON`, INNER JOIN)에도 `WHERE` 줄만 빠져 있다. '이 조건이 JOIN의 필수 부품인가?'가 먼저 걸려서 예제 본체에 집중이 안 됐다. 같은 필드가 L03에서는 '좌석 수', L04에서는 주석으로 '(예약 있는 운항편만)'이라고 풀이되는데, 정작 처음 나온 여기에만 풀이가 없다.",
+      "suggestion": "코드에 `\" 예약이 있는 운항편만` 같은 주석을 달거나, 아래 설명 목록에 '`WHERE`는 JOIN과 별개로 결과를 좁히는 조건이며 `seatsocc`는 예약된 좌석 수' 한 줄을 추가한다. 또는 첫 예제에서는 `WHERE`를 빼서 JOIN 골격만 보이게 한다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L01.md",
+      "quote": "INTO CORRESPONDING FIELDS OF TABLE gt_flight.",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "레슨 첫 코드 블록부터 `INTO CORRESPONDING FIELDS OF TABLE`이라는 긴 문장이 나오는데, 이게 무슨 뜻인지 알려 주는 콜아웃은 두 섹션 뒤에야 나온다.",
+      "evidence": "챕터의 맨 첫 코드에서 이미 이 표기가 두 번 쓰이는데, '이름이 같은 필드끼리 맞춰 담는다'는 풀이와 앞 챕터 링크는 한참 뒤 INNER JOIN 절의 💡 콜아웃에 있다. 앞 챕터에서 봤던 것 같긴 한데 확신이 안 서서, 도입부 코드를 읽는 내내 이 줄에서 멈칫했다. 도입부는 '지금까지 배운 것만으로 해 보는' 복습 코드라 오히려 기억을 되살려 주는 한마디가 여기 필요했다.",
+      "suggestion": "첫 코드 블록 직후 한 문장(예: '`INTO CORRESPONDING FIELDS OF TABLE`은 이름이 같은 필드끼리 맞춰 담는 형태다')과 앞 챕터 링크를 앞당겨 붙이고, 뒤 콜아웃은 JOIN 맥락의 차이만 다룬다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L02.md",
+      "quote": "키도 값 자체는 초기값일 수 있기 때문이다.",
+      "category": "멈춘 곳",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'키는 NULL이 될 수 없다'고 해 놓고 세 줄 뒤에 '키도 값 자체는 초기값일 수 있다'고 해서, 두 문장이 서로 부딪히는 것처럼 읽힌다.",
+      "evidence": "같은 문단 안에서 '키는 NULL이 될 수 없으니, 키가 초기값이면 짝을 못 찾은 행이라고 판단할 수 있다'와 '키도 값 자체는 초기값일 수 있다'가 붙어 있다. 앞 절에서 NULL과 초기값이 '다른 것'이라고 배웠는데, 여기서는 그 둘이 결과에서 똑같이 보인다는 이야기와 겹쳐서 세 번 읽어도 '그래서 키로 판단해도 된다는 거야, 안 된다는 거야?'가 정리되지 않았다. 결론이 되는 규칙(키가 초기값이면 짝 없음)과 예외(그 키가 원래 초기값을 값으로 쓰는 설계)를 구분해 주는 표시가 없다.",
+      "suggestion": "'DB 안의 키는 NULL일 수 없다 → 그래서 결과의 초기값은 대개 짝 없음의 신호다' / '단, 초기값 자체를 유효한 값으로 쓰는 키라면 이 신호가 통하지 않는다'를 두 개의 불릿으로 분리하고, 통하지 않는 예를 한 줄 든다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L02.md",
+      "quote": "정상 경로로 들어온 데이터라면 공연 마스터가 있다고 기대할 수 있다.",
+      "category": "멈춘 곳",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "'공연 마스터'라는 말이 풀이 없이 나와서, 앞에서 만든 `zconcert` 테이블을 가리키는 건지 다른 무언가인지 확신할 수 없었다.",
+      "evidence": "코드 주석 '공연 마스터는 반드시 있다'와 본문의 '공연 마스터가 있다고 기대할 수 있다'에 '마스터'가 두 번 나오는데, 이 챕터 어디에도 마스터가 무엇인지 한 줄 풀이가 없다. 앞뒤 문맥상 `zconcert` 같긴 한데, 처음 보는 단어라 '마스터라는 특별한 종류의 테이블이 따로 있나?' 하고 멈췄다. 바로 다음 불릿의 '자식/부모' 비유는 그림이 그려지는데 '마스터'만 붕 떠 있다.",
+      "suggestion": "첫 등장에 '공연 마스터(공연 자체의 기본 정보를 담은 원본 표, 여기서는 `zconcert`)'처럼 인라인 한 줄 풀이를 붙이거나, 이미 쓰고 있는 '부모 테이블' 표현으로 통일한다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L02.md",
+      "quote": "## 한 문장에 JOIN을 여러 개",
+      "category": "과부하",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "이 레슨 하나에 LEFT OUTER JOIN, NULL, NULL→초기값 변환, 짝 없음 판별법, ON과 WHERE의 순서 차이, 그리고 세 테이블 다중 JOIN까지 들어 있어 마지막 절에서 소화가 안 됐다.",
+      "evidence": "앞 절들에서 이미 새 개념 다섯 개(LEFT OUTER, NULL, 초기값 변환표, 키로 판별, ON vs WHERE)를 받아들인 상태인데, 여기서 다시 테이블 세 개짜리 SELECT와 '자식→부모는 INNER, 부모→자식은 LEFT OUTER', 'FROM에 무엇을 두느냐가 무엇을 다 보여 줄지를 정한다'까지 새 판단 기준이 두 개 더 나온다. 레슨 끝의 '눈에 확 안 들어와도 괜찮다'는 위로가 오히려 제가 지금 소화 못 하고 있다는 걸 확인시켜 줬다. 한 번에 붙잡기엔 개념 밀도가 높다.",
+      "suggestion": "다중 JOIN 체이닝(FROM 기준 테이블 선택 포함)을 별도 레슨이나 챕터 뒤쪽으로 분리하고, 이 레슨은 'LEFT OUTER + NULL/초기값 + ON vs WHERE'까지로 끊는다. 분리가 어렵다면 다중 JOIN 절 앞에 지금까지 배운 것 3줄 요약을 넣어 호흡을 끊어 준다."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L03.md",
+      "quote": "\"9바이트짜리 정수 자리\"라는 뜻이라 웬만한 합계는 다 담긴다.",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'9바이트'가 실제로 몇 자리 숫자까지 담는다는 건지 알 수 없어서, '넉넉하게 잡으라'는 조언을 따를 기준이 안 생긴다.",
+      "evidence": "바로 앞뒤에서 '칸이 좁으면 값이 넘쳐 엉뚱한 수가 담기거나 실행이 멈출 수 있다'고 겁을 주는데, 정작 9라는 숫자가 자릿수인지 바이트인지, 몇 자리를 담을 수 있는지는 안 나온다. 비전공자에게 '바이트'는 크기 감각이 없는 단위라 '내 합계가 웬만한 범위인지' 스스로 판단할 수가 없었다. 뒤의 흔한 실수에서도 '`TYPE p`로 넉넉하게'라고만 반복된다.",
+      "suggestion": "'9바이트 = 약 17자리 정수까지'처럼 자릿수로 환산해 한 줄 덧붙이고, LENGTH 숫자를 키우면 자릿수가 늘어난다는 관계를 명시한다."
+    },
+    {
+      "seq": 7,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L04.md",
+      "quote": "`SELECT` → `FROM` → `INTO` → `WHERE` → `GROUP BY` → `HAVING` → `ORDER BY`",
+      "category": "단절",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'절의 순서는 정해져 있다 / 바꿔 적으면 구문 오류'라고 못 박은 이 목록에 뒤 레슨에서 실제로 쓰라고 하는 `UP TO n ROWS`와 `FOR ALL ENTRIES`가 없어서, 그것들을 어디에 적어야 할지 알 수 없다.",
+      "evidence": "L04는 이 일곱 개가 전부인 것처럼 제시하고 순서를 어기면 오류라고 경고한다. 그런데 L05에서 '`UP TO n ROWS`로 개수를 자른다… `ORDER BY`와 함께 쓰면 정렬해서 앞 10건이 된다'고 시키는데 그 절의 자리는 목록에도 없고 L05 예제 코드에도 나오지 않는다. L06의 FAE 예제에서는 `INTO`와 `WHERE` 사이에 `FOR ALL ENTRIES IN gt_carr`가 갑자기 끼어 있는데 이것도 목록에 없다. 순서를 틀리면 오류라고 배운 뒤라, 직접 써 보려니 어디에 넣어야 할지 몰라 막혔다.",
+      "suggestion": "L04 목록을 `SELECT → FROM → INTO → UP TO n ROWS → FOR ALL ENTRIES → WHERE → GROUP BY → HAVING → ORDER BY`처럼 확장하되 '아직 안 배운 절은 자리만 봐 두자'로 안내하거나, 최소한 L05·L06에서 해당 절이 들어가는 자리를 예제 코드로 보여 준다."
+    },
+    {
+      "seq": 8,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L08.md",
+      "quote": "| 공연 | 정원 | 회차 | 좌석 합계 | 잔여석 |",
+      "category": "단절",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'이 데이터로 돌리면 이렇게 나온다'며 보여 준 결과 표에 `잔여석` 열이 있는데, 위 `SELECT`는 잔여석을 만들지 않는다. 코드를 그대로 돌려도 이 표가 안 나온다.",
+      "evidence": "`ts_stat`의 칸은 concert_id·artist·capacity·perf_no·perf_date·booked 여섯 개뿐이고 `SELECT` 목록에도 잔여석에 해당하는 것이 없다. 그런데 표는 '위 코드를 돌린 결과'로 제시되고, 바로 아래 두 불릿도 표를 근거로 설명한다. 잔여석은 그 뒤 '직접 해 볼 과제 2'에서 '결과 구조에 잔여석 칸을 더하고 LOOP를 돌며 채워 넣는다'로 비로소 나온다. 처음 읽을 때는 '내 코드가 뭘 빠뜨렸나' 하고 위 SELECT를 몇 번이나 다시 훑었다.",
+      "suggestion": "표 캡션이나 열 머리에 '잔여석은 SELECT 결과가 아니라 과제 2에서 직접 채울 칸'이라고 표시하거나, 잔여석 열을 표에서 빼고 과제 2 쪽으로 옮긴다."
+    },
+    {
+      "seq": 9,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L08.md",
+      "quote": "차은우의 2석은 상태가 `C`(취소)라",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "결과 설명이 '차은우의 2석'이라는, 이 레슨에 한 번도 제시되지 않은 데이터를 근거로 삼아서 검산할 수가 없다.",
+      "evidence": "이 레슨에는 예매 원본 데이터가 표로도 코드로도 나오지 않는다. `C002`의 합계가 왜 `4 + 2`가 아니라 `4`인지 확인하려면 앞 챕터에 넣어 둔 데이터를 기억하거나 링크를 타고 되돌아가야 하는데, 그 링크는 이 문단이 아니라 표 위 문장에만 있다. 취소가 빠졌다는 이 레슨의 핵심 포인트를 스스로 세어 확인하지 못하고 '그렇다니 그런가 보다' 하고 넘어가야 했다.",
+      "suggestion": "이 레슨 안에 예매 원본 3~5행(회차·예매자·좌석·상태)을 작은 표로 다시 보여 주고, 그 표에서 취소 행이 어떻게 빠지는지 화살표로 잇는다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "전반적으로 아주 잘 읽혔다. 특히 L01 도입부에서 'JOIN 없이 하면 이렇게 길어진다'를 먼저 겪게 한 뒤 SELECT 한 문장으로 줄여 주는 흐름과, `carrid`·`connid`·`carrname`을 나란히 놓고 짝 없는 `ZZ` 줄이 통째로 빠지는 걸 보여 준 텍스트 표는 JOIN이 무엇인지 단번에 그림으로 잡혔고, L02의 '좌석을 0석 예매했다 vs 예매 기록이 아예 없다' 비유는 NULL이라는 낯선 개념을 한 문장으로 이해시켰다. 막힌 곳은 치명적인 수준은 없었고 대부분 한두 줄 보강으로 풀린다. 가장 크게 걸린 셋은 (1) L02에서 '키는 NULL이 될 수 없다'와 '키도 초기값일 수 있다'가 부딪혀 판별법의 결론이 안 잡히는 점, (2) L04가 절 순서를 '이게 전부이고 어기면 오류'로 못 박았는데 정작 L05·L06에서 쓰라는 `UP TO n ROWS`·`FOR ALL ENTRIES`의 자리가 그 목록에 없는 점, (3) L08 결과 표의 `잔여석` 열이 위 SELECT로는 나오지 않아 코드가 틀린 줄 알고 헤맨 점이다. 그 밖에 L02는 한 레슨에 새 개념이 여섯 개쯤 몰려 마지막 다중 JOIN 절에서 숨이 찼고, `seatsocc`·'공연 마스터'·'9바이트'처럼 첫 등장 풀이가 빠진 낱말이 몇 개 있었다."
+  }
+}

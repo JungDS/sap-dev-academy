@@ -1,0 +1,47 @@
+{
+  "agent": "AG01",
+  "model": "sonnet",
+  "target": "CH13",
+  "persona_ack": "은서(24세, 개발·전공 경험 없는 문과 출신 입문자) 역할로 CH13-L01부터 L08, _chapter.md까지 실제 배포 순서대로 처음 읽는 사람으로서 통독했다. 막힌 곳/생략/단절/과부하만 기록했고, 내 ABAP 지식으로 빈틈을 메꾸지 않았다.",
+  "method": "대상 9개 파일(_chapter.md + CH13-L01~L08.md)을 레슨 순서대로 전문 통독. 도구는 파일 읽기만 사용했고 별도 실행·검증 도구는 쓰지 않았다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH13\\CH13-L08.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH13-L02.md",
+      "quote": "이 문장은 **회차를 기준으로** 시작하므로, 회차가 아직 없는 공연(`C003`)은 애초에 등장하지 않는다.",
+      "category": "예제 데이터 정합성",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "같은 레슨 안에서 예제 공연 `C003`의 상태 설명이 앞뒤로 달라 보여, 데이터를 머릿속에 그려 가며 따라가던 중 혼란이 생긴다.",
+      "evidence": "레슨 앞부분 '## INNER vs LEFT OUTER — 직접 켜고 보기'에서는 'C003은 예매가 한 건도 없는 공연이다'라고만 소개돼, 회차(공연 일정)는 있고 예매만 없는 그림으로 읽힌다. 그런데 훨씬 뒤 '## 한 문장에 JOIN을 여러 개' 절의 이 문장에서는 C003이 '회차가 아직 없는 공연'으로 서술된다. 두 설명을 하나의 데이터로 겹쳐 보려면 '회차가 없으니 예매도 당연히 없다'는 연결 추론을 은서 스스로 해내야 하는데, 본문 어디에도 그 연결을 짚어 주는 문장이 없다. CH13-L08의 결과표('C003 UI5 Night | 80 | (없음) | 0')에 가서야 C003이 회차 자체가 없는 공연이라는 사실이 명확히 확인되므로, L02만 읽는 시점에는 C003의 실제 상태를 확신하지 못한 채 다음 절로 넘어가게 된다.",
+      "suggestion": "L02에서 C003을 처음 소개할 때 '회차도 예매도 없는 공연'처럼 속성을 한 번에 통일해서 서술하거나, 뒷부분 문장에 '(회차 자체가 없으니 앞서 본 예매 0건도 사실 이 때문이다)'처럼 두 설명을 잇는 한 문장을 추가한다."
+    },
+    {
+      "seq": 2,
+      "file": "CH13-L02.md",
+      "quote": "세 테이블을 한 번에 붙이니 눈에 확 안 들어와도 괜찮다. 두 테이블 JOIN을 두 번 한",
+      "category": "과부하",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "다중 JOIN 체이닝(새 개념)과 FK 방향 판단 기준('자식→부모는 INNER, 부모→자식은 LEFT OUTER')이 새 3-테이블 스키마(zperf·zconcert·zbooking, 5개 필드) 예제와 함께 한 절에 몰려 있어 한 번에 소화하기 버겁다.",
+      "evidence": "이 절의 introduces 목록에도 '다중 JOIN 체이닝'이 새로 등재돼 있는데, 같은 문단에서 부모/자식 방향에 따른 INNER·LEFT OUTER 선택 기준까지 처음 제시되고, 곧바로 5개 필드짜리 TYPES 정의와 3-테이블 SELECT 코드가 이어진다. 저자 스스로도 바로 뒤 콜아웃에서 '눈에 확 안 들어와도 괜찮다'고 인정할 만큼 밀도가 높은 지점이라, 처음 읽는 입문자에게는 실제로 멈춰서 되짚어야 하는 구간이 될 가능성이 크다.",
+      "suggestion": "3-테이블 코드 전에, 두 테이블씩 순서대로 붙이는 중간 단계를 그림이나 짧은 나열로 한 번 보여준 뒤 전체 코드로 넘어가면 완충 효과가 있을 것 같다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "전체적으로 '왜 필요한가 → 무엇인가 → 어떻게 쓰나 → 실수/주의'의 흐름이 레슨마다 잘 지켜져 있고, 특히 CH13-L02의 NULL 설명(표+LOOP 예제로 '0인지 짝이 없는지'를 구분하는 법을 짚어 준 부분)과 CH13-L08에서 'booked를 TYPE i로 둬도 되나'처럼 은서가 직접 떠올릴 법한 의문을 스스로 먼저 물어봐 주는 대목이 특히 잘 읽혔다. 다만 CH13-L02 안에서 예제 공연 C003의 상태 설명이 앞뒤로 어긋나 보이는 지점(finding 1)과, 다중 JOIN 절의 밀도(finding 2)는 가볍게 다듬을 만하다."
+  }
+}

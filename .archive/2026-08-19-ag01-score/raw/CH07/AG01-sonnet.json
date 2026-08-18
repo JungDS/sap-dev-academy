@@ -1,0 +1,55 @@
+{
+  "agent": "AG01",
+  "model": "sonnet",
+  "target": "CH07",
+  "persona_ack": "나는 은서다. 개발·전공 경험이 전혀 없는 24세 문과 출신 입문자로, CH07 세 레슨과 챕터 소개를 첫 레슨부터 순서대로 처음 읽는 사람 시점에서 통독했다.",
+  "method": "",
+  "errors": [
+    "::embed:: 구문이 가리키는 실제 위젯 파일(embeds/abap/CH07-*.html)은 이 프롬프트가 지정한 대상 파일 목록 밖이라 열람하지 않았다 — 위젯의 실제 체험 품질(작동 여부·설명 충실도)은 텍스트 상 존재 확인만 하고 판단에서 제외했다."
+  ],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\CH07-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\CH07-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\CH07-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH07\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH07-L01.md",
+      "quote": "넣은 객체는 내 시스템에만 남고 다른 시스템으로 이송되지 않는다.",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "'이송'이라는 단어가 아무 풀이 없이 그냥 쓰인다. 이게 SAP에서 시스템 간에 객체를 옮기는 정식 절차(Transport)를 압축한 단어라는 건 이 시점까지 안 배웠다.",
+      "evidence": "은서 입장: '$TMP에 넣으면 다른 시스템으로 이송 안 된다'는 문장을 보고 '이송이 뭐지? 그냥 옮겨진다는 뜻인가?' 하고 잠깐 멈췄다. 문맥으로 대충 '다른 시스템엔 안 보인다' 정도로 짐작은 했지만, 정확히 어떤 절차를 말하는 건지는 끝까지 몰랐다. Chapter 38에서 Transport를 배운다는 언급도 이 문장 근처엔 없다.",
+      "suggestion": "'이송(다른 시스템으로 옮겨 전달하는 절차 — Transport, 나중 챕터에서 배운다)'처럼 짧은 인라인 풀이나 괄호 설명을 붙인다."
+    },
+    {
+      "seq": 2,
+      "file": "CH07-L01.md",
+      "quote": "| Technical Settings | Data Class는 `APPL0`, Size Category는 `0`을 고른 뒤 활성화 |",
+      "category": "단절",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "이 표에서 Data Class·Size Category 값을 먼저 정하라고 하지만, 이 둘이 실제로 무엇인지 설명하는 '## Technical Settings — 저장 방식 지정' 절은 필드 타입 절과 MANDT 절을 다 지나서야 훨씬 뒤에 나온다.",
+      "evidence": "은서 입장: 표를 읽다가 'APPL0이 뭐고 왜 0을 고르라는 거지?' 하고 멈췄는데, 답은 두 섹션(필드 타입, MANDT)을 더 읽은 뒤에야 나왔다. 그동안은 그냥 '나중에 설명하겠지' 하고 값만 외워서 넘어가야 했다.",
+      "suggestion": "표 옆에 '자세한 뜻은 아래 Technical Settings 절 참고' 안내를 붙이거나, Technical Settings 설명 절을 표 바로 다음으로 옮긴다."
+    },
+    {
+      "seq": 3,
+      "file": "CH07-L01.md",
+      "quote": "조금 더 정확히 말하면, 이 값이 실제로 하는 일은 **데이터를 옮길 때의 취급 방식**을 정하는",
+      "category": "과부하",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "바로 앞 문장에서 '지금은 A 하나만 기억하면 된다'고 안심시켜 놓고, 곧바로 더 어려운 재정의(시스템 간 이송, 클라이언트 복사)를 이어붙인다. Where-Used List 같은 다른 곁가지는 <details> 접기로 처리했는데 이 문단은 그냥 본문에 그대로 노출돼 있다.",
+      "evidence": "은서 입장: 'A만 기억하면 된다'는 말을 읽고 안심했는데 바로 다음 문단에서 '데이터를 옮길 때의 취급 방식', '시스템 안에 방(Client)을 새로 복사' 같은 표현이 나와서 다시 긴장했다. 방금 안 외워도 된다고 했는데 왜 계속 설명이 이어지는지 헷갈렸고, '이송'도 모르는 상태라 두 배로 막혔다.",
+      "suggestion": "이 심화 문단을 <details>(더 알고 싶다면) 접기로 옮기거나, '지금은 안 읽어도 된다'는 안내를 문단 앞에 명시한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "'다른 언어를 해봤다면' 박스는 제목만으로 비전공자가 스스로 건너뛸 수 있게 잘 설계돼 있었고, CH07-L03의 Structure·Internal Table·Table Type·Transparent Table 네 가지 비교표는 헷갈리던 이름들을 한 번에 정리해 줘서 가장 시원했다. 다만 CH07-L01에서 Technical Settings 값을 먼저 고르라고 해놓고 설명은 한참 뒤에 나오는 순서, 그리고 'A만 기억하면 된다'는 안심 직후 이송·클라이언트 복사 같은 심화 개념을 바로 이어붙이는 부분에서 두 번 정도 멈췄다. 둘 다 재독하거나 계속 읽으면 풀리는 수준이라 치명적이진 않다."
+  }
+}

@@ -1,0 +1,115 @@
+{
+  "agent": "AG01",
+  "model": "opus",
+  "target": "CH16",
+  "persona_ack": "나는 '은서'다. 개발·전공 경험이 전혀 없는 24세 문과 출신 입문자로, 이 사이트로 ABAP을 처음 공부한다. CH16의 _chapter.md와 L01부터 L10까지를 순서대로 처음 읽는 사람으로서 통독했고, 내가 모르는 것은 내 바깥 지식으로 메꾸지 않고 '막힌 곳'으로 기록했다.",
+  "method": "Read 도구로 대상 11개 파일(_chapter.md, CH16-L01~L10)을 지정된 순서대로 1회 통독하고, 막힌 지점은 같은 챕터 앞 레슨에 풀이가 있는지 되짚어 확인했다. 웹 검색·외부 네트워크·다른 감사 산출물은 사용하지 않았다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L10.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L01.md",
+      "quote": "| 중심 흐름 | 이벤트(`START-OF-SELECTION`…) | 화면 sequence · **PBO/PAI** |",
+      "category": "단절",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "표에 '화면 sequence'가 풀이 없이 먼저 나오는데, 바로 위 안내 콜아웃은 PBO/PAI와 OK_CODE만 '뒤에서 풀이한다'고 짚어 주어 이 단어만 안내 밖에 남는다.",
+      "evidence": "표 바로 위 🪧 콜아웃은 'PBO/PAI는 바로 다음 절에서, OK_CODE는 …에서 풀이한다'라고만 예고한다. '화면 sequence'의 뜻은 다음 레슨 CH16-L02의 next screen 설명('화면들이 이렇게 줄줄이 이어지는 흐름을 화면 sequence(화면 줄서기)라고 부른다')에 가서야 나온다. 나는 여기서 '시퀀스가 뭐지, 이것도 나중에 배우는 건가'로 한 번 멈췄다.",
+      "suggestion": "표 셀을 '화면 sequence(화면 줄서기) · PBO/PAI'처럼 괄호 한 줄 풀이를 붙이거나, 🪧 콜아웃의 예고 목록에 '화면 sequence'도 함께 넣어 준다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L02.md",
+      "quote": "- **요소 이름 ≠ 변수 이름** → 자동 data transport가 안 된다. 같은 이름으로 맞춘다.",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'data transport'라는 영어 용어가 풀이 없이 '흔한 실수' 목록에서 처음 등장한다.",
+      "evidence": "같은 레슨 본문은 같은 현상을 '값이 운반되지 않는다'라는 우리말로만 설명했고, 'data transport'라는 이름은 이 줄에서 처음 나온다. 앞 레슨 CH16-L01에도 이 단어는 없다. 영어 단어만 보고 '운반과 같은 말인가, 다른 기능인가' 판단이 안 서서 위 본문으로 되돌아가야 했다.",
+      "suggestion": "'자동 data transport(화면↔변수 값 운반)가 안 된다'처럼 괄호 한 줄 풀이를 붙이거나, 본문에서 '이 자동 운반을 data transport라고 부른다'를 한 번 짚어 준다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L05.md",
+      "quote": "DATA: gt_dynp TYPE STANDARD TABLE OF dynpread,",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "`dynpread`라는 타입 이름이 어디서 온 것인지(내가 만드는 게 아니라 SAP이 미리 갖고 있는 것인지) 설명이 없다.",
+      "evidence": "바로 아래 `ts_perf`는 `TYPES: BEGIN OF …`로 내가 직접 만드는 과정을 보여 주는데, `dynpread`는 만든 적이 없는데 그냥 쓰인다. 주석은 '화면값을 주고받을 표'라고 용도만 말한다. 앞 레슨 CH16-L03에서는 같은 상황의 `vrm_values`에 대해 '🧯 `vrm_values`는 **VRM 타입 그룹**에 들어 있는 타입이다'라고 출처를 짚어 줬기 때문에, 여기서는 왜 안 짚어 주는지 더 헷갈렸다.",
+      "suggestion": "`dynpread`는 SAP이 DDIC에 미리 만들어 둔 구조(필드 이름·현재 값 칸을 가진 표의 한 줄)라는 한 줄 풀이를 코드 아래 불릿에 추가한다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L07.md",
+      "quote": "MESSAGE '좌석 수는 1 이상이어야 합니다' TYPE 'E'.",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "화면(Dynpro)에서 `MESSAGE ... TYPE 'E'`를 만나면 화면이 어떻게 되는지(프로그램이 끝나는지, 화면이 남아 다시 입력받는지)를 이 레슨 어디에서도 말해 주지 않는다.",
+      "evidence": "이 레슨은 '화면을 떠나는 문장들'을 표까지 만들어 꼼꼼히 구분해 주는데, 정작 검증 실패 시 화면이 어떻게 되는지는 침묵한다. 나는 '오류 메시지가 뜨면 프로그램이 죽는 거 아닌가? 그럼 사용자가 다시 입력을 못 하는데?'에서 막혔다. 답은 마지막 레슨 CH16-L10에 가서야 '`MESSAGE E` 후 화면 유지를 실패로 오해 → 정상 검증 흐름이다'로 나오는데, 거기서는 이미 아는 사실처럼 다뤄진다.",
+      "suggestion": "`FORM check_booking` 코드 아래에 '화면에서 `TYPE 'E'`는 프로그램을 끝내는 게 아니라 화면을 그대로 두고 사용자에게 다시 입력받게 한다'는 한 줄 설명을 넣는다(L10의 문장을 여기로 앞당김)."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L09.md",
+      "quote": "MODULE tab_command_0100 INPUT.",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "탭을 눌렀을 때 도는 `tab_command_0100` 모듈은 정의만 보여 주고, 이 모듈을 flow logic에서 언제 부르는지가 이 레슨의 어떤 코드에도 없다.",
+      "evidence": "레슨에 나오는 flow logic 조각은 두 개인데, 앞의 것은 PAI에 `CALL SUBSCREEN sub_area.`와 `MODULE user_command_0100.`만 있고, 뒤의 것은 `PROCESS BEFORE OUTPUT.` 쪽(`MODULE set_tab_0100.` + `CALL SUBSCREEN`)만 보여 준다. 앞 레슨 CH16-L02가 '`MODULE status_0100.`(호출)과 `MODULE status_0100 OUTPUT.`(정의)은 다른 위치에 있고, 이름이 같아야 연결된다'를 강조했기 때문에, 나는 '그럼 이 탭 모듈의 호출은 어디 적지?' 하고 위아래를 세 번 훑다가 못 찾았다.",
+      "suggestion": "뒤쪽 flow logic 조각에 PAI 블록도 함께 적어 `MODULE tab_command_0100.` 호출 줄을 보여 준다(PBO/PAI 한 쌍으로 제시)."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L09.md",
+      "quote": "tab_main-activetab = ok_code.",
+      "category": "단절",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "바로 앞 레슨에서 '기본 패턴'이라고 배운 `save_ok` 복사 + 즉시 `CLEAR` 절차를 여기서는 쓰지 않고 `CASE ok_code`로 바로 분기하는데, 예외인지 실수인지 설명이 없다.",
+      "evidence": "CH16-L07은 'PAI 처음에 `OK_CODE`를 보조 변수 `save_ok`로 복사한 뒤 바로 `CLEAR`'가 공식 권장 패턴이라 했고, 흔한 실수에도 '`OK_CODE`를 안 비움 → 이전 명령이 남아 Enter에 재실행된다'를 못박아 뒀다. 그런데 이 레슨의 PAI 모듈은 `CASE ok_code.`로 시작하고 `CLEAR`도 없다. 나는 '방금 배운 안전 규칙을 교재가 어긴 건가, 탭은 예외인가'를 판단할 근거가 없어 멈췄다.",
+      "suggestion": "예제를 `save_ok` 패턴에 맞추거나(권장), 그대로 둔다면 '탭 기록은 같은 값을 다시 넣어도 안전해 여기서는 단순화했다 / 실제로는 L07 패턴을 따른다'는 한 줄 주석을 붙인다."
+    },
+    {
+      "seq": 7,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L09.md",
+      "quote": "이 레슨은 화면 안에 **무엇을 얹을 자리**를 만드는 요소들을 다룬다.",
+      "category": "과부하",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "한 레슨에 Custom Control·Custom Container·Subscreen·Tabstrip·Status Icon 다섯 요소가 한꺼번에 들어오고, 그 각각이 또 처음 보는 문장(`CREATE OBJECT`, `CALL SUBSCREEN`, `CONTROLS ... TYPE TABSTRIP`, 아이콘 상수)을 데리고 와서 한 번에 소화하기 버겁다.",
+      "evidence": "레슨 안에서 '[선행 사용]'이라 표시된 블랙박스만 두 군데(`TYPE REF TO`·`CREATE OBJECT`, `CONTROLS ... TYPE TABSTRIP`)이고, 앞 레슨들이 한 레슨에 개념 하나(L06=PBO, L07=PAI, L08=PF-STATUS/TITLEBAR)를 다룬 것과 밀도가 확연히 다르다. '자리와 구조만 잡는다'는 범위 선언과 '외울 필요는 없다'는 안내가 있어 포기까지는 아니었지만, 다 읽고 나서 다섯 개 중 무엇이 무엇과 짝인지 되짚기 어려웠다.",
+      "suggestion": "Custom Control/Container(컨트롤 자리)와 Subscreen/Tabstrip(화면 분할)을 두 레슨으로 나누거나, 레슨 끝에 다섯 요소를 한 장의 그림·표로 다시 묶어 주는 정리 시각물을 둔다."
+    },
+    {
+      "seq": 8,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L10.md",
+      "quote": "- 화면에 `GV_CONC`(F4)·`GV_PERF`·`GV_SEATS`·`GV_CUST`·`GV_STAT`·`OK_CODE`를 둔다.",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "요구사항은 `GV_CONC`에 F4가 있어야 한다고 적어 놓고, 그 F4를 어떻게 만드는지는 8단계 절차에도 통합 코드에도 나오지 않는다.",
+      "evidence": "만들기 절차 3번은 `GV_CONC`를 '입력칸으로 배치'하라고만 하고(같은 문장에서 OK field 이름과 `GV_STAT`의 Listbox 속성은 콕 집어 지시한다), 뒤에 직접 만드는 F4는 회차(`gv_perf`)용 `PROCESS ON VALUE-REQUEST`뿐이다. 그런데 CH16-L04는 '`gv_`로 직접 선언한 필드는 **기본값으로는** 라벨도 F4도 없다. 필요하면 Screen Painter의 Element List에서 그 화면 필드에 Data Element나 Search Help를 하나씩 지정해 줘야 한다'고 못박았다. 그래서 나는 '내가 만든 GV_CONC에 F4가 왜 생기지?'에서 앞 레슨을 다시 뒤졌지만 답을 못 찾았다.",
+      "suggestion": "절차 3번에 'GV_CONC의 Element List에서 Data Element(또는 Search Help)를 지정해 F4가 따라오게 한다'는 단계를 추가하거나, 요구사항에서 `(F4)` 표시를 회차 쪽으로만 남긴다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "입문자로서 CH16은 전반적으로 따라갈 만했다 — 특히 PBO/PAI를 '두 박자'라 부르고 '위에서 아래로 한 번'이 아니라 '순환'이라고 못박아 준 비유, CH16-L02의 Layout·Element List·Flow Logic·Attributes '네 조각' 표, 그리고 CH16-L03의 요소를 모양이 아니라 '값 운반 / function code / 표시'라는 세 가지 행동으로 갈라 준 구분이 가장 잘 읽혔고, `MODULE`이 다른 언어의 '모듈'이 아니라는 🔤 콜아웃과 `CLEAR`를 생략해 보는 실험 체험도 혼동을 미리 막아 줬다. 막힌 지점은 학습을 포기할 수준은 없었고(치명·높음 0), 대부분 용어 한 줄 풀이 누락(화면 sequence·data transport·dynpread)과 코드 조각의 빈틈이다. 다만 세 곳은 재독으로도 스스로 못 메꿨다: 화면에서 `MESSAGE 'E'`가 뜬 뒤 화면이 어떻게 되는지가 CH16-L07에 없고 CH16-L10에서야 아는 척 전제되는 점, CH16-L09에서 `tab_command_0100`의 flow logic 호출이 통째로 빠지고 바로 앞에서 배운 `save_ok`+`CLEAR` 안전 패턴을 예외 설명 없이 어긴 점, 그리고 CH16-L10 요구사항의 `GV_CONC`(F4)를 만드는 단계가 절차에 없어 CH16-L04의 설명과 어긋나는 점이다. 이 세 곳만 각각 한두 줄 보완하면 챕터 전체가 매끄럽게 읽힐 것 같다."
+  }
+}

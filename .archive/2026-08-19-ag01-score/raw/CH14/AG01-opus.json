@@ -1,0 +1,114 @@
+{
+  "agent": "AG01",
+  "model": "opus",
+  "target": "CH14",
+  "persona_ack": "나는 은서다. 개발·전공 경험이 전혀 없는 24세 문과 출신이고, 이 사이트로 ABAP을 처음 배운다. CH14를 _chapter → L01 → L09 순서로, 아는 척하지 않고 처음 읽는 사람으로서 통독했다. 모르는 단어가 나오면 그 자리에서 멈췄고, 내 바깥 지식으로 빈틈을 메꾸지 않았다.",
+  "method": "파일 읽기 도구로 대상 10개 파일(_chapter.md, CH14-L01~L09.md) 전문을 순서대로 통독. 웹 검색·외부 네트워크·타 감사 산출물 열람 없음. 인용은 원문에서 그대로 복사.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L09.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L01.md",
+      "quote": "**Tables** 칸에 `ZPERF`, `ZCONCERT` 순으로 적는다. 먼저 적은 쪽이 기준 테이블이다.",
+      "category": "멈춤",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "바로 앞에서 'basis table(기반 테이블)'을 정의해 놓고, 만들기 절차에서는 갑자기 '기준 테이블'이라는 다른 말이 나와 같은 것인지 다른 것인지 판단이 안 된다.",
+      "evidence": "레슨 앞부분은 '하나 이상의 **basis table**(기반 테이블, View가 값을 실제로 읽어 오는 원본 테이블)'이라고 못을 박았다. 그런데 절차 2번에서는 두 테이블 중 먼저 적은 쪽을 '기준 테이블'이라 부른다. 한국어로 '기반'과 '기준'은 거의 같게 들려서, 나는 '두 개 다 basis table이라며? 그중 하나만 기준이라는 건 또 뭐지?'에서 멈췄다. 둘이 다른 개념(전체 원본 테이블 vs 첫 줄에 적는 주 테이블)이라는 설명이 그 자리에 없다.",
+      "suggestion": "'먼저 적은 쪽이 기준 테이블(첫 줄에 오는 주 테이블)이다' 식으로 괄호 풀이를 붙이거나, L03·L04에서 쓰는 'primary table'로 용어를 통일해 basis table과 층이 다르다는 걸 한 문장으로 밝혀 준다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L01.md",
+      "quote": "(**Selection Conditions** 탭에서 \"상태가 `N`인 행만\" 같은 **고정 조건**은 걸 수 있다.",
+      "category": "멈춤",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'직접 만들어 보기'의 다섯 단계에 없던 **Selection Conditions** 탭이 갑자기 등장하고, 예시로 든 `N`이라는 값이 무엇을 뜻하는지 어디에도 없다.",
+      "evidence": "SE11 절차는 Tables → Relationships → View Flds → 저장/활성화까지만 알려 줬다. 그래서 나는 View 화면에 어떤 탭들이 있는지 그 탭 목록으로만 알고 있는데, 갑자기 Selection Conditions 탭이 나온다. 게다가 '상태가 `N`인 행만'의 `N`은 우리 예제 테이블 어디에도 나온 적 없는 값이라(이 레슨의 `ZV_PERF`에는 상태 필드 자체가 없다) 무슨 상태를 말하는 건지 짐작할 수 없었다.",
+      "suggestion": "예시 값을 이 챕터가 이미 쓴 데이터로 바꾸거나(예: `zbooking`의 `status`가 취소인 행 제외), `N` 뒤에 한 단어 풀이를 붙인다. Selection Conditions 탭도 '위 절차에는 안 썼지만 View 화면에 있는 탭'이라고 한마디 덧붙이면 덜 놀란다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L02.md",
+      "quote": "업무 담당자는 **예매 번호·공연·좌석·상태만** 필요하다.",
+      "category": "멈춤",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "도입부는 담당자에게 필요한 게 네 가지라고 했는데, 정작 만드는 Projection View는 업무 필드 여섯 개를 다 남긴다. 왜 숫자가 달라지는지 설명이 없다.",
+      "evidence": "도입에서 '예매 번호·공연·좌석·상태만 필요하다'를 읽고 나는 '아, 네 개만 남기는 연습이구나'로 이해했다. 그런데 다음 절에서 '업무 필드가 여섯(`booking_id`, `concert_id`, `perf_no`, `customer`, `seats`, `status`)'이라며 여섯 개를 전부 고르라고 하고, 실습 레슨에서도 '업무 여섯 필드만 내보낸다'고 한다. 앞에서 필요 없다던 `perf_no`·`customer`가 언제 다시 필요해졌는지를 몰라 도입부를 세 번 다시 읽었다.",
+      "suggestion": "도입부 예시를 '감사 필드를 뺀 업무 필드만' 정도로 느슨하게 쓰거나, 본문에서 '도입에서 든 네 항목에 회차·고객까지 더한 업무 필드 여섯이 실제 대상이다'라고 한 줄로 이어 준다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L02.md",
+      "quote": "**계산·가공 컬럼**은 클래식 View가 아니라 CDS의 영역이다",
+      "category": "단절",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "CDS라는 약어가 여기서 처음 나오는데 풀이가 없다. 무엇의 줄임말인지, 무슨 도구인지 모른 채 '그건 CDS가 하는 일'이라는 문장을 읽어야 한다.",
+      "evidence": "이 챕터에서 CDS가 처음 등장하는 자리다. '클래식 View가 아니라 CDS의 영역'이라고만 하고 링크는 Chapter 23으로 간다. 정작 CDS가 Core Data Services의 줄임말이라는 설명은 한참 뒤 L08에 가서야 나온다. 그 사이 L02를 읽는 나는 CDS가 사람 이름인지 화면 이름인지도 모르는 상태라, '지금 몰라도 되는 것'인지 '내가 놓친 것'인지 구분이 안 됐다.",
+      "suggestion": "L02 첫 등장 자리에 'CDS(Core Data Services, 나중에 배울 현대식 View 정의 방식)' 정도의 괄호 한 줄을 붙이고 '지금은 이름만 스쳐도 된다'를 덧붙인다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L04.md",
+      "quote": "직접 저장하는 경로(문법은 [Chapter 25 · 데이터 변경](CH25-L01.html)에서 배운다)나 SE16N",
+      "category": "단절",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "SE16N이 아무 설명 없이 툭 나온다. 이 도구는 세 레슨 뒤(L07)에야 소개되는데, 여기서는 '그게 뭔지 당연히 안다'는 투로 쓰였다.",
+      "evidence": "같은 문장 안의 다른 미래 개념(프로그램이 값을 직접 저장하는 문법)은 친절하게 'Chapter 25에서 배운다'고 링크를 달아 줬는데, SE16N에는 풀이도 링크도 없다. 나는 이 챕터의 앞 세 레슨에서 SE16N을 본 적이 없어서 'SE11의 오타인가?' 하고 앞으로 돌아가 확인했다. L07을 읽고 나서야 조회 도구였다는 걸 알았다.",
+      "suggestion": "'SE16N(테이블 내용을 직접 들여다보는 도구, [이 챕터 뒤 레슨](CH14-L07.html))'처럼 한 줄 풀이 + 링크를 붙인다."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L05.md",
+      "quote": "보통 대상 이름을 따 `ZCONCERT`처럼 새로 만든다(없으면 그 자리에서 만들지 묻는다).",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "같은 절차를 대상만 바꿔 두 번 반복하라고 해 놓고, 두 번째(`ZMV_CONCERT`) 때 Function Group을 첫 번째와 같은 이름으로 둬도 되는지 새 이름을 지어야 하는지가 없어서 화면 앞에서 멈춘다.",
+      "evidence": "이 레슨은 '이 챕터에서 화면을 붙일 대상은 둘이다... 절차는 같으니 아래를 대상만 바꿔 두 번 반복한다'고 했고, Function Group은 '**필수**'이며 '보통 대상 이름을 따 `ZCONCERT`처럼' 지으라고 한다. 그러면 두 번째 대상 `ZMV_CONCERT` 차례에 나는 무슨 이름을 넣어야 하나? 같은 `ZCONCERT`를 또 넣으면 첫 화면이 덮어써지는 건 아닌지 겁이 났고, 다른 이름을 지어야 한다면 그 규칙이 뭔지도 없다. 뒤에 나오는 '이 이름이 나중에 화면을 다시 찾거나 재생성할 때 기준이 되니'라는 경고 때문에 더더욱 아무거나 넣기가 무서웠다.",
+      "suggestion": "'두 번째 대상은 `ZMV_CONCERT`용으로 Function Group 이름을 따로(예: `ZMVCONCERT`) 만든다' 또는 '한 Function Group에 여러 대상을 담아도 된다'처럼 둘 중 어느 쪽인지 한 줄로 못 박아 준다."
+    },
+    {
+      "seq": 7,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L05.md",
+      "quote": "**Delivery Class·Recording Routine 무시** → 둘 다 \"이 데이터가 시스템 사이를 옮겨 다니느냐\"에",
+      "category": "과부하",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "가볍게 훑는 '흔한 실수와 점검' 목록의 불릿 하나에 처음 보는 설정 두 개와 새 용어 네 개(Delivery Class, customizing 데이터, local 데이터, Recording Routine)가 한꺼번에 들어 있어 소화가 안 된다.",
+      "evidence": "이 레슨은 이미 TMG·One Step/Two Step·생성 화면 네 칸·SM30·게이트 네 단계·`&NC&`까지 새것을 잔뜩 배운 뒤다. 그 끝의 체크리스트는 '아 그렇지' 하고 확인하는 자리라고 생각하며 읽었는데, 이 불릿만 여섯 줄짜리 새 개념 설명이라 리듬이 끊겼다. 게다가 Delivery Class는 '테이블을 만들 때 정하는' 것이라 하는데 내가 테이블을 만들 때 그런 칸을 정한 기억이 없어서, 내가 뭘 놓친 건지 앞 챕터로 돌아가 확인해야 하나 망설였다.",
+      "suggestion": "이 둘은 체크리스트 불릿 대신 본문의 작은 절이나 접기(details) 콜아웃으로 빼고, 어디서 정하는 값인지(테이블 생성 화면 등) 배운 자리를 링크로 짚어 준다."
+    },
+    {
+      "seq": 8,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH14\\CH14-L06.md",
+      "quote": "계층은 **SE54에서 우리가 직접 정의한다.** 어떤 View·테이블을 포함할지, 어느 것이 위이고",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'우리가 직접 정의한다'고 하면서 정작 어떻게 정의하는지 절차가 없다. 이 챕터에서 유일하게 '직접 만들어 보기' 단계가 빠진 레슨이라 따라 할 수가 없다.",
+      "evidence": "L01·L02·L03·L04는 모두 'SE11 → 이 칸에 무엇 → 다음 탭에서 무엇 → 저장·활성화'를 번호로 짚어 줬고, L05도 채울 칸 네 개를 표로 설명했다. 그래서 나는 L06에서도 SE54 화면을 열어 따라 할 생각이었는데, 여기서는 '무엇을 포함할지, 어느 것이 위이고 아래인지, 상위의 어떤 값이 하위로 전달되는지를 하나씩 지정한다'는 말만 있고 그 지정을 어느 칸에서 어떻게 하는지가 없다. 앞 레슨에서 만든 `ZMV_CONCERT` 같은 것을 여기에 넣는 건지, 새 View를 또 만들어야 하는지도 모르겠다.",
+      "suggestion": "다른 레슨과 같은 '직접 만들어 보기 (SE54)' 번호 절차를 넣어 준다. 최소한 '이 레슨은 개념만 보고 실제 생성은 하지 않는다'라고 밝혀서, 따라 할 게 없다는 걸 알려 주면 헤매지 않는다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "전체적으로 굉장히 잘 따라갔다. 특히 L01 첫머리의 '이 챕터의 지도 — 두 갈래' 콜아웃이 이름만 비슷한 View 네 종류를 미리 두 무리로 갈라 줘서 길을 잃지 않았고, L08의 네 View 비교표와 '사람이 보는 화면을 위한 것인가, 프로그램이 읽기 위한 것인가'라는 한 문장 기준은 챕터 전체를 한 번에 정리해 줬다(L02의 '런타임이 basis table 읽기로 바꿔 준다' 콜아웃, L04·L05의 설계도와 건물 비유도 같은 혼동을 미리 막아 줬다). 막힌 지점은 학습을 포기할 만한 곳 없이 전부 낮음·중간이었고, 성격은 세 가지다. ① 용어가 미세하게 흔들리는 곳(기반 테이블 vs 기준 테이블), ② 아직 안 배운 이름이 풀이 없이 먼저 나오는 곳(L02의 CDS, L04의 SE16N), ③ 따라 하려는데 다음 한 걸음이 비어 있는 곳(L05의 두 번째 Function Group 이름, L06의 SE54 정의 절차 부재). 특히 L06은 이 챕터에서 혼자만 '직접 만들어 보기' 절차가 없어 다른 레슨과 리듬이 달라 눈에 띄었다."
+  }
+}

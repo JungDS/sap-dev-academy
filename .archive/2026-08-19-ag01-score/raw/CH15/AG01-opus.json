@@ -1,0 +1,150 @@
+{
+  "agent": "AG01",
+  "model": "opus",
+  "target": "CH15",
+  "persona_ack": "나는 '은서'다. 개발·전공 경험이 전혀 없는 24세 문과 출신 입문자로, 이 사이트로 ABAP을 처음 공부한다. 모르는 단어가 나오면 그 자리에서 멈추는 성격이라, 풀이가 그 자리나 같은 챕터 앞 레슨에 없으면 막힌 것으로 기록했다. 내 실제 지식으로 빈틈을 메꾸지 않았다.",
+  "method": "Read 도구로 대상 13개 파일(_chapter.md, CH15-L01~L12.md) 전문을 L01부터 순서대로 통독. 웹 검색·외부 네트워크·다른 감사 산출물 열람 없음. quote는 각 파일 원문에서 그대로 복사.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L10.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L11.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH15\\CH15-L12.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH15/CH15-L04.md",
+      "quote": "MESSAGE e001(zmsg).   \" zmsg 클래스의 001번을 Error로",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "`e001(zmsg)` 한 줄이 어떤 조각으로 이루어졌는지, 그리고 `zmsg` 자체를 어떻게 만드는지가 설명되지 않은 채 바로 다음 레슨부터 계속 쓰인다.",
+      "evidence": "본문은 '메시지 클래스(SE91)에 메시지를 번호로 등록해 재사용한다'고만 말하고 곧장 코드로 넘어간다. 그래서 나는 세 가지를 모른 채 지나가야 했다. ① 앞 글자 `e`가 TYPE 'E'를 뜻하는 건지(주석의 '001번을 Error로'로 짐작만 된다), ② `001`이라는 번호는 누가 정하는지, ③ `zmsg`라는 클래스는 SE91에서 어떤 화면에 무엇을 입력해 만드는지. 그런데 CH15-L07에서는 아무 추가 설명 없이 `MESSAGE e003(zmsg) WITH pa_conc.`가 등장하고, 나는 zmsg를 만들어 본 적이 없어서 '내가 뭔가 놓쳤나' 하고 앞 레슨을 다시 뒤졌다. 이 챕터 어디에도 등록 절차가 없다.",
+      "suggestion": "`MESSAGE e001(zmsg)`를 `e`(타입)+`001`(번호)+`(zmsg)`(클래스)로 쪼개 한 줄씩 라벨을 붙이고, SE91에서 클래스 이름과 번호별 문구를 등록하는 최소 절차(또는 '문구 등록은 관리자가 해 둔 것을 부른다'는 전제)를 한 문단으로 명시해 주면 좋겠다."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH15/CH15-L07.md",
+      "quote": "ID 'CONCERT' FIELD pa_conc",
+      "category": "멈춘 곳",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "`AUTHORITY-CHECK` 문장에서 `ID` 자리와 `FIELD` 자리가 각각 무엇을 적는 곳인지 본문이 말해 주지 않아, 코드를 읽을 수 없다.",
+      "evidence": "본문 설명은 'Authorization Object(권한 객체)에 정의된 필드 값을 기준으로 접근 가능 여부를 검사'가 전부다. 그런데 코드에는 `OBJECT 'Z_CONCERT'`, `ID 'CONCERT'`, `FIELD pa_conc`, `ID 'ACTVT'`, `FIELD '03'`이 한꺼번에 나온다. 나는 `'Z_CONCERT'`와 `'CONCERT'`가 왜 이름이 비슷한지, `ID`에 적는 게 필드 이름인지 값인지, `FIELD` 뒤가 변수(pa_conc)였다가 리터럴('03')로 바뀌는 이유가 무엇인지 알 수 없었다. 아래 ⚠️ 상자의 '`ID ...` 로 적어 준 필드만 검사 대상'을 읽고 나서야 ID가 필드 이름 쪽이겠거니 역추론했다.",
+      "suggestion": "코드 바로 아래에 `OBJECT`=권한 객체 이름 / `ID`=그 객체 안의 필드 이름 / `FIELD`=이번에 검사할 값 이라는 3줄 대응표를 붙이고, `ID 'ACTVT' FIELD '03'`이 '조회 활동으로 검사'라는 뜻임을 한 문장으로 풀어 주면 좋겠다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH15/CH15-L09.md",
+      "quote": "SELECTION-SCREEN PUSHBUTTON /1(20) gv_ref USER-COMMAND ref.   \" 본문 버튼",
+      "category": "멈춘 곳",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "버튼을 선언할 때는 소문자 `ref`인데 판정 코드에서는 대문자 `'REF'`로 비교한다. 이 불일치에 대한 설명이 없다.",
+      "evidence": "같은 코드 블록 안에서 `USER-COMMAND ref`로 선언한 것을 `WHEN 'REF'.`로 받는다. 나는 오타인 줄 알고 두 번 다시 읽었다. CH15-L03에서 '`screen-name` 소문자 비교 → 화면 필드명은 대문자다'라는 주의는 봤지만, 그건 SCREEN 테이블 이야기였고 여기 function code에도 같은 규칙이 적용된다는 말은 어디에도 없다. `FUNCTION KEY 1` → `'FC01'`도 마찬가지로 이름이 달라져서 '이 값들은 내가 적은 것과 다른 형태로 들어오는구나'를 규칙으로 정리하지 못했다.",
+      "suggestion": "`USER-COMMAND` 뒤에 적은 코드는 시스템이 대문자로 바꿔 `sscrfields-ucomm`에 넣어 준다는 한 줄 주의(💡)를 코드 바로 아래에 추가하면 해결된다."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH15/CH15-L08.md",
+      "quote": "PARAMETERS pa_carr TYPE scarr-carrid.",
+      "category": "단절",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "챕터 내내 공연·예매(`zconcert`·`zbooking`) 예제로 오다가 이 절만 갑자기 항공사 테이블 `scarr`·`carrid`로 바뀌는데, 그게 무엇인지 한 마디도 없다.",
+      "evidence": "바로 앞 절(F1 도움말)까지도 `pa_conc`, 'ZCONCERT에 등록된 CONCERT_ID'로 우리 예제를 쓰다가, F4 절에서 `scarr-carrid`, `carrname`, `gt_carr`가 예고 없이 등장한다. 나는 `scarr`가 우리가 만든 테이블인지, SAP이 원래 갖고 있는 테이블인지, 왜 여기만 공연이 아닌 항공사인지 알 수 없어 잠깐 멈췄다. 같은 블록의 `DATA gt_carr LIKE STANDARD TABLE OF gs_carr.`도 지금까지 봐 온 `TYPE STANDARD TABLE OF ...`와 모양이 달라 `LIKE`가 무슨 뜻인지 궁금했는데, `TYPE`/`LIKE` 대비는 한참 뒤 CH15-L10 표에서야 한 칸으로 나온다. (앞 챕터에서 scarr를 이미 썼다면 오탐일 수 있어 추정으로 남긴다.)",
+      "suggestion": "예제를 `zconcert`(공연 코드 F4)로 바꿔 관통예제를 유지하거나, 유지한다면 'scarr = SAP이 기본 제공하는 연습용 항공사 테이블'이라는 한 줄 풀이를 붙여 달라."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH15/CH15-L12.md",
+      "quote": "MESSAGE '없는 공연 코드입니다' TYPE 'E'.",
+      "category": "단절",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "메시지를 문자열로 직접 적지 말라고 배웠는데, 종합 실습 코드는 전부 문자열을 직접 적는다. 왜 되돌아갔는지 설명이 없다.",
+      "evidence": "CH15-L04는 '매번 문자열을 직접 적는 대신, 메시지 클래스(SE91)에 메시지를 번호로 등록해 재사용한다'고 했고, CH15-L07의 같은 검증 코드는 실제로 `MESSAGE e003(zmsg) WITH pa_conc.`를 썼다. 그런데 그 둘을 합친 이 실습에서는 같은 검사가 `MESSAGE '없는 공연 코드입니다' TYPE 'E'.`로 돌아와 있다. 나는 '규칙이 바뀐 건가, 실습이라 대충 쓴 건가'를 알 수 없어서 어느 쪽을 따라 해야 할지 판단하지 못했다.",
+      "suggestion": "실습 코드 옆에 '여기서는 흐름에 집중하려고 문구를 직접 적었다. 실제 리포트는 L04에서 배운 메시지 클래스를 쓴다' 정도의 한 줄 콜아웃을 달아 주면 충분하다."
+    },
+    {
+      "seq": 6,
+      "file": "content/abap/CH15/CH15-L01.md",
+      "quote": "| [[AT SELECTION-SCREEN OUTPUT]] | 화면 **그리기 직전**(PBO) | 화면 동적 제어(숨김/회색) |",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "PBO·PAI 약어가 표에서 먼저 나오는데, 원어 풀이는 그 아래 접혀 있는 `<details>` 안에만 있다.",
+      "evidence": "표를 읽는 시점에는 `(PBO)`, `(PAI)`가 괄호로만 붙어 있어 무엇의 줄임말인지 알 수 없었다. 'Process Before Output' / 'Process After Input'은 '각 이벤트, 한 줄 더 자세히' 접힌 상자를 펼쳐야 나오는데, 접힌 상자는 '더 궁금할 때 보는 곳'으로 보여서 처음엔 넘겼다. 이후 CH15-L03·L04는 제목·본문에서 (PBO)·(PAI)를 계속 쓴다.",
+      "suggestion": "표의 첫 등장 자리에 `(PBO · Process Before Output = 화면을 그리기 직전)`처럼 원어를 함께 노출하고, 접힌 상자는 심화 설명용으로 남기면 된다."
+    },
+    {
+      "seq": 7,
+      "file": "content/abap/CH15/CH15-L03.md",
+      "quote": "| `invisible` | 입력한 글자가 **가려진다**(비밀번호 칸처럼) | 글자가 그대로 보인다 |",
+      "category": "멈춘 곳",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "같은 표 안에서 `active`는 `'0'`이 숨김인데 `invisible`은 `'1'`이 가림이라 값의 방향이 정반대인데, 그 점을 짚어 주지 않는다.",
+      "evidence": "표의 열 제목이 `'1'`일 때 / `'0'`일 때로 고정돼 있어서, 세 속성이 같은 방향으로 읽힐 거라고 기대하며 읽었다. 그런데 `active`는 0에서 사라지고 `invisible`은 1에서 가려진다. '숨긴다'는 말이 두 줄에 다 나오니 예제의 `gs_screen-active = '0'.`을 보고 '0이 숨김인가 1이 숨김인가'가 잠깐 뒤엉켰다. CH15-L10의 `\" 0=숨김 (1=표시)` 주석을 보고서야 정리됐다.",
+      "suggestion": "표 아래에 '`active`는 0이 숨김, `invisible`은 1이 가림 — 방향이 반대다'라는 한 줄 주의를 붙이면 해결된다."
+    },
+    {
+      "seq": 8,
+      "file": "content/abap/CH15/CH15-L08.md",
+      "quote": "IF pa_det = 'X' AND pa_to - pa_from > 31.",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "날짜끼리 빼면 '일수'가 나온다는 전제가 설명 없이 쓰였다.",
+      "evidence": "`pa_from`·`pa_to`는 바로 위에서 `TYPE d`(날짜)로 선언됐는데, 날짜에서 날짜를 뺀 결과가 왜 숫자 31과 비교되는지 본문에 한 마디도 없다. 나는 날짜를 빼면 무엇이 나오는지(일수인지 초인지) 몰라서 '31'이 31일을 뜻한다고 확신하지 못했다. 바로 아래 메시지 문구('31일 이내 기간만')를 읽고서야 일수라고 짐작했다.",
+      "suggestion": "코드 아래 불릿에 '날짜끼리 빼면 두 날짜 사이의 **일수**가 나온다'는 한 줄을 추가해 달라."
+    },
+    {
+      "seq": 9,
+      "file": "content/abap/CH15/CH15-L08.md",
+      "quote": "- `value_tab` — 팝업에 띄울 목록(코드에서 만든다).",
+      "category": "단절",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "`CALL FUNCTION`에서 인자가 `EXPORTING`과 `TABLES`로 갈리는 이유가 설명되지 않고, 게다가 바로 다음 레슨에서 `TABLES`가 전혀 다른 뜻으로 다시 나온다.",
+      "evidence": "코드 아래 불릿은 `value_tab`·`retfield`·`dynpprog` 등 각 값의 의미는 친절히 풀어 주지만, 왜 목록만 `EXPORTING`이 아니라 `TABLES` 아래에 적는지는 말하지 않아 '여기 규칙이 뭐지' 하고 멈췄다. 더 헷갈린 건 다음 레슨 CH15-L09의 `TABLES sscrfields.`다. 같은 단어가 한 번은 함수 인자 구분자, 한 번은 선언문으로 쓰이는데 둘을 잇는 언급이 없어서 같은 문법인 줄 알고 한참 비교했다.",
+      "suggestion": "`TABLES`는 함수에 '표(내부 테이블) 통째로'를 넘기는 옛 방식의 인자 구분이라는 한 줄을 붙이고, L09의 `TABLES` 선언문과는 다른 것임을 짧게 구분해 주면 좋겠다."
+    },
+    {
+      "seq": 10,
+      "file": "content/abap/CH15/CH15-L09.md",
+      "quote": "- `POSITION n` — 다음 요소를 n번째 칸에 둔다. 범위 입력(SELECT-OPTIONS)의 From/To",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "`POS_LOW`·`POS_HIGH`가 이름만 한 번 나오고 어떻게 쓰는지(어느 문장에 붙는지) 예시가 없다.",
+      "evidence": "'From/To 자리는 `POS_LOW`·`POS_HIGH`로 가다듬는다'가 전부여서, 이게 `SELECTION-SCREEN POSITION`처럼 쓰는 문장인지 옵션인지 알 수 없었다. 이 레슨의 다른 요소(`COMMENT`·`ULINE`·`SKIP`·`POSITION`)는 전부 코드 예시가 있어서 여기만 붕 떠 보였다.",
+      "suggestion": "한 줄짜리 코드 예시(`SELECTION-SCREEN POSITION POS_LOW.` 형태)를 덧붙이거나, 지금 단계에서 필요 없다면 '이런 이름이 있다' 수준의 접기로 내려 달라."
+    },
+    {
+      "seq": 11,
+      "file": "content/abap/CH15/CH15-L09.md",
+      "quote": "여기서 다룰 것은 크게 세 덩어리다. **① 묶고 나누기**(블록·구분선·설명) →",
+      "category": "과부하",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "한 레슨에서 새 문법 요소가 열 가지 넘게 쏟아져 한 번에 소화하기 어렵다.",
+      "evidence": "이 레슨 하나에 BLOCK/FRAME/TITLE, COMMENT, ULINE, SKIP, BEGIN~END OF LINE, POSITION, POS_LOW·POS_HIGH, 텍스트 심볼(TEXT-001), AS CHECKBOX, RADIOBUTTON GROUP, PUSHBUTTON, FUNCTION KEY, SSCRFIELDS, TABLES 선행 사용, TABBED BLOCK이 연달아 나온다. '세 덩어리'라는 안내와 '한 번에 다 외우려 하지 말고'라는 배려는 있었지만, 마지막 버튼 절까지 오니 앞의 블록 문법이 이미 기억에서 밀려나 있었다. 체험 위젯도 버튼·COMMENT 쪽만 다뤄 앞 덩어리를 다시 붙잡아 주지 못했다.",
+      "suggestion": "① 묶고 나누기 / ② 입력 방식 / ③ 버튼 사이에 '여기까지 정리' 미니 요약(또는 덩어리별 짧은 체험)을 넣어 호흡을 끊어 주면 좋겠다. 분량이 커지면 버튼 절을 별도 레슨으로 떼는 것도 방법이다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH15는 '언제 실행되는가'라는 눈에 안 보이는 주제를 다루는데도 전체적으로 잘 따라갈 수 있었다. 특히 L01의 '식당의 하루'(오픈 준비→주문 접수→조리→마감) 비유와 단계별 빌드업 체험, L07의 '없는 주소=404 / 못 들어가는 곳=403' 비유, L12 끝의 이벤트별 책임 요약 블록이 머릿속 그림을 정확히 잡아 줬고, 레슨마다 '흔한 실수와 점검'이 있어 내가 헷갈린 지점을 대체로 미리 짚어 줬다. 막힌 곳은 대부분 문법 조각의 자리 설명이 빠진 좁은 지점이다. 재독으로도 해결되지 않은 것은 세 곳 — 메시지 클래스 `e001(zmsg)`의 구성과 zmsg 생성 절차 부재(L04, 이후 L07에서 계속 사용), `AUTHORITY-CHECK`의 `ID`/`FIELD` 자리 의미 미설명(L07), 버튼 선언 `ref`와 판정 `'REF'`의 대소문자 불일치(L09)다. 여기에 F4 절만 공연이 아닌 항공사 테이블 `scarr`로 갑자기 바뀌어 흐름이 한 번 끊겼다(L08). 나머지는 한 줄 보충으로 해결될 낮은 수준(PBO/PAI 원어가 접힌 상자 안에만 있음, active/invisible 값 방향이 반대, 날짜 뺄셈=일수 전제, TABLES의 두 가지 용법, POS_LOW/POS_HIGH 예시 없음)이고, L09는 새 문법 요소가 많아 뒤로 갈수록 앞이 밀려나는 과부하가 있었다. 치명적으로 학습을 포기할 지점은 없었다."
+  }
+}
