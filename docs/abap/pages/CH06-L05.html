@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Deep Structure 개념 · Internal Table · SAP Developer Academy</title>
+<title>한 행 제어 ① — 넣기와 찾기 (INSERT · READ TABLE) · Internal Table · SAP Developer Academy</title>
 <link rel="stylesheet" href="../../../assets/base.css">
 <link rel="stylesheet" href="../../../assets/lesson.css">
 <link rel="stylesheet" href="../../../assets/shell.css">
@@ -34,97 +34,144 @@
       <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 6 › Lesson 5</nav>
       <section class="lhead">
         <p class="lhead__eyebrow">Internal Table</p>
-        <h1>Deep Structure 개념</h1>
-        <p class="lhead__direction">구조 안에 Internal Table·문자열이 든 'Deep' Structure — 개념과 분류.</p>
+        <h1>한 행 제어 ① — 넣기와 찾기 (INSERT · READ TABLE)</h1>
+        <p class="lhead__direction">자리로 할까, 키로 할까 — 한 행을 다루는 두 좌표를 잡는다.</p>
         <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 6</span><span class="tag tag--ls">Lesson 5</span><span class="tag tag--lv">초급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>행 안에 또 목록이 있다면</h2>
-<p>주문 한 건에는 &quot;주문 항목 여러 줄&quot;이 딸린다. 즉 <strong>한 행 안에 또 다른 <button class="term" type="button" data-term="Internal Table">Internal Table</button></strong>이
-들어가야 한다. 이렇게 Structure 안에 테이블이나 문자열 같은 가변 요소가 든 것을
-<button class="term" type="button" data-term="Deep Structure">Deep Structure</button>(깊은 구조)라 한다. 여기서는 <strong>개념과 분류만</strong> 잡는다(구현은 뒤에서).</p>
-<p>새 문장을 배우는 자리는 아니다. 마지막 캡스톤으로 가기 전에, 지금까지 만들어 온 Structure와
-테이블을 <strong>분류하는 눈</strong>을 한 번 정리하고 넘어가는 짧은 레슨이다.</p>
-</section><section class="lblock"><h2>Flat vs Deep</h2>
-<p>먼저 낱말 하나. 여기서 말하는 <button class="term" type="button" data-term="Component">Component</button>는 <a href="CH05-L01.html">Chapter 5 · Local Structure</a>에서
-&quot;필드&quot;라 부르던 그것이다. Structure를 이루는 한 칸을 가리키는 공식 용어다.</p>
+<section class="lblock"><h2>두 개의 좌표 — 자리, 아니면 키</h2>
+<p>그릇 설계(3속성)가 끝났으니 이제 본격적으로 부린다. 한 행을 콕 집어 다루는 방법은
+이 챕터 내내 <strong>딱 두 갈래</strong>다.</p>
 <ul>
-<li><strong>Flat Structure</strong> — 모든 Component가 <strong>고정 길이</strong> 타입(<code>c LENGTH n</code>·<code>n</code>·<code>d</code>·<code>t</code>·<code>i</code>·<code>p</code> 등)이다.
-담기는 값이 무엇이든 차지하는 자리의 크기가 처음부터 정해져 있다.</li>
-<li><strong><button class="term" type="button" data-term="Deep Structure">Deep Structure</button></strong> — Component 중에 <strong>가변 요소</strong>가 하나라도 있다. <code>string</code>,
-<button class="term" type="button" data-term="Internal Table">Internal Table</button>, 참조(reference) 셋이 그것이다.</li>
+<li><strong>자리(INDEX)로</strong> — &quot;3번째 행&quot; 처럼 번호로 집는다. 번호가 있는 Index Table(STANDARD·SORTED)에서만.</li>
+<li><strong>키(KEY)로</strong> — &quot;name이 정훈영인 행&quot;처럼 값으로 집는다. 모든 종류에서.</li>
 </ul>
-<p>가변 요소란 담기는 내용에 따라 <strong>크기가 달라지는</strong> 것들이다. 글자 수가 늘면 그만큼 커지는
-<code>string</code>, 행이 계속 늘어나는 Internal Table이 그렇다. 참조(reference)는 값을 직접 담지 않고
-값이 있는 자리를 가리키기만 하는 것으로, <a href="CH06-L04.html">앞 레슨</a>에서 잠깐 본 Field Symbol과
-비슷한 종류다. 지금은 &quot;가변 요소가 셋 있구나&quot;까지만 알면 되고, 참조는 뒤에서 따로 배운다.</p>
-<p>고정 길이만 모인 Structure는 <button class="term" type="button" data-term="메모리">메모리</button>에서 <strong>한 덩어리</strong>로 붙어 있다. 그래서 통째로 복사하거나
-넘기기 쉽다. 가변 요소가 끼면 그 부분은 크기가 그때그때 달라져 다른 자리에 따로 놓이고,
-Structure는 그 자리를 가리키기만 한다. 둘을 굳이 나눠 부르는 이유가 여기 있다.</p>
+<p>오늘 배우는 넣기·찾기도, 다음 레슨의 고치기·지우기도 전부 이 두 좌표의 반복이다.
+이 틀 하나만 잡으면 문법이 절반으로 줄어든다.</p>
+</section><section class="lblock"><h2>넣기 — APPEND vs INSERT</h2>
+<p><code>APPEND</code>(끝에 쌓기)는 이미 안다. <code>INSERT</code>는 <strong>자리를 고를 수 있는</strong> 넣기다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3</pre><pre class="abap-editor__code"><code><span class="tok-kw">APPEND</span> gs_person <span class="tok-kw">TO</span> gt_person.            <span class="tok-com">" 끝에</span>
+<span class="tok-kw">INSERT</span> gs_person <span class="tok-kw">INTO</span> gt_person <span class="tok-kw">INDEX</span> <span class="tok-num">1</span>.  <span class="tok-com">" 자리로: 맨 앞에 끼워 넣기</span>
+<span class="tok-kw">INSERT</span> gs_person <span class="tok-kw">INTO</span> <span class="tok-kw">TABLE</span> gt_person.    <span class="tok-com">" 키로: 종류가 정한 자리에</span></code></pre></div></div>
+<p><code>INTO TABLE</code>이 실제로 어디에 넣는지는 <strong>테이블 종류</strong>가 정한다. 하나로 외우면 틀린다.</p>
+<table>
+<thead>
+<tr>
+<th>종류</th>
+<th><code>INSERT ... INTO TABLE</code>이 넣는 자리</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>STANDARD</td>
+<td>맨 끝. 결과가 <code>APPEND</code>와 같다(입력 순서 유지)</td>
+</tr>
+<tr>
+<td>SORTED</td>
+<td>키 순서에 맞는 자리</td>
+</tr>
+<tr>
+<td>HASHED</td>
+<td>해시가 관리하는 자리(눈에 보이는 순서는 의미가 없다)</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><code>INTO</code>(자리 지정)와 <code>INTO TABLE</code>(종류에게 위임)은 <strong>다른 문장</strong>이다. HASHED는 번호가 없어
+<code>INTO TABLE</code>만 가능하다. SORTED는 <code>INDEX</code> 문법 자체는 되지만 삽입이 정렬 순서를 깨면
+런타임 오류가 난다. 그래서 SORTED/HASHED엔 <code>INTO TABLE</code>을 쓴다(자리는 시스템이 잡는다).</p>
+</blockquote>
+<p>정리하면, <strong>행을 넣는 방법은 세 형제</strong>다. 셋째는 아직 이름만 알아 두자.</p>
+<table>
+<thead>
+<tr>
+<th>형제</th>
+<th>하는 일</th>
+<th>배우는 곳</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>APPEND</code></td>
+<td>무조건 <strong>끝에</strong> 붙인다</td>
+<td><a href="CH06-L01.html">L01</a>에서 배움</td>
+</tr>
+<tr>
+<td><code>INSERT</code></td>
+<td><strong>자리를 골라</strong> 넣는다(직접 지정 또는 종류에 위임)</td>
+<td>지금</td>
+</tr>
+<tr>
+<td><code>COLLECT</code></td>
+<td>같은 키의 행이 이미 있으면 <strong>행을 늘리는 대신 숫자를 합산</strong>한다</td>
+<td><a href="CH06-L11.html">집계 레슨</a>에서 — 지금 외울 필요 없음</td>
+</tr>
+</tbody></table>
+</section><section class="lblock"><h2>찾기 — READ TABLE</h2>
+<p>찾기도 같은 두 좌표다. 자리로 찾거나, 키로 찾거나.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
 4
 5
 6
-7
-8
-9
-10
-11
-12</pre><pre class="abap-editor__code"><code><span class="tok-kw">TYPES</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ts_item,              <span class="tok-com">" 주문 항목 한 줄</span>
-         item <span class="tok-kw">TYPE</span> c <span class="tok-kw">LENGTH</span> <span class="tok-num">20</span>,
-         qty  <span class="tok-kw">TYPE</span> i,
-       <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ts_item.
-
-<span class="tok-kw">TYPES</span> tt_item <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ts_item.  <span class="tok-com">" 항목 여러 줄(테이블 타입)</span>
-
-<span class="tok-kw">TYPES</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ts_order,             <span class="tok-com">" 주문 한 건</span>
-         order_id <span class="tok-kw">TYPE</span> c <span class="tok-kw">LENGTH</span> <span class="tok-num">10</span>,
-         customer <span class="tok-kw">TYPE</span> c <span class="tok-kw">LENGTH</span> <span class="tok-num">20</span>,
-         items    <span class="tok-kw">TYPE</span> tt_item,       <span class="tok-com">" 행 안에 테이블! → Deep</span>
-       <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ts_order.</code></pre></div></div>
-<p><code>ts_order</code>는 <code>items</code> Component가 Internal Table이라 Deep Structure다.</p>
-<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">어느 줄이 구조를 Deep으로 만드나 — 클릭 해부</span><a class="embed__open" href="../../../embeds/abap/CH06-L05-S02.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH06-L05-S02.html" loading="lazy" title="어느 줄이 구조를 Deep으로 만드나 — 클릭 해부"></iframe></figure>
-</section><section class="lblock"><h2>사실, 우리는 이미 Deep을 쓰고 있었다</h2>
-<p>이 챕터 내내 쓴 <code>ts_person</code>도 알고 보면 이미 Deep이다.</p>
+7</pre><pre class="abap-editor__code"><code><span class="tok-kw">READ</span> <span class="tok-kw">TABLE</span> gt_person <span class="tok-kw">INTO</span> gs_person <span class="tok-kw">INDEX</span> <span class="tok-num">3</span>.               <span class="tok-com">" 자리로: 3번 행</span>
+<span class="tok-kw">READ</span> <span class="tok-kw">TABLE</span> gt_person <span class="tok-kw">INTO</span> gs_person <span class="tok-kw">WITH</span> <span class="tok-kw">KEY</span> name = <span class="tok-str">'수지'</span>. <span class="tok-com">" 키로: 즉석 조건</span>
+<span class="tok-kw">READ</span> <span class="tok-kw">TABLE</span> gt_person <span class="tok-kw">INTO</span> gs_person
+     <span class="tok-kw">WITH</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">KEY</span> name = <span class="tok-str">'수지'</span>.                         <span class="tok-com">" 키로: 선언된 키 전체</span>
+<span class="tok-kw">IF</span> sy-subrc = <span class="tok-num">0</span>.
+  <span class="tok-kw">WRITE</span>: / <span class="tok-str">'찾음:'</span>, gs_person-age.
+<span class="tok-kw">ENDIF</span>.</code></pre></div></div>
+<p>키로 찾는 문장은 다시 둘로 갈린다. 이름이 비슷해서 헷갈리기 쉬운데, 구분 기준은
+&quot;<strong>선언한 그 키</strong>냐, <strong>즉석 조건</strong>이냐&quot;다.</p>
+<ul>
+<li><code>WITH KEY field = ...</code> — <strong>아무 필드나</strong> 즉석 조건으로 찾기. 키가 아닌 필드도 된다
+(<code>WITH KEY age = 30</code>도 합법). 대신 STANDARD에서는 앞에서부터 순차 탐색이다.</li>
+<li><code>WITH TABLE KEY ...</code> — 선언에 <strong>정의된 키 전체</strong>를 지정해 찾기. 키 필드를 빠짐없이
+적어야 하며, SORTED/HASHED가 자기 방식(이진/해시)으로 가장 빠르게 찾는 경로다.
+(위 예제에서 이 형이 성립하는 이유 — <code>gt_person</code>의 키는 standard key, 곧 문자 필드
+<code>name</code> 하나라서 <code>name</code>만 적으면 &quot;키 전체&quot;가 된다.)</li>
+</ul>
+<p>조건에 맞는 행이 <strong>여러 개</strong>면? <a href="CH06-L03.html">키 레슨에서 못박은 답</a> 그대로 —
+<strong>앞에서부터 처음 만나는 행 하나</strong>만 Work Area로 들어온다. 전부 다루려면 찾기가 아니라
+순회(<a href="CH06-L08.html">다다음 레슨</a>)다.</p>
+</section><section class="lblock"><h2>결과 확인 — sy-subrc와 sy-tabix</h2>
+<p>먼저 <button class="term" type="button" data-term="sy-subrc">sy-subrc</button>가 무엇인지부터. <strong>문장 하나가 실행될 때마다 시스템이 그 결과(성공/실패)를
+숫자로 채워 주는 시스템 변수</strong>다 — <code>sy-index</code>·<code>sy-tabix</code>와 같은 <code>sy-</code> 가족이고, <strong>0이면
+성공</strong>이라는 약속이다. 위 예제의 <code>IF sy-subrc = 0.</code>이 바로 &quot;방금 그 READ, 성공했나?&quot;라는
+질문이었던 것이다.</p>
+<p><code>READ</code>가 성공했는지는 <strong>언제나 <code>sy-subrc</code>가 0인지로만</strong> 판정한다. 못 찾으면 0이 아닌
+값이 들어오는데, 그 값이 상황에 따라 다르므로 &quot;0이냐 아니냐&quot;만 보는 것이 규율이다.
+(<code>IF sy-subrc = 4</code>처럼 실패 코드를 콕 집어 비교하면 조용히 어긋나는 날이 온다.)</p>
+<p>찾기에 성공하면 <button class="term" type="button" data-term="sy-tabix">sy-tabix</button>에 <strong>그 행의 번호</strong>가 들어온다. 몇 번 행에서 찾았는지를
+시스템이 알려 주는 것이다 — 다음 레슨의 고치기에서 바로 써먹는다. 단, 번호가 있는
+Index Table(STANDARD·SORTED) 이야기고, 번호표가 없는 HASHED에서는 <strong>0</strong>이 들어온다.
+&quot;행은 찾았는데 번호는 없다&quot;는 이 묘한 상태의 정체는 <a href="CH06-L07.html">빠르게 찾기</a>에서
+실험으로 확인한다.</p>
+<p>값은 필요 없고 <strong>있는지만</strong> 알고 싶을 때는 <code>TRANSPORTING NO FIELDS</code>를 쓴다.
+&quot;옮길(transporting) 필드가 없다(no fields)&quot;, 즉 Work Area 복사 없이 존재만 확인한다(그래서 빠르다).</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
-3
-4</pre><pre class="abap-editor__code"><code><span class="tok-kw">TYPES</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ts_person,
-         name <span class="tok-kw">TYPE</span> string,   <span class="tok-com">" string은 길이가 가변 → 가변 요소!</span>
-         age  <span class="tok-kw">TYPE</span> i,
-       <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ts_person.</code></pre></div></div>
-<p><code>string</code>은 길이가 고정돼 있지 않으니 앞에서 본 <strong>가변 요소</strong>다. 문자열 하나만
-있어도 그 Structure 전체가 Deep이 된다. 지금까지 아무 문제 없이 썼듯 Deep이라서 못 쓰는
-건 아니다. 다만 아래 상황들에서 Flat과 <strong>다르게 취급</strong>되므로 구분할 줄 알아야 한다.</p>
-</section><section class="lblock"><h2>중첩(Nested)과는 다른 개념</h2>
-<p>Structure 안에 <strong>Structure</strong>가 든 것은 중첩(nested)이다. 중첩이라도 안까지 전부 고정
-길이 타입이면 여전히 <strong>Flat</strong>이다. Deep 여부는 &quot;구조가 몇 겹인가&quot;가 아니라 <strong>가변
-요소(string·테이블·참조)가 있는가</strong>로만 정해진다.</p>
-</section><section class="lblock"><h2>왜 미리 알아두나</h2>
+3</pre><pre class="abap-editor__code"><code><span class="tok-kw">READ</span> <span class="tok-kw">TABLE</span> gt_person <span class="tok-kw">TRANSPORTING</span> <span class="tok-kw">NO</span> <span class="tok-kw">FIELDS</span> <span class="tok-kw">WITH</span> <span class="tok-kw">KEY</span> name = <span class="tok-str">'수지'</span>.
+<span class="tok-kw">IF</span> sy-subrc = <span class="tok-num">0</span>.  <span class="tok-com">" 존재만 확인</span>
+<span class="tok-kw">ENDIF</span>.</code></pre></div></div>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">한 행 실험실 ① — INSERT와 READ, sy-subrc·sy-tabix 관찰</span><a class="embed__open" href="../../../embeds/abap/CH06-L05-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH06-L05-S01.html" loading="lazy" title="한 행 실험실 ① — INSERT와 READ, sy-subrc·sy-tabix 관찰"></iframe></figure>
+<blockquote>
+<p>🔭 <strong>실무 미리보기.</strong> 지금은 행을 전부 손으로 <code>APPEND</code>해 채우고 있지만, 실무에서는
+대부분 <strong>데이터베이스에서 읽어 와 한 번에</strong> 채운다. 그 도구(<code>SELECT</code>)는
+<a href="CH08-L02.html">Chapter 8 · Open SQL</a>에서 배운다 — 그때 이 챕터의 테이블 지식이
+그릇 역할로 그대로 재등장한다.</p>
+</blockquote>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>DB 저장</strong>: DB 테이블의 컬럼은 단일(elementary) 타입 하나여야 해서, <button class="term" type="button" data-term="Internal Table">Internal Table</button>·
-참조·하위 Structure를 통째로 컬럼에 넣을 수 없다.</li>
-<li><strong>화면 출력</strong>: 결과를 표 형태 화면으로 보여 주는 도구(ALV, 뒤에서 배운다)도 기본적으로
-평평한 행을 전제한다.</li>
-<li>지금은 &quot;구조 안에 테이블이 들어갈 수 있다&quot;는 가능성과 분류 기준만 기억하면 된다.
-실제로 어떻게 쓰고 어디까지 되는지는 뒤에서 차근차근 넓혀 간다.</li>
+<li><strong><button class="term" type="button" data-term="sy-subrc">sy-subrc</button> 미확인</strong> → READ 실패 시 Work Area엔 <strong>이전 값이 그대로</strong> 남는다. 그걸 새로
+읽은 값인 줄 알고 쓰는 버그가 정말 잦다. READ 다음 줄은 반드시 <code>IF sy-subrc = 0</code>.</li>
+<li><strong>실패 코드 콕 집어 비교</strong> → 판정은 &quot;0이냐 아니냐&quot;로만. 실패 값의 종류는 문장에 따라 다르다.</li>
+<li><strong>INTO vs INTO TABLE 혼동</strong> → 자리를 내가 지정하는 문장인지, 종류에 맡기는 문장인지 구분.</li>
+<li><strong>WITH KEY와 WITH TABLE KEY 혼동</strong> → 즉석 조건(아무 필드)인지, 선언된 키 전체인지.</li>
 </ul>
-</section><section class="lblock"><h2>흔한 오해와 점검</h2>
-<ul>
-<li><strong>&quot;Deep이면 DB에 못 넣는다&quot;는 뭉뚱그린 결론</strong> → 컬럼 하나에 넣을 수 없는 건 Internal
-Table과 참조다. 표를 통째로 한 칸에 담을 수는 없기 때문이다. 반면 <code>string</code>은 문자열을
-담는 컬럼 타입이 따로 있어 DB에도 넣을 수 있다(그 얘기는 DB 테이블을 만들 때 다시 본다).</li>
-<li><strong>중첩 = Deep이라는 착각</strong> → 중첩은 &quot;겹&quot;의 문제, Deep은 &quot;가변 요소&quot;의 문제. 별개다.</li>
-<li><strong>지금 깊이 파려는 욕심</strong> → 개념·분류만. 구현은 뒤에서.</li>
-</ul>
-</section><section class="lblock"><h2>분류 연습</h2>
-<p>구조 정의를 보고 Flat인지 Deep인지 판정해 보자.</p>
-<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">Flat일까 Deep일까 — 판정 퀴즈</span><a class="embed__open" href="../../../embeds/abap/CH06-L05-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH06-L05-S01.html" loading="lazy" title="Flat일까 Deep일까 — 판정 퀴즈"></iframe></figure>
 <hr>
-<p>이제 구조와 테이블을 깊이까지 안다. 배운 걸 모아 <strong>구구단 전체를 <button class="term" type="button" data-term="Internal Table">Internal Table</button>로</strong>
-완성해 보자 → <a href="CH06-L06.html">구구단 전체 = Internal Table</a>.</p>
+<p>넣고 찾는 두 좌표를 잡았다. 같은 좌표가 그대로 반복되는 <strong>고치기와 지우기</strong>로 →
+<a href="CH06-L06.html">한 행 제어 ②</a>.</p>
 </section>
       </article>
       <nav class="lesson-nav" data-shell="prevnext"></nav>

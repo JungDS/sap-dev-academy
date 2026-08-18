@@ -1,0 +1,153 @@
+{
+  "agent": "AG01",
+  "model": "opus",
+  "target": "CH06",
+  "persona_ack": "나는 AG01 '은서'다. 개발도 전공도 해 본 적 없는 24세 문과 출신 입문자로서 CH06을 _chapter부터 L01～L15까지 순서대로, 앞 레슨에서 배운 것만 들고 통독했다. 내 바깥 지식으로 빈틈을 메우지 않고, 그 자리(또는 같은 챕터의 앞 레슨)에 풀이가 없어 실제로 멈춘 지점만 기록했다.",
+  "method": "Read 도구로 대상 16개 파일(_chapter.md · CH06-L01～L15.md) 전문을 순서대로 통독. front-matter·본문·코드 블록·표·details 접기·embed 지시자·콜아웃까지 전부 읽고, 용어가 처음 등장한 위치와 풀이 유무를 챕터 전체에서 재확인. 위젯(embeds) 내부와 렌더된 페이지는 열지 않았으므로 판단 근거는 MD 본문 기준.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L10.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L11.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L12.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L13.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L14.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L15.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L04.md",
+      "quote": "그래서 선택 기준은 단순하다. **이 테이블을 어떻게 쓸 것인가**를 먼저 묻는 것이다.",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "세 종류 중 하나를 '고르라'고 하는 레슨인데, SORTED·HASHED 테이블을 실제로 어떻게 선언하는지 코드로 한 번도 보여 주지 않는다.",
+      "evidence": "L04에는 abap 코드 블록이 하나도 없다. 종류 표·Index Table 설명·UNIQUE 매트릭스·거래표까지 다 읽고 '어떻게 쓸 것인가를 먼저 물어라'는 결론에 닿았는데, 정작 나는 STANDARD 아닌 테이블을 한 줄도 못 써 봤다. 챕터 전체를 되짚어도 SORTED/HASHED가 들어간 선언문이 없고, L03의 'TABLE OF는 STANDARD TABLE OF의 준말이다'라는 한마디가 유일한 힌트다. 그런데 L05(SORTED/HASHED엔 INTO TABLE), L07(SORTED에 SORT는 구문 오류), L08(SORTED·HASHED 키 필드를 고치면 강제 종료)은 계속 그 테이블들을 전제로 주의를 준다. 만들어 본 적 없는 그릇의 주의사항만 계속 듣는 느낌이라, 3속성이 다 모였다는 마무리 문장에도 실감이 안 왔다.",
+      "suggestion": "L04에 세 줄짜리 선언 예시(STANDARD / SORTED ... WITH NON-UNIQUE KEY / HASHED ... WITH UNIQUE KEY)를 코드 블록으로 넣어, L03에서 배운 키 선언과 종류 키워드가 한 문장에서 어떻게 합쳐지는지 눈으로 보게 해 주기."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L07.md",
+      "quote": "| `WITH KEY`(키 필드·선두 일치) | 순차 | **이진(자동)** | 순차* |",
+      "category": "멈춤",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'선두 일치'라는 낱말이 아무 풀이 없이 표 안에서 처음 등장해, 표의 두 행을 가르는 기준 자체를 읽을 수 없다.",
+      "evidence": "이 표의 핵심은 '같은 WITH KEY라도 무엇을 지정했느냐에 따라 비용이 다르다'인데, 그 '무엇'을 가르는 말이 바로 '선두 일치'다. 그 뜻이 이 자리에도, 앞의 어느 레슨(L03 키·L04 종류·L05 READ)에도 없다. 바로 아래 각주는 HASHED만 '키 전체가 정확히 일치할 때만'이라고 풀어 주고 SORTED 쪽은 그대로 둔다. 그래서 윗 행(키 아닌 필드)과 이 행의 차이를 '키 필드를 앞에서부터 빠짐없이 적었나'로 추측만 하고 넘어갔다. 앞에서 키를 여러 개 묶는 예(WITH NON-UNIQUE KEY dan mul)는 봤지만 '선두'라는 말은 여기가 처음이다.",
+      "suggestion": "HASHED 각주 옆에 '선두 일치 = 키 필드를 앞 필드부터 빠짐없이 지정한 경우' 한 줄 풀이를 추가하고, 가능하면 dan·mul 예로 (dan만 준 경우 vs dan+mul을 준 경우) 대조해 주기."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L05.md",
+      "quote": "`WITH TABLE KEY ...` — 선언에 **정의된 키 전체**를 지정해 찾기.",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "WITH TABLE KEY는 이름과 설명만 나오고 완성된 문장이 챕터 어디에도 없어서 직접 쳐 볼 수가 없다.",
+      "evidence": "짝인 WITH KEY는 바로 위 코드 블록에 실물 문장이 있는데, WITH TABLE KEY는 점 세 개로만 나온다. 그런데 이 이름은 L06 격자표에도, L07 탐색 비용표에도 계속 나오고 심지어 HASHED의 가장 빠른 경로라고까지 한다. 중요하다는 말은 여러 번 듣는데 우리 예제(ts_person, 키는 name)로 어떻게 쓰는지는 끝내 못 봐서, 실습에서 '키 필드를 빠짐없이 적는다'가 구체적으로 어떤 모양인지 확신이 안 섰다.",
+      "suggestion": "L05 READ 코드 블록에 한 줄(READ TABLE gt_person INTO gs_person WITH TABLE KEY name = '수지'.)을 추가해 WITH KEY와 나란히 보이게 하기."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L05.md",
+      "quote": "`READ`가 성공했는지는 **언제나 `sy-subrc`가 0인지로만** 판정한다.",
+      "category": "단절",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "sy-subrc가 '무엇인지'는 이 챕터 안에 한 줄 풀이도, 어디서 배웠는지 링크도 없이 사용 규율만 나온다.",
+      "evidence": "바로 다음 문단의 sy-tabix는 용어 마킹과 함께 '그 행의 번호가 들어온다 / 시스템이 알려 주는 것'이라고 정체를 밝혀 주는데, sy-subrc는 첫 등장부터 '0인지로만 판정하라'는 사용법뿐이다. 이 챕터가 앞 챕터 개념을 데려올 때는 늘 'Chapter 4에서 배운 그 판별(IS INITIAL)', 'L01에서 익힌 그 확인 습관(BREAK-POINT)', 'CH05에서 배운 패턴 그대로(sy-index)'처럼 출처를 달아 주기 때문에 이것만 유독 맨몸으로 등장하는 게 눈에 걸렸다. 값을 누가 언제 넣는지를 모르면 IF sy-subrc = 0이 왜 READ 바로 다음 줄이어야 하는지도 그냥 외우는 규칙이 된다(앞 챕터에서 이미 배웠을 가능성이 있어 추정으로 둔다).",
+      "suggestion": "첫 등장에 '문장을 실행할 때마다 시스템이 결과를 자동으로 채워 넣는 값' 정도의 한 줄 풀이와 최초 학습 레슨 링크를 붙이기."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L12.md",
+      "quote": "**AT 블록 안에서 상세 값 참조** → 마스킹 때문에 `*`나 0이 나온다.",
+      "category": "멈춤",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "본문은 줄곧 '손질'이라 부르던 현상을 점검 목록에서만 '마스킹'이라는 새 낱말로 부르고, 캡스톤도 본문에 없는 그 이름으로 되돌아보게 한다.",
+      "evidence": "설명 절 전체가 '시스템이 Work Area를 일부러 손질한다', '손질 규칙 세 줄'로 되어 있어서, 갑자기 나온 '마스킹'이 같은 것인지 다른 것인지 확인하려고 위로 다시 올라갔다. 게다가 L15 미션 3이 'L12의 마스킹'으로 링크를 걸어 두어서, 그 이름으로 L12를 다시 뒤졌을 때 본문에서는 찾지 못하고 점검 목록 한 줄에서야 발견했다.",
+      "suggestion": "손질을 설명하는 문단에서 '이 손질을 마스킹이라 부른다'를 한 번 명시해 두 이름을 묶어 주기."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L12.md",
+      "quote": "말보다 실물이다. 이런 **입력**이 쌓여 있을 때(지역으로 정렬된 상태):",
+      "category": "단절",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "앞 레슨에서 COLLECT로 지역당 한 행만 남겼던 그 gt_sales가, 아무 말 없이 서울이 두 행인 상세 테이블로 다시 등장한다.",
+      "evidence": "L11에서 같은 이름(gs_sales·gt_sales)·같은 타입(ts_sales)으로 COLLECT를 배웠고 결과는 서울 130·부산 50 두 행이라고 분명히 못박았다. 그런데 L12의 입력 표에는 서울 100과 서울 30이 따로 있고, 코드도 그대로 gt_sales를 쓴다. '이번 건 COLLECT 말고 쌓아 둔 상세'라는 안내가 어디에도 없어서, 앞 레슨을 내가 잘못 읽었나 싶어 L11로 되돌아가 확인했다. 도입부의 '이미 다 쌓여 있는 상세 기록'이라는 말이 그 뜻이었다는 건 되돌아온 뒤에야 이어 붙었다.",
+      "suggestion": "입력 표 앞에 '이 gt_sales는 COLLECT로 모은 것이 아니라 상세 기록을 그대로 APPEND해 둔 것' 한 문장을 넣거나, 표 이름을 gt_detail 같은 다른 이름으로 바꾸기."
+    },
+    {
+      "seq": 7,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L13.md",
+      "quote": "모든 Component가 **고정 길이** 타입(`c LENGTH n`·`n`·`d`·`t`·`i`·`p` 등).",
+      "category": "멈춤",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "같은 글자 n이 한 줄 안에서 '숫자를 적는 자리'와 '타입 이름' 두 뜻으로 연달아 쓰여 목록을 못 읽었다.",
+      "evidence": "앞의 `c LENGTH n`에서 n은 길이를 적는 빈칸인데, 가운뎃점 바로 뒤에 `n`이 또 나오고 이번엔 타입 이름이다. 처음엔 같은 걸 두 번 적은 오타인 줄 알았다. 게다가 d·t·i·p가 각각 무엇을 담는 타입인지 이 자리에 풀이가 없어서, 아래 예제의 zip TYPE n LENGTH 5를 보고 나서야 n을 숫자 문자쯤으로 짐작했다. Flat과 Deep을 가르는 기준을 처음 배우는 문장이라 여기서 흐름이 끊긴 게 아까웠다.",
+      "suggestion": "`c LENGTH 10`처럼 실제 숫자로 쓰고, 타입 목록을 '문자(c)·숫자 문자(n)·날짜(d)·시간(t)·정수(i)·소수(p)'처럼 한 낱말씩 풀어 적기."
+    },
+    {
+      "seq": 8,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L13.md",
+      "quote": "WRITE: /4 gs_item-item, gs_item-qty.",
+      "category": "단절",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "WRITE의 `/4`에서 4가 무슨 뜻인지 이 자리에도 챕터 어디에도 설명이 없다.",
+      "evidence": "이 챕터의 WRITE는 L01부터 L15까지 전부 `/` 하나뿐이었는데 여기서만 `/4`다. 앞뒤 문장은 중첩 LOOP 이야기만 해서 4에 대한 언급이 없다. 안쪽 목록이니 들여쓰기겠거니 짐작했지만 '상품 4개'나 '4자리'로도 읽혀서 잠깐 멈췄다. 앞 챕터의 WRITE 레슨에서 다뤘을 수도 있어 추정으로 둔다.",
+      "suggestion": "코드 주석으로 '4번째 칸부터 출력 = 들여쓰기' 한마디를 붙이거나, 이 예제도 `/`로 통일하기."
+    },
+    {
+      "seq": 9,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L03.md",
+      "quote": "## 이름만 알아 두기 — 키의 나머지 친척들",
+      "category": "과부하",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "한 레슨 안에서 이름이 서로 비슷한 '키/STANDARD' 계열 낱말이 다섯 종류 넘게 몰려 나와 끝에 가서는 무엇이 무엇인지 섞였다.",
+      "evidence": "WITH NON-UNIQUE/UNIQUE KEY(직접 지정) → standard key(자동) → STANDARD(종류) → WITH DEFAULT KEY → WITH EMPTY KEY → secondary key가 40줄 안에 이어진다. 게다가 DEFAULT는 '안 적은 것과 결과가 같다', STANDARD는 '이름만 비슷할 뿐 별개다'로 관계가 정반대라 더 헷갈렸다. EMPTY와 secondary는 CH18 링크뿐이라 궁금해도 확인할 방법이 없다. '지금 외울 필요 전혀 없다'는 안내와 standard key vs STANDARD를 갈라 주는 ✅ 콜아웃이 있어서 그나마 버텼지만, 이 절을 지나고 나서 앞의 UNIQUE/NON-UNIQUE 설명을 다시 읽어야 했다.",
+      "suggestion": "친척 셋(DEFAULT·EMPTY·secondary)을 details 접기로 내리거나, '키 이야기 / 종류 이야기' 두 칸짜리 이름 대조표로 한 번에 정리해 주기."
+    },
+    {
+      "seq": 10,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L09.md",
+      "quote": "일부만 붙이고 싶으면 `APPEND LINES OF gt_seoul FROM 2 TO 5 TO gt_all.`처럼 범위도 된다.",
+      "category": "멈춤",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "한 문장에 TO가 두 번 나오는데 역할이 서로 달라서, 어디까지가 범위이고 어디부터가 목적지인지 몰라 여러 번 다시 읽었다.",
+      "evidence": "바로 위 두 예제가 'APPEND LINES OF 원본 TO 목적지' 형태라 TO 다음은 목적지라고 막 외운 참이었다. 그런데 이 줄에서는 첫 TO가 범위의 끝(5)이고 두 번째 TO가 목적지다. 설명은 '범위도 된다' 한마디뿐이고 이 문장은 코드 블록이 아니라 문장 속에 인라인으로 들어 있어서, 눈으로 끊어 읽기가 더 어려웠다.",
+      "suggestion": "`FROM 2 TO 5`(범위)와 `TO gt_all`(목적지)를 굵게 갈라 표시하거나, 코드 블록에 주석과 함께 따로 보여 주기."
+    },
+    {
+      "seq": 11,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L02.md",
+      "quote": "필드가 하나뿐일 때 쓴다. 행에 이름이 없고 값 자체가 행이다.",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "행이 값 하나뿐인 테이블(TYPE TABLE OF i)을 어떻게 채우고 꺼내는지는 챕터 끝까지 한 번도 안 나온다.",
+      "evidence": "'행에 이름이 없고 값 자체가 행'이라는 말은 알겠는데, 그렇다면 L01에서 배운 APPEND의 짝인 Work Area(gs_)는 무엇으로 두어야 하는지, READ한 값은 어디로 들어오는지 알 수가 없다. 이후 모든 예제가 Structure 행이고, L10의 선언 여섯 갈래 표에도 ②로 다시 올라오지만 사용 예는 여전히 없다. 선언은 배웠는데 쓸 줄은 모르는 갈래가 하나 남은 채로 챕터가 끝났다.",
+      "suggestion": "스칼라 Work Area(DATA gv_num TYPE i.)를 써서 APPEND 한 줄·READ 한 줄만 붙여 주면 '값 자체가 행'이라는 말이 바로 체감된다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "레슨이 15개나 되는데도 '불편을 먼저 겪고 그 해결책으로 도구를 배우는' 흐름과 한 레슨 한 질문 구성 덕에 끝까지 따라갈 수 있었다. 특히 잘 읽힌 장치는 비유와 격자표였다 — 사물함(HASHED)·전화번호부(이진 탐색)·서랍과 별채와 쪽지(Deep), 그리고 '자리(INDEX)냐 키(KEY)냐' 두 좌표로 넣기·찾기·고치기·지우기를 한 판에 접은 L05～L06 표, L12의 '먼저 결과부터 보자'가 새 문법의 무서움을 크게 덜어 주었다. 막힌 지점은 대부분 낱말 하나('선두 일치'·'마스킹')나 예시 한 줄(WITH TABLE KEY·값 하나짜리 행) 수준이라 경미 수정으로 충분해 보인다. 구조적으로 아쉬운 곳은 L04 하나다 — 세 종류 중 고르라고 하면서 SORTED·HASHED 선언을 끝내 코드로 보여 주지 않아, 이후 레슨들이 계속 그 테이블을 전제로 주의를 줄 때마다 만들어 본 적 없는 그릇 이야기를 듣는 기분이었다."
+  }
+}

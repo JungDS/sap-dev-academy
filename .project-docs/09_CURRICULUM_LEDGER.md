@@ -1,6 +1,6 @@
 # 09. CURRICULUM LEDGER — 커리큘럼 개념 원장 (개요 SSOT)
 
-> 📅 최종수정: 2026-08-10 20:58 KST
+> 📅 최종수정: 2026-08-19 05:49 KST
 > 🎯 **3트랙(최종 39번호) 챕터 맵 + 교차 설계 합의(경계·관통예제·도구 아크)의 단일 출처.**
 > 🧭 **per-lesson `introduces`/`prereq`/`prevRel`/`foreshadow`/`advanceUse` = 각 레슨 `.md` front-matter가 라이브 SSOT**([04 R10](04_CONVENTIONS.md)) — 이 문서는 레슨별 데이터를 중복하지 않고 *그 위의 개요·경계·관통설계*만 담는다(§F). 게이팅([04 R15](04_CONVENTIONS.md)) 점검 = front-matter ↔ 본문 ↔ R15.
 > ✅ 현행: **최종 39번호(2026-07-14 리넘버)** · 본문 **39챕터 전량 작성 완료**. 전면 리빌드는 *선택* — 절차 = [10_REBUILD_EXECUTION](10_REBUILD_EXECUTION.md).
@@ -25,7 +25,7 @@
 | 03 | DDIC Domain·Data Element + PARAMETERS | 3 | Domain·Data Element·PARAMETERS(라벨·F4) — DDIC 나선 1지점 |
 | 04 | 연산자와 흐름 제어 | 7 | 산술·날짜 산술·문자열·IF·CASE·DO/WHILE·`sy-index`·디버깅 (🟢구구단) |
 | 05 | Structure (Local·DDIC) | 5 | Structure·Work Area·MOVE-CORRESPONDING·DDIC Structure — DDIC 나선 2지점 |
-| 06 | Internal Table | 6 | Internal Table·테이블 종류·READ/LOOP·컨트롤레벨·Field Symbol 기초 |
+| 06 | Internal Table | 15 | Internal Table·3속성(Line Type·Key·Table Kind)·READ/LOOP·SORT/BINARY SEARCH·COLLECT·컨트롤레벨·Table Type 자산화(SE11)·Deep Structure·Header Line(읽기)·Field Symbol 기초 |
 | 07 | Transparent Table (SE11) | 3 | Transparent Table·Key/MANDT·Create Entries — DDIC 나선 3지점 |
 | 08 | Open SQL 기본 조회 | 7 | SELECT(classic)·INTO·WHERE·`sy-subrc` — **읽기 전용** |
 | 09 | DDIC 관계와 입력도움말(F4) | 9 | Foreign Key·Check/Value Table·Search Help·Text Table |
@@ -85,7 +85,7 @@
 |---|---|---|---|
 | CH04 | 값을 받아도 계산·반복 불가 | 연산·IF·DO/WHILE·PARAMETERS | 구구단 전체/특정 단/범위(단일 변수) |
 | CH05 | 단수·배수·결과 변수 3개 따로 | Structure 3필드 | 구구단 한 줄=Structure → 한 행 한계 |
-| CH06 | Structure 한 행뿐 | Internal Table | 구구단 전체 APPEND→LOOP→SORT |
+| CH06 | Structure 한 행뿐 | Internal Table | 구구단 72행 APPEND→SORT→READ→LOOP(+AT END 소계) |
 | CH07 | 메모리 휘발 | Transparent Table | `ZGUGUDAN`에 Create Entries로 2·3단 18행 손입력 |
 | CH08 | 손입력 번거로움 / 되찾기 | SELECT (읽기) | 18행을 SELECT로 되찾아 출력 + 결과없음 시 MESSAGE |
 

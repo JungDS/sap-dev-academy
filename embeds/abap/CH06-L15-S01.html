@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<!-- CH06-L15-S01 — 엔진: step-debugger (embeds/_engine/step-debugger.{js,css}) + _autoheight.js
+     config=레슨 전용(캡스톤: 중첩 DO로 구구단 2~9단 × 9 = 72행을 APPEND로 쌓고 DESCRIBE·SORT·LOOP 출력).
+     구 CH06-L06-S01에서 rename + 본문 L15 정합 보강(CLEAR gs_line 습관 줄 추가·SORT 후 LOOP 출력 재현).
+     itab.max=6으로 가운데 행을 접어 72행 워치를 한눈에. 게이팅: CH06 범위(TYPES/DATA·DO·APPEND·DESCRIBE·SORT·LOOP). -->
+<html lang="ko" data-eng="step-debugger">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>구구단 72행 캡스톤 · CH06-L15-S01</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/step-debugger.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">gt_gugu — 행이 쌓이며 테이블이 자란다 <small>(스텝 디버거)</small></p>
+  <p class="lead"><b>다음 ⏭</b>을 누르며 오른쪽 <code>gt_gugu</code>를 보세요. <code>APPEND</code>가 한 번 실행될 때마다 행이 <b>1개 → 2개 → 3개</b>… 하나씩 늘고, <b>먼저 쌓은 행은 사라지지 않습니다</b>. 2단부터 9단까지 다 돌면 <b>8단 × 9줄 = 72행</b>. 다 모았기에 마지막에 <code>SORT</code>로 순서를 통째로 바꾸고 <code>LOOP</code>로 그 순서 그대로 출력해 봅니다.</p>
+
+  <div class="dbg" data-stepper>
+    <div class="dbg__bar">
+      <button class="btn btn--primary" data-start>▶ 시작</button>
+      <button class="btn btn--step" data-next disabled>다음 ⏭</button>
+      <div class="progress"><i data-progress></i></div>
+      <span class="muted" data-counter>0 / 17</span>
+    </div>
+    <div class="dbg__main">
+      <div class="dbg__editorwrap"><div class="dbg__edhd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span></div><div class="dbg__editor" data-code></div></div>
+      <div class="dbg__watch">
+        <div class="watch__head">변수 모니터 — Work Area 한 줄과 쌓이는 테이블</div>
+        <div class="watch__list" data-vars></div>
+      </div>
+    </div>
+    <div class="dbg__console">
+      <div class="console__head">
+        <span>콘솔</span>
+        <span class="leg"><span class="a">▶ 실행할 차례</span> · <span class="d">✓ 방금 실행</span></span>
+        <span class="sp"></span>
+        <span class="cmode"><button class="cmode__b on" data-cmode="cur">현재 행</button><button class="cmode__b" data-cmode="all">전체 출력</button></span>
+      </div>
+      <pre class="console__body" data-console>대기 중 — ▶ 시작을 누르세요.</pre>
+    </div>
+    <script type="application/json" class="stepper-config">
+    {
+      "code":[
+        "TYPES: BEGIN OF ts_line,",
+        "         dan    TYPE i,",
+        "         mul    TYPE i,",
+        "         result TYPE i,",
+        "       END OF ts_line.",
+        "",
+        "DATA: gs_line TYPE ts_line,",
+        "      gt_gugu TYPE TABLE OF ts_line,",
+        "      gv_cnt  TYPE i.",
+        "",
+        "DO 8 TIMES.                          \" 바깥 = 단",
+        "  CLEAR gs_line.                     \" 새 단 시작 — L01의 그 습관",
+        "  gs_line-dan = sy-index + 1.        \" 2~9단",
+        "  DO 9 TIMES.                        \" 안쪽 = 곱하는 수",
+        "    gs_line-mul    = sy-index.",
+        "    gs_line-result = gs_line-dan * gs_line-mul.",
+        "    APPEND gs_line TO gt_gugu.       \" 한 줄씩 쌓는다",
+        "  ENDDO.",
+        "ENDDO.",
+        "",
+        "DESCRIBE TABLE gt_gugu LINES gv_cnt. \" gv_cnt = 72",
+        "",
+        "SORT gt_gugu BY result DESCENDING.   \" 결과 큰 순서로",
+        "",
+        "LOOP AT gt_gugu INTO gs_line.",
+        "  WRITE: / gs_line-dan, 'x', gs_line-mul, '=', gs_line-result.",
+        "ENDLOOP."
+      ],
+      "vars":[
+        {"label":"gs_line-dan","sub":"Work Area · 단","key":"gs_line-dan","init":"0"},
+        {"label":"gs_line-mul","sub":"Work Area · 곱하는 수","key":"gs_line-mul","init":"0"},
+        {"label":"gs_line-result","sub":"Work Area · 결과","key":"gs_line-result","init":"0"},
+        {"label":"gt_gugu","sub":"쌓인 줄","key":"gt_gugu","itab":{"cols":["dan","mul","result"],"num":[true,true,true],"max":6},"init":[]},
+        {"label":"gv_cnt","sub":"DESCRIBE가 세어 준 행 수","key":"gv_cnt","init":"0"}
+      ],
+      "steps":[
+        {"line":12,"vars":{},"console":"바깥 DO 1회차 — 새 단을 시작할 때 Work Area부터 비웁니다(L01의 그 습관. 첫 회차라 이미 비어 있지만, 습관은 습관)"},
+        {"line":13,"vars":{"gs_line-dan":"2"},"console":"sy-index가 1이니 dan = 1 + 1 = 2. 2단부터 시작합니다"},
+        {"line":15,"vars":{"gs_line-mul":"1"},"console":"안쪽 DO 1회차 — 여기서 sy-index는 안쪽 회차라 mul = 1. 단 값을 안쪽 루프 전에 dan에 저장해 둔 이유입니다"},
+        {"line":16,"vars":{"gs_line-result":"2"},"console":"2 × 1 = 2 — Work Area(gs_line)에 한 줄이 완성됐습니다. 아직 테이블은 비어 있습니다"},
+        {"line":17,"vars":{"gt_gugu":[[2,1,2]]},"console":"APPEND — Work Area의 값이 복사되어 1번 행이 됐습니다 (1행)"},
+        {"line":17,"vars":{"gs_line-mul":"2","gs_line-result":"4","gt_gugu":[[2,1,2],[2,2,4]]},"console":"안쪽 2회차 — 2 × 2 = 4를 채우고 APPEND. 앞 행은 그대로 남고 뒤에 붙습니다 (2행)"},
+        {"line":17,"vars":{"gs_line-mul":"3","gs_line-result":"6","gt_gugu":[[2,1,2],[2,2,4],[2,3,6]]},"console":"안쪽 3회차 — 하나씩 늘어납니다 (3행)"},
+        {"line":17,"vars":{"gs_line-mul":"4","gs_line-result":"8","gt_gugu":[[2,1,2],[2,2,4],[2,3,6],[2,4,8]]},"console":"안쪽 4회차 (4행) — WRITE로 찍기만 하던 지난 챕터와 달리, 찍고 끝이 아니라 메모리에 남습니다"},
+        {"line":17,"vars":{"gs_line-mul":"9","gs_line-result":"18","gt_gugu":[[2,1,2],[2,2,4],[2,3,6],[2,4,8],[2,5,10],[2,6,12],[2,7,14],[2,8,16],[2,9,18]]},"console":"안쪽 5~9회차도 같은 방식으로 하나씩 — 2단이 끝나면 9행입니다"},
+        {"line":12,"vars":{"gs_line-dan":"0","gs_line-mul":"0","gs_line-result":"0"},"console":"안쪽 DO가 끝나 바깥 2회차로 — CLEAR가 Work Area를 다시 비웁니다(쌓아 둔 9행은 무사!)"},
+        {"line":13,"vars":{"gs_line-dan":"3"},"console":"dan = 3 — 3단 시작. 안쪽 루프가 다시 9번 돕니다"},
+        {"line":17,"vars":{"gs_line-mul":"9","gs_line-result":"27","gt_gugu":[[2,1,2],[2,2,4],[2,3,6],[2,4,8],[2,5,10],[2,6,12],[2,7,14],[2,8,16],[2,9,18],[3,1,3],[3,2,6],[3,3,9],[3,4,12],[3,5,15],[3,6,18],[3,7,21],[3,8,24],[3,9,27]]},"console":"3단 9줄이 더 쌓여 18행. 앞의 9행(2단)은 지워지지 않고 그대로 남아 있습니다"},
+        {"line":19,"vars":{"gs_line-dan":"9","gs_line-mul":"9","gs_line-result":"81","gt_gugu":[[2,1,2],[2,2,4],[2,3,6],[2,4,8],[2,5,10],[2,6,12],[2,7,14],[2,8,16],[2,9,18],[3,1,3],[3,2,6],[3,3,9],[3,4,12],[3,5,15],[3,6,18],[3,7,21],[3,8,24],[3,9,27],[4,1,4],[4,2,8],[4,3,12],[4,4,16],[4,5,20],[4,6,24],[4,7,28],[4,8,32],[4,9,36],[5,1,5],[5,2,10],[5,3,15],[5,4,20],[5,5,25],[5,6,30],[5,7,35],[5,8,40],[5,9,45],[6,1,6],[6,2,12],[6,3,18],[6,4,24],[6,5,30],[6,6,36],[6,7,42],[6,8,48],[6,9,54],[7,1,7],[7,2,14],[7,3,21],[7,4,28],[7,5,35],[7,6,42],[7,7,49],[7,8,56],[7,9,63],[8,1,8],[8,2,16],[8,3,24],[8,4,32],[8,5,40],[8,6,48],[8,7,56],[8,8,64],[8,9,72],[9,1,9],[9,2,18],[9,3,27],[9,4,36],[9,5,45],[9,6,54],[9,7,63],[9,8,72],[9,9,81]]},"console":"4단부터 9단까지 같은 방식으로 반복 — 바깥 DO 8회가 모두 끝나면 8단 × 9줄 = 72행. 마지막 행은 9 × 9 = 81입니다(행 수 72와 헷갈리지 마세요)"},
+        {"line":21,"vars":{"gv_cnt":"72"},"console":"DESCRIBE TABLE ... LINES — 우리가 센 것과 같은 72가 gv_cnt에 들어옵니다"},
+        {"line":23,"vars":{"gt_gugu":[[9,9,81],[8,9,72],[9,8,72],[8,8,64],[7,9,63],[9,7,63],[7,8,56],[8,7,56],[6,9,54],[9,6,54],[7,7,49],[6,8,48],[8,6,48],[5,9,45],[9,5,45],[6,7,42],[7,6,42],[5,8,40],[8,5,40],[4,9,36],[6,6,36],[9,4,36],[5,7,35],[7,5,35],[4,8,32],[8,4,32],[5,6,30],[6,5,30],[4,7,28],[7,4,28],[3,9,27],[9,3,27],[5,5,25],[3,8,24],[4,6,24],[6,4,24],[8,3,24],[3,7,21],[7,3,21],[4,5,20],[5,4,20],[2,9,18],[3,6,18],[6,3,18],[9,2,18],[2,8,16],[4,4,16],[8,2,16],[3,5,15],[5,3,15],[2,7,14],[7,2,14],[2,6,12],[3,4,12],[4,3,12],[6,2,12],[2,5,10],[5,2,10],[3,3,9],[9,1,9],[2,4,8],[4,2,8],[8,1,8],[7,1,7],[2,3,6],[3,2,6],[6,1,6],[5,1,5],[2,2,4],[4,1,4],[3,1,3],[2,1,2]]},"console":"SORT BY result DESCENDING — 모아 두었기에 마음대로 재배열할 수 있습니다. 1번 행이 81(9 × 9), 마지막 행이 2(2 × 1)로 뒤집혔습니다"},
+        {"line":26,"vars":{"gs_line-dan":"9","gs_line-mul":"9","gs_line-result":"81"},"focus":{"gt_gugu":1},"console":"LOOP 1회차 — 정렬된 1번 행부터 꺼내 출력합니다\n[출력] 9 x 9 = 81"},
+        {"line":27,"vars":{},"console":"이어서 8 x 9 = 72, 9 x 8 = 72, 8 x 8 = 64 … 72줄 전부 이 순서대로 출력됩니다. 한 줄씩 찍고 버리던 지난 챕터와 달리, 쌓아 두었기에 '결과 큰 순서'라는 내 기준으로 출력할 수 있는 것 — 이게 모아 두는 것의 힘입니다"}
+      ]
+    }
+    </script>
+  </div>
+  <div class="note">💡 워치의 <b>⋮ n행 생략</b>은 화면을 줄이려고 가운데를 접어 둔 것일 뿐, 테이블에는 그 행들이 모두 들어 있습니다. 그리고 같은 <code>result</code>끼리의 순서는 <code>SORT</code>가 보장하지 않습니다(9×8과 8×9는 둘 다 72). 순서까지 고정하려면 2차 키를 더합니다: <code>SORT gt_gugu BY result DESCENDING dan</code>.</div>
+</div>
+<script src="../_engine/step-debugger.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

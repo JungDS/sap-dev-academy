@@ -1,101 +1,71 @@
 <!DOCTYPE html>
-<!-- CH06-L03-S01 — 엔진: step-debugger (embeds/_engine/step-debugger.{js,css}) + _autoheight.js
-     config=레슨 전용(단일 행 제어: INSERT INDEX/INTO TABLE·READ INDEX/WITH KEY/TRANSPORTING NO FIELDS·
-     MODIFY TRANSPORTING·DELETE, sy-subrc/sy-tabix — READ 실패 시 sy-tabix는 0).
-     게이팅: CH06-L03 범위 — modern 문법 없음. -->
-<html lang="ko" data-eng="step-debugger">
+<!-- CH06-L03-S01 — 엔진: key-variant-lab (embeds/_engine/key-variant-lab.{js,css}) + _autoheight.js
+     config=window.KVL_CFG. 같은 데이터(정훈영30·홍길동25·정훈영35)를 ①키 생략(standard key)
+     ②WITH NON-UNIQUE KEY name ③WITH UNIQUE KEY name 으로 바꿔 넣으며 중복 허용/차단·키 구성 관찰.
+     ③의 종류 자리는 "…"로 비움(UNIQUE 허용 종류는 L04 매트릭스 몫 — 사실 왜곡 방지).
+     게이팅: CH06-L03 범위(WITH KEY 선언·standard key·UNIQUE/NON-UNIQUE). INSERT/sy-subrc 없음(L05 전). -->
+<html lang="ko" data-eng="key-variant-lab">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>한 행 제어 실험실 · CH06-L03-S01</title>
+<title>키 바꿔 넣어 보기 · CH06-L03-S01</title>
 <link rel="stylesheet" href="../_engine/_base.css" />
-<link rel="stylesheet" href="../_engine/step-debugger.css" />
+<link rel="stylesheet" href="../_engine/key-variant-lab.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">한 행을 콕 집어 — 넣고 · 찾고 · 고치고 · 지우기 <small>(스텝 디버거)</small></p>
-  <p class="lead">명단 3명이 쌓인 STANDARD 테이블에서 시작합니다. 문장이 실행될 때마다 오른쪽에서 <b>대상 행</b>이 강조되고 <code>sy-subrc</code>·<code>sy-tabix</code>가 바뀝니다. <code>INDEX</code>와 <code>INTO TABLE</code>이 어디에 넣는지, <code>TRANSPORTING NO FIELDS</code>가 Work Area를 건드리는지, 그리고 READ <b>실패</b> 뒤에 무엇이 남는지를 눈여겨보세요.</p>
-
-  <div class="dbg" data-stepper>
-    <div class="dbg__bar">
-      <button class="btn btn--primary" data-start>▶ 시작</button>
-      <button class="btn btn--step" data-next disabled>다음 ⏭</button>
-      <div class="progress"><i data-progress></i></div>
-      <span class="muted" data-counter>0 / 13</span>
-    </div>
-    <div class="dbg__main">
-      <div class="dbg__editorwrap"><div class="dbg__edhd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span></div><div class="dbg__editor" data-code></div></div>
-      <div class="dbg__watch">
-        <div class="watch__head">변수 모니터 — Work Area · 테이블 · sy 필드</div>
-        <div class="watch__list" data-vars></div>
-      </div>
-    </div>
-    <div class="dbg__console">
-      <div class="console__head">
-        <span>콘솔</span>
-        <span class="leg"><span class="a">▶ 실행할 차례</span> · <span class="d">✓ 방금 실행</span></span>
-        <span class="sp"></span>
-        <span class="cmode"><button class="cmode__b on" data-cmode="cur">현재 행</button><button class="cmode__b" data-cmode="all">전체 출력</button></span>
-      </div>
-      <pre class="console__body" data-console>대기 중 — ▶ 시작을 누르세요.</pre>
-    </div>
-    <script type="application/json" class="stepper-config">
-    {
-      "code":[
-        "\" 시작: gt_person(STANDARD) = 정훈영/30 · 유재석/40 · 홍길동/25",
-        "gs_person-name = '강호동'. gs_person-age = 35.",
-        "INSERT gs_person INTO gt_person INDEX 1.",
-        "",
-        "gs_person-name = '심청'. gs_person-age = 17.",
-        "INSERT gs_person INTO TABLE gt_person.",
-        "",
-        "READ TABLE gt_person INTO gs_person INDEX 2.",
-        "",
-        "READ TABLE gt_person TRANSPORTING NO FIELDS",
-        "     WITH KEY name = '유재석'.",
-        "",
-        "READ TABLE gt_person INTO gs_person",
-        "     WITH KEY name = '홍길동'.",
-        "IF sy-subrc = 0.",
-        "  gs_person-age = 26.",
-        "  MODIFY gt_person FROM gs_person INDEX sy-tabix",
-        "         TRANSPORTING age.",
-        "ENDIF.",
-        "",
-        "READ TABLE gt_person INTO gs_person",
-        "     WITH KEY name = '없는사람'.",
-        "WRITE: / gs_person-name.   \" 위험!",
-        "",
-        "DELETE gt_person WHERE age < 30."
-      ],
-      "vars":[
-        {"label":"gs_person-name","sub":"Work Area · name","key":"gs_person-name","init":"( 공백 )"},
-        {"label":"gs_person-age","sub":"Work Area · age","key":"gs_person-age","init":"0"},
-        {"label":"gt_person","sub":"Internal Table · 명단(STANDARD)","key":"gt_person","itab":{"cols":["name","age"],"num":[false,true]},"init":[["정훈영",30],["유재석",40],["홍길동",25]]},
-        {"label":"sy-subrc","sub":"0이면 성공 (실패는 4, 때로 8)","key":"sy-subrc","init":"-"},
-        {"label":"sy-tabix","sub":"찾은 행 번호 · 실패하면 0","key":"sy-tabix","init":"-"}
-      ],
-      "steps":[
-        {"line":2,"vars":{"gs_person-name":"강호동","gs_person-age":"35"},"console":"Work Area에 새 사람 준비"},
-        {"line":3,"vars":{"gt_person":[["강호동",35],["정훈영",30],["유재석",40],["홍길동",25]]},"focus":{"gt_person":1},"console":"INSERT ... INDEX 1 — 1번 위치에 끼워 넣기. 기존 행들이 한 칸씩 밀렸습니다 (APPEND와 달리 자리를 내가 지정)"},
-        {"line":5,"vars":{"gs_person-name":"심청","gs_person-age":"17"},"console":"Work Area에 또 한 사람 준비 — 이번엔 자리를 지정하지 않고 넣어 봅니다"},
-        {"line":6,"vars":{"gt_person":[["강호동",35],["정훈영",30],["유재석",40],["홍길동",25],["심청",17]]},"focus":{"gt_person":5},"console":"INSERT ... INTO TABLE — 자리를 테이블 종류에 맡깁니다. 이 테이블은 STANDARD라 결과가 맨 끝(5번 행), 즉 APPEND와 같습니다. SORTED였다면 키 순서 자리, HASHED였다면 해시가 정한 자리로 갑니다"},
-        {"line":8,"vars":{"gs_person-name":"정훈영","gs_person-age":"30","sy-subrc":"0","sy-tabix":"2"},"focus":{"gt_person":2},"console":"번호로 직접 읽기 — 2번 행이 Work Area로 복사됨. sy-subrc = 0, sy-tabix = 2"},
-        {"line":10,"vars":{"sy-subrc":"0","sy-tabix":"3"},"focus":{"gt_person":3},"console":"TRANSPORTING NO FIELDS — 있는지만 확인. 3번 행에서 찾아 sy-subrc = 0 · sy-tabix = 3이 되지만, Work Area는 여전히 정훈영 그대로입니다(한 필드도 옮기지 않음)"},
-        {"line":13,"vars":{"gs_person-name":"홍길동","gs_person-age":"25","sy-tabix":"4"},"focus":{"gt_person":4},"console":"값으로 찾기(WITH KEY) — 이번엔 INTO가 있으니 4번 행이 Work Area로 복사됩니다. sy-tabix = 4"},
-        {"line":15,"vars":{},"console":"sy-subrc = 0 확인 — 성공 판정은 언제나 0인지로 합니다"},
-        {"line":16,"vars":{"gs_person-age":"26"},"console":"복사본(Work Area)의 age만 26으로 — 아직 테이블은 그대로"},
-        {"line":17,"vars":{"gt_person":[["강호동",35],["정훈영",30],["유재석",40],["홍길동",26],["심청",17]]},"focus":{"gt_person":4},"console":"MODIFY — READ가 남긴 sy-tabix(4)번 행의 age만 갱신. TRANSPORTING age 덕에 다른 필드는 보존"},
-        {"line":21,"vars":{"sy-subrc":"4","sy-tabix":"0"},"console":"못 찾음 — sy-subrc = 4. 찾은 행이 없으니 sy-tabix도 유효한 번호가 아니라 0입니다. 반면 Work Area는 바뀌지 않아 홍길동이 그대로 남아 있습니다"},
-        {"line":23,"vars":{},"console":"[출력] 홍길동 ← ⚠ 위험! 방금 READ는 실패였는데 이전 값이 출력됨. READ 뒤엔 반드시 sy-subrc = 0인지 확인!"},
-        {"line":25,"vars":{"gt_person":[["강호동",35],["정훈영",30],["유재석",40]],"sy-subrc":"0"},"console":"DELETE WHERE age < 30 — 조건에 맞는 행 모두 삭제(홍길동/26·심청/17). 1행이라도 지웠으니 sy-subrc = 0"}
-      ]
-    }
-    </script>
-  </div>
-  <div class="note">💡 실패한 READ 뒤의 Work Area는 "빈 값"이 아니라 <b>직전 값 그대로</b>이고, <code>sy-tabix</code>는 <b>0</b>입니다. <code>sy-subrc = 0</code> 확인 없이 쓰면 엉뚱한 사람이 출력되는 버그가 됩니다.</div>
+  <p class="hd">키를 바꿔 가며 같은 데이터 넣어 보기 <small>(동명이인 정훈영 포함 3명)</small></p>
+  <p class="lead">넣을 사람은 셋 — <b>정훈영/30 · 홍길동/25 · 정훈영/35</b>(동명이인!). 키 선언 ①②③을 바꿔 가며 <b>⏭ 다음 사람 넣기</b>를 눌러 보세요. 무엇이 키가 되는지(주황 칸), 같은 이름의 두 번째 정훈영이 <b>들어가는지 막히는지</b>가 달라집니다.</p>
+  <div data-kvl></div>
+  <div class="note">💡 ①과 ②는 결과가 같습니다 — 차이는 <b>키가 우연히 정해졌나, 내가 정했나</b>입니다. ③의 종류 자리(<code>…</code>)는 비워 뒀습니다: UNIQUE를 실제로 받아 주는 <b>종류</b>가 따로 있는데, 그 표는 다음 레슨에서 정리합니다.</div>
 </div>
-<script src="../_engine/step-debugger.js" defer></script>
+<script>
+window.KVL_CFG = {
+  cols: ['name', 'age'],
+  num: [false, true],
+  people: [['정훈영', 30], ['홍길동', 25], ['정훈영', 35]],
+  idle: '⏭ 버튼으로 한 명씩 넣어 보세요 — 세 번째 사람(두 번째 정훈영)에서 차이가 납니다.',
+  variants: [
+    {
+      id: 'v1', tab: '① 키 생략',
+      decl: ['DATA gt_person TYPE TABLE OF ts_person.'],
+      keyChip: 'standard key — 문자 계열 필드 전부 = name (자동, 숫자 age는 제외)',
+      keyCols: ['name'],
+      rows: [
+        { ok: true, msg: '정훈영/30 입장 — 첫 행이라 무엇과도 안 겹칩니다.' },
+        { ok: true, msg: '홍길동/25 입장 — 키(name)가 다르니 당연히 통과.' },
+        { ok: true, dup: true, msg: '⚠ 두 번째 정훈영/35도 <b>그대로 입장</b> — 자동으로 잡힌 standard key는 중복을 막지 않습니다. 이제 "정훈영을 찾아라" 하면 어느 행일까요?' }
+      ],
+      done: '<b>내가 고른 기준이 아니라 타입 모양에서 우연히 만들어진 키</b>입니다. age는 숫자라 키에서 빠졌고, 동명이인은 키만으로 구분되지 않습니다 — 이것이 "느슨하다"의 정확한 뜻.'
+    },
+    {
+      id: 'v2', tab: '② NON-UNIQUE KEY',
+      decl: ['DATA gt_person TYPE TABLE OF ts_person', '               WITH NON-UNIQUE KEY name.'],
+      keyChip: '내가 직접 정한 키 = name (중복 허용을 명시)',
+      keyCols: ['name'],
+      rows: [
+        { ok: true, msg: '정훈영/30 입장.' },
+        { ok: true, msg: '홍길동/25 입장.' },
+        { ok: true, dup: true, msg: '두 번째 정훈영/35 입장 — <b>NON-UNIQUE</b>는 "같은 키 값이 여러 개 와도 된다"는 뜻이니까요. 결과는 ①과 같습니다.' }
+      ],
+      done: '결과는 ①과 같지만 결정적 차이가 있습니다 — <b>"이름으로 찾고, 중복은 허용한다"를 코드에 직접 적었다</b>는 것. 나중에 필드를 추가해도 키가 소리 없이 바뀌지 않습니다.'
+    },
+    {
+      id: 'v3', tab: '③ UNIQUE KEY',
+      decl: ['DATA gt_person TYPE … TABLE OF ts_person', '               WITH UNIQUE KEY name.'],
+      keyChip: '내가 직접 정한 키 = name (중복 금지! · 종류 자리 …는 다음 레슨)',
+      keyCols: ['name'],
+      rows: [
+        { ok: true, msg: '정훈영/30 입장 — 아직 겹치는 키가 없습니다.' },
+        { ok: true, msg: '홍길동/25 입장.' },
+        { ok: false, msg: '🚫 두 번째 정훈영/35 <b>거부!</b> — 키 name = 정훈영인 행이 이미 있습니다. <b>UNIQUE</b>는 같은 키 값이 두 번 들어오는 것 자체를 막습니다.' }
+      ],
+      done: '사번처럼 <b>절대 겹치면 안 되는 기준</b>이면 UNIQUE입니다. 단, 이 막아 줌은 <b>프로그램 메모리 안</b> 이야기 — DB에 저장할 때의 중복 방지는 별개 문제입니다.'
+    }
+  ]
+};
+</script>
+<script src="../_engine/key-variant-lab.js" defer></script>
 <script src="../_engine/_autoheight.js" defer></script>
 </body>
 </html>

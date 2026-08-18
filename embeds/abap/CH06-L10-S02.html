@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<!-- CH06-L10-S02 — 엔진: procedure-cards (embeds/_engine/procedure-cards.{js,css}) + _autoheight.js
+     config=window.PC_CFG. SE11에서 전역 Table Type ZTT_PERSON 만들기 — 본문 L10 절차(Data type 라디오→
+     팝업 Table type→Line Type=ZST_PERSON→키/종류 탭→설명·저장·$TMP→활성화 Ctrl+F3) 단계 카드.
+     게이팅: CH06-L10 범위(SE11 생성 절차·ZST_PERSON은 CH05-L02에서 생성 완료·활성화 개념은 CH03 습득). -->
+<html lang="ko" data-eng="procedure-cards">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SE11 ZTT_PERSON 만들기 · CH06-L10-S02</title>
+<link rel="stylesheet" href="../_engine/_base.css" />
+<link rel="stylesheet" href="../_engine/procedure-cards.css" />
+</head>
+<body>
+<div class="wrap">
+  <p class="hd">SE11에서 ZTT_PERSON 만들기 — 절차 따라 하기</p>
+  <p class="lead">로컬 <code>tt_person</code>을 회사 공용 자산으로 승격하는 절차입니다. <b>다음 단계 →</b>를 누르며 실제 SE11 화면에서 무엇을 채우는지 확인하세요. 결정하는 내용은 로컬 <code>TYPES</code>와 똑같은 3속성입니다 — 화면만 다를 뿐.</p>
+  <div data-pc></div>
+  <div class="note">💡 저장까지만 하면 <b>다른 프로그램에서 아직 안 보입니다</b> — 활성화(Ctrl+F3)까지가 등록입니다. 그리고 이 <code>ZTT_PERSON</code>은 다음 챕터(DB 테이블)에서 다시 등장하니 지워 두지 마세요.</div>
+</div>
+<script>
+window.PC_CFG = {
+  steps: [
+    {
+      k: 'SE11 진입', t: 'SE11 열고 Data type 선택 → 이름 입력 → Create',
+      d: '명령 필드에 <code>SE11</code>. 첫 화면의 라디오 버튼 중 <b>Data type</b>을 고르고 이름 칸에 <code>ZTT_PERSON</code>을 입력한 뒤 <b>Create</b>를 누릅니다. (전역 객체라 Z로 시작 — Domain·Structure 때와 같은 규칙)',
+      mock: '<div class="bar">📚 SE11 · ABAP Dictionary: Initial Screen</div><div class="body"><div class="row"><span class="radio"><i></i>Database table</span><span class="radio sel"><i></i><b>Data type</b></span><span class="radio"><i></i>Domain</span></div><div class="row"><span class="lab">Data type</span><span class="inp hl">ZTT_PERSON</span><span class="gbtn hl">Create</span></div></div>'
+    },
+    {
+      k: '종류 팝업', t: '팝업에서 "Table type" 선택',
+      d: 'Data type이라는 큰 우산 아래 무엇을 만들지 묻는 팝업이 뜹니다. <b>Table type</b>을 선택합니다. (Data Element·Structure를 만들 때도 거쳐 간 그 갈림길입니다)',
+      mock: '<div class="bar">Create Type ZTT_PERSON</div><div class="body"><div class="row"><span class="radio"><i></i>Data element</span></div><div class="row"><span class="radio"><i></i>Structure</span></div><div class="row"><span class="radio sel"><i></i><b>Table type</b></span></div><div class="row"><span class="gbtn hl">✔ 계속</span></div></div>'
+    },
+    {
+      k: 'Line Type', t: 'Line Type 칸에 ZST_PERSON — 전역은 전역끼리',
+      d: '행 모양이 될 이름을 <b>Line Type</b> 칸에 적습니다. 여기서는 앞 챕터에서 만든 DDIC Structure <code>ZST_PERSON</code>. 로컬 <code>ts_person</code>은 <b>이 프로그램 밖에서 안 보이므로</b> 전역 Table Type의 행 모양이 될 수 없습니다 — 전역은 전역끼리.',
+      mock: '<div class="bar">Dictionary: Table Type ZTT_PERSON</div><div class="body"><div class="row"><span class="lab">Short Description</span><span class="inp">사람 명단 테이블 타입</span></div><div class="row"><span class="lab">Line Type</span><span class="inp hl">ZST_PERSON</span><span class="ok">✓ DDIC Structure(전역)</span></div></div>'
+    },
+    {
+      k: '키·종류 탭', t: 'Primary Key 탭 · Initialization and Access 탭 — 3속성의 나머지 둘',
+      d: '<b>Primary Key</b> 탭에서 키 필드와 UNIQUE 여부를, <b>Initialization and Access</b> 탭에서 종류(Standard 등)를 정할 수 있습니다. 화면 배치는 달라도 결정하는 것은 로컬 <code>TYPES</code>의 3속성과 똑같습니다. 학습 단계에서는 <b>기본값(Standard·기본 키 설정)</b>이면 충분합니다.',
+      mock: '<div class="bar">Dictionary: Table Type ZTT_PERSON</div><div class="body"><div class="row"><span class="tab">Attributes</span><span class="tab on">Primary Key</span><span class="tab on">Initialization and Access</span></div><div class="row"><span class="lab">Access</span><span class="inp">Standard Table</span><span class="ok">← ③ 종류</span></div><div class="row"><span class="lab">Key definition</span><span class="inp">Standard key</span><span class="ok">← ② 키</span></div></div>'
+    },
+    {
+      k: '저장·$TMP', t: 'Short Description 채우고 저장 → 패키지는 Local Object($TMP)',
+      d: '짧은 설명을 채우고 <b>저장</b>합니다. 패키지를 묻는 팝업이 뜨면 학습 중에는 <b>Local Object</b>(<code>$TMP</code>)를 누릅니다 — Domain·Structure 저장 때와 같은 선택입니다.',
+      mock: '<div class="bar">Create Object Directory Entry</div><div class="body"><div class="row"><span class="lab">Object</span><span class="inp">ZTT_PERSON</span></div><div class="row"><span class="lab">Package</span><span class="inp">$TMP</span></div><div class="row"><span class="gbtn hl">Local Object</span><span class="gbtn">Save</span></div></div>'
+    },
+    {
+      k: '활성화', t: '활성화(Ctrl+F3) — 여기까지 해야 쓸 수 있다',
+      d: '저장만 된 상태는 아직 초안입니다. <b>활성화</b>(🔥 아이콘 또는 <code>Ctrl+F3</code>)까지 해야 다른 프로그램들이 이 타입을 볼 수 있습니다. 상태 표시가 <b>Active</b>로 바뀌면 완료.',
+      mock: '<div class="bar">Dictionary: Table Type ZTT_PERSON</div><div class="body"><div class="row"><span class="gbtn hl">🔥 Activate (Ctrl+F3)</span></div><div class="row"><span class="lab">Status</span><span class="inp">Active</span><span class="ok">✓ 활성화 완료</span></div></div>'
+    }
+  ],
+  done: '🎉 이제 <b>어느 프로그램에서든</b> 한 단어로 선언합니다: <code>DATA gt_person TYPE ztt_person.</code> — 로컬 <code>tt_person</code>과 결정 내용은 같고, 보이는 범위만 회사 전체로 넓어졌습니다.'
+};
+</script>
+<script src="../_engine/procedure-cards.js" defer></script>
+<script src="../_engine/_autoheight.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>빠르게 찾기 — SORT와 BINARY SEARCH · Internal Table · SAP Developer Academy</title>
+<link rel="stylesheet" href="../../../assets/base.css">
+<link rel="stylesheet" href="../../../assets/lesson.css">
+<link rel="stylesheet" href="../../../assets/shell.css">
+<script>/* 읽기 설정 선적용(플래시 방지) */(function(){try{var L=localStorage,r=document.documentElement;if(L.getItem('sda.dark')==='1')r.classList.add('dark');if(L.getItem('sda.wide')==='1')r.classList.add('wide');var f=parseInt(L.getItem('sda.fontPx'),10);if(f>=13&&f<=20)r.style.fontSize=f+'px';}catch(e){}})();</script>
+</head>
+<body data-domain="abap" data-chapter-id="CH06" data-lesson-id="CH06-L07">
+<header class="appbar">
+  <a class="appbar__home" href="../../../index.html">🏠 <span class="full">SAP Developer Academy</span></a>
+  <span class="appbar__sp"></span>
+  <span class="meta">Chapter 6 · Internal Table</span>
+  <a class="btn-soft" href="../../../pages/abap.html">ABAP 커리큘럼</a>
+  <div class="tools">
+    <button class="icon-btn" id="fsDec" title="글자 작게">A−</button>
+    <button class="icon-btn" id="fsInc" title="글자 크게">A+</button>
+    <button class="icon-btn" id="fsReset" title="글자 크기 초기화">↺</button>
+    <button class="icon-btn" id="darkBtn" title="다크 모드">🌙</button>
+    <button class="icon-btn" id="widthBtn" title="가독 폭 넓게">↔</button>
+    <button class="icon-btn fs-btn" title="전체화면" aria-label="전체화면"></button>
+  </div>
+</header>
+<div class="read-progress"><i></i></div>
+<div class="scrim"></div>
+<nav class="rail" data-shell="rail"></nav>
+<button class="railFab" id="railFab" aria-label="네비 열기">☰</button>
+<div class="stage">
+  <div class="layout">
+    <main class="main">
+      <nav class="crumb"><a href="../../../index.html">홈</a> › <a href="../../../pages/abap.html">ABAP 커리큘럼</a> › Chapter 6 › Lesson 7</nav>
+      <section class="lhead">
+        <p class="lhead__eyebrow">Internal Table</p>
+        <h1>빠르게 찾기 — SORT와 BINARY SEARCH</h1>
+        <p class="lhead__direction">정렬해 두면 반씩 갈라 찾는다 — 그리고 &quot;순서 없는&quot; HASHED의 정체.</p>
+        <div class="tags"><span class="tag tag--track">Track 1</span><span class="tag tag--ch">Chapter 6</span><span class="tag tag--ls">Lesson 7</span><span class="tag tag--lv">초급</span></div>
+      </section>
+      <article class="prose">
+<section class="lblock"><h2>996번의 허탕</h2>
+<p><a href="CH06-L04.html">종류 레슨</a>의 그 장면으로 돌아가자. STANDARD 테이블 1,000행에서
+<code>READ ... WITH KEY name = &#39;수지&#39;</code>를 하면 시스템은 앞에서부터 한 행씩 훑는다.
+수지가 997번째면 996번의 허탕. 매번 이렇게 찾을 수는 없다.</p>
+<p>SORTED나 HASHED로 그릇을 바꾸는 게 한 방법이지만(<a href="CH06-L04.html">거래표</a> 기억),
+그릇은 STANDARD로 두고 <strong>찾기 직전에만 정렬해서 빠르게</strong> 찾는 수동 처방이 있다.
+오늘의 주제다.</p>
+</section><section class="lblock"><h2>정렬 — SORT</h2>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3</pre><pre class="abap-editor__code"><code><span class="tok-kw">SORT</span> gt_person <span class="tok-kw">BY</span> name.              <span class="tok-com">" name 기준 오름차순(기본)</span>
+<span class="tok-kw">SORT</span> gt_person <span class="tok-kw">BY</span> age <span class="tok-kw">DESCENDING</span>.    <span class="tok-com">" 내림차순</span>
+<span class="tok-kw">SORT</span> gt_person <span class="tok-kw">BY</span> name age.          <span class="tok-com">" name 같으면 age로(정렬 기준 여러 개)</span></code></pre></div></div>
+<ul>
+<li>기준 필드를 안 적은 <code>SORT gt_person.</code>은 <strong>테이블의 키</strong>(standard key였다면 문자 필드들)로
+정렬한다 — <a href="CH06-L03.html">키 레슨</a>의 함정이 여기서도 이어지니, 기준은 <code>BY</code>로 직접 적자.</li>
+<li>같은 값끼리의 순서까지 유지해야 하면 <code>SORT ... BY ... STABLE.</code>이 있다(동점 행의 원래
+순서 보존). 지금은 &quot;그런 옵션이 있다&quot;만 알아 두면 된다.</li>
+</ul>
+<h3>종류별로 되고 안 되고</h3>
+<table>
+<thead>
+<tr>
+<th>종류</th>
+<th>SORT</th>
+<th>이유</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>STANDARD</td>
+<td>O</td>
+<td>순서가 자유라 마음대로 재배열</td>
+</tr>
+<tr>
+<td>SORTED</td>
+<td><strong>X (구문 오류)</strong></td>
+<td><strong>정렬이 곧 정체성</strong>이다 — 항상 키 순서를 유지하는 그릇이라 손으로 다시 정렬한다는 것 자체가 모순</td>
+</tr>
+<tr>
+<td>HASHED</td>
+<td>O</td>
+<td>단, 무엇이 정렬되는지가 미묘하다 — 바로 아래에서</td>
+</tr>
+</tbody></table>
+<h3>&quot;순서가 없다&quot;더니 SORT가 된다? — HASHED의 정체</h3>
+<p><a href="CH06-L04.html">종류 레슨</a>에서 HASHED는 &quot;순서(행 번호)가 없다&quot;고 했는데 SORT가 된다니,
+모순처럼 들린다. 여기가 이 챕터에서 가장 헷갈리는 지점이니 정확히 갈라 두자.</p>
+<p><strong>&quot;순서가 없다&quot;의 진짜 뜻은 &quot;관리되는 번호표가 없다&quot;는 것이다.</strong> 사물함 비유로:
+사물함(HASHED)은 열쇠(키)로 한 번에 열지만, &quot;37번째 사물함 물건 줘&quot;는 성립하지 않는다 —
+번호표를 아무도 관리하지 않기 때문이다. 그런데 사물함도 <strong>청소할 때는 왼쪽 위부터 차례로
+훑을 수 있다.</strong> 이 &quot;훑는 길&quot;이 곧 <code>LOOP</code>가 행을 꺼내는 <strong>순회 순서</strong>다. 길은 있지만
+번호표는 없다 — 길이 있다고 좌표가 있는 게 아니다.</p>
+<p><code>SORT</code>가 바꾸는 것이 바로 이 <strong>훑는 길의 순서</strong>다. 화면에 찍히는 차례를 정리하고 싶을 때
+쓴다. 반면 <code>READ ... INDEX</code>가 요구하는 것은 <strong>관리되는 번호표</strong>라서 HASHED에선 여전히
+불가능하다.</p>
+<p>증거도 이미 봤다 — <a href="CH06-L05.html">L05</a>에서 HASHED의 <code>sy-tabix</code>가 <strong>0</strong>이었다.
+&quot;행은 찾았지만 지금 몇 번째인지는 세지 않는다&quot;고 시스템이 스스로 말해 준 것이다.
+왜 번호표를 안 만들까? <a href="CH06-L04.html">거래표</a> 그대로다 — 번호표를 유지하려면 중간에 넣고
+뺄 때마다 뒤 번호를 전부 밀고 당겨야 한다. HASHED는 <strong>그 비용을 버리는 대가로 열쇠 속도를
+산</strong> 그릇이다. 결함이 아니라 거래다.</p>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">같은 코드, 종류만 토글 — sy-tabix와 순회 순서 관찰</span><a class="embed__open" href="../../../embeds/abap/CH06-L07-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH06-L07-S01.html" loading="lazy" title="같은 코드, 종류만 토글 — sy-tabix와 순회 순서 관찰"></iframe></figure>
+</section><section class="lblock"><h2>이진 탐색 — BINARY SEARCH</h2>
+<p>STANDARD 테이블을 <strong>키로 정렬해 뒀다면</strong>, <code>READ</code>에 <code>BINARY SEARCH</code>를 붙여 이진 탐색
+(반씩 갈라 좁히기 — <a href="CH06-L04.html">종류 레슨</a>의 전화번호부)으로 찾을 수 있다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3</pre><pre class="abap-editor__code"><code><span class="tok-kw">SORT</span> gt_person <span class="tok-kw">BY</span> name.                  <span class="tok-com">" 반드시 같은 키로, 오름차순으로 먼저 정렬</span>
+<span class="tok-kw">READ</span> <span class="tok-kw">TABLE</span> gt_person <span class="tok-kw">INTO</span> gs_person
+     <span class="tok-kw">WITH</span> <span class="tok-kw">KEY</span> name = <span class="tok-str">'수지'</span> <span class="tok-kw">BINARY</span> <span class="tok-kw">SEARCH</span>.</code></pre></div></div>
+<blockquote class="cw">
+<p>⚠️ <code>BINARY SEARCH</code>는 <strong>그 키로(오름차순) 정렬돼 있어야</strong> 정확하다. 정렬 안 하고 쓰면
+<strong>있는 행도 &quot;없음&quot;</strong> (<code>sy-subrc</code> ≠ 0)으로 나온다. 반쪽을 잘라 버리는 탐색이라, 순서가
+어긋나 있으면 찾을 행이 있는 쪽을 통째로 버리기 때문이다. 아래에서 직접 실패를 목격해 보자.</p>
+</blockquote>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">정렬 없이 BINARY SEARCH — 있는 행도 못 찾는 함정</span><a class="embed__open" href="../../../embeds/abap/CH06-L07-S02.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH06-L07-S02.html" loading="lazy" title="정렬 없이 BINARY SEARCH — 있는 행도 못 찾는 함정"></iframe></figure>
+<p>한 가지 더. <a href="CH06-L05.html">L05</a>에서 &quot;실패 값은 문장에 따라 다르니 0인지로만 판정하라&quot;고
+했는데, 그 &#39;다른 값&#39;의 정체가 여기 있다. <code>BINARY SEARCH</code>로 찾다 실패하면 <code>sy-subrc</code>에
+<strong>4 또는 8</strong>이 들어온다(중간에서 못 찾으면 4, 찾다가 테이블 끝을 넘어가면 8).
+구분해서 외울 필요는 없다 — 규율은 언제나 같다. <strong>0인지로만 판정한다.</strong></p>
+</section><section class="lblock"><h2>무엇으로 찾느냐 × 어떤 그릇이냐 — 탐색 비용 한눈에</h2>
+<p>표에 들어갈 낱말 하나만 먼저 풀어 두자 — <strong>선두 일치</strong>. 키가 여러 필드일 때(구구단이라면
+<code>dan</code>+<code>mul</code>), 조건을 <strong>키의 첫 필드부터 끊김 없이</strong> 주는 것을 말한다. <code>dan</code>만 주거나
+<code>dan</code>+<code>mul</code>을 다 주면 선두 일치고, 첫 필드를 건너뛰고 <code>mul</code>만 주면 아니다. 전화번호부에서
+성(첫 글자)을 알아야 반으로 가를 수 있듯, SORTED의 자동 이진 탐색은 <strong>선두 일치일 때만</strong>
+작동한다.</p>
+<table>
+<thead>
+<tr>
+<th>찾는 방법</th>
+<th>STANDARD</th>
+<th>SORTED</th>
+<th>HASHED</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>WITH KEY</code>(키 아닌 필드)</td>
+<td>순차</td>
+<td>순차</td>
+<td>순차</td>
+</tr>
+<tr>
+<td><code>WITH KEY</code>(키 필드·선두 일치)</td>
+<td>순차</td>
+<td><strong>이진(자동)</strong></td>
+<td>순차*</td>
+</tr>
+<tr>
+<td><code>WITH TABLE KEY</code>(키 전체)</td>
+<td>순차</td>
+<td><strong>이진(자동)</strong></td>
+<td><strong>해시(최속)</strong></td>
+</tr>
+<tr>
+<td><code>WITH KEY ... BINARY SEARCH</code></td>
+<td><strong>이진(정렬 필수)</strong></td>
+<td>— (이미 자동)</td>
+<td>—</td>
+</tr>
+</tbody></table>
+<p>*HASHED는 키 <strong>전체</strong>가 정확히 일치할 때만 해시가 작동한다. 일부만 주면 훑는다.</p>
+<p>읽는 법: 같은 <code>WITH KEY</code>라도 <strong>무엇을 지정했느냐</strong>에 따라 비용이 다르다. SORTED/HASHED는
+키 조건이면 알아서 빠르고, STANDARD만 수동 처방(<code>SORT</code> + <code>BINARY SEARCH</code>)이 필요하다.</p>
+</section><section class="lblock"><h2>흔한 실수와 점검</h2>
+<ul>
+<li><strong>SORT 없이 BINARY SEARCH</strong> → 잘못된 &quot;없음&quot;. 이 함정은 에러도 안 나서 더 위험하다.</li>
+<li><strong>다른 키로 SORT 해 놓고 BINARY SEARCH</strong> → <code>SORT ... BY age</code> 후 <code>WITH KEY name = ... BINARY SEARCH</code>도 같은 함정이다. 정렬 키와 탐색 키가 <strong>같아야</strong> 한다.</li>
+<li><strong>SORTED 테이블에 SORT</strong> → 구문 오류. 애초에 항상 정렬돼 있는 그릇이다.</li>
+<li><strong>정렬 후 sy-tabix 재사용</strong> → 정렬하면 행 번호가 전부 바뀐다. 이전에 봐 둔 번호는 버린다.</li>
+</ul>
+<hr>
+<p>한 행씩은 끝났다. 이제 <strong>여러 행을 한 번에</strong> — 테이블 전체를 훑으며 일하는 법이다
+→ <a href="CH06-L08.html">LOOP</a>.</p>
+</section>
+      </article>
+      <nav class="lesson-nav" data-shell="prevnext"></nav>
+      <footer class="foot">SAP Developer Academy · 배포자 SAP전문강사 정훈영</footer>
+    </main>
+    <aside class="journey" data-shell="journey"></aside>
+  </div>
+</div>
+<div class="term-popup" data-shell="popup" hidden></div>
+<div class="tmodal" data-shell="tmodal" hidden></div>
+<script>window.__SDA__={"domain":"abap","dataBase":"../","siteRoot":"../../../"};</script>
+<script src="../../../assets/shell.js" defer></script>
+</body>
+</html>
