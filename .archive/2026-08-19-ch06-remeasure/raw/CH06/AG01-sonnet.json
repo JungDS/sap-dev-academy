@@ -1,0 +1,43 @@
+{
+  "agent": "AG01",
+  "model": "sonnet",
+  "target": "CH06",
+  "persona_ack": "저는 은서예요. 개발이나 컴퓨터공학을 배운 적 없는 24살 문과 출신이고, 이 사이트로 ABAP을 처음 배우는 중이에요. 노션·인스타는 익숙한데 모르는 단어가 나오면 그 자리에서 멈춰요. 제가 원래 알고 있을지 모르는 지식으로 빈틈을 메꾸지 않고, 딱 이 챕터 본문에 적힌 설명만 갖고 첫 레슨부터 순서대로 읽었어요.",
+  "method": "대상 챕터 레슨 15개(CH06-L01~L15) + 챕터 개요(_chapter.md)를 순서대로 정독. 코드 블록·표·콜아웃을 포함해 원문 텍스트만 확인했고, ::embed:: 로 표시된 체험 위젯이나 빌드 결과물(docs/abap 등)은 렌더링하지 않고 본문 서술만으로 판단했다. 별도 검증 도구는 쓰지 않았다.",
+  "errors": [],
+  "files_read": [
+    "content/abap/CH06/_chapter.md",
+    "content/abap/CH06/CH06-L01.md",
+    "content/abap/CH06/CH06-L02.md",
+    "content/abap/CH06/CH06-L03.md",
+    "content/abap/CH06/CH06-L04.md",
+    "content/abap/CH06/CH06-L05.md",
+    "content/abap/CH06/CH06-L06.md",
+    "content/abap/CH06/CH06-L07.md",
+    "content/abap/CH06/CH06-L08.md",
+    "content/abap/CH06/CH06-L09.md",
+    "content/abap/CH06/CH06-L10.md",
+    "content/abap/CH06/CH06-L11.md",
+    "content/abap/CH06/CH06-L12.md",
+    "content/abap/CH06/CH06-L13.md",
+    "content/abap/CH06/CH06-L14.md",
+    "content/abap/CH06/CH06-L15.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH06/CH06-L07.md",
+      "quote": "| `WITH KEY`(키 필드·선두 일치) | 순차 | **이진(자동)** | 순차* |",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "'탐색 비용 한눈에' 표에서 'WITH KEY(키 필드·선두 일치)' 행이 아무 설명 없이 등장해서, 바로 아래 'WITH TABLE KEY(키 전체)' 행과 정확히 뭐가 다른지 표만 봐서는 알 수 없었다.",
+      "evidence": "'선두 일치'라는 말이 이 챕터를 통틀어 이 표 한 칸에만 나온다. 지금까지 예제로 써 온 gt_person의 키는 name 딱 한 필드뿐이라서(L03), 'WITH KEY에 키 필드 일부만 주는 것'과 'WITH TABLE KEY로 키 전체를 주는 것'이 실제로 다르게 동작하는 장면을 코드로 본 적이 한 번도 없다. dan+mul처럼 필드 두 개짜리 키는 L03에서 '구구단이라면 dan+mul 조합이 한 줄을 식별한다'고 말로만 스쳐 지나갔지, 그 키의 일부(dan만)로 WITH KEY를 쓰면 무슨 일이 생기는지는 어디에도 안 나온다. 표 바로 아래 문장('같은 WITH KEY라도 무엇을 지정했느냐에 따라 비용이 다르다')도 총평만 줄 뿐 '선두'가 정확히 뭘 가리키는지는 안 풀어준다. 그래서 이 줄에서 멈춰서 두세 번 다시 읽었는데도 '키 필드·선두 일치'가 코드로 어떻게 생긴 상황인지 그림이 안 그려졌다.",
+      "suggestion": "dan+mul처럼 필드 두 개짜리 키 예시를 하나 넣어서, WITH KEY dan = 7.(키의 앞부분 하나만 준 경우)과 WITH TABLE KEY dan = 7 mul = 8.(키 전체를 다 준 경우)을 나란히 코드로 보여주면 이 표가 훨씬 잘 읽힐 것 같다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "비유가 정말 잘 살아있는 챕터였다. L04의 '사물함(HASHED)·전화번호부(이진 탐색 원리)', L13의 '서랍·별채·쪽지'(Flat vs Deep), L14의 '그림자 한 행'(Header Line) 같은 그림이 머릿속에 바로 그려져서 낯선 용어가 쏟아지는데도 따라가기가 수월했다. 특히 L07에서 'HASHED는 순서가 없다더니 SORT가 된다'는 모순처럼 보이는 지점을 직접 짚고 넘어가 준 게 고마웠다 — 나 혼자였으면 거기서 완전히 헤맸을 것 같다. '흔한 실수' 코너, L06·L10·L15의 '한눈에' 정리표들도 앞 내용을 되짚기 좋았다. 걸린 곳은 L07 탐색 비용 표의 '키 필드·선두 일치' 한 칸 정도였고(finding 1), 나머지는 15개 레슨을 끝까지 큰 무리 없이 읽었다."
+  }
+}
