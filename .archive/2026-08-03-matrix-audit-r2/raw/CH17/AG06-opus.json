@@ -1,0 +1,104 @@
+{
+  "agent": "AG06",
+  "model": "opus",
+  "target": "CH17",
+  "persona_ack": "20년차 SAP ABAP 아키텍트(ECC~S/4HANA 개발·운영·성능·이관 경험, 교재 기술검수 다수)로서 CH17 'Grid ALV 기초' 10개 레슨과 _chapter.md를 기술 사실·예시 적절성·위험한 생략·안티패턴 네 축으로 감사했다. 컨테이너/그리드 생성 파라미터, LVC_FIELDCATALOG_MERGE 인터페이스, set_table_for_first_display·refresh_table_display 시그니처, LVC_S_LAYO/DISVARIANT 필드, 행 색상 코드 체계(C+색번호+강조+반전)는 실제와 일치함을 확인했고, 실제로 어긋나는 지점만 보고한다.",
+  "method": "Read 도구로 대상 11개 파일 전문 통독 → 코드 스니펫별 파라미터·시그니처·제어흐름 검토 → Grep으로 인용문(quote) 원문 일치 확인. 웹 검색·외부 자료·타 감사 산출물 미사용(내 지식만 사용).",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L10.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L10.md",
+      "quote": "PERFORM build_fieldcat.",
+      "category": "사실 오류(제어 흐름) · 안티패턴",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "`FORM build_fieldcat` 안의 `RETURN`은 그 FORM만 빠져나올 뿐, 상위 `FORM build_alv`의 나머지 `PERFORM build_layout` · `PERFORM display_grid`는 그대로 실행된다. 따라서 CH17-L04가 `RETURN` 옆에 붙여 놓은 주석 '카탈로그 없이 다음 단계로 가지 않는다'는 보호가 종합 실습 골격에서는 성립하지 않는다.",
+      "evidence": "ABAP의 `RETURN`은 현재 프로세싱 블록(FORM/METHOD/MODULE) 하나만 종료한다. L10의 `build_alv`는 select→create→fieldcat→layout→display를 순차 PERFORM으로 부르므로, `LVC_FIELDCATALOG_MERGE`가 실패해 `build_fieldcat`이 조기 종료해도 곧바로 `display_grid`가 호출되어 비어 있는 `gt_fcat`으로 `set_table_for_first_display`가 실행된다. 정작 같은 레슨의 '흔한 실수와 점검'은 'merge 실패 무시 → 확인 없이 display로 넘어가는 실수'를 경고하고 있어, 본문 골격이 스스로 경고한 실수를 시연하는 모순이다.",
+      "suggestion": "성공 여부를 상위로 올리도록 고친다. 예: `build_fieldcat` 끝에 전역 플래그를 세우고(`gv_fcat_ok = abap_true.`), `FORM build_alv`에서 `PERFORM build_fieldcat. IF gv_fcat_ok <> abap_true. RETURN. ENDIF.` 로 분기. 또는 최소한 `PERFORM display_grid` 앞에 `IF gt_fcat IS INITIAL. RETURN. ENDIF.` 가드를 넣고, 'RETURN은 그 FORM만 끝낸다'는 사실을 한 줄로 명시한다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L09.md",
+      "quote": "LEFT OUTER JOIN zbooking AS b",
+      "category": "사실 오류(classic Open SQL 제약)",
+      "severity": "높음",
+      "confidence": "추정",
+      "claim": "이 LEFT OUTER JOIN의 ON 조건에 `AND b~status <> 'C'`가 들어 있다. classic Open SQL은 오랫동안 'LEFT OUTER JOIN의 ON 조건은 `=` 비교만, AND로만 연결'이라는 제약을 강제했으므로, `<>` 비교가 들어간 이 문장은 CH01~17이 표방하는 classic 구간 시스템에서 구문 검사에 걸릴 가능성이 높다.",
+      "evidence": "outer join의 ON 절 제약(등가 비교·AND 한정)은 classic Open SQL 문법 규칙으로 문서화돼 있었고, 완화는 이후 릴리스/새 SQL 구문 쪽에서 이루어졌다. 이 레슨은 `@` host variable과 콤마 목록을 CH19로 미루는 순수 classic 표기를 쓰고 있어(같은 챕터 CH17-L03이 명시), 완화된 신구문 전제가 아니다. 다만 정확한 완화 시점·릴리스 의존성은 웹 검색 없이 단정할 수 없어 confidence는 '추정'으로 둔다. 의미론적으로는 취소 예매를 제외하면서도 예매 0건 회차를 남기려는 의도가 맞으므로, 문제는 의도가 아니라 classic 문법 적합성이다.",
+      "suggestion": "SE38 구문검사로 대상 시스템에서 통과하는지 먼저 확인하고, 걸리면 classic-safe하게 두 단계로 분리한다. ① `SELECT concert_id perf_no SUM( seats ) AS booked FROM zbooking WHERE status <> 'C' GROUP BY concert_id perf_no INTO TABLE gt_booksum.` ② 회차 마스터는 `zperf INNER JOIN zconcert`로만 조회한 뒤 `LOOP AT gt_perf ... READ TABLE gt_booksum ...`으로 합계를 채운다. 입문자에게도 '조인 한 방'보다 읽기 쉽다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L10.md",
+      "quote": "CREATE OBJECT go_cont EXPORTING container_name = 'CONT100'.",
+      "category": "위험한 생략(예외 처리 규율)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "컨트롤 생성(`CL_GUI_CUSTOM_CONTAINER` · `CL_GUI_ALV_GRID`)에서 생성자의 classic EXCEPTIONS를 하나도 받지 않는다. 두 클래스의 생성자는 `cntl_error`·`cntl_system_error`·`create_error`·`lifetime_error` 등을 raise하며, `CREATE OBJECT`에 `EXCEPTIONS`가 없으면 처리되지 않은 예외가 되어 런타임 오류로 이어진다.",
+      "evidence": "CH17-L01은 '이름 불일치 → 처리되지 않은 예외로 프로그램이 중단(덤프)될 수 있다'고 서술해 놓고, 정작 예제 코드에는 예외 처리가 없다. 반면 같은 챕터의 `LVC_FIELDCATALOG_MERGE`(L04) · `set_table_for_first_display`(L07) · `refresh_table_display`(L08)는 EXCEPTIONS와 `sy-subrc`를 꼼꼼히 검사한다. 학습자는 '함수/메서드는 검사, 객체 생성은 무검사'라는 일관되지 않은 습관을 그대로 가져간다.",
+      "suggestion": "`CREATE OBJECT go_cont EXPORTING container_name = 'CONT100' EXCEPTIONS OTHERS = 1.` + `IF sy-subrc <> 0. MESSAGE ... TYPE 'S'. RETURN. ENDIF.` 로 다른 호출과 규율을 맞춘다(그리드 생성도 동일). 분량이 부담이면 L01에 '표준 클래스 생성자도 EXCEPTIONS를 받는 것이 원칙'이라는 한 줄과 실무형 예시를 접기(details)로 덧붙인다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L10.md",
+      "quote": "ls_fcat-outputlen = 8.",
+      "category": "사실 오류(설정 상호작용) · 예시 적절성",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "종합 실습 골격은 Field Catalog에 `outputlen = 8`을 주면서 Layout에는 `cwidth_opt = abap_true`(컬럼 너비 자동 최적화)를 함께 켠다. `cwidth_opt`가 켜지면 ALV Grid는 내용·헤더 길이에 맞춰 너비를 다시 계산하므로 `outputlen` 지정은 화면에 나타나지 않는다.",
+      "evidence": "CH17-L04는 `outputlen`으로 너비를 정한다고 가르치고, CH17-L05는 `cwidth_opt`로 너비를 자동 조정한다고 가르친 뒤, L10이 둘을 동시에 켠다. 게다가 L10 '완성 체크리스트'는 '모양 | zebra·title·width가 반영되는가'를 확인하라고 요구해, 학습자가 반영되지 않는 `outputlen`을 자기 코드 오류로 오해하게 만든다. 두 설정이 서로를 무력화한다는 설명은 어느 레슨에도 없다.",
+      "suggestion": "L04 또는 L05에 '`cwidth_opt`를 켜면 `outputlen`은 무시된다 — 너비를 직접 정하려면 `cwidth_opt`를 끈다'는 한 줄을 넣고, L10 골격에서는 둘 중 하나만 쓴다(권장: 자동 최적화를 쓰고 `outputlen`은 빼거나, 반대로 `cwidth_opt`를 빼고 `outputlen`으로 통제). 체크리스트의 'width' 항목도 선택한 쪽에 맞춘다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L10.md",
+      "quote": "LEAVE TO SCREEN 0.",
+      "category": "위험한 생략(컨트롤 수명주기)",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "화면을 떠나는 경로에서 그리드·컨테이너를 `free( )`로 해제하고 전역 참조를 `CLEAR`하지 않는다. Control Framework 컨트롤은 화면과 수명이 묶여 있어, 해제 없이 나갔다가 같은 internal session에서 이 화면으로 다시 들어오면 `IF go_grid IS INITIAL` 가드가 '이미 만들어졌다'고 판단해 재조립을 건너뛴다.",
+      "evidence": "`go_cont`·`go_grid`는 전역 참조이고 `MODULE user_command_0100`의 `WHEN 'BACK'`은 곧바로 `LEAVE TO SCREEN 0`만 한다. 이 화면이 트랜잭션의 최초 화면이면 세션 종료로 함께 정리되지만, `CALL SCREEN`으로 불려 돌아오는 구성에서는 참조만 살아남아 표가 안 그려지거나 CNTL 계열 오류가 날 수 있다(정확한 증상은 컨트롤의 lifetime 설정·호출 경로에 따라 달라 '추정'). SAP 표준 데모 프로그램들은 종료 경로에서 free를 호출한다.",
+      "suggestion": "`WHEN 'BACK'.` 분기를 `IF go_grid IS NOT INITIAL. CALL METHOD go_grid->free. CALL METHOD go_cont->free. CLEAR: go_grid, go_cont. ENDIF. LEAVE TO SCREEN 0.` 형태로 바꾸고, '만든 컨트롤은 화면을 떠날 때 해제한다'를 완성 체크리스트 항목으로 추가한다."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L10.md",
+      "quote": "SELECT * FROM zbooking INTO TABLE gt_booking",
+      "category": "위험한 생략(권한 검사)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "사용자가 공연번호를 입력해 예매 내역을 조회·표시하는 Dialog 프로그램인데, 챕터 전체에 `AUTHORITY-CHECK`도 '실무에서는 권한 검사가 필요하다'는 언급도 전혀 없다.",
+      "evidence": "L03과 L10의 조회는 화면 입력값(`gv_conc`)을 그대로 WHERE에 넣어 업무 데이터를 전부 화면에 뿌린다. 실무 Dialog/리포트에서는 조회 직전 권한 오브젝트 검사가 기본 규율이고, 이를 배우지 않은 채 이 골격을 실무 템플릿으로 복사하는 것이 전형적인 사고 경로다. 권한 개념 자체는 이 챕터 범위 밖일 수 있으나, 한 줄 경고조차 없는 것은 과한 생략이다.",
+      "suggestion": "권한을 정식 도입하지 않더라도 L10 '흔한 실수와 점검'에 한 줄 추가: '실무에서는 조회 전에 `AUTHORITY-CHECK`로 이 사용자가 해당 공연/조직 데이터를 볼 수 있는지 확인한다(자세한 내용은 권한 관련 챕터에서).'"
+    },
+    {
+      "seq": 7,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L03.md",
+      "quote": "MESSAGE '해당 공연의 예매 데이터가 없습니다.' TYPE 'S'.",
+      "category": "안티패턴(메시지 클래스 미사용)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "챕터의 모든 안내가 텍스트 리터럴 `MESSAGE '...' TYPE 'S'` 형태다. 리터럴 메시지는 T100 메시지 클래스에 등록되지 않아 번역·재사용·중앙 관리가 되지 않으며, 실무 코드에서는 교정 대상 습관이다.",
+      "evidence": "L03·L04·L07·L08·L10이 모두 리터럴 메시지를 쓰고, 어느 곳에도 '실무는 메시지 클래스를 쓴다'는 언급이 없다. 문법상 유효하고 입문 예제로는 편하지만, 교정 없이 다섯 레슨에 걸쳐 반복 시연되면 그대로 습관이 된다.",
+      "suggestion": "각 레슨마다 반복할 필요는 없고, L03(첫 등장)이나 L10에 한 줄 각주만 붙이면 충분하다: '실무에서는 메시지 클래스를 만들어 `MESSAGE s001(zbooking) WITH gv_conc.`처럼 쓴다 — 번역·재사용을 위해서다.'"
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "기술 사실 수준은 전반적으로 견실하다. 컨테이너 `container_name`, 그리드 `i_parent`, `LVC_FIELDCATALOG_MERGE`의 `i_structure_name`/`ct_fieldcat`/예외 3종, `set_table_for_first_display`의 EXPORTING(is_layout·is_variant·i_save)·CHANGING(it_outtab·it_fieldcatalog)·예외 4종, `refresh_table_display`의 `is_stable`·`finished` 예외, `LVC_S_LAYO`의 zebra/sel_mode/grid_title/cwidth_opt/info_fname, `DISVARIANT-report = sy-repid`, i_save='A'의 의미, 행 색상 `C`+색번호(0~7)+강조+반전 4자리와 `'C610'`=빨강 계열 해석까지 실제 인터페이스와 일치했다. PBO에서 `'E'` 메시지가 종료처럼 동작하니 `'S'`+`RETURN`을 쓰라는 서술, `info_fname`이 '색 값'이 아니라 '필드명'이라는 경고, Layout 설정 변경은 refresh로 전달되지 않는다는 단서, 전역 Variant 저장 위험 경고 등은 오히려 이 수준 교재에서 보기 드물게 정확하다. 반대로 실전에서 바로 문제가 되는 곳은 세 군데다. ① 종합 실습 골격의 `RETURN`이 FORM만 끝내므로 merge 실패 뒤에도 display가 호출되는 제어 흐름 결함(레슨이 스스로 경고한 실수를 골격이 저지름), ② L09의 LEFT OUTER JOIN ON 절에 들어간 `<>` 비교가 classic Open SQL 제약에 걸릴 소지, ③ `cwidth_opt`와 `outputlen`을 동시에 켜 놓고 '너비가 반영되는가'를 확인시키는 설정 충돌. 여기에 컨트롤 생성 시 예외 미수신, 화면 이탈 시 free 누락, 권한 검사·메시지 클래스에 대한 한 줄 언급 부재가 더해진다. 모두 국소 수정으로 해결되는 범위라 재집필은 불필요하고, 위 지점만 손보면 기술 검수 관점에서 무리 없이 통과할 수준이다."
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "agent": "AG01",
+  "model": "opus",
+  "target": "CH17",
+  "persona_ack": "나는 '은서'다. 24세 문과 출신, 개발·전공 경험이 전혀 없고 이 사이트로 ABAP을 처음 공부한다. 모르는 단어가 나오면 그 자리에서 멈춘다. CH17-L01부터 L10까지 순서대로 처음 읽는 사람으로서 통독하며, 내 바깥 지식으로 빈틈을 메우지 않고 막힌 지점만 기록했다.",
+  "method": "Read 도구로 대상 11개 파일(_chapter.md, L01~L10)을 레슨 순서대로 전문 통독. 인용문은 해당 파일의 원문 줄에서 그대로 복사. 웹 검색·외부 네트워크 미사용, 다른 감사 산출물·아카이브 미열람.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L10.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH17/CH17-L01.md",
+      "quote": "이 챕터는 객체(클래스라는 설계도로 찍어낸 **실체 하나** — `TYPE REF TO`·`CREATE OBJECT`)와 메서드 호출을 많이 쓴다.",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "[선행 사용] 콜아웃이 `TYPE REF TO`와 `CREATE OBJECT`는 비유까지 들어 친절히 풀어 주면서, 같은 문장에 나오는 '메서드'는 한 번도 풀이하지 않는다.",
+      "evidence": "이 콜아웃은 '두 낱말만 감으로 잡아 두자'라며 리모컨 비유로 참조 변수와 객체 생성을 설명한다. 그런데 정작 '메서드 호출을 많이 쓴다', '메서드를 부른다'의 메서드가 무엇인지는 이 문장에도, 이 챕터 어느 앞부분에도 없다. 나는 '객체를 만든다'는 감은 잡았는데 '부른다'가 무슨 동작인지 몰라 멈췄다. 이 낱말은 L02 이후 계속 나오고, L07에서는 실제 코드 형태로 등장해서 넘어가기가 더 어렵다.",
+      "suggestion": "같은 콜아웃에서 낱말을 셋으로 늘려 '메서드 = 그 객체가 할 줄 아는 기능(동작) 하나, 부른다 = 그 기능을 시킨다' 정도의 한 줄 풀이를 추가."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH17/CH17-L07.md",
+      "quote": "go_grid->set_table_for_first_display(",
+      "category": "단절",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "이 챕터에서 가장 중요한 코드 줄에 갑자기 `->` 기호가 나오는데, 이 기호가 무엇인지 챕터 어디에서도 설명되지 않는다.",
+      "evidence": "L01은 `TYPE REF TO`와 `CREATE OBJECT`를 일부러 [선행 사용]으로 붙잡아 설명해 줬다. 그래서 나는 '이 챕터는 낯선 문법을 그때그때 알려 주는구나'라고 믿고 읽었다. 그런데 L07에서 처음 보는 `->`가 아무 안내 없이 나온다. `go_grid`는 리모컨이라고 배웠으니 `->`가 '이 리모컨의 버튼을 누른다'는 뜻이겠거니 짐작만 할 뿐 확신이 없다. L08의 `go_grid->refresh_table_display( )`, L10의 코드에서도 계속 나와서 짐작한 채로 끝까지 간다.",
+      "suggestion": "L07의 코드 바로 아래(또는 L01 [선행 사용] 콜아웃 안)에 '`->`는 참조 변수가 가리키는 객체에게 그 기능을 시키라는 표시' 정도의 한 줄을 넣는다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH17/CH17-L04.md",
+      "quote": "    inconsistent_interface = 1",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "`EXCEPTIONS` 블록의 이름 = 숫자 목록이 아무 설명 없이 나오고, 그 숫자가 바로 다음 줄 `sy-subrc`와 어떻게 이어지는지도 말해 주지 않는다.",
+      "evidence": "`inconsistent_interface = 1`, `program_error = 2`, `OTHERS = 3`을 보고 '이 1, 2, 3은 내가 정하는 건가? 정해진 건가?'에서 멈췄다. 바로 아래 `IF sy-subrc <> 0.`이 나오지만, 앞의 숫자들이 sy-subrc에 들어가는 값이라는 연결 고리는 본문에 한 글자도 없다. L07의 `EXCEPTIONS invalid_parameter_combination = 1 ...`, L10의 `EXCEPTIONS OTHERS = 1`에서도 같은 형태가 반복되는데, L10은 아예 이름 없이 `OTHERS`만 남아 있어서 '앞에서 쓰던 것들은 어디 갔지?'라고 또 걸린다.",
+      "suggestion": "L04 코드 아래에 '이 이름들은 실패 상황의 이름이고, 붙인 숫자가 실패 시 `sy-subrc`에 담긴다. 0이 아니면 실패' 한두 줄을 추가하고, L10에서 `OTHERS`만 남긴 이유(예제 축약)를 주석으로 밝힌다."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH17/CH17-L09.md",
+      "quote": "SELECT pf~concert_id pf~perf_no pf~perf_date c~capacity",
+      "category": "과부하",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'행에 색 입히기'를 배우러 들어온 레슨의 첫 코드 블록에 로컬 TYPES 구조 정의, 세 테이블 조인, 합계, 그룹핑이 한꺼번에 쏟아진다.",
+      "evidence": "이 레슨의 주제는 색 코드 컬럼과 `info_fname` 두 가지인데, 그걸 만나기 전에 `TYPES: BEGIN OF ts_perf_alv ... END OF`(새 행 타입 만들기), 처음 보는 테이블 `zperf`·`zconcert`, `INNER JOIN`/`LEFT OUTER JOIN`, `SUM( b~seats ) AS booked`, `INTO CORRESPONDING FIELDS OF TABLE`, `GROUP BY`가 한 화면에 들어 있다. '앞 실습에서 만든 집계를 그대로 가져온다'고 쓰여 있지만 코드는 그대로 다시 다 적혀 있어서, 나는 색 이야기에 닿기 전에 조인 코드를 해독하느라 지쳤다. 실제로 색과 관련된 줄은 `rowcolor` 한 칸, LOOP 안 세 줄, `info_fname` 한 줄뿐이다.",
+      "suggestion": "집계 SELECT는 접기(details)로 내리거나 '이미 이런 표가 만들어져 있다'는 결과 표 그림으로 대체하고, 본문 코드는 rowcolor 칸 + LOOP + info_fname만 남긴다."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH17/CH17-L10.md",
+      "quote": "    \" PBO 경로라 'E' 대신 'S' + RETURN — 이유는 CH17-L07 참고",
+      "category": "멈춘 곳",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L04에서 `RETURN`은 '카탈로그 없이 다음 단계로 가지 않는다'고 배웠는데, L10 골격에서는 `RETURN`을 해도 `build_alv`가 그 다음 `PERFORM build_layout`·`PERFORM display_grid`를 그대로 이어서 실행한다. 배운 약속과 보이는 코드가 어긋난다.",
+      "evidence": "L04에서 `RETURN.`에 '카탈로그 없이 다음 단계로 가지 않는다'는 주석이 붙어 있어서 나는 RETURN을 '여기서 전부 멈춤'으로 이해했다. 그런데 L10에서 그 RETURN은 `FORM build_fieldcat` 안에 있고, 그 FORM을 부른 `FORM build_alv`는 `PERFORM build_fieldcat` 다음 줄에 `PERFORM build_layout`, `PERFORM display_grid`를 조건 없이 나열하고 있다. 그러면 카탈로그 만들기가 실패해도 결국 표를 그리러 가는 것 아닌가? 게다가 이 레슨의 흔한 실수에는 '`merge` 실패 무시 → 확인 없이 display로 넘어가는 실수'가 적혀 있어서, 예시 코드가 스스로 지적한 실수를 하고 있는 것처럼 보인다. 여기서 어느 쪽이 맞는지 몰라 멈췄다.",
+      "suggestion": "`build_alv`에서 실패 여부를 되돌려 받아 실패 시 뒤 단계를 건너뛰게 하거나(예: 실패 깃발 변수 확인 후 `PERFORM display_grid`), 최소한 'RETURN은 그 FORM만 빠져나온다'는 한 줄을 달아 L04의 문장과 어긋나지 않게 정리한다."
+    },
+    {
+      "seq": 6,
+      "file": "content/abap/CH17/CH17-L02.md",
+      "quote": "SALV도 컨테이너를 지정해 화면 안에 넣을 수는 있다.",
+      "category": "멈춘 곳",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "챕터가 내내 밀고 온 불편('SALV는 전체 화면을 통째로 차지한다')이 두 번째 레슨에서 사실이 아니라고 뒤집혀, 이 챕터를 배우는 이유가 잠깐 흔들린다.",
+      "evidence": "챕터 소개와 L01 도입이 모두 'SALV는 전체 화면을 차지해서 화면 안 한 영역에 못 넣는다'는 불편으로 시작한다. 나는 그 불편 때문에 컨테이너를 배우기 시작했는데, L02에서 'SALV도 컨테이너를 지정해 화면 안에 넣을 수는 있다'를 읽고 '그럼 아까 그 이유는 뭐였지?'라며 되돌아가 다시 읽었다. 바로 뒤 문장이 진짜 차이는 편집·이벤트 제어 폭이라고 정정해 주긴 하지만, 정정이 챕터 도입이 아니라 두 레슨 뒤에 와서 앞서 세운 동기가 한 번 무너진 뒤다.",
+      "suggestion": "챕터 intro와 L01 도입의 불편을 '전체 화면을 차지한다'가 아니라 '세밀한 제어(색·이벤트·편집)가 막힌다' 쪽으로 살짝 옮기고, L02의 정정 문장은 확인용으로 남긴다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "부품이 많은 주제인데도 L01의 '방을 잡고 → 표를 놓고 → 자료를 얹고 → 그려라' 비유와 9단계 조립 표가 지도 역할을 해 줘서, 레슨마다 '지금 내가 어느 조각을 하고 있는지'를 놓치지 않았다. 특히 L08의 '왼쪽은 내부 테이블, 오른쪽은 화면'이라는 좌우 비교와 L01의 `CONT100`/`go_cont`/`CL_GUI_CUSTOM_CONTAINER` 세 이름 구분 표는 처음 읽는 사람에게 가장 잘 읽힌 장치였다. 막힌 곳은 대부분 객체 용어의 마무리 부족(메서드, `->`)과 코드 곁가지(EXCEPTIONS 숫자)였고, 후반부에서는 L09의 집계 SELECT 과부하와 L10의 RETURN 흐름이 걸렸다. 통째로 다시 쓸 정도는 아니고, 한 줄 풀이 추가와 코드 접기·흐름 정리 수준의 손질이면 따라갈 수 있다."
+  }
+}

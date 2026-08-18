@@ -1,0 +1,102 @@
+{
+  "agent": "AG05",
+  "model": "opus",
+  "target": "CH19",
+  "persona_ack": "나는 20년차 학습 교재·코스 설계 전문가로서 CH19(New Open SQL / Modern ABAP SQL)를 교수설계 관점에서 감사했다. 챕터 구성(레슨 분할·순서), 섹션 흐름(왜→무엇→어떻게→주의→정리), 복습·예습 장치, 불편→해결 서사의 진정성, 인지 부하 다섯 축으로만 판단했고 문법 정오·사실검증은 다른 발견자 몫으로 남겼다. 형식 5단계를 기계적으로 강요하지 않고, 학습 효과를 실제로 해치는 구조 문제만 골랐다.",
+  "method": "Read 도구로 대상 9개 파일(_chapter.md + CH19-L01~L08) 전문을 정독. front-matter(introduces/prereq/prevRel)와 본문 섹션 구조·코드 예제 등장 순서를 레슨 간 교차 대조. 외부 네트워크·다른 감사 산출물 미열람.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L08.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH19/CH19-L01.md",
+      "quote": "[지난 챕터](CH18-L01.html)에서 ABAP 코드는 모던으로 바꿨지만, **`SELECT`(Open SQL)**만은 일부러 classic으로 뒀다(공백 구분·`@` 없음). 이유가 있다.",
+      "category": "불편→해결 서사(동기 설계)",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "챕터 도입부의 '불편'이 학습자가 겪은 고통이 아니라 집필자의 편집 의도 설명('일부러 classic으로 뒀다')에서 출발한다. classic SQL 때문에 실제로 틀린 결과나 오류를 만난 장면이 챕터 전체에 한 번도 제시되지 않아, 모던 SQL을 배울 동기가 '경계가 안 보인다'는 추상 서술에만 기대고 있다.",
+      "evidence": "L01은 '경계를 다시 긋는 일'·'멋이 아니라 경계 표시'로 필요성을 설명하고, L02도 '읽는 사람에게는 lv_ 같은 이름 규칙이 거의 유일한 단서였다'는 가독성 논거에 머문다. 반면 CH19 어디에도 classic 표기 때문에 조회가 잘못되거나 컴파일에서 못 잡힌 구체 사례(예: ABAP 변수 이름이 DB 컬럼명과 겹쳐 엉뚱하게 필터되는 상황)가 없다. 도입부 불편을 체감시키는 것이 이 커리큘럼의 기본 서사인데(불편 먼저→해결책으로 개념 도입), 이 챕터는 그 첫 단추가 선언형이다.",
+      "suggestion": "L01 도입에 3~5줄짜리 실패 장면을 넣는다. 예: classic에서 변수명이 컬럼명과 겹쳐 WHERE가 '컬럼 대 컬럼' 비교로 해석되어 결과가 이상해진 짧은 사례를 보여 주고, 같은 조회를 @로 표기하면 그 모호함 자체가 사라진다는 순서로 전환. 편집 의도('일부러 뒀다')는 그 뒤 보조 문장으로 내린다."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH19/CH19-L02.md",
+      "quote": "INTO TABLE @DATA(lt_large).",
+      "category": "인지 부하 · 선행 사용",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L02는 아직 배우지 않은 `@DATA( )` 인라인 target을 예제 3개 모두에서 쓰는데, 안내는 첫 예제 주석 1회('결과 인라인 선언 — 다음 레슨에서 정식으로')뿐이다. 뒤 예제(`@DATA(lt_flight)`·`@DATA(lt_large)`)에는 표기가 없어, 학습자는 이번 레슨의 주제(@ host variable/host expression)와 아직 안 배운 문법을 동시에 붙들게 된다.",
+      "evidence": "L02 본문 코드블록 3개가 각각 `INTO TABLE @DATA(lt_flight)`(두 번)·`INTO TABLE @DATA(lt_large)`로 끝나며, 안내 주석은 첫 블록 한 곳에만 있다. front-matter의 introduces는 '@ Host Variable'·'@( ) Host Expression' 둘뿐이고 advanceUse 선언도 없다. 정식 도입은 L03(INTO TABLE @DATA(...) Inline Target)이다.",
+      "suggestion": "둘 중 하나. ① L02 예제의 target을 이미 배운 방식(`DATA lt_flight TYPE TABLE OF sflight.` 선언 후 `INTO TABLE @lt_flight`)으로 바꿔 이번 레슨의 신규 요소를 @ 하나로 좁힌다. ② 그대로 두려면 첫 등장 자리에 [선행 사용] 라벨을 붙이고 front-matter에 advanceUse를 선언한다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH19/CH19-L07.md",
+      "quote": "데이터 접근(읽기·가공)은 이제 현대적이다. 다만 여러 조회 결과를 묶거나 순위를 매기는 **더 복잡한 조회**는 아직 미뤄 뒀다. 바로 다음 [고급 SQL](CH20-L01.html)에서 회수한다.",
+      "category": "챕터 구성(순서)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "챕터 마무리 레슨(L07 '정리 — 다음 단계로')이 실습 레슨(L08)보다 앞에 놓여, 챕터 종료 선언과 다음 챕터 핸드오프가 실습 전에 나온다. 그 결과 챕터가 두 번 닫히고(L07 끝·L08 끝), 학습자는 '끝났다'는 신호를 받은 뒤 다시 실습으로 돌아가야 한다.",
+      "evidence": "L07은 '여기까지의 ABAP SQL' 요약 → 선택 기준 표 → '다음은 — 더 복잡한 조회, 그다음 구조화' 절에서 CH20·CH23·CH21 세 챕터를 한꺼번에 예고한 뒤, 마지막 줄에서야 실습(L08)으로 되돌린다. L08도 마지막에 다시 CH20-L01로 연결한다. 예고가 1~2문장 수준을 넘어 세 챕터의 역할까지 서술되는 것도 실습 직전 위치에서는 부담이다.",
+      "suggestion": "L08(실습)을 L07 앞에 두어 '요약·선택 기준·다음 챕터 예고'가 챕터의 마지막이 되게 순서를 바꾸거나, 순서를 유지하려면 L07의 '다음은' 절에서 CH20·CH23·CH21 예고를 걷어내고(그 내용은 L08 말미로 이동) L07은 '정리 + 실습으로 확인'까지만 담게 축소한다."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH19/CH19-L06.md",
+      "quote": "TYPES tt_flight TYPE STANDARD TABLE OF ts_flight WITH EMPTY KEY.",
+      "category": "인지 부하 · 복습 장치",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "이 레슨의 신규 개념은 사실상 한 줄(`FROM @lt_flight AS f`)인데, 그 앞의 준비 코드가 구조체 TYPES·테이블 타입·WITH EMPTY KEY·VALUE 생성자·3행 리터럴을 한 블록에 몰아 놓고 '지금까지 배운 TYPES·VALUE'라는 한 마디로만 상기시킨다. 본론보다 준비물이 무거워 인지 부하의 중심이 엉뚱한 곳에 실린다.",
+      "evidence": "L06 첫 코드블록은 `TYPES: BEGIN OF ts_flight … END OF ts_flight.` + `TYPES tt_flight TYPE STANDARD TABLE OF ts_flight WITH EMPTY KEY.` + `DATA(lt_flight) = VALUE tt_flight( … )` 3연타이며 줄별 설명이 없다. 특히 `WITH EMPTY KEY`는 L03에서 개념(“Standard Table · Empty Key”)만 콜아웃으로 스쳤을 뿐, 이 선언 문법으로 쓰이는 것은 여기가 처음이다.",
+      "suggestion": "준비 코드에 한 줄짜리 주석 리마인드를 붙이거나(무엇이 이미 배운 것인지 표시), 준비 블록을 details로 접고 본문은 '이런 3행짜리 표가 이미 메모리에 있다고 하자' + 조회 코드로 시작해 학습자의 주의를 `FROM @itab`에 모은다."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH19/CH19-L05.md",
+      "quote": "modern SQL은 문자열·날짜용 함수도 제공한다.",
+      "category": "섹션 흐름(왜 필요한가 결손)",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "L05의 도입이 '기능이 있다'는 카탈로그형 선언이라, 앞 레슨(L04)이 이미 세운 'DB에 계산을 시킨다'는 논거 외에 이 레슨만의 필요성이 없다. 필요성 문장도 '자연스러울 때가 있다'로 약하게 닫혀 동기가 서지 않는다.",
+      "evidence": "L04는 '왜 — DB에 계산을 시킨다'로 ABAP LOOP 대비 이득을 세우고 시작하는 반면, L05는 같은 논거를 재사용하며 CONCAT·SUBSTRING·UPPER·LENGTH·DATS_ADD_DAYS·DATS_DAYS_BETWEEN을 나열한다. front-matter의 introduces도 'SQL 문자열 함수'·'SQL 날짜 함수'라는 범주명뿐이다.",
+      "suggestion": "L05 도입을 구체 요구로 바꾼다. 예: 결과 목록에 '노선 코드(LH0400)'와 '출발까지 남은 일수'를 붙여야 하는데 ABAP LOOP로 만들면 코드가 어떻게 늘어나는지 한 컷 보여 준 뒤 SQL 함수로 대체하는 순서. 그러면 L04와 다른, 이 레슨만의 불편이 생긴다."
+    },
+    {
+      "seq": 6,
+      "file": "content/abap/CH19/CH19-L02.md",
+      "quote": "classic에서도 컴파일러는 선언을 보고 변수를 알아봤다. 하지만 **읽는 사람**에게는 `lv_` 같은 이름 규칙이 거의 유일한 단서였다.",
+      "category": "챕터 구성(레슨 분할·중복)",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "L01의 '어느 이름이 DB 것이고, 어느 게 ABAP 것인가' 절과 L02의 '왜' + '@ Host Variable' 절이 같은 설명(@ = ABAP 값 경계 표시, 컬럼엔 안 붙임)을 거의 같은 깊이로 두 번 한다. L02의 진짜 신규 가치는 host expression `@( )`인데, 중복 설명이 그 앞에 길게 놓여 레슨의 초점이 늦게 잡힌다.",
+      "evidence": "L01 표('carrid = DB 컬럼 / @lv_carr = ABAP 변수 값')와 '흔한 실수' 항목('DB 컬럼에 @를 붙임', '@ 빠뜨림')이, L02의 '@ Host Variable' 절과 '흔한 실수'('컬럼에 @', '리터럴에 @')에서 사실상 반복된다. 두 레슨의 예제도 동일한 sflight/carrid/@lv_carr 조합이다.",
+      "suggestion": "L01은 '셋이 달라졌다'는 한눈 비교와 경계 표시의 존재까지만 남기고, @의 정의(escape·operand)·타입 규율·host expression은 L02가 독점하도록 역할을 나눈다. 반대로 L02의 도입은 짧게 하고 `@( )` 절을 앞으로 당긴다."
+    },
+    {
+      "seq": 7,
+      "file": "content/abap/CH19/CH19-L07.md",
+      "quote": "prevRel: next-step",
+      "category": "메타 선언(레슨 관계)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L07·L08의 front-matter `prevRel` 값이 `next-step`인데, 프로젝트 규칙(R10)이 정의한 값은 `pain-solution`/`parallel`/`deepening` 세 가지뿐이다. 레슨 간 관계 선언이 정적 점검의 근거로 쓰이는 메타인데 미정의 값이 들어가 게이팅·관계 검증에서 분류되지 않는다.",
+      "evidence": "CH19-L07.md 9행과 CH19-L08.md 9행이 모두 `prevRel: next-step`. 같은 챕터의 L01은 `pain-solution`, L02~L06은 `deepening`으로 정의된 값을 쓰고 있어 두 레슨만 예외다.",
+      "suggestion": "정의된 값으로 교체하거나(정리·실습은 앞 레슨의 심화가 아니므로 `parallel`이 가장 가깝다), `next-step`을 정식 값으로 쓸 것이라면 04_CONVENTIONS R10의 열거에 추가해 규칙과 데이터를 일치시킨다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH19는 교수설계상 뼈대가 튼튼하다. L01 한눈 비교 → L02 경계(@) → L03 결과 그릇(@DATA) → L04·L05 DB 계산 → L06 소스 확장(@itab) → L07 선택 기준 → L08 콘서트앱 실습으로 이어지는 계단이 자연스럽고, 각 레슨이 '흔한 실수와 점검'과 관찰 지점(sy-subrc·sy-dbcnt)을 일관되게 유지해 확인 습관이 챕터 내내 반복 강화된다. 복습 장치도 대체로 좋다 — LEFT OUTER JOIN의 null(L04), GROUP BY·SUM(L06), so_conc range table(L08)을 링크와 한 줄 상기로 되살리고, L05의 'SQL SUBSTRING은 1부터, ABAP off는 0부터' 대조는 혼동 지점을 정면으로 처리한 모범 사례다. L08 실습은 샘플 데이터·기대 결과표·자기점검 질문까지 갖춰 검증 가능한 실습으로 잘 닫힌다. 개선이 필요한 곳은 네 가지다. ① 챕터의 출발점인 '불편'이 학습자 체감 실패가 아니라 집필 의도 설명이라 동기가 약하다(F1). ② 정리 레슨(L07)이 실습(L08)보다 앞서 있어 챕터가 두 번 닫히고, 실습 직전에 다음 세 챕터 예고가 먼저 나온다(F3). ③ L02가 아직 안 배운 @DATA( )를 예제 전반에 쓰면서 안내는 1회뿐이고(F2), L06은 본론(FROM @itab 한 줄)보다 준비 코드가 무겁다(F4). ④ L05는 독립된 필요성 없이 L04의 연장으로 시작하고(F5), L01↔L02 사이에 @ 설명 중복이 있다(F6). 모두 국소 편집으로 해소 가능한 수준이며 재집필이 필요한 구조적 붕괴는 없다."
+  }
+}

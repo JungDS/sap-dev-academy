@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- CH17-L10-S01 — 엔진: gui-alv-grid-simulator · 자체 postHeight. 콘텐츠=레슨 전용(종합 실습 예매목록 Grid ALV, #C17-1).
-     게이팅: CL_GUI_ALV_GRID·classic. 전체 골격(PBO 분기→FORM 조립→display→PAI [조회]→깃발→다음 PBO refresh 분기). -->
+     게이팅: CL_GUI_ALV_GRID·classic. 전체 골격(PBO 분기→FORM 조립(실패 깃발 gv_error로 중단)→display→PAI [조회]→깃발→다음 PBO refresh 분기). -->
 <html lang="ko" data-eng="gui-alv-grid-simulator">
 <head>
 <meta charset="utf-8" />
@@ -73,6 +73,7 @@ window.ALVG_CFG = {
       "      gs_variant TYPE disvariant,",
       "      gv_conc    TYPE zbooking-concert_id,",
       "      gv_refresh TYPE abap_bool,",
+      "      gv_error   TYPE abap_bool,   \" 조립 실패 깃발",
       "      ok_code    TYPE sy-ucomm,",
       "      save_ok    TYPE sy-ucomm.",
       "",
@@ -84,11 +85,15 @@ window.ALVG_CFG = {
       "    CLEAR gv_refresh.",
       "  ENDIF.",
       "ENDMODULE." ]},
-    {n:2, nm:'build_alv', sub:'책임을 FORM으로', code:[
+    {n:2, nm:'build_alv', sub:'책임을 FORM으로 · 실패 시 중단', code:[
       "FORM build_alv.",
+      "  CLEAR gv_error.",
       "  PERFORM select_booking.   \" 1. 데이터",
       "  PERFORM create_grid.      \" 2. 컨테이너+그리드",
       "  PERFORM build_fieldcat.   \" 3. 컬럼 설명서",
+      "  IF gv_error = abap_true.  \" 실패 → 조립 중단",
+      "    RETURN.",
+      "  ENDIF.",
       "  PERFORM build_layout.     \" 4. 모양 + variant",
       "  PERFORM display_grid.     \" 5. 처음 띄우기",
       "ENDFORM." ]},
@@ -104,11 +109,17 @@ window.ALVG_CFG = {
       "  CREATE OBJECT go_grid",
       "    EXPORTING i_parent = go_cont.",
       "ENDFORM." ]},
-    {n:4, nm:'fieldcat + layout', sub:'MERGE · zebra · variant', code:[
+    {n:4, nm:'fieldcat + layout', sub:'MERGE·실패 깃발 · zebra · variant', code:[
       "FORM build_fieldcat.",
       "  CALL FUNCTION 'LVC_FIELDCATALOG_MERGE'",
       "    EXPORTING i_structure_name = 'ZBOOKING'",
-      "    CHANGING  ct_fieldcat      = gt_fcat.",
+      "    CHANGING  ct_fieldcat      = gt_fcat",
+      "    EXCEPTIONS OTHERS          = 1.",
+      "  IF sy-subrc <> 0.",
+      "    \" RETURN은 이 FORM만 끝낸다 — 깃발로 호출자에 알림",
+      "    gv_error = abap_true.",
+      "    RETURN.",
+      "  ENDIF.",
       "ENDFORM.",
       "",
       "FORM build_layout.",

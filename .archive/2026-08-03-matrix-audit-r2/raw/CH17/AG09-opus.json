@@ -1,0 +1,49 @@
+{
+  "agent": "AG09",
+  "model": "opus",
+  "target": "CH17",
+  "persona_ack": "나는 AG09 — ABAP 정적 검사기를 시늉하는 코드 전용 감사자다. 산문·교수법·시각화는 판단 대상에서 제외하고 ```abap 코드 블록만 줄 단위로 본다. 활성화 차단급 결함(미선언·마침표·타입·시그니처), 네이밍 규약(g/l 스코프 접두어·ty_/ts_/tt_·pa_/so_), 경계 규약(CH01~17 classic·New Open SQL 금지), 주석/출력 문자열의 명백한 오류만 보고한다. 실행 환경이 없으므로 컴파일 확신이 아닌 정적 판단이며, 릴리스 의존적 판단은 confidence=\"추정\"으로 낮춘다. 억지 발견은 하지 않는다.",
+  "method": "Read 도구로 대상 11개 파일(_chapter.md + L01~L10) 전문을 읽고, 그 안의 ```abap 펜스 블록 15개만 줄 단위로 정적 검토했다. 점검 항목: (1) 선언 유무·문장 마침표·괄호 균형, (2) SAP 표준 객체 시그니처 대조 — CL_GUI_CUSTOM_CONTAINER(container_name), CL_GUI_ALV_GRID(i_parent), set_table_for_first_display(EXPORTING is_layout/is_variant/i_save, CHANGING it_outtab/it_fieldcatalog, EXCEPTIONS invalid_parameter_combination/program_error/too_many_lines), refresh_table_display(is_stable, EXCEPTIONS finished), LVC_FIELDCATALOG_MERGE(i_structure_name/ct_fieldcat, EXCEPTIONS inconsistent_interface/program_error), 구조 필드 LVC_S_LAYO(zebra/sel_mode/grid_title/cwidth_opt/info_fname)·LVC_S_FCAT(fieldname/coltext/outputlen)·LVC_S_STBL(row/col)·DISVARIANT(report), (3) modern 문법 스캔(인라인 DATA()·VALUE·NEW·+=·|…| 0건)·New Open SQL 스캔(@·콤마 필드목록 0건), (4) 접두어 스캔(전역 gv_/gs_/gt_/go_, FORM 내부 ls_, TYPES ts_, 관례명 ok_code/save_ok). 실행·컴파일 환경 없음(정적 판단).",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L10.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH17/CH17-L09.md",
+      "quote": "  LEFT OUTER JOIN zbooking AS b\n    ON  b~concert_id = pf~concert_id\n    AND b~perf_no    = pf~perf_no\n    AND b~status     <> 'C'",
+      "category": "문법제약(classic Open SQL)",
+      "severity": "높음",
+      "confidence": "추정",
+      "claim": "LEFT OUTER JOIN의 ON 조건에 `<>` 비교와 리터럴('C') 비교를 썼다. classic Open SQL(CH17 구간의 문법 기준)에서 outer join의 ON 조건은 논리연산자 AND와 비교연산자 = 만 허용하고, 리터럴 비교도 제한되므로 구문 오류(활성화 차단)가 날 수 있다.",
+      "evidence": "classic Open SQL(7.40 이전 기준) JOIN 규칙: LEFT OUTER JOIN의 ON 조건은 AND만·비교는 =만 허용하며, 각 비교는 오른쪽 테이블의 컬럼을 포함해야 한다. 여기서 `AND b~status <> 'C'`는 (a) 비교연산자가 `<>`이고 (b) 오른쪽 테이블 컬럼과 리터럴의 비교라 두 제약에 동시에 걸린다. 같은 조건을 WHERE로 옮기면 의미가 바뀌므로(예약 0건 회차가 결과에서 사라짐) 단순 이동도 불가. 앞선 INNER JOIN의 ON(`c~concert_id = pf~concert_id`)은 제약 대상이 아니라 문제없다. 다만 7.50+ 커널에서는 outer join ON 제약이 완화되어 통과할 수 있어 릴리스 의존적 — confidence는 '추정'.",
+      "suggestion": "취소 예매 제외를 ON에서 빼고 (1) 취소 제외 집계를 서브셀렉트/별도 SELECT로 분리해 합치거나, (2) 정원 대비 예약합계를 `SELECT ... FROM zbooking WHERE status <> 'C' GROUP BY ...`로 먼저 구한 뒤 회차 목록과 LOOP에서 결합하는 형태로 바꾼다. classic 제약 안에서 표현이 어려우면 매진 판정 예제를 '취소 제외' 없이 단순화하고, 취소 제외 조건은 New Open SQL 도입(CH19) 이후 심화로 미룬다."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH17/CH17-L10.md",
+      "quote": "  PERFORM build_fieldcat.     \" 3. 컬럼 설명서\n  PERFORM build_layout.       \" 4. 표 모양 + variant\n  PERFORM display_grid.       \" 5. 처음 띄우기",
+      "category": "논리결함(제어흐름)·주석/본문 불일치",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "`FORM build_fieldcat` 안의 `RETURN.`은 그 FORM만 빠져나올 뿐 호출자 `build_alv`의 이후 PERFORM(build_layout·display_grid)을 막지 못한다. 결과적으로 Field Catalog merge가 실패해도 빈 `gt_fcat`으로 `set_table_for_first_display`가 그대로 호출된다 — 코드가 스스로 명시한 의도와 반대다.",
+      "evidence": "ABAP에서 FORM 안의 RETURN은 해당 서브루틴만 종료하고 호출 지점 다음 문장으로 복귀한다. 같은 파일 `FORM build_alv`는 build_fieldcat 호출 뒤 build_layout·display_grid를 무조건 이어 부른다. 그런데 CH17-L04의 동일 코드에는 `RETURN.` 옆에 \"카탈로그 없이 다음 단계로 가지 않는다\"는 주석이 붙어 있고, CH17-L10의 '흔한 실수' 항목도 \"merge 실패 무시 → …확인 없이 display로 넘어가는 실수\"를 경고한다. 즉 골격 코드가 자기가 경고한 실수를 그대로 저지르는 상태다.",
+      "suggestion": "실패를 호출자에 전달하도록 바꾼다. 예: `FORM build_fieldcat` 실패 시 전역 깃발(예 `gv_fcat_ok`)을 CLEAR하고, `build_alv`에서 `PERFORM build_fieldcat. IF gv_fcat_ok IS INITIAL. EXIT. ENDIF.` 처럼 파이프라인을 끊는다(FORM 파라미터 반환값을 아직 안 배웠다면 전역 깃발이 CH17 시점 문법 안에서 안전). 또는 CH17-L04 주석을 \"이 처리를 중단한다\" 수준으로 정정하고 L10 골격에도 실제 중단 로직을 넣는다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH17 코드 블록 15개를 정적 검토했다. 전반적으로 문법 품질이 높다. (1) 경계 규약: 인라인 DATA()·VALUE·NEW·+=·|…| 0건, New Open SQL(@·콤마 필드목록) 0건 — CH01~17 classic 구간 규율을 지켰다. CREATE OBJECT·CALL FUNCTION·classic SELECT 일관 사용. (2) 네이밍: 전역 스코프의 gv_conc/gv_refresh·gs_layout/gs_variant/gs_fcat/gs_stable/gs_perf·gt_booking/gt_fcat/gt_perf·go_cont/go_grid, FORM 내부 로컬만 ls_fcat/ls_stable, 로컬 구조 타입 ts_perf_alv, 관례명 ok_code/save_ok 유지 — R11 규약과 전부 일치, 위반 0건. (3) 시그니처: CL_GUI_CUSTOM_CONTAINER(container_name), CL_GUI_ALV_GRID(i_parent), set_table_for_first_display의 EXPORTING/CHANGING 분배와 예외 3종, refresh_table_display(is_stable·finished), LVC_FIELDCATALOG_MERGE(i_structure_name/ct_fieldcat + 예외 3종), LVC_S_LAYO/LVC_S_FCAT/LVC_S_STBL/DISVARIANT 필드명 모두 실제 표준과 부합. 문장 마침표 누락·괄호 불균형·미선언(레슨 간 이어지는 발췌 특성 제외) 없음. 결함은 2건 — CH17-L09의 LEFT OUTER JOIN ON 절에 classic이 허용하지 않는 `<>`·리터럴 비교(높음/추정, 릴리스 의존), CH17-L10 종합 골격에서 FORM 안 RETURN이 조립 파이프라인을 끊지 못해 merge 실패 시 빈 fieldcat으로 display까지 진행되는 제어흐름 결함(중간/확실, 자기 주석과 모순). 두 지점만 손보면 코드 측면은 유지 가능한 수준이다."
+  }
+}

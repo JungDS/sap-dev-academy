@@ -1,0 +1,36 @@
+{
+  "agent": "AG06",
+  "model": "sonnet",
+  "target": "CH19",
+  "persona_ack": "20년차 SAP ABAP 아키텍트로서 CH19(New Open SQL / Modern ABAP SQL) 8개 레슨과 챕터 개요를 문법·표준예제·안전성 관점에서 감사했다.",
+  "method": "대상 9개 파일 전문 정독. 코드 스니펫을 ABAP SQL 공식 문법(호스트 변수·호스트 표현식·strict mode·CAST/COALESCE/SQL 함수·SELECT FROM @itab)과 대조하고, 각 레슨이 스스로 명시한 원칙(예: L01의 'SELECT *' 경계)이 뒤 레슨 예제와 일관되는지 교차 확인했다. 웹 검색·외부 도구 미사용, 기억 기반 판단.",
+  "errors": [],
+  "files_read": [
+    "content/abap/CH19/_chapter.md",
+    "content/abap/CH19/CH19-L01.md",
+    "content/abap/CH19/CH19-L02.md",
+    "content/abap/CH19/CH19-L03.md",
+    "content/abap/CH19/CH19-L04.md",
+    "content/abap/CH19/CH19-L05.md",
+    "content/abap/CH19/CH19-L06.md",
+    "content/abap/CH19/CH19-L07.md",
+    "content/abap/CH19/CH19-L08.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH19-L08.md",
+      "quote": "SELECT * FROM zbooking\n  WHERE concert_id IN @so_conc\n  INTO TABLE @DATA(lt_book).",
+      "category": "예시 적절성",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L01의 '흔한 실수' 목록에서 '무심한 SELECT *'를 명시적으로 경계했는데, 바로 이 실습(L08)의 첫 기본 조회 예제가 아무 캐비어 없이 zbooking 전체 컬럼을 SELECT *로 가져온다. 게다가 이렇게 만든 lt_book은 L08 나머지 내용(결과 검증·LOOP 출력)에서 전혀 다시 쓰이지 않는다 — ②의 lt_stat만 이후에 쓰인다.",
+      "evidence": "CH19-L01.md 흔한 실수 목록: '무심한 SELECT * → 필요한 컬럼만 읽는 원칙은 모던에서도 그대로다.' 반면 CH19-L08.md ①의 classic/modern 예제는 둘 다 'SELECT * FROM zbooking'이고, 이 lt_book은 이후 결과 검증 표·LOOP·자기점검 질문 어디에도 등장하지 않는다(등장하는 건 ②에서 만든 lt_stat뿐).",
+      "suggestion": "① 예제를 zbooking에서 실제 필요한 컬럼(concert_id, seats, status 등)만 콤마로 나열하도록 바꾸거나, SELECT *를 유지할 거라면 '여기서는 조회 컬럼 좁히기보다 @·@DATA 문법 전환 자체가 목적이라 SELECT *를 그대로 뒀다'는 한 줄을 덧붙여 L01의 원칙과 충돌하지 않게 한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH19는 modern ABAP SQL(콤마·@ host variable·host expression·@DATA 인라인 target·CAST/COALESCE/SQL 함수·SELECT FROM @itab)을 대체로 정확하게 서술한다. INTO 절 위치 규칙, strict mode 자동 적용, SQL SUBSTRING의 1-기반 오프셋과 ABAP off의 0-기반 대조, empty key 인라인 표, 계산 컬럼 AS 별칭 필수, LEFT OUTER JOIN에서 취소조건을 ON에 두어야 하는 이유 등 세부 사실은 검증한 범위에서 문제를 찾지 못했다. 유일하게 짚을 곳은 L08 실습 첫 예제가 L01에서 스스로 경계한 '무심한 SELECT *'를 캐비어 없이 재현하고, 그 결과 테이블도 이후 안 쓰인다는 점 — 경미한 예시 일관성 문제로 재작성까지는 필요 없다."
+  }
+}

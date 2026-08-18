@@ -1,0 +1,588 @@
+{
+  "target": "CH19",
+  "inputs": 28,
+  "missing": [],
+  "clusters": [
+    {
+      "cluster_id": "CH19-C001",
+      "file": "content/abap/CH19/CH19-L05.md",
+      "claim": "본문과 위젯이 DATS_ADD_DAYS의 인자를 date·days 두 개로 못 박고 예제도 2인자 형태(DATS_ADD_DAYS( fldate, 7 ))로 제시한다. ABAP SQL의 이 함수는 세 번째 인자 on_error('FAIL'/'NULL'/'INITIAL' 등)를 요구하므로 예제를 그대로 옮기면 구문 오류로 활성화되지 않을 수 있다. 7개 보고가 본문·위젯(CH19-L05-S01.html)에서 동일 결함을 독립적으로 지적한 최다 지지 클러스터다.",
+      "severity": "높음",
+      "confidence": "확실",
+      "supporters": ["AG02-opus#5", "AG03-gemini-3.6-flash-high#1", "AG06-opus#1", "AG06-gemini-3.6-flash-high#1", "AG09-opus#1", "AG09-gpt-5.6-sol#6", "AG09-gemini-3.6-flash-high#1"],
+      "conflict": false,
+      "quotes": ["- `DATS_ADD_DAYS( fldate, 7 )` — **인자**(함수 괄호 안에 넣는 값)는 두 개, `date`와 `days`다.", "SQL SUBSTRING=1-기반(↔CH18 ABAP off=0). DATS_ADD_DAYS=2인자."]
+    },
+    {
+      "cluster_id": "CH19-C002",
+      "file": "content/abap/CH19/CH19-L04.md",
+      "claim": "CAST 목표 길이 규칙에서 INT4→CHAR(11)의 '11'이 나온 계산 과정(최대 10자리+부호 1자리)이 어디에도 없어, 학습자가 다른 타입에 CAST를 적용할 때 길이를 스스로 정할 수 없다. 해당 문단만 '허용되지 않는다'는 매뉴얼체 단정으로 톤도 이탈한다는 지적이 함께 붙었다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG01-opus#4", "AG01-sonnet#1", "AG01-gpt-5.6-sol#2", "AG04-sonnet#3"],
+      "conflict": false,
+      "quotes": ["`seatsmax` 같은 정수(`INT4`) 컬럼이면 `CHAR( 11 )` — 이보다 짧게 주는 조합은 허용되지 않는다."]
+    },
+    {
+      "cluster_id": "CH19-C003",
+      "file": "content/abap/CH19/CH19-L08.md",
+      "claim": "실습 ②의 COALESCE( SUM( b~seats ), 0 )·CASE 안 SUM 중첩, 즉 집계식을 SQL 식의 피연산자로 넣는 형태의 릴리스 의존성이 전혀 언급되지 않는다. AG06-gemini는 규격상 아예 불가한 구문 오류(높음·확실)라 주장하고, AG03-opus·AG06-opus는 구릴리스에서만 막히는 릴리스 의존(추정)으로 보며, AG09-opus는 최신 ABAP SQL에서 허용되는 조합이라 판단해 결함으로 세지 않았다. 최소한 릴리스 단서·대안 경로 안내가 필요하다는 데는 지지자들이 일치한다.",
+      "severity": "중간",
+      "confidence": "추정",
+      "supporters": ["AG03-opus#8", "AG06-opus#6", "AG06-gemini-3.6-flash-high#2"],
+      "conflict": true,
+      "quotes": ["COALESCE( SUM( b~seats ), 0 ) AS booked,", "CASE WHEN COALESCE( SUM( b~seats ), 0 ) >= c~capacity THEN 'FULL'"]
+    },
+    {
+      "cluster_id": "CH19-C004",
+      "file": "content/abap/CH19/CH19-L02.md",
+      "claim": "L02는 introduces가 @ Host Variable·Host Expression뿐인데 예제 3개가 모두 아직 안 배운 @DATA( ) 인라인 target으로 끝나고, 안내는 첫 예제 주석 1회('다음 레슨에서 정식으로')뿐이다. 프로젝트 관례인 [선행 사용](L2) 표기도 front-matter advanceUse 선언도 없어, 학습자가 이번 레슨 주제와 미학습 문법을 동시에 붙들게 된다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG01-opus#1", "AG01-sonnet#2", "AG05-opus#2"],
+      "conflict": false,
+      "quotes": ["INTO TABLE @DATA(lt_flight).   \" 결과 인라인 선언 — 다음 레슨에서 정식으로"]
+    },
+    {
+      "cluster_id": "CH19-C005",
+      "file": "content/abap/CH19/CH19-L02.md",
+      "claim": "'일부러 다음 세 경우를 실행해 본다'고 해 놓고 3번(타입/값 부적합)만 '재현 방법이 하나로 정해져 있진 않으니'로 끝나 학습자가 무엇을 해 볼지 알 수 없다. lossless 변환 원칙도 어떤 식이 허용되고 거부되는지 판별 기준·대비 예제가 없어, 실습 항목이 실행 불가능한 자리 차지가 된다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG01-opus#2", "AG01-gpt-5.6-sol#1", "AG03-opus#7"],
+      "conflict": false,
+      "quotes": ["**타입/값 부적합** → `lv_carr`의 길이·값이 컬럼 타입과 안 맞으면 문법 경고·오류나 런타임 데이터 오류가 날 수 있다. 재현 방법이 하나로 정해져 있진 않으니"]
+    },
+    {
+      "cluster_id": "CH19-C006",
+      "file": "content/abap/CH19/CH19-L02.md",
+      "claim": "host variable 정의문이 관형절을 겹친 번역투·매뉴얼 투 한 문장이고, 풀이랍시고 붙인 '자리(operand)'는 영어 단어를 덧댄 것이라 operand가 실제로 풀이되지 않는다. 이후 'SQL operand 자리' 같은 겹침 표기가 반복돼 입문자가 '자리'와 'operand 자리'가 같은 것인지 계속 걸린다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG04-opus#4", "AG04-sonnet#1", "AG04-sonnet#2"],
+      "conflict": false,
+      "quotes": ["ABAP 프로그램에서 선언한 데이터 객체(변수·상수·필드)를 SQL 문장의 자리(operand)에 넣은 것이 **host variable**이다."]
+    },
+    {
+      "cluster_id": "CH19-C007",
+      "file": "content/abap/CH19/CH19-L06.md",
+      "claim": "'단순한 조회는 ABAP 서버가 메모리 안에서 처리한다(DB 왕복 없음)'는 서술의 사실성에 이견이 제기됐다. AG06-gemini는 SELECT FROM @itab이 쿼리 종류와 무관하게 내부 테이블을 DB 계층으로 전송해 처리하므로 사실 오류(확실)라 하고, AG06-opus는 도입 초기 릴리스(7.52 계열)에서는 DB 전송이 기본이고 메모리 처리(로컬 SQL 엔진)는 최신 릴리스에 해당하는 릴리스 의존 서술(추정)이라 본다. 어느 쪽이든 현행 단정 서술은 학습자 시스템에 따라 반대가 될 수 있다.",
+      "severity": "중간",
+      "confidence": "추정",
+      "supporters": ["AG06-opus#3", "AG06-gemini-3.6-flash-high#3"],
+      "conflict": true,
+      "quotes": ["단순한 조회는 ABAP 서버가 **메모리 안에서** 처리한다(DB 왕복 없음)."]
+    },
+    {
+      "cluster_id": "CH19-C008",
+      "file": "content/abap/CH19/CH19-L07.md",
+      "claim": "정리 레슨(L07 '정리 — 다음 단계로')이 종합 실습(L08)보다 앞에 배치돼 챕터 종료 신호와 CH20·CH23·CH21 핸드오프가 실습 전에 나온다. 챕터가 두 번 닫히고 실제 다음 학습 단위인 L08의 위상이 흐려지므로, 순서를 바꾸거나 L07의 외부 예고를 L08 말미로 옮겨야 한다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG05-opus#3", "AG05-gpt-5.6-sol#1"],
+      "conflict": false,
+      "quotes": ["데이터 접근(읽기·가공)은 이제 현대적이다. 다만 여러 조회 결과를 묶거나 순위를 매기는 **더 복잡한 조회**는 아직 미뤄 뒀다. 바로 다음 [고급 SQL](CH20-L01.html)에서 회수한다."]
+    },
+    {
+      "cluster_id": "CH19-C009",
+      "file": "content/abap/CH19/CH19-L08.md",
+      "claim": "ABAP 데이터 객체에는 null이 없어 DB null은 target에 담기는 순간 initial(0·공백)로 바뀌는데, 이 규칙이 챕터 어디에도 없다. L04의 'null≠initial' 콜아웃은 절반만 말해 'ABAP 변수에도 null 상태가 있다'는 오해를 남기고, L08 자기점검 질문은 COALESCE가 없으면 booked가 null로 나온다는 답을 유도해 타 언어 경력자의 오개념을 굳힌다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG03-opus#1", "AG03-opus#2"],
+      "conflict": false,
+      "quotes": ["- 예매 없는 공연의 `booked`가 null이 아니라 0으로 나오나? 무엇이 그렇게 만드나?", "> ⚠️ `COALESCE`가 다루는 **null은 DB 개념**이다."]
+    },
+    {
+      "cluster_id": "CH19-C010",
+      "file": "content/abap/CH19/_chapter.md",
+      "claim": "챕터 제목이 내세운 'New Open SQL'이라는 이름이 여덟 레슨 본문 어디에도 다시 나오지 않고 설명도 없다. L01 이름 정리 단락은 Open SQL(옛 이름)·ABAP SQL(공식 이름) 둘만 정리해, 학습자가 제목의 세 번째 이름이 무엇인지 알 길이 없다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG04-opus#1", "AG04-gpt-5.6-sol#1"],
+      "conflict": false,
+      "quotes": ["title: \"New Open SQL / Modern ABAP SQL\""]
+    },
+    {
+      "cluster_id": "CH19-C011",
+      "file": "content/abap/CH19/CH19-L06.md",
+      "claim": "L06의 신규 개념은 사실상 FROM @lt_flight 한 줄인데, 준비 코드가 TYPES 구조체·테이블 타입·WITH EMPTY KEY·VALUE 생성자를 한 블록에 몰아 놓아 본론보다 무겁다. 특히 WITH EMPTY KEY는 L03에서 'key를 주는 편이 낫다'고 권고한 직후 설명 없이 등장해 앞뒤가 어긋나 보인다(선언 문법으로는 첫 등장).",
+      "severity": "중간",
+      "confidence": "추정",
+      "supporters": ["AG01-opus#6", "AG05-opus#4"],
+      "conflict": false,
+      "quotes": ["TYPES tt_flight TYPE STANDARD TABLE OF ts_flight WITH EMPTY KEY."]
+    },
+    {
+      "cluster_id": "CH19-C012",
+      "file": "content/abap/CH19/CH19-L01.md",
+      "claim": "AG06-gpt는 'strict 모드에선 INTO가 맨 뒤로 강제된다'는 서술이 사실과 다르다고 주장한다(후행 INTO는 권장 표기일 뿐 전통적 위치가 금지되진 않는다는 논지). 반면 AG02-opus의 위젯 실측과 AG09-opus의 정적 검토는 INTO 후치·strict 모드 서술을 정확한 것으로 판정해 상반된다. 공식 keyword doc으로 확정이 필요한 논쟁 항목이다.",
+      "severity": "중간",
+      "confidence": "추정",
+      "supporters": ["AG06-gpt-5.6-sol#1"],
+      "conflict": true,
+      "quotes": ["- **`INTO`를 중간에 둠** → 마지막 clause로 두는 습관을 처음부터. 콤마·`@`를 쓰는 strict 모드에선 맨 뒤가 강제된다."]
+    },
+    {
+      "cluster_id": "CH19-C013",
+      "file": "content/abap/CH19/CH19-L06.md",
+      "claim": "'@는 ABAP 값에만 붙이고 컬럼엔 안 붙인다 / 콤마와 공백을 섞지 않는다'는 같은 주의가 L01·L02·L03·L06·L07·L08의 '흔한 실수' 절에 사실상 같은 문장으로 여섯 번 반복된다. 3회차 이후로는 새 정보가 없고, 각 레슨 고유의 함정(별칭 필수·table_line·ON vs WHERE)이 반복 뒤에 묻힌다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG03-opus#3"],
+      "conflict": false,
+      "quotes": ["- **`@` 누락** → 소스 Internal Table도 ABAP 값이라 `@lt_flight`. `FROM lt_flight`는 안 된다."]
+    },
+    {
+      "cluster_id": "CH19-C014",
+      "file": "embeds/abap/CH19-L03-S01.html",
+      "claim": "본문은 계산 컬럼에 별칭이 없으면 '구문 오류'라고 못 박는데, 위젯의 '계산(별칭 X)' 상태는 오류로 끝내지 않고 '??? (이름 없음)' 컬럼을 가진 결과 표가 만들어진 것처럼 그린다(실측 verdict '행 구조가 흐릿합니다'). 실습형 학습자에게 '이름만 흐릿할 뿐 돌아가긴 한다'는 오개념을 준다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG02-opus#1"],
+      "conflict": false,
+      "quotes": ["cols: ['carrid', '??? (이름 없음)'], alias: 'missing'"]
+    },
+    {
+      "cluster_id": "CH19-C015",
+      "file": "embeds/abap/CH19-L03-S01.html",
+      "claim": "위젯이 SELECT *로 만들어지는 SFLIGHT 행의 컴포넌트를 6개(carrid·connid·fldate·price·seatsmax·seatsocc)뿐인 것처럼 표시한다. 표준 SFLIGHT에는 CURRENCY·PLANETYPE·PAYMENTSUM 등 다른 필드도 있으므로 실제 SELECT *의 전체 행 구조가 아니며, '대표 필드 일부' 명시나 생략 표시가 필요하다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG02-gpt-5.6-sol#1"],
+      "conflict": false,
+      "quotes": ["{ v: 'star',   label: '*',              sql: '*', cols: ['carrid', 'connid', 'fldate', 'price', 'seatsmax', 'seatsocc'], alias: 'na' },"]
+    },
+    {
+      "cluster_id": "CH19-C016",
+      "file": "embeds/abap/CH19-L03-S01.html",
+      "claim": "기존 변수 재사용 target('@lt_기존 재사용')을 선택해도 위젯이 결과를 항상 'Standard Table · Empty Key'로 단정한다. 기존 lt_flight의 table category와 key는 사전 선언 타입에 따라 달라지며 본문도 key가 필요하면 타입을 직접 선언하라고 설명하므로, 기존 target일 때는 '사전 선언 타입·key 유지'로 표시를 전환해야 한다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG02-gpt-5.6-sol#2"],
+      "conflict": false,
+      "quotes": ["표는 항상 <b>standard table · empty key</b>입니다."]
+    },
+    {
+      "cluster_id": "CH19-C017",
+      "file": "embeds/abap/CH19-L04-S01.html",
+      "claim": "COALESCE 모드의 SELECT는 집계도 DISTINCT도 없는 scarr LEFT OUTER JOIN spfli인데 결과표는 항공사당 1행만 그려, 1:N 조인 카디널리티와 어긋난다. 또 노선이 있는 AA를 'NO ROUTE'(cityto=null)로 그려 같은 챕터 L06 위젯(AA 0017 정상 노선)과도 데이터가 충돌한다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG02-opus#3"],
+      "conflict": false,
+      "quotes": ["{ carrid: 'LH', carrname: 'Lufthansa', cityto: 'FRANKFURT', out: 'FRANKFURT' },"]
+    },
+    {
+      "cluster_id": "CH19-C018",
+      "file": "content/abap/CH19/CH19-L07.md",
+      "claim": "'UP TO n ROWS는 모던에서도 그대로'라고 하지만, strict 모드에서 INTO가 마지막이 되면서 UP TO n ROWS·ORDER BY의 문장 내 위치가 classic과 달라진다는 점이 챕터 어디에도 없고 modern 형태 예제도 없다. classic 습관대로 INTO 뒤에 붙이면 즉시 문법 오류를 만나며, 조회량 통제라는 실무 방어 수단이 막히는 지점이다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG06-opus#4"],
+      "conflict": false,
+      "quotes": ["[UP TO n ROWS](CH08-L03.html)와 꼭 필요한 `WHERE`는 모던에서도 그대로다."]
+    },
+    {
+      "cluster_id": "CH19-C019",
+      "file": "content/abap/CH19/CH19-L04.md",
+      "claim": "WHERE도 UP TO n ROWS도 없는 outer join 전량 조회를 인라인 target에 담는 예제를 '표준 예시'처럼 시연해, 같은 챕터가 가르치는 '꼭 필요한 WHERE'·조회량 통제 원칙과 어긋난다. 데모 테이블이 작아 학습자가 위험을 체감하지 못하므로 조건 추가나 '실무에선 조건 없는 조회 금지' 주석이 필요하다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG06-opus#5"],
+      "conflict": false,
+      "quotes": ["LEFT OUTER JOIN spfli AS p ON p~carrid = c~carrid"]
+    },
+    {
+      "cluster_id": "CH19-C020",
+      "file": "content/abap/CH19/CH19-L04.md",
+      "claim": "'DB에 계산을 시킨다'를 미덕으로 가르치면서, 함수·CAST·계산식을 WHERE 조건 쪽 컬럼에 쓰면 인덱스를 못 타 성능이 급락한다는 경계선이 챕터에 한 번도 나오지 않는다. 학습자가 code pushdown을 '어디에 써도 좋다'로 일반화하기 쉬운 위험한 생략이다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG06-opus#7"],
+      "conflict": false,
+      "quotes": ["- **과한 SQL 가공** → 복잡한 업무 규칙·메시지·권한 분기는 ABAP/이후 장의 코드로. SQL 식은 단순 가공에."]
+    },
+    {
+      "cluster_id": "CH19-C021",
+      "file": "content/abap/CH19/CH19-L03.md",
+      "claim": "'키로 자주 찾아 읽을 결과면 타입을 직접 선언하고 알맞은 key를 주는 편이 낫다'는 권고만 있고, key가 무엇인지도 어떻게 주는지도 코드 예가 챕터 어디에도 없다. L07 표에도 같은 권고가 반복되지만 방법이 없어 '뭘 어떻게 하라는 거지'로 끝난다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG01-opus#3"],
+      "conflict": false,
+      "quotes": ["그래서 키로 자주 찾아 읽어야 하는 결과라면, 인라인 대신 **타입을 직접 선언**하고 알맞은 key를 주는 편이 낫다."]
+    },
+    {
+      "cluster_id": "CH19-C022",
+      "file": "content/abap/CH19/CH19-L08.md",
+      "claim": "실습 ②의 SELECT 한 문장에 LEFT OUTER JOIN·SUM·GROUP BY·COALESCE·CASE·IN @so_conc가 11줄 한 덩어리로 몰려, 이번에 배운 것과 예전 것을 분리해 읽을 수 없다. 중첩식 COALESCE(SUM(),0)가 CASE 안에서 반복되는 이유(별칭 재사용 금지)도 코드 뒤에야 나와, 단계 분해나 '새로 들어온 것' 지도 한 줄이 필요하다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG01-opus#7"],
+      "conflict": false,
+      "quotes": ["여기 모던 SQL이 여럿 모였다: 콤마 목록, `@so_conc`, `@DATA`, **`COALESCE`**(예매 없는 공연의 합계 null → 0), **`CASE`**(매진 상태 컬럼)."]
+    },
+    {
+      "cluster_id": "CH19-C023",
+      "file": "content/abap/CH19/CH19-L05.md",
+      "claim": "DATS_DAYS_BETWEEN이 두 날짜 중 어느 쪽에서 어느 쪽을 빼는지, 과거 날짜일 때 부호가 어떻게 되는지 설명이 없다. 예제 결과값도 없어 학습자가 실행 결과를 스스로 검증할 수 없으므로, 고정된 두 날짜와 예상 결과·인자 순서를 바꿨을 때의 부호를 명시해야 한다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG01-gpt-5.6-sol#3"],
+      "conflict": false,
+      "quotes": ["`DATS_DAYS_BETWEEN( @sy-datum, fldate )` — 두 날짜의 차이를 정수(일)로."]
+    },
+    {
+      "cluster_id": "CH19-C024",
+      "file": "content/abap/CH19/CH19-L06.md",
+      "claim": "'내 데이터가 지금 DB로 가고 있는 건 아닌지부터 확인하자'고 지시하지만 어디에서 무엇을 봐야 하는지 절차가 없어 입문자가 행동으로 옮길 수 없다. 어떤 구문이 DB 전송을 만드는지, syntax check 경고를 어떻게 해석할지 대비 예제와 안내가 필요하다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG01-gpt-5.6-sol#4"],
+      "conflict": false,
+      "quotes": ["경고가 보이면 없앨 방법부터 찾지 말고, **내 데이터가 지금 DB로 가고 있는 건 아닌지**부터 확인하자."]
+    },
+    {
+      "cluster_id": "CH19-C025",
+      "file": "content/abap/CH19/CH19-L05.md",
+      "claim": "SPFLI-CONNID는 NUMC(4) 컬럼인데 CONCAT( carrid, connid )처럼 문자열 함수에 그대로 넘긴다. ABAP SQL 문자열 함수의 인자 타입은 CHAR/SSTRING 계열 제한이 원칙이라 릴리스에 따라 문법 오류가 날 수 있으므로, CAST를 거친 안전한 조합으로 바꾸거나 'NUMC는 CAST 후 투입' 주의를 추가해야 한다.",
+      "severity": "중간",
+      "confidence": "추정",
+      "supporters": ["AG06-opus#2"],
+      "conflict": false,
+      "quotes": ["CONCAT( carrid, connid )"]
+    },
+    {
+      "cluster_id": "CH19-C026",
+      "file": "content/abap/CH19/CH19-L08.md",
+      "claim": "검증용 zbooking 샘플 데이터를 필드 이름 없이 값만 나열해('손흥민 C001 2(N)'), 숫자가 좌석 수인지 예매 번호인지 문맥으로 추측해야 한다. 바로 위 zconcert는 표(concert_id·artist·cap)로 제시해 대비가 크므로 같은 표 형식이나 컬럼 순서 안내가 필요하다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG04-opus#8"],
+      "conflict": false,
+      "quotes": ["`zbooking`: 손흥민 C001 2(**N**=정상), 아이유 C001 3(N), 차은우 C001 1(**C**=취소), 정훈영 C002 50(N)."]
+    },
+    {
+      "cluster_id": "CH19-C027",
+      "file": "content/abap/CH19/CH19-L08.md",
+      "claim": "실습이 현대화 대상 원본으로 CH12-L07과 CH13-L08을 지목하고 과제 1번도 CH12-L07을 콕 집어 지시하는데, front-matter prereq에는 CH13-L08만 있고 CH12-L07이 빠져 있다. R10 메타 기반 정적 점검(게이팅 검증)의 근거가 어긋나는 문서화 결함이다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG05-sonnet#2"],
+      "conflict": false,
+      "quotes": ["prereq: [\"CH19-L01\", \"CH19-L03\", \"CH13-L08\"]"]
+    },
+    {
+      "cluster_id": "CH19-C028",
+      "file": "content/abap/CH19/CH19-L03.md",
+      "claim": "CH19-L04의 introduces가 'SQL 산술/CASE'를 선언하지만 L04 본문에는 산술 전용 예제·설명이 없고, 계산 컬럼 산술식은 이미 L03의 AS 별칭 예제(seatsmax - seatsocc AS seats_free)로 먼저 등장한다. R15 '개념당 한 곳' 원칙 기준으로 도입 지점 선언과 실제 최초 등장이 어긋난다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG05-sonnet#3"],
+      "conflict": false,
+      "quotes": ["seatsmax - seatsocc AS seats_free"]
+    },
+    {
+      "cluster_id": "CH19-C029",
+      "file": "content/abap/CH19/CH19-L01.md",
+      "claim": "챕터 도입부의 '불편'이 학습자가 겪은 고통이 아니라 집필자의 편집 의도 설명('일부러 classic으로 뒀다')에서 출발한다. classic 표기 때문에 조회가 잘못되거나 오류를 만난 구체 실패 장면이 챕터 전체에 없어, 모던 SQL을 배울 동기가 '경계가 안 보인다'는 추상 서술에만 기댄다.",
+      "severity": "중간",
+      "confidence": "추정",
+      "supporters": ["AG05-opus#1"],
+      "conflict": false,
+      "quotes": ["[지난 챕터](CH18-L01.html)에서 ABAP 코드는 모던으로 바꿨지만, **`SELECT`(Open SQL)**만은 일부러 classic으로 뒀다(공백 구분·`@` 없음). 이유가 있다."]
+    },
+    {
+      "cluster_id": "CH19-C030",
+      "file": "content/abap/CH19/CH19-L01.md",
+      "claim": "AG09-gpt가 L01·L02·L03·L04·L05·L06·L08의 코드 블록들이 lv_carr·lt_flight·so_conc·lt_stat 등을 블록 안에서 선언하지 않은 채 사용해 블록 단위 정적 검사로는 활성화되지 않는다고 7건에 걸쳐 지적했다(선언 포함 또는 [선행 사용] 표기 요구). 다만 같은 축의 AG09-opus·sonnet은 이 스니펫 관례를 결함으로 세지 않아, 챕터 전반의 저작 관례로 볼지 표기 보강 대상으로 볼지는 판단이 갈린다.",
+      "severity": "낮음",
+      "confidence": "추정",
+      "supporters": ["AG09-gpt-5.6-sol#1", "AG09-gpt-5.6-sol#2", "AG09-gpt-5.6-sol#3", "AG09-gpt-5.6-sol#4", "AG09-gpt-5.6-sol#5", "AG09-gpt-5.6-sol#7", "AG09-gpt-5.6-sol#8"],
+      "conflict": false,
+      "quotes": ["SELECT carrid connid seatsmax\n  FROM sflight\n  INTO TABLE lt_flight\n  WHERE carrid = lv_carr.", "  WHERE concert_id IN so_conc."]
+    },
+    {
+      "cluster_id": "CH19-C031",
+      "file": "content/abap/CH19/CH19-L01.md",
+      "claim": "SQL을 이미 아는 경력자가 표준 SQL과 겹치는 절(흔한 실수 목록, CASE·CAST·COALESCE 기본, CONCAT·UPPER 등 표준 함수)을 건너뛸 안내가 챕터에 없고, 경력자에게 가장 값진 L07 결정표는 통독을 마친 뒤에야 나온다. 'ABAP 고유 차이만 확인' 같은 빠른 경로 한 줄이면 입문자 동선을 해치지 않고 해결된다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG03-opus#4", "AG03-sonnet#1", "AG03-sonnet#4", "AG03-sonnet#5", "AG03-gpt-5.6-sol#2"],
+      "conflict": false,
+      "quotes": ["> 📌 **★ 여기부터 modern SQL**(`@`·콤마·SQL 식)을 쓴다. 이전 챕터까지의 `SELECT`는 전부 classic이었다."]
+    },
+    {
+      "cluster_id": "CH19-C032",
+      "file": "content/abap/CH19/CH19-L02.md",
+      "claim": "host variable이 JDBC PreparedStatement의 ?·T-SQL의 @param 같은 바인드 파라미터와 본질적으로 동일한 개념인데 그 대응이 챕터에 한 번도 언급되지 않아, 경력자가 이미 아는 개념을 새 용어로 처음부터 학습하게 된다. 콜아웃 한 줄 비유로 해결 가능하다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG03-sonnet#3", "AG03-gemini-3.6-flash-high#2"],
+      "conflict": false,
+      "quotes": ["modern SQL의 핵심은 멋이 아니라 **경계 표시**다. DB 테이블의 컬럼은 그냥 쓰고, ABAP 프로그램의 값은 `@`로 표시(escape)한다."]
+    },
+    {
+      "cluster_id": "CH19-C033",
+      "file": "content/abap/CH19/CH19-L02.md",
+      "claim": "'escape 문자'라는 표현이 일반 개발 상식의 이스케이프 처리(따옴표 치환·SQL 인젝션 방지)를 먼저 연상시키는데, 여기서의 escape는 값 가공이 아니라 '이 이름은 ABAP 것'이라는 구분 표시일 뿐이라는 차이가 명시되지 않는다. raw SQL 조립을 해 본 경력자일수록 @를 인젝션 방지 장치로 오해할 여지가 있다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG03-opus#6", "AG03-sonnet#2"],
+      "conflict": false,
+      "quotes": ["SQL 안에서 host variable로 알아보게 하는 **escape 문자**"]
+    },
+    {
+      "cluster_id": "CH19-C034",
+      "file": "content/abap/CH19/CH19-L05.md",
+      "claim": "도입부가 예고한 세 예시 중 '노선 코드(route)'·'대문자 도시명(city_up)'은 예제 컬럼과 짝이 맞는데 '기준일'만 대응하는 예제가 없다. 날짜 예제는 due(7일 뒤)와 days_gap(차이)뿐이라 학습자가 '기준일'을 찾아 헛돌게 되므로 예고 문구를 실제 예제에 맞춰야 한다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG01-opus#5", "AG04-opus#11"],
+      "conflict": false,
+      "quotes": ["예를 들어 항공사 코드와 편명을 이어 붙인 노선 코드(아래 예제의 `route`), 대문자 도시명, 기준일처럼 **결과 목록에 보여 줄 간단한 값**들이다."]
+    },
+    {
+      "cluster_id": "CH19-C035",
+      "file": "content/abap/CH19/CH19-L02.md",
+      "claim": "L01의 '어느 이름이 DB 것이고 어느 게 ABAP 것인가' 절과 L02 도입부·'@ Host Variable' 절이 같은 경계 설명·비교 코드를 거의 같은 깊이로 반복한다. L02의 진짜 신규 가치인 host expression @( )와 lossless 규칙이 중복 설명 뒤로 밀려 초점이 늦게 잡힌다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG03-gpt-5.6-sol#1", "AG05-opus#6"],
+      "conflict": false,
+      "quotes": ["`SELECT` 문장은 **데이터베이스**에서 실행된다. 그런데 ABAP 변수 값은 **애플리케이션 서버 메모리**에 있다."]
+    },
+    {
+      "cluster_id": "CH19-C036",
+      "file": "content/abap/CH19/CH19-L08.md",
+      "claim": "L01이 '무심한 SELECT *'를 흔한 실수로 경계해 놓고 실습 ①의 classic/modern 대비 코드가 둘 다 SELECT * FROM zbooking이며, 그렇게 만든 lt_book은 이후 검증·출력 어디에도 쓰이지 않는다. 콤마 필드 목록을 배우는 챕터의 첫 실습 코드로는 자기 원칙과 모순되는 반례다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG06-opus#9", "AG06-sonnet#1"],
+      "conflict": false,
+      "quotes": ["SELECT * FROM zbooking"]
+    },
+    {
+      "cluster_id": "CH19-C037",
+      "file": "content/abap/CH19/CH19-L07.md",
+      "claim": "L01에서 'strict 모드'로 도입한 표기가 정리 레슨 L07의 표에서만 'strict mode'로 바뀐다. 정리 레슨은 앞서 배운 이름을 그대로 되짚는 자리이므로 도입 표기로 통일해야 한다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG04-opus#3", "AG04-sonnet#4"],
+      "conflict": false,
+      "quotes": ["| SELECT list가 길다 | 콤마 필드 목록 | 필드 경계 분명 · strict mode |"]
+    },
+    {
+      "cluster_id": "CH19-C038",
+      "file": "content/abap/CH19/CH19-L04.md",
+      "claim": "'로직이 ABAP에 보여 좋지만'은 조사와 서술이 어긋나 무엇이 어디에 보인다는 것인지 불명확한 비문이다. 레슨의 첫 판단 문장이라 여기서 걸리면 이어지는 논지가 흐려지므로 '로직이 ABAP 코드에 그대로 드러나는 건 좋다' 식으로 분리해야 한다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG04-opus#9", "AG04-gpt-5.6-sol#3"],
+      "conflict": false,
+      "quotes": ["로직이 ABAP에 보여 좋지만, **단순한 계산·상태 분류까지 전부 ABAP LOOP로 가져오면** DB가 잘할 일을 애플리케이션 서버로 떠넘기는 셈이다."]
+    },
+    {
+      "cluster_id": "CH19-C039",
+      "file": "embeds/abap/CH19-L03-S01.html",
+      "claim": "레슨이 introduces로 선언한 INTO @DATA( )(SELECT SINGLE 단건→구조체)는 본문에 코드로 나오지만, 위젯에서는 조작 불가한 하단 정적 안내문으로만 존재한다. 표(INTO TABLE) target만 체험되고 단건 target은 '읽고 끝'이라 부분 체험 공백이다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG02-opus#2"],
+      "conflict": false,
+      "quotes": ["한 행만 받을 땐 <code>SELECT SINGLE … INTO @DATA(ls_carr)</code>로 <b>구조체</b>가 만들어집니다."]
+    },
+    {
+      "cluster_id": "CH19-C040",
+      "file": "embeds/abap/CH19-L04-S01.html",
+      "claim": "'계산 위치 비교 → ABAP LOOP'가 보여 주는 COALESCE 대체 코드가 그대로는 성립하지 않는다. city_to_text는 SQL COALESCE가 만든 결과 컬럼인데 이미 있는 것처럼 대입하고, LOOP AT … INTO 작업영역만 고칠 뿐 MODIFY가 없어 내부 테이블에 반영되지 않는데도 결과표는 SQL판과 동일하게 채워져 보인다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG02-opus#4"],
+      "conflict": false,
+      "quotes": ["ls_route-city_to_text = 'NO ROUTE'."]
+    },
+    {
+      "cluster_id": "CH19-C041",
+      "file": "embeds/abap/CH19-L05-S01.html",
+      "claim": "SUBSTRING 실습에서 len=0을 넣으면 위젯이 정상 결과(빈 문자열)로 판정한다. ABAP SQL의 substring은 길이가 1 이상이어야 하므로 '되는 조합'으로 잘못 배우게 되며, 하한 검사가 len<0으로만 되어 있어 len>=1 검증으로 바꿔야 한다.",
+      "severity": "낮음",
+      "confidence": "추정",
+      "supporters": ["AG02-opus#6"],
+      "conflict": false,
+      "quotes": ["<code>pos</code>·<code>len</code>·<code>days</code>를 바꿔 보세요."]
+    },
+    {
+      "cluster_id": "CH19-C042",
+      "file": "embeds/abap/CH19-L05-S01.html",
+      "claim": "본문 예제는 SUBSTRING 결과 컬럼 별칭을 prefix로 쓰는데 같은 페이지 위젯은 같은 함수·같은 인자의 결과를 part로 부른다. 본문을 보며 위젯을 조작하는 학습자가 두 이름을 다른 것으로 오해할 수 있어 한쪽으로 통일이 필요하다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG02-opus#7"],
+      "conflict": false,
+      "quotes": ["SUBSTRING( connid, 1, 2 ) AS prefix"]
+    },
+    {
+      "cluster_id": "CH19-C043",
+      "file": "content/abap/CH19/CH19-L02.md",
+      "claim": "L02의 서로 다른 두 코드 블록이 모두 @DATA(lt_flight)로 같은 이름을 인라인 선언하는데, 이어 붙여 실행하면 중복 선언 오류가 난다는 안내가 이 레슨에만 없다. 같은 함정을 L03과 L08은 명시적으로 안내해 챕터 안에서 처리가 엇갈린다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG09-opus#2"],
+      "conflict": false,
+      "quotes": ["INTO TABLE @DATA(lt_flight)."]
+    },
+    {
+      "cluster_id": "CH19-C044",
+      "file": "content/abap/CH19/CH19-L04.md",
+      "claim": "'COALESCE는 null이 아닌 첫 번째 값을 돌려준다'는 표준 SQL의 가변 인자 설명을 그대로 옮겨, 인자를 셋 이상 나열해도 되는 것처럼 읽힌다. ABAP SQL의 COALESCE는 인자 두 개(arg1, arg2)를 받는 형태이므로 'a가 null이면 b'로 정정하는 편이 정확하다.",
+      "severity": "낮음",
+      "confidence": "추정",
+      "supporters": ["AG06-opus#8"],
+      "conflict": false,
+      "quotes": ["`COALESCE`는 **null이 아닌 첫 번째 값**을 돌려준다."]
+    },
+    {
+      "cluster_id": "CH19-C045",
+      "file": "content/abap/CH19/CH19-L03.md",
+      "claim": "@DATA( )가 다른 언어의 지역변수 타입 추론(Java var·C# var)과 같은 성격이라는 대응 한 줄이 없어, 경력자가 3초에 끝낼 절을 비유 설명부터 따라 읽어야 한다. '타입 추론이되 결과가 Standard Table·Empty Key로 고정된다'는 괄호 각주 한 줄이면 지름길이 된다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG03-opus#5"],
+      "conflict": false,
+      "quotes": ["`@DATA(lt_flight)`는 **SELECT 결과 구조에 맞는 Internal Table을 그 자리에서 자동 선언**한다."]
+    },
+    {
+      "cluster_id": "CH19-C046",
+      "file": "content/abap/CH19/CH19-L07.md",
+      "claim": "L07·L08의 front-matter prevRel 값이 'next-step'인데, R10이 정의한 값은 pain-solution/parallel/deepening 세 가지뿐이다. 정적 점검의 근거로 쓰이는 메타에 미정의 값이 들어가 분류되지 않으므로, 정의된 값으로 교체하거나 R10 열거에 next-step을 추가해 규칙과 데이터를 일치시켜야 한다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG05-opus#7"],
+      "conflict": false,
+      "quotes": ["prevRel: next-step"]
+    },
+    {
+      "cluster_id": "CH19-C047",
+      "file": "content/abap/CH19/CH19-L05.md",
+      "claim": "본문의 핵심 경고(SQL SUBSTRING은 1부터 vs ABAP substring off=0)가 CH18-L05의 지식을 전제로 하고 본문에 링크도 있는데, front-matter prereq에는 CH19-L04만 있고 CH18-L05가 빠져 있다. 본문이 실제로 전제하는 선행 레슨을 메타에도 반영해야 한다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG05-sonnet#1"],
+      "conflict": false,
+      "quotes": ["prereq: [\"CH19-L04\"]"]
+    },
+    {
+      "cluster_id": "CH19-C048",
+      "file": "content/abap/CH19/CH19-L05.md",
+      "claim": "L05의 도입이 '기능이 있다'는 카탈로그형 선언이라 L04가 세운 'DB에 계산을 시킨다' 논거 외에 이 레슨만의 필요성이 없다. 노선 코드·남은 일수를 ABAP LOOP로 만들 때의 코드 증가를 먼저 보여 주는 구체 요구로 바꾸면 이 레슨만의 불편이 생긴다.",
+      "severity": "낮음",
+      "confidence": "추정",
+      "supporters": ["AG05-opus#5"],
+      "conflict": false,
+      "quotes": ["modern SQL은 문자열·날짜용 함수도 제공한다."]
+    },
+    {
+      "cluster_id": "CH19-C049",
+      "file": "content/abap/CH19/CH19-L08.md",
+      "claim": "같은 개념을 영어 표기 'modern SQL'(L01)과 한글 표기 '모던 SQL'(L07 direction·L08 제목/본문)로 번갈아 쓰고, L08 한 파일 안에서도 두 표기가 섞인다. 표기가 흔들리면 입문자는 다른 것인지 멈춰 확인하게 되므로 하나로 고정해야 한다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG04-opus#2"],
+      "conflict": false,
+      "quotes": ["이 챕터의 모던 SQL(`@`·콤마·`@DATA`)로 다듬는다"]
+    },
+    {
+      "cluster_id": "CH19-C050",
+      "file": "content/abap/CH19/CH19-L08.md",
+      "claim": "별칭 재사용 금지 콜아웃에서 '같은 SELECT 안에서'가 세 문장 연속 반복되고, 세 번째 문장은 두 번째를 말만 바꿔 되풀이해 정보 증가가 없다. 짧은 콜아웃에서 같은 구절이 세 번 나와 읽는 호흡이 늘어지므로 세 번째 문장을 이유 서술로 교체해야 한다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG04-opus#5"],
+      "conflict": false,
+      "quotes": ["**별칭을 같은 SELECT 안에서 다시 못 쓴다.**"]
+    },
+    {
+      "cluster_id": "CH19-C051",
+      "file": "content/abap/CH19/CH19-L06.md",
+      "claim": "'그 한 컬럼의 이름이 table_line이라는 특수한 이름이 되어'에서 주어(이름)와 보어(이름)가 같은 명사로 겹쳐 비문에 가깝게 읽힌다. '그 컬럼은 table_line이라는 특수한 이름을 갖게 되어'로 고치면 된다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG04-opus#6"],
+      "conflict": false,
+      "quotes": ["그 한 컬럼의 이름이 `table_line`이라는 특수한 이름이 되어, `@DATA( )`로 받으려면 `AS`로 별칭을 줘야 한다."]
+    },
+    {
+      "cluster_id": "CH19-C052",
+      "file": "content/abap/CH19/CH19-L06.md",
+      "claim": "같은 대상(Internal Table)을 한 문장 안에서 'DB 테이블'과 '표'로 갈라 부른다. '표'는 원래 괄호 풀이로만 쓰였는데 여기서 독립 지칭어로 승격돼 입문자가 표와 테이블이 다른 것인지 헷갈리기 쉬우므로 본문 지칭을 Internal Table로 고정해야 한다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG04-opus#7"],
+      "conflict": false,
+      "quotes": ["하지만 DB 테이블과의 join처럼 서버가 처리하지 못하는 요소가 섞이면 **표의 데이터를 임시로 DB에 보내서** 처리한다 — 표가 크면 그만큼 전송 비용이 든다."]
+    },
+    {
+      "cluster_id": "CH19-C053",
+      "file": "content/abap/CH19/CH19-L03.md",
+      "claim": "본문 문장 한가운데에 줄표로 부연을 매다는 방식이 여러 레슨(L03·L04·L05·L06)에서 반복돼 한 호흡이 길어지고 입문자의 읽는 속도를 떨어뜨린다. R3의 줄표 절제 원칙대로 부연을 마침표로 끊어 별도 문장으로 돌리는 편이 낫다.",
+      "severity": "낮음",
+      "confidence": "추정",
+      "supporters": ["AG04-opus#10"],
+      "conflict": false,
+      "quotes": ["두 코드는 같은 일을 하는 별개의 예제다 — 한 프로그램 안에서 같은 이름을 두 번 선언하면 오류이니, 둘을 이어 붙여 실행하지는 말자."]
+    },
+    {
+      "cluster_id": "CH19-C054",
+      "file": "content/abap/CH19/CH19-L01.md",
+      "claim": "'SELECT list'가 첫 등장할 때 한국어 풀이 없이 제시되고 이후 레슨에서도 그대로 반복된다. 같은 문단이 콤마·INTO는 바로 설명해 이 용어만 풀이 밀도가 다르므로, 첫 등장을 'SELECT 목록(가져올 컬럼 목록)'으로 풀어야 한다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG04-gpt-5.6-sol#2"],
+      "conflict": false,
+      "quotes": ["**`INTO`를 문장 맨 뒤**에 둔다 → `SELECT list → FROM → WHERE → INTO` 순으로 읽힌다."]
+    },
+    {
+      "cluster_id": "CH19-C055",
+      "file": "content/abap/CH19/CH19-L07.md",
+      "claim": "'SQL에 과적하지 않기'의 '과적'은 화물 적재·시스템 부하를 연상시키는 압축 표현으로, 업무 규칙을 SQL에 지나치게 넣지 말라는 뜻이 입문자에게 즉시 드러나지 않고 별도 풀이도 없다. 'SQL에 몰아넣지 않기' 같은 쉬운 표현으로 바꾸는 편이 낫다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG04-gpt-5.6-sol#4"],
+      "conflict": false,
+      "quotes": ["| 복잡한 업무 규칙을 표현한다 | ABAP 코드 | SQL에 과적하지 않기 |"]
+    }
+  ],
+  "grade_opinions": {
+    "AG01-opus": "경미 수정",
+    "AG01-sonnet": "경미 수정",
+    "AG01-gpt-5.6-sol": "보강 권장",
+    "AG01-gemini-3.6-flash-high": "유지",
+    "AG02-opus": "경미 수정",
+    "AG02-sonnet": "유지",
+    "AG02-gpt-5.6-sol": "경미 수정",
+    "AG02-gemini-3.6-flash-high": "유지",
+    "AG03-opus": "경미 수정",
+    "AG03-sonnet": "경미 수정",
+    "AG03-gpt-5.6-sol": "경미 수정",
+    "AG03-gemini-3.6-flash-high": "경미 수정",
+    "AG04-opus": "경미 수정",
+    "AG04-sonnet": "경미 수정",
+    "AG04-gpt-5.6-sol": "경미 수정",
+    "AG04-gemini-3.6-flash-high": "유지",
+    "AG05-opus": "경미 수정",
+    "AG05-sonnet": "경미 수정",
+    "AG05-gpt-5.6-sol": "경미 수정",
+    "AG05-gemini-3.6-flash-high": "유지",
+    "AG06-opus": "경미 수정",
+    "AG06-sonnet": "경미 수정",
+    "AG06-gpt-5.6-sol": "경미 수정",
+    "AG06-gemini-3.6-flash-high": "보강 권장",
+    "AG09-opus": "경미 수정",
+    "AG09-sonnet": "유지",
+    "AG09-gpt-5.6-sol": "보강 권장",
+    "AG09-gemini-3.6-flash-high": "경미 수정"
+  },
+  "dropped": []
+}

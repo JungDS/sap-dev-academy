@@ -1,0 +1,47 @@
+{
+  "agent": "AG09",
+  "model": "opus",
+  "target": "CH19",
+  "persona_ack": "나는 ABAP 정적 검사기를 시늉하는 코드 전용 감사자 AG09이다. 산문 서술은 판단 근거로만 참고하고, ```abap 코드 블록을 줄 단위로 읽어 (1) 활성화 차단급 문법·시그니처 오류, (2) 커리큘럼 네이밍 규약(gv_/lv_·pa_/so_·ty_/ts_/tt_), (3) classic↔modern 경계 규약(CH01~17 modern 금지·CH01~18 New Open SQL 금지, CH19는 modern 허용 구간), (4) 주석·출력 문자열의 명백한 오류만 본다. 오탐을 피하기 위해 스타일 선호와 의도적으로 '🚫 오류 예시'로 표시된 블록은 결함으로 세지 않았다.",
+  "method": "Read 도구로 대상 9개 파일 전문을 읽고, 각 ```abap 블록을 줄 단위로 문장 종결(마침표)·절 순서(SELECT list→FROM→JOIN→WHERE→GROUP BY→ORDER BY→INTO)·@ escape 위치·콤마 필드리스트·별칭(AS) 필수 여부·SQL 함수 시그니처·선언 접두어 관점으로 대조. 인용 앵커는 Grep으로 원문 존재를 재확인(CH19-L05:40/47, CH19-L02:31/46). 실행 환경(SAP 시스템)이 없으므로 컴파일 검증이 아닌 정적 판단이며, 웹 검색은 사용하지 않고 ABAP SQL 키워드 문서 지식에 근거함.",
+  "errors": [],
+  "files_read": [
+    "content/abap/CH19/_chapter.md",
+    "content/abap/CH19/CH19-L01.md",
+    "content/abap/CH19/CH19-L02.md",
+    "content/abap/CH19/CH19-L03.md",
+    "content/abap/CH19/CH19-L04.md",
+    "content/abap/CH19/CH19-L05.md",
+    "content/abap/CH19/CH19-L06.md",
+    "content/abap/CH19/CH19-L07.md",
+    "content/abap/CH19/CH19-L08.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH19/CH19-L05.md",
+      "quote": "DATS_ADD_DAYS( fldate, 7 )",
+      "category": "문법오류",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "ABAP SQL 날짜 함수 `DATS_ADD_DAYS`는 인자가 세 개(`date`, `days`, `on_error`)이고 `on_error`가 필수인데, 예제 코드가 두 개만 넘겨 그대로 옮기면 구문 오류로 활성화되지 않는다. 본문 설명도 \"인자는 두 개\"라고 잘못 못 박고 있다.",
+      "evidence": "ABAP SQL(및 CDS)의 DATS 계열 함수 시그니처는 `DATS_IS_VALID( date )`, `DATS_DAYS_BETWEEN( date1, date2 )`, `DATS_ADD_DAYS( date, days, on_error )`, `DATS_ADD_MONTHS( date, months, on_error )`이다. `DATS_ADD_DAYS`/`DATS_ADD_MONTHS`만 세 번째 인자 `on_error`(허용값 `FAIL`/`NULL`/`INITIAL`)를 반드시 요구한다 — 잘못된 날짜 입력 시 동작을 지정하는 자리라 생략할 수 없다. 코드 블록 40행 `DATS_ADD_DAYS( fldate, 7 )              AS due,`와 47행 설명 \"**인자**(함수 괄호 안에 넣는 값)는 두 개, `date`와 `days`다\"가 함께 어긋난다. 반면 같은 블록의 `DATS_DAYS_BETWEEN( @sy-datum, fldate )`는 인자 두 개가 맞아, 두 함수를 같은 규칙으로 뭉뚱그린 것이 원인으로 보인다.",
+      "suggestion": "코드를 `DATS_ADD_DAYS( fldate, 7, 'INITIAL' )`처럼 세 번째 인자를 포함한 형태로 고치고(입문 단계에선 오류 시 초기값을 주는 선택이 설명하기 쉽다), 47행 설명을 \"인자는 세 개 — 날짜·더할 일수·잘못된 날짜일 때의 처리(on_error)\"로 바꾼다. 바로 아래 '흔한 실수' 항목의 날짜 유효성 불릿과 자연스럽게 연결된다."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH19/CH19-L02.md",
+      "quote": "INTO TABLE @DATA(lt_flight).",
+      "category": "실습 재현성",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "한 레슨 안 서로 다른 두 코드 블록(31행·46행)이 모두 `@DATA(lt_flight)`로 같은 이름을 인라인 선언하는데, 이어 붙여 실행하면 중복 선언 구문 오류가 난다는 안내가 이 레슨에만 없다.",
+      "evidence": "CH19-L02는 31행 블록과 46행 블록에서 각각 `INTO TABLE @DATA(lt_flight).`로 같은 이름을 새로 선언한다(추가로 18~23행 classic 블록도 `lt_flight`를 쓴다). 인라인 선언은 새 이름일 때만 허용되므로 학습자가 두 블록을 한 프로그램에 붙여 넣으면 활성화되지 않는다. 같은 함정을 CH19-L03은 \"한 프로그램 안에서 같은 이름을 두 번 선언하면 오류이니, 둘을 이어 붙여 실행하지는 말자\"로, CH19-L08은 \"classic과 별개 예제 (같은 이름을 이어서 재선언하면 오류)\" 주석으로 명시해 두었다 — L02만 같은 안내가 빠져 챕터 안에서 처리가 엇갈린다.",
+      "suggestion": "L03·L08과 동일하게 두 번째 블록에 \"앞 블록과 별개 예제 — 이어 붙여 실행하면 같은 이름 재선언으로 오류\" 한 줄(주석 또는 블록 뒤 문장)을 덧붙이거나, 두 번째 블록의 target 이름을 `@DATA(lt_flight2)` 등으로 달리한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH19의 ```abap 블록 전수를 정적으로 훑은 결과, modern ABAP SQL 문법 자체는 대체로 정확하다. 절 순서(SELECT list→FROM→JOIN→WHERE→GROUP BY→ORDER BY→INTO 맨 뒤)·콤마 필드리스트·`@` escape 위치(컬럼엔 미부착, ABAP 값·target·range table `@so_conc`엔 부착)·문장 종결 마침표는 8개 레슨 전체에서 일관되고, `CAST( seatsmax AS CHAR( 11 ) )`의 INT4→CHAR 최소 길이 11, `SUBSTRING`의 1-기반 시작 위치, 계산 컬럼의 `AS` 별칭 필수, `FROM @itab AS f`의 별칭 필수, 단일 컬럼 표의 `table_line` 같은 세부 규칙 서술도 맞다. 네이밍 규약 위반도 발견되지 않았다 — `so_conc`(so_+4자), `ts_flight`/`tt_flight`, `lv_`/`ls_`/`lt_`가 규약대로 쓰였고 `it_` 오용은 없다. 경계 규약도 지켜져, classic으로 표시한 블록에는 `@`·콤마가 없고 modern 블록에만 `@DATA( )`·string template 등 CH18~19 허용 문법이 나온다(CH19는 modern 허용 구간). 확정 결함은 CH19-L05의 `DATS_ADD_DAYS` 시그니처 오류 하나로, 필수 인자 `on_error`가 빠져 코드가 활성화되지 않고 본문 설명까지 \"인자 두 개\"로 잘못 못 박아 함께 고쳐야 한다. 그 외 CH19-L02의 같은 이름 인라인 선언 중복 안내 누락(L03·L08에는 있는 안내)이 경미하게 남는다. CH19-L08의 `COALESCE( SUM( b~seats ), 0 )`처럼 집계식을 SQL 식의 피연산자로 쓰는 형태는 릴리스에 따라 지원 여부가 갈릴 수 있어 눈여겨봤으나, 최신 ABAP SQL에서 허용되는 조합이라 결함으로 세지 않았다(오탐 회피)."
+  }
+}

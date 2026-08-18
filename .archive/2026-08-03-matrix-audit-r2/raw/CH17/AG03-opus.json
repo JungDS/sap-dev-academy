@@ -1,0 +1,137 @@
+{
+  "agent": "AG03",
+  "model": "opus",
+  "target": "CH17",
+  "persona_ack": "나는 Java/C# 계열 백엔드 3～5년차 개발자로서 ABAP을 빠르게 훑어 익히려는 독자 시선으로 CH17(Grid ALV 기초) 10개 레슨 + _chapter.md를 통독했다. 변수·조건문·루프·SQL·OOP 기본기는 전제하고, 과잉 설명·오개념 유발·지름길 부재·용어 충돌 네 축으로 기록했다. 다만 이 사이트의 1독자가 비전공 입문자임을 감안해 '입문자에겐 필요하나 경력자에겐 아는 내용'은 낮음/제안으로만 분류했다.",
+  "method": "Read 도구로 대상 11개 MD 파일 전량 통독(부분 발췌 없음). ABAP 문법·클래스 시그니처(CL_GUI_ALV_GRID, LVC_S_LAYO, LVC_FIELDCATALOG_MERGE, classic Open SQL join 제약) 판단은 외부 검색 없이 내부 지식만 사용했고, 버전 의존 가능성이 있는 항목은 confidence=추정으로 표기했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L10.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH17/CH17-L09.md",
+      "quote": "LEFT OUTER JOIN zbooking AS b",
+      "category": "사실오류",
+      "severity": "높음",
+      "confidence": "추정",
+      "claim": "classic Open SQL의 LEFT OUTER JOIN ON 조건에 `AND b~status <> 'C'` 처럼 비동등(`<>`) 비교와 리터럴 비교를 넣었다. classic 구간(CH01～17) 문법으로는 문법 오류가 될 가능성이 높다.",
+      "evidence": "SQL을 아는 독자가 그대로 SE38에 옮겨 적었을 때 바로 막히는 지점이다. classic Open SQL(7.40 이전 표기)은 LEFT OUTER JOIN의 ON 조건을 'AND로 연결된 = 비교'로 제한해 왔고, `<>`나 리터럴 비교는 ON이 아니라 다른 위치로 밀어내야 했다. 이 제약이 완화된 것은 modern ABAP SQL 쪽 이야기인데, 이 레슨은 스스로 classic 구간임을 여러 곳에서 못박고 있다(CH17-L03: \"여기는 classic 문법 구간이라\"). 즉 레슨이 선언한 문법 구간과 예제 코드가 어긋난다.",
+      "suggestion": "취소 예매 제외 조건을 ON에서 빼고 집계 방식으로 바꾼다 — 예: 서브셀렉트/별도 집계 후 병합, 또는 예매를 INNER JOIN + WHERE b~status <> 'C' 로 구하고 예매 0건 회차는 별도 처리. 만약 대상 릴리스에서 실제로 허용된다면 '이 표기는 7.4x 이상에서만 통과' 같은 각주를 달아 classic 선언과의 모순을 해소한다."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH17/CH17-L10.md",
+      "quote": "\" PBO 경로라 'E' 대신 'S' + RETURN — 이유는 CH17-L07 참고",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "`FORM build_fieldcat` 안의 `RETURN`은 그 FORM만 빠져나올 뿐 호출자 `build_alv`는 계속 진행해 `display_grid`까지 간다. 그런데 CH17-L04는 같은 `RETURN`을 두고 \"카탈로그 없이 다음 단계로 가지 않는다\"라고 설명한다.",
+      "evidence": "다른 언어에서 온 개발자는 return이 '현재 함수만' 끝낸다는 것을 알기 때문에, L04의 주석 문구와 L10의 실제 호출 구조(build_alv가 5개 PERFORM을 순차 실행)를 나란히 보면 곧바로 모순을 느낀다. 실제로 merge가 실패해도 build_layout·display_grid가 그대로 실행되어 빈 fieldcat으로 표시가 시도된다 — L10 자신이 '흔한 실수'에서 경고한 \"merge 실패 무시\" 시나리오가 본문 골격 코드에서 재현되는 셈이다.",
+      "suggestion": "build_alv가 실패를 인지하도록 고친다 — 예: build_fieldcat 실패 시 gt_fcat을 비운 채 플래그/`sy-subrc`를 남기고 build_alv에서 `IF gt_fcat IS INITIAL. RETURN. ENDIF.` 로 조립을 중단. 아울러 L04 주석의 \"다음 단계로 가지 않는다\"는 '이 FORM(또는 이 처리)을 중단한다' 정도로 정확히 표현한다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH17/CH17-L10.md",
+      "quote": "MODULE status_0100 OUTPUT.",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "종합 실습 골격의 PBO 모듈에 `SET PF-STATUS`가 없는데, PAI에서는 기능 코드 `'SEL'`·`'BACK'`을 CASE로 받는다. GUI 상태가 없으면 그 기능 코드를 발생시킬 버튼 자체가 존재하지 않아 코드가 실행되지 않는다.",
+      "evidence": "화면 스케치에는 `[조회] [뒤로]` 버튼이 그려져 있고 재조회 고리 설명도 이 버튼을 전제로 한다. 그런데 골격 코드는 컨트롤 조립만 다루고 GUI 상태 설정을 한 줄도 보여주지 않는다. 이벤트 소스가 없는 이벤트 핸들러는 다른 언어 경험자 눈에 바로 '이거 안 도는데?'로 읽히고, 입문자는 그대로 따라 만들었을 때 조회 버튼이 없어 막힌다. 챕터 이름이 '종합 실습 — 완성'이라 기대치도 높다.",
+      "suggestion": "`MODULE status_0100 OUTPUT` 첫 줄에 `SET PF-STATUS 'S0100'.`(+ 선택적으로 `SET TITLEBAR`)을 넣고, 그 상태에 기능 코드 `SEL`/`BACK`을 정의해야 한다는 한 줄 안내를 붙인다. 또는 '화면·GUI 상태 만들기는 앞 챕터에서 다뤘으므로 생략'임을 명시해 누락이 아니라 생략임을 알린다."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH17/CH17-L05.md",
+      "quote": "Field Catalog가 **컬럼별** 설명서라면, [[Layout]](타입 `LVC_S_LAYO`)은 **표 전체**의",
+      "category": "용어 충돌",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "바로 앞 챕터(Screen Painter/Module Pool)에서 'Layout'은 화면 요소를 배치하는 **화면 레이아웃**을 뜻했는데, 여기서 같은 낱말이 ALV 표의 표시 옵션 구조체(`LVC_S_LAYO`)를 가리킨다. 두 Layout이 다르다는 구분이 어디에도 없다.",
+      "evidence": "CH17-L10은 '화면 0100', 'Custom Control CONT100' 같은 Screen Painter 문맥을 계속 쓰고, CH17-L01도 CH16의 화면 만들기를 전제로 시작한다. 같은 챕터 안에서 화면 Layout(Screen Painter)과 ALV Layout(LVC_S_LAYO)이 공존하는데 L05는 '표 전체의 보기 설정'이라고만 말한다. CSS/뷰 레이아웃 개념에 익숙한 경력자일수록 처음엔 화면 배치 이야기로 오독한다.",
+      "suggestion": "L05 도입부에 한 줄 구분 콜아웃 추가 — \"여기서 Layout은 Screen Painter의 화면 배치가 아니라, ALV 표 자체의 표시 옵션 묶음(`LVC_S_LAYO`)이다.\" CH17-L01이 '컨테이너' 낱말을 구분해 준 것과 같은 방식이면 일관된다."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH17/CH17-L06.md",
+      "quote": "ALV의 [[Display Variant]]는 사용자가 **자기 보기",
+      "category": "용어 충돌",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "ABAP에는 이미 '선택화면 Variant(프로그램 실행 조건 저장)'라는 동명 개념이 있는데, 이 레슨은 Display Variant를 '데이터 저장이 아니다'라고만 구분하고 선택화면 Variant와의 충돌은 짚지 않는다.",
+      "evidence": "레슨은 \"**Variant는 데이터 저장이 아니다.**\"라는 대비만 제시한다. 그러나 학습자가 실제로 혼동하는 상대는 '데이터'가 아니라 SE38에서 저장하던 실행 조건 Variant다(선택화면 학습 이후 독자 기준). 두 Variant는 저장 대상(입력값 vs 컬럼 배치)과 저장 위치가 완전히 다르므로, 대비 상대를 잘못 잡으면 구분이 서지 않는다. 다만 선행 챕터에서 선택화면 Variant를 어느 정도로 다뤘는지 확인하지 못해 추정으로 둔다.",
+      "suggestion": "\"Variant는 데이터 저장이 아니다\" 콜아웃에 한 줄을 덧대 대비 상대를 하나 더 준다 — \"실행 조건(입력값)을 저장하던 선택화면 Variant와도 다르다. 이건 **표 보이는 방식**만 저장한다.\""
+    },
+    {
+      "seq": 6,
+      "file": "content/abap/CH17/CH17-L07.md",
+      "quote": "- `EXPORTING`=어떻게 보일지, `CHANGING`=무엇을 그릴지로 나눠 기억하고, `sy-subrc`로 성공을 확인한다.",
+      "category": "과잉",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "한 레슨 안에서 EXPORTING/CHANGING 구분이 네 번(💡 콜아웃 · 그 아래 불릿 · '흔한 실수' 첫 항목 · '정리' 둘째 항목) 거의 같은 말로 반복된다. 입문자 기준으로도 중복이다.",
+      "evidence": "콜아웃이 이미 '설정 vs 데이터'를 두 줄로 나눠 설명하고 예외까지 달았는데, 곧이어 `it_outtab`/`it_fieldcatalog` 불릿이 같은 대응을 되풀이하고, '흔한 실수'가 다시 \"데이터·fieldcat은 **`CHANGING`**, 설정은 `EXPORTING`이다\"로, '정리'가 또 한 번 같은 문장으로 닫는다. 한 페이지 안 4회 반복은 강조가 아니라 진도를 느리게 만든다.",
+      "suggestion": "콜아웃 1회 + '정리' 1회로 줄이고, 중간의 불릿과 '흔한 실수' 항목은 다른 내용(예: `EXCEPTIONS` 처리, `i_save` 값 의미)으로 교체한다."
+    },
+    {
+      "seq": 7,
+      "file": "content/abap/CH17/CH17-L07.md",
+      "quote": "> - `EXPORTING`(`is_layout`·`is_variant`·`i_save`) = **어떻게 보일지**(설정). 호출하는 쪽이 **넘겨주는 입력값**이다.",
+      "category": "용어 충돌",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "타 언어 경력자가 가장 걸려 넘어지는 지점 — 호출부의 `EXPORTING`이 '메서드가 내보내는 값'이 아니라 '호출자가 넣어 주는 입력'(= 메서드 정의부의 IMPORTING)이라는 방향 반전을 명시적으로 짚지 않는다.",
+      "evidence": "본문은 \"호출하는 쪽이 넘겨주는 입력값이다\"라고 결과만 말할 뿐, 왜 하필 이름이 EXPORTING인지(호출자 관점 명명, 정의부에서는 IMPORTING으로 뒤집힌다)는 설명하지 않는다. out 파라미터 관례(C#의 out/ref, Java의 반환)에 익숙한 독자는 EXPORTING을 출력 파라미터로 오독하기 쉽고, 이 반전을 모르면 CH21의 메서드 정의부 학습에서 다시 헷갈린다. 입문자에게도 손해는 아니지만 우선순위상 낮음.",
+      "suggestion": "콜아웃 끝에 한 줄 각주 — \"이름은 **호출하는 쪽 기준**이다. 여기서 EXPORTING으로 넘긴 값은 메서드 정의부에서 IMPORTING으로 받는다(정의부 관점은 CH21).\""
+    },
+    {
+      "seq": 8,
+      "file": "content/abap/CH17/CH17-L01.md",
+      "quote": "지금 레슨은 맨 위 **방을 잡는** 단계다. 각 조각이 왜 필요한지는 그 레슨에서 불편과 함께 만난다.",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "9조각 로드맵 표가 챕터 전체 지도 역할을 하는데, '조립된 전체 코드를 먼저 보고 싶은 독자는 종합 실습으로'라는 지름길 안내나 링크가 없다. 표의 조각 이름들도 해당 레슨으로 링크되어 있지 않다.",
+      "evidence": "실제 완성 코드는 CH17-L10에 한 번에 모여 있지만, L01에서 L10으로 가는 안내는 없고 각 레슨 말미의 '다음 →' 사슬을 10번 따라가야 도달한다. 코드 골격을 먼저 보고 세부를 역추적하는 독자(경력자 다수)에게는 진입로가 막혀 있는 셈이다. 입문자용 순차 흐름은 그대로 두고 링크 한 줄만 추가하면 되는 저비용 개선이다.",
+      "suggestion": "로드맵 표 아래에 한 줄 — \"전체가 조립된 모습을 먼저 보고 싶다면 [종합 실습 — 예매 목록 Grid ALV 완성](CH17-L10.html)을 훑고 돌아와도 좋다.\" 표의 조각 이름에 해당 레슨 링크를 걸어 두면 재방문 시 색인으로도 쓸 수 있다."
+    },
+    {
+      "seq": 9,
+      "file": "content/abap/CH17/CH17-L09.md",
+      "quote": "색 코드는 임의 RGB가 아니라 `C` + **색번호(0～7)** + **강조(0/1)** + **반전(0/1)** 네",
+      "category": "사실오류",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "ALV 색 코드의 색번호 범위를 '0～7'로 적었으나, 실제로 의미 있는 색은 1～7이다(0은 색 지정 없음/기본).",
+      "evidence": "예시로 든 `'C610'`의 6도 1～7 범위 안이며, ALV 색상표는 1=회청, 2=회록, 3=황, 4=청, 5=녹, 6=적, 7=오렌지로 7가지가 정본이다. 0을 유효한 색번호로 소개하면 학습자가 `'C010'` 같은 코드를 넣고 '색이 안 나온다'고 헤맬 수 있다. 릴리스별 표기 차이를 완전히 배제하지 못해 추정으로 둔다.",
+      "suggestion": "\"색번호(1～7)\"로 고치고, 필요하면 \"0은 색 없음\"을 괄호로 덧붙인다."
+    },
+    {
+      "seq": 10,
+      "file": "content/abap/CH17/CH17-L10.md",
+      "quote": "FORM build_alv.",
+      "category": "오개념 유발",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "첫 PBO에서 `go_grid IS INITIAL`이라 `build_alv` → `select_booking`이 즉시 실행되는데, 이때 `gv_conc`는 아직 사용자가 입력하기 전이라 비어 있다. 화면에 들어서자마자 \"해당 공연의 예매 데이터가 없습니다.\" 메시지가 뜨는 흐름이 된다.",
+      "evidence": "CH17-L03에서는 `gv_conc = 'C001'.`로 값을 직접 넣어 이 문제를 피했지만, L10 골격에는 초기값 대입이 없다. 화면 스케치는 `공연번호 gv_conc: C001`로 값이 이미 있는 상태를 그려 놓아, 코드와 그림이 어긋난 채 읽힌다(Screen Painter 기본값 지정을 전제했다면 그 사실이 본문에 없다). PBO/PAI 왕복 순서에 익숙지 않은 입문자는 '왜 처음부터 없다고 뜨지?'에서 막힌다.",
+      "suggestion": "초기화 지점을 명시한다 — `INITIALIZATION`/첫 PBO에서 `IF gv_conc IS INITIAL. gv_conc = 'C001'. ENDIF.` 를 넣거나, `select_booking`을 첫 PBO 조립에서 빼고 [조회] 버튼을 눌렀을 때만 데이터를 담도록 바꾼다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "경력자 시선에서 이 챕터는 드물게 잘 쪼개진 편이다. '방→표→자료→설명서→보기→저장→표시→갱신→색' 로드맵이 L01에 먼저 나오고 레슨마다 조각 하나씩만 다뤄, ALV Grid처럼 부품이 많은 주제를 훑기에 인지 부담이 낮다. SALV와의 차이표(L02), '데이터 변경 ≠ 화면 갱신'(L08), 'info_fname은 값이 아니라 필드명'(L09) 같은 대목은 경력자에게도 바로 실용적이다. 과잉 설명은 대체로 입문자에게 필요한 수준이라 감점 요소가 아니며, 유일하게 걸린 중복은 L07의 EXPORTING/CHANGING 4회 반복이었다. 반면 코드 정확도에서 손볼 곳이 있다 — 가장 무거운 것은 L09의 classic Open SQL LEFT OUTER JOIN ON 조건에 `<>` 리터럴 비교를 넣은 점으로, 레슨 스스로 선언한 classic 구간 문법과 충돌한다. 종합 실습(L10)은 두 군데가 아쉽다: FORM 안 `RETURN`이 호출자 조립을 멈추지 못해 L04의 설명과 어긋나고, 기능 코드 SEL/BACK을 받으면서 `SET PF-STATUS`가 없어 버튼 소스가 없다. 용어 축에서는 앞 챕터의 화면 Layout과 `LVC_S_LAYO` Layout이 같은 이름으로 충돌하는데 구분 문구가 없는 점(컨테이너는 L01에서 잘 구분해 줬기에 더 눈에 띈다), 호출부 `EXPORTING`이 정의부 IMPORTING으로 뒤집힌다는 안내가 없는 점이 남는다. 지름길 축은 로드맵 표에서 L10 완성 코드로 가는 링크 한 줄이면 해결된다. 전체 구조·서술은 유지할 만하고, 위 국소 수정만으로 충분하다고 본다."
+  }
+}

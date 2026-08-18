@@ -1,0 +1,60 @@
+{
+  "agent": "AG01",
+  "model": "sonnet",
+  "target": "CH17",
+  "persona_ack": "나는 은서다. 개발·전공 경험이 전혀 없는 24세 문과 출신 입문자로, 이 사이트로 ABAP을 처음 공부한다. CH17의 레슨을 L01부터 L10까지, _chapter.md 포함해 순서대로 처음 읽는 사람의 시선으로 통독했다. 모르는 단어가 나오면 그 자리에서 멈추는 성격대로, 그 자리(또는 같은 챕터 앞 레슨)에 풀이가 없으면 막힌 것으로 기록했다.",
+  "method": "도구 실행 없이 대상 11개 파일을 첫 레슨부터 순서대로 정독. 각 레슨에서 새로 등장하는 용어·문법·코드가 그 자리 또는 같은 챕터 앞 레슨에서 풀이됐는지 문장 단위로 추적.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L10.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L04.md",
+      "quote": "inconsistent_interface = 1",
+      "category": "단절",
+      "severity": "높음",
+      "confidence": "추정",
+      "claim": "CALL FUNCTION/메서드 호출에서 EXCEPTIONS 뒤에 나오는 '이름 = 숫자' 목록(예: inconsistent_interface = 1, program_error = 2, OTHERS = 3)이 왜 이런 형태인지, 그 숫자가 어떻게 뒤이은 sy-subrc 값과 연결되는지 CH17 어디서도 설명되지 않은 채 처음 등장해 그대로 쓰인다.",
+      "evidence": "L04에서 이 패턴이 챕터 안에서 처음 나오는데, 앞선 레슨(L01~L03)에는 이런 문법이 전혀 없었고 다른 챕터로의 링크도 없다. 그런데 이후 L07(SET_TABLE_FOR_FIRST_DISPLAY의 EXCEPTIONS invalid_parameter_combination=1 ... OTHERS=4), L08(refresh_table_display의 EXCEPTIONS finished=1, OTHERS=2), L10(build_fieldcat·display_grid의 EXCEPTIONS OTHERS=1)에서 계속 재사용된다. 은서 입장에서는 'inconsistent_interface가 왜 1이고 OTHERS가 왜 3인지, 이게 sy-subrc <> 0과 무슨 상관인지' 첫 등장부터 이해할 단서가 본문에 없다. 게다가 L04는 세 개 이름을 나열하는데 L07·L10에서는 이름 없이 OTHERS만 쓰는 등 형태가 달라져서(같은 개념의 다른 겉모습인지 확신이 서지 않는다), 재독해도 명확해지지 않고 계속 '외워서 베끼는' 느낌으로 남는다.",
+      "suggestion": "L04에서 이 패턴이 처음 등장하는 시점에 1~2문장으로 'EXCEPTIONS 뒤 이름=숫자는 함수 실패 원인별 코드이고, 그 숫자가 그대로 sy-subrc에 들어간다. OTHERS는 나머지 모든 오류를 받는 자리'라는 인라인 풀이를 붙이거나, 이 문법을 이미 다룬 이전 챕터가 있다면 그곳으로 링크한다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L01.md",
+      "quote": "실패한다. 이 실패는 조용히 넘어가지 않고, 처리되지 않은 예외로 프로그램이 중단(덤프)될",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "'예외'와 '덤프'라는 단어가 인라인 풀이나 glossary 마킹([[ ]]) 없이 처음 쓰인다.",
+      "evidence": "이 문장 앞뒤 어디에도 '예외(오류가 발생했는데 아무도 처리하지 않은 상태)'나 '덤프(프로그램이 강제 종료되며 뜨는 오류 화면)'에 대한 설명이 없다. 문맥상 '뭔가 나쁜 일이 생긴다'는 정도는 짐작되지만, '덤프'가 구체적으로 무엇을 뜻하는지는 이 챕터 안에서 알 길이 없다.",
+      "suggestion": "괄호 안에 '(프로그램이 강제로 멈추면서 오류 화면이 뜨는 것)' 정도의 짧은 풀이를 덧붙이거나 glossary 용어로 등록한다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L09.md",
+      "quote": "모자라서, [실습 — 공연별 예매현황 리포트](CH13-L08.html)에서 만든 **회차별 집계**를 그대로",
+      "category": "과부하",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "'행 색상'이 주제인 레슨인데, 본문 코드 블록의 대부분(TYPES 구조 정의 + 3-테이블 조인·LEFT OUTER JOIN·GROUP BY·SUM AS 집계 SQL)이 색상과 무관한 이전 챕터 실습 코드를 통째로 다시 불러오는 내용이라, 정작 이번 레슨의 핵심인 rowcolor 관련 코드는 마지막 몇 줄뿐이다.",
+      "evidence": "코드 블록 23~57행 중 rowcolor를 직접 다루는 부분은 TYPES의 필드 하나, LOOP 안 IF문 두 줄, info_fname 대입 한 줄뿐이고 나머지는 CH13-L08의 조인·집계 쿼리 재현이다. '그대로 가져온다'는 링크 한 문장만으로 이 복잡한 쿼리 전체를 다시 소화하라고 요구하는 셈이라, 색상 로직에 집중하려던 흐름이 SQL 조인을 다시 이해하는 데로 끌려간다.",
+      "suggestion": "집계 쿼리 블록을 details(접기)로 감싸거나 '이 부분은 CH13-L08 그대로이니 필요하면 펼쳐 확인'이라는 안내를 코드 앞에 붙여, rowcolor 관련 코드와 시각적으로 분리한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "L01의 '세 가지 이름을 구분하자' 표(CONT100·go_cont·CL_GUI_CUSTOM_CONTAINER)와 L02의 '그리드를 만들었는데 왜 표가 안 보이지?' 같은 선제적 FAQ 장치는 헷갈리기 쉬운 지점을 미리 짚어줘 실제로 잘 읽혔다. 다만 CALL FUNCTION/메서드 호출의 EXCEPTIONS 이름=숫자 패턴이 챕터 전체에서 설명 없이 4번 재사용되는 점과, L09에서 색상 설명 전에 이전 챕터 집계 쿼리 전체가 재등장하는 점은 첫 완독 시 걸림돌이 될 수 있어 경미한 보강을 권한다."
+  }
+}

@@ -79,6 +79,12 @@
 <span class="tok-kw">ENDIF</span>.
 
 <span class="tok-kw">DATA</span>(lv_idx) = line_index( lt_booking[ booking_id = lv_id ] ).  <span class="tok-com">" 위치(못 찾으면 0)</span></code></pre></div></div>
+<p>잠깐, 방금 &quot;없는 행을 직접 읽으면 예외&quot;라고 했는데, <code>line_exists( )</code> 괄호 안에도 그
+<code>lt_booking[ … ]</code>이 그대로 들어 있다. 왜 여기서는 예외가 안 날까?
+<strong><code>line_exists</code>·<code>line_index</code>의 괄호 안은 값을 꺼내는 자리가 아니기 때문</strong>이다. 이 자리의
+table expression은 &quot;그런 행이 있는가&quot;를 판정하는 <strong>검사 조건</strong>으로만 쓰이고, 행의 값을
+실제로 만들지 않는다. 값을 꺼내려는 시도 자체가 없으니, 없는 행이어도 예외 없이
+결과만(있다/없다 · 몇 번째) 돌아온다.</p>
 <ul>
 <li><code>line_exists( )</code> — 그 행이 있는지 먼저 확인(성공 여부는 <strong><code>sy-subrc</code>가 아니라</strong> 이걸로).</li>
 <li><code>line_index( )</code> — 찾은 <strong>위치</strong>. 못 찾으면 <code>0</code>(hashed key 등 순서를 말할 수 없으면 <code>-1</code>).</li>

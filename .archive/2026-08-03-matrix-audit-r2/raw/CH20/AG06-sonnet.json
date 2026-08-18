@@ -1,0 +1,57 @@
+{
+  "agent": "AG06",
+  "model": "sonnet",
+  "target": "CH20",
+  "persona_ack": "20년차 SAP ABAP 아키텍트로서 CH20(고급 ABAP SQL: CTE·Subquery·Set operation·Window) 8개 파일을 문법·예시 적절성·위험한 생략·안티패턴 관점에서 감사했다.",
+  "method": "대상 8개 파일을 직접 열람해 ABAP Open SQL 문법(WITH/CTE `+` 접두, EXISTS/IN subquery, UNION/INTERSECT/EXCEPT, OVER/PARTITION BY/RANK/DENSE_RANK)을 지식 기준으로 검토했고, 각 레슨의 예시 데이터(zconcert/zbooking)와 예상 결과표를 손으로 재계산해 수치 정합성을 전수 검증했다(L02 +booked 합계, L05 GROUP BY vs Window vs RANK/DENSE_RANK 동점 처리, L07 과제1~4 및 직접 해 볼 과제 1~3의 검산 문구까지). 웹 검색은 사용하지 않았다.",
+  "errors": [],
+  "files_read": [
+    "CH20/_chapter.md",
+    "CH20/CH20-L01.md",
+    "CH20/CH20-L02.md",
+    "CH20/CH20-L03.md",
+    "CH20/CH20-L04.md",
+    "CH20/CH20-L05.md",
+    "CH20/CH20-L06.md",
+    "CH20/CH20-L07.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH20-L04.md",
+      "quote": "`UNION`은 `UNION DISTINCT`와 같고, `INTERSECT`·`EXCEPT`도 `DISTINCT`를 붙이든 빼든 같다.",
+      "category": "사실 오류(문법)",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "ABAP SQL의 SELECT 집합 연산 구문은 `UNION [ALL]` / `INTERSECT [DISTINCT]` / `EXCEPT [DISTINCT]`로 각기 다른 선택지를 허용한다고 기억한다. 즉 `UNION` 뒤에는 `ALL`만 붙일 수 있고 `DISTINCT` 키워드 자체는 허용되지 않는 반면(중복 제거가 기본 동작일 뿐 `UNION DISTINCT`라는 표기는 syntax 상 존재하지 않을 가능성이 높다), `INTERSECT`·`EXCEPT`는 반대로 `DISTINCT`만 명시할 수 있고 `ALL`은 없다.",
+      "evidence": "본문은 '`UNION`은 `UNION DISTINCT`와 같고'라고 서술해 `UNION DISTINCT`가 유효한 ABAP SQL 표기인 것처럼 가르친다. `INTERSECT`/`EXCEPT`에 `ALL`이 없다는 뒷문장은 맞는 서술로 기억하지만, `UNION`에 `DISTINCT` 키워드를 붙일 수 있다는 부분은 확신이 서지 않는다 — 실제로는 `UNION`(=DISTINCT 동작)과 `UNION ALL` 두 표기만 허용되고 `UNION DISTINCT`라는 글자 그대로의 표기는 syntax 오류일 가능성이 있다. 학습자가 이 문장을 그대로 믿고 실제 코드에 `UNION DISTINCT`를 타이핑하면 컴파일이 안 될 위험이 있다.",
+      "suggestion": "'UNION은 DISTINCT가 기본 동작이라 UNION만 써도 되고, 중복을 남기려면 UNION ALL을 붙인다(UNION 뒤에 DISTINCT라는 글자를 직접 쓰지는 않는다). INTERSECT·EXCEPT는 반대로 DISTINCT를 명시하거나 생략해도 같은 동작이고 ALL은 없다'처럼 UNION과 INTERSECT/EXCEPT의 허용 키워드 비대칭을 정확히 구분해 서술하고, 실제 시스템에서 syntax check로 확인해 보라는 문구를 추가한다."
+    },
+    {
+      "seq": 2,
+      "file": "CH20-L03.md",
+      "quote": "ABAP 공식 keyword 문서도 긴 컬럼 목록 대신 값 하나만 쓰라고 권한다.",
+      "category": "출처 불명확 주장",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "EXISTS subquery에서 SELECT list에 값 하나(또는 상수)만 쓰는 것이 관례적으로 권장되는 것은 맞지만, 이를 'ABAP 공식 keyword 문서가 권한다'고 특정 출처를 명시해 단언하는 부분은 정확히 기억나지 않는다.",
+      "evidence": "EXISTS는 존재 여부만 판정하므로 안쪽 SELECT list의 컬럼이 결과에 영향을 주지 않는다는 설명 자체는 기술적으로 맞다. 다만 '공식 keyword 문서'라는 구체적 출처 인용이 실제 문서 문구와 일치하는지는 웹 검색 없이 확신할 수 없다 — 일반적인 SQL 모범 사례(성능·가독성)일 뿐 ABAP 공식 문서의 명시적 권고인지는 불확실하다.",
+      "suggestion": "출처를 특정하는 표현('ABAP 공식 keyword 문서도 …라고 권한다') 대신 '실무 관례상' 또는 '가독성·성능 관점에서'처럼 일반화된 근거로 바꾸거나, 실제 문서 인용이 확인되면 그대로 유지한다."
+    },
+    {
+      "seq": 3,
+      "file": "CH20-L05.md",
+      "quote": "`RANK`·`DENSE_RANK`엔 `OVER` 안 `ORDER BY`가 필수다. 없으면 순위가 무의미하다.",
+      "category": "사실 오류(문법, 가능성)",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "RANK·DENSE_RANK에 OVER 안 ORDER BY가 '필수'라고 먼저 말해 놓고, 뒤이어 '없으면 순위가 무의미하다'고 표현해 마치 생략해도 컴파일은 되고 결과만 의미 없어지는 것처럼 읽힌다. 그러나 ABAP SQL 컴파일러가 RANK/DENSE_RANK에서 ORDER BY 누락을 syntax 오류로 잡아낼 가능성이 있다(표준 SQL 다수 구현에서 순위 함수는 ORDER BY가 없으면 컴파일 자체가 안 되는 경우가 흔하다).",
+      "evidence": "문장 앞부분 '필수다'는 정확한 표현이지만, 바로 뒤 '없으면 순위가 무의미하다'는 '컴파일은 되지만 결과가 의미 없다'는 뉘앙스를 준다. 실제로 필수 조건 위반이 syntax 오류라면, 학습자는 'ABAP이 문법 오류로 알려주지 않고 조용히 이상한 값을 준다'고 오해해 디버깅 방향을 잘못 잡을 수 있다.",
+      "suggestion": "'필수다'와 '없으면 무의미하다'가 같은 문장 안에서 모순되지 않도록, '없으면 syntax 오류가 난다(또는: 없으면 컴파일 시점에 걸러진다)'처럼 실제 실패 시점을 명확히 하거나, 정말 컴파일이 되고 결과만 이상해지는 것이 맞다면 그 근거(어떤 동작인지)를 한 줄 더 보탠다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH20 7개 레슨은 CTE·Subquery/EXISTS·Set operation·Window라는 네 고급 SQL 도구를 왜-무엇-어떻게-실수 흐름으로 일관되게 다루고, zconcert/zbooking 예시 데이터와 결과표의 수치가 전 레슨에 걸쳐 정확히 재계산된다(L02 booked 합계, L05 GROUP BY/Window/RANK·DENSE_RANK 동점 처리, L07 과제 1~4 및 직접 해 볼 과제의 검산 문구까지 오차 없음). COALESCE 누락 시 null이 ABAP 초기값 0으로 조용히 바뀌는 함정, CTE/EXISTS/EXCEPT/Window 간 선택 기준, 릴리스별 지원 여부·성능 단정 금지 등 전문가가 짚을 위험 요소도 스스로 짚어 놓아 완성도가 높다. 다만 UNION/INTERSECT/EXCEPT의 DISTINCT·ALL 허용 키워드 비대칭 서술, EXISTS subquery 컬럼 개수에 대한 '공식 문서' 출처 인용, RANK/DENSE_RANK의 ORDER BY 누락 시 실패 양상(syntax 오류 vs 무의미한 결과) 서술 세 곳은 확신이 서지 않아 추정 신뢰도로 짚었다 — 실제 시스템에서 syntax check로 재확인이 필요하다."
+  }
+}

@@ -1,0 +1,628 @@
+{
+  "target": "CH17",
+  "inputs": 28,
+  "missing": [],
+  "clusters": [
+    {
+      "cluster_id": "CH17-C001",
+      "file": "content/abap/CH17/CH17-L10.md",
+      "claim": "종합 실습 골격에서 FORM build_fieldcat 안의 RETURN은 그 FORM만 종료할 뿐, 호출자 build_alv는 build_layout·display_grid를 조건 없이 이어 실행한다. 따라서 Field Catalog merge가 실패해도 빈 gt_fcat으로 set_table_for_first_display가 호출되어, L04의 '카탈로그 없이 다음 단계로 가지 않는다'는 설명 및 L10 스스로 경고한 '흔한 실수(merge 실패 무시)'와 정면으로 모순된다. 실패 깃발/파라미터로 상위 조립을 중단시키거나 최소한 'RETURN은 그 FORM만 끝낸다'는 정정이 필요하다.",
+      "severity": "높음",
+      "confidence": "확실",
+      "supporters": ["AG01-opus#5", "AG01-gpt-5.6-sol#3", "AG03-opus#2", "AG03-gpt-5.6-sol#4", "AG05-sonnet#1", "AG06-opus#1", "AG06-gpt-5.6-sol#1", "AG06-gemini-3.6-flash-high#3", "AG09-opus#2", "AG09-gpt-5.6-sol#1"],
+      "conflict": false,
+      "quotes": ["\" PBO 경로라 'E' 대신 'S' + RETURN — 이유는 CH17-L07 참고", "FORM build_alv."]
+    },
+    {
+      "cluster_id": "CH17-C002",
+      "file": "content/abap/CH17/CH17-L09.md",
+      "claim": "'행 색상' 레슨의 유일한 본문 코드 블록 대부분이 색과 무관한 준비 코드(로컬 TYPES 6필드 + ZPERF·ZCONCERT·ZBOOKING 3테이블 JOIN·SUM·GROUP BY 집계)로 채워져, 정작 신규 개념인 rowcolor·info_fname 관련 줄은 서너 줄뿐이다. 데이터 모델도 gt_booking에서 회차 집계(gt_perf)로 급전환되어 색상 원리 학습 전에 SQL 해독 부담이 크다. 집계 블록을 접기(details)·요약·결과 표로 분리하거나, 최소 예제(또는 기존 gt_booking + 취소 상태 색상)로 색 개념을 먼저 완결하라는 제안이 7벌에서 공통된다.",
+      "severity": "높음",
+      "confidence": "확실",
+      "supporters": ["AG01-opus#4", "AG01-sonnet#3", "AG01-gpt-5.6-sol#1", "AG05-opus#2", "AG05-sonnet#2", "AG05-gpt-5.6-sol#1", "AG05-gemini-3.6-flash-high#1"],
+      "conflict": false,
+      "quotes": ["매진 판정에는 회차별 **정원과 예약 좌석 합계**가 필요하다.", "SELECT pf~concert_id pf~perf_no pf~perf_date c~capacity"]
+    },
+    {
+      "cluster_id": "CH17-C003",
+      "file": "content/abap/CH17/CH17-L09.md",
+      "claim": "L09의 LEFT OUTER JOIN ON 절에 비등가 비교와 리터럴 비교(AND b~status <> 'C')가 들어 있다. classic Open SQL(CH01～17 구간 문법)은 outer join의 ON 조건을 '=' 비교·AND 연결로 제한해 왔으므로 구문 오류(활성화 차단) 소지가 있고, 레슨이 스스로 선언한 classic 구간과 어긋난다. 다만 7.4x/7.5x 이후 제약 완화 여부가 릴리스 의존이라 클러스터 확신은 추정으로 둔다(취소 제외 집계를 별도 SELECT + LOOP 결합으로 재구성하거나 각주로 릴리스 조건을 명시하는 수정 권고).",
+      "severity": "높음",
+      "confidence": "추정",
+      "supporters": ["AG03-opus#1", "AG06-opus#2", "AG06-gemini-3.6-flash-high#2", "AG09-opus#1"],
+      "conflict": false,
+      "quotes": ["LEFT OUTER JOIN zbooking AS b", "AND b~status     <> 'C'"]
+    },
+    {
+      "cluster_id": "CH17-C004",
+      "file": "content/abap/CH17/CH17-L10.md",
+      "claim": "L10은 '배운 조각(색 포함)을 하나의 화면으로 모은다'고 약속하지만, 제공된 완성 골격에는 색 코드 컬럼·info_fname·색 판정이 전혀 없고 행 색상은 '손이 가장 많이 가는' 독자 과제로 넘겨진다. 직전 레슨의 가장 복잡한 개념이 종합 모델에서 빠져 챕터의 통합 완료 경험이 성립하지 않는다. 골격에 최소 색상 구현을 포함하거나 레슨 범위를 '색상 제외 기본 골격'으로 정직하게 조정해야 한다.",
+      "severity": "높음",
+      "confidence": "확실",
+      "supporters": ["AG01-gpt-5.6-sol#2", "AG03-gpt-5.6-sol#5", "AG05-gpt-5.6-sol#2"],
+      "conflict": false,
+      "quotes": ["지금까지는 조각을 하나씩 배웠다: 자리·그리드·데이터·Field Catalog·Layout·Variant·display·refresh·색.", "1. **매진 회차 행 색상** — 지금 골격의 `gt_booking`은 DDIC 구조(`zbooking`) 그대로라"]
+    },
+    {
+      "cluster_id": "CH17-C005",
+      "file": "embeds/abap/CH17-L05-S01.html",
+      "claim": "위젯의 대표 학습 포인트인 cwidth_opt 토글이 실제 레슨 iframe 폭(801px)에서 아무 시각 변화를 만들지 않는다. Playwright 실측 결과 끄기 전후 셀 폭이 170px로 동일하고 말줄임이 나타나지 않으며(560px 이하에서만 잘림 관찰), 원인은 table-layout:fixed 탓에 .clip의 max-width:78px가 열 폭에 반영되지 않는 것이다. colgroup으로 열 폭 자체를 토글하도록 고쳐야 '눌러도 배우는 게 없는' 헛체험이 해소된다.",
+      "severity": "높음",
+      "confidence": "확실",
+      "supporters": ["AG02-opus#1"],
+      "conflict": false,
+      "quotes": ["특히 <code>cwidth_opt</code>를 끄면 <b>긴 고객명이 잘리고</b>, 켜면 컬럼이 넓어집니다."]
+    },
+    {
+      "cluster_id": "CH17-C006",
+      "file": "content/abap/CH17/CH17-L03.md",
+      "claim": "R3의 'ABAP 고유 용어는 영어 원문' 규칙에도 불구하고 같은 문단·같은 챕터 안에서 'Internal Table'과 직역 '내부 테이블'이 혼용된다(L02·L03·L04·L08). 특히 L03은 [[Internal Table]] 마킹 직후 문장에서 곧바로 '내부 테이블'로 전환해, 입문자가 두 표기를 다른 개념으로 오인할 여지가 있다. 산문 표기를 Internal Table로 통일하거나 첫 등장 병기 후 한 형태만 쓰는 정리가 필요하다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG04-opus#6", "AG04-sonnet#2", "AG04-sonnet#3", "AG04-sonnet#4"],
+      "conflict": false,
+      "quotes": ["Grid ALV는 그 내부 테이블을 읽어 행과 열로 그린다.", "타입 `LVC_T_FCAT`은 컬럼 설정들의 **내부 테이블**"]
+    },
+    {
+      "cluster_id": "CH17-C007",
+      "file": "content/abap/CH17/CH17-L10.md",
+      "claim": "CREATE OBJECT go_cont/go_grid 호출(L01·L02·L10)에 EXCEPTIONS 절과 sy-subrc 점검이 전혀 없다. L01 본문이 '이름 불일치 → 처리되지 않은 예외로 덤프' 위험을 직접 경고하면서도 코드는 방어하지 않고, 같은 챕터의 LVC_FIELDCATALOG_MERGE·set_table_for_first_display·refresh_table_display는 모두 EXCEPTIONS를 시연해 오류 처리 규율의 일관성이 깨진다. EXCEPTIONS + sy-subrc 추가 또는 '의도적 생략' 명시가 필요하다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG06-opus#3", "AG06-sonnet#1", "AG06-gpt-5.6-sol#2"],
+      "conflict": false,
+      "quotes": ["CREATE OBJECT go_cont EXPORTING container_name = 'CONT100'."]
+    },
+    {
+      "cluster_id": "CH17-C008",
+      "file": "content/abap/CH17/_chapter.md",
+      "claim": "챕터 도입 불편('SALV는 전체 화면을 통째로 차지한다')이 L02의 'SALV도 컨테이너를 지정해 화면 안에 넣을 수는 있다'는 정정과 충돌해, 챕터를 배우는 동기가 두 레슨 만에 흔들린다. 진짜 차별점(편집·이벤트 등 세밀 제어 폭)을 _chapter intro·L01 도입으로 끌어올리고 도입부 단정은 '기본 사용 방식'으로 한정해 서사를 재정렬해야 한다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG01-opus#6", "AG04-gpt-5.6-sol#1", "AG05-opus#1"],
+      "conflict": false,
+      "quotes": ["SALV 표는 빠르게 만들 수 있었지만 **전체 화면을 통째로** 차지했다.", "SALV도 컨테이너를 지정해 화면 안에 넣을 수는 있다."]
+    },
+    {
+      "cluster_id": "CH17-C009",
+      "file": "content/abap/CH17/CH17-L04.md",
+      "claim": "EXCEPTIONS 뒤 '이름 = 숫자' 목록(inconsistent_interface = 1 등)이 챕터 첫 등장(L04)부터 설명 없이 쓰이고, 그 숫자가 sy-subrc에 들어간다는 연결 고리도 본문에 없다. 같은 패턴이 L07·L08·L10에서 형태를 바꿔(이름 없이 OTHERS만 남는 등) 반복 재사용되어 입문자는 끝까지 외워 베끼게 된다. 첫 등장 시 1～2문장 인라인 풀이가 필요하다.",
+      "severity": "중간",
+      "confidence": "추정",
+      "supporters": ["AG01-opus#3", "AG01-sonnet#1"],
+      "conflict": false,
+      "quotes": ["inconsistent_interface = 1"]
+    },
+    {
+      "cluster_id": "CH17-C010",
+      "file": "content/abap/CH17/CH17-L06.md",
+      "claim": "본문 '직접 저장·복원해 보기' 안내는 학습자가 컬럼 순서를 바꿔 저장하는 체험을 예고하지만, 위젯에는 저장 조작이 전혀 없고 하드코딩된 사용자 A/B Variant를 '이 보기로 열기'로 복원하는 기능뿐이다. 순서 변경 → 저장 → 복원 왕복을 추가해 저장 체험을 실제로 만들거나, 본문 문구를 '이미 저장된 보기를 열어 본다'로 정정해야 한다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG02-opus#4", "AG02-gpt-5.6-sol#1"],
+      "conflict": false,
+      "quotes": ["## 직접 저장·복원해 보기 — 사용자별 보기", "사용자 A는 `예매자·좌석수`를 앞에, 사용자 B는 `상태·예매번호`를 앞에 두고 저장한다."]
+    },
+    {
+      "cluster_id": "CH17-C011",
+      "file": "embeds/abap/CH17-L07-S01.html",
+      "claim": "L07 위젯의 gt_booking 데이터에 C001 4건 외 C002 2건이 섞여 총 6건이 표시되어, L03에서 WHERE concert_id = gv_conc('C001')로 채운 gt_booking 정의와 어긋난다. L03 위젯(4건·sy-dbcnt 4)·L10 위젯(C001/C002 데이터셋 분리)과도 데이터 흐름이 끊기므로 C001 4건으로 좁히거나 전제를 명시해야 한다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG02-opus#5", "AG02-gpt-5.6-sol#2"],
+      "conflict": false,
+      "quotes": ["{booking_id:'0005',concert_id:'C002',customer:'김연아',seats:2,status:'N'}"]
+    },
+    {
+      "cluster_id": "CH17-C012",
+      "file": "content/abap/CH17/CH17-L05.md",
+      "claim": "직전 챕터(Screen Painter/Module Pool)의 화면 Layout과 이 레슨의 ALV Layout(LVC_S_LAYO, 표시 옵션 묶음)이 같은 이름으로 공존하는데 구분 문구가 없다. 일반 개발 용례(CSS/뷰의 배치·정렬)와도 뜻이 달라 경력자·입문자 모두 '컬럼 배치 설정'으로 오독할 수 있으므로, 도입부에 '여기서 Layout은 화면 배치가 아니라 표의 표시 옵션 묶음'이라는 한 줄 구분 콜아웃이 필요하다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG03-opus#4", "AG03-sonnet#4"],
+      "conflict": false,
+      "quotes": ["Field Catalog가 **컬럼별** 설명서라면, [[Layout]](타입 `LVC_S_LAYO`)은 **표 전체**의"]
+    },
+    {
+      "cluster_id": "CH17-C013",
+      "file": "content/abap/CH17/CH17-L10.md",
+      "claim": "종합 위젯에 공연 번호 입력 필드와 [조회] 버튼이 없어, 본문이 설명하는 사용자 입력 → PAI 조회 → 다음 PBO refresh 흐름을 직접 실행할 수 없다. C001→C002 전환이 cfg의 단계 진행으로 자동 발생할 뿐이라 재조회 고리 체험이 반쪽이다. gv_conc 입력과 [조회] 조작을 추가해 데이터 변경과 화면 갱신을 분리 체험하게 해야 한다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG02-gpt-5.6-sol#3"],
+      "conflict": false,
+      "quotes": ["사용자가 공연 번호를 입력하고,"]
+    },
+    {
+      "cluster_id": "CH17-C014",
+      "file": "content/abap/CH17/CH17-L10.md",
+      "claim": "종합 골격의 PBO 모듈에 SET PF-STATUS가 없는데 PAI는 기능 코드 'SEL'·'BACK'을 CASE로 받는다. GUI 상태가 없으면 그 기능 코드를 발생시킬 버튼 자체가 존재하지 않아 화면 스케치([조회][뒤로])와 코드가 어긋나고, 입문자가 그대로 따라 만들면 조회 버튼이 없어 막힌다. SET PF-STATUS 한 줄과 기능 코드 정의 안내(또는 '앞 챕터에서 다뤄 생략' 명시)가 필요하다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG03-opus#3"],
+      "conflict": false,
+      "quotes": ["MODULE status_0100 OUTPUT."]
+    },
+    {
+      "cluster_id": "CH17-C015",
+      "file": "content/abap/CH17/CH17-L10.md",
+      "claim": "골격이 Field Catalog의 outputlen = 8과 Layout의 cwidth_opt = abap_true를 동시에 켠다. cwidth_opt가 켜지면 outputlen 지정은 화면에 반영되지 않는데 이 상호작용 설명이 챕터 어디에도 없고, 완성 체크리스트는 'width가 반영되는가'를 확인하라고 해 학습자가 자기 코드 오류로 오해하게 만든다. 둘 중 하나만 쓰고 상호 무력화 사실을 L04/L05에 한 줄로 명시해야 한다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG06-opus#4"],
+      "conflict": false,
+      "quotes": ["ls_fcat-outputlen = 8."]
+    },
+    {
+      "cluster_id": "CH17-C016",
+      "file": "content/abap/CH17/CH17-L10.md",
+      "claim": "화면 이탈 경로(WHEN 'BACK' → LEAVE TO SCREEN 0)에서 그리드·컨테이너의 free( ) 해제와 전역 참조 CLEAR가 없다. CALL SCREEN으로 재진입하는 구성에서는 go_grid IS INITIAL 가드가 거짓이 되어 재조립이 건너뛰어져 표가 안 그려지거나 CNTL 계열 오류가 날 수 있다(컨트롤 lifetime 설정·호출 경로 의존이라 추정). 종료 경로에 free + CLEAR를 넣고 체크리스트 항목으로 추가할 것을 권고한다.",
+      "severity": "중간",
+      "confidence": "추정",
+      "supporters": ["AG06-opus#5"],
+      "conflict": false,
+      "quotes": ["LEAVE TO SCREEN 0."]
+    },
+    {
+      "cluster_id": "CH17-C017",
+      "file": "content/abap/CH17/CH17-L10.md",
+      "claim": "종합 과제 1(매진 회차 행 색상)이 챕터에서 가르치지 않은 'Field Catalog 수동 작성/보강'을 전제한다. L04는 LVC_FIELDCATALOG_MERGE 자동 생성과 기존 행의 coltext/outputlen 수정만 다루고, 로컬 타입용 카탈로그 작성법은 L09 흔한 실수의 코드 없는 한 문장뿐이라 입문자가 실제로 착수할 수 없는 과제다. L04에 수동 APPEND 예시를 추가하거나 과제에 힌트 스니펫을 붙여 징검다리를 놓아야 한다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG05-opus#3"],
+      "conflict": false,
+      "quotes": ["1. **매진 회차 행 색상** — 지금 골격의 `gt_booking`은 DDIC 구조(`zbooking`) 그대로라"]
+    },
+    {
+      "cluster_id": "CH17-C018",
+      "file": "content/abap/CH17/CH17-L10.md",
+      "claim": "직접 해 볼 과제 3(위치 보존 새로고침)은 제공된 완성 코드의 FORM refresh_alv에 이미 is_stable 설정(row·col 참)으로 구현되어 있어 학습자가 수행하거나 판단할 작업이 없다. 골격에서 stable 설정을 비워 직접 완성하게 하거나, 일반 refresh와 stable refresh의 차이를 관찰·설명하는 비교 과제로 바꿔야 한다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG05-gpt-5.6-sol#3"],
+      "conflict": false,
+      "quotes": ["3. **위치 보존 새로고침** — 데이터 변경 후 [Refresh와 Stable Refresh 기초](CH17-L08.html)의 `is_stable`로 위치를 지킨다."]
+    },
+    {
+      "cluster_id": "CH17-C019",
+      "file": "content/abap/CH17/CH17-L06.md",
+      "claim": "첫 표시 성공 경험(L07)이 여섯 레슨 뒤로 밀린 구조에서, Variant(L06)는 표를 이미 화면에서 본 뒤 배우는 편이 자연스러운 옵션 기능이다. 현재는 저장할 표가 존재하지 않는 상태에서 저장을 배워 동기 곡선상 부담이 크다. Variant 레슨을 첫 표시 뒤로 옮기거나, L05·L06 도입부에 '이 값들의 효과는 L07에서 한 번에 확인한다'는 지연 보상 안내를 명시할 것을 권고한다.",
+      "severity": "중간",
+      "confidence": "추정",
+      "supporters": ["AG05-opus#4"],
+      "conflict": false,
+      "quotes": ["- 이렇게 채운 `gs_variant`는 **다음 레슨에서 배우는 표시 호출**에 `is_variant`로 넘긴다."]
+    },
+    {
+      "cluster_id": "CH17-C020",
+      "file": "content/abap/CH17/CH17-L06.md",
+      "claim": "'전역 Variant를 아무나 바꾸게 하면 모든 사용자의 표 모양이 실제로 바뀐다'는 서술이 과도한 단정이다. 전역 Variant의 핵심은 공유 범위이며, 각 사용자 화면에 실제로 적용되는지는 기본 Variant 지정·사용자 선택 등 별도 조건에 좌우된다. '공유 범위'와 '자동 적용 조건'을 구분해 서술해야 오개념을 막는다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG03-gpt-5.6-sol#3"],
+      "conflict": false,
+      "quotes": ["운영에서 **전역 Variant**를 아무나 바꾸게 하면 **모든 사용자의 표 모양이 실제로 바뀐다**."]
+    },
+    {
+      "cluster_id": "CH17-C021",
+      "file": "content/abap/CH17/CH17-L07.md",
+      "claim": "EXPORTING/CHANGING 구분 설명이 한 레슨 안에서 콜아웃·불릿·흔한 실수·정리로 네 번 거의 같은 문장으로 반복된다. 입문자 기준으로도 강조가 아니라 진도를 늦추는 중복이므로, 콜아웃 1회 + 정리 1회로 줄이고 나머지 자리는 EXCEPTIONS 처리나 i_save 의미 등 다른 내용으로 교체할 것을 권고한다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG03-opus#6"],
+      "conflict": false,
+      "quotes": ["- `EXPORTING`=어떻게 보일지, `CHANGING`=무엇을 그릴지로 나눠 기억하고, `sy-subrc`로 성공을 확인한다."]
+    },
+    {
+      "cluster_id": "CH17-C022",
+      "file": "content/abap/CH17/CH17-L07.md",
+      "claim": "객체 메서드 호출인데 TRY/CATCH 계열 예외가 아닌 classic EXCEPTIONS + sy-subrc 방식을 쓰는 이유(GUI Control Framework 클래스의 역사적 인터페이스)가 챕터 어디에도 설명되지 않는다. OOP 예외 처리에 익숙한 경력자가 TRY/CATCH를 기대하거나 sy-subrc 확인을 생략할 위험이 있으므로 짧은 콜아웃 한 줄이 필요하다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG03-sonnet#2"],
+      "conflict": false,
+      "quotes": ["EXCEPTIONS invalid_parameter_combination = 1"]
+    },
+    {
+      "cluster_id": "CH17-C023",
+      "file": "content/abap/CH17/CH17-L02.md",
+      "claim": "비교 표가 Field Catalog·Layout을 Grid ALV 첫 표시의 필수 구성요소처럼 제시해, set_table_for_first_display에 i_structure_name으로 DDIC 구조를 지정하는 간단한 경로가 숨는다. 최소 경로(컨테이너+그리드+outtab+i_structure_name)와 커스텀 경로(Field Catalog+Layout)를 구분해, 경험자가 불필요한 merge 코드를 필수 관례로 오해하지 않게 해야 한다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG03-gpt-5.6-sol#1"],
+      "conflict": false,
+      "quotes": ["시작 코드 | 짧음([factory](CH11-L02.html)) | 컨테이너·그리드·field catalog·layout 필요"]
+    },
+    {
+      "cluster_id": "CH17-C024",
+      "file": "content/abap/CH17/CH17-L02.md",
+      "claim": "'표는 기본 시나리오 기준이고'의 '표'가 바로 위의 SALV↔Grid ALV 비교 표인지 화면에 그리는 ALV 표인지 문맥만으로 갈리지 않는다. 챕터 전반에서 '표'가 ALV 그리드를 가리키는 말로 고정 사용되므로 '위 비교 표는'처럼 지시 대상을 명시해야 한다.",
+      "severity": "중간",
+      "confidence": "확실",
+      "supporters": ["AG04-opus#3"],
+      "conflict": false,
+      "quotes": ["표는 **기본 시나리오** 기준이고,"]
+    },
+    {
+      "cluster_id": "CH17-C025",
+      "file": "content/abap/CH17/CH17-L04.md",
+      "claim": "gemini 단독 주장: LVC_FIELDCATALOG_MERGE가 SCRTEXT_L/M/S·REPTEXT를 DDIC 텍스트로 채운 상태에서 coltext만 바꾸면 헤더가 우선순위 탓에 바뀌지 않으므로 SCRTEXT_*도 함께 수정해야 한다는 사실오류 지적. 반면 같은 축의 AG06-opus·AG06-sonnet은 L04의 coltext 서술을 실제 API와 일치한다고 명시 판정해 발견하지 않았다(LVC 카탈로그에서 COLTEXT 우선 적용 여부가 쟁점). 실기(SE38) 검증 후 채택 여부를 판단해야 한다.",
+      "severity": "중간",
+      "confidence": "추정",
+      "supporters": ["AG06-gemini-3.6-flash-high#1"],
+      "conflict": true,
+      "quotes": ["gs_fcat-coltext   = '좌석수'.            \" 컬럼 제목"]
+    },
+    {
+      "cluster_id": "CH17-C026",
+      "file": "content/abap/CH17/CH17-L01.md",
+      "claim": "L01 [선행 사용] 콜아웃이 TYPE REF TO·CREATE OBJECT는 리모컨 비유까지 들어 풀면서, 같은 문장의 '메서드(호출)'는 챕터 어디에서도 풀이하지 않는다. 이 낱말은 L02 이후 계속 나오고 L07에서 실제 코드로 등장하므로, '메서드 = 그 객체가 할 줄 아는 기능 하나, 부른다 = 그 기능을 시킨다' 수준의 한 줄 풀이 추가가 필요하다.",
+      "severity": "중간",
+      "confidence": "추정",
+      "supporters": ["AG01-opus#1"],
+      "conflict": false,
+      "quotes": ["이 챕터는 객체(클래스라는 설계도로 찍어낸 **실체 하나** — `TYPE REF TO`·`CREATE OBJECT`)와 메서드 호출을 많이 쓴다."]
+    },
+    {
+      "cluster_id": "CH17-C027",
+      "file": "content/abap/CH17/CH17-L07.md",
+      "claim": "챕터에서 가장 중요한 코드 줄에 처음 등장하는 `->` 기호가 챕터 어디에서도 설명되지 않는다. L01이 낯선 문법을 [선행 사용]으로 붙잡아 주는 방침을 보였기에 공백이 더 두드러지며, L08·L10에서도 반복 등장한다. '참조 변수가 가리키는 객체에게 그 기능을 시키라는 표시'라는 한 줄을 L07 코드 아래 또는 L01 콜아웃에 넣어야 한다.",
+      "severity": "중간",
+      "confidence": "추정",
+      "supporters": ["AG01-opus#2"],
+      "conflict": false,
+      "quotes": ["go_grid->set_table_for_first_display("]
+    },
+    {
+      "cluster_id": "CH17-C028",
+      "file": "content/abap/CH17/CH17-L01.md",
+      "claim": "L01의 OOP 선행 사용 박스는 참조 변수·객체 생성을 이미 아는 Java/C# 경력자가 통째로 건너뛸 수 있는 유일한 구간인데 스킵 안내가 없다. 'TYPE REF TO = 객체 참조 변수, CREATE OBJECT = new 인스턴스화'라는 1:1 매핑과 함께 '익숙하면 건너뛰어도 된다'는 지름길 팁 한 줄을 권고한다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG03-sonnet#1", "AG03-gemini-3.6-flash-high#1"],
+      "conflict": false,
+      "quotes": ["🔎 **[선행 사용]** 이 챕터는 객체(클래스라는 설계도로 찍어낸 **실체 하나** — `TYPE REF TO`·`CREATE OBJECT`)와 메서드 호출을 많이 쓴다."]
+    },
+    {
+      "cluster_id": "CH17-C029",
+      "file": "content/abap/CH17/CH17-L01.md",
+      "claim": "L01의 9조각 로드맵 표에서 조립된 전체 코드(L10)로 바로 가는 지름길 링크가 없고, 경험자용 압축 경로(예: L10 골격 → L04 → L06 → L08～L09) 안내도 없다. 코드 골격을 먼저 보고 세부를 역추적하는 독자를 위해 링크 한 줄과 조각 이름의 레슨 링크화를 권고한다(입문자용 순차 흐름은 유지).",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG03-opus#8", "AG03-gpt-5.6-sol#6"],
+      "conflict": false,
+      "quotes": ["지금 레슨은 맨 위 **방을 잡는** 단계다. 각 조각이 왜 필요한지는 그 레슨에서 불편과 함께 만난다."]
+    },
+    {
+      "cluster_id": "CH17-C030",
+      "file": "content/abap/CH17/CH17-L06.md",
+      "claim": "Display Variant를 '데이터 저장이 아니다'와만 대비할 뿐, 학습자가 실제로 혼동하는 동명 개념들 — 선택화면 Variant(SE38 실행 조건 저장)나 타 언어의 Variant 타입(가변 데이터형) — 과의 구분을 짚지 않는다. 콜아웃에 '실행 조건을 저장하던 선택화면 Variant와도 다르다. 이건 표 보이는 방식만 저장한다' 수준의 한 줄 대비를 권고한다.",
+      "severity": "낮음",
+      "confidence": "추정",
+      "supporters": ["AG03-opus#5", "AG03-gemini-3.6-flash-high#2"],
+      "conflict": false,
+      "quotes": ["ALV의 [[Display Variant]]는 사용자가 **자기 보기"]
+    },
+    {
+      "cluster_id": "CH17-C031",
+      "file": "content/abap/CH17/CH17-L07.md",
+      "claim": "호출부 EXPORTING이 '메서드가 내보내는 값'이 아니라 '호출자가 넣어 주는 입력'(정의부의 IMPORTING)이라는 방향 반전을 명시적으로 짚지 않는다. out 파라미터 관례에 익숙한 타 언어 경력자가 출력 파라미터로 오독하기 쉽고, 이 반전을 모르면 메서드 정의부 학습(CH21)에서 다시 헷갈린다. '이름은 호출하는 쪽 기준'이라는 한 줄 각주를 권고한다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG03-opus#7", "AG03-gemini-3.6-flash-high#3"],
+      "conflict": false,
+      "quotes": ["- `EXPORTING`(`is_layout`·`is_variant`·`i_save`) = **어떻게 보일지**(설정). 호출하는 쪽이 **넘겨주는 입력값**이다."]
+    },
+    {
+      "cluster_id": "CH17-C032",
+      "file": "content/abap/CH17/CH17-L06.md",
+      "claim": "'이 과정은 연습이 편하도록 가장 넓은 'A'를 쓴다'에서 '이 과정'의 지시 대상이 학습 과정인지 직전에 설명한 처리 절차인지 갈리고, '과정은 … 쓴다'는 주술 호응도 어색하다. '이 레슨에서는(또는 우리 예제에서는)'으로 행위 주체를 명시하는 수정을 권고한다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG04-opus#9", "AG04-gpt-5.6-sol#4"],
+      "conflict": false,
+      "quotes": ["이 값이 **저장을 어디까지 허용할지**를 정한다. 이 과정은"]
+    },
+    {
+      "cluster_id": "CH17-C033",
+      "file": "content/abap/CH17/CH17-L01.md",
+      "claim": "L01 콜아웃 첫 문장이 괄호 부연 안에 다시 줄표 부연이 겹쳐(객체 정의와 키워드 예고가 한 괄호에 혼재) 호흡이 두 번 끊기고, TYPE REF TO가 객체 자체가 아니라 참조라는 다음 문장 설명과도 미묘하게 어긋난다. R3의 줄표 절제 원칙에 맞춰 정의부와 키워드 예고부를 두 문장으로 분리해야 한다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG04-opus#1", "AG04-sonnet#1"],
+      "conflict": false,
+      "quotes": ["이 챕터는 객체(클래스라는 설계도로 찍어낸 **실체 하나** — `TYPE REF TO`·`CREATE OBJECT`)와 메서드 호출을 많이 쓴다."]
+    },
+    {
+      "cluster_id": "CH17-C034",
+      "file": "embeds/abap/CH17-L05-S01.html",
+      "claim": "위젯의 sel_mode 토글이 'single' 선택 시 sel_mode=' '(공백)를 그대로 안내한다. 두 감사 모두 이 라벨-값 짝이 부정확하다고 보나 해석은 갈린다 — 단일 행 선택을 명시하는 값은 'B'이고 공백은 기본값 위임(opus) 또는 공백은 표시 전용/선택 불가에 가깝다(sonnet). 어느 쪽이든 본문이 'A'만 다루는 상황에서 위젯이 임의로 추가한 매핑이므로, 라벨을 정정하거나 '(지정 안 함 = 기본 동작)' 꼬리말을 붙여야 한다.",
+      "severity": "낮음",
+      "confidence": "추정",
+      "supporters": ["AG02-opus#7", "AG02-sonnet#1"],
+      "conflict": false,
+      "quotes": ["selEl.innerHTML = [{ v: 0, l: 'single' }, { v: 1, l: 'multi (A)' }].map(function (o) {"]
+    },
+    {
+      "cluster_id": "CH17-C035",
+      "file": "content/abap/CH17/CH17-L01.md",
+      "claim": "'예외'와 '덤프'라는 단어가 인라인 풀이나 glossary 마킹 없이 처음 쓰인다. 문맥상 나쁜 일이 생긴다는 정도는 짐작되지만 '덤프'가 구체적으로 무엇인지 챕터 안에서 알 길이 없으므로, 괄호 풀이('프로그램이 강제로 멈추며 오류 화면이 뜨는 것')나 glossary 등록이 필요하다.",
+      "severity": "낮음",
+      "confidence": "추정",
+      "supporters": ["AG01-sonnet#2"],
+      "conflict": false,
+      "quotes": ["실패한다. 이 실패는 조용히 넘어가지 않고, 처리되지 않은 예외로 프로그램이 중단(덤프)될"]
+    },
+    {
+      "cluster_id": "CH17-C036",
+      "file": "content/abap/CH17/CH17-L01.md",
+      "claim": "본문은 container_name 불일치의 결과를 '덤프(프로그램 중단)'로 경고하는데, 같은 레슨 위젯은 이름을 틀려도 조용한 '실패(미연결)' 상태만 보여 줘 본문이 강조한 결과를 체험이 뒤집는다. 위젯 실패 상태에 '처리되지 않은 예외 → 덤프' 배지를 덧붙이거나 본문 문장을 위젯 수준으로 정정해 맞춰야 한다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG02-opus#2"],
+      "conflict": false,
+      "quotes": ["이 실패는 조용히 넘어가지 않고, 처리되지 않은 예외로 프로그램이 중단(덤프)될"]
+    },
+    {
+      "cluster_id": "CH17-C037",
+      "file": "content/abap/CH17/CH17-L04.md",
+      "claim": "본문은 Field Catalog 편집 LOOP의 작업 구조체를 gs_fcat으로 선언·사용하는데, 위젯의 실패 경고문은 ls_fcat-fieldname이라는 본문에 없는 변수명을 쓴다. L04 시점 선언은 전역이라 g 접두어가 맞으므로(ls_는 L10 FORM 안에서만 등장) 위젯 경고문의 ls_fcat을 gs_fcat으로 통일해야 한다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG02-opus#3"],
+      "conflict": false,
+      "quotes": ["LOOP AT gt_fcat INTO gs_fcat."]
+    },
+    {
+      "cluster_id": "CH17-C038",
+      "file": "embeds/abap/CH17-L09-S01.html",
+      "claim": "위젯 안 번호 체계가 두 갈래로 충돌한다 — 안내문·버튼의 ③은 '표시'인데 체크리스트의 ③은 'info_fname 필드명 일치'이고 표시는 ④다. 또 안내문의 '② info_fname 연결'에 해당하는 ROWCOLOR/ROW_COLOR 토글에는 번호 표시가 없어 무엇을 눌러야 ②인지 알 수 없다. 버튼 번호를 체크리스트와 맞추거나 조작에는 번호 대신 화살표만 쓰는 정리가 필요하다(동작 자체는 본문 조건과 일치해 정상).",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG02-opus#6"],
+      "conflict": false,
+      "quotes": ["<b>① 색 코드 쓰기 → ② info_fname 연결 → ③ 표시</b>"]
+    },
+    {
+      "cluster_id": "CH17-C039",
+      "file": "content/abap/CH17/CH17-L10.md",
+      "claim": "완성 체크리스트는 'gt_fcat 변경이 화면 컬럼 제목에 반영되는가'를 확인하라고 하지만, L10 위젯은 coltext 편집을 코드에서도 화면에서도 보여 주지 않아(7단계 진행 후에도 헤더가 기술명 그대로) 그 항목을 체험으로 확인할 수 없다. 위젯 4단계에 coltext LOOP를 추가해 SEATS 헤더가 '좌석수'로 바뀌게 하거나, 체크리스트 문항을 위젯이 실제 보여 주는 범위로 조정해야 한다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG02-opus#8"],
+      "conflict": false,
+      "quotes": ["| 컬럼 | `gt_fcat` 변경이 화면 컬럼 제목에 반영되는가 |"]
+    },
+    {
+      "cluster_id": "CH17-C040",
+      "file": "content/abap/CH17/CH17-L09.md",
+      "claim": "ALV 색 코드의 색번호 범위를 '0～7'로 적었으나 실제로 의미 있는 색은 1～7이고 0은 색 지정 없음/기본이다. 0을 유효한 색번호로 소개하면 학습자가 'C010' 같은 코드를 넣고 색이 안 나온다고 헤맬 수 있으므로 '색번호(1～7)'로 고치고 필요하면 '0은 색 없음'을 괄호로 덧붙일 것을 권고한다(릴리스별 표기 차이 미배제로 추정).",
+      "severity": "낮음",
+      "confidence": "추정",
+      "supporters": ["AG03-opus#9"],
+      "conflict": false,
+      "quotes": ["색 코드는 임의 RGB가 아니라 `C` + **색번호(0～7)** + **강조(0/1)** + **반전(0/1)** 네"]
+    },
+    {
+      "cluster_id": "CH17-C041",
+      "file": "content/abap/CH17/CH17-L10.md",
+      "claim": "첫 PBO에서 go_grid IS INITIAL이라 build_alv → select_booking이 즉시 실행되는데, 이때 gv_conc는 사용자 입력 전이라 비어 있어 화면 진입 직후 '데이터가 없습니다' 메시지가 뜨는 흐름이 된다. 화면 스케치는 C001이 입력된 상태를 그려 코드와 어긋나므로, 초기값 대입을 명시하거나 첫 PBO 조립에서 조회를 분리해 [조회] 시점에만 데이터를 담도록 바꿔야 한다.",
+      "severity": "낮음",
+      "confidence": "추정",
+      "supporters": ["AG03-opus#10"],
+      "conflict": false,
+      "quotes": ["FORM build_alv."]
+    },
+    {
+      "cluster_id": "CH17-C042",
+      "file": "content/abap/CH17/CH17-L03.md",
+      "claim": "결과 없음 판정에 sy-subrc·sy-dbcnt·내부 테이블 행 수 셋을 모두 확인하게 하는 설명은 SQL 경험자에게 지나치게 기초적·중복이다. 입문자용 설명은 유지하되 'SQL 경험자는 gt_booking IS INITIAL 확인만 보고 다음으로 이동해도 된다'는 지름길 한 줄을 붙일 것을 권고한다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG03-gpt-5.6-sol#2"],
+      "conflict": false,
+      "quotes": ["빈 그리드가 **기술 오류인지 정상적인 \"결과 없음\"인지** 구분하려면, 조회 직후 셋을 본다."]
+    },
+    {
+      "cluster_id": "CH17-C043",
+      "file": "content/abap/CH17/CH17-L05.md",
+      "claim": "zebra·sel_mode·grid_title·cwidth_opt 네 속성의 의미가 도입부 프로즈, 코드 인라인 주석, 속성 표('의미'+'초보자 설명' 두 칸)로 사실상 세 번 반복된다. 단순 플래그 4개치고 같은 정보를 세 형식으로 되풀이해 읽는 시간만 늘리므로, 프로즈는 필요성 위주로 줄이고 상세는 표 하나로 통일할 것을 권고한다.",
+      "severity": "낮음",
+      "confidence": "추정",
+      "supporters": ["AG03-sonnet#3"],
+      "conflict": false,
+      "quotes": ["gs_layout-zebra      = abap_true."]
+    },
+    {
+      "cluster_id": "CH17-C044",
+      "file": "content/abap/CH17/CH17-L09.md",
+      "claim": "로컬 행 타입으로 바꾼 파급 효과(색 코드 컬럼이 화면에 노출되고, DDIC 이름이 없어 자동 merge 불가)가 레슨 맨 끝 '흔한 실수' 마지막 불릿까지 지연되어, 학습자는 그 전까지 반쪽 그림으로 코드를 따라간다. '어떻게 쓰나'에 속하는 필수 후속 조치(no_out으로 숨김·카탈로그 수동 보강)를 코드 블록 직후로 올리고 실수 항목은 요약만 남겨야 한다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG05-opus#5"],
+      "conflict": false,
+      "quotes": ["- **색 코드 컬럼이 화면에 노출** → `ROWCOLOR`는 내부용 값이라 사용자에게 보일 필요가 없다."]
+    },
+    {
+      "cluster_id": "CH17-C045",
+      "file": "content/abap/CH17/CH17-L07.md",
+      "claim": "L07 코드가 실제로 쓰는 선행 산출물(go_grid=L02, gt_booking=L03, gs_variant·i_save=L06) 중 절반이 prereq 선언(CH17-L04·L05만)에서 빠져 있고 본문 하단 링크와도 어긋난다. 순차 학습에서는 실질 피해가 없으나 게이팅 자동 점검·재배열 시 잘못된 근거가 되므로 CH17-L02·L03·L06을 추가해야 한다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG05-opus#6"],
+      "conflict": false,
+      "quotes": ["prereq: [\"CH17-L04\", \"CH17-L05\"]"]
+    },
+    {
+      "cluster_id": "CH17-C046",
+      "file": "content/abap/CH17/CH17-L10.md",
+      "claim": "L10의 prevRel 값 'next-step'이 규약(R10)에 정의된 세 값(pain-solution/parallel/deepening) 밖의 임의 값이라 기계·사람 어느 쪽에서도 일관되게 해석되지 않는다. 정의된 값(조각 통합이므로 deepening)으로 바꾸거나 규약에 새 값을 정식 추가해야 하며, 부수적으로 L02의 parallel도 실제 관계(순차 조립)와 어긋나 재검토가 필요하다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG05-opus#7"],
+      "conflict": false,
+      "quotes": ["prevRel: next-step"]
+    },
+    {
+      "cluster_id": "CH17-C047",
+      "file": "content/abap/CH17/CH17-L10.md",
+      "claim": "사용자 입력값으로 업무 데이터를 조회·표시하는 Dialog 프로그램인데 챕터 전체에 AUTHORITY-CHECK도 권한 검사 언급도 없다. 권한을 정식 도입하지 않더라도 L10 '흔한 실수'에 '실무에서는 조회 전 AUTHORITY-CHECK로 권한을 확인한다'는 한 줄 경고를 추가할 것을 권고한다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG06-opus#6"],
+      "conflict": false,
+      "quotes": ["SELECT * FROM zbooking INTO TABLE gt_booking"]
+    },
+    {
+      "cluster_id": "CH17-C048",
+      "file": "content/abap/CH17/CH17-L03.md",
+      "claim": "챕터의 모든 안내가 T100 메시지 클래스가 아닌 텍스트 리터럴 MESSAGE '...' TYPE 'S' 형태로 다섯 레슨에 걸쳐 반복 시연되어, 번역·재사용·중앙 관리가 안 되는 습관이 교정 없이 굳는다. 첫 등장(L03)이나 L10에 '실무에서는 메시지 클래스를 쓴다'는 한 줄 각주면 충분하다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG06-opus#7"],
+      "conflict": false,
+      "quotes": ["MESSAGE '해당 공연의 예매 데이터가 없습니다.' TYPE 'S'."]
+    },
+    {
+      "cluster_id": "CH17-C049",
+      "file": "content/abap/CH17/CH17-L07.md",
+      "claim": "'빈 Field Catalog면 표가 비어 보인다'는 서술이 이 예제 호출에서는 부정확하다 — i_structure_name을 넘기지 않는 현재 호출에서 빈 it_fieldcatalog는 invalid_parameter_combination 등 실패 경로로 이어진다. '빈 카탈로그는 표시가 실패할 수 있다'로 고치고, 자동 생성을 보여 주려면 i_structure_name 대안을 함께 제시할 것을 권고한다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG06-gpt-5.6-sol#3"],
+      "conflict": false,
+      "quotes": ["빈 Field Catalog면 표가 비어 보인다."]
+    },
+    {
+      "cluster_id": "CH17-C050",
+      "file": "content/abap/CH17/CH17-L02.md",
+      "claim": "같은 개념의 고유 용어 표기가 레슨마다 흔들린다 — 'Field Catalog'(L04 도입)·'field catalog'(L02 표)·'fieldcat'(L07), 'Layout'(L05)·'layout'(L02·L07·L09). 입문자는 표기가 다르면 다른 것으로 오인할 수 있으므로 산문에서는 도입 시점 표기로 통일하고 축약형은 코드 식별자를 가리킬 때만 쓰도록 정리해야 한다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG04-opus#5"],
+      "conflict": false,
+      "quotes": ["| 시작 코드 | 짧음([factory](CH11-L02.html)) | 컨테이너·그리드·field catalog·layout 필요 |"]
+    },
+    {
+      "cluster_id": "CH17-C051",
+      "file": "content/abap/CH17/CH17-L02.md",
+      "claim": "같은 표 컨트롤을 'Grid ALV'·'ALV Grid'·'ALV 그리드'·'Grid'로 번갈아 불러 입문자가 서로 다른 개념으로 받아들일 여지가 있다. 첫 등장에 'Grid ALV(클래스 CL_GUI_ALV_GRID)'로 연결한 뒤 일반 문장에서는 한 가지 명칭으로 통일할 것을 권고한다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG04-gpt-5.6-sol#2"],
+      "conflict": false,
+      "quotes": ["| 관점 | SALV | Grid ALV |"]
+    },
+    {
+      "cluster_id": "CH17-C052",
+      "file": "content/abap/CH17/CH17-L01.md",
+      "claim": "가리키는 대상이 TYPE REF TO(세 단어)와 CREATE OBJECT(두 단어)인데 이를 '두 낱말'이라 불러 지시 대상과 단위가 맞지 않는다. '이 두 가지 표현만' 또는 '키워드 두 개만'으로 바꿔야 한다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG04-opus#2"],
+      "conflict": false,
+      "quotes": ["두 낱말만 감으로 잡아 두자."]
+    },
+    {
+      "cluster_id": "CH17-C053",
+      "file": "content/abap/CH17/CH17-L02.md",
+      "claim": "'정렬 버튼을 주고'는 목적어-서술어 호응이 어색하고, 관형절 네 개가 이어진 뒤에야 주어 '주인공'과 서술어가 나와 호흡이 지나치게 길다. 주어를 앞세워 두 문장으로 나누는 손질을 권고한다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG04-opus#4"],
+      "conflict": false,
+      "quotes": ["실제로 표를 그리고, 정렬 버튼을 주고, 컬럼 너비를"]
+    },
+    {
+      "cluster_id": "CH17-C054",
+      "file": "content/abap/CH17/CH17-L03.md",
+      "claim": "'4=보통 결과 없음'은 부사 '보통'의 위치 탓에 '보통 결과가 없다'로 읽힌다. 짝인 '0=있음'과 값-뜻 1:1 대응이 깨지므로 '4=결과 없음(대개)' 또는 '4=조건에 맞는 행 없음'으로 맞춰야 한다.",
+      "severity": "낮음",
+      "confidence": "추정",
+      "supporters": ["AG04-opus#7"],
+      "conflict": false,
+      "quotes": ["| `sy-subrc` | 결과가 있었나 — `0`=있음, `4`=보통 결과 없음 |"]
+    },
+    {
+      "cluster_id": "CH17-C055",
+      "file": "content/abap/CH17/CH17-L05.md",
+      "claim": "속성 표의 다른 셀은 짧은 명사구인데 sel_mode 셀만 두 문장 분량이라 표 훑어 읽기가 끊기고, '넉넉한 값'이라는 표현도 코드값 성격을 가리키기엔 모호하다. 셀은 짧게 줄이고 'A'가 연습에 무난한 이유는 표 아래 한 문장으로 뺄 것을 권고한다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG04-opus#8"],
+      "conflict": false,
+      "quotes": ["| `sel_mode` | 선택 모드 | 사용자가 표에서 무엇을 선택할 수 있는지 정하는 값. `'A'`는 여러 행·컬럼 선택까지 허용하는 넉넉한 값이라 연습에 무난 |"]
+    },
+    {
+      "cluster_id": "CH17-C056",
+      "file": "content/abap/CH17/CH17-L06.md",
+      "claim": "메서드 set_table_for_first_display를 가리키는 이름이 '표시 호출'·'display'·'처음 표시'·'처음 구성(display)'으로 흩어져 있고, 벌거벗은 영어 명사 'display'는 첫 등장에서 풀이 없이 쓰인다. 메서드 지칭을 통일하거나 최초 1회 약칭 선언('앞으로 짧게 display라 부른다')을 권고한다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG04-opus#10"],
+      "conflict": false,
+      "quotes": ["- `DISVARIANT-report = sy-repid`로 프로그램을 식별하고, `is_variant`·`i_save`를 display에 넘긴다."]
+    },
+    {
+      "cluster_id": "CH17-C057",
+      "file": "content/abap/CH17/CH17-L09.md",
+      "claim": "L01～L08이 줄곧 '공연(번호)'·'예매'만 쓰다가 L09에서 '회차'가 풀이 없이 등장해, 공연과 회차의 관계를 모르는 입문자는 두 말을 같은 뜻으로 오인할 수 있다. 첫 등장에 '한 공연은 날짜별 회차로 나뉜다'는 한 줄 상기 문장을 권고한다.",
+      "severity": "낮음",
+      "confidence": "추정",
+      "supporters": ["AG04-opus#11"],
+      "conflict": false,
+      "quotes": ["매진 판정에는 회차별 **정원과 예약 좌석 합계**가 필요하다."]
+    },
+    {
+      "cluster_id": "CH17-C058",
+      "file": "content/abap/CH17/CH17-L10.md",
+      "claim": "프로그래밍 일반 용어 flag를 '깃발'이라는 직역어로만 반복하고 통용 표기 '플래그'를 병기하지 않아, 실무 코드·문서에서 '플래그'를 만났을 때 같은 개념임을 잇지 못한다. 다른 용어는 영어 원문을 유지하는 챕터 기준과도 어긋나므로 첫 등장 1회 '플래그(flag)' 병기를 권고한다.",
+      "severity": "낮음",
+      "confidence": "추정",
+      "supporters": ["AG04-opus#12"],
+      "conflict": false,
+      "quotes": ["재조회 직후인지 표시하는 깃발"]
+    },
+    {
+      "cluster_id": "CH17-C059",
+      "file": "content/abap/CH17/CH17-L04.md",
+      "claim": "'행 Structure가 DDIC에 있으면'처럼 한국어 조사 사이에 영어 Structure를 그대로 넣은 표현이 어색하고, 같은 계열 개념의 표기('Structure(구조) 타입'·'행 Structure'·'DDIC Structure 이름')도 레슨 안팎에서 일관되지 않다. 첫 등장에만 '구조(Structure)' 병기 후 통일할 것을 권고한다.",
+      "severity": "낮음",
+      "confidence": "확실",
+      "supporters": ["AG04-gpt-5.6-sol#3"],
+      "conflict": false,
+      "quotes": ["행 Structure가 DDIC에 있으면 함수로 기본 Field Catalog를 **자동 생성**한다."]
+    }
+  ],
+  "grade_opinions": {
+    "AG01-opus": "경미 수정",
+    "AG01-sonnet": "경미 수정",
+    "AG01-gpt-5.6-sol": "보강 권장",
+    "AG01-gemini-3.6-flash-high": "유지",
+    "AG02-opus": "경미 수정",
+    "AG02-sonnet": "경미 수정",
+    "AG02-gpt-5.6-sol": "보강 권장",
+    "AG02-gemini-3.6-flash-high": "유지",
+    "AG03-opus": "경미 수정",
+    "AG03-sonnet": "경미 수정",
+    "AG03-gpt-5.6-sol": "보강 권장",
+    "AG03-gemini-3.6-flash-high": "경미 수정",
+    "AG04-opus": "경미 수정",
+    "AG04-sonnet": "경미 수정",
+    "AG04-gpt-5.6-sol": "경미 수정",
+    "AG04-gemini-3.6-flash-high": "유지",
+    "AG05-opus": "경미 수정",
+    "AG05-sonnet": "경미 수정",
+    "AG05-gpt-5.6-sol": "보강 권장",
+    "AG05-gemini-3.6-flash-high": "경미 수정",
+    "AG06-opus": "경미 수정",
+    "AG06-sonnet": "경미 수정",
+    "AG06-gpt-5.6-sol": "보강 권장",
+    "AG06-gemini-3.6-flash-high": "보강 권장",
+    "AG09-opus": "경미 수정",
+    "AG09-sonnet": "유지",
+    "AG09-gpt-5.6-sol": "경미 수정",
+    "AG09-gemini-3.6-flash-high": "유지"
+  },
+  "dropped": []
+}

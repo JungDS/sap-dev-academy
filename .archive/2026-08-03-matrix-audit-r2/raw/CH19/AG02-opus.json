@@ -1,0 +1,118 @@
+{
+  "agent": "AG02",
+  "model": "opus",
+  "target": "CH19",
+  "persona_ack": "나는 발견자 AG02 '준호'다. 배운 것을 그 자리에서 직접 해봐야 직성이 풀리는 실습형 학습자 관점으로, CH19의 본문 코드·설명과 체험 위젯(임베드)을 1:1로 대조했다. 체험 공백·본문↔위젯 불일치·헛체험·위젯 결함 네 가지만 본다.",
+  "method": "① 대상 MD 9개·위젯 HTML 8개 전문 정독 ② 위젯이 참조하는 공통 엔진 8종(sql-modernize-stepper.js, host-escape-inspector.js, inline-target-viewer.js, sql-expression-lab.js, sql-function-workbench.js, itab-sql-console.js, module-choice-cards.js, concert-agg-join-lab.js) 정독 ③ 하네스가 기동한 로컬 서버 http://localhost:8143 를 전역 Playwright 1.62.1(Chromium)로 열어 8개 위젯을 ?v=r2b5로 로드하고 모든 버튼을 실제 click 이벤트로 눌러 #code/#result/#verdict/#note DOM 텍스트를 상태별로 실측(콘솔·pageerror 수집) ④ L05는 pos/len/days 입력을 1·0·3·4·-1·5·400 등으로 바꿔 경계값 실측, L08은 ON×WHERE와 COALESCE on/off 4조합을 교차 실측, L07은 오답·정답을 눌러 채점·피드백 실측 ⑤ 레슨 페이지 8개(/docs/abap/pages/CH19-L0n.html)를 같은 서버로 열어 iframe 실장 여부·높이·콘솔 오류 확인(file:// 직접 열람은 하지 않음).",
+  "errors": [],
+  "files_read": [
+    "content/abap/CH19/_chapter.md",
+    "content/abap/CH19/CH19-L01.md",
+    "content/abap/CH19/CH19-L02.md",
+    "content/abap/CH19/CH19-L03.md",
+    "content/abap/CH19/CH19-L04.md",
+    "content/abap/CH19/CH19-L05.md",
+    "content/abap/CH19/CH19-L06.md",
+    "content/abap/CH19/CH19-L07.md",
+    "content/abap/CH19/CH19-L08.md",
+    "embeds/abap/CH19-L01-S01.html",
+    "embeds/abap/CH19-L02-S01.html",
+    "embeds/abap/CH19-L03-S01.html",
+    "embeds/abap/CH19-L04-S01.html",
+    "embeds/abap/CH19-L05-S01.html",
+    "embeds/abap/CH19-L06-S01.html",
+    "embeds/abap/CH19-L07-S01.html",
+    "embeds/abap/CH19-L08-S01.html",
+    "embeds/_engine/sql-modernize-stepper.js",
+    "embeds/_engine/host-escape-inspector.js",
+    "embeds/_engine/inline-target-viewer.js",
+    "embeds/_engine/sql-expression-lab.js",
+    "embeds/_engine/sql-function-workbench.js",
+    "embeds/_engine/itab-sql-console.js",
+    "embeds/_engine/module-choice-cards.js",
+    "embeds/_engine/concert-agg-join-lab.js"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "embeds/abap/CH19-L03-S01.html",
+      "quote": "cols: ['carrid', '??? (이름 없음)'], alias: 'missing'",
+      "category": "불일치(본문 판정 ↔ 위젯 판정)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "본문은 '계산 컬럼에 별칭이 없으면 구문 오류'라고 못 박는데, 위젯의 '계산(별칭 X)' 상태는 오류로 끝내지 않고 `??? (이름 없음)` 컬럼을 가진 결과 표가 실제로 만들어진 것처럼 그려 준다. 실습형 학습자에게 '이름만 흐릿할 뿐 돌아가긴 한다'는 오개념을 준다.",
+      "evidence": "http://localhost:8143/embeds/abap/CH19-L03-S01.html 를 Playwright로 열고 '계산(별칭 X)' 버튼을 실제 click한 실측: #itvShape = '결과 lt_flight 한 행의 컴포넌트 / carrid / ??? (이름 없음) / 표 종류 — Standard Table · Empty Key', #itvVerdict = '🚫 계산 컬럼에 이름이 없음 — seatsmax - seatsocc 결과 컬럼에 이름이 없어 행 구조가 흐릿합니다.'로 끝난다(구문 오류라는 말이 없음). 본문 CH19-L03.md는 '인라인 target이 그 컬럼의 이름을 정할 수 없어 **구문 오류**다.'라고 단정한다.",
+      "suggestion": "alias='missing' 상태의 verdict를 '구문 오류 — 컴파일되지 않는다'로 바꾸고, 그 상태에서는 결과 표(칩·표 종류 문구)를 그리는 대신 '표가 만들어지지 않음' 오류 배지로 대체한다."
+    },
+    {
+      "seq": 2,
+      "file": "embeds/abap/CH19-L03-S01.html",
+      "quote": "한 행만 받을 땐 <code>SELECT SINGLE … INTO @DATA(ls_carr)</code>로 <b>구조체</b>가 만들어집니다.",
+      "category": "체험 공백(부분)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "이 레슨이 introduces로 선언한 `INTO @DATA( )`(SELECT SINGLE 단건 → 구조체)는 본문에 코드로 나오는데, 위젯에서는 조작할 수 없는 하단 정적 안내문으로만 존재한다. 표(`INTO TABLE @DATA( )`)만 체험되고 단건 target은 '읽고 끝'이다.",
+      "evidence": "ITV_CFG.targets는 '@DATA( ) 새로'·'DATA( ) 틀림'·'@lt_기존 재사용' 3개뿐이고, 실측으로 세 버튼을 모두 눌러도 #itvCode는 항상 'INTO TABLE …' 복수행 형태만 생성한다(SELECT SINGLE/구조체 상태 없음). 본문 CH19-L03.md에는 'SELECT SINGLE carrid, carrname … INTO @DATA(ls_carr).' 코드 블록이 있다.",
+      "suggestion": "targets(또는 별도 세그)에 'SELECT SINGLE … INTO @DATA(ls_carr)' 상태를 추가해, 표가 아니라 구조체 한 행이 만들어지는 모양(칩 1줄 + '표 아님' 표시)을 직접 보게 한다."
+    },
+    {
+      "seq": 3,
+      "file": "embeds/abap/CH19-L04-S01.html",
+      "quote": "{ carrid: 'LH', carrname: 'Lufthansa', cityto: 'FRANKFURT', out: 'FRANKFURT' },",
+      "category": "위젯 결함(결과 데이터가 표시된 SQL과 불일치)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "COALESCE 모드가 보여 주는 SELECT는 집계도 DISTINCT도 없는 `scarr AS c LEFT OUTER JOIN spfli AS p`인데, 결과표는 항공사당 정확히 1행만 그린다. 1:N 조인이라 노선이 여러 개인 항공사는 여러 행이 나와야 한다 — 학습자가 실제 시스템에서 같은 문장을 돌리면 행 수가 전혀 다르게 나온다.",
+      "evidence": "실측(#selCode/#selTable): 코드는 'SELECT c~carrid, c~carrname, p~cityto, COALESCE( p~cityto, ''NO ROUTE'' ) AS city_to_text FROM scarr AS c LEFT OUTER JOIN spfli AS p ON p~carrid = c~carrid INTO TABLE @DATA(lt_route).'인데 결과표는 LH/AA/ZZ 각 1행뿐. 덧붙여 표준 flight 데모에서 노선이 있는 AA를 'NO ROUTE'(cityto=null)로 그리는데, 같은 챕터의 CH19-L06-S01 위젯은 AA 0017을 정상 노선으로 쓰고 있어 챕터 내부에서도 어긋난다.",
+      "suggestion": "노선이 여럿인 항공사는 결과표에 여러 행으로 펼쳐 보여 주고(예: LH 2～3행), 소스 spfli 표를 함께 노출해 조인 카디널리티를 납득시킨다. '매칭 없음' 역할은 실제 노선이 없는 가상 코드(ZZ)만 맡긴다."
+    },
+    {
+      "seq": 4,
+      "file": "embeds/abap/CH19-L04-S01.html",
+      "quote": "ls_route-city_to_text = 'NO ROUTE'.",
+      "category": "위젯 결함(비교용 ABAP 코드가 그대로는 동작 불가)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'계산 위치 비교 → ABAP LOOP'가 보여 주는 COALESCE 대체 코드가 그대로는 성립하지 않는다. ① `city_to_text`는 SQL의 COALESCE가 만들어 준 결과 컬럼인데, ABAP 대안 코드는 그 컴포넌트가 이미 있는 것처럼 대입한다. ② `LOOP AT lt_route INTO ls_route`의 작업영역만 고치고 `MODIFY`가 없어 내부 테이블에는 반영되지 않는다.",
+      "evidence": "실측(#selCode, COALESCE 모드 + ABAP LOOP): '\" outer join 결과를 ABAP으로 가져온 뒤: / LOOP AT lt_route INTO DATA(ls_route). / IF ls_route-cityto IS INITIAL. / ls_route-city_to_text = ''NO ROUTE''. / ELSE. / ls_route-city_to_text = ls_route-cityto. / ENDIF. / ENDLOOP.' — 결과표는 SQL판과 동일하게 채워져 있어 이 코드가 그 결과를 만든 것처럼 보인다.",
+      "suggestion": "city_to_text를 가진 결과 구조를 따로 두고 APPEND 하는 형태로 바꾸거나, `LOOP AT … ASSIGNING FIELD-SYMBOL( )`/`MODIFY`를 써서 실제로 테이블이 갱신되는 코드로 교체한다."
+    },
+    {
+      "seq": 5,
+      "file": "embeds/abap/CH19-L05-S01.html",
+      "quote": "SQL SUBSTRING=1-기반(↔CH18 ABAP off=0). DATS_ADD_DAYS=2인자.",
+      "category": "위젯 결함(안내문 사실 오류 가능)",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "위젯이 `DATS_ADD_DAYS`를 '인자 두 개(date, days)'라고 못 박지만, 내 지식으로는 ABAP SQL의 이 날짜 함수는 오류 처리 방식을 정하는 세 번째 인자(on_error, 예: 'FAIL'/'NULL'/'INITIAL')를 함께 요구한다. 그대로 SE38에 옮겨 치면 구문 오류가 날 수 있다.",
+      "evidence": "위젯 헤더 주석의 'DATS_ADD_DAYS=2인자'와, 실측한 #sfwCode 'DATS_ADD_DAYS( fldate, 7 ) AS due' · #sfwNote 'ABAP SQL에서는 인자 두 개(date, days)로 씁니다'가 서로 맞물려 2인자를 확정 사실로 제시한다. 본문 CH19-L05.md도 '인자(함수 괄호 안에 넣는 값)는 두 개, date와 days다'로 같은 주장을 한다. 웹 검색·시스템 접근이 금지되어 릴리스 문서로 재확인하지 못했으므로 confidence=추정.",
+      "suggestion": "공식 keyword doc으로 시그니처를 확인한 뒤 3인자 형태(예: `DATS_ADD_DAYS( fldate, 7, 'NULL' )`)로 정정하고 on_error의 뜻을 한 줄로 풀이한다. 본문 CH19-L05.md의 같은 문장도 함께 맞춘다."
+    },
+    {
+      "seq": 6,
+      "file": "embeds/abap/CH19-L05-S01.html",
+      "quote": "<code>pos</code>·<code>len</code>·<code>days</code>를 바꿔 보세요.",
+      "category": "위젯 결함(경계값 판정 누락)",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "SUBSTRING 실습에서 `len = 0`을 넣으면 위젯이 이를 정상 결과(빈 문자열 '')로 판정한다. 내 지식으로는 ABAP SQL의 substring은 길이가 1 이상이어야 해서, 학습자가 '되는 조합'으로 잘못 배우게 된다.",
+      "evidence": "실측: pos=1·len=0 입력 시 #sfwResult가 'PART / ' + 빈 문자열'로 정상(비오류) 렌더되고 비교줄도 'SQL SUBSTRING( connid, 1, 0 ) ↔ ABAP substring( val = connid off = 0 len = 0 )'을 정상 예시처럼 보여 준다. 반면 pos=0·pos=4·pos=-1·len=5는 '🚫 범위 밖 — SQL pos는 1부터 4까지'로 정확히 막힌다(즉 하한 검사만 len<0으로 되어 있음).",
+      "suggestion": "유효성 검사를 len >= 1로 바꾸고 len 입력의 min을 1로 둔다. 막을 때 문구도 'len은 1 이상'으로 따로 안내한다."
+    },
+    {
+      "seq": 7,
+      "file": "content/abap/CH19/CH19-L05.md",
+      "quote": "SUBSTRING( connid, 1, 2 ) AS prefix",
+      "category": "불일치(별칭 이름)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "본문 예제는 SUBSTRING 결과 컬럼의 별칭을 `prefix`로 쓰는데, 같은 페이지의 위젯은 같은 함수·같은 인자의 결과를 `part`로 부른다. 본문을 보며 위젯을 조작하는 학습자가 두 이름을 다른 것으로 오해할 수 있다.",
+      "evidence": "본문 CH19-L05.md: 'SUBSTRING( connid, 1, 2 ) AS prefix,   \" 1번째부터 2글자'. 위젯 실측 #sfwCode: 'SELECT connid, SUBSTRING( connid, 1, 2 ) AS part FROM spfli ...' · 결과 라벨 'PART'. (CONCAT의 route, UPPER의 city_up 별칭은 본문과 일치한다.)",
+      "suggestion": "위젯 엔진의 SUBSTRING 결과 라벨·별칭을 `prefix`로 통일하거나, 본문 별칭을 `part`로 맞춘다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH19는 8개 레슨 전부가 각각 임베드 위젯 1개를 갖고 있고, 서버 실측에서 8개 레슨 페이지 모두 iframe이 정상 실장(높이 431～873px)·콘솔 오류 0으로 로드됐다. 체험 공백(코드는 있는데 체험이 없는 레슨)은 없다. 대조 정확도도 대체로 높다 — L08 콘서트 집계 위젯은 본문 검증표(C001=5/OPEN, C002=50/FULL, C003=0/OPEN)와 ON↔WHERE 전환 결과(C003 보존/소멸)까지 완전히 일치했고, L06의 내부 테이블 데이터·LH 합계 200, L01의 단계별 표기 변화와 sy-subrc/sy-dbcnt(LH 5행·ZZ 0행/subrc 4), L02의 @ 경계 4종 판정, L07 퀴즈 채점·피드백 모두 정확했다. 남은 결함은 국소적이다: ① L03이 본문의 '구문 오류' 판정을 위젯에서 '행 구조가 흐릿함'으로 눅여 오개념을 줄 수 있는 점과 단건 INTO @DATA( ) 미체험, ② L04 COALESCE 결과표의 조인 카디널리티(항공사당 1행)와 그대로는 동작하지 않는 ABAP 비교 코드, ③ L05의 DATS_ADD_DAYS 인자 수 주장(추정)·len=0 허용·별칭 prefix↔part 불일치. 구조를 다시 짤 문제가 아니라 위젯 판정 문구·데이터·경계 검사 손질 수준이라 '경미 수정'으로 본다."
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "agent": "AG06",
+  "model": "sonnet",
+  "target": "CH17",
+  "persona_ack": "20년차 SAP ABAP 아키텍트로서 CH17 Grid ALV 기초 레슨 10개와 _chapter.md를 원문 그대로 정독하며 CL_GUI_CUSTOM_CONTAINER·CL_GUI_ALV_GRID·LVC_FIELDCATALOG_MERGE·SET_TABLE_FOR_FIRST_DISPLAY·REFRESH_TABLE_DISPLAY의 시그니처, EXPORTING/CHANGING/EXCEPTIONS 구성, LVC_S_LAYO·DISVARIANT 필드값 의미, PBO에서의 MESSAGE TYPE E 동작, 행 색상 코드 형식(info_fname)을 실제 API 지식과 대조해 감사했다.",
+  "method": "웹 검색 없이 대상 파일 11개를 직접 읽고, 각 코드 블록의 클래스/함수모듈 시그니처(파라미터명·EXCEPTIONS 목록)와 서술을 ABAP 표준 API 지식으로 교차 검증. 도구(빌드·브라우저) 미사용 — 정적 코드·문장 검토만 수행.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L10.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L10.md",
+      "quote": "FORM create_grid.\n  CREATE OBJECT go_cont EXPORTING container_name = 'CONT100'.\n  CREATE OBJECT go_grid EXPORTING i_parent = go_cont.\nENDFORM.",
+      "category": "위험한 생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "CREATE OBJECT go_cont / go_grid 호출에 EXCEPTIONS 절이 전혀 없어, 컨테이너 이름 불일치 등으로 생성이 실패하면 처리되지 않은 예외로 프로그램이 그대로 덤프될 위험을 코드가 스스로 남겨 둔다. 같은 챕터의 다른 호출들(LVC_FIELDCATALOG_MERGE, SET_TABLE_FOR_FIRST_DISPLAY, REFRESH_TABLE_DISPLAY)은 하나같이 EXCEPTIONS + sy-subrc 점검을 시연하는데, 정작 화면 컨트롤을 만드는 CREATE OBJECT 시점만 이 규율에서 빠져 있어 일관성이 깨진다.",
+      "evidence": "CL_GUI_CUSTOM_CONTAINER·CL_GUI_ALV_GRID의 생성자는 컨테이너 이름 불일치나 Control Framework 오류 시 예외(cntl_error 등)를 낼 수 있다 — CH17-L01 본문도 '이 실패는 조용히 넘어가지 않고, 처리되지 않은 예외로 프로그램이 중단(덤프)될 수 있다'고 직접 서술한다. 그런데 정작 CREATE OBJECT 호출 자체엔 EXCEPTIONS 절이 없어(L01·L02의 단독 예시는 물론, L10 종합 실습의 create_grid FORM까지) 그 위험을 실제로 잡아내는 코드가 어디에도 없다. 반면 바로 다음 단계인 LVC_FIELDCATALOG_MERGE·SET_TABLE_FOR_FIRST_DISPLAY·REFRESH_TABLE_DISPLAY는 모두 EXCEPTIONS를 걸고 sy-subrc를 확인하도록 가르친다. '실패는 항상 확인한다'는 이 챕터의 반복 교훈이 정작 가장 먼저 실패할 수 있는 지점(컨테이너·그리드 생성)에서만 빠진 셈이다.",
+      "suggestion": "L01·L02·L10의 CREATE OBJECT go_cont / go_grid 호출에도 EXCEPTIONS(cntl_error = 1, cntl_system_error = 2, create_error = 3, OTHERS = 4 등) + sy-subrc 체크를 추가해 다른 호출들과 동일한 오류 처리 규율을 보여 주거나, 최소한 '지금은 지면상 의도적으로 생략했고 실무에서는 반드시 EXCEPTIONS를 건다'는 안내를 흔한 실수 절에 덧붙인다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CL_GUI_CUSTOM_CONTAINER/CL_GUI_ALV_GRID 생성, LVC_FIELDCATALOG_MERGE, SET_TABLE_FOR_FIRST_DISPLAY, REFRESH_TABLE_DISPLAY의 파라미터 구성(EXPORTING/CHANGING/EXCEPTIONS)과 LVC_S_LAYO·DISVARIANT 필드 의미, PBO에서 MESSAGE TYPE E가 종료 메시지처럼 동작한다는 서술, info_fname 기반 행 색상 코드(Cxyz) 형식 등은 실제 ABAP API 동작과 정확히 일치했고 classic 문법 경계(R6)도 잘 지켜졌다. 유일하게 발견한 결함은 CREATE OBJECT go_cont/go_grid에 EXCEPTIONS 처리가 빠져, 챕터 스스로 경고한 '컨테이너 이름 불일치 시 덤프' 위험을 실제 코드에서 방어하지 않는 일관성 결함이다. 그 외 억지 발견은 만들지 않았다 — 나머지 코드·서술은 실무 기준으로도 적절했다."
+  }
+}

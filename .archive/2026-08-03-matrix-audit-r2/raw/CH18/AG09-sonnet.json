@@ -1,0 +1,61 @@
+{
+  "agent": "AG09",
+  "model": "sonnet",
+  "target": "CH18",
+  "persona_ack": "AG09 — CH18 코드 전용 정적 감사자로서 산문은 배제하고 ```abap 코드 블록만 줄 단위로 검사했다.",
+  "method": "대상 12개 파일(_chapter.md + CH18-L01~L11)의 fenced abap 코드 블록을 순서대로 정독하며 미선언 변수·마침표 누락·타입 불일치·존재하지 않는 구문/시그니처·네이밍 접두어(gv_/lv_/ls_/lt_/ty_/ts_/tt_ 등)·CH01~18 경계 규약(New Open SQL 미노출, 이 챕터 자체는 modern 도입점이라 modern 문법은 허용) 위반·classic/modern 라벨과 실제 코드의 불일치를 코드 블록 단위로 대조했다. 별도 실행 환경·외부 도구는 쓰지 않았다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L10.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L11.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L04.md",
+      "quote": "\" classic\nREAD TABLE lt_booking INTO ls_book WITH KEY booking_id = '0001'.\n\n\" modern — 키로 콕 집기\nDATA(ls_book) = lt_booking[ booking_id = '0001' ].",
+      "category": "코드 예시 일관성(중복 선언 위험)",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "classic·modern 두 버전을 하나의 abap 코드 블록 안에서 ls_book이라는 같은 변수명으로 이어 붙였는데, 이 챕터의 동일 패턴인 CH18-L01·CH18-L02는 반드시 두 블록으로 분리하고 '위 classic과는 별개 프로그램이다 — 이어 붙이면 중복 선언 오류' 문구로 명시적으로 경고한다. 이 블록은 그 분리·경고 없이 한 블록 안에 이어져 있어, 그대로 위→아래로 실행되는 하나의 코드로 읽으면 ls_book이 두 번(암묵적 선행 선언 + DATA() 인라인) 선언되어 문법 오류가 난다.",
+      "evidence": "L01의 대응 패턴: 'READ TABLE lt_booking INTO DATA(ls_book) ...' 등 modern 예시 앞에 '위 classic과는 별개 프로그램이다 — 한 프로그램에 둘을 이어 붙이면 ls_book이 중복 선언되어 문법 오류가 난다'는 안내문이 별도 블록으로 붙어 있다. CH18-L04는 같은 재사용 위험이 있는데도 한 블록 + 안내문 없음.",
+      "suggestion": "L01·L02처럼 classic 줄과 modern 줄을 별도 ```abap 블록으로 분리하거나, 한 블록을 유지한다면 '두 줄은 서로 다른 방법을 보여줄 뿐 이어서 실행하는 코드가 아니다' 같은 안내를 덧붙인다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L05.md",
+      "quote": "\" classic\nCONCATENATE lv_name '님 환영합니다' INTO lv_msg.\n\n\" modern — 최종 문장이 코드에 그대로 보인다\nDATA(lv_msg) = |{ lv_name }님 환영합니다|.",
+      "category": "코드 예시 일관성(중복 선언 위험)",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "CH18-L04의 findings와 같은 패턴이다. classic의 'CONCATENATE ... INTO lv_msg'(lv_msg가 이미 선언돼 있다고 가정)와 modern의 'DATA(lv_msg) = ...'(lv_msg를 새로 인라인 선언)가 한 abap 블록 안에 이어져 있어, 그대로 이어 실행하면 lv_msg 중복 선언 오류가 난다. L01·L02식 분리·경고문이 없다.",
+      "evidence": "동일 챕터 L01·L02는 이름이 겹치는 classic/modern 쌍을 별도 블록 + '별개 프로그램' 경고로 처리하는데, 이 블록은 그 관례를 따르지 않았다.",
+      "suggestion": "classic 줄과 modern 줄을 별도 블록으로 분리하거나, 이어서 읽지 않도록 안내 문구를 추가한다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L08.md",
+      "quote": "이건 아래 classic loop와 **같은 목적**이다.\n\n```abap\nDATA lv_total_seats TYPE i.\nLOOP AT lt_booking INTO DATA(ls_book).",
+      "category": "코드-설명 불일치",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "REDUCE 예시와 비교하며 'classic loop'라고 부르는 코드가 실제로는 `LOOP AT ... INTO DATA(ls_book)`, 즉 인라인 선언(modern) 문법을 쓰고 있다. CH18-L01은 바로 이 형태('LOOP AT lt_booking INTO DATA(ls_row).')를 modern 예시로 명시적으로 도입했다. 같은 챕터 안에서 동일 구문을 한쪽은 modern, 다른 쪽은 classic이라고 상반되게 부르는 셈이라 classic/modern 경계 학습(R6/R15)에 혼선을 준다.",
+      "evidence": "CH18-L01 코드 블록: 'LOOP AT lt_booking INTO DATA(ls_row).\\n  WRITE: / ls_row-customer.\\nENDLOOP.' 은 '\" modern' 주석 아래 제시된다. 반면 CH18-L08은 거의 동일한 구문(LOOP AT ... INTO DATA(ls_book))을 'classic loop'라고 서술한다.",
+      "suggestion": "진짜 classic으로 고치려면 'DATA ls_book TYPE ts_booking. LOOP AT lt_booking INTO ls_book. lv_total_seats = lv_total_seats + ls_book-seats. ENDLOOP.'처럼 인라인 선언 없이 작성하거나, 이미 modern 인라인 선언을 쓰고 있다는 점을 인정하고 '순수 classic'이 아니라 'LOOP 절차형(순차 방식)'처럼 다른 표현으로 바꾼다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH18의 코드 블록은 대체로 modern ABAP 구문(VALUE·CORRESPONDING·Table Expression·String Template·CONV/EXACT·COND/SWITCH·REDUCE/FILTER·LET·+=)을 정확한 시그니처로 쓰고, 네이밍 접두어(lv_/ls_/lt_/ty_/ts_/tt_)와 CH01~18 New Open SQL 미노출 경계도 위반 없이 지킨다. 다만 classic/modern 비교 예시에서 사소한 결함 3건을 찾았다: CH18-L04·L05는 같은 변수명을 재사용하는 classic·modern 코드를 한 블록에 이어 붙이면서 L01·L02가 지키는 '별개 프로그램' 분리·경고 관례를 따르지 않아, 그대로 이어 실행하면 중복 선언 오류가 난다(낮음, 추정). CH18-L08은 REDUCE와 대비되는 'classic loop' 예시에 정작 modern inline 선언(`INTO DATA(ls_book)`)을 써서, CH18-L01이 방금 도입한 classic/modern 구분과 스스로 모순된다(중간, 확실). 활성화 차단급 문법 오류·잘못된 네이밍 접두어·New Open SQL 조기 노출은 발견하지 못했다."
+  }
+}

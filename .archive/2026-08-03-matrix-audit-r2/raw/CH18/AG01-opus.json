@@ -1,0 +1,127 @@
+{
+  "agent": "AG01",
+  "model": "opus",
+  "target": "CH18",
+  "persona_ack": "나는 AG01 '은서'다. 개발·전공 경험이 전혀 없는 24세 문과 출신 입문자로, CH18(Modern ABAP Syntax)의 _chapter.md와 L01부터 L11까지를 처음 읽는 사람으로서 순서대로 통독하며 멈춘 곳·생략·단절·과부하를 기록했다. 내 바깥 지식으로 빈틈을 메꾸지 않고, 그 자리(또는 같은 챕터 앞 레슨)에 풀이가 없으면 막힌 것으로 적었다.",
+  "method": "Read 도구로 대상 12개 파일 전문을 레슨 순서대로 통독(_chapter.md → L01 → L11). 웹 검색·외부 네트워크 미사용, 다른 감사 산출물 미열람. 발견은 본문 원문 인용을 앵커로 삼음.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L10.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L11.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH18/CH18-L04.md",
+      "quote": "IF line_exists( lt_booking[ booking_id = lv_id ] ).",
+      "category": "멈춘 곳",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "\"없는 행을 직접 읽으면 예외가 난다\"고 방금 강조해 놓고, 바로 다음 코드에서 그 위험한 `lt_booking[ ... ]`을 `line_exists( )` 괄호 안에 그대로 넣는다. 왜 여기서는 예외가 안 나는지 설명이 한 줄도 없어서 코드를 여러 번 다시 읽어도 납득이 안 됐다.",
+      "evidence": "바로 위 문단이 \"Table expression은 일반 값 표현식이라, 없는 행을 직접 읽으면 CX_SY_ITAB_LINE_NOT_FOUND 예외가 난다\"고 못박는다. 그런데 예제의 `line_exists( lt_booking[ booking_id = lv_id ] )`는 글자 그대로 보면 '없는 행을 읽는 표현식'을 괄호 안에서 실행하는 모양이다. 나는 '그럼 line_exists를 호출하는 순간 이미 예외가 터지는 거 아닌가? 이 보호막이 어떻게 성립하지?'에서 멈췄다. `line_exists( )`/`line_index( )`의 인자 자리에서는 그 예외가 발생하지 않고 존재 여부만 판정된다는 설명이 이 레슨(및 챕터 어디에도) 없다. L11의 ③에서도 같은 형태를 '기본 방어선'이라며 다시 쓰는데, 근거는 여전히 설명되지 않는다.",
+      "suggestion": "`line_exists( )`·`line_index( )` 소개 직후에 \"이 두 함수의 괄호 안에 놓인 table expression은 예외를 일으키지 않고 '있는지/몇 번째인지'만 판정한다 — 그래서 안전한 확인 수단이 된다\"는 한두 문장을 추가한다. 체험 위젯 설명에도 '직접 읽기'와 'line_exists 안에서 읽기'의 차이를 명시하면 좋겠다."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH18/CH18-L10.md",
+      "quote": "lv_total += lt_book[ 1 ]-seats.",
+      "category": "단절",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "대괄호 조회 뒤에 하이픈으로 필드를 바로 붙이는 `lt_book[ 1 ]-seats` 형태가 설명 없이 처음 등장한다. 앞 레슨에서 배운 모양과 달라서 '이렇게 붙여 써도 되는 건가'에서 걸렸다.",
+      "evidence": "Table Expression을 정식으로 배운 L04에서는 항상 `DATA(ls_book) = lt_booking[ booking_id = '0001' ].`처럼 **행 전체를 변수에 담은 뒤** `ls_hit-customer`로 필드를 꺼냈다. L04 어디에도 `tab[ ... ]-필드`처럼 표현식 결과에서 곧바로 필드를 꺼내는 형태는 나오지 않는다. 그런데 L10에서는 아무 예고 없이 `lt_book[ 1 ]-seats`가 나오고, 같은 레슨 뒤쪽 '과한 표현' 예제에서도 `lt_all[ 3 ]-seats`가 또 나온다. 나는 '대괄호는 행을 꺼내는 거라고 배웠는데, 행에서 다시 하이픈으로 필드를 꺼내는 건 별도 문법인가? 왜 변수에 안 담아도 되지?'에서 막혔다.",
+      "suggestion": "L04에 `DATA(lv_seats) = lt_booking[ 1 ]-seats.`처럼 '행을 변수에 담지 않고 필드까지 한 번에 꺼내는' 형태를 한 줄 예제로 추가하거나, L10에서 처음 쓸 때 \"대괄호로 집은 행에서 곧바로 `-필드`를 꺼낼 수도 있다\"는 한 문장 안내를 붙인다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH18/CH18-L08.md",
+      "quote": "LOOP AT lt_booking INTO DATA(ls_book).",
+      "category": "멈춘 곳",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "\"classic loop\"라고 소개한 비교 코드 안에 정작 L01에서 modern으로 배운 인라인 선언 `INTO DATA(ls_book)`이 들어 있다. classic과 modern을 구분해서 배우는 중이라 이 지점에서 판단이 흔들렸다.",
+      "evidence": "L08은 REDUCE 예제 아래에 \"이건 아래 classic loop와 **같은 목적**이다.\"라고 쓰고 `DATA lv_total_seats TYPE i.` / `LOOP AT lt_booking INTO DATA(ls_book).`을 보여 준다. 그런데 `DATA(ls_book)` 인라인 선언은 L01에서 '이 챕터부터 쓰는 모던 문법'으로 정식 도입된 것이다. 게다가 같은 코드 블록 안에서 합계 변수는 `DATA lv_total_seats TYPE i.`라는 classic 방식으로 미리 선언해 두어, 한 덩어리 안에 두 방식이 섞여 있다. L01·L02·L11에서는 classic 코드와 modern 코드를 항상 `\" classic` / `\" modern` 주석으로 깔끔히 갈라 놓았기 때문에, 여기서만 규칙이 깨진 것으로 읽혀 '내가 classic/modern 구분을 잘못 이해했나?' 하고 되돌아가 다시 읽어야 했다.",
+      "suggestion": "비교 코드를 순수 classic(`DATA ls_book TYPE ts_booking.` 선언 후 `LOOP AT lt_booking INTO ls_book.`)으로 통일하거나, 라벨을 \"classic loop\" 대신 \"같은 일을 하는 LOOP 버전(선언만 인라인)\"으로 정직하게 바꾼다."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH18/CH18-L06.md",
+      "quote": "> 💡 첫 줄의 `VALUE '12'`는 classic 선언의 **초기값 지정**이다. 두 레슨 전에 배운",
+      "category": "멈춘 곳",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "\"두 레슨 전\"이라는 안내가 실제 위치와 맞지 않는다. VALUE constructor는 L02인데 지금 읽는 레슨은 L06이라 네 레슨 전이다. 앞으로 되짚어 갈 때 L04(Table Expression)를 펴 보고 헤맸다.",
+      "evidence": "이 레슨은 CH18-L06이고, `VALUE ts_book( … )`을 정식으로 배운 곳은 CH18-L02(VALUE Constructor Expression)다. 사이에 L03(CORRESPONDING)·L04(Table Expression)·L05(String Template)가 있으므로 '두 레슨 전'이 아니라 '네 레슨 전'이다. 링크 자체는 CH18-L02.html로 맞게 걸려 있어서 더 헷갈렸다 — 나는 문장을 믿고 두 칸 앞으로 돌아갔다가, 링크를 눌러 보고 나서야 위치가 다르다는 걸 알았다.",
+      "suggestion": "\"두 레슨 전에 배운\"을 \"이 챕터 앞부분에서 배운\"처럼 개수를 세지 않는 표현으로 바꾸거나 '네 레슨 전'으로 정정한다(레슨 순서가 바뀌어도 안 깨지는 전자를 권함)."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH18/CH18-L10.md",
+      "quote": "필요한 게 값 하나면 테이블을 통째로 만들 이유가 없다. 이 예제 데이터는 `seats = i` 규칙이라 3회차 좌석 수를 **테이블 없이 바로 계산할 수 있다**(`i = 3`일 때 3): `DATA(lv_third) = 3.`",
+      "category": "멈춘 곳",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'과한 표현'을 고치는 정답으로 제시된 게 `DATA(lv_third) = 3.`인데, 이건 계산이 아니라 값을 그냥 손으로 적어 넣은 것으로 보인다. '이게 왜 더 좋은 코드인지', '데이터가 바뀌면 어떻게 되는지'를 몇 번 읽어도 판단이 서지 않았다.",
+      "evidence": "본문은 \"테이블 없이 바로 계산할 수 있다\"고 하지만 제시된 코드에는 계산식이 없고 숫자 `3`만 있다. 바로 뒤에 \"이렇게 줄여도 되는 근거는 데이터의 규칙을 알고 있어서지, 실행 결과를 바꿔도 된다는 뜻이 아니다\"라는 단서가 붙는데, 이 레슨의 대전제가 '리팩터링은 결과가 같아야 한다'라서 나는 오히려 더 혼란스러웠다. 앞의 다른 예제들(VALUE·+=)은 문법을 바꾼 것인데 여기만 갑자기 '값을 직접 아는 경우'라는 다른 층위의 이야기를 하고, 그것도 하나의 긴 문장 안에 근거·단서·경고가 다 들어 있어 한 번에 소화되지 않았다.",
+      "suggestion": "고친 코드를 하드코딩 `3` 대신 실제로 규칙을 계산하는 형태(예: 필요한 회차 값을 변수로 두고 그 값을 그대로 쓰는 식)로 바꾸거나, 이 예제의 교훈을 '9행을 만들어 1행만 쓰지 말고 필요한 값만 구하라'로 좁히고 긴 문장을 2～3문장으로 끊어 쓴다."
+    },
+    {
+      "seq": 6,
+      "file": "content/abap/CH18/CH18-L01.md",
+      "quote": "> 지점부터 같은 **처리 블록**(FORM/METHOD 같은 프로시저 하나, 또는 이벤트 블록) **끝까지**",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "인라인 선언 변수의 수명을 정하는 핵심 단위가 '처리 블록'인데, 그 안에 나온 \"이벤트 블록\"이 무엇인지 이 자리에도 챕터 앞부분에도 풀이가 없다. 수명 범위를 정확히 그릴 수 없었다.",
+      "evidence": "FORM/METHOD는 '프로시저 하나'라고 옆에 풀이가 붙어 있는데, '이벤트 블록'만 이름 그대로 던져진다. 나는 화면에서 버튼을 누르는 것 같은 '이벤트'를 떠올렸지만, 그것이 코드에서 어디서 시작해 어디서 끝나는 블록인지 알 수 없었다. 이 문단의 결론이 '어디까지 살아 있느냐'와 '서로 다른 IF 분기에서 같은 이름을 또 DATA()로 선언하면 중복 선언 오류'라는 실전 규칙이라, 범위를 못 그리면 그 규칙도 반쯤만 이해된다.",
+      "suggestion": "\"이벤트 블록\" 뒤에 괄호로 한 줄 풀이를 붙이거나(예: 프로그램이 특정 시점에 실행하는 코드 묶음), 이 레슨 범위에서는 'FORM/METHOD 같은 한 덩어리'로만 좁혀 말하고 이벤트 블록 언급은 뺀다."
+    },
+    {
+      "seq": 7,
+      "file": "content/abap/CH18/CH18-L05.md",
+      "quote": "DATA(lv_sub) = substring( val = lv_text off = 0 len = 3 ).",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "괄호 안에 등호가 세 개 들어간 호출 형태(`val = … off = … len = …`)가 아무 설명 없이 처음 나온다. 특히 `val`이 무엇인지는 끝까지 언급이 없어서, 이 등호가 대입인지 이름표인지 판단이 안 섰다.",
+      "evidence": "바로 아래 불릿에서 `off`와 `len`은 친절히 풀어 준다(\"off는 0부터 세는 시작 위치\", \"len은 거기서부터 셀 글자 수\"). 그런데 `val`은 어디에도 설명이 없다. 같은 코드 블록의 바로 윗줄 `to_upper( lv_name )`은 이름 없이 값만 넣는 형태라 두 형태가 왜 다른지도 알 수 없었다. 나는 `val = lv_text`를 보고 '지금 lv_text에 무언가를 대입하는 건가?'라고 잘못 읽었다가 다시 돌아왔다.",
+      "suggestion": "`val`을 \"대상 문자열\"로 한 줄 풀이하고, \"괄호 안의 `이름 = 값`은 대입이 아니라 '어떤 자리에 넣는 값인지' 이름표를 붙인 것\"이라는 한 문장을 더한다."
+    },
+    {
+      "seq": 8,
+      "file": "content/abap/CH18/CH18-L11.md",
+      "quote": "DATA(ls_new) = VALUE zbooking(",
+      "category": "단절",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "`zbooking`에 `concert_id`·`perf_no` 필드가 있다는 전제로 코드를 채우는데, 이 챕터 안에서 본 `zbooking`의 필드는 booking_id·customer·seats·status뿐이었다. 필드 이름이 맞는지 스스로 확인할 방법이 없어 잠깐 멈췄다.",
+      "evidence": "이 챕터에서 `zbooking`이 등장한 곳은 L03(`booking_id`·`customer`·`seats`·`status`를 `TYPE zbooking-…`로 참조)과 L08(같은 네 필드), L11 ①(`ls_book TYPE zbooking`, `ls_book-seats`)이다. `concert_id`·`perf_no`는 L02에서 만든 **연습용 로컬 타입 `ts_book`**의 필드로만 봤다. 그래서 L11 ②에서 `VALUE zbooking( concert_id = 'C001' perf_no = '001' … )`을 보고 '연습용 타입 필드를 실제 테이블에 잘못 쓴 건가, 아니면 zbooking에 원래 이 필드도 있는 건가'를 판단할 수 없었다. 챕터 밖 지식이 없으면 확인이 불가능한 지점이다.",
+      "suggestion": "이 실습에서 쓰는 `zbooking`의 필드 목록을 표나 한 줄 주석으로 한 번 보여 주거나, `concert_id`·`perf_no`가 앞 챕터에서 정의된 필드임을 링크와 함께 짧게 밝힌다."
+    },
+    {
+      "seq": 9,
+      "file": "content/abap/CH18/CH18-L04.md",
+      "quote": "- `line_index( )` — 찾은 **위치**. 못 찾으면 `0`(hashed key 등 순서를 말할 수 없으면 `-1`).",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "괄호 안에 `-1`이라는 또 다른 반환값이 조건과 함께 압축돼 들어 있는데, \"순서를 말할 수 없으면\"이 무슨 상황인지 알 수 없어 그냥 넘길 수도 붙잡을 수도 없었다.",
+      "evidence": "본문은 `0`(못 찾음)과 `-1`(순서를 말할 수 없음)을 한 괄호 안에서 구분 없이 던진다. 나는 '못 찾은 것'과 '순서를 말할 수 없는 것'이 어떻게 다른 상황인지, 그리고 내가 쓰는 테이블이 그 상황인지 판별하는 법을 알 수 없었다. 뒤의 '흔한 실수와 점검'에서도 `line_index`는 \"위치는 line_index로 본다\"로만 나와서 `-1`은 끝까지 회수되지 않는다. 결과적으로 `IF lv_idx = 0`으로 판정해도 되는지조차 확신이 안 선다.",
+      "suggestion": "`-1` 언급을 각주/💡 콜아웃으로 빼서 \"보통 쓰는 Standard·Sorted 테이블에서는 0만 신경 쓰면 된다\"는 결론을 먼저 주고, `-1`은 '지금은 몰라도 되는 예외 상황'으로 명시한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH18은 레슨당 새 문법을 하나씩만 얹고 매번 'classic 불편 → modern 해결 → 흔한 실수 → 정리'로 리듬이 일정해서, 문법이 12가지나 되는데도 과부하 없이 따라갈 수 있었다. 특히 잘 읽힌 장치는 L06의 💡 콜아웃(선언 초기값 `VALUE '12'`와 constructor `VALUE ts_book( … )`이 '키워드만 같고 다른 용법'이라고 미리 짚어 준 부분)과 L08의 💡(CORRESPONDING의 `EXCEPT`와 FILTER의 `EXCEPT`가 '글자만 같고 문맥이 다르다'는 구분)로, 같은 단어에 걸려 넘어질 자리를 정확히 먼저 막아 줬다. L02의 `FOR i`가 '따로 선언하지 않아도 시작값에서 정수로 자동 선언된다'는 설명, L04의 예외 개념 한 줄 풀이, L11의 '없는 번호 0999 테스트가 제일 중요하다'도 인상적이었다. 걸린 곳은 대부분 국지적이다 — 가장 크게 막힌 지점은 L04에서 '없으면 예외가 난다'고 강조한 직후 그 위험한 표현식을 `line_exists( )` 괄호 안에 그대로 넣으면서 왜 안전한지 설명이 없는 부분이고(높음), 그다음이 L10에서 예고 없이 나온 `lt_book[ 1 ]-seats` 형태와 L08에서 'classic loop'라며 인라인 `DATA()`를 쓴 혼선, L06의 '두 레슨 전' 위치 오기, L10의 `DATA(lv_third) = 3.` 논리다. 문장 몇 개를 보태거나 다듬는 수준으로 해결 가능해 재집필은 필요 없어 보인다."
+  }
+}

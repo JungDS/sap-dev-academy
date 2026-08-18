@@ -1,0 +1,61 @@
+{
+  "agent": "AG06",
+  "model": "sonnet",
+  "target": "CH18",
+  "persona_ack": "20년차 SAP ABAP 아키텍트로서 CH18(Modern ABAP Syntax) 레슨 11개와 챕터 개요를 기술 사실·예시 적절성·위험한 생략·안티패턴 관점에서 감사했다.",
+  "method": "도구 미사용 — Read로 대상 12개 파일 전문을 열람해 본문 서술·코드 예제를 ABAP 언어 지식으로 직접 대조 확인. 웹 검색·과거 감사 산출물 열람 없음.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L10.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\CH18-L11.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH18\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH18-L01.md",
+      "quote": "`FINAL()`은 `DATA()`보다 **훨씬 최신 문법**이다(ABAP 릴리스 7.57부터). 실습 시스템이",
+      "category": "사실 오류",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "FINAL() 도입 릴리스를 7.57로 명시했는데, 기억하기로는 immutable expression(FINAL)이 도입된 릴리스는 7.55다. 7.57은 그보다 늦은 릴리스로, 실제 도입 시점과 어긋날 가능성이 있다.",
+      "evidence": "DATA()·VALUE·CORRESPONDING 등 constructor expression 계열은 7.40에서 도입됐고, FINAL은 그보다 한참 뒤인 7.55에서 추가된 것으로 기억한다. 웹 검색이 금지된 상태라 정확한 SP 레벨까지는 100% 확신할 수 없어 confidence를 '추정'으로 둔다.",
+      "suggestion": "SAP Help Portal의 ABAP Keyword Documentation(Release 변경 이력)에서 FINAL 도입 시점을 재확인해 '7.55' 여부를 검증하거나, 특정 릴리스 번호 대신 '비교적 최근 릴리스'처럼 버전 비의존적 표현으로 완화한다."
+    },
+    {
+      "seq": 2,
+      "file": "CH18-L04.md",
+      "quote": "`line_index( )` — 찾은 **위치**. 못 찾으면 `0`(hashed key 등 순서를 말할 수 없으면 `-1`).",
+      "category": "사실 오류",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "line_index()의 -1 반환 조건 서술이 부정확할 수 있다. 본문은 -1을 '못 찾은 경우의 변형'처럼 서술하지만, hashed table처럼 순서 개념이 없는 테이블은 행을 실제로 찾았는지 여부와 무관하게 line_index()가 항상 -1을 반환하는 것으로 기억한다.",
+      "evidence": "hashed table은 인덱스 자체가 존재하지 않으므로 line_index()는 '못 찾았을 때'만이 아니라 '찾았을 때도' -1을 돌려준다. 본문 문구는 이 둘을 명확히 구분하지 않아 '못 찾으면 0, hashed면 -1'로 오해될 소지가 있다. 정확한 조건문 형태에 대한 기억이 완전하지는 않아 confidence는 '추정'.",
+      "suggestion": "\"찾았는지 여부와 별개로, hashed table처럼 순서가 없는 테이블에서는 line_index()가 항상 -1을 반환한다\"는 식으로 '찾음/못찾음'과 '테이블 종류'를 분리해 서술하면 혼동을 줄일 수 있다."
+    },
+    {
+      "seq": 3,
+      "file": "CH18-L04.md",
+      "quote": "IF line_exists( lt_booking[ booking_id = lv_id ] ).\n  DATA(ls_hit) = lt_booking[ booking_id = lv_id ].",
+      "category": "위험한 생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "`line_exists( tab[ ... ] )`로 존재를 확인한 뒤 같은 조건으로 `tab[ ... ]`를 다시 읽는 패턴이 이 챕터의 '안전한 조회' 정석으로 제시되고(L04 도입부), CH18-L11 실습에서도 그대로 재사용·강조된다. 이는 동일 key로 내부 테이블을 두 번 검색하는 비효율 패턴인데, 그 비용에 대한 언급이 전혀 없다.",
+      "evidence": "line_exists()와 뒤이은 table expression은 내부적으로 독립된 두 번의 검색을 수행한다. 대상 테이블이 key 없는 Standard Table이면 선형 탐색이 두 배가 되고, sorted/hashed table이라도 탐색이 중복된다. 실무에서는 TRY/CATCH(cx_sy_itab_line_not_found)로 한 번만 읽는 방식을 흔히 권장한다. 이 커리큘럼은 TRY/CATCH를 CH21로 미루고 있어 지금 이 패턴을 쓰는 것 자체는 합리적 절충이지만, '이중 탐색 비용'에 대한 한 줄 유의사항조차 없다는 점이 아쉽다.",
+      "suggestion": "코드 패턴을 지금 바꿀 필요는 없지만, \"대량 데이터를 반복 조회할 때는 line_exists+tab[ ]가 같은 key를 두 번 찾는 셈이라 비용이 있다 — CH21의 TRY/CATCH로 한 번에 줄이는 법을 배운다\" 정도의 L1 예고를 흔한 실수 항목에 덧붙이면 좋다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH18 전체적으로 modern ABAP 구문(DATA()·VALUE·CORRESPONDING·Table Expression·String Template·CONV/EXACT·COND/SWITCH·REDUCE/FILTER·LET·+=)의 문법·의미 설명이 정확하고, classic→modern 대응과 흔한 실수 안내도 꼼꼼하다. R6 classic-first 경계·R15 게이팅(TRY/CATCH를 CH21로 미룸)도 잘 지켜졌다. 발견한 문제는 모두 경미한 수준이다 — FINAL() 도입 릴리스 번호(7.57) 정확성이 의심되는 점, line_index()의 hashed table -1 반환 조건 서술이 약간 부정확할 수 있는 점, 그리고 line_exists+tab[ ] 이중 조회 패턴에 성능 유의사항이 빠진 점이다. 구조적 재작성은 불필요하고, 위 세 지점만 다듬으면 충분하다."
+  }
+}

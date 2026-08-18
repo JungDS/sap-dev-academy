@@ -1,0 +1,118 @@
+{
+  "agent": "AG02",
+  "model": "opus",
+  "target": "CH20",
+  "persona_ack": "나는 준호다 — 배운 건 그 자리에서 눌러 봐야 직성이 풀린다. CH20의 레슨 7개 본문 코드와 임베드 위젯 7개를 실제 브라우저로 열어 버튼·토글을 전부 눌러 보고, 본문 코드·예상 결과표와 위젯이 만든 결과를 한 칸씩 대조했다.",
+  "method": "① 하네스가 띄운 로컬 서버(http://localhost:8143) 경유 실조작 — 전역 Playwright 1.62.1(C:\\Users\\gosts\\AppData\\Roaming\\npm\\node_modules\\playwright) Chromium 헤드리스로 위젯 7개(embeds/abap/CH20-L0n-S01.html?v=r2b5)를 열어 모든 모드·토글·단계 버튼을 실제 click 후 렌더된 DOM(innerText)을 추출해 값 검증. L02는 4단계×취소포함/예약없음 토글, L03은 join/exists/in×취소조건 토글, L04는 4연산×좌우바꾸기, L05는 5모드, L06은 stop+5분기 전수, L07은 4모드×조건제거 실험 전수 조작. ② 같은 서버의 빌드 산출 레슨 페이지(docs/abap/pages/CH20-L0n.html) 7개를 열어 iframe 실장·자동 높이(417～970px)·in-situ 클릭·콘솔 오류 0 확인. ③ 위젯 HTML(cfg)과 공통 엔진 소스(cte-step-viewer.js·exists-vs-join.js·sql-set-board.js·window-partition-sim.js·concert-adv-sql-lab.js·compare-matrix.js/.css·decision-tree.js) 정독으로 계산 로직·등급색 매핑 확인. file:// 직접 열람은 하지 않았다.",
+  "errors": [],
+  "files_read": [
+    "content/abap/CH20/_chapter.md",
+    "content/abap/CH20/CH20-L01.md",
+    "content/abap/CH20/CH20-L02.md",
+    "content/abap/CH20/CH20-L03.md",
+    "content/abap/CH20/CH20-L04.md",
+    "content/abap/CH20/CH20-L05.md",
+    "content/abap/CH20/CH20-L06.md",
+    "content/abap/CH20/CH20-L07.md",
+    "embeds/abap/CH20-L01-S01.html",
+    "embeds/abap/CH20-L02-S01.html",
+    "embeds/abap/CH20-L03-S01.html",
+    "embeds/abap/CH20-L04-S01.html",
+    "embeds/abap/CH20-L05-S01.html",
+    "embeds/abap/CH20-L06-S01.html",
+    "embeds/abap/CH20-L07-S01.html",
+    "embeds/_engine/cte-step-viewer.js",
+    "embeds/_engine/cte-step-viewer.css",
+    "embeds/_engine/exists-vs-join.js",
+    "embeds/_engine/sql-set-board.js",
+    "embeds/_engine/window-partition-sim.js",
+    "embeds/_engine/concert-adv-sql-lab.js",
+    "embeds/_engine/compare-matrix.js",
+    "embeds/_engine/compare-matrix.css",
+    "embeds/_engine/decision-tree.js",
+    "http://localhost:8143/docs/abap/pages/CH20-L01.html ～ CH20-L07.html (렌더 확인용)"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "embeds/abap/CH20-L03-S01.html",
+      "quote": "{ b: '0004', c: 'C002', seats: 4, status: 'C' }",
+      "category": "헛체험",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L03 위젯의 'IN 으로 조회' 모드가 이 데이터에서는 EXISTS 모드와 언제나 똑같은 결과를 내, 위젯이 약속한 'EXISTS vs IN' 대비가 실제로는 한 번도 나타나지 않는다.",
+      "evidence": "브라우저 실조작 실측 — 기본 상태: EXISTS 결과 = C001(안유진) 1행, IN 결과 = C001 1행(동일). '취소 조건 제거' 토글 ON: EXISTS = C001·C002 2행, IN = C001·C002 2행(역시 동일). 원인은 cfg 데이터에 있다. IN의 판별 조건은 seats >= 3(inMinSeats: 3)인데, 살아있는 예약을 가진 공연은 C001(0002가 3석)과 C002(0004가 4석)뿐이라 '예약은 있지만 3석 미만이라 IN에서만 탈락하는 공연'이 존재하지 않는다. 위젯 lead는 \"본문의 IN subquery(\"3석 이상 예약이 있는 공연 ID 목록에 드는가\")도 같은 데이터로 눌러 보세요\"라고 안내하지만, 눌러도 EXISTS와 화면이 같아 본문이 구분해 가르치는 'EXISTS = 존재 / IN = 값 목록 비교'의 차이를 체험으로 확인할 수 없다.",
+      "suggestion": "cfg bookings에 2석짜리 정상 예약을 가진 공연을 하나 추가한다(예: C003에 { b:'0005', c:'C003', seats:2, status:'N' }). 그러면 EXISTS는 C001·C003을 통과시키고 IN(seats>=3)은 C001만 남겨, 두 모드의 결과 행이 실제로 갈라진다. 그때 IN 모드 피드백에 '왜 C003이 EXISTS엔 있고 IN엔 없는가'를 한 줄 덧붙이면 학습 목표가 체험으로 닫힌다."
+    },
+    {
+      "seq": 2,
+      "file": "embeds/abap/CH20-L02-S01.html",
+      "quote": "{ \"booking_id\":\"0004\", \"concert_id\": \"C002\", \"seats\": 4, \"status\": \"N\" }",
+      "category": "불일치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "같은 챕터 안에서 동일한 예약번호(booking_id)가 레슨마다 다른 공연·다른 상태를 뜻해, 위젯을 이어서 눌러 보는 학습자에게 zbooking 표가 말없이 바뀐 것처럼 보인다.",
+      "evidence": "실측한 위젯 원본 데이터 비교 — 0004는 L02 위젯에서 (C002, 4석, 정상 N), L03 위젯에서 (C002, 4석, 취소 C), L07 랩에서 (C004, 4석, 정상 N)로 세 번 다르게 정의돼 있다. 0003도 L02·L03에서는 (C001, 1석, 취소)인데 L07에서는 (C002, 1석, 취소)다. 각 레슨 본문과는 각각 일치하지만(예: L03 본문의 존재 판정 표는 C002가 '취소만 있음'이어야 성립), 챕터가 하나의 콘서트 예매 데이터를 관통 예제로 쓰는 만큼 연속으로 실습하면 '아까 정상이던 예약이 왜 취소지?'라는 혼란이 생긴다.",
+      "suggestion": "레슨별로 데이터가 달라야 한다면 예약번호를 겹치지 않게 부여하거나(L03은 0011~, L07은 0021~ 등), 위젯 lead에 '이 레슨 전용 데이터 세트'라는 한 줄을 넣어 앞 레슨과 다른 표임을 명시한다."
+    },
+    {
+      "seq": 3,
+      "file": "embeds/_engine/cte-step-viewer.js",
+      "quote": "{ key: 'artist', label: '공연', cls: 'txt' },",
+      "category": "위젯 결함",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L02 위젯 ④단계(잔여석) 결과표가 바로 위에 표시한 SQL의 SELECT 목록과 어긋난다 — SQL은 concert_id를 첫 컬럼으로 뽑는데 표에는 concert_id 컬럼이 없고, '공연' 헤더 아래에 artist 값이 들어간다.",
+      "evidence": "실조작 DOM 실측 — ④단계 SQL은 'SELECT c~concert_id, c~artist, c~capacity, COALESCE( b~booked_seats, 0 ) AS booked, c~capacity - COALESCE(...) AS remaining'(5컬럼)인데, 렌더된 표는 '공연 | 정원 | BOOKED (NULL→0) | REMAINING (잔여석)'(4컬럼)이고 '공연' 칸의 값은 '안유진·ABAP Trio·UI5 Night'다. ③단계에서는 같은 '공연' 헤더가 concert_id(C001…)를 담았기 때문에 단계 사이에 헤더 의미가 뒤바뀐다. 게다가 ④단계 피드백은 '최종 잔여석은 C001 = 95, C002 = 46, C003 = 80'이라고 ID로 말하는데 표에는 ID가 없어, 본문이 요구하는 '결과 값 한 칸씩 대조'가 끊긴다.",
+      "suggestion": "④단계 cols에 { key:'concert_id', label:'공연' }을 되살리고 artist 컬럼의 label은 'artist'로 두어 ③단계와 헤더 의미를 맞춘다(SQL SELECT 목록과 표 컬럼 1:1)."
+    },
+    {
+      "seq": 4,
+      "file": "embeds/abap/CH20-L04-S01.html",
+      "quote": "겹침을 걸러내는 정렬 작업이 없어 <b>UNION보다 빠릅니다</b>",
+      "category": "위젯 결함",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L04 위젯의 UNION ALL 피드백이 성능을 단정해, 같은 챕터가 반복해서 가르치는 '성능은 측정 없이 단정하지 않는다'는 규율과 충돌한다.",
+      "evidence": "UNION ALL 버튼을 누르면 '겹침을 걸러내는 정렬 작업이 없어 UNION보다 빠릅니다 — 중복이 없다고 확신하면 ALL을 쓰는 게 이득이에요'가 출력된다(실측). 그러나 L03 본문은 '성능 단정 → subquery 성능은 DB·상황마다 다르다. 실제 시스템에서 측정한다', L06 본문도 '성능 단정 → 측정 없이 단정하지 않는다'라고 못 박는다. 또 중복 제거가 반드시 '정렬'로 구현되는 것도 아니다(해시 기반도 흔하다). L04 본문 자체는 UNION ALL의 성능을 전혀 언급하지 않으므로 위젯만 앞서 나간 서술이다.",
+      "suggestion": "'중복 제거 작업이 없는 만큼 DB가 할 일이 줄어들 수 있다(실제 차이는 시스템에서 측정)'처럼 단정을 완화하고, '정렬 작업' 대신 '중복 제거 작업'으로 표현한다."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH20/CH20-L05.md",
+      "quote": "| concert_id | sum_seats |",
+      "category": "불일치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L05 본문의 결과표 컬럼명과 위젯이 만드는 컬럼명이 다르다(sum_seats↔booked_total, row_in_concert↔row_num).",
+      "evidence": "본문 GROUP BY 결과표 헤더는 'concert_id | sum_seats'이고 Window 결과표는 'row_in_concert'인데, 위젯 실행 결과(실측)는 GROUP BY 모드가 'concert_id | booked_total', ROW_NUMBER 모드가 'booking_id | concert_id | seats | row_num'이다. 값은 모두 본문과 일치하지만(C001 8·C002 4, 순번 1·2·3·1), 본문 표와 위젯 표를 나란히 놓고 대조하려는 학습자에겐 별칭이 달라 같은 컬럼인지 한 번 더 확인해야 한다.",
+      "suggestion": "위젯 cfg의 group 모드 SQL·표 헤더를 sum_seats로, rownum 모드를 row_in_concert로 바꿔 본문 별칭에 맞춘다(반대로 본문을 위젯에 맞춰도 되지만, 본문이 L07 실습까지 row_in_concert를 쓰므로 위젯 쪽 수정이 자연스럽다)."
+    },
+    {
+      "seq": 6,
+      "file": "content/abap/CH20/CH20-L07.md",
+      "quote": "2. 과제 2의 `EXISTS`를 `INNER JOIN`으로 바꿔 보고, 공연 행이 예약 건수만큼 중복되는지 비교한다.",
+      "category": "체험 공백",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L07 '직접 해 볼 과제' 3개 중 2·3번은 같은 페이지의 랩에서 실행할 수 없다 — 랩에는 INNER JOIN 전환 모드도, EXCEPT 좌우 바꾸기도 없다.",
+      "evidence": "랩 실조작 결과 제공되는 조작은 모드 4개(CTE·EXISTS·EXCEPT·Window)와 토글 '조건 제거 실험'·'초기화'뿐이다. 과제 1(취소 조건 제거 → C002 booked 0→1, remaining 50→49)은 '조건 제거 실험'으로 정확히 재현돼 검증 패널까지 뜨지만, 과제 2(EXISTS→INNER JOIN 중복 비교)와 과제 3(EXCEPT 좌우 바꿔 빈 결과 확인)은 눌러 볼 수단이 없다. 두 조작 자체는 L03·L04 위젯에 있으나 데이터 세트가 달라 L07의 검산 값(3행·C001 두 번 / 0행)과 대조되지 않는다.",
+      "suggestion": "랩 EXISTS 모드에 'INNER JOIN으로 바꿔 보기' 서브 토글, EXCEPT 모드에 '좌우 바꾸기' 토글을 추가해 과제 2·3의 검산값(3행·중복 C001 / 0행)이 화면에서 확인되게 한다. 추가가 어렵다면 과제 2·3 옆에 해당 조작이 있는 레슨 링크를 달아 준다."
+    },
+    {
+      "seq": 7,
+      "file": "embeds/abap/CH20-L01-S01.html",
+      "quote": "{\"v\":\"단계로 나눔\",\"r\":\"mid\"}",
+      "category": "위젯 결함",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L01 비교표의 '행에 미치는 영향' 열은 순수 서술인데 등급색이 붙어 CTE만 주황(주의)으로, 나머지 셋은 초록(양호)으로 보인다 — 도구 우열 평가처럼 읽힌다.",
+      "evidence": "compare-matrix.css 실측 매핑은 .rate.hi = 초록(#d1fae5/#0b7250), .rate.mid = 주황(#fef3c7/#b45309), .rate.lo = 빨강이다. cfg에서 CTE 행만 '단계로 나눔'에 r:'mid', Subquery/EXISTS·Set·Window는 각각 '존재 판정'·'위아래로 병합'·'행 유지'에 r:'hi'를 준다. 네 값 모두 좋고 나쁨이 없는 설명인데 색이 갈려, '언제 무엇을 쓰나'를 판단하러 온 학습자가 CTE를 열등하거나 위험한 선택지로 오해할 소지가 있다(L06 선택 가이드는 다섯 도구를 대등하게 다룬다).",
+      "suggestion": "이 열의 r 값을 모두 빼거나 네 행 모두 같은 등급으로 통일한다. 색으로 구분하고 싶다면 '행 수 증가/유지/감소'처럼 색이 의미를 갖는 축으로 열을 다시 정의한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "체험 공백은 없다 — 코드가 있는 레슨(L02·L03·L04·L05·L07)은 물론 개념 레슨(L01·L06)까지 임베드가 1:1로 붙어 있고, 서버 경유 실조작에서 위젯 7개 모두 콘솔 오류 0·자동 높이 정상(417～970px)·모든 버튼 동작이 확인됐다. 수치 정합도 높다: L02의 +booked(C001 5·C002 4)·잔여석, L04의 UNION 4행/UNION ALL 6행/INTERSECT C001·C004/EXCEPT C002·C003, L05의 GROUP BY 8·4와 RANK 3 vs DENSE_RANK 2, L07의 잔여석 4행(95·50·80·56)·EXISTS C001·C004·EXCEPT C002·C003·Window 3행이 모두 본문 예상표와 정확히 일치했고, L07 '조건 제거 실험'은 본문 검산값(C002 booked 0→1, remaining 50→49)까지 재현했다. 결함은 대체로 경미하다. 다만 L03의 IN 모드가 데이터 탓에 EXISTS와 항상 같은 결과를 내 위젯이 내건 'EXISTS vs IN' 학습이 무력화된 점(중간)은 cfg에 2석짜리 정상 예약 한 건을 넣는 정도로 고쳐지므로, 이 데이터 보정과 나머지 표기·서술 정리만 하면 챕터 체험 품질은 충분하다."
+  }
+}

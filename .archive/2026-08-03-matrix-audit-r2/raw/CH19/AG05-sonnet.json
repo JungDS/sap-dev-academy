@@ -1,0 +1,58 @@
+{
+  "agent": "AG05",
+  "model": "sonnet",
+  "target": "CH19",
+  "persona_ack": "20년차 학습 교재·코스 설계 전문가로서 CH19(Modern ABAP SQL) 8개 레슨 + _chapter.md를 챕터 구성, 섹션 흐름(왜→무엇→어떻게→실수→정리), 복습/예습 장치, 불편-해결 서사, 인지 부하 다섯 축으로 감사했다.",
+  "method": "정적 텍스트 분석. 대상 9개 파일(_chapter.md, CH19-L01~L08.md) 전문을 순서대로 통독하며 (1) 레슨 간 순서·전환 문구, (2) 각 레슨의 흐름 단계 구성, (3) 본문 내 상호 참조 링크와 front-matter의 prereq/introduces 필드 간 정합성, (4) prevRel 라벨과 실제 도입부 서사 톤의 일치 여부를 대조했다. 브라우저·빌드 도구는 사용하지 않음(런타임 검증이 아닌 구조 감사 범위).",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH19\\CH19-L08.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH19/CH19-L05.md",
+      "quote": "prereq: [\"CH19-L04\"]",
+      "category": "front-matter 메타 정합성(R10 prereq)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "본문의 핵심 경고(SQL SUBSTRING은 1부터, ABAP substring(off=0)은 0부터)가 CH18-L05의 ABAP substring 지식을 전제로 하는데, 이 레슨을 상기시키는 링크만 있고 prereq 메타에는 빠져 있다.",
+      "evidence": "본문: \"[지난 챕터](CH18-L05.html)의 ABAP `substring( off = 0 … )`는 **0부터**였다.\" — 이 대조가 경고문의 핵심인데 front-matter prereq는 [\"CH19-L04\"] 하나뿐이라 CH18-L05가 선언되지 않았다.",
+      "suggestion": "prereq 배열에 \"CH18-L05\"를 추가해 본문이 실제로 전제하는 선행 레슨을 메타에도 반영."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH19/CH19-L08.md",
+      "quote": "prereq: [\"CH19-L01\", \"CH19-L03\", \"CH13-L08\"]",
+      "category": "front-matter 메타 정합성(R10 prereq)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "실습 전체가 '현대화할 원본 쿼리'로 CH12-L07과 CH13-L08 둘 다를 지목하고 '직접 해 볼 과제' 1번도 CH12-L07을 콕 집어 지시하는데, prereq에는 CH13-L08만 있고 CH12-L07(과 결과 출력에 쓰이는 CH18-L05)이 빠져 있다.",
+      "evidence": "본문: \"[공연·상태로 예매 필터](CH12-L07.html)·[공연별 예매현황 리포트](CH13-L08.html)에서 만든 콘서트 조회를 … 다듬는다.\"와 과제 1번 \"[공연·상태로 예매 필터](CH12-L07.html) 조회를 `@`·`@DATA`로 바꾼다.\" — 둘 다 실습의 출발점인데 prereq는 CH13-L08만 선언.",
+      "suggestion": "prereq에 \"CH12-L07\"을 추가(결과 메시지 출력에 쓰는 \"CH18-L05\" string template도 참고용으로 함께 검토)."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH19/CH19-L03.md",
+      "quote": "seatsmax - seatsocc AS seats_free",
+      "category": "개념 도입 지점 불일치(R15 '개념당 한 곳' 원칙)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "CH19-L04의 front-matter introduces가 'SQL 산술/CASE'를 선언해 산술 SQL 표현을 그 레슨에서 처음 가르치는 것으로 명시하지만, L04 본문에는 산술 표현 전용 예제/설명이 없다(CASE·CAST·COALESCE만 있음). 반대로 계산 컬럼 산술식은 이미 CH19-L03의 'AS 별칭' 규칙 설명용 예제(seatsmax - seatsocc AS seats_free)로 먼저 등장한다.",
+      "evidence": "CH19-L03: \"SELECT carrid,\\n       seatsmax - seatsocc AS seats_free\\n  FROM sflight\\n  INTO TABLE @DATA(lt_ok).\" — 산술 계산 컬럼의 실제 최초 등장. 반면 CH19-L04 front-matter: introduces: [\"SQL 산술/CASE\", \"CAST\", \"COALESCE\"] — 그러나 L04 본문 섹션은 '왜'·CASE·CAST·COALESCE·흔한 실수뿐이라 '산술'을 독립적으로 도입하는 대목이 없다.",
+      "suggestion": "L04 introduces에서 'SQL 산술'을 빼거나(이미 L03에서 실질적으로 다뤄졌으므로 중복 선언), 대신 L03 front-matter에 advanceUse로 '계산 컬럼 산술식'을 명시해 도입 지점을 하나로 통일한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH19는 교수설계 관점에서 전반적으로 탄탄하다. 8개 레슨이 비교(L01)→host variable/expression(L02)→inline target(L03)→SQL expression(L04)→문자열·날짜 함수(L05)→@itab(L06)→선택 기준 정리(L07)→콘서트앱 실습(L08) 순으로 과대·파편 없이 단계적이며, prevRel(pain-solution/deepening/next-step) 라벨과 실제 도입부 톤이 일관되게 맞는다(L01만 진짜 '불편'으로 서사하고 나머지는 억지 불편 없이 '심화'로 정직하게 프레이밍). CH13-L02(LEFT OUTER JOIN null)·CH13-L03(GROUP BY)·CH18-L01(인라인 선언)·CH18-L05(substring off=0) 등 이전 개념을 구체적으로 재소환하는 복습 장치가 곳곳에 잘 배치되어 있고, 특히 SQL SUBSTRING(1부터) vs ABAP substring(0부터)처럼 혼동 지점을 명시적으로 대조시킨 점은 인지 부하 관리 측면에서 우수하다. 레슨 말미 예고는 1~2문장 수준을 대체로 지키고, L07의 결정 표(언제 무엇을 쓸까)는 개념 암기가 아닌 선택 기준으로 챕터를 마무리해 좋은 정리 장치다. 다만 front-matter의 prereq 선언이 본문이 실제로 요구하는 선행 레슨(L05→CH18-L05, L08→CH12-L07)을 누락한 경우가 있고, 계산 컬럼 산술식(AS 별칭)의 실질적 최초 등장이 이를 formal하게 '도입'한다고 선언한 L04보다 앞선 L03에서 이미 일어나 introduces 메타와 본문 순서가 어긋난다. 셋 다 학습 경험 자체를 크게 해치기보다는 R10/R15가 명시한 메타 기반 정적 점검(prereq·introduces 정합성)의 신뢰도를 흐리는 문서화 결함이라 '경미 수정'으로 판단한다."
+  }
+}
