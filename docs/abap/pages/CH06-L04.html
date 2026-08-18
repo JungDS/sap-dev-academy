@@ -124,6 +124,42 @@
 <li>HASHED는 반대로 <strong>UNIQUE가 강제</strong>다. 사물함 방식은 &quot;키 하나 = 행 하나&quot;가 전제라,
 키가 겹치는 데이터는 아예 담을 수 없다.</li>
 </ul>
+</section><section class="lblock"><h2>세 종류를 코드로 — 선언 문법 나란히</h2>
+<p>고르는 눈을 만들었으니 <strong>적는 손</strong>도 만들자. 자리 규칙은 하나다 — <strong>종류는 <code>TABLE OF</code>
+앞에 낱말 하나, 키는 그 뒤에 <code>WITH ...</code>.</strong> <a href="CH06-L02.html">L02</a>·<a href="CH06-L03.html">L03</a>에서
+배운 선언에 딱 그만큼만 얹으면 된다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12</pre><pre class="abap-editor__code"><code><span class="tok-com">" ① STANDARD — 우리가 내내 쓰던 그 선언의 정식 이름</span>
+<span class="tok-kw">DATA</span> gt_std  <span class="tok-kw">TYPE</span> <span class="tok-kw">STANDARD</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ts_person
+             <span class="tok-kw">WITH</span> NON-UNIQUE <span class="tok-kw">KEY</span> name.
+<span class="tok-kw">DATA</span> gt_std2 <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ts_person.       <span class="tok-com">" 같은 STANDARD — 종류·키를 생략한 준말</span>
+
+<span class="tok-com">" ② SORTED — 항상 키 순서 유지. 키를 반드시 적는다(UNIQUE/NON-UNIQUE 선택)</span>
+<span class="tok-kw">DATA</span> gt_srt  <span class="tok-kw">TYPE</span> SORTED <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ts_person
+             <span class="tok-kw">WITH</span> UNIQUE <span class="tok-kw">KEY</span> name.
+
+<span class="tok-com">" ③ HASHED — 사물함 방식. 키를 반드시 적고, UNIQUE만 된다</span>
+<span class="tok-kw">DATA</span> gt_hsh  <span class="tok-kw">TYPE</span> HASHED <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ts_person
+             <span class="tok-kw">WITH</span> UNIQUE <span class="tok-kw">KEY</span> name.</code></pre></div></div>
+<ul>
+<li><a href="CH06-L03.html">L03의 확인 문장</a> 그대로 — <code>TABLE OF</code>는 <code>STANDARD TABLE OF</code>의 준말이다.
+키·종류 없이 쓰던 우리의 선언은 처음부터 ①의 생략형이었던 것이다.</li>
+<li><strong>SORTED·HASHED는 키 생략이 안 된다.</strong> &quot;무엇으로 줄 세우나&quot;·&quot;무엇으로 사물함을 여나&quot;가
+저장 방식 그 자체라, 키 없이는 그릇이 성립하지 않는다. 위 UNIQUE 매트릭스를 코드로
+옮기면 이 세 문장이 된다.</li>
+<li><code>TYPES</code>로 이름을 붙일 때도 문법은 똑같다 —
+<code>TYPES tt_srt TYPE SORTED TABLE OF ts_person WITH UNIQUE KEY name.</code></li>
+</ul>
 </section><section class="lblock"><h2>공짜는 없다 — 종류 선택은 거래다</h2>
 <p>세 종류의 차이는 &quot;좋고 나쁨&quot;이 아니라 <strong>무엇을 지불하고 무엇을 얻는가</strong>다.</p>
 <table>

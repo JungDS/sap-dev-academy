@@ -152,6 +152,34 @@ DDIC에 등록해 회사 자산으로 만들었듯, <strong>Table Type도 SE11�
 </tbody></table>
 <p>수렴하면 축은 둘뿐이다 — <strong>무엇을 보고 선언하나</strong>(타입 이름 ①②③⑤⑥ vs 변수 ④),
 그리고 <strong>모양의 주인이 누구인가</strong>(한 줄에 직접 ①②③④ vs 이름 붙인 타입: 로컬 ⑤ vs 전역 ⑥).</p>
+<p>한 가지 더 — 이 여섯 갈래는 <strong>행 모양을 어디서 가져오나</strong>의 축일 뿐이다.
+<a href="CH06-L03.html">키(L03)</a>와 <a href="CH06-L04.html">종류(L04)</a>는 <strong>어느 갈래에나</strong> 그대로 얹을 수
+있다. 3속성은 서로 독립된 결정이라 자유 조합이다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12</pre><pre class="abap-editor__code"><code><span class="tok-com">" 갈래 ①(로컬 Structure) + SORTED + UNIQUE 키</span>
+<span class="tok-kw">DATA</span> gt_a <span class="tok-kw">TYPE</span> SORTED <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ts_person
+          <span class="tok-kw">WITH</span> UNIQUE <span class="tok-kw">KEY</span> name.
+
+<span class="tok-com">" 갈래 ③(DDIC Structure) + HASHED + UNIQUE 키</span>
+<span class="tok-kw">DATA</span> gt_b <span class="tok-kw">TYPE</span> HASHED <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> zst_person
+          <span class="tok-kw">WITH</span> UNIQUE <span class="tok-kw">KEY</span> name.
+
+<span class="tok-com">" 갈래 ⑤(로컬 Table Type)에 종류·키까지 미리 구워 두기</span>
+<span class="tok-kw">TYPES</span> tt_ranked <span class="tok-kw">TYPE</span> SORTED <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ts_person
+                <span class="tok-kw">WITH</span> NON-UNIQUE <span class="tok-kw">KEY</span> name.
+<span class="tok-kw">DATA</span> gt_c <span class="tok-kw">TYPE</span> tt_ranked.       <span class="tok-com">" 쓰는 쪽은 한 단어 — 3속성이 전부 따라온다</span></code></pre></div></div>
+<p>행 모양은 어디서 왔든, 그 위에 종류와 키를 조립하는 문법(<a href="CH06-L04.html">L04의 비교</a>)은
+언제나 같다 — 이것이 3속성 프레임(<a href="CH06-L02.html">L02</a>)의 진짜 힘이다.</p>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
 <li><strong>전역 Table Type에 로컬 Structure</strong> → <code>ZTT_...</code>의 Line Type엔 전역(DDIC) 타입만 들어간다.

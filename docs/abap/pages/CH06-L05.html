@@ -112,8 +112,12 @@
 2
 3
 4
-5</pre><pre class="abap-editor__code"><code><span class="tok-kw">READ</span> <span class="tok-kw">TABLE</span> gt_person <span class="tok-kw">INTO</span> gs_person <span class="tok-kw">INDEX</span> <span class="tok-num">3</span>.               <span class="tok-com">" 자리로: 3번 행</span>
-<span class="tok-kw">READ</span> <span class="tok-kw">TABLE</span> gt_person <span class="tok-kw">INTO</span> gs_person <span class="tok-kw">WITH</span> <span class="tok-kw">KEY</span> name = <span class="tok-str">'수지'</span>. <span class="tok-com">" 키로: 값으로 찾기</span>
+5
+6
+7</pre><pre class="abap-editor__code"><code><span class="tok-kw">READ</span> <span class="tok-kw">TABLE</span> gt_person <span class="tok-kw">INTO</span> gs_person <span class="tok-kw">INDEX</span> <span class="tok-num">3</span>.               <span class="tok-com">" 자리로: 3번 행</span>
+<span class="tok-kw">READ</span> <span class="tok-kw">TABLE</span> gt_person <span class="tok-kw">INTO</span> gs_person <span class="tok-kw">WITH</span> <span class="tok-kw">KEY</span> name = <span class="tok-str">'수지'</span>. <span class="tok-com">" 키로: 즉석 조건</span>
+<span class="tok-kw">READ</span> <span class="tok-kw">TABLE</span> gt_person <span class="tok-kw">INTO</span> gs_person
+     <span class="tok-kw">WITH</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">KEY</span> name = <span class="tok-str">'수지'</span>.                         <span class="tok-com">" 키로: 선언된 키 전체</span>
 <span class="tok-kw">IF</span> sy-subrc = <span class="tok-num">0</span>.
   <span class="tok-kw">WRITE</span>: / <span class="tok-str">'찾음:'</span>, gs_person-age.
 <span class="tok-kw">ENDIF</span>.</code></pre></div></div>
@@ -123,9 +127,18 @@
 <li><code>WITH KEY field = ...</code> — <strong>아무 필드나</strong> 즉석 조건으로 찾기. 키가 아닌 필드도 된다
 (<code>WITH KEY age = 30</code>도 합법). 대신 STANDARD에서는 앞에서부터 순차 탐색이다.</li>
 <li><code>WITH TABLE KEY ...</code> — 선언에 <strong>정의된 키 전체</strong>를 지정해 찾기. 키 필드를 빠짐없이
-적어야 하며, SORTED/HASHED가 자기 방식(이진/해시)으로 가장 빠르게 찾는 경로다.</li>
+적어야 하며, SORTED/HASHED가 자기 방식(이진/해시)으로 가장 빠르게 찾는 경로다.
+(위 예제에서 이 형이 성립하는 이유 — <code>gt_person</code>의 키는 standard key, 곧 문자 필드
+<code>name</code> 하나라서 <code>name</code>만 적으면 &quot;키 전체&quot;가 된다.)</li>
 </ul>
+<p>조건에 맞는 행이 <strong>여러 개</strong>면? <a href="CH06-L03.html">키 레슨에서 못박은 답</a> 그대로 —
+<strong>앞에서부터 처음 만나는 행 하나</strong>만 Work Area로 들어온다. 전부 다루려면 찾기가 아니라
+순회(<a href="CH06-L08.html">다다음 레슨</a>)다.</p>
 </section><section class="lblock"><h2>결과 확인 — sy-subrc와 sy-tabix</h2>
+<p>먼저 <button class="term" type="button" data-term="sy-subrc">sy-subrc</button>가 무엇인지부터. <strong>문장 하나가 실행될 때마다 시스템이 그 결과(성공/실패)를
+숫자로 채워 주는 시스템 변수</strong>다 — <code>sy-index</code>·<code>sy-tabix</code>와 같은 <code>sy-</code> 가족이고, <strong>0이면
+성공</strong>이라는 약속이다. 위 예제의 <code>IF sy-subrc = 0.</code>이 바로 &quot;방금 그 READ, 성공했나?&quot;라는
+질문이었던 것이다.</p>
 <p><code>READ</code>가 성공했는지는 <strong>언제나 <code>sy-subrc</code>가 0인지로만</strong> 판정한다. 못 찾으면 0이 아닌
 값이 들어오는데, 그 값이 상황에 따라 다르므로 &quot;0이냐 아니냐&quot;만 보는 것이 규율이다.
 (<code>IF sy-subrc = 4</code>처럼 실패 코드를 콕 집어 비교하면 조용히 어긋나는 날이 온다.)</p>
@@ -150,7 +163,7 @@ Index Table(STANDARD·SORTED) 이야기고, 번호표가 없는 HASHED에서는 
 </blockquote>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
 <ul>
-<li><strong>sy-subrc 미확인</strong> → READ 실패 시 Work Area엔 <strong>이전 값이 그대로</strong> 남는다. 그걸 새로
+<li><strong><button class="term" type="button" data-term="sy-subrc">sy-subrc</button> 미확인</strong> → READ 실패 시 Work Area엔 <strong>이전 값이 그대로</strong> 남는다. 그걸 새로
 읽은 값인 줄 알고 쓰는 버그가 정말 잦다. READ 다음 줄은 반드시 <code>IF sy-subrc = 0</code>.</li>
 <li><strong>실패 코드 콕 집어 비교</strong> → 판정은 &quot;0이냐 아니냐&quot;로만. 실패 값의 종류는 문장에 따라 다르다.</li>
 <li><strong>INTO vs INTO TABLE 혼동</strong> → 자리를 내가 지정하는 문장인지, 종류에 맡기는 문장인지 구분.</li>

@@ -49,7 +49,10 @@
 &quot;기록도 필요하고 소계도 필요하다&quot;면 이쪽이다.</p>
 </blockquote>
 </section><section class="lblock"><h2>먼저 결과부터 보자</h2>
-<p>말보다 실물이다. 이런 <strong>입력</strong>이 쌓여 있을 때(지역으로 정렬된 상태):</p>
+<p>말보다 실물이다. 테이블은 <a href="CH06-L11.html">앞 레슨</a>의 <code>gt_sales</code>(행 모양 <code>ts_sales</code>)를
+그대로 쓰되, 담긴 내용이 다르다 — <strong>COLLECT로 뭉친 결과가 아니라, 뭉치기 전의 상세 기록을
+<code>APPEND</code>로 그대로 쌓았다</strong>고 하자(상세를 남기는 것이 이번 도구의 전제니까). 이런 <strong>입력</strong>이
+쌓여 있을 때(지역으로 정렬된 상태):</p>
 <table>
 <thead>
 <tr>
@@ -148,10 +151,11 @@
 <p>블록에 들어가는 순간 시스템이 Work Area를 <strong>일부러 손질</strong>한다. 왜일까 — AT 블록은
 &quot;행 하나&quot;가 아니라 <strong>&quot;그룹 전체&quot;를 대표하는 자리</strong>이기 때문이다. 특정 행의 값이 남아
 있으면 그걸 그룹 값인 줄 알고 쓰는 사고가 나니, <strong>그룹의 대표값(키)만 남기고 나머지는
-비워 두는</strong> 것이다. 비워진 숫자 자리는 <code>SUM</code>이 그룹 합계로 채워 준다 — 예제가
-<code>AT END OF</code> 안에서 <code>SUM</code>을 먼저 부르는 이유다.</p>
+가려 두는</strong> 것이다. 이 &quot;가려 두기&quot;를 <strong>마스킹</strong>(masking)이라 부른다 — 앞으로 이 현상은
+이 이름으로 가리키겠다. 가려져 비워진 숫자 자리는 <code>SUM</code>이 그룹 합계로 채워 준다 —
+예제가 <code>AT END OF</code> 안에서 <code>SUM</code>을 먼저 부르는 이유다.</p>
 <details>
-<summary>📎 손질 규칙 세 줄(지금 안 외워도 된다 — 블록 안 값이 이상할 때 열어 보자)</summary><ol>
+<summary>📎 마스킹 규칙 세 줄(지금 안 외워도 된다 — 블록 안 값이 이상할 때 열어 보자)</summary><ol>
 <li><strong>그룹 키 필드</strong>(와 그 왼쪽) — 그대로 남는다.</li>
 <li><strong>키 오른쪽의 고정 길이 문자 필드</strong> — 전부 <code>*</code>로 채워진다(문자를 찍으면 <code>****</code>가
 나오는 이유).</li>
