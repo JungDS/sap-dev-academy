@@ -11,7 +11,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
-const MODELS = ['opus', 'sonnet', 'gpt-5.6-sol', 'gemini-3.6-flash-high'];
+const MODELS = ['opus', 'sonnet', 'gpt-5.6-sol', 'gemini-3.6-flash-high', 'gemini-3.7-flash-high'];
 const SEVS = ['치명', '높음', '중간', '낮음'];
 
 const norm = (s) => String(s || '').replace(/\s+/g, ' ').trim().slice(0, 60);

@@ -91,6 +91,11 @@
 번호표를 아무도 관리하지 않기 때문이다. 그런데 사물함도 <strong>청소할 때는 왼쪽 위부터 차례로
 훑을 수 있다.</strong> 이 &quot;훑는 길&quot;이 곧 <code>LOOP</code>가 행을 꺼내는 <strong>순회 순서</strong>다. 길은 있지만
 번호표는 없다 — 길이 있다고 좌표가 있는 게 아니다.</p>
+<blockquote>
+<p>🔎 <strong>[선행 사용]</strong> <code>LOOP</code>는 테이블을 처음부터 끝까지 훑는 문장으로, 정식 도입은
+<a href="CH06-L08.html">다음 레슨</a>이다. 여기서는 &quot;훑는 길의 순서&quot;를 관찰하는 용도로만 이름을
+빌려 쓴다(지금 분석할 필요 없다).</p>
+</blockquote>
 <p><code>SORT</code>가 바꾸는 것이 바로 이 <strong>훑는 길의 순서</strong>다. 화면에 찍히는 차례를 정리하고 싶을 때
 쓴다. 반면 <code>READ ... INDEX</code>가 요구하는 것은 <strong>관리되는 번호표</strong>라서 HASHED에선 여전히
 불가능하다.</p>
@@ -158,7 +163,8 @@
 <td>—</td>
 </tr>
 </tbody></table>
-<p>*HASHED는 키 <strong>전체</strong>가 정확히 일치할 때만 해시가 작동한다. 일부만 주면 훑는다.</p>
+<p>*HASHED에서는 <code>WITH KEY</code>라도 키 필드를 <strong>전부</strong> 주면 아랫줄(<code>WITH TABLE KEY</code>)과 똑같이
+해시로 찾는다. 일부만 주면 처음부터 훑는다.</p>
 <p>읽는 법: 같은 <code>WITH KEY</code>라도 <strong>무엇을 지정했느냐</strong>에 따라 비용이 다르다. SORTED/HASHED는
 키 조건이면 알아서 빠르고, STANDARD만 수동 처방(<code>SORT</code> + <code>BINARY SEARCH</code>)이 필요하다.</p>
 </section><section class="lblock"><h2>흔한 실수와 점검</h2>
@@ -167,6 +173,10 @@
 <li><strong>다른 키로 SORT 해 놓고 BINARY SEARCH</strong> → <code>SORT ... BY age</code> 후 <code>WITH KEY name = ... BINARY SEARCH</code>도 같은 함정이다. 정렬 키와 탐색 키가 <strong>같아야</strong> 한다.</li>
 <li><strong>SORTED 테이블에 SORT</strong> → 구문 오류. 애초에 항상 정렬돼 있는 그릇이다.</li>
 <li><strong>정렬 후 sy-tabix 재사용</strong> → 정렬하면 행 번호가 전부 바뀐다. 이전에 봐 둔 번호는 버린다.</li>
+<li><strong>한 번 찾자고 SORT부터</strong> → 정렬 자체도 공짜가 아니다. 딱 한 번 찾고 말 거면 그냥 순차
+탐색이 이득이고, 정렬해 두고 <strong>여러 번</strong> 찾을 때 비로소 본전을 뽑는다.</li>
+<li><strong>정렬해 둔 뒤 행 추가/삭제</strong> → 중간에 행을 넣거나 지우면 정렬 전제가 깨져, 그다음
+<code>BINARY SEARCH</code>가 다시 &quot;잘못된 없음&quot;을 낸다. 행이 바뀌었으면 SORT부터 다시.</li>
 </ul>
 <hr>
 <p>한 행씩은 끝났다. 이제 <strong>여러 행을 한 번에</strong> — 테이블 전체를 훑으며 일하는 법이다

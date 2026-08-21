@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <!-- CH06-L13-S01 — 엔진: step-debugger (embeds/_engine/step-debugger.{js,css}) + _autoheight.js
      config=레슨 전용(Deep Structure 실전 — 주문 A001/김연아의 행 '안' 테이블(items)에 키보드1·마우스2를
-     APPEND, 완성된 주문을 gt_orders에 쌓고 CLEAR, 중첩 LOOP로 꺼내기. 본문 L13 예제 그대로).
+     APPEND, 완성된 주문을 gt_orders에 쌓고 CLEAR, 중첩 LOOP로 꺼내기. 본문 L13 예제 그대로.
+     중첩 LOOP는 안쪽 LOOP 헤더(각 회차 진입)·안쪽 ENDLOOP·바깥 ENDLOOP를 전부 스텝화 — 재감사 C3).
      게이팅: CH06-L13 범위(Structure Component에 Table Type·APPEND·CLEAR·LOOP 중첩 — 전부 기습득). -->
 <html lang="ko" data-eng="step-debugger">
 <head>
@@ -21,7 +22,7 @@
       <button class="btn btn--primary" data-start>▶ 시작</button>
       <button class="btn btn--step" data-next disabled>다음 ⏭</button>
       <div class="progress"><i data-progress></i></div>
-      <span class="muted" data-counter>0 / 13</span>
+      <span class="muted" data-counter>0 / 16</span>
     </div>
     <div class="dbg__main">
       <div class="dbg__editorwrap"><div class="dbg__edhd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span></div><div class="dbg__editor" data-code></div></div>
@@ -79,9 +80,12 @@
         {"line":11,"vars":{"oid":"( 공백 )","cust":"( 공백 )","items":[]},"console":"CLEAR gs_order — 다음 주문을 받으려고 비웠습니다. 안의 목록(items)까지 함께 비워지는 것에 주목! 쌓아 둔 gt_orders의 행은 물론 그대로입니다"},
         {"line":13,"vars":{"oid":"A001","cust":"김연아","items":[["키보드",1],["마우스",2]]},"focus":{"gt_orders":1},"console":"읽기 시작 — 바깥 LOOP가 주문 1번 행을 gs_order로 복사합니다(품고 있던 목록까지 돌아왔습니다)"},
         {"line":14,"vars":{},"console":"[출력] 주문: A001 김연아"},
-        {"line":16,"vars":{"gs_item":"키보드 · 1"},"focus":{"items":1},"console":"안쪽 LOOP 1회차 — 도는 대상이 gt_orders가 아니라 gs_order-items, 즉 '지금 든 주문이 품은 목록'입니다\n[출력]     키보드 1"},
-        {"line":16,"vars":{"gs_item":"마우스 · 2"},"focus":{"items":2},"console":"안쪽 LOOP 2회차\n[출력]     마우스 2"},
-        {"line":18,"vars":{},"console":"안쪽 목록 2행이 끝나면 바깥 LOOP도 다음 주문으로 — 주문이 하나뿐이라 여기서 종료. Chapter 4의 중첩 DO와 같은 겹 구조인데, 안쪽이 '횟수'가 아니라 '이 행이 품은 목록'이라는 점만 다릅니다"}
+        {"line":15,"vars":{"gs_item":"키보드 · 1"},"focus":{"items":1},"console":"안쪽 LOOP 진입(1회차) — 도는 대상이 gt_orders가 아니라 gs_order-items, 즉 '지금 든 주문이 품은 목록'입니다. 첫 행(키보드)이 gs_item으로 복사됩니다"},
+        {"line":16,"vars":{},"console":"[출력]     키보드 1"},
+        {"line":15,"vars":{"gs_item":"마우스 · 2"},"focus":{"items":2},"console":"안쪽 LOOP 2회차 — 목록의 다음 행(마우스)이 gs_item으로"},
+        {"line":16,"vars":{},"console":"[출력]     마우스 2"},
+        {"line":17,"vars":{},"console":"안쪽 ENDLOOP — 이 주문이 품은 목록 2행을 다 돌았으니 안쪽 반복만 끝나고, 바깥 LOOP의 다음 차례로 돌아갑니다"},
+        {"line":18,"vars":{},"console":"바깥 ENDLOOP — 다음 주문이 없어 전체 종료. Chapter 4의 중첩 DO와 같은 겹 구조인데, 안쪽이 '횟수'가 아니라 '이 행이 품은 목록'이라는 점만 다릅니다"}
       ]
     }
     </script>

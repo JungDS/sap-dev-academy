@@ -1,0 +1,120 @@
+{
+  "agent": "AG03",
+  "model": "opus",
+  "target": "CH06",
+  "persona_ack": "타 언어(Java/C#) 백엔드 3～5년차 개발자 시선으로 CH06 전 레슨(_chapter + L01～L15)을 통독했다. 과잉·오개념 유발·지름길 부재·용어 충돌 네 축으로만 기록했고, '입문자에겐 필요하나 경력자에겐 이미 아는 내용'은 높음으로 올리지 않고 낮음 또는 suggestion으로 낮춰 분류했다. 전반적으로 경력자 배려가 이미 상당하다(_chapter의 경험자 안내, L01의 값복사 콜아웃, L15의 개념 대조표, L03의 Primary Key vs DB 키 구분, L07의 HASHED 순서 해명). 그래서 발견은 대부분 '한 줄 보태면 되는' 지점이다.",
+  "method": "Read 도구로 대상 16개 파일 전문(front-matter 포함) 통독. 발견마다 grep -F로 quote 원문 일치와 파일 유일성 검증(8건 전부 1회 매치). 웹검색·외부 네트워크·브라우저 미사용, ABAP 문법 판단은 사전 지식 기반이며 확신이 낮은 1건은 confidence=추정으로 표기.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L10.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L11.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L12.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L13.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L14.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L15.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L05.md",
+      "quote": "문장 하나가 실행될 때마다 시스템이 그 결과(성공/실패)를",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "sy-subrc를 '문장 하나가 실행될 때마다 시스템이 결과를 채워 주는 변수'로 정의했는데, 실제로는 sy-subrc를 설정한다고 문서화된 문장만 채운다. 나머지 문장은 값을 건드리지 않아 직전 값이 그대로 남는다.",
+      "evidence": "ABAP에서 WRITE·대입·IF 같은 문장은 sy-subrc를 갱신하지 않는다. 정의를 문자 그대로 받아들이면 '어떤 문장 뒤에 읽어도 그 문장의 결과'라고 믿게 되어, READ와 IF 사이에 다른 문장이 끼었을 때 남아 있던 옛 값을 새 결과로 오인하는 전형적 버그로 이어진다. errno/반환코드 관례에 익숙한 경력자일수록 '매 문장 갱신'을 곧이곧대로 받아들이기 쉽다. 같은 레슨의 '흔한 실수' 첫 항목(READ 실패 시 Work Area에 이전 값이 남는다)과도 결이 어긋난다 — Work Area는 남는다고 하면서 sy-subrc는 늘 새로 채워진다고 읽히기 때문이다.",
+      "suggestion": "'문장 하나가 실행될 때마다'를 '결과를 알려 주는 일부 문장(READ·SELECT 등)이 실행될 때'로 좁히고, '그 외 문장은 값을 건드리지 않아 직전 값이 그대로 남는다 → 그래서 READ 바로 다음 줄에서 본다'는 한 문장을 붙이면 이미 있는 '다음 줄은 반드시 IF sy-subrc = 0' 규율의 근거가 완성된다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L04.md",
+      "quote": "STANDARD·SORTED는 **Index Table**이다.",
+      "category": "용어 충돌",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "일반 개발/DB 상식에서 'index'는 조회를 빠르게 하는 보조 자료구조인데, ABAP Internal Table의 index는 '행 번호(순번)'다. 본문은 index를 '행 번호표'로 풀이만 하고, DB 인덱스와 다른 물건이라는 구분을 어디서도 명시하지 않는다.",
+      "evidence": "이 챕터 안에서 오해가 정반대 결론으로 굳는다 — 가장 느린 순차 탐색 그릇인 STANDARD가 'Index Table'이고, 가장 빠른 HASHED는 '인덱스가 없다'로 서술된다. DB 감각으로 읽으면 '인덱스가 있는 쪽이 느리고 없는 쪽이 빠르다'는 모순으로 보인다. 저자는 같은 종류의 충돌을 두 번이나 정면으로 다뤘다 — L03의 '> Internal Table의 키는 … DB의 Primary Key와는 다른 물건이다' 콜아웃, L03/L04의 'standard key vs STANDARD' 못박기 — 그래서 index만 빠진 것이 더 두드러진다. 바로 다음 챕터가 Transparent Table(CH07)이라 DB 인덱스 개념과 곧 충돌한다. (본문 기준 판단이며 [[인덱스]] glossary 팝업 문안은 확인 범위 밖이다.)",
+      "suggestion": "'번호가 있는 그릇, 없는 그릇' 절에 L03 키 콜아웃과 같은 형식으로 한 줄 — '여기서 말하는 index는 조회를 빠르게 하는 DB 인덱스가 아니라 행 번호(순번)다. 그래서 번호가 있는 STANDARD가 느리고 번호가 없는 HASHED가 빠른, 얼핏 거꾸로 보이는 일이 생긴다' — 를 넣으면 L07 탐색 비용 표까지 한 번에 정리된다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L08.md",
+      "quote": "sy-tabix`가 LOOP에서는 매 반복 **현재 행의 번호**를 담는다.",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "LOOP에서 sy-tabix가 쓰인다는 것만 말하고, 짝인 sy-index는 LOOP AT에서 갱신되지 않는다는 경고가 챕터 어디에도 없다. CH04에서 sy-index를 먼저 배운 독자는 LOOP 안에서도 sy-index를 반복 카운터로 쓰려 한다.",
+      "evidence": "sy-index는 DO/WHILE의 회차 변수이고 LOOP AT은 sy-tabix만 관리한다. LOOP 안에서 sy-index를 읽으면 바깥 DO/WHILE이 남긴 값이 나오거나 의미 없는 값이 되는데, 문법 오류도 덤프도 없이 조용히 틀린다. 이 챕터의 캡스톤(L15)이 정확히 위험 조합이다 — 같은 프로그램에서 DO 8 TIMES/DO 9 TIMES로 sy-index를 쓰고 곧이어 LOOP AT gt_gugu로 출력한다. 게다가 L08은 '반복 회차 vs sy-tabix 어긋남'(WHERE·FROM/TO)이라는 바로 옆 함정은 전용 콜아웃과 임베드까지 붙여 다루고 있어, 더 흔한 sy-index 혼동만 빠진 것이 비일관적이다. L15 '흔한 실수'도 '바깥 sy-index와 안쪽 sy-index 혼동'까지만 다룬다.",
+      "suggestion": "L08 첫 절 불릿에 한 줄 — 'DO/WHILE의 회차는 sy-index, LOOP의 행 번호는 sy-tabix. LOOP 안에서 sy-index는 갱신되지 않으니(바깥 루프 값이 남는다) 반복 카운터로 쓰지 말자' — 를 추가하고, L15 '흔한 실수'에 같은 항목을 한 줄 반영."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L07.md",
+      "quote": "그릇은 STANDARD로 두고 **찾기 직전에만 정렬해서 빠르게** 찾는 수동 처방이 있다.",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'찾기 직전에만 정렬해서 빠르게'라는 처방 제시가 정렬 자체의 비용을 지워, 단발 조회에도 SORT + BINARY SEARCH가 이득인 것처럼 읽힌다. 실제로는 한 번 정렬해 두고 여러 번 찾을 때만 이득이고, 한 번만 찾을 거면 그냥 순차 탐색이 더 싸다.",
+      "evidence": "레슨의 동기가 '1,000행에서 996번의 허탕'인데, 그 한 번의 탐색을 위해 1,000행을 정렬하는 것은 순차 훑기보다 비싸다. 알고리즘 비용 감각이 있는 경력자는 여기서 '이 처방은 왜 이득이지?'로 걸려 멈추고, 입문자는 반대로 '찾기 전엔 일단 SORT'라는 잘못된 습관을 얻는다(루프 안에서 매번 SORT하는 실무 안티패턴의 씨앗). L04의 '공짜는 없다 — 종류 선택은 거래다'에서 SORTED의 지불 항목으로 '넣을 때마다 자리 찾는 비용'을 정직하게 적어 둔 것과 대비된다 — 수동 처방 쪽만 지불 항목이 비어 있다.",
+      "suggestion": "처방 문장 뒤나 '흔한 실수'에 한 줄 — '정렬도 공짜가 아니다. 한 번 정렬해 두고 그 뒤로 여러 번 찾을 때 이득이고, 딱 한 번 찾을 거면 그냥 순차가 낫다. 그래서 SORT는 탐색 루프 안이 아니라 루프 앞에 둔다' — 를 추가. L04의 거래표 프레임을 그대로 재사용하면 톤도 맞는다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L11.md",
+      "quote": "키가 아닌 필드는 전부 숫자 타입이어야 한다.",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "COLLECT 제약을 '비키 필드는 전부 숫자'로만 제시해서, 챕터 주력 예제인 ts_person(name TYPE string + age TYPE i)에도 COLLECT가 되는 것처럼 읽힌다. 그러나 COLLECT는 행 타입이 flat일 것을 요구하고, ts_person은 L13에서 스스로 밝히듯 string 때문에 Deep이다.",
+      "evidence": "L11의 세 제약을 ts_person에 그대로 대입하면 전부 통과한다 — 키=문자 필드 name, 비키 필드=age(숫자) 하나. 그래서 독자는 COLLECT gs_person INTO gt_person이 합법이라고 결론 내린다. 그런데 L13은 'name이 string이니 — ts_person은 처음부터 Deep이었다'로 반전을 제시한다. 두 레슨을 이어 읽으면 결론이 충돌하는데 그 충돌이 챕터 안에서 해소되지 않는다. L11이 굳이 새 flat 타입 ts_sales(c LENGTH 10 + i)를 만들어 쓴 것으로 보아 저자는 이 제약을 알고 예제를 안전하게 잡은 듯한데, 정작 제약 목록에는 그 이유가 적혀 있지 않다. (COLLECT의 flat 요구는 사전 지식 기반 판단이라 confidence=추정.)",
+      "suggestion": "제약 목록에 4번을 추가하거나 2번을 확장 — '행 타입이 flat이어야 한다(string·내부 테이블·참조가 섞인 Deep 행에는 못 쓴다). 그래서 이 절은 name이 string인 ts_person 대신 c LENGTH 10을 쓴 ts_sales를 새로 만든 것이다.' L13에서 Deep을 배운 뒤 되짚는 한 줄을 걸어 두면 두 레슨이 서로를 보강한다."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L04.md",
+      "quote": "표에 처음 나온 두 낱말부터 풀어 둔다.",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "이진 탐색·해시를 전화번호부/사물함 비유로 처음부터 풀어 주는 8줄에 '아는 사람은 건너뛰어도 좋다'는 표시가 없다. 하필 _chapter.md의 경험자 안내가 'L03·L04로 바로 가라'고 보내는 목적지라, 경력자가 이 챕터에서 처음 착지하는 자리가 가장 이미 아는 내용인 절이 된다.",
+      "evidence": "_chapter.md의 '🧭 경험자라면' 콜아웃은 L01～L02를 훑고 L04(종류 선택)로 직행하라고 안내한다. 그런데 L04에서 종류 선택의 핵심(세 종류 표·UNIQUE 매트릭스·거래표)에 도달하기 전에 이진 탐색과 해시의 원리 설명이 놓여 있다. 입문자에겐 반드시 필요한 대목이므로 삭제 대상은 아니고, 순전히 안내 표시의 문제다. 챕터 차원의 지름길 안내는 있는데 레슨 안 지름길 표시는 이 챕터 15개 레슨 어디에도 없다.",
+      "suggestion": "두 낱말 풀이를 details로 접거나(예: '📎 이진 탐색·해시가 처음이라면 — 펼쳐 보기'), 절 머리에 '이진 탐색·해시를 이미 안다면 이 두 불릿은 건너뛰고 아래 매트릭스로' 한 줄. 입문자 본문은 그대로 두고 경력자만 통과시키는 값싼 처방이다."
+    },
+    {
+      "seq": 7,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L15.md",
+      "quote": "다른 언어를 해 봤다면 — 이번 챕터 개념 대조표 (더 보기)",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "경력자용 압축 지도 두 개가 모두 '해당 구간을 다 읽은 뒤'에 놓여 있다. 개념 대조표는 15개 중 마지막 레슨의, 그것도 접힌 details 안이고, 한 행 제어 전체 격자는 L06의 맨 끝이다. 훑어 읽는 경력자가 가장 늦게 만나는 자리에 가장 먼저 필요한 것이 있다.",
+      "evidence": "_chapter.md가 '캡스톤 끝의 개념 대조표가 가장 빠른 지도'라고 안내하지만, 그 지도에 닿으려면 마지막 레슨을 열고 접힌 블록을 펼쳐야 한다. L06의 '여기까지 한눈에 — 한 행 제어 전체 지도'(하려는 일 × 좌표 4×4 격자)도 L05～L06을 다 읽은 다음에야 나온다 — 이 격자 하나면 경력자는 L05·L06 본문을 건너뛸 수 있는데도. 덧붙여 대조표에는 Java/C# 출신이 가장 먼저 밟는 지뢰인 '행 번호가 1부터'가 빠져 있다(챕터 전체에서 L04의 '이 번호는 1번부터 센다' 한 줄뿐이다).",
+      "suggestion": "대조표를 details에서 꺼내 펼쳐 두거나, 축약본(테이블 종류 대응·INTO=복사·sy-subrc 반환코드·인덱스 1-base 4줄)을 _chapter.md 경험자 콜아웃 안으로 끌어올린다. L06 격자는 L05 도입부에서 '전체 지도를 먼저 보려면 → L06 끝' 링크로 예고. 대조표에 '행 번호는 1부터(0번 행은 없다)' 항목 추가."
+    },
+    {
+      "seq": 8,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L04.md",
+      "quote": "순서대로 훑는 게 주 용도면 STANDARD, 키·범위로 자주 찾고 정렬이 늘 필요하면 SORTED,",
+      "category": "과잉",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'어느 종류를 언제 고르나'라는 같은 내용이 한 레슨 안에서 세 번 반복된다 — 세 종류 표의 '언제' 열, 거래표의 '얻는 것' 열, 그리고 이 산문 문단. 세 번째는 앞 두 표의 재진술에 가깝다.",
+      "evidence": "세 종류 표 '언제' 열(기본·대부분의 처리 / 정렬 유지·빠른 키·범위 탐색 / 유일 키 대량 데이터 단건 조회)과 이 산문 문단(순서대로 훑기 → STANDARD / 키·범위로 자주 찾고 정렬 필요 → SORTED / 유일 키 대량 단건 → HASHED)은 항목이 일대일로 겹친다. 게다가 바로 아래 선택 트리 임베드가 같은 판단을 인터랙션으로 또 한 번 시킨다. 한 레슨에 표 3개 + 코드 블록 + 임베드 + 재진술 문단이 쌓여, 입문자 기준으로도 밀도가 아니라 부피가 커진 구간이다.",
+      "suggestion": "표 '언제' 열이나 산문 문단 중 하나를 접는다. 세 종류 표에서 '언제' 열을 빼고(거래표가 그 역할을 더 잘한다) 산문은 '선택 기준은 이 테이블을 어떻게 쓸 것인가 하나다' 한 문장으로 줄이면 대략 5～6줄이 절약되고, 남는 자리에 seq 6의 지름길 표시를 넣을 수 있다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "경력자 시선에서 이 챕터는 상태가 좋다. 이미 다른 언어 경험자를 명시적으로 배려한 장치가 여럿이다 — _chapter의 경험자 우회 안내, L01의 값 복사 vs 참조 콜아웃, L03의 'Internal Table 키 ≠ DB Primary Key' 못박기, L03/L04의 standard key vs STANDARD 반복 분리, L07의 'HASHED에 순서가 없다더니 SORT가 된다' 정면 해명, L08의 ASSIGNING 위험 4종, L15의 개념 대조표. 이 정도면 재집필은 물론 대규모 보강도 필요 없다. 발견 8건은 전부 '한두 줄 보태거나 위치를 옮기면 끝나는' 층위다. 실질 위험은 넷 — sy-subrc를 '매 문장 갱신'으로 정의한 것(seq 1), Index Table의 index를 DB 인덱스와 구분해 주지 않은 것(seq 2, DB 감각으로 읽으면 빠름·느림이 거꾸로 보인다), LOOP에서 sy-index가 죽는다는 경고 부재(seq 3, 캡스톤이 정확히 위험 조합이다), SORT+BINARY SEARCH 처방에서 정렬 비용을 지운 것(seq 4). 나머지는 안내 표시와 압축 여지다. 과잉은 거의 없었다 — 길다고 느낀 절(L04의 이진 탐색·해시, L07의 사물함 해명, L12의 마스킹)은 전부 입문자에게 값을 하는 설명이라 삭제가 아니라 '건너뛰기 표시'가 답이다. 용어 충돌은 저자가 이미 대부분 잡아 뒀고 index 하나가 남았다. 다만 지름길은 챕터 입구에만 있고 레슨 안에는 하나도 없어서, 경력자가 실제로 훑기 시작하면 안내가 끊긴다(seq 6·7)."
+  }
+}

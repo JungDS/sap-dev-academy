@@ -1,0 +1,120 @@
+{
+  "agent": "AG03",
+  "model": "sonnet",
+  "target": "CH06",
+  "persona_ack": "타 언어(Java/C# 계열) 백엔드 3～5년차 개발자로서, ABAP을 빠르게 훑어 익히려고 이 사이트를 읽는다는 페르소나로 CH06(Internal Table) 15개 레슨 + _chapter.md 전체를 통독했다. 변수·조건문·루프·SQL·OOP 기본기는 이미 안다는 전제 아래 ① 과잉 ② 오개념 유발 ③ 지름길 부재 ④ 용어 충돌 네 기준으로 기록했고, '입문자에게도 불필요한 장황함'만 높음 이상으로 두고 '입문자에겐 필요하나 경력자에겐 아는 내용'은 낮음/suggestion으로 낮춰 잡았다.",
+  "method": "Read 도구로 대상 파일(CH06-L01～L15.md, _chapter.md) 전문을 순서대로 통독. 인용 예정 문장은 전부 Grep으로 원문과 대조해 앵커(quote) 정확성을 사전 확인했다(마크다운 굵게/백틱 경계 때문에 실패한 패턴은 재검색으로 보정). 웹 검색·브라우저 렌더링·빌드 실행은 사용하지 않았다(콘텐츠 정독 위주 감사).",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L10.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L11.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L12.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L13.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L14.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L15.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "_chapter.md",
+      "quote": "🧭 **경험자라면** — 다른 언어의 컬렉션(리스트·맵)을 이미 안다면 L01～L02를 훑고",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "챕터 서두의 '경험자라면' 안내가 1부(L01～L04) 내비게이션만 커버하고, 2부(L05～L09)·3부(L10～L15)에는 대응하는 스킵 가이드가 없다.",
+      "evidence": "이 콜아웃은 1부 안에서 'L01～L02는 훑고 L03·L04는 정독'이라는 완급까지 짚어 주지만, 그 뒤 2부·3부에는 같은 수준의 안내가 없다. 그런데 2부에도 INSERT/READ/MODIFY/DELETE처럼 다른 언어의 List/Map API와 거의 1:1 대응이라 표(L06의 격자표)만 훑어도 되는 절과, ASSIGNING의 네 가지 위험(L08)처럼 ABAP 고유라 정독이 필요한 절이 섞여 있다. 안내가 1부에서 멈춰서, 그대로 따르면 2부·3부는 구분 없이 전부 처음부터 읽게 된다.",
+      "suggestion": "'경험자라면' 박스를 확장하거나 2부 초입에 짧은 안내를 하나 더 둬서, 어떤 절은 표만 봐도 되고(예: L06 격자표) 어떤 절은 ABAP 고유 함정이라 정독이 필요한지(예: L08 ASSIGNING 위험) 구분해 주면 좋겠다."
+    },
+    {
+      "seq": 2,
+      "file": "CH06-L02.md",
+      "quote": "- `LIKE TABLE OF <변수>` — 그 **변수의 모양을 행으로 삼는** 테이블.",
+      "category": "오개념 유발",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "LIKE가 변수의 '모양'만 복사하고 '현재 값'은 복사하지 않는다는 점이 명시적으로 짚이지 않아, 선언과 초기화를 겸하는 문법(예: C#의 `var x = y;`)에 익숙한 경력자가 값까지 함께 복사되는 것으로 오해할 소지가 있다.",
+      "evidence": "예제는 `DATA gt_a LIKE TABLE OF gs_person.` 뒤에 '변수 gs_person과 같은 행 모양의 테이블'이라는 설명만 달려 있고, gt_a가 gs_person의 현재 값과 무관하게 빈 테이블로 시작한다는 점은 본문 어디에도 명시되지 않는다. '이 변수처럼 선언'이 값 초기화까지 겸하는 문법에 익숙한 경력자라면, 빠르게 훑을 때 LIKE도 값을 함께 가져온다고 넘겨짚을 수 있다.",
+      "suggestion": "예제 옆에 '(값은 복사되지 않는다 — gt_a는 빈 테이블로 시작, 모양만 gs_person을 따른다)' 같은 한 줄을 덧붙이면 오해 여지가 없어진다."
+    },
+    {
+      "seq": 3,
+      "file": "CH06-L03.md",
+      "quote": "그 기준이 3속성의 두 번째, **Primary Key(기본 키)** 다. 사번이 유일하다면 사번이 키 후보고,",
+      "category": "용어 충돌",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "관계형 DB를 아는 경력자에게 'Primary Key'는 정의상 항상 UNIQUE인 제약인데, 이 레슨은 곧바로 NON-UNIQUE Primary Key(중복 허용)를 흔한 선택지로 제시한다. 뒤이은 disambiguation 블록은 '메모리 vs 저장'이라는 범위 차이만 짚을 뿐, 'UNIQUE 보장 여부' 자체가 다르다는 용어 충돌은 짚지 않는다.",
+      "evidence": "바로 다음 절의 코드는 `WITH NON-UNIQUE KEY name.`을 'name으로 찾는다, 중복은 허용'이라 설명하고, L04의 표에서도 NON-UNIQUE가 STANDARD 종류의 '유일한 선택지'로 나온다 — 이 사이트의 기본형 Internal Table은 사실상 대부분 NON-UNIQUE Primary Key다. 모든 RDBMS에서 PRIMARY KEY 제약은 정의상 NOT NULL + UNIQUE를 자동으로 강제하므로, SQL에 익숙한 경력자에게 'NON-UNIQUE Primary Key'는 형용모순처럼 읽힐 수 있다. 레슨의 disambiguation('Internal Table의 키는 메모리 안에서 행을 찾는 기준이다... DB의 Primary Key와는 다른 물건이다')은 저장 위치(메모리 vs 영구저장) 차이만 설명하고, DB의 PK는 애초에 NON-UNIQUE를 허용하지 않는다는 더 근본적인 차이는 언급하지 않는다.",
+      "suggestion": "disambiguation 블록에 한 문장만 추가 — 예: 'DB의 PRIMARY KEY는 정의상 항상 UNIQUE지만, Internal Table의 Primary Key는 이름과 달리 NON-UNIQUE도 흔하다(오히려 STANDARD 테이블의 기본값).' — 이러면 SQL 배경 독자의 첫 반응('모순 아닌가?')을 바로 해소할 수 있다."
+    },
+    {
+      "seq": 4,
+      "file": "CH06-L04.md",
+      "quote": "여기서 3속성의 마지막, **Table Kind(종류)** 가 등장한다. 행을 **어떻게 저장하고 어떻게",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "STANDARD/SORTED/HASHED를 List/정렬맵(TreeMap·SortedList)/해시맵(HashMap·Dictionary)에 빗댄 비유가 이 레슨엔 없고 캡스톤(L15)의 접힌 상세 블록에만 있다. '지불하는 것/얻는 것' 거래표가 이미 실용적 판단 기준을 잘 주긴 하지만, 경력자라면 한 줄 비유만으로 이진 탐색·해시 원리 설명 문단을 통째로 건너뛸 수 있었을 것이다.",
+      "evidence": "L04는 이진 탐색(전화번호부)·해시(사물함) 원리를 처음부터 비유로 새로 쌓아 올리는데, 정작 '리스트/정렬맵/해시맵과 같다'는 한 줄 매핑은 10개 레슨 뒤인 L15의 접힌 블록('STANDARD/SORTED/HASHED — 순서대로 담는 리스트 / 키 순서가 유지되는 정렬 맵 / 해시로 찾는 맵에 각각 대응한다')에만 등장한다. 그사이 L07도 '[종류 레슨]의 전화번호부'라고 L04를 다시 참조할 뿐 새 설명은 없어서, 경력자는 챕터 내내 ABAP 고유 비유(전화번호부·사물함)로만 개념을 재구성하게 된다.",
+      "suggestion": "L04의 종류 소개 부분에 '🧭 경력자라면 STANDARD≈List, SORTED≈정렬 유지 맵(TreeMap/SortedList), HASHED≈해시맵(HashMap/Dictionary)에 가깝다'는 한 줄만 얹으면, 뒤따르는 원리 설명은 검증용으로만 읽고 넘어갈 수 있다."
+    },
+    {
+      "seq": 5,
+      "file": "CH06-L05.md",
+      "quote": "`READ`가 성공했는지는 **언제나 `sy-subrc`가 0인지로만** 판정한다. 못 찾으면 0이 아닌",
+      "category": "지름길 부재",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "sy-subrc가 '예외를 던지지 않고 반환 코드로 실패를 알리는' 방식이라는, Java/C# 개발자에게 가장 결정적인 패러다임 설명이 이 레슨엔 없고 캡스톤(L15)에서야 나온다. 정작 'sy-subrc를 확인하는 습관'이 가장 강하게 요구되는 곳이 이 레슨인데, 그 습관이 왜 필요한지(예외가 없어서)를 여기서 바로 알려주지 않는다.",
+      "evidence": "이 레슨은 'READ 다음 줄은 반드시 IF sy-subrc = 0'을 규율로 못박지만, '왜 습관으로 강제해야 하는가'(=실패해도 프로그램이 멈추거나 자동으로 알려주지 않고 조용히 넘어간다 — 즉 Java/C#의 예외처럼 catch를 강제하는 안전장치가 없다)는 명시하지 않는다. 이 통찰은 L15의 접힌 대조표('sy-subrc 확인 — 실패를 예외로 던지지 않고 반환 코드로 알리는 방식이다... 확인하지 않으면 프로그램은 아무 일 없다는 듯 그대로 진행한다')에만 나온다. try/catch에 익숙한 경력자일수록 이 차이를 처음부터 알아야 실수를 줄일 텐데, 그 설명이 습관을 배우는 시점이 아니라 챕터 끝에 온다.",
+      "suggestion": "L05의 sy-subrc 도입부에 '예외를 던지는 언어(Java/C# 등)와 달리 ABAP은 실패해도 자동으로 멈추거나 알려주지 않는다 — 그래서 확인이 습관이어야 한다'는 한 줄을 넣으면, 경력자가 왜 이 규율이 낯설고도 중요한지 바로 납득한다."
+    },
+    {
+      "seq": 6,
+      "file": "CH06-L08.md",
+      "quote": "**복사**해 온다. 우리가 한 살 올린 것은 복사본(`gs_person`)이지 테이블의 행이 아니다.",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "LOOP...INTO가 값을 복사해 온다는 이 함정은, Java/C#에서 컬렉션을 순회할 때 요소가 참조라 직접 수정이 곧바로 반영되는 습관을 가진 경력자에게는 초보자보다 오히려 더 잘 걸리는 함정인데, L01에 있던 것과 같은 '다른 언어를 해봤다면' 식 명시적 대조가 이 절에는 없다.",
+      "evidence": "Java의 for-each나 C#의 foreach는 리스트 요소가 참조 타입(클래스)이면 루프 변수를 통한 직접 수정이 그대로 반영된다 — 즉 경력자의 기본 반사작용은 'LOOP 안에서 고치면 당연히 반영된다'는 쪽이다. 이 레슨은 '에러가 안 나서 더 위험하다'고 정확히 경고하면서도, 그 위험이 Java/C# 참조형 순회 습관을 가진 독자에게 통계적으로 더 크다는 점은 짚지 않는다. 반면 L01의 APPEND 값복사 설명에는 '다른 언어를 해 봤다면' 콜아웃으로 Java/C#의 참조 의미론과 명시적으로 대조했었다 — 같은 장치가 구조적으로 더 위험한 이 지점에는 재사용되지 않았다.",
+      "suggestion": "이 절에도 L01과 같은 형식의 짧은 콜아웃을 추가 — 예: 'Java/C#의 foreach는 요소가 참조라 직접 수정이 바로 반영되지만, ABAP의 LOOP...INTO는 항상 복사본이라 그 반사작용이 통하지 않는다.'"
+    },
+    {
+      "seq": 7,
+      "file": "CH06-L11.md",
+      "quote": "[L05의 넣기 3형제 표](CH06-L05.html)에서 이름만 알아 둔 막내 — **넣는 순간 합산까지",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "SQL을 이미 아는 독자에게는 'COLLECT ≈ GROUP BY + SUM'이라는 한 줄이면 충분할 텐데, 그 비유가 COLLECT를 처음 배우는 이 레슨엔 없고 캡스톤(L15)에만 나온다.",
+      "evidence": "이 레슨은 지역별 매출 합계 예제로 COLLECT의 동작(있으면 더하고 없으면 넣는다)부터 제약 3가지, 성능 원리(임시 해시 찾기표)까지 전부 처음부터 쌓아 올린다. 그런데 'SQL을 안다면 GROUP BY 뒤의 합계'라는 정확한 대응 관계는 L15의 접힌 대조표에만 등장한다. SQL 능숙자를 가정하는 이 페르소나라면, 이 한 줄이 COLLECT 도입부에 먼저 있었으면 동작 자체는 즉시 이해하고 나머지 분량(제약·성능)만 새 정보로 읽었을 것이다.",
+      "suggestion": "COLLECT 도입부('COLLECT의 동작' 절 시작)에 'SQL의 GROUP BY + SUM을 행이 들어올 때마다 즉시 실행하는 것과 같다'는 한 줄을 먼저 주고, 그다음 ABAP 고유의 제약·성능 이야기로 들어가면 좋겠다."
+    },
+    {
+      "seq": 8,
+      "file": "CH06-L13.md",
+      "quote": "왜 이 셋일까. **서랍**으로 비유하면 — Flat Structure는 폭이 정해진 서랍이라 모든 칸이",
+      "category": "과잉",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "고정 크기 인라인 저장 vs 가변 크기 데이터를 포인터/참조로 별도 보관한다는 개념은 경력자에게는 이미 익숙한 상식(문자열 내부 구현, 참조 타입 필드 등)이라 서랍·별채·쪽지 비유 문단 전체가 길게 느껴질 수 있다. 다만 입문자에게는 정당한 비유라 우선순위는 낮다.",
+      "evidence": "서랍/별채/쪽지 비유는 여러 문장에 걸쳐 '왜 string과 Internal Table이 Flat이 아닌가'를 처음부터 이미지로 재구성한다. 경력자는 이 개념을 C#의 참조 타입 필드나 가변 길이 문자열의 내부 구현으로 이미 알고 있어, 비유 없이 '가변 크기 요소는 내부적으로 포인터/참조로 저장된다'는 한 줄 요약만으로도 충분히 넘어갈 수 있다.",
+      "suggestion": "비유 문단 앞에 '(경력자용 한 줄: 가변 길이 요소는 포인터/참조로 별도 저장 — 대부분의 언어에서 문자열·컬렉션의 내부 구현과 같은 원리)'를 붙이면, 그 아래 비유 문단은 건너뛰어도 되는 것으로 표시된다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "이 챕터는 3속성 프레임·좌표 격자표(L06)·거래표(L04)·캡스톤 비교표(L15) 등 경력자에게 실질적으로 도움되는 요약 장치를 이미 여러 곳에 갖추고 있고, 챕터 서두의 '경험자라면' 안내도 방향은 맞다. 다만 그 유용한 비유·대조들(Table Kind↔List/Map, sy-subrc↔반환코드, COLLECT↔GROUP BY)이 대부분 캡스톤(L15)에만 몰려 있어, 각 개념을 처음 배우는 시점에는 경력자도 ABAP 고유 비유로 처음부터 다시 쌓아야 한다. 가장 실질적인 위험은 L08의 LOOP...INTO 함정으로, Java/C#의 참조 기반 순회 습관을 가진 경력자가 초보자보다 오히려 더 걸리기 쉬운데 L01에 있던 것과 같은 명시적 언어 대조가 빠져 있다. L03의 'Primary Key'라는 이름이 NON-UNIQUE를 허용한다는 점도 SQL 상식과 정면으로 부딪히는 용어라 짧은 보강이 필요하다. 모두 국소적인 한두 문장 추가로 해결 가능한 수준이라 재집필이나 전면 보강까지는 필요 없다."
+  }
+}
