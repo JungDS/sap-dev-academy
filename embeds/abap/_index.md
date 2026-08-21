@@ -68,7 +68,7 @@
 | CH06-L13-S01 | CH06-L13 | step-debugger(itab워치) | Deep 실전 13스텝 — **본문 L13 예제 그대로**(A001 김연아·키보드1·마우스2): 행 '안의' 테이블(gs_order-items)에 APPEND→완성 주문을 gt_orders에 쌓기(🧺 목록 요약 셀)→**CLEAR가 안의 목록까지 비움**→중첩 LOOP(바깥=주문·안쪽=그 행이 품은 목록)로 꺼내기 | ✅ |
 | CH06-L13-S02 | CH06-L13 | code-anatomy | ts_order 해부 — order_id/customer=Flat, items TYPE tt_item 한 줄이 전체를 Deep으로(원본 코드블록 체험·R2). *구 CH06-L05-S02 rename* | ✅ |
 | CH06-L13-S03 | CH06-L13 | judge-quiz | Flat vs Deep 판정 5문(전 숫자=Flat·string 하나=Deep·itab 포함=Deep·중첩≠deep·고정길이 회원카드). *구 CH06-L05-S01 rename* | ✅ |
-| CH06-L14-S01 | CH06-L14 | diff-mapper | 옛 코드 ↔ 지금 표준 대역 비교 7쌍 — **본문 L14 예제 정합**: WITH HEADER LINE/OCCURS 선언↔gt_/gs_ 분리 선언·그림자 대입·**TO 없는 APPEND**·READ 결과=그림자·**CLEAR it(그림자만) vs CLEAR it[](본체=대괄호)**. classic/modern 중립 톤·hover 대응+해독 포인트 | ✅ |
+| CH06-L14-S01 | CH06-L14 | diff-mapper | 옛 코드 ↔ 지금 표준 대역 비교 7쌍 — **본문 L14 예제 정합**: WITH HEADER LINE/OCCURS 선언↔gt_/gs_ 분리 선언·그림자 대입·**TO 없는 APPEND**·READ 결과=그림자·**CLEAR it(그림자만) vs CLEAR it[](본체=대괄호)**. classic/modern 중립 톤·클릭=고정(hover=임시) 대응+해독 포인트 | ✅ |
 | CH06-L15-S01 | CH06-L15 | step-debugger(itab워치·max) | 구구단 캡스톤 17스텝 — 중첩 DO로 gt_gugu가 1→2→3→4행 **하나씩** 쌓이고 9→18→**72행**(2~9단 × 9)으로 완성, DESCRIBE gv_cnt=72, SORT result DESC(1번 행 9×9=81), **LOOP 출력 재현(`9 x 9 = 81`…) 보강**. 본문 L15 코드 정합(단 시작마다 CLEAR gs_line 습관 줄 포함). `itab.max=6`으로 가운데 접힘(⋮ n행 생략). *구 CH06-L06-S01 rename+보강* | ✅ |
 | CH07-L01-S01 | CH07-L01 | se11-table-builder(신규) | SE11 Transparent Table 생성 시뮬(ZGUGUDAN 필드·키 토글·타입 Data Element↔Built-In·**Technical Settings 게이트(Data Class APPL0·Size 0 — 미지정 시 활성화 거부)**·검사→활성화→DB 물리테이블 생성·키 연속성/DE 검증) | ✅ |
 | CH07-L02-S01 | CH07-L02 | se11-create-entries(신규) | Create Entries 손입력 훈련기(DAN·MUL·RESULT 저장·키 중복 거부·RESULT≠DAN*MUL 경고+빨간행·MANDT 클라이언트 분리 100/200·2·3단 자동채움). **seed 비움 = 빈 테이블에서 시작**(본문 "빈 테이블"·"2×1부터"와 정합, 키 중복은 학습자가 직접 만들어 겪음) + **↻ 처음으로** | ✅ |
@@ -172,7 +172,7 @@
 | CH18-L07-S01 | CH18-L07 | cond-switch-selector | 잔여석→COND(범위)·상태→SWITCH(상수) 값 선택·ELSE 제거 시 초기값 | ✅ |
 | CH18-L08-S01 | CH18-L08 | reduce-filter-lab | REDUCE 좌석합계 누적 스텝·FILTER status=N·EXCEPT 반대집합 | ✅ |
 | CH18-L09-S01 | CH18-L09 | let-reader | LET 보조값 먼저 평가→IN 결과·COND/REDUCE 문맥·보조값vs누적값 구분·COND 순차·정확 비교(음수 잔여석→`< 10` 가지+경고, R2B5 CH18-C002) | ✅ |
-| CH18-L10-S01 | CH18-L10 | diff-mapper | classic↔modern(VALUE·+=·Table Expr) hover 대응+설명 · 중립 톤 | ✅ |
+| CH18-L10-S01 | CH18-L10 | diff-mapper | classic↔modern(VALUE·+=·Table Expr) 클릭=고정(hover=임시) 대응+설명 · 중립 톤 | ✅ |
 | CH18-L11-S01 | CH18-L11 | diff-mapper | 콘서트앱 모던리팩터(인라인DATA·+=·VALUE·line_exists·REDUCE/SWITCH) | ✅ |
 | CH19-L01-S01 | CH19-L01 | sql-modernize-stepper | classic→modern SQL 단계 변환(콤마·@·INTO 뒤로)·항공사 코드별 결과(행수·sy-subrc·sy-dbcnt) 동일·중간 단계(콤마만/@만)는 "컴파일 안 되는 학습용 표기" 명시+결과 카드 흐림(b5w2) | ✅ |
 | CH19-L02-S01 | CH19-L02 | host-escape-inspector | WHERE 오른쪽 operand(ABAP변수/식/DB컬럼/리터럴)×@ on·off→정오 판정(escape 필요/불필요/누락)·host식 lossless·SQL식↔host식 구분 | ✅ |
@@ -363,7 +363,7 @@
 | move-mapping (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH05-L04-S01 | MM_CFG 주도 · src/tgt 카드·같은 이름=초록 복사 flash·원본-only=주황 무시·대상-only=잔존(빨강 stale 함정)·CLEAR 먼저 토글→ok/warn verdict(교훈3)·classic 전용(FMB는 modern이라 미재사용)·토큰만 · 다크 · 잔존값 verdict는 값을 괄호로 감싼다(맨값이라 뒤에 조사를 붙이면 받침에 따라 어긋남) |
 | struct-reuse-board (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH05-L03-S01 | SRB_CFG 주도 · 3모드 세그(중첩=amber 하위/INCLUDE=good 점선 펼침/APPEND=잠긴 표준+accent 확장)+접근 경로 칩+선택형 퀴즈(정오 good/bad+why·정답 인덱스는 문항마다 분산해 둘 것)·토큰만 · 다크 |
 | syntax-toggle-lab (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH01-L03-S01 | STL_CFG 주도 · 코드 패널(행번호·kw/cmt 토큰색)+토글 4(마침표/별표 위치/인라인 */소문자)→구문 램프 ok/bad+원인 목록·이름 풀 정훈영(R9)·코드 base=var(--surface) 틴트 · 다크 |
-| diff-mapper | 3 | 공통(_engine)+_autoheight ✅ | CH06-L14-S01 · CH18-L10·L11 (완료) | 데이터=마크업(data-link/title/desc) · classic/modern 중립 톤 추가(CH06-L14는 옛 Header Line↔지금 표준 대역에 재사용) |
+| diff-mapper | 3 | 공통(_engine)+_autoheight ✅ | CH06-L14-S01 · CH18-L10·L11 (완료) | 데이터=마크업(data-link/title/desc) · **클릭=고정·hover=임시**(모바일 탭 고정, 2026-08-19) · classic/modern 중립 톤 추가(CH06-L14는 옛 Header Line↔지금 표준 대역에 재사용) |
 | inline-decl-judge (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH18-L01-S01 | IDJ_CFG 주도 · 문장 카드 4종(READ/LOOP/계산/SELECT) 허용/보류 판정·계산 카드 DATA()/FINAL() 토글→재대입 ok/bad · 다크 |
 | value-builder (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH18-L02-S01 | key 토글·작업 버튼(make/base/replace/forgen/dup)→VALUE 식·결과 테이블(new 강조)·BASE 유무·중복 key 모드별 분기(dup이 keyMode 참조·unique 전환 시 중복 테이블 비움) · 다크 |
 | field-mapping-board (신규) | 1 | 공통(_engine)+_autoheight ✅ | CH18-L03-S01 | FMB_CFG 주도 · 원본/대상 필드 매핑표(자동/MAPPING/EXCEPT/초기값 배지, EXCEPT가 자동복사보다 우선 판정)·MAPPING/EXCEPT 토글→매핑표+CORRESPONDING 코드·원본only 버려짐 · 다크 |
