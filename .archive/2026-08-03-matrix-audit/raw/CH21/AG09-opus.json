@@ -1,0 +1,71 @@
+{
+  "agent": "AG09",
+  "model": "opus",
+  "target": "CH21",
+  "persona_ack": "나는 발견자 AG09 — ABAP 정적 검사기를 시늉하는 코드 전용 감사자다. CH21의 ```abap 코드 블록만 줄 단위로 보고 산문은 판단 근거에서 제외했다(산문은 코드 해석에 필요한 문맥으로만 참조). 읽기 전용·저장소 내 대상 파일 한정·웹 검색 없음·블라인드(다른 감사자 산출물 미열람) 제약을 지켰다. 실행 환경이 없으므로 컴파일 확신이 아니라 정적 판단이며, 불확실한 건 confidence=\"추정\"으로 적었다.",
+  "method": "Read 도구로 대상 11개 파일 원문 통독. 각 ```abap 펜스 블록을 문장 단위로 수기 정적 검사 — (a) 문장 마침표·블록 개폐(CLASS/IMPLEMENTATION/METHOD/TRY/CASE) 대응, (b) 선언-사용 정합(속성·파라미터·시그니처·RAISING·REDEFINITION·EVENTS↔RAISE EVENT↔FOR EVENT), (c) ABAP SQL strict 문법(@ 이스케이프·INTO 절 위치·집계식/SQL 함수), (d) 네이밍 규약 대조(lv_/lo_/lx_/mv_/rv_/iv_·CH10+ 로컬 문맥), (e) 경계 규약(CH21은 CH19 이후라 modern 문법·New Open SQL 허용 구간임을 확인), (f) 주석·출력 문자열과 코드의 어긋남. SAP 시스템·구문검사 실행 없음, 웹 검색 없음.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L10.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L10.md",
+      "quote": "IF iv_seats <= 0 OR iv_seats > lv_remaining.",
+      "category": "예외 설계 정합(코드 의미 불일치)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "실습 정본 METHOD book이 '잘못된 입력(iv_seats <= 0)'과 '잔여석 초과' 두 개의 서로 다른 실패 원인을 한 조건으로 묶어 모두 ZCX_FULLY_BOOKED(매진)를 던진다. 0석·음수 좌석 요청은 매진이 아니므로 예외 이름이 실제 실패 원인과 어긋난다.",
+      "evidence": "CH21-L10.md 구현부(66～70행): 'DATA(lv_remaining) = me->remaining( ).' 다음 줄이 'IF iv_seats <= 0 OR iv_seats > lv_remaining.'이고 그 안에서 'RAISE EXCEPTION TYPE zcx_fully_booked.'만 던진다. 같은 파일 '흔한 실수' 항목은 '너무 넓은 예외 이름 → ZCX_ERROR는 이유 구분이 안 된다. ZCX_FULLY_BOOKED처럼 *업무 상황*을 말하는 이름.'이라고 가르치는데, 정작 예제 코드가 그 원칙을 어긴다. 호출부(84～89행)는 CATCH 후 lx_booked->get_text( )를 그대로 출력하므로 좌석 수 0 입력에도 '매진' 문장이 뜬다. CH21-L06.md의 원형(METHOD book)은 조건이 'IF iv_seats > me->remaining( ).' 뿐이어서 이름과 원인이 일치했다 — L10에서 조건만 넓히고 예외는 그대로 둔 결과다.",
+      "suggestion": "입력 검증과 정원 검증을 분리한다. ① 간단히 가려면 IF 조건을 'iv_seats > lv_remaining'으로 되돌리고 좌석 수 유효성은 can_book( )/선택화면 검증에 맡긴다. ② 유지하려면 별도 예외(예: ZCX_INVALID_SEATS)를 하나 더 두고 'IF iv_seats <= 0. RAISE EXCEPTION TYPE zcx_invalid_seats. ENDIF.'로 분기 — RAISING 절에 두 예외를 함께 선언한다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L09.md",
+      "quote": "METHOD book.",
+      "category": "코드 구조(활성화 불가 조합)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "하나의 ```abap 블록 안에서 'ENDCLASS.'로 닫힌 완결된 DEFINITION 뒤에 곧바로 'METHOD book. … ENDMETHOD.'가 붙어 있다. METHOD 블록은 CLASS … IMPLEMENTATION 안에서만 허용되므로, 이 블록을 그대로 옮겨 적으면 구문 오류로 활성화되지 않는다.",
+      "evidence": "CH21-L09.md 20～35행 한 블록: 'CLASS zcl_booking_manager DEFINITION PUBLIC CREATE PUBLIC.' … 26행 'ENDCLASS.' → 빈 줄 → 28행 'METHOD book.' … 34행 'ENDMETHOD.'. 앞뒤로 'CLASS zcl_booking_manager IMPLEMENTATION.'이 없다. 같은 챕터에서 CH21-L04.md(35～44행)·CH21-L06.md(36～42행)는 METHOD만 든 *단독* 블록이라 발췌임이 분명하고, CH21-L10.md(46～77행)는 IMPLEMENTATION으로 정확히 감쌌다 — L09만 완결 코드처럼 보이는 혼합 블록이라 학습자가 그대로 입력할 위험이 있다.",
+      "suggestion": "L09의 METHOD book 부분을 별도 ```abap 블록으로 떼어내거나(다른 레슨의 발췌 관례와 일치), 'CLASS zcl_booking_manager IMPLEMENTATION. … ENDCLASS.'로 감싸 완결된 형태로 만든다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L09.md",
+      "quote": "EXPORTING VALUE(iv_concert) TYPE zconcert-concert_id",
+      "category": "네이밍 규약(파라미터 접두어)",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "EVENTS의 EXPORTING 파라미터에 importing 접두어 iv_를 붙였다. 이 챕터가 iv_를 일관되게 '메서드 IMPORTING 파라미터'에 쓰고 있어(constructor·book·can_book 전부), 같은 접두어가 '이벤트가 내보내는 값'에도 쓰이면 방향 표시가 서로 충돌한다. SAP 표준 이벤트(예: ALV의 e_row_id·e_column_id)도 exporting 계열은 e_/ev_를 쓴다.",
+      "evidence": "CH21-L09.md 23～25행 'EVENTS sold_out EXPORTING VALUE(iv_concert) … VALUE(iv_perf) …', 30～32행 'RAISE EVENT sold_out EXPORTING iv_concert = mv_concert …', 44～46행 handler 'FOR EVENT sold_out OF zcl_booking_manager IMPORTING iv_concert iv_perf sender.'. 동일 패턴이 CH21-L10.md 23～25행·72～73행에도 반복된다. 문법 오류는 아니고(EVENTS의 EXPORTING VALUE(...) 선언 자체는 정상), 프로젝트 규칙 R11이 메서드/이벤트 파라미터 접두어를 명시하지 않아 '규칙 위반'이 아니라 일관성 문제로 판단해 confidence=추정.",
+      "suggestion": "이벤트 파라미터만 ev_(또는 e_)로 바꿔 방향을 드러낸다 — 'EVENTS sold_out EXPORTING VALUE(ev_concert) … VALUE(ev_perf) …', RAISE EVENT·FOR EVENT IMPORTING 목록·handler 본문(|{ ev_concert }/{ ev_perf } 매진|)까지 L09·L10 두 파일을 함께 고쳐야 한다. 접두어 정책을 바꾸지 않기로 하면 R11에 '이벤트 파라미터도 iv_ 유지'를 한 줄 명시해 의도된 선택임을 남긴다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L10.md",
+      "quote": "SELECT COALESCE( SUM( seats ), 0 ) FROM zbooking",
+      "category": "ABAP SQL 릴리스 의존 구문",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "집계식 SUM( )을 SQL 함수 COALESCE( )의 인자로 중첩했다. ABAP SQL에서 '집계식을 SQL 식(함수)의 오퍼랜드로 쓰는 것'은 비교적 늦게 열린 기능이라, 구형 넷위버(7.40/7.50대) 연습 시스템에서는 구문검사에서 막힐 수 있다. 실행 환경이 없어 릴리스를 확정할 수 없으므로 추정으로 남긴다.",
+      "evidence": "CH21-L10.md 54～59행 METHOD remaining의 'SELECT COALESCE( SUM( seats ), 0 ) FROM zbooking … INTO @DATA(lv_booked).' 및 CH21-L04.md 35～44행의 동일 패턴('SELECT COALESCE( SUM( seats ), 0 )'). 나머지 부분(@ 호스트 변수 이스케이프·INTO 절을 WHERE 뒤 마지막에 둔 strict 문법·집계 전용 SELECT라 ENDSELECT 불필요)은 정상이다. 이 챕터가 CH19 이후라 New Open SQL 사용 자체는 경계 규약에 부합한다.",
+      "suggestion": "학습 시스템 릴리스를 확인해 문제가 되면 COALESCE를 걷어내고 집계만 남긴다 — 'SELECT SUM( seats ) FROM zbooking WHERE … INTO @DATA(lv_booked).' 뒤에 'IF sy-subrc <> 0. lv_booked = 0. ENDIF.'(또는 대상 변수 초기값 사용)로 NULL 상황을 처리하면 릴리스 의존이 사라지고, 입문자에게 '집계 결과가 없을 때'를 설명할 자리도 생긴다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH21의 ```abap 블록 22개를 줄 단위로 검사했다. 활성화 차단급(문장 마침표 누락·블록 개폐 불일치·시그니처 오류·미선언 속성 사용) 결함은 없었다. 클래스 선언 순서(DEFINITION PUBLIC → INHERITING FROM → CREATE PUBLIC), constructor/class_constructor의 PUBLIC SECTION 배치, REDEFINITION과 super-> 호출, INTERFACES와 zif~meth 구현, CAST/CX_SY_MOVE_CAST_ERROR·CASE TYPE OF … INTO, EVENTS↔RAISE EVENT↔FOR EVENT 파라미터 대응이 모두 정합했고, 상속 자식 zcl_vip_booking을 부모 constructor 인자로 생성하는 부분도 문법상 옳다. 네이밍은 lo_/lv_/lx_/mv_/rv_ 사용이 챕터 내내 일관되고 CH21은 CH19 이후라 modern 문법·New Open SQL 사용도 경계 규약에 어긋나지 않는다. 남은 것은 네 건 — 실습 정본 book( )이 입력 오류(0석 이하)까지 ZCX_FULLY_BOOKED로 던져 같은 레슨의 '예외 이름은 업무 상황을 말해야 한다'는 가르침과 어긋나는 게 유일한 중간급이고, L09의 IMPLEMENTATION 밖 METHOD 혼합 블록·이벤트 EXPORTING 파라미터의 iv_ 접두어·COALESCE(SUM( ))의 릴리스 의존은 낮음이다. 구조 재집필이 아니라 국소 교정으로 끝나는 수준이라 '경미 수정'."
+  }
+}

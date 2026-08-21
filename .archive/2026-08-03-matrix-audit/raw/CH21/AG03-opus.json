@@ -1,0 +1,115 @@
+{
+  "agent": "AG03",
+  "model": "opus",
+  "target": "CH21",
+  "persona_ack": "타 언어(Java/C# 계열) 백엔드 3～5년차 개발자로서, ABAP을 빠르게 훑어 익히려는 눈으로 CH21의 _chapter.md와 L01～L10을 통독했다. 과잉·오개념 유발·지름길 부재·용어 충돌 네 축으로만 기록했고, 이 사이트의 1독자가 비전공 입문자라는 점을 감안해 '입문자에게도 불필요·혼란'인 항목만 중간으로, '입문자에겐 필요하나 경력자에겐 이미 아는 내용'은 낮음 또는 suggestion으로 분류했다.",
+  "method": "Read 도구로 대상 11개 파일 전문을 순서대로 정독(코드 블록·front-matter 포함). 외부 검색·다른 감사 산출물 열람 없음. 인용문은 원문에서 그대로 복사.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L10.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH21/_chapter.md",
+      "quote": "절차적 코드의 한계 — 객체로 구조화하고 싶다.",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "챕터 어디에도 '다른 언어에서 OOP를 해 본 사람은 여기만 보면 된다'는 안내가 없다. CH21은 10개 레슨 중 상당 부분(클래스/객체, 속성/메서드, 가시성, 생성자, static vs instance, 인터페이스, 상속/오버라이드, 다형성)이 언어 불문 표준 OOP라 경력자는 ABAP 고유 지점을 스스로 골라내야 한다.",
+      "evidence": "_chapter.md의 intro는 이 한 줄이 전부이고, L01～L10 어느 레슨에도 난이도·건너뛰기 신호가 없다. 반면 이 챕터에서 실제로 ABAP 고유한 것은 SE24 Global Class, CREATE OBJECT(classic), 인터페이스~메서드의 `~` 표기, CX_STATIC_CHECK/DYNAMIC_CHECK/NO_CHECK 3계층, CLEANUP이 finally가 아니라는 점, CASE TYPE OF, EVENTS/SET HANDLER, me->/super-> 정도로 좁게 특정된다.",
+      "suggestion": "intro 아래 또는 각 레슨 상단에 한 줄 안내를 넣는다. 예: '다른 언어로 객체지향을 해 봤다면 L01의 SE24·CREATE OBJECT, L05의 ~ 표기, L06의 CX 계층·CLEANUP, L08의 CASE TYPE OF, L09의 EVENTS/SET HANDLER만 봐도 된다.' 입문자에게는 아무 손해가 없고 경력자에게는 챕터 전체의 진입 비용이 크게 줄어든다."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH21/CH21-L03.md",
+      "quote": "**생성자에 무거운 작업** → 객체 만드는 **모든 곳**이 느려진다. 정원 조회처럼 꼭 필요한 초기 상태만.",
+      "category": "오개념 유발",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'생성자에 무거운 작업 금지'라고 경고하면서 바로 위 예제의 생성자가 DB를 조회(SELECT SINGLE)한다. 경력자 눈에는 생성자 안의 DB 접근이야말로 전형적인 회피 대상(숨은 I/O·부작용·테스트 대체 불가)이라, '무거움'의 기준이 무엇인지 오히려 헷갈린다.",
+      "evidence": "같은 레슨 CONSTRUCTOR 예제가 `SELECT SINGLE capacity FROM zconcert WHERE concert_id = @iv_concert INTO @mv_cap.`으로 생성자에서 DB를 읽고, CH21-L10의 실습 클래스도 동일한 생성자를 그대로 채택한다. 즉 '무거운 작업 금지' 원칙과 예제 코드의 방향이 서로 다르게 읽힌다.",
+      "suggestion": "기준을 한 줄로 명시한다. 예: '무겁다 = 반복 조회·대량 집계처럼 객체 생성 비용이 눈에 띄게 커지는 일. 여기서는 정원 1건 조회라 생성자에 두었다.' 여유가 있으면 '실무에서는 조회를 뒤로 미루거나(lazy) 값을 밖에서 넣어 주기도 한다'는 각주 한 줄만 붙여도 경력자의 의문이 해소된다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH21/CH21-L04.md",
+      "quote": "객체 상태가 **필요 없는** 유틸리티(포맷·계산) → **정적**.",
+      "category": "과잉",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'정적이냐 인스턴스냐'의 판단 기준이 L02와 L04에 걸쳐 사실상 네 번 반복된다. 경력자는 첫 문단에서 이미 끝난 이야기를 세 번 더 읽게 되어 답답하다.",
+      "evidence": "① L02 본문 '`DATA`는 인스턴스 속성 / `CLASS-DATA`는 정적 속성' ② L02 흔한 실수 '인스턴스 vs 정적 혼동 → 객체마다 다른 값 = DATA, 클래스 공용 = CLASS-DATA' ③ L04 첫 섹션 '인스턴스 멤버…/정적 멤버…' ④ L04 '언제 정적, 언제 인스턴스' 섹션 ⑤ L04 흔한 실수 2개(정적으로 만든 상태 조회, 인스턴스로 만든 helper). 같은 축의 진술이 다섯 군데다.",
+      "suggestion": "L04의 '언제 정적, 언제 인스턴스' 섹션은 첫 섹션 불릿 2개에 흡수하고(내용이 동일), L04는 ABAP 고유 지점인 `=>` vs `->`와 `me->`에 지면을 몰아 준다. 입문자용 반복이 필요하면 흔한 실수 쪽 한 곳만 남긴다."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH21/CH21-L04.md",
+      "quote": "**정적 메서드에서 인스턴스 멤버** → 정적 메서드 안엔 자기 객체(`me`)가 없다. 인스턴스 멤버를 못 쓴다.",
+      "category": "오개념 유발",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'정적 메서드는 인스턴스 멤버를 못 쓴다'는 단정은 개발 상식과 어긋난다. 정확히는 '암묵적인 자기 객체가 없어서 객체 없이는 못 쓴다'이고, 객체 참조를 파라미터 등으로 넘겨받으면 그 객체의 인스턴스 멤버는 정적 메서드 안에서도 접근할 수 있다(같은 클래스면 private까지).",
+      "evidence": "앞 절 '`me->`는 대부분 생략할 수 있지만'과 묶어 읽으면 이유(=`me`가 없다)는 맞게 서술돼 있는데, 결론 문장만 절대 진술로 닫혀 있다. 팩토리 메서드처럼 정적 메서드가 객체를 만들어 그 상태를 세팅하는 흔한 패턴이 곧바로 이 문장과 충돌한다.",
+      "suggestion": "결론을 조건부로 바꾼다. 예: '정적 메서드 안엔 자기 객체(`me`)가 없다. 그래서 객체를 지정하지 않고는 인스턴스 멤버를 쓸 수 없다(객체 참조를 넘겨받으면 `lo_x->…` 형태로는 가능).' 괄호 한 줄이면 입문자 부담 없이 정확해진다."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH21/CH21-L06.md",
+      "quote": "introduces: [\"TRY/CATCH/CLEANUP\", \"RAISE EXCEPTION\", \"RAISING\", \"CX 계층\", \"RESUME\", \"THROW expression\", \"예외 텍스트(T100 라이트)\"]",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L06 한 레슨이 신규 개념 7개를 다루는데, 그중 '이미 아는 것'(TRY/CATCH, 던지기, checked 예외 선언, 구체 예외를 먼저 잡기)과 'ABAP이라서 다른 것'(CX 3계층, CLEANUP≠finally, THROW 표현식, get_text/T100, RESUME)이 섞여 있고 어느 쪽인지 표시가 없다. 다른 레슨의 introduces가 2～3개인 것과 비교해도 이 레슨만 밀도가 크게 높다.",
+      "evidence": "L01=3개, L02=2개, L03=2개, L05=3개, L08=3개, L09=3개인 반면 L06만 7개다. 본문도 '왜 오류를 객체로'(표준 지식) → 'RAISING/TRY/CATCH'(표준) → 'THROW'(ABAP 고유) → 'CX 계층'(ABAP 고유) → 'get_text/메시지 클래스'(SAP 고유)로 성격이 다른 덩어리가 신호 없이 이어진다.",
+      "suggestion": "레슨 앞에 '이미 예외를 써 본 적 있다면 CX 계층·CLEANUP·get_text 세 절만 보면 된다' 한 줄을 넣거나, ABAP 고유 절에 작은 표식(예: 🇸🇦 대신 'ABAP 특이점' 같은 라벨)을 붙여 두 층을 구분한다. 분량 자체를 줄일 필요는 없다."
+    },
+    {
+      "seq": 6,
+      "file": "content/abap/CH21/CH21-L09.md",
+      "quote": "ENDCLASS.\n\nMETHOD book.\n  IF iv_seats = me->remaining( ).",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "하나의 코드 블록 안에서 `ENDCLASS.` 다음에 `CLASS ... IMPLEMENTATION.` 없이 `METHOD book.`이 곧바로 이어진다. 그대로는 문법이 성립하지 않는 조각인데 한 덩어리로 보여 '메서드는 클래스 밖에도 쓸 수 있나'로 읽힌다. 게다가 이 DEFINITION에는 `book`이 선언돼 있지도 않아(EVENTS만 있음) 두 조각의 관계가 더 모호하다.",
+      "evidence": "CH21-L09의 첫 코드 블록은 `CLASS zcl_booking_manager DEFINITION ... ENDCLASS.` 직후 빈 줄 하나를 두고 `METHOD book. ... ENDMETHOD.`로 계속된다. 반면 CH21-L10의 같은 코드는 `CLASS zcl_booking_manager IMPLEMENTATION.` 안에 `METHOD book.`을 두는 정상 형태로 제시돼 있어, 두 레슨의 표기가 서로 어긋난다. 사이트 코드 블록은 복사 버튼이 붙는 양식이라 그대로 붙여 넣으면 활성화되지 않는다.",
+      "suggestion": "코드 블록을 둘로 쪼개거나(선언 블록 / 구현 블록), `CLASS zcl_booking_manager IMPLEMENTATION.` … `ENDCLASS.` 래퍼를 넣어 L10과 표기를 맞춘다. DEFINITION 쪽에 `METHODS book IMPORTING iv_seats TYPE i.` 한 줄을 추가하면 두 조각의 연결도 분명해진다."
+    },
+    {
+      "seq": 7,
+      "file": "content/abap/CH21/CH21-L09.md",
+      "quote": "EXPORTING VALUE(iv_concert) TYPE zconcert-concert_id",
+      "category": "용어 충돌",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "이벤트 파라미터에 `iv_` 접두어를 붙였는데, 선언 키워드는 `EXPORTING`이다. 이 챕터가 L01·L03에서 `METHODS book IMPORTING iv_seats`로 'iv_ = IMPORTING 파라미터'를 반복 각인시킨 직후라, `EXPORTING VALUE(iv_...)`는 규칙 위반처럼 읽히고 어느 쪽이 맞는지 설명이 없다.",
+      "evidence": "CH21-L09에서 `EVENTS sold_out EXPORTING VALUE(iv_concert)/VALUE(iv_perf)`로 선언하고, handler 쪽은 `IMPORTING iv_concert iv_perf sender`로 받는다. 같은 이름이 한쪽에선 EXPORTING, 다른 쪽에선 IMPORTING으로 등장하는데 본문은 이 비대칭을 짚지 않는다. CH21-L10의 클래스 정의도 같은 표기를 그대로 쓴다. (SAP 표준 클래스의 이벤트 파라미터가 `e_`/`ev_` 계열인 것과도 어긋난다.)",
+      "suggestion": "이벤트 파라미터를 `ev_concert`/`ev_perf`로 바꾸고(발생 객체가 내보내는 값), handler 쪽 `IMPORTING`도 같은 이름으로 받게 한다. 이름을 유지한다면 '이벤트 파라미터는 발생 쪽에선 EXPORTING, 듣는 쪽에선 IMPORTING이라 이름이 한 번 뒤집혀 보인다'는 한 줄 설명을 붙인다."
+    },
+    {
+      "seq": 8,
+      "file": "content/abap/CH21/CH21-L10.md",
+      "quote": "rv_ok = xsdbool( iv_seats > 0 AND iv_seats <= me->remaining( ) ).",
+      "category": "용어 충돌",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "`abap_bool`과 `xsdbool( )`이 CH21 안에서는 아무 설명 없이 처음 등장한다. 다른 언어 경력자는 `abap_bool`을 진짜 boolean 타입으로 읽고 `IF rv_ok = true`나 `IF rv_ok.` 같은 코드를 떠올리는데, ABAP에는 고유 boolean 타입이 없고 `abap_bool`은 'X'/공백 한 글자 문자라 비교는 `= abap_true`여야 한다. 이 간극을 짚어 주지 않았다.",
+      "evidence": "CH21-L10의 `METHODS can_book ... RETURNING VALUE(rv_ok) TYPE abap_bool.`과 구현부 `xsdbool( ... )`가 이 챕터에서 두 값의 유일한 등장이며, 앞뒤 어디에도 풀이나 링크가 없다. 다만 이전 챕터(표현식 계열)에서 이미 도입됐을 가능성이 있어 '첫 등장'인지는 대상 파일 범위 밖이라 확인하지 못했다 — 그래서 confidence=추정.",
+      "suggestion": "이전 챕터에서 이미 도입했다면 해당 레슨으로 링크 한 개만 걸면 충분하다. 도입한 적이 없다면 '`abap_bool`은 참/거짓을 담는 한 글자 문자 타입(참=`abap_true`), `xsdbool( )`은 비교 결과를 그 값으로 바꿔 주는 함수' 정도의 한 줄 풀이를 붙인다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "경력자 관점에서 CH21은 전반적으로 밀도와 정확도가 좋다. 특히 다른 언어 경험자가 잘 틀리는 ABAP 고유 지점(CLEANUP이 finally가 아님, 인터페이스~메서드의 `~`, CASE TYPE OF 분기 순서, CAST 실패 시 CX_SY_MOVE_CAST_ERROR, 정적 타입 vs 동적 타입, 이벤트 handler 호출 순서 비보장)을 대부분 선제적으로 짚어 두어, '입문자용 단순화 탓에 경력자가 잘못 배우는' 큰 구멍은 발견하지 못했다. 콘서트 예매라는 관통 예제도 L01부터 L10까지 일관되게 이어져 훑어 읽기 좋다. 남는 문제는 국소적이다. ① L09 첫 코드 블록이 IMPLEMENTATION 래퍼 없이 ENDCLASS 뒤에 METHOD를 이어 붙여 그대로는 성립하지 않고 L10 표기와도 어긋난다(중간). ② 이벤트 파라미터 `iv_` 접두어가 EXPORTING과 충돌해 챕터가 방금 가르친 명명 규칙을 흔든다(중간). 나머지는 낮음이다 — 생성자 '무거운 작업 금지'와 생성자 내 DB 조회의 기준 모호, static vs instance 판단 기준의 다섯 번 반복(L02·L04), 정적 메서드가 인스턴스 멤버를 '못 쓴다'는 절대 진술, L06의 개념 7개 밀집, L10의 abap_bool/xsdbool 무설명. 지름길 안내는 챕터 전체에 전무한데, 이 사이트의 1독자가 비전공 입문자임을 감안하면 분량을 줄일 일이 아니라 '경험자는 여기만' 한 줄을 얹는 문제라 낮음으로 두었다. 코드 블록 정합성 한 곳과 명명 충돌 한 곳만 손보면 유지 가능한 수준이다."
+  }
+}

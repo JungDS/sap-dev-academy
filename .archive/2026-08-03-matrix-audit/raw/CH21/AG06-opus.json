@@ -1,0 +1,148 @@
+{
+  "agent": "AG06",
+  "model": "opus",
+  "target": "CH21",
+  "persona_ack": "20년차 SAP ABAP 아키텍트(ECC～S/4HANA 개발·운영·성능·이관 경험)로서 CH21 'OO ABAP 기본 설계' 10개 레슨과 _chapter.md를 기술 검수했다. 사실 오류·예시 적절성·위험한 생략·안티패턴 네 축으로만 보고한다.",
+  "method": "Read 도구로 대상 MD 11개를 front-matter 포함 전문 통독하고, ABAP 구문·런타임 의미·운영(성능/잠금/LUW) 관점으로 대조했다. 외부 네트워크·웹검색 미사용. 릴리스 의존 항목은 confidence를 '추정'으로 낮췄다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L10.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L05.md",
+      "quote": "- **`~`를 빠뜨림** → 구현·호출 모두 `인터페이스~메서드` 형식(`zif_printable~print`).",
+      "category": "사실 오류",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'호출도 모두 인터페이스~메서드 형식'은 틀렸다. 인터페이스 참조 변수로 호출할 때는 `~` 없이 메서드 이름만 쓴다.",
+      "evidence": "ABAP에서 `~`(인터페이스 컴포넌트 선택자)가 필요한 자리는 ① 구현부 `METHOD zif_printable~print.` ② 클래스 참조로 호출할 때 `lo_booking->zif_printable~print( )` 두 곳이다. 인터페이스 참조 변수는 인터페이스 컴포넌트를 직접 접근하므로 `iref->print( )`가 정상이며, 실제로 같은 레슨의 앞 예제가 `lo_printable->print( ).`로 `~` 없이 호출하고 있다. 본문 서술과 자기 예제가 정면으로 모순돼, 학습자가 앞 예제를 '오타'로 오해하거나 클래스 참조 호출에서 `~`를 빠뜨리는 진짜 실수를 못 배운다.",
+      "suggestion": "'구현부와 **클래스 참조** 호출에는 `~`가 필수, **인터페이스 참조**(`TYPE REF TO zif_printable`) 호출에는 붙이지 않는다'로 정정하고, 대비 예제 두 줄(`lo_booking->zif_printable~print( ).` vs `lo_printable->print( ).`)을 나란히 둔다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L06.md",
+      "quote": "- **`CLEANUP`을 finally로 오해** → 항상 실행되는 후처리가 아니라, TRY 블록이 *예외로* 정리될 때 실행되는 블록이다.",
+      "category": "사실 오류",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "CLEANUP의 핵심 조건이 빠졌다. CLEANUP은 예외가 **바깥(상위) TRY**에서 처리·전파될 때만 실행되고, **같은 TRY의 CATCH가 잡으면 실행되지 않는다.**",
+      "evidence": "위 예제는 하나의 TRY 안에 `CATCH zcx_fully_booked`와 `CLEANUP`을 나란히 두고 CLEANUP에 '자원 해제 등' 주석을 달았는데, 그 TRY가 예외를 직접 잡으므로 그 CLEANUP은 어떤 경우에도 실행되지 않는다. 즉 '자원 해제가 되는 것처럼 보이지만 실제로는 안 되는' 패턴을 시연하는 셈이고, 서술('TRY 블록이 예외로 정리될 때')도 그 오해를 막지 못한다.",
+      "suggestion": "예제를 2단으로 바꾼다 — 안쪽 TRY에는 CLEANUP만 두고 바깥 TRY가 CATCH하게 해서 CLEANUP이 실제로 도는 그림을 보여 준다. 서술은 '예외가 **이 TRY 밖**에서 처리·전파돼 블록을 벗어날 때만 실행. 같은 TRY의 CATCH가 잡으면 실행되지 않는다'로 정정."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L10.md",
+      "quote": "- **`can_book`과 `book` 기준 불일치** → 둘이 다른 잔여석 판단을 가지면 호출자가 혼란. `book`이 내부에서 `remaining( )`을 다시 확인한다.",
+      "category": "위험한 생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'book이 내부에서 다시 확인하니 안전하다'는 인상을 주지만, 잠금(ENQUEUE) 없는 조회-후-판정(check-then-act)은 동시 예약에서 정원 초과를 막지 못한다. 챕터 전체에 잠금·동시성 언급이 단 한 줄도 없다.",
+      "evidence": "예매는 경쟁 조건의 교과서적 사례다. `remaining( )` 조회와 실제 저장 사이에 다른 세션이 같은 회차를 예약하면 두 세션 모두 '가능' 판정을 받아 초과 예약이 발생한다. 실무 표준은 공연·회차 키에 대한 Lock Object 잠금(`ENQUEUE_E…`) → 잔여석 재조회 → 저장 → `DEQUEUE` 순서다. 저장(DML)을 뒤 챕터로 미루는 것과 무관하게, 여기서 가르치는 설계가 '재확인=안전'이라는 잘못된 안전감을 심는다.",
+      "suggestion": "흔한 실수에 한 줄 추가 — '잔여석 재확인만으로는 동시 예약을 못 막는다. 실제 저장 단계에서는 공연·회차에 잠금(Lock Object/ENQUEUE)을 건 뒤 다시 조회한다'고 명시하고, 정식 학습은 DML/LUW 챕터로 예고(L1)한다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L10.md",
+      "quote": "\" 실제 INSERT는 이후 DML 챕터에서.",
+      "category": "위험한 생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "`RAISE EVENT sold_out`이 저장(INSERT) 자리보다 **앞**에 놓여 있다. 학습자가 이후 주석 자리에 INSERT를 채우면 '통지 먼저, 저장 나중' 순서가 굳는다.",
+      "evidence": "ABAP 이벤트 handler는 동기 호출이라 `RAISE EVENT` 시점에 로그·알림·화면 갱신이 즉시 실행된다. 그 뒤의 INSERT가 실패하거나 LUW가 ROLLBACK되면, 일어나지 않은 '매진'을 이미 통지한 상태가 된다(취소·역보정이 어려운 부작용). 예약처럼 저장 성공이 사실의 근거인 도메인에서는 사건 통지가 반드시 저장·커밋 뒤여야 한다.",
+      "suggestion": "예제에서 '실제 INSERT는 이후 DML 챕터에서' 주석을 `RAISE EVENT` **앞**으로 옮기고, 한 줄 노트를 단다 — '이벤트는 저장(그리고 COMMIT WORK)이 성공한 뒤에 발생시킨다. 실패할 수도 있는 일을 미리 알리지 않는다.'"
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L10.md",
+      "quote": "SELECT SINGLE capacity FROM zconcert",
+      "category": "위험한 생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "생성자가 `sy-subrc`를 확인하지 않아, 공연이 없으면 `mv_cap = 0`인 채로 '정상 생성된' 객체가 만들어진다. 그 결과 `remaining( )`이 음수를 돌려주고 `book( )`은 모든 요청을 `ZCX_FULLY_BOOKED`로 거절한다 — 원인을 알 수 없는 조용한 실패다.",
+      "evidence": "L03·L10 모두 '없는 공연 ID는 선택화면 검증에서 걸러진다는 전제'로 넘어가지만, 이 클래스는 L01에서 '화면 프로그램·ALV 리포트·배치가 같은 판단을 재사용'하려고 만든 전역 클래스로 선언됐다. 배치·RFC 호출자는 선택화면을 거치지 않으므로 전제가 성립하지 않는다. 게다가 L06에서 예외를 이미 배웠으므로, 생성자에서 즉시 실패시키는 처리는 이 챕터 범위 안에서 가능하다.",
+      "suggestion": "생성자에 `IF sy-subrc <> 0. RAISE EXCEPTION TYPE zcx_concert_not_found. ENDIF.`(또는 기존 예외 재사용 대신 전용 예외)를 넣어 '잘못 태어난 객체'를 원천 차단하고, 호출부 예제를 `TRY ... NEW ... CATCH`로 감싼다. 흔한 실수에 '생성자 조회 실패를 방치하면 잔여석이 음수가 된다'를 추가."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L07.md",
+      "quote": "RAISE EXCEPTION TYPE zcx_fully_booked.",
+      "category": "안티패턴",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'VIP는 1회 4석 초과 불가'라는 **전혀 다른 사유**에 매진 예외 `ZCX_FULLY_BOOKED`를 돌려 쓴다. 호출자는 '매진'으로 잡아 '다른 회차를 보세요' 같은 엉뚱한 안내를 하게 된다.",
+      "evidence": "같은 챕터 L10이 '너무 넓은 예외 이름 → 업무 상황을 말하는 이름'이라고 가르치는데 상속 예제가 그 원칙을 스스로 어긴다. 또한 자식이 부모보다 강한 전제조건(4석 제한)을 추가하는 형태라, 부모 타입 참조로 다형 호출하는 코드가 부모 계약대로 동작하지 않는다(치환 원칙 위반) — L07·L08이 곧바로 가르치는 다형성과 충돌한다.",
+      "suggestion": "`ZCX_VIP_SEAT_LIMIT` 같은 별도 예외를 만들고(공통 상위 `ZCX_BOOKING_RULE`을 두면 부모 시그니처의 `RAISING`으로 묶인다), 또는 상속 예제를 '같은 사유·다른 계산'(예: VIP는 별도 정원 풀에서 잔여석을 계산) 규칙으로 바꿔 치환 원칙을 지키게 한다."
+    },
+    {
+      "seq": 7,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L05.md",
+      "quote": "WRITE: / '예매 내역 출력'.",
+      "category": "예시 적절성",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "업무 클래스의 인터페이스 구현 메서드가 `WRITE`로 직접 리스트를 출력한다. 이 챕터가 스스로 세운 원칙('클래스는 예외로 알리고, 화면 프로그램이 사용자 메시지로 바꾼다')과 어긋난다.",
+      "evidence": "`WRITE`는 호출 프로그램의 리스트에 종속돼 배치·RFC·유닛테스트 문맥에서는 의미가 없거나 쓸 수 없고(ABAP for Cloud/RAP에서는 아예 금지), L06이 같은 이유로 클래스 안 `MESSAGE`를 안티패턴으로 지목한다. 규약 이름이 `zif_printable`이라 오히려 '표현 계층 분리'를 보여 주기 좋은 자리인데 반대 습관을 시연한다.",
+      "suggestion": "규약을 `METHODS to_text RETURNING VALUE(rv_text) TYPE string.`처럼 **문자열을 돌려주는** 형태로 바꾸고, 출력(`WRITE`/ALV)은 호출 프로그램이 하게 한다. 다형성 시연도 '같은 호출이 다른 문장을 돌려준다'로 더 또렷해진다."
+    },
+    {
+      "seq": 8,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L04.md",
+      "quote": "SELECT COALESCE( SUM( seats ), 0 )",
+      "category": "위험한 생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "`remaining( )`은 호출될 때마다 DB 집계 조회를 실행하는데, '이 메서드는 DB를 친다'는 경고가 챕터 어디에도 없다.",
+      "evidence": "L06의 `COND` 예제, L10의 `can_book( )`·`book( )`이 모두 내부에서 `me->remaining( )`을 부르므로 예약 판정 한 번에 집계 SELECT가 여러 번 발생한다. ALV 행이나 내부 테이블 루프 안에서 공연별 객체를 만들어 이 getter를 호출하면 전형적인 '루프 안 SELECT'가 되고, 메서드 호출처럼 가벼워 보여 성능 문제가 발견되기도 늦다.",
+      "suggestion": "'속성처럼 보이는 메서드가 실은 DB 왕복'이라는 한 줄 경고를 넣고, 다건 처리 시 대안(공연·회차별 `GROUP BY` 집계를 한 번에 읽어 생성자로 주입, 또는 조회 결과를 인스턴스에 캐시하되 신선도 대가를 명시)을 한 줄 제시한다."
+    },
+    {
+      "seq": 9,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L09.md",
+      "quote": "EXPORTING VALUE(iv_concert) TYPE zconcert-concert_id",
+      "category": "예시 적절성",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "이벤트의 **EXPORTING** 파라미터에 IMPORTING 관례 접두어 `iv_`를 붙였다. SAP 표준 이벤트와 실무 관례는 `e_`/`ev_`를 쓴다.",
+      "evidence": "SAP 표준(예: `CL_GUI_ALV_GRID`의 `double_click` → `e_row`, `e_column`)은 이벤트 파라미터에 `e_` 계열을 쓴다. handler가 IMPORTING으로 받는다는 이유로 `iv_`를 택한 것으로 보이나, 같은 챕터에서 `iv_`는 `METHODS book IMPORTING iv_seats`처럼 메서드 입력 파라미터에 쓰이고 있어 한 챕터 안에서 같은 접두어가 정반대 방향을 가리키게 된다.",
+      "suggestion": "`ev_concert`/`ev_perf`로 바꾸고 handler 선언(`IMPORTING ev_concert ev_perf sender`)도 맞춘 뒤, '이벤트 파라미터는 발생 객체가 *내보내는* 값이라 `ev_`, handler 쪽에서는 그 이름 그대로 받는다'를 한 줄 덧붙인다."
+    },
+    {
+      "seq": 10,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L09.md",
+      "quote": "- **handler 객체 수명** → handler 객체도 참조로 등록된다. 불필요한 등록을 오래 유지하지 않는다.",
+      "category": "위험한 생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "경고만 있고 **등록 해제 수단**이 없다. `SET HANDLER … ACTIVATION abap_false`를 알려주지 않으면 학습자가 이 경고를 실천할 방법이 없다.",
+      "evidence": "본문은 `SET HANDLER lo_monitor->on_sold_out FOR lo_mgr.`(등록)만 제시한다. 등록되면 발생 객체가 handler 객체 참조를 붙들어 GC 대상에서 빠지므로, 장기 실행 세션(모듈풀·ALV 화면)에서 handler가 계속 살아 있고 이미 끝난 화면의 handler가 다시 호출되는 사고로도 이어진다.",
+      "suggestion": "해제 한 줄(`SET HANDLER lo_monitor->on_sold_out FOR lo_mgr ACTIVATION abap_false.`)을 예제에 추가하고, '등록 = 발생 객체가 handler를 참조로 잡는다 → 해제 전까지 살아 있다'를 명시한다."
+    },
+    {
+      "seq": 11,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L10.md",
+      "quote": "SELECT COALESCE( SUM( seats ), 0 ) FROM zbooking",
+      "category": "예시 적절성",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "`COALESCE( SUM( … ), 0 )`은 ABAP SQL에서 불필요하고(널 결과는 ABAP 변수로 옮겨질 때 자동으로 초기값 0이 된다), 집계식을 SQL 함수의 인자로 중첩하는 형태는 릴리스 의존이라 구형 시스템에서 구문 오류가 날 수 있다.",
+      "evidence": "ABAP에는 null이 없어 결과셋의 null은 대상 데이터 오브젝트로 전송될 때 타입별 초기값으로 변환된다 — 따라서 행이 없어도 `lv_booked`는 0이 되고 `COALESCE`가 결과를 바꾸지 않는다(이 부분은 확실). 반면 '집계식을 SQL 식의 피연산자로 사용' 허용 시점은 비교적 최근 릴리스로 기억하나 오프라인이라 확인 불가라 confidence를 낮춘다. 이 커리큘럼은 SAPGUI/SE38 기반 구형 시스템 학습자를 상정하므로 실습에서 활성화가 막힐 위험이 있다.",
+      "suggestion": "`SELECT SUM( seats ) … INTO @DATA(lv_booked).`로 단순화하고, 필요하면 '조건에 맞는 행이 없으면 SQL의 null이 오는데 ABAP에는 null이 없어 0으로 들어온다'를 한 줄 각주로 붙인다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH21은 OO 문법 자체는 대체로 정확하다 — 클래스 정의/구현 형식, `NEW`↔`CREATE OBJECT` 등가, 생성자·정적 생성자 선언 위치, 상속 시 부모 생성자 시그니처 승계, `REDEFINITION`/`super->`, `CAST`↔`?=`와 `CX_SY_MOVE_CAST_ERROR`, `CASE TYPE OF … INTO`의 안전성, 이벤트 3종 세트(`EVENTS`/`FOR EVENT`/`SET HANDLER`)와 동기 호출 서술까지 문법 오류는 발견되지 않았다. 다만 두 곳은 반드시 고쳐야 한다 — ① L05의 '호출도 모두 `인터페이스~메서드`' 서술은 사실과 다르고 자기 예제와도 모순되며, ② L06의 `CLEANUP` 설명·예제는 '같은 TRY의 CATCH가 잡으면 실행되지 않는다'는 핵심 조건이 빠져 실행되지 않는 자원 해제 코드를 시연한다. 다음으로 운영 관점의 생략 셋(동시 예약에 대한 잠금 무언급, 저장 전에 발생하는 `sold_out` 이벤트 순서, 생성자 `SELECT SINGLE`의 `sy-subrc` 미확인으로 인한 잔여석 음수 조용한 실패)이 아쉽다. 나머지는 예시 품질 수준(업무 클래스 안 `WRITE`, 사유가 다른 예외 재사용, 이벤트 파라미터 접두어, DB를 치는 getter, 불필요한 `COALESCE`)이다. 전부 문장·코드 몇 줄 단위의 국소 수정으로 해결되므로 재집필·대규모 보강은 불필요하다."
+  }
+}

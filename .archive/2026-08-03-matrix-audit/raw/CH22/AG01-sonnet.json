@@ -1,0 +1,91 @@
+{
+  "agent": "AG01",
+  "model": "sonnet",
+  "target": "CH22",
+  "persona_ack": "은서(24세, 비전공·개발 경험 없음) 시점에서 CH22 _chapter.md와 CH22-L01~L08을 이 순서 그대로, 처음 읽는 사람으로서 통독했다. 실제 SAP/ABAP 지식으로 빈틈을 메꾸지 않았고, 본문(또는 같은 챕터 앞 레슨)에 뜻이 없는 용어·코드는 '모르는 것'으로 기록했다.",
+  "method": "본문을 첫 레슨부터 순서대로 통독하며 멈춘 곳·생략·단절·과부하를 표시. 같은 챕터 안 앞 레슨에서 이미 가르친 속성·용어와 뒤 레슨의 실제 사용이 일치하는지 대조. finding.quote는 Grep으로 대상 파일 원문과 정확히 일치하는지 전부 사전 확인 후 기록.",
+  "errors": [],
+  "files_read": [
+    "content/abap/CH22/_chapter.md",
+    "content/abap/CH22/CH22-L01.md",
+    "content/abap/CH22/CH22-L02.md",
+    "content/abap/CH22/CH22-L03.md",
+    "content/abap/CH22/CH22-L04.md",
+    "content/abap/CH22/CH22-L05.md",
+    "content/abap/CH22/CH22-L06.md",
+    "content/abap/CH22/CH22-L07.md",
+    "content/abap/CH22/CH22-L08.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH22/CH22-L08.md",
+      "quote": "IF <fc>-fieldname = 'CELLCOLORS'. <fc>-tech = abap_true. ENDIF.",
+      "category": "단절",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "L03·L04·L05가 세 번에 걸쳐 '기술 컬럼은 no_out으로 숨긴다'고 못박아 놓고, 정작 L08 실습 코드는 no_out이 아니라 CH22 어디에도 정의된 적 없는 tech 속성을 쓴다.",
+      "evidence": "L03 표에 'no_out | 기본 화면에서 숨김'이 명시되고 코드도 `<fc>-no_out = abap_true`다. L04 흔한 실수: 'CELLCOLORS가 화면에 노출 → 기술 컬럼이라 field catalog에서 숨긴다(no_out)'. L05 흔한 실수도 'CELLSTYLES... no_out으로 숨긴다'고 재확인한다. 그런데 L08 코드는 `<fc>-tech = abap_true`를 쓰면서 주석은 똑같이 '화면에서 숨김'이라고만 적는다. tech가 무엇인지, no_out과 어떻게 다른지는 CH22 어디에도 설명이 없다. 은서는 '분명 no_out을 쓰라고 세 번이나 배웠는데 왜 갑자기 다른 단어가 나오지? 오타인가?'에서 멈춘다. tech의 정의 자체가 본문에 없어서 몇 번을 다시 읽어도 풀리지 않는다.",
+      "suggestion": "L08에서 tech 대신 앞서 가르친 no_out을 그대로 쓰거나, tech를 굳이 쓰려면 'no_out과 달리 tech는 사용자가 컬럼 설정에서도 다시 켤 수 없는 완전 숨김'처럼 한 줄로 차이를 밝혀야 한다."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH22/CH22-L01.md",
+      "quote": "sign = 'I' option = 'GE' low = sy-datum",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "add_filter에 쓰인 sign='I'·option='GE' 코드가 무슨 뜻인지 CH22 어디에서도 풀이되지 않는다.",
+      "evidence": "코드 바로 위 주석은 '지난 회차는 빼고 오늘 이후만'이라 결과(무엇을 하는지)는 짐작되지만, 'I'가 왜 포함을 뜻하는지, 'GE'가 왜 크거나 같음을 뜻하는지는 이 레슨 어디에도 설명이 없다. 같은 코드의 다른 파라미터(columnname·low)는 이름만 봐도 뜻이 짐작되는데 sign·option 두 값만 낯선 알파벳 코드라서, 은서는 '이 I랑 GE는 어디서 나온 약속이지?'에서 멈춘다. 결과는 감으로 넘어가지만 코드 자체는 끝까지 미스터리로 남는다.",
+      "suggestion": "sign='I'(포함)·option='GE'(크거나 같음)처럼 코드 옆에 괄호로 짧은 뜻을 한 번만 달아줘도 해결된다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH22/CH22-L03.md",
+      "quote": "정렬 방향 (`L`/`C`/`R`)",
+      "category": "멈춘 곳",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L01·L02에서 '정렬'은 줄곧 정렬 순서(오름차순 등, sort)만 뜻했는데, L03의 just 속성 설명에서 같은 단어 '정렬'이 좌우 배치(L/C/R, align)라는 다른 뜻으로 다시 쓰여 헷갈린다.",
+      "evidence": "L01은 direction부터 'SALV 객체로 정렬·필터·툴바 기능을 코드로'이고 본문 내내 'PERF_DATE 정렬', '공연일 오름차순' 등 정렬=줄 순서로 못박아 놓았다. 그런데 L03 표에서는 'just | 정렬 방향 (L/C/R) | STATUS 가운데'라고 해서, 방금까지 '순서'였던 정렬이 갑자기 '왼쪽/가운데/오른쪽 배치'로 바뀐다. 표를 다시 읽고 L/C/R·가운데 예시를 보면 뜻이 잡히긴 하지만, 문장을 처음 보는 순간에는 '방금 배운 정렬 얘기인가?' 하며 순서 정렬로 오독할 뻔했다.",
+      "suggestion": "just 항목에 '(줄 순서를 바꾸는 정렬과 다른, 셀 안 좌우 배치)'처럼 한 번만 구분해 주면 혼동이 줄어든다."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH22/CH22-L02.md",
+      "quote": "SALV를 다듬었다. 이제 Grid ALV의 컬럼을 field catalog로 더 세밀히 →",
+      "category": "단절",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "L01·L02는 내내 SALV 객체(go_salv->...)만 다루다가 L03부터는 예고 없이 완전히 다른 API인 Grid ALV/Field Catalog(LOOP+CASE 구조)로 바뀌는데, 다리 문장이 '더 세밀히'라고만 해서 같은 SALV 이야기의 연장처럼 읽힌다.",
+      "evidence": "L02 마지막 문장은 'SALV를 다듬었다. 이제... 더 세밀히'라서 SALV 이야기가 계속 이어지는 느낌을 준다. 그런데 L03을 열면 go_salv->는 한 번도 안 나오고 `LOOP AT gt_fcat ASSIGNING FIELD-SYMBOL(<fc>)` 같은 전혀 다른 모양의 코드가 나온다. 챕터 제목(SALV/Grid ALV)과 L03 소제목을 천천히 보면 다른 기술임을 알 수 있지만, 다리 문장만 보고 넘어가면 'SALV 코드가 왜 갑자기 이렇게 생겼지?' 하고 잠깐 헷갈릴 수 있다.",
+      "suggestion": "L02 마지막 문장이나 L03 도입부에 'SALV와는 다른 API인 Grid ALV로 넘어간다'는 한 줄을 명시하면 좋겠다."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH22/CH22-L08.md",
+      "quote": "세 단계가 이어지는 것**이다: 업무 계산(`remaining`) → 표시용 필드(`seats_left`) → deep component([[Cell Color|cellcolors]]) → layout(`ctab_fname`) 연결.",
+      "category": "멈춘 곳",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "완성 기준을 '세 단계'라고 했는데, 실제로 화살표로 이어진 항목은 업무 계산→표시용 필드→deep component→layout 연결로 4개다. 세어 보면 숫자가 안 맞아 잠깐 헷갈린다.",
+      "evidence": "화살표(→)는 3개지만 이어지는 항목은 4개다. '세 단계'가 항목 수인지 연결(전환) 횟수인지 문장만으로는 분명치 않아서, 꼼꼼히 세는 성격이면 '어? 네 개인데 왜 세 단계라고 하지?' 하고 한 번 멈추게 된다.",
+      "suggestion": "'네 조각이 이어지는 것' 또는 '세 번의 연결이 이어지는 것'처럼 항목 수와 표현을 맞추면 좋겠다."
+    },
+    {
+      "seq": 6,
+      "file": "content/abap/CH22/CH22-L08.md",
+      "quote": "INTO CORRESPONDING FIELDS OF TABLE @gt_row.",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "실습 첫 SELECT문이 INNER JOIN과 INTO CORRESPONDING FIELDS OF TABLE을 한꺼번에 쓰는데, CH22 안에는 이 둘에 대한 설명이 전혀 없다.",
+      "evidence": "CH22의 다른 SELECT(L01)는 `SELECT * FROM zperf WHERE ... INTO TABLE @gt_perf`처럼 단순한데, L08은 갑자기 두 테이블을 INNER JOIN으로 묶고 INTO TABLE이 아니라 INTO CORRESPONDING FIELDS OF TABLE을 쓴다. 이 레슨은 '색 강조'가 목표라서 SELECT 자체는 설명 없이 바로 다음 문단(잔여석 계산)으로 넘어가고, CORRESPONDING FIELDS가 TABLE과 뭐가 다른지·왜 필요한지는 본문 어디서도 짚어주지 않는다. (더 이른 챕터에서 배웠을 가능성은 있지만, 이 챕터 안에서는 그 설명을 찾을 수 없다.)",
+      "suggestion": "실습 코드라 전부 새로 가르칠 필요는 없지만, 'INTO CORRESPONDING FIELDS OF TABLE은 SELECT 컬럼 순서와 구조 필드 순서가 달라도 이름으로 맞춰준다'처럼 괄호 한 줄만 있어도 안심된다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "정렬·필터 → 레이아웃/Variant → Field Catalog → Cell Color → Cell Style → 색 단위 선택 → Stable Refresh → 실습으로 이어지는 큰 흐름은 매끄러웠고, 특히 L05가 '색(L04) vs 모양(L05)'을 LVC_T_SCOL/LVC_T_STYL·ctab_fname/stylefname·fname/fieldname으로 나란히 비교한 표는 헷갈리기 딱 좋은 두 구조를 미리 짚어줘서 실제로 안 헷갈렸다. 다만 L08 실습 코드가 L03·L04·L05가 세 번이나 가르친 no_out 대신 한 번도 설명 없는 tech 속성을 쓰는 점이 가장 크게 걸렸고, 그 밖에 add_filter의 sign/option 코드, 정렬(sort)과 정렬(align)의 용어 중복, SALV→Grid ALV 전환이 예고 없이 일어나는 점을 가볍게 짚었다."
+  }
+}

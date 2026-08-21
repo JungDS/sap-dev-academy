@@ -1,0 +1,71 @@
+{
+  "agent": "AG06",
+  "model": "sonnet",
+  "target": "CH21",
+  "persona_ack": "20년차 SAP ABAP 아키텍트로서 CH21(OO ABAP 기본 설계) 레슨 10개와 _chapter.md를 문법·런타임 동작·설계 관행 관점에서 감사했다.",
+  "method": "대상 11개 파일을 직접 통독하며 ABAP 문법(CLASS/INTERFACE/예외/이벤트 등)과 SAP 표준 동작을 기억에 기반해 수동 검증. 코드 실행·정적분석 도구·웹 검색은 쓰지 않음(과제 제약상 오프라인 지식 판단).",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L10.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH21-L02.md",
+      "quote": "정적 속성(`CLASS-DATA`)은 객체가 아니라 클래스에 하나뿐이라 `gv_`(클래스 공용)로 구분해 쓴다.",
+      "category": "예시 적절성",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "정적 속성(CLASS-DATA)을 gv_(전역) 접두어로 구분하라는 관례가 실무 표준으로 보기 어렵고, 이 레슨 자체의 코드 예시와도 의미가 모순된다.",
+      "evidence": "gv_는 통상 '전역(global)' — 어디서든 접근 가능하다는 뜻인데, 바로 아래 코드 예시는 'PRIVATE SECTION. CLASS-DATA gv_version ...'처럼 PRIVATE SECTION 안에 있어 클래스 밖에서는 전혀 접근할 수 없다. '전역'이라는 이름과 '캡슐화된 정적 멤버'라는 실제 접근범위가 어긋난다. 실무에서도 CLASS-DATA(정적 속성)는 인스턴스 속성과 같은 mv_ 계열을 그대로 쓰는 경우가 흔하고(DATA/CLASS-DATA 키워드 자체가 이미 인스턴스/정적을 구분하므로), gv_를 정적 클래스 속성 전용 접두어로 쓰는 걸 표준 관례로 보기는 어렵다.",
+      "suggestion": "gv_ 대신 mv_ 계열을 그대로 쓰거나, 굳이 인스턴스와 구분하고 싶으면 '전역'이 아닌 '정적'을 뜻하는 다른 표기(주석 등)를 쓴다."
+    },
+    {
+      "seq": 2,
+      "file": "CH21-L06.md",
+      "quote": "`CX_DYNAMIC_CHECK` | 선언은 필요, 일부 검사는 런타임",
+      "category": "사실 오류",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "CX_DYNAMIC_CHECK 예외를 '선언은 필요'하다고 서술했는데, 실제로는 RAISING 선언이 CX_STATIC_CHECK처럼 강제(필수)는 아니고 선택적이다 — 선언하면 정적 검사를 받고, 선언하지 않으면 구문 오류 없이 통과하되 처리되지 않으면 런타임에 예외가 그대로 전파된다고 기억한다.",
+      "evidence": "CX_STATIC_CHECK는 RAISING 선언(또는 TRY/CATCH 처리)이 없으면 활성화 시점에 구문 오류가 나는 반면, CX_DYNAMIC_CHECK는 선언 여부에 따라 정적/동적 검사 강도가 갈리는 '선택적' 성격에 가깝다고 기억한다. 표의 '선언은 필요'라는 문구가 CX_STATIC_CHECK와의 차이(강제 vs 선택)를 흐릴 수 있다. 다만 이 세부 동작은 릴리스별 기억이 완전히 확실하지 않아 추정으로 표기한다.",
+      "suggestion": "CX_DYNAMIC_CHECK 행을 '선언하면 CX_STATIC_CHECK처럼 정적 검사, 선언하지 않으면 런타임에만 확인'처럼 선택적 성격을 더 분명히 하는 문구로 다듬는 걸 검토."
+    },
+    {
+      "seq": 3,
+      "file": "CH21-L07.md",
+      "quote": "RAISE EXCEPTION TYPE zcx_fully_booked.",
+      "category": "안티패턴",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "VIP 좌석 상한(4석) 초과라는, 정원(잔여석)과 무관한 사유에 '정원 초과로 예약 불가'라는 의미로 앞 레슨에서 도입된 zcx_fully_booked를 그대로 재사용해 던진다.",
+      "evidence": "CH21-L06은 zcx_fully_booked를 '정원 초과라 예약 불가'라는 의미로 도입하고, get_text( )가 '공연 &1 잔여석은 &2석입니다' 같은 SE24 예외 텍스트를 돌려준다고 설명한다. 그런데 CH21-L07의 zcl_vip_booking.book( )은 '한 번에 4석 초과 예약'이라는, 잔여석과 무관한 VIP 전용 규칙 위반에도 같은 zcx_fully_booked를 던진다. 호출자가 CATCH 후 get_text( )로 메시지를 그대로 띄우면 실제로는 좌석이 남아 있는데도 '매진/정원 초과'류 문구를 보게 돼 사용자에게 잘못된 사유를 전달하게 된다. 이는 CH21-L10이 '흔한 실수'에서 스스로 경고하는 '너무 넓은 예외 이름 — zcx_fully_booked처럼 업무 상황을 말하는 이름을 쓰라'는 원칙과 같은 챕터 안에서 정면으로 어긋나는 예시다.",
+      "suggestion": "VIP 좌석 상한 위반에는 별도 예외(예: ZCX_VIP_LIMIT_EXCEEDED)를 새로 만들거나, 최소한 zcx_fully_booked에 사유를 구분할 속성을 두어 '정원 초과'와 'VIP 상한 초과'를 구분되게 한다."
+    },
+    {
+      "seq": 4,
+      "file": "CH21-L10.md",
+      "quote": "DATA(lv_remaining) = me->remaining( ).",
+      "category": "위험한 생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "book( )이 remaining( )으로 잔여석을 읽어 판정한 뒤(check) 실제 저장은 이후 챕터로 미루는 check-then-act 구조인데, 그 판정과 저장 사이 동시 접속을 막는 잠금(ENQUEUE)에 대한 언급이 챕터 전체에 전혀 없다. 여러 세션이 동시에 같은 공연의 마지막 좌석에 예약을 시도하면 둘 다 remaining( ) 판정을 통과해 초과예약(overbooking)이 날 수 있다.",
+      "evidence": "L10 상단에 '실제 INSERT·UPDATE는 이후 DML 챕터의 영역'이라는 명시적 경계는 있지만, 이 챕터가 설계하는 book( )/can_book( )/remaining( )이 정확히 '읽고 판정한 뒤 나중에 쓴다'는 구조 자체이므로, 그 사이에 동시성 보호가 필요하다는 점 정도는 이 시점에 한 문장으로라도 예고할 만하다. 콘서트 예매는 마지막 좌석 경합이 핵심 시나리오인 도메인이라 이 누락은 실무에서 실제 초과예약 사고로 이어지는 전형적 패턴이다. L09에서 '정확히 그 순간'(잔여석과 요청 좌석이 같을 때)을 sold_out 이벤트로 세밀하게 다루면서도 동시성 위험은 언급되지 않는다.",
+      "suggestion": "L10 '흔한 실수' 또는 마무리 문단에 '동시에 여러 세션이 같은 공연의 마지막 좌석을 예약하면 remaining( ) 확인만으로는 안전하지 않다 — 실제 저장 시점엔 ENQUEUE 잠금이 필요하다'는 한두 문장 예고를 추가."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH21은 Global Class 생성부터 속성/메서드/가시성·생성자·정적/인스턴스·인터페이스·예외·상속·다형성(CAST/CASE TYPE OF)·이벤트까지 ABAP OO 핵심 문법을 대체로 정확히 다룬다. private 접근 오류가 런타임이 아니라 컴파일 단계에서 난다는 점, CLEANUP이 finally가 아니라는 점, CATCH는 구체 타입부터 와야 한다는 점, downcast 실패 시 CX_SY_MOVE_CAST_ERROR, THROW와 RAISE EXCEPTION TYPE의 EXPORTING 유무 차이 등 세부 사실이 정확하고, 레슨마다 '흔한 실수' 섹션이 실무 함정을 잘 짚는다. 다만 (1) L07의 VIP 상속 예제가 zcx_fully_booked를 잔여석과 무관한 사유(VIP 4석 상한)에 재사용해 L10 자신이 강조하는 '예외 이름은 업무 상황을 말해야 한다'는 원칙과 같은 챕터 안에서 어긋나고, (2) 콘서트 좌석 경합이 핵심 시나리오인데도 book( )의 check-then-act 구조에 동시성/잠금(ENQUEUE) 예고가 전혀 없어 학습자가 이 설계를 '안전하다'고 오해할 수 있으며, (3) L02의 CLASS-DATA 접두어 gv_ 관례가 '전역'이라는 이름과 실제 PRIVATE 캡슐화 범위가 모순되고 실무 표준으로 보기도 어렵다. (4) L06의 CX_DYNAMIC_CHECK 설명 중 '선언은 필요'라는 문구는 다소 부정확할 수 있다(추정, 확신도 낮음). 치명·높음 등급 결함은 없어 경미 수정으로 충분하다고 판단한다."
+  }
+}

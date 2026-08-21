@@ -1,0 +1,49 @@
+{
+  "agent": "AG09",
+  "model": "sonnet",
+  "target": "CH21",
+  "persona_ack": "AG09 — ABAP 정적 검사기를 시늉하는 코드 전용 감사자로서 산문은 배제하고 CH21 레슨 10개 + _chapter.md 안의 모든 ```abap 코드 블록만 줄 단위로 점검했다. 과제 4항목(활성화 차단급·네이밍 규약·classic/modern 경계·주석-코드 일치)만 판단 기준으로 삼았고, 스타일 선호(빈 줄·정렬)와 의사코드성 축약(예: CLASS ... DEFINITION ...)은 결함으로 세지 않았다.",
+  "method": "빌드·브라우저 등 외부 도구는 사용하지 않음. 대상 11개 파일을 Read로 전문 열람한 뒤 각 ```abap 코드 블록을 수동으로 줄 단위 정적 분석: (1) DEFINITION/IMPLEMENTATION 간 클래스·메서드·속성·파라미터 이름을 문자 단위로 대조(오타 탐지), (2) RAISING 선언·CX 계층과 호출부의 TRY/CATCH 짝을 추적, (3) DATA/CLASS-DATA/TYPES 등 선언부 접두어를 gv_/gs_/gt_·lv_/ls_/lt_·mv_·lo_/go_ 규칙과 대조, (4) 챕터 경계(CH21은 CH18/19 이후이므로 modern 문법·New Open SQL 허용 구간)를 확인, (5) 코드 옆 한글 주석과 실제 로직·출력 문자열의 일치 여부 확인.",
+  "errors": [],
+  "files_read": [
+    "C:/SAP/sap-dev-academy/content/abap/CH21/CH21-L01.md",
+    "C:/SAP/sap-dev-academy/content/abap/CH21/CH21-L02.md",
+    "C:/SAP/sap-dev-academy/content/abap/CH21/CH21-L03.md",
+    "C:/SAP/sap-dev-academy/content/abap/CH21/CH21-L04.md",
+    "C:/SAP/sap-dev-academy/content/abap/CH21/CH21-L05.md",
+    "C:/SAP/sap-dev-academy/content/abap/CH21/CH21-L06.md",
+    "C:/SAP/sap-dev-academy/content/abap/CH21/CH21-L07.md",
+    "C:/SAP/sap-dev-academy/content/abap/CH21/CH21-L08.md",
+    "C:/SAP/sap-dev-academy/content/abap/CH21/CH21-L09.md",
+    "C:/SAP/sap-dev-academy/content/abap/CH21/CH21-L10.md",
+    "C:/SAP/sap-dev-academy/content/abap/CH21/_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH21-L07.md",
+      "quote": "lo_mgr->book( iv_seats = 2 ).",
+      "category": "활성화 차단급 — 체크드 예외 미처리",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "정적 타입 vs 동적 타입을 보여주는 예제에서 lo_mgr->book( iv_seats = 2 )을 TRY/CATCH도, 이를 감싸는 문맥의 RAISING 전파도 없이 호출한다. book()은 CH21-L06에서 RAISING zcx_fully_booked로 선언됐고 ZCX_FULLY_BOOKED는 CX_STATIC_CHECK 상속(체크드 예외)이므로, 이 코드 그대로는 구문 검사(활성화) 단계에서 걸린다.",
+      "evidence": "바로 위 코드 블록의 super->book( iv_seats = iv_seats )는 REDEFINITION으로 상속된 RAISING 안에 있어 문제없지만, 이 블록의 lo_mgr->book( iv_seats = 2 )는 TRY/CATCH도 없고 감싸는 메서드도 안 보인다. 같은 챕터에서 book()을 호출하는 다른 예(CH21-L06의 TRY/CATCH 블록, CH21-L10 실습의 TRY/CATCH)는 모두 올바르게 감싸는데 이 블록만 예외다.",
+      "suggestion": "TRY. lo_mgr->book( iv_seats = 2 ). CATCH zcx_fully_booked INTO DATA(lx_booked). ... ENDTRY.로 감싸거나, 타입 개념 설명에 집중하려 의도적으로 생략한 것이라면 주석으로 '실제로는 TRY/CATCH 필요'를 명시."
+    },
+    {
+      "seq": 2,
+      "file": "CH21-L08.md",
+      "quote": "lo_base->book( iv_seats = 1 ).",
+      "category": "활성화 차단급 — 체크드 예외 미처리",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "CASE TYPE OF 분기 안에서 lo_base->book( iv_seats = 1 )을 TRY/CATCH도 RAISING 전파도 없이 호출한다. book()은 RAISING zcx_fully_booked(CX_STATIC_CHECK, 체크드 예외)로 선언돼 있어 이 코드 그대로는 구문 검사(활성화) 단계에서 걸린다.",
+      "evidence": "CH21-L06은 CX_STATIC_CHECK 계열을 '시그니처 선언·처리를 강하게 요구(checked)'라고 직접 설명한다. 같은 챕터의 다른 book() 호출 예제(CH21-L06 CATCH 블록, CH21-L10 실습)는 모두 TRY/CATCH로 감싸는데 이 CASE TYPE OF 블록만 감싸지 않는다.",
+      "suggestion": "WHEN TYPE zcl_booking_manager 분기의 lo_base->book(...) 호출을 TRY/CATCH로 감싸거나 CASE TYPE OF 전체를 TRY 블록 안에 둔다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH21 코드 블록은 전반적으로 정확하다 — DEFINITION/IMPLEMENTATION 간 클래스·메서드·속성·파라미터 이름이 전 레슨(L01～L10)에 걸쳐 오타 없이 일치하고, mv_(멤버)·gv_(클래스 공용)·lv_/lo_(로컬 스칼라·객체 참조) 접두어도 일관되게 쓰였다. CH21은 CH18/19 경계를 넘어선 챕터라 인라인 DATA()·COND/THROW·New Open SQL(@호스트변수) 등 modern 문법 사용에 경계 위반이 없다. 다만 book()이 CH21-L06에서 RAISING zcx_fully_booked(체크드 예외)로 확정된 뒤, CH21-L07·CH21-L08의 예시 코드 각 1곳이 TRY/CATCH 없이 book()을 직접 호출해 그 코드 그대로는 활성화되지 않는다(반면 CH21-L06·CH21-L10의 동일 호출은 모두 올바르게 TRY/CATCH로 감쌌다). 그 외 미선언 변수·마침표 누락·존재하지 않는 구문·네이밍 위반·주석-코드 불일치는 발견되지 않았다."
+  }
+}
