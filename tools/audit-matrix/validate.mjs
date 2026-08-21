@@ -14,7 +14,7 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const AGENTS = ['AG01', 'AG02', 'AG03', 'AG04', 'AG05', 'AG06', 'AG07', 'AG08', 'AG09'];
-const MODELS = ['opus', 'sonnet', 'gpt-5.6-sol', 'gemini-3.6-flash-high'];
+const MODELS = ['opus', 'sonnet', 'gpt-5.6-sol', 'gemini-3.6-flash-high', 'gemini-3.7-flash-high'];
 const SEVERITIES = ['치명', '높음', '중간', '낮음'];
 const CONFIDENCES = ['확실', '추정'];
 const GRADES = ['유지', '경미 수정', '보강 권장', '재집필 권장'];

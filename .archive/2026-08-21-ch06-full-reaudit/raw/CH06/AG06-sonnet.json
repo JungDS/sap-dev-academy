@@ -1,0 +1,65 @@
+{
+  "agent": "AG06",
+  "model": "sonnet",
+  "target": "CH06",
+  "persona_ack": "20년차 SAP ABAP 아키텍트로서 CH06(Internal Table) 챕터 개요와 레슨 15개를 문법 정확성·런타임 동작·실무 관행 기준으로 검수했다.",
+  "method": "대상 파일 16개(_chapter.md + CH06-L01~L15.md) 전문을 정독. 각 코드 블록을 ABAP 언어 사양에 따라 손으로 트레이스(선언 3속성 조합·INSERT/READ/MODIFY/DELETE/SORT/BINARY SEARCH/LOOP/COLLECT/AT NEW·END OF/SUM 실행 시 sy-subrc·sy-tabix 값 변화)하며 검증하고, 레슨 간 상호 참조(예: L03의 standard key 규칙과 L11의 COLLECT 극단 사례, L05의 HASHED sy-tabix=0 주장과 L07의 순회 순서 설명)의 내적 일관성을 대조. 웹 검색은 금지 규정에 따라 미사용, ABAP 언어 지식만으로 판단했으며 확신이 서지 않는 항목은 confidence를 '추정'으로 표기.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L10.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L11.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L12.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L13.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L14.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L15.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH06/CH06-L05.md",
+      "quote": "INSERT gs_person INTO TABLE gt_person.",
+      "category": "위험한 생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "이 챕터는 READ 문장 뒤 sy-subrc 확인을 처음부터 끝까지(L05~L06 '흔한 실수' 절, L15 미션 1) 반복해서 규율로 못박지만, 실패해도 예외 없이 sy-subrc만 세팅하는 같은 계열의 쓰기 문장 — INSERT INTO TABLE(UNIQUE 키 테이블에 중복 키 삽입), MODIFY TABLE(키가 없는 행 갱신), DELETE TABLE(키가 없는 행 삭제) — 에는 같은 확인 규율이 한 번도 언급되지 않는다.",
+      "evidence": "L04에서 HASHED는 'UNIQUE가 강제'(키 겹치는 데이터는 아예 담을 수 없다)라고 배우고 L05에서 바로 INSERT INTO TABLE로 그 HASHED에 넣는 법을 다루는데, '중복 키를 넣으려 하면 sy-subrc≠0으로 조용히 실패한다'는 경고가 없다. L06의 MODIFY TABLE·DELETE TABLE도 마찬가지로 '키에 해당하는 행이 없으면 아무 일도 안 일어나고 sy-subrc만 남는다'는 언급 없이 넘어간다. 실무에서 이 세 문장을 확인 없이 쓰다가 데이터가 조용히 유실·불일치되는 사고는 매우 흔하고, 이 챕터가 READ에 대해서는 정확히 이 패턴을 사고 원인으로 지목하고 있는 것과 대비된다.",
+      "suggestion": "L05 INSERT 절 또는 L06 MODIFY TABLE/DELETE TABLE 절의 '흔한 실수와 점검' 목록에 '이 문장들도 실패 시 예외 없이 sy-subrc만 바뀐다 — 특히 UNIQUE 키 테이블에 중복 삽입, 또는 존재하지 않는 키로 갱신·삭제를 시도하면 조용히 아무 일도 안 일어나니 IF sy-subrc = 0으로 확인하는 습관을 여기도 붙인다'는 한 줄 추가."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH06/CH06-L13.md",
+      "quote": "가변 요소는 셋:",
+      "category": "사실 오류",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "Deep Structure를 만드는 '가변 요소'가 string·Internal Table·참조(reference) 셋뿐이라고 단정하는데, 가변 길이 바이트열 XSTRING도 같은 이유(크기가 고정이 아니라 별채에 저장되고 자리엔 쪽지만 남는다)로 Deep을 만드는 요소다. '셋'이라는 단정이 정확하지 않다.",
+      "evidence": "바로 위 Flat 목록에서 c·n·d·t·i·p·x(고정 길이 바이트)까지 나열하면서도 XSTRING은 Flat·Deep 어느 쪽 목록에도 등장하지 않는다. XSTRING은 STRING과 완전히 같은 성질(가변 길이 → 별채 저장)이라 이 레슨 자신의 '서랍/별채' 비유 기준으로도 Deep 요소여야 한다.",
+      "suggestion": "'가변 요소는 셋: string · Internal Table · 참조(reference)'를 완결 나열이 아니라 예시 나열로 바꾸거나('가변 요소는 string·xstring·Internal Table·참조(reference) 등이다'), XSTRING을 넷째 항목으로 추가."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH06/CH06-L07.md",
+      "quote": "4 또는 8**이 들어온다(중간에서 못 찾으면 4, 찾다가 테이블 끝을 넘어가면 8).",
+      "category": "사실 오류",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "READ TABLE ... WITH KEY ... BINARY SEARCH가 실패하면 sy-subrc가 4 또는 8 중 하나로 갈린다는 서술인데, 기억으로 sy-subrc = 8은 전통적으로 READ TABLE ... INDEX idx에서 idx가 유효 범위를 벗어났을 때(순수 인덱스 접근 실패) 쓰이는 코드로 남아 있고, WITH KEY ... BINARY SEARCH의 '찾기 실패'는 4 하나로만 기억한다 — '중간에서 못 찾으면 4 / 테이블 끝을 넘어가면 8'이라는 이분법이 실제 사양인지 확신이 서지 않는다.",
+      "evidence": "웹 검색이 금지된 상태라 공식 문서로 재확인하지 못했다. 이 세부 구분은 레슨 스스로도 '구분해서 외울 필요는 없다 — 규율은 언제나 같다. 0인지로만 판정한다'고 방어선을 쳐 둬서 실제 사고로 이어질 위험은 낮지만, 확실 판정 없이 구체적 수치(4/8)를 단정한 서술이라 재검증 대상으로 남긴다.",
+      "suggestion": "공식 ABAP 키워드 문서(F1 헬프의 READ TABLE 예외/sy-subrc 절)로 BINARY SEARCH 실패 시 정확한 sy-subrc 값을 재확인. 확신이 서지 않으면 '0이 아니면 실패'로만 서술하고 구체적 실패 코드(4/8) 구분 자체를 빼는 것이 더 안전하다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH06은 3속성 프레임(Line Type·Primary Key·Table Kind)을 축으로 매우 체계적으로 설계돼 있고, sy-subrc 판정 규율·BINARY SEARCH의 정렬 전제·ASSIGNING의 4대 위험(원본 즉시 수정·ENDLOOP 뒤 잔존·추적 어려움·키 필드 수정 시 덤프)·컨트롤레벨 마스킹 규칙·COLLECT의 내부 해시 무효화 조건 등 실무에서 실제로 사고가 나는 지점을 정확하고 깊이 있게 짚어 낸다. 검증한 범위 안에서 코드 예제의 문법·동작은 대체로 정확했고, classic 문법 경계(R6)도 잘 지켰다. 다만 (1) READ에 대해서는 철저한 sy-subrc 확인 규율이 같은 위험을 가진 쓰기 문장(INSERT INTO TABLE·MODIFY TABLE·DELETE TABLE)에는 적용되지 않아 실무에서 흔한 '조용한 실패' 사고 패턴 하나를 놓쳤고, (2) Deep을 만드는 가변 요소 개수 서술이 XSTRING을 빠뜨려 살짝 부정확하며, (3) BINARY SEARCH 실패 시 sy-subrc 4/8 구분은 확인이 필요하다. 셋 다 챕터의 큰 골격이나 학습 흐름을 흔드는 문제는 아니라 경미 수정으로 충분하다."
+  }
+}

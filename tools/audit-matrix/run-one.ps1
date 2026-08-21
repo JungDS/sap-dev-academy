@@ -24,12 +24,17 @@ $Ws = Join-Path $env:LOCALAPPDATA "Temp\audit-matrix-ws\$Campaign"
 New-Item -ItemType Directory -Force $RawDir, $TraceDir, $Ws, (Join-Path $Ws 'codex-ws') | Out-Null
 
 if ($Lane -eq 'codex') { $Model = 'gpt-5.6-sol'; $Serve = 'http://localhost:8141' }
-else { $Model = 'gemini-3.6-flash-high'; $Serve = 'http://localhost:8142' }
+else { $Model = 'gemini-3.7-flash-high'; $Serve = 'http://localhost:8142' }   # 3.6→3.7 전환(사용자 지시 2026-08-21)
 
 # 레인 프롬프트(MODEL_ID·SERVE_URL 치환) — BOM 없는 UTF-8로 기록
 $LanePrompt = Join-Path $Ws "$Chapter-$Agent-$Lane.prompt.md"
 $text = [IO.File]::ReadAllText($PromptFile, [Text.UTF8Encoding]::new($false))
 $text = $text.Replace('{{MODEL_ID}}', $Model).Replace('{{SERVE_URL}}', $Serve)
+# agy 레인 전용 엄격화 보정(관대 편향 교정, 사용자 지시 2026-08-21) — 라이더 원문 = agy-strict-rider.md
+$Rider = Join-Path $PSScriptRoot 'agy-strict-rider.md'
+if ($Lane -eq 'agy' -and (Test-Path $Rider)) {
+  $text += "`n`n" + [IO.File]::ReadAllText($Rider, [Text.UTF8Encoding]::new($false))
+}
 [IO.File]::WriteAllText($LanePrompt, $text, [Text.UTF8Encoding]::new($false))
 
 $Final = Join-Path $RawDir ("$Agent-$Model.json")

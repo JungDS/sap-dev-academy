@@ -61,6 +61,8 @@
 
 <span class="tok-kw">DATA</span>: gs_sales <span class="tok-kw">TYPE</span> ts_sales,
       gt_sales <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ts_sales.</code></pre></div></div>
+<p>(금액을 <code>TYPE i</code>, 원 단위 정수로 둔 것은 예제를 단순하게 하려는 선택이다. 실무의 금액
+필드는 소수점과 통화 정보까지 다루는 전용 타입을 쓰는데, 뒤 챕터에서 만난다.)</p>
 <p><code>COLLECT</code>는 <strong>키가 같은 행이 이미 있으면 숫자 필드를 합산</strong>하고, 없으면 새 행으로 넣는다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
@@ -88,7 +90,7 @@ gs_sales-region = <span class="tok-str">'부산'</span>. gs_sales-amount = <span
 <li><strong>키가 &quot;묶는 기준&quot;이 된다.</strong> 문자 필드(standard key) 또는 직접 지정한 키가 그룹의
 기준이다. <code>ts_sales</code>에선 <code>region</code>.</li>
 <li><strong>키가 아닌 필드는 전부 숫자 타입이어야 한다.</strong> 합산 대상이기 때문이다. <code>ts_sales</code>의
-비키 필드는 <code>amount</code> 하나뿐이고 숫자라 합격. 만약 비키 필드에 문자가 섞여 있으면
+비키 필드(키가 <strong>아닌</strong>(非) 필드)는 <code>amount</code> 하나뿐이고 숫자라 합격. 만약 비키 필드에 문자가 섞여 있으면
 그 문장은 성립하지 않는다(무엇을 &quot;합산&quot;하겠는가).</li>
 <li><strong>한 테이블엔 COLLECT만.</strong> 같은 테이블에 <code>APPEND</code>와 <code>COLLECT</code>를 섞으면, <code>APPEND</code>가
 만든 중복 키 행 때문에 합계가 두 행으로 갈라진다. 쌓는 테이블과 모으는 테이블은

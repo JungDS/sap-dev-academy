@@ -1,27 +1,28 @@
 <!DOCTYPE html>
 <!-- CH06-L08-S01 — 엔진: step-debugger (embeds/_engine/step-debugger.{js,css}) + _autoheight.js
-     config=레슨 전용(1막 LOOP WHERE의 반복 회차 vs sy-tabix 분리 · 2막 FROM/TO 번호 구간).
-     구 CH06-L04-S01(3막 통합)에서 분할 개조 — 3막 ASSIGNING은 CH06-L08-S02로.
-     게이팅: CH06-L08 범위(LOOP·WHERE·FROM/TO·sy-tabix). -->
+     config=레슨 전용(1막 LOOP WHERE의 반복 회차 vs sy-tabix 분리 · 2막 FROM/TO 번호 구간(2～5행 전 행 스텝) ·
+     3막 복사본 함정 → MODIFY FROM(INDEX 생략형) 기본기 — 본문 L08 '함정/해법 1' 절 정합. 재감사 C1·C6).
+     구 CH06-L04-S01(3막 통합)에서 분할 개조 — ASSIGNING은 CH06-L08-S02로.
+     게이팅: CH06-L08 범위(LOOP·WHERE·FROM/TO·sy-tabix·LOOP 안 MODIFY). -->
 <html lang="ko" data-eng="step-debugger">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>반복 회차 vs sy-tabix · CH06-L08-S01</title>
+<title>반복 회차 vs sy-tabix · MODIFY 기본기 · CH06-L08-S01</title>
 <link rel="stylesheet" href="../_engine/_base.css" />
 <link rel="stylesheet" href="../_engine/step-debugger.css" />
 </head>
 <body>
 <div class="wrap">
-  <p class="hd">반복 회차 vs sy-tabix — 일부만 돌면 어긋난다 <small>(스텝 디버거)</small></p>
-  <p class="lead">1막: <code>WHERE</code>로 걸러 돌면 "몇 번째 반복"과 <code>sy-tabix</code>가 <b>어긋납니다</b>. 2막: <code>FROM ... TO</code>는 조건이 아니라 <b>행 번호 구간</b>으로 잘라 돕니다. 두 값을 오른쪽 모니터에서 나란히 비교해 보세요.</p>
+  <p class="hd">반복 회차 vs sy-tabix, 그리고 MODIFY 기본기 <small>(스텝 디버거)</small></p>
+  <p class="lead">1막: <code>WHERE</code>로 걸러 돌면 "몇 번째 반복"과 <code>sy-tabix</code>가 <b>어긋납니다</b>. 2막: <code>FROM ... TO</code>는 조건이 아니라 <b>행 번호 구간</b>으로 잘라 돕니다. 3막: 복사본(<code>INTO</code>)만 고쳐서 <b>테이블이 안 바뀌는 함정</b>을 직접 겪고, <code>MODIFY</code>(INDEX 생략형)로 현재 행에 되돌려 쓰는 <b>기본기</b>를 완성합니다. 오른쪽 모니터와 나란히 비교해 보세요.</p>
 
   <div class="dbg" data-stepper>
     <div class="dbg__bar">
       <button class="btn btn--primary" data-start>▶ 시작</button>
       <button class="btn btn--step" data-next disabled>다음 ⏭</button>
       <div class="progress"><i data-progress></i></div>
-      <span class="muted" data-counter>0 / 14</span>
+      <span class="muted" data-counter>0 / 31</span>
     </div>
     <div class="dbg__main">
       <div class="dbg__editorwrap"><div class="dbg__edhd"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">ABAP</span></div><div class="dbg__editor" data-code></div></div>
@@ -47,37 +48,65 @@
         "  WRITE: / sy-tabix, gs_person-name.",
         "ENDLOOP.",
         "",
-        "\" 조건 대신 번호 구간으로 자르기",
+        "\" 2막 — 조건 대신 번호 구간으로 자르기",
         "LOOP AT gt_person INTO gs_person FROM 2 TO 5.",
         "  WRITE: / sy-tabix, gs_person-name.",
+        "ENDLOOP.",
+        "",
+        "\" 3막 — 전원 나이 +1: 복사본 함정 → MODIFY 기본기",
+        "LOOP AT gt_person INTO gs_person.",
+        "  gs_person-age = gs_person-age + 1.   \" 올렸다...?",
+        "ENDLOOP.",
+        "\" 테이블은 그대로! → MODIFY로 되돌려 쓴다",
+        "LOOP AT gt_person INTO gs_person.",
+        "  gs_person-age = gs_person-age + 1.",
+        "  MODIFY gt_person FROM gs_person.   \" 현재 행에 반영",
         "ENDLOOP."
       ],
       "vars":[
         {"label":"반복 회차","sub":"블록이 몇 번 돌았나(우리가 센 수)","key":"iter","init":"0"},
         {"label":"sy-tabix","sub":"현재 행의 실제 번호","key":"sy-tabix","init":"-"},
         {"label":"gs_person-name","sub":"Work Area(복사본)","key":"gs_person-name","init":"( 공백 )"},
+        {"label":"gs_person-age","sub":"Work Area의 age(복사본)","key":"gs_person-age","init":"-"},
         {"label":"gt_person","sub":"Internal Table · 5행","key":"gt_person","itab":{"cols":["name","age"],"num":[false,true]},"init":[["정훈영",30],["심청",17],["유재석",40],["이몽룡",19],["강호동",35]]}
       ],
       "steps":[
-        {"line":2,"vars":{"iter":"1","sy-tabix":"1","gs_person-name":"정훈영"},"focus":{"gt_person":1},"console":"1번 행 정훈영(30) — 조건(age >= 20) 통과 → 블록 실행. 회차 1 · sy-tabix 1"},
+        {"line":2,"vars":{"iter":"1","sy-tabix":"1","gs_person-name":"정훈영","gs_person-age":"30"},"focus":{"gt_person":1},"console":"1번 행 정훈영(30) — 조건(age >= 20) 통과 → 블록 실행. 회차 1 · sy-tabix 1"},
         {"line":3,"vars":{},"console":"[출력] 1  정훈영 (아직은 회차와 행 번호가 같습니다)"},
         {"line":2,"vars":{},"focus":{"gt_person":2},"console":"2번 행 심청(17) — 탈락. 블록을 건너뜁니다(회차가 늘지 않음)"},
-        {"line":2,"vars":{"iter":"2","sy-tabix":"3","gs_person-name":"유재석"},"focus":{"gt_person":3},"console":"3번 행 유재석(40) — 통과. 회차는 2인데 sy-tabix는 3! 어긋나기 시작"},
+        {"line":2,"vars":{"iter":"2","sy-tabix":"3","gs_person-name":"유재석","gs_person-age":"40"},"focus":{"gt_person":3},"console":"3번 행 유재석(40) — 통과. 회차는 2인데 sy-tabix는 3! 어긋나기 시작"},
         {"line":3,"vars":{},"console":"[출력] 3  유재석"},
         {"line":2,"vars":{},"focus":{"gt_person":4},"console":"4번 행 이몽룡(19) — 탈락"},
-        {"line":2,"vars":{"iter":"3","sy-tabix":"5","gs_person-name":"강호동"},"focus":{"gt_person":5},"console":"5번 행 강호동(35) — 통과. 회차 3 · sy-tabix 5"},
+        {"line":2,"vars":{"iter":"3","sy-tabix":"5","gs_person-name":"강호동","gs_person-age":"35"},"focus":{"gt_person":5},"console":"5번 행 강호동(35) — 통과. 회차 3 · sy-tabix 5"},
         {"line":3,"vars":{},"console":"[출력] 5  강호동"},
         {"line":4,"vars":{},"console":"ENDLOOP — 블록은 3번 돌았지만 sy-tabix는 1·3·5. sy-tabix = 테이블의 실제 행 번호!"},
-        {"line":7,"vars":{"iter":"1","sy-tabix":"2","gs_person-name":"심청"},"focus":{"gt_person":2},"console":"2막 — FROM 2라 1번 행(정훈영)은 아예 건너뛰고 2번 행부터 시작합니다. 조건이 없으니 20살 미만인 심청도 그대로 돕니다. 회차 1 · sy-tabix 2"},
+        {"line":7,"vars":{"iter":"1","sy-tabix":"2","gs_person-name":"심청","gs_person-age":"17"},"focus":{"gt_person":2},"console":"2막 — FROM 2라 1번 행(정훈영)은 아예 건너뛰고 2번 행부터 시작합니다. 조건이 없으니 20살 미만인 심청도 그대로 돕니다. 회차 1 · sy-tabix 2"},
         {"line":8,"vars":{},"console":"[출력] 2  심청 (여기서도 회차 1 ≠ sy-tabix 2)"},
-        {"line":7,"vars":{"iter":"2","sy-tabix":"3","gs_person-name":"유재석"},"focus":{"gt_person":3},"console":"3번 행 유재석 — 번호 구간 안이면 값과 상관없이 모두 돕니다"},
-        {"line":7,"vars":{"iter":"4","sy-tabix":"5","gs_person-name":"강호동"},"focus":{"gt_person":5},"console":"4번 이몽룡도 같은 방식으로 돌고, 마지막은 TO 5가 가리키는 5번 강호동. 회차 4 · sy-tabix 5"},
-        {"line":9,"vars":{},"console":"ENDLOOP — 1번 행은 한 번도 돌지 않았습니다. WHERE는 '값의 조건'으로, FROM/TO는 '행 번호 구간'으로 자릅니다"}
+        {"line":7,"vars":{"iter":"2","sy-tabix":"3","gs_person-name":"유재석","gs_person-age":"40"},"focus":{"gt_person":3},"console":"3번 행 유재석 — 번호 구간 안이면 값과 상관없이 모두 돕니다. 회차 2 · sy-tabix 3"},
+        {"line":8,"vars":{},"console":"[출력] 3  유재석"},
+        {"line":7,"vars":{"iter":"3","sy-tabix":"4","gs_person-name":"이몽룡","gs_person-age":"19"},"focus":{"gt_person":4},"console":"4번 행 이몽룡(19) — WHERE였다면 탈락했을 값도 번호 구간이라 그대로 돕니다. 회차 3 · sy-tabix 4"},
+        {"line":8,"vars":{},"console":"[출력] 4  이몽룡"},
+        {"line":7,"vars":{"iter":"4","sy-tabix":"5","gs_person-name":"강호동","gs_person-age":"35"},"focus":{"gt_person":5},"console":"TO 5의 끝 — 5번 행 강호동. 회차 4 · sy-tabix 5"},
+        {"line":8,"vars":{},"console":"[출력] 5  강호동"},
+        {"line":9,"vars":{},"console":"ENDLOOP — 1번 행은 한 번도 돌지 않았습니다. WHERE는 '값의 조건'으로, FROM/TO는 '행 번호 구간'으로 자릅니다"},
+        {"line":12,"vars":{"iter":"1","sy-tabix":"1","gs_person-name":"정훈영","gs_person-age":"30"},"focus":{"gt_person":1},"console":"3막 — 전원 나이 +1. 1번 행 정훈영이 복사본(gs_person)으로 들어옵니다. age 30"},
+        {"line":13,"vars":{"gs_person-age":"31"},"console":"복사본의 age만 31 — 오른쪽 표(gt_person)의 1번 행은 여전히 30! 고친 건 복사본뿐입니다"},
+        {"line":12,"vars":{"iter":"2","sy-tabix":"2","gs_person-name":"심청","gs_person-age":"17"},"focus":{"gt_person":2},"console":"다음 반복 — 2번 행 심청이 들어오면서 방금 고친 31은 덮어써져 조용히 사라졌습니다"},
+        {"line":13,"vars":{"gs_person-age":"18"},"console":"심청의 복사본도 18로. 테이블은 17 그대로. 3～5번 행도 같은 식 — 복사본만 올라갔다 사라집니다"},
+        {"line":14,"vars":{"iter":"5","sy-tabix":"5","gs_person-name":"강호동","gs_person-age":"36"},"console":"ENDLOOP — 5행을 다 돌았는데 표는 30·17·40·19·35 그대로! 에러도 안 나는 대표 실수입니다"},
+        {"line":16,"vars":{"iter":"1","sy-tabix":"1","gs_person-name":"정훈영","gs_person-age":"30"},"focus":{"gt_person":1},"console":"기본기 판 — 이번엔 MODIFY가 있습니다. 다시 1번 행 정훈영(30)이 복사본으로"},
+        {"line":17,"vars":{"gs_person-age":"31"},"console":"복사본을 31로 — 여기까지는 아까 함정과 똑같습니다. 표는 아직 30"},
+        {"line":18,"vars":{"gt_person":[["정훈영",31],["심청",17],["유재석",40],["이몽룡",19],["강호동",35]]},"focus":{"gt_person":1},"console":"MODIFY gt_person FROM gs_person — LOOP 안이라 INDEX를 생략해도 '지금 돌고 있는 1번 행'에 반영! 표의 30이 31로 바뀌었습니다"},
+        {"line":16,"vars":{"iter":"2","sy-tabix":"2","gs_person-name":"심청","gs_person-age":"17"},"focus":{"gt_person":2},"console":"2번 행 심청(17)이 복사본으로"},
+        {"line":17,"vars":{"gs_person-age":"18"},"console":"복사본 18 — 아직 반영 전"},
+        {"line":18,"vars":{"gt_person":[["정훈영",31],["심청",18],["유재석",40],["이몽룡",19],["강호동",35]]},"focus":{"gt_person":2},"console":"현재 행(2번)에 반영 — 심청 17 → 18. 읽기(INTO) → 고치기 → 되돌려 쓰기(MODIFY)의 세 박자"},
+        {"line":18,"vars":{"iter":"5","sy-tabix":"5","gs_person-name":"강호동","gs_person-age":"36","gt_person":[["정훈영",31],["심청",18],["유재석",41],["이몽룡",20],["강호동",36]]},"focus":{"gt_person":5},"console":"3·4·5번 행도 같은 세 박자 반복 — 유재석 41 · 이몽룡 20 · 강호동 36까지 차례로 반영됩니다"},
+        {"line":19,"vars":{},"console":"ENDLOOP — 이번엔 표가 31·18·41·20·36. 지금 단계의 기본기 = 읽기는 INTO, 고치기는 MODIFY!"}
       ]
     }
     </script>
   </div>
-  <div class="note">💡 <code>WHERE</code>든 <code>FROM/TO</code>든 일부만 도는 루프 안에서 "지금 몇 번째 행이지?"가 필요하면 <code>sy-tabix</code>를 그대로 쓰면 됩니다. 반대로 "몇 번 돌았지?"가 필요하면 직접 세어야 합니다.</div>
+  <div class="note">💡 <code>WHERE</code>든 <code>FROM/TO</code>든 일부만 도는 루프 안에서 "지금 몇 번째 행이지?"가 필요하면 <code>sy-tabix</code>를 그대로 쓰면 됩니다. 반대로 "몇 번 돌았지?"가 필요하면 직접 세어야 합니다. 그리고 3막의 한 줄 요약 — <b>읽기는 INTO, 고치기는 MODIFY.</b> 복사본만 고치고 끝내면 테이블은 그대로입니다.</div>
 </div>
 <script src="../_engine/step-debugger.js" defer></script>
 <script src="../_engine/_autoheight.js" defer></script>

@@ -1,0 +1,54 @@
+{
+  "agent": "AG09",
+  "model": "sonnet",
+  "target": "CH06",
+  "persona_ack": "AG09으로서 ABAP 정적 검사기를 시늉하는 코드 전용 감사자 역할을 확인했다 — 산문은 판단 근거로만 참고하고, CH06 레슨 15개(및 _chapter.md)에서 코드펜스(abap)로 표시된 블록만 줄 단위로 골라 활성화 가능성·네이밍 접두어(gv_/gs_/gt_/ts_/tt_/it_ 등)·CH01～17 classic 문법 경계·주석-코드 일치를 기준으로 판정했다.",
+  "method": "Read로 대상 16개 파일을 전문 열람한 뒤 코드펜스(abap) 블록만 추출해 줄 단위로 정적 검토했다(미선언/타입 불일치/존재하지 않는 구문 → 네이밍 접두어 규약 → CH01～17 modern 문법 금지·CH01～18 New Open SQL 금지 → 주석-코드 불일치 순으로 점검). 실행 환경이 없어 실제 컴파일 확인은 불가했고, Grep으로 각 finding.quote가 대상 파일 원문과 정확히 일치하는지만 별도 확인했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L10.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L11.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L12.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L13.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L14.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L15.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L14.md",
+      "quote": "DATA it_person TYPE TABLE OF ts_person WITH HEADER LINE.",
+      "category": "활성화 차단급 — Header Line 플랫 타입 제약",
+      "severity": "높음",
+      "confidence": "추정",
+      "claim": "WITH HEADER LINE으로 선언하는 내부 테이블은 행 타입이 flat(고정 길이 컴포넌트만)이어야 하는데, ts_person은 CH06-L01에서 name TYPE string으로 정의된 Deep 구조체라 이 선언은 실제 SAP 시스템에서 활성화가 막힐 가능성이 높다.",
+      "evidence": "Header Line(및 OCCURS) 테이블은 테이블 본체와 이름이 같은 '그림자 Work Area'를 만드는 옛 메모리 관리 방식이라, 그 Work Area가 string·Internal Table·참조 같은 가변 요소를 담지 못한다 — 즉 행 타입이 flat이어야 성립한다. 그런데 이 챕터의 ts_person은 처음부터(CH06-L01) name TYPE string을 갖고, CH06-L13이 '우리는 이미 Deep을 쓰고 있었다'며 이를 명시적으로 재확인한다. 그 ts_person을 그대로 WITH HEADER LINE에 물리면 두 전제가 충돌해 실제로는 활성화되지 않을 가능성이 크다.",
+      "suggestion": "name 필드를 flat 타입(예: TYPE c LENGTH 20)으로 잡은 이 레슨 전용 구조체를 새로 만들어 예시에 쓰거나, string 필드가 있으면 Header Line 선언 자체가 막힌다는 단서를 본문에 덧붙인다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L14.md",
+      "quote": "DATA: BEGIN OF it_person OCCURS 0,",
+      "category": "활성화 차단급 — Header Line 플랫 타입 제약",
+      "severity": "높음",
+      "confidence": "추정",
+      "claim": "바로 다음 줄에서 name을 TYPE string으로 그 자리에서 선언하는데, OCCURS 선언도 WITH HEADER LINE과 같은 flat 전용 제약을 받으므로 이 선언 역시 활성화가 막힐 가능성이 높다 — Finding 1과 달리 다른 레슨을 참조할 필요 없이 이 코드 블록 안에서 자체적으로 재현되는 문제다.",
+      "evidence": "BEGIN OF ... OCCURS 0 ... END OF로 헤더라인 테이블을 선언하면서 그 자리에서 name TYPE string을 필드로 넣었다. Finding 1과 같은 이유로 헤더라인 테이블의 행 타입은 flat이어야 하므로 활성화 시 막힐 가능성이 높다. 또한 OCCURS는 string 타입보다 훨씬 오래된 문법이라, 실제로 20년 된 옛 코드였다면 애초에 이 조합 자체가 존재할 수 없었다는 점에서 '진짜 옛 코드 그대로'라는 레슨의 취지와도 어긋난다.",
+      "suggestion": "name 필드를 TYPE c LENGTH 20 등 flat 타입으로 바꿔 실제로 활성화되고 시대적으로도 자연스러운 옛 코드 예시로 고친다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH06 15개 레슨을 코드 블록 위주로 정적 검토한 결과, 활성화 차단급 결함은 L14(옛 코드를 읽는 법)의 Header Line/OCCURS 예시 두 곳에 집중돼 있었다 — 두 선언 모두 string 필드를 가진 Deep 구조체를 flat 전용인 헤더라인 테이블에 그대로 물려 실제로는 활성화되지 않을 가능성이 높다. 그 외 L01～L13, L15의 코드는 네이밍 접두어(gv_/gs_/gt_/ts_/tt_/it_)와 CH01～17 classic 문법 경계를 포함해 구문·관례 위반이 발견되지 않았다."
+  }
+}

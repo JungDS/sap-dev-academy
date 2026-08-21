@@ -40,23 +40,22 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>첫 출근, 20년 된 프로그램</h2>
-<p>SAP 시스템은 오래 산다. 실무에 나가면 높은 확률로 <strong>당신보다 나이가 많은 프로그램</strong>을
+<p>SAP 시스템은 오래 산다. 실무에 나가면 높은 확률로 <strong>여러분보다 나이가 많은 프로그램</strong>을
 유지보수하게 된다. 그 코드들 속에서 반드시 마주치는 것이 오늘의 주제 — 지금은 쓰지 않지만
 <strong>읽을 줄은 알아야 하는</strong> Internal Table의 옛 선언 방식이다.</p>
 <p>미리 말해 두면: 이 레슨엔 외울 것이 없다. 새 코드에 쓸 일도 없다. 목표는 딱 하나 —
 옛 코드를 만났을 때 &quot;아, 그 방식이구나&quot; 하고 <strong>알아보는 눈</strong>이다. 가볍게 보자.</p>
 </section><section class="lblock"><h2>옛 선언 두 가지</h2>
+<p>같은 테이블을 만드는 <strong>두 가지 옛 표기</strong>다. 실제 코드에는 둘 중 하나만 나타난다
+(한 프로그램에 둘 다 적으면 <code>it_person</code>을 두 번 선언하는 오류가 난다).</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2</pre><pre class="abap-editor__code"><code><span class="tok-com">" 옛 방식 ① — WITH HEADER LINE</span>
+<span class="tok-kw">DATA</span> it_person <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ts_person <span class="tok-kw">WITH</span> HEADER <span class="tok-kw">LINE</span>.</code></pre></div></div>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
 4
-5
-6
-7
-8</pre><pre class="abap-editor__code"><code><span class="tok-com">" 옛 방식 ① — WITH HEADER LINE</span>
-<span class="tok-kw">DATA</span> it_person <span class="tok-kw">TYPE</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ts_person <span class="tok-kw">WITH</span> HEADER <span class="tok-kw">LINE</span>.
-
-<span class="tok-com">" 옛 방식 ② — 더 오래된 OCCURS 선언 (행 모양 정의와 테이블 선언을 한 번에)</span>
+5</pre><pre class="abap-editor__code"><code><span class="tok-com">" 옛 방식 ② — 더 오래된 OCCURS 선언 (행 모양 정의와 테이블 선언을 한 번에)</span>
 <span class="tok-kw">DATA</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> it_person OCCURS <span class="tok-num">0</span>,
         name <span class="tok-kw">TYPE</span> string,
         age  <span class="tok-kw">TYPE</span> i,
@@ -79,11 +78,13 @@
 2
 3
 4
-5</pre><pre class="abap-editor__code"><code>it_person-name = <span class="tok-str">'정훈영'</span>.        <span class="tok-com">" Header Line(한 행)에 값 채우기</span>
+5
+6</pre><pre class="abap-editor__code"><code>it_person-name = <span class="tok-str">'정훈영'</span>.        <span class="tok-com">" Header Line(한 행)에 값 채우기</span>
 <span class="tok-kw">APPEND</span> it_person.                 <span class="tok-com">" Header Line을 테이블 본체에 붙이기 — TO가 없다!</span>
 <span class="tok-kw">READ</span> <span class="tok-kw">TABLE</span> it_person <span class="tok-kw">WITH</span> <span class="tok-kw">KEY</span> name = <span class="tok-str">'정훈영'</span>.   <span class="tok-com">" 결과도 Header Line으로 들어온다</span>
 <span class="tok-kw">CLEAR</span> it_person.                  <span class="tok-com">" ⚠️ Header Line'만' 비워진다(본체는 그대로)</span>
-<span class="tok-kw">CLEAR</span> it_person[].                <span class="tok-com">" 본체를 비우려면 대괄호!</span></code></pre></div></div>
+<span class="tok-kw">CLEAR</span> it_person[].                <span class="tok-com">" 본체를 비우려면 대괄호!</span>
+<span class="tok-kw">REFRESH</span> it_person.                <span class="tok-com">" 본체 비우기의 옛 문장(= CLEAR it_person[], 지금은 안 쓴다)</span></code></pre></div></div>
 <p>마지막 두 줄이 핵심 해독 포인트다 — <strong>테이블 본체를 콕 집을 땐 <code>it_person[]</code>처럼
 대괄호를 붙인다.</strong> 옛 코드에서 <code>[]</code>를 보면 &quot;아, 본체 쪽 이야기구나&quot;로 읽으면 된다.
 <code>APPEND it_person.</code>처럼 <code>TO</code>가 없는 축약 문장들도 &quot;그림자를 본체에&quot; 가 생략된 것이다.</p>

@@ -1,0 +1,109 @@
+{
+  "agent": "AG06",
+  "model": "opus",
+  "target": "CH06",
+  "persona_ack": "20년차 SAP ABAP 아키텍트로서 CH06(Internal Table) 15개 레슨 + _chapter.md의 기술 사실·예시 적절성·위험한 생략·안티패턴만 감사했다. 읽기 전용이며 파일을 고치지 않았고, 웹 검색·외부 네트워크는 쓰지 않았으며, 다른 감사자의 보고나 과거 감사 산출물도 열지 않았다. 릴리스에 따라 갈릴 수 있는 판단은 confidence='추정'으로 낮췄다.",
+  "method": "Read 도구로 대상 16개 MD 파일 전문을 통독(빌드 산출물·브라우저·검색 도구 미사용). 문법·시스템 동작 판정은 내부 ABAP 지식만으로 수행했고, 릴리스·설정 의존이거나 기억이 불확실한 항목은 확실로 올리지 않고 추정으로 표기했다.",
+  "errors": [],
+  "files_read": [
+    "content/abap/CH06/_chapter.md",
+    "content/abap/CH06/CH06-L01.md",
+    "content/abap/CH06/CH06-L02.md",
+    "content/abap/CH06/CH06-L03.md",
+    "content/abap/CH06/CH06-L04.md",
+    "content/abap/CH06/CH06-L05.md",
+    "content/abap/CH06/CH06-L06.md",
+    "content/abap/CH06/CH06-L07.md",
+    "content/abap/CH06/CH06-L08.md",
+    "content/abap/CH06/CH06-L09.md",
+    "content/abap/CH06/CH06-L10.md",
+    "content/abap/CH06/CH06-L11.md",
+    "content/abap/CH06/CH06-L12.md",
+    "content/abap/CH06/CH06-L13.md",
+    "content/abap/CH06/CH06-L14.md",
+    "content/abap/CH06/CH06-L15.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH06/CH06-L11.md",
+      "quote": "amount TYPE i,",
+      "category": "안티패턴",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "매출 집계 예제의 금액 필드를 `TYPE i`(4바이트 정수)로 잡았다. SAP 실무에서 금액을 정수형으로 선언하는 일은 없다 — 소수 자리가 없고, 무엇보다 `i`의 상한(2,147,483,647)을 누적 도중 넘기면 오버플로 런타임 오류로 프로그램이 죽는다. 집계 전용 예제라 하필 가장 위험한 자리다.",
+      "evidence": "`COLLECT`는 같은 키 행의 숫자 필드를 계속 누적하는 문장이라 상한 초과가 가장 쉬운 문장이다. 원 단위 매출 합계는 21억 원만 넘어도 `i` 범위를 벗어나는데, 월/연 단위 지역별 매출이면 흔한 규모다. 정수 오버플로는 릴리스와 무관하게 런타임 오류로 이어지고, 에러 지점이 선언이 아니라 한참 뒤 COLLECT라 원인 추적도 어렵다. 게다가 이 과정은 CH03에서 금액용 Data Element(`zde_amount`)를 만들었고 L02에서 그것을 행 타입으로 쓰는 법까지 보여 준 뒤라, 정작 금액 집계 예제만 `i`로 후퇴한 모양새다.",
+      "suggestion": "`amount TYPE p DECIMALS 2`(또는 CH03에서 만든 `zde_amount`)로 바꾼다. 제약 목록 2번(비키 필드는 숫자)에 '금액·수량은 `i`가 아니라 `p`(소수 있는 숫자)로 잡는다 — 정수는 자릿수도 없고 큰 합계에서 넘친다' 한 줄을 붙이면 제약 설명과 자연스럽게 이어진다. L12가 같은 `ts_sales`를 재사용하므로 함께 반영."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH06/CH06-L07.md",
+      "quote": "- **SORT 없이 BINARY SEARCH** → 잘못된 \"없음\". 이 함정은 에러도 안 나서 더 위험하다.",
+      "category": "위험한 생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "BINARY SEARCH의 실무 1순위 사고 원인 — '한 번 정렬해 놨어도 테이블을 건드리는 순간 정렬이 깨진다' — 가 빠져 있다. 레슨은 '아예 정렬을 안 했을 때'와 '다른 키로 정렬했을 때' 두 경우만 경고한다.",
+      "evidence": "APPEND/INSERT/DELETE, 키 필드를 바꾸는 MODIFY 뒤에는 정렬 상태가 보장되지 않는다. 특히 'SORT 한 번 → 루프를 돌며 READ ... BINARY SEARCH로 존재 확인 → 없으면 같은 테이블에 APPEND' 패턴은 실무에서 대량으로 반복되는데, 처음 몇 건은 맞다가 이후부터 조용히 '없음'을 돌려준다. 덤프도 안 나고 sy-subrc<>0이 대개 '신규 건' 분기로 흘러 데이터 중복·누락으로 끝난다. 이 챕터는 L05에서 INSERT를, L06에서 DELETE를 이미 가르쳤으므로 학습자가 조합할 수 있는 상태다.",
+      "suggestion": "경고 박스나 '흔한 실수'에 한 줄 추가 — '정렬에는 유통기한이 있다: 행을 넣거나 지운 뒤라면 BINARY SEARCH 전에 다시 SORT.' 순서 규율('다 모으고 → 정렬하고 → 그다음부터 조회')로 제시하면 입문자에게도 바로 전달된다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH06/CH06-L05.md",
+      "quote": "먼저 [[sy-subrc]]가 무엇인지부터. **문장 하나가 실행될 때마다 시스템이 그 결과(성공/실패)를",
+      "category": "사실 오류",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "`sy-subrc`는 '문장 하나가 실행될 때마다' 채워지지 않는다. 반환 코드를 정의한 일부 문장(READ TABLE·LOOP·SELECT·CALL FUNCTION·AUTHORITY-CHECK 등)만 설정하고, 그 밖의 문장(WRITE·대입·산술 등)이 지나가는 동안에는 직전 값이 그대로 남는다.",
+      "evidence": "이 차이가 곧 실무 버그의 원천이다. '매 문장 갱신된다'고 믿으면 검사 시점을 뒤로 미뤄도 안전하다는 잘못된 안심을 준다. 실제로는 중간에 sy-subrc를 설정하는 다른 문장(다른 READ·함수 호출)이 끼면 앞 문장의 결과가 덮여 사라지고, 반대로 설정하지 않는 문장만 지나가면 한참 전 값이 살아남아 엉뚱한 판정을 한다. 같은 레슨이 뒤에서 세우는 '읽자마자 다음 줄에서 판정한다'는 규율의 근거도 정확히 이 성질이다.",
+      "suggestion": "'문장 하나가 실행될 때마다' → '결과 코드를 남기는 문장이 실행되면' 정도로 고치고, '값을 안 채우는 문장도 많아 직전 값이 그대로 남는다 → 그래서 READ 바로 다음 줄에서 본다' 한 문장을 덧붙이면 규율의 이유까지 맞아떨어진다."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH06/CH06-L05.md",
+      "quote": "| `APPEND` | 무조건 **끝에** 붙인다 | [L01](CH06-L01.html)에서 배움 |",
+      "category": "위험한 생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "`APPEND`가 번호 있는 그릇(STANDARD·SORTED)에서만 쓸 수 있다는 제약이 챕터 어디에도 없다. 바로 앞 레슨에서 세 종류를 배운 학습자는 이 '넣기 3형제' 표를 보고 HASHED에도 APPEND가 통한다고 읽는다.",
+      "evidence": "APPEND는 Index Table 전용 문장이라 HASHED 테이블에 쓰면 구문 오류다. SORTED에 대한 APPEND는 문법은 통과하지만 정렬 순서를 깨는 행이면 런타임 오류로 죽는다. 같은 레슨의 INSERT 설명은 STANDARD/SORTED/HASHED를 표로 꼼꼼히 갈라 뒀는데 APPEND 행만 그 대비가 비어 있어, 세 종류를 막 배운 시점에서는 비대칭이 오해를 부른다.",
+      "suggestion": "3형제 표의 `APPEND` 행 설명에 '단, 번호가 있는 그릇(STANDARD·SORTED)에서만 — HASHED에는 `INSERT ... INTO TABLE`' 한 마디를 붙이거나, INSERT 종류별 표 아래 각주 한 줄로 처리."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH06/CH06-L03.md",
+      "quote": "- **숫자 필드가 키에 들어 있다고 착각** → standard key는 문자 계열만 모은다. `age`·금액·수량은",
+      "category": "사실 오류(불완전 서술)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'문자 계열'에 `n`(숫자문자)·`d`(날짜)·`t`(시간)가 포함된다는 점이 빠져 있어, 학습자가 '숫자·날짜처럼 보이면 자동 키에서 빠진다'는 반대 결론을 갖는다. 실제 SAP 데이터는 사번·전표번호(NUMC)와 일자(DATS)가 주류라 이 오해는 표준 키를 거의 항상 오독하게 만든다.",
+      "evidence": "standard key는 문자 계열(c·n·d·t·string)과 바이트 계열(x·xstring) 필드를 전부 모은다. 즉 `pernr TYPE n LENGTH 8`(사번)이나 `budat TYPE d`(전기일)는 눈에 숫자·날짜로 보여도 자동 키에 **들어간다**. 빠지는 것은 `i`·`p`·`f` 같은 진짜 수치 타입뿐인데, 레슨은 `age`·금액·수량만 예로 들어 NUMC/DATS 사례를 통째로 가린다. 본문의 '문자 계열 필드(문자·바이트를 담는 타입…)' 서술 자체는 맞지만, 입문자가 `n`·`d`를 문자로 분류할 수 없다는 것이 문제다.",
+      "suggestion": "'숫자 필드는 빠진다' 뒤에 한 줄 — '단 `n`(숫자문자)·`d`(날짜)·`t`(시간)는 눈에 숫자로 보여도 문자 계열이라 자동 키에 들어간다(사번·전표번호가 대개 이 타입)'. L13의 Flat 타입 목록(`c`·`n`·`d`·`t`…)과 그대로 이어져 추가 부담도 없다."
+    },
+    {
+      "seq": 6,
+      "file": "content/abap/CH06/CH06-L14.md",
+      "quote": "DATA: BEGIN OF it_person OCCURS 0,",
+      "category": "예시 적절성",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "'20년 된 코드'를 재현한 옛 선언 예제(OCCURS 0, 그리고 바로 위 WITH HEADER LINE 예제가 쓰는 `ts_person`)의 필드를 `name TYPE string`으로 잡았다. `string`은 OCCURS 관용이 표준이던 시절의 코드에는 사실상 등장하지 않는 타입이라, '옛 코드를 알아보는 눈'을 기른다는 이 레슨의 목적에 비해 고증이 어긋난다.",
+      "evidence": "OCCURS/헤더라인 선언이 일상이던 시기의 실코드는 `name(20) TYPE c`처럼 괄호 길이 표기의 고정 길이 필드로 채워져 있다. 현장에서 만날 실물과 예제의 생김새가 다르면 인식 훈련 효과가 떨어진다. 덧붙여 `string`은 L13 분류대로 deep 요소라 옛 선언 방식과의 조합에 릴리스·문맥 의존 제약이 걸릴 소지가 있는데, 웹 확인이 막혀 있어 컴파일 가능 여부는 단정하지 않는다(그래서 추정).",
+      "suggestion": "옛 방식 두 예제만 `name(20) TYPE c`(괄호 길이 표기 자체가 옛 코드의 특징이라 인식 훈련에 오히려 유용) 형태로 바꾸고, 새 방식 대역 코드에서만 현재 챕터의 `ts_person`을 쓰면 옛↔새 대조가 더 선명해진다."
+    },
+    {
+      "seq": 7,
+      "file": "content/abap/CH06/CH06-L01.md",
+      "quote": "- 대용량 테이블을 **다 쓰고 더 안 쓸 때**는 `FREE`. 초기 메모리까지 돌려주니 그만큼 여유가 생긴다.",
+      "category": "위험한 생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "챕터 전체가 '메모리에 담는다'를 전제로 하면서, 그 메모리에 한계가 있고 넘기면 프로그램이 강제 종료된다는 사실을 한 번도 말하지 않는다. 그래서 `FREE`도 '여유가 생긴다'는 막연한 이득으로만 설명된다.",
+      "evidence": "내부 테이블은 워크프로세스의 롤/힙 메모리를 쓰고, 한도를 넘기면 메모리 부족 런타임 오류(대표적으로 TSV_TNEW_PAGE_ALLOC_FAILED)로 프로그램이 죽는다. 다음 챕터부터 DB 조회 결과를 통째로 내부 테이블에 담기 시작하면 입문자가 실제로 처음 만나는 덤프가 대개 이것이다. 이 챕터는 이미 L04·L07에서 '만 명·십만 명' 규모를 예로 들고 있어 한 줄 경고를 붙일 자리가 충분하다.",
+      "suggestion": "'Internal Table ≠ Database Table' 콜아웃 옆이나 CLEAR/FREE 절 끝에 한 줄 — '메모리는 무한하지 않다. 감당 못 할 양을 담으면 프로그램이 메모리 부족으로 강제 종료된다 — 다 쓴 대용량 테이블을 `FREE`로 돌려주는 진짜 이유다.'"
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "기술 서술의 정확도가 전반적으로 높다. 3속성(Line Type·Primary Key·Table Kind) 분해, 종류×UNIQUE 매트릭스, INSERT INTO와 INTO TABLE의 구분, HASHED에서 sy-tabix가 0인 점, SORTED에 SORT가 막히는 점, BINARY SEARCH 실패 시 4/8, COLLECT가 STANDARD 테이블에 임시 해시를 두고 다른 문장이 끼면 버려지는 원리, 컨트롤레벨의 마스킹 규칙과 SUM이 LOOP ... INTO 전용인 제약, Flat/Deep 판정 기준(중첩과 무관), SE11 Table Type의 탭 구성과 활성화 절차까지 릴리스와 무관하게 사실과 맞는다. 순수한 사실 오류는 sy-subrc를 '문장마다 갱신된다'로 서술한 한 곳뿐이고, 나머지는 정밀도와 안전 경고의 결손이다. 실무 관점에서 손봐야 할 급소는 둘 — 금액을 `TYPE i`로 잡은 집계 예제(오버플로·자릿수)와 BINARY SEARCH에서 '정렬은 테이블을 건드리는 순간 깨진다'는 경고 누락이다. 이 둘을 포함해 지적한 일곱 군데에 한두 줄씩 보태는 정도면 기술 검수 관점에서 그대로 나가도 무방하다. 치명·높음 등급 결함은 없다."
+  }
+}

@@ -43,8 +43,8 @@
 <p><code>gt_person</code>에 사원이 1,000명 들어 있고, 그중 &#39;수지&#39;를 찾아야 한다고 하자. 지금까지 우리가
 만든 테이블은 이럴 때 <strong>앞에서부터 한 행씩</strong> 훑는다. 수지가 997번째에 있다면 996번의
 허탕을 치는 셈이다. 열 명일 땐 아무 문제가 아니었지만, 만 명·십만 명이면 이야기가 달라진다.</p>
-<p>여기서 3속성의 마지막, <strong>Table Kind(종류)</strong> 가 등장한다. 행을 <strong>어떻게 저장하고 어떻게
-찾을지</strong>를 정하는 속성이다. 종류가 다르면 같은 데이터라도 찾는 속도가 하늘과 땅이다.</p>
+<p>여기서 3속성의 마지막, **Table Kind(종류)**가 등장한다. 행을 <strong>어떻게 저장하고 어떻게
+찾을지</strong>를 정하는 속성이다. 종류가 다르면 같은 데이터라도 찾는 속도가 완전히 달라진다.</p>
 </section><section class="lblock"><h2>세 종류</h2>
 <table>
 <thead>
@@ -74,21 +74,26 @@
 <td>유일 키 대량 데이터 단건 조회</td>
 </tr>
 </tbody></table>
-<p>표에 처음 나온 두 낱말부터 풀어 둔다.</p>
+<p>표에 처음 나온 낱말 셋부터 풀어 둔다.</p>
 <ul>
 <li><strong>이진 탐색</strong> — 정렬된 전화번호부를 딱 반으로 갈라 &quot;찾는 이름이 앞쪽인가 뒤쪽인가&quot;만 보고,
 남은 쪽을 또 반으로 가르는 식으로 좁혀 간다. 첫 장부터 한 장씩 넘기는 것보다 훨씬 적게 본다.
 대신 <strong>정렬돼 있어야</strong> 성립한다. SORTED는 넣는 순간부터 항상 키 순서를 유지하므로
 언제든 이 방식으로 찾는다.</li>
-<li><strong>해시</strong> — 키 값을 계산해서 &quot;이 값은 몇 번 사물함&quot;인지 <strong>바로</strong> 알아낸다. 앞에서부터 훑지
+<li><strong>범위 탐색</strong> — &quot;이름이 ㄱ～ㄷ 사이&quot;처럼 한 값이 아니라 <strong>구간</strong>으로 찾는 것.
+늘 정렬돼 있는 SORTED가 특히 잘하는 일이다.</li>
+<li><strong>해시</strong> — 키 값을 계산해서 그 값이 <strong>어느 사물함 칸</strong>인지 바로 알아낸다. 앞에서부터 훑지
 않으니 행이 100개든 10만 개든 한 건 찾는 시간이 비슷하다. HASHED는 행들을 줄 세우는 대신
 이 사물함 방식으로 보관한다.</li>
 </ul>
 </section><section class="lblock"><h2>번호가 있는 그릇, 없는 그릇 — Index Table</h2>
 <ul>
-<li>STANDARD·SORTED는 <strong>Index Table</strong>이다. 행마다 번호가 붙어 &quot;n번 행&quot;으로 접근할 수 있다.
-이 번호는 <strong>1번부터</strong> 센다(0번 행은 없다).</li>
-<li>HASHED는 행을 줄 세워 관리하는 <button class="term" type="button" data-term="인덱스">인덱스</button>(행 번호표)가 <strong>없다</strong>. 사물함에 번호표가 없듯,
+<li>STANDARD·SORTED는 행마다 번호가 붙어 &quot;n번 행&quot;으로 접근할 수 있다. 이 행 번호가 곧
+<button class="term" type="button" data-term="인덱스">인덱스</button>(index)다. 위 표의 &quot;번호(인덱스) 접근&quot;이 이것이고, 인덱스가 있는 이 두 종류를
+묶어 <strong>Index Table</strong>이라 부른다. 번호는 <strong>1번부터</strong> 센다(0번 행은 없다).</li>
+<li>여기서 인덱스는 그저 &quot;몇 번째 행&quot;이라는 번호다. 나중에 DB 쪽에서 만나는 인덱스(조회를
+빠르게 하려고 따로 두는 장치)와는 이름만 같은 다른 물건이다.</li>
+<li>HASHED는 행을 줄 세워 관리하는 인덱스(행 번호표)가 <strong>없다</strong>. 사물함에 번호표가 없듯,
 &quot;37번째 행&quot;이라는 말 자체가 성립하지 않고 <strong>키로만</strong> 찾는다. 이게 무슨 뜻인지는
 <a href="CH06-L07.html">빠르게 찾기 레슨</a>에서 직접 실험으로 확인한다.</li>
 </ul>

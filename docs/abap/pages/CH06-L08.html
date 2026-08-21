@@ -73,7 +73,7 @@
 <code>sy-tabix</code>는 언제나 <strong>테이블에서의 실제 행 번호</strong>다. 조건에 걸린 첫 행이 3번 행이면
 첫 반복부터 <code>sy-tabix = 3</code>이고, <code>FROM 2</code>로 시작하면 첫 반복이 <code>sy-tabix = 2</code>다.</p>
 </blockquote>
-<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">반복 회차 vs sy-tabix — WHERE로 일부만 돌아 보기</span><a class="embed__open" href="../../../embeds/abap/CH06-L08-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH06-L08-S01.html" loading="lazy" title="반복 회차 vs sy-tabix — WHERE로 일부만 돌아 보기"></iframe></figure>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">순회 실험실 — WHERE·구간 돌기, 그리고 복사본 함정과 MODIFY 반영</span><a class="embed__open" href="../../../embeds/abap/CH06-L08-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH06-L08-S01.html" loading="lazy" title="순회 실험실 — WHERE·구간 돌기, 그리고 복사본 함정과 MODIFY 반영"></iframe></figure>
 </section><section class="lblock"><h2>함정 — 고쳤는데 안 바뀐다</h2>
 <p>전원의 나이를 한 살씩 올려 보자. 자연스럽게 이렇게 쓰게 된다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
@@ -135,7 +135,7 @@ LOOP 안에서는 <code>INDEX</code>를 <strong>생략</strong>할 수 있다 �
 </blockquote>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">ENDLOOP 뒤의 별명 — 루프 밖 오염 사고 재현</span><a class="embed__open" href="../../../embeds/abap/CH06-L08-S02.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH06-L08-S02.html" loading="lazy" title="ENDLOOP 뒤의 별명 — 루프 밖 오염 사고 재현"></iframe></figure>
 <p><strong>규율로 정리하자.</strong> 실무 코드에서 <code>ASSIGNING</code>을 많이 만나겠지만, 지금 단계의 기본기는
-<strong>&quot;읽기는 INTO, 고치기는 MODIFY&quot;</strong> 다. <code>ASSIGNING</code>은 고치려는 의도가 분명하고 위 네 가지
+&quot;<strong>읽기는 INTO, 고치기는 MODIFY</strong>&quot;다. <code>ASSIGNING</code>은 고치려는 의도가 분명하고 위 네 가지
 위험을 다 알 때 꺼내는 도구다. 참고로 Field Symbol에는 LOOP 밖에서 쓰는 일반형(<code>ASSIGN</code>)과
 동적 접근이라는 더 큰 세계가 있는데, 그건 <a href="CH28-L01.html">Chapter 28 · Dynamic ABAP</a>의
 주제다 — 지금은 &quot;LOOP의 직접 수정 도구&quot;까지만 알면 충분하다.</p>
@@ -149,6 +149,8 @@ LOOP 안에서는 <code>INDEX</code>를 <strong>생략</strong>할 수 있다 �
 런타임 오류(덤프)다. LOOP가 매 반복 할당해 주는 범위 안에서만 쓰자.</li>
 <li><strong>HASHED에서 sy-tabix 기대</strong> → <a href="CH06-L07.html">L07</a>에서 본 그대로, 번호표가 없는
 그릇이라 LOOP 안에서도 0이다.</li>
+<li><strong><code>sy-index</code>로 행 번호 확인</strong> → <code>sy-index</code>는 DO·WHILE의 회차 카운터라서 LOOP는
+세 주지 않는다. LOOP의 행 번호는 언제나 <code>sy-tabix</code>다.</li>
 </ul>
 <hr>
 <p>순회를 익혔으니 실무 시나리오로 들어간다. 지점마다 따로 온 명단들을 <strong>합치고, 중복을

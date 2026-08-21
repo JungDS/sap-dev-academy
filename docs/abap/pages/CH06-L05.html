@@ -43,7 +43,7 @@
 <p>그릇 설계(3속성)가 끝났으니 이제 본격적으로 부린다. 한 행을 콕 집어 다루는 방법은
 이 챕터 내내 <strong>딱 두 갈래</strong>다.</p>
 <ul>
-<li><strong>자리(INDEX)로</strong> — &quot;3번째 행&quot; 처럼 번호로 집는다. 번호가 있는 Index Table(STANDARD·SORTED)에서만.</li>
+<li><strong>자리(INDEX)로</strong> — &quot;3번째 행&quot;처럼 번호로 집는다. 번호가 있는 Index Table(STANDARD·SORTED)에서만.</li>
 <li><strong>키(KEY)로</strong> — &quot;name이 정훈영인 행&quot;처럼 값으로 집는다. 모든 종류에서.</li>
 </ul>
 <p>오늘 배우는 넣기·찾기도, 다음 레슨의 고치기·지우기도 전부 이 두 좌표의 반복이다.
@@ -106,6 +106,9 @@
 <td><a href="CH06-L11.html">집계 레슨</a>에서 — 지금 외울 필요 없음</td>
 </tr>
 </tbody></table>
+<p>한 가지만 덧붙이면, <code>APPEND</code>는 번호 있는 그릇(Index Table: STANDARD·SORTED) <strong>전용</strong>이다.
+&quot;끝에&quot;라는 자리 자체가 행 번호가 있어야 성립하기 때문이다. 번호표 없는 HASHED에 넣는
+길은 <code>INSERT ... INTO TABLE</code>뿐이다.</p>
 </section><section class="lblock"><h2>찾기 — READ TABLE</h2>
 <p>찾기도 같은 두 좌표다. 자리로 찾거나, 키로 찾거나.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
@@ -128,20 +131,30 @@
 (<code>WITH KEY age = 30</code>도 합법). 대신 STANDARD에서는 앞에서부터 순차 탐색이다.</li>
 <li><code>WITH TABLE KEY ...</code> — 선언에 <strong>정의된 키 전체</strong>를 지정해 찾기. 키 필드를 빠짐없이
 적어야 하며, SORTED/HASHED가 자기 방식(이진/해시)으로 가장 빠르게 찾는 경로다.
-(위 예제에서 이 형이 성립하는 이유 — <code>gt_person</code>의 키는 standard key, 곧 문자 필드
-<code>name</code> 하나라서 <code>name</code>만 적으면 &quot;키 전체&quot;가 된다.)</li>
+(위 예제에서 이 형태가 성립하는 이유: 이 챕터의 기본 예제처럼 <strong>키를 안 적고</strong> 선언한
+<code>gt_person</code>이라면 키는 standard key, 곧 문자 필드 <code>name</code> 하나다. 그래서 <code>name</code>만
+적으면 &quot;키 전체&quot;가 된다.)</li>
 </ul>
-<p>조건에 맞는 행이 <strong>여러 개</strong>면? <a href="CH06-L03.html">키 레슨에서 못박은 답</a> 그대로 —
+<p>조건에 맞는 행이 <strong>여러 개</strong>면? <a href="CH06-L03.html">키 레슨에서 못 박은 답</a> 그대로 —
 <strong>앞에서부터 처음 만나는 행 하나</strong>만 Work Area로 들어온다. 전부 다루려면 찾기가 아니라
-순회(<a href="CH06-L08.html">다다음 레슨</a>)다.</p>
+순회다(<a href="CH06-L08.html">순회 레슨</a>에서 배운다).</p>
 </section><section class="lblock"><h2>결과 확인 — sy-subrc와 sy-tabix</h2>
-<p>먼저 <button class="term" type="button" data-term="sy-subrc">sy-subrc</button>가 무엇인지부터. <strong>문장 하나가 실행될 때마다 시스템이 그 결과(성공/실패)를
-숫자로 채워 주는 시스템 변수</strong>다 — <code>sy-index</code>·<code>sy-tabix</code>와 같은 <code>sy-</code> 가족이고, <strong>0이면
-성공</strong>이라는 약속이다. 위 예제의 <code>IF sy-subrc = 0.</code>이 바로 &quot;방금 그 READ, 성공했나?&quot;라는
-질문이었던 것이다.</p>
+<p>먼저 <button class="term" type="button" data-term="sy-subrc">sy-subrc</button>가 무엇인지부터. <strong>READ처럼 &quot;잘 됐나?&quot;를 물어야 하는 문장이 실행된 뒤,
+시스템이 그 결과(성공/실패)를 숫자로 채워 주는 시스템 변수</strong>다. <code>sy-index</code>·<code>sy-tabix</code>와
+같은 <code>sy-</code> 가족이고, <strong>0이면 성공</strong>이라는 약속이다. 위 예제의 <code>IF sy-subrc = 0.</code>이 바로
+&quot;방금 그 READ, 성공했나?&quot;라는 질문이었던 것이다. (다른 언어를 해 봤다면: 실패를 예외로
+던지는 대신 <strong>반환 코드</strong>로 알리는 방식이다.)</p>
+<p>단, <strong>모든 문장이 이 변수를 채우는 것은 아니다.</strong> 결과를 알리기로 정해진 문장(지금은
+<code>READ TABLE</code>, 앞으로 배울 훑기·DB 읽기 문장들이 더 있다)만 채우고, 그 밖의 문장 뒤에는
+<strong>직전 값이 그대로</strong> 남아 있다. 말하자면 sy-subrc는 &quot;가장 최근에 보고한 문장&quot;의 성적표다.
+그래서 확인은 READ <strong>바로 다음 줄</strong>에서 한다. 사이에 다른 문장이 끼어들수록, 지금 보는
+값이 누구의 성적인지부터 흐려진다.</p>
 <p><code>READ</code>가 성공했는지는 <strong>언제나 <code>sy-subrc</code>가 0인지로만</strong> 판정한다. 못 찾으면 0이 아닌
 값이 들어오는데, 그 값이 상황에 따라 다르므로 &quot;0이냐 아니냐&quot;만 보는 것이 규율이다.
 (<code>IF sy-subrc = 4</code>처럼 실패 코드를 콕 집어 비교하면 조용히 어긋나는 날이 온다.)</p>
+<p>이 성적표는 READ만의 것이 아니다. 예컨대 UNIQUE 키 그릇(UNIQUE SORTED·HASHED)에
+<code>INSERT ... INTO TABLE</code>로 <strong>이미 있는 키</strong>를 또 넣으면, 행은 삽입되지 않고 <code>sy-subrc</code>에
+4가 들어온다(판정은 역시 0인지로만).</p>
 <p>찾기에 성공하면 <button class="term" type="button" data-term="sy-tabix">sy-tabix</button>에 <strong>그 행의 번호</strong>가 들어온다. 몇 번 행에서 찾았는지를
 시스템이 알려 주는 것이다 — 다음 레슨의 고치기에서 바로 써먹는다. 단, 번호가 있는
 Index Table(STANDARD·SORTED) 이야기고, 번호표가 없는 HASHED에서는 <strong>0</strong>이 들어온다.
