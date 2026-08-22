@@ -41,8 +41,20 @@
       <article class="prose">
 <section class="lblock"><h2>왜 — 누가 들을지 몰라도 알린다 📣</h2>
 <p>예약 관리자가 정원 초과를 <em><button class="term" type="button" data-term="예외">예외</button>로 던지는 것</em>은 <strong>실패 처리</strong>다. 반면 &quot;방금 매진됐다&quot;는 실패가 아니라 <strong>사건</strong>이다. 누군가는 이 사건을 듣고 ALV 행을 빨갛게 칠하거나, 로그를 남기거나, 알림을 띄울 수 있다.</p>
-<p><button class="term" type="button" data-term="Method">메서드</button> 호출은 호출자가 대상을 알고 직접 부른다. <strong><button class="term" type="button" data-term="이벤트">이벤트</button>는 반대다.</strong> 발생시키는 <button class="term" type="button" data-term="객체">객체</button>는 <em>누가 들을지 모른다</em>. 관심 있는 객체가 미리 handler를 등록해 두고, 사건이 나면 반응한다. (ALV의 더블클릭·버튼 같은 상호작용이 모두 이 구조다. 이후 ALV 챕터에서 그대로 쓴다.)</p>
+<p><button class="term" type="button" data-term="Method">메서드</button> 호출은 호출자가 대상을 알고 직접 부른다. <strong><button class="term" type="button" data-term="이벤트">이벤트</button>는 반대다.</strong> 발생시키는 <button class="term" type="button" data-term="객체">객체</button>는 <em>누가 들을지 모른다</em>. 관심 있는 객체가 미리 <strong>handler</strong>(핸들러: 사건이 나면 대신 실행될 반응 메서드)를 등록해 두고, 사건이 나면 반응한다. (ALV의 더블클릭·버튼 같은 상호작용이 모두 이 구조다. 이후 ALV 챕터에서 그대로 쓴다.)</p>
 </section><section class="lblock"><h2>선언 · 발생 — EVENTS / RAISE EVENT 🔔</h2>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6</pre><pre class="abap-editor__code"><code><span class="tok-kw">CLASS</span> zcl_booking_manager <span class="tok-kw">DEFINITION</span> <span class="tok-kw">PUBLIC</span> <span class="tok-kw">CREATE</span> <span class="tok-kw">PUBLIC</span>.
+  <span class="tok-kw">PUBLIC</span> <span class="tok-kw">SECTION</span>.
+    <span class="tok-kw">EVENTS</span> sold_out                         <span class="tok-com">" 이벤트 선언(전달값 포함)</span>
+      <span class="tok-kw">EXPORTING</span> <span class="tok-kw">VALUE</span>(iv_concert) <span class="tok-kw">TYPE</span> zconcert-concert_id
+                <span class="tok-kw">VALUE</span>(iv_perf)    <span class="tok-kw">TYPE</span> zbooking-perf_no.
+<span class="tok-kw">ENDCLASS</span>.</code></pre></div></div>
+<p>선언은 <code>DEFINITION</code> 쪽 일이다(위는 <button class="term" type="button" data-term="이벤트">이벤트</button> 부분만 발췌). 사건을 실제로 <strong>일으키는</strong> 곳은 <code>IMPLEMENTATION</code> 안, <button class="term" type="button" data-term="Method">메서드</button>의 몸통이다. <code>book</code>의 선언과 <button class="term" type="button" data-term="Class">클래스</button> 전체 골격은 <a href="CH21-L10.html">실습 — ZCL_BOOKING_MANAGER 클래스</a>에 있다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -51,27 +63,17 @@
 6
 7
 8
-9
-10
-11
-12
-13
-14</pre><pre class="abap-editor__code"><code><span class="tok-kw">CLASS</span> zcl_booking_manager <span class="tok-kw">DEFINITION</span> <span class="tok-kw">PUBLIC</span> <span class="tok-kw">CREATE</span> <span class="tok-kw">PUBLIC</span>.
-  <span class="tok-kw">PUBLIC</span> <span class="tok-kw">SECTION</span>.
-    <span class="tok-kw">EVENTS</span> sold_out                         <span class="tok-com">" 이벤트 선언(전달값 포함)</span>
-      <span class="tok-kw">EXPORTING</span> <span class="tok-kw">VALUE</span>(iv_concert) <span class="tok-kw">TYPE</span> zconcert-concert_id
-                <span class="tok-kw">VALUE</span>(iv_perf)    <span class="tok-kw">TYPE</span> zbooking-perf_no.
-<span class="tok-kw">ENDCLASS</span>.
-
-<span class="tok-kw">METHOD</span> book.
-  <span class="tok-kw">IF</span> iv_seats = me-&gt;remaining( ).
-    <span class="tok-kw">RAISE</span> <span class="tok-kw">EVENT</span> sold_out                     <span class="tok-com">" 사건 발생 + 값 전달</span>
-      <span class="tok-kw">EXPORTING</span> iv_concert = mv_concert
-                iv_perf    = mv_perf.
-  <span class="tok-kw">ENDIF</span>.
-<span class="tok-kw">ENDMETHOD</span>.</code></pre></div></div>
+9</pre><pre class="abap-editor__code"><code><span class="tok-kw">CLASS</span> zcl_booking_manager <span class="tok-kw">IMPLEMENTATION</span>.
+  <span class="tok-kw">METHOD</span> book.
+    <span class="tok-kw">IF</span> iv_seats = me-&gt;remaining( ).
+      <span class="tok-kw">RAISE</span> <span class="tok-kw">EVENT</span> sold_out                   <span class="tok-com">" 사건 발생 + 값 전달</span>
+        <span class="tok-kw">EXPORTING</span> iv_concert = mv_concert
+                  iv_perf    = mv_perf.
+    <span class="tok-kw">ENDIF</span>.
+  <span class="tok-kw">ENDMETHOD</span>.
+<span class="tok-kw">ENDCLASS</span>.</code></pre></div></div>
 </section><section class="lblock"><h2>반응 등록 — Handler / SET HANDLER 🔌</h2>
-<p>반응하는 쪽은 <code>FOR EVENT</code>로 handler <button class="term" type="button" data-term="Method">메서드</button>를 선언한다. 이때 <button class="term" type="button" data-term="이벤트">이벤트</button>가 넘긴 값과 함께 <code>sender</code>(이벤트를 일으킨 <button class="term" type="button" data-term="객체">객체</button> 자신)를 받는다.</p>
+<p>반응하는 쪽은 <code>FOR EVENT</code>로 handler <button class="term" type="button" data-term="Method">메서드</button>를 선언한다. 이때 <button class="term" type="button" data-term="이벤트">이벤트</button>가 넘긴 값과 함께 <code>sender</code>(이벤트를 일으킨 <button class="term" type="button" data-term="객체">객체</button> 자신)를 받는다. handler의 <code>IMPORTING</code>에는 <strong>타입을 쓰지 않는다</strong>(쓸 수도 없다). <button class="term" type="button" data-term="파라미터">파라미터</button>의 이름과 타입은 <code>EVENTS</code> 선언의 <code>EXPORTING</code>에서 그대로 물려받기 때문이다. <code>sender</code>는 따로 선언한 적이 없어도 모든 <button class="term" type="button" data-term="인스턴스">인스턴스</button> 이벤트가 자동으로 함께 넘겨 준다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -110,7 +112,7 @@
 <li><strong><code>SET HANDLER</code> 누락</strong> → <button class="term" type="button" data-term="이벤트">이벤트</button>가 나도 아무도 안 듣는다. 선언만으로 연결되지 않는다. <strong>등록</strong>해야 한다.</li>
 <li><strong>이벤트를 <button class="term" type="button" data-term="예외">예외</button>처럼</strong> → 실패를 중단·책임 전가하면 예외, 단지 <em>알리는</em> 것이면 이벤트. 둘은 용도가 다르다.</li>
 <li><strong>handler 순서 의존</strong> → 여러 handler가 등록될 수 있고 <strong>호출 순서는 정해지지 않는다</strong>. 순서가 꼭 필요하면 한 handler 안에서 명시적으로 구성한다.</li>
-<li><strong>handler <button class="term" type="button" data-term="객체">객체</button> 수명</strong> → handler 객체도 참조로 등록된다. 불필요한 등록을 오래 유지하지 않는다.</li>
+<li><strong>handler <button class="term" type="button" data-term="객체">객체</button> 수명</strong> → handler 객체도 참조로 등록된다. 등록이 살아 있는 동안은 <button class="term" type="button" data-term="메모리">메모리</button>에서 정리되지 않으니, 불필요한 등록을 오래 유지하지 않는다. 그만 들을 때는 같은 문장에 <code>ACTIVATION abap_false</code>를 붙여 해제한다: <code>SET HANDLER lo_monitor-&gt;on_sold_out FOR lo_mgr ACTIVATION abap_false.</code></li>
 </ul>
 <hr>
 <p>객체로 설계·확장·반응까지 다뤘다. 이제 배운 OO를 모아 <strong>콘서트앱</strong>의 예약 로직을 <button class="term" type="button" data-term="Class">클래스</button>로 만들자 →

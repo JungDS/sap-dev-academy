@@ -1,6 +1,6 @@
 /* booking-manager-lab 엔진 — CH21 캡스톤. ZCL_BOOKING_MANAGER의 동작을 그대로 재현해 본다.
    remaining( ) = mv_cap - SUM(seats WHERE status <> 'C')  → 취소 예약이 합계에서 빠지는 것을 눈으로 확인.
-   book( ) 분기: 좌석<=0 또는 >잔여석 → RAISE EXCEPTION(zcx_fully_booked) / 좌석=잔여석 → RAISE EVENT sold_out / 그 외 → 검증 통과.
+   book( ) 분기: 좌석>잔여석 → RAISE EXCEPTION(zcx_fully_booked) / 좌석<=0 → 입력 오류(매진 예외 아님 — 선택화면 검증 전제, 실무는 사유별 예외) / 좌석=잔여석 → RAISE EVENT sold_out / 그 외 → 검증 통과.
    SET HANDLER 토글로 handler 미등록 시 이벤트가 나도 아무도 안 듣는 것(L09 흔한 실수)까지 보여 준다.
    저장(INSERT)은 이 챕터 밖(이후 DML 챕터) — 랩에서도 저장하지 않는다.
    골격 계약: #bmlSeats(좌석 세그) · #bmlBtns(동작) · #bmlState(상태) · #bmlLog(피드백).
@@ -56,6 +56,7 @@
     if (last === 'ok') { lastTxt = '검증 통과'; lastCls = 'ok'; }
     else if (last === 'event') { lastTxt = 'sold_out 이벤트'; lastCls = 'ok'; }
     else if (last === 'exception') { lastTxt = 'ZCX_FULLY_BOOKED'; lastCls = 'bad'; }
+    else if (last === 'invalid') { lastTxt = '입력 오류(매진 예외 아님)'; lastCls = 'bad'; }
     stateEl.innerHTML =
       '<div><span class="k">정원 mv_cap</span><span class="v">' + CAP + '</span></div>' +
       '<div><span class="k">예약 합계 (취소 제외)</span><span class="v">' + bookedSeats() + '</span></div>' +
@@ -68,13 +69,14 @@
 
   function doBook() {
     var rem = remaining();
-    if (seats <= 0 || seats > rem) {
+    if (seats <= 0) {
+      // 입력 오류는 매진이 아니다 — 예외 이름은 원인 그대로(본문 L10 콜아웃)
+      last = 'invalid';
+      log('bad', '<b>입력 오류</b> — 좌석 수 <code>' + seats + '</code>은 업무적으로 말이 안 되지만, 매진이 아니므로 <b><code>zcx_fully_booked</code>로 던지지 않습니다</b>(던지면 예외 이름이 원인을 거짓말하게 됩니다). 좌석 수가 1 이상인 것은 <b>선택화면 검증에서 먼저 걸러진다</b>는 전제이고, 실무라면 <code>ZCX_INVALID_INPUT</code>처럼 <b>사유별 예외</b>를 따로 둡니다.');
+    } else if (seats > rem) {
       last = 'exception';
-      var why = seats <= 0
-        ? '좌석 수가 <code>0</code> 이하라 업무적으로 말이 안 됩니다'
-        : '요청 <code>' + seats + '</code>석이 잔여석 <code>' + rem + '</code>석을 넘습니다';
-      log('bad', '<code>RAISE EXCEPTION TYPE zcx_fully_booked</code> — ' + why +
-        '. 실패는 화면 메시지가 아니라 <b>예외 객체</b>로 호출자에게 전달되고, 바깥 <code>TRY/CATCH</code>가 <code>get_text( )</code>로 사용자 메시지를 만듭니다.');
+      log('bad', '<code>RAISE EXCEPTION TYPE zcx_fully_booked</code> — 요청 <code>' + seats + '</code>석이 잔여석 <code>' + rem +
+        '</code>석을 넘습니다. 실패는 화면 메시지가 아니라 <b>예외 객체</b>로 호출자에게 전달되고, 바깥 <code>TRY/CATCH</code>가 <code>get_text( )</code>로 사용자 메시지를 만듭니다.');
     } else if (seats === rem) {
       last = 'event';
       var tail = handlerOn

@@ -31,7 +31,7 @@
   }
   function renderCards(){
     var zi='<pre class="pcc-code"><span class="k">define root view entity</span> <span class="ent">ZI_Booking</span>\n{\n'+
-      FIELDS.map(function(x){ return (x.key?'  <span class="kw">key</span> ':'      ')+esc(x.f)+','; }).join('\n')+'\n}</pre>';
+      FIELDS.map(function(x,i){ return (x.key?'  <span class="kw">key</span> ':'      ')+esc(x.f)+(i===FIELDS.length-1?'':','); }).join('\n')+'\n}</pre>';
     $('pccZi').innerHTML=zi;
 
     var ex=exposedList();

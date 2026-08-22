@@ -1,0 +1,79 @@
+{
+  "agent": "AG02",
+  "model": "sonnet",
+  "target": "CH24",
+  "persona_ack": "나는 준호다 — 배운 건 그 자리에서 바로 해봐야 직성이 풀리는 실습형 학습자. RAP 챕터(CH24) 9개 레슨을 하나씩 열어 본문 코드·설명과 옆에 붙은 체험 위젯을 직접 조작하며 변수명·데이터·정답 판정이 실제로 맞물리는지 끝까지 대조했다.",
+  "method": "① 로컬서버(http://localhost:8144)로 9개 레슨 페이지(docs/abap/pages/CH24-L0X.html — 대표로 L01·L05·L09는 전체 네트워크 로그까지 확인) 및 9개 위젯 단독 페이지(embeds/abap/CH24-L0X-S01.html)를 새 탭(tab-2)에서 열람, network/console 로그로 에셋 200 OK·JS 에러 0 확인. ② L01~L06은 실제 마우스 조작(computer 도구 클릭·드래그)과 스크린샷으로 토글·판정 상태 전이를 시각 확인(6계층 조립 완성, 판정 정답/오답, 계약 결함 3종, BDEF 위반 2종, 4단계 호출추적+loop EML, Service expose/binding 4조합, binding type 3종 등). ③ 세션 중반 Browser pane 합성이 끊겨(screenshot 오류: pane not displayed) 좌표/ref 기반 클릭이 부정확해짐을 진단(클릭 이벤트 자체는 발생하나 stale 좌표로 엉뚱한 요소를 침 — document 레벨 리스너로 실증)한 뒤, L07~L09 위젯은 javascript_tool로 대상 DOM 요소에 실제 .click()을 디스패치(진짜 addEventListener 발화·상태 갱신 확인)하는 방식으로 전환해 정답/오답/경계 케이스(정상생성·정원초과·취소·중복취소·리셋 등)를 끝까지 조작 검증. ④ 9개 임베드가 참조하는 엔진 JS 9개(embeds/_engine/*.js) 정독으로 데이터·로직을 본문과 대조. 모든 findings는 위 실조작 또는 스크립트 실행 결과로 재현 확인함(confidence=확실, 추정 없음).",
+  "errors": [
+    "세션 중반부터 Browser pane 합성이 중단되어(screenshot 'pane not displayed') computer 도구의 스크린샷·좌표/ref기반 클릭이 부정확해짐을 발견 — 진단 결과 클릭 이벤트 자체는 발생하나 stale 좌표로 다른 요소를 침(CH24-L07에서 document 클릭리스너로 실증: ref로 지정한 s3/Action이 아닌 s2/Action이 눌림). 이후 L07~L09는 javascript_tool의 실제 DOM .click() 디스패치로 검증 방식을 전환했고 모든 케이스에서 진짜 이벤트 발화·상태 갱신을 확인했으므로 검증 신뢰도 저하는 없음(스키마의 검증 우선순위 중 '스크립트 실행' 단계에 해당)."
+  ],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH24-L01-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH24-L02-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH24-L03-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH24-L04-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH24-L05-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH24-L06-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH24-L07-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH24-L08-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH24-L09-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\rap-layer-assembler.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\root-entity-picker.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\projection-contract-checker.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\bdef-contract-editor.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\behavior-pool-tracer.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\service-exposure-board.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\vda-classifier.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\cloud-readiness-judge.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\rap-booking-runtime.js"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "embeds/_engine/root-entity-picker.js",
+      "quote": "(st.ent==='perf' ? ['concert_id','perf_no','perf_date'] : ['artist','venue','capacity']);",
+      "category": "위젯 결함",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "CH24-L02 'Root Entity 판정기'에서 후보 3개(공연/회차/예매) 중 '회차'(perf)를 고르면, 생성되는 CDS 코드 미리보기에서 concert_id·perf_no 필드가 key로도 일반 필드로도 중복 출력되어 문법적으로 잘못된(같은 필드를 두 번 선언하는) CDS를 보여준다.",
+      "evidence": "renderCode()에서 perf 엔티티의 fields 배열이 ['concert_id','perf_no','perf_date']인데, perf의 유일한 '적합' key 후보(keys[0])도 'concert_id, perf_no'로 같은 두 필드다. 회차 카드를 클릭하기만 해도(키를 따로 고르지 않아도) keyf가 이 후보로 기본 결정되어 곧바로 중복이 발생한다. 브라우저에서 실제로 재현: '회차' 카드 클릭 직후 repCode의 실제 출력이 'define root view entity ZI_Perf\\n  as select from zperf\\n{\\n  key concert_id,\\n  key perf_no,\\n      concert_id,\\n      perf_no,\\n      perf_date\\n}'로 나옴(concert_id·perf_no가 key 줄과 일반 필드 줄에 각각 한 번씩, 총 두 번씩 출력). 이어서 '적합'으로 표시된 key 후보(concert_id, perf_no)를 직접 클릭해도 동일하게 재현됨. 반면 '공연'(concert) 후보는 fields=['artist','venue','capacity']가 key(concert_id)와 겹치지 않아 문제가 재현되지 않음을 대조 확인함(정상: 'key concert_id, artist, venue, capacity'). '예매'(booking, 기본 선택) 후보도 fields가 booking_id와 겹치지 않아 정상.",
+      "suggestion": "perf 후보의 fields 배열에서 복합키로 이미 출력되는 concert_id·perf_no를 제외(예: fields를 ['perf_date']만 남기거나, renderCode에서 keyf.split(', ')에 포함된 필드를 fields 목록에서 필터링한 뒤 출력)."
+    },
+    {
+      "seq": 2,
+      "file": "embeds/_engine/root-entity-picker.js",
+      "quote": "root를 <b>'+esc(e.nm)+'</b>로 두면 뒤 계층(BDEF·action·validation)이 흔들립니다.",
+      "category": "위젯 결함",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'공연'을 후보로 골라 부적합 판정을 받으면 verdict 문구가 '...root를 공연로 두면...'으로 출력되어 조사가 한국어 문법(받침 있는 명사 뒤 '으로')에 어긋난다.",
+      "evidence": "renderVerdict()가 'root를 <b>'+esc(e.nm)+'</b>로 두면...' 템플릿에 조사 '로'를 하드코딩. e.nm='공연'(받침 ㄴ)일 때 '공연로'가 되어 어색하고 '공연으로'가 맞다. e.nm='회차'(받침 없음)는 '회차로'가 맞아 문제 없음. 브라우저에서 '공연' 카드 클릭 후 verdict 실제 텍스트가 '트랜잭션 단위가 안 맞습니다. 이 앱의 예약·취소·검증은 '예매'에서 일어납니다 — root를 공연로 두면 뒤 계층(BDEF·action·validation)이 흔들립니다.'로 출력됨을 확인.",
+      "suggestion": "e.nm의 마지막 글자 받침 유무를 판정해 '로'/'으로'를 자동 선택하는 조사 처리 함수를 추가하거나, 후보명을 조사 없이 끝나는 문구('root 후보로는 공연이 아니라 예매가 맞습니다' 등)로 바꾼다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH24/CH24-L09.md",
+      "quote": "| 중복 취소 | 이미 `C`인 예매에 cancel | 실패 메시지 또는 no-op 정책 |",
+      "category": "위젯 결함",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "본문 체크리스트는 '이미 C인 예매에 cancel'을 시도해 결과를 확인하라고 안내하지만, 위젯(예매 RAP 런타임 시뮬레이터)은 첫 취소가 성공하면 그 행의 '취소(action)' 버튼을 즉시 disabled 처리해 재클릭 자체를 막으므로, 학습자가 실제로 이 체크리스트 항목을 실행·관찰할 방법이 없다.",
+      "evidence": "rap-booking-runtime.js의 renderTable()이 취소된 행에 '<button class=\"rbr-cancel\" ...'+(c?' disabled':'')+'>취소(action)</button>'로 disabled 속성을 추가하고, 클릭 위임 리스너도 'if(!b||b.disabled) return;'로 한 번 더 막는다. cancel() 함수 안에는 이미 취소된 건을 다시 취소하려 할 때의 분기(status!=='N' → dup:true, renderMsg에서 '이미 취소된 예매입니다 ... 중복 취소는 no-op/실패 정책으로 처리합니다' 메시지)가 실제로 존재하지만, 버튼이 비활성화된 뒤라 이 분기는 UI 조작으로는 도달할 수 없는 죽은 코드다. 브라우저에서 정상 예매 생성(B001) → 취소(상태 C로 전환 확인) → 같은 버튼을 다시 .click()으로 눌러도 메시지·상태에 변화가 없음을 확인(disabled 버튼은 애초에 click 이벤트가 발생하지 않음 — 네이티브 동작). 즉 '실패 메시지 또는 no-op 정책' 중 메시지 경로는 코드만 있고 절대 보이지 않으며, no-op 경로도 버튼이 사라지듯 비활성화될 뿐 '중복 취소를 시도했다'는 사용자 피드백이 전혀 없다.",
+      "suggestion": "취소된 행의 버튼을 disabled로 완전히 막기보다, 클릭은 허용하되 cancel()의 기존 no-op 분기(이미 취소된 예매 메시지)가 실제로 실행되게 하거나, 최소한 disabled 버튼 옆에 '이미 취소됨 — 재취소 불가' 같은 짧은 인라인 안내를 붙여 체크리스트의 '중복 취소' 케이스를 학습자가 직접 관찰할 수 있게 한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH24(RAP/ABAP Cloud 입문) 9개 레슨은 전 레슨에 정확히 1개씩 체험 위젯이 붙어 있어 체험 공백은 없다. 8/9 위젯(L01·L03~L08)은 본문 코드·용어·시나리오와 변수명·데이터·정답 판정까지 정밀하게 일치했고, 정답·오답·경계 조합을 실조작(초반은 마우스+스크린샷, 세션 중반 이후는 스크립트 기반 실클릭)으로 끝까지 확인해도 불일치나 헛체험이 발견되지 않았다. 다만 L02 'Root Entity 판정기'는 '회차'(perf) 후보를 고르는 즉시(정답 후보를 골라도 동일) CDS 코드 미리보기에서 concert_id·perf_no가 key/일반필드로 중복 출력되는 확실한 로직 결함이 있고(높음), 같은 위젯의 verdict 문구에 조사 오류('공연로'→'공연으로', 낮음)가 있다. L09 캡스톤 시뮬레이터는 본문 체크리스트의 '중복 취소' 케이스가 취소 버튼이 첫 취소 직후 disabled되어 실제로는 재현 불가능한 죽은 코드 경로라 학습자가 확인할 수 없다(중간). 세 건 모두 국소 코드 수정으로 해결 가능한 수준이라 전체 등급은 '경미 수정'으로 판단한다."
+  }
+}

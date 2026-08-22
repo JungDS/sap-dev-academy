@@ -1,6 +1,7 @@
 // ===== rap-booking-runtime 엔진 JS — 예매 RAP 런타임 시뮬레이터 (CH24-L09 capstone) =====
-// create→determination(status='N')→validation(seats vs 잔여)→save/reject, cancel=action(status='C'). V/D/A를 한 흐름에서.
-// 정원 초과는 failed/reported로 거부, 취소는 명시 action(중복 취소=no-op). 데이터 내장. 교훈3: msg base 중립·ok/warn/bad 명시.
+// create(MODIFY→buffer)→determination(status='N')→COMMIT(save sequence)→validation(seats vs 잔여)→save/reject, cancel=action(status='C').
+// V/D/A를 한 흐름에서. 정원 초과는 failed/reported로 저장 거부(buffer 거부 아님). 취소 버튼은 취소 후에도 재클릭 가능 → 중복 취소
+// = no-op(상태 불변)+warn 분기 도달(C018). 타임라인에 buffer→COMMIT 노드(본문 EML 개념 지도 정합, C022). 데이터 내장. 교훈3: msg ok/warn/bad.
 (function(){
   var $=function(id){return document.getElementById(id);};
   var CAP=10;
@@ -39,7 +40,7 @@
       var c=(b.status==='C');
       return '<tr'+(c?' class="cancelled"':'')+'><td>'+esc(b.id)+'</td><td>'+b.seats+'</td>'+
         '<td><span class="rbr-st '+(c?'c':'n')+'">'+b.status+(c?' 취소':' 신규')+'</span></td>'+
-        '<td><button class="rbr-cancel" data-id="'+b.id+'"'+(c?' disabled':'')+'>취소(action)</button></td></tr>';
+        '<td><button class="rbr-cancel" data-id="'+b.id+'">취소(action)</button></td></tr>';
     }).join('');
     $('rbrTable').innerHTML='<table class="dt">'+head+'<tbody>'+body+'</tbody></table>';
   }
@@ -48,11 +49,12 @@
     if(!L || L.kind!=='create'){ $('rbrTl').style.display='none'; return; }
     $('rbrTl').style.display='';
     var valCls=L.ok?'pass':'fail';
-    var lastNode=L.ok?'<div class="rbr-node pass">save<small>저장 성공</small></div>':'<div class="rbr-node fail">reject<small>buffer 거부</small></div>';
+    var lastNode=L.ok?'<div class="rbr-node pass">save<small>DB 저장</small></div>':'<div class="rbr-node fail">reject<small>저장 거부</small></div>';
     $('rbrTl').innerHTML='<p class="rbr-tl__c">실행 타임라인 — 마지막 create (seats '+L.seats+')</p>'+
       '<div class="rbr-flow">'+
-        '<div class="rbr-node on">create<small>요청</small></div><span class="rbr-arrow">▶</span>'+
+        '<div class="rbr-node on">create<small>MODIFY → buffer</small></div><span class="rbr-arrow">▶</span>'+
         '<div class="rbr-node on">determination<small>status=\'N\'</small></div><span class="rbr-arrow">▶</span>'+
+        '<div class="rbr-node on">COMMIT<small>save sequence 시작</small></div><span class="rbr-arrow">▶</span>'+
         '<div class="rbr-node '+valCls+'">validation<small>'+L.seats+' vs 잔여 '+L.rem+'</small></div><span class="rbr-arrow">▶</span>'+
         lastNode+
       '</div>';
@@ -70,10 +72,10 @@
   function renderMsg(){
     var L=st.last;
     if(!L){ setMsg('<b>정상 예매</b>는 determination이 상태를 채우고 validation을 통과해 저장됩니다. <b>정원 초과</b>는 validation이 막고, <b>취소</b>는 action으로 실행돼요.',''); return; }
-    if(L.kind==='create' && L.ok){ setMsg('<b>저장 성공.</b> create → determination(<code>status=\'N\'</code>) → validation(<code>'+L.seats+' ≤ 잔여 '+L.rem+'</code>) 통과 → 저장(<code>'+esc(L.id)+'</code>).','ok'); return; }
+    if(L.kind==='create' && L.ok){ setMsg('<b>저장 성공.</b> create(buffer) → determination(<code>status=\'N\'</code>) → COMMIT(save sequence) → validation(<code>'+L.seats+' ≤ 잔여 '+L.rem+'</code>) 통과 → DB 저장(<code>'+esc(L.id)+'</code>). 변경은 먼저 buffer에 모이고 DB에는 그다음에 쓰여요.','ok'); return; }
     if(L.kind==='create' && !L.ok){ setMsg('<b>validation 실패.</b> <code>'+L.seats+' &gt; 잔여 '+L.rem+'</code> — <code>failed/reported</code>에 기록하고 저장을 <b>거부</b>합니다(오류 메시지만 띄우고 저장이 아님).','bad'); return; }
     if(L.kind==='cancel' && L.ok){ setMsg('<b>action cancel 실행.</b> <code>'+esc(L.id)+'</code>의 status를 <code>\'C\'</code>로 바꿨습니다 — 사용자가 명시적으로 실행하는 동작입니다.','ok'); return; }
-    setMsg('<b>이미 취소된 예매</b>입니다 (<code>'+esc(L.id)+'</code>) — 중복 취소는 no-op/실패 정책으로 처리합니다.','warn');
+    setMsg('<b>이미 취소된 예매</b>입니다 (<code>'+esc(L.id)+'</code>) — 상태는 그대로 두고(<b>no-op</b>: 아무 변경 없음) 경고만 알립니다. 실무에선 이런 중복 요청을 no-op으로 둘지 <code>failed</code>로 거부할지 정책을 정해 둡니다.','warn');
   }
   function render(){ renderPerf(); renderTable(); renderTimeline(); renderResp(); renderMsg(); }
 

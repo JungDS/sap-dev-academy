@@ -1,4 +1,5 @@
-// ===== projection-layer-lab 엔진 JS — Interface(ZI_) vs Projection(ZC_) 계층 분리 (CH23-L02) =====
+// ===== projection-layer-lab 엔진 JS — Interface(ZI_) vs Consumption(소비 ZC_) 계층 분리 (CH23-L02) =====
+// 용어: 화면 문구는 '소비 뷰'(RAP 'Projection View'와 혼동 금지, C020) — cfg 키 proj/클래스명은 내부 식별자로 유지.
 // 비대칭이 핵심: ZC_에서 필드를 숨겨도 ZI_은 불변(비파괴) / ZI_에서 필드를 제거하면 ZC_도 노출 불가(연쇄).
 // 각 필드: inBase(ZI_ 존재) · inProj(ZC_ 노출). key는 항상 잠금. DDL·SELECT 라이브. 데이터=window.PLL_CFG.
 (function(){
@@ -65,8 +66,8 @@
     var f=F[+b.dataset.i];
     if(b.dataset.a==='base'){
       f.inBase=!f.inBase;
-      if(f.inBase){ setMsg('<b>'+esc(f.name)+'</b>를 기반 <b>'+esc(BASE)+'</b>에 복원했습니다. 이제 projection이 다시 노출할 수 있습니다.'); }
-      else { setMsg('<b>'+esc(BASE)+'</b>에서 <b>'+esc(f.name)+'</b>를 제거했습니다 → projection <b>'+esc(PROJ)+'</b>도 더는 노출할 수 없습니다(기반에 없으니까). 기반 변경은 <b>연쇄</b>됩니다.', true); }
+      if(f.inBase){ setMsg('<b>'+esc(f.name)+'</b>를 기반 <b>'+esc(BASE)+'</b>에 복원했습니다. 이제 소비 뷰가 다시 노출할 수 있습니다.'); }
+      else { setMsg('<b>'+esc(BASE)+'</b>에서 <b>'+esc(f.name)+'</b>를 제거했습니다 → 소비 뷰 <b>'+esc(PROJ)+'</b>도 더는 노출할 수 없습니다(기반에 없으니까). 기반 변경은 <b>연쇄</b>됩니다.', true); }
     }else{
       f.inProj=!f.inProj;
       if(f.inProj){ setMsg('<b>'+esc(f.name)+'</b>를 다시 노출합니다.'); }

@@ -1,0 +1,133 @@
+{
+  "agent": "AG02",
+  "model": "opus",
+  "target": "CH24",
+  "persona_ack": "나는 준호다 — 배운 건 그 자리에서 직접 해봐야 직성이 풀리는 실습형 학습자. CH24의 레슨 9개 본문 코드·설명과 체험 위젯 9개를 실제로 눌러 가며 대조했고, 체험 공백·불일치·헛체험·위젯 결함 네 축으로만 판단했다.",
+  "method": "① 전역 Playwright 1.62.1(C:/Users/gosts/AppData/Roaming/npm/node_modules/playwright) + Chromium 헤드리스 1회 기동 → 위젯마다 새 탭. ② http://localhost:8143/embeds/abap/CH24-L0n-S01.html 9종을 실조작(계층 토글 6개 전부, root 후보/키 후보 클릭, provider contract·root·필드 토글, BDEF operation·table·lock·key 토글, 추적기 4단계 순서/역순 클릭 및 loop-EML 토글, expose×activate 4조합 + binding type 3종, V/D/A 카드 오답→정답 전환, Cloud 판정 5카드, 예매 생성/정원초과/취소/중복취소/정원 소진까지) 후 렌더 DOM innerText·disabled·computed display 측정, console/pageerror 수집(9종 모두 0건). ③ http://localhost:8143/docs/abap/pages/CH24-L0n.html 9쪽을 열어 iframe src·실측 높이(336~804px)·콘솔 확인 — 9쪽 전부 임베드 1개 정상 로드. ④ 위젯 HTML 9개 + 참조 엔진 JS 9개 소스 정독. ⑤ 아래 모든 finding.quote를 node 스크립트로 원본 파일 리터럴 포함 검증(10/10 OK).",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L09.md",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH24-L01-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH24-L02-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH24-L03-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH24-L04-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH24-L05-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH24-L06-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH24-L07-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH24-L08-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH24-L09-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\rap-layer-assembler.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\root-entity-picker.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\projection-contract-checker.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\bdef-contract-editor.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\behavior-pool-tracer.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\service-exposure-board.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\vda-classifier.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\cloud-readiness-judge.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\rap-booking-runtime.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\AUTHORING.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\cloud-readiness-judge.js",
+      "quote": "{id:'c1', text:'표준 테이블 <code>ZBOOKING</code>을 SQL로 직접 UPDATE', ready:false,",
+      "category": "위젯 결함 — 정답 판정·사실 오류",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L08 판정 카드 1번이 ZBOOKING을 '표준 테이블'이라 부르고, 그 직접 UPDATE를 '비released 테이블 직접 수정 = Clean Core 위반'이라는 근거로 '제한됨'으로 채점한다. ZBOOKING은 이 커리큘럼에서 학습자가 직접 만든 Z(고객 네임스페이스) 예매 테이블이라 표준 테이블이 아니고, 자기 소유 커스텀 테이블 접근은 released API 제약이 겨냥하는 대상도 아니다.",
+      "evidence": "같은 챕터가 zbooking을 우리 앱의 테이블로 쓴다 — CH24-L02 'as select from zbooking', CH24-L04 'persistent table zbooking'. Z*는 고객 네임스페이스이므로 SAP 표준 객체가 될 수 없다. L08 본문이 제한 대상으로 든 것도 'unreleased table 직접 접근'(= SAP 표준 미release 객체)인데, 카드가 이 논리를 학습자 자신의 테이블에 적용해 '내가 만든 테이블도 cloud에서는 못 건드린다'는 오해를 만든다. 게다가 바로 다음 장이 이 테이블에 대한 직접 DML을 실무 기준으로 가르친다(CH24-L09 말미의 CH25-L01 링크). 실측: 카드를 'Cloud-ready'로 고르면 '✕ 제한됨 — 비released 테이블 직접 수정은 Clean Core 위반입니다.'로 오답 처리된다.",
+      "suggestion": "① 카드 문구를 실제 SAP 표준 객체(예: 표준 마스터 테이블 직접 UPDATE)로 바꾸거나, ② ZBOOKING을 유지한다면 '표준 테이블' 표현을 빼고 판정 근거를 released 여부가 아니라 'RAP BO의 transactional buffer·save sequence 우회'로 교체한다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L09.md",
+      "quote": "| 중복 취소 | 이미 `C`인 예매에 cancel | 실패 메시지 또는 no-op 정책 |",
+      "category": "불일치 — 본문 체크리스트 ↔ 위젯 조작 불가",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "본문 확인 체크리스트가 '이미 C인 예매에 cancel'을 해 보라고 지시하지만, 같은 페이지 시뮬레이터에서는 이 케이스를 절대 실행할 수 없다. 취소된 행의 '취소(action)' 버튼이 disabled로 렌더되고 클릭 핸들러도 disabled를 다시 막기 때문이다.",
+      "evidence": "실측(Playwright): B001 생성 → 취소 후 '.rbr-cancel[data-id=\"B001\"]'의 disabled === true, force click을 넣어도 메시지는 'action cancel 실행. B001의 status를 C로 바꿨습니다' 그대로여서 중복 취소 피드백이 뜨지 않는다. 엔진 rap-booking-runtime.js는 렌더에서 (c?' disabled':'')를 붙이고 핸들러에서 if(!b||b.disabled) return; 으로 한 번 더 차단한다 — 그 결과 준비돼 있는 dup 분기(st.last={kind:'cancel',...,dup:true})와 '이미 취소된 예매입니다 … 중복 취소는 no-op/실패 정책으로 처리합니다' 메시지는 도달 불가능한 죽은 코드다.",
+      "suggestion": "취소된 행의 버튼을 disabled 대신 활성으로 두고 클릭 시 준비된 dup 메시지(no-op/실패 정책)를 노출하거나, 그 정책을 유지할 거라면 본문 체크리스트의 '중복 취소' 행을 '실제 시스템에서 확인' 표기로 바꾼다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L09.md",
+      "quote": "**저장 트리거는 `COMMIT ENTITIES`다.** `MODIFY ENTITIES` 직후 테이블을 `SELECT`하면 아직 안 보일 수 있다 — 버퍼에만 있으니까.",
+      "category": "체험 공백 — 본문 핵심 개념이 위젯에 없음(오해 강화)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "본문은 '입문자가 RAP에서 가장 크게 오해하는 지점'으로 buffer→COMMIT 2단계를 세우고 EML 3문장을 표로 가르치는데, 같은 페이지 시뮬레이터에는 buffer도 COMMIT도 없다. 오히려 타임라인이 create→determination→validation→'save 저장 성공'으로 끝나고 표에 행이 즉시 나타나 '만들면 곧바로 저장된다'는 바로 그 오해를 강화한다.",
+      "evidence": "실측: 정상 생성 직후 타임라인 '… ▶ validation 2 vs 잔여 10 ▶ save 저장 성공', 메시지 '저장 성공 … → 저장(B001)', 표에 B001 행 즉시 표시 — buffer/commit 단계 노드가 하나도 없다(엔진 노드는 create·determination·validation·save|reject 4개뿐). 위젯 헤더 주석도 'EML/draft/side effects 심화는 보류'라고 적혀 있어, 본문에 EML 절이 들어온 뒤 체험이 따라가지 못한 상태로 보인다.",
+      "suggestion": "타임라인 끝에 'transactional buffer 반영 → COMMIT ENTITIES(save sequence) → DB' 노드를 덧붙이고, 성공 문구를 '버퍼에 반영됨 / 커밋 시 DB 확정' 두 단계로 나눈다(EML 실전 코드는 CH39 유지)."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\root-entity-picker.js",
+      "quote": "(st.ent==='perf' ? ['concert_id','perf_no','perf_date'] : ['artist','venue','capacity'])",
+      "category": "위젯 결함 — 잘못된 코드 생성",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L02 판정기에서 '회차' 후보를 고르면 생성되는 CDS 코드에 concert_id·perf_no가 key로 한 번, 일반 필드로 또 한 번 출력돼 실제로는 활성화되지 않는 중복 필드 코드가 학습자에게 보인다.",
+      "evidence": "실측 렌더 결과: 'define root view entity ZI_Perf / as select from zperf / { key concert_id, key perf_no, concert_id, perf_no, perf_date }'. 원인은 key(기본값 keys[0] = 'concert_id, perf_no')를 분해해 출력한 뒤, 같은 이름이 그대로 들어 있는 fields 배열을 또 출력하기 때문. 'root key 안정성'을 가르치는 화면에서 문법적으로 성립하지 않는 예를 보여 주게 된다(공연·예매 후보에서는 겹치지 않아 이 화면만 해당).",
+      "suggestion": "fields 출력 시 이미 key로 쓴 이름을 제외하거나, perf의 fields를 key와 겹치지 않는 항목(perf_date·venue 등)만으로 정의한다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\behavior-pool-tracer.js",
+      "quote": "<thead><tr><th>booking_id</th><th>회차</th><th>seats</th><th>remaining</th></tr></thead>",
+      "category": "불일치 — 위젯 데이터가 본문 entity에 없는 필드를 포함",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L05 추적기의 'READ ENTITIES … WITH CORRESPONDING #( keys ) — 집합 read' 패널이 remaining(잔여) 컬럼을 read 결과처럼 보여 준다. 그런데 ZI_Booking에는 그런 필드가 없고, 본문 read의 FIELDS 목록에도 없다 — 잔여/정원은 회차에서 따로 조회해야 하는 값이다.",
+      "evidence": "본문 CH24-L05의 read는 'FIELDS ( booking_id concert_id perf_no seats )'뿐이고, CH24-L02의 ZI_Booking 필드는 booking_id/concert_id/perf_no/customer/seats/status 6개다. CH24-L09 골격 주석도 '1. concert_id·perf_no로 회차 정원을 찾는다'로 별도 조회를 전제한다. 이 상태로 따라 하면 학습자가 FIELDS에 remaining을 넣어 활성화 오류를 만나기 쉽다.",
+      "suggestion": "read 결과 표에는 entity 필드만 두고, remaining은 '③ 정원 검사' 단계에서 '회차 조회 결과' 같은 별도 출처 라벨로 합류시킨다."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\projection-contract-checker.js",
+      "quote": "{f:'created_by', audit:true}",
+      "category": "불일치 — 본문 모델 ↔ 위젯 모델",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L03 위젯의 기반 ZI_Booking이 본문에 존재하지 않는 created_by를 7번째(감사) 필드로 갖고 있다. 직전 레슨에서 만든 ZI_Booking은 6필드라, 앞 화면과 대조하는 학습자는 '내가 만든 root에는 이 필드가 없는데?'가 된다.",
+      "evidence": "CH24-L02 본문 코드와 L02 위젯 생성 코드 모두 key booking_id + concert_id/perf_no/customer/seats/status 6필드. 반면 L03 위젯 실측 ZI 패널은 created_by를 포함한 7필드이고, 기본값은 '감사 필드 숨김'이라 ZC 쪽만 본문과 일치한다.",
+      "suggestion": "본문 L02의 ZI_Booking에 감사 필드를 한 줄 추가해 모델을 일치시키거나(권장), 위젯 lead에 '감사 필드는 숨김 예시로 덧붙인 것'이라고 한 줄 밝힌다."
+    },
+    {
+      "seq": 7,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\projection-contract-checker.js",
+      "quote": "FIELDS.map(function(x){ return (x.key?'  <span class=\"kw\">key</span> ':'      ')+esc(x.f)+','; }).join('\\n')+'\\n}</pre>';",
+      "category": "위젯 결함 — 코드 표시 오류",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L03 위젯의 기반 ZI_Booking 코드 블록이 마지막 필드에도 쉼표를 붙여 'created_by,' 다음에 바로 '}'가 오는, 그대로는 활성화되지 않는 모양으로 렌더된다.",
+      "evidence": "실측 ZI 패널 텍스트: '… seats, status, created_by, }'. 같은 파일의 ZC 패널은 (i===ex.length-1?'':',')로 마지막 쉼표를 정확히 생략하고 있어, 나란히 놓인 두 코드 카드의 문법 품질이 갈린다(의도가 아니라 누락으로 보임).",
+      "suggestion": "ZI 렌더도 마지막 요소에서 쉼표를 생략하도록 동일 처리."
+    },
+    {
+      "seq": 8,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\rap-layer-assembler.js",
+      "quote": "'<ul>'+missing.map(function(l){ return '<li><code>'+esc(l.nm.split(' ')[0])+'</code> — '+esc(l.miss)+'</li>'; }).join('')+'</ul>';",
+      "category": "위젯 결함 — 피드백 라벨 모호",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L01 조립 보드의 '빠진 계층' 목록이 계층 이름의 첫 단어만 잘라 쓰기 때문에 Service Binding과 Service Definition이 둘 다 'Service'로 표시된다. 이 위젯의 핵심 학습 포인트가 '어느 계층이 빠지면 무엇을 못 하나'인데, 정작 어느 계층인지 이름으로 구분되지 않는다.",
+      "evidence": "실측 초기 verdict: '… Service — OData URL이 없어 Fiori가 호출할 수 없습니다. Service — 무엇을 서비스로 노출할지 정의가 없습니다. ZC_Booking — … BDEF — … Behavior — … ZI_Booking — …' (앞의 두 항목이 같은 라벨).",
+      "suggestion": "l.nm 전체(또는 'Service Binding'/'Service Def')를 표시해 두 계층을 구분한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "체험 공백은 사실상 없다 — CH24 9개 레슨 전부 임베드가 1개씩 붙어 있고, 9쪽 모두 http 경유로 iframe이 정상 로드되며(높이 336～804px 자동 맞춤) 콘솔 오류는 위젯·페이지 통틀어 0건이었다. 위젯들도 '해보나 마나'가 아니라 각 레슨 목표에 정확히 걸려 있다(계층 6개 토글→막히는 사용자 행동, root 후보·key 안정성, provider contract 유무, operation 끄면 소비자 버튼 사라짐, keys 3행 집합 지향 + loop 안 EML 경고, expose×activate 4조합의 서로 다른 오류, V/D/A 분류·타임라인, 정원 초과 시 failed/reported 거부). 남는 문제는 국소적이다: (a) L08 판정 카드가 학습자 자신의 Z 테이블 ZBOOKING을 '표준 테이블'로 부르며 잘못된 근거로 오답 처리하는 사실 오류, (b) L09 본문 체크리스트의 '중복 취소'가 버튼 disabled 때문에 아예 실행 불가(엔진의 dup 메시지는 죽은 코드), (c) L09 본문이 새로 세운 EML buffer→COMMIT 개념이 시뮬레이터에 없고 타임라인이 '즉시 저장'으로 끝나 본문이 경고한 오해를 되레 강화, (d) L02 '회차' 선택 시 key와 필드가 중복 출력돼 성립하지 않는 CDS가 보임, (e) L05 read 결과에 entity에 없는 remaining 컬럼, (f) L03 ZI 패널의 본문에 없는 created_by와 trailing comma, (g) L01 누락 계층 라벨 'Service' 중복. 모두 위젯 데이터·렌더 몇 줄과 본문 한두 줄 수준의 수정으로 끝나므로 재집필이 아니라 경미 수정이 맞다."
+  }
+}

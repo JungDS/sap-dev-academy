@@ -1,0 +1,69 @@
+{
+  "agent": "AG09",
+  "model": "sonnet",
+  "target": "CH22",
+  "persona_ack": "ABAP 정적 검사기를 시늉하는 코드 전용 감사자 역할을 확인했다. 산문은 배경 확인에만 참고하고 판단 대상에서 제외했으며, 8개 레슨의 ```abap 코드 블록만 줄 단위로 검사해 (1)활성화 차단급 오류 (2)네이밍 규약(gv_/gs_/gt_·lv_/ls_/lt_·it_·pa_·so_·ty_/ts_/tt_) (3)classic/modern 경계 (4)주석-코드 불일치 네 항목을 점검했다.",
+  "method": "대상 8개 레슨 + _chapter.md 전문을 Read로 정독하고 모든 ```abap 블록을 줄 단위로 검토했다. 필드명·속성(no_out/tech 등)·상수 사용의 일관성은 레슨 내부 교차대조와 grep을 통한 커리큘럼 전역 검색(동일 식별자의 다른 챕터 사용례 대조)으로 확인했다. SERVE_URL·브라우저 등 실행 도구는 정적 코드 감사 특성상 사용하지 않았다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L04.md",
+      "quote": "fname     = 'BOOKED'",
+      "category": "코드-설명 불일치",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "이 레슨 도입부는 공연명·날짜·정원은 정상인데 잔여석만 위험할 때 그 잔여석 셀 하나만 칠하자고 명시적으로 동기를 제시하지만, 뒤이은 예제 코드는 seats_left가 아니라 fname = 'BOOKED'(예약 수) 셀을 칠한다. 같은 매진 강조 개념을 다루는 L06 컬럼 색 예시와 L08 실습 코드는 모두 SEATS_LEFT를 칠해 이 레슨과 어긋난다.",
+      "evidence": "L04 도입부(행이 아니라 셀 하나만)의 서술과 달리, 코드는 IF <perf>-booked >= <perf>-capacity. 조건에서 fname = 'BOOKED'(주석: 어느 셀)를 칠한다. 반면 CH22-L06은 IF <fc>-fieldname = 'SEATS_LEFT', CH22-L08은 fname = 'SEATS_LEFT'로, 동일한 매진→강조 상황에서 일관되게 SEATS_LEFT를 대상으로 삼는다.",
+      "suggestion": "코드의 fname = 'BOOKED'를 fname = 'SEATS_LEFT'로 바꿔 도입부·후속 레슨(L06/L08)과 일치시키거나, 도입부 서술을 예약 수(booked)가 위험 신호라는 취지로 고쳐 코드와 맞춘다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L04.md",
+      "quote": "**`fname` 오타** → `SEATS_OCC`처럼 틀리면 색 정보는 있어도 적용 안 된다. **컬럼 제목이 아니라 component 이름**(`SEATSOCC`).",
+      "category": "주석·설명 오류",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "흔한 실수 항목이 예로 든 SEATS_OCC/SEATSOCC는 이 레슨의 ts_perf_alv 구조(concert_id/perf_no/capacity/booked/seats_left/cellcolors) 어디에도 없는 필드명이다. 커리큘럼 전체에서 SEATSOCC는 CH08의 SFLIGHT 표준 테이블 필드(예약된 좌석) 설명에만 등장해, 이 레슨과 무관한 다른 예제의 필드명이 잘못 섞여 들어온 것으로 보인다.",
+      "evidence": "grep 결과 SEATS_OCC는 CH22-L04.md의 이 한 줄에만, SEATSOCC는 CH08-L01.md(SFLIGHT 필드 설명)와 이 줄에만 나타난다. CH22-L04의 실제 필드명은 BOOKED·CAPACITY·SEATS_LEFT이며 SEATS_OCC/SEATSOCC 계열은 이 구조에 없다.",
+      "suggestion": "예시 필드명을 이 레슨의 실제 이름(코드가 실제로 쓰는 BOOKED, 혹은 도입부 취지에 맞는 SEATS_LEFT)으로 교체한다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L08.md",
+      "quote": "IF <fc>-fieldname = 'CELLCOLORS'. <fc>-tech = abap_true. ENDIF.",
+      "category": "필드카탈로그 속성 불일치",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "L08(실습) 코드는 기술 컬럼 CELLCOLORS를 숨기는 데 tech = abap_true를 쓰는데, 바로 앞 L04·L05는 같은 목적(CELLCOLORS/CELLSTYLES 숨김)에 명시적으로 no_out을 쓰라고 가르쳤다. tech 속성은 CH22-L03의 Field Catalog 속성표에도, 커리큘럼 전체 어디에도 소개된 적이 없어 실습에서 갑자기 미도입 속성이 등장한다.",
+      "evidence": "CH22-L04.md는 CELLCOLORS가 화면에 노출 → 기술 컬럼이라 field catalog에서 숨긴다(no_out)라 하고, CH22-L05.md도 CELLSTYLES를 no_out으로 숨긴다고 명시한다. 그런데 CH22-L08.md는 <fc>-tech = abap_true를 쓴다. 저장소 전체에서 fieldcat의 tech 속성 대입은 이 줄이 유일하며, CH22-L03의 속성표(fieldname/no_out/do_sum/just/key/edit)에도 tech는 없다.",
+      "suggestion": "L08의 <fc>-tech = abap_true를 <fc>-no_out = abap_true로 통일하거나, tech를 쓰는 이유(사용자가 레이아웃에서도 다시 켤 수 없음 등 no_out과의 차이)를 한 줄 설명으로 L03 속성표나 L08에 추가한다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L07.md",
+      "quote": "WITH KEY concert_id = pa_conc perf_no = pa_perf.",
+      "category": "미선언 변수",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "이 코드 조각이 쓰는 pa_perf·pa_seats는 이 레슨은 물론 CH22 전체, 나아가 커리큘럼 전체에서 PARAMETERS로 선언되는 지점을 찾을 수 없다. pa_conc는 CH22-L01에서 선언되어 추적 가능한 것과 달리 이 둘은 선언 근거가 없다. 다른 레슨에서 미리 선언 없이 재사용되는 변수(go_grid·gt_fcat 등)는 보통 앞선 챕터/레슨에 선언 지점이 있어 추적 가능한 것과 대비된다.",
+      "evidence": "저장소 전체 grep에서 PARAMETERS pa_perf·PARAMETERS pa_seats 선언은 0건이며, pa_perf/pa_seats 사용은 CH22-L07의 이 두 줄이 유일하다.",
+      "suggestion": "이 코드 조각 위에 PARAMETERS pa_perf TYPE zbooking-perf_no.·PARAMETERS pa_seats TYPE i.(또는 실제 타입)를 한 줄 보여주거나, 선택화면에 이미 있다고 가정한다는 짧은 주석을 덧붙인다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "ABAP 코드 자체는 SALV/Grid ALV API 시그니처·네이밍 규약(gv_/gs_/gt_·pa_·ts_)·classic-modern 경계(CH19 이후라 자유 사용) 모두 정상이며 활성화를 막을 문법 오류는 발견되지 않았다. 다만 L04의 예시 코드가 도입부가 예고한 잔여석 대신 BOOKED 셀을 칠해 후속 레슨(L06/L08)과 어긋나고, L04의 흔한 실수 항목이 이 레슨과 무관한 SFLIGHT(CH08) 필드명 SEATSOCC를 잘못 인용하며, L08 실습이 L04/L05가 가르친 no_out 대신 커리큘럼에 소개된 적 없는 tech 속성을 설명 없이 사용한다. pa_perf/pa_seats는 선언 지점을 커리큘럼 어디서도 찾을 수 없어 낮은 확신으로 함께 지적한다."
+  }
+}

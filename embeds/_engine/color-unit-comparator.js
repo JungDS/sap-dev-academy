@@ -22,9 +22,9 @@
   ];
 
   var CODE = {
-    row: '" 행 색 — 지난 회차 줄 전체를 회색으로\nls_layout-info_fname = \'LINE_COLOR\'.',
-    col: '" 컬럼 색 — SEATS_LEFT 컬럼을 늘 강조\n<fc>-fieldname = \'SEATS_LEFT\'. <fc>-emphasize = \'C500\'.',
-    cell: '" 셀 색 — 잔여 0인 그 칸만 빨강\nAPPEND VALUE lvc_s_scol( fname = \'SEATS_LEFT\'\n  color-col = col_negative color-int = 1 ) TO <r>-cellcolors.\nls_layout-ctab_fname = \'CELLCOLORS\'.',
+    row: '" 행 색 — 지난 회차 줄 전체를 회색으로\ngs_layout-info_fname = \'ROWCOLOR\'.',
+    col: '" 컬럼 색 — SEATS_LEFT 컬럼을 늘 강조\nIF <fc>-fieldname = \'SEATS_LEFT\'.\n  <fc>-emphasize = \'C500\'.\nENDIF.',
+    cell: '" 셀 색 — 잔여 0인 그 칸만 빨강\nAPPEND VALUE lvc_s_scol( fname = \'SEATS_LEFT\'\n  color-col = col_negative color-int = 1 ) TO <r>-cellcolors.\ngs_layout-ctab_fname = \'CELLCOLORS\'.',
     none: '" 색 없음 — 기본 표시(모든 수치가 정상일 때)'
   };
   var WHY = {

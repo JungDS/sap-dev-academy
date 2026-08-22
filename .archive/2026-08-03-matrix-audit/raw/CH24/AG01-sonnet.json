@@ -1,0 +1,103 @@
+{
+  "agent": "AG01",
+  "model": "sonnet",
+  "target": "CH24",
+  "persona_ack": "개발·전공 경험이 없는 24세 문과 출신 입문자 '은서'로서 CH24 레슨(_chapter.md 포함 10개 파일)을 L01부터 L09까지 순서대로 처음 읽는 사람처럼 통독했다. 실제 배경지식으로 빈틈을 메우지 않았고, 그 자리 또는 같은 챕터 앞 레슨에 풀이가 없는 용어·코드는 막힌 지점으로 기록했다.",
+  "method": "대상 10개 MD 파일을 CH24-L01→L09 순서로 정독했다. 발견마다 해당 용어·코드가 더 앞선 레슨(같은 챕터 내)에 이미 설명됐는지 확인하기 위해 이전 레슨 전체 텍스트를 다시 훑어 교차 확인했다(예: 'EML'·'transactional buffer'·'validate_capacity'가 처음 등장하는 지점과 정식 설명이 나오는 지점을 레슨 단위로 대조). 브라우저·서버·외부 도구는 사용하지 않았다(이 종은 정적 텍스트 통독 페르소나라 SERVE_URL 접속이 불필요).",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH24-L05.md",
+      "quote": "`keys`가 3행이라는 점, `loop 안 EML`이 왜 anti-pattern인지 확인하자.",
+      "category": "단절",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "'EML'이 무엇의 줄임말인지, 무엇을 가리키는지 아무 설명 없이 이미 아는 용어처럼 쓰여서 이 문장을 이해할 수 없다.",
+      "evidence": "L05 이전(L01～L04) 어디에도 'EML'이라는 단어가 나온 적이 없는데, L05의 '직접 따라가 보기'와 '어떻게 확인하는가'(4번 항목 'loop 안 EML 금지')에서 갑자기 등장한다. 은서는 'EML이 뭐지? 앞에서 못 봤는데' 하고 멈췄다. 실제로 'EML(Entity Manipulation Language)'이라는 정식 설명은 4개 레슨 뒤인 CH24-L09('프로그램에서 RAP BO를 직접 다루는 언어를 [[EML]](Entity Manipulation Language)이라 한다')에서야 처음 나온다.",
+      "suggestion": "L05에서 처음 쓸 때 '[선행 사용]'으로 표시하고 괄호로 최소 뜻(예: 'RAP BO를 다루는 문장들, 정식은 L09')을 붙인다."
+    },
+    {
+      "seq": 2,
+      "file": "CH24-L05.md",
+      "quote": "같은 RAP BO 구현 안에서 현재 transactional buffer를 고려해 entity를 읽는다.",
+      "category": "단절",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "`IN LOCAL MODE`를 설명하는 문장 자체가 'transactional buffer'라는, 아직 설명되지 않은 용어를 써서 설명을 읽어도 뜻을 모른 채 넘어가게 된다.",
+      "evidence": "이 표에서 'transactional buffer'가 처음 등장하는데 [[ ]] 용어 표시(클릭 풀이)도, 괄호 풀이도 없다. 이 개념이 실제 뜻('RAP가 변경을 잠시 모아 두는 메모리')과 함께 나오는 곳은 4개 레슨 뒤인 CH24-L09다. 사이에 있는 L07에서도 '[[transactional buffer]]를 거부할 수 있으므로'로 한 번 더 쓰이지만 거기서도 뜻은 안 알려준다. 은서는 'IN LOCAL MODE가 뭘 고려한다는 건지' 이해 못 한 채 다음 줄로 넘어가야 했다.",
+      "suggestion": "L05에서 'transactional buffer'를 처음 쓸 때 다른 신규 용어처럼 한 줄 괄호 풀이를 붙이거나, 최소한 [[ ]]로 표시해 팝업을 열어볼 수 있게 한다."
+    },
+    {
+      "seq": 3,
+      "file": "CH24-L05.md",
+      "quote": "IMPORTING keys FOR Booking~validate_capacity",
+      "category": "단절",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "`Booking~validate_capacity`라는 이름이 BDEF 어디에 선언되어 있었는지 본 적이 없어서 이 코드와 BDEF의 연결고리를 찾을 수 없다.",
+      "evidence": "직전 레슨 CH24-L04의 BDEF 예제는 `create; update; delete;`, `field(readonly:update) booking_id;`, `mapping`만 있고 validation 선언이 없다. 그런데 L05는 곧바로 `FOR Booking~validate_capacity`를 쓰고, '어떻게 확인하는가'에서도 '핸들러 method 이름이 BDEF에 선언한 validation/action 이름과 맞아야 연결된다'고 말한다 — 하지만 그 BDEF 선언 예시(`validation validate_capacity on save { ... }`)는 2개 레슨 뒤인 CH24-L07에야 나온다. 은서는 'validate_capacity가 BDEF 어디 있었지?' 하고 L04로 되돌아가 봤지만 못 찾았다.",
+      "suggestion": "L05에서 handler 코드를 보여주기 전 'BDEF 쪽 validation 선언은 L07에서 다룬다 — 지금은 handler 모양만 본다'처럼 짧게 안내를 붙인다."
+    },
+    {
+      "seq": 4,
+      "file": "CH24-L01.md",
+      "quote": "OData 같은 protocol과 연결해 실제 호출 가능한 서비스로 만든다.",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'OData'가 무엇인지 이 레슨 어디에도 설명이 없는데 계층도와 표에 반복해서 등장해서, 뜻을 모른 채 계속 읽어야 했다.",
+      "evidence": "L01 계층도 맨 위 줄이 'Fiori Elements / OData Client'이고 표에도 'protocol(OData) 연결', 'OData 같은 protocol'로 두 번 더 나오지만 풀이나 [[ ]] 표시가 전혀 없다. 다음 레슨 L02에서도 'OData entity key'로 한 번 더 설명 없이 쓰인다. 'OData'가 [[OData]]로 표시되고 짧게라도 문맥이 붙는 곳은 5개 레슨 뒤인 L06('외부 [[OData]] client')이다. 은서는 'OData가 무슨 프로토콜이길래 다들 아는 것처럼 쓰지?' 궁금한 채로 다섯 레슨을 넘겼다.",
+      "suggestion": "L01에서 'OData'가 처음 나오는 자리에 최소 한 줄 괄호 풀이(예: 'OData(웹에서 데이터를 주고받는 표준 프로토콜)')를 붙인다."
+    },
+    {
+      "seq": 5,
+      "file": "CH24-L03.md",
+      "quote": "root entity이거나 root를 포함한 composition tree 안에 있어야 한다.",
+      "category": "단절",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'composition tree'라는 말이 챕터 안에서 한 번 등장하고 다시 설명되지 않아서 이 문장이 말하는 조건이 정확히 뭘 뜻하는지 모른다.",
+      "evidence": "CH24 9개 레슨 전체에서 'composition tree'는 이 문장 한 번만 나온다. 바로 앞 레슨 L02에 'child entity가 있을 수는 있지만'이라는 비슷한 힌트가 있었지만 그것도 설명 없이 지나갔다. 은서는 'composition tree가 뭔지 몰라도 되나?' 싶었지만, 바로 다음 문장이 '이 챕터에서는 root 하나를 쓰는 단순 구조로 이 조건을 이해한다'며 넘어가서 큰 걸림돌까지는 아니었다.",
+      "suggestion": "이 문장을 빼거나(단순 구조만 다루는 챕터이므로), 남긴다면 '여러 entity가 부모-자식처럼 묶인 모양(지금은 다루지 않음)'처럼 짧게 괄호 풀이를 붙인다."
+    },
+    {
+      "seq": 6,
+      "file": "CH24-L04.md",
+      "quote": "managed implementation in class zbp_i_booking unique;",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "코드 줄 끝의 `unique`라는 단어가 바로 아래 뜻풀이 표에서 언급되지 않아서 이 단어만 뜻을 모른 채 넘어가게 된다.",
+      "evidence": "표는 이 코드 줄 전체를 인용하며 'managed 시나리오이며, custom 구현이 필요하면 zbp_i_booking behavior pool을 쓴다'라고만 풀이한다. 코드에 분명히 있는 `unique;` 부분은 언급이 없다. 은서는 '왜 굳이 unique라고 썼지?' 하고 잠깐 멈췄지만 나머지 줄 이해에는 지장이 없었다.",
+      "suggestion": "표 풀이에 'unique — 이 behavior pool class가 이 BDEF에 하나만 연결됨을 나타냄' 같은 짧은 구절을 추가한다."
+    },
+    {
+      "seq": 7,
+      "file": "CH24-L09.md",
+      "quote": "mapping for zbooking { booking_id = booking_id; }",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L04에서 배운 mapping은 6개 필드를 모두 대응시켰는데 여기서는 `booking_id` 하나만 있어서, 나머지 필드는 매핑 안 해도 되는 건지 헷갈린다.",
+      "evidence": "CH24-L04의 BDEF 예제는 `mapping for zbooking { booking_id = ...; concert_id = ...; perf_no = ...; customer = ...; seats = ...; status = ...; }`처럼 6개 필드를 모두 나열했다. 그런데 같은 `ZI_Booking`/`zbooking`을 다루는 이 실습 레슨(L09)의 BDEF는 `mapping for zbooking { booking_id = booking_id; }` 한 줄만 보여준다. '...'이나 '나머지도 동일'이라는 언급이 없어서, 은서는 '이번엔 필드 하나만 매핑해도 되나? 지면상 생략인가?' 헷갈렸다.",
+      "suggestion": "`mapping for zbooking { booking_id = booking_id; /* concert_id, perf_no, customer, seats, status도 동일하게 매핑 */ }`처럼 생략을 명시하거나 전체를 다시 보여준다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "레슨마다 '왜 필요한가→무엇인가→어떻게 쓰나→흔한 실수' 흐름과 줄별 코드 뜻풀이 표, 실습 임베드가 일관되게 붙어 있어 처음 읽는 사람도 큰 줄기는 따라갈 수 있었고, 특히 L01의 'RAP 계층 조립 보드'는 '이 파일이 무엇을 하나' 대신 '이 파일이 없으면 무엇을 못 하나'로 질문을 바꿔 6개 계층의 존재 이유를 체감하게 해 준 좋은 장치였다. 다만 L05(Behavior Implementation)에서 EML·transactional buffer·validate_capacity라는 용어·코드가 정식 설명(각각 L09·L09·L07)보다 먼저 등장해 그 시점엔 뜻을 모른 채 읽어야 했고, OData도 L01～L02에서 설명 없이 쓰이다 L06에서야 풀이가 나왔다. 나머지는 단어 하나 수준의 사소한 누락이었다."
+  }
+}

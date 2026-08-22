@@ -30,7 +30,7 @@
     if (mode === 'throw') {
       codeEl.innerHTML =
         'DATA(lv_status) = <span class="fn">COND</span> string(\n' +
-        '    <span class="fn">WHEN</span> iv_seats &lt;= me-&gt;remaining( ) <span class="fn">THEN</span> |예약 가능: { ' + seatVal() + ' }석|\n' +
+        '    <span class="fn">WHEN</span> iv_seats &lt;= me-&gt;remaining( ) <span class="fn">THEN</span> |예약 가능: { iv_seats }석|\n' +
         '    <span class="fn">ELSE</span> <span class="fn">THROW</span> <span class="cx">zcx_fully_booked</span>( ) ).';
       return;
     }

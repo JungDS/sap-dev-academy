@@ -1,6 +1,6 @@
 /* concert-alv-color-lab 엔진 — CH22 capstone. ZCL_BOOKING_MANAGER->remaining()으로 구한 잔여석(seats_left)을 조건에 따라 색칠한다.
    seats_left <= 0 → 빨강(col_negative), <= 5 → 노랑(col_total). cellcolors deep를 ctab_fname으로 ALV에 연결해야 보인다.
-   예매를 추가하면 잔여석이 줄어 셀 색이 노랑→빨강으로 바뀐다. ctab_fname을 끄면 색 데이터는 남아도 화면 색은 사라진다.
+   예매를 추가하면 잔여석이 줄어 셀 색이 노랑→빨강으로 바뀐다. 매진(잔여 0) 회차는 예매 버튼이 비활성(잔여 음수 방지). ctab_fname을 끄면 색 데이터는 남아도 화면 색은 사라진다.
    골격 계약: .cacl-sel(세그) · .cacl-act(버튼) · #caclTable · #caclStatus.
    config: window.CACL_CFG = { rows:[{concert,perf,capacity,booked}] }. 높이: _autoheight.js. */
 (function () {
@@ -25,9 +25,10 @@
   }
 
   function renderActs() {
+    var full = leftOf(sel) <= 0;   // 매진 회차 — 더 예매 불가(잔여 음수 방지)
     actEl.innerHTML =
-      '<button type="button" class="prim" data-a="add1">+1 예매</button>' +
-      '<button type="button" class="prim" data-a="add5">+5 예매</button>' +
+      '<button type="button" class="prim" data-a="add1"' + (full ? ' disabled' : '') + '>+1 예매</button>' +
+      '<button type="button" class="prim" data-a="add5"' + (full ? ' disabled' : '') + '>+5 예매</button>' +
       '<button type="button" data-a="ctab" aria-pressed="' + (ctabOff ? 'true' : 'false') + '">ctab_fname 끄기</button>' +
       '<button type="button" data-a="reset">리셋</button>';
   }
@@ -56,7 +57,8 @@
     statusEl.className = 'ok';
     statusEl.innerHTML = '✅ <code>' + h(s.concert) + '/' + h(s.perf) + '</code> 잔여석 <b>' + leftOf(sel) + '</b> → ' +
       (colorOf(sel) === 'red' ? '<b>빨강(매진)</b>' : colorOf(sel) === 'yellow' ? '<b>노랑(임박)</b>' : '색 없음(정상)') +
-      '. 전체 매진 ' + reds + '·임박 ' + yel + '. 예매를 더하면 <code>remaining( )</code>이 줄어 색이 바뀝니다.';
+      '. 전체 매진 ' + reds + '·임박 ' + yel + '. ' +
+      (leftOf(sel) <= 0 ? '이 회차는 매진이라 <b>더 예매할 수 없습니다</b>(버튼 비활성).' : '예매를 더하면 <code>remaining( )</code>이 줄어 색이 바뀝니다.');
   }
 
   function render() { renderSel(); renderActs(); renderTable(); renderStatus(); }
@@ -65,8 +67,10 @@
   actEl.addEventListener('click', function (e) {
     var b = e.target.closest('button'); if (!b) return;
     var a = b.getAttribute('data-a');
-    if (a === 'add1') { added[sel] += 1; bumped = sel; }
-    else if (a === 'add5') { added[sel] += 5; bumped = sel; }
+    if (a === 'add1' || a === 'add5') {
+      var room = leftOf(sel);                      // 잔여 초과 예매 방지(매진이면 0)
+      if (room > 0) { added[sel] += Math.min(a === 'add5' ? 5 : 1, room); bumped = sel; }
+    }
     else if (a === 'ctab') { ctabOff = !ctabOff; }
     else if (a === 'reset') { added = CFG.rows.map(function () { return 0; }); ctabOff = false; sel = 0; bumped = -1; }
     render();

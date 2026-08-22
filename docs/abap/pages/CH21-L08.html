@@ -60,9 +60,13 @@ lo_mgr = <span class="tok-kw">NEW</span> zcl_vip_booking( iv_concert = <span cla
     <span class="tok-kw">MESSAGE</span> <span class="tok-str">'VIP 예약 객체가 아닙니다.'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'I'</span>.
 <span class="tok-kw">ENDTRY</span>.</code></pre></div></div>
 <ul>
-<li><code>CAST 타입( ref )</code>(모던) = <code>ref ?= ...</code>(classic) — <strong>down-cast</strong>.</li>
+<li><code>CAST 타입( ref )</code>(modern) = <code>?=</code>(classic). 부모 참조를 자식 타입으로 내려보내는 <strong>downcast</strong>다.</li>
 <li><strong>실제 <button class="term" type="button" data-term="객체">객체</button>의 동적 타입이 안 맞으면</strong> <code>CX_SY_MOVE_CAST_ERROR</code> → <code>TRY/CATCH</code>로 대비한다. CAST는 정적 타입을 바꾸는 듯 보이지만, <strong>실제(동적) 타입이 맞아야</strong> 성공한다.</li>
 </ul>
+<p>classic <code>?=</code>는 받는 변수를 먼저 자식 타입으로 선언해 두고 쓴다. 하는 일과 실패 시 <button class="term" type="button" data-term="예외">예외</button>는 <code>CAST</code>와 같다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> lo_vip_classic <span class="tok-kw">TYPE</span> <span class="tok-kw">REF</span> <span class="tok-kw">TO</span> zcl_vip_booking.
+lo_vip_classic ?= lo_mgr.                <span class="tok-com">" classic downcast: CAST와 같은 일</span></code></pre></div></div>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">Dynamic Type Inspector (CAST vs CASE TYPE OF)</span><a class="embed__open" href="../../../embeds/abap/CH21-L08-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH21-L08-S01.html" loading="lazy" title="Dynamic Type Inspector (CAST vs CASE TYPE OF)"></iframe></figure>
 </section><section class="lblock"><h2>타입 분기 — CASE TYPE OF 🔀</h2>
 <p><button class="term" type="button" data-term="객체">객체</button>의 실제 타입에 따라 분기한다. <code>WHEN TYPE ... INTO ...</code>는 <strong>타입 검사와 안전한 참조 확보를 한 번에</strong> 한다(<button class="term" type="button" data-term="예외">예외</button>를 던지지 않음).</p>

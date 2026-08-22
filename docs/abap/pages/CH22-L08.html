@@ -40,7 +40,7 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>🎫 상태를 색으로 — 세 단계가 이어지기</h2>
-<p>회차 현황을 ALV로 띄우되, <strong>매진은 빨강·잔여 적으면 노랑</strong>으로 강조한다. 완성 기준은 &quot;색이 예쁘다&quot;가 아니라 <strong>세 단계가 이어지는 것</strong>이다: 업무 계산(<code>remaining</code>) → 표시용 필드(<code>seats_left</code>) → deep component(<button class="term" type="button" data-term="Cell Color">cellcolors</button>) → layout(<code>ctab_fname</code>) 연결.</p>
+<p>회차 현황을 ALV로 띄우되, <strong>매진은 빨강·잔여 적으면 노랑</strong>으로 강조한다. 완성 기준은 &quot;색이 예쁘다&quot;가 아니라 <strong>세 단계가 이어지는 것</strong>이다: ① 업무 계산(<code>remaining( )</code> → 표시용 필드 <code>seats_left</code>) → ② 셀 색 채우기(deep component <button class="term" type="button" data-term="Cell Color">cellcolors</button>) → ③ layout 연결(<code>ctab_fname</code>).</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -71,11 +71,13 @@
 28
 29
 30
-31</pre><pre class="abap-editor__code"><code><span class="tok-kw">TYPES</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ts_row,
-         concert_id <span class="tok-kw">TYPE</span> zconcert-concert_id,
-         perf_no    <span class="tok-kw">TYPE</span> zbooking-perf_no,
-         capacity   <span class="tok-kw">TYPE</span> i,
-         seats_left <span class="tok-kw">TYPE</span> i,
+31
+32</pre><pre class="abap-editor__code"><code><span class="tok-com">" L04의 ts_perf_alv를 실습용으로 줄인 구조(booked 집계는 remaining( )이 대신)</span>
+<span class="tok-kw">TYPES</span>: <span class="tok-kw">BEGIN</span> <span class="tok-kw">OF</span> ts_row,
+         concert_id <span class="tok-kw">TYPE</span> zperf-concert_id,
+         perf_no    <span class="tok-kw">TYPE</span> zperf-perf_no,
+         capacity   <span class="tok-kw">TYPE</span> zconcert-capacity,
+         seats_left <span class="tok-kw">TYPE</span> i,                 <span class="tok-com">" 잔여석(계산 필드)</span>
          cellcolors <span class="tok-kw">TYPE</span> lvc_t_scol,        <span class="tok-com">" ALV 표시용 deep(DB 저장 아님)</span>
        <span class="tok-kw">END</span> <span class="tok-kw">OF</span> ts_row.
 <span class="tok-kw">DATA</span> gt_row <span class="tok-kw">TYPE</span> <span class="tok-kw">STANDARD</span> <span class="tok-kw">TABLE</span> <span class="tok-kw">OF</span> ts_row.
@@ -102,7 +104,10 @@
 
 <span class="tok-kw">DATA</span> gs_layout <span class="tok-kw">TYPE</span> lvc_s_layo.
 gs_layout-ctab_fname = <span class="tok-str">'CELLCOLORS'</span>.                 <span class="tok-com">" 셀색 컬럼 연결(이전 레슨)</span></code></pre></div></div>
-<p>Grid와 field catalog 준비는 <a href="CH17-L07.html">Grid ALV 기초</a>와 같다. 표시할 때 layout과 field catalog를 함께 넘기고, <code>CELLCOLORS</code>는 화면에 보일 컬럼이 아니라 <strong>기술용</strong>으로 숨긴다.</p>
+<blockquote>
+<p>🔗 <strong>①의 SELECT는 <a href="CH22-L04.html">셀 색 레슨</a>의 &quot;deep 테이블로 직접 SELECT 금지&quot;와 어긋나지 않나?</strong> 그 제한은 <code>CORRESPONDING FIELDS</code> <strong>없이</strong> 결과를 통째로 받는 <code>INTO</code>의 규칙이다. 여기는 <a href="CH08-L04.html">INTO CORRESPONDING FIELDS</a>라 조회 목록과 <strong>이름이 같은 성분만</strong>(<code>concert_id</code>·<code>perf_no</code>·<code>capacity</code>) 채우고, <code>seats_left</code>·<code>cellcolors</code>처럼 목록에 없는 성분은 건드리지 않는다. 그래서 행 구조에 deep component가 있어도 문제없다. 두 테이블을 합쳐 읽는 <a href="CH13-L01.html">INNER JOIN</a>도 이미 배운 그대로다.</p>
+</blockquote>
+<p>Grid와 field catalog 준비는 <a href="CH17-L07.html">Grid ALV 기초</a>와 같다. 표시할 때 layout과 field catalog를 함께 넘기고, <code>CELLCOLORS</code>는 화면에 보일 컬럼이 아니라 <strong>기술용</strong>이라 <a href="CH22-L03.html">컬럼 숨김</a>에서 배운 <code>no_out</code>으로 숨긴다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -117,7 +122,7 @@ gs_layout-ctab_fname = <span class="tok-str">'CELLCOLORS'</span>.               
 <span class="tok-kw">DATA</span> gt_fcat <span class="tok-kw">TYPE</span> lvc_t_fcat.                    <span class="tok-com">" ts_row 구조에서 생성(CH17)</span>
 
 <span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> gt_fcat <span class="tok-kw">ASSIGNING</span> <span class="tok-kw">FIELD-SYMBOL</span>(&lt;fc&gt;).
-  <span class="tok-kw">IF</span> &lt;fc&gt;-fieldname = <span class="tok-str">'CELLCOLORS'</span>. &lt;fc&gt;-tech = abap_true. <span class="tok-kw">ENDIF</span>.   <span class="tok-com">" 화면에서 숨김</span>
+  <span class="tok-kw">IF</span> &lt;fc&gt;-fieldname = <span class="tok-str">'CELLCOLORS'</span>. &lt;fc&gt;-no_out = abap_true. <span class="tok-kw">ENDIF</span>. <span class="tok-com">" 기술 컬럼 숨김</span>
 <span class="tok-kw">ENDLOOP</span>.
 
 go_grid-&gt;set_table_for_first_display(
@@ -134,14 +139,14 @@ go_grid-&gt;set_table_for_first_display(
 </ol>
 </section><section class="lblock"><h2>흔한 실수와 점검 🚧</h2>
 <ul>
-<li><strong><code>fname</code> ≠ 필드명</strong> → 색 줄의 <code>fname</code>은 output table component 이름(<code>SEATS_LEFT</code>)과 정확히 같아야. 틀리면 그 셀 색이 안 먹는다.</li>
+<li><strong><code>fname</code> ≠ 화면 제목</strong> → 색 지정 줄의 <code>fname</code>은 output table component 이름(<code>SEATS_LEFT</code>)과 정확히 같아야 한다. 화면 제목이나 설명 텍스트를 쓰면 그 셀 색이 안 먹는다.</li>
 <li><strong><code>ctab_fname</code> 미지정</strong> → 색 컬럼을 둬도 layout에 안 알리면 무시된다(<a href="CH22-L04.html">셀 색 연결</a>).</li>
-<li><strong>루프마다 매니저 생성</strong> → 학습용으론 명확하지만 대량 데이터엔 비효율(<a href="CH35-L01.html">성능 분석과 튜닝</a>에서 batch/<button class="term" type="button" data-term="Aggregate">집계</button>로).</li>
+<li><strong>루프마다 매니저 생성</strong> → 행마다 <button class="term" type="button" data-term="객체">객체</button>를 만들고 <code>remaining( )</code>이 그때마다 DB를 다시 읽는다(행 수만큼 왕복). 학습용으론 명확하지만 대량 데이터엔 비효율(<a href="CH35-L01.html">성능 분석과 튜닝</a>에서 batch/<button class="term" type="button" data-term="Aggregate">집계</button>로).</li>
 <li><strong>색 = 검증 착각</strong> → 색은 <em>표시 결과</em>다. 매진 여부의 진짜 검증은 <code>ZCL_BOOKING_MANAGER</code> 서버 로직에서.</li>
 <li><strong>색만 믿기</strong> → 색맹·시스템 테마·프린트 출력에서는 색이 사라질 수 있다. 잔여석 숫자와 상태 텍스트(매진/임박)를 색과 <strong>함께</strong> 둔다.</li>
 </ul>
 <hr>
-<p>상태를 색으로 보여 줬다. 이 챕터는 &quot;내부 테이블을 ALV로 잘 보여 주는 기술&quot;이었다. 이제 <strong>데이터 모델 자체를 재사용 가능한 뷰</strong>로 정의하는 CDS로 →
+<p>상태를 색으로 보여 줬다. 이 챕터는 &quot;Internal Table을 ALV로 잘 보여 주는 기술&quot;이었다. 이제 <strong>데이터 모델 자체를 재사용 가능한 뷰</strong>로 정의하는 CDS로 →
 <a href="CH23-L01.html">CDS View Entity 기본 구조</a>.</p>
 </section>
       </article>

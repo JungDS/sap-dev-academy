@@ -1,6 +1,7 @@
 // ===== annotation-effect-preview 엔진 JS — CDS Annotation 효과 미리보기 (CH23-L04) =====
-// 3패널: ①라벨 토글(헤더 기술명↔업무라벨) ②@Semantics.amount.currencyCode 짝(currency_code=ok·자기참조=bad·없음=warn)
-// ③@UI.lineItem 순서(▲▼→컬럼 순서+position 재할당). annotation은 활성화된 metadata. 데이터=window.AEP_CFG.
+// 3패널: ①라벨 토글(헤더 기술명↔업무라벨) ②@Semantics.amount.currencyCode 짝(currency=ok·자기참조 price=bad·
+// 미지정=annotation 줄 자체를 생략+warn — 한국어 의사문장 출력 금지, C049) ③@UI.lineItem 순서(▲▼→컬럼 순서+position 재할당).
+// annotation은 활성화된 metadata. 필드명은 cfg 주도(본문 L04와 동일 price/currency). 데이터=window.AEP_CFG.
 (function(){
   var $=function(id){return document.getElementById(id);};
   var cfg=window.AEP_CFG||{};
@@ -29,14 +30,17 @@
   // ── 패널2: @Semantics 금액 짝 ──
   function renderSem(){
     $('aepSemSeg').querySelectorAll('button').forEach(function(b){ b.classList.toggle('on', b.dataset.t===st.target); });
-    var tShow = st.target==='none' ? '(지정 안 함)' : st.target;
-    var codeTarget = st.target==='none'
-      ? '<span class="anno">@Semantics.amount.currencyCode</span> 미지정'
-      : (st.target===price
-          ? '<span class="anno">@Semantics.amount.currencyCode:</span> <span class="bad">\''+esc(price)+'\'</span>'
-          : '<span class="anno">@Semantics.amount.currencyCode:</span> \''+esc(curr)+'\'');
-    var code='<pre class="aep-code">'+codeTarget+'\n<span class="fld">'+esc(price)+',</span>\n\n'+
-      '<span class="anno">@Semantics.currencyCode:</span> true\n<span class="fld">'+esc(curr)+'</span></pre>';
+    var lines=[];
+    if(st.target!=='none'){
+      lines.push(st.target===price
+        ? '<span class="anno">@Semantics.amount.currencyCode:</span> <span class="bad">\''+esc(price)+'\'</span>'
+        : '<span class="anno">@Semantics.amount.currencyCode:</span> \''+esc(curr)+'\'');
+    }
+    lines.push('<span class="fld">'+esc(price)+',</span>');
+    lines.push('');
+    lines.push('<span class="anno">@Semantics.currencyCode:</span> true');
+    lines.push('<span class="fld">'+esc(curr)+'</span>');
+    var code='<pre class="aep-code">'+lines.join('\n')+'</pre>';
     $('aepSemCode').innerHTML=code;
     var v=$('aepSemVerdict');
     if(st.target===curr){ v.className='aep-verdict ok'; v.innerHTML='<b>금액 + 통화 의미 완성.</b> 금액 필드 <code>'+esc(price)+'</code>가 통화 필드 <code>'+esc(curr)+'</code>를 가리킵니다.'; }

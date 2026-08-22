@@ -1,5 +1,7 @@
 /* refresh-shake-comparator 엔진 — 값 갱신 후 refresh_table_display를 호출할 때 세 옵션의 효과를 실제로 관찰한다.
    is_stable-row=보던 세로 위치 유지 · is_stable-col=가로 스크롤 위치 유지 · i_soft_refresh=사용자가 건 정렬/필터 유지(끄면 초기 순서로 되돌아감).
+   '값 갱신 + refresh'는 대상 행(jumpRow)의 booked/left를 실제로 증감시킨 뒤 다시 그린다(내부 테이블 먼저 갱신 재현).
+   표 min-width(900px)로 가로 스크롤을 보장해 is_stable-col을 관찰 가능하게 하고, 가로 스크롤이 없으면 상태문이 그렇게 말한다.
    컬럼 구조가 바뀌면 refresh_table_display로는 부족 — field catalog를 다시 만들어 set_table_for_first_display로 재초기화해야 한다(옵션과 무관).
    골격 계약: .rsc-opt(토글) · .rsc-act(버튼) · #rscCode · #rscScroll · #rscStatus.
    config: window.RSC_CFG = { rowCount, jumpRow }. 스키마: 회차 표시행(concert_id·perf_no·capacity·booked·seats_left). 높이: _autoheight.js. */
@@ -18,12 +20,17 @@
   function h(s) { return String(s).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); }
 
   // 고정 시드 데이터(회차 표시행) — 스키마: capacity=공연 정원, booked=예약 합계, seats_left=잔여석
+  // 갱신 버튼이 실제 값을 바꾸므로 리셋 때 다시 생성한다.
   var rows = [];
-  for (var i = 1; i <= CFG.rowCount; i++) {
-    var cap = 50 + (i % 5) * 20;
-    var booked = (i * 13) % (cap + 1);
-    rows.push({ n: i, concert: 'C' + (1000 + ((i - 1) % 6 + 1)), perf: ('0' + ((i % 3) + 1)).slice(-2), capacity: cap, booked: booked, left: cap - booked });
+  function buildRows() {
+    rows = [];
+    for (var i = 1; i <= CFG.rowCount; i++) {
+      var cap = 50 + (i % 5) * 20;
+      var booked = (i * 13) % (cap + 1);
+      rows.push({ n: i, concert: 'C' + (1000 + ((i - 1) % 6 + 1)), perf: ('0' + ((i % 3) + 1)).slice(-2), capacity: cap, booked: booked, left: cap - booked });
+    }
   }
+  buildRows();
 
   function renderOpts() {
     optEl.innerHTML = [['row', 'is_stable-row'], ['col', 'is_stable-col'], ['soft', 'i_soft_refresh']].map(function (it) {
@@ -54,7 +61,7 @@
       return '<tr class="' + cls.trim() + '"><td>' + r.n + '</td><td>' + r.concert + '</td><td>' + r.perf + '</td><td>' + r.capacity + '</td><td>' + r.booked + '</td><td>' + r.left + '</td>' +
         (extraCol ? '<td class="extra">' + Math.round(r.booked / r.capacity * 100) + '%</td>' : '') + '</tr>';
     }).join('');
-    scrollEl.innerHTML = '<table class="rsc-tbl" style="min-width:600px">' + '<thead>' + head + '</thead><tbody>' + body + '</tbody></table>';
+    scrollEl.innerHTML = '<table class="rsc-tbl" style="min-width:900px">' + '<thead>' + head + '</thead><tbody>' + body + '</tbody></table>';
   }
 
   function targetTr() { return scrollEl.querySelector('.rsc-tbl tbody tr.target'); }
@@ -68,6 +75,11 @@
 
   function doRefresh() {
     var keepTop = scrollEl.scrollTop, keepLeft = scrollEl.scrollLeft;
+    // 1) 내부 테이블 먼저 갱신 — 대상 회차(jumpRow)에 예매 +2(정원 상한)
+    var tgt = null;
+    for (var i = 0; i < rows.length; i++) if (rows[i].n === CFG.jumpRow) { tgt = rows[i]; break; }
+    var inc = 0;
+    if (tgt) { inc = Math.min(2, tgt.capacity - tgt.booked); tgt.booked += inc; tgt.left = tgt.capacity - tgt.booked; }
     markRow = CFG.jumpRow;                       // 그 회차의 예약이 바뀌었다고 표시
     var lostSort = userSorted && !opt.soft;
     if (lostSort) userSorted = false;            // soft 아니면 정렬이 풀려 초기 순서로
@@ -75,14 +87,17 @@
     scrollEl.scrollTop = opt.row ? keepTop : 0;
     scrollEl.scrollLeft = opt.col ? keepLeft : 0;
 
+    var hasH = scrollEl.scrollWidth > scrollEl.clientWidth;   // 가로 스크롤 실재 여부
     var parts = [];
+    parts.push(CFG.jumpRow + '행 ' + (inc > 0 ? 'BOOKED +' + inc + ' → SEATS_LEFT <b>' + tgt.left + '</b>' : 'BOOKED 변화 없음(정원 도달)'));
     parts.push(opt.row ? '세로 위치 <b>유지</b>' : '세로 <b>첫 줄로 튐</b>');
-    parts.push(opt.col ? '가로 위치 <b>유지</b>' : '가로 <b>왼쪽으로 튐</b>');
+    if (hasH) parts.push(opt.col ? '가로 위치 <b>유지</b>' : '가로 <b>왼쪽으로 튐</b>');
+    else parts.push('가로 스크롤 없음(<code>col</code>은 가로 스크롤이 있을 때 관찰)');
     if (opt.soft) parts.push('정렬 <b>유지</b>(soft)');
     else if (lostSort) parts.push('정렬 <b>풀림</b>(soft off)');
-    var good = opt.row && opt.col && (!lostSort);
+    var good = opt.row && (!hasH || opt.col) && (!lostSort);
     statusEl.className = good ? 'ok' : 'warn';
-    statusEl.innerHTML = (good ? '✅ ' : '⚠️ ') + parts.join(' · ') + '. <code>is_stable</code>는 스크롤 위치를, <code>i_soft_refresh</code>는 사용자가 건 정렬·필터를 지킵니다.';
+    statusEl.innerHTML = (good ? '✅ ' : '⚠️ ') + '내부 테이블 먼저 갱신: ' + parts.join(' · ') + '. <code>is_stable</code>는 스크롤 위치를, <code>i_soft_refresh</code>는 사용자가 건 정렬·필터를 지킵니다.';
   }
 
   function doStructChange() {
@@ -94,6 +109,7 @@
 
   function reset() {
     opt = { row: false, col: false, soft: false }; extraCol = false; markRow = 0; userSorted = false;
+    buildRows();                                  // 갱신으로 바뀐 값 원복
     renderTable(); scrollEl.scrollTop = 0; scrollEl.scrollLeft = 0;
     statusEl.className = '';
     statusEl.innerHTML = '<b>① 28행으로 스크롤</b> → (선택) <b>SEATS_LEFT 정렬</b> → <b>값 갱신 + refresh</b> 순서로, 세 옵션 on/off에 따라 위치와 정렬이 어떻게 달라지는지 보세요.';

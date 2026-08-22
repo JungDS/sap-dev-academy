@@ -1,7 +1,7 @@
 // ===== cds-activation-observer 엔진 JS — CDS View Entity 활성화 관찰기 (CH23-L01) =====
 // 5단계: ①원본 테이블 ②DDL 작성 ③활성화 ④Data Preview ⑤ABAP SQL 소비.
 // 필드 오타 토글 → ③활성화 실패 → ④⑤는 미리볼 수 없음(CDS는 오류 있으면 활성화 안 됨).
-// 핵심 메시지: "바꾼 것은 테이블 데이터가 아니라 모델 정의". 데이터=window.CAO_CFG.
+// 핵심 메시지: "바꾼 것은 테이블 데이터가 아니라 모델 정의". ⑤ SELECT는 cfg 필드 명시(C019). 데이터=window.CAO_CFG.
 (function(){
   var $=function(id){return document.getElementById(id);};
   var cfg=window.CAO_CFG||{};
@@ -55,9 +55,9 @@
       '</div>';
   }
 
-  function sqlHtml(){
+  function sqlHtml(){   // 필드 명시(본문 L01 소비 예제와 동일 — SELECT * 대신 필요한 것만, C019)
     return '<pre class="cao-sql">'+
-      '<span class="k">SELECT</span> *\n'+
+      '<span class="k">SELECT</span> '+esc(FIELDS.map(function(c){return c.name;}).join(', '))+'\n'+
       '  <span class="k">FROM</span> <span class="ent">'+esc(ENT)+'</span>\n'+
       '  <span class="k">INTO TABLE</span> <span class="host">@DATA(gt_concerts)</span>.</pre>';
   }

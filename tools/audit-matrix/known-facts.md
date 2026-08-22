@@ -24,6 +24,9 @@
 - ㉖ "윈도 함수 OVER 안에서 ASCENDING/DESCENDING 불가" → 구문도 명문. `ABAPSELECT_OVER`
 - ㉗ "standard key에서 string 제외" → standard key = character-like(**string 포함**)+byte-like 전부. `ABENITAB_STANDARD_KEY` `ABENCHARLIKE_DATA_TYPE_GLOSRY`
 - ㉘ "WITH HEADER LINE/OCCURS에 deep(string) 컴포넌트 불가" → 금지는 행 타입 자체가 테이블일 때뿐. `ABAPDATA_HEADER_LINE`
+- ㉙ "CDS association의 단어형 cardinality(`OF ONE TO MANY` 등) 비실재" → 명문 문법·SAP 권장. `ABENCDS_CARDINALITY_V2`
+- ㉚ "CDS 요소 목록 마지막에 세미콜론 필수" → 구문도상 `[;]` 선택 사항.
+- ㉛ "VALUE 생성자에서 `구조필드-하위컴포넌트 =` 지정 불가" → 합법. `ABENVALUE_CONSTRUCTOR_PARAMS_STRUC`
 
 ## B. 코퍼스 확정 사실(자주 갈리는 지점)
 - sy-subrc는 **결과를 정의한 문장만** 설정(그 외 문장은 직전 값 유지). `ABENSYSTEM_FIELDS`
@@ -35,6 +38,8 @@
 - DELETE TABLE ... FROM/WITH TABLE KEY = **처음 만나는 한 행만** 삭제. `ABAPDELETE_ITAB_LINE`
 - `COUNT(*)`만 예약어 붙여쓰기 허용, 그 외 집계함수 괄호 안 공백 = 문법 요구. `abensql_agg_func`
 - Maintenance View = **inner join** 명문(outer 보존은 Help View 성질). `abenddic_maintenance_views`
+- TYPE-POOLS 구문 = **obsolete**(타입 그룹 참조는 여전히 합법, 선언문이 불요). `ABAPTYPE-POOLS`
+- ABAP SQL의 deep work area 제한 = **CORRESPONDING 없는 INTO 한정**(INTO CORRESPONDING FIELDS는 별개 규칙). `ABENABAP_SQL_WA` `ABAPINTO_CLAUSE`
 
 ## C. 시드·정본(관통예제 콘서트 앱)
 - 공연 3종 = C001～C003, C001 ARTIST 정본 = **안유진**. ZCONCERT에는 title 필드가 없다(별칭 `c~artist`가 정본).

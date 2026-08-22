@@ -1,0 +1,125 @@
+{
+  "agent": "AG05",
+  "model": "opus",
+  "target": "CH24",
+  "persona_ack": "20년차 학습 교재·코스 설계 전문가로서 CH24(RAP / ABAP Cloud 입문)를 교수설계 관점에서 감사했다. 챕터 구성·레슨 분할·섹션 흐름·복습/예습 장치·불편→해결 서사·인지부하 다섯 축으로 보되, 형식 강제는 하지 않고 학습 효과를 실제로 해치는 구조 문제만 상위 심각도로 판정했다.",
+  "method": "지정된 10개 파일 전문을 Read로 정독. 레슨 간 개념 도입 순서를 front-matter(introduces/prereq/foreshadow/prevRel)와 본문 실제 서술로 교차 대조하고, 각 레슨의 섹션 헤딩을 나열해 흐름 5단계 충족 여부와 예제 변수/신규 개념 수를 세었다. 외부 검색·다른 감사 산출물 열람 없음.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L09.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L05.md",
+      "quote": "METHODS validate_capacity FOR VALIDATE ON SAVE",
+      "category": "레슨 순서 역전(개념 도입 순서)",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "L05가 Validation이라는 개념 자체를 정식 도입하기 전에 validation handler 코드를 대표 예제로 제시한다. Validation·Determination·Action의 목적과 실행 시점은 두 레슨 뒤인 L07에서야 정식 도입되므로, L05 학습자는 이 코드가 무엇을 하는 코드인지 모르는 상태로 문법 세부를 먼저 읽는다.",
+      "evidence": "L05 front-matter의 introduces는 Behavior Implementation·behavior pool 클래스뿐이고 prereq도 CH24-L04, CH21이다. 반면 L07 front-matter가 Validation·Determination·Action을 introduces로 선언하며 prereq에 CH24-L05를 넣어 L05→L07 방향 의존을 명시한다. 그런데 L05 본문의 유일한 코드 예제는 validation handler(FOR VALIDATE ON SAVE)이고, failed·reported, save 시점, 집합 지향 keys가 한꺼번에 등장한다. 즉 선언된 의존 방향과 실제 개념 의존 방향이 반대다. 결과적으로 L05는 신규 개념(behavior pool, 상속 기반 클래스, handler signature, READ ENTITIES, IN LOCAL MODE, WITH CORRESPONDING, keys 집합성, failed/reported)에 미도입 개념 Validation까지 얹혀 한 레슨 인지부하가 과다해진다.",
+      "suggestion": "① 레슨 순서를 L04(BDEF 선언) → V/D/A 개요 → Behavior Pool 구현 → Service Def/Binding으로 재배치하거나, ② 순서를 유지한다면 L05의 대표 예제를 validation이 아닌 표준 operation 관점 handler로 바꾸고 validation은 L07 이후에 다루도록 옮긴다. ③ 최소 조치로는 L05 도입부에 검증·자동결정·액션 세 갈래가 있고 그중 검증 하나를 표본으로 본다는 1～2문장 위치 안내를 넣어 미도입 개념임을 명시한다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L04.md",
+      "quote": "field ( readonly:update ) booking_id;",
+      "category": "빠진 징검다리(예제 간 앵커 단절)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L04의 BDEF 예제에는 create·update·delete·field·mapping만 있고 validation 선언이 없다. 그런데 바로 다음 레슨 L05의 handler는 IMPORTING keys FOR Booking~validate_capacity로 BDEF에 있어야 할 validation 이름을 참조한다. 학습자가 방금 배운 BDEF에서 그 이름의 출처를 찾을 수 없어 두 레슨의 코드가 연결되지 않는다.",
+      "evidence": "L04 예제 블록은 create; update; delete; 와 field ( readonly:update ) booking_id; 및 mapping for zbooking으로 끝난다. L05는 method 이름 일치가 연결 조건이라고 설명하면서도(handler method 이름이 BDEF에 선언한 validation/action 이름과 맞아야 연결된다) 정작 대응하는 BDEF 선언을 보여주지 않는다. validation validate_capacity on save 선언이 처음 등장하는 곳은 L07이고, L09 실습에서 다시 쓰인다. 두 레슨을 잇는 코드 앵커가 챕터 중반에 비어 있다.",
+      "suggestion": "L05 예제 바로 위에 대응하는 BDEF 한 줄(validation 선언)을 대조용으로 함께 제시하고, 그 줄은 정식 설명이 L07에 있다고 1문장으로 안내한다. seq 1의 순서 재배치를 택하면 이 단절은 자연 해소된다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L08.md",
+      "quote": "> **기초·Modern 두 트랙을 마치며** — 환경([Chapter 1](CH01-L01.html))부터 RAP까지, *읽고 → 모델링하고 → 화면을 만들고 →",
+      "category": "챕터 구성(마무리 회고 중복 배치)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "트랙 전체를 회고하는 마무리 블록이 L08 끝과 L09 끝에 두 번 놓여 있다. 아직 통합 실습(L09)이 남았는데 L08에서 먼저 완주 선언이 나와, 학습자에게 종료 신호가 두 번 주어지고 마지막 실습의 무게가 깎인다.",
+      "evidence": "L08 말미의 인용 블록이 환경부터 RAP까지 한 바퀴를 돌았다고 선언하고 콘서트 예매 앱을 여정의 산출물이라고 못박는다. 그 직후 문장은 다시 실습으로 넘어가라고 안내한다. L09 말미에도 이 과정에서 키운 콘서트 예매 앱이 RAP 트랜잭션 앱으로 완성됐다는 동일 취지의 회고가 반복된다. 코스 설계상 회고·축하 장치는 단원 최종 산출물 뒤 한 번만 두는 것이 동기 곡선에 유리하다.",
+      "suggestion": "L08의 회고 인용 블록을 제거하거나 L09 말미로 통합하고, L08 마무리는 다음 레슨으로 넘기는 1～2문장 예고만 남긴다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L01.md",
+      "quote": "큰 그림을 봤다. 이제 RAP의 토대인 **root Interface View**부터 아래에서 위로 하나씩 쌓자 →",
+      "category": "선행 조직자(advance organizer)와 실제 학습 순서 불일치",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L01이 계층도를 제시하며 아래에서 위로 쌓겠다고 약속하지만, 그 계층도의 상하 순서와 실제 레슨 진행 순서가 중간에서 뒤집힌다. 챕터 전체의 지도 역할을 하는 그림이 진행 순서를 잘못 예고해, 학습자가 지금 어디를 쌓고 있는지 대조할 때 어긋난다.",
+      "evidence": "L01 계층도는 아래에서 위로 DB Table → ZI_Booking(Root) → Behavior Pool → BDEF → ZC_Booking(Projection) → Service Definition → Service Binding 순으로 그려져 있다. 실제 레슨은 L02 ZI_Booking → L03 ZC_Booking → L04 BDEF → L05 Behavior Pool → L06 Service Definition/Binding 순으로, 그림에서 붙어 있던 Behavior Pool·BDEF·Projection 세 칸의 순서가 정확히 역순이다. L01이 아래에서 위로 하나씩 쌓자고 명시한 만큼 이 불일치는 단순 배치 취향이 아니라 예고 위반이다.",
+      "suggestion": "계층도의 Behavior Pool과 BDEF 위치를 실제 진행 순서에 맞춰 조정하거나(또는 Projection과 BDEF/Pool을 같은 층으로 묶어 표현), 계층도 아래에 이 그림은 실행 시 의존 관계이고 학습 순서는 모델 → 동작 → 서비스라는 1문장 주석을 붙인다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L07.md",
+      "quote": "| **Validation** | 저장해도 되는지 검사 | [[save sequence]] | 정원 초과 예매 거부 |",
+      "category": "미정의 용어로 핵심 정보 전달 실패",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "세 로직의 차이를 가르는 핵심 표에서 Validation의 실행 시점 칸이 아직 설명되지 않은 용어 save sequence 하나로 채워져 있다. 같은 표의 Determination 칸은 on modify 또는 on save로 실제 시점을 말하므로, 정작 가장 중요한 Validation 행만 입문자에게 정보를 주지 못한다.",
+      "evidence": "save sequence는 CH24 어느 레슨에서도 인라인 풀이가 없다. L07 하단에서 다시 transactional buffer를 거부할 수 있다고만 쓰이고, transactional buffer의 인라인 풀이(RAP가 변경을 잠시 모아 두는 메모리)는 두 레슨 뒤 L09에서야 처음 등장한다. L09에서도 save sequence는 트리거한다는 서술로만 쓰이고 정의되지 않는다. 결과적으로 실행 시점 구분이 이 레슨의 학습 목표인데(입문자는 BDEF 문법보다 실행 시점 구분에서 자주 틀린다고 본문이 직접 밝힌다), 그 목표 정보가 미정의 용어로 봉인된다.",
+      "suggestion": "표의 Validation 실행 시점 칸을 저장 확정 직전(save sequence)처럼 일상어 + 용어 병기로 바꾸고, save sequence와 transactional buffer의 한 줄 풀이를 최초 등장 지점인 L07로 앞당긴다."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L03.md",
+      "quote": "일부여야 하며, root entity이거나 root를 포함한 composition tree 안에 있어야 한다. 이 챕터에서는 root 하나를",
+      "category": "인지 부하(미도입 용어·문서 번역투)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "provider contract의 제약을 설명하는 문단이 composition tree라는 미도입 용어를 풀이 없이 사용하고, 문장 자체도 표준 문서 번역투라 비전공 입문자가 조건을 이해하기 어렵다.",
+      "evidence": "composition은 CH24 어느 레슨에서도 도입되지 않는다. 가장 가까운 언급은 L02의 child entity가 있을 수는 있지만 이 챕터 실습에서는 root 하나로 단순하게 시작한다는 서술뿐이며, composition이라는 관계 개념 자체는 설명되지 않는다. 해당 문단은 바로 뒤에서 이 챕터는 root 하나를 쓰는 단순 구조로 이 조건을 이해한다고 수습하지만, 그 앞 문장이 이미 이해 불가 상태를 만든 뒤다.",
+      "suggestion": "이 문단을 root 하나 구조 기준으로 다시 쓰고(예: 이 계약은 트랜잭션 BO에 속한 entity에만 붙일 수 있다 → 우리는 root 하나이므로 조건을 자동 충족), composition tree는 필요하면 괄호 한 줄 풀이 또는 심화 장 예고로만 남긴다."
+    },
+    {
+      "seq": 7,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L09.md",
+      "quote": "mapping for zbooking { booking_id = booking_id; }",
+      "category": "예제 일관성(선행 레슨 강조와 실습 코드 충돌)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L04가 학습 단계에서는 모든 필드 대응을 눈으로 확인하는 편이 안전하다며 6개 필드 mapping을 보여줬는데, 통합 실습 L09의 BDEF는 같은 mapping을 필드 1개로 줄이면서 생략 표시도 근거도 없다. 실습을 그대로 따라 하는 학습자에게는 방금 배운 지침을 스스로 뒤집는 신호가 된다.",
+      "evidence": "L04 예제의 mapping 블록은 booking_id·concert_id·perf_no·customer·seats·status 6줄이고, 흔한 실수 항목에서 mapping 생략을 경계하라고 명시한다. L09의 같은 BDEF 블록은 mapping for zbooking에 booking_id 한 줄만 남기며, 다른 코드 블록에는 붙어 있는 생략 주석이나 골격 표시가 이 블록에는 없다.",
+      "suggestion": "L09 BDEF의 mapping을 L04와 동일하게 6줄로 복원하거나, 최소한 나머지 필드 생략 주석을 넣어 축약임을 명시한다."
+    },
+    {
+      "seq": 8,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L09.md",
+      "quote": "프로그램에서 RAP BO를 직접 다루는 언어를 [[EML]](Entity Manipulation Language)이라 한다. 흐름은 이렇다.",
+      "category": "인지 부하(통합 실습 중 신규 개념 삽입)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "통합 실습 레슨 한가운데, 시뮬레이터 직전에 EML·transactional buffer·save sequence를 다루는 신규 개념 절이 들어가 실습 흐름이 끊긴다. front-matter는 introduces를 빈 배열로 두고 EML을 foreshadow로 분류했지만, 본문 분량은 3행 표 + 핵심 2개 + 인용 블록으로 1～2문장 예고 수준을 넘는다.",
+      "evidence": "L09 front-matter의 introduces는 빈 배열이고 foreshadow에 EML 개념 지도가 들어 있다. 그러나 본문은 MODIFY ENTITIES·COMMIT ENTITIES·ROLLBACK ENTITIES를 표로 나란히 설명하고, 저장 트리거는 COMMIT ENTITIES라는 규칙과 behavior pool은 스스로 COMMIT하지 않는다는 규칙까지 제시한다. 조립·검증에 집중해야 할 마지막 실습에서 주의 자원이 분산된다.",
+      "suggestion": "이 절을 실습 시뮬레이터 뒤로 옮겨 실습 결과 해석용 보충으로 배치하거나, 표를 빼고 저장은 COMMIT 시점에 확정된다는 2～3문장으로 줄인 뒤 상세는 심화 장 예고로 넘긴다. 남긴다면 front-matter introduces에 EML 개념 지도를 반영해 실제 노출 수준과 선언을 일치시킨다."
+    },
+    {
+      "seq": 9,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\_chapter.md",
+      "quote": "현대 SAP 표준 — 트랜잭션 앱을 RAP로 짓고 싶다.",
+      "category": "챕터 intro(동기 설계 빈약·본문 중복)",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "챕터 본문이 front-matter의 intro 문장과 글자 그대로 동일해, 챕터 랜딩에서 같은 한 문장을 두 번 읽게 된다. Track 2를 닫는 고급 난이도 챕터인데도 챕터 수준의 동기 서사(지금까지 배운 CDS·OO만으로 왜 부족한가)가 없고, 그 역할이 전부 L01에 위임되어 있다.",
+      "evidence": "_chapter.md는 front-matter intro와 본문 한 줄이 동일 문자열이다. 반면 L01은 사용자가 예매를 생성·수정·삭제·검증해야 하고 그 기능이 Fiori 화면이나 OData API로 노출되어야 한다는 구체적 불편으로 챕터 동기를 충실히 세운다. 챕터 카드/랜딩에서 intro와 본문이 각각 어디에 렌더되는지는 대상 파일만으로 확인할 수 없어 추정으로 둔다.",
+      "suggestion": "본문을 intro 복제가 아닌 2～3문장으로 다시 써서 읽기 모델까지 왔다는 현재 위치, 트랜잭션 앱이라는 목표, 이 챕터에서 만들 산출물(예매 BO)을 제시한다. 렌더 위치상 중복이 무해하다면 이 항목은 무시해도 된다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "보강 권장",
+    "summary": "CH24는 불편→해결 서사와 복습 장치가 전반적으로 건강하다. 아홉 레슨 모두 왜 필요한가로 열고 무엇인가·어떻게 확인하는가·흔한 실수·다음 예고로 닫는 흐름이 일관되며, 도입부 불편이 형식적 칸 채우기가 아니라 실제 결핍(읽기 모델만으로는 생성·검증·노출이 안 된다, root가 흔들리면 뒤 계층이 무너진다 등)에 뿌리를 둔다. 이전 개념 상기도 CH23 읽기 모델, CH21 class·method, CH21 예외 클래스 지점에서 링크와 함께 잘 배치돼 있고, 레슨 말미 예고는 1～2문장으로 절제돼 과도한 선행 설명이 없다. 반면 챕터 중반의 개념 도입 순서에 실질적 결함이 있다. Validation·Determination·Action이 L07에서 정식 도입되는데 L05가 그보다 먼저 validation handler를 대표 예제로 쓰고(높음), 그 handler가 참조하는 validation 선언이 직전 L04의 BDEF 예제에 없어 두 레슨의 코드 앵커가 끊긴다. 여기에 L01 계층도가 예고한 아래에서 위로 순서가 실제 레슨 진행(Projection→BDEF→Pool)과 역순이고, 트랙 마무리 회고가 L08과 L09에 이중으로 놓여 종료 신호가 두 번 나며, L07의 핵심 비교표에서 Validation의 실행 시점이 끝까지 정의되지 않는 save sequence 한 단어로 처리된다. 이 네 건은 문구 교정이 아니라 레슨 배치·예제 앵커 조정을 요하므로 경미 수정보다 한 단계 위로 판단했다. 나머지(composition tree 미정의, L04↔L09 mapping 불일치, L09 실습 중 EML 절 삽입, 챕터 intro 중복)는 국소 보강으로 해소 가능하다. 재집필이 필요한 수준의 구조 붕괴는 없다."
+  }
+}

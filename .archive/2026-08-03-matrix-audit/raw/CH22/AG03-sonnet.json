@@ -1,0 +1,69 @@
+{
+  "agent": "AG03",
+  "model": "sonnet",
+  "target": "CH22",
+  "persona_ack": "Java/C# 계열 백엔드 3～5년차 개발자로서 ABAP을 빠르게 훑는다는 페르소나로 CH22(_chapter.md 및 L01～L08) 전체를 정독했다. 프로그래밍 기본기(변수·조건문·루프·SQL·OOP)는 이미 안다는 전제에서 과잉설명·오개념유발·지름길부재·용어충돌 네 관점으로 점검했고, 입문자에게 필요한 설명은 낮음 또는 suggestion으로만 남기고 억지 지적은 만들지 않았다.",
+  "method": "코드 실행·브라우저 검증 없이 Read로 대상 파일 9개(챕터 메타 1 + 레슨 8) 전문을 정적으로 통독. 각 코드 조각(CL_SALV_TABLE=>FACTORY, get_functions/get_sorts/get_filters, get_display_settings/get_columns/get_layout, LVC_T_FCAT, LVC_T_SCOL/LVC_T_STYL, refresh_table_display 등)의 파라미터·상수명은 보유한 SAP ABAP API 지식으로 교차 확인(기술적 오류는 발견하지 못함).",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH22-L03.md",
+      "quote": "`gt_fcat`을 바꾼다고 **DB 테이블 구조나 데이터가 바뀌지 않는다.** `MANDT`(클라이언트 구분용 기술 필드)를 `no_out`으로 숨겨도 Internal Table엔 값이 그대로 남아 있고, `SEATS`에 `do_sum`을 켜도 DB에 합계 행이 생기지 않는다.",
+      "category": "과잉",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'카탈로그를 바꿔도 데이터는 그대로' 단락은 표시 설정(view)과 실제 데이터/DB를 구분하는 내용인데, MVC/OOP에 익숙한 경력 개발자에겐 이미 체화된 상식이라 다시 읽는 게 답답할 수 있다.",
+      "evidence": "이 사이트의 1독자는 비전공 입문자이므로 이 설명 자체는 필요하고 유지가 맞다(실제로 많은 초심자가 '숨기면 데이터도 지워지나'로 오해한다). 다만 경력자 관점에선 view/model 분리는 자명해 이 문단 전체(3문장)를 정독할 필요가 낮다.",
+      "suggestion": "본문은 그대로 두되, 경력자가 한눈에 건너뛸 수 있게 문단 앞에 짧은 표시(예: 'MVC의 view/data 분리를 이미 아는 개발자는 이 문단 스킵 가능')를 붙이는 정도의 보완이면 충분하다."
+    },
+    {
+      "seq": 2,
+      "file": "CH22-L08.md",
+      "quote": "color-col = col_total color-int = 1 ) TO <r>-cellcolors.",
+      "category": "오개념 유발",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "col_total 색상 상수가 실제로는 '합계' 의미와 무관하게 잔여석 임박 경고(노랑) 표시에 재사용되는데, 상수 이름과 실제 용도가 다른 이유에 대한 설명이 챕터 어디에도 없다.",
+      "evidence": "CH22-L04의 color-col 설명표는 col_total을 '노랑'으로만 소개하고 원래 의미(합계 행 강조용 색)는 언급하지 않는다. CH22-L08 코드에서는 '합계'와 무관한 '잔여석 5 이하 경고'에 col_total을 쓰는데, ABAP 클래식 ALV 색상 상수가 7개뿐이라(전용 warning 색이 없음) 이름보다 렌더링 색으로 골라 쓰는 관행이라는 배경이 나오지 않는다. 상수 이름과 실제 의미의 일치를 중시하는 경력 개발자는 이 재사용을 코드 리뷰에서 지적할 법한 '설계가 이상한 부분'으로 오인할 수 있다.",
+      "suggestion": "col_total처럼 상수 이름이 '용도'가 아니라 '렌더링 색'만 가리키는 관행이라는 점(전용 warning 색이 없어서 그렇다는 점)을 한 줄 각주로 덧붙이면 경력자가 네이밍-용도 불일치에 걸리지 않는다."
+    },
+    {
+      "seq": 3,
+      "file": "CH22-L04.md",
+      "quote": "**`fname` 오타** → `SEATS_OCC`처럼 틀리면 색 정보는 있어도 적용 안 된다. **컬럼 제목이 아니라 component 이름**(`SEATSOCC`).",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "field catalog·layout 연결에 쓰이는 fieldname/fname/ctab_fname/stylefname/info_fname 같은 문자열 기반 필드 바인딩이 컴파일 타임에 검증되지 않는 근본 이유(레거시 ALV API가 타입 참조가 아니라 문자열 이름으로 런타임에 매칭하는 방식이라는 점)가 챕터 전체에서 한 번도 명시적으로 설명되지 않는다.",
+      "evidence": "L03(fieldname), L04(fname/ctab_fname), L05(fieldname/stylefname), L06(info_fname), L08(fname)에서 모두 '오타 나면 조용히 안 먹는다'는 흔한 실수가 반복 경고되지만, 왜 컴파일러가 이런 오타를 못 잡는지는 설명되지 않는다. 타입 세이프한 참조(nameof, 람다 표현식, 제네릭 프로퍼티 접근자 등)에 익숙한 Java/C# 개발자는 반복되는 '오타 주의' 경고만 보고 왜 이런 구식 설계가 아직 쓰이는지 답답해하거나, 이 사이트의 안내가 근본 원인 대신 증상만 반복한다고 느낄 수 있다.",
+      "suggestion": "이 패턴이 챕터에 처음 등장하는 L03 즈음에서 '이 필드명들은 컴파일 타임 타입 체크가 없는 문자열 기반 바인딩이라 오타가 런타임에만, 그것도 조용히 드러난다'는 한 줄 배경 설명을 한 곳에 추가하면, 이후 반복되는 '오타 주의' 경고들이 왜 필요한지 경력자가 구조적으로 이해하게 된다."
+    },
+    {
+      "seq": 4,
+      "file": "CH22-L07.md",
+      "quote": "[Refresh와 Stable Refresh 기초](CH17-L08.html)의 [[Stable Refresh]]를 심화한다.",
+      "category": "용어 충돌",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "'Stable Refresh'의 'Stable'은 화면 스크롤·선택 위치 유지를 뜻하는데, 알고리즘 용어인 stable sort(동일 키 원소의 상대 순서 보존)와 이름이 겹친다. 같은 챕터(L01)에서 add_sort로 정렬도 다루기 때문에 순간적으로 다른 의미를 연상할 여지가 있다.",
+      "evidence": "본문은 [[Stable Refresh]]를 용어 링크로만 제시할 뿐, '정렬의 stable과는 다른 뜻'이라는 구분을 어디에도 명시하지 않는다. 정렬 알고리즘의 안정성 개념에 익숙한 경력 개발자라면 챕터 제목만 보고 잠깐 다른 의미를 떠올릴 수 있다. 다만 본문을 읽으면(28번째 줄 예시 등) 문맥상 바로 해소되므로 혼동은 순간적이다.",
+      "suggestion": "본문 초반에 괄호로 한 번 '(여기서 stable은 정렬 알고리즘의 stable sort와 무관하게, 화면 위치가 그대로 유지된다는 뜻이다)' 정도만 짚어주면 순간적 혼동도 없앨 수 있다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH22는 SALV/Grid ALV 표시를 색·레이아웃·리프레시까지 깊게 다루는 심화 챕터로, 경력 개발자 관점에서도 이미 밀도가 높고 표·경고 콜아웃 위주라 장황함이 적은 편이다. 특히 FACTORY의 IMPORTING 수신 패턴(값 반환이 아니라는 점), 저장된 variant가 코드 기본값을 덮어쓰는 함정, refresh_table_display가 DB를 다시 읽지 않는다는 점 등 경력자가 실제로 오해하기 쉬운 지점들을 이미 선제적으로 경고 콜아웃(⚠️/📌)으로 짚어주고 있어 전반적으로 완성도가 높다. 다만 (1) view/data 분리처럼 경력자에겐 자명한 설명이 일부 남아 있고, (2) col_total처럼 상수 이름과 실제 용도(경고색 렌더링)가 어긋나는데 배경 설명이 없고, (3) fieldname/fname/ctab_fname/stylefname 등 문자열 기반 필드 바인딩이 왜 컴파일 타임에 안 잡히는지 근거 없이 '오타 주의'만 챕터 내내 반복되고, (4) 'Stable Refresh'의 Stable이 stable sort와 다른 개념이라는 구분이 없다. 모두 낮음～중간 severity의 보완형 지적이라 재집필이 아닌 '경미 수정'으로 판단한다."
+  }
+}

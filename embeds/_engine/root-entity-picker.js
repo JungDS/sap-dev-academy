@@ -17,6 +17,8 @@
 
   function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
   function cur(){ return ENT[st.ent]; }
+  // 조사 '(으)로' — 받침 있으면 '으로'(ㄹ 받침 제외), 없으면 '로' (공연→공연으로·회차→회차로, C026)
+  function ro(w){ var c=w.charCodeAt(w.length-1); if(c<0xAC00||c>0xD7A3) return w+'로'; var j=(c-0xAC00)%28; return w+((j===0||j===8)?'로':'으로'); }
 
   function renderCards(){
     $('repCards').innerHTML=ORDER.map(function(k){
@@ -32,7 +34,7 @@
     }).join('');
     $('repActNote').textContent = fits
       ? '이 행동들이 모두 ‘예매’ 단위에서 일어납니다 → 예매가 root로 자연스럽습니다.'
-      : '이 행동들은 실제로 ‘예매’ 단위인데, root를 ‘'+cur().nm+'’로 두면 action·validation 대상이 흔들립니다.';
+      : '이 행동들은 실제로 ‘예매’ 단위인데, root를 ‘'+ro(cur().nm)+'’ 두면 action·validation 대상이 흔들립니다.';
   }
   function renderKeys(){
     var e=cur();
@@ -49,19 +51,21 @@
   function renderCode(){
     var e=cur();
     var keyf = (st.key && st.key.ok) ? st.key.f : (e.keys[0].f);
-    var fields = st.ent==='booking'
+    var keys = keyf.split(', ');
+    var fields = (st.ent==='booking'
       ? ['concert_id','perf_no','customer','seats','status']
-      : (st.ent==='perf' ? ['concert_id','perf_no','perf_date'] : ['artist','venue','capacity']);
+      : (st.ent==='perf' ? ['concert_id','perf_no','perf_date'] : ['concert_id','artist','venue','capacity']))
+      .filter(function(f){ return keys.indexOf(f)<0; });   // key로 이미 쓴 필드는 일반 필드로 중복 출력하지 않음(C020)
     var lines=['<span class="k">define root view entity</span> <span class="ent">'+esc(e.root)+'</span>',
       '  <span class="k">as select from</span> '+esc(e.tb.toLowerCase()),'{'];
-    keyf.split(', ').forEach(function(kf){ lines.push('  <span class="kw">key</span> '+esc(kf)+','); });
+    keys.forEach(function(kf){ lines.push('  <span class="kw">key</span> '+esc(kf)+','); });
     fields.forEach(function(f,i){ lines.push('      '+esc(f)+(i===fields.length-1?'':',')); });
     lines.push('}');
     $('repCode').innerHTML='<pre class="rep-code">'+lines.join('\n')+'</pre>';
   }
   function renderVerdict(){
     var e=cur(), v=$('repVerdict');
-    if(!e.fits){ v.className='rep-verdict warn'; v.innerHTML='<b>트랜잭션 단위가 안 맞습니다.</b> 이 앱의 예약·취소·검증은 ‘예매’에서 일어납니다 — root를 <b>'+esc(e.nm)+'</b>로 두면 뒤 계층(BDEF·action·validation)이 흔들립니다.'; return; }
+    if(!e.fits){ v.className='rep-verdict warn'; v.innerHTML='<b>트랜잭션 단위가 안 맞습니다.</b> 이 앱의 예약·취소·검증은 ‘예매’에서 일어납니다 — root를 <b>'+esc(ro(e.nm))+'</b> 두면 뒤 계층(BDEF·action·validation)이 흔들립니다.'; return; }
     if(!st.key){ v.className='rep-verdict warn'; v.innerHTML='예매를 골랐습니다. 이제 <b>안정적인 key</b>를 정하세요 — RAP key는 인스턴스 식별 기준입니다.'; return; }
     if(!st.key.ok){ v.className='rep-verdict bad'; v.innerHTML='<b>key 부적합:</b> '+esc(st.key.why)+' RAP에서 key는 update·action·OData URL이 인스턴스를 찾는 기준이라 안정적이어야 합니다.'; return; }
     v.className='rep-verdict ok';

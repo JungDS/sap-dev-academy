@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <!-- CH23-L06-S01 — 엔진: dcl-auth-comparator · _autoheight. 콘텐츠=레슨 전용(CDS DCL 권한 필터 결과 비교기, #C22 L06).
      config=window.DAC_CFG. 게이팅: CDS 정식(DCL define role·grant select·aspect pfcg_auth·@AccessControl). RAP instance auth은 CH24+.
-     관통예제=콘서트. DCL role≠PFCG 사용자 배정. 이름 풀(R9: 아이유·손흥민·정훈영·김연아·유재석). -->
+     C058 교정(본문 L06 3값 표 정본): #CHECK/#NOT_REQUIRED=DCL 있으면 둘 다 평가(차이=DCL 없을 때 경고 유무) · #NOT_ALLOWED=존재 DCL 무시(+경고).
+     직접 비교 축 = #CHECK ↔ #NOT_ALLOWED(본문과 동일) · 3값 seg × DCL source 있음/없음 = 3×2 비교. privileged access는 note 1줄(L1).
+     권한 객체명 = Z_VENUE(기술명 10자 한도, C060). 관통예제=콘서트. 시드=정본(C001 안유진 KSPO DOME·C002 ABAP Trio 올림픽홀·
+     C003 UI5 Night 블루스퀘어, known-facts C절 — venue 값을 형제 위젯과 일치시킴, C069). DCL role≠PFCG 사용자 배정. -->
 <html lang="ko" data-eng="dcl-auth-comparator">
 <head>
 <meta charset="utf-8" />
@@ -13,10 +16,11 @@
 <body>
 <div class="wrap">
   <p class="hd">DCL 권한 필터 결과 비교기 <small>(같은 코드, 다른 결과)</small></p>
-  <p class="lead">사용자를 바꾸고 <code>@AccessControl</code>을 <code>#CHECK</code>↔<code>#NOT_REQUIRED</code>로 토글해 보세요. <b>같은 <code>SELECT FROM ZI_Concert</code></b>인데 권한(PFCG VENUE)에 따라 보이는 행이 달라집니다. <code>#NOT_REQUIRED</code>면 권한 밖 venue까지 노출되는 걸 직접 확인하세요.</p>
+  <p class="lead">사용자를 바꾸고 <code>@AccessControl</code>을 <code>#CHECK</code> ↔ <code>#NOT_ALLOWED</code>로 바꿔 보세요. <b>같은 <code>SELECT FROM ZI_Concert</code></b>인데 사용자 권한에 따라 보이는 행이 달라지고, <code>#NOT_ALLOWED</code>면 존재하는 DCL이 무시되어 권한 밖 공연장까지 노출됩니다. <code>#NOT_REQUIRED</code>로 바꿔 봐도 DCL이 있는 한 결과는 <code>#CHECK</code>와 같아요(그 값은 "DCL 끄기"가 아닙니다). <b>DCL source 없음</b>으로도 바꿔 보면 세 값의 차이(경고 유무)가 보입니다.</p>
 
   <div class="dac-grp"><span class="dac-glbl">사용자</span><span id="dacUsers"></span><span class="dac-pfcg" id="dacPfcg"></span></div>
-  <div class="dac-grp"><span class="dac-glbl">접근 제어</span><button class="dac-mode" id="dacMode"></button></div>
+  <div class="dac-grp"><span class="dac-glbl">@AccessControl</span><span id="dacModeSeg"></span></div>
+  <div class="dac-grp"><span class="dac-glbl">DCL source</span><button class="dac-mode" id="dacDclTog"></button></div>
 
   <pre class="dac-code" id="dacDcl"></pre>
   <pre class="dac-code" id="dacSql"></pre>
@@ -25,23 +29,21 @@
 
   <div class="dac-verdict" id="dacVerdict"></div>
 
-  <div class="note"><b>DCL role ≠ 사용자에게 role 부여.</b> <code>define role</code>은 CDS 접근 규칙이고, <code>aspect pfcg_auth</code>는 기존 PFCG 권한 객체의 값을 조건으로 <b>참조</b>할 뿐입니다. 사용자에게 권한을 주는 작업(SU01/PFCG)은 별도 보안 설정이에요. 그리고 권한은 UI에서만 막으면 안 됩니다 — 모델을 직접 읽는 다른 소비처가 우회할 수 있으니까요.</div>
+  <div class="note"><b>DCL role ≠ 사용자에게 role 부여.</b> <code>define role</code>은 CDS 접근 규칙이고, <code>aspect pfcg_auth</code>는 기존 PFCG 권한 객체의 값을 조건으로 <b>참조</b>할 뿐입니다. 사용자에게 권한을 주는 작업(SU01/PFCG)은 별도 보안 설정이에요. 존재하는 DCL을 <b>무시</b>하게 하는 것은 <code>#NOT_REQUIRED</code>가 아니라 <code>#NOT_ALLOWED</code>(또는 소비 쪽의 privileged access, 심화 주제)입니다. 그리고 권한은 UI에서만 막으면 안 됩니다 — 모델을 직접 읽는 다른 소비처가 우회할 수 있으니까요.</div>
 </div>
 
 <script>
 window.DAC_CFG = {
   entity: 'ZI_Concert',
   users: [
-    { id: 'SEOUL_USER', auth: ['SEOUL'] },
-    { id: 'BUSAN_USER', auth: ['BUSAN'] },
+    { id: 'KSPO_USER',    auth: ['KSPO DOME'] },
+    { id: 'OLYMPIC_USER', auth: ['올림픽홀'] },
     { id: 'NO_AUTH_USER', auth: [] }
   ],
   concerts: [
-    { id: 'C001', artist: '아이유',  venue: 'SEOUL' },
-    { id: 'C002', artist: '손흥민',  venue: 'BUSAN' },
-    { id: 'C003', artist: '정훈영',  venue: 'SEOUL' },
-    { id: 'C004', artist: '김연아',  venue: 'BUSAN' },
-    { id: 'C005', artist: '유재석',  venue: 'JEJU' }
+    { id: 'C001', artist: '안유진',    venue: 'KSPO DOME' },
+    { id: 'C002', artist: 'ABAP Trio', venue: '올림픽홀' },
+    { id: 'C003', artist: 'UI5 Night', venue: '블루스퀘어' }
   ]
 };
 </script>

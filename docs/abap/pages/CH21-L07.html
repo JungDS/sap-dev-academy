@@ -56,11 +56,17 @@
 12
 13
 14
-15</pre><pre class="abap-editor__code"><code><span class="tok-kw">CLASS</span> zcl_vip_booking <span class="tok-kw">DEFINITION</span> <span class="tok-kw">PUBLIC</span>
+15
+16
+17
+18
+19
+20</pre><pre class="abap-editor__code"><code><span class="tok-kw">CLASS</span> zcl_vip_booking <span class="tok-kw">DEFINITION</span> <span class="tok-kw">PUBLIC</span>
   <span class="tok-kw">INHERITING</span> <span class="tok-kw">FROM</span> zcl_booking_manager
   <span class="tok-kw">CREATE</span> <span class="tok-kw">PUBLIC</span>.
   <span class="tok-kw">PUBLIC</span> <span class="tok-kw">SECTION</span>.
     <span class="tok-kw">METHODS</span> book <span class="tok-kw">REDEFINITION</span>.        <span class="tok-com">" 부모 메서드를 다시 정의</span>
+    <span class="tok-kw">METHODS</span> apply_vip_coupon.         <span class="tok-com">" 자식에서 새로 더한 VIP 전용 메서드</span>
 <span class="tok-kw">ENDCLASS</span>.
 
 <span class="tok-kw">CLASS</span> zcl_vip_booking <span class="tok-kw">IMPLEMENTATION</span>.
@@ -70,12 +76,20 @@
     <span class="tok-kw">ENDIF</span>.
     super-&gt;book( iv_seats = iv_seats ).   <span class="tok-com">" 부모의 원래 동작 재사용</span>
   <span class="tok-kw">ENDMETHOD</span>.
+
+  <span class="tok-kw">METHOD</span> apply_vip_coupon.
+    <span class="tok-com">" VIP 쿠폰 적용(자리만 잡아 둔다. 다음 레슨에서 이 메서드를 부른다)</span>
+  <span class="tok-kw">ENDMETHOD</span>.
 <span class="tok-kw">ENDCLASS</span>.</code></pre></div></div>
 <ul>
 <li><code>INHERITING FROM</code> — 부모를 <button class="term" type="button" data-term="상속">상속</button>한다.</li>
 <li><code>REDEFINITION</code> — 부모의 <button class="term" type="button" data-term="인스턴스">인스턴스</button> <button class="term" type="button" data-term="Method">메서드</button>를 <strong>새로 구현</strong>(오버라이드).</li>
 <li><code>super-&gt;</code> — 부모의 원래 구현을 부른다(자식 검사 후 부모 동작 재사용).</li>
+<li>자식은 재정의만 하는 게 아니라 <code>apply_vip_coupon</code>처럼 <strong>새 메서드를 더할</strong> 수도 있다.</li>
 </ul>
+<blockquote class="cw">
+<p>⚠️ 상한 위반(1회 4석 초과)은 매진과 <strong>원인이 다른</strong> 실패다. 지금은 배운 예외 클래스가 <code>ZCX_FULLY_BOOKED</code> 하나뿐이라 재사용했지만, 실무에서는 <code>ZCX_VIP_LIMIT</code>처럼 <strong>사유별 예외 클래스</strong>를 나눈다. 예외 이름이 원인을 정확히 말해야 호출자가 바르게 대응한다(매진이면 다른 회차 안내, 상한 위반이면 좌석 수 조정).</p>
+</blockquote>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">부모-자식 클래스 상속 계층</span><a class="embed__open" href="../../../embeds/abap/CH21-L07-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH21-L07-S01.html" loading="lazy" title="부모-자식 클래스 상속 계층"></iframe></figure>
 </section><section class="lblock"><h2>정적 타입 vs 동적 타입 🎭</h2>
 <p>부모 타입 참조 변수에 자식 <button class="term" type="button" data-term="객체">객체</button>를 담을 수 있다. 그래도 <strong>재정의된 <button class="term" type="button" data-term="Method">메서드</button>는 실제 객체(자식) 구현으로</strong> 실행된다.</p>
@@ -86,18 +100,32 @@
 lo_mgr = <span class="tok-kw">NEW</span> zcl_vip_booking( iv_concert = <span class="tok-str">'C001'</span> iv_perf = <span class="tok-str">'01'</span> ).
 <span class="tok-com">"                              ↑ 동적 타입 = 자식</span>
 lo_mgr-&gt;book( iv_seats = <span class="tok-num">2</span> ).   <span class="tok-com">" 자식의 redefined book 이 실행된다</span></code></pre></div></div>
-<p>변수의 <strong>정적 타입</strong>은 <code>zcl_booking_manager</code>지만, 담긴 객체의 <strong>동적 타입</strong>은 <code>zcl_vip_booking</code>이다. <code>book</code>이 재정의돼 있으면 호출은 자식 구현으로 들어간다. 이것이 다음 레슨에서 다룰 다형성의 핵심이다.</p>
+<p><code>zcl_vip_booking</code>에는 <code>constructor</code>를 따로 쓰지 않았는데도 공연 ID·회차를 넘겼다. <strong>생성자도 부모에게서 물려받기</strong> 때문이다: 자식이 생성자를 직접 선언하지 않으면 부모 <code>constructor</code>의 입력 형태를 그대로 이어받아 그 생성자가 실행된다.</p>
+<p>변수의 <strong>정적 타입</strong>은 <code>zcl_booking_manager</code>지만, 담긴 객체의 <strong>동적 타입</strong>은 <code>zcl_vip_booking</code>이다. <code>book</code>이 재정의돼 있으면 호출은 자식 구현으로 들어간다. 이것이 <a href="CH21-L05.html">Interface 기본 설계</a>에서 본 <button class="term" type="button" data-term="다형성">다형성</button>이 상속 계층에서 나타나는 모습이다. 그 활용법(실제 타입 확인·분기)은 다음 레슨에서 다룬다.</p>
 </section><section class="lblock"><h2>ABSTRACT · FINAL 🚧</h2>
 <ul>
 <li><code>ABSTRACT</code> — 직접 <button class="term" type="button" data-term="객체">객체</button>를 못 만들고 <strong>상속 전용 틀</strong>로 둔다(공통 정책의 추상 부모).</li>
 <li><code>FINAL</code> — 더 이상 <strong>상속·재정의 금지</strong>(완성된 <button class="term" type="button" data-term="Class">클래스</button>).</li>
 </ul>
+<p>둘 다 <code>DEFINITION</code> 머리에 붙는다.</p>
+<div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
+2
+3
+4
+5
+6</pre><pre class="abap-editor__code"><code><span class="tok-com">" 골격 — 붙는 자리만 본다</span>
+<span class="tok-kw">CLASS</span> zcl_abstract_sample <span class="tok-kw">DEFINITION</span> <span class="tok-kw">PUBLIC</span> <span class="tok-kw">ABSTRACT</span>.   <span class="tok-com">" NEW 불가: 상속 전용 틀</span>
+<span class="tok-kw">ENDCLASS</span>.
+
+<span class="tok-kw">CLASS</span> zcl_final_sample <span class="tok-kw">DEFINITION</span> <span class="tok-kw">PUBLIC</span> <span class="tok-kw">FINAL</span>.         <span class="tok-com">" 더는 상속 불가: 완성형</span>
+<span class="tok-kw">ENDCLASS</span>.</code></pre></div></div>
+<p><button class="term" type="button" data-term="Method">메서드</button> 수준에도 붙일 수 있다. <code>METHODS book ABSTRACT.</code>는 부모가 몸통 없이 선언만 하고 자식이 <code>REDEFINITION</code>으로 반드시 채우는 메서드(ABSTRACT 클래스 안에서만 가능), <code>METHODS book FINAL.</code>은 자식이 더는 재정의할 수 없는 메서드다.</p>
 </section><section class="lblock"><h2>흔한 실수와 점검 🚧</h2>
 <ul>
 <li><strong><code>REDEFINITION</code> 없이 오버라이드</strong> → 부모 <button class="term" type="button" data-term="Method">메서드</button>를 바꾸려면 definition에 <code>METHODS book REDEFINITION.</code>이 있어야 한다.</li>
 <li><strong>자식에서 부모 private 접근</strong> → private은 자식에게도 안 보인다. 자식에게 열 의도면 부모에서 <strong>protected</strong>로 설계한다.</li>
-<li><strong>상속으로 모든 변형 해결</strong> → &quot;VIP는 예약 관리자의 특수한 종류&quot;면 상속이 맞지만, &quot;출력 가능&quot;·&quot;검증 가능&quot; 같은 <strong>횡단 규약</strong>은 <a href="CH21-L05.html">Interface</a>가 더 적합하다.</li>
-<li><strong><code>super-&gt;</code>를 무심코 켜고 끔</strong> → 부모 동작을 유지하며 앞뒤로 규칙을 더할지, 완전히 대체할지 <strong>설계 의도를 먼저</strong> 정한다.</li>
+<li><strong>상속으로 모든 변형 해결</strong> → &quot;VIP는 예약 관리자의 특수한 종류&quot;면 상속이 맞지만, &quot;출력 가능&quot;·&quot;검증 가능&quot;처럼 상속 계보와 무관하게 여러 <button class="term" type="button" data-term="Class">클래스</button>를 <strong>가로질러</strong> 적용되는 약속(횡단 규약)은 <a href="CH21-L05.html">Interface</a>가 더 적합하다.</li>
+<li><strong><code>super-&gt;</code> 호출을 습관적으로 넣거나 빼기</strong> → 부모 동작을 유지하며 앞뒤로 규칙을 더할지(호출), 완전히 대체할지(생략) <strong>설계 의도를 먼저</strong> 정한다.</li>
 </ul>
 <hr>
 <p>상속으로 확장했다. 그런데 부모 타입 변수에 담긴 자식을 <strong>원래 자식 타입으로</strong> 다시 다루려면? →

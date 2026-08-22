@@ -68,7 +68,7 @@
       return;
     }
     boundIdx = -1;
-    log('bad', '<code>CLEAR ' + h(REF) + '.</code> 참조가 <b>initial</b>로 돌아갔습니다. 객체 자체가 사라진 게 아니라, <b>가리키던 손을 놓은 것</b>입니다.');
+    log('bad', '<code>CLEAR ' + h(REF) + '.</code> 참조가 <b>initial</b>로 돌아갔습니다. 객체가 그 순간 사라진 게 아니라, <b>가리키던 손을 놓은 것</b>입니다. 다만 <b>가리키는 참조가 하나도 안 남은 객체</b>는 이후 ABAP이 알아서 정리합니다(Garbage Collection).');
     render();
   }
 

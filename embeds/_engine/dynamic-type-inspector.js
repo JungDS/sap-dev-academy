@@ -66,7 +66,7 @@
     }
     // CASE TYPE OF — 예외 없이 안전 분기
     verEl.className = 'ok';
-    if (isVip()) verEl.innerHTML = '✅ <b><code>WHEN TYPE ' + h(CFG.vipClass) + '</code> 분기</b> — 타입이 맞아 <code>INTO DATA(lo_v)</code>로 안전한 참조를 얻고 <code>' + h(CFG.vipMethod) + '</code> 실행. <b>예외 없이</b> 타입 검사+참조 확보를 한 번에.';
+    if (isVip()) verEl.innerHTML = '✅ <b><code>WHEN TYPE ' + h(CFG.vipClass) + '</code> 분기</b> — 타입이 맞아 <code>INTO DATA(lo_vip)</code>로 안전한 참조를 얻고 <code>' + h(CFG.vipMethod) + '</code> 실행. <b>예외 없이</b> 타입 검사+참조 확보를 한 번에.';
     else verEl.innerHTML = '✅ <b><code>WHEN TYPE ' + h(CFG.baseClass) + '</code> 분기</b> — 일반 객체라 기본 분기로. <code>CASE TYPE OF</code>는 <code>CAST</code>와 달리 <b>예외를 던지지 않고</b> 타입에 맞는 가지로 안전하게 들어갑니다.';
   }
 

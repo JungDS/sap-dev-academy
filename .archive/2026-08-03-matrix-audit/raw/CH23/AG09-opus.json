@@ -1,0 +1,68 @@
+{
+  "agent": "AG09",
+  "model": "opus",
+  "target": "CH23",
+  "persona_ack": "나는 발견자 AG09 — ABAP 정적 검사기를 시늉하는 코드 전용 감사자다. 산문 서술은 판단 대상에서 제외하고 펜스 코드 블록만 줄 단위로 대조했다. 읽기 전용 감사로 대상 8개 파일만 열었고, 수정·생성·삭제·웹검색은 하지 않았다. 다른 감사자 산출물·과거 감사 기록은 열지 않았다(블라인드).",
+  "method": "대상 8개 MD를 Read로 통독한 뒤 펜스 코드 블록만 추출해 줄 단위 대조: ```abap 2개(CH23-L01·L02) · ```cds 13개 · ```metadata 2개 · ```dcl 1개, 총 18개. ABAP 실행·활성화 환경이 없으므로 컴파일 확인이 아니라 문법·식별자 제약·챕터 경계 규약에 대한 정적 판단이며, 코드 블록 사이의 상호 참조(같은 entity가 여러 레슨에서 어떻게 재정의되는지, 본문이 코드에 대해 주장하는 내용이 코드와 맞는지)를 교차 검증했다. 대상 파일 밖(zconcert·zperf DDIC 정의 등)은 접근 제약상 확인하지 않았다.",
+  "errors": [],
+  "files_read": [
+    "content/abap/CH23/_chapter.md",
+    "content/abap/CH23/CH23-L01.md",
+    "content/abap/CH23/CH23-L02.md",
+    "content/abap/CH23/CH23-L03.md",
+    "content/abap/CH23/CH23-L04.md",
+    "content/abap/CH23/CH23-L05.md",
+    "content/abap/CH23/CH23-L06.md",
+    "content/abap/CH23/CH23-L07.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH23/CH23-L06.md",
+      "quote": "where ( venue ) = aspect pfcg_auth( Z_VENUE_AUTH, VENUE, ACTVT = '03' );",
+      "category": "존재불가 식별자(길이 제한)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "DCL 예제가 참조하는 권한 객체 이름 `Z_VENUE_AUTH`는 12자로, SAP 권한 객체(authorization object) 이름의 최대 길이 10자를 초과한다. 이 이름의 권한 객체는 SU21에서 만들 수 없으므로 예제를 그대로 따라 하면 권한 객체 생성 단계에서 막히고, DCL도 미존재 객체 참조로 활성화되지 않는다.",
+      "evidence": "권한 객체 이름은 TOBJ-OBJCT(데이터 요소 XUOBJECT, CHAR 10)로 10자 제한이며 표준 객체도 예외 없이 10자 이하다(S_TABU_DIS·S_ADMI_FCD·S_CARRID 등). `Z_VENUE_AUTH`는 Z(1)~H(12)로 12자다. 같은 레슨의 '어떻게 확인하는가' 1번이 '권한 객체·필드명 오류가 있으면 활성화 단계에서 드러난다'고 안내하므로, 예제 자체가 그 오류 사례가 되어 버린다. 반면 두 번째 인자 `VENUE`(권한 필드, 5자)와 `ACTVT = '03'` 표기, `@MappingRole: true`·`define role`·`grant select on` 구조는 정상이다.",
+      "suggestion": "권한 객체 이름을 10자 이내로 줄인다(예: `Z_VENUE` 또는 `Z_CONCERT`). 본문 표(`| 코드 | 뜻 |`)의 해당 행과 위젯 CH23-L06-S01에서 같은 이름을 쓴다면 함께 맞춘다."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH23/CH23-L04.md",
+      "quote": "@Semantics.amount.currencyCode: 'currency'\nprice,",
+      "category": "코드-본문 불일치",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "이 조각은 'L01의 ZI_Flight에는 price와 currency가 실제로 있으니'라는 전제로 제시되지만, CH23-L01이 정의한 `ZI_Flight`의 select list에는 `price`도 `currency`도 없다. 학습자가 L01에서 만든 모델에 이 조각을 그대로 붙이면 `@Semantics.amount.currencyCode: 'currency'`가 가리키는 요소가 select list에 없어 활성화 오류가 난다.",
+      "evidence": "CH23-L01의 `define view entity ZI_Flight`는 `key carrid, key connid, key fldate, seatsmax, seatsocc, seatsmax - seatsocc as seats_left`만 노출한다. `price`·`currency`는 원본 테이블 `sflight`에는 있지만 뷰에는 올라가 있지 않다. 같은 L04의 '어떻게 확인하는가'가 '짝 존재 — ...라고 썼다면 같은 select list에 그 요소가 실제로 있어야 한다'고 스스로 규정하므로, 예제가 자기 규칙을 위반하는 형태다. (annotation 표기 자체 — 금액=`@Semantics.amount.currencyCode`, 통화 키=`@Semantics.currencyCode: true` — 는 올바르다.)",
+      "suggestion": "둘 중 하나로 맞춘다. ① CH23-L01의 `ZI_Flight` select list에 `price`·`currency`를 추가한다(추가 시 CURR 필드라 통화 참조 annotation이 함께 필요하다는 점이 오히려 L04의 자연스러운 도입이 된다). ② 또는 L04 본문의 '실제로 있으니'를 '`sflight`에 있는 price·currency를 ZI_Flight에 추가한 뒤'처럼 고치고 select list에 얹는 과정을 한 줄 보여 준다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH23/CH23-L03.md",
+      "quote": "(숫자 대신 단어로 `association of one to many\n  to ZI_Perf`처럼 쓰는 표기도 있다.)",
+      "category": "존재하지 않는 구문",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "ABAP CDS의 cardinality 대안 표기로 소개한 `association of one to many to ZI_Perf`는 ABAP CDS(DDL) 문법에 없는 형태로 보인다. ABAP CDS view entity의 association cardinality는 `association [min..max] to <target> as <_name>` 대괄호 표기만 지원한다.",
+      "evidence": "ABAP CDS에서 `of`는 composition(`composition [0..*] of ZI_Child as _Child`)에 쓰이는 키워드이고, 단어형 `to many`/`to one`은 SAP HANA CDS·CAP CDL 계열의 표기다. 그 어느 쪽에도 'of one to many to <target>'을 결합한 형태는 없다. 입문자가 대안 표기로 믿고 쓰면 활성화 단계에서 문법 오류가 난다. 다만 활성화 환경 없이 지식만으로 판단했으므로 confidence는 추정으로 둔다.",
+      "suggestion": "해당 괄호 문장을 삭제하거나, 사실이 확인된 범위로 좁혀 표기한다(예: '최대치만 적어 `[0..*]` 대신 `[*]`로 줄여 쓰기도 한다' 수준). 단어형 표기를 굳이 언급하려면 'SAP HANA CDS·CAP 등 다른 CDS 방언의 표기'라고 소속을 밝힌다."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH23/CH23-L04.md",
+      "quote": "`@UI.lineItem`을 `artist` 위에 썼다고\n  생각했는데 사이에 빈 줄·다른 필드가 끼면 의도와 다른 필드에 붙을 수 있다.",
+      "category": "설명-문법 불일치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'빈 줄이 끼면 다른 필드에 붙을 수 있다'는 부분이 CDS 문법과 맞지 않는다. CDS DDL은 자유 형식이라 빈 줄은 의미가 없고, 요소 annotation은 빈 줄 개수와 무관하게 '그 다음에 오는 요소'에 붙는다. 실제로 결합 대상을 바꾸는 것은 '다른 필드가 끼는' 경우뿐이다.",
+      "evidence": "같은 레슨의 예제 코드 자체가 `key concert_id,` 다음에 빈 줄을 두고 `@UI.lineItem: [{ position: 10 }]`·`@EndUserText.label: '아티스트'`를 이어 쓴 뒤 `artist,`에 정상적으로 결합시키는 형태다. 즉 본문 경고를 그대로 믿으면 자기 예제가 위험해 보이는 자기모순이 생긴다.",
+      "suggestion": "'빈 줄·'을 빼고 '사이에 다른 필드가 끼면'으로 고친다. 빈 줄을 언급하려면 '빈 줄은 영향이 없다 — 붙는 기준은 annotation 바로 다음에 오는 요소다'처럼 오해를 푸는 방향으로 쓴다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "코드 블록 18개(```abap 2 · ```cds 13 · ```metadata 2 · ```dcl 1)를 줄 단위로 대조했다. ABAP 코드는 두 블록뿐이며 둘 다 결함이 없다 — `SELECT ... FROM ... INTO TABLE @DATA(gt_concerts).`는 문장 마침표·INTO의 FROM 뒤 배치·host 변수 `@` 이스케이프까지 strict 모드 요건을 지켰고, 인라인 `@DATA`와 콤마 select list는 CH19 이후 챕터라 경계 규약(R6) 위반이 아니다. 접두어 `gt_`도 챕터 내에서 일관되며 CH10 이후 조각에 대한 예외 조항과 충돌하지 않는다. CDS 쪽도 `define view entity`/`as select from`/key 선행 배치, association의 `[0..*]`·`$projection` ON 조건과 select list 노출, DDLX의 `annotate entity` + 요소 뒤 세미콜론, `@Metadata.layer: #CORE`·`@Metadata.allowExtensions: true`, DCL의 `@MappingRole: true`·`define role`·`grant select on`·`aspect pfcg_auth` 구조가 모두 표준 형태다. 활성화를 막을 치명 결함은 없었고, 발견 4건은 ① 권한 객체 이름 길이 초과(Z_VENUE_AUTH 12자>10자), ② L04의 금액-통화 예제가 L01의 ZI_Flight에 없는 요소를 전제, ③ 존재하지 않아 보이는 cardinality 단어형 표기 소개(추정), ④ CDS에서 무의미한 '빈 줄' 경고로, 모두 국소 문자열 교정 수준이다."
+  }
+}

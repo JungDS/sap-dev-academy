@@ -1,0 +1,90 @@
+{
+  "agent": "AG06",
+  "model": "sonnet",
+  "target": "CH23",
+  "persona_ack": "ECC부터 S/4HANA까지 20년차 SAP ABAP 아키텍트로서 CH23(CDS View Entity 기초) 챕터 메타 + 레슨 7개를 감사했다. CDS DDL 문법(define view entity), Interface/Consumption 계층, Association, Annotation, Metadata Extension(DDLX), DCL/권한 설계가 실제 시스템 동작·표준 관례와 일치하는지 검토했다.",
+  "method": "대상 8개 파일(_chapter.md, CH23-L01~L07.md)을 Read 도구로 전문 로드해 원문을 직접 대조했다. 특히 레슨 간 코드 재인용(예: L04가 L01의 ZI_Flight를 인용하는 대목)이 실제 원문과 일치하는지 교차 검증했다. 웹 검색·서버(SERVE_URL) 접속 없이 도구 사용 없는 지식 기반 감사로 진행했으며, 불확실한 항목은 confidence=추정으로 표기했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH23\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH23\\CH23-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH23\\CH23-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH23\\CH23-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH23\\CH23-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH23\\CH23-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH23\\CH23-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH23\\CH23-L07.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH23/CH23-L02.md",
+      "quote": "이름을 `ABC_Concert`로 지어도 활성화는 된다 — 다만 팀 규칙을 잃는다",
+      "category": "예시 적절성",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "'ZI_/ZC_는 문법이 아니라 관습'이라는 논지 자체는 맞지만, 그 반례로 든 `ABC_Concert`는 대부분의 실제 개발 시스템에서 활성화가 안 될 가능성이 높다. 커스텀 리포지토리 오브젝트(DDL/DDLX 소스 포함)는 보통 Y/Z로 시작하거나 등록된 네임스페이스(`/xxx/`)여야 생성이 허용되는 네임스페이스 보호를 받는다. `ABC_Concert`는 Y/Z로 시작하지 않으므로 일반 개발 시스템이라면 CDS 문법과 무관하게 네임스페이스 위반으로 막힐 소지가 크다.",
+      "evidence": "SAP 커스텀 오브젝트 명명 규칙(Y/Z 접두 또는 등록 네임스페이스 필수)은 안정적인 Basis 지식이다. 다만 실습 전용/네임스페이스 검사가 완화된 트레이닝 시스템 등 예외 환경 가능성을 배제할 수 없고 웹 검색으로 재확인이 불가해 추정으로 표기한다.",
+      "suggestion": "예시 이름을 `ZABC_Concert`처럼 네임스페이스 규칙은 지키되 팀 관습(ZI_/ZC_)만 벗어난 이름으로 바꾸면 핵심 논지를 유지하면서 무관한 함정을 피할 수 있다."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH23/CH23-L03.md",
+      "quote": "association을 select list에 노출하면, ON 조건의 source 쪽 필드(`concert_id`)는 반드시 `{ }` 안에 있어야 한다.",
+      "category": "사실 오류",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "본문은 '(1) association을 select list에 노출하면 → (2) ON 조건의 source 필드가 select list에 있어야 한다'는 인과로 서술하지만, 실제 제약의 방아쇠는 association 노출 여부가 아니라 ON 조건에서 `$projection.<필드>` 표기를 쓴다는 점 자체다. `$projection`은 '현재 뷰가 노출하는 요소(select list)'를 가리키므로, association을 select list에 노출하지 않고 내부용으로만 선언해도 ON 조건에 `$projection.concert_id`를 쓰면 여전히 `concert_id`가 select list에 있어야 한다.",
+      "evidence": "바로 앞 문장에서 본문 스스로 '$projection은 현재 뷰가 노출하는 요소를 기준으로 ON 조건을 쓴다는 표시'라고 설명한다 — 이 정의를 그대로 따르면 제약은 $projection 문법 사용에 딸린 것이지 association 노출과는 별개다. 다만 이 레슨의 모든 예제가 두 조건(소스 필드 노출 + association 노출)을 항상 함께 보여줘 실습상 체감 차이는 없을 수 있어 추정으로 낮춘다.",
+      "suggestion": "'association을 노출하면'이 아니라 'ON 조건에 $projection.필드를 쓰면'을 트리거 문구로 바꾸면 더 정확하다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH23/CH23-L03.md",
+      "quote": "path를 실제로 사용하면 내부적으로 JOIN으로 변환될 수",
+      "category": "위험한 생략",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "association이 JOIN과 무관한 마법이 아니라는 경고는 있지만, cardinality가 `[0..*]`(to-many)인 association을 평면 조회에서 그대로 펼쳐 쓰면(JOIN과 동일하게) 부모 쪽 행이 대상 개수만큼 중복된다는, classic Open SQL JOIN 경험자가 CDS로 넘어올 때 가장 흔히 놀라는 함정은 언급이 없다.",
+      "evidence": "1:N 관계를 JOIN하면 '1' 쪽 행이 N만큼 반복되는 것은 관계형 DB의 기본 동작이며, 본문도 association이 실제 사용 시 JOIN으로 변환된다고 명시한다. 다만 이 레슨은 `_Perf` association 자체의 선언·노출까지만 다루고 `_Perf.필드`를 평면 SELECT에서 실제로 펼치는 소비 패턴은 아직 가르치지 않으므로, 지금 당장 사고로 이어질 위험은 낮다고 보아 낮음/추정으로 표기한다.",
+      "suggestion": "'성능 무료 쿠폰으로 착각' 항목에 '`[0..*]` association을 평면 조회에서 펼치면 부모 행이 중복될 수 있다(집계·DISTINCT로 정리)'는 한 줄만 추가해도 충분하다."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH23/CH23-L04.md",
+      "quote": "[L01](CH23-L01.html)의 항공편 모델 `ZI_Flight`에는 `price`와 `currency`가 실제로 있으니, 이 둘로 금액-통화 짝을 선언한다.",
+      "category": "사실 오류",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "L04는 L01의 `ZI_Flight` 예제에 `price`·`currency` 필드가 '실제로' 있다고 서술하지만, CH23-L01.md에 실제로 정의된 `ZI_Flight`의 select list는 `key carrid, key connid, key fldate, seatsmax, seatsocc, seatsmax - seatsocc as seats_left`뿐이다. `price`·`currency`는 그 어디에도 없다 — L04가 존재하지 않는 필드를 '이미 있다'고 잘못 인용한 내부 불일치다.",
+      "evidence": "CH23-L01.md의 ZI_Flight DDL 코드 블록을 그대로 옮기면 `key carrid, key connid, key fldate, seatsmax, seatsocc, seatsmax - seatsocc as seats_left` 여섯 요소뿐이며 price·currency는 없다. 학습자가 링크를 따라 L01로 되돌아가 확인하면 본문 설명과 실제 코드가 어긋나는 것을 바로 발견하게 된다.",
+      "suggestion": "둘 중 하나로 고친다 — ① CH23-L01.md의 ZI_Flight select list에 price·currency를 실제로 추가하거나, ② CH23-L04.md 문구를 '항공편 모델에 price·currency 필드를 추가하면'처럼 신규 확장으로 정직하게 바꾼다."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH23/CH23-L06.md",
+      "quote": "@MappingRole: true` | 이 DCL role이 CDS access control role임을 표시.",
+      "category": "사실 오류",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "`@MappingRole: true`를 '이 DCL role이 CDS access control role임을 표시'하는 범용 마커로 설명하지만, 이는 부정확하다. `define role { ... }`로 선언되는 모든 DCL role은 이 annotation 유무와 무관하게 이미 CDS access control role이다. `@MappingRole: true`는 더 좁은 의미 — 다른 role이 `aspect role`로 재사용하는 '매핑 전용 role'을 표시하는 annotation에 가깝다. 같은 레슨의 '어떻게 확인하는가' 절은 한 걸음 더 나가 '`@MappingRole: true` 누락'을 활성화 오류 원인으로 나열해, 마치 모든 DCL role에 필수인 것처럼 서술한다.",
+      "evidence": "`grant select on ... where ... = aspect pfcg_auth(...);` 형태의 표준 단독 DCL role은 `@MappingRole` 없이도 정상 활성화된다는 것이 일반적인 이해다. 이 레슨의 role은 다른 role에서 `aspect role`로 참조되는 장면이 전혀 없는 '단독 사용' 예제인데도 이 annotation을 필수처럼 곁들여, 설명(access control role 표시)과 활성화 요건(누락 시 오류) 둘 다 부정확할 가능성이 있다. 웹 검색이 금지돼 SAP 공식 문서로 재확인은 못 해 추정으로 표기한다.",
+      "suggestion": "이 단일 role 예제에서는 `@MappingRole: true`를 빼고 가장 단순한 형태로 보여주거나, 유지한다면 '다른 role이 aspect role로 재사용하는 매핑 전용 role' 의미를 정확히 설명하고 '어떻게 확인하는가'의 활성화 필수 조건 서술도 함께 고친다."
+    },
+    {
+      "seq": 6,
+      "file": "content/abap/CH23/CH23-L06.md",
+      "quote": "aspect pfcg_auth( Z_VENUE_AUTH, VENUE, ACTVT = '03' )",
+      "category": "예시 적절성",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "권한 객체 기술명 `Z_VENUE_AUTH`는 12자(Z,_,V,E,N,U,E,_,A,U,T,H)로, SAP 권한 객체(SU21에서 생성하는 오브젝트) 기술명의 10자 제한을 넘는다. 이 이름 그대로는 실제 시스템에서 권한 객체를 생성할 수 없어, 코드 자체는 개념 설명용으로 문제없지만 '그대로 따라 만들 수 있는 예시'는 아니다.",
+      "evidence": "SAP 권한 객체 기술명이 10자로 제한된다는 것은 오래 안정적으로 유지된 Basis 사실이다. `Z_VENUE_AUTH`를 글자 수로 세면 12자로 이 제한을 초과한다.",
+      "suggestion": "`ZVENUEAUTH`(10자) 또는 `Z_VENUE_AU`처럼 10자 이내 이름으로 줄인다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH23은 CDS View Entity 기초(define view entity)→계층(ZI_/ZC_)→Association→Annotation→Metadata Extension→DCL 권한까지 구조·문법·활성화 규칙 설명이 전반적으로 정확하고, 'DCL은 상위 계층에 상속되지 않는다'·'association은 성능 무료 쿠폰이 아니다' 같은 전문가급 위험 경고도 제 위치에 잘 들어가 있다. 다만 L04가 L01의 ZI_Flight 예제에 없는 price·currency 필드를 '실제로 있다'고 잘못 인용한 내부 불일치가 확실한 결함으로 발견됐고(높음), L06의 `@MappingRole: true` 설명·활성화 요건 서술과 권한 객체명 길이(10자 초과), L02의 네임스페이스 반례, L03의 $projection 인과관계·association row-중복 생략 등은 중간~낮음 수준의 정밀도 이슈다. 구조 재작성 없이 해당 지점만 손보면 충분하다."
+  }
+}
