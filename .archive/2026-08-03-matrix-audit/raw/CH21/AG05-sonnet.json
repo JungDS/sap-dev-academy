@@ -1,0 +1,82 @@
+{
+  "agent": "AG05",
+  "model": "sonnet",
+  "target": "CH21",
+  "persona_ack": "20년차 학습 교재·코스 설계 전문가 페르소나로 CH21(OO ABAP 기본 설계) 10개 레슨 + _chapter.md를 챕터구성·섹션흐름·복습/예습장치·불편-해결서사·인지부하 5개 축에서 감사함.",
+  "method": "대상 CH21 파일 11개(_chapter.md, CH21-L01~L10.md)를 Read 도구로 전문 정독. 브라우저·빌드 서버(SERVE_URL)는 사용하지 않음 — 대상 파일이 명시적으로 .md 소스 11개로 한정돼 있어 교수설계 감사는 원문 텍스트 분석만으로 수행. 레슨별 front-matter(introduces/prereq/prevRel/foreshadow 개수·내용)를 상호 대조해 챕터 전체의 구조 일관성을 교차 검증하고, Grep으로 각 finding의 인용문이 실제 파일에 정확히 존재하는지 재확인함.",
+  "errors": [],
+  "files_read": [
+    "content/abap/CH21/_chapter.md",
+    "content/abap/CH21/CH21-L01.md",
+    "content/abap/CH21/CH21-L02.md",
+    "content/abap/CH21/CH21-L03.md",
+    "content/abap/CH21/CH21-L04.md",
+    "content/abap/CH21/CH21-L05.md",
+    "content/abap/CH21/CH21-L06.md",
+    "content/abap/CH21/CH21-L07.md",
+    "content/abap/CH21/CH21-L08.md",
+    "content/abap/CH21/CH21-L09.md",
+    "content/abap/CH21/CH21-L10.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH21/CH21-L06.md",
+      "quote": "introduces: [\"TRY/CATCH/CLEANUP\", \"RAISE EXCEPTION\", \"RAISING\", \"CX 계층\", \"RESUME\", \"THROW expression\", \"예외 텍스트(T100 라이트)\"]",
+      "category": "인지 부하",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L06 한 레슨에 신규 개념이 7개(TRY/CATCH/CLEANUP, RAISE EXCEPTION, RAISING, CX 계층, RESUME, THROW expression, 예외 텍스트)나 몰려 있어, 같은 챕터 다른 레슨(대부분 2~3개, 최대인 L07도 5개)보다 밀도가 뚜렷이 높다.",
+      "evidence": "챕터 내 introduces 개수는 L01=3·L02=2·L03=2·L04=2·L05=3·L07=5·L08=3·L09=3·L10=0인데 L06만 7개다. 실제 본문 흐름도 '예외 선언·던지기(RAISING+RAISE EXCEPTION)' → 'TRY/CATCH/CLEANUP' → 'THROW 표현식' → 'CX 계층 3분류' → 'RESUME은 존재만 언급' → 'get_text()/메시지 클래스 T100 메커니즘'까지 한 레슨에서 예외의 선언·발생·포착·분류·메시지조회를 전부 다룬다. 저자가 'RESUME은... 존재와 제약만 알고, 일반 업무 예외 패턴으로는 쓰지 않는다', '지금은 메시지가 SE24 예외 텍스트에서 온다까지만 알면 된다'처럼 본문에서 두 차례나 명시적으로 범위를 축소하는 문장을 넣은 것 자체가, 레슨이 다루는 양이 과함을 저자도 이미 인지하고 있었다는 방증이다.",
+      "suggestion": "get_text()/메시지 클래스(T100) 서브섹션을 별도 부록이나 CH21-L10 실습 쪽 참고 노트로 옮기거나, RESUME 언급을 '흔한 실수' 섹션의 한 줄 각주로 축약해 본 레슨의 핵심(선언·발생·포착)에 집중시키는 방안을 검토."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH21/CH21-L07.md",
+      "quote": "- `ABSTRACT` — 직접 객체를 못 만들고 **상속 전용 틀**로 둔다(공통 정책의 추상 부모).",
+      "category": "섹션 흐름",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "front-matter introduces에 정식 도입 개념으로 올라 있는 ABSTRACT·FINAL이 본문에서는 코드 예제 없이 정의 문장 두 줄로만 끝나, '어떻게 쓰나(예제)' 단계가 비어 있다.",
+      "evidence": "같은 레슨의 다른 개념(INHERITING FROM·REDEFINITION·super->, 정적/동적 타입)은 모두 완결된 코드 블록과 실행 설명을 동반하는데, ABSTRACT·FINAL 섹션만 코드 없이 불릿 두 줄('ABSTRACT — 직접 객체를 못 만들고 상속 전용 틀로 둔다', 'FINAL — 더 이상 상속·재정의 금지')이 전부다. 04_CONVENTIONS.md R15가 정의하는 L3(정식 도입) 기준은 '필요성→정의→구조→동작→문법→예제→실습'인데 이 두 키워드는 정의만 있고 예제·실습이 없다.",
+      "suggestion": "ABSTRACT 부모 클래스 선언 예제(공통 정책만 담은 추상 부모)와 FINAL 클래스 선언 예제를 4~6줄 정도로 짧게 추가하거나, 두 키워드를 introduces에서 빼고 '흔한 실수'급 참고 언급 수준으로 격하."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH21/CH21-L07.md",
+      "quote": "이것이 다음 레슨에서 다룰 다형성의 핵심이다.",
+      "category": "예습 장치 일관성",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "L07이 '다형성은 다음 레슨(L08)에서 다룬다'고 예고하지만, '다형성'이라는 용어와 개념은 이미 두 레슨 전인 L05에서 [[다형성]] glossary 링크로 명명·설명이 끝나 있다. 학습자가 '이미 배운 용어 아닌가' 헷갈릴 소지가 있다.",
+      "evidence": "L05 본문: '클래스 이름에 덜 묶일수록 나중에 구현을 갈아끼우기 쉽다. 이게 [[다형성]]이다.' — 인터페이스 참조를 통한 다형성을 이미 정의·용어 마킹까지 완료했다. L07은 상속의 정적/동적 타입을 설명한 뒤 '다음 레슨에서 다룰 다형성의 핵심'이라 표현해, 마치 다형성이 아직 미도입 개념인 것처럼 다시 예고한다. L08 도입부에도 L05의 인터페이스 기반 다형성을 상기시키는 연결 문장이 없어 두 언급이 서로를 인지하지 못한 채 따로 논다.",
+      "suggestion": "L07의 예고 문장을 '상속 관점의 다형성'처럼 범위를 좁혀 쓰거나, L08 도입부에 'L05에서 인터페이스로 본 다형성을, 이번엔 상속 계층에서 안전하게 다루는 법을 보자'처럼 명시적 연결 문장을 추가."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH21/CH21-L05.md",
+      "quote": "CLASS zcl_booking DEFINITION PUBLIC CREATE PUBLIC.",
+      "category": "챕터 구성(관통예제 일관성)",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "L01~L04에서 계속 zcl_booking_manager 하나로 이어오던 관통예제 클래스명이, L05의 Interface 예제에서 별다른 설명 없이 zcl_booking(_manager 없음)으로 바뀐다. 이름이 한 조각 차이로 비슷해 오탈자인지 의도적으로 다른 클래스인지 헷갈릴 여지가 있다.",
+      "evidence": "L05 도입부는 '예매 내역·공연 정보·오류 로그는 서로 다른 클래스'라 언급해 zcl_booking이 그중 '예매 내역(개별 예약 건)'을 뜻하는 것으로 추정은 가능하지만, 본문 어디에도 'zcl_booking_manager와는 다른 클래스'라는 명시적 문장이 없다. 반면 L07의 zcl_vip_booking은 'INHERITING FROM zcl_booking_manager'로 관계가 코드로 명시되고, L09의 zcl_booking_monitor는 이름 자체가 역할(모니터)을 설명해 혼동 여지가 적다. zcl_booking만 관계를 유추에 의존한다.",
+      "suggestion": "클래스 선언 직전이나 코드 주석에 'zcl_booking(예매 내역 한 건 — zcl_booking_manager와는 다른 클래스)'처럼 한 구절만 추가해 관계를 명시."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH21/CH21-L08.md",
+      "quote": "상속·인터페이스 덕에 **부모(또는 인터페이스) 타입 변수**에 여러 자식 객체를 담아 **똑같이** 다룰 수 있다.",
+      "category": "섹션 흐름(범위-예제 불일치)",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L08은 도입부와 '흔한 실수' 두 곳에서 인터페이스 타입 참조의 다운캐스트 가능성을 언급하고 prereq에도 CH21-L05(Interface)를 명시하지만, 실제 코드 예제(CAST·CASE TYPE OF)는 전부 상속 계층(zcl_booking_manager/zcl_vip_booking)만 다루고 인터페이스 참조(zif_printable 등)를 다운캐스트하는 예제는 한 번도 나오지 않는다.",
+      "evidence": "'내려보내기 — CAST' 절과 '타입 분기 — CASE TYPE OF' 절의 코드 블록 모두 zcl_booking_manager 계열만 사용한다. '흔한 실수'의 마지막 항목('인터페이스·부모 참조를 구체 클래스로 downcast하면... 결합도↑')도 인터페이스 케이스를 다시 말로만 언급하고 코드는 없다. 레슨이 스스로 설정한 범위(상속+인터페이스 둘 다의 다형성)를 예제가 절반(상속)만 충족한다.",
+      "suggestion": "CASE TYPE OF 또는 CAST 예제를 하나 더 추가해 TYPE REF TO zif_printable 참조를 구체 클래스로 내려받는 장면을 보여주거나, 커버하지 않을 거면 도입부·흔한실수의 '인터페이스' 언급을 삭제하거나 각주 수준으로 낮춰 본문 범위와 서술을 일치."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH21은 클래스·객체 생성(L01)에서 시작해 속성/메서드/가시성(L02)→생성자(L03)→정적/인스턴스(L04)→인터페이스(L05)→예외(L06)→상속(L07)→다형성(L08)→이벤트(L09)→실습(L10)으로 이어지는 흐름이 선수개념 체인상 잘 짜여 있다. 특히 L06(예외)이 L05와 L07 사이에 끼어 있는 배치는 얼핏 순서가 어색해 보이지만, L07의 VIP 오버라이드 예제가 L06에서 배운 RAISE EXCEPTION 구문을 그대로 재사용하도록 설계돼 있어 실제로는 타당한 순서다. 레슨 끝 예고문은 전부 1~2문장·코드 없음 수준을 지키고, L06→CH11-L02(SALV FACTORY), L10→CH10-L07(절차적 예매 판정)처럼 장거리 복습 연결도 훌륭하다. 도입부 불편 서사(L01·L03·L06·L09) 역시 형식적이지 않고 콘서트 예매 도메인에 구체적으로 뿌리내려 있다. 다만 다섯 가지 국소적 결함이 있다: (1) L06 한 레슨에 신규 개념 7개가 몰려 챕터 내 다른 레슨(2~3개, 최대 5개)보다 밀도가 뚜렷이 높고, (2) L07의 ABSTRACT·FINAL은 정식 도입 개념으로 올라 있음에도 코드 예제 없이 정의 두 줄로 끝나며, (3) L08은 인터페이스 다운캐스트를 두 번 언급하고 prereq에도 L05를 걸어 두지만 실제 예제는 상속 계열만 다뤄 범위와 예제가 어긋난다. 이 외에 (4) L07이 이미 L05에서 명명·정의된 '다형성' 용어를 '다음 레슨에서 다룰' 개념처럼 다시 예고하는 서술 중복, (5) L05의 zcl_booking이 zcl_booking_manager와 이름이 비슷한데 관계 설명 없이 등장하는 점은 경미한 혼선 소지다. 구조적으로 학습을 막는 결함(치명·높음급)은 없고, 위 5건은 각 레슨 국소 보강으로 해결 가능한 수준이라 '경미 수정'으로 판단한다."
+  }
+}

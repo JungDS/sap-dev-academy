@@ -1,6 +1,7 @@
 // ===== cds-builder-stepper 엔진 JS — 콘서트 CDS 빌더 (CH23-L07 capstone) =====
 // 6단계 순서 의존: ①ZI_Perf ②ZI_Concert(+_Perf assoc, target=ZI_Perf 필요) ③ZC_Concert(소비 뷰 nesting) ④Metadata Extension(zc 필요)
-// ⑤Data Preview(zi&zc 필요) ⑥소비 코드(zc 필요). 순서 어기면 bad. 산출물 4개 active 다이어그램. 데이터=window.CBS_CFG.
+// ⑤Data Preview(zi&zc 필요 — 4열 concert_id/artist/venue/capacity, cfg 주도·본문 L07 DDL과 동일 필드, C072) ⑥소비 코드(zc 필요).
+// 순서 어기면 bad. 산출물 4개 active 다이어그램. 데이터=window.CBS_CFG(concerts: id/artist/venue/capacity).
 (function(){
   var $=function(id){return document.getElementById(id);};
   var cfg=window.CBS_CFG||{};
@@ -39,12 +40,15 @@
   function renderOut(){
     var html='';
     if(st.preview){
-      var head='<thead><tr><th>concert_id</th><th>artist</th><th>venue</th></tr></thead>';
-      var body=CONCERTS.map(function(c){return '<tr><td>'+esc(c.id)+'</td><td>'+esc(c.artist)+'</td><td>'+esc(c.venue)+'</td></tr>';}).join('');
+      var cols=['concert_id','artist','venue','capacity'];
+      var head='<thead><tr>'+cols.map(function(k){return '<th>'+esc(k)+'</th>';}).join('')+'</tr></thead>';
+      var body=CONCERTS.map(function(c){
+        return '<tr><td>'+esc(c.id)+'</td><td>'+esc(c.artist)+'</td><td>'+esc(c.venue)+'</td><td>'+esc(c.capacity)+'</td></tr>';
+      }).join('');
       html+='<div class="cbs-prev">'+
         '<div><p class="cbs-prev__t zi">ZI_Concert (기반)</p><table class="dt">'+head+'<tbody>'+body+'</tbody></table></div>'+
         '<div><p class="cbs-prev__t zc">ZC_Concert (소비)</p><table class="dt">'+head+'<tbody>'+body+'</tbody></table></div>'+
-        '</div><span class="cbs-eq">두 뷰 모두 '+CONCERTS.length+'행 — 소비 뷰는 행 수를 바꾸지 않습니다</span>';
+        '</div><span class="cbs-eq">두 뷰 모두 '+CONCERTS.length+'행 — 소비 뷰는 열을 고를 뿐 행 수를 바꾸지 않습니다(이번 ZC_Concert는 기반과 같은 4필드 + _Perf 노출)</span>';
     }
     if(st.consume){
       html+=(st.preview?'<div style="height:9px"></div>':'')+
@@ -73,7 +77,7 @@
     }
     else if(id==='preview'){
       if(!(st.ziConcert && st.zcConcert)){ setMsg('<b>미리볼 수 없습니다.</b> ZI_Concert·ZC_Concert가 모두 활성화돼야 합니다(②③).','bad'); return; }
-      st.preview=true; setMsg('<b>Data Preview.</b> 노출 필드는 달라도 행 수는 같습니다 — 소비 뷰는 열만 고를 뿐 행을 바꾸지 않아요.','ok');
+      st.preview=true; setMsg('<b>Data Preview.</b> 행 수는 기반과 같습니다 — 소비 뷰는 열을 고를 뿐 행을 바꾸지 않아요(이번 실습의 ZC_Concert는 기반과 같은 필드를 노출하고, 골라내기는 설계 선택).','ok');
     }
     else if(id==='consume'){
       if(!st.zcConcert){ setMsg('<b>생성 실패.</b> 소비할 <b>ZC_Concert</b>가 먼저 있어야 합니다 — ③을 만드세요.','bad'); return; }

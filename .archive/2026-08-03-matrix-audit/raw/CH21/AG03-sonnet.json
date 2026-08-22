@@ -1,0 +1,104 @@
+{
+  "agent": "AG03",
+  "model": "sonnet",
+  "target": "CH21",
+  "persona_ack": "Java/C# 백엔드 3～5년차 개발자 페르소나로 CH21(OO ABAP 기본 설계) 레슨 10개(L01～L10)와 챕터 개요(_chapter.md)를 순서대로 통독함. 변수·조건문·루프·SQL·OOP(캡슐화·상속·다형성·예외·이벤트) 기본기는 이미 안다는 전제로, ABAP 고유 문법·관례와 일반 OO 언어(Java/C#) 대비 차이점 위주로 읽었다.",
+  "method": "브라우저·빌드 등 외부 도구는 사용하지 않음 — 대상 CH21 레슨 10개(L01～L10)와 _chapter.md 원문을 Read로 전문 통독한 뒤, Java/C#/OOP 지식과 대조해 텍스트 근거(quote)에 기반해 판단함.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L10.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH21-L01.md",
+      "quote": "\"예약 관리자\"라는 업무 개념은 분명히 있는데, 코드에는 그 개념이 **흩어져** 있다.",
+      "category": "과잉·지름길 부재",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "CH21 레슨들이 공통적으로 '절차적 코드의 불편 체감 → 개념 도입' 서사로 시작하는데(L01의 이 문장이 대표 사례), 이미 OOP(캡슐화·클래스·객체)에 익숙한 경력 개발자에게는 매 레슨 같은 흐름을 반복해서 통과해야 해 다소 늘어진다. 10개 레슨 어디에도 경력자가 문법/코드 블록으로 바로 건너뛸 수 있는 안내가 없다.",
+      "evidence": "L01·L03·L06·L07·L09 등 다수 레슨이 '왜 필요한가'를 실패 시나리오로 먼저 서술한 뒤 개념을 도입하는 동일 패턴을 쓴다(사이트의 입문자 우선 설계상 의도된 구조로 보임). 그러나 이 패턴이 반복되는 동안 'OOP를 이미 안다면 여기부터'류의 접기(details)나 요약 링크는 챕터 전체에 한 번도 없다.",
+      "suggestion": "레슨 상단에 'OOP 경험자라면' 한두 줄 요약(접기)을 두어 핵심 ABAP 구문만 먼저 보여주고, 필요하면 본문 '왜' 절로 펼쳐볼 수 있게 하면 좋겠다. 입문자용 서술은 그대로 유지하고 지름길만 추가하는 방향."
+    },
+    {
+      "seq": 2,
+      "file": "CH21-L03.md",
+      "quote": "`NEW`로 객체를 만드는 순간 **자동으로** 실행되는 메서드가 [[CONSTRUCTOR]](생성자)다.",
+      "category": "오개념 유발",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "Java/C#은 생성자 오버로딩(파라미터 목록이 다른 생성자 여러 개)이 흔한 관용구인데, ABAP 클래스는 인스턴스 생성자를 단 하나만 가지며 오버로딩을 지원하지 않는다. 이 레슨은 CONSTRUCTOR를 소개하면서 이 제약을 언급하지 않아, Java/C# 습관대로 생성자를 하나 더 추가하려는 경력자가 막힐 수 있다.",
+      "evidence": "L03 어디에도 '오버로딩 불가'라는 언급이 없다. ABAP은 메서드 시그니처 오버로딩 자체를 지원하지 않아(이름만으로 식별) 대안으로 OPTIONAL 파라미터나 static factory 메서드를 쓰는데, 이는 Java/C#/C++ 출신이 ABAP OO를 배울 때 초반에 부딪히는 대표적 차이로 알려져 있다.",
+      "suggestion": "CONSTRUCTOR 소개 근처에 'ABAP 클래스는 생성자를 하나만 가질 수 있다(오버로딩 불가) — 여러 초기화 조합이 필요하면 OPTIONAL 파라미터나 static factory 메서드를 쓴다' 한 줄을 추가하면 좋겠다."
+    },
+    {
+      "seq": 3,
+      "file": "CH21-L06.md",
+      "quote": "**`CLEANUP`을 finally로 오해** → 항상 실행되는 후처리가 아니라, TRY 블록이 *예외로* 정리될 때 실행되는 블록이다.",
+      "category": "오개념 유발",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'finally 아님'까지는 정확히 짚었지만, CLEANUP이 실제로 도는 조건 — '같은 TRY의 CATCH들이 그 예외를 못 잡고 더 바깥으로 전파될 때만' — 은 설명하지 않는다. 이대로면 '이 TRY에서 예외가 나면(바로 아래 CATCH가 잡아도) CLEANUP이 돈다'로 오해하기 쉽다.",
+      "evidence": "레슨 예제는 CATCH zcx_fully_booked와 CLEANUP을 나란히 두는데, book( )이 zcx_fully_booked를 던지는 시나리오는 CATCH가 그 예외를 잡으므로 CLEANUP은 실행되지 않는다. CLEANUP은 그 TRY의 CATCH들이 처리하지 못해 예외가 상위로 계속 전파될 때만 실행되는 것으로 알려져 있다. 이 조건이 빠지면 자원 해제를 CLEANUP에만 넣고 '예외가 나면 항상 정리된다'고 잘못 믿는 코드가 나올 수 있다 — 이는 경력자뿐 아니라 이 문장을 그대로 받아들이는 입문자에게도 해당하는 정확도 이슈다.",
+      "suggestion": "'TRY 블록이 예외로 정리될 때 실행되는 블록이다' 뒤에 '단, 같은 TRY의 CATCH가 그 예외를 잡으면 CLEANUP은 돌지 않는다 — 못 잡고 더 위로 퍼질 때만 실행된다'는 단서를 추가하면 정확해진다."
+    },
+    {
+      "seq": 4,
+      "file": "CH21-L06.md",
+      "quote": "모든 class-based 예외는 최상위 `CX_ROOT`에서 내려오고, 처리 강제 수준에 따라 셋으로 나뉜다.",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "CX_STATIC_CHECK/CX_DYNAMIC_CHECK/CX_NO_CHECK의 '처리 강제' 수준을 표로 처음부터 설명하는데, Java의 checked exception(throws 필수)·unchecked(RuntimeException) 구분을 아는 경력자에게는 'CX_STATIC_CHECK≈checked, CX_NO_CHECK≈unchecked'라는 한 줄 대응만 있으면 표 전체를 훨씬 빨리 흡수할 수 있다. 이 대응이 어디에도 없다.",
+      "evidence": "RAISING 선언(메서드 시그니처에 명시)도 Java의 throws 절과 사실상 같은 역할을 하는데, 이 유사성 역시 언급되지 않는다.",
+      "suggestion": "CX 계층 표 앞뒤에 'Java를 안다면: CX_STATIC_CHECK는 checked exception(throws 필수)과, CX_NO_CHECK는 RuntimeException(선언 불필요)과 비슷하다' 한 줄을 추가하면 좋겠다."
+    },
+    {
+      "seq": 5,
+      "file": "CH21-L02.md",
+      "quote": "| `PROTECTED SECTION` | 자신 + **상속 자식** | 상속 확장용 내부 계약 |",
+      "category": "용어 충돌",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "Java의 protected는 상속 자식뿐 아니라 같은 패키지의 다른 클래스에서도 접근 가능해 범위가 더 넓다. ABAP의 PROTECTED는 표대로 '자신 + 상속 자식'까지이고, ABAP에는 Java의 '같은 패키지' 같은 별도 가시성 단계가 없다. Java 습관을 그대로 옮기면 '같은 개발 패키지의 다른 클래스도 protected 멤버를 보겠지'라고 넘겨짚기 쉬운데 이 차이를 짚어주지 않는다.",
+      "evidence": "L02 전체가 PROTECTED를 '자신 + 상속 자식'으로만 정의하고, 다른 언어의 protected와 비교하는 문장이 없다.",
+      "suggestion": "표 아래에 'Java의 protected(패키지 포함)보다 좁다 — ABAP PROTECTED는 상속 자식에게만 열린다' 정도의 대조 문장을 추가하면 좋겠다."
+    },
+    {
+      "seq": 6,
+      "file": "CH21-L05.md",
+      "quote": "클래스는 `INTERFACES`로 규약을 받아들이고, 구현 메서드는 **`인터페이스~메서드`** 이름으로 쓴다.",
+      "category": "용어 충돌",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "C#에는 이름이 비슷한 explicit interface implementation(예: void IPrintable.Print())이 있지만 이는 이름 충돌 등을 해소할 때만 선택적으로 쓰는 특수 케이스이고, Java는 이런 접두 자체가 없다. ABAP은 반대로 인터페이스를 구현하는 모든 메서드에 인터페이스~메서드 표기를 예외 없이 강제한다. 이 '항상 강제'라는 차이를 짚어주지 않아 C# 경험자는 왜 매번 이 표기를 써야 하는지 의아해할 수 있다.",
+      "evidence": "L05 어디에도 '이름 충돌 여부와 무관하게 항상 필요하다'는 언급이나 다른 언어와의 대조가 없다.",
+      "suggestion": "'C#의 explicit interface implementation과 비슷해 보이지만, ABAP은 이름이 겹치지 않아도 항상 인터페이스~메서드로 써야 한다'는 한 줄을 추가하면 좋겠다."
+    },
+    {
+      "seq": 7,
+      "file": "CH21-L08.md",
+      "quote": "`CAST 타입( ref )`(모던) = `ref ?= ...`(classic) — **down-cast**.",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "CAST와 CX_SY_MOVE_CAST_ERROR는 Java의 (SubType)obj 캐스팅·ClassCastException, C#의 (SubType)obj/InvalidCastException·as 연산자와 개념이 거의 1:1 대응하고, 이어지는 CASE TYPE OF ... WHEN TYPE는 C# 7+의 switch 패턴 매칭(case SubType v: ...)과 문법·의미가 매우 비슷하다. 이 대응 관계를 짚어주면 경력자는 이 절을 훨씬 빠르게 넘어갈 수 있는데 그런 연결이 없다.",
+      "evidence": "L08 전체가 ABAP 문법만으로 처음부터 설명되고, 다른 언어의 캐스팅·패턴 매칭과의 비교는 없다.",
+      "suggestion": "CAST 절 시작에 'Java/C#의 다운캐스트·ClassCastException과 같은 개념', CASE TYPE OF 절에 'C#의 switch 패턴 매칭과 비슷하다' 정도의 한 줄을 추가하면 좋겠다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "Java/C# 백엔드 경력자 관점에서 CH21(OO ABAP 기본 설계) 10개 레슨을 통독했다. 전반적으로 설명 밀도가 적절하고 '흔한 실수' 절이 예상되는 오해를 상당수 선제적으로 짚어 준다(handler 호출 순서 비보장 등). 다만 ① 전 레슨이 '절차적 코드의 불편 체감 → 개념 도입' 서사를 반복해 이미 OOP에 익숙한 독자에게는 다소 늘어지고, 경력자가 문법으로 바로 건너뛸 지름길 안내가 챕터 전체에 없다(L01). ② 생성자(L03)에서 ABAP이 오버로딩을 지원하지 않는다는 점이 언급되지 않아 Java/C# 습관대로 생성자를 여러 개 만들려다 막힐 수 있다. ③ CLEANUP 설명(L06)이 'finally 아님'까지는 정확하지만 '이 TRY의 CATCH가 못 잡아 전파될 때만 실행'이라는 정확한 발동 조건이 빠져 있어, 캐치되는 예외에서도 CLEANUP이 돈다고 오해할 여지가 있다(경력 여부와 무관한 정확도 이슈). ④ CX 계층(L06)·PROTECTED(L02)·인터페이스~메서드 표기(L05)·CAST/CASE TYPE OF(L08)처럼 일반 OO 언어와 이름은 같거나 비슷하지만 범위·강제성·발동조건이 다른 지점에서, 그 차이나 대응 관계를 짚어주는 한 줄이 있으면 경력자의 학습 속도가 크게 빨라질 것이다. 모두 구조 변경 없이 문장 한두 줄 보강으로 해결 가능한 경미～중간 수준이며, 재집필이 필요한 결함은 없었다."
+  }
+}

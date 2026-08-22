@@ -1,0 +1,124 @@
+{
+  "agent": "AG01",
+  "model": "opus",
+  "target": "CH22",
+  "persona_ack": "나는 '은서'다. 24세 문과 출신이고 개발·전공 경험이 전혀 없다. 이 사이트로 ABAP을 처음 배우는 중이며, CH22를 L01부터 L08까지 순서대로 처음 읽는 사람으로서 통독했다. 모르는 단어가 나오면 그 자리에서 멈췄고, 내 바깥 지식으로 빈틈을 메우지 않고 '그 자리(또는 이 챕터 앞 레슨)에 풀이가 있는가'만 기준으로 판단했다.",
+  "method": "Read 도구로 대상 MD 9개(_chapter.md + CH22-L01~L08)를 L01→L08 순서로 통독. 읽기 전용이며 대상 파일 외 저장소 내부 문서·저장소 밖 경로·웹은 일절 열지 않았다. 브라우저 미사용(텍스트 통독 종).",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L08.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L02.md",
+      "quote": "SALV를 다듬었다. 이제 Grid ALV의 컬럼을 field catalog로 더 세밀히 →",
+      "category": "단절",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L01~L02는 SALV 객체(get_sorts·get_layout)로 표를 다뤘는데 L03부터 갑자기 Grid ALV + field catalog로 도구가 바뀐다. 두 도구가 어떻게 다른지, 앞에서 배운 SALV 설정이 뒤에서도 쓰이는지가 이 챕터 안에 없다.",
+      "evidence": "전환 안내가 이 한 줄이 전부다. L03을 여니 컬럼 숨김·정렬을 gt_fcat 내부 테이블을 LOOP 돌며 지정하는데, L01에서 배운 get_sorts( )->add_sort( )와 '같은 일'을 왜 전혀 다른 방식으로 하는지 설명이 없다. 그래서 내가 만들 화면에서 둘 중 무엇을 써야 하는지, L02에서 배운 set_optimize·set_key가 L03 이후에도 유효한지 판단이 안 됐다. 챕터가 두 도구를 이어 붙인 구성이라는 것도 L03을 읽고 나서야 눈치챘다.",
+      "suggestion": "L03 도입부에 2~3문장으로 '여기서부터는 SALV가 아니라 Grid ALV 이야기'라는 갈림길 안내(각각 언제 쓰는지 한 줄 비교)를 넣고, L01 도입에도 '이 챕터는 두 도구를 차례로 다룬다'는 한 줄 지도를 둔다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L01.md",
+      "quote": "columnname = 'PERF_DATE' sign = 'I' option = 'GE' low = sy-datum ).",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "필터 코드의 sign = 'I'·option = 'GE'가 무슨 뜻인지 이 자리에 한 줄 풀이도 없다.",
+      "evidence": "'지난 회차는 빼고 오늘 이후만'이라는 주석만 있어서 결과는 알겠는데, sign의 'I'가 무엇의 약자인지, option에 'GE' 말고 무엇을 넣을 수 있는지, low 말고 high도 있는지 알 수 없다. 위 표에도 add_filter( )가 '첫 표시 때 적용할 기본 필터'라고만 적혀 있다. 조건을 '이번 달만' 같은 걸로 바꿔 보려면 어디를 고쳐야 하는지 몰라 멈췄다. (앞 챕터에서 비슷한 모양을 본 기억은 있지만 이 자리에는 풀이가 없다.)",
+      "suggestion": "코드 아래에 sign='I'(Include=포함) · option='GE'(Greater or Equal=이상)를 한 줄 풀이로 붙이고, 자주 쓰는 option 값(EQ·LE·BT) 2~3개만 작은 표로 곁들인다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L04.md",
+      "quote": "- **`fname` 오타** → `SEATS_OCC`처럼 틀리면 색 정보는 있어도 적용 안 된다. **컬럼 제목이 아니라 component 이름**(`SEATSOCC`).",
+      "category": "멈춘 곳",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "'흔한 실수'의 fname 오타 예시가 이 레슨 어디에도 존재하지 않는 필드(SEATS_OCC / SEATSOCC)를 든다.",
+      "evidence": "바로 위에서 정의한 구조 ts_perf_alv의 필드는 concert_id·perf_no·capacity·booked·seats_left·cellcolors뿐이라 SEATS_OCC도 SEATSOCC도 없다. 게다가 틀린 예와 맞는 예의 차이가 밑줄 하나뿐이어서 'component 이름에는 밑줄을 쓰면 안 되는 건가?'라고 잘못 배울 뻔했다(바로 아래 L08에서는 SEATS_LEFT처럼 밑줄 있는 이름을 정상으로 쓴다). 세 번 다시 읽어도 무슨 말인지 확정이 안 됐다.",
+      "suggestion": "이 레슨 구조에 실제로 있는 필드로 교체한다. 예: 틀린 예 'BOOKED_SEATS' → 맞는 예 'BOOKED'(구조 component 이름과 정확히 일치). 밑줄 유무가 쟁점처럼 보이지 않게 쓴다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L04.md",
+      "quote": "그런데 공연명·날짜·정원은 정상인데 **잔여석만 위험**하다면, 행 전체를 칠하는 것보다 **그 셀 하나**만 칠하는 게 정확하다.",
+      "category": "단절",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "도입부는 '잔여석 셀만 칠한다'로 시작하는데, 정작 예제 코드는 fname = 'BOOKED'로 예약 좌석 칸을 칠한다.",
+      "evidence": "구조에 seats_left가 버젓이 있는데도 색은 BOOKED에 붙고 조건도 booked >= capacity(매진)라, '잔여석만 위험'이라던 도입 문장과 실제로 칠해지는 칸이 어긋난다. 뒤의 L06 비교표와 L08 실습에서는 다시 SEATS_LEFT를 칠해서, 이 챕터의 대표 예가 어느 칸인지 헷갈렸고 '내가 뭘 잘못 읽었나' 하고 도입부로 두 번 되돌아갔다.",
+      "suggestion": "L04 예제도 fname = 'SEATS_LEFT'(조건 seats_left <= 0)로 통일하거나, 도입 문장을 '매진이면 예약 좌석 칸만 빨강'처럼 코드와 일치시킨다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L08.md",
+      "quote": "IF <fc>-fieldname = 'CELLCOLORS'. <fc>-tech = abap_true. ENDIF.",
+      "category": "단절",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "실습에서 기술 컬럼 숨김을 tech = abap_true로 하는데, 이 챕터가 가르친 숨김은 no_out이었고 tech는 여기서 처음 나온다.",
+      "evidence": "L03 표에서 '기본 화면에서 숨김 = no_out'이라고 배웠고, L04·L05의 '흔한 실수'는 CELLCOLORS/CELLSTYLES를 'field catalog에서 숨긴다(no_out)'라고 못 박았다. 그런데 마지막 실습 코드의 주석은 똑같이 '화면에서 숨김'인데 속성만 tech다. 둘이 같은 건지 다른 건지, 내 코드에는 무엇을 써야 하는지 판단할 근거가 챕터 안에 없어서, 배운 걸 그대로 따라 쓰면 실습 정답과 달라지는 상황이 됐다.",
+      "suggestion": "L03 표에 tech 행을 한 줄 추가해 차이를 밝힌다(no_out = 숨겼다가 사용자가 layout으로 다시 볼 수 있음 / tech = 표시 대상에서 아예 제외). 그리고 L08 주석에 '기술 컬럼이라 no_out보다 강한 tech를 쓴다' 한 줄을 붙인다."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L08.md",
+      "quote": "INTO CORRESPONDING FIELDS OF TABLE @gt_row.",
+      "category": "단절",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "L04가 '흔한 실수'로 금지한 'deep 테이블에 직접 SELECT'를 마지막 실습 코드가 그대로 한다.",
+      "evidence": "L04는 'DB는 flat table로 조회한다(deep component를 가진 work area는 SQL에서 제한)'라고 콜아웃으로, 또 '흔한 실수'에서 'deep로 직접 SELECT → DB는 flat으로 읽고, 표시용 deep table로 옮긴 뒤 색을 채운다'라고 두 번 경고했다. 그런데 L08의 ts_row에는 cellcolors TYPE lvc_t_scol(deep)이 들어 있고 바로 그 gt_row로 SELECT 한다. 규칙과 모범답안이 정반대라 어느 쪽을 따라야 하는지 몰라 실습 앞에서 멈췄다.",
+      "suggestion": "둘 중 하나로 일치시킨다. (가) L08 코드에 'INTO CORRESPONDING FIELDS 방식은 이름이 같은 flat 필드만 채우고 deep component는 건드리지 않아 예외적으로 가능'이라는 한 줄 설명을 붙이거나, (나) flat 조회용 테이블로 먼저 읽고 gt_row로 옮기는 2단계로 바꿔 L04 규칙과 맞춘다."
+    },
+    {
+      "seq": 7,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L02.md",
+      "quote": "DATA(go_disp) = go_salv->get_display_settings( ).",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "레슨 코드가 앞 레슨에서 만든 변수를 전제로 시작하는데, 이 챕터 어디에도 전체 프로그램 골격이 없어 어디에 붙여넣어야 할지 알 수 없다.",
+      "evidence": "L02의 첫 코드가 go_salv부터 쓰는데 이 레슨엔 선언이 없다. 같은 식으로 L03은 gt_fcat, L05는 gs_layout, L07은 go_grid가 '이미 있다'는 전제로 시작한다. 특히 go_salv는 L01에서 TRY 블록 안에서 DATA(go_salv)로 만들어졌는데, 그 블록 바깥에서도 쓸 수 있는지조차 나는 모른다. 그래서 코드를 따라 만들어 보려다 첫 줄에서 막혔다.",
+      "suggestion": "각 레슨 코드 위에 '앞 레슨에서 만든 go_salv에 이어서' 같은 한 줄 전제 표기를 달고, 챕터 안 최소 한 곳(L01 또는 L08)에는 선언부터 display까지 끊기지 않는 전체 골격 코드를 한 벌 보여 준다."
+    },
+    {
+      "seq": 8,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L07.md",
+      "quote": "WITH KEY concert_id = pa_conc perf_no = pa_perf.",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "갱신 예제의 pa_perf·pa_seats가 어디서 온 값인지 설명이 없다.",
+      "evidence": "pa_conc는 L01의 PARAMETERS pa_conc로 봤지만 pa_perf와 pa_seats는 이 챕터에 선언도 설명도 없다. '예매가 추가되면 잔여석이 바뀐다'는 상황에서 '몇 석이 추가됐는지'를 어디서 받아 오는지가 이 예제의 출발점인데 그 자리가 비어 있어서, 이 코드가 언제·무엇을 눌렀을 때 실행되는지 그림이 안 그려졌다.",
+      "suggestion": "예제 위에 PARAMETERS 선언 2줄을 보여 주거나, '사용자가 예매 화면에서 입력한 회차·좌석 수'라는 한 줄 전제를 붙인다."
+    },
+    {
+      "seq": 9,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L03.md",
+      "quote": "- **숨김 = 권한 제어 착각** → 사용자가 variant/layout으로 다시 볼 수 있다. 민감 정보는 애초에 조회하지 않는다.",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L03과 L07에는 다른 레슨에 모두 있는 '정리' 섹션이 없어, 무엇을 기억하고 넘어가야 하는지 스스로 추려야 했다.",
+      "evidence": "L01·L02·L04·L05·L06은 '정리 📌' 2~3줄이 있어 복습 지점이 분명했는데, L03은 이 마지막 실수 항목으로 끝나고 곧장 다음 레슨 링크로 넘어간다(L07도 동일). 하필 이 두 레슨이 새 속성이 가장 많이 쏟아지는 곳(no_out·do_sum·just·key·edit / is_stable-row·col·i_soft_refresh)이라, 표만 훑고 끝난 느낌으로 다음 레슨에 들어갔다.",
+      "suggestion": "L03·L07에도 2~3줄 '정리 📌'를 붙인다(L03: 카탈로그는 표시 지시서·이름은 component 명·데이터는 안 바뀜 / L07: refresh는 재조회가 아님·is_stable로 위치 유지·구조 변경은 초기 표시 재구성)."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "레슨마다 '왜 → 표 → 코드 → 체험 → 흔한 실수' 리듬이 일정해서 처음 읽는 사람도 따라가기 좋았고, 특히 L03의 'Field Catalog = 화면 표시 지시서' 비유와 L05의 색(ctab_fname) vs 모양(stylefname) 비교표, L06의 '고르는 기준' 갈림길 도식은 한 번에 이해됐다. 반면 마지막 실습(L08)이 앞 레슨이 세운 규칙 두 가지(deep 테이블 직접 SELECT 금지, 숨김은 no_out)를 그대로 어겨 가장 크게 흔들렸고, L04의 '흔한 실수' 예시 필드(SEATS_OCC/SEATSOCC)는 구조에 없는 이름이라 잘못 배울 뻔했으며, L02→L03에서 SALV→Grid ALV로 도구가 바뀌는 안내가 한 줄뿐이라 잠깐 길을 잃었다. 다만 모두 몇 줄 보태거나 예시 이름을 맞추면 해결되는 국소 문제라 전체 재집필은 필요 없다고 느꼈다."
+  }
+}

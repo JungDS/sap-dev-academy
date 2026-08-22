@@ -96,9 +96,9 @@ go_cols-&gt;set_optimize( abap_true ).               <span class="tok-com">" 컬
     <span class="tok-kw">MESSAGE</span> <span class="tok-str">'CAPACITY 컬럼을 찾을 수 없습니다.'</span> <span class="tok-kw">TYPE</span> <span class="tok-str">'E'</span>.
 <span class="tok-kw">ENDTRY</span>.</code></pre></div></div>
 <blockquote class="cw">
-<p>⚠️ <code>set_long_text</code>만 바꾸면 헤더가 그대로일 수 있다. <button class="term" type="button" data-term="SALV">SALV</button>는 컬럼 폭에 따라 <strong>short/medium/long 중 하나를 골라</strong> 쓰므로, 셋을 함께 맞춰야 초보자 혼란이 없다.</p>
+<p>⚠️ <code>set_long_text</code>만 바꾸면 헤더가 그대로일 수 있다. <button class="term" type="button" data-term="SALV">SALV</button>는 컬럼 폭에 따라 <strong>short/medium/long 중 하나를 골라</strong> 쓰기 때문이다. 셋을 함께 맞춰 두면 폭이 어떻게 바뀌어도 같은 제목이 보인다.</p>
 </blockquote>
-<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">SALV Layout 실험실 (줄무늬·폭·컬럼 텍스트)</span><a class="embed__open" href="../../../embeds/abap/CH22-L02-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH22-L02-S01.html" loading="lazy" title="SALV Layout 실험실 (줄무늬·폭·컬럼 텍스트)"></iframe></figure>
+<figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">SALV Layout 실험실 (줄무늬·폭·컬럼 텍스트·Variant)</span><a class="embed__open" href="../../../embeds/abap/CH22-L02-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH22-L02-S01.html" loading="lazy" title="SALV Layout 실험실 (줄무늬·폭·컬럼 텍스트·Variant)"></iframe></figure>
 </section><section class="lblock"><h2>Variant 저장 💾</h2>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
@@ -111,13 +111,12 @@ go_layout-&gt;set_save_restriction( if_salv_c_layout=&gt;restrict_none ).   <spa
 </blockquote>
 </section><section class="lblock"><h2>정리 📌</h2>
 <ul>
-<li><strong>layout</strong> = 개발자가 주는 <em>첫 보기</em>(줄무늬·폭·컬럼 텍스트). <strong>variant</strong> = 사용자가 저장한 <em>내 보기</em>.</li>
-<li>컬럼 텍스트는 short/medium/long을 <strong>함께</strong> 맞춰야 폭에 상관없이 헤더가 바뀐다.</li>
+<li><strong>개발자 기본 보기</strong>는 <code>get_display_settings( )</code>(제목·줄무늬)와 <code>get_columns( )</code>(폭·컬럼 텍스트)로 만든다. <strong>variant</strong>는 사용자가 저장한 <em>내 보기</em>고, 그 저장(키·허용 범위)을 관할하는 게 <code>get_layout( )</code>이다.</li>
 <li>variant는 <strong>표시 설정만</strong> 저장할 뿐 데이터·권한과는 무관하다.</li>
 </ul>
 </section><section class="lblock"><h2>흔한 실수와 점검 🚧</h2>
 <ul>
-<li><strong><code>long_text</code>만 바꿈</strong> → 헤더가 안 바뀔 수 있다. short/medium/long을 <strong>함께</strong>.</li>
+<li><strong><code>long_text</code>만 바꿈</strong> → 헤더가 안 바뀔 수 있다. short/medium/long을 <strong>함께</strong> 맞춘다.</li>
 <li><strong>컬럼명 오타</strong> → <code>get_column( )</code>은 화면 제목이 아니라 <strong>내부 필드명</strong>(대문자)으로 접근. 틀리면 <code>cx_salv_not_found</code>.</li>
 <li><strong>레이아웃 키 누락</strong> → variant를 저장하려면 <code>set_key</code>로 식별부터.</li>
 <li><strong>variant ≠ 데이터 변경</strong> → 컬럼 순서·숨김·폭 같은 <strong>표시 설정만</strong> 저장된다. 또 ALV 숨김은 <strong>권한 제어가 아니다</strong> — 보안상 숨길 값은 애초에 조회하지 않는다.</li>

@@ -1,0 +1,103 @@
+{
+  "agent": "AG04",
+  "model": "sonnet",
+  "target": "CH24",
+  "persona_ack": "AG04 — 20년차 한국어 교열/기술 용어 감수자 페르소나로 CH24(RAP·ABAP Cloud 입문) 9개 레슨과 _chapter.md를 문장·용어 관점에서만 감사했다(구조·게이팅·사실 정확성 자체는 범위 밖으로 두되 발견 근거로만 언급).",
+  "method": "대상 10개 파일을 전문 통독한 뒤 [[용어]] 마킹·괄호 풀이 유무를 레슨 순서(L01→L09)대로 추적해 첫 등장 시 인라인 풀이가 있는지 확인했다. 의심 사례는 grep으로 챕터 전체를 재검색해 등장 순서·빈도·풀이 유무를 교차 대조했다. 웹 검색·빌드·브라우저는 사용하지 않았다(텍스트 감사 과제 특성상 불필요).",
+  "errors": [],
+  "files_read": [
+    "content/abap/CH24/CH24-L01.md",
+    "content/abap/CH24/CH24-L02.md",
+    "content/abap/CH24/CH24-L03.md",
+    "content/abap/CH24/CH24-L04.md",
+    "content/abap/CH24/CH24-L05.md",
+    "content/abap/CH24/CH24-L06.md",
+    "content/abap/CH24/CH24-L07.md",
+    "content/abap/CH24/CH24-L08.md",
+    "content/abap/CH24/CH24-L09.md",
+    "content/abap/CH24/_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH24-L01.md",
+      "quote": "그 기능은 **Fiori 화면이나 OData API**로 노출되어야 한다.",
+      "category": "용어 첫 등장",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "핵심 개념인 OData가 CH24 전체(L01·L02·L06·L08·L09, 총 13회)에서 반복 사용되지만 어느 곳에서도 입문자용 한 줄 풀이가 없다.",
+      "evidence": "L01에서 'OData API'로 첫 등장(풀이 없음, glossary 마킹도 없음) 이후 L02 'OData entity key'(52행), L06 'OData client'([[OData]] 마킹, 14행)·'OData V2/V4'(34행), L08 'OData/Fiori 소비'(52행), L09 'OData로 활성화'(27행)까지 계속 전제 지식처럼 쓰인다. 특히 L06은 front-matter에 'OData 노출'을 introduces로 명시해 이 챕터가 OData를 도입할 자리로 스스로 선언했지만, 본문 어디에도 'OData가 무엇인가'에 대한 문장은 없고 'Definition/Binding으로 어떻게 노출하는가'만 설명한다.",
+      "suggestion": "L01 첫 등장 지점에 '(웹에서 데이터를 표준화된 방식으로 주고받는 프로토콜)'류의 짧은 인라인 풀이를 붙이거나, [[OData]]로 마킹해 glossary와 연결한다."
+    },
+    {
+      "seq": 2,
+      "file": "CH24-L03.md",
+      "quote": "root entity이거나 root를 포함한 composition tree 안에 있어야 한다.",
+      "category": "톤 / 용어 첫 등장",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "이 문장은 앞뒤 대화체 흐름과 달리 SAP 스펙 문서를 그대로 옮긴 듯한 조건문 나열체이고, 'composition tree'라는 새 용어를 풀이 없이 던진다. 같은 레슨 뒤쪽의 'projection tree'(다른 표현)와의 관계도 밝히지 않는다.",
+      "evidence": "해당 문단('transactional query는 business object의 일부여야 하며, root entity이거나 root를 포함한 composition tree 안에 있어야 한다')은 '~해야 하며 ~해야 한다' 이중 조건 나열로, 같은 레슨 도입부('왜 root를 그대로 노출하지 않을까' 섹션)의 대화체와 톤이 다르다. composition tree는 이 레슨·챕터 어디에도 정의가 없이 바로 다음 문장 '이 챕터에서는 root 하나를 쓰는 단순 구조로 이 조건을 이해한다'로 넘어간다. 그런데 같은 레슨의 '어떻게 확인하는가' 2번 항목에는 'ZC_Booking이 root가 아니면 projection tree 위치가 맞지 않는다'는 표현이 나와, composition tree와 projection tree가 같은 대상을 가리키는지 다른 개념인지 입문자는 구분할 수 없다.",
+      "suggestion": "composition tree는 '이 챕터에서는 다루지 않는 심화 개념'임을 먼저 밝히고 문장을 쉬운 말로 풀거나 각주로 뺀다. projection tree라는 표현은 삭제하고 이미 쓰인 'root 위치'로 통일한다."
+    },
+    {
+      "seq": 3,
+      "file": "CH24-L04.md",
+      "quote": "BDEF는 RAP BO의 transactional behavior를 정의하는 repository object다.",
+      "category": "용어 첫 등장",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "'repository object'가 BDEF의 정의 문장에 핵심 술어로 쓰이는데 이 챕터 어디에도 무엇을 뜻하는지 풀이가 없다. 이후 L06(1회)·L08(2회)에서도 계속 무풀이로 재사용된다.",
+      "evidence": "L04 24행 'BDEF는 ... 정의하는 repository object다'가 첫 등장이며 풀이·glossary 마킹이 없다. L06 33행 'Service Binding은 ADT의 form-based repository object로', L08 25행 '다른 repository object에 접근할 때', L08 30행 표 'release된 repository object(또는 그 일부)만 쓴다'까지 총 4회 등장하지만 '시스템에 저장된 개발 산출물' 같은 기본 뜻을 알려주는 문장이 없다.",
+      "suggestion": "L04 첫 등장 지점에 '(시스템에 저장되는 개발 산출물 — 클래스·테이블·CDS 뷰 등을 통칭)' 같은 짧은 풀이를 붙인다."
+    },
+    {
+      "seq": 4,
+      "file": "CH24-L05.md",
+      "quote": "같은 RAP BO 구현 안에서 현재 transactional buffer를 고려해 entity를 읽는다.",
+      "category": "용어 첫 등장",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "'transactional buffer'가 이 챕터에서 처음 등장하는 지점(L05)에는 풀이가 전혀 없고, L07에서도 glossary 마킹만 있을 뿐 여전히 무풀이로 재사용되며, 제대로 된 인라인 풀이는 4개 레슨 뒤인 L09에서야 나온다.",
+      "evidence": "L05 53행 표 셀에서 'transactional buffer'가 처음 등장하지만 설명이 없다(용어 마킹도 없음). L07 63행 'validation 실패는 [[transactional buffer]]를 거부할 수 있으므로'에서도 클릭형 glossary 마킹만 있고 본문 인라인 풀이는 없다. 실제 인라인 풀이 '(RAP가 변경을 잠시 모아 두는 메모리)'는 L09 81행에서야 처음 등장한다. 순서대로 읽는 입문자는 L05·L07 두 번의 노출 동안 이 핵심 개념을 모르는 채로 코드 설명을 따라가야 한다.",
+      "suggestion": "L05 첫 등장 지점에 L09에서 쓴 것과 같은 '(RAP가 변경을 잠시 모아 두는 메모리)' 풀이를 앞당겨 붙이거나, 최소한 [[transactional buffer]]로 마킹해 glossary라도 즉시 확인 가능하게 한다."
+    },
+    {
+      "seq": 5,
+      "file": "CH24-L05.md",
+      "quote": "보자. `keys`가 3행이라는 점, `loop 안 EML`이 왜 anti-pattern인지 확인하자.",
+      "category": "용어 첫 등장",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'EML'이라는 약어가 L05에서 두 차례 풀이 없이 쓰이는데, 'EML이 무엇의 약자인가'는 4개 레슨 뒤인 L09에서 처음 설명된다. L05 자체의 front-matter는 이 노출을 foreshadow로 선언하지도 않았다.",
+      "evidence": "L05 63행 'loop 안 EML이 왜 anti-pattern인지 확인하자'와 72행 'loop 안 EML 금지'에서 EML이 등장하지만 풀이가 없다. 'EML(Entity Manipulation Language)' 정의는 L09 84행 '프로그램에서 RAP BO를 직접 다루는 언어를 EML(Entity Manipulation Language)이라 한다'에서 처음 나온다. L05의 front-matter(introduces/keywords/prereq)에는 EML이 전혀 없어 이 노출이 계획된 것인지 누락인지 본문만으로는 알 수 없다(참고로 L01 front-matter는 'EML(CH39)'을 foreshadow로 명시해 두었다).",
+      "suggestion": "L05에서 EML을 처음 쓰는 자리에 괄호로 짧게 '(EML, L09에서 정식으로 다룸)' 정도의 예고를 붙이거나, 이 시점에는 약어 대신 '이 방식'처럼 풀어 쓴다."
+    },
+    {
+      "seq": 6,
+      "file": "CH24-L06.md",
+      "quote": "**① Service Definition**은 CDS entity를 RAP business service로 노출하는 SDL source다.",
+      "category": "용어 첫 등장 / 일관성",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'SDL'이 아무 풀이 없이 등장한다. 같은 챕터에서 RAP은 '(RESTful Application Programming Model)', EML은 '(Entity Manipulation Language)'처럼 약어가 나올 때마다 영문 전체 표기를 병기하는 패턴을 지켜 왔는데 SDL만 이 패턴이 깨진다.",
+      "evidence": "L06 22행 'SDL source다'가 SDL의 유일한 등장이며 전체 표기도 glossary 마킹도 없다. 반면 같은 챕터 L01의 RAP, L09의 EML은 첫 등장 시 괄호로 영문 풀네임을 병기한다.",
+      "suggestion": "'SDL(Service Definition Language) source다'처럼 다른 약어와 같은 방식으로 영문 전체 표기를 병기한다."
+    },
+    {
+      "seq": 7,
+      "file": "CH24-L09.md",
+      "quote": "behavior pool(provider)은 스스로 `COMMIT`하지 않는다.",
+      "category": "용어 일관성",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'provider'라는 단어가 L01에서는 'RAP 런타임/provider'로 자동 저장을 처리하는 프레임워크 쪽을 가리키는데, L09에서는 'behavior pool(provider)'로 개발자가 직접 짜는 커스텀 코드 쪽을 가리켜 서로 반대되는 대상에 같은 단어를 붙인다.",
+      "evidence": "L01 55행 표 'RAP 런타임/provider가 표준 저장 처리의 상당 부분을 자동으로 맡는다'는 provider를 '자동 처리하는 런타임' 쪽으로 규정한다. 반대로 L09 95행 'behavior pool(provider)은 스스로 COMMIT하지 않는다'는 provider를 곧 behavior pool(개발자가 검증·액션 코드를 넣는 자리)과 동일시한다. 둘 다 '누가 무엇을 하는가'를 서술하는 문장의 주어 자리에서 같은 단어를 정반대 대상에 붙여, 챕터를 순서대로 읽는 입문자가 provider의 정체를 다시 헷갈릴 수 있다.",
+      "suggestion": "L09의 '(provider)' 병기를 빼거나, managed provider와 behavior pool이 어떻게 다르고 겹치는지 한 문장으로 구분해 준다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH24(RAP/ABAP Cloud 입문) 9개 레슨은 왜→무엇→어떻게→흔한 실수 흐름을 전 레슨에서 일관되게 지키고, 표·임베드·이름 풀(정훈영) 사용도 규칙에 맞다. 문장·용어 감사에서 7건을 발견했다 — 핵심 개념 OData가 챕터 전체(13회)에서 한 번도 인라인 풀이 없이 쓰이는 점, transactional buffer와 EML이 L05에서 풀이 없이 먼저 등장했다가 L09에서야 정식 설명이 나오는 순서 문제(특히 transactional buffer는 RAP 저장 메커니즘의 핵심이라 영향이 크다), repository object가 4회 무풀이로 반복되는 점, SDL 약어만 다른 약어(RAP·EML)와 달리 영문 풀네임 병기 없이 쓰인 점, L03의 composition tree 문장이 갑자기 스펙 문서체로 바뀌면서 같은 레슨의 projection tree와 관계가 불명확한 점, provider라는 단어가 L01(런타임 쪽)과 L09(behavior pool 쪽)에서 반대 대상을 가리키는 점이다. 모두 국소적인 풀이 추가·표현 통일로 해결 가능해 재집필이나 구조 변경까지는 필요 없다."
+  }
+}

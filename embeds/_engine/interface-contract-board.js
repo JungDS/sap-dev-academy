@@ -61,7 +61,10 @@
       return;
     }
     outEl.className = 'ok';
-    outEl.innerHTML = '✅ 출력: <b>' + h(c.out) + '</b> — 같은 <code>lo_printable-&gt;' + h(CFG.method) + '( )</code> 호출인데, 담긴 객체(<code>' + h(c.name) + '</code>)에 따라 <b>다르게</b> 실행됩니다. 이게 <b>다형성</b>입니다.';
+    outEl.innerHTML = '✅ 출력: <b>' + h(c.out) + '</b> — 같은 <code>lo_printable-&gt;' + h(CFG.method) + '( )</code> 호출인데, 담긴 객체(<code>' + h(c.name) + '</code>)에 따라 <b>다르게</b> 실행됩니다. 이게 <b>다형성</b>입니다.' +
+      (c.extra
+        ? '<div class="icb-extra">🚫 이어서 <code>lo_printable-&gt;' + h(c.extra) + '</code>를 부르면 <b>syntax 오류</b> — 인터페이스 참조에는 규약(<code>' + h(CFG.intf) + '</code>)에 선언된 것만 보입니다. <code>' + h(c.name) + '</code> 전용 메서드는 그 클래스 타입 참조로만 부릅니다.</div>'
+        : '');
   }
 
   function render() {

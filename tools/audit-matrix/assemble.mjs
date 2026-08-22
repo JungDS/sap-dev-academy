@@ -43,13 +43,56 @@ function listEmbeds(ch) {
     .sort().map((f) => path.join(EMBEDS, f));
 }
 
-function fill(agent, target, targetFiles, body) {
+function fill(agent, target, targetFiles, body, contextBlocks = '') {
   return preamble
     .replaceAll('{{AGENT_ID}}', agent)
     .replaceAll('{{TARGET}}', target)
     .replace('{{TARGET_FILES}}', targetFiles.map((f) => `- ${f}`).join('\n'))
+    .replace('{{CONTEXT_BLOCKS}}', contextBlocks)
     .replace('{{SCHEMA_JSON}}', schemaJson)
     .replace('{{AGENT_BODY}}', body.replaceAll('{{TARGET}}', target));
+}
+
+// 학습 이력 블록 — CH01～CH(n-1)의 챕터 제목 + 레슨 front-matter introduces 누적(기계 추출).
+// 사용자 확정 2026-08-21: 발견자에게 "여기까지 배운 상태"를 제공(감사 판정문은 계속 비공개).
+function learnedSoFar(ch) {
+  const n = parseInt(ch.slice(2), 10);
+  if (!Number.isFinite(n) || n <= 1) return '';
+  const lines = [];
+  for (let i = 1; i < n; i++) {
+    const cid = 'CH' + String(i).padStart(2, '0');
+    const dir = path.join(CONTENT, cid);
+    if (!fs.existsSync(dir)) continue;
+    let title = '';
+    const concepts = [];
+    for (const f of fs.readdirSync(dir).filter((x) => x.endsWith('.md')).sort()) {
+      const src = read(path.join(dir, f));
+      if (f === '_chapter.md') {
+        const m = src.match(/^title:\s*"?([^"\n]+)"?\s*$/m);
+        if (m) title = m[1].trim();
+        continue;
+      }
+      const m = src.match(/^introduces:\s*\[(.*)\]\s*$/m);
+      if (m && m[1].trim()) {
+        for (const c of m[1].split(',')) {
+          const v = c.trim().replace(/^"|"$/g, '');
+          if (v) concepts.push(v);
+        }
+      }
+    }
+    lines.push(`- ${cid} «${title}»: ${concepts.length ? concepts.join(' · ') : '(introduces 미선언)'}`);
+  }
+  if (!lines.length) return '';
+  return [
+    '[학습 이력 — 학습자는 이 챕터 직전까지 아래를 이미 배웠다]',
+    '- 각 챕터의 정식 도입 개념(front-matter introduces 기계 추출)이다. 판단에 "앞에서 배웠나?"가 중요하면 해당 챕터 원문·학습수단을 직접 열어 확인하라(접근 허용 ②). 아래 목록에 없고 원문에도 없으면 미학습 개념이다.',
+    ...lines,
+  ].join('\n');
+}
+
+function knownFacts() {
+  const p = path.join(HERE, 'known-facts.md');
+  return fs.existsSync(p) ? read(p).trim() : '';
 }
 
 function writeOut(campaign, target, agent, text) {
@@ -63,11 +106,13 @@ function writeOut(campaign, target, agent, text) {
 function assembleChapter(campaign, ch) {
   const lessons = listLessons(ch);
   const embeds = listEmbeds(ch);
+  // 컨텍스트 주입(배치 7+, 사용자 확정 2026-08-21): 학습 이력 + 확정 사실. 감사 판정문은 비공개 유지.
+  const ctx = [learnedSoFar(ch), knownFacts()].filter(Boolean).join('\n\n');
   const made = [];
   for (const agent of CHAPTER_AGENTS) {
     const body = read(path.join(HERE, `${agent}.md`));
     const files = agent === 'AG02' ? [...lessons, ...embeds] : lessons;
-    made.push(writeOut(campaign, ch, agent, fill(agent, ch, files, body)));
+    made.push(writeOut(campaign, ch, agent, fill(agent, ch, files, body, ctx)));
   }
   return { chapter: ch, lessons: lessons.length, embeds: embeds.length, prompts: made.length };
 }

@@ -1,0 +1,70 @@
+{
+  "agent": "AG09",
+  "model": "opus",
+  "target": "CH24",
+  "persona_ack": "나는 발견자 AG09 — ABAP 정적 검사기를 시늉하는 코드 전용 감사자다. 산문·서사·교수법은 채점하지 않고 코드 블록만 줄 단위로 본다(CH24는 ```abap이 아니라 ```cds/```bdef/```bimpl/```service 펜스로 코드를 싣고 있어 그 블록들을 대상으로 삼았다). 읽기 전용·블라인드로 대상 10개 파일만 열었고, 시스템이 없으므로 컴파일 확신이 아닌 정적 판단으로 confidence를 정직하게 표기했다. 억지 발견은 하지 않았다.",
+  "method": "Read 도구로 대상 10개 파일 전문을 읽고, 각 코드 블록(cds 2·bdef 3·bimpl 3·service 1·text 1)을 줄 단위로 대조. 검사 축 = ①BDL/EML/CDS 문법과 시그니처 정합 ②선언(BDEF)↔구현(behavior pool) 식별자 교차 대조 ③엔티티·필드·클래스·테이블 이름의 챕터 내 일관성(ZI_Booking·ZC_Booking·zbooking·zbp_i_booking·booking_id/concert_id/perf_no/customer/seats/status) ④네이밍 규약(로컬 스코프 lv_/ls_/lt_) ⑤경계 규약(CH18+ 구간이므로 modern 문법·New Open SQL 허용). 빌드·실행·외부 조회 없음(정적 판단만).",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L09.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH24/CH24-L03.md",
+      "quote": "provider contract transactional_query",
+      "category": "계층 누락(behavior projection)",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "ZC_Booking에 transactional_query 계약을 붙였지만, 그 짝인 behavior definition projection(`projection; define behavior for ZC_Booking alias Booking { use create; use update; use delete; use action cancel; }`)이 챕터 전체(L03·L04·L06·L09)에 한 번도 등장하지 않는다. 코드대로 만들면 서비스로 노출된 ZC_Booking은 사실상 조회 전용이 되어 create/update/delete와 cancel action이 소비자에게 열리지 않는다.",
+      "evidence": "BDEF는 L04·L09 두 곳 모두 `define behavior for ZI_Booking alias Booking`(interface 계층)뿐이고, L06의 Service Definition은 `expose ZC_Booking as Booking;`으로 projection을 노출한다. 즉 노출되는 엔티티(ZC_Booking)에는 대응 behavior가 없다. 그런데 L09 확인 체크리스트는 `| service preview | binding 활성화 후 preview | Booking 목록·`cancel` action 노출 |`를 기대 결과로 적어, 코드 구성과 기대 결과가 어긋난다. L01의 계층표도 6계층을 열거하면서 projection behavior를 빠뜨린다.",
+      "suggestion": "L03(또는 L04) 끝에 projection BDEF 조각을 한 개 추가하고 L01 계층표/조립 보드에도 'ZC_ 쪽 behavior projection' 칸을 넣는다. 지면상 어렵다면 최소한 'ZC_*로 CUD를 열려면 ZC_ 전용 behavior projection이 하나 더 필요하다(형태만 소개)'는 한 줄과 링크를 L03·L06에 명시해, L09 체크리스트의 action 노출 기대와 일치시킨다."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH24/CH24-L05.md",
+      "quote": "IMPORTING keys FOR Booking~validate_capacity.",
+      "category": "선언-구현 불일치(BDEF 선언 부재)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "handler method가 `Booking~validate_capacity`를 참조하지만, 이 시점까지 제시된 BDEF(L04)에는 `validation validate_capacity ...` 선언이 없다. RAP behavior pool의 handler는 BDEF에 선언된 validation/determination/action에만 붙일 수 있으므로, L04→L05를 순서대로 그대로 따라 만든 독자는 activation 오류를 만난다.",
+      "evidence": "L04의 BDEF 본문은 `create;`, `update;`, `delete;`, `field ( readonly:update ) booking_id;`, `mapping for zbooking { ... }`뿐이며 validation 선언이 없다. 해당 선언(`validation validate_capacity on save { field seats, concert_id, perf_no; }`)은 두 레슨 뒤인 L07과 L09에서 처음 등장한다. L05 본문도 '어떻게 확인하는가 2'에서 'handler method 이름이 BDEF에 선언한 validation/action 이름과 맞아야 연결된다'고 전제하지만, 정작 그 선언 코드는 이 레슨에 없다.",
+      "suggestion": "L05 코드 블록 바로 위/아래에 BDEF 한 줄(`validation validate_capacity on save { field seats, concert_id, perf_no; }`)을 [선행 사용] 표기로 함께 보여 주거나, '이 선언은 다음 레슨에서 정식으로 다룬다 — 지금은 짝이 필요하다는 사실만'이라는 한 줄 안내를 붙여 코드가 단독으로 성립하지 않음을 명시한다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH24/CH24-L09.md",
+      "quote": "mapping for zbooking { booking_id = booking_id; }",
+      "category": "BDEF mapping 불완전",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "실습(최종 산출물) BDEF의 mapping 블록이 booking_id 하나만 남아, L04에서 6개 필드를 모두 매핑한 것과 어긋난다. BDL의 명시 mapping 블록은 나열한 요소만 대응시키므로(동일명 자동 매핑을 원하면 `corresponding` 필요), 이대로면 concert_id·perf_no·customer·seats·status가 persistent table에 반영되지 않을 수 있다 — 정원 검증·취소 상태 변경이 모두 이 필드들에 달려 있어 실습이 조용히 실패한다.",
+      "evidence": "L04는 `mapping for zbooking` 블록에 booking_id·concert_id·perf_no·customer·seats·status 6개를 모두 적었고, L02/L03의 ZI_Booking·ZC_Booking 필드 목록도 같은 6개다. 그런데 L09의 최종 BDEF는 같은 블록을 한 줄로 줄이면서 booking_id 한 건만 남겼고, 생략을 알리는 표기(… 등)도 없다.",
+      "suggestion": "L09의 mapping을 L04와 동일하게 6개 필드 전부로 복원하거나, 이름이 완전히 동일하므로 `mapping for zbooking corresponding`으로 바꾼다. 축약을 유지하려면 `mapping for zbooking { booking_id = booking_id; \" …나머지 필드 동일… }`처럼 생략 표기를 남긴다."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH24/CH24-L09.md",
+      "quote": "determination set_status_new on modify { create; }",
+      "category": "선언 대비 구현 골격 누락",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "실습 BDEF는 validation·determination·action 셋을 선언하는데, 이어지는 behavior pool 골격은 `METHOD validate_capacity`와 `METHOD cancel` 둘뿐이고 determination `set_status_new`의 구현 골격이 없다. RAP는 BDEF에 선언한 로직마다 pool에 대응 handler를 요구하므로, 선언만 있고 구현이 없으면 활성화되지 않고 체크리스트의 '상태 N' 기대도 성립하지 않는다.",
+      "evidence": "L09 본문 표 4단계는 'Behavior Pool | validation/determination/action 구현 위치'라고 셋을 모두 약속하고, 확인 체크리스트도 `| 정상 생성 | 좌석 2, 잔여 10 | 저장 성공, 상태 `N` |`로 determination의 결과를 기대한다. 그러나 제시된 ```bimpl 블록은 validate_capacity와 cancel 두 개뿐이다.",
+      "suggestion": "`METHOD set_status_new.` 골격(주석 3줄: keys 읽기 → status 비어 있으면 'N' 설정 → MODIFY ENTITIES로 반영) 하나를 추가해 선언 3개와 구현 3개를 짝 맞춘다. 지면을 아끼려면 최소한 '세 번째 handler(set_status_new)도 같은 자리에 만든다'는 한 줄이라도 남긴다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "코드 블록 자체의 품질은 양호하다. CDS(root view entity·projection + provider contract), BDL(managed 헤더·persistent table·lock master·field readonly·validation/determination/action), EML(READ ENTITIES ... IN LOCAL MODE / FIELDS ( ) 공백 나열 / WITH CORRESPONDING #( keys ) / RESULT DATA(...)), handler 시그니처(FOR VALIDATE ON SAVE ... IMPORTING keys FOR alias~name) 모두 실제 문법 형태와 일치하고, 문장 마침표·엔티티/필드/클래스/테이블 이름(ZI_Booking·ZC_Booking·zbooking·zbp_i_booking, 6개 필드)도 레슨 사이에서 어긋나지 않는다. 네이밍 규약도 준수 — METHOD 내부 선언만 lt_bookings/ls_booking으로 로컬 접두어를 썼고 it_ 오용·PARAMETERS/SELECT-OPTIONS/TYPES 위반은 없다. 경계 규약도 CH24는 CH18/19 이후 구간이라 인라인 DATA()·CORRESPONDING #( ) 사용이 정당하다. 결함은 문법 오류가 아니라 '짝이 빠진 선언·구현'에 몰려 있다 — ① ZC_ 쪽 behavior projection이 챕터 전체에 없어 노출 서비스가 조회 전용이 될 소지(L03/L06/L09 기대와 모순), ② L05 handler가 아직 선언되지 않은 validation을 참조, ③ 실습 최종 BDEF의 mapping이 6→1 필드로 줄어 저장 매핑 누락 위험, ④ 선언한 determination의 구현 골격 부재. 넷 다 몇 줄 삽입·복원으로 해결되는 성질이라 재집필이 아니라 경미 수정으로 본다. 다만 ①과 ③은 '따라 만들면 동작하지 않는' 결과로 이어질 수 있어 우선 처리 권장."
+  }
+}

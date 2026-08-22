@@ -1,0 +1,80 @@
+{
+  "agent": "AG05",
+  "model": "sonnet",
+  "target": "CH22",
+  "persona_ack": "20년차 학습 교재·코스 설계 전문가로서 인지부하 관리·동기 설계(불편→해결) 관점에서 CH22 8개 레슨 + 챕터 파일을 감사함.",
+  "method": "대상 9개 파일(_chapter.md, CH22-L01~L08.md) 전문 통독. 프런트매터(introduces/prereq/prevRel/foreshadow)와 본문 서술·코드·표·콜아웃을 레슨 간 교차 대조해 일관성·게이팅 준수(R15)·복습/예습 장치·불편 서사의 진정성을 정적으로 검증. 임베드(.html) 자체는 감사 대상 파일 범위 밖이라 열지 않았고, 그에 의존하는 판단은 confidence=추정으로 표기.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L08.md",
+      "quote": "IF <fc>-fieldname = 'CELLCOLORS'. <fc>-tech = abap_true. ENDIF.",
+      "category": "일관성 — 실습 코드와 앞선 레슨 설명의 불일치",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "실습(L08) 코드가 기술 컬럼(CELLCOLORS) 숨김에 no_out이 아니라 이 챕터가 한 번도 설명하지 않은 tech 속성을 갑자기 사용해, L03~L05에서 세 번 반복 학습한 내용과 충돌한다.",
+      "evidence": "L03은 no_out을 '기본 화면에서 숨김' 속성으로 명시 도입한다. L04 흔한 실수는 'CELLCOLORS가 화면에 노출 → 기술 컬럼이라 field catalog에서 숨긴다(no_out)'라고 쓰고, L05 흔한 실수도 'CELLSTYLES 컬럼 노출 → ... no_out으로 숨긴다'고 동일 패턴을 반복한다. 그런데 실습(L08)의 실제 코드는 no_out이 아니라 tech = abap_true를 쓰는데, tech는 이 챕터 어디에도 정의·설명이 없고 L08 front-matter의 introduces도 빈 배열(새 개념 도입 없음을 선언)이다. 실무적으로 tech가 no_out보다 더 적합할 수 있으나(컬럼 선택 대화상자에서도 숨김) 그 차이를 챕터가 한 번도 설명하지 않아, 배운 대로 따라 하던 학습자가 완성 예시 코드에서 낯선 속성을 마주치는 모양이 된다.",
+      "suggestion": "① 실습 코드를 배운 대로 no_out = abap_true로 통일하거나, ② tech를 그대로 쓰려면 'no_out과 달리 tech는 컬럼 선택 대화상자에서도 안 보이게 한다' 같은 한 줄 설명을 덧붙여 의도적 차이임을 밝힌다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L06.md",
+      "quote": "<fc>-emphasize = 'C500'.",
+      "category": "개념 도입 깊이 불균형",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "front-matter는 '컬럼 색(fieldcat emphasize)'을 이 레슨에서 처음 L3로 도입한다고 선언하지만, 실제 지면은 코드 3줄과 형식 설명 한 문장뿐이라 같은 레슨에서 함께 다루는 행 색(링크로 회상)·셀 색(L04 전용 레슨)에 비해 훨씬 얇게 다뤄진다.",
+      "evidence": "L06 front-matter: introduces: [\"색 단위 선택 기준\", \"컬럼 색(fieldcat emphasize)\"]. 반면 행 색은 CH17-L09 링크로 대체하고, 셀 색은 L04가 전용 레슨(타입 선언·계산 코드·color-col/int/inv 의미 표·임베드·흔한 실수)을 통째로 할애했다. 컬럼 색은 emphasize = 'C500' 같은 인코딩 문자열 형식(구조체 color-col/int/inv와 전혀 다른 표기법)을 처음 접하는데도, 흔한 실수 5개 항목(과한 색·행+셀 중복·색만으로 전달·테마 의존·셀 색 남용) 중 emphasize 형식 실수(자릿수·색 번호 범위·'C' 접두 누락 등)를 다루는 항목이 하나도 없다.",
+      "suggestion": "emphasize 문자열 형식에 특화된 흔한 실수 한 항목을 추가하거나(예: 자릿수 틀림·'C' 접두 누락), 왜 컬럼 색만 구조체가 아니라 인코딩 문자열인지 대비 설명을 한 줄 덧붙인다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L07.md",
+      "quote": "## 흔한 실수와 점검 🚧",
+      "category": "섹션 흐름 — 정리(요약) 누락",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L07은 새 개념(is_stable-row/col, i_soft_refresh)을 도입한 뒤 흔한 실수 섹션으로 바로 끝나, 다른 대부분의 레슨(L01·L02·L04·L05·L06)에 있는 별도 '정리 📌' 요약 섹션이 없다. L03도 동일하게 정리 섹션이 없다.",
+      "evidence": "L07 본문 구조는 왜 → 콜아웃 → 코드 → 옵션 표 → 임베드 → 흔한 실수 순으로 끝나며, 배운 내용을 한곳에 압축하는 정리 단락이 없다. L01/L02/L04/L05/L06은 모두 흔한 실수 전후로 '## 정리 📌' 섹션을 두어 핵심을 3줄 내외로 재확인시키는 반면, L03·L07만 이 장치가 빠져 있다(단, L08은 실습 레슨이라 '직접 해 볼 과제'가 그 역할을 대신하므로 예외로 본다).",
+      "suggestion": "L07 끝(또는 흔한 실수 앞)에 'refresh_table_display는 재조회가 아니다 / is_stable로 위치 보존 / 구조 변경 시엔 soft_refresh만으론 부족' 등을 3줄 내외로 압축하는 정리 섹션을 추가한다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L02.md",
+      "quote": "위 체험의 *다시 실행*으로 직접 확인하자.",
+      "category": "체험(임베드)-본문 정합성 불확실",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "'저장한 variant가 개발자 기본을 덮어쓴다'는 이 레슨의 핵심 경고를 '위 체험의 다시 실행'으로 직접 확인하라고 안내하는데, 그 임베드(CH22-L02-S01)의 캡션은 '줄무늬·폭·컬럼 텍스트'만 언급해 Variant 저장·재실행 시나리오까지 포함하는지 본문만으로는 확인할 수 없다.",
+      "evidence": "이 레슨의 임베드는 ':: embed CH22-L02-S01 | SALV Layout 실험실 (줄무늬·폭·컬럼 텍스트) ::' 하나뿐이며 Variant 저장 절보다 앞에 배치돼 있다. Variant 절의 경고 콜아웃은 이 임베드를 '위 체험'으로 지칭하며 '다시 실행'으로 variant 우선 적용을 확인하라고 안내한다. 감사 범위가 대상 .md 파일로 한정되어 embeds/abap/CH22-L02-S01.html의 실제 구현은 열어볼 수 없었으므로 확정 판정은 못 내리지만, 캡션 문구만으로는 이 상호작용이 실제로 구현돼 있는지 불분명하다.",
+      "suggestion": "임베드가 실제로 variant 저장→재실행→우선 적용 시나리오를 포함하는지 확인한다. 포함한다면 캡션에 'Variant'를 명시하고, 포함하지 않는다면 이 경고에 맞는 별도 체험을 추가하거나 안내 문구를 '개발 환경에서 직접 재실행해 확인하자'처럼 바꾼다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\_chapter.md",
+      "quote": "keywords: [\"Cell Color\",\"Stable Refresh\",\"Event\",\"Layout 심화\"]",
+      "category": "챕터 메타데이터 정합성",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "챕터 키워드에 'Event'가 있지만, 이 챕터의 실제 레슨은 이벤트를 다루지 않고 오히려 두 곳에서 명시적으로 CH30으로 미룬다.",
+      "evidence": "L05: 'mc_style_button은 모양일 뿐, 클릭 이벤트(상세 열기 등)는 이후 ALV 이벤트 챕터에서 구현한다.' L08: '본격 이벤트는 ALV 고급 Event 응용(CH30-L01)의 몫이다' 및 L08 front-matter foreshadow: [\"ALV 이벤트(CH30)\", \"대량 성능(CH35)\"]. 챕터 키워드의 'Event'는 실제로 이 챕터에서 배우는 내용이 아니라 다음 챕터로 미룬 예고 대상이라, 키워드만 보고 이벤트를 기대하면 실제 내용과 어긋난다.",
+      "suggestion": "키워드 'Event'를 제거하거나, 이 챕터에서 다루지 않고 예고만 한다는 점이 드러나도록 표기를 조정한다(예: 삭제 또는 'Event(예고)')."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH22 8개 레슨은 왜→무엇→어떻게→실수 흐름과 불편-해결 서사가 대체로 진솔하다(L01·L03·L07의 구체적 pain 사례, deepening/parallel/next-step 관계에서 억지 불편을 만들지 않는 R15 준수). L05가 L04와 동일한 deep 구조를 재사용해 인지 부하를 낮추고 명시적 비교표(L05·L06)로 복습 장치를 잘 갖춘 점도 긍정적이다. 다만 L08 실습 코드가 세 번 반복 학습한 no_out 대신 설명 없는 tech 속성을 써 학습 내용과 충돌하는 점(높음)이 가장 뚜렷한 결함이며, L06이 새로 도입한다고 선언한 '컬럼 색(emphasize)'이 형제 개념보다 훨씬 얇게 다뤄지는 점(중간), L02의 Variant 검증 안내가 가리키는 임베드 범위가 본문만으로는 불확실한 점(중간, 추정), L03·L07의 정리 섹션 누락과 챕터 키워드의 'Event' 불일치(낮음)가 함께 발견됐다. 모두 구조 재설계 없이 해당 지점만 국소적으로 손보면 되는 수준이라 '경미 수정'으로 판단한다."
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "agent": "AG03",
+  "model": "sonnet",
+  "target": "CH24",
+  "persona_ack": "페르소나 확인 — 타 언어(Java/C#) 백엔드 3～5년차 개발자로서 ABAP을 빠르게 훑어 익히려고 CH24(RAP/ABAP Cloud 입문, 레슨 9개 + _chapter)를 통독. 프로그래밍 기본기(변수·조건문·루프·SQL·OOP)는 이미 안다는 전제로 과잉·오개념유발·지름길부재·용어충돌 4관점을 기록했고, '입문자에게도 불필요한 장황함'만 높음 이상으로 채택하는 기준을 적용했다.",
+  "method": "대상 10개 파일(CH24-L01～L09.md, _chapter.md)을 Read 도구로 전문 통독. 실행·빌드·미리보기 접속·외부 검색 없이 원문 텍스트만 대조하는 수동 검토.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L09.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH24-L02.md",
+      "quote": "RAP에서 가장 먼저 안정되어야 하는 것은 업무 객체의 **뿌리(root)**다.",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "root(트랜잭션 단위) 선택 기준이 DDD(Domain-Driven Design)의 Aggregate Root 선정 기준(트랜잭션·일관성 경계를 대표하는 entity를 고르는 것)과 사실상 같은 개념인데 그 연결을 짚어주지 않는다.",
+      "evidence": "이 절 전체('왜 root부터 정할까'~'직접 판정해 보기')는 '사용자 행동이 어디에 모이는가·key가 인스턴스를 안정적으로 가리키는가'로 root를 고르라고 안내하는데, 이는 DDD Aggregate Root의 선정 기준과 거의 1:1 대응한다. DDD를 경험한 개발자라면 이 절의 논리를 몇 초 만에 넘길 수 있는데 그 지름길이 없다.",
+      "suggestion": "'DDD의 Aggregate Root 선정 기준을 안다면 이 절의 논리는 동일하다'는 괄호/콜아웃 한 줄을 추가하면 경력자는 바로 코드 예시로 건너뛸 수 있다."
+    },
+    {
+      "seq": 2,
+      "file": "CH24-L03.md",
+      "quote": "기반 모델은 내부 안정성을 위해 존재하고, 외부 소비자는 화면·API 목적에 맞춘 모델을 원한다.",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "ZI_(root)/ZC_(projection) 분리 근거가 일반 백엔드의 Domain Entity/DTO(API 전용 View Model) 분리와 동일한 패턴인데 그 대응 관계를 짚어주지 않는다.",
+      "evidence": "이어지는 근거('내부 감사 필드를 숨기고 싶을 수도 있고, UI annotation을 분리하고 싶을 수도 있으며...')는 Entity와 DTO를 분리하는 표준적인 이유(내부 필드 은닉·API 계약 안정화)와 그대로 겹친다. 3～5년차라면 이미 체화한 패턴이라 근거 설명 자체는 새롭지 않고, 새로 배울 건 'ZI_/ZC_'라는 ABAP 명명·문법뿐이다.",
+      "suggestion": "'Entity 대 DTO 분리에 익숙하면 이 절의 동기는 동일 — ZI_=내부 모델, ZC_=API 계약'처럼 한 줄로 매핑해주면 근거 단락을 건너뛰고 바로 provider contract 문법으로 갈 수 있다."
+    },
+    {
+      "seq": 3,
+      "file": "CH24-L04.md",
+      "quote": "CDS 요소와 persistent table 필드의 대응을 명시한다.",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "BDEF의 `mapping for zbooking { ... }`은 JPA `@Column`/EF Core Fluent API의 필드-컬럼 매핑 선언과 본질적으로 같은 개념인데 그 유사성이 짚어지지 않는다.",
+      "evidence": "ORM을 써본 개발자에게 '모델 필드명과 테이블 컬럼명이 다를 때 명시적으로 대응을 선언한다'는 개념 자체는 새롭지 않다. 새로 배울 건 BDL 문법(`mapping for ... { a = b; }`)뿐인데 본문은 개념부터 다시 설명한다.",
+      "suggestion": "'JPA @Column류의 필드-컬럼 매핑과 같은 개념 — 문법만 다르다'는 한 줄이 있으면 이 표 항목을 빠르게 넘어갈 수 있다."
+    },
+    {
+      "seq": 4,
+      "file": "CH24-L05.md",
+      "quote": "Behavior Pool은 ABAP [[Behavior Implementation]]을 위한 특수 class pool이다.",
+      "category": "용어 충돌",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "'class pool'이라는 이름이 일반 개발자에게는 Object Pool(연결 풀·스레드 풀처럼 비싼 객체를 재사용하는 성능 기법)을 먼저 연상시키는데, 여기서는 그와 전혀 무관한 classic ABAP의 소스 컨테이너 종류(클래스 정의를 담는 저장소 오브젝트 타입 — 다른 언어의 '소스 파일/컴파일 단위'에 가까움)를 가리킨다. 이 오해 소지가 본문에서 짚어지지 않는다.",
+      "evidence": "본문은 'Behavior Pool은... 특수 class pool이다'라고만 설명하고 바로 코드 예시로 넘어간다. Java의 connection pool, C#의 ObjectPool<T> 등 'pool=재사용 가능한 인스턴스를 미리 만들어 두는 자료구조' 패턴에 익숙한 독자는 'behavior pool 안에서 뭔가를 재사용/캐싱하나?'라는 잘못된 가정을 가지고 이어지는 코드 워크스루를 읽을 위험이 있다.",
+      "suggestion": "첫 등장 시 '(Object Pool 디자인패턴과 무관 — classic ABAP의 클래스 저장 단위)'처럼 괄호로 한 번만 반증해주면 충분하다."
+    },
+    {
+      "seq": 5,
+      "file": "CH24-L05.md",
+      "quote": "**loop 안 EML 금지** — 먼저 필요한 데이터를 한 번에 읽고, 그 결과를 loop로 처리한다.",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "'loop 안에서 개별 READ ENTITIES 호출 금지' 원칙은 ORM의 N+1 쿼리 문제(반복문 안에서 개별 조회를 날려 성능이 무너지는 문제)와 정확히 같은 이유·같은 해법인데 그 연결이 없다.",
+      "evidence": "JPA/Hibernate·EF Core 등을 다뤄본 3～5년차 개발자에게 'N+1'은 이미 반사적으로 아는 안티패턴이다. 'loop 안 EML 금지'라는 새 용어로만 제시되면 같은 개념을 처음부터 다시 이해해야 하는 것처럼 읽힌다.",
+      "suggestion": "'(ORM의 N+1 문제와 같은 이유 — 한 번에 모아 읽고 loop는 처리에만 쓴다)'를 괄호로 덧붙이면 경력자는 이 항목을 즉시 이해하고 넘어간다."
+    },
+    {
+      "seq": 6,
+      "file": "CH24-L09.md",
+      "quote": "프로그램에서 RAP BO를 직접 다루는 언어를 [[EML]](Entity Manipulation Language)이라 한다.",
+      "category": "지름길 부재",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "MODIFY ENTITIES(버퍼 스테이징) → COMMIT ENTITIES(DB 확정)의 2단계 흐름은 JPA 영속성 컨텍스트(flush/commit)나 EF Core change tracker(SaveChanges())가 구현하는 Unit of Work 패턴과 정확히 같은 구조인데 그 대응이 없다. 이 챕터에서 가장 핵심적인 개념 지도인 만큼 지름길 부재의 체감 비용이 가장 크다.",
+      "evidence": "본문 스스로 '입문자가 RAP에서 가장 크게 오해하는 지점'이라고 밝힐 정도로 이 절의 비중이 크다. Unit of Work 패턴(먼저 메모리에 변경을 모았다가 한 번에 커밋)을 다뤄본 개발자라면 표 하나로 즉시 이해할 내용을 처음 배우는 개념처럼 단계별로 다시 읽어야 한다.",
+      "suggestion": "EML 표 위나 아래에 'JPA의 flush/commit, EF Core의 SaveChanges()와 같은 Unit of Work 패턴 — MODIFY는 스테이징, COMMIT은 확정'이라는 한 줄 대응을 추가하면 경력자는 표를 눈으로만 훑고 지나갈 수 있다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH24는 RAP 6계층·root 선정·managed/unmanaged·BDEF·behavior pool·V/D/A·서비스 노출·ABAP Cloud·실습까지 구조가 촘촘하고, 'create/update/delete는 직접 SQL이 아니다', 'lock master를 classic lock object와 혼동 말 것', 'managed=코드 0 아님' 같이 경력 개발자가 특히 헷갈릴 만한 지점을 본문이 이미 선제적으로 짚어주고 있어 오개념을 유발하는 대목은 찾지 못했다. 과잉 서술도 마찬가지 — 각 절이 이미 압축되어 있어 '입문자에게도 불필요한 장황함'에 해당하는 곳은 없었다. 남은 발견 6건 중 5건은 경력자라면 이미 아는 패턴(DDD Aggregate Root·Entity/DTO 분리·ORM 필드매핑·N+1·Unit of Work)과의 다리를 놓아주면 더 빨리 읽을 수 있는 지름길 부재이고, 1건은 'class pool'이라는 이름이 Object Pool 패턴을 연상시킬 수 있는 용어 충돌이다. 전체적으로 경력 개발자도 안전하게 읽을 수 있는 수준이며, 위 6건은 괄호·콜아웃 한 줄 수준의 경미한 보강으로 충분하다."
+  }
+}

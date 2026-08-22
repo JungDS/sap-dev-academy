@@ -1,0 +1,79 @@
+{
+  "agent": "AG05",
+  "model": "sonnet",
+  "target": "CH23",
+  "persona_ack": "20년차 학습 교재·코스 설계 전문가로서 CH23(CDS View Entity 기초) 7개 레슨과 챕터 파일 전체를 인지부하 관리·동기 설계 관점에서 감사함 — 챕터 구성, 섹션 흐름(왜→무엇→어떻게→실수→정리), 복습/예습 장치, 불편→해결 서사, 인지 부하 5개 축으로 점검.",
+  "method": "대상 8개 파일 전문을 통독하고, 레슨 간 교차 참조(용어 최초 도입 시점, 코드 예제의 필드 일치 여부, prereq 선언과 본문 링크의 일치 여부)는 grep으로 재확인해 인용문이 원문에 실존하는지 사전 검증함. 이 챕터는 순수 콘텐츠·구조 감사라 SERVE_URL(로컬 미리보기) 브라우저 확인은 사용하지 않음.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH23\\CH23-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH23\\CH23-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH23\\CH23-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH23\\CH23-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH23\\CH23-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH23\\CH23-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH23\\CH23-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH23\\_chapter.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "_chapter.md",
+      "quote": "DB 계층에서 모델링하고 재사용하고 싶다.",
+      "category": "챕터 구성 — intro",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "챕터 intro가 'CDS View Entity를 왜 지금 배우는지'를 실질적으로 설득하지 못한다. front-matter intro 필드의 한 문장을 본문에 그대로 반복할 뿐, 22개 챕터를 거쳐온 학습자에게 왜 이 고급 주제가 필요한지, 이 챕터를 마치면 무엇(RAP)으로 이어지는지에 대한 서사가 없다.",
+      "evidence": "_chapter.md 본문 전체가 intro와 동일한 문장 하나뿐이다. 반면 L01～L06 각 레슨의 '왜' 섹션은 3개 안팎의 구체적 불편 사례로 훨씬 강하게 설득한다(예: L01은 '같은 조회가 프로그램마다 반복된다' 등 3가지 불편을 나열). 챕터 레벨에는 그런 요약·확장이 전혀 없다.",
+      "suggestion": "본문에 '왜 지금(CH01～22를 지나) CDS인가'와 'CH24 RAP의 기반이 된다'는 연결을 1～2문단으로 보강."
+    },
+    {
+      "seq": 2,
+      "file": "CH23-L01.md",
+      "quote": "define view entity ZI_Concert",
+      "category": "챕터 구성 — 학습 순서(명명 관습 선사용)",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L01의 첫 코드 예제부터 `ZI_Concert`라는 `ZI_` 접두어 이름을 쓰지만, `ZI_`가 무엇을 뜻하는 명명 관습인지는 L02에서야 공식 도입된다. L01 본문에는 이 접두어에 대한 언급이 없어, 입문자는 레슨 내내 이름의 의미를 모른 채 코드를 읽는다.",
+      "evidence": "L01 코드 블록(37번째 줄)에 `define view entity ZI_Concert`가 등장하지만 L01 본문 어디에도 `ZI_`의 뜻은 설명되지 않는다. `ZI_`(Interface View)·`ZC_`(Consumption View) 명명 관습은 CH23-L02에서 처음 설명된다.",
+      "suggestion": "L01 첫 코드 예제 옆에 '이름 앞 `ZI_`의 뜻은 다음 레슨에서 설명한다' 같은 한 줄 안내를 붙이거나, L01 예제를 접두어 없는 이름으로 시작해 L02에서 `ZI_`/`ZC_`로 넘어가는 구성을 고려."
+    },
+    {
+      "seq": 3,
+      "file": "CH23-L04.md",
+      "quote": "[L01](CH23-L01.html)의 항공편 모델 `ZI_Flight`에는 `price`와 `currency`가 실제로 있으니, 이 둘로 금액-통화 짝을 선언한다.",
+      "category": "복습 장치 — 사실 불일치",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "L04는 'L01의 ZI_Flight에 price와 currency가 실제로 있다'고 명시하지만, L01의 실제 ZI_Flight 코드에는 carrid·connid·fldate·seatsmax·seatsocc·seats_left만 있고 price·currency는 전혀 없다. 이전 레슨을 되짚어보는 복습 지점에서 존재하지 않는 내용을 '있다'고 단언해 학습자를 혼란시킨다.",
+      "evidence": "L01의 ZI_Flight select list를 확인한 결과 price·currency 문자열이 전혀 없다(grep 무결과로 확인). L04는 이 문장 바로 다음에 `@Semantics.amount.currencyCode: 'currency'` / `price,` 코드를 이미 존재하는 필드인 것처럼 이어서 제시한다.",
+      "suggestion": "L04 문장을 'ZI_Flight를 이렇게 확장한다면'처럼 가정형으로 바꾸거나, L01의 ZI_Flight select list에 price·currency를 실제로 추가해 두 레슨의 코드를 일치시킨다."
+    },
+    {
+      "seq": 4,
+      "file": "CH23-L07.md",
+      "quote": "prereq: [\"CH23-L01\", \"CH23-L03\", \"CH23-L04\", \"CH23-L05\"]",
+      "category": "챕터 구성 — 선수지식(prereq) 선언 불완전",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L07의 front-matter prereq 배열은 L01·L03·L04·L05만 나열하지만, 본문은 CH23-L06(DCL)을 직접 링크해 그 핵심 내용('DCL은 상속되지 않는다')을 흔한 실수 항목으로 재사용하고, 완성 코드 전체가 L02에서 도입한 ZI_/ZC_ 명명 관습을 전제로 한다. 레슨 배치 순서 자체는 문제없으나(L02·L06 모두 L07보다 앞에 있음), 게이팅 검증의 근거가 되는 prereq 선언이 실제 의존성보다 좁다.",
+      "evidence": "본문 120번째 줄이 '([DCL 개요](CH23-L06.html))'로 CH23-L06을 직접 인용하지만 prereq 배열에는 CH23-L06이 없다. ZI_/ZC_ 계층 개념(L02에서 introduces)도 prereq에 없다.",
+      "suggestion": "prereq 배열에 CH23-L02·CH23-L06을 추가해 본문이 실제로 전제·인용하는 레슨과 일치시킨다."
+    },
+    {
+      "seq": 5,
+      "file": "CH23-L07.md",
+      "quote": "지금까지 배운 문법을 따로 보면 각각은 작아 보인다. 그러나 실무 가치는 **조합**에서 나온다.",
+      "category": "복습 장치/인지 부하 — 캡스톤 통합 불완전",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L07은 '지금까지 배운 문법의 조합'이라고 선언하고 L04(Annotation)를 prereq로 명시하지만, 실제 완성 코드(ZI_Perf·ZI_Concert·ZC_Concert·DDLX)에는 L04의 핵심 어휘인 @EndUserText.label이나 @Semantics.*가 한 번도 등장하지 않는다. @UI.lineItem(L05)만 재사용되어, 캡스톤이 전 레슨을 고르게 통합한다는 주장이 부분적으로만 성립한다.",
+      "evidence": "L07 전체에서 'EndUserText'·'Semantics' 문자열을 검색한 결과 매치가 전혀 없다. L04가 강조한 @Semantics 자기참조 오류 같은 핵심 주의사항도 캡스톤에서 재확인되지 않는다.",
+      "suggestion": "DDLX 블록에 @EndUserText.label을 한둘 추가하거나, 확인 체크리스트에 'L04에서 배운 라벨/의미 annotation이 최소 하나 반영되었는가' 항목을 넣어 캡스톤이 실제로 L04를 통합하도록 보강."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH23은 기본 뷰(L01)→계층 분리 ZI_/ZC_(L02)→관계 Association(L03)→의미 부여 Annotation(L04)→메타데이터 분리(L05)→권한 DCL(L06)→실습(L07) 순으로 난이도가 매끄럽게 상승하고, 레슨마다 왜→무엇→체험→확인→실수→정리 흐름과 형식적이지 않은 진짜 불편-해결 서사를 일관되게 지킨다. 레슨 끝 예고도 1～2문장·코드 없음 규칙을 전 레슨이 지킨다. 다만 (1) 챕터 intro가 본문에서 문장을 그대로 반복할 뿐 이 고급 주제를 배우는 이유를 못 팔고, (2) L04가 L01의 ZI_Flight에 실제로 없는 price/currency가 '있다'고 잘못 말해 복습 장치가 깨지며, (3) 캡스톤(L07)이 prereq로 못박은 L04의 annotation 어휘를 실제로는 적용하지 않고, (4) L07의 prereq 배열이 본문이 직접 인용하는 L06과 전제로 삼는 L02를 빠뜨리는 국소적 결함이 있다. 구조를 다시 짤 필요는 없고 지적된 지점만 손보면 된다."
+  }
+}

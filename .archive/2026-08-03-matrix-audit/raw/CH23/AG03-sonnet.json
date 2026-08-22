@@ -1,0 +1,90 @@
+{
+  "agent": "AG03",
+  "model": "sonnet",
+  "target": "CH23",
+  "persona_ack": "타 언어(Java/C# 계열) 백엔드 3～5년차 개발자 관점으로 CH23(CDS View Entity 기초) 레슨 7개(CH23-L01～L07)와 _chapter.md를 원문 그대로 통독하며 과잉·오개념 유발·지름길 부재·용어 충돌 네 축으로 기록함.",
+  "method": "저장소 소스 content/abap/CH23/*.md 8개 파일(_chapter.md + L01～L07)을 Read 도구로 직접 통독(정적 텍스트 분석). 로컬 프리뷰 서버(localhost:8144)나 브라우저 렌더링은 사용하지 않음 — 산문·용어 감사라 원문 MD가 더 정확한 근거.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH23\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH23\\CH23-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH23\\CH23-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH23\\CH23-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH23\\CH23-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH23\\CH23-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH23\\CH23-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH23\\CH23-L07.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH23-L01.md",
+      "quote": "입문자가 가장 오해하는 지점이 여기다 — \"테이블에 컬럼이 새로 생겼다\"가 아니다. DB 구조는 그대로고, CDS entity를 읽을 때 보이는 요소를 정의했을 뿐이다.",
+      "category": "과잉",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "SQL VIEW의 계산 컬럼(computed/virtual column)을 다뤄본 경력자에게는 '뷰의 계산 필드가 물리 테이블을 바꾸지 않는다'는 사실이 자명해서, 이를 재확인하는 문장이 다소 늘어지게 느껴질 수 있다.",
+      "evidence": "이 설명 자체는 입문자에게 필요한 안전장치라 문제는 아니다. 다만 같은 패턴(뷰가 원본을 안 바꾼다는 재확인)이 L02의 '삭제가 아니라 숨김' 대목에서도 반복돼, 경력자 입장에선 이미 아는 내용을 두 레슨에 걸쳐 다시 확인받는 느낌을 준다.",
+      "suggestion": "내용은 유지하되, 이미 아는 독자가 빠르게 넘어갈 수 있게 'SQL VIEW의 계산 컬럼을 안다면 이 문단은 확인만 하고 넘어가도 된다' 같은 한 줄 안내를 추가하면 좋다."
+    },
+    {
+      "seq": 2,
+      "file": "CH23-L02.md",
+      "quote": "**[[Interface View]]** | `ZI_*` | 테이블과 가까운 **재사용 기반** 모델. 필드·기본 계산·관계를 안정적으로 정의.",
+      "category": "용어 충돌",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "Java/C# 경력자에게 'Interface'는 구현이 없는 계약(메서드 시그니처만 있고 본문이 없는 타입)을 강하게 연상시킨다. 'Interface View'라는 이름만 보면 '구현 없는 추상 뷰이니 어딘가에서 구현해야 한다'고 오해할 수 있는데, 실제로는 정반대로 실제 SELECT 로직을 가진 가장 구체적인(concrete) 기반 뷰다.",
+      "evidence": "레슨 전체에서 'Interface View'가 OOP의 interface와 다른 뜻이라는 점을 명시적으로 짚어주는 문장이 없다. 바로 아래 코드 예제가 실제 SELECT 문임을 보여줘 빠르게 정정되긴 하지만, 이름 자체에 대한 디스클레이머는 없다.",
+      "suggestion": "L02 도입부(이름 관습 설명 문단)에 'Interface View의 Interface는 OOP interface(구현 없는 계약)와 무관하다 — 원본 테이블과 상위 소비 계층 사이의 인터페이스 역할이라는 뜻이며, 실제로는 구체적인 SELECT를 가진 뷰다' 같은 한 문장을 추가."
+    },
+    {
+      "seq": 3,
+      "file": "CH23-L02.md",
+      "quote": "**\"Projection View\"라는 정식 뷰와 헷갈리기** → CDS에는 `as projection on` + provider contract로 만드는",
+      "category": "용어 충돌",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "관계형 대수·SQL에 익숙한 경력자는 'ZC_가 ZI_보다 적은 필드를 고른다'는 동작을 보자마자 일반 용어인 projection(컬럼 선택)을 먼저 떠올리기 쉽다. 그런데 CDS에는 as projection on + provider contract로 만드는 별개의 공식 Projection View 타입이 있어, 같은 레슨 안에서 두 의미가 부딪힌다.",
+      "evidence": "레슨이 이 혼동 자체는 '흔한 실수와 점검' 항목에서 명시적으로 짚어주지만, 그 위치가 레슨 맨 끝이다. 정작 ZC_가 필드를 줄이는 예제(용어 충돌이 발생하는 지점)는 레슨 중반에 먼저 나와, 경력자는 정정을 만나기 전까지 잘못된 어휘로 개념을 저장할 시간이 있다.",
+      "suggestion": "Projection View와 다르다는 디스클레이머를 ZC_ConcertList 예제(필드를 줄이는 첫 예제) 바로 뒤로 옮기거나, 그 예제에 짧은 각주로 미리 언급."
+    },
+    {
+      "seq": 4,
+      "file": "CH23-L03.md",
+      "quote": "CDS [[Association]](뷰 사이 관계 선언)은 이 관계를 데이터 모델 안에 새겨 둔다. 핵심은 \"JOIN을 없앤다\"가",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "JPA @OneToMany/@ManyToOne, Entity Framework 탐색 속성(navigation property) 등 ORM 관계 매핑을 다뤄본 경력자에게 Association의 핵심 아이디어(관계에 이름을 붙여 재사용)는 이미 익숙한 개념이다. 그런데 레슨은 이를 완전히 새 개념처럼 처음부터 끝까지 설명해, 경력자가 빠르게 짚고 넘어갈 지점을 안내받지 못한다.",
+      "evidence": "L03 전체에 ORM/FK 매핑과의 비교나 'ORM을 안다면 이 부분은 빠르게 훑어도 된다'는 안내가 없다. 반면 select list에 명시적으로 노출해야 사용 가능하다는 ABAP 고유 규칙(대부분 ORM은 매핑만 하면 자동 사용 가능)은 진짜 차이점이라, 이 대조가 있었으면 경력자가 어디에 주의를 기울여야 할지 더 빨리 파악했을 것이다.",
+      "suggestion": "도입부에 'JPA나 Entity Framework의 관계 매핑을 안다면 개념은 같다. 다른 점은 select list에 명시적으로 노출해야만 소비처가 쓸 수 있다는 것'이라는 한 줄 브리지를 추가."
+    },
+    {
+      "seq": 5,
+      "file": "CH23-L06.md",
+      "quote": "[[DCL]](Data Control Language)은 CDS entity에 대한 [[Access Control|접근 규칙]]을 별도 DCL source로 정의한다.",
+      "category": "지름길 부재",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "PostgreSQL이나 SQL Server의 Row-Level Security 같은 행단위 보안 정책을 다뤄본 경력자에게 DCL의 '행 단위 필터를 선언적으로 정의' 개념은 낯설지 않다. 그런데 유사성을 짚어주는 문장이 없어 처음 접하는 개념처럼 전부 설명한다.",
+      "evidence": "레슨은 DCL이 상위 계층으로 상속되지 않는다는, 일반 RLS 사용자가 오히려 헷갈릴 만한 CDS 고유 차이점은 정확히 짚어주지만(🚨 콜아웃), '이미 알던 RLS와 이 지점이 다르다'는 명시적 프레이밍은 없어 그 경고의 임팩트가 경력자에게 최대로 전달되지 않는다.",
+      "suggestion": "도입부나 상속 경고 문단에 'Postgres RLS 같은 행단위 보안 정책을 안다면 개념은 비슷하다. 가장 큰 차이는 계층 간 자동 상속이 안 된다는 것'이라는 문장을 추가하면 경력자가 정확히 새로운 지점에 집중할 수 있다."
+    },
+    {
+      "seq": 6,
+      "file": "CH23-L06.md",
+      "quote": "| `grant select on ZI_Concert` | `ZI_Concert`를 SELECT할 때의 허용 조건. |",
+      "category": "용어 충돌",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "표준 SQL에서 DCL은 GRANT/REVOKE로 DB 사용자·역할에 권한을 실행 시점에 부여·회수하는 명령형 문장이다. CDS의 grant select on ZI_Concert where (...) 문법이 이 어휘·구조를 그대로 빌려 써서, 경력자가 이것을 표준 SQL GRANT문(실행하면 즉시 특정 사용자의 접근권한이 바뀌는 명령)으로 오해할 수 있다. 실제로는 PFCG 인가 객체 값을 조건으로 참조하는 선언적 행 필터 메타데이터이고, 실행형 권한 부여 명령이 아니다.",
+      "evidence": "레슨은 DCL role과 PFCG role assignment가 다르다는 점은 명시적으로 짚어주지만('DCL role은 사용자에게 PFCG role을 배정하는 행위 그 자체가 아니다'), grant select on ... where라는 표준 SQL DCL 어휘 자체가 표준 GRANT문과 근본적으로 다른 메커니즘(런타임 실행 명령이 아니라 활성화된 선언적 메타데이터)이라는 점은 별도로 짚지 않는다.",
+      "suggestion": "'이 grant select는 SQL의 GRANT처럼 실행되는 순간 권한이 바뀌는 명령문이 아니라, 활성화된 선언적 메타데이터로서 조회 시점마다 PFCG 인가값을 조건으로 재평가되는 규칙이다' 같은 문장을 DCL 예제 직후에 추가."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH23(CDS View Entity)은 SQL VIEW·ORM 관계 매핑·Row-Level Security 등 경력자의 기존 지식과 개념적으로 잘 대응되고, 예상되는 오해(association≠JOIN 대체, DCL 미상속, annotation≠단순 주석, DCL role≠PFCG role 배정)를 본문이 선제적으로 짚어주는 곳이 많아 전반적으로 탄탄하다. 다만 'Interface View'라는 이름이 OOP interface(구현 없는 계약)를 연상시켜 초반 오독 소지가 있고, DCL의 grant select on ... where가 표준 SQL GRANT문과 다른 메커니즘(PFCG 인가값을 참조하는 선언적 행 필터)임을 명시하지 않는 점이 경력자에게 가장 걸리는 지점이다. Association·DCL 도입부에 ORM/RLS와의 유사성을 한 줄만 짚어줘도 경력자의 통독 속도가 빨라질 것이다. 오개념을 유발하는 명백한 사실 오류는 발견하지 못했다."
+  }
+}

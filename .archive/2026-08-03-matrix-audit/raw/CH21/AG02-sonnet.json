@@ -1,0 +1,58 @@
+{
+  "agent": "AG02",
+  "model": "sonnet",
+  "target": "CH21",
+  "persona_ack": "나는 준호다. 배운 건 그 자리에서 직접 눌러보고 값을 바꿔가며 확인해야 직성이 풀리는 실습형 학습자로서, CH21 레슨 10개 전부의 본문 코드·설명과 체험 위젯(엔진 JS 포함)을 한 줄씩 대조하고 브라우저로 직접 조작해 검증했다.",
+  "method": "① 소스 정독: 레슨 MD 10개(CH21-L01~L10)+_chapter.md+임베드 HTML 10개+각 임베드가 로드하는 엔진 JS 10개(class-object-builder·visibility-gate-sim·constructor-timeline·selector-trainer·interface-contract-board·exception-flow-console·redefinition-stepper·dynamic-type-inspector·event-wiring-panel·booking-manager-lab) 전량을 읽고 cfg↔본문 변수명·클래스명·시나리오·수치를 대조. ② 브라우저 실조작: Claude Browser(Chromium)로 http://localhost:8144/embeds/abap/CH21-L0N-S01.html 10개 전부를 새 탭에서 열어 get_page_text·read_page·콘솔 로그를 확인하고, 각 위젯에서 핵심 분기를 실제로 클릭해 성공/실패 양쪽 결과를 실측했다(L01 참조 initial 호출 실패→NEW 후 성공, L02 mv_cap PUBLIC 노출 경고, L03 객체 2개 생성 시 constructor 2회·class_constructor 1회 카운트, L04 클래스=>인스턴스 멤버 호출 오류, L05 인터페이스 구현체별 다른 출력, L06 CATCH 순서 뒤바꿈+COND THROW 갈래, L07 super-> 끔→부모 검증 누락 로그, L08 CX_SY_MOVE_CAST_ERROR 재현, L09 미등록 handler 무반응→handler 2개 등록 후 순서 미보장 경고, L10 좌석 0/2/3으로 예외·이벤트·정상 3분기 재현). 10개 전 페이지 콘솔 오류 0건. 대표 위젯 3개(L02·L05·L10)는 스크린샷으로 레이아웃도 육안 확인.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L10.md",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH21-L01-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH21-L02-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH21-L03-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH21-L04-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH21-L05-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH21-L06-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH21-L07-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH21-L08-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH21-L09-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH21-L10-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\class-object-builder.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\visibility-gate-sim.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\constructor-timeline.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\selector-trainer.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\interface-contract-board.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\exception-flow-console.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\redefinition-stepper.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\dynamic-type-inspector.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\event-wiring-panel.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\booking-manager-lab.js"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH21-L05-S01.html",
+      "quote": "{ v: 'booking', name: 'zcl_booking',      out: '예매 내역 출력', extra: 'vip_only( )' },",
+      "category": "위젯 결함",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "ICB_CFG.classes[0]에 선언된 extra: 'vip_only( )' 필드가 interface-contract-board.js 어디에서도 읽히지 않는 죽은 설정값이다.",
+      "evidence": "embeds/_engine/interface-contract-board.js 전체(renderBoard·renderCode·renderOut)를 확인했지만 c.extra 또는 CFG.classes[...].extra를 참조하는 코드가 없다. 실제 브라우저에서 '담을 객체'를 zcl_booking으로 선택해도 카드·코드 패널·출력 어디에도 vip_only( )가 나타나지 않는다 — 화면 하단에 보이는 'zcl_booking에만 있는 vip_only( ) 같은 구체 메서드…' 문구는 cfg에서 파생된 게 아니라 HTML에 고정 텍스트로 박혀 있어 어떤 클래스를 선택해도 항상 그대로 노출된다. cfg 작성자는 선택 시 카드에 동적으로 표시할 의도였을 가능성이 높지만 실제로는 반영되지 않았다.",
+      "suggestion": "renderBoard()에서 sel===c.v && c.extra가 있을 때 카드 안에 '구체 전용: vip_only( )' 같은 뱃지를 표시해 cfg와 렌더링을 일치시키거나, 쓰지 않을 필드면 cfg에서 extra 키 자체를 제거한다. 학습 경험 자체는 하단 고정 안내문으로 이미 커버되므로 시급하지 않다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH21(OO ABAP 기본 설계) 10개 레슨 전부 본문 코드와 체험 위젯이 변수명·클래스명(zcl_booking_manager/zcl_vip_booking 등)·메서드명·시나리오까지 정밀하게 일치했다. 10개 위젯을 브라우저로 직접 조작해 핵심 분기(참조 initial 호출 실패, PUBLIC 데이터 노출 위험, constructor/class_constructor 실행 횟수, 정적·인스턴스 호출 오류, 인터페이스 다형성, CATCH 순서·COND THROW, super-> 생략, CX_SY_MOVE_CAST_ERROR, handler 미등록·순서 미보장, 예외/이벤트/정상 3분기)를 재현했고 전부 본문 설명과 일치했으며 콘솔 오류도 0건이었다. 체험 공백·불일치·헛체험은 발견되지 않았다. 유일한 흠은 L05 Contract Board의 cfg 필드 extra:'vip_only( )'가 실제로는 렌더링에 쓰이지 않는 죽은 값이라는 점(낮음, 학습에는 지장 없음) — 그 외에는 이 챕터에서 감사한 것 중 가장 촘촘하게 짜인 위젯 세트였다."
+  }
+}

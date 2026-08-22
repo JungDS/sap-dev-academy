@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <!-- CH23-L03-S01 — 엔진: relationship-map (CSS-only) + _autoheight. 콘텐츠=레슨 전용(CDS Association, #C22).
-     게이팅: CDS·modern 허용. 관통예제(공연→회차→예매) association 관계도. -->
+     게이팅: CDS·modern 허용. 관통예제(공연→회차→예매) association 관계도.
+     예매(ZI_Booking) 구간=점선 '설계 예고'(L07 도전 과제 — 아직 미정의, C033) · 회차 연결=복합키 concert_id+perf_no(C032). -->
 <html lang="ko" data-eng="relationship-map">
 <head>
 <meta charset="utf-8" />
@@ -24,15 +25,16 @@
       </div>
       <div class="relmap__row">
         <div class="relmap__node key"><strong>ZI_Perf</strong><code>회차</code></div>
-        <div class="relmap__rel">_Booking [0..*]<br>on perf_no</div>
-        <div class="relmap__node"><strong>ZI_Booking</strong><code>예매</code></div>
+        <div class="relmap__rel plan">_Booking [0..*]<br>on concert_id + perf_no</div>
+        <div class="relmap__node plan"><strong>ZI_Booking</strong><code>예매 · 설계 예고</code></div>
       </div>
       <div class="relmap__row">
-        <div class="relmap__node key"><strong>ZI_Booking</strong><code>예매</code></div>
-        <div class="relmap__rel">_Concert [1..1]<br>역방향 경로</div>
+        <div class="relmap__node plan"><strong>ZI_Booking</strong><code>예매 · 설계 예고</code></div>
+        <div class="relmap__rel plan">_Concert [1..1]<br>역방향 경로</div>
         <div class="relmap__node"><strong>ZI_Concert</strong><code>공연</code></div>
       </div>
     </div>
+    <p class="relmap-legend">점선 = <b>설계 예고</b>. 예매 뷰 <code>ZI_Booking</code>과 그 관계는 아직 만들지 않았어요 — <code>_Booking</code>을 어느 뷰에 둘지는 실습 레슨의 도전 과제입니다. 회차의 키는 <code>concert_id + perf_no</code> <b>복합키</b>라, 예매로 가는 ON 조건도 두 필드를 모두 이어야 합니다.</p>
   </div>
 
   <div class="note"><b>관계를 경로로</b> — <code>ZI_Concert</code>에서 <code>_Perf</code>로 회차를, 다시 <code>_Booking</code>으로 예매를 따라갑니다(예: <code>_Perf._Booking</code>). 선언만 하고 <code>{ }</code>에 <b>노출하지 않으면</b> 소비 측에서 못 따라갑니다. <code>on</code> 조건은 <code>$projection.필드 = _대상.필드</code>로 키를 정확히 잇습니다.</div>

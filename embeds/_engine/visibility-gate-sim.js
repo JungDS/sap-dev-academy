@@ -40,7 +40,7 @@
   function accessLine() {
     var m = curMem();
     var expr = m.kind === 'method' ? m.name : m.name + ' = 100';
-    if (caller === 'ext') return 'DATA(lo) = NEW zcl_booking_manager( ).\nlo->' + expr + '.';
+    if (caller === 'ext') return 'DATA(lo_mgr) = NEW zcl_booking_manager( ).\nlo_mgr->' + expr + '.';
     if (caller === 'self') return '" zcl_booking_manager 안에서\nme->' + expr + '.';
     return '" 자식 클래스(상속) 메서드 안에서\nme->' + expr + '.';
   }
@@ -51,12 +51,12 @@
       ? '    <span class="fn">METHODS</span> ' + m.name.replace('( )', '')
       : '    <span class="fn">DATA</span> ' + m.name + ' <span class="fn">TYPE</span> i';
     codeEl.innerHTML =
-      '<span class="fn">CLASS</span> zcl_booking_manager <span class="fn">DEFINITION</span>.\n' +
+      '<span class="fn">CLASS</span> zcl_booking_manager <span class="fn">DEFINITION</span> <span class="fn">PUBLIC CREATE PUBLIC</span>.\n' +
       '  <span class="sec">' + SEC[vis] + '</span>.\n' +
       decl + '.\n' +
       '<span class="fn">ENDCLASS</span>.\n\n' +
       '" 호출자: ' + CALLER_LBL[caller] + '\n' +
-      accessLine().replace(/(lo->|me->)([^\n.]+)/g, '$1<span class="try">$2</span>');
+      accessLine().replace(/(lo_mgr->|me->)([^\n.]+)/g, '$1<span class="try">$2</span>');
   }
 
   function renderVerdict() {

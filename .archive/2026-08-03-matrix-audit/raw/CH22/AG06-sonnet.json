@@ -1,0 +1,77 @@
+{
+  "agent": "AG06",
+  "model": "sonnet",
+  "target": "CH22",
+  "persona_ack": "20년차 SAP ABAP 아키텍트(ECC~S/4HANA 개발·운영·성능·이관 경험, 후배 교재 기술 검수 담당) 관점으로 CH22(SALV/Grid ALV 표시 제어 심화) 8개 레슨 + _chapter.md를 감사했다.",
+  "method": "대상 9개 파일 전문 정독. CL_SALV_TABLE/FUNCTIONS/SORTS/FILTERS/LAYOUT/COLUMNS 및 LVC_S_FCAT/LVC_S_SCOL/LVC_S_STYL/LVC_S_STBL 등 API 시그니처·필드명을 기억 기반으로 대조. 챕터 간 정합성 확인을 위해 CH22가 직접 링크·전제하는 선행 레슨(CH06-L13, CH16-L03, CH17-L04, CH17-L07, CH17-L08, CH17-L09, CH21-L10, CH02-L05)을 Read로 열람하고, grep으로 저장소 전체의 'TYPE-POOLS' 및 'col_negative/col_positive/col_total' 사용 이력을 대조해 내부 정합성을 검증했다. 웹 검색·외부 네트워크·실제 SAP 시스템 접속 없이 지식 기반으로만 판정(지시서 제약).",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH17\\CH17-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L10.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH06\\CH06-L13.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH16\\CH16-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH02\\CH02-L05.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L04.md",
+      "quote": "color-col = col_negative",
+      "category": "위험한 생략",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "L04(및 이를 그대로 잇는 L08)에서 셀 색 상수 col_negative·col_total·col_positive를 아무 선언 없이 바로 쓰는데, 이 상수들은 고전 Type Group(Type Pool) COL에 속해 있어 프로그램 상단에 TYPE-POOLS: col.을 선언해야 인식되는 경우가 있다. 레슨 어디에도 이 선언이 언급되지 않는다.",
+      "evidence": "같은 사이트가 CH16-L03에서 VRM_SET_VALUES용 vrm_values 타입에 대해 '요즘 릴리스는 알아서 인식하지만, 오래된 실습 시스템에서 타입을 모르겠다며 활성화가 막히면 프로그램 맨 위에 TYPE-POOLS vrm. 한 줄을 넣어 주면 된다'고 명시적으로 안전장치를 안내한 전례가 있다(grep으로 저장소 전체에서 TYPE-POOLS 언급이 CH02-L05·CH16-L03 두 곳뿐임을 확인). col_negative 등도 같은 부류의 고전 Type Group 상수라 동일한 위험이 있는데 CH22-L04·L08에는 이런 안내가 전혀 없다. 학습자가 이 코드를 그대로 옮기면 'COL_NEGATIVE를(을) 찾을 수 없습니다' 류의 활성화 오류를 만날 위험이 있다. 릴리스·시스템 구성에 따라 자동 인식 여부가 달라질 수 있어 확실 대신 추정으로 표기.",
+      "suggestion": "CH16-L03 사례처럼 'TYPE-POOLS: col.이 필요할 수 있다'는 각주를 추가하거나, 이름 있는 상수 대신 숫자 색번호(예: 6=빨강 계열, 3=노랑 계열)를 주석과 함께 직접 대입해 Type Group 의존 자체를 없애는 방법도 고려."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L08.md",
+      "quote": "<fc>-tech = abap_true",
+      "category": "사실 오류",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L04·L05는 CELLCOLORS/CELLSTYLES 같은 deep 기술 컬럼을 숨기는 방법으로 명시적으로 no_out을 지시하는데, 정작 실습 코드인 L08은 같은 목적에 no_out이 아니라 tech 속성을 쓴다. 지침과 실제 코드가 서로 다른 field catalog 속성을 가리키는 내부 불일치다.",
+      "evidence": "L04 흔한 실수: 'CELLCOLORS가 화면에 노출 → 기술 컬럼이라 field catalog에서 숨긴다(no_out).' L05 흔한 실수: '스타일 테이블도 표시용 기술 컬럼이라... field catalog에서 no_out으로 숨긴다.' 반면 L08 코드는 'IF <fc>-fieldname = 'CELLCOLORS'. <fc>-tech = abap_true. ENDIF.'로 되어 있어 no_out이 아닌 tech를 쓴다. LVC_S_FCAT의 tech는 컬럼 선택 대화상자에도 노출되지 않는 순수 기술 컬럼 표시이고 no_out은 사용자가 레이아웃/컬럼 설정에서 다시 켤 수 있는 단순 숨김이라 서로 효과가 다르다. LVC_T_SCOL 같은 deep(테이블) 타입 컬럼은 애초에 셀 값으로 표시할 수 없는 타입이라 tech 쪽이 더 맞는 선택으로 보이며, 그렇다면 L04·L05의 no_out 지침이 부정확한 것이 된다.",
+      "suggestion": "L04·L05의 '흔한 실수' 문구를 L08 코드와 맞춰 tech로 통일하거나, no_out(재노출 가능한 일반 숨김)과 tech(선택창에도 안 뜨는 순수 기술 컬럼)가 어떻게 다르고 deep 컬럼엔 왜 tech가 필요한지 명시적으로 설명을 추가."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L06.md",
+      "quote": "색 번호(1～7)",
+      "category": "사실 오류",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "CH22-L06은 emphasize 색 코드 형식을 'C' + 색 번호(1～7) + 진하게(0/1) + 반전(0/1)로 설명하는데, 같은 사이트의 CH17-L09(행 색상 기초)는 동일한 'C+3자리' 색 코드 형식의 색 번호 자리 범위를 '0～7'로 설명한다. 같은 형식의 유효 범위가 레슨마다 다르게 서술된다.",
+      "evidence": "CH17-L09: '색 코드는 임의 RGB가 아니라 C + 색번호(0～7) + 강조(0/1) + 반전(0/1) 네 글자다.' CH22-L06: 'emphasize 값은 'C' + 색 번호(1～7) + 진하게(0/1) + 반전(0/1) 형식이다.' 0(COL_BACKGROUND, 배경/기본색)도 형식상 유효한 자리값이라 0～7이 더 정확해 보이며 CH22-L06의 1～7은 0을 빠뜨린 서술로 보인다. 다만 emphasize 맥락에서 0이 실용적 의미가 없어 의도적으로 뺐을 가능성도 있어 확실 대신 추정으로 표기.",
+      "suggestion": "CH22-L06의 범위 표기를 CH17-L09와 동일하게 '0～7'로 통일하거나, 의도적으로 1～7만 유효하다면 그 이유(0은 emphasize에 의미 없음 등)를 한 줄 덧붙인다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\_chapter.md",
+      "quote": "keywords: [\"Cell Color\",\"Stable Refresh\",\"Event\",\"Layout 심화\"]",
+      "category": "메타데이터 불일치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "_chapter.md의 keywords에 'Event'가 챕터를 대표하는 4개 키워드 중 하나로 들어 있는데, 이 챕터의 실제 레슨들은 'ALV 이벤트'가 이 챕터의 범위 밖(CH30으로 이연)이라고 반복해서 명시한다. 챕터 요약 메타데이터가 실제 다루는 범위와 어긋난다.",
+      "evidence": "CH22-L05: '버튼처럼 보여도 클릭 처리는 아직 없다... 클릭 이벤트(상세 열기 등)는 이후 ALV 이벤트 챕터에서 구현한다.' CH22-L08: '본격 이벤트는 ALV 고급 Event 응용(CH30-L01.html)의 몫이다.' CH22-L08 front-matter도 foreshadow: [\"ALV 이벤트(CH30)\", ...]로 이벤트를 CH30 예고로만 다룬다. CH22 8개 레슨 어디에도 SET HANDLER/RAISE EVENT 같은 ALV 이벤트 구현 코드가 실제로 나오지 않는데, 정작 챕터 keywords 4개 중 하나가 'Event'다.",
+      "suggestion": "keywords의 'Event'를 이 챕터가 실제로 다루는 개념(예: 'Field Catalog' 또는 'Cell Style')으로 교체."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH22 8개 레슨은 SALV 하위객체(functions/sorts/filters/aggregations/layout/columns)와 LVC 필드카탈로그·셀색(LVC_T_SCOL)·셀스타일(LVC_T_STYL)·Stable Refresh(LVC_S_STBL) API를 대체로 정확한 시그니처·필드명으로 제시한다. FNAME(SCOL)↔FIELDNAME(STYL) 차이, 저장된 variant가 개발자 기본값을 덮어쓰는 함정, short/medium/long 텍스트를 함께 맞춰야 하는 이유처럼 실무자도 자주 틀리는 세부까지 정확히 짚어 완성도가 높고, ZCL_BOOKING_MANAGER(CH21-L10) 재사용이나 루프 내 매니저 생성 비효율을 스스로 인정하고 CH35로 이연하는 등 앞뒤 챕터와의 정합성도 대체로 잘 맞는다. 다만 (1) L04·L08의 col_negative/col_total 상수가 TYPE-POOLS: col 선언 없이 쓰이는데, 같은 사이트가 CH16-L03(VRM)에서는 이런 Type Group 의존을 명시적으로 경고한 전례가 있어 형평이 맞지 않고 학습자가 활성화 오류를 만날 위험이 있으며, (2) L04/L05는 CELLCOLORS/CELLSTYLES 숨김에 no_out을 지시하지만 L08 실제 코드는 tech를 쓰는 내부 불일치가 있고, (3) 색 코드 자리값 범위가 CH17-L09(0～7)와 CH22-L06(1～7)에서 다르게 서술되며, (4) 챕터 keywords에 'Event'가 있지만 본문은 이벤트를 CH30으로 반복 이연해 메타데이터가 실제 범위와 어긋난다. 네 건 모두 중간 이하 심각도의 국지적 결함이라 전면 보강보다는 경미 수정으로 충분해 보인다."
+  }
+}

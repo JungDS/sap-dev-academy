@@ -1,7 +1,8 @@
 /* salv-layout-lab 엔진 — SALV의 표시 설정을 바꿔 가며 화면이 어떻게 달라지는지 본다.
    줄무늬(set_striped_pattern)·폭 최적화(set_optimize)·컬럼 텍스트(set_short/medium/long_text)를 체험하고,
    Variant(사용자별 보기)를 저장 → 프로그램을 다시 실행하면 개발자 기본이 아니라 저장한 variant가 먼저 적용됨(실무 함정)을 재현한다.
-   long_text만 바꾸면 헤더가 안 바뀔 수 있고, 컬럼명을 틀리면 cx_salv_not_found가 난다.
+   long_text만 바꾸면 헤더가 안 바뀔 수 있고, 컬럼명을 틀리면 cx_salv_not_found — 예외 이후 줄(set_*_text·set_key·display)은 미실행 처리되어 화면 자체가 뜨지 않는다.
+   폭 최적화 off일 땐 clip 컬럼이 고정 좁은 폭이라 긴 값이 …로 잘리고(화면 폭과 무관), on이면 펴진다.
    골격 계약: .sll-ctrl(토글) · .sll-text(세그) · .sll-variant(variant 조작) · #sllCode · #sllTable · #sllStatus.
    config: window.SLL_CFG = { cols:[{f,label}], rows, capCol, badCol, clipCol }. 높이: _autoheight.js. */
 (function () {
@@ -54,19 +55,26 @@
     var getCol = st.bad
       ? 'DATA(go_col) = go_cols-&gt;<span class="fn">get_column</span>( \'<span class="bad">' + CFG.badCol + '</span>\' ).'
       : 'DATA(go_col) = go_cols-&gt;<span class="fn">get_column</span>( \'' + CFG.capCol + '\' ).';
+    var keyLn = 'go_salv-&gt;<span class="fn">get_layout</span>( )-&gt;set_key( <span class="fn">VALUE</span> salv_s_layout_key( report = sy-repid ) ).';
+    var dispLn = 'go_salv-&gt;display( ).';
     codeEl.innerHTML =
       ln(st.striped, 'go_salv-&gt;<span class="fn">get_display_settings</span>( )-&gt;set_striped_pattern( abap_true ).') + '\n' +
       ln(st.opt, 'go_cols-&gt;<span class="fn">set_optimize</span>( abap_true ).') + '\n' +
-      ln(st.text !== 'none', getCol) + '\n' +
-      ln(st.text !== 'none', txt) + '\n' +
-      'go_salv-&gt;<span class="fn">get_layout</span>( )-&gt;set_key( <span class="fn">VALUE</span> salv_s_layout_key( report = sy-repid ) ).\n' +
-      'go_salv-&gt;display( ).';
+      ln(st.text !== 'none' || st.bad, getCol) + '\n' +
+      (st.bad ? '<span class="off">' + txt + '</span>' : ln(st.text !== 'none', txt)) + '\n' +
+      (st.bad ? '<span class="off">' + keyLn + '</span>' : keyLn) + '\n' +
+      (st.bad ? '<span class="off">' + dispLn + '</span>' : dispLn);
   }
 
   function renderTable() {
+    if (st.bad) {
+      tblEl.innerHTML = '<div class="sll-noscreen">🚫 ALV 화면 없음 — <code>get_column</code>에서 예외가 나서 <code>display( )</code>까지 가지 못했습니다.</div>';
+      return;
+    }
     var head = '<tr>' + CFG.cols.map(function (c) {
       var renamed = c.f === CFG.capCol && st.text === 'all';
-      return '<th class="' + (renamed ? 'renamed' : '') + '">' + h(c.f === CFG.capCol ? capHeader() : c.f) + '</th>';
+      var thCls = ((renamed ? 'renamed' : '') + (c.f === CFG.clipCol ? ' clipth' : '')).trim();
+      return '<th class="' + thCls + '">' + h(c.f === CFG.capCol ? capHeader() : c.f) + '</th>';
     }).join('') + '</tr>';
     var body = CFG.rows.map(function (r) {
       return '<tr>' + CFG.cols.map(function (c) {
@@ -80,7 +88,7 @@
   function renderStatus() {
     if (st.bad) {
       statusEl.className = 'bad';
-      statusEl.innerHTML = '🚫 <code>cx_salv_not_found</code>. 컬럼 <code>' + CFG.badCol + '</code>를 찾을 수 없습니다. <code>get_column</code>은 화면 제목이 아니라 <b>내부 필드명 <code>' + CFG.capCol + '</code></b>로 접근합니다.';
+      statusEl.innerHTML = '🚫 <code>cx_salv_not_found</code>. 컬럼 <code>' + CFG.badCol + '</code>를 찾을 수 없습니다. <code>get_column</code>은 화면 제목이 아니라 <b>내부 필드명 <code>' + CFG.capCol + '</code></b>로 접근합니다. 예외가 난 뒤의 줄(텍스트 설정·<code>display( )</code>)은 <b>실행되지 않으니</b> 화면 자체가 안 뜹니다.';
       return;
     }
     if (st.text === 'long') {

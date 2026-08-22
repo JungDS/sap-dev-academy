@@ -35,12 +35,13 @@
       <section class="lhead">
         <p class="lhead__eyebrow">SALV/Grid ALV 표시 제어 심화</p>
         <h1>Grid ALV Column 제어 심화</h1>
-        <p class="lhead__direction">Field Catalog로 컬럼을 숨기고·합계·정렬·키 강조 — 화면 표시 지시서.</p>
+        <p class="lhead__direction">Field Catalog로 컬럼 숨김·합계·가로 맞춤·키 강조 — 화면 표시 지시서.</p>
         <div class="tags"><span class="tag tag--track">Track 2</span><span class="tag tag--ch">Chapter 22</span><span class="tag tag--ls">Lesson 3</span><span class="tag tag--lv">고급</span></div>
       </section>
       <article class="prose">
-<section class="lblock"><h2>왜 — 컬럼이 다 보이면 표가 아니라 덤프다 🧾</h2>
+<section class="lblock"><h2>왜 — 다 보이면 표가 아니라 데이터 무더기다 🧾</h2>
 <p>회차 목록을 그냥 띄우면 <code>MANDT</code> 같은 기술 필드가 첫 칸을 차지하고, 좌석수 합계는 눈으로 세야 하고, 상태 코드는 왼쪽에 붙어 잘 안 읽힌다. 이건 DB를 고칠 문제가 아니라 <strong>화면에 어떻게 보일지</strong>의 문제다. Grid ALV는 그 규칙을 field catalog로 지시한다.</p>
+<p>그런데 잠깐 — 지난 두 레슨의 <button class="term" type="button" data-term="SALV">SALV</button>로도 표는 잘 띄웠는데, 왜 여기부터는 Grid ALV일까? SALV는 몇 줄로 표준 기능과 기본 보기를 갖추는 데 강하다. 반면 이번 레슨부터 다룰 <strong>컬럼 하나하나의 표시 규칙, 셀 단위 색·모양, 화면 갱신 제어</strong>는 <a href="CH17-L07.html">Grid ALV</a>가 field catalog와 layout으로 세밀하게 다루는 영역이다. 실무 감각도 같다: 빠른 조회 화면이면 SALV로 충분하고, 이런 세밀 제어가 필요해지면 Grid를 고른다.</p>
 </section><section class="lblock"><h2>Field Catalog = 화면 표시 지시서 📋</h2>
 <p><a href="CH17-L04.html">Field Catalog 기초</a>에서 만든 <button class="term" type="button" data-term="Field Catalog">Field Catalog</button>를 다시 꺼낸다. 핵심은 <strong><code>LVC_T_FCAT</code>은 DB 테이블 구조가 아니라, ALV에게 &quot;이 컬럼을 화면에 어떻게 보일지&quot; 알려 주는 지시서</strong>라는 점이다. 각 행이 한 컬럼의 표시 규칙을 담는다.</p>
 <table>
@@ -68,18 +69,18 @@
 </tr>
 <tr>
 <td><code>just</code></td>
-<td>정렬 방향 (<code>L</code>/<code>C</code>/<code>R</code>)</td>
+<td>가로 맞춤 (<code>L</code>왼쪽/<code>C</code>가운데/<code>R</code>오른쪽)</td>
 <td><code>STATUS</code> 가운데</td>
 </tr>
 <tr>
 <td><code>key</code></td>
-<td>키 컬럼처럼 고정·강조</td>
+<td>키 컬럼처럼 고정·강조 — 표시 속성일 뿐, DB 키 정의와는 무관</td>
 <td><code>PERF_NO</code></td>
 </tr>
 <tr>
 <td><code>edit</code></td>
-<td>입력 가능한 <em>모양</em></td>
-<td>맛보기만(실제 편집은 이후 챕터)</td>
+<td>셀 입력(편집)에 관여 — 이 챕터는 <strong>표시까지만</strong> 다룬다</td>
+<td>정식 도입은 <a href="CH31-L01.html">Editable Grid ALV와 입력 검증</a></td>
 </tr>
 </tbody></table>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
@@ -93,7 +94,7 @@
   <span class="tok-kw">CASE</span> &lt;fc&gt;-fieldname.
     <span class="tok-kw">WHEN</span> <span class="tok-str">'MANDT'</span>.   &lt;fc&gt;-no_out = abap_true.    <span class="tok-com">" 숨김</span>
     <span class="tok-kw">WHEN</span> <span class="tok-str">'SEATS'</span>.   &lt;fc&gt;-do_sum = abap_true.    <span class="tok-com">" 합계</span>
-    <span class="tok-kw">WHEN</span> <span class="tok-str">'STATUS'</span>.  &lt;fc&gt;-just   = <span class="tok-str">'C'</span>.          <span class="tok-com">" 가운데 정렬</span>
+    <span class="tok-kw">WHEN</span> <span class="tok-str">'STATUS'</span>.  &lt;fc&gt;-just   = <span class="tok-str">'C'</span>.          <span class="tok-com">" 가운데 맞춤</span>
     <span class="tok-kw">WHEN</span> <span class="tok-str">'PERF_NO'</span>. &lt;fc&gt;-<span class="tok-kw">key</span>    = abap_true.    <span class="tok-com">" 키 고정·강조</span>
   <span class="tok-kw">ENDCASE</span>.
 <span class="tok-kw">ENDLOOP</span>.</code></pre></div></div>
@@ -109,6 +110,11 @@
 <li><strong>문자 컬럼에 <code>do_sum</code></strong> → 합계는 숫자 컬럼에만 의미. 상태 코드·이름·날짜엔 안 먹는다.</li>
 <li><strong><code>no_out</code> vs 카탈로그에서 삭제</strong> → <code>no_out</code>은 <em>다시 표시 가능한</em> 숨김(카탈로그엔 있음), 삭제는 ALV가 그 컬럼을 아예 모르는 상태.</li>
 <li><strong>숨김 = 권한 제어 착각</strong> → 사용자가 variant/layout으로 다시 볼 수 있다. 민감 정보는 애초에 조회하지 않는다.</li>
+</ul>
+</section><section class="lblock"><h2>정리 📌</h2>
+<ul>
+<li>Field catalog는 <strong>화면 표시 지시서</strong>다: 행 하나 = 컬럼 하나의 표시 규칙(<code>no_out</code>·<code>do_sum</code>·<code>just</code>·<code>key</code>).</li>
+<li>지시서를 바꿔도 <strong>데이터·DB 구조는 그대로</strong>다. 표가 이상하면 화면보다 <code>gt_fcat</code>부터 디버거로 확인한다.</li>
 </ul>
 <hr>
 <p>컬럼을 제어했다. 이제 한 줄 전체가 아니라 <strong>셀 하나하나에 색</strong>을 입혀 위험을 정확히 강조하자 →

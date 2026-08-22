@@ -1,0 +1,130 @@
+{
+  "agent": "AG02",
+  "model": "sonnet",
+  "target": "CH22",
+  "persona_ack": "나는 준호다. 배운 건 그 자리에서 직접 해봐야 직성이 풀리는 실습형 학습자로서, CH22 8개 레슨(CH22-L01～L08)의 본문 코드·설명과 체험 위젯을 브라우저로 직접 눌러보며 대조 감사했다.",
+  "method": "Claude Browser MCP(navigate/computer/read_page/get_page_text/read_console_messages/javascript_tool)로 http://localhost:8144에서 8개 위젯(CH22-L01～L08-S01.html)을 전부 로드해 모든 버튼을 실제로 클릭·조합해 보며 렌더링 결과를 DOM/텍스트로 실측했고, 8개 전부 콘솔 오류 0건을 확인했다. 특히 L01·L02는 javascript_tool로 클릭 순서를 조합해 상태 일관성(오류 토글과 다른 토글의 상호작용)까지 검증했다. 이와 병행해 레슨 .md 9편(챕터 포함)·임베드 .html 8편·엔진 .js 8편(+CSS 1편)을 정독해 본문 코드·설명과 위젯 config/로직을 줄 단위로 대조했다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L08.md",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH22-L01-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH22-L02-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH22-L03-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH22-L04-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH22-L05-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH22-L06-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH22-L07-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH22-L08-S01.html",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\salv-control-panel.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\salv-control-panel.css",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\salv-layout-lab.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\fieldcat-builder.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\cell-color-microscope.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\cell-style-board.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\color-unit-comparator.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\refresh-shake-comparator.js",
+    "C:\\SAP\\sap-dev-academy\\embeds\\_engine\\concert-alv-color-lab.js"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L01.md",
+      "quote": "CATCH cx_salv_msg cx_salv_not_found INTO DATA(gx_salv).",
+      "category": "위젯 결함",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "CH22-L01-S01 위젯에서 필드명 오타 실행을 이미 켜진 다른 토글(지난 회차 빼기) 뒤에 누르면, 코드 순서상 오류 지점(add_sort) 이후에 있는 add_filter의 효과가 취소되지 않고 화면에 그대로 남아 오류 메시지와 실제 표시 상태가 모순된다.",
+      "evidence": "레슨 코드는 add_sort → add_filter → display를 TRY 블록 안에서 순서대로 실행하고, 필드명이 틀리면 add_sort에서 즉시 CATCH로 빠져 이후 줄(add_filter·display)은 실행되지 않는다(위 인용 CATCH 문이 그 전제). 브라우저에서 지난 회차 빼기(3/6행 표시)를 먼저 켠 뒤 필드명 오타 실행을 누르면, 상태 메시지는 컬럼 PERFDATE를 찾을 수 없다(cx_salv_not_found)며 프로그램이 멈췄다고 알리면서도 테이블은 여전히 필터가 적용된 3/6행만 보여준다(salv-control-panel.js의 renderTable이 st.bad와 무관하게 st.filter만으로 hide를 계산하기 때문, javascript_tool로 재현 확인). 순서를 반대로 하면(오타 먼저·필터 나중) 문제가 드러나지 않아 특정 클릭 순서에서만 재현된다.",
+      "suggestion": "renderTable()에서 st.bad가 true일 때는 필터·정렬 등 add_sort 이후 줄의 효과를 반영하지 않도록(또는 표를 초기·에러 상태로 되돌리도록) 렌더링을 분리한다."
+    },
+    {
+      "seq": 2,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L01.md",
+      "quote": "**표준 기능 켜기** → 표 위 툴바에 정렬·필터·합계·엑셀 아이콘이 생기는지.",
+      "category": "불일치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "레슨이 지시하는 화면 확인 1단계(툴바 아이콘 등장 여부)를 위젯에서 실제로 확인할 방법이 없다.",
+      "evidence": "브라우저로 표준 기능 켜기를 눌러 확인한 결과, 위젯 DOM에는 툴바나 아이콘 요소가 전혀 없고(salv-control-panel.css 전문에도 toolbar·icon 관련 클래스 없음) #scpStatus의 문구(표준 기능 ON·정렬·합계·엑셀 보임)로만 대체된다. 2·3·4단계(정렬·필터·오류)는 표에서 직접 확인되어 위젯과 일치하지만, 1단계만 그림이 아니라 서술로 대체돼 레슨이 예고한 화면 확인과 어긋난다.",
+      "suggestion": "표 위에 간단한 툴바 아이콘 목업을 두고 표준 기능 on/off에 따라 나타나게 하거나, 레슨 1단계 문구를 상태 메시지로 확인하는 것으로 조정한다."
+    },
+    {
+      "seq": 3,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L02.md",
+      "quote": "CATCH cx_salv_not_found.",
+      "category": "위젯 결함",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "CH22-L02-S01 위젯에서 셋 다(컬럼 텍스트를 정원으로 변경)를 먼저 적용한 뒤 컬럼명 오타를 누르면, get_column 실패로 무효가 됐어야 할 set_short_text 결과(정원)가 헤더에 그대로 남아 오류 메시지와 모순된다.",
+      "evidence": "레슨 코드는 get_column('CAPACITY')이 실패하면 CATCH cx_salv_not_found로 빠져 이후의 set_short/medium/long_text가 실행되지 않는다(위 인용이 그 전제). 브라우저에서 셋 다 클릭(헤더가 CAPACITY→정원으로 바뀜) 후 컬럼명 오타 클릭 시 상태 메시지는 cx_salv_not_found·컬럼 CAP를 찾을 수 없다는 내용으로 바뀌지만 헤더는 여전히 정원으로 남는다(javascript_tool로 실측). salv-layout-lab.js의 capHeader()가 st.bad를 참조하지 않고 st.text만으로 헤더를 결정하기 때문이다.",
+      "suggestion": "capHeader()가 st.bad일 때는 CFG.capCol(원래 헤더)을 반환하도록 분기를 추가한다."
+    },
+    {
+      "seq": 4,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L02.md",
+      "quote": "go_disp->set_list_header( '회차별 예매 현황' ).",
+      "category": "불일치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "레슨 코드 블록에 나온 두 API 호출(set_list_header, set_save_restriction)이 위젯의 코드 패널·인터랙션 어디에도 나타나지 않는다.",
+      "evidence": "salv-layout-lab.js의 renderCode()는 set_striped_pattern·set_optimize·get_column/set_*_text·get_layout()->set_key(...)·display()만 조립하며, 레슨 첫 코드블록의 set_list_header('회차별 예매 현황')과 두 번째 코드블록의 set_save_restriction(if_salv_c_layout=>restrict_none)은 네 가지 토글을 모두 눌러 봐도 코드 패널에 전혀 나타나지 않는다(정적 소스 확인 및 브라우저 실측). 위젯 제목이 줄무늬·폭·컬럼 텍스트로 범위를 좁혀 놓아 치명적이진 않으나, 본문에 실제로 존재하는 두 줄이 체험에서는 완전히 빠져 있다.",
+      "suggestion": "코드 패널에 두 줄을 고정으로라도 노출하거나, 리스트 헤더 문구를 표 위에 작게 표시하는 토글을 추가한다."
+    },
+    {
+      "seq": 5,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH22-L02-S01.html",
+      "quote": "<title>Variant 저장 실험실 · CH22-L02-S01</title>",
+      "category": "위젯 결함",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "위젯 HTML의 title 태그가 실제 화면 제목·레슨 임베드 캡션과 다른 문구다.",
+      "evidence": "같은 파일의 실제 표시 제목(p.hd)은 SALV Layout 실험실(줄무늬·폭·컬럼 텍스트)이고 CH22-L02.md의 임베드 지시문(::embed CH22-L02-S01 | SALV Layout 실험실 (줄무늬·폭·컬럼 텍스트)::)도 동일한 문구를 쓰는데, title 태그만 Variant 저장 실험실로 남아 있다(브라우저 탭 제목으로 실측). 기능상 문제는 없으나 이전 초안(Variant 중심 명칭)의 흔적으로 보인다.",
+      "suggestion": "title 태그를 SALV Layout 실험실 · CH22-L02-S01로 통일한다."
+    },
+    {
+      "seq": 6,
+      "file": "C:\\SAP\\sap-dev-academy\\embeds\\abap\\CH22-L04-S01.html",
+      "quote": "colorCol: 'BOOKED', badName: 'SEATS_OCC',",
+      "category": "불일치",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "fname 오타 데모가 보여주는 잘못된 이름 SEATS_OCC가 이 레슨의 실제 데이터 모델 어디에도 없는 이름이라, 오타로 보기엔 원래 필드(BOOKED)와 유사성이 없다.",
+      "evidence": "CH22-L04.md의 ts_perf_alv 구조체 필드는 concert_id·perf_no·capacity·booked·seats_left·cellcolors뿐이고 색 채우기 코드도 fname = 'BOOKED'를 쓴다. 레슨의 흔한 실수 절과 위젯(브라우저로 fname 오타 클릭 실측: cellcolors[1]: fname = 'SEATS_OCC' … 화면 컬럼 BOOKED과 다르다는 메시지)이 공통으로 SEATS_OCC(레슨 괄호 안은 SEATSOCC)를 예시로 든다. 두 값 다 이 레슨이 실제로 쓰는 어떤 필드명과도 겹치지 않아 오탈자 데모라기보다 다른 초안에서 넘어온 값으로 보이며, 학습자가 BOOKED의 오타가 왜 SEATS_OCC인지 혼란스러워할 수 있다.",
+      "suggestion": "badName을 BOOKED의 실제 오탈자에 가까운 값(예: BOOOKED)으로 바꾸거나, 레슨의 SEATS_OCC/SEATSOCC 예시 문구를 BOOKED 기준으로 고친다."
+    },
+    {
+      "seq": 7,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L06.md",
+      "quote": "gs_layout-info_fname = 'ROWCOLOR'.",
+      "category": "불일치",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "위젯의 행 색 코드 패널이 보여주는 변수명·컬럼명 리터럴이 레슨 본문 코드와 다르다.",
+      "evidence": "브라우저에서 행 색 (info_fname) 버튼을 누르면 코드 패널에 ls_layout-info_fname = 'LINE_COLOR'.가 뜨는데(color-unit-comparator.js, get_page_text로 실측), 레슨 본문은 gs_layout-info_fname = 'ROWCOLOR'.다. 셀 색 패널도 같은 파일에서 ls_layout-ctab_fname = 'CELLCOLORS'.로 나와, 이 챕터의 다른 레슨(L04·L05·L08)이 일관되게 쓰는 gs_layout 접두어와도 다르다. 컬럼명 리터럴(ROWCOLOR ↔ LINE_COLOR)까지 달라 두 코드를 나란히 보는 학습자가 어느 쪽이 맞는 이름인지 헷갈릴 수 있다.",
+      "suggestion": "위젯 코드 패널 문자열을 레슨과 동일하게(gs_layout-info_fname = 'ROWCOLOR'. / gs_layout-ctab_fname = 'CELLCOLORS'.) 맞춘다."
+    },
+    {
+      "seq": 8,
+      "file": "C:\\SAP\\sap-dev-academy\\content\\abap\\CH22\\CH22-L07.md",
+      "quote": "`i_soft_refresh` | field catalog/layout을 다시 짜지 않는 *가벼운* 갱신 |",
+      "category": "불일치",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "i_soft_refresh의 효과를 레슨 표와 위젯이 서로 다른 각도로 설명해, 둘을 잇는 연결 설명이 본문에 없다.",
+      "evidence": "레슨 표는 i_soft_refresh를 field catalog/layout을 다시 짜지 않는 가벼운 갱신으로 정의하는데, 위젯(refresh-shake-comparator.js)은 이를 사용자가 건 정렬/필터 유지 여부로 시뮬레이션한다(브라우저 실측: SEATS_LEFT 정렬 후 soft off 상태로 갱신하면 정렬이 풀려 원래 순번으로 돌아가고, soft on이면 유지됨). 두 설명이 실제로는 인과관계(카탈로그·레이아웃을 다시 안 짜니 결과적으로 사용자 정렬도 유지된다)일 가능성이 있어 틀렸다고 단정하긴 어렵지만, 레슨 본문에 그 연결고리가 없어 확인하지 못했다.",
+      "suggestion": "레슨 표의 i_soft_refresh 설명에 그래서 사용자가 건 정렬·필터도 함께 유지된다는 문장을 보태 위젯 시뮬레이션과 명시적으로 연결한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "CH22(SALV/Grid ALV 표시 제어 심화) 8개 레슨의 위젯을 전부 브라우저로 직접 조작하며 감사했다. 8개 위젯 모두 콘솔 오류 없이 정상 작동하고 핵심 개념(정렬·필터·기능, layout·variant, field catalog, cell color 2단계, cell style, 색 단위 선택, stable refresh, capstone)을 대체로 충실히 재현한다. 다만 L01·L02에서 오류 유발 토글을 다른 토글 뒤에 누르면 코드 순서상 오류 지점 이후 줄의 효과(필터 적용·컬럼 텍스트 변경)가 취소되지 않고 화면에 남아 오류 메시지와 실제 상태가 모순되는, 재현 가능한 위젯 결함을 발견했다. 그 외 L04의 fname 오타 예시(SEATS_OCC)가 이 레슨의 실제 필드(BOOKED)와 무관한 값이고, L06의 코드 패널이 레슨 본문과 다른 변수명·컬럼명(gs_layout/ROWCOLOR ↔ ls_layout/LINE_COLOR)을 보여주는 불일치가 있다. L01 툴바 아이콘 미시각화, L02의 set_list_header·set_save_restriction 코드 미노출과 title 오기, L07의 i_soft_refresh 설명 각도 차이는 경미한 수준이다. 전반적으로 구조는 탄탄하고 수정 범위는 국소적이라 경미 수정으로 판단한다."
+  }
+}

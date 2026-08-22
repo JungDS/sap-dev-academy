@@ -48,7 +48,7 @@
 <span class="tok-kw">ENDIF</span>.</code></pre></div></div>
 <p>이러면 같은 예약 로직을 <strong>배치·테스트에서 재사용하기 어렵다</strong>(화면이 없으니까). 또 호출자는 <em>무엇이</em> 실패했는지 구조적으로 구분하기 힘들다. <strong>예외</strong>는 오류를 <strong><button class="term" type="button" data-term="객체">객체</button></strong>로 전달한다. <button class="term" type="button" data-term="Class">클래스</button>는 &quot;정원 초과라 예약 불가&quot;라는 사실을 <button class="term" type="button" data-term="예외">예외</button> 객체로 던지고, 호출자가 화면·배치·테스트 상황에 맞게 잡는다. (<a href="CH11-L02.html">SALV FACTORY</a>에서 <code>cx_salv_msg</code>를 <code>TRY/CATCH</code>로 잡았던 그 메커니즘이다. 이제 <em>내 예외</em>도 만든다.)</p>
 </section><section class="lblock"><h2>내 예외 만들기 · 던지기 🚀</h2>
-<p><code>ZCX_FULLY_BOOKED</code>(예외 <button class="term" type="button" data-term="Class">클래스</button>, SE24에서 <code>CX_STATIC_CHECK</code> <button class="term" type="button" data-term="상속">상속</button>)를 만든다. 예외를 던질 수 있는 <button class="term" type="button" data-term="Method">메서드</button>는 <strong>시그니처에 <code>RAISING</code>으로 선언</strong>한다.</p>
+<p><code>ZCX_FULLY_BOOKED</code> 예외 <button class="term" type="button" data-term="Class">클래스</button>를 SE24에서 만든다. 절차는 <a href="CH21-L01.html">Global Class 생성과 객체</a>의 SE24 스텝과 같고, 클래스 유형만 Exception Class로, Superclass만 <code>CX_STATIC_CHECK</code>로 지정한다. 표준 뼈대 <code>CX_STATIC_CHECK</code>를 <strong>물려받으면</strong> 던지고 잡는 데 필요한 기능이 따라온다. 이 &#39;물려받기&#39;가 <button class="term" type="button" data-term="상속">상속</button>인데, <a href="CH21-L07.html">Inheritance / Redefinition</a>에서 정식으로 배우니 지금은 지정만 하면 된다. 예외를 던질 수 있는 <button class="term" type="button" data-term="Method">메서드</button>는 <strong>시그니처</strong>(signature: 이름·<button class="term" type="button" data-term="파라미터">파라미터</button>·예외 목록을 합친 메서드 선언부)에 <strong><code>RAISING</code>으로 선언</strong>한다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3</pre><pre class="abap-editor__code"><code><span class="tok-kw">METHODS</span> book
@@ -77,8 +77,11 @@
   <span class="tok-kw">CATCH</span> zcx_fully_booked <span class="tok-kw">INTO</span> <span class="tok-kw">DATA</span>(lx_booked).
     <span class="tok-kw">MESSAGE</span> lx_booked-&gt;get_text( ) <span class="tok-kw">TYPE</span> <span class="tok-str">'I'</span>.
   <span class="tok-kw">CLEANUP</span>.
-    <span class="tok-com">" TRY 블록이 예외로 정리될 때 필요한 뒷정리(자원 해제 등)</span>
+    <span class="tok-com">" 뒷정리 자리(자원 해제 등). 실행 조건은 아래 참고</span>
 <span class="tok-kw">ENDTRY</span>.</code></pre></div></div>
+<blockquote class="cw">
+<p>⚠️ <code>CLEANUP</code>은 finally(항상 실행)가 아니다. 실행 조건은 하나뿐이다: 이 <code>TRY</code> 안에서 난 예외를 <strong>여기 <code>CATCH</code>가 잡지 못하고 바깥(호출자 쪽) <code>TRY</code>의 <code>CATCH</code>가 잡을 때</strong>, 이 블록이 정리되면서 실행된다. 위 예제처럼 같은 <code>TRY</code>의 <code>CATCH</code>가 <code>zcx_fully_booked</code>를 잡으면 <code>CLEANUP</code>은 <strong>실행되지 않는다</strong>. 지금은 자리와 뜻만 봐 두자. 실전에서 쓰는 때는 <code>TRY</code>가 겹겹이 쌓일 때다.</p>
+</blockquote>
 </section><section class="lblock"><h2>표현식에서 던지기 — THROW 🎯</h2>
 <p><a href="CH18-L07.html">COND·SWITCH 조건 표현식</a>에서 &quot;값 하나를 만드는 표현식&quot;을 배웠다. 그때 정상 값을 만들 수 없는 갈래는 나중에 채운다고 미뤄 뒀는데, 그 자리를 채우는 게 <button class="term" type="button" data-term="THROW">THROW</button>다. <code>COND</code>나 <code>SWITCH</code>의 결과 위치에서 예외를 던진다.</p>
 <p><code>RAISE EXCEPTION</code>은 문장이고 <code>THROW</code>는 표현식이다. 하는 일은 같고(예외를 던진다), 쓰는 자리가 다르다.</p>
@@ -96,7 +99,7 @@
 <span class="tok-kw">DATA</span>(lv_status) = COND string(
     <span class="tok-kw">WHEN</span> iv_seats &lt;= me-&gt;remaining( ) <span class="tok-kw">THEN</span> |예약 가능: { iv_seats }석|
     <span class="tok-kw">ELSE</span> THROW zcx_fully_booked( ) ).</code></pre></div></div>
-<p><code>THROW</code> 뒤 예외 <button class="term" type="button" data-term="Class">클래스</button>에는 괄호 <code>( )</code>가 붙고, <code>RAISE EXCEPTION TYPE</code>과 달리 <code>EXPORTING</code>을 쓰지 않는다. 던져진 예외는 똑같이 바깥의 <code>TRY/CATCH</code>가 잡는다. <code>book( )</code>처럼 checked 예외를 던지는 <button class="term" type="button" data-term="Method">메서드</button>라면 <code>THROW</code>를 써도 <code>RAISING zcx_fully_booked</code> 선언은 그대로 필요하다.</p>
+<p><code>THROW</code> 뒤 예외 <button class="term" type="button" data-term="Class">클래스</button>에는 괄호 <code>( )</code>가 붙고, <code>RAISE EXCEPTION TYPE</code>과 달리 <code>EXPORTING</code>을 쓰지 않는다. 던져진 예외는 똑같이 바깥의 <code>TRY/CATCH</code>가 잡는다. <code>book( )</code>처럼 시그니처에 <code>RAISING</code>으로 선언해야 하는 예외라면, <code>THROW</code>로 던져도 <code>RAISING zcx_fully_booked</code> 선언은 그대로 필요하다.</p>
 <blockquote class="cw">
 <p>⚠️ THROW를 배웠다고 모든 <code>IF</code>를 <code>COND … THROW</code>로 바꾸지 않는다. 조건에 따라 값 하나를 만들 때만 어울린다. 검증·로그·여러 단계 보정이 섞이면 <code>IF</code>와 <code>RAISE EXCEPTION</code>이 더 읽기 좋다.</p>
 </blockquote>
@@ -108,28 +111,28 @@
 <tr>
 <th>계층</th>
 <th>처리 강제</th>
-<th>입문자 판단 기준</th>
+<th>입문자 판단 기준(실례)</th>
 </tr>
 </thead>
 <tbody><tr>
 <td><code>CX_STATIC_CHECK</code></td>
-<td>시그니처 선언·처리를 강하게 요구(checked)</td>
-<td>업무상 예상 가능한 복구 오류</td>
+<td>시그니처 선언·처리를 강하게 요구(checked: 문법 검사 때 확인)</td>
+<td>업무상 예상 가능한 복구 오류. 호출자가 꼭 대응해야 하는 것(예: 매진 <code>ZCX_FULLY_BOOKED</code>)</td>
 </tr>
 <tr>
 <td><code>CX_DYNAMIC_CHECK</code></td>
-<td>선언은 필요, 일부 검사는 런타임</td>
-<td>동적 상황에서 날 수 있는 오류</td>
+<td>선언은 필요, 검사는 런타임</td>
+<td>호출 조건만 지키면 미리 막을 수 있는 오류(예: 0으로 나누기 <code>CX_SY_ZERODIVIDE</code>)</td>
 </tr>
 <tr>
 <td><code>CX_NO_CHECK</code></td>
 <td>처리 강제 안 함</td>
-<td>어디서나 발생 가능·강제 부적절</td>
+<td>사실상 어디서나 날 수 있어 선언을 강제하면 모든 시그니처가 지저분해지는 오류(예: 잡히지 않은 예외를 시스템이 알리는 <code>CX_SY_NO_HANDLER</code>)</td>
 </tr>
 </tbody></table>
-<p><code>CX_ROOT</code>의 <code>get_text( )</code>로 메시지를 얻는다. <code>RESUME</code>은 <em>resumable 예외</em>를 <code>CATCH BEFORE UNWIND</code>로 잡은 뒤 발생 지점부터 재개하는 특수 문장이다. <strong>존재와 제약만 알고</strong>, 일반 업무 예외 패턴으로는 쓰지 않는다.</p>
-<h3>get_text( )는 어디서 문장을 가져오나 🗂️</h3>
-<p><code>get_text( )</code>가 돌려주는 문장은 어디서 올까. 예외 <button class="term" type="button" data-term="Class">클래스</button>를 SE24에서 만들 때 정의한 <strong>예외 텍스트</strong>(exception text)에서 온다. 이 텍스트는 고정 문장일 수도 있고, 회사 표준처럼 메시지 클래스(Message Class, 메시지를 번호로 묶어 두는 저장소)의 한 줄에 연결할 수도 있다.</p>
+<p><code>CX_ROOT</code>의 <code>get_text( )</code>로 메시지를 얻는다. 이 밖에 <code>RESUME</code>이라는 특수 문장도 있다. 잡은 예외가 났던 자리로 되돌아가 그 다음부터 실행을 잇는 드문 도구인데, 일반 업무 예외 패턴에서는 쓰지 않는다. 지금은 이름만 알아 두면 된다.</p>
+<details>
+<summary>get_text( )는 어디서 문장을 가져오나 — 예외 텍스트 (더 보기)</summary><p><code>get_text( )</code>가 돌려주는 문장은 어디서 올까. 예외 <button class="term" type="button" data-term="Class">클래스</button>를 SE24에서 만들 때 정의한 <strong>예외 텍스트</strong>(exception text)에서 온다. 이 텍스트는 고정 문장일 수도 있고, 회사 표준처럼 메시지 클래스(Message Class, 메시지를 번호로 묶어 두는 저장소)의 한 줄에 연결할 수도 있다.</p>
 <table>
 <thead>
 <tr>
@@ -154,12 +157,12 @@
 <blockquote>
 <p>지금은 &quot;메시지가 SE24 예외 텍스트(필요하면 메시지 클래스)에서 온다&quot;까지만 알면 된다. 실행 중에 메시지를 동적으로 갈아 끼우는 <code>IF_T100_DYN_MSG</code>나 <code>MESSAGE 예외객체</code> 심화는 이 과정 범위를 넘어 다루지 않는다.</p>
 </blockquote>
-</section><section class="lblock"><h2>흔한 실수와 점검 🚧</h2>
+</details></section><section class="lblock"><h2>흔한 실수와 점검 🚧</h2>
 <ul>
 <li><strong>예외 무시</strong> → <code>TRY/CATCH</code> 없이 던지면 덤프. 적절히 잡는다.</li>
-<li><strong><code>CATCH cx_root</code> 먼저</strong> → 상위 예외가 모든 걸 가로채 구체 handler가 <strong>도달 불가</strong>가 된다. <strong>구체 예외부터, 일반 예외는 뒤로.</strong> (위 체험에서 직접 확인.)</li>
+<li><strong><code>CATCH cx_root</code> 먼저</strong> → 상위 예외가 모든 예외를 가로채, 뒤에 둔 구체 <code>CATCH</code> 블록에는 <strong>영영 내려가지 못한다</strong>. <strong>구체 예외부터, 일반 예외는 뒤로.</strong> (위 체험에서 직접 확인.)</li>
 <li><strong><code>cx_root</code>로 전부 삼킴</strong> → 무엇이 실패했는지 사라진다. 정말 필요한 경계에서만 좁게.</li>
-<li><strong><code>CLEANUP</code>을 finally로 오해</strong> → 항상 실행되는 후처리가 아니라, TRY 블록이 <em>예외로</em> 정리될 때 실행되는 블록이다.</li>
+<li><strong><code>CLEANUP</code>을 finally로 오해</strong> → 항상 실행되는 후처리가 아니다. 같은 <code>TRY</code>의 <code>CATCH</code>가 잡으면 실행되지 않고, 예외가 바깥 <code>TRY</code>로 넘어가며 이 블록이 정리될 때만 실행된다.</li>
 <li><strong>던지기와 메시지를 한 곳에</strong> → <button class="term" type="button" data-term="Class">클래스</button>는 예외로 <em>알리고</em>, 화면 프로그램이 사용자 메시지로 <em>바꾼다</em>.</li>
 </ul>
 <hr>

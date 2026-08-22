@@ -4,8 +4,8 @@
 (function(){
   var $=function(id){return document.getElementById(id);};
   var CARDS=[
-    {id:'c1', text:'표준 테이블 <code>ZBOOKING</code>을 SQL로 직접 UPDATE', ready:false,
-      why:'비released 테이블 직접 수정은 Clean Core 위반입니다.', alt:'RAP BO나 released API를 통해 변경을 처리하세요.'},
+    {id:'c1', text:'SAP 표준 테이블 <code>SFLIGHT</code>를 SQL로 직접 UPDATE', ready:false,
+      why:'SAP가 배포한(비released) 표준 테이블을 직접 수정하는 것은 Clean Core 위반입니다.', alt:'표준 데이터는 released API·공개 확장 지점으로만 다루고, 내 데이터는 내 Z 테이블(예: <code>ZBOOKING</code>) + RAP BO로 관리하세요.'},
     {id:'c2', text:'released CDS view(<code>I_*</code>)를 SELECT로 소비', ready:true,
       why:'release된 객체만 ABAP Cloud에서 접근할 수 있습니다.'},
     {id:'c3', text:'Dynpro(SAP GUI) 화면을 새로 개발', ready:false,

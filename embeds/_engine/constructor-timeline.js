@@ -42,14 +42,22 @@
 
   function callStatic() {
     var steps = [];
-    steps.push({ ic: '①', t: '<code>zcl_booking_manager</code>를 <b>객체 없이</b> 처음 사용(아직 <code>NEW</code>를 안 했다)' });
+    var first;
+    if (objects.length > 0) {
+      first = '사용(이미 만든 객체 ' + objects.length + '개와는 무관 — 정적 호출엔 객체가 필요 없다)';
+    } else if (classInit) {
+      first = '다시 사용(여전히 <code>NEW</code>는 안 했다)';
+    } else {
+      first = '처음 사용(아직 <code>NEW</code>를 안 했다)';
+    }
+    steps.push({ ic: '①', t: '<code>zcl_booking_manager</code>를 <b>객체 없이</b> ' + first });
     if (!classInit) {
       classInit = true; classCtorCount++;
       steps.push({ ic: '②', cls: 'stat', t: '<b>class_constructor</b> 실행 — 클래스 최초 사용이라 한 번' });
     } else {
       steps.push({ ic: '②', cls: 'skip', t: 'class_constructor — 이미 실행됨, 다시 안 함' });
     }
-    steps.push({ ic: '③', t: '클래스 공용 초기화만 끝남 — <b>constructor는 실행되지 않음</b>(객체를 안 만들었으니까)' });
+    steps.push({ ic: '③', t: '클래스 공용 초기화만 끝남 — <b>constructor는 실행되지 않음</b>(이번 호출은 객체를 안 만드니까)' });
     timeline(steps);
     render();
   }

@@ -1,0 +1,137 @@
+{
+  "agent": "AG01",
+  "model": "opus",
+  "target": "CH21",
+  "persona_ack": "나는 '은서'다. 개발·전공 경험이 전혀 없는 24세 문과 출신 입문자로, 이 사이트로 ABAP을 처음 배운다. 내 실제 지식으로 빈틈을 메우지 않고, 풀이가 그 자리(또는 같은 챕터의 앞 레슨)에 없어 실제로 읽다 멈춘 지점만 기록했다. 없으면 억지로 만들지 않았다.",
+  "method": "CH21 대상 11개 파일(_chapter.md, L01~L10)을 L01부터 순서대로 전문 통독(bash cat). 코드 조각의 정확한 들여쓰기·행 번호는 grep -n / sed -n / cat -A 로 확인. 다른 챕터 파일·과거 감사 산출물·웹 검색은 사용하지 않음.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L09.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH21\\CH21-L10.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH21/CH21-L01.md",
+      "quote": "  PUBLIC              \" Global Class 표식: 클래스 라이브러리에 두고 어디서나 쓴다\n  CREATE PUBLIC.      \" 누구나 NEW로 객체를 만들 수 있다(기본값)\n  PUBLIC SECTION.",
+      "category": "단절",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "이 챕터의 첫 코드에서 PUBLIC이 세 번 나오는데 앞의 둘만 주석이 붙어 있고 세 번째 `PUBLIC SECTION.`은 아무 설명이 없다.",
+      "evidence": "같은 단어가 세 번 나오면 같은 뜻이라고 짐작하는데, 주석을 보면 첫째는 '클래스 라이브러리에 둔다', 둘째는 'NEW로 만들 수 있다'로 뜻이 서로 다르다. 그러면 셋째도 또 다른 뜻일 텐데 아무 말이 없어서 '이건 또 무슨 PUBLIC이지?'에서 멈춘다. 뜻은 다음 레슨 L02의 Visibility 절에 가서야 나오는데, 코드는 여기서 먼저 읽어야 한다.",
+      "suggestion": "세 번째 줄에도 '밖에서 부를 수 있는 것들을 적는 칸(자세히는 다음 레슨)' 같은 한 줄 주석을 붙이거나, L01 코드에서는 섹션 키워드를 빼고 DEFINITION/IMPLEMENTATION 골격만 보여준다."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH21/CH21-L01.md",
+      "quote": "1. `SE24` 실행 → Object Type에 `ZCL_BOOKING_MANAGER` 입력 → **Create**.",
+      "category": "멈춘 곳",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'Object Type'이라는 칸에 클래스 이름을 넣으라는 지시가 입문자에게는 모순처럼 읽힌다.",
+      "evidence": "Type은 '종류'라서, 나는 이 칸을 Class냐 Interface냐를 고르는 칸으로 이해했다. 거기에 이름을 적으라고 하니 화면 앞에서 손이 멈춘다. 게다가 Create를 누른 뒤 '클래스인지 인터페이스인지' 고르는 단계가 있는지 없는지도 적혀 있지 않아서, 실제 화면과 글을 맞춰 볼 수가 없다.",
+      "suggestion": "칸 이름 뒤에 괄호 풀이를 넣는다 — 'Object Type 칸(만들 대상의 이름을 적는 칸이다)에 ZCL_BOOKING_MANAGER 입력'. Create 후 종류를 고르는 창이 뜬다면 그 한 단계를 명시."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH21/CH21-L03.md",
+      "quote": "CLASS zcl_booking_manager DEFINITION PUBLIC CREATE PUBLIC.\n  PUBLIC SECTION.\n    CLASS-METHODS class_constructor.\n  PRIVATE SECTION.\n    CLASS-DATA gv_version TYPE string.\nENDCLASS.",
+      "category": "단절",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "정적 생성자 예제가 같은 클래스를 처음부터 다시 쓰면서 바로 위에서 만든 constructor·mv_concert·mv_perf·mv_cap이 통째로 사라졌는데 '발췌'라는 표시가 없다.",
+      "evidence": "나는 레슨의 코드를 위에서 아래로 이어지는 한 파일처럼 읽는다. 같은 이름 zcl_booking_manager인데 안이 완전히 달라져서 '앞에서 만든 생성자를 지우고 이걸로 바꾸라는 건가?'에서 막혔다. 뒤 레슨 L09에는 '(위는 이벤트 부분만 발췌)'라고 친절히 적혀 있어서 대비가 더 크게 느껴진다.",
+      "suggestion": "코드 바로 위나 첫 줄 주석에 '정적 생성자 부분만 발췌 — 앞에서 만든 constructor와 속성은 그대로 있다' 한 줄을 넣는다."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH21/CH21-L04.md",
+      "quote": "  SELECT COALESCE( SUM( seats ), 0 )",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "`COALESCE`가 무엇을 하는 함수인지 이 챕터 어디에도 풀이가 없다.",
+      "evidence": "이 절의 주제는 me-> 인데 예제 코드 첫 줄부터 모르는 영어 함수가 두 겹으로 겹쳐 있다. SUM은 '합계'로 짐작이라도 되지만 COALESCE는 단어 자체를 본 적이 없어서 무엇이 0으로 바뀌는 건지 알 수 없다. 게다가 L10 실습 과제 2번이 'remaining( )이 취소 제외 좌석 합계를 정원에서 빼는지 확인'하라고 시키는데, 그러려면 이 줄을 이해해야 한다.",
+      "suggestion": "'예약이 하나도 없으면 합계가 빈 값 → 0으로 대신한다' 같은 주석 한 줄, 또는 인라인 풀이(COALESCE: 값이 없을 때 대신 쓸 값을 정해 주는 함수)를 붙인다. 앞 챕터에서 이미 배운 것이면 그 레슨 링크를 단다."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH21/CH21-L05.md",
+      "quote": "INTERFACE zif_printable PUBLIC.\n  METHODS print.\nENDINTERFACE.",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "인터페이스를 어디서 어떻게 만드는지가 빠져 있다 — 코드만 툭 나온다.",
+      "evidence": "L01은 클래스를 만드는 SE24 다섯 단계를 짚어 줬고, L06도 예외 클래스에 대해 'SE24에서 만든다, 클래스 유형만 Exception Class로'라고 알려 줬다. 그런데 인터페이스만 만드는 화면·절차가 없어서, 이 세 줄을 어디에 입력해야 하는지 몰라 실습을 시작조차 못 한다.",
+      "suggestion": "'인터페이스도 SE24에서 만든다(Create 때 Class 대신 Interface 선택)' 정도의 한 줄을 코드 앞에 추가한다."
+    },
+    {
+      "seq": 6,
+      "file": "content/abap/CH21/CH21-L06.md",
+      "quote": "  CATCH zcx_fully_booked INTO DATA(lx_booked).\n    MESSAGE lx_booked->get_text( ) TYPE 'I'.",
+      "category": "단절",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "`get_text( )`가 그 정체를 설명하는 문장보다 먼저 쓰인다(설명은 두 절 뒤 CX 계층 절에 나온다).",
+      "evidence": "처음 만나는 자리에서는 '내가 만든 적 없는 메서드가 왜 여기 있지?'가 되어 멈춘다. 이 챕터에서 나는 아직 상속을 안 배웠으니 부모에게서 물려받았다는 짐작도 할 수 없다. lx_booked의 lx_ 라는 새 접두어도 같이 처음 나오는데 뜻이 없다(L02가 알려준 건 m·g뿐이다).",
+      "suggestion": "첫 등장 줄에 '예외 객체가 들고 있는 메시지 문장(자세히는 아래 CX 계층 절)' 주석 한 줄을 붙이고, lx_ 도 '예외 객체' 접두어임을 괄호로 밝힌다."
+    },
+    {
+      "seq": 7,
+      "file": "content/abap/CH21/CH21-L06.md",
+      "quote": "| `CX_NO_CHECK` | 처리 강제 안 함 | 사실상 어디서나 날 수 있어 선언을 강제하면 모든 시그니처가 지저분해지는 오류(예: 잡히지 않은 예외를 시스템이 알리는 `CX_SY_NO_HANDLER`) |",
+      "category": "과부하",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "한 레슨에 처음 보는 개념·이름이 지나치게 몰려 있어 뒤로 갈수록 앞 내용이 남지 않는다.",
+      "evidence": "이 레슨 하나에 TRY/CATCH/CLEANUP, RAISE EXCEPTION, RAISING, 시그니처, THROW와 COND 결합, CX 3계층, get_text, 예외 텍스트, 메시지 클래스, IF_T100_MESSAGE, IF_T100_DYN_MSG, RESUME이 다 들어 있다. 이 표 한 칸만 봐도 처음 보는 이름이 CX_NO_CHECK·CX_SY_NO_HANDLER 둘이다. 여기까지 오니 앞에서 읽은 CLEANUP 규칙이 하나도 기억나지 않아 위로 되돌아가야 했다.",
+      "suggestion": "'내 예외 만들기·던지기·잡기'와 'CX 계층·예외 텍스트(THROW 포함)'를 두 레슨으로 나누거나, CX 3계층 표를 '입문 단계에서 내가 만드는 업무 예외는 CX_STATIC_CHECK' 한 줄로 줄이고 나머지 두 계층은 접기(details)로 내린다."
+    },
+    {
+      "seq": 8,
+      "file": "content/abap/CH21/CH21-L06.md",
+      "quote": "예외 클래스가 `IF_T100_MESSAGE`(예외와 메시지 저장소를 잇는 표준 interface)를 구현하면 `get_text( )`는 `ZBOOKING 001`의 문장을 돌려주고, `&1`·`&2` 자리는 예외 객체가 담아 온 값으로 채워진다.",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'예외 객체가 담아 온 값'을 어떻게 담는지가 챕터 어디에도 없다.",
+      "evidence": "이 챕터에서 본 던지기는 RAISE EXCEPTION TYPE zcx_fully_booked. 처럼 값 없이 던지는 것뿐이고, THROW 절에는 'EXPORTING을 쓰지 않는다'고까지 적혀 있다. 그런데 여기서는 값이 채워진다고 하니, '그 공연 번호와 잔여석은 언제 어떻게 넣은 거지?'가 그대로 남는다.",
+      "suggestion": "값을 넣는 방법은 이 과정 범위 밖임을 한 줄로 못 박거나, RAISE EXCEPTION TYPE ... EXPORTING ... 형태를 한 줄만 예시로 보여 준다."
+    },
+    {
+      "seq": 9,
+      "file": "content/abap/CH21/CH21-L07.md",
+      "quote": "    METHODS book REDEFINITION.        \" 부모 메서드를 다시 정의",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "재정의 선언에는 IMPORTING iv_seats가 없는데 바로 아래 구현부는 iv_seats를 쓴다 — 이 파라미터가 어디서 왔는지 설명이 없다.",
+      "evidence": "METHOD book. 다음의 IF iv_seats > 4. 에서 '선언에 없는 이름을 왜 쓰지? 빠뜨린 건가?' 하고 위아래를 세 번 오갔다. 같은 레슨이 생성자에 대해서는 '생성자도 부모에게서 물려받기 때문'이라고 친절히 짚어 줘서, 파라미터만 설명이 빠진 게 더 눈에 걸린다.",
+      "suggestion": "REDEFINITION 설명 줄에 '재정의는 파라미터를 다시 적지 않는다 — 부모 선언의 입·출력 형태를 그대로 물려받는다'를 한 문장 덧붙인다."
+    },
+    {
+      "seq": 10,
+      "file": "content/abap/CH21/CH21-L10.md",
+      "quote": "    rv_ok = xsdbool( iv_seats > 0 AND iv_seats <= me->remaining( ) ).",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "`xsdbool`과 `abap_bool`이 이 챕터에서는 처음 나오는데 풀이가 없다.",
+      "evidence": "마지막 종합 실습이라 코드를 그대로 따라 치게 되는데, xsdbool 은 글자만 봐서는 뜻을 짐작할 수 없다(x·s·d가 각각 뭔지 모른다). 위 선언의 TYPE abap_bool 도 이 챕터에서 처음이라 '참·거짓을 담는 타입인가 보다' 하고 넘길 수밖에 없었다.",
+      "suggestion": "'조건이 맞으면 참, 아니면 거짓을 돌려준다' 주석 한 줄을 붙이거나, 앞 챕터에서 배운 것이면 해당 레슨으로 링크를 단다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "10개 레슨을 순서대로 읽는 동안 아예 포기할 만한 지점은 없었다. 흐름(불편 → 개념 → 흔한 실수 → 다음 레슨 예고)이 일정해서 리듬을 타기 좋았고, 특히 잘 읽힌 장치는 클래스=설계도/객체=찍어낸 실물 비유, L05의 '필요한 건 핏줄이 아니라 출력할 수 있다는 규약'이라는 한 문장, 그리고 L09~L10에서 '실패는 예외로, 사건은 이벤트로'라고 두 도구의 쓰임을 갈라 준 대비다(L05가 zcl_booking과 zcl_booking_manager를 헷갈리지 말라고 미리 짚어 준 것, L06이 CLEANUP은 finally가 아니라고 못 박아 준 것도 고마웠다). 걸린 곳은 대부분 한두 줄 주석·괄호 풀이로 메울 수 있는 크기였다: 첫 코드의 세 번째 PUBLIC(L01), 발췌 표시 없는 클래스 재작성(L03), 풀이 없는 COALESCE·xsdbool(L04·L10), 인터페이스를 만드는 화면이 없는 것(L05), 설명보다 먼저 쓰인 get_text와 lx_ 접두어(L06), 재정의 파라미터의 출처(L07). 유일하게 구조가 걸린 곳은 L06으로, 예외 만들기·던지기·잡기에 THROW·CX 3계층·메시지 텍스트까지 한 레슨에 몰려 뒤로 갈수록 앞이 남지 않았다."
+  }
+}

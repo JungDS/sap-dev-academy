@@ -40,7 +40,7 @@
       </section>
       <article class="prose">
 <section class="lblock"><h2>왜 — 흩어진 로직을 한 개념으로 🧩</h2>
-<p>지금까지 콘서트 예매 로직은 <code>FORM get_remaining</code>, <code>FORM can_book</code>처럼 <strong>따로따로</strong> 있었다. 처음엔 단순해 보인다. 그런데 화면 프로그램·ALV 리포트·배치가 <strong>같은 예약 판단을 재사용</strong>하기 시작하면 문제가 드러난다.</p>
+<p>지금까지 콘서트 예매 로직은 <code>FORM get_remaining</code>, <code>FORM can_book</code>처럼 <strong>따로따로</strong> 있었다. 처음엔 단순해 보인다. 그런데 화면 프로그램·ALV 리포트·배치(batch: 화면 없이 뒤에서 도는 일괄 실행)가 <strong>같은 예약 판단을 재사용</strong>하기 시작하면 문제가 드러난다.</p>
 <ul>
 <li>어느 FORM이 최신 규칙인지 헷갈린다.</li>
 <li>공연 ID·회차 같은 상태를 매번 <button class="term" type="button" data-term="파라미터">파라미터</button>로 넘겨야 한다.</li>
@@ -51,7 +51,15 @@
 <p>🎫 콘서트 예매 앱의 핵심 로직을 <code>ZCL_BOOKING_MANAGER</code> 클래스로 묶어 간다.</p>
 </blockquote>
 </section><section class="lblock"><h2>전역 클래스 — SE24 🏛️</h2>
-<p><code>SE24</code>(또는 ADT)에서 <code>ZCL_BOOKING_MANAGER</code>를 만든다. <a href="CH10-L04.html">Local Class로 모듈화</a>에서 봤듯, <button class="term" type="button" data-term="Class">클래스</button>는 <strong><code>DEFINITION</code></strong>(밖에서 무엇을 볼 수 있는지·어떤 속성/<button class="term" type="button" data-term="Method">메서드</button>가 있는지)과 <strong><code>IMPLEMENTATION</code></strong>(메서드가 실제로 하는 일)으로 나뉜다.</p>
+<p><code>SE24</code>(또는 ADT: 이클립스에서 ABAP을 개발하는 ABAP Development Tools)에서 <code>ZCL_BOOKING_MANAGER</code>를 만든다. 이렇게 <button class="term" type="button" data-term="Class">클래스</button> 라이브러리에 만들어 <strong>모든 프로그램이 가져다 쓰는</strong> 클래스가 <button class="term" type="button" data-term="Global Class">Global Class</button>(전역 클래스)다. 생성 절차는 한 번 익혀 두면 이 챕터 내내 같다.</p>
+<ol>
+<li><code>SE24</code> 실행 → Object Type에 <code>ZCL_BOOKING_MANAGER</code> 입력 → <strong>Create</strong>.</li>
+<li>Description을 적고 저장한다(연습이면 Local Object).</li>
+<li><strong>Methods 탭</strong>에서 <button class="term" type="button" data-term="Method">메서드</button> 이름·Level(Instance/Static)·Visibility를 등록한다.</li>
+<li>메서드 이름을 더블클릭해 <strong>소스 코드</strong>를 채운다.</li>
+<li><strong>활성화</strong>(Ctrl+F3). 이제 어느 프로그램에서든 이 클래스를 쓸 수 있다.</li>
+</ol>
+<p><a href="CH10-L04.html">Local Class로 모듈화</a>에서 봤듯, 클래스는 <strong><code>DEFINITION</code></strong>(밖에서 무엇을 볼 수 있는지·어떤 속성/메서드가 있는지)과 <strong><code>IMPLEMENTATION</code></strong>(메서드가 실제로 하는 일)으로 나뉜다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -64,8 +72,8 @@
 10
 11
 12</pre><pre class="abap-editor__code"><code><span class="tok-kw">CLASS</span> zcl_booking_manager <span class="tok-kw">DEFINITION</span>
-  <span class="tok-kw">PUBLIC</span>
-  <span class="tok-kw">CREATE</span> <span class="tok-kw">PUBLIC</span>.
+  <span class="tok-kw">PUBLIC</span>              <span class="tok-com">" Global Class 표식: 클래스 라이브러리에 두고 어디서나 쓴다</span>
+  <span class="tok-kw">CREATE</span> <span class="tok-kw">PUBLIC</span>.      <span class="tok-com">" 누구나 NEW로 객체를 만들 수 있다(기본값)</span>
   <span class="tok-kw">PUBLIC</span> <span class="tok-kw">SECTION</span>.
     <span class="tok-kw">METHODS</span> book <span class="tok-kw">IMPORTING</span> iv_seats <span class="tok-kw">TYPE</span> i.
 <span class="tok-kw">ENDCLASS</span>.
@@ -76,7 +84,7 @@
   <span class="tok-kw">ENDMETHOD</span>.
 <span class="tok-kw">ENDCLASS</span>.</code></pre></div></div>
 </section><section class="lblock"><h2>객체 만들기 — NEW 🏗️</h2>
-<p><button class="term" type="button" data-term="Class">클래스</button>만 선언했다고 예약 관리자가 생긴 건 아니다. 실제로 일을 시키려면 **<button class="term" type="button" data-term="객체">객체</button>(<button class="term" type="button" data-term="인스턴스">인스턴스</button>)**를 만들어야 한다. 객체를 만드는 연산자가 <code>NEW</code>다.</p>
+<p><button class="term" type="button" data-term="Class">클래스</button>만 선언했다고 예약 관리자가 생긴 건 아니다. 실제로 일을 시키려면 **<button class="term" type="button" data-term="객체">객체</button>**를 만들어야 한다(설계도에서 찍어낸 실물이라는 뜻에서 <button class="term" type="button" data-term="인스턴스">인스턴스</button>라고도 부른다). 객체를 만드는 연산자가 <code>NEW</code>다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span>(lo_mgr) = <span class="tok-kw">NEW</span> zcl_booking_manager( ).   <span class="tok-com">" 객체 생성</span>
 lo_mgr-&gt;book( iv_seats = <span class="tok-num">2</span> ).                <span class="tok-com">" -&gt; 로 인스턴스 메서드 호출</span></code></pre></div></div>
@@ -86,13 +94,13 @@ lo_mgr-&gt;book( iv_seats = <span class="tok-num">2</span> ).                <sp
 3</pre><pre class="abap-editor__code"><code><span class="tok-kw">DATA</span> lo_mgr <span class="tok-kw">TYPE</span> <span class="tok-kw">REF</span> <span class="tok-kw">TO</span> zcl_booking_manager.   <span class="tok-com">" 객체를 담을 변수</span>
 <span class="tok-kw">CREATE</span> <span class="tok-kw">OBJECT</span> lo_mgr.                          <span class="tok-com">" 객체 생성(classic)</span>
 lo_mgr-&gt;book( iv_seats = <span class="tok-num">2</span> ).</code></pre></div></div>
-<p><code>NEW zcl_booking_manager( )</code>와 <code>CREATE OBJECT lo_mgr</code>는 <strong>둘 다 객체를 만들고</strong> instance constructor를 호출한다. 앞으로는 modern <code>NEW</code>를 쓰되, 기존 코드·SAP GUI 예제에서 <code>CREATE OBJECT</code>를 만나도 같은 개념으로 읽으면 된다.</p>
+<p><code>NEW zcl_booking_manager( )</code>와 <code>CREATE OBJECT lo_mgr</code>는 <strong>둘 다 객체를 만들고</strong>, 객체가 태어나는 순간 자동 실행되는 <strong>생성자</strong>를 호출한다. 생성자는 <a href="CH21-L03.html">Constructor와 객체 초기화</a>에서 정식으로 배우니 지금은 이름만 알아 두면 된다. 앞으로는 modern <code>NEW</code>를 쓰되, 기존 코드·SAP GUI 예제에서 <code>CREATE OBJECT</code>를 만나도 같은 개념으로 읽으면 된다.</p>
 <figure class="embed"><figcaption class="embed__cap"><span class="embed__badge">체험</span><span class="embed__title">클래스(설계도)와 객체(인스턴스)의 관계</span><a class="embed__open" href="../../../embeds/abap/CH21-L01-S01.html" target="_blank" rel="noopener">↗ 새 탭에서 크게</a></figcaption><iframe class="embed__frame" src="../../../embeds/abap/CH21-L01-S01.html" loading="lazy" title="클래스(설계도)와 객체(인스턴스)의 관계"></iframe></figure>
 </section><section class="lblock"><h2>흔한 실수와 점검 🚧</h2>
 <ul>
 <li><strong>객체 없이 <button class="term" type="button" data-term="인스턴스">인스턴스</button> <button class="term" type="button" data-term="Method">메서드</button> 호출</strong> → 참조 변수 선언은 <em>빈 명함</em>을 만든 것일 뿐. <code>NEW</code>(또는 <code>CREATE OBJECT</code>)로 객체부터 만든다. <code>lo_mgr</code>가 initial이면 <code>lo_mgr-&gt;book( )</code>은 실패한다.</li>
 <li><strong><button class="term" type="button" data-term="Class">클래스</button> = 객체 라고 착각</strong> → <code>zcl_booking_manager</code>는 설계도, <code>lo_mgr</code>는 그 설계도로 만든 <em>특정 객체</em>를 가리키는 변수. 같은 클래스로 객체를 여러 개 만들면 각자 다른 상태를 가진다.</li>
-<li><strong>무조건 Global Class</strong> → 한 프로그램 안에서만 짧게 쓰는 보조 구조면 Local Class도 된다. 여러 프로그램·후속 챕터가 공유할 업무 로직이라야 Global Class가 제값을 한다.</li>
+<li><strong>무조건 <button class="term" type="button" data-term="Global Class">Global Class</button></strong> → 한 프로그램 안에서만 짧게 쓰는 보조 구조면 Local Class도 된다. 여러 프로그램·후속 챕터가 공유할 업무 로직이라야 Global Class가 제값을 한다.</li>
 </ul>
 <hr>
 <p>클래스와 객체를 만들었다. 이제 그 안에 담을 <strong>속성·메서드와 공개 범위</strong>를 보자 →

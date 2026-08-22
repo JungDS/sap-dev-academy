@@ -1,0 +1,125 @@
+{
+  "agent": "AG06",
+  "model": "opus",
+  "target": "CH23",
+  "persona_ack": "20년차 SAP ABAP 아키텍트로서 CH23(CDS View Entity 기초) 레슨 7편과 _chapter.md를 기술 사실·예시 적절성·위험한 생략·안티패턴 네 축으로 검수했다. 블라인드 감사 — 다른 감사자의 보고나 과거 감사 산출물은 열지 않았고, 웹 검색도 쓰지 않았다.",
+  "method": "대상 8개 파일 전문 정독(Read) + 인용 문장 원문 대조(grep/sed)로 앵커 실존 확인. 외부 네트워크·코퍼스 미사용 — 기술 판단은 내 SAP 지식에만 의존했고 불확실한 항목은 confidence='추정'으로 표기.",
+  "errors": [
+    "웹 검색·외부 문서 접근이 금지되어 ABAP CDS의 단어형 cardinality 표기(`association of one to many`) 존재 여부를 1차 문서로 확인하지 못했다 — 해당 발견(seq 5)은 confidence='추정'으로 남긴다."
+  ],
+  "files_read": [
+    "content/abap/CH23/_chapter.md",
+    "content/abap/CH23/CH23-L01.md",
+    "content/abap/CH23/CH23-L02.md",
+    "content/abap/CH23/CH23-L03.md",
+    "content/abap/CH23/CH23-L04.md",
+    "content/abap/CH23/CH23-L05.md",
+    "content/abap/CH23/CH23-L06.md",
+    "content/abap/CH23/CH23-L07.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH23/CH23-L02.md",
+      "quote": "> 🔗 **기반 뷰의 annotation은 자동으로 물려받는다.** 뷰 위에 뷰를 쌓으면(nesting) 아래 `ZI_Concert`에 붙은",
+      "category": "사실 오류",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "CDS에서 자동 전파되는 것은 '요소(element) annotation'뿐이고, 뷰 전체에 붙는 'entity annotation'은 상속되지 않는다. 그런데 본문은 범위를 나누지 않고 '기반 뷰의 annotation은 자동으로 물려받는다'고 단언한다.",
+      "evidence": "① 같은 챕터의 모든 예제가 뷰마다 `@AccessControl.authorizationCheck`를 다시 쓴다 — 이것이 entity annotation이 안 물려진다는 증거다. ② L06은 'DCL은 위 계층으로 상속되지 않는다'고 정반대로 못박아 두 레슨이 충돌한다. ③ 요소 annotation도 원본 필드를 1:1로 그대로 투영할 때만 따라오고, L01의 `seats_left`처럼 식으로 만든 요소에는 원본 주석이 전파되지 않는다. 학습자가 이 문장을 그대로 믿으면 '기반에 권한·의미를 한 번만 걸면 위 계층도 안전하다'는 위험한 일반화로 이어진다.",
+      "suggestion": "'필드(요소)에 붙인 annotation은 그대로 투영될 때 물려받고, 뷰 전체에 붙는 annotation(`@AccessControl.authorizationCheck`, 뷰 라벨, `@Metadata.allowExtensions` 등)은 물려받지 않는다 — 그래서 예제마다 뷰 위에 다시 쓰는 것이다'로 범위를 한정한다. 계산식으로 만든 요소는 전파 대상이 아니라는 한 줄도 덧붙이면 L01의 `seats_left`와 이어진다."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH23/CH23-L04.md",
+      "quote": "생각했는데 사이에 빈 줄·다른 필드가 끼면 의도와 다른 필드에 붙을 수 있다.",
+      "category": "사실 오류",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "CDS DDL에서 빈 줄은 아무 의미가 없다. annotation은 '바로 다음에 오는 요소'에 결합하므로, 사이에 빈 줄이 몇 개 있든 붙는 대상이 바뀌지 않는다. '빈 줄이 끼면 다른 필드에 붙을 수 있다'는 서술은 틀렸다.",
+      "evidence": "같은 레슨의 예제 코드가 이미 반례다 — `key concert_id,` 다음에 빈 줄을 두고 `@UI.lineItem` → `@EndUserText.label` → `artist,`로 이어지는데, 본문은 이 코드가 의도대로 동작한다고 설명한다. 즉 예제와 주의사항이 서로 모순이다. 실제로 결합 대상을 어긋나게 만드는 것은 '사이에 다른 요소가 끼어드는 경우'와 'select list 밖 엉뚱한 위치에 쓴 경우'뿐이다. 이대로 두면 학습자가 코드 정렬용 빈 줄을 겁내 가독성 나쁜 DDL을 쓰게 된다.",
+      "suggestion": "'사이에 빈 줄·다른 필드가 끼면' → '사이에 다른 요소가 끼어들면'으로 축소한다. 덧붙여 '빈 줄은 결합에 영향이 없다(가독성용으로 자유롭게 써도 된다)'를 한 줄 명시하면 오해가 확실히 잡힌다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH23/CH23-L04.md",
+      "quote": "[L01](CH23-L01.html)의 항공편 모델 `ZI_Flight`에는 `price`와 `currency`가 실제로 있으니, 이 둘로 금액-통화 짝을 선언한다.",
+      "category": "사실 오류",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L01에서 정의한 `ZI_Flight`의 select list는 `carrid`·`connid`·`fldate`·`seatsmax`·`seatsocc`·`seats_left`뿐이다. `price`·`currency`는 원본 테이블 `sflight`에는 있지만 `ZI_Flight`에는 없다 — 그대로 따라 하면 '요소 없음' 활성화 오류가 난다.",
+      "evidence": "CH23-L01.md의 `define view entity ZI_Flight` 블록에 price·currency가 존재하지 않는다. CDS annotation은 '그 뷰의 select list에 있는 요소'에만 붙일 수 있고, `@Semantics.amount.currencyCode: 'currency'`가 가리키는 통화 요소도 같은 select list에 있어야 하므로(레슨 스스로 '짝 존재' 항목에서 그렇게 말한다) 두 필드가 없는 상태로는 이 예제가 성립하지 않는다.",
+      "suggestion": "둘 중 하나로 정합을 맞춘다. (a) L01의 `ZI_Flight`에 `price`·`currency`를 추가한다 — 다만 view entity에서 통화(CURR) 요소를 노출하면 통화 참조 annotation을 요구하는 구문 검사가 걸리므로(릴리스에 따라 경고/오류) 필드 추가와 `@Semantics` 선언을 한 세트로 가르쳐야 한다. (b) L04 문장을 '원본 `sflight`에 `price`·`currency`가 있으니, `ZI_Flight`의 select list에 두 필드를 추가한 뒤 짝을 선언한다'로 고치고 추가된 select list를 함께 보여 준다."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH23/CH23-L06.md",
+      "quote": "| `@MappingRole: true` | 이 DCL role이 CDS access control role임을 표시. |",
+      "category": "사실 오류",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "`@MappingRole: true`는 '이 role을 사용자에게 매핑(사실상 전 사용자 대상으로 유효화)하겠다'는 배정 선언이지, 'CDS access control role임을 표시'하는 스위치가 아니다. 이 소스가 CDS access control role이라는 것은 `define role` 구문 자체가 정한다.",
+      "evidence": "레슨은 뒤에서 'DCL role은 사용자에게 PFCG role을 배정하는 행위 그 자체가 아니다'라고 배정 축을 따로 강조하는데, 정작 배정 의미를 가진 유일한 annotation을 '종류 표시용'으로 설명해 두 서술이 어긋난다. 학습자는 '`@MappingRole`은 그냥 형식이구나'로 읽고, 이 값이 빠졌을 때 규칙이 사용자에게 적용되지 않는 상황을 진단하지 못한다.",
+      "suggestion": "표의 뜻을 '이 access control role을 사용자에게 매핑하겠다는 선언(실무에서는 항상 `true`) — 빠지면 규칙이 사용자에게 걸리지 않는다'로 고친다. 'role의 종류는 `define role`이 정한다'를 한 줄 덧붙이면 바로 아래 행(`define role ZI_Concert_Role`)과 역할 분담이 선명해진다."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH23/CH23-L03.md",
+      "quote": "(숫자 대신 단어로 `association of one to many to ZI_Perf`처럼 쓰는 표기도 있다.)",
+      "category": "사실 오류",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "내가 아는 한 ABAP CDS DDL의 association cardinality 표기는 대괄호 `[min..max]` 형태뿐이고, `association of one to many …` 같은 단어형 표기는 ABAP CDS 문법이 아니다. CAP(클라우드 CDS, CDL)의 `Association to many` / `Composition of many` 표기와 혼동된 문장으로 보인다.",
+      "evidence": "레슨 본문의 정본 예제는 모두 `association [0..*] to ZI_Perf as _Perf` 형태이며, 챕터 어디에도 단어형 표기의 실제 사용례가 없다. 게다가 제시된 문자열 `association of one to many to ZI_Perf`는 CAP 표기법으로 봐도 어색하다(CAP는 `Association to many <target>`). 학습자가 ADT에서 그대로 입력하면 구문 오류를 만나게 되고, '표기도 있다'는 안내 때문에 자기 오타를 의심하며 시간을 낭비한다. 다만 웹·문서 접근이 금지되어 릴리스별 문법 확장 여부를 확인하지 못했으므로 추정으로 남긴다.",
+      "suggestion": "1차 문서로 확인되기 전까지 이 괄호 문장을 삭제하는 편이 안전하다. 유지하려면 'CAP(클라우드 CDS)에서는 단어형으로 쓰지만 ABAP CDS는 대괄호 표기만 쓴다'처럼 출처를 분리해 명시한다. 표기 다양성을 보여 주고 싶다면 확인된 대괄호 변형(`[0..1]`·`[1..*]` 등 데이터 현실별 예)로 대체하는 것이 이 레슨 목적에도 더 맞는다."
+    },
+    {
+      "seq": 6,
+      "file": "content/abap/CH23/CH23-L03.md",
+      "quote": "> **association은 JOIN과 무관한 마법 통로가 아니다.** path를 실제로 사용하면 내부적으로 JOIN으로 변환될 수",
+      "category": "위험한 생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "path가 JOIN으로 바뀐다는 것까지는 말했지만, '`[0..*]`(to-many) 경로를 실제로 따라가면 원본 1행이 대상 건수만큼 불어난다'는 결과집합 왜곡을 짚지 않았다. CDS 입문자가 가장 먼저 겪는 사고가 성능이 아니라 이 '행 중복'이다.",
+      "evidence": "레슨은 `[0..*]` association을 선언·노출하는 데까지 가르치고 시뮬레이터에서 '경로로 회차를 따라가 보자'고 유도한다. 그런데 주의 항목은 '성능 무료 쿠폰으로 착각 → path를 쓰면 JOIN이 발생한다'는 비용 관점뿐이다. to-many 경로가 select list에 들어가면 공연 1건이 회차 수만큼 반복 출력되고, 그 상태로 집계하면 금액·좌석 합계가 부풀려진다 — 실무에서 흔히 터지는 잘못된 리포트의 전형이다. (릴리스에 따라 경로에 명시적 cardinality를 요구하는 구문 검사가 함께 걸리기도 하나, 이 부분은 추정이다.)",
+      "suggestion": "'흔한 실수' 목록에 한 줄 추가: '**to-many 경로를 값 조회에 쓰기** → `[0..*]` 경로를 select list에서 따라가면 공연 1행이 회차 수만큼 늘어난다. 목록 뷰에서는 관계를 *노출*만 하고, 값이 필요하면 1:1로 좁혀 쓰거나 집계 전용 뷰를 따로 만든다.' 검증 항목에도 'Data Preview 행 수가 원본보다 늘었는지'를 넣으면 L01의 행 수 점검과 짝이 맞는다."
+    },
+    {
+      "seq": 7,
+      "file": "content/abap/CH23/CH23-L01.md",
+      "quote": "달리, CDS는 **DDL**(Data Definition Language, 데이터를 *정의*하는 언어)로 작성하고 ADT(Eclipse)에서 만든다.",
+      "category": "위험한 생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "`define view entity`(CDS View Entity)는 ABAP Platform 2020(7.55) 이상에서만 쓸 수 있는 문법이라는 전제가 챕터 어디에도 없다. 그보다 낮은 릴리스에서는 이 구문 자체가 존재하지 않고, `define view` + `@AbapCatalog.sqlViewName`(DDIC 기반 CDS view)으로 써야 한다.",
+      "evidence": "이 커리큘럼은 CH01부터 SAPGUI/SE38 기반으로 진행하고 `sflight` 같은 구형 데모 데이터를 예제로 쓴다 — 학습자의 연습 시스템이 구형 온프레미스일 가능성이 상당하다. 그런 시스템에서는 첫 레슨의 첫 코드부터 활성화가 안 되는데, 레슨의 '흔한 실수'는 오타·이름 불일치만 다루므로 학습자가 원인을 릴리스로 의심할 단서가 없다. ADT(Eclipse) 설치·연결이라는 전제도 '만든다'는 한 문장으로 지나간다.",
+      "suggestion": "L01 도입부에 전제 콜아웃 한 개를 넣는다: '이 문법은 ADT(Eclipse)가 연결된 ABAP Platform 2020(7.55) 이상에서 동작한다. 더 낮은 릴리스에서는 `define view` + `@AbapCatalog.sqlViewName`을 쓰는 예전 방식(DDIC 기반 CDS view)이라 문법이 조금 다르다 — 지금 외울 필요는 없고, 내 시스템에서 활성화가 안 되면 여기부터 확인한다.' 예고(L1) 수준이라 학습 순서도 해치지 않는다."
+    },
+    {
+      "seq": 8,
+      "file": "content/abap/CH23/CH23-L01.md",
+      "quote": "SELECT *\n  FROM ZI_Concert\n  INTO TABLE @DATA(gt_concerts).",
+      "category": "안티패턴",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "CDS 모델을 소비하는 첫 예제가 `SELECT *` + WHERE·건수 제한 없는 전건 읽기인데 아무 교정 문구가 없다. 필드 목록 명시는 SAP 성능 가이드의 기본 규율이고, CDS는 뷰라서 조인·계산을 품은 만큼 무조건 전건 조회의 비용이 테이블보다 커질 수 있다.",
+      "evidence": "바로 다음 레슨(L02)은 같은 상황을 `SELECT concert_id, artist, venue FROM ZC_Concert`로 필드를 명시해 보여 준다 — 두 레슨의 시연 습관이 엇갈린다. 입문자는 먼저 본 형태를 관성으로 복사하므로, 첫 등장에서 `SELECT *`를 교정 없이 두면 이후 챕터(RAP·서비스 소비)까지 습관이 따라간다.",
+      "suggestion": "L01 예제도 필드를 명시한다 — `SELECT concert_id, artist, venue, capacity FROM ZI_Concert INTO TABLE @DATA(gt_concerts).` 그리고 '흔한 실수'에 '**조건 없이 전건 읽기** → CDS는 뷰라서 조인·계산이 딸려 온다. 실무에서는 WHERE로 좁혀 읽는다' 한 줄을 붙인다."
+    },
+    {
+      "seq": 9,
+      "file": "content/abap/CH23/CH23-L02.md",
+      "quote": "::embed CH23-L02-S01 | Interface vs Projection 계층 분리 실험실::",
+      "category": "용어 혼동",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "레슨이 '\"Projection View\"라는 정식 뷰와 헷갈리기'를 흔한 실수로 못박아 두고, 정작 체험 위젯 제목에서 그 헷갈리는 단어를 계층 이름으로 쓴다. L02가 만드는 것은 `as projection on` + provider contract로 정의하는 Projection View가 아니라 `as select from`으로 쌓은 읽기 전용 소비 뷰(Consumption View)다.",
+      "evidence": "같은 파일의 '흔한 실수' 3번째 항목이 두 개념을 구분하라고 명시하고, 정식 Projection View는 CH24로 미룬다고 안내한다. 그런데 학습자가 화면에서 가장 먼저 읽는 위젯 제목이 'Interface vs Projection'이라 본문이 방금 세운 경계가 바로 흐려진다.",
+      "suggestion": "캡션을 'Interface vs Consumption 계층 분리 실험실'로 바꾸고, 위젯 내부에 같은 단어가 쓰였다면 함께 교체한다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "기술 골격은 이 수준 교재로서 견고하다. DCL이 위 계층으로 상속되지 않는다는 경고, association을 select list에 노출해야 소비자가 경로를 쓸 수 있다는 지점, DDL의 쉼표와 DDLX의 세미콜론 구분, `@Semantics` 금액-통화 짝, 활성화 순서(target 먼저) 등 실무에서 실제로 사고가 나는 급소를 정확히 짚었고 예제 문법(`define view entity`, `association [0..*] … on $projection.…`, `annotate entity … with`, `aspect pfcg_auth`)도 대체로 정확하다. 다만 국소적인 사실 오류 네 건이 남아 있다 — annotation 상속을 요소/entity 구분 없이 단언한 점(L02), 빈 줄이 annotation 결합을 바꾼다는 잘못된 주의(L04, 자기 예제와 모순), L01의 `ZI_Flight`에 없는 `price`·`currency`를 '실제로 있다'고 쓴 교차 레슨 불일치(L04), `@MappingRole: true`의 뜻을 '종류 표시'로 오기한 점(L06). 여기에 ABAP CDS 문법이 아닐 가능성이 큰 단어형 cardinality 표기(L03, 추정)와, to-many 경로가 행을 부풀린다는 경고 누락(L03)·view entity의 릴리스 전제 누락(L01)이 더해진다. 모두 문장 단위 교정과 한두 문단 보강으로 해결되는 범위이므로 재집필은 불필요하고, 특히 seq 1·3·4는 학습자가 그대로 따라 하면 오해나 활성화 실패로 직결되니 우선 고치기를 권한다."
+  }
+}

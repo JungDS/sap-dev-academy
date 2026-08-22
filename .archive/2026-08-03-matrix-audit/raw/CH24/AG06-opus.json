@@ -1,0 +1,125 @@
+{
+  "agent": "AG06",
+  "model": "opus",
+  "target": "CH24",
+  "persona_ack": "20년차 SAP ABAP 아키텍트(ECC~S/4HANA 개발·운영·성능·이관, 후배 교재 기술 검수 경험) 시선으로 CH24 'RAP / ABAP Cloud 입문' 9개 레슨과 _chapter.md를 읽기 전용 감사했다. 사실 오류·예시 적절성·위험한 생략·안티패턴 네 축으로만 판정했고, 파일은 수정하지 않았다.",
+  "method": "Read 도구로 대상 10개 파일 전문을 정독(읽기 전용). 웹 검색·외부 네트워크·다른 감사 산출물 열람 없이, RAP(BDEF/BDEF projection/behavior pool/EML)·CDS projection view·ABAP Cloud에 대한 내 지식만으로 판정했다. 릴리스·설정 의존 항목은 confidence='추정'으로 낮춰 표기.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L09.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH24/CH24-L01.md",
+      "quote": "| BDEF (Behavior Definition) | 어떤 operation을 허용할지 선언(create·update·delete·validation·determination·action). |",
+      "category": "위험한 생략 / 구조 누락",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "RAP 계층 목록에 'BDEF projection(behavior definition projection)'이 통째로 빠져 있다. 챕터는 behavior를 ZI_Booking(base BO)에만 정의하면서 서비스에는 ZC_Booking(projection)을 expose하는데, projection 계층에 behavior가 투영되지 않으면 노출된 OData 서비스는 조회 전용이 되어 create/update/delete와 cancel action이 나타나지 않는다.",
+      "evidence": "RAP는 base BO(ZI_* + BDEF)와 BO projection(ZC_* + BDEF projection)이 짝을 이루는 2단 구조다. projection 계층의 동작은 'projection; define behavior for ZC_Booking alias Booking { use create; use update; use delete; use action cancel; }' 형태로 명시 투영해야만 활성화된다(use 하지 않은 operation은 projection에 없다). 이 챕터는 L01 스택 다이어그램·계층 표, L06 'expose ZC_Booking as Booking;' 점검 목록, L09 실습 산출물 표(1~6단계: ZI_Booking·ZC_Booking·BDEF·Behavior Pool·Service Definition·Service Binding) 어디에도 BDEF projection이 없다. 게다가 이 누락은 활성화 오류로 잡히지 않고 '읽기만 되는 서비스'로 조용히 나타나므로 입문자가 원인을 찾기 가장 어렵다. L09 체크리스트의 기대 결과 'Booking 목록·cancel action 노출'은 현재 구성 그대로면 재현되지 않는다.",
+      "suggestion": "L01 계층 스택/표에 'BDEF Projection(ZC_ 용 behavior 투영)'을 7번째 구성요소로 추가하고, L03(projection view) 또는 L06 직전에 'projection; define behavior for ZC_Booking alias Booking { use create; use update; use delete; use action cancel; }' 예시를 넣는다. L06 '어떻게 확인하는가'에 'projection BDEF에서 use 선언이 빠지면 서비스가 조회 전용이 된다' 항목을, L09 산출물 표에도 해당 단계를 추가한다."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH24/CH24-L02.md",
+      "quote": "@AccessControl.authorizationCheck: #NOT_REQUIRED",
+      "category": "위험한 생략 / 권한",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "권한 검사를 끄는 annotation을 L02·L03 두 곳의 예제 코드에 아무 설명 없이 넣어 두고, BDEF(L04·L09)에도 authorization 선언이 전혀 없다. 챕터 전체(L08의 ABAP Cloud·Clean Core 포함)가 RAP 권한을 한 번도 언급하지 않는다.",
+      "evidence": "#NOT_REQUIRED는 '이 CDS entity에 권한 검사를 하지 않는다'는 선언이라 학습용으로는 흔하지만, 이 챕터는 그 뷰를 그대로 OData 서비스로 외부 노출하는 데까지 진행한다(L06). RAP에서 실제 권한 통제는 CDS의 DCL(#CHECK + Access Control)과 BDEF의 authorization master(global/instance) + get_global_authorizations/get_instance_authorizations 구현으로 이루어지는데, 그 존재 자체가 언급되지 않아 학습자는 '예매 앱이 완성됐다'고 이해한 채 권한 개념 공백을 안고 CH25(직접 DML)로 넘어간다. 전문가 검수 기준에서 '누구나 남의 예매를 수정·취소할 수 있는 서비스'는 짚었어야 할 누락이다.",
+      "suggestion": "L02(또는 L03) 코드 아래에 '#NOT_REQUIRED = 학습용으로 권한 검사를 끈 상태. 실제 서비스는 authorizationCheck: #CHECK + DCL, BDEF의 authorization master가 필요하다(정식은 후속 챕터)'는 1~2문장 콜아웃을 R15 L1 수준으로 추가하고, L04 BDEF '흔한 실수' 목록에 '권한 선언 없이 서비스 노출' 항목을 넣는다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH24/CH24-L04.md",
+      "quote": "| `create; update; delete;` | 소비자가 쓸 수 있는 표준 operation을 허용한다. |",
+      "category": "위험한 생략 / 예시 적절성",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "create를 허용했는데 key(booking_id)를 누가 채우는지(numbering)가 챕터 전체에 없다. 현재 BDEF대로면 external numbering이 되어 소비자(Fiori 생성 화면)가 예매번호를 직접 입력해야 하고, 중복 키 입력 시 저장이 실패한다.",
+      "evidence": "managed RAP BO에서 키 채번은 세 갈래다 — field ( numbering : managed )(UUID 키 전용), early numbering(FOR NUMBERING handler), late numbering. 셋 중 아무것도 선언·구현하지 않으면 키는 consumer가 제공해야 한다. L04·L09의 BDEF에는 field ( readonly:update ) booking_id;만 있어 booking_id가 create 시 입력 가능 필드로 남는다. 예매 앱에서 사용자가 예매번호를 손으로 타이핑하는 시나리오는 실무 표준이 아니며, 정원 validation·상태 determination까지 설계해 놓고 채번만 비어 있는 것은 학습자가 실제로 만들어 보면 곧바로 부딪히는 지점이다.",
+      "suggestion": "L04에 'create를 켰다면 키를 누가 만드는지도 정해야 한다'는 한 문단을 넣고, 실습(L09) BDEF에는 최소한 field ( readonly ) booking_id; + 'ZBOOKING 키를 UUID로 잡으면 numbering : managed 한 줄로 끝난다(숫자 예매번호는 early numbering handler 필요)'는 선택지를 제시한다."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH24/CH24-L04.md",
+      "quote": "| `lock master` | root entity가 lock master임을 선언한다(managed에서는 framework가 잠금을 처리). |",
+      "category": "위험한 생략 / 동시성",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "lock master만 설명하고 etag master(낙관적 동시성 제어)를 언급하지 않아, '잠금은 framework가 알아서 처리한다'로 읽히면서 동시 수정 문제가 해결된 것처럼 오해된다. ETag가 없으면 RAP는 갱신 충돌 검사를 하지 않으므로 나중 요청이 앞 요청의 변경을 조용히 덮어쓴다(lost update).",
+      "evidence": "managed non-draft BO에서 RAP lock은 modify 요청 처리 구간에만 걸린다. 두 사용자가 같은 예매를 조회한 뒤 각각 저장하면 두 요청 모두 정상 처리되고 마지막 값만 남는다. 이를 막는 장치가 BDEF의 etag master <필드>(보통 last_changed_at)와 OData의 If-Match이며, 표준 RAP 예제(BDEF header)에는 persistent table / lock master / authorization master / etag master가 함께 등장한다. 챕터의 ZBOOKING 모델(L02 필드 목록)에는 last_changed_at 같은 변경 타임스탬프 필드조차 없다.",
+      "suggestion": "L04 BDEF 설명에 'lock = 같은 순간 동시 저장을 막는 장치, ETag = 내가 읽은 뒤 남이 바꿨는지 확인하는 장치'로 두 축을 한 문단 구분해 주고, ZI_Booking 모델에 last_changed_at을 추가해 etag master last_changed_at 한 줄을 시연한다(깊은 동시성은 CH26/CH39로 L1 예고)."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH24/CH24-L09.md",
+      "quote": "이미 예약된 좌석·취소 제외·같은 회차 합계·현재 transaction 변경분을",
+      "category": "위험한 생략 / 동시성",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "정원 validation의 한계로 '집계 범위'만 지적하고, 정작 더 위험한 '동시 세션 경합'을 짚지 않았다. 두 사용자가 같은 회차의 마지막 좌석을 동시에 예매하면 각자의 validation은 모두 통과하고 두 건 모두 저장되어 정원이 초과된다.",
+      "evidence": "이 BO의 lock master는 Booking 인스턴스에만 걸린다. 정원의 기준이 되는 회차(Perf)는 서로 다른 Booking 인스턴스이므로 잠기지 않고, 각 트랜잭션의 validation은 상대 트랜잭션이 아직 커밋하지 않은 좌석을 볼 수 없다(read committed). 즉 validation 로직이 완벽해도 동시성 하에서는 정원 초과가 발생한다. 재고·정원 같은 '공유 카운터' 검증은 회차 단위 잠금(ENQUEUE 계열 lock object)이나 회차를 BO 안으로 끌어들이는 설계가 필요하다는 것이 실무 기준이고, 이 챕터는 정원 검사를 챕터의 대표 예제로 삼고 있으므로 최소한 한계를 명시해야 한다.",
+      "suggestion": "L09 '흔한 실수' 또는 마무리에 '한 트랜잭션 안에서 아무리 잘 세어도, 동시에 두 명이 마지막 좌석을 예매하면 둘 다 통과할 수 있다 - 정원 같은 공유 자원은 회차 단위 잠금이 필요하다(정식은 Lock Object 챕터)'는 1~2문장 콜아웃을 추가하고 CH26 링크로 잇는다."
+    },
+    {
+      "seq": 6,
+      "file": "content/abap/CH24/CH24-L09.md",
+      "quote": "1. concert_id·perf_no로 회차 정원을 찾는다.",
+      "category": "안티패턴",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "정원 조회 단계를 LOOP AT lt_bookings 안쪽에 배치해, 인스턴스마다 회차 정원을 조회하는 loop 내 개별 조회 패턴을 골격으로 시연한다. 바로 앞 L05에서 '집합 지향 처리, loop 안 EML 금지'를 가르쳐 놓고 실습 골격이 정반대 형태를 보여 준다.",
+      "evidence": "제시된 골격은 'LOOP AT lt_bookings INTO DATA(ls_booking). \" 1. concert_id·perf_no로 회차 정원을 찾는다. ... ENDLOOP.' 구조라, 학습자가 그대로 채우면 loop 안 SELECT(또는 loop 안 EML read)가 된다. keys가 3행이면 조회도 3회다. RAP handler는 집합 지향이 원칙이므로 표준은 'loop로 concert_id·perf_no를 모아 정원·기존 예약 좌석을 한 번에(집계 SELECT) 읽고 -> 그 결과 테이블을 기준으로 loop 판정'이다. L05의 '4. loop 안 EML 금지 - 먼저 필요한 데이터를 한 번에 읽고, 그 결과를 loop로 처리한다'와도 어긋난다.",
+      "suggestion": "골격 주석을 3단계로 재배치한다 - (1) lt_bookings에서 회차 키를 모아 중복 제거, (2) LOOP 밖에서 회차 정원·기존 예약 좌석 합계를 한 번에 조회(집계), (3) LOOP AT lt_bookings에서 메모리 테이블만 읽어 초과 판정 후 failed/reported 기록."
+    },
+    {
+      "seq": 7,
+      "file": "content/abap/CH24/CH24-L09.md",
+      "quote": "mapping for zbooking { booking_id = booking_id; }",
+      "category": "사실 오류 / 예시 일관성",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "실습의 '완성형' BDEF에서 mapping이 booking_id 한 필드만 남아 L04(6개 필드 전부 매핑)와 어긋난다. entity 요소와 persistent table 필드의 대응이 불완전한 BDEF를 정답 예시로 제시하는 셈이다.",
+      "evidence": "L04는 booking_id·concert_id·perf_no·customer·seats·status 6개를 모두 mapping하고 '엔티티 요소와 DB 필드의 대응을 눈으로 확인하는 편이 안전하다'고 가르쳤는데, L09의 통합 BDEF는 같은 entity에 대해 mapping for zbooking { booking_id = booking_id; } 한 줄만 둔다. 명시 mapping 절을 두면서 일부 요소만 나열했을 때의 활성화 결과(전부 나열 요구 오류인지, 나머지 동명 필드 자동 매핑인지)는 릴리스별 체크 강도에 따라 달라질 수 있어 confidence는 추정으로 둔다. 다만 두 레슨의 예시가 상충한다는 점, 그리고 이름이 같은 경우의 표준 축약형은 mapping for zbooking corresponding; 이라는 점은 분명하다.",
+      "suggestion": "L09 BDEF의 mapping을 L04와 동일하게 6필드 전부 나열하거나, 'CDS 요소명과 테이블 필드명이 같으므로 mapping for zbooking corresponding; 한 줄로 줄일 수 있다'는 설명과 함께 corresponding 형태로 통일한다."
+    },
+    {
+      "seq": 8,
+      "file": "content/abap/CH24/CH24-L06.md",
+      "quote": "ADT에서 binding을 **Activate**하면 URL과",
+      "category": "사실 오류",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "'binding을 Activate하면 URL/preview를 쓸 수 있다'를 protocol 구분 없이 단언했다. OData V4 binding은 활성화만으로 접근 가능하지만, OData V2 binding은 활성화 외에 Service Binding 에디터의 Publish(Local Service Endpoint) 단계가 추가로 필요한 것으로 안다.",
+      "evidence": "바로 앞 문장에서 'binding type에는 OData V2/V4, UI용·Web API용 변형이 있다'고 V2를 함께 소개했기 때문에, V2를 고른 학습자가 활성화 후 URL이 안 뜨는 상황에서 원인을 못 찾을 수 있다(L06이 '흔한 실수'로 든 'binding 활성화 빼먹기'와는 다른 원인이다). Publish 단계의 필요 여부·버튼 명칭은 릴리스와 배포 형태(온프레미스/BTP ABAP Environment)에 따라 달라질 수 있어 추정으로 표기한다.",
+      "suggestion": "'실습은 OData V4 UI binding 기준 - V4는 활성화하면 바로 접근 가능하고, V2를 고르면 활성화 후 Publish(Local Service Endpoint) 단계가 한 번 더 있다' 정도로 protocol을 특정해 서술한다."
+    },
+    {
+      "seq": 9,
+      "file": "content/abap/CH24/CH24-L01.md",
+      "quote": "이 전부를 하나의 **비즈니스 객체**로 묶는 현대 SAP 표준이 [[RAP]](RESTful Application Programming Model)다.",
+      "category": "사실 오류 / 용어 정확도",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "RAP의 정식 명칭은 'ABAP RESTful Application Programming Model'인데 맨 앞 'ABAP'이 빠졌다. 약어 첫 등장에서 풀 스펠링을 제시하는 자리라 정확한 원어가 필요하다.",
+      "evidence": "SAP 공식 명칭은 ABAP RESTful Application Programming Model(약어 RAP)이며, 약어의 R은 RESTful, 앞의 A는 ABAP에서 온다. 'RESTful Application Programming Model'로만 적으면 ABAP 플랫폼 고유 모델이라는 정보가 빠지고, 일반적인 REST 프로그래밍 모델처럼 읽힌다.",
+      "suggestion": "'[[RAP]](ABAP RESTful Application Programming Model)'로 고치고, glossary의 RAP 항목 title/desc에도 동일하게 ABAP을 포함시킨다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "보강 권장",
+    "summary": "구조·서술의 방향은 정확하다. RAP를 '파일 하나가 아니라 계층의 연결'로 잡고 아래에서 위로 쌓는 순서, managed/unmanaged 구분, keys가 internal table이라는 집합 지향 감각, validation에서 MODIFY 금지, provider contract의 의미, transactional buffer와 COMMIT ENTITIES의 관계까지 - 입문자용으로 드물게 정확한 골격이다. CDS/BDEF/EML 문법 자체에서 명백한 오타·구문 오류는 발견하지 못했다. 문제는 '틀린 설명'보다 '없는 계층·없는 규율'에 몰려 있다. (1) 최대 결함은 BDEF projection 누락이다 - 서비스에는 ZC_Booking을 expose하면서 behavior는 ZI_Booking에만 정의해, 챕터가 시키는 대로 만들면 create/cancel이 없는 조회 전용 서비스가 나온다. 게다가 활성화 오류로 잡히지 않는 조용한 실패라 입문자가 가장 헤맬 지점이다. (2) 그다음이 전문가 눈의 위험한 생략 3종 - 권한(모든 예제가 authorizationCheck #NOT_REQUIRED인데 설명 없음, BDEF에 authorization 선언 전무), 키 채번(create는 켰는데 booking_id를 누가 만드는지 없음), ETag 낙관적 잠금(lock master만 설명해 동시 수정이 해결된 것처럼 읽힘). (3) 정원 검사를 챕터 대표 예제로 쓰면서 동시 세션 경합(두 명이 마지막 좌석을 동시에 예매)을 언급하지 않은 점, 그리고 실습 골격이 LOOP 안에서 회차 정원을 조회하는 형태여서 바로 앞 레슨의 집합 지향 원칙과 충돌하는 점도 교정 대상이다. 나머지(L09 mapping 축약 불일치, OData V2 Publish 단계, RAP 풀 네이밍)는 경미하다. 재집필이 필요한 수준은 아니고, projection BDEF 계층 추가 + 권한/채번/ETag/동시성 콜아웃 삽입 + 실습 골격의 조회 위치 교정으로 충분히 실무 신뢰도를 확보할 수 있다."
+  }
+}

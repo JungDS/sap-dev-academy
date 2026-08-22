@@ -1,0 +1,213 @@
+{
+  "agent": "AG01",
+  "model": "opus",
+  "target": "CH24",
+  "persona_ack": "나는 은서다. 24세 문과 출신으로 개발·전공 경험이 전혀 없고, 이 사이트로 ABAP을 처음 공부한다. CH24를 _chapter.md부터 L01→L09까지 순서대로, 처음 읽는 사람으로서 통독했다. 내가 따로 아는 지식으로 빈틈을 메우지 않았고, 용어의 풀이가 그 자리나 같은 챕터의 앞 레슨에 없으면 막힌 것으로 기록했다.",
+  "method": "Read 도구로 대상 10개 파일(_chapter.md, CH24-L01～L09)을 순서대로 전문 통독. 추가로 같은 용어가 챕터 안에서 '처음 쓰인 위치'와 '풀이가 나오는 위치'를 파일 간 수동 대조했다(예: transactional buffer·EML·save sequence). 웹 검색·외부 네트워크 미사용, 저장소 밖 접근 없음, 다른 감사 산출물 미열람. 렌더된 페이지가 아니라 MD 원문 기준으로 읽었다.",
+  "errors": [],
+  "files_read": [
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\_chapter.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L01.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L02.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L03.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L04.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L05.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L06.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L07.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L08.md",
+    "C:\\SAP\\sap-dev-academy\\content\\abap\\CH24\\CH24-L09.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH24/CH24-L01.md",
+      "quote": "Fiori Elements / OData Client",
+      "category": "단절",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "챕터 첫 그림의 맨 위 계층인 Fiori Elements와 OData Client가 무엇인지 챕터 어디에도 풀이가 없다.",
+      "evidence": "본문은 '아래에서 위로 계층을 본다'며 그림을 읽으라고 안내하는데, 정작 맨 윗줄 두 이름은 바로 아래 계층 표(6행)에도 없고 본문 어디에도 설명이 없다. 바로 앞 문단의 '그 기능은 Fiori 화면이나 OData API로 노출되어야 한다'도 OData가 무엇인지 말해 주지 않는다(OData에 용어 버튼이 붙는 건 L06에 가서다). 나는 이 그림이 결국 무엇을 향해 쌓이는지 모른 채 나머지 계층을 읽어야 했다.",
+      "suggestion": "L01 첫 등장 자리에 한 줄 풀이를 붙인다 — OData(웹으로 데이터를 주고받는 표준 규약)·Fiori Elements(그 서비스를 자동으로 화면으로 그려 주는 SAP 표준 UI). 용어 마킹도 L06이 아니라 L01에서 시작한다."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH24/CH24-L01.md",
+      "quote": "| 동작 코드 위치가 있는가? | behavior pool의 local handler class가 있다. |",
+      "category": "단절",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "확인 체크리스트 중 이 행만 미설명 용어(local handler class)로 되어 있고, 다른 행과 달리 '지금은 모양만' 안내나 링크가 없다.",
+      "evidence": "같은 표의 BDEF 행에는 '모양만 눈에 익히면 됨 — 정식은 [BDEF 기초]', service definition 행에는 '이 문장도 지금은 모양만 — 정식은 [Service Definition/Binding]' 안내가 붙어 있는데, behavior pool 행에만 없다. local handler class라는 말은 L05에 가서야 나온다. '정상 신호'를 확인하라는 표인데 나는 무엇을 보라는 건지 알 수 없었다.",
+      "suggestion": "다른 행과 같은 형식으로 '(정식은 [Behavior Implementation 기초](CH24-L05.html))' 링크와 '지금은 이름만 눈에 익히면 됨' 안내를 추가한다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH24/CH24-L02.md",
+      "quote": "@AccessControl.authorizationCheck: #NOT_REQUIRED",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "챕터에서 처음 만나는 코드의 첫 줄인데, 바로 아래 '읽는 순서' 표가 이 줄만 건너뛴다.",
+      "evidence": "표는 '읽는 순서는 이렇다'며 define root view entity 줄부터 key·필드까지 전부 설명하는데, 정작 맨 위 첫 줄만 빠져 있다. 나는 이게 권한 검사를 하지 않겠다는 뜻인지, 실습이라 잠깐 꺼 둔 것인지, 반드시 써야 하는 줄인지 판단할 수 없었다. L03 코드에도 같은 줄이 또 나오지만 거기서도 설명이 없다.",
+      "suggestion": "표 맨 위에 한 행을 추가한다 — '학습용이라 권한 검사를 요구하지 않는다는 표시. 권한은 뒤에서 따로 다룬다' 수준의 한 줄이면 충분하다."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH24/CH24-L03.md",
+      "quote": "root entity이거나 root를 포함한 composition tree 안에 있어야 한다",
+      "category": "멈춘 곳",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "transactional query의 성립 조건을 알려 주는 문장이 미설명 용어(composition tree)로 되어 있어 조건 자체를 읽을 수 없다.",
+      "evidence": "composition tree는 이 문장이 챕터 안 유일한 등장이고 풀이가 없다. 앞 L02는 'child entity가 있을 수는 있지만'이라고만 하고 넘어갔다. 바로 다음 문장이 '이 챕터에서는 root 하나를 쓰는 단순 구조로 이 조건을 이해한다'고 하는데, 이해할 조건 자체가 모르는 단어라서 무엇을 이해했다는 건지 알 수 없었다. 같은 문단의 'projection layer를 모델링한다'도 영어 명사만 이어져 있어 두 번 읽어도 그림이 안 잡혔다.",
+      "suggestion": "composition tree를 한 줄로 풀거나(부모 entity와 자식 entity가 한 덩어리로 묶인 구조), 이 챕터 범위(root 1개)에 맞게 조건 문장을 쉬운 말로 바꾸고 정식 설명은 심화 레슨으로 넘긴다."
+    },
+    {
+      "seq": 5,
+      "file": "content/abap/CH24/CH24-L03.md",
+      "quote": "contract가 없으면 runtime-specific syntax check를 기대하기 어렵다.",
+      "category": "멈춘 곳",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "provider contract를 빼면 실제로 무엇이 나빠지는지가 영어 전문용어 그대로라 와닿지 않는다.",
+      "evidence": "runtime-specific syntax check가 무엇인지 풀이가 없어서, 계약을 빼면 활성화 때 오류를 못 잡는다는 건지 아예 실행이 안 된다는 건지 구분할 수 없었다. 바로 위 체험 안내는 'provider contract를 넣고 빼 보라'고 하는데, 넣고 뺀 결과를 무엇으로 판단해야 하는지 기준이 본문에 없다.",
+      "suggestion": "'계약을 적어 두어야 활성화(문법 검사) 단계에서 이 시나리오에 맞는 코드인지 걸러 준다' 정도의 우리말 설명으로 바꾼다."
+    },
+    {
+      "seq": 6,
+      "file": "content/abap/CH24/CH24-L04.md",
+      "quote": "RAP BO에 대해 가능한 표준 operation을 선언하는 BDL",
+      "category": "멈춘 곳",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "BDL이라는 약어가 원어 없이 두 번 쓰여, BDEF와 같은 말인지 다른 말인지 알 수 없다.",
+      "evidence": "같은 레슨에서 Behavior Definition은 '[[Behavior Definition]](줄여서 BDEF)'로 친절히 풀어 줬는데, BDL은 어디에도 원어가 없다. 뒤 흔한 실수의 'BDEF는 behavior를 선언하는 BDL source이고'에서 두 약어가 한 문장에 같이 나와서, 나는 BDL이 BDEF의 오타인지 다른 것인지 판단하지 못한 채 멈췄다.",
+      "suggestion": "첫 등장에 'BDL(Behavior Definition Language — BDEF를 적을 때 쓰는 전용 문법)'처럼 원어와 BDEF와의 관계를 한 줄로 밝힌다."
+    },
+    {
+      "seq": 7,
+      "file": "content/abap/CH24/CH24-L04.md",
+      "quote": "| `lock master` | root entity가 lock master임을 선언한다(managed에서는 framework가 잠금을 처리). |",
+      "category": "멈춘 곳",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "코드 한 줄의 뜻을 알려 주는 표인데 lock master를 lock master로 설명하는 순환 정의다.",
+      "evidence": "다른 행은 create/update/delete처럼 뜻이 풀리는데 이 행은 같은 말로 되돌아온다. 무엇을 왜 잠그는지(두 사람이 같은 예매를 동시에 고치면 어떤 문제가 생기는지)가 한 번도 나오지 않아서, 이 줄을 왜 써야 하는지 모른 채 지나갔다. 아래 흔한 실수 항목도 '동시성 심화는 CH26에서 다룬다'며 미루기만 한다.",
+      "suggestion": "'여러 사람이 같은 예매를 동시에 고치지 못하게, 잠금의 기준이 되는 entity가 root임을 알리는 선언' 같은 한 줄 풀이를 표 안이나 바로 아래에 붙인다."
+    },
+    {
+      "seq": 8,
+      "file": "content/abap/CH24/CH24-L05.md",
+      "quote": "CLASS lhc_booking DEFINITION INHERITING FROM cl_abap_behavior_handler.",
+      "category": "과부하",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "이 한 예제에 처음 보는 개념이 열 개 가까이 한꺼번에 쏟아져 소화가 불가능하다.",
+      "evidence": "짧은 코드 한 덩어리에서 lhc_ 접두어, cl_abap_behavior_handler 상속, FOR VALIDATE ON SAVE, Booking~validate_capacity의 물결표, keys, READ ENTITIES, IN LOCAL MODE, FIELDS, WITH CORRESPONDING, transactional buffer, failed/reported가 전부 첫 등장이다. 아래 표는 각 줄을 한 줄씩 옮겨 적을 뿐 새 용어를 다시 풀어 주지 않아서, 한 항목에서 멈추면 나머지가 그대로 밀렸다. 앞 L04는 선언만 다뤄서 코드로 넘어오는 준비 단계가 없다.",
+      "suggestion": "최소 골격(핸들러 클래스 + BDEF의 validation 이름과 method가 연결된다는 것)만 먼저 보여 주고, keys가 여러 건이라는 감각·READ ENTITIES·failed/reported를 단계로 나눠 쌓는다. 표에 '지금 꼭 알 것 / 나중에 알아도 되는 것'을 구분해 표시하면 부담이 크게 준다."
+    },
+    {
+      "seq": 9,
+      "file": "content/abap/CH24/CH24-L05.md",
+      "quote": "| `READ ENTITIES OF ZI_Booking IN LOCAL MODE` | 같은 RAP BO 구현 안에서 현재 transactional buffer를 고려해 entity를 읽는다. |",
+      "category": "단절",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "transactional buffer가 풀이 없이 먼저 쓰이고, 정의는 네 레슨 뒤인 L09에 가서야 나온다.",
+      "evidence": "L05에서 처음 만나는데 무엇인지 설명이 없고, L07에서도 'validation 실패는 transactional buffer를 거부할 수 있으므로'로 또 쓰인다. 'RAP가 변경을 잠시 모아 두는 메모리'라는 한 줄 풀이는 L09 본문에 있다. 그래서 L05의 IN LOCAL MODE가 왜 특별한지(무엇을 고려해서 읽는다는 건지) 이해하지 못한 채 넘어갔다.",
+      "suggestion": "L09에 있는 한 줄 풀이를 첫 등장인 L05로 앞당기고, L09에서는 '앞에서 본 그 버퍼'로 되짚기만 한다."
+    },
+    {
+      "seq": 10,
+      "file": "content/abap/CH24/CH24-L05.md",
+      "quote": "4. **loop 안 EML 금지** — 먼저 필요한 데이터를 한 번에 읽고, 그 결과를 loop로 처리한다.",
+      "category": "단절",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "EML이 무엇인지 모르는 상태에서 금지 규칙만 먼저 나온다. 원어는 L09에 가서야 등장한다.",
+      "evidence": "L05 본문 어디에도 EML의 풀이가 없다. 체험 안내문의 'loop 안 EML이 왜 anti-pattern인지 확인하자'에서도 EML과 anti-pattern 둘 다 설명이 없다. 'EML(Entity Manipulation Language)'라는 원어는 L09에 있다. 확인 체크리스트 항목인데 무엇을 하지 말라는 건지 알 수 없어 확인 자체를 못 했다.",
+      "suggestion": "L05 첫 등장 자리에 'EML(Entity Manipulation Language — RAP BO를 다루는 전용 문장들, 방금 본 READ ENTITIES가 그중 하나)'를 한 줄로 풀고, anti-pattern은 '피해야 할 습관'처럼 우리말을 병기한다."
+    },
+    {
+      "seq": 11,
+      "file": "content/abap/CH24/CH24-L05.md",
+      "quote": "| `failed`, `reported` | 실패 인스턴스와 메시지를 RAP runtime에 돌려주는 응답 구조다. |",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "코드 줄을 풀어 주는 표인데 이 두 이름은 위 예제 코드에 선언도 사용도 되어 있지 않아, 어디서 온 것인지 알 수 없다.",
+      "evidence": "예제에는 주석 '정원 초과 여부를 계산하고, 실패 시 failed/reported에 기록한다.'만 있고 실제 코드가 없다. 표의 다른 행은 모두 코드에 실제로 있는 문장인데 이 행만 없어서, 내가 직접 만들어야 하는 변수인지 원래 주어지는 것인지 판단할 수 없었다. 그런데 아래 흔한 실수는 'failed/reported를 안 채우기'라며 채우는 것을 전제한다.",
+      "suggestion": "'method에 자동으로 주어지는 응답용 자리(내가 선언하지 않는다)'라는 사실을 한 줄로 밝히고, 주석 대신 기록하는 최소 코드 한 줄을 실제로 보여 준다."
+    },
+    {
+      "seq": 12,
+      "file": "content/abap/CH24/CH24-L06.md",
+      "quote": "**① Service Definition**은 CDS entity를 RAP business service로 노출하는 SDL source다.",
+      "category": "멈춘 곳",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "'무엇인가'의 답이 되어야 할 정의 문장에 풀이 없는 약어(SDL)가 들어 있다.",
+      "evidence": "SDL의 원어가 챕터 어디에도 없다. L04의 BDL과 똑같은 방식으로 막혔고, 바로 아래 코드의 define service가 그 SDL인지도 명시가 없어서 둘을 연결하지 못했다.",
+      "suggestion": "'SDL(Service Definition Language — 아래 define service … 를 적는 전용 문법)'처럼 원어와 아래 코드의 대응을 한 줄로 밝힌다."
+    },
+    {
+      "seq": 13,
+      "file": "content/abap/CH24/CH24-L06.md",
+      "quote": "4. **$metadata / Preview** — service definition의 alias `Booking`이 metadata에 노출되는지 본다.",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "$metadata가 무엇이고 어디서 여는 것인지 없이 확인 절차로만 제시된다.",
+      "evidence": "제목에는 $metadata, 설명에는 metadata만 있고 둘의 관계나 여는 방법이 없다. 앞 문단도 'ADT가 URL·testing을 제공한다'까지만 말해서, 실제로 무엇을 눌러 어떤 화면을 봐야 하는지 몰라 이 확인 항목은 그냥 넘길 수밖에 없었다.",
+      "suggestion": "'$metadata = 이 서비스가 무엇을 제공하는지 적힌 목록 페이지(서비스 URL 뒤에 붙여서 연다)' 한 줄과 확인 위치를 덧붙인다."
+    },
+    {
+      "seq": 14,
+      "file": "content/abap/CH24/CH24-L07.md",
+      "quote": "| **Validation** | 저장해도 되는지 검사 | [[save sequence]] | 정원 초과 예매 거부 |",
+      "category": "단절",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "'실행 시점'을 알려 주는 칸에 풀이 없는 용어가 들어가 표의 목적이 무너진다.",
+      "evidence": "같은 표의 Determination은 'on modify 또는 on save', Action은 '버튼·API 호출'이라 시점이 짐작되는데, save sequence는 이 표가 챕터 첫 등장이고 풀이가 없다. 대략의 뜻은 L09의 COMMIT ENTITIES 설명에 가서야 나온다. 이 레슨은 세 로직을 '실행 시점'으로 구분하라고 하는데, 정작 그 기준 한 칸을 못 읽었다.",
+      "suggestion": "표 바로 아래에 'save sequence(저장이 확정되기 직전에 RAP가 검사·조정을 순서대로 처리하는 구간)' 한 줄을 붙인다."
+    },
+    {
+      "seq": 15,
+      "file": "content/abap/CH24/CH24-L09.md",
+      "quote": "mapping for zbooking { booking_id = booking_id; }",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L04에서 6개 필드를 모두 적었던 mapping이 실습에서는 한 줄로 줄었는데, 지면상 생략인지 이게 정답인지 표시가 없다.",
+      "evidence": "L04 예제는 booking_id부터 status까지 6줄을 적고 '학습 단계에서는 entity 요소와 DB 필드의 대응을 눈으로 확인하는 편이 안전하다'고 했다. 그 말을 믿고 왔는데 실습 코드가 갑자기 한 줄이라, 그대로 따라 만들면 나머지 필드는 저장이 안 되는 건지 아니면 원래 생략해도 되는 건지 판단할 수 없었다. 다른 코드 조각들은 생략한 자리에 주석으로 표시를 해 두었기 때문에 더 헷갈렸다.",
+      "suggestion": "생략이라면 다른 조각처럼 주석으로 나머지 필드 동일이라고 표시하고, 생략해도 되는 규칙이라면 '이름이 같으면 mapping을 줄일 수 있다'를 한 줄로 밝힌다."
+    },
+    {
+      "seq": 16,
+      "file": "content/abap/CH24/CH24-L09.md",
+      "quote": "3. 초과하면 failed-booking·reported-booking에 기록한다.",
+      "category": "단절",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "앞에서 배운 failed/reported와 표기가 달라 새로운 것처럼 보인다.",
+      "evidence": "하이픈이 붙은 failed-booking·reported-booking은 챕터에서 여기 한 번만 나오고 설명이 없다. L05에서는 계속 failed/reported였고, Booking은 BDEF의 alias였는데 그 이름이 왜 여기 붙는지, failed와 다른 것인지 알 수 없었다.",
+      "suggestion": "'failed-booking = failed 안의 Booking 자리'라는 한 줄 설명을 붙이거나, L05와 같은 표기로 통일한다."
+    },
+    {
+      "seq": 17,
+      "file": "content/abap/CH24/CH24-L09.md",
+      "quote": "| 6 | Service Binding | OData로 활성화하고 Preview 확인 |",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "실습 레슨인데 여섯 개 산출물을 어디서 어떻게 만드는지가 챕터 전체에 없다.",
+      "evidence": "표는 산출물과 역할만 있고 만드는 화면·순서·활성화 방법이 없다. 앞 레슨들도 L02의 Data Preview, L06의 'ADT에서 binding을 Activate하면' 정도로 스치듯 언급할 뿐, 객체를 새로 만드는 위치와 순서는 어디에도 나오지 않는다. 게다가 1단계 ZI_Booking이 올라타는 zbooking 테이블은 누가 언제 만든 것인지 이 챕터에서 한 번도 만들지 않았다. 시뮬레이터 체험은 있지만 내 손으로 만드는 절차가 없어서, 실습이라는 제목과 실제로 할 수 있는 일 사이가 벌어졌다.",
+      "suggestion": "도입에 '이 실습은 시뮬레이터로 흐름만 확인한다'를 분명히 하거나, 최소한의 생성 순서(어떤 도구에서 어떤 객체를 만들고 활성화하는지, zbooking 테이블은 어디서 온 것인지)를 단계로 적는다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "챕터의 뼈대는 입문자에게 아주 친절하다. L01에서 '이 파일이 무엇을 하나'가 아니라 '이 파일이 없으면 무엇을 못 하나'로 6계층을 보게 한 조립 보드, 그리고 L09의 MODIFY는 버퍼·COMMIT이 진짜 저장이라는 EML 개념 지도 표가 특히 잘 읽혔고, 레슨마다 다음 레슨으로 넘기는 마무리 문장 덕분에 길을 잃지 않았다. 다만 내가 멈춘 곳은 거의 전부 같은 유형이었다 — 풀이 없는 약어(BDL·SDL·EML)와 영어 전문용어(composition tree·save sequence·transactional buffer·$metadata·runtime-specific syntax check)가 설명보다 먼저 나오고, 정의는 두세 레슨 뒤에 나오는 경우가 반복된다. 표가 코드 한 줄씩을 풀어 줄 때도 L02의 첫 줄, L04의 lock master, L05의 failed/reported처럼 정작 모르는 자리에서만 설명이 비었다. 구조를 다시 짤 문제가 아니라 한 줄 풀이를 첫 등장 자리에 넣고 정의 위치를 앞당기면 대부분 해소되므로 경미 수정으로 본다. 예외는 L05로, 새 개념 열 개가 한 예제에 몰려 있어 여기만은 단계를 나눠 쌓는 실질 보강이 필요하다."
+  }
+}

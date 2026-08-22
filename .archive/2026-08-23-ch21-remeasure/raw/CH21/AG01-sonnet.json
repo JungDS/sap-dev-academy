@@ -1,0 +1,82 @@
+{
+  "agent": "AG01",
+  "model": "sonnet",
+  "target": "CH21",
+  "persona_ack": "나는 '은서'다. 개발·전공 경험이 전혀 없는 24세 문과 출신 입문자로 이 사이트로 ABAP을 처음 공부하며, CH21 레슨을 CH21-L01부터 순서대로 처음 읽는 사람으로서 끝까지 통독했다.",
+  "method": "CH21-L01～L10과 _chapter.md를 순서대로 정독. 각 레슨에서 새로 쓰인 용어·코드·변수가 그 자리 또는 같은 챕터 앞 레슨에서 이미 설명됐는지 본문을 되짚어 확인했고, 인용문과 최초 등장 위치는 grep으로 파일 원문과 대조해 정확히 옮겨 적었다(다른 감사 산출물·저장소 밖 자료는 열람하지 않음).",
+  "errors": [],
+  "files_read": [
+    "C:SAPsap-dev-academycontentabapCH21_chapter.md",
+    "C:SAPsap-dev-academycontentabapCH21CH21-L01.md",
+    "C:SAPsap-dev-academycontentabapCH21CH21-L02.md",
+    "C:SAPsap-dev-academycontentabapCH21CH21-L03.md",
+    "C:SAPsap-dev-academycontentabapCH21CH21-L04.md",
+    "C:SAPsap-dev-academycontentabapCH21CH21-L05.md",
+    "C:SAPsap-dev-academycontentabapCH21CH21-L06.md",
+    "C:SAPsap-dev-academycontentabapCH21CH21-L07.md",
+    "C:SAPsap-dev-academycontentabapCH21CH21-L08.md",
+    "C:SAPsap-dev-academycontentabapCH21CH21-L09.md",
+    "C:SAPsap-dev-academycontentabapCH21CH21-L10.md"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "CH21-L05.md",
+      "quote": "클래스 타입 참조로 인터페이스 메서드를 부를 때(`lo_booking->zif_printable~print( )`)만 쓰는 소속 표시다.",
+      "category": "생략",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "lo_booking이라는 변수가 어디서 나왔는지 이 레슨 어디에도 선언돼 있지 않다.",
+      "evidence": "이 레슨에서 실제로 선언된 참조 변수는 lo_printable(TYPE REF TO zif_printable) 뿐이다. lo_booking->zif_printable~print( ) 예시는 본문과 흔한 실수 항목 두 곳에서 쓰이는데, DATA lo_booking TYPE REF TO zcl_booking. 같은 선언 코드가 한 번도 나오지 않아 lo_booking이 무슨 타입인지 이름만 보고 짐작해야 했다. 처음 읽을 때 이 변수가 언제 만들어졌는지 몰라 멈췄다.",
+      "suggestion": "lo_booking을 처음 쓰는 자리에 DATA lo_booking TYPE REF TO zcl_booking. 선언 한 줄을 코드로 보여주면 짐작 없이 이해된다."
+    },
+    {
+      "seq": 2,
+      "file": "CH21-L06.md",
+      "quote": "`THROW` 뒤 예외 클래스에는 괄호 `( )`가 붙고, `RAISE EXCEPTION TYPE`과 달리 `EXPORTING`을 쓰지 않는다.",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "RAISE EXCEPTION TYPE이 EXPORTING을 쓰는 예시를 이 챕터 어디서도 본 적이 없는데, 그것과 다르다고 비교한다.",
+      "evidence": "이 레슨과 앞뒤 레슨에 나온 RAISE EXCEPTION TYPE 예시(RAISE EXCEPTION TYPE zcx_fully_booked. 등)는 전부 EXPORTING 없이 쓰였다. 그런데 THROW를 설명하며 RAISE EXCEPTION TYPE과 달리 EXPORTING을 쓰지 않는다고 하니, 내가 놓친 예시가 있나 싶어 앞으로 되짚어 봤지만 못 찾았다.",
+      "suggestion": "RAISE EXCEPTION TYPE zcx_xxx EXPORTING ... 형태의 짧은 예시를 한 번 보여준 뒤 THROW와 비교하면 다르다는 말이 바로 이해된다."
+    },
+    {
+      "seq": 3,
+      "file": "CH21-L06.md",
+      "quote": "모든 class-based 예외는 최상위 `CX_ROOT`에서 내려오고, 처리 강제 수준에 따라 셋으로 나뉜다.",
+      "category": "과부하",
+      "severity": "중간",
+      "confidence": "추정",
+      "claim": "이 레슨 하나에서 예외 동기부여·내 예외 만들기·RAISING·TRY/CATCH/CLEANUP·THROW·CX 3계층까지 새 개념이 끊이지 않고 이어져서, CX 계층 표에 이르렀을 땐 이미 머리가 꽉 찬 상태였다.",
+      "evidence": "이 표 앞까지 RAISE EXCEPTION, RAISING 시그니처, TRY/CATCH, 실행조건이 까다로운 CLEANUP, THROW 표현식을 순서대로 다 소화해야 했다. 거기에 CX_STATIC_CHECK·CX_DYNAMIC_CHECK·CX_NO_CHECK 세 갈래가 checked라는 낯선 말과 함께 또 나오니, 표는 읽었지만 각 줄이 실제로 뭘 의미하는지는 나중에 다시 안 보면 기억 못 할 것 같다. 다른 레슨들은 이 정도로 새 개념이 한 레슨에 몰리지 않았다.",
+      "suggestion": "CX 계층 표를 접이식(details)으로 옮기거나, 지금은 CX_STATIC_CHECK만 기억하면 된다는 식으로 핵심 하나만 남기고 나머지 둘은 참고로 낮춰주면 부담이 준다."
+    },
+    {
+      "seq": 4,
+      "file": "CH21-L09.md",
+      "quote": "handler 객체도 참조로 등록된다. 등록이 살아 있는 동안은 메모리에서 정리되지 않으니, 불필요한 등록을 오래 유지하지 않는다.",
+      "category": "생략",
+      "severity": "낮음",
+      "confidence": "추정",
+      "claim": "등록이 메모리에서 정리되지 않는다는 말이 왜 문제인지 설명 없이, 곧바로 ACTIVATION abap_false라는 새 문법이 나온다.",
+      "evidence": "이 챕터 어디에서도 객체가 메모리에서 언제·왜 정리되는지, 정리되지 않으면 무엇이 나쁜지 설명한 적이 없다. 흔한 실수 항목 한 줄에 이 내용과 새 옵션(ACTIVATION abap_false)이 한꺼번에 들어 있어서, 왜 위험한지 와닿지 않은 채로 문법만 외워야 했다.",
+      "suggestion": "등록을 안 끊으면 왜 문제가 되는지(예: 안 쓰는 관찰자가 계속 반응하며 자원을 붙잡고 있다) 한 문장으로 먼저 풀어주면 ACTIVATION abap_false의 필요성이 자연스럽게 이해된다."
+    },
+    {
+      "seq": 5,
+      "file": "CH21-L10.md",
+      "quote": "RAISING   zcx_concert_not_found.",
+      "category": "단절",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "zcx_concert_not_found라는 예외 클래스가 이 레슨의 클래스 정의 코드에 아무 설명 없이 먼저 등장하고, 왜 필요한지·어떻게 만드는지는 한참 뒤에야 나온다.",
+      "evidence": "이 레슨은 introduces가 비어 있어 새로 배우는 건 없다고 기대했는데, constructor의 RAISING 절에 zcx_concert_not_found가 처음부터 나온다. 이 챕터에서 SE24로 만들어 본 예외 클래스는 ZCX_FULLY_BOOKED뿐이라 이 예외는 언제 만든 건지 몰라 멈췄다. 몇 문단 뒤 생성자가 스스로 확인한다는 설명에서야 이유를 알았고, 만드는 법은 맨 아래 실습 과제 1번에서야 나온다.",
+      "suggestion": "클래스 정의 코드 블록 바로 앞이나 코드 옆 주석에 ZCX_FULLY_BOOKED처럼 SE24로 새로 만들 예외라고 한 줄만 미리 알려주면 코드를 보자마자 낯설지 않다."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "새 클래스 개념이 나올 때마다 Visibility Gate Simulator·Constructor Timeline·Contract Board·Exception Flow Console 같은 체험이 바로 붙어 있어 설명만 읽고 넘어가지 않아도 됐고, 특히 CH21-L07에서 자리만 잡아 둔 apply_vip_coupon 메서드가 CH21-L08에서 실제로 쓰이는 걸 보고 그때 그게 이거였구나 싶어 챕터 전체가 한 이야기처럼 이어진다는 인상을 받았다. 다만 CH21-L05의 인터페이스 참조 예시에서 선언되지 않은 변수(lo_booking)가 쓰이고, CH21-L06의 예외 파트가 한 레슨에 RAISING·TRY/CATCH/CLEANUP·THROW·CX 3계층까지 새 개념을 많이 몰아넣었고, CH21-L10에서 새 예외 클래스(zcx_concert_not_found)가 설명보다 코드에 먼저 나오는 점에서 걸려 다시 읽거나 앞으로 되짚어야 했다. 전체적으로 학습을 포기할 만한 지점은 없었고, 위 몇 곳만 다듬으면 충분할 수준이다."
+  }
+}

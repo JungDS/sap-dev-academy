@@ -1,0 +1,105 @@
+{
+  "agent": "AG02",
+  "model": "sonnet",
+  "target": "CH23",
+  "persona_ack": "나는 준호다 — 배운 건 그 자리에서 바로 눌러보고 만져봐야 진짜 이해했다고 느끼는 실습형 학습자. CH23의 레슨 7개와 위젯 8개를 하나씩 열어 본문 코드·설명과 대조하며 직접 조작해 봤다.",
+  "method": "① 소스 정독 — 대상 16개 파일 전부(레슨 7개+_chapter.md+위젯 8개) 및 위젯이 참조하는 embeds/_engine 엔진 JS 7개(cds-activation-observer.js·projection-layer-lab.js·association-path-simulator.js·annotation-effect-preview.js·metadata-extension-lab.js·dcl-auth-comparator.js·cds-builder-stepper.js)를 읽어 렌더 로직·CFG 데이터를 직접 확인. ② 브라우저 실조작 — 하네스가 띄운 로컬 서버(http://localhost:8144)에서 새 탭(tab-1)을 열어 8개 위젯 전부를 로드하고, 각 위젯의 토글·버튼(필드 오타 주입/활성화 단계 이동, ZC_에서 숨김·ZI_에서 제거, association 노출 끄기·concert_id 제거·cardinality 전환·JOIN 보기 전환, 금액-통화 짝 3가지 상태 전환, DDLX 분리·allowExtensions·구분자 전환, DCL 사용자 3명·#CHECK/#NOT_REQUIRED 전환, CDS 빌더 6단계를 정순·역순으로)를 직접 클릭해 결과 텍스트(get_page_text)와 스크린샷으로 대조. ③ read_console_messages로 매 위젯 로드·조작 후 콘솔 오류 0건 확인. 기존 탭(seed)은 건드리지 않고 새 탭에서만 작업.",
+  "errors": [],
+  "files_read": [
+    "content/abap/CH23/_chapter.md",
+    "content/abap/CH23/CH23-L01.md",
+    "content/abap/CH23/CH23-L02.md",
+    "content/abap/CH23/CH23-L03.md",
+    "content/abap/CH23/CH23-L04.md",
+    "content/abap/CH23/CH23-L05.md",
+    "content/abap/CH23/CH23-L06.md",
+    "content/abap/CH23/CH23-L07.md",
+    "embeds/abap/CH23-L01-S01.html",
+    "embeds/abap/CH23-L02-S01.html",
+    "embeds/abap/CH23-L03-S01.html",
+    "embeds/abap/CH23-L03-S02.html",
+    "embeds/abap/CH23-L04-S01.html",
+    "embeds/abap/CH23-L05-S01.html",
+    "embeds/abap/CH23-L06-S01.html",
+    "embeds/abap/CH23-L07-S01.html",
+    "embeds/_engine/cds-activation-observer.js",
+    "embeds/_engine/projection-layer-lab.js",
+    "embeds/_engine/association-path-simulator.js",
+    "embeds/_engine/annotation-effect-preview.js",
+    "embeds/_engine/metadata-extension-lab.js",
+    "embeds/_engine/dcl-auth-comparator.js",
+    "embeds/_engine/cds-builder-stepper.js"
+  ],
+  "findings": [
+    {
+      "seq": 1,
+      "file": "content/abap/CH23/CH23-L01.md",
+      "quote": "여기서 `seats_left`는 테이블의 물리 컬럼이 아니라 **CDS가 조회될 때 계산해서 보여 주는 요소**([[Calculated Element]])다. 입문자가 가장 오해하는 지점이 여기다",
+      "category": "체험 공백",
+      "severity": "높음",
+      "confidence": "확실",
+      "claim": "L01 본문은 `ZI_Flight`(sflight 기반) 코드로 이 레슨의 세 번째 정식 도입 개념인 Calculated Element(`seats_left`)를 가르치고 '입문자가 가장 오해하는 지점'이라고 직접 강조하지만, 이 페이지의 유일한 위젯은 이 개념을 전혀 체험시키지 않는다.",
+      "evidence": "CH23-L01-S01.html의 CAO_CFG는 entity:'ZI_Concert', source:'zconcert', fields: concert_id/artist/venue/capacity로 고정돼 있고, 대응 엔진 cds-activation-observer.js도 이 필드들만으로 5단계(원본 테이블→DDL→활성화→Data Preview→ABAP SQL 소비)를 렌더한다. 브라우저로 5단계를 전부 실행하고 필드 오타 토글까지 조작해 확인해도 Calculated Element·seats_left·ZI_Flight·sflight는 위젯 어디에도 등장하지 않는다(코드·설정 전체에 문자열 자체가 없음). front-matter의 introduces: [\"CDS View Entity\", \"DEFINE VIEW ENTITY\", \"Calculated Element\"]에도 정식 도입 개념으로 명시돼 있어 공백의 비중이 크다.",
+      "suggestion": "위젯에 sflight/ZI_Flight 시나리오를 다루는 스텝(또는 별도 토글)을 추가해, seats_left가 Data Preview에서 실제로 계산되어 나타나는 모습(테이블에는 없던 값이 CDS 조회 시점에만 보임)을 직접 확인할 수 있게 보강."
+    },
+    {
+      "seq": 2,
+      "file": "content/abap/CH23/CH23-L02.md",
+      "quote": "`ZI_Concert`와 `ZC_Concert`를 각각 미리 보면, 소비 뷰가 노출하지 않은 필드는",
+      "category": "불일치",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "위젯(CH23-L02-S01.html)이 실제로 구현한 소비 뷰는 `ZC_ConcertList`(capacity 미노출)인데, 같은 레슨의 '어떻게 확인하는가' 절은 위젯이 아니라 앞서 본문 첫 코드 예제의 `ZC_Concert`(모든 필드를 그대로 노출)를 가리키며 '노출하지 않은 필드가 있다'고 설명해, 위젯 시나리오와 검증 문구의 엔티티 이름이 어긋난다.",
+      "evidence": "본문 '무엇인가' 절 첫 `ZC_Concert` 코드는 concert_id/artist/venue/capacity 4필드를 ZI_Concert와 동일하게 노출해 숨기는 필드가 없다. capacity를 뺀 두 번째 예제 이름은 `ZC_ConcertList`뿐이며, 위젯 PLL_CFG도 proj:'ZC_ConcertList'로 이와 일치한다(브라우저로 capacity 숨김·ZI_에서 제거하는 두 동작 모두 정상 작동 확인). 그런데 '어떻게 확인하는가' 절의 SQL 예시는 다시 'FROM ZC_Concert'(3필드만 SELECT)로 돌아가면서 '소비 뷰가 노출하지 않은 필드는 ZC_ 쪽에 안 보인다'고 설명해, 정작 그 이름의 엔티티(첫 예제)에는 숨겨진 필드가 없다는 점과 충돌한다.",
+      "suggestion": "'어떻게 확인하는가' 절의 entity 이름을 위젯과 동일한 `ZC_ConcertList`로 통일하거나, 위젯의 proj 이름을 `ZC_Concert`로 맞춰 앞뒤 설명을 일치시킨다."
+    },
+    {
+      "seq": 3,
+      "file": "content/abap/CH23/CH23-L03.md",
+      "quote": "venue,\n      capacity,\n      _Perf",
+      "category": "불일치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "본문의 ZI_Concert association 코드는 select list에 concert_id/artist/venue/capacity/_Perf 5개를 노출하는데, 같은 시나리오를 다루는 위젯(CH23-L03-S02.html)의 실시간 DDL 코드 패널은 capacity를 빼고 concert_id/artist/venue/_Perf 4개만 보여준다.",
+      "evidence": "association-path-simulator.js의 codePanel()은 필드 목록을 '{\\n'+idLine+'\\n      artist,\\n      venue,\\n'+perfLine+'\\n}'로 하드코딩해 capacity가 존재하지 않는다. 브라우저로 위젯을 로드하고 공연 선택·cardinality·노출 토글을 모두 조작해 확인해도 렌더되는 코드에는 capacity가 한 번도 나타나지 않는다 — 본문 코드 그대로를 옮겼다면 있어야 할 필드가 위젯에서만 빠졌다.",
+      "suggestion": "association-path-simulator.js의 codePanel() 필드 목록에 capacity 줄을 추가해 본문 코드와 1:1로 맞춘다."
+    },
+    {
+      "seq": 4,
+      "file": "content/abap/CH23/CH23-L04.md",
+      "quote": "@Semantics.amount.currencyCode: 'currency'",
+      "category": "불일치",
+      "severity": "중간",
+      "confidence": "확실",
+      "claim": "L04 본문의 금액-통화 짝 코드 예제는 필드명 `price`/`currency`를 쓰는데, 바로 이어지는 위젯(CH23-L04-S01.html)의 같은 개념 체험은 `ticket_price`/`currency_code`라는 다른 필드명을 쓴다 — 방금 읽은 코드와 위젯에 나오는 이름이 달라 대조가 끊긴다.",
+      "evidence": "본문은 \"@Semantics.amount.currencyCode: 'currency' / price, / @Semantics.currencyCode: true / currency\" 코드를 보여준 직후 '아래에서... 금액의 통화 짝을 맞춰 보고(자기참조면 오류)... 직접 보자'며 위젯으로 연결한다. 그런데 위젯 AEP_CFG는 priceField:'ticket_price', currencyField:'currency_code'이고, 브라우저로 3가지 토글(currency_code로/ticket_price로 자기참조/지정 안 함)을 모두 조작해 확인해도 렌더 코드 패널은 실제로 'ticket_price'·'currency_code'만 출력한다. 참고로 같은 레슨 '어떻게 확인하는가' 절은 오히려 'currency_code'를 예로 들어 위젯과는 맞지만, 정작 '무엇인가' 절의 코드 예제(currency)와는 다시 어긋나 레슨 안에서도 이름이 통일돼 있지 않다.",
+      "suggestion": "위젯의 priceField/currencyField를 본문 코드 예제와 같은 'price'/'currency'로 맞추거나, 반대로 본문 코드 예제와 확인 절의 이름을 위젯과 같은 이름으로 통일한다."
+    },
+    {
+      "seq": 5,
+      "file": "embeds/_engine/cds-builder-stepper.js",
+      "quote": "SELECT</span> concert_id, artist, venue, capacity",
+      "category": "위젯 결함",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "CH23-L07-S01 위젯에서 ⑤Data Preview 표는 concert_id/artist/venue 3개 컬럼만 보여주는데, 바로 다음 ⑥소비 코드 생성 단계의 SELECT문은 capacity까지 4개 필드를 조회한다고 표시한다 — 같은 위젯 안에서 미리보기와 조회 코드의 필드 집합이 서로 다르다.",
+      "evidence": "CBS_CFG.concerts 데이터는 {id, artist, venue}만 갖고 있어 renderOut()의 Data Preview 표(ZI_Concert·ZC_Concert 둘 다)는 3컬럼만 렌더한다. 반면 같은 renderOut() 안의 소비 코드 문자열은 'SELECT concert_id, artist, venue, capacity FROM ZC_Concert...'로 고정 하드코딩돼 capacity를 포함한다. 브라우저로 ①→⑥ 순서대로 전부 실행해 확인해도 Data Preview 표에는 capacity 열이 끝까지 나타나지 않고 소비 코드에만 등장한다.",
+      "suggestion": "CBS_CFG.concerts에 capacity 필드를 추가해 Data Preview 표에도 반영하거나, 소비 코드의 SELECT 목록에서 capacity를 빼 두 결과의 필드 집합을 맞춘다."
+    },
+    {
+      "seq": 6,
+      "file": "embeds/abap/CH23-L03-S01.html",
+      "quote": "_Booking [0..*]<br>on perf_no",
+      "category": "불일치",
+      "severity": "낮음",
+      "confidence": "확실",
+      "claim": "L03의 관계도 위젯(S01)은 회차→예매 association을 ZI_Perf 쪽에서 `_Booking [0..*] on perf_no`로, 예매→공연 역방향을 `_Concert [1..1]`로 이미 구체적으로 확정해 보여준다. 그런데 CH23 어디에도 ZI_Booking·_Booking·역방향 _Concert를 실제로 정의하는 코드가 없고, 캡스톤(L07) 위젯의 도전 과제는 오히려 '_Booking [0..*]을 어느 뷰에 두는 게 자연스러울지'를 CH23에서는 풀지 않는 미해결 질문으로 제시해, L03이 4개 레슨 앞서 이미 답(ZI_Perf에 배치, on perf_no)을 보여준 것과 어긋난다.",
+      "evidence": "CH23-L03-S01.html의 relmap 마크업은 'ZI_Perf → _Booking[0..*] on perf_no → ZI_Booking'과 'ZI_Booking → _Concert[1..1] 역방향 경로 → ZI_Concert'를 정적으로 표시한다. CH23-L01~L07.md의 실제 CDS 코드에는 ZI_Booking 정의나 _Booking/_Concert association이 전혀 없다(L03 코드는 _Perf 하나뿐). 반면 CH23-L07-S01.html의 cbs-chall 도전 과제 목록은 \"예매 association — _Booking [0..*]을 어느 뷰에 두는 게 자연스러울지\"를 CH23에서는 설계만 하고 구현은 다루지 않는 미해결 항목으로 명시한다.",
+      "suggestion": "L03 관계도에서 _Booking·_Concert 구간은 카디널리티·ON조건 같은 구체 사양 없이 점선이나 물음표로 '이후 배울 관계'임을 표시하거나, L07 도전 과제 문구를 L03이 이미 보여준 배치와 모순되지 않게 조정."
+    }
+  ],
+  "overall": {
+    "grade_opinion": "경미 수정",
+    "summary": "8개 위젯 모두 정상 로드·상호작용(콘솔 오류 0건)했고, 특히 L02(비파괴 숨김 vs 연쇄 제거)·L05(DDLX 분리·세미콜론/쉼표·allowExtensions)·L06(DCL 사용자별 결과 비교)은 본문과 위젯이 정확히 맞아떨어져 문제가 없었다. 다만 L01은 본문이 도입한 두 번째 핵심 개념(Calculated Element/seats_left, ZI_Flight)에 대한 체험이 위젯에 전혀 없어 체험 공백이 있었고(위젯은 ZI_Concert 시나리오만 구현), L02·L04는 본문 코드가 쓰는 엔티티·필드 이름과 위젯이 실제로 렌더하는 이름이 서로 달라(ZC_Concert vs ZC_ConcertList, price/currency vs ticket_price/currency_code) 대조하며 따라가기 혼란스러웠다. L03은 위젯의 실시간 코드 패널이 본문 예제의 capacity 필드를 누락했고, 오리엔테이션 관계도(S01)가 이 챕터에서 정의되지 않은 _Booking/_Concert 관계를 구체적 카디널리티까지 확정해 보여줘 L07 캡스톤의 '아직 미정' 도전 과제와 어긋났다. L07 위젯은 Data Preview 표와 바로 아래 소비 코드의 필드 집합(capacity 포함 여부)이 서로 달랐다. 전반적으로 핵심 상호작용은 모두 의도대로 작동하는 탄탄한 구조이고, 이름·필드 일치성과 L01 한 곳의 체험 공백을 손보면 충분해 보인다."
+  }
+}

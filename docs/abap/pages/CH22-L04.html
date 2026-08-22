@@ -43,7 +43,7 @@
 <p><a href="CH17-L09.html">행 색상 기초</a>에서 행 <em>전체</em> 색을 봤다. 그런데 공연명·날짜·정원은 정상인데 <strong>잔여석만 위험</strong>하다면, 행 전체를 칠하는 것보다 <strong>그 셀 하나</strong>만 칠하는 게 정확하다.</p>
 <p>방법은 행 구조에 <button class="term" type="button" data-term="Cell Color">색 정보 테이블</button>(<code>LVC_T_SCOL</code>)을 컬럼으로 품는 것이다. 한 행 안에서도 여러 셀에 각각 다른 색이 붙을 수 있으니, 색 정보는 단일 값이 아니라 <em>목록</em>이다. 여기서 <a href="CH06-L13.html">Deep Structure 개념</a>(<button class="term" type="button" data-term="Deep Structure">Deep Structure</button>)이 쓰인다.</p>
 <blockquote>
-<p>🧱 <strong>flat ↔ deep 분리.</strong> DB는 <strong>flat table</strong>로 조회한다(deep component를 가진 work area는 SQL에서 제한). 표시용 internal table을 따로 두고 거기에 색 deep component를 채운다.</p>
+<p>🧱 <strong>flat ↔ deep 분리.</strong> DB에서 읽는 쪽은 <strong>flat</strong>(색 목록 같은 &quot;표 안의 표&quot;가 없이, 낱값 필드만 나란한 구조)한 표로 둔다. 화면에 보여 줄 internal table은 따로 만들어, 거기에 색 deep component를 채운다. <code>SELECT</code>가 결과를 그대로 통째 받는 기본 <code>INTO</code> 경로는 <strong>대상에 deep component가 있으면 안 되기</strong> 때문이다.</p>
 </blockquote>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
@@ -73,14 +73,14 @@
 8
 9</pre><pre class="abap-editor__code"><code><span class="tok-kw">LOOP</span> <span class="tok-kw">AT</span> gt_perf_alv <span class="tok-kw">ASSIGNING</span> <span class="tok-kw">FIELD-SYMBOL</span>(&lt;perf&gt;).
   <span class="tok-kw">CLEAR</span> &lt;perf&gt;-cellcolors.
-  <span class="tok-kw">IF</span> &lt;perf&gt;-booked &gt;= &lt;perf&gt;-capacity.              <span class="tok-com">" 매진</span>
+  <span class="tok-kw">IF</span> &lt;perf&gt;-seats_left &lt;= <span class="tok-num">0</span>.                        <span class="tok-com">" 매진 — 위험한 건 잔여석 셀</span>
     <span class="tok-kw">APPEND</span> <span class="tok-kw">VALUE</span> lvc_s_scol(
-      fname     = <span class="tok-str">'BOOKED'</span>                            <span class="tok-com">" 어느 셀</span>
+      fname     = <span class="tok-str">'SEATS_LEFT'</span>                        <span class="tok-com">" 어느 셀</span>
       color-col = col_negative                        <span class="tok-com">" 빨강 계열(색 번호)</span>
       color-int = <span class="tok-num">1</span> ) <span class="tok-kw">TO</span> &lt;perf&gt;-cellcolors.           <span class="tok-com">" 진하게(1) / 연하게(0)</span>
   <span class="tok-kw">ENDIF</span>.
 <span class="tok-kw">ENDLOOP</span>.</code></pre></div></div>
-<p>색 한 칸(<code>lvc_s_scol</code>)은 <strong>어느 셀에</strong>(<code>fname</code>) <strong>무슨 색을</strong>(<code>color</code>) 줄지 담는다. <code>color</code>는 다시 세 부분이다.</p>
+<p>색 지정 한 줄(<code>lvc_s_scol</code>)은 <strong>어느 셀에</strong>(<code>fname</code>) <strong>무슨 색을</strong>(<code>color</code>) 줄지 담는다. <code>color</code>는 다시 세 부분이다.</p>
 <table>
 <thead>
 <tr>
@@ -91,7 +91,7 @@
 </thead>
 <tbody><tr>
 <td><code>color-col</code></td>
-<td>색 번호(1～7). <code>col_negative</code>(빨강)·<code>col_total</code>(노랑)·<code>col_positive</code>(초록) 같은 상수로 쓴다</td>
+<td>색 번호(1～7). <code>col_negative</code>(빨강)·<code>col_total</code>(노랑)·<code>col_positive</code>(초록) 같은 상수로 쓴다. <code>col_total</code>은 이름은 합계 행 색이지만, 노랑이 필요할 때 관례처럼 재사용한다</td>
 <td><code>col_negative</code></td>
 </tr>
 <tr>
@@ -118,8 +118,8 @@ gs_layout-ctab_fname = <span class="tok-str">'CELLCOLORS'</span>.     <span clas
 </section><section class="lblock"><h2>흔한 실수와 점검 🚧</h2>
 <ul>
 <li><strong><code>ctab_fname</code> 미지정</strong> → 색 컬럼을 둬도 연결 안 하면 색이 그냥 <em>안 보이는 데이터</em>. (위 체험의 2단계.)</li>
-<li><strong><code>fname</code> 오타</strong> → <code>SEATS_OCC</code>처럼 틀리면 색 정보는 있어도 적용 안 된다. <strong>컬럼 제목이 아니라 component 이름</strong>(<code>SEATSOCC</code>).</li>
-<li><strong>deep로 직접 SELECT</strong> → DB는 flat으로 읽고, 표시용 deep table로 옮긴 뒤 색을 채운다.</li>
+<li><strong><code>fname</code> 오타</strong> → <code>SEATSLEFT</code>처럼 밑줄을 빠뜨리면 색 정보는 있어도 적용 안 된다. <strong>컬럼 제목이 아니라 component 이름</strong>(<code>SEATS_LEFT</code>)이다.</li>
+<li><strong>deep 테이블로 직접 SELECT</strong> → <code>CORRESPONDING FIELDS</code> 없이 통째로 받는 <code>INTO</code>는 대상에 deep component가 있으면 안 된다. DB는 flat으로 읽고, 표시용 deep table로 옮긴 뒤 색을 채운다.</li>
 <li><strong><code>CELLCOLORS</code>가 화면에 노출</strong> → 기술 컬럼이라 field catalog에서 숨긴다(<code>no_out</code>).</li>
 <li><strong>색 남용</strong> → 위험·경고·확정 같은 제한된 의미에만. 다 칠하면 오히려 안 읽힌다.</li>
 </ul>
