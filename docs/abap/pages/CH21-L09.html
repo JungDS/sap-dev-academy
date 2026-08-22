@@ -51,8 +51,8 @@
 6</pre><pre class="abap-editor__code"><code><span class="tok-kw">CLASS</span> zcl_booking_manager <span class="tok-kw">DEFINITION</span> <span class="tok-kw">PUBLIC</span> <span class="tok-kw">CREATE</span> <span class="tok-kw">PUBLIC</span>.
   <span class="tok-kw">PUBLIC</span> <span class="tok-kw">SECTION</span>.
     <span class="tok-kw">EVENTS</span> sold_out                         <span class="tok-com">" 이벤트 선언(전달값 포함)</span>
-      <span class="tok-kw">EXPORTING</span> <span class="tok-kw">VALUE</span>(iv_concert) <span class="tok-kw">TYPE</span> zconcert-concert_id
-                <span class="tok-kw">VALUE</span>(iv_perf)    <span class="tok-kw">TYPE</span> zbooking-perf_no.
+      <span class="tok-kw">EXPORTING</span> <span class="tok-kw">VALUE</span>(ev_concert) <span class="tok-kw">TYPE</span> zconcert-concert_id
+                <span class="tok-kw">VALUE</span>(ev_perf)    <span class="tok-kw">TYPE</span> zbooking-perf_no.
 <span class="tok-kw">ENDCLASS</span>.</code></pre></div></div>
 <p>선언은 <code>DEFINITION</code> 쪽 일이다(위는 <button class="term" type="button" data-term="이벤트">이벤트</button> 부분만 발췌). 사건을 실제로 <strong>일으키는</strong> 곳은 <code>IMPLEMENTATION</code> 안, <button class="term" type="button" data-term="Method">메서드</button>의 몸통이다. <code>book</code>의 선언과 <button class="term" type="button" data-term="Class">클래스</button> 전체 골격은 <a href="CH21-L10.html">실습 — ZCL_BOOKING_MANAGER 클래스</a>에 있다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
@@ -67,13 +67,13 @@
   <span class="tok-kw">METHOD</span> book.
     <span class="tok-kw">IF</span> iv_seats = me-&gt;remaining( ).
       <span class="tok-kw">RAISE</span> <span class="tok-kw">EVENT</span> sold_out                   <span class="tok-com">" 사건 발생 + 값 전달</span>
-        <span class="tok-kw">EXPORTING</span> iv_concert = mv_concert
-                  iv_perf    = mv_perf.
+        <span class="tok-kw">EXPORTING</span> ev_concert = mv_concert
+                  ev_perf    = mv_perf.
     <span class="tok-kw">ENDIF</span>.
   <span class="tok-kw">ENDMETHOD</span>.
 <span class="tok-kw">ENDCLASS</span>.</code></pre></div></div>
 </section><section class="lblock"><h2>반응 등록 — Handler / SET HANDLER 🔌</h2>
-<p>반응하는 쪽은 <code>FOR EVENT</code>로 handler <button class="term" type="button" data-term="Method">메서드</button>를 선언한다. 이때 <button class="term" type="button" data-term="이벤트">이벤트</button>가 넘긴 값과 함께 <code>sender</code>(이벤트를 일으킨 <button class="term" type="button" data-term="객체">객체</button> 자신)를 받는다. handler의 <code>IMPORTING</code>에는 <strong>타입을 쓰지 않는다</strong>(쓸 수도 없다). <button class="term" type="button" data-term="파라미터">파라미터</button>의 이름과 타입은 <code>EVENTS</code> 선언의 <code>EXPORTING</code>에서 그대로 물려받기 때문이다. <code>sender</code>는 따로 선언한 적이 없어도 모든 <button class="term" type="button" data-term="인스턴스">인스턴스</button> 이벤트가 자동으로 함께 넘겨 준다.</p>
+<p>반응하는 쪽은 <code>FOR EVENT</code>로 handler <button class="term" type="button" data-term="Method">메서드</button>를 선언한다. 이때 <button class="term" type="button" data-term="이벤트">이벤트</button>가 넘긴 값과 함께 <code>sender</code>(이벤트를 일으킨 <button class="term" type="button" data-term="객체">객체</button> 자신)를 받는다. handler의 <code>IMPORTING</code>에는 <strong>타입을 쓰지 않는다</strong>(쓸 수도 없다). <button class="term" type="button" data-term="파라미터">파라미터</button>의 이름과 타입은 <code>EVENTS</code> 선언의 <code>EXPORTING</code>에서 그대로 물려받기 때문이다. 그래서 이름도 이벤트가 <strong>내보내는</strong> 값이라는 뜻의 <code>ev_</code>를 쓰고, handler는 그 이름을 그대로 받는다(이 과정의 파라미터 접두어 규칙: IMPORTING <code>i</code>·EXPORTING <code>e</code>·CHANGING <code>c</code>·TABLES <code>t</code> + 값 종류). <code>sender</code>는 따로 선언한 적이 없어도 모든 <button class="term" type="button" data-term="인스턴스">인스턴스</button> 이벤트가 자동으로 함께 넘겨 준다.</p>
 <div class="abap-editor"><div class="abap-editor__header"><span class="abap-editor__dots"><i class="abap-editor__dot r"></i><i class="abap-editor__dot y"></i><i class="abap-editor__dot g"></i></span><span class="abap-editor__title">ABAP</span><button class="copy-btn" type="button">⧉ 복사</button></div><div class="abap-editor__body"><pre class="abap-editor__gutter" aria-hidden="true">1
 2
 3
@@ -89,12 +89,12 @@
   <span class="tok-kw">PUBLIC</span> <span class="tok-kw">SECTION</span>.
     <span class="tok-kw">METHODS</span> on_sold_out
       <span class="tok-kw">FOR</span> <span class="tok-kw">EVENT</span> sold_out <span class="tok-kw">OF</span> zcl_booking_manager
-      <span class="tok-kw">IMPORTING</span> iv_concert iv_perf sender.
+      <span class="tok-kw">IMPORTING</span> ev_concert ev_perf sender.
 <span class="tok-kw">ENDCLASS</span>.
 
 <span class="tok-kw">CLASS</span> zcl_booking_monitor <span class="tok-kw">IMPLEMENTATION</span>.
   <span class="tok-kw">METHOD</span> on_sold_out.
-    <span class="tok-kw">MESSAGE</span> |{ iv_concert }/{ iv_perf } 매진| <span class="tok-kw">TYPE</span> <span class="tok-str">'I'</span>.
+    <span class="tok-kw">MESSAGE</span> |{ ev_concert }/{ ev_perf } 매진| <span class="tok-kw">TYPE</span> <span class="tok-str">'I'</span>.
   <span class="tok-kw">ENDMETHOD</span>.
 <span class="tok-kw">ENDCLASS</span>.</code></pre></div></div>
 <p>마지막으로 <code>SET HANDLER</code>로 <strong>어떤 발생 객체의 이벤트를 들을지</strong> 연결한다.</p>
